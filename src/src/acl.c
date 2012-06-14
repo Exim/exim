@@ -3863,6 +3863,43 @@ return FAIL;
 }
 
 
+
+
+/* Same args as acl_check_internal() above, but the string s is
+the name of an ACL followed optionally by up to 9 space-separated arguments.
+The name and args are separately expanded.  Args go into $acl_arg globals. */
+int
+acl_check_args(int where, address_item *addr, uschar *s, int level,
+  uschar **user_msgptr, uschar **log_msgptr)
+{
+uschar * tmp;
+uschar * name;
+
+if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
+  goto bad;
+
+for (acl_narg = 0; acl_narg < sizeof(acl_arg)/sizeof(*acl_arg); acl_narg++)
+  {
+  while (*s && isspace(*s)) s++;
+  if (!*s) break;
+  if (!(tmp = string_dequote(&s)) || !(acl_arg[acl_narg] = expand_string(tmp)))
+    {
+    tmp = name;
+    goto bad;
+    }
+  }
+
+return acl_check_internal(where, addr, name, level+1, user_msgptr, log_msgptr);
+
+bad:
+if (expand_string_forcedfail) return ERROR;
+*log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+  tmp, expand_string_message);
+return search_find_defer?DEFER:ERROR;
+}
+
+
+
 /*************************************************
 *        Check access using an ACL               *
 *************************************************/

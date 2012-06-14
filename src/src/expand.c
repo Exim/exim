@@ -249,6 +249,7 @@ static uschar *cond_table[] = {
   US"==",     /* Backward compatibility */
   US">",
   US">=",
+  US"acl",
   US"and",
   US"bool",
   US"bool_lax",
@@ -294,6 +295,7 @@ enum {
   ECOND_NUM_EE,
   ECOND_NUM_G,
   ECOND_NUM_GE,
+  ECOND_ACL,
   ECOND_AND,
   ECOND_BOOL,
   ECOND_BOOL_LAX,
@@ -2066,12 +2068,50 @@ switch(cond_type)
   return s;
 
 
+  /* call ACL (in a conditional context).  Accept true, deny false.
+  Defer is a forced-fail.  Anything set by message= goes to $value.
+  See also the expansion-item version EITEM_ACL. */
+
+  case ECOND_ACL:
+    /* ${if acl {name arg1 arg2...}  {yes}{no}}
+    {
+    uschar *nameargs;
+    uschar *user_msg;
+    uschar *log_msg;
+    BOOL cond = FALSE;
+    int size = 0;
+
+    while (isspace(*s)) s++;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (!(nameargs = expand_string_internal(s, TRUE, &s, FALSE, FALSE)) return NULL;
+    if (*s++ != '}') goto COND_FAILED_CURLY_END;
+
+    switch(acl_check_args(ACL_WHERE_EXPANSION, NULL, nameargs, &user_msg, &log_msg))
+      {
+      case OK:
+	cond = TRUE;
+      case FAIL:
+	if (user_msg)
+          lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
+        if (yield != NULL) *yield = cond;
+	return s;
+
+      case DEFER:
+        expand_string_forcedfail = TRUE;
+      default:
+        expand_string_message = string_sprintf("error from acl \"%s\"", nameargs);
+	return NULL;
+      }
+    }
+  return s;
+
+
   /* saslauthd: does Cyrus saslauthd authentication. Four parameters are used:
 
      ${if saslauthd {{username}{password}{service}{realm}}  {yes}[no}}
 
   However, the last two are optional. That is why the whole set is enclosed
-  in their own set or braces. */
+  in their own set of braces. */
 
   case ECOND_SASLAUTHD:
   #ifndef CYRUS_SASLAUTHD_SOCKET
@@ -3654,18 +3694,19 @@ while (*s != 0)
   switch(item_type)
     {
     /* Call an ACL from an expansion.  We feed data in via $acl_arg1 - $acl_arg9.
-    If the ACL returns acceptance we return content set by "message ="
+    If the ACL returns accept or reject we return content set by "message ="
     There is currently no limit on recursion; this would have us call
     acl_check_internal() directly and get a current level from somewhere.
     */
 
     case EITEM_ACL:
+      /* ${acl {name} {arg1}{arg2}...} */
       {
-      int rc;
-      uschar *sub[10];	/* name + arg1-arg9, must match number of acl_arg[] */
-      uschar *new_yield;
+      int i;
+      uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
       uschar *user_msg;
       uschar *log_msg;
+
       switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl"))
         {
         case 1: goto EXPAND_FAILED_CURLY;
@@ -3674,11 +3715,11 @@ while (*s != 0)
         }
       if (skipping) continue;
 
-      for (rc = 1; rc < sizeof(sub)/sizeof(*sub) && sub[rc]; rc++)
-        acl_arg[rc-1] = sub[rc];
-      acl_narg = rc-1;
-      while (rc < sizeof(sub)/sizeof(*sub))
-        acl_arg[rc++ - 1] = NULL;
+      for (i = 1; i < sizeof(sub)/sizeof(*sub) && sub[i]; i++)
+        acl_arg[i-1] = sub[i];
+      acl_narg = i-1;
+      while (i < sizeof(sub)/sizeof(*sub))
+        acl_arg[i++ - 1] = NULL;
 
       DEBUG(D_expand)
         debug_printf("expanding: acl: %s  arg: %s%s\n",
@@ -3686,16 +3727,18 @@ while (*s != 0)
 	  acl_narg>0 ? sub[1]   : US"<none>",
 	  acl_narg>1 ? " +more" : "");
 
-      switch(rc = acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], &user_msg, &log_msg))
+      switch(acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], &user_msg, &log_msg))
 	{
 	case OK:
+	case FAIL:
 	  if (user_msg)
             yield = string_cat(yield, &size, &ptr, user_msg, Ustrlen(user_msg));
 	  continue;
+
 	case DEFER:
-	  continue;
+          expand_string_forcedfail = TRUE;
 	default:
-          expand_string_message = string_sprintf("acl \"%s\" did not accept", sub[0]);
+          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
 	  goto EXPAND_FAILED;
 	}
       }
