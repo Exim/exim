@@ -44,6 +44,9 @@ NM/01 Bugzilla 1197 - Spec typo
 
 JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
 
+PP/09 Add gnutls_enable_pkcs11 option.
+
+
 Exim version 4.80
 -----------------
 

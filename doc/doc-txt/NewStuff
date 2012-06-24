@@ -87,6 +87,16 @@ Version 4.81
  8. New expansion operators ${listnamed:name} to get the content of a named list
     and ${listcount:string} to count the items in a list.
 
+ 9. New global option "gnutls_enable_pkcs11", defaults false.  The GnuTLS
+    rewrite in 4.80 combines with GnuTLS 2.12.0 or later, to autoload PKCS11
+    modules.  For some situations this is desirable, but we expect admin in
+    those situations to know they want the feature.  More commonly, it means
+    that GUI user modules get loaded and are broken by the setuid Exim being
+    unable to access files specified in environment variables and passed
+    through, thus breakage.  So we explicitly inhibit the PKCS11 initialisation
+    unless this new option is set.
+
+
 Version 4.80
 ------------
 

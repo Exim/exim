@@ -12825,6 +12825,9 @@ listed in more than one group.
 .section "TLS" "SECID108"
 .table2
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
+.new
+.row &%gnutls_enable_pkcs11%&        "allow GnuTLS to autoload PKCS11 modules"
+.wen
 .row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_certificate%&             "location of server certificate"
@@ -13852,6 +13855,19 @@ See &%gecos_name%& above.
 This option controls whether GnuTLS is used in compatibility mode in an Exim
 server. This reduces security slightly, but improves interworking with older
 implementations of TLS.
+
+
+.new
+option gnutls_enable_pkcs11 main boolean unset
+This option will let GnuTLS (2.12.0 or later) autoload PKCS11 modules with
+the p11-kit configuration files in &_/etc/pkcs11/modules/_&.
+
+See
+&url(http://www.gnu.org/software/gnutls/manual/gnutls.html#Smart-cards-and-HSMs)
+for documentation.
+.wen
+
+
 
 .option headers_charset main string "see below"
 This option sets a default character set for translating from encoded MIME

@@ -39,6 +39,10 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #include <gnutls/x509.h>
 /* man-page is incorrect, gnutls_rnd() is not in gnutls.h: */
 #include <gnutls/crypto.h>
+/* needed to disable PKCS11 autoload unless requested */
+#if GNUTLS_VERSION_NUMBER >= 0x020c00
+# include <gnutls/pkcs11.h>
+#endif
 
 /* GnuTLS 2 vs 3
 
@@ -172,6 +176,7 @@ before, for now. */
 #define HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 #define HAVE_GNUTLS_SEC_PARAM_CONSTANTS
 #define HAVE_GNUTLS_RND
+#define HAVE_GNUTLS_PKCS11
 #endif
 
 
@@ -911,6 +916,19 @@ if (!exim_gnutls_base_init_done)
   {
   DEBUG(D_tls) debug_printf("GnuTLS global init required.\n");
 
+#ifdef HAVE_GNUTLS_PKCS11
+  /* By default, gnutls_global_init will init PKCS11 support in auto mode,
+  which loads modules from a config file, which sounds good and may be wanted
+  by some sysadmin, but also means in common configurations that GNOME keyring
+  environment variables are used and so breaks for users calling mailq.
+  To prevent this, we init PKCS11 first, which is the documented approach. */
+  if (!gnutls_enable_pkcs11)
+    {
+    rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
+    exim_gnutls_err_check(US"gnutls_pkcs11_init");
+    }
+#endif
+
   rc = gnutls_global_init();
   exim_gnutls_err_check(US"gnutls_global_init");
 
@@ -970,7 +988,7 @@ if (rc != OK) return rc;
 /* set SNI in client, only */
 if (host)
   {
-  if (!expand_check(state->tlsp->sni, "tls_out_sni", &state->exp_tls_sni))
+  if (!expand_check(state->tlsp->sni, US"tls_out_sni", &state->exp_tls_sni))
     return DEFER;
   if (state->exp_tls_sni && *state->exp_tls_sni)
     {
@@ -1945,6 +1963,13 @@ if (exim_gnutls_base_init_done)
   log_write(0, LOG_MAIN|LOG_PANIC,
       "already initialised GnuTLS, Exim developer bug");
 
+#ifdef HAVE_GNUTLS_PKCS11
+if (!gnutls_enable_pkcs11)
+  {
+  rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
+  validate_check_rc(US"gnutls_pkcs11_init");
+  }
+#endif
 rc = gnutls_global_init();
 validate_check_rc(US"gnutls_global_init()");
 exim_gnutls_base_init_done = TRUE;
