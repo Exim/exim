@@ -696,8 +696,8 @@ static uschar *ratelimit_option_string[] = {
 
 /* Enable recursion between acl_check_internal() and acl_check_condition() */
 
-static int acl_check_internal(int, address_item *, uschar *, int, uschar **,
-         uschar **);
+static int acl_check_wargs(int, address_item *, uschar *, int, uschar **,
+    uschar **);
 
 
 /*************************************************
@@ -2785,33 +2785,7 @@ for (; cb != NULL; cb = cb->next)
     "discard" verb. */
 
     case ACLC_ACL:
-      {
-      uschar * cp = arg;
-      uschar * tmp;
-      uschar * name;
-
-      if (!(tmp = string_dequote(&cp)) || !(name = expand_string(tmp)))
-        {
-        if (expand_string_forcedfail) continue;
-        *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
-          tmp, expand_string_message);
-        return search_find_defer? DEFER : ERROR;
-        }
-
-      for (acl_narg = 0; acl_narg < sizeof(acl_arg)/sizeof(*acl_arg); acl_narg++)
-        {
-	while (*cp && isspace(*cp)) cp++;
-	if (!*cp) break;
-	if (!(tmp = string_dequote(&cp)) || !(acl_arg[acl_narg] = expand_string(tmp)))
-          {
-          if (expand_string_forcedfail) continue;
-          *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
-            arg, expand_string_message);
-          return search_find_defer? DEFER : ERROR;
-          }
-	}
-
-      rc = acl_check_internal(where, addr, name, level+1, user_msgptr, log_msgptr);
+      rc = acl_check_wargs(where, addr, arg, level+1, user_msgptr, log_msgptr);
       if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
         {
         *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
@@ -2819,7 +2793,6 @@ for (; cb != NULL; cb = cb->next)
           verbs[verb]);
         return ERROR;
         }
-      }
     break;
 
     case ACLC_AUTHENTICATED:
@@ -3895,8 +3868,8 @@ return FAIL;
 /* Same args as acl_check_internal() above, but the string s is
 the name of an ACL followed optionally by up to 9 space-separated arguments.
 The name and args are separately expanded.  Args go into $acl_arg globals. */
-int
-acl_check_args(int where, address_item *addr, uschar *s, int level,
+static int
+acl_check_wargs(int where, address_item *addr, uschar *s, int level,
   uschar **user_msgptr, uschar **log_msgptr)
 {
 uschar * tmp;

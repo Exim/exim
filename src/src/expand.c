@@ -1836,6 +1836,40 @@ if (Ustrncmp(name, "acl_", 4) == 0)
 
 
 
+/*
+Load args from sub array to globals, and call acl_check().
+
+Returns:       OK         access is granted by an ACCEPT verb
+               DISCARD    access is granted by a DISCARD verb
+	       FAIL       access is denied
+	       FAIL_DROP  access is denied; drop the connection
+	       DEFER      can't tell at the moment
+	       ERROR      disaster
+*/
+static int
+eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
+{
+int i;
+uschar *dummy_log_msg;
+
+for (i = 1; i < nsub && sub[i]; i++)
+  acl_arg[i-1] = sub[i];
+acl_narg = i-1;
+while (i < sizeof(sub)/sizeof(*sub))
+  acl_arg[i++ - 1] = NULL;
+
+DEBUG(D_expand)
+  debug_printf("expanding: acl: %s  arg: %s%s\n",
+    sub[0],
+    acl_narg>0 ? sub[1]   : US"<none>",
+    acl_narg>1 ? " +more" : "");
+
+return acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &dummy_log_msg);
+}
+
+
+
+
 /*************************************************
 *        Read and evaluate a condition           *
 *************************************************/
@@ -1863,7 +1897,7 @@ int i, rc, cond_type, roffset;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar name[256];
-uschar *sub[4];
+uschar *sub[10];
 
 const pcre *re;
 const uschar *rerror;
@@ -2070,40 +2104,52 @@ switch(cond_type)
 
   /* call ACL (in a conditional context).  Accept true, deny false.
   Defer is a forced-fail.  Anything set by message= goes to $value.
-  See also the expansion-item version EITEM_ACL. */
+  Up to ten parameters are used; we use the braces round the name+args
+  like the saslauthd condition does, to permit a variable number of args.
+  See also the expansion-item version EITEM_ACL and the traditional
+  acl modifier ACLC_ACL.
+  */
 
   case ECOND_ACL:
-    /* ${if acl {name arg1 arg2...}  {yes}{no}}
+    /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}}
     {
     uschar *nameargs;
     uschar *user_msg;
-    uschar *log_msg;
     BOOL cond = FALSE;
-    int size = 0;
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;
-    if (!(nameargs = expand_string_internal(s, TRUE, &s, FALSE, FALSE)) return NULL;
-    if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
-    switch(acl_check_args(ACL_WHERE_EXPANSION, NULL, nameargs, &user_msg, &log_msg))
+    switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
+      &s, yield == NULL, TRUE, US"acl"))
       {
-      case OK:
-	cond = TRUE;
-      case FAIL:
-	if (user_msg)
-          lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
-        if (yield != NULL) *yield = cond;
-	return s;
-
-      case DEFER:
-        expand_string_forcedfail = TRUE;
-      default:
-        expand_string_message = string_sprintf("error from acl \"%s\"", nameargs);
-	return NULL;
+      case 1: expand_string_message = US"too few arguments or bracketing "
+        "error for acl";
+      case 2:
+      case 3: return NULL;
       }
+
+    if (yield != NULL)
+      switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+	{
+	case OK:
+	  cond = TRUE;
+	case FAIL:
+	  if (user_msg)
+            lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
+	  else
+	    lookup_value = NULL;
+	  *yield = cond;
+	  break;
+
+	case DEFER:
+          expand_string_forcedfail = TRUE;
+	default:
+          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
+	  return NULL;
+	}
+    return s;
     }
-  return s;
 
 
   /* saslauthd: does Cyrus saslauthd authentication. Four parameters are used:
@@ -3697,15 +3743,15 @@ while (*s != 0)
     If the ACL returns accept or reject we return content set by "message ="
     There is currently no limit on recursion; this would have us call
     acl_check_internal() directly and get a current level from somewhere.
+    See also the acl expansion condition ECOND_ACL and the traditional
+    acl modifier ACLC_ACL.
     */
 
     case EITEM_ACL:
       /* ${acl {name} {arg1}{arg2}...} */
       {
-      int i;
       uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
       uschar *user_msg;
-      uschar *log_msg;
 
       switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl"))
         {
@@ -3715,19 +3761,7 @@ while (*s != 0)
         }
       if (skipping) continue;
 
-      for (i = 1; i < sizeof(sub)/sizeof(*sub) && sub[i]; i++)
-        acl_arg[i-1] = sub[i];
-      acl_narg = i-1;
-      while (i < sizeof(sub)/sizeof(*sub))
-        acl_arg[i++ - 1] = NULL;
-
-      DEBUG(D_expand)
-        debug_printf("expanding: acl: %s  arg: %s%s\n",
-	  sub[0],
-	  acl_narg>0 ? sub[1]   : US"<none>",
-	  acl_narg>1 ? " +more" : "");
-
-      switch(acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], &user_msg, &log_msg))
+      switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:
 	case FAIL:
