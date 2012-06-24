@@ -236,7 +236,7 @@ at the outer level. In the other cases, expansion already occurs in the
 checking functions. */
 
 static uschar cond_expand_at_top[] = {
-  TRUE,    /* acl */
+  FALSE,   /* acl */
   TRUE,    /* add_header */
   FALSE,   /* authenticated */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -2785,13 +2785,40 @@ for (; cb != NULL; cb = cb->next)
     "discard" verb. */
 
     case ACLC_ACL:
-    rc = acl_check_internal(where, addr, arg, level+1, user_msgptr, log_msgptr);
-    if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
       {
-      *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
-        "\"%s\" command (only allowed with \"accept\" or \"discard\")",
-        verbs[verb]);
-      return ERROR;
+      uschar * cp = arg;
+      uschar * tmp;
+      uschar * name;
+
+      if (!(tmp = string_dequote(&cp)) || !(name = expand_string(tmp)))
+        {
+        if (expand_string_forcedfail) continue;
+        *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+          tmp, expand_string_message);
+        return search_find_defer? DEFER : ERROR;
+        }
+
+      for (acl_narg = 0; acl_narg < sizeof(acl_arg)/sizeof(*acl_arg); acl_narg++)
+        {
+	while (*cp && isspace(*cp)) cp++;
+	if (!*cp) break;
+	if (!(tmp = string_dequote(&cp)) || !(acl_arg[acl_narg] = expand_string(tmp)))
+          {
+          if (expand_string_forcedfail) continue;
+          *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+            arg, expand_string_message);
+          return search_find_defer? DEFER : ERROR;
+          }
+	}
+
+      rc = acl_check_internal(where, addr, name, level+1, user_msgptr, log_msgptr);
+      if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
+        {
+        *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
+          "\"%s\" command (only allowed with \"accept\" or \"discard\")",
+          verbs[verb]);
+        return ERROR;
+        }
       }
     break;
 
