@@ -46,6 +46,9 @@ JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
 
 PP/09 Add gnutls_enable_pkcs11 option.
 
+PP/10 Let Linux makefile inherit CFLAGS/CFLAGS_DYNAMIC.
+      Pulled from Debian 30_dontoverridecflags.dpatch by Andreas Metzler.
+
 
 Exim version 4.80
 -----------------

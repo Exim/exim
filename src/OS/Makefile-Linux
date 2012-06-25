@@ -1,5 +1,9 @@
 # Exim: OS-specific make file for Linux. This is for modern Linuxes,
 # which use libc6.
+#
+# For Linux, we assume GNU Make; at time of writing, the only extension
+# used is ?= which is actually portable to other maintained Make variants,
+# just is not POSIX.
 
 HAVE_ICONV=yes
 
@@ -8,8 +12,9 @@ CHOWN_COMMAND=look_for_it
 CHGRP_COMMAND=look_for_it
 CHMOD_COMMAND=look_for_it
 
-CFLAGS=-O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
-CFLAGS_DYNAMIC=-shared -rdynamic
+# Preserve CFLAGS and CFLAGS_DYNAMIC from the caller/environment
+CFLAGS ?= -O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+CFLAGS_DYNAMIC ?= -shared -rdynamic
 
 DBMLIB = -ldb
 USE_DB = yes
