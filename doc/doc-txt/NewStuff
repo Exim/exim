@@ -87,10 +87,15 @@ Version 4.81
  8. New expansion operators ${listnamed:name} to get the content of a named list
     and ${listcount:string} to count the items in a list.
 
- 9. New expansion item ${acl {name}{arg}...} to call an ACL.  The argument can
-    be accessed by the ACL in $acl_arg1 to $acl_arg9.  $acl_narg will be the
-    number of arguments. The expansion result is set by a "message =" modifier
-    and an "accept" return from the ACL.
+ 9. The "acl = name" condition on an ACL now supports optional arguments.
+    New expansion item "${acl {name}{arg}...}" and expansion condition
+    "acl {{name}{arg}...}" are added.  In all cases up to nine arguments
+    can be used, appearing in $acl_arg1 to $acl_arg9 for the called ACL.
+    Variable $acl_narg contains the number of arguments.  If the ACL sets
+    a "message =" value this becomes the result of the expansion item,
+    or the value of $value for the expansion condition.  If the ACL returns
+    accept the expansion condition is true; if reject, false.  A defer
+    return results in a forced fail.
 
 Version 4.80
 ------------

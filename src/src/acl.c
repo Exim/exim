@@ -3873,23 +3873,28 @@ acl_check_wargs(int where, address_item *addr, uschar *s, int level,
   uschar **user_msgptr, uschar **log_msgptr)
 {
 uschar * tmp;
+uschar * tmp_arg[9];	/* must match acl_arg[] */
 uschar * name;
+int i;
 
 if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
   goto bad;
 
-for (acl_narg = 0; acl_narg < sizeof(acl_arg)/sizeof(*acl_arg); acl_narg++)
+for (i = 0; i < 9; i++)
   {
   while (*s && isspace(*s)) s++;
   if (!*s) break;
-  if (!(tmp = string_dequote(&s)) || !(acl_arg[acl_narg] = expand_string(tmp)))
+  if (!(tmp = string_dequote(&s)) || !(tmp_arg[i] = expand_string(tmp)))
     {
     tmp = name;
     goto bad;
     }
   }
+acl_narg = i;
+for (i = 0; i < acl_narg; i++) acl_arg[i] = tmp_arg[i];
+while (i < 9) acl_arg[i++] = NULL;
 
-return acl_check_internal(where, addr, name, level+1, user_msgptr, log_msgptr);
+return acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
 
 bad:
 if (expand_string_forcedfail) return ERROR;

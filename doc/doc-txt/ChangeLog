@@ -44,7 +44,9 @@ NM/01 Bugzilla 1197 - Spec typo
 
 JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
 
-JH/04 Add expansion item ${acl {name}{arg}...}
+JH/04 Add expansion item ${acl {name}{arg}...}, expansion condition
+      "acl {{name}{arg}...}", and optional args on acl condition
+      "acl = name arg..."
 
 Exim version 4.80
 -----------------

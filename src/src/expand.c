@@ -1855,7 +1855,7 @@ uschar *dummy_log_msg;
 for (i = 1; i < nsub && sub[i]; i++)
   acl_arg[i-1] = sub[i];
 acl_narg = i-1;
-while (i < sizeof(sub)/sizeof(*sub))
+while (i < nsub)
   acl_arg[i++ - 1] = NULL;
 
 DEBUG(D_expand)
@@ -2111,11 +2111,13 @@ switch(cond_type)
   */
 
   case ECOND_ACL:
-    /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}}
+    /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
     {
     uschar *nameargs;
     uschar *user_msg;
     BOOL cond = FALSE;
+    int size = 0;
+    int ptr = 0;
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;
@@ -2129,16 +2131,17 @@ switch(cond_type)
       case 3: return NULL;
       }
 
-    if (yield != NULL)
-      switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+    if (yield != NULL) switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:
 	  cond = TRUE;
 	case FAIL:
+          lookup_value = NULL;
 	  if (user_msg)
+	    {
             lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
-	  else
-	    lookup_value = NULL;
+            lookup_value[ptr] = '\0';
+	    }
 	  *yield = cond;
 	  break;
 

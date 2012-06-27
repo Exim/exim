@@ -80,15 +80,17 @@
 > 
 > Failed: missing or misplaced { or }
 > Failed: missing or misplaced { or }
-> Failed: acl "a_bad" did not accept
+> Failed: error from acl "a_nosuch"
 > acl: (0) [] []
 > acl: (1) [person@dom.ain] []
 > acl: (2) [firstarg] [secondarg]
 > acl: (1) [arg with spaces] []
 > acl: 
 > acl: 
-> Failed: acl "a_deny" did not accept
-> Failed: acl "a_deny" did not accept
+> acl: (0) [] []
+> acl: (1) [person@dom.ain] []
+> Failed: error from acl "a_defer"
+> acl: (2) [new arg1] [top_arg_1]
 > acl:  (1) [1] [] (1) [2] [] (1) [3] [] (1) [4] []
 > 
 > addrss: local-part@dom.ain
@@ -389,6 +391,12 @@
 > 
 > queue_running after or: y
 > first_delivery after or: y
+> 
+> # acl expansion condition
+> acl if: Y:(0) [] []
+> acl if: Y:(1) [argY] []
+> acl if: N:(2) [argN] [arg2]
+> Failed: error from acl "a_defer"
 > 
 > # Default values for both if strings
 > 
