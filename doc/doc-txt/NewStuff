@@ -96,6 +96,15 @@ Version 4.81
     through, thus breakage.  So we explicitly inhibit the PKCS11 initialisation
     unless this new option is set.
 
+10. The "acl = name" condition on an ACL now supports optional arguments.
+    New expansion item "${acl {name}{arg}...}" and expansion condition
+    "acl {{name}{arg}...}" are added.  In all cases up to nine arguments
+    can be used, appearing in $acl_arg1 to $acl_arg9 for the called ACL.
+    Variable $acl_narg contains the number of arguments.  If the ACL sets
+    a "message =" value this becomes the result of the expansion item,
+    or the value of $value for the expansion condition.  If the ACL returns
+    accept the expansion condition is true; if reject, false.  A defer
+    return results in a forced fail.
 
 Version 4.80
 ------------

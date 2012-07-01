@@ -49,6 +49,9 @@ PP/09 Add gnutls_enable_pkcs11 option.
 PP/10 Let Linux makefile inherit CFLAGS/CFLAGS_DYNAMIC.
       Pulled from Debian 30_dontoverridecflags.dpatch by Andreas Metzler.
 
+JH/04 Add expansion item ${acl {name}{arg}...}, expansion condition
+      "acl {{name}{arg}...}", and optional args on acl condition
+      "acl = name arg..."
 
 Exim version 4.80
 -----------------

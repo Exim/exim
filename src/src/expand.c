@@ -102,6 +102,7 @@ bcrypt ({CRYPT}$2a$).
 alphabetical order. */
 
 static uschar *item_table[] = {
+  US"acl",
   US"dlfunc",
   US"extract",
   US"filter",
@@ -124,6 +125,7 @@ static uschar *item_table[] = {
   US"tr" };
 
 enum {
+  EITEM_ACL,
   EITEM_DLFUNC,
   EITEM_EXTRACT,
   EITEM_FILTER,
@@ -247,6 +249,7 @@ static uschar *cond_table[] = {
   US"==",     /* Backward compatibility */
   US">",
   US">=",
+  US"acl",
   US"and",
   US"bool",
   US"bool_lax",
@@ -292,6 +295,7 @@ enum {
   ECOND_NUM_EE,
   ECOND_NUM_G,
   ECOND_NUM_GE,
+  ECOND_ACL,
   ECOND_AND,
   ECOND_BOOL,
   ECOND_BOOL_LAX,
@@ -390,6 +394,16 @@ enum {
 static var_entry var_table[] = {
   /* WARNING: Do not invent variables whose names start acl_c or acl_m because
      they will be confused with user-creatable ACL variables. */
+  { "acl_arg1",            vtype_stringptr,   &acl_arg[0] },
+  { "acl_arg2",            vtype_stringptr,   &acl_arg[1] },
+  { "acl_arg3",            vtype_stringptr,   &acl_arg[2] },
+  { "acl_arg4",            vtype_stringptr,   &acl_arg[3] },
+  { "acl_arg5",            vtype_stringptr,   &acl_arg[4] },
+  { "acl_arg6",            vtype_stringptr,   &acl_arg[5] },
+  { "acl_arg7",            vtype_stringptr,   &acl_arg[6] },
+  { "acl_arg8",            vtype_stringptr,   &acl_arg[7] },
+  { "acl_arg9",            vtype_stringptr,   &acl_arg[8] },
+  { "acl_narg",            vtype_int,         &acl_narg },
   { "acl_verify_message",  vtype_stringptr,   &acl_verify_message },
   { "address_data",        vtype_stringptr,   &deliver_address_data },
   { "address_file",        vtype_stringptr,   &address_file },
@@ -1822,6 +1836,40 @@ if (Ustrncmp(name, "acl_", 4) == 0)
 
 
 
+/*
+Load args from sub array to globals, and call acl_check().
+
+Returns:       OK         access is granted by an ACCEPT verb
+               DISCARD    access is granted by a DISCARD verb
+	       FAIL       access is denied
+	       FAIL_DROP  access is denied; drop the connection
+	       DEFER      can't tell at the moment
+	       ERROR      disaster
+*/
+static int
+eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
+{
+int i;
+uschar *dummy_log_msg;
+
+for (i = 1; i < nsub && sub[i]; i++)
+  acl_arg[i-1] = sub[i];
+acl_narg = i-1;
+while (i < nsub)
+  acl_arg[i++ - 1] = NULL;
+
+DEBUG(D_expand)
+  debug_printf("expanding: acl: %s  arg: %s%s\n",
+    sub[0],
+    acl_narg>0 ? sub[1]   : US"<none>",
+    acl_narg>1 ? " +more" : "");
+
+return acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &dummy_log_msg);
+}
+
+
+
+
 /*************************************************
 *        Read and evaluate a condition           *
 *************************************************/
@@ -1849,7 +1897,7 @@ int i, rc, cond_type, roffset;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar name[256];
-uschar *sub[4];
+uschar *sub[10];
 
 const pcre *re;
 const uschar *rerror;
@@ -2054,12 +2102,65 @@ switch(cond_type)
   return s;
 
 
+  /* call ACL (in a conditional context).  Accept true, deny false.
+  Defer is a forced-fail.  Anything set by message= goes to $value.
+  Up to ten parameters are used; we use the braces round the name+args
+  like the saslauthd condition does, to permit a variable number of args.
+  See also the expansion-item version EITEM_ACL and the traditional
+  acl modifier ACLC_ACL.
+  */
+
+  case ECOND_ACL:
+    /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
+    {
+    uschar *nameargs;
+    uschar *user_msg;
+    BOOL cond = FALSE;
+    int size = 0;
+    int ptr = 0;
+
+    while (isspace(*s)) s++;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+
+    switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
+      &s, yield == NULL, TRUE, US"acl"))
+      {
+      case 1: expand_string_message = US"too few arguments or bracketing "
+        "error for acl";
+      case 2:
+      case 3: return NULL;
+      }
+
+    if (yield != NULL) switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+	{
+	case OK:
+	  cond = TRUE;
+	case FAIL:
+          lookup_value = NULL;
+	  if (user_msg)
+	    {
+            lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
+            lookup_value[ptr] = '\0';
+	    }
+	  *yield = cond;
+	  break;
+
+	case DEFER:
+          expand_string_forcedfail = TRUE;
+	default:
+          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
+	  return NULL;
+	}
+    return s;
+    }
+
+
   /* saslauthd: does Cyrus saslauthd authentication. Four parameters are used:
 
      ${if saslauthd {{username}{password}{service}{realm}}  {yes}[no}}
 
   However, the last two are optional. That is why the whole set is enclosed
-  in their own set or braces. */
+  in their own set of braces. */
 
   case ECOND_SASLAUTHD:
   #ifndef CYRUS_SASLAUTHD_SOCKET
@@ -3641,6 +3742,44 @@ while (*s != 0)
 
   switch(item_type)
     {
+    /* Call an ACL from an expansion.  We feed data in via $acl_arg1 - $acl_arg9.
+    If the ACL returns accept or reject we return content set by "message ="
+    There is currently no limit on recursion; this would have us call
+    acl_check_internal() directly and get a current level from somewhere.
+    See also the acl expansion condition ECOND_ACL and the traditional
+    acl modifier ACLC_ACL.
+    */
+
+    case EITEM_ACL:
+      /* ${acl {name} {arg1}{arg2}...} */
+      {
+      uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
+      uschar *user_msg;
+
+      switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl"))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+      if (skipping) continue;
+
+      switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+	{
+	case OK:
+	case FAIL:
+	  if (user_msg)
+            yield = string_cat(yield, &size, &ptr, user_msg, Ustrlen(user_msg));
+	  continue;
+
+	case DEFER:
+          expand_string_forcedfail = TRUE;
+	default:
+          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
+	  goto EXPAND_FAILED;
+	}
+      }
+
     /* Handle conditionals - preserve the values of the numerical expansion
     variables in case they get changed by a regular expression match in the
     condition. If not, they retain their external settings. At the end
@@ -5533,7 +5672,6 @@ while (*s != 0)
 	  goto EXPAND_FAILED;
 	  }
 
-	if (skipping) continue;
 	list = ((namedlist_block *)(t->data.ptr))->string;
 
 	while ((item = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)

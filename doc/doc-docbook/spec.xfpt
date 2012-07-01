@@ -8758,6 +8758,23 @@ string easier to understand.
 This item inserts &"basic"& header lines. It is described with the &%header%&
 expansion item below.
 
+
+.vitem "&*${acl{*&<&'name'&>&*}{*&<&'arg'&>&*}...}*&"
+.cindex "expansion" "calling an acl"
+.cindex "&%acl%&" "call from expansion"
+The name and zero to nine argument strings are first expanded separately.  The expanded
+arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
+Any unused are made empty.  The variable &$acl_narg$& is set to the number of
+arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
+and may use the variables; if another acl expansion is used the values
+are overwritten.  If the ACL sets
+a value using a "message =" modifier and returns accept or deny, the value becomes
+the result of the expansion.
+If no message was set and the ACL returned accept or deny
+the value is an empty string.
+If the ACL returned defer the result is a forced-fail.  Otherwise the expansion fails.
+
+
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
        {*&<&'arg'&>&*}...}*&"
 .cindex &%dlfunc%&
@@ -10042,6 +10059,21 @@ In all cases, a relative comparator OP is testing if <&'string1'&> OP
 <&'string2'&>; the above example is checking if &$message_size$& is larger than
 10M, not if 10M is larger than &$message_size$&.
 
+
+.vitem &*acl&~{{*&<&'name'&>&*}{*&<&'arg1'&>&*}&&&
+	{*&<&'arg2'&>&*}...}*&
+.cindex "expansion" "calling an acl"
+.cindex "&%acl%&" "expansion condition"
+The name and zero to nine argument strings are first expanded separately.  The expanded
+arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
+Any unused are made empty.  The variable &$acl_narg$& is set to the number of
+arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
+and may use the variables; if another acl expansion is used the values
+are overwritten.  If the ACL sets
+a value using a "message =" modifier the variable $value becomes
+the result of the expansion, otherwise it is empty.
+If the ACL returns accept the condition is true; if deny, false.
+If the ACL returns defer the result is a forced-fail.
 
 .vitem &*bool&~{*&<&'string'&>&*}*&
 .cindex "expansion" "boolean parsing"
@@ -27301,6 +27333,7 @@ The conditions are as follows:
 .vitem &*acl&~=&~*&<&'name&~of&~acl&~or&~ACL&~string&~or&~file&~name&~'&>
 .cindex "&ACL;" "nested"
 .cindex "&ACL;" "indirect"
+.cindex "&ACL;" "arguments"
 .cindex "&%acl%& ACL condition"
 The possible values of the argument are the same as for the
 &%acl_smtp_%&&'xxx'& options. The named or inline ACL is run. If it returns
@@ -27309,6 +27342,10 @@ false. If it returns &"defer"&, the current ACL returns &"defer"& unless the
 condition is on a &%warn%& verb. In that case, a &"defer"& return makes the
 condition false. This means that further processing of the &%warn%& verb
 ceases, but processing of the ACL continues.
+
+If the argument is a named ACL, up to nine space-separated optional values
+can be appended; they appear in $acl_arg1 to $acl_arg9, and $acl_narg is set
+to the count of values.  The name and values are expanded separately.
 
 If the nested &%acl%& returns &"drop"& and the outer condition denies access,
 the connection is dropped. If it returns &"discard"&, the verb must be

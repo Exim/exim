@@ -86,6 +86,21 @@ reduce: ${reduce {<\x7f 1\x7f2\177 3}{0}{${eval:$value+$item}}}
 
 # Operators
 
+acl: ${acl
+acl: ${acl}
+acl: ${acl {a_nosuch}}
+acl: ${acl {a_ret}}
+acl: ${acl {a_ret}{person@dom.ain}}
+acl: ${acl {a_ret}{firstarg}{secondarg}}
+acl: ${acl {a_ret}{arg with spaces}}
+acl: ${acl {a_none}}
+acl: ${acl {a_none}{person@dom.ain}}
+acl: ${acl {a_deny}}
+acl: ${acl {a_deny}{person@dom.ain}}
+acl: ${acl {a_defer}}
+acl: ${acl {a_sub}{top_arg_1}{top_arg_2}{top_arg_3}}
+acl: ${reduce {1:2:3:4} {} {$value ${acl {a_ret}{$item}}}}
+
 addrss: ${address:local-part@dom.ain}
 addrss: ${address:Exim Person <local-part@dom.ain> (that's me)}
 domain: ${domain:local-part@dom.ain}
@@ -407,6 +422,12 @@ first_delivery: ${if first_delivery{y}{n}}
 
 queue_running after or: ${if or{{eq {0}{0}}{queue_running}}{y}{n}}
 first_delivery after or: ${if or{{eq {0}{0}}{first_delivery}}{y}{n}}
+
+# acl expansion condition
+acl if: ${if acl {{a_ret}}               {Y:$value}{N:$value}}
+acl if: ${if acl {{a_ret}{argY}}         {Y:$value}{N:$value}}
+acl if: ${if acl {{a_deny}{argN}{arg2}}  {Y:$value}{N:$value}}
+acl if: ${if acl {{a_defer}{argN}{arg2}} {Y:$value}{N:$value}}
 
 # Default values for both if strings
 

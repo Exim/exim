@@ -44,4 +44,19 @@ check_data:
   warn  logwrite = Subject is: "$h_subject:"
   deny  message = reply_address=<$reply_address>
 
+a_ret:
+  accept message = ($acl_narg) [$acl_arg1] [$acl_arg2]
+
+a_none:
+  accept
+
+a_deny:
+  deny message = ($acl_narg) [$acl_arg1] [$acl_arg2]
+
+a_defer:
+  defer
+
+a_sub:
+  require acl = a_deny "new arg1" $acl_arg1
+
 # End

@@ -236,7 +236,7 @@ at the outer level. In the other cases, expansion already occurs in the
 checking functions. */
 
 static uschar cond_expand_at_top[] = {
-  TRUE,    /* acl */
+  FALSE,   /* acl */
   TRUE,    /* add_header */
   FALSE,   /* authenticated */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -696,8 +696,8 @@ static uschar *ratelimit_option_string[] = {
 
 /* Enable recursion between acl_check_internal() and acl_check_condition() */
 
-static int acl_check_internal(int, address_item *, uschar *, int, uschar **,
-         uschar **);
+static int acl_check_wargs(int, address_item *, uschar *, int, uschar **,
+    uschar **);
 
 
 /*************************************************
@@ -2785,14 +2785,14 @@ for (; cb != NULL; cb = cb->next)
     "discard" verb. */
 
     case ACLC_ACL:
-    rc = acl_check_internal(where, addr, arg, level+1, user_msgptr, log_msgptr);
-    if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
-      {
-      *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
-        "\"%s\" command (only allowed with \"accept\" or \"discard\")",
-        verbs[verb]);
-      return ERROR;
-      }
+      rc = acl_check_wargs(where, addr, arg, level+1, user_msgptr, log_msgptr);
+      if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
+        {
+        *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
+          "\"%s\" command (only allowed with \"accept\" or \"discard\")",
+          verbs[verb]);
+        return ERROR;
+        }
     break;
 
     case ACLC_AUTHENTICATED:
@@ -3861,6 +3861,48 @@ while (acl != NULL)
 HDEBUG(D_acl) debug_printf("end of %s: implicit DENY\n", acl_name);
 return FAIL;
 }
+
+
+
+
+/* Same args as acl_check_internal() above, but the string s is
+the name of an ACL followed optionally by up to 9 space-separated arguments.
+The name and args are separately expanded.  Args go into $acl_arg globals. */
+static int
+acl_check_wargs(int where, address_item *addr, uschar *s, int level,
+  uschar **user_msgptr, uschar **log_msgptr)
+{
+uschar * tmp;
+uschar * tmp_arg[9];	/* must match acl_arg[] */
+uschar * name;
+int i;
+
+if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
+  goto bad;
+
+for (i = 0; i < 9; i++)
+  {
+  while (*s && isspace(*s)) s++;
+  if (!*s) break;
+  if (!(tmp = string_dequote(&s)) || !(tmp_arg[i] = expand_string(tmp)))
+    {
+    tmp = name;
+    goto bad;
+    }
+  }
+acl_narg = i;
+for (i = 0; i < acl_narg; i++) acl_arg[i] = tmp_arg[i];
+while (i < 9) acl_arg[i++] = NULL;
+
+return acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+
+bad:
+if (expand_string_forcedfail) return ERROR;
+*log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+  tmp, expand_string_message);
+return search_find_defer?DEFER:ERROR;
+}
+
 
 
 /*************************************************
