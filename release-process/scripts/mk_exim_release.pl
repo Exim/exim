@@ -146,8 +146,11 @@ sub build_html_documentation {
 
     mkdir($dir);
 
-    my @cmd =
-      ( $genpath, '--spec', $spec, '--filter', $filter, '--latest', $context->{trelease}, '--tmpl', $templates, '--docroot', $dir );
+    my @cmd = (
+        $genpath,   '--spec',    $spec,                '--filter',
+        $filter,    '--latest',  $context->{trelease}, '--tmpl',
+        $templates, '--docroot', $dir,                 '--localstatic'
+    );
 
     print "Executing ", join( ' ', @cmd ), "\n";
     system(@cmd);
