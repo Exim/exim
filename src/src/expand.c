@@ -1964,6 +1964,7 @@ switch(cond_type)
       Ustrncmp(name, "bheader_", 8) == 0)
     {
     s = read_header_name(name, 256, s);
+    /* {-for-text-editors */
     if (Ustrchr(name, '}') != NULL) malformed_header = TRUE;
     if (yield != NULL) *yield =
       (find_header(name, TRUE, NULL, FALSE, NULL) != NULL) == testfor;
@@ -2023,10 +2024,11 @@ switch(cond_type)
   case ECOND_PWCHECK:
 
   while (isspace(*s)) s++;
-  if (*s != '{') goto COND_FAILED_CURLY_START;
+  if (*s != '{') goto COND_FAILED_CURLY_START;		/* }-for-text-editors */
 
   sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL, TRUE);
   if (sub[0] == NULL) return NULL;
+  /* {-for-text-editors */
   if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
   if (yield == NULL) return s;   /* No need to run the test if skipping */
@@ -2142,7 +2144,7 @@ switch(cond_type)
             lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
             lookup_value[ptr] = '\0';
 	    }
-	  *yield = cond;
+	  *yield = cond == testfor;
 	  break;
 
 	case DEFER:
@@ -2167,7 +2169,7 @@ switch(cond_type)
   goto COND_FAILED_NOT_COMPILED;
   #else
   while (isspace(*s)) s++;
-  if (*s++ != '{') goto COND_FAILED_CURLY_START;
+  if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
   switch(read_subs(sub, 4, 2, &s, yield == NULL, TRUE, US"saslauthd"))
     {
     case 1: expand_string_message = US"too few arguments or bracketing "
@@ -2286,63 +2288,63 @@ switch(cond_type)
     {
     case ECOND_NUM_E:
     case ECOND_NUM_EE:
-    *yield = (num[0] == num[1]) == testfor;
+    tempcond = (num[0] == num[1]);
     break;
 
     case ECOND_NUM_G:
-    *yield = (num[0] > num[1]) == testfor;
+    tempcond = (num[0] > num[1]);
     break;
 
     case ECOND_NUM_GE:
-    *yield = (num[0] >= num[1]) == testfor;
+    tempcond = (num[0] >= num[1]);
     break;
 
     case ECOND_NUM_L:
-    *yield = (num[0] < num[1]) == testfor;
+    tempcond = (num[0] < num[1]);
     break;
 
     case ECOND_NUM_LE:
-    *yield = (num[0] <= num[1]) == testfor;
+    tempcond = (num[0] <= num[1]);
     break;
 
     case ECOND_STR_LT:
-    *yield = (Ustrcmp(sub[0], sub[1]) < 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) < 0);
     break;
 
     case ECOND_STR_LTI:
-    *yield = (strcmpic(sub[0], sub[1]) < 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) < 0);
     break;
 
     case ECOND_STR_LE:
-    *yield = (Ustrcmp(sub[0], sub[1]) <= 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) <= 0);
     break;
 
     case ECOND_STR_LEI:
-    *yield = (strcmpic(sub[0], sub[1]) <= 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) <= 0);
     break;
 
     case ECOND_STR_EQ:
-    *yield = (Ustrcmp(sub[0], sub[1]) == 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) == 0);
     break;
 
     case ECOND_STR_EQI:
-    *yield = (strcmpic(sub[0], sub[1]) == 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) == 0);
     break;
 
     case ECOND_STR_GT:
-    *yield = (Ustrcmp(sub[0], sub[1]) > 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) > 0);
     break;
 
     case ECOND_STR_GTI:
-    *yield = (strcmpic(sub[0], sub[1]) > 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) > 0);
     break;
 
     case ECOND_STR_GE:
-    *yield = (Ustrcmp(sub[0], sub[1]) >= 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) >= 0);
     break;
 
     case ECOND_STR_GEI:
-    *yield = (strcmpic(sub[0], sub[1]) >= 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) >= 0);
     break;
 
     case ECOND_MATCH:   /* Regular expression match */
@@ -2354,7 +2356,7 @@ switch(cond_type)
         "\"%s\": %s at offset %d", sub[1], rerror, roffset);
       return NULL;
       }
-    *yield = regex_match_and_setup(re, sub[0], 0, -1) == testfor;
+    tempcond = regex_match_and_setup(re, sub[0], 0, -1);
     break;
 
     case ECOND_MATCH_ADDRESS:  /* Match in an address list */
@@ -2410,11 +2412,11 @@ switch(cond_type)
     switch(rc)
       {
       case OK:
-      *yield = testfor;
+      tempcond = TRUE;
       break;
 
       case FAIL:
-      *yield = !testfor;
+      tempcond = FALSE;
       break;
 
       case DEFER:
@@ -2428,6 +2430,7 @@ switch(cond_type)
     /* Various "encrypted" comparisons. If the second string starts with
     "{" then an encryption type is given. Default to crypt() or crypt16()
     (build-time choice). */
+    /* }-for-text-editors */
 
     case ECOND_CRYPTEQ:
     #ifndef SUPPORT_CRYPTEQ
@@ -2452,7 +2455,7 @@ switch(cond_type)
         uschar *coded = auth_b64encode((uschar *)digest, 16);
         DEBUG(D_auth) debug_printf("crypteq: using MD5+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
-        *yield = (Ustrcmp(coded, sub[1]+5) == 0) == testfor;
+        tempcond = (Ustrcmp(coded, sub[1]+5) == 0);
         }
       else if (sublen == 32)
         {
@@ -2462,13 +2465,13 @@ switch(cond_type)
         coded[32] = 0;
         DEBUG(D_auth) debug_printf("crypteq: using MD5+hex hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
-        *yield = (strcmpic(coded, sub[1]+5) == 0) == testfor;
+        tempcond = (strcmpic(coded, sub[1]+5) == 0);
         }
       else
         {
         DEBUG(D_auth) debug_printf("crypteq: length for MD5 not 24 or 32: "
           "fail\n  crypted=%s\n", sub[1]+5);
-        *yield = !testfor;
+        tempcond = FALSE;
         }
       }
 
@@ -2490,7 +2493,7 @@ switch(cond_type)
         uschar *coded = auth_b64encode((uschar *)digest, 20);
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
-        *yield = (Ustrcmp(coded, sub[1]+6) == 0) == testfor;
+        tempcond = (Ustrcmp(coded, sub[1]+6) == 0);
         }
       else if (sublen == 40)
         {
@@ -2500,13 +2503,13 @@ switch(cond_type)
         coded[40] = 0;
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+hex hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
-        *yield = (strcmpic(coded, sub[1]+6) == 0) == testfor;
+        tempcond = (strcmpic(coded, sub[1]+6) == 0);
         }
       else
         {
         DEBUG(D_auth) debug_printf("crypteq: length for SHA-1 not 28 or 40: "
           "fail\n  crypted=%s\n", sub[1]+6);
-        *yield = !testfor;
+	tempcond = FALSE;
         }
       }
 
@@ -2526,7 +2529,7 @@ switch(cond_type)
         sub[1] += 9;
         which = 2;
         }
-      else if (sub[1][0] == '{')
+      else if (sub[1][0] == '{')		/* }-for-text-editors */
         {
         expand_string_message = string_sprintf("unknown encryption mechanism "
           "in \"%s\"", sub[1]);
@@ -2553,8 +2556,8 @@ switch(cond_type)
       salt), force failure. Otherwise we get false positives: with an empty
       string the yield of crypt() is an empty string! */
 
-      *yield = (Ustrlen(sub[1]) < 2)? !testfor :
-        (Ustrcmp(coded, sub[1]) == 0) == testfor;
+      tempcond = (Ustrlen(sub[1]) < 2)? FALSE :
+        (Ustrcmp(coded, sub[1]) == 0);
       }
     break;
     #endif  /* SUPPORT_CRYPTEQ */
@@ -2563,10 +2566,10 @@ switch(cond_type)
     case ECOND_INLISTI:
       {
       int sep = 0;
-      BOOL found = FALSE;
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
+      tempcond = FALSE;
       if (cond_type == ECOND_INLISTI)
         compare = strcmpic;
       else
@@ -2575,15 +2578,15 @@ switch(cond_type)
       while ((iterate_item = string_nextinlist(&sub[1], &sep, NULL, 0)) != NULL)
         if (compare(sub[0], iterate_item) == 0)
           {
-          found = TRUE;
+          tempcond = TRUE;
           break;
           }
       iterate_item = save_iterate_item;
-      *yield = found;
       }
 
     }   /* Switch for comparison conditions */
 
+  *yield = tempcond == testfor;
   return s;    /* End of comparison conditions */
 
 
@@ -2595,13 +2598,14 @@ switch(cond_type)
   combined_cond = (cond_type == ECOND_AND);
 
   while (isspace(*s)) s++;
-  if (*s++ != '{') goto COND_FAILED_CURLY_START;
+  if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
 
   for (;;)
     {
     while (isspace(*s)) s++;
+    /* {-for-text-editors */
     if (*s == '}') break;
-    if (*s != '{')
+    if (*s != '{')					/* }-for-text-editors */
       {
       expand_string_message = string_sprintf("each subcondition "
         "inside an \"%s{...}\" condition must be in its own {}", name);
@@ -2617,8 +2621,10 @@ switch(cond_type)
       }
     while (isspace(*s)) s++;
 
+    /* {-for-text-editors */
     if (*s++ != '}')
       {
+      /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
         "inside \"%s\" group", name);
       return NULL;
@@ -2652,13 +2658,14 @@ switch(cond_type)
     uschar *save_iterate_item = iterate_item;
 
     while (isspace(*s)) s++;
-    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL), TRUE);
     if (sub[0] == NULL) return NULL;
+    /* {-for-text-editors */
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
     while (isspace(*s)) s++;
-    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
 
     sub[1] = s;
 
@@ -2675,8 +2682,10 @@ switch(cond_type)
       }
     while (isspace(*s)) s++;
 
+    /* {-for-text-editors */
     if (*s++ != '}')
       {
+      /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
         "inside \"%s\"", name);
       return NULL;
@@ -2724,7 +2733,7 @@ switch(cond_type)
     size_t len;
     BOOL boolvalue = FALSE;
     while (isspace(*s)) s++;
-    if (*s != '{') goto COND_FAILED_CURLY_START;
+    if (*s != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     ourname = cond_type == ECOND_BOOL_LAX ? US"bool_lax" : US"bool";
     switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, ourname))
       {
