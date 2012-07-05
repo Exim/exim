@@ -921,29 +921,6 @@ tls_out.peerdn = NULL;
 tls_out.sni = NULL;
 #endif
 
-/* If an authenticated_sender override has been specified for this transport
-instance, expand it. If the expansion is forced to fail, and there was already
-an authenticated_sender for this message, the original value will be used.
-Other expansion failures are serious. An empty result is ignored, but there is
-otherwise no check - this feature is expected to be used with LMTP and other
-cases where non-standard addresses (e.g. without domains) might be required. */
-
-if (ob->authenticated_sender != NULL)
-  {
-  uschar *new = expand_string(ob->authenticated_sender);
-  if (new == NULL)
-    {
-    if (!expand_string_forcedfail)
-      {
-      uschar *message = string_sprintf("failed to expand "
-        "authenticated_sender: %s", expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE);
-      return ERROR;
-      }
-    }
-  else if (new[0] != 0) local_authenticated_sender = new;
-  }
-
 #ifndef SUPPORT_TLS
 if (smtps)
   {
@@ -1486,6 +1463,29 @@ if (smtp_use_size)
   {
   sprintf(CS p, " SIZE=%d", message_size+message_linecount+ob->size_addition);
   while (*p) p++;
+  }
+
+/* If an authenticated_sender override has been specified for this transport
+instance, expand it. If the expansion is forced to fail, and there was already
+an authenticated_sender for this message, the original value will be used.
+Other expansion failures are serious. An empty result is ignored, but there is
+otherwise no check - this feature is expected to be used with LMTP and other
+cases where non-standard addresses (e.g. without domains) might be required. */
+
+if (ob->authenticated_sender != NULL)
+  {
+  uschar *new = expand_string(ob->authenticated_sender);
+  if (new == NULL)
+    {
+    if (!expand_string_forcedfail)
+      {
+      uschar *message = string_sprintf("failed to expand "
+        "authenticated_sender: %s", expand_string_message);
+      set_errno(addrlist, 0, message, DEFER, FALSE);
+      return ERROR;
+      }
+    }
+  else if (new[0] != 0) local_authenticated_sender = new;
   }
 
 /* Add the authenticated sender address if present */
