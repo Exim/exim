@@ -5,9 +5,9 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx3@test.ex R=t1 T=smtp defer (dd): Connection timed out: SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after RCPT TO:<userx1@test.ex>
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx1@test.ex R=t1 T=smtp H=127.0.0.1 [127.0.0.1]
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> userx2@test.ex R=t1 T=smtp H=127.0.0.1 [127.0.0.1]
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> userx3@test.ex R=t1 T=smtp H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx1@test.ex R=t1 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> userx2@test.ex R=t1 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> userx3@test.ex R=t1 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 

@@ -33670,7 +33670,7 @@ selection marked by asterisks:
 &`*sender_verify_fail         `&  sender verification failures
 &`*size_reject                `&  rejection because too big
 &`*skip_delivery              `&  delivery skipped in a queue run
-&` smtp_confirmation          `&  SMTP confirmation on => lines
+&`*smtp_confirmation          `&  SMTP confirmation on => lines
 &` smtp_connection            `&  SMTP connections
 &` smtp_incomplete_transaction`&  incomplete SMTP transactions
 &` smtp_no_mail               `&  session with no MAIL commands

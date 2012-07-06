@@ -11,7 +11,7 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 => userz <userz@test.ex> R=bsmtp_localuser T=bsmtp_local_delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery

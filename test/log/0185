@@ -3,6 +3,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 Frozen
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqff -R usery
 1999-03-02 09:44:33 10HmaX-0005vi-00 Unfrozen by forced delivery
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@non.local.domain <usery@test.ex> R=all_R T=smtp H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@non.local.domain <usery@test.ex> R=all_R T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qqff -R usery
