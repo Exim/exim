@@ -1,8 +1,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 *> newr1@myhost.test.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
-1999-03-02 09:44:33 10HmaX-0005vi-00 *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
+1999-03-02 09:44:33 10HmaX-0005vi-00 *> newr1@myhost.test.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
+1999-03-02 09:44:33 10HmaX-0005vi-00 *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@qd.text.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 *> newr1@qd.text.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
-1999-03-02 09:44:33 10HmaY-0005vi-00 *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
+1999-03-02 09:44:33 10HmaY-0005vi-00 *> newr1@qd.text.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
+1999-03-02 09:44:33 10HmaY-0005vi-00 *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

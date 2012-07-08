@@ -4,7 +4,7 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 == ok@no.delay R=r1 T=t1 defer (0): SMTP delivery explicitly queued
 1999-03-02 09:44:33 10HmaY-0005vi-00 recipient <delay@2.test.again.dns> added by root
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-0005vi-00 => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 == delay@2.test.again.dns R=r2 defer (-1): host lookup did not complete
 1999-03-02 09:44:33 10HmaY-0005vi-00 == ok@no.delay R=r1 T=t1 defer (-45): SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex> SIZE=1325: host 127.0.0.1 [127.0.0.1]: 421 myhost.test.ex: SMTP command timeout - closing connection

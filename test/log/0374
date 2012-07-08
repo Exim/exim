@@ -8,7 +8,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a1 <a1@myhost.test.ex> R=u1 T=ut1
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** b1@myhost.test.ex R=ut2 T=ut2: Child process of ut2 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
 1999-03-02 09:44:33 10HmaX-0005vi-00 == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
-1999-03-02 09:44:33 10HmaX-0005vi-00 => d1@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-0005vi-00 => d1@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 == d2@myhost.test.ex R=ut4 T=ut4 defer (-44): SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 450 soft error
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** d3@myhost.test.ex R=ut4 T=ut4: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 550 hard error
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss

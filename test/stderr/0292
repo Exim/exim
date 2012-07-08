@@ -6,6 +6,6 @@ LOG: MAIN
   *> userx@t1 R=r1 T=t1 H=host.1:host.2
 $host=127.0.0.1 $host_address=127.0.0.1
 LOG: MAIN
-  *> userx@t2 R=r2 T=t2 H=127.0.0.1 [127.0.0.1]
+  *> userx@t2 R=r2 T=t2 H=127.0.0.1 [127.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed

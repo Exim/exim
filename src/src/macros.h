@@ -424,6 +424,7 @@ set all the bits in a multi-word selector. */
 #define LX_default   ((LX_acl_warn_skipped        | \
                        LX_rejected_header         | \
                        LX_sender_verify_fail      | \
+                       LX_smtp_confirmation       | \
                        LX_tls_cipher) & 0x7fffffff)
 
 /* Private error numbers for delivery failures, set negative so as not

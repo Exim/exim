@@ -27,7 +27,7 @@ accept: condition test succeeded in inline ACL
   SMTP>> .
   SMTP<< 250 OK
 LOG: MAIN
-  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
+  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 created log directory TESTSUITE/spool/log
   SMTP>> QUIT
 ----------- cutthrough shutdown (delivered) ------------

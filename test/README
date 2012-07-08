@@ -434,6 +434,10 @@ OTHER ISSUES
   with an extra log line saying the hostname doesn't resolve.  You must use a
   FQDN for the hostname for proper test functionality.
 
+. If you change your hostname to a FQDN, you must delete the test/dnszones
+  subdirectory.  When you next run the runtest script, it will rebuild the
+  content to use the new hostname.
+
 . If your hostname has an uppercase characters in it, expect that some tests
   will fail, for example, 0036, because some log lines will have the hostname
   in all lowercase.  The regex which extracts the hostname from the log lines

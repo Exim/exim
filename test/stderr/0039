@@ -2,17 +2,17 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 delivering 10HmaX-0005vi-00
 LOG: MAIN
-  *> newr1@myhost.test.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
+  *> newr1@myhost.test.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
 LOG: MAIN
-  *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
+  *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: MAIN
   <= CALLER@qd.text.ex U=CALLER P=local S=sss
 delivering 10HmaY-0005vi-00
 LOG: MAIN
-  *> newr1@qd.text.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
+  *> newr1@qd.text.ex <r1@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
 LOG: MAIN
-  *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0]
+  *> newr2@local.test.ex <r2@test.ex> R=ok T=t1 H=V4NET.0.0.0 [V4NET.0.0.0] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed

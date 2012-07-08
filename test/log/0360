@@ -1,6 +1,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex <cms@test.ex> R=r2 defer (-1): Forcibly deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 *> unknown@recurse.test.ex.test.ex <cms@test.ex> R=r1 T=t1 H=recurse.test.ex.test.ex [V4NET.99.0.2]
+1999-03-02 09:44:33 10HmaX-0005vi-00 *> unknown@recurse.test.ex.test.ex <cms@test.ex> R=r1 T=t1 H=recurse.test.ex.test.ex [V4NET.99.0.2] C="delivery bypassed by -N option"
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex <cms@test.ex> R=r2 defer (-1): Forcibly deferred
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
