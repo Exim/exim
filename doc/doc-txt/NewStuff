@@ -106,6 +106,9 @@ Version 4.81
     accept the expansion condition is true; if reject, false.  A defer
     return results in a forced fail.
 
+11. Routers and transports can now have multiple headers_add and headers_remove
+    option lines.  The concatenated list is used.
+
 Version 4.80
 ------------
 

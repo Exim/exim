@@ -624,7 +624,9 @@ for booleans that are kept in one bit. */
 #define opt_public  0x200      /* Stored in the main instance block */
 #define opt_set     0x400      /* Option is set */
 #define opt_secure  0x800      /* "hide" prefix used */
-#define opt_mask    0x0ff
+#define opt_rep_con 0x1000     /* Can be appended to by a repeated line (condition) */
+#define opt_rep_str 0x2000     /* Can be appended to by a repeated line (string) */
+#define opt_mask    0x00ff
 
 /* Verify types when directing and routing */
 

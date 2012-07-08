@@ -53,6 +53,8 @@ JH/04 Add expansion item ${acl {name}{arg}...}, expansion condition
       "acl {{name}{arg}...}", and optional args on acl condition
       "acl = name arg..."
 
+JH/05 Permit multiple router/transport headers_add/remove lines.
+
 Exim version 4.80
 -----------------
 

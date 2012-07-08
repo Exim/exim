@@ -16333,7 +16333,7 @@ router is skipped, and the address is offered to the next one.
 If the result is any other value, the router is run (as this is the last
 precondition to be evaluated, all the other preconditions must be true).
 
-This option is unique in that multiple &%condition%& options may be present.
+This option is unusual in that multiple &%condition%& options may be present.
 All &%condition%& options must succeed.
 
 The &%condition%& option provides a means of applying custom conditions to the
@@ -16532,6 +16532,9 @@ The &%headers_add%& option is expanded after &%errors_to%&, but before
 the expansion is forced to fail, the option has no effect. Other expansion
 failures are treated as configuration errors.
 
+Unlike most options, &%headers_add%& can be specified multiple times
+for a router; all listed headers are added.
+
 &*Warning 1*&: The &%headers_add%& option cannot be used for a &(redirect)&
 router that has the &%one_time%& option set.
 
@@ -16564,6 +16567,9 @@ The &%headers_remove%& option is expanded after &%errors_to%& and
 &%headers_add%&, but before &%transport%&. If the expansion is forced to fail,
 the option has no effect. Other expansion failures are treated as configuration
 errors.
+
+Unlike most options, &%headers_remove%& can be specified multiple times
+for a router; all listed headers are removed.
 
 &*Warning 1*&: The &%headers_remove%& option cannot be used for a &(redirect)&
 router that has the &%one_time%& option set.
@@ -19568,6 +19574,9 @@ routers. If the result of the expansion is an empty string, or if the expansion
 is forced to fail, no action is taken. Other expansion failures are treated as
 errors and cause the delivery to be deferred.
 
+Unlike most options, &%headers_add%& can be specified multiple times
+for a transport; all listed headers are added.
+
 
 
 .option headers_only transports boolean false
@@ -19589,6 +19598,9 @@ in section &<<SECTheadersaddrem>>&. Header removal can also be specified by
 routers. If the result of the expansion is an empty string, or if the expansion
 is forced to fail, no action is taken. Other expansion failures are treated as
 errors and cause the delivery to be deferred.
+
+Unlike most options, &%headers_remove%& can be specified multiple times
+for a router; all listed headers are added.
 
 
 
@@ -31481,6 +31493,10 @@ headers_add = X-added-header: added by $primary_hostname\n\
 .endd
 Exim does not check the syntax of these added header lines.
 
+Multiple &%headers_add%& options for a single router or transport can be
+specified; the values will be concatenated (with a separating newline
+added) before expansion.
+
 The result of expanding &%headers_remove%& must consist of a colon-separated
 list of header names. This is confusing, because header names themselves are
 often terminated by colons. In this case, the colons are the list separators,
@@ -31488,6 +31504,11 @@ not part of the names. For example:
 .code
 headers_remove = return-receipt-to:acknowledge-to
 .endd
+
+Multiple &%headers_remove%& options for a single router or transport can be
+specified; the values will be concatenated (with a separating colon
+added) before expansion.
+
 When &%headers_add%& or &%headers_remove%& is specified on a router, its value
 is expanded at routing time, and then associated with all addresses that are
 accepted by that router, and also with any new addresses that it generates. If

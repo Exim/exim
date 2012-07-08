@@ -1374,7 +1374,6 @@ uid_t uid;
 gid_t gid;
 BOOL boolvalue = TRUE;
 BOOL freesptr = TRUE;
-BOOL extra_condition = FALSE;
 optionlist *ol, *ol2;
 struct passwd *pw;
 void *reset_point;
@@ -1437,16 +1436,9 @@ if (ol == NULL)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, CS unknown_txt, name);
   }
 
-if ((ol->type & opt_set) != 0)
-  {
-  uschar *mname = name;
-  if (Ustrncmp(mname, "no_", 3) == 0) mname += 3;
-  if (Ustrcmp(mname, "condition") == 0)
-    extra_condition = TRUE;
-  else
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-      "\"%s\" option set for the second time", mname);
-  }
+if ((ol->type & opt_set)  && !(ol->type & (opt_rep_con | opt_rep_str)))
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+    "\"%s\" option set for the second time", name);
 
 ol->type |= opt_set | issecure;
 type = ol->type & opt_mask;
@@ -1530,7 +1522,7 @@ switch (type)
       str_target = (uschar **)(ol->value);
     else
       str_target = (uschar **)((uschar *)data_block + (long int)(ol->value));
-    if (extra_condition)
+    if (ol->type & opt_rep_con)
       {
       /* We already have a condition, we're conducting a crude hack to let
       multiple condition rules be chained together, despite storing them in
@@ -1539,9 +1531,10 @@ switch (type)
       strtemp = string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
           saved_condition, sptr);
       *str_target = string_copy_malloc(strtemp);
-      /* TODO(pdp): there is a memory leak here when we set 3 or more
-      conditions; I still don't understand the store mechanism enough
-      to know what's the safe way to free content from an earlier store.
+      /* TODO(pdp): there is a memory leak here and just below
+      when we set 3 or more conditions; I still don't
+      understand the store mechanism enough to know
+      what's the safe way to free content from an earlier store.
       AFAICT, stores stack, so freeing an early stored item also stores
       all data alloc'd after it.  If we knew conditions were adjacent,
       we could survive that, but we don't.  So I *think* we need to take
@@ -1552,6 +1545,15 @@ switch (type)
       Because we only do this once, near process start-up, I'm prepared to
       let this slide for the time being, even though it rankles.  */
       }
+    else if (*str_target && (ol->type & opt_rep_str))
+     {
+      uschar sep = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
+      saved_condition = *str_target;
+      strtemp = saved_condition + strlen(saved_condition)-1;
+      if (*strtemp == sep) *strtemp = 0;	/* eliminate trailing list-sep */
+      strtemp = string_sprintf("%s%c%s", saved_condition, sep, sptr);
+      *str_target = string_copy_malloc(strtemp);
+     }
     else
       {
       *str_target = sptr;

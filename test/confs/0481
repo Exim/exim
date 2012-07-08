@@ -23,6 +23,7 @@ r1:
 
 r2:
   driver = redirect
+  headers_remove = Remove-Me-Also:
   headers_remove = Remove-Me:
   data = $local_part@domain
 
@@ -30,6 +31,7 @@ r3:
   driver = accept
   headers_remove = Remove-Me:
   headers_add = X-Was-Remove-Me: >$h_remove-me:<
+  headers_add = ${if def:h_remove-me-also {X-Was-Remove-Me-Also: >$h_remove-me-also:<}}
   transport = t1
 
 
