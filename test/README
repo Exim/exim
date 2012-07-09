@@ -237,6 +237,11 @@ is as follows:
 
 There are some options for the ./runtest script itself:
 
+  -CONTINUE This will allow the script to move past some failing tests. It will
+            write a simple failure line with the test number in a temporary
+            logfile test/failed-summary.log. Unexpected exit codes will still
+            stall the test execution and require interaction.
+
   -DEBUG    This option is for debugging the test script. It causes some
             tracing information to be output.
 
