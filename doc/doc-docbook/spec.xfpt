@@ -25866,6 +25866,8 @@ install if the receiving end is a client MUA that can interact with a user.
 .cindex "certificate" "self-signed"
 You can create a self-signed certificate using the &'req'& command provided
 with OpenSSL, like this:
+. ==== Do not shorten the duration here without reading and considering
+. ==== the text below.  Please leave it at 9999 days.
 .code
 openssl req -x509 -newkey rsa:1024 -keyout file1 -out file2 \
             -days 9999 -nodes
@@ -25877,6 +25879,22 @@ important: if you do not set it, the key is encrypted with a passphrase
 that you are prompted for, and any use that is made of the key causes more
 prompting for the passphrase. This is not helpful if you are going to use
 this certificate and key in an MTA, where prompting is not possible.
+
+. ==== I expect to still be working 26 years from now.  The less technical
+. ==== debt I create, in terms of storing up trouble for my later years, the
+. ==== happier I will be then.  We really have reached the point where we
+. ==== should start, at the very least, provoking thought and making folks
+. ==== pause before proceeding, instead of leaving all the fixes until two
+. ==== years before 2^31 seconds after the 1970 Unix epoch.
+. ==== -pdp, 2012
+NB: we are now past the point where 9999 days takes us past the 32-bit Unix
+epoch.  If your system uses unsigned time_t (most do) and is 32-bit, then
+the above command might produce a date in the past.  Think carefully about
+the lifetime of the systems you're deploying, and either reduce the duration
+of the certificate or reconsider your platform deployment.  (At time of
+writing, reducing the duration is the most likely choice, but the inexorable
+progression of time takes us steadily towards an era where this will not
+be a sensible resolution).
 
 A self-signed certificate made in this way is sufficient for testing, and
 may be adequate for all your requirements if you are mainly interested in

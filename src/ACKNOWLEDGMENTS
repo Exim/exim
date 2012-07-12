@@ -427,6 +427,7 @@ Dan Rosenberg             Security notification & patch for hardlink attack on
                             sticky mail directory
                           Security notification of race condition in MBX locking
 Jay Rouman                Kept our copyright claim in the 21st century, not 11th
+                          Drew attention to SSL docs and epoch issue on 32bit
 Heiko Schlittermann       Patch making maildir_use_size_file expand
                           Patch fixing maildir quota file races
                           Patch fixing make parallelisation
