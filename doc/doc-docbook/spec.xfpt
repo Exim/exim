@@ -1936,7 +1936,7 @@ in your &_/etc/hosts.allow_& file allows connections from the local host, from
 the subnet 192.168.1.0/24, and from all hosts in &'friendly.domain.example'&.
 All other connections are denied. The daemon name used by &'tcpwrappers'&
 can be changed at build time by setting TCP_WRAPPERS_DAEMON_NAME in
-in &_Local/Makefile_&, or by setting tcp_wrappers_daemon_name in the
+&_Local/Makefile_&, or by setting tcp_wrappers_daemon_name in the
 configure file. Consult the &'tcpwrappers'& documentation for
 further details.
 
@@ -2978,7 +2978,7 @@ way to guarantee a correct response.
 .oindex "&%-bm%&"
 .cindex "local message reception"
 This option runs an Exim receiving process that accepts an incoming,
-locally-generated message on the current input. The recipients are given as the
+locally-generated message on the standard input. The recipients are given as the
 command arguments (except when &%-t%& is also present &-- see below). Each
 argument can be a comma-separated list of RFC 2822 addresses. This is the
 default option for selecting the overall action of an Exim call; it is assumed
@@ -4094,8 +4094,8 @@ message.
 Provided
 this error message is successfully sent, the Exim receiving process
 exits with a return code of zero. If not, the return code is 2 if the problem
-is that the original message has no recipients, or 1 any other error. This is
-the default &%-oe%&&'x'& option if Exim is called as &'rmail'&.
+is that the original message has no recipients, or 1 for any other error.
+This is the default &%-oe%&&'x'& option if Exim is called as &'rmail'&.
 
 .vitem &%-oem%&
 .oindex "&%-oem%&"
@@ -4515,7 +4515,7 @@ has &'f'& or &'ff'& in its flags, the associated action is taken.
 
 .vitem &%-Tqt%&&~<&'times'&>
 .oindex "&%-Tqt%&"
-This an option that is exclusively for use by the Exim testing suite. It is not
+This is an option that is exclusively for use by the Exim testing suite. It is not
 recognized when Exim is run normally. It allows for the setting up of explicit
 &"queue times"& so that various warning/retry features can be tested.
 
@@ -8513,7 +8513,7 @@ but the separating colon must still be included at line breaks. White space
 surrounding the colons is ignored. For example:
 .code
 aol.com:  spammer1 : spammer2 : ^[0-9]+$ :
-spammer3 : spammer4
+ spammer3 : spammer4
 .endd
 As in all colon-separated lists in Exim, a colon can be included in an item by
 doubling.
@@ -9752,7 +9752,7 @@ when &%length%& is used as an operator.
 The string is interpreted as a list and the number of items is returned.
 
 
-.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name'&>&*}*&
+.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name*&>&*}*&
 .cindex "expansion" "named list"
 .cindex "&%listnamed%& expansion item"
 The name is interpreted as a named list and the content of the list is returned,
@@ -12560,7 +12560,7 @@ local_interfaces = 0.0.0.0 : 127.0.0.1.26
 .endd
 To specify listening on the default port on specific interfaces only:
 .code
-local_interfaces = 192.168.34.67 : 192.168.34.67
+local_interfaces = 10.0.0.67 : 192.168.34.67
 .endd
 &*Warning*&: Such a setting excludes listening on the loopback interfaces.
 
@@ -19906,7 +19906,7 @@ message, which happens if the &%return_message%& option is set.
 
 .option transport_filter_timeout transports time 5m
 .cindex "transport" "filter, timeout"
-When Exim is reading the output of a transport filter, it a applies a timeout
+When Exim is reading the output of a transport filter, it applies a timeout
 that can be set by this option. Exceeding the timeout is normally treated as a
 temporary delivery failure. However, if a transport filter is used with a
 &(pipe)& transport, a timeout in the transport filter is treated in the same
@@ -26613,7 +26613,7 @@ others specify text for messages that are used when access is denied or a
 warning is generated. The &%control%& modifier affects the way an incoming
 message is handled.
 
-The positioning of the modifiers in an ACL statement important, because the
+The positioning of the modifiers in an ACL statement is important, because the
 processing of a verb ceases as soon as its outcome is known. Only those
 modifiers that have already been encountered will take effect. For example,
 consider this use of the &%message%& modifier:
@@ -26734,12 +26734,12 @@ If you want to apply a control unconditionally, you can use it with a
 .vitem &*delay*&&~=&~<&'time'&>
 .cindex "&%delay%& ACL modifier"
 .oindex "&%-bh%&"
-This modifier may appear in any ACL. It causes Exim to wait for the time
-interval before proceeding. However, when testing Exim using the &%-bh%&
-option, the delay is not actually imposed (an appropriate message is output
-instead). The time is given in the usual Exim notation, and the delay happens
-as soon as the modifier is processed. In an SMTP session, pending output is
-flushed before the delay is imposed.
+This modifier may appear in any ACL except notquit. It causes Exim to wait for
+the time interval before proceeding. However, when testing Exim using the
+&%-bh%& option, the delay is not actually imposed (an appropriate message is
+output instead). The time is given in the usual Exim notation, and the delay
+happens as soon as the modifier is processed. In an SMTP session, pending
+output is flushed before the delay is imposed.
 
 Like &%control%&, &%delay%& can be used with &%accept%& or &%deny%&, for
 example:
@@ -27345,7 +27345,7 @@ system filter or in a router or transport.
 
 .section "ACL conditions" "SECTaclconditions"
 .cindex "&ACL;" "conditions; list of"
-Some of conditions listed in this section are available only when Exim is
+Some of the conditions listed in this section are available only when Exim is
 compiled with the content-scanning extension. They are included here briefly
 for completeness. More detailed descriptions can be found in the discussion on
 content scanning in chapter &<<CHAPexiscan>>&.
@@ -28125,7 +28125,7 @@ dnslists = a.b.c!&0.0.0.1
 If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
 false because 127.0.0.1 matches.
 .next
-If &`!==`& or &`!=&&`& is used, the condition is true there is at least one
+If &`!==`& or &`!=&&`& is used, the condition is true if there is at least one
 looked up IP address that does not match. Consider:
 .code
 dnslists = a.b.c!=&0.0.0.1

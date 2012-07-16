@@ -401,6 +401,7 @@ John Horne                Patch adding $av_failed
                           Patch escaping log text after lookup expansion defer
                           Documentation fixes
                           Pointed out ClamAV ExtendedDetectionInfo compat issue
+Regid Ichira              Documentation fixes
 Andreas M. Kirchwitz      Let /dev/null have normal permissions (4.73 fallout)
 Roberto Lima              Patch letting exicyclog rotate paniclog
 Todd Lyons                Patch handling TAB in MAIL arguments
@@ -409,6 +410,7 @@ Andreas Metzler           Patch upgrading PolarSSL (DKIM)
                           Reported delivery logging problems (4.73 fallout)
                           Patch to build without WITH_CONTENT_SCAN
                           Patches fixing docs for max_rcpts, relay hosts/domains
+                          Documentation fixes
 Kirill Miazine            Multiple patches improving Dovecot authenticator
 Robert Millan             Wrote SPF Best Guess support
 Marcin Mirosław           Running static analysis tools for us, catching issues
