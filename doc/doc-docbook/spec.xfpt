@@ -9405,6 +9405,20 @@ can be the word &"fail"& (not in braces) to force expansion failure if the
 command does not succeed. If both strings are omitted, the result is contents
 of the standard output/error on success, and nothing on failure.
 
+.vindex "&$run_in_acl$&"
+The standard output/error of the command is put in the variable &$value$&.
+In this ACL example, the output of a command is logged for the admin to
+troubleshoot:
+.code
+warn  condition    = ${run{/usr/bin/id}{yes}{no}}
+      log_message  = Output of id: $value
+.endd
+If the command requires shell idioms, such as the > redirect operator, the
+shell must be invoked directly, such as with:
+.code
+${run{/bin/bash -c "/usr/bin/id >/tmp/id"}{yes}{yes}}
+.endd
+
 .vindex "&$runrc$&"
 The return code from the command is put in the variable &$runrc$&, and this
 remains set afterwards, so in a filter file you can do things like this:
