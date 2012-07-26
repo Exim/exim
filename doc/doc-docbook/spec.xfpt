@@ -26508,8 +26508,8 @@ duplicates to be written, use the &%logwrite%& modifier instead.
 
 If &%log_message%& is not present, a &%warn%& verb just checks its conditions
 and obeys any &"immediate"& modifiers (such as &%control%&, &%set%&,
-&%logwrite%&, and &%add_header%&) that appear before the first failing
-condition. There is more about adding header lines in section
+&%logwrite%&, &%add_header%&, and &%remove_header%&) that appear before the
+first failing condition. There is more about adding header lines in section
 &<<SECTaddheadacl>>&.
 
 If any condition on a &%warn%& statement cannot be completed (that is, there is
@@ -26951,6 +26951,12 @@ all the conditions are true, wherever it appears in an ACL command, whereas
 effect.
 
 
+.vitem &*remove_header*&&~=&~<&'text'&>
+This modifier specifies one or more header names in a colon-separated list
+ that are to be removed from an incoming message, assuming, of course, that
+the message is ultimately accepted. For details, see section &<<SECTremoveheadacl>>&.
+
+
 .vitem &*set*&&~<&'acl_name'&>&~=&~<&'value'&>
 .cindex "&%set%& ACL modifier"
 This modifier puts a value into one of the ACL variables (see section
@@ -27265,7 +27271,7 @@ Remotely submitted, fixups applied: use &`control = submission`&.
 .section "Adding header lines in ACLs" "SECTaddheadacl"
 .cindex "header lines" "adding in an ACL"
 .cindex "header lines" "position of added lines"
-.cindex "&%message%& ACL modifier"
+.cindex "&%add_header%& ACL modifier"
 The &%add_header%& modifier can be used to add one or more extra header lines
 to an incoming message, as in this example:
 .code
@@ -27307,7 +27313,7 @@ passing data between (for example) the MAIL and RCPT ACLs. If you want to do
 this, you can use ACL variables, as described in section
 &<<SECTaclvariables>>&.
 
-The &%add_header%& modifier acts immediately it is encountered during the
+The &%add_header%& modifier acts immediately as it is encountered during the
 processing of an ACL. Notice the difference between these two cases:
 .display
 &`accept add_header = ADDED: some text`&
@@ -27353,6 +27359,77 @@ up in reverse order.
 &*Warning*&: This facility currently applies only to header lines that are
 added in an ACL. It does NOT work for header lines that are added in a
 system filter or in a router or transport.
+
+
+
+.section "Removing header lines in ACLs" "SECTremoveheadacl"
+.cindex "header lines" "removing in an ACL"
+.cindex "header lines" "position of removed lines"
+.cindex "&%remove_header%& ACL modifier"
+The &%remove_header%& modifier can be used to remove one or more header lines
+from an incoming message, as in this example:
+.code
+warn   message        = Remove internal headers
+       remove_header  = x-route-mail1 : x-route-mail2
+.endd
+The &%remove_header%& modifier is permitted in the MAIL, RCPT, PREDATA, DATA,
+MIME, and non-SMTP ACLs (in other words, those that are concerned with
+receiving a message). The message must ultimately be accepted for
+&%remove_header%& to have any significant effect. You can use &%remove_header%&
+with any ACL verb, including &%deny%&, though this is really not useful for
+any verb that doesn't result in a delivered message.
+
+More than one header can be removed at the same time by using a colon separated
+list of header names. The header matching is case insensitive. Wildcards are
+not permitted, nor is list expansion performed, so you cannot use hostlists to
+create a list of headers, however both connection and message variable expansion
+are performed (&%$acl_c_*%& and &%$acl_m_*%&), illustrated in this example:
+.code
+warn   hosts           = +internal_hosts
+       set acl_c_ihdrs = x-route-mail1 : x-route-mail2
+warn   message         = Remove internal headers
+       remove_header   = $acl_c_ihdrs
+.endd
+Removed header lines are accumulated during the MAIL, RCPT, and predata ACLs.
+They are removed from the message before processing the DATA and MIME ACLs.
+There is no harm in attempting to remove the same header twice nor is removing
+a non-existent header. Further header lines to be removed may be accumulated
+during the DATA and MIME ACLs, after which they are removed from the message,
+if present. In the case of non-SMTP messages, headers to be removed are
+accumulated during the non-SMTP ACLs, and are removed from the message after
+all the ACLs have run. If a message is rejected after DATA or by the non-SMTP
+ACL, there really is no effect because there is no logging of what headers
+would have been removed.
+
+.cindex "header lines" "removed; visibility of"
+Header lines are not visible in string expansions until the DATA phase when it
+is received. Any header lines removed in the MAIL, RCPT, and predata ACLs are
+not visible in the DATA ACL and MIME ACLs. Similarly, header lines that are
+removed by the DATA or MIME ACLs are still visible in those ACLs. Because of
+this restriction, you cannot use header lines as a way of controlling data
+passed between (for example) the MAIL and RCPT ACLs. If you want to do this,
+you should instead use ACL variables, as described in section
+&<<SECTaclvariables>>&.
+
+The &%remove_header%& modifier acts immediately as it is encountered during the
+processing of an ACL. Notice the difference between these two cases:
+.display
+&`accept remove_header = X-Internal`&
+&`       `&<&'some condition'&>
+
+&`accept `&<&'some condition'&>
+&`       remove_header = X-Internal`&
+.endd
+In the first case, the header line is always removed, whether or not the
+condition is true. In the second case, the header line is removed only if the
+condition is true. Multiple occurrences of &%remove_header%& may occur in the
+same ACL statement. All those that are encountered before a condition fails
+are honoured.
+
+&*Warning*&: This facility currently applies only to header lines that are
+present during ACL processing. It does NOT remove header lines that are added
+in a system filter or in a router or transport.
+
 
 
 

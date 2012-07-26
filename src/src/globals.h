@@ -142,6 +142,7 @@ extern uschar *acl_not_smtp;           /* ACL run for non-SMTP messages */
 extern uschar *acl_not_smtp_mime;      /* For MIME parts of ditto */
 #endif
 extern uschar *acl_not_smtp_start;     /* ACL run at the beginning of a non-SMTP session */
+extern uschar *acl_removed_headers;    /* Headers deleted by an ACL */
 extern uschar *acl_smtp_auth;          /* ACL run for AUTH */
 extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */

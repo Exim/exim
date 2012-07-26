@@ -1041,6 +1041,7 @@ cancel_cutthrough_connection("smtp reset");
 message_linecount = 0;
 message_size = -1;
 acl_added_headers = NULL;
+acl_removed_headers = NULL;
 queue_only_policy = FALSE;
 rcpt_smtp_response = NULL;
 rcpt_smtp_response_same = TRUE;

@@ -35,6 +35,9 @@ TL/01 Bugzilla 1258 - Refactor MAIL FROM optional args processing.
 
 TL/02 Add +smtp_confirmation as a default logging option.
 
+TL/03 Bugzilla 198 - Implement remove_header ACL modifier.
+      Patch by Magnus Holmgren from 2007-02-20.
+
 JH/01 Bugzilla 1201 & 304 - New cutthrough-delivery feature, with TLS support.
 
 JH/02 Support "G" suffix to numbers in ${if comparisons.

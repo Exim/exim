@@ -936,6 +936,40 @@ add_acl_headers(uschar *acl_name)
 {
 header_line *h, *next;
 header_line *last_received = NULL;
+int sep = ':';
+
+if (acl_removed_headers != NULL)
+  {
+  DEBUG(D_receive|D_acl) debug_printf(">>Headers removed by %s ACL:\n", acl_name);
+
+  for (h = header_list; h != NULL; h = h->next)
+    {
+    int i;
+    uschar *list;
+    BOOL include_header;
+
+    if (h->type == htype_old) continue;
+
+    include_header = TRUE;
+    list = acl_removed_headers;
+
+    int sep = ':';         /* This is specified as a colon-separated list */
+    uschar *s;
+    uschar buffer[128];
+    while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
+            != NULL)
+      {
+      int len = Ustrlen(s);
+      if (header_testname(h, s, len, FALSE))
+	{
+	h->type = htype_old;
+        DEBUG(D_receive|D_acl) debug_printf("  %s", h->text);
+	}
+      }
+    }
+  acl_removed_headers = NULL;
+  DEBUG(D_receive|D_acl) debug_printf(">>\n");
+  }
 
 if (acl_added_headers == NULL) return;
 DEBUG(D_receive|D_acl) debug_printf(">>Headers added by %s ACL:\n", acl_name);

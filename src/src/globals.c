@@ -196,6 +196,7 @@ uschar *acl_not_smtp           = NULL;
 uschar *acl_not_smtp_mime      = NULL;
 #endif
 uschar *acl_not_smtp_start     = NULL;
+uschar *acl_removed_headers    = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;

@@ -88,6 +88,7 @@ enum { ACLC_ACL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_REGEX,
 #endif
+       ACLC_REMOVE_HEADER,
        ACLC_SENDER_DOMAINS,
        ACLC_SENDERS,
        ACLC_SET,
@@ -150,6 +151,7 @@ static uschar *conditions[] = {
 #ifdef WITH_CONTENT_SCAN
   US"regex",
 #endif
+  US"remove_header",
   US"sender_domains", US"senders", US"set",
 #ifdef WITH_CONTENT_SCAN
   US"spam",
@@ -280,6 +282,7 @@ static uschar cond_expand_at_top[] = {
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* regex */
 #endif
+  TRUE,    /* remove_header */
   FALSE,   /* sender_domains */
   FALSE,   /* senders */
   TRUE,    /* set */
@@ -340,6 +343,7 @@ static uschar cond_modifiers[] = {
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* regex */
 #endif
+  TRUE,    /* remove_header */
   FALSE,   /* sender_domains */
   FALSE,   /* senders */
   TRUE,    /* set */
@@ -464,6 +468,12 @@ static unsigned int cond_forbids[] = {
   ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|    /* regex */
     (1<<ACL_WHERE_MIME)),
   #endif
+
+  (unsigned int)
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* remove_header */
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
+    (1<<ACL_WHERE_NOTSMTP_START)),
 
   (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* sender_domains */
     (1<<ACL_WHERE_HELO)|
@@ -1035,6 +1045,31 @@ for (p = q = hstring; *p != 0; )
   }
 }
 
+
+
+/*************************************************
+*        Set up removed header line(s)           *
+*************************************************/
+
+/* This function is called by the remove_header modifier.  The argument is
+treated as a sequence of header names which are added to a colon separated
+list, provided there isn't an identical one already there.
+
+Argument:   string of header names
+Returns:    nothing
+*/
+
+static void
+setup_remove_header(uschar *hnames)
+{
+if (*hnames != 0)
+  {
+  if (acl_removed_headers == NULL)
+    acl_removed_headers = hnames;
+  else
+    acl_removed_headers = string_sprintf("%s : %s", acl_removed_headers, hnames);
+  }
+}
 
 
 
@@ -3293,6 +3328,10 @@ for (; cb != NULL; cb = cb->next)
     rc = regex(&arg);
     break;
     #endif
+
+    case ACLC_REMOVE_HEADER:
+    setup_remove_header(arg);
+    break;
 
     case ACLC_SENDER_DOMAINS:
       {

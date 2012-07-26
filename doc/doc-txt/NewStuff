@@ -109,6 +109,9 @@ Version 4.81
 11. Routers and transports can now have multiple headers_add and headers_remove
     option lines.  The concatenated list is used.
 
+12. New ACL modifier "remove_header" can remove headers before message gets
+    handled by routers/transports.
+
 Version 4.80
 ------------
 
