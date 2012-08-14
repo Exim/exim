@@ -36173,7 +36173,7 @@ warn log_message = GMail sender without DKIM signature
 
 .vitem &%dkim_status%&
 ACL condition that checks a colon-separated list of possible DKIM verification
-results agains the actual result of verification. This is typically used
+results against the actual result of verification. This is typically used
 to restrict an ACL verb to a list of verification outcomes, for example:
 
 .code
