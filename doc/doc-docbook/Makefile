@@ -282,7 +282,8 @@ os-fixup:
 
 clean:; /bin/rm -rf exim.8 \
 	      filter*.xml spec*.xml test*.xml \
-	      *.fo *.html *.pdf *.ps \
+	      *.fo *.pdf *.ps \
+	      filter*.html spec*.html test*.html \
 	      filter*.txt spec*.txt test*.txt \
 	      *.info* *.texinfo *.texi
 

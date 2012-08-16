@@ -12871,9 +12871,7 @@ listed in more than one group.
 .section "TLS" "SECID108"
 .table2
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
-.new
 .row &%gnutls_enable_pkcs11%&        "allow GnuTLS to autoload PKCS11 modules"
-.wen
 .row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_certificate%&             "location of server certificate"
@@ -13023,9 +13021,7 @@ See also the &'Policy controls'& section above.
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
-.new
 .row &%dns_use_dnssec%&              "parameter for resolver"
-.wen
 .row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
@@ -27045,24 +27041,6 @@ sender when the destination system is doing content-scan based rejection.
 
 
 .new
-.vitem &*control&~=&~dscp/*&<&'value'&>
-.cindex "&ACL;" "setting DSCP value"
-.cindex "DSCP" "inbound"
-This option causes the DSCP value associated with the socket for the inbound
-connection to be adjusted to a given value, given as one of a number of fixed
-strings or to numeric value.
-The &%-bI:dscp%& option may be used to ask Exim which names it knows of.
-Common values include &`throughput`&, &`mincost`&, and on newer systems
-&`ef`&, &`af41`&, etc.  Numeric values may be in the range 0 to 0x3F.
-
-The outbound packets from Exim will be marked with this value in the header
-(for IPv4, the TOS field; for IPv6, the TCLASS field); there is no guarantee
-that these values will have any effect, not be stripped by networking
-equipment, or do much of anything without cooperation with your Network
-Engineer and those of all network operators between the source and destination.
-.wen
-
-
 .vitem &*control&~=&~debug/*&<&'options'&>
 .cindex "&ACL;" "enabling debug logging"
 .cindex "debugging" "enabling from an ACL"
@@ -27079,6 +27057,35 @@ contexts):
       control = debug/opts=+expand+acl
       control = debug/tag=.$message_exim_id/opts=+expand
 .endd
+.wen
+
+
+.new
+.vitem &*control&~=&~dkim_disable_verify*&
+.cindex "disable DKIM verify"
+.cindex "DKIM" "disable verify"
+This control turns off DKIM verification processing entirely.  For details on
+the operation and configuration of DKIM, see chapter &<<CHID12>>&.
+.wen
+
+
+.new
+.vitem &*control&~=&~dscp/*&<&'value'&>
+.cindex "&ACL;" "setting DSCP value"
+.cindex "DSCP" "inbound"
+This option causes the DSCP value associated with the socket for the inbound
+connection to be adjusted to a given value, given as one of a number of fixed
+strings or to numeric value.
+The &%-bI:dscp%& option may be used to ask Exim which names it knows of.
+Common values include &`throughput`&, &`mincost`&, and on newer systems
+&`ef`&, &`af41`&, etc.  Numeric values may be in the range 0 to 0x3F.
+
+The outbound packets from Exim will be marked with this value in the header
+(for IPv4, the TOS field; for IPv6, the TCLASS field); there is no guarantee
+that these values will have any effect, not be stripped by networking
+equipment, or do much of anything without cooperation with your Network
+Engineer and those of all network operators between the source and destination.
+.wen
 
 
 .vitem &*control&~=&~enforce_sync*& &&&
