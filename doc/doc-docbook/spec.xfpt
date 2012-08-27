@@ -8144,7 +8144,7 @@ case the IP address is used on its own.
 There are several types of pattern that require Exim to know the name of the
 remote host. These are either wildcard patterns or lookups by name. (If a
 complete hostname is given without any wildcarding, it is used to find an IP
-address to match against, as described in the section &<<SECThoslispatip>>&
+address to match against, as described in section &<<SECThoslispatip>>&
 above.)
 
 If the remote host name is not already known when Exim encounters one of these
@@ -8313,7 +8313,7 @@ use masked IP addresses in database queries, you can use the &%mask%& expansion
 operator.
 
 If the query contains a reference to &$sender_host_name$&, Exim automatically
-looks up the host name if has not already done so. (See section
+looks up the host name if it has not already done so. (See section
 &<<SECThoslispatnam>>& for comments on finding host names.)
 
 Historical note: prior to release 4.30, Exim would always attempt to find a
@@ -8513,7 +8513,7 @@ but the separating colon must still be included at line breaks. White space
 surrounding the colons is ignored. For example:
 .code
 aol.com:  spammer1 : spammer2 : ^[0-9]+$ :
- spammer3 : spammer4
+  spammer3 : spammer4
 .endd
 As in all colon-separated lists in Exim, a colon can be included in an item by
 doubling.
@@ -27563,7 +27563,7 @@ encrypted = *
 .endd
 
 
-.vitem &*hosts&~=&~*&<&'&~host&~list'&>
+.vitem &*hosts&~=&~*&<&'host&~list'&>
 .cindex "&%hosts%& ACL condition"
 .cindex "host" "ACL checking"
 .cindex "&ACL;" "testing the client host"

@@ -40,6 +40,7 @@ TL/03 Bugzilla 198 - Implement remove_header ACL modifier.
 
 TL/04 Bugzilla 1281 - Spec typo.
       Bugzilla 1283 - Spec typo.
+      Bugzilla 1290 - Spec grammar fixes.
 
 TL/05 Bugzilla 1285 - Spec omission, fix docbook errors for spec.txt creation.
 
