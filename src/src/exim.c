@@ -816,6 +816,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_DCC
   fprintf(f, " Experimental_DCC");
 #endif
+#ifdef EXPERIMENTAL_PRDR
+  fprintf(f, " Experimental_PRDR");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");

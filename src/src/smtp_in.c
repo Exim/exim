@@ -210,7 +210,10 @@ static uschar *protocols[] = {
 /* Sanity check and validate optional args to MAIL FROM: envelope */
 enum {
   ENV_MAIL_OPT_SIZE, ENV_MAIL_OPT_BODY, ENV_MAIL_OPT_AUTH,
-  ENV_MAIL_OPT_PRDR, ENV_MAIL_OPT_NULL
+#ifdef EXPERIMENTAL_PRDR
+  ENV_MAIL_OPT_PRDR,
+#endif
+  ENV_MAIL_OPT_NULL
   };
 typedef struct {
   uschar *   name;  /* option requested during MAIL cmd */
@@ -222,7 +225,9 @@ static env_mail_type_t env_mail_type_list[] = {
     { US"SIZE",   ENV_MAIL_OPT_SIZE,   TRUE  },
     { US"BODY",   ENV_MAIL_OPT_BODY,   TRUE  },
     { US"AUTH",   ENV_MAIL_OPT_AUTH,   TRUE  },
+#ifdef EXPERIMENTAL_PRDR
     { US"PRDR",   ENV_MAIL_OPT_PRDR,   FALSE },
+#endif
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
   };
 
@@ -2206,6 +2211,9 @@ uschar *what =
 #endif
   (where == ACL_WHERE_PREDATA)? US"DATA" :
   (where == ACL_WHERE_DATA)? US"after DATA" :
+#ifdef EXPERIMENTAL_PRDR
+  (where == ACL_WHERE_PRDR)? US"after DATA PRDR" :
+#endif
   (smtp_cmd_data == NULL)?
     string_sprintf("%s in \"connect\" ACL", acl_wherenames[where]) :
     string_sprintf("%s %s", acl_wherenames[where], smtp_cmd_data);
@@ -3183,11 +3191,13 @@ while (done <= 0)
         }
       #endif
 
+      #ifdef EXPERIMENTAL_PRDR
       /* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
       if (prdr_enable) {
         s = string_cat(s, &size, &ptr, smtp_code, 3);
         s = string_cat(s, &size, &ptr, US"-PRDR\r\n", 7);
       }
+      #endif
 
       /* Finish off the multiline reply with one that is always available. */
 
@@ -3408,10 +3418,12 @@ while (done <= 0)
             }
             break;
 
+#ifdef EXPERIMENTAL_PRDR
         case ENV_MAIL_OPT_PRDR:
           if ( prdr_enable )
             prdr_requested = TRUE;
           break;
+#endif
 
         /* Unknown option. Stick back the terminator characters and break
         the loop. An error for a malformed address will occur. */
@@ -3543,14 +3555,19 @@ BAD_MAIL_ARGS:
       {
       if (user_msg == NULL) 
         smtp_printf("%s%s%s", US"250 OK",
-                    prdr_requested == TRUE ? US", PRDR Requested" : US"",
+                  #ifdef EXPERIMENTAL_PRDR
+                    prdr_requested == TRUE ? US", PRDR Requested" :
+                  #endif
+                    US"",
                     US"\r\n");
-        else 
-           {
-           if ( prdr_requested == TRUE ) 
-              user_msg = string_sprintf(US"%s%s", user_msg, US", PRDR Requested");
-           smtp_user_msg(US"250",user_msg);
-           }
+      else 
+        {
+      #ifdef EXPERIMENTAL_PRDR
+        if ( prdr_requested == TRUE )
+           user_msg = string_sprintf(US"%s%s", user_msg, US", PRDR Requested");
+      #endif
+        smtp_user_msg(US"250",user_msg);
+        }
       smtp_delay_rcpt = smtp_rlr_base;
       recipients_discarded = (rc == DISCARD);
       was_rej_mail = FALSE;
@@ -3815,9 +3832,12 @@ BAD_MAIL_ARGS:
     if (rc == OK)
       {
       uschar * code;
-      code = prdr_requested ? "353" : "354";
+      code = US"354";
+    #ifdef EXPERIMENTAL_PRDR
+      code = prdr_requested ? US"353" : code;
+    #endif
       if (user_msg == NULL)
-        smtp_printf("%i Enter message, ending with \".\" on a line by itself\r\n", code);
+        smtp_printf("%s Enter message, ending with \".\" on a line by itself\r\n", code);
       else smtp_user_msg(code, user_msg);
       done = 3;
       message_ended = END_NOTENDED;   /* Indicate in middle of data */

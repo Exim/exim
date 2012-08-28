@@ -3195,6 +3195,38 @@ else
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
+#ifdef EXPERIMENTAL_PRDR
+    unsigned int c;
+    if (prdr_requested && recipients_count > 0 && acl_smtp_data_prdr != NULL )
+      {
+      // for loop through recipients.  Must stay in order received because
+      // responses must be in same order.
+ 
+      for (c = 0; recipients_count > c; c++)
+        {
+        DEBUG(D_receive)
+          debug_printf("PRDR processing recipient %s (%d of %d)\n",
+                       recipients_list[c].address, c+1, recipients_count);
+        rc = acl_check(ACL_WHERE_PRDR, recipients_list[c].address, acl_smtp_data_prdr, &user_msg, &log_msg);
+        recipients_list[c].prdr_rc = rc;
+        //add_acl_headers(US"PRDR");
+        //if (rc == DISCARD)
+        //  {
+        //    blackholed_by = US"PRDR ACL";
+        //    if (log_msg != NULL)
+        //      blackhole_log_msg = string_sprintf(": %s", log_msg);
+        //    if (smtp_handle_acl_fail(ACL_WHERE_PRDR, rc, user_msg, log_msg) != 0)
+        //      smtp_yield = FALSE;
+        //    smtp_reply = US"";
+        //    message_id[0] = 0;
+        //  }
+        }
+        DEBUG(D_receive) debug_printf("Finished acl_smtp_data_prdr\n");
+      }
+    /* Kinda ugly, but turns the next if into an else-if */
+    else
+#endif /* EXPERIMENTAL_PRDR */
+
     /* Check the recipients count again, as the MIME ACL might have changed
     them. */
 

@@ -811,6 +811,9 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MIME,       /* ) implemented by <= WHERE_NOTSMTP           */
        ACL_WHERE_DKIM,       /* )                                           */
        ACL_WHERE_DATA,       /* )                                           */
+#ifdef EXPERIMENTAL_PRDR
+       ACL_WHERE_PRDR,       /* )                                           */
+#endif
        ACL_WHERE_NOTSMTP,    /* )                                           */
 
        ACL_WHERE_AUTH,       /* These remaining ones are not currently    */
