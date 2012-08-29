@@ -482,6 +482,34 @@ recipients_list[recipients_count++].errors_to = NULL;
 
 
 /*************************************************
+*        Send user response message              *
+*************************************************/
+        
+/* This function is passed a default response code and a user message. It calls
+smtp_message_code() to check and possibly modify the response code, and then
+calls smtp_respond() to transmit the response. I put this into a function
+just to avoid a lot of repetition.
+            
+Arguments:               
+  code         the response code
+  user_msg     the user message
+
+Returns:       nothing
+*/        
+            
+static void 
+smtp_user_msg(uschar *code, uschar *user_msg)
+{           
+int len = 3;
+smtp_message_code(&code, &len, &user_msg, NULL);
+smtp_respond(code, len, TRUE, user_msg);
+}           
+                        
+            
+          
+          
+
+/*************************************************
 *        Remove a recipient from the list        *
 *************************************************/
 
@@ -3199,29 +3227,29 @@ else
     unsigned int c;
     if (prdr_requested && recipients_count > 0 && acl_smtp_data_prdr != NULL )
       {
-      // for loop through recipients.  Must stay in order received because
-      // responses must be in same order.
- 
+      smtp_printf("353 PRDR content analysis beginning\r\n");
+      /* Loop through recipients, responses must be in same order received */
       for (c = 0; recipients_count > c; c++)
         {
         DEBUG(D_receive)
           debug_printf("PRDR processing recipient %s (%d of %d)\n",
                        recipients_list[c].address, c+1, recipients_count);
-        rc = acl_check(ACL_WHERE_PRDR, recipients_list[c].address, acl_smtp_data_prdr, &user_msg, &log_msg);
+        rc = acl_check(ACL_WHERE_PRDR, recipients_list[c].address,
+                       acl_smtp_data_prdr, &user_msg, &log_msg);
         recipients_list[c].prdr_rc = rc;
+        if (user_msg != NULL)
+          recipients_list[c].prdr_user_msg = string_sprintf("%s: %s",
+                                               recipients_list[c].address, user_msg);
         //add_acl_headers(US"PRDR");
         //if (rc == DISCARD)
         //  {
         //    blackholed_by = US"PRDR ACL";
-        //    if (log_msg != NULL)
-        //      blackhole_log_msg = string_sprintf(": %s", log_msg);
         //    if (smtp_handle_acl_fail(ACL_WHERE_PRDR, rc, user_msg, log_msg) != 0)
         //      smtp_yield = FALSE;
         //    smtp_reply = US"";
         //    message_id[0] = 0;
         //  }
         }
-        DEBUG(D_receive) debug_printf("Finished acl_smtp_data_prdr\n");
       }
     /* Kinda ugly, but turns the next if into an else-if */
     else
@@ -3915,6 +3943,55 @@ if (smtp_input)
     {
     if (smtp_reply == NULL)
       {
+    #ifdef EXPERIMENTAL_PRDR
+      unsigned int c;
+      int all_pass = OK;
+      if (prdr_requested && recipients_count > 0)
+        {
+        for (c = 0; recipients_count > c; c++)
+          {
+          /* If any recipient rejected content, then indicate it in final message */
+          all_pass |= recipients_list[c].prdr_rc;
+          DEBUG(D_receive)
+            debug_printf("PRDR response processing for recipient %s (%d of %d)\n",
+                         recipients_list[c].address, c+1, recipients_count);
+          /* Non PRDR code path will have already rejected the message, but *
+           * we had to defer that action, then detect and display it here.  */
+          uschar *user_msg = recipients_list[c].prdr_user_msg;
+          if (recipients_list[c].prdr_rc != OK)
+            {
+            uschar *code = US"550";
+            if (user_msg != NULL)
+              smtp_user_msg(code, user_msg);
+            else
+              smtp_user_msg(code, string_sprintf(
+                            "%s refuses the content",
+                            recipients_list[c].address));
+            /* Decrement the counter _after_ removing the address  *
+             * so that it points to the previous good one or zero. */
+            receive_remove_recipient(recipients_list[c--].address);
+            }
+          else if (user_msg != NULL)
+            {
+            uschar *code = US"250";
+            smtp_user_msg(code, user_msg);
+            }
+          /* Default OK response in PRDR mode */
+          else
+            {
+            smtp_printf("250 OK PRDR accepted for %s\r\n",
+                        recipients_list[c].address);
+            }
+          }
+          uschar *code = US"250";
+          user_msg = string_sprintf("id=%s %s",
+                       message_id,
+                       ((all_pass == OK) ? US"message accepted" :
+                        US"message accepted for some recipients"));
+          smtp_user_msg(code, user_msg);
+        }
+      else
+    #endif
       if (fake_response != OK)
         smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
           fake_response_text);

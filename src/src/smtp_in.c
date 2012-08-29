@@ -3833,9 +3833,6 @@ BAD_MAIL_ARGS:
       {
       uschar * code;
       code = US"354";
-    #ifdef EXPERIMENTAL_PRDR
-      code = prdr_requested ? US"353" : code;
-    #endif
       if (user_msg == NULL)
         smtp_printf("%s Enter message, ending with \".\" on a line by itself\r\n", code);
       else smtp_user_msg(code, user_msg);
