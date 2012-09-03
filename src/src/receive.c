@@ -3945,50 +3945,73 @@ if (smtp_input)
       {
     #ifdef EXPERIMENTAL_PRDR
       unsigned int c;
+      int prdr_rc;
       int all_pass = OK;
+      int all_fail = FAIL;
       if (prdr_requested && recipients_count > 0)
         {
+        uschar *code = US"250";
         for (c = 0; recipients_count > c; c++)
           {
+          prdr_rc = recipients_list[c].prdr_rc;
           /* If any recipient rejected content, then indicate it in final message */
-          all_pass |= recipients_list[c].prdr_rc;
-          DEBUG(D_receive)
-            debug_printf("PRDR response processing for recipient %s (%d of %d)\n",
-                         recipients_list[c].address, c+1, recipients_count);
+          all_pass |= prdr_rc;
+          /* If all recipients rejected, indicate in final message */
+          all_fail &= prdr_rc;
           /* Non PRDR code path will have already rejected the message, but *
            * we had to defer that action, then detect and display it here.  */
           uschar *user_msg = recipients_list[c].prdr_user_msg;
-          if (recipients_list[c].prdr_rc != OK)
+          DEBUG(D_receive)
+            debug_printf("PRDR response processing for recipient %s (%d of %d)\n",
+                         recipients_list[c].address, c+1, recipients_count);
+          switch (prdr_rc)
             {
-            uschar *code = US"550";
-            if (user_msg != NULL)
-              smtp_user_msg(code, user_msg);
-            else
-              smtp_user_msg(code, string_sprintf(
-                            "%s refuses the content",
-                            recipients_list[c].address));
-            /* Decrement the counter _after_ removing the address  *
-             * so that it points to the previous good one or zero. */
-            receive_remove_recipient(recipients_list[c--].address);
-            }
-          else if (user_msg != NULL)
-            {
-            uschar *code = US"250";
-            smtp_user_msg(code, user_msg);
-            }
-          /* Default OK response in PRDR mode */
-          else
-            {
-            smtp_printf("250 OK PRDR accepted for %s\r\n",
-                        recipients_list[c].address);
+            case OK:
+            case DISCARD:
+              code = US"250";
+              if (user_msg != NULL)
+                smtp_user_msg(code, user_msg);
+              else
+                smtp_printf("250 OK PRDR accepted for %s\r\n",
+                            recipients_list[c].address);
+              /* Decrement the counter _after_ removing the address  *
+               * so that it points to the previous good one or zero  *
+               * if result is to blackhole.                          */
+              if (prdr_rc == DISCARD)
+                receive_remove_recipient(recipients_list[c--].address);
+              break;
+
+            case DEFER:
+              code = US"450";
+              if (user_msg != NULL)
+                smtp_user_msg(code, user_msg);
+              else
+                smtp_user_msg(code, string_sprintf(
+                              "%s temporarily refuses the content",
+                              recipients_list[c].address));
+              receive_remove_recipient(recipients_list[c--].address);
+              break;
+
+            default:
+              // recipients_list[c].prdr_rc != OK
+              code = (prdr_rc == DEFER) ? US"450" : US"550";
+              if (user_msg != NULL)
+                smtp_user_msg(code, user_msg);
+              else
+                smtp_user_msg(code, string_sprintf(
+                              "%s refuses the content",
+                              recipients_list[c].address));
+              receive_remove_recipient(recipients_list[c--].address);
+              break;
             }
           }
-          uschar *code = US"250";
-          user_msg = string_sprintf("id=%s %s",
-                       message_id,
-                       ((all_pass == OK) ? US"message accepted" :
-                        US"message accepted for some recipients"));
-          smtp_user_msg(code, user_msg);
+        /* Print final message */
+        code = (all_fail == FAIL) ? US"550" : US"250";
+        user_msg = string_sprintf("id=%s message %s", message_id,
+                     ((all_fail == FAIL) ? US"rejected for all recipients" :
+                      (all_pass == OK)     ? US"accepted" :
+                      US"accepted for some recipients") );
+        smtp_user_msg(code, user_msg);
         }
       else
     #endif
