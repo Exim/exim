@@ -3,4 +3,8 @@
 exim -be
 ptr=V6NET:0:12:1:a00:20ff:fe86:a062 ${lookup dnsdb {ptr=<;V6NET:0:12:1:a00:20ff:fe86:a062}{$value}{fail}}
 ptr=V6NET:0:12:1:a00:20ff:fe86:a062 ${lookup dnsdb {ptr=V6NET:0:12:1:a00:20ff:fe86:a062}{$value}{fail}}
+
+a=46.test.ex       ${lookup dnsdb{>; a=46.test.ex}{$value}fail}
+aaaa=46.test.ex    ${lookup dnsdb{>; aaaa=46.test.ex}{$value}fail}
+a+=46.test.ex      ${lookup dnsdb{>; a+=46.test.ex}{$value}fail}
 ****

@@ -27,6 +27,7 @@ header files. */
 static const char *type_names[] = {
   "a",
 #if HAVE_IPV6
+  "a+",
   "aaaa",
   #ifdef SUPPORT_A6
   "a6",
@@ -47,6 +48,7 @@ static const char *type_names[] = {
 static int type_values[] = {
   T_A,
 #if HAVE_IPV6
+  T_APL,     /* Private type for AAAA + A */
   T_AAAA,
   #ifdef SUPPORT_A6
   T_A6,
@@ -280,157 +282,178 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
     domain = rbuffer;
     }
 
-  DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", domain);
-
-  /* Do the lookup and sort out the result. There are three special types that
-  are handled specially: T_CSA, T_ZNS and T_MXH. The former two are handled in
-  a special lookup function so that the facility could be used from other
-  parts of the Exim code. The latter affects only what happens later on in
-  this function, but for tidiness it is handled in a similar way. If the
-  lookup fails, continue with the next domain. In the case of DEFER, adjust
-  the final "nothing found" result, but carry on to the next domain. */
-
-  found = domain;
-  rc = dns_special_lookup(&dnsa, domain, type, &found);
-
-  if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
-  if (rc != DNS_SUCCEED)
+  do
     {
-    if (defer_mode == DEFER) return DEFER;          /* always defer */
-      else if (defer_mode == PASS) failrc = DEFER;  /* defer only if all do */
-    continue;                                       /* treat defer as fail */
-    }
+    DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", domain);
 
-  /* Search the returned records */
+    /* Do the lookup and sort out the result. There are four special types that
+    are handled specially: T_CSA, T_ZNS, T_APL and T_MXH.
+    The first two are handled in a special lookup function so that the facility
+    could be used from other parts of the Exim code. T_APL is handled by looping
+    over the types of A lookup.  T_MXH affects only what happens later on in
+    this function, but for tidiness it is handled by the "special". If the
+    lookup fails, continue with the next domain. In the case of DEFER, adjust
+    the final "nothing found" result, but carry on to the next domain. */
 
-  for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-       rr != NULL;
-       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-    {
-    if (rr->type != searchtype) continue;
-
-    /* There may be several addresses from an A6 record. Put the configured
-    separator between them, just as for between several records. However, A6
-    support is not normally configured these days. */
-
-    if (type == T_A ||
-        #ifdef SUPPORT_A6
-        type == T_A6 ||
-        #endif
-        type == T_AAAA)
+    found = domain;
+    if (type == T_APL)		/* NB cannot happen unless HAVE_IPV6 */
       {
-      dns_address *da;
-      for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
-        {
-        if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
-        yield = string_cat(yield, &size, &ptr, da->address,
-          Ustrlen(da->address));
-        }
-      continue;
+#if HAVE_IPV6 && defined(SUPPORT_A6)
+      if (searchtype == T_APL)  searchtype = T_A6;
+#endif
+#if HAVE_IPV6 && !defined(SUPPORT_A6)
+      if (searchtype == T_APL)  searchtype = T_AAAA;
+#endif
+      else if (searchtype == T_A6)   searchtype = T_AAAA;
+      else if (searchtype == T_AAAA) searchtype = T_A;
+      rc = dns_special_lookup(&dnsa, domain, searchtype, &found);
+      }
+    else
+      rc = dns_special_lookup(&dnsa, domain, type, &found);
+
+    if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
+    if (rc != DNS_SUCCEED)
+      {
+      if (defer_mode == DEFER) return DEFER;          /* always defer */
+      if (defer_mode == PASS) failrc = DEFER;         /* defer only if all do */
+      continue;                                       /* treat defer as fail */
       }
 
-    /* Other kinds of record just have one piece of data each, but there may be
-    several of them, of course. */
+    /* Search the returned records */
 
-    if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
-
-    if (type == T_TXT || type == T_SPF)
+    for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+         rr != NULL;
+         rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
       {
-      if (outsep2 == NULL)
+      if (rr->type != searchtype) continue;
+
+      /* There may be several addresses from an A6 record. Put the configured
+      separator between them, just as for between several records. However, A6
+      support is not normally configured these days. */
+
+      if (type == T_A ||
+          #ifdef SUPPORT_A6
+          type == T_A6 ||
+          #endif
+          type == T_AAAA ||
+	  type == T_APL)
         {
-        /* output only the first item of data */
-        yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
-          (rr->data)[0]);
-        }
-      else
-        {
-        /* output all items */
-        int data_offset = 0;
-        while (data_offset < rr->size)
+        dns_address *da;
+        for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
           {
-          uschar chunk_len = (rr->data)[data_offset++];
-          if (outsep2[0] != '\0' && data_offset != 1)
-            yield = string_cat(yield, &size, &ptr, outsep2, 1);
-          yield = string_cat(yield, &size, &ptr,
-                             (uschar *)((rr->data)+data_offset), chunk_len);
-          data_offset += chunk_len;
+          if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
+          yield = string_cat(yield, &size, &ptr, da->address,
+            Ustrlen(da->address));
           }
+        continue;
         }
-      }
-    else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */
-      {
-      int priority, weight, port;
-      uschar s[264];
-      uschar *p = (uschar *)(rr->data);
 
-      if (type == T_MXH)
+      /* Other kinds of record just have one piece of data each, but there may be
+      several of them, of course. */
+
+      if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
+
+      if (type == T_TXT || type == T_SPF)
         {
-        /* mxh ignores the priority number and includes only the hostnames */
-        GETSHORT(priority, p);
-        }
-      else if (type == T_MX)
-        {
-        GETSHORT(priority, p);
-        sprintf(CS s, "%d ", priority);
-        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-        }
-      else if (type == T_SRV)
-        {
-        GETSHORT(priority, p);
-        GETSHORT(weight, p);
-        GETSHORT(port, p);
-        sprintf(CS s, "%d %d %d ", priority, weight, port);
-        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-        }
-      else if (type == T_CSA)
-        {
-        /* See acl_verify_csa() for more comments about CSA. */
-
-        GETSHORT(priority, p);
-        GETSHORT(weight, p);
-        GETSHORT(port, p);
-
-        if (priority != 1) continue;      /* CSA version must be 1 */
-
-        /* If the CSA record we found is not the one we asked for, analyse
-        the subdomain assertions in the port field, else analyse the direct
-        authorization status in the weight field. */
-
-        if (found != domain)
+        if (outsep2 == NULL)
           {
-          if (port & 1) *s = 'X';         /* explicit authorization required */
-          else *s = '?';                  /* no subdomain assertions here */
+          /* output only the first item of data */
+          yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
+            (rr->data)[0]);
           }
         else
           {
-          if (weight < 2) *s = 'N';       /* not authorized */
-          else if (weight == 2) *s = 'Y'; /* authorized */
-          else if (weight == 3) *s = '?'; /* unauthorizable */
-          else continue;                  /* invalid */
+          /* output all items */
+          int data_offset = 0;
+          while (data_offset < rr->size)
+            {
+            uschar chunk_len = (rr->data)[data_offset++];
+            if (outsep2[0] != '\0' && data_offset != 1)
+              yield = string_cat(yield, &size, &ptr, outsep2, 1);
+            yield = string_cat(yield, &size, &ptr,
+                             (uschar *)((rr->data)+data_offset), chunk_len);
+            data_offset += chunk_len;
+            }
+          }
+        }
+      else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */
+        {
+        int priority, weight, port;
+        uschar s[264];
+        uschar *p = (uschar *)(rr->data);
+
+        if (type == T_MXH)
+          {
+          /* mxh ignores the priority number and includes only the hostnames */
+          GETSHORT(priority, p);
+          }
+        else if (type == T_MX)
+          {
+          GETSHORT(priority, p);
+          sprintf(CS s, "%d ", priority);
+          yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+          }
+        else if (type == T_SRV)
+          {
+          GETSHORT(priority, p);
+          GETSHORT(weight, p);
+          GETSHORT(port, p);
+          sprintf(CS s, "%d %d %d ", priority, weight, port);
+          yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+          }
+        else if (type == T_CSA)
+          {
+          /* See acl_verify_csa() for more comments about CSA. */
+
+          GETSHORT(priority, p);
+          GETSHORT(weight, p);
+          GETSHORT(port, p);
+
+          if (priority != 1) continue;      /* CSA version must be 1 */
+
+          /* If the CSA record we found is not the one we asked for, analyse
+          the subdomain assertions in the port field, else analyse the direct
+          authorization status in the weight field. */
+
+          if (found != domain)
+            {
+            if (port & 1) *s = 'X';         /* explicit authorization required */
+            else *s = '?';                  /* no subdomain assertions here */
+            }
+          else
+            {
+            if (weight < 2) *s = 'N';       /* not authorized */
+            else if (weight == 2) *s = 'Y'; /* authorized */
+            else if (weight == 3) *s = '?'; /* unauthorizable */
+            else continue;                  /* invalid */
+            }
+
+          s[1] = ' ';
+          yield = string_cat(yield, &size, &ptr, s, 2);
           }
 
-        s[1] = ' ';
-        yield = string_cat(yield, &size, &ptr, s, 2);
+        /* GETSHORT() has advanced the pointer to the target domain. */
+
+        rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+          (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));
+
+        /* If an overlong response was received, the data will have been
+        truncated and dn_expand may fail. */
+
+        if (rc < 0)
+          {
+          log_write(0, LOG_MAIN, "host name alias list truncated: type=%s "
+            "domain=%s", dns_text_type(type), domain);
+          break;
+          }
+        else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
+      }    /* Loop for list of returned records */
 
-      /* GETSHORT() has advanced the pointer to the target domain. */
+           /* Loop for set of A-lookupu types */
+    } while (type == T_APL && searchtype != T_A);
 
-      rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
-        (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));
-
-      /* If an overlong response was received, the data will have been
-      truncated and dn_expand may fail. */
-
-      if (rc < 0)
-        {
-        log_write(0, LOG_MAIN, "host name alias list truncated: type=%s "
-          "domain=%s", dns_text_type(type), domain);
-        break;
-        }
-      else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-      }
-    }    /* Loop for list of returned records */
-  }      /* Loop for list of domains */
+  }        /* Loop for list of domains */
 
 /* Reclaim unused memory */
 

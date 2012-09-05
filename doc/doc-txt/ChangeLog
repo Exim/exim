@@ -66,6 +66,8 @@ JH/04 Add expansion item ${acl {name}{arg}...}, expansion condition
 
 JH/05 Permit multiple router/transport headers_add/remove lines.
 
+JH/06 Add dnsdb pseudo-lookup "a+" to do an "aaaa" + "a" combination.
+
 Exim version 4.80
 -----------------
 

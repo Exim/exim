@@ -6911,6 +6911,14 @@ has two space-separated fields: an authorization code and a target host name.
 The authorization code can be &"Y"& for yes, &"N"& for no, &"X"& for explicit
 authorization required but absent, or &"?"& for unknown.
 
+.cindex "A+" "in &(dnsdb)& lookup"
+The pseudo-type A+ performs an A6 lookup (if configured) followed by an AAAA
+and then an A lookup.  All results are returned; defer processing
+(see below) is handled separately for each lookup.  Example:
+.code
+${lookup dnsdb {>; a+=$sender_helo_name}}
+.endd
+
 
 .section "Multiple dnsdb lookups" "SECID67"
 In the previous sections, &(dnsdb)& lookups for a single domain are described.

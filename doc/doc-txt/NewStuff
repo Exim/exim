@@ -112,6 +112,9 @@ Version 4.81
 12. New ACL modifier "remove_header" can remove headers before message gets
     handled by routers/transports.
 
+13. New dnsdb lookup pseudo-type "a+".  A sequence of "a6" (if configured),
+    "aaaa" and "a" lookups is done and the full set of results returned.
+
 Version 4.80
 ------------
 
