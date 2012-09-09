@@ -27030,6 +27030,7 @@ is what is wanted for subsequent tests.
 .new
 .vitem &*control&~=&~cutthrough_delivery*&
 .cindex "&ACL;" "cutthrough routing"
+.cindex "cutthrough" "requesting"
 This option requests delivery be attempted while the item is being received.
 It is usable in the RCPT ACL and valid only for single-recipient mails forwarded
 from one SMTP connection to another.  If a recipient-verify callout connection is
@@ -33496,6 +33497,7 @@ timestamp. The flags are:
 &`<=`&     message arrival
 &`=>`&     normal message delivery
 &`->`&     additional address in same delivery
+&`>>`&     cutthrough message delivery
 &`*>`&     delivery suppressed by &%-N%&
 &`**`&     delivery failed; address bounced
 &`==`&     delivery deferred; temporary problem
@@ -33609,6 +33611,12 @@ SMTP RCPT commands in one transaction) the second and subsequent addresses are
 flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
 down a single SMTP connection, an asterisk follows the IP address in the log
 lines for the second and subsequent messages.
+
+.cindex "delivery" "cutthrough; logging"
+.cindex "cutthrough" "logging"
+When delivery is done in cutthrough mode it is flagged with &`>>`& and the log
+line precedes the reception line, since cutthrough waits for a possible
+rejection from the destination in case it can reject the sourced item.
 
 The generation of a reply message by a filter file gets logged as a
 &"delivery"& to the addressee, preceded by &">"&.
