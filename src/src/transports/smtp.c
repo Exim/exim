@@ -3114,9 +3114,12 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
 /* Update the database which keeps information about which messages are waiting
 for which hosts to become available. For some message-specific errors, the
 update_waiting flag is turned off because we don't want follow-on deliveries in
-those cases. */
+those cases.  If this transport instance is explicitly limited to one message
+per connection, follow-on deliveries are not possible, and there's no need
+to create/update a waiting database. */
 
-if (update_waiting) transport_update_waiting(hostlist, tblock->name);
+if (update_waiting && tblock->connection_max_messages != 1)
+  transport_update_waiting(hostlist, tblock->name);
 
 END_TRANSPORT:
 
