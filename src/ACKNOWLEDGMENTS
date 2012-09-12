@@ -382,6 +382,7 @@ Maxim Dounin              Patch portability of accept() len
 Frank Elsner              Fixed build reliability by exporting LC_ALL=C
 Paul Fisher               Diagnosed smtp_cmd_buffer_size affecting GSSAPI SASL
                             initial response, raised buffer size
+                          Patch adjusting connection_max_messages wait-DB usage
 Oliver Fleischmann        Patches fixing compilation in older compilers
 Julian Gilbey             Helped improve userforward local_part_suffix docs
 Richard Godbee            Patch fixing usage fprintf

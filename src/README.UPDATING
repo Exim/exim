@@ -32,6 +32,11 @@ Exim version 4.81
  * New option gnutls_enable_pkcs11 defaults false; if you have GnuTLS 2.12.0
    or later and do want PKCS11 modules to be autoloaded, then set this option.
 
+ * A per-transport wait-<name> database is no longer updated if the transport
+   sets "connection_max_messages" to 1, as it can not be used and causes
+   unnecessary serialisation and load.  External tools tracking the state of
+   Exim by the hints databases may need modification to take this into account.
+
 
 Exim version 4.80
 -----------------

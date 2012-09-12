@@ -69,7 +69,8 @@ JH/05 Permit multiple router/transport headers_add/remove lines.
 JH/06 Add dnsdb pseudo-lookup "a+" to do an "aaaa" + "a" combination.
 
 JH/07 Avoid using a waiting database for a single-message-only transport.
-      Performance patch from Paul Fisher.
+      Performance patch from Paul Fisher.  Bugzilla 1262.
+
 
 Exim version 4.80
 -----------------

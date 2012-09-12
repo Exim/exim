@@ -3115,8 +3115,8 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
 for which hosts to become available. For some message-specific errors, the
 update_waiting flag is turned off because we don't want follow-on deliveries in
 those cases.  If this transport instance is explicitly limited to one message
-per connection, follow-on deliveries are not possible, and there's no need
-to create/update a waiting database. */
+per connection then follow-on deliveries are not possible and there's no need
+to create/update the per-transport wait-<transport_name> database. */
 
 if (update_waiting && tblock->connection_max_messages != 1)
   transport_update_waiting(hostlist, tblock->name);
