@@ -1348,6 +1348,8 @@ Setting the &%verify%& option actually sets two options, &%verify_sender%& and
 &%verify_recipient%&, which independently control the use of the router for
 sender and recipient verification. You can set these options directly if
 you want a router to be used for only one type of verification.
+Note that cutthrough delivery is classed as a recipient verification
+for this purpose.
 .next
 If the &%address_test%& option is set false, the router is skipped when Exim is
 run with the &%-bt%& option to test an address routing. This can be helpful
@@ -1357,6 +1359,7 @@ having to simulate the effect of the scanner.
 .next
 Routers can be designated for use only when verifying an address, as
 opposed to routing it for delivery. The &%verify_only%& option controls this.
+Again, cutthrough delibery counts as a verification.
 .next
 Individual routers can be explicitly skipped when running the routers to
 check an address given in the SMTP EXPN command (see the &%expn%& option).
@@ -17225,7 +17228,8 @@ Setting this option has the effect of setting &%verify_sender%& and
 .cindex "EXPN" "with &%verify_only%&"
 .oindex "&%-bv%&"
 .cindex "router" "used only when verifying"
-If this option is set, the router is used only when verifying an address or
+If this option is set, the router is used only when verifying an address,
+delivering in cutthrough mode or
 testing with the &%-bv%& option, not when actually doing a delivery, testing
 with the &%-bt%& option, or running the SMTP EXPN command. It can be further
 restricted to verifying only senders or recipients by means of
@@ -17239,7 +17243,8 @@ user or group.
 
 .option verify_recipient routers&!? boolean true
 If this option is false, the router is skipped when verifying recipient
-addresses
+addresses,
+delivering in cutthrough mode
 or testing recipient verification using &%-bv%&.
 See section &<<SECTrouprecon>>& for a list of the order in which preconditions
 are evaluated.
@@ -27035,7 +27040,7 @@ This option requests delivery be attempted while the item is being received.
 It is usable in the RCPT ACL and valid only for single-recipient mails forwarded
 from one SMTP connection to another.  If a recipient-verify callout connection is
 requested in the same ACL it is held open and used for the data, otherwise one is made
-after the ACL completes.
+after the ACL completes.  Note that routers are used in verify mode.
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
