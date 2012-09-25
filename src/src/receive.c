@@ -1345,6 +1345,7 @@ header_line *received_header;
 
 #ifdef EXPERIMENTAL_DMARC
 OPENDMARC_LIB_T dmarc_ctx;
+DMARC_POLICY_T * dmarc_pctx;
 OPENDMARC_STATUS_T dmarc_status;
 #endif
 
@@ -1402,6 +1403,12 @@ if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_
 #ifdef EXPERIMENTAL_DMARC
 /* initialize libopendmarc */
 (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
+if (opendmarc_policy_library_init(&dmarc_ctx) != 0)
+  {
+  // Log a failure
+  }
+// Force this to be non ipv6 for now
+dmarc_pctx = opendmarc_policy_connect_init(sender_host_address , FALSE);
 #endif
 
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
