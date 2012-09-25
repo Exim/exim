@@ -2674,6 +2674,12 @@ if (from_header != NULL &&
     }
   }
 
+#ifdef EXPERIMENTAL_DMARC
+if (opendmarc_policy_store_from_domain(dmarc_pctx, from_header->text) != DMARC_PARSE_OKAY)
+  {
+  // Log something
+  }
+#endif
 
 /* If there are any rewriting rules, apply them to the sender address, unless
 it has already been rewritten as part of verification for SMTP input. */
