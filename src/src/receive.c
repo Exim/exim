@@ -1434,6 +1434,11 @@ header_line *subject_header = NULL;
 header_line *msgid_header = NULL;
 header_line *received_header;
 
+#ifdef EXPERIMENTAL_DMARC
+OPENDMARC_LIB_T dmarc_ctx;
+OPENDMARC_STATUS_T dmarc_status;
+#endif
+
 /* Variables for use when building the Received: header. */
 
 uschar *timestamp;
@@ -1488,6 +1493,11 @@ message_linecount = body_linecount = body_zerocount =
 #ifndef DISABLE_DKIM
 /* Call into DKIM to set up the context. */
 if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_init();
+#endif
+
+#ifdef EXPERIMENTAL_DMARC
+/* initialize libopendmarc */
+(void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
 #endif
 
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
@@ -3859,6 +3869,11 @@ if this happens? */
 TIDYUP:
 process_info[process_info_len] = 0;                /* Remove message id */
 if (data_file != NULL) (void)fclose(data_file);    /* Frees the lock */
+
+#ifdef EXPERIMENTAL_DMARC
+/* shut down libopendmarc */
+(void) opendmarc_policy_library_shutdown(&dmarc_ctx);
+#endif
 
 /* Now reset signal handlers to their defaults */
 
