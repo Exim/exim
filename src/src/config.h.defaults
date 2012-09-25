@@ -163,6 +163,7 @@ it's a default value. */
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
+#define EXPERIMENTAL_DMARC
 #define EXPERIMENTAL_OCSP
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS
