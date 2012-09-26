@@ -13,6 +13,10 @@
 extern int dcc_ok;
 #endif
 
+#ifdef EXPERIMENTAL_DMARC
+#include "pdkim/pdkim.h"
+#endif
+
 /*************************************************
 *                Local static variables          *
 *************************************************/
@@ -1438,6 +1442,7 @@ header_line *received_header;
 OPENDMARC_LIB_T dmarc_ctx;
 DMARC_POLICY_T * dmarc_pctx;
 OPENDMARC_STATUS_T dmarc_status;
+extern pdkim_signature *dkim_signatures;
 #endif
 
 /* Variables for use when building the Received: header. */
@@ -1499,7 +1504,8 @@ if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_
 #ifdef EXPERIMENTAL_DMARC
 /* initialize libopendmarc */
 (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
-if (opendmarc_policy_library_init(&dmarc_ctx) != 0)
+dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
+if (dmarc_status != 0)
   {
   // Log a failure
   }
@@ -2675,10 +2681,36 @@ if (from_header != NULL &&
   }
 
 #ifdef EXPERIMENTAL_DMARC
-if (opendmarc_policy_store_from_domain(dmarc_pctx, from_header->text) != DMARC_PARSE_OKAY)
+dmarc_status = opendmarc_policy_store_from_domain(dmarc_pctx, from_header->text);
+if (dmarc_status != DMARC_PARSE_OKAY)
   {
   // Log something
   }
+dmarc_status = opendmarc_policy_query_dmarc(dmarc_pctx, "");
+switch (dmarc_status)
+  {
+  case DMARC_DNS_ERROR_NXDOMAIN:
+    //log something
+    break;
+  case DMARC_DNS_ERROR_NO_RECORD:
+    //no dmarc record
+    break;
+  case DMARC_PARSE_OKAY:
+    DEBUG(D_receive)
+      debug_printf("DMARC record found for %s\n", from_header->text);
+    break;
+  default:
+    // everything else, abort dmarc
+    break;
+  }
+/*  Have to get the SPF results before this will work
+dmarc_status = opendmarc_policy_store_spf(dmarc_pctx, sender_address, spf_result,
+                                          origin, human_readable);
+if (dmarc_status != DMARC_PARSE_OKAY)
+  {
+  // Log something
+  }
+*/
 #endif
 
 /* If there are any rewriting rules, apply them to the sender address, unless
@@ -3209,6 +3241,29 @@ else
           }
         }
       }
+#ifdef EXPERIMENTAL_DMARC
+    /* Now we cycle through the dkim signature results and put into
+     * the opendmarc context, further building the DMARC reply.
+     */
+    pdkim_signature *sig = NULL;
+    sig = dkim_signatures;
+    while (sig != NULL)
+      {
+      int dkim_result, vs;
+      vs = sig->verify_status;
+      dkim_result = ( vs == PDKIM_VERIFY_PASS ) ? DMARC_POLICY_DKIM_OUTCOME_PASS :
+		    ( vs == PDKIM_VERIFY_FAIL ) ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
+		    ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
+	            DMARC_POLICY_DKIM_OUTCOME_NONE;
+      dmarc_status = opendmarc_policy_store_dkim(dmarc_pctx, sig->domain,
+		                                 dkim_result, US"");
+      if (dmarc_status != DMARC_PARSE_OKAY)
+        {
+        /* Log something */
+        }
+      sig = sig->next;
+      }
+#endif /* EXPERIMENTAL_DMARC */
 #endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
