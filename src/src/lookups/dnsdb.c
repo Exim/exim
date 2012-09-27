@@ -296,19 +296,21 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
     the final "nothing found" result, but carry on to the next domain. */
 
     found = domain;
+#if HAVE_IPV6
     if (type == T_APL)		/* NB cannot happen unless HAVE_IPV6 */
       {
-#if HAVE_IPV6 && defined(SUPPORT_A6)
-      if (searchtype == T_APL)  searchtype = T_A6;
-#endif
-#if HAVE_IPV6 && !defined(SUPPORT_A6)
-      if (searchtype == T_APL)  searchtype = T_AAAA;
-#endif
+      if (searchtype == T_APL)
+# if defined(SUPPORT_A6)
+                                     searchtype = T_A6;
+# else
+                                     searchtype = T_AAAA;
+# endif
       else if (searchtype == T_A6)   searchtype = T_AAAA;
       else if (searchtype == T_AAAA) searchtype = T_A;
       rc = dns_special_lookup(&dnsa, domain, searchtype, &found);
       }
     else
+#endif
       rc = dns_special_lookup(&dnsa, domain, type, &found);
 
     if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
