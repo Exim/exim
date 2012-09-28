@@ -15,7 +15,10 @@ extern int dcc_ok;
 
 #ifdef EXPERIMENTAL_DMARC
 #include "pdkim/pdkim.h"
-#endif
+#ifdef EXPERIMENTAL_SPF
+#include "spf2/spf.h"
+#endif /* EXPERIMENTAL_SPF */
+#endif /* EXPERIMENTAL_DMARC */
 
 /*************************************************
 *                Local static variables          *
@@ -1348,11 +1351,14 @@ header_line *msgid_header = NULL;
 header_line *received_header;
 
 #ifdef EXPERIMENTAL_DMARC
-OPENDMARC_LIB_T dmarc_ctx;
-DMARC_POLICY_T * dmarc_pctx;
-OPENDMARC_STATUS_T dmarc_status;
-extern pdkim_signature *dkim_signatures;
-#endif
+OPENDMARC_LIB_T  dmarc_ctx;
+DMARC_POLICY_T  *dmarc_pctx;
+OPENDMARC_STATUS_T  dmarc_status;
+extern pdkim_signature  *dkim_signatures;
+#ifdef EXPERIMENTAL_SPF
+extern SPF_response_t  *spf_response;
+#endif /* EXPERIMENTAL_SPF */
+#endif /* EXPERIMENTAL_DMARC */
 
 /* Variables for use when building the Received: header. */
 
@@ -2607,15 +2613,62 @@ switch (dmarc_status)
     // everything else, abort dmarc
     break;
   }
-/*  Have to get the SPF results before this will work
-dmarc_status = opendmarc_policy_store_spf(dmarc_pctx, sender_address, spf_result,
-                                          origin, human_readable);
+#ifdef EXPERIMENTAL_SPF
+int spf_result, sr, origin;
+uschar *spf_sender_domain, *human_readable;
+if ( spf_response == NULL )
+  {
+  /* No spf data means null envelope sender so generate a domain name
+   * from the sender_host_name || sender_helo_name
+   */
+  spf_sender_domain = (sender_host_name == NULL) ? sender_helo_name : sender_host_name;
+  uschar *subdomain = spf_sender_domain;
+  int count = 0;
+  while (subdomain && *subdomain != '.')
+    {
+    subdomain++;
+    count++;
+    }
+  /* If parsed characters in temp var "subdomain" and is pointing to
+   * a period now, get rid of the period and use that.  Otherwise
+   * will use whatever was first set in spf_sender_domain.  Goal is to
+   * generate a sane answer, not necessarily the right/best answer b/c
+   * at this point with a null sender, it's a bounce message, making
+   * the spf domain be subjective.
+   */
+  if (count > 0 && *subdomain == '.')
+    {
+    subdomain++;
+    spf_sender_domain = subdomain;
+    }
+  spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
+  origin = DMARC_POLICY_SPF_ORIGIN_HELO;
+  human_readable = US"";
+  DEBUG(D_receive)
+    debug_printf("DMARC adding synthesized SPF sender domain = %s\n", spf_sender_domain);
+  }
+else
+  {
+  spf_sender_domain = expand_string(US"$sender_address_domain");
+  sr = spf_response->result;
+  spf_result = (sr == SPF_RESULT_NEUTRAL)  ? DMARC_POLICY_SPF_OUTCOME_NONE :
+               (sr == SPF_RESULT_PASS)     ? DMARC_POLICY_SPF_OUTCOME_PASS :
+               (sr == SPF_RESULT_FAIL)     ? DMARC_POLICY_SPF_OUTCOME_FAIL :
+               (sr == SPF_RESULT_SOFTFAIL) ? DMARC_POLICY_SPF_OUTCOME_TMPFAIL :
+               DMARC_POLICY_SPF_OUTCOME_NONE;
+  origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
+  human_readable = spf_response->header_comment;
+  DEBUG(D_receive)
+    debug_printf("DMARC adding SPF sender domain = %s\n", spf_sender_domain);
+  }
+dmarc_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
+                                          spf_result, origin, human_readable);
 if (dmarc_status != DMARC_PARSE_OKAY)
   {
   // Log something
   }
-*/
-#endif
+#endif /* EXPERIMENTAL_SPF */
+#endif /* EXPERIMENTAL_DMARC */
 
 /* If there are any rewriting rules, apply them to the sender address, unless
 it has already been rewritten as part of verification for SMTP input. */
@@ -3153,6 +3206,8 @@ else
 	            DMARC_POLICY_DKIM_OUTCOME_NONE;
       dmarc_status = opendmarc_policy_store_dkim(dmarc_pctx, sig->domain,
 		                                 dkim_result, US"");
+      DEBUG(D_receive)
+        debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
       if (dmarc_status != DMARC_PARSE_OKAY)
         {
         /* Log something */
