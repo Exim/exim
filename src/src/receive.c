@@ -1448,6 +1448,7 @@ OPENDMARC_STATUS_T  dmarc_status;
 extern pdkim_signature  *dkim_signatures;
 #ifdef EXPERIMENTAL_SPF
 extern SPF_response_t  *spf_response;
+uschar *spf_sender_domain = NULL, *human_readable = NULL;
 #endif /* EXPERIMENTAL_SPF */
 #endif /* EXPERIMENTAL_DMARC */
 
@@ -1513,7 +1514,8 @@ if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_
 dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
 if (dmarc_status != 0)
   {
-  // Log a failure
+  log_write(0, LOG_MAIN|LOG_PANIC, "failure to init DMARC policy: %s",
+                       opendmarc_policy_status_to_str(dmarc_status));
   }
 // Force this to be non ipv6 for now
 dmarc_pctx = opendmarc_policy_connect_init(sender_host_address , FALSE);
@@ -2690,7 +2692,8 @@ if (from_header != NULL &&
 dmarc_status = opendmarc_policy_store_from_domain(dmarc_pctx, from_header->text);
 if (dmarc_status != DMARC_PARSE_OKAY)
   {
-  // Log something
+  log_write(0, LOG_MAIN|LOG_PANIC, "failure to store header From: in DMARC: %s",
+                       opendmarc_policy_status_to_str(dmarc_status));
   }
 dmarc_status = opendmarc_policy_query_dmarc(dmarc_pctx, "");
 switch (dmarc_status)
@@ -2711,7 +2714,6 @@ switch (dmarc_status)
   }
 #ifdef EXPERIMENTAL_SPF
 int spf_result, sr, origin;
-uschar *spf_sender_domain, *human_readable;
 if ( spf_response == NULL )
   {
   /* No spf data means null envelope sender so generate a domain name
@@ -2761,7 +2763,8 @@ dmarc_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
                                           spf_result, origin, human_readable);
 if (dmarc_status != DMARC_PARSE_OKAY)
   {
-  // Log something
+  log_write(0, LOG_MAIN|LOG_PANIC, "failure to store spf for DMARC: %s",
+                       opendmarc_policy_status_to_str(dmarc_status));
   }
 #endif /* EXPERIMENTAL_SPF */
 #endif /* EXPERIMENTAL_DMARC */
@@ -3314,10 +3317,32 @@ else
         debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
       if (dmarc_status != DMARC_PARSE_OKAY)
         {
-        /* Log something */
+        log_write(0, LOG_MAIN|LOG_PANIC, "failure to store dkim (%s) for DMARC: %s",
+			     sig->domain, opendmarc_policy_status_to_str(dmarc_status));
         }
       sig = sig->next;
       }
+    int da, sa;
+    uschar *dmarc_domain  = (uschar *)calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
+    dmarc_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx, dmarc_domain,
+		                                          DMARC_MAXHOSTNAMELEN-1);
+    if (dmarc_status != DMARC_PARSE_OKAY)
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC, "failure to fetch domainname used for DMARC lookup: %s",
+                                       opendmarc_policy_status_to_str(dmarc_status));
+      }
+    dmarc_status = opendmarc_policy_fetch_alignment(dmarc_pctx, &da, &sa);
+    if (dmarc_status != DMARC_PARSE_OKAY)
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC, "failure to fetch DMARC alignment: %s",
+                                       opendmarc_policy_status_to_str(dmarc_status));
+      }
+    log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
+                           "spf_align=%s dkim_align=%s",
+                           spf_sender_domain, dmarc_domain,
+                           (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS)?"yes":"no",
+                           (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no");
+    free(dmarc_domain);
 #endif /* EXPERIMENTAL_DMARC */
 #endif /* DISABLE_DKIM */
 
