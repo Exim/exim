@@ -1510,7 +1510,10 @@ if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_
 
 #ifdef EXPERIMENTAL_DMARC
 /* initialize libopendmarc */
-dmarc_ctx.tld_type = OPENDMARC_TLD_TYPE_NONE;
+dmarc_ctx.tld_type = OPENDMARC_TLD_TYPE_MOZILLA;
+/* Will have exim.conf setting here in future */
+char *dmarc_tld_file = US"/etc/exim/opendmarc.tlds";
+string_sprintf(dmarc_ctx.tld_source_file,dmarc_tld_file);
 dmarc_ctx.nscount = 0;
 (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
 dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
@@ -1519,7 +1522,7 @@ if (dmarc_status != 0)
   log_write(0, LOG_MAIN|LOG_PANIC, "failure to init DMARC policy: %s",
                        opendmarc_policy_status_to_str(dmarc_status));
   }
-int *netmask;   /* Ignored */
+int *netmask = NULL;   /* Ignored */
 int is_ipv6 = string_is_ip_address(sender_host_address, netmask);
 is_ipv6 = (is_ipv6 == 6) ? TRUE :
           (is_ipv6 == 4) ? FALSE : FALSE;
