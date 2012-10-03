@@ -328,6 +328,9 @@ extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for ea
 extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP input is fed to DKIM validation */
 extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
+#ifdef EXPERIMENTAL_DMARC
+extern uschar *dmarc_tld_file;         /* Mozilla TLDs text file */
+#endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */
