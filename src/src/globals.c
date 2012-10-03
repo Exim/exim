@@ -563,6 +563,9 @@ uschar *dkim_verify_signers      = US"$dkim_signers";
 BOOL    dkim_collect_input       = FALSE;
 BOOL    dkim_disable_verify      = FALSE;
 #endif
+#ifdef EXPERIMENTAL_DMARC
+uschar *dmarc_tld_file          = NULL;
+#endif
 
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;

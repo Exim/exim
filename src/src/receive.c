@@ -1512,8 +1512,10 @@ if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_
 /* initialize libopendmarc */
 dmarc_ctx.tld_type = OPENDMARC_TLD_TYPE_MOZILLA;
 /* Will have exim.conf setting here in future */
-char *dmarc_tld_file = US"/etc/exim/opendmarc.tlds";
-string_sprintf(dmarc_ctx.tld_source_file,dmarc_tld_file);
+char *tld_file = (dmarc_tld_file == NULL) ?
+                 US"/etc/exim/opendmarc.tlds" :
+                 dmarc_tld_file;
+string_sprintf(dmarc_ctx.tld_source_file,tld_file);
 dmarc_ctx.nscount = 0;
 (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
 dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
