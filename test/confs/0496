@@ -25,7 +25,8 @@ check_rcpt:
                      :at_start:At-Start: some text\n\
                      :at_end:  At-End: some text
   warn     message = data4
-  accept
+  warn     add_header = X-multiline: foo\n\tbar
+  accept   logwrite = $headers_added
 
 
 # ----- Routers -----

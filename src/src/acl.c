@@ -1051,6 +1051,44 @@ for (p = q = hstring; *p != 0; )
 
 
 /*************************************************
+*        List the added header lines		 *
+*************************************************/
+uschar *
+fn_hdrs_added(void)
+{
+uschar * ret = NULL;
+header_line * h = acl_added_headers;
+uschar * s;
+uschar * cp;
+int size = 0;
+int ptr = 0;
+
+if (!h) return NULL;
+
+do
+  {
+  s = h->text;
+  while ((cp = Ustrchr(s, '\n')) != NULL)
+    {
+    if (cp[1] == '\0') break;
+
+    /* contains embedded newline; needs doubling */
+    ret = string_cat(ret, &size, &ptr, s, cp-s+1);
+    ret = string_cat(ret, &size, &ptr, "\n", 1);
+    s = cp+1;
+    }
+  /* last bit of header */
+
+  ret = string_cat(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
+  }
+while(h = h->next);
+
+ret[ptr-1] = '\0';	/* overwrite last newline */
+return ret;
+}
+
+
+/*************************************************
 *        Set up removed header line(s)           *
 *************************************************/
 

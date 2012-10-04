@@ -16,6 +16,8 @@ X-ACL-Warn: data3
 X-ACL-Warn: 
 X-ACL-Warn: data4
 At-End: some text
+X-multiline: foo
+	bar
 
 Testing message
 

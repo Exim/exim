@@ -11063,6 +11063,12 @@ inserting the message header line with the given name. Note that the name must
 be terminated by colon or white space, because it may contain a wide variety of
 characters. Note also that braces must &'not'& be used.
 
+.vitem &$headers_added$&
+.vindex "&$headers_added$&"
+Within an ACL this variable contains the headers added so far by
+the ACL modifier add_header (section &<<SECTaddheadacl>>&).
+The headers are a newline-separated list.
+
 .vitem &$home$&
 .vindex "&$home$&"
 When the &%check_local_user%& option is set for a router, the user's home
@@ -27340,7 +27346,9 @@ message is rejected after DATA or by the non-SMTP ACL, all added header lines
 are included in the entry that is written to the reject log.
 
 .cindex "header lines" "added; visibility of"
-Header lines are not visible in string expansions until they are added to the
+Header lines are not visible in string expansions
+of message headers
+until they are added to the
 message. It follows that header lines defined in the MAIL, RCPT, and predata
 ACLs are not visible until the DATA ACL and MIME ACLs are run. Similarly,
 header lines that are added by the DATA or MIME ACLs are not visible in those
@@ -27348,6 +27356,8 @@ ACLs. Because of this restriction, you cannot use header lines as a way of
 passing data between (for example) the MAIL and RCPT ACLs. If you want to do
 this, you can use ACL variables, as described in section
 &<<SECTaclvariables>>&.
+
+The list of headers yet to be added is given by the &%$headers_added%& variable.
 
 The &%add_header%& modifier acts immediately as it is encountered during the
 processing of an ACL. Notice the difference between these two cases:

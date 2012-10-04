@@ -139,6 +139,8 @@ extern BOOL    filter_personal(string_item *, BOOL);
 extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
+extern uschar * fn_hdrs_added(void);
+
 extern void    header_add(int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);
 extern BOOL    header_match(uschar *, BOOL, BOOL, string_item *, int, ...);

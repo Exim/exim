@@ -367,9 +367,7 @@ enum {
   vtype_msgheaders_raw, /* the message's headers, unprocessed */
   vtype_localpart,      /* extract local part from string */
   vtype_domain,         /* extract domain from string */
-  vtype_recipients,     /* extract recipients from recipients list */
-                        /* (available only in system filters, ACLs, and */
-                        /* local_scan()) */
+  vtype_string_func,	/* value is string returned by given function */
   vtype_todbsdin,       /* value not used; generate BSD inbox tod */
   vtype_tode,           /* value not used; generate tod in epoch format */
   vtype_todel,          /* value not used; generate tod in epoch/usec format */
@@ -388,6 +386,8 @@ enum {
   ,vtype_dkim           /* Lookup of value in DKIM signature */
   #endif
   };
+
+static uschar * fn_recipients(void);
 
 /* This table must be kept in alphabetical order. */
 
@@ -471,6 +471,7 @@ static var_entry var_table[] = {
 #ifdef WITH_OLD_DEMIME
   { "found_extension",     vtype_stringptr,   &found_extension },
 #endif
+  { "headers_added",       vtype_string_func, &fn_hdrs_added },
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -562,7 +563,7 @@ static var_entry var_table[] = {
   { "received_time",       vtype_int,         &received_time },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
-  { "recipients",          vtype_recipients,  NULL },
+  { "recipients",          vtype_string_func, &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
@@ -1447,6 +1448,34 @@ return yield;
 
 
 /*************************************************
+*               Return list of recipients        *
+*************************************************/
+/* A recipients list is available only during system message filtering,
+during ACL processing after DATA, and while expanding pipe commands
+generated from a system filter, but not elsewhere. */
+
+static uschar *
+fn_recipients(void)
+{
+if (!enable_dollar_recipients) return NULL; else
+  {
+  int size = 128;
+  int ptr = 0;
+  int i;
+  uschar * s = store_get(size);
+  for (i = 0; i < recipients_count; i++)
+    {
+    if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
+    s = string_cat(s, &size, &ptr, recipients_list[i].address,
+      Ustrlen(recipients_list[i].address));
+    }
+  s[ptr] = 0;     /* string_cat() leaves room */
+  return s;
+  }
+}
+
+
+/*************************************************
 *               Find value of a variable         *
 *************************************************/
 
@@ -1671,26 +1700,11 @@ while (last > first)
       }
     return (s == NULL)? US"" : s;
 
-    /* A recipients list is available only during system message filtering,
-    during ACL processing after DATA, and while expanding pipe commands
-    generated from a system filter, but not elsewhere. */
-
-    case vtype_recipients:
-    if (!enable_dollar_recipients) return NULL; else
+    case vtype_string_func:
       {
-      int size = 128;
-      int ptr = 0;
-      int i;
-      s = store_get(size);
-      for (i = 0; i < recipients_count; i++)
-        {
-        if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
-        s = string_cat(s, &size, &ptr, recipients_list[i].address,
-          Ustrlen(recipients_list[i].address));
-        }
-      s[ptr] = 0;     /* string_cat() leaves room */
+      uschar * (*fn)() = var_table[middle].value;
+      return fn();
       }
-    return s;
 
     case vtype_pspace:
       {

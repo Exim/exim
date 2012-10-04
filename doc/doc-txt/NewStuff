@@ -115,6 +115,9 @@ Version 4.81
 13. New dnsdb lookup pseudo-type "a+".  A sequence of "a6" (if configured),
     "aaaa" and "a" lookups is done and the full set of results returned.
 
+14. New expansion variable $headers_added with content from ACL add_header
+    modifier (but not yet added to messsage).
+
 
 Version 4.80
 ------------
