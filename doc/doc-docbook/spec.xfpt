@@ -533,10 +533,23 @@ The &_.bz2_& file is usually a lot smaller than the &_.gz_& file.
 .cindex "distribution" "signing details"
 .cindex "distribution" "public key"
 .cindex "public key for signed distribution"
-The distributions are currently signed with Nigel Metheringham's GPG key. The
-corresponding public key is available from a number of keyservers, and there is
-also a copy in the file &_nigel-pubkey.asc_&. The signatures for the tar bundles are
-in:
+.new
+The distributions will be PGP signed by an individual key of the Release
+Coordinator.  This key will have a uid containing an email address in the
+&'exim.org'& domain and will have signatures from other people, including
+other Exim maintainers.  We expect that the key will be in the "strong set" of
+PGP keys.  There should be a trust path to that key from Nigel Metheringham's
+PGP key, a version of which can be found in the release directory in the file
+&_nigel-pubkey.asc_&.  All keys used will be available in public keyserver pools,
+such as &'pool.sks-keyservers.net'&.
+
+At time of last update, releases were being made by Phil Pennock and signed with
+key &'0x403043153903637F'&, although that key is expected to be replaced in 2013.
+A trust path from Nigel's key to Phil's can be observed at
+&url(https://www.security.spodhuis.org/exim-trustpath).
+.wen
+
+The signatures for the tar bundles are in:
 .display
 &_exim-n.nn.tar.gz.asc_&
 &_exim-n.nn.tar.bz2.asc_&
