@@ -1510,15 +1510,17 @@ if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_
 
 #ifdef EXPERIMENTAL_DMARC
 /* initialize libopendmarc */
-dmarc_ctx.tld_type = OPENDMARC_TLD_TYPE_MOZILLA;
-/* Will have exim.conf setting here in future */
+(void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
+dmarc_ctx.nscount = 0;
+dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
 char *tld_file = (dmarc_tld_file == NULL) ?
                  US"/etc/exim/opendmarc.tlds" :
                  dmarc_tld_file;
-string_sprintf(dmarc_ctx.tld_source_file,tld_file);
-dmarc_ctx.nscount = 0;
-(void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
-dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
+if (opendmarc_tld_read_file(tld_file, NULL, NULL, NULL))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "failure to load DMARC tld list %s: %d",
+                       tld_file, errno);
+  }
 if (dmarc_status != 0)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "failure to init DMARC policy: %s",
@@ -3342,11 +3344,11 @@ else
     }
 
 #ifdef EXPERIMENTAL_DMARC
-#ifdef EXPERIMENTAL_SPF
   /* Skip DMARC if connection is SMTP Auth. Temporarily, admin should
    * instead do this in the ACLs.  */
   if (sender_host_authenticated == NULL)
     {
+#ifdef EXPERIMENTAL_SPF
     spf_sender_domain = expand_string(US"$sender_address_domain");
     int spf_result, sr, origin;
     if ( spf_response == NULL )
