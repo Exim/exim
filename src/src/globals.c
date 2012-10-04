@@ -271,6 +271,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
 
 BOOL    active_local_from_check = FALSE;
 BOOL    active_local_sender_retain = FALSE;
+int     body_8bitmime = 0;
 BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
 address_item  *addr_duplicate  = NULL;
 
@@ -734,6 +735,7 @@ selectors was getting close to filling a 32-bit word. */
 /* Note that this list must be in alphabetical order. */
 
 bit_table log_options[]        = {
+  { US"8bitmime",                     LX_8bitmime },
   { US"acl_warn_skipped",             LX_acl_warn_skipped },
   { US"address_rewrite",              L_address_rewrite },
   { US"all",                          L_all },

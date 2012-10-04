@@ -133,6 +133,7 @@ extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 /* General global variables */
 
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
+extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
 extern uschar *acl_arg[9];             /* Argument to ACL call */

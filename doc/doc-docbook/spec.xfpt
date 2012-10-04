@@ -13099,6 +13099,7 @@ Those options that undergo string expansion before use are marked with
 .option accept_8bitmime main boolean true
 .cindex "8BITMIME"
 .cindex "8-bit characters"
+.cindex "log" "selectors"
 This option causes Exim to send 8BITMIME in its response to an SMTP
 EHLO command, and to accept the BODY= parameter on MAIL commands.
 However, though Exim is 8-bit clean, it is not a protocol converter, and it
@@ -13110,6 +13111,11 @@ It now defaults to true.
 A more detailed analysis of the issues is provided by Dan Bernstein:
 .display
 &url(http://cr.yp.to/smtp/8bitmime.html)
+.endd
+
+To log received 8BITMIME status use
+.code
+log_selector = +8bitmime
 .endd
 
 .option acl_not_smtp main string&!! unset
@@ -33824,6 +33830,7 @@ log_selector = +arguments -retry_defer
 The list of optional log items is in the following table, with the default
 selection marked by asterisks:
 .display
+&` 8bitmime                   `&  received 8BITMIME status
 &`*acl_warn_skipped           `&  skipped &%warn%& statement in ACL
 &` address_rewrite            `&  address rewriting
 &` all_parents                `&  all parents in => lines

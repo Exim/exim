@@ -3320,10 +3320,20 @@ while (done <= 0)
         some sites want the action that is provided. We recognize both "8BITMIME"
         and "7BIT" as body types, but take no action. */
         case ENV_MAIL_OPT_BODY:
-          if (accept_8bitmime &&
-              (strcmpic(value, US"8BITMIME") == 0 ||
-               strcmpic(value, US"7BIT") == 0) )
-            break;
+          if (accept_8bitmime) {
+            if (strcmpic(value, US"8BITMIME") == 0) {
+              body_8bitmime = 8;
+            } else if (strcmpic(value, US"7BIT") == 0) {
+              body_8bitmime = 7;
+            } else {
+              body_8bitmime = 0;
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"invalid data for BODY");
+              goto COMMAND_LOOP;
+            }
+            DEBUG(D_receive) debug_printf("8BITMIME: %d\n", body_8bitmime);
+	    break;
+          }
           arg_error = TRUE;
           break;
 
