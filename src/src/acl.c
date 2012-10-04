@@ -958,10 +958,13 @@ setup_header(uschar *hstring)
 uschar *p, *q;
 int hlen = Ustrlen(hstring);
 
-/* An empty string does nothing; otherwise add a final newline if necessary. */
+/* Ignore any leading newlines */
+while (*hstring == '\n') hstring++, hlen--;
 
+/* An empty string does nothing; ensure exactly one final newline. */
 if (hlen <= 0) return;
-if (hstring[hlen-1] != '\n') hstring = string_sprintf("%s\n", hstring);
+if (hstring[--hlen] != '\n') hstring = string_sprintf("%s\n", hstring);
+else while(hstring[--hlen] == '\n') hstring[hlen+1] = '\0';
 
 /* Loop for multiple header lines, taking care about continuations */
 
