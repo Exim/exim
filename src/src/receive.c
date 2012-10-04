@@ -1417,6 +1417,11 @@ if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_
 (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
 dmarc_ctx.nscount = 0;
 dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
+if (dmarc_status != 0)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "failure to init DMARC policy: %s",
+                       opendmarc_policy_status_to_str(dmarc_status));
+  }
 char *tld_file = (dmarc_tld_file == NULL) ?
                  US"/etc/exim/opendmarc.tlds" :
                  dmarc_tld_file;
@@ -1424,11 +1429,6 @@ if (opendmarc_tld_read_file(tld_file, NULL, NULL, NULL))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "failure to load DMARC tld list %s: %d",
                        tld_file, errno);
-  }
-if (dmarc_status != 0)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC, "failure to init DMARC policy: %s",
-                       opendmarc_policy_status_to_str(dmarc_status));
   }
 int *netmask = NULL;   /* Ignored */
 int is_ipv6 = string_is_ip_address(sender_host_address, netmask);
