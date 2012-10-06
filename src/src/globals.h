@@ -657,6 +657,7 @@ extern uid_t   root_uid;               /* The uid for root */
 extern router_info routers_available[];/* Vector of available routers */
 extern router_instance *routers;       /* Chain of instantiated routers */
 extern router_instance router_defaults;/* Default values */
+extern uschar *router_name;            /* Name of router last started */
 extern BOOL    running_in_test_harness; /*TRUE when running_status is patched */
 extern ip_address_item *running_interfaces; /* Host's running interfaces */
 extern uschar *running_status;         /* Flag string for testing */
@@ -812,6 +813,7 @@ extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
 extern BOOL    timestamps_utc;         /* Use UTC for all times */
+extern uschar *transport_name;         /* Name of transport last started */
 extern int     transport_count;        /* Count of bytes transported */
 extern int     transport_newlines;     /* Accurate count of number of newline chars transported */
 extern uschar **transport_filter_argv; /* For on-the-fly filtering */

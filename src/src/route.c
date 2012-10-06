@@ -1512,6 +1512,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
   int rc;
 
   DEBUG(D_route) debug_printf("--------> %s router <--------\n", r->name);
+  router_name = r->name;
 
   /* Reset any search error message from the previous router. */
 

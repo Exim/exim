@@ -120,7 +120,14 @@ Version 4.82
 
 15. New 8bitmime status logging option for received messages.  Log field "M8S".
 
+
 16. New authenticated_sender logging option, adding to log field "A".
+
+17. New expansion variables $router_name and $transport_name.  Useful
+    particularly for debug_print as -bt commandline option does not
+    require privilege whereas -d does.  As a side-effect the router accepting
+    for verification is visible in ACLs.
+
 
 
 Version 4.80

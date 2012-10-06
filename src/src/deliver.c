@@ -2190,6 +2190,8 @@ while (addr_local != NULL)
 
   if (previously_transported(addr, FALSE)) continue;
 
+  transport_name = tp->name;
+
   /* There are weird cases where logging is disabled */
 
   disable_logging = tp->disable_logging;
@@ -3529,6 +3531,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   time. */
 
   if (previously_transported(addr, FALSE)) continue;
+
+  transport_name = tp->name;
 
   /* Force failure if the message is too big. */
 

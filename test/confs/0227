@@ -26,21 +26,25 @@ check_recipient:
           control  = no_multiline_responses
   accept  hosts    = V4NET.0.0.4
   deny    hosts    = V4NET.0.0.1
+          log_message = ($sender_verify_failure) R:$router_name
          !verify   = sender/callout=no_cache
   deny    hosts    = V4NET.0.0.3
-          log_message = ($recipient_verify_failure)
+          log_message = ($recipient_verify_failure) R:$router_name
          !verify   = recipient/callout=no_cache
+  warn    logwrite = verify recipient used R:$router_name
   deny    hosts    = V4NET.0.0.5
-          log_message = ($sender_verify_failure)
+          log_message = ($sender_verify_failure) R:$router_name
          !verify   = sender/callout=no_cache/check_postmaster
   require verify   = sender
+          logwrite = verify sender used R:$router_name
   accept  domains  = +local_domains
   deny    message  = relay not permitted
 
 check_data:
   deny    hosts = V4NET.0.0.4
+          log_message = header_sender R:$router_name
          !verify = header_sender/callout=no_cache
-  accept
+  accept logwrite = verify header_sender used R:$router_name
 
 
 # ----- Routers -----

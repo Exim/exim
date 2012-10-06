@@ -1071,6 +1071,8 @@ router_instance  router_defaults = {
     NULL                       /* redirect_router */
 };
 
+uschar *router_name            = NULL;
+
 ip_address_item *running_interfaces = NULL;
 BOOL    running_in_test_harness = FALSE;
 
@@ -1305,6 +1307,7 @@ transport_instance  transport_defaults = {
 };
 
 int     transport_count;
+uschar *transport_name          = NULL;
 int     transport_newlines;
 uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;

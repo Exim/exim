@@ -22,7 +22,9 @@ begin ACL
 
 rcpt:
   accept verify = recipient
+	 logwrite = rcpt R:$router_name
          verify = sender
+	 logwrite = sndr R:$router_name
          condition = ${if eq {$address_data}{ADDRESS_DATA_STRING}{yes}{no}}
          condition = ${if eq {$sender_address_data}{SENDER_ADDRESS_DATA_STRING}{yes}{no}}
 

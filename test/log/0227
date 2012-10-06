@@ -1,20 +1,27 @@
+1999-03-02 09:44:33 verify recipient used R:all
+1999-03-02 09:44:33 verify sender used R:all
+1999-03-02 09:44:33 verify recipient used R:
+1999-03-02 09:44:33 verify sender used R:all
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: response to "RCPT TO:<bad@localhost>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown user
-1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient) R:all: Sender verify failed
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify defer for <uncheckable@localhost1>: response to "RCPT TO:<uncheckable@localhost1>" from 127.0.0.1 [127.0.0.1] was: 450 Temporary error
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable@localhost1> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <uncheckable2@localhost1>: response to "MAIL FROM:<>" from 127.0.0.1 [127.0.0.1] was: 550 Error for <>
-1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable2@localhost1> rejected RCPT <z@test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable2@localhost1> rejected RCPT <z@test.ex>: (mail) R:localhost1: Sender verify failed
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <uncheckable@localhost1>: response to "MAIL FROM:<>" from 127.0.0.1 [127.0.0.1] was: 550-Multiline error for <>\n550 Here's the second line
-1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable@localhost1> rejected RCPT <z@test.ex>: Sender verify failed
-1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: (recipient): response to "RCPT TO:<z@remote.domain>" from 127.0.0.1 [127.0.0.1] was: 550 Recipient not liked
-1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: (recipient): response to "RCPT TO:<z@remote.domain>" from 127.0.0.1 [127.0.0.1] was: 550-Recipient not liked on two lines\n550 Here's the second
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable@localhost1> rejected RCPT <z@test.ex>: (mail) R:localhost1: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: (recipient) R:all: response to "RCPT TO:<z@remote.domain>" from 127.0.0.1 [127.0.0.1] was: 550 Recipient not liked
+1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: (recipient) R:all: response to "RCPT TO:<z@remote.domain>" from 127.0.0.1 [127.0.0.1] was: 550-Recipient not liked on two lines\n550 Here's the second
 1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> temporarily rejected RCPT <z@remote.domain>: Could not complete recipient verify callout
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
-1999-03-02 09:44:33 10HmaY-0005vi-00 H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: header_sender R:all: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmaY-0005vi-00 H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: header_sender R:all: there is no valid sender in any header line
+1999-03-02 09:44:33 verify recipient used R:
+1999-03-02 09:44:33 verify sender used R:localhost1
 1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
+1999-03-02 09:44:33 verify recipient used R:
 1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root sender verify fail for <ok@localhost1>: response to "RCPT TO:<postmaster@localhost1>" from 127.0.0.1 [127.0.0.1] was: 550 Don't like postmaster
-1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: (postmaster): Sender verify failed
-1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.lmtp>: (recipient): response to "RCPT TO:<z@remote.lmtp>" from 127.0.0.1 [127.0.0.1] was: 550 Recipient not liked
+1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: (postmaster) R:localhost1: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.lmtp>: (recipient) R:lmtp: response to "RCPT TO:<z@remote.lmtp>" from 127.0.0.1 [127.0.0.1] was: 550 Recipient not liked
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify defer for <bad@localhost1>: response to "initial connection" from 127.0.0.1 [127.0.0.1] was: connection dropped
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<bad@localhost1> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify defer for <bad@localhost1>: could not connect to 127.0.0.1 [127.0.0.1]: Connection refused
