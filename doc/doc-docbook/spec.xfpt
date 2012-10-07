@@ -13100,6 +13100,7 @@ Those options that undergo string expansion before use are marked with
 .cindex "8BITMIME"
 .cindex "8-bit characters"
 .cindex "log" "selectors"
+.cindex "log" "8BITMIME"
 This option causes Exim to send 8BITMIME in its response to an SMTP
 EHLO command, and to accept the BODY= parameter on MAIL commands.
 However, though Exim is 8-bit clean, it is not a protocol converter, and it
@@ -33878,6 +33879,14 @@ selection marked by asterisks:
 More details on each of these items follows:
 
 .ilist
+.cindex "8BITMIME"
+.cindex "log" "8BITMIME"
+&%8bitmime%&: This causes Exim to log any 8BITMIME status of received messages,
+which may help in tracking down interoperability issues with ancient MTAs
+that are not 8bit clean.  This is added to the &"<="& line, tagged with
+&`M8S=`& and a value of &`0`&, &`7`& or &`8`&, corresponding to "not given",
+&`7BIT`& and &`8BITMIME`& respectively.
+.next
 .cindex "&%warn%& ACL verb" "log when skipping"
 &%acl_warn_skipped%&: When an ACL &%warn%& statement is skipped because one of
 its conditions cannot be evaluated, a log line to this effect is written if

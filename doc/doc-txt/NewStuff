@@ -118,7 +118,7 @@ Version 4.81
 14. New expansion variable $headers_added with content from ACL add_header
     modifier (but not yet added to messsage).
 
-15. New 8bitmime status logging option for received messages.
+15. New 8bitmime status logging option for received messages.  Log field "M8S".
 
 
 Version 4.80
