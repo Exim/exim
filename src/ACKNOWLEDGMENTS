@@ -98,7 +98,6 @@ Matt Bernstein            LMTP over socket
 Mike Bethune              Help with debugging an elusive ALRM signal bug
 Ard Biesheuvel            Lookup code for accessing an Interbase database
 Richard Birkett           Fix for empty -f address crash
-Wolfgang Breyha           Logging of 8bitmime reception
 Dean Brooks               Fix for ratelimit per_rcpt in acl_not_smtp.
 Nick Burrett              Patch for CONFIGURE_FILE_USE_EUID in exicyclog
 Matthew Byng-Maddick      Patch for qualify_domain in redirect router
@@ -371,6 +370,7 @@ Wolfgang Breyha           DCC integration; expandable spamd_address
                           Patch fixing DKIM verification when signature header
                             not prepended
                           Unbroke Cyrus SASL auth after incorrect SSF addition
+                          Logging of 8bitmime reception
 David Brownlee            Patch improving local interface IP address detection
 Eugene Bujak              Security patch fixing buffer overflow in string_format
 Adam Ciarcinski           Patch for TLS-enabled LDAP (alternative to ldaps)
