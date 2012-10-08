@@ -3357,7 +3357,7 @@ else
       sig = sig->next;
       }
     dmarc_status = opendmarc_policy_query_dmarc(dmarc_pctx, "");
-    bool has_dmarc_record = TRUE;
+    BOOL has_dmarc_record = TRUE;
     switch (dmarc_status)
       {
       case DMARC_DNS_ERROR_NXDOMAIN:
