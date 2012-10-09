@@ -1352,7 +1352,7 @@ header_line *received_header;
 
 #ifdef EXPERIMENTAL_DMARC
 OPENDMARC_LIB_T     dmarc_ctx;
-DMARC_POLICY_T     *dmarc_pctx;
+DMARC_POLICY_T     *dmarc_pctx = NULL;
 OPENDMARC_STATUS_T  dmarc_status;
 BOOL dmarc_skip    = FALSE;
 extern pdkim_signature  *dkim_signatures;
