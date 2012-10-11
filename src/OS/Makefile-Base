@@ -307,7 +307,7 @@ OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 
 OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o dkim.o \
+        filtertest.o globals.o dkim.o dmarc.o\
         header.o host.o ip.o log.o lss.o match.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
@@ -584,6 +584,7 @@ transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) verify.c
 dkim.o:          $(HDRS) dkim.c
+dmarc.o:         $(HDRS) dmarc.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
