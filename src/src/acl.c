@@ -107,6 +107,7 @@ enum { ACLC_ACL,
        ACLC_SPF,
        ACLC_SPF_GUESS,
 #endif
+       ACLC_UDPSEND,
        ACLC_VERIFY };
 
 /* ACL conditions/modifiers: "delay", "control", "continue", "endpass",
@@ -171,6 +172,7 @@ static uschar *conditions[] = {
   US"spf",
   US"spf_guess",
 #endif
+  US"udpsend",
   US"verify" };
 
 
@@ -315,6 +317,7 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* spf */
   TRUE,    /* spf_guess */
 #endif
+  TRUE,    /* udpsend */
   TRUE     /* verify */
 };
 
@@ -379,6 +382,7 @@ static uschar cond_modifiers[] = {
   FALSE,   /* spf */
   FALSE,   /* spf_guess */
 #endif
+  TRUE,    /* udpsend */
   FALSE    /* verify */
 };
 
@@ -578,6 +582,8 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
+
+  0,                                               /* udpsend */
 
   /* Certain types of verify are always allowed, so we let it through
   always and check in the verify function itself */
@@ -2817,6 +2823,106 @@ return rc;
 
 
 /*************************************************
+*            The udpsend ACL modifier            *
+*************************************************/
+
+/* Called by acl_check_condition() below.
+
+Arguments:
+  arg          the option string for udpsend=
+  log_msgptr   for error messages
+
+Returns:       OK        - Completed.
+               DEFER     - Problem with DNS lookup.
+               ERROR     - Syntax error in options.
+*/
+
+static int
+acl_udpsend(uschar *arg, uschar **log_msgptr)
+{
+int sep = 0;
+uschar *hostname;
+uschar *portstr;
+uschar *portend;
+host_item *h;
+int portnum;
+int host_af;
+int len;
+int r, s;
+
+hostname = string_nextinlist(&arg, &sep, NULL, 0);
+portstr = string_nextinlist(&arg, &sep, NULL, 0);
+
+if (hostname == NULL)
+  {
+  *log_msgptr = "missing destination host in \"udpsend\" modifier";
+  return ERROR;
+  }
+if (portstr == NULL)
+  {
+  *log_msgptr = "missing destination port in \"udpsend\" modifier";
+  return ERROR;
+  }
+if (arg == NULL)
+  {
+  *log_msgptr = "missing datagram payload in \"udpsend\" modifier";
+  return ERROR;
+  }
+portnum = Ustrtol(portstr, &portend, 10);
+if (*portend != '\0')
+  {
+  *log_msgptr = "bad destination port in \"udpsend\" modifier";
+  return ERROR;
+  }
+
+/* Make a single-item host list. */
+h = store_get(sizeof(host_item));
+memset(h, 0, sizeof(host_item));
+h->name = hostname;
+h->port = portnum;
+h->mx = MX_NONE;
+
+if (string_is_ip_address(hostname, NULL))
+  h->address = hostname, r = HOST_FOUND;
+else
+  r = host_find_byname(h, NULL, 0, NULL, FALSE);
+if (r == HOST_FIND_FAILED || r == HOST_FIND_AGAIN)
+  {
+  *log_msgptr = "DNS lookup failed in \"udpsend\" modifier";
+  return DEFER;
+  }
+
+HDEBUG(D_acl)
+  debug_printf("udpsend [%s]:%d %s\n", h->address, portnum, arg);
+
+host_af = (Ustrchr(h->address, ':') == NULL)? AF_INET:AF_INET6;
+r = s = ip_socket(SOCK_DGRAM, host_af);
+if (r < 0) goto defer;
+r = ip_connect(s, host_af, h->address, portnum, 1);
+if (r < 0) goto defer;
+len = strlen(arg);
+r = send(s, arg, len, MSG_NOSIGNAL);
+if (r < 0) goto defer;
+if (r < len)
+  {
+  *log_msgptr =
+    string_sprintf("\"udpsend\" truncated from %d to %d octets", len, r);
+  return DEFER;
+  }
+
+HDEBUG(D_acl)
+  debug_printf("udpsend %d bytes\n", r);
+
+return OK;
+
+defer:
+*log_msgptr = string_sprintf("\"udpsend\" failed: %s", strerror(errno));
+return DEFER;
+}
+
+
+
+/*************************************************
 *   Handle conditions/modifiers on an ACL item   *
 *************************************************/
 
@@ -3545,6 +3651,10 @@ for (; cb != NULL; cb = cb->next)
       rc = spf_process(&arg, sender_address, SPF_PROCESS_GUESS);
     break;
     #endif
+
+    case ACLC_UDPSEND:
+    rc = acl_udpsend(arg, log_msgptr);
+    break;
 
     /* If the verb is WARN, discard any user message from verification, because
     such messages are SMTP responses, not header additions. The latter come
