@@ -3887,13 +3887,6 @@ TIDYUP:
 process_info[process_info_len] = 0;                /* Remove message id */
 if (data_file != NULL) (void)fclose(data_file);    /* Frees the lock */
 
-#ifdef EXPERIMENTAL_DMARC
-/* shut down libopendmarc */
-if ( dmarc_pctx != NULL )
-  (void) opendmarc_policy_connect_shutdown(dmarc_pctx);
-(void) opendmarc_policy_library_shutdown(&dmarc_ctx);
-#endif
-
 /* Now reset signal handlers to their defaults */
 
 signal(SIGTERM, SIG_DFL);
