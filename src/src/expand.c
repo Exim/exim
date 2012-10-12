@@ -459,6 +459,11 @@ static var_entry var_table[] = {
   { "dkim_verify_reason",  vtype_dkim,        (void *)DKIM_VERIFY_REASON },
   { "dkim_verify_status",  vtype_dkim,        (void *)DKIM_VERIFY_STATUS},
 #endif
+#ifdef EXPERIMENTAL_DMARC
+  { "dmarc_status",        vtype_stringptr,   &dmarc_status },
+  { "dmarc_status_text",   vtype_stringptr,   &dmarc_status_text },
+  { "dmarc_used_domain",   vtype_stringptr,   &dmarc_used_domain },
+#endif
   { "dnslist_domain",      vtype_stringptr,   &dnslist_domain },
   { "dnslist_matched",     vtype_stringptr,   &dnslist_matched },
   { "dnslist_text",        vtype_stringptr,   &dnslist_text },
@@ -5660,7 +5665,7 @@ while (*s != 0)
 	uschar * list;
 	int sep = 0;
 	uschar * item;
-	uschar * suffix = "";
+	uschar * suffix = US"";
 	BOOL needsep = FALSE;
 	uschar buffer[256];
 
@@ -5674,10 +5679,10 @@ while (*s != 0)
 	  }
 	else switch(*arg)	/* specific list-type version */
 	  {
-	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = "_a"; break;
-	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = "_d"; break;
-	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = "_h"; break;
-	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = "_l"; break;
+	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = US"_a"; break;
+	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = US"_d"; break;
+	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = US"_h"; break;
+	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = US"_l"; break;
 	  default:
             expand_string_message = string_sprintf("bad suffix on \"list\" operator");
 	    goto EXPAND_FAILED;

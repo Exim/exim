@@ -14,7 +14,7 @@
 
 OPENDMARC_LIB_T    dmarc_ctx;
 DMARC_POLICY_T    *dmarc_pctx = NULL;
-OPENDMARC_STATUS_T dmarc_status;
+OPENDMARC_STATUS_T libdm_status;
 BOOL dmarc_skip  = FALSE;
 extern pdkim_signature  *dkim_signatures;
 #ifdef EXPERIMENTAL_SPF
@@ -37,11 +37,11 @@ int dmarc_init() {
 
   (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
   dmarc_ctx.nscount = 0;
-  dmarc_status = opendmarc_policy_library_init(&dmarc_ctx);
-  if (dmarc_status != DMARC_PARSE_OKAY)
+  libdm_status = opendmarc_policy_library_init(&dmarc_ctx);
+  if (libdm_status != DMARC_PARSE_OKAY)
   {
     log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to init library: %s",
-                         opendmarc_policy_status_to_str(dmarc_status));
+                         opendmarc_policy_status_to_str(libdm_status));
     dmarc_skip = TRUE;
   }
   if (opendmarc_tld_read_file(tld_file, NULL, NULL, NULL))
@@ -77,6 +77,13 @@ int dmarc_init() {
 
 // int dmarc_process(uschar **listptr, uschar *spf_envelope_sender, int action) {
 int dmarc_process(header_line *from_header) {
+    int spf_result, sr, origin; /* used in SPF section */
+    int da, sa;
+    pdkim_signature *sig  = NULL;
+    uschar *enforcement   = NULL;
+    uschar *tmp_status    = NULL;
+    BOOL has_dmarc_record = TRUE;
+
   /* Store the header From: sender domain for this part of DMARC.
    * If there is no from_header struct, then it's likely this message
    * is locally generated and relying on fixups to add it.  Just skip
@@ -97,11 +104,11 @@ int dmarc_process(header_line *from_header) {
     header_from_sender = expand_string( string_sprintf("${extract{1}{:}{${addresses:%s}}}",
                                                        from_header->text) );
     /* The opendmarc library extracts the domain from the email address. */
-    dmarc_status = opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
-    if (dmarc_status != DMARC_PARSE_OKAY)
+    libdm_status = opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
+    if (libdm_status != DMARC_PARSE_OKAY)
     {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to store header From: in DMARC: %s",
-                           opendmarc_policy_status_to_str(dmarc_status));
+                           opendmarc_policy_status_to_str(libdm_status));
     }
   }
 
@@ -112,7 +119,6 @@ int dmarc_process(header_line *from_header) {
 #ifdef EXPERIMENTAL_SPF
     /* Use the envelope sender domain for this part of DMARC */
     spf_sender_domain = expand_string(US"$sender_address_domain");
-    int spf_result, sr, origin;
     if ( spf_response == NULL )
     {
       /* No spf data means null envelope sender so generate a domain name
@@ -160,17 +166,16 @@ int dmarc_process(header_line *from_header) {
       DEBUG(D_receive)
         debug_printf("DMARC using SPF sender domain = %s\n", spf_sender_domain);
     }
-    dmarc_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
+    libdm_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
                                               spf_result, origin, human_readable);
-    if (dmarc_status != DMARC_PARSE_OKAY)
+    if (libdm_status != DMARC_PARSE_OKAY)
     {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to store spf for DMARC: %s",
-                           opendmarc_policy_status_to_str(dmarc_status));
+                           opendmarc_policy_status_to_str(libdm_status));
     }
 #endif /* EXPERIMENTAL_SPF */
     /* Now we cycle through the dkim signature results and put into
      * the opendmarc context, further building the DMARC reply.  */
-    pdkim_signature *sig = NULL;
     sig = dkim_signatures;
     while (sig != NULL)
     {
@@ -180,20 +185,19 @@ int dmarc_process(header_line *from_header) {
 		    ( vs == PDKIM_VERIFY_FAIL ) ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
 		    ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
 	            DMARC_POLICY_DKIM_OUTCOME_NONE;
-      dmarc_status = opendmarc_policy_store_dkim(dmarc_pctx, (uschar *)sig->domain,
+      libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, (uschar *)sig->domain,
 		                                 dkim_result, US"");
       DEBUG(D_receive)
         debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
-      if (dmarc_status != DMARC_PARSE_OKAY)
+      if (libdm_status != DMARC_PARSE_OKAY)
       {
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store dkim (%s) for DMARC: %s",
-			     sig->domain, opendmarc_policy_status_to_str(dmarc_status));
+			     sig->domain, opendmarc_policy_status_to_str(libdm_status));
       }
       sig = sig->next;
     }
-    dmarc_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
-    BOOL has_dmarc_record = TRUE;
-    switch (dmarc_status)
+    libdm_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
+    switch (libdm_status)
     {
       case DMARC_DNS_ERROR_NXDOMAIN:
       case DMARC_DNS_ERROR_NO_RECORD:
@@ -208,38 +212,48 @@ int dmarc_process(header_line *from_header) {
         has_dmarc_record = FALSE;
         break;
     }
-    int da, sa;
-    uschar *dmarc_domain  = (uschar *)calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
-    dmarc_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx, dmarc_domain,
+    /* Can't use exim's string manipulation functions so allocate memory
+     * for libopendmarc using its max hostname length definition. */
+    uschar *dmarc_domain = (uschar *)calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
+    libdm_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx, dmarc_domain,
 		                                          DMARC_MAXHOSTNAMELEN-1);
-    if (dmarc_status != DMARC_PARSE_OKAY)
+    dmarc_used_domain = string_copy(dmarc_domain);
+    free(dmarc_domain);
+    if (libdm_status != DMARC_PARSE_OKAY)
     {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to read domainname used for DMARC lookup: %s",
-                                       opendmarc_policy_status_to_str(dmarc_status));
+                                       opendmarc_policy_status_to_str(libdm_status));
     }
-    dmarc_status = opendmarc_get_policy_to_enforce(dmarc_pctx);
-    uschar *enforcement;
-    enforcement = (dmarc_status == DMARC_POLICY_NONE)        ? US"None, Accept" :
-                  (dmarc_status == DMARC_POLICY_PASS)        ? US"Accept" :
-                  (dmarc_status == DMARC_POLICY_REJECT)      ? US"Reject" :
-                  (dmarc_status == DMARC_POLICY_QUARANTINE)  ? US"Quarantine" :
-                  (dmarc_status == DMARC_POLICY_ABSENT)      ? US"No DMARC record" :
-                  (dmarc_status == DMARC_FROM_DOMAIN_ABSENT) ? US"No From: domain found" :
+    libdm_status = opendmarc_get_policy_to_enforce(dmarc_pctx);
+    tmp_status =  (libdm_status == DMARC_POLICY_NONE)        ? US"none" :
+                  (libdm_status == DMARC_POLICY_PASS)        ? US"accept" :
+                  (libdm_status == DMARC_POLICY_REJECT)      ? US"reject" :
+                  (libdm_status == DMARC_POLICY_QUARANTINE)  ? US"quarantine" :
+                  (libdm_status == DMARC_POLICY_ABSENT)      ? US"norecord" :
+                  (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"nofrom" :
+                  US"error";
+    dmarc_status = string_copy(tmp_status);
+    enforcement = (libdm_status == DMARC_POLICY_NONE)        ? US"None, Accept" :
+                  (libdm_status == DMARC_POLICY_PASS)        ? US"Accept" :
+                  (libdm_status == DMARC_POLICY_REJECT)      ? US"Reject" :
+                  (libdm_status == DMARC_POLICY_QUARANTINE)  ? US"Quarantine" :
+                  (libdm_status == DMARC_POLICY_ABSENT)      ? US"No DMARC record" :
+                  (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"No From: domain found" :
                   US"Internal Policy Error";
-    dmarc_status = opendmarc_policy_fetch_alignment(dmarc_pctx, &da, &sa);
-    if (dmarc_status != DMARC_PARSE_OKAY)
+    dmarc_status_text = string_copy(enforcement);
+    libdm_status = opendmarc_policy_fetch_alignment(dmarc_pctx, &da, &sa);
+    if (libdm_status != DMARC_PARSE_OKAY)
     {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to read DMARC alignment: %s",
-                                       opendmarc_policy_status_to_str(dmarc_status));
+                                       opendmarc_policy_status_to_str(libdm_status));
     }
     if (has_dmarc_record == TRUE)
       log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
                              "spf_align=%s dkim_align=%s enforcement='%s'",
-                             spf_sender_domain, dmarc_domain,
+                             spf_sender_domain, dmarc_used_domain,
                              (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              enforcement);
-    free(dmarc_domain);
   }
 
   /* set some global variables here */
