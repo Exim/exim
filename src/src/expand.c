@@ -181,6 +181,7 @@ static uschar *op_table_main[] = {
   US"h",
   US"hash",
   US"hex2b64",
+  US"hexquote",
   US"l",
   US"lc",
   US"length",
@@ -216,6 +217,7 @@ enum {
   EOP_H,
   EOP_HASH,
   EOP_HEX2B64,
+  EOP_HEXQUOTE,
   EOP_L,
   EOP_LC,
   EOP_LENGTH,
@@ -5663,6 +5665,22 @@ while (*s != 0)
         yield = string_cat(yield, &size, &ptr, enc, Ustrlen(enc));
         continue;
         }
+
+      /* Convert octets outside 0x21..0x7E to \xXX form */
+
+      case EOP_HEXQUOTE:
+	{
+        uschar *t = sub - 1;
+        while (*(++t) != 0)
+          {
+          if (*t < 0x21 || 0x7E < *t)
+            yield = string_cat(yield, &size, &ptr,
+	      string_sprintf("\\x%02x", *t), 4);
+	  else
+	    yield = string_cat(yield, &size, &ptr, t, 1);
+          }
+	continue;
+	}
 
       /* count the number of list elements */
 
