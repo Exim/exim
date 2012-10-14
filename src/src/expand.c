@@ -784,8 +784,11 @@ return -1;
 
 /* This function is called to expand a string, and test the result for a "true"
 or "false" value. Failure of the expansion yields FALSE; logged unless it was a
-forced fail or lookup defer. All store used by the function can be released on
-exit.
+forced fail or lookup defer.
+
+We used to release all store used, but this is not not safe due
+to ${dlfunc } and ${acl }.  In any case expand_string_internal()
+is reasonably careful to release what it can.
 
 The actual false-value tests should be replicated for ECOND_BOOL_LAX.
 
@@ -801,7 +804,6 @@ BOOL
 expand_check_condition(uschar *condition, uschar *m1, uschar *m2)
 {
 int rc;
-void *reset_point = store_get(0);
 uschar *ss = expand_string(condition);
 if (ss == NULL)
   {
@@ -812,7 +814,6 @@ if (ss == NULL)
   }
 rc = ss[0] != 0 && Ustrcmp(ss, "0") != 0 && strcmpic(ss, US"no") != 0 &&
   strcmpic(ss, US"false") != 0;
-store_reset(reset_point);
 return rc;
 }
 
@@ -3548,8 +3549,8 @@ $message_headers which can get very long.
 There's a problem if a ${dlfunc item has side-effects that cause allocation,
 since resetting the store at the end of the expansion will free store that was
 allocated by the plugin code as well as the slop after the expanded string. So
-we skip any resets if ${dlfunc has been used. This is an unfortunate
-consequence of string expansion becoming too powerful.
+we skip any resets if ${dlfunc has been used. The same applies for ${acl. This
+is an unfortunate consequence of string expansion becoming too powerful.
 
 Arguments:
   string         the string to be expanded
@@ -3771,6 +3772,7 @@ while (*s != 0)
     acl_check_internal() directly and get a current level from somewhere.
     See also the acl expansion condition ECOND_ACL and the traditional
     acl modifier ACLC_ACL.
+    Assume that the function has side-effects on the store that must be preserved.
     */
 
     case EITEM_ACL:
@@ -3787,6 +3789,7 @@ while (*s != 0)
         }
       if (skipping) continue;
 
+      resetok = FALSE;
       switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:
