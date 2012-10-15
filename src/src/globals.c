@@ -543,6 +543,7 @@ BOOL    dkim_collect_input       = FALSE;
 BOOL    dkim_disable_verify      = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DMARC
+uschar *dmarc_ar_header         = NULL;
 uschar *dmarc_status            = NULL;
 uschar *dmarc_status_text       = NULL;
 uschar *dmarc_tld_file          = NULL;
