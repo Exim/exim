@@ -340,6 +340,7 @@ extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP i
 extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
 #ifdef EXPERIMENTAL_DMARC
+extern uschar *dmarc_ar_header;        /* Expansion variable, suggested header for dmarc auth results */
 extern uschar *dmarc_status;           /* Expansion variable, one word value */
 extern uschar *dmarc_status_text;      /* Expansion variable, human readable value */
 extern uschar *dmarc_tld_file;         /* Mozilla TLDs text file */

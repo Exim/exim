@@ -13,15 +13,17 @@
 #include "dmarc.h"
 #include "pdkim/pdkim.h"
 
-OPENDMARC_LIB_T    dmarc_ctx;
-DMARC_POLICY_T    *dmarc_pctx = NULL;
-OPENDMARC_STATUS_T libdm_status;
+OPENDMARC_LIB_T     dmarc_ctx;
+DMARC_POLICY_T     *dmarc_pctx = NULL;
+OPENDMARC_STATUS_T  libdm_status;
 BOOL dmarc_abort  = FALSE;
+uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
 #ifdef EXPERIMENTAL_SPF
 extern SPF_response_t   *spf_response;
-uschar *spf_sender_domain = NULL;
-uschar *human_readable = NULL;
+uschar *spf_sender_domain  = NULL;
+uschar *spf_human_readable = NULL;
+u_char *header_from_sender = NULL;
 #endif
 
 /* dmarc_init sets up a context that can be re-used for several
@@ -75,7 +77,7 @@ int dmarc_init() {
     }
   }
 
-  return 1;
+  return OK;
 }
 
 
@@ -83,7 +85,6 @@ int dmarc_init() {
    context (if any), retrieves the result, sets up expansion
    strings and evaluates the condition outcome. */
 
-// int dmarc_process(uschar **listptr, uschar *spf_envelope_sender, int action) {
 int dmarc_process(header_line *from_header) {
     int spf_result, sr, origin; /* used in SPF section */
     int da, sa;
@@ -94,7 +95,10 @@ int dmarc_process(header_line *from_header) {
 
   /* ACLs have "control=dmarc_disable_verify" */
   if (dmarc_disable_verify == TRUE)
+  {
+    dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
     return OK;
+  }
 
   /* Store the header From: sender domain for this part of DMARC.
    * If there is no from_header struct, then it's likely this message
@@ -102,26 +106,23 @@ int dmarc_process(header_line *from_header) {
    * the entire DMARC system if we can't find a From: header....or if
    * there was a previous error.
    */
-  if (from_header == 0 || dmarc_abort == TRUE)
+  if (from_header == NULL || dmarc_abort == TRUE)
     dmarc_abort = TRUE;
   else
   {
-    u_char *header_from_sender = NULL;
     /* I strongly encourage anybody who can make this better to contact me directly!
      * <cannonball> Is this an insane way to extract the email address from the From: header?
      * <jgh_hm> it's sure a horrid layer-crossing....
      * <cannonball> I'm not denying that :-/
      * <jgh_hm> there may well be no better though
      */
-    header_from_sender = expand_string( string_sprintf("${extract{1}{:}{${addresses:%s}}}",
+    header_from_sender = expand_string( string_sprintf("${domain:${extract{1}{:}{${addresses:%s}}}}",
                                                        from_header->text) );
     /* The opendmarc library extracts the domain from the email address. */
     libdm_status = opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
     if (libdm_status != DMARC_PARSE_OKAY)
-    {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to store header From: in DMARC: %s",
                            opendmarc_policy_status_to_str(libdm_status));
-    }
   }
 
   /* Skip DMARC if connection is SMTP Auth. Temporarily, admin should
@@ -163,7 +164,7 @@ int dmarc_process(header_line *from_header) {
       }
       spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
       origin = DMARC_POLICY_SPF_ORIGIN_HELO;
-      human_readable = US"";
+      spf_human_readable = US"";
     }
     else
     {
@@ -174,18 +175,17 @@ int dmarc_process(header_line *from_header) {
                    (sr == SPF_RESULT_SOFTFAIL) ? DMARC_POLICY_SPF_OUTCOME_TMPFAIL :
                    DMARC_POLICY_SPF_OUTCOME_NONE;
       origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
-      human_readable = (uschar *)spf_response->header_comment;
+      spf_human_readable = (uschar *)spf_response->header_comment;
       DEBUG(D_receive)
         debug_printf("DMARC using SPF sender domain = %s\n", spf_sender_domain);
     }
     libdm_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
-                                              spf_result, origin, human_readable);
+                                              spf_result, origin, spf_human_readable);
     if (libdm_status != DMARC_PARSE_OKAY)
-    {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to store spf for DMARC: %s",
                            opendmarc_policy_status_to_str(libdm_status));
-    }
 #endif /* EXPERIMENTAL_SPF */
+
     /* Now we cycle through the dkim signature results and put into
      * the opendmarc context, further building the DMARC reply.  */
     sig = dkim_signatures;
@@ -202,10 +202,8 @@ int dmarc_process(header_line *from_header) {
       DEBUG(D_receive)
         debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
       if (libdm_status != DMARC_PARSE_OKAY)
-      {
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store dkim (%s) for DMARC: %s",
 			     sig->domain, opendmarc_policy_status_to_str(libdm_status));
-      }
       sig = sig->next;
     }
     libdm_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
@@ -245,6 +243,13 @@ int dmarc_process(header_line *from_header) {
                   (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"nofrom" :
                   US"error";
     dmarc_status = string_copy(tmp_status);
+    dmarc_pass_fail = (libdm_status == DMARC_POLICY_NONE)    ? US"none" :
+                      (libdm_status == DMARC_POLICY_PASS)    ? US"pass" :
+		      (libdm_status == DMARC_POLICY_REJECT)  ? US"fail" :
+		      (libdm_status == DMARC_POLICY_QUARANTINE)  ? US"fail" :
+		      (libdm_status == DMARC_POLICY_ABSENT)  ? US"temperror" :
+		      (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"temperror" :
+		      US"permerror";
     enforcement = (libdm_status == DMARC_POLICY_NONE)        ? US"None, Accept" :
                   (libdm_status == DMARC_POLICY_PASS)        ? US"Accept" :
                   (libdm_status == DMARC_POLICY_REJECT)      ? US"Reject" :
@@ -260,23 +265,25 @@ int dmarc_process(header_line *from_header) {
                                        opendmarc_policy_status_to_str(libdm_status));
     }
     if (has_dmarc_record == TRUE)
+    {
       log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
                              "spf_align=%s dkim_align=%s enforcement='%s'",
                              spf_sender_domain, dmarc_used_domain,
                              (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              enforcement);
+    }
   }
-
   /* set some global variables here */
+  dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
 
   /* shut down libopendmarc */
   if ( dmarc_pctx != NULL )
     (void) opendmarc_policy_connect_shutdown(dmarc_pctx);
-  (void) opendmarc_policy_library_shutdown(&dmarc_ctx);
+  if ( dmarc_disable_verify == FALSE )
+    (void) opendmarc_policy_library_shutdown(&dmarc_ctx);
 
-  /* no match */
-  return FAIL;
+  return OK;
 }
 
 uschar *dmarc_exim_expand_query(int what)
@@ -295,8 +302,51 @@ uschar *dmarc_exim_expand_query(int what)
 uschar *dmarc_exim_expand_defaults(int what)
 {
   switch(what) {
-    case DMARC_VERIFY_STATUS:      return US"none";
-    default:                       return US"";
+    case DMARC_VERIFY_STATUS:
+      return (dmarc_disable_verify) ?
+              US"off" :
+              US"none";
+    default:
+      return US"";
   }
 }
+
+uschar *dmarc_auth_results_header(header_line *from_header, uschar *hostname)
+{
+  uschar *hdr_tmp    = US"";
+
+  /* Allow a server hostname to be passed to this function, but is
+   * currently unused */
+  if (hostname == NULL)
+    hostname = primary_hostname;
+  hdr_tmp = string_sprintf("%s %s;", DMARC_AR_HEADER, hostname);
+
+#if 0
+  /* I don't think this belongs here, but left it here commented out
+   * because it was a lot of work to get working right. */
+#ifdef EXPERIMENTAL_SPF
+  if (spf_response != NULL) {
+    uschar *dmarc_ar_spf = US"";
+    int sr               = 0;
+    sr = spf_response->result;
+    dmarc_ar_spf = (sr == SPF_RESULT_NEUTRAL)  ? US"neutral" :
+                   (sr == SPF_RESULT_PASS)     ? US"pass" :
+                   (sr == SPF_RESULT_FAIL)     ? US"fail" :
+                   (sr == SPF_RESULT_SOFTFAIL) ? US"softfail" :
+                   US"none";
+    hdr_tmp = string_sprintf("%s spf=%s (%s) smtp.mail=%s;",
+                             hdr_tmp, dmarc_ar_spf_result,
+                             spf_response->header_comment,
+                             expand_string(US"$sender_address") );
+  }
+#endif
+#endif
+  hdr_tmp = string_sprintf("%s dmarc=%s",
+                           hdr_tmp, dmarc_pass_fail);
+  if (header_from_sender)
+    hdr_tmp = string_sprintf("%s header.from=%s",
+                             hdr_tmp, header_from_sender);
+  return hdr_tmp;
+}
+
 #endif
