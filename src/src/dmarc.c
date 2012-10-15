@@ -15,7 +15,7 @@
 OPENDMARC_LIB_T    dmarc_ctx;
 DMARC_POLICY_T    *dmarc_pctx = NULL;
 OPENDMARC_STATUS_T libdm_status;
-BOOL dmarc_skip  = FALSE;
+BOOL dmarc_abort  = FALSE;
 extern pdkim_signature  *dkim_signatures;
 #ifdef EXPERIMENTAL_SPF
 extern SPF_response_t   *spf_response;
@@ -35,6 +35,10 @@ int dmarc_init() {
                    "/etc/exim/opendmarc.tlds" :
                    (char *)dmarc_tld_file;
 
+  /* ACLs have "control=dmarc_disable_verify" */
+  if (dmarc_disable_verify == TRUE)
+    return OK;
+
   (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
   dmarc_ctx.nscount = 0;
   libdm_status = opendmarc_policy_library_init(&dmarc_ctx);
@@ -42,18 +46,18 @@ int dmarc_init() {
   {
     log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to init library: %s",
                          opendmarc_policy_status_to_str(libdm_status));
-    dmarc_skip = TRUE;
+    dmarc_abort = TRUE;
   }
   if (opendmarc_tld_read_file(tld_file, NULL, NULL, NULL))
   {
     log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to load tld list %s: %d",
                          tld_file, errno);
-    dmarc_skip = TRUE;
+    dmarc_abort = TRUE;
   }
   if (sender_host_address == NULL)
-    dmarc_skip = TRUE;
+    dmarc_abort = TRUE;
   /* This catches locally originated email and startup errors above. */
-  if ( dmarc_skip == FALSE )
+  if ( dmarc_abort == FALSE )
   {
     is_ipv6 = string_is_ip_address(sender_host_address, netmask);
     is_ipv6 = (is_ipv6 == 6) ? TRUE :
@@ -63,7 +67,7 @@ int dmarc_init() {
     {
       log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure creating policy context: ip=%s",
                                        sender_host_address);
-      dmarc_skip = TRUE;
+      dmarc_abort = TRUE;
     }
   }
 
@@ -84,14 +88,18 @@ int dmarc_process(header_line *from_header) {
     uschar *tmp_status    = NULL;
     BOOL has_dmarc_record = TRUE;
 
+  /* ACLs have "control=dmarc_disable_verify" */
+  if (dmarc_disable_verify == TRUE)
+    return OK;
+
   /* Store the header From: sender domain for this part of DMARC.
    * If there is no from_header struct, then it's likely this message
    * is locally generated and relying on fixups to add it.  Just skip
    * the entire DMARC system if we can't find a From: header....or if
    * there was a previous error.
    */
-  if (from_header == 0 || dmarc_skip == TRUE)
-    dmarc_skip = TRUE;
+  if (from_header == 0 || dmarc_abort == TRUE)
+    dmarc_abort = TRUE;
   else
   {
     u_char *header_from_sender = NULL;
@@ -114,7 +122,7 @@ int dmarc_process(header_line *from_header) {
 
   /* Skip DMARC if connection is SMTP Auth. Temporarily, admin should
    * instead do this in the ACLs.  */
-  if (dmarc_skip == FALSE && sender_host_authenticated == NULL)
+  if (dmarc_abort == FALSE && sender_host_authenticated == NULL)
   {
 #ifdef EXPERIMENTAL_SPF
     /* Use the envelope sender domain for this part of DMARC */
