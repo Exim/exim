@@ -175,6 +175,9 @@ enum {
   #ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
   #endif
+  #ifdef EXPERIMENTAL_DMARC
+  CONTROL_DMARC_VERIFY,
+  #endif
   CONTROL_DSCP,
   CONTROL_ERROR,
   CONTROL_CASEFUL_LOCAL_PART,
@@ -210,6 +213,9 @@ static uschar *controls[] = {
   US"debug",
   #ifndef DISABLE_DKIM
   US"dkim_disable_verify",
+  #endif
+  #ifdef EXPERIMENTAL_DMARC
+  US"dmarc_disable_verify",
   #endif
   US"dscp",
   US"error",
@@ -538,6 +544,11 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
+  #ifdef EXPERIMENTAL_DMARC
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_disable_verify */
+    (1<<ACL_WHERE_NOTSMTP_START),
+  #endif
+
   (1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_NOTSMTP_START)|
     (1<<ACL_WHERE_NOTQUIT),                        /* dscp */
@@ -624,6 +635,9 @@ static control_def controls_list[] = {
   { US"debug",                   CONTROL_DEBUG, TRUE },
 #ifndef DISABLE_DKIM
   { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY, FALSE },
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  { US"dmarc_disable_verify",    CONTROL_DMARC_VERIFY, FALSE },
 #endif
   { US"dscp",                    CONTROL_DSCP, TRUE },
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
@@ -2933,6 +2947,12 @@ for (; cb != NULL; cb = cb->next)
       #ifndef DISABLE_DKIM
       case CONTROL_DKIM_VERIFY:
       dkim_disable_verify = TRUE;
+      break;
+      #endif
+
+      #ifdef EXPERIMENTAL_DMARC
+      case CONTROL_DMARC_VERIFY:
+      dmarc_disable_verify = TRUE;
       break;
       #endif
 
