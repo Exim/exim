@@ -67,6 +67,9 @@ enum { ACLC_ACL,
        ACLC_DKIM_SIGNER,
        ACLC_DKIM_STATUS,
 #endif
+#ifdef EXPERIMENTAL_DMARC
+       ACLC_DMARC_STATUS,
+#endif
        ACLC_DNSLISTS,
        ACLC_DOMAINS,
        ACLC_ENCRYPTED,
@@ -129,6 +132,9 @@ static uschar *conditions[] = {
 #ifndef DISABLE_DKIM
   US"dkim_signers",
   US"dkim_status",
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  US"dmarc_status",
 #endif
   US"dnslists",
   US"domains",
@@ -267,6 +273,9 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* dkim_signers */
   TRUE,    /* dkim_status */
 #endif
+#ifdef EXPERIMENTAL_DMARC
+  TRUE,    /* dmarc_status */
+#endif
   TRUE,    /* dnslists */
   FALSE,   /* domains */
   FALSE,   /* encrypted */
@@ -327,6 +336,9 @@ static uschar cond_modifiers[] = {
 #ifndef DISABLE_DKIM
   FALSE,   /* dkim_signers */
   FALSE,   /* dkim_status */
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  FALSE,   /* dmarc_status */
 #endif
   FALSE,   /* dnslists */
   FALSE,   /* domains */
@@ -425,6 +437,11 @@ static unsigned int cond_forbids[] = {
 
   (unsigned int)
   ~(1<<ACL_WHERE_DKIM),                            /* dkim_status */
+  #endif
+
+  #ifdef EXPERIMENTAL_DMARC
+  (unsigned int)
+  ~(1<<ACL_WHERE_DATA),                            /* dmarc_status */
   #endif
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* dnslists */
@@ -3242,6 +3259,15 @@ for (; cb != NULL; cb = cb->next)
 
     case ACLC_DKIM_STATUS:
     rc = match_isinlist(dkim_exim_expand_query(DKIM_VERIFY_STATUS),
+                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+    break;
+    #endif
+
+    #ifdef EXPERIMENTAL_DMARC
+    case ACLC_DMARC_STATUS:
+    /* used long way of dmarc_exim_expand_query() in case we need more
+     * view into the process in the future. */
+    rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
                         &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     break;
     #endif

@@ -11,6 +11,7 @@
 #ifdef EXPERIMENTAL_DMARC
 
 #include "dmarc.h"
+#include "pdkim/pdkim.h"
 
 OPENDMARC_LIB_T    dmarc_ctx;
 DMARC_POLICY_T    *dmarc_pctx = NULL;
@@ -34,6 +35,9 @@ int dmarc_init() {
   char *tld_file = (dmarc_tld_file == NULL) ?
                    "/etc/exim/opendmarc.tlds" :
                    (char *)dmarc_tld_file;
+
+  /* Set some sane defaults */
+  dmarc_status = US"none";
 
   /* ACLs have "control=dmarc_disable_verify" */
   if (dmarc_disable_verify == TRUE)
@@ -275,4 +279,24 @@ int dmarc_process(header_line *from_header) {
   return FAIL;
 }
 
+uschar *dmarc_exim_expand_query(int what)
+{
+  if (dmarc_disable_verify || !dmarc_pctx)
+    return dmarc_exim_expand_defaults(what);
+
+  switch(what) {
+    case DMARC_VERIFY_STATUS:
+      return(dmarc_status);
+    default:
+      return US"";
+  }
+}
+
+uschar *dmarc_exim_expand_defaults(int what)
+{
+  switch(what) {
+    case DMARC_VERIFY_STATUS:      return US"none";
+    default:                       return US"";
+  }
+}
 #endif
