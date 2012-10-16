@@ -26143,6 +26143,9 @@ before or after the data) correctly &-- they keep the message on their queues
 and try again later, but that is their problem, though it does waste some of
 your resources.
 
+The &%acl_smtp_data%& ACL is run after both the &%acl_smtp_dkim%& and
+the &%acl_smtp_mime%& ACLs.
+
 
 .section "The SMTP DKIM ACL" "SECTDKIMACL"
 The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
@@ -26152,12 +26155,16 @@ The ACL test specified by &%acl_smtp_dkim%& happens after a message has been
 received, and is executed for each DKIM signature found in a message.  If not
 otherwise specified, the default action is to accept.
 
-For details on the operation of DKIM, see chapter &<<CHID12>>&.
+This ACL is evaluated before &%acl_smtp_mime%& and &%acl_smtp_data%&.
+
+For details on the operation of DKIM, see chapter &<<CHAPdkim>>&.
 
 
 .section "The SMTP MIME ACL" "SECID194"
 The &%acl_smtp_mime%& option is available only when Exim is compiled with the
 content-scanning extension. For details, see chapter &<<CHAPexiscan>>&.
+
+This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
 
 .section "The QUIT ACL" "SECTQUITACL"
@@ -27105,7 +27112,7 @@ contexts):
 .cindex "disable DKIM verify"
 .cindex "DKIM" "disable verify"
 This control turns off DKIM verification processing entirely.  For details on
-the operation and configuration of DKIM, see chapter &<<CHID12>>&.
+the operation and configuration of DKIM, see chapter &<<CHAPdkim>>&.
 .wen
 
 
@@ -35991,7 +35998,7 @@ unqualified domain &'foundation'&.
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHID12" &&&
+.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHAPdkim" &&&
          "DKIM Support"
 .cindex "DKIM"
 
