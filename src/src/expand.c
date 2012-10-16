@@ -367,9 +367,7 @@ enum {
   vtype_msgheaders_raw, /* the message's headers, unprocessed */
   vtype_localpart,      /* extract local part from string */
   vtype_domain,         /* extract domain from string */
-  vtype_recipients,     /* extract recipients from recipients list */
-                        /* (available only in system filters, ACLs, and */
-                        /* local_scan()) */
+  vtype_string_func,	/* value is string returned by given function */
   vtype_todbsdin,       /* value not used; generate BSD inbox tod */
   vtype_tode,           /* value not used; generate tod in epoch format */
   vtype_todel,          /* value not used; generate tod in epoch/usec format */
@@ -388,6 +386,8 @@ enum {
   ,vtype_dkim           /* Lookup of value in DKIM signature */
   #endif
   };
+
+static uschar * fn_recipients(void);
 
 /* This table must be kept in alphabetical order. */
 
@@ -471,6 +471,7 @@ static var_entry var_table[] = {
 #ifdef WITH_OLD_DEMIME
   { "found_extension",     vtype_stringptr,   &found_extension },
 #endif
+  { "headers_added",       vtype_string_func, &fn_hdrs_added },
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -562,7 +563,7 @@ static var_entry var_table[] = {
   { "received_time",       vtype_int,         &received_time },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
-  { "recipients",          vtype_recipients,  NULL },
+  { "recipients",          vtype_string_func, &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
@@ -783,8 +784,11 @@ return -1;
 
 /* This function is called to expand a string, and test the result for a "true"
 or "false" value. Failure of the expansion yields FALSE; logged unless it was a
-forced fail or lookup defer. All store used by the function can be released on
-exit.
+forced fail or lookup defer.
+
+We used to release all store used, but this is not not safe due
+to ${dlfunc } and ${acl }.  In any case expand_string_internal()
+is reasonably careful to release what it can.
 
 The actual false-value tests should be replicated for ECOND_BOOL_LAX.
 
@@ -800,7 +804,6 @@ BOOL
 expand_check_condition(uschar *condition, uschar *m1, uschar *m2)
 {
 int rc;
-void *reset_point = store_get(0);
 uschar *ss = expand_string(condition);
 if (ss == NULL)
   {
@@ -811,7 +814,6 @@ if (ss == NULL)
   }
 rc = ss[0] != 0 && Ustrcmp(ss, "0") != 0 && strcmpic(ss, US"no") != 0 &&
   strcmpic(ss, US"false") != 0;
-store_reset(reset_point);
 return rc;
 }
 
@@ -1447,6 +1449,34 @@ return yield;
 
 
 /*************************************************
+*               Return list of recipients        *
+*************************************************/
+/* A recipients list is available only during system message filtering,
+during ACL processing after DATA, and while expanding pipe commands
+generated from a system filter, but not elsewhere. */
+
+static uschar *
+fn_recipients(void)
+{
+if (!enable_dollar_recipients) return NULL; else
+  {
+  int size = 128;
+  int ptr = 0;
+  int i;
+  uschar * s = store_get(size);
+  for (i = 0; i < recipients_count; i++)
+    {
+    if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
+    s = string_cat(s, &size, &ptr, recipients_list[i].address,
+      Ustrlen(recipients_list[i].address));
+    }
+  s[ptr] = 0;     /* string_cat() leaves room */
+  return s;
+  }
+}
+
+
+/*************************************************
 *               Find value of a variable         *
 *************************************************/
 
@@ -1671,26 +1701,11 @@ while (last > first)
       }
     return (s == NULL)? US"" : s;
 
-    /* A recipients list is available only during system message filtering,
-    during ACL processing after DATA, and while expanding pipe commands
-    generated from a system filter, but not elsewhere. */
-
-    case vtype_recipients:
-    if (!enable_dollar_recipients) return NULL; else
+    case vtype_string_func:
       {
-      int size = 128;
-      int ptr = 0;
-      int i;
-      s = store_get(size);
-      for (i = 0; i < recipients_count; i++)
-        {
-        if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
-        s = string_cat(s, &size, &ptr, recipients_list[i].address,
-          Ustrlen(recipients_list[i].address));
-        }
-      s[ptr] = 0;     /* string_cat() leaves room */
+      uschar * (*fn)() = var_table[middle].value;
+      return fn();
       }
-    return s;
 
     case vtype_pspace:
       {
@@ -3534,8 +3549,8 @@ $message_headers which can get very long.
 There's a problem if a ${dlfunc item has side-effects that cause allocation,
 since resetting the store at the end of the expansion will free store that was
 allocated by the plugin code as well as the slop after the expanded string. So
-we skip any resets if ${dlfunc has been used. This is an unfortunate
-consequence of string expansion becoming too powerful.
+we skip any resets if ${dlfunc has been used. The same applies for ${acl. This
+is an unfortunate consequence of string expansion becoming too powerful.
 
 Arguments:
   string         the string to be expanded
@@ -3757,6 +3772,7 @@ while (*s != 0)
     acl_check_internal() directly and get a current level from somewhere.
     See also the acl expansion condition ECOND_ACL and the traditional
     acl modifier ACLC_ACL.
+    Assume that the function has side-effects on the store that must be preserved.
     */
 
     case EITEM_ACL:
@@ -3773,6 +3789,7 @@ while (*s != 0)
         }
       if (skipping) continue;
 
+      resetok = FALSE;
       switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:

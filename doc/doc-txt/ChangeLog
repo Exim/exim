@@ -71,6 +71,17 @@ JH/06 Add dnsdb pseudo-lookup "a+" to do an "aaaa" + "a" combination.
 JH/07 Avoid using a waiting database for a single-message-only transport.
       Performance patch from Paul Fisher.  Bugzilla 1262.
 
+JH/08 Strip leading/trailing newlines from add_header ACL modifier data.
+      Bugzilla 884.
+
+JH/09 Add $headers_added variable, with content from use of ACL modifier
+      add_header (but not yet added to the message).  Bugzilla 199.
+
+
+JH/10 Add 8bitmime log_selector, for 8bitmime status on the received line.
+      Pulled from Bugzilla 817 by Wolfgang Breyha.
+
+
 
 Exim version 4.80
 -----------------

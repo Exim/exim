@@ -958,10 +958,13 @@ setup_header(uschar *hstring)
 uschar *p, *q;
 int hlen = Ustrlen(hstring);
 
-/* An empty string does nothing; otherwise add a final newline if necessary. */
+/* Ignore any leading newlines */
+while (*hstring == '\n') hstring++, hlen--;
 
+/* An empty string does nothing; ensure exactly one final newline. */
 if (hlen <= 0) return;
-if (hstring[hlen-1] != '\n') hstring = string_sprintf("%s\n", hstring);
+if (hstring[--hlen] != '\n') hstring = string_sprintf("%s\n", hstring);
+else while(hstring[--hlen] == '\n') hstring[hlen+1] = '\0';
 
 /* Loop for multiple header lines, taking care about continuations */
 
@@ -1045,6 +1048,44 @@ for (p = q = hstring; *p != 0; )
   }
 }
 
+
+
+/*************************************************
+*        List the added header lines		 *
+*************************************************/
+uschar *
+fn_hdrs_added(void)
+{
+uschar * ret = NULL;
+header_line * h = acl_added_headers;
+uschar * s;
+uschar * cp;
+int size = 0;
+int ptr = 0;
+
+if (!h) return NULL;
+
+do
+  {
+  s = h->text;
+  while ((cp = Ustrchr(s, '\n')) != NULL)
+    {
+    if (cp[1] == '\0') break;
+
+    /* contains embedded newline; needs doubling */
+    ret = string_cat(ret, &size, &ptr, s, cp-s+1);
+    ret = string_cat(ret, &size, &ptr, "\n", 1);
+    s = cp+1;
+    }
+  /* last bit of header */
+
+  ret = string_cat(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
+  }
+while(h = h->next);
+
+ret[ptr-1] = '\0';	/* overwrite last newline */
+return ret;
+}
 
 
 /*************************************************

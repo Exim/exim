@@ -3610,6 +3610,15 @@ if (sender_host_authenticated != NULL)
 sprintf(CS big_buffer, "%d", msg_size);
 s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
 
+/* log 8BITMIME mode announced in MAIL_FROM
+   0 ... no BODY= used
+   7 ... 7BIT
+   8 ... 8BITMIME */
+if (log_extra_selector & LX_8bitmime) {
+  sprintf(CS big_buffer, "%d", body_8bitmime);
+  s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
+}
+
 /* If an addr-spec in a message-id contains a quoted string, it can contain
 any characters except " \ and CR and so in particular it can contain NL!
 Therefore, make sure we use a printing-characters only version for the log.

@@ -19,11 +19,14 @@ acl_smtp_rcpt = check_rcpt
 begin acl
 
 check_rcpt:
-  warn     message = data1 data1\ndata2 data2
+  warn     message = data1 data1\ndata2 data2\n
+  warn     message = \n\ndata3\n\ndata4\n\n
   warn     message = :after_received:After-Received: some text\n\
                      :at_start:At-Start: some text\n\
                      :at_end:  At-End: some text
-  accept
+  warn     message = data4
+  warn     add_header = X-multiline: foo\n\tbar
+  accept   logwrite = $headers_added
 
 
 # ----- Routers -----

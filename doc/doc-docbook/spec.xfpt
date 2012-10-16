@@ -11063,6 +11063,12 @@ inserting the message header line with the given name. Note that the name must
 be terminated by colon or white space, because it may contain a wide variety of
 characters. Note also that braces must &'not'& be used.
 
+.vitem &$headers_added$&
+.vindex "&$headers_added$&"
+Within an ACL this variable contains the headers added so far by
+the ACL modifier add_header (section &<<SECTaddheadacl>>&).
+The headers are a newline-separated list.
+
 .vitem &$home$&
 .vindex "&$home$&"
 When the &%check_local_user%& option is set for a router, the user's home
@@ -13093,6 +13099,8 @@ Those options that undergo string expansion before use are marked with
 .option accept_8bitmime main boolean true
 .cindex "8BITMIME"
 .cindex "8-bit characters"
+.cindex "log" "selectors"
+.cindex "log" "8BITMIME"
 This option causes Exim to send 8BITMIME in its response to an SMTP
 EHLO command, and to accept the BODY= parameter on MAIL commands.
 However, though Exim is 8-bit clean, it is not a protocol converter, and it
@@ -13104,6 +13112,11 @@ It now defaults to true.
 A more detailed analysis of the issues is provided by Dan Bernstein:
 .display
 &url(http://cr.yp.to/smtp/8bitmime.html)
+.endd
+
+To log received 8BITMIME status use
+.code
+log_selector = +8bitmime
 .endd
 
 .option acl_not_smtp main string&!! unset
@@ -26130,6 +26143,9 @@ before or after the data) correctly &-- they keep the message on their queues
 and try again later, but that is their problem, though it does waste some of
 your resources.
 
+The &%acl_smtp_data%& ACL is run after both the &%acl_smtp_dkim%& and
+the &%acl_smtp_mime%& ACLs.
+
 
 .section "The SMTP DKIM ACL" "SECTDKIMACL"
 The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
@@ -26139,12 +26155,16 @@ The ACL test specified by &%acl_smtp_dkim%& happens after a message has been
 received, and is executed for each DKIM signature found in a message.  If not
 otherwise specified, the default action is to accept.
 
-For details on the operation of DKIM, see chapter &<<CHID12>>&.
+This ACL is evaluated before &%acl_smtp_mime%& and &%acl_smtp_data%&.
+
+For details on the operation of DKIM, see chapter &<<CHAPdkim>>&.
 
 
 .section "The SMTP MIME ACL" "SECID194"
 The &%acl_smtp_mime%& option is available only when Exim is compiled with the
 content-scanning extension. For details, see chapter &<<CHAPexiscan>>&.
+
+This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
 
 .section "The QUIT ACL" "SECTQUITACL"
@@ -27092,7 +27112,7 @@ contexts):
 .cindex "disable DKIM verify"
 .cindex "DKIM" "disable verify"
 This control turns off DKIM verification processing entirely.  For details on
-the operation and configuration of DKIM, see chapter &<<CHID12>>&.
+the operation and configuration of DKIM, see chapter &<<CHAPdkim>>&.
 .wen
 
 
@@ -27320,7 +27340,9 @@ receiving a message). The message must ultimately be accepted for
 any ACL verb, including &%deny%& (though this is potentially useful only in a
 RCPT ACL).
 
-If the data for the &%add_header%& modifier contains one or more newlines that
+Leading and trailing newlines are removed from
+the data for the &%add_header%& modifier; if it then
+contains one or more newlines that
 are not followed by a space or a tab, it is assumed to contain multiple header
 lines. Each one is checked for valid syntax; &`X-ACL-Warn:`& is added to the
 front of any line that is not a valid header line.
@@ -27338,7 +27360,9 @@ message is rejected after DATA or by the non-SMTP ACL, all added header lines
 are included in the entry that is written to the reject log.
 
 .cindex "header lines" "added; visibility of"
-Header lines are not visible in string expansions until they are added to the
+Header lines are not visible in string expansions
+of message headers
+until they are added to the
 message. It follows that header lines defined in the MAIL, RCPT, and predata
 ACLs are not visible until the DATA ACL and MIME ACLs are run. Similarly,
 header lines that are added by the DATA or MIME ACLs are not visible in those
@@ -27346,6 +27370,8 @@ ACLs. Because of this restriction, you cannot use header lines as a way of
 passing data between (for example) the MAIL and RCPT ACLs. If you want to do
 this, you can use ACL variables, as described in section
 &<<SECTaclvariables>>&.
+
+The list of headers yet to be added is given by the &%$headers_added%& variable.
 
 The &%add_header%& modifier acts immediately as it is encountered during the
 processing of an ACL. Notice the difference between these two cases:
@@ -33812,6 +33838,7 @@ log_selector = +arguments -retry_defer
 The list of optional log items is in the following table, with the default
 selection marked by asterisks:
 .display
+&` 8bitmime                   `&  received 8BITMIME status
 &`*acl_warn_skipped           `&  skipped &%warn%& statement in ACL
 &` address_rewrite            `&  address rewriting
 &` all_parents                `&  all parents in => lines
@@ -33859,6 +33886,14 @@ selection marked by asterisks:
 More details on each of these items follows:
 
 .ilist
+.cindex "8BITMIME"
+.cindex "log" "8BITMIME"
+&%8bitmime%&: This causes Exim to log any 8BITMIME status of received messages,
+which may help in tracking down interoperability issues with ancient MTAs
+that are not 8bit clean.  This is added to the &"<="& line, tagged with
+&`M8S=`& and a value of &`0`&, &`7`& or &`8`&, corresponding to "not given",
+&`7BIT`& and &`8BITMIME`& respectively.
+.next
 .cindex "&%warn%& ACL verb" "log when skipping"
 &%acl_warn_skipped%&: When an ACL &%warn%& statement is skipped because one of
 its conditions cannot be evaluated, a log line to this effect is written if
@@ -35963,7 +35998,7 @@ unqualified domain &'foundation'&.
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHID12" &&&
+.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHAPdkim" &&&
          "DKIM Support"
 .cindex "DKIM"
 
