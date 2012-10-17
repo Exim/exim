@@ -575,6 +575,130 @@ this to some results from ClamAV.  Be careful.  Header syntax is
 not checked and is added "as is".
 
 
+DMARC Support
+--------------------------------------------------------------
+
+DMARC combines feedback from SPF, DKIM, and header From: in order
+to attempt to provide better indicators of the authenticity of an
+email.  This document does not explain the fundamentals, you
+should read and understand how it works by visiting the website at
+http://www.dmarc.org/.
+
+DMARC support is added via the libopendmarc library.  Visit:
+
+  http://sourceforge.net/projects/opendmarc/
+
+to obtain a copy, or find it in your favorite rpm package
+repository.  If building from source, this description assumes
+that headers will be in /usr/local/include, and that the libraries
+are in /usr/local/lib.
+
+To compile Exim with DMARC support, you must first enable SPF.
+Please read the above section on enabling the EXPERIMENTAL_SPF
+feature.  You must also have DKIM support, so you cannot set the
+DISABLE_DKIM feature.  Once both of those conditions have been met
+you can enable DMARC in Local/Makefile:
+
+EXPERIMENTAL_DMARC=yes
+LDFLAGS += -lopendmarc
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -L/usr/local/lib
+
+The first line sets the feature to include the correct code, and
+the second line says to link the libopendmarc libraries into the
+exim binary.  The commented out lines should be uncommented if you
+built opendmarc from source and installed in the default location.
+
+You can now run DMARC checks in incoming SMTP by using the
+"dmarc_status" ACL condition in the DATA ACL.
+
+The dmarc_status condition takes a list of strings on its
+right-hand side.  These strings describe recommended action based
+on the DMARC check.  To understand what the policy recommendations
+mean, refer to the DMARC website above.  Valid strings are:
+
+  o accept      The DMARC check passed and the library recommends
+                accepting the email.
+  o reject      The DMARC check failed and the library recommends
+                rejecting the email.
+  o quarantine  The DMARC check failed and the library recommends
+                keeping it for further inspection.
+  o norecord    No policy section in the DMARC record for this
+                sender domain.
+  o nofrom      Unable to determine the domain of the sender.
+  o none        There is no DMARC record for this sender domain.
+  o error       Library error or dns error.
+
+You can prefix each string with an exclamation mark to invert its
+meaning, for example "!accept" will match all results but
+"accept".  The string list is evaluated left-to-right in a
+short-circuit fashion.  When a string matches the outcome of the
+DMARC check, the condition succeeds.  If none of the listed
+strings matches the outcome of the DMARC check, the condition
+fails.
+
+Of course, you can also use any other lookup method that Exim
+supports, including LDAP, Postgres, MySQL, etc, as long as the
+result is a list of colon-separated strings;
+
+To optimize performance, it makes sense to only verify DMARC
+status of messages coming from remote, untrusted sources.  You can
+use standard conditions such as hosts, senders, etc, decide that
+DMARC verification should not be performed and disable DMARC with
+a control setting "control=dmarc_verify_disable".  There are no
+options to this control.
+
+By default, the DMARC process will run for any remote,
+non-authenticated user.
+
+Several expansion variables are set before the DATA ACL is
+processed, and you can use them in this ACL.  The following
+expansion variables are available:
+
+  o dmarc_status
+    This is a one word status indicating what the DMARC library
+    thinks of the email.
+
+  o dmarc_status_text
+    This is a slightly longer, human readable status.
+
+  o dmarc_used_domain
+    This is the domain which DMARC used to look up the DMARC
+    policy record.
+
+  o dmarc_ar_header
+    This is the entire Authentication-Results header which you can
+    add using an add_header modifier.
+
+
+Example usage:
+(RCPT ACL)
+  warn    domains        = +local_domains
+          hosts          = +local_hosts
+          control        = dmarc_verify_disable
+
+(DATA ACL)
+  warn    dmarc_status   = accept : none : off
+          !authenticated = *
+          log_message    = DMARC $dmarc_status $dmarc_used_domain
+          add_header     = $dmarc_ar_header
+
+  warn    dmarc_status   = !accept
+          !authenticated = *
+          log_message    = DMARC DEBUG: '$dmarc_status' for $dmarc_used_domain
+
+  warn    dmarc_status   = quarantine
+          !authenticated = *
+          set $acl_m_quarantine = 1
+          # Do something in a transport with this flag
+
+  deny    dmarc_status   = reject
+          !authenticated = *
+          message        = Message from $domain_used_domain failed sender's DMARC policy, REJECT
+
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------
