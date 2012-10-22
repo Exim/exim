@@ -543,7 +543,10 @@ BOOL    dkim_collect_input       = FALSE;
 BOOL    dkim_disable_verify      = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DMARC
+uschar *dmarc_status            = NULL;
+uschar *dmarc_status_text       = NULL;
 uschar *dmarc_tld_file          = NULL;
+uschar *dmarc_used_domain       = NULL;
 #endif
 
 uschar *dns_again_means_nonexist = NULL;

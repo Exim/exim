@@ -3102,6 +3102,11 @@ else
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
+#ifdef EXPERIMENTAL_DMARC
+  if (dmarc_up)
+    dmarc_up = dmarc_process(from_header);
+#endif /* EXPERIMENTAL_DMARC */
+
     /* Check the recipients count again, as the MIME ACL might have changed
     them. */
 
@@ -3192,11 +3197,6 @@ else
       add_acl_headers(US"non-SMTP");
       }
     }
-
-#ifdef EXPERIMENTAL_DMARC
-  if (dmarc_up)
-    dmarc_up = dmarc_process(from_header);
-#endif /* EXPERIMENTAL_DMARC */
 
 #endif /* DISABLE_DKIM */
 

@@ -440,6 +440,11 @@ static var_entry var_table[] = {
   { "dkim_verify_reason",  vtype_dkim,        (void *)DKIM_VERIFY_REASON },
   { "dkim_verify_status",  vtype_dkim,        (void *)DKIM_VERIFY_STATUS},
 #endif
+#ifdef EXPERIMENTAL_DMARC
+  { "dmarc_status",        vtype_stringptr,   &dmarc_status },
+  { "dmarc_status_text",   vtype_stringptr,   &dmarc_status_text },
+  { "dmarc_used_domain",   vtype_stringptr,   &dmarc_used_domain },
+#endif
   { "dnslist_domain",      vtype_stringptr,   &dnslist_domain },
   { "dnslist_matched",     vtype_stringptr,   &dnslist_matched },
   { "dnslist_text",        vtype_stringptr,   &dnslist_text },
