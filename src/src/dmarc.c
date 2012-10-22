@@ -38,8 +38,18 @@ int dmarc_init() {
                    "/etc/exim/opendmarc.tlds" :
                    (char *)dmarc_tld_file;
 
-  /* Set some sane defaults */
+  /* Set some sane defaults.  Also clears previous results when
+   * multiple messages in one connection. */
+  dmarc_pctx = NULL;
   dmarc_status = US"none";
+  dmarc_abort  = FALSE;
+  dmarc_pass_fail = US"skipped";
+  dmarc_used_domain = US"";
+#ifdef EXPERIMENTAL_SPF
+  spf_sender_domain  = NULL;
+  spf_human_readable = NULL;
+  header_from_sender = NULL;
+#endif
 
   /* ACLs have "control=dmarc_disable_verify" */
   if (dmarc_disable_verify == TRUE)
