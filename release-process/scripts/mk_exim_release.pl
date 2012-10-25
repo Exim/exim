@@ -23,12 +23,12 @@ sub get_and_check_version {
 
     # make sure this looks like a real release version
     # which should (currently) be 4.xx or 4.xx_RCx
-    unless ( $release =~ /^(4\.\d\d(?:_RC\d+)?)$/ ) {
+    unless ( $release =~ /^(4\.\d\d(?:(?:_RC\d+)|\.\d+)?)$/ ) {
         croak "The given version number does not look right - $release";
     }
     my $full_release  = $1;              # untainted here...
     my $trunc_release = $full_release;
-    $trunc_release =~ s/^(4\.\d\d)(?:_RC\d+)?$/$1/;
+    $trunc_release =~ s/^(4\.\d\d\.\d+)(?:_RC\d+)?$/$1/;
 
     $context->{release}  = $full_release;
     $context->{trelease} = $trunc_release;
