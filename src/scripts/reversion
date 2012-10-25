@@ -32,21 +32,23 @@ fi
 
 # If this tree is a git working directory, use that to get version information.
 
-if [ -d ../../.git ] || [ "$1" = "release" ]
-then
-	# Modify the output of git describe into separate parts for
-	# the name "exim" and the release and variant versions.
-	# Put a dot in the version number and remove a spurious g.
-	set $(git describe --dirty=-XX --match 'exim-4*' |
-		sed 's|-| |;s|_|.|;s|[-_]| _|;s|-g|-|')
-	# Only update if we need to
-	if [ "$2 $3" != "$EXIM_RELEASE_VERSION $EXIM_VARIANT_VERSION" ]
-	then
-		EXIM_RELEASE_VERSION="$2"
-		EXIM_VARIANT_VERSION="$3"
-		rm -f version.h
-	fi
-fi
+#if [ -d ../../.git ] || [ "$1" = "release" ]
+#then
+#	# Modify the output of git describe into separate parts for
+#	# the name "exim" and the release and variant versions.
+#	# Put a dot in the version number and remove a spurious g.
+#	set $(git describe --dirty=-XX --match 'exim-4*' |
+#		sed 's|-| |;s|_|.|;s|[-_]| _|;s|-g|-|')
+#	# Only update if we need to
+#	if [ "$2 $3" != "$EXIM_RELEASE_VERSION $EXIM_VARIANT_VERSION" ]
+#	then
+#		EXIM_RELEASE_VERSION="$2"
+#		EXIM_VARIANT_VERSION="$3"
+#		rm -f version.h
+#	fi
+#fi
+EXIM_RELEASE_VERSION="4.80.1"
+EXIM_VARIANT_VERSION=""
 
 # If you are maintaining a patched version of Exim, you can either
 # create your own version.sh as part of your release process, or you
