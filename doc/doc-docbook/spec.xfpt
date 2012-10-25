@@ -8791,12 +8791,12 @@ arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
 Any unused are made empty.  The variable &$acl_narg$& is set to the number of
 arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
 and may use the variables; if another acl expansion is used the values
-are overwritten.  If the ACL sets
+are restored after it returns.  If the ACL sets
 a value using a "message =" modifier and returns accept or deny, the value becomes
 the result of the expansion.
-If no message was set and the ACL returned accept or deny
-the value is an empty string.
-If the ACL returned defer the result is a forced-fail.  Otherwise the expansion fails.
+If no message is set and the ACL returns accept or deny
+the expansion result is an empty string.
+If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
 
 
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
@@ -10107,7 +10107,7 @@ arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
 Any unused are made empty.  The variable &$acl_narg$& is set to the number of
 arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
 and may use the variables; if another acl expansion is used the values
-are overwritten.  If the ACL sets
+are restored after it returns.  If the ACL sets
 a value using a "message =" modifier the variable $value becomes
 the result of the expansion, otherwise it is empty.
 If the ACL returns accept the condition is true; if deny, false.
@@ -27518,8 +27518,10 @@ condition false. This means that further processing of the &%warn%& verb
 ceases, but processing of the ACL continues.
 
 If the argument is a named ACL, up to nine space-separated optional values
-can be appended; they appear in $acl_arg1 to $acl_arg9, and $acl_narg is set
-to the count of values.  The name and values are expanded separately.
+can be appended; they appear within the called ACL in $acl_arg1 to $acl_arg9,
+and $acl_narg is set to the count of values.
+Previous values of these variables are restored after the call returns.
+The name and values are expanded separately.
 
 If the nested &%acl%& returns &"drop"& and the outer condition denies access,
 the connection is dropped. If it returns &"discard"&, the verb must be

@@ -3954,8 +3954,11 @@ acl_check_wargs(int where, address_item *addr, uschar *s, int level,
 {
 uschar * tmp;
 uschar * tmp_arg[9];	/* must match acl_arg[] */
+uschar * sav_arg[9];	/* must match acl_arg[] */
+int sav_narg;
 uschar * name;
 int i;
+int ret;
 
 if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
   goto bad;
@@ -3970,11 +3973,25 @@ for (i = 0; i < 9; i++)
     goto bad;
     }
   }
-acl_narg = i;
-for (i = 0; i < acl_narg; i++) acl_arg[i] = tmp_arg[i];
-while (i < 9) acl_arg[i++] = NULL;
 
-return acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+sav_narg = acl_narg;
+acl_narg = i;
+for (i = 0; i < acl_narg; i++)
+  {
+  sav_arg[i] = acl_arg[i];
+  acl_arg[i] = tmp_arg[i];
+  }
+while (i < 9)
+  {
+  sav_arg[i] = acl_arg[i];
+  acl_arg[i++] = NULL;
+  }
+
+ret = acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+
+acl_narg = sav_narg;
+for (i = 0; i < 9; i++) acl_arg[i] = sav_arg[i];
+return ret;
 
 bad:
 if (expand_string_forcedfail) return ERROR;

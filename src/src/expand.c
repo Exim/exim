@@ -1853,6 +1853,7 @@ if (Ustrncmp(name, "acl_", 4) == 0)
 
 /*
 Load args from sub array to globals, and call acl_check().
+Sub array will be corrupted on return.
 
 Returns:       OK         access is granted by an ACCEPT verb
                DISCARD    access is granted by a DISCARD verb
@@ -1865,13 +1866,23 @@ static int
 eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
 {
 int i;
-uschar *dummy_log_msg;
+uschar *tmp;
+int sav_narg = acl_narg;
+int ret;
 
-for (i = 1; i < nsub && sub[i]; i++)
-  acl_arg[i-1] = sub[i];
-acl_narg = i-1;
+if(--nsub > sizeof(acl_arg)/sizeof(*acl_arg)) nsub = sizeof(acl_arg)/sizeof(*acl_arg);
+for (i = 0; i < nsub && sub[i+1]; i++)
+  {
+  tmp = acl_arg[i];
+  acl_arg[i] = sub[i+1];	/* place callers args in the globals */
+  sub[i+1] = tmp;		/* stash the old args using our caller's storage */
+  }
+acl_narg = i;
 while (i < nsub)
-  acl_arg[i++ - 1] = NULL;
+  {
+  sub[i+1] = acl_arg[i];
+  acl_arg[i++] = NULL;
+  }
 
 DEBUG(D_expand)
   debug_printf("expanding: acl: %s  arg: %s%s\n",
@@ -1879,7 +1890,13 @@ DEBUG(D_expand)
     acl_narg>0 ? sub[1]   : US"<none>",
     acl_narg>1 ? " +more" : "");
 
-return acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &dummy_log_msg);
+ret = acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &tmp);
+
+for (i = 0; i < nsub; i++)
+  acl_arg[i] = sub[i+1];	/* restore old args */
+acl_narg = sav_narg;
+
+return ret;
 }
 
 
