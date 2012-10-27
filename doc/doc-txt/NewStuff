@@ -6,7 +6,7 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
-Version 4.81
+Version 4.82
 ------------
 
  1. New command-line option -bI:sieve will list all supported sieve extensions

@@ -1,7 +1,7 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
-Exim version 4.81
+Exim version 4.82
 -----------------
 
 PP/01 Add -bI: framework, and -bI:sieve for querying sieve capabilities.
@@ -90,7 +90,7 @@ Exim version 4.80.1
 
 PP/01 SECURITY: protect DKIM DNS decoding from remote exploit.
       CVE-2012-5671
-      This, or similar/improved, will also be change PP/11 of 4.81.
+      This, or similar/improved, will also be change PP/11 of 4.82.
 
 
 Exim version 4.80
