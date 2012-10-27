@@ -42,6 +42,9 @@ int dkim_exim_query_dns_txt(char *name, char *answer) {
                "%.*s", (int)len, (char *)((rr->data)+rr_offset));
       rr_offset+=len;
       answer_offset+=len;
+      if (answer_offset >= PDKIM_DNS_TXT_MAX_RECLEN) {
+        return PDKIM_FAIL;
+      }
     }
   }
   else return PDKIM_FAIL;

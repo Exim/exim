@@ -81,6 +81,16 @@ JH/09 Add $headers_added variable, with content from use of ACL modifier
 JH/10 Add 8bitmime log_selector, for 8bitmime status on the received line.
       Pulled from Bugzilla 817 by Wolfgang Breyha.
 
+PP/11 SECURITY: protect DKIM DNS decoding from remote exploit.
+      CVE-2012-5671
+
+
+Exim version 4.80.1
+-------------------
+
+PP/01 SECURITY: protect DKIM DNS decoding from remote exploit.
+      CVE-2012-5671
+      This, or similar/improved, will also be change PP/11 of 4.81.
 
 
 Exim version 4.80
