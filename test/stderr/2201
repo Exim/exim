@@ -103,7 +103,7 @@ cached data used for lookup of test.ex
 lookup yielded: A TXT record for test.ex.
 test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking senders
-address match: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
+address match test: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
 search_open: dnsdb "NULL"
   cached open
 search_find: file="NULL"

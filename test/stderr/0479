@@ -40,7 +40,7 @@ LOG: MAIN
 check verify = sender
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying a@b
-address match: subject=a@b pattern=a@b
+address match test: subject=a@b pattern=a@b
 b in "b"? yes (matched "b")
 a@b in "a@b"? yes (matched "a@b")
 LOG: address_rewrite MAIN
