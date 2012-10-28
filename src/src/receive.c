@@ -936,7 +936,6 @@ add_acl_headers(uschar *acl_name)
 {
 header_line *h, *next;
 header_line *last_received = NULL;
-int sep = ':';
 
 if (acl_removed_headers != NULL)
   {
@@ -944,7 +943,6 @@ if (acl_removed_headers != NULL)
 
   for (h = header_list; h != NULL; h = h->next)
     {
-    int i;
     uschar *list;
     BOOL include_header;
 
@@ -3799,6 +3797,7 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
+cutthrough_done = 0;
 if(cutthrough_fd >= 0)
   {
   uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
@@ -3820,8 +3819,6 @@ if(cutthrough_fd >= 0)
       break;
     }
   }
-else
-  cutthrough_done = 0;
 
 if(smtp_reply == NULL)
   {

@@ -2147,14 +2147,13 @@ switch(cond_type)
   case ECOND_ACL:
     /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
     {
-    uschar *nameargs;
     uschar *user_msg;
     BOOL cond = FALSE;
     int size = 0;
     int ptr = 0;
 
     while (isspace(*s)) s++;
-    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
     switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
       &s, yield == NULL, TRUE, US"acl"))
@@ -5680,7 +5679,7 @@ while (*s != 0)
 	uschar * list;
 	int sep = 0;
 	uschar * item;
-	uschar * suffix = "";
+	uschar * suffix = US"";
 	BOOL needsep = FALSE;
 	uschar buffer[256];
 
@@ -5694,10 +5693,10 @@ while (*s != 0)
 	  }
 	else switch(*arg)	/* specific list-type version */
 	  {
-	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = "_a"; break;
-	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = "_d"; break;
-	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = "_h"; break;
-	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = "_l"; break;
+	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = US"_a"; break;
+	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = US"_d"; break;
+	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = US"_h"; break;
+	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = US"_l"; break;
 	  default:
             expand_string_message = string_sprintf("bad suffix on \"list\" operator");
 	    goto EXPAND_FAILED;
@@ -5741,13 +5740,13 @@ while (*s != 0)
 	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
 	        {
                 yield = string_cat(yield, &size, &ptr, US"::", 2);
-	        item = cp;
+	        item = (uschar *)cp;
 		}
 	      else		/* sep in item; should already be doubled; emit once */
 	        {
                 yield = string_cat(yield, &size, &ptr, (uschar *)tok, 1);
 		if (*cp == sep) cp++;
-	        item = cp;
+	        item = (uschar *)cp;
 		}
 	      }
 	    }

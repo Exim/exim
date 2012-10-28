@@ -4328,7 +4328,7 @@ while (done <= 0)
     incomplete_transaction_log(US"too many non-mail commands");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
       "nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),
-      s - smtp_cmd_buffer, smtp_cmd_buffer);
+      (int)(s - smtp_cmd_buffer), smtp_cmd_buffer);
     smtp_notquit_exit(US"bad-commands", US"554", US"Too many nonmail commands");
     done = 1;   /* Pretend eof - drops connection */
     break;
