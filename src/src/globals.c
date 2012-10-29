@@ -245,7 +245,8 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"QUIT",
                                    US"STARTTLS",
                                    US"VRFY",
-				   US"expansion"
+				   US"delivery",
+				   US"unknown"
                                  };
 
 uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
@@ -266,6 +267,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"0",       /* QUIT; not relevant */
                                    US"550",     /* STARTTLS */
                                    US"252",     /* VRFY */
+				   US"0",       /* delivery; not relevant */
 				   US"0"        /* unknown; not relevant */
                                  };
 

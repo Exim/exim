@@ -49,6 +49,7 @@ extern BOOL    tls_openssl_options_parse(uschar *, long *);
 
 extern acl_block *acl_read(uschar *(*)(void), uschar **);
 extern int     acl_check(int, uschar *, uschar *, uschar **, uschar **);
+extern int     acl_eval(int, uschar *, uschar *, uschar **, uschar **);
 
 extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);

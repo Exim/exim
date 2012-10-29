@@ -4515,6 +4515,7 @@ FILE *jread;
 int process_recipients = RECIP_ACCEPT;
 open_db dbblock;
 open_db *dbm_file;
+extern int acl_where;
 
 uschar *info = (queue_run_pid == (pid_t)0)?
   string_sprintf("delivering %s", id) :
@@ -4564,6 +4565,9 @@ message_size = 0;
 
 update_spool = FALSE;
 remove_journal = TRUE;
+
+/* Set a known context for any ACLs we call via expansions */
+acl_where = ACL_WHERE_DELIVERY;
 
 /* Reset the random number generator, so that if several delivery processes are
 started from a queue runner that has already used random numbers (for sorting),
@@ -7034,6 +7038,7 @@ expand_check_condition) to do a lookup. We must therefore be sure everything is
 released. */
 
 search_tidyup();
+acl_where = ACL_WHERE_UNKNOWN;
 return final_yield;
 }
 

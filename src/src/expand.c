@@ -1869,6 +1869,7 @@ int i;
 uschar *tmp;
 int sav_narg = acl_narg;
 int ret;
+extern int acl_where;
 
 if(--nsub > sizeof(acl_arg)/sizeof(*acl_arg)) nsub = sizeof(acl_arg)/sizeof(*acl_arg);
 for (i = 0; i < nsub && sub[i+1]; i++)
@@ -1890,7 +1891,7 @@ DEBUG(D_expand)
     acl_narg>0 ? sub[1]   : US"<none>",
     acl_narg>1 ? " +more" : "");
 
-ret = acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &tmp);
+ret = acl_eval(acl_where, NULL, sub[0], user_msgp, &tmp);
 
 for (i = 0; i < nsub; i++)
   acl_arg[i] = sub[i+1];	/* restore old args */

@@ -4006,6 +4006,39 @@ return search_find_defer?DEFER:ERROR;
 *        Check access using an ACL               *
 *************************************************/
 
+/* Alternate interface for ACL, used by expansions */
+int
+acl_eval(int where, uschar *recipient, uschar *s, uschar **user_msgptr,
+  uschar **log_msgptr)
+{
+int rc;
+address_item adb;
+address_item *addr = NULL;
+
+*user_msgptr = *log_msgptr = NULL;
+sender_verified_failed = NULL;
+ratelimiters_cmd = NULL;
+log_reject_target = LOG_MAIN|LOG_REJECT;
+
+if (where == ACL_WHERE_RCPT)
+  {
+  adb = address_defaults;
+  addr = &adb;
+  addr->address = recipient;
+  if (deliver_split_address(addr) == DEFER)
+    {
+    *log_msgptr = US"defer in percent_hack_domains check";
+    return DEFER;
+    }
+  deliver_domain = addr->domain;
+  deliver_localpart = addr->local_part;
+  }
+
+return acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+}
+
+
+
 /* This is the external interface for ACL checks. It sets up an address and the
 expansions for $domain and $local_part when called after RCPT, then calls
 acl_check_internal() to do the actual work.
@@ -4024,6 +4057,7 @@ Returns:       OK         access is granted by an ACCEPT verb
                DEFER      can't tell at the moment
                ERROR      disaster
 */
+int acl_where = ACL_WHERE_UNKNOWN;
 
 int
 acl_check(int where, uschar *recipient, uschar *s, uschar **user_msgptr,
@@ -4052,7 +4086,9 @@ if (where == ACL_WHERE_RCPT)
   deliver_localpart = addr->local_part;
   }
 
+acl_where = where;
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+acl_where = ACL_WHERE_UNKNOWN;
 
 /* Cutthrough - if requested,
 and WHERE_RCPT and not yet opened conn as result of recipient-verify,
@@ -4133,7 +4169,6 @@ if (fake_response != OK)
 
 return rc;
 }
-
 
 
 /*************************************************
