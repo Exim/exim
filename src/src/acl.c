@@ -2875,6 +2875,10 @@ for (; cb != NULL; cb = cb->next)
       #ifndef DISABLE_DKIM
       case CONTROL_DKIM_VERIFY:
       dkim_disable_verify = TRUE;
+      #ifdef EXPERIMENTAL_DMARC
+      /* Since DKIM was blocked, skip DMARC too */
+      dmarc_disable_verify = TRUE;
+      #endif
       break;
       #endif
 
