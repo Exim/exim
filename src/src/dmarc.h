@@ -14,7 +14,8 @@
 
 /* prototypes */
 int dmarc_init();
-int dmarc_process(header_line *);
+int dmarc_store_data(header_line *);
+int dmarc_process();
 uschar *dmarc_exim_expand_query(int);
 uschar *dmarc_exim_expand_defaults(int);
 uschar *dmarc_auth_results_header(header_line *,uschar *);

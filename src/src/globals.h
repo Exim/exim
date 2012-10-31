@@ -329,6 +329,7 @@ extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP i
 extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
 #ifdef EXPERIMENTAL_DMARC
+extern int     dmarc_has_been_checked; /* Global variable to check if test has been called yet */
 extern uschar *dmarc_ar_header;        /* Expansion variable, suggested header for dmarc auth results */
 extern uschar *dmarc_status;           /* Expansion variable, one word value */
 extern uschar *dmarc_status_text;      /* Expansion variable, human readable value */

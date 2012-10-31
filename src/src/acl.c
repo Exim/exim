@@ -3122,6 +3122,8 @@ for (; cb != NULL; cb = cb->next)
 
     #ifdef EXPERIMENTAL_DMARC
     case ACLC_DMARC_STATUS:
+    if (dmarc_has_been_checked++ == 0)
+      dmarc_process();
     /* used long way of dmarc_exim_expand_query() in case we need more
      * view into the process in the future. */
     rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),

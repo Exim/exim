@@ -19,6 +19,7 @@ OPENDMARC_STATUS_T  libdm_status;
 BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
+header_line *from_header   = NULL;
 #ifdef EXPERIMENTAL_SPF
 extern SPF_response_t   *spf_response;
 uschar *spf_sender_domain  = NULL;
@@ -30,7 +31,6 @@ u_char *header_from_sender = NULL;
    messages on the same SMTP connection (that come from the
    same host with the same HELO string) */
 
-// int dmarc_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
 int dmarc_init() {
   int *netmask   = NULL;   /* Ignored */
   int is_ipv6    = 0;
@@ -91,11 +91,23 @@ int dmarc_init() {
 }
 
 
+/* dmarc_store_data stores the header data so that subsequent
+ * dmarc_process can access the data */
+
+int dmarc_store_data(header_line *hdr) {
+  DEBUG(D_receive)
+    debug_printf("DMARC storing header data\n");
+  if (dmarc_disable_verify != TRUE)
+    from_header = hdr;
+  return OK;
+}
+
+
 /* dmarc_process adds the envelope sender address to the existing
    context (if any), retrieves the result, sets up expansion
    strings and evaluates the condition outcome. */
 
-int dmarc_process(header_line *from_header) {
+int dmarc_process() {
     int spf_result, sr, origin; /* used in SPF section */
     int da, sa;
     pdkim_signature *sig  = NULL;
@@ -221,14 +233,18 @@ int dmarc_process(header_line *from_header) {
     {
       case DMARC_DNS_ERROR_NXDOMAIN:
       case DMARC_DNS_ERROR_NO_RECORD:
+        DEBUG(D_receive)
+          debug_printf("DMARC no record found for '%s'\n", from_header->text);
         has_dmarc_record = FALSE;
         break;
       case DMARC_PARSE_OKAY:
         DEBUG(D_receive)
-          debug_printf("DMARC record found for %s\n", from_header->text);
+          debug_printf("DMARC record found for '%s'\n", from_header->text);
         break;
       default:
         /* everything else, skip dmarc */
+        DEBUG(D_receive)
+          debug_printf("DMARC skipping, unsure what to do with '%s'\n", from_header->text);
         has_dmarc_record = FALSE;
         break;
     }
@@ -270,19 +286,15 @@ int dmarc_process(header_line *from_header) {
     dmarc_status_text = string_copy(enforcement);
     libdm_status = opendmarc_policy_fetch_alignment(dmarc_pctx, &da, &sa);
     if (libdm_status != DMARC_PARSE_OKAY)
-    {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to read DMARC alignment: %s",
                                        opendmarc_policy_status_to_str(libdm_status));
-    }
     if (has_dmarc_record == TRUE)
-    {
       log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
                              "spf_align=%s dkim_align=%s enforcement='%s'",
                              spf_sender_domain, dmarc_used_domain,
                              (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              enforcement);
-    }
   }
   /* set some global variables here */
   dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
@@ -300,7 +312,6 @@ uschar *dmarc_exim_expand_query(int what)
 {
   if (dmarc_disable_verify || !dmarc_pctx)
     return dmarc_exim_expand_defaults(what);
-
   switch(what) {
     case DMARC_VERIFY_STATUS:
       return(dmarc_status);

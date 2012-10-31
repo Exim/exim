@@ -3103,7 +3103,7 @@ else
 #endif /* WITH_CONTENT_SCAN */
 
 #ifdef EXPERIMENTAL_DMARC
-  dmarc_up = dmarc_process(from_header);
+  dmarc_up = dmarc_store_data(from_header);
 #endif /* EXPERIMENTAL_DMARC */
 
     /* Check the recipients count again, as the MIME ACL might have changed
