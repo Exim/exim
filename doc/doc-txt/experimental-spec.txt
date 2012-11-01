@@ -610,7 +610,12 @@ exim binary.  The commented out lines should be uncommented if you
 built opendmarc from source and installed in the default location.
 
 You can now run DMARC checks in incoming SMTP by using the
-"dmarc_status" ACL condition in the DATA ACL.
+"dmarc_status" ACL condition in the DATA ACL.  You are required to
+call the spf condition first in the ACLs, then the "dmarc_status"
+condition.  Putting this condition in the ACLs is required in order
+for a DMARC check to actually occur.  All of the variables are set
+up before the DATA ACL, but there is no actual DMARC check that
+occurs until a "dmarc_status" condition is encountered in the ACLs.
 
 The dmarc_status condition takes a list of strings on its
 right-hand side.  These strings describe recommended action based
@@ -680,7 +685,7 @@ Example usage:
 (DATA ACL)
   warn    dmarc_status   = accept : none : off
           !authenticated = *
-          log_message    = DMARC $dmarc_status $dmarc_used_domain
+          log_message    = DMARC DEBUG: $dmarc_status $dmarc_used_domain
           add_header     = $dmarc_ar_header
 
   warn    dmarc_status   = !accept
