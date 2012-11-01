@@ -138,7 +138,7 @@ int dmarc_process() {
      * <cannonball> I'm not denying that :-/
      * <jgh_hm> there may well be no better though
      */
-    header_from_sender = expand_string( string_sprintf("${domain:${extract{1}{:}{${addresses:${sg{%s}{([^\"]\\S+)@(\\S+[^\"]) (<\\S+@\\S+>)}{\$1.\$2 \$3}}}}}}",
+    header_from_sender = expand_string( string_sprintf("${domain:${extract{1}{:}{${addresses:${sg{%s}{([^\"]\\\\S+)@(\\\\S+[^\"]) (<\\\\S+@\\\\S+>)}{\\$1.\\$2 \\$3}}}}}}",
                                                        from_header->text) );
     /* The opendmarc library extracts the domain from the email address. */
     libdm_status = opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
