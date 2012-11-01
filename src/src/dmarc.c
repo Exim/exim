@@ -20,11 +20,11 @@ BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
 header_line *from_header   = NULL;
+u_char *header_from_sender = NULL;
 #ifdef EXPERIMENTAL_SPF
 extern SPF_response_t   *spf_response;
 uschar *spf_sender_domain  = NULL;
 uschar *spf_human_readable = NULL;
-u_char *header_from_sender = NULL;
 #endif
 
 /* dmarc_init sets up a context that can be re-used for several
@@ -45,10 +45,10 @@ int dmarc_init() {
   dmarc_abort  = FALSE;
   dmarc_pass_fail = US"skipped";
   dmarc_used_domain = US"";
+  header_from_sender = NULL;
 #ifdef EXPERIMENTAL_SPF
   spf_sender_domain  = NULL;
   spf_human_readable = NULL;
-  header_from_sender = NULL;
 #endif
 
   /* ACLs have "control=dmarc_disable_verify" */
@@ -138,13 +138,16 @@ int dmarc_process() {
      * <cannonball> I'm not denying that :-/
      * <jgh_hm> there may well be no better though
      */
-    header_from_sender = expand_string( string_sprintf("${domain:${extract{1}{:}{${addresses:%s}}}}",
+    header_from_sender = expand_string( string_sprintf("${domain:${extract{1}{:}{${addresses:${sg{%s}{([^\"]\\S+)@(\\S+[^\"]) (<\\S+@\\S+>)}{\$1.\$2 \$3}}}}}}",
                                                        from_header->text) );
     /* The opendmarc library extracts the domain from the email address. */
     libdm_status = opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
     if (libdm_status != DMARC_PARSE_OKAY)
-      log_write(0, LOG_MAIN|LOG_PANIC, "failure to store header From: in DMARC: %s",
-                           opendmarc_policy_status_to_str(libdm_status));
+    {
+      log_write(0, LOG_MAIN|LOG_PANIC, "failure to store header From: in DMARC: %s, header was '%s'",
+                           opendmarc_policy_status_to_str(libdm_status), from_header->text);
+      dmarc_abort = TRUE;
+    }
   }
 
   /* Skip DMARC if connection is SMTP Auth. Temporarily, admin should
