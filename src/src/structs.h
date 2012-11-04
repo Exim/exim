@@ -335,7 +335,8 @@ typedef struct auth_instance {
   uschar *advertise_condition;    /* Are we going to advertise this?*/
   uschar *client_condition;       /* Should the client try this? */
   uschar *public_name;            /* Advertised name */
-  uschar *set_id;                 /* String to set as authenticated id */
+  uschar *set_id;                 /* String to set when server as authenticated id */
+  uschar *set_client_id;          /* String to set when client as client_authenticated id */
   uschar *mail_auth_condition;    /* Condition for AUTH on MAIL command */
   uschar *server_debug_string;    /* Debugging output */
   uschar *server_condition;       /* Authorization condition */

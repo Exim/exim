@@ -17,6 +17,8 @@ data blocks and hence have the opt_public flag set. */
 optionlist optionlist_auths[] = {
   { "client_condition", opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, client_condition)) },
+  { "client_set_id", opt_stringptr | opt_public,
+                 (void *)(offsetof(auth_instance, set_client_id)) },
   { "driver",        opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, driver_name)) },
   { "public_name",   opt_stringptr | opt_public,
@@ -426,6 +428,8 @@ int     check_log_space        = 0;
 BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 0;
 int     check_spool_space      = 0;
+uschar	*client_authenticator  = NULL;
+uschar	*client_authenticated_id = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 BOOL    config_changed         = FALSE;

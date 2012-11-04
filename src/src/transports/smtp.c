@@ -1349,6 +1349,9 @@ if (continue_hostname == NULL
             {
             case OK:
             smtp_authenticated = TRUE;   /* stops the outer loop */
+	    client_authenticator = au->name;
+	    if (au->set_client_id != NULL)
+	      client_authenticated_id = expand_string(au->set_client_id);
             break;
 
             /* Failure after writing a command */

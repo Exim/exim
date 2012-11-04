@@ -22,6 +22,7 @@ login:
   driver = plaintext
   public_name = LOGIN
   client_send = : userx : secret
+  client_set_id = userx
 
 plain:
   driver = plaintext
@@ -32,6 +33,7 @@ xlogin:
   driver = plaintext
   public_name = XLOGIN
   client_send = : $auth1 : $auth1+$auth2
+  client_set_id = $auth1
 
 
 # ----- Routers -----

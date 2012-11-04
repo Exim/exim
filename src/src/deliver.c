@@ -774,6 +774,13 @@ else
       string_printing(addr->peerdn), US"\"");
   #endif
 
+  if (smtp_authenticated)
+    {
+    s = string_append(s, &size, &ptr, 2, US" A=", client_authenticator);
+    if (client_authenticated_id)
+      s = string_append(s, &size, &ptr, 2, US":", client_authenticated_id);
+    }
+
   if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
       addr->message != NULL)
     {
@@ -2913,6 +2920,20 @@ while (!done)
     break;
     #endif
 
+    case 'C':	/* client authenticator information */
+    switch (*ptr++)
+    {
+    case '1':
+      smtp_authenticated = TRUE;
+      client_authenticator = (*ptr)? string_copy(ptr) : NULL;
+      break;
+    case '2':
+      client_authenticated_id = (*ptr)? string_copy(ptr) : NULL;
+      break;
+    }
+    while (*ptr++);
+    break;
+
     case 'A':
     if (addr == NULL)
       {
@@ -3950,10 +3971,10 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     memcpy(big_buffer+1, &transport_count, sizeof(transport_count));
     (void)write(fd, big_buffer, sizeof(transport_count) + 1);
 
-    /* Information about what happened to each address. Three item types are
-    used: an optional 'X' item first, for TLS information, followed by 'R'
-    items for any retry settings, and finally an 'A' item for the remaining
-    data. */
+    /* Information about what happened to each address. Four item types are
+    used: an optional 'X' item first, for TLS information, then an optional "C"
+    item for any client-auth info followed by 'R' items for any retry settings,
+    and finally an 'A' item for the remaining data. */
 
     for(; addr != NULL; addr = addr->next)
       {
@@ -3970,8 +3991,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       if (addr->cipher != NULL)
         {
         ptr = big_buffer;
-        *ptr++ = 'X';
-        sprintf(CS ptr, "%.128s", addr->cipher);
+        sprintf(CS ptr, "X%.128s", addr->cipher);
         while(*ptr++);
         if (addr->peerdn == NULL) *ptr++ = 0; else
           {
@@ -3981,6 +4001,21 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         (void)write(fd, big_buffer, ptr - big_buffer);
         }
       #endif
+
+      if (client_authenticator)
+        {
+        ptr = big_buffer;
+	sprintf(CS big_buffer, "C1%.64s", client_authenticator);
+        while(*ptr++);
+        (void)write(fd, big_buffer, ptr - big_buffer);
+	}
+      if (client_authenticated_id)
+        {
+        ptr = big_buffer;
+	sprintf(CS big_buffer, "C2%.64s", client_authenticated_id);
+        while(*ptr++);
+        (void)write(fd, big_buffer, ptr - big_buffer);
+	}
 
       /* Retry information: for most success cases this will be null. */
 
