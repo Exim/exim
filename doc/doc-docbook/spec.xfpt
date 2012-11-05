@@ -33649,9 +33649,9 @@ intermediate address(es) exist between the original and the final address, the
 last of these is given in parentheses after the final address. The R and T
 fields record the router and transport that were used to process the address.
 
-If SMTP AUTH was used for the deliver there is an additional item A=
+If SMTP AUTH was used for the delivery there is an additional item A=
 followed by the name of the authenticator that was used.
-If an authenticated identification was set up by the authenticator’s client_set_id
+If an authenticated identification was set up by the authenticator's &%client_set_id%&
 option, this is logged too, separated by a colon from the authenticator name.
 
 If a shadow transport was run after a successful local delivery, the log line
