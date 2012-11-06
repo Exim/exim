@@ -3602,7 +3602,11 @@ if (sender_host_authenticated != NULL)
   {
   s = string_append(s, &size, &sptr, 2, US" A=", sender_host_authenticated);
   if (authenticated_id != NULL)
+    {
     s = string_append(s, &size, &sptr, 2, US":", authenticated_id);
+    if (log_extra_selector & LX_smtp_mailauth  &&  authenticated_sender != NULL)
+      s = string_append(s, &size, &sptr, 2, US":", authenticated_sender);
+    }
   }
 
 sprintf(CS big_buffer, "%d", msg_size);
@@ -3612,10 +3616,11 @@ s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
    0 ... no BODY= used
    7 ... 7BIT
    8 ... 8BITMIME */
-if (log_extra_selector & LX_8bitmime) {
+if (log_extra_selector & LX_8bitmime)
+  {
   sprintf(CS big_buffer, "%d", body_8bitmime);
   s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
-}
+  }
 
 /* If an addr-spec in a message-id contains a quoted string, it can contain
 any characters except " \ and CR and so in particular it can contain NL!

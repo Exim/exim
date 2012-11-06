@@ -368,6 +368,7 @@ auth_instance auth_defaults    = {
     NULL,                      /* client_condition */
     NULL,                      /* public_name */
     NULL,                      /* set_id */
+    NULL,                      /* set_client_id */
     NULL,                      /* server_mail_auth_condition */
     NULL,                      /* server_debug_string */
     NULL,                      /* server_condition */
@@ -430,6 +431,7 @@ int     check_spool_inodes     = 0;
 int     check_spool_space      = 0;
 uschar	*client_authenticator  = NULL;
 uschar	*client_authenticated_id = NULL;
+uschar	*client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 BOOL    config_changed         = FALSE;
@@ -776,6 +778,7 @@ bit_table log_options[]        = {
   { US"smtp_confirmation",            LX_smtp_confirmation },
   { US"smtp_connection",              L_smtp_connection },
   { US"smtp_incomplete_transaction",  L_smtp_incomplete_transaction },
+  { US"smtp_mailauth",                LX_smtp_mailauth },
   { US"smtp_no_mail",                 LX_smtp_no_mail },
   { US"smtp_protocol_error",          L_smtp_protocol_error },
   { US"smtp_syntax_error",            L_smtp_syntax_error },

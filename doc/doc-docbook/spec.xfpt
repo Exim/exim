@@ -33767,7 +33767,7 @@ at the end of its processing.
 A summary of the field identifiers that are used in log lines is shown in
 the following table:
 .display
-&`A   `&        authenticator name (and optional id)
+&`A   `&        authenticator name (and optional id and sender)
 &`C   `&        SMTP confirmation on delivery
 &`    `&        command list for &"no mail in SMTP session"&
 &`CV  `&        certificate verification status
@@ -33884,6 +33884,7 @@ selection marked by asterisks:
 &`*smtp_confirmation          `&  SMTP confirmation on => lines
 &` smtp_connection            `&  SMTP connections
 &` smtp_incomplete_transaction`&  incomplete SMTP transactions
+&` smtp_mailauth              `&  AUTH argument to MAIL commands
 &` smtp_no_mail               `&  session with no MAIL commands
 &` smtp_protocol_error        `&  SMTP protocol errors
 &` smtp_syntax_error          `&  SMTP syntax errors
@@ -34151,6 +34152,11 @@ than 20 commands, they are all listed. If there were more than 20 commands,
 the last 20 are listed, preceded by &"..."&. However, with the default
 setting of 10 for &%smtp_accep_max_nonmail%&, the connection will in any case
 have been aborted before 20 non-mail commands are processed.
+.next
+&%smtp_mailauth%&: A third subfield with the authenticated sender,
+colon-separated, is appended to the A= item for a message arrival or delivery
+log line, if an AUTH argument to the SMTP MAIL command (see &<<SECTauthparamail>>&)
+was accepted or used.
 .next
 .cindex "log" "SMTP protocol error"
 .cindex "SMTP" "logging protocol error"

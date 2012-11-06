@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=login:userx C="250 OK"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=login:userx:CALLER@myhost.test.ex C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=plain C="250 OK"
@@ -27,7 +27,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 => forcesender@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=login:userx C="250 OK"
+1999-03-02 09:44:33 10HmbF-0005vi-00 => forcesender@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=login:userx:force@x.y.z C="250 OK"
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbG-0005vi-00 login authenticator cancelled authentication H=127.0.0.1 [127.0.0.1] Invalid base64 string in server response "334 User?"
@@ -37,5 +37,5 @@
 1999-03-02 09:44:33 10HmbH-0005vi-00 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbI-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=xlogin:challenge-1 C="250 OK"
+1999-03-02 09:44:33 10HmbI-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1] A=xlogin:challenge-1:CALLER@myhost.test.ex C="250 OK"
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed

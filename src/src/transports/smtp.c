@@ -1499,7 +1499,10 @@ if ((smtp_authenticated || ob->authenticated_sender_force) &&
   string_format(p, sizeof(buffer) - (p-buffer), " AUTH=%s",
     auth_xtextencode(local_authenticated_sender,
     Ustrlen(local_authenticated_sender)));
+  client_authenticated_sender = string_copy(local_authenticated_sender);
   }
+else
+  client_authenticated_sender = NULL;
 
 /* From here until we send the DATA command, we can make use of PIPELINING
 if the server host supports it. The code has to be able to check the responses

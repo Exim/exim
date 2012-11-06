@@ -238,8 +238,9 @@ extern int     check_log_space;        /* Minimum for message acceptance */
 extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length */
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
-extern uschar *client_authenticator;   /* Authenticator name used for smtp delivery */
-extern uschar *client_authenticated_id; /* (not yet used) */
+extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
+extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */
+extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
 extern int     clmacro_count;          /* Number of command line macros */
 extern uschar *clmacros[];             /* Copy of them, for re-exec */
 extern int     connection_max_messages;/* Max down one SMTP connection */

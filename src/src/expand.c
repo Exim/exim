@@ -426,8 +426,6 @@ static var_entry var_table[] = {
   { "bounce_return_size_limit", vtype_int,    &bounce_return_size_limit },
   { "caller_gid",          vtype_gid,         &real_gid },
   { "caller_uid",          vtype_uid,         &real_uid },
-  { "client_authenticator", vtype_stringptr,  &client_authenticator },
-  { "client_authenticated_id", vtype_stringptr, &client_authenticated_id },
   { "compile_date",        vtype_stringptr,   &version_date },
   { "compile_number",      vtype_stringptr,   &version_cnumber },
   { "csa_status",          vtype_stringptr,   &csa_status },

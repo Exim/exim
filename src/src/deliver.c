@@ -778,7 +778,11 @@ else
     {
     s = string_append(s, &size, &ptr, 2, US" A=", client_authenticator);
     if (client_authenticated_id)
+      {
       s = string_append(s, &size, &ptr, 2, US":", client_authenticated_id);
+      if (log_extra_selector & LX_smtp_mailauth  &&  client_authenticated_sender)
+        s = string_append(s, &size, &ptr, 2, US":", client_authenticated_sender);
+      }
     }
 
   if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
@@ -2930,6 +2934,9 @@ while (!done)
     case '2':
       client_authenticated_id = (*ptr)? string_copy(ptr) : NULL;
       break;
+    case '3':
+      client_authenticated_sender = (*ptr)? string_copy(ptr) : NULL;
+      break;
     }
     while (*ptr++);
     break;
@@ -4013,6 +4020,13 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         {
         ptr = big_buffer;
 	sprintf(CS big_buffer, "C2%.64s", client_authenticated_id);
+        while(*ptr++);
+        (void)write(fd, big_buffer, ptr - big_buffer);
+	}
+      if (client_authenticated_sender)
+        {
+        ptr = big_buffer;
+	sprintf(CS big_buffer, "C3%.64s", client_authenticated_sender);
         while(*ptr++);
         (void)write(fd, big_buffer, ptr - big_buffer);
 	}

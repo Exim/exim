@@ -86,6 +86,9 @@ PP/11 SECURITY: protect DKIM DNS decoding from remote exploit.
 JH/11 Add A= logging on delivery lines, and a client_set_id option on
       authenticators.
 
+JH/12 Add optional authenticated_sender logging to A= and a log_selector
+      for control.
+
 
 Exim version 4.80.1
 -------------------

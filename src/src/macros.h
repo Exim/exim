@@ -410,6 +410,7 @@ set all the bits in a multi-word selector. */
 #define LX_tls_sni                     0x80800000
 #define LX_unknown_in_list             0x81000000
 #define LX_8bitmime                    0x82000000
+#define LX_smtp_mailauth               0x84000000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \

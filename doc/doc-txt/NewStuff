@@ -120,6 +120,8 @@ Version 4.82
 
 15. New 8bitmime status logging option for received messages.  Log field "M8S".
 
+16. New authenticated_sender logging option, adding to log field "A".
+
 
 Version 4.80
 ------------
