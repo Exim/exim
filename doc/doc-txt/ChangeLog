@@ -89,6 +89,8 @@ JH/11 Add A= logging on delivery lines, and a client_set_id option on
 JH/12 Add optional authenticated_sender logging to A= and a log_selector
       for control.
 
+PP/12 Unbreak server_set_id for NTLM/SPA auth, broken by 4.80 PP/29.
+
 
 Exim version 4.80.1
 -------------------
