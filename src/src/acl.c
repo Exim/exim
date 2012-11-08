@@ -4008,8 +4008,7 @@ return search_find_defer?DEFER:ERROR;
 
 /* Alternate interface for ACL, used by expansions */
 int
-acl_eval(int where, uschar *recipient, uschar *s, uschar **user_msgptr,
-  uschar **log_msgptr)
+acl_eval(int where, uschar *s, uschar **user_msgptr, uschar **log_msgptr)
 {
 int rc;
 address_item adb;
@@ -4024,14 +4023,11 @@ if (where == ACL_WHERE_RCPT)
   {
   adb = address_defaults;
   addr = &adb;
-  addr->address = recipient;
-  if (deliver_split_address(addr) == DEFER)
-    {
-    *log_msgptr = US"defer in percent_hack_domains check";
-    return DEFER;
-    }
-  deliver_domain = addr->domain;
-  deliver_localpart = addr->local_part;
+  addr->address = expand_string(US"$local_part@$domain");
+  addr->domain = deliver_domain;
+  addr->local_part = deliver_localpart;
+  addr->cc_local_part = deliver_localpart;
+  addr->lc_local_part = deliver_localpart;
   }
 
 return acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
