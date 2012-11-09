@@ -774,14 +774,14 @@ else
       string_printing(addr->peerdn), US"\"");
   #endif
 
-  if (smtp_authenticated)
+  if (addr->authenticator)
     {
-    s = string_append(s, &size, &ptr, 2, US" A=", client_authenticator);
-    if (client_authenticated_id)
+    s = string_append(s, &size, &ptr, 2, US" A=", addr->authenticator);
+    if (addr->auth_id)
       {
-      s = string_append(s, &size, &ptr, 2, US":", client_authenticated_id);
-      if (log_extra_selector & LX_smtp_mailauth  &&  client_authenticated_sender)
-        s = string_append(s, &size, &ptr, 2, US":", client_authenticated_sender);
+      s = string_append(s, &size, &ptr, 2, US":", addr->auth_id);
+      if (log_extra_selector & LX_smtp_mailauth  &&  addr->auth_sndr)
+        s = string_append(s, &size, &ptr, 2, US":", addr->auth_sndr);
       }
     }
 
@@ -2928,14 +2928,13 @@ while (!done)
     switch (*ptr++)
     {
     case '1':
-      smtp_authenticated = TRUE;
-      client_authenticator = (*ptr)? string_copy(ptr) : NULL;
+      addr->authenticator = (*ptr)? string_copy(ptr) : NULL;
       break;
     case '2':
-      client_authenticated_id = (*ptr)? string_copy(ptr) : NULL;
+      addr->auth_id = (*ptr)? string_copy(ptr) : NULL;
       break;
     case '3':
-      client_authenticated_sender = (*ptr)? string_copy(ptr) : NULL;
+      addr->auth_sndr = (*ptr)? string_copy(ptr) : NULL;
       break;
     }
     while (*ptr++);
@@ -3681,6 +3680,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   /* Set up the expansion variables for this set of addresses */
 
   deliver_set_expansions(addr);
+
+  /* Ensure any transport-set auth info is fresh */
+  addr->authenticator = addr->auth_id = addr->auth_sndr = NULL;
 
   /* Compute the return path, expanding a new one if required. The old one
   must be set first, as it might be referred to in the expansion. */

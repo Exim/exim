@@ -1272,6 +1272,7 @@ if (continue_hostname == NULL
   authenticator's client driver is running. */
 
   smtp_authenticated = FALSE;
+  client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
   require_auth = verify_check_this_host(&(ob->hosts_require_auth), NULL,
     host->name, host->address, NULL);
 
@@ -1501,8 +1502,6 @@ if ((smtp_authenticated || ob->authenticated_sender_force) &&
     Ustrlen(local_authenticated_sender)));
   client_authenticated_sender = string_copy(local_authenticated_sender);
   }
-else
-  client_authenticated_sender = NULL;
 
 /* From here until we send the DATA command, we can make use of PIPELINING
 if the server host supports it. The code has to be able to check the responses

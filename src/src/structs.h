@@ -536,6 +536,10 @@ typedef struct address_item {
   uschar *peerdn;                 /* DN of server's certificate */
   #endif
 
+  uschar *authenticator;	  /* auth driver name used by transport */
+  uschar *auth_id;		  /* auth "login" name used by transport */
+  uschar *auth_sndr;		  /* AUTH arg to SMTP MAIL, used by transport */
+
   uid_t   uid;                    /* uid for transporting */
   gid_t   gid;                    /* gid for transporting */
 

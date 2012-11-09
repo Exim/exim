@@ -315,6 +315,9 @@ address_item address_defaults = {
   NULL,                 /* cipher */
   NULL,                 /* peerdn */
   #endif
+  NULL,			/* authenticator */
+  NULL,			/* auth_id */
+  NULL,			/* auth_sndr */
   (uid_t)(-1),          /* uid */
   (gid_t)(-1),          /* gid */
   0,                    /* flags */
