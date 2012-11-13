@@ -140,8 +140,13 @@ int dmarc_process() {
      */
     header_from_sender = expand_string( string_sprintf("${domain:${extract{1}{:}{${addresses:${sg{%s}{([^\"]\\\\S+)@(\\\\S+[^\"]) (<\\\\S+@\\\\S+>)}{\\$1.\\$2 \\$3}}}}}}",
                                                        from_header->text) );
-    /* The opendmarc library extracts the domain from the email address. */
-    libdm_status = opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
+    /* The opendmarc library extracts the domain from the email address, but
+     * only try to store it if it's not empty.  Otherwise, skip out of DMARC. */
+    if (strcmp( CCS header_from_sender, "") == 0)
+      dmarc_abort = TRUE;
+    libdm_status = (dmarc_abort == TRUE) ?
+	           DMARC_PARSE_OKAY :
+		   opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
     if (libdm_status != DMARC_PARSE_OKAY)
     {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to store header From: in DMARC: %s, header was '%s'",
@@ -204,11 +209,16 @@ int dmarc_process() {
       DEBUG(D_receive)
         debug_printf("DMARC using SPF sender domain = %s\n", spf_sender_domain);
     }
-    libdm_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
-                                              spf_result, origin, spf_human_readable);
-    if (libdm_status != DMARC_PARSE_OKAY)
-      log_write(0, LOG_MAIN|LOG_PANIC, "failure to store spf for DMARC: %s",
-                           opendmarc_policy_status_to_str(libdm_status));
+    if (strcmp( CCS spf_sender_domain, "") == 0)
+      dmarc_abort = TRUE;
+    if (dmarc_abort == FALSE)
+    {
+      libdm_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
+                                                spf_result, origin, spf_human_readable);
+      if (libdm_status != DMARC_PARSE_OKAY)
+        log_write(0, LOG_MAIN|LOG_PANIC, "failure to store spf for DMARC: %s",
+                             opendmarc_policy_status_to_str(libdm_status));
+    }
 #endif /* EXPERIMENTAL_SPF */
 
     /* Now we cycle through the dkim signature results and put into
@@ -219,16 +229,16 @@ int dmarc_process() {
       int dkim_result, vs;
       vs = sig->verify_status;
       dkim_result = ( vs == PDKIM_VERIFY_PASS ) ? DMARC_POLICY_DKIM_OUTCOME_PASS :
-		    ( vs == PDKIM_VERIFY_FAIL ) ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
-		    ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
-	            DMARC_POLICY_DKIM_OUTCOME_NONE;
+        	    ( vs == PDKIM_VERIFY_FAIL ) ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
+        	    ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
+                    DMARC_POLICY_DKIM_OUTCOME_NONE;
       libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, (uschar *)sig->domain,
-		                                 dkim_result, US"");
+        	                                 dkim_result, US"");
       DEBUG(D_receive)
         debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
       if (libdm_status != DMARC_PARSE_OKAY)
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store dkim (%s) for DMARC: %s",
-			     sig->domain, opendmarc_policy_status_to_str(libdm_status));
+        		     sig->domain, opendmarc_policy_status_to_str(libdm_status));
       sig = sig->next;
     }
     libdm_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
@@ -255,7 +265,7 @@ int dmarc_process() {
      * for libopendmarc using its max hostname length definition. */
     uschar *dmarc_domain = (uschar *)calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
     libdm_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx, dmarc_domain,
-		                                          DMARC_MAXHOSTNAMELEN-1);
+        	                                          DMARC_MAXHOSTNAMELEN-1);
     dmarc_used_domain = string_copy(dmarc_domain);
     free(dmarc_domain);
     if (libdm_status != DMARC_PARSE_OKAY)
@@ -299,8 +309,8 @@ int dmarc_process() {
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              enforcement);
   }
-  /* set some global variables here */
-  dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
+  /* set header variable here too */
+  dmarc_ar_header = dmarc_auth_results_header(from_header, primary_hostname);
 
   /* shut down libopendmarc */
   if ( dmarc_pctx != NULL )
