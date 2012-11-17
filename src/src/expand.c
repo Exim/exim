@@ -3389,12 +3389,12 @@ if (*error == NULL)
      * can just let the other invalid results occur otherwise, as they have
      * until now.  For this one case, we can coerce.
      */
-    if (y == -1 && x == LLONG_MIN && op != '*')
+    if (y == -1 && x == EXIM_ARITH_MIN && op != '*')
       {
       DEBUG(D_expand)
         debug_printf("Integer exception dodging: " PR_EXIM_ARITH "%c-1 coerced to " PR_EXIM_ARITH "\n",
-            LLONG_MIN, op, LLONG_MAX);
-      x = LLONG_MAX;
+            EXIM_ARITH_MIN, op, EXIM_ARITH_MAX);
+      x = EXIM_ARITH_MAX;
       continue;
       }
     if (op == '*')
@@ -6514,17 +6514,17 @@ else
     default:
       break;
     case 'k':
-      if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/1024 || value < EXIM_ARITH_MIN/1024) errno = ERANGE;
       else value *= 1024;
       endptr++;
       break;
     case 'm':
-      if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024)) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/(1024*1024) || value < EXIM_ARITH_MIN/(1024*1024)) errno = ERANGE;
       else value *= 1024*1024;
       endptr++;
       break;
     case 'g':
-      if (value > LLONG_MAX/(1024*1024*1024) || value < LLONG_MIN/(1024*1024*1024)) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/(1024*1024*1024) || value < EXIM_ARITH_MIN/(1024*1024*1024)) errno = ERANGE;
       else value *= 1024*1024*1024;
       endptr++;
       break;
