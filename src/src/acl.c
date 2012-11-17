@@ -4010,7 +4010,6 @@ return search_find_defer?DEFER:ERROR;
 int
 acl_eval(int where, uschar *s, uschar **user_msgptr, uschar **log_msgptr)
 {
-int rc;
 address_item adb;
 address_item *addr = NULL;
 

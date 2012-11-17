@@ -1236,7 +1236,7 @@ char versionString[] = "libntlm version 0.21";
 
 #define spa_bytes_add(ptr, header, buf, count) \
 { \
-if (buf && count) \
+if (buf != NULL  &&  count) \
   { \
   SSVAL(&ptr->header.len,0,count); \
   SSVAL(&ptr->header.maxlen,0,count); \

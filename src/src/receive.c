@@ -1401,7 +1401,7 @@ BOOL resents_exist = FALSE;
 uschar *resent_prefix = US"";
 uschar *blackholed_by = NULL;
 uschar *blackhole_log_msg = US"";
-int  cutthrough_done;
+int  cutthrough_done = 0;
 
 flock_t lock_data;
 error_block *bad_addresses = NULL;
