@@ -1549,7 +1549,7 @@ switch (type)
      {
       uschar sep = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
       saved_condition = *str_target;
-      strtemp = saved_condition + strlen((char *)saved_condition)-1;
+      strtemp = saved_condition + Ustrlen(saved_condition)-1;
       if (*strtemp == sep) *strtemp = 0;	/* eliminate trailing list-sep */
       strtemp = string_sprintf("%s%c%s", saved_condition, sep, sptr);
       *str_target = string_copy_malloc(strtemp);

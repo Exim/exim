@@ -29,7 +29,8 @@ sense in all contexts.  For some, we can do checks at init time.
 
 #ifndef AUTH_GSASL
 /* dummy function to satisfy compilers when we link in an "empty" file. */
-static void dummy(int x) { dummy(x-1); }
+static void dummy2(int x) { dummy2(x-1); }
+static void dummy(int x) { dummy2(x-1); }
 #else
 
 #include <gsasl.h>
