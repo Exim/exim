@@ -91,6 +91,11 @@ JH/12 Add optional authenticated_sender logging to A= and a log_selector
 
 PP/12 Unbreak server_set_id for NTLM/SPA auth, broken by 4.80 PP/29.
 
+PP/13 Dovecot auth: log better reason to rejectlog if Dovecot did not
+      advertise SMTP AUTH mechanism to us, instead of a generic
+      protocol violation error.  Also, make Exim more robust to bad
+      data from the Dovecot auth socket.
+
 
 Exim version 4.80.1
 -------------------

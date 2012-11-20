@@ -12,11 +12,41 @@ commented them specially, but now they are getting quite extensive, so I have
 ceased doing that. The biggest change is to use unbuffered I/O on the socket
 because using C buffered I/O gives problems on some operating systems. PH */
 
+/* Protocol specifications:
+ * Dovecot 1, protocol version 1.1
+ *   http://wiki.dovecot.org/Authentication%20Protocol
+ *
+ * Dovecot 2, protocol version 1.1
+ *   http://wiki2.dovecot.org/Design/AuthProtocol
+ */
+
 #include "../exim.h"
 #include "dovecot.h"
 
 #define VERSION_MAJOR  1
 #define VERSION_MINOR  0
+
+/* http://wiki.dovecot.org/Authentication%20Protocol
+"The maximum line length isn't defined,
+ but it's currently expected to fit into 8192 bytes"
+*/
+#define DOVECOT_AUTH_MAXLINELEN 8192
+
+/* This was hard-coded as 8.
+AUTH req C->S sends {"AUTH", id, mechanism, service } + params, 5 defined for
+Dovecot 1; Dovecot 2 (same protocol version) defines 9.
+
+Master->Server sends {"USER", id, userid} + params, 6 defined.
+Server->Client only gives {"OK", id} + params, unspecified, only 1 guaranteed.
+
+We only define here to accept S->C; max seen is 3+<unspecified>, plus the two
+for the command and id, where unspecified might include _at least_ user=...
+
+So: allow for more fields than we ever expect to see, while aware that count
+can go up without changing protocol version.
+The cost is the length of an array of pointers on the stack.
+*/
+#define DOVECOT_AUTH_MAXFIELDCOUNT 16
 
 /* Options specific to the authentication mechanism. */
 optionlist auth_dovecot_options[] = {
@@ -43,7 +73,7 @@ auth_dovecot_options_block auth_dovecot_option_defaults = {
 /* Static variables for reading from the socket */
 
 static uschar sbuffer[256];
-static int sbp;
+static int socket_buffer_left;
 
 
 
@@ -67,9 +97,28 @@ void auth_dovecot_init(auth_instance *ablock)
        ablock->client = FALSE;
 }
 
-static int strcut(uschar *str, uschar **ptrs, int nptrs)
+/*************************************************
+ *    "strcut" to split apart server lines       *
+ *************************************************/
+
+/* Dovecot auth protocol uses TAB \t as delimiter; a line consists
+of a command-name, TAB, and then any parameters, each separated by a TAB.
+A parameter can be param=value or a bool, just param.
+
+This function modifies the original str in-place, inserting NUL characters.
+It initialises ptrs entries, setting all to NULL and only setting
+non-NULL N entries, where N is the return value, the number of fields seen
+(one more than the number of tabs).
+
+Note that the return value will always be at least 1, is the count of
+actual fields (so last valid offset into ptrs is one less).
+*/
+
+static int
+strcut(uschar *str, uschar **ptrs, int nptrs)
 {
-       uschar *tmp = str;
+       uschar *last_sub_start = str;
+       uschar *lastvalid = str + Ustrlen(str);
        int n;
 
        for (n = 0; n < nptrs; n++)
@@ -79,19 +128,44 @@ static int strcut(uschar *str, uschar **ptrs, int nptrs)
        while (*str) {
                if (*str == '\t') {
                        if (n <= nptrs) {
-                               *ptrs++ = tmp;
-                               tmp = str + 1;
-                               *str = 0;
+                               *ptrs++ = last_sub_start;
+                               last_sub_start = str + 1;
+                               *str = '\0';
                        }
                        n++;
                }
                str++;
        }
 
-       if (n < nptrs)
-               *ptrs = tmp;
+       if (last_sub_start < lastvalid) {
+              if (n <= nptrs) {
+                       *ptrs = last_sub_start;
+               } else {
+                       HDEBUG(D_auth) debug_printf("dovecot: warning: too many results from tab-splitting; saw %d fields, room for %d\n", n, nptrs);
+                       n = nptrs;
+              }
+       } else {
+              n--;
+              HDEBUG(D_auth) debug_printf("dovecot: warning: ignoring trailing tab\n");
+       }
 
-       return n;
+       return n <= nptrs ? n : nptrs;
+}
+
+static void debug_strcut(uschar **ptrs, int nlen, int alen) ARG_UNUSED;
+static void
+debug_strcut(uschar **ptrs, int nlen, int alen)
+{
+        int i;
+        debug_printf("%d read but unreturned bytes; strcut() gave %d results: ",
+                        socket_buffer_left, nlen);
+        for (i = 0; i < nlen; i++) {
+                debug_printf(" {%s}", ptrs[i]);
+        }
+        if (nlen < alen)
+                debug_printf(" last is %s\n", ptrs[i] ? ptrs[i] : US"<null>");
+        else
+                debug_printf(" (max for capacity)\n");
 }
 
 #define CHECK_COMMAND(str, arg_min, arg_max) do { \
@@ -125,27 +199,27 @@ int count = 0;
 
 for (;;)
   {
-  if (sbp == 0)
+  if (socket_buffer_left == 0)
     {
-    sbp = read(fd, sbuffer, sizeof(sbuffer));
-    if (sbp == 0) { if (count == 0) return NULL; else break; }
+    socket_buffer_left = read(fd, sbuffer, sizeof(sbuffer));
+    if (socket_buffer_left == 0) { if (count == 0) return NULL; else break; }
     p = 0;
     }
 
-  while (p < sbp)
+  while (p < socket_buffer_left)
     {
     if (count >= n - 1) break;
     s[count++] = sbuffer[p];
     if (sbuffer[p++] == '\n') break;
     }
 
-  memmove(sbuffer, sbuffer + p, sbp - p);
-  sbp -= p;
+  memmove(sbuffer, sbuffer + p, socket_buffer_left - p);
+  socket_buffer_left -= p;
 
   if (s[count-1] == '\n' || count >= n - 1) break;
   }
 
-s[count] = 0;
+s[count] = '\0';
 return s;
 }
 
@@ -161,12 +235,14 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        auth_dovecot_options_block *ob =
                (auth_dovecot_options_block *)(ablock->options_block);
        struct sockaddr_un sa;
-       uschar buffer[4096];
-       uschar *args[8];
+       uschar buffer[DOVECOT_AUTH_MAXLINELEN];
+       uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
        uschar *auth_command;
        uschar *auth_extra_data = US"";
+       uschar *p;
        int nargs, tmp;
-       int cuid = 0, cont = 1, found = 0, fd, ret = DEFER;
+       int crequid = 1, cont = 1, fd, ret = DEFER;
+       BOOL found = FALSE;
 
        HDEBUG(D_auth) debug_printf("dovecot authentication\n");
 
@@ -198,37 +274,46 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
 
        auth_defer_msg = US"authentication socket protocol error";
 
-       sbp = 0;  /* Socket buffer pointer */
+       socket_buffer_left = 0;  /* Global, used to read more than a line but return by line */
        while (cont) {
                if (dc_gets(buffer, sizeof(buffer), fd) == NULL)
                        OUT("authentication socket read error or premature eof");
-
-               buffer[Ustrlen(buffer) - 1] = 0;
+               p = buffer + Ustrlen(buffer) - 1;
+               if (*p != '\n') {
+                       OUT("authentication socket protocol line too long");
+               }
+               *p = '\0';
                HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
                nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
+               /* HDEBUG(D_auth) debug_strcut(args, nargs, sizeof(args) / sizeof(args[0])); */
 
                /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands that
                   Exim will need. Original code also failed if Dovecot server sent unknown
                   command. E.g. COOKIE in version 1.1 of the protocol would cause troubles. */
-               if (Ustrcmp(args[0], US"CUID") == 0) {
-                       CHECK_COMMAND("CUID", 1, 1);
-                       cuid = Uatoi(args[1]);
-               } else if (Ustrcmp(args[0], US"VERSION") == 0) {
+               /* pdp: note that CUID is a per-connection identifier sent by the server,
+                  which increments at server discretion.
+                  By contrast, the "id" field of the protocol is a connection-specific request
+                  identifier, which needs to be unique per request from the client and is not
+                  connected to the CUID value, so we ignore CUID from server.  It's purely for
+                  diagnostics. */
+               if (Ustrcmp(args[0], US"VERSION") == 0) {
                        CHECK_COMMAND("VERSION", 2, 2);
                        if (Uatoi(args[1]) != VERSION_MAJOR)
                                OUT("authentication socket protocol version mismatch");
                } else if (Ustrcmp(args[0], US"MECH") == 0) {
                        CHECK_COMMAND("MECH", 1, INT_MAX);
                        if (strcmpic(US args[1], ablock->public_name) == 0)
-                               found = 1;
+                               found = TRUE;
                } else if (Ustrcmp(args[0], US"DONE") == 0) {
                        CHECK_COMMAND("DONE", 0, 0);
                        cont = 0;
                }
        }
 
-       if (!found)
+       if (!found) {
+               auth_defer_msg = string_sprintf("Dovecot did not advertise mechanism \"%s\" to us", ablock->public_name);
                goto out;
+       }
 
        /* Added by PH: data must not contain tab (as it is
        b64 it shouldn't, but check for safety). */
@@ -264,14 +349,11 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
 
    Subsequently, the command was modified to add "secured" and "valid-client-
    cert" when relevant.
-
-   The auth protocol is documented here:
-        http://wiki.dovecot.org/Authentication_Protocol
 ****************************************************************************/
 
        auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
                "AUTH\t%d\t%s\tservice=smtp\t%srip=%s\tlip=%s\tnologin\tresp=%s\n",
-               VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
+               VERSION_MAJOR, VERSION_MINOR, getpid(), crequid,
                ablock->public_name, auth_extra_data, sender_host_address,
                interface_address, data ? (char *) data : "");
 
@@ -295,7 +377,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
                nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
 
-               if (Uatoi(args[1]) != cuid)
+               if (Uatoi(args[1]) != crequid)
                        OUT("authentication socket connection id mismatch");
 
                switch (toupper(*args[0])) {
@@ -316,7 +398,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                                goto out;
                        }
 
-                       temp = string_sprintf("CONT\t%d\t%s\n", cuid, data);
+                       temp = string_sprintf("CONT\t%d\t%s\n", crequid, data);
                        if (write(fd, temp, Ustrlen(temp)) < 0)
                                OUT("authentication socket write error");
                        break;
