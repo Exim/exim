@@ -212,7 +212,7 @@ uschar buffer[256];
 sprintf(CS buffer, "%d 1\n", size);
 len = Ustrlen(buffer);
 (void)lseek(fd, 0, SEEK_END);
-(void)write(fd, buffer, len);
+len = write(fd, buffer, len);
 DEBUG(D_transport)
   debug_printf("added '%.*s' to maildirsize file\n", len-1, buffer);
 }

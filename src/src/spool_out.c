@@ -93,10 +93,12 @@ double-check the mode because the group setting doesn't always get set
 automatically. */
 
 if (fd >= 0)
-  {
-  (void)fchown(fd, exim_uid, exim_gid);
-  (void)fchmod(fd, SPOOL_MODE);
-  }
+  if (fchown(fd, exim_uid, exim_gid) || fchmod(fd, SPOOL_MODE))
+    {
+    DEBUG(D_any) debug_printf("failed setting perms on %s\n", temp_name);
+    (void) close(fd); fd = -1;
+    Uunlink(temp_name);
+    }
 
 return fd;
 }

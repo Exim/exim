@@ -208,7 +208,8 @@ if (created && geteuid() == root_uid)
       if (Ustat(buffer, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
         {
         DEBUG(D_hints_lookup) debug_printf("ensuring %s is owned by exim\n", buffer);
-        (void)Uchown(buffer, exim_uid, exim_gid);
+        if (Uchown(buffer, exim_uid, exim_gid))
+          DEBUG(D_hints_lookup) debug_printf("failed setting %s to owned by exim\n", buffer);
         }
       }
     }

@@ -3192,7 +3192,9 @@ while (done <= 0)
     if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr); else
     #endif
 
-    (void)fwrite(s, 1, ptr, smtp_out);
+      {
+      int i = fwrite(s, 1, ptr, smtp_out); i = i; /* compiler quietening */
+      }
     DEBUG(D_receive)
       {
       uschar *cr;

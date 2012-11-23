@@ -718,8 +718,8 @@ while ((n = fgetc(f)) != EOF)
   int i;
 
   if (!isdigit(n)) goto SPOOL_FORMAT_ERROR;
-  (void)ungetc(n, f);
-  (void)fscanf(f, "%d%c ", &n, flag);
+  if(ungetc(n, f) == EOF  ||  fscanf(f, "%d%c ", &n, flag) == EOF)
+    goto SPOOL_READ_ERROR;
   if (flag[0] != '*') message_size += n;  /* Omit non-transmitted headers */
 
   if (read_headers)

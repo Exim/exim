@@ -433,22 +433,24 @@ return parse_forward_list(data,
 *         Write string down pipe                 *
 *************************************************/
 
-/* This function is used for tranferring a string down a pipe between
+/* This function is used for transferring a string down a pipe between
 processes. If the pointer is NULL, a length of zero is written.
 
 Arguments:
   fd         the pipe
   s          the string
 
-Returns:     nothing
+Returns:     -1 on error, else 0
 */
 
-static void
+static int
 rda_write_string(int fd, uschar *s)
 {
 int len = (s == NULL)? 0 : Ustrlen(s) + 1;
-(void)write(fd, &len, sizeof(int));
-if (s != NULL) (void)write(fd, s, len);
+return (  write(fd, &len, sizeof(int)) != sizeof(int)
+       || (s != NULL  &&  write(fd, s, len) != len)
+       )
+       ? -1 : 0;
 }
 
 
@@ -645,9 +647,11 @@ if ((pid = fork()) == 0)
   /* Pass back whether it was a filter, and the return code and any overall
   error text via the pipe. */
 
-  (void)write(fd, filtertype, sizeof(int));
-  (void)write(fd, &yield, sizeof(int));
-  rda_write_string(fd, *error);
+  if (  write(fd, filtertype, sizeof(int)) != sizeof(int)
+     || write(fd, &yield, sizeof(int)) != sizeof(int)
+     || rda_write_string(fd, *error) != 0
+     )
+    goto bad;
 
   /* Pass back the contents of any syntax error blocks if we have a pointer */
 
@@ -655,11 +659,12 @@ if ((pid = fork()) == 0)
     {
     error_block *ep;
     for (ep = *eblockp; ep != NULL; ep = ep->next)
-      {
-      rda_write_string(fd, ep->text1);
-      rda_write_string(fd, ep->text2);
-      }
-    rda_write_string(fd, NULL);    /* Indicates end of eblocks */
+      if (  rda_write_string(fd, ep->text1) != 0
+         || rda_write_string(fd, ep->text2) != 0
+	 )
+	goto bad;
+    if (rda_write_string(fd, NULL) != 0)    /* Indicates end of eblocks */
+      goto bad;
     }
 
   /* If this is a system filter, we have to pass back the numbers of any
@@ -671,27 +676,33 @@ if ((pid = fork()) == 0)
     int i = 0;
     header_line *h;
     for (h = header_list; h != waslast->next; i++, h = h->next)
-      {
-      if (h->type == htype_old) (void)write(fd, &i, sizeof(i));
-      }
+      if (  h->type == htype_old
+         && write(fd, &i, sizeof(i)) != sizeof(i)
+	 )
+	goto bad;
+
     i = -1;
-    (void)write(fd, &i, sizeof(i));
+    if (write(fd, &i, sizeof(i)) != sizeof(i))
+	goto bad;
 
     while (waslast != header_last)
       {
       waslast = waslast->next;
       if (waslast->type != htype_old)
-        {
-        rda_write_string(fd, waslast->text);
-        (void)write(fd, &(waslast->type), sizeof(waslast->type));
-        }
+	if (  rda_write_string(fd, waslast->text) != 0
+           || write(fd, &(waslast->type), sizeof(waslast->type))
+	      != sizeof(waslast->type)
+	   )
+	  goto bad;
       }
-    rda_write_string(fd, NULL);    /* Indicates end of added headers */
+    if (rda_write_string(fd, NULL) != 0)    /* Indicates end of added headers */
+      goto bad;
     }
 
   /* Write the contents of the $n variables */
 
-  (void)write(fd, filter_n, sizeof(filter_n));
+  if (write(fd, filter_n, sizeof(filter_n)) != sizeof(filter_n))
+    goto bad;
 
   /* If the result was DELIVERED or NOTDELIVERED, we pass back the generated
   addresses, and their associated information, through the pipe. This is
@@ -707,52 +718,71 @@ if ((pid = fork()) == 0)
       {
       int reply_options = 0;
 
-      rda_write_string(fd, addr->address);
-      (void)write(fd, &(addr->mode), sizeof(addr->mode));
-      (void)write(fd, &(addr->flags), sizeof(addr->flags));
-      rda_write_string(fd, addr->p.errors_address);
+      if (  rda_write_string(fd, addr->address) != 0
+         || write(fd, &(addr->mode), sizeof(addr->mode))
+	    != sizeof(addr->mode)
+         || write(fd, &(addr->flags), sizeof(addr->flags))
+	    != sizeof(addr->flags)
+         || rda_write_string(fd, addr->p.errors_address) != 0
+	 )
+	goto bad;
 
       if (addr->pipe_expandn != NULL)
         {
         uschar **pp;
         for (pp = addr->pipe_expandn; *pp != NULL; pp++)
-          rda_write_string(fd, *pp);
+          if (rda_write_string(fd, *pp) != 0)
+	    goto bad;
         }
-      rda_write_string(fd, NULL);
+      if (rda_write_string(fd, NULL) != 0)
+        goto bad;
 
       if (addr->reply == NULL)
-        (void)write(fd, &reply_options, sizeof(int));    /* 0 means no reply */
+	{
+        if (write(fd, &reply_options, sizeof(int)) != sizeof(int))    /* 0 means no reply */
+	  goto bad;
+	}
       else
         {
         reply_options |= REPLY_EXISTS;
         if (addr->reply->file_expand) reply_options |= REPLY_EXPAND;
         if (addr->reply->return_message) reply_options |= REPLY_RETURN;
-        (void)write(fd, &reply_options, sizeof(int));
-        (void)write(fd, &(addr->reply->expand_forbid), sizeof(int));
-        (void)write(fd, &(addr->reply->once_repeat), sizeof(time_t));
-        rda_write_string(fd, addr->reply->to);
-        rda_write_string(fd, addr->reply->cc);
-        rda_write_string(fd, addr->reply->bcc);
-        rda_write_string(fd, addr->reply->from);
-        rda_write_string(fd, addr->reply->reply_to);
-        rda_write_string(fd, addr->reply->subject);
-        rda_write_string(fd, addr->reply->headers);
-        rda_write_string(fd, addr->reply->text);
-        rda_write_string(fd, addr->reply->file);
-        rda_write_string(fd, addr->reply->logfile);
-        rda_write_string(fd, addr->reply->oncelog);
+        if (  write(fd, &reply_options, sizeof(int)) != sizeof(int)
+           || write(fd, &(addr->reply->expand_forbid), sizeof(int))
+	      != sizeof(int)
+           || write(fd, &(addr->reply->once_repeat), sizeof(time_t))
+	      != sizeof(time_t)
+           || rda_write_string(fd, addr->reply->to) != 0
+           || rda_write_string(fd, addr->reply->cc) != 0
+           || rda_write_string(fd, addr->reply->bcc) != 0
+           || rda_write_string(fd, addr->reply->from) != 0
+           || rda_write_string(fd, addr->reply->reply_to) != 0
+           || rda_write_string(fd, addr->reply->subject) != 0
+           || rda_write_string(fd, addr->reply->headers) != 0
+           || rda_write_string(fd, addr->reply->text) != 0
+           || rda_write_string(fd, addr->reply->file) != 0
+           || rda_write_string(fd, addr->reply->logfile) != 0
+           || rda_write_string(fd, addr->reply->oncelog) != 0
+	   )
+	  goto bad;
         }
       }
 
-    rda_write_string(fd, NULL);   /* Marks end of addresses */
+    if (rda_write_string(fd, NULL) != 0)   /* Marks end of addresses */
+      goto bad;
     }
 
   /* OK, this process is now done. Free any cached resources. Must use _exit()
   and not exit() !! */
 
+out:
   (void)close(fd);
   search_tidyup();
   _exit(0);
+
+bad:
+  DEBUG(D_rewrite) debug_printf("rda_interpret: failed write to pipe\n");
+  goto out;
   }
 
 /* Back in the main process: panic if the fork did not succeed. */

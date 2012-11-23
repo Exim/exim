@@ -1093,7 +1093,10 @@ if ((flags & LOG_PANIC) != 0)
     panic_recurseflag = FALSE;
 
     if (panic_save_buffer != NULL)
-      (void) write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
+      {
+      int i = write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
+      i = i;	/* compiler quietening */
+      }
 
     written_len = write_to_fd_buf(paniclogfd, log_buffer, length);
     if (written_len != length)

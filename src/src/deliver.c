@@ -1904,33 +1904,40 @@ if ((pid = fork()) == 0)
     int i;
     int local_part_length = Ustrlen(addr2->local_part);
     uschar *s;
+    int ret;
 
-    (void)write(pfd[pipe_write], (void *)&(addr2->transport_return), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&transport_count, sizeof(transport_count));
-    (void)write(pfd[pipe_write], (void *)&(addr2->flags), sizeof(addr2->flags));
-    (void)write(pfd[pipe_write], (void *)&(addr2->basic_errno), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&(addr2->more_errno), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&(addr2->special_action), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&(addr2->transport),
-      sizeof(transport_instance *));
+    if(  (ret = write(pfd[pipe_write], (void *)&(addr2->transport_return), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&transport_count, sizeof(transport_count))) != sizeof(transport_count)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->flags), sizeof(addr2->flags))) != sizeof(addr2->flags)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->basic_errno), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->more_errno), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->special_action), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->transport),
+        sizeof(transport_instance *))) != sizeof(transport_instance *)
 
     /* For a file delivery, pass back the local part, in case the original
     was only part of the final delivery path. This gives more complete
     logging. */
 
-    if (testflag(addr2, af_file))
-      {
-      (void)write(pfd[pipe_write], (void *)&local_part_length, sizeof(int));
-      (void)write(pfd[pipe_write], addr2->local_part, local_part_length);
-      }
+      || (testflag(addr2, af_file)
+          && (  (ret = write(pfd[pipe_write], (void *)&local_part_length, sizeof(int))) != sizeof(int)
+             || (ret = write(pfd[pipe_write], addr2->local_part, local_part_length)) != local_part_length
+	     )
+	 )
+      )
+      log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s\n",
+	ret == -1 ? strerror(errno) : "short write");
 
     /* Now any messages */
 
     for (i = 0, s = addr2->message; i < 2; i++, s = addr2->user_message)
       {
       int message_length = (s == NULL)? 0 : Ustrlen(s) + 1;
-      (void)write(pfd[pipe_write], (void *)&message_length, sizeof(int));
-      if (message_length > 0) (void)write(pfd[pipe_write], s, message_length);
+      if(  (ret = write(pfd[pipe_write], (void *)&message_length, sizeof(int))) != sizeof(int)
+        || (message_length > 0  && (ret = write(pfd[pipe_write], s, message_length)) != message_length)
+	)
+        log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s\n",
+	  ret == -1 ? strerror(errno) : "short write");
       }
     }
 
@@ -3449,6 +3456,15 @@ while (parcount > max)
 
 
 
+static void
+rmt_dlv_checked_write(int fd, void * buf, int size)
+{
+int ret = write(fd, buf, size);
+if(ret != size)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed writing transport result to pipe: %s\n",
+    ret == -1 ? strerror(errno) : "short write");
+}
+
 /*************************************************
 *           Do remote deliveries                 *
 *************************************************/
@@ -3968,7 +3984,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       {
       if (h->address == NULL || h->status < hstatus_unusable) continue;
       sprintf(CS big_buffer, "H%c%c%s", h->status, h->why, h->address);
-      (void)write(fd, big_buffer, Ustrlen(big_buffer+3) + 4);
+      rmt_dlv_checked_write(fd, big_buffer, Ustrlen(big_buffer+3) + 4);
       }
 
     /* The number of bytes written. This is the same for each address. Even
@@ -3978,7 +3994,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
     big_buffer[0] = 'S';
     memcpy(big_buffer+1, &transport_count, sizeof(transport_count));
-    (void)write(fd, big_buffer, sizeof(transport_count) + 1);
+    rmt_dlv_checked_write(fd, big_buffer, sizeof(transport_count) + 1);
 
     /* Information about what happened to each address. Four item types are
     used: an optional 'X' item first, for TLS information, then an optional "C"
@@ -4007,7 +4023,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
           sprintf(CS ptr, "%.512s", addr->peerdn);
           while(*ptr++);
           }
-        (void)write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
         }
       #endif
 
@@ -4016,21 +4032,21 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         ptr = big_buffer;
 	sprintf(CS big_buffer, "C1%.64s", client_authenticator);
         while(*ptr++);
-        (void)write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
       if (client_authenticated_id)
         {
         ptr = big_buffer;
 	sprintf(CS big_buffer, "C2%.64s", client_authenticated_id);
         while(*ptr++);
-        (void)write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
       if (client_authenticated_sender)
         {
         ptr = big_buffer;
 	sprintf(CS big_buffer, "C3%.64s", client_authenticated_sender);
         while(*ptr++);
-        (void)write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
 
       /* Retry information: for most success cases this will be null. */
@@ -4049,7 +4065,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
           sprintf(CS ptr, "%.512s", r->message);
           while(*ptr++);
           }
-        (void)write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
         }
 
       /* The rest of the information goes in an 'A' item. */
@@ -4085,7 +4101,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         memcpy(ptr, &(addr->host_used->port), sizeof(addr->host_used->port));
         ptr += sizeof(addr->host_used->port);
         }
-      (void)write(fd, big_buffer, ptr - big_buffer);
+      rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
       }
 
     /* Add termination flag, close the pipe, and that's it. The character
@@ -4095,7 +4111,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
     big_buffer[0] = 'Z';
     big_buffer[1] = (continue_transport == NULL)? '0' : '1';
-    (void)write(fd, big_buffer, 2);
+    rmt_dlv_checked_write(fd, big_buffer, 2);
     (void)close(fd);
     exit(EXIT_SUCCESS);
     }
@@ -6022,10 +6038,21 @@ if (addr_local != NULL || addr_remote != NULL)
   that the mode is correct - the group setting doesn't always seem to get
   set automatically. */
 
-  (void)fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC);
-  (void)fchown(journal_fd, exim_uid, exim_gid);
-  (void)fchmod(journal_fd, SPOOL_MODE);
+  if(  fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC)
+    || fchown(journal_fd, exim_uid, exim_gid)
+    || fchmod(journal_fd, SPOOL_MODE)
+    )
+    {
+    int ret = Uunlink(spoolname);
+    log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't set perms on journal file %s: %s",
+      spoolname, strerror(errno));
+    if(ret  &&  errno != ENOENT)
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+        spoolname, strerror(errno));
+    return DELIVER_NOT_ATTEMPTED;
+    }
   }
+
 
 
 /* Now we can get down to the business of actually doing deliveries. Local

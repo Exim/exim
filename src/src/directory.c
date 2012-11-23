@@ -74,7 +74,12 @@ while (c != 0 && *p != 0)
 
     /* Set the ownership if necessary. */
 
-    if (use_chown) (void)Uchown(buffer, exim_uid, exim_gid);
+    if (use_chown && Uchown(buffer, exim_uid, exim_gid))
+      {
+      if (!panic) return FALSE;
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+        "Failed to set owner on directory \"%s\": %s\n", buffer, strerror(errno));
+      }
 
     /* It appears that any mode bits greater than 0777 are ignored by
     mkdir(), at least on some operating systems. Therefore, if the mode

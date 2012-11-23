@@ -1226,9 +1226,14 @@ if ((write_pid = fork()) == 0)
     size_limit, add_headers, remove_headers, NULL, NULL,
     rewrite_rules, rewrite_existflags);
   save_errno = errno;
-  (void)write(pfd[pipe_write], (void *)&rc, sizeof(BOOL));
-  (void)write(pfd[pipe_write], (void *)&save_errno, sizeof(int));
-  (void)write(pfd[pipe_write], (void *)&(addr->more_errno), sizeof(int));
+  if (  write(pfd[pipe_write], (void *)&rc, sizeof(BOOL))
+        != sizeof(BOOL)
+     || write(pfd[pipe_write], (void *)&save_errno, sizeof(int))
+        != sizeof(int)
+     || write(pfd[pipe_write], (void *)&(addr->more_errno), sizeof(int))
+        != sizeof(int)
+     )
+    rc = FALSE;	/* compiler quietening */
   _exit(0);
   }
 save_errno = errno;
@@ -1339,11 +1344,11 @@ if (write_pid > 0)
     if (rc == 0)
       {
       BOOL ok;
-      (void)read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
+      int dummy = read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
       if (!ok)
         {
-        (void)read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
-        (void)read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
+        dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
+        dummy = read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
         yield = FALSE;
         }
       }

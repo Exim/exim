@@ -2793,7 +2793,10 @@ if (data_fd < 0)
 /* Make sure the file's group is the Exim gid, and double-check the mode
 because the group setting doesn't always get set automatically. */
 
-(void)fchown(data_fd, exim_uid, exim_gid);
+if (fchown(data_fd, exim_uid, exim_gid))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "Failed setting ownership on spool file %s: %s",
+    spool_name, strerror(errno));
 (void)fchmod(data_fd, SPOOL_MODE);
 
 /* We now have data file open. Build a stream for it and lock it. We lock only
@@ -2823,7 +2826,7 @@ if (next != NULL)
   {
   uschar *s = next->text;
   int len = next->slen;
-  (void)fwrite(s, 1, len, data_file);
+  len = fwrite(s, 1, len, data_file);  len = len; /* compiler quietening */
   body_linecount++;                 /* Assumes only 1 line */
   }
 

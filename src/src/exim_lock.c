@@ -583,12 +583,14 @@ if (restore_times)
   struct stat strestore;
   struct utimbuf ut;
   stat(filename, &strestore);
-  (void)system(command);
+  i = system(command);
   ut.actime = strestore.st_atime;
   ut.modtime = strestore.st_mtime;
   utime(filename, &ut);
   }
-else (void)system(command);
+else i = system(command);
+
+if(i && !quiet) printf("warning: nonzero status %d\n", i);
 
 /* Remove the locks and exit. Unlink the /tmp file if we can get an exclusive
 lock on the mailbox. This should be a non-blocking lock call, as there is no
