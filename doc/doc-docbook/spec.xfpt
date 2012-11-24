@@ -41,12 +41,11 @@
 .book
 
 . /////////////////////////////////////////////////////////////////////////////
-. These definitions set some parameters and save some typing. Remember that
-. the <bookinfo> element must also be updated for each new edition.
+. These definitions set some parameters and save some typing.
 . /////////////////////////////////////////////////////////////////////////////
 
 .set previousversion "4.80"
-.set version "4.80"
+.include ./local_params
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -170,15 +169,23 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>17 May 2012</date>
+<date>
+.fulldate
+</date>
 <author><firstname>Exim</firstname><surname>Maintainers</surname></author>
 <authorinitials>EM</authorinitials>
 <revhistory><revision>
-  <revnumber>4.80</revnumber>
-  <date>17 May 2012</date>
+  <revnumber>
+.version
+  </revnumber>
+  <date>
+.fulldate
+  </date>
   <authorinitials>EM</authorinitials>
 </revision></revhistory>
-<copyright><year>2012</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>
+.year
+           </year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -367,7 +374,7 @@ contributors.
 
 .new
 .cindex "documentation"
-This edition of the Exim specification applies to version &version; of Exim.
+This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of the document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
@@ -1618,7 +1625,7 @@ for only a short time (see &%timeout_frozen_after%& and
 .section "Unpacking" "SECID23"
 Exim is distributed as a gzipped or bzipped tar file which, when unpacked,
 creates a directory with the name of the current release (for example,
-&_exim-&version;_&) into which the following files are placed:
+&_exim-&version()_&) into which the following files are placed:
 
 .table2 140pt
 .irow &_ACKNOWLEDGMENTS_& "contains some acknowledgments"
@@ -2314,7 +2321,7 @@ INFO_DIRECTORY, as described in section &<<SECTinsinfdoc>>& below.
 For the utility programs, old versions are renamed by adding the suffix &_.O_&
 to their names. The Exim binary itself, however, is handled differently. It is
 installed under a name that includes the version number and the compile number,
-for example &_exim-&version;-1_&. The script then arranges for a symbolic link
+for example &_exim-&version()-1_&. The script then arranges for a symbolic link
 called &_exim_& to point to the binary. If you are updating a previous version
 of Exim, the script takes care to ensure that the name &_exim_& is never absent
 from the directory (as seen by other processes).
