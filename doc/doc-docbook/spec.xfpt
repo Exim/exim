@@ -42,6 +42,7 @@
 
 . /////////////////////////////////////////////////////////////////////////////
 . These definitions set some parameters and save some typing.
+. Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
 .set previousversion "4.80"
@@ -50,6 +51,9 @@
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
 
+.macro copyyear
+2012
+.endmacro
 
 . /////////////////////////////////////////////////////////////////////////////
 . Additional xfpt markup used by this document, over and above the default

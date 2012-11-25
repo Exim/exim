@@ -45,6 +45,13 @@
 .endmacro
 . ===========================================================================
 
+. Copyright year.  Update this (only) when changing content.
+
+.macro copyyear
+2010
+.endmacro
+
+. ===========================================================================
 
 . /////////////////////////////////////////////////////////////////////////////
 . /////////////////////////////////////////////////////////////////////////////
@@ -75,7 +82,7 @@
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
 <copyright><year>
-.year
+.copyyear
            </year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
@@ -86,7 +93,7 @@
 
 .chapter "Forwarding and filtering in Exim" "CHAPforandfilt"
 This document describes the user interfaces to Exim's in-built mail filtering
-facilities, and is copyright &copy; University of Cambridge &year(). It
+facilities, and is copyright &copy; University of Cambridge &copyyear(). It
 corresponds to Exim version &version().
 
 
