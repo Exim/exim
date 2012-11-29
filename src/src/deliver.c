@@ -2383,48 +2383,12 @@ while (addr_local != NULL)
                retry_record->expired;
 
           /* If we haven't reached the retry time, there is one more check
-          to do, which is for the ultimate address timeout. */
+          to do, which is for the ultimate address timeout. We also do this
+          check during routing so this one might be redundant... */
 
           if (!ok)
-            {
-            retry_config *retry =
-              retry_find_config(retry_key+2, addr2->domain,
-                retry_record->basic_errno,
-                retry_record->more_errno);
-
-            DEBUG(D_deliver|D_retry)
-              {
-              debug_printf("retry time not reached for %s: "
-                "checking ultimate address timeout\n", addr2->address);
-              debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
-                (int)now, (int)retry_record->first_failed,
-                (int)retry_record->next_try, retry_record->expired);
-              }
-
-            if (retry != NULL && retry->rules != NULL)
-              {
-              retry_rule *last_rule;
-              for (last_rule = retry->rules;
-                   last_rule->next != NULL;
-                   last_rule = last_rule->next);
-              DEBUG(D_deliver|D_retry)
-                debug_printf("  received_time=%d diff=%d timeout=%d\n",
-                  received_time, (int)now - received_time, last_rule->timeout);
-              if (now - received_time > last_rule->timeout) ok = TRUE;
-              }
-            else
-              {
-              DEBUG(D_deliver|D_retry)
-                debug_printf("no retry rule found: assume timed out\n");
-              ok = TRUE;    /* No rule => timed out */
-              }
-
-            DEBUG(D_deliver|D_retry)
-              {
-              if (ok) debug_printf("on queue longer than maximum retry for "
-                "address - allowing delivery\n");
-              }
-            }
+            ok = retry_ultimate_address_timeout(retry_key, addr2->domain,
+                retry_record, now);
           }
         }
       else DEBUG(D_retry) debug_printf("no retry record exists\n");
@@ -5656,7 +5620,10 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
     will be far too many attempts for an address that gets a 4xx error. In
     fact, after such an error, we should not get here because, the host should
     not be remembered as one this message needs. However, there was a bug that
-    used to cause this to  happen, so it is best to be on the safe side. */
+    used to cause this to  happen, so it is best to be on the safe side.
+
+    Even if we haven't reached the retry time in the hints, there is one
+    more check to do, which is for the ultimate address timeout. */
 
     else if (((queue_running && !deliver_force) || continue_hostname != NULL)
             &&
@@ -5666,6 +5633,9 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
             ||
             (address_retry_record != NULL &&
               now < address_retry_record->next_try))
+            &&
+            !retry_ultimate_address_timeout(addr->address_retry_key,
+	      addr->domain, address_retry_record, now)
             )
       {
       addr->message = US"retry time not reached";

@@ -269,6 +269,8 @@ extern void    retry_add_item(address_item *, uschar *, int);
 extern BOOL    retry_check_address(uschar *, host_item *, uschar *, BOOL,
                  uschar **, uschar **);
 extern retry_config *retry_find_config(uschar *, uschar *, int, int);
+extern BOOL    retry_ultimate_address_timeout(uschar *, uschar *,
+                 dbdata_retry *, time_t);
 extern void    retry_update(address_item **, address_item **, address_item **);
 extern uschar *rewrite_address(uschar *, BOOL, BOOL, rewrite_rule *, int);
 extern uschar *rewrite_address_qualify(uschar *, BOOL);
