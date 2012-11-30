@@ -96,6 +96,30 @@ PP/13 Dovecot auth: log better reason to rejectlog if Dovecot did not
       protocol violation error.  Also, make Exim more robust to bad
       data from the Dovecot auth socket.
 
+TF/01 Fix ultimate retry timeouts for intermittently deliverable recipients.
+
+      When a queue runner is handling a message, Exim first routes the
+      recipient addresses, during which it prunes them based on the retry
+      hints database. After that it attempts to deliver the message to
+      any remaining recipients. It then updates the hints database using
+      the retry rules.
+
+      So if a recipient address works intermittently, it can get repeatedly
+      deferred at routing time. The retry hints record remains fresh so the
+      address never reaches the final cutoff time.
+
+      This is a fairly common occurrence when a user is bumping up against
+      their storage quota. Exim had some logic in its local delivery code
+      to deal with this. However it did not apply to per-recipient defers
+      in remote deliveries, e.g. over LMTP to a separate IMAP message store.
+
+      This commit adds a proper retry rule check during routing so that
+      the final cutoff time is checked against the message's age. I also
+      took the opportunity to unify three very similar blocks of code.
+
+      I suspect this new check makes the old local delivery cutoff check
+      redundant, but I have not verified this so I left the code in place.
+
 
 Exim version 4.80.1
 -------------------
