@@ -113,9 +113,13 @@ TF/01 Fix ultimate retry timeouts for intermittently deliverable recipients.
       to deal with this. However it did not apply to per-recipient defers
       in remote deliveries, e.g. over LMTP to a separate IMAP message store.
 
-      This commit adds a proper retry rule check during routing so that
-      the final cutoff time is checked against the message's age. I also
-      took the opportunity to unify three very similar blocks of code.
+      This change adds a proper retry rule check during routing so that the
+      final cutoff time is checked against the message's age. We only do
+      this check if there is an address retry record and there is not a
+      domain retry record; this implies that previous attempts to handle
+      the address had the retry_use_local_parts option turned on. We use
+      this as an approximation for the destination being like a local
+      delivery, as in LMTP.
 
       I suspect this new check makes the old local delivery cutoff check
       redundant, but I have not verified this so I left the code in place.

@@ -2383,8 +2383,7 @@ while (addr_local != NULL)
                retry_record->expired;
 
           /* If we haven't reached the retry time, there is one more check
-          to do, which is for the ultimate address timeout. We also do this
-          check during routing so this one might be redundant... */
+          to do, which is for the ultimate address timeout. */
 
           if (!ok)
             ok = retry_ultimate_address_timeout(retry_key, addr2->domain,
@@ -5622,8 +5621,16 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
     not be remembered as one this message needs. However, there was a bug that
     used to cause this to  happen, so it is best to be on the safe side.
 
-    Even if we haven't reached the retry time in the hints, there is one
-    more check to do, which is for the ultimate address timeout. */
+    Even if we haven't reached the retry time in the hints, there is one more
+    check to do, which is for the ultimate address timeout. We only do this
+    check if there is an address retry record and there is not a domain retry
+    record; this implies that previous attempts to handle the address had the
+    retry_use_local_parts option turned on. We use this as an approximation
+    for the destination being like a local delivery, for example delivery over
+    LMTP to an IMAP message store. In this situation users are liable to bump
+    into their quota and thereby have intermittently successful deliveries,
+    which keep the retry record fresh, which can lead to us perpetually
+    deferring messages. */
 
     else if (((queue_running && !deliver_force) || continue_hostname != NULL)
             &&
@@ -5634,9 +5641,10 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
             (address_retry_record != NULL &&
               now < address_retry_record->next_try))
             &&
-            !retry_ultimate_address_timeout(addr->address_retry_key,
-	      addr->domain, address_retry_record, now)
-            )
+	    (domain_retry_record != NULL ||
+	     address_retry_record == NULL ||
+	     !retry_ultimate_address_timeout(addr->address_retry_key,
+	       addr->domain, address_retry_record, now)))
       {
       addr->message = US"retry time not reached";
       addr->basic_errno = ERRNO_RRETRY;
