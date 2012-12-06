@@ -2035,9 +2035,12 @@ for (h = header_list->next; h != NULL; h = h->next)
       from_header = h;
       if (!smtp_input)
         {
+        int len;
         uschar *s = Ustrchr(h->text, ':') + 1;
         while (isspace(*s)) s++;
-        if (strcmpic(s, originator_login) == 0)
+        len = h->slen - (s - h->text) - 1;
+        if (strncmpic(s, originator_login, len) == 0
+            && Ustrlen(originator_login) == len)
           {
           uschar *name = is_resent? US"Resent-From" : US"From";
           header_add(htype_from, "%s: %s <%s@%s>\n", name, originator_name,
