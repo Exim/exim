@@ -120,6 +120,19 @@ TF/01 Fix ultimate retry timeouts for intermittently deliverable recipients.
       I suspect this new check makes the old local delivery cutoff check
       redundant, but I have not verified this so I left the code in place.
 
+TF/02 Correct gecos expansion when From: is a prefix of the username.
+
+      Test 0254 submits a message to Exim with the header
+
+        Resent-From: f
+
+      When I ran the test suite under the user fanf2, Exim expanded
+      the header to contain my full name, whereas it should have added
+      a Resent-Sender: header. It erroneously treats any prefix of the
+      username as equal to the username.
+
+      This change corrects that bug.
+
 
 Exim version 4.80.1
 -------------------
