@@ -137,6 +137,10 @@ TF/02 Correct gecos expansion when From: is a prefix of the username.
 
       This change corrects that bug.
 
+GF/01 DCC debug and logging tidyup
+      Error conditions log to mainlog rather than paniclog.
+      Debug lines prefixed by "DCC: " to remove any ambiguity.
+
 
 Exim version 4.80.1
 -------------------
