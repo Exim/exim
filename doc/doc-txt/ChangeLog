@@ -141,6 +141,8 @@ GF/01 DCC debug and logging tidyup
       Error conditions log to paniclog rather than rejectlog.
       Debug lines prefixed by "DCC: " to remove any ambiguity.
 
+TF/03 Avoid unnecessary rebuilds of lookup-related code.
+
 
 Exim version 4.80.1
 -------------------
