@@ -2039,8 +2039,8 @@ for (h = header_list->next; h != NULL; h = h->next)
         uschar *s = Ustrchr(h->text, ':') + 1;
         while (isspace(*s)) s++;
         len = h->slen - (s - h->text) - 1;
-        if (strncmpic(s, originator_login, len) == 0
-            && Ustrlen(originator_login) == len)
+        if (Ustrlen(originator_login) == len &&
+	    strncmpic(s, originator_login, len) == 0)
           {
           uschar *name = is_resent? US"Resent-From" : US"From";
           header_add(htype_from, "%s: %s <%s@%s>\n", name, originator_name,
