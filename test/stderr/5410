@@ -86,7 +86,7 @@ expanding: ${if eq {$address_data}{userz}{*}{:}}
          250-8BITMIME
          250-PIPELINING
          250 HELP
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP>> MAIL FROM:<eximtest@myhost.test.ex>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<userx@domain.com>
   SMTP<< 250 Accepted
@@ -218,7 +218,7 @@ skipping: result is not used
 expanding: ${if eq {$address_data}{usery}{*}{:}}
    result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP>> MAIL FROM:<eximtest@myhost.test.ex>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
   SMTP<< 250 Accepted
@@ -350,7 +350,7 @@ skipping: result is not used
 expanding: ${if eq {$address_data}{usery}{*}{:}}
    result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP>> MAIL FROM:<eximtest@myhost.test.ex>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
   SMTP<< 250 Accepted
