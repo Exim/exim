@@ -16,7 +16,7 @@ Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
 EHLO myhost.test.ex
 250 OK
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 250 Sender OK
 RCPT TO:<userx@domain.com>
 250 Recipient OK

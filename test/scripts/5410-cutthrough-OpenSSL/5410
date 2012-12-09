@@ -4,7 +4,7 @@ exim -DSERVER=server -bd -oX PORT_D
 # this one should succeed
 exim -d-all+acl+transport+expand+lists -bs
 EHLO myhost.test.ex
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@domain.com>
 DATA
 
@@ -15,7 +15,7 @@ QUIT
 # so this one should not use TLS
 exim -d-all+acl+transport+expand+lists -bs
 EHLO myhost.test.ex
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<usery@domain.com>
 DATA
 
@@ -26,7 +26,7 @@ QUIT
 # so this one should not use TLS
 exim -d-all+acl+transport+expand+lists -bs
 EHLO myhost.test.ex
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<usery@domain.com>
 DATA
 
