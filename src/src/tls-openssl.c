@@ -689,7 +689,7 @@ if (cbinfo->server_cipher_list)
 if (cbinfo->ocsp_file)
   {
   SSL_CTX_set_tlsext_status_cb(server_sni, tls_stapling_cb);
-  SSL_CTX_set_tlsext_status_arg(server_ctx, cbinfo);
+  SSL_CTX_set_tlsext_status_arg(server_sni, cbinfo);
   }
 #endif
 

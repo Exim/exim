@@ -143,6 +143,11 @@ GF/01 DCC debug and logging tidyup
 
 TF/03 Avoid unnecessary rebuilds of lookup-related code.
 
+PP/14 Fix OCSP reinitialisation in SNI handling for Exim/TLS as server.
+      Bug spotted by Jeremy Harris; was flawed since initial commit.
+      Would have resulted in OCSP responses post-SNI triggering an Exim
+      NULL dereference and crash.
+
 
 Exim version 4.80.1
 -------------------
