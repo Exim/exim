@@ -36325,6 +36325,12 @@ Add to &_src/config.h.defaults_& the line:
 Edit &_src/drtables.c_&, adding conditional code to pull in the private header
 and create a table entry as is done for all the other drivers and lookup types.
 .next
+Edit &_scripts/lookups-Makefile_& if this is a new lookup; there is a for-loop
+near the bottom, ranging the &`name_mod`& variable over a list of all lookups.
+Add your &`NEWDRIVER`& to that list.
+As long as the dynamic module would be named &_newdriver.so_&, you can use the
+simple form that most lookups have.
+.next
 Edit &_Makefile_& in the appropriate sub-directory (&_src/routers_&,
 &_src/transports_&, &_src/auths_&, or &_src/lookups_&); add a line for the new
 driver or lookup type and add it to the definition of OBJ.
