@@ -631,7 +631,9 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakedefer */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+  #ifdef EXPERIMENTAL_PRDR
     (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
     (1<<ACL_WHERE_MIME)),
 
   (unsigned int)
