@@ -788,6 +788,8 @@ cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
 #ifdef EXPERIMENTAL_OCSP
 cbinfo->ocsp_file = ocsp_file;
+cbinfo->ocsp_file_expanded = NULL;
+cbinfo->ocsp_response = NULL;
 #endif
 cbinfo->dhparam = dhparam;
 cbinfo->host = host;
