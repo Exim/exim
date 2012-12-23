@@ -245,6 +245,9 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MIME",
                                    US"DKIM",
                                    US"DATA",
+#ifdef EXPERIMENTAL_PRDR
+                                   US"PRDR",
+#endif
                                    US"non-SMTP",
                                    US"AUTH",
                                    US"connection",
@@ -259,9 +262,6 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"VRFY",
 				   US"delivery",
 				   US"unknown"
-                                 #ifdef EXPERIMENTAL_PRDR
-                                  , US"PRDR"
-                                 #endif
                                  };
 
 uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
@@ -270,6 +270,9 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"550",     /* MIME */
                                    US"550",     /* DKIM */
                                    US"550",     /* DATA */
+#ifdef EXPERIMENTAL_PRDR
+                                   US"550",    /* RCPT PRDR */
+#endif
                                    US"0",       /* not SMTP; not relevant */
                                    US"503",     /* AUTH */
                                    US"550",     /* connect */
@@ -284,9 +287,6 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"252",     /* VRFY */
 				   US"0",       /* delivery; not relevant */
 				   US"0"        /* unknown; not relevant */
-                                 #ifdef EXPERIMENTAL_PRDR
-                                  ,US"550"     /* RCPT PRDR */
-                                 #endif
                                  };
 
 BOOL    active_local_from_check = FALSE;
