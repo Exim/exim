@@ -3,11 +3,11 @@
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <usery@myhost.test.ex>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after RCPT TO:<usery@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@myhost.test.ex> R=r0 T=t2
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@myhost.test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]
-1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@myhost.test.ex R=r1 T=t1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@myhost.test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@myhost.test.ex R=r1 T=t1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery <usery@myhost.test.ex> R=r0 T=t2
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
