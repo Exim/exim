@@ -12,6 +12,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH PLAIN
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> auth plain AHVzZXJuYW1lAG15c2VjcmV0
@@ -59,6 +61,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH PLAIN
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> auth plain AHVzZXJuYW1lAG15c2VjcmV0
@@ -94,6 +98,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH PLAIN
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> auth plain AHVzZXJuYW1lAG15c2VjcmV0
@@ -129,6 +135,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH PLAIN
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> auth plain AHVzZXJuYW1lAG15c2VjcmV0

@@ -49,6 +49,7 @@ expanding: $primary_hostname
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
+         250-PRDR
          250 HELP
 expanding: $address_data
    result: userx
@@ -85,6 +86,7 @@ expanding: ${if eq {$address_data}{userz}{*}{:}}
          250-SIZE 52428800
          250-8BITMIME
          250-PIPELINING
+         250-PRDR
          250 HELP
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP<< 250 OK
@@ -203,6 +205,7 @@ expanding: $primary_hostname
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
+         250-PRDR
          250 HELP
 expanding: $address_data
    result: usery
@@ -335,6 +338,7 @@ expanding: $primary_hostname
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
+         250-PRDR
          250 HELP
 expanding: $address_data
    result: usery

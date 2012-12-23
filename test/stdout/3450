@@ -14,6 +14,8 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 <<< 250-AUTH PLAIN
 ??? 250-
 <<< 250-STARTTLS
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> auth plain AHVzZXJ4AHNlY3JldA==
@@ -39,6 +41,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-AUTH PLAIN
 ??? 250-
 <<< 250-STARTTLS
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> auth plain AHVzZXJ4AHNlY3JldA==
@@ -75,6 +79,8 @@ Succeeded in starting TLS
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH PLAIN
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> auth plain AHVzZXJ4AHNlY3JldA==

@@ -4,6 +4,7 @@
 250-8BITMIME
 250-PIPELINING
 250-AUTH FIRST
+250-PRDR
 250 HELP
 235 Authentication succeeded
 221 myhost.test.ex closing connection
@@ -13,6 +14,7 @@
 250-8BITMIME
 250-PIPELINING
 250-AUTH SECOND
+250-PRDR
 250 HELP
 504 first authentication mechanism not supported
 221 myhost.test.ex closing connection
@@ -22,6 +24,7 @@
 250-8BITMIME
 250-PIPELINING
 250-AUTH FIRST
+250-PRDR
 250 HELP
 504 second authentication mechanism not supported
 221 myhost.test.ex closing connection
@@ -31,6 +34,7 @@
 250-8BITMIME
 250-PIPELINING
 250-AUTH SECOND
+250-PRDR
 250 HELP
 235 Authentication succeeded
 221 myhost.test.ex closing connection

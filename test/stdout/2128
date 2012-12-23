@@ -12,6 +12,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-STARTTLS
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> starttls
@@ -69,6 +71,8 @@ Succeeded in starting TLS
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> quit

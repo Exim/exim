@@ -10,6 +10,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> rset\r\nmail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
@@ -34,6 +36,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-SIZE 52428800
 ??? 250-
 <<< 250-8BITMIME
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> mail from:<userx@test.ex>
@@ -52,6 +56,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-SIZE 52428800
 ??? 250-
 <<< 250-8BITMIME
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> mail from:<userx@test.ex>

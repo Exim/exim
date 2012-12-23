@@ -8,6 +8,7 @@
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
+250-PRDR
 250 HELP
 250 OK
 550 EHLO argument does not match calling host

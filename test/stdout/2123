@@ -4,6 +4,7 @@
 250-8BITMIME
 250-PIPELINING
 250-STARTTLS
+250-PRDR
 250 HELP
 550 Administrative prohibition
 221 myhost.test.ex closing connection

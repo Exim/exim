@@ -13,6 +13,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH NTLMX NTLM
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> AUTH NTLM
@@ -39,6 +41,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH NTLMX NTLM
+??? 250-
+<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> AUTH NTLM

@@ -39,6 +39,7 @@ SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
+250-PRDR
 250 HELP
 SMTP<< mail from:<x@y>
 using ACL "mail"

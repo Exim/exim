@@ -24,6 +24,7 @@ SMTP>> 250-myhost.test.ex Hello CALLER at x.y
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
+250-PRDR
 250 HELP
 SMTP<< mail from:<x@y>
 SMTP>> 250 OK
