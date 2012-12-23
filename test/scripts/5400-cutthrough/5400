@@ -18,7 +18,7 @@ QUIT
 ****
 exim -d-all+acl+transport -bs
 EHLO myhost.test.ex
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@domain.com>
 DATA
 
@@ -47,7 +47,7 @@ QUIT
 ****
 exim -d-all+acl+transport -bs
 EHLO myhost.test.ex
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userz@domain.com>
 DATA
 
@@ -83,7 +83,7 @@ QUIT
 ****
 exim -d-all+acl+transport -bs
 EHLO myhost.test.ex
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<usery@domain.com>
 RCPT TO:<userx@domain.com>
 DATA

@@ -106,6 +106,15 @@ making unique names. */
 #define UCHAR_MAX 255
 #endif
 
+
+/* To match int_eximarith_t.  Define in OS/os.h-<your-system> to override. */
+#ifndef EXIM_ARITH_MAX
+# define EXIM_ARITH_MAX ((int_eximarith_t)9223372036854775807LL)
+#endif
+#ifndef EXIM_ARITH_MIN
+# define EXIM_ARITH_MIN (-EXIM_ARITH_MAX - 1)
+#endif
+
 /* Some systems have PATH_MAX and some have MAX_PATH_LEN. */
 
 #ifndef PATH_MAX
@@ -354,6 +363,7 @@ side, put in definitions for all the ones that Exim uses. */
 #define T_ZNS (-1)
 #define T_MXH (-2)
 #define T_CSA (-3)
+#define T_APL (-4)
 
 /* The resolv.h header defines __P(x) on some Solaris 2.5.1 systems (without
 checking that it is already defined, in fact). This conflicts with other

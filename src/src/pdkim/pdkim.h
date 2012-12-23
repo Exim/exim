@@ -27,8 +27,8 @@
 
 /* -------------------------------------------------------------------------- */
 /* Length of the preallocated buffer for the "answer" from the dns/txt
-   callback function. */
-#define PDKIM_DNS_TXT_MAX_RECLEN    4096
+   callback function. This should match the maximum RDLENGTH from DNS. */
+#define PDKIM_DNS_TXT_MAX_RECLEN    (1 << 16)
 
 /* -------------------------------------------------------------------------- */
 /* Function success / error codes */

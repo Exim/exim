@@ -21,7 +21,7 @@ SMTP<< rcpt to:<abc@local>
 using ACL "rcpt"
 processing "deny"
 check senders = qq@remote
-address match: subject=qq@remote pattern=qq@remote
+address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender
@@ -70,7 +70,7 @@ sender qq@remote verified ok
 deny: condition test failed in ACL "rcpt"
 processing "warn"
 check senders = qq@remote
-address match: subject=qq@remote pattern=qq@remote
+address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender/callout
@@ -150,7 +150,7 @@ LOG: MAIN
   U=CALLER Warning: Sender verify failed: response to "RCPT TO:<qq@remote>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown
 processing "accept"
 check senders = qq@remote
-address match: subject=qq@remote pattern=qq@remote
+address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 accept: condition test succeeded in ACL "rcpt"
@@ -159,7 +159,7 @@ SMTP<< rcpt to:<xyz@local>
 using ACL "rcpt"
 processing "deny"
 check senders = qq@remote
-address match: subject=qq@remote pattern=qq@remote
+address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender
@@ -167,7 +167,7 @@ using cached sender verify result
 deny: condition test failed in ACL "rcpt"
 processing "warn"
 check senders = qq@remote
-address match: subject=qq@remote pattern=qq@remote
+address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender/callout
@@ -227,7 +227,7 @@ LOG: MAIN
   U=CALLER Warning: Sender verify failed
 processing "accept"
 check senders = qq@remote
-address match: subject=qq@remote pattern=qq@remote
+address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 accept: condition test succeeded in ACL "rcpt"

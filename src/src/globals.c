@@ -17,6 +17,8 @@ data blocks and hence have the opt_public flag set. */
 optionlist optionlist_auths[] = {
   { "client_condition", opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, client_condition)) },
+  { "client_set_id", opt_stringptr | opt_public,
+                 (void *)(offsetof(auth_instance, set_client_id)) },
   { "driver",        opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, driver_name)) },
   { "public_name",   opt_stringptr | opt_public,
@@ -254,7 +256,8 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"QUIT",
                                    US"STARTTLS",
                                    US"VRFY",
-				   US"expansion"
+				   US"delivery",
+				   US"unknown"
                                  #ifdef EXPERIMENTAL_PRDR
                                   , US"PRDR"
                                  #endif
@@ -278,6 +281,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"0",       /* QUIT; not relevant */
                                    US"550",     /* STARTTLS */
                                    US"252",     /* VRFY */
+				   US"0",       /* delivery; not relevant */
 				   US"0"        /* unknown; not relevant */
                                  #ifdef EXPERIMENTAL_PRDR
                                   ,US"550"     /* RCPT PRDR */
@@ -286,6 +290,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
 
 BOOL    active_local_from_check = FALSE;
 BOOL    active_local_sender_retain = FALSE;
+int     body_8bitmime = 0;
 BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
 address_item  *addr_duplicate  = NULL;
 
@@ -325,6 +330,9 @@ address_item address_defaults = {
   NULL,                 /* cipher */
   NULL,                 /* peerdn */
   #endif
+  NULL,			/* authenticator */
+  NULL,			/* auth_id */
+  NULL,			/* auth_sndr */
   (uid_t)(-1),          /* uid */
   (gid_t)(-1),          /* gid */
   0,                    /* flags */
@@ -378,6 +386,7 @@ auth_instance auth_defaults    = {
     NULL,                      /* client_condition */
     NULL,                      /* public_name */
     NULL,                      /* set_id */
+    NULL,                      /* set_client_id */
     NULL,                      /* server_mail_auth_condition */
     NULL,                      /* server_debug_string */
     NULL,                      /* server_condition */
@@ -438,6 +447,9 @@ int     check_log_space        = 0;
 BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 0;
 int     check_spool_space      = 0;
+uschar	*client_authenticator  = NULL;
+uschar	*client_authenticated_id = NULL;
+uschar	*client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 BOOL    config_changed         = FALSE;
@@ -749,6 +761,7 @@ selectors was getting close to filling a 32-bit word. */
 /* Note that this list must be in alphabetical order. */
 
 bit_table log_options[]        = {
+  { US"8bitmime",                     LX_8bitmime },
   { US"acl_warn_skipped",             LX_acl_warn_skipped },
   { US"address_rewrite",              L_address_rewrite },
   { US"all",                          L_all },
@@ -783,6 +796,7 @@ bit_table log_options[]        = {
   { US"smtp_confirmation",            LX_smtp_confirmation },
   { US"smtp_connection",              L_smtp_connection },
   { US"smtp_incomplete_transaction",  L_smtp_incomplete_transaction },
+  { US"smtp_mailauth",                LX_smtp_mailauth },
   { US"smtp_no_mail",                 LX_smtp_no_mail },
   { US"smtp_protocol_error",          L_smtp_protocol_error },
   { US"smtp_syntax_error",            L_smtp_syntax_error },

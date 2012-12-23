@@ -103,9 +103,9 @@ signed.
 MD5 was once very popular.  It still is far too popular.  Real world attacks
 have been proven possible against MD5.  Including an attack against PKI
 (Public Key Infrastructure) certificates used for SSL/TLS.  In that attack,
-the attackers got a certificate for one identity but we able to then public a
-certificate with the same signature but a different identity.  This undermines
-the whole purpose of having certificates.
+the attackers got a certificate for one identity but were able to then publish
+a certificate with the same signature but a different identity.  This
+undermines the whole purpose of having certificates.
 
 So GnuTLS stopped trusting any certificate with an MD5-based hash used in it.
 The world has been hurriedly moving away from MD5 in certificates for a while.
@@ -150,7 +150,7 @@ unset, so that you get one of the standard built-in primes used for DH.
 DH, Diffie-Hellman (or Diffie-Hellman-Merkle, or something naming Williamson)
 is the common name for a way for two parties to a communication stream to
 exchange some private random data so that both end up with a shared secret
-which no evesdropper can get.  It does not provide for proof of the identity
+which no eavesdropper can get.  It does not provide for proof of the identity
 of either party, so on its own is subject to man-in-the-middle attacks, but is
 often combined with systems which do provide such proof, improving them by
 separating the session key (the shared secret) from the long-term identity,
@@ -159,7 +159,7 @@ and so protecting past communications from a break of the long-term identity.
 To do this, the server sends to the client a very large prime number; this is
 in the clear, an attacker can see it.  This is not a problem; it's so not a
 problem, that there are standard named primes which applications can use, and
-which a future release of Exim will probably support.
+which Exim now supports.
 
 The size of the prime number affects how difficult it is to break apart the
 shared secret and decrypt the data.  As time passes, the size required to
@@ -177,13 +177,14 @@ such matters than the Exim folks, we just say "er, what they said".
 
 One of the new pieces of the GnuTLS API is a means for an application to ask
 it for guidance and advice on how large some numbers should be.  This is not
-entirely internal to GnuTLS since generating the numbers is slow, an
+entirely internal to GnuTLS, since generating the numbers is slow, an
 application might want to use a standard prime, etc.  So, in an attempt to get
 away from being involved in cryptographic policy, and to get rid of a
 hard-coded "1024" in Exim's source-code, we switched to asking GnuTLS how many
-bits should be in the prime number generated for use for Diffie-Hellman.  To
-give back to GnuTLS for use  We can ask for various sizes, and did not expose
-this to the administrator but instead just asked for "NORMAL" protection.
+bits should be in the prime number generated for use for Diffie-Hellman.  We
+then give this number straight back to GnuTLS when generating a DH prime.
+We can ask for various sizes, and did not expose this to the administrator but
+instead just asked for "NORMAL" protection.
 Literally:
 
  dh_bits = gnutls_sec_param_to_pk_bits(GNUTLS_PK_DH, GNUTLS_SEC_PARAM_NORMAL);

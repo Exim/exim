@@ -620,7 +620,7 @@ drtables.o:      $(HDRS) drtables.c
 # When using parallel make, we don't have the dependency to force building
 # in the sub-directory unless we force that dependency:
 
-$(OBJ_LOOKUPS):  buildlookups
+$(OBJ_LOOKUPS):  lookups/lookups.a
 
 # The exim monitor's private modules - the sources live in a private
 # subdirectory. The final binary combines the private modules with some

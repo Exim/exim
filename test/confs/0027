@@ -42,6 +42,7 @@ data3:
   accept local_parts = a.b.c
 
 acl_rcpt:
+  warn	 set acl_m_1 = ${acl {data}}
   accept endpass
          acl = ${tr{$local_part}{:}{\n}}
   deny   message = this message should not occur

@@ -964,7 +964,6 @@ add_acl_headers(uschar *acl_name)
 {
 header_line *h, *next;
 header_line *last_received = NULL;
-int sep = ':';
 
 if (acl_removed_headers != NULL)
   {
@@ -972,7 +971,6 @@ if (acl_removed_headers != NULL)
 
   for (h = header_list; h != NULL; h = h->next)
     {
-    int i;
     uschar *list;
     BOOL include_header;
 
@@ -1431,7 +1429,7 @@ BOOL resents_exist = FALSE;
 uschar *resent_prefix = US"";
 uschar *blackholed_by = NULL;
 uschar *blackhole_log_msg = US"";
-int  cutthrough_done;
+int  cutthrough_done = 0;
 
 flock_t lock_data;
 error_block *bad_addresses = NULL;
@@ -2065,9 +2063,12 @@ for (h = header_list->next; h != NULL; h = h->next)
       from_header = h;
       if (!smtp_input)
         {
+        int len;
         uschar *s = Ustrchr(h->text, ':') + 1;
         while (isspace(*s)) s++;
-        if (strncmpic(s, originator_login, h->slen - (s - h->text) - 1) == 0)
+        len = h->slen - (s - h->text) - 1;
+        if (Ustrlen(originator_login) == len &&
+	    strncmpic(s, originator_login, len) == 0)
           {
           uschar *name = is_resent? US"Resent-From" : US"From";
           header_add(htype_from, "%s: %s <%s@%s>\n", name, originator_name,
@@ -2823,7 +2824,10 @@ if (data_fd < 0)
 /* Make sure the file's group is the Exim gid, and double-check the mode
 because the group setting doesn't always get set automatically. */
 
-(void)fchown(data_fd, exim_uid, exim_gid);
+if (fchown(data_fd, exim_uid, exim_gid))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "Failed setting ownership on spool file %s: %s",
+    spool_name, strerror(errno));
 (void)fchmod(data_fd, SPOOL_MODE);
 
 /* We now have data file open. Build a stream for it and lock it. We lock only
@@ -2853,7 +2857,7 @@ if (next != NULL)
   {
   uschar *s = next->text;
   int len = next->slen;
-  (void)fwrite(s, 1, len, data_file);
+  len = fwrite(s, 1, len, data_file);  len = len; /* compiler quietening */
   body_linecount++;                 /* Assumes only 1 line */
   }
 
@@ -3664,11 +3668,25 @@ if (sender_host_authenticated != NULL)
   {
   s = string_append(s, &size, &sptr, 2, US" A=", sender_host_authenticated);
   if (authenticated_id != NULL)
+    {
     s = string_append(s, &size, &sptr, 2, US":", authenticated_id);
+    if (log_extra_selector & LX_smtp_mailauth  &&  authenticated_sender != NULL)
+      s = string_append(s, &size, &sptr, 2, US":", authenticated_sender);
+    }
   }
 
 sprintf(CS big_buffer, "%d", msg_size);
 s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
+
+/* log 8BITMIME mode announced in MAIL_FROM
+   0 ... no BODY= used
+   7 ... 7BIT
+   8 ... 8BITMIME */
+if (log_extra_selector & LX_8bitmime)
+  {
+  sprintf(CS big_buffer, "%d", body_8bitmime);
+  s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
+  }
 
 /* If an addr-spec in a message-id contains a quoted string, it can contain
 any characters except " \ and CR and so in particular it can contain NL!
@@ -3850,6 +3868,7 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
+cutthrough_done = 0;
 if(cutthrough_fd >= 0)
   {
   uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
@@ -3871,8 +3890,6 @@ if(cutthrough_fd >= 0)
       break;
     }
   }
-else
-  cutthrough_done = 0;
 
 if(smtp_reply == NULL)
   {

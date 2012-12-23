@@ -3214,7 +3214,9 @@ while (done <= 0)
     if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr); else
     #endif
 
-    (void)fwrite(s, 1, ptr, smtp_out);
+      {
+      int i = fwrite(s, 1, ptr, smtp_out); i = i; /* compiler quietening */
+      }
     DEBUG(D_receive)
       {
       uschar *cr;
@@ -3342,10 +3344,20 @@ while (done <= 0)
         some sites want the action that is provided. We recognize both "8BITMIME"
         and "7BIT" as body types, but take no action. */
         case ENV_MAIL_OPT_BODY:
-          if (accept_8bitmime &&
-              (strcmpic(value, US"8BITMIME") == 0 ||
-               strcmpic(value, US"7BIT") == 0) )
-            break;
+          if (accept_8bitmime) {
+            if (strcmpic(value, US"8BITMIME") == 0) {
+              body_8bitmime = 8;
+            } else if (strcmpic(value, US"7BIT") == 0) {
+              body_8bitmime = 7;
+            } else {
+              body_8bitmime = 0;
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"invalid data for BODY");
+              goto COMMAND_LOOP;
+            }
+            DEBUG(D_receive) debug_printf("8BITMIME: %d\n", body_8bitmime);
+	    break;
+          }
           arg_error = TRUE;
           break;
 
@@ -4362,7 +4374,7 @@ BAD_MAIL_ARGS:
     incomplete_transaction_log(US"too many non-mail commands");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
       "nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),
-      s - smtp_cmd_buffer, smtp_cmd_buffer);
+      (int)(s - smtp_cmd_buffer), smtp_cmd_buffer);
     smtp_notquit_exit(US"bad-commands", US"554", US"Too many nonmail commands");
     done = 1;   /* Pretend eof - drops connection */
     break;

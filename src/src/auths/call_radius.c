@@ -20,10 +20,12 @@ RADIUS_CONFIG_FILE is defined. However, some compilers don't like compiling
 empty modules, so keep them happy with a dummy when skipping the rest. Make it
 reference itself to stop picky compilers complaining that it is unused, and put
 in a dummy argument to stop even pickier compilers complaining about infinite
-loops. */
+loops. Then use a mutually-recursive pair as gcc is just getting stupid. */
 
 #ifndef RADIUS_CONFIG_FILE
-static void dummy(int x) { dummy(x-1); }
+static void dummy(int x);
+static void dummy2(int x) { dummy(x-1); }
+static void dummy(int x) { dummy2(x-1); }
 #else  /* RADIUS_CONFIG_FILE */
 
 

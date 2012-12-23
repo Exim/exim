@@ -774,6 +774,17 @@ else
       string_printing(addr->peerdn), US"\"");
   #endif
 
+  if (addr->authenticator)
+    {
+    s = string_append(s, &size, &ptr, 2, US" A=", addr->authenticator);
+    if (addr->auth_id)
+      {
+      s = string_append(s, &size, &ptr, 2, US":", addr->auth_id);
+      if (log_extra_selector & LX_smtp_mailauth  &&  addr->auth_sndr)
+        s = string_append(s, &size, &ptr, 2, US":", addr->auth_sndr);
+      }
+    }
+
   if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
       addr->message != NULL)
     {
@@ -1893,33 +1904,40 @@ if ((pid = fork()) == 0)
     int i;
     int local_part_length = Ustrlen(addr2->local_part);
     uschar *s;
+    int ret;
 
-    (void)write(pfd[pipe_write], (void *)&(addr2->transport_return), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&transport_count, sizeof(transport_count));
-    (void)write(pfd[pipe_write], (void *)&(addr2->flags), sizeof(addr2->flags));
-    (void)write(pfd[pipe_write], (void *)&(addr2->basic_errno), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&(addr2->more_errno), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&(addr2->special_action), sizeof(int));
-    (void)write(pfd[pipe_write], (void *)&(addr2->transport),
-      sizeof(transport_instance *));
+    if(  (ret = write(pfd[pipe_write], (void *)&(addr2->transport_return), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&transport_count, sizeof(transport_count))) != sizeof(transport_count)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->flags), sizeof(addr2->flags))) != sizeof(addr2->flags)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->basic_errno), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->more_errno), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->special_action), sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], (void *)&(addr2->transport),
+        sizeof(transport_instance *))) != sizeof(transport_instance *)
 
     /* For a file delivery, pass back the local part, in case the original
     was only part of the final delivery path. This gives more complete
     logging. */
 
-    if (testflag(addr2, af_file))
-      {
-      (void)write(pfd[pipe_write], (void *)&local_part_length, sizeof(int));
-      (void)write(pfd[pipe_write], addr2->local_part, local_part_length);
-      }
+      || (testflag(addr2, af_file)
+          && (  (ret = write(pfd[pipe_write], (void *)&local_part_length, sizeof(int))) != sizeof(int)
+             || (ret = write(pfd[pipe_write], addr2->local_part, local_part_length)) != local_part_length
+	     )
+	 )
+      )
+      log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s\n",
+	ret == -1 ? strerror(errno) : "short write");
 
     /* Now any messages */
 
     for (i = 0, s = addr2->message; i < 2; i++, s = addr2->user_message)
       {
       int message_length = (s == NULL)? 0 : Ustrlen(s) + 1;
-      (void)write(pfd[pipe_write], (void *)&message_length, sizeof(int));
-      if (message_length > 0) (void)write(pfd[pipe_write], s, message_length);
+      if(  (ret = write(pfd[pipe_write], (void *)&message_length, sizeof(int))) != sizeof(int)
+        || (message_length > 0  && (ret = write(pfd[pipe_write], s, message_length)) != message_length)
+	)
+        log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s\n",
+	  ret == -1 ? strerror(errno) : "short write");
       }
     }
 
@@ -2368,45 +2386,8 @@ while (addr_local != NULL)
           to do, which is for the ultimate address timeout. */
 
           if (!ok)
-            {
-            retry_config *retry =
-              retry_find_config(retry_key+2, addr2->domain,
-                retry_record->basic_errno,
-                retry_record->more_errno);
-
-            DEBUG(D_deliver|D_retry)
-              {
-              debug_printf("retry time not reached for %s: "
-                "checking ultimate address timeout\n", addr2->address);
-              debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
-                (int)now, (int)retry_record->first_failed,
-                (int)retry_record->next_try, retry_record->expired);
-              }
-
-            if (retry != NULL && retry->rules != NULL)
-              {
-              retry_rule *last_rule;
-              for (last_rule = retry->rules;
-                   last_rule->next != NULL;
-                   last_rule = last_rule->next);
-              DEBUG(D_deliver|D_retry)
-                debug_printf("  received_time=%d diff=%d timeout=%d\n",
-                  received_time, (int)now - received_time, last_rule->timeout);
-              if (now - received_time > last_rule->timeout) ok = TRUE;
-              }
-            else
-              {
-              DEBUG(D_deliver|D_retry)
-                debug_printf("no retry rule found: assume timed out\n");
-              ok = TRUE;    /* No rule => timed out */
-              }
-
-            DEBUG(D_deliver|D_retry)
-              {
-              if (ok) debug_printf("on queue longer than maximum retry for "
-                "address - allowing delivery\n");
-              }
-            }
+            ok = retry_ultimate_address_timeout(retry_key, addr2->domain,
+                retry_record, now);
           }
         }
       else DEBUG(D_retry) debug_printf("no retry record exists\n");
@@ -2912,6 +2893,22 @@ while (!done)
     while (*ptr++);
     break;
     #endif
+
+    case 'C':	/* client authenticator information */
+    switch (*ptr++)
+    {
+    case '1':
+      addr->authenticator = (*ptr)? string_copy(ptr) : NULL;
+      break;
+    case '2':
+      addr->auth_id = (*ptr)? string_copy(ptr) : NULL;
+      break;
+    case '3':
+      addr->auth_sndr = (*ptr)? string_copy(ptr) : NULL;
+      break;
+    }
+    while (*ptr++);
+    break;
 
     case 'A':
     if (addr == NULL)
@@ -3422,6 +3419,15 @@ while (parcount > max)
 
 
 
+static void
+rmt_dlv_checked_write(int fd, void * buf, int size)
+{
+int ret = write(fd, buf, size);
+if(ret != size)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed writing transport result to pipe: %s\n",
+    ret == -1 ? strerror(errno) : "short write");
+}
+
 /*************************************************
 *           Do remote deliveries                 *
 *************************************************/
@@ -3653,6 +3659,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   /* Set up the expansion variables for this set of addresses */
 
   deliver_set_expansions(addr);
+
+  /* Ensure any transport-set auth info is fresh */
+  addr->authenticator = addr->auth_id = addr->auth_sndr = NULL;
 
   /* Compute the return path, expanding a new one if required. The old one
   must be set first, as it might be referred to in the expansion. */
@@ -3938,7 +3947,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       {
       if (h->address == NULL || h->status < hstatus_unusable) continue;
       sprintf(CS big_buffer, "H%c%c%s", h->status, h->why, h->address);
-      (void)write(fd, big_buffer, Ustrlen(big_buffer+3) + 4);
+      rmt_dlv_checked_write(fd, big_buffer, Ustrlen(big_buffer+3) + 4);
       }
 
     /* The number of bytes written. This is the same for each address. Even
@@ -3948,12 +3957,12 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
     big_buffer[0] = 'S';
     memcpy(big_buffer+1, &transport_count, sizeof(transport_count));
-    (void)write(fd, big_buffer, sizeof(transport_count) + 1);
+    rmt_dlv_checked_write(fd, big_buffer, sizeof(transport_count) + 1);
 
-    /* Information about what happened to each address. Three item types are
-    used: an optional 'X' item first, for TLS information, followed by 'R'
-    items for any retry settings, and finally an 'A' item for the remaining
-    data. */
+    /* Information about what happened to each address. Four item types are
+    used: an optional 'X' item first, for TLS information, then an optional "C"
+    item for any client-auth info followed by 'R' items for any retry settings,
+    and finally an 'A' item for the remaining data. */
 
     for(; addr != NULL; addr = addr->next)
       {
@@ -3970,17 +3979,38 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       if (addr->cipher != NULL)
         {
         ptr = big_buffer;
-        *ptr++ = 'X';
-        sprintf(CS ptr, "%.128s", addr->cipher);
+        sprintf(CS ptr, "X%.128s", addr->cipher);
         while(*ptr++);
         if (addr->peerdn == NULL) *ptr++ = 0; else
           {
           sprintf(CS ptr, "%.512s", addr->peerdn);
           while(*ptr++);
           }
-        (void)write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
         }
       #endif
+
+      if (client_authenticator)
+        {
+        ptr = big_buffer;
+	sprintf(CS big_buffer, "C1%.64s", client_authenticator);
+        while(*ptr++);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+	}
+      if (client_authenticated_id)
+        {
+        ptr = big_buffer;
+	sprintf(CS big_buffer, "C2%.64s", client_authenticated_id);
+        while(*ptr++);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+	}
+      if (client_authenticated_sender)
+        {
+        ptr = big_buffer;
+	sprintf(CS big_buffer, "C3%.64s", client_authenticated_sender);
+        while(*ptr++);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+	}
 
       /* Retry information: for most success cases this will be null. */
 
@@ -3998,7 +4028,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
           sprintf(CS ptr, "%.512s", r->message);
           while(*ptr++);
           }
-        (void)write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
         }
 
       /* The rest of the information goes in an 'A' item. */
@@ -4034,7 +4064,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         memcpy(ptr, &(addr->host_used->port), sizeof(addr->host_used->port));
         ptr += sizeof(addr->host_used->port);
         }
-      (void)write(fd, big_buffer, ptr - big_buffer);
+      rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
       }
 
     /* Add termination flag, close the pipe, and that's it. The character
@@ -4044,7 +4074,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
     big_buffer[0] = 'Z';
     big_buffer[1] = (continue_transport == NULL)? '0' : '1';
-    (void)write(fd, big_buffer, 2);
+    rmt_dlv_checked_write(fd, big_buffer, 2);
     (void)close(fd);
     exit(EXIT_SUCCESS);
     }
@@ -4515,6 +4545,7 @@ FILE *jread;
 int process_recipients = RECIP_ACCEPT;
 open_db dbblock;
 open_db *dbm_file;
+extern int acl_where;
 
 uschar *info = (queue_run_pid == (pid_t)0)?
   string_sprintf("delivering %s", id) :
@@ -4564,6 +4595,9 @@ message_size = 0;
 
 update_spool = FALSE;
 remove_journal = TRUE;
+
+/* Set a known context for any ACLs we call via expansions */
+acl_where = ACL_WHERE_DELIVERY;
 
 /* Reset the random number generator, so that if several delivery processes are
 started from a queue runner that has already used random numbers (for sorting),
@@ -5585,7 +5619,18 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
     will be far too many attempts for an address that gets a 4xx error. In
     fact, after such an error, we should not get here because, the host should
     not be remembered as one this message needs. However, there was a bug that
-    used to cause this to  happen, so it is best to be on the safe side. */
+    used to cause this to  happen, so it is best to be on the safe side.
+
+    Even if we haven't reached the retry time in the hints, there is one more
+    check to do, which is for the ultimate address timeout. We only do this
+    check if there is an address retry record and there is not a domain retry
+    record; this implies that previous attempts to handle the address had the
+    retry_use_local_parts option turned on. We use this as an approximation
+    for the destination being like a local delivery, for example delivery over
+    LMTP to an IMAP message store. In this situation users are liable to bump
+    into their quota and thereby have intermittently successful deliveries,
+    which keep the retry record fresh, which can lead to us perpetually
+    deferring messages. */
 
     else if (((queue_running && !deliver_force) || continue_hostname != NULL)
             &&
@@ -5595,7 +5640,11 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
             ||
             (address_retry_record != NULL &&
               now < address_retry_record->next_try))
-            )
+            &&
+	    (domain_retry_record != NULL ||
+	     address_retry_record == NULL ||
+	     !retry_ultimate_address_timeout(addr->address_retry_key,
+	       addr->domain, address_retry_record, now)))
       {
       addr->message = US"retry time not reached";
       addr->basic_errno = ERRNO_RRETRY;
@@ -5967,10 +6016,21 @@ if (addr_local != NULL || addr_remote != NULL)
   that the mode is correct - the group setting doesn't always seem to get
   set automatically. */
 
-  (void)fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC);
-  (void)fchown(journal_fd, exim_uid, exim_gid);
-  (void)fchmod(journal_fd, SPOOL_MODE);
+  if(  fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC)
+    || fchown(journal_fd, exim_uid, exim_gid)
+    || fchmod(journal_fd, SPOOL_MODE)
+    )
+    {
+    int ret = Uunlink(spoolname);
+    log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't set perms on journal file %s: %s",
+      spoolname, strerror(errno));
+    if(ret  &&  errno != ENOENT)
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+        spoolname, strerror(errno));
+    return DELIVER_NOT_ATTEMPTED;
+    }
   }
+
 
 
 /* Now we can get down to the business of actually doing deliveries. Local
@@ -7034,6 +7094,7 @@ expand_check_condition) to do a lookup. We must therefore be sure everything is
 released. */
 
 search_tidyup();
+acl_where = ACL_WHERE_UNKNOWN;
 return final_yield;
 }
 

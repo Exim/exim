@@ -529,8 +529,10 @@ if (oncelog != NULL && *oncelog != 0 && to != NULL)
       uschar *ptr = log_buffer;
       sprintf(CS ptr, "%s\n  previously sent to %.200s\n", tod_stamp(tod_log), to);
       while(*ptr) ptr++;
-      (void)write(log_fd, log_buffer, ptr - log_buffer);
-      (void)close(log_fd);
+      if(write(log_fd, log_buffer, ptr - log_buffer) != ptr-log_buffer
+        || close(log_fd))
+        DEBUG(D_transport) debug_printf("Problem writing log file %s for %s "
+          "transport\n", logfile, tblock->name);
       }
     goto END_OFF;
     }
@@ -753,7 +755,9 @@ if (cache_fd >= 0)
     }
 
   memcpy(cache_time, &now, sizeof(time_t));
-  (void)write(cache_fd, from, size);
+  if(write(cache_fd, from, size) != size)
+    DEBUG(D_transport) debug_printf("Problem writing cache file %s for %s "
+      "transport\n", oncelog, tblock->name);
   }
 
 /* Update DBM file */
@@ -849,8 +853,10 @@ if (logfile != NULL)
         "  %s\n", headers);
       while(*ptr) ptr++;
       }
-    (void)write(log_fd, log_buffer, ptr - log_buffer);
-    (void)close(log_fd);
+    if(write(log_fd, log_buffer, ptr - log_buffer) != ptr-log_buffer
+      || close(log_fd))
+      DEBUG(D_transport) debug_printf("Problem writing log file %s for %s "
+        "transport\n", logfile, tblock->name);
     }
   else DEBUG(D_transport) debug_printf("Failed to open log file %s for %s "
     "transport: %s\n", logfile, tblock->name, strerror(errno));

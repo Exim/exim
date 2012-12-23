@@ -186,7 +186,7 @@ if (ob->permit_coredump)
     if (errno != ENOSYS && errno != ENOTSUP)
 #endif
       log_write(0, LOG_MAIN,
-          "delivery setrlimit(RLIMIT_CORE, RLIMI_INFINITY) failed: %s",
+          "delivery setrlimit(RLIMIT_CORE, RLIM_INFINITY) failed: %s",
           strerror(errno));
     }
   }
@@ -749,14 +749,19 @@ if (outpid == 0)
   while ((rc = read(fd_out, big_buffer, big_buffer_size)) > 0)
     {
     if (addr->return_file >= 0)
-      write(addr->return_file, big_buffer, rc);
+      if(write(addr->return_file, big_buffer, rc) != rc)
+        DEBUG(D_transport) debug_printf("Problem writing to return_file\n");
     count += rc;
     if (count > ob->max_output)
       {
-      uschar *message = US"\n\n*** Too much output - remainder discarded ***\n";
       DEBUG(D_transport) debug_printf("Too much output from pipe - killed\n");
       if (addr->return_file >= 0)
-        write(addr->return_file, message, Ustrlen(message));
+	{
+        uschar *message = US"\n\n*** Too much output - remainder discarded ***\n";
+        rc = Ustrlen(message);
+        if(write(addr->return_file, message, rc) != rc)
+          DEBUG(D_transport) debug_printf("Problem writing to return_file\n");
+	}
       killpg(pid, SIGKILL);
       break;
       }

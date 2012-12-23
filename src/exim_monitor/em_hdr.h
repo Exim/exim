@@ -100,6 +100,7 @@ that this kind of kludge isn't needed. */
 #include "local_scan.h"
 #include "structs.h"
 #include "globals.h"
+#include "dbstuff.h"
 #include "functions.h"
 #include "osfunctions.h"
 #include "store.h"

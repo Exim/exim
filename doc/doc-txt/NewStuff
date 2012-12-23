@@ -6,7 +6,7 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
-Version 4.81
+Version 4.82
 ------------
 
  1. New command-line option -bI:sieve will list all supported sieve extensions
@@ -73,7 +73,7 @@ Version 4.81
     early in reception rather than at the end; this will affect any timestamp
     included.  The log line showing delivery is recorded before that showing
     reception; it uses a new ">>" tag instead of "=>".
-    
+
     To support the feature, verify-callout connections can now use ESMTP and TLS.
     The usual smtp transport options are honoured, plus a (new, default everything)
     hosts_verify_avoid_tls.
@@ -111,6 +111,17 @@ Version 4.81
 
 12. New ACL modifier "remove_header" can remove headers before message gets
     handled by routers/transports.
+
+13. New dnsdb lookup pseudo-type "a+".  A sequence of "a6" (if configured),
+    "aaaa" and "a" lookups is done and the full set of results returned.
+
+14. New expansion variable $headers_added with content from ACL add_header
+    modifier (but not yet added to messsage).
+
+15. New 8bitmime status logging option for received messages.  Log field "M8S".
+
+16. New authenticated_sender logging option, adding to log field "A".
+
 
 Version 4.80
 ------------
@@ -358,13 +369,13 @@ Version 4.73
     then henceforth you will have to maintain your own local patches to strip
     the safeties off.
 
- 8. There is a new expansion operator, bool_lax{}.  Where bool{} uses the ACL
+ 8. There is a new expansion condition, bool_lax{}.  Where bool{} uses the ACL
     condition logic to determine truth/failure and will fail to expand many
     strings, bool_lax{} uses the router condition logic, where most strings
     do evaluate true.
     Note: bool{00} is false, bool_lax{00} is true.
 
- 9. Routers now support multiple "condition" tests,
+ 9. Routers now support multiple "condition" tests.
 
 10. There is now a runtime configuration option "tcp_wrappers_daemon_name".
     Setting this allows an admin to define which entry in the tcpwrappers

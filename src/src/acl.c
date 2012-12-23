@@ -1007,10 +1007,13 @@ setup_header(uschar *hstring)
 uschar *p, *q;
 int hlen = Ustrlen(hstring);
 
-/* An empty string does nothing; otherwise add a final newline if necessary. */
+/* Ignore any leading newlines */
+while (*hstring == '\n') hstring++, hlen--;
 
+/* An empty string does nothing; ensure exactly one final newline. */
 if (hlen <= 0) return;
-if (hstring[hlen-1] != '\n') hstring = string_sprintf("%s\n", hstring);
+if (hstring[--hlen] != '\n') hstring = string_sprintf("%s\n", hstring);
+else while(hstring[--hlen] == '\n') hstring[hlen+1] = '\0';
 
 /* Loop for multiple header lines, taking care about continuations */
 
@@ -1094,6 +1097,44 @@ for (p = q = hstring; *p != 0; )
   }
 }
 
+
+
+/*************************************************
+*        List the added header lines		 *
+*************************************************/
+uschar *
+fn_hdrs_added(void)
+{
+uschar * ret = NULL;
+header_line * h = acl_added_headers;
+uschar * s;
+uschar * cp;
+int size = 0;
+int ptr = 0;
+
+if (!h) return NULL;
+
+do
+  {
+  s = h->text;
+  while ((cp = Ustrchr(s, '\n')) != NULL)
+    {
+    if (cp[1] == '\0') break;
+
+    /* contains embedded newline; needs doubling */
+    ret = string_cat(ret, &size, &ptr, s, cp-s+1);
+    ret = string_cat(ret, &size, &ptr, US"\n", 1);
+    s = cp+1;
+    }
+  /* last bit of header */
+
+  ret = string_cat(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
+  }
+while((h = h->next));
+
+ret[ptr-1] = '\0';	/* overwrite last newline */
+return ret;
+}
 
 
 /*************************************************
@@ -3962,8 +4003,11 @@ acl_check_wargs(int where, address_item *addr, uschar *s, int level,
 {
 uschar * tmp;
 uschar * tmp_arg[9];	/* must match acl_arg[] */
+uschar * sav_arg[9];	/* must match acl_arg[] */
+int sav_narg;
 uschar * name;
 int i;
+int ret;
 
 if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
   goto bad;
@@ -3978,11 +4022,25 @@ for (i = 0; i < 9; i++)
     goto bad;
     }
   }
-acl_narg = i;
-for (i = 0; i < acl_narg; i++) acl_arg[i] = tmp_arg[i];
-while (i < 9) acl_arg[i++] = NULL;
 
-return acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+sav_narg = acl_narg;
+acl_narg = i;
+for (i = 0; i < acl_narg; i++)
+  {
+  sav_arg[i] = acl_arg[i];
+  acl_arg[i] = tmp_arg[i];
+  }
+while (i < 9)
+  {
+  sav_arg[i] = acl_arg[i];
+  acl_arg[i++] = NULL;
+  }
+
+ret = acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+
+acl_narg = sav_narg;
+for (i = 0; i < 9; i++) acl_arg[i] = sav_arg[i];
+return ret;
 
 bad:
 if (expand_string_forcedfail) return ERROR;
@@ -3996,6 +4054,34 @@ return search_find_defer?DEFER:ERROR;
 /*************************************************
 *        Check access using an ACL               *
 *************************************************/
+
+/* Alternate interface for ACL, used by expansions */
+int
+acl_eval(int where, uschar *s, uschar **user_msgptr, uschar **log_msgptr)
+{
+address_item adb;
+address_item *addr = NULL;
+
+*user_msgptr = *log_msgptr = NULL;
+sender_verified_failed = NULL;
+ratelimiters_cmd = NULL;
+log_reject_target = LOG_MAIN|LOG_REJECT;
+
+if (where == ACL_WHERE_RCPT)
+  {
+  adb = address_defaults;
+  addr = &adb;
+  addr->address = expand_string(US"$local_part@$domain");
+  addr->domain = deliver_domain;
+  addr->local_part = deliver_localpart;
+  addr->cc_local_part = deliver_localpart;
+  addr->lc_local_part = deliver_localpart;
+  }
+
+return acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+}
+
+
 
 /* This is the external interface for ACL checks. It sets up an address and the
 expansions for $domain and $local_part when called after RCPT, then calls
@@ -4015,6 +4101,7 @@ Returns:       OK         access is granted by an ACCEPT verb
                DEFER      can't tell at the moment
                ERROR      disaster
 */
+int acl_where = ACL_WHERE_UNKNOWN;
 
 int
 acl_check(int where, uschar *recipient, uschar *s, uschar **user_msgptr,
@@ -4047,7 +4134,9 @@ if (where == ACL_WHERE_RCPT )
   deliver_localpart = addr->local_part;
   }
 
+acl_where = where;
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+acl_where = ACL_WHERE_UNKNOWN;
 
 /* Cutthrough - if requested,
 and WHERE_RCPT and not yet opened conn as result of recipient-verify,
@@ -4131,7 +4220,6 @@ if (fake_response != OK)
 
 return rc;
 }
-
 
 
 /*************************************************

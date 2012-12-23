@@ -42,6 +42,9 @@ int dkim_exim_query_dns_txt(char *name, char *answer) {
                "%.*s", (int)len, (char *)((rr->data)+rr_offset));
       rr_offset+=len;
       answer_offset+=len;
+      if (answer_offset >= PDKIM_DNS_TXT_MAX_RECLEN) {
+        return PDKIM_FAIL;
+      }
     }
   }
   else return PDKIM_FAIL;
@@ -501,7 +504,12 @@ uschar *dkim_exim_sign(int dkim_fd,
         rc = NULL;
         goto CLEANUP;
       }
-      (void)read(privkey_fd,big_buffer,(big_buffer_size-2));
+      if (read(privkey_fd,big_buffer,(big_buffer_size-2)) < 0) {
+        log_write(0, LOG_MAIN|LOG_PANIC, "unable to read private key file: %s",
+	  dkim_private_key_expanded);
+        rc = NULL;
+        goto CLEANUP;
+      }
       (void)close(privkey_fd);
       dkim_private_key_expanded = big_buffer;
     }

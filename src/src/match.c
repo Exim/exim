@@ -1010,7 +1010,7 @@ uschar *s, *pdomain, *sdomain;
 
 error = error;  /* Keep clever compilers from complaining */
 
-DEBUG(D_lists) debug_printf("address match: subject=%s pattern=%s\n",
+DEBUG(D_lists) debug_printf("address match test: subject=%s pattern=%s\n",
   subject, pattern);
 
 /* Find the subject's domain */

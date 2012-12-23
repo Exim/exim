@@ -367,9 +367,7 @@ enum {
   vtype_msgheaders_raw, /* the message's headers, unprocessed */
   vtype_localpart,      /* extract local part from string */
   vtype_domain,         /* extract domain from string */
-  vtype_recipients,     /* extract recipients from recipients list */
-                        /* (available only in system filters, ACLs, and */
-                        /* local_scan()) */
+  vtype_string_func,	/* value is string returned by given function */
   vtype_todbsdin,       /* value not used; generate BSD inbox tod */
   vtype_tode,           /* value not used; generate tod in epoch format */
   vtype_todel,          /* value not used; generate tod in epoch/usec format */
@@ -388,6 +386,8 @@ enum {
   ,vtype_dkim           /* Lookup of value in DKIM signature */
   #endif
   };
+
+static uschar * fn_recipients(void);
 
 /* This table must be kept in alphabetical order. */
 
@@ -471,6 +471,7 @@ static var_entry var_table[] = {
 #ifdef WITH_OLD_DEMIME
   { "found_extension",     vtype_stringptr,   &found_extension },
 #endif
+  { "headers_added",       vtype_string_func, &fn_hdrs_added },
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -562,7 +563,7 @@ static var_entry var_table[] = {
   { "received_time",       vtype_int,         &received_time },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
-  { "recipients",          vtype_recipients,  NULL },
+  { "recipients",          vtype_string_func, &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
@@ -783,8 +784,11 @@ return -1;
 
 /* This function is called to expand a string, and test the result for a "true"
 or "false" value. Failure of the expansion yields FALSE; logged unless it was a
-forced fail or lookup defer. All store used by the function can be released on
-exit.
+forced fail or lookup defer.
+
+We used to release all store used, but this is not not safe due
+to ${dlfunc } and ${acl }.  In any case expand_string_internal()
+is reasonably careful to release what it can.
 
 The actual false-value tests should be replicated for ECOND_BOOL_LAX.
 
@@ -800,7 +804,6 @@ BOOL
 expand_check_condition(uschar *condition, uschar *m1, uschar *m2)
 {
 int rc;
-void *reset_point = store_get(0);
 uschar *ss = expand_string(condition);
 if (ss == NULL)
   {
@@ -811,7 +814,6 @@ if (ss == NULL)
   }
 rc = ss[0] != 0 && Ustrcmp(ss, "0") != 0 && strcmpic(ss, US"no") != 0 &&
   strcmpic(ss, US"false") != 0;
-store_reset(reset_point);
 return rc;
 }
 
@@ -1447,6 +1449,34 @@ return yield;
 
 
 /*************************************************
+*               Return list of recipients        *
+*************************************************/
+/* A recipients list is available only during system message filtering,
+during ACL processing after DATA, and while expanding pipe commands
+generated from a system filter, but not elsewhere. */
+
+static uschar *
+fn_recipients(void)
+{
+if (!enable_dollar_recipients) return NULL; else
+  {
+  int size = 128;
+  int ptr = 0;
+  int i;
+  uschar * s = store_get(size);
+  for (i = 0; i < recipients_count; i++)
+    {
+    if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
+    s = string_cat(s, &size, &ptr, recipients_list[i].address,
+      Ustrlen(recipients_list[i].address));
+    }
+  s[ptr] = 0;     /* string_cat() leaves room */
+  return s;
+  }
+}
+
+
+/*************************************************
 *               Find value of a variable         *
 *************************************************/
 
@@ -1671,26 +1701,11 @@ while (last > first)
       }
     return (s == NULL)? US"" : s;
 
-    /* A recipients list is available only during system message filtering,
-    during ACL processing after DATA, and while expanding pipe commands
-    generated from a system filter, but not elsewhere. */
-
-    case vtype_recipients:
-    if (!enable_dollar_recipients) return NULL; else
+    case vtype_string_func:
       {
-      int size = 128;
-      int ptr = 0;
-      int i;
-      s = store_get(size);
-      for (i = 0; i < recipients_count; i++)
-        {
-        if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
-        s = string_cat(s, &size, &ptr, recipients_list[i].address,
-          Ustrlen(recipients_list[i].address));
-        }
-      s[ptr] = 0;     /* string_cat() leaves room */
+      uschar * (*fn)() = var_table[middle].value;
+      return fn();
       }
-    return s;
 
     case vtype_pspace:
       {
@@ -1838,6 +1853,7 @@ if (Ustrncmp(name, "acl_", 4) == 0)
 
 /*
 Load args from sub array to globals, and call acl_check().
+Sub array will be corrupted on return.
 
 Returns:       OK         access is granted by an ACCEPT verb
                DISCARD    access is granted by a DISCARD verb
@@ -1850,13 +1866,24 @@ static int
 eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
 {
 int i;
-uschar *dummy_log_msg;
+uschar *tmp;
+int sav_narg = acl_narg;
+int ret;
+extern int acl_where;
 
-for (i = 1; i < nsub && sub[i]; i++)
-  acl_arg[i-1] = sub[i];
-acl_narg = i-1;
+if(--nsub > sizeof(acl_arg)/sizeof(*acl_arg)) nsub = sizeof(acl_arg)/sizeof(*acl_arg);
+for (i = 0; i < nsub && sub[i+1]; i++)
+  {
+  tmp = acl_arg[i];
+  acl_arg[i] = sub[i+1];	/* place callers args in the globals */
+  sub[i+1] = tmp;		/* stash the old args using our caller's storage */
+  }
+acl_narg = i;
 while (i < nsub)
-  acl_arg[i++ - 1] = NULL;
+  {
+  sub[i+1] = acl_arg[i];
+  acl_arg[i++] = NULL;
+  }
 
 DEBUG(D_expand)
   debug_printf("expanding: acl: %s  arg: %s%s\n",
@@ -1864,7 +1891,13 @@ DEBUG(D_expand)
     acl_narg>0 ? sub[1]   : US"<none>",
     acl_narg>1 ? " +more" : "");
 
-return acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &dummy_log_msg);
+ret = acl_eval(acl_where, sub[0], user_msgp, &tmp);
+
+for (i = 0; i < nsub; i++)
+  acl_arg[i] = sub[i+1];	/* restore old args */
+acl_narg = sav_narg;
+
+return ret;
 }
 
 
@@ -2115,14 +2148,13 @@ switch(cond_type)
   case ECOND_ACL:
     /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
     {
-    uschar *nameargs;
     uschar *user_msg;
     BOOL cond = FALSE;
     int size = 0;
     int ptr = 0;
 
     while (isspace(*s)) s++;
-    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
     switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
       &s, yield == NULL, TRUE, US"acl"))
@@ -3357,12 +3389,12 @@ if (*error == NULL)
      * can just let the other invalid results occur otherwise, as they have
      * until now.  For this one case, we can coerce.
      */
-    if (y == -1 && x == LLONG_MIN && op != '*')
+    if (y == -1 && x == EXIM_ARITH_MIN && op != '*')
       {
       DEBUG(D_expand)
         debug_printf("Integer exception dodging: " PR_EXIM_ARITH "%c-1 coerced to " PR_EXIM_ARITH "\n",
-            LLONG_MIN, op, LLONG_MAX);
-      x = LLONG_MAX;
+            EXIM_ARITH_MIN, op, EXIM_ARITH_MAX);
+      x = EXIM_ARITH_MAX;
       continue;
       }
     if (op == '*')
@@ -3534,8 +3566,8 @@ $message_headers which can get very long.
 There's a problem if a ${dlfunc item has side-effects that cause allocation,
 since resetting the store at the end of the expansion will free store that was
 allocated by the plugin code as well as the slop after the expanded string. So
-we skip any resets if ${dlfunc has been used. This is an unfortunate
-consequence of string expansion becoming too powerful.
+we skip any resets if ${dlfunc has been used. The same applies for ${acl. This
+is an unfortunate consequence of string expansion becoming too powerful.
 
 Arguments:
   string         the string to be expanded
@@ -3757,6 +3789,7 @@ while (*s != 0)
     acl_check_internal() directly and get a current level from somewhere.
     See also the acl expansion condition ECOND_ACL and the traditional
     acl modifier ACLC_ACL.
+    Assume that the function has side-effects on the store that must be preserved.
     */
 
     case EITEM_ACL:
@@ -3773,6 +3806,7 @@ while (*s != 0)
         }
       if (skipping) continue;
 
+      resetok = FALSE;
       switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:
@@ -5646,7 +5680,7 @@ while (*s != 0)
 	uschar * list;
 	int sep = 0;
 	uschar * item;
-	uschar * suffix = "";
+	uschar * suffix = US"";
 	BOOL needsep = FALSE;
 	uschar buffer[256];
 
@@ -5660,10 +5694,10 @@ while (*s != 0)
 	  }
 	else switch(*arg)	/* specific list-type version */
 	  {
-	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = "_a"; break;
-	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = "_d"; break;
-	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = "_h"; break;
-	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = "_l"; break;
+	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = US"_a"; break;
+	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = US"_d"; break;
+	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = US"_h"; break;
+	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = US"_l"; break;
 	  default:
             expand_string_message = string_sprintf("bad suffix on \"list\" operator");
 	    goto EXPAND_FAILED;
@@ -5707,13 +5741,13 @@ while (*s != 0)
 	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
 	        {
                 yield = string_cat(yield, &size, &ptr, US"::", 2);
-	        item = cp;
+	        item = (uschar *)cp;
 		}
 	      else		/* sep in item; should already be doubled; emit once */
 	        {
                 yield = string_cat(yield, &size, &ptr, (uschar *)tok, 1);
 		if (*cp == sep) cp++;
-	        item = cp;
+	        item = (uschar *)cp;
 		}
 	      }
 	    }
@@ -6480,17 +6514,17 @@ else
     default:
       break;
     case 'k':
-      if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/1024 || value < EXIM_ARITH_MIN/1024) errno = ERANGE;
       else value *= 1024;
       endptr++;
       break;
     case 'm':
-      if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024)) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/(1024*1024) || value < EXIM_ARITH_MIN/(1024*1024)) errno = ERANGE;
       else value *= 1024*1024;
       endptr++;
       break;
     case 'g':
-      if (value > LLONG_MAX/(1024*1024*1024) || value < LLONG_MIN/(1024*1024*1024)) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/(1024*1024*1024) || value < EXIM_ARITH_MIN/(1024*1024*1024)) errno = ERANGE;
       else value *= 1024*1024*1024;
       endptr++;
       break;

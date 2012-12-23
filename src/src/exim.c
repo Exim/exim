@@ -222,7 +222,7 @@ to disrupt whatever is going on outside the signal handler. */
 
 if (fd < 0) return;
 
-(void)write(fd, process_info, process_info_len);
+{int dummy = write(fd, process_info, process_info_len); dummy = dummy; }
 (void)close(fd);
 }
 
@@ -3908,8 +3908,9 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
   {
   int i;
   uschar *p = big_buffer;
-  Ustrcpy(p, "cwd=");
-  (void)getcwd(CS p+4, big_buffer_size - 4);
+  char * dummy;
+  Ustrcpy(p, "cwd= (failed)");
+  dummy = /* quieten compiler */ getcwd(CS p+4, big_buffer_size - 4);
   while (*p) p++;
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
   while (*p) p++;
@@ -3952,8 +3953,9 @@ privilege by now. Before the chdir, we try to ensure that the directory exists.
 
 if (Uchdir(spool_directory) != 0)
   {
+  int dummy;
   (void)directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, FALSE);
-  (void)Uchdir(spool_directory);
+  dummy = /* quieten compiler */ Uchdir(spool_directory);
   }
 
 /* Handle calls with the -bi option. This is a sendmail option to rebuild *the*
@@ -5401,7 +5403,11 @@ while (more)
     if (ftest_prefix != NULL) printf("Prefix    = %s\n", ftest_prefix);
     if (ftest_suffix != NULL) printf("Suffix    = %s\n", ftest_suffix);
 
-    (void)chdir("/");   /* Get away from wherever the user is running this from */
+    if (chdir("/"))   /* Get away from wherever the user is running this from */
+      {
+      DEBUG(D_receive) debug_printf("chdir(\"/\") failed\n");
+      exim_exit(EXIT_FAILURE);
+      }
 
     /* Now we run either a system filter test, or a user filter test, or both.
     In the latter case, headers added by the system filter will persist and be

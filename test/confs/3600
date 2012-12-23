@@ -39,6 +39,7 @@ spabad:
   client_password = ${if eq{1}{0}{xxx}fail}
   client_username = username
   server_password = ok@test.ex
+  server_set_id = $auth1
 
 spa:
   driver = spa
@@ -47,6 +48,7 @@ spa:
   client_username = username
   server_debug_print = +++SPA \$auth1="$auth1"
   server_password = ok@test.ex
+  server_set_id = $auth1
 
 
 # ----- Routers -----

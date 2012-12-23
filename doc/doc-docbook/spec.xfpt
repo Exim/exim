@@ -41,16 +41,19 @@
 .book
 
 . /////////////////////////////////////////////////////////////////////////////
-. These definitions set some parameters and save some typing. Remember that
-. the <bookinfo> element must also be updated for each new edition.
+. These definitions set some parameters and save some typing.
+. Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
 .set previousversion "4.80"
-.set version "4.80"
+.include ./local_params
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
 
+.macro copyyear
+2012
+.endmacro
 
 . /////////////////////////////////////////////////////////////////////////////
 . Additional xfpt markup used by this document, over and above the default
@@ -170,15 +173,23 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>17 May 2012</date>
+<date>
+.fulldate
+</date>
 <author><firstname>Exim</firstname><surname>Maintainers</surname></author>
 <authorinitials>EM</authorinitials>
 <revhistory><revision>
-  <revnumber>4.80</revnumber>
-  <date>17 May 2012</date>
+  <revnumber>
+.version
+  </revnumber>
+  <date>
+.fulldate
+  </date>
   <authorinitials>EM</authorinitials>
 </revision></revhistory>
-<copyright><year>2012</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>
+.copyyear
+           </year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -367,7 +378,7 @@ contributors.
 
 .new
 .cindex "documentation"
-This edition of the Exim specification applies to version &version; of Exim.
+This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of the document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
@@ -533,10 +544,23 @@ The &_.bz2_& file is usually a lot smaller than the &_.gz_& file.
 .cindex "distribution" "signing details"
 .cindex "distribution" "public key"
 .cindex "public key for signed distribution"
-The distributions are currently signed with Nigel Metheringham's GPG key. The
-corresponding public key is available from a number of keyservers, and there is
-also a copy in the file &_nigel-pubkey.asc_&. The signatures for the tar bundles are
-in:
+.new
+The distributions will be PGP signed by an individual key of the Release
+Coordinator.  This key will have a uid containing an email address in the
+&'exim.org'& domain and will have signatures from other people, including
+other Exim maintainers.  We expect that the key will be in the "strong set" of
+PGP keys.  There should be a trust path to that key from Nigel Metheringham's
+PGP key, a version of which can be found in the release directory in the file
+&_nigel-pubkey.asc_&.  All keys used will be available in public keyserver pools,
+such as &'pool.sks-keyservers.net'&.
+
+At time of last update, releases were being made by Phil Pennock and signed with
+key &'0x403043153903637F'&, although that key is expected to be replaced in 2013.
+A trust path from Nigel's key to Phil's can be observed at
+&url(https://www.security.spodhuis.org/exim-trustpath).
+.wen
+
+The signatures for the tar bundles are in:
 .display
 &_exim-n.nn.tar.gz.asc_&
 &_exim-n.nn.tar.bz2.asc_&
@@ -1348,6 +1372,8 @@ Setting the &%verify%& option actually sets two options, &%verify_sender%& and
 &%verify_recipient%&, which independently control the use of the router for
 sender and recipient verification. You can set these options directly if
 you want a router to be used for only one type of verification.
+Note that cutthrough delivery is classed as a recipient verification
+for this purpose.
 .next
 If the &%address_test%& option is set false, the router is skipped when Exim is
 run with the &%-bt%& option to test an address routing. This can be helpful
@@ -1357,6 +1383,7 @@ having to simulate the effect of the scanner.
 .next
 Routers can be designated for use only when verifying an address, as
 opposed to routing it for delivery. The &%verify_only%& option controls this.
+Again, cutthrough delibery counts as a verification.
 .next
 Individual routers can be explicitly skipped when running the routers to
 check an address given in the SMTP EXPN command (see the &%expn%& option).
@@ -1602,7 +1629,7 @@ for only a short time (see &%timeout_frozen_after%& and
 .section "Unpacking" "SECID23"
 Exim is distributed as a gzipped or bzipped tar file which, when unpacked,
 creates a directory with the name of the current release (for example,
-&_exim-&version;_&) into which the following files are placed:
+&_exim-&version()_&) into which the following files are placed:
 
 .table2 140pt
 .irow &_ACKNOWLEDGMENTS_& "contains some acknowledgments"
@@ -2298,7 +2325,7 @@ INFO_DIRECTORY, as described in section &<<SECTinsinfdoc>>& below.
 For the utility programs, old versions are renamed by adding the suffix &_.O_&
 to their names. The Exim binary itself, however, is handled differently. It is
 installed under a name that includes the version number and the compile number,
-for example &_exim-&version;-1_&. The script then arranges for a symbolic link
+for example &_exim-&version()-1_&. The script then arranges for a symbolic link
 called &_exim_& to point to the binary. If you are updating a previous version
 of Exim, the script takes care to ensure that the name &_exim_& is never absent
 from the directory (as seen by other processes).
@@ -6911,6 +6938,14 @@ has two space-separated fields: an authorization code and a target host name.
 The authorization code can be &"Y"& for yes, &"N"& for no, &"X"& for explicit
 authorization required but absent, or &"?"& for unknown.
 
+.cindex "A+" "in &(dnsdb)& lookup"
+The pseudo-type A+ performs an A6 lookup (if configured) followed by an AAAA
+and then an A lookup.  All results are returned; defer processing
+(see below) is handled separately for each lookup.  Example:
+.code
+${lookup dnsdb {>; a+=$sender_helo_name}}
+.endd
+
 
 .section "Multiple dnsdb lookups" "SECID67"
 In the previous sections, &(dnsdb)& lookups for a single domain are described.
@@ -8144,7 +8179,7 @@ case the IP address is used on its own.
 There are several types of pattern that require Exim to know the name of the
 remote host. These are either wildcard patterns or lookups by name. (If a
 complete hostname is given without any wildcarding, it is used to find an IP
-address to match against, as described in the section &<<SECThoslispatip>>&
+address to match against, as described in section &<<SECThoslispatip>>&
 above.)
 
 If the remote host name is not already known when Exim encounters one of these
@@ -8313,7 +8348,7 @@ use masked IP addresses in database queries, you can use the &%mask%& expansion
 operator.
 
 If the query contains a reference to &$sender_host_name$&, Exim automatically
-looks up the host name if has not already done so. (See section
+looks up the host name if it has not already done so. (See section
 &<<SECThoslispatnam>>& for comments on finding host names.)
 
 Historical note: prior to release 4.30, Exim would always attempt to find a
@@ -8513,7 +8548,7 @@ but the separating colon must still be included at line breaks. White space
 surrounding the colons is ignored. For example:
 .code
 aol.com:  spammer1 : spammer2 : ^[0-9]+$ :
- spammer3 : spammer4
+  spammer3 : spammer4
 .endd
 As in all colon-separated lists in Exim, a colon can be included in an item by
 doubling.
@@ -8767,12 +8802,12 @@ arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
 Any unused are made empty.  The variable &$acl_narg$& is set to the number of
 arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
 and may use the variables; if another acl expansion is used the values
-are overwritten.  If the ACL sets
+are restored after it returns.  If the ACL sets
 a value using a "message =" modifier and returns accept or deny, the value becomes
 the result of the expansion.
-If no message was set and the ACL returned accept or deny
-the value is an empty string.
-If the ACL returned defer the result is a forced-fail.  Otherwise the expansion fails.
+If no message is set and the ACL returns accept or deny
+the expansion result is an empty string.
+If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
 
 
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
@@ -9899,12 +9934,12 @@ dotted-nibble hexadecimal form.  In both cases, this is the "natural" form
 for DNS.  For example,
 .code
 ${reverse_ip:192.0.2.4}
-${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
+${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.127}
 .endd
 returns
 .code
 4.2.0.192
-3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
+f.7.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 .endd
 
 
@@ -10083,7 +10118,7 @@ arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
 Any unused are made empty.  The variable &$acl_narg$& is set to the number of
 arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
 and may use the variables; if another acl expansion is used the values
-are overwritten.  If the ACL sets
+are restored after it returns.  If the ACL sets
 a value using a "message =" modifier the variable $value becomes
 the result of the expansion, otherwise it is empty.
 If the ACL returns accept the condition is true; if deny, false.
@@ -11038,6 +11073,12 @@ This is not strictly an expansion variable. It is expansion syntax for
 inserting the message header line with the given name. Note that the name must
 be terminated by colon or white space, because it may contain a wide variety of
 characters. Note also that braces must &'not'& be used.
+
+.vitem &$headers_added$&
+.vindex "&$headers_added$&"
+Within an ACL this variable contains the headers added so far by
+the ACL modifier add_header (section &<<SECTaddheadacl>>&).
+The headers are a newline-separated list.
 
 .vitem &$home$&
 .vindex "&$home$&"
@@ -12871,9 +12912,7 @@ listed in more than one group.
 .section "TLS" "SECID108"
 .table2
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
-.new
 .row &%gnutls_enable_pkcs11%&        "allow GnuTLS to autoload PKCS11 modules"
-.wen
 .row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_certificate%&             "location of server certificate"
@@ -13023,9 +13062,7 @@ See also the &'Policy controls'& section above.
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
-.new
 .row &%dns_use_dnssec%&              "parameter for resolver"
-.wen
 .row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
@@ -13073,6 +13110,8 @@ Those options that undergo string expansion before use are marked with
 .option accept_8bitmime main boolean true
 .cindex "8BITMIME"
 .cindex "8-bit characters"
+.cindex "log" "selectors"
+.cindex "log" "8BITMIME"
 This option causes Exim to send 8BITMIME in its response to an SMTP
 EHLO command, and to accept the BODY= parameter on MAIL commands.
 However, though Exim is 8-bit clean, it is not a protocol converter, and it
@@ -13084,6 +13123,11 @@ It now defaults to true.
 A more detailed analysis of the issues is provided by Dan Bernstein:
 .display
 &url(http://cr.yp.to/smtp/8bitmime.html)
+.endd
+
+To log received 8BITMIME status use
+.code
+log_selector = +8bitmime
 .endd
 
 .option acl_not_smtp main string&!! unset
@@ -17221,7 +17265,8 @@ Setting this option has the effect of setting &%verify_sender%& and
 .cindex "EXPN" "with &%verify_only%&"
 .oindex "&%-bv%&"
 .cindex "router" "used only when verifying"
-If this option is set, the router is used only when verifying an address or
+If this option is set, the router is used only when verifying an address,
+delivering in cutthrough mode or
 testing with the &%-bv%& option, not when actually doing a delivery, testing
 with the &%-bt%& option, or running the SMTP EXPN command. It can be further
 restricted to verifying only senders or recipients by means of
@@ -17235,7 +17280,8 @@ user or group.
 
 .option verify_recipient routers&!? boolean true
 If this option is false, the router is skipped when verifying recipient
-addresses
+addresses,
+delivering in cutthrough mode
 or testing recipient verification using &%-bv%&.
 See section &<<SECTrouprecon>>& for a list of the order in which preconditions
 are evaluated.
@@ -24037,6 +24083,12 @@ client_condition = ${if !eq{$tls_out_cipher}{}}
 .endd
 
 
+.option client_set_id authenticators string&!! unset
+When client authentication succeeds, this condition is expanded; the
+result is used in the log lines for outbound messasges.
+Typically it will be the user name used for authentication.
+
+
 .option driver authenticators string unset
 This option must always be set. It specifies which of the available
 authenticators is to be used.
@@ -26108,6 +26160,9 @@ before or after the data) correctly &-- they keep the message on their queues
 and try again later, but that is their problem, though it does waste some of
 your resources.
 
+The &%acl_smtp_data%& ACL is run after both the &%acl_smtp_dkim%& and
+the &%acl_smtp_mime%& ACLs.
+
 
 .section "The SMTP DKIM ACL" "SECTDKIMACL"
 The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
@@ -26117,12 +26172,16 @@ The ACL test specified by &%acl_smtp_dkim%& happens after a message has been
 received, and is executed for each DKIM signature found in a message.  If not
 otherwise specified, the default action is to accept.
 
-For details on the operation of DKIM, see chapter &<<CHID12>>&.
+This ACL is evaluated before &%acl_smtp_mime%& and &%acl_smtp_data%&.
+
+For details on the operation of DKIM, see chapter &<<CHAPdkim>>&.
 
 
 .section "The SMTP MIME ACL" "SECID194"
 The &%acl_smtp_mime%& option is available only when Exim is compiled with the
 content-scanning extension. For details, see chapter &<<CHAPexiscan>>&.
+
+This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
 
 .section "The QUIT ACL" "SECTQUITACL"
@@ -26154,7 +26213,7 @@ connection is closed. In these special cases, the QUIT ACL does not run.
 .section "The not-QUIT ACL" "SECTNOTQUITACL"
 .vindex &$acl_smtp_notquit$&
 The not-QUIT ACL, specified by &%acl_smtp_notquit%&, is run in most cases when
-an SMTP session ends without sending QUIT. However, when Exim itself is is bad
+an SMTP session ends without sending QUIT. However, when Exim itself is in bad
 trouble, such as being unable to write to its log files, this ACL is not run,
 because it might try to do things (such as write to log files) that make the
 situation even worse.
@@ -27026,11 +27085,12 @@ is what is wanted for subsequent tests.
 .new
 .vitem &*control&~=&~cutthrough_delivery*&
 .cindex "&ACL;" "cutthrough routing"
+.cindex "cutthrough" "requesting"
 This option requests delivery be attempted while the item is being received.
 It is usable in the RCPT ACL and valid only for single-recipient mails forwarded
 from one SMTP connection to another.  If a recipient-verify callout connection is
 requested in the same ACL it is held open and used for the data, otherwise one is made
-after the ACL completes.
+after the ACL completes.  Note that routers are used in verify mode.
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
@@ -27041,6 +27101,35 @@ line.
 
 Delivery in this mode avoids the generation of a bounce mail to a (possibly faked)
 sender when the destination system is doing content-scan based rejection.
+.wen
+
+
+.new
+.vitem &*control&~=&~debug/*&<&'options'&>
+.cindex "&ACL;" "enabling debug logging"
+.cindex "debugging" "enabling from an ACL"
+This control turns on debug logging, almost as though Exim had been invoked
+with &`-d`&, with the output going to a new logfile, by default called
+&'debuglog'&.  The filename can be adjusted with the &'tag'& option, which
+may access any variables already defined.  The logging may be adjusted with
+the &'opts'& option, which takes the same values as the &`-d`& command-line
+option.  Some examples (which depend on variables that don't exist in all
+contexts):
+.code
+      control = debug
+      control = debug/tag=.$sender_host_address
+      control = debug/opts=+expand+acl
+      control = debug/tag=.$message_exim_id/opts=+expand
+.endd
+.wen
+
+
+.new
+.vitem &*control&~=&~dkim_disable_verify*&
+.cindex "disable DKIM verify"
+.cindex "DKIM" "disable verify"
+This control turns off DKIM verification processing entirely.  For details on
+the operation and configuration of DKIM, see chapter &<<CHAPdkim>>&.
 .wen
 
 
@@ -27061,24 +27150,6 @@ that these values will have any effect, not be stripped by networking
 equipment, or do much of anything without cooperation with your Network
 Engineer and those of all network operators between the source and destination.
 .wen
-
-
-.vitem &*control&~=&~debug/*&<&'options'&>
-.cindex "&ACL;" "enabling debug logging"
-.cindex "debugging" "enabling from an ACL"
-This control turns on debug logging, almost as though Exim had been invoked
-with &`-d`&, with the output going to a new logfile, by default called
-&'debuglog'&.  The filename can be adjusted with the &'tag'& option, which
-may access any variables already defined.  The logging may be adjusted with
-the &'opts'& option, which takes the same values as the &`-d`& command-line
-option.  Some examples (which depend on variables that don't exist in all
-contexts):
-.code
-      control = debug
-      control = debug/tag=.$sender_host_address
-      control = debug/opts=+expand+acl
-      control = debug/tag=.$message_exim_id/opts=+expand
-.endd
 
 
 .vitem &*control&~=&~enforce_sync*& &&&
@@ -27286,7 +27357,9 @@ receiving a message). The message must ultimately be accepted for
 any ACL verb, including &%deny%& (though this is potentially useful only in a
 RCPT ACL).
 
-If the data for the &%add_header%& modifier contains one or more newlines that
+Leading and trailing newlines are removed from
+the data for the &%add_header%& modifier; if it then
+contains one or more newlines that
 are not followed by a space or a tab, it is assumed to contain multiple header
 lines. Each one is checked for valid syntax; &`X-ACL-Warn:`& is added to the
 front of any line that is not a valid header line.
@@ -27304,7 +27377,9 @@ message is rejected after DATA or by the non-SMTP ACL, all added header lines
 are included in the entry that is written to the reject log.
 
 .cindex "header lines" "added; visibility of"
-Header lines are not visible in string expansions until they are added to the
+Header lines are not visible in string expansions
+of message headers
+until they are added to the
 message. It follows that header lines defined in the MAIL, RCPT, and predata
 ACLs are not visible until the DATA ACL and MIME ACLs are run. Similarly,
 header lines that are added by the DATA or MIME ACLs are not visible in those
@@ -27312,6 +27387,8 @@ ACLs. Because of this restriction, you cannot use header lines as a way of
 passing data between (for example) the MAIL and RCPT ACLs. If you want to do
 this, you can use ACL variables, as described in section
 &<<SECTaclvariables>>&.
+
+The list of headers yet to be added is given by the &%$headers_added%& variable.
 
 The &%add_header%& modifier acts immediately as it is encountered during the
 processing of an ACL. Notice the difference between these two cases:
@@ -27465,8 +27542,10 @@ condition false. This means that further processing of the &%warn%& verb
 ceases, but processing of the ACL continues.
 
 If the argument is a named ACL, up to nine space-separated optional values
-can be appended; they appear in $acl_arg1 to $acl_arg9, and $acl_narg is set
-to the count of values.  The name and values are expanded separately.
+can be appended; they appear within the called ACL in $acl_arg1 to $acl_arg9,
+and $acl_narg is set to the count of values.
+Previous values of these variables are restored after the call returns.
+The name and values are expanded separately.
 
 If the nested &%acl%& returns &"drop"& and the outer condition denies access,
 the connection is dropped. If it returns &"discard"&, the verb must be
@@ -27556,7 +27635,7 @@ encrypted = *
 .endd
 
 
-.vitem &*hosts&~=&~*&<&'&~host&~list'&>
+.vitem &*hosts&~=&~*&<&'host&~list'&>
 .cindex "&%hosts%& ACL condition"
 .cindex "host" "ACL checking"
 .cindex "&ACL;" "testing the client host"
@@ -33481,6 +33560,7 @@ timestamp. The flags are:
 &`<=`&     message arrival
 &`=>`&     normal message delivery
 &`->`&     additional address in same delivery
+&`>>`&     cutthrough message delivery
 &`*>`&     delivery suppressed by &%-N%&
 &`**`&     delivery failed; address bounced
 &`==`&     delivery deferred; temporary problem
@@ -33580,6 +33660,11 @@ intermediate address(es) exist between the original and the final address, the
 last of these is given in parentheses after the final address. The R and T
 fields record the router and transport that were used to process the address.
 
+If SMTP AUTH was used for the delivery there is an additional item A=
+followed by the name of the authenticator that was used.
+If an authenticated identification was set up by the authenticator's &%client_set_id%&
+option, this is logged too, separated by a colon from the authenticator name.
+
 If a shadow transport was run after a successful local delivery, the log line
 for the successful delivery has an item added on the end, of the form
 .display
@@ -33594,6 +33679,12 @@ SMTP RCPT commands in one transaction) the second and subsequent addresses are
 flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
 down a single SMTP connection, an asterisk follows the IP address in the log
 lines for the second and subsequent messages.
+
+.cindex "delivery" "cutthrough; logging"
+.cindex "cutthrough" "logging"
+When delivery is done in cutthrough mode it is flagged with &`>>`& and the log
+line precedes the reception line, since cutthrough waits for a possible
+rejection from the destination in case it can reject the sourced item.
 
 The generation of a reply message by a filter file gets logged as a
 &"delivery"& to the addressee, preceded by &">"&.
@@ -33687,7 +33778,7 @@ at the end of its processing.
 A summary of the field identifiers that are used in log lines is shown in
 the following table:
 .display
-&`A   `&        authenticator name (and optional id)
+&`A   `&        authenticator name (and optional id and sender)
 &`C   `&        SMTP confirmation on delivery
 &`    `&        command list for &"no mail in SMTP session"&
 &`CV  `&        certificate verification status
@@ -33771,6 +33862,7 @@ log_selector = +arguments -retry_defer
 The list of optional log items is in the following table, with the default
 selection marked by asterisks:
 .display
+&` 8bitmime                   `&  received 8BITMIME status
 &`*acl_warn_skipped           `&  skipped &%warn%& statement in ACL
 &` address_rewrite            `&  address rewriting
 &` all_parents                `&  all parents in => lines
@@ -33803,6 +33895,7 @@ selection marked by asterisks:
 &`*smtp_confirmation          `&  SMTP confirmation on => lines
 &` smtp_connection            `&  SMTP connections
 &` smtp_incomplete_transaction`&  incomplete SMTP transactions
+&` smtp_mailauth              `&  AUTH argument to MAIL commands
 &` smtp_no_mail               `&  session with no MAIL commands
 &` smtp_protocol_error        `&  SMTP protocol errors
 &` smtp_syntax_error          `&  SMTP syntax errors
@@ -33818,6 +33911,14 @@ selection marked by asterisks:
 More details on each of these items follows:
 
 .ilist
+.cindex "8BITMIME"
+.cindex "log" "8BITMIME"
+&%8bitmime%&: This causes Exim to log any 8BITMIME status of received messages,
+which may help in tracking down interoperability issues with ancient MTAs
+that are not 8bit clean.  This is added to the &"<="& line, tagged with
+&`M8S=`& and a value of &`0`&, &`7`& or &`8`&, corresponding to "not given",
+&`7BIT`& and &`8BITMIME`& respectively.
+.next
 .cindex "&%warn%& ACL verb" "log when skipping"
 &%acl_warn_skipped%&: When an ACL &%warn%& statement is skipped because one of
 its conditions cannot be evaluated, a log line to this effect is written if
@@ -34062,6 +34163,11 @@ than 20 commands, they are all listed. If there were more than 20 commands,
 the last 20 are listed, preceded by &"..."&. However, with the default
 setting of 10 for &%smtp_accep_max_nonmail%&, the connection will in any case
 have been aborted before 20 non-mail commands are processed.
+.next
+&%smtp_mailauth%&: A third subfield with the authenticated sender,
+colon-separated, is appended to the A= item for a message arrival or delivery
+log line, if an AUTH argument to the SMTP MAIL command (see &<<SECTauthparamail>>&)
+was accepted or used.
 .next
 .cindex "log" "SMTP protocol error"
 .cindex "SMTP" "logging protocol error"
@@ -35922,7 +36028,7 @@ unqualified domain &'foundation'&.
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHID12" &&&
+.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHAPdkim" &&&
          "DKIM Support"
 .cindex "DKIM"
 
@@ -36218,6 +36324,12 @@ Add to &_src/config.h.defaults_& the line:
 .next
 Edit &_src/drtables.c_&, adding conditional code to pull in the private header
 and create a table entry as is done for all the other drivers and lookup types.
+.next
+Edit &_scripts/lookups-Makefile_& if this is a new lookup; there is a for-loop
+near the bottom, ranging the &`name_mod`& variable over a list of all lookups.
+Add your &`NEWDRIVER`& to that list.
+As long as the dynamic module would be named &_newdriver.so_&, you can use the
+simple form that most lookups have.
 .next
 Edit &_Makefile_& in the appropriate sub-directory (&_src/routers_&,
 &_src/transports_&, &_src/auths_&, or &_src/lookups_&); add a line for the new

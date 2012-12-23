@@ -8,6 +8,7 @@
 
 .include stdflags
 .include stdmacs
+.include ./local_params
 .docbook
 
 . /////////////////////////////////////////////////////////////////////////////
@@ -44,6 +45,13 @@
 .endmacro
 . ===========================================================================
 
+. Copyright year.  Update this (only) when changing content.
+
+.macro copyyear
+2010
+.endmacro
+
+. ===========================================================================
 
 . /////////////////////////////////////////////////////////////////////////////
 . /////////////////////////////////////////////////////////////////////////////
@@ -59,15 +67,23 @@
 <bookinfo>
 <title>Exim's interfaces to mail filtering</title>
 <titleabbrev>Exim filtering</titleabbrev>
-<date>23 November 2009</date>
+<date>
+.fulldate
+</date>
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>4.80</revnumber>
-  <date>17 May 2012</date>
+  <revnumber>
+.version
+  </revnumber>
+  <date>
+.fulldate
+  </date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
-<copyright><year>2010</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>
+.copyyear
+           </year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -77,8 +93,8 @@
 
 .chapter "Forwarding and filtering in Exim" "CHAPforandfilt"
 This document describes the user interfaces to Exim's in-built mail filtering
-facilities, and is copyright &copy; University of Cambridge 2007. It
-corresponds to Exim version 4.80.
+facilities, and is copyright &copy; University of Cambridge &copyyear(). It
+corresponds to Exim version &version().
 
 
 

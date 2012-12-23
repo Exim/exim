@@ -18,7 +18,9 @@
 #include "../exim.h"
 
 #ifndef EXPERIMENTAL_SPF
-static void dummy(int x) { dummy(x-1); }
+static void dummy(int x);
+static void dummy2(int x) { dummy(x-1); }
+static void dummy(int x) { dummy2(x-1); }
 #else
 
 #include "lf_functions.h"

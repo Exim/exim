@@ -493,7 +493,7 @@ locked TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-address match: subject=userx@test.ex pattern=*
+address match test: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
 userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0
@@ -665,7 +665,7 @@ locked TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-address match: subject=userx@test.ex pattern=*
+address match test: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
 userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0

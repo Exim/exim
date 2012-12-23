@@ -43,7 +43,9 @@ Without rename, we could add an option for GS2 support in the future.
 
 #ifndef AUTH_HEIMDAL_GSSAPI
 /* dummy function to satisfy compilers when we link in an "empty" file. */
-static void dummy(int x) { dummy(x-1); }
+static void dummy(int x);
+static void dummy2(int x) { dummy(x-1); }
+static void dummy(int x) { dummy2(x-1); }
 #else
 
 #include <gssapi/gssapi.h>

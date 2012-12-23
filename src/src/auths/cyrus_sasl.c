@@ -25,7 +25,9 @@ in a dummy argument to stop even pickier compilers complaining about infinite
 loops. */
 
 #ifndef AUTH_CYRUS_SASL
-static void dummy(int x) { dummy(x-1); }
+static void dummy(int x);
+static void dummy2(int x) { dummy(x-1); }
+static void dummy(int x) { dummy2(x-1); }
 #else
 
 

@@ -133,6 +133,7 @@ extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 /* General global variables */
 
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
+extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
 extern uschar *acl_arg[9];             /* Argument to ACL call */
@@ -240,6 +241,9 @@ extern int     check_log_space;        /* Minimum for message acceptance */
 extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length */
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
+extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
+extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */
+extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
 extern int     clmacro_count;          /* Number of command line macros */
 extern uschar *clmacros[];             /* Copy of them, for re-exec */
 extern int     connection_max_messages;/* Max down one SMTP connection */

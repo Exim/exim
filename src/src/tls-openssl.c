@@ -46,6 +46,25 @@ static BOOL client_verify_callback_called = FALSE;
 static BOOL server_verify_callback_called = FALSE;
 static const uschar *sid_ctx = US"exim";
 
+/* We have three different contexts to care about.
+
+Simple case: client, `client_ctx`
+ As a client, we can be doing a callout or cut-through delivery while receiving
+ a message.  So we have a client context, which should have options initialised
+ from the SMTP Transport.
+
+Server:
+ There are two cases: with and without ServerNameIndication from the client.
+ Given TLS SNI, we can be using different keys, certs and various other
+ configuration settings, because they're re-expanded with $tls_sni set.  This
+ allows vhosting with TLS.  This SNI is sent in the handshake.
+ A client might not send SNI, so we need a fallback, and an initial setup too.
+ So as a server, we start out using `server_ctx`.
+ If SNI is sent by the client, then we as server, mid-negotiation, try to clone
+ `server_sni` from `server_ctx` and then initialise settings by re-expanding
+ configuration.
+*/
+
 static SSL_CTX *client_ctx = NULL;
 static SSL_CTX *server_ctx = NULL;
 static SSL     *client_ssl = NULL;
@@ -670,7 +689,7 @@ if (cbinfo->server_cipher_list)
 if (cbinfo->ocsp_file)
   {
   SSL_CTX_set_tlsext_status_cb(server_sni, tls_stapling_cb);
-  SSL_CTX_set_tlsext_status_arg(server_ctx, cbinfo);
+  SSL_CTX_set_tlsext_status_arg(server_sni, cbinfo);
   }
 #endif
 
@@ -769,6 +788,8 @@ cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
 #ifdef EXPERIMENTAL_OCSP
 cbinfo->ocsp_file = ocsp_file;
+cbinfo->ocsp_file_expanded = NULL;
+cbinfo->ocsp_response = NULL;
 #endif
 cbinfo->dhparam = dhparam;
 cbinfo->host = host;

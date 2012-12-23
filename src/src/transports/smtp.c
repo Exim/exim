@@ -1272,6 +1272,7 @@ if (continue_hostname == NULL
   authenticator's client driver is running. */
 
   smtp_authenticated = FALSE;
+  client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
   require_auth = verify_check_this_host(&(ob->hosts_require_auth), NULL,
     host->name, host->address, NULL);
 
@@ -1349,6 +1350,9 @@ if (continue_hostname == NULL
             {
             case OK:
             smtp_authenticated = TRUE;   /* stops the outer loop */
+	    client_authenticator = au->name;
+	    if (au->set_client_id != NULL)
+	      client_authenticated_id = expand_string(au->set_client_id);
             break;
 
             /* Failure after writing a command */
@@ -1496,6 +1500,7 @@ if ((smtp_authenticated || ob->authenticated_sender_force) &&
   string_format(p, sizeof(buffer) - (p-buffer), " AUTH=%s",
     auth_xtextencode(local_authenticated_sender,
     Ustrlen(local_authenticated_sender)));
+  client_authenticated_sender = string_copy(local_authenticated_sender);
   }
 
 /* From here until we send the DATA command, we can make use of PIPELINING
@@ -3114,9 +3119,12 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
 /* Update the database which keeps information about which messages are waiting
 for which hosts to become available. For some message-specific errors, the
 update_waiting flag is turned off because we don't want follow-on deliveries in
-those cases. */
+those cases.  If this transport instance is explicitly limited to one message
+per connection then follow-on deliveries are not possible and there's no need
+to create/update the per-transport wait-<transport_name> database. */
 
-if (update_waiting) transport_update_waiting(hostlist, tblock->name);
+if (update_waiting && tblock->connection_max_messages != 1)
+  transport_update_waiting(hostlist, tblock->name);
 
 END_TRANSPORT:
 

@@ -23,10 +23,22 @@ exim.8:       spec.xml x2man
 
 ########################################################################
 
+.PHONY: local_params
+local_params:
+	echo .macro version > $@
+	echo $(EXIM_VER)	>> $@
+	echo .endmacro		>> $@
+	echo .macro fulldate	>> $@
+	date "+%d %b %Y"	>> $@
+	echo .endmacro		>> $@
+	echo .macro year	>> $@
+	date "+%Y"		>> $@
+	echo .endmacro		>> $@
+
 
 ############################### FILTER #################################
 
-filter.xml:      filter.xfpt
+filter.xml:      local_params filter.xfpt
 		 xfpt filter.xfpt
 
 filter-pr.xml:   filter.xml Pre-xml
@@ -104,7 +116,7 @@ filter.info:  filter-info.xml
 
 ################################ SPEC ##################################
 
-spec.xml:      spec.xfpt
+spec.xml:      local_params spec.xfpt
 	       xfpt spec.xfpt
 
 spec-pr.xml:   spec.xml Pre-xml
@@ -282,7 +294,8 @@ os-fixup:
 
 clean:; /bin/rm -rf exim.8 \
 	      filter*.xml spec*.xml test*.xml \
-	      *.fo *.html *.pdf *.ps \
+	      *.fo *.pdf *.ps \
+	      filter*.html spec*.html test*.html \
 	      filter*.txt spec*.txt test*.txt \
 	      *.info* *.texinfo *.texi
 
