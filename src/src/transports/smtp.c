@@ -1075,9 +1075,31 @@ goto SEND_QUIT;
   #endif
 
   #ifdef EXPERIMENTAL_PRDR
+    DEBUG(D_transport) debug_printf("considering PRDR...\n");
+
   prdr_enable = esmtp &&
-    pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0;
+    (pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
+      PCRE_EOPT, NULL, 0) >= 0) &&
+    (verify_check_this_host(&(ob->hosts_try_prdr), NULL, host->name,
+      host->address, NULL) == OK);
+    DEBUG(D_transport) debug_printf("considered PRDR...\n");
+
+  if (prdr_enable)
+    {DEBUG(D_transport) debug_printf("PRDR usable\n");}
+
+else if (!esmtp)
+    {DEBUG(D_transport) debug_printf("PRDR not possible, not esmtp\n");}
+
+else if (pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
+      PCRE_EOPT, NULL, 0) < 0)
+    {DEBUG(D_transport) debug_printf("PRDR not offerred\n");}
+
+else if (verify_check_this_host(&(ob->hosts_try_prdr), NULL, host->name,
+      host->address, NULL) != OK)
+    {DEBUG(D_transport) debug_printf("PRDR not permitted for host\n");}
+
+else
+    {DEBUG(D_transport) debug_printf("PRDR confusion\n");}
   #endif
   }
 
@@ -1481,6 +1503,14 @@ if (smtp_use_size)
   sprintf(CS p, " SIZE=%d", message_size+message_linecount+ob->size_addition);
   while (*p) p++;
   }
+
+#ifdef EXPERIMENTAL_PRDDR
+if (prdr_enable)	/*XXX could we do this on if >1 rcpts? */
+  {
+  sprintf(CS p, " PRDR");
+  p += 5;
+  }
+#endif
 
 /* If an authenticated_sender override has been specified for this transport
 instance, expand it. If the expansion is forced to fail, and there was already
