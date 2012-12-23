@@ -7,6 +7,16 @@
  * c99 $(pkg-config --cflags openssl) gen_pkcs3.c $(pkg-config --libs openssl)
  */
 
+/*
+ * Rationale:
+ * The Diffie-Hellman primes which are embedded into Exim as named primes for
+ * the tls_dhparam option are in the std-crypto.c file.  The source for those
+ * comes from various RFCs, where they are given in hexadecimal form.
+ *
+ * This tool provides convenient conversion, to reduce the risk of human
+ * error in transcription.
+ */
+
 #include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
