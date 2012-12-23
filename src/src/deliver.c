@@ -6096,6 +6096,11 @@ if (addr_remote != NULL)
     regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
   #endif
 
+  #ifdef EXPERIMENTAL_PRDR
+  if (regex_PRDR == NULL) regex_PRDR =
+    regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
+  #endif
+
   /* Now sort the addresses if required, and do the deliveries. The yield of
   do_remote_deliveries is FALSE when mua_wrapper is set and all addresses
   cannot be delivered in one transaction. */

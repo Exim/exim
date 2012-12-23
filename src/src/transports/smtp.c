@@ -106,6 +106,10 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
+#ifdef EXPERIMENTAL_PRDR
+  { "hosts_try_prdr",       opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_try_prdr) },
+#endif
 #ifdef SUPPORT_TLS
   { "hosts_verify_avoid_tls", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_verify_avoid_tls) },
@@ -172,6 +176,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* serialize_hosts */
   NULL,                /* hosts_try_auth */
   NULL,                /* hosts_require_auth */
+#ifdef EXPERIMENTAL_PRDR
+  NULL,                /* hosts_try_prdr */
+#endif
   NULL,                /* hosts_require_tls */
   NULL,                /* hosts_avoid_tls */
   US"*",               /* hosts_verify_avoid_tls */
@@ -1064,6 +1071,12 @@ goto SEND_QUIT;
   #ifdef SUPPORT_TLS
   tls_offered = esmtp &&
     pcre_exec(regex_STARTTLS, NULL, CS buffer, Ustrlen(buffer), 0,
+      PCRE_EOPT, NULL, 0) >= 0;
+  #endif
+
+  #ifdef EXPERIMENTAL_PRDR
+  prdr_enable = esmtp &&
+    pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
       PCRE_EOPT, NULL, 0) >= 0;
   #endif
   }
