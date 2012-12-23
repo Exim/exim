@@ -2,14 +2,14 @@ From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
 option whose name starts  "EXPERIMENTAL_" that must be  set in
 order to include the  feature. This file contains  information
-about experimenatal  features, all  of which  are unstable and
-liable to incompatibile change.
+about experimental  features, all  of which  are unstable and
+liable to incompatible change.
 
 
 OCSP Stapling support
 --------------------------------------------------------------
 
-X509 PKI certificates expire and can be revoked; to handle this, the
+X.509 PKI certificates expire and can be revoked; to handle this, the
 clients need some way to determine if a particular certificate, from a
 particular Certificate Authority (CA), is still valid.  There are three
 main ways to do so.
@@ -380,7 +380,7 @@ their default locations.
 
 You can now run SPF checks in incoming SMTP by using the "spf"
 ACL condition  in either  the MAIL,  RCPT or  DATA ACLs.  When
-using it in the RCPT ACL, you can make the checks dependend on
+using it in the RCPT ACL, you can make the checks dependent on
 the RCPT  address (or  domain), so  you can  check SPF records
 only  for   certain  target   domains.  This   gives  you  the
 possibility  to opt-out  certain customers  that do  not want
@@ -491,7 +491,7 @@ reject message.
 When the spf_guess condition has run, it sets up the same expansion
 variables as when spf condition is run, described above.
 
-Additionally, since Best-guess is not standarized, you may redefine
+Additionally, since Best-guess is not standardized, you may redefine
 what "Best-guess" means to you by redefining spf_guess variable in
 global config.  For example, the following:
 
@@ -546,7 +546,7 @@ In the DATA ACL you can use the new condition
 
 After that "$dcc_header" contains the X-DCC-Header.
 
-Returnvalues are:
+Return values are:
   fail    for overall "R", "G" from dccifd
   defer   for overall "T" from dccifd
   accept  for overall "A", "S" from dccifd
