@@ -125,8 +125,7 @@ Version 4.82
 
 17. New expansion variables $router_name and $transport_name.  Useful
     particularly for debug_print as -bt commandline option does not
-    require privilege whereas -d does.  As a side-effect the router accepting
-    for verification is visible in ACLs.
+    require privilege whereas -d does.
 
 
 

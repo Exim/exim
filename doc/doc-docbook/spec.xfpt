@@ -11754,8 +11754,7 @@ This is an obsolete name for &$bounce_return_size_limit$&.
 .cindex "router" "name"
 .cindex "name" "of router"
 .vindex "&$router_name$&"
-During the running of a router, and any transport it runs, this variable
-contains the name of the router.
+During the running of a router this variable contains its name.
 
 .vitem &$runrc$&
 .cindex "return code" "from &%run%& expansion"

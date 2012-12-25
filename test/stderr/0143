@@ -8,9 +8,10 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+router_name <my_main_router>
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@domain.com <--------
-transport_name <my_smtp> from router <my_main_router>
+transport_name <my_smtp>
 my_smtp transport entered
   userx@domain.com
 checking status of 127.0.0.1
