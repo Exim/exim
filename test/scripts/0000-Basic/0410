@@ -1,4 +1,4 @@
-# address_data in ACLs after verification
+# address_data and router_name in ACLs after verification
 exim -bs
 MAIL FROM:<oksender@y>
 rcpt to:<child@test.ex>

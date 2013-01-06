@@ -28,10 +28,8 @@ check_recipient:
   deny    hosts    = V4NET.0.0.1
          !verify   = sender/callout=no_cache
   deny    hosts    = V4NET.0.0.3
-          log_message = ($recipient_verify_failure)
          !verify   = recipient/callout=no_cache
   deny    hosts    = V4NET.0.0.5
-          log_message = ($sender_verify_failure)
          !verify   = sender/callout=no_cache/check_postmaster
   require verify   = sender
   accept  domains  = +local_domains

@@ -1871,6 +1871,9 @@ if ((pid = fork()) == 0)
     set_process_info("delivering %s to %s using %s", message_id,
      addr->local_part, addr->transport->name);
 
+    /* Setting this global in the subprocess means we need never clear it */
+    transport_name = addr->transport->name;
+
     /* If a transport filter has been specified, set up its argument list.
     Any errors will get put into the address, and FALSE yielded. */
 
@@ -3855,8 +3858,10 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     int fd = pfd[pipe_write];
     host_item *h;
 
-    /* There are weird circumstances in which logging is disabled */
+    /* Setting this global in the subprocess means we need never clear it */
+    transport_name = tp->name;
 
+    /* There are weird circumstances in which logging is disabled */
     disable_logging = tp->disable_logging;
 
     /* Show pids on debug output if parallelism possible */

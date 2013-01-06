@@ -8,9 +8,11 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+router_name <my_main_router>
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@domain.com <--------
-smtp transport entered
+transport_name <my_smtp>
+my_smtp transport entered
   userx@domain.com
 checking status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 status = usable
@@ -36,9 +38,9 @@ transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
 no messages waiting for 127.0.0.1
   SMTP>> QUIT
-Leaving smtp transport
+Leaving my_smtp transport
 LOG: MAIN
-  => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+  => userx@domain.com R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

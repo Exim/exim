@@ -1633,6 +1633,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
   /* Set the expansion variables now that we have the affixes and the case of
   the local part sorted. */
 
+  router_name = r->name;
   deliver_set_expansions(addr);
 
   /* For convenience, the pre-router checks are in a separate function, which
@@ -1640,6 +1641,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
   if ((rc = check_router_conditions(r, addr, verify, &pw, &error)) != OK)
     {
+    router_name = NULL;
     if (rc == SKIP) continue;
     addr->message = error;
     yield = rc;
@@ -1678,6 +1680,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
           {
           DEBUG(D_route)
             debug_printf("\"more\"=false: skipping remaining routers\n");
+	  router_name = NULL;
           r = NULL;
           break;
           }
@@ -1720,6 +1723,8 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
   yield = (r->info->code)(r, addr, pw, verify, paddr_local, paddr_remote,
     addr_new, addr_succeed);
+
+  router_name = NULL;
 
   if (yield == FAIL)
     {
@@ -1967,6 +1972,7 @@ if (yield == DEFER) {
 }
 
 deliver_set_expansions(NULL);
+router_name = NULL;
 disable_logging = FALSE;
 return yield;
 }

@@ -11750,6 +11750,12 @@ envelope sender.
 .vindex "&$return_size_limit$&"
 This is an obsolete name for &$bounce_return_size_limit$&.
 
+.vitem &$router_name$&
+.cindex "router" "name"
+.cindex "name" "of router"
+.vindex "&$router_name$&"
+During the running of a router this variable contains its name.
+
 .vitem &$runrc$&
 .cindex "return code" "from &%run%& expansion"
 .vindex "&$runrc$&"
@@ -12203,6 +12209,12 @@ This variable contains the numerical value of the local timezone, for example:
 .vindex "&$tod_zulu$&"
 This variable contains the UTC date and time in &"Zulu"& format, as specified
 by ISO 8601, for example: 20030221154023Z.
+
+.vitem &$transport_name$&
+.cindex "transport" "name"
+.cindex "name" "of transport"
+.vindex "&$transport_name$&"
+During the running of a transport, this variable contains its name.
 
 .vitem &$value$&
 .vindex "&$value$&"
@@ -16420,7 +16432,8 @@ be specified using &%condition%&.
 .option debug_print routers string&!! unset
 .cindex "testing" "variables in drivers"
 If this option is set and debugging is enabled (see the &%-d%& command line
-option), the string is expanded and included in the debugging output.
+option) or in address-testing mode (see the &%-bt%& command line option),
+the string is expanded and included in the debugging output.
 If expansion of the string fails, the error message is written to the debugging
 output, and Exim carries on processing.
 This option is provided to help with checking out the values of variables and
@@ -16429,6 +16442,7 @@ option appears not to be working, &%debug_print%& can be used to output the
 variables it references. The output happens after checks for &%domains%&,
 &%local_parts%&, and &%check_local_user%& but before any other preconditions
 are tested. A newline is added to the text if it does not end with one.
+The variable &$router_name$& contains the name of the router.
 
 
 
@@ -19589,6 +19603,8 @@ so on when debugging driver configurations. For example, if a &%headers_add%&
 option is not working properly, &%debug_print%& could be used to output the
 variables it references. A newline is added to the text if it does not end with
 one.
+The variables &$transport_name$ and &&$router_name$& contain the name of the
+transport and the router that called it.
 
 
 .option delivery_date_add transports boolean false
