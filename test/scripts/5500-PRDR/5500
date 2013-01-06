@@ -2,7 +2,7 @@
 need_ipv4
 #
 # usery should be rejected, x & z accepted, all after data per PRDR spec
-exim -DSERVER=server -d -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
 ****
 client 127.0.0.1 PORT_D
 ??? 220
@@ -33,3 +33,5 @@ Sender: sender@some.where
 quit
 ??? 221
 ****
+sleep 1
+killdaemon

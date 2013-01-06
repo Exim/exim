@@ -3228,13 +3228,17 @@ else
 #endif /* WITH_CONTENT_SCAN */
 
 #ifdef EXPERIMENTAL_PRDR
-    unsigned int c;
     if (prdr_requested && recipients_count > 0 && acl_smtp_data_prdr != NULL )
       {
+      unsigned int c;
+      int all_pass = OK;
+      int all_fail = FAIL;
+
       smtp_printf("353 PRDR content analysis beginning\r\n");
       /* Loop through recipients, responses must be in same order received */
       for (c = 0; recipients_count > c; c++)
         {
+	uschar * code;
         DEBUG(D_receive)
           debug_printf("PRDR processing recipient %s (%d of %d)\n",
                        recipients_list[c].address, c+1, recipients_count);
@@ -3244,16 +3248,61 @@ else
         recipients_list[c].prdr_user_msg = user_msg
 	  ? string_sprintf("%s: %s", recipients_list[c].address, user_msg)
 	  : NULL;
-        //add_acl_headers(US"PRDR");
-        //if (rc == DISCARD)
-        //  {
-        //    blackholed_by = US"PRDR ACL";
-        //    if (smtp_handle_acl_fail(ACL_WHERE_PRDR, rc, user_msg, log_msg) != 0)
-        //      smtp_yield = FALSE;
-        //    smtp_reply = US"";
-        //    message_id[0] = 0;
-        //  }
+
+        /* If any recipient rejected content, then indicate it in final message */
+        all_pass |= rc;
+        /* If all recipients rejected, indicate in final message */
+        all_fail &= rc;
+
+        switch (rc)
+          {
+          case OK:
+          case DISCARD:
+            code = US"250";
+            if (user_msg != NULL)
+              smtp_user_msg(code, user_msg);
+            else
+              smtp_printf("250 OK PRDR accepted for %s\r\n",
+                            recipients_list[c].address);
+            /* Decrement the counter _after_ removing the address  *
+             * so that it points to the previous good one or zero  *
+             * if result is to blackhole.                          */
+            if (rc == DISCARD)
+              receive_remove_recipient(recipients_list[c--].address);
+            break;
+
+          case DEFER:
+            code = US"450";
+            if (user_msg != NULL)
+              smtp_user_msg(code, user_msg);
+            else
+              smtp_user_msg(code, string_sprintf(
+                              "%s temporarily refuses the content",
+                              recipients_list[c].address));
+            receive_remove_recipient(recipients_list[c--].address);
+            break;
+
+          default:
+            code = US"550";
+            if (user_msg != NULL)
+              smtp_user_msg(code, user_msg);
+            else
+              smtp_user_msg(code, string_sprintf(
+                              "%s refuses the content",
+                              recipients_list[c].address));
+            receive_remove_recipient(recipients_list[c--].address);
+            break;
+          }
         }
+        /* Set up final message */
+        smtp_reply = string_sprintf("%s id=%s message %s",
+		       all_fail == FAIL ? US"550" : US"250",
+		       message_id,
+                       all_fail == FAIL
+		         ? US"rejected for all recipients"
+			 : all_pass == OK
+			   ? US"accepted"
+			   : US"accepted for some recipients");
       }
     /* Kinda ugly, but turns the next if into an else-if */
     else
@@ -3960,79 +4009,6 @@ if (smtp_input)
     {
     if (smtp_reply == NULL)
       {
-    #ifdef EXPERIMENTAL_PRDR
-      unsigned int c;
-      int prdr_rc;
-      int all_pass = OK;
-      int all_fail = FAIL;
-      if (prdr_requested && recipients_count > 0)
-        {
-        uschar *code;
-        uschar *user_msg;
-        for (c = 0; recipients_count > c; c++)
-          {
-          prdr_rc = recipients_list[c].prdr_rc;
-          user_msg = recipients_list[c].prdr_user_msg;
-
-          /* If any recipient rejected content, then indicate it in final message */
-          all_pass |= prdr_rc;
-          /* If all recipients rejected, indicate in final message */
-          all_fail &= prdr_rc;
-          /* Non PRDR code path will have already rejected the message, but *
-           * we had to defer that action, then detect and display it here.  */
-          DEBUG(D_receive)
-            debug_printf("PRDR response processing for recipient %s (%d of %d)\n",
-                         recipients_list[c].address, c+1, recipients_count);
-          switch (prdr_rc)
-            {
-            case OK:
-            case DISCARD:
-              code = US"250";
-              if (user_msg != NULL)
-                smtp_user_msg(code, user_msg);
-              else
-                smtp_printf("250 OK PRDR accepted for %s\r\n",
-                            recipients_list[c].address);
-              /* Decrement the counter _after_ removing the address  *
-               * so that it points to the previous good one or zero  *
-               * if result is to blackhole.                          */
-              if (prdr_rc == DISCARD)
-                receive_remove_recipient(recipients_list[c--].address);
-              break;
-
-            case DEFER:
-              code = US"450";
-              if (user_msg != NULL)
-                smtp_user_msg(code, user_msg);
-              else
-                smtp_user_msg(code, string_sprintf(
-                              "%s temporarily refuses the content",
-                              recipients_list[c].address));
-              receive_remove_recipient(recipients_list[c--].address);
-              break;
-
-            default:
-              code = US"550";
-              if (user_msg != NULL)
-                smtp_user_msg(code, user_msg);
-              else
-                smtp_user_msg(code, string_sprintf(
-                              "%s refuses the content",
-                              recipients_list[c].address));
-              receive_remove_recipient(recipients_list[c--].address);
-              break;
-            }
-          }
-        /* Print final message */
-        code = (all_fail == FAIL) ? US"550" : US"250";
-        user_msg = string_sprintf("id=%s message %s", message_id,
-                     ((all_fail == FAIL) ? US"rejected for all recipients" :
-                      (all_pass == OK)     ? US"accepted" :
-                      US"accepted for some recipients") );
-        smtp_user_msg(code, user_msg);
-        }
-      else
-    #endif
       if (fake_response != OK)
         smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
           fake_response_text);
