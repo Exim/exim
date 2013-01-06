@@ -24,14 +24,18 @@ trusted_users = CALLER
 prdr_enable = true
 
 acl_smtp_rcpt = accept
+acl_smtp_data_prdr = prdr_acl
 acl_smtp_data = data_acl
 
 # ----- ACLs -----
 
 begin acl
 
-data_acl:
+prdr_acl:
   deny	local_parts = usery
+  accept
+
+data_acl:
   accept
 
 # ----- Transports -----

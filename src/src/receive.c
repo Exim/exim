@@ -3241,9 +3241,9 @@ else
         rc = acl_check(ACL_WHERE_PRDR, recipients_list[c].address,
                        acl_smtp_data_prdr, &user_msg, &log_msg);
         recipients_list[c].prdr_rc = rc;
-        if (user_msg != NULL)
-          recipients_list[c].prdr_user_msg = string_sprintf("%s: %s",
-                                               recipients_list[c].address, user_msg);
+        recipients_list[c].prdr_user_msg = user_msg
+	  ? string_sprintf("%s: %s", recipients_list[c].address, user_msg)
+	  : NULL;
         //add_acl_headers(US"PRDR");
         //if (rc == DISCARD)
         //  {
@@ -3967,17 +3967,19 @@ if (smtp_input)
       int all_fail = FAIL;
       if (prdr_requested && recipients_count > 0)
         {
-        uschar *code = US"250";
+        uschar *code;
+        uschar *user_msg;
         for (c = 0; recipients_count > c; c++)
           {
           prdr_rc = recipients_list[c].prdr_rc;
+          user_msg = recipients_list[c].prdr_user_msg;
+
           /* If any recipient rejected content, then indicate it in final message */
           all_pass |= prdr_rc;
           /* If all recipients rejected, indicate in final message */
           all_fail &= prdr_rc;
           /* Non PRDR code path will have already rejected the message, but *
            * we had to defer that action, then detect and display it here.  */
-          uschar *user_msg = recipients_list[c].prdr_user_msg;
           DEBUG(D_receive)
             debug_printf("PRDR response processing for recipient %s (%d of %d)\n",
                          recipients_list[c].address, c+1, recipients_count);
@@ -4010,8 +4012,7 @@ if (smtp_input)
               break;
 
             default:
-              // recipients_list[c].prdr_rc != OK
-              code = (prdr_rc == DEFER) ? US"450" : US"550";
+              code = US"550";
               if (user_msg != NULL)
                 smtp_user_msg(code, user_msg);
               else
