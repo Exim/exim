@@ -80,8 +80,6 @@ JH/09 Add $headers_added variable, with content from use of ACL modifier
 JH/10 Add 8bitmime log_selector, for 8bitmime status on the received line.
       Pulled from Bugzilla 817 by Wolfgang Breyha.
 
-JH/11 Add $router_name and $transport_name variables.  Bugzilla 308.
-
 PP/11 SECURITY: protect DKIM DNS decoding from remote exploit.
       CVE-2012-5671
 
@@ -149,6 +147,8 @@ PP/14 Fix OCSP reinitialisation in SNI handling for Exim/TLS as server.
       Bug spotted by Jeremy Harris; was flawed since initial commit.
       Would have resulted in OCSP responses post-SNI triggering an Exim
       NULL dereference and crash.
+
+JH/13 Add $router_name and $transport_name variables.  Bugzilla 308.
 
 
 Exim version 4.80.1
