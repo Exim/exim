@@ -1876,6 +1876,9 @@ if (!ok) ok = TRUE; else
       addr->host_used = thost;
       addr->special_action = flag;
       addr->message = conf;
+#ifdef EXPERIMENTAL_PRDR
+      if (prdr_active) addr->flags |= af_prdr_used;
+#endif
       flag = '-';
 
 #ifdef EXPERIMENTAL_PRDR

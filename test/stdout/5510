@@ -1,0 +1,31 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<userx@test.ex> PRDR
+250 OK
+RCPT TO:<usery@test.ex>
+250 OK
+DATA
+300 gimme yer body
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaX-0005vi-00
+	for usery@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: userx@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Some message text.
+.
+353 prdr responses coming up
+250 first rcpt was good
+250 OK, overall
+QUIT
+250 OK
+End of script
