@@ -4,21 +4,22 @@ need_ipv4
 server PORT_S
 220 Server ready
 EHLO
+250-
 250-PRDR
 250 OK
-MAIL FROM:<userx> PRDR
+MAIL FROM:<userx@test.ex> PRDR
 250 OK
 RCPT TO
 250 OK
 DATA
-300 go ahead
+300 gimme yer body
 .
 353 prdr responses coming up
-250 first one
+250 first rcpt was good
 250 OK, overall
 QUIT
 250 OK
 ****
-exim -d -odi page+userx
+exim -d -odi -f userx usery
 Some message text.
 ****

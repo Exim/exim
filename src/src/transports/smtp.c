@@ -878,6 +878,10 @@ BOOL completed_address = FALSE;
 BOOL esmtp = TRUE;
 BOOL pending_MAIL;
 BOOL pass_message = FALSE;
+#ifdef EXPERIMENTAL_PRDR
+BOOL prdr_offered = FALSE;
+BOOL prdr_active;
+#endif
 smtp_inblock inblock;
 smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
@@ -1075,31 +1079,14 @@ goto SEND_QUIT;
   #endif
 
   #ifdef EXPERIMENTAL_PRDR
-    DEBUG(D_transport) debug_printf("considering PRDR...\n");
-
-  prdr_enable = esmtp &&
+  prdr_offered = esmtp &&
     (pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
       PCRE_EOPT, NULL, 0) >= 0) &&
     (verify_check_this_host(&(ob->hosts_try_prdr), NULL, host->name,
       host->address, NULL) == OK);
-    DEBUG(D_transport) debug_printf("considered PRDR...\n");
 
-  if (prdr_enable)
+  if (prdr_offered)
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
-
-else if (!esmtp)
-    {DEBUG(D_transport) debug_printf("PRDR not possible, not esmtp\n");}
-
-else if (pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
-      PCRE_EOPT, NULL, 0) < 0)
-    {DEBUG(D_transport) debug_printf("PRDR not offerred\n");}
-
-else if (verify_check_this_host(&(ob->hosts_try_prdr), NULL, host->name,
-      host->address, NULL) != OK)
-    {DEBUG(D_transport) debug_printf("PRDR not permitted for host\n");}
-
-else
-    {DEBUG(D_transport) debug_printf("PRDR confusion\n");}
   #endif
   }
 
@@ -1504,12 +1491,15 @@ if (smtp_use_size)
   while (*p) p++;
   }
 
-#ifdef EXPERIMENTAL_PRDDR
-if (prdr_enable)	/*XXX could we do this on if >1 rcpts? */
+#ifdef EXPERIMENTAL_PRDR
+if (prdr_offered)	/*XXX limit to >1 rcpts?  Need prdr_active flag */
   {
+  prdr_active = TRUE;
   sprintf(CS p, " PRDR");
   p += 5;
   }
+else
+  prdr_active = FALSE;
 #endif
 
 /* If an authenticated_sender override has been specified for this transport
@@ -1752,8 +1742,29 @@ if (!ok) ok = TRUE; else
 
   smtp_command = US"end of data";
 
-  /* For SMTP, we now read a single response that applies to the whole message.
-  If it is OK, then all the addresses have been delivered. */
+#ifdef EXPERIMENTAL_PRDR
+  /* For PRDR we optionally get a partial-responses warning
+   * followed by the individual responses, before going on with
+   * the overall response.  If we don't get the warning then deal
+   * with per non-PRDR. */
+  if(prdr_active)
+    {
+    ok = smtp_read_response(&inblock, buffer, sizeof(buffer), '3',
+      ob->final_timeout);
+    if (!ok && errno == 0)
+      switch(buffer[0])
+        {
+	case '2': prdr_active = FALSE; break;
+	case '4': errno = ERRNO_DATA4XX;
+                  addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+		  break;
+        }
+    }
+  else
+#endif
+
+  /* For non-PRDR SMTP, we now read a single response that applies to the
+  whole message.  If it is OK, then all the addresses have been delivered. */
 
   if (!lmtp)
     {
@@ -1807,7 +1818,7 @@ if (!ok) ok = TRUE; else
       conf = (s == buffer)? (uschar *)string_copy(s) : s;
       }
 
-    /* Process all transported addresses - for LMTP, read a status for
+    /* Process all transported addresses - for LMTP or PRDR, read a status for
     each one. */
 
     for (addr = addrlist; addr != first_addr; addr = addr->next)
@@ -1819,13 +1830,22 @@ if (!ok) ok = TRUE; else
       address. For temporary errors, add a retry item for the address so that
       it doesn't get tried again too soon. */
 
+#ifdef EXPERIMENTAL_PRDR
+      if (lmtp || prdr_active)
+#else
       if (lmtp)
+#endif
         {
         if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
             ob->final_timeout))
           {
           if (errno != 0 || buffer[0] == 0) goto RESPONSE_FAILED;
-          addr->message = string_sprintf("LMTP error after %s: %s",
+          addr->message = string_sprintf(
+#ifdef EXPERIMENTAL_PRDR
+	    "%s error after %s: %s", prdr_active ? "PRDR":"LMTP",
+#else
+	    "LMTP error after %s: %s",
+#endif
             big_buffer, string_printing(buffer));
           setflag(addr, af_pass_message);   /* Allow message to go to user */
           if (buffer[0] == '5')
@@ -1842,6 +1862,7 @@ if (!ok) ok = TRUE; else
         completed_address = TRUE;   /* NOW we can set this flag */
         if ((log_extra_selector & LX_smtp_confirmation) != 0)
           {
+/*XXX ought to have some specific logging of PRDR used, too */
           uschar *s = string_printing(buffer);
           conf = (s == buffer)? (uschar *)string_copy(s) : s;
           }
@@ -1857,22 +1878,61 @@ if (!ok) ok = TRUE; else
       addr->message = conf;
       flag = '-';
 
-      /* Update the journal. For homonymic addresses, use the base address plus
-      the transport name. See lots of comments in deliver.c about the reasons
-      for the complications when homonyms are involved. Just carry on after
-      write error, as it may prove possible to update the spool file later. */
-
-      if (testflag(addr, af_homonym))
-        sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
-      else
-        sprintf(CS buffer, "%.500s\n", addr->unique);
-
-      DEBUG(D_deliver) debug_printf("journalling %s", buffer);
-      len = Ustrlen(CS buffer);
-      if (write(journal_fd, buffer, len) != len)
-        log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
-          "%s: %s", buffer, strerror(errno));
+#ifdef EXPERIMENTAL_PRDR
+      if (!prdr_active)
+#endif
+        {
+        /* Update the journal. For homonymic addresses, use the base address plus
+        the transport name. See lots of comments in deliver.c about the reasons
+        for the complications when homonyms are involved. Just carry on after
+        write error, as it may prove possible to update the spool file later. */
+  
+        if (testflag(addr, af_homonym))
+          sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
+        else
+          sprintf(CS buffer, "%.500s\n", addr->unique);
+  
+        DEBUG(D_deliver) debug_printf("journalling %s", buffer);
+        len = Ustrlen(CS buffer);
+        if (write(journal_fd, buffer, len) != len)
+          log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
+            "%s: %s", buffer, strerror(errno));
+        }
       }
+
+#ifdef EXPERIMENTAL_PRDR
+      if (prdr_active)
+        {
+	/* PRDR - get the final, overall response.  For any non-success
+	overwrite all the address statuses.
+        ok = smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
+          ob->final_timeout);
+        if (!ok)
+	  {
+	  if(errno == 0 && buffer[0] == '4')
+            {
+            errno = ERRNO_DATA4XX;
+            addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+            }
+	  goto RESPONSE_FAILED;
+	  }
+
+	/* Update the journal. */
+        for (addr = addrlist; addr != first_addr; addr = addr->next)
+	  {
+          if (testflag(addr, af_homonym))
+            sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
+          else
+            sprintf(CS buffer, "%.500s\n", addr->unique);
+  
+          DEBUG(D_deliver) debug_printf("journalling %s", buffer);
+          len = Ustrlen(CS buffer);
+          if (write(journal_fd, buffer, len) != len)
+            log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
+              "%s: %s", buffer, strerror(errno));
+	  }
+	}
+#endif
 
     /* Ensure the journal file is pushed out to disk. */
 
