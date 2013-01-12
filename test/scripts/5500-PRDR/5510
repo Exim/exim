@@ -58,9 +58,8 @@ Some message text.
 #
 #
 # 3: Two recipients, one accepted one rejected
-# Oddly the client never gives us QUIT, just drops the conn.
-# Perhaps due to the outstanding bounce for userx ?  It is
-# fine if the preceding tests are commented out.
+# Avoid issues dealing with the bounce by sending
+# with a null from.
 #
 server PORT_S
 220 Server ready
@@ -68,7 +67,7 @@ EHLO
 250-
 250-PRDR
 250 OK
-MAIL FROM:<userx@test.ex> PRDR
+MAIL FROM:<> PRDR
 250 OK
 RCPT TO
 250 OK
@@ -84,37 +83,37 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi -f userx userp userq
+exim -odi -f "" userp userq
 Some message text.
 ****
 #
 #
-## 4: Two recipients, rejected by final.
-##
-#server PORT_S
-#220 Server ready
-#EHLO
-#250-
-#250-PRDR
-#250 OK
-#MAIL FROM:<userx@test.ex> PRDR
-#250 OK
-#RCPT TO
-#250 OK
-#RCPT TO
-#250 OK
-#DATA
-#300 gimme yer body
-#.
-#353 prdr responses coming up
-#250 first rcpt was good
-#250 second rcpt was good
-#550 Nope, overall rejection
-#QUIT
-#250 OK
-#****
-#exim -d -odi -f userx user4.1 user4.2
-#text
-#****
-##
-##
+# 4: Two recipients, rejected by final.
+#
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 yeah baby
+.
+353 prdr responses coming up
+250 first rcpt was good
+250 second rcpt was good
+550 oops, overall rejection
+QUIT
+250 OK
+****
+exim -odi -f "" user4.1 user4.2
+text
+****
+#
+#

@@ -1855,14 +1855,16 @@ if (!ok) ok = TRUE; else
             errno = ERRNO_DATA4XX;
             addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
             addr->transport_return = DEFER;
-            retry_add_item(addr, addr->address_retry_key, 0);
+#ifdef EXPERIMENTAL_PRDR
+            if (!prdr_active)
+#endif
+              retry_add_item(addr, addr->address_retry_key, 0);
             }
           continue;
           }
         completed_address = TRUE;   /* NOW we can set this flag */
         if ((log_extra_selector & LX_smtp_confirmation) != 0)
           {
-/*XXX ought to have some specific logging of PRDR used, too */
           uschar *s = string_printing(buffer);
           conf = (s == buffer)? (uschar *)string_copy(s) : s;
           }
@@ -1907,7 +1909,7 @@ if (!ok) ok = TRUE; else
       if (prdr_active)
         {
 	/* PRDR - get the final, overall response.  For any non-success
-	overwrite all the address statuses.
+	upgrade all the address statuses. */
         ok = smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
           ob->final_timeout);
         if (!ok)
@@ -1917,23 +1919,29 @@ if (!ok) ok = TRUE; else
             errno = ERRNO_DATA4XX;
             addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
             }
+	  for (addr = addrlist; addr != first_addr; addr = addr->next)
+            if (buffer[0] == '5' || addr->transport_return == OK)
+              addr->transport_return = PENDING_OK; /* allow set_errno action */
 	  goto RESPONSE_FAILED;
 	  }
 
-	/* Update the journal. */
+	/* Update the journal, or setup retry. */
         for (addr = addrlist; addr != first_addr; addr = addr->next)
+	  if (addr->transport_return == OK)
 	  {
           if (testflag(addr, af_homonym))
             sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
           else
             sprintf(CS buffer, "%.500s\n", addr->unique);
   
-          DEBUG(D_deliver) debug_printf("journalling %s", buffer);
+          DEBUG(D_deliver) debug_printf("journalling(PRDR) %s", buffer);
           len = Ustrlen(CS buffer);
           if (write(journal_fd, buffer, len) != len)
             log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
               "%s: %s", buffer, strerror(errno));
 	  }
+	else if (addr->transport_return == DEFER)
+          retry_add_item(addr, addr->address_retry_key, -2);
 	}
 #endif
 
