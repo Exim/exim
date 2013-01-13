@@ -6,6 +6,23 @@ about experimental  features, all  of which  are unstable and
 liable to incompatible change.
 
 
+PRDR support
+--------------------------------------------------------------
+
+Per-Recipient Data Reponse is an SMTP extension proposed by Eric Hall
+in a (now-expired) IETF draft from 2007.  It's not hit mainstream
+use, but has apparently been implemented in the META1 MTA.
+
+ ref: http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt
+
+If Exim is built with EXPERIMENTAL_OCSP there is a new config
+boolean "prdr_enable" while controls whether PRDR is advertised
+as part of an EHLO response, a new "acl_data_smtp_prdr" ACL
+(called for each recipient, after data arrives but before the
+data ACL), and a new smtp transport option "hosts_try_prdr".
+
+
+
 OCSP Stapling support
 --------------------------------------------------------------
 

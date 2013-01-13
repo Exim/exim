@@ -150,6 +150,18 @@ PP/14 Fix OCSP reinitialisation in SNI handling for Exim/TLS as server.
       Would have resulted in OCSP responses post-SNI triggering an Exim
       NULL dereference and crash.
 
+JH/13 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
+      Server implementation by Todd Lyons, client by JH.
+      Only enabled when compiled with EXPERIMENTAL_PRDR.  A new
+      config variable "prdr_enable" controls whether the server
+      advertises the facility.  If the client requests PRDR a new
+      acl_data_smtp_prdr ACL is called once for each recipient, after
+      the body content is received and before the acl_smtp_data ACL.
+      The client is controlled by bolth of: a hosts_try_prdr option
+      on the smtp transport, and the server advertisement.
+      Default client logging of deliveries and rejections involving
+      PRDR are flagged with the string "PRDR".
+
 
 Exim version 4.80.1
 -------------------
