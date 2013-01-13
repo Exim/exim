@@ -3294,7 +3294,7 @@ else
             break;
           }
         }
-        /* Set up final message */
+        /* Set up final message, used if data acl gives OK */
         smtp_reply = string_sprintf("%s id=%s message %s",
 		       all_fail == FAIL ? US"550" : US"250",
 		       message_id,
@@ -3304,8 +3304,6 @@ else
 			   ? US"accepted"
 			   : US"accepted for some recipients");
       }
-    /* Kinda ugly, but turns the next if into an else-if */
-    else
 #endif /* EXPERIMENTAL_PRDR */
 
     /* Check the recipients count again, as the MIME ACL might have changed

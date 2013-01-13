@@ -607,8 +607,6 @@ else
        )
       {
       uschar buffer2[4096];
-DEBUG(D_transport)
-        debug_printf("trying tls\n");
       if (  !smtps
          && !(done= smtp_write_command(&outblock, FALSE, "STARTTLS\r\n") >= 0))
         goto SEND_FAILED;

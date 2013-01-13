@@ -14,3 +14,7 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 ** user4.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 550 oops, overall rejection
 1999-03-02 09:44:33 10HmbA-0005vi-00 ** user4.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 550 oops, overall rejection
 1999-03-02 09:44:33 10HmbA-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 == user5.1@test.ex R=r0 T=t1 defer (-46): SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 450 oops, try again later please
+1999-03-02 09:44:33 10HmbB-0005vi-00 == user5.2@test.ex R=r0 T=t1 defer (-46): SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 450 oops, try again later please
+1999-03-02 09:44:33 10HmbB-0005vi-00 == user5.3@test.ex R=r0 T=t1 defer (-46): SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 450 oops, try again later please
