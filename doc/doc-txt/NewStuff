@@ -127,6 +127,9 @@ Version 4.82
     particularly for debug_print as -bt commandline option does not
     require privilege whereas -d does.
 
+18. If built with EXPERIMENTAL_PRDR, per-recipient data responses per a
+    proposed extension to SMTP from Eric Hall.
+
 
 
 Version 4.80
