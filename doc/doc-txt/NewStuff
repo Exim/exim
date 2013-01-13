@@ -120,7 +120,6 @@ Version 4.82
 
 15. New 8bitmime status logging option for received messages.  Log field "M8S".
 
-
 16. New authenticated_sender logging option, adding to log field "A".
 
 17. New expansion variables $router_name and $transport_name.  Useful
@@ -129,7 +128,6 @@ Version 4.82
 
 18. If built with EXPERIMENTAL_PRDR, per-recipient data responses per a
     proposed extension to SMTP from Eric Hall.
-
 
 
 Version 4.80

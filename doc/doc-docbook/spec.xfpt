@@ -19603,7 +19603,7 @@ so on when debugging driver configurations. For example, if a &%headers_add%&
 option is not working properly, &%debug_print%& could be used to output the
 variables it references. A newline is added to the text if it does not end with
 one.
-The variables &$transport_name$ and &&$router_name$& contain the name of the
+The variables &$transport_name$& and &$router_name$& contain the name of the
 transport and the router that called it.
 
 
