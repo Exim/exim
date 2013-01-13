@@ -3238,61 +3238,47 @@ else
       /* Loop through recipients, responses must be in same order received */
       for (c = 0; recipients_count > c; c++)
         {
+	uschar * addr= recipients_list[c].address;
+	uschar * msg= US"PRDR R=<%s> %s";
 	uschar * code;
         DEBUG(D_receive)
           debug_printf("PRDR processing recipient %s (%d of %d)\n",
-                       recipients_list[c].address, c+1, recipients_count);
-        rc = acl_check(ACL_WHERE_PRDR, recipients_list[c].address,
+                       addr, c+1, recipients_count);
+        rc = acl_check(ACL_WHERE_PRDR, addr,
                        acl_smtp_data_prdr, &user_msg, &log_msg);
-        recipients_list[c].prdr_rc = rc;
-        recipients_list[c].prdr_user_msg = user_msg
-	  ? string_sprintf("%s: %s", recipients_list[c].address, user_msg)
-	  : NULL;
 
-        /* If any recipient rejected content, then indicate it in final message */
+        /* If any recipient rejected content, indicate it in final message */
         all_pass |= rc;
         /* If all recipients rejected, indicate in final message */
         all_fail &= rc;
 
         switch (rc)
           {
-          case OK:
-          case DISCARD:
-            code = US"250";
-            if (user_msg != NULL)
-              smtp_user_msg(code, user_msg);
-            else
-              smtp_printf("250 OK PRDR accepted for %s\r\n",
-                            recipients_list[c].address);
-            /* Decrement the counter _after_ removing the address  *
-             * so that it points to the previous good one or zero  *
-             * if result is to blackhole.                          */
-            if (rc == DISCARD)
-              receive_remove_recipient(recipients_list[c--].address);
-            break;
-
-          case DEFER:
-            code = US"450";
-            if (user_msg != NULL)
-              smtp_user_msg(code, user_msg);
-            else
-              smtp_user_msg(code, string_sprintf(
-                              "%s temporarily refuses the content",
-                              recipients_list[c].address));
-            receive_remove_recipient(recipients_list[c--].address);
-            break;
-
-          default:
-            code = US"550";
-            if (user_msg != NULL)
-              smtp_user_msg(code, user_msg);
-            else
-              smtp_user_msg(code, string_sprintf(
-                              "%s refuses the content",
-                              recipients_list[c].address));
-            receive_remove_recipient(recipients_list[c--].address);
-            break;
+          case OK: case DISCARD: code = US"250"; break;
+          case DEFER:            code = US"450"; break;
+          default:               code = US"550"; break;
           }
+	if (user_msg != NULL)
+	  smtp_user_msg(code, user_msg);
+	else
+	  {
+	  switch (rc)
+            {
+            case OK: case DISCARD:
+              msg = string_sprintf(msg, addr, "acceptance");        break;
+            case DEFER:
+              msg = string_sprintf(msg, addr, "temporary refusal"); break;
+            default:
+              msg = string_sprintf(msg, addr, "refusal");           break;
+            }
+          smtp_user_msg(code, msg);
+	  }
+	if (log_msg)       log_write(0, LOG_MAIN, "PRDR %s %s", addr, log_msg);
+	else if (user_msg) log_write(0, LOG_MAIN, "PRDR %s %s", addr, user_msg);
+	else               log_write(0, LOG_MAIN, msg);
+
+	if (rc != OK)
+	  receive_remove_recipient(recipients_list[c--].address);
         }
         /* Set up final message, used if data acl gives OK */
         smtp_reply = string_sprintf("%s id=%s message %s",

@@ -35,8 +35,7 @@ Sender: sender@some.where
 quit
 ??? 221
 ****
-#sleep 1
-#killdaemon
+sleep 1
 #
 #
 # 2: traditional data acl should be called, resulting in an overall reject

@@ -149,7 +149,7 @@ uschar *tls_verify_hosts       = NULL;
 /* Per Recipient Data Response variables */
 BOOL    prdr_enable            = FALSE;
 BOOL    prdr_requested         = FALSE;
-pcre   *regex_PRDR             = NULL;
+const pcre *regex_PRDR         = NULL;
 #endif
 
 /* Input-reading functions for messages, so we can use special ones for

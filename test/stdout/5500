@@ -34,11 +34,11 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 353
 <<< 353 PRDR content analysis beginning
 ??? 250
-<<< 250 OK PRDR accepted for userx@test.ex
+<<< 250 PRDR R=<userx@test.ex> acceptance
 ??? 450
-<<< 450 usery@test.ex temporarily refuses the content
+<<< 450 PRDR R=<usery@test.ex> temporary refusal
 ??? 550
-<<< 550 userz@test.ex refuses the content
+<<< 550 PRDR R=<userz@test.ex> refusal
 ??? 250
 <<< 250 id=10HmaY-0005vi-00 message accepted for some recipients
 >>> quit
@@ -78,9 +78,9 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 353
 <<< 353 PRDR content analysis beginning
 ??? 250
-<<< 250 OK PRDR accepted for userp@test.ex
+<<< 250 PRDR R=<userp@test.ex> acceptance
 ??? 250
-<<< 250 OK PRDR accepted for userq@test.ex
+<<< 250 PRDR R=<userq@test.ex> acceptance
 ??? 550
 <<< 550 Administrative prohibition
 >>> quit

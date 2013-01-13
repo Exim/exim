@@ -131,10 +131,6 @@ typedef struct recipient_item {
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   uschar *bmi_optin;
 #endif
-#ifdef EXPERIMENTAL_PRDR
-  int     prdr_rc;              /* ACL return code for this recipient */
-  uschar *prdr_user_msg;        /* User specified message */
-#endif
 } recipient_item;
 
 
