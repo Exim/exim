@@ -4,7 +4,6 @@
 250-8BITMIME
 250-PIPELINING
 250-AUTH PLAIN
-250-PRDR
 250 HELP
 535 Incorrect authentication data
 235 Authentication succeeded

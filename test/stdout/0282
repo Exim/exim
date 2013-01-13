@@ -10,8 +10,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> mail from:<userx@test.ex>
@@ -43,8 +41,6 @@ Connecting to 127.0.0.1 port 1226 ... connected
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> mail from:<userx@test.ex>

@@ -11,7 +11,6 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
-         250-PRDR
          250 HELP
   SMTP>> STARTTLS
   SMTP<< 220 TLS go ahead
@@ -20,7 +19,6 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
          250-SIZE 52428800
          250-8BITMIME
          250-PIPELINING
-         250-PRDR
          250 HELP
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userx@test.ex>
@@ -35,7 +33,6 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
          250-8BITMIME
          250-PIPELINING
          250-STARTTLS
-         250-PRDR
          250 HELP
 LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
@@ -52,7 +49,6 @@ admin user
          250-SIZE 52428800
          250-8BITMIME
          250-PIPELINING
-         250-PRDR
          250 HELP
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userx@test.ex>

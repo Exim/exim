@@ -14,8 +14,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-AUTH PLAIN
 ??? 250-
 <<< 250-STARTTLS
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> starttls
@@ -49,8 +47,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-AUTH PLAIN
 ??? 250-
 <<< 250-STARTTLS
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> starttls

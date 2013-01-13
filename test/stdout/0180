@@ -3,7 +3,6 @@
 250-SIZE 100
 250-8BITMIME
 250-PIPELINING
-250-PRDR
 250 HELP
 552 Message size exceeds maximum permitted
 250 Reset OK
@@ -23,7 +22,6 @@
 250-SIZE 500
 250-8BITMIME
 250-PIPELINING
-250-PRDR
 250 HELP
 221 myhost.test.ex closing connection
 
@@ -36,7 +34,6 @@
 250-SIZE 600
 250-8BITMIME
 250-PIPELINING
-250-PRDR
 250 HELP
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -44,7 +41,6 @@
 250-SIZE 100
 250-8BITMIME
 250-PIPELINING
-250-PRDR
 250 HELP
 552 Message size exceeds maximum permitted
 250 Reset OK

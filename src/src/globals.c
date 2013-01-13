@@ -147,10 +147,9 @@ uschar *tls_verify_hosts       = NULL;
 
 #ifdef EXPERIMENTAL_PRDR
 /* Per Recipient Data Response variables */
-BOOL    prdr_enable            = TRUE;
+BOOL    prdr_enable            = FALSE;
 BOOL    prdr_requested         = FALSE;
-//recipient_item  *prdr_recipients_list = NULL;
-const pcre *regex_PRDR        = NULL;
+pcre   *regex_PRDR             = NULL;
 #endif
 
 /* Input-reading functions for messages, so we can use special ones for

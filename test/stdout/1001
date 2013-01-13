@@ -10,8 +10,6 @@ Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> mail from:<>
@@ -38,8 +36,6 @@ Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> mail from:<>
@@ -66,8 +62,6 @@ Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 <<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> mail from:<>

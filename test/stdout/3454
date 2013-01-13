@@ -14,8 +14,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-AUTH PLAIN
 ??? 250-STARTTLS
 <<< 250-STARTTLS
-??? 250-PRDR
-<<< 250-PRDR
 ??? 250 HELP
 <<< 250 HELP
 >>> starttls
@@ -58,8 +56,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250-AUTH PLAIN
 ??? 250-STARTTLS
 <<< 250-STARTTLS
-??? 250-PRDR
-<<< 250-PRDR
 ??? 250 HELP
 <<< 250 HELP
 >>> starttls
@@ -93,8 +89,6 @@ Succeeded in starting TLS
 <<< 250-PIPELINING
 ??? 250-AUTH
 <<< 250-AUTH PLAIN
-??? 250-PRDR
-<<< 250-PRDR
 ??? 250 HELP
 <<< 250 HELP
 >>> auth plain AHVzZXJ4AHNlY3JldA==

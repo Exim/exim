@@ -4,7 +4,6 @@
 250-8BITMIME
 250-PIPELINING
 250-AUTH PLAIN
-250-PRDR
 250 HELP
 504 rhubarb authentication mechanism not supported
 504 rhubarb authentication mechanism not supported

@@ -14,8 +14,6 @@ Key file = aux-fixed/cert2
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-STARTTLS
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> starttls
@@ -40,8 +38,6 @@ Key file = aux-fixed/cert2
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-STARTTLS
-??? 250-
-<<< 250-PRDR
 ??? 250
 <<< 250 HELP
 >>> starttls

@@ -406,7 +406,6 @@ SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
 250-EXPN
 250-PIPELINING
 250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
-250-PRDR
 250 HELP
 SMTP<< auth mylogin dXNlcnggc2VjcmV0
 mylogin authenticator server_condition:
