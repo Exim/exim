@@ -2,11 +2,12 @@
 
 #define CRYPT_H
 #define GLIBC_IP_OPTIONS
-#define HAVE_MMAP
 #define HAVE_BSD_GETLOADAVG
+#define HAVE_MMAP
 #define HAVE_SYS_VFS_H
 #define NO_IP_VAR_H
 #define SIG_IGN_WORKS
+#define SIOCGIFCONF_GIVES_ADDR
 
 #define F_FREESP     O_TRUNC
 typedef struct flock flock_t;

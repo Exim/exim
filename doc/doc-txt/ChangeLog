@@ -150,6 +150,10 @@ PP/14 Fix OCSP reinitialisation in SNI handling for Exim/TLS as server.
 
 JH/13 Add $router_name and $transport_name variables.  Bugzilla 308.
 
+PP/15 Define SIOCGIFCONF_GIVES_ADDR for GNU Hurd.
+      Bug detection, analysis and fix by Samuel Thibault.
+      Bugzilla 1331, Debian bug #698092.
+
 
 Exim version 4.80.1
 -------------------

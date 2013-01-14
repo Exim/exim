@@ -440,6 +440,7 @@ Janne Snabb               TLS extensive debugging & failure root cause analysis
                           Added SPF record type support to dnsdb lookup
 Jan Srzednicki            Patch improving Dovecot authenticator
                           Reported crash in Dovecot authenticator
+Samuel Thibault           Patch fixing IPv6 interface address detection on Hurd
 Martin Tscholak           Reported issue with TLS anonymous ciphersuites
 Stephen Usher             Patch fixing use of Oracle's LDAP libraries on Solaris
 Holger Weiß               Patch leting ${run} return more data than OS pipe

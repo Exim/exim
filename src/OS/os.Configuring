@@ -88,7 +88,7 @@ On some operating systems, the SIOCGIFCONF ioctl returns the IP addresses
 with the list of interfaces, and there is no need to call SIOCGIFADDR for each
 individual address. Mostly, making the second call does no harm, but on Linux
 when there are IP aliases, it causes things to go wrong. This also happens on
-BSDI. Therefore, there is now a macro to cut it out, called
+BSDI and GNU Hurd. Therefore, there is now a macro to cut it out, called
 SIOCGIFCONF_GIVES_ADDR.
 
 Note that, if IPv6 support is configured, Exim cannot find the IPv6 addresses
