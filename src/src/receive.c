@@ -3228,7 +3228,7 @@ else
 #endif /* WITH_CONTENT_SCAN */
 
 #ifdef EXPERIMENTAL_PRDR
-    if (prdr_requested && recipients_count > 0 && acl_smtp_data_prdr != NULL )
+    if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr != NULL )
       {
       unsigned int c;
       int all_pass = OK;
@@ -3277,8 +3277,7 @@ else
 	else if (user_msg) log_write(0, LOG_MAIN, "PRDR %s %s", addr, user_msg);
 	else               log_write(0, LOG_MAIN, msg);
 
-	if (rc != OK)
-	  receive_remove_recipient(recipients_list[c--].address);
+	if (rc != OK) { receive_remove_recipient(addr); c--; }
         }
         /* Set up final message, used if data acl gives OK */
         smtp_reply = string_sprintf("%s id=%s message %s",
@@ -3290,6 +3289,8 @@ else
 			   ? US"accepted"
 			   : US"accepted for some recipients");
       }
+    else
+      prdr_requested = FALSE;
 #endif /* EXPERIMENTAL_PRDR */
 
     /* Check the recipients count again, as the MIME ACL might have changed
