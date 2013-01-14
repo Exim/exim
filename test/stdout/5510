@@ -150,3 +150,28 @@ text
 QUIT
 250 OK
 End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<user6.1@test.ex>
+250 OK
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbC-0005vi-00
+	for user6.1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+text
+.
+250 OK, got that
+QUIT
+250 OK, bye
+End of script

@@ -1288,6 +1288,17 @@ if (continue_hostname == NULL
   DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
     smtp_use_pipelining? "" : "not ");
 
+#ifdef EXPERIMENTAL_PRDR
+  prdr_offered = esmtp &&
+    pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(CS buffer), 0,
+      PCRE_EOPT, NULL, 0) >= 0 &&
+    verify_check_this_host(&(ob->hosts_try_prdr), NULL, host->name,
+      host->address, NULL) == OK;
+
+  if (prdr_offered)
+    {DEBUG(D_transport) debug_printf("PRDR usable\n");}
+#endif
+
   /* Note if the response to EHLO specifies support for the AUTH extension.
   If it has, check that this host is one we want to authenticate to, and do
   the business. The host name and address must be available when the
@@ -1492,14 +1503,23 @@ if (smtp_use_size)
   }
 
 #ifdef EXPERIMENTAL_PRDR
-if (prdr_offered)	/*XXX limit to >1 rcpts?  Need prdr_active flag */
+prdr_active = FALSE;
+if (prdr_offered)
   {
-  prdr_active = TRUE;
-  sprintf(CS p, " PRDR");
-  p += 5;
+  for (addr = first_addr; addr; addr = addr->next)
+    if (addr->transport_return == PENDING_DEFER)
+      {
+      for (addr = addr->next; addr; addr = addr->next)
+        if (addr->transport_return == PENDING_DEFER)
+	  {			/* at least two recipients to send */
+	  prdr_active = TRUE;
+	  sprintf(CS p, " PRDR"); p += 5;
+	  goto prdr_is_active;
+	  }
+      break;
+      }
   }
-else
-  prdr_active = FALSE;
+prdr_is_active:
 #endif
 
 /* If an authenticated_sender override has been specified for this transport

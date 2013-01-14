@@ -2,7 +2,7 @@
 need_ipv4
 no_msglog_check
 #
-# 1: Two recipients, accepted
+# 1: Two recipients, accepted by full PRDR response sequence
 server PORT_S
 220 Server ready
 EHLO
@@ -59,7 +59,7 @@ Some message text.
 #
 #
 # 3: Two recipients, one accepted one rejected
-# Avoid issues dealing with the bounce by sending
+# Avoid tester issues dealing with the bounce by sending
 # with a null from.
 #
 server PORT_S
@@ -150,4 +150,27 @@ text
 #
 #
 #
-# 6 ?
+# 8: Client should avoid requesting PRDR for a single-recipient mail
+# even though the server offers
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO
+250 OK
+DATA
+300 go ahead
+.
+250 OK, got that
+QUIT
+250 OK, bye
+****
+exim -odi -f "" user6.1
+text
+****
+#
+#
