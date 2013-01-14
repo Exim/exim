@@ -1774,7 +1774,9 @@ if (!ok) ok = TRUE; else
     if (!ok && errno == 0)
       switch(buffer[0])
         {
-	case '2': prdr_active = FALSE; break;
+	case '2': prdr_active = FALSE;
+	          ok = TRUE;
+		  break;
 	case '4': errno = ERRNO_DATA4XX;
                   addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
 		  break;
