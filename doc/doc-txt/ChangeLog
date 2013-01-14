@@ -154,6 +154,8 @@ PP/15 Define SIOCGIFCONF_GIVES_ADDR for GNU Hurd.
       Bug detection, analysis and fix by Samuel Thibault.
       Bugzilla 1331, Debian bug #698092.
 
+SC/01 Update eximstats to watch out for senders sending 'HELO [IpAddr]'
+
 
 Exim version 4.80.1
 -------------------
