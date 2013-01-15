@@ -2,6 +2,7 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 PRDR R=<userx@test.ex> acceptance
 1999-03-02 09:44:33 10HmaY-0005vi-00 PRDR R=<usery@test.ex> temporary refusal
 1999-03-02 09:44:33 10HmaY-0005vi-00 PRDR R=<userz@test.ex> refusal
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=(rhu.barb) [127.0.0.1] P=esmtp PRDR S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r0 T=t1
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaX-0005vi-00 PRDR R=<userp@test.ex> acceptance

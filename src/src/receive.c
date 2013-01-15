@@ -3709,6 +3709,11 @@ if (sender_host_authenticated != NULL)
     }
   }
 
+#ifdef EXPERIMENTAL_PRDR
+if (prdr_requested)
+  s = string_append(s, &size, &sptr, 1, US" PRDR");
+#endif
+
 sprintf(CS big_buffer, "%d", msg_size);
 s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
 
@@ -3925,7 +3930,11 @@ if(cutthrough_fd >= 0)
     }
   }
 
-if(smtp_reply == NULL)
+if(smtp_reply == NULL
+#ifdef EXPERIMENTAL_PRDR
+                     || prdr_requested
+#endif
+  )
   {
   log_write(0, LOG_MAIN |
     (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |

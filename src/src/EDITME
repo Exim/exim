@@ -460,6 +460,10 @@ EXIM_MONITOR=eximon.bin
 
 # EXPERIMENTAL_OCSP=yes
 
+# Uncomment the following line to add Per-Recipient-Data-Response support.
+
+# EXPERIMENTAL_PRDR=yes
+
 
 
 ###############################################################################
