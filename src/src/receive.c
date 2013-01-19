@@ -3288,6 +3288,11 @@ else
 			 : all_pass == OK
 			   ? US"accepted"
 			   : US"accepted for some recipients");
+        if (recipients_count == 0)
+	  {
+          message_id[0] = 0;       /* Indicate no message accepted */
+	  goto TIDYUP;
+	  }
       }
     else
       prdr_requested = FALSE;

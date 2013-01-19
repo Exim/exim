@@ -11,3 +11,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=(rhu.barb) [127.0.0.1] P=esmtp S=sss
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => user1 <user1@test.ex> R=r0 T=t1
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 PRDR R=<usery@test.ex> temporary refusal
+1999-03-02 09:44:33 10HmbA-0005vi-00 PRDR R=<usery@test.ex> temporary refusal
+1999-03-02 09:44:33 10HmbB-0005vi-00 PRDR R=<userz@test.ex> refusal
+1999-03-02 09:44:33 10HmbB-0005vi-00 PRDR R=<userz@test.ex> refusal
