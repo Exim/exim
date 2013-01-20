@@ -3576,7 +3576,7 @@ BAD_MAIL_ARGS:
         {
       #ifdef EXPERIMENTAL_PRDR
         if ( prdr_requested == TRUE )
-           user_msg = string_sprintf(US"%s%s", user_msg, US", PRDR Requested");
+           user_msg = string_sprintf("%s%s", user_msg, US", PRDR Requested");
       #endif
         smtp_user_msg(US"250",user_msg);
         }

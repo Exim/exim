@@ -3265,22 +3265,22 @@ else
 	  switch (rc)
             {
             case OK: case DISCARD:
-              msg = string_sprintf(msg, addr, "acceptance");        break;
+              msg = string_sprintf(CS msg, addr, "acceptance");        break;
             case DEFER:
-              msg = string_sprintf(msg, addr, "temporary refusal"); break;
+              msg = string_sprintf(CS msg, addr, "temporary refusal"); break;
             default:
-              msg = string_sprintf(msg, addr, "refusal");           break;
+              msg = string_sprintf(CS msg, addr, "refusal");           break;
             }
           smtp_user_msg(code, msg);
 	  }
 	if (log_msg)       log_write(0, LOG_MAIN, "PRDR %s %s", addr, log_msg);
 	else if (user_msg) log_write(0, LOG_MAIN, "PRDR %s %s", addr, user_msg);
-	else               log_write(0, LOG_MAIN, msg);
+	else               log_write(0, LOG_MAIN, CS msg);
 
 	if (rc != OK) { receive_remove_recipient(addr); c--; }
         }
-        /* Set up final message, used if data acl gives OK */
-        smtp_reply = string_sprintf("%s id=%s message %s",
+      /* Set up final message, used if data acl gives OK */
+      smtp_reply = string_sprintf("%s id=%s message %s",
 		       all_fail == FAIL ? US"550" : US"250",
 		       message_id,
                        all_fail == FAIL
@@ -3288,11 +3288,11 @@ else
 			 : all_pass == OK
 			   ? US"accepted"
 			   : US"accepted for some recipients");
-        if (recipients_count == 0)
-	  {
-          message_id[0] = 0;       /* Indicate no message accepted */
-	  goto TIDYUP;
-	  }
+      if (recipients_count == 0)
+        {
+        message_id[0] = 0;       /* Indicate no message accepted */
+	goto TIDYUP;
+	}
       }
     else
       prdr_requested = FALSE;
