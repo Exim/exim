@@ -24,6 +24,14 @@ as part of an EHLO response, a new "acl_data_smtp_prdr" ACL
 (called for each recipient, after data arrives but before the
 data ACL), and a new smtp transport option "hosts_try_prdr".
 
+PRDR may be used to support per-user content filtering.  Without it
+one must defer any recipient after the first that has a different
+content-filter configuration.  With PRDR, the RCPT-time check
+for this can be disabled when the MAIL-time $smtp_command included
+"PRDR".  Any required difference in behaviour of the main DATA-time
+ACL should however depend on the PRDR-time ACL having run, as Exim
+will avoid doing so in some situations (eg.  single-recipient mails).
+
 
 
 OCSP Stapling support
