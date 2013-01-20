@@ -154,6 +154,8 @@ PP/15 Define SIOCGIFCONF_GIVES_ADDR for GNU Hurd.
       Bug detection, analysis and fix by Samuel Thibault.
       Bugzilla 1331, Debian bug #698092.
 
+SC/01 Update eximstats to watch out for senders sending 'HELO [IpAddr]'
+
 JH/14 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
       Server implementation by Todd Lyons, client by JH.
       Only enabled when compiled with EXPERIMENTAL_PRDR.  A new
