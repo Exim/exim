@@ -3315,17 +3315,12 @@ while (done <= 0)
         }
       if (mail_args->need_value && strcmpic(value, US"") == 0)
         break;
-      /* This doesn't seem right to use
-        if ((char *)mail_args >= (char *)env_mail_type_list + sizeof(env_mail_type_list))
-        goto BAD_MAIL_ARGS;
-      */
 
       switch(mail_args->value)
         {
         /* Handle SIZE= by reading the value. We don't do the check till later,
         in order to be able to log the sender address on failure. */
         case ENV_MAIL_OPT_SIZE:
-          /* if (strcmpic(name, US"SIZE") == 0 && */
           if (((size = Ustrtoul(value, &end, 10)), *end == 0))
             {
             if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
@@ -3377,8 +3372,8 @@ while (done <= 0)
             if (auth_xtextdecode(value, &authenticated_sender) < 0)
               {
               /* Put back terminator overrides for error message */
-              name[-1] = ' ';
               value[-1] = '=';
+              name[-1] = ' ';
               done = synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"invalid data for AUTH");
               goto COMMAND_LOOP;
@@ -3421,8 +3416,8 @@ while (done <= 0)
               overrides for error message */
   
               default:
-              name[-1] = ' ';
               value[-1] = '=';
+              name[-1] = ' ';
               (void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
                 log_msg);
               goto COMMAND_LOOP;
@@ -3438,12 +3433,13 @@ while (done <= 0)
 #endif
 
         /* Unknown option. Stick back the terminator characters and break
-        the loop. An error for a malformed address will occur. */
+        the loop.  Do the name-terminator second as extract_option sets
+	value==name when it found no space.
+	An error for a malformed address will occur. */
         default:
-          /* BAD_MAIL_ARGS: */
-BAD_MAIL_ARGS:
-          name[-1] = ' ';
           value[-1] = '=';
+          name[-1] = ' ';
+          arg_error = TRUE;
           break;
         }
       /* Break out of for loop if switch() had bad argument or

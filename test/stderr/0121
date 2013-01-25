@@ -38,6 +38,20 @@ LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Send
 >>> processing "require"
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing "unknown with spaces"@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> unknown with spaces in "defer"? no (end of list)
+>>> unknown with spaces in "userx"? no (end of list)
+>>> no more routers
+>>> ----------- end verify ------------
+>>> require: condition test failed in ACL "check_recipient"
+LOG: H=[127.0.0.1] sender verify fail for <"unknown with spaces"@test.ex>: Unrouteable address
+LOG: H=[127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "! +local_domains"? no (matched "! +local_domains")
