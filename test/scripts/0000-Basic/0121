@@ -6,6 +6,9 @@ rset
 mail from:<userx@unknown.dom.ain>
 rcpt to:<userx@test.ex>
 rset
+mail from:<"unknown with spaces"@test.ex>
+rcpt to:<userx@test.ex>
+rset
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>
 data

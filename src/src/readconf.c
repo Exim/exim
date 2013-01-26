@@ -140,6 +140,9 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_auth",            opt_stringptr,   &acl_smtp_auth },
   { "acl_smtp_connect",         opt_stringptr,   &acl_smtp_connect },
   { "acl_smtp_data",            opt_stringptr,   &acl_smtp_data },
+#ifdef EXPERIMENTAL_PRDR
+  { "acl_smtp_data_prdr",       opt_stringptr,   &acl_smtp_data_prdr },
+#endif
 #ifndef DISABLE_DKIM
   { "acl_smtp_dkim",            opt_stringptr,   &acl_smtp_dkim },
 #endif
@@ -316,6 +319,9 @@ static optionlist optionlist_config[] = {
 #endif
   { "pid_file_path",            opt_stringptr,   &pid_file_path },
   { "pipelining_advertise_hosts", opt_stringptr, &pipelining_advertise_hosts },
+#ifdef EXPERIMENTAL_PRDR
+  { "prdr_enable",              opt_bool,        &prdr_enable },
+#endif
   { "preserve_message_logs",    opt_bool,        &preserve_message_logs },
   { "primary_hostname",         opt_stringptr,   &primary_hostname },
   { "print_topbitchars",        opt_bool,        &print_topbitchars },

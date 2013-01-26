@@ -6,6 +6,34 @@ about experimental  features, all  of which  are unstable and
 liable to incompatible change.
 
 
+PRDR support
+--------------------------------------------------------------
+
+Per-Recipient Data Reponse is an SMTP extension proposed by Eric Hall
+in a (now-expired) IETF draft from 2007.  It's not hit mainstream
+use, but has apparently been implemented in the META1 MTA.
+
+There is mention at http://mail.aegee.org/intern/sendmail.html
+of a patch to sendmail "to make it PRDR capable".
+
+ ref: http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt
+
+If Exim is built with EXPERIMENTAL_PRDR there is a new config
+boolean "prdr_enable" which controls whether PRDR is advertised
+as part of an EHLO response, a new "acl_data_smtp_prdr" ACL
+(called for each recipient, after data arrives but before the
+data ACL), and a new smtp transport option "hosts_try_prdr".
+
+PRDR may be used to support per-user content filtering.  Without it
+one must defer any recipient after the first that has a different
+content-filter configuration.  With PRDR, the RCPT-time check
+for this can be disabled when the MAIL-time $smtp_command included
+"PRDR".  Any required difference in behaviour of the main DATA-time
+ACL should however depend on the PRDR-time ACL having run, as Exim
+will avoid doing so in some situations (eg.  single-recipient mails).
+
+
+
 OCSP Stapling support
 --------------------------------------------------------------
 

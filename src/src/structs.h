@@ -483,6 +483,10 @@ typedef struct address_item_propagated {
 #define af_pass_message        0x02000000 /* pass message in bounces */
 #define af_bad_reply           0x04000000 /* filter could not generate autoreply */
 
+#ifdef EXPERIMENTAL_PRDR
+# define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
+#endif
+
 /* These flags must be propagated when a child is created */
 
 #define af_propagate           (af_ignore_error)

@@ -210,7 +210,10 @@ static uschar *protocols[] = {
 /* Sanity check and validate optional args to MAIL FROM: envelope */
 enum {
   ENV_MAIL_OPT_SIZE, ENV_MAIL_OPT_BODY, ENV_MAIL_OPT_AUTH,
-  ENV_MAIL_OPT_PRDR, ENV_MAIL_OPT_NULL
+#ifdef EXPERIMENTAL_PRDR
+  ENV_MAIL_OPT_PRDR,
+#endif
+  ENV_MAIL_OPT_NULL
   };
 typedef struct {
   uschar *   name;  /* option requested during MAIL cmd */
@@ -222,7 +225,10 @@ static env_mail_type_t env_mail_type_list[] = {
     { US"SIZE",   ENV_MAIL_OPT_SIZE,   TRUE  },
     { US"BODY",   ENV_MAIL_OPT_BODY,   TRUE  },
     { US"AUTH",   ENV_MAIL_OPT_AUTH,   TRUE  },
-    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }  /* Placeholder for ending */
+#ifdef EXPERIMENTAL_PRDR
+    { US"PRDR",   ENV_MAIL_OPT_PRDR,   FALSE },
+#endif
+    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
   };
 
 /* When reading SMTP from a remote host, we have to use our own versions of the
@@ -998,19 +1004,23 @@ uschar *n;
 uschar *v = smtp_cmd_data + Ustrlen(smtp_cmd_data) - 1;
 while (isspace(*v)) v--;
 v[1] = 0;
-
 while (v > smtp_cmd_data && *v != '=' && !isspace(*v)) v--;
-if (*v != '=') return FALSE;
 
 n = v;
-while(isalpha(n[-1])) n--;
-
-/* RFC says SP, but TAB seen in wild and other major MTAs accept it */
-if (!isspace(n[-1])) return FALSE;
-
-n[-1] = 0;
-*name = n;
+if (*v == '=')
+{
+  while(isalpha(n[-1])) n--;
+  /* RFC says SP, but TAB seen in wild and other major MTAs accept it */
+  if (!isspace(n[-1])) return FALSE;
+  n[-1] = 0;
+}
+else
+{
+  n++;
+  if (v == smtp_cmd_data) return FALSE;
+}
 *v++ = 0;
+*name = n;
 *value = v;
 return TRUE;
 }
@@ -2201,6 +2211,9 @@ uschar *what =
 #endif
   (where == ACL_WHERE_PREDATA)? US"DATA" :
   (where == ACL_WHERE_DATA)? US"after DATA" :
+#ifdef EXPERIMENTAL_PRDR
+  (where == ACL_WHERE_PRDR)? US"after DATA PRDR" :
+#endif
   (smtp_cmd_data == NULL)?
     string_sprintf("%s in \"connect\" ACL", acl_wherenames[where]) :
     string_sprintf("%s %s", acl_wherenames[where], smtp_cmd_data);
@@ -3119,6 +3132,7 @@ while (done <= 0)
         pipelining_advertised = TRUE;
         }
 
+
       /* If any server authentication mechanisms are configured, advertise
       them if the current host is in auth_advertise_hosts. The problem with
       advertising always is that some clients then require users to
@@ -3175,6 +3189,14 @@ while (done <= 0)
         s = string_cat(s, &size, &ptr, US"-STARTTLS\r\n", 11);
         tls_advertised = TRUE;
         }
+      #endif
+
+      #ifdef EXPERIMENTAL_PRDR
+      /* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
+      if (prdr_enable) {
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-PRDR\r\n", 7);
+      }
       #endif
 
       /* Finish off the multiline reply with one that is always available. */
@@ -3293,17 +3315,12 @@ while (done <= 0)
         }
       if (mail_args->need_value && strcmpic(value, US"") == 0)
         break;
-      /* This doesn't seem right to use
-        if ((char *)mail_args >= (char *)env_mail_type_list + sizeof(env_mail_type_list))
-        goto BAD_MAIL_ARGS;
-      */
 
       switch(mail_args->value)
         {
         /* Handle SIZE= by reading the value. We don't do the check till later,
         in order to be able to log the sender address on failure. */
         case ENV_MAIL_OPT_SIZE:
-          /* if (strcmpic(name, US"SIZE") == 0 && */
           if (((size = Ustrtoul(value, &end, 10)), *end == 0))
             {
             if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
@@ -3355,8 +3372,8 @@ while (done <= 0)
             if (auth_xtextdecode(value, &authenticated_sender) < 0)
               {
               /* Put back terminator overrides for error message */
-              name[-1] = ' ';
               value[-1] = '=';
+              name[-1] = ' ';
               done = synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"invalid data for AUTH");
               goto COMMAND_LOOP;
@@ -3399,22 +3416,30 @@ while (done <= 0)
               overrides for error message */
   
               default:
-              name[-1] = ' ';
               value[-1] = '=';
+              name[-1] = ' ';
               (void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
                 log_msg);
               goto COMMAND_LOOP;
               }
             }
             break;
- 
-        /* Unknown option. Stick back the terminator characters and break
-        the loop. An error for a malformed address will occur. */
-        default:
 
-          /* BAD_MAIL_ARGS: */
-          name[-1] = ' ';
+#ifdef EXPERIMENTAL_PRDR
+        case ENV_MAIL_OPT_PRDR:
+          if ( prdr_enable )
+            prdr_requested = TRUE;
+          break;
+#endif
+
+        /* Unknown option. Stick back the terminator characters and break
+        the loop.  Do the name-terminator second as extract_option sets
+	value==name when it found no equal-sign.
+	An error for a malformed address will occur. */
+        default:
           value[-1] = '=';
+          name[-1] = ' ';
+          arg_error = TRUE;
           break;
         }
       /* Break out of for loop if switch() had bad argument or
@@ -3536,8 +3561,21 @@ while (done <= 0)
 
     if (rc == OK || rc == DISCARD)
       {
-      if (user_msg == NULL) smtp_printf("250 OK\r\n");
-        else smtp_user_msg(US"250", user_msg);
+      if (user_msg == NULL) 
+        smtp_printf("%s%s%s", US"250 OK",
+                  #ifdef EXPERIMENTAL_PRDR
+                    prdr_requested == TRUE ? US", PRDR Requested" :
+                  #endif
+                    US"",
+                    US"\r\n");
+      else 
+        {
+      #ifdef EXPERIMENTAL_PRDR
+        if ( prdr_requested == TRUE )
+           user_msg = string_sprintf("%s%s", user_msg, US", PRDR Requested");
+      #endif
+        smtp_user_msg(US"250",user_msg);
+        }
       smtp_delay_rcpt = smtp_rlr_base;
       recipients_discarded = (rc == DISCARD);
       was_rej_mail = FALSE;
@@ -3801,9 +3839,11 @@ while (done <= 0)
 
     if (rc == OK)
       {
+      uschar * code;
+      code = US"354";
       if (user_msg == NULL)
-        smtp_printf("354 Enter message, ending with \".\" on a line by itself\r\n");
-      else smtp_user_msg(US"354", user_msg);
+        smtp_printf("%s Enter message, ending with \".\" on a line by itself\r\n", code);
+      else smtp_user_msg(code, user_msg);
       done = 3;
       message_ended = END_NOTENDED;   /* Indicate in middle of data */
       }

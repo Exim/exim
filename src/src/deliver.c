@@ -785,6 +785,11 @@ else
       }
     }
 
+  #ifdef EXPERIMENTAL_PRDR
+  if (addr->flags & af_prdr_used)
+    s = string_append(s, &size, &ptr, 1, US" PRDR");
+  #endif
+
   if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
       addr->message != NULL)
     {
@@ -2913,6 +2918,11 @@ while (!done)
     while (*ptr++);
     break;
 
+#ifdef EXPERIMENTAL_PRDR
+    case 'P':
+      addr->flags |= af_prdr_used; break;
+#endif
+
     case 'A':
     if (addr == NULL)
       {
@@ -4016,6 +4026,10 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         while(*ptr++);
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
+
+      #ifdef EXPERIMENTAL_PRDR
+      if (addr->flags & af_prdr_used) rmt_dlv_checked_write(fd, "P", 1);
+      #endif
 
       /* Retry information: for most success cases this will be null. */
 
@@ -6099,6 +6113,11 @@ if (addr_remote != NULL)
   #ifdef SUPPORT_TLS
   if (regex_STARTTLS == NULL) regex_STARTTLS =
     regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
+  #endif
+
+  #ifdef EXPERIMENTAL_PRDR
+  if (regex_PRDR == NULL) regex_PRDR =
+    regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
   #endif
 
   /* Now sort the addresses if required, and do the deliveries. The yield of

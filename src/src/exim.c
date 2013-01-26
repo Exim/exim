@@ -819,6 +819,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_OCSP
   fprintf(f, " Experimental_OCSP");
 #endif
+#ifdef EXPERIMENTAL_PRDR
+  fprintf(f, " Experimental_PRDR");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");

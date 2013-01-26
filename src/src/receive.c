@@ -482,6 +482,34 @@ recipients_list[recipients_count++].errors_to = NULL;
 
 
 /*************************************************
+*        Send user response message              *
+*************************************************/
+        
+/* This function is passed a default response code and a user message. It calls
+smtp_message_code() to check and possibly modify the response code, and then
+calls smtp_respond() to transmit the response. I put this into a function
+just to avoid a lot of repetition.
+            
+Arguments:               
+  code         the response code
+  user_msg     the user message
+
+Returns:       nothing
+*/        
+            
+static void 
+smtp_user_msg(uschar *code, uschar *user_msg)
+{           
+int len = 3;
+smtp_message_code(&code, &len, &user_msg, NULL);
+smtp_respond(code, len, TRUE, user_msg);
+}           
+                        
+            
+          
+          
+
+/*************************************************
 *        Remove a recipient from the list        *
 *************************************************/
 
@@ -3199,6 +3227,77 @@ else
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
+#ifdef EXPERIMENTAL_PRDR
+    if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr != NULL )
+      {
+      unsigned int c;
+      int all_pass = OK;
+      int all_fail = FAIL;
+
+      smtp_printf("353 PRDR content analysis beginning\r\n");
+      /* Loop through recipients, responses must be in same order received */
+      for (c = 0; recipients_count > c; c++)
+        {
+	uschar * addr= recipients_list[c].address;
+	uschar * msg= US"PRDR R=<%s> %s";
+	uschar * code;
+        DEBUG(D_receive)
+          debug_printf("PRDR processing recipient %s (%d of %d)\n",
+                       addr, c+1, recipients_count);
+        rc = acl_check(ACL_WHERE_PRDR, addr,
+                       acl_smtp_data_prdr, &user_msg, &log_msg);
+
+        /* If any recipient rejected content, indicate it in final message */
+        all_pass |= rc;
+        /* If all recipients rejected, indicate in final message */
+        all_fail &= rc;
+
+        switch (rc)
+          {
+          case OK: case DISCARD: code = US"250"; break;
+          case DEFER:            code = US"450"; break;
+          default:               code = US"550"; break;
+          }
+	if (user_msg != NULL)
+	  smtp_user_msg(code, user_msg);
+	else
+	  {
+	  switch (rc)
+            {
+            case OK: case DISCARD:
+              msg = string_sprintf(CS msg, addr, "acceptance");        break;
+            case DEFER:
+              msg = string_sprintf(CS msg, addr, "temporary refusal"); break;
+            default:
+              msg = string_sprintf(CS msg, addr, "refusal");           break;
+            }
+          smtp_user_msg(code, msg);
+	  }
+	if (log_msg)       log_write(0, LOG_MAIN, "PRDR %s %s", addr, log_msg);
+	else if (user_msg) log_write(0, LOG_MAIN, "PRDR %s %s", addr, user_msg);
+	else               log_write(0, LOG_MAIN, CS msg);
+
+	if (rc != OK) { receive_remove_recipient(addr); c--; }
+        }
+      /* Set up final message, used if data acl gives OK */
+      smtp_reply = string_sprintf("%s id=%s message %s",
+		       all_fail == FAIL ? US"550" : US"250",
+		       message_id,
+                       all_fail == FAIL
+		         ? US"rejected for all recipients"
+			 : all_pass == OK
+			   ? US"accepted"
+			   : US"accepted for some recipients");
+      if (recipients_count == 0)
+        {
+        message_id[0] = 0;       /* Indicate no message accepted */
+	goto TIDYUP;
+	}
+      }
+    else
+      prdr_requested = FALSE;
+#endif /* EXPERIMENTAL_PRDR */
+
     /* Check the recipients count again, as the MIME ACL might have changed
     them. */
 
@@ -3615,6 +3714,11 @@ if (sender_host_authenticated != NULL)
     }
   }
 
+#ifdef EXPERIMENTAL_PRDR
+if (prdr_requested)
+  s = string_append(s, &size, &sptr, 1, US" PRDR");
+#endif
+
 sprintf(CS big_buffer, "%d", msg_size);
 s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
 
@@ -3831,7 +3935,11 @@ if(cutthrough_fd >= 0)
     }
   }
 
-if(smtp_reply == NULL)
+if(smtp_reply == NULL
+#ifdef EXPERIMENTAL_PRDR
+                     || prdr_requested
+#endif
+  )
   {
   log_write(0, LOG_MAIN |
     (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
