@@ -1372,7 +1372,7 @@ if (sni)
 #else
     DEBUG(D_tls)
       debug_printf("OpenSSL at build-time lacked SNI support, ignoring \"%s\"\n",
-          tls_sni);
+          tls_out.sni);
 #endif
     }
   }
