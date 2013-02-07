@@ -10,6 +10,7 @@
 #include "exim.h"
 #ifdef EXPERIMENTAL_DMARC
 
+#include "functions.h"
 #include "dmarc.h"
 #include "pdkim/pdkim.h"
 
@@ -23,8 +24,11 @@ extern pdkim_signature  *dkim_signatures;
 extern SPF_response_t   *spf_response;
 uschar *spf_sender_domain  = NULL;
 uschar *spf_human_readable = NULL;
-u_char *header_from_sender = NULL;
 #endif
+u_char *header_from_sender = NULL;
+int history_file_status    = DMARC_HIST_OK;
+uschar *history_buffer     = NULL;
+uschar *dkim_history_buffer= NULL;
 
 /* dmarc_init sets up a context that can be re-used for several
    messages on the same SMTP connection (that come from the
@@ -48,8 +52,8 @@ int dmarc_init() {
 #ifdef EXPERIMENTAL_SPF
   spf_sender_domain  = NULL;
   spf_human_readable = NULL;
-  header_from_sender = NULL;
 #endif
+  header_from_sender = NULL;
 
   /* ACLs have "control=dmarc_disable_verify" */
   if (dmarc_disable_verify == TRUE)
@@ -97,7 +101,8 @@ int dmarc_init() {
 
 int dmarc_process(header_line *from_header) {
     int spf_result, sr, origin; /* used in SPF section */
-    int da, sa;
+    int da, sa, tmp_ans;
+    u_char **ruv;
     pdkim_signature *sig  = NULL;
     uschar *enforcement   = NULL;
     uschar *tmp_status    = NULL;
@@ -126,8 +131,9 @@ int dmarc_process(header_line *from_header) {
      * <cannonball> I'm not denying that :-/
      * <jgh_hm> there may well be no better though
      */
-    header_from_sender = expand_string( string_sprintf("${domain:${extract{1}{:}{${addresses:%s}}}}",
-                                                       from_header->text) );
+    header_from_sender = expand_string(
+                           string_sprintf("${domain:${extract{1}{:}{${addresses:%s}}}}",
+                             from_header->text) );
     /* The opendmarc library extracts the domain from the email address. */
     libdm_status = opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
     if (libdm_status != DMARC_PARSE_OKAY)
@@ -199,6 +205,7 @@ int dmarc_process(header_line *from_header) {
     /* Now we cycle through the dkim signature results and put into
      * the opendmarc context, further building the DMARC reply.  */
     sig = dkim_signatures;
+    dkim_history_buffer = US"";
     while (sig != NULL)
     {
       int dkim_result, vs;
@@ -207,6 +214,7 @@ int dmarc_process(header_line *from_header) {
 		    ( vs == PDKIM_VERIFY_FAIL ) ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
 		    ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
 	            DMARC_POLICY_DKIM_OUTCOME_NONE;
+
       libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, (uschar *)sig->domain,
 		                                 dkim_result, US"");
       DEBUG(D_receive)
@@ -214,6 +222,9 @@ int dmarc_process(header_line *from_header) {
       if (libdm_status != DMARC_PARSE_OKAY)
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store dkim (%s) for DMARC: %s",
 			     sig->domain, opendmarc_policy_status_to_str(libdm_status));
+
+      dkim_history_buffer = string_sprintf("%sdkim %s %d\n", dkim_history_buffer,
+                                                             sig->domain, dkim_result);
       sig = sig->next;
     }
     libdm_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
@@ -268,12 +279,59 @@ int dmarc_process(header_line *from_header) {
                   (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"No From: domain found" :
                   US"Internal Policy Error";
     dmarc_status_text = string_copy(enforcement);
+
+    history_buffer = string_sprintf("job %s\n", message_id);
+    history_buffer = string_sprintf("%sreporter %s\n", history_buffer, primary_hostname);
+    history_buffer = string_sprintf("%sreceived %ld\n", history_buffer, time(NULL));
+    history_buffer = string_sprintf("%sipaddr %s\n", history_buffer, sender_host_address);
+    history_buffer = string_sprintf("%sfrom %s\n", history_buffer, header_from_sender);
+    history_buffer = string_sprintf("%smfrom %s\n", history_buffer,
+                       expand_string(US"$sender_address_domain"));
+
+#ifdef EXPERIMENTAL_SPF
+    if (spf_response != NULL)
+      history_buffer = string_sprintf("%sspf %d\n", history_buffer, sr);
+#else
+      history_buffer = string_sprintf("%sspf -1\n", history_buffer);
+#endif /* EXPERIMENTAL_SPF */
+
+    history_buffer = string_sprintf("%s%s", history_buffer, dkim_history_buffer);
+    history_buffer = string_sprintf("%spdomain %s\n", history_buffer, dmarc_used_domain);
+    history_buffer = string_sprintf("%spolicy %d\n", history_buffer, libdm_status);
+
+    ruv = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1);
+    if (ruv != NULL)
+    {
+      for (tmp_ans = 0; ruv[tmp_ans] != NULL; tmp_ans++)
+      {
+        history_buffer = string_sprintf("%srua %s\n", history_buffer, ruv[tmp_ans]);
+      }
+    }
+    else
+      history_buffer = string_sprintf("%srua -\n", history_buffer);
+
+    opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
+    history_buffer = string_sprintf("%spct %d\n", history_buffer, tmp_ans);
+
+    opendmarc_policy_fetch_adkim(dmarc_pctx, &tmp_ans);
+    history_buffer = string_sprintf("%sadkim %d\n", history_buffer, tmp_ans);
+
+    opendmarc_policy_fetch_aspf(dmarc_pctx, &tmp_ans);
+    history_buffer = string_sprintf("%saspf %d\n", history_buffer, tmp_ans);
+
+    opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
+    history_buffer = string_sprintf("%sp %d\n", history_buffer, tmp_ans);
+
+    opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
+    history_buffer = string_sprintf("%ssp %d\n", history_buffer, tmp_ans);
+
     libdm_status = opendmarc_policy_fetch_alignment(dmarc_pctx, &da, &sa);
     if (libdm_status != DMARC_PARSE_OKAY)
     {
       log_write(0, LOG_MAIN|LOG_PANIC, "failure to read DMARC alignment: %s",
                                        opendmarc_policy_status_to_str(libdm_status));
     }
+
     if (has_dmarc_record == TRUE)
     {
       log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
@@ -282,8 +340,13 @@ int dmarc_process(header_line *from_header) {
                              (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              enforcement);
+      history_buffer = string_sprintf("%salign_dkim %d\n", history_buffer, sa);
+      history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, da);
+
+      history_file_status = dmarc_write_history_file();
     }
   }
+
   /* set some global variables here */
   dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
 
@@ -294,6 +357,27 @@ int dmarc_process(header_line *from_header) {
     (void) opendmarc_policy_library_shutdown(&dmarc_ctx);
 
   return OK;
+}
+
+int dmarc_write_history_file()
+{
+  static int history_file_fd;
+  ssize_t written_len;
+
+  if (dmarc_history_file == NULL)
+    return DMARC_HIST_DISABLED;
+  if (history_buffer == NULL)
+    return DMARC_HIST_EMPTY;
+  history_file_fd = text_log_create(dmarc_history_file);
+  if (history_file_fd < 0)
+    return DMARC_HIST_FILE_ERR;
+  written_len = write_to_fd_buf(history_file_fd,
+                                history_buffer,
+                                Ustrlen(history_buffer));
+  if (written_len == 0)
+    return DMARC_HIST_WRITE_ERR;
+  (void)close(history_file_fd);
+  return DMARC_HIST_OK;
 }
 
 uschar *dmarc_exim_expand_query(int what)
@@ -360,3 +444,5 @@ uschar *dmarc_auth_results_header(header_line *from_header, uschar *hostname)
 }
 
 #endif
+
+// vim:sw=2 expandtab

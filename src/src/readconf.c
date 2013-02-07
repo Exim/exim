@@ -210,6 +210,7 @@ static optionlist optionlist_config[] = {
   { "dkim_verify_signers",      opt_stringptr,   &dkim_verify_signers },
 #endif
 #ifdef EXPERIMENTAL_DMARC
+  { "dmarc_history_file",       opt_stringptr,   &dmarc_history_file },
   { "dmarc_tld_file",           opt_stringptr,   &dmarc_tld_file },
 #endif
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },

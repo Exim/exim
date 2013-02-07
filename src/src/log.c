@@ -1342,5 +1342,27 @@ else
   log_write(0, LOG_MAIN|LOG_PANIC, "unable to open debug log");
 }
 
+#ifdef EXPERIMENTAL_DMARC
+
+/*************************************************
+*          Create a text log file                *
+*************************************************/
+
+/* This function is called to create and open a log file.  It is
+   passed straight through to log_open()
+
+Arguments:
+  name         the file name
+
+Returns:       a file descriptor, or < 0 on failure (errno set)
+*/
+
+int
+text_log_create(uschar *name)
+{
+return(log_create(name));
+}
+
+#endif /* EXPERIMENTAL_DMARC */
 
 /* End of log.c */

@@ -341,6 +341,7 @@ extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When se
 #endif
 #ifdef EXPERIMENTAL_DMARC
 extern uschar *dmarc_ar_header;        /* Expansion variable, suggested header for dmarc auth results */
+extern uschar *dmarc_history_file;     /* Expansion variable, file to store dmarc results */
 extern uschar *dmarc_status;           /* Expansion variable, one word value */
 extern uschar *dmarc_status_text;      /* Expansion variable, human readable value */
 extern uschar *dmarc_tld_file;         /* Mozilla TLDs text file */

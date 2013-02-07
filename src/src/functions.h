@@ -362,6 +362,9 @@ extern BOOL    string_vformat(uschar *, int, const char *, va_list);
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
+#ifdef EXPERIMENTAL_DMARC
+extern int     text_log_create(uschar *);
+#endif
 
 extern uschar *tod_stamp(int);
 extern BOOL    transport_check_waiting(uschar *, uschar *, int, uschar *,
