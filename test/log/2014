@@ -4,6 +4,5 @@
 1999-03-02 09:44:33 TLS error on connection from (rhu5.barb) [ip4.ip4.ip4.ip4] (certificate verification failed): invalid
 1999-03-02 09:44:33 H=[127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (recv): A TLS packet with unexpected length was received.
 1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (send): The specified session has been invalidated for some reason.
 1999-03-02 09:44:33 H=[127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock

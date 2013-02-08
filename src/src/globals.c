@@ -93,16 +93,31 @@ BOOL    move_frozen_messages   = FALSE;
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
-BOOL    tls_active             = -1;
-int     tls_bits               = 0;
-BOOL    tls_certificate_verified = FALSE;
-uschar *tls_cipher             = NULL;
-BOOL    tls_on_connect         = FALSE;
-uschar *tls_on_connect_ports   = NULL;
-uschar *tls_peerdn             = NULL;
+tls_support tls_in = {
+ -1,   /* tls_active */
+ 0,    /* tls_bits */
+ FALSE,/* tls_certificate_verified */
+ NULL, /* tls_cipher */
+ FALSE,/* tls_on_connect */
+ NULL, /* tls_on_connect_ports */
+ NULL, /* tls_peerdn */
+ NULL  /* tls_sni */
+};
+tls_support tls_out = {
+ -1,   /* tls_active */
+ 0,    /* tls_bits */
+ FALSE,/* tls_certificate_verified */
+ NULL, /* tls_cipher */
+ FALSE,/* tls_on_connect */
+ NULL, /* tls_on_connect_ports */
+ NULL, /* tls_peerdn */
+ NULL  /* tls_sni */
+};
+
 
 #ifdef SUPPORT_TLS
 BOOL    gnutls_compat_mode     = FALSE;
+BOOL    gnutls_enable_pkcs11   = FALSE;
 uschar *gnutls_require_mac     = NULL;
 uschar *gnutls_require_kx      = NULL;
 uschar *gnutls_require_proto   = NULL;
@@ -123,7 +138,6 @@ BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
-uschar *tls_sni                = NULL;
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= NULL;
 uschar *tls_verify_hosts       = NULL;
@@ -173,13 +187,16 @@ int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
 
 header_line *acl_added_headers = NULL;
 tree_node *acl_anchor          = NULL;
+uschar *acl_arg[9]             = {NULL, NULL, NULL, NULL, NULL,
+                                  NULL, NULL, NULL, NULL};
+int     acl_narg               = 0;
 
 uschar *acl_not_smtp           = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *acl_not_smtp_mime      = NULL;
 #endif
 uschar *acl_not_smtp_start     = NULL;
-
+uschar *acl_removed_headers    = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
@@ -227,7 +244,8 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"NOTQUIT",
                                    US"QUIT",
                                    US"STARTTLS",
-                                   US"VRFY"
+                                   US"VRFY",
+				   US"expansion"
                                  };
 
 uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
@@ -247,11 +265,13 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"0",       /* NOTQUIT; not relevant */
                                    US"0",       /* QUIT; not relevant */
                                    US"550",     /* STARTTLS */
-                                   US"252"      /* VRFY */
+                                   US"252",     /* VRFY */
+				   US"0"        /* unknown; not relevant */
                                  };
 
 BOOL    active_local_from_check = FALSE;
 BOOL    active_local_sender_retain = FALSE;
+int     body_8bitmime = 0;
 BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
 address_item  *addr_duplicate  = NULL;
 
@@ -429,6 +449,8 @@ int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 
 uschar *csa_status             = NULL;
+BOOL    cutthrough_delivery    = FALSE;
+int     cutthrough_fd          = -1;
 
 BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";
@@ -545,6 +567,7 @@ BOOL    dkim_disable_verify      = FALSE;
 #ifdef EXPERIMENTAL_DMARC
 int     dmarc_has_been_checked  = 0;
 uschar *dmarc_ar_header         = NULL;
+uschar *dmarc_history_file      = NULL;
 uschar *dmarc_status            = NULL;
 uschar *dmarc_status_text       = NULL;
 uschar *dmarc_tld_file          = NULL;
@@ -558,6 +581,7 @@ BOOL    dns_csa_use_reverse    = TRUE;
 uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
+int     dns_use_dnssec         = -1; /* <0 = not coerced */
 int     dns_use_edns0          = -1; /* <0 = not coerced */
 uschar *dnslist_domain         = NULL;
 uschar *dnslist_matched        = NULL;
@@ -721,6 +745,7 @@ selectors was getting close to filling a 32-bit word. */
 /* Note that this list must be in alphabetical order. */
 
 bit_table log_options[]        = {
+  { US"8bitmime",                     LX_8bitmime },
   { US"acl_warn_skipped",             LX_acl_warn_skipped },
   { US"address_rewrite",              L_address_rewrite },
   { US"all",                          L_all },
@@ -1075,6 +1100,7 @@ uschar **sender_host_aliases   = &no_aliases;
 uschar *sender_host_address    = NULL;
 uschar *sender_host_authenticated = NULL;
 unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32];
+BOOL    sender_host_dnssec     = FALSE;
 uschar *sender_host_name       = NULL;
 int     sender_host_port       = 0;
 BOOL    sender_host_notsocket  = FALSE;
@@ -1194,6 +1220,7 @@ uschar *submission_domain      = NULL;
 BOOL    submission_mode        = FALSE;
 uschar *submission_name        = NULL;
 BOOL    suppress_local_fixups  = FALSE;
+BOOL    suppress_local_fixups_default = FALSE;
 BOOL    synchronous_delivery   = FALSE;
 BOOL    syslog_duplication     = TRUE;
 int     syslog_facility        = LOG_MAIL;

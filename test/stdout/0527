@@ -1,22 +1,4 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
-550-Verification failed for <unknown@x.x.x.x>
-550-Called:   127.0.0.1
-550-Sent:     RCPT TO:<unknown@x.x.x.x>
-550-Response: 550 unrouteable address
-550 Sender verify failed
+451 Could not complete sender verify callout
 221 myhost.test.ex closing connection
-
-******** SERVER ********
-Listening on port 1224 ... 
-Connection request from [127.0.0.1]
-220 Welcome
-HELO myhost.test.ex
-250 Hi
-MAIL FROM:<>
-250 OK
-RCPT TO:<unknown@x.x.x.x>
-550 unrouteable address
-QUIT
-221 Bye
-End of script

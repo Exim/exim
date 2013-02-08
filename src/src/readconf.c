@@ -210,6 +210,7 @@ static optionlist optionlist_config[] = {
   { "dkim_verify_signers",      opt_stringptr,   &dkim_verify_signers },
 #endif
 #ifdef EXPERIMENTAL_DMARC
+  { "dmarc_history_file",       opt_stringptr,   &dmarc_history_file },
   { "dmarc_tld_file",           opt_stringptr,   &dmarc_tld_file },
 #endif
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
@@ -219,6 +220,7 @@ static optionlist optionlist_config[] = {
   { "dns_ipv4_lookup",          opt_stringptr,   &dns_ipv4_lookup },
   { "dns_retrans",              opt_time,        &dns_retrans },
   { "dns_retry",                opt_int,         &dns_retry },
+  { "dns_use_dnssec",           opt_int,         &dns_use_dnssec },
   { "dns_use_edns0",            opt_int,         &dns_use_edns0 },
  /* This option is now a no-op, retained for compability */
   { "drop_cr",                  opt_bool,        &drop_cr },
@@ -238,6 +240,7 @@ static optionlist optionlist_config[] = {
   { "gecos_pattern",            opt_stringptr,   &gecos_pattern },
 #ifdef SUPPORT_TLS
   { "gnutls_compat_mode",       opt_bool,        &gnutls_compat_mode },
+  { "gnutls_enable_pkcs11",     opt_bool,        &gnutls_enable_pkcs11 },
   /* These three gnutls_require_* options stopped working in Exim 4.80 */
   { "gnutls_require_kx",        opt_stringptr,   &gnutls_require_kx },
   { "gnutls_require_mac",       opt_stringptr,   &gnutls_require_mac },
@@ -420,10 +423,10 @@ static optionlist optionlist_config[] = {
   { "tls_crl",                  opt_stringptr,   &tls_crl },
   { "tls_dh_max_bits",          opt_int,         &tls_dh_max_bits },
   { "tls_dhparam",              opt_stringptr,   &tls_dhparam },
-#if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
+# if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
   { "tls_ocsp_file",            opt_stringptr,   &tls_ocsp_file },
-#endif
-  { "tls_on_connect_ports",     opt_stringptr,   &tls_on_connect_ports },
+# endif
+  { "tls_on_connect_ports",     opt_stringptr,   &tls_in.on_connect_ports },
   { "tls_privatekey",           opt_stringptr,   &tls_privatekey },
   { "tls_remember_esmtp",       opt_bool,        &tls_remember_esmtp },
   { "tls_require_ciphers",      opt_stringptr,   &tls_require_ciphers },
@@ -1375,7 +1378,6 @@ uid_t uid;
 gid_t gid;
 BOOL boolvalue = TRUE;
 BOOL freesptr = TRUE;
-BOOL extra_condition = FALSE;
 optionlist *ol, *ol2;
 struct passwd *pw;
 void *reset_point;
@@ -1438,16 +1440,9 @@ if (ol == NULL)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, CS unknown_txt, name);
   }
 
-if ((ol->type & opt_set) != 0)
-  {
-  uschar *mname = name;
-  if (Ustrncmp(mname, "no_", 3) == 0) mname += 3;
-  if (Ustrcmp(mname, "condition") == 0)
-    extra_condition = TRUE;
-  else
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-      "\"%s\" option set for the second time", mname);
-  }
+if ((ol->type & opt_set)  && !(ol->type & (opt_rep_con | opt_rep_str)))
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+    "\"%s\" option set for the second time", name);
 
 ol->type |= opt_set | issecure;
 type = ol->type & opt_mask;
@@ -1531,7 +1526,7 @@ switch (type)
       str_target = (uschar **)(ol->value);
     else
       str_target = (uschar **)((uschar *)data_block + (long int)(ol->value));
-    if (extra_condition)
+    if (ol->type & opt_rep_con)
       {
       /* We already have a condition, we're conducting a crude hack to let
       multiple condition rules be chained together, despite storing them in
@@ -1540,9 +1535,10 @@ switch (type)
       strtemp = string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
           saved_condition, sptr);
       *str_target = string_copy_malloc(strtemp);
-      /* TODO(pdp): there is a memory leak here when we set 3 or more
-      conditions; I still don't understand the store mechanism enough
-      to know what's the safe way to free content from an earlier store.
+      /* TODO(pdp): there is a memory leak here and just below
+      when we set 3 or more conditions; I still don't
+      understand the store mechanism enough to know
+      what's the safe way to free content from an earlier store.
       AFAICT, stores stack, so freeing an early stored item also stores
       all data alloc'd after it.  If we knew conditions were adjacent,
       we could survive that, but we don't.  So I *think* we need to take
@@ -1553,6 +1549,15 @@ switch (type)
       Because we only do this once, near process start-up, I'm prepared to
       let this slide for the time being, even though it rankles.  */
       }
+    else if (*str_target && (ol->type & opt_rep_str))
+     {
+      uschar sep = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
+      saved_condition = *str_target;
+      strtemp = saved_condition + strlen(saved_condition)-1;
+      if (*strtemp == sep) *strtemp = 0;	/* eliminate trailing list-sep */
+      strtemp = string_sprintf("%s%c%s", saved_condition, sep, sptr);
+      *str_target = string_copy_malloc(strtemp);
+     }
     else
       {
       *str_target = sptr;
@@ -2153,13 +2158,14 @@ Arguments:
                    resides.
   oltop          points to the option list in which ol exists
   last           one more than the offset of the last entry in optop
+  no_labels      do not show "foo = " at the start.
 
 Returns:         nothing
 */
 
 static void
 print_ol(optionlist *ol, uschar *name, void *options_block,
-  optionlist *oltop, int last)
+  optionlist *oltop, int last, BOOL no_labels)
 {
 struct passwd *pw;
 struct group *gr;
@@ -2181,7 +2187,11 @@ if (ol == NULL)
 
 if (!admin_user && (ol->type & opt_secure) != 0)
   {
-  printf("%s = <value not displayable>\n", name);
+  const char * const hidden = "<value not displayable>";
+  if (no_labels)
+    printf("%s\n", hidden);
+  else
+    printf("%s = %s\n", name, hidden);
   return;
   }
 
@@ -2200,11 +2210,13 @@ switch(ol->type & opt_mask)
   case opt_stringptr:
   case opt_rewrite:        /* Show the text value */
   s = *((uschar **)value);
-  printf("%s = %s\n", name, (s == NULL)? US"" : string_printing2(s, FALSE));
+  if (!no_labels) printf("%s = ", name);
+  printf("%s\n", (s == NULL)? US"" : string_printing2(s, FALSE));
   break;
 
   case opt_int:
-  printf("%s = %d\n", name, *((int *)value));
+  if (!no_labels) printf("%s = ", name);
+  printf("%d\n", *((int *)value));
   break;
 
   case opt_mkint:
@@ -2219,23 +2231,30 @@ switch(ol->type & opt_mask)
         c = 'M';
         x >>= 10;
         }
-      printf("%s = %d%c\n", name, x, c);
+      if (!no_labels) printf("%s = ", name);
+      printf("%d%c\n", x, c);
       }
-    else printf("%s = %d\n", name, x);
+    else
+      {
+      if (!no_labels) printf("%s = ", name);
+      printf("%d\n", x);
+      }
     }
   break;
 
   case opt_Kint:
     {
     int x = *((int *)value);
-    if (x == 0) printf("%s = 0\n", name);
-      else if ((x & 1023) == 0) printf("%s = %dM\n", name, x >> 10);
-        else printf("%s = %dK\n", name, x);
+    if (!no_labels) printf("%s = ", name);
+    if (x == 0) printf("0\n");
+      else if ((x & 1023) == 0) printf("%dM\n", x >> 10);
+        else printf("%dK\n", x);
     }
   break;
 
   case opt_octint:
-  printf("%s = %#o\n", name, *((int *)value));
+  if (!no_labels) printf("%s = ", name);
+  printf("%#o\n", *((int *)value));
   break;
 
   /* Can be negative only when "unset", in which case integer */
@@ -2247,7 +2266,8 @@ switch(ol->type & opt_mask)
     int d = 100;
     if (x < 0) printf("%s =\n", name); else
       {
-      printf("%s = %d.", name, x/1000);
+      if (!no_labels) printf("%s = ", name);
+      printf("%d.", x/1000);
       do
         {
         printf("%d", f/d);
@@ -2273,7 +2293,8 @@ switch(ol->type & opt_mask)
       if (options_block != NULL)
         value2 = (void *)((uschar *)options_block + (long int)value2);
       s = *((uschar **)value2);
-      printf("%s = %s\n", name, (s == NULL)? US"" : string_printing(s));
+      if (!no_labels) printf("%s = ", name);
+      printf("%s\n", (s == NULL)? US"" : string_printing(s));
       break;
       }
     }
@@ -2281,14 +2302,15 @@ switch(ol->type & opt_mask)
   /* Else fall through */
 
   case opt_uid:
+  if (!no_labels) printf("%s = ", name);
   if (! *get_set_flag(name, oltop, last, options_block))
-    printf("%s =\n", name);
+    printf("\n");
   else
     {
     pw = getpwuid(*((uid_t *)value));
     if (pw == NULL)
-      printf("%s = %ld\n", name, (long int)(*((uid_t *)value)));
-    else printf("%s = %s\n", name, pw->pw_name);
+      printf("%ld\n", (long int)(*((uid_t *)value)));
+    else printf("%s\n", pw->pw_name);
     }
   break;
 
@@ -2305,7 +2327,8 @@ switch(ol->type & opt_mask)
       if (options_block != NULL)
         value2 = (void *)((uschar *)options_block + (long int)value2);
       s = *((uschar **)value2);
-      printf("%s = %s\n", name, (s == NULL)? US"" : string_printing(s));
+      if (!no_labels) printf("%s = ", name);
+      printf("%s\n", (s == NULL)? US"" : string_printing(s));
       break;
       }
     }
@@ -2313,31 +2336,34 @@ switch(ol->type & opt_mask)
   /* Else fall through */
 
   case opt_gid:
+  if (!no_labels) printf("%s = ", name);
   if (! *get_set_flag(name, oltop, last, options_block))
-    printf("%s =\n", name);
+    printf("\n");
   else
     {
     gr = getgrgid(*((int *)value));
     if (gr == NULL)
-       printf("%s = %ld\n", name, (long int)(*((int *)value)));
-    else printf("%s = %s\n", name, gr->gr_name);
+       printf("%ld\n", (long int)(*((int *)value)));
+    else printf("%s\n", gr->gr_name);
     }
   break;
 
   case opt_uidlist:
   uidlist = *((uid_t **)value);
-  printf("%s =", name);
+  if (!no_labels) printf("%s =", name);
   if (uidlist != NULL)
     {
     int i;
     uschar sep = ' ';
+    if (no_labels) sep = '\0';
     for (i = 1; i <= (int)(uidlist[0]); i++)
       {
       uschar *name = NULL;
       pw = getpwuid(uidlist[i]);
       if (pw != NULL) name = US pw->pw_name;
-      if (name != NULL) printf("%c%s", sep, name);
-        else printf("%c%ld", sep, (long int)(uidlist[i]));
+      if (sep != '\0') printf("%c", sep);
+      if (name != NULL) printf("%s", name);
+        else printf("%ld", (long int)(uidlist[i]));
       sep = ':';
       }
     }
@@ -2346,18 +2372,20 @@ switch(ol->type & opt_mask)
 
   case opt_gidlist:
   gidlist = *((gid_t **)value);
-  printf("%s =", name);
+  if (!no_labels) printf("%s =", name);
   if (gidlist != NULL)
     {
     int i;
     uschar sep = ' ';
+    if (no_labels) sep = '\0';
     for (i = 1; i <= (int)(gidlist[0]); i++)
       {
       uschar *name = NULL;
       gr = getgrgid(gidlist[i]);
       if (gr != NULL) name = US gr->gr_name;
-      if (name != NULL) printf("%c%s", sep, name);
-        else printf("%c%ld", sep, (long int)(gidlist[i]));
+      if (sep != '\0') printf("%c", sep);
+      if (name != NULL) printf("%s", name);
+        else printf("%ld", (long int)(gidlist[i]));
       sep = ':';
       }
     }
@@ -2365,14 +2393,15 @@ switch(ol->type & opt_mask)
   break;
 
   case opt_time:
-  printf("%s = %s\n", name, readconf_printtime(*((int *)value)));
+  if (!no_labels) printf("%s = ", name);
+  printf("%s\n", readconf_printtime(*((int *)value)));
   break;
 
   case opt_timelist:
     {
     int i;
     int *list = (int *)value;
-    printf("%s = ", name);
+    if (!no_labels) printf("%s = ", name);
     for (i = 0; i < list[1]; i++)
       printf("%s%s", (i == 0)? "" : ":", readconf_printtime(list[i+2]));
     printf("\n");
@@ -2395,7 +2424,8 @@ switch(ol->type & opt_mask)
     s = *((uschar **)value2);
     if (s != NULL)
       {
-      printf("%s = %s\n", name, string_printing(s));
+      if (!no_labels) printf("%s = ", name);
+      printf("%s\n", string_printing(s));
       break;
       }
     /* s == NULL => string not set; fall through */
@@ -2441,12 +2471,13 @@ driver whose options are to be printed.
 Arguments:
   name        option name if type == NULL; else driver name
   type        NULL or driver type name, as described above
+  no_labels   avoid the "foo = " at the start of an item
 
 Returns:      nothing
 */
 
 void
-readconf_print(uschar *name, uschar *type)
+readconf_print(uschar *name, uschar *type, BOOL no_labels)
 {
 BOOL names_only = FALSE;
 optionlist *ol;
@@ -2473,8 +2504,11 @@ if (type == NULL)
       if (t != NULL)
         {
         found = TRUE;
-        printf("%slist %s = %s\n", types[i], name+1,
-          ((namedlist_block *)(t->data.ptr))->string);
+        if (no_labels)
+          printf("%s\n", ((namedlist_block *)(t->data.ptr))->string);
+        else
+          printf("%slist %s = %s\n", types[i], name+1,
+            ((namedlist_block *)(t->data.ptr))->string);
         }
       }
 
@@ -2497,7 +2531,9 @@ if (type == NULL)
          ol < optionlist_config + optionlist_config_size; ol++)
       {
       if ((ol->type & opt_hidden) == 0)
-        print_ol(ol, US ol->name, NULL, optionlist_config, optionlist_config_size);
+        print_ol(ol, US ol->name, NULL,
+            optionlist_config, optionlist_config_size,
+            no_labels);
       }
     return;
     }
@@ -2511,7 +2547,7 @@ if (type == NULL)
          ol < local_scan_options + local_scan_options_count; ol++)
       {
       print_ol(ol, US ol->name, NULL, local_scan_options,
-        local_scan_options_count);
+        local_scan_options_count, no_labels);
       }
     #endif
     return;
@@ -2571,7 +2607,7 @@ if (type == NULL)
   else
     {
     print_ol(find_option(name, optionlist_config, optionlist_config_size),
-      name, NULL, optionlist_config, optionlist_config_size);
+      name, NULL, optionlist_config, optionlist_config_size, no_labels);
     return;
     }
   }
@@ -2644,14 +2680,14 @@ for (; d != NULL; d = d->next)
   for (ol = ol2; ol < ol2 + size; ol++)
     {
     if ((ol->type & opt_hidden) == 0)
-      print_ol(ol, US ol->name, d, ol2, size);
+      print_ol(ol, US ol->name, d, ol2, size, no_labels);
     }
 
   for (ol = d->info->options;
        ol < d->info->options + *(d->info->options_count); ol++)
     {
     if ((ol->type & opt_hidden) == 0)
-      print_ol(ol, US ol->name, d, d->info->options, *(d->info->options_count));
+      print_ol(ol, US ol->name, d, d->info->options, *(d->info->options_count), no_labels);
     }
   if (name != NULL) return;
   }

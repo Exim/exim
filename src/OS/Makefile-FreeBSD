@@ -2,8 +2,6 @@
 # There's no setting of CFLAGS here, to allow the system default
 # for "make" to be the default.
 
-PORTOBJFORMAT!= test -x /usr/bin/objformat && /usr/bin/objformat || echo aout
-
 CHOWN_COMMAND=/usr/sbin/chown
 STRIP_COMMAND=/usr/bin/strip
 CHMOD_COMMAND=/bin/chmod
@@ -28,11 +26,19 @@ X11=$(LOCALBASE)
 X11=/usr/local
 .endif
 
+# nb: FreeBSD is entirely elf; objformat was removed prior to FreeBSD 7
+# http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/objformat/Attic/objformat.c
+# deleted Jan 2007.
+#
+# So if this fails, you're on an ancient unsupported FreeBSD release *and*
+# running GUI software, which seems both unusual and unwise.
+#
+# http://www.freebsd.org/doc/handbook/binary-formats.html suggests that the
+# switch to default to ELF came with FreeBSD 3.  elf(5) claims ELF support
+# introduced in FreeBSD 2.2.6.
+#
 XINCLUDE=-I$(X11)/include
-XLFLAGS=-L$(X11)/lib
-.if ${PORTOBJFORMAT} == "elf"
-XLFLAGS+=-Wl,-rpath,${X11}/lib
-.endif
+XLFLAGS=-L$(X11)/lib -Wl,-rpath,${X11}/lib
 X11_LD_LIB=$(X11)/lib
 
 EXIWHAT_PS_ARG=-ax

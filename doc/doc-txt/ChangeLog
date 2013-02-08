@@ -1,6 +1,88 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.81
+-----------------
+
+PP/01 Add -bI: framework, and -bI:sieve for querying sieve capabilities.
+
+PP/02 Make -n do something, by making it not do something.
+      When combined with -bP, the name of an option is not output.
+
+PP/03 Added tls_dh_min_bits SMTP transport driver option, only honoured
+      by GnuTLS.
+
+PP/04 First step towards DNSSEC, provide $sender_host_dnssec for
+      $sender_host_name and config options to manage this, and basic check
+      routines.
+
+PP/05 DSCP support for outbound connections and control modifier for inbound.
+
+PP/06 Cyrus SASL: set local and remote IP;port properties for driver.
+      (Only plugin which currently uses this is kerberos4, which nobody should
+      be using, but we should make it available and other future plugins might
+      conceivably use it, even though it would break NAT; stuff *should* be
+      using channel bindings instead).
+
+PP/07 Handle "exim -L <tag>" to indicate to use syslog with tag as the process
+      name; added for Sendmail compatibility; requires admin caller.
+      Handle -G as equivalent to "control = suppress_local_fixups" (we used to
+      just ignore it); requires trusted caller.
+      Also parse but ignore: -Ac -Am -X<logfile>
+      Bugzilla 1117.
+
+TL/01 Bugzilla 1258 - Refactor MAIL FROM optional args processing.
+
+TL/02 Add +smtp_confirmation as a default logging option.
+
+TL/03 Bugzilla 198 - Implement remove_header ACL modifier.
+      Patch by Magnus Holmgren from 2007-02-20.
+
+TL/04 Bugzilla 1281 - Spec typo.
+      Bugzilla 1283 - Spec typo.
+      Bugzilla 1290 - Spec grammar fixes.
+
+TL/05 Bugzilla 1285 - Spec omission, fix docbook errors for spec.txt creation.
+
+JH/01 Bugzilla 1201 & 304 - New cutthrough-delivery feature, with TLS support.
+
+JH/02 Support "G" suffix to numbers in ${if comparisons.
+
+PP/08 Handle smtp transport tls_sni option forced-fail for OpenSSL.
+
+NM/01 Bugzilla 1197 - Spec typo
+      Bugzilla 1196 - Spec examples corrections
+
+JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
+
+PP/09 Add gnutls_enable_pkcs11 option.
+
+PP/10 Let Linux makefile inherit CFLAGS/CFLAGS_DYNAMIC.
+      Pulled from Debian 30_dontoverridecflags.dpatch by Andreas Metzler.
+
+JH/04 Add expansion item ${acl {name}{arg}...}, expansion condition
+      "acl {{name}{arg}...}", and optional args on acl condition
+      "acl = name arg..."
+
+JH/05 Permit multiple router/transport headers_add/remove lines.
+
+JH/06 Add dnsdb pseudo-lookup "a+" to do an "aaaa" + "a" combination.
+
+JH/07 Avoid using a waiting database for a single-message-only transport.
+      Performance patch from Paul Fisher.  Bugzilla 1262.
+
+JH/08 Strip leading/trailing newlines from add_header ACL modifier data.
+      Bugzilla 884.
+
+JH/09 Add $headers_added variable, with content from use of ACL modifier
+      add_header (but not yet added to the message).  Bugzilla 199.
+
+
+JH/10 Add 8bitmime log_selector, for 8bitmime status on the received line.
+      Pulled from Bugzilla 817 by Wolfgang Breyha.
+
+
+
 Exim version 4.80
 -----------------
 
@@ -772,7 +854,7 @@ NM/32 Bugzilla 889: Change all instances of "expr" in shell scripts to "expr --"
 NM/33 Bugzilla 898: Transport filter timeout fix.
       Patch by Todd Rinaldo.
 
-NM/34 Bugzilla 901: Fix sign/unsigned and UTF mistmatches.
+NM/34 Bugzilla 901: Fix sign/unsigned and UTF mismatches.
       Patch by Serge Demonchaux.
 
 NM/35 Bugzilla 39: Base64 decode bug fixes.

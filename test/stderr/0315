@@ -49,9 +49,9 @@ After routing:
   Deferred addresses:
 locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
-  *> x@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1]
+  *> x@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
-  *> y@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1]
+  *> y@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -125,9 +125,9 @@ After routing:
   Deferred addresses:
 locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
-  *> x@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2]
+  *> x@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN
-  *> y@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2]
+  *> y@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

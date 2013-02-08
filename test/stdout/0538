@@ -29,7 +29,7 @@
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Welcome
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 Hi
 MAIL FROM:<>
 550 I'm misconfigured
@@ -39,7 +39,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Welcome
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 Hi
 MAIL FROM:<userx@ok.example>
 250 OK

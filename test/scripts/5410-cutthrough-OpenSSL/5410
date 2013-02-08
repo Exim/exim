@@ -1,0 +1,37 @@
+# cutthrough_delivery to target oferring TLS
+exim -DSERVER=server -bd -oX PORT_D
+****
+# this one should succeed
+exim -d-all+acl+transport+expand+lists -bs
+EHLO myhost.test.ex
+MAIL FROM:<eximtest@myhost.test.ex>
+RCPT TO:<userx@domain.com>
+DATA
+
+.
+QUIT
+****
+# via a transport setting hosts_avoid_tls
+# so this one should not use TLS
+exim -d-all+acl+transport+expand+lists -bs
+EHLO myhost.test.ex
+MAIL FROM:<eximtest@myhost.test.ex>
+RCPT TO:<usery@domain.com>
+DATA
+
+.
+QUIT
+****
+# via a transport setting hosts_verify_avoid_tls
+# so this one should not use TLS
+exim -d-all+acl+transport+expand+lists -bs
+EHLO myhost.test.ex
+MAIL FROM:<eximtest@myhost.test.ex>
+RCPT TO:<usery@domain.com>
+DATA
+
+.
+QUIT
+****
+killdaemon
+no_msglog_check

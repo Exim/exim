@@ -211,12 +211,15 @@ int     string_datestamp_length= 0;
 int     string_datestamp_type  = -1;
 
 BOOL    timestamps_utc         = FALSE;
-BOOL    tls_certificate_verified = FALSE;
-uschar *tls_cipher             = NULL;
-uschar *tls_peerdn             = NULL;
-#ifdef SUPPORT_TLS
-uschar *tls_sni                = NULL;
-#endif
+tls_support tls_in = {
+ -1,	/* tls_active */
+ FALSE,	/* tls_certificate_verified */
+ NULL,	/* tls_cipher */
+ FALSE,	/* tls_on_connect */
+ NULL,	/* tls_on_connect_ports */
+ NULL,	/* tls_peerdn */
+ NULL	/* tls_sni */
+};
 
 tree_node *tree_duplicates     = NULL;
 tree_node *tree_nonrecipients  = NULL;

@@ -237,6 +237,11 @@ is as follows:
 
 There are some options for the ./runtest script itself:
 
+  -CONTINUE This will allow the script to move past some failing tests. It will
+            write a simple failure line with the test number in a temporary
+            logfile test/failed-summary.log. Unexpected exit codes will still
+            stall the test execution and require interaction.
+
   -DEBUG    This option is for debugging the test script. It causes some
             tracing information to be output.
 
@@ -433,6 +438,10 @@ OTHER ISSUES
   Domain Name (FQDN), expect that some tests will fail, for example 0036,
   with an extra log line saying the hostname doesn't resolve.  You must use a
   FQDN for the hostname for proper test functionality.
+
+. If you change your hostname to a FQDN, you must delete the test/dnszones
+  subdirectory.  When you next run the runtest script, it will rebuild the
+  content to use the new hostname.
 
 . If your hostname has an uppercase characters in it, expect that some tests
   will fail, for example, 0036, because some log lines will have the hostname
@@ -713,6 +722,12 @@ comments about starting Exim daemons.
 
 This command causes the script to sleep for m milliseconds. Nothing is output
 to the screen.
+
+
+  munge <name>
+
+This command requests custom munging of the test outputs.  The munge names
+used are coded in the runtest script.
 
 
   need_ipv4

@@ -1,0 +1,45 @@
+From mailok@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <mailok@test.ex>)
+	id 10HmaX-0005vi-00
+	for rcptok@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+cond: accept
+X-Data-2: Line two
+X-Data-5: Line five
+X-Not-1: Testing wildcard one
+X-Not-2: Testing wildcard two
+X-Rcpt-1: Line six
+X-Rcpt-3: Line eight
+X-Rcpt-5: Line ten
+X-Mail-2: Line twelve
+X-Mail-3: Line thirteen
+X-Mail-4: Line fourteen is also really long, but it won't get
+	removed by these ACL's.
+X-Mail-5: Line fifteen
+X-Predata-5: Line sixteen
+X-Predata-4: Line seventeen
+X-Predata-2: Line nineteen
+X-NotSMTP-1: Line twenty-one
+X-NotSMTP-2: Line twenty-two
+X-NotSMTP-3: Line twenty-three
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: mailok@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+RCPT: denied notok
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for rcptok@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+
+Test non-SMTP message.  Make sure it doesn't blow up when a header
+it wants to remove is not present.  This one also overrides the
+fixup of adding a Date header because we specified to remove it!
+Allow the admin to shoot himself in the foot if he really and
+truly wants to.
+

@@ -21,7 +21,7 @@ LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmbB-0005vi-00
 LOG: MAIN
-  *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1]
+  *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: MAIN
@@ -33,7 +33,7 @@ LOG: queue_run MAIN
   Start queue run: pid=pppp
 delivering 10HmbC-0005vi-00 (queue run pid ppppp)
 LOG: MAIN
-  *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2]
+  *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: queue_run MAIN
@@ -44,12 +44,12 @@ delivering 10HmbD-0005vi-00 (queue run pid ppppp)
 delivering 10HmbE-0005vi-00 (queue run pid ppppp)
 delivering 10HmbD-0005vi-00 (queue run pid ppppp)
 LOG: MAIN
-  *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1]
+  *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 delivering 10HmbE-0005vi-00 (queue run pid ppppp)
 LOG: MAIN
-  *> yyy@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1]
+  *> yyy@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: queue_run MAIN
@@ -61,7 +61,7 @@ LOG: MAIN
   == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
 delivering 10HmbF-0005vi-00
 LOG: MAIN
-  *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2]
+  *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
 LOG: MAIN

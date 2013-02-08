@@ -207,6 +207,24 @@ static uschar *protocols[] = {
 #define pauthed  2  /* added to pextend */
 #define pnlocal  6  /* offset to remove "local" */
 
+/* Sanity check and validate optional args to MAIL FROM: envelope */
+enum {
+  ENV_MAIL_OPT_SIZE, ENV_MAIL_OPT_BODY, ENV_MAIL_OPT_AUTH,
+  ENV_MAIL_OPT_PRDR, ENV_MAIL_OPT_NULL
+  };
+typedef struct {
+  uschar *   name;  /* option requested during MAIL cmd */
+  int       value;  /* enum type */
+  BOOL need_value;  /* TRUE requires value (name=value pair format)
+                       FALSE is a singleton */
+  } env_mail_type_t;
+static env_mail_type_t env_mail_type_list[] = {
+    { US"SIZE",   ENV_MAIL_OPT_SIZE,   TRUE  },
+    { US"BODY",   ENV_MAIL_OPT_BODY,   TRUE  },
+    { US"AUTH",   ENV_MAIL_OPT_AUTH,   TRUE  },
+    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }  /* Placeholder for ending */
+  };
+
 /* When reading SMTP from a remote host, we have to use our own versions of the
 C input-reading functions, in order to be able to flush the SMTP output only
 when about to read more data from the socket. This is the only way to get
@@ -437,9 +455,10 @@ if (rcpt_in_progress)
 /* Now write the string */
 
 #ifdef SUPPORT_TLS
-if (tls_active >= 0)
+if (tls_in.active >= 0)
   {
-  if (tls_write(big_buffer, Ustrlen(big_buffer)) < 0) smtp_write_error = -1;
+  if (tls_write(TRUE, big_buffer, Ustrlen(big_buffer)) < 0)
+    smtp_write_error = -1;
   }
 else
 #endif
@@ -465,7 +484,7 @@ Returns:    0 for no error; -1 after an error
 int
 smtp_fflush(void)
 {
-if (tls_active < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
+if (tls_in.active < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
 return smtp_write_error;
 }
 
@@ -488,7 +507,7 @@ command_timeout_handler(int sig)
 sig = sig;    /* Keep picky compilers happy */
 log_write(L_lost_incoming_connection,
           LOG_MAIN, "SMTP command timeout on%s connection from %s",
-          (tls_active >= 0)? " TLS" : "",
+          (tls_in.active >= 0)? " TLS" : "",
           host_and_ident(FALSE));
 if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SMTP command timeout");  /* Does not return */
@@ -689,7 +708,7 @@ fd_set fds;
 struct timeval tzero;
 
 if (!smtp_enforce_sync || sender_host_address == NULL ||
-    sender_host_notsocket || tls_active >= 0)
+    sender_host_notsocket || tls_in.active >= 0)
   return TRUE;
 
 fd = fileno(smtp_in);
@@ -832,18 +851,18 @@ if (sender_host_authenticated != NULL)
   }
 
 #ifdef SUPPORT_TLS
-if ((log_extra_selector & LX_tls_cipher) != 0 && tls_cipher != NULL)
-  s = string_append(s, &size, &ptr, 2, US" X=", tls_cipher);
+if ((log_extra_selector & LX_tls_cipher) != 0 && tls_in.cipher != NULL)
+  s = string_append(s, &size, &ptr, 2, US" X=", tls_in.cipher);
 if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-     tls_cipher != NULL)
+     tls_in.cipher != NULL)
   s = string_append(s, &size, &ptr, 2, US" CV=",
-    tls_certificate_verified? "yes":"no");
-if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
+    tls_in.certificate_verified? "yes":"no");
+if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_in.peerdn != NULL)
   s = string_append(s, &size, &ptr, 3, US" DN=\"",
-    string_printing(tls_peerdn), US"\"");
-if ((log_extra_selector & LX_tls_sni) != 0 && tls_sni != NULL)
+    string_printing(tls_in.peerdn), US"\"");
+if ((log_extra_selector & LX_tls_sni) != 0 && tls_in.sni != NULL)
   s = string_append(s, &size, &ptr, 3, US" SNI=\"",
-    string_printing(tls_sni), US"\"");
+    string_printing(tls_in.sni), US"\"");
 #endif
 
 sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?
@@ -1018,9 +1037,11 @@ store_reset(reset_point);
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
+cancel_cutthrough_connection("smtp reset");
 message_linecount = 0;
 message_size = -1;
 acl_added_headers = NULL;
+acl_removed_headers = NULL;
 queue_only_policy = FALSE;
 rcpt_smtp_response = NULL;
 rcpt_smtp_response_same = TRUE;
@@ -1032,7 +1053,7 @@ fake_response = OK;                                  /* Can be set by ACL */
 no_mbox_unspool = FALSE;                             /* Can be set by ACL */
 #endif
 submission_mode = FALSE;                             /* Can be set by ACL */
-suppress_local_fixups = FALSE;                       /* Can be set by ACL */
+suppress_local_fixups = suppress_local_fixups_default; /* Can be set by ACL */
 active_local_from_check = local_from_check;          /* Can be set by ACL */
 active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
 sender_address = NULL;
@@ -1385,7 +1406,7 @@ if (!host_checking && !sender_host_notsocket) sender_host_authenticated = NULL;
 authenticated_by = NULL;
 
 #ifdef SUPPORT_TLS
-tls_cipher = tls_peerdn = NULL;
+tls_in.cipher = tls_in.peerdn = NULL;
 tls_advertised = FALSE;
 #endif
 
@@ -1673,8 +1694,7 @@ if (!sender_host_unknown)
   smtps port for use with older style SSL MTAs. */
 
   #ifdef SUPPORT_TLS
-  if (tls_on_connect &&
-      tls_server_start(tls_require_ciphers) != OK)
+  if (tls_in.on_connect && tls_server_start(tls_require_ciphers) != OK)
     return FALSE;
   #endif
 
@@ -2789,7 +2809,7 @@ while (done <= 0)
         sender_host_authenticated = au->name;
         authentication_failed = FALSE;
         received_protocol =
-          protocols[pextend + pauthed + ((tls_active >= 0)? pcrpted:0)] +
+          protocols[pextend + pauthed + ((tls_in.active >= 0)? pcrpted:0)] +
             ((sender_host_address != NULL)? pnlocal : 0);
         s = ss = US"235 Authentication succeeded";
         authenticated_by = au;
@@ -2923,7 +2943,7 @@ while (done <= 0)
 
       host_build_sender_fullhost();  /* Rebuild */
       set_process_info("handling%s incoming connection from %s",
-        (tls_active >= 0)? " TLS" : "", host_and_ident(FALSE));
+        (tls_in.active >= 0)? " TLS" : "", host_and_ident(FALSE));
 
       /* Verify if configured. This doesn't give much security, but it does
       make some people happy to be able to do it. If helo_required is set,
@@ -3148,7 +3168,7 @@ while (done <= 0)
       secure connection. */
 
       #ifdef SUPPORT_TLS
-      if (tls_active < 0 &&
+      if (tls_in.active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         {
         s = string_cat(s, &size, &ptr, smtp_code, 3);
@@ -3169,7 +3189,7 @@ while (done <= 0)
     s[ptr] = 0;
 
     #ifdef SUPPORT_TLS
-    if (tls_active >= 0) (void)tls_write(s, ptr); else
+    if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr); else
     #endif
 
     (void)fwrite(s, 1, ptr, smtp_out);
@@ -3187,9 +3207,9 @@ while (done <= 0)
     received_protocol = (esmtp?
       protocols[pextend +
         ((sender_host_authenticated != NULL)? pauthed : 0) +
-        ((tls_active >= 0)? pcrpted : 0)]
+        ((tls_in.active >= 0)? pcrpted : 0)]
       :
-      protocols[pnormal + ((tls_active >= 0)? pcrpted : 0)])
+      protocols[pnormal + ((tls_in.active >= 0)? pcrpted : 0)])
       +
       ((sender_host_address != NULL)? pnlocal : 0);
 
@@ -3208,6 +3228,7 @@ while (done <= 0)
     HAD(SCH_MAIL);
     smtp_mailcmd_count++;              /* Count for limit and ratelimit */
     was_rej_mail = TRUE;               /* Reset if accepted */
+    env_mail_type_t * mail_args;       /* Sanity check & validate args */
 
     if (helo_required && !helo_seen)
       {
@@ -3256,113 +3277,147 @@ while (done <= 0)
       {
       uschar *name, *value, *end;
       unsigned long int size;
+      BOOL arg_error = FALSE;
 
       if (!extract_option(&name, &value)) break;
 
-      /* Handle SIZE= by reading the value. We don't do the check till later,
-      in order to be able to log the sender address on failure. */
-
-      if (strcmpic(name, US"SIZE") == 0 &&
-          ((size = Ustrtoul(value, &end, 10)), *end == 0))
+      for (mail_args = env_mail_type_list;
+           (char *)mail_args < (char *)env_mail_type_list + sizeof(env_mail_type_list);
+           mail_args++
+          )
         {
-        if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
-          size = INT_MAX;
-        message_size = (int)size;
+        if (strcmpic(name, mail_args->name) == 0)
+          break;
         }
+      if (mail_args->need_value && strcmpic(value, US"") == 0)
+        break;
+      /* This doesn't seem right to use
+        if ((char *)mail_args >= (char *)env_mail_type_list + sizeof(env_mail_type_list))
+        goto BAD_MAIL_ARGS;
+      */
 
-      /* If this session was initiated with EHLO and accept_8bitmime is set,
-      Exim will have indicated that it supports the BODY=8BITMIME option. In
-      fact, it does not support this according to the RFCs, in that it does not
-      take any special action for forwarding messages containing 8-bit
-      characters. That is why accept_8bitmime is not the default setting, but
-      some sites want the action that is provided. We recognize both "8BITMIME"
-      and "7BIT" as body types, but take no action. */
-
-      else if (accept_8bitmime && strcmpic(name, US"BODY") == 0 &&
-          (strcmpic(value, US"8BITMIME") == 0 ||
-           strcmpic(value, US"7BIT") == 0)) {}
-
-      /* Handle the AUTH extension. If the value given is not "<>" and either
-      the ACL says "yes" or there is no ACL but the sending host is
-      authenticated, we set it up as the authenticated sender. However, if the
-      authenticator set a condition to be tested, we ignore AUTH on MAIL unless
-      the condition is met. The value of AUTH is an xtext, which means that +,
-      = and cntrl chars are coded in hex; however "<>" is unaffected by this
-      coding. */
-
-      else if (strcmpic(name, US"AUTH") == 0)
+      switch(mail_args->value)
         {
-        if (Ustrcmp(value, "<>") != 0)
-          {
-          int rc;
-          uschar *ignore_msg;
-
-          if (auth_xtextdecode(value, &authenticated_sender) < 0)
+        /* Handle SIZE= by reading the value. We don't do the check till later,
+        in order to be able to log the sender address on failure. */
+        case ENV_MAIL_OPT_SIZE:
+          /* if (strcmpic(name, US"SIZE") == 0 && */
+          if (((size = Ustrtoul(value, &end, 10)), *end == 0))
             {
-            /* Put back terminator overrides for error message */
-            name[-1] = ' ';
-            value[-1] = '=';
-            done = synprot_error(L_smtp_syntax_error, 501, NULL,
-              US"invalid data for AUTH");
-            goto COMMAND_LOOP;
-            }
-
-          if (acl_smtp_mailauth == NULL)
-            {
-            ignore_msg = US"client not authenticated";
-            rc = (sender_host_authenticated != NULL)? OK : FAIL;
+            if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
+              size = INT_MAX;
+            message_size = (int)size;
             }
           else
-            {
-            ignore_msg = US"rejected by ACL";
-            rc = acl_check(ACL_WHERE_MAILAUTH, NULL, acl_smtp_mailauth,
-              &user_msg, &log_msg);
+            arg_error = TRUE;
+          break;
+
+        /* If this session was initiated with EHLO and accept_8bitmime is set,
+        Exim will have indicated that it supports the BODY=8BITMIME option. In
+        fact, it does not support this according to the RFCs, in that it does not
+        take any special action for forwarding messages containing 8-bit
+        characters. That is why accept_8bitmime is not the default setting, but
+        some sites want the action that is provided. We recognize both "8BITMIME"
+        and "7BIT" as body types, but take no action. */
+        case ENV_MAIL_OPT_BODY:
+          if (accept_8bitmime) {
+            if (strcmpic(value, US"8BITMIME") == 0) {
+              body_8bitmime = 8;
+            } else if (strcmpic(value, US"7BIT") == 0) {
+              body_8bitmime = 7;
+            } else {
+              body_8bitmime = 0;
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"invalid data for BODY");
+              goto COMMAND_LOOP;
             }
-
-          switch (rc)
-            {
-            case OK:
-            if (authenticated_by == NULL ||
-                authenticated_by->mail_auth_condition == NULL ||
-                expand_check_condition(authenticated_by->mail_auth_condition,
-                    authenticated_by->name, US"authenticator"))
-              break;     /* Accept the AUTH */
-
-            ignore_msg = US"server_mail_auth_condition failed";
-            if (authenticated_id != NULL)
-              ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
-                ignore_msg, authenticated_id);
-
-            /* Fall through */
-
-            case FAIL:
-            authenticated_sender = NULL;
-            log_write(0, LOG_MAIN, "ignoring AUTH=%s from %s (%s)",
-              value, host_and_ident(TRUE), ignore_msg);
-            break;
-
-            /* Should only get DEFER or ERROR here. Put back terminator
-            overrides for error message */
-
-            default:
-            name[-1] = ' ';
-            value[-1] = '=';
-            (void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
-              log_msg);
-            goto COMMAND_LOOP;
-            }
+            DEBUG(D_receive) debug_printf("8BITMIME: %d\n", body_8bitmime);
+	    break;
           }
-        }
+          arg_error = TRUE;
+          break;
 
-      /* Unknown option. Stick back the terminator characters and break
-      the loop. An error for a malformed address will occur. */
+        /* Handle the AUTH extension. If the value given is not "<>" and either
+        the ACL says "yes" or there is no ACL but the sending host is
+        authenticated, we set it up as the authenticated sender. However, if the
+        authenticator set a condition to be tested, we ignore AUTH on MAIL unless
+        the condition is met. The value of AUTH is an xtext, which means that +,
+        = and cntrl chars are coded in hex; however "<>" is unaffected by this
+        coding. */
+        case ENV_MAIL_OPT_AUTH:
+          if (Ustrcmp(value, "<>") != 0)
+            {
+            int rc;
+            uschar *ignore_msg;
 
-      else
-        {
-        name[-1] = ' ';
-        value[-1] = '=';
-        break;
+            if (auth_xtextdecode(value, &authenticated_sender) < 0)
+              {
+              /* Put back terminator overrides for error message */
+              name[-1] = ' ';
+              value[-1] = '=';
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"invalid data for AUTH");
+              goto COMMAND_LOOP;
+              }
+            if (acl_smtp_mailauth == NULL)
+              {
+              ignore_msg = US"client not authenticated";
+              rc = (sender_host_authenticated != NULL)? OK : FAIL;
+              }
+            else
+              {
+              ignore_msg = US"rejected by ACL";
+              rc = acl_check(ACL_WHERE_MAILAUTH, NULL, acl_smtp_mailauth,
+                &user_msg, &log_msg);
+              }
+  
+            switch (rc)
+              {
+              case OK:
+              if (authenticated_by == NULL ||
+                  authenticated_by->mail_auth_condition == NULL ||
+                  expand_check_condition(authenticated_by->mail_auth_condition,
+                      authenticated_by->name, US"authenticator"))
+                break;     /* Accept the AUTH */
+  
+              ignore_msg = US"server_mail_auth_condition failed";
+              if (authenticated_id != NULL)
+                ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
+                  ignore_msg, authenticated_id);
+  
+              /* Fall through */
+  
+              case FAIL:
+              authenticated_sender = NULL;
+              log_write(0, LOG_MAIN, "ignoring AUTH=%s from %s (%s)",
+                value, host_and_ident(TRUE), ignore_msg);
+              break;
+  
+              /* Should only get DEFER or ERROR here. Put back terminator
+              overrides for error message */
+  
+              default:
+              name[-1] = ' ';
+              value[-1] = '=';
+              (void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
+                log_msg);
+              goto COMMAND_LOOP;
+              }
+            }
+            break;
+ 
+        /* Unknown option. Stick back the terminator characters and break
+        the loop. An error for a malformed address will occur. */
+        default:
+
+          /* BAD_MAIL_ARGS: */
+          name[-1] = ' ';
+          value[-1] = '=';
+          break;
         }
+      /* Break out of for loop if switch() had bad argument or
+         when start of the email address is reached */
+      if (arg_error) break;
       }
 
     /* If we have passed the threshold for rate limiting, apply the current
@@ -3729,12 +3784,14 @@ while (done <= 0)
       }
 
     /* If there is an ACL, re-check the synchronization afterwards, since the
-    ACL may have delayed. */
+    ACL may have delayed.  To handle cutthrough delivery enforce a dummy call
+    to get the DATA command sent. */
 
-    if (acl_smtp_predata == NULL) rc = OK; else
+    if (acl_smtp_predata == NULL && cutthrough_fd < 0) rc = OK; else
       {
+      uschar * acl= acl_smtp_predata ? acl_smtp_predata : US"accept";
       enable_dollar_recipients = TRUE;
-      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl_smtp_predata, &user_msg,
+      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl, &user_msg,
         &log_msg);
       enable_dollar_recipients = FALSE;
       if (rc == OK && !check_sync()) goto SYNC_FAILURE;
@@ -3868,7 +3925,7 @@ while (done <= 0)
       {
       DEBUG(D_any)
         debug_printf("Non-empty input buffer after STARTTLS; naive attack?");
-      if (tls_active < 0)
+      if (tls_in.active < 0)
         smtp_inend = smtp_inptr = smtp_inbuffer;
       /* and if TLS is already active, tls_server_start() should fail */
       }
@@ -3929,7 +3986,7 @@ while (done <= 0)
       }
 
     /* Hard failure. Reject everything except QUIT or closed connection. One
-    cause for failure is a nested STARTTLS, in which case tls_active remains
+    cause for failure is a nested STARTTLS, in which case tls_in.active remains
     set, but we must still reject all incoming commands. */
 
     DEBUG(D_tls) debug_printf("TLS failed to start\n");
@@ -3945,7 +4002,7 @@ while (done <= 0)
         break;
 
         /* It is perhaps arguable as to which exit ACL should be called here,
-        but as it is probably a situtation that almost never arises, it
+        but as it is probably a situation that almost never arises, it
         probably doesn't matter. We choose to call the real QUIT ACL, which in
         some sense is perhaps "right". */
 
@@ -3973,7 +4030,7 @@ while (done <= 0)
         break;
         }
       }
-    tls_close(TRUE);
+    tls_close(TRUE, TRUE);
     break;
     #endif
 
@@ -3998,7 +4055,7 @@ while (done <= 0)
       smtp_respond(US"221", 3, TRUE, user_msg);
 
     #ifdef SUPPORT_TLS
-    tls_close(TRUE);
+    tls_close(TRUE, TRUE);
     #endif
 
     done = 2;
@@ -4036,7 +4093,7 @@ while (done <= 0)
       buffer[0] = 0;
       Ustrcat(buffer, " AUTH");
       #ifdef SUPPORT_TLS
-      if (tls_active < 0 &&
+      if (tls_in.active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         Ustrcat(buffer, " STARTTLS");
       #endif

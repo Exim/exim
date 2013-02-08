@@ -1,0 +1,49 @@
+# remove_header modifier in ACLs
+exim -bs -odi
+mail from:<mailok@test.ex>
+rcpt to:<rcptok@test.ex>
+rcpt to:<notok@test.ex>
+data
+cond: accept
+X-Data-1: Line one
+X-Data-2: Line two
+X-Data-3: Line three
+X-Data-4: Line four
+X-Data-5: Line five
+X-Not-1: Testing wildcard one
+X-Not-2: Testing wildcard two
+X-Rcpt-1: Line six
+X-Rcpt-2: Line seven
+X-Rcpt-3: Line eight
+X-Rcpt-4: Line nine is really long, so long in fact that it wraps
+	around to the next line.
+X-Rcpt-5: Line ten
+X-Mail-1: Line eleven
+X-Mail-2: Line twelve
+X-Mail-3: Line thirteen
+X-Mail-4: Line fourteen is also really long, but it won't get
+	removed by these ACL's.
+X-Mail-5: Line fifteen
+X-Predata-5: Line sixteen
+X-Predata-4: Line seventeen
+X-Predata-3: Line eighteen
+X-Predata-2: Line nineteen
+X-Predata-1: Line twenty
+X-NotSMTP-1: Line twenty-one
+X-NotSMTP-2: Line twenty-two
+X-NotSMTP-3: Line twenty-three
+
+Test message
+.
+quit
+****
+exim -odi rcptok@test.ex
+Test non-SMTP message.  Make sure it doesn't blow up when a header
+it wants to remove is not present.  This one also overrides the
+fixup of adding a Date header because we specified to remove it!
+Allow the admin to shoot himself in the foot if he really and
+truly wants to.
+****
+exim -bs -odi -DCONNECTCOND="remove_header=CONNECT: won't do this"
+****
+no_msglog_check

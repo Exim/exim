@@ -1,7 +1,7 @@
 THE EXIM MAIL TRANSFER AGENT VERSION 4
 --------------------------------------
 
-Copyright (c) 1995 - 2005 University of Cambridge.
+Copyright (c) 1995 - 2012 University of Cambridge.
 See the file NOTICE for conditions of use and distribution.
 
 There is a book about Exim by Philip Hazel called "The Exim SMTP Mail Server",
@@ -47,7 +47,7 @@ Please see the documentation files for full instructions on how to build,
 install, and run Exim. For straightforward installations on operating systems
 to which Exim has already been ported, the building process is as follows:
 
-. Ensure that the top-level Exim directory (e.g. exim-4.40) is the current
+. Ensure that the top-level Exim directory (e.g. exim-4.80) is the current
   directory (containing the files and directories listed above).
 
 . Edit the file called src/EDITME and put the result in a new file called

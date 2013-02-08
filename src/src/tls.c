@@ -86,11 +86,11 @@ return TRUE;
 #ifdef USE_GNUTLS
 #include "tls-gnu.c"
 
-#define ssl_xfer_buffer (current_global_tls_state->xfer_buffer)
-#define ssl_xfer_buffer_lwm (current_global_tls_state->xfer_buffer_lwm)
-#define ssl_xfer_buffer_hwm (current_global_tls_state->xfer_buffer_hwm)
-#define ssl_xfer_eof (current_global_tls_state->xfer_eof)
-#define ssl_xfer_error (current_global_tls_state->xfer_error)
+#define ssl_xfer_buffer (state_server.xfer_buffer)
+#define ssl_xfer_buffer_lwm (state_server.xfer_buffer_lwm)
+#define ssl_xfer_buffer_hwm (state_server.xfer_buffer_hwm)
+#define ssl_xfer_eof (state_server.xfer_eof)
+#define ssl_xfer_error (state_server.xfer_error)
 
 #else
 #include "tls-openssl.c"
@@ -104,6 +104,7 @@ return TRUE;
 
 /* Puts a character back in the input buffer. Only ever
 called once.
+Only used by the server-side TLS.
 
 Arguments:
   ch           the character
@@ -125,6 +126,7 @@ return ch;
 *************************************************/
 
 /* Tests for a previous EOF
+Only used by the server-side TLS.
 
 Arguments:     none
 Returns:       non-zero if the eof flag is set
@@ -144,6 +146,7 @@ return ssl_xfer_eof;
 
 /* Tests for a previous read error, and returns with errno
 restored to what it was when the error was detected.
+Only used by the server-side TLS.
 
 >>>>> Hmm. Errno not handled yet. Where do we get it from?  >>>>>
 
@@ -163,6 +166,7 @@ return ssl_xfer_error;
 *************************************************/
 
 /* Tests for unused chars in the TLS input buffer.
+Only used by the server-side TLS.
 
 Arguments:     none
 Returns:       TRUE/FALSE

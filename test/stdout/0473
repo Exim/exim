@@ -123,7 +123,7 @@
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<s1@test.ex>
 250 OK
@@ -135,7 +135,7 @@ Expected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<s2@test.ex>
 250 OK
@@ -147,7 +147,7 @@ Expected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<s3@other.ex>
 550 NOTOK
@@ -157,7 +157,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<>
 250 OK
@@ -169,7 +169,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<postmaster@the.local.host.name>
 250 OK
@@ -181,7 +181,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<x9@test.ex>
 250 OK
@@ -193,7 +193,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<>
 250 OK
@@ -205,7 +205,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<postmaster@the.local.host.name>
 250 OK
@@ -217,7 +217,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO the.local.host.name
+EHLO the.local.host.name
 250 OK
 MAIL FROM:<>
 250 OK

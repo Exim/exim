@@ -53,6 +53,16 @@ store_free(block);
 
 
 /*************************************************
+*         Enums for cmdline interface            *
+*************************************************/
+
+enum commandline_info { CMDINFO_NONE=0,
+  CMDINFO_HELP, CMDINFO_SIEVE, CMDINFO_DSCP };
+
+
+
+
+/*************************************************
 *  Compile regular expression and panic on fail  *
 *************************************************/
 
@@ -516,7 +526,7 @@ close_unwanted(void)
 if (smtp_input)
   {
   #ifdef SUPPORT_TLS
-  tls_close(FALSE);      /* Shut down the TLS library */
+  tls_close(FALSE, FALSE);      /* Shut down the TLS library */
   #endif
   (void)close(fileno(smtp_in));
   (void)close(fileno(smtp_out));
@@ -1017,6 +1027,39 @@ DEBUG(D_any) do {
 }
 
 
+/*************************************************
+*     Show auxiliary information about Exim      *
+*************************************************/
+
+static void
+show_exim_information(enum commandline_info request, FILE *stream)
+{
+const uschar **pp;
+
+switch(request)
+  {
+  case CMDINFO_NONE:
+    fprintf(stream, "Oops, something went wrong.\n");
+    return;
+  case CMDINFO_HELP:
+    fprintf(stream,
+"The -bI: flag takes a string indicating which information to provide.\n"
+"If the string is not recognised, you'll get this help (on stderr).\n"
+"\n"
+"  exim -bI:help    this information\n"
+"  exim -bI:dscp    dscp value keywords known\n"
+"  exim -bI:sieve   list of supported sieve extensions, one per line.\n"
+);
+    return;
+  case CMDINFO_SIEVE:
+    for (pp = exim_sieve_extension_list; *pp; ++pp)
+      fprintf(stream, "%s\n", *pp);
+    return;
+  case CMDINFO_DSCP:
+    dscp_list_to_stream(stream);
+    return;
+  }
+}
 
 
 /*************************************************
@@ -1394,6 +1437,8 @@ BOOL checking = FALSE;
 BOOL count_queue = FALSE;
 BOOL expansion_test = FALSE;
 BOOL extract_recipients = FALSE;
+BOOL flag_G = FALSE;
+BOOL flag_n = FALSE;
 BOOL forced_delivery = FALSE;
 BOOL f_end_dot = FALSE;
 BOOL deliver_give_up = FALSE;
@@ -1414,6 +1459,7 @@ BOOL verify_as_sender = FALSE;
 BOOL version_printed = FALSE;
 uschar *alias_arg = NULL;
 uschar *called_as = US"";
+uschar *cmdline_syslog_name = NULL;
 uschar *start_queue_run_id = NULL;
 uschar *stop_queue_run_id = NULL;
 uschar *expansion_test_message = NULL;
@@ -1424,6 +1470,7 @@ uschar *ftest_suffix = NULL;
 uschar *malware_test_file = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
+size_t sz;
 void *reset_point;
 
 struct passwd *pw;
@@ -1431,6 +1478,10 @@ struct stat statbuf;
 pid_t passed_qr_pid = (pid_t)0;
 int passed_qr_pipe = -1;
 gid_t group_list[NGROUPS_MAX];
+
+/* For the -bI: flag */
+enum commandline_info info_flag = CMDINFO_NONE;
+BOOL info_stdout = FALSE;
 
 /* Possible options for -R and -S */
 
@@ -1830,6 +1881,26 @@ for (i = 1; i < argc; i++)
 
   switch(switchchar)
     {
+
+    /* sendmail uses -Ac and -Am to control which .cf file is used;
+    we ignore them. */
+    case 'A':
+    if (*argrest == '\0') { badarg = TRUE; break; }
+    else
+      {
+      BOOL ignore = FALSE;
+      switch (*argrest)
+        {
+        case 'c':
+        case 'm':
+          if (*(argrest + 1) == '\0')
+            ignore = TRUE;
+          break;
+        }
+      if (!ignore) { badarg = TRUE; break; }
+      }
+    break;
+
     /* -Btype is a sendmail option for 7bit/8bit setting. Exim is 8-bit clean
     so has no need of it. */
 
@@ -1930,6 +2001,32 @@ for (i = 1; i < argc; i++)
     sendmail this way, some support must be provided. */
 
     else if (Ustrcmp(argrest, "i") == 0) bi_option = TRUE;
+
+    /* -bI: provide information, of the type to follow after a colon.
+    This is an Exim flag. */
+
+    else if (argrest[0] == 'I' && Ustrlen(argrest) >= 2 && argrest[1] == ':')
+      {
+      uschar *p = &argrest[2];
+      info_flag = CMDINFO_HELP;
+      if (Ustrlen(p))
+        {
+        if (strcmpic(p, CUS"sieve") == 0)
+          {
+          info_flag = CMDINFO_SIEVE;
+          info_stdout = TRUE;
+          }
+        else if (strcmpic(p, CUS"dscp") == 0)
+          {
+          info_flag = CMDINFO_DSCP;
+          info_stdout = TRUE;
+          }
+        else if (strcmpic(p, CUS"help") == 0)
+          {
+          info_stdout = TRUE;
+          }
+        }
+      }
 
     /* -bm: Accept and deliver message - the default option. Reinstate
     receiving_message, which got turned off for all -b options. */
@@ -2413,9 +2510,13 @@ for (i = 1; i < argc; i++)
       }
     break;
 
-    /* This is some Sendmail thing which can be ignored */
+    /* -G: sendmail invocation to specify that it's a gateway submission and
+    sendmail may complain about problems instead of fixing them.
+    We make it equivalent to an ACL "control = suppress_local_fixups" and do
+    not at this time complain about problems. */
 
     case 'G':
+    flag_G = TRUE;
     break;
 
     /* -h: Set the hop count for an incoming message. Exim does not currently
@@ -2439,6 +2540,29 @@ for (i = 1; i < argc; i++)
     if (*argrest == 0) dot_ends = FALSE; else badarg = TRUE;
     break;
 
+
+    /* -L: set the identifier used for syslog; equivalent to setting
+    syslog_processname in the config file, but needs to be an admin option. */
+
+    case 'L':
+    if (*argrest == '\0')
+      {
+      if(++i < argc) argrest = argv[i]; else
+        { badarg = TRUE; break; }
+      }
+    sz = Ustrlen(argrest);
+    if (sz > 32)
+      {
+      fprintf(stderr, "exim: the -L syslog name is too long: \"%s\"\n", argrest);
+      return EXIT_FAILURE;
+      }
+    if (sz < 1)
+      {
+      fprintf(stderr, "exim: the -L syslog name is too short\n");
+      return EXIT_FAILURE;
+      }
+    cmdline_syslog_name = argrest;
+    break;
 
     case 'M':
     receiving_message = FALSE;
@@ -2702,10 +2826,12 @@ for (i = 1; i < argc; i++)
     break;
 
 
-    /* -n: This means "don't alias" in sendmail, apparently. Just ignore
-    it. */
+    /* -n: This means "don't alias" in sendmail, apparently.
+    For normal invocations, it has no effect.
+    It may affect some other options. */
 
     case 'n':
+    flag_n = TRUE;
     break;
 
     /* -O: Just ignore it. In sendmail, apparently -O option=value means set
@@ -3153,7 +3279,7 @@ for (i = 1; i < argc; i++)
     /* -tls-on-connect: don't wait for STARTTLS (for old clients) */
 
     #ifdef SUPPORT_TLS
-    else if (Ustrcmp(argrest, "ls-on-connect") == 0) tls_on_connect = TRUE;
+    else if (Ustrcmp(argrest, "ls-on-connect") == 0) tls_in.on_connect = TRUE;
     #endif
 
     else badarg = TRUE;
@@ -3192,6 +3318,20 @@ for (i = 1; i < argc; i++)
 
     case 'x':
     if (*argrest != 0) badarg = TRUE;
+    break;
+
+    /* -X: in sendmail: takes one parameter, logfile, and sends debugging
+    logs to that file.  We swallow the parameter and otherwise ignore it. */
+
+    case 'X':
+    if (*argrest == '\0')
+      {
+      if (++i >= argc)
+        {
+        fprintf(stderr, "exim: string expected after -X\n");
+        exit(EXIT_FAILURE);
+        }
+      }
     break;
 
     /* All other initial characters are errors */
@@ -3498,6 +3638,66 @@ configuration data for delivery can be read if needed. */
 
 readconf_main();
 
+/* If an action on specific messages is requested, or if a daemon or queue
+runner is being started, we need to know if Exim was called by an admin user.
+This is the case if the real user is root or exim, or if the real group is
+exim, or if one of the supplementary groups is exim or a group listed in
+admin_groups. We don't fail all message actions immediately if not admin_user,
+since some actions can be performed by non-admin users. Instead, set admin_user
+for later interrogation. */
+
+if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
+  admin_user = TRUE;
+else
+  {
+  int i, j;
+  for (i = 0; i < group_count; i++)
+    {
+    if (group_list[i] == exim_gid) admin_user = TRUE;
+    else if (admin_groups != NULL)
+      {
+      for (j = 1; j <= (int)(admin_groups[0]); j++)
+        if (admin_groups[j] == group_list[i])
+          { admin_user = TRUE; break; }
+      }
+    if (admin_user) break;
+    }
+  }
+
+/* Another group of privileged users are the trusted users. These are root,
+exim, and any caller matching trusted_users or trusted_groups. Trusted callers
+are permitted to specify sender_addresses with -f on the command line, and
+other message parameters as well. */
+
+if (real_uid == root_uid || real_uid == exim_uid)
+  trusted_caller = TRUE;
+else
+  {
+  int i, j;
+
+  if (trusted_users != NULL)
+    {
+    for (i = 1; i <= (int)(trusted_users[0]); i++)
+      if (trusted_users[i] == real_uid)
+        { trusted_caller = TRUE; break; }
+    }
+
+  if (!trusted_caller && trusted_groups != NULL)
+    {
+    for (i = 1; i <= (int)(trusted_groups[0]); i++)
+      {
+      if (trusted_groups[i] == real_gid)
+        trusted_caller = TRUE;
+      else for (j = 0; j < group_count; j++)
+        {
+        if (trusted_groups[i] == group_list[j])
+          { trusted_caller = TRUE; break; }
+        }
+      if (trusted_caller) break;
+      }
+    }
+  }
+
 /* Handle the decoding of logging options. */
 
 decode_bits(&log_write_selector, &log_extra_selector, 0, 0,
@@ -3525,6 +3725,24 @@ if (sender_address != NULL)
     {
     fprintf(stderr, "exim: bad -f address \"%s.\": domain is malformed "
       "(trailing dot not allowed)\n", sender_address);
+    return EXIT_FAILURE;
+    }
+  }
+
+/* See if an admin user overrode our logging. */
+
+if (cmdline_syslog_name != NULL)
+  {
+  if (admin_user)
+    {
+    syslog_processname = cmdline_syslog_name;
+    log_file_path = string_copy(CUS"syslog");
+    }
+  else
+    {
+    /* not a panic, non-privileged users should not be able to spam paniclog */
+    fprintf(stderr,
+        "exim: you lack sufficient privilege to specify syslog process name\n");
     return EXIT_FAILURE;
     }
   }
@@ -3772,65 +3990,9 @@ if (bi_option)
     }
   }
 
-/* If an action on specific messages is requested, or if a daemon or queue
-runner is being started, we need to know if Exim was called by an admin user.
-This is the case if the real user is root or exim, or if the real group is
-exim, or if one of the supplementary groups is exim or a group listed in
-admin_groups. We don't fail all message actions immediately if not admin_user,
-since some actions can be performed by non-admin users. Instead, set admin_user
-for later interrogation. */
-
-if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
-  admin_user = TRUE;
-else
-  {
-  int i, j;
-  for (i = 0; i < group_count; i++)
-    {
-    if (group_list[i] == exim_gid) admin_user = TRUE;
-    else if (admin_groups != NULL)
-      {
-      for (j = 1; j <= (int)(admin_groups[0]); j++)
-        if (admin_groups[j] == group_list[i])
-          { admin_user = TRUE; break; }
-      }
-    if (admin_user) break;
-    }
-  }
-
-/* Another group of privileged users are the trusted users. These are root,
-exim, and any caller matching trusted_users or trusted_groups. Trusted callers
-are permitted to specify sender_addresses with -f on the command line, and
-other message parameters as well. */
-
-if (real_uid == root_uid || real_uid == exim_uid)
-  trusted_caller = TRUE;
-else
-  {
-  int i, j;
-
-  if (trusted_users != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_users[0]); i++)
-      if (trusted_users[i] == real_uid)
-        { trusted_caller = TRUE; break; }
-    }
-
-  if (!trusted_caller && trusted_groups != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_groups[0]); i++)
-      {
-      if (trusted_groups[i] == real_gid)
-        trusted_caller = TRUE;
-      else for (j = 0; j < group_count; j++)
-        {
-        if (trusted_groups[i] == group_list[j])
-          { trusted_caller = TRUE; break; }
-        }
-      if (trusted_caller) break;
-      }
-    }
-  }
+/* We moved the admin/trusted check to be immediately after reading the
+configuration file.  We leave these prints here to ensure that syslog setup,
+logfile setup, and so on has already happened. */
 
 if (trusted_caller) DEBUG(D_any) debug_printf("trusted user\n");
 if (admin_user) DEBUG(D_any) debug_printf("admin user\n");
@@ -3898,6 +4060,21 @@ else
     interface_port = check_port(interface_address);
   }
 
+/* If the caller is trusted, then they can use -G to suppress_local_fixups. */
+if (flag_G)
+  {
+  if (trusted_caller)
+    {
+    suppress_local_fixups = suppress_local_fixups_default = TRUE;
+    DEBUG(D_acl) debug_printf("suppress_local_fixups forced on by -G\n");
+    }
+  else
+    {
+    fprintf(stderr, "exim: permission denied (-G requires a trusted user)\n");
+    return EXIT_FAILURE;
+    }
+  }
+
 /* If an SMTP message is being received check to see if the standard input is a
 TCP/IP socket. If it is, we assume that Exim was called from inetd if the
 caller is root or the Exim user, or if the port is a privileged one. Otherwise,
@@ -3919,7 +4096,7 @@ if (smtp_input)
         interface_address = host_ntoa(-1, &interface_sock, NULL,
           &interface_port);
 
-      if (host_is_tls_on_connect_port(interface_port)) tls_on_connect = TRUE;
+      if (host_is_tls_on_connect_port(interface_port)) tls_in.on_connect = TRUE;
 
       if (real_uid == root_uid || real_uid == exim_uid || interface_port < 1024)
         {
@@ -4226,11 +4403,12 @@ if (test_retry_arg >= 0)
   }
 
 /* Handle a request to list one or more configuration options */
+/* If -n was set, we suppress some information */
 
 if (list_options)
   {
   set_process_info("listing variables");
-  if (recipients_arg >= argc) readconf_print(US"all", NULL);
+  if (recipients_arg >= argc) readconf_print(US"all", NULL, flag_n);
     else for (i = recipients_arg; i < argc; i++)
       {
       if (i < argc - 1 &&
@@ -4239,10 +4417,10 @@ if (list_options)
            Ustrcmp(argv[i], "authenticator") == 0 ||
            Ustrcmp(argv[i], "macro") == 0))
         {
-        readconf_print(argv[i+1], argv[i]);
+        readconf_print(argv[i+1], argv[i], flag_n);
         i++;
         }
-      else readconf_print(argv[i], NULL);
+      else readconf_print(argv[i], NULL, flag_n);
       }
   exim_exit(EXIT_SUCCESS);
   }
@@ -4769,7 +4947,8 @@ if (host_checking)
 
 /* Arrange for message reception if recipients or SMTP were specified;
 otherwise complain unless a version print (-bV) happened or this is a filter
-verification test. In the former case, show the configuration file name. */
+verification test or info dump.
+In the former case, show the configuration file name. */
 
 if (recipients_arg >= argc && !extract_recipients && !smtp_input)
   {
@@ -4777,6 +4956,12 @@ if (recipients_arg >= argc && !extract_recipients && !smtp_input)
     {
     printf("Configuration file is %s\n", config_main_filename);
     return EXIT_SUCCESS;
+    }
+
+  if (info_flag != CMDINFO_NONE)
+    {
+    show_exim_information(info_flag, info_stdout ? stdout : stderr);
+    return info_stdout ? EXIT_SUCCESS : EXIT_FAILURE;
     }
 
   if (filter_test == FTEST_NONE)

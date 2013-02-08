@@ -35,7 +35,7 @@ After routing:
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
 LOG: MAIN
-  => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]
+  => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
 LOG: MAIN
   Completed
 Exim version x.yz ....

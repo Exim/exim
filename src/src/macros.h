@@ -81,7 +81,7 @@ as unsigned. */
 a no-op once an SSL session is in progress. */
 
 #ifdef SUPPORT_TLS
-#define mac_smtp_fflush() if (tls_active < 0) fflush(smtp_out);
+#define mac_smtp_fflush() if (tls_in.active < 0) fflush(smtp_out);
 #else
 #define mac_smtp_fflush() fflush(smtp_out);
 #endif
@@ -409,6 +409,7 @@ set all the bits in a multi-word selector. */
 #define LX_tls_peerdn                  0x80400000
 #define LX_tls_sni                     0x80800000
 #define LX_unknown_in_list             0x81000000
+#define LX_8bitmime                    0x82000000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \
@@ -424,6 +425,7 @@ set all the bits in a multi-word selector. */
 #define LX_default   ((LX_acl_warn_skipped        | \
                        LX_rejected_header         | \
                        LX_sender_verify_fail      | \
+                       LX_smtp_confirmation       | \
                        LX_tls_cipher) & 0x7fffffff)
 
 /* Private error numbers for delivery failures, set negative so as not
@@ -624,7 +626,9 @@ for booleans that are kept in one bit. */
 #define opt_public  0x200      /* Stored in the main instance block */
 #define opt_set     0x400      /* Option is set */
 #define opt_secure  0x800      /* "hide" prefix used */
-#define opt_mask    0x0ff
+#define opt_rep_con 0x1000     /* Can be appended to by a repeated line (condition) */
+#define opt_rep_str 0x2000     /* Can be appended to by a repeated line (string) */
+#define opt_mask    0x00ff
 
 /* Verify types when directing and routing */
 
@@ -820,7 +824,9 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_NOTQUIT,
        ACL_WHERE_QUIT,
        ACL_WHERE_STARTTLS,
-       ACL_WHERE_VRFY
+       ACL_WHERE_VRFY,
+
+       ACL_WHERE_EXPANSION   /* Currently used by a ${acl:name} expansion */
      };
 
 /* Situations for spool_write_header() */

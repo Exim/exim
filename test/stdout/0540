@@ -10,7 +10,7 @@
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Welcome
-HELO localhost
+EHLO localhost
 250 Hi
 MAIL FROM:<>
 250 OK
@@ -22,7 +22,7 @@ Expected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Welcome
-HELO aname
+EHLO aname
 250 Hi
 MAIL FROM:<>
 250 OK
@@ -34,7 +34,7 @@ Expected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Welcome
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 Hi
 MAIL FROM:<>
 250 OK
@@ -46,7 +46,7 @@ Expected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Welcome
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 Hi
 MAIL FROM:<>
 250 OK

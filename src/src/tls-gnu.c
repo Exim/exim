@@ -39,6 +39,10 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #include <gnutls/x509.h>
 /* man-page is incorrect, gnutls_rnd() is not in gnutls.h: */
 #include <gnutls/crypto.h>
+/* needed to disable PKCS11 autoload unless requested */
+#if GNUTLS_VERSION_NUMBER >= 0x020c00
+# include <gnutls/pkcs11.h>
+#endif
 
 /* GnuTLS 2 vs 3
 
@@ -63,8 +67,7 @@ Some of these correspond to variables in globals.c; those variables will
 be set to point to content in one of these instances, as appropriate for
 the stage of the process lifetime.
 
-Not handled here: globals tls_active, tls_bits, tls_cipher, tls_peerdn,
-tls_certificate_verified, tls_channelbinding_b64, tls_sni.
+Not handled here: global tls_channelbinding_b64.
 */
 
 typedef struct exim_gnutls_state {
@@ -95,6 +98,8 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
 
+  tls_support *tlsp;	/* set in tls_init() */
+
   uschar *xfer_buffer;
   int xfer_buffer_lwm;
   int xfer_buffer_hwm;
@@ -107,6 +112,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
+  NULL,
   NULL, 0, 0, 0, 0,
 };
 
@@ -120,7 +126,6 @@ there's no way for heart-beats to be responded to, for the duration of the
 second connection. */
 
 static exim_gnutls_state_st state_server, state_client;
-static exim_gnutls_state_st *current_global_tls_state;
 
 /* dh_params are initialised once within the lifetime of a process using TLS;
 if we used TLS in a long-lived daemon, we'd have to reconsider this.  But we
@@ -171,6 +176,7 @@ before, for now. */
 #define HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 #define HAVE_GNUTLS_SEC_PARAM_CONSTANTS
 #define HAVE_GNUTLS_RND
+#define HAVE_GNUTLS_PKCS11
 #endif
 
 
@@ -286,15 +292,13 @@ Sets:
   tls_cipher                a string
   tls_peerdn                a string
   tls_sni                   a (UTF-8) string
-Also:
-  current_global_tls_state  for API limitations
 
 Argument:
   state      the relevant exim_gnutls_state_st *
 */
 
 static void
-extract_exim_vars_from_tls_state(exim_gnutls_state_st *state)
+extract_exim_vars_from_tls_state(exim_gnutls_state_st *state, BOOL is_server)
 {
 gnutls_cipher_algorithm_t cipher;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
@@ -303,19 +307,17 @@ int rc;
 gnutls_datum_t channel;
 #endif
 
-current_global_tls_state = state;
-
-tls_active = state->fd_out;
+state->tlsp->active = state->fd_out;
 
 cipher = gnutls_cipher_get(state->session);
 /* returns size in "bytes" */
-tls_bits = gnutls_cipher_get_key_size(cipher) * 8;
+state->tlsp->bits = gnutls_cipher_get_key_size(cipher) * 8;
 
-tls_cipher = state->ciphersuite;
+state->tlsp->cipher = state->ciphersuite;
 
-DEBUG(D_tls) debug_printf("cipher: %s\n", tls_cipher);
+DEBUG(D_tls) debug_printf("cipher: %s\n", state->ciphersuite);
 
-tls_certificate_verified = state->peer_cert_verified;
+state->tlsp->certificate_verified = state->peer_cert_verified;
 
 /* note that tls_channelbinding_b64 is not saved to the spool file, since it's
 only available for use for authenticators while this TLS session is running. */
@@ -336,9 +338,8 @@ if (rc) {
 }
 #endif
 
-tls_peerdn = state->peerdn;
-
-tls_sni = state->received_sni;
+state->tlsp->peerdn = state->peerdn;
+state->tlsp->sni =    state->received_sni;
 }
 
 
@@ -653,7 +654,11 @@ if (!state->host)
   {
   if (!state->received_sni)
     {
-    if (state->tls_certificate && Ustrstr(state->tls_certificate, US"tls_sni"))
+    if (state->tls_certificate &&
+        (Ustrstr(state->tls_certificate, US"tls_sni") ||
+         Ustrstr(state->tls_certificate, US"tls_in_sni") ||
+         Ustrstr(state->tls_certificate, US"tls_out_sni")
+       ))
       {
       DEBUG(D_tls) debug_printf("We will re-expand TLS session files if we receive SNI.\n");
       state->trigger_sni_changes = TRUE;
@@ -884,6 +889,7 @@ Arguments:
   cas             CA certs file
   crl             CRL file
   require_ciphers tls_require_ciphers setting
+  caller_state    returned state-info structure
 
 Returns:          OK/DEFER/FAIL
 */
@@ -910,6 +916,19 @@ if (!exim_gnutls_base_init_done)
   {
   DEBUG(D_tls) debug_printf("GnuTLS global init required.\n");
 
+#ifdef HAVE_GNUTLS_PKCS11
+  /* By default, gnutls_global_init will init PKCS11 support in auto mode,
+  which loads modules from a config file, which sounds good and may be wanted
+  by some sysadmin, but also means in common configurations that GNOME keyring
+  environment variables are used and so breaks for users calling mailq.
+  To prevent this, we init PKCS11 first, which is the documented approach. */
+  if (!gnutls_enable_pkcs11)
+    {
+    rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
+    exim_gnutls_err_check(US"gnutls_pkcs11_init");
+    }
+#endif
+
   rc = gnutls_global_init();
   exim_gnutls_err_check(US"gnutls_global_init");
 
@@ -929,6 +948,7 @@ if (host)
   {
   state = &state_client;
   memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
+  state->tlsp = &tls_out;
   DEBUG(D_tls) debug_printf("initialising GnuTLS client session\n");
   rc = gnutls_init(&state->session, GNUTLS_CLIENT);
   }
@@ -936,6 +956,7 @@ else
   {
   state = &state_server;
   memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
+  state->tlsp = &tls_in;
   DEBUG(D_tls) debug_printf("initialising GnuTLS server session\n");
   rc = gnutls_init(&state->session, GNUTLS_SERVER);
   }
@@ -967,7 +988,7 @@ if (rc != OK) return rc;
 /* set SNI in client, only */
 if (host)
   {
-  if (!expand_check_tlsvar(tls_sni))
+  if (!expand_check(state->tlsp->sni, US"tls_out_sni", &state->exp_tls_sni))
     return DEFER;
   if (state->exp_tls_sni && *state->exp_tls_sni)
     {
@@ -1038,8 +1059,6 @@ if (gnutls_compat_mode)
   }
 
 *caller_state = state;
-/* needs to happen before callbacks during handshake */
-current_global_tls_state = state;
 return OK;
 }
 
@@ -1118,7 +1137,7 @@ old_pool = store_pool;
 store_pool = POOL_PERM;
 state->ciphersuite = string_copy(cipherbuf);
 store_pool = old_pool;
-tls_cipher = state->ciphersuite;
+state->tlsp->cipher = state->ciphersuite;
 
 /* tls_peerdn */
 cert_list = gnutls_certificate_get_peers(state->session, &cert_list_size);
@@ -1240,7 +1259,7 @@ else
       state->peerdn ? state->peerdn : US"<unset>");
   }
 
-tls_peerdn = state->peerdn;
+state->tlsp->peerdn = state->peerdn;
 
 return TRUE;
 }
@@ -1284,6 +1303,7 @@ handshake.".
 
 For inability to get SNI information, we return 0.
 We only return non-zero if re-setup failed.
+Only used for server-side TLS.
 */
 
 static int
@@ -1291,7 +1311,7 @@ exim_sni_handling_cb(gnutls_session_t session)
 {
 char sni_name[MAX_HOST_LEN];
 size_t data_len = MAX_HOST_LEN;
-exim_gnutls_state_st *state = current_global_tls_state;
+exim_gnutls_state_st *state = &state_server;
 unsigned int sni_type;
 int rc, old_pool;
 
@@ -1321,7 +1341,7 @@ state->received_sni = string_copyn(US sni_name, data_len);
 store_pool = old_pool;
 
 /* We set this one now so that variable expansions below will work */
-tls_sni = state->received_sni;
+state->tlsp->sni = state->received_sni;
 
 DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", sni_name,
     state->trigger_sni_changes ? "" : " (unused for certificate selection)");
@@ -1377,9 +1397,7 @@ const char *error;
 exim_gnutls_state_st *state = NULL;
 
 /* Check for previous activation */
-/* nb: this will not be TLS callout safe, needs reworking as part of that. */
-
-if (tls_active >= 0)
+if (tls_in.active >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", "", NULL);
   smtp_printf("554 Already in TLS\r\n");
@@ -1430,10 +1448,10 @@ make them disconnect. We need to have an explicit fflush() here, to force out
 the response. Other smtp_printf() calls do not need it, because in non-TLS
 mode, the fflush() happens when smtp_getc() is called. */
 
-if (!tls_on_connect)
+if (!state->tlsp->on_connect)
   {
   smtp_printf("220 TLS go ahead\r\n");
-  fflush(smtp_out);
+  fflush(smtp_out);		/*XXX JGH */
   }
 
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
@@ -1500,7 +1518,7 @@ if (rc != OK) return rc;
 
 /* Sets various Exim expansion variables; always safe within server */
 
-extract_exim_vars_from_tls_state(state);
+extract_exim_vars_from_tls_state(state, TRUE);
 
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize appropriately. */
@@ -1536,6 +1554,7 @@ Arguments:
   verify_certs      file for certificate verify
   verify_crl        CRL for verify
   require_ciphers   list of allowed ciphers or NULL
+  dh_min_bits       minimum number of bits acceptable in server's DH prime
   timeout           startup timeout
 
 Returns:            OK/DEFER/FAIL (because using common functions),
@@ -1547,7 +1566,7 @@ tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED, uschar *dhparam ARG_UNUSED,
     uschar *certificate, uschar *privatekey, uschar *sni,
     uschar *verify_certs, uschar *verify_crl,
-    uschar *require_ciphers, int timeout)
+    uschar *require_ciphers, int dh_min_bits, int timeout)
 {
 int rc;
 const char *error;
@@ -1559,7 +1578,17 @@ rc = tls_init(host, certificate, privatekey,
     sni, verify_certs, verify_crl, require_ciphers, &state);
 if (rc != OK) return rc;
 
-gnutls_dh_set_prime_bits(state->session, EXIM_CLIENT_DH_MIN_BITS);
+if (dh_min_bits < EXIM_CLIENT_DH_MIN_MIN_BITS)
+  {
+  DEBUG(D_tls)
+    debug_printf("WARNING: tls_dh_min_bits far too low, clamping %d up to %d\n",
+        dh_min_bits, EXIM_CLIENT_DH_MIN_MIN_BITS);
+  dh_min_bits = EXIM_CLIENT_DH_MIN_MIN_BITS;
+  }
+
+DEBUG(D_tls) debug_printf("Setting D-H prime minimum acceptable bits to %d\n",
+    dh_min_bits);
+gnutls_dh_set_prime_bits(state->session, dh_min_bits);
 
 if (verify_certs == NULL)
   {
@@ -1609,7 +1638,7 @@ if (rc != OK) return rc;
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */
 
-extract_exim_vars_from_tls_state(state);
+extract_exim_vars_from_tls_state(state, FALSE);
 
 return OK;
 }
@@ -1630,11 +1659,11 @@ Returns:     nothing
 */
 
 void
-tls_close(BOOL shutdown)
+tls_close(BOOL is_server, BOOL shutdown)
 {
-exim_gnutls_state_st *state = current_global_tls_state;
+exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
 
-if (tls_active < 0) return;  /* TLS was not active */
+if (!state->tlsp || state->tlsp->active < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
@@ -1644,6 +1673,7 @@ if (shutdown)
 
 gnutls_deinit(state->session);
 
+state->tlsp->active = -1;
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
 
 if ((state_server.session == NULL) && (state_client.session == NULL))
@@ -1652,7 +1682,6 @@ if ((state_server.session == NULL) && (state_client.session == NULL))
   exim_gnutls_base_init_done = FALSE;
   }
 
-tls_active = -1;
 }
 
 
@@ -1664,6 +1693,7 @@ tls_active = -1;
 
 /* This gets the next byte from the TLS input buffer. If the buffer is empty,
 it refills the buffer via the GnuTLS reading function.
+Only used by the server-side TLS.
 
 This feeds DKIM and should be used for all message-body reads.
 
@@ -1674,7 +1704,7 @@ Returns:    the next character or EOF
 int
 tls_getc(void)
 {
-exim_gnutls_state_st *state = current_global_tls_state;
+exim_gnutls_state_st *state = &state_server;
 if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
   {
   ssize_t inbytes;
@@ -1703,12 +1733,12 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
 
     gnutls_deinit(state->session);
     state->session = NULL;
-    tls_active = -1;
-    tls_bits = 0;
-    tls_certificate_verified = FALSE;
-    tls_channelbinding_b64 = NULL;
-    tls_cipher = NULL;
-    tls_peerdn = NULL;
+    state->tlsp->active = -1;
+    state->tlsp->bits = 0;
+    state->tlsp->certificate_verified = FALSE;
+    tls_channelbinding_b64 = NULL;	/*XXX JGH */
+    state->tlsp->cipher = NULL;
+    state->tlsp->peerdn = NULL;
 
     return smtp_getc();
     }
@@ -1742,6 +1772,7 @@ return state->xfer_buffer[state->xfer_buffer_lwm++];
 
 /* This does not feed DKIM, so if the caller uses this for reading message body,
 then the caller must feed DKIM.
+
 Arguments:
   buff      buffer of data
   len       size of buffer
@@ -1751,9 +1782,9 @@ Returns:    the number of bytes read
 */
 
 int
-tls_read(uschar *buff, size_t len)
+tls_read(BOOL is_server, uschar *buff, size_t len)
 {
-exim_gnutls_state_st *state = current_global_tls_state;
+exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
 ssize_t inbytes;
 
 if (len > INT_MAX)
@@ -1789,6 +1820,7 @@ return -1;
 
 /*
 Arguments:
+  is_server channel specifier
   buff      buffer of data
   len       number of bytes
 
@@ -1797,11 +1829,11 @@ Returns:    the number of bytes after a successful write,
 */
 
 int
-tls_write(const uschar *buff, size_t len)
+tls_write(BOOL is_server, const uschar *buff, size_t len)
 {
 ssize_t outbytes;
 size_t left = len;
-exim_gnutls_state_st *state = current_global_tls_state;
+exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
 
 DEBUG(D_tls) debug_printf("tls_do_write(%p, " SIZE_T_FMT ")\n", buff, left);
 while (left > 0)
@@ -1931,6 +1963,13 @@ if (exim_gnutls_base_init_done)
   log_write(0, LOG_MAIN|LOG_PANIC,
       "already initialised GnuTLS, Exim developer bug");
 
+#ifdef HAVE_GNUTLS_PKCS11
+if (!gnutls_enable_pkcs11)
+  {
+  rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
+  validate_check_rc(US"gnutls_pkcs11_init");
+  }
+#endif
 rc = gnutls_global_init();
 validate_check_rc(US"gnutls_global_init()");
 exim_gnutls_base_init_done = TRUE;

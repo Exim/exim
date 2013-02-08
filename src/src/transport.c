@@ -68,11 +68,11 @@ optionlist optionlist_transports[] = {
                  (void *)(offsetof(transport_instance, envelope_to_add)) },
   { "group",             opt_expand_gid|opt_public,
                  (void *)offsetof(transport_instance, gid) },
-  { "headers_add",      opt_stringptr|opt_public,
+  { "headers_add",      opt_stringptr|opt_public|opt_rep_str,
                  (void *)offsetof(transport_instance, add_headers) },
   { "headers_only",     opt_bool|opt_public,
                  (void *)offsetof(transport_instance, headers_only) },
-  { "headers_remove",   opt_stringptr|opt_public,
+  { "headers_remove",   opt_stringptr|opt_public|opt_rep_str,
                  (void *)offsetof(transport_instance, remove_headers) },
   { "headers_rewrite",  opt_rewrite|opt_public,
                  (void *)offsetof(transport_instance, headers_rewrite) },
@@ -219,7 +219,7 @@ for (i = 0; i < 100; i++)
   if (transport_write_timeout <= 0)   /* No timeout wanted */
     {
     #ifdef SUPPORT_TLS
-    if (tls_active == fd) rc = tls_write(block, len); else
+    if (tls_out.active == fd) rc = tls_write(FALSE, block, len); else
     #endif
     rc = write(fd, block, len);
     save_errno = errno;
@@ -231,7 +231,7 @@ for (i = 0; i < 100; i++)
     {
     alarm(local_timeout);
     #ifdef SUPPORT_TLS
-    if (tls_active == fd) rc = tls_write(block, len); else
+    if (tls_out.active == fd) rc = tls_write(FALSE, block, len); else
     #endif
     rc = write(fd, block, len);
     save_errno = errno;
@@ -1046,7 +1046,7 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
       int siglen = Ustrlen(dkim_signature);
       while(siglen > 0) {
         #ifdef SUPPORT_TLS
-        if (tls_active == fd) wwritten = tls_write(dkim_signature, siglen); else
+        if (tls_out.active == fd) wwritten = tls_write(FALSE, dkim_signature, siglen); else
         #endif
         wwritten = write(fd,dkim_signature,siglen);
         if (wwritten == -1) {
@@ -1072,7 +1072,7 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
      to the socket. However only if we don't use TLS,
      in which case theres another layer of indirection
      before the data finally hits the socket. */
-  if (tls_active != fd)
+  if (tls_out.active != fd)
     {
     ssize_t copied = 0;
     off_t offset = 0;
@@ -1096,7 +1096,7 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
     /* write the chunk */
     DKIM_WRITE:
     #ifdef SUPPORT_TLS
-    if (tls_active == fd) wwritten = tls_write(US p, sread); else
+    if (tls_out.active == fd) wwritten = tls_write(FALSE, US p, sread); else
     #endif
     wwritten = write(fd,p,sread);
     if (wwritten == -1)

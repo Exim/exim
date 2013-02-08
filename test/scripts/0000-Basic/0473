@@ -3,7 +3,7 @@ need_ipv4
 #
 server PORT_S 3
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -13,7 +13,7 @@ QUIT
 250 OK
 *eof
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -23,7 +23,7 @@ QUIT
 250 OK
 *eof
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 550 NOTOK
@@ -51,7 +51,7 @@ quit
 ****
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -68,7 +68,7 @@ quit
 ****
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -85,7 +85,7 @@ quit
 ****
 server PORT_S
 220 server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -109,7 +109,7 @@ quit
 ****
 server PORT_S
 220 server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -134,7 +134,7 @@ quit
 ****
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -152,7 +152,7 @@ quit
 dump callout
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK

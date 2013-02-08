@@ -91,6 +91,7 @@ enum { ACLC_ACL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_REGEX,
 #endif
+       ACLC_REMOVE_HEADER,
        ACLC_SENDER_DOMAINS,
        ACLC_SENDERS,
        ACLC_SET,
@@ -156,6 +157,7 @@ static uschar *conditions[] = {
 #ifdef WITH_CONTENT_SCAN
   US"regex",
 #endif
+  US"remove_header",
   US"sender_domains", US"senders", US"set",
 #ifdef WITH_CONTENT_SCAN
   US"spam",
@@ -182,9 +184,11 @@ enum {
   #ifdef EXPERIMENTAL_DMARC
   CONTROL_DMARC_VERIFY,
   #endif
+  CONTROL_DSCP,
   CONTROL_ERROR,
   CONTROL_CASEFUL_LOCAL_PART,
   CONTROL_CASELOWER_LOCAL_PART,
+  CONTROL_CUTTHROUGH_DELIVERY,
   CONTROL_ENFORCE_SYNC,
   CONTROL_NO_ENFORCE_SYNC,
   CONTROL_FREEZE,
@@ -219,9 +223,11 @@ static uschar *controls[] = {
   #ifdef EXPERIMENTAL_DMARC
   US"dmarc_disable_verify",
   #endif
+  US"dscp",
   US"error",
   US"caseful_local_part",
   US"caselower_local_part",
+  US"cutthrough_delivery",
   US"enforce_sync",
   US"no_enforce_sync",
   US"freeze",
@@ -244,7 +250,7 @@ at the outer level. In the other cases, expansion already occurs in the
 checking functions. */
 
 static uschar cond_expand_at_top[] = {
-  TRUE,    /* acl */
+  FALSE,   /* acl */
   TRUE,    /* add_header */
   FALSE,   /* authenticated */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -291,6 +297,7 @@ static uschar cond_expand_at_top[] = {
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* regex */
 #endif
+  TRUE,    /* remove_header */
   FALSE,   /* sender_domains */
   FALSE,   /* senders */
   TRUE,    /* set */
@@ -354,6 +361,7 @@ static uschar cond_modifiers[] = {
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* regex */
 #endif
+  TRUE,    /* remove_header */
   FALSE,   /* sender_domains */
   FALSE,   /* senders */
   TRUE,    /* set */
@@ -484,6 +492,12 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MIME)),
   #endif
 
+  (unsigned int)
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* remove_header */
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
+    (1<<ACL_WHERE_NOTSMTP_START)),
+
   (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* sender_domains */
     (1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
@@ -552,6 +566,10 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
+  (1<<ACL_WHERE_NOTSMTP)|
+    (1<<ACL_WHERE_NOTSMTP_START)|
+    (1<<ACL_WHERE_NOTQUIT),                        /* dscp */
+
   0,                                               /* error */
 
   (unsigned int)
@@ -559,6 +577,9 @@ static unsigned int control_forbids[] = {
 
   (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* caselower_local_part */
+
+  (unsigned int)
+  0,						   /* cutthrough_delivery */
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* enforce_sync */
     (1<<ACL_WHERE_NOTSMTP_START),
@@ -635,6 +656,7 @@ static control_def controls_list[] = {
 #ifdef EXPERIMENTAL_DMARC
   { US"dmarc_disable_verify",    CONTROL_DMARC_VERIFY, FALSE },
 #endif
+  { US"dscp",                    CONTROL_DSCP, TRUE },
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
   { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
   { US"enforce_sync",            CONTROL_ENFORCE_SYNC, FALSE },
@@ -651,7 +673,8 @@ static control_def controls_list[] = {
   { US"fakedefer",               CONTROL_FAKEDEFER, TRUE },
   { US"fakereject",              CONTROL_FAKEREJECT, TRUE },
   { US"submission",              CONTROL_SUBMISSION, TRUE },
-  { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE }
+  { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE },
+  { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY, FALSE }
   };
 
 /* Support data structures for Client SMTP Authorization. acl_verify_csa()
@@ -714,8 +737,8 @@ static uschar *ratelimit_option_string[] = {
 
 /* Enable recursion between acl_check_internal() and acl_check_condition() */
 
-static int acl_check_internal(int, address_item *, uschar *, int, uschar **,
-         uschar **);
+static int acl_check_wargs(int, address_item *, uschar *, int, uschar **,
+    uschar **);
 
 
 /*************************************************
@@ -966,10 +989,13 @@ setup_header(uschar *hstring)
 uschar *p, *q;
 int hlen = Ustrlen(hstring);
 
-/* An empty string does nothing; otherwise add a final newline if necessary. */
+/* Ignore any leading newlines */
+while (*hstring == '\n') hstring++, hlen--;
 
+/* An empty string does nothing; ensure exactly one final newline. */
 if (hlen <= 0) return;
-if (hstring[hlen-1] != '\n') hstring = string_sprintf("%s\n", hstring);
+if (hstring[--hlen] != '\n') hstring = string_sprintf("%s\n", hstring);
+else while(hstring[--hlen] == '\n') hstring[hlen+1] = '\0';
 
 /* Loop for multiple header lines, taking care about continuations */
 
@@ -1053,6 +1079,69 @@ for (p = q = hstring; *p != 0; )
   }
 }
 
+
+
+/*************************************************
+*        List the added header lines		 *
+*************************************************/
+uschar *
+fn_hdrs_added(void)
+{
+uschar * ret = NULL;
+header_line * h = acl_added_headers;
+uschar * s;
+uschar * cp;
+int size = 0;
+int ptr = 0;
+
+if (!h) return NULL;
+
+do
+  {
+  s = h->text;
+  while ((cp = Ustrchr(s, '\n')) != NULL)
+    {
+    if (cp[1] == '\0') break;
+
+    /* contains embedded newline; needs doubling */
+    ret = string_cat(ret, &size, &ptr, s, cp-s+1);
+    ret = string_cat(ret, &size, &ptr, "\n", 1);
+    s = cp+1;
+    }
+  /* last bit of header */
+
+  ret = string_cat(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
+  }
+while(h = h->next);
+
+ret[ptr-1] = '\0';	/* overwrite last newline */
+return ret;
+}
+
+
+/*************************************************
+*        Set up removed header line(s)           *
+*************************************************/
+
+/* This function is called by the remove_header modifier.  The argument is
+treated as a sequence of header names which are added to a colon separated
+list, provided there isn't an identical one already there.
+
+Argument:   string of header names
+Returns:    nothing
+*/
+
+static void
+setup_remove_header(uschar *hnames)
+{
+if (*hnames != 0)
+  {
+  if (acl_removed_headers == NULL)
+    acl_removed_headers = hnames;
+  else
+    acl_removed_headers = string_sprintf("%s : %s", acl_removed_headers, hnames);
+  }
+}
 
 
 
@@ -1633,7 +1722,7 @@ switch(vp->value)
     test whether it was successful or not. (This is for optional verification; for
     mandatory verification, the connection doesn't last this long.) */
 
-      if (tls_certificate_verified) return OK;
+      if (tls_in.certificate_verified) return OK;
       *user_msgptr = US"no verified certificate";
       return FAIL;
 
@@ -2803,14 +2892,14 @@ for (; cb != NULL; cb = cb->next)
     "discard" verb. */
 
     case ACLC_ACL:
-    rc = acl_check_internal(where, addr, arg, level+1, user_msgptr, log_msgptr);
-    if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
-      {
-      *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
-        "\"%s\" command (only allowed with \"accept\" or \"discard\")",
-        verbs[verb]);
-      return ERROR;
-      }
+      rc = acl_check_wargs(where, addr, arg, level+1, user_msgptr, log_msgptr);
+      if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
+        {
+        *log_msgptr = string_sprintf("nested ACL returned \"discard\" for "
+          "\"%s\" command (only allowed with \"accept\" or \"discard\")",
+          verbs[verb]);
+        return ERROR;
+        }
     break;
 
     case ACLC_AUTHENTICATED:
@@ -2887,6 +2976,46 @@ for (; cb != NULL; cb = cb->next)
       dmarc_disable_verify = TRUE;
       break;
       #endif
+
+      case CONTROL_DSCP:
+      if (*p == '/')
+        {
+        int fd, af, level, optname, value;
+        /* If we are acting on stdin, the setsockopt may fail if stdin is not
+        a socket; we can accept that, we'll just debug-log failures anyway. */
+        fd = fileno(smtp_in);
+        af = ip_get_address_family(fd);
+        if (af < 0)
+          {
+          HDEBUG(D_acl)
+            debug_printf("smtp input is probably not a socket [%s], not setting DSCP\n",
+                strerror(errno));
+          break;
+          }
+        if (dscp_lookup(p+1, af, &level, &optname, &value))
+          {
+          if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
+            {
+            HDEBUG(D_acl) debug_printf("failed to set input DSCP[%s]: %s\n",
+                p+1, strerror(errno));
+            }
+          else
+            {
+            HDEBUG(D_acl) debug_printf("set input DSCP to \"%s\"\n", p+1);
+            }
+          }
+        else
+          {
+          *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
+          return ERROR;
+          }
+        }
+      else
+        {
+        *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+        return ERROR;
+        }
+      break;
 
       case CONTROL_ERROR:
       return ERROR;
@@ -3027,6 +3156,20 @@ for (; cb != NULL; cb = cb->next)
       case CONTROL_SUPPRESS_LOCAL_FIXUPS:
       suppress_local_fixups = TRUE;
       break;
+
+      case CONTROL_CUTTHROUGH_DELIVERY:
+      if (deliver_freeze)
+        {
+        *log_msgptr = string_sprintf("\"control=%s\" on frozen item", arg);
+        return ERROR;
+        }
+       if (queue_only_policy)
+        {
+        *log_msgptr = string_sprintf("\"control=%s\" on queue-only item", arg);
+        return ERROR;
+        }
+      cutthrough_delivery = TRUE;
+      break;
       }
     break;
 
@@ -3151,11 +3294,11 @@ for (; cb != NULL; cb = cb->next)
     writing is poorly documented. */
 
     case ACLC_ENCRYPTED:
-    if (tls_cipher == NULL) rc = FAIL; else
+    if (tls_in.cipher == NULL) rc = FAIL; else
       {
       uschar *endcipher = NULL;
-      uschar *cipher = Ustrchr(tls_cipher, ':');
-      if (cipher == NULL) cipher = tls_cipher; else
+      uschar *cipher = Ustrchr(tls_in.cipher, ':');
+      if (cipher == NULL) cipher = tls_in.cipher; else
         {
         endcipher = Ustrchr(++cipher, ':');
         if (endcipher != NULL) *endcipher = 0;
@@ -3278,6 +3421,10 @@ for (; cb != NULL; cb = cb->next)
     rc = regex(&arg);
     break;
     #endif
+
+    case ACLC_REMOVE_HEADER:
+    setup_remove_header(arg);
+    break;
 
     case ACLC_SENDER_DOMAINS:
       {
@@ -3848,6 +3995,48 @@ return FAIL;
 }
 
 
+
+
+/* Same args as acl_check_internal() above, but the string s is
+the name of an ACL followed optionally by up to 9 space-separated arguments.
+The name and args are separately expanded.  Args go into $acl_arg globals. */
+static int
+acl_check_wargs(int where, address_item *addr, uschar *s, int level,
+  uschar **user_msgptr, uschar **log_msgptr)
+{
+uschar * tmp;
+uschar * tmp_arg[9];	/* must match acl_arg[] */
+uschar * name;
+int i;
+
+if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
+  goto bad;
+
+for (i = 0; i < 9; i++)
+  {
+  while (*s && isspace(*s)) s++;
+  if (!*s) break;
+  if (!(tmp = string_dequote(&s)) || !(tmp_arg[i] = expand_string(tmp)))
+    {
+    tmp = name;
+    goto bad;
+    }
+  }
+acl_narg = i;
+for (i = 0; i < acl_narg; i++) acl_arg[i] = tmp_arg[i];
+while (i < 9) acl_arg[i++] = NULL;
+
+return acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+
+bad:
+if (expand_string_forcedfail) return ERROR;
+*log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+  tmp, expand_string_message);
+return search_find_defer?DEFER:ERROR;
+}
+
+
+
 /*************************************************
 *        Check access using an ACL               *
 *************************************************/
@@ -3899,6 +4088,50 @@ if (where == ACL_WHERE_RCPT)
   }
 
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+
+/* Cutthrough - if requested,
+and WHERE_RCPT and not yet opened conn as result of recipient-verify,
+and rcpt acl returned accept,
+and first recipient (cancel on any subsequents)
+open one now and run it up to RCPT acceptance.
+A failed verify should cancel cutthrough request.
+
+Initial implementation:  dual-write to spool.
+Assume the rxd datastream is now being copied byte-for-byte to an open cutthrough connection.
+
+Cease cutthrough copy on rxd final dot; do not send one.
+
+On a data acl, if not accept and a cutthrough conn is open, hard-close it (no SMTP niceness).
+
+On data acl accept, terminate the dataphase on an open cutthrough conn.  If accepted or
+perm-rejected, reflect that to the original sender - and dump the spooled copy.
+If temp-reject, close the conn (and keep the spooled copy).
+If conn-failure, no action (and keep the spooled copy).
+*/
+switch (where)
+{
+case ACL_WHERE_RCPT:
+  if( rcpt_count > 1 )
+    cancel_cutthrough_connection("more than one recipient");
+  else if (rc == OK  &&  cutthrough_delivery  &&  cutthrough_fd < 0)
+    open_cutthrough_connection(addr);
+  break;
+
+case ACL_WHERE_PREDATA:
+  if( rc == OK )
+    cutthrough_predata();
+  else
+    cancel_cutthrough_connection("predata acl not ok");
+  break;
+
+case ACL_WHERE_QUIT:
+case ACL_WHERE_NOTQUIT:
+  cancel_cutthrough_connection("quit or notquit");
+  break;
+
+default:
+  break;
+}
 
 deliver_domain = deliver_localpart = deliver_address_data =
   sender_address_data = NULL;

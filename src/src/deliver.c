@@ -673,6 +673,150 @@ while (addr->parent != NULL)
 
 
 
+/* If msg is NULL this is a delivery log and logchar is used. Otherwise
+this is a nonstandard call; no two-characher delivery flag is written
+but sender-host and sender are prefixed and "msg" is inserted in the log line.
+
+Arguments:
+  flags		passed to log_write()
+*/
+void
+delivery_log(int flags, address_item * addr, int logchar, uschar * msg)
+{
+uschar *log_address;
+int size = 256;         /* Used for a temporary, */
+int ptr = 0;            /* expanding buffer, for */
+uschar *s;              /* building log lines;   */
+void *reset_point;      /* released afterwards.  */
+
+
+/* Log the delivery on the main log. We use an extensible string to build up
+the log line, and reset the store afterwards. Remote deliveries should always
+have a pointer to the host item that succeeded; local deliveries can have a
+pointer to a single host item in their host list, for use by the transport. */
+
+s = reset_point = store_get(size);
+
+log_address = string_log_address(addr, (log_write_selector & L_all_parents) != 0, TRUE);
+if (msg)
+  s = string_append(s, &size, &ptr, 3, host_and_ident(TRUE), US" ", log_address);
+else
+  {
+  s[ptr++] = logchar;
+  s = string_append(s, &size, &ptr, 2, US"> ", log_address);
+  }
+
+if ((log_extra_selector & LX_sender_on_delivery) != 0  ||  msg)
+  s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
+
+#ifdef EXPERIMENTAL_SRS
+if(addr->p.srs_sender)
+  s = string_append(s, &size, &ptr, 3, US" SRS=<", addr->p.srs_sender, US">");
+#endif
+
+/* You might think that the return path must always be set for a successful
+delivery; indeed, I did for some time, until this statement crashed. The case
+when it is not set is for a delivery to /dev/null which is optimised by not
+being run at all. */
+
+if (used_return_path != NULL &&
+      (log_extra_selector & LX_return_path_on_delivery) != 0)
+  s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
+
+if (msg)
+  s = string_append(s, &size, &ptr, 2, US" ", msg);
+
+/* For a delivery from a system filter, there may not be a router */
+if (addr->router != NULL)
+  s = string_append(s, &size, &ptr, 2, US" R=", addr->router->name);
+
+s = string_append(s, &size, &ptr, 2, US" T=", addr->transport->name);
+
+if ((log_extra_selector & LX_delivery_size) != 0)
+  s = string_append(s, &size, &ptr, 2, US" S=",
+    string_sprintf("%d", transport_count));
+
+/* Local delivery */
+
+if (addr->transport->info->local)
+  {
+  if (addr->host_list != NULL)
+    s = string_append(s, &size, &ptr, 2, US" H=", addr->host_list->name);
+  if (addr->shadow_message != NULL)
+    s = string_cat(s, &size, &ptr, addr->shadow_message,
+      Ustrlen(addr->shadow_message));
+  }
+
+/* Remote delivery */
+
+else
+  {
+  if (addr->host_used != NULL)
+    {
+    s = string_append(s, &size, &ptr, 5, US" H=", addr->host_used->name,
+      US" [", addr->host_used->address, US"]");
+    if ((log_extra_selector & LX_outgoing_port) != 0)
+      s = string_append(s, &size, &ptr, 2, US":", string_sprintf("%d",
+        addr->host_used->port));
+    if (continue_sequence > 1)
+      s = string_cat(s, &size, &ptr, US"*", 1);
+    }
+
+  #ifdef SUPPORT_TLS
+  if ((log_extra_selector & LX_tls_cipher) != 0 && addr->cipher != NULL)
+    s = string_append(s, &size, &ptr, 2, US" X=", addr->cipher);
+  if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
+       addr->cipher != NULL)
+    s = string_append(s, &size, &ptr, 2, US" CV=",
+      testflag(addr, af_cert_verified)? "yes":"no");
+  if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
+    s = string_append(s, &size, &ptr, 3, US" DN=\"",
+      string_printing(addr->peerdn), US"\"");
+  #endif
+
+  if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
+      addr->message != NULL)
+    {
+    int i;
+    uschar *p = big_buffer;
+    uschar *ss = addr->message;
+    *p++ = '\"';
+    for (i = 0; i < 100 && ss[i] != 0; i++)
+      {
+      if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\';
+      *p++ = ss[i];
+      }
+    *p++ = '\"';
+    *p = 0;
+    s = string_append(s, &size, &ptr, 2, US" C=", big_buffer);
+    }
+  }
+
+/* Time on queue and actual time taken to deliver */
+
+if ((log_extra_selector & LX_queue_time) != 0)
+  {
+  s = string_append(s, &size, &ptr, 2, US" QT=",
+    readconf_printtime(time(NULL) - received_time));
+  }
+
+if ((log_extra_selector & LX_deliver_time) != 0)
+  {
+  s = string_append(s, &size, &ptr, 2, US" DT=",
+    readconf_printtime(addr->more_errno));
+  }
+
+/* string_cat() always leaves room for the terminator. Release the
+store we used to build the line after writing it. */
+
+s[ptr] = 0;
+log_write(0, flags, "%s", s);
+store_reset(reset_point);
+return;
+}
+
+
+
 /*************************************************
 *    Actions at the end of handling an address   *
 *************************************************/
@@ -835,12 +979,6 @@ if (addr->return_file >= 0 && addr->return_filename != NULL)
   (void)close(addr->return_file);
   }
 
-/* Create the address string for logging. Must not do this earlier, because
-an OK result may be changed to FAIL when a pipe returns text. */
-
-log_address = string_log_address(addr,
-  (log_write_selector & L_all_parents) != 0, result == OK);
-
 /* The sucess case happens only after delivery by a transport. */
 
 if (result == OK)
@@ -868,120 +1006,7 @@ if (result == OK)
     child_done(addr, now);
     }
 
-  /* Log the delivery on the main log. We use an extensible string to build up
-  the log line, and reset the store afterwards. Remote deliveries should always
-  have a pointer to the host item that succeeded; local deliveries can have a
-  pointer to a single host item in their host list, for use by the transport. */
-
-  s = reset_point = store_get(size);
-  s[ptr++] = logchar;
-
-  s = string_append(s, &size, &ptr, 2, US"> ", log_address);
-
-  if ((log_extra_selector & LX_sender_on_delivery) != 0)
-    s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
-
-  #ifdef EXPERIMENTAL_SRS
-  if(addr->p.srs_sender)
-    s = string_append(s, &size, &ptr, 3, US" SRS=<", addr->p.srs_sender, US">");
-  #endif
-
-  /* You might think that the return path must always be set for a successful
-  delivery; indeed, I did for some time, until this statement crashed. The case
-  when it is not set is for a delivery to /dev/null which is optimised by not
-  being run at all. */
-
-  if (used_return_path != NULL &&
-        (log_extra_selector & LX_return_path_on_delivery) != 0)
-    s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
-
-  /* For a delivery from a system filter, there may not be a router */
-
-  if (addr->router != NULL)
-    s = string_append(s, &size, &ptr, 2, US" R=", addr->router->name);
-
-  s = string_append(s, &size, &ptr, 2, US" T=", addr->transport->name);
-
-  if ((log_extra_selector & LX_delivery_size) != 0)
-    s = string_append(s, &size, &ptr, 2, US" S=",
-      string_sprintf("%d", transport_count));
-
-  /* Local delivery */
-
-  if (addr->transport->info->local)
-    {
-    if (addr->host_list != NULL)
-      s = string_append(s, &size, &ptr, 2, US" H=", addr->host_list->name);
-    if (addr->shadow_message != NULL)
-      s = string_cat(s, &size, &ptr, addr->shadow_message,
-        Ustrlen(addr->shadow_message));
-    }
-
-  /* Remote delivery */
-
-  else
-    {
-    if (addr->host_used != NULL)
-      {
-      s = string_append(s, &size, &ptr, 5, US" H=", addr->host_used->name,
-        US" [", addr->host_used->address, US"]");
-      if ((log_extra_selector & LX_outgoing_port) != 0)
-        s = string_append(s, &size, &ptr, 2, US":", string_sprintf("%d",
-          addr->host_used->port));
-      if (continue_sequence > 1)
-        s = string_cat(s, &size, &ptr, US"*", 1);
-      }
-
-    #ifdef SUPPORT_TLS
-    if ((log_extra_selector & LX_tls_cipher) != 0 && addr->cipher != NULL)
-      s = string_append(s, &size, &ptr, 2, US" X=", addr->cipher);
-    if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-         addr->cipher != NULL)
-      s = string_append(s, &size, &ptr, 2, US" CV=",
-        testflag(addr, af_cert_verified)? "yes":"no");
-    if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
-      s = string_append(s, &size, &ptr, 3, US" DN=\"",
-        string_printing(addr->peerdn), US"\"");
-    #endif
-
-    if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
-        addr->message != NULL)
-      {
-      int i;
-      uschar *p = big_buffer;
-      uschar *ss = addr->message;
-      *p++ = '\"';
-      for (i = 0; i < 100 && ss[i] != 0; i++)
-        {
-        if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\';
-        *p++ = ss[i];
-        }
-      *p++ = '\"';
-      *p = 0;
-      s = string_append(s, &size, &ptr, 2, US" C=", big_buffer);
-      }
-    }
-
-  /* Time on queue and actual time taken to deliver */
-
-  if ((log_extra_selector & LX_queue_time) != 0)
-    {
-    s = string_append(s, &size, &ptr, 2, US" QT=",
-      readconf_printtime(time(NULL) - received_time));
-    }
-
-  if ((log_extra_selector & LX_deliver_time) != 0)
-    {
-    s = string_append(s, &size, &ptr, 2, US" DT=",
-      readconf_printtime(addr->more_errno));
-    }
-
-  /* string_cat() always leaves room for the terminator. Release the
-  store we used to build the line after writing it. */
-
-  s[ptr] = 0;
-  log_write(0, LOG_MAIN, "%s", s);
-  store_reset(reset_point);
+  delivery_log(LOG_MAIN, addr, logchar, NULL);
   }
 
 
@@ -1029,6 +1054,13 @@ else if (result == DEFER || result == PANIC)
     log. */
 
     s = reset_point = store_get(size);
+
+    /* Create the address string for logging. Must not do this earlier, because
+    an OK result may be changed to FAIL when a pipe returns text. */
+
+    log_address = string_log_address(addr,
+      (log_write_selector & L_all_parents) != 0, result == OK);
+
     s = string_cat(s, &size, &ptr, log_address, Ustrlen(log_address));
 
     /* Either driver_name contains something and driver_kind contains
@@ -1129,6 +1161,13 @@ else
   /* Build up the log line for the message and main logs */
 
   s = reset_point = store_get(size);
+
+  /* Create the address string for logging. Must not do this earlier, because
+  an OK result may be changed to FAIL when a pipe returns text. */
+
+  log_address = string_log_address(addr,
+    (log_write_selector & L_all_parents) != 0, result == OK);
+
   s = string_cat(s, &size, &ptr, log_address, Ustrlen(log_address));
 
   if ((log_extra_selector & LX_sender_on_delivery) != 0)
@@ -3923,7 +3962,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
       /* The certificate verification status goes into the flags */
 
-      if (tls_certificate_verified) setflag(addr, af_cert_verified);
+      if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
 
       /* Use an X item only if there's something to send */
 

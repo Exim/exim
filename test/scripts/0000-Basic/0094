@@ -1,4 +1,5 @@
 # Reverse lookup failures
+munge dnssec
 exim -bh V4NET.11.12.13
 mail from:<userx@cam.ac.uk>
 rcpt to:<userx@cam.ac.uk>

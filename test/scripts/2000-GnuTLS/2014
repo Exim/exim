@@ -1,5 +1,6 @@
 # TLS server: mandatory, optional, and revoked certificates
 gnutls
+munge gnutls_unexpected
 exim -DSERVER=server -bd -oX PORT_D
 ****
 # No certificate, certificate required

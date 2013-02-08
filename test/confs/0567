@@ -1,0 +1,91 @@
+# Exim test configuration 0532
+
+CONNECTCOND=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_connect = connect
+acl_smtp_mail = mail
+acl_smtp_rcpt = rcpt
+acl_smtp_predata = predata
+acl_smtp_data = data
+acl_not_smtp = notsmtp
+
+qualify_domain = test.ex
+trusted_users = CALLER
+
+hostlist internal_headers = x-mail-2 : x-mail-3
+
+
+# ----- ACL -----
+
+begin acl
+
+connect:
+  accept CONNECTCOND
+
+mail:
+  accept remove_header = x-mail-1
+         senders       = mailok@test.ex
+         # Won't work because doesn't expand
+         remove_header = +internal_headers
+  accept
+
+rcpt:
+  accept local_parts   = rcptok
+         remove_header = x-rcpt-4 : x-rcpt-2
+         set acl_m_hdr = x-predata-1
+  deny   add_header    = RCPT: denied $local_part
+
+
+predata:
+  warn   remove_header = x-predata-3 : $acl_m_hdr
+  # Won't work because doesn't use wildcards
+  accept remove_header = x-not-*
+
+data:
+  warn   log_message   = Verified previously removed header X-Rcpt-2
+         condition     = ${if eq{$h_x-rcpt-2:}{}}
+  warn   remove_header = x-data-1 : x-data-4
+         condition     = ${if eq{$h_cond:}{accept}}
+         remove_header = x-data-3
+  # Won't delete this header because condition fails before the modifier
+  warn   condition     = ${if eq{$h_cond:}{reject}}
+         remove_header = x-data-2
+  warn   log_message   = Verified removed header X-Data-3 in this ACL still visible
+         condition     = ${if !eq{$h_x-data-3:}{}}
+  accept
+
+notsmtp:
+  # Will remove a required header (Date) if told to
+  accept remove_header = x-notsmtp-1 : date
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

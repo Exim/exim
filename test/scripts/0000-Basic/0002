@@ -4,6 +4,7 @@
 # be present in the basic Exim binary which we require in order to run these
 # tests at all. Specialized expansion tests also exist for optional features
 # in other test scripts.
+munge dnssec
 
 exim -be
 
@@ -59,6 +60,21 @@ reduce: ${reduce{a:b:c}{+}{$value$item}}
 reduce: ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
 reduce: ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
 
+listnamed: ${listnamed:dlist}
+listnamed: ${listnamed:+dlist}
+listnamed: ${listnamed:hlist}
+listnamed: ${listnamed:elist}
+listnamed: ${listnamed:flist}
+listnamed: ${listnamed:nolist}
+listnamed: ${listnamed_d:dlist}
+listnamed: ${listnamed_d:hlist}
+listnamed: ${listnamed_z:dlist}
+
+listcount: ${listcount:a:b:c}
+listcount: ${listcount:}
+listcount: ${listcount:<;a;b;c}
+listcount: ${listcount:${listnamed:dlist}}
+
 # Tests with iscntrl() and illegal separators
 
 map: ${map{<\n a\n\nb\nc}{'$item'}}
@@ -69,6 +85,21 @@ reduce: ${reduce { <\n 1\n 2 \n 3 }{0}{${eval:$value+$item}}}
 reduce: ${reduce {<\x7f 1\x7f2\177 3}{0}{${eval:$value+$item}}}
 
 # Operators
+
+acl: ${acl
+acl: ${acl}
+acl: ${acl {a_nosuch}}
+acl: ${acl {a_ret}}
+acl: ${acl {a_ret}{person@dom.ain}}
+acl: ${acl {a_ret}{firstarg}{secondarg}}
+acl: ${acl {a_ret}{arg with spaces}}
+acl: ${acl {a_none}}
+acl: ${acl {a_none}{person@dom.ain}}
+acl: ${acl {a_deny}}
+acl: ${acl {a_deny}{person@dom.ain}}
+acl: ${acl {a_defer}}
+acl: ${acl {a_sub}{top_arg_1}{top_arg_2}{top_arg_3}}
+acl: ${reduce {1:2:3:4} {} {$value ${acl {a_ret}{$item}}}}
 
 addrss: ${address:local-part@dom.ain}
 addrss: ${address:Exim Person <local-part@dom.ain> (that's me)}
@@ -238,6 +269,12 @@ hash:   ${if eq {1}{2}{${hash_3:invalid}}{NO}}
 md5:    ${if eq {1}{2}{${md5:invalid}}{NO}}
 mask:   ${if eq {1}{2}{${mask:invalid}}{NO}}
 
+# Number suffixes in conditions
+1k: ${if >{1}{1k}{n}{y}}
+1K: ${if >{1}{1K}{n}{y}}
+1M: ${if >{1}{1M}{n}{y}}
+1G: ${if >{1}{1G}{n}{y}}
+
 # Numeric overflow
 # >32b should work, >64b not
 
@@ -385,6 +422,12 @@ first_delivery: ${if first_delivery{y}{n}}
 
 queue_running after or: ${if or{{eq {0}{0}}{queue_running}}{y}{n}}
 first_delivery after or: ${if or{{eq {0}{0}}{first_delivery}}{y}{n}}
+
+# acl expansion condition
+acl if: ${if acl {{a_ret}}               {Y:$value}{N:$value}}
+acl if: ${if acl {{a_ret}{argY}}         {Y:$value}{N:$value}}
+acl if: ${if acl {{a_deny}{argN}{arg2}}  {Y:$value}{N:$value}}
+acl if: ${if acl {{a_defer}{argN}{arg2}} {Y:$value}{N:$value}}
 
 # Default values for both if strings
 
@@ -882,4 +925,9 @@ quit
 exim -d -be
 match_ip:        15 ${if match_ip{1.2.3.4}{1.2.3}}
 match_ip:        16 ${if match_ip{1.2.3.4}{1.2.3.4/abc}}
+****
+# Operation of inlist and negated inlist
+exim -be
+${if inlist{aa}{aa} {in list}{not in list}}
+${if !inlist{aa}{aa} {not in list}{in list}}
 ****

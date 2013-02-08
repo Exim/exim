@@ -74,16 +74,22 @@ extern BOOL    move_frozen_messages;   /* Get them out of the normal directory *
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
-extern int     tls_active;             /* fd/socket when in a TLS session */
-extern int     tls_bits;               /* bits used in TLS session */
-extern BOOL    tls_certificate_verified; /* Client certificate verified */
-extern uschar *tls_cipher;             /* Cipher used */
-extern BOOL    tls_on_connect;         /* For older MTAs that don't STARTTLS */
-extern uschar *tls_on_connect_ports;   /* Ports always tls-on-connect */
-extern uschar *tls_peerdn;             /* DN from peer */
+typedef struct {
+  int     active;             /* fd/socket when in a TLS session */
+  int     bits;               /* bits used in TLS session */
+  BOOL    certificate_verified; /* Client certificate verified */
+  uschar *cipher;             /* Cipher used */
+  BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
+  uschar *on_connect_ports;   /* Ports always tls-on-connect */
+  uschar *peerdn;             /* DN from peer */
+  uschar *sni;                /* Server Name Indication */
+} tls_support;
+extern tls_support tls_in;
+extern tls_support tls_out;
 
 #ifdef SUPPORT_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
+extern BOOL    gnutls_enable_pkcs11;   /* Let GnuTLS autoload PKCS11 modules */
 extern uschar *gnutls_require_mac;     /* So some can be avoided */
 extern uschar *gnutls_require_kx;      /* So some can be avoided */
 extern uschar *gnutls_require_proto;   /* So some can be avoided */
@@ -102,7 +108,6 @@ extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
-extern uschar *tls_sni;                /* Server Name Indication */
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */
 extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */
@@ -128,13 +133,17 @@ extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 /* General global variables */
 
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
+extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
+extern uschar *acl_arg[9];             /* Argument to ACL call */
+extern int     acl_narg;               /* Number of arguments to ACL call */
 extern uschar *acl_not_smtp;           /* ACL run for non-SMTP messages */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *acl_not_smtp_mime;      /* For MIME parts of ditto */
 #endif
 extern uschar *acl_not_smtp_start;     /* ACL run at the beginning of a non-SMTP session */
+extern uschar *acl_removed_headers;    /* Headers deleted by an ACL */
 extern uschar *acl_smtp_auth;          /* ACL run for AUTH */
 extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
@@ -251,6 +260,8 @@ extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */
+extern BOOL    cutthrough_delivery;    /* Deliver in foreground */
+extern int     cutthrough_fd;          /* Connection for ditto */
 
 extern BOOL    daemon_listen;          /* True if listening required */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
@@ -331,6 +342,7 @@ extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When se
 #ifdef EXPERIMENTAL_DMARC
 extern int     dmarc_has_been_checked; /* Global variable to check if test has been called yet */
 extern uschar *dmarc_ar_header;        /* Expansion variable, suggested header for dmarc auth results */
+extern uschar *dmarc_history_file;     /* Expansion variable, file to store dmarc results */
 extern uschar *dmarc_status;           /* Expansion variable, one word value */
 extern uschar *dmarc_status_text;      /* Expansion variable, human readable value */
 extern uschar *dmarc_tld_file;         /* Mozilla TLDs text file */
@@ -344,6 +356,7 @@ extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standar
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */
 extern int     dns_retrans;            /* Retransmission time setting */
 extern int     dns_retry;              /* Number of retries */
+extern int     dns_use_dnssec;         /* When constructing DNS query, set DO flag */
 extern int     dns_use_edns0;          /* Coerce EDNS0 support on/off in resolver. */
 extern uschar *dnslist_domain;         /* DNS (black) list domain */
 extern uschar *dnslist_matched;        /* DNS (black) list matched key */
@@ -369,6 +382,7 @@ extern int     errors_sender_rc;       /* Return after message to sender*/
 extern gid_t   exim_gid;               /* To be used with exim_uid */
 extern BOOL    exim_gid_set;           /* TRUE if exim_gid set */
 extern uschar *exim_path;              /* Path to exec exim */
+extern const uschar *exim_sieve_extension_list[]; /* list of sieve extensions */
 extern uid_t   exim_uid;               /* Non-root uid for exim */
 extern BOOL    exim_uid_set;           /* TRUE if exim_uid set */
 extern int     expand_forbid;          /* RDO flags for forbidding things */
@@ -668,6 +682,7 @@ extern uschar *sender_fullhost;        /* Sender host name + address */
 extern uschar *sender_helo_name;       /* Host name from HELO/EHLO */
 extern uschar **sender_host_aliases;   /* Points to list of alias names */
 extern unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for incoming host */
+extern BOOL    sender_host_dnssec;     /* true if sender_host_name verified in DNSSEC */
 extern BOOL    sender_host_notsocket;  /* Set for -bs and -bS */
 extern BOOL    sender_host_unknown;    /* TRUE for -bs and -bS except inetd */
 extern uschar *sender_ident;           /* Sender identity via RFC 1413 */
@@ -777,6 +792,7 @@ extern uschar *submission_domain;      /* Domain for submission mode */
 extern BOOL    submission_mode;        /* Can be forced from ACL */
 extern uschar *submission_name;        /* User name set from ACL */
 extern BOOL    suppress_local_fixups;  /* Can be forced from ACL */
+extern BOOL    suppress_local_fixups_default; /* former is reset to this; override with -G */
 extern BOOL    synchronous_delivery;   /* TRUE if -odi is set */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */

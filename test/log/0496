@@ -1,3 +1,4 @@
+1999-03-02 09:44:33 X-ACL-Warn: data1 data1\nX-ACL-Warn: data2 data2\nX-ACL-Warn: data3\nX-ACL-Warn: \nX-ACL-Warn: data4\nAfter-Received: some text\nAt-Start: some text\nAt-End: some text\nX-multiline: foo\n\n	bar
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmaX-0005vi-00 => someone <someone@el.se> R=r9 T=t1
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

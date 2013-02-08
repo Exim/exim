@@ -241,10 +241,10 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        /* Added by PH: extra fields when TLS is in use or if the TCP/IP
        connection is local. */
 
-       if (tls_cipher != NULL)
+       if (tls_in.cipher != NULL)
                auth_extra_data = string_sprintf("secured\t%s%s",
-                   tls_certificate_verified? "valid-client-cert" : "",
-                   tls_certificate_verified? "\t" : "");
+                   tls_in.certificate_verified? "valid-client-cert" : "",
+                   tls_in.certificate_verified? "\t" : "");
        else if (interface_address != NULL &&
                 Ustrcmp(sender_host_address, interface_address) == 0)
                auth_extra_data = US"secured\t";

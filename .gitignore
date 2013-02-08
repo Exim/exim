@@ -2,3 +2,6 @@ exim-packaging-*
 *~
 *.bak
 .*.swp
+0*.patch
+*.orig
+*.rej

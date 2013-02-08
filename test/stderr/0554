@@ -75,7 +75,7 @@ reading retry information for R:x@y:<CALLER@myhost.test.ex> from subprocess
   existing delete item dropped
   added delete item
 LOG: MAIN
-  => x@y R=r1 T=smtp H=127.0.0.1 [127.0.0.1]
+  => x@y R=r1 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 Processing retry items
 Succeeded addresses:
 x@y

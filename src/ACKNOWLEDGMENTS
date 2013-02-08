@@ -1,5 +1,26 @@
 EXIM ACKNOWLEDGEMENTS
 
+This file is divided into two parts.  The first is the original list maintained
+by Exim's author, Philip Hazel, before he retired.  That has two sub-lists of
+contributors.  The second main part is an attempt to bring this up-to-date,
+using information from ChangeLog and git.
+
+Names may well occur more than once.
+
+There was a five year gap.  It is unlikely that this file is complete.
+If you contributed and are not listed, then *please* let us know.  Even if you
+don't much care, we want to acknowledge your help.  A contribution isn't just
+code, it includes reporting real bugs, helping with tracking problems down,
+documentation fixes and more.
+
+(Note that we have patches from folks in various countries and Latin1 is not
+ sufficient to handle all of their names acceptably.
+ This file should be in UTF-8).
+
+-Phil Pennock, pp The Exim Maintainers.
+
+============================8< cut here >8==============================
+
 I have not been very good at keeping a proper record of all the people who have
 sent in patches and other contributions to Exim. I am going to try to do better
 in the future by keeping a record in this file. First, I'll put a list of all
@@ -19,11 +40,6 @@ Philip Hazel
 
 Lists created: 20 November 2002
 Last updated (by PH):  22 August 2007
-
-  Note: at current time, Exim is maintained in git; the commit messages
-  typically credit sources, at the very least.  Also the ChangeLog file
-  will record who provided patches.  This file is not very up-to-date.
-  -Phil Pennock, 2012
 
 THE OLD LIST
 
@@ -198,7 +214,7 @@ Alex Kiernan              Patches for libradius
 Tom Kistner               SPA server code
                           Writing and maintaining the content scanning
                             extension (exiscan)
-J�rgen Kreileder          Fix for cyrus_sasl advertisement problem
+Jürgen Kreileder          Fix for cyrus_sasl advertisement problem
 Friso Kuipers             Patch for GDBM problem
 Matthias Lederhofer       Diagnosing and patching obscure and subtle socket bug
 Chris Liddiard            Fix for bug in exiqsumm
@@ -287,3 +303,164 @@ David Woodhouse           SQLite support proof of concept code
                           control=freeze/no_tell basic code
 Erik ?                    patch to use select() instead of poll() on OS X
 ****
+
+============================8< cut here >8==============================
+
+The Exim Maintainers Lists
+==========================
+
+We'll start with the Exim Maintainers, who are the people with commit
+access to the master git repository and a couple more folk; then we'll list
+known contributors since the lists above.  Then we list the folks who work
+to make Exim available on various operating systems as porters/packagers.
+
+For the Maintainers, we may list primary focus area.  All maintainers
+will have contributed to work outside those areas.  The maintainers'
+contributions are initialled in ChangeLog.  Changes from before maintainership
+should be listed as a contributor.
+
+For other contributors, we will attempt to track all contributions.  Note that
+the entries per-person were added initially by scanning back through the
+ChangeLog and git, so are not in chronological order.
+
+[ With names from all over the world, we need one sort order.  I've arbitrarily
+  decreed it to be "normal British address-book sort order, but based on family
+  name rather than whichever comes last and using whatever seems sanest for
+  sort order of characters which do not collate onto an English character",
+  which should handle the majority of cases.  If it is not adequate for some
+  situation, we'll resolve it then.
+  We leave out titles and honourifics, just names and handles. ]
+
+
+Maintainers
+-----------
+Steve Campbell            eximstats maintainer.
+Mike Cardwell             Exim webmaster.
+Tony Finch                Unbreaks lots of things. Ratelimit code.
+Graeme Fowler
+Michael Haardt            Maintains Sieve support, works on DKIM.
+Jeremy Harris
+Philip Hazel              Retired.
+                          Originating architect and author of the Exim project.
+John Jetmore
+Tom Kistner               DKIM. Content scanning. SPA.
+Todd Lyons
+Nigel Metheringham        Transitioning out of Default Victim status.
+Phil Pennock              Release Coordinator. Breaks lots of things.
+David Woodhouse           Dynamic modules. Security.
+
+
+Contributors
+------------
+Andrew Aitchison          Spotted cmdline AV scanner regression with -bmalware
+Simon Arlott              Code for outbound SSL-on-connect
+                          Patch implementing %M datestamping in log filenames
+                          Patch restoring SIGPIPE handler for child_open_uid
+                          Patch fixing NUL term/init of DKIM strings
+                          Patch fixing dnsdb TXT record handling for DKIM
+                          Patch speeding up DomainKeys signing
+Dmitry Banschikov         Path to check for LDAP TLS initialisation errors
+René Berber               Pointed out mistake in build instructions for QNX
+Johannes Berg             Maintained dynamically loadable module code out-of-tree
+                          Patch expanding spamd_address if contains $
+Jasen Betts               Spotted lack of docs re bool{} on empty string 
+                            and typo fixes
+Wolfgang Breyha           DCC integration; expandable spamd_address
+                          Patch handling IPv6 addresses for SPF
+                          Patch fixing DKIM verification when signature header
+                            not prepended
+                          Unbroke Cyrus SASL auth after incorrect SSF addition
+                          Logging of 8bitmime reception
+David Brownlee            Patch improving local interface IP address detection
+Eugene Bujak              Security patch fixing buffer overflow in string_format
+Adam Ciarcinski           Patch for TLS-enabled LDAP (alternative to ldaps)
+Dennis Davis              Patches fixing compilation in older compilers
+                          Reported dynlookup framework build issues on Solaris
+Serge Demonchaux          Maintained dynamically loadable module code out-of-tree
+                          Patch fixing sign/unsigned and UTF mismatches
+Uwe Doering               Patch fixing DKIM multiple signature generation
+Maxim Dounin              Patch portability of accept() len
+Frank Elsner              Fixed build reliability by exporting LC_ALL=C
+Paul Fisher               Diagnosed smtp_cmd_buffer_size affecting GSSAPI SASL
+                            initial response, raised buffer size
+                          Patch adjusting connection_max_messages wait-DB usage
+Oliver Fleischmann        Patches fixing compilation in older compilers
+Julian Gilbey             Helped improve userforward local_part_suffix docs
+Richard Godbee            Patch fixing usage fprintf
+Steve Haslam              Maintained dynamically loadable module code out-of-tree
+Oliver Heesakkers         Debugged dynamic lookup build issues for LOOKUP_foo.
+Dmitry Isaikin            Spotted short writes to local files
+                          Patch for format string regression
+Alun Jones                Patch for NULL dereference in localhost_number
+Brad Jorsch               Patches fixing Resent-*: header handling
+John Hall                 Updated PCRE to 7.4 (when in-tree)
+Jeremy Harris             Patch to log authentication information in reject log
+                          Reported a ${extract error message typo
+Jakob Hirsch              Patch implementing freeze_signal on pipe transports
+                          Suggested X-Envelope-Sender: for content-scanning
+                          Patch fixing Base64 decode bugs
+John Horne                Patch adding $av_failed
+                          Patch escaping log text after lookup expansion defer
+                          Documentation fixes
+                          Pointed out ClamAV ExtendedDetectionInfo compat issue
+Regid Ichira              Documentation fixes
+Andreas M. Kirchwitz      Let /dev/null have normal permissions (4.73 fallout)
+Roberto Lima              Patch letting exicyclog rotate paniclog
+Todd Lyons                Patch handling TAB in MAIL arguments
+Christof Meerwald         Provided insight & suggested patch for GnuTLS update
+Andreas Metzler           Patch upgrading PolarSSL (DKIM)
+                          Reported delivery logging problems (4.73 fallout)
+                          Patch to build without WITH_CONTENT_SCAN
+                          Patches fixing docs for max_rcpts, relay hosts/domains
+                          Documentation fixes
+Kirill Miazine            Multiple patches improving Dovecot authenticator
+Robert Millan             Wrote SPF Best Guess support
+Marcin Mirosław           Running static analysis tools for us, catching issues
+Dirk Mueller              Patch extending use of our printf() compiler checking
+Andrey Oktyabrski         Patch fixing wide character breakage in rfc2047 coding
+                          Patch keeping SQL errors from being returned over SMTP
+Phil Pennock              Patch adding gnutls_compat_mode
+                          Patches adding bool{} and later bool_lax{}
+                          Patch for TLS library version reporting build/runtime
+                          Patch letting EXPN work under TLS
+                          More patches built up & applied when became maintainer
+Mark Daniel Reidel        Patch adding f-protd malware scanner support
+Steven A Reisman          Pointed out ${eval:x % 0} SIGFPE
+Todd Rinaldo              Patch fixing transport filter timeout
+Dan Rosenberg             Security notification & patch for hardlink attack on
+                            sticky mail directory
+                          Security notification of race condition in MBX locking
+Jay Rouman                Kept our copyright claim in the 21st century, not 11th
+                          Drew attention to SSL docs and epoch issue on 32bit
+Heiko Schlittermann       Patch making maildir_use_size_file expand
+                          Patch fixing maildir quota file races
+                          Patch fixing make parallelisation
+                          Updates to eximstats, exiwhat
+Janne Snabb               TLS extensive debugging & failure root cause analysis
+                          Added SPF record type support to dnsdb lookup
+Jan Srzednicki            Patch improving Dovecot authenticator
+                          Reported crash in Dovecot authenticator
+Martin Tscholak           Reported issue with TLS anonymous ciphersuites
+Stephen Usher             Patch fixing use of Oracle's LDAP libraries on Solaris
+Holger Weiß               Patch leting ${run} return more data than OS pipe
+                            buffer size
+Moritz Wilhelmy           Pointed out PCRE_PRERELEASE glitch
+Alain Williams            Patch supporting MySQL stored procedures
+Mark Zealey               Patch updating $message_linecount for maildir_tag
+                          Patch improving spamd server selection
+
+
+Packagers
+---------
+Mark Baker                Debian, through Exim 3
+Hilko Bengen              Debian, Exim 4, current(*) maintenance
+Tim Cutts                 Debian, initial packaging
+Marc Haber                Debian, Exim 4, current(*) maintenance
+Steve Haslam              Debian, Exim 4
+Andreas Metzler           Debian, current(*) maintenance
+Christian Perrier         Debian, current(*) maintenance
+
+(*) Current as of our last information as of release: Exim 4.81
+
+
+# vim: set fileencoding=utf-8 expandtab :

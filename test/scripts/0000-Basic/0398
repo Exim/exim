@@ -3,7 +3,7 @@ need_ipv4
 #
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -22,7 +22,7 @@ quit
 ****
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -38,7 +38,7 @@ quit
 ****
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK

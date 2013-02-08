@@ -41,6 +41,7 @@ it's a default value. */
 #define DELIVER_IN_BUFFER_SIZE     8192
 #define DELIVER_OUT_BUFFER_SIZE    8192
 #define DISABLE_DKIM
+#define DISABLE_DNSSEC
 #define DISABLE_D_OPTION
 
 #define ENABLE_DISABLE_FSYNC
@@ -49,7 +50,8 @@ it's a default value. */
 #define EXIMDB_LOCK_TIMEOUT          60
 #define EXIMDB_LOCKFILE_MODE       0640
 #define EXIMDB_MODE                0640
-#define EXIM_CLIENT_DH_MIN_BITS
+#define EXIM_CLIENT_DH_MIN_MIN_BITS         512
+#define EXIM_CLIENT_DH_DEFAULT_MIN_BITS    1024
 #define EXIM_GNUTLS_LIBRARY_LOG_LEVEL
 #define EXIM_SERVER_DH_BITS_PRE2_12
 #define EXIM_PERL
@@ -179,18 +181,10 @@ just in case. */
 #define ROOT_UID                      0
 #define ROOT_GID                      0
 
-/* Sizes for integer arithmetic.  Go for 64bit; can be overridden in OS/os.h-FOO */
-#ifndef int_eximarith_t
- #define int_eximarith_t int64_t
-#endif
-#ifndef PR_EXIM_ARITH
- #define PR_EXIM_ARITH "%" PRId64		/* C99 standard, printf %lld */
-#endif
-#ifndef SC_EXIM_ARITH
- #define SC_EXIM_ARITH "%" SCNi64		/* scanf incl. 0x prefix */
-#endif
-#ifndef SC_EXIM_DEC
- #define SC_EXIM_DEC   "%" SCNd64		/* scanf decimal */
-#endif
+/* Sizes for integer arithmetic.  Go for 64bit; can be overridden in OS/Makefile-FOO */
+#define int_eximarith_t int64_t
+#define PR_EXIM_ARITH "%" PRId64		/* C99 standard, printf %lld */
+#define SC_EXIM_ARITH "%" SCNi64		/* scanf incl. 0x prefix */
+#define SC_EXIM_DEC   "%" SCNd64		/* scanf decimal */
 
 /* End of config.h.defaults */

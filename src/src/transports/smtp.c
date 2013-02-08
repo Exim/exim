@@ -55,6 +55,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
   { "dns_search_parents",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_search_parents) },
+  { "dscp",                 opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dscp) },
   { "fallback_hosts",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, fallback_hosts) },
   { "final_timeout",        opt_time,
@@ -104,6 +106,10 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
+#ifdef SUPPORT_TLS
+  { "hosts_verify_avoid_tls", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_verify_avoid_tls) },
+#endif
   { "interface",            opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, interface) },
   { "keepalive",            opt_bool,
@@ -129,6 +135,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, tls_certificate) },
   { "tls_crl",              opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_crl) },
+  { "tls_dh_min_bits",      opt_int,
+      (void *)offsetof(smtp_transport_options_block, tls_dh_min_bits) },
   { "tls_privatekey",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_privatekey) },
   { "tls_require_ciphers",  opt_stringptr,
@@ -160,11 +168,13 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* interface */
   NULL,                /* port */
   US"smtp",            /* protocol */
+  NULL,                /* DSCP */
   NULL,                /* serialize_hosts */
   NULL,                /* hosts_try_auth */
   NULL,                /* hosts_require_auth */
   NULL,                /* hosts_require_tls */
   NULL,                /* hosts_avoid_tls */
+  US"*",               /* hosts_verify_avoid_tls */
   NULL,                /* hosts_avoid_pipelining */
   NULL,                /* hosts_avoid_esmtp */
   NULL,                /* hosts_nopass_tls */
@@ -195,9 +205,11 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* gnutls_require_kx */
   NULL,                /* gnutls_require_mac */
   NULL,                /* gnutls_require_proto */
+  NULL,                /* tls_sni */
   NULL,                /* tls_verify_certificates */
-  TRUE,                /* tls_tempfail_tryclear */
-  NULL                 /* tls_sni */
+  EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
+                       /* tls_dh_min_bits */
+  TRUE                 /* tls_tempfail_tryclear */
 #endif
 #ifndef DISABLE_DKIM
  ,NULL,                /* dkim_canon */
@@ -895,35 +907,19 @@ outblock.authenticating = FALSE;
 
 /* Reset the parameters of a TLS session. */
 
-tls_bits = 0;
-tls_cipher = NULL;
-tls_peerdn = NULL;
+tls_in.bits = 0;
+tls_in.cipher = NULL;	/* for back-compatible behaviour */
+tls_in.peerdn = NULL;
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
-tls_sni = NULL;
+tls_in.sni = NULL;
 #endif
 
-/* If an authenticated_sender override has been specified for this transport
-instance, expand it. If the expansion is forced to fail, and there was already
-an authenticated_sender for this message, the original value will be used.
-Other expansion failures are serious. An empty result is ignored, but there is
-otherwise no check - this feature is expected to be used with LMTP and other
-cases where non-standard addresses (e.g. without domains) might be required. */
-
-if (ob->authenticated_sender != NULL)
-  {
-  uschar *new = expand_string(ob->authenticated_sender);
-  if (new == NULL)
-    {
-    if (!expand_string_forcedfail)
-      {
-      uschar *message = string_sprintf("failed to expand "
-        "authenticated_sender: %s", expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE);
-      return ERROR;
-      }
-    }
-  else if (new[0] != 0) local_authenticated_sender = new;
-  }
+tls_out.bits = 0;
+tls_out.cipher = NULL;	/* the one we may use for this transport */
+tls_out.peerdn = NULL;
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+tls_out.sni = NULL;
+#endif
 
 #ifndef SUPPORT_TLS
 if (smtps)
@@ -941,7 +937,7 @@ if (continue_hostname == NULL)
   {
   inblock.sock = outblock.sock =
     smtp_connect(host, host_af, port, interface, ob->connect_timeout,
-      ob->keepalive);   /* This puts port into host->port */
+      ob->keepalive, ob->dscp);   /* This puts port into host->port */
 
   if (inblock.sock < 0)
     {
@@ -1136,6 +1132,7 @@ if (tls_offered && !suppress_tls &&
       ob->tls_verify_certificates,
       ob->tls_crl,
       ob->tls_require_ciphers,
+      ob->tls_dh_min_bits,
       ob->command_timeout);
 
     /* TLS negotiation failed; give an error. From outside, this function may
@@ -1156,8 +1153,8 @@ if (tls_offered && !suppress_tls &&
       {
       if (addr->transport_return == PENDING_DEFER)
         {
-        addr->cipher = tls_cipher;
-        addr->peerdn = tls_peerdn;
+        addr->cipher = tls_out.cipher;
+        addr->peerdn = tls_out.peerdn;
         }
       }
     }
@@ -1173,7 +1170,7 @@ another process, and so we won't have expanded helo_data above. We have to
 expand it here. $sending_ip_address and $sending_port are set up right at the
 start of the Exim process (in exim.c). */
 
-if (tls_active >= 0)
+if (tls_out.active >= 0)
   {
   char *greeting_cmd;
   if (helo_data == NULL)
@@ -1235,7 +1232,7 @@ we skip this. */
 
 if (continue_hostname == NULL
     #ifdef SUPPORT_TLS
-    || tls_active >= 0
+    || tls_out.active >= 0
     #endif
     )
   {
@@ -1466,6 +1463,29 @@ if (smtp_use_size)
   {
   sprintf(CS p, " SIZE=%d", message_size+message_linecount+ob->size_addition);
   while (*p) p++;
+  }
+
+/* If an authenticated_sender override has been specified for this transport
+instance, expand it. If the expansion is forced to fail, and there was already
+an authenticated_sender for this message, the original value will be used.
+Other expansion failures are serious. An empty result is ignored, but there is
+otherwise no check - this feature is expected to be used with LMTP and other
+cases where non-standard addresses (e.g. without domains) might be required. */
+
+if (ob->authenticated_sender != NULL)
+  {
+  uschar *new = expand_string(ob->authenticated_sender);
+  if (new == NULL)
+    {
+    if (!expand_string_forcedfail)
+      {
+      uschar *message = string_sprintf("failed to expand "
+        "authenticated_sender: %s", expand_string_message);
+      set_errno(addrlist, 0, message, DEFER, FALSE);
+      return ERROR;
+      }
+    }
+  else if (new[0] != 0) local_authenticated_sender = new;
   }
 
 /* Add the authenticated sender address if present */
@@ -1995,7 +2015,7 @@ if (completed_address && ok && send_quit)
   BOOL more;
   if (first_addr != NULL || continue_more ||
         (
-           (tls_active < 0 ||
+           (tls_out.active < 0 ||
            verify_check_this_host(&(ob->hosts_nopass_tls), NULL, host->name,
              host->address, NULL) != OK)
         &&
@@ -2044,9 +2064,9 @@ if (completed_address && ok && send_quit)
       don't get a good response, we don't attempt to pass the socket on. */
 
       #ifdef SUPPORT_TLS
-      if (tls_active >= 0)
+      if (tls_out.active >= 0)
         {
-        tls_close(TRUE);
+        tls_close(FALSE, TRUE);
         if (smtps)
           ok = FALSE;
         else
@@ -2096,7 +2116,7 @@ if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
 END_OFF:
 
 #ifdef SUPPORT_TLS
-tls_close(TRUE);
+tls_close(FALSE, TRUE);
 #endif
 
 /* Close the socket, and return the appropriate value, first setting
@@ -3094,9 +3114,12 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
 /* Update the database which keeps information about which messages are waiting
 for which hosts to become available. For some message-specific errors, the
 update_waiting flag is turned off because we don't want follow-on deliveries in
-those cases. */
+those cases.  If this transport instance is explicitly limited to one message
+per connection then follow-on deliveries are not possible and there's no need
+to create/update the per-transport wait-<transport_name> database. */
 
-if (update_waiting) transport_update_waiting(hostlist, tblock->name);
+if (update_waiting && tblock->connection_max_messages != 1)
+  transport_update_waiting(hostlist, tblock->name);
 
 END_TRANSPORT:
 

@@ -6,6 +6,121 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.81
+------------
+
+ 1. New command-line option -bI:sieve will list all supported sieve extensions
+    of this Exim build on standard output, one per line.
+    ManageSieve (RFC 5804) providers managing scripts for use by Exim should
+    query this to establish the correct list to include in the protocol's
+    SIEVE capability line.
+
+ 2. If the -n option is combined with the -bP option, then the name of an
+    emitted option is not output, only the value (if visible to you).
+    For instance, "exim -n -bP pid_file_path" should just emit a pathname
+    followed by a newline, and no other text.
+
+ 3. When built with SUPPORT_TLS and USE_GNUTLS, the SMTP transport driver now
+    has a "tls_dh_min_bits" option, to set the minimum acceptable number of
+    bits in the Diffie-Hellman prime offered by a server (in DH ciphersuites)
+    acceptable for security.  (Option accepted but ignored if using OpenSSL).
+    Defaults to 1024, the old value.  May be lowered only to 512, or raised as
+    far as you like.  Raising this may hinder TLS interoperability with other
+    sites and is not currently recommended.  Lowering this will permit you to
+    establish a TLS session which is not as secure as you might like.
+
+    Unless you really know what you are doing, leave it alone.
+
+ 4. If not built with DISABLE_DNSSEC, Exim now has the main option
+    dns_use_dnssec; if set to 1 then Exim will initialise the resolver library
+    to send the DO flag to your recursive resolver.  If you have a recursive
+    resolver, which can set the Authenticated Data (AD) flag in results, Exim
+    can now detect this.
+
+    Current status: work-in-progress; $sender_host_dnssec variable added.
+
+ 5. DSCP support for outbound connections: on a transport using the smtp driver,
+    set "dscp = ef", for instance, to cause the connections to have the relevant
+    DSCP (IPv4 TOS or IPv6 TCLASS) value in the header.
+
+    Similarly for inbound connections, there is a new control modifier, dscp,
+    so "warn control = dscp/ef" in the connect ACL, or after authentication.
+
+    Supported values depend upon system libraries.  "exim -bI:dscp" to list the
+    ones Exim knows of.  You can also set a raw number 0..0x3F.
+
+ 6. The -G command-line flag is no longer ignored; it is now equivalent to an
+    ACL setting "control = suppress_local_fixups".  The -L command-line flag
+    is now accepted and forces use of syslog, with the provided tag as the
+    process name.  A few other flags used by Sendmail are now accepted and
+    ignored.
+
+ 7. New cutthrough routing feature.  Requested by a "control = cutthrough_delivery"
+    ACL modifier; works for single-recipient mails which are recieved on and
+    deliverable via SMTP.  Using the connection made for a recipient verify,
+    if requested before the verify, or a new one made for the purpose while
+    the inbound connection is still active.  The bulk of the mail item is copied
+    direct from the inbound socket to the outbound (as well as the spool file).
+    When the source notifies the end of data, the data acceptance by the destination
+    is negociated before the acceptance is sent to the source.  If the destination
+    does not accept the mail item, for example due to content-scanning, the item
+    is not accepted from the source and therefore there is no need to generate
+    a bounce mail.  This is of benefit when providing a secondary-MX service.
+    The downside is that delays are under the control of the ultimate destination
+    system not your own.
+
+    The Recieved-by: header on items delivered by cutthrough is generated
+    early in reception rather than at the end; this will affect any timestamp
+    included.  The log line showing delivery is recorded before that showing
+    reception; it uses a new ">>" tag instead of "=>".
+
+    To support the feature, verify-callout connections can now use ESMTP and TLS.
+    The usual smtp transport options are honoured, plus a (new, default everything)
+    hosts_verify_avoid_tls.
+
+    New variable families named tls_in_cipher, tls_out_cipher etc. are introduced
+    for specific access to the information for each connection.  The old names
+    are present for now but deprecated.
+
+    Not yet supported: IGNOREQUOTA, SIZE, PIPELINING, AUTH.
+
+ 8. New expansion operators ${listnamed:name} to get the content of a named list
+    and ${listcount:string} to count the items in a list.
+
+ 9. New global option "gnutls_enable_pkcs11", defaults false.  The GnuTLS
+    rewrite in 4.80 combines with GnuTLS 2.12.0 or later, to autoload PKCS11
+    modules.  For some situations this is desirable, but we expect admin in
+    those situations to know they want the feature.  More commonly, it means
+    that GUI user modules get loaded and are broken by the setuid Exim being
+    unable to access files specified in environment variables and passed
+    through, thus breakage.  So we explicitly inhibit the PKCS11 initialisation
+    unless this new option is set.
+
+10. The "acl = name" condition on an ACL now supports optional arguments.
+    New expansion item "${acl {name}{arg}...}" and expansion condition
+    "acl {{name}{arg}...}" are added.  In all cases up to nine arguments
+    can be used, appearing in $acl_arg1 to $acl_arg9 for the called ACL.
+    Variable $acl_narg contains the number of arguments.  If the ACL sets
+    a "message =" value this becomes the result of the expansion item,
+    or the value of $value for the expansion condition.  If the ACL returns
+    accept the expansion condition is true; if reject, false.  A defer
+    return results in a forced fail.
+
+11. Routers and transports can now have multiple headers_add and headers_remove
+    option lines.  The concatenated list is used.
+
+12. New ACL modifier "remove_header" can remove headers before message gets
+    handled by routers/transports.
+
+13. New dnsdb lookup pseudo-type "a+".  A sequence of "a6" (if configured),
+    "aaaa" and "a" lookups is done and the full set of results returned.
+
+14. New expansion variable $headers_added with content from ACL add_header
+    modifier (but not yet added to messsage).
+
+15. New 8bitmime status logging option for received messages.  Log field "M8S".
+
+
 Version 4.80
 ------------
 
@@ -252,13 +367,13 @@ Version 4.73
     then henceforth you will have to maintain your own local patches to strip
     the safeties off.
 
- 8. There is a new expansion operator, bool_lax{}.  Where bool{} uses the ACL
+ 8. There is a new expansion condition, bool_lax{}.  Where bool{} uses the ACL
     condition logic to determine truth/failure and will fail to expand many
     strings, bool_lax{} uses the router condition logic, where most strings
     do evaluate true.
     Note: bool{00} is false, bool_lax{00} is true.
 
- 9. Routers now support multiple "condition" tests,
+ 9. Routers now support multiple "condition" tests.
 
 10. There is now a runtime configuration option "tcp_wrappers_daemon_name".
     Setting this allows an admin to define which entry in the tcpwrappers

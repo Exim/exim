@@ -1,2 +1,5 @@
 Local
 build-*
+tags
+cscope.log
+cscope.out

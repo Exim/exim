@@ -186,7 +186,7 @@ if (ob->permit_coredump)
     if (errno != ENOSYS && errno != ENOTSUP)
 #endif
       log_write(0, LOG_MAIN,
-          "delivery setrlimit(RLIMIT_CORE, RLIMI_INFINITY) failed: %s",
+          "delivery setrlimit(RLIMIT_CORE, RLIM_INFINITY) failed: %s",
           strerror(errno));
     }
   }

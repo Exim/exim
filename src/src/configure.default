@@ -542,6 +542,21 @@ dnslookup:
   no_more
 
 
+# This alternative router can be used when you want to send all mail to a
+# server which handles DNS lookups for you; an ISP will typically run such
+# a server for their customers.  If you uncomment "smarthost" then you
+# should comment out "dnslookup" above.  Setting a real hostname in route_data
+# wouldn't hurt either.
+
+# smarthost:
+#   driver = manualroute
+#   domains = ! +local_domains
+#   transport = remote_smtp
+#   route_data = MAIL.HOSTNAME.FOR.CENTRAL.SERVER.EXAMPLE
+#   ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+#   no_more
+
+
 # The remaining routers handle addresses in the local domain(s), that is those
 # domains that are defined by "domainlist local_domains" above.
 
@@ -771,7 +786,7 @@ begin authenticators
 #  server_set_id              = $auth2
 #  server_prompts             = :
 #  server_condition           = Authentication is not yet configured
-#  server_advertise_condition = ${if def:tls_cipher }
+#  server_advertise_condition = ${if def:tls_in_cipher }
 
 # LOGIN authentication has traditional prompts and responses. There is no
 # authorization ID in this mechanism, so unlike PLAIN the username and
@@ -783,7 +798,7 @@ begin authenticators
 #  server_set_id              = $auth1
 #  server_prompts             = <| Username: | Password:
 #  server_condition           = Authentication is not yet configured
-#  server_advertise_condition = ${if def:tls_cipher }
+#  server_advertise_condition = ${if def:tls_in_cipher }
 
 
 ######################################################################

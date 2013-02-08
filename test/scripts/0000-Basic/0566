@@ -1,0 +1,126 @@
+# Optional MAIL FROM args processing
+#
+# SIZE alone
+exim -bs
+ehlo Testing
+mail from:<x@y> SIZE=1000
+rcpt to:<userx@test.ex>
+quit
+****
+# BODY alone
+exim -bs
+ehlo Testing
+mail from:<x@y> BODY=7BIT
+rcpt to:<userx@test.ex>
+quit
+****
+# SIZE then BODY
+exim -bs
+ehlo Testing
+mail from:<x@y> SIZE=1000 BODY=7BIT
+rcpt to:<userx@test.ex>
+quit
+****
+# BODY then SIZE
+exim -bs
+ehlo Testing
+mail from:<x@y> BODY=7BIT SIZE=1000
+rcpt to:<userx@test.ex>
+quit
+****
+# AUTH then BODY then SIZE
+exim -bs
+ehlo Testing
+mail from:<x@y> AUTH=x@y BODY=7BIT SIZE=1000
+rcpt to:<userx@test.ex>
+quit
+****
+# BODY then AUTH then SIZE
+exim -bs
+ehlo Testing
+mail from:<x@y> BODY=7BIT AUTH=x@y SIZE=1000
+rcpt to:<userx@test.ex>
+quit
+****
+# SIZE then BODY then AUTH
+exim -bs
+ehlo Testing
+mail from:<x@y> SIZE=1000 BODY=7BIT AUTH=x@y
+rcpt to:<userx@test.ex>
+quit
+****
+# SIZE then BODY then SIZE
+exim -bs
+ehlo Testing
+mail from:<x@y> SIZE=1000 BODY=7BIT SIZE=1200
+rcpt to:<userx@test.ex>
+quit
+****
+# (over)SIZE then BODY
+exim -bs
+ehlo Testing
+mail from:<x@y> SIZE=40004 BODY=8BITMIME
+rcpt to:<userx@test.ex>
+quit
+****
+# BODY then (over)SIZE
+exim -bs
+ehlo Testing
+mail from:<x@y> BODY=8BITMIME SIZE=40004
+rcpt to:<userx@test.ex>
+quit
+****
+# no BODY, data
+exim -bs
+ehlo Testing
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+Subject: test
+
+foo
+.
+quit
+****
+sleep 1
+# 7bit BODY, data
+exim -bs
+ehlo Testing
+mail from:<x@y> BODY=7BIT
+rcpt to:<userx@test.ex>
+data
+Subject: test
+
+foo
+.
+quit
+****
+sleep 1
+# 8bit BODY, data
+exim -bs
+ehlo Testing
+mail from:<x@y> BODY=8BITMIME
+rcpt to:<userx@test.ex>
+data
+Subject: test
+
+foo
+.
+quit
+****
+sleep 1
+# bad BODY, data
+# should fail
+1
+exim -bs
+ehlo Testing
+mail from:<x@y> BODY=wrong
+rcpt to:<userx@test.ex>
+data
+Subject: test
+
+foo
+.
+quit
+****
+no_msglog_check

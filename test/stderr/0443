@@ -16,9 +16,8 @@
 >>> Attempting full verification using callout
 >>> callout cache: no domain record found
 >>> callout cache: no address record found
->>> interface=NULL port=25
->>> Connecting to ten-1.test.ex [V4NET.0.0.1]:25 ... failed: Network Error
+>>> cannot callout via null transport
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "rcpt"
-LOG: H=[V4NET.0.0.1] sender verify defer for <x@ten-1.test.ex>: could not connect to ten-1.test.ex [V4NET.0.0.1]: Network Error
+LOG: H=[V4NET.0.0.1] sender verify defer for <x@ten-1.test.ex>: Could not complete sender verify callout
 LOG: H=[V4NET.0.0.1] F=<x@ten-1.test.ex> temporarily rejected RCPT x@y: Could not complete sender verify callout

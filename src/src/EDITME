@@ -412,6 +412,14 @@ EXIM_MONITOR=eximon.bin
 
 
 #------------------------------------------------------------------------------
+# By default, Exim has support for checking the AD bit in a DNS response, to
+# determine if DNSSEC validation was successful.  If your system libraries
+# do not support that bit, then set DISABLE_DNSSEC to "yes"
+
+# DISABLE_DNSSEC=yes
+
+
+#------------------------------------------------------------------------------
 # Compiling Exim with experimental features. These are documented in
 # experimental-spec.txt. "Experimental" means that the way these features are
 # implemented may still change. Backward compatibility is not guaranteed.

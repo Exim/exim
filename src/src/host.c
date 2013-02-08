@@ -1177,10 +1177,10 @@ host_is_tls_on_connect_port(int port)
 {
 int sep = 0;
 uschar buffer[32];
-uschar *list = tls_on_connect_ports;
+uschar *list = tls_in.on_connect_ports;
 uschar *s;
 
-if (tls_on_connect) return TRUE;
+if (tls_in.on_connect) return TRUE;
 
 while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {
@@ -1597,7 +1597,7 @@ dns_record *rr;
 dns_answer dnsa;
 dns_scan dnss;
 
-host_lookup_deferred = host_lookup_failed = FALSE;
+sender_host_dnssec = host_lookup_deferred = host_lookup_failed = FALSE;
 
 HDEBUG(D_host_lookup)
   debug_printf("looking up host name for %s\n", sender_host_address);
@@ -1638,6 +1638,13 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
       int ssize = 264;
       int count = 0;
       int old_pool = store_pool;
+
+      /* Ideally we'd check DNSSEC both forward and reverse, but we use the
+      gethost* routines for forward, so can't do that unless/until we rewrite. */
+      sender_host_dnssec = dns_is_secure(&dnsa);
+      DEBUG(D_dns)
+        debug_printf("Reverse DNS security status: %s\n",
+            sender_host_dnssec ? "DNSSEC verified (AD)" : "unverified");
 
       store_pool = POOL_PERM;        /* Save names in permanent storage */
 

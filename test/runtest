@@ -36,7 +36,9 @@ $gnutls_dh_bits_normal = 2236;
 $cf = "bin/cf -exact";
 $cr = "\r";
 $debug = 0;
+$force_continue = 0;
 $force_update = 0;
+$log_failed_filename = "failed-summary.log";
 $more = "less -XF";
 $optargs = "";
 $save_output = 0;
@@ -313,6 +315,7 @@ return @yield;
 
 sub munge {
 my($file) = $_[0];
+my($extra) = $_[1];
 my($yield) = 0;
 my(@saved) = ();
 
@@ -338,6 +341,13 @@ $spid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 while(<IN>)
   {
 RESET_AFTER_EXTRA_LINE_READ:
+  # Custom munges
+  if ($extra)
+    {
+    next if $extra =~ m%^/%  &&  eval $extra;
+    eval $extra if $extra =~ m/^s/;
+    }
+
   # Check for "*** truncated ***"
   $yield = 1 if /\*\*\* truncated \*\*\*/;
 
@@ -998,14 +1008,41 @@ return $yield;
 
 # Arguments: [0] the prompt string
 #            [1] if there is a U in the prompt and $force_update is true
+#            [2] if there is a C in the prompt and $force_continue is true
 # Returns:   nothing (it sets $_)
 
 sub interact{
 print $_[0];
 if ($_[1]) { $_ = "u"; print "... update forced\n"; }
+  elsif ($_[2]) { $_ = "c"; print "... continue forced\n"; }
   else { $_ = <T>; }
 }
 
+
+
+##################################################
+#    Subroutine to log in force_continue mode    #
+##################################################
+
+# In force_continue mode, we just want a terse output to a statically
+# named logfile.  If multiple files in same batch (stdout, stderr, etc)
+# all have mismatches, it will log multiple times.
+#
+# Arguments: [0] the logfile to append to
+#            [1] the testno that failed
+# Returns:   nothing
+
+
+
+sub log_failure {
+  my $logfile = shift();
+  my $testno  = shift();
+  my $detail  = shift() || '';
+  if ( open(my $fh, ">>", $logfile) ) {
+    print $fh "Test $testno $detail failed\n";
+    close $fh;
+  }
+}
 
 
 
@@ -1022,6 +1059,7 @@ if ($_[1]) { $_ = "u"; print "... update forced\n"; }
 #             [2] where to put the munged copy
 #             [3] the name of the saved file
 #             [4] TRUE if this is a log file whose deliveries must be sorted
+#             [5] optionally, a custom munge command
 #
 # Returns:    0 comparison succeeded or differences to be ignored
 #             1 comparison failed; files may have been updated (=> re-compare)
@@ -1029,7 +1067,7 @@ if ($_[1]) { $_ = "u"; print "... update forced\n"; }
 # Does not return if the user replies "Q" to a prompt.
 
 sub check_file{
-my($rf,$rsf,$mf,$sf,$sortfile) = @_;
+my($rf,$rsf,$mf,$sf,$sortfile,$extra) = @_;
 
 # If there is no saved file, the raw files must either not exist, or be
 # empty. The test ! -s is TRUE if the file does not exist or is empty.
@@ -1047,6 +1085,7 @@ if (! -e $sf)
     print "Continue, Show, or Quit? [Q] ";
     $_ = <T>;
     tests_exit(1) if /^q?$/i;
+    log_failure($log_failed_filename, $testno, $rf) if (/^c$/i && $force_continue);
     return 0 if /^c$/i;
     last if (/^s$/);
     }
@@ -1065,8 +1104,9 @@ if (! -e $sf)
   print "\n";
   for (;;)
     {
-    interact("Continue, Update & retry, Quit? [Q] ", $force_update);
+    interact("Continue, Update & retry, Quit? [Q] ", $force_update, $force_continue);
     tests_exit(1) if /^q?$/i;
+    log_failure($log_failed_filename, $testno, $rsf) if (/^c$/i && $force_continue);
     return 0 if /^c$/i;
     last if (/^u$/i);
     }
@@ -1077,11 +1117,11 @@ if (! -e $sf)
 # data that does exist.
 
 open(MUNGED, ">$mf") || tests_exit(-1, "Failed to open $mf: $!");
-my($truncated) = munge($rf) if -e $rf;
+my($truncated) = munge($rf, $extra) if -e $rf;
 if (defined $rsf && -e $rsf)
   {
   print MUNGED "\n******** SERVER ********\n";
-  $truncated |= munge($rsf);
+  $truncated |= munge($rsf, $extra);
   }
 close(MUNGED);
 
@@ -1182,8 +1222,9 @@ if (-e $sf)
   print "\n";
   for (;;)
     {
-    interact("Continue, Retry, Update & retry, Quit? [Q] ", $force_update);
+    interact("Continue, Retry, Update & retry, Quit? [Q] ", $force_update, $force_continue);
     tests_exit(1) if /^q?$/i;
+    log_failure($log_failed_filename, $testno, $sf) if (/^c$/i && $force_continue);
     return 0 if /^c$/i;
     return 1 if /^r$/i;
     last if (/^u$/i);
@@ -1203,46 +1244,75 @@ return 1;
 
 
 ##################################################
+# Custom munges
+# keyed by name of munge; value is a ref to a hash
+# which is keyed by file, value a string to look for.
+# Usable files are:
+#  paniclog, rejectlog, mainlog, stdout, stderr, msglog, mail
+# Search strings starting with 's' do substitutions;
+# with '/' do line-skips.
+##################################################
+$munges =
+  { 'dnssec' =>
+    { 'stderr' => '/^Reverse DNS security status: unverified\n/', },
+
+    'gnutls_unexpected' =>
+    { 'mainlog' => '/\(recv\): A TLS packet with unexpected length was received./', },
+
+    'gnutls_handshake' =>
+    { 'mainlog' => 's/\(gnutls_handshake\): Error in the push function/\(gnutls_handshake\): A TLS packet with unexpected length was received/', },
+
+  };
+
+
+##################################################
 #    Subroutine to check the output of a test    #
 ##################################################
 
 # This function is called when the series of subtests is complete. It makes
-# use of check() file, whose arguments are:
+# use of check_file(), whose arguments are:
 #
 #  [0] the name of the main raw output file
 #  [1] the name of the server raw output file or undef
 #  [2] where to put the munged copy
 #  [3] the name of the saved file
 #  [4] TRUE if this is a log file whose deliveries must be sorted
+#  [5] an optional custom munge command
 #
-# Arguments: none
+# Arguments: Optionally, name of a custom munge to run.
 # Returns:   0 if the output compared equal
 #            1 if re-run needed (files may have been updated)
 
 sub check_output{
+my($mungename) = $_[0];
 my($yield) = 0;
+my($munge) = $munges->{$mungename} if defined $mungename;
 
 $yield = 1 if check_file("spool/log/paniclog",
                        "spool/log/serverpaniclog",
                        "test-paniclog-munged",
-                       "paniclog/$testno", 0);
+                       "paniclog/$testno", 0,
+		       $munge->{'paniclog'});
 
 $yield = 1 if check_file("spool/log/rejectlog",
                        "spool/log/serverrejectlog",
                        "test-rejectlog-munged",
-                       "rejectlog/$testno", 0);
+                       "rejectlog/$testno", 0,
+		       $munge->{'rejectlog'});
 
 $yield = 1 if check_file("spool/log/mainlog",
                        "spool/log/servermainlog",
                        "test-mainlog-munged",
-                       "log/$testno", $sortlog);
+                       "log/$testno", $sortlog,
+		       $munge->{'mainlog'});
 
 if (!$stdout_skip)
   {
   $yield = 1 if check_file("test-stdout",
                        "test-stdout-server",
                        "test-stdout-munged",
-                       "stdout/$testno", 0);
+                       "stdout/$testno", 0,
+		       $munge->{'stdout'});
   }
 
 if (!$stderr_skip)
@@ -1250,7 +1320,8 @@ if (!$stderr_skip)
   $yield = 1 if check_file("test-stderr",
                        "test-stderr-server",
                        "test-stderr-munged",
-                       "stderr/$testno", 0);
+                       "stderr/$testno", 0,
+		       $munge->{'stderr'});
   }
 
 # Compare any delivered messages, unless this test is skipped.
@@ -1289,7 +1360,8 @@ if (! $message_skip)
 
     print ">> COMPARE $mail mail/$testno.$saved_mail\n" if $debug;
     $yield = 1 if check_file($mail, undef, "test-mail-munged",
-      "mail/$testno.$saved_mail", 0);
+      "mail/$testno.$saved_mail", 0,
+      $munge->{'mail'});
     delete $expected_mails{"mail/$testno.$saved_mail"};
     }
 
@@ -1302,8 +1374,9 @@ if (! $message_skip)
 
     for (;;)
       {
-      interact("Continue, Update & retry, or Quit? [Q] ", $force_update);
+      interact("Continue, Update & retry, or Quit? [Q] ", $force_update, $force_continue);
       tests_exit(1) if /^q?$/i;
+      log_failure($log_failed_filename, $testno, "missing email") if (/^c$/i && $force_continue);
       last if /^c$/i;
 
       # For update, we not only have to unlink the file, but we must also
@@ -1359,7 +1432,8 @@ if (! $msglog_skip)
         s/((?:[^\W_]{6}-){2}[^\W_]{2})
           /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
       $yield = 1 if check_file("spool/msglog/$msglog", undef,
-        "test-msglog-munged", "msglog/$testno.$munged_msglog", 0);
+        "test-msglog-munged", "msglog/$testno.$munged_msglog", 0,
+        $munge->{'msglog'});
       delete $expected_msglogs{"$testno.$munged_msglog"};
       }
     }
@@ -1384,8 +1458,9 @@ if (! $msglog_skip)
 
     for (;;)
       {
-      interact("Continue, Update, or Quit? [Q] ", $force_update);
+      interact("Continue, Update, or Quit? [Q] ", $force_update, $force_continue);
       tests_exit(1) if /^q?$/i;
+      log_failure($log_failed_filename, $testno, "missing msglog") if (/^c$/i && $force_continue);
       last if /^c$/i;
       if (/^u$/i)
         {
@@ -1453,6 +1528,7 @@ system("$cmd");
 #            4 EOF was encountered after an initial return code line
 # Optionally alse a second parameter, a hash-ref, with auxilliary information:
 #            exim_pid: pid of a run process
+#            munge: name of a post-script results munger
 
 sub run_command{
 my($testno) = $_[0];
@@ -1662,6 +1738,18 @@ elsif (/^millisleep\s+(.*)$/)
   {
   select(undef, undef, undef, $1/1000);
   return 0;
+  }
+
+
+# The "munge" command selects one of a hardwired set of test-result modifications
+# to be made before result compares are run agains the golden set.  This lets
+# us account for test-system dependent things which only affect a few, but known,
+# test-cases.
+# Currently only the last munge takes effect.
+
+if (/^munge\s+(.*)$/)
+  {
+  return (0, { munge => $1 });
   }
 
 
@@ -2077,6 +2165,7 @@ while (@ARGV > 0 && $ARGV[0] =~ /^-/)
     {
     if ($arg eq "-DEBUG")  { $debug = 1; $cr = "\n"; next; }
     if ($arg eq "-DIFF")   { $cf = "diff -u"; next; }
+    if ($arg eq "-CONTINUE"){$force_continue = 1; next; }
     if ($arg eq "-UPDATE") { $force_update = 1; next; }
     if ($arg eq "-NOIPV4") { $have_ipv4 = 0; next; }
     if ($arg eq "-NOIPV6") { $have_ipv6 = 0; next; }
@@ -3104,6 +3193,8 @@ if ($have_ipv6 && $parm_ipv6 ne "::1")
     $exp_v6 = $1 . ':0' x (8-length($exp_v6)) . ':' . $2;
   } elsif ( $parm_ipv6 =~ /^::(.+[^:])$/ ) {
     $exp_v6 = '0:' x (9-length($exp_v6)) . $1;
+  } else {
+    $exp_v6 = $parm_ipv6;
   }
   my(@components) = split /:/, $exp_v6;
   my(@nibbles) = reverse (split /\s*/, shift @components);
@@ -3372,6 +3463,7 @@ foreach $test (@test_list)
         print "\nshow stdErr, show stdOut, Retry, Continue (without file comparison), or Quit? [Q] ";
         $_ = <T>;
         tests_exit(1) if /^q?$/i;
+        log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
         last if /^[rc]$/i;
         if (/^e$/i)
           {
@@ -3409,6 +3501,7 @@ foreach $test (@test_list)
           print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
           $_ = <T>;
           tests_exit(1) if /^q?$/i;
+          log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
           last if /^[rc]$/i;
 
           if (/^s$/i)
@@ -3439,7 +3532,7 @@ foreach $test (@test_list)
 
   if ($docheck)
     {
-    if (check_output() != 0)
+    if (check_output($TEST_STATE->{munge}) != 0)
       {
       print (("#" x 79) . "\n");
       redo;

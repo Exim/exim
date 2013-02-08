@@ -354,6 +354,7 @@ side, put in definitions for all the ones that Exim uses. */
 #define T_ZNS (-1)
 #define T_MXH (-2)
 #define T_CSA (-3)
+#define T_APL (-4)
 
 /* The resolv.h header defines __P(x) on some Solaris 2.5.1 systems (without
 checking that it is already defined, in fact). This conflicts with other

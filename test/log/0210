@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaX-0005vi-00 => file <file@test.ex> R=file T=bsmtp_local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 => pipe <pipe@test.ex> R=pipe T=bsmtp_pipe_delivery
-1999-03-02 09:44:33 10HmaX-0005vi-00 => smtp@test.ex R=smtp T=bsmtp_smtp H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-0005vi-00 => smtp@test.ex R=smtp T=bsmtp_smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

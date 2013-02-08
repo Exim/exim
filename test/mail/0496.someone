@@ -12,7 +12,12 @@ Sender: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-ACL-Warn: data1 data1
 X-ACL-Warn: data2 data2
+X-ACL-Warn: data3
+X-ACL-Warn: 
+X-ACL-Warn: data4
 At-End: some text
+X-multiline: foo
+	bar
 
 Testing message
 

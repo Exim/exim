@@ -725,7 +725,7 @@ static int
 read_message_data_smtp(FILE *fout)
 {
 int ch_state = 0;
-register int ch;
+int ch;
 register int linelength = 0;
 
 while ((ch = (receive_getc)()) != EOF)
@@ -772,6 +772,7 @@ while ((ch = (receive_getc)()) != EOF)
       {
       message_size++;
       if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
+      (void) cutthrough_put_nl();
       if (ch != '\r') ch_state = 1; else continue;
       }
     break;
@@ -792,6 +793,7 @@ while ((ch = (receive_getc)()) != EOF)
     message_size++;
     body_linecount++;
     if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
+    (void) cutthrough_put_nl();
     if (ch == '\r')
       {
       ch_state = 2;
@@ -810,6 +812,13 @@ while ((ch = (receive_getc)()) != EOF)
     {
     if (fputc(ch, fout) == EOF) return END_WERROR;
     if (message_size > thismessage_size_limit) return END_SIZE;
+    }
+  if(ch == '\n')
+    (void) cutthrough_put_nl();
+  else
+    {
+    uschar c= ch;
+    (void) cutthrough_puts(&c, 1);
     }
   }
 
@@ -931,6 +940,40 @@ add_acl_headers(uschar *acl_name)
 {
 header_line *h, *next;
 header_line *last_received = NULL;
+int sep = ':';
+
+if (acl_removed_headers != NULL)
+  {
+  DEBUG(D_receive|D_acl) debug_printf(">>Headers removed by %s ACL:\n", acl_name);
+
+  for (h = header_list; h != NULL; h = h->next)
+    {
+    int i;
+    uschar *list;
+    BOOL include_header;
+
+    if (h->type == htype_old) continue;
+
+    include_header = TRUE;
+    list = acl_removed_headers;
+
+    int sep = ':';         /* This is specified as a colon-separated list */
+    uschar *s;
+    uschar buffer[128];
+    while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
+            != NULL)
+      {
+      int len = Ustrlen(s);
+      if (header_testname(h, s, len, FALSE))
+	{
+	h->type = htype_old;
+        DEBUG(D_receive|D_acl) debug_printf("  %s", h->text);
+	}
+      }
+    }
+  acl_removed_headers = NULL;
+  DEBUG(D_receive|D_acl) debug_printf(">>\n");
+  }
 
 if (acl_added_headers == NULL) return;
 DEBUG(D_receive|D_acl) debug_printf(">>Headers added by %s ACL:\n", acl_name);
@@ -1201,6 +1244,52 @@ return TRUE;
 #endif  /* WITH_CONTENT_SCAN */
 
 
+
+void
+received_header_gen(void)
+{
+uschar *received;
+uschar *timestamp;
+header_line *received_header= header_list;
+
+timestamp = expand_string(US"${tod_full}");
+if (recipients_count == 1) received_for = recipients_list[0].address;
+received = expand_string(received_header_text);
+received_for = NULL;
+
+if (received == NULL)
+  {
+  if(spool_name[0] != 0)
+    Uunlink(spool_name);           /* Lose the data file */
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
+    "(received_header_text) failed: %s", string_printing(received_header_text),
+      expand_string_message);
+  }
+
+/* The first element on the header chain is reserved for the Received header,
+so all we have to do is fill in the text pointer, and set the type. However, if
+the result of the expansion is an empty string, we leave the header marked as
+"old" so as to refrain from adding a Received header. */
+
+if (received[0] == 0)
+  {
+  received_header->text = string_sprintf("Received: ; %s\n", timestamp);
+  received_header->type = htype_old;
+  }
+else
+  {
+  received_header->text = string_sprintf("%s; %s\n", received, timestamp);
+  received_header->type = htype_received;
+  }
+
+received_header->slen = Ustrlen(received_header->text);
+
+DEBUG(D_receive) debug_printf(">>Generated Received: header line\n%c %s",
+  received_header->type, received_header->text);
+}
+
+
+
 /*************************************************
 *                 Receive message                *
 *************************************************/
@@ -1210,7 +1299,8 @@ Either a non-null list of recipients, or the extract flag will be true, or
 both. The flag sender_local is true for locally generated messages. The flag
 submission_mode is true if an ACL has obeyed "control = submission". The flag
 suppress_local_fixups is true if an ACL has obeyed "control =
-suppress_local_fixups". The flag smtp_input is true if the message is to be
+suppress_local_fixups" or -G was passed on the command-line.
+The flag smtp_input is true if the message is to be
 handled using SMTP conventions about termination and lines starting with dots.
 For non-SMTP messages, dot_ends is true for dot-terminated messages.
 
@@ -1317,6 +1407,7 @@ BOOL resents_exist = FALSE;
 uschar *resent_prefix = US"";
 uschar *blackholed_by = NULL;
 uschar *blackhole_log_msg = US"";
+int  cutthrough_done;
 
 flock_t lock_data;
 error_block *bad_addresses = NULL;
@@ -1353,7 +1444,6 @@ int dmarc_up = 0;
 
 /* Variables for use when building the Received: header. */
 
-uschar *received;
 uschar *timestamp;
 int tslen;
 
@@ -1362,6 +1452,12 @@ accept the message - e.g. by verifying addresses - because reading a message
 might take a fair bit of real time. */
 
 search_tidyup();
+
+/* Extracting the recipient list from an input file is incompatible with
+cutthrough delivery with the no-spool option.  It shouldn't be possible
+to set up the combination, but just in case kill any ongoing connection. */
+if (extract_recip || !smtp_input)
+  cancel_cutthrough_connection("not smtp input");
 
 /* Initialize the chain of headers by setting up a place-holder for Received:
 header. Temporarily mark it as "old", i.e. not to be used. We keep header_last
@@ -2656,6 +2752,35 @@ if (filter_test != FTEST_NONE)
   return message_ended == END_DOT;
   }
 
+/* Cutthrough delivery:
+	We have to create the Received header now rather than at the end of reception,
+	so the timestamp behaviour is a change to the normal case.
+	XXX Ensure this gets documented XXX.
+	Having created it, send the headers to the destination.
+*/
+if (cutthrough_fd >= 0)
+  {
+  if (received_count > received_headers_max)
+    {
+    cancel_cutthrough_connection("too many headers");
+    if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
+    log_write(0, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
+      "Too many \"Received\" headers",
+      sender_address,
+      (sender_fullhost == NULL)? "" : " H=",
+      (sender_fullhost == NULL)? US"" : sender_fullhost,
+      (sender_ident == NULL)? "" : " U=",
+      (sender_ident == NULL)? US"" : sender_ident);
+    message_id[0] = 0;                       /* Indicate no message accepted */
+    smtp_reply = US"550 Too many \"Received\" headers - suspected mail loop";
+    goto TIDYUP;                             /* Skip to end of function */
+    }
+  received_header_gen();
+  add_acl_headers(US"MAIL or RCPT");
+  (void) cutthrough_headers_send();
+  }
+ 
+
 /* Open a new spool file for the data portion of the message. We need
 to access it both via a file descriptor and a stream. Try to make the
 directory if it isn't there. Note re use of sprintf: spool_directory
@@ -2737,6 +2862,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   if (smtp_input && message_ended == END_EOF)
     {
     Uunlink(spool_name);                     /* Lose data file when closed */
+    cancel_cutthrough_connection("sender closed connection");
     message_id[0] = 0;                       /* Indicate no message accepted */
     smtp_reply = handle_lost_connection(US"");
     smtp_yield = FALSE;
@@ -2749,6 +2875,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   if (message_ended == END_SIZE)
     {
     Uunlink(spool_name);                /* Lose the data file when closed */
+    cancel_cutthrough_connection("mail too big");
     if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
 
     log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
@@ -2804,6 +2931,7 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
 
   log_write(0, LOG_MAIN, "Message abandoned: %s", msg);
   Uunlink(spool_name);                /* Lose the data file */
+  cancel_cutthrough_connection("error writing spoolfile");
 
   if (smtp_input)
     {
@@ -2923,50 +3051,25 @@ for use when we generate the Received: header.
 
 Note: the checking for too many Received: headers is handled by the delivery
 code. */
+/*XXX eventually add excess Received: check for cutthrough case back when classifying them */
 
-timestamp = expand_string(US"${tod_full}");
-if (recipients_count == 1) received_for = recipients_list[0].address;
-received = expand_string(received_header_text);
-received_for = NULL;
-
-if (received == NULL)
+if (received_header->text == NULL)	/* Non-cutthrough case */
   {
-  Uunlink(spool_name);           /* Lose the data file */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
-    "(received_header_text) failed: %s", string_printing(received_header_text),
-      expand_string_message);
-  }
+  received_header_gen();
 
-/* The first element on the header chain is reserved for the Received header,
-so all we have to do is fill in the text pointer, and set the type. However, if
-the result of the expansion is an empty string, we leave the header marked as
-"old" so as to refrain from adding a Received header. */
+  /* Set the value of message_body_size for the DATA ACL and for local_scan() */
 
-if (received[0] == 0)
-  {
-  received_header->text = string_sprintf("Received: ; %s\n", timestamp);
-  received_header->type = htype_old;
+  message_body_size = (fstat(data_fd, &statbuf) == 0)?
+    statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
+
+  /* If an ACL from any RCPT commands set up any warning headers to add, do so
+  now, before running the DATA ACL. */
+
+  add_acl_headers(US"MAIL or RCPT");
   }
 else
-  {
-  received_header->text = string_sprintf("%s; %s\n", received, timestamp);
-  received_header->type = htype_received;
-  }
-
-received_header->slen = Ustrlen(received_header->text);
-
-DEBUG(D_receive) debug_printf(">>Generated Received: header line\n%c %s",
-  received_header->type, received_header->text);
-
-/* Set the value of message_body_size for the DATA ACL and for local_scan() */
-
-message_body_size = (fstat(data_fd, &statbuf) == 0)?
-  statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
-
-/* If an ACL from any RCPT commands set up any warning headers to add, do so
-now, before running the DATA ACL. */
-
-add_acl_headers(US"MAIL or RCPT");
+  message_body_size = (fstat(data_fd, &statbuf) == 0)?
+    statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
 
 /* If an ACL is specified for checking things at this stage of reception of a
 message, run it, unless all the recipients were removed by "discard" in earlier
@@ -3071,6 +3174,7 @@ else
               {
                 DEBUG(D_receive)
                   debug_printf("acl_smtp_dkim: acl_check returned %d on %s, skipping remaining items\n", rc, item);
+	        cancel_cutthrough_connection("dkim acl not ok");
                 break;
               }
             }
@@ -3103,7 +3207,7 @@ else
 #endif /* WITH_CONTENT_SCAN */
 
 #ifdef EXPERIMENTAL_DMARC
-  dmarc_up = dmarc_store_data(from_header);
+    dmarc_up = dmarc_store_data(from_header);
 #endif /* EXPERIMENTAL_DMARC */
 
     /* Check the recipients count again, as the MIME ACL might have changed
@@ -3119,10 +3223,12 @@ else
         blackholed_by = US"DATA ACL";
         if (log_msg != NULL)
           blackhole_log_msg = string_sprintf(": %s", log_msg);
+	cancel_cutthrough_connection("data acl discard");
         }
       else if (rc != OK)
         {
         Uunlink(spool_name);
+	cancel_cutthrough_connection("data acl not ok");
 #ifdef WITH_CONTENT_SCAN
         unspool_mbox();
 #endif
@@ -3382,6 +3488,7 @@ the message to be abandoned. */
 signal(SIGTERM, SIG_IGN);
 signal(SIGINT, SIG_IGN);
 
+
 /* Ensure the first time flag is set in the newly-received message. */
 
 deliver_firsttime = TRUE;
@@ -3496,18 +3603,18 @@ if (message_reference != NULL)
 s = add_host_info_for_log(s, &size, &sptr);
 
 #ifdef SUPPORT_TLS
-if ((log_extra_selector & LX_tls_cipher) != 0 && tls_cipher != NULL)
-  s = string_append(s, &size, &sptr, 2, US" X=", tls_cipher);
+if ((log_extra_selector & LX_tls_cipher) != 0 && tls_in.cipher != NULL)
+  s = string_append(s, &size, &sptr, 2, US" X=", tls_in.cipher);
 if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-     tls_cipher != NULL)
+     tls_in.cipher != NULL)
   s = string_append(s, &size, &sptr, 2, US" CV=",
-    tls_certificate_verified? "yes":"no");
-if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
+    tls_in.certificate_verified? "yes":"no");
+if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_in.peerdn != NULL)
   s = string_append(s, &size, &sptr, 3, US" DN=\"",
-    string_printing(tls_peerdn), US"\"");
-if ((log_extra_selector & LX_tls_sni) != 0 && tls_sni != NULL)
+    string_printing(tls_in.peerdn), US"\"");
+if ((log_extra_selector & LX_tls_sni) != 0 && tls_in.sni != NULL)
   s = string_append(s, &size, &sptr, 3, US" SNI=\"",
-    string_printing(tls_sni), US"\"");
+    string_printing(tls_in.sni), US"\"");
 #endif
 
 if (sender_host_authenticated != NULL)
@@ -3519,6 +3626,15 @@ if (sender_host_authenticated != NULL)
 
 sprintf(CS big_buffer, "%d", msg_size);
 s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
+
+/* log 8BITMIME mode announced in MAIL_FROM
+   0 ... no BODY= used
+   7 ... 7BIT
+   8 ... 8BITMIME */
+if (log_extra_selector & LX_8bitmime) {
+  sprintf(CS big_buffer, "%d", body_8bitmime);
+  s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
+}
 
 /* If an addr-spec in a message-id contains a quoted string, it can contain
 any characters except " \ and CR and so in particular it can contain NL!
@@ -3567,7 +3683,7 @@ s[sptr] = 0;
 
 /* Create a message log file if message logs are being used and this message is
 not blackholed. Write the reception stuff to it. We used to leave message log
-creation until the first delivery, but this has proved confusing for somep
+creation until the first delivery, but this has proved confusing for some
 people. */
 
 if (message_logs && blackholed_by == NULL)
@@ -3688,17 +3804,56 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
 /* The connection has not gone away; we really are going to take responsibility
 for this message. */
 
-log_write(0, LOG_MAIN |
-  (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
-  (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
-  "%s", s);
+/* Cutthrough - had sender last-dot; assume we've sent (or bufferred) all
+   data onward by now.
+
+   Send dot onward.  If accepted, wipe the spooled files, log as delivered and accept
+   the sender's dot (below).
+   If rejected: copy response to sender, wipe the spooled files, log approriately.
+   If temp-reject: accept to sender, keep the spooled files.
+
+   Having the normal spool files lets us do data-filtering, and store/forward on temp-reject.
+
+   XXX We do not handle queue-only, freezing, or blackholes.
+*/
+if(cutthrough_fd >= 0)
+  {
+  uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
+					/* Logging was done in finaldot() */
+  switch(msg[0])
+    {
+    case '2':	/* Accept. Do the same to the source; dump any spoolfiles.   */
+      cutthrough_done = 3;
+      break;					/* message_id needed for SMTP accept below */
+  
+    default:	/* Unknown response, or error.  Treat as temp-reject.         */
+    case '4':	/* Temp-reject. Keep spoolfiles and accept. */
+      cutthrough_done = 1;			/* Avoid the usual immediate delivery attempt */
+      break;					/* message_id needed for SMTP accept below */
+  
+    case '5':	/* Perm-reject.  Do the same to the source.  Dump any spoolfiles */
+      smtp_reply= msg;		/* Pass on the exact error */
+      cutthrough_done = 2;
+      break;
+    }
+  }
+else
+  cutthrough_done = 0;
+
+if(smtp_reply == NULL)
+  {
+  log_write(0, LOG_MAIN |
+    (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
+    (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
+    "%s", s);
+
+  /* Log any control actions taken by an ACL or local_scan(). */
+
+  if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
+  if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
+    "no immediate delivery: queued by %s", queued_by);
+  }
 receive_call_bombout = FALSE;
-
-/* Log any control actions taken by an ACL or local_scan(). */
-
-if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
-if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
-  "no immediate delivery: queued by %s", queued_by);
 
 store_reset(s);   /* The store for the main log message can be reused */
 
@@ -3725,6 +3880,7 @@ A fflush() was done earlier in the expectation that any write errors on the
 data file will be flushed(!) out thereby. Nevertheless, it is theoretically
 possible for fclose() to fail - but what to do? What has happened to the lock
 if this happens? */
+
 
 TIDYUP:
 process_info[process_info_len] = 0;                /* Remove message id */
@@ -3786,6 +3942,25 @@ if (smtp_input)
       else
         smtp_printf("%.1024s\r\n", smtp_reply);
       }
+
+    switch (cutthrough_done)
+      {
+      case 3: log_write(0, LOG_MAIN, "Completed");	/* Delivery was done */
+      case 2: {						/* Delete spool files */
+	      sprintf(CS spool_name, "%s/input/%s/%s-D", spool_directory,
+	        message_subdir, message_id);
+	      Uunlink(spool_name);
+	      sprintf(CS spool_name, "%s/input/%s/%s-H", spool_directory,
+	        message_subdir, message_id);
+	      Uunlink(spool_name);
+	      sprintf(CS spool_name, "%s/msglog/%s/%s", spool_directory,
+	        message_subdir, message_id);
+	      Uunlink(spool_name);
+	      }
+      case 1: message_id[0] = 0;			/* Prevent a delivery from starting */
+      default:break;
+      }
+    cutthrough_delivery = FALSE;
     }
 
   /* For batched SMTP, generate an error message on failure, and do

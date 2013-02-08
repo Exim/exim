@@ -36,7 +36,7 @@ plain:
   server_condition = "\
     ${if and {{eq{$2}{userx}}{eq{$3}{secret1}}}{yes}{no}}"
   server_set_id = $2
-  client_condition = ${if !eq {$tls_cipher}{}}
+  client_condition = ${if !eq {$tls_out_cipher}{}}
   client_send = ^userx^secret1
 
 login:

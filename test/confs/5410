@@ -1,0 +1,59 @@
+# Exim test configuration 5410
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector =  +smtp_confirmation
+tls_advertise_hosts = *
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+domainlist local_domains = test.ex : *.test.ex
+
+acl_smtp_rcpt = ${if eq {SERVER}{server}{queue}{cutthrough}}
+
+# ----- ACLs -------
+
+begin acl
+
+cutthrough:
+    accept	control = cutthrough_delivery
+    		verify = recipient
+
+queue:
+    accept	control = queue_only
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * 127.0.0.1
+  self = send
+  address_data = $local_part
+  transport = smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  interface = HOSTIPV4
+  port = PORT_D
+  hosts_avoid_tls =        ${if eq {$address_data}{usery}{*}{:}}
+  hosts_verify_avoid_tls = ${if eq {$address_data}{userz}{*}{:}}
+
+
+# End

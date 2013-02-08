@@ -1,4 +1,5 @@
 # dns_again_means_nonexist
+munge dnssec
 exim -d -bh HOSTIPV4
 mail from:<xx@cioce.test.again.dns>
 rcpt to:<a@b>

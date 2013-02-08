@@ -102,6 +102,7 @@ bcrypt ({CRYPT}$2a$).
 alphabetical order. */
 
 static uschar *item_table[] = {
+  US"acl",
   US"dlfunc",
   US"extract",
   US"filter",
@@ -124,6 +125,7 @@ static uschar *item_table[] = {
   US"tr" };
 
 enum {
+  EITEM_ACL,
   EITEM_DLFUNC,
   EITEM_EXTRACT,
   EITEM_FILTER,
@@ -182,6 +184,8 @@ static uschar *op_table_main[] = {
   US"l",
   US"lc",
   US"length",
+  US"listcount",
+  US"listnamed",
   US"mask",
   US"md5",
   US"nh",
@@ -215,6 +219,8 @@ enum {
   EOP_L,
   EOP_LC,
   EOP_LENGTH,
+  EOP_LISTCOUNT,
+  EOP_LISTNAMED,
   EOP_MASK,
   EOP_MD5,
   EOP_NH,
@@ -243,6 +249,7 @@ static uschar *cond_table[] = {
   US"==",     /* Backward compatibility */
   US">",
   US">=",
+  US"acl",
   US"and",
   US"bool",
   US"bool_lax",
@@ -288,6 +295,7 @@ enum {
   ECOND_NUM_EE,
   ECOND_NUM_G,
   ECOND_NUM_GE,
+  ECOND_ACL,
   ECOND_AND,
   ECOND_BOOL,
   ECOND_BOOL_LAX,
@@ -351,6 +359,7 @@ enum {
   vtype_ino,            /* value is address of ino_t (not always an int) */
   vtype_uid,            /* value is address of uid_t (not always an int) */
   vtype_gid,            /* value is address of gid_t (not always an int) */
+  vtype_bool,           /* value is address of bool */
   vtype_stringptr,      /* value is address of pointer to string */
   vtype_msgbody,        /* as stringptr, but read when first required */
   vtype_msgbody_end,    /* ditto, the end of the message */
@@ -358,9 +367,7 @@ enum {
   vtype_msgheaders_raw, /* the message's headers, unprocessed */
   vtype_localpart,      /* extract local part from string */
   vtype_domain,         /* extract domain from string */
-  vtype_recipients,     /* extract recipients from recipients list */
-                        /* (available only in system filters, ACLs, and */
-                        /* local_scan()) */
+  vtype_string_func,	/* value is string returned by given function */
   vtype_todbsdin,       /* value not used; generate BSD inbox tod */
   vtype_tode,           /* value not used; generate tod in epoch format */
   vtype_todel,          /* value not used; generate tod in epoch/usec format */
@@ -380,11 +387,23 @@ enum {
   #endif
   };
 
+static uschar * fn_recipients(void);
+
 /* This table must be kept in alphabetical order. */
 
 static var_entry var_table[] = {
   /* WARNING: Do not invent variables whose names start acl_c or acl_m because
      they will be confused with user-creatable ACL variables. */
+  { "acl_arg1",            vtype_stringptr,   &acl_arg[0] },
+  { "acl_arg2",            vtype_stringptr,   &acl_arg[1] },
+  { "acl_arg3",            vtype_stringptr,   &acl_arg[2] },
+  { "acl_arg4",            vtype_stringptr,   &acl_arg[3] },
+  { "acl_arg5",            vtype_stringptr,   &acl_arg[4] },
+  { "acl_arg6",            vtype_stringptr,   &acl_arg[5] },
+  { "acl_arg7",            vtype_stringptr,   &acl_arg[6] },
+  { "acl_arg8",            vtype_stringptr,   &acl_arg[7] },
+  { "acl_arg9",            vtype_stringptr,   &acl_arg[8] },
+  { "acl_narg",            vtype_int,         &acl_narg },
   { "acl_verify_message",  vtype_stringptr,   &acl_verify_message },
   { "address_data",        vtype_stringptr,   &deliver_address_data },
   { "address_file",        vtype_stringptr,   &address_file },
@@ -458,6 +477,7 @@ static var_entry var_table[] = {
 #ifdef WITH_OLD_DEMIME
   { "found_extension",     vtype_stringptr,   &found_extension },
 #endif
+  { "headers_added",       vtype_string_func, &fn_hdrs_added },
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -549,7 +569,7 @@ static var_entry var_table[] = {
   { "received_time",       vtype_int,         &received_time },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
-  { "recipients",          vtype_recipients,  NULL },
+  { "recipients",          vtype_string_func, &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
@@ -568,6 +588,7 @@ static var_entry var_table[] = {
   { "sender_helo_name",    vtype_stringptr,   &sender_helo_name },
   { "sender_host_address", vtype_stringptr,   &sender_host_address },
   { "sender_host_authenticated",vtype_stringptr, &sender_host_authenticated },
+  { "sender_host_dnssec",  vtype_bool,        &sender_host_dnssec },
   { "sender_host_name",    vtype_host_lookup, NULL },
   { "sender_host_port",    vtype_int,         &sender_host_port },
   { "sender_ident",        vtype_stringptr,   &sender_ident },
@@ -618,13 +639,32 @@ static var_entry var_table[] = {
   { "srs_status",          vtype_stringptr,   &srs_status },
 #endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
-  { "tls_bits",            vtype_int,         &tls_bits },
-  { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
-  { "tls_cipher",          vtype_stringptr,   &tls_cipher },
-  { "tls_peerdn",          vtype_stringptr,   &tls_peerdn },
-#ifdef SUPPORT_TLS
-  { "tls_sni",             vtype_stringptr,   &tls_sni },
+
+  /* The non-(in,out) variables are now deprecated */
+  { "tls_bits",            vtype_int,         &tls_in.bits },
+  { "tls_certificate_verified", vtype_int,    &tls_in.certificate_verified },
+  { "tls_cipher",          vtype_stringptr,   &tls_in.cipher },
+
+  { "tls_in_bits",         vtype_int,         &tls_in.bits },
+  { "tls_in_certificate_verified", vtype_int, &tls_in.certificate_verified },
+  { "tls_in_cipher",       vtype_stringptr,   &tls_in.cipher },
+  { "tls_in_peerdn",       vtype_stringptr,   &tls_in.peerdn },
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+  { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
 #endif
+  { "tls_out_bits",        vtype_int,         &tls_out.bits },
+  { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
+  { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
+  { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+  { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
+#endif
+
+  { "tls_peerdn",          vtype_stringptr,   &tls_in.peerdn },	/* mind the alphabetical order! */
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+  { "tls_sni",             vtype_stringptr,   &tls_in.sni },	/* mind the alphabetical order! */
+#endif
+
   { "tod_bsdinbox",        vtype_todbsdin,    NULL },
   { "tod_epoch",           vtype_tode,        NULL },
   { "tod_epoch_l",         vtype_todel,       NULL },
@@ -1414,6 +1454,34 @@ return yield;
 
 
 /*************************************************
+*               Return list of recipients        *
+*************************************************/
+/* A recipients list is available only during system message filtering,
+during ACL processing after DATA, and while expanding pipe commands
+generated from a system filter, but not elsewhere. */
+
+static uschar *
+fn_recipients(void)
+{
+if (!enable_dollar_recipients) return NULL; else
+  {
+  int size = 128;
+  int ptr = 0;
+  int i;
+  uschar * s = store_get(size);
+  for (i = 0; i < recipients_count; i++)
+    {
+    if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
+    s = string_cat(s, &size, &ptr, recipients_list[i].address,
+      Ustrlen(recipients_list[i].address));
+    }
+  s[ptr] = 0;     /* string_cat() leaves room */
+  return s;
+  }
+}
+
+
+/*************************************************
 *               Find value of a variable         *
 *************************************************/
 
@@ -1507,6 +1575,10 @@ while (last > first)
 
     case vtype_uid:
     sprintf(CS var_buffer, "%ld", (long int)(*(uid_t *)(var_table[middle].value))); /* uid */
+    return var_buffer;
+
+    case vtype_bool:
+    sprintf(CS var_buffer, "%s", *(BOOL *)(var_table[middle].value) ? "yes" : "no"); /* bool */
     return var_buffer;
 
     case vtype_stringptr:                      /* Pointer to string */
@@ -1634,26 +1706,11 @@ while (last > first)
       }
     return (s == NULL)? US"" : s;
 
-    /* A recipients list is available only during system message filtering,
-    during ACL processing after DATA, and while expanding pipe commands
-    generated from a system filter, but not elsewhere. */
-
-    case vtype_recipients:
-    if (!enable_dollar_recipients) return NULL; else
+    case vtype_string_func:
       {
-      int size = 128;
-      int ptr = 0;
-      int i;
-      s = store_get(size);
-      for (i = 0; i < recipients_count; i++)
-        {
-        if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
-        s = string_cat(s, &size, &ptr, recipients_list[i].address,
-          Ustrlen(recipients_list[i].address));
-        }
-      s[ptr] = 0;     /* string_cat() leaves room */
+      uschar * (*fn)() = var_table[middle].value;
+      return fn();
       }
-    return s;
 
     case vtype_pspace:
       {
@@ -1681,6 +1738,31 @@ while (last > first)
 
 return NULL;          /* Unknown variable name */
 }
+
+
+
+
+void
+modify_variable(uschar *name, void * value)
+{
+int first = 0;
+int last = var_table_size;
+
+while (last > first)
+  {
+  int middle = (first + last)/2;
+  int c = Ustrcmp(name, var_table[middle].name);
+
+  if (c > 0) { first = middle + 1; continue; }
+  if (c < 0) { last = middle; continue; }
+
+  /* Found an existing variable; change the item it refers to */
+  var_table[middle].value = value;
+  return;
+  }
+return;          /* Unknown variable name, fail silently */
+}
+
 
 
 
@@ -1774,6 +1856,40 @@ if (Ustrncmp(name, "acl_", 4) == 0)
 
 
 
+/*
+Load args from sub array to globals, and call acl_check().
+
+Returns:       OK         access is granted by an ACCEPT verb
+               DISCARD    access is granted by a DISCARD verb
+	       FAIL       access is denied
+	       FAIL_DROP  access is denied; drop the connection
+	       DEFER      can't tell at the moment
+	       ERROR      disaster
+*/
+static int
+eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
+{
+int i;
+uschar *dummy_log_msg;
+
+for (i = 1; i < nsub && sub[i]; i++)
+  acl_arg[i-1] = sub[i];
+acl_narg = i-1;
+while (i < nsub)
+  acl_arg[i++ - 1] = NULL;
+
+DEBUG(D_expand)
+  debug_printf("expanding: acl: %s  arg: %s%s\n",
+    sub[0],
+    acl_narg>0 ? sub[1]   : US"<none>",
+    acl_narg>1 ? " +more" : "");
+
+return acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &dummy_log_msg);
+}
+
+
+
+
 /*************************************************
 *        Read and evaluate a condition           *
 *************************************************/
@@ -1801,7 +1917,7 @@ int i, rc, cond_type, roffset;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar name[256];
-uschar *sub[4];
+uschar *sub[10];
 
 const pcre *re;
 const uschar *rerror;
@@ -1868,6 +1984,7 @@ switch(cond_type)
       Ustrncmp(name, "bheader_", 8) == 0)
     {
     s = read_header_name(name, 256, s);
+    /* {-for-text-editors */
     if (Ustrchr(name, '}') != NULL) malformed_header = TRUE;
     if (yield != NULL) *yield =
       (find_header(name, TRUE, NULL, FALSE, NULL) != NULL) == testfor;
@@ -1927,10 +2044,11 @@ switch(cond_type)
   case ECOND_PWCHECK:
 
   while (isspace(*s)) s++;
-  if (*s != '{') goto COND_FAILED_CURLY_START;
+  if (*s != '{') goto COND_FAILED_CURLY_START;		/* }-for-text-editors */
 
   sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL, TRUE);
   if (sub[0] == NULL) return NULL;
+  /* {-for-text-editors */
   if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
   if (yield == NULL) return s;   /* No need to run the test if skipping */
@@ -2006,19 +2124,72 @@ switch(cond_type)
   return s;
 
 
+  /* call ACL (in a conditional context).  Accept true, deny false.
+  Defer is a forced-fail.  Anything set by message= goes to $value.
+  Up to ten parameters are used; we use the braces round the name+args
+  like the saslauthd condition does, to permit a variable number of args.
+  See also the expansion-item version EITEM_ACL and the traditional
+  acl modifier ACLC_ACL.
+  */
+
+  case ECOND_ACL:
+    /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
+    {
+    uschar *nameargs;
+    uschar *user_msg;
+    BOOL cond = FALSE;
+    int size = 0;
+    int ptr = 0;
+
+    while (isspace(*s)) s++;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+
+    switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
+      &s, yield == NULL, TRUE, US"acl"))
+      {
+      case 1: expand_string_message = US"too few arguments or bracketing "
+        "error for acl";
+      case 2:
+      case 3: return NULL;
+      }
+
+    if (yield != NULL) switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+	{
+	case OK:
+	  cond = TRUE;
+	case FAIL:
+          lookup_value = NULL;
+	  if (user_msg)
+	    {
+            lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
+            lookup_value[ptr] = '\0';
+	    }
+	  *yield = cond == testfor;
+	  break;
+
+	case DEFER:
+          expand_string_forcedfail = TRUE;
+	default:
+          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
+	  return NULL;
+	}
+    return s;
+    }
+
+
   /* saslauthd: does Cyrus saslauthd authentication. Four parameters are used:
 
      ${if saslauthd {{username}{password}{service}{realm}}  {yes}[no}}
 
   However, the last two are optional. That is why the whole set is enclosed
-  in their own set or braces. */
+  in their own set of braces. */
 
   case ECOND_SASLAUTHD:
   #ifndef CYRUS_SASLAUTHD_SOCKET
   goto COND_FAILED_NOT_COMPILED;
   #else
   while (isspace(*s)) s++;
-  if (*s++ != '{') goto COND_FAILED_CURLY_START;
+  if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
   switch(read_subs(sub, 4, 2, &s, yield == NULL, TRUE, US"saslauthd"))
     {
     case 1: expand_string_message = US"too few arguments or bracketing "
@@ -2137,63 +2308,63 @@ switch(cond_type)
     {
     case ECOND_NUM_E:
     case ECOND_NUM_EE:
-    *yield = (num[0] == num[1]) == testfor;
+    tempcond = (num[0] == num[1]);
     break;
 
     case ECOND_NUM_G:
-    *yield = (num[0] > num[1]) == testfor;
+    tempcond = (num[0] > num[1]);
     break;
 
     case ECOND_NUM_GE:
-    *yield = (num[0] >= num[1]) == testfor;
+    tempcond = (num[0] >= num[1]);
     break;
 
     case ECOND_NUM_L:
-    *yield = (num[0] < num[1]) == testfor;
+    tempcond = (num[0] < num[1]);
     break;
 
     case ECOND_NUM_LE:
-    *yield = (num[0] <= num[1]) == testfor;
+    tempcond = (num[0] <= num[1]);
     break;
 
     case ECOND_STR_LT:
-    *yield = (Ustrcmp(sub[0], sub[1]) < 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) < 0);
     break;
 
     case ECOND_STR_LTI:
-    *yield = (strcmpic(sub[0], sub[1]) < 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) < 0);
     break;
 
     case ECOND_STR_LE:
-    *yield = (Ustrcmp(sub[0], sub[1]) <= 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) <= 0);
     break;
 
     case ECOND_STR_LEI:
-    *yield = (strcmpic(sub[0], sub[1]) <= 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) <= 0);
     break;
 
     case ECOND_STR_EQ:
-    *yield = (Ustrcmp(sub[0], sub[1]) == 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) == 0);
     break;
 
     case ECOND_STR_EQI:
-    *yield = (strcmpic(sub[0], sub[1]) == 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) == 0);
     break;
 
     case ECOND_STR_GT:
-    *yield = (Ustrcmp(sub[0], sub[1]) > 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) > 0);
     break;
 
     case ECOND_STR_GTI:
-    *yield = (strcmpic(sub[0], sub[1]) > 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) > 0);
     break;
 
     case ECOND_STR_GE:
-    *yield = (Ustrcmp(sub[0], sub[1]) >= 0) == testfor;
+    tempcond = (Ustrcmp(sub[0], sub[1]) >= 0);
     break;
 
     case ECOND_STR_GEI:
-    *yield = (strcmpic(sub[0], sub[1]) >= 0) == testfor;
+    tempcond = (strcmpic(sub[0], sub[1]) >= 0);
     break;
 
     case ECOND_MATCH:   /* Regular expression match */
@@ -2205,7 +2376,7 @@ switch(cond_type)
         "\"%s\": %s at offset %d", sub[1], rerror, roffset);
       return NULL;
       }
-    *yield = regex_match_and_setup(re, sub[0], 0, -1) == testfor;
+    tempcond = regex_match_and_setup(re, sub[0], 0, -1);
     break;
 
     case ECOND_MATCH_ADDRESS:  /* Match in an address list */
@@ -2261,11 +2432,11 @@ switch(cond_type)
     switch(rc)
       {
       case OK:
-      *yield = testfor;
+      tempcond = TRUE;
       break;
 
       case FAIL:
-      *yield = !testfor;
+      tempcond = FALSE;
       break;
 
       case DEFER:
@@ -2279,6 +2450,7 @@ switch(cond_type)
     /* Various "encrypted" comparisons. If the second string starts with
     "{" then an encryption type is given. Default to crypt() or crypt16()
     (build-time choice). */
+    /* }-for-text-editors */
 
     case ECOND_CRYPTEQ:
     #ifndef SUPPORT_CRYPTEQ
@@ -2303,7 +2475,7 @@ switch(cond_type)
         uschar *coded = auth_b64encode((uschar *)digest, 16);
         DEBUG(D_auth) debug_printf("crypteq: using MD5+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
-        *yield = (Ustrcmp(coded, sub[1]+5) == 0) == testfor;
+        tempcond = (Ustrcmp(coded, sub[1]+5) == 0);
         }
       else if (sublen == 32)
         {
@@ -2313,13 +2485,13 @@ switch(cond_type)
         coded[32] = 0;
         DEBUG(D_auth) debug_printf("crypteq: using MD5+hex hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
-        *yield = (strcmpic(coded, sub[1]+5) == 0) == testfor;
+        tempcond = (strcmpic(coded, sub[1]+5) == 0);
         }
       else
         {
         DEBUG(D_auth) debug_printf("crypteq: length for MD5 not 24 or 32: "
           "fail\n  crypted=%s\n", sub[1]+5);
-        *yield = !testfor;
+        tempcond = FALSE;
         }
       }
 
@@ -2341,7 +2513,7 @@ switch(cond_type)
         uschar *coded = auth_b64encode((uschar *)digest, 20);
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
-        *yield = (Ustrcmp(coded, sub[1]+6) == 0) == testfor;
+        tempcond = (Ustrcmp(coded, sub[1]+6) == 0);
         }
       else if (sublen == 40)
         {
@@ -2351,13 +2523,13 @@ switch(cond_type)
         coded[40] = 0;
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+hex hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
-        *yield = (strcmpic(coded, sub[1]+6) == 0) == testfor;
+        tempcond = (strcmpic(coded, sub[1]+6) == 0);
         }
       else
         {
         DEBUG(D_auth) debug_printf("crypteq: length for SHA-1 not 28 or 40: "
           "fail\n  crypted=%s\n", sub[1]+6);
-        *yield = !testfor;
+	tempcond = FALSE;
         }
       }
 
@@ -2377,7 +2549,7 @@ switch(cond_type)
         sub[1] += 9;
         which = 2;
         }
-      else if (sub[1][0] == '{')
+      else if (sub[1][0] == '{')		/* }-for-text-editors */
         {
         expand_string_message = string_sprintf("unknown encryption mechanism "
           "in \"%s\"", sub[1]);
@@ -2404,8 +2576,8 @@ switch(cond_type)
       salt), force failure. Otherwise we get false positives: with an empty
       string the yield of crypt() is an empty string! */
 
-      *yield = (Ustrlen(sub[1]) < 2)? !testfor :
-        (Ustrcmp(coded, sub[1]) == 0) == testfor;
+      tempcond = (Ustrlen(sub[1]) < 2)? FALSE :
+        (Ustrcmp(coded, sub[1]) == 0);
       }
     break;
     #endif  /* SUPPORT_CRYPTEQ */
@@ -2414,10 +2586,10 @@ switch(cond_type)
     case ECOND_INLISTI:
       {
       int sep = 0;
-      BOOL found = FALSE;
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
+      tempcond = FALSE;
       if (cond_type == ECOND_INLISTI)
         compare = strcmpic;
       else
@@ -2426,15 +2598,15 @@ switch(cond_type)
       while ((iterate_item = string_nextinlist(&sub[1], &sep, NULL, 0)) != NULL)
         if (compare(sub[0], iterate_item) == 0)
           {
-          found = TRUE;
+          tempcond = TRUE;
           break;
           }
       iterate_item = save_iterate_item;
-      *yield = found;
       }
 
     }   /* Switch for comparison conditions */
 
+  *yield = tempcond == testfor;
   return s;    /* End of comparison conditions */
 
 
@@ -2446,13 +2618,14 @@ switch(cond_type)
   combined_cond = (cond_type == ECOND_AND);
 
   while (isspace(*s)) s++;
-  if (*s++ != '{') goto COND_FAILED_CURLY_START;
+  if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
 
   for (;;)
     {
     while (isspace(*s)) s++;
+    /* {-for-text-editors */
     if (*s == '}') break;
-    if (*s != '{')
+    if (*s != '{')					/* }-for-text-editors */
       {
       expand_string_message = string_sprintf("each subcondition "
         "inside an \"%s{...}\" condition must be in its own {}", name);
@@ -2468,8 +2641,10 @@ switch(cond_type)
       }
     while (isspace(*s)) s++;
 
+    /* {-for-text-editors */
     if (*s++ != '}')
       {
+      /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
         "inside \"%s\" group", name);
       return NULL;
@@ -2503,13 +2678,14 @@ switch(cond_type)
     uschar *save_iterate_item = iterate_item;
 
     while (isspace(*s)) s++;
-    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL), TRUE);
     if (sub[0] == NULL) return NULL;
+    /* {-for-text-editors */
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
     while (isspace(*s)) s++;
-    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
 
     sub[1] = s;
 
@@ -2526,8 +2702,10 @@ switch(cond_type)
       }
     while (isspace(*s)) s++;
 
+    /* {-for-text-editors */
     if (*s++ != '}')
       {
+      /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
         "inside \"%s\"", name);
       return NULL;
@@ -2575,7 +2753,7 @@ switch(cond_type)
     size_t len;
     BOOL boolvalue = FALSE;
     while (isspace(*s)) s++;
-    if (*s != '{') goto COND_FAILED_CURLY_START;
+    if (*s != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     ourname = cond_type == ECOND_BOOL_LAX ? US"bool_lax" : US"bool";
     switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, ourname))
       {
@@ -3593,6 +3771,44 @@ while (*s != 0)
 
   switch(item_type)
     {
+    /* Call an ACL from an expansion.  We feed data in via $acl_arg1 - $acl_arg9.
+    If the ACL returns accept or reject we return content set by "message ="
+    There is currently no limit on recursion; this would have us call
+    acl_check_internal() directly and get a current level from somewhere.
+    See also the acl expansion condition ECOND_ACL and the traditional
+    acl modifier ACLC_ACL.
+    */
+
+    case EITEM_ACL:
+      /* ${acl {name} {arg1}{arg2}...} */
+      {
+      uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
+      uschar *user_msg;
+
+      switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl"))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+      if (skipping) continue;
+
+      switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+	{
+	case OK:
+	case FAIL:
+	  if (user_msg)
+            yield = string_cat(yield, &size, &ptr, user_msg, Ustrlen(user_msg));
+	  continue;
+
+	case DEFER:
+          expand_string_forcedfail = TRUE;
+	default:
+          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
+	  goto EXPAND_FAILED;
+	}
+      }
+
     /* Handle conditionals - preserve the values of the numerical expansion
     variables in case they get changed by a regular expression match in the
     condition. If not, they retain their external settings. At the end
@@ -5426,6 +5642,106 @@ while (*s != 0)
         continue;
         }
 
+      /* count the number of list elements */
+
+      case EOP_LISTCOUNT:
+        {
+	int cnt = 0;
+	int sep = 0;
+	uschar * cp;
+	uschar buffer[256];
+
+	while (string_nextinlist(&sub, &sep, buffer, sizeof(buffer)) != NULL) cnt++;
+	cp = string_sprintf("%d", cnt);
+        yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
+        continue;
+        }
+
+      /* expand a named list given the name */
+      /* handles nested named lists; requotes as colon-sep list */
+
+      case EOP_LISTNAMED:
+	{
+	tree_node *t = NULL;
+	uschar * list;
+	int sep = 0;
+	uschar * item;
+	uschar * suffix = US"";
+	BOOL needsep = FALSE;
+	uschar buffer[256];
+
+	if (*sub == '+') sub++;
+	if (arg == NULL)	/* no-argument version */
+	  {
+	  if (!(t = tree_search(addresslist_anchor, sub)) &&
+	      !(t = tree_search(domainlist_anchor,  sub)) &&
+	      !(t = tree_search(hostlist_anchor,    sub)))
+	    t = tree_search(localpartlist_anchor, sub);
+	  }
+	else switch(*arg)	/* specific list-type version */
+	  {
+	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = US"_a"; break;
+	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = US"_d"; break;
+	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = US"_h"; break;
+	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = US"_l"; break;
+	  default:
+            expand_string_message = string_sprintf("bad suffix on \"list\" operator");
+	    goto EXPAND_FAILED;
+	  }
+
+	if(!t)
+	  {
+          expand_string_message = string_sprintf("\"%s\" is not a %snamed list",
+            sub, !arg?""
+	      : *arg=='a'?"address "
+	      : *arg=='d'?"domain "
+	      : *arg=='h'?"host "
+	      : *arg=='l'?"localpart "
+	      : 0);
+	  goto EXPAND_FAILED;
+	  }
+
+	list = ((namedlist_block *)(t->data.ptr))->string;
+
+	while ((item = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
+	  {
+	  uschar * buf = US" : ";
+	  if (needsep)
+	    yield = string_cat(yield, &size, &ptr, buf, 3);
+	  else
+	    needsep = TRUE;
+
+	  if (*item == '+')	/* list item is itself a named list */
+	    {
+	    uschar * sub = string_sprintf("${listnamed%s:%s}", suffix, item);
+	    item = expand_string_internal(sub, FALSE, NULL, FALSE, TRUE);
+	    }
+	  else if (sep != ':')	/* item from non-colon-sep list, re-quote for colon list-separator */
+	    {
+	    char * cp;
+	    char tok[3];
+	    tok[0] = sep; tok[1] = ':'; tok[2] = 0;
+	    while ((cp= strpbrk((const char *)item, tok)))
+	      {
+              yield = string_cat(yield, &size, &ptr, item, cp-(char *)item);
+	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
+	        {
+                yield = string_cat(yield, &size, &ptr, US"::", 2);
+	        item = cp;
+		}
+	      else		/* sep in item; should already be doubled; emit once */
+	        {
+                yield = string_cat(yield, &size, &ptr, (uschar *)tok, 1);
+		if (*cp == sep) cp++;
+	        item = cp;
+		}
+	      }
+	    }
+          yield = string_cat(yield, &size, &ptr, item, Ustrlen(item));
+	  }
+        continue;
+	}
+
       /* mask applies a mask to an IP address; for example the result of
       ${mask:131.111.10.206/28} is 131.111.10.192/28. */
 
@@ -6179,18 +6495,25 @@ else if (value < 0 && isplus)
   }
 else
   {
-  if (tolower(*endptr) == 'k')
+  switch (tolower(*endptr))
     {
-    if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
+    default:
+      break;
+    case 'k':
+      if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
       else value *= 1024;
-    endptr++;
-    }
-    else if (tolower(*endptr) == 'm')
-    {
-    if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024))
-      errno = ERANGE;
-    else value *= 1024*1024;
-    endptr++;
+      endptr++;
+      break;
+    case 'm':
+      if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024)) errno = ERANGE;
+      else value *= 1024*1024;
+      endptr++;
+      break;
+    case 'g':
+      if (value > LLONG_MAX/(1024*1024*1024) || value < LLONG_MIN/(1024*1024*1024)) errno = ERANGE;
+      else value *= 1024*1024*1024;
+      endptr++;
+      break;
     }
   if (errno == ERANGE)
     msg = US"absolute value of integer \"%s\" is too large (overflow)";

@@ -49,6 +49,21 @@
 > reduce: 6
 > reduce: 9
 > 
+> listnamed: *.aa.bb : ^\Nxxx(.*)
+> listnamed: *.aa.bb : ^\Nxxx(.*)
+> listnamed: V4NET.11.12.13 : iplsearch;TESTSUITE/aux-fixed/0002.iplsearch
+> listnamed: *.aa.bb : ^\Nxxx(.*) : ;;
+> listnamed: a : b;c : *.aa.bb : ^\Nxxx(.*) : ;; : 2001::630::212::8::204::::b664
+> Failed: "nolist" is not a named list
+> listnamed: *.aa.bb : ^\Nxxx(.*)
+> Failed: "hlist" is not a domain named list
+> Failed: bad suffix on "list" operator
+> 
+> listcount: 3
+> listcount: 0
+> listcount: 3
+> listcount: 2
+> 
 > # Tests with iscntrl() and illegal separators
 > 
 > map: 'a'
@@ -62,6 +77,21 @@
 > reduce: 6
 > 
 > # Operators
+> 
+> Failed: missing or misplaced { or }
+> Failed: missing or misplaced { or }
+> Failed: error from acl "a_nosuch"
+> acl: (0) [] []
+> acl: (1) [person@dom.ain] []
+> acl: (2) [firstarg] [secondarg]
+> acl: (1) [arg with spaces] []
+> acl: 
+> acl: 
+> acl: (0) [] []
+> acl: (1) [person@dom.ain] []
+> Failed: error from acl "a_defer"
+> acl: (2) [new arg1] [top_arg_1]
+> acl:  (1) [1] [] (1) [2] [] (1) [3] [] (1) [4] []
 > 
 > addrss: local-part@dom.ain
 > addrss: local-part@dom.ain
@@ -220,6 +250,12 @@
 > md5:    NO
 > mask:   NO
 > 
+> # Number suffixes in conditions
+> 1k: y
+> 1K: y
+> 1M: y
+> 1G: y
+> 
 > # Numeric overflow
 > # >32b should work, >64b not
 > 
@@ -355,6 +391,12 @@
 > 
 > queue_running after or: y
 > first_delivery after or: y
+> 
+> # acl expansion condition
+> acl if: Y:(0) [] []
+> acl if: Y:(1) [argY] []
+> acl if: N:(2) [argN] [arg2]
+> Failed: error from acl "a_defer"
 > 
 > # Default values for both if strings
 > 
@@ -829,4 +871,7 @@ xyz
 221 myhost.test.ex closing connection
 > match_ip:        15 
 > match_ip:        16 
+> 
+> in list
+> in list
 > 

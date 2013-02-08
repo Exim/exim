@@ -1,3 +1,7 @@
 > ptr=V6NET:0:12:1:a00:20ff:fe86:a062 testptr-arpa.ipv6.test.ex
 > ptr=V6NET:0:12:1:a00:20ff:fe86:a062 testptr-arpa.ipv6.test.ex
 > 
+> a=46.test.ex       V4NET.0.0.4
+> aaaa=46.test.ex    V6NET:ffff:836f:a00:a:800:200a:c031
+> a+=46.test.ex      V6NET:ffff:836f:a00:a:800:200a:c031;V4NET.0.0.4
+> 

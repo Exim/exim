@@ -1,0 +1,10 @@
+1999-03-02 09:44:33 U=CALLER F=<mailok@test.ex> rejected RCPT <notok@test.ex>
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER Warning: Verified previously removed header X-Rcpt-2
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER Warning: Verified removed header X-Data-3 in this ACL still visible
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= mailok@test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => rcptok <rcptok@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => rcptok <rcptok@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 U=CALLER temporarily rejected connection in "connect" ACL: cannot use remove_header condition in connection ACL
