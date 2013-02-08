@@ -1771,8 +1771,14 @@ if (!isdirectory)
       /* We have successfully created and opened the file. Ensure that the group
       and the mode are correct. */
 
-      (void)Uchown(filename, uid, gid);
-      (void)Uchmod(filename, mode);
+      if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+        {
+        addr->basic_errno = errno;
+        addr->message = string_sprintf("while setting perms on mailbox %s",
+          filename);
+        addr->transport_return = FAIL;
+        goto RETURN;
+        }
       }
 
 
@@ -2573,8 +2579,13 @@ else
     /* Why are these here? Put in because they are present in the non-maildir
     directory case above. */
 
-    (void)Uchown(filename, uid, gid);
-    (void)Uchmod(filename, mode);
+    if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+      {
+      addr->basic_errno = errno;
+      addr->message = string_sprintf("while setting perms on maildir %s",
+        filename);
+      return FALSE;
+      }
     }
 
   #endif  /* SUPPORT_MAILDIR */
@@ -2615,8 +2626,13 @@ else
     /* Why are these here? Put in because they are present in the non-maildir
     directory case above. */
 
-    (void)Uchown(filename, uid, gid);
-    (void)Uchmod(filename, mode);
+    if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+      {
+      addr->basic_errno = errno;
+      addr->message = string_sprintf("while setting perms on file %s",
+        filename);
+      return FALSE;
+      }
 
     /* Built a C stream from the open file descriptor. */
 
@@ -2707,8 +2723,13 @@ else
       Uunlink(filename);
       return FALSE;
       }
-    (void)Uchown(dataname, uid, gid);
-    (void)Uchmod(dataname, mode);
+    if(Uchown(dataname, uid, gid) || Uchmod(dataname, mode))
+      {
+      addr->basic_errno = errno;
+      addr->message = string_sprintf("while setting perms on file %s",
+        dataname);
+      return FALSE;
+      }
     }
 
   #endif  /* SUPPORT_MAILSTORE */
@@ -2717,8 +2738,13 @@ else
   /* In all cases of writing to a new file, ensure that the file which is
   going to be renamed has the correct ownership and mode. */
 
-  (void)Uchown(filename, uid, gid);
-  (void)Uchmod(filename, mode);
+  if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+    {
+    addr->basic_errno = errno;
+    addr->message = string_sprintf("while setting perms on file %s",
+      filename);
+    return FALSE;
+    }
   }
 
 
@@ -3095,7 +3121,8 @@ if (yield != OK)
   investigated so far have ftruncate(), whereas not all have the F_FREESP
   fcntl() call (BSDI & FreeBSD do not). */
 
-  if (!isdirectory) (void)ftruncate(fd, saved_size);
+  if (!isdirectory && ftruncate(fd, saved_size))
+    DEBUG(D_transport) debug_printf("Error restting file size\n");
   }
 
 /* Handle successful writing - we want the modification time to be now for

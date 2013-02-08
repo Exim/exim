@@ -386,6 +386,9 @@ static unsigned int cond_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* add_header */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif
     (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_DKIM)|
     (1<<ACL_WHERE_NOTSMTP_START)),
@@ -398,6 +401,9 @@ static unsigned int cond_forbids[] = {
   (1<<ACL_WHERE_AUTH)|                             /* bmi_optin */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
@@ -416,7 +422,11 @@ static unsigned int cond_forbids[] = {
 
   #ifdef EXPERIMENTAL_DCC
   (unsigned int)
-  ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* dcc */
+  ~((1<<ACL_WHERE_DATA)|                           /* dcc */
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
+    (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
   #ifdef WITH_CONTENT_SCAN
@@ -428,7 +438,11 @@ static unsigned int cond_forbids[] = {
 
   #ifdef WITH_OLD_DEMIME
   (unsigned int)
-  ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* demime */
+  ~((1<<ACL_WHERE_DATA)|                           /* demime */
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
+    (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
   #ifndef DISABLE_DKIM
@@ -448,7 +462,11 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
 
   (unsigned int)
-  ~(1<<ACL_WHERE_RCPT),                            /* domains */
+  ~((1<<ACL_WHERE_RCPT)                            /* domains */
+  #ifdef EXPERIMENTAL_PRDR
+    |(1<<ACL_WHERE_PRDR)
+  #endif
+    ),
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* encrypted */
     (1<<ACL_WHERE_CONNECT)|
@@ -461,7 +479,11 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
 
   (unsigned int)
-  ~(1<<ACL_WHERE_RCPT),                            /* local_parts */
+  ~((1<<ACL_WHERE_RCPT)                             /* local_parts */
+  #ifdef EXPERIMENTAL_PRDR
+    |(1<<ACL_WHERE_PRDR)
+  #endif
+    ),
 
   0,                                               /* log_message */
 
@@ -471,7 +493,11 @@ static unsigned int cond_forbids[] = {
 
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
-  ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* malware */
+  ~((1<<ACL_WHERE_DATA)|                           /* malware */
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
+    (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
   0,                                               /* message */
@@ -488,13 +514,20 @@ static unsigned int cond_forbids[] = {
 
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
-  ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|    /* regex */
+  ~((1<<ACL_WHERE_DATA)|                           /* regex */
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
+    (1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_MIME)),
   #endif
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* remove_header */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif
     (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_NOTSMTP_START)),
 
@@ -514,7 +547,11 @@ static unsigned int cond_forbids[] = {
 
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
-  ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* spam */
+  ~((1<<ACL_WHERE_DATA)|                           /* spam */
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
+    (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
   #ifdef EXPERIMENTAL_SPF
@@ -558,6 +595,9 @@ static unsigned int control_forbids[] = {
 
   #ifndef DISABLE_DKIM
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_disable_verify */
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
@@ -590,11 +630,13 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* freeze */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
     (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME)),
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* queue_only */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
     (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME)),
 
   (unsigned int)
@@ -610,17 +652,24 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* no_mbox_unspool */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
     (1<<ACL_WHERE_MIME)),
   #endif
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakedefer */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
     (1<<ACL_WHERE_MIME)),
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+  #ifdef EXPERIMENTAL_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif /* EXPERIMENTAL_PRDR */
     (1<<ACL_WHERE_MIME)),
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* no_multiline */
@@ -1105,14 +1154,14 @@ do
 
     /* contains embedded newline; needs doubling */
     ret = string_cat(ret, &size, &ptr, s, cp-s+1);
-    ret = string_cat(ret, &size, &ptr, "\n", 1);
+    ret = string_cat(ret, &size, &ptr, US"\n", 1);
     s = cp+1;
     }
   /* last bit of header */
 
   ret = string_cat(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
   }
-while(h = h->next);
+while((h = h->next));
 
 ret[ptr-1] = '\0';	/* overwrite last newline */
 return ret;
@@ -4006,8 +4055,11 @@ acl_check_wargs(int where, address_item *addr, uschar *s, int level,
 {
 uschar * tmp;
 uschar * tmp_arg[9];	/* must match acl_arg[] */
+uschar * sav_arg[9];	/* must match acl_arg[] */
+int sav_narg;
 uschar * name;
 int i;
+int ret;
 
 if (!(tmp = string_dequote(&s)) || !(name = expand_string(tmp)))
   goto bad;
@@ -4022,11 +4074,25 @@ for (i = 0; i < 9; i++)
     goto bad;
     }
   }
-acl_narg = i;
-for (i = 0; i < acl_narg; i++) acl_arg[i] = tmp_arg[i];
-while (i < 9) acl_arg[i++] = NULL;
 
-return acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+sav_narg = acl_narg;
+acl_narg = i;
+for (i = 0; i < acl_narg; i++)
+  {
+  sav_arg[i] = acl_arg[i];
+  acl_arg[i] = tmp_arg[i];
+  }
+while (i < 9)
+  {
+  sav_arg[i] = acl_arg[i];
+  acl_arg[i++] = NULL;
+  }
+
+ret = acl_check_internal(where, addr, name, level, user_msgptr, log_msgptr);
+
+acl_narg = sav_narg;
+for (i = 0; i < 9; i++) acl_arg[i] = sav_arg[i];
+return ret;
 
 bad:
 if (expand_string_forcedfail) return ERROR;
@@ -4040,6 +4106,34 @@ return search_find_defer?DEFER:ERROR;
 /*************************************************
 *        Check access using an ACL               *
 *************************************************/
+
+/* Alternate interface for ACL, used by expansions */
+int
+acl_eval(int where, uschar *s, uschar **user_msgptr, uschar **log_msgptr)
+{
+address_item adb;
+address_item *addr = NULL;
+
+*user_msgptr = *log_msgptr = NULL;
+sender_verified_failed = NULL;
+ratelimiters_cmd = NULL;
+log_reject_target = LOG_MAIN|LOG_REJECT;
+
+if (where == ACL_WHERE_RCPT)
+  {
+  adb = address_defaults;
+  addr = &adb;
+  addr->address = expand_string(US"$local_part@$domain");
+  addr->domain = deliver_domain;
+  addr->local_part = deliver_localpart;
+  addr->cc_local_part = deliver_localpart;
+  addr->lc_local_part = deliver_localpart;
+  }
+
+return acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+}
+
+
 
 /* This is the external interface for ACL checks. It sets up an address and the
 expansions for $domain and $local_part when called after RCPT, then calls
@@ -4059,6 +4153,7 @@ Returns:       OK         access is granted by an ACCEPT verb
                DEFER      can't tell at the moment
                ERROR      disaster
 */
+int acl_where = ACL_WHERE_UNKNOWN;
 
 int
 acl_check(int where, uschar *recipient, uschar *s, uschar **user_msgptr,
@@ -4073,7 +4168,11 @@ sender_verified_failed = NULL;
 ratelimiters_cmd = NULL;
 log_reject_target = LOG_MAIN|LOG_REJECT;
 
-if (where == ACL_WHERE_RCPT)
+#ifdef EXPERIMENTAL_PRDR
+if (where == ACL_WHERE_RCPT || where == ACL_WHERE_PRDR )
+#else
+if (where == ACL_WHERE_RCPT )
+#endif
   {
   adb = address_defaults;
   addr = &adb;
@@ -4087,7 +4186,9 @@ if (where == ACL_WHERE_RCPT)
   deliver_localpart = addr->local_part;
   }
 
+acl_where = where;
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+acl_where = ACL_WHERE_UNKNOWN;
 
 /* Cutthrough - if requested,
 and WHERE_RCPT and not yet opened conn as result of recipient-verify,
@@ -4111,6 +4212,9 @@ If conn-failure, no action (and keep the spooled copy).
 switch (where)
 {
 case ACL_WHERE_RCPT:
+#ifdef EXPERIMENTAL_PRDR
+case ACL_WHERE_PRDR:
+#endif
   if( rcpt_count > 1 )
     cancel_cutthrough_connection("more than one recipient");
   else if (rc == OK  &&  cutthrough_delivery  &&  cutthrough_fd < 0)
@@ -4168,7 +4272,6 @@ if (fake_response != OK)
 
 return rc;
 }
-
 
 
 /*************************************************

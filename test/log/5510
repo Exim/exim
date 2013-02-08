@@ -1,0 +1,31 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> userz@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 second rcpt was good"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => user2.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK got that"
+1999-03-02 09:44:33 10HmaY-0005vi-00 -> user2.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK got that"
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= userx@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == userz@test.ex R=r0 T=t1 defer (0): PRDR error after DATA: 450 cannot handle second rcpt right now
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userp@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good"
+1999-03-02 09:44:33 10HmbA-0005vi-00 ** userq@test.ex R=r0 T=t1: PRDR error after DATA: 550 second rcpt does not like content
+1999-03-02 09:44:33 10HmbA-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == userz@test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** user5.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 550 oops, overall rejection
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** user5.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 550 oops, overall rejection
+1999-03-02 09:44:33 10HmbB-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** user6.1@test.ex R=r0 T=t1: SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 550 naah mate
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** user6.2@test.ex R=r0 T=t1: SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 550 naah mate
+1999-03-02 09:44:33 10HmbC-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 == user7.1@test.ex R=r0 T=t1 defer (-46): SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 450 oops, try again later please
+1999-03-02 09:44:33 10HmbD-0005vi-00 == user7.2@test.ex R=r0 T=t1 defer (-46): SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 450 oops, try again later please
+1999-03-02 09:44:33 10HmbD-0005vi-00 == user7.3@test.ex R=r0 T=t1 defer (-46): SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 450 oops, try again later please
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => user8.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK, got that"
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed

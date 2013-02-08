@@ -17,26 +17,34 @@
 *************************************************/
 
 /* This function tests whether a message has been on the queue longer than
-the maximum retry time for a particular host.
+the maximum retry time for a particular host or address.
 
 Arguments:
-  host_key      the key to look up a host retry rule
+  retry_key     the key to look up a retry rule
   domain        the domain to look up a domain retry rule
-  basic_errno   a specific error number, or zero if none
-  more_errno    additional data for the error
+  retry_record  contains error information for finding rule
   now           the time
 
 Returns:        TRUE if the ultimate timeout has been reached
 */
 
-static BOOL
-ultimate_address_timeout(uschar *host_key, uschar *domain, int basic_errno,
-  int more_errno, time_t now)
+BOOL
+retry_ultimate_address_timeout(uschar *retry_key, uschar *domain,
+  dbdata_retry *retry_record, time_t now)
 {
-BOOL address_timeout = TRUE;   /* no rule => timed out */
+BOOL address_timeout;
+
+DEBUG(D_retry)
+  {
+  debug_printf("retry time not reached: checking ultimate address timeout\n");
+  debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
+    (int)now, (int)retry_record->first_failed,
+    (int)retry_record->next_try, retry_record->expired);
+  }
 
 retry_config *retry =
-  retry_find_config(host_key+2, domain, basic_errno, more_errno);
+  retry_find_config(retry_key+2, domain,
+    retry_record->basic_errno, retry_record->more_errno);
 
 if (retry != NULL && retry->rules != NULL)
   {
@@ -44,16 +52,22 @@ if (retry != NULL && retry->rules != NULL)
   for (last_rule = retry->rules;
        last_rule->next != NULL;
        last_rule = last_rule->next);
-  DEBUG(D_transport|D_retry)
+  DEBUG(D_retry)
     debug_printf("  received_time=%d diff=%d timeout=%d\n",
       received_time, (int)(now - received_time), last_rule->timeout);
   address_timeout = (now - received_time > last_rule->timeout);
   }
 else
   {
-  DEBUG(D_transport|D_retry)
+  DEBUG(D_retry)
     debug_printf("no retry rule found: assume timed out\n");
+  address_timeout = TRUE;
   }
+
+DEBUG(D_retry)
+  if (address_timeout)
+    debug_printf("on queue longer than maximum retry for address - "
+      "allowing delivery\n");
 
 return address_timeout;
 }
@@ -206,25 +220,10 @@ if (host_retry_record != NULL)
 
   if (now < host_retry_record->next_try && !deliver_force)
     {
-    DEBUG(D_transport|D_retry)
-      {
-      debug_printf("host retry time not reached: checking ultimate address "
-        "timeout\n");
-      debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
-        (int)now, (int)host_retry_record->first_failed,
-        (int)host_retry_record->next_try,
-        host_retry_record->expired);
-      }
-
     if (!host_retry_record->expired &&
-        ultimate_address_timeout(host_key, domain,
-          host_retry_record->basic_errno, host_retry_record->more_errno, now))
-      {
-      DEBUG(D_transport|D_retry)
-        debug_printf("on queue longer than maximum retry for "
-          "address - allowing delivery\n");
+        retry_ultimate_address_timeout(host_key, domain,
+          host_retry_record, now))
       return FALSE;
-      }
 
     /* We have not hit the ultimate address timeout; host is unusable. */
 
@@ -249,24 +248,11 @@ if (message_retry_record != NULL)
   *retry_message_key = message_key;
   if (now < message_retry_record->next_try && !deliver_force)
     {
-    DEBUG(D_transport|D_retry)
-      {
-      debug_printf("host+message retry time not reached: checking ultimate "
-        "address timeout\n");
-      debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
-        (int)now, (int)message_retry_record->first_failed,
-        (int)message_retry_record->next_try, message_retry_record->expired);
-      }
-    if (!ultimate_address_timeout(host_key, domain, 0, 0, now))
+    if (!retry_ultimate_address_timeout(host_key, domain,
+        message_retry_record, now))
       {
       host->status = hstatus_unusable;
       host->why = hwhy_retry;
-      }
-    else
-      {
-      DEBUG(D_transport|D_retry)
-        debug_printf("on queue longer than maximum retry for "
-          "address - allowing delivery\n");
       }
     return FALSE;
     }

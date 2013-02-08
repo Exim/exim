@@ -57,6 +57,7 @@ a_defer:
   defer
 
 a_sub:
+  require acl = a_none foo bar baz barf
   require acl = a_deny "new arg1" $acl_arg1
 
 # End

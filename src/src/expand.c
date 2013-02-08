@@ -577,6 +577,7 @@ static var_entry var_table[] = {
   { "reply_address",       vtype_reply,       NULL },
   { "return_path",         vtype_stringptr,   &return_path },
   { "return_size_limit",   vtype_int,         &bounce_return_size_limit },
+  { "router_name",         vtype_stringptr,   &router_name },
   { "runrc",               vtype_int,         &runrc },
   { "self_hostname",       vtype_stringptr,   &self_hostname },
   { "sender_address",      vtype_stringptr,   &sender_address },
@@ -673,6 +674,7 @@ static var_entry var_table[] = {
   { "tod_logfile",         vtype_todlf,       NULL },
   { "tod_zone",            vtype_todzone,     NULL },
   { "tod_zulu",            vtype_todzulu,     NULL },
+  { "transport_name",      vtype_stringptr,   &transport_name },
   { "value",               vtype_stringptr,   &lookup_value },
   { "version_number",      vtype_stringptr,   &version_string },
   { "warn_message_delay",  vtype_stringptr,   &warnmsg_delay },
@@ -790,8 +792,11 @@ return -1;
 
 /* This function is called to expand a string, and test the result for a "true"
 or "false" value. Failure of the expansion yields FALSE; logged unless it was a
-forced fail or lookup defer. All store used by the function can be released on
-exit.
+forced fail or lookup defer.
+
+We used to release all store used, but this is not not safe due
+to ${dlfunc } and ${acl }.  In any case expand_string_internal()
+is reasonably careful to release what it can.
 
 The actual false-value tests should be replicated for ECOND_BOOL_LAX.
 
@@ -807,7 +812,6 @@ BOOL
 expand_check_condition(uschar *condition, uschar *m1, uschar *m2)
 {
 int rc;
-void *reset_point = store_get(0);
 uschar *ss = expand_string(condition);
 if (ss == NULL)
   {
@@ -818,7 +822,6 @@ if (ss == NULL)
   }
 rc = ss[0] != 0 && Ustrcmp(ss, "0") != 0 && strcmpic(ss, US"no") != 0 &&
   strcmpic(ss, US"false") != 0;
-store_reset(reset_point);
 return rc;
 }
 
@@ -1858,6 +1861,7 @@ if (Ustrncmp(name, "acl_", 4) == 0)
 
 /*
 Load args from sub array to globals, and call acl_check().
+Sub array will be corrupted on return.
 
 Returns:       OK         access is granted by an ACCEPT verb
                DISCARD    access is granted by a DISCARD verb
@@ -1870,13 +1874,24 @@ static int
 eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
 {
 int i;
-uschar *dummy_log_msg;
+uschar *tmp;
+int sav_narg = acl_narg;
+int ret;
+extern int acl_where;
 
-for (i = 1; i < nsub && sub[i]; i++)
-  acl_arg[i-1] = sub[i];
-acl_narg = i-1;
+if(--nsub > sizeof(acl_arg)/sizeof(*acl_arg)) nsub = sizeof(acl_arg)/sizeof(*acl_arg);
+for (i = 0; i < nsub && sub[i+1]; i++)
+  {
+  tmp = acl_arg[i];
+  acl_arg[i] = sub[i+1];	/* place callers args in the globals */
+  sub[i+1] = tmp;		/* stash the old args using our caller's storage */
+  }
+acl_narg = i;
 while (i < nsub)
-  acl_arg[i++ - 1] = NULL;
+  {
+  sub[i+1] = acl_arg[i];
+  acl_arg[i++] = NULL;
+  }
 
 DEBUG(D_expand)
   debug_printf("expanding: acl: %s  arg: %s%s\n",
@@ -1884,7 +1899,13 @@ DEBUG(D_expand)
     acl_narg>0 ? sub[1]   : US"<none>",
     acl_narg>1 ? " +more" : "");
 
-return acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], user_msgp, &dummy_log_msg);
+ret = acl_eval(acl_where, sub[0], user_msgp, &tmp);
+
+for (i = 0; i < nsub; i++)
+  acl_arg[i] = sub[i+1];	/* restore old args */
+acl_narg = sav_narg;
+
+return ret;
 }
 
 
@@ -2135,14 +2156,13 @@ switch(cond_type)
   case ECOND_ACL:
     /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
     {
-    uschar *nameargs;
     uschar *user_msg;
     BOOL cond = FALSE;
     int size = 0;
     int ptr = 0;
 
     while (isspace(*s)) s++;
-    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
     switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
       &s, yield == NULL, TRUE, US"acl"))
@@ -3377,12 +3397,12 @@ if (*error == NULL)
      * can just let the other invalid results occur otherwise, as they have
      * until now.  For this one case, we can coerce.
      */
-    if (y == -1 && x == LLONG_MIN && op != '*')
+    if (y == -1 && x == EXIM_ARITH_MIN && op != '*')
       {
       DEBUG(D_expand)
         debug_printf("Integer exception dodging: " PR_EXIM_ARITH "%c-1 coerced to " PR_EXIM_ARITH "\n",
-            LLONG_MIN, op, LLONG_MAX);
-      x = LLONG_MAX;
+            EXIM_ARITH_MIN, op, EXIM_ARITH_MAX);
+      x = EXIM_ARITH_MAX;
       continue;
       }
     if (op == '*')
@@ -3554,8 +3574,8 @@ $message_headers which can get very long.
 There's a problem if a ${dlfunc item has side-effects that cause allocation,
 since resetting the store at the end of the expansion will free store that was
 allocated by the plugin code as well as the slop after the expanded string. So
-we skip any resets if ${dlfunc has been used. This is an unfortunate
-consequence of string expansion becoming too powerful.
+we skip any resets if ${dlfunc has been used. The same applies for ${acl. This
+is an unfortunate consequence of string expansion becoming too powerful.
 
 Arguments:
   string         the string to be expanded
@@ -3777,6 +3797,7 @@ while (*s != 0)
     acl_check_internal() directly and get a current level from somewhere.
     See also the acl expansion condition ECOND_ACL and the traditional
     acl modifier ACLC_ACL.
+    Assume that the function has side-effects on the store that must be preserved.
     */
 
     case EITEM_ACL:
@@ -3793,6 +3814,7 @@ while (*s != 0)
         }
       if (skipping) continue;
 
+      resetok = FALSE;
       switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:
@@ -5727,13 +5749,13 @@ while (*s != 0)
 	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
 	        {
                 yield = string_cat(yield, &size, &ptr, US"::", 2);
-	        item = cp;
+	        item = (uschar *)cp;
 		}
 	      else		/* sep in item; should already be doubled; emit once */
 	        {
                 yield = string_cat(yield, &size, &ptr, (uschar *)tok, 1);
 		if (*cp == sep) cp++;
-	        item = cp;
+	        item = (uschar *)cp;
 		}
 	      }
 	    }
@@ -6500,17 +6522,17 @@ else
     default:
       break;
     case 'k':
-      if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/1024 || value < EXIM_ARITH_MIN/1024) errno = ERANGE;
       else value *= 1024;
       endptr++;
       break;
     case 'm':
-      if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024)) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/(1024*1024) || value < EXIM_ARITH_MIN/(1024*1024)) errno = ERANGE;
       else value *= 1024*1024;
       endptr++;
       break;
     case 'g':
-      if (value > LLONG_MAX/(1024*1024*1024) || value < LLONG_MIN/(1024*1024*1024)) errno = ERANGE;
+      if (value > EXIM_ARITH_MAX/(1024*1024*1024) || value < EXIM_ARITH_MIN/(1024*1024*1024)) errno = ERANGE;
       else value *= 1024*1024*1024;
       endptr++;
       break;

@@ -1,0 +1,231 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<userx@test.ex> PRDR
+250 OK
+RCPT TO:<usery@test.ex>
+250 OK
+RCPT TO:<userz@test.ex>
+250 OK
+DATA
+300 gimme yer body
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: userx@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Some message text.
+.
+353 prdr responses coming up
+250 first rcpt was good
+250 second rcpt was good
+250 OK, overall
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<userx@test.ex> PRDR
+250 OK
+RCPT TO:<user2.1@test.ex>
+250 OK
+RCPT TO:<user2.2@test.ex>
+250 OK
+DATA
+300 gimme that body
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: userx@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Some message text.
+.
+250 OK got that
+QUIT
+250 OK, bye
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<userx@test.ex> PRDR
+250 OK
+RCPT TO:<usery@test.ex>
+250 OK
+RCPT TO:<userz@test.ex>
+250 OK
+DATA
+300 gimme yer body
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: userx@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Some message text.
+.
+353 prdr responses coming up
+250 first rcpt was good
+450 cannot handle second rcpt right now
+250 OK, overall
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO:<userp@test.ex>
+250 OK
+RCPT TO:<userq@test.ex>
+250 OK
+DATA
+300 gimme yer body
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbA-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Some message text.
+.
+353 prdr responses coming up
+250 first rcpt was good
+550 second rcpt does not like content
+250 OK, overall
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO:<user5.1@test.ex>
+250 OK
+RCPT TO:<user5.2@test.ex>
+250 OK
+DATA
+300 yeah baby
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbB-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+text
+.
+353 prdr responses coming up
+250 first rcpt was good
+250 second rcpt was good
+550 oops, overall rejection
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO:<user6.1@test.ex>
+250 OK
+RCPT TO:<user6.2@test.ex>
+250 OK
+DATA
+300 yeah baby
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbC-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+text
+.
+550 naah mate
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO:<user7.1@test.ex>
+250 OK
+RCPT TO:<user7.2@test.ex>
+250 OK
+RCPT TO:<user7.3@test.ex>
+250 OK
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbD-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+text
+.
+353 prdr responses coming up
+250 first rcpt does not like you
+250 second rcpt has a temporary problem
+250 third rcpt is ok
+450 oops, try again later please
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-
+250-PRDR
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<user8.1@test.ex>
+250 OK
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbE-0005vi-00
+	for user8.1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+text
+.
+250 OK, got that
+QUIT
+250 OK, bye
+End of script

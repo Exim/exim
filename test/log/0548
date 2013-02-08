@@ -8,17 +8,19 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaY-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
-1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
 1999-03-02 09:44:33 10HmaY-0005vi-00 SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaY-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
-1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
 1999-03-02 09:44:33 End queue run: pid=pppp
 
 ******** SERVER ********
@@ -27,7 +29,9 @@
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
 1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
-1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <usery@test.ex>: Recipient deferred
+1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
 1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <usery@test.ex>: Recipient deferred
+1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
+1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <usery@test.ex>: Recipient deferred

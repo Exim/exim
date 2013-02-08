@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/sh -e
 
 # A script to be called to run all the other configuring scripts manually.
 

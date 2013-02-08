@@ -96,7 +96,7 @@ To: random@test.example,
  
 **** debug string too long - truncated ****
 
-address match: subject=r1@test.ex pattern=*@*
+address match test: subject=r1@test.ex pattern=*@*
 test.ex in "*"? yes (matched "*")
 r1@test.ex in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -116,7 +116,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
 file lookup required for *.test.ex
   in TESTSUITE/aux-fixed/0471.rw
 lookup failed
-address match: subject=CALLER@myhost.test.ex pattern=*@*
+address match test: subject=CALLER@myhost.test.ex pattern=*@*
 myhost.test.ex in "*"? yes (matched "*")
 CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -225,7 +225,7 @@ rewrite_one_header: type=T:
     random@test.example,
     random@test.examp
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -404,7 +404,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -583,7 +583,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -762,7 +762,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -941,7 +941,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1120,7 +1120,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1299,7 +1299,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1478,7 +1478,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1657,7 +1657,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -1836,7 +1836,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2014,7 +2014,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2192,7 +2192,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2370,7 +2370,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2548,7 +2548,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2726,7 +2726,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -2904,7 +2904,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3082,7 +3082,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3260,7 +3260,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3438,7 +3438,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3616,7 +3616,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3794,7 +3794,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -3972,7 +3972,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4150,7 +4150,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4327,7 +4327,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4504,7 +4504,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4681,7 +4681,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -4858,7 +4858,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5035,7 +5035,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5212,7 +5212,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5389,7 +5389,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5566,7 +5566,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5743,7 +5743,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -5920,7 +5920,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6097,7 +6097,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6274,7 +6274,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6450,7 +6450,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6626,7 +6626,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6802,7 +6802,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -6978,7 +6978,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7154,7 +7154,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7330,7 +7330,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7506,7 +7506,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7682,7 +7682,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -7858,7 +7858,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8034,7 +8034,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8210,7 +8210,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8386,7 +8386,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8562,7 +8562,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8737,7 +8737,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -8912,7 +8912,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9087,7 +9087,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9262,7 +9262,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9437,7 +9437,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9612,7 +9612,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9787,7 +9787,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -9962,7 +9962,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10137,7 +10137,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10312,7 +10312,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10487,7 +10487,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10662,7 +10662,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -10836,7 +10836,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11010,7 +11010,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11184,7 +11184,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11358,7 +11358,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11532,7 +11532,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11706,7 +11706,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -11880,7 +11880,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12054,7 +12054,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12228,7 +12228,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12402,7 +12402,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12576,7 +12576,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12750,7 +12750,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -12924,7 +12924,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13097,7 +13097,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13270,7 +13270,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13443,7 +13443,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13616,7 +13616,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13789,7 +13789,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -13962,7 +13962,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14135,7 +14135,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14308,7 +14308,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14481,7 +14481,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14653,7 +14653,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14824,7 +14824,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -14994,7 +14994,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15163,7 +15163,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15331,7 +15331,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15498,7 +15498,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15664,7 +15664,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15829,7 +15829,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -15993,7 +15993,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16156,7 +16156,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16318,7 +16318,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16479,7 +16479,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16639,7 +16639,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16798,7 +16798,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -16956,7 +16956,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17113,7 +17113,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17269,7 +17269,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17424,7 +17424,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17578,7 +17578,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17731,7 +17731,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -17883,7 +17883,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18034,7 +18034,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18184,7 +18184,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18333,7 +18333,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18481,7 +18481,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18628,7 +18628,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18774,7 +18774,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -18919,7 +18919,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19063,7 +19063,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19206,7 +19206,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19348,7 +19348,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19489,7 +19489,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19629,7 +19629,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19768,7 +19768,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -19906,7 +19906,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20043,7 +20043,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20179,7 +20179,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20314,7 +20314,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20448,7 +20448,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20581,7 +20581,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20713,7 +20713,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20844,7 +20844,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -20974,7 +20974,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21103,7 +21103,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21231,7 +21231,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21358,7 +21358,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21484,7 +21484,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21609,7 +21609,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21733,7 +21733,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21856,7 +21856,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -21978,7 +21978,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22099,7 +22099,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22219,7 +22219,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22338,7 +22338,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22456,7 +22456,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22573,7 +22573,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22689,7 +22689,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22804,7 +22804,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -22918,7 +22918,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23031,7 +23031,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23143,7 +23143,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23254,7 +23254,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23364,7 +23364,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23473,7 +23473,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23581,7 +23581,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23688,7 +23688,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23794,7 +23794,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -23899,7 +23899,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24003,7 +24003,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24106,7 +24106,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24208,7 +24208,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24309,7 +24309,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24409,7 +24409,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24508,7 +24508,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24606,7 +24606,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24703,7 +24703,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24799,7 +24799,7 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24894,7 +24894,7 @@ To: random@rwtest.example,
 remainder: random@test.example,
     random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -24988,7 +24988,7 @@ To: random@rwtest.example,
 **** debug string too long - truncated ****
 remainder: random@test.example,
     random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25081,7 +25081,7 @@ To: random@rwtest.example,
     random@rwtest.example,
 **** debug string too long - truncated ****
 remainder: random@test.example
-address match: subject=random@test.example pattern=*@*
+address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
@@ -25176,7 +25176,7 @@ To: random@rwtest.example,
 remainder: 
 rewrite_one_header: type=F:
   From: CALLER_NAME <CALLER@myhost.test.ex>
-address match: subject=CALLER@myhost.test.ex pattern=*@*
+address match test: subject=CALLER@myhost.test.ex pattern=*@*
 myhost.test.ex in "*"? yes (matched "*")
 CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
 search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"

@@ -196,16 +196,13 @@ that causes failure if the size of msgbuf is exceeded. ****/
 /***************************************************************/
 
 /* Put the username in $auth1 and $1. The former is now the preferred variable;
-the latter is the original variable. */
+the latter is the original variable. These have to be out of stack memory, and
+need to be available once known even if not authenticated, for error messages
+(server_set_id, which only makes it to authenticated_id if we return OK) */
 
-auth_vars[0] = expand_nstring[1] = msgbuf;
+auth_vars[0] = expand_nstring[1] = string_copy(msgbuf);
 expand_nlength[1] = Ustrlen(msgbuf);
 expand_nmax = 1;
-
-/* clean up globals which aren't referenced, but still shouldn't be left
-pointing to stack memory */
-#define CLEANUP_RETURN(Code) do { auth_vars[0] = expand_nstring[1] = NULL; \
-  expand_nlength[1] = expand_nmax = 0; return (Code); } while (0);
 
 debug_print_string(ablock->server_debug_string);    /* customized debug */
 
@@ -218,13 +215,13 @@ if (clearpass == NULL)
     {
     DEBUG(D_auth) debug_printf("auth_spa_server(): forced failure while "
       "expanding spa_serverpassword\n");
-    CLEANUP_RETURN(FAIL);
+    return FAIL;
     }
   else
     {
     DEBUG(D_auth) debug_printf("auth_spa_server(): error while expanding "
       "spa_serverpassword: %s\n", expand_string_message);
-    CLEANUP_RETURN(DEFER);
+    return DEFER;
     }
   }
 
@@ -240,13 +237,12 @@ if (memcmp(ntRespData,
       24) == 0)
   /* success. we have a winner. */
   {
-  int rc = auth_check_serv_cond(ablock);
-  CLEANUP_RETURN(rc);
+  return auth_check_serv_cond(ablock);
   }
 
   /* Expand server_condition as an authorization check (PH) */
 
-CLEANUP_RETURN(FAIL);
+return FAIL;
 }
 
 

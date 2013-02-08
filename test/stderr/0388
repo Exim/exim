@@ -95,7 +95,7 @@ LOG: MAIN
 added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
   SMTP>> QUIT
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for x@y: result OK
-address match: subject=*@127.0.0.1 pattern=*
+address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")
 *@127.0.0.1 in "*"? yes (matched "*")
 checking status of V4NET.0.0.0
@@ -134,7 +134,7 @@ locked TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
-address match: subject=x@y pattern=*
+address match test: subject=x@y pattern=*
 y in "*"? yes (matched "*")
 x@y in "*"? yes (matched "*")
 retry for R:x@y = * 0 0
@@ -144,7 +144,7 @@ Writing retry data for R:x@y
   first failed=dddd last try=dddd next try=+1 expired=1
   errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 dbfn_write: key=R:x@y
-address match: subject=*@V4NET.0.0.0 pattern=*
+address match test: subject=*@V4NET.0.0.0 pattern=*
 V4NET.0.0.0 in "*"? yes (matched "*")
 *@V4NET.0.0.0 in "*"? yes (matched "*")
 retry for T:V4NET.0.0.0:V4NET.0.0.0:1224 (y) = * 0 0
@@ -236,7 +236,7 @@ local_part=CALLER domain=myhost.test.ex
 checking local_parts
 CALLER in "CALLER"? yes (matched "CALLER")
 checking senders
-address match: subject= pattern=
+address match test: subject= pattern=
  in ":"? yes (matched "")
 calling r0 router
 rda_interpret (string): :blackhole:

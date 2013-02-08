@@ -4,7 +4,9 @@
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
 1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
-1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <usery@test.ex>: Recipient deferred
+1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
 1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <usery@test.ex>: Recipient deferred
+1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <userx@test.ex>: Recipient deferred
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL: host deferred
+1999-03-02 09:44:33 H=the.local.host.name [ip4.ip4.ip4.ip4] F=<CALLER@test.ex> temporarily rejected RCPT <usery@test.ex>: Recipient deferred

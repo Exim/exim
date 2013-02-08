@@ -284,6 +284,8 @@
 # 2007-09-20  V1.60 Heiko Schlittermann
 #             Fix for misinterpreted log lines
 #
+# 2013-01-14  V1.61 Steve Campbell
+#             Watch out for senders sending "HELO [IpAddr]"
 #
 #
 # For documentation on the logfile format, see
@@ -582,7 +584,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.60';
+$VERSION = '1.61';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -1924,7 +1926,8 @@ sub generate_parser {
     # "H=Host (UnverifiedHost) [IpAddr]" or "H=(UnverifiedHost) [IpAddr]".
     # We do 2 separate matches to keep the matches simple and fast.
     # Host is local unless otherwise specified.
-    $ip = (/\\bH=.*?(\\[[^]]+\\])/) ? $1
+    # Watch out for "H=([IpAddr])" in case they send "[IpAddr]" as their HELO!
+    $ip = (/\\bH=(?:|.*? )(\\[[^]]+\\])/) ? $1
      # 2008-03-31 06:25:22 Connection from [213.246.33.217]:39456 refused: too many connections from that IP address // .hs
      : (/Connection from (\[\S+\])/) ? $1
      # 2008-03-31 06:52:40 SMTP call from mail.cacoshrf.com (ccsd02.ccsd.local) [69.24.118.229]:4511 dropped: too many nonmail commands (last was "RSET") // .hs

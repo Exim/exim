@@ -20,17 +20,17 @@ routing CALLER@test.ex
 --------> rr1 router <--------
 local_part=CALLER domain=test.ex
 checking senders
-address match: subject=CALLER@test.ex pattern=user1@+funny_domains
+address match test: subject=CALLER@test.ex pattern=user1@+funny_domains
 CALLER@test.ex in "user1@+funny_domains"? no (end of list)
 rr1 router skipped: senders mismatch
 --------> r1 router <--------
 local_part=CALLER domain=test.ex
 checking senders
-address match: subject=CALLER@test.ex pattern=never@test.ex
+address match test: subject=CALLER@test.ex pattern=never@test.ex
 CALLER@test.ex in "never@test.ex"? no (end of list)
-address match: subject=CALLER@test.ex pattern=never1@test.ex
+address match test: subject=CALLER@test.ex pattern=never1@test.ex
 CALLER@test.ex in "never1@test.ex"? no (end of list)
-address match: subject=CALLER@test.ex pattern=CALLER@test.ex
+address match test: subject=CALLER@test.ex pattern=CALLER@test.ex
 test.ex in "test.ex"? yes (matched "test.ex")
 CALLER@test.ex in "CALLER@test.ex"? yes (matched "CALLER@test.ex")
 CALLER@test.ex in "+never_addresses : +n1_addresses : ! +local_addresses"? no (matched "! +local_addresses")
@@ -40,7 +40,7 @@ local_part=CALLER domain=test.ex
 checking senders
 cached no match for +never_addresses
 cached lookup data = NULL
-address match: subject=CALLER@test.ex pattern=never2@test.ex
+address match test: subject=CALLER@test.ex pattern=never2@test.ex
 cached no match for +n1_addresses
 cached lookup data = NULL
 CALLER@test.ex in "<; never2@test.ex ; +n1_addresses"? no (end of list)
@@ -92,7 +92,7 @@ routing CALLER@test.ex
 --------> rr1 router <--------
 local_part=CALLER domain=test.ex
 checking senders
-address match: subject=user1@fun.1 pattern=user1@+funny_domains
+address match test: subject=user1@fun.1 pattern=user1@+funny_domains
 fun.1 in "fun.1 : fun.2"? yes (matched "fun.1")
 fun.1 in "+funny_domains"? yes (matched "+funny_domains")
 user1@fun.1 in "user1@+funny_domains"? yes (matched "user1@+funny_domains")

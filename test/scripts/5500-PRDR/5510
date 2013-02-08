@@ -1,0 +1,228 @@
+# PRDR client
+need_ipv4
+no_msglog_check
+#
+# 1: Two recipients, accepted by full PRDR response sequence
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<userx@test.ex> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 gimme yer body
+.
+353 prdr responses coming up
+250 first rcpt was good
+250 second rcpt was good
+250 OK, overall
+QUIT
+250 OK
+****
+exim -odi -f userx usery userz
+Some message text.
+****
+#
+#
+# 2: Two recipients, accepted by traditional response
+# though client offered full PRDR capability
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<userx@test.ex> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 gimme that body
+.
+250 OK got that
+QUIT
+250 OK, bye
+****
+exim -odi -f userx user2.1 user2.2
+Some message text.
+****
+#
+#
+# 3: Two recipients, one accepted one tmp-rejected
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<userx@test.ex> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 gimme yer body
+.
+353 prdr responses coming up
+250 first rcpt was good
+450 cannot handle second rcpt right now
+250 OK, overall
+QUIT
+250 OK
+****
+exim -odi -f userx usery userz
+Some message text.
+****
+#
+#
+# 4: Two recipients, one accepted one rejected
+# Avoid tester issues dealing with the bounce by sending
+# with a null from.
+#
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 gimme yer body
+.
+353 prdr responses coming up
+250 first rcpt was good
+550 second rcpt does not like content
+250 OK, overall
+QUIT
+250 OK
+****
+exim -odi -f "" userp userq
+Some message text.
+****
+#
+#
+# 5: Two recipients, rejected by final after PRDR accepts.
+#
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 yeah baby
+.
+353 prdr responses coming up
+250 first rcpt was good
+250 second rcpt was good
+550 oops, overall rejection
+QUIT
+250 OK
+****
+exim -odi -f "" user5.1 user5.2
+text
+****
+#
+#
+# 6: Two recipients, rejected traditionally though PRDR negociated.
+#
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 yeah baby
+.
+550 naah mate
+QUIT
+250 OK
+****
+exim -odi -f "" user6.1 user6.2
+text
+****
+#
+#
+# 7: Temp-reject at final
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+300 go ahead
+.
+353 prdr responses coming up
+250 first rcpt does not like you
+250 second rcpt has a temporary problem
+250 third rcpt is ok
+450 oops, try again later please
+QUIT
+250 OK
+****
+exim -odi -f "" user7.1 user7.2 user7.3
+text
+****
+#
+#
+#
+# 8: Client should avoid requesting PRDR for a single-recipient mail
+# even though the server offers
+server PORT_S
+220 Server ready
+EHLO
+250-
+250-PRDR
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO
+250 OK
+DATA
+300 go ahead
+.
+250 OK, got that
+QUIT
+250 OK, bye
+****
+exim -odi -f "" user8.1
+text
+****
+#
+#

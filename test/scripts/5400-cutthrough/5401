@@ -18,7 +18,7 @@ QUIT
 ****
 exim -d-all+acl+transport -bs
 EHLO myhost.test.ex
-MAIL FROM:<eximtest@myhost.test.ex>
+MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@domain.com>
 DATA
 

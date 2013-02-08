@@ -69,11 +69,11 @@ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
 cached data used for lookup of smart.domain
   in TESTSUITE/aux-fixed/0085.data
 lookup yielded: x : y : abc@d.e.f
-address match: subject=abc@d.e.f pattern=x
+address match test: subject=abc@d.e.f pattern=x
 d.e.f in "x"? no (end of list)
-address match: subject=abc@d.e.f pattern=y
+address match test: subject=abc@d.e.f pattern=y
 d.e.f in "y"? no (end of list)
-address match: subject=abc@d.e.f pattern=abc@d.e.f
+address match test: subject=abc@d.e.f pattern=abc@d.e.f
 d.e.f in "d.e.f"? yes (matched "d.e.f")
 abc@d.e.f in "x : y : abc@d.e.f"? yes (matched "abc@d.e.f")
 calling smart1 router
@@ -138,11 +138,11 @@ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
 cached data used for lookup of test.ex
   in TESTSUITE/aux-fixed/0085.data
 lookup yielded: x : y : abc@d.e.f
-address match: subject=abc@d.e.f pattern=x
+address match test: subject=abc@d.e.f pattern=x
 d.e.f in "x"? no (end of list)
-address match: subject=abc@d.e.f pattern=y
+address match test: subject=abc@d.e.f pattern=y
 d.e.f in "y"? no (end of list)
-address match: subject=abc@d.e.f pattern=abc@d.e.f
+address match test: subject=abc@d.e.f pattern=abc@d.e.f
 d.e.f in "d.e.f"? yes (matched "d.e.f")
 abc@d.e.f in "x : y : abc@d.e.f"? yes (matched "abc@d.e.f")
 checking require_files
@@ -268,11 +268,11 @@ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
 cached data used for lookup of smart.domain
   in TESTSUITE/aux-fixed/0085.data
 lookup yielded: x : y : abc@d.e.f
-address match: subject=CALLER@myhost.test.ex pattern=x
+address match test: subject=CALLER@myhost.test.ex pattern=x
 myhost.test.ex in "x"? no (end of list)
-address match: subject=CALLER@myhost.test.ex pattern=y
+address match test: subject=CALLER@myhost.test.ex pattern=y
 myhost.test.ex in "y"? no (end of list)
-address match: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
+address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
 CALLER@myhost.test.ex in "x : y : abc@d.e.f"? no (end of list)
 smart1 router skipped: senders mismatch
 --------> fail_remote_domains router <--------
@@ -335,11 +335,11 @@ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
 cached data used for lookup of test.ex
   in TESTSUITE/aux-fixed/0085.data
 lookup yielded: x : y : abc@d.e.f
-address match: subject=CALLER@myhost.test.ex pattern=x
+address match test: subject=CALLER@myhost.test.ex pattern=x
 myhost.test.ex in "x"? no (end of list)
-address match: subject=CALLER@myhost.test.ex pattern=y
+address match test: subject=CALLER@myhost.test.ex pattern=y
 myhost.test.ex in "y"? no (end of list)
-address match: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
+address match test: subject=CALLER@myhost.test.ex pattern=abc@d.e.f
 CALLER@myhost.test.ex in "x : y : abc@d.e.f"? no (end of list)
 smart2 router skipped: senders mismatch
 no more routers

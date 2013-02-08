@@ -335,7 +335,8 @@ typedef struct auth_instance {
   uschar *advertise_condition;    /* Are we going to advertise this?*/
   uschar *client_condition;       /* Should the client try this? */
   uschar *public_name;            /* Advertised name */
-  uschar *set_id;                 /* String to set as authenticated id */
+  uschar *set_id;                 /* String to set when server as authenticated id */
+  uschar *set_client_id;          /* String to set when client as client_authenticated id */
   uschar *mail_auth_condition;    /* Condition for AUTH on MAIL command */
   uschar *server_debug_string;    /* Debugging output */
   uschar *server_condition;       /* Authorization condition */
@@ -482,6 +483,10 @@ typedef struct address_item_propagated {
 #define af_pass_message        0x02000000 /* pass message in bounces */
 #define af_bad_reply           0x04000000 /* filter could not generate autoreply */
 
+#ifdef EXPERIMENTAL_PRDR
+# define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
+#endif
+
 /* These flags must be propagated when a child is created */
 
 #define af_propagate           (af_ignore_error)
@@ -534,6 +539,10 @@ typedef struct address_item {
   uschar *cipher;                 /* Cipher used for transport */
   uschar *peerdn;                 /* DN of server's certificate */
   #endif
+
+  uschar *authenticator;	  /* auth driver name used by transport */
+  uschar *auth_id;		  /* auth "login" name used by transport */
+  uschar *auth_sndr;		  /* AUTH arg to SMTP MAIL, used by transport */
 
   uid_t   uid;                    /* uid for transporting */
   gid_t   gid;                    /* gid for transporting */

@@ -41,16 +41,19 @@
 .book
 
 . /////////////////////////////////////////////////////////////////////////////
-. These definitions set some parameters and save some typing. Remember that
-. the <bookinfo> element must also be updated for each new edition.
+. These definitions set some parameters and save some typing.
+. Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
 .set previousversion "4.80"
-.set version "4.80"
+.include ./local_params
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
 
+.macro copyyear
+2012
+.endmacro
 
 . /////////////////////////////////////////////////////////////////////////////
 . Additional xfpt markup used by this document, over and above the default
@@ -170,15 +173,23 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>17 May 2012</date>
+<date>
+.fulldate
+</date>
 <author><firstname>Exim</firstname><surname>Maintainers</surname></author>
 <authorinitials>EM</authorinitials>
 <revhistory><revision>
-  <revnumber>4.80</revnumber>
-  <date>17 May 2012</date>
+  <revnumber>
+.version
+  </revnumber>
+  <date>
+.fulldate
+  </date>
   <authorinitials>EM</authorinitials>
 </revision></revhistory>
-<copyright><year>2012</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>
+.copyyear
+           </year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -367,7 +378,7 @@ contributors.
 
 .new
 .cindex "documentation"
-This edition of the Exim specification applies to version &version; of Exim.
+This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of the document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
@@ -1618,7 +1629,7 @@ for only a short time (see &%timeout_frozen_after%& and
 .section "Unpacking" "SECID23"
 Exim is distributed as a gzipped or bzipped tar file which, when unpacked,
 creates a directory with the name of the current release (for example,
-&_exim-&version;_&) into which the following files are placed:
+&_exim-&version()_&) into which the following files are placed:
 
 .table2 140pt
 .irow &_ACKNOWLEDGMENTS_& "contains some acknowledgments"
@@ -2314,7 +2325,7 @@ INFO_DIRECTORY, as described in section &<<SECTinsinfdoc>>& below.
 For the utility programs, old versions are renamed by adding the suffix &_.O_&
 to their names. The Exim binary itself, however, is handled differently. It is
 installed under a name that includes the version number and the compile number,
-for example &_exim-&version;-1_&. The script then arranges for a symbolic link
+for example &_exim-&version()-1_&. The script then arranges for a symbolic link
 called &_exim_& to point to the binary. If you are updating a previous version
 of Exim, the script takes care to ensure that the name &_exim_& is never absent
 from the directory (as seen by other processes).
@@ -8791,12 +8802,12 @@ arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
 Any unused are made empty.  The variable &$acl_narg$& is set to the number of
 arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
 and may use the variables; if another acl expansion is used the values
-are overwritten.  If the ACL sets
+are restored after it returns.  If the ACL sets
 a value using a "message =" modifier and returns accept or deny, the value becomes
 the result of the expansion.
-If no message was set and the ACL returned accept or deny
-the value is an empty string.
-If the ACL returned defer the result is a forced-fail.  Otherwise the expansion fails.
+If no message is set and the ACL returns accept or deny
+the expansion result is an empty string.
+If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
 
 
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
@@ -9923,12 +9934,12 @@ dotted-nibble hexadecimal form.  In both cases, this is the "natural" form
 for DNS.  For example,
 .code
 ${reverse_ip:192.0.2.4}
-${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
+${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.127}
 .endd
 returns
 .code
 4.2.0.192
-3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
+f.7.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 .endd
 
 
@@ -10107,7 +10118,7 @@ arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
 Any unused are made empty.  The variable &$acl_narg$& is set to the number of
 arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
 and may use the variables; if another acl expansion is used the values
-are overwritten.  If the ACL sets
+are restored after it returns.  If the ACL sets
 a value using a "message =" modifier the variable $value becomes
 the result of the expansion, otherwise it is empty.
 If the ACL returns accept the condition is true; if deny, false.
@@ -11739,6 +11750,12 @@ envelope sender.
 .vindex "&$return_size_limit$&"
 This is an obsolete name for &$bounce_return_size_limit$&.
 
+.vitem &$router_name$&
+.cindex "router" "name"
+.cindex "name" "of router"
+.vindex "&$router_name$&"
+During the running of a router this variable contains its name.
+
 .vitem &$runrc$&
 .cindex "return code" "from &%run%& expansion"
 .vindex "&$runrc$&"
@@ -12192,6 +12209,12 @@ This variable contains the numerical value of the local timezone, for example:
 .vindex "&$tod_zulu$&"
 This variable contains the UTC date and time in &"Zulu"& format, as specified
 by ISO 8601, for example: 20030221154023Z.
+
+.vitem &$transport_name$&
+.cindex "transport" "name"
+.cindex "name" "of transport"
+.vindex "&$transport_name$&"
+During the running of a transport, this variable contains its name.
 
 .vitem &$value$&
 .vindex "&$value$&"
@@ -16409,7 +16432,8 @@ be specified using &%condition%&.
 .option debug_print routers string&!! unset
 .cindex "testing" "variables in drivers"
 If this option is set and debugging is enabled (see the &%-d%& command line
-option), the string is expanded and included in the debugging output.
+option) or in address-testing mode (see the &%-bt%& command line option),
+the string is expanded and included in the debugging output.
 If expansion of the string fails, the error message is written to the debugging
 output, and Exim carries on processing.
 This option is provided to help with checking out the values of variables and
@@ -16418,6 +16442,7 @@ option appears not to be working, &%debug_print%& can be used to output the
 variables it references. The output happens after checks for &%domains%&,
 &%local_parts%&, and &%check_local_user%& but before any other preconditions
 are tested. A newline is added to the text if it does not end with one.
+The variable &$router_name$& contains the name of the router.
 
 
 
@@ -19578,6 +19603,8 @@ so on when debugging driver configurations. For example, if a &%headers_add%&
 option is not working properly, &%debug_print%& could be used to output the
 variables it references. A newline is added to the text if it does not end with
 one.
+The variables &$transport_name$& and &$router_name$& contain the name of the
+transport and the router that called it.
 
 
 .option delivery_date_add transports boolean false
@@ -24072,6 +24099,12 @@ client_condition = ${if !eq{$tls_out_cipher}{}}
 .endd
 
 
+.option client_set_id authenticators string&!! unset
+When client authentication succeeds, this condition is expanded; the
+result is used in the log lines for outbound messasges.
+Typically it will be the user name used for authentication.
+
+
 .option driver authenticators string unset
 This option must always be set. It specifies which of the available
 authenticators is to be used.
@@ -26143,6 +26176,9 @@ before or after the data) correctly &-- they keep the message on their queues
 and try again later, but that is their problem, though it does waste some of
 your resources.
 
+The &%acl_smtp_data%& ACL is run after both the &%acl_smtp_dkim%& and
+the &%acl_smtp_mime%& ACLs.
+
 
 .section "The SMTP DKIM ACL" "SECTDKIMACL"
 The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
@@ -26152,12 +26188,16 @@ The ACL test specified by &%acl_smtp_dkim%& happens after a message has been
 received, and is executed for each DKIM signature found in a message.  If not
 otherwise specified, the default action is to accept.
 
-For details on the operation of DKIM, see chapter &<<CHID12>>&.
+This ACL is evaluated before &%acl_smtp_mime%& and &%acl_smtp_data%&.
+
+For details on the operation of DKIM, see chapter &<<CHAPdkim>>&.
 
 
 .section "The SMTP MIME ACL" "SECID194"
 The &%acl_smtp_mime%& option is available only when Exim is compiled with the
 content-scanning extension. For details, see chapter &<<CHAPexiscan>>&.
+
+This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
 
 .section "The QUIT ACL" "SECTQUITACL"
@@ -27105,7 +27145,7 @@ contexts):
 .cindex "disable DKIM verify"
 .cindex "DKIM" "disable verify"
 This control turns off DKIM verification processing entirely.  For details on
-the operation and configuration of DKIM, see chapter &<<CHID12>>&.
+the operation and configuration of DKIM, see chapter &<<CHAPdkim>>&.
 .wen
 
 
@@ -27518,8 +27558,10 @@ condition false. This means that further processing of the &%warn%& verb
 ceases, but processing of the ACL continues.
 
 If the argument is a named ACL, up to nine space-separated optional values
-can be appended; they appear in $acl_arg1 to $acl_arg9, and $acl_narg is set
-to the count of values.  The name and values are expanded separately.
+can be appended; they appear within the called ACL in $acl_arg1 to $acl_arg9,
+and $acl_narg is set to the count of values.
+Previous values of these variables are restored after the call returns.
+The name and values are expanded separately.
 
 If the nested &%acl%& returns &"drop"& and the outer condition denies access,
 the connection is dropped. If it returns &"discard"&, the verb must be
@@ -33634,6 +33676,11 @@ intermediate address(es) exist between the original and the final address, the
 last of these is given in parentheses after the final address. The R and T
 fields record the router and transport that were used to process the address.
 
+If SMTP AUTH was used for the delivery there is an additional item A=
+followed by the name of the authenticator that was used.
+If an authenticated identification was set up by the authenticator's &%client_set_id%&
+option, this is logged too, separated by a colon from the authenticator name.
+
 If a shadow transport was run after a successful local delivery, the log line
 for the successful delivery has an item added on the end, of the form
 .display
@@ -33747,7 +33794,7 @@ at the end of its processing.
 A summary of the field identifiers that are used in log lines is shown in
 the following table:
 .display
-&`A   `&        authenticator name (and optional id)
+&`A   `&        authenticator name (and optional id and sender)
 &`C   `&        SMTP confirmation on delivery
 &`    `&        command list for &"no mail in SMTP session"&
 &`CV  `&        certificate verification status
@@ -33864,6 +33911,7 @@ selection marked by asterisks:
 &`*smtp_confirmation          `&  SMTP confirmation on => lines
 &` smtp_connection            `&  SMTP connections
 &` smtp_incomplete_transaction`&  incomplete SMTP transactions
+&` smtp_mailauth              `&  AUTH argument to MAIL commands
 &` smtp_no_mail               `&  session with no MAIL commands
 &` smtp_protocol_error        `&  SMTP protocol errors
 &` smtp_syntax_error          `&  SMTP syntax errors
@@ -34131,6 +34179,11 @@ than 20 commands, they are all listed. If there were more than 20 commands,
 the last 20 are listed, preceded by &"..."&. However, with the default
 setting of 10 for &%smtp_accep_max_nonmail%&, the connection will in any case
 have been aborted before 20 non-mail commands are processed.
+.next
+&%smtp_mailauth%&: A third subfield with the authenticated sender,
+colon-separated, is appended to the A= item for a message arrival or delivery
+log line, if an AUTH argument to the SMTP MAIL command (see &<<SECTauthparamail>>&)
+was accepted or used.
 .next
 .cindex "log" "SMTP protocol error"
 .cindex "SMTP" "logging protocol error"
@@ -35991,7 +36044,7 @@ unqualified domain &'foundation'&.
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHID12" &&&
+.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHAPdkim" &&&
          "DKIM Support"
 .cindex "DKIM"
 
@@ -36287,6 +36340,12 @@ Add to &_src/config.h.defaults_& the line:
 .next
 Edit &_src/drtables.c_&, adding conditional code to pull in the private header
 and create a table entry as is done for all the other drivers and lookup types.
+.next
+Edit &_scripts/lookups-Makefile_& if this is a new lookup; there is a for-loop
+near the bottom, ranging the &`name_mod`& variable over a list of all lookups.
+Add your &`NEWDRIVER`& to that list.
+As long as the dynamic module would be named &_newdriver.so_&, you can use the
+simple form that most lookups have.
 .next
 Edit &_Makefile_& in the appropriate sub-directory (&_src/routers_&,
 &_src/transports_&, &_src/auths_&, or &_src/lookups_&); add a line for the new

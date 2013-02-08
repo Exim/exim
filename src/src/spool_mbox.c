@@ -96,7 +96,11 @@ FILE *spool_mbox(unsigned long *mbox_file_size, uschar *source_file_override) {
     };
 
     /* End headers */
-    (void)fwrite("\n", 1, 1, mbox_file);
+    if (fwrite("\n", 1, 1, mbox_file) != 1) {
+      log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
+        message headers to %s", mbox_path);
+      goto OUT;
+    }
 
     /* copy body file */
     if (source_file_override == NULL) {

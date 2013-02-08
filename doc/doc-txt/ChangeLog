@@ -1,7 +1,7 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
-Exim version 4.81
+Exim version 4.82
 -----------------
 
 PP/01 Add -bI: framework, and -bI:sieve for querying sieve capabilities.
@@ -77,10 +77,104 @@ JH/08 Strip leading/trailing newlines from add_header ACL modifier data.
 JH/09 Add $headers_added variable, with content from use of ACL modifier
       add_header (but not yet added to the message).  Bugzilla 199.
 
-
 JH/10 Add 8bitmime log_selector, for 8bitmime status on the received line.
       Pulled from Bugzilla 817 by Wolfgang Breyha.
 
+PP/11 SECURITY: protect DKIM DNS decoding from remote exploit.
+      CVE-2012-5671
+
+JH/11 Add A= logging on delivery lines, and a client_set_id option on
+      authenticators.
+
+JH/12 Add optional authenticated_sender logging to A= and a log_selector
+      for control.
+
+PP/12 Unbreak server_set_id for NTLM/SPA auth, broken by 4.80 PP/29.
+
+PP/13 Dovecot auth: log better reason to rejectlog if Dovecot did not
+      advertise SMTP AUTH mechanism to us, instead of a generic
+      protocol violation error.  Also, make Exim more robust to bad
+      data from the Dovecot auth socket.
+
+TF/01 Fix ultimate retry timeouts for intermittently deliverable recipients.
+
+      When a queue runner is handling a message, Exim first routes the
+      recipient addresses, during which it prunes them based on the retry
+      hints database. After that it attempts to deliver the message to
+      any remaining recipients. It then updates the hints database using
+      the retry rules.
+
+      So if a recipient address works intermittently, it can get repeatedly
+      deferred at routing time. The retry hints record remains fresh so the
+      address never reaches the final cutoff time.
+
+      This is a fairly common occurrence when a user is bumping up against
+      their storage quota. Exim had some logic in its local delivery code
+      to deal with this. However it did not apply to per-recipient defers
+      in remote deliveries, e.g. over LMTP to a separate IMAP message store.
+
+      This change adds a proper retry rule check during routing so that the
+      final cutoff time is checked against the message's age. We only do
+      this check if there is an address retry record and there is not a
+      domain retry record; this implies that previous attempts to handle
+      the address had the retry_use_local_parts option turned on. We use
+      this as an approximation for the destination being like a local
+      delivery, as in LMTP.
+
+      I suspect this new check makes the old local delivery cutoff check
+      redundant, but I have not verified this so I left the code in place.
+
+TF/02 Correct gecos expansion when From: is a prefix of the username.
+
+      Test 0254 submits a message to Exim with the header
+
+        Resent-From: f
+
+      When I ran the test suite under the user fanf2, Exim expanded
+      the header to contain my full name, whereas it should have added
+      a Resent-Sender: header. It erroneously treats any prefix of the
+      username as equal to the username.
+
+      This change corrects that bug.
+
+GF/01 DCC debug and logging tidyup
+      Error conditions log to paniclog rather than rejectlog.
+      Debug lines prefixed by "DCC: " to remove any ambiguity.
+
+TF/03 Avoid unnecessary rebuilds of lookup-related code.
+
+PP/14 Fix OCSP reinitialisation in SNI handling for Exim/TLS as server.
+      Bug spotted by Jeremy Harris; was flawed since initial commit.
+      Would have resulted in OCSP responses post-SNI triggering an Exim
+      NULL dereference and crash.
+
+JH/13 Add $router_name and $transport_name variables.  Bugzilla 308.
+
+PP/15 Define SIOCGIFCONF_GIVES_ADDR for GNU Hurd.
+      Bug detection, analysis and fix by Samuel Thibault.
+      Bugzilla 1331, Debian bug #698092.
+
+SC/01 Update eximstats to watch out for senders sending 'HELO [IpAddr]'
+
+JH/14 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
+      Server implementation by Todd Lyons, client by JH.
+      Only enabled when compiled with EXPERIMENTAL_PRDR.  A new
+      config variable "prdr_enable" controls whether the server
+      advertises the facility.  If the client requests PRDR a new
+      acl_data_smtp_prdr ACL is called once for each recipient, after
+      the body content is received and before the acl_smtp_data ACL.
+      The client is controlled by bolth of: a hosts_try_prdr option
+      on the smtp transport, and the server advertisement.
+      Default client logging of deliveries and rejections involving
+      PRDR are flagged with the string "PRDR".
+
+
+Exim version 4.80.1
+-------------------
+
+PP/01 SECURITY: protect DKIM DNS decoding from remote exploit.
+      CVE-2012-5671
+      This, or similar/improved, will also be change PP/11 of 4.82.
 
 
 Exim version 4.80

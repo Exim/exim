@@ -213,6 +213,7 @@ int     string_datestamp_type  = -1;
 BOOL    timestamps_utc         = FALSE;
 tls_support tls_in = {
  -1,	/* tls_active */
+ 0,	/* bits */
  FALSE,	/* tls_certificate_verified */
  NULL,	/* tls_cipher */
  FALSE,	/* tls_on_connect */

@@ -1,4 +1,4 @@
-# $domain_data and $local_part_data
+# $domain_data, $local_part_data and $router_name
 exim -v -bt xxx@a.b.c
 ****
 exim -bh V4NET.0.0.0

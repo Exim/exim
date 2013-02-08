@@ -30,13 +30,13 @@ accept: condition test succeeded in ACL "connect"
 using ACL "mail"
 processing "warn"
 check senders = ok@test3
-address match: subject=bad@test1 pattern=ok@test3
+address match test: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test3"? no (end of list)
 warn: condition test failed in ACL "mail"
 processing "accept"
 check senders = ok@test1 : ok@test3
-address match: subject=bad@test1 pattern=ok@test1
-address match: subject=bad@test1 pattern=ok@test3
+address match test: subject=bad@test1 pattern=ok@test1
+address match test: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test1 : ok@test3"? no (end of list)
 accept: condition test failed in ACL "mail"
 end of ACL "mail": implicit DENY
@@ -45,13 +45,13 @@ LOG: MAIN REJECT
 using ACL "mail"
 processing "warn"
 check senders = ok@test3
-address match: subject=ok@test1 pattern=ok@test3
+address match test: subject=ok@test1 pattern=ok@test3
 test1 in "test3"? no (end of list)
 ok@test1 in "ok@test3"? no (end of list)
 warn: condition test failed in ACL "mail"
 processing "accept"
 check senders = ok@test1 : ok@test3
-address match: subject=ok@test1 pattern=ok@test1
+address match test: subject=ok@test1 pattern=ok@test1
 test1 in "test1"? yes (matched "test1")
 ok@test1 in "ok@test1 : ok@test3"? yes (matched "ok@test1")
 check verify = sender
@@ -66,9 +66,9 @@ accept: condition test succeeded in ACL "mail"
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
-address match: subject=ok@test1 pattern=ok@somewhere
+address match test: subject=ok@test1 pattern=ok@somewhere
 test1 in "somewhere"? no (end of list)
-address match: subject=ok@test1 pattern=ok@test1
+address match test: subject=ok@test1 pattern=ok@test1
 test1 in "test1"? yes (matched "test1")
 ok@test1 in "ok@somewhere : ok@test1 : ok@test3"? yes (matched "ok@test1")
 ok@test1 in "+ok_senders"? yes (matched "+ok_senders")
@@ -128,15 +128,15 @@ accept: condition test succeeded in ACL "connect"
 using ACL "mail"
 processing "warn"
 check senders = ok@test3
-address match: subject=ok@test3 pattern=ok@test3
+address match test: subject=ok@test3 pattern=ok@test3
 test3 in "test3"? yes (matched "test3")
 ok@test3 in "ok@test3"? yes (matched "ok@test3")
 warn: condition test succeeded in ACL "mail"
 processing "accept"
 check senders = ok@test1 : ok@test3
-address match: subject=ok@test3 pattern=ok@test1
+address match test: subject=ok@test3 pattern=ok@test1
 test3 in "test1"? no (end of list)
-address match: subject=ok@test3 pattern=ok@test3
+address match test: subject=ok@test3 pattern=ok@test3
 test3 in "test3"? yes (matched "test3")
 ok@test3 in "ok@test1 : ok@test3"? yes (matched "ok@test3")
 check verify = sender
@@ -151,11 +151,11 @@ accept: condition test succeeded in ACL "mail"
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
-address match: subject=ok@test3 pattern=ok@somewhere
+address match test: subject=ok@test3 pattern=ok@somewhere
 test3 in "somewhere"? no (end of list)
-address match: subject=ok@test3 pattern=ok@test1
+address match test: subject=ok@test3 pattern=ok@test1
 test3 in "test1"? no (end of list)
-address match: subject=ok@test3 pattern=ok@test3
+address match test: subject=ok@test3 pattern=ok@test3
 test3 in "test3"? yes (matched "test3")
 ok@test3 in "ok@somewhere : ok@test1 : ok@test3"? yes (matched "ok@test3")
 ok@test3 in "+ok_senders"? yes (matched "+ok_senders")

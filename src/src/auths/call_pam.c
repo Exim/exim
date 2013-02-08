@@ -16,10 +16,13 @@ available for compiling. Therefore, compile these functions only if SUPPORT_PAM
 is defined. However, some compilers don't like compiling empty modules, so keep
 them happy with a dummy when skipping the rest. Make it reference itself to
 stop picky compilers complaining that it is unused, and put in a dummy argument
-to stop even pickier compilers complaining about infinite loops. */
+to stop even pickier compilers complaining about infinite loops.
+Then use a mutually-recursive pair as gcc is just getting stupid. */
 
 #ifndef SUPPORT_PAM
-static void dummy(int x) { dummy(x-1); }
+static void dummy(int x);
+static void dummy2(int x) { dummy(x-1); }
+static void dummy(int x) { dummy2(x-1); }
 #else  /* SUPPORT_PAM */
 
 #ifdef PAM_H_IN_PAM

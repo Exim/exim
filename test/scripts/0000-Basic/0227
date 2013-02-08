@@ -1,4 +1,4 @@
-# callout verification (no caching)
+# callout verification (no caching) and $router_name
 need_ipv4
 #
 server PORT_S

@@ -1,5 +1,5 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 spa authenticator failed for localhost (myhost.test.ex) [127.0.0.1]: 535 Incorrect authentication data
+1999-03-02 09:44:33 spa authenticator failed for localhost (myhost.test.ex) [127.0.0.1]: 535 Incorrect authentication data (set_id=username)
 1999-03-02 09:44:33 spa authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data
 1999-03-02 09:44:33 spa authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data

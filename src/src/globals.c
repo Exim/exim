@@ -17,6 +17,8 @@ data blocks and hence have the opt_public flag set. */
 optionlist optionlist_auths[] = {
   { "client_condition", opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, client_condition)) },
+  { "client_set_id", opt_stringptr | opt_public,
+                 (void *)(offsetof(auth_instance, set_client_id)) },
   { "driver",        opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, driver_name)) },
   { "public_name",   opt_stringptr | opt_public,
@@ -143,6 +145,12 @@ uschar *tls_verify_certificates= NULL;
 uschar *tls_verify_hosts       = NULL;
 #endif
 
+#ifdef EXPERIMENTAL_PRDR
+/* Per Recipient Data Response variables */
+BOOL    prdr_enable            = FALSE;
+BOOL    prdr_requested         = FALSE;
+const pcre *regex_PRDR         = NULL;
+#endif
 
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. The defaults use stdin. We never need these for any
@@ -200,6 +208,9 @@ uschar *acl_removed_headers    = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
+#ifdef EXPERIMENTAL_PRDR
+uschar *acl_smtp_data_prdr     = NULL;
+#endif
 #ifndef DISABLE_DKIM
 uschar *acl_smtp_dkim          = NULL;
 #endif
@@ -233,6 +244,9 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MIME",
                                    US"DKIM",
                                    US"DATA",
+#ifdef EXPERIMENTAL_PRDR
+                                   US"PRDR",
+#endif
                                    US"non-SMTP",
                                    US"AUTH",
                                    US"connection",
@@ -245,7 +259,8 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"QUIT",
                                    US"STARTTLS",
                                    US"VRFY",
-				   US"expansion"
+				   US"delivery",
+				   US"unknown"
                                  };
 
 uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
@@ -254,6 +269,9 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"550",     /* MIME */
                                    US"550",     /* DKIM */
                                    US"550",     /* DATA */
+#ifdef EXPERIMENTAL_PRDR
+                                   US"550",    /* RCPT PRDR */
+#endif
                                    US"0",       /* not SMTP; not relevant */
                                    US"503",     /* AUTH */
                                    US"550",     /* connect */
@@ -266,6 +284,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"0",       /* QUIT; not relevant */
                                    US"550",     /* STARTTLS */
                                    US"252",     /* VRFY */
+				   US"0",       /* delivery; not relevant */
 				   US"0"        /* unknown; not relevant */
                                  };
 
@@ -311,6 +330,9 @@ address_item address_defaults = {
   NULL,                 /* cipher */
   NULL,                 /* peerdn */
   #endif
+  NULL,			/* authenticator */
+  NULL,			/* auth_id */
+  NULL,			/* auth_sndr */
   (uid_t)(-1),          /* uid */
   (gid_t)(-1),          /* gid */
   0,                    /* flags */
@@ -364,6 +386,7 @@ auth_instance auth_defaults    = {
     NULL,                      /* client_condition */
     NULL,                      /* public_name */
     NULL,                      /* set_id */
+    NULL,                      /* set_client_id */
     NULL,                      /* server_mail_auth_condition */
     NULL,                      /* server_debug_string */
     NULL,                      /* server_condition */
@@ -424,6 +447,9 @@ int     check_log_space        = 0;
 BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 0;
 int     check_spool_space      = 0;
+uschar	*client_authenticator  = NULL;
+uschar	*client_authenticated_id = NULL;
+uschar	*client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 BOOL    config_changed         = FALSE;
@@ -780,6 +806,7 @@ bit_table log_options[]        = {
   { US"smtp_confirmation",            LX_smtp_confirmation },
   { US"smtp_connection",              L_smtp_connection },
   { US"smtp_incomplete_transaction",  L_smtp_incomplete_transaction },
+  { US"smtp_mailauth",                LX_smtp_mailauth },
   { US"smtp_no_mail",                 LX_smtp_no_mail },
   { US"smtp_protocol_error",          L_smtp_protocol_error },
   { US"smtp_syntax_error",            L_smtp_syntax_error },
@@ -1069,6 +1096,8 @@ router_instance  router_defaults = {
     NULL                       /* redirect_router */
 };
 
+uschar *router_name            = NULL;
+
 ip_address_item *running_interfaces = NULL;
 BOOL    running_in_test_harness = FALSE;
 
@@ -1303,6 +1332,7 @@ transport_instance  transport_defaults = {
 };
 
 int     transport_count;
+uschar *transport_name          = NULL;
 int     transport_newlines;
 uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;

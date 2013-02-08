@@ -18,12 +18,13 @@ domainlist local_domains = test.ex : *.test.ex
 
 begin routers
 
-all:
+my_main_router:
   driver = manualroute
   domains = ! +local_domains
   route_list = * 127.0.0.1
   self = send
-  transport = smtp
+  transport = my_smtp
+  debug_print = router_name <$router_name>
   no_more
 
 
@@ -31,10 +32,11 @@ all:
 
 begin transports
 
-smtp:
+my_smtp:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_S
+  debug_print = transport_name <$transport_name>
 
 
 # End

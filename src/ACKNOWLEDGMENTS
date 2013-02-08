@@ -440,6 +440,7 @@ Janne Snabb               TLS extensive debugging & failure root cause analysis
                           Added SPF record type support to dnsdb lookup
 Jan Srzednicki            Patch improving Dovecot authenticator
                           Reported crash in Dovecot authenticator
+Samuel Thibault           Patch fixing IPv6 interface address detection on Hurd
 Martin Tscholak           Reported issue with TLS anonymous ciphersuites
 Stephen Usher             Patch fixing use of Oracle's LDAP libraries on Solaris
 Holger Weiß               Patch leting ${run} return more data than OS pipe
@@ -460,7 +461,7 @@ Steve Haslam              Debian, Exim 4
 Andreas Metzler           Debian, current(*) maintenance
 Christian Perrier         Debian, current(*) maintenance
 
-(*) Current as of our last information as of release: Exim 4.81
+(*) Current as of our last information as of release: Exim 4.82
 
 
 # vim: set fileencoding=utf-8 expandtab :

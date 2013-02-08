@@ -160,6 +160,9 @@ locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 no domain retry record
+retry time not reached: checking ultimate address timeout
+  now=tttt first_failed=tttt next_try=tttt expired=0
+  received_time=tttt diff=tttt timeout=3600
 LOG: retry_defer MAIN
   == userx@test.ex routing defer (-51): retry time not reached
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

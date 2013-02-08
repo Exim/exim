@@ -410,6 +410,7 @@ set all the bits in a multi-word selector. */
 #define LX_tls_sni                     0x80800000
 #define LX_unknown_in_list             0x81000000
 #define LX_8bitmime                    0x82000000
+#define LX_smtp_mailauth               0x84000000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \
@@ -812,6 +813,9 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MIME,       /* ) implemented by <= WHERE_NOTSMTP           */
        ACL_WHERE_DKIM,       /* )                                           */
        ACL_WHERE_DATA,       /* )                                           */
+#ifdef EXPERIMENTAL_PRDR
+       ACL_WHERE_PRDR,       /* )                                           */
+#endif
        ACL_WHERE_NOTSMTP,    /* )                                           */
 
        ACL_WHERE_AUTH,       /* These remaining ones are not currently    */
@@ -826,7 +830,8 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_STARTTLS,
        ACL_WHERE_VRFY,
 
-       ACL_WHERE_EXPANSION   /* Currently used by a ${acl:name} expansion */
+       ACL_WHERE_DELIVERY,
+       ACL_WHERE_UNKNOWN     /* Currently used by a ${acl:name} expansion */
      };
 
 /* Situations for spool_write_header() */

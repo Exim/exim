@@ -40,7 +40,7 @@ a.b.c in "+relay_domains"? yes (matched "+relay_domains")
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@a.b.c
-address match: subject=x@a.b.c pattern=x@a.b.c
+address match test: subject=x@a.b.c pattern=x@a.b.c
 a.b.c in "a.b.c"? yes (matched "a.b.c")
 x@a.b.c in "x@a.b.c"? yes (matched "x@a.b.c")
 LOG: address_rewrite MAIN

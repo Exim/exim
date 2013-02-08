@@ -26,7 +26,7 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
-Exim version 4.81
+Exim version 4.82
 -----------------
 
  * New option gnutls_enable_pkcs11 defaults false; if you have GnuTLS 2.12.0

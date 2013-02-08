@@ -36,4 +36,4 @@
 1999-03-02 09:44:33 received_protocol=protocol
 1999-03-02 09:44:33 sender_host_name=hostname
 1999-03-02 09:44:33 sender_ident=ident
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=hostname [5.6.7.8] U=ident P=protocol A=authname:authid S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=hostname [5.6.7.8] U=ident P=protocol A=authname:authid:authsender S=sss

@@ -147,6 +147,10 @@ extern uschar *acl_removed_headers;    /* Headers deleted by an ACL */
 extern uschar *acl_smtp_auth;          /* ACL run for AUTH */
 extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
+#ifdef EXPERIMENTAL_PRDR
+extern uschar *acl_smtp_data_prdr;     /* ACL run after DATA received if in PRDR mode*/
+const extern pcre *regex_PRDR;         /* For recognizing PRDR settings */
+#endif
 #ifndef DISABLE_DKIM
 extern uschar *acl_smtp_dkim;          /* ACL run for DKIM signatures / domains */
 #endif
@@ -238,6 +242,9 @@ extern int     check_log_space;        /* Minimum for message acceptance */
 extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length */
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
+extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
+extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */
+extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
 extern int     clmacro_count;          /* Number of command line macros */
 extern uschar *clmacros[];             /* Copy of them, for re-exec */
 extern int     connection_max_messages;/* Max down one SMTP connection */
@@ -567,6 +574,10 @@ extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
 extern uschar *pipelining_advertise_hosts; /* As it says */
 extern BOOL    pipelining_enable;      /* As it says */
+#ifdef EXPERIMENTAL_PRDR
+extern BOOL    prdr_enable;            /* As it says */
+extern BOOL    prdr_requested;         /* Connecting mail server wants PRDR */
+#endif
 extern BOOL    preserve_message_logs;  /* Save msglog files */
 extern uschar *primary_hostname;       /* Primary name of this computer */
 extern BOOL    print_topbitchars;      /* Topbit chars are printing chars */
@@ -664,6 +675,7 @@ extern uid_t   root_uid;               /* The uid for root */
 extern router_info routers_available[];/* Vector of available routers */
 extern router_instance *routers;       /* Chain of instantiated routers */
 extern router_instance router_defaults;/* Default values */
+extern uschar *router_name;            /* Name of router last started */
 extern BOOL    running_in_test_harness; /*TRUE when running_status is patched */
 extern ip_address_item *running_interfaces; /* Host's running interfaces */
 extern uschar *running_status;         /* Flag string for testing */
@@ -819,6 +831,7 @@ extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
 extern BOOL    timestamps_utc;         /* Use UTC for all times */
+extern uschar *transport_name;         /* Name of transport last started */
 extern int     transport_count;        /* Count of bytes transported */
 extern int     transport_newlines;     /* Accurate count of number of newline chars transported */
 extern uschar **transport_filter_argv; /* For on-the-fly filtering */

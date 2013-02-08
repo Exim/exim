@@ -30,7 +30,7 @@ processing "accept"
 check verify = sender
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying U@W.x.y
-address match: subject=U@w.x.y pattern=*@*.x.y
+address match test: subject=U@w.x.y pattern=*@*.x.y
 w.x.y in "*.x.y"? yes (matched "*.x.y")
 U@W.x.y in "*@*.x.y"? yes (matched "*@*.x.y")
 LOG: address_rewrite MAIN

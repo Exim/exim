@@ -69,7 +69,7 @@ After routing:
 locking TESTSUITE/spool/db/retry.lockfile
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
-retry time not reached for TESTSUITE/test-mail/rmbox: checking ultimate address timeout
+retry time not reached: checking ultimate address timeout
   now=tttt first_failed=tttt next_try=tttt expired=0
   received_time=tttt diff=tttt timeout=259200
 LOG: retry_defer MAIN
