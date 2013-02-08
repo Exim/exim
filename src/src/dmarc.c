@@ -16,7 +16,7 @@
 
 OPENDMARC_LIB_T     dmarc_ctx;
 DMARC_POLICY_T     *dmarc_pctx = NULL;
-OPENDMARC_STATUS_T  libdm_status;
+OPENDMARC_STATUS_T  libdm_status, action;
 BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
@@ -116,8 +116,6 @@ int dmarc_process() {
     int da, sa, tmp_ans;
     u_char **ruv;
     pdkim_signature *sig  = NULL;
-    uschar *enforcement   = NULL;
-    uschar *tmp_status    = NULL;
     BOOL has_dmarc_record = TRUE;
 
   /* ACLs have "control=dmarc_disable_verify" */
@@ -284,29 +282,51 @@ int dmarc_process() {
                                        opendmarc_policy_status_to_str(libdm_status));
     }
     libdm_status = opendmarc_get_policy_to_enforce(dmarc_pctx);
-    tmp_status =  (libdm_status == DMARC_POLICY_NONE)        ? US"none" :
-                  (libdm_status == DMARC_POLICY_PASS)        ? US"accept" :
-                  (libdm_status == DMARC_POLICY_REJECT)      ? US"reject" :
-                  (libdm_status == DMARC_POLICY_QUARANTINE)  ? US"quarantine" :
-                  (libdm_status == DMARC_POLICY_ABSENT)      ? US"norecord" :
-                  (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"nofrom" :
-                  US"error";
-    dmarc_status = string_copy(tmp_status);
-    dmarc_pass_fail = (libdm_status == DMARC_POLICY_NONE)    ? US"none" :
-                      (libdm_status == DMARC_POLICY_PASS)    ? US"pass" :
-		      (libdm_status == DMARC_POLICY_REJECT)  ? US"fail" :
-		      (libdm_status == DMARC_POLICY_QUARANTINE)  ? US"fail" :
-		      (libdm_status == DMARC_POLICY_ABSENT)  ? US"temperror" :
-		      (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"temperror" :
-		      US"permerror";
-    enforcement = (libdm_status == DMARC_POLICY_NONE)        ? US"None, Accept" :
-                  (libdm_status == DMARC_POLICY_PASS)        ? US"Accept" :
-                  (libdm_status == DMARC_POLICY_REJECT)      ? US"Reject" :
-                  (libdm_status == DMARC_POLICY_QUARANTINE)  ? US"Quarantine" :
-                  (libdm_status == DMARC_POLICY_ABSENT)      ? US"No DMARC record" :
-                  (libdm_status == DMARC_FROM_DOMAIN_ABSENT) ? US"No From: domain found" :
-                  US"Internal Policy Error";
-    dmarc_status_text = string_copy(enforcement);
+    switch(libdm_status)
+    {
+      case DMARC_POLICY_ABSENT:     /* No DMARC record found */
+        dmarc_status = US"norecord";
+        dmarc_pass_fail = US"temperror";
+        dmarc_status_text = US"No DMARC record";
+        action = DMARC_RESULT_ACCEPT;
+        break;
+      case DMARC_FROM_DOMAIN_ABSENT:    /* No From: domain */
+        dmarc_status = US"nofrom";
+        dmarc_pass_fail = US"temperror";
+        dmarc_status_text = US"No From: domain found";
+        action = DMARC_RESULT_ACCEPT;
+        break;
+      case DMARC_POLICY_NONE:       /* Accept and report */
+        dmarc_status = US"none";
+        dmarc_pass_fail = US"none";
+        dmarc_status_text = US"None, Accept";
+        action = DMARC_RESULT_ACCEPT;
+        break;
+      case DMARC_POLICY_PASS:       /* Explicit accept */
+        dmarc_status = US"accept";
+        dmarc_pass_fail = US"pass";
+        dmarc_status_text = US"Accept";
+        action = DMARC_RESULT_ACCEPT;
+        break;
+      case DMARC_POLICY_REJECT:       /* Explicit reject */
+        dmarc_status = US"reject";
+        dmarc_pass_fail = US"fail";
+        dmarc_status_text = US"Reject";
+        action = DMARC_RESULT_REJECT;
+        break;
+      case DMARC_POLICY_QUARANTINE:       /* Explicit quarantine */
+        dmarc_status = US"quarantine";
+        dmarc_pass_fail = US"fail";
+        dmarc_status_text = US"Quarantine";
+        action = DMARC_RESULT_QUARANTINE;
+        break;
+      default:
+        dmarc_status = US"temperror";
+        dmarc_pass_fail = US"temperror";
+        dmarc_status_text = US"Internal Policy Error";
+        action = DMARC_RESULT_TEMPFAIL;
+        break;
+    }
 
     history_buffer = string_sprintf("job %s\n", message_id);
     history_buffer = string_sprintf("%sreporter %s\n", history_buffer, primary_hostname);
@@ -367,9 +387,10 @@ int dmarc_process() {
                              spf_sender_domain, dmarc_used_domain,
                              (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
-                             enforcement);
+                             dmarc_status_text);
       history_buffer = string_sprintf("%salign_dkim %d\n", history_buffer, sa);
       history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, da);
+      history_buffer = string_sprintf("%saction %d\n", history_buffer, action);
 
       history_file_status = dmarc_write_history_file();
     }

@@ -30,6 +30,14 @@ int dmarc_write_history_file();
 #define DMARC_HIST_FILE_ERR    4
 #define DMARC_HIST_WRITE_ERR   5
 
+/* From opendmarc.c */
+#define DMARC_RESULT_REJECT     0
+#define DMARC_RESULT_DISCARD    1
+#define DMARC_RESULT_ACCEPT     2
+#define DMARC_RESULT_TEMPFAIL   3
+#define DMARC_RESULT_QUARANTINE 4
+
+
 #endif
 
 // vim:sw=2 expandtab
