@@ -637,6 +637,22 @@ the second line says to link the libopendmarc libraries into the
 exim binary.  The commented out lines should be uncommented if you
 built opendmarc from source and installed in the default location.
 
+Use the following global settings to configure dmarc:
+
+dmarc_tld_file      Defines the location of a text file of valid
+                    top level domains the opendmarc library uses
+                    during domain parsing. Maintained by Mozilla,
+                    the most current version can be downloaded
+                    from a link at http://publicsuffix.org/list/.
+
+dmarc_history_file  Defines the location of a file to log results
+                    of dmarc verification on inbound emails. The
+                    contents are importable by the opendmarc tools
+                    which will manage the data, send out DMARC
+                    reports, and expire the data. Make sure the
+                    directory of this file is writable by the user
+                    exim runs as.
+
 You can now run DMARC checks in incoming SMTP by using the
 "dmarc_status" ACL condition in the DATA ACL.  You are required to
 call the spf condition first in the ACLs, then the "dmarc_status"
