@@ -16,13 +16,14 @@
 
 OPENDMARC_LIB_T     dmarc_ctx;
 DMARC_POLICY_T     *dmarc_pctx = NULL;
-OPENDMARC_STATUS_T  libdm_status, action;
+OPENDMARC_STATUS_T  libdm_status, action, dmarc_policy;
 BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
 header_line *from_header   = NULL;
 #ifdef EXPERIMENTAL_SPF
 extern SPF_response_t   *spf_response;
+int    dmarc_spf_result     = 0;
 uschar *spf_sender_domain  = NULL;
 uschar *spf_human_readable = NULL;
 #endif
@@ -44,11 +45,11 @@ int dmarc_init() {
 
   /* Set some sane defaults.  Also clears previous results when
    * multiple messages in one connection. */
-  dmarc_pctx = NULL;
-  dmarc_status = US"none";
-  dmarc_abort  = FALSE;
-  dmarc_pass_fail = US"skipped";
-  dmarc_used_domain = US"";
+  dmarc_pctx         = NULL;
+  dmarc_status       = US"none";
+  dmarc_abort        = FALSE;
+  dmarc_pass_fail    = US"skipped";
+  dmarc_used_domain  = US"";
   header_from_sender = NULL;
 #ifdef EXPERIMENTAL_SPF
   spf_sender_domain  = NULL;
@@ -112,9 +113,8 @@ int dmarc_store_data(header_line *hdr) {
    strings and evaluates the condition outcome. */
 
 int dmarc_process() {
-    int spf_result, sr, origin; /* used in SPF section */
-    int da, sa, tmp_ans;
-    u_char **ruv;
+    int sr, origin; /* used in SPF section */
+    OPENDMARC_STATUS_T da, sa, action;
     pdkim_signature *sig  = NULL;
     BOOL has_dmarc_record = TRUE;
 
@@ -196,18 +196,18 @@ int dmarc_process() {
         DEBUG(D_receive)
           debug_printf("DMARC using synthesized SPF sender domain = %s\n", spf_sender_domain);
       }
-      spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
+      dmarc_spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
       origin = DMARC_POLICY_SPF_ORIGIN_HELO;
       spf_human_readable = US"";
     }
     else
     {
       sr = spf_response->result;
-      spf_result = (sr == SPF_RESULT_NEUTRAL)  ? DMARC_POLICY_SPF_OUTCOME_NONE :
-                   (sr == SPF_RESULT_PASS)     ? DMARC_POLICY_SPF_OUTCOME_PASS :
-                   (sr == SPF_RESULT_FAIL)     ? DMARC_POLICY_SPF_OUTCOME_FAIL :
-                   (sr == SPF_RESULT_SOFTFAIL) ? DMARC_POLICY_SPF_OUTCOME_TMPFAIL :
-                   DMARC_POLICY_SPF_OUTCOME_NONE;
+      dmarc_spf_result = (sr == SPF_RESULT_NEUTRAL)  ? DMARC_POLICY_SPF_OUTCOME_NONE :
+                         (sr == SPF_RESULT_PASS)     ? DMARC_POLICY_SPF_OUTCOME_PASS :
+                         (sr == SPF_RESULT_FAIL)     ? DMARC_POLICY_SPF_OUTCOME_FAIL :
+                         (sr == SPF_RESULT_SOFTFAIL) ? DMARC_POLICY_SPF_OUTCOME_TMPFAIL :
+                         DMARC_POLICY_SPF_OUTCOME_NONE;
       origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
       spf_human_readable = (uschar *)spf_response->header_comment;
       DEBUG(D_receive)
@@ -218,7 +218,7 @@ int dmarc_process() {
     if (dmarc_abort == FALSE)
     {
       libdm_status = opendmarc_policy_store_spf(dmarc_pctx, spf_sender_domain,
-                                                spf_result, origin, spf_human_readable);
+                                                dmarc_spf_result, origin, spf_human_readable);
       if (libdm_status != DMARC_PARSE_OKAY)
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store spf for DMARC: %s",
                              opendmarc_policy_status_to_str(libdm_status));
@@ -282,6 +282,7 @@ int dmarc_process() {
                                        opendmarc_policy_status_to_str(libdm_status));
     }
     libdm_status = opendmarc_get_policy_to_enforce(dmarc_pctx);
+    dmarc_policy = libdm_status;
     switch(libdm_status)
     {
       case DMARC_POLICY_ABSENT:     /* No DMARC record found */
@@ -328,51 +329,6 @@ int dmarc_process() {
         break;
     }
 
-    history_buffer = string_sprintf("job %s\n", message_id);
-    history_buffer = string_sprintf("%sreporter %s\n", history_buffer, primary_hostname);
-    history_buffer = string_sprintf("%sreceived %ld\n", history_buffer, time(NULL));
-    history_buffer = string_sprintf("%sipaddr %s\n", history_buffer, sender_host_address);
-    history_buffer = string_sprintf("%sfrom %s\n", history_buffer, header_from_sender);
-    history_buffer = string_sprintf("%smfrom %s\n", history_buffer,
-                       expand_string(US"$sender_address_domain"));
-
-#ifdef EXPERIMENTAL_SPF
-    if (spf_response != NULL)
-      history_buffer = string_sprintf("%sspf %d\n", history_buffer, sr);
-#else
-      history_buffer = string_sprintf("%sspf -1\n", history_buffer);
-#endif /* EXPERIMENTAL_SPF */
-
-    history_buffer = string_sprintf("%s%s", history_buffer, dkim_history_buffer);
-    history_buffer = string_sprintf("%spdomain %s\n", history_buffer, dmarc_used_domain);
-    history_buffer = string_sprintf("%spolicy %d\n", history_buffer, libdm_status);
-
-    ruv = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1);
-    if (ruv != NULL)
-    {
-      for (tmp_ans = 0; ruv[tmp_ans] != NULL; tmp_ans++)
-      {
-        history_buffer = string_sprintf("%srua %s\n", history_buffer, ruv[tmp_ans]);
-      }
-    }
-    else
-      history_buffer = string_sprintf("%srua -\n", history_buffer);
-
-    opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
-    history_buffer = string_sprintf("%spct %d\n", history_buffer, tmp_ans);
-
-    opendmarc_policy_fetch_adkim(dmarc_pctx, &tmp_ans);
-    history_buffer = string_sprintf("%sadkim %d\n", history_buffer, tmp_ans);
-
-    opendmarc_policy_fetch_aspf(dmarc_pctx, &tmp_ans);
-    history_buffer = string_sprintf("%saspf %d\n", history_buffer, tmp_ans);
-
-    opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
-    history_buffer = string_sprintf("%sp %d\n", history_buffer, tmp_ans);
-
-    opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
-    history_buffer = string_sprintf("%ssp %d\n", history_buffer, tmp_ans);
-
     libdm_status = opendmarc_policy_fetch_alignment(dmarc_pctx, &da, &sa);
     if (libdm_status != DMARC_PARSE_OKAY)
     {
@@ -388,11 +344,7 @@ int dmarc_process() {
                              (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              dmarc_status_text);
-      history_buffer = string_sprintf("%salign_dkim %d\n", history_buffer, sa);
-      history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, da);
-      history_buffer = string_sprintf("%saction %d\n", history_buffer, action);
-
-      history_file_status = dmarc_write_history_file();
+      history_file_status = dmarc_write_history_file(sa, da, action);
     }
   }
 
@@ -408,23 +360,88 @@ int dmarc_process() {
   return OK;
 }
 
-int dmarc_write_history_file()
+int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
+                             OPENDMARC_STATUS_T da,
+                             OPENDMARC_STATUS_T action)
 {
   static int history_file_fd;
   ssize_t written_len;
+  int tmp_ans;
+  u_char **ruv;
 
   if (dmarc_history_file == NULL)
     return DMARC_HIST_DISABLED;
-  if (history_buffer == NULL)
-    return DMARC_HIST_EMPTY;
   history_file_fd = log_create(dmarc_history_file);
+ 
   if (history_file_fd < 0)
+  {
+    log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
+        		     dmarc_history_file);
     return DMARC_HIST_FILE_ERR;
+  }
+
+  /* Generate the contents of the history file */
+  history_buffer = string_sprintf("job %s\n", message_id);
+  history_buffer = string_sprintf("%sreporter %s\n", history_buffer, primary_hostname);
+  history_buffer = string_sprintf("%sreceived %ld\n", history_buffer, time(NULL));
+  history_buffer = string_sprintf("%sipaddr %s\n", history_buffer, sender_host_address);
+  history_buffer = string_sprintf("%sfrom %s\n", history_buffer, header_from_sender);
+  history_buffer = string_sprintf("%smfrom %s\n", history_buffer,
+                     expand_string(US"$sender_address_domain"));
+
+#ifdef EXPERIMENTAL_SPF
+  if (spf_response != NULL)
+    history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_result);
+#else
+    history_buffer = string_sprintf("%sspf -1\n", history_buffer);
+#endif /* EXPERIMENTAL_SPF */
+
+  history_buffer = string_sprintf("%s%s", history_buffer, dkim_history_buffer);
+  history_buffer = string_sprintf("%spdomain %s\n", history_buffer, dmarc_used_domain);
+  history_buffer = string_sprintf("%spolicy %d\n", history_buffer, dmarc_policy);
+
+  ruv = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1);
+  if (ruv != NULL)
+  {
+    for (tmp_ans = 0; ruv[tmp_ans] != NULL; tmp_ans++)
+    {
+      history_buffer = string_sprintf("%srua %s\n", history_buffer, ruv[tmp_ans]);
+    }
+  }
+  else
+    history_buffer = string_sprintf("%srua -\n", history_buffer);
+
+  opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
+  history_buffer = string_sprintf("%spct %d\n", history_buffer, tmp_ans);
+
+  opendmarc_policy_fetch_adkim(dmarc_pctx, &tmp_ans);
+  history_buffer = string_sprintf("%sadkim %d\n", history_buffer, tmp_ans);
+
+  opendmarc_policy_fetch_aspf(dmarc_pctx, &tmp_ans);
+  history_buffer = string_sprintf("%saspf %d\n", history_buffer, tmp_ans);
+
+  opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
+  history_buffer = string_sprintf("%sp %d\n", history_buffer, tmp_ans);
+
+  opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
+  history_buffer = string_sprintf("%ssp %d\n", history_buffer, tmp_ans);
+
+  history_buffer = string_sprintf("%salign_dkim %d\n", history_buffer, sa);
+  history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, da);
+  history_buffer = string_sprintf("%saction %d\n", history_buffer, action);
+
+  /* Write the contents to the history file */
+  DEBUG(D_receive)
+    debug_printf("DMARC logging history data for opendmarc reporting\n");
   written_len = write_to_fd_buf(history_file_fd,
                                 history_buffer,
                                 Ustrlen(history_buffer));
   if (written_len == 0)
+  {
+    log_write(0, LOG_MAIN|LOG_PANIC, "failure to write to DMARC history file: %s",
+        		     dmarc_history_file);
     return DMARC_HIST_WRITE_ERR;
+  }
   (void)close(history_file_fd);
   return DMARC_HIST_OK;
 }
