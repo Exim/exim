@@ -430,6 +430,11 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, da);
   history_buffer = string_sprintf("%saction %d\n", history_buffer, action);
 
+  if (dmarc_policy == DMARC_POLICY_REJECT ||
+      dmarc_policy == DMARC_POLICY_QUARANTINE)
+  {
+    dmarc_send_forensic_report();
+  }
   /* Write the contents to the history file */
   DEBUG(D_receive)
     debug_printf("DMARC logging history data for opendmarc reporting\n");
@@ -444,6 +449,10 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   }
   (void)close(history_file_fd);
   return DMARC_HIST_OK;
+}
+
+void dmarc_send_forensic_report()
+{
 }
 
 uschar *dmarc_exim_expand_query(int what)
