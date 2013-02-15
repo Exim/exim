@@ -1,6 +1,9 @@
+spec*.html
 spec*.xml
 spec.ps
 spec.pdf
+spec.txt
 filter*.xml
 filter.ps
 filter.pdf
+local_params
