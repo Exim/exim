@@ -598,10 +598,29 @@ through to eg. SpamAssassin.
 If you want to pass even more headers in the middle of the
 DATA stage you can set
   $acl_m_dcc_add_header
-to tell the DCC routines add more information; eg, you might set
+to tell the DCC routines to add more information; eg, you might set
 this to some results from ClamAV.  Be careful.  Header syntax is
 not checked and is added "as is".
 
+In case you've troubles with sites sending the same queue items from several
+hosts and fail to get through greylisting you can use
+$acl_m_dcc_override_client_ip
+
+Setting $acl_m_dcc_override_client_ip to an IP address overrides the default
+of $sender_host_address. eg. use the following ACL in DATA stage:
+
+  warn    set acl_m_dcc_override_client_ip = \
+    ${lookup{$sender_helo_name}nwildlsearch{/etc/mail/multipleip_sites}{$value}{}}
+          condition = ${if def:acl_m_dcc_override_client_ip}
+          log_message = dbg: acl_m_dcc_override_client_ip set to \
+                        $acl_m_dcc_override_client_ip
+
+Then set something like
+# cat /etc/mail/multipleip_sites
+mout-xforward.gmx.net           82.165.159.12
+mout.gmx.net                    212.227.15.16
+
+Use a reasonable IP. eg. one the sending cluster acutally uses.
 
 --------------------------------------------------------------
 End of file
