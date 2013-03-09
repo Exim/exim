@@ -429,8 +429,8 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
   history_buffer = string_sprintf("%ssp %d\n", history_buffer, tmp_ans);
 
-  history_buffer = string_sprintf("%salign_dkim %d\n", history_buffer, sa);
-  history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, da);
+  history_buffer = string_sprintf("%salign_dkim %d\n", history_buffer, da);
+  history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, sa);
   history_buffer = string_sprintf("%saction %d\n", history_buffer, action);
 
   if (dmarc_policy == DMARC_POLICY_REJECT ||
