@@ -61,7 +61,7 @@ Arguments:
 Returns:         TRUE if message successfully sent
 */
 
-static BOOL
+BOOL
 moan_send_message(uschar *recipient, int ident, error_block *eblock,
   header_line *headers, FILE *message_file, uschar *firstline)
 {
@@ -201,6 +201,25 @@ switch(ident)
     }
   fprintf(f, "\n");
   break;
+
+#ifdef EXPERIMENTAL_DMARC
+  case ERRMESS_DMARC_FORENSIC:
+  bounce_return_message = TRUE;
+  bounce_return_body = TRUE;
+  fprintf(f,
+  "Subject: DMARC Failure Forensic Report\n\n");
+  fprintf(f,
+  "A message claiming to be from you has failed the published DMARC\n"
+  "policy for your domain.\n");
+  fprintf(f, (eblock == NULL ? "\n" : "Additional details:\n\n"));
+  while (eblock != NULL)
+    {
+    fprintf(f, "  %s: %s\n", eblock->text1, eblock->text2);
+    count++;
+    eblock = eblock->next;
+    }
+  break;
+#endif
 
   default:
   fprintf(f, "Subject: Mail failure\n\n");

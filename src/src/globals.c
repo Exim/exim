@@ -593,6 +593,7 @@ BOOL    dkim_disable_verify      = FALSE;
 #ifdef EXPERIMENTAL_DMARC
 int     dmarc_has_been_checked  = 0;
 uschar *dmarc_ar_header         = NULL;
+uschar *dmarc_forensic_sender   = NULL;
 uschar *dmarc_history_file      = NULL;
 uschar *dmarc_status            = NULL;
 uschar *dmarc_status_text       = NULL;

@@ -375,7 +375,7 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   if (dmarc_history_file == NULL)
     return DMARC_HIST_DISABLED;
   history_file_fd = log_create(dmarc_history_file);
- 
+
   if (history_file_fd < 0)
   {
     log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
@@ -436,26 +436,60 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   if (dmarc_policy == DMARC_POLICY_REJECT ||
       dmarc_policy == DMARC_POLICY_QUARANTINE)
   {
-    dmarc_send_forensic_report();
+    dmarc_send_forensic_report(ruv);
   }
   /* Write the contents to the history file */
   DEBUG(D_receive)
     debug_printf("DMARC logging history data for opendmarc reporting\n");
-  written_len = write_to_fd_buf(history_file_fd,
-                                history_buffer,
-                                Ustrlen(history_buffer));
-  if (written_len == 0)
+  if (running_in_test_harness)
+    debug_printf("DMARC history data for debugging:\n%s\n", history_buffer);
+  else
   {
-    log_write(0, LOG_MAIN|LOG_PANIC, "failure to write to DMARC history file: %s",
-        		     dmarc_history_file);
-    return DMARC_HIST_WRITE_ERR;
+    written_len = write_to_fd_buf(history_file_fd,
+                                  history_buffer,
+                                  Ustrlen(history_buffer));
+    if (written_len == 0)
+    {
+      log_write(0, LOG_MAIN|LOG_PANIC, "failure to write to DMARC history file: %s",
+          		     dmarc_history_file);
+      return DMARC_HIST_WRITE_ERR;
+    }
+    (void)close(history_file_fd);
   }
-  (void)close(history_file_fd);
   return DMARC_HIST_OK;
 }
 
-void dmarc_send_forensic_report()
+void dmarc_send_forensic_report(u_char **ruv)
 {
+  int   c;
+  char *recipient;
+  BOOL  send_status = FALSE;
+  error_block *eblock = NULL;
+  FILE *message_file = NULL;
+
+  if (ruv != NULL)
+  {
+  /* Set a sane default envelope sender */
+  dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
+             dsn_from ? dsn_from :
+             string_sprintf("do-not-reply@%s",primary_hostname);
+    for (c = 0; ruv[c] != NULL; c++)
+    {
+      recipient = string_copylc(ruv[c]);
+      if (!Ustrncmp(recipient, "mailto:",7))
+	continue;
+      /* Move to first character past the colon */
+      recipient += 7;
+      debug_printf("DMARC forensic report to %s\n", recipient);
+      if (running_in_test_harness)
+        continue;
+      send_status = moan_send_message(recipient, ERRMESS_DMARC_FORENSIC, eblock,
+                                      message_headers, message_file, NULL);
+      if (send_status == FALSE)
+        log_write(0, LOG_MAIN|LOG_PANIC, "failure to send DMARC forensic report to %s",
+                  recipient);
+    }
+  }
 }
 
 uschar *dmarc_exim_expand_query(int what)
