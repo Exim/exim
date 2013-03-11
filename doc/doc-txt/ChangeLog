@@ -168,6 +168,9 @@ JH/14 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
       Default client logging of deliveries and rejections involving
       PRDR are flagged with the string "PRDR".
 
+PP/16 Fix problems caused by timeouts during quit ACLs trying to double
+      fclose().  Diagnosis by Todd Lyons.
+
 
 Exim version 4.80.1
 -------------------
