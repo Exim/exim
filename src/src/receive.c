@@ -502,30 +502,32 @@ recipients_list[recipients_count++].errors_to = NULL;
 /*************************************************
 *        Send user response message              *
 *************************************************/
-        
+
 /* This function is passed a default response code and a user message. It calls
 smtp_message_code() to check and possibly modify the response code, and then
 calls smtp_respond() to transmit the response. I put this into a function
 just to avoid a lot of repetition.
-            
-Arguments:               
+
+Arguments:
   code         the response code
   user_msg     the user message
 
 Returns:       nothing
-*/        
-            
-static void 
+*/
+
+#ifdef EXPERIMENTAL_PRDR
+static void
 smtp_user_msg(uschar *code, uschar *user_msg)
-{           
+{
 int len = 3;
 smtp_message_code(&code, &len, &user_msg, NULL);
 smtp_respond(code, len, TRUE, user_msg);
-}           
-                        
-            
-          
-          
+}
+#endif
+
+
+
+
 
 /*************************************************
 *        Remove a recipient from the list        *
@@ -2814,7 +2816,7 @@ if (cutthrough_fd >= 0)
   add_acl_headers(US"MAIL or RCPT");
   (void) cutthrough_headers_send();
   }
- 
+
 
 /* Open a new spool file for the data portion of the message. We need
 to access it both via a file descriptor and a stream. Try to make the
@@ -3177,7 +3179,7 @@ else
               uschar seen_item_buf[256];
               uschar *seen_items_list = seen_items;
               int seen_this_item = 0;
-              
+
               while ((seen_item = string_nextinlist(&seen_items_list, &sep,
                                                     seen_item_buf,
                                                     sizeof(seen_item_buf))) != NULL)
@@ -3186,7 +3188,7 @@ else
                     {
                       seen_this_item = 1;
                       break;
-                    } 
+                    }
                 }
 
               if (seen_this_item > 0)
@@ -3195,7 +3197,7 @@ else
                   debug_printf("acl_smtp_dkim: skipping signer %s, already seen\n", item);
                 continue;
                 }
-              
+
               seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,":");
               }
 
@@ -3940,12 +3942,12 @@ if(cutthrough_fd >= 0)
     case '2':	/* Accept. Do the same to the source; dump any spoolfiles.   */
       cutthrough_done = 3;
       break;					/* message_id needed for SMTP accept below */
-  
+
     default:	/* Unknown response, or error.  Treat as temp-reject.         */
     case '4':	/* Temp-reject. Keep spoolfiles and accept. */
       cutthrough_done = 1;			/* Avoid the usual immediate delivery attempt */
       break;					/* message_id needed for SMTP accept below */
-  
+
     case '5':	/* Perm-reject.  Do the same to the source.  Dump any spoolfiles */
       smtp_reply= msg;		/* Pass on the exact error */
       cutthrough_done = 2;
