@@ -56,7 +56,9 @@
 
 domainlist local_domains = @
 domainlist relay_to_domains =
-hostlist   relay_from_hosts = 127.0.0.1
+hostlist   relay_from_hosts = localhost
+# (We rely upon hostname resolution working for localhost, because the default
+# uncommented configuration needs to work in IPv4-only environments.)
 
 # Most straightforward access control requirements can be obtained by
 # appropriate settings of the above options. In more complicated situations,
@@ -91,12 +93,13 @@ hostlist   relay_from_hosts = 127.0.0.1
 # to any other host on the Internet. Such a setting commonly refers to a
 # complete local network as well as the localhost. For example:
 #
-# hostlist relay_from_hosts = 127.0.0.1 : 192.168.0.0/16
+# hostlist relay_from_hosts = <; 127.0.0.1 ; ::1 ; 192.168.0.0/16
 #
 # The "/16" is a bit mask (CIDR notation), not a number of hosts. Note that you
 # have to include 127.0.0.1 if you want to allow processes on your host to send
 # SMTP mail by using the loopback address. A number of MUAs use this method of
-# sending mail.
+# sending mail.  Often, connections are made to "localhost", which might be ::1
+# on IPv6-enabled hosts.  Do not forget CIDR for your IPv6 networks.
 
 # All three of these lists may contain many different kinds of item, including
 # wildcarded names, regular expressions, and file lookups. See the reference
@@ -539,6 +542,8 @@ dnslookup:
   domains = ! +local_domains
   transport = remote_smtp
   ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+# if ipv6-enabled then instead use:
+# ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
   no_more
 
 
@@ -553,7 +558,7 @@ dnslookup:
 #   domains = ! +local_domains
 #   transport = remote_smtp
 #   route_data = MAIL.HOSTNAME.FOR.CENTRAL.SERVER.EXAMPLE
-#   ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+#   ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
 #   no_more
 
 

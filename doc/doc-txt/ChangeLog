@@ -171,6 +171,10 @@ JH/14 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
 PP/16 Fix problems caused by timeouts during quit ACLs trying to double
       fclose().  Diagnosis by Todd Lyons.
 
+PP/17 Update configure.default to handle IPv6 localhost better.
+      Patch by Alain Williams (plus minor tweaks).
+      Bugzilla 880.
+
 
 Exim version 4.80.1
 -------------------
