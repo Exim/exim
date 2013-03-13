@@ -175,6 +175,12 @@ PP/17 Update configure.default to handle IPv6 localhost better.
       Patch by Alain Williams (plus minor tweaks).
       Bugzilla 880.
 
+PP/18 OpenSSL made graceful with empty tls_verify_certificates setting.
+      This is now consistent with GnuTLS, and is now documented: the
+      previous undocumented portable approach to treating the option as
+      unset was to force an expansion failure.  That still works, and
+      an empty string is now equivalent.
+
 
 Exim version 4.80.1
 -------------------
