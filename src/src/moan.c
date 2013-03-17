@@ -61,7 +61,7 @@ Arguments:
 Returns:         TRUE if message successfully sent
 */
 
-BOOL
+static BOOL
 moan_send_message(uschar *recipient, int ident, error_block *eblock,
   header_line *headers, FILE *message_file, uschar *firstline)
 {

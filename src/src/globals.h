@@ -356,6 +356,7 @@ extern uschar *dmarc_status_text;      /* Expansion variable, human readable val
 extern uschar *dmarc_tld_file;         /* Mozilla TLDs text file */
 extern uschar *dmarc_used_domain;      /* Expansion variable, domain libopendmarc chose for DMARC policy lookup */
 extern BOOL    dmarc_disable_verify;   /* Set via ACL control statement. When set, DMARC verification is disabled for the current message */
+extern BOOL    dmarc_disable_forensic; /* Set via ACL control statement. When set, DMARC forensic reports are disabled for the current message */
 #endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */

@@ -120,6 +120,7 @@ int dmarc_process() {
     OPENDMARC_STATUS_T da, sa, action;
     pdkim_signature *sig  = NULL;
     BOOL has_dmarc_record = TRUE;
+    u_char **ruf; /* forensic report addressees, if called for */
 
   /* ACLs have "control=dmarc_disable_verify" */
   if (dmarc_disable_verify == TRUE)
@@ -348,6 +349,9 @@ int dmarc_process() {
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              dmarc_status_text);
       history_file_status = dmarc_write_history_file(sa, da, action);
+      /* Now get the forensic reporting addresses, if any */
+      ruf = opendmarc_policy_fetch_ruf(dmarc_pctx, NULL, 0, 1);
+      dmarc_send_forensic_report(ruf);
     }
   }
 
@@ -370,7 +374,7 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   static int history_file_fd;
   ssize_t written_len;
   int tmp_ans;
-  u_char **ruv;
+  u_char **rua; /* aggregate report addressees */
 
   if (dmarc_history_file == NULL)
     return DMARC_HIST_DISABLED;
@@ -403,12 +407,12 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   history_buffer = string_sprintf("%spdomain %s\n", history_buffer, dmarc_used_domain);
   history_buffer = string_sprintf("%spolicy %d\n", history_buffer, dmarc_policy);
 
-  ruv = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1);
-  if (ruv != NULL)
+  rua = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1);
+  if (rua != NULL)
   {
-    for (tmp_ans = 0; ruv[tmp_ans] != NULL; tmp_ans++)
+    for (tmp_ans = 0; rua[tmp_ans] != NULL; tmp_ans++)
     {
-      history_buffer = string_sprintf("%srua %s\n", history_buffer, ruv[tmp_ans]);
+      history_buffer = string_sprintf("%srua %s\n", history_buffer, rua[tmp_ans]);
     }
   }
   else
@@ -433,16 +437,15 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   history_buffer = string_sprintf("%salign_spf %d\n", history_buffer, sa);
   history_buffer = string_sprintf("%saction %d\n", history_buffer, action);
 
-  if (dmarc_policy == DMARC_POLICY_REJECT ||
-      dmarc_policy == DMARC_POLICY_QUARANTINE)
-  {
-    dmarc_send_forensic_report(ruv);
-  }
   /* Write the contents to the history file */
   DEBUG(D_receive)
-    debug_printf("DMARC logging history data for opendmarc reporting\n");
-  if (running_in_test_harness)
-    debug_printf("DMARC history data for debugging:\n%s\n", history_buffer);
+    debug_printf("DMARC logging history data for opendmarc reporting%s\n",
+                 (host_checking || running_in_test_harness) ? " (not really)" : "");
+  if (host_checking || running_in_test_harness)
+  {
+    DEBUG(D_receive)
+      debug_printf("DMARC history data for debugging:\n%s", history_buffer);
+  }
   else
   {
     written_len = write_to_fd_buf(history_file_fd,
@@ -459,37 +462,54 @@ int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
   return DMARC_HIST_OK;
 }
 
-void dmarc_send_forensic_report(u_char **ruv)
+void dmarc_send_forensic_report(u_char **ruf)
 {
   int   c;
-  char *recipient;
+  uschar *recipient, *save_sender;
   BOOL  send_status = FALSE;
   error_block *eblock = NULL;
   FILE *message_file = NULL;
 
-  if (ruv != NULL)
-  {
-  /* Set a sane default envelope sender */
-  dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
-             dsn_from ? dsn_from :
-             string_sprintf("do-not-reply@%s",primary_hostname);
-    for (c = 0; ruv[c] != NULL; c++)
+//  if ((dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT) ||
+//      (dmarc_policy == DMARC_POLICY_QUARANTINE && action == DMARC_RESULT_QUARANTINE) )
+//  {
+    if (dmarc_disable_forensic == TRUE)
     {
-      recipient = string_copylc(ruv[c]);
-      if (!Ustrncmp(recipient, "mailto:",7))
-	continue;
-      /* Move to first character past the colon */
-      recipient += 7;
-      debug_printf("DMARC forensic report to %s\n", recipient);
-      if (running_in_test_harness)
-        continue;
-      send_status = moan_send_message(recipient, ERRMESS_DMARC_FORENSIC, eblock,
-                                      message_headers, message_file, NULL);
-      if (send_status == FALSE)
-        log_write(0, LOG_MAIN|LOG_PANIC, "failure to send DMARC forensic report to %s",
-                  recipient);
+      /* ACL has control=dmarc_disable_forensic */
+      DEBUG(D_receive)
+        debug_printf("DMARC alignment failure forensic reporting disabled\n");
+      return;
     }
-  }
+
+    if (ruf != NULL)
+    {
+    /* Set a sane default envelope sender */
+      dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
+                 dsn_from ? dsn_from :
+                 string_sprintf("do-not-reply@%s",primary_hostname);
+      for (c = 0; ruf[c] != NULL; c++)
+      {
+        recipient = string_copylc(ruf[c]);
+        if (Ustrncmp(recipient, "mailto:",7))
+  	continue;
+        /* Move to first character past the colon */
+        recipient += 7;
+        DEBUG(D_receive)
+          debug_printf("DMARC forensic report to %s%s\n", recipient,
+                       (host_checking || running_in_test_harness) ? " (not really)" : "");
+        //if (host_checking || running_in_test_harness)
+        //  continue;
+        save_sender = sender_address;
+        sender_address = recipient;
+        send_status = moan_to_sender(ERRMESS_DMARC_FORENSIC, eblock,
+                                     header_list, message_file, FALSE);
+        sender_address = save_sender;
+        if (send_status == FALSE)
+          log_write(0, LOG_MAIN|LOG_PANIC, "failure to send DMARC forensic report to %s",
+                    recipient);
+      }
+    }
+//  }
 }
 
 uschar *dmarc_exim_expand_query(int what)

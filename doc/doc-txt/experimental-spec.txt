@@ -621,7 +621,7 @@ repository.  If building from source, this description assumes
 that headers will be in /usr/local/include, and that the libraries
 are in /usr/local/lib.
 
-To compile Exim with DMARC support, you must first enable SPF.
+1. To compile Exim with DMARC support, you must first enable SPF.
 Please read the above section on enabling the EXPERIMENTAL_SPF
 feature.  You must also have DKIM support, so you cannot set the
 DISABLE_DKIM feature.  Once both of those conditions have been met
@@ -636,8 +636,12 @@ The first line sets the feature to include the correct code, and
 the second line says to link the libopendmarc libraries into the
 exim binary.  The commented out lines should be uncommented if you
 built opendmarc from source and installed in the default location.
+Adjust the paths if you installed them elsewhere, but you do not
+need to adjust them if an rpm (or you) installed them in the
+package controlled locations (/usr/include and /usr/lib).
 
-Use the following global settings to configure dmarc:
+
+2. Use the following global settings to configure dmarc:
 
 dmarc_tld_file      Defines the location of a text file of valid
                     top level domains the opendmarc library uses
@@ -653,7 +657,29 @@ dmarc_history_file  Defines the location of a file to log results
                     directory of this file is writable by the user
                     exim runs as.
 
-You can now run DMARC checks in incoming SMTP by using the
+dmarc_forensic_sender The email address to use when sending a
+                    forensic report detailing alignment failures
+                    if a sender domain's dmarc record specifies it.
+
+3. By default, the DMARC process will run for any remote,
+non-authenticated user.  It makes sense to only verify DMARC
+status of messages coming from remote, untrusted sources.  You can
+use standard conditions such as hosts, senders, etc, to decide that
+DMARC verification should not be performed and disable DMARC with
+a control setting:
+
+  control = dmarc_verify_disable
+
+You can also do full dmarc checking and aggregate reports, but
+choose not to send forensic reports (detailing dmarc alignment
+failures):
+
+  control = dmarc_forensic_disable
+
+There are no options to either control.  Both must appear before
+the DATA acl.
+
+4. You can now run DMARC checks in incoming SMTP by using the
 "dmarc_status" ACL condition in the DATA ACL.  You are required to
 call the spf condition first in the ACLs, then the "dmarc_status"
 condition.  Putting this condition in the ACLs is required in order
@@ -690,16 +716,6 @@ Of course, you can also use any other lookup method that Exim
 supports, including LDAP, Postgres, MySQL, etc, as long as the
 result is a list of colon-separated strings;
 
-To optimize performance, it makes sense to only verify DMARC
-status of messages coming from remote, untrusted sources.  You can
-use standard conditions such as hosts, senders, etc, decide that
-DMARC verification should not be performed and disable DMARC with
-a control setting "control=dmarc_verify_disable".  There are no
-options to this control.
-
-By default, the DMARC process will run for any remote,
-non-authenticated user.
-
 Several expansion variables are set before the DATA ACL is
 processed, and you can use them in this ACL.  The following
 expansion variables are available:
@@ -720,11 +736,14 @@ expansion variables are available:
     add using an add_header modifier.
 
 
-Example usage:
+5. Example usage:
 (RCPT ACL)
   warn    domains        = +local_domains
           hosts          = +local_hosts
           control        = dmarc_verify_disable
+
+  warn    domains        = +screwed_up_dmarc_records
+          control        = dmarc_forensic_disable
 
 (DATA ACL)
   warn    dmarc_status   = accept : none : off
