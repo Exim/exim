@@ -35,6 +35,31 @@ int history_file_status    = DMARC_HIST_OK;
 uschar *history_buffer     = NULL;
 uschar *dkim_history_buffer= NULL;
 
+/* Accept an error_block struct, initialize if empty, parse to the
+ * end, and append the two strings passed to it.  Used for adding
+ * variable amounts of value:pair data to the forensic emails. */
+
+static error_block *
+add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
+{
+  error_block *eb = malloc(sizeof(error_block));
+  if (eblock == NULL)
+    eblock = eb;
+  else
+  {
+    /* Find the end of the eblock struct */
+    error_block *tmp = malloc(sizeof(error_block));
+    tmp = eblock;
+    while(tmp->next != NULL)
+      tmp = tmp->next;
+    tmp->next = eb;
+  }
+  eb->text1 = t1;
+  eb->text2 = t2;
+  eb->next  = NULL;
+  return eblock;
+}
+
 /* dmarc_init sets up a context that can be re-used for several
    messages on the same SMTP connection (that come from the
    same host with the same HELO string) */
@@ -473,17 +498,18 @@ void dmarc_send_forensic_report(u_char **ruf)
 //  if ((dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT) ||
 //      (dmarc_policy == DMARC_POLICY_QUARANTINE && action == DMARC_RESULT_QUARANTINE) )
 //  {
-    if (dmarc_disable_forensic == TRUE)
+    if (dmarc_enable_forensic == FALSE)
     {
-      /* ACL has control=dmarc_disable_forensic */
-      DEBUG(D_receive)
-        debug_printf("DMARC alignment failure forensic reporting disabled\n");
+      /* ACL does not have *required* control=dmarc_enable_forensic */
       return;
     }
 
     if (ruf != NULL)
     {
-    /* Set a sane default envelope sender */
+      eblock = add_to_eblock(eblock, US"Sender Domain", dmarc_used_domain);
+      eblock = add_to_eblock(eblock, US"Sender IP Address", sender_host_address);
+      eblock = add_to_eblock(eblock, US"Received Date", tod_stamp(tod_full));
+      /* Set a sane default envelope sender */
       dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
                  dsn_from ? dsn_from :
                  string_sprintf("do-not-reply@%s",primary_hostname);

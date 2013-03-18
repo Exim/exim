@@ -223,7 +223,7 @@ static uschar *controls[] = {
   #endif
   #ifdef EXPERIMENTAL_DMARC
   US"dmarc_disable_verify",
-  US"dmarc_disable_forensic",
+  US"dmarc_enable_forensic",
   #endif
   US"dscp",
   US"error",
@@ -606,7 +606,7 @@ static unsigned int control_forbids[] = {
   #ifdef EXPERIMENTAL_DMARC
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_disable_verify */
     (1<<ACL_WHERE_NOTSMTP_START),
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_disable_forensic */
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_enable_forensic */
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
@@ -708,7 +708,7 @@ static control_def controls_list[] = {
 #endif
 #ifdef EXPERIMENTAL_DMARC
   { US"dmarc_disable_verify",    CONTROL_DMARC_VERIFY, FALSE },
-  { US"dmarc_disable_forensic",  CONTROL_DMARC_FORENSIC, FALSE },
+  { US"dmarc_enable_forensic",   CONTROL_DMARC_FORENSIC, FALSE },
 #endif
   { US"dscp",                    CONTROL_DSCP, TRUE },
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
@@ -3021,7 +3021,7 @@ for (; cb != NULL; cb = cb->next)
       #ifdef EXPERIMENTAL_DMARC
       /* Since DKIM was blocked, skip DMARC too */
       dmarc_disable_verify = TRUE;
-      dmarc_disable_forensic = TRUE;
+      dmarc_enable_forensic = FALSE;
       #endif
       break;
       #endif
@@ -3032,7 +3032,7 @@ for (; cb != NULL; cb = cb->next)
       break;
 
       case CONTROL_DMARC_FORENSIC:
-      dmarc_disable_forensic = TRUE;
+      dmarc_enable_forensic = TRUE;
       break;
       #endif
 

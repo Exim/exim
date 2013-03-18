@@ -641,7 +641,7 @@ need to adjust them if an rpm (or you) installed them in the
 package controlled locations (/usr/include and /usr/lib).
 
 
-2. Use the following global settings to configure dmarc:
+2. Use the following global settings to configure DMARC:
 
 dmarc_tld_file      Defines the location of a text file of valid
                     top level domains the opendmarc library uses
@@ -659,22 +659,27 @@ dmarc_history_file  Defines the location of a file to log results
 
 dmarc_forensic_sender The email address to use when sending a
                     forensic report detailing alignment failures
-                    if a sender domain's dmarc record specifies it.
+                    if a sender domain's dmarc record specifies it
+                    and you have configured Exim to send them.
 
-3. By default, the DMARC process will run for any remote,
+3. By default, the DMARC processing will run for any remote,
 non-authenticated user.  It makes sense to only verify DMARC
 status of messages coming from remote, untrusted sources.  You can
 use standard conditions such as hosts, senders, etc, to decide that
-DMARC verification should not be performed and disable DMARC with
-a control setting:
+DMARC verification should *not* be performed for them and disable
+DMARC with a control setting:
 
   control = dmarc_verify_disable
 
-You can also do full dmarc checking and aggregate reports, but
-choose not to send forensic reports (detailing dmarc alignment
-failures):
+A DMARC record can also specify a "forensic address", which gives
+exim an email address to submit reports about failed alignment.
+Exim does not do this by default, you must specify the control line
+below for forensic reports to be submitted.  It's also advised that
+you specify a dmarc_forensic_sender as well.  You can choose not to
+send these forensic reports by not having this control line at any
+point in your exim config:
 
-  control = dmarc_forensic_disable
+  control = dmarc_forensic_enable
 
 There are no options to either control.  Both must appear before
 the DATA acl.
@@ -742,8 +747,8 @@ expansion variables are available:
           hosts          = +local_hosts
           control        = dmarc_verify_disable
 
-  warn    domains        = +screwed_up_dmarc_records
-          control        = dmarc_forensic_disable
+  warn    !domains       = +screwed_up_dmarc_records
+          control        = dmarc_enable_forensic
 
 (DATA ACL)
   warn    dmarc_status   = accept : none : off

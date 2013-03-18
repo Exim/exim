@@ -205,13 +205,14 @@ switch(ident)
 #ifdef EXPERIMENTAL_DMARC
   case ERRMESS_DMARC_FORENSIC:
   bounce_return_message = TRUE;
-  bounce_return_body = TRUE;
+  bounce_return_body    = FALSE;
   fprintf(f,
-  "Subject: DMARC Failure Forensic Report\n\n");
+          "Subject: DMARC Forensic Report for %s from IP %s\n\n",
+	  ((eblock == NULL) ? US"Unknown" : eblock->text2),
+          sender_host_address);
   fprintf(f,
   "A message claiming to be from you has failed the published DMARC\n"
-  "policy for your domain.\n");
-  fprintf(f, (eblock == NULL ? "\n" : "Additional details:\n\n"));
+  "policy for your domain.\n\n");
   while (eblock != NULL)
     {
     fprintf(f, "  %s: %s\n", eblock->text1, eblock->text2);
@@ -299,8 +300,16 @@ if (bounce_return_message)
         }
       }
     }
+#ifdef EXPERIMENTAL_DMARC
+  /* Overkill, but use exact test in case future code gets inserted */
+  else if (bounce_return_body && message_file == NULL)
+    {
+    /* This doesn't print newlines, disable until can parse and fix
+     * output to be legible.  */
+    fprintf(f, "%s", expand_string(US"$message_body"));
+    }
+#endif
   }
-
 /* Close the file, which should send an EOF to the child process
 that is receiving the message. Wait for it to finish, without a timeout. */
 
