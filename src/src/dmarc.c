@@ -20,6 +20,7 @@
 OPENDMARC_LIB_T     dmarc_ctx;
 DMARC_POLICY_T     *dmarc_pctx = NULL;
 OPENDMARC_STATUS_T  libdm_status, action, dmarc_policy;
+OPENDMARC_STATUS_T  da, sa, action;
 BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
@@ -47,9 +48,8 @@ add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
     eblock = eb;
   else
   {
-    /* Find the end of the eblock struct */
-    error_block *tmp = malloc(sizeof(error_block));
-    tmp = eblock;
+    /* Find the end of the eblock struct and point it at eb */
+    error_block *tmp = eblock;
     while(tmp->next != NULL)
       tmp = tmp->next;
     tmp->next = eb;
@@ -142,7 +142,6 @@ int dmarc_store_data(header_line *hdr) {
 
 int dmarc_process() {
     int sr, origin; /* used in SPF section */
-    OPENDMARC_STATUS_T da, sa, action;
     pdkim_signature *sig  = NULL;
     BOOL has_dmarc_record = TRUE;
     u_char **ruf; /* forensic report addressees, if called for */
@@ -289,7 +288,7 @@ int dmarc_process() {
         break;
       case DMARC_PARSE_OKAY:
         DEBUG(D_receive)
-          debug_printf("DMARC record found for '%s'\n", from_header->text);
+          debug_printf("DMARC record found for %s", from_header->text);
         break;
       default:
         /* everything else, skip dmarc */
@@ -373,7 +372,7 @@ int dmarc_process() {
                              (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
                              (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
                              dmarc_status_text);
-      history_file_status = dmarc_write_history_file(sa, da, action);
+      history_file_status = dmarc_write_history_file();
       /* Now get the forensic reporting addresses, if any */
       ruf = opendmarc_policy_fetch_ruf(dmarc_pctx, NULL, 0, 1);
       dmarc_send_forensic_report(ruf);
@@ -392,9 +391,7 @@ int dmarc_process() {
   return OK;
 }
 
-int dmarc_write_history_file(OPENDMARC_STATUS_T sa,
-                             OPENDMARC_STATUS_T da,
-                             OPENDMARC_STATUS_T action)
+int dmarc_write_history_file()
 {
   static int history_file_fd;
   ssize_t written_len;
@@ -495,20 +492,23 @@ void dmarc_send_forensic_report(u_char **ruf)
   error_block *eblock = NULL;
   FILE *message_file = NULL;
 
-//  if ((dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT) ||
-//      (dmarc_policy == DMARC_POLICY_QUARANTINE && action == DMARC_RESULT_QUARANTINE) )
-//  {
-    if (dmarc_enable_forensic == FALSE)
-    {
-      /* ACL does not have *required* control=dmarc_enable_forensic */
-      return;
-    }
+  /* Earlier ACL does not have *required* control=dmarc_enable_forensic */
+  if (dmarc_enable_forensic == FALSE)
+    return;
 
+  if ((dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT) ||
+      (dmarc_policy == DMARC_POLICY_QUARANTINE && action == DMARC_RESULT_QUARANTINE) )
+  {
     if (ruf != NULL)
     {
       eblock = add_to_eblock(eblock, US"Sender Domain", dmarc_used_domain);
       eblock = add_to_eblock(eblock, US"Sender IP Address", sender_host_address);
       eblock = add_to_eblock(eblock, US"Received Date", tod_stamp(tod_full));
+      eblock = add_to_eblock(eblock, US"SPF Alignment",
+                             (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?US"yes":US"no");
+      eblock = add_to_eblock(eblock, US"DKIM Alignment",
+                             (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?US"yes":US"no");
+      eblock = add_to_eblock(eblock, US"DMARC Results", dmarc_status_text);
       /* Set a sane default envelope sender */
       dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
                  dsn_from ? dsn_from :
@@ -535,7 +535,7 @@ void dmarc_send_forensic_report(u_char **ruf)
                     recipient);
       }
     }
-//  }
+  }
 }
 
 uschar *dmarc_exim_expand_query(int what)
