@@ -75,8 +75,15 @@ dmarc_load_fake_dns(uschar *tmp_dns_lookup)
       if (rr->type == T_TXT) break;
     if (rr != NULL) {
       uschar *dns_data = rr->data;
+      /* Get rid of any leading non-ASCII */
       while (*dns_data > 127)
         dns_data++;
+      /* Get rid of any trailing non-ASCII */
+      uschar *tmp = dns_data;
+      while(*tmp < 128 || *tmp == 0)
+        *tmp++;
+      if (*tmp != 0)
+        *tmp = 0;
       opendmarc_dns_fake_record(CCS tmp_dns_lookup, CCS dns_data);
       DEBUG(D_receive)
         debug_printf("DMARC fakens loaded %s TXT \"%s\"\n", tmp_dns_lookup, dns_data);
