@@ -60,6 +60,35 @@ add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
   return eblock;
 }
 
+static void
+dmarc_load_fake_dns(uschar *tmp_dns_lookup)
+{
+  dns_answer dnsa;
+  dns_scan   dnss;
+  dns_record *rr;
+  if (dns_lookup(&dnsa, tmp_dns_lookup, T_TXT, NULL) == DNS_SUCCEED)
+  {
+    /* Search for TXT record */
+    for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+         rr != NULL;
+         rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+      if (rr->type == T_TXT) break;
+    if (rr != NULL) {
+      uschar *dns_data = rr->data;
+      while (*dns_data > 127)
+        dns_data++;
+      opendmarc_dns_fake_record(CCS tmp_dns_lookup, CCS dns_data);
+      DEBUG(D_receive)
+        debug_printf("DMARC fakens loaded %s TXT \"%s\"\n", tmp_dns_lookup, dns_data);
+    }
+  }
+  else
+  {
+    DEBUG(D_receive)
+      debug_printf("DMARC fakens didn't find %s\n", tmp_dns_lookup);
+  }
+}
+
 /* dmarc_init sets up a context that can be re-used for several
    messages on the same SMTP connection (that come from the
    same host with the same HELO string) */
@@ -128,8 +157,7 @@ int dmarc_init() {
  * dmarc_process can access the data */
 
 int dmarc_store_data(header_line *hdr) {
-  DEBUG(D_receive)
-    debug_printf("DMARC storing header data\n");
+  /* No debug output because would change every test debug output */
   if (dmarc_disable_verify != TRUE)
     from_header = hdr;
   return OK;
@@ -191,6 +219,8 @@ int dmarc_process() {
    * instead do this in the ACLs.  */
   if (dmarc_abort == FALSE && sender_host_authenticated == NULL)
   {
+    if (running_in_test_harness)
+      dmarc_load_fake_dns(string_sprintf("_dmarc.%s",header_from_sender));
 #ifdef EXPERIMENTAL_SPF
     /* Use the envelope sender domain for this part of DMARC */
     spf_sender_domain = expand_string(US"$sender_address_domain");
@@ -283,17 +313,23 @@ int dmarc_process() {
       case DMARC_DNS_ERROR_NXDOMAIN:
       case DMARC_DNS_ERROR_NO_RECORD:
         DEBUG(D_receive)
-          debug_printf("DMARC no record found for '%s'\n", from_header->text);
+          debug_printf("DMARC no record found for %s\n", header_from_sender);
         has_dmarc_record = FALSE;
         break;
       case DMARC_PARSE_OKAY:
         DEBUG(D_receive)
-          debug_printf("DMARC record found for %s", from_header->text);
+          debug_printf("DMARC record found for %s\n", header_from_sender);
+        break;
+      case DMARC_PARSE_ERROR_BAD_VALUE:
+        DEBUG(D_receive)
+          debug_printf("DMARC record parse error for %s\n", header_from_sender);
+        has_dmarc_record = FALSE;
         break;
       default:
         /* everything else, skip dmarc */
         DEBUG(D_receive)
-          debug_printf("DMARC skipping, unsure what to do with '%s'\n", from_header->text);
+          debug_printf("DMARC skipping (%d), unsure what to do with %s",
+                        libdm_status, from_header->text);
         has_dmarc_record = FALSE;
         break;
     }
