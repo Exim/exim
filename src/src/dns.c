@@ -206,28 +206,28 @@ if (dns_use_edns0 >= 0)
 #  ifndef RES_USE_EDNS0
 #   error Have RES_USE_DNSSEC but not RES_USE_EDNS0?  Something hinky ...
 #  endif
-if (dns_use_dnssec >= 0)
+if (dns_dnssec_ok >= 0)
   {
-  if (dns_use_edns0 == 0 && dns_use_dnssec != 0)
+  if (dns_use_edns0 == 0 && dns_dnssec_ok != 0)
     {
     DEBUG(D_resolver)
-      debug_printf("CONFLICT: dns_use_edns0 forced false, dns_use_dnssec forced true!\n");
+      debug_printf("CONFLICT: dns_use_edns0 forced false, dns_dnssec_ok forced true, ignoring latter!\n");
     }
   else
     {
-    if (dns_use_dnssec)
+    if (dns_dnssec_ok)
       resp->options |= RES_USE_DNSSEC;
     else
       resp->options &= ~RES_USE_DNSSEC;
     DEBUG(D_resolver) debug_printf("Coerced resolver DNSSEC support %s.\n",
-        dns_use_dnssec ? "on" : "off");
+        dns_dnssec_ok ? "on" : "off");
     }
   }
 # else
-if (dns_use_dnssec >= 0)
+if (dns_dnssec_ok >= 0)
   DEBUG(D_resolver)
     debug_printf("Unable to %sset DNSSEC without resolver support.\n",
-        dns_use_dnssec ? "" : "un");
+        dns_dnssec_ok ? "" : "un");
 # endif
 #endif /* DISABLE_DNSSEC */
 

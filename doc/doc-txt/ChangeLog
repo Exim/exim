@@ -181,6 +181,10 @@ PP/18 OpenSSL made graceful with empty tls_verify_certificates setting.
       unset was to force an expansion failure.  That still works, and
       an empty string is now equivalent.
 
+PP/19 Renamed DNSSEC-enabling option to "dns_dnssec_ok", to make it
+      clearer that Exim is using the DO (DNSSEC OK) EDNS0 resolver flag,
+      not performing validation itself.
+
 
 Exim version 4.80.1
 -------------------

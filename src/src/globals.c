@@ -597,7 +597,7 @@ BOOL    dns_csa_use_reverse    = TRUE;
 uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
-int     dns_use_dnssec         = -1; /* <0 = not coerced */
+int     dns_dnssec_ok          = -1; /* <0 = not coerced */
 int     dns_use_edns0          = -1; /* <0 = not coerced */
 uschar *dnslist_domain         = NULL;
 uschar *dnslist_matched        = NULL;
