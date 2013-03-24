@@ -101,6 +101,10 @@ optionlist smtp_transport_options[] = {
   { "hosts_require_auth",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_auth) },
 #ifdef SUPPORT_TLS
+# if defined EXPERIMENTAL_OCSP
+  { "hosts_require_ocsp",   opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_require_ocsp) },
+# endif
   { "hosts_require_tls",    opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_tls) },
 #endif
@@ -178,6 +182,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_require_auth */
 #ifdef EXPERIMENTAL_PRDR
   NULL,                /* hosts_try_prdr */
+#endif
+#ifdef EXPERIMENTAL_OCSP
+  NULL,                /* hosts_require_ocsp */
 #endif
   NULL,                /* hosts_require_tls */
   NULL,                /* hosts_avoid_tls */
@@ -1147,13 +1154,15 @@ if (tls_offered && !suppress_tls &&
     int rc = tls_client_start(inblock.sock,
       host,
       addrlist,
-      NULL,                    /* No DH param */
       ob->tls_certificate,
       ob->tls_privatekey,
       ob->tls_sni,
       ob->tls_verify_certificates,
       ob->tls_crl,
       ob->tls_require_ciphers,
+#ifdef EXPERIMENTAL_OCSP
+      ob->hosts_require_ocsp,
+#endif
       ob->tls_dh_min_bits,
       ob->command_timeout);
 

@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+
+echo Ensure time is set to 2012/11/01 12:34
+echo use -  date -u 110112342012
+echo hit return when ready
+read junk
+for tld in com org net
+do
+    clica -D example.$tld -p password -B 512 -I -N example.$tld -F -C http://crl.example.$tld/latest.crl -O http://oscp/example.$tld/
+    clica -D example.$tld -p password -s 101 -S server1.example.$tld
+    clica -D example.$tld -p password -s 102 -S revoked1.example.$tld
+    clica -D example.$tld -p password -s 103 -S expired1.example.$tld -m 1
+    clica -D example.$tld -p password -s 201 -S server2.example.$tld
+    clica -D example.$tld -p password -s 202 -S revoked2.example.$tld
+    clica -D example.$tld -p password -s 203 -S expired2.example.$tld -m 1
+done
+
+# and loop again
+for tld in com org net
+do
+    CADIR=example.$tld/CA
+    #give ourselves an OSCP key to work with
+    pk12util -o $CADIR/OCSP.p12 -n 'OCSP Signer' -d $CADIR -K password -W password
+    openssl pkcs12 -in $CADIR/OCSP.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/OCSP.key
+
+
+    # create some index files for the ocsp responder to work with
+    cat >$CADIR/index.valid.txt <<EOF
+V	130110200751Z		65	unknown	CN=server1.example.$tld
+V	130110200751Z		66	unknown	CN=revoked1.example.$tld
+V	130110200751Z		67	unknown	CN=expired1.example.$tld
+V	130110200751Z		c9	unknown	CN=server2.example.$tld
+V	130110200751Z		ca	unknown	CN=revoked2.example.$tld
+V	130110200751Z		cb	unknown	CN=expired2.example.$tld
+EOF
+    cat >$CADIR/index.revoked.txt <<EOF
+R	130110200751Z	100201142709Z,superseded	65	unknown	CN=server1.example.$tld
+R	130110200751Z	100201142709Z,superseded	66	unknown	CN=revoked1.example.$tld
+R	130110200751Z	100201142709Z,superseded	67	unknown	CN=expired1.example.$tld
+R	130110200751Z	100201142709Z,superseded	c9	unknown	CN=server2.example.$tld
+R	130110200751Z	100201142709Z,superseded	ca	unknown	CN=revoked2.example.$tld
+R	130110200751Z	100201142709Z,superseded	cb	unknown	CN=expired2.example.$tld
+EOF
+
+    # Now create all the ocsp requests and responses
+    OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -noverify"
+    for server in server1 revoked1 expired1 server2 revoked2 expired2
+    do
+	SPFX=example.$tld/$server.example.$tld/$server.example.$tld
+	openssl ocsp -issuer $CADIR/Signer.pem -cert $SPFX.pem -reqout $SPFX.ocsp.req
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.good.resp
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON -ndays 30 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.dated.resp
+	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.revoked.resp
+    done
+done
+
+# and loop again to generate unlocked keys and client cert bundles
+for tld in com org net
+do
+    for server in server1 revoked1 expired1 server2 revoked2 expired2 do
+	SDIR=example.$tld/$server.example.$tld
+	SPFX=$SDIR/$server.example.$tld
+	openssl rsa -in $SPFX.key -passin file:$SDIR/pwdfile -out $SPFX.unlocked.key
+	cat $SPFX.pem example.$tld/CA/Signer.pem >$SPFX.chain.pem
+    done
+done
+
+echo Please to reset date to now.
+echo service ntpdate start
+echo 
+echo Then hit return
+read junk
+
+# Create CRL files in .der and .pem
+# empty versions, and ones with the revoked servers
+for tld in com org net
+do
+    CADIR=example.$tld/CA
+    CRLIN=$CADIR/crl.empty.in.txt
+    DATENOW=`date -u +%Y%m%d%H%M%SZ`
+    echo "update=$DATENOW " >$CRLIN
+    crlutil -G -d $CADIR -f $CADIR/pwdfile \
+	-n 'Signing Cert' -c $CRLIN -o $CADIR/crl.empty
+    openssl crl -in $CADIR/crl.empty -inform der -out $CADIR/crl.empty.pem
+done
+sleep 2
+for tld in com org net
+do
+    CADIR=example.$tld/CA
+    CRLIN=$CADIR/crl.v2.in.txt
+    DATENOW=`date -u +%Y%m%d%H%M%SZ`
+    echo "update=$DATENOW " >$CRLIN
+    echo "addcert 102 $DATENOW" >>$CRLIN
+    echo "addcert 202 $DATENOW" >>$CRLIN
+    crlutil -G -d $CADIR -f $CADIR/pwdfile \
+	-n 'Signing Cert' -c $CRLIN -o $CADIR/crl.v2
+    openssl crl -in $CADIR/crl.v2 -inform der -out $CADIR/crl.v2.pem
+done
+
+echo "CA, Certificate, CRL and OSCP Response generation complete"

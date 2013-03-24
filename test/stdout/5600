@@ -1,0 +1,142 @@
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Certificate file = aux-fixed/cert2
+Key file = aux-fixed/cert2
+??? 220
+<<< 220 server1.example.com ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-server1.example.com Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+SSL info: before/connect initialization
+SSL info: before/connect initialization
+SSL info: SSLv2/v3 write client hello A
+SSL info: SSLv3 read server hello A
+SSL info: SSLv3 read server certificate A
+Response verify OK
+SSL info: unknown state
+SSL info: SSLv3 read server key exchange A
+SSL info: SSLv3 read server certificate request A
+SSL info: SSLv3 read server done A
+SSL info: SSLv3 write client certificate A
+SSL info: SSLv3 write client key exchange A
+SSL info: SSLv3 write certificate verify A
+SSL info: SSLv3 write change cipher spec A
+SSL info: SSLv3 write finished A
+SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
+SSL info: SSLv3 read finished A
+SSL info: SSL negotiation finished successfully
+SSL info: SSL negotiation finished successfully
+SSL connection using AES256-SHA
+Succeeded in starting TLS
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> quit
+??? 221
+<<< 221 server1.example.com closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Certificate file = aux-fixed/cert2
+Key file = aux-fixed/cert2
+??? 220
+<<< 220 server1.example.com ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-server1.example.com Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+SSL info: before/connect initialization
+SSL info: before/connect initialization
+SSL info: SSLv2/v3 write client hello A
+no response received
+SSL info: SSLv3 read server hello A
+SSL info: SSLv3 read server certificate A
+SSL info: SSLv3 read server key exchange A
+SSL info: SSLv3 read server certificate request A
+SSL info: SSLv3 read server done A
+SSL info: SSLv3 write client certificate A
+SSL info: SSLv3 write client key exchange A
+SSL info: SSLv3 write certificate verify A
+SSL info: SSLv3 write change cipher spec A
+SSL info: SSLv3 write finished A
+SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
+SSL info: SSLv3 read finished A
+SSL info: SSL negotiation finished successfully
+SSL info: SSL negotiation finished successfully
+SSL connection using AES256-SHA
+Succeeded in starting TLS
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Certificate file = aux-fixed/cert2
+Key file = aux-fixed/cert2
+??? 220
+<<< 220 server1.example.com ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-server1.example.com Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+SSL info: before/connect initialization
+SSL info: before/connect initialization
+SSL info: SSLv2/v3 write client hello A
+no response received
+SSL info: SSLv3 read server hello A
+SSL info: SSLv3 read server certificate A
+SSL info: SSLv3 read server key exchange A
+SSL info: SSLv3 read server certificate request A
+SSL info: SSLv3 read server done A
+SSL info: SSLv3 write client certificate A
+SSL info: SSLv3 write client key exchange A
+SSL info: SSLv3 write certificate verify A
+SSL info: SSLv3 write change cipher spec A
+SSL info: SSLv3 write finished A
+SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
+SSL info: SSLv3 read finished A
+SSL info: SSL negotiation finished successfully
+SSL info: SSL negotiation finished successfully
+SSL connection using AES256-SHA
+Succeeded in starting TLS
+End of script

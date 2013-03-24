@@ -1,0 +1,6 @@
+V	130110200751Z		65	unknown	CN=server1.example.com
+V	130110200751Z		66	unknown	CN=revoked1.example.com
+V	130110200751Z		67	unknown	CN=expired1.example.com
+V	130110200751Z		c9	unknown	CN=server2.example.com
+V	130110200751Z		ca	unknown	CN=revoked2.example.com
+V	130110200751Z		cb	unknown	CN=expired2.example.com

@@ -25,8 +25,11 @@ extern const char *
                std_dh_prime_default(void);
 extern const char *
                std_dh_prime_named(const uschar *);
-extern int     tls_client_start(int, host_item *, address_item *, uschar *,
+extern int     tls_client_start(int, host_item *, address_item *,
                  uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
+# ifdef EXPERIMENTAL_OCSP
+                 uschar *,
+# endif
                  int, int);
 extern void    tls_close(BOOL, BOOL);
 extern int     tls_feof(void);
