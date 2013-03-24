@@ -30,6 +30,7 @@ typedef struct {
   uschar *hosts_avoid_pipelining;
   uschar *hosts_avoid_esmtp;
   uschar *hosts_nopass_tls;
+  uschar *expand_need_dnssec;
   int     command_timeout;
   int     connect_timeout;
   int     data_timeout;
@@ -43,6 +44,7 @@ typedef struct {
   BOOL    gethostbyname;
   BOOL    dns_qualify_single;
   BOOL    dns_search_parents;
+  BOOL    need_dnssec;
   BOOL    delay_after_cutoff;
   BOOL    hosts_override;
   BOOL    hosts_randomize;

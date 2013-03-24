@@ -192,6 +192,7 @@ if (cb->at_is_special && pattern[0] == '@')
     BOOL prim = FALSE;
     BOOL secy = FALSE;
     BOOL removed = FALSE;
+    BOOL need_dnssec = FALSE;
     uschar *ss = pattern + 4;
     uschar *ignore_target_hosts = NULL;
 
@@ -208,6 +209,11 @@ if (cb->at_is_special && pattern[0] == '@')
       }
     else goto NOT_AT_SPECIAL;
 
+    if (strncmpic(ss, US"/dnssec", 7) == 0)
+      {
+      ss += 7;
+      need_dnssec = TRUE;
+      }
     if (strncmpic(ss, US"/ignore=", 8) == 0) ignore_target_hosts = ss + 8;
       else if (*ss != 0) goto NOT_AT_SPECIAL;
 
@@ -222,7 +228,8 @@ if (cb->at_is_special && pattern[0] == '@')
       NULL,                /* srv_fail_domains not relevant */
       NULL,                /* mx_fail_domains not relevant */
       NULL,                /* no feedback FQDN */
-      &removed);           /* feedback if local removed */
+      &removed,            /* feedback if local removed */
+      need_dnssec);
 
     if (rc == HOST_FIND_AGAIN)
       {

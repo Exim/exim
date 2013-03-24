@@ -7858,6 +7858,11 @@ example, a single-component domain will &'not'& be expanded by adding the
 resolver's default domain. See the &%qualify_single%& and &%search_parents%&
 options of the &(dnslookup)& router for a discussion of domain widening.
 
+If you wish to constrain results to only include those for which DNSSEC
+verification can prove the data authentic, then follow the pattern with
+&`/dnssec`&.  If this is combined with the &`/ignore`& in the next paragraph,
+then this option must come first (to not be part of the ignore list).
+
 Sometimes you may want to ignore certain IP addresses when using one of these
 patterns. You can specify this by following the pattern with &`/ignore=`&<&'ip
 list'&>, where <&'ip list'&> is a list of IP addresses. These addresses are
@@ -11858,7 +11863,7 @@ other times, this variable is false.
 It is likely that you will need to coerce DNSSEC support on in the resolver
 library, by setting:
 .code
-dns_use_dnssec = 1
+dns_dnssec_ok
 .endd
 
 Exim does not perform DNSSEC validation itself, instead leaving that to a
@@ -13074,7 +13079,7 @@ See also the &'Policy controls'& section above.
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
-.row &%dns_use_dnssec%&              "parameter for resolver"
+.row &%dns_dnssec_ok%&               "parameter for resolver"
 .row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
@@ -13723,24 +13728,26 @@ See &%dns_retrans%& above.
 
 
 .new
-.option dns_use_dnssec main integer -1
+.option dns_dnssec_ok main boolean unset
 .cindex "DNS" "resolver options"
 .cindex "DNS" "DNSSEC"
-If this option is set to a non-negative number then Exim will initialise the
+If this option is set, whether true or false, then Exim will initialise the
 DNS resolver library to either use or not use DNSSEC, overriding the system
-default. A value of 0 coerces DNSSEC off, a value of 1 coerces DNSSEC on.
+default.
 
 If the resolver library does not support DNSSEC then this option has no effect.
+
+If &%dns_use_edns0%& has been explicitly set false, then this option will
+be ignored.
 .wen
 
 
-.option dns_use_edns0 main integer -1
+.option dns_use_edns0 main boolean unset
 .cindex "DNS" "resolver options"
 .cindex "DNS" "EDNS0"
-If this option is set to a non-negative number then Exim will initialise the
+If this option is set, whether true or false, then Exim will initialise the
 DNS resolver library to either use or not use EDNS0 extensions, overriding
-the system default. A value of 0 coerces EDNS0 off, a value of 1 coerces EDNS0
-on.
+the system default.
 
 If the resolver library does not support EDNS0 then this option has no effect.
 
@@ -17506,6 +17513,14 @@ DNS lookup error, Exim behaves as if no MX records were found. See section
 
 
 
+.option need_dnssec dnslookup boolean&!! false
+If this option is set, then DNSSEC results must be verifiable, and both bogus
+and unsigned data will be ignored.  Setting this without setting
+&%dns_dnssec_ok%& in the main section is probably a mistake.
+
+See chapter &<<CHAPdnssec>>& for more discussion.
+
+
 
 .option qualify_single dnslookup boolean true
 .cindex "DNS" "resolver options"
@@ -17866,6 +17881,14 @@ randomized for each use, but the first three always end up before the last two.
 If &%hosts_randomize%& is not set, a &`+`& item in the list is ignored. If a
 randomized host list is passed to an &(smtp)& transport that also has
 &%hosts_randomize set%&, the list is not re-randomized.
+
+
+.option need_dnssec manualroute boolean&!! false
+If this option is set, then DNSSEC results must be verifiable, and both bogus
+and unsigned data will be ignored.  Setting this without setting
+&%dns_dnssec_ok%& in the main section is probably a mistake.
+
+See chapter &<<CHAPdnssec>>& for more discussion.
 
 
 .option route_data manualroute string&!! unset
@@ -22666,6 +22689,14 @@ handling only one domain at a time. This is useful if you want to use
 is a single domain involved in a remote delivery.
 
 
+.option need_dnssec smtp boolean&!! false
+If this option is set, then DNSSEC results must be verifiable, and both bogus
+and unsigned data will be ignored.  Setting this without setting
+&%dns_dnssec_ok%& in the main section is probably a mistake.
+
+See chapter &<<CHAPdnssec>>& for more discussion.
+
+
 .option port smtp string&!! "see below"
 .cindex "port" "sending TCP/IP"
 .cindex "TCP/IP" "setting outgoing port"
@@ -25999,6 +26030,144 @@ Open-source PKI book, available online at
 .ecindex IIDencsmtp1
 .ecindex IIDencsmtp2
 
+
+
+. ////////////////////////////////////////////////////////////////////////////
+. ////////////////////////////////////////////////////////////////////////////
+
+
+.chapter "DNS Security Extensions" "CHAPdnssec"
+.scindex IIDdnssec1 "DNS" "DNSSEC"
+.scindex IIDdnssec2 "security" "DNS"
+.cindex DNSSEC
+Exim is able to make some use of the DNSSEC security extensions to DNS; this
+chapter describes what DNS security is and how Exim can make use of it.
+
+If Exim was built with DISABLE_DNSSEC then the facilities described in this
+chapter are not available.  Running Exim with the &%-bV%& flag will list
+DNSSEC in the &"Support for"& line if support is present.
+
+
+.section "Types of DNS security" "SECTsecurednstypes"
+There are two types of security available within DNS: link-level security and
+object-level security.
+
+Link-level security, as provided by TSIG, provides for symmetric encryption
+between DNS speakers, for confidentiality and authentication.  In practice,
+this is primarily used between authoritative servers to secure zone transfers.
+Whilst the TKEY DNS extensions might make TSIG more widely useful, in practice
+it remains rare.
+
+Exim does not contain any special support for TSIG at this time.
+
+Object-level security is data which is published by the authoritative servers
+for a zone, passing unchanged through caches, so that clients can verify
+that the data received is the data published.  This is handled by the DNSSEC
+extensions to DNS.
+
+In DNSSEC, each zone has one or more sets of keys, used to sign data, published
+at the apex of the zone in &`DNSKEY`& records.
+Typically, there are two current keys, a zone-signing-key (ZSK) and a stronger
+key-signing-key (KSK).  The KSK is used to sign the ZSK records, the ZSK is
+used to sign the remaining records.
+This permits the KSK to be used as a trust anchor, and ideally kept off-line,
+while the ZSK is used to periodically re-sign data.  A fingerprint of the KSK
+is published in a DS record in the &'parent'& zone.  Across a DNS zone cut,
+only the &`DS`& records are authoritative in the parent, not the child.
+
+Any piece of software which has access to a trust anchor for some parent of
+a domain can verify all signatures for that domain and reject invalid
+signatures.  Today, the DNS root zone has been signed, so only one trust
+anchor is normally needed.
+
+Useful websites for verifying that DNSSEC has been correctly deployed for a
+zone include &url(http://dnsviz.net/) and &url(http://secspider.cs.ucla.edu/).
+
+&*Note 1*&: Beware that DNSSEC records make responses larger, often more than
+the 512 historical size limit on DNS packets, before the EDNS0 extension
+allowed them to grow larger.  Some broken NAT boxes are known to interfere with
+any large DNS packets because of hard-coded assumptions that DNS "can't" be
+that large.
+
+&*Note 2*&: DNSSEC validation requires that your system clock does not
+vehemently disagree with the consensus time and date of the rest of the world.
+You do not need to be fully NTP synchronised, but if you can't get the time to
+the right hour of the right day, you may encounter vexing issues.
+
+
+.section "DNSSEC Validation" "SECTdnssecvalidation"
+Exim does not itself implement any knowledge of validation records, trust
+anchors or the rest of the machinery.  Instead, Exim is ably to work with
+a validating resolver.
+
+If you have a trusted path between Exim and a resolver, and trust the resolver
+to do its job right, then this is all that is needed.  This encapsulates all
+the DNSSEC logic needed to handle new algorithms inside software maintained
+by DNS experts.  Typically, you might run the validating resolver on the same
+machine as Exim.
+
+When the &%dns_dnssec_ok%& option is set in Exim's main configuration section,
+Exim will configure the system resolver library to send the EDNS0 option with
+the &"DNSSEC OK"& (DO) flag.  This will cause the resolver to return results
+where for validated entries the results header will include the
+&"Authenticated Data"& (AD) flag.
+
+&*Warning*&: Successful use of DNSSEC by Exim is highly likely to be contingent
+upon &%dns_dnssec_ok%& being set.
+
+In a DNSSEC world, all responses can be one of: &'Secure'&, &'Insecure'&,
+&'Bogus'& or &'Indeterminate'&.  Now that the root zone has been signed,
+&'Indeterminate'& is a sign of resolver misconfiguration.
+A Validating Resolver will filter out &'Bogus'& results, where the DNSSEC shows
+that something is wrong, but return both &'Secure'& and &'Insecure'& results,
+typically without setting the AD flag to distinguish between them unless
+explicitly asked to, via the DO flag.
+
+Without setting &%dns_dnssec_ok%&, &'Secure'& and &'Insecure'& can not be
+distinguished; asking Exim to only accept &'Secure'& answers without setting
+this option is only likely to yield useful results if the resolver returns AD
+regardless of the state of DO.
+
+When a connection is made to Exim and &$sender_host_name$& has been populated
+from reverse DNS, then the &$sender_host_dnssec$& boolean will be set true by
+Exim if the reverse DNS is &'Secure'&.
+
+When resolving DNS in a &(dnslookup)& or &(manualroute)& router or in an
+&(smtp)& transport, if the &%need_dnssec%& option is set then host resolution
+will skip &'Insecure'& results too and it will appear that only &'Secure'&
+results exist in DNS.
+
+.section "Resolver Setup" "SECTdnssecressetup"
+
+When validation is working, &'www.cam.ac.uk'& will have the AD flag set on the
+resolution results, while &'www.dnssec-failed.org'& will disappear from DNS
+unless you explicitly disable checking:
+.code
+$ dig +dnssec www.cam.ac.uk
+$ dig www.dnssec-failed.org
+$ dig +cd www.dnssec-failed.org
+.endd
+
+Unbound (&url(http://unbound.net/)) is a validating, recursive, and caching DNS
+resolver.  In the &`server:`& block of configuration, set
+&`auto-trust-anchor-file:`& to a path which can be updated by the unbound
+runtime user and make sure to run &(unbound-anchor)& before starting
+&(unbound)&.  The daemon will keep the anchor up-to-date, the
+&(unbound-anchor)& command will get the anchor in the first place and recover
+from serious errors, so should be run before starting unbound.
+
+That's it, for Unbound.
+
+Configuring Bind is more involved; see descriptions at
+&url(http://fanf.livejournal.com/107310.html) or
+&url(https://dnssec.surfnet.nl/?p=402).
+
+. ////
+. In future, we'll document DANE here.
+. ////
+
+.ecindex IIDdnssec1
+.ecindex IIDdnssec2
 
 
 . ////////////////////////////////////////////////////////////////////////////

@@ -31,14 +31,30 @@ Version 4.82
 
     Unless you really know what you are doing, leave it alone.
 
- 4. If not built with DISABLE_DNSSEC, Exim now has the main option
-    dns_dnssec_ok; if set to 1 then Exim will initialise the resolver library
+ 4. If not built with DISABLE_DNSSEC, Exim now has the main boolean option
+    dns_dnssec_ok; if set then Exim will initialise the resolver library
     to send the DO flag to your recursive resolver.  If you have a recursive
     resolver, which can set the Authenticated Data (AD) flag in results, Exim
     can now detect this.  Exim does not perform validation itself, instead
     relying upon a trusted path to the resolver.
 
-    Current status: work-in-progress; $sender_host_dnssec variable added.
+    For inbound mails, if there is reverse DNS for the sender IP, then the
+    new $sender_host_dnssec variable will be set true.
+
+    For outbound mails, a dnslookup or manualroute Router can set the
+    need_dnssec option, to cause resolution to fail if the AD flag is not set
+    in results.  Setting this option without setting dns_dnssec_ok is likely
+    a poor choice, as on most DNS resolver implementations AD can only be set
+    if DO is set in the query.
+
+    The smtp Transport also gains a need_dnssec option, used when it needs to
+    map names to IPs.
+
+    need_dnssec is always expanded.
+
+    The @mx* family of address-lists have gained an /dnssec option; if both
+    this and /ignore are present, then /dnssec must come first (as /ignore=
+    swallows the rest of that parameter as an address-list).
 
  5. DSCP support for outbound connections: on a transport using the smtp driver,
     set "dscp = ef", for instance, to cause the connections to have the relevant

@@ -180,8 +180,8 @@ dns_qualify_single                   boolean         true          smtp
 dns_retrans                          time            0s            main              1.60
 dns_retry                            integer         0             main              1.60
 dns_search_parents                   boolean         false         smtp
-dns_use_dnssec                       integer         -1            main              4.82
-dns_use_edns0                        integer         -1            main              4.76
+dns_dnssec_ok                        boolean         (unset)       main              4.82 default set by platform resolver
+dns_use_edns0                        boolean         (unset)       main              4.76 default set by platform resolver
 domains                              domain list     unset         routers           4.00
 driver                               string          unset         authenticators
                                                      unset         routers           4.00
@@ -370,6 +370,9 @@ multi_domain                         boolean         true          smtp
 mx_domains                           domain list     unset         dnslookup         4.00
 mx_fail_domains                      domain list     unset         dnslookup         4.43
 mysql_servers                        string list     unset         main              3.03
+need_dnssec                          boolean*        false         dnslookup         4.82
+                                                                   manualroute       4.82
+                                                                   smtp              4.82
 never_users                          string list     unset         main
 notify_comsat                        boolean         false         appendfile
 once                                 string*         unset         autoreply

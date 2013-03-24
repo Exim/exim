@@ -789,6 +789,11 @@ fprintf(f, "Support for:");
   fprintf(f, " OpenSSL");
   #endif
 #endif
+#ifndef DISABLE_DNSSEC
+# ifdef RES_USE_DNSSEC
+  fprintf(f, " DNSSEC");
+# endif
+#endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   fprintf(f, " translate_ip_address");
 #endif

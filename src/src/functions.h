@@ -154,7 +154,7 @@ extern void    host_build_log_info(void);
 extern void    host_build_sender_fullhost(void);
 extern BOOL    host_find_byname(host_item *, uschar *, int, uschar **, BOOL);
 extern int     host_find_bydns(host_item *, uschar *, int, uschar *, uschar *,
-                 uschar *,uschar **, BOOL *);
+                 uschar *,uschar **, BOOL *, BOOL);
 extern ip_address_item *host_find_interfaces(void);
 extern BOOL    host_is_in_net(uschar *, uschar *, int);
 extern BOOL    host_is_tls_on_connect_port(int);

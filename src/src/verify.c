@@ -1645,7 +1645,8 @@ while (addr_new != NULL)
         FALSE,                      /* hosts_randomize */
         FALSE,                      /* gethostbyname */
         TRUE,                       /* qualify_single */
-        FALSE                       /* search_parents */
+        FALSE,                      /* search_parents */
+        FALSE                       /* dnssec */
         };
 
       /* If verification yielded a remote transport, we want to use that
@@ -1705,7 +1706,7 @@ while (addr_new != NULL)
                 (void)host_find_byname(host, NULL, flags, &canonical_name, TRUE);
               else
                 (void)host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-                  &canonical_name, NULL);
+                  &canonical_name, NULL, tf.dnssec);
               }
             }
           }

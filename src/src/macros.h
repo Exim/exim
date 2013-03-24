@@ -608,7 +608,7 @@ those defined here start from 32. The boolean ones must all be together so they
 can be easily tested as a group. That is the only use of opt_bool_last. */
 
 enum { opt_bit = 32, opt_bool_verify, opt_bool_set, opt_expand_bool,
-  opt_bool_last,
+  opt_bool_tern, opt_bool_last,
   opt_rewrite, opt_timelist, opt_uid, opt_gid, opt_uidlist, opt_gidlist,
   opt_expand_uid, opt_expand_gid, opt_void };
 

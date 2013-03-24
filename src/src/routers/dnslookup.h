@@ -12,11 +12,13 @@ typedef struct {
   BOOL qualify_single;
   BOOL search_parents;
   BOOL rewrite_headers;
+  BOOL need_dnssec;
   uschar *widen_domains;
   uschar *mx_domains;
   uschar *mx_fail_domains;
   uschar *srv_fail_domains;
   uschar *check_srv;
+  uschar *expand_need_dnssec;
 } dnslookup_router_options_block;
 
 /* Data for reading the private options. */

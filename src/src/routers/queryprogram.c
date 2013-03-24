@@ -519,7 +519,7 @@ if (*s != 0)
   host_build_hostlist(&(addr->host_list), s, FALSE);  /* pro tem no randomize */
 
   rc = rf_lookup_hostlist(rblock, addr, rblock->ignore_target_hosts,
-    lookup_type, hff_defer, addr_new);
+    lookup_type, hff_defer, addr_new, FALSE /* no DNSSEC support */);
   if (rc != OK) return rc;
   }
 lookup_value = NULL;

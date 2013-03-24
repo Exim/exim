@@ -19,6 +19,8 @@ before the lower case letters). Some live in the transport_instance block so as
 to be publicly visible; these are flagged with opt_public. */
 
 optionlist smtp_transport_options[] = {
+  { "*expand_need_dnssec",  opt_bool | opt_hidden,
+      (void *)offsetof(smtp_transport_options_block, expand_need_dnssec) },
   { "address_retry_include_sender", opt_bool,
       (void *)offsetof(smtp_transport_options_block, address_retry_include_sender) },
   { "allow_localhost",      opt_bool,
@@ -124,6 +126,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(transport_instance, max_addresses) },
   { "multi_domain",         opt_bool | opt_public,
       (void *)offsetof(transport_instance, multi_domain) },
+  { "need_dnssec",          opt_expand_bool,
+      (void *)offsetof(smtp_transport_options_block, need_dnssec) },
   { "port",                 opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, port) },
   { "protocol",             opt_stringptr,
@@ -185,6 +189,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_avoid_pipelining */
   NULL,                /* hosts_avoid_esmtp */
   NULL,                /* hosts_nopass_tls */
+  NULL,                /* expand_need_dnssec */
   5*60,                /* command_timeout */
   5*60,                /* connect_timeout; shorter system default overrides */
   5*60,                /* data timeout */
@@ -198,6 +203,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   FALSE,               /* gethostbyname */
   TRUE,                /* dns_qualify_single */
   FALSE,               /* dns_search_parents */
+  FALSE,               /* need_dnssec */
   TRUE,                /* delay_after_cutoff */
   FALSE,               /* hosts_override */
   FALSE,               /* hosts_randomize */
@@ -269,6 +275,11 @@ errmsg = errmsg;    /* Keep picky compilers happy */
 uid = uid;
 gid = gid;
 
+/* expand the dnssec option if it contained a $ */
+if (ob->expand_need_dnssec)
+  ob->need_dnssec = expand_check_condition(ob->expand_need_dnssec,
+      US"'need_dnssec' in transport", tblock->name);
+
 /* Pass back options if required. This interface is getting very messy. */
 
 if (tf != NULL)
@@ -283,6 +294,7 @@ if (tf != NULL)
   tf->qualify_single = ob->dns_qualify_single;
   tf->search_parents = ob->dns_search_parents;
   tf->helo_data = ob->helo_data;
+  tf->dnssec = ob->need_dnssec;
   }
 
 /* Set the fallback host list for all the addresses that don't have fallback
@@ -2663,10 +2675,26 @@ for (cutoff_retry = 0; expired &&
       if (ob->dns_search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
       if (ob->gethostbyname || string_is_ip_address(host->name, NULL) != 0)
+        {
+#ifndef DISABLE_DNSSEC
+        if (ob->need_dnssec)
+          {
+          DEBUG(D_transport)
+            debug_printf("dnssec required but configured to use gethostbyname(), deferring\n");
+          rc = HOST_FIND_FAILED;
+          }
+        else
+#endif
         rc = host_find_byname(host, NULL, flags, &canonical_name, TRUE);
+        }
       else
+        {
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-          &canonical_name, NULL);
+          &canonical_name, NULL, ob->need_dnssec);
+        /* security: unless built with DISABLE_DNSSEC, that will have failed
+        to resolve if AD was not set in the response; in effect, need_dnssec in
+        Router options means any unsigned data disappears from DNS. */
+        }
 
       /* Update the host (and any additional blocks, resulting from
       multihoming) with a host-specific port, if any. */

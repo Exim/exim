@@ -21,7 +21,7 @@ extern BOOL rf_get_transport(uschar *, transport_instance **,  address_item *,
               uschar *, uschar *);
 extern BOOL rf_get_ugid(router_instance *, address_item *, ugid_block *);
 extern int  rf_lookup_hostlist(router_instance *, address_item *, uschar *,
-              int, int, address_item **);
+              int, int, address_item **, BOOL);
 extern BOOL rf_queue_add(address_item *, address_item **, address_item **,
               router_instance *, struct passwd *);
 extern int  rf_self_action(address_item *, host_item *, int, BOOL, uschar *,

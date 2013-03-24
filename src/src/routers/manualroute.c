@@ -14,12 +14,16 @@
 /* Options specific to the manualroute router. */
 
 optionlist manualroute_router_options[] = {
+  { "*expand_need_dnssec", opt_stringptr | opt_hidden,
+      (void *)(offsetof(manualroute_router_options_block, expand_need_dnssec)) },
   { "host_all_ignored", opt_stringptr,
       (void *)(offsetof(manualroute_router_options_block, host_all_ignored)) },
   { "host_find_failed", opt_stringptr,
       (void *)(offsetof(manualroute_router_options_block, host_find_failed)) },
   { "hosts_randomize",  opt_bool,
       (void *)(offsetof(manualroute_router_options_block, hosts_randomize)) },
+  { "need_dnssec",        opt_expand_bool,
+      (void *)(offsetof(manualroute_router_options_block, need_dnssec)) },
   { "route_data",       opt_stringptr,
       (void *)(offsetof(manualroute_router_options_block, route_data)) },
   { "route_list",       opt_stringptr,
@@ -40,10 +44,12 @@ manualroute_router_options_block manualroute_router_option_defaults = {
   -1,           /* host_all_ignored code (unset) */
   -1,           /* host_find_failed code (unset) */
   FALSE,        /* hosts_randomize */
+  FALSE,        /* need_dnssec */
   US"defer",    /* host_all_ignored */
   US"freeze",   /* host_find_failed */
   NULL,         /* route_data */
-  NULL          /* route_list */
+  NULL,         /* route_list */
+  NULL          /* expand_need_dnssec */
 };
 
 
@@ -111,6 +117,18 @@ if ((ob->route_list == NULL && ob->route_data == NULL) ||
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "route_list or route_data (but not both) must be specified",
     rblock->name);
+
+/* Expand expandable options */
+if (ob->expand_need_dnssec)
+  ob->need_dnssec = expand_check_condition(ob->expand_need_dnssec,
+      US"need_dnssec in manualroute router", rblock->name);
+
+/* It's conceivable that resolvers will permit setting the DO flag by default
+without an application needing to do it, so we can't outright call it an error.
+But without DO set, we won't get AD, so if Exim isn't asking for DO then we
+should at least complain loudly during a debug run. */
+DEBUG(D_any) if (ob->need_dnssec && dns_dnssec_ok < 0)
+  debug_printf("WARNING: need_dnssec true but dns_dnssec_ok not set in main configuration\n");
 }
 
 
@@ -425,7 +443,7 @@ for the list of configured hosts, and then finding their addresses. */
 
 host_build_hostlist(&(addr->host_list), hostlist, randomize);
 rc = rf_lookup_hostlist(rblock, addr, rblock->ignore_target_hosts, lookup_type,
-  ob->hff_code, addr_new);
+  ob->hff_code, addr_new, ob->need_dnssec);
 if (rc != OK) return rc;
 
 /* If host_find_failed is set to "ignore", it is possible for all the hosts to

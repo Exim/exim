@@ -219,8 +219,8 @@ static optionlist optionlist_config[] = {
   { "dns_ipv4_lookup",          opt_stringptr,   &dns_ipv4_lookup },
   { "dns_retrans",              opt_time,        &dns_retrans },
   { "dns_retry",                opt_int,         &dns_retry },
-  { "dns_dnssec_ok",            opt_int,         &dns_dnssec_ok },
-  { "dns_use_edns0",            opt_int,         &dns_use_edns0 },
+  { "dns_dnssec_ok",            opt_bool_tern,   &dns_dnssec_ok },
+  { "dns_use_edns0",            opt_bool_tern,   &dns_use_edns0 },
  /* This option is now a no-op, retained for compability */
   { "drop_cr",                  opt_bool,        &drop_cr },
 /*********************************************************/
@@ -1465,8 +1465,8 @@ if (type < opt_bool || type > opt_bool_last)
   }
 
 /* If a boolean wasn't preceded by "no[t]_" it can be followed by = and
-true/false/yes/no, or, in the case of opt_expanded_bool, a general string that
-ultimately expands to one of those values. */
+true/false/yes/no/1/0, or, in the case of opt_expanded_bool, a general string
+that ultimately expands to one of those values. */
 
 else if (*s != 0 && (offset != 0 || *s != '='))
   extra_chars_error(s, US"boolean option ", name, US"");
@@ -1827,20 +1827,48 @@ switch (type)
   /* Fall through */
 
   /* Boolean: if no characters follow, the value is boolvalue. Otherwise
-  look for yes/not/true/false. Some booleans are stored in a single bit in
+  look for yes/no/true/false/1/0. Some booleans are stored in a single bit in
   a single int. There's a special fudge for verify settings; without a suffix
   they set both xx_sender and xx_recipient. The table points to the sender
   value; search subsequently for the recipient. There's another special case:
-  opt_bool_set also notes when a boolean has been set. */
+  opt_bool_set also notes when a boolean has been set.
+
+  opt_bool_tern is guaranteed to be an int which can be < 0 when unset; for
+  backwards compatibility, it can be configured as an int.  A mistake by Phil.
+  */
+
+  case opt_bool_tern:
+  n = 0;
+  if (*s != 0)
+    {
+    uschar *endptr;
+    long int lvalue;
+
+    errno = 0;
+    lvalue = strtol(CS s, CSS &endptr, intbase);
+    if ((endptr != s) && (errno == 0))
+      {
+      n = 1;
+      if (lvalue > 0)
+        boolvalue = lvalue ? TRUE : FALSE;
+      }
+    s = endptr;
+    }
+  /* Fall through */
 
   case opt_bool:
   case opt_bit:
   case opt_bool_verify:
   case opt_bool_set:
+  if (type != opt_bool_tern)
+    n = 0;
   if (*s != 0)
     {
-    s = readconf_readname(name2, 64, s);
-    if (strcmpic(name2, US"true") == 0 || strcmpic(name2, US"yes") == 0)
+    if (n == 0)
+      s = readconf_readname(name2, 64, s);
+    if (n > 0)
+      /* handled as int (for ternary) */;
+    else if (strcmpic(name2, US"true") == 0 || strcmpic(name2, US"yes") == 0)
       boolvalue = TRUE;
     else if (strcmpic(name2, US"false") == 0 || strcmpic(name2, US"no") == 0)
       boolvalue = FALSE;

@@ -185,6 +185,9 @@ PP/19 Renamed DNSSEC-enabling option to "dns_dnssec_ok", to make it
       clearer that Exim is using the DO (DNSSEC OK) EDNS0 resolver flag,
       not performing validation itself.
 
+PP/20 Added need_dnssec for SMTP Transport, dnslookup & manualroute
+      Routers.  @mx..* options get /dnssec modifier.
+
 
 Exim version 4.80.1
 -------------------

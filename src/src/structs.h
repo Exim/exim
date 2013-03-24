@@ -92,6 +92,7 @@ typedef struct transport_feedback {
   BOOL   gethostbyname;
   BOOL   qualify_single;
   BOOL   search_parents;
+  BOOL   dnssec;
 } transport_feedback;
 
 /* Routers, transports, and authenticators have similar data blocks. Each

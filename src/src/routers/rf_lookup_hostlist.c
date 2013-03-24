@@ -38,6 +38,7 @@ Arguments:
   lookup_type          lk_default or lk_byname or lk_bydns
   hff_code             what to do for host find failed
   addr_new             passed to rf_self_action for self=reroute
+  need_dnssec          whether or not to require DNSSEC
 
 Returns:               OK
                        DEFER host lookup defer
@@ -49,7 +50,7 @@ Returns:               OK
 int
 rf_lookup_hostlist(router_instance *rblock, address_item *addr,
   uschar *ignore_target_hosts, int lookup_type, int hff_code,
-  address_item **addr_new)
+  address_item **addr_new, BOOL need_dnssec)
 {
 BOOL self_send = FALSE;
 host_item *h, *next_h, *prev;
@@ -95,7 +96,8 @@ for (h = addr->host_list; h != NULL; h = next_h)
         NULL,                           /* failing srv domains not relevant */
         NULL,                           /* no special mx failing domains */
         NULL,                           /* fully_qualified_name */
-        NULL);                          /* indicate local host removed */
+        NULL,                           /* indicate local host removed */
+        need_dnssec);
     }
 
   /* If explicitly configured to look up by name, or if the "host name" is
@@ -117,7 +119,7 @@ for (h = addr->host_list; h != NULL; h = next_h)
     BOOL removed;
     DEBUG(D_route|D_host_lookup) debug_printf("doing DNS lookup\n");
     rc = host_find_bydns(h, ignore_target_hosts, HOST_FIND_BY_A, NULL, NULL,
-      NULL, &canonical_name, &removed);
+      NULL, &canonical_name, &removed, need_dnssec);
     if (rc == HOST_FOUND)
       {
       if (removed) setflag(addr, af_local_host_removed);

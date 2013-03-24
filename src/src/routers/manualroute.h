@@ -13,10 +13,12 @@ typedef struct {
   int   hai_code;
   int   hff_code;
   BOOL  hosts_randomize;
+  BOOL  need_dnssec;
   uschar *host_all_ignored;
   uschar *host_find_failed;
   uschar *route_data;
   uschar *route_list;
+  uschar *expand_need_dnssec;
 } manualroute_router_options_block;
 
 /* Data for reading the private options. */

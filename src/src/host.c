@@ -2192,6 +2192,7 @@ Arguments:
                           extended because multihomed)
   ignore_target_hosts   list of hosts to ignore
   allow_ip              if TRUE, recognize an IP address and return it
+  need_dnssec           if TRUE, DNSSEC required
   fully_qualified_name  if not NULL, return fully qualified name here if
                           the contents are different (i.e. it must be preset
                           to something)
@@ -2204,7 +2205,8 @@ Returns:       HOST_FIND_FAILED     couldn't find A record
 
 static int
 set_address_from_dns(host_item *host, host_item **lastptr,
-  uschar *ignore_target_hosts, BOOL allow_ip, uschar **fully_qualified_name)
+  uschar *ignore_target_hosts, BOOL allow_ip, BOOL need_dnssec,
+  uschar **fully_qualified_name)
 {
 dns_record *rr;
 host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
@@ -2265,6 +2267,13 @@ for (; i >= 0; i--)
   dns_scan dnss;
 
   int rc = dns_lookup(&dnsa, host->name, type, fully_qualified_name);
+
+  if (need_dnssec && rc != DNS_NODATA && !dns_is_secure(&dnsa))
+    {
+    DEBUG(D_host_lookup)
+      debug_printf("DNSSEC required for \"%s\" but AD missing\n", host->name);
+    return HOST_FIND_AGAIN;
+    }
 
   /* We want to return HOST_FIND_AGAIN if one of the A, A6, or AAAA lookups
   fails or times out, but not if another one succeeds. (In the early
@@ -2435,6 +2444,7 @@ Arguments:
   mx_fail_domains       DNS errors for these domains => assume nonexist
   fully_qualified_name  if not NULL, return fully-qualified name
   removed               set TRUE if local host was removed from the list
+  need_dnssec           set TRUE if should fail without DNSSEC
 
 Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
                                           if there was a syntax error,
@@ -2450,7 +2460,7 @@ Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
 int
 host_find_bydns(host_item *host, uschar *ignore_target_hosts, int whichrrs,
   uschar *srv_service, uschar *srv_fail_domains, uschar *mx_fail_domains,
-  uschar **fully_qualified_name, BOOL *removed)
+  uschar **fully_qualified_name, BOOL *removed, BOOL need_dnssec)
 {
 host_item *h, *last;
 dns_record *rr;
@@ -2491,6 +2501,14 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
   if (temp_fully_qualified_name != buffer && fully_qualified_name != NULL)
     *fully_qualified_name = temp_fully_qualified_name + prefix_length;
 
+  /* See if we're allowed to continue */
+  if (need_dnssec && !dns_is_secure(&dnsa))
+    {
+    DEBUG(D_host_lookup)
+      debug_printf("SRV lookup for \"%s\" not AD but AD required\n", buffer);
+    return HOST_FIND_AGAIN;
+    }
+
   /* On DNS failures, we give the "try again" error unless the domain is
   listed as one for which we continue. */
 
@@ -2517,6 +2535,12 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   {
   ind_type = T_MX;
   rc = dns_lookup(&dnsa, host->name, ind_type, fully_qualified_name);
+  if (need_dnssec && !dns_is_secure(&dnsa))
+    {
+    DEBUG(D_host_lookup)
+      debug_printf("MX lookup for \"%s\" not AD but AD required\n", host->name);
+    return HOST_FIND_AGAIN;
+    }
   if (rc == DNS_NOMATCH) return HOST_FIND_FAILED;
   if (rc == DNS_FAIL || rc == DNS_AGAIN)
     {
@@ -2546,7 +2570,7 @@ if (rc != DNS_SUCCEED)
   host->mx = MX_NONE;
   host->port = PORT_NONE;
   rc = set_address_from_dns(host, &last, ignore_target_hosts, FALSE,
-    fully_qualified_name);
+    need_dnssec, fully_qualified_name);
 
   /* If one or more address records have been found, check that none of them
   are local. Since we know the host items all have their IP addresses
@@ -2872,7 +2896,8 @@ dns_init(FALSE, FALSE);      /* Disable qualify_single and search_parents */
 for (h = host; h != last->next; h = h->next)
   {
   if (h->address != NULL) continue;  /* Inserted by a multihomed host */
-  rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip, NULL);
+  rc = set_address_from_dns(h, &last, ignore_target_hosts,
+      allow_mx_to_ip, need_dnssec, NULL);
   if (rc != HOST_FOUND)
     {
     h->status = hstatus_unusable;
@@ -3002,6 +3027,7 @@ int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A;
 BOOL byname = FALSE;
 BOOL qualify_single = TRUE;
 BOOL search_parents = FALSE;
+BOOL need_dnssec = FALSE;
 uschar **argv = USS cargv;
 uschar buffer[256];
 
@@ -3018,6 +3044,15 @@ host_find_interfaces();
 debug_selector = D_host_lookup | D_dns;
 
 if (argc > 1) primary_hostname = argv[1];
+
+#define BOOLSETVERBOSE(Variable, NewValue) do { \
+    Variable = (NewValue); \
+    printf("%s set %s\n", #Variable , (Variable) ? "true" : "false"); \
+  } while (0)
+#define BOOLTOGGLERESOPT(Field) do { \
+    _res.options ^= Field; \
+    printf("Set resolver option %s to %s\n", #Field , (_res.options & Field) ? "true" : "false"); \
+  } while (0)
 
 /* So that debug level changes can be done first */
 
@@ -3036,8 +3071,16 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
   if (Ustrcmp(buffer, "q") == 0) break;
 
-  if (Ustrcmp(buffer, "byname") == 0) byname = TRUE;
-  else if (Ustrcmp(buffer, "no_byname") == 0) byname = FALSE;
+  if ((Ustrcmp(buffer, "help") == 0) || (Ustrcmp(buffer, "?") == 0))
+    {
+    printf(": (no_){byname,qualify_single,search_parents,need_dnssec}\n");
+    printf(": a_only mx_only srv_only srv+a srv+mx srv+mx+a\n");
+    printf("toggles: test_harness ipv6 edns0 dnssec_ok res_debug\n");
+    printf("numeric args: retrans retry\n");
+    printf("to progress to next type of lookup: q\n");
+    }
+  else if (Ustrcmp(buffer, "byname") == 0) BOOLSETVERBOSE(byname, TRUE);
+  else if (Ustrcmp(buffer, "no_byname") == 0) BOOLSETVERBOSE(byname, FALSE);
   else if (Ustrcmp(buffer, "a_only") == 0) whichrrs = HOST_FIND_BY_A;
   else if (Ustrcmp(buffer, "mx_only") == 0) whichrrs = HOST_FIND_BY_MX;
   else if (Ustrcmp(buffer, "srv_only") == 0) whichrrs = HOST_FIND_BY_SRV;
@@ -3047,17 +3090,22 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_MX;
   else if (Ustrcmp(buffer, "srv+mx+a") == 0)
     whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_MX | HOST_FIND_BY_A;
-  else if (Ustrcmp(buffer, "qualify_single") == 0) qualify_single = TRUE;
-  else if (Ustrcmp(buffer, "no_qualify_single") == 0) qualify_single = FALSE;
-  else if (Ustrcmp(buffer, "search_parents") == 0) search_parents = TRUE;
-  else if (Ustrcmp(buffer, "no_search_parents") == 0) search_parents = FALSE;
+  else if (Ustrcmp(buffer, "qualify_single") == 0) BOOLSETVERBOSE(qualify_single, TRUE);
+  else if (Ustrcmp(buffer, "no_qualify_single") == 0) BOOLSETVERBOSE(qualify_single, FALSE);
+  else if (Ustrcmp(buffer, "search_parents") == 0) BOOLSETVERBOSE(search_parents, TRUE);
+  else if (Ustrcmp(buffer, "no_search_parents") == 0) BOOLSETVERBOSE(search_parents, FALSE);
   else if (Ustrcmp(buffer, "test_harness") == 0)
-    running_in_test_harness = !running_in_test_harness;
-  else if (Ustrcmp(buffer, "ipv6") == 0) disable_ipv6 = !disable_ipv6;
-  else if (Ustrcmp(buffer, "res_debug") == 0)
-    {
-    _res.options ^= RES_DEBUG;
-    }
+    BOOLSETVERBOSE(running_in_test_harness, !running_in_test_harness);
+  else if (Ustrcmp(buffer, "ipv6") == 0) BOOLSETVERBOSE(disable_ipv6, !disable_ipv6);
+  else if (Ustrcmp(buffer, "need_dnssec") == 0) BOOLSETVERBOSE(need_dnssec, TRUE);
+  else if (Ustrcmp(buffer, "no_need_dnssec") == 0) BOOLSETVERBOSE(need_dnssec, FALSE);
+#ifdef RES_USE_EDNS0
+  else if (Ustrcmp(buffer, "edns0") == 0) BOOLTOGGLERESOPT(RES_USE_EDNS0);
+#endif
+#ifdef RES_USE_DNSSEC
+  else if (Ustrcmp(buffer, "dnssec_ok") == 0) BOOLTOGGLERESOPT(RES_USE_DNSSEC);
+#endif
+  else if (Ustrcmp(buffer, "res_debug") == 0) BOOLTOGGLERESOPT(RES_DEBUG);
   else if (Ustrncmp(buffer, "retrans", 7) == 0)
     {
     (void)sscanf(CS(buffer+8), "%d", &dns_retrans);
@@ -3087,7 +3135,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
       host_find_byname(&h, NULL, flags, &fully_qualified_name, TRUE)
       :
       host_find_bydns(&h, NULL, flags, US"smtp", NULL, NULL,
-        &fully_qualified_name, NULL);
+        &fully_qualified_name, NULL, need_dnssec);
 
     if (rc == HOST_FIND_FAILED) printf("Failed\n");
       else if (rc == HOST_FIND_AGAIN) printf("Again\n");

@@ -14,6 +14,8 @@
 /* Options specific to the dnslookup router. */
 
 optionlist dnslookup_router_options[] = {
+  { "*expand_need_dnssec", opt_stringptr | opt_hidden,
+      (void *)(offsetof(dnslookup_router_options_block, expand_need_dnssec)) },
   { "check_secondary_mx", opt_bool,
       (void *)(offsetof(dnslookup_router_options_block, check_secondary_mx)) },
   { "check_srv",          opt_stringptr,
@@ -22,6 +24,8 @@ optionlist dnslookup_router_options[] = {
       (void *)(offsetof(dnslookup_router_options_block, mx_domains)) },
   { "mx_fail_domains",    opt_stringptr,
       (void *)(offsetof(dnslookup_router_options_block, mx_fail_domains)) },
+  { "need_dnssec",        opt_expand_bool,
+      (void *)(offsetof(dnslookup_router_options_block, need_dnssec)) },
   { "qualify_single",     opt_bool,
       (void *)(offsetof(dnslookup_router_options_block, qualify_single)) },
   { "rewrite_headers",    opt_bool,
@@ -49,11 +53,13 @@ dnslookup_router_options_block dnslookup_router_option_defaults = {
   TRUE,            /* qualify_single */
   FALSE,           /* search_parents */
   TRUE,            /* rewrite_headers */
+  FALSE,           /* need_dnssec */
   NULL,            /* widen_domains */
   NULL,            /* mx_domains */
   NULL,            /* mx_fail_domains */
   NULL,            /* srv_fail_domains */
-  NULL             /* check_srv */
+  NULL,            /* check_srv */
+  NULL             /* expand_need_dnssec */
 };
 
 
@@ -152,6 +158,18 @@ addr_succeed = addr_succeed;
 DEBUG(D_route)
   debug_printf("%s router called for %s\n  domain = %s\n",
     rblock->name, addr->address, addr->domain);
+
+/* Expand expandable options */
+if (ob->expand_need_dnssec)
+  ob->need_dnssec = expand_check_condition(ob->expand_need_dnssec,
+      US"need_dnssec in dnslookup router", rblock->name);
+
+/* It's conceivable that resolvers will permit setting the DO flag by default
+without an application needing to do it, so we can't outright call it an error.
+But without DO set, we won't get AD, so if Exim isn't asking for DO then we
+should at least complain loudly during a debug run. */
+DEBUG(D_any) if (ob->need_dnssec && dns_dnssec_ok < 0)
+  debug_printf("WARNING: need_dnssec true but dns_dnssec_ok not set in main configuration\n");
 
 /* If an SRV check is required, expand the service name */
 
@@ -261,7 +279,8 @@ for (;;)
     }
 
   rc = host_find_bydns(&h, rblock->ignore_target_hosts, flags, srv_service,
-    ob->srv_fail_domains, ob->mx_fail_domains, &fully_qualified_name, &removed);
+    ob->srv_fail_domains, ob->mx_fail_domains, &fully_qualified_name, &removed,
+    ob->need_dnssec);
   if (removed) setflag(addr, af_local_host_removed);
 
   /* If host found with only address records, test for the domain's being in
