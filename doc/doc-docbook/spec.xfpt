@@ -1372,8 +1372,10 @@ Setting the &%verify%& option actually sets two options, &%verify_sender%& and
 &%verify_recipient%&, which independently control the use of the router for
 sender and recipient verification. You can set these options directly if
 you want a router to be used for only one type of verification.
+.new
 Note that cutthrough delivery is classed as a recipient verification
 for this purpose.
+.wen
 .next
 If the &%address_test%& option is set false, the router is skipped when Exim is
 run with the &%-bt%& option to test an address routing. This can be helpful
@@ -1383,7 +1385,9 @@ having to simulate the effect of the scanner.
 .next
 Routers can be designated for use only when verifying an address, as
 opposed to routing it for delivery. The &%verify_only%& option controls this.
+.new
 Again, cutthrough delibery counts as a verification.
+.wen
 .next
 Individual routers can be explicitly skipped when running the routers to
 check an address given in the SMTP EXPN command (see the &%expn%& option).
@@ -6938,6 +6942,7 @@ has two space-separated fields: an authorization code and a target host name.
 The authorization code can be &"Y"& for yes, &"N"& for no, &"X"& for explicit
 authorization required but absent, or &"?"& for unknown.
 
+.new
 .cindex "A+" "in &(dnsdb)& lookup"
 The pseudo-type A+ performs an A6 lookup (if configured) followed by an AAAA
 and then an A lookup.  All results are returned; defer processing
@@ -6945,6 +6950,7 @@ and then an A lookup.  All results are returned; defer processing
 .code
 ${lookup dnsdb {>; a+=$sender_helo_name}}
 .endd
+.wen
 
 
 .section "Multiple dnsdb lookups" "SECID67"
@@ -7858,10 +7864,12 @@ example, a single-component domain will &'not'& be expanded by adding the
 resolver's default domain. See the &%qualify_single%& and &%search_parents%&
 options of the &(dnslookup)& router for a discussion of domain widening.
 
+.new
 If you wish to constrain results to only include those for which DNSSEC
 verification can prove the data authentic, then follow the pattern with
 &`/dnssec`&.  If this is combined with the &`/ignore`& in the next paragraph,
 then this option must come first (to not be part of the ignore list).
+.wen
 
 Sometimes you may want to ignore certain IP addresses when using one of these
 patterns. You can specify this by following the pattern with &`/ignore=`&<&'ip
@@ -8799,6 +8807,7 @@ This item inserts &"basic"& header lines. It is described with the &%header%&
 expansion item below.
 
 
+.new
 .vitem "&*${acl{*&<&'name'&>&*}{*&<&'arg'&>&*}...}*&"
 .cindex "expansion" "calling an acl"
 .cindex "&%acl%&" "call from expansion"
@@ -8813,6 +8822,7 @@ the result of the expansion.
 If no message is set and the ACL returns accept or deny
 the expansion result is an empty string.
 If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
+.wen
 
 
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
@@ -9445,6 +9455,7 @@ can be the word &"fail"& (not in braces) to force expansion failure if the
 command does not succeed. If both strings are omitted, the result is contents
 of the standard output/error on success, and nothing on failure.
 
+.new
 .vindex "&$run_in_acl$&"
 The standard output/error of the command is put in the variable &$value$&.
 In this ACL example, the output of a command is logged for the admin to
@@ -9458,6 +9469,7 @@ shell must be invoked directly, such as with:
 .code
 ${run{/bin/bash -c "/usr/bin/id >/tmp/id"}{yes}{yes}}
 .endd
+.wen
 
 .vindex "&$runrc$&"
 The return code from the command is put in the variable &$runrc$&, and this
@@ -9798,14 +9810,17 @@ See the description of the general &%length%& item above for details. Note that
 when &%length%& is used as an operator.
 
 
+.new
 .vitem &*${listcount:*&<&'string'&>&*}*&
 .cindex "expansion" "list item count"
 .cindex "list" "item count"
 .cindex "list" "count of items"
 .cindex "&%listcount%& expansion item"
 The string is interpreted as a list and the number of items is returned.
+.wen
 
 
+.new
 .vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name*&>&*}*&
 .cindex "expansion" "named list"
 .cindex "&%listnamed%& expansion item"
@@ -9815,6 +9830,7 @@ If the optional type if given it must be one of "a", "d", "h" or "l"
 and selects address-, domain-, host- or localpart- lists to search among respectively.
 Otherwise all types are searched in an undefined order and the first
 matching list is returned.
+.wen
 
 
 .vitem &*${local_part:*&<&'string'&>&*}*&
@@ -10114,8 +10130,9 @@ In all cases, a relative comparator OP is testing if <&'string1'&> OP
 10M, not if 10M is larger than &$message_size$&.
 
 
+.new
 .vitem &*acl&~{{*&<&'name'&>&*}{*&<&'arg1'&>&*}&&&
-	{*&<&'arg2'&>&*}...}*&
+               {*&<&'arg2'&>&*}...}*&
 .cindex "expansion" "calling an acl"
 .cindex "&%acl%&" "expansion condition"
 The name and zero to nine argument strings are first expanded separately.  The expanded
@@ -10128,6 +10145,7 @@ a value using a "message =" modifier the variable $value becomes
 the result of the expansion, otherwise it is empty.
 If the ACL returns accept the condition is true; if deny, false.
 If the ACL returns defer the result is a forced-fail.
+.wen
 
 .vitem &*bool&~{*&<&'string'&>&*}*&
 .cindex "expansion" "boolean parsing"
@@ -11079,11 +11097,13 @@ inserting the message header line with the given name. Note that the name must
 be terminated by colon or white space, because it may contain a wide variety of
 characters. Note also that braces must &'not'& be used.
 
+.new
 .vitem &$headers_added$&
 .vindex "&$headers_added$&"
 Within an ACL this variable contains the headers added so far by
 the ACL modifier add_header (section &<<SECTaddheadacl>>&).
 The headers are a newline-separated list.
+.wen
 
 .vitem &$home$&
 .vindex "&$home$&"
@@ -11755,11 +11775,13 @@ envelope sender.
 .vindex "&$return_size_limit$&"
 This is an obsolete name for &$bounce_return_size_limit$&.
 
+.new
 .vitem &$router_name$&
 .cindex "router" "name"
 .cindex "name" "of router"
 .vindex "&$router_name$&"
 During the running of a router this variable contains its name.
+.wen
 
 .vitem &$runrc$&
 .cindex "return code" "from &%run%& expansion"
@@ -12075,6 +12097,7 @@ command in a filter file. Its use is explained in the description of that
 command, which can be found in the separate document entitled &'Exim's
 interfaces to mail filtering'&.
 
+.new
 .vitem &$tls_in_bits$&
 .vindex "&$tls_in_bits$&"
 Contains an approximation of the TLS cipher's bit-strength
@@ -12173,6 +12196,7 @@ the outbound.
 During outbound
 SMTP deliveries, this variable reflects the value of the &%tls_sni%& option on
 the transport.
+.wen
 
 .vitem &$tod_bsdinbox$&
 .vindex "&$tod_bsdinbox$&"
@@ -12215,11 +12239,13 @@ This variable contains the numerical value of the local timezone, for example:
 This variable contains the UTC date and time in &"Zulu"& format, as specified
 by ISO 8601, for example: 20030221154023Z.
 
+.new
 .vitem &$transport_name$&
 .cindex "transport" "name"
 .cindex "name" "of transport"
 .vindex "&$transport_name$&"
 During the running of a transport, this variable contains its name.
+.wen
 
 .vitem &$value$&
 .vindex "&$value$&"
@@ -13076,10 +13102,10 @@ See also the &'Policy controls'& section above.
 .row &%disable_ipv6%&                "do no IPv6 processing"
 .row &%dns_again_means_nonexist%&    "for broken domains"
 .row &%dns_check_names_pattern%&     "pre-DNS syntax check"
+.row &%dns_dnssec_ok%&               "parameter for resolver"
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
-.row &%dns_dnssec_ok%&               "parameter for resolver"
 .row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
@@ -13697,6 +13723,22 @@ This option controls whether or not an IP address, given as a CSA domain, is
 reversed and looked up in the reverse DNS, as described in more detail in
 section &<<SECTverifyCSA>>&.
 
+
+.new
+.option dns_dnssec_ok main boolean unset
+.cindex "DNS" "resolver options"
+.cindex "DNS" "DNSSEC"
+If this option is set, whether true or false, then Exim will initialise the
+DNS resolver library to either use or not use DNSSEC, overriding the system
+default.
+
+If the resolver library does not support DNSSEC then this option has no effect.
+
+If &%dns_use_edns0%& has been explicitly set false, then this option will
+be ignored.
+.wen
+
+
 .option dns_ipv4_lookup main "domain list&!!" unset
 .cindex "IPv6" "DNS lookup for AAAA records"
 .cindex "DNS" "IPv6 lookup for AAAA records"
@@ -13725,21 +13767,6 @@ to set in them.
 
 .option dns_retry main integer 0
 See &%dns_retrans%& above.
-
-
-.new
-.option dns_dnssec_ok main boolean unset
-.cindex "DNS" "resolver options"
-.cindex "DNS" "DNSSEC"
-If this option is set, whether true or false, then Exim will initialise the
-DNS resolver library to either use or not use DNSSEC, overriding the system
-default.
-
-If the resolver library does not support DNSSEC then this option has no effect.
-
-If &%dns_use_edns0%& has been explicitly set false, then this option will
-be ignored.
-.wen
 
 
 .option dns_use_edns0 main boolean unset
@@ -16073,8 +16100,10 @@ use OpenSSL with a directory.
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
+.new
 A forced expansion failure or setting to an empty string is equivalent to
 being unset.
+.wen
 
 
 .option tls_verify_hosts main "host list&!!" unset
@@ -16614,8 +16643,10 @@ The &%headers_add%& option is expanded after &%errors_to%&, but before
 the expansion is forced to fail, the option has no effect. Other expansion
 failures are treated as configuration errors.
 
+.new
 Unlike most options, &%headers_add%& can be specified multiple times
 for a router; all listed headers are added.
+.wen
 
 &*Warning 1*&: The &%headers_add%& option cannot be used for a &(redirect)&
 router that has the &%one_time%& option set.
@@ -16650,8 +16681,10 @@ The &%headers_remove%& option is expanded after &%errors_to%& and
 the option has no effect. Other expansion failures are treated as configuration
 errors.
 
+.new
 Unlike most options, &%headers_remove%& can be specified multiple times
 for a router; all listed headers are removed.
+.wen
 
 &*Warning 1*&: The &%headers_remove%& option cannot be used for a &(redirect)&
 router that has the &%one_time%& option set.
@@ -17513,12 +17546,14 @@ DNS lookup error, Exim behaves as if no MX records were found. See section
 
 
 
+.new
 .option need_dnssec dnslookup boolean&!! false
 If this option is set, then DNSSEC results must be verifiable, and both bogus
 and unsigned data will be ignored.  Setting this without setting
 &%dns_dnssec_ok%& in the main section is probably a mistake.
 
 See chapter &<<CHAPdnssec>>& for more discussion.
+.wen
 
 
 
@@ -17883,12 +17918,14 @@ randomized host list is passed to an &(smtp)& transport that also has
 &%hosts_randomize set%&, the list is not re-randomized.
 
 
+.new
 .option need_dnssec manualroute boolean&!! false
 If this option is set, then DNSSEC results must be verifiable, and both bogus
 and unsigned data will be ignored.  Setting this without setting
 &%dns_dnssec_ok%& in the main section is probably a mistake.
 
 See chapter &<<CHAPdnssec>>& for more discussion.
+.wen
 
 
 .option route_data manualroute string&!! unset
@@ -19676,8 +19713,10 @@ routers. If the result of the expansion is an empty string, or if the expansion
 is forced to fail, no action is taken. Other expansion failures are treated as
 errors and cause the delivery to be deferred.
 
+.new
 Unlike most options, &%headers_add%& can be specified multiple times
 for a transport; all listed headers are added.
+.wen
 
 
 
@@ -19701,8 +19740,10 @@ routers. If the result of the expansion is an empty string, or if the expansion
 is forced to fail, no action is taken. Other expansion failures are treated as
 errors and cause the delivery to be deferred.
 
+.new
 Unlike most options, &%headers_remove%& can be specified multiple times
 for a router; all listed headers are added.
+.wen
 
 
 
@@ -22248,8 +22289,10 @@ appropriate values for the outgoing connection, and these are the values that
 are in force when any authenticators are run and when the
 &%authenticated_sender%& option is expanded.
 
+.new
 These variables are deprecated in favour of &$tls_in_cipher$& et. al.
-and will be removed in a future release.
+and will be removed in a future major release.
+.wen
 
 
 .section "Private options for smtp" "SECID146"
@@ -22533,12 +22576,14 @@ that matches this list, even if the server host advertises PIPELINING support.
 Exim will not try to start a TLS session when delivering to any host that
 matches this list. See chapter &<<CHAPTLS>>& for details of TLS.
 
+.new
 .option hosts_verify_avoid_tls smtp "host list&!!" *
 .cindex "TLS" "avoiding for certain hosts"
 Exim will not try to start a TLS session for a verify callout,
 or when delivering in cutthrough mode,
 to any host that matches this list.
 Note that the default is to not use TLS.
+.wen
 
 
 .option hosts_max_try smtp integer 5
@@ -22689,6 +22734,7 @@ handling only one domain at a time. This is useful if you want to use
 is a single domain involved in a remote delivery.
 
 
+.new
 .option need_dnssec smtp boolean&!! false
 If this option is set, then DNSSEC results must be verifiable, and both bogus
 and unsigned data will be ignored.  Setting this without setting
@@ -22700,6 +22746,7 @@ by a router such as &(dnslookup)&, it is the router's &%need_dnssec%& setting
 which applies.
 
 See chapter &<<CHAPdnssec>>& for more discussion.
+.wen
 
 
 .option port smtp string&!! "see below"
@@ -24138,10 +24185,12 @@ client_condition = ${if !eq{$tls_out_cipher}{}}
 .endd
 
 
+.new
 .option client_set_id authenticators string&!! unset
 When client authentication succeeds, this condition is expanded; the
 result is used in the log lines for outbound messasges.
 Typically it will be the user name used for authentication.
+.wen
 
 
 .option driver authenticators string unset
@@ -25695,8 +25744,10 @@ example, OpenSSL uses the name DES-CBC3-SHA for the cipher suite which in other
 contexts is known as TLS_RSA_WITH_3DES_EDE_CBC_SHA. Check the OpenSSL or GnuTLS
 documentation for more details.
 
+.new
 For outgoing SMTP deliveries, &$tls_out_cipher$& is used and logged
 (again depending on the &%tls_cipher%& log selector).
+.wen
 
 
 .section "Requesting and verifying client certificates" "SECID183"
@@ -26008,6 +26059,7 @@ this certificate and key in an MTA, where prompting is not possible.
 . ==== pause before proceeding, instead of leaving all the fixes until two
 . ==== years before 2^31 seconds after the 1970 Unix epoch.
 . ==== -pdp, 2012
+.new
 NB: we are now past the point where 9999 days takes us past the 32-bit Unix
 epoch.  If your system uses unsigned time_t (most do) and is 32-bit, then
 the above command might produce a date in the past.  Think carefully about
@@ -26016,6 +26068,7 @@ of the certificate or reconsider your platform deployment.  (At time of
 writing, reducing the duration is the most likely choice, but the inexorable
 progression of time takes us steadily towards an era where this will not
 be a sensible resolution).
+.wen
 
 A self-signed certificate made in this way is sufficient for testing, and
 may be adequate for all your requirements if you are mainly interested in
@@ -26041,6 +26094,7 @@ Open-source PKI book, available online at
 . ////////////////////////////////////////////////////////////////////////////
 
 
+.new
 .chapter "DNS Security Extensions" "CHAPdnssec"
 .scindex IIDdnssec1 "DNS" "DNSSEC"
 .scindex IIDdnssec2 "security" "DNS"
@@ -26178,6 +26232,7 @@ Configuring Bind is more involved; see descriptions at
 
 .ecindex IIDdnssec1
 .ecindex IIDdnssec2
+.wen
 
 
 . ////////////////////////////////////////////////////////////////////////////
@@ -27586,7 +27641,9 @@ passing data between (for example) the MAIL and RCPT ACLs. If you want to do
 this, you can use ACL variables, as described in section
 &<<SECTaclvariables>>&.
 
+.new
 The list of headers yet to be added is given by the &%$headers_added%& variable.
+.wen
 
 The &%add_header%& modifier acts immediately as it is encountered during the
 processing of an ACL. Notice the difference between these two cases:
@@ -27637,6 +27694,7 @@ system filter or in a router or transport.
 
 
 
+.new
 .section "Removing header lines in ACLs" "SECTremoveheadacl"
 .cindex "header lines" "removing in an ACL"
 .cindex "header lines" "position of removed lines"
@@ -27704,7 +27762,7 @@ are honoured.
 &*Warning*&: This facility currently applies only to header lines that are
 present during ACL processing. It does NOT remove header lines that are added
 in a system filter or in a router or transport.
-
+.wen
 
 
 
@@ -27739,11 +27797,13 @@ condition is on a &%warn%& verb. In that case, a &"defer"& return makes the
 condition false. This means that further processing of the &%warn%& verb
 ceases, but processing of the ACL continues.
 
+.new
 If the argument is a named ACL, up to nine space-separated optional values
 can be appended; they appear within the called ACL in $acl_arg1 to $acl_arg9,
 and $acl_narg is set to the count of values.
 Previous values of these variables are restored after the call returns.
 The name and values are expanded separately.
+.wen
 
 If the nested &%acl%& returns &"drop"& and the outer condition denies access,
 the connection is dropped. If it returns &"discard"&, the verb must be
@@ -31879,9 +31939,11 @@ headers_add = X-added-header: added by $primary_hostname\n\
 .endd
 Exim does not check the syntax of these added header lines.
 
+.new
 Multiple &%headers_add%& options for a single router or transport can be
 specified; the values will be concatenated (with a separating newline
 added) before expansion.
+.wen
 
 The result of expanding &%headers_remove%& must consist of a colon-separated
 list of header names. This is confusing, because header names themselves are
@@ -31891,9 +31953,11 @@ not part of the names. For example:
 headers_remove = return-receipt-to:acknowledge-to
 .endd
 
+.new
 Multiple &%headers_remove%& options for a single router or transport can be
 specified; the values will be concatenated (with a separating colon
 added) before expansion.
+.wen
 
 When &%headers_add%& or &%headers_remove%& is specified on a router, its value
 is expanded at routing time, and then associated with all addresses that are
@@ -33858,10 +33922,12 @@ intermediate address(es) exist between the original and the final address, the
 last of these is given in parentheses after the final address. The R and T
 fields record the router and transport that were used to process the address.
 
+.new
 If SMTP AUTH was used for the delivery there is an additional item A=
 followed by the name of the authenticator that was used.
 If an authenticated identification was set up by the authenticator's &%client_set_id%&
 option, this is logged too, separated by a colon from the authenticator name.
+.wen
 
 If a shadow transport was run after a successful local delivery, the log line
 for the successful delivery has an item added on the end, of the form
@@ -33878,6 +33944,7 @@ flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
 down a single SMTP connection, an asterisk follows the IP address in the log
 lines for the second and subsequent messages.
 
+.new
 .cindex "delivery" "cutthrough; logging"
 .cindex "cutthrough" "logging"
 When delivery is done in cutthrough mode it is flagged with &`>>`& and the log
@@ -33889,6 +33956,7 @@ The generation of a reply message by a filter file gets logged as a
 
 The &%log_selector%& option can be used to request the logging of additional
 data when a message is delivered. See section &<<SECTlogselector>>& below.
+.wen
 
 
 .section "Discarded deliveries" "SECID253"
@@ -34109,6 +34177,7 @@ selection marked by asterisks:
 More details on each of these items follows:
 
 .ilist
+.new
 .cindex "8BITMIME"
 .cindex "log" "8BITMIME"
 &%8bitmime%&: This causes Exim to log any 8BITMIME status of received messages,
@@ -34116,6 +34185,7 @@ which may help in tracking down interoperability issues with ancient MTAs
 that are not 8bit clean.  This is added to the &"<="& line, tagged with
 &`M8S=`& and a value of &`0`&, &`7`& or &`8`&, corresponding to "not given",
 &`7BIT`& and &`8BITMIME`& respectively.
+.wen
 .next
 .cindex "&%warn%& ACL verb" "log when skipping"
 &%acl_warn_skipped%&: When an ACL &%warn%& statement is skipped because one of
@@ -34362,10 +34432,12 @@ the last 20 are listed, preceded by &"..."&. However, with the default
 setting of 10 for &%smtp_accep_max_nonmail%&, the connection will in any case
 have been aborted before 20 non-mail commands are processed.
 .next
+.new
 &%smtp_mailauth%&: A third subfield with the authenticated sender,
 colon-separated, is appended to the A= item for a message arrival or delivery
 log line, if an AUTH argument to the SMTP MAIL command (see &<<SECTauthparamail>>&)
 was accepted or used.
+.wen
 .next
 .cindex "log" "SMTP protocol error"
 .cindex "SMTP" "logging protocol error"
@@ -36523,11 +36595,13 @@ Add to &_src/config.h.defaults_& the line:
 Edit &_src/drtables.c_&, adding conditional code to pull in the private header
 and create a table entry as is done for all the other drivers and lookup types.
 .next
+.new
 Edit &_scripts/lookups-Makefile_& if this is a new lookup; there is a for-loop
 near the bottom, ranging the &`name_mod`& variable over a list of all lookups.
 Add your &`NEWDRIVER`& to that list.
 As long as the dynamic module would be named &_newdriver.so_&, you can use the
 simple form that most lookups have.
+.wen
 .next
 Edit &_Makefile_& in the appropriate sub-directory (&_src/routers_&,
 &_src/transports_&, &_src/auths_&, or &_src/lookups_&); add a line for the new
