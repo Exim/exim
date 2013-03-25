@@ -22694,6 +22694,11 @@ If this option is set, then DNSSEC results must be verifiable, and both bogus
 and unsigned data will be ignored.  Setting this without setting
 &%dns_dnssec_ok%& in the main section is probably a mistake.
 
+This only applies to hostname to IP mappings performed by the transport
+itself, such as for the &%hosts%& option.  When the lookups are performed
+by a router such as &(dnslookup)&, it is the router's &%need_dnssec%& setting
+which applies.
+
 See chapter &<<CHAPdnssec>>& for more discussion.
 
 
@@ -26136,6 +26141,11 @@ When resolving DNS in a &(dnslookup)& or &(manualroute)& router or in an
 &(smtp)& transport, if the &%need_dnssec%& option is set then host resolution
 will skip &'Insecure'& results too and it will appear that only &'Secure'&
 results exist in DNS.
+
+If a router performs the hostname to IP mapping, then the &(smtp)& transport
+uses the results of that and its own &%need_dnssec%& setting does not apply.
+The &(smtp)& transport's setting applies to results from looking up options
+such as &%hosts%& or &%fallback_hosts%& on the transport itself.
 
 .section "Resolver Setup" "SECTdnssecressetup"
 
