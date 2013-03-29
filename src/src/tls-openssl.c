@@ -1008,7 +1008,7 @@ uschar *expcerts, *expcrl;
 if (!expand_check(certs, US"tls_verify_certificates", &expcerts))
   return DEFER;
 
-if (expcerts != NULL)
+if (expcerts != NULL && *expcerts != '\0')
   {
   struct stat statbuf;
   if (!SSL_CTX_set_default_verify_paths(sctx))

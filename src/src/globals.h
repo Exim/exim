@@ -365,7 +365,7 @@ extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standar
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */
 extern int     dns_retrans;            /* Retransmission time setting */
 extern int     dns_retry;              /* Number of retries */
-extern int     dns_use_dnssec;         /* When constructing DNS query, set DO flag */
+extern int     dns_dnssec_ok;          /* When constructing DNS query, set DO flag */
 extern int     dns_use_edns0;          /* Coerce EDNS0 support on/off in resolver. */
 extern uschar *dnslist_domain;         /* DNS (black) list domain */
 extern uschar *dnslist_matched;        /* DNS (black) list matched key */

@@ -16075,6 +16075,9 @@ use OpenSSL with a directory.
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
+A forced expansion failure or setting to an empty string is equivalent to
+being unset.
+
 
 .option tls_verify_hosts main "host list&!!" unset
 .cindex "TLS" "client certificate verification"

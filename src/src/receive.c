@@ -290,32 +290,50 @@ Returns:     it doesn't
 void
 receive_bomb_out(uschar *reason, uschar *msg)
 {
+  static BOOL already_bombing_out;
+/* The smtp_notquit_exit() below can call ACLs which can trigger recursive
+timeouts, if someone has something slow in their quit ACL.  Since the only
+things we should be doing are to close down cleanly ASAP, on the second
+pass we also close down stuff that might be opened again, before bypassing
+the ACL call and exiting. */
+
 /* If spool_name is set, it contains the name of the data file that is being
 written. Unlink it before closing so that it cannot be picked up by a delivery
 process. Ensure that any header file is also removed. */
 
-if (spool_name[0] != 0)
+if (spool_name[0] != '\0')
   {
   Uunlink(spool_name);
   spool_name[Ustrlen(spool_name) - 1] = 'H';
   Uunlink(spool_name);
+  spool_name[0] = '\0';
   }
 
 /* Now close the file if it is open, either as a fd or a stream. */
 
-if (data_file != NULL) (void)fclose(data_file);
-  else if (data_fd >= 0) (void)close(data_fd);
+if (data_file != NULL)
+  {
+  (void)fclose(data_file);
+  data_file = NULL;
+} else if (data_fd >= 0) {
+  (void)close(data_fd);
+  data_fd = -1;
+  }
 
 /* Attempt to close down an SMTP connection tidily. For non-batched SMTP, call
 smtp_notquit_exit(), which runs the NOTQUIT ACL, if present, and handles the
 SMTP response. */
 
-if (smtp_input)
+if (!already_bombing_out)
   {
-  if (smtp_batched_input)
-    moan_smtp_batch(NULL, "421 %s - message abandoned", msg);  /* No return */
-  smtp_notquit_exit(reason, US"421", US"%s %s - closing connection.",
-    smtp_active_hostname, msg);
+  already_bombing_out = TRUE;
+  if (smtp_input)
+    {
+    if (smtp_batched_input)
+      moan_smtp_batch(NULL, "421 %s - message abandoned", msg);  /* No return */
+    smtp_notquit_exit(reason, US"421", US"%s %s - closing connection.",
+      smtp_active_hostname, msg);
+    }
   }
 
 /* Exit from the program (non-BSMTP cases) */
@@ -488,30 +506,32 @@ recipients_list[recipients_count++].errors_to = NULL;
 /*************************************************
 *        Send user response message              *
 *************************************************/
-        
+
 /* This function is passed a default response code and a user message. It calls
 smtp_message_code() to check and possibly modify the response code, and then
 calls smtp_respond() to transmit the response. I put this into a function
 just to avoid a lot of repetition.
-            
-Arguments:               
+
+Arguments:
   code         the response code
   user_msg     the user message
 
 Returns:       nothing
-*/        
-            
-static void 
+*/
+
+#ifdef EXPERIMENTAL_PRDR
+static void
 smtp_user_msg(uschar *code, uschar *user_msg)
-{           
+{
 int len = 3;
 smtp_message_code(&code, &len, &user_msg, NULL);
 smtp_respond(code, len, TRUE, user_msg);
-}           
-                        
-            
-          
-          
+}
+#endif
+
+
+
+
 
 /*************************************************
 *        Remove a recipient from the list        *
@@ -2808,7 +2828,7 @@ if (cutthrough_fd >= 0)
   add_acl_headers(US"MAIL or RCPT");
   (void) cutthrough_headers_send();
   }
- 
+
 
 /* Open a new spool file for the data portion of the message. We need
 to access it both via a file descriptor and a stream. Try to make the
@@ -3171,7 +3191,7 @@ else
               uschar seen_item_buf[256];
               uschar *seen_items_list = seen_items;
               int seen_this_item = 0;
-              
+
               while ((seen_item = string_nextinlist(&seen_items_list, &sep,
                                                     seen_item_buf,
                                                     sizeof(seen_item_buf))) != NULL)
@@ -3180,7 +3200,7 @@ else
                     {
                       seen_this_item = 1;
                       break;
-                    } 
+                    }
                 }
 
               if (seen_this_item > 0)
@@ -3189,7 +3209,7 @@ else
                   debug_printf("acl_smtp_dkim: skipping signer %s, already seen\n", item);
                 continue;
                 }
-              
+
               seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,":");
               }
 
@@ -3939,12 +3959,12 @@ if(cutthrough_fd >= 0)
     case '2':	/* Accept. Do the same to the source; dump any spoolfiles.   */
       cutthrough_done = 3;
       break;					/* message_id needed for SMTP accept below */
-  
+
     default:	/* Unknown response, or error.  Treat as temp-reject.         */
     case '4':	/* Temp-reject. Keep spoolfiles and accept. */
       cutthrough_done = 1;			/* Avoid the usual immediate delivery attempt */
       break;					/* message_id needed for SMTP accept below */
-  
+
     case '5':	/* Perm-reject.  Do the same to the source.  Dump any spoolfiles */
       smtp_reply= msg;		/* Pass on the exact error */
       cutthrough_done = 2;

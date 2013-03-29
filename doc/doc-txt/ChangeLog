@@ -168,6 +168,23 @@ JH/14 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
       Default client logging of deliveries and rejections involving
       PRDR are flagged with the string "PRDR".
 
+PP/16 Fix problems caused by timeouts during quit ACLs trying to double
+      fclose().  Diagnosis by Todd Lyons.
+
+PP/17 Update configure.default to handle IPv6 localhost better.
+      Patch by Alain Williams (plus minor tweaks).
+      Bugzilla 880.
+
+PP/18 OpenSSL made graceful with empty tls_verify_certificates setting.
+      This is now consistent with GnuTLS, and is now documented: the
+      previous undocumented portable approach to treating the option as
+      unset was to force an expansion failure.  That still works, and
+      an empty string is now equivalent.
+
+PP/19 Renamed DNSSEC-enabling option to "dns_dnssec_ok", to make it
+      clearer that Exim is using the DO (DNSSEC OK) EDNS0 resolver flag,
+      not performing validation itself.
+
 
 Exim version 4.80.1
 -------------------

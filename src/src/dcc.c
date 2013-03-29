@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Wolfgang Breyha 2005-2012
+/* Copyright (c) Wolfgang Breyha 2005-2013
  * Vienna University Computer Center
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
@@ -36,7 +36,8 @@ int flushbuffer (int socket, uschar *buffer)
     DEBUG(D_acl)
       debug_printf("DCC: Error writing buffer to socket: %s\n", strerror(errno));
     retval = errno;
-  } else {
+  }
+  else {
     DEBUG(D_acl)
       debug_printf("DCC: Wrote buffer to socket:\n%s\n", buffer);
     retval = 0;
@@ -48,12 +49,11 @@ int dcc_process(uschar **listptr) {
   int sep = 0;
   uschar *list = *listptr;
   FILE *data_file;
-  uschar *dcc_daemon_ip = US"";
   uschar *dcc_default_ip_option = US"127.0.0.1";
-  uschar *dcc_ip_option = US"";
   uschar *dcc_helo_option = US"localhost";
   uschar *dcc_reject_message = US"Rejected by DCC";
   uschar *xtra_hdrs = NULL;
+  uschar *override_client_ip  = NULL;
 
   /* from local_scan */
   int i, j, k, c, retval, sockfd, resp, line;
@@ -140,24 +140,26 @@ int dcc_process(uschar **listptr) {
   /* opts is what we send as dccifd options - see man dccifd */
   /* We don't support any other option than 'header' so just copy that */
   bzero(opts,sizeof(opts));
-  Ustrncpy(opts, "header", sizeof(opts)-1);
-  Ustrncpy(client_ip, dcc_ip_option, sizeof(client_ip)-1);
-  /* If the dcc_client_ip is not provided use the
-   * sender_host_address or 127.0.0.1 if it is NULL */
-  DEBUG(D_acl)
-    debug_printf("DCC: my_ip_option = %s - client_ip = %s - sender_host_address = %s\n", dcc_ip_option, client_ip, sender_host_address);
-  if(!(Ustrcmp(client_ip, ""))){
-    /* Do we have a sender_host_address or is it NULL? */
-    if(sender_host_address){
-      Ustrncpy(client_ip, sender_host_address, sizeof(client_ip)-1);
-    } else {
-      /* sender_host_address is NULL which means it comes from localhost */
-      Ustrncpy(client_ip, dcc_default_ip_option, sizeof(client_ip)-1);
-    }
+  Ustrncpy(opts, dccifd_options, sizeof(opts)-1);
+  /* if $acl_m_dcc_override_client_ip is set use it */
+  if (((override_client_ip = expand_string(US"$acl_m_dcc_override_client_ip")) != NULL) && 
+       (override_client_ip[0] != '\0')) {
+    Ustrncpy(client_ip, override_client_ip, sizeof(client_ip)-1);
+    DEBUG(D_acl)
+      debug_printf("DCC: Client IP (overridden): %s\n", client_ip);
+  } 
+  else if(sender_host_address) {
+  /* else if $sender_host_address is available use that? */
+    Ustrncpy(client_ip, sender_host_address, sizeof(client_ip)-1);
+    DEBUG(D_acl)
+      debug_printf("DCC: Client IP (sender_host_address): %s\n", client_ip);
+  } 
+  else {
+    /* sender_host_address is NULL which means it comes from localhost */
+    Ustrncpy(client_ip, dcc_default_ip_option, sizeof(client_ip)-1);
+    DEBUG(D_acl)
+      debug_printf("DCC: Client IP (default): %s\n", client_ip);
   }
-  DEBUG(D_acl)
-    debug_printf("DCC: Client IP: %s\n", client_ip);
-  Ustrncpy(sockip, dcc_daemon_ip, sizeof(sockip)-1);
   /* strncat(opts, my_request, strlen(my_request)); */
   Ustrcat(opts, "\n");
   Ustrncat(opts, client_ip, sizeof(opts)-Ustrlen(opts)-1);
@@ -186,7 +188,7 @@ int dcc_process(uschar **listptr) {
    * Now creating the socket connection *
    **************************************/
 
-  /* If there is a dcc_daemon_ip, we use a tcp socket, otherwise a UNIX socket */
+  /* If sockip contains an ip, we use a tcp socket, otherwise a UNIX socket */
   if(Ustrcmp(sockip, "")){
     ipaddress = gethostbyname((char *)sockip);
     bzero((char *) &serv_addr_in, sizeof(serv_addr_in));
