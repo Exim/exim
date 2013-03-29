@@ -60,42 +60,6 @@ add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
   return eblock;
 }
 
-static void
-dmarc_load_fake_dns(uschar *tmp_dns_lookup)
-{
-  dns_answer dnsa;
-  dns_scan   dnss;
-  dns_record *rr;
-  if (dns_lookup(&dnsa, tmp_dns_lookup, T_TXT, NULL) == DNS_SUCCEED)
-  {
-    /* Search for TXT record */
-    for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-         rr != NULL;
-         rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-      if (rr->type == T_TXT) break;
-    if (rr != NULL) {
-      uschar *dns_data = rr->data;
-      /* Get rid of any leading non-ASCII */
-      while (*dns_data > 127)
-        dns_data++;
-      /* Get rid of any trailing non-ASCII */
-      uschar *tmp = dns_data;
-      while(*tmp < 128 || *tmp == 0)
-        *tmp++;
-      if (*tmp != 0)
-        *tmp = 0;
-      opendmarc_dns_fake_record(CCS tmp_dns_lookup, CCS dns_data);
-      DEBUG(D_receive)
-        debug_printf("DMARC fakens loaded %s TXT \"%s\"\n", tmp_dns_lookup, dns_data);
-    }
-  }
-  else
-  {
-    DEBUG(D_receive)
-      debug_printf("DMARC fakens didn't find %s\n", tmp_dns_lookup);
-  }
-}
-
 /* dmarc_init sets up a context that can be re-used for several
    messages on the same SMTP connection (that come from the
    same host with the same HELO string) */
@@ -226,8 +190,6 @@ int dmarc_process() {
    * instead do this in the ACLs.  */
   if (dmarc_abort == FALSE && sender_host_authenticated == NULL)
   {
-    if (running_in_test_harness)
-      dmarc_load_fake_dns(string_sprintf("_dmarc.%s",header_from_sender));
 #ifdef EXPERIMENTAL_SPF
     /* Use the envelope sender domain for this part of DMARC */
     spf_sender_domain = expand_string(US"$sender_address_domain");
@@ -566,8 +528,8 @@ void dmarc_send_forensic_report(u_char **ruf)
         DEBUG(D_receive)
           debug_printf("DMARC forensic report to %s%s\n", recipient,
                        (host_checking || running_in_test_harness) ? " (not really)" : "");
-        //if (host_checking || running_in_test_harness)
-        //  continue;
+        if (host_checking || running_in_test_harness)
+          continue;
         save_sender = sender_address;
         sender_address = recipient;
         send_status = moan_to_sender(ERRMESS_DMARC_FORENSIC, eblock,
