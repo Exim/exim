@@ -21601,10 +21601,10 @@ that are routed to the transport.
 .vindex "&$address_pipe$&"
 A router redirects an address directly to a pipe command (for example, from an
 alias or forward file). In this case, &$address_pipe$& contains the text of the
-pipe command, and the &%command%& option on the transport is ignored. If only
-one address is being transported (&%batch_max%& is not greater than one, or
-only one address was redirected to this pipe command), &$local_part$& contains
-the local part that was redirected.
+pipe command, and the &%command%& option on the transport is ignored unless
+&%force_command%& is set. If only one address is being transported
+(&%batch_max%& is not greater than one, or only one address was redirected to
+this pipe command), &$local_part$& contains the local part that was redirected.
 .endlist
 
 
@@ -21711,6 +21711,12 @@ transport filter command. It causes each address that is being handled to be
 inserted in the argument list at that point &'as a separate argument'&. This
 avoids any problems with spaces or shell metacharacters, and is of use when a
 &(pipe)& transport is handling groups of addresses in a batch.
+
+If &(force_command)& is enabled on the transport, Special handling takes place
+for an argument that consists of precisely the text &`$address_pipe`&.  It
+is handled much like &`$pipe_addresses`& above.  It is expanded and each
+argument is inserted in the argument list at that point
+&'as a separate argument'&.
 
 After splitting up into arguments and expansion, the resulting command is run
 in a subprocess directly from the transport, &'not'& under a shell. The
@@ -21863,6 +21869,19 @@ Normally if the process run by a command in a pipe transport exits on a signal,
 a bounce message is sent. If &%freeze_signal%& is set, the message will be
 frozen in Exim's queue instead.
 
+
+.option force_command pipe boolean false
+.cindex "force command"
+.cindex "&(pipe)& transport", "force command"
+Normally when a router redirects an address directly to a pipe command
+the &%command%& option on the transport is ignored.  If &%force_command%&
+is set, the &%command%& option will used. This is especially
+useful for forcing a wrapper or additional argument to be added to the
+command. For example:
+.code
+command = /usr/bin/remote_exec myhost -- $address_pipe
+force_command
+.endd
 
 .option ignore_status pipe boolean false
 If this option is true, the status returned by the subprocess that is set up to

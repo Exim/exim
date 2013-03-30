@@ -37,6 +37,8 @@ optionlist pipe_transport_options[] = {
       (void *)offsetof(pipe_transport_options_block, environment) },
   { "escape_string",     opt_stringptr,
       (void *)offsetof(pipe_transport_options_block, escape_string) },
+  { "force_command",         opt_bool,
+      (void *)offsetof(pipe_transport_options_block, force_command) },
   { "freeze_exec_fail",  opt_bool,
       (void *)offsetof(pipe_transport_options_block, freeze_exec_fail) },
   { "freeze_signal",     opt_bool,
@@ -110,6 +112,7 @@ pipe_transport_options_block pipe_transport_option_defaults = {
   20480,          /* max_output */
   60*60,          /* timeout */
   0,              /* options */
+  FALSE,          /* force_command */
   FALSE,          /* freeze_exec_fail */
   FALSE,          /* freeze_signal */
   FALSE,          /* ignore_status */
@@ -569,10 +572,18 @@ options. */
 
 if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
   {
-  cmd = addr->local_part + 1;
-  while (isspace(*cmd)) cmd++;
-  expand_arguments = testflag(addr, af_expand_pipe);
-  expand_fail = FAIL;
+    if (ob->force_command) {
+     /* Enables expansion of $address_pipe into seperate arguments */
+     setflag(addr,af_force_command);
+     cmd = ob->cmd;
+     expand_arguments = TRUE;
+     expand_fail = PANIC;
+    } else {
+     cmd = addr->local_part + 1;
+     while (isspace(*cmd)) cmd++;
+     expand_arguments = testflag(addr, af_expand_pipe);
+     expand_fail = FAIL;
+    }
   }
 else
   {
@@ -581,9 +592,12 @@ else
   expand_fail = PANIC;
   }
 
-/* If no command has been supplied, we are in trouble. */
+/* If no command has been supplied, we are in trouble.
+ * We also check for an empty string since it may be
+ * coming from addr->local_part[0] == '|'
+ */
 
-if (cmd == NULL)
+if (cmd == NULL || *cmd == '\0')
   {
   addr->transport_return = DEFER;
   addr->message = string_sprintf("no command specified for %s transport",

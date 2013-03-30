@@ -1997,8 +1997,124 @@ if (expand_arguments)
         memmove(argv + i + 1 + additional, argv + i + 1,
           (argcount - i)*sizeof(uschar *));
 
-      for (ad = addr; ad != NULL; ad = ad->next) argv[i++] = ad->address;
-      i--;
+      for (ad = addr; ad != NULL; ad = ad->next) {
+          argv[i++] = ad->address;
+          argcount++;
+      }
+
+        /* Subtract one since we replace $pipe_addresses */
+        argcount--;
+        i--;
+
+      }
+
+      /* Handle special case of $address_pipe when af_force_command is set */
+
+    else if (addr != NULL && testflag(addr,af_force_command) &&
+        (Ustrcmp(argv[i], "$address_pipe") == 0 ||
+         Ustrcmp(argv[i], "${address_pipe}") == 0))
+      {
+      int address_pipe_i;
+      int address_pipe_argcount = 0;
+      int address_pipe_max_args;
+      uschar **address_pipe_argv;
+
+      /* We can never have more then the argv we will be loading into */
+      address_pipe_max_args = max_args - argcount + 1;
+
+      DEBUG(D_transport)
+        debug_printf("address_pipe_max_args=%d\n",
+          address_pipe_max_args);
+
+      /* We allocate an additional for (uschar *)0 */
+      address_pipe_argv = store_get((address_pipe_max_args+1)*sizeof(uschar *));
+
+      /* +1 because addr->local_part[0] == '|' since af_force_command is set */
+      s = expand_string(addr->local_part + 1);
+
+      if (s == NULL || *s == '\0') {
+       addr->transport_return = FAIL;
+       addr->message = string_sprintf("Expansion of \"%s\" "
+          "from command \"%s\" in %s failed: %s",
+          (addr->local_part + 1), cmd, etext, expand_string_message);
+        return FALSE;
+      }
+
+      while (isspace(*s)) s++; /* strip leading space */
+
+      while (*s != 0 && address_pipe_argcount < address_pipe_max_args)
+        {
+        if (*s == '\'')
+          {
+          ss = s + 1;
+          while (*ss != 0 && *ss != '\'') ss++;
+          address_pipe_argv[address_pipe_argcount++] = ss = store_get(ss - s++);
+          while (*s != 0 && *s != '\'') *ss++ = *s++;
+          if (*s != 0) s++;
+          *ss++ = 0;
+          }
+        else address_pipe_argv[address_pipe_argcount++] = string_dequote(&s);
+        while (isspace(*s)) s++; /* strip space after arg */
+        }
+
+      address_pipe_argv[address_pipe_argcount] = (uschar *)0;
+
+      /* If *s != 0 we have run out of argument slots. */
+      if (*s != 0)
+        {
+        uschar *msg = string_sprintf("Too many arguments in $address_pipe "
+          "\"%s\" in %s", addr->local_part + 1, etext);
+        if (addr != NULL)
+          {
+          addr->transport_return = FAIL;
+          addr->message = msg;
+          }
+        else *errptr = msg;
+        return FALSE;
+        }
+
+        /* address_pipe_argcount - 1
+         * because we are replacing $address_pipe in the argument list
+         * with the first thing it expands to */
+      if (argcount + address_pipe_argcount - 1 > max_args)
+        {
+        addr->transport_return = FAIL;
+        addr->message = string_sprintf("Too many arguments to command "
+          "\"%s\" after expanding $address_pipe in %s", cmd, etext);
+        return FALSE;
+        }
+
+      /* If we are not just able to replace the slot that contained
+       * $address_pipe (address_pipe_argcount == 1)
+       * We have to move the existing argv by address_pipe_argcount
+       * Visually if address_pipe_argcount == 2:
+       * [argv 0][argv 1][argv 2($address_pipe)][argv 3][0]
+       * [argv 0][argv 1][XXXXXX][XXXXXX][old argv 3][0]
+       */
+      if (address_pipe_argcount > 1)
+        memmove(
+          /* current position + additonal args */
+          argv + i + address_pipe_argcount,
+          /* current position + 1 (for the (uschar *)0 at the end) */
+          argv + i + 1,
+          /* -1 for the (uschar *)0 at the end)*/
+          (argcount - i)*sizeof(uschar *)
+        );
+
+      /* Now we fill in the slots we just moved argv out of
+       * [argv 0][argv 1][argv 2=pipeargv[0]][argv 3=pipeargv[1]][old argv 3][0]
+       */
+       for (address_pipe_i = 0;
+            address_pipe_argv[address_pipe_i] != (uschar *)0;
+            address_pipe_i++) {
+         argv[i++] = address_pipe_argv[address_pipe_i];
+         argcount++;
+        }
+
+        /* Subtract one since we replace $address_pipe */
+        argcount--;
+        i--;
+
       }
 
     /* Handle normal expansion string */

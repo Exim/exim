@@ -21,6 +21,7 @@ typedef struct {
   int   max_output;
   int   timeout;
   int   options;
+  BOOL  force_command;
   BOOL  freeze_exec_fail;
   BOOL  freeze_signal;
   BOOL  ignore_status;
