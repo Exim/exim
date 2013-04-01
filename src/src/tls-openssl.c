@@ -115,7 +115,8 @@ tls_ext_ctx_cb *client_static_cbinfo = NULL;
 tls_ext_ctx_cb *server_static_cbinfo = NULL;
 
 static int
-setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional, BOOL client);
+setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional,
+    int (*cert_vfy_cb)(int, X509_STORE_CTX *) );
 
 /* Callbacks */
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
@@ -307,6 +308,9 @@ else
 /*XXX JGH: this looks bogus - we set "verified" first time through, which
 will be for the root CS cert (calls work down the chain).  Why should it
 not be on the last call, where we're setting peerdn?
+
+To test: set up a chain anchored by a good root-CA but with a bad server cert.
+Does certificate_verified get set?
 */
 if (!*calledp) tlsp->certificate_verified = TRUE;
 *calledp = TRUE;
@@ -739,7 +743,7 @@ if (cbinfo->u_ocsp.server.file)
   }
 #endif
 
-rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE, FALSE);
+rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE, verify_callback_server);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 /* do this after setup_certs, because this can require the certs for verifying
@@ -1191,13 +1195,14 @@ Arguments:
   host          NULL in a server; the remote host in a client
   optional      TRUE if called from a server for a host in tls_try_verify_hosts;
                 otherwise passed as FALSE
-  client        TRUE if called for client startup, FALSE for server startup
+  cert_vfy_cb	Callback function for certificate verification
 
 Returns:        OK/DEFER/FAIL
 */
 
 static int
-setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional, BOOL client)
+setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional,
+    int (*cert_vfy_cb)(int, X509_STORE_CTX *) )
 {
 uschar *expcerts, *expcrl;
 
@@ -1296,7 +1301,7 @@ if (expcerts != NULL && *expcerts != '\0')
 
   SSL_CTX_set_verify(sctx,
     SSL_VERIFY_PEER | (optional? 0 : SSL_VERIFY_FAIL_IF_NO_PEER_CERT),
-    client ? verify_callback_client : verify_callback_server);
+    cert_vfy_cb);
   }
 
 return OK;
@@ -1375,13 +1380,15 @@ server_verify_callback_called = FALSE;
 
 if (verify_check_host(&tls_verify_hosts) == OK)
   {
-  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, FALSE, FALSE);
+  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL,
+  			FALSE, verify_callback_server);
   if (rc != OK) return rc;
   server_verify_optional = FALSE;
   }
 else if (verify_check_host(&tls_try_verify_hosts) == OK)
   {
-  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, TRUE, FALSE);
+  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL,
+  			TRUE, verify_callback_server);
   if (rc != OK) return rc;
   server_verify_optional = TRUE;
   }
@@ -1549,7 +1556,7 @@ if (expciphers != NULL)
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
-rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE, TRUE);
+rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE, verify_callback_client);
 if (rc != OK) return rc;
 
 if ((client_ssl = SSL_new(client_ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
