@@ -590,6 +590,18 @@ uschar *dkim_verify_signers      = US"$dkim_signers";
 BOOL    dkim_collect_input       = FALSE;
 BOOL    dkim_disable_verify      = FALSE;
 #endif
+#ifdef EXPERIMENTAL_DMARC
+int     dmarc_has_been_checked  = 0;
+uschar *dmarc_ar_header         = NULL;
+uschar *dmarc_forensic_sender   = NULL;
+uschar *dmarc_history_file      = NULL;
+uschar *dmarc_status            = NULL;
+uschar *dmarc_status_text       = NULL;
+uschar *dmarc_tld_file          = NULL;
+uschar *dmarc_used_domain       = NULL;
+BOOL    dmarc_disable_verify    = FALSE;
+BOOL    dmarc_enable_forensic   = FALSE;
+#endif
 
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;

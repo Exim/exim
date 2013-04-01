@@ -179,7 +179,7 @@ overwrite it temporarily if it is necessary to create the directory.
 Returns:       a file descriptor, or < 0 on failure (errno set)
 */
 
-static int
+int
 log_create(uschar *name)
 {
 int fd = Uopen(name, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);

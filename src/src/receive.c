@@ -13,6 +13,10 @@
 extern int dcc_ok;
 #endif
 
+#ifdef EXPERIMENTAL_DMARC
+#include "dmarc.h"
+#endif /* EXPERIMENTAL_DMARC */
+
 /*************************************************
 *                Local static variables          *
 *************************************************/
@@ -1480,6 +1484,10 @@ header_line *subject_header = NULL;
 header_line *msgid_header = NULL;
 header_line *received_header;
 
+#ifdef EXPERIMENTAL_DMARC
+int dmarc_up = 0;
+#endif /* EXPERIMENTAL_DMARC */
+
 /* Variables for use when building the Received: header. */
 
 uschar *timestamp;
@@ -1534,6 +1542,11 @@ message_linecount = body_linecount = body_zerocount =
 #ifndef DISABLE_DKIM
 /* Call into DKIM to set up the context. */
 if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_init();
+#endif
+
+#ifdef EXPERIMENTAL_DMARC
+/* initialize libopendmarc */
+dmarc_up = dmarc_init();
 #endif
 
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
@@ -2706,7 +2719,6 @@ if (from_header != NULL &&
     }
   }
 
-
 /* If there are any rewriting rules, apply them to the sender address, unless
 it has already been rewritten as part of verification for SMTP input. */
 
@@ -3238,7 +3250,6 @@ else
           }
         }
       }
-#endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
     if (recipients_count > 0 &&
@@ -3246,6 +3257,10 @@ else
         !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by))
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
+
+#ifdef EXPERIMENTAL_DMARC
+    dmarc_up = dmarc_store_data(from_header);
+#endif /* EXPERIMENTAL_DMARC */
 
 #ifdef EXPERIMENTAL_PRDR
     if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr != NULL )
@@ -3410,6 +3425,8 @@ else
       add_acl_headers(US"non-SMTP");
       }
     }
+
+#endif /* DISABLE_DKIM */
 
   /* The applicable ACLs have been run */
 
