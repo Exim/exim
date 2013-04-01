@@ -746,6 +746,7 @@ the Exim documentation, &"spool"& is always used in the first sense.
 .cindex "incorporated code"
 .cindex "regular expressions" "library"
 .cindex "PCRE"
+.cindex "OpenDMARC"
 A number of pieces of external code are included in the Exim distribution.
 
 .ilist
@@ -869,6 +870,14 @@ WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
 ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 .endblockquote
+
+.next
+.cindex "opendmarc" "acknowledgment"
+The DMARC implementation uses the OpenDMARC library which is Copyrighted by
+The Trusted Domain Project. Portions of Exim source which use OpenDMARC
+derived code are indicated in the respective source files. The full OpenDMARC
+license is provided in the LICENSE.opendmarc file contained in the distributed
+source code.
 
 .next
 Many people have contributed code fragments, some large, some small, that were
