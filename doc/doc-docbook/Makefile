@@ -5,8 +5,6 @@ notarget:;    @echo "** You must specify a target, in the form x.y, where x is '
 	      @echo "** One other possible target is 'exim.8'".
 	      exit 1
 
-EPUB_DOCBOOK= /usr/local/share/xsl/docbook/epub/docbook.xsl
-
 ############################# EVERYTHING ###############################
 #
 # Generate all the documentation files...
@@ -116,12 +114,8 @@ filter.info:  filter-info.xml
 	      makeinfo -o filter.info filter.texinfo
 
 filter.epub:   filter-epub.xml
-	rm -rf book-filter
-	mkdir book-filter
-	xsltproc -o book-filter/ $(EPUB_DOCBOOK) filter-epub.xml
-	echo "application/epub+zip" > book-filter/mimetype
-	( cd book-filter; zip -XqD ../filter.epub mimetype )
-	( cd book-filter; zip -Xr9D ../filter.epub META-INF OEBPS )
+	xmlto epub filter-epub.xml
+	mv filter-epub.epub filter.epub
 
 ########################################################################
 
@@ -207,12 +201,8 @@ spec.info:    spec-info.xml
 	      makeinfo -o spec.info --no-split spec.texinfo
 
 spec.epub:   spec-epub.xml
-	rm -rf book-spec
-	mkdir book-spec
-	xsltproc -o book-spec/ $(EPUB_DOCBOOK) spec-epub.xml
-	echo "application/epub+zip" > book-spec/mimetype
-	( cd book-spec; zip -XqD ../spec.epub mimetype )
-	( cd book-spec; zip -Xr9D ../spec.epub META-INF OEBPS )
+	xmlto epub spec-epub.xml
+	mv spec-epub.epub spec.epub
 
 ########################################################################
 
@@ -320,7 +310,8 @@ clean:; /bin/rm -rf exim.8 \
 	      *.fo *.pdf *.ps \
 	      filter*.html spec*.html test*.html \
 	      filter*.txt spec*.txt test*.txt \
-	      *.info* *.texinfo *.texi
+	      *.info* *.texinfo *.texi \
+	      *.epub
 
 ########################################################################
 # vim: set ts=4 :
