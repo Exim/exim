@@ -36,7 +36,9 @@
 #            except when preceded by <entry> (i.e. not in tables). The same is
 #            also done within a word of four or more upper-case letters (for
 #            compile-time options).
-
+#
+# -epub      Convert date formats to comply with epub specification
+#
 
 
 # The function that processes non-literal, non-monospaced text
@@ -71,11 +73,18 @@ if ($ascii)
 $s;
 }
 
+# Mapping needed for epub
+
+my %months = (
+  jan => '01', feb => '02', mar => '03', apr => '04', may => '05', jun => '06',
+  jul => '07', aug => '08', sep => '09', oct => '10', nov => '11', dec => '12',
+);
 
 # The main program
 
 $ascii     = 0;
 $bookinfo  = 0;
+$epub      = 0;
 $html      = 0;
 $inliteral = 0;
 $inliterallayout = 0;
@@ -91,6 +100,7 @@ foreach $arg (@ARGV)
   if    ($arg eq "-fi")       { $ligatures = 1; }
   elsif ($arg eq "-ascii")    { $ascii = 1; }
   elsif ($arg eq "-bookinfo") { $bookinfo = 1; }
+  elsif ($arg eq "-epub")     { $epub = 1; }
   elsif ($arg eq "-html")     { $html = 1; }
   elsif ($arg eq "-noindex")  { $noindex = 1; }
   elsif ($arg eq "-oneindex") { $oneindex = 1; }
@@ -139,6 +149,25 @@ while (<STDIN>)
       }
 
     next;
+    }
+
+  # Adjust dates to YYYY-MM-DD
+
+  if ($epub && /^\s*<date[\s>]/)
+    {
+    print;
+    while (<STDIN>)
+      {
+      last if /^\s*<\/date>/;
+
+      if (/^ \s* (\d{1,2}) \s+ ([a-zA-Z]{3}) \s+ (\d{4})/x)
+        {
+        die "Unknown month '$2'\n" unless exists $months{lc $2};
+        my $month = $months{lc $2};
+        s//$3-$month-$1/;
+        }
+      print;
+      }
     }
 
   # A line that is not in a monospaced literal block; keep track of which

@@ -5,6 +5,7 @@ notarget:;    @echo "** You must specify a target, in the form x.y, where x is '
 	      @echo "** One other possible target is 'exim.8'".
 	      exit 1
 
+EPUB_DOCBOOK= /usr/local/share/xsl/docbook/epub/docbook.xsl
 
 ############################# EVERYTHING ###############################
 #
@@ -12,8 +13,8 @@ notarget:;    @echo "** You must specify a target, in the form x.y, where x is '
 #
 ## removed info files as I cannot generate them -  spec.info filter.info
 ## removed html files as superceded by new website code
-everything:		spec.pdf 	spec.ps  	spec.txt \
-				filter.pdf 	filter.ps filter.txt \
+everything:		spec.pdf	spec.ps		spec.txt	spec.epub \
+				filter.pdf	filter.ps	filter.txt	filter.epub \
 				exim.8
 
 ############################## MAN PAGE ################################
@@ -49,6 +50,9 @@ filter-txt.xml:  filter.xml Pre-xml
 
 filter-info.xml: filter.xml Pre-xml
 		 ./Pre-xml -ascii -html <filter.xml >filter-info.xml
+
+filter-epub.xml: filter.xml Pre-xml
+		 ./Pre-xml -epub <filter.xml >filter-epub.xml
 
 filter.fo:       filter-pr.xml MyStyle-filter-fo.xsl MyStyle-fo.xsl MyStyle.xsl
 		 /bin/rm -rf filter.fo filter-pr.fo
@@ -111,6 +115,14 @@ filter.info:  filter-info.xml
 	      /bin/rm -rf exim_filtering.texi
 	      makeinfo -o filter.info filter.texinfo
 
+filter.epub:   filter-epub.xml
+	rm -rf book-filter
+	mkdir book-filter
+	xsltproc -o book-filter/ $(EPUB_DOCBOOK) filter-epub.xml
+	echo "application/epub+zip" > book-filter/mimetype
+	( cd book-filter; zip -XqD ../filter.epub mimetype )
+	( cd book-filter; zip -Xr9D ../filter.epub META-INF OEBPS )
+
 ########################################################################
 
 
@@ -128,6 +140,9 @@ spec-txt.xml:  spec.xml Pre-xml
 
 spec-info.xml: spec.xml Pre-xml
 	       ./Pre-xml -ascii -html -noindex <spec.xml >spec-info.xml
+
+spec-epub.xml: spec.xml Pre-xml
+		 ./Pre-xml -epub <spec.xml >spec-epub.xml
 
 spec.fo:       spec-pr.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl \
                MyTitleStyle.xsl
@@ -190,6 +205,14 @@ spec.info:    spec-info.xml
 	      ./TidyInfo <the_exim_mta.texi >spec.texinfo
 	      /bin/rm -rf the_exim_mta.texi
 	      makeinfo -o spec.info --no-split spec.texinfo
+
+spec.epub:   spec-epub.xml
+	rm -rf book-spec
+	mkdir book-spec
+	xsltproc -o book-spec/ $(EPUB_DOCBOOK) spec-epub.xml
+	echo "application/epub+zip" > book-spec/mimetype
+	( cd book-spec; zip -XqD ../spec.epub mimetype )
+	( cd book-spec; zip -Xr9D ../spec.epub META-INF OEBPS )
 
 ########################################################################
 
@@ -300,3 +323,4 @@ clean:; /bin/rm -rf exim.8 \
 	      *.info* *.texinfo *.texi
 
 ########################################################################
+# vim: set ts=4 :
