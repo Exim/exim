@@ -130,6 +130,10 @@ Version 4.82
 18. If built with EXPERIMENTAL_PRDR, per-recipient data responses per a
     proposed extension to SMTP from Eric Hall.
 
+19. The pipe transport has gained the force_command option, to allow
+    decorating commands from user .forward pipe aliases with prefix
+    wrappers, for instance.
+
 
 Version 4.80
 ------------

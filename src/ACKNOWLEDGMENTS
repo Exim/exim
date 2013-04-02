@@ -405,6 +405,7 @@ John Horne                Patch adding $av_failed
                           Pointed out ClamAV ExtendedDetectionInfo compat issue
 Regid Ichira              Documentation fixes
 Andreas M. Kirchwitz      Let /dev/null have normal permissions (4.73 fallout)
+J. Nick Koston            Patch adding force_command pipe transport option
 Roberto Lima              Patch letting exicyclog rotate paniclog
 Todd Lyons                Patch handling TAB in MAIL arguments
 Christof Meerwald         Provided insight & suggested patch for GnuTLS update

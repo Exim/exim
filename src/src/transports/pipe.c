@@ -572,17 +572,20 @@ options. */
 
 if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
   {
-    if (ob->force_command) {
-     /* Enables expansion of $address_pipe into seperate arguments */
-     setflag(addr,af_force_command);
-     cmd = ob->cmd;
-     expand_arguments = TRUE;
-     expand_fail = PANIC;
-    } else {
-     cmd = addr->local_part + 1;
-     while (isspace(*cmd)) cmd++;
-     expand_arguments = testflag(addr, af_expand_pipe);
-     expand_fail = FAIL;
+  if (ob->force_command)
+    {
+    /* Enables expansion of $address_pipe into seperate arguments */
+    setflag(addr, af_force_command);
+    cmd = ob->cmd;
+    expand_arguments = TRUE;
+    expand_fail = PANIC;
+    }
+  else
+    {
+    cmd = addr->local_part + 1;
+    while (isspace(*cmd)) cmd++;
+    expand_arguments = testflag(addr, af_expand_pipe);
+    expand_fail = FAIL;
     }
   }
 else

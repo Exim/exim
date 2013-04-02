@@ -235,6 +235,7 @@ forbid_include                       boolean         false         redirect     
 forbid_pipe                          boolean         false         redirect          4.00
 forbid_sieve_filter                  boolean         false         redirect          4.44
 forbid_smtp_code                     boolean         false         redirect          4.63
+force_command                        boolean         false         pipe              4.82
 freeze_exec_fail                     boolean         false         pipe              1.89
 freeze_signal                        boolean         false         pipe              4.75
 freeze_tell                          boolean         false         main              4.00 replaces freeze_tell_mailmaster
