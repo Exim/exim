@@ -1753,11 +1753,25 @@ vaguely_random_number(int max)
 {
 unsigned int r;
 int i, needed_len;
+static pid_t pidlast = 0;
+pid_t pidnow;
 uschar *p;
 uschar smallbuf[sizeof(r)];
 
 if (max <= 1)
   return 0;
+
+pidnow = getpid();
+if (pidnow != pidlast)
+  {
+  /* Although OpenSSL documents that "OpenSSL makes sure that the PRNG state
+  is unique for each thread", this doesn't apparently apply across processes,
+  so our own warning from vaguely_random_number_fallback() applies here too.
+  Fix per PostgreSQL. */
+  if (pidlast != 0)
+    RAND_cleanup();
+  pidlast = pidnow;
+  }
 
 /* OpenSSL auto-seeds from /dev/random, etc, but this a double-check. */
 if (!RAND_status())
