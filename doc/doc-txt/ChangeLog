@@ -99,6 +99,10 @@ TL/09 Bugzilla 609: Add -C option to exiqgrep, specify which exim.conf to use.
 
 JH/19 EXPERIMENTAL_OCSP support under GnuTLS.  Bug 1459.
 
+TL/10 Bugzilla 1454: New -oMm option to pass message reference to Exim.
+      Requires trusted mode and valid format message id, aborts otherwise.
+      Patch contributed by Heiko Schlichting.
+
 
 Exim version 4.82
 -----------------

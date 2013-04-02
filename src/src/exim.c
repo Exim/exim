@@ -2989,6 +2989,23 @@ for (i = 1; i < argc; i++)
 
       else if (Ustrcmp(argrest, "Mi") == 0) interface_address = argv[++i];
 
+      /* -oMm: Message reference */
+
+      else if (Ustrcmp(argrest, "Mm") == 0)
+        {
+        if (!mac_ismsgid(argv[i+1]))
+          {
+            fprintf(stderr,"-oMm must be a valid message ID\n");
+            exit(EXIT_FAILURE);
+          }
+        if (!trusted_config)
+          {
+            fprintf(stderr,"-oMm must be called by a trusted user/config\n");
+            exit(EXIT_FAILURE);
+          }
+          message_reference = argv[++i];
+        }
+
       /* -oMr: Received protocol */
 
       else if (Ustrcmp(argrest, "Mr") == 0) received_protocol = argv[++i];

@@ -4221,6 +4221,20 @@ option sets the IP interface address value. A port number may be included,
 using the same syntax as for &%-oMa%&. The interface address is placed in
 &$received_ip_address$& and the port number, if present, in &$received_port$&.
 
+.vitem &%-oMm%&&~<&'message&~reference'&>
+.oindex "&%-oMm%&"
+.cindex "message reference" "message reference, specifying for local message"
+See &%-oMa%& above for general remarks about the &%-oM%& options. The &%-oMm%&
+option sets the message reference, e.g. message-id, and is logged during
+delivery. This is useful when some kind of audit trail is required to tie
+messages together. The format of the message reference is checked and will
+abort if the format is invalid. The option will only be accepted if exim is
+running in trusted mode, not as any regular user.
+
+The best example of a message reference is when Exim sends a bounce message.
+The message reference is the message-id of the original message for which Exim
+is sending the bounce.
+
 .vitem &%-oMr%&&~<&'protocol&~name'&>
 .oindex "&%-oMr%&"
 .cindex "protocol, specifying for local message"

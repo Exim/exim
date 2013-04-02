@@ -714,6 +714,7 @@ provide compatibility with Sendmail.
 -oMai          # Supply authenticated id
 -oMas          # Supply authenticated sender
 -oMi           # Supply interface address
+-oMm           # Supply message reference
 -oMr           # Supply protocol name
 -oMs           # Supply host name
 -oMt           # Supply ident string
