@@ -4335,7 +4335,7 @@ For compatibility with Sendmail, this option is equivalent to
 It sets the incoming protocol and host name (for trusted callers). The
 host name and its colon can be omitted when only the protocol is to be set.
 Note the Exim already has two private options, &%-pd%& and &%-ps%&, that refer
-to embedded Perl. It is therefore impossible to set a protocol value of &`p`&
+to embedded Perl. It is therefore impossible to set a protocol value of &`d`&
 or &`s`& using this option (but that does not seem a real limitation).
 
 .vitem &%-q%&
