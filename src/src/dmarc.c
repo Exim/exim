@@ -12,6 +12,11 @@
 
 #include "exim.h"
 #ifdef EXPERIMENTAL_DMARC
+#if !defined EXPERIMENTAL_SPF
+#error SPF must also be enabled for DMARC
+#elif defined DISABLE_DKIM
+#error DKIM must also be enabled for DMARC
+#else
 
 #include "functions.h"
 #include "dmarc.h"
@@ -25,15 +30,12 @@ BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
 header_line *from_header   = NULL;
-#ifdef EXPERIMENTAL_SPF
 extern SPF_response_t   *spf_response;
 int    dmarc_spf_result     = 0;
 uschar *spf_sender_domain  = NULL;
 uschar *spf_human_readable = NULL;
-#endif
 u_char *header_from_sender = NULL;
 int history_file_status    = DMARC_HIST_OK;
-uschar *history_buffer     = NULL;
 uschar *dkim_history_buffer= NULL;
 
 /* Accept an error_block struct, initialize if empty, parse to the
@@ -64,7 +66,8 @@ add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
    messages on the same SMTP connection (that come from the
    same host with the same HELO string) */
 
-int dmarc_init() {
+int dmarc_init()
+{
   int *netmask   = NULL;   /* Ignored */
   int is_ipv6    = 0;
   char *tld_file = (dmarc_tld_file == NULL) ?
@@ -79,10 +82,8 @@ int dmarc_init() {
   dmarc_pass_fail    = US"skipped";
   dmarc_used_domain  = US"";
   header_from_sender = NULL;
-#ifdef EXPERIMENTAL_SPF
   spf_sender_domain  = NULL;
   spf_human_readable = NULL;
-#endif
 
   /* ACLs have "control=dmarc_disable_verify" */
   if (dmarc_disable_verify == TRUE)
@@ -190,7 +191,6 @@ int dmarc_process() {
    * instead do this in the ACLs.  */
   if (dmarc_abort == FALSE && sender_host_authenticated == NULL)
   {
-#ifdef EXPERIMENTAL_SPF
     /* Use the envelope sender domain for this part of DMARC */
     spf_sender_domain = expand_string(US"$sender_address_domain");
     if ( spf_response == NULL )
@@ -250,7 +250,6 @@ int dmarc_process() {
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store spf for DMARC: %s",
                              opendmarc_policy_status_to_str(libdm_status));
     }
-#endif /* EXPERIMENTAL_SPF */
 
     /* Now we cycle through the dkim signature results and put into
      * the opendmarc context, further building the DMARC reply.  */
@@ -402,6 +401,7 @@ int dmarc_write_history_file()
   ssize_t written_len;
   int tmp_ans;
   u_char **rua; /* aggregate report addressees */
+  uschar *history_buffer = NULL;
 
   if (dmarc_history_file == NULL)
     return DMARC_HIST_DISABLED;
@@ -423,12 +423,9 @@ int dmarc_write_history_file()
   history_buffer = string_sprintf("%smfrom %s\n", history_buffer,
                      expand_string(US"$sender_address_domain"));
 
-#ifdef EXPERIMENTAL_SPF
   if (spf_response != NULL)
     history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_result);
-#else
-    history_buffer = string_sprintf("%sspf -1\n", history_buffer);
-#endif /* EXPERIMENTAL_SPF */
+    // history_buffer = string_sprintf("%sspf -1\n", history_buffer);
 
   history_buffer = string_sprintf("%s%s", history_buffer, dkim_history_buffer);
   history_buffer = string_sprintf("%spdomain %s\n", history_buffer, dmarc_used_domain);
@@ -581,7 +578,6 @@ uschar *dmarc_auth_results_header(header_line *from_header, uschar *hostname)
 #if 0
   /* I don't think this belongs here, but left it here commented out
    * because it was a lot of work to get working right. */
-#ifdef EXPERIMENTAL_SPF
   if (spf_response != NULL) {
     uschar *dmarc_ar_spf = US"";
     int sr               = 0;
@@ -597,7 +593,6 @@ uschar *dmarc_auth_results_header(header_line *from_header, uschar *hostname)
                              expand_string(US"$sender_address") );
   }
 #endif
-#endif
   hdr_tmp = string_sprintf("%s dmarc=%s",
                            hdr_tmp, dmarc_pass_fail);
   if (header_from_sender)
@@ -606,6 +601,7 @@ uschar *dmarc_auth_results_header(header_line *from_header, uschar *hostname)
   return hdr_tmp;
 }
 
-#endif
+#endif /* EXPERIMENTAL_SPF */
+#endif /* EXPERIMENTAL_DMARC */
 
 // vim:sw=2 expandtab

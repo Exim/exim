@@ -43,6 +43,6 @@ void dmarc_send_forensic_report(u_char **);
 #define DMARC_RESULT_QUARANTINE 4
 
 
-#endif
+#endif /* EXPERIMENTAL_DMARC */
 
 // vim:sw=2 expandtab

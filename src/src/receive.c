@@ -3250,6 +3250,7 @@ else
           }
         }
       }
+#endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
     if (recipients_count > 0 &&
@@ -3425,8 +3426,6 @@ else
       add_acl_headers(US"non-SMTP");
       }
     }
-
-#endif /* DISABLE_DKIM */
 
   /* The applicable ACLs have been run */
 
