@@ -69,6 +69,7 @@ check_string =
 command = /x/y
 environment = 
 escape_string = 
+no_force_command
 no_freeze_exec_fail
 no_freeze_signal
 no_ignore_status
@@ -122,6 +123,7 @@ check_string =
 command = /x/y
 environment = 
 escape_string = 
+no_force_command
 no_freeze_exec_fail
 no_freeze_signal
 no_ignore_status
