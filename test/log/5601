@@ -1,0 +1,41 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => nostaple@test.ex R=client T=send_to_server1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:AES256-SHA:256 DN="/CN=server1.example.com" C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER@test.ex R=client T=send_to_server2 H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 Received TLS status response, null content
+1999-03-02 09:44:33 10HmbB-0005vi-00 TLS error on connection to 127.0.0.1 [127.0.0.1] (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbB-0005vi-00 == CALLER@test.ex R=client T=send_to_server2 defer (-37): failure while setting up TLS session
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 Server certificate revoked; reason: superseded
+1999-03-02 09:44:33 10HmbC-0005vi-00 TLS error on connection to 127.0.0.1 [127.0.0.1] (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbC-0005vi-00 == CALLER@test.ex R=client T=send_to_server2 defer (-37): failure while setting up TLS session
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 Server OSCP dates invalid
+1999-03-02 09:44:33 10HmbD-0005vi-00 TLS error on connection to 127.0.0.1 [127.0.0.1] (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbD-0005vi-00 == CALLER@test.ex R=client T=send_to_server2 defer (-37): failure while setting up TLS session
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:AES256-SHA:256 S=sss id=E10HmaX-0005vi-00@server1.example.com
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <nostaple@test.ex> R=server
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 [127.0.0.1] Recieved OCSP stapling req; responding
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@server1.example.com H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLSv1:AES256-SHA:256 S=sss id=E10HmaZ-0005vi-00@server1.example.com
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <CALLER@test.ex> R=server
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 [127.0.0.1] Recieved OCSP stapling req; not responding
+1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
+1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 [127.0.0.1] Recieved OCSP stapling req; responding
+1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
+1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 [127.0.0.1] Recieved OCSP stapling req; responding
+1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
+1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)

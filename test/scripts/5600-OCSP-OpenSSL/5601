@@ -1,0 +1,65 @@
+# OCSP stapling, client
+#
+#
+# Client works when we don't demand OCSP stapling
+exim -bd -oX PORT_D -DSERVER=server -DOCSP=/dev/null
+****
+exim nostaple@test.ex
+test message.
+****
+sleep 1
+killdaemon
+#
+#
+#
+#
+# Client accepts good stapled info
+exim -bd -oX PORT_D -DSERVER=server \
+ -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+****
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+#
+#
+#
+# Client fails on lack of requested stapled info
+exim -bd -oX PORT_D -DSERVER=server -DOCSP=/dev/null
+****
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+no_msglog_check
+#
+#
+#
+# Client fails on revoked stapled info
+EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
+ -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
+****
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+#
+#
+#
+#
+# Client fails on expired stapled info
+EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
+ -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
+****
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+#
+#
+#
+#

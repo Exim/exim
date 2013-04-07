@@ -1547,7 +1547,6 @@ Arguments:
   fd                the fd of the connection
   host              connected host (for messages)
   addr              the first address (not used)
-  dhparam           DH parameter file (ignored, we're a client)
   certificate       certificate file
   privatekey        private key file
   sni               TLS SNI to send to remote host
@@ -1563,10 +1562,14 @@ Returns:            OK/DEFER/FAIL (because using common functions),
 
 int
 tls_client_start(int fd, host_item *host,
-    address_item *addr ARG_UNUSED, uschar *dhparam ARG_UNUSED,
+    address_item *addr ARG_UNUSED,
     uschar *certificate, uschar *privatekey, uschar *sni,
     uschar *verify_certs, uschar *verify_crl,
-    uschar *require_ciphers, int dh_min_bits, int timeout)
+    uschar *require_ciphers,
+#ifdef EXPERIMENTAL_OCSP
+    uschar *require_ocsp ARG_UNUSED,
+#endif
+    int dh_min_bits, int timeout)
 {
 int rc;
 const char *error;

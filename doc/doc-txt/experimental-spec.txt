@@ -69,7 +69,7 @@ starts retrying to fetch an OCSP proof some time before its current
 proof expires.  The downside is that it requires server support.
 
 If Exim is built with EXPERIMENTAL_OCSP and it was built with OpenSSL,
-then it gains one new option: "tls_ocsp_file".
+then it gains a new global option: "tls_ocsp_file".
 
 The file specified therein is expected to be in DER format, and contain
 an OCSP proof.  Exim will serve it as part of the TLS handshake.  This
@@ -86,10 +86,15 @@ next connection.
 Exim will check for a valid next update timestamp in the OCSP proof;
 if not present, or if the proof has expired, it will be ignored.
 
+Also, given EXPERIMENTAL_OCSP and OpenSSL, the smtp transport gains
+a "hosts_require_ocsp" option; a host-list for which an OCSP Stapling
+is requested and required for the connection to proceed.  The host(s)
+should also be in "hosts_require_tls", and "tls_verify_certificates"
+configured for the transport.
+
 At this point in time, we're gathering feedback on use, to determine if
 it's worth adding complexity to the Exim daemon to periodically re-fetch
-OCSP files and somehow handling multiple files.  There is no client support
-for OCSP in Exim, this is feature expected to be used by mail clients.
+OCSP files and somehow handling multiple files.
 
 
 

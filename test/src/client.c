@@ -1,7 +1,8 @@
 /* A little hacked up program that makes a TCP/IP call and reads a script to
 drive it, for testing Exim server code running as a daemon. It's got a bit
 messy with the addition of support for either OpenSSL or GnuTLS. The code for
-those was hacked out of Exim itself. */
+those was hacked out of Exim itself, then code for OCSP stapling was ripped
+from the openssl ocsp and s_client utilities. */
 
 /* ANSI C standard includes */
 
@@ -66,6 +67,9 @@ latter needs a whole pile of tables. */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#include <openssl/ocsp.h>
+
+char * ocsp_stapling = NULL;
 #endif
 
 
@@ -145,6 +149,91 @@ sigalrm_seen = 1;
 /****************************************************************************/
 
 #ifdef HAVE_OPENSSL
+
+X509_STORE *
+setup_verify(BIO *bp, char *CAfile, char *CApath)
+{
+        X509_STORE *store;
+        X509_LOOKUP *lookup;
+        if(!(store = X509_STORE_new())) goto end;
+        lookup=X509_STORE_add_lookup(store,X509_LOOKUP_file());
+        if (lookup == NULL) goto end;
+        if (CAfile) {
+                if(!X509_LOOKUP_load_file(lookup,CAfile,X509_FILETYPE_PEM)) {
+                        BIO_printf(bp, "Error loading file %s\n", CAfile);
+                        goto end;
+                }
+        } else X509_LOOKUP_load_file(lookup,NULL,X509_FILETYPE_DEFAULT);
+
+        lookup=X509_STORE_add_lookup(store,X509_LOOKUP_hash_dir());
+        if (lookup == NULL) goto end;
+        if (CApath) {
+                if(!X509_LOOKUP_add_dir(lookup,CApath,X509_FILETYPE_PEM)) {
+                        BIO_printf(bp, "Error loading directory %s\n", CApath);
+                        goto end;
+                }
+        } else X509_LOOKUP_add_dir(lookup,NULL,X509_FILETYPE_DEFAULT);
+
+        ERR_clear_error();
+        return store;
+        end:
+        X509_STORE_free(store);
+        return NULL;
+}
+
+
+static int
+tls_client_stapling_cb(SSL *s, void *arg)
+{
+const unsigned char *p;
+int len;
+OCSP_RESPONSE *rsp;
+OCSP_BASICRESP *bs;
+char *CAfile = NULL;
+X509_STORE *store = NULL;
+int ret = 1;
+
+len = SSL_get_tlsext_status_ocsp_resp(s, &p);
+/*BIO_printf(arg, "OCSP response: ");*/
+if (!p)
+	{
+	BIO_printf(arg, "no response received\n");
+	return 1;
+	}
+if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
+	{
+	BIO_printf(arg, "response parse error\n");
+	BIO_dump_indent(arg, (char *)p, len, 4);
+	return 0;
+	}
+if(!(bs = OCSP_response_get1_basic(rsp)))
+  {
+  BIO_printf(arg, "error parsing response\n");
+  return 0;
+  }
+
+CAfile = ocsp_stapling;
+if(!(store = setup_verify(arg, CAfile, NULL)))
+  {
+  BIO_printf(arg, "error in cert setup\n");
+  return 0;
+  }
+
+/* No file of alternate certs, no options */
+if(OCSP_basic_verify(bs, NULL, store, 0) <= 0)
+  {
+  BIO_printf(arg, "Response Verify Failure\n");
+  ERR_print_errors(arg);
+  ret = 0;
+  }
+else
+  BIO_printf(arg, "Response verify OK\n");
+
+X509_STORE_free(store);
+return ret;
+}
+
+
 /*************************************************
 *         Start an OpenSSL TLS session           *
 *************************************************/
@@ -160,6 +249,13 @@ RAND_load_file("client.c", -1);   /* Not *very* random! */
 SSL_set_session_id_context(*ssl, sid_ctx, strlen(sid_ctx));
 SSL_set_fd (*ssl, sock);
 SSL_set_connect_state(*ssl);
+
+if (ocsp_stapling)
+  {
+  SSL_CTX_set_tlsext_status_cb(ctx, tls_client_stapling_cb);
+  SSL_CTX_set_tlsext_status_arg(ctx, BIO_new_fp(stdout, BIO_NOCLOSE));
+  SSL_set_tlsext_status_type(*ssl, TLSEXT_STATUSTYPE_ocsp);
+  }
 
 signal(SIGALRM, sigalrm_handler_flag);
 sigalrm_seen = 0;
@@ -418,6 +514,17 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
     tls_on_connect = 1;
     argi++;
     }
+#ifdef HAVE_OPENSSL
+  else if (strcmp(argv[argi], "-ocsp") == 0)
+    {
+    if (argc < ++argi + 1)
+      {
+      fprintf(stderr, "Missing required certificate file for ocsp option\n");
+      exit(1);
+      }
+    ocsp_stapling = argv[argi++];
+    }
+#endif
   else if (argv[argi][1] == 't' && isdigit(argv[argi][2]))
     {
     tmplong = strtol(argv[argi]+2, &end, 10);
