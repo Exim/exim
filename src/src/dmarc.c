@@ -98,7 +98,9 @@ int dmarc_init()
                          opendmarc_policy_status_to_str(libdm_status));
     dmarc_abort = TRUE;
   }
-  if (opendmarc_tld_read_file(tld_file, NULL, NULL, NULL))
+  if (dmarc_tld_file == NULL)
+    dmarc_abort = TRUE;
+  else if (opendmarc_tld_read_file(tld_file, NULL, NULL, NULL))
   {
     log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to load tld list %s: %d",
                          tld_file, errno);
