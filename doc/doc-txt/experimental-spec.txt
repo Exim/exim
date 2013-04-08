@@ -627,6 +627,209 @@ mout.gmx.net                    212.227.15.16
 
 Use a reasonable IP. eg. one the sending cluster acutally uses.
 
+DMARC Support
+--------------------------------------------------------------
+
+DMARC combines feedback from SPF, DKIM, and header From: in order
+to attempt to provide better indicators of the authenticity of an
+email.  This document does not explain the fundamentals, you
+should read and understand how it works by visiting the website at
+http://www.dmarc.org/.
+
+DMARC support is added via the libopendmarc library.  Visit:
+
+  http://sourceforge.net/projects/opendmarc/
+
+to obtain a copy, or find it in your favorite rpm package
+repository.  If building from source, this description assumes
+that headers will be in /usr/local/include, and that the libraries
+are in /usr/local/lib.
+
+1. To compile Exim with DMARC support, you must first enable SPF.
+Please read the above section on enabling the EXPERIMENTAL_SPF
+feature.  You must also have DKIM support, so you cannot set the
+DISABLE_DKIM feature.  Once both of those conditions have been met
+you can enable DMARC in Local/Makefile:
+
+EXPERIMENTAL_DMARC=yes
+LDFLAGS += -lopendmarc
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -L/usr/local/lib
+
+The first line sets the feature to include the correct code, and
+the second line says to link the libopendmarc libraries into the
+exim binary.  The commented out lines should be uncommented if you
+built opendmarc from source and installed in the default location.
+Adjust the paths if you installed them elsewhere, but you do not
+need to uncomment them if an rpm (or you) installed them in the
+package controlled locations (/usr/include and /usr/lib).
+
+
+2. Use the following global settings to configure DMARC:
+
+Required:
+dmarc_tld_file      Defines the location of a text file of valid
+                    top level domains the opendmarc library uses
+                    during domain parsing. Maintained by Mozilla,
+                    the most current version can be downloaded
+                    from a link at http://publicsuffix.org/list/.
+
+Optional:
+dmarc_history_file  Defines the location of a file to log results
+                    of dmarc verification on inbound emails. The
+                    contents are importable by the opendmarc tools
+                    which will manage the data, send out DMARC
+                    reports, and expire the data. Make sure the
+                    directory of this file is writable by the user
+                    exim runs as.
+
+dmarc_forensic_sender The email address to use when sending a
+                    forensic report detailing alignment failures
+                    if a sender domain's dmarc record specifies it
+                    and you have configured Exim to send them.
+                    Default: do-not-reply@$default_hostname
+
+
+3. By default, the DMARC processing will run for any remote,
+non-authenticated user.  It makes sense to only verify DMARC
+status of messages coming from remote, untrusted sources.  You can
+use standard conditions such as hosts, senders, etc, to decide that
+DMARC verification should *not* be performed for them and disable
+DMARC with a control setting:
+
+  control = dmarc_verify_disable
+
+A DMARC record can also specify a "forensic address", which gives
+exim an email address to submit reports about failed alignment.
+Exim does not do this by default because in certain conditions it
+results in unintended information leakage (what lists a user might
+be subscribed to, etc).  You must configure exim to submit forensic
+reports to the owner of the domain.  If the DMARC record contains a
+forensic address and you specify the control statement below, then
+exim will send these forensic emails.  It's also advised that you
+configure a dmarc_forensic_sender because the default sender address
+construction might be inadequate.
+
+  control = dmarc_forensic_enable
+
+(AGAIN: You can choose not to send these forensic reports by simply
+not putting the dmarc_forensic_enable control line at any point in
+your exim config.  If you don't tell it to send them, it will not
+send them.)
+
+There are no options to either control.  Both must appear before
+the DATA acl.
+
+
+4. You can now run DMARC checks in incoming SMTP by using the
+"dmarc_status" ACL condition in the DATA ACL.  You are required to
+call the spf condition first in the ACLs, then the "dmarc_status"
+condition.  Putting this condition in the ACLs is required in order
+for a DMARC check to actually occur.  All of the variables are set
+up before the DATA ACL, but there is no actual DMARC check that
+occurs until a "dmarc_status" condition is encountered in the ACLs.
+
+The dmarc_status condition takes a list of strings on its
+right-hand side.  These strings describe recommended action based
+on the DMARC check.  To understand what the policy recommendations
+mean, refer to the DMARC website above.  Valid strings are:
+
+  o accept      The DMARC check passed and the library recommends
+                accepting the email.
+  o reject      The DMARC check failed and the library recommends
+                rejecting the email.
+  o quarantine  The DMARC check failed and the library recommends
+                keeping it for further inspection.
+  o norecord    No policy section in the DMARC record for this
+                sender domain.
+  o nofrom      Unable to determine the domain of the sender.
+  o none        There is no DMARC record for this sender domain.
+  o error       Library error or dns error.
+
+You can prefix each string with an exclamation mark to invert its
+meaning, for example "!accept" will match all results but
+"accept".  The string list is evaluated left-to-right in a
+short-circuit fashion.  When a string matches the outcome of the
+DMARC check, the condition succeeds.  If none of the listed
+strings matches the outcome of the DMARC check, the condition
+fails.
+
+Of course, you can also use any other lookup method that Exim
+supports, including LDAP, Postgres, MySQL, etc, as long as the
+result is a list of colon-separated strings;
+
+Several expansion variables are set before the DATA ACL is
+processed, and you can use them in this ACL.  The following
+expansion variables are available:
+
+  o $dmarc_status
+    This is a one word status indicating what the DMARC library
+    thinks of the email.
+
+  o $dmarc_status_text
+    This is a slightly longer, human readable status.
+
+  o $dmarc_used_domain
+    This is the domain which DMARC used to look up the DMARC
+    policy record.
+
+  o $dmarc_ar_header
+    This is the entire Authentication-Results header which you can
+    add using an add_header modifier.
+
+
+5. How to enable DMARC advanced operation:
+By default, Exim's DMARC configuration is intended to be
+non-intrusive and conservative.  To facilitate this, Exim will not
+create any type of logging files without explicit configuration by
+you, the admin.  Nor will Exim send out any emails/reports about
+DMARC issues without explicit configuration by you, the admin (other
+than typical bounce messages that may come about due to ACL
+processing or failure delivery issues).
+
+In order to log statistics suitable to be imported by the opendmarc
+tools, you need to:
+a. Configure the global setting dmarc_history_file.
+b. Configure cron jobs to call the appropriate opendmarc history
+   import scripts and truncating the dmarc_history_file.
+
+In order to send forensic reports, you need to:
+a. Configure the global setting dmarc_forensic_sender.
+b. Configure, somewhere before the DATA ACL, the control option to
+   enable sending DMARC forensic reports.
+
+
+6. Example usage:
+(RCPT ACL)
+  warn    domains        = +local_domains
+          hosts          = +local_hosts
+          control        = dmarc_verify_disable
+
+  warn    !domains       = +screwed_up_dmarc_records
+          control        = dmarc_enable_forensic
+
+(DATA ACL)
+  warn    dmarc_status   = accept : none : off
+          !authenticated = *
+          log_message    = DMARC DEBUG: $dmarc_status $dmarc_used_domain
+          add_header     = $dmarc_ar_header
+
+  warn    dmarc_status   = !accept
+          !authenticated = *
+          log_message    = DMARC DEBUG: '$dmarc_status' for $dmarc_used_domain
+
+  warn    dmarc_status   = quarantine
+          !authenticated = *
+          set $acl_m_quarantine = 1
+          # Do something in a transport with this flag variable
+
+  deny    dmarc_status   = reject
+          !authenticated = *
+          message        = Message from $domain_used_domain failed sender's DMARC policy, REJECT
+
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

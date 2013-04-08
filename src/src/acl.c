@@ -67,6 +67,9 @@ enum { ACLC_ACL,
        ACLC_DKIM_SIGNER,
        ACLC_DKIM_STATUS,
 #endif
+#ifdef EXPERIMENTAL_DMARC
+       ACLC_DMARC_STATUS,
+#endif
        ACLC_DNSLISTS,
        ACLC_DOMAINS,
        ACLC_ENCRYPTED,
@@ -130,6 +133,9 @@ static uschar *conditions[] = {
   US"dkim_signers",
   US"dkim_status",
 #endif
+#ifdef EXPERIMENTAL_DMARC
+  US"dmarc_status",
+#endif
   US"dnslists",
   US"domains",
   US"encrypted",
@@ -175,6 +181,10 @@ enum {
   #ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
   #endif
+  #ifdef EXPERIMENTAL_DMARC
+  CONTROL_DMARC_VERIFY,
+  CONTROL_DMARC_FORENSIC,
+  #endif
   CONTROL_DSCP,
   CONTROL_ERROR,
   CONTROL_CASEFUL_LOCAL_PART,
@@ -210,6 +220,10 @@ static uschar *controls[] = {
   US"debug",
   #ifndef DISABLE_DKIM
   US"dkim_disable_verify",
+  #endif
+  #ifdef EXPERIMENTAL_DMARC
+  US"dmarc_disable_verify",
+  US"dmarc_enable_forensic",
   #endif
   US"dscp",
   US"error",
@@ -260,6 +274,9 @@ static uschar cond_expand_at_top[] = {
 #ifndef DISABLE_DKIM
   TRUE,    /* dkim_signers */
   TRUE,    /* dkim_status */
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  TRUE,    /* dmarc_status */
 #endif
   TRUE,    /* dnslists */
   FALSE,   /* domains */
@@ -321,6 +338,9 @@ static uschar cond_modifiers[] = {
 #ifndef DISABLE_DKIM
   FALSE,   /* dkim_signers */
   FALSE,   /* dkim_status */
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  FALSE,   /* dmarc_status */
 #endif
   FALSE,   /* dnslists */
   FALSE,   /* domains */
@@ -433,6 +453,11 @@ static unsigned int cond_forbids[] = {
 
   (unsigned int)
   ~(1<<ACL_WHERE_DKIM),                            /* dkim_status */
+  #endif
+
+  #ifdef EXPERIMENTAL_DMARC
+  (unsigned int)
+  ~(1<<ACL_WHERE_DATA),                            /* dmarc_status */
   #endif
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* dnslists */
@@ -578,6 +603,13 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
+  #ifdef EXPERIMENTAL_DMARC
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_disable_verify */
+    (1<<ACL_WHERE_NOTSMTP_START),
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_enable_forensic */
+    (1<<ACL_WHERE_NOTSMTP_START),
+  #endif
+
   (1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_NOTSMTP_START)|
     (1<<ACL_WHERE_NOTQUIT),                        /* dscp */
@@ -673,6 +705,10 @@ static control_def controls_list[] = {
   { US"debug",                   CONTROL_DEBUG, TRUE },
 #ifndef DISABLE_DKIM
   { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY, FALSE },
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  { US"dmarc_disable_verify",    CONTROL_DMARC_VERIFY, FALSE },
+  { US"dmarc_enable_forensic",   CONTROL_DMARC_FORENSIC, FALSE },
 #endif
   { US"dscp",                    CONTROL_DSCP, TRUE },
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
@@ -2982,6 +3018,21 @@ for (; cb != NULL; cb = cb->next)
       #ifndef DISABLE_DKIM
       case CONTROL_DKIM_VERIFY:
       dkim_disable_verify = TRUE;
+      #ifdef EXPERIMENTAL_DMARC
+      /* Since DKIM was blocked, skip DMARC too */
+      dmarc_disable_verify = TRUE;
+      dmarc_enable_forensic = FALSE;
+      #endif
+      break;
+      #endif
+
+      #ifdef EXPERIMENTAL_DMARC
+      case CONTROL_DMARC_VERIFY:
+      dmarc_disable_verify = TRUE;
+      break;
+
+      case CONTROL_DMARC_FORENSIC:
+      dmarc_enable_forensic = TRUE;
       break;
       #endif
 
@@ -3271,6 +3322,17 @@ for (; cb != NULL; cb = cb->next)
 
     case ACLC_DKIM_STATUS:
     rc = match_isinlist(dkim_exim_expand_query(DKIM_VERIFY_STATUS),
+                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+    break;
+    #endif
+
+    #ifdef EXPERIMENTAL_DMARC
+    case ACLC_DMARC_STATUS:
+    if (dmarc_has_been_checked++ == 0)
+      dmarc_process();
+    /* used long way of dmarc_exim_expand_query() in case we need more
+     * view into the process in the future. */
+    rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
                         &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     break;
     #endif

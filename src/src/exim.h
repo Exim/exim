@@ -495,6 +495,10 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifndef DISABLE_DKIM
 #include "dkim.h"
 #endif
+#ifdef EXPERIMENTAL_DMARC
+#include "dmarc.h"
+#include <opendmarc/dmarc.h>
+#endif
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */

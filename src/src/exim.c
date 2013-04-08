@@ -816,6 +816,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_DCC
   fprintf(f, " Experimental_DCC");
 #endif
+#ifdef EXPERIMENTAL_DMARC
+  fprintf(f, " Experimental_DMARC");
+#endif
 #ifdef EXPERIMENTAL_OCSP
   fprintf(f, " Experimental_OCSP");
 #endif
