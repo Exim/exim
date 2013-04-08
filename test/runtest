@@ -2165,7 +2165,9 @@ while (@ARGV > 0 && $ARGV[0] =~ /^-/)
     {
     if ($arg eq "-DEBUG")  { $debug = 1; $cr = "\n"; next; }
     if ($arg eq "-DIFF")   { $cf = "diff -u"; next; }
-    if ($arg eq "-CONTINUE"){$force_continue = 1; next; }
+    if ($arg eq "-CONTINUE"){$force_continue = 1;
+                             $more = "cat";
+                             next; }
     if ($arg eq "-UPDATE") { $force_update = 1; next; }
     if ($arg eq "-NOIPV4") { $have_ipv4 = 0; next; }
     if ($arg eq "-NOIPV6") { $have_ipv6 = 0; next; }
@@ -3461,9 +3463,10 @@ foreach $test (@test_list)
       for (;;)
         {
         print "\nshow stdErr, show stdOut, Retry, Continue (without file comparison), or Quit? [Q] ";
-        $_ = <T>;
+        $_ = $force_continue ? "c" : <T>;
         tests_exit(1) if /^q?$/i;
         log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
+        print "... continue forced\n" if $force_continue;
         last if /^[rc]$/i;
         if (/^e$/i)
           {
@@ -3499,9 +3502,10 @@ foreach $test (@test_list)
         for (;;)
           {
           print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
-          $_ = <T>;
+          $_ = $force_continue ? "c" : <T>;
           tests_exit(1) if /^q?$/i;
           log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
+          print "... continue forced\n" if $force_continue;
           last if /^[rc]$/i;
 
           if (/^s$/i)
