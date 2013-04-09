@@ -42,6 +42,22 @@ void dmarc_send_forensic_report(u_char **);
 #define DMARC_RESULT_TEMPFAIL   3
 #define DMARC_RESULT_QUARANTINE 4
 
+/* From opendmarc-ar.h */
+/* ARES_RESULT_T -- type for specifying an authentication result */
+#define ARES_RESULT_UNDEFINED   (-1)
+#define ARES_RESULT_PASS    0
+#define ARES_RESULT_UNUSED  1
+#define ARES_RESULT_SOFTFAIL    2
+#define ARES_RESULT_NEUTRAL 3
+#define ARES_RESULT_TEMPERROR   4
+#define ARES_RESULT_PERMERROR   5
+#define ARES_RESULT_NONE    6
+#define ARES_RESULT_FAIL    7
+#define ARES_RESULT_POLICY  8
+#define ARES_RESULT_NXDOMAIN    9
+#define ARES_RESULT_SIGNED  10
+#define ARES_RESULT_UNKNOWN 11
+#define ARES_RESULT_DISCARD 12
 
 #endif /* EXPERIMENTAL_DMARC */
 

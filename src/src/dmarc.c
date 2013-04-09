@@ -31,7 +31,7 @@ uschar *dmarc_pass_fail = US"skipped";
 extern pdkim_signature  *dkim_signatures;
 header_line *from_header   = NULL;
 extern SPF_response_t   *spf_response;
-int    dmarc_spf_result     = 0;
+int dmarc_spf_ares_result  = 0;
 uschar *spf_sender_domain  = NULL;
 uschar *spf_human_readable = NULL;
 u_char *header_from_sender = NULL;
@@ -143,7 +143,8 @@ int dmarc_store_data(header_line *hdr) {
    strings and evaluates the condition outcome. */
 
 int dmarc_process() {
-    int sr, origin; /* used in SPF section */
+    int sr, origin;             /* used in SPF section */
+    int dmarc_spf_result  = 0;  /* stores spf into dmarc conn ctx */
     pdkim_signature *sig  = NULL;
     BOOL has_dmarc_record = TRUE;
     u_char **ruf; /* forensic report addressees, if called for */
@@ -198,34 +199,17 @@ int dmarc_process() {
     if ( spf_response == NULL )
     {
       /* No spf data means null envelope sender so generate a domain name
-       * from the sender_host_name || sender_helo_name  */
+       * from the sender_helo_name  */
       if (spf_sender_domain == NULL)
       {
-        spf_sender_domain = (sender_host_name == NULL) ? sender_helo_name : sender_host_name;
-        uschar *subdomain = spf_sender_domain;
-        int count = 0;
-        while (subdomain && *subdomain != '.')
-        {
-          subdomain++;
-          count++;
-        }
-        /* If parsed characters in temp var "subdomain" and is pointing to
-         * a period now, get rid of the period and use that.  Otherwise
-         * will use whatever was first set in spf_sender_domain.  Goal is to
-         * generate a sane answer, not necessarily the right/best answer b/c
-         * at this point with a null sender, it's a bounce message, making
-         * the spf domain be subjective.  */
-        if (count > 0 && *subdomain == '.')
-        {
-          subdomain++;
-          spf_sender_domain = subdomain;
-        }
+        spf_sender_domain = sender_helo_name;
         log_write(0, LOG_MAIN, "DMARC using synthesized SPF sender domain = %s\n",
                                spf_sender_domain);
         DEBUG(D_receive)
           debug_printf("DMARC using synthesized SPF sender domain = %s\n", spf_sender_domain);
       }
       dmarc_spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
+      dmarc_spf_ares_result = ARES_RESULT_UNKNOWN;
       origin = DMARC_POLICY_SPF_ORIGIN_HELO;
       spf_human_readable = US"";
     }
@@ -237,6 +221,14 @@ int dmarc_process() {
                          (sr == SPF_RESULT_FAIL)     ? DMARC_POLICY_SPF_OUTCOME_FAIL :
                          (sr == SPF_RESULT_SOFTFAIL) ? DMARC_POLICY_SPF_OUTCOME_TMPFAIL :
                          DMARC_POLICY_SPF_OUTCOME_NONE;
+      dmarc_spf_ares_result = (sr == SPF_RESULT_NEUTRAL)   ? ARES_RESULT_NEUTRAL :
+                              (sr == SPF_RESULT_PASS)      ? ARES_RESULT_PASS :
+                              (sr == SPF_RESULT_FAIL)      ? ARES_RESULT_FAIL :
+                              (sr == SPF_RESULT_SOFTFAIL)  ? ARES_RESULT_SOFTFAIL :
+                              (sr == SPF_RESULT_NONE)      ? ARES_RESULT_NONE :
+                              (sr == SPF_RESULT_TEMPERROR) ? ARES_RESULT_TEMPERROR :
+                              (sr == SPF_RESULT_PERMERROR) ? ARES_RESULT_PERMERROR :
+                              ARES_RESULT_UNKNOWN;
       origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
       spf_human_readable = (uschar *)spf_response->header_comment;
       DEBUG(D_receive)
@@ -259,11 +251,12 @@ int dmarc_process() {
     dkim_history_buffer = US"";
     while (sig != NULL)
     {
-      int dkim_result, vs;
-      vs = sig->verify_status;
+      int dkim_result, dkim_ares_result, vs, ves;
+      vs  = sig->verify_status;
+      ves = sig->verify_ext_status;
       dkim_result = ( vs == PDKIM_VERIFY_PASS ) ? DMARC_POLICY_DKIM_OUTCOME_PASS :
-        	    ( vs == PDKIM_VERIFY_FAIL ) ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
-        	    ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
+                    ( vs == PDKIM_VERIFY_FAIL ) ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
+                    ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
                     DMARC_POLICY_DKIM_OUTCOME_NONE;
       libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, (uschar *)sig->domain,
         	                                 dkim_result, US"");
@@ -273,8 +266,17 @@ int dmarc_process() {
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store dkim (%s) for DMARC: %s",
         		     sig->domain, opendmarc_policy_status_to_str(libdm_status));
 
+      dkim_ares_result = ( vs == PDKIM_VERIFY_PASS )    ? ARES_RESULT_PASS :
+        	              ( vs == PDKIM_VERIFY_FAIL )    ? ARES_RESULT_FAIL :
+        	              ( vs == PDKIM_VERIFY_NONE )    ? ARES_RESULT_NONE :
+        	              ( vs == PDKIM_VERIFY_INVALID ) ?
+                           ( ves == PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE ? ARES_RESULT_PERMERROR :
+                             ves == PDKIM_VERIFY_INVALID_BUFFER_SIZE        ? ARES_RESULT_PERMERROR :
+                             ves == PDKIM_VERIFY_INVALID_PUBKEY_PARSING     ? ARES_RESULT_PERMERROR :
+                             ARES_RESULT_UNKNOWN ) :
+                          ARES_RESULT_UNKNOWN;
       dkim_history_buffer = string_sprintf("%sdkim %s %d\n", dkim_history_buffer,
-                                                             sig->domain, dkim_result);
+                                                             sig->domain, dkim_ares_result);
       sig = sig->next;
     }
     libdm_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
@@ -426,7 +428,7 @@ int dmarc_write_history_file()
                      expand_string(US"$sender_address_domain"));
 
   if (spf_response != NULL)
-    history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_result);
+    history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_ares_result);
     // history_buffer = string_sprintf("%sspf -1\n", history_buffer);
 
   history_buffer = string_sprintf("%s%s", history_buffer, dkim_history_buffer);
