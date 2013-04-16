@@ -401,7 +401,7 @@ int dmarc_process() {
 
 int dmarc_write_history_file()
 {
-  static int history_file_fd;
+  int history_file_fd;
   ssize_t written_len;
   int tmp_ans;
   u_char **rua; /* aggregate report addressees */
