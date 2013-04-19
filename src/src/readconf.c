@@ -212,6 +212,11 @@ static optionlist optionlist_config[] = {
 #ifndef DISABLE_DKIM
   { "dkim_verify_signers",      opt_stringptr,   &dkim_verify_signers },
 #endif
+#ifdef EXPERIMENTAL_DMARC
+  { "dmarc_forensic_sender",    opt_stringptr,   &dmarc_forensic_sender },
+  { "dmarc_history_file",       opt_stringptr,   &dmarc_history_file },
+  { "dmarc_tld_file",           opt_stringptr,   &dmarc_tld_file },
+#endif
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },
   { "dns_csa_search_limit",     opt_int,         &dns_csa_search_limit },

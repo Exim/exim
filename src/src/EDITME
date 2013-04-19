@@ -460,10 +460,14 @@ EXIM_MONITOR=eximon.bin
 
 # EXPERIMENTAL_OCSP=yes
 
+# Uncomment the following line to add DMARC checking capability, implemented
+# using libopendmarc libraries.
+# EXPERIMENTAL_DMARC=yes
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -lopendmarc
+
 # Uncomment the following line to add Per-Recipient-Data-Response support.
-
 # EXPERIMENTAL_PRDR=yes
-
 
 
 ###############################################################################

@@ -346,6 +346,18 @@ extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for ea
 extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP input is fed to DKIM validation */
 extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
+#ifdef EXPERIMENTAL_DMARC
+extern BOOL    dmarc_has_been_checked; /* Global variable to check if test has been called yet */
+extern uschar *dmarc_ar_header;        /* Expansion variable, suggested header for dmarc auth results */
+extern uschar *dmarc_forensic_sender;  /* Set sender address for forensic reports */
+extern uschar *dmarc_history_file;     /* Expansion variable, file to store dmarc results */
+extern uschar *dmarc_status;           /* Expansion variable, one word value */
+extern uschar *dmarc_status_text;      /* Expansion variable, human readable value */
+extern uschar *dmarc_tld_file;         /* Mozilla TLDs text file */
+extern uschar *dmarc_used_domain;      /* Expansion variable, domain libopendmarc chose for DMARC policy lookup */
+extern BOOL    dmarc_disable_verify;   /* Set via ACL control statement. When set, DMARC verification is disabled for the current message */
+extern BOOL    dmarc_enable_forensic;  /* Set via ACL control statement. When set, DMARC forensic reports are enabled for the current message */
+#endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */
