@@ -1453,7 +1453,7 @@ BOOL resents_exist = FALSE;
 uschar *resent_prefix = US"";
 uschar *blackholed_by = NULL;
 uschar *blackhole_log_msg = US"";
-int  cutthrough_done = 0;
+enum {NOT_TRIED, TMP_REJ, PERM_REJ, ACCEPTED} cutthrough_done;
 
 flock_t lock_data;
 error_block *bad_addresses = NULL;
@@ -3948,7 +3948,7 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
-cutthrough_done = 0;
+cutthrough_done = NOT_TRIED;
 if(cutthrough_fd >= 0)
   {
   uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
@@ -3956,17 +3956,17 @@ if(cutthrough_fd >= 0)
   switch(msg[0])
     {
     case '2':	/* Accept. Do the same to the source; dump any spoolfiles.   */
-      cutthrough_done = 3;
+      cutthrough_done = ACCEPTED;
       break;					/* message_id needed for SMTP accept below */
 
     default:	/* Unknown response, or error.  Treat as temp-reject.         */
     case '4':	/* Temp-reject. Keep spoolfiles and accept. */
-      cutthrough_done = 1;			/* Avoid the usual immediate delivery attempt */
+      cutthrough_done = TMP_REJ;		/* Avoid the usual immediate delivery attempt */
       break;					/* message_id needed for SMTP accept below */
 
     case '5':	/* Perm-reject.  Do the same to the source.  Dump any spoolfiles */
       smtp_reply= msg;		/* Pass on the exact error */
-      cutthrough_done = 2;
+      cutthrough_done = PERM_REJ;
       break;
     }
   }
@@ -4080,8 +4080,8 @@ if (smtp_input)
 
     switch (cutthrough_done)
       {
-      case 3: log_write(0, LOG_MAIN, "Completed");	/* Delivery was done */
-      case 2: {						/* Delete spool files */
+      case ACCEPTED: log_write(0, LOG_MAIN, "Completed");/* Delivery was done */
+      case PERM_REJ: {					/* Delete spool files */
 	      sprintf(CS spool_name, "%s/input/%s/%s-D", spool_directory,
 	        message_subdir, message_id);
 	      Uunlink(spool_name);
@@ -4092,7 +4092,7 @@ if (smtp_input)
 	        message_subdir, message_id);
 	      Uunlink(spool_name);
 	      }
-      case 1: message_id[0] = 0;			/* Prevent a delivery from starting */
+      case TMP_REJ: message_id[0] = 0;	  /* Prevent a delivery from starting */
       default:break;
       }
     cutthrough_delivery = FALSE;
