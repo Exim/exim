@@ -54,6 +54,8 @@ acl_not_smtp_mime                    string*         unset         main         
 acl_smtp_auth                        string*         unset         main              4.00
 acl_smtp_connect                     string*         unset         main              4.11
 acl_smtp_data                        string*         unset         main              4.00
+acl_smtp_data_prdr                   string*         unset         main              4.82 with expreimental_prdr
+acl_smtp_dkim                        string*         unset         main              4.70 unless disable_dkim
 acl_smtp_etrn                        string*         unset         main              4.00
 acl_smtp_expn                        string*         unset         main              4.00
 acl_smtp_helo                        string*         unset         main              4.20
@@ -171,6 +173,9 @@ directory_transport                  string*         unset         redirect     
 disable_ipv6                         boolean         false         main              4.61
 disable_logging                      boolean         false         routers           4.11
                                                      false         transports        4.11
+dmarc_forensic_sender                string          unset         main              4.82 if experimental_dmarc
+dmarc_history_file                   string          unset         main              4.82 if experimental_dmarc
+dmarc_tld_file                       string          unset         main              4.82 if experimental_dmarc
 dns_again_means_nonexist             domain list     unset         main              1.89
 dns_check_names_pattern              string          +             main              2.11
 dns_csa_search_limit                 integer         5             main              4.60
@@ -290,9 +295,11 @@ hosts_override                       boolean         false         smtp         
 hosts_randomize                      boolean         false         manualroute       4.00
                                                      false         smtp              3.14
 hosts_require_auth                   host list       unset         smtp              4.00
+hosts_require_ocsp                   host list       unset         smtp              4.82 if experimental_ocsp
 hosts_require_tls                    host list       unset         smtp              3.20
 hosts_treat_as_local                 domain list     unset         main              1.95
 hosts_try_auth                       host list       unset         smtp              4.00
+hosts_try_prdr                       host list       unset         smtp              4.82 if experimental_prdr
 ibase_servers                        string          unset         main              4.23
 ignore_bounce_errors_after           time            0s            main              4.00
 ignore_eacces                        boolean         false         redirect          4.00
@@ -397,6 +404,7 @@ pipelining_advertise_hosts           host list       "*"           main         
 port                                 integer         0             iplookup          4.00
                                      string          "smtp"        smtp
 preserve_message_logs                boolean         false         main
+prdr_enable                          boolean         false         main              4.82 if experimental_prdr
 primary_hostname                     string          +             main
 print_topbitchars                    boolean         false         main              1.89
 process_log_path                     string          unset         main              4.21
@@ -554,6 +562,7 @@ tls_certificate                      string*         unset         main         
 tls_dh_max_bits                      integer         2236          main              4.80
 tls_dh_min_bits                      integer         1024          smtp              4.82
 tls_dhparam                          string*         unset         main              3.20
+tls_ocsp_file                        string*         unset         main              4.80 if experimental_ocsp
 tls_on_connect_ports                 string          unset         main              4.43
 tls_privatekey                       string*         unset         main              3.20
                                                      unset         smtp              3.20
