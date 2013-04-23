@@ -332,6 +332,10 @@ static optionlist optionlist_config[] = {
   { "print_topbitchars",        opt_bool,        &print_topbitchars },
   { "process_log_path",         opt_stringptr,   &process_log_path },
   { "prod_requires_admin",      opt_bool,        &prod_requires_admin },
+#ifdef EXIM_PYTHON
+  { "python_at_start",          opt_bool,        &opt_python_at_start },
+  { "python_startup",           opt_stringptr,   &opt_python_startup },
+#endif
   { "qualify_domain",           opt_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",        opt_stringptr,   &qualify_domain_recipient },
   { "queue_domains",            opt_stringptr,   &queue_domains },

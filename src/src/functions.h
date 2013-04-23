@@ -19,6 +19,14 @@ extern void    cleanup_perl(void);
 extern uschar *init_perl(uschar *);
 #endif
 
+#ifdef EXIM_PYTHON
+extern uschar *call_python_cat(uschar *, int *, int *, uschar **, uschar *,
+                 uschar **);
+extern void    cleanup_python(void);
+extern uschar *init_python(uschar *);
+#endif
+
+
 
 #ifdef SUPPORT_TLS
 extern const char *

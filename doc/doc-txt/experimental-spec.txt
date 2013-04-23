@@ -844,6 +844,16 @@ b. Configure, somewhere before the DATA ACL, the control option to
 
 
 
+Embedded Python Support
+
+Global configuration options:
+python_at_start                      boolean         false         main              4.82
+python_startup                       string          unset         main              4.82
+
+Commandline options added:
+-pyd             Delay Python interpreter start
+-pys             Do not delay Python interpreter start
+
 
 --------------------------------------------------------------
 End of file

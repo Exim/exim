@@ -214,6 +214,7 @@ ln -s ../src/match.c           match.c
 ln -s ../src/moan.c            moan.c
 ln -s ../src/parse.c           parse.c
 ln -s ../src/perl.c            perl.c
+ln -s ../src/python.c          python.c
 ln -s ../src/queue.c           queue.c
 ln -s ../src/rda.c             rda.c
 ln -s ../src/readconf.c        readconf.c

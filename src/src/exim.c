@@ -776,6 +776,9 @@ fprintf(f, "Support for:");
 #ifdef EXIM_PERL
   fprintf(f, " Perl");
 #endif
+#ifdef EXIM_PYTHON
+  fprintf(f, " Python");
+#endif
 #ifdef EXPAND_DLFUNC
   fprintf(f, " Expand_dlfunc");
 #endif
@@ -1432,6 +1435,9 @@ int  namelen = (argv[0] == NULL)? 0 : Ustrlen(argv[0]);
 int  queue_only_reason = 0;
 #ifdef EXIM_PERL
 int  perl_start_option = 0;
+#endif
+#ifdef EXIM_PYTHON
+int  python_start_option = 0;
 #endif
 int  recipients_arg = argc;
 int  sender_address_domain = 0;
@@ -3066,6 +3072,18 @@ for (i = 1; i < argc; i++)
       break;
       }
     #endif
+    #ifdef EXIM_PYTHON
+    if (*argrest == 'y' && argrest[1] == 's' && argrest[2] == 0)
+      {
+      python_start_option = 1;
+      break;
+      }
+    if (*argrest == 'y' && argrest[1] == 'd' && argrest[2] == 0)
+      {
+      python_start_option = -1;
+      break;
+      }
+    #endif
 
     /* -panythingelse is taken as the Sendmail-compatible argument -prval:sval,
     which sets the host protocol and host name */
@@ -3903,6 +3921,28 @@ if (opt_perl_at_start && opt_perl_startup != NULL)
   opt_perl_started = TRUE;
   }
 #endif /* EXIM_PERL */
+
+/* Start up Python interpreter if Python support is configured and there is a
+python_startup option, and the configuration or the command line specifies
+initializing starting. Note that the global variables are actually called
+opt_python_xxx, simply modeled after the perl embedding code. */
+
+#ifdef EXIM_PYTHON
+if (python_start_option != 0)
+  opt_python_at_start = (python_start_option > 0);
+if (opt_python_at_start && opt_python_startup != NULL)
+  {
+  uschar *errstr;
+  DEBUG(D_any) debug_printf("Starting Python interpreter\n");
+  errstr = init_python(opt_python_startup);
+  if (errstr != NULL)
+    {
+    fprintf(stderr, "exim: error in python_startup code: %s\n", errstr);
+    return EXIT_FAILURE;
+    }
+  opt_python_started = TRUE;
+  }
+#endif
 
 /* Log the arguments of the call if the configuration file said so. This is
 a debugging feature for finding out what arguments certain MUAs actually use.

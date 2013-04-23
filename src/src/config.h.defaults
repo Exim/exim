@@ -55,6 +55,7 @@ it's a default value. */
 #define EXIM_GNUTLS_LIBRARY_LOG_LEVEL
 #define EXIM_SERVER_DH_BITS_PRE2_12
 #define EXIM_PERL
+#define EXIM_PYTHON
 /* Both uid and gid are triggered by this */
 #define EXIM_UID
 #define EXPAND_DLFUNC

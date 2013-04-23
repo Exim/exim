@@ -51,6 +51,12 @@ BOOL    opt_perl_at_start      = FALSE;
 BOOL    opt_perl_started       = FALSE;
 #endif
 
+#ifdef EXIM_PYTHON
+uschar *opt_python_startup     = NULL;
+BOOL    opt_python_at_start    = FALSE;
+BOOL    opt_python_started     = FALSE;
+#endif
+
 #ifdef EXPAND_DLFUNC
 tree_node *dlobj_anchor        = NULL;
 #endif

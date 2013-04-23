@@ -30,6 +30,12 @@ extern BOOL    opt_perl_at_start;      /* Start Perl interpreter at start */
 extern BOOL    opt_perl_started;       /* Set once interpreter started */
 #endif
 
+#ifdef EXIM_PYTHON
+extern uschar *opt_python_startup;     /* Startup code for Python interpreter */
+extern BOOL    opt_python_at_start;    /* Start Python interpreter at start */
+extern BOOL    opt_python_started;     /* Set once interpreter started */
+#endif
+
 #ifdef EXPAND_DLFUNC
 extern tree_node *dlobj_anchor;        /* Tree of dynamically-loaded objects */
 #endif

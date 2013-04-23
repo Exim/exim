@@ -236,6 +236,41 @@ if [ "${EXIM_PERL}" != "" ] ; then
   rm -f $mftt
 fi
 
+# Test if embedded Python support is being requested
+
+EXIM_PYTHON=`grep EXIM_PYTHON $mft`
+
+PYTHON_COMMAND=`grep PYTHON_COMMAND $mft | sed -e "\\$!d;s/^[$st]*PYTHON_COMMAND[$st]*=[$st]*//"`
+if [ "${PYTHON_COMMAND}" = "" ] ; then
+  PYTHON_COMMAND='python'
+fi
+PYTHON_CONFIG_COMMAND=`grep PYTHON_CONFIG_COMMAND $mft | sed -e "\\$!d;s/^[$st]*PYTHON_CONFIG_COMMAND[$st]*=[$st]*//"`
+if [ "${PYTHON_CONFIG_COMMAND}" = "" ] ; then
+  PYTHON_CONFIG_COMMAND='python-config'
+fi
+
+if [ "${EXIM_PYTHON}" != "" ] ; then
+  testpython=`$PYTHON_COMMAND --version 2>&1 | grep Python`
+  if [ "$testpython" = "" ] ; then
+    echo "*** EXIM_PYTHON is set, but '$PYTHON_COMMAND --version' failed"
+    exit 1
+  fi
+
+  PYTHON_DEVEL_NOT_INSTALLED=`$PYTHON_CONFIG_COMMAND --help";" 2>&1 | grep -v -- --help`
+  if [ "${PYTHON_DEVEL_NOT_INSTALLED}" != "" ] ; then
+    echo "Please install python development libraries to provide $PYTHON_CONFIG_COMMAND"
+    exit 1;
+  fi
+
+  mv $mft $mftt
+  #echo "PERL_CC=`$PERL_COMMAND -MConfig -e 'print $Config{cc}'`" >>$mft
+  echo "PYTHON_CCOPTS=`$PYTHON_CONFIG_COMMAND --cflags`" >>$mft
+  echo "PYTHON_LIBS=`$PYTHON_CONFIG_COMMAND --ldflags`" >>$mft
+  echo "" >>$mft
+  cat $mftt >> $mft
+  rm -f $mftt
+fi
+
 # Record the build variable in the Makefile.
 
 echo "build=$build" >>$mft
