@@ -35625,6 +35625,50 @@ are given in chapter &<<CHAPappendfile>>&.
 
 
 
+.section "Running local commands" "SECTsecconslocalcmds"
+There are a number of ways in which an administrator can configure Exim to run
+commands based upon received, untrustworthy, data. Further, in some
+configurations a user who can control a &_.forward_& file can also arrange to
+run commands. Configuration to check includes, but is not limited to:
+
+.ilist
+Use of &%use_shell%& in the pipe transport: various forms of shell command
+injection may be possible with this option present. It is dangerous and should
+be used only with considerable caution. Consider constraints which whitelist
+allowed characters in a variable which is to be used in a pipe transport that
+has &%use_shell%& enabled.
+.next
+A number of options such as &%forbid_filter_run%&, &%forbid_filter_perl%&,
+&%forbid_filter_dlfunc%& and so forth which restrict facilities available to
+&_.forward_ files in a redirect router. If Exim is running on a central mail
+hub to which ordinary users do not have shell access, but home directories are
+NFS mounted (for instance) then administrators should review the list of these
+forbid options available, and should bear in mind that the options that may
+need forbidding can change as new features are added between releases.
+.next
+The &%${run...}%& expansion item does not use a shell by default, but
+administrators can configure use of &_/bin/sh_& as part of the command.
+Such invocations should be viewed with prejudicial suspicion.
+.next
+Administrators who use embedded Perl are advised to explore how Perl's
+taint checking might apply to their usage.
+.next
+Use of &%${expand...}%& is somewhat analagous to shell's eval builtin and
+administrators are well advised to view its use with suspicion, in case (for
+instance) it allows a local-part to contain embedded Exim directives.
+.next
+Use of &%${match_local_part...}%& and friends becomes more dangerous if
+Exim was built with EXPAND_LISTMATCH_RHS defined: the second string in
+each can reference arbitrary lists and files, rather than just being a list
+of opaque strings.
+The EXPAND_LISTMATCH_RHS option was added and set false by default because of
+real-world security vulnerabilities caused by its use with untrustworthy data
+injected in, for SQL injection attacks.
+Consider the use of the &%inlisti%& expansion condition instead.
+.endlist
+
+
+
 .section "IPv4 source routing" "SECID272"
 .cindex "source routing" "in IP packets"
 .cindex "IP source routing"
