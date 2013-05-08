@@ -46,6 +46,9 @@ TL/05 Bugzilla 1285 - Spec omission, fix docbook errors for spec.txt creation.
 
 TL/06 Add Experimental DMARC support using libopendmarc libraries.
 
+TL/07 Fix an out of order global option causing a segfault.  Reported to dev
+      mailing list by by Dmitry Isaikin.
+
 JH/01 Bugzilla 1201 & 304 - New cutthrough-delivery feature, with TLS support.
 
 JH/02 Support "G" suffix to numbers in ${if comparisons.

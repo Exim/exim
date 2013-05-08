@@ -221,10 +221,10 @@ static optionlist optionlist_config[] = {
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },
   { "dns_csa_search_limit",     opt_int,         &dns_csa_search_limit },
   { "dns_csa_use_reverse",      opt_bool,        &dns_csa_use_reverse },
+  { "dns_dnssec_ok",            opt_int,         &dns_dnssec_ok },
   { "dns_ipv4_lookup",          opt_stringptr,   &dns_ipv4_lookup },
   { "dns_retrans",              opt_time,        &dns_retrans },
   { "dns_retry",                opt_int,         &dns_retry },
-  { "dns_dnssec_ok",            opt_int,         &dns_dnssec_ok },
   { "dns_use_edns0",            opt_int,         &dns_use_edns0 },
  /* This option is now a no-op, retained for compability */
   { "drop_cr",                  opt_bool,        &drop_cr },
