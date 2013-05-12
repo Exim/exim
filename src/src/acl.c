@@ -21,8 +21,13 @@ enum { ACL_ACCEPT, ACL_DEFER, ACL_DENY, ACL_DISCARD, ACL_DROP, ACL_REQUIRE,
 
 /* ACL verbs */
 
-static uschar *verbs[] =
-  { US"accept", US"defer", US"deny", US"discard", US"drop", US"require",
+static uschar *verbs[] = {
+    US"accept",
+    US"defer",
+    US"deny",
+    US"discard",
+    US"drop",
+    US"require",
     US"warn" };
 
 /* For each verb, the conditions for which "message" or "log_message" are used

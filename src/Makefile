@@ -45,12 +45,15 @@ build-directory:
 	$(SHELL) -c "test -d $$builddir -a -r $$builddir/version.c || \
 	  (mkdir $$builddir; cd $$builddir; $(SHELL) ../scripts/MakeLinks)";
 
+checks:
+	$(SHELL) scripts/source_checks
+
 # The "configure" target ensures that the build directory exists, then arranges
 # to build the main makefile from inside the build directory, by calling the
 # Configure-Makefile script. This does its own dependency checking because of
 # the optional files.
 
-configure: build-directory
+configure: checks build-directory
 	@cd build-$(buildname); \
 	  build=$(build) $(SHELL) ../scripts/Configure-Makefile
 
