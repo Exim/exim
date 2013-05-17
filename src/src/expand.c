@@ -116,9 +116,7 @@ static uschar *item_table[] = {
   US"perl",
   US"prvs",
   US"prvscheck",
-#ifdef EXIM_PYTHON
   US"python",
-#endif
   US"readfile",
   US"readsocket",
   US"reduce",
@@ -140,11 +138,9 @@ enum {
   EITEM_MAP,
   EITEM_NHASH,
   EITEM_PERL,
-#ifdef EXIM_PYTHON
-  EITEM_PYTHON,
-#endif
   EITEM_PRVS,
   EITEM_PRVSCHECK,
+  EITEM_PYTHON,
   EITEM_READFILE,
   EITEM_READSOCK,
   EITEM_REDUCE,
@@ -4162,104 +4158,6 @@ while (*s != 0)
       }
     #endif /* EXIM_PERL */
 
-    /* If Python support is configured, handle calling embedded python subroutines,
-    unless locked out at this time. Syntax is ${python{sub}} or ${python{sub}{arg}}
-    or ${python{sub}{arg1}{arg2}} or up to a maximum of EXIM_PYTHON_MAX_ARGS
-    arguments (defined below). */
-
-    #ifdef EXIM_PYTHON
-    #define EXIM_PYTHON_MAX_ARGS 8
-
-    case EITEM_PYTHON:
-    #ifndef EXIM_PYTHON
-    expand_string_message = US"\"${python\" encountered, but this facility "
-      "is not included in this binary";
-    goto EXPAND_FAILED;
-
-    #else   /* not defined EXIM_PYTHON */
-      {
-      uschar *sub_arg[EXIM_PYTHON_MAX_ARGS + 2];
-      uschar *new_yield;
-
-      /* Add to python later */
-      /*
-      if ((expand_forbid & RDO_PERL) != 0)
-        {
-        expand_string_message = US"Perl calls are not permitted";
-        goto EXPAND_FAILED;
-        }
-      */
-
-      /* Python of course uses structured indentation */
-      /*
-      switch(read_subs(sub_arg, EXIM_PYTHON_MAX_ARGS + 1, 1, &s, skipping, TRUE,
-           US"python"))
-        {
-        case 1: goto EXPAND_FAILED_CURLY;
-        case 2:
-        case 3: goto EXPAND_FAILED;
-        }
-      */
-
-      /* If skipping, we don't actually do anything */
-
-      // if (skipping) continue;
-
-      /* Start the interpreter if necessary */
-
-      if (!opt_python_started)
-        {
-        uschar *initerror;
-        if (opt_python_startup == NULL)
-          {
-          expand_string_message = US"A setting of python_startup is needed when "
-            "using the Python interpreter";
-          goto EXPAND_FAILED;
-          }
-        DEBUG(D_any) debug_printf("Starting Python interpreter\n");
-        initerror = init_python(opt_python_startup);
-        if (initerror != NULL)
-          {
-          expand_string_message =
-            string_sprintf("error in python_startup code: %s\n", initerror);
-          goto EXPAND_FAILED;
-          }
-        opt_python_started = TRUE;
-        }
-
-      /* Call the function */
-
-      sub_arg[EXIM_PYTHON_MAX_ARGS + 1] = NULL;
-      new_yield = call_python_cat(yield, &size, &ptr, &expand_string_message,
-        sub_arg[0], sub_arg + 1);
-
-      /* NULL yield indicates failure; if the message pointer has been set to
-      NULL, the yield was undef, indicating a forced failure. Otherwise the
-      message will indicate some kind of Python error. */
-
-      if (new_yield == NULL)
-        {
-        if (expand_string_message == NULL)
-          {
-          expand_string_message =
-            string_sprintf("Python subroutine \"%s\" returned undef to force "
-              "failure", sub_arg[0]);
-          expand_string_forcedfail = TRUE;
-          }
-        goto EXPAND_FAILED;
-        }
-
-      /* Yield succeeded. Ensure forcedfail is unset, just in case it got
-      set during a callback from Perl. */
-
-      expand_string_forcedfail = FALSE;
-      yield = new_yield;
-      continue;
-      }
-    #endif  /* not defined EXIM_PYTHON */
-
-    #endif  /* EXIM_PYTHON */
-
     /* Transform email address to "prvs" scheme to use
        as BATV-signed return path */
 
@@ -4462,6 +4360,99 @@ while (*s != 0)
 
       continue;
       }
+
+    /* If Python support is configured, handle calling embedded python subroutines,
+    unless locked out at this time. Syntax is ${python{sub}} or ${python{sub}{arg}}
+    or ${python{sub}{arg1}{arg2}} or up to a maximum of EXIM_PYTHON_MAX_ARGS
+    arguments (defined below). */
+
+    #define EXIM_PYTHON_MAX_ARGS 8
+
+    case EITEM_PYTHON:
+    #ifndef EXIM_PYTHON
+    expand_string_message = US"\"${python\" encountered, but this facility "
+      "is not included in this binary";
+    goto EXPAND_FAILED;
+
+    #else   /* EXIM_PYTHON is defined */
+      {
+      uschar *sub_arg[EXIM_PYTHON_MAX_ARGS + 2];
+      uschar *new_yield;
+
+      /* Add to python later */
+      /*
+      if ((expand_forbid & RDO_PYTHON) != 0)
+        {
+        expand_string_message = US"Python calls are not permitted";
+        goto EXPAND_FAILED;
+        }
+      */
+
+      /* Python of course uses structured indentation */
+      switch(read_subs(sub_arg, EXIM_PYTHON_MAX_ARGS + 1, 1, &s, skipping, TRUE,
+           US"python"))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+
+      /* If skipping, we don't actually do anything */
+
+      if (skipping) continue;
+
+      /* Start the interpreter if necessary */
+
+      if (!opt_python_started)
+        {
+        uschar *initerror;
+        if (opt_python_startup == NULL)
+          {
+          expand_string_message = US"A setting of python_startup is needed when "
+            "using the Python interpreter";
+          goto EXPAND_FAILED;
+          }
+        DEBUG(D_any) debug_printf("Starting Python interpreter\n");
+        initerror = init_python(opt_python_startup);
+        if (initerror != NULL)
+          {
+          expand_string_message =
+            string_sprintf("error in python_startup code: %s\n", initerror);
+          goto EXPAND_FAILED;
+          }
+        opt_python_started = TRUE;
+        }
+
+      /* Call the function */
+
+      sub_arg[EXIM_PYTHON_MAX_ARGS + 1] = NULL;
+      new_yield = call_python_cat(yield, &size, &ptr, &expand_string_message,
+        sub_arg[0], sub_arg + 1);
+
+      /* NULL yield indicates failure; if the message pointer has been set to
+      NULL, the yield was undef, indicating a forced failure. Otherwise the
+      message will indicate some kind of Python error. */
+
+      if (new_yield == NULL)
+        {
+        if (expand_string_message == NULL)
+          {
+          expand_string_message =
+            string_sprintf("Python subroutine \"%s\" returned undef to force "
+              "failure", sub_arg[0]);
+          expand_string_forcedfail = TRUE;
+          }
+        goto EXPAND_FAILED;
+        }
+
+      /* Yield succeeded. Ensure forcedfail is unset, just in case it got
+      set during a callback from Perl. */
+
+      expand_string_forcedfail = FALSE;
+      yield = new_yield;
+      continue;
+      }
+    #endif  /* not defined EXIM_PYTHON */
 
     /* Handle "readfile" to insert an entire file */
 

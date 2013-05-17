@@ -845,14 +845,151 @@ b. Configure, somewhere before the DATA ACL, the control option to
 
 
 Embedded Python Support
+--------------------------------------------------------------
+
+Similar to Embedded Perl, Exim has the ability to use embedded python.
+When this is done, Python subroutines can be called as part of the string
+expansion process. To make use of the Python support, you need the
+development libraries version 2.x installed on your system. To include
+the embedded interpreter in the Exim binary, include the line
+
+EXIM_PYTHON = yes
+
+in your Local/Makefile and then build Exim in the normal way.
+
+1. Setting up so Python can be used
+
+Access to Python subroutines is via a global configuration option called
+python_startup and an expansion string operator ${python ...}. If there is
+no python_startup option in the Exim configuration file then no Python
+interpreter is started and there is almost no overhead for Exim (since
+none of the Python library will be paged in unless used). If there is a
+python_startup option then the associated value is taken to be Python code
+which is executed in a newly created Python interpreter.
+
+The value of python_startup is not expanded in the Exim sense, so you do
+not need backslashes before any characters to escape special meanings.
+The option should usually be something like
+
+python_startup = do '/etc/exim/mod_exim.py'
+
+where this script is Python code which defines any subroutines you want
+to use from Exim. Exim can be configured either to start up a Python
+interpreter as soon as it is entered, or to wait until the first time it
+is needed. Starting the interpreter at the beginning ensures that it is
+done while Exim still has its setuid privilege, but can impose an
+unnecessary overhead if Python is not in fact used in a particular run.
+Also, note that this does not mean that Exim is necessarily running as
+root when Python is called at a later time. By default, the interpreter is
+started only when it is needed, but this can be changed in two ways:
+
+Setting python_at_start (a boolean option) in the configuration
+requests a startup when Exim is entered.
+
+The command line option -pys also requests a startup when Exim is
+entered, overriding the setting of python_at_start.
+
+There is also a command line option -pyd (for delay) which suppresses the
+initial startup, even if python_at_start is set. 
 
 Global configuration options:
 python_at_start                      boolean         false         main              4.82
 python_startup                       string          unset         main              4.82
 
-Commandline options added:
+Commandline options added to override configuration settings:
 -pyd             Delay Python interpreter start
 -pys             Do not delay Python interpreter start
+
+
+2. Calling Python subroutines
+
+When the configuration file includes a python_startup option you can make
+use of the string expansion item to call the Python subroutines that are
+defined by the python_startup code. The operator is used in any of the
+following forms:
+
+${python{foo}}
+${python{foo}{argument}}
+${python{foo}{argument1}{argument2} ... }
+
+which calls the subroutine foo with the given arguments. A maximum of
+eight arguments may be passed. Passing more than this results in an
+expansion failure with an error message of the form
+
+Too many arguments passed to Python subroutine "foo" (max is 8)
+
+The return value of the Python subroutine is evaluated in a scalar
+context before it is passed back to Exim to be inserted into the
+expanded string. If the return value is undefined, the expansion is
+forced to fail in the same way as an explicit “fail” on an if or lookup
+item. If the subroutine aborts by Pythons’s exception handler, the
+expansion fails with the error message explaining the exception.
+
+
+3. Calling Exim functions from Python
+
+Within any Python code called from Exim, the function
+Exim.expand_string() is available to call back into Exim’s string
+expansion function. For example, the Python code
+
+lp = Exim.expand_string('$local_part')
+
+makes the current Exim $local_part available in the Python variable lp.
+
+If the string expansion is forced to fail by a “fail” item, the result
+of Exim.expand_string() is undefined. If there is a syntax error in the
+expansion string, the Python call from the original expansion string
+fails with an appropriate error message.
+
+Two other Exim functions are available for use from within Python code.
+Exim.debug_write() writes a string to the standard error stream if
+Exim’s debugging is enabled. If you want a newline at the end, you must
+supply it. Exim.log_write() writes a string to Exim’s main log, adding a
+leading timestamp. In this case, you should not supply a terminating
+newline.
+
+
+4. Examples
+
+Using the following extremely simple python script:
+
+   # Set a global variable
+   r = 300
+   
+   def string_output(a):
+           # Just a simple string being returned
+           return a
+   
+   def decimal_number_output(a):
+           # A decimal number being returned
+           return float(a)
+   
+   def negative_number_output(a):
+           return -(int(b))
+   
+   def dumb_add(a,b):
+           # Use the global integer here to test
+           return int(a)+int(b)+r
+
+All values passed to the functions are passed as strings.  Python uses
+very strict typing, so if you need to treat the numbers as integers or
+real numbers, you must use the int() or the float() functions to cast
+the variables so that you may then use math (otherwise it treats it as
+a string and simply concatenates them).  You must also properly cast
+the variables or else you'll get failure results (see below).
+
+# exim -be '${python{dumb_add}{800}{100}}'
+1200
+# exim -be '${python{negative_number_output}{800}}'
+-800
+# exim -be '${python{negative_number_output}{800.55}}'
+Failed: Did not get an answer from negative_number_output
+
+The first function added 800 + 100 plus the global value of r (300).
+The second function converted the integer to a negative number.
+The third failed because the code casts it as an integer, but it's
+actually being passed a float.  To properly work, instead cast the
+value as a float, then to an int, as:   -(int(float(b)))
 
 
 --------------------------------------------------------------

@@ -314,7 +314,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
         $(OBJ_LOOKUPS) \
-        local_scan.o $(EXIM_PERL) $(EXIM_PYTHON) $(OBJ_WITH_CONTENT_SCAN) \
+        local_scan.o $(EXIM_PERL) $(PYTHON_OBJ) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
 
 exim:   lookups/lookups.a auths/auths.a pdkim/pdkim.a \

@@ -266,6 +266,7 @@ if [ "${EXIM_PYTHON}" != "" ] ; then
   #echo "PERL_CC=`$PERL_COMMAND -MConfig -e 'print $Config{cc}'`" >>$mft
   echo "PYTHON_CCOPTS=`$PYTHON_CONFIG_COMMAND --cflags`" >>$mft
   echo "PYTHON_LIBS=`$PYTHON_CONFIG_COMMAND --ldflags`" >>$mft
+  echo "PYTHON_OBJ=python.o" >>$mft
   echo "" >>$mft
   cat $mftt >> $mft
   rm -f $mftt
