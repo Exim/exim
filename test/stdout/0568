@@ -1,0 +1,82 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at the.client
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at the.client
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+235 Authentication succeeded
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at the.client
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+235 Authentication succeeded
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250-wotcher mate
+250-AUTH PLAIN
+250 Hi
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+250 Oh alright then
+MAIL FROM:<> AUTH=brian
+250 OK
+RCPT TO:<abc@force>
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250-wotcher mate
+250-AUTH PLAIN
+250 Hi
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+250 Oh alright then
+MAIL FROM:<> AUTH=freddy
+250 OK
+RCPT TO:<abc@normal>
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250-wotcher mate
+250-AUTH PLAIN
+250 Hi
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+250 Oh alright then
+MAIL FROM:<> AUTH=brian
+250 OK
+RCPT TO:<def@force>
+250 OK
+QUIT
+250 OK
+End of script

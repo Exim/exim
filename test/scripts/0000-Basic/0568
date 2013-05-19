@@ -1,0 +1,76 @@
+# Recipient callout with AUTH
+need_ipv4
+#
+# Variant 1: using authenticated_sender on the transport.
+server PORT_S 1
+220 Welcome
+EHLO
+250-wotcher mate
+250-AUTH PLAIN
+250 Hi
+AUTH
+250 Oh alright then
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -odq -bs
+EHLO the.client
+mail from:<>
+RCPT TO:<abc@force> 
+quit
+****
+#
+#
+# Variant 2: Passing through an authenticated_sender from the MAIL FROM:
+server PORT_S 1
+220 Welcome
+EHLO
+250-wotcher mate
+250-AUTH PLAIN
+250 Hi
+AUTH
+250 Oh alright then
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -odq -bs
+EHLO the.client
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+mail from:<> AUTH=freddy
+RCPT TO:<abc@normal> 
+quit
+****
+#
+#
+# Variant 3: An authenticated_sender option on the transport should override
+# a value set by the MAIL FROM:
+server PORT_S 1
+220 Welcome
+EHLO
+250-wotcher mate
+250-AUTH PLAIN
+250 Hi
+AUTH
+250 Oh alright then
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -odq -bs
+EHLO the.client
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+mail from:<> AUTH=freddy
+RCPT TO:<def@force> 
+quit
+****

@@ -193,6 +193,9 @@ PP/19 Renamed DNSSEC-enabling option to "dns_dnssec_ok", to make it
 PP/20 Added force_command boolean option to pipe transport.
       Patch from Nick Koston, of cPanel Inc.
 
+JH/15 AUTH support on callouts (and hence cutthrough-deliveries).
+      Bugzilla 321, 823.
+
 
 Exim version 4.80.1
 -------------------

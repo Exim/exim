@@ -28844,6 +28844,9 @@ following SMTP commands are sent:
 LHLO is used instead of HELO if the transport's &%protocol%& option is
 set to &"lmtp"&.
 
+The callout may use EHLO, AUTH and/or STARTTLS given appropriate option
+settings.
+
 A recipient callout check is similar. By default, it also uses an empty address
 for the sender. This default is chosen because most hosts do not make use of
 the sender address when verifying a recipient. Using the same address means
