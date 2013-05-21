@@ -35640,7 +35640,7 @@ has &%use_shell%& enabled.
 .next
 A number of options such as &%forbid_filter_run%&, &%forbid_filter_perl%&,
 &%forbid_filter_dlfunc%& and so forth which restrict facilities available to
-&_.forward_ files in a redirect router. If Exim is running on a central mail
+&_.forward_& files in a redirect router. If Exim is running on a central mail
 hub to which ordinary users do not have shell access, but home directories are
 NFS mounted (for instance) then administrators should review the list of these
 forbid options available, and should bear in mind that the options that may
