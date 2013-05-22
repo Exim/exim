@@ -86,6 +86,7 @@ expanding: ${if eq {$address_data}{userz}{*}{:}}
          250-8BITMIME
          250-PIPELINING
          250 HELP
+127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<userx@domain.com>
@@ -218,6 +219,7 @@ skipping: result is not used
 expanding: ${if eq {$address_data}{usery}{*}{:}}
    result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
+127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
@@ -350,6 +352,7 @@ skipping: result is not used
 expanding: ${if eq {$address_data}{usery}{*}{:}}
    result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
+127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>

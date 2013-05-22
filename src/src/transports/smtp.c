@@ -814,6 +814,229 @@ return yield;
 
 
 
+/* Do the client side of smtp-level authentication */
+/*
+Arguments:
+  buffer	EHLO response from server (gets overwritten)
+  addrlist      chain of potential addresses to deliver
+  host          host to deliver to
+  ob		transport options
+  ibp, obp	comms channel control blocks
+
+Returns:
+  OK			Success, or failed (but not required): global "smtp_authenticated" set
+  DEFER			Failed authentication (and was required)
+  ERROR			Internal problem
+
+  FAIL_SEND		Failed communications - transmit
+  FAIL			- response
+*/
+
+int
+smtp_auth(uschar *buffer, unsigned bufsize, address_item *addrlist, host_item *host,
+    smtp_transport_options_block *ob, BOOL is_esmtp,
+    smtp_inblock *ibp, smtp_outblock *obp)
+{
+  int require_auth;
+  uschar *fail_reason = US"server did not advertise AUTH support";
+
+  smtp_authenticated = FALSE;
+  client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
+  require_auth = verify_check_this_host(&(ob->hosts_require_auth), NULL,
+    host->name, host->address, NULL);
+
+  if (is_esmtp && !regex_AUTH) regex_AUTH =
+      regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
+            FALSE, TRUE);
+
+  if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
+    {
+    uschar *names = string_copyn(expand_nstring[1], expand_nlength[1]);
+    expand_nmax = -1;                          /* reset */
+
+    /* Must not do this check until after we have saved the result of the
+    regex match above. */
+
+    if (require_auth == OK ||
+        verify_check_this_host(&(ob->hosts_try_auth), NULL, host->name,
+          host->address, NULL) == OK)
+      {
+      auth_instance *au;
+      fail_reason = US"no common mechanisms were found";
+
+      DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
+
+      /* Scan the configured authenticators looking for one which is configured
+      for use as a client, which is not suppressed by client_condition, and
+      whose name matches an authentication mechanism supported by the server.
+      If one is found, attempt to authenticate by calling its client function.
+      */
+
+      for (au = auths; !smtp_authenticated && au != NULL; au = au->next)
+        {
+        uschar *p = names;
+        if (!au->client ||
+            (au->client_condition != NULL &&
+             !expand_check_condition(au->client_condition, au->name,
+               US"client authenticator")))
+          {
+          DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
+            au->name,
+            (au->client)? "client_condition is false" :
+                          "not configured as a client");
+          continue;
+          }
+
+        /* Loop to scan supported server mechanisms */
+
+        while (*p != 0)
+          {
+          int rc;
+          int len = Ustrlen(au->public_name);
+          while (isspace(*p)) p++;
+
+          if (strncmpic(au->public_name, p, len) != 0 ||
+              (p[len] != 0 && !isspace(p[len])))
+            {
+            while (*p != 0 && !isspace(*p)) p++;
+            continue;
+            }
+
+          /* Found data for a listed mechanism. Call its client entry. Set
+          a flag in the outblock so that data is overwritten after sending so
+          that reflections don't show it. */
+
+          fail_reason = US"authentication attempt(s) failed";
+          obp->authenticating = TRUE;
+          rc = (au->info->clientcode)(au, ibp, obp,
+            ob->command_timeout, buffer, bufsize);
+          obp->authenticating = FALSE;
+          DEBUG(D_transport) debug_printf("%s authenticator yielded %d\n",
+            au->name, rc);
+
+          /* A temporary authentication failure must hold up delivery to
+          this host. After a permanent authentication failure, we carry on
+          to try other authentication methods. If all fail hard, try to
+          deliver the message unauthenticated unless require_auth was set. */
+
+          switch(rc)
+            {
+            case OK:
+            smtp_authenticated = TRUE;   /* stops the outer loop */
+	    client_authenticator = au->name;
+	    if (au->set_client_id != NULL)
+	      client_authenticated_id = expand_string(au->set_client_id);
+            break;
+
+            /* Failure after writing a command */
+
+            case FAIL_SEND:
+            return FAIL_SEND;
+
+            /* Failure after reading a response */
+
+            case FAIL:
+            if (errno != 0 || buffer[0] != '5') return FAIL;
+            log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
+              au->name, host->name, host->address, buffer);
+            break;
+
+            /* Failure by some other means. In effect, the authenticator
+            decided it wasn't prepared to handle this case. Typically this
+            is the result of "fail" in an expansion string. Do we need to
+            log anything here? Feb 2006: a message is now put in the buffer
+            if logging is required. */
+
+            case CANCELLED:
+            if (*buffer != 0)
+              log_write(0, LOG_MAIN, "%s authenticator cancelled "
+                "authentication H=%s [%s] %s", au->name, host->name,
+                host->address, buffer);
+            break;
+
+            /* Internal problem, message in buffer. */
+
+            case ERROR:
+            set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE);
+            return ERROR;
+            }
+
+          break;  /* If not authenticated, try next authenticator */
+          }       /* Loop for scanning supported server mechanisms */
+        }         /* Loop for further authenticators */
+      }
+    }
+
+  /* If we haven't authenticated, but are required to, give up. */
+
+  if (require_auth == OK && !smtp_authenticated)
+    {
+    set_errno(addrlist, ERRNO_AUTHFAIL,
+      string_sprintf("authentication required but %s", fail_reason), DEFER,
+      FALSE);
+    return DEFER;
+    }
+  
+  return OK;
+}
+
+
+/* Construct AUTH appendix string for MAIL TO */
+/*
+Arguments
+  buffer	to build string
+  addrlist      chain of potential addresses to deliver
+  ob		transport options
+
+Globals		smtp_authenticated
+		client_authenticated_sender
+Return	True on error, otherwise buffer has (possibly empty) terminated string
+*/
+
+BOOL
+smtp_mail_auth_str(uschar *buffer, unsigned bufsize, address_item *addrlist,
+		    smtp_transport_options_block *ob)
+{
+uschar *local_authenticated_sender = authenticated_sender;
+
+#ifdef notdef
+  debug_printf("smtp_mail_auth_str: as<%s> os<%s> SA<%s>\n", authenticated_sender, ob->authenticated_sender, smtp_authenticated?"Y":"N");
+#endif
+
+if (ob->authenticated_sender != NULL)
+  {
+  uschar *new = expand_string(ob->authenticated_sender);
+  if (new == NULL)
+    {
+    if (!expand_string_forcedfail)
+      {
+      uschar *message = string_sprintf("failed to expand "
+        "authenticated_sender: %s", expand_string_message);
+      set_errno(addrlist, 0, message, DEFER, FALSE);
+      return TRUE;
+      }
+    }
+  else if (new[0] != 0) local_authenticated_sender = new;
+  }
+
+/* Add the authenticated sender address if present */
+
+if ((smtp_authenticated || ob->authenticated_sender_force) &&
+    local_authenticated_sender != NULL)
+  {
+  string_format(buffer, bufsize, " AUTH=%s",
+    auth_xtextencode(local_authenticated_sender,
+    Ustrlen(local_authenticated_sender)));
+  client_authenticated_sender = string_copy(local_authenticated_sender);
+  }
+else
+  *buffer= 0;
+
+return FALSE;
+}
+
+
+
 /*************************************************
 *       Deliver address list to given host       *
 *************************************************/
@@ -893,7 +1116,6 @@ smtp_inblock inblock;
 smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
 uschar *igquotstr = US"";
-uschar *local_authenticated_sender = authenticated_sender;
 uschar *helo_data = NULL;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
@@ -1267,9 +1489,6 @@ if (continue_hostname == NULL
     #endif
     )
   {
-  int require_auth;
-  uschar *fail_reason = US"server did not advertise AUTH support";
-
   /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
   lmtp_ignore_quota option was set. */
 
@@ -1313,139 +1532,13 @@ if (continue_hostname == NULL
   the business. The host name and address must be available when the
   authenticator's client driver is running. */
 
-  smtp_authenticated = FALSE;
-  client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
-  require_auth = verify_check_this_host(&(ob->hosts_require_auth), NULL,
-    host->name, host->address, NULL);
-
-  if (esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
+  switch (yield = smtp_auth(buffer, sizeof(buffer), addrlist, host,
+			    ob, esmtp, &inblock, &outblock))
     {
-    uschar *names = string_copyn(expand_nstring[1], expand_nlength[1]);
-    expand_nmax = -1;                          /* reset */
-
-    /* Must not do this check until after we have saved the result of the
-    regex match above. */
-
-    if (require_auth == OK ||
-        verify_check_this_host(&(ob->hosts_try_auth), NULL, host->name,
-          host->address, NULL) == OK)
-      {
-      auth_instance *au;
-      fail_reason = US"no common mechanisms were found";
-
-      DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
-
-      /* Scan the configured authenticators looking for one which is configured
-      for use as a client, which is not suppressed by client_condition, and
-      whose name matches an authentication mechanism supported by the server.
-      If one is found, attempt to authenticate by calling its client function.
-      */
-
-      for (au = auths; !smtp_authenticated && au != NULL; au = au->next)
-        {
-        uschar *p = names;
-        if (!au->client ||
-            (au->client_condition != NULL &&
-             !expand_check_condition(au->client_condition, au->name,
-               US"client authenticator")))
-          {
-          DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
-            au->name,
-            (au->client)? "client_condition is false" :
-                          "not configured as a client");
-          continue;
-          }
-
-        /* Loop to scan supported server mechanisms */
-
-        while (*p != 0)
-          {
-          int rc;
-          int len = Ustrlen(au->public_name);
-          while (isspace(*p)) p++;
-
-          if (strncmpic(au->public_name, p, len) != 0 ||
-              (p[len] != 0 && !isspace(p[len])))
-            {
-            while (*p != 0 && !isspace(*p)) p++;
-            continue;
-            }
-
-          /* Found data for a listed mechanism. Call its client entry. Set
-          a flag in the outblock so that data is overwritten after sending so
-          that reflections don't show it. */
-
-          fail_reason = US"authentication attempt(s) failed";
-          outblock.authenticating = TRUE;
-          rc = (au->info->clientcode)(au, &inblock, &outblock,
-            ob->command_timeout, buffer, sizeof(buffer));
-          outblock.authenticating = FALSE;
-          DEBUG(D_transport) debug_printf("%s authenticator yielded %d\n",
-            au->name, rc);
-
-          /* A temporary authentication failure must hold up delivery to
-          this host. After a permanent authentication failure, we carry on
-          to try other authentication methods. If all fail hard, try to
-          deliver the message unauthenticated unless require_auth was set. */
-
-          switch(rc)
-            {
-            case OK:
-            smtp_authenticated = TRUE;   /* stops the outer loop */
-	    client_authenticator = au->name;
-	    if (au->set_client_id != NULL)
-	      client_authenticated_id = expand_string(au->set_client_id);
-            break;
-
-            /* Failure after writing a command */
-
-            case FAIL_SEND:
-            goto SEND_FAILED;
-
-            /* Failure after reading a response */
-
-            case FAIL:
-            if (errno != 0 || buffer[0] != '5') goto RESPONSE_FAILED;
-            log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
-              au->name, host->name, host->address, buffer);
-            break;
-
-            /* Failure by some other means. In effect, the authenticator
-            decided it wasn't prepared to handle this case. Typically this
-            is the result of "fail" in an expansion string. Do we need to
-            log anything here? Feb 2006: a message is now put in the buffer
-            if logging is required. */
-
-            case CANCELLED:
-            if (*buffer != 0)
-              log_write(0, LOG_MAIN, "%s authenticator cancelled "
-                "authentication H=%s [%s] %s", au->name, host->name,
-                host->address, buffer);
-            break;
-
-            /* Internal problem, message in buffer. */
-
-            case ERROR:
-            yield = ERROR;
-            set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE);
-            goto SEND_QUIT;
-            }
-
-          break;  /* If not authenticated, try next authenticator */
-          }       /* Loop for scanning supported server mechanisms */
-        }         /* Loop for further authenticators */
-      }
-    }
-
-  /* If we haven't authenticated, but are required to, give up. */
-
-  if (require_auth == OK && !smtp_authenticated)
-    {
-    yield = DEFER;
-    set_errno(addrlist, ERRNO_AUTHFAIL,
-      string_sprintf("authentication required but %s", fail_reason), DEFER,
-      FALSE);
-    goto SEND_QUIT;
+    default:		goto SEND_QUIT;
+    case OK:		break;
+    case FAIL_SEND:	goto SEND_FAILED;
+    case FAIL:		goto RESPONSE_FAILED;
     }
   }
 
@@ -1538,32 +1631,8 @@ Other expansion failures are serious. An empty result is ignored, but there is
 otherwise no check - this feature is expected to be used with LMTP and other
 cases where non-standard addresses (e.g. without domains) might be required. */
 
-if (ob->authenticated_sender != NULL)
-  {
-  uschar *new = expand_string(ob->authenticated_sender);
-  if (new == NULL)
-    {
-    if (!expand_string_forcedfail)
-      {
-      uschar *message = string_sprintf("failed to expand "
-        "authenticated_sender: %s", expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE);
-      return ERROR;
-      }
-    }
-  else if (new[0] != 0) local_authenticated_sender = new;
-  }
-
-/* Add the authenticated sender address if present */
-
-if ((smtp_authenticated || ob->authenticated_sender_force) &&
-    local_authenticated_sender != NULL)
-  {
-  string_format(p, sizeof(buffer) - (p-buffer), " AUTH=%s",
-    auth_xtextencode(local_authenticated_sender,
-    Ustrlen(local_authenticated_sender)));
-  client_authenticated_sender = string_copy(local_authenticated_sender);
-  }
+if (smtp_mail_auth_str(p, sizeof(buffer) - (p-buffer), addrlist, ob))
+    return ERROR;
 
 /* From here until we send the DATA command, we can make use of PIPELINING
 if the server host supports it. The code has to be able to check the responses

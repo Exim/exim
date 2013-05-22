@@ -92,6 +92,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
+127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<x@y>
@@ -246,6 +247,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
 >>>   SMTP<< 250 OK
+>>> 127.0.0.1 in hosts_require_auth? no (option unset)
 >>>   SMTP>> MAIL FROM:<>
 >>>   SMTP<< 250 OK
 >>>   SMTP>> RCPT TO:<a@b>

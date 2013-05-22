@@ -722,11 +722,26 @@ else
         }
       }
 
-    /* Send the MAIL command */
+    /* Try to AUTH */
 
-    else done =
-      smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>\r\n",
-        from_address) >= 0 &&
+    else done = smtp_auth(responsebuffer, sizeof(responsebuffer),
+	addr, host, ob, esmtp, &inblock, &outblock) == OK  &&
+
+      		/* Copy AUTH info for logging */
+      ( (addr->authenticator = client_authenticator),
+        (addr->auth_id = client_authenticated_id),
+
+    /* Build a mail-AUTH string (re-using responsebuffer for convenience */
+        !smtp_mail_auth_str(responsebuffer, sizeof(responsebuffer), addr, ob)
+      )  &&
+
+      ( (addr->auth_sndr = client_authenticated_sender),
+
+    /* Send the MAIL command */
+        (smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>%s\r\n",
+          from_address, responsebuffer) >= 0)
+      )  &&
+
       smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
         '2', callout);
 
