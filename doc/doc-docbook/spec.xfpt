@@ -9777,6 +9777,16 @@ This operator converts a hex string into one that is base64 encoded. This can
 be useful for processing the output of the MD5 and SHA-1 hashing functions.
 
 
+
+.vitem &*${hexquote:*&<&'string'&>&*}*&
+.cindex "quoting" "hex-encoded unprintable characters"
+.cindex "&%hexquote%& expansion item"
+This operator converts non-printable characters in a string into a hex
+escape form. Byte values between 33 (!) and 126 (~) inclusive are left
+as is, and other byte values are converted to &`\xNN`&, for example a
+byt value 127 is converted to &`\x7f`&.
+
+
 .vitem &*${lc:*&<&'string'&>&*}*&
 .cindex "case forcing in strings"
 .cindex "string" "case forcing"
@@ -27074,6 +27084,21 @@ the message is ultimately accepted. For details, see section &<<SECTremoveheadac
 .cindex "&%set%& ACL modifier"
 This modifier puts a value into one of the ACL variables (see section
 &<<SECTaclvariables>>&).
+
+
+.vitem &*udpsend*&&~=&~<&'parameters'&>
+This modifier sends a UDP packet, for purposes such as statistics
+collection or behaviour monitoring. The parameters are expanded, and
+the result of the expansion must be a colon-separated list consisting
+of a destination server, port number, and the packet contents. The
+server can be specified as a host name or IPv4 or IPv6 address. The
+separator can be changed with the usual angle bracket syntax. For
+example, you might want to collect information on which hosts connect
+when:
+.code
+udpsend = <; 2001:dB8::dead:beef ; 1234 ;\
+             $tod_zulu $sender_host_address
+.endd
 .endlist
 
 
