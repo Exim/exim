@@ -3829,7 +3829,7 @@ while ((p = get_config_line()) != NULL)
   pp = p;
   while (mac_isgraph(*p)) p++;
   if (p - pp <= 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-    "missing error type");
+    "missing error type in retry rule");
 
   /* Test error names for things we understand. */
 
