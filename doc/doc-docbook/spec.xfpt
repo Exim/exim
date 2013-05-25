@@ -10337,6 +10337,8 @@ ${if forany{<, $recipients}{match{$item}{^user3@}}{yes}{no}}
 The value of &$item$& is saved and restored while &*forany*& or &*forall*& is
 being processed, to enable these expansion items to be nested.
 
+To scan a named list, expand it with the &*listnamed*& operator.
+
 
 .vitem &*ge&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
        &*gei&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
