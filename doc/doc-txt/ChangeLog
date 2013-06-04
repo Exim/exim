@@ -196,6 +196,12 @@ PP/20 Added force_command boolean option to pipe transport.
 JH/15 AUTH support on callouts (and hence cutthrough-deliveries).
       Bugzilla 321, 823.
 
+PP/21 Fix eximon continuous updating with timestamped log-files.
+      Broken in a format-string cleanup in 4.80, missed when I repaired the
+      other false fix of the same issue.
+      Report and fix from Heiko Schlichting.
+      Bugzilla 1363.
+
 
 Exim version 4.80.1
 -------------------

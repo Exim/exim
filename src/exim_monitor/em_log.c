@@ -364,7 +364,9 @@ link count of zero on the currently open file. */
 if (log_datestamping)
   {
   uschar log_file_wanted[256];
-  string_format(log_file_wanted, sizeof(log_file_wanted), "%s", CS log_file);
+  /* Do *not* use "%s" here, we need the %D datestamp in the log_file to
+   *   be expanded! */
+  string_format(log_file_wanted, sizeof(log_file_wanted), CS log_file);
   if (Ustrcmp(log_file_wanted, log_file_open) != 0)
     {
     if (LOG != NULL)
