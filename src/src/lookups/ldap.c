@@ -519,18 +519,25 @@ if (!lcp->bound ||
   {
   DEBUG(D_lookup) debug_printf("%sbinding with user=%s password=%s\n",
     (lcp->bound)? "re-" : "", user, password);
-#ifdef LDAP_OPT_X_TLS
-  /* The Oracle LDAP libraries (LDAP_LIB_TYPE=SOLARIS) don't support this: */
   if (eldap_start_tls)
     {
-        if ( (rc = ldap_start_tls_s(lcp->ld, NULL, NULL)) != LDAP_SUCCESS) {
-            *errmsg = string_sprintf("failed to initiate TLS processing on an "
-                "LDAP session to server %s%s - ldap_start_tls_s() returned %d:"
-                " %s", host, porttext, rc, ldap_err2string(rc));
-            goto RETURN_ERROR;
-        }
-    }
+#if defined(LDAP_OPT_X_TLS) && !defined(LDAP_LIB_SOLARIS)
+    /* The Oracle LDAP libraries (LDAP_LIB_TYPE=SOLARIS) don't support this.
+     * Note: moreover, they appear to now define LDAP_OPT_X_TLS and still not
+     *       export an ldap_start_tls_s symbol.
+     */
+    if ( (rc = ldap_start_tls_s(lcp->ld, NULL, NULL)) != LDAP_SUCCESS)
+      {
+      *errmsg = string_sprintf("failed to initiate TLS processing on an "
+          "LDAP session to server %s%s - ldap_start_tls_s() returned %d:"
+          " %s", host, porttext, rc, ldap_err2string(rc));
+      goto RETURN_ERROR;
+      }
+#else
+    DEBUG(D_lookup)
+      debug_printf("TLS initiation not supported with this Exim and your LDAP library.\n");
 #endif
+    }
   if ((msgid = ldap_bind(lcp->ld, CS user, CS password, LDAP_AUTH_SIMPLE))
        == -1)
     {

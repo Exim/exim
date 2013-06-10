@@ -202,6 +202,9 @@ PP/21 Fix eximon continuous updating with timestamped log-files.
       Report and fix from Heiko Schlichting.
       Bugzilla 1363.
 
+PP/22 Guard LDAP TLS usage against Solaris LDAP variant.
+      Report from Prashanth Katuri.
+
 
 Exim version 4.80.1
 -------------------
