@@ -2061,7 +2061,9 @@ all options unless explicitly for DTLS, let the administrator choose which
 to apply.
 
 This list is current as of:
-  ==>  1.0.1b  <==  */
+  ==>  1.0.1b  <==
+Plus SSL_OP_SAFARI_ECDHE_ECDSA_BUG from 2013-June patch/discussion on openssl-dev
+*/
 static struct exim_openssl_option exim_openssl_options[] = {
 /* KEEP SORTED ALPHABETICALLY! */
 #ifdef SSL_OP_ALL
@@ -2125,6 +2127,9 @@ static struct exim_openssl_option exim_openssl_options[] = {
 #endif
 #ifdef SSL_OP_NO_TLSv1_2
   { US"no_tlsv1_2", SSL_OP_NO_TLSv1_2 },
+#endif
+#ifdef SSL_OP_SAFARI_ECDHE_ECDSA_BUG
+  { US"safari_ecdhe_ecdsa_bug", SSL_OP_SAFARI_ECDHE_ECDSA_BUG },
 #endif
 #ifdef SSL_OP_SINGLE_DH_USE
   { US"single_dh_use", SSL_OP_SINGLE_DH_USE },

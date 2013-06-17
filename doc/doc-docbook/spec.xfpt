@@ -14742,6 +14742,8 @@ Possible options may include:
 .next
 &`no_tlsv1_2`&
 .next
+&`safari_ecdhe_ecdsa_bug`&
+.next
 &`single_dh_use`&
 .next
 &`single_ecdh_use`&
@@ -14756,6 +14758,15 @@ Possible options may include:
 .next
 &`tls_rollback_bug`&
 .endlist
+
+.new
+As an aside, the &`safari_ecdhe_ecdsa_bug`& item is a misnomer and affects
+all clients connecting using the MacOS SecureTransport TLS facility prior
+to MacOS 10.8.4, including email clients.  If you see old MacOS clients failing
+to negotiate TLS then this option value might help, provided that your OpenSSL
+release is new enough to contain this work-around.  This may be a situation
+where you have to upgrade OpenSSL to get buggy clients working.
+.wen
 
 
 .option oracle_servers main "string list" unset

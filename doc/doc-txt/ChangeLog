@@ -205,6 +205,10 @@ PP/21 Fix eximon continuous updating with timestamped log-files.
 PP/22 Guard LDAP TLS usage against Solaris LDAP variant.
       Report from Prashanth Katuri.
 
+PP/23 Support safari_ecdhe_ecdsa_bug for openssl_options.
+      It's SecureTransport, so affects any MacOS clients which use the
+      system-integrated TLS libraries, including email clients.
+
 
 Exim version 4.80.1
 -------------------
