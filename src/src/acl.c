@@ -2900,7 +2900,7 @@ r = s = ip_socket(SOCK_DGRAM, host_af);
 if (r < 0) goto defer;
 r = ip_connect(s, host_af, h->address, portnum, 1);
 if (r < 0) goto defer;
-len = strlen(CCS arg);
+len = Ustrlen(arg);
 r = send(s, arg, len, MSG_NOSIGNAL);
 if (r < 0) goto defer;
 if (r < len)
