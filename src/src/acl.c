@@ -2855,23 +2855,23 @@ portstr = string_nextinlist(&arg, &sep, NULL, 0);
 
 if (hostname == NULL)
   {
-  *log_msgptr = "missing destination host in \"udpsend\" modifier";
+  *log_msgptr = US"missing destination host in \"udpsend\" modifier";
   return ERROR;
   }
 if (portstr == NULL)
   {
-  *log_msgptr = "missing destination port in \"udpsend\" modifier";
+  *log_msgptr = US"missing destination port in \"udpsend\" modifier";
   return ERROR;
   }
 if (arg == NULL)
   {
-  *log_msgptr = "missing datagram payload in \"udpsend\" modifier";
+  *log_msgptr = US"missing datagram payload in \"udpsend\" modifier";
   return ERROR;
   }
 portnum = Ustrtol(portstr, &portend, 10);
 if (*portend != '\0')
   {
-  *log_msgptr = "bad destination port in \"udpsend\" modifier";
+  *log_msgptr = US"bad destination port in \"udpsend\" modifier";
   return ERROR;
   }
 
@@ -2888,7 +2888,7 @@ else
   r = host_find_byname(h, NULL, 0, NULL, FALSE);
 if (r == HOST_FIND_FAILED || r == HOST_FIND_AGAIN)
   {
-  *log_msgptr = "DNS lookup failed in \"udpsend\" modifier";
+  *log_msgptr = US"DNS lookup failed in \"udpsend\" modifier";
   return DEFER;
   }
 
@@ -2900,7 +2900,7 @@ r = s = ip_socket(SOCK_DGRAM, host_af);
 if (r < 0) goto defer;
 r = ip_connect(s, host_af, h->address, portnum, 1);
 if (r < 0) goto defer;
-len = strlen(arg);
+len = strlen(CCS arg);
 r = send(s, arg, len, MSG_NOSIGNAL);
 if (r < 0) goto defer;
 if (r < len)
