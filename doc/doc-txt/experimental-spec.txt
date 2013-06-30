@@ -92,9 +92,24 @@ is requested and required for the connection to proceed.  The host(s)
 should also be in "hosts_require_tls", and "tls_verify_certificates"
 configured for the transport.
 
+For the client to be able to verify the stapled OCSP the server must
+also supply, in its stapled information, any intermediate
+certificates for the chain leading to the OCSP proof from the signer
+of the server certificate.  There may be zero or one such. These
+intermediate certificates should be added to the server OCSP stapling
+file (named by tls_ocsp_file).
+
 At this point in time, we're gathering feedback on use, to determine if
 it's worth adding complexity to the Exim daemon to periodically re-fetch
 OCSP files and somehow handling multiple files.
+
+  A helper script "ocsp_fetch.pl" for fetching a proof from a CA
+  OCSP server is supplied.  The server URL may be included in the
+  server certificate, if the CA is helpful.
+
+  One fail mode seen was the OCSP Signer cert expiring before the end
+  of vailidity of the OCSP proof. The checking done by Exim/OpenSSL
+  noted this as invalid overall, but the re-fetch script did not.
 
 
 
