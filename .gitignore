@@ -5,3 +5,4 @@ exim-packaging-*
 0*.patch
 *.orig
 *.rej
+.gdb_history
