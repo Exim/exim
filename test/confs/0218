@@ -19,6 +19,13 @@ queue_run_in_order
 queue_only
 
 
+# ----- ACLs ----
+
+begin acl
+
+expand_check:
+  accept message = ACL
+
 # ----- Routers -----
 
 begin routers
@@ -30,11 +37,13 @@ bounce:
   data = :fail: just discard
   retry_use_local_part
   senders = :
+  debug_print = R: $router_name  (${acl {expand_check}})
 
 client:
   driver = accept
   retry_use_local_part
   transport = send_to_server
+  debug_print = R: $router_name  (${acl {expand_check}})
 
 
 # ----- Transports -----
@@ -47,6 +56,7 @@ send_to_server:
   command_timeout = 1s
   hosts = 127.0.0.1
   port = PORT_S
+  debug_print = T: $transport_name  (${acl {expand_check}})
 
 
 # ----- Retry -----

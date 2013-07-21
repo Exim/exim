@@ -4270,13 +4270,12 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
   exit(yield);
   }
 
-/* All the modes below here require the remaining configuration sections
-to be read, except that we can skip over the ACL setting when delivering
-specific messages, or doing a queue run. (For various testing cases we could
-skip too, but as they are rare, it doesn't really matter.) The argument is TRUE
-for skipping. */
+/* We used to set up here to skip reading the ACL section, on
+ (msg_action_arg > 0 || (queue_interval == 0 && !daemon_listen)
+Now, since the intro of the ${acl } expansion, ACL definitions may be
+needed in transports so we lost the optimisation. */
 
-readconf_rest(msg_action_arg > 0 || (queue_interval == 0 && !daemon_listen));
+readconf_rest();
 
 /* The configuration data will have been read into POOL_PERM because we won't
 ever want to reset back past it. Change the current pool to POOL_MAIN. In fact,

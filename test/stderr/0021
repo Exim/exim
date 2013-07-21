@@ -176,7 +176,6 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-skipping ACL configuration - not needed
 x in "!bad"? yes (end of list)
 LOG: MAIN
   => x <x@y> R=accept T=appendfile

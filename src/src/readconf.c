@@ -3972,26 +3972,14 @@ return acl_line;
 
 /* Now the main function:
 
-Arguments:
-  skip        TRUE when this Exim process is doing something that will
-              not need the ACL data
-
+Arguments:    none
 Returns:      nothing
 */
 
 static void
-readconf_acl(BOOL skip)
+readconf_acl(void)
 {
 uschar *p;
-
-/* Not receiving messages, don't need to parse the ACL data */
-
-if (skip)
-  {
-  DEBUG(D_acl) debug_printf("skipping ACL configuration - not needed\n");
-  while ((p = get_config_line()) != NULL);
-  return;
-  }
 
 /* Read each ACL and add it into the tree. Macro (re)definitions are allowed
 between ACLs. */
@@ -4126,7 +4114,7 @@ while(next_section[0] != 0)
 
   switch(mid)
     {
-    case 0: readconf_acl(skip_acl); break;
+    case 0: readconf_acl(); break;
     case 1: auths_init(); break;
     case 2: local_scan_init(); break;
     case 3: readconf_retries(); break;

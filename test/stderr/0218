@@ -6,9 +6,15 @@ LOG: queue_run MAIN
   Start queue run: pid=pppp -qq
 queue running combined directories
 delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 queue running combined directories
 delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
@@ -31,6 +37,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>
   SMTP>> RCPT TO:<b@test.ex>
   SMTP>> DATA
@@ -56,9 +64,15 @@ LOG: queue_run MAIN
   Start queue run: pid=pppp -qq
 queue running combined directories
 delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 queue running combined directories
 delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
@@ -83,6 +97,8 @@ LOG: MAIN
 LOG: MAIN
   Completed
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
 LOG: MAIN
   127.0.0.1 [127.0.0.1] Connection refused
@@ -97,7 +113,10 @@ admin user
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 delivering 10HmbB-0005vi-00 (queue run pid ppppp)
+R: bounce  (ACL)
 LOG: MAIN
   ** CALLER@test.ex F=<> R=bounce: just discard
 LOG: MAIN
@@ -105,7 +124,11 @@ LOG: MAIN
 LOG: MAIN
   Completed
 delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
@@ -135,6 +158,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+R: client  (ACL)
+T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>
   SMTP>> RCPT TO:<c@test.ex>
   SMTP>> DATA
