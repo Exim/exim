@@ -4065,9 +4065,7 @@ Because it may confuse people as to whether the names are singular or plural,
 we add "s" if it's missing. There is always enough room in next_section for
 this. This function is basically just a switch.
 
-Arguments:
-  skip_acl   TRUE if ACL information is not needed
-
+Arguments:   none
 Returns:     nothing
 */
 
@@ -4081,7 +4079,7 @@ static uschar *section_list[] = {
   US"transports"};
 
 void
-readconf_rest(BOOL skip_acl)
+readconf_rest(void)
 {
 int had = 0;
 
