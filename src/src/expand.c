@@ -1898,8 +1898,8 @@ while (i < nsub)
 DEBUG(D_expand)
   debug_printf("expanding: acl: %s  arg: %s%s\n",
     sub[0],
-    acl_narg>0 ? sub[1]   : US"<none>",
-    acl_narg>1 ? " +more" : "");
+    acl_narg>0 ? acl_arg[0] : US"<none>",
+    acl_narg>1 ? " +more"   : "");
 
 ret = acl_eval(acl_where, sub[0], user_msgp, &tmp);
 
