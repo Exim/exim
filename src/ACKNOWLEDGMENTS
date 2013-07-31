@@ -359,6 +359,7 @@ Simon Arlott              Code for outbound SSL-on-connect
                           Patch fixing NUL term/init of DKIM strings
                           Patch fixing dnsdb TXT record handling for DKIM
                           Patch speeding up DomainKeys signing
+Warren Baker              Found crash with MIME ACLs in non-SMTP local injection
 Dmitry Banschikov         Path to check for LDAP TLS initialisation errors
 René Berber               Pointed out mistake in build instructions for QNX
 Johannes Berg             Maintained dynamically loadable module code out-of-tree

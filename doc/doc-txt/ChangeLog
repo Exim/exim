@@ -209,6 +209,10 @@ PP/23 Support safari_ecdhe_ecdsa_bug for openssl_options.
       It's SecureTransport, so affects any MacOS clients which use the
       system-integrated TLS libraries, including email clients.
 
+PP/24 Fix segfault from trying to fprintf() to a NULL stdio FILE* if
+      using a MIME ACL for non-SMTP local injection.
+      Report and assistance in diagnosis by Warren Baker.
+
 
 Exim version 4.80.1
 -------------------

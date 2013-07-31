@@ -1277,9 +1277,10 @@ else if (rc != OK)
 #ifdef EXPERIMENTAL_DCC
   dcc_ok = 0;
 #endif
-  if (smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
+  if (smtp_input && smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0) {
     *smtp_yield_ptr = FALSE;    /* No more messsages after dropped connection */
-  *smtp_reply_ptr = US"";       /* Indicate reply already sent */
+    *smtp_reply_ptr = US"";     /* Indicate reply already sent */
+  }
   message_id[0] = 0;            /* Indicate no message accepted */
   return FALSE;                 /* Cause skip to end of receive function */
   }
