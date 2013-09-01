@@ -13986,7 +13986,7 @@ This option will let GnuTLS (2.12.0 or later) autoload PKCS11 modules with
 the p11-kit configuration files in &_/etc/pkcs11/modules/_&.
 
 See
-&url(http://www.gnu.org/software/gnutls/manual/gnutls.html#Smart-cards-and-HSMs)
+&url(http://www.gnutls.org/manual/gnutls.html#Smart-cards-and-HSMs)
 for documentation.
 .wen
 
@@ -25597,10 +25597,10 @@ aware of future feature enhancements of GnuTLS.
 
 Documentation of the strings accepted may be found in the GnuTLS manual, under
 "Priority strings".  This is online as
-&url(http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html),
+&url(http://www.gnutls.org/manual/html_node/Priority-Strings.html),
 but beware that this relates to GnuTLS 3, which may be newer than the version
 installed on your system.  If you are using GnuTLS 3,
-&url(http://www.gnu.org/software/gnutls/manual/html_node/Listing-the-ciphersuites-in-a-priority-string.html, then the example code)
+&url(http://www.gnutls.org/manual/gnutls.html#Listing-the-ciphersuites-in-a-priority-string, then the example code)
 on that site can be used to test a given string.
 
 Prior to Exim 4.80, an older API of GnuTLS was used, and Exim supported three

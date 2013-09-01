@@ -1005,7 +1005,7 @@ else if (state->tls_sni)
       "have an SNI set for a client [%s]\n", state->tls_sni);
 
 /* This is the priority string support,
-http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html
+http://www.gnutls.org/manual/html_node/Priority-Strings.html
 and replaces gnutls_require_kx, gnutls_require_mac & gnutls_require_protocols.
 This was backwards incompatible, but means Exim no longer needs to track
 all algorithms and provide string forms for them. */

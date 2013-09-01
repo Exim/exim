@@ -124,7 +124,7 @@ Exim version 4.80
    is instead given to gnutls_priority_init(3), which expects a priority string;
    this behaviour is much closer to the OpenSSL behaviour.  See:
 
-     http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html
+     http://www.gnutls.org/manual/html_node/Priority-Strings.html
 
    for fuller documentation of the strings parsed.  The three gnutls_require_*
    options are still parsed by Exim and, for this release, silently ignored.

@@ -208,7 +208,7 @@ Version 4.80
     gnutls_require_mac & gnutls_require_protocols are no longer supported.
     tls_require_ciphers is now parsed by gnutls_priority_init(3) as a priority
     string, documentation for which is at:
-    http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html
+    http://www.gnutls.org/manual/html_node/Priority-Strings.html
 
     SNI support has been added to Exim's GnuTLS integration too.
 
