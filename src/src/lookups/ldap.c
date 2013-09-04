@@ -81,6 +81,7 @@ typedef struct ldap_connection {
   uschar *password;
   BOOL  bound;
   int   port;
+  BOOL  is_start_tls_called;
   LDAP *ld;
 } LDAP_CONNECTION;
 
@@ -493,6 +494,7 @@ if (lcp == NULL)
   lcp->port = port;
   lcp->ld = ld;
   lcp->next = ldap_connections;
+  lcp->is_start_tls_called = FALSE;
   ldap_connections = lcp;
   }
 
@@ -519,7 +521,7 @@ if (!lcp->bound ||
   {
   DEBUG(D_lookup) debug_printf("%sbinding with user=%s password=%s\n",
     (lcp->bound)? "re-" : "", user, password);
-  if (eldap_start_tls)
+  if (eldap_start_tls && !lcp->is_start_tls_called)
     {
 #if defined(LDAP_OPT_X_TLS) && !defined(LDAP_LIB_SOLARIS)
     /* The Oracle LDAP libraries (LDAP_LIB_TYPE=SOLARIS) don't support this.
@@ -533,6 +535,7 @@ if (!lcp->bound ||
           " %s", host, porttext, rc, ldap_err2string(rc));
       goto RETURN_ERROR;
       }
+    lcp->is_start_tls_called = TRUE;
 #else
     DEBUG(D_lookup)
       debug_printf("TLS initiation not supported with this Exim and your LDAP library.\n");
