@@ -49,8 +49,6 @@ TL/06 Add Experimental DMARC support using libopendmarc libraries.
 TL/07 Fix an out of order global option causing a segfault.  Reported to dev
       mailing list by by Dmitry Isaikin.
 
-TL/08 Adjust exiqgrep to be case-insensitive for sender/receiver.
-
 JH/01 Bugzilla 1201 & 304 - New cutthrough-delivery feature, with TLS support.
 
 JH/02 Support "G" suffix to numbers in ${if comparisons.
@@ -214,6 +212,8 @@ PP/23 Support safari_ecdhe_ecdsa_bug for openssl_options.
 PP/24 Fix segfault from trying to fprintf() to a NULL stdio FILE* if
       using a MIME ACL for non-SMTP local injection.
       Report and assistance in diagnosis by Warren Baker.
+
+TL/08 Adjust exiqgrep to be case-insensitive for sender/receiver.
 
 
 Exim version 4.80.1
