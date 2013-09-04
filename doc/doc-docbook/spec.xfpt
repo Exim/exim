@@ -16031,6 +16031,21 @@ The available primes are:
 Some of these will be too small to be accepted by clients.
 Some may be too large to be accepted by clients.
 
+The TLS protocol does not negotiate an acceptable size for this; clients tend
+to hard-drop connections if what is offered by the server is unacceptable,
+whether too large or too small, and there's no provision for the client to
+tell the server what these constraints are.  Thus, as a server operator, you
+need to make an educated guess as to what is most likely to work for your
+userbase.
+
+Some known size constraints suggest that a bit-size in the range 2048 to 2236
+is most likely to maximise interoperability.  The upper bound comes from
+applications using the Mozilla Network Security Services (NSS) library, which
+used to set its &`DH_MAX_P_BITS`& upper-bound to 2236.  This affects many
+mail user agents (MUAs). The lower bound comes from Debian installs of Exim4
+prior to the 4.80 release, as Debian used to patch Exim to raise the minimum
+acceptable bound from 1024 to 2048.
+
 
 .option tls_on_connect_ports main "string list" unset
 This option specifies a list of incoming SSMTP (aka SMTPS) ports that should
@@ -25686,7 +25701,7 @@ tls_dhparam = none
 This may also be set to a string identifying a standard prime to be used for
 DH; if it is set to &`default`& or, for OpenSSL, is unset, then the prime
 used is &`ike23`&.  There are a few standard primes available, see the
-documetnation for &%tls_dhparam%& for the complete list.
+documentation for &%tls_dhparam%& for the complete list.
 
 See the command
 .code
