@@ -15,7 +15,7 @@
 # Routine for extracting the UTC timestamp from message ID
 # lifted from eximstat utility
 
-# Version 1.1
+# Version 1.2
 
 use strict;
 use Getopt::Std;
@@ -115,13 +115,13 @@ sub selection() {
 	foreach my $msg (keys(%id)) {
 		if ($opt{f}) {
 			# Match sender address
-			next unless ($id{$msg}{from} =~ /$opt{f}/);
+			next unless ($id{$msg}{from} =~ /$opt{f}/i);
 		}
 		if ($opt{r}) {
 			# Match any recipient address
 			my $match = 0;
 			foreach my $rcpt (@{$id{$msg}{rcpt}}) {
-				$match++ if ($rcpt =~ /$opt{r}/);
+				$match++ if ($rcpt =~ /$opt{r}/i);
 			}
 			next unless ($match);
 		}

@@ -34435,14 +34435,14 @@ options are available:
 
 .vlist
 .vitem &*-f*&&~<&'regex'&>
-Match the sender address. The field that is tested is enclosed in angle
-brackets, so you can test for bounce messages with
+Match the sender address using a case-insensitive search. The field that is
+tested is enclosed in angle brackets, so you can test for bounce messages with
 .code
 exiqgrep -f '^<>$'
 .endd
 .vitem &*-r*&&~<&'regex'&>
-Match a recipient address. The field that is tested is not enclosed in angle
-brackets.
+Match a recipient address using a case-insensitve search. The field that is
+tested is not enclosed in angle brackets.
 
 .vitem &*-s*&&~<&'regex'&>
 Match against the size field.
