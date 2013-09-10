@@ -416,15 +416,43 @@ if (lcp == NULL)
   if (!ldapi)
     {
     int tls_option;
+    #ifdef LDAP_OPT_X_TLS_REQUIRE_CERT
+    if (eldap_require_cert != NULL)
+      {
+      tls_option = LDAP_OPT_X_TLS_NEVER;
+      if (Ustrcmp(eldap_require_cert, "hard") == 0)
+        {
+        tls_option = LDAP_OPT_X_TLS_HARD;
+        }
+      else if (Ustrcmp(eldap_require_cert, "demand") == 0)
+        {
+        tls_option = LDAP_OPT_X_TLS_DEMAND;
+        }
+      else if (Ustrcmp(eldap_require_cert, "allow") == 0)
+        {
+        tls_option = LDAP_OPT_X_TLS_ALLOW;
+        }
+      else if (Ustrcmp(eldap_require_cert, "try") == 0)
+        {
+        tls_option = LDAP_OPT_X_TLS_TRY;
+        }
+      DEBUG(D_lookup)
+        debug_printf("Require certificate overrides LDAP_OPT_X_TLS option (%d)\n",
+                     tls_option);
+      }
+    else
+    #endif  /* LDAP_OPT_X_TLS_REQUIRE_CERT */
     if (strncmp(ludp->lud_scheme, "ldaps", 5) == 0)
       {
       tls_option = LDAP_OPT_X_TLS_HARD;
-      DEBUG(D_lookup) debug_printf("LDAP_OPT_X_TLS_HARD set\n");
+      DEBUG(D_lookup)
+        debug_printf("LDAP_OPT_X_TLS_HARD set due to ldaps:// URI\n");
       }
     else
       {
       tls_option = LDAP_OPT_X_TLS_TRY;
-      DEBUG(D_lookup) debug_printf("LDAP_OPT_X_TLS_TRY set\n");
+      DEBUG(D_lookup)
+        debug_printf("LDAP_OPT_X_TLS_TRY set due to ldap:// URI\n");
       }
     ldap_set_option(ld, LDAP_OPT_X_TLS, (void *)&tls_option);
     }
@@ -480,7 +508,8 @@ if (lcp == NULL)
       {
       cert_option = LDAP_OPT_X_TLS_TRY;
       }
-    ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_option);
+    /* Use NULL ldap handle because is a global option */
+    ldap_set_option(NULL, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_option);
     }
   #endif
 

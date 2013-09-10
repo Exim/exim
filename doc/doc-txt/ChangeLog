@@ -223,6 +223,11 @@ TL/09 Add expansion variable $authenticated_fail_id to keep track of
 TL/10 Bugzilla 1375 - Prevent TLS rebinding in ldap. Patch provided by
       Alexander Miroch.
 
+TL/11 Bugzilla 1382 - Option ldap_require_cert overrides start_tls
+      ldap library initialization, allowing self-signed CA's to be
+      used. Also properly sets require_cert option later in code by
+      using NULL (global ldap config) instead of ldap handle (per
+      session). Bug diagnosis and testing by alxgomz.
 
 Exim version 4.80.1
 -------------------
