@@ -334,6 +334,7 @@ static optionlist optionlist_config[] = {
   { "prod_requires_admin",      opt_bool,        &prod_requires_admin },
 #ifdef EXIM_PYTHON
   { "python_at_start",          opt_bool,        &opt_python_at_start },
+  { "python_log_exceptions",    opt_bool,        &opt_python_log_exceptions },
   { "python_startup",           opt_stringptr,   &opt_python_startup },
 #endif
   { "qualify_domain",           opt_stringptr,   &qualify_domain_sender },

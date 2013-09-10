@@ -79,6 +79,65 @@ basedir (const char *full)
   return dir;
 }
 
+static int *
+handle_python_exception(uschar *name, uschar **errstrp)
+{
+  PyObject *pType, *pValue, *pTraceback;
+  /* Catch the sys.exit() calls and log the exit value */
+  if (PyErr_ExceptionMatches(PyExc_SystemExit))
+  {
+    PyObject *pRepr;
+    PyErr_Fetch(&pType, &pValue, &pTraceback);
+    pRepr = PyObject_Repr(pValue);
+    *errstrp = string_sprintf("exited with errorlevel: %s",
+                              PyString_AsString(pRepr));
+    Py_DECREF(pRepr);
+    Py_XDECREF(pType);
+    Py_XDECREF(pValue);
+    Py_XDECREF(pTraceback);
+    return NULL;
+  }
+  /* Otherwise get the values, which clears the error data */
+  PyErr_Fetch(&pType, &pValue, &pTraceback);
+  if (pType)
+  {
+    PyObject *pMod, *pList, *pSep, *pJoin;
+    pMod = PyImport_ImportModule("traceback");
+    if (pMod)
+    {
+      PyObject *pRepr;
+      pList = PyObject_CallMethod(pMod, "format_exception", "OOO",
+                                  pType, pValue, pTraceback);
+      pRepr = PyObject_Repr(pValue);
+      pSep = PyUnicode_FromString("\n");
+      pJoin = PyUnicode_Join(pSep, pList);
+
+      DEBUG(D_any) debug_printf("%s", PyString_AsString(pJoin));
+      if (opt_python_log_exceptions)
+        *errstrp = string_sprintf("%s", PyString_AsString(pJoin));
+      else
+      {
+        *errstrp = string_sprintf("Exception raised in python function: %s",
+                                  PyString_AsString(pRepr));
+      }
+
+      Py_DECREF(pRepr);
+      Py_XDECREF(pList);
+      Py_XDECREF(pSep);
+      Py_XDECREF(pJoin);
+    }
+    else
+    {
+      *errstrp = US"Error loading traceback module";
+      PyErr_Clear(); /* Cleans up failed traceback import */
+    }
+  }
+  Py_XDECREF(pType);
+  Py_XDECREF(pValue);
+  Py_XDECREF(pTraceback);
+  return NULL;
+}
+
 uschar *
 init_python(uschar *startup_module)
 {
@@ -98,7 +157,7 @@ init_python(uschar *startup_module)
   /* Add path of startup module code to system search path, but only if
    * the detected module name is actually specified in a location by the
    * python_startup configuration setting. */
-  if (strncmp(name, path, sizeof(name)) != 0 )
+  if (Ustrcmp(name, path) != 0 )
   {
     pPath = PySys_GetObject("path");
     if (pPath == NULL)
@@ -186,14 +245,14 @@ call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
         str = string_sprintf("%f", PyFloat_AsDouble(pReturn));
       else
         str = US PyString_AsString(pReturn);
+      Py_DECREF(pFunc);
+      Py_DECREF(pReturn);
     }
     else
     {
-      *errstrp = string_sprintf("Did not get an answer from %s", name);
+      handle_python_exception(name, errstrp);
       return NULL;
     }
-    Py_DECREF(pFunc);
-    Py_DECREF(pReturn);
   }
   else
   {

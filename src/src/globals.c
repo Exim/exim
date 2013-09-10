@@ -54,6 +54,7 @@ BOOL    opt_perl_started       = FALSE;
 #ifdef EXIM_PYTHON
 uschar *opt_python_startup     = NULL;
 BOOL    opt_python_at_start    = FALSE;
+BOOL    opt_python_log_exceptions = FALSE;
 BOOL    opt_python_started     = FALSE;
 #endif
 
