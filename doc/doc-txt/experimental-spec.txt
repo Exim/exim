@@ -911,6 +911,8 @@ following forms:
 ${python{foo}}
 ${python{foo}{argument}}
 ${python{foo}{argument1}{argument2} ... }
+${python{ foo }{argument}}
+${python{ >, foo }{argument}}
 
 which calls the subroutine foo with the given arguments. A maximum of
 eight arguments may be passed. Passing more than this results in an
@@ -924,6 +926,17 @@ expanded string. If the return value is undefined, the expansion is
 forced to fail in the same way as an explicit “fail” on an if or lookup
 item. If the subroutine aborts by Pythons’s exception handler, the
 expansion fails with the error message explaining the exception.
+
+The last version is using the exim standard "list separator" format.
+If the python function returns a list of items, the python module will
+convert the string representation of the list to a single string
+separated by the list separator. The default separator is the ':'
+character.
+
+The parser will also strip leading and trailing spaces from the
+function name, but it leaves any embedded spaces. Presence of spaces
+in the function name will result in a "function not found" error
+since you cannot define a python function with spaces.
 
 
 3. Calling Exim functions from Python
@@ -971,6 +984,9 @@ Using the following extremely simple python script:
            # Use the global integer here to test
            return int(a)+int(b)+r
 
+   def simple_list(a,b,c):
+           return[a,b,c]
+
 All values passed to the functions are passed as strings.  Python uses
 very strict typing, so if you need to treat the numbers as integers or
 real numbers, you must use the int() or the float() functions to cast
@@ -984,12 +1000,22 @@ the variables or else you'll get failure results (see below).
 -800
 # exim -be '${python{negative_number_output}{800.55}}'
 Failed: Did not get an answer from negative_number_output
+# exim -be '${python{ simple_list }{big}{this is little}{25}}
+big:this is little:25
+# exim -be '${python{>, simple_list}{big}{this is little}{25}}
+big,this is little,25
+# exim -be '${python{ simple list}{a}{b}{c}}
+Failed: Did not find function 'small list'
 
 The first function added 800 + 100 plus the global value of r (300).
 The second function converted the integer to a negative number.
 The third failed because the code casts it as an integer, but it's
 actually being passed a float.  To properly work, instead cast the
 value as a float, then to an int, as:   -(int(float(b)))
+The fourth and fifth examples show how a list is converted to a string
+which separated by a configurable separator, and it also demonstrates
+that leading and trailing spaces are removed by the parser.
+The sixth example shows that embedded spaces are a syntax error.
 
 
 --------------------------------------------------------------

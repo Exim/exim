@@ -138,6 +138,46 @@ handle_python_exception(uschar *name, uschar **errstrp)
   return NULL;
 }
 
+static uschar *
+string_from_python_object(PyObject *pResult, uschar *sep)
+{
+  uschar *list = US"";
+  Py_ssize_t count = PyList_Size(pResult);
+  int loop;
+  int ptr = 0, size = 0;
+  for (loop=0; loop < count; loop++)
+  {
+    PyObject *pItem;
+    uschar *temp;
+    pItem = PyList_GetItem(pResult, loop);
+    temp = string_copy( (const uschar *)PyString_AsString(pItem));
+    size = Ustrlen(temp);
+    /* Swiped from expand.c to parse list items for the seperator
+       character and double them if it finds them */
+    for (;;)
+    {
+      size_t seglen = Ustrcspn(temp,sep);
+      list = string_cat(list, &size, &ptr, temp, seglen + 1);
+      /* If we got to the end of the string we output one character
+         too many; backup and end the loop. Otherwise arrange to double
+         the separator. */
+      if(temp[seglen] == '\0') { ptr--; break; }
+      list = string_cat(list, &size, &ptr, sep, 1);
+      temp += seglen + 1;
+    }
+    /* Add separator preparing for next item in list */
+    list = string_cat(list, &size, &ptr, sep, 1);
+    Py_DECREF(pItem);
+  }
+  DEBUG(D_acl)
+    debug_printf("Stringified python list has %d items and is %d characters long\n",
+                 count, ptr);
+  /* Remove the trailing separator */
+  if (ptr > 0)
+    list[ptr-1] = '\0';
+  return list;
+}
+
 uschar *
 init_python(uschar *startup_module)
 {
@@ -185,7 +225,7 @@ cleanup_python(void)
 
 uschar *
 call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
-  uschar *name, uschar **arg)
+  uschar *sep, uschar *name, uschar **arg)
 {
   uschar *str;
   size_t count = 0;
@@ -243,8 +283,12 @@ call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
         str = string_sprintf("%lf", PyLong_AsLong(pReturn));
       else if (PyFloat_CheckExact(pReturn))
         str = string_sprintf("%f", PyFloat_AsDouble(pReturn));
-      else
+      else if (PyString_CheckExact(pReturn))
         str = US PyString_AsString(pReturn);
+      else if (PyList_CheckExact(pReturn))
+        str = string_from_python_object(pReturn, sep);
+      else
+        str = US"Unknown object type returned";
       Py_DECREF(pFunc);
       Py_DECREF(pReturn);
     }
@@ -256,7 +300,7 @@ call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
   }
   else
   {
-    *errstrp = string_sprintf("Did not find function %s", name);
+    *errstrp = string_sprintf("Did not find function '%s'", name);
     return NULL;
   }
 
@@ -264,4 +308,5 @@ call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
   return yield;
 }
 
-// vim:tw=72 sw=2 ts=2 expandtab
+/* vim:tw=72 sw=2 ts=2 expandtab
+ */

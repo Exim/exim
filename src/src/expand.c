@@ -4423,11 +4423,42 @@ while (*s != 0)
         opt_python_started = TRUE;
         }
 
+      sub_arg[EXIM_PYTHON_MAX_ARGS + 1] = NULL;
+
+      /* Strip leading whitespace from function name */
+      while (isspace(*sub_arg[0])) sub_arg[0]++;
+
+      /* Check if alternate separator is specified */
+      uschar sep[2] = { ':' , '\0' };
+      if (sub_arg[0][0] == '>' && ispunct(sub_arg[0][1]))
+        {
+        sep[0] = sub_arg[0][1];  /* Set the actual separator char */
+        sub_arg[0] += 2;         /* Get past those two chars */
+        while (isspace(*sub_arg[0])) sub_arg[0]++;
+	/* Skipped whitespace, what's left is function name */
+        }
+      else if (sub_arg[0][0] == '>')
+        {
+        /* The first char is the "list separator" specifier, but what
+           follows it is not a punctuation symbol, so we error out. */
+        expand_string_message =
+          string_sprintf("Cannot use '%c' as a separator",
+                         sub_arg[0][1]);
+        goto EXPAND_FAILED;
+        }
+
+      /* Removes trailing spaces from function name, but leaves embedded
+         spaces.  Don't expect functions with spaces to work, it's simply
+	 a syntax error. */
+      int length = strlen(CCS sub_arg[0]) - 1;
+      uschar *func_name = sub_arg[0];
+      func_name += length;
+      while (isspace(*func_name)) { *func_name = '\0'; func_name--; }
+
       /* Call the function */
 
-      sub_arg[EXIM_PYTHON_MAX_ARGS + 1] = NULL;
       new_yield = call_python_cat(yield, &size, &ptr, &expand_string_message,
-        sub_arg[0], sub_arg + 1);
+        sep, sub_arg[0], sub_arg + 1);
 
       /* NULL yield indicates failure; if the message pointer has been set to
       NULL, the yield was undef, indicating a forced failure. Otherwise the
