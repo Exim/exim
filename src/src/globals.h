@@ -192,6 +192,7 @@ extern BOOL    allow_mx_to_ip;         /* Allow MX records to -> ip address */
 extern BOOL    allow_unqualified_recipient; /* As it says */
 extern BOOL    allow_unqualified_sender; /* Ditto */
 extern BOOL    allow_utf8_domains;     /* For experimenting */
+extern uschar *authenticated_fail_id;  /* ID that failed authentication */
 extern uschar *authenticated_id;       /* ID that was authenticated */
 extern uschar *authenticated_sender;   /* From AUTH on MAIL */
 extern BOOL    authentication_failed;  /* TRUE if AUTH was tried and failed */

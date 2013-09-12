@@ -2821,6 +2821,7 @@ while (done <= 0)
         if (set_id != NULL) authenticated_id = string_copy_malloc(set_id);
         sender_host_authenticated = au->name;
         authentication_failed = FALSE;
+        authenticated_fail_id = NULL;   /* Impossible to already be set? */
         received_protocol =
           protocols[pextend + pauthed + ((tls_in.active >= 0)? pcrpted:0)] +
             ((sender_host_address != NULL)? pnlocal : 0);
@@ -2836,6 +2837,7 @@ while (done <= 0)
       /* Fall through */
 
       case DEFER:
+      if (set_id != NULL) authenticated_fail_id = string_copy_malloc(set_id);
       s = string_sprintf("435 Unable to authenticate at present%s",
         auth_defer_user_msg);
       ss = string_sprintf("435 Unable to authenticate at present%s: %s",
@@ -2855,11 +2857,13 @@ while (done <= 0)
       break;
 
       case FAIL:
+      if (set_id != NULL) authenticated_fail_id = string_copy_malloc(set_id);
       s = US"535 Incorrect authentication data";
       ss = string_sprintf("535 Incorrect authentication data%s", set_id);
       break;
 
       default:
+      if (set_id != NULL) authenticated_fail_id = string_copy_malloc(set_id);
       s = US"435 Internal error";
       ss = string_sprintf("435 Internal error%s: return %d from authentication "
         "check", set_id, c);

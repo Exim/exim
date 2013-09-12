@@ -371,6 +371,7 @@ BOOL    allow_mx_to_ip         = FALSE;
 BOOL    allow_unqualified_recipient = TRUE;    /* For local messages */
 BOOL    allow_unqualified_sender = TRUE;       /* Reset for SMTP */
 BOOL    allow_utf8_domains     = FALSE;
+uschar *authenticated_fail_id  = NULL;
 uschar *authenticated_id       = NULL;
 uschar *authenticated_sender   = NULL;
 BOOL    authentication_failed  = FALSE;

@@ -217,6 +217,9 @@ TL/08 Adjust exiqgrep to be case-insensitive for sender/receiver.
 
 JH/16 Fix comparisons for 64b.  Bugzilla 1385.
 
+TL/09 Add expansion variable $authenticated_fail_id to keep track of
+      last id that failed so it may be referenced in subsequent ACL's.
+
 
 Exim version 4.80.1
 -------------------

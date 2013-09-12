@@ -410,6 +410,7 @@ static var_entry var_table[] = {
   { "address_data",        vtype_stringptr,   &deliver_address_data },
   { "address_file",        vtype_stringptr,   &address_file },
   { "address_pipe",        vtype_stringptr,   &address_pipe },
+  { "authenticated_fail_id",vtype_stringptr,  &authenticated_fail_id },
   { "authenticated_id",    vtype_stringptr,   &authenticated_id },
   { "authenticated_sender",vtype_stringptr,   &authenticated_sender },
   { "authentication_failed",vtype_int,        &authentication_failed },
