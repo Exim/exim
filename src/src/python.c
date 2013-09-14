@@ -22,6 +22,9 @@
 /* Module scoped python object */
 PyObject *pModule;
 
+/* UTILITY
+ * First we have some utility functions that are used internally */
+
 /* Get a filename from a full path. */
 static char *
 filename (const char *full)
@@ -79,6 +82,9 @@ basedir (const char *full)
   return dir;
 }
 
+/* When an exception occurs, based on python_log_exceptions value,
+ * generate a oneline description of the exception or the full
+ * stack trace, and put in an error return pointer. */
 static int *
 handle_python_exception(uschar *name, uschar **errstrp)
 {
@@ -138,6 +144,9 @@ handle_python_exception(uschar *name, uschar **errstrp)
   return NULL;
 }
 
+/* When a python function returns a list, stringify each item in the
+ * list and combine them into one big string, separated by the
+ * configurable separator. */
 static uschar *
 string_from_python_object(PyObject *pResult, uschar *sep)
 {
@@ -188,7 +197,7 @@ init_python(uschar *startup_module)
   name  = filename( CCS startup_module );
   mname = modulename( CCS name );
 
-  Py_SetProgramName("exim");
+  Py_SetProgramName("Exim");
   Py_Initialize();
   /* Is a fatal error if it fails to initialize */
   if (!Py_IsInitialized())
@@ -214,6 +223,7 @@ init_python(uschar *startup_module)
   return NULL;
 }
 
+/* Cleanly close out everything python related. */
 void
 cleanup_python(void)
 {
@@ -223,6 +233,9 @@ cleanup_python(void)
     Py_Finalize();
 }
 
+/* The python expansion comes into this function with the python
+ * function to call and all args to that function, and a list seperator
+ * to use in case the return value is a list. */
 uschar *
 call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
   uschar *sep, uschar *name, uschar **arg)

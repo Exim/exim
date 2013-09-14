@@ -886,6 +886,10 @@ started only when it is needed, but this can be changed in two ways:
 Setting python_at_start (a boolean option) in the configuration
 requests a startup when Exim is entered.
 
+If a python function raises an exception, a simple message is logged by
+default. Setting python_log_exceptions to true will cause the entire
+python stacktrace to be logged.
+
 The command line option -pys also requests a startup when Exim is
 entered, overriding the setting of python_at_start.
 
@@ -895,6 +899,7 @@ initial startup, even if python_at_start is set.
 Global configuration options:
 python_at_start                      boolean         false         main              4.82
 python_startup                       string          unset         main              4.82
+python_log_exceptions                boolean         false         main              4.82
 
 Commandline options added to override configuration settings:
 -pyd             Delay Python interpreter start
@@ -1005,7 +1010,7 @@ big:this is little:25
 # exim -be '${python{>, simple_list}{big}{this is little}{25}}
 big,this is little,25
 # exim -be '${python{ simple list}{a}{b}{c}}
-Failed: Did not find function 'small list'
+Failed: Did not find function 'simple list'
 
 The first function added 800 + 100 plus the global value of r (300).
 The second function converted the integer to a negative number.
