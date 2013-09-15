@@ -215,6 +215,8 @@ PP/24 Fix segfault from trying to fprintf() to a NULL stdio FILE* if
 
 TL/08 Adjust exiqgrep to be case-insensitive for sender/receiver.
 
+JH/16 Fix comparisons for 64b.  Bugzilla 1385.
+
 
 Exim version 4.80.1
 -------------------
