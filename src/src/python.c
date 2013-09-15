@@ -187,6 +187,57 @@ string_from_python_object(PyObject *pResult, uschar *sep)
   return list;
 }
 
+/* Allow python code to emit debug output to STDERR. */
+static PyObject *
+python_debug_write(PyObject *self, PyObject *args)
+{
+  const char *output;
+  if (!PyArg_ParseTuple(args, "s", &output))
+    return NULL;
+  debug_printf("%s", output);
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+/* Allow python code to log messages to the system log. */
+static PyObject *
+python_log_write(PyObject *self, PyObject *args)
+{
+  const char *output;
+  if (!PyArg_ParseTuple(args, "s", &output))
+    return NULL;
+  log_write(0, LOG_MAIN, "%s", output);
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+/* Allow python code to reach back into exim string expansion for
+ * configuration settings, per connection/message acl variables, etc.
+ */
+static PyObject *
+python_expand_string(PyObject *self, PyObject *args)
+{
+  const char *name;
+  uschar *expansion;
+  if (!PyArg_ParseTuple(args, "s", &name))
+    return NULL;
+  expansion = expand_string(US name);
+  return Py_BuildValue("s",expansion);
+}
+
+static PyMethodDef EximMethods[] = {
+  {"debug_write",   python_debug_write,   METH_VARARGS,
+     "Python interface to emit debug output using Exim functions."},
+  {"expand_string", python_expand_string, METH_VARARGS,
+     "Python interface to expand Exim settings/variables."},
+  {"log_write",     python_log_write,     METH_VARARGS,
+     "Python interface to emit debug output to Exim logs."},
+  {NULL, NULL, 0, NULL}
+};
+
+/* Second section contains the core code that exim calls in to. */
+
+/* Main initialization of python. */
 uschar *
 init_python(uschar *startup_module)
 {
@@ -203,6 +254,9 @@ init_python(uschar *startup_module)
   if (!Py_IsInitialized())
     return(US"Error initializing Python interpreter");
 
+  /* Create static functions expand_string, debug_write, and log_write */
+  (void) Py_InitModule("Exim",EximMethods);
+
   /* Add path of startup module code to system search path, but only if
    * the detected module name is actually specified in a location by the
    * python_startup configuration setting. */
@@ -215,7 +269,6 @@ init_python(uschar *startup_module)
     if (PyList_Insert(pPath, 0, pName))
       return(string_sprintf("Error inserting subdir into sys.path"));
   }
-  /* Create static functions expand_string, debug_write, and log_write */
   /* Process startup_code */
   pModule = PyImport_ImportModule(mname);
   if (pModule == NULL)

@@ -943,39 +943,60 @@ function name, but it leaves any embedded spaces. Presence of spaces
 in the function name will result in a "function not found" error
 since you cannot define a python function with spaces.
 
+Note: the python interface can only call functions that are defined in
+the script that is imported. It cannot be used to run inline python
+code.
+
 
 3. Calling Exim functions from Python
 
-Within any Python code called from Exim, the function
-Exim.expand_string() is available to call back into Exim’s string
-expansion function. For example, the Python code
+The python interface to exim exposes three calls into the Exim system,
+but these three functions are not automatically accesible to your
+script as part of the embedded python initialization. If you want to
+use these internal Exim calls, add to the top of your script:
+
+import Exim
+
+Three functions provided for use by your script are:
+  Exim.expand_string()
+  Exim.debug_write()
+  Exim.log_write()
+
+Exim.expand_string() calls into Exim’s string expansion function. The
+value returned is a string type. For example, to retrieve the
+$local_part for the current message being processed:
 
 lp = Exim.expand_string('$local_part')
-
-makes the current Exim $local_part available in the Python variable lp.
 
 If the string expansion is forced to fail by a “fail” item, the result
 of Exim.expand_string() is undefined. If there is a syntax error in the
 expansion string, the Python call from the original expansion string
 fails with an appropriate error message.
 
-Two other Exim functions are available for use from within Python code.
 Exim.debug_write() writes a string to the standard error stream if
 Exim’s debugging is enabled. If you want a newline at the end, you must
 supply it. Exim.log_write() writes a string to Exim’s main log, adding a
 leading timestamp. In this case, you should not supply a terminating
 newline.
 
+Using python's print statement to print to stdout or stderr is an
+unsupported function. It works if you're using exim from the commandline
+such as using the -be option, but in the (normal use) case of exim
+running as a daemon, stdout and stderr are sent to /dev/null and sending
+output to them will not result in any output being logged or visible.
+
 
 4. Examples
 
 Using the following extremely simple python script:
 
+   import Exim
    # Set a global variable
    r = 300
    
    def string_output(a):
            # Just a simple string being returned
+           Exim.log_write("Value "+a+" got passed to string_output()")
            return a
    
    def decimal_number_output(a):
@@ -986,18 +1007,19 @@ Using the following extremely simple python script:
            return -(int(b))
    
    def dumb_add(a,b):
-           # Use the global integer here to test
+           # Use the global integer here too
            return int(a)+int(b)+r
 
    def simple_list(a,b,c):
            return[a,b,c]
 
-All values passed to the functions are passed as strings.  Python uses
+All values passed to the functions are passed as strings. Python uses
 very strict typing, so if you need to treat the numbers as integers or
 real numbers, you must use the int() or the float() functions to cast
-the variables so that you may then use math (otherwise it treats it as
-a string and simply concatenates them).  You must also properly cast
-the variables or else you'll get failure results (see below).
+the variables so that you may then use math, otherwise it treats it as
+a string and simply concatenates them. You must also properly cast
+the variables from the correct type or you'll get failures. Here are
+some examples and their explanations follow:
 
 # exim -be '${python{dumb_add}{800}{100}}'
 1200
@@ -1012,13 +1034,13 @@ big,this is little,25
 # exim -be '${python{ simple list}{a}{b}{c}}
 Failed: Did not find function 'simple list'
 
-The first function added 800 + 100 plus the global value of r (300).
-The second function converted the integer to a negative number.
+The first example added 800 + 100 plus the global value of r (300).
+The second example converted the integer to a negative number.
 The third failed because the code casts it as an integer, but it's
-actually being passed a float.  To properly work, instead cast the
+actually being passed a float. To properly work, instead cast the
 value as a float, then to an int, as:   -(int(float(b)))
 The fourth and fifth examples show how a list is converted to a string
-which separated by a configurable separator, and it also demonstrates
+which is separated by a configurable separator. It also demonstrates
 that leading and trailing spaces are removed by the parser.
 The sixth example shows that embedded spaces are a syntax error.
 
