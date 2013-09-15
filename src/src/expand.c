@@ -6560,7 +6560,7 @@ else
   else
     {
     while (isspace(*endptr)) endptr++;
-    if (*endptr == 0) return (int)value;
+    if (*endptr == 0) return value;
     }
   }
 

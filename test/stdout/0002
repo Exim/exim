@@ -260,9 +260,11 @@
 > # Numeric overflow
 > # >32b should work, >64b not
 > 
-> 4096M      y
-> 4096000000 y
-> 4611686018427387904  y
+> 1 > 2047M                n
+> 1 > 2048M                n
+> 1 > 4096000000           n
+> 1 > 4096M                n
+> 1 > 4611686018427387904  n
 > Failed: absolute value of integer "46116860184273879040" is too large (overflow)
 > 
 > # Conditions
