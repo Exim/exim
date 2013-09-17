@@ -849,14 +849,18 @@ ZCAT_COMMAND=/usr/bin/zcat
 # EXIM_PERL=perl.o
 
 #------------------------------------------------------------------------------
+# EXPERIMENTAL Python Support
 # Compiling in support for embedded Python: If you want to be able to
 # use Python code in Exim's string manipulation language and you have Python
-# version 2.x installed, set EXIM_PYTHON to "yes" and the build system will
-# use the python-config program to determine build flags. Using embedded
-# Python costs quite a lot of resources. Only do this if you really need it.
-# This option is experimental.
+# version 2.x installed, set EXPERIMENTAL_PYTHON to "yes" and the build
+# system will use the python-config program to determine build flags. Using
+# embedded Python costs quite a lot of resources. Only do this if you really
+# need it.  Defaults that can be overridden if you have a multiple-version
+# installation:
+# PYTHON_COMMAND="python"
+# PYTHON_CONFIG_COMMAND="python-config"
 
-# EXIM_PYTHON=yes
+# EXPERIMENTAL_PYTHON=yes
 
 #------------------------------------------------------------------------------
 # Support for dynamically-loaded string expansion functions via ${dlfunc. If

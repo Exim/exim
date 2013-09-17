@@ -332,7 +332,7 @@ static optionlist optionlist_config[] = {
   { "print_topbitchars",        opt_bool,        &print_topbitchars },
   { "process_log_path",         opt_stringptr,   &process_log_path },
   { "prod_requires_admin",      opt_bool,        &prod_requires_admin },
-#ifdef EXIM_PYTHON
+#ifdef EXPERIMENTAL_PYTHON
   { "python_at_start",          opt_bool,        &opt_python_at_start },
   { "python_log_exceptions",    opt_bool,        &opt_python_log_exceptions },
   { "python_startup",           opt_stringptr,   &opt_python_startup },

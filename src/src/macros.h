@@ -536,11 +536,12 @@ router, which were chosen to represent the standard situation for users'
 #define RDO_EXIM_FILTER  0x00040000  /* Forbid Exim filters */
 #define RDO_SIEVE_FILTER 0x00080000  /* Forbid Sieve filters */
 #define RDO_PREPEND_HOME 0x00100000  /* Prepend $home to relative paths in Exim filter save commands */
+#define RDO_PYTHON       0x00200000  /* Forbid "python" in expansion in filter */
 
 /* This is the set that apply to expansions in filters */
 
 #define RDO_FILTER_EXPANSIONS \
-  (RDO_EXISTS|RDO_LOOKUP|RDO_PERL|RDO_READFILE|RDO_READSOCK|RDO_RUN|RDO_DLFUNC)
+  (RDO_EXISTS|RDO_LOOKUP|RDO_PERL|RDO_READFILE|RDO_READSOCK|RDO_RUN|RDO_DLFUNC|RDO_PYTHON)
 
 /* As well as the RDO bits themselves, we need the bit numbers in order to
 access (most of) the individual bits as separate options. This could be

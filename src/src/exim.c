@@ -776,9 +776,6 @@ fprintf(f, "Support for:");
 #ifdef EXIM_PERL
   fprintf(f, " Perl");
 #endif
-#ifdef EXIM_PYTHON
-  fprintf(f, " Python");
-#endif
 #ifdef EXPAND_DLFUNC
   fprintf(f, " Expand_dlfunc");
 #endif
@@ -827,6 +824,9 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_PRDR
   fprintf(f, " Experimental_PRDR");
+#endif
+#ifdef EXPERIMENTAL_PYTHON
+  fprintf(f, " Experimental_Python");
 #endif
 fprintf(f, "\n");
 
@@ -1436,7 +1436,7 @@ int  queue_only_reason = 0;
 #ifdef EXIM_PERL
 int  perl_start_option = 0;
 #endif
-#ifdef EXIM_PYTHON
+#ifdef EXPERIMENTAL_PYTHON
 int  python_start_option = 0;
 #endif
 int  recipients_arg = argc;
@@ -3072,7 +3072,7 @@ for (i = 1; i < argc; i++)
       break;
       }
     #endif
-    #ifdef EXIM_PYTHON
+    #ifdef EXPERIMENTAL_PYTHON
     if (*argrest == 'y' && argrest[1] == 's' && argrest[2] == 0)
       {
       python_start_option = 1;
@@ -3927,7 +3927,7 @@ python_startup option, and the configuration or the command line specifies
 initializing starting. Note that the global variables are actually called
 opt_python_xxx, simply modeled after the perl embedding code. */
 
-#ifdef EXIM_PYTHON
+#ifdef EXPERIMENTAL_PYTHON
 if (python_start_option != 0)
   opt_python_at_start = (python_start_option > 0);
 if (opt_python_at_start && opt_python_startup != NULL)

@@ -13,6 +13,7 @@
  * before any standard headers are included. */
 #include <Python.h>
 #include "exim.h"
+#include <libgen.h>
 
 /* A couple of macros that handle specific chars when parsing
  * a path and filename */
@@ -44,42 +45,25 @@ filename (const char *full)
 static char *
 modulename (const char *full)
 {
-  char *file;
+  uschar *file;
   int count = 0, done = 0;
 
-  file = strdup( CS full);
-  for (; *full && !done; full++)
+  file = string_copy( CUS full);
+  for (; *file && !done; file++)
   {
     /* Check for slashes just in case */
-    if (IS_SLASH(*full))
-      file = (char *)full + 1;
-    else if (IS_DOT(*full))
+    if (IS_SLASH(*file))
+      file++;
+    else if (IS_DOT(*file))
     {
-      file[count] = '\0';
+      /* Set end of string and reset back to beginning of string */
+      *file = '\0';
+      file -= (count + 1);
       done = 1;
     }
     count++;
   }
   return CS file;
-}
-
-/* Get the directory portion of a path+filename. */
-static char *
-basedir (const char *full)
-{
-  char *dir;
-  int match = 0, count = 0;
-
-  dir = strdup( CS full);
-  for (; *full; full++)
-  {
-    if (IS_SLASH(*full))
-      match = count;
-    count++;
-  }
-  if (match > 0)
-    dir[match] = '\0';
-  return dir;
 }
 
 /* When an exception occurs, based on python_log_exceptions value,
@@ -160,9 +144,13 @@ string_from_python_object(PyObject *pResult, uschar *sep)
     uschar *temp;
     pItem = PyList_GetItem(pResult, loop);
     temp = string_copy( (const uschar *)PyString_AsString(pItem));
-    size = Ustrlen(temp);
     /* Swiped from expand.c to parse list items for the seperator
-       character and double them if it finds them */
+       character and double them if it finds them. In the special case
+       where string begins with separator, prepend a space, but not
+       for first item in the list. */
+    if (loop && (temp[0] == *sep || temp[0] == 0))
+      list = string_cat(list, &size, &ptr, US" ", 1);
+
     for (;;)
     {
       size_t seglen = Ustrcspn(temp,sep);
@@ -194,7 +182,7 @@ python_debug_write(PyObject *self, PyObject *args)
   const char *output;
   if (!PyArg_ParseTuple(args, "s", &output))
     return NULL;
-  debug_printf("%s", output);
+  DEBUG(D_any) debug_printf("%s", output);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -241,12 +229,15 @@ static PyMethodDef EximMethods[] = {
 uschar *
 init_python(uschar *startup_module)
 {
-  char *name, *mname, *path;
+  char *name, *mname, *path, *temp;
   PyObject *pName, *pPath;
 
-  path  = basedir( CCS startup_module );
   name  = filename( CCS startup_module );
   mname = modulename( CCS name );
+  /* Use temp var since dirname() stomps on string passed to it
+   * and don't want an Exim global variable being altered. */
+  temp  = CS string_copy( startup_module );
+  path  = dirname( temp );
 
   Py_SetProgramName("Exim");
   Py_Initialize();
@@ -272,7 +263,7 @@ init_python(uschar *startup_module)
   /* Process startup_code */
   pModule = PyImport_ImportModule(mname);
   if (pModule == NULL)
-    return(string_sprintf("\nFailed to import module %s", mname));
+    return(string_sprintf("Failed to import module %s", mname));
   return NULL;
 }
 
@@ -373,6 +364,3 @@ call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
   yield = string_cat(yield, sizep, ptrp, str, strlen(CCS str));
   return yield;
 }
-
-/* vim:tw=72 sw=2 ts=2 expandtab
- */

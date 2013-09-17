@@ -19,7 +19,7 @@ extern void    cleanup_perl(void);
 extern uschar *init_perl(uschar *);
 #endif
 
-#ifdef EXIM_PYTHON
+#ifdef EXPERIMENTAL_PYTHON
 extern uschar *call_python_cat(uschar *, int *, int *, uschar **, uschar *,
                  uschar *, uschar **);
 extern void    cleanup_python(void);

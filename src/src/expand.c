@@ -4369,24 +4369,23 @@ while (*s != 0)
     #define EXIM_PYTHON_MAX_ARGS 8
 
     case EITEM_PYTHON:
-    #ifndef EXIM_PYTHON
+    #ifndef EXPERIMENTAL_PYTHON
     expand_string_message = US"\"${python\" encountered, but this facility "
       "is not included in this binary";
     goto EXPAND_FAILED;
 
-    #else   /* EXIM_PYTHON is defined */
+    #else   /* EXPERIMENTAL_PYTHON is defined */
       {
       uschar *sub_arg[EXIM_PYTHON_MAX_ARGS + 2];
-      uschar *new_yield;
+      uschar *new_yield, *func_name;
+      uschar sep[2] = { ':' , '\0' };
+      int length;
 
-      /* Add to python later */
-      /*
       if ((expand_forbid & RDO_PYTHON) != 0)
         {
         expand_string_message = US"Python calls are not permitted";
         goto EXPAND_FAILED;
         }
-      */
 
       /* Python of course uses structured indentation */
       switch(read_subs(sub_arg, EXIM_PYTHON_MAX_ARGS + 1, 1, &s, skipping, TRUE,
@@ -4417,7 +4416,7 @@ while (*s != 0)
         if (initerror != NULL)
           {
           expand_string_message =
-            string_sprintf("error in python_startup code: %s\n", initerror);
+            string_sprintf("error in python_startup code: %s", initerror);
           goto EXPAND_FAILED;
           }
         opt_python_started = TRUE;
@@ -4429,29 +4428,26 @@ while (*s != 0)
       while (isspace(*sub_arg[0])) sub_arg[0]++;
 
       /* Check if alternate separator is specified */
-      uschar sep[2] = { ':' , '\0' };
       if (sub_arg[0][0] == '>' && ispunct(sub_arg[0][1]))
         {
         sep[0] = sub_arg[0][1];  /* Set the actual separator char */
         sub_arg[0] += 2;         /* Get past those two chars */
+	/* Skip whitespace, what's left is function name */
         while (isspace(*sub_arg[0])) sub_arg[0]++;
-	/* Skipped whitespace, what's left is function name */
         }
       else if (sub_arg[0][0] == '>')
         {
         /* The first char is the "list separator" specifier, but what
            follows it is not a punctuation symbol, so we error out. */
-        expand_string_message =
-          string_sprintf("Cannot use '%c' as a separator",
-                         sub_arg[0][1]);
+        expand_string_message = sub_arg[0][1] ?
+          string_sprintf("Cannot use '%c' as a separator", sub_arg[0][1]) :
+          US"No separator specified";
         goto EXPAND_FAILED;
         }
 
-      /* Removes trailing spaces from function name, but leaves embedded
-         spaces.  Don't expect functions with spaces to work, it's simply
-	 a syntax error. */
-      int length = strlen(CCS sub_arg[0]) - 1;
-      uschar *func_name = sub_arg[0];
+      /* Removes trailing spaces from function name. */
+      length = strlen(CCS sub_arg[0]) - 1;
+      func_name = sub_arg[0];
       func_name += length;
       while (isspace(*func_name)) { *func_name = '\0'; func_name--; }
 
@@ -4469,7 +4465,7 @@ while (*s != 0)
         if (expand_string_message == NULL)
           {
           expand_string_message =
-            string_sprintf("Python subroutine \"%s\" returned undef to force "
+            string_sprintf("Python function \"%s\" returned None to force "
               "failure", sub_arg[0]);
           expand_string_forcedfail = TRUE;
           }
@@ -4477,13 +4473,13 @@ while (*s != 0)
         }
 
       /* Yield succeeded. Ensure forcedfail is unset, just in case it got
-      set during a callback from Perl. */
+      set during a callback from Python. */
 
       expand_string_forcedfail = FALSE;
       yield = new_yield;
       continue;
       }
-    #endif  /* not defined EXIM_PYTHON */
+    #endif  /* not defined EXPERIMENTAL_PYTHON */
 
     /* Handle "readfile" to insert an entire file */
 
@@ -6785,7 +6781,7 @@ if (opt_perl_startup != NULL)
   }
 #endif /* EXIM_PERL */
 
-#ifdef EXIM_PYTHON
+#ifdef EXPERIMENTAL_PYTHON
 if (opt_python_startup != NULL)
   {
   uschar *errstr;
@@ -6797,7 +6793,7 @@ if (opt_python_startup != NULL)
     return EXIT_FAILURE;
     }
   }
-#endif /* EXIM_PYTHON */
+#endif /* EXPERIMENTAL_PYTHON */
 
 while (fgets(buffer, sizeof(buffer), stdin) != NULL)
   {

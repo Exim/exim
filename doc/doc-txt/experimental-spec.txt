@@ -883,18 +883,18 @@ Also, note that this does not mean that Exim is necessarily running as
 root when Python is called at a later time. By default, the interpreter is
 started only when it is needed, but this can be changed in two ways:
 
-Setting python_at_start (a boolean option) in the configuration
+a. Setting python_at_start (a boolean option) in the configuration
 requests a startup when Exim is entered.
 
-If a python function raises an exception, a simple message is logged by
-default. Setting python_log_exceptions to true will cause the entire
-python stacktrace to be logged.
-
-The command line option -pys also requests a startup when Exim is
+b. The command line option -pys also requests a startup when Exim is
 entered, overriding the setting of python_at_start.
 
 There is also a command line option -pyd (for delay) which suppresses the
 initial startup, even if python_at_start is set. 
+
+If a python function raises an exception, a simple message is logged by
+default. Setting python_log_exceptions to true will cause the entire
+python stacktrace to be logged.
 
 Global configuration options:
 python_at_start                      boolean         false         main              4.82
@@ -939,9 +939,7 @@ separated by the list separator. The default separator is the ':'
 character.
 
 The parser will also strip leading and trailing spaces from the
-function name, but it leaves any embedded spaces. Presence of spaces
-in the function name will result in a "function not found" error
-since you cannot define a python function with spaces.
+function name, both when the separator is specified and not.
 
 Note: the python interface can only call functions that are defined in
 the script that is imported. It cannot be used to run inline python

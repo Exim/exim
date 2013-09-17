@@ -238,7 +238,7 @@ fi
 
 # Test if embedded Python support is being requested
 
-EXIM_PYTHON=`grep EXIM_PYTHON $mft`
+EXPERIMENTAL_PYTHON=`grep EXPERIMENTAL_PYTHON $mft`
 
 PYTHON_COMMAND=`grep PYTHON_COMMAND $mft | sed -e "\\$!d;s/^[$st]*PYTHON_COMMAND[$st]*=[$st]*//"`
 if [ "${PYTHON_COMMAND}" = "" ] ; then
@@ -249,7 +249,7 @@ if [ "${PYTHON_CONFIG_COMMAND}" = "" ] ; then
   PYTHON_CONFIG_COMMAND='python-config'
 fi
 
-if [ "${EXIM_PYTHON}" != "" ] ; then
+if [ "${EXPERIMENTAL_PYTHON}" != "" ] ; then
   testpython=`$PYTHON_COMMAND --version 2>&1 | grep Python`
   if [ "$testpython" = "" ] ; then
     echo "*** EXIM_PYTHON is set, but '$PYTHON_COMMAND --version' failed"
