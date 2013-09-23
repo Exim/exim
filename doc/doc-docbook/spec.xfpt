@@ -10882,6 +10882,16 @@ the value of &$authenticated_id$& is normally the login name of the calling
 process. However, a trusted user can override this by means of the &%-oMai%&
 command line option.
 
+.vitem &$authenticated_fail_id$&
+.cindex "authentication" "fail" "id"
+.vindex "&$authenticated_fail_id$&"
+When an authentication attempt fails, the variable &$authenticated_fail_id$&
+will contain the failed authentication id. If more than one authentication
+id is attempted, it will contain only the last one. The variable is
+available for processing in the ACL's, generally the quit or notquit ACL.
+A message to a local recipient could still be accepted without requiring
+authentication, which means this variable could also be visible in all of
+the ACL's as well.
 
 
 
@@ -24548,7 +24558,8 @@ to be returned. If the result of a successful expansion is an empty string,
 expansion is &"1"&, &"yes"&, or &"true"&, authentication succeeds and the
 generic &%server_set_id%& option is expanded and saved in &$authenticated_id$&.
 For any other result, a temporary error code is returned, with the expanded
-string as the error text.
+string as the error text, and the failed id saved in
+&$authenticated_fail_id$&.
 
 &*Warning*&: If you use a lookup in the expansion to find the user's
 password, be sure to make the authentication fail if the user is unknown.
