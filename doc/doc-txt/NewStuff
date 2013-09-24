@@ -137,6 +137,17 @@ Version 4.82
 20. Callout connections can now AUTH; the same controls as normal delivery
     connections apply.
 
+21. Support for DMARC, using opendmarc libs, can be enabled. It adds new
+    options: dmarc_forensic_sender, dmarc_history_file, and dmarc_tld_file.
+    It adds new expansion variables $dmarc_ar_header, $dmarc_status,
+    $dmarc_status_text, and $dmarc_used_domain.  It adds a new acl modifier
+    dmarc_status.  It adds new control flags dmarc_disable_verify and
+    dmarc_enable_forensic.
+
+22. Add expansion variable $authenticated_fail_id, which is the username
+    provided to the authentication method which failed.  It is available
+    for use in subsequent ACL processing (typically quit or notquit ACLs).
+
 
 Version 4.80
 ------------
