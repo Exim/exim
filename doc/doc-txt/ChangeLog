@@ -87,6 +87,7 @@ JH/10 Add 8bitmime log_selector, for 8bitmime status on the received line.
 
 PP/11 SECURITY: protect DKIM DNS decoding from remote exploit.
       CVE-2012-5671
+      (nb: this is the same fix as in Exim 4.80.1)
 
 JH/11 Add A= logging on delivery lines, and a client_set_id option on
       authenticators.
@@ -228,6 +229,7 @@ TL/11 Bugzilla 1382 - Option ldap_require_cert overrides start_tls
       used. Also properly sets require_cert option later in code by
       using NULL (global ldap config) instead of ldap handle (per
       session). Bug diagnosis and testing by alxgomz.
+
 
 Exim version 4.80.1
 -------------------
