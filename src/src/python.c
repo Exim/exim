@@ -23,6 +23,17 @@
 /* Module scoped python object */
 PyObject *pModule;
 
+#if (PY_MAJOR_VERSION == 3)
+#define WCS (wchar_t *)
+#define PyString_AsString(n)   PyBytes_AsString(n)
+#define PyString_CheckExact(n) PyBytes_CheckExact(n)
+#define PyString_FromString(n) PyBytes_FromString(n)
+#define STRING_TYPE_FORMATTER  "y"
+#else
+#define WCS
+#define STRING_TYPE_FORMATTER  "s"
+#endif
+
 /* UTILITY
  * First we have some utility functions that are used internally */
 
@@ -207,10 +218,10 @@ python_expand_string(PyObject *self, PyObject *args)
 {
   const char *name;
   uschar *expansion;
-  if (!PyArg_ParseTuple(args, "s", &name))
+  if (!PyArg_ParseTuple(args, STRING_TYPE_FORMATTER, &name))
     return NULL;
   expansion = expand_string(US name);
-  return Py_BuildValue("s",expansion);
+  return Py_BuildValue(STRING_TYPE_FORMATTER, expansion);
 }
 
 static PyMethodDef EximMethods[] = {
@@ -223,6 +234,30 @@ static PyMethodDef EximMethods[] = {
   {NULL, NULL, 0, NULL}
 };
 
+#if (PY_MAJOR_VERSION == 3)
+static struct PyModuleDef Eximmodule = {
+  PyModuleDef_HEAD_INIT,
+  "Exim", /* name of module */
+  NULL,   /* module documentation */
+  -1,     /* size of per-interpreter state of module,
+             or -1 if module keeps state in global variables */
+  EximMethods
+};
+
+PyMODINIT_FUNC
+PyInit_Exim(void)
+{
+  return PyModule_Create(&Eximmodule);
+}
+
+#else
+PyMODINIT_FUNC
+initExim(void)
+{
+  Py_InitModule("Exim", EximMethods);
+}
+#endif
+
 /* Second section contains the core code that exim calls in to. */
 
 /* Main initialization of python. */
@@ -230,7 +265,7 @@ uschar *
 init_python(uschar *startup_module)
 {
   char *name, *mname, *path, *temp;
-  PyObject *pName, *pPath;
+  PyObject *pName, *pPath, *pInit;
 
   name  = filename( CCS startup_module );
   mname = modulename( CCS name );
@@ -239,14 +274,23 @@ init_python(uschar *startup_module)
   temp  = CS string_copy( startup_module );
   path  = dirname( temp );
 
-  Py_SetProgramName("Exim");
+#if (PY_MAJOR_VERSION == 3)
+  PyImport_AppendInittab("Exim", PyInit_Exim);
+#else
+  PyImport_AppendInittab("Exim", initExim);
+#endif
+  Py_SetProgramName(WCS "Exim");
   Py_Initialize();
   /* Is a fatal error if it fails to initialize */
   if (!Py_IsInitialized())
     return(US"Error initializing Python interpreter");
 
   /* Create static functions expand_string, debug_write, and log_write */
+#if 0
+#if (PY_MAJOR_VERSION == 2)
   (void) Py_InitModule("Exim",EximMethods);
+#endif
+#endif
 
   /* Add path of startup module code to system search path, but only if
    * the detected module name is actually specified in a location by the
@@ -334,10 +378,13 @@ call_python_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
     if (pReturn != NULL)
     {
       /* Convert the appropriate format to a string and return it */
+#if (PY_MAJOR_VERSION == 2)
       if (PyInt_CheckExact(pReturn))
         str = string_sprintf("%d", PyInt_AsLong(pReturn));
-      else if (PyLong_CheckExact(pReturn))
-        str = string_sprintf("%lf", PyLong_AsLong(pReturn));
+      else
+#endif
+      if (PyLong_CheckExact(pReturn))
+        str = string_sprintf("%ld", PyLong_AsLong(pReturn));
       else if (PyFloat_CheckExact(pReturn))
         str = string_sprintf("%f", PyFloat_AsDouble(pReturn));
       else if (PyString_CheckExact(pReturn))
