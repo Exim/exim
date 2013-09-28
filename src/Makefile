@@ -85,6 +85,15 @@ clean_exim:; cd build-$(buildname); \
 	 $(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
 	routers/*.o routers/*.a transports/*.o transports/*.a lookups/*.so
 
-distclean:; $(RM_COMMAND) -rf build-*
+distclean:; $(RM_COMMAND) -rf build-* cscope*
+
+cscope.files: FRC
+	echo "-q" > $@
+	echo "-p3" >> $@
+	find src Local -name "*.[cshyl]" -print \
+		    -o -name "*akefile*" -print \
+		    -o -name EDITME -print >> $@
+
+FRC:
 
 # End of top-level makefile
