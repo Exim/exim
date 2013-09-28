@@ -464,11 +464,13 @@ if (af == AF_INET)
   *level = IPPROTO_IP;
   *optname = IP_TOS;
   }
+#if HAVE_IPV6
 else if (af == AF_INET6)
   {
   *level = IPPROTO_IPV6;
   *optname = IPV6_TCLASS;
   }
+#endif
 else
   {
   DEBUG(D_transport)
