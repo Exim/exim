@@ -24,7 +24,7 @@ options:
             whereas internally Exim computes sender rates to the
             accuracy of your computer's clock (typically 10ms).
 
-<regex>     The second argumetnis a regular expression.
+<regex>     The second argumetnis is a regular expression.
 
             Each line is matched against the regular expression.
             Lines that do not match are ignored. The regex may
