@@ -4,47 +4,69 @@ use strict;
 
 sub usage () {
   print <<END;
-usage: ratelimit.pl <period> <regex> logfile
+usage: ratelimit.pl [options] <period> <regex> <logfile>
 
 The aim of this script is to compute clients' peak sending rates
 from an Exim log file, using the same formula as Exim's ratelimit
 ACL condition. This is so that you can get an idea of a reasonable
 limit setting before you deploy the restrictions.
 
-This script isn't perfectly accurate, because the time stamps in
-Exim's log files are only accurate to a second whereas internally
-Exim computes sender rates to the accuracy of your computer's clock
-(typically 10ms).
+options:
 
-The log files to be processed can be specified on the command line
-after the other arguments; if no filenames are specified the script
-will read from stdin.
+-d          Show debugging information to stderr
+-p          Show progress of parse the log to stderr
 
-The first command line argument is the smoothing period, as defined by
-the documentation for the ratelimit ACL condition. The second argumetn
-is a regular expression.
+<period>    The smoothing period in seconds, as defined by the
+            documentation for the ratelimit ACL condition.
 
-Each line is matched against the regular expression. Lines that do not
-match are ignored. The regex may contain 0, 1, or 2 () capturing
-sub-expressions.
+            This script isn't perfectly accurate, because the time
+            stamps in Exim's log files are only accurate to a second
+            whereas internally Exim computes sender rates to the
+            accuracy of your computer's clock (typically 10ms).
 
-If there are no () sub-expressions, then every line that matches is
-used to compute a single rate. Its maximum value is reported when the
-script finishes.
+<regex>     The second argumetnis a regular expression.
 
-If there is one () sub-expression, then the text matched by the
-sub-expression is used to identify a rate lookup key, similar to the
-lookup key used by the ratelimit ACL condition. For example, you might
-write a regex to match the client IP address, or the authenticated
-username. Separate rates are computed for each different client and
-the maximum rate for each client is reported when the script finishes.
+            Each line is matched against the regular expression.
+            Lines that do not match are ignored. The regex may
+            contain 0, 1, or 2 () capturing sub-expressions.
 
-If there are two () sub-expressions, then the text matched by the
-first sub-expression is used to identify a rate lookup key as above,
-and the second is used to match the message size recorded in the log
-line, e.g. " S=(\\d+) ". In this case the byte rate is computed instead
-of the message rate, similar to the per_byte option of the ratelimit
-ACL condition.
+            If there are no () sub-expressions, then every line that
+            matches is used to compute a single rate. Its maximum
+            value is reported when the script finishes.
+
+            If there is one () sub-expression, then the text matched
+            by the sub-expression is used to identify a rate lookup
+            key, similar to the lookup key used by the ratelimit
+            ACL condition. For example, you might write a regex
+            to match the client IP address, or the authenticated
+            username. Separate rates are computed for each different
+            client and the maximum rate for each client is reported
+            when the script finishes.
+
+            If there are two () sub-expressions, then the text matched
+            by the first sub-expression is used to identify a rate
+            lookup key as above, and the second is used to match the
+            message size recorded in the log line, e.g. "S=(\\d+)".
+            In this case the byte rate is computed instead of the
+            message rate, similar to the per_byte option of the
+            ratelimit ACL condition.
+
+<logfile>   The log files to be processed can be specified on the
+            command line after the other arguments; if no filenames
+            are specified the script will read from stdin.
+
+examples:
+
+./ratelimit.pl 1 ' <= .*? \[(.*?)\]' <logfile>
+
+            Compute burst sending rate like ACL condition
+            ratelimit = 0 / 1s / strict / \$sender_host_address
+
+./ratelimit.pl 3600 '<= (.*?) ' <logfile>
+
+            Compute sending rate like ACL condition
+            ratelimit = 0 / 1h / strict / \$sender_address
+
 END
   exit 1;
 }
@@ -87,7 +109,7 @@ my %max;
 
 sub debug ($) {
   my $key = shift;
-  printf "%s\t%12d %8s %5.2f %5.2f\n",
+  printf STDERR "%s\t%12d %8s %5.2f %5.2f\n",
     $_, $time{$key}, $key, $max{$key}, $rate{$key};
 }
 
@@ -104,7 +126,7 @@ while (<>) {
     my $prog_now = substr $_, 0, 14;
     if ($progtime ne $prog_now) {
       $progtime = $prog_now;
-      print "$progtime\n";
+      print STDERR "$progtime\n";
     }
   }
   if (not defined $time{$key}) {
