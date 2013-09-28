@@ -712,7 +712,7 @@ use standard conditions such as hosts, senders, etc, to decide that
 DMARC verification should *not* be performed for them and disable
 DMARC with a control setting:
 
-  control = dmarc_verify_disable
+  control = dmarc_disable_verify
 
 A DMARC record can also specify a "forensic address", which gives
 exim an email address to submit reports about failed alignment.
@@ -818,7 +818,7 @@ b. Configure, somewhere before the DATA ACL, the control option to
 (RCPT ACL)
   warn    domains        = +local_domains
           hosts          = +local_hosts
-          control        = dmarc_verify_disable
+          control        = dmarc_disable_verify
 
   warn    !domains       = +screwed_up_dmarc_records
           control        = dmarc_enable_forensic
