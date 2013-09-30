@@ -154,6 +154,9 @@ Version 4.82
 24. New ${hexquote:..string..} expansion operator converts non-printable
     characters in the string to \xNN form.
 
+25. Experimental TPDA (Transport Post Delivery Action) function added.
+    Patch provided by Axel Rau.
+
 
 Version 4.80
 ------------
