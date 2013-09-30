@@ -755,11 +755,13 @@ mean, refer to the DMARC website above.  Valid strings are:
                 rejecting the email.
   o quarantine  The DMARC check failed and the library recommends
                 keeping it for further inspection.
+  o none        The DMARC check passed and the library recommends
+                no specific action, neutral.
   o norecord    No policy section in the DMARC record for this
                 sender domain.
   o nofrom      Unable to determine the domain of the sender.
-  o none        There is no DMARC record for this sender domain.
-  o error       Library error or dns error.
+  o temperror   Library error or dns error.
+  o off         The DMARC check was disable for this email.
 
 You can prefix each string with an exclamation mark to invert its
 meaning, for example "!accept" will match all results but
