@@ -976,7 +976,7 @@ smtp_auth(uschar *buffer, unsigned bufsize, address_item *addrlist, host_item *h
       FALSE);
     return DEFER;
     }
-  
+
   return OK;
 }
 
@@ -1991,12 +1991,12 @@ if (!ok) ok = TRUE; else
         the transport name. See lots of comments in deliver.c about the reasons
         for the complications when homonyms are involved. Just carry on after
         write error, as it may prove possible to update the spool file later. */
-  
+
         if (testflag(addr, af_homonym))
           sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
         else
           sprintf(CS buffer, "%.500s\n", addr->unique);
-  
+
         DEBUG(D_deliver) debug_printf("journalling %s", buffer);
         len = Ustrlen(CS buffer);
         if (write(journal_fd, buffer, len) != len)
@@ -2033,7 +2033,7 @@ if (!ok) ok = TRUE; else
             sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
           else
             sprintf(CS buffer, "%.500s\n", addr->unique);
-  
+
           DEBUG(D_deliver) debug_printf("journalling(PRDR) %s", buffer);
           len = Ustrlen(CS buffer);
           if (write(journal_fd, buffer, len) != len)
