@@ -118,7 +118,6 @@ static int
 strcut(uschar *str, uschar **ptrs, int nptrs)
 {
        uschar *last_sub_start = str;
-       uschar *lastvalid = str + Ustrlen(str);
        int n;
 
        for (n = 0; n < nptrs; n++)
@@ -137,16 +136,14 @@ strcut(uschar *str, uschar **ptrs, int nptrs)
                str++;
        }
 
-       if (last_sub_start < lastvalid) {
-              if (n <= nptrs) {
-                       *ptrs = last_sub_start;
-               } else {
-                       HDEBUG(D_auth) debug_printf("dovecot: warning: too many results from tab-splitting; saw %d fields, room for %d\n", n, nptrs);
-                       n = nptrs;
-              }
+       /* It's acceptable for the string to end with a tab character.  We see
+       this in AUTH PLAIN without an initial response from the client, which
+       causing us to send "334 " and get the data from the client. */
+       if (n <= nptrs) {
+               *ptrs = last_sub_start;
        } else {
-              n--;
-              HDEBUG(D_auth) debug_printf("dovecot: warning: ignoring trailing tab\n");
+               HDEBUG(D_auth) debug_printf("dovecot: warning: too many results from tab-splitting; saw %d fields, room for %d\n", n, nptrs);
+               n = nptrs;
        }
 
        return n <= nptrs ? n : nptrs;
