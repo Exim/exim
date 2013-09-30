@@ -1,0 +1,64 @@
+# Arbtirary expansion after transport
+# (EXPERIMENTAL_TPDA)
+#
+need_ipv4
+#
+exim -odq userx@domain1
+A deliverable message
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+354 More...
+.
+250 OK
+QUIT
+220 OK
+****
+exim -qqf
+****
+#
+#
+#
+#
+exim -odq userx@domain2
+A deliverable message which will hit a coding error in the config
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+354 More...
+.
+250 OK
+QUIT
+220 OK
+****
+exim -qqf
+****
+#
+#
+#
+server PORT_S
+220 ESMTP
+EHLO
+*sleep 4
+****
+exim -odi userx@domain1
+A message which will hit a timeout at the destination server
+.
+****
+#

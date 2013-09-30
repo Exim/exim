@@ -825,6 +825,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_PRDR
   fprintf(f, " Experimental_PRDR");
 #endif
+#ifdef EXPERIMENTAL_TPDA
+  fprintf(f, " Experimental_TPDA");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");

@@ -1,0 +1,67 @@
+# Exim test configuration 5700
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = accept
+
+
+# ----- ACL -----
+
+begin acl
+
+logger:
+    accept condition = ${if eq {$acl_arg2}{domain1}}
+	   logwrite = \
+	    $acl_arg1 \
+	    ip <$tpda_delivery_ip> \
+	    port <$tpda_delivery_port> \
+	    fqdn <$tpda_delivery_fqdn> \
+	    local_part <$tpda_delivery_local_part> \
+	    domain <$tpda_delivery_domain> \
+	    confirmation <$tpda_delivery_confirmation> \
+	    errno <$tpda_defer_errno> \
+	    errstr <$tpda_defer_errstr> \
+	    router <$router_name> \
+	    transport <$transport_name>
+
+    accept logwrite = $this_expansion_will_fail
+
+# ----- Routers -----
+
+begin routers
+
+dump_bounces:
+  driver = redirect
+  senders = :
+  data = :blackhole:
+
+others:
+  driver = manualroute
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+  command_timeout = 1s
+  final_timeout = 1s
+  tpda_delivery_action =   ${acl {logger} {delivery} {$domain} }
+  tpda_host_defer_action = ${acl {logger} {deferral} {$domain} }
+
+# End

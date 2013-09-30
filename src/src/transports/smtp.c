@@ -156,6 +156,10 @@ optionlist smtp_transport_options[] = {
   { "tls_verify_certificates", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_verify_certificates) }
 #endif
+#ifdef EXPERIMENTAL_TPDA
+ ,{ "tpda_host_defer_action", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, tpda_host_defer_action) },
+#endif
 };
 
 /* Size of the options list. An extern variable has to be used so that its
@@ -232,6 +236,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* dkim_selector */
   NULL,                /* dkim_sign_headers */
   NULL                 /* dkim_strict */
+#endif
+#ifdef EXPERIMENTAL_TPDA
+ ,NULL                 /* tpda_host_defer_action */
 #endif
 };
 
@@ -574,6 +581,59 @@ else
     strerror(addr->basic_errno));
   }
 }
+
+
+
+#ifdef EXPERIMENTAL_TPDA
+/*************************************************
+*   Post-defer action                            *
+*************************************************/
+
+/* This expands an arbitrary per-transport string.
+   It might, for example, be used to write to the database log.
+
+Arguments:
+  ob                    transport options block
+  addr                  the address item containing error information
+  host                  the current host
+
+Returns:   nothing
+*/
+
+static void
+tpda_deferred(smtp_transport_options_block *ob, address_item *addr, host_item *host)
+{
+uschar *action = ob->tpda_host_defer_action;
+if (!action)
+	return;
+
+tpda_delivery_ip =         string_copy(host->address);
+tpda_delivery_port =       (host->port == PORT_NONE)? 25 : host->port;
+tpda_delivery_fqdn =       string_copy(host->name);
+tpda_delivery_local_part = string_copy(addr->local_part);
+tpda_delivery_domain =     string_copy(addr->domain);
+tpda_defer_errno =         addr->basic_errno;
+
+tpda_defer_errstr = addr->message
+  ? addr->basic_errno > 0
+    ? string_sprintf("%s: %s", addr->message, strerror(addr->basic_errno))
+    : string_copy(addr->message)
+  : addr->basic_errno > 0
+    ? string_copy(strerror(addr->basic_errno))
+    : NULL;
+
+DEBUG(D_transport)
+  debug_printf("  TPDA(host defer): tpda_host_defer_action=|%s| tpda_delivery_IP=%s\n",
+    action, tpda_delivery_ip);
+
+router_name =    addr->router->name;
+transport_name = addr->transport->name;
+if (!expand_string(action) && *expand_string_message)
+  log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand tpda_defer_action in %s: %s\n",
+    transport_name, expand_string_message);
+router_name = transport_name = NULL;
+}
+#endif
 
 
 
@@ -976,7 +1036,7 @@ smtp_auth(uschar *buffer, unsigned bufsize, address_item *addrlist, host_item *h
       FALSE);
     return DEFER;
     }
-  
+
   return OK;
 }
 
@@ -1912,7 +1972,12 @@ if (!ok) ok = TRUE; else
 
     /* Set up confirmation if needed - applies only to SMTP */
 
-    if ((log_extra_selector & LX_smtp_confirmation) != 0 && !lmtp)
+    if (
+        #ifndef EXPERIMENTAL_TPDA
+          (log_extra_selector & LX_smtp_confirmation) != 0 &&
+        #endif
+          !lmtp
+       )
       {
       uschar *s = string_printing(buffer);
       conf = (s == buffer)? (uschar *)string_copy(s) : s;
@@ -1991,12 +2056,12 @@ if (!ok) ok = TRUE; else
         the transport name. See lots of comments in deliver.c about the reasons
         for the complications when homonyms are involved. Just carry on after
         write error, as it may prove possible to update the spool file later. */
-  
+
         if (testflag(addr, af_homonym))
           sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
         else
           sprintf(CS buffer, "%.500s\n", addr->unique);
-  
+
         DEBUG(D_deliver) debug_printf("journalling %s", buffer);
         len = Ustrlen(CS buffer);
         if (write(journal_fd, buffer, len) != len)
@@ -2033,7 +2098,7 @@ if (!ok) ok = TRUE; else
             sprintf(CS buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
           else
             sprintf(CS buffer, "%.500s\n", addr->unique);
-  
+
           DEBUG(D_deliver) debug_printf("journalling(PRDR) %s", buffer);
           len = Ustrlen(CS buffer);
           if (write(journal_fd, buffer, len) != len)
@@ -3051,6 +3116,11 @@ for (cutoff_retry = 0; expired &&
                          first_addr->basic_errno != ERRNO_TLSFAILURE)
         write_logs(first_addr, host);
 
+      #ifdef EXPERIMENTAL_TPDA
+      if (rc == DEFER)
+        tpda_deferred(ob, first_addr, host);
+      #endif
+
       /* If STARTTLS was accepted, but there was a failure in setting up the
       TLS session (usually a certificate screwup), and the host is not in
       hosts_require_tls, and tls_tempfail_tryclear is true, try again, with
@@ -3073,6 +3143,10 @@ for (cutoff_retry = 0; expired &&
           expanded_hosts != NULL, &message_defer, TRUE);
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
           write_logs(first_addr, host);
+        #ifdef EXPERIMENTAL_TPDA
+        if (rc == DEFER)
+          tpda_deferred(ob, first_addr, host);
+        #endif
         }
       #endif
       }

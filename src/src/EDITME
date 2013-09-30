@@ -469,6 +469,10 @@ EXIM_MONITOR=eximon.bin
 # Uncomment the following line to add Per-Recipient-Data-Response support.
 # EXPERIMENTAL_PRDR=yes
 
+# Uncomment the following line to support Transport post-delivery actions,
+# eg. for logging to a database.
+# EXPERIMENTAL_TPDA=yes
+
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
