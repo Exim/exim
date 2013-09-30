@@ -232,6 +232,9 @@ TL/11 Bugzilla 1382 - Option ldap_require_cert overrides start_tls
       using NULL (global ldap config) instead of ldap handle (per
       session). Bug diagnosis and testing by alxgomz.
 
+TL/12 Enhanced documentation in the ratelimit.pl script provided in
+      the src/util/ subdirectory.
+
 
 Exim version 4.80.1
 -------------------
