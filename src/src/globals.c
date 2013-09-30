@@ -1280,6 +1280,17 @@ int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;
 BOOL    timestamps_utc         = FALSE;
 
+#ifdef EXPERIMENTAL_TPDA
+int     tpda_defer_errno        = 0;
+uschar *tpda_defer_errstr       = NULL;
+uschar *tpda_delivery_ip        = NULL;
+int     tpda_delivery_port      = 0;
+uschar *tpda_delivery_fqdn      = NULL;
+uschar *tpda_delivery_local_part= NULL;
+uschar *tpda_delivery_domain    = NULL;
+uschar *tpda_delivery_confirmation = NULL;
+#endif
+
 transport_instance  *transports = NULL;
 
 transport_instance  transport_defaults = {

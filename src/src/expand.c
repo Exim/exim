@@ -677,6 +677,16 @@ static var_entry var_table[] = {
   { "tod_logfile",         vtype_todlf,       NULL },
   { "tod_zone",            vtype_todzone,     NULL },
   { "tod_zulu",            vtype_todzulu,     NULL },
+#ifdef EXPERIMENTAL_TPDA
+  { "tpda_defer_errno",     vtype_int,         &tpda_defer_errno },
+  { "tpda_defer_errstr",    vtype_stringptr,   &tpda_defer_errstr },
+  { "tpda_delivery_confirmation", vtype_stringptr,   &tpda_delivery_confirmation },
+  { "tpda_delivery_domain", vtype_stringptr,   &tpda_delivery_domain },
+  { "tpda_delivery_fqdn",   vtype_stringptr,   &tpda_delivery_fqdn },
+  { "tpda_delivery_ip",     vtype_stringptr,   &tpda_delivery_ip },
+  { "tpda_delivery_local_part",vtype_stringptr,&tpda_delivery_local_part },
+  { "tpda_delivery_port",   vtype_int,         &tpda_delivery_port },
+#endif
   { "transport_name",      vtype_stringptr,   &transport_name },
   { "value",               vtype_stringptr,   &lookup_value },
   { "version_number",      vtype_stringptr,   &version_string },

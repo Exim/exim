@@ -834,6 +834,18 @@ extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
 extern BOOL    timestamps_utc;         /* Use UTC for all times */
+
+#ifdef EXPERIMENTAL_TPDA
+extern int     tpda_defer_errno;        /* error number set when a remote delivery is deferred with a host error */
+extern uschar *tpda_defer_errstr;       /* error string set when a remote delivery is deferred with a host error */
+extern uschar *tpda_delivery_ip;        /* IP of host, which has accepted delivery */
+extern int     tpda_delivery_port;       /* port of host, which has accepted delivery */
+extern uschar *tpda_delivery_fqdn;      /* FQDN of host, which has accepted delivery */
+extern uschar *tpda_delivery_local_part;/* local part of address being delivered */
+extern uschar *tpda_delivery_domain;    /* domain part of address being delivered */
+extern uschar *tpda_delivery_confirmation; /* SMTP confirmation message */
+#endif
+
 extern uschar *transport_name;         /* Name of transport last started */
 extern int     transport_count;        /* Count of bytes transported */
 extern int     transport_newlines;     /* Accurate count of number of newline chars transported */

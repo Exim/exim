@@ -844,6 +844,90 @@ b. Configure, somewhere before the DATA ACL, the control option to
 
 
 
+Transport post-delivery actions
+--------------------------------------------------------------
+
+An arbitrary per-transport string can be expanded on successful delivery,
+and (for SMTP transports) a second string on deferrals caused by a host error.
+This feature may be used, for example, to write exim internal log information
+(not available otherwise) into a database.
+
+In order to use the feature, you must set
+
+EXPERIMENTAL_TPDA=yes
+
+in your Local/Makefile
+
+and define the expandable strings in the runtime config file, to
+be executed at end of delivery.
+
+Additionally, there are 6 more variables, available at end of
+delivery:
+
+tpda_delivery_ip             IP of host, which has accepted delivery
+tpda_delivery_port           Port of remote host which has accepted delivery
+tpda_delivery_fqdn           FQDN of host, which has accepted delivery
+tpda_delivery_local_part     local part of address being delivered
+tpda_delivery_domain         domain part of address being delivered
+tpda_delivery_confirmation   SMTP confirmation message
+
+In case of a deferral caused by a host-error:
+tpda_defer_errno             Error number
+tpda_defer_errstr            Error string possibly containing more details
+
+The $router_name and $transport_name variables are also usable.
+
+
+To take action after successful deliveries, set the following option
+on any transport of interest.
+
+tpda_delivery_action
+
+An example might look like:
+
+tpda_delivery_action = \
+${lookup pgsql {SELECT * FROM record_Delivery( \
+    '${quote_pgsql:$sender_address_domain}',\
+    '${quote_pgsql:${lc:$sender_address_local_part}}', \
+    '${quote_pgsql:$tpda_delivery_domain}', \
+    '${quote_pgsql:${lc:$tpda_delivery_local_part}}', \
+    '${quote_pgsql:$tpda_delivery_ip}', \
+    '${quote_pgsql:${lc:$tpda_delivery_fqdn}}', \
+    '${quote_pgsql:$message_exim_id}')}}
+
+The string is expanded after the delivery completes and any
+side-effects will happen.  The result is then discarded.
+Note that for complex operations an ACL expansion can be used.
+
+
+In order to log host deferrals, add the following option to an SMTP
+transport:
+
+tpda_host_defer_action
+
+This is a private option of the SMTP transport. It is intended to
+log failures of remote hosts. It is executed only when exim has
+attempted to deliver a message to a remote host and failed due to
+an error which doesn't seem to be related to the individual
+message, sender, or recipient address.
+See section 45.2 of the exim documentation for more details on how
+this is determined.
+
+Example:
+
+tpda_host_defer_action = \
+${lookup mysql {insert into delivlog set \
+    msgid = '${quote_mysql:$message_exim_id}', \
+    senderlp = '${quote_mysql:${lc:$sender_address_local_part}}', \
+    senderdom = '${quote_mysql:$sender_address_domain}', \
+    delivlp = '${quote_mysql:${lc:$tpda_delivery_local_part}}', \
+    delivdom = '${quote_mysql:$tpda_delivery_domain}', \
+    delivip = '${quote_mysql:$tpda_delivery_ip}', \
+    delivport = '${quote_mysql:$tpda_delivery_port}', \
+    delivfqdn = '${quote_mysql:$tpda_delivery_fqdn}', \
+    deliverrno = '${quote_mysql:$tpda_defer_errno}', \
+    deliverrstr = '${quote_mysql:$tpda_defer_errstr}' \
+    }}
 
 --------------------------------------------------------------
 End of file

@@ -695,6 +695,15 @@ the log line, and reset the store afterwards. Remote deliveries should always
 have a pointer to the host item that succeeded; local deliveries can have a
 pointer to a single host item in their host list, for use by the transport. */
 
+#ifdef EXPERIMENTAL_TPDA
+  tpda_delivery_ip = NULL;	/* presume no successful remote delivery */
+  tpda_delivery_port = 0;
+  tpda_delivery_fqdn = NULL;
+  tpda_delivery_local_part = NULL;
+  tpda_delivery_domain = NULL;
+  tpda_delivery_confirmation = NULL;
+#endif
+
 s = reset_point = store_get(size);
 
 log_address = string_log_address(addr, (log_write_selector & L_all_parents) != 0, TRUE);
@@ -741,7 +750,12 @@ if ((log_extra_selector & LX_delivery_size) != 0)
 if (addr->transport->info->local)
   {
   if (addr->host_list != NULL)
+    {
     s = string_append(s, &size, &ptr, 2, US" H=", addr->host_list->name);
+    #ifdef EXPERIMENTAL_TPDA
+      tpda_delivery_fqdn = addr->host_list->name;
+    #endif
+    }
   if (addr->shadow_message != NULL)
     s = string_cat(s, &size, &ptr, addr->shadow_message,
       Ustrlen(addr->shadow_message));
@@ -760,6 +774,15 @@ else
         addr->host_used->port));
     if (continue_sequence > 1)
       s = string_cat(s, &size, &ptr, US"*", 1);
+
+    #ifdef EXPERIMENTAL_TPDA
+    tpda_delivery_ip =           addr->host_used->address;
+    tpda_delivery_port =         addr->host_used->port;
+    tpda_delivery_fqdn =         addr->host_used->name;
+    tpda_delivery_local_part =   addr->local_part;
+    tpda_delivery_domain =       addr->domain;
+    tpda_delivery_confirmation = addr->message;
+    #endif
     }
 
   #ifdef SUPPORT_TLS
@@ -827,6 +850,23 @@ store we used to build the line after writing it. */
 
 s[ptr] = 0;
 log_write(0, flags, "%s", s);
+
+#ifdef EXPERIMENTAL_TPDA
+if (addr->transport->tpda_delivery_action)
+  {
+  DEBUG(D_deliver)
+    debug_printf("  TPDA(Delivery): tpda_deliver_action=|%s| tpda_delivery_IP=%s\n",
+      addr->transport->tpda_delivery_action, tpda_delivery_ip);
+
+  router_name =    addr->router->name;
+  transport_name = addr->transport->name;
+  if (!expand_string(addr->transport->tpda_delivery_action) && *expand_string_message)
+    log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand tpda_deliver_action in %s: %s\n",
+      transport_name, expand_string_message);
+  router_name = NULL;
+  transport_name = NULL;
+  }
+#endif
 store_reset(reset_point);
 return;
 }
