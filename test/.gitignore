@@ -9,3 +9,4 @@ eximdir/
 Makefile
 spool/
 test-*
+failed-summary.log

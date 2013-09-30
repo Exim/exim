@@ -49,12 +49,12 @@ bin/client:     src/client.c Makefile
 		@echo " "
 
 bin/client-gnutls: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -lgnutls -lgcrypt -o bin/client-gnutls src/client.c
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls src/client.c -lgnutls -lgcrypt
 		@echo ">>> bin/client-gnutls command built"
 		@echo " "
 
 bin/client-ssl: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -lssl -lcrypto -o bin/client-ssl src/client.c
+		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl src/client.c -lssl -lcrypto
 		@echo ">>> bin/client-ssl command built"
 		@echo " "
 
