@@ -931,6 +931,91 @@ ${lookup mysql {insert into delivlog set \
     deliverrstr = '${quote_mysql:$tpda_defer_errstr}' \
     }}
 
+
+Redis Lookup
+--------------------------------------------------------------
+
+Redis is open source advanced key-value data store. This document
+does not explain the fundamentals, you should read and understand how
+it works by visiting the website at http://www.redis.io/.
+
+Redis lookup support is added via the hiredis library.  Visit:
+
+  https://github.com/redis/hiredis
+
+to obtain a copy, or find it in your operating systems package repository.
+If building from source, this description assumes that headers will be in
+/usr/local/include, and that the libraries are in /usr/local/lib.
+
+1. In order to build exim with Redis lookup support add
+
+EXPERIMENTAL_REDIS=yes
+
+to your Local/Makefile. (Re-)build/install exim. exim -d should show
+Experimental_Redis in the line "Support for:".
+
+EXPERIMENTAL_REDIS=yes
+LDFLAGS += -lhiredis
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -L/usr/local/lib
+
+The first line sets the feature to include the correct code, and
+the second line says to link the hiredis libraries into the
+exim binary.  The commented out lines should be uncommented if you
+built hiredis from source and installed in the default location.
+Adjust the paths if you installed them elsewhere, but you do not
+need to uncomment them if an rpm (or you) installed them in the
+package controlled locations (/usr/include and /usr/lib).
+
+
+2. Use the following global settings to configure Redis lookup support:
+
+Required:
+redis_servers       This option provides a list of Redis servers
+                    and associated connection data, to be used in
+                    conjunction with redis lookups. The option is
+                    only available if Exim is configured with Redis
+                    support.
+
+For example:
+
+redis_servers = 127.0.0.1/10/ - using database 10 with no password
+redis_servers = 127.0.0.1//password - to make use of the default database of 0 with a password
+redis_servers = 127.0.0.1// - for default database of 0 with no password
+
+3. Once you have the Redis servers defined you can then make use of the
+experimental Redis lookup by specifying ${lookup redis{}} in a lookup query.
+
+4. Example usage:
+
+(Host List)
+hostlist relay_from_ips = <\n ${lookup redis{SMEMBERS relay_from_ips}}
+
+Where relay_from_ips is a Redis set which contains entries such as "192.168.0.0/24" "10.0.0.0/8" and so on.
+The result set is returned as
+192.168.0.0/24
+10.0.0.0/8
+..
+.
+
+(Domain list)
+domainlist virtual_domains = ${lookup redis {HGET $domain domain}}
+
+Where $domain is a hash which includes the key 'domain' and the value '$domain'.
+
+(Adding or updating an existing key)
+set acl_c_spammer = ${if eq{${lookup redis{SPAMMER_SET}}}{OK}}
+
+Where SPAMMER_SET is a macro and it is defined as
+
+"SET SPAMMER <some_value>"
+
+(Getting a value from Redis)
+
+set acl_c_spam_host = ${lookup redis{GET...}}
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

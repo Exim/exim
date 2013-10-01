@@ -1961,6 +1961,9 @@ if (yield == DEFER) {
     (
       Ustrstr(addr->message, "mysql") != NULL ||
       Ustrstr(addr->message, "pgsql") != NULL ||
+#ifdef EXPERIMENTAL_REDIS
+      Ustrstr(addr->message, "redis") != NULL ||
+#endif
       Ustrstr(addr->message, "sqlite") != NULL ||
       Ustrstr(addr->message, "ldap:") != NULL ||
       Ustrstr(addr->message, "ldapdn:") != NULL ||

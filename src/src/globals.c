@@ -83,6 +83,10 @@ uschar *oracle_servers         = NULL;
 uschar *pgsql_servers          = NULL;
 #endif
 
+#ifdef EXPERIMENTAL_REDIS
+uschar *redis_servers          = NULL;
+#endif
+
 #ifdef LOOKUP_SQLITE
 int     sqlite_lock_timeout    = 5;
 #endif

@@ -62,6 +62,10 @@ extern uschar *oracle_servers;         /* List of servers and connect info */
 extern uschar *pgsql_servers;          /* List of servers and connect info */
 #endif
 
+#ifdef EXPERIMENTAL_REDIS
+extern uschar *redis_servers;          /* List of servers and connect info */
+#endif
+
 #ifdef LOOKUP_SQLITE
 extern int     sqlite_lock_timeout;    /* Internal lock waiting timeout */
 #endif

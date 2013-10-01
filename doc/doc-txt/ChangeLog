@@ -237,7 +237,13 @@ TL/12 Enhanced documentation in the ratelimit.pl script provided in
 
 TL/13 Bug 1301 - Imported transport SQL logging patch from Axel Rau
       renamed to Transport Post Delivery Action by Jeremy Harris, as
-			EXPERIMENTAL_TPDA.
+      EXPERIMENTAL_TPDA.
+
+TL/14 Bugzilla 1217 - Redis lookup support has been added. It is only enabled
+      when Exim is compiled with EXPERIMENTAL_REDIS. A new config variable
+      redis_servers = needs to be configured which will be used by the redis
+      lookup.  Patch from Warren Baker, of The Packet Hub.
+
 
 
 Exim version 4.80.1

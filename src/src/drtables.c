@@ -447,6 +447,9 @@ extern lookup_module_info sqlite_lookup_module_info;
 #ifdef EXPERIMENTAL_SPF
 extern lookup_module_info spf_lookup_module_info;
 #endif
+#ifdef EXPERIMENTAL_REDIS
+extern lookup_module_info redis_lookup_module_info;
+#endif
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
 extern lookup_module_info pgsql_lookup_module_info;
 #endif
@@ -553,6 +556,10 @@ void init_lookup_list(void)
 
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
   addlookupmodule(NULL, &pgsql_lookup_module_info);
+#endif
+
+#ifdef EXPERIMENTAL_REDIS
+  addlookupmodule(NULL, &redis_lookup_module_info);
 #endif
 
 #ifdef EXPERIMENTAL_SPF

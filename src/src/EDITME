@@ -473,6 +473,13 @@ EXIM_MONITOR=eximon.bin
 # eg. for logging to a database.
 # EXPERIMENTAL_TPDA=yes
 
+# Uncomment the following line to add Redis lookup support
+# You need to have hiredis installed on your system (https://github.com/redis/hiredis).
+# Depending on where it is installed you may have to edit the CFLAGS and LDFLAGS lines.
+# EXPERIMENTAL_REDIS=yes
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -lhiredis
+
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

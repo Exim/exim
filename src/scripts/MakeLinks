@@ -38,6 +38,7 @@ ln -s ../../src/lookups/ldap.h           ldap.h
 ln -s ../../src/lookups/ldap.c           ldap.c
 ln -s ../../src/lookups/lsearch.c        lsearch.c
 ln -s ../../src/lookups/mysql.c          mysql.c
+ln -s ../../src/lookups/redis.c          redis.c
 ln -s ../../src/lookups/nis.c            nis.c
 ln -s ../../src/lookups/nisplus.c        nisplus.c
 ln -s ../../src/lookups/oracle.c         oracle.c

@@ -6644,6 +6644,9 @@ for (i = 1; i < argc; i++)
       #ifdef LOOKUP_PGSQL
       pgsql_servers = argv[i];
       #endif
+      #ifdef EXPERIMENTAL_REDIS
+      redis_servers = argv[i];
+      #endif
       }
   #ifdef EXIM_PERL
   else opt_perl_startup = argv[i];

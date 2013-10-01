@@ -828,6 +828,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_TPDA
   fprintf(f, " Experimental_TPDA");
 #endif
+#ifdef EXPERIMENTAL_REDIS
+  fprintf(f, " Experimental_Redis");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");

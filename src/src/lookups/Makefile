@@ -41,6 +41,7 @@ nisplus.o:       $(PHDRS) nisplus.c
 oracle.o:        $(PHDRS) oracle.c
 passwd.o:        $(PHDRS) passwd.c
 pgsql.o:         $(PHDRS) pgsql.c
+redis.o:         $(PHDRS) redis.c
 spf.o:           $(PHDRS) spf.c
 sqlite.o:        $(PHDRS) sqlite.c
 testdb.o:        $(PHDRS) testdb.c
@@ -59,6 +60,7 @@ nisplus.so:       $(PHDRS) nisplus.c
 oracle.so:        $(PHDRS) oracle.c
 passwd.so:        $(PHDRS) passwd.c
 pgsql.so:         $(PHDRS) pgsql.c
+redis.so:         $(PHDRS) redis.c
 spf.so:           $(PHDRS) spf.c
 sqlite.so:        $(PHDRS) sqlite.c
 testdb.so:        $(PHDRS) testdb.c
