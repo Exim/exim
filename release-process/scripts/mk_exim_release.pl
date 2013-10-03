@@ -334,15 +334,15 @@ sub create_tar_files {
     foreach my $dir ( glob( File::Spec->catdir( $pkgdirs, ( 'exim*-' . $context->{release} ) ) ) ) {
         my $dirname = ( File::Spec->splitdir($dir) )[-1];
         if ($context->{compressors}{gzip}) {
-            print "Creating: ${pkgs}/${dirname}.tar.gz\n" if ($verbose);
+            print "Creating: ${pkgs}/${dirname}.tar.gz\n" if ($verbose || $debug);
             system("$tar cf  ${pkgs}/${dirname}.tar.gz  --gzip  -C ${pkgdirs} ${dirname}")
         }
         if ($context->{compressors}{bzip2}) {
-            print "Creating: ${pkgs}/${dirname}.tar.bz2\n" if ($verbose);
+            print "Creating: ${pkgs}/${dirname}.tar.bz2\n" if ($verbose || $debug);
             system("$tar cf  ${pkgs}/${dirname}.tar.bz2 --bzip2 -C ${pkgdirs} ${dirname}")
         }
         if ($context->{compressors}{lzip}) {
-            print "Creating: ${pkgs}/${dirname}.tar.lz\n" if ($verbose);
+            print "Creating: ${pkgs}/${dirname}.tar.lz\n" if ($verbose || $debug);
             system("$tar cf  ${pkgs}/${dirname}.tar.lz  --lzip  -C ${pkgdirs} ${dirname}")
         }
     }
