@@ -20,8 +20,13 @@ s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
 sub filter_linux
 {
 # SUSE 10 with extra pkgs
-s{"http://docbook.sourceforge.net/release/xsl/current/}
- {"/usr/share/xml/docbook/stylesheet/nwalsh/1.71.1/};
+-d "/usr/share/xml/docbook/stylesheet/nwalsh/1.71.1/" &&
+  s{"http://docbook.sourceforge.net/release/xsl/current/}
+   {"/usr/share/xml/docbook/stylesheet/nwalsh/1.71.1/};
+# Ubuntu/Debian with standard docbook-xsl pkgs
+-d "/usr/share/xml/docbook/stylesheet/docbook-xsl/" &&
+  s{"http://docbook.sourceforge.net/release/xsl/current/}
+   {"/usr/share/xml/docbook/stylesheet/docbook-xsl/};
 s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
  {"/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd"};
 }
