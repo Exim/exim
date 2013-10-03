@@ -87,6 +87,7 @@ Justo Alonso              Suggested patch for maildir++ maildirsize file support
 Anton Altaparmakov        Patches to get cyrus_sasl fully working
 Simon Arlott              Patch for $dnslist_matched.
 Claus Assmann             Example code for OpenSSL CRL support
+Warren Baker              Experimental Redis lookup.
 Robert Bannocks           Patch for LDAP reference problem on Solaris
 Ian Bell                  Analysis of a bug and an infelicity in clock tick code
                           Patch for ${quote_local_part

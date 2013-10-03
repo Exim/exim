@@ -157,6 +157,8 @@ Version 4.82
 25. Experimental TPDA (Transport Post Delivery Action) function added.
     Patch provided by Axel Rau.
 
+26. Experimental Redis lookup added. Patch provided by Warren Baker.
+
 
 Version 4.80
 ------------
