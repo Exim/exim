@@ -25,16 +25,7 @@ exim.8:       spec.xml x2man
 
 .PHONY: local_params
 local_params:
-	echo .macro version > $@
-	echo $(EXIM_VER)	>> $@
-	echo .endmacro		>> $@
-	echo .macro fulldate	>> $@
-	date "+%d %b %Y"	>> $@
-	echo .endmacro		>> $@
-	echo .macro year	>> $@
-	date "+%Y"		>> $@
-	echo .endmacro		>> $@
-
+	./GenLocalParams $@
 
 ############################### FILTER #################################
 

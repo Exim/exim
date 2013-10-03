@@ -1,0 +1,23 @@
+#!/bin/sh -eu
+
+output="${1:-local_params}"
+: ${EXIM_VER:?Need the EXIM_VER environment variable}
+
+nicedate="$(date +"%d %b %Y")"
+
+exec > "$output"
+cat <<EOTEMPLATE
+.macro version
+${EXIM_VER}
+.endmacro
+.macro fulldate
+${nicedate}
+.endmacro
+.macro year
+$(date +%Y)
+.endmacro
+.macro versiondatexml
+<revnumber>${EXIM_VER}</revnumber>
+<date>${nicedate}</date>
+.endmacro
+EOTEMPLATE

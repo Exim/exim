@@ -179,12 +179,7 @@
 <author><firstname>Exim</firstname><surname>Maintainers</surname></author>
 <authorinitials>EM</authorinitials>
 <revhistory><revision>
-  <revnumber>
-.version
-  </revnumber>
-  <date>
-.fulldate
-  </date>
+.versiondatexml
   <authorinitials>EM</authorinitials>
 </revision></revhistory>
 <copyright><year>
