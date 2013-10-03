@@ -191,7 +191,8 @@ sub build_documentation {
     my $context = shift;
 
     my $docdir = File::Spec->catdir( $context->{release_tree}, 'doc', 'doc-docbook' );
-    system("cd '$docdir' && ./OS-Fixups && make EXIM_VER=$context->{release} everything") == 0
+    # documentation building gets the truncated release, without RC
+    system("cd '$docdir' && ./OS-Fixups && make EXIM_VER=$context->{trelease} everything") == 0
       || croak "Doc build failed";
 
     copy_docbook_files($context);
