@@ -10,7 +10,7 @@ do
   perl -e '$/= undef; while (<>) { print $1 if /(?<='$table'\[\])\s*=\s*{\n(([^}].*\n)+)/m }' \
   | awk '/{ (US)?"/ {print $2}' \
   | awk -F\" '{print $2}' \
-  | LANG=C sort -c \
+  | LC_ALL=C sort -c \
   || exit 1
 done <<-END
 	readconf.c	optionlist_config
@@ -36,7 +36,7 @@ do
   < $file \
   perl -e '$/= undef; while (<>) { print $1 if /(?<='$table'\[\])\s*=\s*{\s?(([^}]*)+)}/m }' \
   | awk -F\" '/"/ {print $2}' \
-  | LANG=C sort -c \
+  | LC_ALL=C sort -c \
   || exit 1
 
 done <<-END
