@@ -81,6 +81,8 @@ int dmarc_init()
   dmarc_abort        = FALSE;
   dmarc_pass_fail    = US"skipped";
   dmarc_used_domain  = US"";
+  dmarc_ar_header    = NULL;
+  dmarc_has_been_checked = FALSE;
   header_from_sender = NULL;
   spf_sender_domain  = NULL;
   spf_human_readable = NULL;
