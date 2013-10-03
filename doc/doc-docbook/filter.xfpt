@@ -73,12 +73,7 @@
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>
-.version
-  </revnumber>
-  <date>
-.fulldate
-  </date>
+.versiondatexml
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
 <copyright><year>
