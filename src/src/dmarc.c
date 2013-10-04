@@ -325,7 +325,7 @@ int dmarc_process() {
     {
       case DMARC_POLICY_ABSENT:     /* No DMARC record found */
         dmarc_status = US"norecord";
-        dmarc_pass_fail = US"temperror";
+        dmarc_pass_fail = US"none";
         dmarc_status_text = US"No DMARC record";
         action = DMARC_RESULT_ACCEPT;
         break;
