@@ -36408,7 +36408,7 @@ integer size comparisons against this value.
 A colon-separated list of names of headers included in the signature.
 .vitem &%$dkim_key_testing%&
 "1" if the key record has the "testing" flag set, "0" if not.
-.vitem &%$nosubdomains%&
+.vitem &%$dkim_key_nosubdomains%&
 "1" if the key record forbids subdomaining, "0" otherwise.
 .vitem &%$dkim_key_srvtype%&
 Service type (tag s=) from the key record. Defaults to "*" if not specified
