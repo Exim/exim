@@ -178,6 +178,7 @@ Michael Haardt            Tidies to make the code stricter
                             ... and several more
 Thomas Hager              Patch for saslauthd crash bug
 Richard Hall              Fix for file descriptor leak in redirection
+                          Fix for exiqsumm output corner case
 Jori Hamalainen           Patch to add features to exiqsumm
                           Patch to speed up exigrep
 Steve Haslam              Lots of stuff, including

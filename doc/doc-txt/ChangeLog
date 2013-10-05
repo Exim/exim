@@ -244,6 +244,8 @@ TL/14 Bugzilla 1217 - Redis lookup support has been added. It is only enabled
       redis_servers = needs to be configured which will be used by the redis
       lookup.  Patch from Warren Baker, of The Packet Hub.
 
+TL/15 Fix exiqsumm summary for corner case. Patch provided by Richard Hall.
+
 
 
 Exim version 4.80.1
