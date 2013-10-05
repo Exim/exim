@@ -139,7 +139,7 @@ elsif (/^\s+[^@]*\@([\w\.\-]+|\[(\d+\.){3}\d+\])/o)
 print "\nCount  Volume  Oldest  Newest  Domain";
 print "\n-----  ------  ------  ------  ------\n\n";
 
-my ($count, $volume, $max_age, $min_age) = (0, 0, "0m", "0000d");
+my ($count, $volume, $max_age, $min_age) = (0, 0, "0m", undef);
 
 foreach $id (sort
             {
@@ -153,10 +153,12 @@ foreach $id (sort
     $queue{$id}, &print_volume_rounded($q_size{$id}), $q_oldest{$id},
     $q_recent{$id}, $id);
     $max_age = $q_oldest{$id} if &older($q_oldest{$id}, $max_age) > 0;
-    $min_age = $q_recent{$id} if &older($min_age, $q_recent{$id}) > 0;
+    $min_age = $q_recent{$id}
+      if (!defined $min_age || &older($min_age, $q_recent{$id}) > 0);
     $volume += $q_size{$id};
     $count += $queue{$id};
   }
+  $min_age ||= "0000d";
 printf("---------------------------------------------------------------\n");
 printf("%5d  %.6s  %6s  %6s  %.80s\n",
   $count, &print_volume_rounded($volume), $max_age, $min_age, "TOTAL");
