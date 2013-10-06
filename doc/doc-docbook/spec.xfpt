@@ -23576,7 +23576,7 @@ In practice, almost all rules start with a domain name pattern without a local
 part.
 
 .cindex "regular expressions" "in retry rules"
-&*Warning*&: If you use a regular expression in a routing rule pattern, it
+&*Warning*&: If you use a regular expression in a retry rule pattern, it
 must match a complete address, not just a domain, because that is how regular
 expressions work in address lists.
 .display
