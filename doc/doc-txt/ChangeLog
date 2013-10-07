@@ -246,6 +246,9 @@ TL/14 Bugzilla 1217 - Redis lookup support has been added. It is only enabled
 
 TL/15 Fix exiqsumm summary for corner case. Patch provided by Richard Hall.
 
+TL/16 Bugzilla 1289 - Clarify host/ip processing when have errors looking up a
+      hostname or reverse DNS when processing a host list. Used suggestions
+      from multiple comments on this bug.
 
 
 Exim version 4.80.1

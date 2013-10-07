@@ -8263,10 +8263,13 @@ apply to temporary DNS errors, whose handling is described in the next section.
 
 .cindex "&`+include_unknown`&"
 .cindex "&`+ignore_unknown`&"
-By default, Exim behaves as if the host does not match the list. This may not
-always be what you want to happen. To change Exim's behaviour, the special
-items &`+include_unknown`& or &`+ignore_unknown`& may appear in the list (at
-top level &-- they are not recognized in an indirected file).
+Exim parses a host list from left to right. If it encounters a permanent
+lookup failure in any item in the host list before it has found a match,
+Exim treats it as a failure and the default behavior is as if the host
+does not match the list. This may not always be what you want to happen.
+To change Exim's behaviour, the special items &`+include_unknown`& or
+&`+ignore_unknown`& may appear in the list (at top level &-- they are
+not recognized in an indirected file).
 
 .ilist
 If any item that follows &`+include_unknown`& requires information that
@@ -8293,6 +8296,37 @@ name can be found for 192.168.4.5, it is rejected.
 Both &`+include_unknown`& and &`+ignore_unknown`& may appear in the same
 list. The effect of each one lasts until the next, or until the end of the
 list.
+
+To explain the host/ip processing logic a different way for the same ACL:
+
+.ilist
+If you have name lookups or wildcarded host names and
+IP addresses in the same host list, you should normally put the IP
+addresses first. For example, in an ACL you could have:
+.code
+accept hosts = 10.9.8.7 : *.friend.example
+.endd
+The reason you normally would order it this way lies in the
+left-to-right way that Exim processes lists.  It can test IP addresses
+without doing any DNS lookups, but when it reaches an item that requires
+a host name, it fails if it cannot find a host name to compare with the
+pattern. If the above list is given in the opposite order, the
+&%accept%& statement fails for a host whose name cannot be found, even
+if its IP address is 10.9.8.7.
+
+.next
+If you really do want to do the name check first, and still recognize the IP
+address, you can rewrite the ACL like this:
+.code
+accept hosts = *.friend.example
+accept hosts = 10.9.8.7
+.endd
+If the first &%accept%& fails, Exim goes on to try the second one. See chapter
+&<<CHAPACL>>& for details of ACLs. Alternatively, you can use
+&`+ignore_unknown`&, which was discussed in depth in the first example in
+this section.
+.endlist
+
 
 
 .section "Temporary DNS errors when looking up host information" &&&
