@@ -912,7 +912,7 @@ log failures of remote hosts. It is executed only when exim has
 attempted to deliver a message to a remote host and failed due to
 an error which doesn't seem to be related to the individual
 message, sender, or recipient address.
-See section 45.2 of the exim documentation for more details on how
+See section 47.2 of the exim documentation for more details on how
 this is determined.
 
 Example:
