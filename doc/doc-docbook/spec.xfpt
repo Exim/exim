@@ -9652,6 +9652,29 @@ expansion item, which extracts the working address from a single RFC2822
 address. See the &*filter*&, &*map*&, and &*reduce*& items for ways of
 processing lists.
 
+To clarify "list of addresses in RFC 2822 format" mentioned above, Exim follows
+a strict interpretation of header line formatting.  Exim parses the bare,
+unquoted portion of an email address and if it finds a comma, treats it as an
+email address seperator. For the example header line:
+.code
+From: =?iso-8859-2?Q?Last=2C_First?= <user@example.com>
+.endd
+The first example below demonstrates that Q-encoded email addresses are parsed
+properly if it is given the raw header (in this example, &`$rheader_from:`&).
+It does not see the comma because it's still encoded as "=2C".  The second
+example below is passed the contents of &`$header_from:`&, meaning it gets
+de-mimed. Exim sees the decoded "," so it treats it as &*two*& email addresses.
+The third example shows that the presence of a comma is skipped when it is
+quoted.
+.code
+# exim -be '${addresses:From: \
+=?iso-8859-2?Q?Last=2C_First?= <user@example.com>}'
+user@example.com
+# exim -be '${addresses:From: Last, First <user@example.com>}'
+Last:user@example.com
+# exim -be '${addresses:From: "Last, First" <user@example.com>}'
+user@example.com
+.endd
 
 .vitem &*${base62:*&<&'digits'&>&*}*&
 .cindex "&%base62%& expansion item"
