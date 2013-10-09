@@ -455,6 +455,7 @@ Moritz Wilhelmy           Pointed out PCRE_PRERELEASE glitch
 Alain Williams            Patch supporting MySQL stored procedures
 Mark Zealey               Patch updating $message_linecount for maildir_tag
                           Patch improving spamd server selection
+                          Patch to allow multiple TCP clamd servers
 
 
 Packagers

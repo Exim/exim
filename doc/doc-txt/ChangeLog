@@ -250,6 +250,8 @@ TL/16 Bugzilla 1289 - Clarify host/ip processing when have errors looking up a
       hostname or reverse DNS when processing a host list. Used suggestions
       from multiple comments on this bug.
 
+TL/17 Bugzilla 1057 - Multiple clamd TCP targets patch from Mark Zealey.
+
 
 Exim version 4.80.1
 -------------------

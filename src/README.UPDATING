@@ -37,6 +37,9 @@ Exim version 4.82
    unnecessary serialisation and load.  External tools tracking the state of
    Exim by the hints databases may need modification to take this into account.
 
+ * The av_scanner option can now accept multiple clamd TCP targets, all other
+   setting limitations remain.
+
 
 Exim version 4.80
 -----------------

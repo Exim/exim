@@ -29637,6 +29637,7 @@ number, and a port, separated by space, as in the second of these examples:
 av_scanner = clamd:/opt/clamd/socket
 av_scanner = clamd:192.0.2.3 1234
 av_scanner = clamd:192.0.2.3 1234:local
+av_scanner = clamd:192.0.2.3 1234 : 192.0.2.4 1234
 .endd
 If the value of av_scanner points to a UNIX socket file or contains the local
 keyword, then the ClamAV interface will pass a filename containing the data
@@ -29645,6 +29646,21 @@ more efficient.  Normally in the TCP case, the data is streamed to ClamAV as
 Exim does not assume that there is a common filesystem with the remote host.
 There is an option WITH_OLD_CLAMAV_STREAM in &_src/EDITME_& available, should
 you be running a version of ClamAV prior to 0.95.
+
+The final example shows that multiple TCP targets can be specified.  Exim will
+randomly use one for each incoming email (i.e. it load balances them).  Note
+that only TCP targets may be used if specifying a list of scanners; a UNIX
+socket cannot be mixed in with TCP targets.  If one of the servers becomes
+unavailable, Exim will try the remaining one(s) until it finds one that works.
+When a clamd server becomes unreachable, Exim will log a message.  Exim does
+not keep track of scanner state between multiple messages, and the scanner
+selection is random, so the message will get logged in the mainlog for each
+email that the down scanner gets chosen first:
+.code
+2013-10-09 14:30:39 1VTumd-0000Y8-BQ malware acl condition: clamd:\
+ connection to localhost, port 3310 failed (Connection refused)
+.endd
+
 If the option is unset, the default is &_/tmp/clamd_&. Thanks to David Saez for
 contributing the code for this scanner.
 
