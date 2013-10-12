@@ -124,6 +124,54 @@ elsif ( ($invert && (($insensitive && !/$pattern/io) || !/$pattern/o)) ||
   { print "$_\n"; }
 }
 
+# Rotated log files are frequently compressed and there are a variety of
+# formats it could be compressed with. Rather than use just one that is
+# detected and hardcoded at Exim compile time, detect and use what the
+# logfile is compressed with on the fly.
+#
+# List of known compression extensions and their associated commands:
+my $compressors = {
+  gz   => { cmd => 'zcat',  args => '' },
+  bz2  => { cmd => 'bzcat', args => '' },
+  xz   => { cmd => 'xzcat', args => '' },
+  lzma => { cmd => 'lzma',  args => '-dc' }
+};
+my $csearch = 0;
+
+sub detect_compressor_bin
+  {
+  my $ext = shift();
+  my $c = $compressors->{$ext}->{cmd};
+  $compressors->{$ext}->{bin} = `which $c 2>/dev/null`;
+  chomp($compressors->{$ext}->{bin});
+  }
+
+sub detect_compressor_capable
+  {
+  my $filename = shift();
+  map { &detect_compressor_bin($_) } keys %$compressors
+    if (!$csearch);
+  $csearch = 1;
+  return undef
+    unless (grep {$filename =~ /\.(?:$_)$/} keys %$compressors);
+  # Loop through them, figure out which one it detected,
+  # and build the commandline.
+  my $cmdline = undef;
+  foreach my $ext (keys %$compressors)
+    {
+    if ($filename =~ /\.(?:$ext)$/)
+      {
+      # Just die if compressor not found; if this occurrs in the middle of
+      # two valid files with a lot of matches, error could easily be missed.
+      die("Didn't find $ext decompressor for $filename\n")
+        if ($compressors->{$ext}->{bin} eq '');
+      $cmdline = $compressors->{$ext}->{bin} ." ".
+                   $compressors->{$ext}->{args};
+      last;
+      }
+    }
+  return $cmdline;
+  }
 
 # The main program. Extract the pattern and make sure any relevant characters
 # are quoted if the -l flag is given. The -t flag gives a time-on-queue value
@@ -153,6 +201,11 @@ if (@ARGV)
       {
       open(LOG, "ZCAT_COMMAND $filename |") ||
         die "Unable to zcat $filename: $!\n";
+      }
+    elsif (my $cmdline = &detect_compressor_capable($filename))
+      {
+      open(LOG, "$cmdline $filename |") ||
+        die "Unable to decompress $filename: $!\n";
       }
     else
       {
