@@ -9892,12 +9892,12 @@ when &%length%& is used as an operator.
 The string is interpreted as a list and the number of items is returned.
 
 
-.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name*&>&*}*&
+.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${listnamed_*&<&'type'&>&*:*&<&'name'&>&*}*&
 .cindex "expansion" "named list"
 .cindex "&%listnamed%& expansion item"
 The name is interpreted as a named list and the content of the list is returned,
 expanding any referenced lists, re-quoting as needed for colon-separation.
-If the optional type if given it must be one of "a", "d", "h" or "l"
+If the optional type is given it must be one of "a", "d", "h" or "l"
 and selects address-, domain-, host- or localpart- lists to search among respectively.
 Otherwise all types are searched in an undefined order and the first
 matching list is returned.
