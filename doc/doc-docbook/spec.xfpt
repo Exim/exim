@@ -29683,7 +29683,9 @@ If you do not set &%av_scanner%&, it defaults to
 av_scanner = sophie:/var/run/sophie
 .endd
 If the value of &%av_scanner%& starts with a dollar character, it is expanded
-before use. The following scanner types are supported in this release:
+before use.
+The usual list-parsing of the content (see &<<SECTlistconstruct>>&) applies.
+The following scanner types are supported in this release:
 
 .vlist
 .vitem &%aveserver%&
