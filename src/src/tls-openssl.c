@@ -365,6 +365,7 @@ DEBUG(D_tls) debug_printf("SSL info: %s\n", SSL_state_string_long(s));
 /* If dhparam is set, expand it, and load up the parameters for DH encryption.
 
 Arguments:
+  sctx      The current SSL CTX (inbound or outbound)
   dhparam   DH parameter file or fixed parameter identity string
   host      connected host, if client; NULL if server
 
@@ -444,6 +445,77 @@ DH_free(dh);
 BIO_free(bio);
 
 return TRUE;
+}
+
+
+
+
+/*************************************************
+*               Initialize for ECDH              *
+*************************************************/
+
+/* Load parameters for ECDH encryption.
+
+For now, we stick to NIST P-256 because: it's simple and easy to configure;
+it avoids any patent issues that might bite redistributors; despite events in
+the news and concerns over curve choices, we're not cryptographers, we're not
+pretending to be, and this is "good enough" to be better than no support,
+protecting against most adversaries.  Given another year or two, there might
+be sufficient clarity about a "right" way forward to let us make an informed
+decision, instead of a knee-jerk reaction.
+
+Longer-term, we should look at supporting both various named curves and
+external files generated with "openssl ecparam", much as we do for init_dh().
+We should also support "none" as a value, to explicitly avoid initialisation.
+
+Patches welcome.
+
+Arguments:
+  sctx      The current SSL CTX (inbound or outbound)
+  host      connected host, if client; NULL if server
+
+Returns:    TRUE if OK (nothing to set up, or setup worked)
+*/
+
+static BOOL
+init_ecdh(SSL_CTX *sctx, host_item *host)
+{
+  if (host != NULL) {
+    /* No ECDH setup for clients, only for servers */
+    return TRUE;
+  }
+
+#ifndef SSL_CTX_set_tmp_ecdh
+  /* No elliptic curve API in OpenSSL, skip it */
+  DEBUG(D_tls)
+    debug_printf("No OpenSSL API to define ECDH parameters, skipping\n");
+  return TRUE;
+#else
+# ifndef NID_X9_62_prime256v1
+  /* For now, stick to NIST P-256 to get "something" running.
+   * If that's not available, bail
+   */
+  DEBUG(D_tls)
+    debug_printf("NIST P-256 EC curve not available, skipping ECDH setup\n");
+  return TRUE;
+# else
+  {
+    EC_KEY *ecdh;
+    BOOL rv = TRUE;
+
+    ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+    if (SSL_CTX_set_tmp_ecdh(sctx, ecdh)) {
+      DEBUG(D_tls)
+        debug_printf("ECDH: enable NIST P-256 curve\n");
+    } else {
+      tls_error("Error enabling NIST P-256 curve", host, NULL);
+      rv = FALSE;
+    }
+    EC_KEY_free(ecdh);
+    return rv;
+  }
+# endif
+#endif
 }
 
 
@@ -754,6 +826,9 @@ if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 rc = init_dh(server_sni, cbinfo->dhparam, NULL);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
+rc = init_ecdh(server_sni, NULL);
+if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
 SSL_set_SSL_CTX(s, server_sni);
 
@@ -1060,6 +1135,8 @@ else
 /* Initialize with DH parameters if supplied */
 
 if (!init_dh(*ctxp, dhparam, host)) return DEFER;
+
+if (!init_ecdh(*ctxp, host)) return DEFER;
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
