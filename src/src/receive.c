@@ -3312,7 +3312,7 @@ else
 	  }
 	if (log_msg)       log_write(0, LOG_MAIN, "PRDR %s %s", addr, log_msg);
 	else if (user_msg) log_write(0, LOG_MAIN, "PRDR %s %s", addr, user_msg);
-	else               log_write(0, LOG_MAIN, CS msg);
+	else               log_write(0, LOG_MAIN, "%s", CS msg);
 
 	if (rc != OK) { receive_remove_recipient(addr); c--; }
         }
