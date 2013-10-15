@@ -508,7 +508,7 @@ init_ecdh(SSL_CTX *sctx, host_item *host)
       DEBUG(D_tls)
         debug_printf("ECDH: enable NIST P-256 curve\n");
     } else {
-      tls_error("Error enabling NIST P-256 curve", host, NULL);
+      tls_error(US"Error enabling NIST P-256 curve", host, NULL);
       rv = FALSE;
     }
     EC_KEY_free(ecdh);
