@@ -1403,8 +1403,8 @@ uschar *warnmsg_recipients     = NULL;
 BOOL    write_rejectlog        = TRUE;
 
 uschar *version_copyright      =
- US"Copyright (c) University of Cambridge, 1995 - 2012\n"
-   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2012";
+ US"Copyright (c) University of Cambridge, 1995 - 2013\n"
+   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2013";
 uschar *version_date           = US"?";
 uschar *version_cnumber        = US"????";
 uschar *version_string         = US"?";
