@@ -243,8 +243,8 @@ static optionlist optionlist_config[] = {
   { "gecos_name",               opt_stringptr,   &gecos_name },
   { "gecos_pattern",            opt_stringptr,   &gecos_pattern },
 #ifdef SUPPORT_TLS
+  { "gnutls_allow_auto_pkcs11", opt_bool,        &gnutls_allow_auto_pkcs11 },
   { "gnutls_compat_mode",       opt_bool,        &gnutls_compat_mode },
-  { "gnutls_enable_pkcs11",     opt_bool,        &gnutls_enable_pkcs11 },
   /* These three gnutls_require_* options stopped working in Exim 4.80 */
   { "gnutls_require_kx",        opt_stringptr,   &gnutls_require_kx },
   { "gnutls_require_mac",       opt_stringptr,   &gnutls_require_mac },

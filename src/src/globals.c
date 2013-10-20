@@ -123,7 +123,7 @@ tls_support tls_out = {
 
 #ifdef SUPPORT_TLS
 BOOL    gnutls_compat_mode     = FALSE;
-BOOL    gnutls_enable_pkcs11   = FALSE;
+BOOL    gnutls_allow_auto_pkcs11 = FALSE;
 uschar *gnutls_require_mac     = NULL;
 uschar *gnutls_require_kx      = NULL;
 uschar *gnutls_require_proto   = NULL;

@@ -118,7 +118,7 @@ done >> $mft || exit 1
 egrep "^[$st]*(AUTH|LOOKUP)_[A-Z0-9_]*[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" > $mftt
-egrep "^[$st]*((USE_(OPENSSL|GNUTLS)_PC)|SUPPORT_TLS|USE_GNUTLS|PCRE_CONFIG)[$st]*=[$st]*" $mft | \
+egrep "^[$st]*((USE_(OPENSSL|GNUTLS)_PC)|SUPPORT_TLS|USE_GNUTLS|PCRE_CONFIG|AVOID_GNUTLS_PKCS11)[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" >> $mftt
 if test -s $mftt
@@ -185,6 +185,10 @@ then
             echo "PCRE_LIBS=$libs"
             ;;
         esac
+        ;;
+
+      AVOID_GNUTLS_PKCS11)
+        echo "$var=yes"
         ;;
 
     esac

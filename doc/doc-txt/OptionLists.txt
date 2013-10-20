@@ -248,8 +248,8 @@ from                                 string*         unset         autoreply
 gecos_name                           string*         unset         main
 gecos_pattern                        string          unset         main
 gethostbyname                        boolean         false         smtp
+gnutls_allow_auto_pkcs11             boolean         false         main              4.82
 gnutls_compat_mode                   boolean         unset         main              4.70
-gnutls_enable_pkcs11                 boolean         false         main              4.82
 gnutls_require_kx                    string*         unset         main              4.67 deprecated, warns
                                      string*         unset         smtp              4.67 deprecated, warns
 gnutls_require_mac                   string*         unset         main              4.67 deprecated, warns

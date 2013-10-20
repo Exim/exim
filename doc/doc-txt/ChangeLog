@@ -60,7 +60,9 @@ NM/01 Bugzilla 1197 - Spec typo
 
 JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
 
-PP/09 Add gnutls_enable_pkcs11 option.
+PP/09 Add gnutls_allow_auto_pkcs11 option (was originally called
+      gnutls_enable_pkcs11, but renamed to more accurately indicate its
+      function.
 
 PP/10 Let Linux makefile inherit CFLAGS/CFLAGS_DYNAMIC.
       Pulled from Debian 30_dontoverridecflags.dpatch by Andreas Metzler.
@@ -258,6 +260,9 @@ TL/18 Had previously added a -CONTINUE option to runtest in the test suite.
 
 TL/19 Bugzilla 1402 - Test 533 fails if any part of the path to the test suite
       contains upper case chars. Make router use caseful_local_part.
+
+TL/20 Bugzilla 1400 - Add AVOID_GNUTLS_PKCS11 build option. Allows GnuTLS
+      support when GnuTLS has been built with p11-kit.
 
 
 Exim version 4.80.1

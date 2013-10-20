@@ -728,6 +728,13 @@ HEADERS_CHARSET="ISO-8859-1"
 # USE_GNUTLS_PC=gnutls
 # TLS_LIBS=-lgnutls -ltasn1 -lgcrypt
 
+# The security fix we provide with the gnutls_allow_auto_pkcs11 option
+# (4.82 PP/09) introduces a compatibility regression.  The symbol is
+# not available if GnuTLS is build without p11-kit (--without-p11-kit
+# configure option).  In this case use AVOID_GNUTLS_PKCS11=yes when
+# building Exim.
+# AVOID_GNUTLS_PKCS11=yes
+
 # If you are running Exim as a server, note that just building it with TLS
 # support is not all you need to do. You also need to set up a suitable
 # certificate, and tell Exim about it by means of the tls_certificate

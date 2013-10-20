@@ -152,6 +152,7 @@ it's a default value. */
 #define USE_DB
 #define USE_GDBM
 #define USE_GNUTLS
+#define AVOID_GNUTLS_PKCS11
 #define USE_READLINE
 #define USE_TCP_WRAPPERS
 #define USE_TDB
