@@ -9892,12 +9892,12 @@ when &%length%& is used as an operator.
 The string is interpreted as a list and the number of items is returned.
 
 
-.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name*&>&*}*&
+.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${listnamed_*&<&'type'&>&*:*&<&'name'&>&*}*&
 .cindex "expansion" "named list"
 .cindex "&%listnamed%& expansion item"
 The name is interpreted as a named list and the content of the list is returned,
 expanding any referenced lists, re-quoting as needed for colon-separation.
-If the optional type if given it must be one of "a", "d", "h" or "l"
+If the optional type is given it must be one of "a", "d", "h" or "l"
 and selects address-, domain-, host- or localpart- lists to search among respectively.
 Otherwise all types are searched in an undefined order and the first
 matching list is returned.
@@ -13039,7 +13039,7 @@ listed in more than one group.
 .section "TLS" "SECID108"
 .table2
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
-.row &%gnutls_enable_pkcs11%&        "allow GnuTLS to autoload PKCS11 modules"
+.row &%gnutls_allow_auto_pkcs11%&    "allow GnuTLS to autoload PKCS11 modules"
 .row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_certificate%&             "location of server certificate"
@@ -14077,7 +14077,7 @@ implementations of TLS.
 
 
 .new
-option gnutls_enable_pkcs11 main boolean unset
+option gnutls_allow_auto_pkcs11 main boolean unset
 This option will let GnuTLS (2.12.0 or later) autoload PKCS11 modules with
 the p11-kit configuration files in &_/etc/pkcs11/modules/_&.
 

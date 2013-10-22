@@ -123,7 +123,7 @@ tls_support tls_out = {
 
 #ifdef SUPPORT_TLS
 BOOL    gnutls_compat_mode     = FALSE;
-BOOL    gnutls_enable_pkcs11   = FALSE;
+BOOL    gnutls_allow_auto_pkcs11 = FALSE;
 uschar *gnutls_require_mac     = NULL;
 uschar *gnutls_require_kx      = NULL;
 uschar *gnutls_require_proto   = NULL;
@@ -1403,8 +1403,8 @@ uschar *warnmsg_recipients     = NULL;
 BOOL    write_rejectlog        = TRUE;
 
 uschar *version_copyright      =
- US"Copyright (c) University of Cambridge, 1995 - 2012\n"
-   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2012";
+ US"Copyright (c) University of Cambridge, 1995 - 2013\n"
+   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2013";
 uschar *version_date           = US"?";
 uschar *version_cnumber        = US"????";
 uschar *version_string         = US"?";

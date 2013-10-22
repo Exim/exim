@@ -193,7 +193,8 @@ close(T);
 system("sudo /bin/rm -rf ./spool test-* ./dnszones/*")
   if ($rc == 0 && !$save_output);
 
-system("sudo /bin/rm -rf ./eximdir/*");
+system("sudo /bin/rm -rf ./eximdir/*")
+  if (!$save_output);
 
 print "\nYou were in test $test at the end there.\n\n" if defined $test;
 exit $rc if ($rc >= 0);
@@ -1083,7 +1084,7 @@ if (! -e $sf)
   for (;;)
     {
     print "Continue, Show, or Quit? [Q] ";
-    $_ = <T>;
+    $_ = $force_continue ? "c" : <T>;
     tests_exit(1) if /^q?$/i;
     log_failure($log_failed_filename, $testno, $rf) if (/^c$/i && $force_continue);
     return 0 if /^c$/i;
@@ -3252,7 +3253,7 @@ closedir(DIR);
 open(T, "/dev/tty") || tests_exit(-1, "Failed to open /dev/tty: $!");
 
 print "\nPress RETURN to run the tests: ";
-$_ = <T>;
+$_ = $force_continue ? "c" : <T>;
 print "\n";
 
 $lasttestdir = "";

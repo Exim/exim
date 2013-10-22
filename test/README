@@ -91,9 +91,10 @@ In order to run this test suite, the following requirements must be met:
 (5) Exim must be built with its user and group specified at build time, and
     with certain minimum facilities, namely:
 
-      Routers:    accept, dnslookup, manualroute, redirect
-      Transports: appendfile, autoreply, pipe, smtp
-      Lookups:    lsearch
+      Routers:        accept, dnslookup, manualroute, redirect
+      Transports:     appendfile, autoreply, pipe, smtp
+      Lookups:        lsearch
+      Authenticators: plaintext
 
     Most Exim binaries will have these included.
 
@@ -456,6 +457,9 @@ OTHER ISSUES
   bit for all of them.  If your umask is set to 002, the group write bit will
   be on by default and you'll see this problem, so make sure your umask is
   022 and re-checkout the test/ subdirectory.
+
+. Some tests will fail if the username and group name are different. It does
+  not have to be the primary group, a secondary group is sufficient.
 
 
 OTHER SCRIPTS AND PROGRAMS

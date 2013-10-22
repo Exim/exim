@@ -176,7 +176,15 @@ before, for now. */
 #define HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 #define HAVE_GNUTLS_SEC_PARAM_CONSTANTS
 #define HAVE_GNUTLS_RND
+/* The security fix we provide with the gnutls_allow_auto_pkcs11 option
+ * (4.82 PP/09) introduces a compatibility regression. The symbol simply
+ * isn't available sometimes, so this needs to become a conditional
+ * compilation; the sanest way to deal with this being a problem on
+ * older OSes is to block it in the Local/Makefile with this compiler
+ * definition  */
+#ifndef AVOID_GNUTLS_PKCS11
 #define HAVE_GNUTLS_PKCS11
+#endif /* AVOID_GNUTLS_PKCS11 */
 #endif
 
 
@@ -922,7 +930,7 @@ if (!exim_gnutls_base_init_done)
   by some sysadmin, but also means in common configurations that GNOME keyring
   environment variables are used and so breaks for users calling mailq.
   To prevent this, we init PKCS11 first, which is the documented approach. */
-  if (!gnutls_enable_pkcs11)
+  if (!gnutls_allow_auto_pkcs11)
     {
     rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
     exim_gnutls_err_check(US"gnutls_pkcs11_init");
@@ -1967,7 +1975,7 @@ if (exim_gnutls_base_init_done)
       "already initialised GnuTLS, Exim developer bug");
 
 #ifdef HAVE_GNUTLS_PKCS11
-if (!gnutls_enable_pkcs11)
+if (!gnutls_allow_auto_pkcs11)
   {
   rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
   validate_check_rc(US"gnutls_pkcs11_init");

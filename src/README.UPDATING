@@ -29,7 +29,7 @@ that might affect a running system.
 Exim version 4.82
 -----------------
 
- * New option gnutls_enable_pkcs11 defaults false; if you have GnuTLS 2.12.0
+ * New option gnutls_allow_auto_pkcs11 defaults false; if you have GnuTLS 2.12.0
    or later and do want PKCS11 modules to be autoloaded, then set this option.
 
  * A per-transport wait-<name> database is no longer updated if the transport

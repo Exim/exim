@@ -88,7 +88,7 @@ Version 4.82
  8. New expansion operators ${listnamed:name} to get the content of a named list
     and ${listcount:string} to count the items in a list.
 
- 9. New global option "gnutls_enable_pkcs11", defaults false.  The GnuTLS
+ 9. New global option "gnutls_allow_auto_pkcs11", defaults false.  The GnuTLS
     rewrite in 4.80 combines with GnuTLS 2.12.0 or later, to autoload PKCS11
     modules.  For some situations this is desirable, but we expect admin in
     those situations to know they want the feature.  More commonly, it means
@@ -96,6 +96,13 @@ Version 4.82
     unable to access files specified in environment variables and passed
     through, thus breakage.  So we explicitly inhibit the PKCS11 initialisation
     unless this new option is set.
+
+    Some older OS's with earlier versions of GnuTLS might not have pkcs11 ability,
+    so have also added a build option which can be used to build Exim with GnuTLS
+    but without trying to use any kind of PKCS11 support.  Uncomment this in the
+    Local/Makefile:
+
+    AVOID_GNUTLS_PKCS11=yes
 
 10. The "acl = name" condition on an ACL now supports optional arguments.
     New expansion item "${acl {name}{arg}...}" and expansion condition
