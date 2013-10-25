@@ -35863,6 +35863,8 @@ are given in chapter &<<CHAPappendfile>>&.
 
 .new
 .section "Running local commands" "SECTsecconslocalcmds"
+.cindex "security" "local commands"
+.cindex "security" "command injection attacks"
 There are a number of ways in which an administrator can configure Exim to run
 commands based upon received, untrustworthy, data. Further, in some
 configurations a user who can control a &_.forward_& file can also arrange to
@@ -35904,6 +35906,41 @@ injected in, for SQL injection attacks.
 Consider the use of the &%inlisti%& expansion condition instead.
 .endlist
 .wen
+
+
+
+
+.new
+.section "Trust in configuration data" "SECTsecconfdata"
+.cindex "security" "data sources"
+.cindex "security" "regular expressions"
+.cindex "regular expressions" "security"
+.cindex "PCRE" "security"
+If configuration data for Exim can come from untrustworthy sources, there
+are some issues to be aware of:
+
+.ilist
+Use of &%${expand...}%& may provide a path for shell injection attacks.
+.next
+Letting untrusted data provide a regular expression is unwise.
+.next
+Using &%${match...}%& to apply a fixed regular expression against untrusted
+data may result in pathological behaviour within PCRE.  Be aware of what
+"backtracking" means and consider options for being more strict with a regular
+expression. Avenues to explore include limiting what can match (avoiding &`.`&
+when &`[a-z0-9]`& or other character class will do), use of atomic grouping and
+possessive quantifiers or just not using regular expressions against untrusted
+data.
+.next
+It can be important to correctly use &%${quote:...}%&,
+&%${quote_local_part:...}%& and &%${quote_%&<&'lookup-type'&>&%:...}%& expansion
+items to ensure that data is correctly constructed.
+.next
+Some lookups might return multiple results, even though normal usage is only
+expected to yield one result.
+.endlist
+.wen
+
 
 
 
