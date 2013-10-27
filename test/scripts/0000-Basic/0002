@@ -75,6 +75,13 @@ listcount: ${listcount:}
 listcount: ${listcount:<;a;b;c}
 listcount: ${listcount:${listnamed:dlist}}
 
+listextract: ${listextract{ 2}{a:b:c:d}}
+listextract: ${listextract{-2}{<,a,b,c,d}{X${value}X}}
+listextract: ${listextract{ 5}{a:b:c:d}}
+listextract: ${listextract{-5}{a:b:c:d}}
+listextract: ${listextract{ 5}{a:b:c:d}{}{fail}}
+listextract: ${listextract{ 5}{a:b:c:d}{}fail}
+
 # Tests with iscntrl() and illegal separators
 
 map: ${map{<\n a\n\nb\nc}{'$item'}}

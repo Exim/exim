@@ -27,6 +27,8 @@ TL/02 Experimental Proxy Protocol support: allows a proxied SMTP connection
       to extract and use the src ip:port in logging and expansions as if it
       were a direct connection from the outside internet.
 
+JH/02 Add ${listextract {number}{list}{success}{fail}}.
+
 
 Exim version 4.82
 -----------------

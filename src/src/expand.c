@@ -110,6 +110,7 @@ static uschar *item_table[] = {
   US"hmac",
   US"if",
   US"length",
+  US"listextract",
   US"lookup",
   US"map",
   US"nhash",
@@ -133,6 +134,7 @@ enum {
   EITEM_HMAC,
   EITEM_IF,
   EITEM_LENGTH,
+  EITEM_LISTEXTRACT,
   EITEM_LOOKUP,
   EITEM_MAP,
   EITEM_NHASH,
@@ -1131,6 +1133,22 @@ return fieldtext;
 }
 
 
+static uschar *
+expand_getlistele (int field, uschar *list)
+{
+uschar * tlist= list;
+int sep= 0;
+uschar dummy;
+
+if(field<0)
+{
+  for(field++; string_nextinlist(&tlist, &sep, &dummy, 1); ) field++;
+  sep= 0;
+}
+if(field==0) return NULL;
+while(--field>0 && (string_nextinlist(&list, &sep, &dummy, 1))) ;
+return string_nextinlist(&list, &sep, NULL, 0);
+}
 
 /*************************************************
 *        Extract a substring from a string       *
@@ -5149,7 +5167,7 @@ while (*s != 0)
       for (i = 0; i < j; i++)
         {
         while (isspace(*s)) s++;
-        if (*s == '{')
+        if (*s == '{') 						/*}*/
           {
           sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
           if (sub[i] == NULL) goto EXPAND_FAILED;		/*{*/
@@ -5203,6 +5221,99 @@ while (*s != 0)
       lookup_value = skipping? NULL : field_number_set?
         expand_gettokened(field_number, sub[1], sub[2]) :
         expand_getkeyed(sub[0], sub[1]);
+
+      /* If no string follows, $value gets substituted; otherwise there can
+      be yes/no strings, as for lookup or if. */
+
+      switch(process_yesno(
+               skipping,                     /* were previously skipping */
+               lookup_value != NULL,         /* success/failure indicator */
+               save_lookup_value,            /* value to reset for string2 */
+               &s,                           /* input pointer */
+               &yield,                       /* output pointer */
+               &size,                        /* output size */
+               &ptr,                         /* output current point */
+               US"extract",                  /* condition type */
+	       &resetok))
+        {
+        case 1: goto EXPAND_FAILED;          /* when all is well, the */
+        case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
+        }
+
+      /* All done - restore numerical variables. */
+
+      restore_expand_strings(save_expand_nmax, save_expand_nstring,
+        save_expand_nlength);
+
+      continue;
+      }
+
+    /* return the Nth item from a list */
+
+    case EITEM_LISTEXTRACT:
+      {
+      int i;
+      int field_number = 1;
+      uschar *save_lookup_value = lookup_value;
+      uschar *sub[2];
+      int save_expand_nmax =
+        save_expand_strings(save_expand_nstring, save_expand_nlength);
+
+      /* Read the field & list arguments */
+
+      for (i = 0; i < 2; i++)
+        {
+        while (isspace(*s)) s++;
+        if (*s != '{')					/*}*/
+	  goto EXPAND_FAILED_CURLY;
+
+	sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+	if (!sub[i])     goto EXPAND_FAILED;		/*{*/
+	if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+
+	/* After removal of leading and trailing white space, the first
+	argument must be numeric and nonempty. */
+
+	if (i == 0)
+	  {
+	  int len;
+	  int x = 0;
+	  uschar *p = sub[0];
+
+	  while (isspace(*p)) p++;
+	  sub[0] = p;
+
+	  len = Ustrlen(p);
+	  while (len > 0 && isspace(p[len-1])) len--;
+	  p[len] = 0;
+
+	  if (!*p && !skipping)
+	    {
+	    expand_string_message = US"first argument of \"listextract\" must "
+	      "not be empty";
+	    goto EXPAND_FAILED;
+	    }
+
+	  if (*p == '-')
+	    {
+	    field_number = -1;
+	    p++;
+	    }
+	  while (*p && isdigit(*p)) x = x * 10 + *p++ - '0';
+	  if (*p)
+	    {
+	    expand_string_message = US"first argument of \"listextract\" must "
+	      "be numeric";
+	    goto EXPAND_FAILED;
+	    }
+	  field_number *= x;
+	  }
+        }
+
+      /* Extract the numbered element into $value. If
+      skipping, just pretend the extraction failed. */
+
+      lookup_value = skipping? NULL : expand_getlistele(field_number, sub[1]);
 
       /* If no string follows, $value gets substituted; otherwise there can
       be yes/no strings, as for lookup or if. */

@@ -64,6 +64,13 @@
 > listcount: 3
 > listcount: 2
 > 
+> listextract: b
+> listextract: XcX
+> listextract: 
+> listextract: 
+> listextract: fail
+> Failed: "extract" failed and "fail" requested
+> 
 > # Tests with iscntrl() and illegal separators
 > 
 > map: 'a'

@@ -9181,6 +9181,44 @@ of <&'string2'&>, whichever is the shorter. Do not confuse &%length%& with
 &%strlen%&, which gives the length of a string.
 
 
+.vitem "&*${listextract{*&<&'number'&>&*}&&&
+        {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
+.cindex "expansion" "extracting list elements by number"
+.cindex "&%listextract%&" "extract list elements by number"
+.cindex "list" "extracting elements by number"
+The <&'number'&> argument must consist entirely of decimal digits,
+apart from an optional leading minus,
+and leading and trailing white space (which is ignored).
+
+After expansion, <&'string1'&> is interpreted as a list, colon-separated by
+default, but the separator can be changed in the usual way.
+
+The first field of the list is numbered one.
+If the number is negative, the fields are
+counted from the end of the list, with the rightmost one numbered -1.
+The numbered element of the list is extracted and placed in &$value$&,
+then <&'string2'&> is expanded as the result.
+
+If the modulus of the
+number is zero or greater than the number of fields in the string,
+the result is the expansion of <&'string3'&>.
+
+For example:
+.code
+${listextract{2}{x:42:99}}
+.endd
+yields &"42"&, and
+.code
+${listextract{-3}{<, x,42,99,& Mailer,,/bin/bash}{result: $value}}
+.endd
+yields &"result: 99"&.
+
+If {<&'string3'&>} is omitted, an empty string is used for string3.
+If {<&'string2'&>} is also omitted, the value that was
+extracted is used.
+You can use &`fail`& instead of {<&'string3'&>} as in a string extract.
+
+
 .vitem "&*${lookup{*&<&'key'&>&*}&~*&<&'search&~type'&>&*&~&&&
         {*&<&'file'&>&*}&~{*&<&'string1'&>&*}&~{*&<&'string2'&>&*}}*&"
 This is the first of one of two different types of lookup item, which are both
