@@ -280,6 +280,13 @@ if (lcp == NULL)
   {
   LDAP *ld;
 
+  #ifdef LDAP_OPT_X_TLS_NEWCTX
+  int  am_server = 0;
+  LDAP *ldsetctx;
+  #else
+  LDAP *ldsetctx = NULL;
+  #endif
+
 
   /* --------------------------- OpenLDAP ------------------------ */
 
@@ -364,6 +371,10 @@ if (lcp == NULL)
       host, porttext, strerror(errno));
     goto RETURN_ERROR;
     }
+
+  #ifdef LDAP_OPT_X_TLS_NEWCTX
+  ldsetctx = ld;
+  #endif
 
   /* Set the TCP connect time limit if available. This is something that is
   in Netscape SDK v4.1; I don't know about other libraries. */
@@ -461,31 +472,31 @@ if (lcp == NULL)
   #ifdef LDAP_OPT_X_TLS_CACERTFILE
   if (eldap_ca_cert_file != NULL)
     {
-    ldap_set_option(ld, LDAP_OPT_X_TLS_CACERTFILE, eldap_ca_cert_file);
+    ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_CACERTFILE, eldap_ca_cert_file);
     }
   #endif
   #ifdef LDAP_OPT_X_TLS_CACERTDIR
   if (eldap_ca_cert_dir != NULL)
     {
-    ldap_set_option(ld, LDAP_OPT_X_TLS_CACERTDIR, eldap_ca_cert_dir);
+    ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_CACERTDIR, eldap_ca_cert_dir);
     }
   #endif
   #ifdef LDAP_OPT_X_TLS_CERTFILE
   if (eldap_cert_file != NULL)
     {
-    ldap_set_option(ld, LDAP_OPT_X_TLS_CERTFILE, eldap_cert_file);
+    ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_CERTFILE, eldap_cert_file);
     }
   #endif
   #ifdef LDAP_OPT_X_TLS_KEYFILE
   if (eldap_cert_key != NULL)
     {
-    ldap_set_option(ld, LDAP_OPT_X_TLS_KEYFILE, eldap_cert_key);
+    ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_KEYFILE, eldap_cert_key);
     }
   #endif
   #ifdef LDAP_OPT_X_TLS_CIPHER_SUITE
   if (eldap_cipher_suite != NULL)
     {
-    ldap_set_option(ld, LDAP_OPT_X_TLS_CIPHER_SUITE, eldap_cipher_suite);
+    ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_CIPHER_SUITE, eldap_cipher_suite);
     }
   #endif
   #ifdef LDAP_OPT_X_TLS_REQUIRE_CERT
@@ -508,8 +519,26 @@ if (lcp == NULL)
       {
       cert_option = LDAP_OPT_X_TLS_TRY;
       }
-    /* Use NULL ldap handle because is a global option */
-    ldap_set_option(NULL, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_option);
+    /* This ldap handle is set at compile time based on client libs. Older
+     * versions want it to be global and newer versions can force a reload
+     * of the TLS context (to reload these settings we are changing from the
+     * default that loaded at instantiation). */
+    rc = ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_option);
+    if (rc)
+      {
+      DEBUG(D_lookup)
+        debug_printf("Unable to set TLS require cert_option(%d) globally: %s\n",
+          cert_option, ldap_err2string(rc));
+      }
+    }
+  #endif
+  #ifdef LDAP_OPT_X_TLS_NEWCTX
+  rc = ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_NEWCTX, &am_server);
+  if (rc)
+    {
+    DEBUG(D_lookup)
+      debug_printf("Unable to reload TLS context %d: %s\n",
+                   rc, ldap_err2string(rc));
     }
   #endif
 

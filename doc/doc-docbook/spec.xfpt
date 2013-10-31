@@ -7040,6 +7040,18 @@ With sufficiently modern LDAP libraries, Exim supports forcing TLS over regular
 LDAP connections, rather than the SSL-on-connect &`ldaps`&.
 See the &%ldap_start_tls%& option.
 
+.new
+Starting with Exim 4.83, the initialization of LDAP with TLS is more tightly
+controlled. Every part of the TLS configuration can be configured by settings in
+&_exim.conf_&. Depending on the version of the client libraries installed on
+your system, some of the initialization may have required setting options in
+&_/etc/ldap.conf_& or &_~/.ldaprc_& to get TLS working with self-signed
+certificates. This revealed a nuance where the current UID that exim was
+running as could affect which config files it read. With Exim 4.83, these
+methods become optional, only taking effect if not specifically set in
+&_exim.conf_&.
+.wen
+
 
 .section "LDAP quoting" "SECID68"
 .cindex "LDAP" "quoting"

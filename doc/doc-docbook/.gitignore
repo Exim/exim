@@ -6,4 +6,7 @@ spec.txt
 filter*.xml
 filter.ps
 filter.pdf
+filter-txt.html
+filter.txt
 local_params
+exim.8
