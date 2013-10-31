@@ -1367,7 +1367,8 @@ while ((lcp = ldap_connections) != NULL)
   {
   DEBUG(D_lookup) debug_printf("unbind LDAP connection to %s:%d\n", lcp->host,
     lcp->port);
-  ldap_unbind(lcp->ld);
+  if(lcp->bound == TRUE)
+    ldap_unbind(lcp->ld);
   ldap_connections = lcp->next;
   }
 }
