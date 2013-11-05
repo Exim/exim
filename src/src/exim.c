@@ -526,7 +526,7 @@ close_unwanted(void)
 if (smtp_input)
   {
   #ifdef SUPPORT_TLS
-  tls_close(FALSE, FALSE);      /* Shut down the TLS library */
+  tls_close(TRUE, FALSE);      /* Shut down the TLS library */
   #endif
   (void)close(fileno(smtp_in));
   (void)close(fileno(smtp_out));
