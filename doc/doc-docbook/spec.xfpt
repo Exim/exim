@@ -371,11 +371,13 @@ contributors.
 .section "Exim documentation" "SECID1"
 . Keep this example change bar when updating the documentation!
 
+.new
 .cindex "documentation"
 This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of the document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
+.wen
 
 This document is very much a reference manual; it is not a tutorial. The reader
 is expected to have some familiarity with the SMTP mail transfer protocol and
