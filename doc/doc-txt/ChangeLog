@@ -1,6 +1,20 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+
+Exim version 4.83
+-----------------
+
+TF/01 Correctly close the server side of TLS when forking for delivery.
+
+      When a message was received over SMTP with TLS, Exim failed to clear up
+      the incoming connection properly after forking off the child process to
+      deliver the message. In some situations the subsequent outgoing
+      delivery connection happened to have the same fd number as the incoming
+      connection previously had. Exim would try to use TLS and fail, logging
+      a "Bad file descriptor" error.
+
+
 Exim version 4.82
 -----------------
 
