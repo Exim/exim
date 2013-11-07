@@ -14,6 +14,9 @@ TF/01 Correctly close the server side of TLS when forking for delivery.
       connection previously had. Exim would try to use TLS and fail, logging
       a "Bad file descriptor" error.
 
+TF/02 Portability fix for building lookup modules on Solaris when the xpg4
+      utilities have not been installed.
+
 
 Exim version 4.82
 -----------------

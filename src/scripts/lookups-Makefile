@@ -95,7 +95,10 @@ emit_module_rule() {
   local mod_name pkgconf
   if [ "${lookup_name%:*}" = "$lookup_name" ]
   then
-    mod_name=$(echo $lookup_name | tr A-Z a-z)
+    # Square brackets are redundant but benign for POSIX compliant tr,
+    # however Solaris /usr/bin/tr requires them. Sometimes Solaris
+    # gets installed without a complete set of xpg4 tools, sigh.
+    mod_name=$(echo $lookup_name | tr [A-Z] [a-z])
   else
     mod_name="${lookup_name#*:}"
     lookup_name="${lookup_name%:*}"
