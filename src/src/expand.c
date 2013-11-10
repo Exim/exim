@@ -1931,6 +1931,8 @@ return ret;
 /*
 Arguments:
   s        points to the start of the condition text
+  canfree  points to a BOOL to sinal if it safe to free memory. Certain condition types (acl)
+	   may have side-effect allocation which must be preserved.
   yield    points to a BOOL to hold the result of the condition test;
            if NULL, we are just reading through a condition that is
            part of an "or" combination to check syntax, or in a state
@@ -1941,7 +1943,7 @@ Returns:   a pointer to the first character after the condition, or
 */
 
 static uschar *
-eval_condition(uschar *s, BOOL *yield)
+eval_condition(uschar *s, BOOL *canfree, BOOL *yield)
 {
 BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
@@ -1955,6 +1957,8 @@ uschar *sub[10];
 
 const pcre *re;
 const uschar *rerror;
+
+*canfree = TRUE;
 
 for (;;)
   {
@@ -2164,6 +2168,8 @@ switch(cond_type)
   like the saslauthd condition does, to permit a variable number of args.
   See also the expansion-item version EITEM_ACL and the traditional
   acl modifier ACLC_ACL.
+  Since the ACL may allocate new global variables, tell our caller to not
+  reclaim memory.
   */
 
   case ECOND_ACL:
@@ -2186,6 +2192,7 @@ switch(cond_type)
       case 3: return NULL;
       }
 
+    *canfree = FALSE;
     if (yield != NULL) switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:
@@ -2655,6 +2662,7 @@ switch(cond_type)
 
   for (;;)
     {
+    BOOL local_canfree;
     while (isspace(*s)) s++;
     /* {-for-text-editors */
     if (*s == '}') break;
@@ -2665,7 +2673,8 @@ switch(cond_type)
       return NULL;
       }
 
-    s = eval_condition(s+1, subcondptr);
+    s = eval_condition(s+1, &local_canfree, subcondptr);
+    if (!local_canfree) *canfree = FALSE;
     if (s == NULL)
       {
       expand_string_message = string_sprintf("%s inside \"%s{...}\" condition",
@@ -2709,6 +2718,7 @@ switch(cond_type)
     {
     int sep = 0;
     uschar *save_iterate_item = iterate_item;
+    BOOL local_canfree;
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
@@ -2726,7 +2736,8 @@ switch(cond_type)
     "false" part). This allows us to find the end of the condition, because if
     the list it empty, we won't actually evaluate the condition for real. */
 
-    s = eval_condition(sub[1], NULL);
+    s = eval_condition(sub[1], &local_canfree, NULL);
+    if (!local_canfree) *canfree = FALSE;
     if (s == NULL)
       {
       expand_string_message = string_sprintf("%s inside \"%s\" condition",
@@ -2747,8 +2758,11 @@ switch(cond_type)
     if (yield != NULL) *yield = !testfor;
     while ((iterate_item = string_nextinlist(&sub[0], &sep, NULL, 0)) != NULL)
       {
+      uschar *s1;
       DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, iterate_item);
-      if (eval_condition(sub[1], &tempcond) == NULL)
+      s1 = eval_condition(sub[1], &local_canfree, &tempcond);
+      if (!local_canfree) *canfree = FALSE;
+      if (!s1)
         {
         expand_string_message = string_sprintf("%s inside \"%s\" condition",
           expand_string_message, name);
@@ -3857,9 +3871,10 @@ while (*s != 0)
       uschar *next_s;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
+      BOOL local_canfree;
 
       while (isspace(*s)) s++;
-      next_s = eval_condition(s, skipping? NULL : &cond);
+      next_s = eval_condition(s, &local_canfree, skipping? NULL : &cond);
       if (next_s == NULL) goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
@@ -3888,8 +3903,9 @@ while (*s != 0)
       /* Restore external setting of expansion variables for continuation
       at this level. */
 
-      restore_expand_strings(save_expand_nmax, save_expand_nstring,
-        save_expand_nlength);
+      if (local_canfree)
+        restore_expand_strings(save_expand_nmax, save_expand_nstring,
+          save_expand_nlength);
       continue;
       }
 
@@ -5212,6 +5228,7 @@ while (*s != 0)
 
 
     /* Handle list operations */
+    /* These do not see to free any excess memory.  Why not? */
 
     case EITEM_FILTER:
     case EITEM_MAP:
@@ -5223,6 +5240,7 @@ while (*s != 0)
       uschar *list, *expr, *temp;
       uschar *save_iterate_item = iterate_item;
       uschar *save_lookup_value = lookup_value;
+      BOOL dummy;
 
       while (isspace(*s)) s++;
       if (*s++ != '{') goto EXPAND_FAILED_CURLY;
@@ -5254,7 +5272,7 @@ while (*s != 0)
 
       if (item_type == EITEM_FILTER)
         {
-        temp = eval_condition(expr, NULL);
+        temp = eval_condition(expr, &dummy, NULL);
         if (temp != NULL) s = temp;
         }
       else
@@ -5298,7 +5316,7 @@ while (*s != 0)
         if (item_type == EITEM_FILTER)
           {
           BOOL condresult;
-          if (eval_condition(expr, &condresult) == NULL)
+          if (eval_condition(expr, &dummy, &condresult) == NULL)
             {
             iterate_item = save_iterate_item;
             lookup_value = save_lookup_value;

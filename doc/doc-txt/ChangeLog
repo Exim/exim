@@ -17,6 +17,9 @@ TF/01 Correctly close the server side of TLS when forking for delivery.
 TF/02 Portability fix for building lookup modules on Solaris when the xpg4
       utilities have not been installed.
 
+JH/01 Fix memory-handling in use of acl as a conditional; avoid free of
+      temporary space as the ACL may create new global variables.
+
 
 Exim version 4.82
 -----------------
