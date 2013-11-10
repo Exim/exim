@@ -3659,9 +3659,11 @@ while (*s != 0)
     continue;
     }
 
+  /*{*/
   /* Anything other than $ is just copied verbatim, unless we are
   looking for a terminating } character. */
 
+  /*{*/
   if (ket_ends && *s == '}') break;
 
   if (*s != '$' || !honour_dollar)
@@ -3676,7 +3678,7 @@ while (*s != 0)
   names can contain any printing characters except space and colon.
   For those that don't like typing this much, "$h_" is a synonym for
   "$header_". A non-existent header yields a NULL value; nothing is
-  inserted. */
+  inserted. */	/*}*/
 
   if (isalpha((*(++s))))
     {
@@ -3763,11 +3765,11 @@ while (*s != 0)
     continue;
     }
 
-  /* Otherwise, if there's no '{' after $ it's an error. */
+  /* Otherwise, if there's no '{' after $ it's an error. */		/*}*/
 
-  if (*s != '{')
+  if (*s != '{')							/*}*/
     {
-    expand_string_message = US"$ not followed by letter, digit, or {";
+    expand_string_message = US"$ not followed by letter, digit, or {";	/*}*/
     goto EXPAND_FAILED;
     }
 
@@ -3777,9 +3779,9 @@ while (*s != 0)
   if (isdigit((*(++s))))
     {
     int n;
-    s = read_number(&n, s);
+    s = read_number(&n, s);		/*{*/
     if (*s++ != '}')
-      {
+      {					/*{*/
       expand_string_message = US"} expected after number";
       goto EXPAND_FAILED;
       }
@@ -3791,7 +3793,7 @@ while (*s != 0)
 
   if (!isalpha(*s))
     {
-    expand_string_message = US"letter or digit expected after ${";
+    expand_string_message = US"letter or digit expected after ${";	/*}*/
     goto EXPAND_FAILED;
     }
 
@@ -3918,10 +3920,10 @@ while (*s != 0)
       Otherwise set the key NULL pro-tem. */
 
       while (isspace(*s)) s++;
-      if (*s == '{')
+      if (*s == '{')					/*}*/
         {
         key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
-        if (key == NULL) goto EXPAND_FAILED;
+        if (key == NULL) goto EXPAND_FAILED;		/*{*/
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
         while (isspace(*s)) s++;
         }
@@ -3937,9 +3939,9 @@ while (*s != 0)
 
       /* The type is a string that may contain special characters of various
       kinds. Allow everything except space or { to appear; the actual content
-      is checked by search_findtype_partial. */
+      is checked by search_findtype_partial. */		/*}*/
 
-      while (*s != 0 && *s != '{' && !isspace(*s))
+      while (*s != 0 && *s != '{' && !isspace(*s))	/*}*/
         {
         if (nameptr < sizeof(name) - 1) name[nameptr++] = *s;
         s++;
@@ -4087,7 +4089,7 @@ while (*s != 0)
 
     case EITEM_PERL:
     #ifndef EXIM_PERL
-    expand_string_message = US"\"${perl\" encountered, but this facility "
+    expand_string_message = US"\"${perl\" encountered, but this facility "	/*}*/
       "is not included in this binary";
     goto EXPAND_FAILED;
 
@@ -4836,7 +4838,7 @@ while (*s != 0)
       uschar *sub[3];
 
       /* "length" takes only 2 arguments whereas the others take 2 or 3.
-      Ensure that sub[2] is set in the ${length case. */
+      Ensure that sub[2] is set in the ${length } case. */
 
       sub[2] = NULL;
       switch(read_subs(sub, (item_type == EITEM_LENGTH)? 2:3, 2, &s, skipping,
@@ -5269,15 +5271,15 @@ while (*s != 0)
 
       while (isspace(*s)) s++;
       if (*s++ != '}')
-        {
+        {						/*{*/
         expand_string_message = string_sprintf("missing } at end of condition "
           "or expression inside \"%s\"", name);
         goto EXPAND_FAILED;
         }
 
-      while (isspace(*s)) s++;
+      while (isspace(*s)) s++;				/*{*/
       if (*s++ != '}')
-        {
+        {						/*{*/
         expand_string_message = string_sprintf("missing } at end of \"%s\"",
           name);
         goto EXPAND_FAILED;
@@ -5387,7 +5389,7 @@ while (*s != 0)
       }
 
 
-    /* If ${dlfunc support is configured, handle calling dynamically-loaded
+    /* If ${dlfunc } support is configured, handle calling dynamically-loaded
     functions, unless locked out at this time. Syntax is ${dlfunc{file}{func}}
     or ${dlfunc{file}{func}{arg}} or ${dlfunc{file}{func}{arg1}{arg2}} or up to
     a maximum of EXPAND_DLFUNC_MAX_ARGS arguments (defined below). */
@@ -5396,7 +5398,7 @@ while (*s != 0)
 
     case EITEM_DLFUNC:
     #ifndef EXPAND_DLFUNC
-    expand_string_message = US"\"${dlfunc\" encountered, but this facility "
+    expand_string_message = US"\"${dlfunc\" encountered, but this facility "	/*}*/
       "is not included in this binary";
     goto EXPAND_FAILED;
 
@@ -5487,7 +5489,7 @@ while (*s != 0)
         }
       }
     #endif /* EXPAND_DLFUNC */
-    }
+    }	/* EITEM_* switch */
 
   /* Control reaches here if the name is not recognized as one of the more
   complicated expansion items. Check for the "operator" syntax (name terminated
@@ -6347,7 +6349,7 @@ while (*s != 0)
   store instead of copying. Many expansion strings contain just one reference,
   so this is a useful optimization, especially for humungous headers
   ($message_headers). */
-
+						/*{*/
   if (*s++ == '}')
     {
     int len;
