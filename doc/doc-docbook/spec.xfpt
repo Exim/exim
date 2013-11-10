@@ -26057,6 +26057,12 @@ validation to succeed, of course, but if it's not preinstalled, sending the
 root certificate along with the rest makes it available for the user to
 install if the receiving end is a client MUA that can interact with a user.
 
+Note that certificates using MD5 are unlikely to work on today's Internet;
+even if your libraries allow loading them for use in Exim when acting as a
+server, increasingly clients will not accept such certificates.  The error
+diagnostics in such a case can be frustratingly vague.
+
+
 
 .section "Self-signed certificates" "SECID187"
 .cindex "certificate" "self-signed"
