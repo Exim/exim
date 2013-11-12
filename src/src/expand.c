@@ -13,7 +13,7 @@
 
 /* Recursively called function */
 
-static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL, BOOL);
+static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL, BOOL, BOOL *);
 
 #ifdef STAND_ALONE
 #ifndef SUPPORT_CRYPTEQ
@@ -1799,6 +1799,8 @@ Arguments:
   skipping   the skipping flag
   check_end  if TRUE, check for final '}'
   name       name of item, for error message
+  resetok    if not NULL, pointer to flag - write FALSE if unsafe to reset
+	     the store.
 
 Returns:     0 OK; string pointer updated
              1 curly bracketing error (too few arguments)
@@ -1808,7 +1810,7 @@ Returns:     0 OK; string pointer updated
 
 static int
 read_subs(uschar **sub, int n, int m, uschar **sptr, BOOL skipping,
-  BOOL check_end, uschar *name)
+  BOOL check_end, uschar *name, BOOL *resetok)
 {
 int i;
 uschar *s = *sptr;
@@ -1822,7 +1824,7 @@ for (i = 0; i < n; i++)
     sub[i] = NULL;
     break;
     }
-  sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
+  sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, resetok);
   if (sub[i] == NULL) return 3;
   if (*s++ != '}') return 1;
   while (isspace(*s)) s++;
@@ -1931,8 +1933,9 @@ return ret;
 /*
 Arguments:
   s        points to the start of the condition text
-  canfree  points to a BOOL to sinal if it safe to free memory. Certain condition types (acl)
-	   may have side-effect allocation which must be preserved.
+  resetok  points to a BOOL which is written false if it is unsafe to
+	   free memory. Certain condition types (acl) may have side-effect
+	   allocation which must be preserved.
   yield    points to a BOOL to hold the result of the condition test;
            if NULL, we are just reading through a condition that is
            part of an "or" combination to check syntax, or in a state
@@ -1943,7 +1946,7 @@ Returns:   a pointer to the first character after the condition, or
 */
 
 static uschar *
-eval_condition(uschar *s, BOOL *canfree, BOOL *yield)
+eval_condition(uschar *s, BOOL *resetok, BOOL *yield)
 {
 BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
@@ -1957,8 +1960,6 @@ uschar *sub[10];
 
 const pcre *re;
 const uschar *rerror;
-
-*canfree = TRUE;
 
 for (;;)
   {
@@ -2084,7 +2085,7 @@ switch(cond_type)
   while (isspace(*s)) s++;
   if (*s != '{') goto COND_FAILED_CURLY_START;		/* }-for-text-editors */
 
-  sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL, TRUE);
+  sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL, TRUE, resetok);
   if (sub[0] == NULL) return NULL;
   /* {-for-text-editors */
   if (*s++ != '}') goto COND_FAILED_CURLY_END;
@@ -2184,7 +2185,7 @@ switch(cond_type)
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
     switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
-      &s, yield == NULL, TRUE, US"acl"))
+      &s, yield == NULL, TRUE, US"acl", resetok))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
         "error for acl";
@@ -2192,7 +2193,7 @@ switch(cond_type)
       case 3: return NULL;
       }
 
-    *canfree = FALSE;
+    *resetok = FALSE;
     if (yield != NULL) switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
 	{
 	case OK:
@@ -2219,7 +2220,7 @@ switch(cond_type)
 
   /* saslauthd: does Cyrus saslauthd authentication. Four parameters are used:
 
-     ${if saslauthd {{username}{password}{service}{realm}}  {yes}[no}}
+     ${if saslauthd {{username}{password}{service}{realm}}  {yes}{no}}
 
   However, the last two are optional. That is why the whole set is enclosed
   in their own set of braces. */
@@ -2230,7 +2231,7 @@ switch(cond_type)
   #else
   while (isspace(*s)) s++;
   if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
-  switch(read_subs(sub, 4, 2, &s, yield == NULL, TRUE, US"saslauthd"))
+  switch(read_subs(sub, 4, 2, &s, yield == NULL, TRUE, US"saslauthd", resetok))
     {
     case 1: expand_string_message = US"too few arguments or bracketing "
       "error for saslauthd";
@@ -2314,7 +2315,7 @@ switch(cond_type)
       return NULL;
       }
     sub[i] = expand_string_internal(s+1, TRUE, &s, yield == NULL,
-        honour_dollar);
+        honour_dollar, resetok);
     if (sub[i] == NULL) return NULL;
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
@@ -2662,7 +2663,6 @@ switch(cond_type)
 
   for (;;)
     {
-    BOOL local_canfree;
     while (isspace(*s)) s++;
     /* {-for-text-editors */
     if (*s == '}') break;
@@ -2673,9 +2673,7 @@ switch(cond_type)
       return NULL;
       }
 
-    s = eval_condition(s+1, &local_canfree, subcondptr);
-    if (!local_canfree) *canfree = FALSE;
-    if (s == NULL)
+    if (!(s = eval_condition(s+1, resetok, subcondptr)))
       {
       expand_string_message = string_sprintf("%s inside \"%s{...}\" condition",
         expand_string_message, name);
@@ -2718,11 +2716,10 @@ switch(cond_type)
     {
     int sep = 0;
     uschar *save_iterate_item = iterate_item;
-    BOOL local_canfree;
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
-    sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL), TRUE);
+    sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL), TRUE, resetok);
     if (sub[0] == NULL) return NULL;
     /* {-for-text-editors */
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
@@ -2736,9 +2733,7 @@ switch(cond_type)
     "false" part). This allows us to find the end of the condition, because if
     the list it empty, we won't actually evaluate the condition for real. */
 
-    s = eval_condition(sub[1], &local_canfree, NULL);
-    if (!local_canfree) *canfree = FALSE;
-    if (s == NULL)
+    if (!(s = eval_condition(sub[1], resetok, NULL)))
       {
       expand_string_message = string_sprintf("%s inside \"%s\" condition",
         expand_string_message, name);
@@ -2758,11 +2753,8 @@ switch(cond_type)
     if (yield != NULL) *yield = !testfor;
     while ((iterate_item = string_nextinlist(&sub[0], &sep, NULL, 0)) != NULL)
       {
-      uschar *s1;
       DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, iterate_item);
-      s1 = eval_condition(sub[1], &local_canfree, &tempcond);
-      if (!local_canfree) *canfree = FALSE;
-      if (!s1)
+      if (!eval_condition(sub[1], resetok, &tempcond))
         {
         expand_string_message = string_sprintf("%s inside \"%s\" condition",
           expand_string_message, name);
@@ -2802,7 +2794,7 @@ switch(cond_type)
     while (isspace(*s)) s++;
     if (*s != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     ourname = cond_type == ECOND_BOOL_LAX ? US"bool_lax" : US"bool";
-    switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, ourname))
+    switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, ourname, resetok))
       {
       case 1: expand_string_message = string_sprintf(
                   "too few arguments or bracketing error for %s",
@@ -2966,6 +2958,8 @@ Arguments:
   sizeptr        points to the output string size
   ptrptr         points to the output string pointer
   type           "lookup" or "if" or "extract" or "run", for error message
+  resetok	 if not NULL, pointer to flag - write FALSE if unsafe to reset
+		the store.
 
 Returns:         0 OK; lookup_value has been reset to save_lookup
                  1 expansion failed
@@ -2974,7 +2968,7 @@ Returns:         0 OK; lookup_value has been reset to save_lookup
 
 static int
 process_yesno(BOOL skipping, BOOL yes, uschar *save_lookup, uschar **sptr,
-  uschar **yieldptr, int *sizeptr, int *ptrptr, uschar *type)
+  uschar **yieldptr, int *sizeptr, int *ptrptr, uschar *type, BOOL *resetok)
 {
 int rc = 0;
 uschar *s = *sptr;    /* Local value */
@@ -3011,7 +3005,7 @@ if (*s++ != '{') goto FAILED_CURLY;
 want this string. Set skipping in the call in the fail case (this will always
 be the case if we were already skipping). */
 
-sub1 = expand_string_internal(s, TRUE, &s, !yes, TRUE);
+sub1 = expand_string_internal(s, TRUE, &s, !yes, TRUE, resetok);
 if (sub1 == NULL && (yes || !expand_string_forcedfail)) goto FAILED;
 expand_string_forcedfail = FALSE;
 if (*s++ != '}') goto FAILED_CURLY;
@@ -3036,7 +3030,7 @@ already skipping. */
 while (isspace(*s)) s++;
 if (*s == '{')
   {
-  sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping, TRUE);
+  sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping, TRUE, resetok);
   if (sub2 == NULL && (!yes || !expand_string_forcedfail)) goto FAILED;
   expand_string_forcedfail = FALSE;
   if (*s++ != '}') goto FAILED_CURLY;
@@ -3601,8 +3595,9 @@ $message_headers which can get very long.
 There's a problem if a ${dlfunc item has side-effects that cause allocation,
 since resetting the store at the end of the expansion will free store that was
 allocated by the plugin code as well as the slop after the expanded string. So
-we skip any resets if ${dlfunc has been used. The same applies for ${acl. This
-is an unfortunate consequence of string expansion becoming too powerful.
+we skip any resets if ${dlfunc } has been used. The same applies for ${acl }
+and, given the acl condition, ${if }. This is an unfortunate consequence of
+string expansion becoming too powerful.
 
 Arguments:
   string         the string to be expanded
@@ -3613,6 +3608,8 @@ Arguments:
                  to be used (to allow for optimisation)
   honour_dollar  TRUE if $ is to be expanded,
                  FALSE if it's just another character
+  resetok_p	 if not NULL, pointer to flag - write FALSE if unsafe to reset
+		 the store.
 
 Returns:         NULL if expansion fails:
                    expand_string_forcedfail is set TRUE if failure was forced
@@ -3622,7 +3619,7 @@ Returns:         NULL if expansion fails:
 
 static uschar *
 expand_string_internal(uschar *string, BOOL ket_ends, uschar **left,
-  BOOL skipping, BOOL honour_dollar)
+  BOOL skipping, BOOL honour_dollar, BOOL *resetok_p)
 {
 int ptr = 0;
 int size = Ustrlen(string)+ 64;
@@ -3835,7 +3832,7 @@ while (*s != 0)
       uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
       uschar *user_msg;
 
-      switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl"))
+      switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -3871,10 +3868,9 @@ while (*s != 0)
       uschar *next_s;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
-      BOOL local_canfree;
 
       while (isspace(*s)) s++;
-      next_s = eval_condition(s, &local_canfree, skipping? NULL : &cond);
+      next_s = eval_condition(s, &resetok, skipping? NULL : &cond);
       if (next_s == NULL) goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
@@ -3894,7 +3890,8 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"if"))                      /* condition type */
+               US"if",                       /* condition type */
+	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
@@ -3903,9 +3900,8 @@ while (*s != 0)
       /* Restore external setting of expansion variables for continuation
       at this level. */
 
-      if (local_canfree)
-        restore_expand_strings(save_expand_nmax, save_expand_nstring,
-          save_expand_nlength);
+      restore_expand_strings(save_expand_nmax, save_expand_nstring,
+        save_expand_nlength);
       continue;
       }
 
@@ -3938,7 +3934,7 @@ while (*s != 0)
       while (isspace(*s)) s++;
       if (*s == '{')					/*}*/
         {
-        key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
+        key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
         if (key == NULL) goto EXPAND_FAILED;		/*{*/
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
         while (isspace(*s)) s++;
@@ -4004,7 +4000,7 @@ while (*s != 0)
       first. */
 
       if (*s != '{') goto EXPAND_FAILED_CURLY;
-      filename = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
+      filename = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
       if (filename == NULL) goto EXPAND_FAILED;
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
       while (isspace(*s)) s++;
@@ -4082,7 +4078,8 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"lookup"))                  /* condition type */
+               US"lookup",                   /* condition type */
+	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
@@ -4121,7 +4118,7 @@ while (*s != 0)
         }
 
       switch(read_subs(sub_arg, EXIM_PERL_MAX_ARGS + 1, 1, &s, skipping, TRUE,
-           US"perl"))
+           US"perl", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -4193,7 +4190,7 @@ while (*s != 0)
       uschar *sub_arg[3];
       uschar *p,*domain;
 
-      switch(read_subs(sub_arg, 3, 2, &s, skipping, TRUE, US"prvs"))
+      switch(read_subs(sub_arg, 3, 2, &s, skipping, TRUE, US"prvs", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -4267,7 +4264,7 @@ while (*s != 0)
       prvscheck_address = NULL;
       prvscheck_keynum = NULL;
 
-      switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs"))
+      switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -4299,7 +4296,7 @@ while (*s != 0)
         prvscheck_keynum = string_copy(key_num);
 
         /* Now expand the second argument */
-        switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs"))
+        switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs", &resetok))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -4353,7 +4350,7 @@ while (*s != 0)
         /* Now expand the final argument. We leave this till now so that
         it can include $prvscheck_result. */
 
-        switch(read_subs(sub_arg, 1, 0, &s, skipping, TRUE, US"prvs"))
+        switch(read_subs(sub_arg, 1, 0, &s, skipping, TRUE, US"prvs", &resetok))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -4377,7 +4374,7 @@ while (*s != 0)
            We need to make sure all subs are expanded first, so as to skip over
            the entire item. */
 
-        switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, US"prvs"))
+        switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, US"prvs", &resetok))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -4401,7 +4398,7 @@ while (*s != 0)
         goto EXPAND_FAILED;
         }
 
-      switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, US"readfile"))
+      switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, US"readfile", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -4447,7 +4444,7 @@ while (*s != 0)
       /* Read up to 4 arguments, but don't do the end of item check afterwards,
       because there may be a string for expansion on failure. */
 
-      switch(read_subs(sub_arg, 4, 2, &s, skipping, FALSE, US"readsocket"))
+      switch(read_subs(sub_arg, 4, 2, &s, skipping, FALSE, US"readsocket", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:                             /* Won't occur: no end check */
@@ -4673,7 +4670,7 @@ while (*s != 0)
 
       if (*s == '{')
         {
-        if (expand_string_internal(s+1, TRUE, &s, TRUE, TRUE) == NULL)
+        if (expand_string_internal(s+1, TRUE, &s, TRUE, TRUE, &resetok) == NULL)
           goto EXPAND_FAILED;
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
         while (isspace(*s)) s++;
@@ -4688,7 +4685,7 @@ while (*s != 0)
       SOCK_FAIL:
       if (*s != '{') goto EXPAND_FAILED;
       DEBUG(D_any) debug_printf("%s\n", expand_string_message);
-      arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE);
+      arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE, &resetok);
       if (arg == NULL) goto EXPAND_FAILED;
       yield = string_cat(yield, &size, &ptr, arg, Ustrlen(arg));
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
@@ -4717,7 +4714,7 @@ while (*s != 0)
 
       while (isspace(*s)) s++;
       if (*s != '{') goto EXPAND_FAILED_CURLY;
-      arg = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
+      arg = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
       if (arg == NULL) goto EXPAND_FAILED;
       while (isspace(*s)) s++;
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
@@ -4799,7 +4796,8 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"run"))                     /* condition type */
+               US"run",                      /* condition type */
+	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
@@ -4816,7 +4814,7 @@ while (*s != 0)
       int o2m;
       uschar *sub[3];
 
-      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, US"tr"))
+      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, US"tr", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -4858,7 +4856,7 @@ while (*s != 0)
 
       sub[2] = NULL;
       switch(read_subs(sub, (item_type == EITEM_LENGTH)? 2:3, 2, &s, skipping,
-             TRUE, name))
+             TRUE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -4933,7 +4931,7 @@ while (*s != 0)
       uschar innerkey[MAX_HASHBLOCKLEN];
       uschar outerkey[MAX_HASHBLOCKLEN];
 
-      switch (read_subs(sub, 3, 3, &s, skipping, TRUE, name))
+      switch (read_subs(sub, 3, 3, &s, skipping, TRUE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5028,7 +5026,7 @@ while (*s != 0)
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
-      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, US"sg"))
+      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, US"sg", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5148,8 +5146,8 @@ while (*s != 0)
         while (isspace(*s)) s++;
         if (*s == '{')
           {
-          sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
-          if (sub[i] == NULL) goto EXPAND_FAILED;
+          sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+          if (sub[i] == NULL) goto EXPAND_FAILED;		/*{*/
           if (*s++ != '}') goto EXPAND_FAILED_CURLY;
 
           /* After removal of leading and trailing white space, the first
@@ -5212,7 +5210,8 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"extract"))                 /* condition type */
+               US"extract",                  /* condition type */
+	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
         case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
@@ -5226,9 +5225,7 @@ while (*s != 0)
       continue;
       }
 
-
     /* Handle list operations */
-    /* These do not see to free any excess memory.  Why not? */
 
     case EITEM_FILTER:
     case EITEM_MAP:
@@ -5245,7 +5242,7 @@ while (*s != 0)
       while (isspace(*s)) s++;
       if (*s++ != '{') goto EXPAND_FAILED_CURLY;
 
-      list = expand_string_internal(s, TRUE, &s, skipping, TRUE);
+      list = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
       if (list == NULL) goto EXPAND_FAILED;
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
 
@@ -5253,7 +5250,7 @@ while (*s != 0)
         {
         while (isspace(*s)) s++;
         if (*s++ != '{') goto EXPAND_FAILED_CURLY;
-        temp = expand_string_internal(s, TRUE, &s, skipping, TRUE);
+        temp = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
         if (temp == NULL) goto EXPAND_FAILED;
         lookup_value = temp;
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
@@ -5272,12 +5269,12 @@ while (*s != 0)
 
       if (item_type == EITEM_FILTER)
         {
-        temp = eval_condition(expr, &dummy, NULL);
+        temp = eval_condition(expr, &resetok, NULL);
         if (temp != NULL) s = temp;
         }
       else
         {
-        temp = expand_string_internal(s, TRUE, &s, TRUE, TRUE);
+        temp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok);
         }
 
       if (temp == NULL)
@@ -5316,7 +5313,7 @@ while (*s != 0)
         if (item_type == EITEM_FILTER)
           {
           BOOL condresult;
-          if (eval_condition(expr, &dummy, &condresult) == NULL)
+          if (eval_condition(expr, &resetok, &condresult) == NULL)
             {
             iterate_item = save_iterate_item;
             lookup_value = save_lookup_value;
@@ -5336,7 +5333,7 @@ while (*s != 0)
 
         else
           {
-          temp = expand_string_internal(expr, TRUE, NULL, skipping, TRUE);
+          temp = expand_string_internal(expr, TRUE, NULL, skipping, TRUE, &resetok);
           if (temp == NULL)
             {
             iterate_item = save_iterate_item;
@@ -5436,7 +5433,7 @@ while (*s != 0)
         }
 
       switch(read_subs(argv, EXPAND_DLFUNC_MAX_ARGS + 2, 2, &s, skipping,
-           TRUE, US"dlfunc"))
+           TRUE, US"dlfunc", &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5518,7 +5515,7 @@ while (*s != 0)
     {
     int c;
     uschar *arg = NULL;
-    uschar *sub = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
+    uschar *sub = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
     if (sub == NULL) goto EXPAND_FAILED;
     s++;
 
@@ -5593,7 +5590,7 @@ while (*s != 0)
 
       case EOP_EXPAND:
         {
-        uschar *expanded = expand_string_internal(sub, FALSE, NULL, skipping, TRUE);
+        uschar *expanded = expand_string_internal(sub, FALSE, NULL, skipping, TRUE, &resetok);
         if (expanded == NULL)
           {
           expand_string_message =
@@ -5785,7 +5782,7 @@ while (*s != 0)
 	  if (*item == '+')	/* list item is itself a named list */
 	    {
 	    uschar * sub = string_sprintf("${listnamed%s:%s}", suffix, item);
-	    item = expand_string_internal(sub, FALSE, NULL, FALSE, TRUE);
+	    item = expand_string_internal(sub, FALSE, NULL, FALSE, TRUE, &resetok);
 	    }
 	  else if (sep != ':')	/* item from non-colon-sep list, re-quote for colon list-separator */
 	    {
@@ -6430,6 +6427,8 @@ In many cases the final string will be the first one that was got and so there
 will be optimal store usage. */
 
 if (resetok) store_reset(yield + ptr + 1);
+else if (resetok_p) *resetok_p = FALSE;
+
 DEBUG(D_expand)
   {
   debug_printf("expanding: %.*s\n   result: %s\n", (int)(s - string), string,
@@ -6459,6 +6458,7 @@ DEBUG(D_expand)
   debug_printf("   error message: %s\n", expand_string_message);
   if (expand_string_forcedfail) debug_printf("failure was forced\n");
   }
+if (resetok_p) *resetok_p = resetok;
 return NULL;
 }
 
@@ -6477,7 +6477,7 @@ expand_string(uschar *string)
 search_find_defer = FALSE;
 malformed_header = FALSE;
 return (Ustrpbrk(string, "$\\") == NULL)? string :
-  expand_string_internal(string, FALSE, NULL, FALSE, TRUE);
+  expand_string_internal(string, FALSE, NULL, FALSE, TRUE, NULL);
 }
 
 
