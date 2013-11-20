@@ -10,6 +10,7 @@ CLIENT_SSL=@CLIENT_SSL@
 CLIENT_GNUTLS=@CLIENT_GNUTLS@
 LOADED=@LOADED@
 LOADED_OPT=@LOADED_OPT@
+LIBS=@LIBS@
 
 ##############################################################################
 
@@ -44,17 +45,17 @@ bin/cf:         src/cf.c Makefile
 		@echo " "
 
 bin/client:     src/client.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client src/client.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client src/client.c $(LIBS)
 		@echo ">>> bin/client command built"
 		@echo " "
 
 bin/client-gnutls: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls src/client.c -lgnutls -lgcrypt
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls src/client.c -lgnutls -lgcrypt $(LIBS)
 		@echo ">>> bin/client-gnutls command built"
 		@echo " "
 
 bin/client-ssl: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl src/client.c -lssl -lcrypto
+		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl src/client.c -lssl -lcrypto $(LIBS)
 		@echo ">>> bin/client-ssl command built"
 		@echo " "
 
@@ -89,7 +90,7 @@ bin/mtpscript:  src/mtpscript.c Makefile
 		@echo " "
 
 bin/server:     src/server.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server src/server.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server src/server.c $(LIBS)
 		@echo ">>> bin/server command built"
 		@echo " "
 

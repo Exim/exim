@@ -48,6 +48,11 @@ case $host_os in
     ;;
 esac
 
+dnl Solaris requires additional libraries for networking functions.
+
+AC_SEARCH_LIBS([inet_addr], [nsl])
+AC_SEARCH_LIBS([connect], [socket])
+
 dnl "Export" these variables
 
 AC_SUBST(BIND_8_COMPAT)
@@ -55,6 +60,7 @@ AC_SUBST(CLIENT_SSL)
 AC_SUBST(CLIENT_GNUTLS)
 AC_SUBST(LOADED)
 AC_SUBST(LOADED_OPT)
+AC_SUBST(LIBS)
 
 dnl This must be last; it determines what files are written
 
