@@ -24,6 +24,22 @@ then
   _XPG=1
   export _XPG
 
+  # We need the _right_ tr, so must do that first; but if a shell which
+  # we're more confident is sane is available, let's try that.  Mostly,
+  # the problem is that "local" is not actually in "the" standard, it's
+  # just in every not-insane shell.  Though arguably, there are no shells
+  # with POSIX-ish syntax which qualify as "not insane".
+  for b in /bin/dash /bin/bash /usr/local/bin/bash
+  do
+    if [ -x "$b" ]
+    then
+      SHELL="$b"
+      break
+    fi
+  done
+  # if we get a report of a system with zsh but not bash, we can add that
+  # to the list, but be sure to enable sh_word_split in that case.
+
   exec "$SHELL" "$0" "$@"
 fi
 
@@ -40,6 +56,16 @@ tab='	'
 # with UTF8, so we should be safe doingthis:
 LC_ALL=C
 export LC_ALL
+
+if [ -f "$defs_source" ]
+then
+  :
+  # we are happy
+else
+  echo >&2 "$0: ERROR: MISSING FILE '${defs_source}'"
+  echo >&2 "$0: SHOULD HAVE BEEN CALLED FROM scripts/Configure-Makefile"
+  exit 1
+fi
 
 # nb: do not permit leading whitespace for this, as CFLAGS_DYNAMIC is exported
 # to the lookups subdir via a line with leading whitespace which otherwise
