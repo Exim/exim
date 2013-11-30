@@ -94,6 +94,10 @@ enum {
 
   QUIT_CMD, HELP_CMD,
 
+#ifdef EXPERIMENTAL_PROXY
+  PROXY_FAIL_IGNORE_CMD,
+#endif
+
   /* These are specials that don't correspond to actual commands */
 
   EOF_CMD, OTHER_CMD, BADARG_CMD, BADCHAR_CMD, BADSYN_CMD,
@@ -549,6 +553,294 @@ exim_exit(EXIT_FAILURE);
 
 
 
+#ifdef EXPERIMENTAL_PROXY
+/*************************************************
+*       Check if host is required proxy host     *
+*************************************************/
+/* The function determines if inbound host will be a regular smtp host
+or if it is configured that it must use Proxy Protocol.
+
+Arguments: none
+Returns:   bool
+*/
+
+static BOOL
+check_proxy_protocol_host()
+{
+int rc;
+/* Cannot configure local connection as a proxy inbound */
+if (sender_host_address == NULL) return proxy_session;
+
+rc = verify_check_this_host(&proxy_required_hosts, NULL, NULL,
+                           sender_host_address, NULL);
+if (rc == OK)
+  {
+  DEBUG(D_receive)
+    debug_printf("Detected proxy protocol configured host\n");
+  proxy_session = TRUE;
+  }
+return proxy_session;
+}
+
+
+/*************************************************
+*           Flush waiting input string           *
+*************************************************/
+static void
+flush_input()
+{
+int rc;
+
+rc = smtp_getc();
+while (rc != '\n')             /* End of input string */
+  {
+  rc = smtp_getc();
+  }
+}
+
+
+/*************************************************
+*         Setup host for proxy protocol          *
+*************************************************/
+/* The function configures the connection based on a header from the
+inbound host to use Proxy Protocol. The specification is very exact
+so exit with an error if do not find the exact required pieces. This
+includes an incorrect number of spaces separating args.
+
+Arguments: none
+Returns:   int
+*/
+
+static BOOL
+setup_proxy_protocol_host()
+{
+union {
+  struct {
+    uschar line[108];
+  } v1;
+  struct {
+    uschar sig[12];
+    uschar ver;
+    uschar cmd;
+    uschar fam;
+    uschar len;
+    union {
+      struct { /* TCP/UDP over IPv4, len = 12 */
+        uint32_t src_addr;
+        uint32_t dst_addr;
+        uint16_t src_port;
+        uint16_t dst_port;
+      } ip4;
+      struct { /* TCP/UDP over IPv6, len = 36 */
+        uint8_t  src_addr[16];
+        uint8_t  dst_addr[16];
+        uint16_t src_port;
+        uint16_t dst_port;
+      } ip6;
+      struct { /* AF_UNIX sockets, len = 216 */
+        uschar   src_addr[108];
+        uschar   dst_addr[108];
+      } unx;
+    } addr;
+  } v2;
+} hdr;
+
+int size, ret, fd;
+uschar *tmpip;
+const char v2sig[13] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x02";
+uschar *iptype;  /* To display debug info */
+struct timeval tv;
+
+fd = fileno(smtp_in);
+
+/* Proxy Protocol host must send header within a short time
+(default 3 seconds) or it's considered invalid */
+tv.tv_sec  = PROXY_NEGOTIATION_TIMEOUT_SEC;
+tv.tv_usec = PROXY_NEGOTIATION_TIMEOUT_USEC;
+setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,
+           sizeof(struct timeval));
+do
+  {
+  ret = recv(fd, &hdr, sizeof(hdr), MSG_PEEK);
+  }
+  while (ret == -1 && errno == EINTR);
+
+if (ret == -1)
+  return (errno == EAGAIN) ? 0 : ERRNO_PROXYFAIL;
+
+if (ret >= 16 &&
+    memcmp(&hdr.v2, v2sig, 13) == 0)
+  {
+  DEBUG(D_receive) debug_printf("Detected PROXYv2 header\n");
+  size = 16 + hdr.v2.len;
+  if (ret < size)
+    {
+    DEBUG(D_receive) debug_printf("Truncated or too large PROXYv2 header\n");
+    goto proxyfail;
+    }
+  switch (hdr.v2.cmd)
+    {
+    case 0x01: /* PROXY command */
+      switch (hdr.v2.fam)
+        {
+        case 0x11:  /* TCPv4 */
+          tmpip = string_sprintf("%s", hdr.v2.addr.ip4.src_addr);
+          if (!string_is_ip_address(tmpip,NULL))
+            return ERRNO_PROXYFAIL;
+          sender_host_address = tmpip;
+          sender_host_port    = hdr.v2.addr.ip4.src_port;
+          goto done;
+        case 0x21:  /* TCPv6 */
+          tmpip = string_sprintf("%s", hdr.v2.addr.ip6.src_addr);
+          if (!string_is_ip_address(tmpip,NULL))
+            return ERRNO_PROXYFAIL;
+          sender_host_address = tmpip;
+          sender_host_port    = hdr.v2.addr.ip6.src_port;
+          goto done;
+        }
+      /* Unsupported protocol, keep local connection address */
+      break;
+    case 0x00: /* LOCAL command */
+      /* Keep local connection address for LOCAL */
+      break;
+    default:
+      DEBUG(D_receive) debug_printf("Unsupported PROXYv2 command\n");
+      goto proxyfail;
+    }
+  }
+else if (ret >= 8 &&
+         memcmp(hdr.v1.line, "PROXY", 5) == 0)
+  {
+  uschar *p = string_copy(hdr.v1.line);
+  uschar *end = memchr(p, '\r', ret - 1);
+  uschar *sp;     /* Utility variables follow */
+  int     tmp_port;
+  char   *endc;
+
+  if (!end || end[1] != '\n')
+    {
+    DEBUG(D_receive) debug_printf("Partial or invalid PROXY header\n");
+    goto proxyfail;
+    }
+  *end = '\0'; /* Terminate the string */
+  size = end + 2 - hdr.v1.line; /* Skip header + CRLF */
+  DEBUG(D_receive) debug_printf("Detected PROXYv1 header\n");
+  /* Step through the string looking for the required fields. Ensure
+     strict adherance to required formatting, exit for any error. */
+  p += 5;
+  if (!isspace(*(p++)))
+    {
+    DEBUG(D_receive) debug_printf("Missing space after PROXY command\n");
+    goto proxyfail;
+    }
+  if (!Ustrncmp(p, CCS"TCP4", 4))
+    iptype = US"IPv4";
+  else if (!Ustrncmp(p,CCS"TCP6", 4))
+    iptype = US"IPv6";
+  else if (!Ustrncmp(p,CCS"UNKNOWN", 7))
+    {
+    iptype = US"Unknown";
+    goto done;
+    }
+  else
+    {
+    DEBUG(D_receive) debug_printf("Invalid TCP type\n");
+    goto proxyfail;
+    }
+
+  p += Ustrlen(iptype);
+  if (!isspace(*(p++)))
+    {
+    DEBUG(D_receive) debug_printf("Missing space after TCP4/6 command\n");
+    goto proxyfail;
+    }
+  /* Find the end of the arg */
+  if ((sp = Ustrchr(p, ' ')) == NULL)
+    {
+    DEBUG(D_receive)
+      debug_printf("Did not find proxied src %s\n", iptype);
+    goto proxyfail;
+    }
+  *sp = '\0';
+  if(!string_is_ip_address(p,NULL))
+    {
+    DEBUG(D_receive)
+      debug_printf("Proxied src arg is not an %s address\n", iptype);
+    goto proxyfail;
+    }
+  proxy_host = sender_host_address;
+  sender_host_address = p;
+  p = sp + 1;
+  if ((sp = Ustrchr(p, ' ')) == NULL)
+    {
+    DEBUG(D_receive)
+      debug_printf("Did not find proxy dest %s\n", iptype);
+    goto proxyfail;
+    }
+  *sp = '\0';
+  if(!string_is_ip_address(p,NULL))
+    {
+    DEBUG(D_receive)
+      debug_printf("Proxy dest arg is not an %s address\n", iptype);
+    goto proxyfail;
+    }
+  /* Should save dest ip somewhere? */
+  p = sp + 1;
+  if ((sp = Ustrchr(p, ' ')) == NULL)
+    {
+    DEBUG(D_receive) debug_printf("Did not find proxied src port\n");
+    goto proxyfail;
+    }
+  *sp = '\0';
+  tmp_port = strtol(CCS p,&endc,10);
+  if (*endc || tmp_port == 0)
+    {
+    DEBUG(D_receive)
+      debug_printf("Proxied src port '%s' not an integer\n", p);
+    goto proxyfail;
+    }
+  proxy_port = sender_host_port;
+  sender_host_port = tmp_port;
+  p = sp + 1;
+  if ((sp = Ustrchr(p, '\0')) == NULL)
+    {
+    DEBUG(D_receive) debug_printf("Did not find proxy dest port\n");
+    goto proxyfail;
+    }
+  tmp_port = strtol(CCS p,&endc,10);
+  if (*endc || tmp_port == 0)
+    {
+    DEBUG(D_receive)
+      debug_printf("Proxy dest port '%s' not an integer\n", p);
+    goto proxyfail;
+    }
+  /* Should save dest port somewhere? */
+  /* Already checked for /r /n above. Good V1 header received. */
+  goto done;
+  }
+else
+  {
+  /* Wrong protocol */
+  DEBUG(D_receive) debug_printf("Wrong proxy protocol specified\n");
+  goto proxyfail;
+  }
+
+proxyfail:
+/* Don't flush any potential buffer contents. Any input should cause a
+synchronization failure or we just don't want to speak SMTP to them */
+return FALSE;
+
+done:
+flush_input();
+DEBUG(D_receive)
+  debug_printf("Valid %s sender from Proxy Protocol header\n",
+               iptype);
+return proxy_session;
+}
+#endif
+
+
+
 /*************************************************
 *           Read one command line                *
 *************************************************/
@@ -622,6 +914,14 @@ if required. */
 
 for (p = cmd_list; p < cmd_list_end; p++)
   {
+  #ifdef EXPERIMENTAL_PROXY
+  /* Only allow QUIT command if Proxy Protocol parsing failed */
+  if (proxy_session && proxy_session_failed)
+    {
+    if (p->cmd != QUIT_CMD)
+      continue;
+    }
+  #endif
   if (strncmpic(smtp_cmd_buffer, US p->name, p->len) == 0 &&
        (smtp_cmd_buffer[p->len-1] == ':' ||   /* "mail from:" or "rcpt to:" */
         smtp_cmd_buffer[p->len] == 0 ||
@@ -668,6 +968,12 @@ for (p = cmd_list; p < cmd_list_end; p++)
     return (p->has_arg || *smtp_cmd_data == 0)? p->cmd : BADARG_CMD;
     }
   }
+
+#ifdef EXPERIMENTAL_PROXY
+/* Only allow QUIT command if Proxy Protocol parsing failed */
+if (proxy_session && proxy_session_failed)
+  return PROXY_FAIL_IGNORE_CMD;
+#endif
 
 /* Enforce synchronization for unknown commands */
 
@@ -1832,6 +2138,28 @@ if (!sender_host_unknown)
 
 if (smtp_batched_input) return TRUE;
 
+#ifdef EXPERIMENTAL_PROXY
+/* If valid Proxy Protocol source is connecting, set up session.
+ * Failure will not allow any SMTP function other than QUIT. */
+proxy_session = FALSE;
+proxy_session_failed = FALSE;
+if (check_proxy_protocol_host())
+  {
+  if (setup_proxy_protocol_host() == FALSE)
+    {
+    proxy_session_failed = TRUE;
+    DEBUG(D_receive)
+      debug_printf("Failure to extract proxied host, only QUIT allowed\n");
+    }
+  else
+    {
+    sender_host_name = NULL;
+    (void)host_name_lookup();
+    host_build_sender_fullhost();
+    }
+  }
+#endif
+
 /* Run the ACL if it exists */
 
 user_msg = NULL;
@@ -2591,7 +2919,6 @@ int len = 3;
 smtp_message_code(&code, &len, &user_msg, NULL);
 smtp_respond(code, len, TRUE, user_msg);
 }
-
 
 
 
@@ -4379,6 +4706,11 @@ while (done <= 0)
     done = 1;   /* Pretend eof - drops connection */
     break;
 
+    #ifdef EXPERIMENTAL_PROXY
+    case PROXY_FAIL_IGNORE_CMD:
+    smtp_printf("503 Command refused, required Proxy negotiation failed\r\n");
+    break;
+    #endif
 
     default:
     if (unknown_command_count++ >= smtp_max_unknown_commands)

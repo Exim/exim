@@ -480,6 +480,9 @@ EXIM_MONITOR=eximon.bin
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lhiredis
 
+# Uncomment the following line to enable Experimental Proxy Protocol
+# EXPERIMENTAL_PROXY=yes
+
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

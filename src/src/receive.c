@@ -3755,6 +3755,13 @@ if (sender_host_authenticated != NULL)
 if (prdr_requested)
   s = string_append(s, &size, &sptr, 1, US" PRDR");
 #endif
+#ifdef EXPERIMENTAL_PROXY
+if (proxy_session &&
+    (log_extra_selector & LX_proxy) != 0)
+  {
+  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host);
+  }
+#endif
 
 sprintf(CS big_buffer, "%d", msg_size);
 s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);

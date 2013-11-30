@@ -23,6 +23,10 @@ JH/01 Fix memory-handling in use of acl as a conditional; avoid free of
 TL/01 LDAP support uses per connection or global context settings, depending
       upon the detected version of the libraries at build time.
 
+TL/02 Experimental Proxy Protocol support: allows a proxied SMTP connection
+      to extract and use the src ip:port in logging and expansions as if it
+      were a direct connection from the outside internet.
+
 
 Exim version 4.82
 -----------------

@@ -556,6 +556,11 @@ static var_entry var_table[] = {
   { "parent_local_part",   vtype_stringptr,   &deliver_localpart_parent },
   { "pid",                 vtype_pid,         NULL },
   { "primary_hostname",    vtype_stringptr,   &primary_hostname },
+#ifdef EXPERIMENTAL_PROXY
+  { "proxy_host",          vtype_stringptr,   &proxy_host },
+  { "proxy_port",          vtype_int,         &proxy_port },
+  { "proxy_session",       vtype_bool,        &proxy_session },
+#endif
   { "prvscheck_address",   vtype_stringptr,   &prvscheck_address },
   { "prvscheck_keynum",    vtype_stringptr,   &prvscheck_keynum },
   { "prvscheck_result",    vtype_stringptr,   &prvscheck_result },

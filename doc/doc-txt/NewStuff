@@ -9,6 +9,11 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.83
 ------------
 
+ 1. If built with the EXPERIMENTAL_PROXY feature enabled, Exim can be
+    configured to expect an initial header from a proxy that will make the
+    actual external source IP:host be used in exim instead of the IP of the
+    proxy that is connecting to it.
+
 
 Version 4.82
 ------------

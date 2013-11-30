@@ -1015,6 +1015,118 @@ Where SPAMMER_SET is a macro and it is defined as
 set acl_c_spam_host = ${lookup redis{GET...}}
 
 
+Proxy Protocol Support
+--------------------------------------------------------------
+
+Exim now has Experimental "Proxy Protocol" support.  It was built on
+specifications from:
+http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt
+
+The purpose of this function is so that an application load balancer,
+such as HAProxy, can sit in front of several Exim servers and Exim
+will log the IP that is connecting to the proxy server instead of
+the IP of the proxy server when it connects to Exim.  It resets the
+$sender_address_host and $sender_address_port to the IP:port of the
+connection to the proxy.  It also re-queries the DNS information for
+this new IP address so that the original sender's hostname and IP
+get logged in the Exim logfile.  There is no logging if a host passes or
+fails Proxy Protocol negotiation, but it can easily be determined and
+recorded in an ACL (example is below).
+
+1. To compile Exim with Proxy Protocol support, put this in
+Local/Makefile:
+
+EXPERIMENTAL_PROXY=yes
+
+2. Global configuration settings:
+
+proxy_required_hosts = HOSTLIST
+
+The proxy_required_hosts option will require any IP in that hostlist
+to use Proxy Protocol. The specification of Proxy Protocol is very
+strict, and if proxy negotiation fails, Exim will not allow any SMTP
+command other than QUIT. (See end of this section for an example.)
+The option is expanded when used, so it can be a hostlist as well as
+string of IP addresses.  Since it is expanded, specifying an alternate
+separator is supported for ease of use with IPv6 addresses.
+
+To log the IP of the proxy in the incoming logline, add:
+  log_selector = +proxy
+
+A default incoming logline (wrapped for appearance) will look like this:
+
+  2013-11-04 09:25:06 1VdNti-0001OY-1V <= me@example.net
+  H=mail.example.net [1.2.3.4] P=esmtp S=433
+
+With the log selector enabled, an email that was proxied through a
+Proxy Protocol server at 192.168.1.2 will look like this:
+
+  2013-11-04 09:25:06 1VdNti-0001OY-1V <= me@example.net
+  H=mail.example.net [1.2.3.4] P=esmtp PRX=192.168.1.2 S=433
+
+3. In the ACL's the following expansion variables are available.
+
+proxy_host     The src IP of the proxy server making the connection
+proxy_port     The src port the proxy server is using
+proxy_session  Boolean, yes/no, the connected host is required to use
+               Proxy Protocol.
+
+There is no expansion for a failed proxy session, however you can detect
+it by checking if $proxy_session is true but $proxy_host is empty.  As
+an example, in my connect ACL, I have:
+
+  warn    condition      = ${if and{ {bool{$proxy_session}} \
+                                     {eq{$proxy_host}{}} } }
+          log_message    = Failed required proxy protocol negotiation \
+                           from $sender_host_name [$sender_host_address]
+
+  warn    condition      = ${if and{ {bool{$proxy_session}} \
+                                     {!eq{$proxy_host}{}} } }
+          # But don't log health probes from the proxy itself
+          condition      = ${if eq{$proxy_host}{$sender_host_address} \
+                                {false}{true}}
+          log_message    = Successfully proxied from $sender_host_name \
+                           [$sender_host_address] through proxy protocol \
+                           host $proxy_host
+
+4. Runtime issues to be aware of:
+   - Since the real connections are all coming from your proxy, and the
+     per host connection tracking is done before Proxy Protocol is
+     evaluated, smtp_accept_max_per_host must be set high enough to
+     handle all of the parallel volume you expect per inbound proxy.
+   - The proxy has 3 seconds (hard-coded in the source code) to send the
+     required Proxy Protocol header after it connects.  If it does not,
+     the response to any commands will be:
+     "503 Command refused, required Proxy negotiation failed"
+   - If the incoming connection is configured in Exim to be a Proxy
+     Protocol host, but the proxy is not sending the header, the banner
+     does not get sent until the timeout occurs.  If the sending host
+     sent any input (before the banner), this causes a standard Exim
+     synchronization error (i.e. trying to pipeline before PIPELINING
+     was advertised).
+   - This is not advised, but is mentioned for completeness if you have
+     a specific internal configuration that you want this:  If the Exim
+     server only has an internal IP address and no other machines in your
+     organization will connect to it to try to send email, you may
+     simply set the hostlist to "*", however, this will prevent local
+     mail programs from working because that would require mail from
+     localhost to use Proxy Protocol.  Again, not advised!
+
+5. Example of a refused connection because the Proxy Protocol header was
+not sent from a host configured to use Proxy Protocol.  In the example,
+the 3 second timeout occurred (when a Proxy Protocol banner should have
+been sent), the banner was displayed to the user, but all commands are
+rejected except for QUIT:
+
+# nc mail.example.net 25
+220-mail.example.net, ESMTP Exim 4.82+proxy, Mon, 04 Nov 2013 10:45:59
+220 -0800 RFC's enforced
+EHLO localhost
+503 Command refused, required Proxy negotiation failed
+QUIT
+221 mail.example.net closing connection
+
+
 
 --------------------------------------------------------------
 End of file

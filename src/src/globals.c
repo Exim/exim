@@ -797,6 +797,9 @@ bit_table log_options[]        = {
   { US"lost_incoming_connection",     L_lost_incoming_connection },
   { US"outgoing_port",                LX_outgoing_port },
   { US"pid",                          LX_pid },
+#ifdef EXPERIMENTAL_PROXY
+  { US"proxy",                        LX_proxy },
+#endif
   { US"queue_run",                    L_queue_run },
   { US"queue_time",                   LX_queue_time },
   { US"queue_time_overall",           LX_queue_time_overall },
@@ -914,6 +917,15 @@ uschar  process_info[PROCESS_INFO_SIZE];
 int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
 BOOL    prod_requires_admin    = TRUE;
+
+#ifdef EXPERIMENTAL_PROXY
+uschar *proxy_host             = US"";
+int     proxy_port             = 0;
+uschar *proxy_required_hosts   = US"";
+BOOL    proxy_session          = FALSE;
+BOOL    proxy_session_failed   = FALSE;
+#endif
+
 uschar *prvscheck_address      = NULL;
 uschar *prvscheck_keynum       = NULL;
 uschar *prvscheck_result       = NULL;

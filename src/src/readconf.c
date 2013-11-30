@@ -332,6 +332,9 @@ static optionlist optionlist_config[] = {
   { "print_topbitchars",        opt_bool,        &print_topbitchars },
   { "process_log_path",         opt_stringptr,   &process_log_path },
   { "prod_requires_admin",      opt_bool,        &prod_requires_admin },
+#ifdef EXPERIMENTAL_PROXY
+  { "proxy_required_hosts",     opt_stringptr,   &proxy_required_hosts },
+#endif
   { "qualify_domain",           opt_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",        opt_stringptr,   &qualify_domain_recipient },
   { "queue_domains",            opt_stringptr,   &queue_domains },

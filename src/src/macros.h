@@ -177,6 +177,14 @@ record. */
 
 #define WAIT_NAME_MAX 50
 
+/* Wait this long before determining that a Proxy Protocol configured
+host isn't speaking the protocol, and so is disallowed. Can be moved to
+runtime configuration if per site settings become needed. */
+#ifdef EXPERIMENTAL_PROXY
+#define PROXY_NEGOTIATION_TIMEOUT_SEC 3
+#define PROXY_NEGOTIATION_TIMEOUT_USEC 0
+#endif
+
 /* Fixed option values for all PCRE functions */
 
 #define PCRE_COPT 0   /* compile */
@@ -414,6 +422,7 @@ set all the bits in a multi-word selector. */
 #define LX_unknown_in_list             0x81000000
 #define LX_8bitmime                    0x82000000
 #define LX_smtp_mailauth               0x84000000
+#define LX_proxy                       0x88000000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \
@@ -481,6 +490,7 @@ to conflict with system errno values. */
 #define ERRNO_RCPT4XX        (-44)   /* RCPT gave 4xx error */
 #define ERRNO_MAIL4XX        (-45)   /* MAIL gave 4xx error */
 #define ERRNO_DATA4XX        (-46)   /* DATA gave 4xx error */
+#define ERRNO_PROXYFAIL      (-47)   /* Negotiation failed for proxy configured host */
 
 /* These must be last, so all retry deferments can easily be identified */
 
