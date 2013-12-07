@@ -13652,6 +13652,9 @@ a very large time at the end of the list. For example:
 .code
 delay_warning = 2h:12h:99d
 .endd
+Note that the option is only evaluated at the time a delivery attempt fails,
+which depends on retry and queue-runner configuration.
+Typically retries will be configured more frequently than warning messages.
 
 .option delay_warning_condition main string&!! "see below"
 .vindex "&$domain$&"
