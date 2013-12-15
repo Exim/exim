@@ -1454,7 +1454,7 @@ BOOL resents_exist = FALSE;
 uschar *resent_prefix = US"";
 uschar *blackholed_by = NULL;
 uschar *blackhole_log_msg = US"";
-enum {NOT_TRIED, TMP_REJ, PERM_REJ, ACCEPTED} cutthrough_done;
+enum {NOT_TRIED, TMP_REJ, PERM_REJ, ACCEPTED} cutthrough_done = NOT_TRIED;
 
 flock_t lock_data;
 error_block *bad_addresses = NULL;
@@ -3956,7 +3956,6 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
-cutthrough_done = NOT_TRIED;
 if(cutthrough_fd >= 0)
   {
   uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
