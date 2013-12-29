@@ -694,13 +694,15 @@ else
 
     done = TRUE; /* so far so good; have response to HELO */
 
-    /*XXX the EHLO response would be analyzed here for IGNOREQUOTA, SIZE, PIPELINING, AUTH */
-    /* If we haven't authenticated, but are required to, give up. */
+    /*XXX the EHLO response would be analyzed here for IGNOREQUOTA, SIZE, PIPELINING */
 
-    /*XXX "filter command specified for this transport" ??? */
-    /* for now, transport_filter by cutthrough-delivery is not supported */
+    /* For now, transport_filter by cutthrough-delivery is not supported */
     /* Need proper integration with the proper transport mechanism. */
-
+    if (cutthrough_delivery && addr->transport->filter_command)
+      {
+      cutthrough_delivery= FALSE;
+      HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
+      }
 
     SEND_FAILED:
     RESPONSE_FAILED:
@@ -722,6 +724,7 @@ else
         }
       }
 
+    /* If we haven't authenticated, but are required to, give up. */
     /* Try to AUTH */
 
     else done = smtp_auth(responsebuffer, sizeof(responsebuffer),

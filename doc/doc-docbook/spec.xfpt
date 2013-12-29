@@ -27303,6 +27303,7 @@ line.
 
 Delivery in this mode avoids the generation of a bounce mail to a (possibly faked)
 sender when the destination system is doing content-scan based rejection.
+Cutthrough delivery is not supported via transport-filters.
 
 
 .vitem &*control&~=&~debug/*&<&'options'&>
