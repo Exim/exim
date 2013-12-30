@@ -919,8 +919,8 @@ uschar *process_log_path       = NULL;
 BOOL    prod_requires_admin    = TRUE;
 
 #ifdef EXPERIMENTAL_PROXY
-uschar *proxy_host             = US"";
-int     proxy_port             = 0;
+uschar *proxy_host_address     = US"";
+int     proxy_host_port        = 0;
 uschar *proxy_required_hosts   = US"";
 BOOL    proxy_session          = FALSE;
 BOOL    proxy_session_failed   = FALSE;

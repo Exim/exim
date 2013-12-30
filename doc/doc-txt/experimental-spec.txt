@@ -1066,28 +1066,28 @@ Proxy Protocol server at 192.168.1.2 will look like this:
 
 3. In the ACL's the following expansion variables are available.
 
-proxy_host     The src IP of the proxy server making the connection
-proxy_port     The src port the proxy server is using
-proxy_session  Boolean, yes/no, the connected host is required to use
-               Proxy Protocol.
+proxy_host_address  The src IP of the proxy server making the connection
+proxy_host_port     The src port the proxy server is using
+proxy_session       Boolean, yes/no, the connected host is required to use
+                    Proxy Protocol.
 
 There is no expansion for a failed proxy session, however you can detect
 it by checking if $proxy_session is true but $proxy_host is empty.  As
 an example, in my connect ACL, I have:
 
   warn    condition      = ${if and{ {bool{$proxy_session}} \
-                                     {eq{$proxy_host}{}} } }
+                                     {eq{$proxy_host_address}{}} } }
           log_message    = Failed required proxy protocol negotiation \
                            from $sender_host_name [$sender_host_address]
 
   warn    condition      = ${if and{ {bool{$proxy_session}} \
-                                     {!eq{$proxy_host}{}} } }
+                                     {!eq{$proxy_host_address}{}} } }
           # But don't log health probes from the proxy itself
-          condition      = ${if eq{$proxy_host}{$sender_host_address} \
+          condition      = ${if eq{$proxy_host_address}{$sender_host_address} \
                                 {false}{true}}
           log_message    = Successfully proxied from $sender_host_name \
                            [$sender_host_address] through proxy protocol \
-                           host $proxy_host
+                           host $proxy_host_address
 
 4. Runtime issues to be aware of:
    - Since the real connections are all coming from your proxy, and the

@@ -559,8 +559,8 @@ static var_entry var_table[] = {
   { "pid",                 vtype_pid,         NULL },
   { "primary_hostname",    vtype_stringptr,   &primary_hostname },
 #ifdef EXPERIMENTAL_PROXY
-  { "proxy_host",          vtype_stringptr,   &proxy_host },
-  { "proxy_port",          vtype_int,         &proxy_port },
+  { "proxy_host_address",  vtype_stringptr,   &proxy_host_address },
+  { "proxy_host_port",     vtype_int,         &proxy_host_port },
   { "proxy_session",       vtype_bool,        &proxy_session },
 #endif
   { "prvscheck_address",   vtype_stringptr,   &prvscheck_address },

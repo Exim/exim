@@ -3759,7 +3759,7 @@ if (prdr_requested)
 if (proxy_session &&
     (log_extra_selector & LX_proxy) != 0)
   {
-  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host);
+  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host_address);
   }
 #endif
 

@@ -555,6 +555,25 @@ exim_exit(EXIT_FAILURE);
 
 #ifdef EXPERIMENTAL_PROXY
 /*************************************************
+*     Restore socket timeout to previous value   *
+*************************************************/
+/* If the previous value was successfully retrieved, restore
+it before returning control to the non-proxy routines
+
+Arguments: fd     - File descriptor for input
+           get_ok - Successfully retrieved previous values
+           tvtmp  - Time struct with previous values
+           vslen  - Length of time struct
+Returns:   none
+*/
+static void
+restore_socket_timeout(int fd, int get_ok, struct timeval tvtmp, socklen_t vslen)
+{
+if (get_ok == 0)
+  setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tvtmp, vslen);
+}
+
+/*************************************************
 *       Check if host is required proxy host     *
 *************************************************/
 /* The function determines if inbound host will be a regular smtp host
@@ -650,8 +669,17 @@ uschar *tmpip;
 const char v2sig[13] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x02";
 uschar *iptype;  /* To display debug info */
 struct timeval tv;
+int get_ok = 0;
+socklen_t vslen = 0;
+struct timeval tvtmp;
+
+vslen = sizeof(struct timeval);
 
 fd = fileno(smtp_in);
+
+/* Save current socket timeout values */
+get_ok = getsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tvtmp,
+                    &vslen);
 
 /* Proxy Protocol host must send header within a short time
 (default 3 seconds) or it's considered invalid */
@@ -659,6 +687,7 @@ tv.tv_sec  = PROXY_NEGOTIATION_TIMEOUT_SEC;
 tv.tv_usec = PROXY_NEGOTIATION_TIMEOUT_USEC;
 setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,
            sizeof(struct timeval));
+
 do
   {
   ret = recv(fd, &hdr, sizeof(hdr), MSG_PEEK);
@@ -666,7 +695,10 @@ do
   while (ret == -1 && errno == EINTR);
 
 if (ret == -1)
+  {
+  restore_socket_timeout(fd, get_ok, tvtmp, vslen);
   return (errno == EAGAIN) ? 0 : ERRNO_PROXYFAIL;
+  }
 
 if (ret >= 16 &&
     memcmp(&hdr.v2, v2sig, 13) == 0)
@@ -768,7 +800,7 @@ else if (ret >= 8 &&
       debug_printf("Proxied src arg is not an %s address\n", iptype);
     goto proxyfail;
     }
-  proxy_host = sender_host_address;
+  proxy_host_address = sender_host_address;
   sender_host_address = p;
   p = sp + 1;
   if ((sp = Ustrchr(p, ' ')) == NULL)
@@ -799,7 +831,7 @@ else if (ret >= 8 &&
       debug_printf("Proxied src port '%s' not an integer\n", p);
     goto proxyfail;
     }
-  proxy_port = sender_host_port;
+  proxy_host_port = sender_host_port;
   sender_host_port = tmp_port;
   p = sp + 1;
   if ((sp = Ustrchr(p, '\0')) == NULL)
@@ -826,11 +858,13 @@ else
   }
 
 proxyfail:
+restore_socket_timeout(fd, get_ok, tvtmp, vslen);
 /* Don't flush any potential buffer contents. Any input should cause a
 synchronization failure or we just don't want to speak SMTP to them */
 return FALSE;
 
 done:
+restore_socket_timeout(fd, get_ok, tvtmp, vslen);
 flush_input();
 DEBUG(D_receive)
   debug_printf("Valid %s sender from Proxy Protocol header\n",
@@ -838,8 +872,6 @@ DEBUG(D_receive)
 return proxy_session;
 }
 #endif
-
-
 
 /*************************************************
 *           Read one command line                *
