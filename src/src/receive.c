@@ -984,10 +984,22 @@ Returns:     nothing
 */
 
 static void
-add_acl_headers(uschar *acl_name)
+add_acl_headers(int where, uschar *acl_name)
 {
 header_line *h, *next;
 header_line *last_received = NULL;
+
+switch(where)
+  {
+  case ACL_WHERE_DKIM:
+  case ACL_WHERE_MIME:
+  case ACL_WHERE_DATA: if (cutthrough_fd >= 0 && (acl_removed_headers || acl_added_headers))
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "Header modification in data ACLs"
+			"will not take effect on cutthrough deliveries");
+    return;
+    }
+  }
 
 if (acl_removed_headers != NULL)
   {
@@ -1264,7 +1276,7 @@ if (rc == OK)
   }
 
 END_MIME_ACL:
-add_acl_headers(US"MIME");
+add_acl_headers(ACL_WHERE_MIME, US"MIME");
 if (rc == DISCARD)
   {
   recipients_count = 0;
@@ -2826,7 +2838,7 @@ if (cutthrough_fd >= 0)
     goto TIDYUP;                             /* Skip to end of function */
     }
   received_header_gen();
-  add_acl_headers(US"MAIL or RCPT");
+  add_acl_headers(ACL_WHERE_RCPT, US"MAIL or RCPT");
   (void) cutthrough_headers_send();
   }
 
@@ -3118,7 +3130,7 @@ if (received_header->text == NULL)	/* Non-cutthrough case */
   /* If an ACL from any RCPT commands set up any warning headers to add, do so
   now, before running the DATA ACL. */
 
-  add_acl_headers(US"MAIL or RCPT");
+  add_acl_headers(ACL_WHERE_RCPT, US"MAIL or RCPT");
   }
 else
   message_body_size = (fstat(data_fd, &statbuf) == 0)?
@@ -3231,7 +3243,7 @@ else
                 break;
               }
             }
-          add_acl_headers(US"DKIM");
+          add_acl_headers(ACL_WHERE_DKIM, US"DKIM");
           if (rc == DISCARD)
             {
             recipients_count = 0;
@@ -3341,7 +3353,7 @@ else
     if (acl_smtp_data != NULL && recipients_count > 0)
       {
       rc = acl_check(ACL_WHERE_DATA, NULL, acl_smtp_data, &user_msg, &log_msg);
-      add_acl_headers(US"DATA");
+      add_acl_headers(ACL_WHERE_DATA, US"DATA");
       if (rc == DISCARD)
         {
         recipients_count = 0;
@@ -3424,7 +3436,7 @@ else
           /* Does not return */
           }
         }
-      add_acl_headers(US"non-SMTP");
+      add_acl_headers(ACL_WHERE_NOTSMTP, US"non-SMTP");
       }
     }
 

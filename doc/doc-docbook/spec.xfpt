@@ -27292,7 +27292,9 @@ It is usable in the RCPT ACL and valid only for single-recipient mails forwarded
 from one SMTP connection to another.  If a recipient-verify callout connection is
 requested in the same ACL it is held open and used for the data, otherwise one is made
 after the ACL completes.
-Note that routers are used in verify mode.
+
+Note that routers are used in verify mode.  Note also that headers cannot be
+modified by any of the post-data ACLs (DATA, MIME and DKIM).
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
@@ -27547,11 +27549,14 @@ warn dnslists = sbl.spamhaus.org : \
      add_header = X-blacklisted-at: $dnslist_domain
 .endd
 The &%add_header%& modifier is permitted in the MAIL, RCPT, PREDATA, DATA,
-MIME, and non-SMTP ACLs (in other words, those that are concerned with
+MIME, DKIM, and non-SMTP ACLs (in other words, those that are concerned with
 receiving a message). The message must ultimately be accepted for
 &%add_header%& to have any significant effect. You can use &%add_header%& with
 any ACL verb, including &%deny%& (though this is potentially useful only in a
 RCPT ACL).
+
+Headers will not be added to the message if the modifier is used in
+DATA, MIME or DKIM ACLs for messages delivered by cutthrough routing.
 
 Leading and trailing newlines are removed from
 the data for the &%add_header%& modifier; if it then
@@ -27646,11 +27651,14 @@ warn   message        = Remove internal headers
        remove_header  = x-route-mail1 : x-route-mail2
 .endd
 The &%remove_header%& modifier is permitted in the MAIL, RCPT, PREDATA, DATA,
-MIME, and non-SMTP ACLs (in other words, those that are concerned with
+MIME, DKIM, and non-SMTP ACLs (in other words, those that are concerned with
 receiving a message). The message must ultimately be accepted for
 &%remove_header%& to have any significant effect. You can use &%remove_header%&
 with any ACL verb, including &%deny%&, though this is really not useful for
 any verb that doesn't result in a delivered message.
+
+Headers will not be removed to the message if the modifier is used in
+DATA, MIME or DKIM ACLs for messages delivered by cutthrough routing.
 
 More than one header can be removed at the same time by using a colon separated
 list of header names. The header matching is case insensitive. Wildcards are
