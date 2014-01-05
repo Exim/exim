@@ -698,10 +698,18 @@ else
 
     /* For now, transport_filter by cutthrough-delivery is not supported */
     /* Need proper integration with the proper transport mechanism. */
-    if (cutthrough_delivery && addr->transport->filter_command)
+    if (cutthrough_delivery)
       {
-      cutthrough_delivery= FALSE;
-      HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
+      if (addr->transport->filter_command)
+        {
+        cutthrough_delivery= FALSE;
+        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
+        }
+      if (ob->dkim_domain)
+        {
+        cutthrough_delivery= FALSE;
+        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
+        }
       }
 
     SEND_FAILED:

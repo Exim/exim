@@ -27295,6 +27295,9 @@ after the ACL completes.
 
 Note that routers are used in verify mode.  Note also that headers cannot be
 modified by any of the post-data ACLs (DATA, MIME and DKIM).
+Cutthrough delivery is not supported via transport-filters or when DKIM signing
+of outgoing messages is done, because it sends data to the ultimate destination
+before the entire message has been received from the source.
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
@@ -27305,7 +27308,6 @@ line.
 
 Delivery in this mode avoids the generation of a bounce mail to a (possibly faked)
 sender when the destination system is doing content-scan based rejection.
-Cutthrough delivery is not supported via transport-filters.
 
 
 .vitem &*control&~=&~debug/*&<&'options'&>
@@ -36347,7 +36349,9 @@ disabled by setting DISABLE_DKIM=yes in Local/Makefile.
 Exim's DKIM implementation allows to
 .olist
 Sign outgoing messages: This function is implemented in the SMTP transport.
-It can co-exist with all other Exim features, including transport filters.
+It can co-exist with all other Exim features
+(including transport filters)
+except cutthrough delivery.
 .next
 Verify signatures in incoming messages: This is implemented by an additional
 ACL (acl_smtp_dkim), which can be called several times per message, with
@@ -36438,6 +36442,10 @@ used.
 Verification of DKIM signatures in incoming email is implemented via the
 &%acl_smtp_dkim%& ACL. By default, this ACL is called once for each
 syntactically(!) correct signature in the incoming message.
+A missing ACL definition defaults to accept.
+If any ACL call does not acccept, the message is not accepted.
+If a cutthrough delivery was in progress for the message it is
+summarily dropped (having wasted the transmission effort).
 
 To evaluate the signature in the ACL a large number of expansion variables
 containing the signature status and its details are set up during the
