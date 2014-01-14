@@ -175,19 +175,20 @@ int dmarc_process() {
      * <jgh_hm> there may well be no better though
      */
     header_from_sender = expand_string(
-                           string_sprintf("${domain:${extract{1}{:}{${addresses:%s}}}}",
-                             from_header->text) );
+           string_sprintf("${domain:${extract{1}{:}{${addresses:\\N%s\\N}}}}",
+                          from_header->text) );
     /* The opendmarc library extracts the domain from the email address, but
      * only try to store it if it's not empty.  Otherwise, skip out of DMARC. */
-    if (strcmp( CCS header_from_sender, "") == 0)
+    if ((header_from_sender == NULL) || (strcmp( CCS header_from_sender, "") == 0))
       dmarc_abort = TRUE;
     libdm_status = (dmarc_abort == TRUE) ?
-	           DMARC_PARSE_OKAY :
-		   opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
+      DMARC_PARSE_OKAY :
+      opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
     if (libdm_status != DMARC_PARSE_OKAY)
     {
-      log_write(0, LOG_MAIN|LOG_PANIC, "failure to store header From: in DMARC: %s, header was '%s'",
-                           opendmarc_policy_status_to_str(libdm_status), from_header->text);
+      log_write(0, LOG_MAIN|LOG_PANIC,
+                "failure to store header From: in DMARC: %s, header was '%s'",
+                opendmarc_policy_status_to_str(libdm_status), from_header->text);
       dmarc_abort = TRUE;
     }
   }
@@ -261,24 +262,24 @@ int dmarc_process() {
                     ( vs == PDKIM_VERIFY_INVALID ) ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
                     DMARC_POLICY_DKIM_OUTCOME_NONE;
       libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, (uschar *)sig->domain,
-        	                                 dkim_result, US"");
+                                                 dkim_result, US"");
       DEBUG(D_receive)
         debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
       if (libdm_status != DMARC_PARSE_OKAY)
         log_write(0, LOG_MAIN|LOG_PANIC, "failure to store dkim (%s) for DMARC: %s",
-        		     sig->domain, opendmarc_policy_status_to_str(libdm_status));
+                  sig->domain, opendmarc_policy_status_to_str(libdm_status));
 
       dkim_ares_result = ( vs == PDKIM_VERIFY_PASS )    ? ARES_RESULT_PASS :
-        	              ( vs == PDKIM_VERIFY_FAIL )    ? ARES_RESULT_FAIL :
-        	              ( vs == PDKIM_VERIFY_NONE )    ? ARES_RESULT_NONE :
-        	              ( vs == PDKIM_VERIFY_INVALID ) ?
+                         ( vs == PDKIM_VERIFY_FAIL )    ? ARES_RESULT_FAIL :
+                         ( vs == PDKIM_VERIFY_NONE )    ? ARES_RESULT_NONE :
+                         ( vs == PDKIM_VERIFY_INVALID ) ?
                            ( ves == PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE ? ARES_RESULT_PERMERROR :
                              ves == PDKIM_VERIFY_INVALID_BUFFER_SIZE        ? ARES_RESULT_PERMERROR :
                              ves == PDKIM_VERIFY_INVALID_PUBKEY_PARSING     ? ARES_RESULT_PERMERROR :
                              ARES_RESULT_UNKNOWN ) :
                           ARES_RESULT_UNKNOWN;
       dkim_history_buffer = string_sprintf("%sdkim %s %d\n", dkim_history_buffer,
-                                                             sig->domain, dkim_ares_result);
+                                           sig->domain, dkim_ares_result);
       sig = sig->next;
     }
     libdm_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
@@ -311,7 +312,7 @@ int dmarc_process() {
      * for libopendmarc using its max hostname length definition. */
     uschar *dmarc_domain = (uschar *)calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
     libdm_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx, dmarc_domain,
-        	                                          DMARC_MAXHOSTNAMELEN-1);
+                                                  DMARC_MAXHOSTNAMELEN-1);
     dmarc_used_domain = string_copy(dmarc_domain);
     free(dmarc_domain);
     if (libdm_status != DMARC_PARSE_OKAY)

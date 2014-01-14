@@ -29,6 +29,9 @@ TL/02 Experimental Proxy Protocol support: allows a proxied SMTP connection
 
 JH/02 Add ${listextract {number}{list}{success}{fail}}.
 
+TL/03 Bugzilla 1433: Fix DMARC SEGV with specific From header contents.
+      Properly escape header and check for NULL return.
+
 
 Exim version 4.82
 -----------------
