@@ -1601,7 +1601,7 @@ DEBUG(D_tls) debug_printf("Setting D-H prime minimum acceptable bits to %d\n",
     dh_min_bits);
 gnutls_dh_set_prime_bits(state->session, dh_min_bits);
 
-if (verify_certs == NULL)
+if (state->exp_tls_verify_certificates == NULL)
   {
   DEBUG(D_tls) debug_printf("TLS: server certificate verification not required\n");
   state->verify_requirement = VERIFY_NONE;
