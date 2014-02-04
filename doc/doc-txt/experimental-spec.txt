@@ -452,10 +452,11 @@ which the spf condition should succeed. Valid strings are:
               This means the queried domain has published
               a SPF record, but wants to allow outside
               servers to send mail under its domain as well.
-  o err_perm  This indicates a syntax error in the SPF
-              record of the queried domain. This should be
-              treated like "none".
-  o err_temp  This indicates a temporary error during all
+              This should be treated like "none".
+  o permerror This indicates a syntax error in the SPF
+              record of the queried domain. You may deny
+              messages when this occurs.
+  o temperror This indicates a temporary error during all
               processing, including Exim's SPF processing.
               You may defer messages when this occurs.
 
@@ -510,8 +511,8 @@ variables.
 
   $spf_result
   This contains the outcome of the SPF check in string form,
-  one of pass, fail, softfail, none, neutral, err_perm or
-  err_temp.
+  one of pass, fail, softfail, none, neutral, permerror or
+  temperror.
 
   $spf_smtp_comment
   This contains a string that can be used in a SMTP response
