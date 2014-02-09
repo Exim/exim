@@ -464,7 +464,7 @@ if (af == AF_INET)
   *level = IPPROTO_IP;
   *optname = IP_TOS;
   }
-#if HAVE_IPV6
+#if HAVE_IPV6 && defined(IPV6_TCLASS)
 else if (af == AF_INET6)
   {
   *level = IPPROTO_IPV6;
