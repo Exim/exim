@@ -641,7 +641,8 @@ else
 #ifdef EXPERIMENTAL_OCSP
   	 ob->hosts_require_ocsp,
 #endif
-	 ob->tls_dh_min_bits,         callout);
+	 ob->tls_dh_min_bits, callout,
+         ob->tls_verify_hosts, ob->tls_try_verify_hosts);
 
         /* TLS negotiation failed; give an error.  Try in clear on a new connection,
            if the options permit it for this host. */

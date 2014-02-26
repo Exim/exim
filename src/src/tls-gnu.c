@@ -1563,6 +1563,8 @@ Arguments:
   require_ciphers   list of allowed ciphers or NULL
   dh_min_bits       minimum number of bits acceptable in server's DH prime
   timeout           startup timeout
+  verify_hosts     mandatory client verification 
+  try_verify_hosts optional client verification
 
 Returns:            OK/DEFER/FAIL (because using common functions),
                     but for a client, DEFER and FAIL have the same meaning
@@ -1577,7 +1579,8 @@ tls_client_start(int fd, host_item *host,
 #ifdef EXPERIMENTAL_OCSP
     uschar *require_ocsp ARG_UNUSED,
 #endif
-    int dh_min_bits, int timeout)
+    int dh_min_bits, int timeout,
+    uschar *verify_hosts, uschar *try_verify_hosts)
 {
 int rc;
 const char *error;

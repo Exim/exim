@@ -1504,6 +1504,8 @@ Argument:
   dh_min_bits      minimum number of bits acceptable in server's DH prime
                    (unused in OpenSSL)
   timeout          startup timeout
+  verify_hosts     mandatory client verification 
+  try_verify_hosts optional client verification
 
 Returns:           OK on success
                    FAIL otherwise - note that tls_error() will not give DEFER
@@ -1518,7 +1520,8 @@ tls_client_start(int fd, host_item *host, address_item *addr,
 #ifdef EXPERIMENTAL_OCSP
   uschar *hosts_require_ocsp,
 #endif
-  int dh_min_bits ARG_UNUSED, int timeout)
+  int dh_min_bits ARG_UNUSED, int timeout,
+  uschar *verify_hosts, uschar *try_verify_hosts)
 {
 static uschar txt[256];
 uschar *expciphers;
@@ -1556,8 +1559,22 @@ if (expciphers != NULL)
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
-rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE, verify_callback_client);
-if (rc != OK) return rc;
+/* stick to the old behaviour for compatibility if tls_verify_certificates is 
+   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only 
+   the specified host patterns if one of them is defined */
+if (((verify_hosts == NULL) && (try_verify_hosts == NULL)) ||
+    (verify_check_host(&verify_hosts) == OK))
+  {
+  rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE, verify_callback_client);
+  if (rc != OK) return rc;
+  client_verify_optional = FALSE;
+  }
+else if (verify_check_host(&try_verify_hosts) == OK)
+  {
+  rc = setup_certs(client_ctx, verify_certs, crl, host, TRUE, verify_callback_client);
+  if (rc != OK) return rc;
+  client_verify_optional = TRUE;
+  }
 
 if ((client_ssl = SSL_new(client_ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
 SSL_set_session_id_context(client_ssl, sid_ctx, Ustrlen(sid_ctx));

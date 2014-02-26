@@ -30,7 +30,7 @@ extern int     tls_client_start(int, host_item *, address_item *,
 # ifdef EXPERIMENTAL_OCSP
                  uschar *,
 # endif
-                 int, int);
+                 int, int, uschar *, uschar *);
 extern void    tls_close(BOOL, BOOL);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
