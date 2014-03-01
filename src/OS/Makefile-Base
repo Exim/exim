@@ -106,8 +106,7 @@ allexim: config.h $(EXIM_MONITOR) exicyclog exinext exiwhat \
         transport-filter.pl convert4r3 convert4r4 \
         exim_checkaccess \
         exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock \
-        buildlookups buildrouters buildtransports \
-        buildauths buildpdkim exim
+        exim
 
 
 # Targets for special-purpose configuration header builders
@@ -649,7 +648,8 @@ $(MONBIN): $(HDRS)
 
 # The lookups library.
 
-buildlookups lookups/lookups.a: config.h version.h
+buildlookups: lookups/lookups.a
+lookups/lookups.a: config.h version.h
 	 @cd lookups && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
@@ -658,7 +658,8 @@ buildlookups lookups/lookups.a: config.h version.h
 
 # The routers library.
 
-buildrouters routers/routers.a: config.h
+buildrouters: routers/routers.a
+routers/routers.a: config.h
 	 @cd routers && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -666,7 +667,8 @@ buildrouters routers/routers.a: config.h
 
 # The transports library.
 
-buildtransports transports/transports.a: config.h
+buildtransports: transports/transports.a
+transports/transports.a: config.h
 	 @cd transports && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -674,7 +676,8 @@ buildtransports transports/transports.a: config.h
 
 # The library of authorization modules
 
-buildauths auths/auths.a: config.h
+buildauths: auths/auths.a
+auths/auths.a: config.h
 	 @cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -682,7 +685,8 @@ buildauths auths/auths.a: config.h
 
 # The PDKIM library
 
-buildpdkim pdkim/pdkim.a: config.h
+buildpdkim: pdkim/pdkim.a
+pdkim/pdkim.a: config.h
 	 @cd pdkim && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
