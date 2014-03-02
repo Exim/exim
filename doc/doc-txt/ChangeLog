@@ -32,6 +32,9 @@ JH/02 Add ${listextract {number}{list}{success}{fail}}.
 TL/03 Bugzilla 1433: Fix DMARC SEGV with specific From header contents.
       Properly escape header and check for NULL return.
 
+PP/01 Continue incomplete 4.82 PP/19 by fixing docs too: use dns_dnssec_ok
+      not dns_use_dnssec.
+
 
 Exim version 4.82
 -----------------

@@ -11978,7 +11978,7 @@ other times, this variable is false.
 It is likely that you will need to coerce DNSSEC support on in the resolver
 library, by setting:
 .code
-dns_use_dnssec = 1
+dns_dnssec_ok = 1
 .endd
 
 Exim does not perform DNSSEC validation itself, instead leaving that to a
@@ -13190,10 +13190,10 @@ See also the &'Policy controls'& section above.
 .row &%disable_ipv6%&                "do no IPv6 processing"
 .row &%dns_again_means_nonexist%&    "for broken domains"
 .row &%dns_check_names_pattern%&     "pre-DNS syntax check"
+.row &%dns_dnssec_ok%&               "parameter for resolver"
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
-.row &%dns_use_dnssec%&              "parameter for resolver"
 .row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
@@ -13814,6 +13814,17 @@ This option controls whether or not an IP address, given as a CSA domain, is
 reversed and looked up in the reverse DNS, as described in more detail in
 section &<<SECTverifyCSA>>&.
 
+
+.option dns_dnssec_ok main integer -1
+.cindex "DNS" "resolver options"
+.cindex "DNS" "DNSSEC"
+If this option is set to a non-negative number then Exim will initialise the
+DNS resolver library to either use or not use DNSSEC, overriding the system
+default. A value of 0 coerces DNSSEC off, a value of 1 coerces DNSSEC on.
+
+If the resolver library does not support DNSSEC then this option has no effect.
+
+
 .option dns_ipv4_lookup main "domain list&!!" unset
 .cindex "IPv6" "DNS lookup for AAAA records"
 .cindex "DNS" "IPv6 lookup for AAAA records"
@@ -13842,16 +13853,6 @@ to set in them.
 
 .option dns_retry main integer 0
 See &%dns_retrans%& above.
-
-
-.option dns_use_dnssec main integer -1
-.cindex "DNS" "resolver options"
-.cindex "DNS" "DNSSEC"
-If this option is set to a non-negative number then Exim will initialise the
-DNS resolver library to either use or not use DNSSEC, overriding the system
-default. A value of 0 coerces DNSSEC off, a value of 1 coerces DNSSEC on.
-
-If the resolver library does not support DNSSEC then this option has no effect.
 
 
 .option dns_use_edns0 main integer -1
