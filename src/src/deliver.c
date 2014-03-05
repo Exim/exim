@@ -812,23 +812,26 @@ else
   if (addr->flags & af_prdr_used)
     s = string_append(s, &size, &ptr, 1, US" PRDR");
   #endif
+  }
 
-  if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
-      addr->message != NULL)
+/* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
+
+if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
+    addr->message != NULL &&
+    ((addr->host_used != NULL) || (Ustrcmp(addr->transport->driver_name, "lmtp") == 0)))
+  {
+  int i;
+  uschar *p = big_buffer;
+  uschar *ss = addr->message;
+  *p++ = '\"';
+  for (i = 0; i < 100 && ss[i] != 0; i++)
     {
-    int i;
-    uschar *p = big_buffer;
-    uschar *ss = addr->message;
-    *p++ = '\"';
-    for (i = 0; i < 100 && ss[i] != 0; i++)
-      {
-      if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\';
-      *p++ = ss[i];
-      }
-    *p++ = '\"';
-    *p = 0;
-    s = string_append(s, &size, &ptr, 2, US" C=", big_buffer);
+    if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\';
+    *p++ = ss[i];
     }
+  *p++ = '\"';
+  *p = 0;
+  s = string_append(s, &size, &ptr, 2, US" C=", big_buffer);
   }
 
 /* Time on queue and actual time taken to deliver */

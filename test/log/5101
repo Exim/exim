@@ -37,9 +37,9 @@ DATA
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery C="250 Number 1 is OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** jack@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 2 fails
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery C="250 Number 3 is OK"
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=local_delivery
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
@@ -82,9 +82,9 @@ DATA
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ has too many links (2))
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ has too many links (2)) C="250 Number 1 is OK"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** jack@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 2 fails
-1999-03-02 09:44:33 10HmaZ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ has too many links (2))
+1999-03-02 09:44:33 10HmaZ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ has too many links (2)) C="250 Number 3 is OK"
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=local_delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

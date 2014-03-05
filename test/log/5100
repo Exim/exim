@@ -86,12 +86,12 @@ DATA
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp C="250 Number 1 is OK"
 1999-03-02 09:44:33 10HmbD-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-46): LMTP error after end of data: 450 Number 2 is now delayed
 1999-03-02 09:44:33 10HmbD-0005vi-00 ** jill@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 3 is now rejected
 1999-03-02 09:44:33 10HmbD-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
 1999-03-02 09:44:33 10HmbD-0005vi-00 ** dick@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
-1999-03-02 09:44:33 10HmbD-0005vi-00 -> harry <harry@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbD-0005vi-00 -> harry <harry@myhost.test.ex> R=smartuser T=lmtp C="250 Number 6 is OK"
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=bounces
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
@@ -137,7 +137,7 @@ DATA
 <<< This is a test message.
 <<< .
 250 Number 1 is OK
-1999-03-02 09:44:33 10HmbF-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbF-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp C="250 Number 1 is OK"
 1999-03-02 09:44:33 10HmbF-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
 1999-03-02 09:44:33 10HmbF-0005vi-00 == jill@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
 1999-03-02 09:44:33 10HmbF-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
@@ -214,8 +214,8 @@ DATA
 QUIT
 <<< QUIT
 220 OK
-1999-03-02 09:44:33 10HmbI-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbI-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbI-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp C="250 OK"
+1999-03-02 09:44:33 10HmbI-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp C="250 OK"
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
@@ -252,8 +252,8 @@ DATA
 QUIT
 <<< QUIT
 220 OK
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbJ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp C="250 OK"
+1999-03-02 09:44:33 10HmbJ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp C="250 OK"
 1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation

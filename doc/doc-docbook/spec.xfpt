@@ -34333,7 +34333,8 @@ The message that is written is &"spool file is locked"&.
 .next
 .cindex "log" "smtp confirmation"
 .cindex "SMTP" "logging confirmation"
-&%smtp_confirmation%&: The response to the final &"."& in the SMTP dialogue for
+.cindex "LMTP" "logging confirmation"
+&%smtp_confirmation%&: The response to the final &"."& in the SMTP or LMTP dialogue for
 outgoing messages is added to delivery log lines in the form &`C=`&<&'text'&>.
 A number of MTAs (including Exim) return an identifying string in this
 response.

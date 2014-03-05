@@ -662,8 +662,14 @@ if (send_data)
     if (addr->transport_return != PENDING_OK) continue;
 
     if (lmtp_read_response(out, buffer, sizeof(buffer), '2', timeout))
+      {
       addr->transport_return = OK;
-
+      if ((log_extra_selector & LX_smtp_confirmation) != 0)
+        {
+        uschar *s = string_printing(buffer);
+        addr->message = (s == buffer)? (uschar *)string_copy(s) : s;
+        }
+      }
     /* If the response has failed badly, use it for all the remaining pending
     addresses and give up. */
 
