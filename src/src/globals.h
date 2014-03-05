@@ -385,6 +385,9 @@ extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */
 extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standard) */
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */
+#ifdef EXPERIMENTAL_DANE
+extern int     dns_dane_ok;            /* Ok to use DANE when checking TLS authenticity */
+#endif
 extern int     dns_retrans;            /* Retransmission time setting */
 extern int     dns_retry;              /* Number of retries */
 extern int     dns_dnssec_ok;          /* When constructing DNS query, set DO flag */

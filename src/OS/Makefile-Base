@@ -298,7 +298,7 @@ convert4r4: Makefile ../src/convert4r4.src
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_WITH_OLD_DEMIME = demime.o
-OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dcc.o dmarc.o
+OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dcc.o dmarc.o dane.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
@@ -541,6 +541,7 @@ acl.o:           $(HDRS) acl.c
 child.o:         $(HDRS) child.c
 crypt16.o:       $(HDRS) crypt16.c
 daemon.o:        $(HDRS) daemon.c
+dane.o:          $(HDRS) dane.c dane-gnu.c dane-openssl.c
 dbfn.o:          $(HDRS) dbfn.c
 debug.o:         $(HDRS) debug.c
 deliver.o:       $(HDRS) deliver.c

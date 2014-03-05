@@ -633,6 +633,9 @@ BOOL    dmarc_enable_forensic   = FALSE;
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;
 BOOL    dns_csa_use_reverse    = TRUE;
+#ifdef EXPERIMENTAL_DANE
+int     dns_dane_ok            = -1;
+#endif
 uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
