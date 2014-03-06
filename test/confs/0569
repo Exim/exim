@@ -1,0 +1,34 @@
+# Exim test configuration 0569
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_mail = check_from
+acl_smtp_rcpt = accept
+acl_smtp_data = check_message
+
+recipient_unqualified_hosts = V4NET.10.10.9
+
+# ----- ACL -----
+
+begin acl
+
+check_from:
+  accept senders = usery@exim.test.ex
+         set acl_m_message = I do not like your message
+  accept
+
+check_message:
+  require message = ${if def:acl_m_message {$acl_m_message}}
+          verify = header_names_ascii
+  accept
+
+# End

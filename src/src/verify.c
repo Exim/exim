@@ -538,7 +538,7 @@ else
     #endif
       if (!(done= smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout)))
         goto RESPONSE_FAILED;
-    
+
     /* Not worth checking greeting line for ESMTP support */
     if (!(esmtp = verify_check_this_host(&(ob->hosts_avoid_esmtp), NULL,
       host->name, host->address, NULL) != OK))
@@ -2155,6 +2155,41 @@ return yield;
 }
 
 
+/*************************************************
+*      Check header names for 8-bit characters   *
+*************************************************/
+
+/* This function checks for invalid charcters in header names. See
+RFC 5322, 2.2. and RFC 6532, 3.
+
+Arguments:
+  msgptr     where to put an error message
+
+Returns:     OK
+             FAIL
+*/
+
+int
+verify_check_header_names_ascii(uschar **msgptr)
+{
+header_line *h;
+uschar *colon, *s;
+
+for (h = header_list; h != NULL; h = h->next)
+  {
+   colon = Ustrchr(h->text, ':');
+   for(s = h->text; s < colon; s++)
+     {
+        if ((*s < 33) || (*s > 126))
+        {
+                *msgptr = string_sprintf("Invalid character in header \"%.*s\" found",
+                                         colon - h->text, h->text);
+                return FAIL;
+        }
+     }
+  }
+return OK;
+}
 
 /*************************************************
 *          Check for blind recipients            *

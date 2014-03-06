@@ -27983,6 +27983,23 @@ This condition checks whether the sending host (the client) is authorized to
 send email. Details of how this works are given in section
 &<<SECTverifyCSA>>&.
 
+.new
+.vitem &*verify&~=&~header_names_ascii*&
+.cindex "&%verify%& ACL condition"
+.cindex "&ACL;" "verifying header names only ASCII"
+.cindex "header lines" "verifying header names only ASCII"
+.cindex "verifying" "header names only ASCII"
+This condition is relevant only in an ACL that is run after a message has been
+received, that is, in an ACL specified by &%acl_smtp_data%& or
+&%acl_not_smtp%&.  It checks all header names (not the content) to make sure
+there are no non-ASCII characters, also excluding control characters.  The
+allowable characters are decimal ASCII values 33 through 126.
+
+Exim itself will handle headers with non-ASCII characters, but it can cause
+problems for downstream applications, so this option will allow their
+detection and rejection in the DATA ACL's.
+.wen
+
 .vitem &*verify&~=&~header_sender/*&<&'options'&>
 .cindex "&%verify%& ACL condition"
 .cindex "&ACL;" "verifying sender in the header"

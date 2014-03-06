@@ -402,6 +402,7 @@ extern int     verify_check_dnsbl(uschar **);
 extern int     verify_check_header_address(uschar **, uschar **, int, int, int,
                  uschar *, uschar *, int, int *);
 extern int     verify_check_headers(uschar **);
+extern int     verify_check_header_names_ascii(uschar **);
 extern int     verify_check_host(uschar **);
 extern int     verify_check_notblind(void);
 extern int     verify_check_this_host(uschar **, unsigned int *, uschar*,

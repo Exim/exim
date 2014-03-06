@@ -1650,7 +1650,8 @@ switch (dns_lookup(&dnsa, target, type, NULL))
 *************************************************/
 
 enum { VERIFY_REV_HOST_LKUP, VERIFY_CERT, VERIFY_HELO, VERIFY_CSA, VERIFY_HDR_SYNTAX,
-  VERIFY_NOT_BLIND, VERIFY_HDR_SNDR, VERIFY_SNDR, VERIFY_RCPT
+       VERIFY_NOT_BLIND, VERIFY_HDR_SNDR, VERIFY_SNDR, VERIFY_RCPT,
+       VERIFY_HDR_NAMES_ASCII
   };
 typedef struct {
   uschar * name;
@@ -1670,7 +1671,8 @@ static verify_type_t verify_type_list[] = {
     { US"sender",	  	VERIFY_SNDR,		(1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)
 			|(1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP),
 										FALSE, 6 },
-    { US"recipient",	  	VERIFY_RCPT,	 	(1<<ACL_WHERE_RCPT),	FALSE, 0 }
+    { US"recipient",	  	VERIFY_RCPT,	 	(1<<ACL_WHERE_RCPT),	FALSE, 0 },
+    { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), TRUE, 0 }
   };
 
 
@@ -1816,6 +1818,15 @@ switch(vp->value)
     always). */
 
     rc = verify_check_headers(log_msgptr);
+    if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
+      *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
+    return rc;
+
+  case VERIFY_HDR_NAMES_ASCII:
+    /* Check that all header names are true 7 bit strings
+    See RFC 5322, 2.2. and RFC 6532, 3. */
+
+    rc = verify_check_header_names_ascii(log_msgptr);
     if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
       *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
     return rc;
@@ -2202,8 +2213,8 @@ return rc;
 
 BAD_VERIFY:
 *log_msgptr = string_sprintf("expected \"sender[=address]\", \"recipient\", "
-  "\"helo\", \"header_syntax\", \"header_sender\" or "
-  "\"reverse_host_lookup\" at start of ACL condition "
+  "\"helo\", \"header_syntax\", \"header_sender\", \"header_names_ascii\" "
+  "or \"reverse_host_lookup\" at start of ACL condition "
   "\"verify %s\"", arg);
 return ERROR;
 }

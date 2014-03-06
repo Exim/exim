@@ -1,0 +1,144 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_from"
+>>> processing "accept"
+>>> check senders = usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
+>>> accept: condition test failed in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in inline ACL
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_names_ascii
+>>> require: condition test succeeded in ACL "check_message"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_message"
+LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_from"
+>>> processing "accept"
+>>> check senders = usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
+>>> accept: condition test failed in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in inline ACL
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_names_ascii
+>>> require: condition test failed in ACL "check_message"
+LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "﻿Received" found
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_from"
+>>> processing "accept"
+>>> check senders = usery@exim.test.ex
+>>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>> usery@exim.test.ex in "usery@exim.test.ex"? yes (matched "usery@exim.test.ex")
+>>> check set acl_m_message = I do not like your message
+>>> accept: condition test succeeded in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in inline ACL
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_names_ascii
+>>> require: condition test failed in ACL "check_message"
+LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_from"
+>>> processing "accept"
+>>> check senders = usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
+>>> accept: condition test failed in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in inline ACL
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_names_ascii
+>>> require: condition test failed in ACL "check_message"
+LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_from"
+>>> processing "accept"
+>>> check senders = usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
+>>> accept: condition test failed in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in inline ACL
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_names_ascii
+>>> require: condition test succeeded in ACL "check_message"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_message"
+LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_from"
+>>> processing "accept"
+>>> check senders = usery@exim.test.ex
+>>> userx@exim.test.ex in "usery@exim.test.ex"? no (end of list)
+>>> accept: condition test failed in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_from"
+>>> processing "accept"
+>>> accept: condition test succeeded in inline ACL
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_names_ascii
+>>> require: condition test succeeded in ACL "check_message"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "check_message"
+LOG: 10HmaZ-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss

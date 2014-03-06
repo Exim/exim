@@ -3,7 +3,7 @@
 1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <postmaster@test.ex>: Sender verify failed
 1999-03-02 09:44:33 U=CALLER F=<userx@test.ex> rejected RCPT <userx@test.ex>: deny for userx
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <"deny verify = header_syntax"@test.ex>: cannot verify header_syntax in ACL for RCPT
-1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <"deny verify = junk"@test.ex>: expected "sender[=address]", "recipient", "helo", "header_syntax", "header_sender" or "reverse_host_lookup" at start of ACL condition "verify junk"
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <"deny verify = junk"@test.ex>: expected "sender[=address]", "recipient", "helo", "header_syntax", "header_sender", "header_names_ascii" or "reverse_host_lookup" at start of ACL condition "verify junk"
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <"deny vorify = junk"@test.ex>: unknown ACL condition/modifier in "deny vorify = junk"
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <"dony verify = junk"@test.ex>: unknown ACL verb "dony" in "dony verify = junk"
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <"deny !message = abcd"@test.ex>: ACL error: negation is not allowed with "message"

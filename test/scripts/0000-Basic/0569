@@ -1,0 +1,147 @@
+# verify = header_names_ascii
+# 1. Headers are good, make sure no misfires.
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+Received: from mail.example.com([10.11.12.13] helo=mail.example.com)
+	by mail1-int.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRL-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:57:00 +0000
+Received: from mail1-int.example.com([10.120.12.12] helo=mail1-int.example.com)
+	by webmail1.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRK-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:56:58 +0000
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z
+Subject: testing
+
+.
+QUIT
+****
+# 2. A non-ASCII in header name, uses default rejection message
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+Received: from mail.example.com([10.11.12.13] helo=mail.example.com)
+	by mail1-int.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRL-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:57:00 +0000
+﻿Received: from mail1-int.example.com([10.120.12.12] helo=mail1-int.example.com)
+	by webmail1.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRK-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:56:58 +0000
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z>
+Subject: testing
+
+.
+QUIT
+****
+# 3. A non-ASCII character in header name, different from sets an acl variable
+#    causing custom log message
+exim -bh V4NET.10.10.10
+mail from:<usery@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+Received: from mail.example.com([10.11.12.13] helo=mail.example.com)
+	by mail1-int.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRL-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:57:00 +0000
+Received: from mail1-int.example.com([10.120.12.12] helo=mail1-int.example.com)
+	by webmail1.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRK-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:56:58 +0000
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z>
+Subjec⍅: testing
+
+.
+QUIT
+****
+# 4. A non-ASCII character in header name, uses default rejection message
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+Received: from mail.example.com([10.11.12.13] helo=mail.example.com)
+	by mail1-int.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRL-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:57:00 +0000
+Received: from mail1-int.example.com([10.120.12.12] helo=mail1-int.example.com)
+	by webmail1.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRK-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:56:58 +0000
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z>
+Subjec⍅: testing
+
+.
+QUIT
+****
+# 5. Headers are good, Unicode in message body, make sure no misfires.
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+Received: from mail.example.com([10.11.12.13] helo=mail.example.com)
+	by mail1-int.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRL-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:57:00 +0000
+Received: from mail1-int.example.com([10.120.12.12] helo=mail1-int.example.com)
+	by webmail1.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRK-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:56:58 +0000
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z>
+Subject: testing
+
+Some unicode characters: 顷晦٦
+This email should be accepted because the headers are ok.
+.
+QUIT
+****
+# 6. Headers are good, Unicode in a header content *and* message body,
+#    make sure no misfires.
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+Received: from mail.example.com([10.11.12.13] helo=mail.example.com)
+	by mail1-int.example.com with esmtp (Exim 4.80)
+	envelope-from <userx@exim.test.ex>
+	id 1WIJRL-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:57:00 +0000
+Received: from mail1-int.example.com([10.120.12.12] helo=mail1-int.example.com)
+	by webmail1.example.com with esmtp (Exim 4.80)
+	envelope-from <userx癑@exim.test.ex>
+	id 1WIJRK-0005Dw-MW
+	for XX@YY; Tue, 25 Feb 2014 15:56:58 +0000
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z>
+Subject: testing
+
+Some unicode characters: 顷晦٦
+This email should be accepted because the headers are ok even though the
+content of one of the headers has unicode.
+.
+QUIT
+****
+no_msglog_check

@@ -37,6 +37,10 @@ PP/01 Continue incomplete 4.82 PP/19 by fixing docs too: use dns_dnssec_ok
 
 JH/03 Bugzilla 1157: support log_selector smtp_confirmation for lmtp.
 
+TL/04 Add verify = header_names_ascii check to reject email with non-ASCII
+      characters in header names, implemented as a verify condition.
+      Contributed by Michael Fischer v. Mollard.
+
 
 Exim version 4.82
 -----------------

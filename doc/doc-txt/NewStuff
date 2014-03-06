@@ -14,6 +14,11 @@ Version 4.83
     actual external source IP:host be used in exim instead of the IP of the
     proxy that is connecting to it.
 
+ 2. New verify option header_names_ascii, which will check to make sure
+    there are no non-ASCII characters in header names.  Exim itself handles
+    those non-ASCII characters, but downstream apps may not, so Exim can
+    detect and reject if those characters are present.
+
 
 Version 4.82
 ------------
