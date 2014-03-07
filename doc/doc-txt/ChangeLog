@@ -41,6 +41,10 @@ TL/04 Add verify = header_names_ascii check to reject email with non-ASCII
       characters in header names, implemented as a verify condition.
       Contributed by Michael Fischer v. Mollard.
 
+TL/05 Rename SPF condition results err_perm and err_temp to standardized
+      results permerror and temperror. Is a backward incompatibility if
+      the ACL tests for either of these two results. Patch contributed by
+      user bes-internal on the mailing list.
 
 Exim version 4.82
 -----------------

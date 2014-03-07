@@ -19,8 +19,8 @@ static spf_result_id spf_result_id_list[] = {
   { US"fail", 3 },
   { US"softfail", 4 },
   { US"none", 5 },
-  { US"err_temp", 6 },
-  { US"err_perm", 7 }
+  { US"temperror", 6 },
+  { US"permerror", 7 }
 };
 
 SPF_server_t    *spf_server = NULL;
