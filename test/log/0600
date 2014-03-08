@@ -1,0 +1,18 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 x-test-header-good1: 1234567890qwertzuiopasdfghjklyxcvbnm,.-QWERTZUIOP+*ASDFGHJKL#'YXCVBNM,.-;:_
+1999-03-02 09:44:33 10HmaX-0005vi-00 x-test-header-good2: \303\237\303\274\303\266\303\244\342\202\254\303\234\303\226\303\204\302\264\340\244\221\340\244\225\340\244\234\341\220\201\341\221\214\341\221\225\360\253\235\206\360\253\237\230
+1999-03-02 09:44:33 10HmaX-0005vi-00 x-test-header-too-short: ?.?.?.\303\244-?.-\303\234.?..?.-?.-?..-?.-?.-?.-?.-?..-?..?.
+1999-03-02 09:44:33 10HmaX-0005vi-00 x-test-header-too-long: ?????-\303\244-?????--\303\226-\303\204-\302\264-\340\244\221-\340\244\225-\340\244\234-\341\220\201-\341\221\214-\341\221\225-?????\360\253\237\206
+1999-03-02 09:44:33 10HmaX-0005vi-00 x-test-header-too-big: ?-----\363\200\200\200
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-good1: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-good2: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-short: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-long: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-big: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=pppp

@@ -204,7 +204,8 @@ static uschar *op_table_main[] = {
   US"str2b64",
   US"strlen",
   US"substr",
-  US"uc" };
+  US"uc",
+  US"utf8clean" };
 
 enum {
   EOP_ADDRESS =  sizeof(op_table_underscore)/sizeof(uschar *),
@@ -240,7 +241,8 @@ enum {
   EOP_STR2B64,
   EOP_STRLEN,
   EOP_SUBSTR,
-  EOP_UC };
+  EOP_UC,
+  EOP_UTF8CLEAN };
 
 
 /* Table of condition names, and corresponding switch numbers. The names must
@@ -6206,6 +6208,89 @@ while (*s != 0)
         continue;
         }
 
+	  /* replace illegal UTF-8 sequences by replacement character  */
+	  
+      #define UTF8_REPLACEMENT_CHAR US"?"
+
+      case EOP_UTF8CLEAN:
+        {
+        int seq_len, index = 0;
+        int bytes_left  = 0;
+        uschar seq_buff[4];			/* accumulate utf-8 here */
+        
+        while (*sub != 0)
+	  {
+	  int complete;
+	  long codepoint;
+	  uschar c;
+
+	  complete = 0;
+	  c = *sub++;
+	  if(bytes_left)
+	    {
+	    if ((c & 0xc0) != 0x80)
+	      {
+		    /* wrong continuation byte; invalidate all bytes */
+	      complete = 1; /* error */
+	      }
+	    else
+	      {
+	      codepoint = (codepoint << 6) | (c & 0x3f);
+	      seq_buff[index++] = c;
+	      if (--bytes_left == 0)		/* codepoint complete */
+		{
+		if(codepoint > 0x10FFFF)	/* is it too large? */
+		  complete = -1;	/* error */
+		else
+		  {		/* finished; output utf-8 sequence */
+		  yield = string_cat(yield, &size, &ptr, seq_buff, seq_len);
+		  index = 0;
+		  }
+		}
+	      }
+	    }
+	  else	/* no bytes left: new sequence */
+	    {
+	    if((c & 0x80) == 0)	/* 1-byte sequence, US-ASCII, keep it */
+	      {
+	      yield = string_cat(yield, &size, &ptr, &c, 1);
+	      continue;
+	      }
+	    if((c & 0xe0) == 0xc0)		/* 2-byte sequence */
+	      {
+	      bytes_left = 1;
+	      codepoint = c & 0x1f;
+	      }
+	    else if((c & 0xf0) == 0xe0)		/* 3-byte sequence */
+	      {
+	      bytes_left = 2;
+	      codepoint = c & 0x0f;
+	      }
+	    else if((c & 0xf8) == 0xf0)		/* 4-byte sequence */
+	      {
+	      bytes_left = 3;
+	      codepoint = c & 0x07;
+	      }
+	    else	/* invalid or too long (RFC3629 allows only 4 bytes) */
+	      complete = -1;
+
+	    seq_buff[index++] = c;
+	    seq_len = bytes_left + 1;
+	    }		/* if(bytes_left) */
+
+	  if (complete != 0)
+	    {
+	    bytes_left = index = 0;
+	    yield = string_cat(yield, &size, &ptr, UTF8_REPLACEMENT_CHAR, 1);
+	    }
+	  if ((complete == 1) && ((c & 0x80) == 0))
+	    { /* ASCII character follows incomplete sequence */
+	      yield = string_cat(yield, &size, &ptr, &c, 1);
+	    }
+	  }
+        continue;
+        }
+
       /* escape turns all non-printing characters into escape sequences. */
 
       case EOP_ESCAPE:
@@ -6834,4 +6919,7 @@ return 0;
 
 #endif
 
+/*
+ vi: aw ai sw=2
+*/
 /* End of expand.c */

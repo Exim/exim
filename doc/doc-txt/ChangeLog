@@ -46,6 +46,8 @@ TL/05 Rename SPF condition results err_perm and err_temp to standardized
       the ACL tests for either of these two results. Patch contributed by
       user bes-internal on the mailing list.
 
+JH/04 Add ${utf8clean:} operator. Contributed by Alex Rau.
+
 Exim version 4.82
 -----------------
 

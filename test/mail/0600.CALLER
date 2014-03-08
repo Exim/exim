@@ -1,0 +1,45 @@
+From CALLER@the.local.host.name Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@the.local.host.name>
+Envelope-to: CALLER@the.local.host.name
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaX-0005vi-00
+	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+x-test-header-good1: 1234567890qwertzuiopasdfghjklyxcvbnm,.-QWERTZUIOP+*ASDFGHJKL#'YXCVBNM,.-;:_
+x-test-header-good2: ÃŸÃ¼Ã¶Ã¤â‚¬ÃœÃ–Ã„Â´à¤‘à¤•à¤œáá‘Œá‘•ğ«†ğ«Ÿ˜
+x-test-header-too-short: Ã.Ã.Ã.Ã¤-â‚.-Ãœ.Ã..Ã.-Â.-à..-à¤.-à¤.-á.-á‘.-á..-ğ«..ğ«Ÿ.
+x-test-header-too-long: øˆˆˆˆ-Ã¤-øˆˆˆˆ--Ã–-Ã„-Â´-à¤‘-à¤•-à¤œ-á-á‘Œ-á‘•-ø€€€€ğ«Ÿ†
+x-test-header-too-big: ÷€€€-----ó€€€
+Subject: This is a test message.
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER@the.local.host.name
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local-user: uid=CALLER_UID gid=CALLER_GID
+X-body-linecount: 3
+X-message-linecount: 16
+X-received-count: 1
+
+This is a test message.
+It has three lines.
+This is the last line.
+
+From CALLER@the.local.host.name Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@the.local.host.name>
+Envelope-to: CALLER@the.local.host.name
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaY-0005vi-00
+	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: second
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER@the.local.host.name
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local-user: uid=CALLER_UID gid=CALLER_GID
+X-body-linecount: 1
+X-message-linecount: 9
+X-received-count: 1
+
+This is a second test message.
+

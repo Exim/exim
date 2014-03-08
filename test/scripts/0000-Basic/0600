@@ -1,0 +1,32 @@
+# ${utf8clean:string}
+#
+# -bs to simple local delivery
+exim -bs -odi
+mail from:CALLER@HOSTNAME
+rcpt to:CALLER@HOSTNAME
+data
+x-test-header-good1: 1234567890qwertzuiopasdfghjklyxcvbnm,.-QWERTZUIOP+*ASDFGHJKL#'YXCVBNM,.-;:_
+x-test-header-good2: ÃŸÃ¼Ã¶Ã¤â‚¬ÃœÃ–Ã„Â´à¤‘à¤•à¤œáá‘Œá‘•ğ«†ğ«Ÿ˜
+x-test-header-too-short: Ã.Ã.Ã.Ã¤-â‚.-Ãœ.Ã..Ã.-Â.-à..-à¤.-à¤.-á.-á‘.-á..-ğ«..ğ«Ÿ.
+x-test-header-too-long: øˆˆˆˆ-Ã¤-øˆˆˆˆ--Ã–-Ã„-Â´-à¤‘-à¤•-à¤œ-á-á‘Œ-á‘•-ø€€€€ğ«Ÿ†
+x-test-header-too-big: ÷€€€-----ó€€€
+Subject: This is a test message.
+
+This is a test message.
+It has three lines.
+This is the last line.
+.
+quit
+****
+exim -bs -odi
+mail from:CALLER@HOSTNAME
+rcpt to:CALLER@HOSTNAME
+data
+Subject: second
+
+This is a second test message.
+.
+quit
+****
+exim -q
+****

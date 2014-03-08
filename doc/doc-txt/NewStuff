@@ -19,6 +19,9 @@ Version 4.83
     those non-ASCII characters, but downstream apps may not, so Exim can
     detect and reject if those characters are present.
 
+ 3. New expansion operator ${utf8clean:string} to replace malformed UTF8
+    codepoints with valid ones.
+
 
 Version 4.82
 ------------
