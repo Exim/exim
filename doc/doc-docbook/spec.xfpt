@@ -28611,6 +28611,13 @@ deny   condition = ${if isip4{$sender_host_address}}
        dnslists  = some.list.example
 .endd
 
+If an explicit key is being used for a DNS lookup and it may be an IPv6
+address you should specify alternate list separators for both the outer
+(DNS list name) list and inner (lookup keys) list:
+.code
+       dnslists = <; dnsbl.example.com/<|$acl_m_addrslist
+.endd
+
 .section "Rate limiting incoming messages" "SECTratelimiting"
 .cindex "rate limiting" "client sending"
 .cindex "limiting client sending rates"
