@@ -22,6 +22,11 @@ Version 4.83
  3. New expansion operator ${utf8clean:string} to replace malformed UTF8
     codepoints with valid ones.
 
+ 4. New malware type "sock".  Talks over a Unix or TCP socket, sending one
+    command line and matching a regex against the return data for trigger
+    and a second regex to extract malware_name.  The mail spoofile name can
+    be included in the command line.
+
 
 Version 4.82
 ------------

@@ -171,6 +171,8 @@ extern int     host_scan_for_local_hosts(host_item *, host_item **, BOOL *);
 extern void    invert_address(uschar *, uschar *);
 extern int     ip_bind(int, int, uschar *, int);
 extern int     ip_connect(int, int, uschar *, int, int);
+extern int     ip_connectedsocket(int, const uschar *, int, int,
+                 int, host_item *, uschar **);
 extern int     ip_get_address_family(int);
 extern void    ip_keepalive(int, uschar *, BOOL);
 extern int     ip_recv(int, uschar *, int, int);
@@ -358,7 +360,7 @@ extern uschar *string_dequote(uschar **);
 extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4);
 extern uschar *string_format_size(int, uschar *);
 extern int     string_interpret_escape(uschar **);
-extern int     string_is_ip_address(uschar *, int *);
+extern int     string_is_ip_address(const uschar *, int *);
 extern uschar *string_log_address(address_item *, BOOL, BOOL);
 extern uschar *string_nextinlist(uschar **, int *, uschar *, int);
 extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);

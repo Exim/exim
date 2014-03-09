@@ -34,7 +34,7 @@ Returns:    0 if the string is not a textual representation of an IP address
 */
 
 int
-string_is_ip_address(uschar *s, int *maskptr)
+string_is_ip_address(const uschar *s, int *maskptr)
 {
 int i;
 int yield = 4;
@@ -44,7 +44,7 @@ offset. */
 
 if (maskptr != NULL)
   {
-  uschar *ss = s + Ustrlen(s);
+  const uschar *ss = s + Ustrlen(s);
   *maskptr = 0;
   if (s != ss && isdigit(*(--ss)))
     {

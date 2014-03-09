@@ -172,7 +172,7 @@ Arguments:
   af          AF_INET6 or AF_INET for the socket type
   address     the remote address, in text form
   port        the remote port
-  timeout     a timeout
+  timeout     a timeout (zero for indefinite timeout)
 
 Returns:      0 on success; -1 on failure, with errno set
 */
@@ -247,6 +247,105 @@ errno = (save_errno == EINTR && sigalrm_seen)? ETIMEDOUT : save_errno;
 return -1;
 }
 
+
+/* Create a socket and connect to host (name or number, ipv6 ok)
+   at one of port-range.
+Arguments:
+  type          SOCK_DGRAM or SOCK_STREAM
+  af            AF_INET6 or AF_INET for the socket type
+  address       the remote address, in text form
+  portlo,porthi the remote port range
+  timeout       a timeout
+  connhost	if not NULL, host_item filled in with connection details
+  errstr        pointer for allocated string on error
+
+Return:
+  socket fd, or -1 on failure (having allocated an error string)
+*/
+int
+ip_connectedsocket(int type, const uschar * hostname, int portlo, int porthi,
+	int timeout, host_item * connhost, uschar ** errstr)
+{
+int namelen, port;
+host_item shost;
+host_item *h;
+int af = 0, fd, fd4 = -1, fd6 = -1;
+
+shost.next = NULL;
+shost.address = NULL;
+shost.port = portlo;
+shost.mx = -1;
+
+namelen = Ustrlen(hostname);
+
+/* Anything enclosed in [] must be an IP address. */
+
+if (hostname[0] == '[' &&
+    hostname[namelen - 1] == ']')
+  {
+  uschar * host = string_copy(hostname);
+  host[namelen - 1] = 0;
+  host++;
+  if (string_is_ip_address(host, NULL) == 0)
+    {
+    *errstr = string_sprintf("malformed IP address \"%s\"", hostname);
+    return -1;
+    }
+  shost.name = shost.address = host;
+  }
+
+/* Otherwise check for an unadorned IP address */
+
+else if (string_is_ip_address(hostname, NULL) != 0)
+  shost.name = shost.address = string_copy(hostname);
+
+/* Otherwise lookup IP address(es) from the name */
+
+else
+  {
+  shost.name = string_copy(hostname);
+  if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE, NULL,
+      FALSE) != HOST_FOUND)
+    {
+    *errstr = string_sprintf("no IP address found for host %s", shost.name);
+    return -1;
+    }
+  }
+
+/* Try to connect to the server - test each IP till one works */
+
+for (h = &shost; h != NULL; h = h->next)
+  {
+  fd = (Ustrchr(h->address, ':') != 0)
+    ? (fd6 < 0) ? (fd6 = ip_socket(SOCK_STREAM, af = AF_INET6)) : fd6
+    : (fd4 < 0) ? (fd4 = ip_socket(SOCK_STREAM, af = AF_INET )) : fd4;
+
+  if (fd < 0)
+    {
+    *errstr = string_sprintf("failed to create socket: %s", strerror(errno));
+    goto bad;
+    }
+
+  for(port = portlo; port <= porthi; port++)
+    if (ip_connect(fd, af, h->address, port, timeout) == 0)
+      {
+      if (fd != fd6) close(fd6);
+      if (fd != fd4) close(fd4);
+      if (connhost) {
+	h->port = port;
+	*connhost = *h;
+	connhost->next = NULL;
+	}
+      return fd;
+      }
+  }
+
+*errstr = string_sprintf("failed to connect to "
+  "%s: couldn't connect to any host", hostname, strerror(errno));
+
+bad:
+  close(fd4); close(fd6); return -1;
+}
 
 
 /*************************************************

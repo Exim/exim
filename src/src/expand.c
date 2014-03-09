@@ -4499,10 +4499,7 @@ while (*s != 0)
 
         if (Ustrncmp(sub_arg[0], "inet:", 5) == 0)
           {
-          BOOL connected = FALSE;
-          int namelen, port;
-          host_item shost;
-          host_item *h;
+          int port;
           uschar *server_name = sub_arg[0] + 5;
           uschar *port_name = Ustrrchr(server_name, ':');
 
@@ -4539,76 +4536,9 @@ while (*s != 0)
             port = ntohs(service_info->s_port);
             }
 
-          /* Sort out the server. */
-
-          shost.next = NULL;
-          shost.address = NULL;
-          shost.port = port;
-          shost.mx = -1;
-
-          namelen = Ustrlen(server_name);
-
-          /* Anything enclosed in [] must be an IP address. */
-
-          if (server_name[0] == '[' &&
-              server_name[namelen - 1] == ']')
-            {
-            server_name[namelen - 1] = 0;
-            server_name++;
-            if (string_is_ip_address(server_name, NULL) == 0)
-              {
-              expand_string_message =
-                string_sprintf("malformed IP address \"%s\"", server_name);
-              goto EXPAND_FAILED;
-              }
-            shost.name = shost.address = server_name;
-            }
-
-          /* Otherwise check for an unadorned IP address */
-
-          else if (string_is_ip_address(server_name, NULL) != 0)
-            shost.name = shost.address = server_name;
-
-          /* Otherwise lookup IP address(es) from the name */
-
-          else
-            {
-            shost.name = server_name;
-            if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE, NULL,
-                FALSE) != HOST_FOUND)
-              {
-              expand_string_message =
-                string_sprintf("no IP address found for host %s", shost.name);
-              goto EXPAND_FAILED;
-              }
-            }
-
-          /* Try to connect to the server - test each IP till one works */
-
-          for (h = &shost; h != NULL; h = h->next)
-            {
-            int af = (Ustrchr(h->address, ':') != 0)? AF_INET6 : AF_INET;
-            if ((fd = ip_socket(SOCK_STREAM, af)) == -1)
-              {
-              expand_string_message = string_sprintf("failed to create socket: "
-                "%s", strerror(errno));
+	  if ((fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
+		  timeout, NULL, &expand_string_message)) < 0)
               goto SOCK_FAIL;
-              }
-
-            if (ip_connect(fd, af, h->address, port, timeout) == 0)
-              {
-              connected = TRUE;
-              break;
-              }
-            }
-
-          if (!connected)
-            {
-            expand_string_message = string_sprintf("failed to connect to "
-              "socket %s: couldn't connect to any host", sub_arg[0],
-              strerror(errno));
-            goto SOCK_FAIL;
-            }
           }
 
         /* Handle a Unix domain socket */
@@ -5355,7 +5285,6 @@ while (*s != 0)
       uschar *list, *expr, *temp;
       uschar *save_iterate_item = iterate_item;
       uschar *save_lookup_value = lookup_value;
-      BOOL dummy;
 
       while (isspace(*s)) s++;
       if (*s++ != '{') goto EXPAND_FAILED_CURLY;

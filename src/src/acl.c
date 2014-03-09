@@ -2857,9 +2857,9 @@ uschar *portstr;
 uschar *portend;
 host_item *h;
 int portnum;
-int host_af;
 int len;
 int r, s;
+uschar * errstr;
 
 hostname = string_nextinlist(&arg, &sep, NULL, 0);
 portstr = string_nextinlist(&arg, &sep, NULL, 0);
@@ -2906,14 +2906,18 @@ if (r == HOST_FIND_FAILED || r == HOST_FIND_AGAIN)
 HDEBUG(D_acl)
   debug_printf("udpsend [%s]:%d %s\n", h->address, portnum, arg);
 
-host_af = (Ustrchr(h->address, ':') == NULL)? AF_INET:AF_INET6;
-r = s = ip_socket(SOCK_DGRAM, host_af);
-if (r < 0) goto defer;
-r = ip_connect(s, host_af, h->address, portnum, 1);
+r = s = ip_connectedsocket(SOCK_DGRAM, h->address, portnum, portnum,
+		1, NULL, &errstr);
 if (r < 0) goto defer;
 len = Ustrlen(arg);
 r = send(s, arg, len, 0);
-if (r < 0) goto defer;
+if (r < 0)
+  {
+  errstr = US strerror(errno);
+  close(s);
+  goto defer;
+  }
+close(s);
 if (r < len)
   {
   *log_msgptr =
@@ -2927,7 +2931,7 @@ HDEBUG(D_acl)
 return OK;
 
 defer:
-*log_msgptr = string_sprintf("\"udpsend\" failed: %s", strerror(errno));
+*log_msgptr = string_sprintf("\"udpsend\" failed: %s", errstr);
 return DEFER;
 }
 

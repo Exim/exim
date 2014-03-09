@@ -29810,6 +29810,24 @@ av_scanner = mksd:2
 .endd
 You can safely omit this option (the default value is 1).
 
+.vitem &%sock%&
+.cindex "virus scanners" "simple socket-connected"
+This is a general-purpose way of talking to simple scanner daemons
+running on the local machine.
+There are four options:
+an address (which may be an IP addres and port, or the path of a Unix socket),
+a commandline to send (may include a single %s which will be replaced with
+the path to the mail file to be scanned),
+an RE to trigger on from the returned data,
+an RE to extract malware_name from the returned data.
+For example:
+.code
+av_scanner = sock:127.0.0.1 6001:%s:(SPAM|VIRUS):(.*)\$
+.endd
+Default for the socket specifier is &_/tmp/malware.sock_&.
+Default for the commandline is &_%s\n_&.
+Both regular-expressions are required.
+
 .vitem &%sophie%&
 .cindex "virus scanners" "Sophos and Sophie"
 Sophie is a daemon that uses Sophos' &%libsavi%& library to scan for viruses.
