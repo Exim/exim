@@ -10172,10 +10172,10 @@ number of larger units and output in Exim's normal time format, for example,
 .cindex "&%uc%& expansion item"
 This forces the letters in the string into upper-case.
 
-.vitem &*${utf8clean*&<&'utf-8 string'&>&*}*&
+.vitem &*${utf8clean:*&<&'string'&>&*}*&
 .cindex "correction of invalid utf-8 sequences in strings"
 .cindex "utf-8" "utf-8 sequences"
-.cindex "wrong utf-8"
+.cindex "incorrect utf-8"
 .cindex "expansion" "utf-8 forcing"
 .cindex "&%utf8clean%& expansion item"
 This replaces any invalid utf-8 sequence in the string by the character &`?`&.
