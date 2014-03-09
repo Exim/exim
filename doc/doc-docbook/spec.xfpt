@@ -34056,6 +34056,7 @@ the following table:
 &`R   `&        on &`<=`& lines: reference for local bounce
 &`    `&        on &`=>`&  &`**`& and &`==`& lines: router name
 &`S   `&        size of message
+&`SNI `&        server name indication from TLS client hello
 &`ST  `&        shadow transport name
 &`T   `&        on &`<=`& lines: message subject (topic)
 &`    `&        on &`=>`& &`**`& and &`==`& lines: transport name

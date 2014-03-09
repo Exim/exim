@@ -1163,6 +1163,32 @@ return string_sprintf("SMTP connection from %s", hostname);
 
 
 
+#ifdef SUPPORT_TLS
+static uschar *
+s_tlslog(uschar * s, int * sizep, int * ptrp)
+{
+  int size = sizep ? *sizep : 0;
+  int ptr = ptrp ? *ptrp : 0;
+
+  if ((log_extra_selector & LX_tls_cipher) != 0 && tls_in.cipher != NULL)
+    s = string_append(s, &size, &ptr, 2, US" X=", tls_in.cipher);
+  if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
+       tls_in.cipher != NULL)
+    s = string_append(s, &size, &ptr, 2, US" CV=",
+      tls_in.certificate_verified? "yes":"no");
+  if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_in.peerdn != NULL)
+    s = string_append(s, &size, &ptr, 3, US" DN=\"",
+      string_printing(tls_in.peerdn), US"\"");
+  if ((log_extra_selector & LX_tls_sni) != 0 && tls_in.sni != NULL)
+    s = string_append(s, &size, &ptr, 3, US" SNI=\"",
+      string_printing(tls_in.sni), US"\"");
+
+  if (sizep) *sizep = size;
+  if (ptrp) *ptrp = ptr;
+  return s;
+}
+#endif
+
 /*************************************************
 *      Log lack of MAIL if so configured         *
 *************************************************/
@@ -1195,18 +1221,7 @@ if (sender_host_authenticated != NULL)
   }
 
 #ifdef SUPPORT_TLS
-if ((log_extra_selector & LX_tls_cipher) != 0 && tls_in.cipher != NULL)
-  s = string_append(s, &size, &ptr, 2, US" X=", tls_in.cipher);
-if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-     tls_in.cipher != NULL)
-  s = string_append(s, &size, &ptr, 2, US" CV=",
-    tls_in.certificate_verified? "yes":"no");
-if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_in.peerdn != NULL)
-  s = string_append(s, &size, &ptr, 3, US" DN=\"",
-    string_printing(tls_in.peerdn), US"\"");
-if ((log_extra_selector & LX_tls_sni) != 0 && tls_in.sni != NULL)
-  s = string_append(s, &size, &ptr, 3, US" SNI=\"",
-    string_printing(tls_in.sni), US"\"");
+s = s_tlslog(s, &size, &ptr);
 #endif
 
 sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?
@@ -2694,8 +2709,13 @@ the connection is not forcibly to be dropped, return 0. Otherwise, log why it
 is closing if required and return 2.  */
 
 if (log_reject_target != 0)
-  log_write(0, log_reject_target, "%s %s%srejected %s%s",
+  log_write(0, log_reject_target, "%s%s %s%srejected %s%s",
     host_and_ident(TRUE),
+#ifdef SUPPORT_TLS
+    s_tlslog(NULL, NULL, NULL),
+#else
+    "",
+#endif
     sender_info, (rc == FAIL)? US"" : US"temporarily ", what, log_msg);
 
 if (!drop) return 0;
@@ -4777,4 +4797,6 @@ while (done <= 0)
 return done - 2;  /* Convert yield values */
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of smtp_in.c */
