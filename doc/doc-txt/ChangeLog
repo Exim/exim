@@ -51,6 +51,9 @@ JH/04 Add ${utf8clean:} operator. Contributed by Alex Rau.
 JH/05 Bugzilla 305: Log incoming-TLS details on rejects, subject to log
       selectors, in both main and reject logs.
 
+JH/06 Log outbound-TLS and port details, subject to log selectors, for a
+      failed delivery.
+
 Exim version 4.82
 -----------------
 

@@ -1183,8 +1183,14 @@ s_tlslog(uschar * s, int * sizep, int * ptrp)
     s = string_append(s, &size, &ptr, 3, US" SNI=\"",
       string_printing(tls_in.sni), US"\"");
 
-  if (sizep) *sizep = size;
-  if (ptrp) *ptrp = ptr;
+  if (s)
+    {
+    s[ptr] = '\0';
+    if (sizep) *sizep = size;
+    if (ptrp) *ptrp = ptr;
+    }
+  else
+    s = US"";
   return s;
 }
 #endif

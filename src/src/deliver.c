@@ -673,8 +673,36 @@ while (addr->parent != NULL)
 
 
 
+static uschar *
+d_hostlog(uschar * s, int * sizep, int * ptrp, address_item * addr)
+{
+  s = string_append(s, sizep, ptrp, 5, US" H=", addr->host_used->name,
+    US" [", addr->host_used->address, US"]");
+  if ((log_extra_selector & LX_outgoing_port) != 0)
+    s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
+      addr->host_used->port));
+  return s;
+}
+
+#ifdef SUPPORT_TLS
+static uschar *
+d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
+{
+  if ((log_extra_selector & LX_tls_cipher) != 0 && addr->cipher != NULL)
+    s = string_append(s, sizep, ptrp, 2, US" X=", addr->cipher);
+  if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
+       addr->cipher != NULL)
+    s = string_append(s, sizep, ptrp, 2, US" CV=",
+      testflag(addr, af_cert_verified)? "yes":"no");
+  if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
+    s = string_append(s, sizep, ptrp, 3, US" DN=\"",
+      string_printing(addr->peerdn), US"\"");
+  return s;
+}
+#endif
+
 /* If msg is NULL this is a delivery log and logchar is used. Otherwise
-this is a nonstandard call; no two-characher delivery flag is written
+this is a nonstandard call; no two-character delivery flag is written
 but sender-host and sender are prefixed and "msg" is inserted in the log line.
 
 Arguments:
@@ -767,11 +795,7 @@ else
   {
   if (addr->host_used != NULL)
     {
-    s = string_append(s, &size, &ptr, 5, US" H=", addr->host_used->name,
-      US" [", addr->host_used->address, US"]");
-    if ((log_extra_selector & LX_outgoing_port) != 0)
-      s = string_append(s, &size, &ptr, 2, US":", string_sprintf("%d",
-        addr->host_used->port));
+    s = d_hostlog(s, &size, &ptr, addr);
     if (continue_sequence > 1)
       s = string_cat(s, &size, &ptr, US"*", 1);
 
@@ -786,15 +810,7 @@ else
     }
 
   #ifdef SUPPORT_TLS
-  if ((log_extra_selector & LX_tls_cipher) != 0 && addr->cipher != NULL)
-    s = string_append(s, &size, &ptr, 2, US" X=", addr->cipher);
-  if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-       addr->cipher != NULL)
-    s = string_append(s, &size, &ptr, 2, US" CV=",
-      testflag(addr, af_cert_verified)? "yes":"no");
-  if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
-    s = string_append(s, &size, &ptr, 3, US" DN=\"",
-      string_printing(addr->peerdn), US"\"");
+  s = d_tlslog(s, &size, &ptr, addr);
   #endif
 
   if (addr->authenticator)
@@ -1239,9 +1255,7 @@ else
 
   if (used_return_path != NULL &&
       (log_extra_selector & LX_return_path_on_delivery) != 0)
-    {
     s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
-    }
 
   if (addr->router != NULL)
     s = string_append(s, &size, &ptr, 2, US" R=", addr->router->name);
@@ -1249,8 +1263,11 @@ else
     s = string_append(s, &size, &ptr, 2, US" T=", addr->transport->name);
 
   if (addr->host_used != NULL)
-    s = string_append(s, &size, &ptr, 5, US" H=", addr->host_used->name,
-      US" [", addr->host_used->address, US"]");
+    s = d_hostlog(s, &size, &ptr, addr);
+
+  #ifdef SUPPORT_TLS
+  s = d_tlslog(s, &size, &ptr, addr);
+  #endif
 
   if (addr->basic_errno > 0)
     s = string_append(s, &size, &ptr, 2, US": ",
@@ -7168,4 +7185,6 @@ acl_where = ACL_WHERE_UNKNOWN;
 return final_yield;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of deliver.c */
