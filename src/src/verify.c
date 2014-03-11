@@ -705,11 +705,13 @@ else
         cutthrough_delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
         }
+      #ifndef DISABLE_DKIM
       if (ob->dkim_domain)
         {
         cutthrough_delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
         }
+      #endif
       }
 
     SEND_FAILED:
