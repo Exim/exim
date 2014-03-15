@@ -23018,6 +23018,14 @@ unknown state), opens a new one to the same host, and then tries the delivery
 in clear.
 
 
+.option tls_try_verify_hosts smtp "host list&!! unset
+.cindex "TLS" "server certificate verification"
+.cindex "certificate" "verification of server"
+For OpenSSL only, this option gives a list of hosts for which
+certificate verification will be tried but need not succeed.
+The &%tls_verify_certificates%& option must also be set.
+
+
 .option tls_verify_certificates smtp string&!! unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
@@ -23031,6 +23039,20 @@ files. This does not work with GnuTLS; the option must be set to the name of a
 single file if you are using GnuTLS. The values of &$host$& and
 &$host_address$& are set to the name and address of the server during the
 expansion of this option. See chapter &<<CHAPTLS>>& for details of TLS.
+
+For back-compatability, or when GnuTLS is used,
+if neither tls_verify_hosts nor tls_try_verify_hosts are set
+and certificate verification fails the TLS connection is closed.
+
+
+.option tls_verify_hosts smtp "host list&!! unset
+.cindex "TLS" "server certificate verification"
+.cindex "certificate" "verification of server"
+For OpenSSL only, this option gives a list of hosts for which
+certificate verification must succeed.
+The &%tls_verify_certificates%& option must also be set.
+If both this option and &%tls_try_verify_hosts%& are unset
+operation is as if this option selected all hosts.
 
 
 
@@ -25933,6 +25955,12 @@ for OpenSSL only (not GnuTLS), a directory, that contains a collection of
 expected server certificates. The client verifies the server's certificate
 against this collection, taking into account any revoked certificates that are
 in the list defined by &%tls_crl%&.
+Failure to verify fails the TLS connection unless either of the
+&%tls_verify_hosts%& or &%tls_try_verify_hosts%& options are set.
+
+The &%tls_verify_hosts%& and &%tls_try_verify_hosts%& options restrict
+certificate verification to the listed servers.  Verification either must
+or need not succeed respectively.
 
 If
 &%tls_require_ciphers%& is set on the &(smtp)& transport, it must contain a

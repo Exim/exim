@@ -32,6 +32,8 @@ JH/02 Add ${listextract {number}{list}{success}{fail}}.
 TL/03 Bugzilla 1433: Fix DMARC SEGV with specific From header contents.
       Properly escape header and check for NULL return.
 
+JH/03 Add tls_{,try_}verify_hosts to smtp transport. OpenSSL only.
+
 
 Exim version 4.82
 -----------------
