@@ -4,6 +4,15 @@ exim -DSERVER=server -bd -oX PORT_D
 exim userx@test.ex
 Testing
 ****
+exim usery@test.ex
+Testing
+****
+exim userz@test.ex
+Testing
+****
+exim userq@test.ex
+Testing
+****
 exim -qf
 ****
 killdaemon

@@ -64,6 +64,8 @@ typedef struct {
   uschar *tls_verify_certificates;
   int     tls_dh_min_bits;
   BOOL    tls_tempfail_tryclear;
+  uschar *tls_verify_hosts;
+  uschar *tls_try_verify_hosts;
   #endif
   #ifndef DISABLE_DKIM
   uschar *dkim_domain;

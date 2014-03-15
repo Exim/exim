@@ -153,8 +153,12 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, tls_sni) },
   { "tls_tempfail_tryclear", opt_bool,
       (void *)offsetof(smtp_transport_options_block, tls_tempfail_tryclear) },
+  { "tls_try_verify_hosts", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, tls_try_verify_hosts) },
   { "tls_verify_certificates", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, tls_verify_certificates) }
+      (void *)offsetof(smtp_transport_options_block, tls_verify_certificates) },
+  { "tls_verify_hosts",     opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, tls_verify_hosts) }
 #endif
 #ifdef EXPERIMENTAL_TPDA
  ,{ "tpda_host_defer_action", opt_stringptr,
@@ -227,7 +231,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* tls_verify_certificates */
   EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
                        /* tls_dh_min_bits */
-  TRUE                 /* tls_tempfail_tryclear */
+  TRUE,                /* tls_tempfail_tryclear */
+  NULL,                /* tls_verify_hosts */
+  NULL                 /* tls_try_verify_hosts */
 #endif
 #ifndef DISABLE_DKIM
  ,NULL,                /* dkim_canon */
@@ -1446,7 +1452,9 @@ if (tls_offered && !suppress_tls &&
       ob->hosts_require_ocsp,
 #endif
       ob->tls_dh_min_bits,
-      ob->command_timeout);
+      ob->command_timeout,
+      ob->tls_verify_hosts,
+      ob->tls_try_verify_hosts);
 
     /* TLS negotiation failed; give an error. From outside, this function may
     be called again to try in clear on a new connection, if the options permit

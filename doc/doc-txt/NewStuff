@@ -27,6 +27,11 @@ Version 4.83
     and a second regex to extract malware_name.  The mail spoofile name can
     be included in the command line.
 
+ 5. When built with OpenSSL the smtp transport now supports options
+    "tls_verify_hosts" and "tls_try_verify_hosts".  If either is set the
+    certificate verification is split from the encryption operation. The
+    default remains that a failed verification cancels the encryption.
+
 
 Version 4.82
 ------------

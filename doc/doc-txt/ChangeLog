@@ -56,6 +56,8 @@ JH/06 Log outbound-TLS and port details, subject to log selectors, for a
 
 JH/07 Add malware type "sock" for talking to simple daemon.
 
+JH/08 Bugzilla 1371: Add tls_{,try_}verify_hosts to smtp transport. OpenSSL only.
+
 
 Exim version 4.82
 -----------------
