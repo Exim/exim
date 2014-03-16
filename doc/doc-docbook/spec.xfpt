@@ -29039,6 +29039,7 @@ router that does not set up hosts routes to an &(smtp)& transport with a
 &%hosts%& setting, the transport's hosts are used. If an &(smtp)& transport has
 &%hosts_override%& set, its hosts are always used, whether or not the router
 supplies a host list.
+Callouts are only supported on &(smtp)& transports.
 
 The port that is used is taken from the transport, if it is specified and is a
 remote transport. (For routers that do verification only, no transport need be

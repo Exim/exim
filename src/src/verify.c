@@ -373,6 +373,9 @@ if (!addr->transport)
   {
   HDEBUG(D_verify) debug_printf("cannot callout via null transport\n");
   }
+else if (Ustrcmp(addr->transport->driver_name, "smtp") != 0)
+  log_write(0, LOG_MAIN|LOG_PANIC|LOG_CONFIG_FOR, "callout transport '%s': %s is non-smtp",
+    addr->transport->name, addr->transport->driver_name);
 else
   {
   smtp_transport_options_block *ob =
