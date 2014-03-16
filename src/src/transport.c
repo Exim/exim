@@ -600,6 +600,175 @@ return write_chunk(fd, pp->address, Ustrlen(pp->address), use_crlf);
 
 
 
+/* Add/remove/rewwrite headers, and send them plus the empty-line sparator.
+
+Globals:
+  header_list
+
+Arguments:
+  addr                  (chain of) addresses (for extra headers), or NULL;
+                          only the first address is used
+  fd                    file descriptor to write the message to
+  sendfn		function for output
+  use_crlf		turn NL into CR LF
+  rewrite_rules         chain of header rewriting rules
+  rewrite_existflags    flags for the rewriting rules
+
+Returns:                TRUE on success; FALSE on failure.
+*/
+BOOL
+transport_headers_send(address_item *addr, int fd, uschar *add_headers, uschar *remove_headers,
+  BOOL (*sendfn)(int fd, uschar * s, int len, BOOL use_crlf),
+  BOOL use_crlf, rewrite_rule *rewrite_rules, int rewrite_existflags)
+{
+header_line *h;
+
+/* Then the message's headers. Don't write any that are flagged as "old";
+that means they were rewritten, or are a record of envelope rewriting, or
+were removed (e.g. Bcc). If remove_headers is not null, skip any headers that
+match any entries therein. Then check addr->p.remove_headers too, provided that
+addr is not NULL. */
+
+if (remove_headers)
+  {
+  uschar *s = expand_string(remove_headers);
+  if (!s && !expand_string_forcedfail)
+    {
+    errno = ERRNO_CHHEADER_FAIL;
+    return FALSE;
+    }
+  remove_headers = s;
+  }
+
+for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
+  {
+  int i;
+  uschar *list = remove_headers;
+
+  BOOL include_header = TRUE;
+
+  for (i = 0; i < 2; i++)    /* For remove_headers && addr->p.remove_headers */
+    {
+    if (list)
+      {
+      int sep = ':';         /* This is specified as a colon-separated list */
+      uschar *s, *ss;
+      uschar buffer[128];
+      while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+	{
+	int len = Ustrlen(s);
+	if (strncmpic(h->text, s, len) != 0) continue;
+	ss = h->text + len;
+	while (*ss == ' ' || *ss == '\t') ss++;
+	if (*ss == ':') break;
+	}
+      if (s != NULL) { include_header = FALSE; break; }
+      }
+    if (addr != NULL) list = addr->p.remove_headers;
+    }
+
+  /* If this header is to be output, try to rewrite it if there are rewriting
+  rules. */
+
+  if (include_header)
+    {
+    if (rewrite_rules)
+      {
+      void *reset_point = store_get(0);
+      header_line *hh;
+
+      if ((hh = rewrite_header(h, NULL, NULL, rewrite_rules, rewrite_existflags, FALSE)))
+	{
+	if (!sendfn(fd, hh->text, hh->slen, use_crlf)) return FALSE;
+	store_reset(reset_point);
+	continue;     /* With the next header line */
+	}
+      }
+
+    /* Either no rewriting rules, or it didn't get rewritten */
+
+    if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+    }
+
+  /* Header removed */
+
+  else
+    {
+    DEBUG(D_transport) debug_printf("removed header line:\n%s---\n", h->text);
+    }
+  }
+
+/* Add on any address-specific headers. If there are multiple addresses,
+they will all have the same headers in order to be batched. The headers
+are chained in reverse order of adding (so several addresses from the
+same alias might share some of them) but we want to output them in the
+opposite order. This is a bit tedious, but there shouldn't be very many
+of them. We just walk the list twice, reversing the pointers each time,
+but on the second time, write out the items.
+
+Headers added to an address by a router are guaranteed to end with a newline.
+*/
+
+if (addr)
+  {
+  int i;
+  header_line *hprev = addr->p.extra_headers;
+  header_line *hnext;
+  for (i = 0; i < 2; i++)
+    {
+    for (h = hprev, hprev = NULL; h != NULL; h = hnext)
+      {
+      hnext = h->next;
+      h->next = hprev;
+      hprev = h;
+      if (i == 1)
+	{
+	if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+	DEBUG(D_transport)
+	  debug_printf("added header line(s):\n%s---\n", h->text);
+	}
+      }
+    }
+  }
+
+/* If a string containing additional headers exists, expand it and write
+out the result. This is done last so that if it (deliberately or accidentally)
+isn't in header format, it won't mess up any other headers. An empty string
+or a forced expansion failure are noops. An added header string from a
+transport may not end with a newline; add one if it does not. */
+
+if (add_headers)
+  {
+  uschar *s = expand_string(add_headers);
+  if (s == NULL)
+    {
+    if (!expand_string_forcedfail)
+      { errno = ERRNO_CHHEADER_FAIL; return FALSE; }
+    }
+  else
+    {
+    int len = Ustrlen(s);
+    if (len > 0)
+      {
+      if (!sendfn(fd, s, len, use_crlf)) return FALSE;
+      if (s[len-1] != '\n' && !sendfn(fd, US"\n", 1, use_crlf))
+	return FALSE;
+      DEBUG(D_transport)
+	{
+	debug_printf("added header line(s):\n%s", s);
+	if (s[len-1] != '\n') debug_printf("\n");
+	debug_printf("---\n");
+	}
+      }
+    }
+  }
+
+/* Separate headers from body with a blank line */
+
+return sendfn(fd, US"\n", 1, use_crlf);
+}
+
+
 /*************************************************
 *                Write the message               *
 *************************************************/
@@ -747,154 +916,9 @@ if ((options & topt_no_headers) == 0)
   were removed (e.g. Bcc). If remove_headers is not null, skip any headers that
   match any entries therein. Then check addr->p.remove_headers too, provided that
   addr is not NULL. */
-
-  if (remove_headers != NULL)
-    {
-    uschar *s = expand_string(remove_headers);
-    if (s == NULL && !expand_string_forcedfail)
-      {
-      errno = ERRNO_CHHEADER_FAIL;
-      return FALSE;
-      }
-    remove_headers = s;
-    }
-
-  for (h = header_list; h != NULL; h = h->next)
-    {
-    int i;
-    uschar *list = NULL;
-    BOOL include_header;
-
-    if (h->type == htype_old) continue;
-
-    include_header = TRUE;
-    list = remove_headers;
-
-    for (i = 0; i < 2; i++)    /* For remove_headers && addr->p.remove_headers */
-      {
-      if (list != NULL)
-        {
-        int sep = ':';         /* This is specified as a colon-separated list */
-        uschar *s, *ss;
-        uschar buffer[128];
-        while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
-                != NULL)
-          {
-          int len = Ustrlen(s);
-          if (strncmpic(h->text, s, len) != 0) continue;
-          ss = h->text + len;
-          while (*ss == ' ' || *ss == '\t') ss++;
-          if (*ss == ':') break;
-          }
-        if (s != NULL) { include_header = FALSE; break; }
-        }
-      if (addr != NULL) list = addr->p.remove_headers;
-      }
-
-    /* If this header is to be output, try to rewrite it if there are rewriting
-    rules. */
-
-    if (include_header)
-      {
-      if (rewrite_rules != NULL)
-        {
-        void *reset_point = store_get(0);
-        header_line *hh =
-          rewrite_header(h, NULL, NULL, rewrite_rules, rewrite_existflags,
-            FALSE);
-        if (hh != NULL)
-          {
-          if (!write_chunk(fd, hh->text, hh->slen, use_crlf)) return FALSE;
-          store_reset(reset_point);
-          continue;     /* With the next header line */
-          }
-        }
-
-      /* Either no rewriting rules, or it didn't get rewritten */
-
-      if (!write_chunk(fd, h->text, h->slen, use_crlf)) return FALSE;
-      }
-
-    /* Header removed */
-
-    else
-      {
-      DEBUG(D_transport) debug_printf("removed header line:\n%s---\n",
-        h->text);
-      }
-    }
-
-  /* Add on any address-specific headers. If there are multiple addresses,
-  they will all have the same headers in order to be batched. The headers
-  are chained in reverse order of adding (so several addresses from the
-  same alias might share some of them) but we want to output them in the
-  opposite order. This is a bit tedious, but there shouldn't be very many
-  of them. We just walk the list twice, reversing the pointers each time,
-  but on the second time, write out the items.
-
-  Headers added to an address by a router are guaranteed to end with a newline.
-  */
-
-  if (addr != NULL)
-    {
-    int i;
-    header_line *hprev = addr->p.extra_headers;
-    header_line *hnext;
-    for (i = 0; i < 2; i++)
-      {
-      for (h = hprev, hprev = NULL; h != NULL; h = hnext)
-        {
-        hnext = h->next;
-        h->next = hprev;
-        hprev = h;
-        if (i == 1)
-          {
-          if (!write_chunk(fd, h->text, h->slen, use_crlf)) return FALSE;
-          DEBUG(D_transport)
-            debug_printf("added header line(s):\n%s---\n", h->text);
-          }
-        }
-      }
-    }
-
-  /* If a string containing additional headers exists, expand it and write
-  out the result. This is done last so that if it (deliberately or accidentally)
-  isn't in header format, it won't mess up any other headers. An empty string
-  or a forced expansion failure are noops. An added header string from a
-  transport may not end with a newline; add one if it does not. */
-
-  if (add_headers != NULL)
-    {
-    uschar *s = expand_string(add_headers);
-    if (s == NULL)
-      {
-      if (!expand_string_forcedfail)
-        {
-        errno = ERRNO_CHHEADER_FAIL;
-        return FALSE;
-        }
-      }
-    else
-      {
-      int len = Ustrlen(s);
-      if (len > 0)
-        {
-        if (!write_chunk(fd, s, len, use_crlf)) return FALSE;
-        if (s[len-1] != '\n' && !write_chunk(fd, US"\n", 1, use_crlf))
-          return FALSE;
-        DEBUG(D_transport)
-          {
-          debug_printf("added header line(s):\n%s", s);
-          if (s[len-1] != '\n') debug_printf("\n");
-          debug_printf("---\n");
-          }
-        }
-      }
-    }
-
-  /* Separate headers from body with a blank line */
-
-  if (!write_chunk(fd, US"\n", 1, use_crlf)) return FALSE;
+  if (!transport_headers_send(addr, fd, add_headers, remove_headers, &write_chunk,
+	use_crlf, rewrite_rules, rewrite_existflags))
+    return FALSE;
   }
 
 /* If the body is required, ensure that the data for check strings (formerly
@@ -2157,4 +2181,6 @@ if (expand_arguments)
 return TRUE;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of transport.c */

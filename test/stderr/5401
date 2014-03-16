@@ -23,7 +23,8 @@ processing "accept"
 accept: condition test succeeded in inline ACL
   SMTP>> DATA
   SMTP<< 354 Send data
-  SMTP>>(nl)
+----------- start cutthrough headers send -----------
+----------- done cutthrough headers send ------------
   SMTP>> .
   SMTP<< 250 OK
 LOG: MAIN

@@ -27330,8 +27330,12 @@ from one SMTP connection to another.  If a recipient-verify callout connection i
 requested in the same ACL it is held open and used for the data, otherwise one is made
 after the ACL completes.
 
-Note that routers are used in verify mode.  Note also that headers cannot be
+Note that routers are used in verify mode,
+and cannot depend on content of received headers.
+Note also that headers cannot be
 modified by any of the post-data ACLs (DATA, MIME and DKIM).
+Headers may be modified by routers (subject to the above) and transports.
+
 Cutthrough delivery is not supported via transport-filters or when DKIM signing
 of outgoing messages is done, because it sends data to the ultimate destination
 before the entire message has been received from the source.

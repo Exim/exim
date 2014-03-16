@@ -34,6 +34,8 @@ all:
   route_list = * 127.0.0.1
   self = send
   transport = smtp
+  headers_remove = X-hdr-rtr
+  headers_add =    X-hdr-rtr-new: $h_X-hdr-rtr:+++
   no_more
 
 
@@ -45,6 +47,7 @@ smtp:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_S
+  headers_add =  ${if def:h_X-hdr-rtr {X-hdr-tpt-new: new} {}}
 
 
 # End

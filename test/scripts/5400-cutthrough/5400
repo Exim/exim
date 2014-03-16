@@ -26,8 +26,6 @@ DATA
 QUIT
 ****
 # cutthrough_delivery into HELO-only server
-need_ipv4
-#
 server PORT_S
 220 SMTP only spoken here
 EHLO
@@ -92,3 +90,36 @@ DATA
 QUIT
 ****
 sleep 1
+#
+#
+#
+#
+#
+# cutthrough_delivery basic operation, again
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -d-all+acl+transport -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userx@domain.com>
+DATA
+X-hdr-rtr: qqq
+X-hdr-tpt: zzz
+
+body
+.
+QUIT
+****

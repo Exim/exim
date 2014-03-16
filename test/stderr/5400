@@ -26,7 +26,11 @@ processing "accept"
 accept: condition test succeeded in inline ACL
   SMTP>> DATA
   SMTP<< 354 Send data
-  SMTP>>(nl)
+----------- start cutthrough headers send -----------
+added header line(s):
+X-hdr-rtr-new: +++
+---
+----------- done cutthrough headers send ------------
   SMTP>> .
   SMTP<< 250 OK
 LOG: MAIN
@@ -69,7 +73,11 @@ processing "accept"
 accept: condition test succeeded in inline ACL
   SMTP>> DATA
   SMTP<< 354 Send data
-  SMTP>>(nl)
+----------- start cutthrough headers send -----------
+added header line(s):
+X-hdr-rtr-new: +++
+---
+----------- done cutthrough headers send ------------
   SMTP>> .
   SMTP<< 250 OK
 LOG: MAIN
@@ -147,6 +155,9 @@ not using PIPELINING
   SMTP>> DATA
   SMTP<< 354 Send data
   SMTP>> writing message and terminating "."
+added header line(s):
+X-hdr-rtr-new: +++
+---
 writing data block fd=dddd size=sss timeout=300
   SMTP<< 250 OK
 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
@@ -161,4 +172,55 @@ LOG: MAIN
   -> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 LOG: MAIN
   Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+using ACL "ar"
+processing "accept"
+check control = cutthrough_delivery
+check logwrite = rcpt for $local_part@$domain
+               = rcpt for userx@domain.com
+LOG: MAIN
+  rcpt for userx@domain.com
+accept: condition test succeeded in ACL "ar"
+----------- start cutthrough setup ------------
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+----------- end cutthrough setup ------------
+processing "accept"
+accept: condition test succeeded in inline ACL
+  SMTP>> DATA
+  SMTP<< 354 Send data
+----------- start cutthrough headers send -----------
+removed header line:
+X-hdr-rtr: qqq
+---
+added header line(s):
+X-hdr-rtr-new: +++
+---
+added header line(s):
+X-hdr-tpt-new: new
+---
+----------- done cutthrough headers send ------------
+  SMTP>> .
+  SMTP<< 250 OK
+LOG: MAIN
+  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+  SMTP>> QUIT
+----------- cutthrough shutdown (delivered) ------------
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
+LOG: MAIN
+  Completed
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

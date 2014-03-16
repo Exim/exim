@@ -1,4 +1,4 @@
-# cutthrough_delivery to target oferring TLS
+# cutthrough_delivery to target offerring TLS
 exim -DSERVER=server -bd -oX PORT_D
 ****
 # this one should succeed

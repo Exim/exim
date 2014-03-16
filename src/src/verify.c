@@ -976,6 +976,7 @@ else
       {
       cutthrough_fd= outblock.sock;	/* We assume no buffer in use in the outblock */
       cutthrough_addr = *addr;		/* Save the address_item for later logging */
+      cutthrough_addr.next =	  NULL;
       cutthrough_addr.host_used = store_get(sizeof(host_item));
       cutthrough_addr.host_used->name =    host->name;
       cutthrough_addr.host_used->address = host->address;
@@ -1244,27 +1245,43 @@ return cutthrough_response('3', NULL) == '3';
 }
 
 
+/* fd and use_crlf args only to match write_chunk() */
+static BOOL
+cutthrough_write_chunk(int fd, uschar * s, int len, BOOL use_crlf)
+{
+uschar * s2;
+while(s && (s2 = Ustrchr(s, '\n')))
+ {
+ if(!cutthrough_puts(s, s2-s) || !cutthrough_put_nl())
+  return FALSE;
+ s = s2+1;
+ }
+return TRUE;
+}
+
+
 /* Buffered send of headers.  Return success boolean. */
 /* Expands newlines to wire format (CR,NL).           */
 /* Also sends header-terminating blank line.          */
 BOOL
 cutthrough_headers_send( void )
 {
-header_line * h;
-uschar * cp1, * cp2;
-
 if(cutthrough_fd < 0)
   return FALSE;
 
-for(h= header_list; h != NULL; h= h->next)
-  if(h->type != htype_old  &&  h->text != NULL)
-    for (cp1 = h->text; *cp1 && (cp2 = Ustrchr(cp1, '\n')); cp1 = cp2+1)
-      if(  !cutthrough_puts(cp1, cp2-cp1)
-        || !cutthrough_put_nl())
-        return FALSE;
+/* We share a routine with the mainline transport to handle header add/remove/rewrites,
+   but having a separate buffered-output function (for now)
+*/
+HDEBUG(D_acl) debug_printf("----------- start cutthrough headers send -----------\n");
 
-HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>>(nl)\n");
-return cutthrough_put_nl();
+if (!transport_headers_send(&cutthrough_addr, cutthrough_fd,
+	cutthrough_addr.transport->add_headers, cutthrough_addr.transport->remove_headers,
+	&cutthrough_write_chunk, TRUE,
+	cutthrough_addr.transport->rewrite_rules, cutthrough_addr.transport->rewrite_existflags))
+  return FALSE;
+
+HDEBUG(D_acl) debug_printf("----------- done cutthrough headers send ------------\n");
+return TRUE;
 }
 
 
@@ -3710,4 +3727,6 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
 return FAIL;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of verify.c */
