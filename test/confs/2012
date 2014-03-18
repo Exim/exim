@@ -1,4 +1,5 @@
 # Exim test configuration 2012
+# TLS client: verify certificate from server - fails
 
 SERVER=
 
@@ -35,18 +36,53 @@ tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
 
 begin routers
 
-client:
+server_dump:
+  driver = redirect
+  condition = ${if eq {SERVER}{server}{yes}{no}}
+  data = :blackhole:
+
+client_x:
   driver = accept
-  condition = ${if eq {SERVER}{server}{no}{yes}}
+  local_parts = userx
   retry_use_local_part
-  transport = send_to_server
+  transport = send_to_server_failcert
+  errors_to = ""
+
+client_y:
+  driver = accept
+  local_parts = usery
+  retry_use_local_part
+  transport = send_to_server_retry
+
+client_z:
+  driver = accept
+  local_parts = userz
+  retry_use_local_part
+  transport = send_to_server_crypt
+
+client_q:
+  driver = accept
+  local_parts = userq
+  retry_use_local_part
+  transport = send_to_server_req_fail
 
 
 # ----- Transports -----
 
 begin transports
 
-send_to_server:
+# this will fail to verify the cert at HOSTIPV4 so fail the crypt requirement
+send_to_server_failcert:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  hosts_require_tls = HOSTIPV4
+  port = PORT_D
+  tls_certificate = DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert2
+
+# this will fail to verify the cert at HOSTIPV4 so fail the crypt, then retry on 127.1; ok
+send_to_server_retry:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4 : 127.0.0.1
@@ -54,6 +90,27 @@ send_to_server:
   port = PORT_D
   tls_certificate = DIR/aux-fixed/cert2
   tls_verify_certificates = \
-    ${if eq{$host_address}{127.0.0.1}{DIR/aux-fixed/cert1}{DIR/aux-fixed/cert2}}
+	${if eq{$host_address}{127.0.0.1}{DIR/aux-fixed/cert1}{DIR/aux-fixed/cert2}}
+
+# this will fail to verify the cert at HOSTIPV4 but continue unverified though crypted
+send_to_server_crypt:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  hosts_require_tls = HOSTIPV4
+  port = PORT_D
+  tls_certificate = DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_try_verify_hosts = *
+
+# this will fail to verify the cert at HOSTIPV4 and fallback to unencrypted
+send_to_server_req_fail:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+  tls_certificate = DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_verify_hosts = *
 
 # End

@@ -1604,18 +1604,27 @@ DEBUG(D_tls) debug_printf("Setting D-H prime minimum acceptable bits to %d\n",
     dh_min_bits);
 gnutls_dh_set_prime_bits(state->session, dh_min_bits);
 
-if (state->exp_tls_verify_certificates == NULL)
+/* stick to the old behaviour for compatibility if tls_verify_certificates is 
+   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only 
+   the specified host patterns if one of them is defined */
+if (((state->exp_tls_verify_certificates != NULL) && (verify_hosts == NULL) && (try_verify_hosts == NULL)) ||
+    (verify_check_host(&verify_hosts) == OK))
   {
-  DEBUG(D_tls) debug_printf("TLS: server certificate verification not required\n");
-  state->verify_requirement = VERIFY_NONE;
-  /* we still ask for it, to log it, etc */
+  DEBUG(D_tls) debug_printf("TLS: server certificate verification required.\n");
+  state->verify_requirement = VERIFY_REQUIRED;
+  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
+  }
+else if (verify_check_host(&try_verify_hosts) == OK)
+  {
+  DEBUG(D_tls) debug_printf("TLS: server certificate verification optional.\n");
+  state->verify_requirement = VERIFY_OPTIONAL;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUEST);
   }
 else
   {
-  DEBUG(D_tls) debug_printf("TLS: server certificate verification required\n");
-  state->verify_requirement = VERIFY_REQUIRED;
-  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
+  DEBUG(D_tls) debug_printf("TLS: server certificate verification not required.\n");
+  state->verify_requirement = VERIFY_NONE;
+  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }
 
 gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr)fd);

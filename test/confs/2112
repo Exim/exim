@@ -92,7 +92,7 @@ send_to_server_retry:
   tls_verify_certificates = \
     ${if eq{$host_address}{127.0.0.1}{DIR/aux-fixed/cert1}{DIR/aux-fixed/cert2}}
 
-# this will fail to verify the cert but continue unverified though cypted
+# this will fail to verify the cert but continue unverified though crypted
 send_to_server_crypt:
   driver = smtp
   allow_localhost
