@@ -299,6 +299,11 @@ data
 .
 mail from:<userx@test.ex>
 rcpt to:<cond-rhubarb@test.ex>
+rset
+mail from:<userx@test.ex>
+rcpt to:<cond--1@test.ex>
+data
+.
 quit
 ****
 exim -DLOG_SELECTOR=log_selector=-acl_warn_skipped -odi -bs -oMa 56.56.56.56

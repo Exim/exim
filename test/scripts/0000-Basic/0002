@@ -602,7 +602,7 @@ abcdea abc z   ${tr{abcdea}{abc}{z}}
 " yes"                ${if bool{ yes}{true}{false}}      EXPECT: true
 " no"                 ${if bool{ no}{true}{false}}     EXPECT: false
 "yes "                ${if bool{yes }{true}{false}}      EXPECT: true
-"-1"                  ${if bool{-1}{true}{false}}     EXPECT: error
+"-1"                  ${if bool{-1}{true}{false}}     EXPECT: true
 "0"                   ${if bool{0}{true}{false}}     EXPECT: false
 "1"                   ${if bool{1}{true}{false}}      EXPECT: true
 " 0 "                 ${if bool{ 0 }{true}{false}}     EXPECT: false
@@ -612,6 +612,7 @@ abcdea abc z   ${tr{abcdea}{abc}{z}}
 " "                   ${if bool{ }{true}{false}}     EXPECT: false
 "text"                ${if bool{text}{true}{false}}     EXPECT: error
 " text"               ${if bool{ text}{true}{false}}     EXPECT: error
+"-text"               ${if bool{-text}{true}{false}}     EXPECT: error
 "text "               ${if bool{text }{true}{false}}     EXPECT: error
 " text "              ${if bool{ text }{true}{false}}     EXPECT: error
 "00"                  ${if bool{00}{true}{false}}     EXPECT: false

@@ -10247,7 +10247,7 @@ If the ACL returns defer the result is a forced-fail.
 .cindex "&%bool%& expansion condition"
 This condition turns a string holding a true or false representation into
 a boolean state.  It parses &"true"&, &"false"&, &"yes"& and &"no"&
-(case-insensitively); also positive integer numbers map to true if non-zero,
+(case-insensitively); also integer numbers map to true if non-zero,
 false if zero.
 An empty string is treated as false.
 Leading and trailing whitespace is ignored;

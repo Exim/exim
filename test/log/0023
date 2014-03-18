@@ -42,17 +42,20 @@
 1999-03-02 09:44:33 10HmbK-0005vi-00 => cond-yes <cond-yes@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
 1999-03-02 09:44:33 H=[56.56.57.57] U=CALLER F=<userx@test.ex> temporarily rejected RCPT <cond-rhubarb@test.ex>: invalid "condition" value "rhubarb"
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= userx@test.ex H=[56.56.56.56] U=CALLER P=smtp S=sss
-1999-03-02 09:44:33 10HmbL-0005vi-00 => cond-rhubarb <cond-rhubarb@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= userx@test.ex H=[56.56.57.57] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmbL-0005vi-00 => cond--1 <cond--1@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= userx@test.ex H=[56.56.56.56] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 => cond-rhubarb <cond-rhubarb@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
 1999-03-02 09:44:33 H=[56.56.58.58] U=CALLER F=<rcpttest@test.ex> rejected RCPT <bad1@test.ex>
 1999-03-02 09:44:33 H=[56.56.58.58] U=CALLER F=<rcpttest@test.ex> rejected RCPT <bad2@test.ex>
 1999-03-02 09:44:33 H=[56.56.58.58] U=CALLER F=<rcpttest@test.ex> rejected RCPT <bad3@test.ex>
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= rcpttest@test.ex H=[56.56.58.58] U=CALLER P=smtp S=sss
-1999-03-02 09:44:33 10HmbM-0005vi-00 => ok1 <ok1@test.ex> R=r0 T=t2
-1999-03-02 09:44:33 10HmbM-0005vi-00 -> ok2 <ok2@test.ex> R=r0 T=t2
-1999-03-02 09:44:33 10HmbM-0005vi-00 -> ok3 <ok3@test.ex> R=r0 T=t2
-1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= rcpttest@test.ex H=[56.56.58.58] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmbN-0005vi-00 => ok1 <ok1@test.ex> R=r0 T=t2
+1999-03-02 09:44:33 10HmbN-0005vi-00 -> ok2 <ok2@test.ex> R=r0 T=t2
+1999-03-02 09:44:33 10HmbN-0005vi-00 -> ok3 <ok3@test.ex> R=r0 T=t2
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
 1999-03-02 09:44:33 H=[56.56.59.59] U=CALLER F=<rcpttest@test.ex> rejected RCPT <fail@test.ex>: here is a fail message
 1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
 1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)

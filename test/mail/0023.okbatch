@@ -5,7 +5,7 @@ Envelope-to: ok1@test.ex,
 Received: from [56.56.58.58] (ident=CALLER)
 	by myhost.test.ex with smtp (Exim x.yz)
 	(envelope-from <rcpttest@test.ex>)
-	id 10HmbM-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+	id 10HmbN-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 xx: rcpt_count = 1
     rcpt_defer_count = 0
     rcpt_fail_count  = 0

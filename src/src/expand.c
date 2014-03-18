@@ -2849,7 +2849,9 @@ switch(cond_type)
     be no maintenance burden from replicating it. */
     if (len == 0)
       boolvalue = FALSE;
-    else if (Ustrspn(t, "0123456789") == len)
+    else if (*t == '-'
+	     ? Ustrspn(t+1, "0123456789") == len-1
+	     : Ustrspn(t,   "0123456789") == len)
       {
       boolvalue = (Uatoi(t) == 0) ? FALSE : TRUE;
       /* expand_check_condition only does a literal string "0" check */

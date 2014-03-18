@@ -3103,7 +3103,9 @@ for (; cb != NULL; cb = cb->next)
     /* The true/false parsing here should be kept in sync with that used in
     expand.c when dealing with ECOND_BOOL so that we don't have too many
     different definitions of what can be a boolean. */
-    if (Ustrspn(arg, "0123456789") == Ustrlen(arg))     /* Digits, or empty */
+    if (*arg == '-'
+	? Ustrspn(arg+1, "0123456789") == Ustrlen(arg+1)    /* Negative number */
+	: Ustrspn(arg,   "0123456789") == Ustrlen(arg))     /* Digits, or empty */
       rc = (Uatoi(arg) == 0)? FAIL : OK;
     else
       rc = (strcmpic(arg, US"no") == 0 ||

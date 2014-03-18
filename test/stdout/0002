@@ -563,7 +563,7 @@
 > " yes"                true      EXPECT: true
 > " no"                 false     EXPECT: false
 > "yes "                true      EXPECT: true
-> Failed: unrecognised boolean value "-1"
+> "-1"                  true     EXPECT: true
 > "0"                   false     EXPECT: false
 > "1"                   true      EXPECT: true
 > " 0 "                 false     EXPECT: false
@@ -573,6 +573,7 @@
 > " "                   false     EXPECT: false
 > Failed: unrecognised boolean value "text"
 > Failed: unrecognised boolean value "text"
+> Failed: unrecognised boolean value "-text"
 > Failed: unrecognised boolean value "text"
 > Failed: unrecognised boolean value "text"
 > "00"                  false     EXPECT: false
