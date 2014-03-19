@@ -137,7 +137,8 @@ expanding:
 	for $received_for
    result: 
 	for userx@domain.com
-PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+----------- start cutthrough headers send -----------
+----------- done cutthrough headers send ------------
 expanding: ${tod_full}
    result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
@@ -270,7 +271,8 @@ expanding:
 	for $received_for
    result: 
 	for usery@domain.com
-PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+----------- start cutthrough headers send -----------
+----------- done cutthrough headers send ------------
 expanding: ${tod_full}
    result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
@@ -403,7 +405,8 @@ expanding:
 	for $received_for
    result: 
 	for usery@domain.com
-PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+----------- start cutthrough headers send -----------
+----------- done cutthrough headers send ------------
 expanding: ${tod_full}
    result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
