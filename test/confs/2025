@@ -23,7 +23,7 @@ queue_run_in_order
 tls_advertise_hosts = *
 
 tls_require_ciphers = ${if eq{$sender_host_address}{HOSTIPV4}\
-                      {IDEA-CBC-MD5}{!RSA_AES_256:DES-CBC3-SHA}}
+                      {NONE}{SECURE256}}
 
 # Set certificate only if server
 
