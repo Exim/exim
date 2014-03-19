@@ -23030,7 +23030,7 @@ in clear.
 .option tls_try_verify_hosts smtp "host list&!! unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
-For OpenSSL only, this option gives a list of hosts for which, on encrypted connections,
+This option gives a list of hosts for which, on encrypted connections,
 certificate verification will be tried but need not succeed.
 The &%tls_verify_certificates%& option must also be set.
 
@@ -23049,7 +23049,7 @@ single file if you are using GnuTLS. The values of &$host$& and
 &$host_address$& are set to the name and address of the server during the
 expansion of this option. See chapter &<<CHAPTLS>>& for details of TLS.
 
-For back-compatability, or when GnuTLS is used,
+For back-compatability,
 if neither tls_verify_hosts nor tls_try_verify_hosts are set
 and certificate verification fails the TLS connection is closed.
 
@@ -23057,7 +23057,7 @@ and certificate verification fails the TLS connection is closed.
 .option tls_verify_hosts smtp "host list&!! unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
-For OpenSSL only, this option gives a list of hosts for which. on encrypted connections,
+This option gives a list of hosts for which. on encrypted connections,
 certificate verification must succeed.
 The &%tls_verify_certificates%& option must also be set.
 If both this option and &%tls_try_verify_hosts%& are unset
