@@ -1137,37 +1137,9 @@ construct_cipher_name(SSL *ssl, uschar *cipherbuf, int bsize, int *bits)
 yet reflect that.  It should be a safe change anyway, even 0.9.8 versions have
 the accessor functions use const in the prototype. */
 const SSL_CIPHER *c;
-uschar *ver;
+const uschar *ver;
 
-switch (ssl->session->ssl_version)
-  {
-  case SSL2_VERSION:
-  ver = US"SSLv2";
-  break;
-
-  case SSL3_VERSION:
-  ver = US"SSLv3";
-  break;
-
-  case TLS1_VERSION:
-  ver = US"TLSv1";
-  break;
-
-#ifdef TLS1_1_VERSION
-  case TLS1_1_VERSION:
-  ver = US"TLSv1.1";
-  break;
-#endif
-
-#ifdef TLS1_2_VERSION
-  case TLS1_2_VERSION:
-  ver = US"TLSv1.2";
-  break;
-#endif
-
-  default:
-  ver = US"UNKNOWN";
-  }
+ver = (const uschar *)SSL_get_version(ssl);
 
 c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
 SSL_CIPHER_get_bits(c, bits);
