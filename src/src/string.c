@@ -374,7 +374,8 @@ while (*p)
   {
   if (*p == '\\')
     {
-    *q = string_interpret_escape(&p);
+    *q++ = string_interpret_escape(&p);
+    p++;
     }
   else
     {
