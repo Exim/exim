@@ -118,6 +118,10 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
+#ifdef EXPERIMENTAL_DANE
+  { "hosts_try_dane",       opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
+#endif
 #ifndef DISABLE_PRDR
   { "hosts_try_prdr",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_prdr) },
@@ -200,6 +204,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* serialize_hosts */
   NULL,                /* hosts_try_auth */
   NULL,                /* hosts_require_auth */
+#ifdef EXPERIMENTAL_DANE
+  NULL,                /* hosts_try_dane */
+#endif
 #ifndef DISABLE_PRDR
   NULL,                /* hosts_try_prdr */
 #endif
