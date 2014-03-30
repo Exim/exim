@@ -7,7 +7,6 @@ From: CALLER_NAME <CALLER@test.ex>
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 Found: no
-
 FROM: CALLER_NAME <CALLER@test.ex>
 --------------------------------
 REPLY_ADDRESS: CALLER_NAME <CALLER@test.ex>
@@ -25,7 +24,6 @@ From: CALLER_NAME <CALLER@test.ex>
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 Found: no
-
 FROM: CALLER_NAME <CALLER@test.ex>
 --------------------------------
 REPLY_ADDRESS: CALLER_NAME <CALLER@test.ex>
@@ -43,7 +41,6 @@ From: CALLER_NAME <CALLER@test.ex>
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 Found: no
-
 FROM: CALLER_NAME <CALLER@test.ex>
 --------------------------------
 REPLY_ADDRESS: usery@test.ex
@@ -61,7 +58,6 @@ Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 Sender: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 Found: no
-
 FROM: 
 --------------------------------
 REPLY_ADDRESS: 

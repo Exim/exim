@@ -13,7 +13,7 @@
 *      Get additional headers for a router       *
 *************************************************/
 
-/* This function is called by both routers to sort out the additional headers
+/* This function is called by routers to sort out the additional headers
 and header remove list for a particular address.
 
 Arguments:
@@ -32,83 +32,78 @@ rf_get_munge_headers(address_item *addr, router_instance *rblock,
   header_line **extra_headers, uschar **remove_headers)
 {
 /* Default is to retain existing headers */
-
 *extra_headers = addr->p.extra_headers;
 
-if (rblock->extra_headers != NULL)
+if (rblock->extra_headers)
   {
-  header_line *h;
-  uschar *s = expand_string(rblock->extra_headers);
+  uschar * list = rblock->extra_headers;
+  int sep = '\n';
+  uschar * s;
+  int slen;
 
-  if (s == NULL)
-    {
-    if (!expand_string_forcedfail)
+  while ((s = string_nextinlist(&list, &sep, NULL, 0)))
+    if (!(s = expand_string(s)))
       {
-      addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
-        rblock->name, rblock->extra_headers, expand_string_message);
-      return DEFER;
+      if (!expand_string_forcedfail)
+	{
+	addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
+	  rblock->name, rblock->extra_headers, expand_string_message);
+	return DEFER;
+	}
       }
-    }
-
-  /* Expand succeeded. Put extra header at the start of the chain because
-  further down it may point to headers from other routers, which may be
-  shared with other addresses. The output function outputs them in reverse
-  order. */
-
-  else
-    {
-    int slen = Ustrlen(s);
-    if (slen > 0)
+    else if ((slen = Ustrlen(s)) > 0)
       {
-      h = store_get(sizeof(header_line));
+      /* Expand succeeded. Put extra headers at the start of the chain because
+      further down it may point to headers from other routers, which may be
+      shared with other addresses. The output function outputs them in reverse
+      order. */
+
+      header_line *  h = store_get(sizeof(header_line));
 
       /* We used to use string_sprintf() to add the newline if needed, but that
       causes problems if the header line is exceedingly long (e.g. adding
       something to a pathologically long line). So avoid it. */
 
       if (s[slen-1] == '\n')
-        {
-        h->text = s;
-        }
+	h->text = s;
       else
-        {
-        h->text = store_get(slen+2);
-        memcpy(h->text, s, slen);
-        h->text[slen++] = '\n';
-        h->text[slen] = 0;
-        }
+	{
+	h->text = store_get(slen+2);
+	memcpy(h->text, s, slen);
+	h->text[slen++] = '\n';
+	h->text[slen] = 0;
+	}
 
-      h->next = addr->p.extra_headers;
+      h->next = *extra_headers;
       h->type = htype_other;
       h->slen = slen;
       *extra_headers = h;
       }
-    }
   }
 
 /* Default is to retain existing removes */
-
 *remove_headers = addr->p.remove_headers;
 
-if (rblock->remove_headers != NULL)
+/* Expand items from colon-sep list separately, then build new list */
+if (rblock->remove_headers)
   {
-  uschar *s = expand_string(rblock->remove_headers);
-  if (s == NULL)
-    {
-    if (!expand_string_forcedfail)
+  uschar * list = rblock->remove_headers;
+  int sep = ':';
+  uschar * s;
+  uschar buffer[128];
+
+  while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+    if (!(s = expand_string(s)))
       {
-      addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
-        rblock->name, rblock->remove_headers, expand_string_message);
-      return DEFER;
+      if (!expand_string_forcedfail)
+	{
+	addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
+	  rblock->name, rblock->remove_headers, expand_string_message);
+	return DEFER;
+	}
       }
-    }
-  else if (*s != 0)
-    {
-    if (addr->p.remove_headers == NULL)
-      *remove_headers = s;
-    else
-      *remove_headers = string_sprintf("%s : %s", addr->p.remove_headers, s);
-    }
+    else if (*s)
+      *remove_headers = string_append_listele(*remove_headers, ':', s);
   }
 
 return OK;

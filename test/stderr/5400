@@ -207,7 +207,7 @@ X-hdr-rtr: qqq
 added header line(s):
 X-hdr-rtr-new: +++
 ---
-added header line(s):
+added header line:
 X-hdr-tpt-new: new
 ---
 ----------- done cutthrough headers send ------------

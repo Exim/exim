@@ -66,6 +66,13 @@ JH/10 Bugzilla 1005: ACL "condition =" should accept values which are negative
 
 JH/11 Add dnsdb tlsa lookup.  From Todd Lyons.
 
+JH/12 Expand items in router/transport headers_add or headers_remove lists
+      individually rather than the list as a whole.  Bug 1452.
+
+      Required for reasonable handling of multiple headers_ options when
+      they may be empty; requires that headers_remove items with embedded
+      colons must have them doubled (or the list-separator changed).
+
 
 Exim version 4.82
 -----------------

@@ -1562,15 +1562,21 @@ switch (type)
       Because we only do this once, near process start-up, I'm prepared to
       let this slide for the time being, even though it rankles.  */
       }
-    else if (*str_target && (ol->type & opt_rep_str))
-     {
+    else if (ol->type & opt_rep_str)
+      {
       uschar sep = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
-      saved_condition = *str_target;
-      strtemp = saved_condition + Ustrlen(saved_condition)-1;
-      if (*strtemp == sep) *strtemp = 0;	/* eliminate trailing list-sep */
-      strtemp = string_sprintf("%s%c%s", saved_condition, sep, sptr);
-      *str_target = string_copy_malloc(strtemp);
-     }
+      uschar * cp;
+
+      /* Strip trailing whitespace and seperators */
+      for (cp = sptr + Ustrlen(sptr) - 1;
+	  cp >= sptr && (*cp == '\n' || *cp == '\t' || *cp == ' ' || *cp == sep);
+	  cp--) *cp = '\0';
+
+      if (cp >= sptr)
+	*str_target = string_copy_malloc(
+		      *str_target ? string_sprintf("%s%c%s", *str_target, sep, sptr)
+				  : sptr);
+      }
     else
       {
       *str_target = sptr;
@@ -4131,4 +4137,6 @@ while(next_section[0] != 0)
 (void)fclose(config_file);
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of readconf.c */

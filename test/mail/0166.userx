@@ -12,5 +12,9 @@ X-Delivered-To: b@test.ex
 X-Delivered-To: c@test.ex
 X-Delivered-To: d@test.ex
 X-Delivered-To: userx@test.ex
+X-rtr-hdr: 1
+X-rtr-hdr: 3
+X-tpt-hdr: 1
+X-tpt-hdr: 3
 
 

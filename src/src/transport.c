@@ -626,19 +626,9 @@ header_line *h;
 /* Then the message's headers. Don't write any that are flagged as "old";
 that means they were rewritten, or are a record of envelope rewriting, or
 were removed (e.g. Bcc). If remove_headers is not null, skip any headers that
-match any entries therein. Then check addr->p.remove_headers too, provided that
-addr is not NULL. */
-
-if (remove_headers)
-  {
-  uschar *s = expand_string(remove_headers);
-  if (!s && !expand_string_forcedfail)
-    {
-    errno = ERRNO_CHHEADER_FAIL;
-    return FALSE;
-    }
-  remove_headers = s;
-  }
+match any entries therein.  It is a colon-sep list; expand the items
+separately and squash any empty ones.
+Then check addr->p.remove_headers too, provided that addr is not NULL. */
 
 for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
   {
@@ -656,7 +646,15 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
       uschar buffer[128];
       while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
 	{
-	int len = Ustrlen(s);
+	int len;
+
+	if (i == 0)
+	  if (!(s = expand_string(s)) && !expand_string_forcedfail)
+	    {
+	    errno = ERRNO_CHHEADER_FAIL;
+	    return FALSE;
+	    }
+	len = Ustrlen(s);
 	if (strncmpic(h->text, s, len) != 0) continue;
 	ss = h->text + len;
 	while (*ss == ' ' || *ss == '\t') ss++;
@@ -731,36 +729,40 @@ if (addr)
     }
   }
 
-/* If a string containing additional headers exists, expand it and write
-out the result. This is done last so that if it (deliberately or accidentally)
-isn't in header format, it won't mess up any other headers. An empty string
-or a forced expansion failure are noops. An added header string from a
-transport may not end with a newline; add one if it does not. */
+/* If a string containing additional headers exists it is a newline-sep
+list.  Expand each item and write out the result.  This is done last so that
+if it (deliberately or accidentally) isn't in header format, it won't mess
+up any other headers. An empty string or a forced expansion failure are
+noops. An added header string from a transport may not end with a newline;
+add one if it does not. */
 
 if (add_headers)
   {
-  uschar *s = expand_string(add_headers);
-  if (s == NULL)
-    {
-    if (!expand_string_forcedfail)
-      { errno = ERRNO_CHHEADER_FAIL; return FALSE; }
-    }
-  else
-    {
-    int len = Ustrlen(s);
-    if (len > 0)
+  int sep = '\n';
+  uschar * s;
+
+  while ((s = string_nextinlist(&add_headers, &sep, NULL, 0)))
+    if (!(s = expand_string(s)))
       {
-      if (!sendfn(fd, s, len, use_crlf)) return FALSE;
-      if (s[len-1] != '\n' && !sendfn(fd, US"\n", 1, use_crlf))
-	return FALSE;
-      DEBUG(D_transport)
+      if (!expand_string_forcedfail)
+	{ errno = ERRNO_CHHEADER_FAIL; return FALSE; }
+      }
+    else
+      {
+      int len = Ustrlen(s);
+      if (len > 0)
 	{
-	debug_printf("added header line(s):\n%s", s);
-	if (s[len-1] != '\n') debug_printf("\n");
-	debug_printf("---\n");
+	if (!sendfn(fd, s, len, use_crlf)) return FALSE;
+	if (s[len-1] != '\n' && !sendfn(fd, US"\n", 1, use_crlf))
+	  return FALSE;
+	DEBUG(D_transport)
+	  {
+	  debug_printf("added header line:\n%s", s);
+	  if (s[len-1] != '\n') debug_printf("\n");
+	  debug_printf("---\n");
+	  }
 	}
       }
-    }
   }
 
 /* Separate headers from body with a blank line */

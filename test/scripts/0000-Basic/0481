@@ -1,4 +1,4 @@
-# multiple remove_headers and trailing colons
+# multiple remove_headers in routers, and trailing colons
 exim -odi userx
 Remove-Me: this header is to be removed
 Another: This is another header

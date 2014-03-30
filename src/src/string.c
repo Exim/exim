@@ -966,6 +966,50 @@ return buffer;
 #endif  /* COMPILE_UTILITY */
 
 
+#ifndef COMPILE_UTILITY
+/************************************************
+*	Add element to seperated list           *
+************************************************/
+/* This function is used to build a list, returning
+an allocated null-terminated growable string. The
+given element has any embedded seperator characters
+doubled.
+
+Arguments:
+  list	points to the start of the list that is being built, or NULL
+	if this is a new list that has no contents yet
+  sep	list seperator charactoer
+  ele	new lement to be appended to the list
+
+Returns:  pointer to the start of the list, changed if copied for expansion.
+*/
+
+uschar *
+string_append_listele(uschar * list, uschar sep, const uschar * ele)
+{
+uschar * new = NULL;
+int sz = 0, off = 0;
+uschar * sp;
+
+if (list)
+  {
+  new = string_cat(new, &sz, &off, list, Ustrlen(list));
+  new = string_cat(new, &sz, &off, &sep, 1);
+  }
+
+while (sp = Ustrchr(ele, sep))
+  {
+  new = string_cat(new, &sz, &off, ele, sp-ele+1);
+  new = string_cat(new, &sz, &off, &sep, 1);
+  ele = sp+1;
+  }
+new = string_cat(new, &sz, &off, ele, Ustrlen(ele));
+new[off] = '\0';
+return new;
+}
+#endif  /* COMPILE_UTILITY */
+
+
 
 #ifndef COMPILE_UTILITY
 /*************************************************
