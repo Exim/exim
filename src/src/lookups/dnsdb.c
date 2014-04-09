@@ -22,6 +22,11 @@ header files. */
 #define T_SPF 99
 #endif
 
+/* New TLSA record for DANE */
+#ifndef T_TLSA
+#define T_TLSA 52
+#endif
+
 /* Table of recognized DNS record types and their integer values. */
 
 static const char *type_names[] = {
@@ -41,6 +46,7 @@ static const char *type_names[] = {
   "ptr",
   "spf",
   "srv",
+  "tlsa",
   "txt",
   "zns"
 };
@@ -62,6 +68,7 @@ static int type_values[] = {
   T_PTR,
   T_SPF,
   T_SRV,
+  T_TLSA,
   T_TXT,
   T_ZNS      /* Private type for "zone nameservers" */
 };
@@ -377,6 +384,29 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
             data_offset += chunk_len;
             }
           }
+        }
+      else if (type == T_TLSA)
+        {
+        uint8_t usage, selector, matching_type;
+        uint16_t i, payload_length;
+        uschar s[MAX_TLSA_EXPANDED_SIZE];
+	uschar * sp = s;
+        uschar *p = (uschar *)(rr->data);
+
+        usage = *p++;
+        selector = *p++;
+        matching_type = *p++;
+        /* What's left after removing the first 3 bytes above */
+        payload_length = rr->size - 3;
+        sp += sprintf(CS s, "%d %d %d ", usage, selector, matching_type);
+        /* Now append the cert/identifier, one hex char at a time */
+        for (i=0;
+             i < payload_length && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4);
+             i++)
+          {
+          sp += sprintf(CS sp, "%02x", (unsigned char)p[i]);
+          }
+        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
       else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */
         {

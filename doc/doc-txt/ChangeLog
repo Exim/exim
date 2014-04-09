@@ -64,6 +64,8 @@ JH/09 Bugzilla 1431: Support (with limitations) headers_add/headers_remove in
 JH/10 Bugzilla 1005: ACL "condition =" should accept values which are negative
       numbers.  Touch up "bool" conditional to keep the same definition.
 
+JH/11 Add dnsdb tlsa lookup.  From Todd Lyons.
+
 
 Exim version 4.82
 -----------------
