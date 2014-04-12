@@ -468,6 +468,7 @@ static var_entry var_table[] = {
 #endif
 #ifdef EXPERIMENTAL_DMARC
   { "dmarc_ar_header",     vtype_stringptr,   &dmarc_ar_header },
+  { "dmarc_domain_policy", vtype_stringptr,   &dmarc_domain_policy },
   { "dmarc_status",        vtype_stringptr,   &dmarc_status },
   { "dmarc_status_text",   vtype_stringptr,   &dmarc_status_text },
   { "dmarc_used_domain",   vtype_stringptr,   &dmarc_used_domain },

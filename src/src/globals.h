@@ -354,6 +354,7 @@ extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When se
 #ifdef EXPERIMENTAL_DMARC
 extern BOOL    dmarc_has_been_checked; /* Global variable to check if test has been called yet */
 extern uschar *dmarc_ar_header;        /* Expansion variable, suggested header for dmarc auth results */
+extern uschar *dmarc_domain_policy;    /* Expansion for declared policy of used domain */
 extern uschar *dmarc_forensic_sender;  /* Set sender address for forensic reports */
 extern uschar *dmarc_history_file;     /* Expansion variable, file to store dmarc results */
 extern uschar *dmarc_status;           /* Expansion variable, one word value */

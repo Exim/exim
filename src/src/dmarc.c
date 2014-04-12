@@ -38,6 +38,18 @@ u_char *header_from_sender = NULL;
 int history_file_status    = DMARC_HIST_OK;
 uschar *dkim_history_buffer= NULL;
 
+typedef struct dmarc_exim_p {
+  uschar *name;
+  int    value;
+} dmarc_exim_p;
+
+static dmarc_exim_p dmarc_policy_description[] = {
+  { US"",           DMARC_RECORD_P_UNSPECIFIED },
+  { US"none",       DMARC_RECORD_P_NONE },
+  { US"quarantine", DMARC_RECORD_P_QUARANTINE },
+  { US"reject",     DMARC_RECORD_P_REJECT },
+  { NULL,           0 }
+};
 /* Accept an error_block struct, initialize if empty, parse to the
  * end, and append the two strings passed to it.  Used for adding
  * variable amounts of value:pair data to the forensic emails. */
@@ -147,6 +159,7 @@ int dmarc_store_data(header_line *hdr) {
 int dmarc_process() {
     int sr, origin;             /* used in SPF section */
     int dmarc_spf_result  = 0;  /* stores spf into dmarc conn ctx */
+    int tmp_ans, c;
     pdkim_signature *sig  = NULL;
     BOOL has_dmarc_record = TRUE;
     u_char **ruf; /* forensic report addressees, if called for */
@@ -308,6 +321,16 @@ int dmarc_process() {
         has_dmarc_record = FALSE;
         break;
     }
+
+  /* Store the policy string in an expandable variable. */
+    libdm_status = opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
+    for (c=0; dmarc_policy_description[c].name != NULL; c++) {
+      if (tmp_ans == dmarc_policy_description[c].value) {
+        dmarc_domain_policy = string_sprintf("%s",dmarc_policy_description[c].name);
+        break;
+      }
+    }
+
     /* Can't use exim's string manipulation functions so allocate memory
      * for libopendmarc using its max hostname length definition. */
     uschar *dmarc_domain = (uschar *)calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));

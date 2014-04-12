@@ -775,7 +775,7 @@ fails.
 
 Of course, you can also use any other lookup method that Exim
 supports, including LDAP, Postgres, MySQL, etc, as long as the
-result is a list of colon-separated strings;
+result is a list of colon-separated strings.
 
 Several expansion variables are set before the DATA ACL is
 processed, and you can use them in this ACL.  The following
@@ -783,7 +783,10 @@ expansion variables are available:
 
   o $dmarc_status
     This is a one word status indicating what the DMARC library
-    thinks of the email.
+    thinks of the email.  It is a combination of the results of
+    DMARC record lookup and the SPF/DKIM/DMARC processing results
+    (if a DMARC record was found).  The actual policy declared
+    in the DMARC record is in a separate expansion variable.
 
   o $dmarc_status_text
     This is a slightly longer, human readable status.
@@ -791,6 +794,11 @@ expansion variables are available:
   o $dmarc_used_domain
     This is the domain which DMARC used to look up the DMARC
     policy record.
+
+  o $dmarc_domain_policy
+    This is the policy declared in the DMARC record.  Valid values
+    are "none", "reject" and "quarantine".  It is blank when there
+    is any error, including no DMARC record.
 
   o $dmarc_ar_header
     This is the entire Authentication-Results header which you can
@@ -827,6 +835,9 @@ b. Configure, somewhere before the DATA ACL, the control option to
   warn    !domains       = +screwed_up_dmarc_records
           control        = dmarc_enable_forensic
 
+  warn    condition      = (lookup if destined to mailing list)
+          set acl_m_mailing_list = 1
+
 (DATA ACL)
   warn    dmarc_status   = accept : none : off
           !authenticated = *
@@ -841,6 +852,10 @@ b. Configure, somewhere before the DATA ACL, the control option to
           !authenticated = *
           set $acl_m_quarantine = 1
           # Do something in a transport with this flag variable
+
+  deny    condition      = ${if eq{$dmarc_domain_policy}{reject}}
+          condition      = ${if eq{$acl_m_mailing_list}{1}}
+          message        = Messages from $dmarc_used_domain break mailing lists
 
   deny    dmarc_status   = reject
           !authenticated = *

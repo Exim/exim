@@ -75,6 +75,10 @@ JH/12 Expand items in router/transport headers_add or headers_remove lists
       they may be empty; requires that headers_remove items with embedded
       colons must have them doubled (or the list-separator changed).
 
+TL/07 Add new dmarc expansion variable $dmarc_domain_policy to directly
+      view the policy declared in the DMARC record. Currently, $dmarc_status
+      is a combined value of both the record presence and the result of the
+      analysis.
 
 Exim version 4.82
 -----------------
