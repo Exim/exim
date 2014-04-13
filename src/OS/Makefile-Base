@@ -316,8 +316,8 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
 
-exim:   lookups/lookups.a auths/auths.a pdkim/pdkim.a \
-        routers/routers.a transports/transports.a \
+exim:   buildlookups buildauths pdkim/pdkim.a \
+        buildrouters buildtransports \
         $(OBJ_EXIM) version.o
 	@echo "$(LNCC) -o exim"
 	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
@@ -354,7 +354,7 @@ exim_dumpdb: $(OBJ_DUMPDB)
 
 OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o
 
-exim_fixdb:  $(OBJ_FIXDB) auths/auths.a
+exim_fixdb:  $(OBJ_FIXDB) buildauths
 	@echo "$(LNCC) -o exim_fixdb"
 	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_fixdb $(LFLAGS) $(OBJ_FIXDB) \
 	  auths/auths.a $(LIBS) $(EXTRALIBS) $(DBMLIB)
@@ -620,7 +620,7 @@ drtables.o:      $(HDRS) drtables.c
 # When using parallel make, we don't have the dependency to force building
 # in the sub-directory unless we force that dependency:
 
-$(OBJ_LOOKUPS):  lookups/lookups.a
+$(OBJ_LOOKUPS):  buildlookups
 
 # The exim monitor's private modules - the sources live in a private
 # subdirectory. The final binary combines the private modules with some
@@ -648,8 +648,7 @@ $(MONBIN): $(HDRS)
 
 # The lookups library.
 
-buildlookups: lookups/lookups.a
-lookups/lookups.a: config.h version.h
+buildlookups:
 	 @cd lookups && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
@@ -658,8 +657,7 @@ lookups/lookups.a: config.h version.h
 
 # The routers library.
 
-buildrouters: routers/routers.a
-routers/routers.a: config.h
+buildrouters:
 	 @cd routers && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -667,8 +665,7 @@ routers/routers.a: config.h
 
 # The transports library.
 
-buildtransports: transports/transports.a
-transports/transports.a: config.h
+buildtransports:
 	 @cd transports && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -676,8 +673,7 @@ transports/transports.a: config.h
 
 # The library of authorization modules
 
-buildauths: auths/auths.a
-auths/auths.a: config.h
+buildauths:
 	 @cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
