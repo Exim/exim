@@ -60,5 +60,3 @@ void dmarc_send_forensic_report(u_char **);
 #define ARES_RESULT_DISCARD 12
 
 #endif /* EXPERIMENTAL_DMARC */
-
-// vim:sw=2 expandtab

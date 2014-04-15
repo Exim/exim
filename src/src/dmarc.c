@@ -455,7 +455,7 @@ int dmarc_write_history_file()
 
   if (spf_response != NULL)
     history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_ares_result);
-    // history_buffer = string_sprintf("%sspf -1\n", history_buffer);
+    /* history_buffer = string_sprintf("%sspf -1\n", history_buffer); */
 
   history_buffer = string_sprintf("%s%s", history_buffer, dkim_history_buffer);
   history_buffer = string_sprintf("%spdomain %s\n", history_buffer, dmarc_used_domain);
@@ -633,5 +633,3 @@ uschar *dmarc_auth_results_header(header_line *from_header, uschar *hostname)
 
 #endif /* EXPERIMENTAL_SPF */
 #endif /* EXPERIMENTAL_DMARC */
-
-// vim:sw=2 expandtab
