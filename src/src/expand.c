@@ -6189,8 +6189,13 @@ while (*s != 0)
 	      }
 	    if((c & 0xe0) == 0xc0)		/* 2-byte sequence */
 	      {
-	      bytes_left = 1;
-	      codepoint = c & 0x1f;
+	      if(c == 0xc0 || c == 0xc1)	/* 0xc0 and 0xc1 are illegal */
+		complete = -1;
+	      else
+		{
+		  bytes_left = 1;
+		  codepoint = c & 0x1f;
+		}
 	      }
 	    else if((c & 0xf0) == 0xe0)		/* 3-byte sequence */
 	      {

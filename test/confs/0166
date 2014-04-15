@@ -30,6 +30,9 @@ user:
   headers_add = X-Delivered-To: $local_part@$domain
   retry_use_local_part
   transport = local_delivery
+  headers_add = X-rtr-hdr: 1
+  headers_add = ${if bool{false} {X-rtr-hdr: 2}}
+  headers_add = X-rtr-hdr: 3
 
 
 # ----- Transports -----
@@ -41,6 +44,9 @@ local_delivery:
   envelope_to_add
   file = DIR/test-mail/$local_part
   user = CALLER
+  headers_add = X-tpt-hdr: 1
+  headers_add = ${if bool{false} {X-tpt-hdr: 2}}
+  headers_add = X-tpt-hdr: 3
 
 
 # End

@@ -350,6 +350,7 @@ extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
 extern int     stdin_ungetc(int);
 extern uschar *string_append(uschar *, int *, int *, int, ...);
+extern uschar *string_append_listele(uschar *, uschar, const uschar *);
 extern uschar *string_base62(unsigned long int);
 extern uschar *string_cat(uschar *, int *, int *, const uschar *, int);
 extern uschar *string_copy_dnsdomain(uschar *);

@@ -479,6 +479,7 @@ switch(t)
   case T_SRV:   return US"SRV";
   case T_NS:    return US"NS";
   case T_CNAME: return US"CNAME";
+  case T_TLSA:  return US"TLSA";
   default:      return US"?";
   }
 }

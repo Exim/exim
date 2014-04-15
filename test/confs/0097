@@ -21,7 +21,8 @@ localuser:
   driver = accept
   local_parts = userx
   headers_add = "${if def:h_x-rbl-warning: {Added: by router}}"
-  headers_remove = "${if def:h_x-rbl-warning: {subject}}"
+  # Colon-sep list!
+  headers_remove = "${if def::h_x-rbl-warning:: {subject}}"
   transport = local_delivery
 
 
@@ -35,7 +36,7 @@ local_delivery:
   envelope_to_add
   file = DIR/test-mail/$local_part
   headers_add = "${if def:h_tadd: {Added: by transport}}"
-  headers_remove = "${if def:h_tadd: {tadd}}"
+  headers_remove = "${if def::h_tadd:: {tadd}}"
   return_path_add
   user = CALLER
 

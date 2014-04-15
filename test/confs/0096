@@ -21,7 +21,8 @@ localuser:
   driver = accept
   local_parts = userx
   headers_add = "${if def:h_x-rbl-warning: {Added: xxxx}fail}"
-  headers_remove = "${if def:h_x-rbl-warning: {subject}fail}"
+  # Colon-sep list!
+  headers_remove = "${if def::h_x-rbl-warning:: {subject}fail}"
   transport = local_delivery
 
 

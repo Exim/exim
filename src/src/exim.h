@@ -321,6 +321,12 @@ header files. I don't suppose they have T_SRV either. */
 #define T_SPF 99
 #endif
 
+/* New TLSA record for DANE */
+#ifndef T_TLSA
+#define T_TLSA 52
+#endif
+#define MAX_TLSA_EXPANDED_SIZE 8192
+
 /* It seems that some versions of arpa/nameser.h don't define *any* of the
 T_xxx macros, which seem to be non-standard nowadays. Just to be on the safe
 side, put in definitions for all the ones that Exim uses. */

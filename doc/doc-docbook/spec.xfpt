@@ -6840,7 +6840,7 @@ is used on its own as the result. If the lookup does not succeed, the
 &`fail`& keyword causes a &'forced expansion failure'& &-- see section
 &<<SECTforexpfai>>& for an explanation of what this means.
 
-The supported DNS record types are A, CNAME, MX, NS, PTR, SPF, SRV, and TXT,
+The supported DNS record types are A, CNAME, MX, NS, PTR, SPF, SRV, TLSA and TXT,
 and, when Exim is compiled with IPv6 support, AAAA (and A6 if that is also
 configured). If no type is given, TXT is assumed. When the type is PTR,
 the data can be an IP address, written as normal; inversion and the addition of
@@ -16727,11 +16727,12 @@ and the discussion in chapter &<<CHAPenvironment>>&.
 
 
 
-.option headers_add routers string&!! unset
+.option headers_add routers list&!! unset
 .cindex "header lines" "adding"
 .cindex "router" "adding header lines"
-This option specifies a string of text that is expanded at routing time, and
-associated with any addresses that are accepted by the router. However, this
+This option specifies a list of text headers, newline-separated,
+that is associated with any addresses that are accepted by the router.
+Each item is separately expanded, at routing time.  However, this
 option has no effect when an address is just being verified. The way in which
 the text is used to add header lines at transport time is described in section
 &<<SECTheadersaddrem>>&. New header lines are not actually added until the
@@ -16740,8 +16741,8 @@ header lines in string expansions in the transport's configuration do not
 &"see"& the added header lines.
 
 The &%headers_add%& option is expanded after &%errors_to%&, but before
-&%headers_remove%& and &%transport%&. If the expanded string is empty, or if
-the expansion is forced to fail, the option has no effect. Other expansion
+&%headers_remove%& and &%transport%&. If an item is empty, or if
+an item expansion is forced to fail, the item has no effect. Other expansion
 failures are treated as configuration errors.
 
 Unlike most options, &%headers_add%& can be specified multiple times
@@ -16763,11 +16764,12 @@ avoided. The &%repeat_use%& option of the &%redirect%& router may be of help.
 
 
 
-.option headers_remove routers string&!! unset
+.option headers_remove routers list&!! unset
 .cindex "header lines" "removing"
 .cindex "router" "removing header lines"
-This option specifies a string of text that is expanded at routing time, and
-associated with any addresses that are accepted by the router. However, this
+This option specifies a list of text headers, colon-separated,
+that is associated with any addresses that are accepted by the router.
+Each item is separately expanded, at routing time.  However, this
 option has no effect when an address is just being verified. The way in which
 the text is used to remove header lines at transport time is described in
 section &<<SECTheadersaddrem>>&. Header lines are not actually removed until
@@ -16776,8 +16778,8 @@ to header lines in string expansions in the transport's configuration still
 &"see"& the original header lines.
 
 The &%headers_remove%& option is expanded after &%errors_to%& and
-&%headers_add%&, but before &%transport%&. If the expansion is forced to fail,
-the option has no effect. Other expansion failures are treated as configuration
+&%headers_add%&, but before &%transport%&. If an item expansion is forced to fail,
+the item has no effect. Other expansion failures are treated as configuration
 errors.
 
 Unlike most options, &%headers_remove%& can be specified multiple times
@@ -19777,10 +19779,11 @@ value that the router supplies, and also overriding any value associated with
 &%user%& (see below).
 
 
-.option headers_add transports string&!! unset
+.option headers_add transports list&!! unset
 .cindex "header lines" "adding in transport"
 .cindex "transport" "header lines; adding"
-This option specifies a string of text that is expanded and added to the header
+This option specifies a list of text headers, newline-separated,
+which are (separately) expanded and added to the header
 portion of a message as it is transported, as described in section
 &<<SECTheadersaddrem>>&. Additional header lines can also be specified by
 routers. If the result of the expansion is an empty string, or if the expansion
@@ -19801,18 +19804,20 @@ transports, the settings of &%message_prefix%& and &%message_suffix%& should be
 checked, since this option does not automatically suppress them.
 
 
-.option headers_remove transports string&!! unset
+.option headers_remove transports list&!! unset
 .cindex "header lines" "removing"
 .cindex "transport" "header lines; removing"
-This option specifies a string that is expanded into a list of header names;
+This option specifies a list of header names, colon-separated;
 these headers are omitted from the message as it is transported, as described
 in section &<<SECTheadersaddrem>>&. Header removal can also be specified by
-routers. If the result of the expansion is an empty string, or if the expansion
+routers.
+Each list item is separately expanded.
+If the result of the expansion is an empty string, or if the expansion
 is forced to fail, no action is taken. Other expansion failures are treated as
 errors and cause the delivery to be deferred.
 
 Unlike most options, &%headers_remove%& can be specified multiple times
-for a router; all listed headers are added.
+for a router; all listed headers are removed.
 
 
 
@@ -31963,7 +31968,7 @@ they do not affect the values of the variables that refer to header lines.
 the transport cannot refer to the modified header lines, because such
 expansions all occur before the message is actually transported.
 
-For both routers and transports, the result of expanding a &%headers_add%&
+For both routers and transports, the argument of a &%headers_add%&
 option must be in the form of one or more RFC 2822 header lines, separated by
 newlines (coded as &"\n"&). For example:
 .code
@@ -31973,10 +31978,10 @@ headers_add = X-added-header: added by $primary_hostname\n\
 Exim does not check the syntax of these added header lines.
 
 Multiple &%headers_add%& options for a single router or transport can be
-specified; the values will be concatenated (with a separating newline
-added) before expansion.
+specified; the values will append to a single list of header lines.
+Each header-line is separately expanded.
 
-The result of expanding &%headers_remove%& must consist of a colon-separated
+The argument of a &%headers_remove%& option must consist of a colon-separated
 list of header names. This is confusing, because header names themselves are
 often terminated by colons. In this case, the colons are the list separators,
 not part of the names. For example:
@@ -31985,11 +31990,12 @@ headers_remove = return-receipt-to:acknowledge-to
 .endd
 
 Multiple &%headers_remove%& options for a single router or transport can be
-specified; the values will be concatenated (with a separating colon
-added) before expansion.
+specified; the arguments will append to a single header-names list.
+Each item is separately expanded.
 
-When &%headers_add%& or &%headers_remove%& is specified on a router, its value
-is expanded at routing time, and then associated with all addresses that are
+When &%headers_add%& or &%headers_remove%& is specified on a router,
+items are expanded at routing time,
+and then associated with all addresses that are
 accepted by that router, and also with any new addresses that it generates. If
 an address passes through several routers as a result of aliasing or
 forwarding, the changes are cumulative.
