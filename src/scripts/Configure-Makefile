@@ -142,6 +142,10 @@ then
         fi
         if [ ".$need_this" != "." ]; then
           tls_include=`pkg-config --cflags $pc_value`
+          if [ $? -ne 0 ]; then
+            echo >&2 "*** Missing pkg-config for package $pc_value (for Exim $var build option)"
+            exit 1
+          fi
           tls_libs=`pkg-config --libs $pc_value`
           echo "TLS_INCLUDE=$tls_include"
           echo "TLS_LIBS=$tls_libs"
@@ -161,6 +165,10 @@ then
         else
           # main binary
           cflags=`pkg-config --cflags $pc_value`
+          if [ $? -ne 0 ]; then
+            echo >&2 "*** Missing pkg-config for package $pc_value (for Exim $var build option)"
+            exit 1
+          fi
           libs=`pkg-config --libs $pc_value`
           if [ "$var" != "${var#LOOKUP_}" ]; then
             echo "LOOKUP_INCLUDE += $cflags"
@@ -178,6 +186,10 @@ then
         case $PCRE_CONFIG in
           yes|YES|y|Y)
             cflags=`pcre-config --cflags`
+            if [ $? -ne 0 ]; then
+              echo >&2 "*** Missing pcre-config for regular expression support"
+              exit 1
+            fi
             libs=`pcre-config --libs`
             if [ ".$cflags" != "." ]; then
               echo "INCLUDE += $cflags"
@@ -196,6 +208,10 @@ then
   echo "# End of pkg-config fixups"
   echo
   ) >> $mft
+  subexit=$?
+  if [ $subexit -ne 0 ]; then
+    exit $subexit
+  fi
 fi
 rm -f $mftt
 
