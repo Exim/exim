@@ -8,6 +8,9 @@ CHMOD_COMMAND=/bin/chmod
 
 HAVE_SA_LEN=YES
 
+# FreeBSD has switched to {sha512} as the default hash-type.
+ALLOW_SYSTEM_CRYPT_BRACES=YES
+
 # crypt() is in a separate library
 LIBS=-lcrypt -lm -lutil
 

@@ -2616,12 +2616,14 @@ switch(cond_type)
         sub[1] += 9;
         which = 2;
         }
+#ifndef ALLOW_SYSTEM_CRYPT_BRACES
       else if (sub[1][0] == '{')		/* }-for-text-editors */
         {
         expand_string_message = string_sprintf("unknown encryption mechanism "
           "in \"%s\"", sub[1]);
         return NULL;
         }
+#endif
 
       switch(which)
         {

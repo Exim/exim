@@ -82,6 +82,11 @@ TL/07 Add new dmarc expansion variable $dmarc_domain_policy to directly
       is a combined value of both the record presence and the result of the
       analysis.
 
+PP/02 Add new ALLOW_SYSTEM_CRYPT_BRACES option, enable by default for FreeBSD,
+      letting crypteq comparisons pass unrecognised {..} prefices through to
+      system crypt.
+
+
 Exim version 4.82
 -----------------
 

@@ -815,6 +815,7 @@ only listed below for the TLS implementation cases.
 Option                       Type         Description
 ------------------------------------------------------------------------------
 
+ALLOW_SYSTEM_CRYPT_BRACES    system**     system crypt() can handle {hashtype}
 ALT_CONFIG_PREFIX            optional     restricts location of -C files
 APPENDFILE_MODE              optional*
 APPENDFILE_DIRECTORY_MODE    optional*
