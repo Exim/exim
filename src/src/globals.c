@@ -925,6 +925,8 @@ int     proxy_host_port        = 0;
 uschar *proxy_required_hosts   = US"";
 BOOL    proxy_session          = FALSE;
 BOOL    proxy_session_failed   = FALSE;
+uschar *proxy_target_address   = US"";
+int     proxy_target_port      = 0;
 #endif
 
 uschar *prvscheck_address      = NULL;

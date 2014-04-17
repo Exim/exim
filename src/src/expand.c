@@ -565,6 +565,8 @@ static var_entry var_table[] = {
   { "proxy_host_address",  vtype_stringptr,   &proxy_host_address },
   { "proxy_host_port",     vtype_int,         &proxy_host_port },
   { "proxy_session",       vtype_bool,        &proxy_session },
+  { "proxy_target_address",vtype_stringptr,   &proxy_target_address },
+  { "proxy_target_port",   vtype_int,         &proxy_target_port },
 #endif
   { "prvscheck_address",   vtype_stringptr,   &prvscheck_address },
   { "prvscheck_keynum",    vtype_stringptr,   &prvscheck_keynum },

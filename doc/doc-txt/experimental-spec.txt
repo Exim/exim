@@ -1087,10 +1087,16 @@ Proxy Protocol server at 192.168.1.2 will look like this:
 
 3. In the ACL's the following expansion variables are available.
 
-proxy_host_address  The src IP of the proxy server making the connection
-proxy_host_port     The src port the proxy server is using
-proxy_session       Boolean, yes/no, the connected host is required to use
-                    Proxy Protocol.
+proxy_host_address   The (internal) src IP of the proxy server
+                     making the connection to the Exim server.
+proxy_host_port      The (internal) src port the proxy server is
+                     using to connect to the Exim server.
+proxy_target_address The dest (public) IP of the remote host to
+                     the proxy server.
+proxy_target_port    The dest port the remote host is using to
+                     connect to the proxy server.
+proxy_session        Boolean, yes/no, the connected host is required
+                     to use Proxy Protocol.
 
 There is no expansion for a failed proxy session, however you can detect
 it by checking if $proxy_session is true but $proxy_host is empty.  As
@@ -1109,6 +1115,13 @@ an example, in my connect ACL, I have:
           log_message    = Successfully proxied from $sender_host_name \
                            [$sender_host_address] through proxy protocol \
                            host $proxy_host_address
+
+  # Possibly more clear
+  warn logwrite = Remote Source Address: $sender_host_address:$sender_host_port
+       logwrite = Proxy Target Address: $proxy_target_address:$proxy_target_port
+       logwrite = Proxy Internal Address: $proxy_host_address:$proxy_host_port
+       logwrite = Internal Server Address: $received_ip_address:$received_port
+
 
 4. Runtime issues to be aware of:
    - Since the real connections are all coming from your proxy, and the
