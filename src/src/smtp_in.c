@@ -1164,6 +1164,15 @@ return string_sprintf("SMTP connection from %s", hostname);
 
 
 #ifdef SUPPORT_TLS
+/* Append TLS-related information to a log line
+
+Arguments:
+  s		String under construction: allocated string to extend, or NULL
+  sizep		Pointer to current allocation size (update on return), or NULL
+  ptrp		Pointer to index for new entries in string (update on return), or NULL
+
+Returns:	Allocated string or NULL
+*/
 static uschar *
 s_tlslog(uschar * s, int * sizep, int * ptrp)
 {
@@ -1189,8 +1198,6 @@ s_tlslog(uschar * s, int * sizep, int * ptrp)
     if (sizep) *sizep = size;
     if (ptrp) *ptrp = ptr;
     }
-  else
-    s = US"";
   return s;
 }
 #endif
@@ -2715,14 +2722,17 @@ the connection is not forcibly to be dropped, return 0. Otherwise, log why it
 is closing if required and return 2.  */
 
 if (log_reject_target != 0)
-  log_write(0, log_reject_target, "%s%s %s%srejected %s%s",
-    host_and_ident(TRUE),
+  {
 #ifdef SUPPORT_TLS
-    s_tlslog(NULL, NULL, NULL),
+  uschar * s = s_tlslog(NULL, NULL, NULL);
+  if (!s) s = US"";
 #else
-    "",
+  uschar * s = US"";
 #endif
+  log_write(0, log_reject_target, "%s%s %s%srejected %s%s",
+    host_and_ident(TRUE), s,
     sender_info, (rc == FAIL)? US"" : US"temporarily ", what, log_msg);
+  }
 
 if (!drop) return 0;
 
