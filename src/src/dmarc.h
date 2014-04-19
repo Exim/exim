@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Experimental DMARC support.
-   Copyright (c) Todd Lyons <tlyons@exim.org> 2012, 2013
+   Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
    License: GPL */
 
 /* Portions Copyright (c) 2012, 2013, The Trusted Domain Project;
