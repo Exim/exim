@@ -536,8 +536,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\(gnutls_priority_set\): No or insufficient priorities were set/\(gnutls_handshake\): Could not negotiate a supported cipher suite/g;
 
   # (replace old with new, hoping that old only happens in one situation)
-  s/TLS error on connection to ip4.ip4.ip4.ip4 \[ip4.ip4.ip4.ip4\] \(gnutls_handshake\): A TLS packet with unexpected length was received./a TLS session is required for ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4], but an attempt to start TLS failed/g;
-  s/TLS error on connection from [127.0.0.1] (recv): A TLS packet with unexpected length was received./TLS error on connection from [127.0.0.1] (recv): The TLS connection was non-properly terminated./g;
+  s/TLS error on connection to \d{1,3}(.\d{1,3}){3} \[\d{1,3}(.\d{1,3}){3}\] \(gnutls_handshake\): A TLS packet with unexpected length was received./a TLS session is required for ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4], but an attempt to start TLS failed/g;
+  s/TLS error on connection from \[127.0.0.1\] \(recv\): A TLS packet with unexpected length was received./TLS error on connection from [127.0.0.1] (recv): The TLS connection was non-properly terminated./g;
 
 
   # ======== Caller's login, uid, gid, home, gecos ========
