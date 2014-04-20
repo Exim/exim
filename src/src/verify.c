@@ -1576,13 +1576,7 @@ if (address[0] == 0) return OK;
 they're used in the context of a transport used by verification. Reset them
 at exit from this routine. */
 
-modify_variable(US"tls_bits",                 &tls_out.bits);
-modify_variable(US"tls_certificate_verified", &tls_out.certificate_verified);
-modify_variable(US"tls_cipher",               &tls_out.cipher);
-modify_variable(US"tls_peerdn",               &tls_out.peerdn);
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
-modify_variable(US"tls_sni",                  &tls_out.sni);
-#endif
+tls_modify_variables(&tls_out);
 
 /* Save a copy of the sender address for re-instating if we change it to <>
 while verifying a sender address (a nice bit of self-reference there). */
@@ -2041,14 +2035,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 the -bv or -bt case). */
 
 out:
-
-modify_variable(US"tls_bits",                 &tls_in.bits);
-modify_variable(US"tls_certificate_verified", &tls_in.certificate_verified);
-modify_variable(US"tls_cipher",               &tls_in.cipher);
-modify_variable(US"tls_peerdn",               &tls_in.peerdn);
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
-modify_variable(US"tls_sni",                  &tls_in.sni);
-#endif
+tls_modify_variables(&tls_in);
 
 return yield;
 }

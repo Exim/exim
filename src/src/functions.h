@@ -45,7 +45,7 @@ extern void    tls_version_report(FILE *);
 #ifndef USE_GNUTLS
 extern BOOL    tls_openssl_options_parse(uschar *, long *);
 #endif
-#endif
+#endif	/*SUPPORT_TLS*/
 
 
 /* Everything else... */
@@ -374,6 +374,7 @@ extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
 extern uschar *tod_stamp(int);
+extern void    tls_modify_variables(tls_support *);
 extern BOOL    transport_check_waiting(uschar *, uschar *, int, uschar *,
                  BOOL *);
 extern void    transport_init(void);

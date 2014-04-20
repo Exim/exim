@@ -1213,19 +1213,18 @@ outblock.authenticating = FALSE;
 
 /* Reset the parameters of a TLS session. */
 
-tls_in.bits = 0;
-tls_in.cipher = NULL;	/* for back-compatible behaviour */
-tls_in.peerdn = NULL;
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
-tls_in.sni = NULL;
-#endif
-
 tls_out.bits = 0;
 tls_out.cipher = NULL;	/* the one we may use for this transport */
 tls_out.peerdn = NULL;
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
 tls_out.sni = NULL;
 #endif
+
+/* Flip the legacy TLS-related variables over to the outbound set in case
+they're used in the context of the transport.  Don't bother resetting
+afterward as we're in a subprocess. */
+
+tls_modify_variables(&tls_out);
 
 #ifndef SUPPORT_TLS
 if (smtps)

@@ -82,6 +82,9 @@ TL/07 Add new dmarc expansion variable $dmarc_domain_policy to directly
       is a combined value of both the record presence and the result of the
       analysis.
 
+JH/13 Fix handling of $tls_cipher et.al. in (non-verify) transport.  Bug 1455.
+
+
 Exim version 4.82
 -----------------
 

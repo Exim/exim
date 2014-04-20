@@ -70,5 +70,9 @@ t1:
   hosts_require_auth = *
   allow_localhost
 
+  # These can be made visible by adding "-d-all+deliver+transport+tls" to the script 1st queuerun
+  headers_add = X-tls-cipher: <$tls_cipher>
+  headers_add = X-tls-out-cipher: <$tls_out_cipher>
+
 
 # End
