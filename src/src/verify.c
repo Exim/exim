@@ -1750,6 +1750,7 @@ while (addr_new != NULL)
                 (void)host_find_byname(host, NULL, flags, &canonical_name, TRUE);
               else
                 (void)host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
+		  NULL, NULL,	/*XXX todo: dnssec */
                   &canonical_name, NULL);
               }
             }
@@ -3546,7 +3547,7 @@ revadd[0] = 0;
 
 /* In case this is the first time the DNS resolver is being used. */
 
-dns_init(FALSE, FALSE);
+dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
 
 /* Loop through all the domains supplied, until something matches */
 

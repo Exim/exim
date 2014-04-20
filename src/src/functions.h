@@ -115,7 +115,7 @@ extern BOOL    dkim_transport_write_message(address_item *, int, int,
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern void    dns_build_reverse(uschar *, uschar *);
-extern void    dns_init(BOOL, BOOL);
+extern void    dns_init(BOOL, BOOL, BOOL);
 extern int     dns_basic_lookup(dns_answer *, uschar *, int);
 extern BOOL    dns_is_secure(dns_answer *);
 extern int     dns_lookup(dns_answer *, uschar *, int, uschar **);
@@ -157,7 +157,7 @@ extern void    host_build_log_info(void);
 extern void    host_build_sender_fullhost(void);
 extern BOOL    host_find_byname(host_item *, uschar *, int, uschar **, BOOL);
 extern int     host_find_bydns(host_item *, uschar *, int, uschar *, uschar *,
-                 uschar *,uschar **, BOOL *);
+                 uschar *, uschar *, uschar *, uschar **, BOOL *);
 extern ip_address_item *host_find_interfaces(void);
 extern BOOL    host_is_in_net(uschar *, uschar *, int);
 extern BOOL    host_is_tls_on_connect_port(int);

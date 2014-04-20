@@ -241,7 +241,7 @@ if ((equals = Ustrchr(keystring, '=')) != NULL)
 
 /* Initialize the resolver in case this is the first time it has been used. */
 
-dns_init(FALSE, FALSE);
+dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
 
 /* The remainder of the string must be a list of domains. As long as the lookup
 for at least one of them succeeds, we return success. Failure means that none

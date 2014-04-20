@@ -1622,7 +1622,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
   {
   if (strcmpic(ordername, US"bydns") == 0)
     {
-    dns_init(FALSE, FALSE);
+    dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
     dns_build_reverse(sender_host_address, buffer);
     rc = dns_lookup(&dnsa, buffer, T_PTR, NULL);
 
@@ -1919,7 +1919,8 @@ if (running_in_test_harness)
 some circumstances when the get..byname() function actually calls the DNS. */
 
 dns_init((flags & HOST_FIND_QUALIFY_SINGLE) != 0,
-         (flags & HOST_FIND_SEARCH_PARENTS) != 0);
+         (flags & HOST_FIND_SEARCH_PARENTS) != 0,
+	 FALSE);	/*XXX dnssec? */
 
 /* In an IPv6 world, unless IPv6 has been disabled, we need to scan for both
 kinds of address, so go round the loop twice. Note that we have ensured that
@@ -2195,6 +2196,7 @@ Arguments:
   fully_qualified_name  if not NULL, return fully qualified name here if
                           the contents are different (i.e. it must be preset
                           to something)
+  dnnssec_require	if TRUE check the DNS result AD bit
 
 Returns:       HOST_FIND_FAILED     couldn't find A record
                HOST_FIND_AGAIN      try again later
@@ -2204,7 +2206,8 @@ Returns:       HOST_FIND_FAILED     couldn't find A record
 
 static int
 set_address_from_dns(host_item *host, host_item **lastptr,
-  uschar *ignore_target_hosts, BOOL allow_ip, uschar **fully_qualified_name)
+  uschar *ignore_target_hosts, BOOL allow_ip, uschar **fully_qualified_name,
+  BOOL dnssec_require)
 {
 dns_record *rr;
 host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
@@ -2285,6 +2288,12 @@ for (; i >= 0; i--)
     error, and look for the next record type. */
 
     if (rc != DNS_NOMATCH && rc != DNS_NODATA) v6_find_again = TRUE;
+    continue;
+    }
+  if (dnssec_require && !dns_is_secure(&dnsa))
+    {
+    log_write(L_host_lookup_failed, LOG_MAIN, "dnssec fail on %s for %.256s",
+		i>1 ? "A6" : i>0 ? "AAAA" : "A", host->name);
     continue;
     }
 
@@ -2433,6 +2442,8 @@ Arguments:
   srv_service           when SRV used, the service name
   srv_fail_domains      DNS errors for these domains => assume nonexist
   mx_fail_domains       DNS errors for these domains => assume nonexist
+  dnssec_request_domains => make dnssec request
+  dnssec_require_domains => ditto and nonexist failures
   fully_qualified_name  if not NULL, return fully-qualified name
   removed               set TRUE if local host was removed from the list
 
@@ -2450,6 +2461,7 @@ Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
 int
 host_find_bydns(host_item *host, uschar *ignore_target_hosts, int whichrrs,
   uschar *srv_service, uschar *srv_fail_domains, uschar *mx_fail_domains,
+  uschar *dnssec_request_domains, uschar *dnssec_require_domains,
   uschar **fully_qualified_name, BOOL *removed)
 {
 host_item *h, *last;
@@ -2459,6 +2471,10 @@ int ind_type = 0;
 int yield;
 dns_answer dnsa;
 dns_scan dnss;
+BOOL dnssec_request = match_isinlist(host->name, &dnssec_request_domains,
+				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
+BOOL dnssec_require = match_isinlist(host->name, &dnssec_require_domains,
+				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
 
 /* Set the default fully qualified name to the incoming name, initialize the
 resolver if necessary, set up the relevant options, and initialize the flag
@@ -2466,7 +2482,9 @@ that gets set for DNS syntax check errors. */
 
 if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
 dns_init((whichrrs & HOST_FIND_QUALIFY_SINGLE) != 0,
-         (whichrrs & HOST_FIND_SEARCH_PARENTS) != 0);
+         (whichrrs & HOST_FIND_SEARCH_PARENTS) != 0,
+	 dnssec_request || dnssec_require
+	 );
 host_find_failed_syntax = FALSE;
 
 /* First, if requested, look for SRV records. The service name is given; we
@@ -2494,13 +2512,19 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
   /* On DNS failures, we give the "try again" error unless the domain is
   listed as one for which we continue. */
 
+  if (rc == DNS_SUCCEED && dnssec_require && !dns_is_secure(&dnsa))
+    {
+    log_write(L_host_lookup_failed, LOG_MAIN,
+		"dnssec fail on SRV for %.256s", host->name);
+    rc = DNS_FAIL;
+    }
   if (rc == DNS_FAIL || rc == DNS_AGAIN)
     {
     #ifndef STAND_ALONE
     if (match_isinlist(host->name, &srv_fail_domains, 0, NULL, NULL, MCL_DOMAIN,
         TRUE, NULL) != OK)
     #endif
-      return HOST_FIND_AGAIN;
+      { yield = HOST_FIND_AGAIN; goto out; }
     DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
       "(domain in srv_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
     }
@@ -2517,16 +2541,29 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   {
   ind_type = T_MX;
   rc = dns_lookup(&dnsa, host->name, ind_type, fully_qualified_name);
-  if (rc == DNS_NOMATCH) return HOST_FIND_FAILED;
-  if (rc == DNS_FAIL || rc == DNS_AGAIN)
+  switch (rc)
     {
-    #ifndef STAND_ALONE
-    if (match_isinlist(host->name, &mx_fail_domains, 0, NULL, NULL, MCL_DOMAIN,
-        TRUE, NULL) != OK)
-    #endif
-      return HOST_FIND_AGAIN;
-    DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
-      "(domain in mx_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
+    case DNS_NOMATCH:
+      yield = HOST_FIND_FAILED; goto out;
+
+    case DNS_SUCCEED:
+      if (!dnssec_require || dns_is_secure(&dnsa))
+	break;
+      log_write(L_host_lookup_failed, LOG_MAIN,
+		  "dnssec fail on MX for %.256s", host->name);
+      rc = DNS_FAIL;
+      /*FALLTRHOUGH*/
+
+    case DNS_FAIL:
+    case DNS_AGAIN:
+      #ifndef STAND_ALONE
+      if (match_isinlist(host->name, &mx_fail_domains, 0, NULL, NULL, MCL_DOMAIN,
+	  TRUE, NULL) != OK)
+      #endif
+	{ yield = HOST_FIND_AGAIN; goto out; }
+      DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
+	"(domain in mx_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
+      break;
     }
   }
 
@@ -2539,14 +2576,15 @@ if (rc != DNS_SUCCEED)
   if ((whichrrs & HOST_FIND_BY_A) == 0)
     {
     DEBUG(D_host_lookup) debug_printf("Address records are not being sought\n");
-    return HOST_FIND_FAILED;
+    yield = HOST_FIND_FAILED;
+    goto out;
     }
 
   last = host;        /* End of local chainlet */
   host->mx = MX_NONE;
   host->port = PORT_NONE;
   rc = set_address_from_dns(host, &last, ignore_target_hosts, FALSE,
-    fully_qualified_name);
+    fully_qualified_name, dnssec_require);
 
   /* If one or more address records have been found, check that none of them
   are local. Since we know the host items all have their IP addresses
@@ -2573,7 +2611,8 @@ if (rc != DNS_SUCCEED)
       }
     }
 
-  return rc;
+  yield = rc;
+  goto out;
   }
 
 /* We have found one or more MX or SRV records. Sort them according to
@@ -2757,7 +2796,8 @@ if (ind_type == T_SRV)
   if (host == last && host->name[0] == 0)
     {
     DEBUG(D_host_lookup) debug_printf("the single SRV record is \".\"\n");
-    return HOST_FIND_FAILED;
+    yield = HOST_FIND_FAILED;
+    goto out;
     }
 
   DEBUG(D_host_lookup)
@@ -2867,12 +2907,14 @@ otherwise invalid host names obtained from MX or SRV records can cause trouble
 if they happen to match something local. */
 
 yield = HOST_FIND_FAILED;    /* Default yield */
-dns_init(FALSE, FALSE);      /* Disable qualify_single and search_parents */
+dns_init(FALSE, FALSE,       /* Disable qualify_single and search_parents */
+	 dnssec_request || dnssec_require);
 
 for (h = host; h != last->next; h = h->next)
   {
   if (h->address != NULL) continue;  /* Inserted by a multihomed host */
-  rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip, NULL);
+  rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip,
+    NULL, dnssec_require);
   if (rc != HOST_FOUND)
     {
     h->status = hstatus_unusable;
@@ -2981,6 +3023,9 @@ DEBUG(D_host_lookup)
     }
   }
 
+out:
+
+dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 return yield;
 }
 
@@ -3002,6 +3047,8 @@ int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A;
 BOOL byname = FALSE;
 BOOL qualify_single = TRUE;
 BOOL search_parents = FALSE;
+BOOL request_dnssec = FALSE;
+BOOL require_dnssec = FALSE;
 uschar **argv = USS cargv;
 uschar buffer[256];
 
@@ -3021,7 +3068,7 @@ if (argc > 1) primary_hostname = argv[1];
 
 /* So that debug level changes can be done first */
 
-dns_init(qualify_single, search_parents);
+dns_init(qualify_single, search_parents, FALSE);
 
 printf("Testing host lookup\n");
 printf("> ");
@@ -3047,10 +3094,14 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_MX;
   else if (Ustrcmp(buffer, "srv+mx+a") == 0)
     whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_MX | HOST_FIND_BY_A;
-  else if (Ustrcmp(buffer, "qualify_single") == 0) qualify_single = TRUE;
+  else if (Ustrcmp(buffer, "qualify_single")    == 0) qualify_single = TRUE;
   else if (Ustrcmp(buffer, "no_qualify_single") == 0) qualify_single = FALSE;
-  else if (Ustrcmp(buffer, "search_parents") == 0) search_parents = TRUE;
+  else if (Ustrcmp(buffer, "search_parents")    == 0) search_parents = TRUE;
   else if (Ustrcmp(buffer, "no_search_parents") == 0) search_parents = FALSE;
+  else if (Ustrcmp(buffer, "request_dnssec")    == 0) request_dnssec = TRUE;
+  else if (Ustrcmp(buffer, "no_request_dnssec") == 0) request_dnssec = FALSE;
+  else if (Ustrcmp(buffer, "require_dnssec")    == 0) require_dnssec = TRUE;
+  else if (Ustrcmp(buffer, "no_reqiret_dnssec") == 0) require_dnssec = FALSE;
   else if (Ustrcmp(buffer, "test_harness") == 0)
     running_in_test_harness = !running_in_test_harness;
   else if (Ustrcmp(buffer, "ipv6") == 0) disable_ipv6 = !disable_ipv6;
@@ -3083,11 +3134,12 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     if (qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
     if (search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
-    rc = byname?
-      host_find_byname(&h, NULL, flags, &fully_qualified_name, TRUE)
-      :
-      host_find_bydns(&h, NULL, flags, US"smtp", NULL, NULL,
-        &fully_qualified_name, NULL);
+    rc = byname
+      ? host_find_byname(&h, NULL, flags, &fully_qualified_name, TRUE)
+      : host_find_bydns(&h, NULL, flags, US"smtp", NULL, NULL,
+			request_dnssec ? &h.name : NULL,
+			require_dnssec ? &h.name : NULL,
+			&fully_qualified_name, NULL);
 
     if (rc == HOST_FIND_FAILED) printf("Failed\n");
       else if (rc == HOST_FIND_AGAIN) printf("Again\n");
@@ -3146,4 +3198,6 @@ return 0;
 }
 #endif  /* STAND_ALONE */
 
+/* vi: aw ai sw=2
+*/
 /* End of host.c */

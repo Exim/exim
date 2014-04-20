@@ -2816,6 +2816,7 @@ for (cutoff_retry = 0; expired &&
         rc = host_find_byname(host, NULL, flags, &canonical_name, TRUE);
       else
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
+	  NULL, NULL,	/*XXX todo: smtp tpt hosts_require_dnssec */
           &canonical_name, NULL);
 
       /* Update the host (and any additional blocks, resulting from
