@@ -7,3 +7,4 @@ exim -odi userx usery
 # Wait to allow delivery to finish before killing the daemon
 sleep 1
 killdaemon
+no_msglog_check

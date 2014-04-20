@@ -5,7 +5,11 @@ host_lookup_order = bydns
 primary_hostname = myhost.test.ex
 rfc1413_query_timeout = 0s
 spool_directory = DIR/spool
+.ifdef SERVER
 log_file_path = DIR/spool/log/%slog
+.else
+log_file_path = DIR/spool/log/%D-%slog
+.endif
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 
@@ -13,6 +17,7 @@ gecos_name = CALLER_NAME
 
 acl_smtp_rcpt = check_rcpt
 log_selector = +tls_peerdn
+
 
 tls_advertise_hosts = HOSTIPV4
 tls_certificate = DIR/aux-fixed/cert1
@@ -25,12 +30,12 @@ begin acl
 
 check_rcpt:
   accept  local_parts = userx
+          control = queue_only
 
   defer   local_parts = usery
           hosts       = 127.0.0.1
 
-  accept
-
+  accept  control = queue_only
 
 # ----- Routers -----
 
