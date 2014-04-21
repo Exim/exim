@@ -34656,9 +34656,13 @@ This utility is a Perl script contributed by Matt Hubbard. It runs
 .code
 exim -bpu
 .endd
-to obtain a queue listing with undelivered recipients only, and then greps the
-output to select messages that match given criteria. The following selection
-options are available:
+or (in case &*-a*& switch is specified)
+.code
+exim -bp
+.endd 
+
+to obtain a queue listing, and then greps the output to select messages 
+that match given criteria. The following selection options are available:
 
 .vlist
 .vitem &*-f*&&~<&'regex'&>
@@ -34705,6 +34709,9 @@ Brief format &-- one line per message.
 
 .vitem &*-R*&
 Display messages in reverse order.
+
+.vitem &*-a*&
+Include delivered recipients in queue listing.
 .endlist
 
 There is one more option, &%-h%&, which outputs a list of options.
