@@ -233,7 +233,7 @@ if (dns_dnssec_ok >= 0)
         dns_dnssec_ok ? "" : "un");
 if (use_dnssec)
   DEBUG(D_resolver)
-    debug_printf("Unable to set DNSSEC without resolver support.\n")
+    debug_printf("Unable to set DNSSEC without resolver support.\n");
 # endif
 #endif /* DISABLE_DNSSEC */
 
