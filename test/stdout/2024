@@ -20,7 +20,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-Failed to start TLS
+Succeeded in starting TLS
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Certificate file = aux-fixed/cert2

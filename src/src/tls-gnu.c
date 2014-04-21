@@ -1228,25 +1228,23 @@ unsigned int verify;
 
 *error = NULL;
 
-rc = peer_status(state);
-if (rc != OK)
+if ((rc = peer_status(state)) != OK)
   {
   verify = GNUTLS_CERT_INVALID;
-  *error = "not supplied";
+  *error = "certificate not supplied";
   }
 else
-  {
   rc = gnutls_certificate_verify_peers2(state->session, &verify);
-  }
 
 /* Handle the result of verification. INVALID seems to be set as well
 as REVOKED, but leave the test for both. */
 
-if ((rc < 0) || (verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)) != 0)
+if (rc < 0 || verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
   {
   state->peer_cert_verified = FALSE;
-  if (*error == NULL)
-    *error = ((verify & GNUTLS_CERT_REVOKED) != 0) ? "revoked" : "invalid";
+  if (!*error)
+    *error = verify & GNUTLS_CERT_REVOKED
+      ? "certificate revoked" : "certificate invalid";
 
   DEBUG(D_tls)
     debug_printf("TLS certificate verification failed (%s): peerdn=%s\n",
