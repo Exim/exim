@@ -6959,11 +6959,16 @@ The data from each lookup is concatenated, with newline separators by default,
 in the same way that multiple DNS records for a single item are handled. A
 different separator can be specified, as described above.
 
+Modifiers for &(dnsdb)& lookups are givien by optional keywords,
+each followed by a comma,
+that may appear before the record type.
+
 The &(dnsdb)& lookup fails only if all the DNS lookups fail. If there is a
 temporary DNS error for any of them, the behaviour is controlled by
-an optional keyword followed by a comma that may appear before the record
-type. The possible keywords are &"defer_strict"&, &"defer_never"&, and
-&"defer_lax"&. With &"strict"& behaviour, any temporary DNS error causes the
+a defer-option modifier.
+The possible keywords are
+&"defer_strict"&, &"defer_never"&, and &"defer_lax"&.
+With &"strict"& behaviour, any temporary DNS error causes the
 whole lookup to defer. With &"never"& behaviour, a temporary DNS error is
 ignored, and the behaviour is as if the DNS lookup failed to find anything.
 With &"lax"& behaviour, all the queries are attempted, but a temporary DNS
@@ -6975,6 +6980,16 @@ ${lookup dnsdb{a=one.host.com:two.host.com}}
 .endd
 Thus, in the default case, as long as at least one of the DNS lookups
 yields some data, the lookup succeeds.
+
+Use of &(DNSSEC)& is controlled by a dnssec modifier.
+The possible keywords are
+&"dnssec_strict"&, &"dnssec_lax"&, and &"dnssec_never"&.
+With &"strict"& or &"lax"& DNSSEC information is requested
+with the lookup.
+With &"strict"& a response from the DNS resolver that
+is not labelled as authenticated data
+is treated as equivalent to a temporary DNS error.
+The default is &"never".
 
 
 

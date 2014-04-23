@@ -114,11 +114,15 @@ any defer causes the whole lookup to defer; 'lax', where a defer causes the
 whole lookup to defer only if none of the DNS queries succeeds; and 'never',
 where all defers are as if the lookup failed. The default is 'lax'.
 
-(d) If the next sequence of characters is a sequence of letters and digits
+(d) Another optional comma-sep field: 'dnssec_FOO', with 'strict', 'lax'
+and 'never' (default); can appear before or after (c).  The meanings are
+require, try and don't-try dnssec respectively.
+
+(e) If the next sequence of characters is a sequence of letters and digits
 followed by '=', it is interpreted as the name of the DNS record type. The
 default is "TXT".
 
-(e) Then there follows list of domain names. This is a generalized Exim list,
+(f) Then there follows list of domain names. This is a generalized Exim list,
 which may start with '<' in order to set a specific separator. The default
 separator, as always, is colon. */
 
@@ -131,6 +135,7 @@ int size = 256;
 int ptr = 0;
 int sep = 0;
 int defer_mode = PASS;
+int dnssec_mode = OK;
 int type;
 int failrc = FAIL;
 uschar *outsep = US"\n";
@@ -173,35 +178,64 @@ if (*keystring == '>')
   while (isspace(*keystring)) keystring++;
   }
 
-/* Check for a defer behaviour keyword. */
+/* Check for a modifier keyword. */
 
-if (strncmpic(keystring, US"defer_", 6) == 0)
+while (  strncmpic(keystring, US"defer_", 6) == 0
+      || strncmpic(keystring, US"dnssec_", 7) == 0
+      )
   {
-  keystring += 6;
-  if (strncmpic(keystring, US"strict", 6) == 0)
+  if (strncmpic(keystring, US"defer_", 6) == 0)
     {
-    defer_mode = DEFER;
     keystring += 6;
-    }
-  else if (strncmpic(keystring, US"lax", 3) == 0)
-    {
-    defer_mode = PASS;
-    keystring += 3;
-    }
-  else if (strncmpic(keystring, US"never", 5) == 0)
-    {
-    defer_mode = OK;
-    keystring += 5;
+    if (strncmpic(keystring, US"strict", 6) == 0)
+      {
+      defer_mode = DEFER;
+      keystring += 6;
+      }
+    else if (strncmpic(keystring, US"lax", 3) == 0)
+      {
+      defer_mode = PASS;
+      keystring += 3;
+      }
+    else if (strncmpic(keystring, US"never", 5) == 0)
+      {
+      defer_mode = OK;
+      keystring += 5;
+      }
+    else
+      {
+      *errmsg = US"unsupported dnsdb defer behaviour";
+      return DEFER;
+      }
     }
   else
     {
-    *errmsg = US"unsupported dnsdb defer behaviour";
-    return DEFER;
+    keystring += 7;
+    if (strncmpic(keystring, US"strict", 6) == 0)
+      {
+      dnssec_mode = DEFER;
+      keystring += 6;
+      }
+    else if (strncmpic(keystring, US"lax", 3) == 0)
+      {
+      dnssec_mode = PASS;
+      keystring += 3;
+      }
+    else if (strncmpic(keystring, US"never", 5) == 0)
+      {
+      dnssec_mode = OK;
+      keystring += 5;
+      }
+    else
+      {
+      *errmsg = US"unsupported dnsdb dnssec behaviour";
+      return DEFER;
+      }
     }
   while (isspace(*keystring)) keystring++;
   if (*keystring++ != ',')
     {
-    *errmsg = US"dnsdb defer behaviour syntax error";
+    *errmsg = US"dnsdb modifier syntax error";
     return DEFER;
     }
   while (isspace(*keystring)) keystring++;
@@ -241,7 +275,7 @@ if ((equals = Ustrchr(keystring, '=')) != NULL)
 
 /* Initialize the resolver in case this is the first time it has been used. */
 
-dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
+dns_init(FALSE, FALSE, dnssec_mode != OK);
 
 /* The remainder of the string must be a list of domains. As long as the lookup
 for at least one of them succeeds, we return success. Failure means that none
@@ -323,10 +357,20 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
     if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
     if (rc != DNS_SUCCEED)
       {
-      if (defer_mode == DEFER) return DEFER;          /* always defer */
+      if (defer_mode == DEFER)
+	{
+	dns_init(FALSE, FALSE, FALSE);
+	return DEFER;					/* always defer */
+	}
       if (defer_mode == PASS) failrc = DEFER;         /* defer only if all do */
       continue;                                       /* treat defer as fail */
       }
+    if (dnssec_mode == DEFER && !dns_is_secure(&dnsa))
+      {
+      failrc = DEFER;
+      continue;
+      }
+
 
     /* Search the returned records */
 
@@ -494,6 +538,8 @@ store_reset(yield + ptr + 1);
 /* If ptr == 0 we have not found anything. Otherwise, insert the terminating
 zero and return the result. */
 
+dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
+
 if (ptr == 0) return failrc;
 yield[ptr] = 0;
 *result = yield;
@@ -538,4 +584,6 @@ static lookup_info _lookup_info = {
 static lookup_info *_lookup_list[] = { &_lookup_info };
 lookup_module_info dnsdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
+/* vi: aw ai sw=2
+*/
 /* End of lookups/dnsdb.c */

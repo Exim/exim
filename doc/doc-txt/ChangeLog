@@ -91,6 +91,9 @@ TL/08 Bugzilla 1453: New LDAP "SERVERS=" option allows admin to override list
       of ldap servers used for a specific lookup.  Patch provided by Heiko
       Schlichting.
 
+JH/18 New options dnssec_lax, dnssec_strict on dnsdb lookups.
+
+
 Exim version 4.82
 -----------------
 
