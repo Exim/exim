@@ -17,6 +17,8 @@ typedef struct {
   uschar *mx_fail_domains;
   uschar *srv_fail_domains;
   uschar *check_srv;
+  uschar *dnssec_request_domains;
+  uschar *dnssec_require_domains;
 } dnslookup_router_options_block;
 
 /* Data for reading the private options. */

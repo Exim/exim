@@ -24,6 +24,7 @@ tls_certificate = CERT
 tls_privatekey = CERT
 
 tls_verify_hosts = HOSTIPV4
-tls_verify_certificates = TVC
+#tls_verify_certificates = TVC
+tls_verify_certificates = CERT
 
 # End

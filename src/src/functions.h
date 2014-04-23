@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2013 */
+/* Copyright (c) University of Cambridge 1995 - 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -45,7 +45,7 @@ extern void    tls_version_report(FILE *);
 #ifndef USE_GNUTLS
 extern BOOL    tls_openssl_options_parse(uschar *, long *);
 #endif
-#endif
+#endif	/*SUPPORT_TLS*/
 
 
 /* Everything else... */
@@ -115,7 +115,7 @@ extern BOOL    dkim_transport_write_message(address_item *, int, int,
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern void    dns_build_reverse(uschar *, uschar *);
-extern void    dns_init(BOOL, BOOL);
+extern void    dns_init(BOOL, BOOL, BOOL);
 extern int     dns_basic_lookup(dns_answer *, uschar *, int);
 extern BOOL    dns_is_secure(dns_answer *);
 extern int     dns_lookup(dns_answer *, uschar *, int, uschar **);
@@ -157,7 +157,7 @@ extern void    host_build_log_info(void);
 extern void    host_build_sender_fullhost(void);
 extern BOOL    host_find_byname(host_item *, uschar *, int, uschar **, BOOL);
 extern int     host_find_bydns(host_item *, uschar *, int, uschar *, uschar *,
-                 uschar *,uschar **, BOOL *);
+                 uschar *, uschar *, uschar *, uschar **, BOOL *);
 extern ip_address_item *host_find_interfaces(void);
 extern BOOL    host_is_in_net(uschar *, uschar *, int);
 extern BOOL    host_is_tls_on_connect_port(int);
@@ -374,6 +374,7 @@ extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
 extern uschar *tod_stamp(int);
+extern void    tls_modify_variables(tls_support *);
 extern BOOL    transport_check_waiting(uschar *, uschar *, int, uschar *,
                  BOOL *);
 extern void    transport_init(void);

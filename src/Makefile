@@ -2,7 +2,7 @@
 # appropriate links, and then creating and running the main makefile in that
 # directory.
 
-# Copyright (c) University of Cambridge, 1995 - 2013
+# Copyright (c) University of Cambridge, 1995 - 2014
 # See the file NOTICE for conditions of use and distribution.
 
 # IRIX make uses the shell that is in the SHELL variable, which often defaults
@@ -90,7 +90,8 @@ distclean:; $(RM_COMMAND) -rf build-* cscope*
 cscope.files: FRC
 	echo "-q" > $@
 	echo "-p3" >> $@
-	find src Local -name "*.[cshyl]" -print \
+	find src Local OS -name "*.[cshyl]" -print \
+		    -o -name "os.h*" -print \
 		    -o -name "*akefile*" -print \
 		    -o -name EDITME -print >> $@
 

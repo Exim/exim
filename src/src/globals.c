@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2013 */
+/* Copyright (c) University of Cambridge 1995 - 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* All the global variables are defined together in this one module, so
@@ -925,6 +925,8 @@ int     proxy_host_port        = 0;
 uschar *proxy_required_hosts   = US"";
 BOOL    proxy_session          = FALSE;
 BOOL    proxy_session_failed   = FALSE;
+uschar *proxy_target_address   = US"";
+int     proxy_target_port      = 0;
 #endif
 
 uschar *prvscheck_address      = NULL;

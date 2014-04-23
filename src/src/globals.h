@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2013 */
+/* Copyright (c) University of Cambridge 1995 - 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Almost all the global variables are defined together in this one header, so
@@ -595,11 +595,13 @@ extern uschar *process_log_path;       /* Alternate path */
 extern BOOL    prod_requires_admin;    /* TRUE if prodding requires admin */
 
 #ifdef EXPERIMENTAL_PROXY
-extern uschar *proxy_host_address;     /* IP of proxy server */
-extern int     proxy_host_port;        /* Port of proxy server */
+extern uschar *proxy_host_address;     /* IP of host being proxied */
+extern int     proxy_host_port;        /* Port of host being proxied */
 extern uschar *proxy_required_hosts;   /* Hostlist which (require) use proxy protocol */
 extern BOOL    proxy_session;          /* TRUE if receiving mail from valid proxy  */
 extern BOOL    proxy_session_failed;   /* TRUE if required proxy negotiation failed */
+extern uschar *proxy_target_address;   /* IP of proxy server inbound */
+extern int     proxy_target_port;      /* Port of proxy server inbound */
 #endif
 
 extern uschar *prvscheck_address;      /* Set during prvscheck expansion item */

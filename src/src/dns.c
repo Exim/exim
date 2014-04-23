@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2013 */
+/* Copyright (c) University of Cambridge 1995 - 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for interfacing with the DNS. */
@@ -159,12 +159,13 @@ the first time we have been here, and set the resolver options.
 Arguments:
   qualify_single    TRUE to set the RES_DEFNAMES option
   search_parents    TRUE to set the RES_DNSRCH option
+  use_dnssec        TRUE to set the RES_USE_DNSSEC option
 
 Returns:            nothing
 */
 
 void
-dns_init(BOOL qualify_single, BOOL search_parents)
+dns_init(BOOL qualify_single, BOOL search_parents, BOOL use_dnssec)
 {
 res_state resp = os_get_dns_resolver_res();
 
@@ -206,6 +207,8 @@ if (dns_use_edns0 >= 0)
 #  ifndef RES_USE_EDNS0
 #   error Have RES_USE_DNSSEC but not RES_USE_EDNS0?  Something hinky ...
 #  endif
+if (use_dnssec)
+  resp->options |= RES_USE_DNSSEC;
 if (dns_dnssec_ok >= 0)
   {
   if (dns_use_edns0 == 0 && dns_dnssec_ok != 0)
@@ -228,6 +231,9 @@ if (dns_dnssec_ok >= 0)
   DEBUG(D_resolver)
     debug_printf("Unable to %sset DNSSEC without resolver support.\n",
         dns_dnssec_ok ? "" : "un");
+if (use_dnssec)
+  DEBUG(D_resolver)
+    debug_printf("Unable to set DNSSEC without resolver support.\n");
 # endif
 #endif /* DISABLE_DNSSEC */
 
@@ -1249,4 +1255,6 @@ else
 return yield;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of dns.c */

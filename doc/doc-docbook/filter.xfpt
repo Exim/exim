@@ -48,7 +48,7 @@
 . Copyright year.  Update this (only) when changing content.
 
 .macro copyyear
-2013
+2014
 .endmacro
 
 . ===========================================================================

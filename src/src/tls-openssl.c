@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2013 */
+/* Copyright (c) University of Cambridge 1995 - 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Portions Copyright (c) The OpenSSL Project 1999 */
@@ -1923,6 +1923,11 @@ one version of OpenSSL but the run-time linker picks up another version,
 it can result in serious failures, including crashing with a SIGSEGV.  So
 report the version found by the compiler and the run-time version.
 
+Note: some OS vendors backport security fixes without changing the version
+number/string, and the version date remains unchanged.  The _build_ date
+will change, so we can more usefully assist with version diagnosis by also
+reporting the build date.
+
 Arguments:   a FILE* to print the results to
 Returns:     nothing
 */
@@ -1931,9 +1936,13 @@ void
 tls_version_report(FILE *f)
 {
 fprintf(f, "Library version: OpenSSL: Compile: %s\n"
-           "                          Runtime: %s\n",
+           "                          Runtime: %s\n"
+           "                                 : %s\n",
            OPENSSL_VERSION_TEXT,
-           SSLeay_version(SSLEAY_VERSION));
+           SSLeay_version(SSLEAY_VERSION),
+           SSLeay_version(SSLEAY_BUILT_ON));
+/* third line is 38 characters for the %s and the line is 73 chars long;
+the OpenSSL output includes a "built on: " prefix already. */
 }
 
 

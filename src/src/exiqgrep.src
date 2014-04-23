@@ -43,8 +43,9 @@ if ($^O eq 'darwin') { # aka MacOS X
   $base = 62;
 };
 
-getopts('hf:r:y:o:s:zxlibRc',\%opt);
+getopts('hf:r:y:o:s:zxlibRca',\%opt);
 if ($opt{h}) { &help; exit;}
+if ($opt{a}) { $eargs = '-bp'; }
 
 # Read message queue output into hash
 &collect();
@@ -78,6 +79,7 @@ Display options:
 	-i		Message IDs only
 	-b		Brief Format
 	-R		Reverse order
+	-a		All recipients (including delivered)
 EOF
 }
 

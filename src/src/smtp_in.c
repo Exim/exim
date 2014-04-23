@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2013 */
+/* Copyright (c) University of Cambridge 1995 - 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for handling an incoming SMTP call. */
@@ -603,22 +603,6 @@ return proxy_session;
 
 
 /*************************************************
-*           Flush waiting input string           *
-*************************************************/
-static void
-flush_input()
-{
-int rc;
-
-rc = smtp_getc();
-while (rc != '\n')             /* End of input string */
-  {
-  rc = smtp_getc();
-  }
-}
-
-
-/*************************************************
 *         Setup host for proxy protocol          *
 *************************************************/
 /* The function configures the connection based on a header from the
@@ -664,12 +648,18 @@ union {
   } v2;
 } hdr;
 
+/* Temp variables used in PPv2 address:port parsing */
+uint16_t tmpport;
+char tmpip[INET_ADDRSTRLEN];
+struct sockaddr_in tmpaddr;
+char tmpip6[INET6_ADDRSTRLEN];
+struct sockaddr_in6 tmpaddr6;
+
+int get_ok = 0;
 int size, ret, fd;
-uschar *tmpip;
 const char v2sig[13] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x02";
 uschar *iptype;  /* To display debug info */
 struct timeval tv;
-int get_ok = 0;
 socklen_t vslen = 0;
 struct timeval tvtmp;
 
@@ -690,7 +680,9 @@ setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,
 
 do
   {
-  ret = recv(fd, &hdr, sizeof(hdr), MSG_PEEK);
+  /* The inbound host was declared to be a Proxy Protocol host, so
+     don't do a PEEK into the data, actually slurp it up. */
+  ret = recv(fd, &hdr, sizeof(hdr), 0);
   }
   while (ret == -1 && errno == EINTR);
 
@@ -715,20 +707,63 @@ if (ret >= 16 &&
     case 0x01: /* PROXY command */
       switch (hdr.v2.fam)
         {
-        case 0x11:  /* TCPv4 */
-          tmpip = string_sprintf("%s", hdr.v2.addr.ip4.src_addr);
-          if (!string_is_ip_address(tmpip,NULL))
+        case 0x11:  /* TCPv4 address type */
+          iptype = US"IPv4";
+          tmpaddr.sin_addr.s_addr = hdr.v2.addr.ip4.src_addr;
+          inet_ntop(AF_INET, &(tmpaddr.sin_addr), (char *)&tmpip, sizeof(tmpip));
+          if (!string_is_ip_address(US tmpip,NULL))
+            {
+            DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
             return ERRNO_PROXYFAIL;
-          sender_host_address = tmpip;
-          sender_host_port    = hdr.v2.addr.ip4.src_port;
-          goto done;
-        case 0x21:  /* TCPv6 */
-          tmpip = string_sprintf("%s", hdr.v2.addr.ip6.src_addr);
-          if (!string_is_ip_address(tmpip,NULL))
+            }
+          proxy_host_address  = sender_host_address;
+          sender_host_address = string_copy(US tmpip);
+          tmpport             = ntohs(hdr.v2.addr.ip4.src_port);
+          proxy_host_port     = sender_host_port;
+          sender_host_port    = tmpport;
+          /* Save dest ip/port */
+          tmpaddr.sin_addr.s_addr = hdr.v2.addr.ip4.dst_addr;
+          inet_ntop(AF_INET, &(tmpaddr.sin_addr), (char *)&tmpip, sizeof(tmpip));
+          if (!string_is_ip_address(US tmpip,NULL))
+            {
+            DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
             return ERRNO_PROXYFAIL;
-          sender_host_address = tmpip;
-          sender_host_port    = hdr.v2.addr.ip6.src_port;
+            }
+          proxy_target_address = string_copy(US tmpip);
+          tmpport              = ntohs(hdr.v2.addr.ip4.dst_port);
+          proxy_target_port    = tmpport;
           goto done;
+        case 0x21:  /* TCPv6 address type */
+          iptype = US"IPv6";
+          memmove(tmpaddr6.sin6_addr.s6_addr, hdr.v2.addr.ip6.src_addr, 16);
+          inet_ntop(AF_INET6, &(tmpaddr6.sin6_addr), (char *)&tmpip6, sizeof(tmpip6));
+          if (!string_is_ip_address(US tmpip6,NULL))
+            {
+            DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
+            return ERRNO_PROXYFAIL;
+            }
+          proxy_host_address  = sender_host_address;
+          sender_host_address = string_copy(US tmpip6);
+          tmpport             = ntohs(hdr.v2.addr.ip6.src_port);
+          proxy_host_port     = sender_host_port;
+          sender_host_port    = tmpport;
+          /* Save dest ip/port */
+          memmove(tmpaddr6.sin6_addr.s6_addr, hdr.v2.addr.ip6.dst_addr, 16);
+          inet_ntop(AF_INET6, &(tmpaddr6.sin6_addr), (char *)&tmpip6, sizeof(tmpip6));
+          if (!string_is_ip_address(US tmpip6,NULL))
+            {
+            DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
+            return ERRNO_PROXYFAIL;
+            }
+          proxy_target_address = string_copy(US tmpip6);
+          tmpport              = ntohs(hdr.v2.addr.ip6.dst_port);
+          proxy_target_port    = tmpport;
+          goto done;
+        default:
+          DEBUG(D_receive)
+            debug_printf("Unsupported PROXYv2 connection type: 0x%02x\n",
+                         hdr.v2.fam);
+          goto proxyfail;
         }
       /* Unsupported protocol, keep local connection address */
       break;
@@ -736,7 +771,9 @@ if (ret >= 16 &&
       /* Keep local connection address for LOCAL */
       break;
     default:
-      DEBUG(D_receive) debug_printf("Unsupported PROXYv2 command\n");
+      DEBUG(D_receive)
+        debug_printf("Unsupported PROXYv2 command: 0x%02x\n",
+                     hdr.v2.cmd);
       goto proxyfail;
     }
   }
@@ -816,7 +853,7 @@ else if (ret >= 8 &&
       debug_printf("Proxy dest arg is not an %s address\n", iptype);
     goto proxyfail;
     }
-  /* Should save dest ip somewhere? */
+  proxy_target_address = p;
   p = sp + 1;
   if ((sp = Ustrchr(p, ' ')) == NULL)
     {
@@ -846,29 +883,27 @@ else if (ret >= 8 &&
       debug_printf("Proxy dest port '%s' not an integer\n", p);
     goto proxyfail;
     }
-  /* Should save dest port somewhere? */
+  proxy_target_port = tmp_port;
   /* Already checked for /r /n above. Good V1 header received. */
   goto done;
   }
 else
   {
   /* Wrong protocol */
-  DEBUG(D_receive) debug_printf("Wrong proxy protocol specified\n");
+  DEBUG(D_receive) debug_printf("Invalid proxy protocol version negotiation\n");
   goto proxyfail;
   }
 
 proxyfail:
 restore_socket_timeout(fd, get_ok, tvtmp, vslen);
 /* Don't flush any potential buffer contents. Any input should cause a
-synchronization failure or we just don't want to speak SMTP to them */
+   synchronization failure */
 return FALSE;
 
 done:
 restore_socket_timeout(fd, get_ok, tvtmp, vslen);
-flush_input();
 DEBUG(D_receive)
-  debug_printf("Valid %s sender from Proxy Protocol header\n",
-               iptype);
+  debug_printf("Valid %s sender from Proxy Protocol header\n", iptype);
 return proxy_session;
 }
 #endif
@@ -1164,6 +1199,15 @@ return string_sprintf("SMTP connection from %s", hostname);
 
 
 #ifdef SUPPORT_TLS
+/* Append TLS-related information to a log line
+
+Arguments:
+  s		String under construction: allocated string to extend, or NULL
+  sizep		Pointer to current allocation size (update on return), or NULL
+  ptrp		Pointer to index for new entries in string (update on return), or NULL
+
+Returns:	Allocated string or NULL
+*/
 static uschar *
 s_tlslog(uschar * s, int * sizep, int * ptrp)
 {
@@ -1189,8 +1233,6 @@ s_tlslog(uschar * s, int * sizep, int * ptrp)
     if (sizep) *sizep = size;
     if (ptrp) *ptrp = ptr;
     }
-  else
-    s = US"";
   return s;
 }
 #endif
@@ -2715,14 +2757,17 @@ the connection is not forcibly to be dropped, return 0. Otherwise, log why it
 is closing if required and return 2.  */
 
 if (log_reject_target != 0)
-  log_write(0, log_reject_target, "%s%s %s%srejected %s%s",
-    host_and_ident(TRUE),
+  {
 #ifdef SUPPORT_TLS
-    s_tlslog(NULL, NULL, NULL),
+  uschar * s = s_tlslog(NULL, NULL, NULL);
+  if (!s) s = US"";
 #else
-    "",
+  uschar * s = US"";
 #endif
+  log_write(0, log_reject_target, "%s%s %s%srejected %s%s",
+    host_and_ident(TRUE), s,
     sender_info, (rc == FAIL)? US"" : US"temporarily ", what, log_msg);
+  }
 
 if (!drop) return 0;
 

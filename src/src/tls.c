@@ -181,4 +181,16 @@ return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm;
 
 #endif  /* SUPPORT_TLS */
 
+void
+tls_modify_variables(tls_support * dest_tsp)
+{
+modify_variable(US"tls_bits",                 &dest_tsp->bits);
+modify_variable(US"tls_certificate_verified", &dest_tsp->certificate_verified);
+modify_variable(US"tls_cipher",               &dest_tsp->cipher);
+modify_variable(US"tls_peerdn",               &dest_tsp->peerdn);
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+modify_variable(US"tls_sni",                  &dest_tsp->sni);
+#endif
+}
+
 /* End of tls.c */

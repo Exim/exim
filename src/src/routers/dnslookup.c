@@ -18,6 +18,10 @@ optionlist dnslookup_router_options[] = {
       (void *)(offsetof(dnslookup_router_options_block, check_secondary_mx)) },
   { "check_srv",          opt_stringptr,
       (void *)(offsetof(dnslookup_router_options_block, check_srv)) },
+  { "dnssec_request_domains",         opt_stringptr,
+      (void *)(offsetof(dnslookup_router_options_block, dnssec_request_domains)) },
+  { "dnssec_require_domains",         opt_stringptr,
+      (void *)(offsetof(dnslookup_router_options_block, dnssec_require_domains)) },
   { "mx_domains",         opt_stringptr,
       (void *)(offsetof(dnslookup_router_options_block, mx_domains)) },
   { "mx_fail_domains",    opt_stringptr,
@@ -53,7 +57,9 @@ dnslookup_router_options_block dnslookup_router_option_defaults = {
   NULL,            /* mx_domains */
   NULL,            /* mx_fail_domains */
   NULL,            /* srv_fail_domains */
-  NULL             /* check_srv */
+  NULL,            /* check_srv */
+  NULL,            /* dnssec_request_domains */
+  NULL             /* dnssec_require_domains */
 };
 
 
@@ -261,7 +267,9 @@ for (;;)
     }
 
   rc = host_find_bydns(&h, rblock->ignore_target_hosts, flags, srv_service,
-    ob->srv_fail_domains, ob->mx_fail_domains, &fully_qualified_name, &removed);
+    ob->srv_fail_domains, ob->mx_fail_domains,
+    ob->dnssec_request_domains, ob->dnssec_require_domains,
+    &fully_qualified_name, &removed);
   if (removed) setflag(addr, af_local_host_removed);
 
   /* If host found with only address records, test for the domain's being in

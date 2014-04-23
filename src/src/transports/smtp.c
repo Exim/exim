@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2013 */
+/* Copyright (c) University of Cambridge 1995 - 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -1213,19 +1213,18 @@ outblock.authenticating = FALSE;
 
 /* Reset the parameters of a TLS session. */
 
-tls_in.bits = 0;
-tls_in.cipher = NULL;	/* for back-compatible behaviour */
-tls_in.peerdn = NULL;
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
-tls_in.sni = NULL;
-#endif
-
 tls_out.bits = 0;
 tls_out.cipher = NULL;	/* the one we may use for this transport */
 tls_out.peerdn = NULL;
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
 tls_out.sni = NULL;
 #endif
+
+/* Flip the legacy TLS-related variables over to the outbound set in case
+they're used in the context of the transport.  Don't bother resetting
+afterward as we're in a subprocess. */
+
+tls_modify_variables(&tls_out);
 
 #ifndef SUPPORT_TLS
 if (smtps)
@@ -2817,6 +2816,7 @@ for (cutoff_retry = 0; expired &&
         rc = host_find_byname(host, NULL, flags, &canonical_name, TRUE);
       else
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
+	  NULL, NULL,	/*XXX todo: smtp tpt hosts_require_dnssec */
           &canonical_name, NULL);
 
       /* Update the host (and any additional blocks, resulting from

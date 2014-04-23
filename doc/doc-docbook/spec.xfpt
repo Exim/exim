@@ -17622,6 +17622,29 @@ when there is a DNS lookup error.
 
 
 
+.option dnssec_request_domains dnslookup "domain list&!!" unset
+.cindex "MX record" "security"
+.cindex "DNSSEC" "MX lookup"
+.cindex "security" "MX lookup"
+.cindex "DNS" "DNSSEC"
+DNS lookups for domains matching &%dnssec_request_domains%& will be done with
+the dnssec request bit set.
+This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+
+
+
+.option dnssec_require_domains dnslookup "domain list&!!" unset
+.cindex "MX record" "security"
+.cindex "DNSSEC" "MX lookup"
+.cindex "security" "MX lookup"
+.cindex "DNS" "DNSSEC"
+DNS lookups for domains matching &%dnssec_request_domains%& will be done with
+the dnssec request bit set.  Any returns not having the Authenticated Data bit
+(AD bit) set wil be ignored and logged as a host-lookup failure.
+This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+
+
+
 .option mx_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "required to exist"
 .cindex "SRV record" "required to exist"
@@ -34633,9 +34656,13 @@ This utility is a Perl script contributed by Matt Hubbard. It runs
 .code
 exim -bpu
 .endd
-to obtain a queue listing with undelivered recipients only, and then greps the
-output to select messages that match given criteria. The following selection
-options are available:
+or (in case &*-a*& switch is specified)
+.code
+exim -bp
+.endd 
+
+to obtain a queue listing, and then greps the output to select messages 
+that match given criteria. The following selection options are available:
 
 .vlist
 .vitem &*-f*&&~<&'regex'&>
@@ -34682,6 +34709,9 @@ Brief format &-- one line per message.
 
 .vitem &*-R*&
 Display messages in reverse order.
+
+.vitem &*-a*&
+Include delivered recipients in queue listing.
 .endlist
 
 There is one more option, &%-h%&, which outputs a list of options.
