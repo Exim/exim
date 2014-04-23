@@ -7198,6 +7198,7 @@ them. The following names are recognized:
 &`USER       `&  set the DN, for authenticating the LDAP bind
 &`PASS       `&  set the password, likewise
 &`REFERRALS  `&  set the referrals parameter
+&`SERVERS    `&  set alternate server list for this query only
 &`SIZE       `&  set the limit for the number of entries returned
 &`TIME       `&  set the maximum waiting time for a query
 .endd
@@ -7218,6 +7219,14 @@ Netscape SDK; for OpenLDAP no action is taken.
 
 The TIME parameter (also a number of seconds) is passed to the server to
 set a server-side limit on the time taken to complete a search.
+
+The SERVERS parameter allows you to specify an alternate list of ldap servers
+to use for an individual lookup.  The global ldap_servers option provides a
+default list of ldap servers, and a single lookup can specify a single ldap
+server to use.  But when you need to do a lookup with a list of servers that is
+different than the default list (maybe different order, maybe a completely
+different set of servers), the SERVERS parameter allows you to specify this
+alternate list.
 
 
 Here is an example of an LDAP query in an Exim lookup that uses some of these

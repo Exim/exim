@@ -32,6 +32,10 @@ Version 4.83
     is split from the encryption operation. The default remains that a failed
     verification cancels the encryption.
 
+ 6. New SERVERS override of default ldap server list.  In the ACLs, an ldap
+    lookup can now set a list of servers to use that is different from the
+    default list.
+
 
 Version 4.82
 ------------

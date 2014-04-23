@@ -1133,6 +1133,7 @@ uschar *url = ldap_url;
 uschar *p;
 uschar *user = NULL;
 uschar *password = NULL;
+uschar *local_servers = NULL;
 uschar *server, *list;
 uschar buffer[512];
 
@@ -1161,6 +1162,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
       else if (strncmpic(name, US"TIME=", namelen) == 0) timelimit = Uatoi(value);
       else if (strncmpic(name, US"CONNECT=", namelen) == 0) tcplimit = Uatoi(value);
       else if (strncmpic(name, US"NETTIME=", namelen) == 0) tcplimit = Uatoi(value);
+      else if (strncmpic(name, US"SERVERS=", namelen) == 0) local_servers = value;
 
       /* Don't know if all LDAP libraries have LDAP_OPT_DEREF */
 
@@ -1288,16 +1290,16 @@ if (Ustrncmp(p, "://", 3) != 0)
 
 /* No default servers, or URL contains a server name: just one attempt */
 
-if (eldap_default_servers == NULL || p[3] != '/')
+if ((eldap_default_servers == NULL && local_servers == NULL) || p[3] != '/')
   {
   return perform_ldap_search(url, NULL, 0, search_type, res, errmsg,
     &defer_break, user, password, sizelimit, timelimit, tcplimit, dereference,
     referrals);
   }
 
-/* Loop through the default servers until OK or FAIL */
-
-list = eldap_default_servers;
+/* Loop through the default servers until OK or FAIL. Use local_servers list
+ * if defined in the lookup, otherwise use the global default list */
+list = (local_servers == NULL) ? eldap_default_servers : local_servers;
 while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {
   int rc;
