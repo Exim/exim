@@ -149,7 +149,8 @@ sub build_html_documentation {
     my @cmd = (
         $genpath,   '--spec',    $spec,                '--filter',
         $filter,    '--latest',  $context->{trelease}, '--tmpl',
-        $templates, '--docroot', $dir,                 '--localstatic'
+        $templates, '--docroot', $dir,                 '--localstatic',
+        (($verbose||$debug) ? '--verbose' : '')
     );
 
     print "Executing ", join( ' ', @cmd ), "\n";
