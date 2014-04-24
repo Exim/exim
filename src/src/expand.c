@@ -510,6 +510,7 @@ static var_entry var_table[] = {
   { "localhost_number",    vtype_int,         &host_number },
   { "log_inodes",          vtype_pinodes,     (void *)FALSE },
   { "log_space",           vtype_pspace,      (void *)FALSE },
+  { "lookup_dnssec_authenticated",vtype_stringptr,&lookup_dnssec_authenticated},
   { "mailstore_basename",  vtype_stringptr,   &mailstore_basename },
 #ifdef WITH_CONTENT_SCAN
   { "malware_name",        vtype_stringptr,   &malware_name },

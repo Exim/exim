@@ -220,6 +220,8 @@ else
   int rc = dns_lookup(&dnsa, lname, type, NULL);
   int count = 0;
 
+  lookup_dnssec_authenticated = NULL;
+
   switch(rc)
     {
     case DNS_SUCCEED: break;
@@ -2207,7 +2209,7 @@ Returns:       HOST_FIND_FAILED     couldn't find A record
 static int
 set_address_from_dns(host_item *host, host_item **lastptr,
   uschar *ignore_target_hosts, BOOL allow_ip, uschar **fully_qualified_name,
-  BOOL dnssec_require)
+  BOOL dnssec_requested, BOOL dnssec_require)
 {
 dns_record *rr;
 host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
@@ -2268,6 +2270,8 @@ for (; i >= 0; i--)
   dns_scan dnss;
 
   int rc = dns_lookup(&dnsa, host->name, type, fully_qualified_name);
+  lookup_dnssec_authenticated = !dnssec_requested ? NULL
+    : dns_is_secure(&dnsa) ? US"yes" : US"no";
 
   /* We want to return HOST_FIND_AGAIN if one of the A, A6, or AAAA lookups
   fails or times out, but not if another one succeeds. (In the early
@@ -2506,6 +2510,9 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
   magic. */
 
   rc = dns_lookup(&dnsa, buffer, ind_type, &temp_fully_qualified_name);
+  lookup_dnssec_authenticated = !dnssec_request ? NULL
+    : dns_is_secure(&dnsa) ? US"yes" : US"no";
+
   if (temp_fully_qualified_name != buffer && fully_qualified_name != NULL)
     *fully_qualified_name = temp_fully_qualified_name + prefix_length;
 
@@ -2541,6 +2548,9 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   {
   ind_type = T_MX;
   rc = dns_lookup(&dnsa, host->name, ind_type, fully_qualified_name);
+  lookup_dnssec_authenticated = !dnssec_request ? NULL
+    : dns_is_secure(&dnsa) ? US"yes" : US"no";
+
   switch (rc)
     {
     case DNS_NOMATCH:
@@ -2584,7 +2594,7 @@ if (rc != DNS_SUCCEED)
   host->mx = MX_NONE;
   host->port = PORT_NONE;
   rc = set_address_from_dns(host, &last, ignore_target_hosts, FALSE,
-    fully_qualified_name, dnssec_require);
+    fully_qualified_name, dnssec_request, dnssec_require);
 
   /* If one or more address records have been found, check that none of them
   are local. Since we know the host items all have their IP addresses
@@ -2914,7 +2924,7 @@ for (h = host; h != last->next; h = h->next)
   {
   if (h->address != NULL) continue;  /* Inserted by a multihomed host */
   rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip,
-    NULL, dnssec_require);
+    NULL, dnssec_request, dnssec_require);
   if (rc != HOST_FOUND)
     {
     h->status = hstatus_unusable;

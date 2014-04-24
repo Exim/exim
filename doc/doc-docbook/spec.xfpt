@@ -6981,6 +6981,8 @@ ${lookup dnsdb{a=one.host.com:two.host.com}}
 Thus, in the default case, as long as at least one of the DNS lookups
 yields some data, the lookup succeeds.
 
+.new
+.cindex "DNSSEC" "dns lookup"
 Use of &(DNSSEC)& is controlled by a dnssec modifier.
 The possible keywords are
 &"dnssec_strict"&, &"dnssec_lax"&, and &"dnssec_never"&.
@@ -6990,6 +6992,9 @@ With &"strict"& a response from the DNS resolver that
 is not labelled as authenticated data
 is treated as equivalent to a temporary DNS error.
 The default is &"never"&.
+
+See also the &$lookup_dnssec_authenticated$& variable.
+.wen
 
 
 
@@ -11447,6 +11452,16 @@ whenever the variable is referenced. If the operating system does not have the
 ability to find the amount of free space (only true for experimental systems),
 the space value is -1. See also the &%check_log_space%& option.
 
+
+.new
+.vitem &$lookup_dnssec_authenticated$&
+.vindex "&$lookup_dnssec_authenticated$&"
+This variable is set after a DNS lookup done by
+either a dnslookup router or a dnsdb lookup expansion.
+It will be empty if &(DNSSEC)& was not requested,
+&"no"& if the result was not labelled as authenticated data
+and &"yes"& if it was.
+.wen
 
 .vitem &$mailstore_basename$&
 .vindex "&$mailstore_basename$&"
@@ -17649,6 +17664,7 @@ when there is a DNS lookup error.
 
 
 
+.new
 .option dnssec_request_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
@@ -17658,8 +17674,12 @@ DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.
 This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
 
+See also the &$lookup_dnssec_authenticated$& variable.
+.wen
 
 
+
+.new
 .option dnssec_require_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
@@ -17669,6 +17689,7 @@ DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set wil be ignored and logged as a host-lookup failure.
 This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+.wen
 
 
 

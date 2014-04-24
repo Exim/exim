@@ -837,6 +837,7 @@ BOOL    log_testing_mode       = FALSE;
 BOOL    log_timezone           = FALSE;
 unsigned int log_write_selector= L_default;
 uschar *login_sender_address   = NULL;
+uschar *lookup_dnssec_authenticated = NULL;
 int     lookup_open_max        = 25;
 uschar *lookup_value           = NULL;
 

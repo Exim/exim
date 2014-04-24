@@ -23,6 +23,7 @@ int dkim_exim_query_dns_txt(char *name, char *answer) {
   dns_scan   dnss;
   dns_record *rr;
 
+  lookup_dnssec_authenticated = NULL;
   if (dns_lookup(&dnsa, (uschar *)name, T_TXT, NULL) != DNS_SUCCEED) return PDKIM_FAIL;
 
   /* Search for TXT record */

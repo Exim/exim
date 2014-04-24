@@ -1614,6 +1614,7 @@ else
 DNS_LOOKUP_AGAIN:
 #endif
 
+lookup_dnssec_authenticated = NULL;
 switch (dns_lookup(&dnsa, target, type, NULL))
   {
   /* If something bad happened (most commonly DNS_AGAIN), defer. */

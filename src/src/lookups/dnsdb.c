@@ -354,6 +354,9 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 #endif
       rc = dns_special_lookup(&dnsa, domain, type, &found);
 
+    lookup_dnssec_authenticated = dnssec_mode==OK ? NULL
+      : dns_is_secure(&dnsa) ? US"yes" : US"no";
+
     if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
     if (rc != DNS_SUCCEED)
       {

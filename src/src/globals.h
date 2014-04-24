@@ -503,6 +503,7 @@ extern unsigned int log_write_selector;/* Bit map of logging options for log_wri
 extern uschar *login_sender_address;   /* The actual sender address */
 extern lookup_info **lookup_list;      /* Array of pointers to available lookups */
 extern int     lookup_list_count;      /* Number of entries in the list */
+extern uschar *lookup_dnssec_authenticated; /* AD status of dns lookup */
 extern int     lookup_open_max;        /* Max lookup files to cache */
 extern uschar *lookup_value;           /* Value looked up from file */
 
