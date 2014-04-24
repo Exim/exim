@@ -36,6 +36,9 @@ Version 4.83
     lookup can now set a list of servers to use that is different from the
     default list.
 
+ 7. New command-line option -C for exiqgrep to specify alternate exim.conf
+    file when searching the queue.
+
 
 Version 4.82
 ------------

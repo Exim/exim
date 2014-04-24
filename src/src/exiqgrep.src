@@ -43,9 +43,10 @@ if ($^O eq 'darwin') { # aka MacOS X
   $base = 62;
 };
 
-getopts('hf:r:y:o:s:zxlibRca',\%opt);
+getopts('hf:r:y:o:s:C:zxlibRca',\%opt);
 if ($opt{h}) { &help; exit;}
 if ($opt{a}) { $eargs = '-bp'; }
+if ($opt{C}) { $eargs .= ' -C '.$opt{C}; }
 
 # Read message queue output into hash
 &collect();
@@ -61,6 +62,7 @@ sub help() {
 Exim message queue display utility.
 
 	-h		This help message.
+	-C		Specify which exim.conf to use.
 
 Selection criteria:
 	-f <regexp>	Match sender address sender (field is "< >" wrapped)

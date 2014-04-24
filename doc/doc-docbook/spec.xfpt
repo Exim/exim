@@ -34683,7 +34683,11 @@ exim -bpu
 or (in case &*-a*& switch is specified)
 .code
 exim -bp
-.endd 
+.endd
+.new
+The &*-C*& option is used to specify an alternate &_exim.conf_& which might
+contain alternate exim configuration the queue management might be using.
+.wen
 
 to obtain a queue listing, and then greps the output to select messages 
 that match given criteria. The following selection options are available:
