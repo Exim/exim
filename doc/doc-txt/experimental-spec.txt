@@ -69,7 +69,8 @@ starts retrying to fetch an OCSP proof some time before its current
 proof expires.  The downside is that it requires server support.
 
 If Exim is built with EXPERIMENTAL_OCSP and it was built with OpenSSL,
-then it gains a new global option: "tls_ocsp_file".
+or with GnuTLS 3.1.3 or later, then it gains a new global option:
+"tls_ocsp_file".
 
 The file specified therein is expected to be in DER format, and contain
 an OCSP proof.  Exim will serve it as part of the TLS handshake.  This
@@ -86,7 +87,7 @@ next connection.
 Exim will check for a valid next update timestamp in the OCSP proof;
 if not present, or if the proof has expired, it will be ignored.
 
-Also, given EXPERIMENTAL_OCSP and OpenSSL, the smtp transport gains
+Also, given EXPERIMENTAL_OCSP, the smtp transport gains
 a "hosts_require_ocsp" option; a host-list for which an OCSP Stapling
 is requested and required for the connection to proceed.  The host(s)
 should also be in "hosts_require_tls", and "tls_verify_certificates"
@@ -99,6 +100,9 @@ of the server certificate.  There may be zero or one such. These
 intermediate certificates should be added to the server OCSP stapling
 file (named by tls_ocsp_file).
 
+Note that the proof only covers the terminal server certificate,
+not any of the chain from CA to it.
+
 At this point in time, we're gathering feedback on use, to determine if
 it's worth adding complexity to the Exim daemon to periodically re-fetch
 OCSP files and somehow handling multiple files.
@@ -107,8 +111,8 @@ OCSP files and somehow handling multiple files.
   OCSP server is supplied.  The server URL may be included in the
   server certificate, if the CA is helpful.
 
-  One fail mode seen was the OCSP Signer cert expiring before the end
-  of vailidity of the OCSP proof. The checking done by Exim/OpenSSL
+  One failure mode seen was the OCSP Signer cert expiring before the end
+  of validity of the OCSP proof. The checking done by Exim/OpenSSL
   noted this as invalid overall, but the re-fetch script did not.
 
 

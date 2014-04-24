@@ -1,8 +1,8 @@
 /* A little hacked up program that makes a TCP/IP call and reads a script to
 drive it, for testing Exim server code running as a daemon. It's got a bit
 messy with the addition of support for either OpenSSL or GnuTLS. The code for
-those was hacked out of Exim itself, then code for OCSP stapling was ripped
-from the openssl ocsp and s_client utilities. */
+those was hacked out of Exim itself, then code for OpenSSL OCSP stapling was
+ripped from the openssl ocsp and s_client utilities. */
 
 /* ANSI C standard includes */
 
@@ -68,8 +68,6 @@ latter needs a whole pile of tables. */
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/ocsp.h>
-
-char * ocsp_stapling = NULL;
 #endif
 
 
@@ -77,6 +75,7 @@ char * ocsp_stapling = NULL;
 #define HAVE_TLS
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#include <gnutls/ocsp.h>
 
 #define DH_BITS      768
 
@@ -117,6 +116,10 @@ static const int cert_type_priority[16] = { GNUTLS_CRT_X509, 0 };
 #endif
 
 
+
+#ifdef HAVE_TLS
+char * ocsp_stapling = NULL;
+#endif
 
 
 /*************************************************
@@ -238,7 +241,8 @@ return ret;
 *         Start an OpenSSL TLS session           *
 *************************************************/
 
-int tls_start(int sock, SSL **ssl, SSL_CTX *ctx)
+int
+tls_start(int sock, SSL **ssl, SSL_CTX *ctx)
 {
 int rc;
 static const char *sid_ctx = "exim";
@@ -416,6 +420,11 @@ if (certificate != NULL)
 /* Associate the parameters with the x509 credentials structure. */
 
 gnutls_certificate_set_dh_params(x509_cred, dh_params);
+
+/* set the CA info for server-cert verify */
+if (ocsp_stapling)
+  gnutls_certificate_set_x509_trust_file(x509_cred, ocsp_stapling,
+       	GNUTLS_X509_FMT_PEM);
 }
 
 
@@ -514,7 +523,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
     tls_on_connect = 1;
     argi++;
     }
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_TLS
   else if (strcmp(argv[argi], "-ocsp") == 0)
     {
     if (argc < ++argi + 1)
@@ -524,6 +533,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
       }
     ocsp_stapling = argv[argi++];
     }
+
 #endif
   else if (argv[argi][1] == 't' && isdigit(argv[argi][2]))
     {
@@ -757,6 +767,8 @@ if (certfile != NULL) printf("Certificate file = %s\n", certfile);
 if (keyfile != NULL) printf("Key file = %s\n", keyfile);
 tls_init(certfile, keyfile);
 tls_session = tls_session_init();
+if (ocsp_stapling)
+  gnutls_ocsp_status_request_enable_client(tls_session, NULL, 0, NULL);
 gnutls_transport_set_ptr(tls_session, (gnutls_transport_ptr)sock);
 
 /* When the server asks for a certificate and the client does not have one,
@@ -791,6 +803,11 @@ if (tls_on_connect)
 
   if (!tls_active)
     printf("Failed to start TLS\n");
+  #ifdef HAVE_GNUTLS
+  else if (  ocsp_stapling
+	  && gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
+    printf("Failed to verify certificate status\n");
+  #endif
   else
     printf("Succeeded in starting TLS\n");
   }
@@ -865,6 +882,9 @@ while (fgets(outbuffer, sizeof(outbuffer), stdin) != NULL)
       {
       if (lineptr[0] == '2')
         {
+int rc;
+	unsigned int verify;
+
         printf("Attempting to start TLS\n");
         fflush(stdout);
 
@@ -884,6 +904,42 @@ while (fgets(outbuffer, sizeof(outbuffer), stdin) != NULL)
           printf("Failed to start TLS\n");
           fflush(stdout);
           }
+	#ifdef HAVE_GNUTLS
+	else if (ocsp_stapling)
+	  {
+	  if ((rc= gnutls_certificate_verify_peers2(tls_session, &verify)) < 0)
+	    {
+	    printf("Failed to verify certificate: %s\n", gnutls_strerror(rc));
+	    fflush(stdout);
+	    }
+	  else if (verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
+	    {
+	    printf("Bad certificate\n");
+	    fflush(stdout);
+	    }
+	  else if (gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
+	    {
+	    printf("Failed to verify certificate status\n");
+	      {
+	      gnutls_datum_t stapling;
+	      gnutls_ocsp_resp_t resp;
+	      gnutls_datum_t printed;
+	      if (  (rc= gnutls_ocsp_status_request_get(tls_session, &stapling)) == 0
+		 && (rc= gnutls_ocsp_resp_init(&resp)) == 0
+		 && (rc= gnutls_ocsp_resp_import(resp, &stapling)) == 0
+		 && (rc= gnutls_ocsp_resp_print(resp, GNUTLS_OCSP_PRINT_FULL, &printed)) == 0
+		 )
+		{
+		fprintf(stderr, "%.4096s", printed.data);
+		gnutls_free(printed.data);
+		}
+	      else
+		(void) fprintf(stderr,"ocsp decode: %s", gnutls_strerror(rc));
+	      }
+	    fflush(stdout);
+	    }
+	  }
+	#endif
         else
           printf("Succeeded in starting TLS\n");
         }

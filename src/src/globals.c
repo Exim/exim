@@ -137,7 +137,7 @@ that's the interop problem which has been observed: GnuTLS suggesting a higher
 bit-count as "NORMAL" (2432) and Thunderbird dropping connection. */
 int     tls_dh_max_bits        = 2236;
 uschar *tls_dhparam            = NULL;
-#if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
+#if defined(EXPERIMENTAL_OCSP)
 uschar *tls_ocsp_file          = NULL;
 #endif
 BOOL    tls_offered            = FALSE;

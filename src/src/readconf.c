@@ -436,7 +436,7 @@ static optionlist optionlist_config[] = {
   { "tls_crl",                  opt_stringptr,   &tls_crl },
   { "tls_dh_max_bits",          opt_int,         &tls_dh_max_bits },
   { "tls_dhparam",              opt_stringptr,   &tls_dhparam },
-# if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
+# if defined(EXPERIMENTAL_OCSP)
   { "tls_ocsp_file",            opt_stringptr,   &tls_ocsp_file },
 # endif
   { "tls_on_connect_ports",     opt_stringptr,   &tls_in.on_connect_ports },

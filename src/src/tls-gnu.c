@@ -43,6 +43,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 # include <gnutls/pkcs11.h>
 #endif
+#ifdef EXPERIMENTAL_OCSP
+# include <gnutls/ocsp.h>
+#endif
 
 /* GnuTLS 2 vs 3
 
@@ -658,7 +661,7 @@ uschar *saved_tls_crl = NULL;
 int cert_count;
 
 /* We check for tls_sni *before* expansion. */
-if (!state->host)
+if (!host)	/* server */
   {
   if (!state->received_sni)
     {
@@ -700,7 +703,7 @@ if (!expand_check_tlsvar(tls_certificate))
 if ((state->exp_tls_certificate == NULL) ||
     (*state->exp_tls_certificate == '\0'))
   {
-  if (state->host == NULL)
+  if (!host)
     return tls_error(US"no TLS server certificate is specified", NULL, NULL);
   else
     DEBUG(D_tls) debug_printf("TLS: no client certificate specified; okay\n");
@@ -744,6 +747,30 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
         state->exp_tls_certificate, state->exp_tls_privatekey));
   DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
   } /* tls_certificate */
+
+
+/* Set the OCSP stapling server info */
+
+#ifdef EXPERIMENTAL_OCSP
+if (  !host	/* server */
+   && tls_ocsp_file
+   )
+  {
+  uschar * expanded;
+  int rc;
+
+  if (!expand_check(tls_ocsp_file, US"tls_ocsp_file", &expanded))
+    return DEFER;
+
+  /* Lazy way; would like callback to emit debug on actual response */
+
+  rc = gnutls_certificate_set_ocsp_status_request_file(state->x509_cred,
+      expanded, 0);
+  exim_gnutls_err_check(US"gnutls_certificate_set_ocsp_status_request_file");
+  DEBUG(D_tls) debug_printf("Set OCSP response file %s\n", expanded);
+  }
+#endif
+
 
 /* Set the trusted CAs file if one is provided, and then add the CRL if one is
 provided. Experiment shows that, if the certificate file is empty, an unhelpful
@@ -1559,10 +1586,11 @@ Arguments:
   verify_certs      file for certificate verify
   verify_crl        CRL for verify
   require_ciphers   list of allowed ciphers or NULL
+  hosts_require_ocsp hosts for which to request certificate-status (OCSP)
   dh_min_bits       minimum number of bits acceptable in server's DH prime
   timeout           startup timeout
-  verify_hosts     mandatory client verification 
-  try_verify_hosts optional client verification
+  verify_hosts      mandatory client verification 
+  try_verify_hosts  optional client verification
 
 Returns:            OK/DEFER/FAIL (because using common functions),
                     but for a client, DEFER and FAIL have the same meaning
@@ -1575,7 +1603,7 @@ tls_client_start(int fd, host_item *host,
     uschar *verify_certs, uschar *verify_crl,
     uschar *require_ciphers,
 #ifdef EXPERIMENTAL_OCSP
-    uschar *require_ocsp ARG_UNUSED,
+    uschar *hosts_require_ocsp,
 #endif
     int dh_min_bits, int timeout,
     uschar *verify_hosts, uschar *try_verify_hosts)
@@ -1583,12 +1611,16 @@ tls_client_start(int fd, host_item *host,
 int rc;
 const char *error;
 exim_gnutls_state_st *state = NULL;
+#ifdef EXPERIMENTAL_OCSP
+BOOL require_ocsp = verify_check_this_host(&hosts_require_ocsp,
+  NULL, host->name, host->address, NULL) == OK;
+#endif
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
 
-rc = tls_init(host, certificate, privatekey,
-    sni, verify_certs, verify_crl, require_ciphers, &state);
-if (rc != OK) return rc;
+if ((rc = tls_init(host, certificate, privatekey,
+    sni, verify_certs, verify_crl, require_ciphers, &state)) != OK)
+  return rc;
 
 if (dh_min_bits < EXIM_CLIENT_DH_MIN_MIN_BITS)
   {
@@ -1602,11 +1634,17 @@ DEBUG(D_tls) debug_printf("Setting D-H prime minimum acceptable bits to %d\n",
     dh_min_bits);
 gnutls_dh_set_prime_bits(state->session, dh_min_bits);
 
-/* stick to the old behaviour for compatibility if tls_verify_certificates is 
-   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only 
-   the specified host patterns if one of them is defined */
-if (((state->exp_tls_verify_certificates != NULL) && (verify_hosts == NULL) && (try_verify_hosts == NULL)) ||
-    (verify_check_host(&verify_hosts) == OK))
+/* Stick to the old behaviour for compatibility if tls_verify_certificates is 
+set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
+the specified host patterns if one of them is defined */
+
+if ((  state->exp_tls_verify_certificates
+    && !verify_hosts
+    && !try_verify_hosts
+    )
+    ||
+    verify_check_host(&verify_hosts) == OK
+   )
   {
   DEBUG(D_tls) debug_printf("TLS: server certificate verification required.\n");
   state->verify_requirement = VERIFY_REQUIRED;
@@ -1624,6 +1662,13 @@ else
   state->verify_requirement = VERIFY_NONE;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }
+
+#ifdef EXPERIMENTAL_OCSP	/* since GnuTLS 3.1.3 */
+if (require_ocsp &&
+    (rc = gnutls_ocsp_status_request_enable_client(state->session, NULL, 0, NULL))
+    != OK)
+  return tls_error(US"cert-status-req", gnutls_strerror(rc), state->host);
+#endif
 
 gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr)fd);
 state->fd_in = fd;
@@ -1652,10 +1697,38 @@ if (state->verify_requirement != VERIFY_NONE &&
     !verify_certificate(state, &error))
   return tls_error(US"certificate verification failed", error, state->host);
 
+#ifdef EXPERIMENTAL_OCSP
+if (require_ocsp)
+  {
+  DEBUG(D_tls)
+    {
+    gnutls_datum_t stapling;
+    gnutls_ocsp_resp_t resp;
+    gnutls_datum_t printed;
+    if (  (rc= gnutls_ocsp_status_request_get(state->session, &stapling)) == 0
+       && (rc= gnutls_ocsp_resp_init(&resp)) == 0
+       && (rc= gnutls_ocsp_resp_import(resp, &stapling)) == 0
+       && (rc= gnutls_ocsp_resp_print(resp, GNUTLS_OCSP_PRINT_FULL, &printed)) == 0
+       )
+      {
+      fprintf(stderr, "%.4096s", printed.data);
+      gnutls_free(printed.data);
+      }
+    else
+      (void) tls_error(US"ocsp decode", gnutls_strerror(rc), state->host);
+    }
+
+  fprintf(stderr, "%s: checking ocsp\n", __FUNCTION__);
+  if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)
+    return tls_error(US"certificate status check failed", NULL, state->host);
+  DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
+  }
+#endif
+
 /* Figure out peer DN, and if authenticated, etc. */
 
-rc = peer_status(state);
-if (rc != OK) return rc;
+if ((rc = peer_status(state)) != OK)
+  return rc;
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */
 
@@ -2041,4 +2114,6 @@ fprintf(f, "Library version: GnuTLS: Compile: %s\n"
            gnutls_check_version(NULL));
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of tls-gnu.c */

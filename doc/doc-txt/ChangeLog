@@ -97,6 +97,8 @@ JH/18 New options dnssec_lax, dnssec_strict on dnsdb lookups.
 TL/09 Bugzilla 609: Add -C option to exiqgrep, specify which exim.conf to use.
       Patch submitted by Lars Timman.
 
+JH/19 EXPERIMENTAL_OCSP support under GnuTLS.  Bug 1459.
+
 
 Exim version 4.82
 -----------------

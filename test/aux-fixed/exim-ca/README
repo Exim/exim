@@ -35,7 +35,7 @@ The ocsp response files are those gotten that way. in .der format;
 is out-of-date, and "revoked" meaning the cert has been revoked.
 
 
-The files were created using the genall script which utilises a
+The files were created using the "genall" script which utilises a
 combination of tools,
 
     openssl
@@ -47,5 +47,9 @@ line CA tool which can be found at
 
     http://people.redhat.com/mpoole/clica/
 
+NOTE:
+ During running of "genall" you need to manipulate the system
+ date/time.  Shutdown ntpd service before doing this, and restart
+ after.
 
 
