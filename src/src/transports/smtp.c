@@ -55,6 +55,10 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
   { "dns_search_parents",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_search_parents) },
+  { "dnssec_request_domains", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dnssec_request_domains) },
+  { "dnssec_require_domains", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dnssec_require_domains) },
   { "dscp",                 opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dscp) },
   { "fallback_hosts",       opt_stringptr,
@@ -213,6 +217,8 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   FALSE,               /* gethostbyname */
   TRUE,                /* dns_qualify_single */
   FALSE,               /* dns_search_parents */
+  NULL,                /* dnssec_request_domains */
+  NULL,                /* dnssec_require_domains */
   TRUE,                /* delay_after_cutoff */
   FALSE,               /* hosts_override */
   FALSE,               /* hosts_randomize */
@@ -2816,7 +2822,7 @@ for (cutoff_retry = 0; expired &&
         rc = host_find_byname(host, NULL, flags, &canonical_name, TRUE);
       else
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-	  NULL, NULL,	/*XXX todo: smtp tpt hosts_require_dnssec */
+	  ob->dnssec_request_domains, ob->dnssec_require_domains,
           &canonical_name, NULL);
 
       /* Update the host (and any additional blocks, resulting from
@@ -3429,4 +3435,6 @@ DEBUG(D_transport) debug_printf("Leaving %s transport\n", tblock->name);
 return TRUE;   /* Each address has its status */
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of transport/smtp.c */

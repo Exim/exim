@@ -85,7 +85,8 @@ TL/07 Add new dmarc expansion variable $dmarc_domain_policy to directly
 JH/13 Fix handling of $tls_cipher et.al. in (non-verify) transport.  Bug 1455.
 
 JH/14 New options dnssec_request_domains, dnssec_require_domains on the
-      dnslookup router (applying to the forward lookup).
+      dnslookup router and the smtp transport (applying to the forward
+      lookup).
 
 TL/08 Bugzilla 1453: New LDAP "SERVERS=" option allows admin to override list
       of ldap servers used for a specific lookup.  Patch provided by Heiko
