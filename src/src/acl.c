@@ -3246,8 +3246,9 @@ for (; cb != NULL; cb = cb->next)
       disable_callout_flush = TRUE;
       break;
 
-      case CONTROL_FAKEDEFER:
       case CONTROL_FAKEREJECT:
+      cancel_cutthrough_connection("fakereject");
+      case CONTROL_FAKEDEFER:
       fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
       if (*p == '/')
         {
@@ -3277,10 +3278,12 @@ for (; cb != NULL; cb = cb->next)
         *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
         return ERROR;
         }
+      cancel_cutthrough_connection("item frozen");
       break;
 
       case CONTROL_QUEUE_ONLY:
       queue_only_policy = TRUE;
+      cancel_cutthrough_connection("queueing forced");
       break;
 
       case CONTROL_SUBMISSION:
@@ -3347,17 +3350,19 @@ for (; cb != NULL; cb = cb->next)
 
       case CONTROL_CUTTHROUGH_DELIVERY:
       if (deliver_freeze)
-        {
-        *log_msgptr = string_sprintf("\"control=%s\" on frozen item", arg);
-        return ERROR;
-        }
-       if (queue_only_policy)
-        {
-        *log_msgptr = string_sprintf("\"control=%s\" on queue-only item", arg);
-        return ERROR;
-        }
-      cutthrough_delivery = TRUE;
-      break;
+        *log_msgptr = US"frozen";
+      else if (queue_only_policy)
+        *log_msgptr = US"queue-only";
+      else if (fake_response == FAIL)
+        *log_msgptr = US"fakereject";
+      else
+	{
+	cutthrough_delivery = TRUE;
+	break;
+	}
+      *log_msgptr = string_sprintf("\"control=%s\" on %s item",
+				    arg, *log_msgptr);
+      return ERROR;
       }
     break;
 
@@ -4476,4 +4481,6 @@ FILE *f = (FILE *)ctx;
 fprintf(f, "-acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of acl.c */
