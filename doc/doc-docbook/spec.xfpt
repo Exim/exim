@@ -11471,7 +11471,7 @@ the space value is -1. See also the &%check_log_space%& option.
 .vitem &$lookup_dnssec_authenticated$&
 .vindex "&$lookup_dnssec_authenticated$&"
 This variable is set after a DNS lookup done by
-either a dnslookup router or a dnsdb lookup expansion.
+a dnsdb lookup expansion, dnslookup router or smtp transport.
 It will be empty if &(DNSSEC)& was not requested,
 &"no"& if the result was not labelled as authenticated data
 and &"yes"& if it was.
@@ -17687,8 +17687,6 @@ when there is a DNS lookup error.
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.
 This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
-
-See also the &$lookup_dnssec_authenticated$& variable.
 .wen
 
 
@@ -22608,6 +22606,33 @@ If the &%hosts%& or &%fallback_hosts%& option is being used, and the
 &%gethostbyname%& option is false, the RES_DNSRCH resolver option is set.
 See the &%search_parents%& option in chapter &<<CHAPdnslookup>>& for more
 details.
+
+
+.new
+.option dnssec_request_domains smtp "domain list&!!" unset
+.cindex "MX record" "security"
+.cindex "DNSSEC" "MX lookup"
+.cindex "security" "MX lookup"
+.cindex "DNS" "DNSSEC"
+DNS lookups for domains matching &%dnssec_request_domains%& will be done with
+the dnssec request bit set.
+This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+.wen
+
+
+
+.new
+.option dnssec_require_domains smtp "domain list&!!" unset
+.cindex "MX record" "security"
+.cindex "DNSSEC" "MX lookup"
+.cindex "security" "MX lookup"
+.cindex "DNS" "DNSSEC"
+DNS lookups for domains matching &%dnssec_request_domains%& will be done with
+the dnssec request bit set.  Any returns not having the Authenticated Data bit
+(AD bit) set wil be ignored and logged as a host-lookup failure.
+This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+.wen
+
 
 
 .option dscp smtp string&!! unset

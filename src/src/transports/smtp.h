@@ -46,6 +46,8 @@ typedef struct {
   BOOL    gethostbyname;
   BOOL    dns_qualify_single;
   BOOL    dns_search_parents;
+  uschar *dnssec_request_domains;
+  uschar *dnssec_require_domains;
   BOOL    delay_after_cutoff;
   BOOL    hosts_override;
   BOOL    hosts_randomize;
