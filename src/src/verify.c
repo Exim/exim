@@ -379,7 +379,7 @@ else if (Ustrcmp(addr->transport->driver_name, "smtp") != 0)
 else
   {
   smtp_transport_options_block *ob =
-    (smtp_transport_options_block *)(addr->transport->options_block);
+    (smtp_transport_options_block *)addr->transport->options_block;
 
   /* The information wasn't available in the cache, so we have to do a real
   callout and save the result in the cache for next time, unless no_cache is set,
@@ -1749,9 +1749,20 @@ while (addr_new != NULL)
                   string_is_ip_address(host->name, NULL) != 0)
                 (void)host_find_byname(host, NULL, flags, &canonical_name, TRUE);
               else
+		{
+		uschar * d_request = NULL, * d_require = NULL;
+		if (Ustrcmp(addr->transport->driver_name, "smtp") == 0)
+		  {
+		  smtp_transport_options_block * ob =
+		      (smtp_transport_options_block *)
+			addr->transport->options_block;
+		  d_request = ob->dnssec_request_domains;
+		  d_require = ob->dnssec_require_domains;
+		  }
+
                 (void)host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-		  NULL, NULL,	/*XXX todo: dnssec */
-                  &canonical_name, NULL);
+		  d_request, d_require, &canonical_name, NULL);
+		}
               }
             }
           }

@@ -362,7 +362,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       {
       if (defer_mode == DEFER)
 	{
-	dns_init(FALSE, FALSE, FALSE);
+	dns_init(FALSE, FALSE, FALSE);			/* clr dnssec bit */
 	return DEFER;					/* always defer */
 	}
       if (defer_mode == PASS) failrc = DEFER;         /* defer only if all do */

@@ -1624,7 +1624,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
   {
   if (strcmpic(ordername, US"bydns") == 0)
     {
-    dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
+    dns_init(FALSE, FALSE, FALSE);    /* dnssec ctrl by dns_dnssec_ok glbl */
     dns_build_reverse(sender_host_address, buffer);
     rc = dns_lookup(&dnsa, buffer, T_PTR, NULL);
 
