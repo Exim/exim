@@ -233,6 +233,8 @@ ln -s ../src/std-crypto.c      std-crypto.c
 ln -s ../src/store.c           store.c
 ln -s ../src/string.c          string.c
 ln -s ../src/tls.c             tls.c
+ln -s ../src/tlscert-gnu.c     tlscert-gnu.c
+ln -s ../src/tlscert-openssl.c tlscert-openssl.c
 ln -s ../src/tls-gnu.c         tls-gnu.c
 ln -s ../src/tls-openssl.c     tls-openssl.c
 ln -s ../src/tod.c             tod.c

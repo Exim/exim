@@ -74,19 +74,20 @@ Not handled here: global tls_channelbinding_b64.
 */
 
 typedef struct exim_gnutls_state {
-  gnutls_session_t session;
+  gnutls_session_t	session;
   gnutls_certificate_credentials_t x509_cred;
-  gnutls_priority_t priority_cache;
+  gnutls_priority_t	priority_cache;
   enum peer_verify_requirement verify_requirement;
-  int fd_in;
-  int fd_out;
-  BOOL peer_cert_verified;
-  BOOL trigger_sni_changes;
-  BOOL have_set_peerdn;
+  int			fd_in;
+  int			fd_out;
+  BOOL			peer_cert_verified;
+  BOOL			trigger_sni_changes;
+  BOOL			have_set_peerdn;
   const struct host_item *host;
-  uschar *peerdn;
-  uschar *ciphersuite;
-  uschar *received_sni;
+  gnutls_x509_crt_t 	peercert;
+  uschar		*peerdn;
+  uschar		*ciphersuite;
+  uschar		*received_sni;
 
   const uschar *tls_certificate;
   const uschar *tls_privatekey;
@@ -288,12 +289,34 @@ tls_error(when, msg, state->host);
 *        Set various Exim expansion vars         *
 *************************************************/
 
+#define exim_gnutls_cert_err(Label) do { \
+  if (rc != GNUTLS_E_SUCCESS) { \
+    DEBUG(D_tls) debug_printf("TLS: cert problem: %s: %s\n", (Label), gnutls_strerror(rc)); \
+    return rc; } } while (0)
+
+static int
+import_cert(const gnutls_datum * cert, gnutls_x509_crt_t * crtp)
+{
+int rc;
+
+rc = gnutls_x509_crt_init(crtp);
+exim_gnutls_cert_err(US"gnutls_x509_crt_init (crt)");
+
+rc = gnutls_x509_crt_import(*crtp, cert, GNUTLS_X509_FMT_DER);
+exim_gnutls_cert_err(US"failed to import certificate [gnutls_x509_crt_import(cert)]");
+
+return rc;
+}
+
+#undef exim_gnutls_cert_err
+
+
 /* We set various Exim global variables from the state, once a session has
 been established.  With TLS callouts, may need to change this to stack
 variables, or just re-call it with the server state after client callout
 has finished.
 
-Make sure anything set here is inset in tls_getc().
+Make sure anything set here is unset in tls_getc().
 
 Sets:
   tls_active                fd
@@ -301,15 +324,17 @@ Sets:
   tls_certificate_verified  bool indicator
   tls_channelbinding_b64    for some SASL mechanisms
   tls_cipher                a string
+  tls_peercert              pointer to library internal
   tls_peerdn                a string
   tls_sni                   a (UTF-8) string
+  tls_ourcert               pointer to library internal
 
 Argument:
   state      the relevant exim_gnutls_state_st *
 */
 
 static void
-extract_exim_vars_from_tls_state(exim_gnutls_state_st *state, BOOL is_server)
+extract_exim_vars_from_tls_state(exim_gnutls_state_st * state)
 {
 gnutls_cipher_algorithm_t cipher;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
@@ -317,18 +342,19 @@ int old_pool;
 int rc;
 gnutls_datum_t channel;
 #endif
+tls_support * tlsp = state->tlsp;
 
-state->tlsp->active = state->fd_out;
+tlsp->active = state->fd_out;
 
 cipher = gnutls_cipher_get(state->session);
 /* returns size in "bytes" */
-state->tlsp->bits = gnutls_cipher_get_key_size(cipher) * 8;
+tlsp->bits = gnutls_cipher_get_key_size(cipher) * 8;
 
-state->tlsp->cipher = state->ciphersuite;
+tlsp->cipher = state->ciphersuite;
 
 DEBUG(D_tls) debug_printf("cipher: %s\n", state->ciphersuite);
 
-state->tlsp->certificate_verified = state->peer_cert_verified;
+tlsp->certificate_verified = state->peer_cert_verified;
 
 /* note that tls_channelbinding_b64 is not saved to the spool file, since it's
 only available for use for authenticators while this TLS session is running. */
@@ -349,8 +375,17 @@ if (rc) {
 }
 #endif
 
-state->tlsp->peerdn = state->peerdn;
-state->tlsp->sni =    state->received_sni;
+/* peercert is set in peer_status() */
+tlsp->peerdn = state->peerdn;
+tlsp->sni =    state->received_sni;
+
+/* record our certificate */
+  {
+  const gnutls_datum * cert = gnutls_certificate_get_ours(state->session);
+  gnutls_x509_crt_t crt;
+
+  tlsp->ourcert = cert && import_cert(cert, &crt)==0 ? crt : NULL;
+  }
 }
 
 
@@ -1099,7 +1134,6 @@ return OK;
 
 
 
-
 /*************************************************
 *            Extract peer information            *
 *************************************************/
@@ -1205,11 +1239,11 @@ if (ct != GNUTLS_CRT_X509)
     if (state->verify_requirement == VERIFY_REQUIRED) { return tls_error((Label), gnutls_strerror(rc), state->host); } \
     return OK; } } while (0)
 
-rc = gnutls_x509_crt_init(&crt);
-exim_gnutls_peer_err(US"gnutls_x509_crt_init (crt)");
+rc = import_cert(&cert_list[0], &crt);
+exim_gnutls_peer_err(US"cert 0");
 
-rc = gnutls_x509_crt_import(crt, &cert_list[0], GNUTLS_X509_FMT_DER);
-exim_gnutls_peer_err(US"failed to import certificate [gnutls_x509_crt_import(cert 0)]");
+state->tlsp->peercert = state->peercert = crt;
+
 sz = 0;
 rc = gnutls_x509_crt_get_dn(crt, NULL, &sz);
 if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
@@ -1220,6 +1254,7 @@ if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
 dn_buf = store_get_perm(sz);
 rc = gnutls_x509_crt_get_dn(crt, CS dn_buf, &sz);
 exim_gnutls_peer_err(US"failed to extract certificate DN [gnutls_x509_crt_get_dn(cert 0)]");
+
 state->peerdn = dn_buf;
 
 return OK;
@@ -1484,7 +1519,7 @@ mode, the fflush() happens when smtp_getc() is called. */
 if (!state->tlsp->on_connect)
   {
   smtp_printf("220 TLS go ahead\r\n");
-  fflush(smtp_out);		/*XXX JGH */
+  fflush(smtp_out);
   }
 
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
@@ -1526,22 +1561,17 @@ DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify after the fact */
 
-if (state->verify_requirement != VERIFY_NONE)
+if (  state->verify_requirement != VERIFY_NONE
+   && !verify_certificate(state, &error))
   {
-  if (!verify_certificate(state, &error))
+  if (state->verify_requirement != VERIFY_OPTIONAL)
     {
-    if (state->verify_requirement == VERIFY_OPTIONAL)
-      {
-      DEBUG(D_tls)
-        debug_printf("TLS: continuing on only because verification was optional, after: %s\n",
-            error);
-      }
-    else
-      {
-      tls_error(US"certificate verification failed", error, NULL);
-      return FAIL;
-      }
+    tls_error(US"certificate verification failed", error, NULL);
+    return FAIL;
     }
+  DEBUG(D_tls)
+    debug_printf("TLS: continuing on only because verification was optional, after: %s\n",
+	error);
   }
 
 /* Figure out peer DN, and if authenticated, etc. */
@@ -1551,7 +1581,7 @@ if (rc != OK) return rc;
 
 /* Sets various Exim expansion variables; always safe within server */
 
-extract_exim_vars_from_tls_state(state, TRUE);
+extract_exim_vars_from_tls_state(state);
 
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize appropriately. */
@@ -1664,16 +1694,22 @@ else
   }
 
 #ifdef EXPERIMENTAL_OCSP	/* since GnuTLS 3.1.3 */
-if (require_ocsp &&
-    (rc = gnutls_ocsp_status_request_enable_client(state->session, NULL, 0, NULL))
-    != OK)
-  return tls_error(US"cert-status-req", gnutls_strerror(rc), state->host);
+if (require_ocsp)
+  {
+  DEBUG(D_tls) debug_printf("TLS: will request OCSP stapling\n");
+  rc = gnutls_ocsp_status_request_enable_client(state->session,
+		    NULL, 0, NULL);
+  if (rc != OK)
+    return tls_error(US"cert-status-req",
+		    gnutls_strerror(rc), state->host);
+  }
 #endif
 
 gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr)fd);
 state->fd_in = fd;
 state->fd_out = fd;
 
+DEBUG(D_tls) debug_printf("about to gnutls_handshake\n");
 /* There doesn't seem to be a built-in timeout on connection. */
 
 sigalrm_seen = FALSE;
@@ -1732,7 +1768,7 @@ if ((rc = peer_status(state)) != OK)
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */
 
-extract_exim_vars_from_tls_state(state, FALSE);
+extract_exim_vars_from_tls_state(state);
 
 return OK;
 }
@@ -1830,8 +1866,9 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
     state->tlsp->active = -1;
     state->tlsp->bits = 0;
     state->tlsp->certificate_verified = FALSE;
-    tls_channelbinding_b64 = NULL;	/*XXX JGH */
+    tls_channelbinding_b64 = NULL;
     state->tlsp->cipher = NULL;
+    state->tlsp->peercert = NULL;
     state->tlsp->peerdn = NULL;
 
     return smtp_getc();

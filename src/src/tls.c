@@ -85,6 +85,7 @@ return TRUE;
 
 #ifdef USE_GNUTLS
 #include "tls-gnu.c"
+#include "tlscert-gnu.c"
 
 #define ssl_xfer_buffer (state_server.xfer_buffer)
 #define ssl_xfer_buffer_lwm (state_server.xfer_buffer_lwm)
@@ -94,6 +95,7 @@ return TRUE;
 
 #else
 #include "tls-openssl.c"
+#include "tlscert-openssl.c"
 #endif
 
 

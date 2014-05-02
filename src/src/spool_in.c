@@ -285,6 +285,8 @@ dkim_collect_input = FALSE;
 #ifdef SUPPORT_TLS
 tls_in.certificate_verified = FALSE;
 tls_in.cipher = NULL;
+tls_in.ourcert = NULL;
+tls_in.peercert = NULL;
 tls_in.peerdn = NULL;
 tls_in.sni = NULL;
 #endif
@@ -548,6 +550,12 @@ for (;;)
       tls_in.certificate_verified = TRUE;
     else if (Ustrncmp(p, "ls_cipher", 9) == 0)
       tls_in.cipher = string_copy(big_buffer + 12);
+#ifndef COMPILE_UTILITY
+    else if (Ustrncmp(p, "ls_ourcert", 10) == 0)
+      (void) tls_import_cert(big_buffer + 13, &tls_in.ourcert);
+    else if (Ustrncmp(p, "ls_peercert", 11) == 0)
+      (void) tls_import_cert(big_buffer + 14, &tls_in.peercert);
+#endif
     else if (Ustrncmp(p, "ls_peerdn", 9) == 0)
       tls_in.peerdn = string_unprinting(string_copy(big_buffer + 12));
     else if (Ustrncmp(p, "ls_sni", 6) == 0)
@@ -799,4 +807,6 @@ errno = ERRNO_SPOOLFORMAT;
 return inheader? spool_read_hdrerror : spool_read_enverror;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of spool_in.c */

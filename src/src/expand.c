@@ -93,6 +93,9 @@ bcrypt ({CRYPT}$2a$).
 
 
 
+#ifndef nelements
+# define nelements(arr) (sizeof(arr) / sizeof(*arr))
+#endif
 
 /*************************************************
 *            Local statics and tables            *
@@ -103,6 +106,7 @@ alphabetical order. */
 
 static uschar *item_table[] = {
   US"acl",
+  US"certextract",
   US"dlfunc",
   US"extract",
   US"filter",
@@ -127,6 +131,7 @@ static uschar *item_table[] = {
 
 enum {
   EITEM_ACL,
+  EITEM_CERTEXTRACT,
   EITEM_DLFUNC,
   EITEM_EXTRACT,
   EITEM_FILTER,
@@ -387,7 +392,8 @@ enum {
   vtype_host_lookup,    /* value not used; get host name */
   vtype_load_avg,       /* value not used; result is int from os_getloadavg */
   vtype_pspace,         /* partition space; value is T/F for spool/log */
-  vtype_pinodes         /* partition inodes; value is T/F for spool/log */
+  vtype_pinodes,        /* partition inodes; value is T/F for spool/log */
+  vtype_cert		/* SSL certificate */
   #ifndef DISABLE_DKIM
   ,vtype_dkim           /* Lookup of value in DKIM signature */
   #endif
@@ -665,6 +671,8 @@ static var_entry var_table[] = {
   { "tls_in_bits",         vtype_int,         &tls_in.bits },
   { "tls_in_certificate_verified", vtype_int, &tls_in.certificate_verified },
   { "tls_in_cipher",       vtype_stringptr,   &tls_in.cipher },
+  { "tls_in_ourcert",      vtype_cert,        &tls_in.ourcert },
+  { "tls_in_peercert",     vtype_cert,        &tls_in.peercert },
   { "tls_in_peerdn",       vtype_stringptr,   &tls_in.peerdn },
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
   { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
@@ -672,6 +680,8 @@ static var_entry var_table[] = {
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
   { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
   { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
+  { "tls_out_ourcert",     vtype_cert,        &tls_out.ourcert },
+  { "tls_out_peercert",    vtype_cert,        &tls_out.peercert },
   { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
   { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
@@ -1065,6 +1075,23 @@ return NULL;
 
 
 
+static var_entry *
+find_var_ent(uschar * name)
+{
+int first = 0;
+int last = var_table_size;
+
+while (last > first)
+  {
+  int middle = (first + last)/2;
+  int c = Ustrcmp(name, var_table[middle].name);
+
+  if (c > 0) { first = middle + 1; continue; }
+  if (c < 0) { last = middle; continue; }
+  return &var_table[middle];
+  }
+return NULL;
+}
 
 /*************************************************
 *   Extract numbered subfield from string        *
@@ -1140,7 +1167,7 @@ return fieldtext;
 
 
 static uschar *
-expand_getlistele (int field, uschar *list)
+expand_getlistele(int field, uschar * list)
 {
 uschar * tlist= list;
 int sep= 0;
@@ -1155,6 +1182,68 @@ if(field==0) return NULL;
 while(--field>0 && (string_nextinlist(&list, &sep, &dummy, 1))) ;
 return string_nextinlist(&list, &sep, NULL, 0);
 }
+
+
+/* Certificate fields, by name.  Worry about by-OID later */
+
+#ifdef SUPPORT_TLS
+typedef struct
+{
+uschar * name;
+uschar * (*getfn)(void * cert);
+} certfield;
+static certfield certfields[] =
+{			/* linear search; no special order */
+  { US"version",	&tls_cert_version },
+  { US"serial_number",	&tls_cert_serial_number },
+  { US"subject",	&tls_cert_subject },
+  { US"notbefore",	&tls_cert_not_before },
+  { US"notafter",	&tls_cert_not_after },
+  { US"issuer",		&tls_cert_issuer },
+  { US"signature",	&tls_cert_signature },
+  { US"signature_algorithm",	&tls_cert_signature_algorithm },
+  { US"subject_altname",	&tls_cert_subject_altname },
+  { US"ocsp_uri",	&tls_cert_ocsp_uri },
+  { US"crl_uri",	&tls_cert_crl_uri },
+};
+
+static uschar *
+expand_getcertele(uschar * field, uschar * certvar)
+{
+var_entry * vp;
+certfield * cp;
+
+if (!(vp = find_var_ent(certvar)))
+  {
+  expand_string_message = 
+    string_sprintf("no variable named \"%s\"", certvar);
+  return NULL;          /* Unknown variable name */
+  }
+/* NB this stops us passing certs around in variable.  Might
+want to do that in future */
+if (vp->type != vtype_cert)
+  {
+  expand_string_message = 
+    string_sprintf("\"%s\" is not a certificate", certvar);
+  return NULL;          /* Unknown variable name */
+  }
+if (!*(void **)vp->value)
+  return NULL;
+
+if (*field >= '0' && *field <= '9')
+  return tls_cert_ext_by_oid(*(void **)vp->value, field, 0);
+
+for(cp = certfields;
+    cp < certfields + nelements(certfields);
+    cp++)
+  if (Ustrcmp(cp->name, field) == 0)
+    return (*cp->getfn)( *(void **)vp->value );
+
+expand_string_message = 
+  string_sprintf("bad field selector \"%s\" for certextract", field);
+return NULL;
+}
+#endif	/*SUPPORT_TLS*/
 
 /*************************************************
 *        Extract a substring from a string       *
@@ -1551,8 +1640,10 @@ Returns:        NULL if the variable does not exist, or
 static uschar *
 find_variable(uschar *name, BOOL exists_only, BOOL skipping, int *newsize)
 {
-int first = 0;
-int last = var_table_size;
+var_entry * vp;
+uschar *s, *domain;
+uschar **ss;
+void * val;
 
 /* Handle ACL variables, whose names are of the form acl_cxxx or acl_mxxx.
 Originally, xxx had to be a number in the range 0-9 (later 0-19), but from
@@ -1585,203 +1676,198 @@ if (Ustrncmp(name, "auth", 4) == 0)
 
 /* For all other variables, search the table */
 
-while (last > first)
+if (!(vp = find_var_ent(name)))
+  return NULL;          /* Unknown variable name */
+
+/* Found an existing variable. If in skipping state, the value isn't needed,
+and we want to avoid processing (such as looking up the host name). */
+
+if (skipping)
+  return US"";
+
+val = vp->value;
+switch (vp->type)
   {
-  uschar *s, *domain;
-  uschar **ss;
-  int middle = (first + last)/2;
-  int c = Ustrcmp(name, var_table[middle].name);
+  case vtype_filter_int:
+  if (!filter_running) return NULL;
+  /* Fall through */
+  /* VVVVVVVVVVVV */
+  case vtype_int:
+  sprintf(CS var_buffer, "%d", *(int *)(val)); /* Integer */
+  return var_buffer;
 
-  if (c > 0) { first = middle + 1; continue; }
-  if (c < 0) { last = middle; continue; }
+  case vtype_ino:
+  sprintf(CS var_buffer, "%ld", (long int)(*(ino_t *)(val))); /* Inode */
+  return var_buffer;
 
-  /* Found an existing variable. If in skipping state, the value isn't needed,
-  and we want to avoid processing (such as looking up the host name). */
+  case vtype_gid:
+  sprintf(CS var_buffer, "%ld", (long int)(*(gid_t *)(val))); /* gid */
+  return var_buffer;
 
-  if (skipping) return US"";
+  case vtype_uid:
+  sprintf(CS var_buffer, "%ld", (long int)(*(uid_t *)(val))); /* uid */
+  return var_buffer;
 
-  switch (var_table[middle].type)
+  case vtype_bool:
+  sprintf(CS var_buffer, "%s", *(BOOL *)(val) ? "yes" : "no"); /* bool */
+  return var_buffer;
+
+  case vtype_stringptr:                      /* Pointer to string */
+  s = *((uschar **)(val));
+  return (s == NULL)? US"" : s;
+
+  case vtype_pid:
+  sprintf(CS var_buffer, "%d", (int)getpid()); /* pid */
+  return var_buffer;
+
+  case vtype_load_avg:
+  sprintf(CS var_buffer, "%d", OS_GETLOADAVG()); /* load_average */
+  return var_buffer;
+
+  case vtype_host_lookup:                    /* Lookup if not done so */
+  if (sender_host_name == NULL && sender_host_address != NULL &&
+      !host_lookup_failed && host_name_lookup() == OK)
+    host_build_sender_fullhost();
+  return (sender_host_name == NULL)? US"" : sender_host_name;
+
+  case vtype_localpart:                      /* Get local part from address */
+  s = *((uschar **)(val));
+  if (s == NULL) return US"";
+  domain = Ustrrchr(s, '@');
+  if (domain == NULL) return s;
+  if (domain - s > sizeof(var_buffer) - 1)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
+	" in string expansion", sizeof(var_buffer));
+  Ustrncpy(var_buffer, s, domain - s);
+  var_buffer[domain - s] = 0;
+  return var_buffer;
+
+  case vtype_domain:                         /* Get domain from address */
+  s = *((uschar **)(val));
+  if (s == NULL) return US"";
+  domain = Ustrrchr(s, '@');
+  return (domain == NULL)? US"" : domain + 1;
+
+  case vtype_msgheaders:
+  return find_header(NULL, exists_only, newsize, FALSE, NULL);
+
+  case vtype_msgheaders_raw:
+  return find_header(NULL, exists_only, newsize, TRUE, NULL);
+
+  case vtype_msgbody:                        /* Pointer to msgbody string */
+  case vtype_msgbody_end:                    /* Ditto, the end of the msg */
+  ss = (uschar **)(val);
+  if (*ss == NULL && deliver_datafile >= 0)  /* Read body when needed */
     {
-    case vtype_filter_int:
-    if (!filter_running) return NULL;
-    /* Fall through */
-    /* VVVVVVVVVVVV */
-    case vtype_int:
-    sprintf(CS var_buffer, "%d", *(int *)(var_table[middle].value)); /* Integer */
-    return var_buffer;
-
-    case vtype_ino:
-    sprintf(CS var_buffer, "%ld", (long int)(*(ino_t *)(var_table[middle].value))); /* Inode */
-    return var_buffer;
-
-    case vtype_gid:
-    sprintf(CS var_buffer, "%ld", (long int)(*(gid_t *)(var_table[middle].value))); /* gid */
-    return var_buffer;
-
-    case vtype_uid:
-    sprintf(CS var_buffer, "%ld", (long int)(*(uid_t *)(var_table[middle].value))); /* uid */
-    return var_buffer;
-
-    case vtype_bool:
-    sprintf(CS var_buffer, "%s", *(BOOL *)(var_table[middle].value) ? "yes" : "no"); /* bool */
-    return var_buffer;
-
-    case vtype_stringptr:                      /* Pointer to string */
-    s = *((uschar **)(var_table[middle].value));
-    return (s == NULL)? US"" : s;
-
-    case vtype_pid:
-    sprintf(CS var_buffer, "%d", (int)getpid()); /* pid */
-    return var_buffer;
-
-    case vtype_load_avg:
-    sprintf(CS var_buffer, "%d", OS_GETLOADAVG()); /* load_average */
-    return var_buffer;
-
-    case vtype_host_lookup:                    /* Lookup if not done so */
-    if (sender_host_name == NULL && sender_host_address != NULL &&
-        !host_lookup_failed && host_name_lookup() == OK)
-      host_build_sender_fullhost();
-    return (sender_host_name == NULL)? US"" : sender_host_name;
-
-    case vtype_localpart:                      /* Get local part from address */
-    s = *((uschar **)(var_table[middle].value));
-    if (s == NULL) return US"";
-    domain = Ustrrchr(s, '@');
-    if (domain == NULL) return s;
-    if (domain - s > sizeof(var_buffer) - 1)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
-          " in string expansion", sizeof(var_buffer));
-    Ustrncpy(var_buffer, s, domain - s);
-    var_buffer[domain - s] = 0;
-    return var_buffer;
-
-    case vtype_domain:                         /* Get domain from address */
-    s = *((uschar **)(var_table[middle].value));
-    if (s == NULL) return US"";
-    domain = Ustrrchr(s, '@');
-    return (domain == NULL)? US"" : domain + 1;
-
-    case vtype_msgheaders:
-    return find_header(NULL, exists_only, newsize, FALSE, NULL);
-
-    case vtype_msgheaders_raw:
-    return find_header(NULL, exists_only, newsize, TRUE, NULL);
-
-    case vtype_msgbody:                        /* Pointer to msgbody string */
-    case vtype_msgbody_end:                    /* Ditto, the end of the msg */
-    ss = (uschar **)(var_table[middle].value);
-    if (*ss == NULL && deliver_datafile >= 0)  /* Read body when needed */
+    uschar *body;
+    off_t start_offset = SPOOL_DATA_START_OFFSET;
+    int len = message_body_visible;
+    if (len > message_size) len = message_size;
+    *ss = body = store_malloc(len+1);
+    body[0] = 0;
+    if (vp->type == vtype_msgbody_end)
       {
-      uschar *body;
-      off_t start_offset = SPOOL_DATA_START_OFFSET;
-      int len = message_body_visible;
-      if (len > message_size) len = message_size;
-      *ss = body = store_malloc(len+1);
-      body[0] = 0;
-      if (var_table[middle].type == vtype_msgbody_end)
-        {
-        struct stat statbuf;
-        if (fstat(deliver_datafile, &statbuf) == 0)
-          {
-          start_offset = statbuf.st_size - len;
-          if (start_offset < SPOOL_DATA_START_OFFSET)
-            start_offset = SPOOL_DATA_START_OFFSET;
-          }
-        }
-      lseek(deliver_datafile, start_offset, SEEK_SET);
-      len = read(deliver_datafile, body, len);
-      if (len > 0)
-        {
-        body[len] = 0;
-        if (message_body_newlines)   /* Separate loops for efficiency */
-          {
-          while (len > 0)
-            { if (body[--len] == 0) body[len] = ' '; }
-          }
-        else
-          {
-          while (len > 0)
-            { if (body[--len] == '\n' || body[len] == 0) body[len] = ' '; }
-          }
-        }
+      struct stat statbuf;
+      if (fstat(deliver_datafile, &statbuf) == 0)
+	{
+	start_offset = statbuf.st_size - len;
+	if (start_offset < SPOOL_DATA_START_OFFSET)
+	  start_offset = SPOOL_DATA_START_OFFSET;
+	}
       }
-    return (*ss == NULL)? US"" : *ss;
-
-    case vtype_todbsdin:                       /* BSD inbox time of day */
-    return tod_stamp(tod_bsdin);
-
-    case vtype_tode:                           /* Unix epoch time of day */
-    return tod_stamp(tod_epoch);
-
-    case vtype_todel:                          /* Unix epoch/usec time of day */
-    return tod_stamp(tod_epoch_l);
-
-    case vtype_todf:                           /* Full time of day */
-    return tod_stamp(tod_full);
-
-    case vtype_todl:                           /* Log format time of day */
-    return tod_stamp(tod_log_bare);            /* (without timezone) */
-
-    case vtype_todzone:                        /* Time zone offset only */
-    return tod_stamp(tod_zone);
-
-    case vtype_todzulu:                        /* Zulu time */
-    return tod_stamp(tod_zulu);
-
-    case vtype_todlf:                          /* Log file datestamp tod */
-    return tod_stamp(tod_log_datestamp_daily);
-
-    case vtype_reply:                          /* Get reply address */
-    s = find_header(US"reply-to:", exists_only, newsize, TRUE,
-      headers_charset);
-    if (s != NULL) while (isspace(*s)) s++;
-    if (s == NULL || *s == 0)
+    lseek(deliver_datafile, start_offset, SEEK_SET);
+    len = read(deliver_datafile, body, len);
+    if (len > 0)
       {
-      *newsize = 0;                            /* For the *s==0 case */
-      s = find_header(US"from:", exists_only, newsize, TRUE, headers_charset);
+      body[len] = 0;
+      if (message_body_newlines)   /* Separate loops for efficiency */
+	{
+	while (len > 0)
+	  { if (body[--len] == 0) body[len] = ' '; }
+	}
+      else
+	{
+	while (len > 0)
+	  { if (body[--len] == '\n' || body[len] == 0) body[len] = ' '; }
+	}
       }
-    if (s != NULL)
-      {
-      uschar *t;
-      while (isspace(*s)) s++;
-      for (t = s; *t != 0; t++) if (*t == '\n') *t = ' ';
-      while (t > s && isspace(t[-1])) t--;
-      *t = 0;
-      }
-    return (s == NULL)? US"" : s;
-
-    case vtype_string_func:
-      {
-      uschar * (*fn)() = var_table[middle].value;
-      return fn();
-      }
-
-    case vtype_pspace:
-      {
-      int inodes;
-      sprintf(CS var_buffer, "%d",
-        receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes));
-      }
-    return var_buffer;
-
-    case vtype_pinodes:
-      {
-      int inodes;
-      (void) receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes);
-      sprintf(CS var_buffer, "%d", inodes);
-      }
-    return var_buffer;
-
-    #ifndef DISABLE_DKIM
-    case vtype_dkim:
-    return dkim_exim_expand_query((int)(long)var_table[middle].value);
-    #endif
-
     }
-  }
+  return (*ss == NULL)? US"" : *ss;
 
-return NULL;          /* Unknown variable name */
+  case vtype_todbsdin:                       /* BSD inbox time of day */
+  return tod_stamp(tod_bsdin);
+
+  case vtype_tode:                           /* Unix epoch time of day */
+  return tod_stamp(tod_epoch);
+
+  case vtype_todel:                          /* Unix epoch/usec time of day */
+  return tod_stamp(tod_epoch_l);
+
+  case vtype_todf:                           /* Full time of day */
+  return tod_stamp(tod_full);
+
+  case vtype_todl:                           /* Log format time of day */
+  return tod_stamp(tod_log_bare);            /* (without timezone) */
+
+  case vtype_todzone:                        /* Time zone offset only */
+  return tod_stamp(tod_zone);
+
+  case vtype_todzulu:                        /* Zulu time */
+  return tod_stamp(tod_zulu);
+
+  case vtype_todlf:                          /* Log file datestamp tod */
+  return tod_stamp(tod_log_datestamp_daily);
+
+  case vtype_reply:                          /* Get reply address */
+  s = find_header(US"reply-to:", exists_only, newsize, TRUE,
+    headers_charset);
+  if (s != NULL) while (isspace(*s)) s++;
+  if (s == NULL || *s == 0)
+    {
+    *newsize = 0;                            /* For the *s==0 case */
+    s = find_header(US"from:", exists_only, newsize, TRUE, headers_charset);
+    }
+  if (s != NULL)
+    {
+    uschar *t;
+    while (isspace(*s)) s++;
+    for (t = s; *t != 0; t++) if (*t == '\n') *t = ' ';
+    while (t > s && isspace(t[-1])) t--;
+    *t = 0;
+    }
+  return (s == NULL)? US"" : s;
+
+  case vtype_string_func:
+    {
+    uschar * (*fn)() = val;
+    return fn();
+    }
+
+  case vtype_pspace:
+    {
+    int inodes;
+    sprintf(CS var_buffer, "%d",
+      receive_statvfs(val == (void *)TRUE, &inodes));
+    }
+  return var_buffer;
+
+  case vtype_pinodes:
+    {
+    int inodes;
+    (void) receive_statvfs(val == (void *)TRUE, &inodes);
+    sprintf(CS var_buffer, "%d", inodes);
+    }
+  return var_buffer;
+
+  case vtype_cert:
+  return *(void **)val ? US"<cert>" : US"";
+
+  #ifndef DISABLE_DKIM
+  case vtype_dkim:
+  return dkim_exim_expand_query((int)(long)val);
+  #endif
+
+  }
 }
 
 
@@ -1790,21 +1876,8 @@ return NULL;          /* Unknown variable name */
 void
 modify_variable(uschar *name, void * value)
 {
-int first = 0;
-int last = var_table_size;
-
-while (last > first)
-  {
-  int middle = (first + last)/2;
-  int c = Ustrcmp(name, var_table[middle].name);
-
-  if (c > 0) { first = middle + 1; continue; }
-  if (c < 0) { last = middle; continue; }
-
-  /* Found an existing variable; change the item it refers to */
-  var_table[middle].value = value;
-  return;
-  }
+var_entry * vp;
+if ((vp = find_var_ent(name))) vp->value = value;
 return;          /* Unknown variable name, fail silently */
 }
 
@@ -5278,6 +5351,79 @@ while (*s != 0)
 
       continue;
       }
+
+#ifdef SUPPORT_TLS
+    case EITEM_CERTEXTRACT:
+      {
+      int i;
+      int field_number = 1;
+      uschar *save_lookup_value = lookup_value;
+      uschar *sub[2];
+      int save_expand_nmax =
+        save_expand_strings(save_expand_nstring, save_expand_nlength);
+
+      /* Read the field argument */
+      while (isspace(*s)) s++;
+      if (*s != '{')					/*}*/
+	goto EXPAND_FAILED_CURLY;
+      sub[0] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+      if (!sub[0])     goto EXPAND_FAILED;		/*{*/
+      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      /* strip spaces fore & aft */
+      {
+      int len;
+      int x = 0;
+      uschar *p = sub[0];
+
+      while (isspace(*p)) p++;
+      sub[0] = p;
+
+      len = Ustrlen(p);
+      while (len > 0 && isspace(p[len-1])) len--;
+      p[len] = 0;
+      }
+
+      /* inspect the cert argument */
+      while (isspace(*s)) s++;
+      if (*s != '{')					/*}*/
+	goto EXPAND_FAILED_CURLY;
+      if (*++s != '$')
+        {
+	expand_string_message = US"second argument of \"certextract\" must "
+	  "be a certificate variable";
+	goto EXPAND_FAILED;
+	}
+      sub[1] = expand_string_internal(s+1, TRUE, &s, skipping, FALSE, &resetok);
+      if (!sub[1])     goto EXPAND_FAILED;		/*{*/
+      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+
+      if (skipping)
+	lookup_value = NULL;
+      else
+	{
+	lookup_value = expand_getcertele(sub[0], sub[1]);
+	if (*expand_string_message) goto EXPAND_FAILED;
+	}
+      switch(process_yesno(
+               skipping,                     /* were previously skipping */
+               lookup_value != NULL,         /* success/failure indicator */
+               save_lookup_value,            /* value to reset for string2 */
+               &s,                           /* input pointer */
+               &yield,                       /* output pointer */
+               &size,                        /* output size */
+               &ptr,                         /* output current point */
+               US"extract",                  /* condition type */
+	       &resetok))
+        {
+        case 1: goto EXPAND_FAILED;          /* when all is well, the */
+        case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
+        }
+
+      restore_expand_strings(save_expand_nmax, save_expand_nstring,
+        save_expand_nlength);
+      continue;
+      }
+#endif	/*SUPPORT_TLS*/
 
     /* Handle list operations */
 

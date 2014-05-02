@@ -1,4 +1,4 @@
-# TLS server: general
+# TLS server: general ops and certificate extractions
 gnutls
 exim -DSERVER=server -bd -oX PORT_D
 ****
@@ -60,7 +60,7 @@ ehlo rhu.barb
 starttls
 ??? 220
 ****
-client-gnutls HOSTIPV4 PORT_D DIR/aux-fixed/cert2 DIR/aux-fixed/cert2
+client-gnutls HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key
 ??? 220
 ehlo rhu.barb
 ??? 250-

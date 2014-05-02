@@ -1,4 +1,4 @@
-# TLS server: general
+# TLS server: general ops and certificate extractions
 exim -DSERVER=server -bd -oX PORT_D
 ****
 client-ssl 127.0.0.1 PORT_D
@@ -59,7 +59,7 @@ ehlo rhu.barb
 starttls
 ??? 220
 ****
-client-ssl HOSTIPV4 PORT_D DIR/aux-fixed/cert2 DIR/aux-fixed/cert2
+client-ssl HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key
 ??? 220
 ehlo rhu.barb
 ??? 250-

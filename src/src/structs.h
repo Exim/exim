@@ -540,6 +540,8 @@ typedef struct address_item {
 
   #ifdef SUPPORT_TLS
   uschar *cipher;                 /* Cipher used for transport */
+  void   *ourcert;                /* Certificate offered to peer, binary */
+  void   *peercert;               /* Certificate from peer, binary */
   uschar *peerdn;                 /* DN of server's certificate */
   #endif
 

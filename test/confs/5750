@@ -1,0 +1,95 @@
+# Exim test configuration 5750 (dup of 5760)
+# $tls_out_peercert - GnuTLS
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector =  +tls_peerdn
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
+tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+
+tls_verify_hosts = *
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server2.example.com/ca_chain.pem
+
+#
+
+begin acl
+logger:
+  warn   logwrite =  $acl_arg1 $tpda_delivery_local_part
+  warn   logwrite =  ${if !def:tls_out_ourcert \
+		{NO CLENT CERT presented} \
+		{Our cert SN: ${certextract{subject}{$tls_out_ourcert}}}}
+  accept condition = ${if !def:tls_out_peercert}
+	 logwrite =  No Peer cert
+  accept logwrite = Peer cert:
+	 logwrite =  ver <${certextract {version}	{$tls_out_peercert}}>
+	 logwrite =  SN  <${certextract {subject}	{$tls_out_peercert}}>
+         logwrite =  IN  <${certextract {issuer}	{$tls_out_peercert}}>
+         logwrite =  NB  <${certextract {notbefore}	{$tls_out_peercert}}>
+         logwrite =  NA  <${certextract {notafter}	{$tls_out_peercert}}>
+         logwrite =  SA  <${certextract {signature_algorithm}{$tls_out_peercert}}>
+         logwrite =  SG  <${certextract {signature}	{$tls_out_peercert}}>
+	 logwrite =       ${certextract {subject_altname}{$tls_out_peercert}{SAN <$value>}{(no SAN)}}
+	 logwrite =       ${certextract {ocsp_uri}	{$tls_out_peercert} {OCU <$value>}{(no OCU)}}
+	 logwrite =       ${certextract {crl_uri}	{$tls_out_peercert} {CRU <$value>}{(no CRU)}}
+
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  retry_use_local_part
+  transport = send_to_server
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+
+  tls_certificate = DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem
+  tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key
+
+  tls_verify_certificates = DIR/aux-fixed/exim-ca/\
+       ${if eq {$local_part}{good}\
+{example.com/server1.example.com/ca_chain.pem}\
+{example.net/server1.example.net/ca_chain.pem}}
+
+  tpda_delivery_action =   ${acl {logger} {delivery} {$domain} }
+  tpda_host_defer_action = ${acl {logger} {deferral} {$domain} }
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

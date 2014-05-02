@@ -85,6 +85,8 @@ typedef struct {
   uschar *cipher;             /* Cipher used */
   BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
   uschar *on_connect_ports;   /* Ports always tls-on-connect */
+  void   *ourcert;            /* Certificate we presented, binary */
+  void	 *peercert;           /* Certificate of peer, binary */
   uschar *peerdn;             /* DN from peer */
   uschar *sni;                /* Server Name Indication */
 } tls_support;

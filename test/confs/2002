@@ -20,11 +20,11 @@ queue_run_in_order
 
 tls_advertise_hosts = 127.0.0.1 : HOSTIPV4
 
-tls_certificate = DIR/aux-fixed/cert1
-tls_privatekey = DIR/aux-fixed/cert1
+tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
+tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
 
 tls_verify_hosts = HOSTIPV4
-tls_verify_certificates = DIR/aux-fixed/cert2
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server2.example.com/ca_chain.pem
 
 
 # ------ ACL ------
@@ -41,7 +41,23 @@ check_recipient:
                       DHE_RSA_AES_256_CBC_SHA1 : \
                       DHE_RSA_3DES_EDE_CBC_SHA : \
                       RSA_AES_256_CBC_SHA1
-  accept
+  warn    logwrite =  ${if def:tls_in_ourcert \
+		{Our cert SN: <${certextract{subject}{$tls_in_ourcert}}>} \
+		{We did not present a cert}}
+  accept  condition = ${if !def:tls_in_peercert}
+	  logwrite =  Peer did not present a cert
+  accept  logwrite =  Peer cert:
+          logwrite =  ver ${certextract {version}{$tls_in_peercert}}
+	  logwrite =  SR  <${certextract {serial_number}{$tls_in_peercert}}>
+	  logwrite =  SN  <${certextract {subject}	{$tls_in_peercert}}>
+          logwrite =  IN  <${certextract {issuer}	{$tls_in_peercert}}>
+          logwrite =  NB  <${certextract {notbefore}	{$tls_in_peercert}}>
+          logwrite =  NA  <${certextract {notafter}	{$tls_in_peercert}}>
+          logwrite =  SA  <${certextract {signature_algorithm}{$tls_in_peercert}}>
+          logwrite =  SG  <${certextract {signature}	{$tls_in_peercert}}>
+	  logwrite =       ${certextract {subject_altname}{$tls_in_peercert} {SAN <$value>}{(no SAN)}}
+#	  logwrite =       ${certextract {ocsp_uri}	{$tls_in_peercert} {OCU <$value>}{(no OCU)}}
+	  logwrite =       ${certextract {crl_uri}	{$tls_in_peercert} {CRU <$value>}{(no CRU)}}
 
 
 # ----- Routers -----

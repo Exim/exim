@@ -1,0 +1,47 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.com/CN=clica CA
+1999-03-02 09:44:33 10HmaX-0005vi-00 TLS error on connection to 127.0.0.1 [127.0.0.1] (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmaX-0005vi-00 deferral bad
+1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLENT CERT presented
+1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
+1999-03-02 09:44:33 10HmaX-0005vi-00 ver <2>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=clica CA,O=example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <CN=clica CA,O=example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:04 2012 GMT>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:34:04 2038 GMT>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <undefined>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <    Signature Algorithm: sha1WithRSAEncryption\n         89:fd:fb:cb:b2:42:d6:aa:f2:c0:44:a2:14:e5:ab:22:50:41:\n         e6:64:e7:1c:5a:20:b6:0f:fe:b0:88:c5:cf:b3:e5:f8:0e:87:\n         eb:ac:07:d6:9d:6a:20:f6:dd:13:ee:b8:3f:cf:d9:cd:d4:a8:\n         72:50:5a:a2:14:4e:ee:3a:78:e2:a7:f4:ae:d7:ee:77:48:1f:\n         75:a7:68:2f:ee:e2:7c:ac:2f:e4:88:02:e8:3b:db:f9:35:04:\n         05:46:35:0b:f2:35:03:21:b6:1e:82:7d:94:e0:63:4b:60:71:\n         2d:19:45:21:f2:85:b4:c3:d0:77:a2:24:32:36:f3:50:68:38:\n         98:e6\n>
+1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
+1999-03-02 09:44:33 10HmaX-0005vi-00 (no OCU)
+1999-03-02 09:44:33 10HmaX-0005vi-00 (no CRU)
+1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session failure: delivering unencrypted to 127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
+1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 delivery bad
+1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLENT CERT presented
+1999-03-02 09:44:33 10HmaX-0005vi-00 No Peer cert
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 delivery good
+1999-03-02 09:44:33 10HmaY-0005vi-00 Our cert SN: CN=server2.example.com
+1999-03-02 09:44:33 10HmaY-0005vi-00 Peer cert:
+1999-03-02 09:44:33 10HmaY-0005vi-00 ver <2>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SN  <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <CN=clica Signing Cert,O=example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:05 2012 GMT>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Jan  1 12:34:05 2038 GMT>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <undefined>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <    Signature Algorithm: sha1WithRSAEncryption\n         56:3a:a4:3c:cb:eb:b8:27:c2:90:08:74:13:88:dc:48:c6:b5:\n         2c:e5:26:be:5b:91:d4:67:e7:3c:49:12:d7:47:30:df:98:db:\n         58:ed:18:a8:7d:4b:db:97:48:f5:5c:7f:70:b9:37:63:33:f1:\n         24:62:72:92:60:f5:6e:da:b6:bc:73:c8:c2:dc:d6:95:9a:bd:\n         16:16:a2:ef:0a:f1:d7:41:68:f6:ad:98:5a:d0:ff:d9:1b:51:\n         9f:59:ce:2f:3d:84:d0:ee:e8:2b:eb:9b:32:1a:0e:02:3e:cc:\n         30:89:44:09:2a:75:81:46:a7:b6:ed:7d:41:eb:5a:63:fa:9c:\n         58:ef\n>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <Unrecognisable>
+1999-03-02 09:44:33 10HmaY-0005vi-00 OCU <http://oscp/example.com/>
+1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
+1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:AES256-SHA:256 DN="/CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex

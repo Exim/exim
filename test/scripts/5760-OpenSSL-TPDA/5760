@@ -1,0 +1,13 @@
+# TLS client: OpenSSL certificates and extractions
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim bad@test.ex
+Testing
+****
+exim good@test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+no_msglog_check

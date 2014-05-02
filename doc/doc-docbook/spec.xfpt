@@ -8875,6 +8875,41 @@ the expansion result is an empty string.
 If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
 
 
+.new
+.vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
+       {*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
+.cindex "expansion" "extracting cerificate fields"
+.cindex "&%certextract%&" "certificate fields"
+.cindex "certificate" "extracting fields"
+The <&'certificate'&> must be a variable of type certificate.
+The field name is expanded and used to retrive the relevant field from
+the certificate.  Supported fields are:
+.display
+version
+serial_number
+subject
+issuer
+notbefore
+notafter
+signature_algorithm
+signature
+subject_altname
+ocsp_uri
+crl_uri
+.endd
+If the field is found,
+<&'string2'&> is expanded, and replaces the whole item;
+otherwise <&'string3'&> is used. During the expansion of <&'string2'&> the
+variable &$value$& contains the value that has been extracted. Afterwards, it
+is restored to any previous value it might have had.
+
+If {<&'string3'&>} is omitted, the item is replaced by an empty string if the
+key is not found. If {<&'string2'&>} is also omitted, the value that was
+extracted is used.
+
+Field values are presented in human-readable form.
+.wen
+
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
        {*&<&'arg'&>&*}...}*&"
 .cindex &%dlfunc%&
@@ -12252,6 +12287,40 @@ Contains an approximation of the TLS cipher's bit-strength
 on an outbound SMTP connection; the meaning of
 this depends upon the TLS implementation used.
 If TLS has not been negotiated, the value will be 0.
+
+.new
+.vitem &$tls_in_ourcert$&
+.vindex "&$tls_in_ourcert$&"
+This variable refers to the certificate presented to the peer of an
+inbound connection when the message was received.
+It is only useful as the argument of a
+&%certextract%& expansion item or the name for a &%def%& expansion condition.
+.wen
+
+.new
+.vitem &$tls_in_peercert$&
+.vindex "&$tls_in_peercert$&"
+This variable refers to the certificate presented by the peer of an
+inbound connection when the message was received.
+It is only useful as the argument of a
+&%certextract%& expansion item or the name for a &%def%& expansion condition.
+.wen
+
+.new
+.vitem &$tls_out_ourcert$&
+.vindex "&$tls_out_ourcert$&"
+This variable refers to the certificate presented to the peer of an
+outbound connection.  It is only useful as the argument of a
+&%certextract%& expansion item or the name for a &%def%& expansion condition.
+.wen
+
+.new
+.vitem &$tls_out_peercert$&
+.vindex "&$tls_out_peercert$&"
+This variable refers to the certificate presented by the peer of an
+outbound connection.  It is only useful as the argument of a
+&%certextract%& expansion item or the name for a &%def%& expansion condition.
+.wen
 
 .vitem &$tls_in_certificate_verified$&
 .vindex "&$tls_in_certificate_verified$&"

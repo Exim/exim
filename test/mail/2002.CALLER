@@ -30,7 +30,7 @@ Received: from [ip4.ip4.ip4.ip4]
 	id 10HmaZ-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 tls-certificate-verified: 1
-TLS: cipher=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 peerdn=C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock
+TLS: cipher=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 peerdn=CN=server2.example.com
 
 This is a test encrypted message from a verified host.
 

@@ -44,6 +44,9 @@ Version 4.83
 
  9. Support for DNSSEC on outbound connections.
 
+10. New variables "tls_(in,out)_(our,peer)cert" and expansion item
+    "certextract" to extract fields from them.
+
 
 Version 4.82
 ------------

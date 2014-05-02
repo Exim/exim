@@ -106,6 +106,8 @@ tls_support tls_in = {
  NULL, /* tls_cipher */
  FALSE,/* tls_on_connect */
  NULL, /* tls_on_connect_ports */
+ NULL, /* tls_ourcert */
+ NULL, /* tls_peercert */
  NULL, /* tls_peerdn */
  NULL  /* tls_sni */
 };
@@ -116,6 +118,8 @@ tls_support tls_out = {
  NULL, /* tls_cipher */
  FALSE,/* tls_on_connect */
  NULL, /* tls_on_connect_ports */
+ NULL, /* tls_ourcert */
+ NULL, /* tls_peercert */
  NULL, /* tls_peerdn */
  NULL  /* tls_sni */
 };
@@ -332,6 +336,8 @@ address_item address_defaults = {
   NULL,                 /* shadow_message */
   #ifdef SUPPORT_TLS
   NULL,                 /* cipher */
+  NULL,			/* ourcert */
+  NULL,			/* peercert */
   NULL,                 /* peerdn */
   #endif
   NULL,			/* authenticator */

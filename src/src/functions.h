@@ -25,6 +25,20 @@ extern const char *
                std_dh_prime_default(void);
 extern const char *
                std_dh_prime_named(const uschar *);
+
+extern uschar * tls_cert_crl_uri(void *);
+extern uschar * tls_cert_ext_by_oid(void *, uschar *, int);
+extern uschar * tls_cert_issuer(void *);
+extern uschar * tls_cert_not_before(void *);
+extern uschar * tls_cert_not_after(void *);
+extern uschar * tls_cert_ocsp_uri(void *);
+extern uschar * tls_cert_serial_number(void *);
+extern uschar * tls_cert_signature(void *);
+extern uschar * tls_cert_signature_algorithm(void *);
+extern uschar * tls_cert_subject(void *);
+extern uschar * tls_cert_subject_altname(void *);
+extern uschar * tls_cert_version(void *);
+
 extern int     tls_client_start(int, host_item *, address_item *,
                  uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
 # ifdef EXPERIMENTAL_OCSP
@@ -32,9 +46,12 @@ extern int     tls_client_start(int, host_item *, address_item *,
 # endif
                  int, int, uschar *, uschar *);
 extern void    tls_close(BOOL, BOOL);
+extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
+extern void    tls_free_cert(void *);
 extern int     tls_getc(void);
+extern int     tls_import_cert(const uschar *, void **);
 extern int     tls_read(BOOL, uschar *, size_t);
 extern int     tls_server_start(const uschar *);
 extern BOOL    tls_smtp_buffered(void);
@@ -421,4 +438,6 @@ extern void    version_init(void);
 
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 
+/* vi: aw
+*/
 /* End of functions.h */

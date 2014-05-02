@@ -1,8 +1,24 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
+1999-03-02 09:44:33 Peer did not present a cert
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 S=sss
+1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
+1999-03-02 09:44:33 Peer did not present a cert
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" S=sss
+1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
+1999-03-02 09:44:33 Peer cert:
+1999-03-02 09:44:33 ver 3
+1999-03-02 09:44:33 SR  <c9>
+1999-03-02 09:44:33 SN  <CN=server2.example.com>
+1999-03-02 09:44:33 IN  <O=example.com,CN=clica Signing Cert>
+1999-03-02 09:44:33 NB  <Nov  1 12:34:06 2012 GMT>
+1999-03-02 09:44:33 NA  <Jan  1 12:34:06 2038 GMT>
+1999-03-02 09:44:33 SA  <RSA-SHA1>
+1999-03-02 09:44:33 SG  <6c 37 41 26 4d 5d f4 b5 31 10 67 ca fb 64 b6 22 98 62 f7 1e 95 7b 6c e6 74 47 21 f4 5e 89 36 3e b9 9c 8a c5 52 bb c4 af 12 93 26 3b d7 3d e0 56 71 1e 1d 21 20 02 ed f0 4e d5 5e 45 42 fd 3c 38 41 54 83 86 0b 3b bf c5 47 39 ff 15 ea 93 dc fd c7 3d 18 58 59 ca dd 2a d8 b9 f9 2f b9 76 93 f4 ae e3 91 56 80 2f 8c 04 2f ad 57 ef d2 51 19 f4 b4 ef 32 9c ac 3a 7c 0d b8 39 db b1 e3 30 73 1a>
+1999-03-02 09:44:33 SAN <server2.example.com>
+1999-03-02 09:44:33 CRU <http://crl.example.com/latest.crl>
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 DN="CN=server2.example.com" S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

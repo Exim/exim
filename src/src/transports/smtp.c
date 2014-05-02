@@ -1221,6 +1221,8 @@ outblock.authenticating = FALSE;
 
 tls_out.bits = 0;
 tls_out.cipher = NULL;	/* the one we may use for this transport */
+tls_out.ourcert = NULL;
+tls_out.peercert = NULL;
 tls_out.peerdn = NULL;
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
 tls_out.sni = NULL;
@@ -1480,6 +1482,8 @@ if (tls_offered && !suppress_tls &&
       if (addr->transport_return == PENDING_DEFER)
         {
         addr->cipher = tls_out.cipher;
+        addr->ourcert = tls_out.ourcert;
+        addr->peercert = tls_out.peercert;
         addr->peerdn = tls_out.peerdn;
         }
       }
@@ -2417,8 +2421,6 @@ tls_close(FALSE, TRUE);
 #endif
 
 /* Close the socket, and return the appropriate value, first setting
-continue_transport and continue_hostname NULL to prevent any other addresses
-that may include the host from trying to re-use a continuation socket. This
 works because the NULL setting is passed back to the calling process, and
 remote_max_parallel is forced to 1 when delivering over an existing connection,
 
@@ -2519,6 +2521,8 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   addr->message = NULL;
   #ifdef SUPPORT_TLS
   addr->cipher = NULL;
+  addr->ourcert = NULL;
+  addr->peercert = NULL;
   addr->peerdn = NULL;
   #endif
   }

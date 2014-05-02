@@ -104,6 +104,9 @@ TL/10 Bugzilla 1454: New -oMm option to pass message reference to Exim.
       Requires trusted mode and valid format message id, aborts otherwise.
       Patch contributed by Heiko Schlichting.
 
+JH/20 New expansion variables tls_(in,out)_(our,peer)cert, and expansion item
+      certextract with support for various fields.  Bug 1358.
+
 
 Exim version 4.82
 -----------------

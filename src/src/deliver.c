@@ -1057,7 +1057,7 @@ if (addr->return_file >= 0 && addr->return_filename != NULL)
   (void)close(addr->return_file);
   }
 
-/* The sucess case happens only after delivery by a transport. */
+/* The success case happens only after delivery by a transport. */
 
 if (result == OK)
   {
@@ -1073,10 +1073,8 @@ if (result == OK)
   DEBUG(D_deliver) debug_printf("%s delivered\n", addr->address);
 
   if (addr->parent == NULL)
-    {
     deliver_msglog("%s %s: %s%s succeeded\n", now, addr->address,
       driver_name, driver_kind);
-    }
   else
     {
     deliver_msglog("%s %s <%s>: %s%s succeeded\n", now, addr->address,
@@ -1084,7 +1082,28 @@ if (result == OK)
     child_done(addr, now);
     }
 
+  /* Certificates for logging (via TPDA) */
+  #ifdef SUPPORT_TLS
+  tls_out.ourcert = addr->ourcert;
+  addr->ourcert = NULL;
+  tls_out.peercert = addr->peercert;
+  addr->peercert = NULL;
+  #endif
+
   delivery_log(LOG_MAIN, addr, logchar, NULL);
+
+  #ifdef SUPPORT_TLS
+  if (tls_out.ourcert)
+    {
+    tls_free_cert(tls_out.ourcert);
+    tls_out.ourcert = NULL;
+    }
+  if (tls_out.peercert)
+    {
+    tls_free_cert(tls_out.peercert);
+    tls_out.peercert = NULL;
+    }
+  #endif
   }
 
 
@@ -2957,27 +2976,51 @@ while (!done)
 
     #ifdef SUPPORT_TLS
     case 'X':
-    if (addr == NULL) goto ADDR_MISMATCH;            /* Below, in 'A' handler */
-    addr->cipher = (*ptr)? string_copy(ptr) : NULL;
-    while (*ptr++);
-    addr->peerdn = (*ptr)? string_copy(ptr) : NULL;
+    if (addr == NULL) goto ADDR_MISMATCH;          /* Below, in 'A' handler */
+    switch (*ptr++)
+      {
+      case '1':
+      addr->cipher = NULL;
+      addr->peerdn = NULL;
+
+      if (*ptr)
+	addr->cipher = string_copy(ptr);
+      while (*ptr++);
+      if (*ptr)
+	{
+	addr->peerdn = string_copy(ptr);
+	}
+      break;
+
+      case '2':
+      addr->peercert = NULL;
+      if (*ptr)
+	(void) tls_import_cert(ptr, &addr->peercert);
+      break;
+
+      case '3':
+      addr->ourcert = NULL;
+      if (*ptr)
+	(void) tls_import_cert(ptr, &addr->ourcert);
+      break;
+      }
     while (*ptr++);
     break;
     #endif
 
     case 'C':	/* client authenticator information */
     switch (*ptr++)
-    {
-    case '1':
-      addr->authenticator = (*ptr)? string_copy(ptr) : NULL;
-      break;
-    case '2':
-      addr->auth_id = (*ptr)? string_copy(ptr) : NULL;
-      break;
-    case '3':
-      addr->auth_sndr = (*ptr)? string_copy(ptr) : NULL;
-      break;
-    }
+      {
+      case '1':
+	addr->authenticator = (*ptr)? string_copy(ptr) : NULL;
+	break;
+      case '2':
+	addr->auth_id = (*ptr)? string_copy(ptr) : NULL;
+	break;
+      case '3':
+	addr->auth_sndr = (*ptr)? string_copy(ptr) : NULL;
+	break;
+      }
     while (*ptr++);
     break;
 
@@ -4054,18 +4097,41 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       /* Use an X item only if there's something to send */
 
       #ifdef SUPPORT_TLS
-      if (addr->cipher != NULL)
+      if (addr->cipher)
         {
         ptr = big_buffer;
-        sprintf(CS ptr, "X%.128s", addr->cipher);
+        sprintf(CS ptr, "X1%.128s", addr->cipher);
         while(*ptr++);
-        if (addr->peerdn == NULL) *ptr++ = 0; else
+        if (!addr->peerdn)
+	  *ptr++ = 0;
+	else
           {
           sprintf(CS ptr, "%.512s", addr->peerdn);
           while(*ptr++);
           }
+
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
         }
+      if (addr->peercert)
+	{
+        ptr = big_buffer;
+	*ptr++ = 'X'; *ptr++ = '2';
+	if (!tls_export_cert(ptr, big_buffer_size-2, addr->peercert))
+	  while(*ptr++);
+	else
+	  *ptr++ = 0;
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+	}
+      if (addr->ourcert)
+	{
+        ptr = big_buffer;
+	*ptr++ = 'X'; *ptr++ = '3';
+	if (!tls_export_cert(ptr, big_buffer_size-2, addr->ourcert))
+	  while(*ptr++);
+	else
+	  *ptr++ = 0;
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+	}
       #endif
 
       if (client_authenticator)

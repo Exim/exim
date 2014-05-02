@@ -276,7 +276,11 @@ if (state == 0)
     txt);
   tlsp->certificate_verified = FALSE;
   *calledp = TRUE;
-  if (!*optionalp) return 0;    /* reject */
+  if (!*optionalp)
+    {
+    tlsp->peercert = X509_dup(x509ctx->current_cert);
+    return 0;			    /* reject */
+    }
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
     "tls_try_verify_hosts)\n");
   return 1;                          /* accept */
@@ -303,6 +307,7 @@ else
   DEBUG(D_tls) debug_printf("SSL%s peer: %s\n",
     *calledp ? "" : " authenticated", txt);
   tlsp->peerdn = txt;
+  tlsp->peercert = X509_dup(x509ctx->current_cert);
   }
 
 /*XXX JGH: this looks bogus - we set "verified" first time through, which
@@ -1433,6 +1438,11 @@ DEBUG(D_tls)
     debug_printf("Shared ciphers: %s\n", buf);
   }
 
+/* Record the certificate we presented */
+  {
+  X509 * crt = SSL_get_certificate(server_ssl);
+  tls_in.ourcert = crt ? X509_dup(crt) : NULL;
+  }
 
 /* Only used by the server-side tls (tls_in), including tls_getc.
    Client-side (tls_out) reads (seem to?) go via
@@ -1597,18 +1607,25 @@ if (rc <= 0)
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 
 /* Beware anonymous ciphers which lead to server_cert being NULL */
+/*XXX server_cert is never freed... use X509_free() */
 server_cert = SSL_get_peer_certificate (client_ssl);
 if (server_cert)
   {
   tls_out.peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
     CS txt, sizeof(txt));
-  tls_out.peerdn = txt;
+  tls_out.peerdn = txt;		/*XXX a static buffer... */
   }
 else
   tls_out.peerdn = NULL;
 
 construct_cipher_name(client_ssl, cipherbuf, sizeof(cipherbuf), &tls_out.bits);
 tls_out.cipher = cipherbuf;
+
+/* Record the certificate we presented */
+  {
+  X509 * crt = SSL_get_certificate(client_ssl);
+  tls_out.ourcert = crt ? X509_dup(crt) : NULL;
+  }
 
 tls_out.active = fd;
 return OK;
@@ -2250,4 +2267,6 @@ for (s=option_spec; *s != '\0'; /**/)
 return TRUE;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of tls-openssl.c */

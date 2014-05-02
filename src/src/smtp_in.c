@@ -1818,6 +1818,8 @@ authenticated_by = NULL;
 
 #ifdef SUPPORT_TLS
 tls_in.cipher = tls_in.peerdn = NULL;
+tls_in.ourcert = tls_in.peercert = NULL;
+tls_in.sni = NULL;
 tls_advertised = FALSE;
 #endif
 
