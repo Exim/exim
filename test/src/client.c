@@ -60,24 +60,27 @@ static int sigalrm_seen = 0;
 latter needs a whole pile of tables. */
 
 #ifdef HAVE_OPENSSL
-#define HAVE_TLS
-#include <openssl/crypto.h>
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-#include <openssl/ocsp.h>
+# define HAVE_TLS
+# include <openssl/crypto.h>
+# include <openssl/x509.h>
+# include <openssl/pem.h>
+# include <openssl/ssl.h>
+# include <openssl/err.h>
+# include <openssl/rand.h>
+# include <openssl/ocsp.h>
 #endif
 
 
 #ifdef HAVE_GNUTLS
-#define HAVE_TLS
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
-#include <gnutls/ocsp.h>
+# define HAVE_TLS
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
+# if GNUTLS_VERSION_NUMBER >= 0x030103
+#  define HAVE_OCSP
+#  include <gnutls/ocsp.h>
+# endif
 
-#define DH_BITS      768
+# define DH_BITS      768
 
 /* Local static variables for GNUTLS */
 
@@ -113,7 +116,7 @@ static const int mac_priority[16] = {
 static const int comp_priority[16] = { GNUTLS_COMP_NULL, 0 };
 static const int cert_type_priority[16] = { GNUTLS_CRT_X509, 0 };
 
-#endif
+#endif	/*HAVE_GNUTLS*/
 
 
 
@@ -767,8 +770,10 @@ if (certfile != NULL) printf("Certificate file = %s\n", certfile);
 if (keyfile != NULL) printf("Key file = %s\n", keyfile);
 tls_init(certfile, keyfile);
 tls_session = tls_session_init();
+#ifdef HAVE_OCSP
 if (ocsp_stapling)
   gnutls_ocsp_status_request_enable_client(tls_session, NULL, 0, NULL);
+#endif
 gnutls_transport_set_ptr(tls_session, (gnutls_transport_ptr)sock);
 
 /* When the server asks for a certificate and the client does not have one,
@@ -803,7 +808,7 @@ if (tls_on_connect)
 
   if (!tls_active)
     printf("Failed to start TLS\n");
-  #ifdef HAVE_GNUTLS
+  #if defined(HAVE_GNUTLS) && defined(HAVE_OCSP)
   else if (  ocsp_stapling
 	  && gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
     printf("Failed to verify certificate status\n");
@@ -917,6 +922,7 @@ int rc;
 	    printf("Bad certificate\n");
 	    fflush(stdout);
 	    }
+	  #ifdef HAVE_OCSP
 	  else if (gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
 	    {
 	    printf("Failed to verify certificate status\n");
@@ -938,6 +944,7 @@ int rc;
 	      }
 	    fflush(stdout);
 	    }
+	  #endif
 	  }
 	#endif
         else
