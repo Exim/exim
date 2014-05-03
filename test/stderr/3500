@@ -49,6 +49,7 @@
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> cram_md5 in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_recipient"
@@ -86,6 +87,7 @@ LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect aut
 >>> processing "warn"
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? yes (matched "10.0.0.5")
+>>>   message: authentication-failed: $authentication_failed
 >>> warn: condition test succeeded in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = 10.0.0.5

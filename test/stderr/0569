@@ -18,6 +18,7 @@
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
+>>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
@@ -43,6 +44,7 @@ LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
+>>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
 LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "﻿Received" found
@@ -66,6 +68,7 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
+>>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
 LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
@@ -89,6 +92,7 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after D
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
+>>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
 LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
@@ -112,6 +116,7 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
+>>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
@@ -137,6 +142,7 @@ LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
+>>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"

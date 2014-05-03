@@ -18,6 +18,7 @@ check hosts = : 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
 deny: condition test failed in ACL "connect"
 processing "drop"
+l_message: forcibly dropped
 check hosts = 10.9.8.9
 host in "10.9.8.9"? no (end of list)
 drop: condition test failed in ACL "connect"
@@ -29,6 +30,7 @@ LOG: MAIN
 accept: condition test succeeded in ACL "connect"
 using ACL "mail"
 processing "warn"
+  message: added header line
 check senders = ok@test3
 address match test: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test3"? no (end of list)
@@ -44,6 +46,7 @@ LOG: MAIN REJECT
   H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
 using ACL "mail"
 processing "warn"
+  message: added header line
 check senders = ok@test3
 address match test: subject=ok@test1 pattern=ok@test3
 test1 in "test3"? no (end of list)
@@ -116,6 +119,7 @@ check hosts = : 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
 deny: condition test failed in ACL "connect"
 processing "drop"
+l_message: forcibly dropped
 check hosts = 10.9.8.9
 host in "10.9.8.9"? no (end of list)
 drop: condition test failed in ACL "connect"
@@ -127,6 +131,7 @@ LOG: MAIN
 accept: condition test succeeded in ACL "connect"
 using ACL "mail"
 processing "warn"
+  message: added header line
 check senders = ok@test3
 address match test: subject=ok@test3 pattern=ok@test3
 test3 in "test3"? yes (matched "test3")

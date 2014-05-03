@@ -21,6 +21,7 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check recipients = verify@test.ex
 >>> userx@test.ex in "verify@test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "check_recipient"
@@ -46,6 +47,7 @@ exim: timed out while reading - message abandoned
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check recipients = verify@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> verify@test.ex in "verify@test.ex"? yes (matched "verify@test.ex")

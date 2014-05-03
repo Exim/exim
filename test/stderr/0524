@@ -10,6 +10,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"
+>>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test succeeded in ACL "check_mail"
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
@@ -17,6 +18,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"
+>>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test failed in ACL "check_mail"
 >>> accept: endpass encountered - denying access
@@ -33,6 +35,7 @@ LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization 
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"
+>>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test failed in ACL "check_mail"
 >>> accept: endpass encountered - denying access
@@ -42,6 +45,7 @@ LOG: H=(csa1.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization 
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"
+>>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test failed in ACL "check_mail"
 >>> accept: endpass encountered - denying access

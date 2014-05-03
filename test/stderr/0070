@@ -28,6 +28,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "rcpt"
 >>> processing "require"
+>>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "NULL"
 >>> no EHLO/HELO command was issued
@@ -55,6 +56,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> HELO verification failed but host is in helo_try_verify_hosts
 >>> using ACL "rcpt"
 >>> processing "require"
+>>>   message: helo not verified
 >>> check verify = helo
 >>> require: condition test failed in ACL "rcpt"
 LOG: H=([V4NET.0.0.1]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo not verified
@@ -80,9 +82,11 @@ MUNGED: ::1 will be omitted in what follows
 >>> matched host address
 >>> using ACL "rcpt"
 >>> processing "require"
+>>>   message: helo not verified
 >>> check verify = helo
 >>> require: condition test succeeded in ACL "rcpt"
 >>> processing "deny"
+>>>   message: helo did verify
 >>> deny: condition test succeeded in ACL "rcpt"
 LOG: H=([V4NET.0.0.2]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
@@ -205,6 +209,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> [V4NET.0.0.99] in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "require"
+>>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "[V4NET.0.0.99]"
 >>> require: condition test failed in ACL "rcpt"
@@ -229,11 +234,13 @@ MUNGED: ::1 will be omitted in what follows
 >>> [V4NET.0.0.13] in helo_lookup_domains? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "require"
+>>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "[V4NET.0.0.13]"
 >>> matched host address
 >>> require: condition test succeeded in ACL "rcpt"
 >>> processing "deny"
+>>>   message: helo did verify
 >>> deny: condition test succeeded in ACL "rcpt"
 LOG: H=([V4NET.0.0.13]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
@@ -257,6 +264,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "rcpt"
 >>> processing "require"
+>>>   message: helo not verified
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "rhubarb"
 >>> looking up host name for 99.99.99.99

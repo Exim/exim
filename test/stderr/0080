@@ -20,6 +20,7 @@
 >>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: host is listed in $dnslist_domain
 >>> check dnslists = rbl.test.ex:rbl2.test.ex
 >>> DNS list check: rbl.test.ex
 >>> new DNS lookup for 14.12.11.V4NET.rbl.test.ex

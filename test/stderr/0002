@@ -254,6 +254,7 @@ search_tidyup called
 LOG: 10HmaX-0005vi-00 Subject is: ""
 >>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
+>>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaX-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> processing "accept"
@@ -266,6 +267,7 @@ LOG: 10HmaX-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 LOG: 10HmaY-0005vi-00 Subject is: ""
 >>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
+>>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<a@b>
 >>> processing "accept"
@@ -278,6 +280,7 @@ LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<a
 LOG: 10HmaZ-0005vi-00 Subject is: ""
 >>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
+>>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<c@d>
 >>> processing "accept"
@@ -290,6 +293,7 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<c
 LOG: 10HmbA-0005vi-00 Subject is: ""
 >>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
+>>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbA-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> processing "accept"
@@ -302,6 +306,7 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 LOG: 10HmbB-0005vi-00 Subject is: ""
 >>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
+>>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbB-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x@y>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -325,6 +330,7 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x
 LOG: 10HmbC-0005vi-00 Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?="
 >>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
+>>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbC-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -348,6 +354,7 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 LOG: 10HmbD-0005vi-00 Subject is: " here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit"
 >>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
+>>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbD-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 Exim version x.yz ....

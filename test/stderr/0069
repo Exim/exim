@@ -68,6 +68,7 @@ LOG: no IP address found for host non.existent.invalid (during SMTP connection f
 >>> host in "non.existent.invalid : V4NET.0.0.13"? no (failed to find IP address for non.existent.invalid)
 >>> accept: condition test failed in ACL "check_recipienty"
 >>> processing "deny"
+>>>   message: "Denied"
 >>> deny: condition test succeeded in ACL "check_recipienty"
 LOG: H=[V4NET.0.0.13] F=<userx@test.ex> rejected RCPT <y@test.ex>: "Denied"
 >>> host in hosts_connection_nolog? no (option unset)
@@ -111,6 +112,7 @@ LOG: no IP address found for host non.existent.invalid (during SMTP connection f
 LOG: list matching forced to fail: failed to find IP address for non.existent.invalid
 >>> accept: condition test failed in ACL "check_recipienty"
 >>> processing "deny"
+>>>   message: "Denied"
 >>> deny: condition test succeeded in ACL "check_recipienty"
 LOG: H=[V4NET.0.0.13] F=<userx@test.ex> rejected RCPT <y@test.ex>: "Denied"
 >>> host in hosts_connection_nolog? no (option unset)

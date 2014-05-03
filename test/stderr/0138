@@ -69,6 +69,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> => that means V4NET.11.12.13 is not listed at rbl3.test.ex
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: host is listed in $dnslist_domain
 >>> check dnslists = rbl2.test.ex
 >>> DNS list check: rbl2.test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl2.test.ex
@@ -76,6 +77,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> => that means V4NET.11.12.13 is not listed at rbl2.test.ex
 >>> deny: condition test failed in ACL "check_recipient"
 >>> processing "warn"
+>>>   message: X-Warning: $sender_host_address is listed at $dnslist_domain
 >>> check dnslists = rbl.test.ex
 >>> DNS list check: rbl.test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
@@ -98,6 +100,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@exim.test.ex

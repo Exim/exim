@@ -8,6 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_rcpt_1"
 >>> processing "require"
+>>>   message: domain doesn't match @ or @[]
 >>> check domains = @ : @[]
 >>> [::1] in "@ : @[]"? yes (matched "@[]")
 >>> require: condition test succeeded in ACL "acl_rcpt_1"
@@ -15,6 +16,7 @@
 >>> accept: condition test succeeded in ACL "acl_rcpt_1"
 >>> using ACL "acl_rcpt_6"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1
 >>> check domains = <+ @mx_any/ignore=<;127.0.0.1;::1
 >>> ::1 in "<;127.0.0.1;::1"? yes (matched "::1")
 >>> 127.0.0.1 in "<;127.0.0.1;::1"? yes (matched "127.0.0.1")

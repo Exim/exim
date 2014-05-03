@@ -19,6 +19,7 @@
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? yes (matched "V4NET.0.0.1")
+>>>   message: invalid sender
 >>> check senders = userx@test.ex
 >>> x@y.z in "userx@test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
@@ -37,6 +38,7 @@ LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? yes (matched "V4NET.0.0.1")
+>>>   message: invalid sender
 >>> check senders = userx@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> userx@test.ex in "userx@test.ex"? yes (matched "userx@test.ex")
@@ -114,6 +116,7 @@ LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.3] F=<x@y.z> rejected RCPT <a@b.c>: relay not permitted
 >>> using ACL "check_recipient"
@@ -135,5 +138,6 @@ LOG: H=[V4NET.0.0.3] F=<x@y.z> rejected RCPT <a@b.c>: relay not permitted
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.3] F=<userx@test.ex> rejected RCPT <a@b.c>: relay not permitted

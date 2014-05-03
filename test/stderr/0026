@@ -11,6 +11,7 @@
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "acl_data"
 >>> processing "deny"
+>>> l_message: body contains trigger
 >>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
 >>>                 = no
 >>> deny: condition test failed in ACL "acl_data"
@@ -31,6 +32,7 @@ LOG: 10HmbH-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing o
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "acl_data"
 >>> processing "deny"
+>>> l_message: body contains trigger
 >>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
 >>>                 = yes
 >>> deny: condition test succeeded in ACL "acl_data"

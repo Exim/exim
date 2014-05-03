@@ -37,6 +37,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 >>> using ACL "check_message"

@@ -8,6 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_rcpt"
 >>> processing "deny"
+>>>   message: unverifiable
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1

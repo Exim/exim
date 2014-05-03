@@ -16,6 +16,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "!localhost"? no (matched "!localhost")
 >>> deny: condition test failed in ACL "check_etrn"
 >>> processing "warn"
+>>> l_message: accepted $smtp_command
 >>> warn: condition test succeeded in ACL "check_etrn"
 LOG: H=[127.0.0.1] Warning: accepted etrn #some.random.domain
 >>> processing "accept"

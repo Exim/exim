@@ -25,6 +25,7 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.test.ex>: relay not permitted
 >>> using ACL "check_recipient"
@@ -42,5 +43,6 @@ LOG: H=[V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.test.ex>: 
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.test.ex>: relay not permitted

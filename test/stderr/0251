@@ -8,6 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing oklist@listr.test.ex
@@ -33,6 +34,7 @@
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing oklist@listr.test.ex

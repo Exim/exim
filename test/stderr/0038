@@ -16,6 +16,7 @@
 >>> ratelimit initializing new key's rate data
 >>> ratelimit db updated
 >>> ratelimit computed rate 1.0
+>>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
@@ -26,6 +27,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> check ratelimit = 0/1h/per_byte/strict
 >>> ratelimit condition count=19 0.0/1h/per_mail/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 1.0
+>>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
@@ -48,6 +50,7 @@ LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit found key in database
 >>> ratelimit db updated
 >>> ratelimit computed rate 2.0
+>>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
@@ -58,6 +61,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=
 >>> check ratelimit = 0/1h/per_byte/strict
 >>> ratelimit condition count=19 0.0/1h/per_mail/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 2.0
+>>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
@@ -81,6 +85,7 @@ LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit initializing new key's rate data
 >>> ratelimit db updated
 >>> ratelimit computed rate 1.0
+>>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
@@ -91,6 +96,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition count=1 0.0/1h/per_conn/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 1.0
+>>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
@@ -113,6 +119,7 @@ LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit found key in database
 >>> ratelimit db updated
 >>> ratelimit computed rate 2.0
+>>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
@@ -123,6 +130,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition count=1 0.0/1h/per_conn/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 2.0
+>>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
@@ -146,6 +154,7 @@ LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit initializing new key's rate data
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 1.0
+>>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
@@ -158,6 +167,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit initializing new key's rate data
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 1.0
+>>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
@@ -169,6 +179,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit initializing new key's rate data
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 1.0
+>>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
@@ -180,6 +191,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit found key in database
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 3.0
+>>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=3.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
@@ -236,6 +248,7 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit initializing new key's rate data
 >>> ratelimit db updated
 >>> ratelimit computed rate 19.0
+>>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] Warning: DATA: sender_rate=19.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"

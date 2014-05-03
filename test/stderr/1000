@@ -8,6 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
 >>> processing "warn"
+>>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "2001:ab8:37f:20:0:0:0:1")
 >>> warn: condition test succeeded in ACL "check_connect"
@@ -33,6 +34,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
 >>> processing "warn"
+>>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
@@ -55,6 +57,7 @@ LOG: H=test3.ipv6.test.ex [V6NET:1234:0005:0006:0007:0008:0abc:000d] rejected co
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
 >>> processing "warn"
+>>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:

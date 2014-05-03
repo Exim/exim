@@ -26,6 +26,7 @@
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 >>> 3rdhost.example.com in percent_hack_domains? no (end of list)
@@ -41,6 +42,7 @@ LOG: H=[V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@another
 >>> 3rdhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@3rdhost.example.com>: relay not permitted
 LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.1] P=smtp S=sss

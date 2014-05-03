@@ -3949,6 +3949,8 @@ while (*s != 0)
 	{
 	case OK:
 	case FAIL:
+	  DEBUG(D_expand)
+	    debug_printf("acl expansion yield: %s\n", user_msg);
 	  if (user_msg)
             yield = string_cat(yield, &size, &ptr, user_msg, Ustrlen(user_msg));
 	  continue;

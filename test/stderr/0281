@@ -8,6 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_rcpt_1"
 >>> processing "require"
+>>>   message: domain doesn't match @ or @[]
 >>> check domains = @ : @[]
 >>> myhost.test.ex in "@ : @[]"? yes (matched "@")
 >>> require: condition test succeeded in ACL "acl_rcpt_1"
@@ -15,6 +16,7 @@
 >>> accept: condition test succeeded in ACL "acl_rcpt_1"
 >>> using ACL "acl_rcpt_1"
 >>> processing "require"
+>>>   message: domain doesn't match @ or @[]
 >>> check domains = @ : @[]
 >>> [127.0.0.1] in "@ : @[]"? yes (matched "@[]")
 >>> require: condition test succeeded in ACL "acl_rcpt_1"
@@ -22,12 +24,14 @@
 >>> accept: condition test succeeded in ACL "acl_rcpt_1"
 >>> using ACL "acl_rcpt_1"
 >>> processing "require"
+>>>   message: domain doesn't match @ or @[]
 >>> check domains = @ : @[]
 >>> else.where in "@ : @[]"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_1"
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't match @ or @[]
 >>> using ACL "acl_rcpt_2"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_any
 >>> check domains = @mx_any
 >>> other1.test.ex in hosts_treat_as_local? yes (matched "other1.test.ex")
 >>> local host has lowest MX
@@ -37,6 +41,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't match 
 >>> accept: condition test succeeded in ACL "acl_rcpt_2"
 >>> using ACL "acl_rcpt_2"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_any
 >>> check domains = @mx_any
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
 >>> local host has lowest MX
@@ -46,6 +51,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't match 
 >>> accept: condition test succeeded in ACL "acl_rcpt_2"
 >>> using ACL "acl_rcpt_2"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_any
 >>> check domains = @mx_any
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
@@ -58,6 +64,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't match 
 >>> accept: condition test succeeded in ACL "acl_rcpt_2"
 >>> using ACL "acl_rcpt_2"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_any
 >>> check domains = @mx_any
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> ten-2.test.ex in hosts_treat_as_local? no (end of list)
@@ -67,12 +74,14 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <1@else.where>: domain doesn't match 
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxt9.test.ex>: domain doesn't match @mx_any
 >>> using ACL "acl_rcpt_2"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_any
 >>> check domains = @mx_any
 >>> mxnone.test.ex in "@mx_any"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_2"
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doesn't match @mx_any
 >>> using ACL "acl_rcpt_3"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_primary
 >>> check domains = @mx_primary
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
@@ -83,6 +92,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doesn't ma
 >>> accept: condition test succeeded in ACL "acl_rcpt_3"
 >>> using ACL "acl_rcpt_3"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_primary
 >>> check domains = @mx_primary
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> ten-2.test.ex in hosts_treat_as_local? no (end of list)
@@ -95,6 +105,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doesn't ma
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt6.test.ex>: domain doesn't match @mx_primary
 >>> using ACL "acl_rcpt_3"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_primary
 >>> check domains = @mx_primary
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> ten-2.test.ex in hosts_treat_as_local? no (end of list)
@@ -104,12 +115,14 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt6.test.ex>: domain doesn't matc
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt9.test.ex>: domain doesn't match @mx_primary
 >>> using ACL "acl_rcpt_3"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_primary
 >>> check domains = @mx_primary
 >>> mxnone.test.ex in "@mx_primary"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_3"
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxnone.test.ex>: domain doesn't match @mx_primary
 >>> using ACL "acl_rcpt_4"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_secondary
 >>> check domains = @mx_secondary
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
 >>> local host has lowest MX
@@ -118,6 +131,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxnone.test.ex>: domain doesn't ma
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt5.test.ex>: domain doesn't match @mx_secondary
 >>> using ACL "acl_rcpt_4"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_secondary
 >>> check domains = @mx_secondary
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> ten-2.test.ex in hosts_treat_as_local? no (end of list)
@@ -131,6 +145,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt5.test.ex>: domain doesn't matc
 >>> accept: condition test succeeded in ACL "acl_rcpt_4"
 >>> using ACL "acl_rcpt_4"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_secondary
 >>> check domains = @mx_secondary
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> ten-2.test.ex in hosts_treat_as_local? no (end of list)
@@ -140,12 +155,14 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt5.test.ex>: domain doesn't matc
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt9.test.ex>: domain doesn't match @mx_secondary
 >>> using ACL "acl_rcpt_4"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_secondary
 >>> check domains = @mx_secondary
 >>> mxnone.test.ex in "@mx_secondary"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_4"
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxnone.test.ex>: domain doesn't match @mx_secondary
 >>> using ACL "acl_rcpt_5"
 >>> processing "require"
+>>>   message: host doesn't match @ or @[]
 >>> check hosts = @ : @[]
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
@@ -163,6 +180,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <5@myhost.test.ex>: host doesn't matc
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_rcpt_5"
 >>> processing "require"
+>>>   message: host doesn't match @ or @[]
 >>> check hosts = @ : @[]
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
@@ -181,6 +199,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_rcpt_5"
 >>> processing "require"
+>>>   message: host doesn't match @ or @[]
 >>> check hosts = @ : @[]
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
@@ -199,6 +218,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_rcpt_2"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_any
 >>> check domains = @mx_any
 >>> not-exist.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
@@ -210,6 +230,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> accept: condition test succeeded in ACL "acl_rcpt_2"
 >>> using ACL "acl_rcpt_3"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_primary
 >>> check domains = @mx_primary
 >>> not-exist.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
@@ -220,6 +241,7 @@ MUNGED: ::1 will be omitted in what follows
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt3.test.ex>: domain doesn't match @mx_primary
 >>> using ACL "acl_rcpt_4"
 >>> processing "require"
+>>>   message: domain doesn't match @mx_secondary
 >>> check domains = @mx_secondary
 >>> not-exist.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)

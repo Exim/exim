@@ -8,6 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_5_6_9"
 >>> processing "accept"
+>>>   message: You must authenticate
 >>> check authenticated = *
 >>> accept: condition test failed in ACL "acl_5_6_9"
 >>> accept: endpass encountered - denying access
@@ -25,6 +26,7 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> expanded string: yes
 >>> using ACL "acl_5_6_9"
 >>> processing "accept"
+>>>   message: You must authenticate
 >>> check authenticated = *
 >>> auth1 in "*"? yes (matched "*")
 >>> accept: condition test succeeded in ACL "acl_5_6_9"

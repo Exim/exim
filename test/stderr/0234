@@ -13,6 +13,7 @@
 >>> d in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 >>> using ACL "check_recipient"

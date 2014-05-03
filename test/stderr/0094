@@ -25,6 +25,7 @@ LOG: no host name found for IP address V4NET.11.12.13
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 >>> host in hosts_connection_nolog? no (option unset)
@@ -58,6 +59,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 Exim version x.yz ....
@@ -141,6 +143,7 @@ host in "*.masq.test.ex"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny"
+  message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT

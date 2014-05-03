@@ -39,6 +39,7 @@
 >>> accept: condition test succeeded in ACL "check_mail"
 >>> using ACL "check_recipient"
 >>> processing "warn"
+>>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
 >>> DNS list check: rbl3.test.ex!=127.0.0.3
 >>> new DNS lookup for 14.12.11.V4NET.rbl3.test.ex
@@ -46,6 +47,7 @@
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: host is listed in $dnslist_domain with value 127.0.0.3${if def:dnslist_text{\n$dnslist_text}}
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> DNS list check: rbl3.test.ex=127.0.0.3
 >>> using result of previous DNS lookup
@@ -69,6 +71,7 @@
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@exim.test.ex
@@ -86,6 +89,7 @@
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "warn"
+>>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
 >>> DNS list check: rbl3.test.ex!=127.0.0.3
 >>> using result of previous DNS lookup
@@ -93,6 +97,7 @@
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: host is listed in $dnslist_domain with value 127.0.0.3${if def:dnslist_text{\n$dnslist_text}}
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> DNS list check: rbl3.test.ex=127.0.0.3
 >>> using result of previous DNS lookup
@@ -105,6 +110,7 @@
 >>> using cached sender verify result
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@exim.test.ex
@@ -160,6 +166,7 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> accept: condition test succeeded in ACL "check_mail"
 >>> using ACL "check_recipient"
 >>> processing "warn"
+>>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
 >>> DNS list check: rbl3.test.ex!=127.0.0.3
 >>> new DNS lookup for 15.12.11.V4NET.rbl3.test.ex
@@ -168,6 +175,7 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> => there was an exclude match for =127.0.0.3
 >>> warn: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: host is listed in $dnslist_domain with value 127.0.0.3${if def:dnslist_text{\n$dnslist_text}}
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> DNS list check: rbl3.test.ex=127.0.0.3
 >>> using result of previous DNS lookup

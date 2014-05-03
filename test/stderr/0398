@@ -146,6 +146,7 @@ wrote callout cache domain record:
 dbfn_write: key=qq@remote
 wrote negative callout cache address record
 ----------- end verify ------------
+l_message: $acl_verify_message
 warn: condition test succeeded in ACL "rcpt"
 LOG: MAIN
   U=CALLER Warning: Sender verify failed: response to "RCPT TO:<qq@remote>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown
@@ -223,6 +224,7 @@ dbfn_read: key=qq@remote
 callout cache: found address record
 callout cache: address record is negative
 ----------- end verify ------------
+l_message: $acl_verify_message
 warn: condition test succeeded in ACL "rcpt"
 LOG: MAIN
   U=CALLER Warning: Sender verify failed

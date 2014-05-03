@@ -8,6 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
 >>> processing "deny"
+>>>   message: dnslist_value is $dnslist_value
 >>> check dnslists = rbl.test.ex=127.0.0.2
 >>> DNS list check: rbl.test.ex=127.0.0.2
 >>> new DNS lookup for 1.13.13.V4NET.rbl.test.ex
@@ -26,6 +27,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
 >>> processing "deny"
+>>>   message: dnslist_value is $dnslist_value
 >>> check dnslists = rbl.test.ex=127.0.0.2
 >>> DNS list check: rbl.test.ex=127.0.0.2
 >>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex

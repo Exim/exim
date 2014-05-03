@@ -39,6 +39,7 @@ LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&
 >>> else.where in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else.where>: relay not permitted
 >>> host in hosts_connection_nolog? no (option unset)
@@ -88,5 +89,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> relay.two.ex in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=ten-99.test.ex (@#$%^&*()) [V4NET.0.0.99] F=<root@myhost.test.ex> rejected RCPT <yy@relay.two.ex>: relay not permitted

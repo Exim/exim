@@ -2992,12 +2992,14 @@ for (; cb != NULL; cb = cb->next)
 
   if (cb->type == ACLC_MESSAGE)
     {
+    HDEBUG(D_acl) debug_printf("  message: %s\n", cb->arg);
     user_message = cb->arg;
     continue;
     }
 
   if (cb->type == ACLC_LOG_MESSAGE)
     {
+    HDEBUG(D_acl) debug_printf("l_message: %s\n", cb->arg);
     log_message = cb->arg;
     continue;
     }

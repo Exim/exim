@@ -40,6 +40,8 @@ check local_parts = ^.*[@%!/|]
 1 in "^.*[@%!/|]"? no (end of list)
 deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "require"
+l_message: Invalid sender
+  message: Couldn't verify the sender
 check verify = sender/defer_ok
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@y
@@ -64,6 +66,7 @@ routed by r1 router
 sender x@y verified ok
 require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
+  message: No such user here
 deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
@@ -83,6 +86,8 @@ check local_parts = ^.*[@%!/|]
 1 in "^.*[@%!/|]"? no (end of list)
 deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "require"
+l_message: Invalid sender
+  message: Couldn't verify the sender
 check verify = sender/defer_ok
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@y
@@ -106,6 +111,7 @@ routed by r1 router
 sender x@y verified ok
 require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
+  message: No such user here
 deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
@@ -152,6 +158,8 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<2@b>
 read ACL from file TESTSUITE/aux-fixed/0386.acl2
 processing "warn"
+  message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
+l_message: found in $dnslist_domain: $dnslist_text
 check dnslists = rbl.test.ex 
 DNS list check: rbl.test.ex
 new DNS lookup for 13.12.11.V4NET.rbl.test.ex
@@ -315,6 +323,8 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<2@b>
 using ACL "TESTSUITE/aux-fixed/0386.acl2"
 processing "warn"
+  message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
+l_message: found in $dnslist_domain: $dnslist_text
 check dnslists = rbl.test.ex 
 DNS list check: rbl.test.ex
 using result of previous DNS lookup

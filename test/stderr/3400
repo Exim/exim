@@ -55,6 +55,7 @@ LOG: ETRN #abcd received from [10.0.0.2]
 >>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
 >>> require: condition test succeeded in ACL "check_etrn"
 >>> processing "warn"
+>>> l_message: accepted ETRN $smtp_command_argument
 >>> warn: condition test succeeded in ACL "check_etrn"
 LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>> processing "accept"
@@ -85,6 +86,7 @@ LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_vrfy"
 LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication required
@@ -92,6 +94,7 @@ LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication requir
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_expn"
 LOG: H=(test.host) [10.0.0.1] rejected EXPN list@test.ex: authentication required
@@ -100,6 +103,7 @@ LOG: ETRN abcd received from (test.host) [10.0.0.1]
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_etrn"
 LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
@@ -119,6 +123,7 @@ LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@test.ex>: authentication required
@@ -143,6 +148,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_recipient"
@@ -167,6 +173,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_recipient"
@@ -186,12 +193,14 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> host in "+auth_relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT <userx@cus.cam.ac.uk>: relay not permitted
 >>> using ACL "check_vrfy"
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_vrfy"
@@ -208,6 +217,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_expn"
@@ -226,6 +236,7 @@ LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>>   message: authentication required
 >>> check !authenticated = *
 >>> mylogin in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_etrn"
@@ -234,6 +245,7 @@ LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 >>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
 >>> require: condition test succeeded in ACL "check_etrn"
 >>> processing "warn"
+>>> l_message: accepted ETRN $smtp_command_argument
 >>> warn: condition test succeeded in ACL "check_etrn"
 LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> processing "accept"
@@ -290,6 +302,7 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> processing "accept"
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"? yes (matched "+auth_relay_hosts" - cached)
+>>>   message: authentication required
 >>> check authenticated = *
 >>> accept: condition test failed in ACL "check_recipient"
 >>> accept: endpass encountered - denying access
@@ -328,6 +341,7 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> processing "accept"
 >>> check hosts = +auth_relay_hosts
 >>> host in "+auth_relay_hosts"? yes (matched "+auth_relay_hosts" - cached)
+>>>   message: authentication required
 >>> check authenticated = *
 >>> mylogin in "*"? yes (matched "*")
 >>> accept: condition test succeeded in ACL "check_recipient"

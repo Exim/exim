@@ -53,6 +53,7 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjun
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing postmaster@exim.test.ex
@@ -86,6 +87,7 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjun
 >>> using cached sender verify result
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing junkjunk@exim.test.ex
@@ -108,6 +110,7 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] F=<postmaster@exim.test.ex> rejected RCPT j
 >>> using cached sender verify result
 >>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing fail@exim.test.ex

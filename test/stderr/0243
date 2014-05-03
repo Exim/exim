@@ -10,6 +10,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_recipient"
 >>> processing "deny"
+>>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing faq@nl.demon.net

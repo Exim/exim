@@ -155,6 +155,7 @@ host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny"
+  message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
@@ -183,6 +184,7 @@ host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
 processing "deny"
+  message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
