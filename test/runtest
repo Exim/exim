@@ -544,7 +544,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/TLS error on connection from \[127.0.0.1\] \(recv\): A TLS packet with unexpected length was received./TLS error on connection from [127.0.0.1] (recv): The TLS connection was non-properly terminated./g;
 
   # signature algorithm names
-  s/RSA-SHA1/RSA_SHA/;
+  s/RSA-SHA1/RSA-SHA/;
 
 
   # ======== Caller's login, uid, gid, home, gecos ========
