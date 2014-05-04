@@ -15,6 +15,7 @@ library. It is #included into the tls.c file when that library is used.
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#include <openssl/x509v3.h>
 
 
 /*****************************************************
