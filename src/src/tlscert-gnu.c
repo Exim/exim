@@ -86,7 +86,7 @@ return len > 0 ? cp : NULL;
 /**/
 
 uschar *
-tls_cert_issuer(void * cert)
+tls_cert_issuer(void * cert, uschar * mod)
 {
 uschar txt[256];
 size_t sz = sizeof(txt);
@@ -95,21 +95,21 @@ return ( gnutls_x509_crt_get_issuer_dn(cert, CS txt, &sz) == 0 )
 }
 
 uschar *
-tls_cert_not_after(void * cert)
+tls_cert_not_after(void * cert, uschar * mod)
 {
 return time_copy(
   gnutls_x509_crt_get_expiration_time((gnutls_x509_crt_t)cert));
 }
 
 uschar *
-tls_cert_not_before(void * cert)
+tls_cert_not_before(void * cert, uschar * mod)
 {
 return time_copy(
   gnutls_x509_crt_get_activation_time((gnutls_x509_crt_t)cert));
 }
 
 uschar *
-tls_cert_serial_number(void * cert)
+tls_cert_serial_number(void * cert, uschar * mod)
 {
 uschar bin[50], txt[150];
 size_t sz = sizeof(bin);
@@ -126,7 +126,7 @@ return string_copy(sp);
 }
 
 uschar *
-tls_cert_signature(void * cert)
+tls_cert_signature(void * cert, uschar * mod)
 {
 uschar * cp1;
 uschar * cp2;
@@ -157,7 +157,7 @@ return cp2;
 }
 
 uschar *
-tls_cert_signature_algorithm(void * cert)
+tls_cert_signature_algorithm(void * cert, uschar * mod)
 {
 gnutls_sign_algorithm_t algo =
   gnutls_x509_crt_get_signature_algorithm((gnutls_x509_crt_t)cert);
@@ -165,7 +165,7 @@ return algo < 0 ? NULL : string_copy(gnutls_sign_get_name(algo));
 }
 
 uschar *
-tls_cert_subject(void * cert)
+tls_cert_subject(void * cert, uschar * mod)
 {
 static uschar txt[256];
 size_t sz = sizeof(txt);
@@ -174,7 +174,7 @@ return ( gnutls_x509_crt_get_dn(cert, CS txt, &sz) == 0 )
 }
 
 uschar *
-tls_cert_version(void * cert)
+tls_cert_version(void * cert, uschar * mod)
 {
 return string_sprintf("%d", gnutls_x509_crt_get_version(cert));
 }
@@ -218,60 +218,106 @@ return cp2;
 }
 
 uschar *
-tls_cert_subject_altname(void * cert)
+tls_cert_subject_altname(void * cert, uschar * mod)
 {
-uschar * cp = NULL;
-size_t siz = 0;
-unsigned int crit;
+uschar * list = NULL;
+int index;
+size_t siz;
 int ret;
+uschar sep = '\n';
+uschar * tag = US"";
+uschar * ele;
+int match = -1;
 
-ret = gnutls_x509_crt_get_subject_alt_name ((gnutls_x509_crt_t)cert,
-  0, cp, &siz, &crit);
-switch(ret)
+while (mod)
   {
-  case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
-    return NULL;
-  case GNUTLS_E_SHORT_MEMORY_BUFFER:
+  if (*mod == '>' && *++mod) sep = *mod++;
+  else if (Ustrcmp(mod, "dns")==0) { match = GNUTLS_SAN_DNSNAME; mod += 3; }
+  else if (Ustrcmp(mod, "uri")==0) { match = GNUTLS_SAN_URI; mod += 3; }
+  else if (Ustrcmp(mod, "mail")==0) { match = GNUTLS_SAN_RFC822NAME; mod += 4; }
+  else continue;
+
+  if (*mod++ != ',')
     break;
-  default:
+  }
+
+for(index = 0;; index++)
+  {
+  siz = 0;
+  switch(ret = gnutls_x509_crt_get_subject_alt_name(
+    (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL))
+    {
+    case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
+      return list;	/* no more elements; normal exit */
+
+    case GNUTLS_E_SHORT_MEMORY_BUFFER:
+      break;
+
+    default:
+      expand_string_message = 
+	string_sprintf("%s: gs0 fail: %d %s\n", __FUNCTION__,
+	  ret, gnutls_strerror(ret));
+      return NULL;
+    }
+
+  ele = store_get(siz+1);
+  if ((ret = gnutls_x509_crt_get_subject_alt_name(
+    (gnutls_x509_crt_t)cert, index, ele, &siz, NULL)) < 0)
+    {
     expand_string_message = 
-      string_sprintf("%s: gs0 fail: %d %s\n", __FUNCTION__,
+      string_sprintf("%s: gs1 fail: %d %s\n", __FUNCTION__,
 	ret, gnutls_strerror(ret));
     return NULL;
-  }
+    }
+  ele[siz] = '\0';
 
-cp = store_get(siz+1);
-ret = gnutls_x509_crt_get_subject_alt_name ((gnutls_x509_crt_t)cert,
-  0, cp, &siz, &crit);
-if (ret < 0)
-  {
-  expand_string_message = 
-    string_sprintf("%s: gs1 fail: %d %s\n", __FUNCTION__,
-      ret, gnutls_strerror(ret));
-  return NULL;
+  if (match != -1 && match != ret)
+    continue;
+  switch (ret)
+    {
+    case GNUTLS_SAN_DNSNAME:    tag = US"DNS";  break;
+    case GNUTLS_SAN_URI:        tag = US"URI";  break; 
+    case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
+    default: continue;        /* ignore unrecognised types */
+    }
+  list = string_append_listele(list, sep, 
+          match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
-cp[siz] = '\0';
-return cp;
+/*NOTREACHED*/
 }
 
 uschar *
-tls_cert_ocsp_uri(void * cert)
+tls_cert_ocsp_uri(void * cert, uschar * mod)
 {
 #if GNUTLS_VERSION_NUMBER >= 0x030000
 gnutls_datum_t uri;
-unsigned int crit;
-int ret = gnutls_x509_crt_get_authority_info_access((gnutls_x509_crt_t)cert,
-	0, GNUTLS_IA_OCSP_URI, &uri, &crit);
+int ret;
+uschar sep = '\n';
+int index;
+uschar * list = NULL;
 
-if (ret >= 0)
-  return string_copyn(uri.data, uri.size);
+if (mod)
+  if (*mod == '>' && *++mod) sep = *mod++;
 
-if (ret != GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
-  expand_string_message = 
-    string_sprintf("%s: gai fail: %d %s\n", __FUNCTION__,
-      ret, gnutls_strerror(ret));
+for(index = 0;; index++)
+  {
+  ret = gnutls_x509_crt_get_authority_info_access((gnutls_x509_crt_t)cert,
+	  index, GNUTLS_IA_OCSP_URI, &uri, NULL);
 
-return NULL;
+  if (ret == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
+    return list;
+  if (ret < 0)
+    {
+    expand_string_message = 
+      string_sprintf("%s: gai fail: %d %s\n", __FUNCTION__,
+	ret, gnutls_strerror(ret));
+    return NULL;
+    }
+
+  list = string_append_listele(list, sep,
+	    string_copyn(uri.data, uri.size));
+  }
+/*NOTREACHED*/
 
 #else
 
@@ -284,39 +330,48 @@ return NULL;
 }
 
 uschar *
-tls_cert_crl_uri(void * cert)
+tls_cert_crl_uri(void * cert, uschar * mod)
 {
 int ret;
-uschar * cp = NULL;
-size_t siz = 0;
+size_t siz;
+uschar sep = '\n';
+int index;
+uschar * list = NULL;
+uschar * ele;
 
-ret = gnutls_x509_crt_get_crl_dist_points ((gnutls_x509_crt_t)cert,
-  0, cp, &siz, NULL, NULL);
-switch(ret)
+if (mod)
+  if (*mod == '>' && *++mod) sep = *mod++;
+
+for(index = 0;; index++)
   {
-  case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
-    return NULL;
-  case GNUTLS_E_SHORT_MEMORY_BUFFER:
-    break;
-  default:
+  siz = 0;
+  switch(ret = gnutls_x509_crt_get_crl_dist_points(
+    (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL, NULL))
+    {
+    case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
+      return list;
+    case GNUTLS_E_SHORT_MEMORY_BUFFER:
+      break;
+    default:
+      expand_string_message = 
+	string_sprintf("%s: gc0 fail: %d %s\n", __FUNCTION__,
+	  ret, gnutls_strerror(ret));
+      return NULL;
+    }
+
+  ele = store_get(siz+1);
+  if ((ret = gnutls_x509_crt_get_crl_dist_points(
+    (gnutls_x509_crt_t)cert, index, ele, &siz, NULL, NULL)) < 0)
+    {
     expand_string_message = 
-      string_sprintf("%s: gc0 fail: %d %s\n", __FUNCTION__,
+      string_sprintf("%s: gc1 fail: %d %s\n", __FUNCTION__,
 	ret, gnutls_strerror(ret));
     return NULL;
+    }
+  ele[siz] = '\0';
+  list = string_append_listele(list, sep, ele);
   }
-
-cp = store_get(siz+1);
-ret = gnutls_x509_crt_get_crl_dist_points ((gnutls_x509_crt_t)cert,
-  0, cp, &siz, NULL, NULL);
-if (ret < 0)
-  {
-  expand_string_message = 
-    string_sprintf("%s: gs1 fail: %d %s\n", __FUNCTION__,
-      ret, gnutls_strerror(ret));
-  return NULL;
-  }
-cp[siz] = '\0';
-return cp;
+/*NOTREACHED*/
 }
 
 

@@ -8885,17 +8885,17 @@ The <&'certificate'&> must be a variable of type certificate.
 The field name is expanded and used to retrive the relevant field from
 the certificate.  Supported fields are:
 .display
-version
-serial_number
-subject
-issuer
-notbefore
-notafter
-signature_algorithm
-signature
-subject_altname
-ocsp_uri
-crl_uri
+&`version        `&
+&`serial_number  `&
+&`subject        `&
+&`issuer         `&
+&`notbefore      `&
+&`notafter       `&
+&`sig_algorithm  `&
+&`signature      `&
+&`subj_altname   `& tagged list
+&`ocsp_uri       `& list
+&`crl_uri        `& list
 .endd
 If the field is found,
 <&'string2'&> is expanded, and replaces the whole item;
@@ -8907,7 +8907,21 @@ If {<&'string3'&>} is omitted, the item is replaced by an empty string if the
 key is not found. If {<&'string2'&>} is also omitted, the value that was
 extracted is used.
 
-Field values are presented in human-readable form.
+Some field names take optional modifiers, appended and separated by commas.
+
+The field selectors marked as "list" above return a list,
+newline-separated by default,
+(embedded separator characters in elements are doubled).
+The separator may be changed by a modifier of
+a right angle-bracket followed immediately by the new separator.
+
+The field selectors marked as "tagged" above
+prefix each list element with a type string and an equals sign.
+Elements of only one type may be selected by a modifier
+which is one of "dns", "uri" or "mail";
+if so the elenment tags are omitted.
+
+Field values are generally presented in human-readable form.
 .wen
 
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&

@@ -109,25 +109,25 @@ return bio_string_copy(bp, len_good);
 /**/
 
 uschar *
-tls_cert_issuer(void * cert)
+tls_cert_issuer(void * cert, uschar * mod)
 {
 return x509_name_copy(X509_get_issuer_name((X509 *)cert));
 }
 
 uschar *
-tls_cert_not_before(void * cert)
+tls_cert_not_before(void * cert, uschar * mod)
 {
 return asn1_time_copy(X509_get_notBefore((X509 *)cert));
 }
 
 uschar *
-tls_cert_not_after(void * cert)
+tls_cert_not_after(void * cert, uschar * mod)
 {
 return asn1_time_copy(X509_get_notAfter((X509 *)cert));
 }
 
 uschar *
-tls_cert_serial_number(void * cert)
+tls_cert_serial_number(void * cert, uschar * mod)
 {
 uschar txt[256];
 BIO * bp = BIO_new(BIO_s_mem());
@@ -142,7 +142,7 @@ return string_copynlc(txt, len);	/* lowercase */
 }
 
 uschar *
-tls_cert_signature(void * cert)
+tls_cert_signature(void * cert, uschar * mod)
 {
 BIO * bp = BIO_new(BIO_s_mem());
 uschar * cp = NULL;
@@ -162,19 +162,19 @@ return cp;
 }
 
 uschar *
-tls_cert_signature_algorithm(void * cert)
+tls_cert_signature_algorithm(void * cert, uschar * mod)
 {
 return string_copy(OBJ_nid2ln(X509_get_signature_type((X509 *)cert)));
 }
 
 uschar *
-tls_cert_subject(void * cert)
+tls_cert_subject(void * cert, uschar * mod)
 {
 return x509_name_copy(X509_get_subject_name((X509 *)cert));
 }
 
 uschar *
-tls_cert_version(void * cert)
+tls_cert_version(void * cert, uschar * mod)
 {
 return string_sprintf("%d", X509_get_version((X509 *)cert));
 }
@@ -211,58 +211,86 @@ return cp3;
 }
 
 uschar *
-tls_cert_subject_altname(void * cert)
+tls_cert_subject_altname(void * cert, uschar * mod)
 {
-uschar * cp;
+uschar * list = NULL;
 STACK_OF(GENERAL_NAME) * san = (STACK_OF(GENERAL_NAME) *)
   X509_get_ext_d2i((X509 *)cert, NID_subject_alt_name, NULL, NULL);
+uschar sep = '\n';
+uschar * tag = US"";
+uschar * ele;
+int match = -1;
 
 if (!san) return NULL;
+
+while (mod)
+  {
+  if (*mod == '>' && *++mod) sep = *mod++;
+  else if (Ustrcmp(mod, "dns")==0) { match = GEN_DNS; mod += 3; }
+  else if (Ustrcmp(mod, "uri")==0) { match = GEN_URI; mod += 3; }
+  else if (Ustrcmp(mod, "mail")==0) { match = GEN_EMAIL; mod += 4; }
+  else continue;
+
+  if (*mod++ != ',')
+    break;
+  }
 
 while (sk_GENERAL_NAME_num(san) > 0)
   {
   GENERAL_NAME * namePart = sk_GENERAL_NAME_pop(san);
+  if (match != -1 && match != namePart->type)
+    continue;
   switch (namePart->type)
     {
+    case GEN_DNS:
+      tag = US"DNS";
+      ele = ASN1_STRING_data(namePart->d.dNSName);
+      break;
     case GEN_URI:
-      cp = string_sprintf("URI=%s",
-	    ASN1_STRING_data(namePart->d.uniformResourceIdentifier));
-      return cp;
+      tag = US"URI";
+      ele = ASN1_STRING_data(namePart->d.uniformResourceIdentifier);
+      break;
     case GEN_EMAIL:
-      cp = string_sprintf("email=%s",
-	    ASN1_STRING_data(namePart->d.rfc822Name));
-      return cp;
+      tag = US"MAIL";
+      ele = ASN1_STRING_data(namePart->d.rfc822Name);
+      break;
     default:
-      cp = string_sprintf("Unrecognisable");
-      return cp;
+      continue;	/* ignore unrecognised types */
     }
+  list = string_append_listele(list, sep,
+	  match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 
-/* sk_GENERAL_NAME_pop_free(gen_names, GENERAL_NAME_free);  ??? */
-return cp;
+sk_GENERAL_NAME_free(san);
+return list;
 }
 
 uschar *
-tls_cert_ocsp_uri(void * cert)
+tls_cert_ocsp_uri(void * cert, uschar * mod)
 {
 STACK_OF(ACCESS_DESCRIPTION) * ads = (STACK_OF(ACCESS_DESCRIPTION) *)
   X509_get_ext_d2i((X509 *)cert, NID_info_access, NULL, NULL);
 int adsnum = sk_ACCESS_DESCRIPTION_num(ads);
 int i;
+uschar sep = '\n';
+uschar * list = NULL;
+
+if (mod)
+  if (*mod == '>' && *++mod) sep = *mod++;
 
 for (i = 0; i < adsnum; i++)
   {
   ACCESS_DESCRIPTION * ad = sk_ACCESS_DESCRIPTION_value(ads, i);
 
   if (ad && OBJ_obj2nid(ad->method) == NID_ad_OCSP)
-    return string_copy( ASN1_STRING_data(ad->location->d.ia5) );
+    list = string_append_listele(list, sep,
+	      ASN1_STRING_data(ad->location->d.ia5));
   }
-
-return NULL;
+return list;
 }
 
 uschar *
-tls_cert_crl_uri(void * cert)
+tls_cert_crl_uri(void * cert, uschar * mod)
 {
 STACK_OF(DIST_POINT) * dps = (STACK_OF(DIST_POINT) *)
   X509_get_ext_d2i((X509 *)cert,  NID_crl_distribution_points,
@@ -270,6 +298,11 @@ STACK_OF(DIST_POINT) * dps = (STACK_OF(DIST_POINT) *)
 DIST_POINT * dp;
 int dpsnum = sk_DIST_POINT_num(dps);
 int i;
+uschar sep = '\n';
+uschar * list = NULL;
+
+if (mod)
+  if (*mod == '>' && *++mod) sep = *mod++;
 
 if (dps) for (i = 0; i < dpsnum; i++)
   if ((dp = sk_DIST_POINT_value(dps, i)))
@@ -283,10 +316,10 @@ if (dps) for (i = 0; i < dpsnum; i++)
       if (  (np = sk_GENERAL_NAME_value(names, j))
 	 && np->type == GEN_URI
 	 )
-	return string_copy(ASN1_STRING_data(
-	  np->d.uniformResourceIdentifier));
+	list = string_append_listele(list, sep,
+		ASN1_STRING_data(np->d.uniformResourceIdentifier));
     }
-return NULL;
+return list;
 }
 
 /* vi: aw ai sw=2

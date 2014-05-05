@@ -26,18 +26,18 @@ extern const char *
 extern const char *
                std_dh_prime_named(const uschar *);
 
-extern uschar * tls_cert_crl_uri(void *);
+extern uschar * tls_cert_crl_uri(void *, uschar * mod);
 extern uschar * tls_cert_ext_by_oid(void *, uschar *, int);
-extern uschar * tls_cert_issuer(void *);
-extern uschar * tls_cert_not_before(void *);
-extern uschar * tls_cert_not_after(void *);
-extern uschar * tls_cert_ocsp_uri(void *);
-extern uschar * tls_cert_serial_number(void *);
-extern uschar * tls_cert_signature(void *);
-extern uschar * tls_cert_signature_algorithm(void *);
-extern uschar * tls_cert_subject(void *);
-extern uschar * tls_cert_subject_altname(void *);
-extern uschar * tls_cert_version(void *);
+extern uschar * tls_cert_issuer(void *, uschar * mod);
+extern uschar * tls_cert_not_before(void *, uschar * mod);
+extern uschar * tls_cert_not_after(void *, uschar * mod);
+extern uschar * tls_cert_ocsp_uri(void *, uschar * mod);
+extern uschar * tls_cert_serial_number(void *, uschar * mod);
+extern uschar * tls_cert_signature(void *, uschar * mod);
+extern uschar * tls_cert_signature_algorithm(void *, uschar * mod);
+extern uschar * tls_cert_subject(void *, uschar * mod);
+extern uschar * tls_cert_subject_altname(void *, uschar * mod);
+extern uschar * tls_cert_version(void *, uschar * mod);
 
 extern int     tls_client_start(int, host_item *, address_item *,
                  uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,

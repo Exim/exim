@@ -45,9 +45,9 @@ logger:
          logwrite =  IN  <${certextract {issuer}	{$tls_out_peercert}}>
          logwrite =  NB  <${certextract {notbefore}	{$tls_out_peercert}}>
          logwrite =  NA  <${certextract {notafter}	{$tls_out_peercert}}>
-         logwrite =  SA  <${certextract {signature_algorithm}{$tls_out_peercert}}>
+         logwrite =  SA  <${certextract {sig_algorithm} {$tls_out_peercert}}>
          logwrite =  SG  <${certextract {signature}	{$tls_out_peercert}}>
-	 logwrite =       ${certextract {subject_altname}{$tls_out_peercert}{SAN <$value>}{(no SAN)}}
+	 logwrite =       ${certextract {subj_altname}  {$tls_out_peercert}{SAN <$value>}{(no SAN)}}
 #	 logwrite =       ${certextract {ocsp_uri}	{$tls_out_peercert} {OCU <$value>}{(no OCU)}}
 	 logwrite =       ${certextract {crl_uri}	{$tls_out_peercert} {CRU <$value>}{(no CRU)}}
 

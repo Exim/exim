@@ -33,7 +33,7 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Jan  1 12:34:05 2038 GMT>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <undefined>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <    Signature Algorithm: sha1WithRSAEncryption\n         56:3a:a4:3c:cb:eb:b8:27:c2:90:08:74:13:88:dc:48:c6:b5:\n         2c:e5:26:be:5b:91:d4:67:e7:3c:49:12:d7:47:30:df:98:db:\n         58:ed:18:a8:7d:4b:db:97:48:f5:5c:7f:70:b9:37:63:33:f1:\n         24:62:72:92:60:f5:6e:da:b6:bc:73:c8:c2:dc:d6:95:9a:bd:\n         16:16:a2:ef:0a:f1:d7:41:68:f6:ad:98:5a:d0:ff:d9:1b:51:\n         9f:59:ce:2f:3d:84:d0:ee:e8:2b:eb:9b:32:1a:0e:02:3e:cc:\n         30:89:44:09:2a:75:81:46:a7:b6:ed:7d:41:eb:5a:63:fa:9c:\n         58:ef\n>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <Unrecognisable>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=server1.example.com;DNS=alternatename2.server1.example.com;DNS=alternatename.server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 OCU <http://oscp/example.com/>
 1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

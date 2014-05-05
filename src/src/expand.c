@@ -1185,26 +1185,28 @@ return string_nextinlist(&list, &sep, NULL, 0);
 
 
 /* Certificate fields, by name.  Worry about by-OID later */
+/* Names are chosen to not have common prefixes */
 
 #ifdef SUPPORT_TLS
 typedef struct
 {
 uschar * name;
-uschar * (*getfn)(void * cert);
+int      namelen;
+uschar * (*getfn)(void * cert, uschar * mod);
 } certfield;
 static certfield certfields[] =
 {			/* linear search; no special order */
-  { US"version",	&tls_cert_version },
-  { US"serial_number",	&tls_cert_serial_number },
-  { US"subject",	&tls_cert_subject },
-  { US"notbefore",	&tls_cert_not_before },
-  { US"notafter",	&tls_cert_not_after },
-  { US"issuer",		&tls_cert_issuer },
-  { US"signature",	&tls_cert_signature },
-  { US"signature_algorithm",	&tls_cert_signature_algorithm },
-  { US"subject_altname",	&tls_cert_subject_altname },
-  { US"ocsp_uri",	&tls_cert_ocsp_uri },
-  { US"crl_uri",	&tls_cert_crl_uri },
+  { US"version",	 7,  &tls_cert_version },
+  { US"serial_number",	 13, &tls_cert_serial_number },
+  { US"subject",	 7,  &tls_cert_subject },
+  { US"notbefore",	 9,  &tls_cert_not_before },
+  { US"notafter",	 8,  &tls_cert_not_after },
+  { US"issuer",		 6,  &tls_cert_issuer },
+  { US"signature",	 9,  &tls_cert_signature },
+  { US"sig_algorithm",	 13, &tls_cert_signature_algorithm },
+  { US"subj_altname",    12, &tls_cert_subject_altname },
+  { US"ocsp_uri",	 8,  &tls_cert_ocsp_uri },
+  { US"crl_uri",	 7,  &tls_cert_crl_uri },
 };
 
 static uschar *
@@ -1236,8 +1238,12 @@ if (*field >= '0' && *field <= '9')
 for(cp = certfields;
     cp < certfields + nelements(certfields);
     cp++)
-  if (Ustrcmp(cp->name, field) == 0)
-    return (*cp->getfn)( *(void **)vp->value );
+  if (Ustrncmp(cp->name, field, cp->namelen) == 0)
+    {
+    uschar * modifier = *(field += cp->namelen) == ','
+      ? ++field : NULL;
+    return (*cp->getfn)( *(void **)vp->value, modifier );
+    }
 
 expand_string_message = 
   string_sprintf("bad field selector \"%s\" for certextract", field);
@@ -7007,7 +7013,6 @@ return 0;
 
 #endif
 
-/*
- vi: aw ai sw=2
+/* vi: aw ai sw=2
 */
 /* End of expand.c */
