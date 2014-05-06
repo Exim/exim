@@ -102,6 +102,10 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts_override) },
   { "hosts_randomize",      opt_bool,
       (void *)offsetof(smtp_transport_options_block, hosts_randomize) },
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_OCSP)
+  { "hosts_request_ocsp",   opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_request_ocsp) },
+#endif
   { "hosts_require_auth",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_auth) },
 #ifdef SUPPORT_TLS
@@ -196,6 +200,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_try_prdr */
 #endif
 #ifdef EXPERIMENTAL_OCSP
+  US"*",               /* hosts_request_ocsp */
   NULL,                /* hosts_require_ocsp */
 #endif
   NULL,                /* hosts_require_tls */

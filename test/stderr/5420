@@ -81,6 +81,7 @@ expanding: ${if eq {$address_data}{userz}{*}{:}}
   SMTP>> STARTTLS
   SMTP<< 220 TLS go ahead
 127.0.0.1 in hosts_require_ocsp? no (option unset)
+127.0.0.1 in hosts_request_ocsp? yes (matched "*")
  in tls_verify_hosts? no (option unset)
  in tls_try_verify_hosts? no (option unset)
   SMTP>> EHLO myhost.test.ex

@@ -1,10 +1,10 @@
 # OCSP stapling, client
 #
 #
-# Client works when we don't demand OCSP stapling
+# Client works when we request but don't require OCSP stapling and none comes
 exim -bd -oX PORT_D -DSERVER=server -DOCSP=""
 ****
-exim nostaple@test.ex
+exim norequire@test.ex
 test message.
 ****
 sleep 1
@@ -13,10 +13,18 @@ killdaemon
 #
 #
 #
-# Client accepts good stapled info
+# Client works when we don't request OCSP stapling
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
+exim nostaple@test.ex
+test message.
+****
+#
+#
+#
+#
+# Client accepts good stapled info
 exim CALLER@test.ex
 test message.
 ****
@@ -25,7 +33,7 @@ killdaemon
 #
 #
 #
-# Client fails on lack of requested stapled info
+# Client fails on lack of required stapled info
 exim -bd -oX PORT_D -DSERVER=server -DOCSP=""
 ****
 exim CALLER@test.ex

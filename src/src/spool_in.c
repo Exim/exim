@@ -289,6 +289,7 @@ tls_in.ourcert = NULL;
 tls_in.peercert = NULL;
 tls_in.peerdn = NULL;
 tls_in.sni = NULL;
+tls_in.ocsp = OCSP_NOT_REQ;
 #endif
 
 #ifdef WITH_CONTENT_SCAN
@@ -560,6 +561,8 @@ for (;;)
       tls_in.peerdn = string_unprinting(string_copy(big_buffer + 12));
     else if (Ustrncmp(p, "ls_sni", 6) == 0)
       tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
+    else if (Ustrncmp(p, "ls_ocsp", 7) == 0)
+      tls_in.ocsp = big_buffer[10] - '0';
     break;
     #endif
 

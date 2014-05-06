@@ -242,6 +242,7 @@ if (tls_in.ourcert)
   (void) tls_export_cert(big_buffer, big_buffer_size, tls_in.ourcert);
   fprintf(f, "-tls_ourcert %s\n", CS big_buffer);
   }
+if (tls_in.ocsp)	 fprintf(f, "-tls_ocsp %d\n",   tls_in.ocsp);
 #endif
 
 /* To complete the envelope, write out the tree of non-recipients, followed by

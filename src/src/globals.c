@@ -109,7 +109,8 @@ tls_support tls_in = {
  NULL, /* tls_ourcert */
  NULL, /* tls_peercert */
  NULL, /* tls_peerdn */
- NULL  /* tls_sni */
+ NULL, /* tls_sni */
+ 0     /* tls_ocsp */
 };
 tls_support tls_out = {
  -1,   /* tls_active */
@@ -121,7 +122,8 @@ tls_support tls_out = {
  NULL, /* tls_ourcert */
  NULL, /* tls_peercert */
  NULL, /* tls_peerdn */
- NULL  /* tls_sni */
+ NULL, /* tls_sni */
+ 0     /* tls_ocsp */
 };
 
 

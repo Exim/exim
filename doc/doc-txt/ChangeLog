@@ -107,6 +107,10 @@ TL/10 Bugzilla 1454: New -oMm option to pass message reference to Exim.
 JH/20 New expansion variables tls_(in,out)_(our,peer)cert, and expansion item
       certextract with support for various fields.  Bug 1358.
 
+JH/21 Observability of OCSP via variables tls_(in,out)_ocsp.  Stapling
+      is requested by default, modifiable by smtp transport option
+      hosts_request_ocsp;
+
 
 Exim version 4.82
 -----------------

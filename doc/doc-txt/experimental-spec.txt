@@ -84,14 +84,21 @@ contents are always valid.  Exim will expand the "tls_ocsp_file" option
 on each connection, so a new file will be handled transparently on the
 next connection.
 
-Exim will check for a valid next update timestamp in the OCSP proof;
-if not present, or if the proof has expired, it will be ignored.
+Under OpenSSL Exim will check for a valid next update timestamp in the
+OCSP proof; if not present, or if the proof has expired, it will be
+ignored.
 
-Also, given EXPERIMENTAL_OCSP, the smtp transport gains
-a "hosts_require_ocsp" option; a host-list for which an OCSP Stapling
-is requested and required for the connection to proceed.  The host(s)
-should also be in "hosts_require_tls", and "tls_verify_certificates"
-configured for the transport.
+Also, given EXPERIMENTAL_OCSP, the smtp transport gains two options:
+- "hosts_require_ocsp"; a host-list for which an OCSP Stapling
+is requested and required for the connection to proceed.  The default
+value is empty.
+- "hosts_request_ocsp"; a host-list for which (additionally) an OCSP
+Stapling is requested (but not necessarily verified).  The default
+value is "*" meaning that requests are made unless configured
+otherwise.
+
+The host(s) should also be in "hosts_require_tls", and
+"tls_verify_certificates" configured for the transport.
 
 For the client to be able to verify the stapled OCSP the server must
 also supply, in its stapled information, any intermediate

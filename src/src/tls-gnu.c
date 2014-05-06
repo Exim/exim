@@ -101,6 +101,7 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_verify_certificates;
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
+  uschar *exp_tls_ocsp_file;
 
   tls_support *tlsp;	/* set in tls_init() */
 
@@ -115,7 +116,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   NULL, NULL, NULL, VERIFY_NONE, -1, -1, FALSE, FALSE, FALSE,
   NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL, NULL, NULL,
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL,
   NULL, 0, 0, 0, 0,
 };
@@ -203,6 +204,10 @@ static void exim_gnutls_logger_cb(int level, const char *message);
 
 static int exim_sni_handling_cb(gnutls_session_t session);
 
+#ifdef EXPERIMENTAL_OCSP
+static int server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
+  gnutls_datum_t * ocsp_response);
+#endif
 
 
 
@@ -791,18 +796,18 @@ if (  !host	/* server */
    && tls_ocsp_file
    )
   {
-  uschar * expanded;
-  int rc;
-
-  if (!expand_check(tls_ocsp_file, US"tls_ocsp_file", &expanded))
+  if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
+	&state->exp_tls_ocsp_file))
     return DEFER;
 
-  /* Lazy way; would like callback to emit debug on actual response */
+  /* Use the full callback method for stapling just to get observability.
+  More efficient would be to read the file once only, if it never changed
+  (due to SNI). Would need restart on file update, or watch datestamp.  */
 
-  rc = gnutls_certificate_set_ocsp_status_request_file(state->x509_cred,
-      expanded, 0);
-  exim_gnutls_err_check(US"gnutls_certificate_set_ocsp_status_request_file");
-  DEBUG(D_tls) debug_printf("Set OCSP response file %s\n", expanded);
+  gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
+    server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
+
+  DEBUG(D_tls) debug_printf("Set OCSP response file %s\n", &state->exp_tls_ocsp_file);
   }
 #endif
 
@@ -1433,6 +1438,31 @@ return 0;
 
 
 
+#ifdef EXPERIMENTAL_OCSP
+
+static int
+server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
+  gnutls_datum_t * ocsp_response)
+{
+int ret;
+
+tls_in.ocsp = OCSP_NOT_RESP;
+if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
+  {
+  DEBUG(D_tls) debug_printf("Failed to load ocsp stapling file %s\n",
+			      (char *)ptr);
+  return GNUTLS_E_NO_CERTIFICATE_STATUS;
+  }
+
+tls_in.ocsp = OCSP_NOT_VFY;
+return 0;
+}
+
+#endif
+
+
+
+
 
 /* ------------------------------------------------------------------------ */
 /* Exported functions */
@@ -1526,8 +1556,8 @@ if (!state->tlsp->on_connect)
 that the GnuTLS library doesn't. */
 
 gnutls_transport_set_ptr2(state->session,
-    (gnutls_transport_ptr)fileno(smtp_in),
-    (gnutls_transport_ptr)fileno(smtp_out));
+    (gnutls_transport_ptr)(long) fileno(smtp_in),
+    (gnutls_transport_ptr)(long) fileno(smtp_out));
 state->fd_in = fileno(smtp_in);
 state->fd_out = fileno(smtp_out);
 
@@ -1628,6 +1658,9 @@ exim_gnutls_state_st *state = NULL;
 #ifdef EXPERIMENTAL_OCSP
 BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
   NULL, host->name, host->address, NULL) == OK;
+BOOL request_ocsp = require_ocsp ? TRUE
+  : verify_check_this_host(&ob->hosts_request_ocsp,
+      NULL, host->name, host->address, NULL) == OK;
 #endif
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
@@ -1684,17 +1717,18 @@ else
   }
 
 #ifdef EXPERIMENTAL_OCSP	/* since GnuTLS 3.1.3 */
-if (require_ocsp)
+if (request_ocsp)
   {
   DEBUG(D_tls) debug_printf("TLS: will request OCSP stapling\n");
   if ((rc = gnutls_ocsp_status_request_enable_client(state->session,
 		    NULL, 0, NULL)) != OK)
     return tls_error(US"cert-status-req",
 		    gnutls_strerror(rc), state->host);
+  tls_out.ocsp = OCSP_NOT_RESP;
   }
 #endif
 
-gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr)fd);
+gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr)(long) fd);
 state->fd_in = fd;
 state->fd_out = fd;
 
@@ -1746,6 +1780,7 @@ if (require_ocsp)
   if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)
     return tls_error(US"certificate status check failed", NULL, state->host);
   DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
+  tls_out.ocsp = OCSP_VFIED;
   }
 #endif
 

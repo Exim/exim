@@ -14,6 +14,8 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+acl_smtp_connect = check_connect
+acl_smtp_mail = check_mail
 acl_smtp_rcpt = check_recipient
 
 log_selector = +tls_peerdn
@@ -36,6 +38,12 @@ tls_ocsp_file = OCSP
 # ------ ACL ------
 
 begin acl
+
+check_connect:
+  accept   logwrite = acl_conn: ocsp in status: $tls_in_ocsp
+
+check_mail:
+  accept   logwrite = acl_mail: ocsp in status: $tls_in_ocsp
 
 check_recipient:
   deny     message = certificate not verified: peerdn=$tls_peerdn

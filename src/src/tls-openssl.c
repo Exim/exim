@@ -97,7 +97,8 @@ typedef struct tls_ext_ctx_cb {
       OCSP_RESPONSE *response;
     } server;
     struct {
-      X509_STORE    *verify_store;
+      X509_STORE    *verify_store;	/* non-null if status requested */
+      BOOL	    verify_required;
     } client;
   } u_ocsp;
 #endif
@@ -797,15 +798,18 @@ else
   DEBUG(D_tls) debug_printf("Received TLS status request (OCSP stapling); %s response.",
     cbinfo->u_ocsp.server.response ? "have" : "lack");
 
+tls_in.ocsp = OCSP_NOT_RESP;
 if (!cbinfo->u_ocsp.server.response)
   return SSL_TLSEXT_ERR_NOACK;
 
 response_der = NULL;
-response_der_len = i2d_OCSP_RESPONSE(cbinfo->u_ocsp.server.response, &response_der);
+response_der_len = i2d_OCSP_RESPONSE(cbinfo->u_ocsp.server.response,
+		      &response_der);
 if (response_der_len <= 0)
   return SSL_TLSEXT_ERR_NOACK;
 
 SSL_set_tlsext_status_ocsp_resp(server_ssl, response_der, response_der_len);
+tls_in.ocsp = OCSP_VFIED;
 return SSL_TLSEXT_ERR_OK;
 }
 
@@ -832,12 +836,15 @@ DEBUG(D_tls) debug_printf("Received TLS status response (OCSP stapling):");
 len = SSL_get_tlsext_status_ocsp_resp(s, &p);
 if(!p)
  {
-  if (log_extra_selector & LX_tls_cipher)
-    log_write(0, LOG_MAIN, "Received TLS status response, null content");
+  /* Expect this when we requested ocsp but got none */
+  if (  cbinfo->u_ocsp.client.verify_required
+     && log_extra_selector & LX_tls_cipher)
+    log_write(0, LOG_MAIN, "Received TLS status callback, null content");
   else
     DEBUG(D_tls) debug_printf(" null\n");
-  return 0;	/* This is the fail case for require-ocsp; none from server */
+  return cbinfo->u_ocsp.client.verify_required ? 0 : 1;
  }
+tls_out.ocsp = OCSP_NOT_VFY;
 if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
  {
   if (log_extra_selector & LX_tls_cipher)
@@ -878,11 +885,12 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
     /* Use the chain that verified the server cert to verify the stapled info */
     /* DEBUG(D_tls) x509_store_dump_cert_s_names(cbinfo->u_ocsp.client.verify_store); */
 
-    if ((i = OCSP_basic_verify(bs, NULL, cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
+    if ((i = OCSP_basic_verify(bs, NULL,
+	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       BIO_printf(bp, "OCSP response verify failure\n");
       ERR_print_errors(bp);
-      i = 0;
+      i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
       goto out;
       }
 
@@ -894,39 +902,48 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 
       if (sk_OCSP_SINGLERESP_num(sresp) != 1)
         {
-        log_write(0, LOG_MAIN, "OCSP stapling with multiple responses not handled");
+        log_write(0, LOG_MAIN, "OCSP stapling "
+	    "with multiple responses not handled");
+	i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
         goto out;
         }
       single = OCSP_resp_get0(bs, 0);
-      status = OCSP_single_get0_status(single, &reason, &rev, &thisupd, &nextupd);
+      status = OCSP_single_get0_status(single, &reason, &rev,
+		  &thisupd, &nextupd);
       }
 
-    i = 0;
     DEBUG(D_tls) time_print(bp, "This OCSP Update", thisupd);
     DEBUG(D_tls) if(nextupd) time_print(bp, "Next OCSP Update", nextupd);
-    if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
+    if (!OCSP_check_validity(thisupd, nextupd,
+	  EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
       {
       DEBUG(D_tls) ERR_print_errors(bp);
       log_write(0, LOG_MAIN, "Server OSCP dates invalid");
-      goto out;
+      i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
       }
-
-    DEBUG(D_tls) BIO_printf(bp, "Certificate status: %s\n", OCSP_cert_status_str(status));
-    switch(status)
+    else
       {
-      case V_OCSP_CERTSTATUS_GOOD:
-        i = 1;
-        break;
-      case V_OCSP_CERTSTATUS_REVOKED:
-        log_write(0, LOG_MAIN, "Server certificate revoked%s%s",
-            reason != -1 ? "; reason: " : "", reason != -1 ? OCSP_crl_reason_str(reason) : "");
-        DEBUG(D_tls) time_print(bp, "Revocation Time", rev);
-        i = 0;
-        break;
-      default:
-        log_write(0, LOG_MAIN, "Server certificate status unknown, in OCSP stapling");
-        i = 0;
-        break;
+      DEBUG(D_tls) BIO_printf(bp, "Certificate status: %s\n",
+		    OCSP_cert_status_str(status));
+      switch(status)
+	{
+	case V_OCSP_CERTSTATUS_GOOD:
+	  i = 1;
+	  tls_out.ocsp = OCSP_VFIED;
+	  break;
+	case V_OCSP_CERTSTATUS_REVOKED:
+	  log_write(0, LOG_MAIN, "Server certificate revoked%s%s",
+	      reason != -1 ? "; reason: " : "",
+	      reason != -1 ? OCSP_crl_reason_str(reason) : "");
+	  DEBUG(D_tls) time_print(bp, "Revocation Time", rev);
+	  i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
+	  break;
+	default:
+	  log_write(0, LOG_MAIN,
+	      "Server certificate status unknown, in OCSP stapling");
+	  i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
+	  break;
+	}
       }
   out:
     BIO_free(bp);
@@ -1497,12 +1514,15 @@ static uschar cipherbuf[256];
 #ifdef EXPERIMENTAL_OCSP
 BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
   NULL, host->name, host->address, NULL) == OK;
+BOOL request_ocsp = require_ocsp ? TRUE
+  : verify_check_this_host(&ob->hosts_request_ocsp,
+      NULL, host->name, host->address, NULL) == OK;
 #endif
 
 rc = tls_init(&client_ctx, host, NULL,
     ob->tls_certificate, ob->tls_privatekey,
 #ifdef EXPERIMENTAL_OCSP
-    require_ocsp ? US"" : NULL,
+    (void *)(long)request_ocsp,
 #endif
     addr, &client_static_cbinfo);
 if (rc != OK) return rc;
@@ -1578,8 +1598,12 @@ if (ob->tls_sni)
 #ifdef EXPERIMENTAL_OCSP
 /* Request certificate status at connection-time.  If the server
 does OCSP stapling we will get the callback (set in tls_init()) */
-if (require_ocsp)
+if (request_ocsp)
+  {
   SSL_set_tlsext_status_type(client_ssl, TLSEXT_STATUSTYPE_ocsp);
+  client_static_cbinfo->u_ocsp.client.verify_required = require_ocsp;
+  tls_out.ocsp = OCSP_NOT_RESP;
+  }
 #endif
 
 /* There doesn't seem to be a built-in timeout on connection. */

@@ -89,6 +89,12 @@ typedef struct {
   void	 *peercert;           /* Certificate of peer, binary */
   uschar *peerdn;             /* DN from peer */
   uschar *sni;                /* Server Name Indication */
+  enum {
+    OCSP_NOT_REQ=0,		/* not requested */
+    OCSP_NOT_RESP,		/* no response to request */
+    OCSP_NOT_VFY,		/* response not verified */
+    OCSP_VFIED			/* verified */
+    }     ocsp;		      /* Stapled OCSP status */
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;
