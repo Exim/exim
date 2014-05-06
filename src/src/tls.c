@@ -17,6 +17,7 @@ functions from the OpenSSL or GNU TLS libraries. */
 
 
 #include "exim.h"
+#include "transports/smtp.h"
 
 /* This module is compiled only when it is specifically requested in the
 build-time configuration. However, some compilers don't like compiling empty

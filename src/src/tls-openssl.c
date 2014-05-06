@@ -1477,17 +1477,7 @@ Argument:
   fd               the fd of the connection
   host             connected host (for messages)
   addr             the first address
-  certificate      certificate file
-  privatekey       private key file
-  sni              TLS SNI to send to remote host
-  verify_certs     file for certificate verify
-  crl              file containing CRL
-  require_ciphers  list of allowed ciphers
-  dh_min_bits      minimum number of bits acceptable in server's DH prime
-                   (unused in OpenSSL)
-  timeout          startup timeout
-  verify_hosts     mandatory client verification 
-  try_verify_hosts optional client verification
+  ob               smtp transport options
 
 Returns:           OK on success
                    FAIL otherwise - note that tls_error() will not give DEFER
@@ -1496,26 +1486,21 @@ Returns:           OK on success
 
 int
 tls_client_start(int fd, host_item *host, address_item *addr,
-  uschar *certificate, uschar *privatekey, uschar *sni,
-  uschar *verify_certs, uschar *crl,
-  uschar *require_ciphers,
-#ifdef EXPERIMENTAL_OCSP
-  uschar *hosts_require_ocsp,
-#endif
-  int dh_min_bits ARG_UNUSED, int timeout,
-  uschar *verify_hosts, uschar *try_verify_hosts)
+  void *v_ob)
 {
+smtp_transport_options_block * ob = v_ob;
 static uschar txt[256];
 uschar *expciphers;
 X509* server_cert;
 int rc;
 static uschar cipherbuf[256];
 #ifdef EXPERIMENTAL_OCSP
-BOOL require_ocsp = verify_check_this_host(&hosts_require_ocsp,
+BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
   NULL, host->name, host->address, NULL) == OK;
 #endif
 
-rc = tls_init(&client_ctx, host, NULL, certificate, privatekey,
+rc = tls_init(&client_ctx, host, NULL,
+    ob->tls_certificate, ob->tls_privatekey,
 #ifdef EXPERIMENTAL_OCSP
     require_ocsp ? US"" : NULL,
 #endif
@@ -1525,7 +1510,8 @@ if (rc != OK) return rc;
 tls_out.certificate_verified = FALSE;
 client_verify_callback_called = FALSE;
 
-if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
+if (!expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
+    &expciphers))
   return FAIL;
 
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
@@ -1542,30 +1528,33 @@ if (expciphers != NULL)
   }
 
 /* stick to the old behaviour for compatibility if tls_verify_certificates is 
-   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only 
+   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
    the specified host patterns if one of them is defined */
-if (((verify_hosts == NULL) && (try_verify_hosts == NULL)) ||
-    (verify_check_host(&verify_hosts) == OK))
+if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
+    (verify_check_host(&ob->tls_verify_hosts) == OK))
   {
-  rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE, verify_callback_client);
-  if (rc != OK) return rc;
+  if ((rc = setup_certs(client_ctx, ob->tls_verify_certificates,
+	ob->tls_crl, host, FALSE, verify_callback_client)) != OK)
+    return rc;
   client_verify_optional = FALSE;
   }
-else if (verify_check_host(&try_verify_hosts) == OK)
+else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
   {
-  rc = setup_certs(client_ctx, verify_certs, crl, host, TRUE, verify_callback_client);
-  if (rc != OK) return rc;
+  if ((rc = setup_certs(client_ctx, ob->tls_verify_certificates,
+	ob->tls_crl, host, TRUE, verify_callback_client)) != OK)
+    return rc;
   client_verify_optional = TRUE;
   }
 
-if ((client_ssl = SSL_new(client_ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
+if ((client_ssl = SSL_new(client_ctx)) == NULL)
+  return tls_error(US"SSL_new", host, NULL);
 SSL_set_session_id_context(client_ssl, sid_ctx, Ustrlen(sid_ctx));
 SSL_set_fd(client_ssl, fd);
 SSL_set_connect_state(client_ssl);
 
-if (sni)
+if (ob->tls_sni)
   {
-  if (!expand_check(sni, US"tls_sni", &tls_out.sni))
+  if (!expand_check(ob->tls_sni, US"tls_sni", &tls_out.sni))
     return FAIL;
   if (tls_out.sni == NULL)
     {
@@ -1597,7 +1586,7 @@ if (require_ocsp)
 
 DEBUG(D_tls) debug_printf("Calling SSL_connect\n");
 sigalrm_seen = FALSE;
-alarm(timeout);
+alarm(ob->command_timeout);
 rc = SSL_connect(client_ssl);
 alarm(0);
 

@@ -636,16 +636,12 @@ else
        /* STARTTLS accepted or ssl-on-connect: try to negotiate a TLS session. */
       else
         {
-        int rc = tls_client_start(inblock.sock, host, addr,
-  	 ob->tls_certificate, ob->tls_privatekey,
-  	 ob->tls_sni,
-  	 ob->tls_verify_certificates, ob->tls_crl,
-  	 ob->tls_require_ciphers,
-#ifdef EXPERIMENTAL_OCSP
-  	 ob->hosts_require_ocsp,
-#endif
-	 ob->tls_dh_min_bits, callout,
-         ob->tls_verify_hosts, ob->tls_try_verify_hosts);
+	int oldtimeout = ob->command_timeout;
+	int rc;
+
+	ob->command_timeout = callout;
+        rc = tls_client_start(inblock.sock, host, addr, ob);
+	ob->command_timeout = oldtimeout;
 
         /* TLS negotiation failed; give an error.  Try in clear on a new connection,
            if the options permit it for this host. */

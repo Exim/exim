@@ -1446,22 +1446,7 @@ if (tls_offered && !suppress_tls &&
   else
   TLS_NEGOTIATE:
     {
-    int rc = tls_client_start(inblock.sock,
-      host,
-      addrlist,
-      ob->tls_certificate,
-      ob->tls_privatekey,
-      ob->tls_sni,
-      ob->tls_verify_certificates,
-      ob->tls_crl,
-      ob->tls_require_ciphers,
-#ifdef EXPERIMENTAL_OCSP
-      ob->hosts_require_ocsp,
-#endif
-      ob->tls_dh_min_bits,
-      ob->command_timeout,
-      ob->tls_verify_hosts,
-      ob->tls_try_verify_hosts);
+    int rc = tls_client_start(inblock.sock, host, addrlist, ob);
 
     /* TLS negotiation failed; give an error. From outside, this function may
     be called again to try in clear on a new connection, if the options permit

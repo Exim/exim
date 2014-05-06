@@ -80,6 +80,7 @@ expanding: ${if eq {$address_data}{userz}{*}{:}}
 127.0.0.1 in hosts_verify_avoid_tls? no (end of list)
   SMTP>> STARTTLS
   SMTP<< 220 TLS go ahead
+127.0.0.1 in hosts_require_ocsp? no (option unset)
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800

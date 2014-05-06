@@ -1610,17 +1610,7 @@ Arguments:
   fd                the fd of the connection
   host              connected host (for messages)
   addr              the first address (not used)
-  certificate       certificate file
-  privatekey        private key file
-  sni               TLS SNI to send to remote host
-  verify_certs      file for certificate verify
-  verify_crl        CRL for verify
-  require_ciphers   list of allowed ciphers or NULL
-  hosts_require_ocsp hosts for which to request certificate-status (OCSP)
-  dh_min_bits       minimum number of bits acceptable in server's DH prime
-  timeout           startup timeout
-  verify_hosts      mandatory client verification 
-  try_verify_hosts  optional client verification
+  ob                smtp transport options
 
 Returns:            OK/DEFER/FAIL (because using common functions),
                     but for a client, DEFER and FAIL have the same meaning
@@ -1629,58 +1619,58 @@ Returns:            OK/DEFER/FAIL (because using common functions),
 int
 tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
-    uschar *certificate, uschar *privatekey, uschar *sni,
-    uschar *verify_certs, uschar *verify_crl,
-    uschar *require_ciphers,
-#ifdef EXPERIMENTAL_OCSP
-    uschar *hosts_require_ocsp,
-#endif
-    int dh_min_bits, int timeout,
-    uschar *verify_hosts, uschar *try_verify_hosts)
+    void *v_ob)
 {
+smtp_transport_options_block *ob = v_ob;
 int rc;
 const char *error;
 exim_gnutls_state_st *state = NULL;
 #ifdef EXPERIMENTAL_OCSP
-BOOL require_ocsp = verify_check_this_host(&hosts_require_ocsp,
+BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
   NULL, host->name, host->address, NULL) == OK;
 #endif
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
 
-if ((rc = tls_init(host, certificate, privatekey,
-    sni, verify_certs, verify_crl, require_ciphers, &state)) != OK)
+if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
+    ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
+    ob->tls_require_ciphers, &state)) != OK)
   return rc;
 
-if (dh_min_bits < EXIM_CLIENT_DH_MIN_MIN_BITS)
   {
-  DEBUG(D_tls)
-    debug_printf("WARNING: tls_dh_min_bits far too low, clamping %d up to %d\n",
-        dh_min_bits, EXIM_CLIENT_DH_MIN_MIN_BITS);
-  dh_min_bits = EXIM_CLIENT_DH_MIN_MIN_BITS;
-  }
+  int dh_min_bits = ob->tls_dh_min_bits;
+  if (dh_min_bits < EXIM_CLIENT_DH_MIN_MIN_BITS)
+    {
+    DEBUG(D_tls)
+      debug_printf("WARNING: tls_dh_min_bits far too low,"
+		    " clamping %d up to %d\n",
+	  dh_min_bits, EXIM_CLIENT_DH_MIN_MIN_BITS);
+    dh_min_bits = EXIM_CLIENT_DH_MIN_MIN_BITS;
+    }
 
-DEBUG(D_tls) debug_printf("Setting D-H prime minimum acceptable bits to %d\n",
-    dh_min_bits);
-gnutls_dh_set_prime_bits(state->session, dh_min_bits);
+  DEBUG(D_tls) debug_printf("Setting D-H prime minimum"
+		    " acceptable bits to %d\n",
+      dh_min_bits);
+  gnutls_dh_set_prime_bits(state->session, dh_min_bits);
+  }
 
 /* Stick to the old behaviour for compatibility if tls_verify_certificates is 
 set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 
 if ((  state->exp_tls_verify_certificates
-    && !verify_hosts
-    && !try_verify_hosts
+    && !ob->tls_verify_hosts
+    && !ob->tls_try_verify_hosts
     )
     ||
-    verify_check_host(&verify_hosts) == OK
+    verify_check_host(&ob->tls_verify_hosts) == OK
    )
   {
   DEBUG(D_tls) debug_printf("TLS: server certificate verification required.\n");
   state->verify_requirement = VERIFY_REQUIRED;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
   }
-else if (verify_check_host(&try_verify_hosts) == OK)
+else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
   {
   DEBUG(D_tls) debug_printf("TLS: server certificate verification optional.\n");
   state->verify_requirement = VERIFY_OPTIONAL;
@@ -1697,9 +1687,8 @@ else
 if (require_ocsp)
   {
   DEBUG(D_tls) debug_printf("TLS: will request OCSP stapling\n");
-  rc = gnutls_ocsp_status_request_enable_client(state->session,
-		    NULL, 0, NULL);
-  if (rc != OK)
+  if ((rc = gnutls_ocsp_status_request_enable_client(state->session,
+		    NULL, 0, NULL)) != OK)
     return tls_error(US"cert-status-req",
 		    gnutls_strerror(rc), state->host);
   }
@@ -1713,7 +1702,7 @@ DEBUG(D_tls) debug_printf("about to gnutls_handshake\n");
 /* There doesn't seem to be a built-in timeout on connection. */
 
 sigalrm_seen = FALSE;
-alarm(timeout);
+alarm(ob->command_timeout);
 do
   {
   rc = gnutls_handshake(state->session);
@@ -1747,14 +1736,13 @@ if (require_ocsp)
        && (rc= gnutls_ocsp_resp_print(resp, GNUTLS_OCSP_PRINT_FULL, &printed)) == 0
        )
       {
-      fprintf(stderr, "%.4096s", printed.data);
+      debug_printf("%.4096s", printed.data);
       gnutls_free(printed.data);
       }
     else
       (void) tls_error(US"ocsp decode", gnutls_strerror(rc), state->host);
     }
 
-  fprintf(stderr, "%s: checking ocsp\n", __FUNCTION__);
   if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)
     return tls_error(US"certificate status check failed", NULL, state->host);
   DEBUG(D_tls) debug_printf("Passed OCSP checking\n");

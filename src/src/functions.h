@@ -40,11 +40,7 @@ extern uschar * tls_cert_subject_altname(void *, uschar * mod);
 extern uschar * tls_cert_version(void *, uschar * mod);
 
 extern int     tls_client_start(int, host_item *, address_item *,
-                 uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
-# ifdef EXPERIMENTAL_OCSP
-                 uschar *,
-# endif
-                 int, int, uschar *, uschar *);
+		 void *);
 extern void    tls_close(BOOL, BOOL);
 extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
