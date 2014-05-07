@@ -23,17 +23,17 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 [ip4.ip4.ip4.ip4] Recieved OCSP stapling req; not responding
-1999-03-02 09:44:33 10HmaY-0005vi-00 client claims: ocsp status 1
+1999-03-02 09:44:33 10HmaY-0005vi-00 client claims: ocsp status 1 (notresp)
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:AES256-SHA:256 S=sss id=E10HmaX-0005vi-00@server1.example.com
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <norequire@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmbB-0005vi-00 client claims: ocsp status 0
+1999-03-02 09:44:33 10HmbB-0005vi-00 client claims: ocsp status 0 (notreq)
 1999-03-02 09:44:33 [127.0.0.1] Recieved OCSP stapling req; responding
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:AES256-SHA:256 S=sss id=E10HmaZ-0005vi-00@server1.example.com
 1999-03-02 09:44:33 10HmbB-0005vi-00 => :blackhole: <nostaple@test.ex> R=server
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 client claims: ocsp status 3
+1999-03-02 09:44:33 10HmbC-0005vi-00 client claims: ocsp status 4 (verified)
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@server1.example.com H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLSv1:AES256-SHA:256 S=sss id=E10HmbA-0005vi-00@server1.example.com
 1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <CALLER@test.ex> R=server
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed

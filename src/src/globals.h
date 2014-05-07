@@ -92,7 +92,8 @@ typedef struct {
   enum {
     OCSP_NOT_REQ=0,		/* not requested */
     OCSP_NOT_RESP,		/* no response to request */
-    OCSP_NOT_VFY,		/* response not verified */
+    OCSP_VFY_NOT_TRIED,		/* response not verified */
+    OCSP_FAILED,		/* verify failed */
     OCSP_VFIED			/* verified */
     }     ocsp;		      /* Stapled OCSP status */
 } tls_support;

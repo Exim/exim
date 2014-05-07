@@ -543,6 +543,7 @@ typedef struct address_item {
   void   *ourcert;                /* Certificate offered to peer, binary */
   void   *peercert;               /* Certificate from peer, binary */
   uschar *peerdn;                 /* DN of server's certificate */
+  int    ocsp;			  /* OCSP status of peer cert */
   #endif
 
   uschar *authenticator;	  /* auth driver name used by transport */

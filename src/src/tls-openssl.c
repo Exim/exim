@@ -572,21 +572,21 @@ if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX
   }
 
 supply_response:
-cbinfo->u_ocsp.server.response = resp;
+  cbinfo->u_ocsp.server.response = resp;
 return;
 
 bad:
-if (running_in_test_harness)
-  {
-  extern char ** environ;
-  uschar ** p;
-  for (p = USS environ; *p != NULL; p++)
-    if (Ustrncmp(*p, "EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK", 42) == 0)
-      {
-      DEBUG(D_tls) debug_printf("Supplying known bad OCSP response\n");
-      goto supply_response;
-      }
-  }
+  if (running_in_test_harness)
+    {
+    extern char ** environ;
+    uschar ** p;
+    for (p = USS environ; *p != NULL; p++)
+      if (Ustrncmp(*p, "EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK", 42) == 0)
+	{
+	DEBUG(D_tls) debug_printf("Supplying known bad OCSP response\n");
+	goto supply_response;
+	}
+    }
 return;
 }
 #endif	/*EXPERIMENTAL_OCSP*/
@@ -844,9 +844,10 @@ if(!p)
     DEBUG(D_tls) debug_printf(" null\n");
   return cbinfo->u_ocsp.client.verify_required ? 0 : 1;
  }
-tls_out.ocsp = OCSP_NOT_VFY;
+
 if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
  {
+  tls_out.ocsp = OCSP_FAILED;
   if (log_extra_selector & LX_tls_cipher)
     log_write(0, LOG_MAIN, "Received TLS status response, parse error");
   else
@@ -856,6 +857,7 @@ if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
 
 if(!(bs = OCSP_response_get1_basic(rsp)))
   {
+  tls_out.ocsp = OCSP_FAILED;
   if (log_extra_selector & LX_tls_cipher)
     log_write(0, LOG_MAIN, "Received TLS status response, error parsing response");
   else
@@ -866,7 +868,6 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 
 /* We'd check the nonce here if we'd put one in the request. */
 /* However that would defeat cacheability on the server so we don't. */
-
 
 /* This section of code reworked from OpenSSL apps source;
    The OpenSSL Project retains copyright:
@@ -888,6 +889,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
     if ((i = OCSP_basic_verify(bs, NULL,
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
+      tls_out.ocsp = OCSP_FAILED;
       BIO_printf(bp, "OCSP response verify failure\n");
       ERR_print_errors(bp);
       i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
@@ -902,6 +904,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 
       if (sk_OCSP_SINGLERESP_num(sresp) != 1)
         {
+	tls_out.ocsp = OCSP_FAILED;
         log_write(0, LOG_MAIN, "OCSP stapling "
 	    "with multiple responses not handled");
 	i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
@@ -917,6 +920,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
     if (!OCSP_check_validity(thisupd, nextupd,
 	  EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
       {
+      tls_out.ocsp = OCSP_FAILED;
       DEBUG(D_tls) ERR_print_errors(bp);
       log_write(0, LOG_MAIN, "Server OSCP dates invalid");
       i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
@@ -928,10 +932,11 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
       switch(status)
 	{
 	case V_OCSP_CERTSTATUS_GOOD:
-	  i = 1;
 	  tls_out.ocsp = OCSP_VFIED;
+	  i = 1;
 	  break;
 	case V_OCSP_CERTSTATUS_REVOKED:
+	  tls_out.ocsp = OCSP_FAILED;
 	  log_write(0, LOG_MAIN, "Server certificate revoked%s%s",
 	      reason != -1 ? "; reason: " : "",
 	      reason != -1 ? OCSP_crl_reason_str(reason) : "");
@@ -939,6 +944,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 	  i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
 	  break;
 	default:
+	  tls_out.ocsp = OCSP_FAILED;
 	  log_write(0, LOG_MAIN,
 	      "Server certificate status unknown, in OCSP stapling");
 	  i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;

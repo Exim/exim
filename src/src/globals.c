@@ -341,6 +341,7 @@ address_item address_defaults = {
   NULL,			/* ourcert */
   NULL,			/* peercert */
   NULL,                 /* peerdn */
+  OCSP_NOT_REQ,         /* ocsp */
   #endif
   NULL,			/* authenticator */
   NULL,			/* auth_id */

@@ -718,6 +718,7 @@ uschar *s;              /* building log lines;   */
 void *reset_point;      /* released afterwards.  */
 
 
+DEBUG(D_deliver) debug_printf("B cipher %s\n", addr->cipher);
 /* Log the delivery on the main log. We use an extensible string to build up
 the log line, and reset the store afterwards. Remote deliveries should always
 have a pointer to the host item that succeeded; local deliveries can have a
@@ -734,6 +735,7 @@ pointer to a single host item in their host list, for use by the transport. */
 
 s = reset_point = store_get(size);
 
+DEBUG(D_deliver) debug_printf("C cipher %s\n", addr->cipher);
 log_address = string_log_address(addr, (log_write_selector & L_all_parents) != 0, TRUE);
 if (msg)
   s = string_append(s, &size, &ptr, 3, host_and_ident(TRUE), US" ", log_address);
@@ -876,6 +878,7 @@ if (addr->transport->tpda_delivery_action)
   DEBUG(D_deliver)
     debug_printf("  TPDA(Delivery): tpda_deliver_action=|%s| tpda_delivery_IP=%s\n",
       addr->transport->tpda_delivery_action, tpda_delivery_ip);
+DEBUG(D_deliver) debug_printf("D cipher %s\n", addr->cipher);
 
   router_name =    addr->router->name;
   transport_name = addr->transport->name;
@@ -1088,6 +1091,11 @@ if (result == OK)
   addr->ourcert = NULL;
   tls_out.peercert = addr->peercert;
   addr->peercert = NULL;
+
+DEBUG(D_deliver) debug_printf("A cipher %s\n", addr->cipher);
+  tls_out.cipher = addr->cipher;
+  tls_out.peerdn = addr->peerdn;
+  tls_out.ocsp = addr->ocsp;
   #endif
 
   delivery_log(LOG_MAIN, addr, logchar, NULL);
@@ -1103,6 +1111,9 @@ if (result == OK)
     tls_free_cert(tls_out.peercert);
     tls_out.peercert = NULL;
     }
+  tls_out.cipher = NULL;
+  tls_out.peerdn = NULL;
+  tls_out.ocsp = OCSP_NOT_REQ;
   #endif
   }
 
@@ -2987,9 +2998,7 @@ while (!done)
 	addr->cipher = string_copy(ptr);
       while (*ptr++);
       if (*ptr)
-	{
 	addr->peerdn = string_copy(ptr);
-	}
       break;
 
       case '2':
@@ -3003,6 +3012,14 @@ while (!done)
       if (*ptr)
 	(void) tls_import_cert(ptr, &addr->ourcert);
       break;
+
+      #ifdef EXPERIMENTAL_OCSP
+      case '4':
+      addr->ocsp = OCSP_NOT_REQ;
+      if (*ptr)
+	addr->ocsp = *ptr - '0';
+      break;
+      #endif
       }
     while (*ptr++);
     break;
@@ -4132,7 +4149,16 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 	  *ptr++ = 0;
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
-      #endif
+      # ifdef EXPERIMENTAL_OCSP
+      if (addr->ocsp > OCSP_NOT_REQ)
+	{
+	ptr = big_buffer;
+	sprintf(CS ptr, "X4%c", addr->ocsp + '0');
+	while(*ptr++);
+        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+	}
+      # endif
+      #endif	/*SUPPORT_TLS
 
       if (client_authenticator)
         {

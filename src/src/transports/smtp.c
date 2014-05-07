@@ -1232,6 +1232,7 @@ tls_out.peerdn = NULL;
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
 tls_out.sni = NULL;
 #endif
+tls_out.ocsp = OCSP_NOT_REQ;
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of the transport.  Don't bother resetting
@@ -1242,8 +1243,8 @@ tls_modify_variables(&tls_out);
 #ifndef SUPPORT_TLS
 if (smtps)
   {
-    set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE);
-    return ERROR;
+  set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE);
+  return ERROR;
   }
 #endif
 
@@ -1475,6 +1476,7 @@ if (tls_offered && !suppress_tls &&
         addr->ourcert = tls_out.ourcert;
         addr->peercert = tls_out.peercert;
         addr->peerdn = tls_out.peerdn;
+	addr->ocsp = tls_out.ocsp;
         }
       }
     }
@@ -2514,6 +2516,7 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   addr->ourcert = NULL;
   addr->peercert = NULL;
   addr->peerdn = NULL;
+  addr->ocsp = OCSP_NOT_REQ;
   #endif
   }
 return first_addr;
