@@ -12308,7 +12308,8 @@ If TLS has not been negotiated, the value will be 0.
 This variable refers to the certificate presented to the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
-&%certextract%& expansion item or the name for a &%def%& expansion condition.
+&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+or a &%def%& condition.
 .wen
 
 .new
@@ -12317,7 +12318,8 @@ It is only useful as the argument of a
 This variable refers to the certificate presented by the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
-&%certextract%& expansion item or the name for a &%def%& expansion condition.
+&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+or a &%def%& condition.
 .wen
 
 .new
@@ -12325,7 +12327,8 @@ It is only useful as the argument of a
 .vindex "&$tls_out_ourcert$&"
 This variable refers to the certificate presented to the peer of an
 outbound connection.  It is only useful as the argument of a
-&%certextract%& expansion item or the name for a &%def%& expansion condition.
+&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+or a &%def%& condition.
 .wen
 
 .new
@@ -12333,7 +12336,8 @@ outbound connection.  It is only useful as the argument of a
 .vindex "&$tls_out_peercert$&"
 This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
-&%certextract%& expansion item or the name for a &%def%& expansion condition.
+&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+or a &%def%& condition.
 .wen
 
 .vitem &$tls_in_certificate_verified$&

@@ -45,7 +45,8 @@ Version 4.83
  9. Support for DNSSEC on outbound connections.
 
 10. New variables "tls_(in,out)_(our,peer)cert" and expansion item
-    "certextract" to extract fields from them.
+    "certextract" to extract fields from them. Hash operators md5 and sha1
+    work over them for generating fingerprints.
 
 
 Version 4.82

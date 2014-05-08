@@ -322,6 +322,42 @@ if (dps) for (i = 0; i < dpsnum; i++)
 return list;
 }
 
+
+
+/*****************************************************
+*  Certificate operator routines
+*****************************************************/
+static uschar *
+fingerprint(X509 * cert, const EVP_MD * fdig)
+{
+int j;
+unsigned int n;
+uschar md[EVP_MAX_MD_SIZE];
+uschar * cp;
+
+if (!X509_digest(cert,fdig,md,&n))
+  {
+  expand_string_message = US"tls_cert_fprt: out of mem\n";
+  return NULL;
+  }
+cp = store_get(n*2+1);
+for (j = 0; j < (int)n; j++) sprintf(cp+2*j, "%02X", md[j]);
+return(cp);
+}
+
+uschar * 
+tls_cert_fprt_md5(void * cert)
+{
+return fingerprint((X509 *)cert, EVP_md5());
+}
+
+uschar * 
+tls_cert_fprt_sha1(void * cert)
+{
+return fingerprint((X509 *)cert, EVP_sha1());
+}
+
+
 /* vi: aw ai sw=2
 */
 /* End of tlscert-openssl.c */

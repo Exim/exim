@@ -375,6 +375,53 @@ for(index = 0;; index++)
 }
 
 
+/*****************************************************
+*  Certificate operator routines
+*****************************************************/
+static uschar *
+fingerprint(gnutls_x509_crt_t cert, gnutls_digest_algorithm_t algo)
+{
+int ret;
+size_t siz = 0;
+uschar * cp;
+uschar * cp2;
+uschar * cp3;
+
+if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, NULL, &siz))
+    != GNUTLS_E_SHORT_MEMORY_BUFFER)
+  {
+  expand_string_message = 
+    string_sprintf("%s: gf0 fail: %d %s\n", __FUNCTION__,
+      ret, gnutls_strerror(ret));
+  return NULL;
+  }
+cp = store_get(siz*3+1);
+if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
+  {
+  expand_string_message = 
+    string_sprintf("%s: gf1 fail: %d %s\n", __FUNCTION__,
+      ret, gnutls_strerror(ret));
+  return NULL;
+  }
+for (cp3 = cp2 = cp+siz; cp < cp2; cp++, cp3+=2)
+  sprintf(cp3, "%02X",*cp);
+return cp2;
+}
+
+
+uschar *
+tls_cert_fprt_md5(void * cert)
+{
+return fingerprint((gnutls_x509_crt_t)cert, GNUTLS_DIG_MD5);
+}
+
+uschar *
+tls_cert_fprt_sha1(void * cert)
+{
+return fingerprint((gnutls_x509_crt_t)cert, GNUTLS_DIG_SHA1);
+}
+
+
 /* vi: aw ai sw=2
 */
 /* End of tlscert-gnu.c */

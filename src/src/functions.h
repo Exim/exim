@@ -39,6 +39,9 @@ extern uschar * tls_cert_subject(void *, uschar * mod);
 extern uschar * tls_cert_subject_altname(void *, uschar * mod);
 extern uschar * tls_cert_version(void *, uschar * mod);
 
+extern uschar * tls_cert_fprt_md5(void *);
+extern uschar * tls_cert_fprt_sha1(void *);
+
 extern int     tls_client_start(int, host_item *, address_item *,
 		 void *);
 extern void    tls_close(BOOL, BOOL);

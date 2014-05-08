@@ -20,6 +20,8 @@
 1999-03-02 09:44:33 SAN <DNS=server2.example.com>
 1999-03-02 09:44:33 OCU <http://oscp/example.com/>
 1999-03-02 09:44:33 CRU <http://crl.example.com/latest.crl>
+1999-03-02 09:44:33 md5 fingerprint C5FA6C8B1BE926DBC4E436AF08F92B55
+1999-03-02 09:44:33 sha1 fingerprint 40B2135E6B67AE36A397696DA328423685E74CE3
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLSv1:AES256-SHA:256 DN="/CN=server2.example.com" S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery

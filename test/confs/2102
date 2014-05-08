@@ -59,6 +59,8 @@ check_recipient:
 	  logwrite =       ${certextract {subj_altname} {$tls_in_peercert} {SAN <$value>}{(no SAN)}}
 	  logwrite =       ${certextract {ocsp_uri}	{$tls_in_peercert} {OCU <$value>}{(no OCU)}}
 	  logwrite =       ${certextract {crl_uri}	{$tls_in_peercert} {CRU <$value>}{(no CRU)}}
+	  logwrite =  md5 fingerprint ${md5:$tls_in_peercert}
+	  logwrite =  sha1 fingerprint ${sha1:$tls_in_peercert}
 
 
 # ----- Routers -----

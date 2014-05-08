@@ -109,7 +109,10 @@ JH/20 New expansion variables tls_(in,out)_(our,peer)cert, and expansion item
 
 JH/21 Observability of OCSP via variables tls_(in,out)_ocsp.  Stapling
       is requested by default, modifiable by smtp transport option
-      hosts_request_ocsp;
+      hosts_request_ocsp.
+
+JH/22 Expansion operators ${md5:string} and ${sha1::string} can now
+      operate on certificate variables to give certificate fingerprints
 
 
 Exim version 4.82

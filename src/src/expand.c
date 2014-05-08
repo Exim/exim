@@ -5724,19 +5724,16 @@ while (*s != 0)
     {
     int c;
     uschar *arg = NULL;
-    uschar *sub = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
-    if (sub == NULL) goto EXPAND_FAILED;
-    s++;
+    uschar *sub;
+    var_entry *vp;
 
     /* Owing to an historical mis-design, an underscore may be part of the
     operator name, or it may introduce arguments.  We therefore first scan the
     table of names that contain underscores. If there is no match, we cut off
     the arguments and then scan the main table. */
 
-    c = chop_match(name, op_table_underscore,
-      sizeof(op_table_underscore)/sizeof(uschar *));
-
-    if (c < 0)
+    if ((c = chop_match(name, op_table_underscore,
+	sizeof(op_table_underscore)/sizeof(uschar *))) < 0)
       {
       arg = Ustrchr(name, '_');
       if (arg != NULL) *arg = 0;
@@ -5744,6 +5741,34 @@ while (*s != 0)
         sizeof(op_table_main)/sizeof(uschar *));
       if (c >= 0) c += sizeof(op_table_underscore)/sizeof(uschar *);
       if (arg != NULL) *arg++ = '_';   /* Put back for error messages */
+      }
+
+    /* Deal specially with operators that might take a certificate variable
+    as we do not want to do the usual expansion. For most, expand the string.*/
+    switch(c)
+      {
+      case EOP_SHA1:
+      case EOP_MD5:
+	if (s[1] == '$')
+	  {
+	  uschar * s1 = s;
+	  sub = expand_string_internal(s+2, TRUE, &s1, skipping,
+		  FALSE, &resetok);
+	  if (!sub)       goto EXPAND_FAILED;		/*{*/
+	  if (*s1 != '}') goto EXPAND_FAILED_CURLY;
+	  if ((vp = find_var_ent(sub)) && vp->type == vtype_cert)
+	    {
+	    s = s1+1;
+	    break;
+	    }
+	  }
+	vp = NULL;
+        /*FALLTHROUGH*/
+      default:
+	sub = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+	if (!sub) goto EXPAND_FAILED;
+	s++;
+	break;
       }
 
     /* If we are skipping, we don't need to perform the operation at all.
@@ -5830,30 +5855,42 @@ while (*s != 0)
         }
 
       case EOP_MD5:
-        {
-        md5 base;
-        uschar digest[16];
-        int j;
-        char st[33];
-        md5_start(&base);
-        md5_end(&base, sub, Ustrlen(sub), digest);
-        for(j = 0; j < 16; j++) sprintf(st+2*j, "%02x", digest[j]);
-        yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
+	if (vp && *(void **)vp->value)
+	  {
+	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
+	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  }
+	else
+	  {
+	  md5 base;
+	  uschar digest[16];
+	  int j;
+	  char st[33];
+	  md5_start(&base);
+	  md5_end(&base, sub, Ustrlen(sub), digest);
+	  for(j = 0; j < 16; j++) sprintf(st+2*j, "%02x", digest[j]);
+	  yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
+	  }
         continue;
-        }
 
       case EOP_SHA1:
-        {
-        sha1 base;
-        uschar digest[20];
-        int j;
-        char st[41];
-        sha1_start(&base);
-        sha1_end(&base, sub, Ustrlen(sub), digest);
-        for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
-        yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
+	if (vp && *(void **)vp->value)
+	  {
+	  uschar * cp = tls_cert_fprt_sha1(*(void **)vp->value);
+	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  }
+	else
+	  {
+	  sha1 base;
+	  uschar digest[20];
+	  int j;
+	  char st[41];
+	  sha1_start(&base);
+	  sha1_end(&base, sub, Ustrlen(sub), digest);
+	  for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
+	  yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
+	  }
         continue;
-        }
 
       /* Convert hex encoding to base64 encoding */
 
