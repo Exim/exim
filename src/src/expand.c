@@ -5747,6 +5747,7 @@ while (*s != 0)
     as we do not want to do the usual expansion. For most, expand the string.*/
     switch(c)
       {
+#ifdef SUPPORT_TLS
       case EOP_SHA1:
       case EOP_MD5:
 	if (s[1] == '$')
@@ -5764,6 +5765,7 @@ while (*s != 0)
 	  }
 	vp = NULL;
         /*FALLTHROUGH*/
+#endif
       default:
 	sub = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
 	if (!sub) goto EXPAND_FAILED;
@@ -5855,12 +5857,14 @@ while (*s != 0)
         }
 
       case EOP_MD5:
+#ifdef SUPPORT_TLS
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
 	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
 	  }
 	else
+#endif
 	  {
 	  md5 base;
 	  uschar digest[16];
@@ -5874,12 +5878,14 @@ while (*s != 0)
         continue;
 
       case EOP_SHA1:
+#ifdef SUPPORT_TLS
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha1(*(void **)vp->value);
 	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
 	  }
 	else
+#endif
 	  {
 	  sha1 base;
 	  uschar digest[20];
