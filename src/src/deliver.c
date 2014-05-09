@@ -718,7 +718,6 @@ uschar *s;              /* building log lines;   */
 void *reset_point;      /* released afterwards.  */
 
 
-DEBUG(D_deliver) debug_printf("B cipher %s\n", addr->cipher);
 /* Log the delivery on the main log. We use an extensible string to build up
 the log line, and reset the store afterwards. Remote deliveries should always
 have a pointer to the host item that succeeded; local deliveries can have a
@@ -735,7 +734,6 @@ pointer to a single host item in their host list, for use by the transport. */
 
 s = reset_point = store_get(size);
 
-DEBUG(D_deliver) debug_printf("C cipher %s\n", addr->cipher);
 log_address = string_log_address(addr, (log_write_selector & L_all_parents) != 0, TRUE);
 if (msg)
   s = string_append(s, &size, &ptr, 3, host_and_ident(TRUE), US" ", log_address);
@@ -878,7 +876,6 @@ if (addr->transport->tpda_delivery_action)
   DEBUG(D_deliver)
     debug_printf("  TPDA(Delivery): tpda_deliver_action=|%s| tpda_delivery_IP=%s\n",
       addr->transport->tpda_delivery_action, tpda_delivery_ip);
-DEBUG(D_deliver) debug_printf("D cipher %s\n", addr->cipher);
 
   router_name =    addr->router->name;
   transport_name = addr->transport->name;
@@ -1092,7 +1089,6 @@ if (result == OK)
   tls_out.peercert = addr->peercert;
   addr->peercert = NULL;
 
-DEBUG(D_deliver) debug_printf("A cipher %s\n", addr->cipher);
   tls_out.cipher = addr->cipher;
   tls_out.peerdn = addr->peerdn;
   tls_out.ocsp = addr->ocsp;
