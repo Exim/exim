@@ -205,6 +205,7 @@ static uschar *op_table_main[] = {
   US"rxquote",
   US"s",
   US"sha1",
+  US"sha256",
   US"stat",
   US"str2b64",
   US"strlen",
@@ -242,6 +243,7 @@ enum {
   EOP_RXQUOTE,
   EOP_S,
   EOP_SHA1,
+  EOP_SHA256,
   EOP_STAT,
   EOP_STR2B64,
   EOP_STRLEN,
@@ -5745,8 +5747,9 @@ while (*s != 0)
     switch(c)
       {
 #ifdef SUPPORT_TLS
-      case EOP_SHA1:
       case EOP_MD5:
+      case EOP_SHA1:
+      case EOP_SHA256:
 	if (s[1] == '$')
 	  {
 	  uschar * s1 = s;
@@ -5892,6 +5895,18 @@ while (*s != 0)
 	  for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
 	  yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
 	  }
+        continue;
+
+      case EOP_SHA256:
+#ifdef SUPPORT_TLS
+	if (vp && *(void **)vp->value)
+	  {
+	  uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
+	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  }
+	else
+#endif
+	  expand_string_message = US"sha256 only supported for certificates";
         continue;
 
       /* Convert hex encoding to base64 encoding */

@@ -10036,6 +10036,7 @@ Letters in IPv6 addresses are always output in lower case.
 .vitem &*${md5:*&<&'string'&>&*}*&
 .cindex "MD5 hash"
 .cindex "expansion" "MD5 hash"
+.cindex "certificate fingerprint"
 .cindex "&%md5%& expansion item"
 The &%md5%& operator computes the MD5 hash value of the string, and returns it
 as a 32-digit hexadecimal number, in which any letters are in lower case.
@@ -10173,9 +10174,22 @@ variables or headers inside regular expressions.
 .vitem &*${sha1:*&<&'string'&>&*}*&
 .cindex "SHA-1 hash"
 .cindex "expansion" "SHA-1 hashing"
+.cindex "certificate fingerprint"
 .cindex "&%sha2%& expansion item"
 The &%sha1%& operator computes the SHA-1 hash value of the string, and returns
 it as a 40-digit hexadecimal number, in which any letters are in upper case.
+
+
+.vitem &*${sha256:*&<&'certificate'&>&*}*&
+.cindex "SHA-256 hash"
+.cindex "certificate fingerprint"
+.cindex "expansion" "SHA-256 hashing"
+.cindex "&%sha256%& expansion item"
+The &%sha256%& operator computes the SHA-256 hash fingerprint of the
+certificate,
+and returns
+it as a 64-digit hexadecimal number, in which any letters are in upper case.
+Only arguments which are a single variable of certificate type are supported.
 
 
 .vitem &*${stat:*&<&'string'&>&*}*&

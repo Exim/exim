@@ -113,6 +113,7 @@ JH/21 Observability of OCSP via variables tls_(in,out)_ocsp.  Stapling
 
 JH/22 Expansion operators ${md5:string} and ${sha1::string} can now
       operate on certificate variables to give certificate fingerprints
+      Also new ${sha256:cert_variable}.
 
 
 Exim version 4.82

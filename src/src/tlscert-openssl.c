@@ -357,6 +357,12 @@ tls_cert_fprt_sha1(void * cert)
 return fingerprint((X509 *)cert, EVP_sha1());
 }
 
+uschar * 
+tls_cert_fprt_sha256(void * cert)
+{
+return fingerprint((X509 *)cert, EVP_sha256());
+}
+
 
 /* vi: aw ai sw=2
 */

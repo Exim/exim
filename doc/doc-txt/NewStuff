@@ -46,7 +46,8 @@ Version 4.83
 
 10. New variables "tls_(in,out)_(our,peer)cert" and expansion item
     "certextract" to extract fields from them. Hash operators md5 and sha1
-    work over them for generating fingerprints.
+    work over them for generating fingerprints, and a new sha256 operator
+    for them added.
 
 
 Version 4.82
