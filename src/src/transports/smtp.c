@@ -636,7 +636,7 @@ tpda_defer_errstr = addr->message
     ? string_sprintf("%s: %s", addr->message, strerror(addr->basic_errno))
     : string_copy(addr->message)
   : addr->basic_errno > 0
-    ? string_copy(strerror(addr->basic_errno))
+    ? string_copy(US strerror(addr->basic_errno))
     : NULL;
 
 DEBUG(D_transport)

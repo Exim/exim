@@ -5365,8 +5365,6 @@ while (*s != 0)
 #ifdef SUPPORT_TLS
     case EITEM_CERTEXTRACT:
       {
-      int i;
-      int field_number = 1;
       uschar *save_lookup_value = lookup_value;
       uschar *sub[2];
       int save_expand_nmax =
@@ -5382,7 +5380,6 @@ while (*s != 0)
       /* strip spaces fore & aft */
       {
       int len;
-      int x = 0;
       uschar *p = sub[0];
 
       while (isspace(*p)) p++;
@@ -5725,7 +5722,7 @@ while (*s != 0)
     int c;
     uschar *arg = NULL;
     uschar *sub;
-    var_entry *vp;
+    var_entry *vp = NULL;
 
     /* Owing to an historical mis-design, an underscore may be part of the
     operator name, or it may introduce arguments.  We therefore first scan the
@@ -5763,7 +5760,6 @@ while (*s != 0)
 	    break;
 	    }
 	  }
-	vp = NULL;
         /*FALLTHROUGH*/
 #endif
       default:
@@ -5861,7 +5857,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
 	  }
 	else
 #endif
@@ -5882,7 +5878,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha1(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
 	  }
 	else
 #endif
@@ -6349,7 +6345,7 @@ while (*s != 0)
       case EOP_UTF8CLEAN:
         {
         int seq_len, index = 0;
-        int bytes_left  = 0;
+        int bytes_left = 0;
         uschar seq_buff[4];			/* accumulate utf-8 here */
         
         while (*sub != 0)
@@ -6360,7 +6356,7 @@ while (*s != 0)
 
 	  complete = 0;
 	  c = *sub++;
-	  if(bytes_left)
+	  if (bytes_left)
 	    {
 	    if ((c & 0xc0) != 0x80)
 	      {

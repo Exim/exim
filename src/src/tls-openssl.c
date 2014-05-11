@@ -875,7 +875,6 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 */
   {
     BIO * bp = NULL;
-    OCSP_CERTID *id;
     int status, reason;
     ASN1_GENERALIZEDTIME *rev, *thisupd, *nextupd;
 

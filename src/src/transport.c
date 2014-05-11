@@ -837,7 +837,6 @@ internal_transport_write_message(address_item *addr, int fd, int options,
 {
 int written = 0;
 int len;
-header_line *h;
 BOOL use_crlf  = (options & topt_use_crlf)  != 0;
 
 /* Initialize pointer in output buffer. */

@@ -997,7 +997,7 @@ if (list)
   new = string_cat(new, &sz, &off, &sep, 1);
   }
 
-while (sp = Ustrchr(ele, sep))
+while((sp = Ustrchr(ele, sep)))
   {
   new = string_cat(new, &sz, &off, ele, sp-ele+1);
   new = string_cat(new, &sz, &off, &sep, 1);

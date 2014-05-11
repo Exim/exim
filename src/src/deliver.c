@@ -4154,7 +4154,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
       # endif
-      #endif	/*SUPPORT_TLS
+      #endif	/*SUPPORT_TLS*/
 
       if (client_authenticator)
         {
