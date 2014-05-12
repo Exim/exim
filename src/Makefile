@@ -94,6 +94,7 @@ cscope.files: FRC
 		    -o -name "os.h*" -print \
 		    -o -name "*akefile*" -print \
 		    -o -name EDITME -print >> $@
+	ls OS/* >> $@
 
 FRC:
 
