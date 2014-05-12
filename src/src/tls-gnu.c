@@ -1446,15 +1446,15 @@ server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
 {
 int ret;
 
-tls_in.ocsp = OCSP_NOT_RESP;
 if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
   {
   DEBUG(D_tls) debug_printf("Failed to load ocsp stapling file %s\n",
 			      (char *)ptr);
+  tls_in.ocsp = OCSP_NOT_RESP;
   return GNUTLS_E_NO_CERTIFICATE_STATUS;
   }
 
-tls_in.ocsp = OCSP_NOT_VFY;
+tls_in.ocsp = OCSP_VFY_NOT_TRIED;
 return 0;
 }
 
@@ -1778,7 +1778,10 @@ if (require_ocsp)
     }
 
   if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)
+    {
+    tls_out.ocsp = OCSP_FAILED;
     return tls_error(US"certificate status check failed", NULL, state->host);
+    }
   DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
   tls_out.ocsp = OCSP_VFIED;
   }

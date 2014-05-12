@@ -1,5 +1,5 @@
 # Exim test configuration 5601
-# OCSP stapling, client
+# OCSP stapling, client, tpda
 
 SERVER =
 
@@ -54,6 +54,12 @@ check_data:
 	  logwrite = client claims: $h_X-TLS-out:
   accept
 
+logger:
+  warn	logwrite = client ocsp status: $tls_out_ocsp \
+    (${listextract {${eval:$tls_out_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
+  accept
+
 # ----- Routers -----
 
 begin routers
@@ -84,56 +90,60 @@ local_delivery:
   headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
   user = CALLER
 
+# nostaple: deliberately do not request cert-status
 send_to_server1:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
-  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
-  hosts_require_tls = *
-  hosts_request_ocsp = :
-  headers_add = X-TLS-out: ocsp status $tls_out_ocsp \
-    (${listextract {${eval:$tls_out_ocsp+1}} \
-		{notreq:notresp:vfynotdone:failed:verified}})
+  tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  hosts_require_tls =	*
+  hosts_request_ocsp =	:
+  headers_add =			X-TLS-out: ocsp status $tls_out_ocsp
+  tpda_delivery_action =	${acl {logger}}
+  tpda_host_defer_action = 	${acl {logger}}
 
+# norequire: request stapling but do not verify
 send_to_server2:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
-  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
-  hosts_require_tls = *
+  tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  hosts_require_tls =	*
 # note no ocsp mention here
-  headers_add = X-TLS-out: ocsp status $tls_out_ocsp \
-    (${listextract {${eval:$tls_out_ocsp+1}} \
-		{notreq:notresp:vfynotdone:failed:verified}})
+  headers_add =			X-TLS-out: ocsp status $tls_out_ocsp
+  tpda_delivery_action =	${acl {logger}}
+  tpda_host_defer_action = 	${acl {logger}}
 
+# (any other name): request and verify
 send_to_server3:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_D
   helo_data = helo.data.changed
-  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
-  hosts_require_tls =  *
-  hosts_require_ocsp = *
-  headers_add = X-TLS-out: ocsp status $tls_out_ocsp \
-    (${listextract {${eval:$tls_out_ocsp+1}} \
-		{notreq:notresp:vfynotdone:failed:verified}})
+  tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  hosts_require_tls =	*
+  hosts_require_ocsp =	*
+  headers_add =			X-TLS-out: ocsp status $tls_out_ocsp
+  tpda_delivery_action =	${acl {logger}}
+  tpda_host_defer_action = 	${acl {logger}}
 
+# (any other name): request and verify, ssl-on-connect
 send_to_server4:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_D
   helo_data = helo.data.changed
-  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
   protocol =           smtps
   hosts_require_tls =  *
   hosts_require_ocsp = *
-  headers_add = X-TLS-out: ocsp status $tls_out_ocsp \
-    (${listextract {${eval:$tls_out_ocsp+1}} \
-		{notreq:notresp:vfynotdone:failed:verified}})
+  headers_add =			X-TLS-out: ocsp status $tls_out_ocsp
+  tpda_delivery_action =	${acl {logger}}
+  tpda_host_defer_action = 	${acl {logger}}
 
 
 # ----- Retry -----

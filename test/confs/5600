@@ -40,10 +40,14 @@ tls_ocsp_file = OCSP
 begin acl
 
 check_connect:
-  accept   logwrite = acl_conn: ocsp in status: $tls_in_ocsp
+  accept   logwrite = acl_conn: ocsp in status: $tls_in_ocsp \
+    (${listextract {${eval:$tls_in_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
 
 check_mail:
-  accept   logwrite = acl_mail: ocsp in status: $tls_in_ocsp
+  accept   logwrite = acl_mail: ocsp in status: $tls_in_ocsp \
+    (${listextract {${eval:$tls_in_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
 
 check_recipient:
   deny     message = certificate not verified: peerdn=$tls_peerdn

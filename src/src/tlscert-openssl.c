@@ -81,7 +81,7 @@ X509_free((X509 *)cert);
 static uschar *
 bio_string_copy(BIO * bp, int len)
 {
-uschar * cp = "";
+uschar * cp = US"";
 len = len > 0 ? (int) BIO_get_mem_data(bp, &cp) : 0;
 cp = string_copyn(cp, len);
 BIO_free(bp);
@@ -164,7 +164,7 @@ return cp;
 uschar *
 tls_cert_signature_algorithm(void * cert, uschar * mod)
 {
-return string_copy(OBJ_nid2ln(X509_get_signature_type((X509 *)cert)));
+return string_copy(US OBJ_nid2ln(X509_get_signature_type((X509 *)cert)));
 }
 
 uschar *
@@ -182,7 +182,7 @@ return string_sprintf("%d", X509_get_version((X509 *)cert));
 uschar *
 tls_cert_ext_by_oid(void * cert, uschar * oid, int idx)
 {
-int nid = OBJ_create(oid, "", "");
+int nid = OBJ_create(CS oid, "", "");
 int nidx = X509_get_ext_by_NID((X509 *)cert, nid, idx);
 X509_EXTENSION * ex = X509_get_ext((X509 *)cert, nidx);
 ASN1_OCTET_STRING * adata = X509_EXTENSION_get_data(ex);
@@ -201,7 +201,7 @@ cp3 = cp2 = store_get(len*3+1);
 
 while(len)
   {
-  sprintf(cp2, "%.2x ", *cp1++);
+  sprintf(CS cp2, "%.2x ", *cp1++);
   cp2 += 3;
   len--;
   }
@@ -341,7 +341,7 @@ if (!X509_digest(cert,fdig,md,&n))
   return NULL;
   }
 cp = store_get(n*2+1);
-for (j = 0; j < (int)n; j++) sprintf(cp+2*j, "%02X", md[j]);
+for (j = 0; j < (int)n; j++) sprintf(CS cp+2*j, "%02X", md[j]);
 return(cp);
 }
 
@@ -355,6 +355,12 @@ uschar *
 tls_cert_fprt_sha1(void * cert)
 {
 return fingerprint((X509 *)cert, EVP_sha1());
+}
+
+uschar * 
+tls_cert_fprt_sha256(void * cert)
+{
+return fingerprint((X509 *)cert, EVP_sha256());
 }
 
 

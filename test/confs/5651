@@ -90,7 +90,9 @@ send_to_server1:
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
   hosts_require_tls = *
   hosts_request_ocsp = :
-  headers_add = X-TLS-out: OCSP status $tls_out_ocsp
+  headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
+    (${listextract {${eval:$tls_out_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
 
 send_to_server2:
   driver = smtp
@@ -100,7 +102,9 @@ send_to_server2:
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
   hosts_require_tls = *
 # note no ocsp mention here
-  headers_add = X-TLS-out: OCSP status $tls_out_ocsp
+  headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
+    (${listextract {${eval:$tls_out_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
 
 send_to_server3:
   driver = smtp
@@ -112,7 +116,9 @@ send_to_server3:
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
   hosts_require_tls =  *
   hosts_require_ocsp = *
-  headers_add = X-TLS-out: OCSP status $tls_out_ocsp
+  headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
+    (${listextract {${eval:$tls_out_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
 
 send_to_server4:
   driver = smtp
@@ -125,7 +131,9 @@ send_to_server4:
   protocol =           smtps
   hosts_require_tls =  *
   hosts_require_ocsp = *
-  headers_add = X-TLS-out: OCSP status $tls_out_ocsp
+  headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
+    (${listextract {${eval:$tls_out_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
 
 
 # ----- Retry -----

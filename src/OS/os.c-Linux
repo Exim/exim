@@ -94,7 +94,7 @@ ip_address_item *last = NULL;
 ip_address_item  *next;
 char addr6p[8][5];
 unsigned int plen, scope, dad_status, if_idx;
-char devname[20];
+char devname[20+1];
 FILE *f;
 #endif
 

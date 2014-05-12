@@ -421,6 +421,12 @@ tls_cert_fprt_sha1(void * cert)
 return fingerprint((gnutls_x509_crt_t)cert, GNUTLS_DIG_SHA1);
 }
 
+uschar *
+tls_cert_fprt_sha256(void * cert)
+{
+return fingerprint((gnutls_x509_crt_t)cert, GNUTLS_DIG_SHA256);
+}
+
 
 /* vi: aw ai sw=2
 */

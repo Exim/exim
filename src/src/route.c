@@ -1941,6 +1941,7 @@ DEBUG(D_route)
     if (h->mx >= 0) debug_printf(" MX=%d", h->mx);
       else if (h->mx != MX_NONE) debug_printf(" rgroup=%d", h->mx);
     if (h->port != PORT_NONE) debug_printf(" port=%d", h->port);
+    /* if (h->dnssec != DS_UNK) debug_printf(" dnssec=%s", h->dnssec==DS_YES ? "yes" : "no"); */
     debug_printf("\n");
     }
   }

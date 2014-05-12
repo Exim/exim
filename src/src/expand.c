@@ -205,6 +205,7 @@ static uschar *op_table_main[] = {
   US"rxquote",
   US"s",
   US"sha1",
+  US"sha256",
   US"stat",
   US"str2b64",
   US"strlen",
@@ -242,6 +243,7 @@ enum {
   EOP_RXQUOTE,
   EOP_S,
   EOP_SHA1,
+  EOP_SHA256,
   EOP_STAT,
   EOP_STR2B64,
   EOP_STRLEN,
@@ -5365,8 +5367,6 @@ while (*s != 0)
 #ifdef SUPPORT_TLS
     case EITEM_CERTEXTRACT:
       {
-      int i;
-      int field_number = 1;
       uschar *save_lookup_value = lookup_value;
       uschar *sub[2];
       int save_expand_nmax =
@@ -5382,7 +5382,6 @@ while (*s != 0)
       /* strip spaces fore & aft */
       {
       int len;
-      int x = 0;
       uschar *p = sub[0];
 
       while (isspace(*p)) p++;
@@ -5725,7 +5724,7 @@ while (*s != 0)
     int c;
     uschar *arg = NULL;
     uschar *sub;
-    var_entry *vp;
+    var_entry *vp = NULL;
 
     /* Owing to an historical mis-design, an underscore may be part of the
     operator name, or it may introduce arguments.  We therefore first scan the
@@ -5748,8 +5747,9 @@ while (*s != 0)
     switch(c)
       {
 #ifdef SUPPORT_TLS
-      case EOP_SHA1:
       case EOP_MD5:
+      case EOP_SHA1:
+      case EOP_SHA256:
 	if (s[1] == '$')
 	  {
 	  uschar * s1 = s;
@@ -5763,7 +5763,6 @@ while (*s != 0)
 	    break;
 	    }
 	  }
-	vp = NULL;
         /*FALLTHROUGH*/
 #endif
       default:
@@ -5861,7 +5860,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
 	  }
 	else
 #endif
@@ -5882,7 +5881,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha1(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
 	  }
 	else
 #endif
@@ -5896,6 +5895,18 @@ while (*s != 0)
 	  for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
 	  yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
 	  }
+        continue;
+
+      case EOP_SHA256:
+#ifdef SUPPORT_TLS
+	if (vp && *(void **)vp->value)
+	  {
+	  uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
+	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  }
+	else
+#endif
+	  expand_string_message = US"sha256 only supported for certificates";
         continue;
 
       /* Convert hex encoding to base64 encoding */
@@ -6349,7 +6360,7 @@ while (*s != 0)
       case EOP_UTF8CLEAN:
         {
         int seq_len, index = 0;
-        int bytes_left  = 0;
+        int bytes_left = 0;
         uschar seq_buff[4];			/* accumulate utf-8 here */
         
         while (*sub != 0)
@@ -6360,7 +6371,7 @@ while (*s != 0)
 
 	  complete = 0;
 	  c = *sub++;
-	  if(bytes_left)
+	  if (bytes_left)
 	    {
 	    if ((c & 0xc0) != 0x80)
 	      {

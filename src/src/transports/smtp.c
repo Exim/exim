@@ -636,7 +636,7 @@ tpda_defer_errstr = addr->message
     ? string_sprintf("%s: %s", addr->message, strerror(addr->basic_errno))
     : string_copy(addr->message)
   : addr->basic_errno > 0
-    ? string_copy(strerror(addr->basic_errno))
+    ? string_copy(US strerror(addr->basic_errno))
     : NULL;
 
 DEBUG(D_transport)
@@ -1232,6 +1232,7 @@ tls_out.peerdn = NULL;
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
 tls_out.sni = NULL;
 #endif
+tls_out.ocsp = OCSP_NOT_REQ;
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of the transport.  Don't bother resetting
@@ -1242,8 +1243,8 @@ tls_modify_variables(&tls_out);
 #ifndef SUPPORT_TLS
 if (smtps)
   {
-    set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE);
-    return ERROR;
+  set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE);
+  return ERROR;
   }
 #endif
 
@@ -1475,6 +1476,7 @@ if (tls_offered && !suppress_tls &&
         addr->ourcert = tls_out.ourcert;
         addr->peercert = tls_out.peercert;
         addr->peerdn = tls_out.peerdn;
+	addr->ocsp = tls_out.ocsp;
         }
       }
     }
@@ -2514,6 +2516,7 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   addr->ourcert = NULL;
   addr->peercert = NULL;
   addr->peerdn = NULL;
+  addr->ocsp = OCSP_NOT_REQ;
   #endif
   }
 return first_addr;
@@ -2916,6 +2919,9 @@ for (cutoff_retry = 0; expired &&
 
     deliver_host = host->name;
     deliver_host_address = host->address;
+    lookup_dnssec_authenticated = host->dnssec == DS_YES ? US"yes"
+				: host->dnssec == DS_NO ? US"no"
+				: US"";
 
     /* Set up a string for adding to the retry key if the port number is not
     the standard SMTP port. A host may have its own port setting that overrides

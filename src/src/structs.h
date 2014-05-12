@@ -55,6 +55,8 @@ typedef struct ugid_block {
 but also used when checking lists of hosts and when transporting. Looking up
 host addresses is done using this structure. */
 
+typedef enum {DS_UNK=-1, DS_NO, DS_YES} dnssec_status_t;
+
 typedef struct host_item {
   struct host_item *next;
   uschar *name;                   /* Host name */
@@ -65,6 +67,7 @@ typedef struct host_item {
   int     status;                 /* Usable, unusable, or unknown */
   int     why;                    /* Why host is unusable */
   int     last_try;               /* Time of last try if known */
+  dnssec_status_t dnssec;
 } host_item;
 
 /* Chain of rewrite rules, read from the rewrite config, or parsed from the
@@ -543,6 +546,7 @@ typedef struct address_item {
   void   *ourcert;                /* Certificate offered to peer, binary */
   void   *peercert;               /* Certificate from peer, binary */
   uschar *peerdn;                 /* DN of server's certificate */
+  int    ocsp;			  /* OCSP status of peer cert */
   #endif
 
   uschar *authenticator;	  /* auth driver name used by transport */

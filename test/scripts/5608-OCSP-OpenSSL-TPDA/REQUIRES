@@ -1,0 +1,4 @@
+support OpenSSL
+support Experimental_OCSP
+support Experimental_TPDA
+running IPv4

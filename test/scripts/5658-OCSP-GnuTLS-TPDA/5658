@@ -1,4 +1,5 @@
-# OCSP stapling, client
+# OCSP stapling, client, tpda
+# duplicate of 5651
 #
 #
 # Client works when we request but don't require OCSP stapling and none comes
@@ -13,10 +14,19 @@ killdaemon
 #
 #
 #
-# Client works when we don't request OCSP stapling
+# Client works when we request but don't require OCSP stapling and some arrives
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
+exim norequire@test.ex
+test message.
+****
+millisleep 500
+#
+#
+#
+#
+# Client works when we don't request OCSP stapling
 exim nostaple@test.ex
 test message.
 ****
@@ -26,7 +36,7 @@ millisleep 500
 #
 #
 # Client accepts good stapled info
-exim CALLER@test.ex
+exim good@test.ex
 test message.
 ****
 sleep 1
@@ -37,7 +47,7 @@ killdaemon
 # Client fails on lack of required stapled info
 exim -bd -oX PORT_D -DSERVER=server -DOCSP=""
 ****
-exim CALLER@test.ex
+exim failrequire@test.ex
 test message.
 ****
 sleep 1
@@ -50,7 +60,7 @@ no_msglog_check
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
 ****
-exim CALLER@test.ex
+exim failrevoked@test.ex
 test message.
 ****
 sleep 1
@@ -63,7 +73,7 @@ killdaemon
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
 ****
-exim CALLER@test.ex
+exim failexpired@test.ex
 test message.
 ****
 sleep 1
