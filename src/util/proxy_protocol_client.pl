@@ -82,10 +82,10 @@ sub generate_preamble {
   if (!$opts{version} || $opts{version} == 2) {
     @preamble = (
       "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A", # 12 byte v2 header
-      "\x02",                                             # declares v2
-      "\x01",                                             # connection is proxied
+      "\x21",                                             # top 4 bits declares v2
+                                                          # bottom 4 bits is command
       $opts{6} ? "\x21" : "\x11",                         # inet6/4 and TCP (stream)
-      $opts{6} ? "\x24" : "\x0b",                         # 36 bytes / 12 bytes
+      $opts{6} ? "\x00\x24" : "\x00\x0b",                 # 36 bytes / 12 bytes
       $source_ip,
       $dest_ip,
       $source_port,

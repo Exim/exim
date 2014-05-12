@@ -304,7 +304,7 @@ if (nonprintcount == 0) return s;
 /* Get a new block of store guaranteed big enough to hold the
 expanded string. */
 
-ss = store_get(length + nonprintcount * 4 + 1);
+ss = store_get(length + nonprintcount * 3 + 1);
 
 /* Copy everying, escaping non printers. */
 

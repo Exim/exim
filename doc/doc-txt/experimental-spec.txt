@@ -1025,6 +1025,8 @@ Proxy Protocol Support
 Exim now has Experimental "Proxy Protocol" support.  It was built on
 specifications from:
 http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt
+Above URL revised May 2014 to change version 2 spec:
+http://git.1wt.eu/web?p=haproxy.git;a=commitdiff;h=afb768340c9d7e50d8e
 
 The purpose of this function is so that an application load balancer,
 such as HAProxy, can sit in front of several Exim servers and Exim

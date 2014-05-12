@@ -623,10 +623,9 @@ union {
   } v1;
   struct {
     uschar sig[12];
-    uschar ver;
-    uschar cmd;
-    uschar fam;
-    uschar len;
+    uint8_t ver_cmd;
+    uint8_t fam;
+    uint16_t len;
     union {
       struct { /* TCP/UDP over IPv4, len = 12 */
         uint32_t src_addr;
@@ -657,7 +656,7 @@ struct sockaddr_in6 tmpaddr6;
 
 int get_ok = 0;
 int size, ret, fd;
-const char v2sig[13] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x02";
+const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar *iptype;  /* To display debug info */
 struct timeval tv;
 socklen_t vslen = 0;
@@ -693,16 +692,32 @@ if (ret == -1)
   }
 
 if (ret >= 16 &&
-    memcmp(&hdr.v2, v2sig, 13) == 0)
+    memcmp(&hdr.v2, v2sig, 12) == 0)
   {
+  uint8_t ver, cmd;
+
+  /* May 2014: haproxy combined the version and command into one byte to
+     allow two full bytes for the length field in order to proxy SSL
+     connections.  SSL Proxy is not supported in this version of Exim, but
+     must still seperate values here. */
+  ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
+  cmd = (hdr.v2.ver_cmd & 0x0f);
+
+  if (ver != 0x02)
+    {
+    DEBUG(D_receive) debug_printf("Invalid Proxy Protocol version: %d\n", ver);
+    goto proxyfail;
+    }
   DEBUG(D_receive) debug_printf("Detected PROXYv2 header\n");
+  /* The v2 header will always be 16 bytes per the spec. */
   size = 16 + hdr.v2.len;
   if (ret < size)
     {
-    DEBUG(D_receive) debug_printf("Truncated or too large PROXYv2 header\n");
+    DEBUG(D_receive) debug_printf("Truncated or too large PROXYv2 header (%d/%d)\n",
+                                  ret, size);
     goto proxyfail;
     }
-  switch (hdr.v2.cmd)
+  switch (cmd)
     {
     case 0x01: /* PROXY command */
       switch (hdr.v2.fam)
@@ -772,8 +787,7 @@ if (ret >= 16 &&
       break;
     default:
       DEBUG(D_receive)
-        debug_printf("Unsupported PROXYv2 command: 0x%02x\n",
-                     hdr.v2.cmd);
+        debug_printf("Unsupported PROXYv2 command: 0x%x\n", cmd);
       goto proxyfail;
     }
   }
