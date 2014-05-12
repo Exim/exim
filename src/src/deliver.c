@@ -730,6 +730,7 @@ pointer to a single host item in their host list, for use by the transport. */
   tpda_delivery_local_part = NULL;
   tpda_delivery_domain = NULL;
   tpda_delivery_confirmation = NULL;
+  lookup_dnssec_authenticated = NULL;
 #endif
 
 s = reset_point = store_get(size);
@@ -793,7 +794,7 @@ if (addr->transport->info->local)
 
 else
   {
-  if (addr->host_used != NULL)
+  if (addr->host_used)
     {
     s = d_hostlog(s, &size, &ptr, addr);
     if (continue_sequence > 1)
@@ -806,6 +807,11 @@ else
     tpda_delivery_local_part =   addr->local_part;
     tpda_delivery_domain =       addr->domain;
     tpda_delivery_confirmation = addr->message;
+
+    /* DNS lookup status */
+    lookup_dnssec_authenticated = addr->host_used->dnssec==DS_YES ? US"yes"
+			      : addr->host_used->dnssec==DS_NO ? US"no"
+			      : NULL;
     #endif
     }
 
@@ -3019,7 +3025,7 @@ while (!done)
       }
     while (*ptr++);
     break;
-    #endif
+    #endif	/*SUPPORT_TLS*/
 
     case 'C':	/* client authenticator information */
     switch (*ptr++)
@@ -3039,7 +3045,7 @@ while (!done)
 
 #ifdef EXPERIMENTAL_PRDR
     case 'P':
-      addr->flags |= af_prdr_used; break;
+    addr->flags |= af_prdr_used; break;
 #endif
 
     case 'A':
@@ -3066,7 +3072,7 @@ while (!done)
     addr->user_message = (*ptr)? string_copy(ptr) : NULL;
     while(*ptr++);
 
-    /* Always two strings for host information, followed by the port number */
+    /* Always two strings for host information, followed by the port number and DNSSEC mark */
 
     if (*ptr != 0)
       {
@@ -3077,6 +3083,10 @@ while (!done)
       while(*ptr++);
       memcpy(&(h->port), ptr, sizeof(h->port));
       ptr += sizeof(h->port);
+      h->dnssec = *ptr == '2' ? DS_YES
+		: *ptr == '1' ? DS_NO
+		: DS_UNK;
+      ptr++;
       addr->host_used = h;
       }
     else ptr++;
@@ -4104,11 +4114,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       retry_item *r;
 
       /* The certificate verification status goes into the flags */
-
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
 
       /* Use an X item only if there's something to send */
-
       #ifdef SUPPORT_TLS
       if (addr->cipher)
         {
@@ -4179,7 +4187,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 	}
 
       #ifdef EXPERIMENTAL_PRDR
-      if (addr->flags & af_prdr_used) rmt_dlv_checked_write(fd, "P", 1);
+      if (addr->flags & af_prdr_used)
+	rmt_dlv_checked_write(fd, "P", 1);
       #endif
 
       /* Retry information: for most success cases this will be null. */
@@ -4233,6 +4242,11 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         while(*ptr++);
         memcpy(ptr, &(addr->host_used->port), sizeof(addr->host_used->port));
         ptr += sizeof(addr->host_used->port);
+
+        /* DNS lookup status */
+	*ptr++ = addr->host_used->dnssec==DS_YES ? '2'
+	       : addr->host_used->dnssec==DS_NO ? '1' : '0';
+
         }
       rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
       }

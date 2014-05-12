@@ -2065,6 +2065,7 @@ for (i = 1; i <= times;
       host->port = PORT_NONE;
       host->status = hstatus_unknown;
       host->why = hwhy_unknown;
+      host->dnssec = DS_UNK;
       last = host;
       }
 
@@ -2080,6 +2081,7 @@ for (i = 1; i <= times;
       next->port = PORT_NONE;
       next->status = hstatus_unknown;
       next->why = hwhy_unknown;
+      next->dnssec = DS_UNK;
       next->last_try = 0;
       next->next = last->next;
       last->next = next;
@@ -2475,10 +2477,12 @@ int ind_type = 0;
 int yield;
 dns_answer dnsa;
 dns_scan dnss;
-BOOL dnssec_request = match_isinlist(host->name, &dnssec_request_domains,
-				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
 BOOL dnssec_require = match_isinlist(host->name, &dnssec_require_domains,
 				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
+BOOL dnssec_request = dnssec_require
+		    || match_isinlist(host->name, &dnssec_request_domains,
+				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
+dnssec_status_t dnssec;
 
 /* Set the default fully qualified name to the incoming name, initialize the
 resolver if necessary, set up the relevant options, and initialize the flag
@@ -2487,7 +2491,7 @@ that gets set for DNS syntax check errors. */
 if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
 dns_init((whichrrs & HOST_FIND_QUALIFY_SINGLE) != 0,
          (whichrrs & HOST_FIND_SEARCH_PARENTS) != 0,
-	 dnssec_request || dnssec_require
+	 dnssec_request
 	 );
 host_find_failed_syntax = FALSE;
 
@@ -2509,9 +2513,17 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
   the input name, pass back the new original domain, without the prepended
   magic. */
 
+  dnssec = DS_UNK;
+  lookup_dnssec_authenticated = NULL;
   rc = dns_lookup(&dnsa, buffer, ind_type, &temp_fully_qualified_name);
-  lookup_dnssec_authenticated = !dnssec_request ? NULL
-    : dns_is_secure(&dnsa) ? US"yes" : US"no";
+
+  if (dnssec_request)
+    {
+    if (dns_is_secure(&dnsa))
+      { dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
+    else
+      { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
+    }
 
   if (temp_fully_qualified_name != buffer && fully_qualified_name != NULL)
     *fully_qualified_name = temp_fully_qualified_name + prefix_length;
@@ -2547,9 +2559,17 @@ listed as one for which we continue. */
 if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   {
   ind_type = T_MX;
+  dnssec = DS_UNK;
+  lookup_dnssec_authenticated = NULL;
   rc = dns_lookup(&dnsa, host->name, ind_type, fully_qualified_name);
-  lookup_dnssec_authenticated = !dnssec_request ? NULL
-    : dns_is_secure(&dnsa) ? US"yes" : US"no";
+
+  if (dnssec_request)
+    {
+    if (dns_is_secure(&dnsa))
+      { dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
+    else
+      { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
+    }
 
   switch (rc)
     {
@@ -2593,8 +2613,18 @@ if (rc != DNS_SUCCEED)
   last = host;        /* End of local chainlet */
   host->mx = MX_NONE;
   host->port = PORT_NONE;
+  dnssec = DS_UNK;
+  lookup_dnssec_authenticated = NULL;
   rc = set_address_from_dns(host, &last, ignore_target_hosts, FALSE,
     fully_qualified_name, dnssec_request, dnssec_require);
+
+  if (dnssec_request)
+    {
+    if (dns_is_secure(&dnsa))
+      { dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
+    else
+      { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
+    }
 
   /* If one or more address records have been found, check that none of them
   are local. Since we know the host items all have their IP addresses
@@ -2665,9 +2695,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   the same precedence to sort randomly. */
 
   if (ind_type == T_MX)
-    {
     weight = random_number(500);
-    }
 
   /* SRV records are specified with a port and a weight. The weight is used
   in a special algorithm. However, to start with, we just use it to order the
@@ -2731,6 +2759,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
     host->sort_key = precedence * 1000 + weight;
     host->status = hstatus_unknown;
     host->why = hwhy_unknown;
+    host->dnssec = dnssec;
     last = host;
     }
 
@@ -2747,6 +2776,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
     next->sort_key = sort_key;
     next->status = hstatus_unknown;
     next->why = hwhy_unknown;
+    next->dnssec = dnssec;
     next->last_try = 0;
 
     /* Handle the case when we have to insert before the first item. */

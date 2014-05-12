@@ -2919,6 +2919,9 @@ for (cutoff_retry = 0; expired &&
 
     deliver_host = host->name;
     deliver_host_address = host->address;
+    lookup_dnssec_authenticated = host->dnssec == DS_YES ? US"yes"
+				: host->dnssec == DS_NO ? US"no"
+				: US"";
 
     /* Set up a string for adding to the retry key if the port number is not
     the standard SMTP port. A host may have its own port setting that overrides
