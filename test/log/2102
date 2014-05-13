@@ -13,6 +13,7 @@
 1999-03-02 09:44:33 SR  <c9>
 1999-03-02 09:44:33 SN  <CN=server2.example.com>
 1999-03-02 09:44:33 IN  <CN=clica Signing Cert,O=example.com>
+1999-03-02 09:44:33 IN/O <example.com>
 1999-03-02 09:44:33 NB  <Nov  1 12:34:06 2012 GMT>
 1999-03-02 09:44:33 NA  <Jan  1 12:34:06 2038 GMT>
 1999-03-02 09:44:33 SA  <undefined>

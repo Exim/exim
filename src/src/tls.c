@@ -196,4 +196,66 @@ modify_variable(US"tls_sni",                  &dest_tsp->sni);
 #endif
 }
 
+/************************************************
+*	TLS certificate name operations         *
+************************************************/
+
+/* Convert an rfc4514 DN to an exim comma-sep list.
+Backslashed commas need to be replaced by doublecomma
+for Exim's list quoting.  We modify the given string
+inplace.
+*/
+
+static void
+dn_to_list(uschar * dn)
+{
+uschar * cp;
+for (cp = dn; *cp; cp++)
+  if (cp[0] == '\\' && cp[1] == ',')
+    *cp++ = ',';
+}
+
+
+/* Extract fields of a given type from an RFC4514-
+format Distinguished Name.  Return an Exim list.
+NOTE: We modify the supplied dn string during operation.
+
+Arguments:
+	dn	Distinguished Name string
+	mod	string containing optional list-sep and
+		field selector match, comma-separated
+Return:
+	allocated string with list of matching fields,
+	field type stripped
+*/
+
+uschar *
+tls_field_from_dn(uschar * dn, uschar * mod)
+{
+int insep = ',';
+uschar outsep = '\n';
+uschar * ele;
+uschar * match = NULL;
+int len;
+uschar * list = NULL;
+
+while (ele = string_nextinlist(&mod, &insep, NULL, 0))
+  if (ele[0] != '>')
+    match = ele;	/* field tag to match */
+  else if (ele[1])
+    outsep = ele[1];	/* nondefault separator */
+
+dn_to_list(dn);
+insep = ',';
+len = Ustrlen(match);
+while (ele = string_nextinlist(&dn, &insep, NULL, 0))
+  if (Ustrncmp(ele, match, len) == 0 && ele[len] == '=')
+    list = string_append_listele(list, outsep, ele+len+1);
+return list;
+}
+
+
+
+/* vi: aw ai sw=2
+*/
 /* End of tls.c */

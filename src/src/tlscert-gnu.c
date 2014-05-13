@@ -77,8 +77,8 @@ gnutls_global_deinit();
 static uschar *
 g_err(const char * tag, const char * from, int gnutls_err)
 {
-expand_string_message = string_sprintf(stderr,
-  "%s: %s fail: %s\n", from, tag, gnutls_strerror(gnutls_err));
+expand_string_message = string_sprintf("%s: %s fail: %s\n",
+  from, tag, gnutls_strerror(gnutls_err));
 return NULL;
 }
 
@@ -97,10 +97,19 @@ return len > 0 ? cp : NULL;
 uschar *
 tls_cert_issuer(void * cert, uschar * mod)
 {
-uschar txt[256];
-size_t sz = sizeof(txt);
-return ( gnutls_x509_crt_get_issuer_dn(cert, CS txt, &sz) == 0 )
-  ? string_copy(txt) : NULL;
+uschar * cp = NULL;
+int ret;
+size_t siz = 0;
+
+if ((ret = gnutls_x509_crt_get_issuer_dn(cert, cp, &siz))
+    != GNUTLS_E_SHORT_MEMORY_BUFFER)
+  return g_err("gi0", __FUNCTION__, ret);
+
+cp = store_get(siz);
+if ((ret = gnutls_x509_crt_get_issuer_dn(cert, cp, &siz)) < 0)
+  return g_err("gi1", __FUNCTION__, ret);
+
+return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *
@@ -143,20 +152,13 @@ uschar * cp3;
 size_t len = 0;
 int ret;
 
-if ((ret = gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, cp1, &len)) !=
-	GNUTLS_E_SHORT_MEMORY_BUFFER)
-  {
-  fprintf(stderr, "%s: gs0 fail: %s\n", __FUNCTION__, gnutls_strerror(ret));
-  return NULL;
-  }
+if ((ret = gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, cp1, &len))
+    != GNUTLS_E_SHORT_MEMORY_BUFFER)
+  return g_err("gs0", __FUNCTION__, ret);
 
 cp1 = store_get(len*4+1);
-
 if (gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, cp1, &len) != 0)
-  {
-  fprintf(stderr, "%s: gs1 fail\n", __FUNCTION__);
-  return NULL;
-  }
+  return g_err("gs1", __FUNCTION__, ret);
 
 for(cp3 = cp2 = cp1+len; cp1 < cp2; cp3 += 3, cp1++)
   sprintf(cp3, "%.2x ", *cp1);
@@ -180,23 +182,15 @@ uschar * cp = NULL;
 int ret;
 size_t siz = 0;
 
-ret = gnutls_x509_crt_get_dn(cert, cp, &siz);
-if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER)
-  {
-  fprintf(stderr, "%s: gs0 fail: %s\n", __FUNCTION__, gnutls_strerror(ret));
-  return NULL;
-  }
+if ((ret = gnutls_x509_crt_get_dn(cert, cp, &siz))
+    != GNUTLS_E_SHORT_MEMORY_BUFFER)
+  return g_err("gs0", __FUNCTION__, ret);
 
 cp = store_get(siz);
+if ((ret = gnutls_x509_crt_get_dn(cert, cp, &siz)) < 0)
+  return g_err("gs1", __FUNCTION__, ret);
 
-ret = gnutls_x509_crt_get_dn(cert, cp, &siz);
-if (ret < 0)
-  {
-  fprintf(stderr, "%s: gs1 fail: %s\n", __FUNCTION__, gnutls_strerror(ret));
-  return NULL;
-  }
-
-return cp;
+return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *

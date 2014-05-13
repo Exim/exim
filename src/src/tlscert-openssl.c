@@ -111,7 +111,8 @@ return bio_string_copy(bp, len_good);
 uschar *
 tls_cert_issuer(void * cert, uschar * mod)
 {
-return x509_name_copy(X509_get_issuer_name((X509 *)cert));
+uschar * cp = x509_name_copy(X509_get_issuer_name((X509 *)cert));
+return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *
@@ -170,7 +171,8 @@ return string_copy(US OBJ_nid2ln(X509_get_signature_type((X509 *)cert)));
 uschar *
 tls_cert_subject(void * cert, uschar * mod)
 {
-return x509_name_copy(X509_get_subject_name((X509 *)cert));
+uschar * cp = x509_name_copy(X509_get_subject_name((X509 *)cert));
+return mod ? tls_field_from_dn(cp, mod) : cp;
 }
 
 uschar *

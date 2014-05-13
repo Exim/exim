@@ -8936,6 +8936,12 @@ output a Distinguished Name string which is
 not quite
 parseable by Exim as a comma-separated tagged list
 (the exceptions being elements containin commas).
+RDN elements of a single type may be selected by
+a modifier of the type label; if so the expansion
+result is a list (newline-separated by default).
+The separator may be changed by another modifer of
+a right angle-bracket followed immediately by the new separator.
+Recognised RDN type labels include "CN", "O", "OU" and "DC".
 
 Field values are generally presented in human-readable form.
 .wen

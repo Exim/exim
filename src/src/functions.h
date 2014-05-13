@@ -62,6 +62,7 @@ extern void    tls_version_report(FILE *);
 #ifndef USE_GNUTLS
 extern BOOL    tls_openssl_options_parse(uschar *, long *);
 #endif
+extern uschar * tls_field_from_dn(uschar *, uschar *);
 #endif	/*SUPPORT_TLS*/
 
 

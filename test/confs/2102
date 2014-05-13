@@ -52,6 +52,7 @@ check_recipient:
 	  logwrite =  SR  <${certextract {serial_number}{$tls_in_peercert}}>
 	  logwrite =  SN  <${certextract {subject}	{$tls_in_peercert}}>
           logwrite =  IN  <${certextract {issuer}	{$tls_in_peercert}}>
+          logwrite =  IN/O <${certextract {issuer,O}	{$tls_in_peercert}}>
           logwrite =  NB  <${certextract {notbefore}	{$tls_in_peercert}}>
           logwrite =  NA  <${certextract {notafter}	{$tls_in_peercert}}>
           logwrite =  SA  <${certextract {sig_algorithm}{$tls_in_peercert}}>
