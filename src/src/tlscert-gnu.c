@@ -75,6 +75,15 @@ gnutls_global_deinit();
 *  Certificate field extraction routines
 *****************************************************/
 static uschar *
+g_err(const char * tag, const char * from, int gnutls_err)
+{
+expand_string_message = string_sprintf(stderr,
+  "%s: %s fail: %s\n", from, tag, gnutls_strerror(gnutls_err));
+return NULL;
+}
+
+
+static uschar *
 time_copy(time_t t)
 {
 uschar * cp = store_get(32);
@@ -167,10 +176,27 @@ return algo < 0 ? NULL : string_copy(gnutls_sign_get_name(algo));
 uschar *
 tls_cert_subject(void * cert, uschar * mod)
 {
-static uschar txt[256];
-size_t sz = sizeof(txt);
-return ( gnutls_x509_crt_get_dn(cert, CS txt, &sz) == 0 )
-  ? string_copy(txt) : NULL;
+uschar * cp = NULL;
+int ret;
+size_t siz = 0;
+
+ret = gnutls_x509_crt_get_dn(cert, cp, &siz);
+if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER)
+  {
+  fprintf(stderr, "%s: gs0 fail: %s\n", __FUNCTION__, gnutls_strerror(ret));
+  return NULL;
+  }
+
+cp = store_get(siz);
+
+ret = gnutls_x509_crt_get_dn(cert, cp, &siz);
+if (ret < 0)
+  {
+  fprintf(stderr, "%s: gs1 fail: %s\n", __FUNCTION__, gnutls_strerror(ret));
+  return NULL;
+  }
+
+return cp;
 }
 
 uschar *
@@ -192,20 +218,14 @@ int ret;
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
   oid, idx, cp1, &siz, &crit);
 if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER)
-  {
-  fprintf(stderr, "%s: ge0 fail: %s\n", __FUNCTION__, gnutls_strerror(ret));
-  return NULL;
-  }
+  return g_err("ge0", __FUNCTION__, ret);
 
 cp1 = store_get(siz*4 + 1);
 
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
   oid, idx, cp1, &siz, &crit);
 if (ret < 0)
-  {
-  fprintf(stderr, "%s: ge1 fail: %s\n", __FUNCTION__, gnutls_strerror(ret));
-  return NULL;
-  }
+  return g_err("ge1", __FUNCTION__, ret);
 
 /* binary data, DER encoded */
 
@@ -254,21 +274,13 @@ for(index = 0;; index++)
       break;
 
     default:
-      expand_string_message = 
-	string_sprintf("%s: gs0 fail: %d %s\n", __FUNCTION__,
-	  ret, gnutls_strerror(ret));
-      return NULL;
+      return g_err("gs0", __FUNCTION__, ret);
     }
 
   ele = store_get(siz+1);
   if ((ret = gnutls_x509_crt_get_subject_alt_name(
     (gnutls_x509_crt_t)cert, index, ele, &siz, NULL)) < 0)
-    {
-    expand_string_message = 
-      string_sprintf("%s: gs1 fail: %d %s\n", __FUNCTION__,
-	ret, gnutls_strerror(ret));
-    return NULL;
-    }
+    return g_err("gs1", __FUNCTION__, ret);
   ele[siz] = '\0';
 
   if (match != -1 && match != ret)
@@ -307,12 +319,7 @@ for(index = 0;; index++)
   if (ret == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
     return list;
   if (ret < 0)
-    {
-    expand_string_message = 
-      string_sprintf("%s: gai fail: %d %s\n", __FUNCTION__,
-	ret, gnutls_strerror(ret));
-    return NULL;
-    }
+    return g_err("gai", __FUNCTION__, ret);
 
   list = string_append_listele(list, sep,
 	    string_copyn(uri.data, uri.size));
@@ -353,21 +360,14 @@ for(index = 0;; index++)
     case GNUTLS_E_SHORT_MEMORY_BUFFER:
       break;
     default:
-      expand_string_message = 
-	string_sprintf("%s: gc0 fail: %d %s\n", __FUNCTION__,
-	  ret, gnutls_strerror(ret));
-      return NULL;
+      return g_err("gc0", __FUNCTION__, ret);
     }
 
   ele = store_get(siz+1);
   if ((ret = gnutls_x509_crt_get_crl_dist_points(
-    (gnutls_x509_crt_t)cert, index, ele, &siz, NULL, NULL)) < 0)
-    {
-    expand_string_message = 
-      string_sprintf("%s: gc1 fail: %d %s\n", __FUNCTION__,
-	ret, gnutls_strerror(ret));
-    return NULL;
-    }
+      (gnutls_x509_crt_t)cert, index, ele, &siz, NULL, NULL)) < 0)
+    return g_err("gc1", __FUNCTION__, ret);
+
   ele[siz] = '\0';
   list = string_append_listele(list, sep, ele);
   }
@@ -389,20 +389,12 @@ uschar * cp3;
 
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, NULL, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
-  {
-  expand_string_message = 
-    string_sprintf("%s: gf0 fail: %d %s\n", __FUNCTION__,
-      ret, gnutls_strerror(ret));
-  return NULL;
-  }
+  return g_err("gf0", __FUNCTION__, ret);
+
 cp = store_get(siz*3+1);
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
-  {
-  expand_string_message = 
-    string_sprintf("%s: gf1 fail: %d %s\n", __FUNCTION__,
-      ret, gnutls_strerror(ret));
-  return NULL;
-  }
+  return g_err("gf1", __FUNCTION__, ret);
+
 for (cp3 = cp2 = cp+siz; cp < cp2; cp++, cp3+=2)
   sprintf(cp3, "%02X",*cp);
 return cp2;
