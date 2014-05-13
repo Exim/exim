@@ -5762,6 +5762,7 @@ while (*s != 0)
 	    s = s1+1;
 	    break;
 	    }
+	  vp = NULL;
 	  }
         /*FALLTHROUGH*/
 #endif
