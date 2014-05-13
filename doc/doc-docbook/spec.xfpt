@@ -5557,16 +5557,21 @@ unreachable.
 The next two lines are concerned with &'ident'& callbacks, as defined by RFC
 1413 (hence their names):
 .code
-rfc1413_hosts = *
-rfc1413_query_timeout = 5s
+rfc1413_query_hosts = *
+rfc1413_query_timeout = 0s
 .endd
-These settings cause Exim to make ident callbacks for all incoming SMTP calls.
-You can limit the hosts to which these calls are made, or change the timeout
-that is used. If you set the timeout to zero, all ident calls are disabled.
-Although they are cheap and can provide useful information for tracing problem
-messages, some hosts and firewalls have problems with ident calls. This can
-result in a timeout instead of an immediate refused connection, leading to
-delays on starting up an incoming SMTP session.
+These settings cause Exim to avoid ident callbacks for all incoming SMTP calls.
+Few hosts offer RFC1413 service these days; calls have to be
+terminated by a timeout and this needlessly delays the startup
+of an incoming SMTP connection.
+If you have hosts for which you trust RFC1413 and need this
+information, you can change this.
+
+This line enables an efficiency SMTP option.  It is negociated by clients
+and not expected to cause problems but can be disabled if needed.
+.code
+prdr_enable = true
+.endd
 
 When Exim receives messages over SMTP connections, it expects all addresses to
 be fully qualified with a domain, as required by the SMTP definition. However,
@@ -6002,9 +6007,14 @@ One remote transport and four local transports are defined.
 .code
 remote_smtp:
   driver = smtp
+  hosts_try_prdr = *
 .endd
-This transport is used for delivering messages over SMTP connections. All its
-options are defaulted. The list of remote hosts comes from the router.
+This transport is used for delivering messages over SMTP connections.
+The list of remote hosts comes from the router.
+The &%hosts_try_prdr%& option enables an efficiency SMTP option.
+It is negotiated between client and server
+and not expected to cause problems but can be disabled if needed.
+All other options are defaulted.
 .code
 local_delivery:
   driver = appendfile
@@ -26663,6 +26673,8 @@ See also the &%prdr_enable%& global option
 and the &%hosts_try_prdr%& smtp transport option.
 
 This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
+If the ACL is not defined, processing completes as if
+the feature was not requested by the client.
 
 .section "The QUIT ACL" "SECTQUITACL"
 .cindex "QUIT, ACL for"

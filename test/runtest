@@ -498,6 +498,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # treat the standard algorithms the same.
   # So far, have seen:
   #   TLSv1:AES256-SHA:256
+  #   TLSv1.1:AES256-SHA:256
   #   TLSv1.2:AES256-GCM-SHA384:256
   #   TLSv1.2:DHE-RSA-AES256-SHA:256
   #   TLS1.2:DHE_RSA_AES_128_CBC_SHA1:128
