@@ -397,7 +397,7 @@ static unsigned int cond_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* add_header */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
   #endif
     (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
@@ -412,7 +412,7 @@ static unsigned int cond_forbids[] = {
   (1<<ACL_WHERE_AUTH)|                             /* bmi_optin */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
   #endif
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -434,9 +434,9 @@ static unsigned int cond_forbids[] = {
   #ifdef EXPERIMENTAL_DCC
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|                           /* dcc */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
@@ -450,9 +450,9 @@ static unsigned int cond_forbids[] = {
   #ifdef WITH_OLD_DEMIME
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|                           /* demime */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
@@ -474,7 +474,7 @@ static unsigned int cond_forbids[] = {
 
   (unsigned int)
   ~((1<<ACL_WHERE_RCPT)                            /* domains */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     |(1<<ACL_WHERE_PRDR)
   #endif
     ),
@@ -505,9 +505,9 @@ static unsigned int cond_forbids[] = {
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|                           /* malware */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
@@ -526,9 +526,9 @@ static unsigned int cond_forbids[] = {
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|                           /* regex */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_MIME)),
   #endif
@@ -536,7 +536,7 @@ static unsigned int cond_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* remove_header */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
   #endif
     (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
@@ -559,9 +559,9 @@ static unsigned int cond_forbids[] = {
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|                           /* spam */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_NOTSMTP)),
   #endif
 
@@ -608,9 +608,9 @@ static unsigned int control_forbids[] = {
 
   #ifndef DISABLE_DKIM
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_disable_verify */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
@@ -674,17 +674,17 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakedefer */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_MIME)),
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif /* EXPERIMENTAL_PRDR */
+  #endif
     (1<<ACL_WHERE_MIME)),
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* no_multiline */
@@ -4319,7 +4319,7 @@ sender_verified_failed = NULL;
 ratelimiters_cmd = NULL;
 log_reject_target = LOG_MAIN|LOG_REJECT;
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 if (where == ACL_WHERE_RCPT || where == ACL_WHERE_PRDR )
 #else
 if (where == ACL_WHERE_RCPT )
@@ -4363,7 +4363,7 @@ If conn-failure, no action (and keep the spooled copy).
 switch (where)
 {
 case ACL_WHERE_RCPT:
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 case ACL_WHERE_PRDR:
 #endif
   if( rcpt_count > 1 )

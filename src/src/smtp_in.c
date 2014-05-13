@@ -214,7 +214,7 @@ static uschar *protocols[] = {
 /* Sanity check and validate optional args to MAIL FROM: envelope */
 enum {
   ENV_MAIL_OPT_SIZE, ENV_MAIL_OPT_BODY, ENV_MAIL_OPT_AUTH,
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
   ENV_MAIL_OPT_PRDR,
 #endif
   ENV_MAIL_OPT_NULL
@@ -229,7 +229,7 @@ static env_mail_type_t env_mail_type_list[] = {
     { US"SIZE",   ENV_MAIL_OPT_SIZE,   TRUE  },
     { US"BODY",   ENV_MAIL_OPT_BODY,   TRUE  },
     { US"AUTH",   ENV_MAIL_OPT_AUTH,   TRUE  },
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
     { US"PRDR",   ENV_MAIL_OPT_PRDR,   FALSE },
 #endif
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
@@ -2637,7 +2637,7 @@ uschar *what =
 #endif
   (where == ACL_WHERE_PREDATA)? US"DATA" :
   (where == ACL_WHERE_DATA)? US"after DATA" :
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
   (where == ACL_WHERE_PRDR)? US"after DATA PRDR" :
 #endif
   (smtp_cmd_data == NULL)?
@@ -3628,12 +3628,13 @@ while (done <= 0)
         }
       #endif
 
-      #ifdef EXPERIMENTAL_PRDR
+      #ifndef DISABLE_PRDR
       /* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
-      if (prdr_enable) {
+      if (prdr_enable)
+        {
         s = string_cat(s, &size, &ptr, smtp_code, 3);
         s = string_cat(s, &size, &ptr, US"-PRDR\r\n", 7);
-      }
+	}
       #endif
 
       /* Finish off the multiline reply with one that is always available. */
@@ -3862,9 +3863,9 @@ while (done <= 0)
             }
             break;
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
         case ENV_MAIL_OPT_PRDR:
-          if ( prdr_enable )
+          if (prdr_enable)
             prdr_requested = TRUE;
           break;
 #endif
@@ -3989,29 +3990,32 @@ while (done <= 0)
     when pipelining is not advertised, do another sync check in case the ACL
     delayed and the client started sending in the meantime. */
 
-    if (acl_smtp_mail == NULL) rc = OK; else
+    if (acl_smtp_mail)
       {
       rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
       if (rc == OK && !pipelining_advertised && !check_sync())
         goto SYNC_FAILURE;
       }
+    else
+      rc = OK;
 
     if (rc == OK || rc == DISCARD)
       {
-      if (user_msg == NULL) 
+      if (!user_msg)
         smtp_printf("%s%s%s", US"250 OK",
-                  #ifdef EXPERIMENTAL_PRDR
-                    prdr_requested == TRUE ? US", PRDR Requested" :
-                  #endif
+                  #ifndef DISABLE_PRDR
+                    prdr_requested ? US", PRDR Requested" : US"",
+		  #else
                     US"",
+                  #endif
                     US"\r\n");
       else 
         {
-      #ifdef EXPERIMENTAL_PRDR
-        if ( prdr_requested == TRUE )
+      #ifndef DISABLE_PRDR
+        if (prdr_requested)
            user_msg = string_sprintf("%s%s", user_msg, US", PRDR Requested");
       #endif
-        smtp_user_msg(US"250",user_msg);
+        smtp_user_msg(US"250", user_msg);
         }
       smtp_delay_rcpt = smtp_rlr_base;
       recipients_discarded = (rc == DISCARD);

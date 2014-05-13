@@ -115,6 +115,8 @@ JH/22 Expansion operators ${md5:string} and ${sha1::string} can now
       operate on certificate variables to give certificate fingerprints
       Also new ${sha256:cert_variable}.
 
+JH/23 The PRDR feature is moved from being Experimental into the mainline.
+
 
 Exim version 4.82
 -----------------
