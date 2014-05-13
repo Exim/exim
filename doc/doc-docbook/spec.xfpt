@@ -8899,8 +8899,8 @@ the certificate.  Supported fields are:
 &`serial_number  `&
 &`subject        `& RFC4514 DN
 &`issuer         `& RFC4514 DN
-&`notbefore      `&
-&`notafter       `&
+&`notbefore      `& time
+&`notafter       `& time
 &`sig_algorithm  `&
 &`signature      `&
 &`subj_altname   `& tagged list
@@ -8919,18 +8919,6 @@ extracted is used.
 
 Some field names take optional modifiers, appended and separated by commas.
 
-The field selectors marked as "list" above return a list,
-newline-separated by default,
-(embedded separator characters in elements are doubled).
-The separator may be changed by a modifier of
-a right angle-bracket followed immediately by the new separator.
-
-The field selectors marked as "tagged" above
-prefix each list element with a type string and an equals sign.
-Elements of only one type may be selected by a modifier
-which is one of "dns", "uri" or "mail";
-if so the elenment tags are omitted.
-
 The field selectors marked as "RFC4514" above
 output a Distinguished Name string which is
 not quite
@@ -8943,7 +8931,23 @@ The separator may be changed by another modifer of
 a right angle-bracket followed immediately by the new separator.
 Recognised RDN type labels include "CN", "O", "OU" and "DC".
 
-Field values are generally presented in human-readable form.
+The field selectors marked as "time" above
+may output a number of seconds since epoch
+if the modifier "int" is used.
+
+The field selectors marked as "list" above return a list,
+newline-separated by default,
+(embedded separator characters in elements are doubled).
+The separator may be changed by a modifier of
+a right angle-bracket followed immediately by the new separator.
+
+The field selectors marked as "tagged" above
+prefix each list element with a type string and an equals sign.
+Elements of only one type may be selected by a modifier
+which is one of "dns", "uri" or "mail";
+if so the elenment tags are omitted.
+
+If not otherwise noted field values are presented in human-readable form.
 .wen
 
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&

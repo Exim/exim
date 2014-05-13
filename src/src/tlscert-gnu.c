@@ -84,11 +84,18 @@ return NULL;
 
 
 static uschar *
-time_copy(time_t t)
+time_copy(time_t t, uschar * mod)
 {
-uschar * cp = store_get(32);
-struct tm * tp = gmtime(&t);
-size_t len = strftime(CS cp, 32, "%b %e %T %Y %Z", tp);
+uschar * cp;
+struct tm * tp;
+size_t len;
+
+if (mod && Ustrcmp(mod, "int") == 0)
+  return string_sprintf("%u", (unsigned)t);
+
+cp = store_get(32);
+tp = gmtime(&t);
+len = strftime(CS cp, 32, "%b %e %T %Y %Z", tp);
 return len > 0 ? cp : NULL;
 }
 
@@ -116,14 +123,16 @@ uschar *
 tls_cert_not_after(void * cert, uschar * mod)
 {
 return time_copy(
-  gnutls_x509_crt_get_expiration_time((gnutls_x509_crt_t)cert));
+  gnutls_x509_crt_get_expiration_time((gnutls_x509_crt_t)cert),
+  mod);
 }
 
 uschar *
 tls_cert_not_before(void * cert, uschar * mod)
 {
 return time_copy(
-  gnutls_x509_crt_get_activation_time((gnutls_x509_crt_t)cert));
+  gnutls_x509_crt_get_activation_time((gnutls_x509_crt_t)cert),
+  mod);
 }
 
 uschar *

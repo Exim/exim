@@ -89,11 +89,26 @@ return cp;
 }
 
 static uschar *
-asn1_time_copy(const ASN1_TIME * time)
+bio_string_time_to_int(BIO * bp, int len)
+{
+uschar * cp = US"";
+struct tm t;
+len = len > 0 ? (int) BIO_get_mem_data(bp, &cp) : 0;
+/*XXX %Z might be glibc-specific? */
+(void) strptime(CS cp, "%b%t%e%t%T%t%Y%t%Z", &t);
+BIO_free(bp);
+/*XXX timegm might not be portable? */
+return string_sprintf("%u", (unsigned) timegm(&t));
+}
+
+static uschar *
+asn1_time_copy(const ASN1_TIME * time, uschar * mod)
 {
 BIO * bp = BIO_new(BIO_s_mem());
 int len = ASN1_TIME_print(bp, time);
-return bio_string_copy(bp, len);
+return mod &&  Ustrcmp(mod, "int") == 0
+  ? bio_string_time_to_int(bp, len)
+  : bio_string_copy(bp, len);
 }
 
 static uschar *
@@ -118,13 +133,13 @@ return mod ? tls_field_from_dn(cp, mod) : cp;
 uschar *
 tls_cert_not_before(void * cert, uschar * mod)
 {
-return asn1_time_copy(X509_get_notBefore((X509 *)cert));
+return asn1_time_copy(X509_get_notBefore((X509 *)cert), mod);
 }
 
 uschar *
 tls_cert_not_after(void * cert, uschar * mod)
 {
-return asn1_time_copy(X509_get_notAfter((X509 *)cert));
+return asn1_time_copy(X509_get_notAfter((X509 *)cert), mod);
 }
 
 uschar *
