@@ -507,7 +507,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # Mail headers (...), log-lines X=..., client-ssl output ...
   # (and \b doesn't match between ' ' and '(' )
 
-  s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1\.2:/$1TLSv1:/xg;
+  s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1\.[12]:/$1TLSv1:/xg;
   s/\bAES256-GCM-SHA384\b/AES256-SHA/g;
   s/\bDHE-RSA-AES256-SHA\b/AES256-SHA/g;
 
