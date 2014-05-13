@@ -782,11 +782,8 @@ const tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
 uschar *response_der;
 int response_der_len;
 
-if (log_extra_selector & LX_tls_cipher)
-  log_write(0, LOG_MAIN, "[%s] Recieved OCSP stapling req;%s responding",
-    sender_host_address, cbinfo->u_ocsp.server.response ? "":" not");
-else
-  DEBUG(D_tls) debug_printf("Received TLS status request (OCSP stapling); %s response.",
+DEBUG(D_tls)
+  debug_printf("Received TLS status request (OCSP stapling); %s response.",
     cbinfo->u_ocsp.server.response ? "have" : "lack");
 
 tls_in.ocsp = OCSP_NOT_RESP;

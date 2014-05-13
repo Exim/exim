@@ -993,10 +993,11 @@ switch(where)
   {
   case ACL_WHERE_DKIM:
   case ACL_WHERE_MIME:
-  case ACL_WHERE_DATA: if (cutthrough_fd >= 0 && (acl_removed_headers || acl_added_headers))
+  case ACL_WHERE_DATA:
+    if (cutthrough_fd >= 0 && (acl_removed_headers || acl_added_headers))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Header modification in data ACLs"
-			"will not take effect on cutthrough deliveries");
+			" will not take effect on cutthrough deliveries");
     return;
     }
   }
