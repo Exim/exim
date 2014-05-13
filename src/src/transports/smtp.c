@@ -118,7 +118,7 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
   { "hosts_try_prdr",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_prdr) },
 #endif
@@ -196,7 +196,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* serialize_hosts */
   NULL,                /* hosts_try_auth */
   NULL,                /* hosts_require_auth */
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
   NULL,                /* hosts_try_prdr */
 #endif
 #ifdef EXPERIMENTAL_OCSP
@@ -1185,7 +1185,7 @@ BOOL completed_address = FALSE;
 BOOL esmtp = TRUE;
 BOOL pending_MAIL;
 BOOL pass_message = FALSE;
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 BOOL prdr_offered = FALSE;
 BOOL prdr_active;
 #endif
@@ -1386,7 +1386,7 @@ goto SEND_QUIT;
       PCRE_EOPT, NULL, 0) >= 0;
   #endif
 
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
   prdr_offered = esmtp &&
     (pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
       PCRE_EOPT, NULL, 0) >= 0) &&
@@ -1585,7 +1585,7 @@ if (continue_hostname == NULL
   DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
     smtp_use_pipelining? "" : "not ");
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
   prdr_offered = esmtp &&
     pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(CS buffer), 0,
       PCRE_EOPT, NULL, 0) >= 0 &&
@@ -1673,7 +1673,7 @@ if (smtp_use_size)
   while (*p) p++;
   }
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 prdr_active = FALSE;
 if (prdr_offered)
   {
@@ -1909,7 +1909,7 @@ if (!ok) ok = TRUE; else
 
   smtp_command = US"end of data";
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
   /* For PRDR we optionally get a partial-responses warning
    * followed by the individual responses, before going on with
    * the overall response.  If we don't get the warning then deal
@@ -2004,7 +2004,7 @@ if (!ok) ok = TRUE; else
       address. For temporary errors, add a retry item for the address so that
       it doesn't get tried again too soon. */
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
       if (lmtp || prdr_active)
 #else
       if (lmtp)
@@ -2015,7 +2015,7 @@ if (!ok) ok = TRUE; else
           {
           if (errno != 0 || buffer[0] == 0) goto RESPONSE_FAILED;
           addr->message = string_sprintf(
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 	    "%s error after %s: %s", prdr_active ? "PRDR":"LMTP",
 #else
 	    "LMTP error after %s: %s",
@@ -2029,7 +2029,7 @@ if (!ok) ok = TRUE; else
             errno = ERRNO_DATA4XX;
             addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
             addr->transport_return = DEFER;
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
             if (!prdr_active)
 #endif
               retry_add_item(addr, addr->address_retry_key, 0);
@@ -2052,12 +2052,12 @@ if (!ok) ok = TRUE; else
       addr->host_used = thost;
       addr->special_action = flag;
       addr->message = conf;
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
       if (prdr_active) addr->flags |= af_prdr_used;
 #endif
       flag = '-';
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
       if (!prdr_active)
 #endif
         {
@@ -2079,7 +2079,7 @@ if (!ok) ok = TRUE; else
         }
       }
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
       if (prdr_active)
         {
 	/* PRDR - get the final, overall response.  For any non-success

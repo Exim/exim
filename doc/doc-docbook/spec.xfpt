@@ -13135,6 +13135,7 @@ listed in more than one group.
 .row &%acl_smtp_auth%&               "ACL for AUTH"
 .row &%acl_smtp_connect%&            "ACL for connection"
 .row &%acl_smtp_data%&               "ACL for DATA"
+.row &%acl_smtp_data_prdr%&          "ACL for DATA, per-recipient"
 .row &%acl_smtp_dkim%&               "ACL for DKIM verification"
 .row &%acl_smtp_etrn%&               "ACL for ETRN"
 .row &%acl_smtp_expn%&               "ACL for EXPN"
@@ -13290,6 +13291,7 @@ See also the &'Policy controls'& section above.
 .row &%ignore_fromline_hosts%&       "allow &""From ""& from these hosts"
 .row &%ignore_fromline_local%&       "allow &""From ""& from local SMTP"
 .row &%pipelining_advertise_hosts%&  "advertise pipelining to these hosts"
+.row &%prdr_enable%&                 "advertise PRDR to all hosts"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .endtable
 
@@ -13439,6 +13441,16 @@ See chapter &<<CHAPACL>>& for further details.
 .cindex "DATA" "ACL for"
 This option defines the ACL that is run after an SMTP DATA command has been
 processed and the message itself has been received, but before the final
+acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
+
+.option acl_smtp_data_prdr main string&!! unset
+.cindex "DATA" "ACL for"
+.cindex "&ACL;" "PRDR-related"
+.cindex "&ACL;" "per-user data processing"
+This option defines the ACL that,
+if the PRDR feature has been negotiated,
+is run for each recipient after an SMTP DATA command has been
+processed and the message itself has been received, but before the
 acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
 
 .option acl_smtp_etrn main string&!! unset
@@ -15082,6 +15094,15 @@ for each SMTP command and response. When PIPELINING is advertised, Exim assumes
 that clients will use it; &"out of order"& commands that are &"expected"& do
 not count as protocol errors (see &%smtp_max_synprot_errors%&).
 
+
+.option prdr_enable main boolean false
+.cindex "PRDR" "enabling on server"
+This option can be used to enable the Per-Recipient Data Response extension
+to SMTP, defined by Eric Hall.
+If the option is set, PRDR is advertised by Exim when operating as a server.
+If the client requests PRDR, and more than one recipient, for a message 
+an additional ACL is called for each recipient after the message content
+is recieved.  See section &<<SECTPRDRACL>>&.
 
 .option preserve_message_logs main boolean false
 .cindex "message logs" "preserving"
@@ -22973,6 +22994,12 @@ connects. If authentication fails, Exim will try to transfer the message
 unauthenticated. See also &%hosts_require_auth%&, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
+.option hosts_try_prdr smtp "host list&!!" unset
+.cindex "PRDR" "enabling, optional in client"
+This option provides a list of servers to which, provided they announce
+PRDR support, Exim will attempt to negotiate PRDR
+for multi-recipient messages.
+
 .option interface smtp "string list&!!" unset
 .cindex "bind IP address"
 .cindex "IP address" "binding"
@@ -26460,6 +26487,7 @@ options in the main part of the configuration. These options are:
 .cindex "SMTP" "connection, ACL for"
 .cindex "non-SMTP messages" "ACLs for"
 .cindex "MIME content scanning" "ACL for"
+.cindex "PRDR" "ACL for"
 
 .table2 140pt
 .irow &%acl_not_smtp%&         "ACL for non-SMTP messages"
@@ -26468,6 +26496,7 @@ options in the main part of the configuration. These options are:
 .irow &%acl_smtp_auth%&        "ACL for AUTH"
 .irow &%acl_smtp_connect%&     "ACL for start of SMTP connection"
 .irow &%acl_smtp_data%&        "ACL after DATA is complete"
+.irow &%acl_smtp_data_prdr%&   "ACL for each recipient, after DATA is complete"
 .irow &%acl_smtp_etrn%&        "ACL for ETRN"
 .irow &%acl_smtp_expn%&        "ACL for EXPN"
 .irow &%acl_smtp_helo%&        "ACL for HELO or EHLO"
@@ -26582,8 +26611,10 @@ before or after the data) correctly &-- they keep the message on their queues
 and try again later, but that is their problem, though it does waste some of
 your resources.
 
-The &%acl_smtp_data%& ACL is run after both the &%acl_smtp_dkim%& and
-the &%acl_smtp_mime%& ACLs.
+The &%acl_smtp_data%& ACL is run after
+the &%acl_smtp_data_prdr%&,
+the &%acl_smtp_dkim%&
+and the &%acl_smtp_mime%& ACLs.
 
 .section "The SMTP DKIM ACL" "SECTDKIMACL"
 The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
@@ -26604,6 +26635,34 @@ content-scanning extension. For details, see chapter &<<CHAPexiscan>>&.
 
 This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
+
+.section "The SMTP PRDR ACL" "SECTPRDRACL"
+.oindex "&%prdr_enable%&"
+The &%acl_smtp_data_prdr%& ACL is available only when Exim is compiled
+with PRDR support enabled (which is the default).
+It becomes active only when the PRDR feature is negotiated between
+client and server for a message, and more than one recipient
+has been accepted.
+
+The ACL test specfied by &%acl_smtp_data_prdr%& happens after a message
+has been recieved, and is executed for each recipient of the message.
+The test may accept or deny for inividual recipients.
+The &%acl_smtp_data%& will still be called after this ACL and
+can reject the message overall, even if this ACL has accepted it
+for some or all recipients.
+
+PRDR may be used to support per-user content filtering.  Without it
+one must defer any recipient after the first that has a different
+content-filter configuration.  With PRDR, the RCPT-time check
+for this can be disabled when the MAIL-time $smtp_command included
+"PRDR".  Any required difference in behaviour of the main DATA-time
+ACL should however depend on the PRDR-time ACL having run, as Exim
+will avoid doing so in some situations (eg.  single-recipient mails).
+
+See also the &%prdr_enable%& global option
+and the &%hosts_try_prdr%& smtp transport option.
+
+This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
 .section "The QUIT ACL" "SECTQUITACL"
 .cindex "QUIT, ACL for"

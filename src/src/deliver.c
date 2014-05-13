@@ -830,7 +830,7 @@ else
       }
     }
 
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
   if (addr->flags & af_prdr_used)
     s = string_append(s, &size, &ptr, 1, US" PRDR");
   #endif
@@ -3043,9 +3043,10 @@ while (!done)
     while (*ptr++);
     break;
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
     case 'P':
-    addr->flags |= af_prdr_used; break;
+    addr->flags |= af_prdr_used;
+    break;
 #endif
 
     case 'A':
@@ -6280,7 +6281,7 @@ if (addr_remote != NULL)
     regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
   #endif
 
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
   if (regex_PRDR == NULL) regex_PRDR =
     regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
   #endif

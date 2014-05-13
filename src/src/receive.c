@@ -519,7 +519,7 @@ Arguments:
 Returns:       nothing
 */
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 static void
 smtp_user_msg(uschar *code, uschar *user_msg)
 {
@@ -3276,8 +3276,8 @@ else
     dmarc_up = dmarc_store_data(from_header);
 #endif /* EXPERIMENTAL_DMARC */
 
-#ifdef EXPERIMENTAL_PRDR
-    if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr != NULL )
+#ifndef DISABLE_PRDR
+    if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr)
       {
       unsigned int c;
       int all_pass = OK;
@@ -3345,7 +3345,7 @@ else
       }
     else
       prdr_requested = FALSE;
-#endif /* EXPERIMENTAL_PRDR */
+#endif /* !DISABLE_PRDR */
 
     /* Check the recipients count again, as the MIME ACL might have changed
     them. */
@@ -3738,21 +3738,20 @@ if (message_reference != NULL)
 s = add_host_info_for_log(s, &size, &sptr);
 
 #ifdef SUPPORT_TLS
-if ((log_extra_selector & LX_tls_cipher) != 0 && tls_in.cipher != NULL)
+if (log_extra_selector & LX_tls_cipher && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" X=", tls_in.cipher);
-if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-     tls_in.cipher != NULL)
+if (log_extra_selector & LX_tls_certificate_verified && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" CV=",
     tls_in.certificate_verified? "yes":"no");
-if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_in.peerdn != NULL)
+if (log_extra_selector & LX_tls_peerdn && tls_in.peerdn)
   s = string_append(s, &size, &sptr, 3, US" DN=\"",
     string_printing(tls_in.peerdn), US"\"");
-if ((log_extra_selector & LX_tls_sni) != 0 && tls_in.sni != NULL)
+if (log_extra_selector & LX_tls_sni && tls_in.sni)
   s = string_append(s, &size, &sptr, 3, US" SNI=\"",
     string_printing(tls_in.sni), US"\"");
 #endif
 
-if (sender_host_authenticated != NULL)
+if (sender_host_authenticated)
   {
   s = string_append(s, &size, &sptr, 2, US" A=", sender_host_authenticated);
   if (authenticated_id != NULL)
@@ -3763,16 +3762,14 @@ if (sender_host_authenticated != NULL)
     }
   }
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 if (prdr_requested)
   s = string_append(s, &size, &sptr, 1, US" PRDR");
 #endif
+
 #ifdef EXPERIMENTAL_PROXY
-if (proxy_session &&
-    (log_extra_selector & LX_proxy) != 0)
-  {
+if (proxy_session &&  log_extra_selector & LX_proxy)
   s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host_address);
-  }
 #endif
 
 sprintf(CS big_buffer, "%d", msg_size);
@@ -3990,11 +3987,11 @@ if(cutthrough_fd >= 0)
     }
   }
 
-if(smtp_reply == NULL
-#ifdef EXPERIMENTAL_PRDR
-                     || prdr_requested
+#ifndef DISABLE_PRDR
+if(!smtp_reply || prdr_requested)
+#else
+if(!smtp_reply)
 #endif
-  )
   {
   log_write(0, LOG_MAIN |
     (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |

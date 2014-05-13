@@ -488,7 +488,7 @@ typedef struct address_item_propagated {
 #define af_cert_verified       0x01000000 /* delivered with verified TLS cert */
 #define af_pass_message        0x02000000 /* pass message in bounces */
 #define af_bad_reply           0x04000000 /* filter could not generate autoreply */
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 # define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
 #endif
 #define af_force_command       0x10000000 /* force_command in pipe transport */

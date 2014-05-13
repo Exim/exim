@@ -160,7 +160,7 @@ extern uschar *acl_removed_headers;    /* Headers deleted by an ACL */
 extern uschar *acl_smtp_auth;          /* ACL run for AUTH */
 extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 extern uschar *acl_smtp_data_prdr;     /* ACL run after DATA received if in PRDR mode*/
 const extern pcre *regex_PRDR;         /* For recognizing PRDR settings */
 #endif
@@ -592,7 +592,7 @@ extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
 extern uschar *pipelining_advertise_hosts; /* As it says */
 extern BOOL    pipelining_enable;      /* As it says */
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 extern BOOL    prdr_enable;            /* As it says */
 extern BOOL    prdr_requested;         /* Connecting mail server wants PRDR */
 #endif

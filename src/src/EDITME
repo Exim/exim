@@ -410,6 +410,10 @@ EXIM_MONITOR=eximon.bin
 
 # DISABLE_DKIM=yes
 
+#------------------------------------------------------------------------------
+# Uncomment the following line to remove Per-Recipient-Data-Response support.
+
+# DISABLE_PRDR=yes
 
 #------------------------------------------------------------------------------
 # By default, Exim has support for checking the AD bit in a DNS response, to
@@ -466,8 +470,6 @@ EXIM_MONITOR=eximon.bin
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lopendmarc
 
-# Uncomment the following line to add Per-Recipient-Data-Response support.
-# EXPERIMENTAL_PRDR=yes
 
 # Uncomment the following line to support Transport post-delivery actions,
 # eg. for logging to a database.

@@ -49,6 +49,8 @@ Version 4.83
     work over them for generating fingerprints, and a new sha256 operator
     for them added.
 
+11. PRDR is now supported dy default.
+
 
 Version 4.82
 ------------

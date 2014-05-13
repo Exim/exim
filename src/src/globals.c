@@ -155,7 +155,7 @@ uschar *tls_verify_certificates= NULL;
 uschar *tls_verify_hosts       = NULL;
 #endif
 
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 /* Per Recipient Data Response variables */
 BOOL    prdr_enable            = FALSE;
 BOOL    prdr_requested         = FALSE;
@@ -218,7 +218,7 @@ uschar *acl_removed_headers    = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
 uschar *acl_smtp_data_prdr     = NULL;
 #endif
 #ifndef DISABLE_DKIM
@@ -254,7 +254,7 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MIME",
                                    US"DKIM",
                                    US"DATA",
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
                                    US"PRDR",
 #endif
                                    US"non-SMTP",
@@ -279,7 +279,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"550",     /* MIME */
                                    US"550",     /* DKIM */
                                    US"550",     /* DATA */
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
                                    US"550",    /* RCPT PRDR */
 #endif
                                    US"0",       /* not SMTP; not relevant */

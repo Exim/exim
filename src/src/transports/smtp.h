@@ -21,7 +21,7 @@ typedef struct {
   uschar *serialize_hosts;
   uschar *hosts_try_auth;
   uschar *hosts_require_auth;
-#ifdef EXPERIMENTAL_PRDR
+#ifndef DISABLE_PRDR
   uschar *hosts_try_prdr;
 #endif
 #ifdef EXPERIMENTAL_OCSP
