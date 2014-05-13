@@ -23266,6 +23266,11 @@ in clear.
 This option gives a list of hosts for which, on encrypted connections,
 certificate verification will be tried but need not succeed.
 The &%tls_verify_certificates%& option must also be set.
+Note that unless the host is in this list
+TLS connections will be denied to hosts using self-signed certificates
+when &%tls_verify_certificates%& is set.
+The &$tls_out_certificate_verified$& variable is set when
+certificate verification succeeds.
 
 
 .option tls_verify_certificates smtp string&!! unset
