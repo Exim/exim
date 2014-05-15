@@ -284,12 +284,11 @@ if (state == 0)
     }
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
     "tls_try_verify_hosts)\n");
-  return 1;                          /* accept */
   }
 
-if (x509ctx->error_depth != 0)
+else if (x509ctx->error_depth != 0)
   {
-  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d cert=%s\n",
+  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n",
      x509ctx->error_depth, txt);
 #ifdef EXPERIMENTAL_OCSP
   if (tlsp == &tls_out && client_static_cbinfo->u_ocsp.client.verify_store)
@@ -305,21 +304,13 @@ if (x509ctx->error_depth != 0)
   }
 else
   {
-  DEBUG(D_tls) debug_printf("SSL%s peer: %s\n",
-    *calledp ? "" : " authenticated", txt);
   tlsp->peerdn = txt;
   tlsp->peercert = X509_dup(x509ctx->current_cert);
+  DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
+    *calledp ? "" : " authenticated", txt);
+  if (!*calledp) tlsp->certificate_verified = TRUE;
+  *calledp = TRUE;
   }
-
-/*XXX JGH: this looks bogus - we set "verified" first time through, which
-will be for the root CS cert (calls work down the chain).  Why should it
-not be on the last call, where we're setting peerdn?
-
-To test: set up a chain anchored by a good root-CA but with a bad server cert.
-Does certificate_verified get set?
-*/
-if (!*calledp) tlsp->certificate_verified = TRUE;
-*calledp = TRUE;
 
 return 1;   /* accept */
 }
