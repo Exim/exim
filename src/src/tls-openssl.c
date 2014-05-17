@@ -262,34 +262,36 @@ Returns:     1 if verified, 0 if not
 */
 
 static int
-verify_callback(int state, X509_STORE_CTX *x509ctx, tls_support *tlsp, BOOL *calledp, BOOL *optionalp)
+verify_callback(int state, X509_STORE_CTX *x509ctx,
+  tls_support *tlsp, BOOL *calledp, BOOL *optionalp)
 {
+X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 static uschar txt[256];
 
-X509_NAME_oneline(X509_get_subject_name(x509ctx->current_cert),
+X509_NAME_oneline(X509_get_subject_name(cert),
   CS txt, sizeof(txt));
 
 if (state == 0)
   {
   log_write(0, LOG_MAIN, "SSL verify error: depth=%d error=%s cert=%s",
-    x509ctx->error_depth,
-    X509_verify_cert_error_string(x509ctx->error),
+    X509_STORE_CTX_get_error_depth(x509ctx),
+    X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
     txt);
   tlsp->certificate_verified = FALSE;
   *calledp = TRUE;
   if (!*optionalp)
     {
-    tlsp->peercert = X509_dup(x509ctx->current_cert);
+    tlsp->peercert = X509_dup(cert);
     return 0;			    /* reject */
     }
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
     "tls_try_verify_hosts)\n");
   }
 
-else if (x509ctx->error_depth != 0)
+else if (X509_STORE_CTX_get_error_depth(x509ctx) != 0)
   {
   DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n",
-     x509ctx->error_depth, txt);
+     X509_STORE_CTX_get_error_depth(x509ctx), txt);
 #ifdef EXPERIMENTAL_OCSP
   if (tlsp == &tls_out && client_static_cbinfo->u_ocsp.client.verify_store)
     {	/* client, wanting stapling  */
@@ -297,7 +299,7 @@ else if (x509ctx->error_depth != 0)
     for the verification of the OCSP stapled information. */
   
     if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
-                             x509ctx->current_cert))
+                             cert))
       ERR_clear_error();
     }
 #endif
@@ -305,7 +307,7 @@ else if (x509ctx->error_depth != 0)
 else
   {
   tlsp->peerdn = txt;
-  tlsp->peercert = X509_dup(x509ctx->current_cert);
+  tlsp->peercert = X509_dup(cert);
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
     *calledp ? "" : " authenticated", txt);
   if (!*calledp) tlsp->certificate_verified = TRUE;
