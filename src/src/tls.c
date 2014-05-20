@@ -196,6 +196,8 @@ modify_variable(US"tls_sni",                  &dest_tsp->sni);
 #endif
 }
 
+
+#ifdef SUPPORT_TLS
 /************************************************
 *	TLS certificate name operations         *
 ************************************************/
@@ -255,7 +257,7 @@ return list;
 }
 
 
-#ifdef EXPERIMENTAL_CERTNAMES
+# ifdef EXPERIMENTAL_CERTNAMES
 /* Compare a domain name with a possibly-wildcarded name. Wildcards
 are restricted to a single one, as the first element of patterns
 having at least three dot-separated elements.  Case-independent.
@@ -328,7 +330,8 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
   }
 return FALSE;
 }
-#endif
+# endif	/*EXPERIMENTAL_CERTNAMES*/
+#endif	/*SUPPORY_TLS*/
 
 /* vi: aw ai sw=2
 */
