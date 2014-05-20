@@ -4187,7 +4187,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
 
-      #ifdef EXPERIMENTAL_PRDR
+      #ifndef DISABLE_PRDR
       if (addr->flags & af_prdr_used)
 	rmt_dlv_checked_write(fd, "P", 1);
       #endif

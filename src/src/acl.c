@@ -491,7 +491,7 @@ static unsigned int cond_forbids[] = {
 
   (unsigned int)
   ~((1<<ACL_WHERE_RCPT)                             /* local_parts */
-  #ifdef EXPERIMENTAL_PRDR
+  #ifndef DISABLE_PRDR
     |(1<<ACL_WHERE_PRDR)
   #endif
     ),
