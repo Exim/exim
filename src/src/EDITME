@@ -485,6 +485,10 @@ EXIM_MONITOR=eximon.bin
 # Uncomment the following line to enable Experimental Proxy Protocol
 # EXPERIMENTAL_PROXY=yes
 
+# Uncomment the following line to enable support for checking certiticate
+# ownership
+# EXPERIMENTAL_CERTNAMES=yes
+
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

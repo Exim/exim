@@ -60,7 +60,12 @@ Changes:
 
 /* Values for verify_requirement */
 
-enum peer_verify_requirement { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED };
+enum peer_verify_requirement
+  { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED
+#ifdef EXPERIMENTAL_CERTNAMES
+    ,VERIFY_WITHHOST
+#endif
+  };
 
 /* This holds most state for server or client; with this, we can set up an
 outbound TLS-enabled connection in an ACL callout, while not stomping all
@@ -95,6 +100,7 @@ typedef struct exim_gnutls_state {
   const uschar *tls_verify_certificates;
   const uschar *tls_crl;
   const uschar *tls_require_ciphers;
+
   uschar *exp_tls_certificate;
   uschar *exp_tls_privatekey;
   uschar *exp_tls_sni;
@@ -102,6 +108,9 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
   uschar *exp_tls_ocsp_file;
+#ifdef EXPERIMENTAL_CERTNAMES
+  uschar *exp_tls_verify_cert_hostnames;
+#endif
 
   tls_support *tlsp;	/* set in tls_init() */
 
@@ -117,6 +126,9 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+#ifdef EXPERIMENTAL_CERTNAMES
+                                            NULL,
+#endif
   NULL,
   NULL, 0, 0, 0, 0,
 };
@@ -178,18 +190,18 @@ before, for now. */
 #define expand_check_tlsvar(Varname) expand_check(state->Varname, US #Varname, &state->exp_##Varname)
 
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
-#define HAVE_GNUTLS_SESSION_CHANNEL_BINDING
-#define HAVE_GNUTLS_SEC_PARAM_CONSTANTS
-#define HAVE_GNUTLS_RND
+# define HAVE_GNUTLS_SESSION_CHANNEL_BINDING
+# define HAVE_GNUTLS_SEC_PARAM_CONSTANTS
+# define HAVE_GNUTLS_RND
 /* The security fix we provide with the gnutls_allow_auto_pkcs11 option
  * (4.82 PP/09) introduces a compatibility regression. The symbol simply
  * isn't available sometimes, so this needs to become a conditional
  * compilation; the sanest way to deal with this being a problem on
  * older OSes is to block it in the Local/Makefile with this compiler
  * definition  */
-#ifndef AVOID_GNUTLS_PKCS11
-#define HAVE_GNUTLS_PKCS11
-#endif /* AVOID_GNUTLS_PKCS11 */
+# ifndef AVOID_GNUTLS_PKCS11
+#  define HAVE_GNUTLS_PKCS11
+# endif /* AVOID_GNUTLS_PKCS11 */
 #endif
 
 
@@ -294,10 +306,16 @@ tls_error(when, msg, state->host);
 *        Set various Exim expansion vars         *
 *************************************************/
 
-#define exim_gnutls_cert_err(Label) do { \
-  if (rc != GNUTLS_E_SUCCESS) { \
-    DEBUG(D_tls) debug_printf("TLS: cert problem: %s: %s\n", (Label), gnutls_strerror(rc)); \
-    return rc; } } while (0)
+#define exim_gnutls_cert_err(Label) \
+  do \
+    { \
+    if (rc != GNUTLS_E_SUCCESS) \
+      { \
+      DEBUG(D_tls) debug_printf("TLS: cert problem: %s: %s\n", \
+	(Label), gnutls_strerror(rc)); \
+      return rc; \
+      } \
+    } while (0)
 
 static int
 import_cert(const gnutls_datum * cert, gnutls_x509_crt_t * crtp)
@@ -1220,7 +1238,7 @@ if (cert_list == NULL || cert_list_size == 0)
   {
   DEBUG(D_tls) debug_printf("TLS: no certificate from peer (%p & %d)\n",
       cert_list, cert_list_size);
-  if (state->verify_requirement == VERIFY_REQUIRED)
+  if (state->verify_requirement >= VERIFY_REQUIRED)
     return tls_error(US"certificate verification failed",
         "no certificate received from peer", state->host);
   return OK;
@@ -1232,17 +1250,23 @@ if (ct != GNUTLS_CRT_X509)
   const char *ctn = gnutls_certificate_type_get_name(ct);
   DEBUG(D_tls)
     debug_printf("TLS: peer cert not X.509 but instead \"%s\"\n", ctn);
-  if (state->verify_requirement == VERIFY_REQUIRED)
+  if (state->verify_requirement >= VERIFY_REQUIRED)
     return tls_error(US"certificate verification not possible, unhandled type",
         ctn, state->host);
   return OK;
   }
 
-#define exim_gnutls_peer_err(Label) do { \
-  if (rc != GNUTLS_E_SUCCESS) { \
-    DEBUG(D_tls) debug_printf("TLS: peer cert problem: %s: %s\n", (Label), gnutls_strerror(rc)); \
-    if (state->verify_requirement == VERIFY_REQUIRED) { return tls_error((Label), gnutls_strerror(rc), state->host); } \
-    return OK; } } while (0)
+#define exim_gnutls_peer_err(Label) \
+  do { \
+    if (rc != GNUTLS_E_SUCCESS) \
+      { \
+      DEBUG(D_tls) debug_printf("TLS: peer cert problem: %s: %s\n", \
+	(Label), gnutls_strerror(rc)); \
+      if (state->verify_requirement >= VERIFY_REQUIRED) \
+	return tls_error((Label), gnutls_strerror(rc), state->host); \
+      return OK; \
+      } \
+    } while (0)
 
 rc = import_cert(&cert_list[0], &crt);
 exim_gnutls_peer_err(US"cert 0");
@@ -1306,7 +1330,9 @@ else
 /* Handle the result of verification. INVALID seems to be set as well
 as REVOKED, but leave the test for both. */
 
-if (rc < 0 || verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
+if (rc < 0 ||
+    verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)
+   )
   {
   state->peer_cert_verified = FALSE;
   if (!*error)
@@ -1314,21 +1340,42 @@ if (rc < 0 || verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
       ? "certificate revoked" : "certificate invalid";
 
   DEBUG(D_tls)
-    debug_printf("TLS certificate verification failed (%s): peerdn=%s\n",
+    debug_printf("TLS certificate verification failed (%s): peerdn=\"%s\"\n",
         *error, state->peerdn ? state->peerdn : US"<unset>");
 
-  if (state->verify_requirement == VERIFY_REQUIRED)
+  if (state->verify_requirement >= VERIFY_REQUIRED)
     {
-    gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
+    gnutls_alert_send(state->session,
+      GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
     return FALSE;
     }
   DEBUG(D_tls)
     debug_printf("TLS verify failure overridden (host in tls_try_verify_hosts)\n");
   }
+
 else
   {
+#ifdef EXPERIMENTAL_CERTNAMES
+  if (state->verify_requirement == VERIFY_WITHHOST)
+    {
+    int sep = 0;
+    uschar * list = state->exp_tls_verify_cert_hostnames;
+    uschar * name;
+    while (name = string_nextinlist(&list, &sep, NULL, 0))
+      if (gnutls_x509_crt_check_hostname(state->tlsp->peercert, CS name))
+	break;
+    if (!name)
+      {
+      DEBUG(D_tls)
+	debug_printf("TLS certificate verification failed: cert name mismatch\n");
+      gnutls_alert_send(state->session,
+	GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
+      return FALSE;
+      }
+    }
+#endif
   state->peer_cert_verified = TRUE;
-  DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=%s\n",
+  DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=\"%s\"\n",
       state->peerdn ? state->peerdn : US"<unset>");
   }
 
@@ -1517,19 +1564,22 @@ optional, set up appropriately. */
 
 if (verify_check_host(&tls_verify_hosts) == OK)
   {
-  DEBUG(D_tls) debug_printf("TLS: a client certificate will be required.\n");
+  DEBUG(D_tls)
+    debug_printf("TLS: a client certificate will be required.\n");
   state->verify_requirement = VERIFY_REQUIRED;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
   }
 else if (verify_check_host(&tls_try_verify_hosts) == OK)
   {
-  DEBUG(D_tls) debug_printf("TLS: a client certificate will be requested but not required.\n");
+  DEBUG(D_tls)
+    debug_printf("TLS: a client certificate will be requested but not required.\n");
   state->verify_requirement = VERIFY_OPTIONAL;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUEST);
   }
 else
   {
-  DEBUG(D_tls) debug_printf("TLS: a client certificate will not be requested.\n");
+  DEBUG(D_tls)
+    debug_printf("TLS: a client certificate will not be requested.\n");
   state->verify_requirement = VERIFY_NONE;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }
@@ -1699,19 +1749,40 @@ if ((  state->exp_tls_verify_certificates
     verify_check_host(&ob->tls_verify_hosts) == OK
    )
   {
-  DEBUG(D_tls) debug_printf("TLS: server certificate verification required.\n");
-  state->verify_requirement = VERIFY_REQUIRED;
+#ifdef EXPERIMENTAL_CERTNAMES
+  if (ob->tls_verify_cert_hostnames)
+    {
+    DEBUG(D_tls)
+      debug_printf("TLS: server cert incl. hostname verification required.\n");
+    state->verify_requirement = VERIFY_WITHHOST;
+    if (!expand_check(ob->tls_verify_cert_hostnames,
+		      US"tls_verify_cert_hostnames",
+		      &state->exp_tls_verify_cert_hostnames))
+      return FAIL;
+    if (state->exp_tls_verify_cert_hostnames)
+      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+		      state->exp_tls_verify_cert_hostnames);
+    }
+  else
+#endif
+    {
+    DEBUG(D_tls)
+      debug_printf("TLS: server certificate verification required.\n");
+    state->verify_requirement = VERIFY_REQUIRED;
+    }
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
   }
 else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
   {
-  DEBUG(D_tls) debug_printf("TLS: server certificate verification optional.\n");
+  DEBUG(D_tls)
+    debug_printf("TLS: server certificate verification optional.\n");
   state->verify_requirement = VERIFY_OPTIONAL;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUEST);
   }
 else
   {
-  DEBUG(D_tls) debug_printf("TLS: server certificate verification not required.\n");
+  DEBUG(D_tls)
+    debug_printf("TLS: server certificate verification not required.\n");
   state->verify_requirement = VERIFY_NONE;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }

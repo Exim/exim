@@ -1147,6 +1147,25 @@ QUIT
 
 
 
+Certificate name checking
+--------------------------------------------------------------
+The X509 certificates used for TLS are supposed be verified
+that they are owned by the expected host.  The coding of TLS
+support to date has not made these checks.
+
+If built with EXPERIMENTAL_CERTNAMES defined, code is
+included to do so, and a new smtp transport option
+"tls_verify_cert_hostname" supported which takes a list of
+names for which the checks must be made.  The host must
+also be in "tls_verify_hosts".
+
+Both Subject and Subject-Alternate-Name certificate fields
+are supported, as are wildcard certificates (limited to
+a single wildcard being the initial component of a 3-or-more
+component FQDN).
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

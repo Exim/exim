@@ -23,7 +23,7 @@ functions from the OpenSSL library. */
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #ifdef EXPERIMENTAL_OCSP
-#include <openssl/ocsp.h>
+# include <openssl/ocsp.h>
 #endif
 
 #ifdef EXPERIMENTAL_OCSP
@@ -32,7 +32,7 @@ functions from the OpenSSL library. */
 #endif
 
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
-#define EXIM_HAVE_OPENSSL_TLSEXT
+# define EXIM_HAVE_OPENSSL_TLSEXT
 #endif
 
 /* Structure for collecting random data for seeding. */
@@ -107,6 +107,10 @@ typedef struct tls_ext_ctx_cb {
   uschar *server_cipher_list;
   /* only passed down to tls_error: */
   host_item *host;
+
+#ifdef EXPERIMENTAL_CERTNAMES
+  uschar * verify_cert_hostnames;
+#endif
 } tls_ext_ctx_cb;
 
 /* should figure out a cleanup of API to handle state preserved per
@@ -268,8 +272,7 @@ verify_callback(int state, X509_STORE_CTX *x509ctx,
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 static uschar txt[256];
 
-X509_NAME_oneline(X509_get_subject_name(cert),
-  CS txt, sizeof(txt));
+X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
 
 if (state == 0)
   {
@@ -306,8 +309,43 @@ else if (X509_STORE_CTX_get_error_depth(x509ctx) != 0)
   }
 else
   {
+#ifdef EXPERIMENTAL_CERTNAMES
+  uschar * verify_cert_hostnames;
+#endif
+
   tlsp->peerdn = txt;
   tlsp->peercert = X509_dup(cert);
+
+#ifdef EXPERIMENTAL_CERTNAMES
+  if (  tlsp == &tls_out
+     && ((verify_cert_hostnames = client_static_cbinfo->verify_cert_hostnames)))
+     	/* client, wanting hostname check */
+
+# if OPENSSL_VERSION_NUMBER >= 0x010100000L || OPENSSL_VERSION_NUMBER >= 0x010002000L
+    {
+    int sep = 0;
+    uschar * list = verify_cert_hostnames;
+    uschar * name;
+    while (name = string_nextinlist(&list, &sep, NULL, 0))
+      if (X509_check_host(cert, name, 0, 0))
+	break;
+    if (!name)
+      {
+      log_write(0, LOG_MAIN,
+	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
+      return 0;				/* reject */
+      }
+    }
+# else
+    if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
+      {
+      log_write(0, LOG_MAIN,
+	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
+      return 0;				/* reject */
+      }
+# endif
+#endif
+
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
     *calledp ? "" : " authenticated", txt);
   if (!*calledp) tlsp->certificate_verified = TRUE;
@@ -955,8 +993,8 @@ return i;
 *            Initialize for TLS                  *
 *************************************************/
 
-/* Called from both server and client code, to do preliminary initialization of
-the library.
+/* Called from both server and client code, to do preliminary initialization
+of the library.  We allocate and return a context structure.
 
 Arguments:
   host            connected host, if client; NULL if server
@@ -965,6 +1003,7 @@ Arguments:
   privatekey      private key
   ocsp_file       file of stapling info (server); flag for require ocsp (client)
   addr            address if client; NULL if server (for some randomness)
+  cbp             place to put allocated context
 
 Returns:          OK/DEFER/FAIL
 */
@@ -1116,6 +1155,10 @@ else			/* client */
     SSL_CTX_set_tlsext_status_arg(*ctxp, cbinfo);
     }
 # endif
+#endif
+
+#ifdef EXPERIMENTAL_CERTNAMES
+cbinfo->verify_cert_hostnames = NULL;
 #endif
 
 /* Set up the RSA callback */
@@ -1545,6 +1588,7 @@ if (expciphers != NULL)
 /* stick to the old behaviour for compatibility if tls_verify_certificates is 
    set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
    the specified host patterns if one of them is defined */
+
 if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
     (verify_check_host(&ob->tls_verify_hosts) == OK))
   {
@@ -1552,6 +1596,19 @@ if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
 	ob->tls_crl, host, FALSE, verify_callback_client)) != OK)
     return rc;
   client_verify_optional = FALSE;
+
+#ifdef EXPERIMENTAL_CERTNAMES
+  if (ob->tls_verify_cert_hostnames)
+    {
+    if (!expand_check(ob->tls_verify_cert_hostnames,
+		      US"tls_verify_cert_hostnames",
+		      &client_static_cbinfo->verify_cert_hostnames))
+      return FAIL;
+    if (client_static_cbinfo->verify_cert_hostnames)
+      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+		      client_static_cbinfo->verify_cert_hostnames);
+    }
+#endif
   }
 else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
   {

@@ -237,6 +237,7 @@ uschar sep = '\n';
 uschar * tag = US"";
 uschar * ele;
 int match = -1;
+int len;
 
 if (!san) return NULL;
 
@@ -262,19 +263,26 @@ while (sk_GENERAL_NAME_num(san) > 0)
     case GEN_DNS:
       tag = US"DNS";
       ele = ASN1_STRING_data(namePart->d.dNSName);
+      len = ASN1_STRING_length(namePart->d.dNSName);
       break;
     case GEN_URI:
       tag = US"URI";
       ele = ASN1_STRING_data(namePart->d.uniformResourceIdentifier);
+      len = ASN1_STRING_length(namePart->d.uniformResourceIdentifier);
       break;
     case GEN_EMAIL:
       tag = US"MAIL";
       ele = ASN1_STRING_data(namePart->d.rfc822Name);
+      len = ASN1_STRING_length(namePart->d.rfc822Name);
       break;
     default:
       continue;	/* ignore unrecognised types */
     }
-  list = string_append_listele(list, sep,
+  if (ele[len])	/* not nul-terminated */
+    ele = string_copyn(ele, len);
+
+  if (strnlen(CS ele, len) == len)	/* ignore any with embedded nul */
+    list = string_append_listele(list, sep,
 	  match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 

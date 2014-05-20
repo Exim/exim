@@ -268,7 +268,7 @@ for(index = 0;; index++)
   {
   siz = 0;
   switch(ret = gnutls_x509_crt_get_subject_alt_name(
-    (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL))
+      (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL))
     {
     case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
       return list;	/* no more elements; normal exit */
@@ -286,7 +286,8 @@ for(index = 0;; index++)
     return g_err("gs1", __FUNCTION__, ret);
   ele[siz] = '\0';
 
-  if (match != -1 && match != ret)
+  if (  match != -1 && match != ret	/* wrong type of SAN */
+     || Ustrlen(ele) != siz)		/* contains a NUL */
     continue;
   switch (ret)
     {

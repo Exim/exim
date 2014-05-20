@@ -59,10 +59,13 @@ extern int     tls_ungetc(int);
 extern int     tls_write(BOOL, const uschar *, size_t);
 extern uschar *tls_validate_require_cipher(void);
 extern void    tls_version_report(FILE *);
-#ifndef USE_GNUTLS
+# ifndef USE_GNUTLS
 extern BOOL    tls_openssl_options_parse(uschar *, long *);
-#endif
+# endif
 extern uschar * tls_field_from_dn(uschar *, uschar *);
+# ifdef EXPERIMENTAL_CERTNAMES
+extern BOOL    tls_is_name_for_cert(uschar *, void *);
+# endif
 #endif	/*SUPPORT_TLS*/
 
 

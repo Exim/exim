@@ -1,0 +1,14 @@
+# TLS client: verify certificate from server - fails
+gnutls
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userr@test.ex
+Testing
+****
+exim users@test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+no_msglog_check

@@ -1,4 +1,4 @@
-# Exim test configuration 2112
+# Exim test configuration 2012
 # TLS client: verify certificate from server - fails
 
 SERVER=
@@ -143,30 +143,30 @@ send_to_server_req_fail:
   tls_verify_certificates = CA2
   tls_verify_hosts = *
 
-# # this will fail to verify the cert name and fallback to unencrypted
-# send_to_server_req_failname:
-#   driver = smtp
-#   allow_localhost
-#   hosts = HOSTIPV4
-#   port = PORT_D
-#   tls_certificate = CERT2
-#   tls_privatekey = CERT2
-# 
-#   tls_verify_certificates = CA1
-#   tls_verify_cert_hostnames = server1.example.net : server1.example.org
-#   tls_verify_hosts = *
-# 
-# # this will pass the cert verify including name check
-# send_to_server_req_passname:
-#   driver = smtp
-#   allow_localhost
-#   hosts = HOSTIPV4
-#   port = PORT_D
-#   tls_certificate = CERT2
-#   tls_privatekey = CERT2
-# 
-#   tls_verify_certificates = CA1
-#   tls_verify_cert_hostnames = noway.example.com : server1.example.com
-#   tls_verify_hosts = *
+# this will fail to verify the cert name and fallback to unencrypted
+send_to_server_req_failname:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+  tls_certificate = CERT2
+  tls_privatekey = CERT2
+
+  tls_verify_certificates = CA1
+  tls_verify_cert_hostnames = server1.example.net : server1.example.org
+  tls_verify_hosts = *
+
+# this will pass the cert verify including name check
+send_to_server_req_passname:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+  tls_certificate = CERT2
+  tls_privatekey = CERT2
+
+  tls_verify_certificates = CA1
+  tls_verify_cert_hostnames = noway.example.com : server1.example.com
+  tls_verify_hosts = *
 
 # End

@@ -55,7 +55,7 @@ typedef struct {
   BOOL    keepalive;
   BOOL    lmtp_ignore_quota;
   BOOL    retry_include_ip_address;
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   uschar *tls_certificate;
   uschar *tls_crl;
   uschar *tls_privatekey;
@@ -69,18 +69,21 @@ typedef struct {
   BOOL    tls_tempfail_tryclear;
   uschar *tls_verify_hosts;
   uschar *tls_try_verify_hosts;
-  #endif
-  #ifndef DISABLE_DKIM
+# ifdef EXPERIMENTAL_CERTNAMES
+  uschar *tls_verify_cert_hostnames;
+# endif
+#endif
+#ifndef DISABLE_DKIM
   uschar *dkim_domain;
   uschar *dkim_private_key;
   uschar *dkim_selector;
   uschar *dkim_canon;
   uschar *dkim_sign_headers;
   uschar *dkim_strict;
-  #endif
-  #ifdef EXPERIMENTAL_TPDA
+#endif
+#ifdef EXPERIMENTAL_TPDA
   uschar *tpda_host_defer_action;
-  #endif
+#endif
 } smtp_transport_options_block;
 
 /* Data for reading the private options. */

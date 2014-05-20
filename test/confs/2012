@@ -12,6 +12,16 @@ log_file_path = DIR/spool/log/SERVER%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 
+FX = DIR/aux-fixed
+S1 = FX/exim-ca/example.com/server1.example.com
+
+CA1 =   S1/ca_chain.pem 
+CERT1 = S1/server1.example.com.pem
+KEY1 =  S1/server1.example.com.unlocked.key
+CA2 =   FX/cert2
+CERT2 = FX/cert2
+KEY2 =  FX/cert2
+
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
@@ -25,11 +35,11 @@ tls_advertise_hosts = *
 
 # Set certificate only if server
 
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = ${if eq {SERVER}{server}{CERT1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{KEY1}fail}
 
 tls_verify_hosts = *
-tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+tls_verify_certificates = ${if eq {SERVER}{server}{CERT2}fail}
 
 
 # ----- Routers -----
@@ -66,6 +76,18 @@ client_q:
   retry_use_local_part
   transport = send_to_server_req_fail
 
+client_r:
+  driver = accept
+  local_parts = userr
+  retry_use_local_part
+  transport = send_to_server_req_failname
+
+client_s:
+  driver = accept
+  local_parts = users
+  retry_use_local_part
+  transport = send_to_server_req_passname
+
 
 # ----- Transports -----
 
@@ -78,8 +100,10 @@ send_to_server_failcert:
   hosts = HOSTIPV4
   hosts_require_tls = HOSTIPV4
   port = PORT_D
-  tls_certificate = DIR/aux-fixed/cert2
-  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_certificate = CERT2
+  tls_privatekey = CERT2
+
+  tls_verify_certificates = CA2
 
 # this will fail to verify the cert at HOSTIPV4 so fail the crypt, then retry on 127.1; ok
 send_to_server_retry:
@@ -88,19 +112,23 @@ send_to_server_retry:
   hosts = HOSTIPV4 : 127.0.0.1
   hosts_require_tls = HOSTIPV4
   port = PORT_D
-  tls_certificate = DIR/aux-fixed/cert2
-  tls_verify_certificates = \
-	${if eq{$host_address}{127.0.0.1}{DIR/aux-fixed/cert1}{DIR/aux-fixed/cert2}}
+  tls_certificate = CERT2
+  tls_privatekey = CERT2
 
-# this will fail to verify the cert at HOSTIPV4 but continue unverified though crypted
+  tls_verify_certificates = \
+    ${if eq{$host_address}{127.0.0.1}{CA1}{CA2}}
+
+# this will fail to verify the cert but continue unverified though crypted
 send_to_server_crypt:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
   hosts_require_tls = HOSTIPV4
   port = PORT_D
-  tls_certificate = DIR/aux-fixed/cert2
-  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_certificate = CERT2
+  tls_privatekey = CERT2
+
+  tls_verify_certificates = CA2
   tls_try_verify_hosts = *
 
 # this will fail to verify the cert at HOSTIPV4 and fallback to unencrypted
@@ -109,8 +137,36 @@ send_to_server_req_fail:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
-  tls_certificate = DIR/aux-fixed/cert2
-  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_certificate = CERT2
+  tls_privatekey = CERT2
+
+  tls_verify_certificates = CA2
   tls_verify_hosts = *
+
+# # this will fail to verify the cert name and fallback to unencrypted
+# send_to_server_req_failname:
+#   driver = smtp
+#   allow_localhost
+#   hosts = HOSTIPV4
+#   port = PORT_D
+#   tls_certificate = CERT2
+#   tls_privatekey = CERT2
+# 
+#   tls_verify_certificates = CA1
+#   tls_verify_cert_hostnames = server1.example.net : server1.example.org
+#   tls_verify_hosts = *
+# 
+# # this will pass the cert verify including name check
+# send_to_server_req_passname:
+#   driver = smtp
+#   allow_localhost
+#   hosts = HOSTIPV4
+#   port = PORT_D
+#   tls_certificate = CERT2
+#   tls_privatekey = CERT2
+# 
+#   tls_verify_certificates = CA1
+#   tls_verify_cert_hostnames = noway.example.com : server1.example.com
+#   tls_verify_hosts = *
 
 # End

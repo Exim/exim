@@ -255,6 +255,80 @@ return list;
 }
 
 
+#ifdef EXPERIMENTAL_CERTNAMES
+/* Compare a domain name with a possibly-wildcarded name. Wildcards
+are restricted to a single one, as the first element of patterns
+having at least three dot-separated elements.  Case-independent.
+Return TRUE for a match
+*/
+static BOOL
+is_name_match(const uschar * name, const uschar * pat)
+{
+uschar * cp;
+return *pat == '*'		/* possible wildcard match */
+  ?    *++pat == '.'		/* starts star, dot              */
+    && !Ustrchr(++pat, '*')	/* has no more stars             */
+    && Ustrchr(pat, '.')	/* and has another dot.          */
+    && (cp = Ustrchr(name, '.'))/* The name has at least one dot */
+    && strcmpic(++cp, pat) == 0 /* and we only compare after it. */
+  :    !Ustrchr(pat+1, '*')
+    && strcmpic(name, pat) == 0;
+}
+
+/* Compare a list of names with the dnsname elements
+of the Subject Alternate Name, if any, and the
+Subject otherwise.
+
+Arguments:
+	namelist names to compare
+	cert	 certificate
+
+Returns:
+	TRUE/FALSE
+*/
+
+BOOL
+tls_is_name_for_cert(uschar * namelist, void * cert)
+{
+uschar * altnames = tls_cert_subject_altname(cert, US"dns");
+uschar * subjdn;
+uschar * certname;
+int cmp_sep = 0;
+uschar * cmpname;
+
+if ((altnames = tls_cert_subject_altname(cert, US"dns")))
+  {
+  int alt_sep = '\n';
+  while (cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0))
+    {
+    uschar * an = altnames;
+    while (certname = string_nextinlist(&an, &alt_sep, NULL, 0))
+      if (is_name_match(cmpname, certname))
+	return TRUE;
+    }
+  }
+
+else if ((subjdn = tls_cert_subject(cert, NULL)))
+  {
+  int sn_sep = ',';
+  uschar * sn;
+
+  dn_to_list(subjdn);
+  while (cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0))
+    {
+    uschar * sn = subjdn;
+    while (certname = string_nextinlist(&sn, &sn_sep, NULL, 0))
+      if (  *certname++ == 'C'
+	 && *certname++ == 'N'
+	 && *certname++ == '='
+	 && is_name_match(cmpname, certname)
+	 )
+	return TRUE;
+    }
+  }
+return FALSE;
+}
+#endif
 
 /* vi: aw ai sw=2
 */
