@@ -804,6 +804,9 @@ fprintf(f, "Support for:");
 #ifdef WITH_OLD_DEMIME
   fprintf(f, " Old_Demime");
 #endif
+#ifndef DISABLE_PRDR
+  fprintf(f, " PRDR");
+#endif
 #ifdef EXPERIMENTAL_SPF
   fprintf(f, " Experimental_SPF");
 #endif
