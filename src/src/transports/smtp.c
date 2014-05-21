@@ -266,6 +266,16 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 #endif
 };
 
+#ifdef EXPERIMENTAL_DSN
+/* some DSN flags for use later */
+
+static int     rf_list[] = {rf_notify_never, rf_notify_success,
+                            rf_notify_failure, rf_notify_delay };
+
+static uschar *rf_names[] = { "NEVER", "SUCCESS", "FAILURE", "DELAY" };
+#endif
+
+
 
 /* Local statics */
 
@@ -1196,6 +1206,9 @@ BOOL pass_message = FALSE;
 BOOL prdr_offered = FALSE;
 BOOL prdr_active;
 #endif
+#ifdef EXPERIMENTAL_DSN
+BOOL dsn_all_lasthop = TRUE;
+#endif
 smtp_inblock inblock;
 smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
@@ -1603,6 +1616,13 @@ if (continue_hostname == NULL
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
+#ifdef EXPERIMENTAL_DSN
+  /* Note if the server supports DSN */
+  smtp_use_dsn = esmtp && pcre_exec(regex_DSN, NULL, CS buffer, (int)Ustrlen(CS buffer), 0,
+       PCRE_EOPT, NULL, 0) >= 0;
+  DEBUG(D_transport) debug_printf("use_dsn=%d\n", smtp_use_dsn);
+#endif
+
   /* Note if the response to EHLO specifies support for the AUTH extension.
   If it has, check that this host is one we want to authenticate to, and do
   the business. The host name and address must be available when the
@@ -1700,6 +1720,38 @@ if (prdr_offered)
 prdr_is_active:
 #endif
 
+#ifdef EXPERIMENTAL_DSN
+/* check if all addresses have lasthop flag */
+/* do not send RET and ENVID if true */
+dsn_all_lasthop = TRUE;
+for (addr = first_addr;
+     address_count < max_rcpt && addr != NULL;
+     addr = addr->next)
+  if ((addr->dsn_flags & rf_dsnlasthop) != 1)
+    dsn_all_lasthop = FALSE;
+
+/* Add any DSN flags to the mail command */
+
+if ((smtp_use_dsn) && (dsn_all_lasthop == FALSE))
+  {
+  if (dsn_ret == dsn_ret_hdrs)
+    {
+    strcpy(p, " RET=HDRS");
+    while (*p) p++;
+    }
+  else if (dsn_ret == dsn_ret_full)
+    {
+    strcpy(p, " RET=FULL");
+    while (*p) p++;
+    }
+  if (dsn_envid != NULL)
+    {
+    string_format(p, sizeof(buffer) - (p-buffer), " ENVID=%s", dsn_envid);
+    while (*p) p++;
+    }
+  }
+#endif
+
 /* If an authenticated_sender override has been specified for this transport
 instance, expand it. If the expansion is forced to fail, and there was already
 an authenticated_sender for this message, the original value will be used.
@@ -1762,18 +1814,66 @@ for (addr = first_addr;
   int count;
   BOOL no_flush;
 
+  #ifdef EXPERIMENTAL_DSN
+  if(smtp_use_dsn)
+    addr->dsn_aware = dsn_support_yes;
+  else
+    addr->dsn_aware = dsn_support_no;
+  #endif
+
   if (addr->transport_return != PENDING_DEFER) continue;
 
   address_count++;
   no_flush = smtp_use_pipelining && (!mua_wrapper || addr->next != NULL);
+
+  #ifdef EXPERIMENTAL_DSN
+  /* Add any DSN flags to the rcpt command and add to the sent string */
+
+  p = buffer;
+  *p = 0;
+
+  if ((smtp_use_dsn) && ((addr->dsn_flags & rf_dsnlasthop) != 1))
+    {
+    if ((addr->dsn_flags & rf_dsnflags) != 0)
+      {
+      int i;
+      BOOL first = TRUE;
+      strcpy(p, " NOTIFY=");
+      while (*p) p++;
+      for (i = 0; i < 4; i++)
+        {
+        if ((addr->dsn_flags & rf_list[i]) != 0)
+          {
+          if (!first) *p++ = ',';
+          first = FALSE;
+          strcpy(p, rf_names[i]);
+          while (*p) p++;
+          }
+        }
+      }
+
+    if (addr->dsn_orcpt != NULL) {
+      string_format(p, sizeof(buffer) - (p-buffer), " ORCPT=%s",
+        addr->dsn_orcpt);
+      while (*p) p++;
+      }
+    }
+  #endif
+
 
   /* Now send the RCPT command, and process outstanding responses when
   necessary. After a timeout on RCPT, we just end the function, leaving the
   yield as OK, because this error can often mean that there is a problem with
   just one address, so we don't want to delay the host. */
 
+  #ifdef EXPERIMENTAL_DSN
+  count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s%s\r\n",
+    transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr, buffer);
+  #else
   count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s\r\n",
     transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr);
+  #endif
+
   if (count < 0) goto SEND_FAILED;
   if (count > 0)
     {

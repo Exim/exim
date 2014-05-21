@@ -296,6 +296,11 @@ tls_in.ocsp = OCSP_NOT_REQ;
 spam_score_int = NULL;
 #endif
 
+#ifdef EXPERIMENTAL_DSN
+dsn_ret = 0;
+dsn_envid = NULL;
+#endif
+
 /* Generate the full name and open the file. If message_subdir is already
 set, just look in the given directory. Otherwise, look in both the split
 and unsplit directories, as for the data file above. */
@@ -470,6 +475,17 @@ for (;;)
     case 'd':
     if (Ustrcmp(p, "eliver_firsttime") == 0)
       deliver_firsttime = TRUE;
+    #ifdef EXPERIMENTAL_DSN
+    /* Check if the dsn flags have been set in the header file */
+    else if (Ustrncmp(p, "sn_ret", 6) == 0)
+      {
+      dsn_ret= atoi(big_buffer + 8);
+      }
+    else if (Ustrncmp(p, "sn_envid", 8) == 0)
+      {
+      dsn_envid = string_copy(big_buffer + 11);
+      }
+    #endif
     break;
 
     case 'f':
@@ -615,6 +631,10 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   {
   int nn;
   int pno = -1;
+  #ifdef EXPERIMENTAL_DSN
+  int dsn_flags = 0;
+  uschar *orcpt = NULL;
+  #endif
   uschar *errors_to = NULL;
   uschar *p;
 
@@ -657,6 +677,9 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
       ends with <errors_to address><space><len>,<pno> where pno is
       the parent number for one_time addresses, and len is the length
       of the errors_to address (zero meaning none).
+
+    Bit 02 indicates that, again reading from right to left, the data continues
+     with orcpt len(orcpt),dsn_flags
    */
 
   while (isdigit(*p)) p--;
@@ -687,6 +710,13 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   else if (*p == '#')
     {
     int flags;
+
+    #ifdef EXPERIMENTAL_DSN
+    #ifndef COMPILE_UTILITY
+      DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim 4 standard format spoolfile\n");
+    #endif  /* COMPILE_UTILITY */
+    #endif
+
     (void)sscanf(CS p+1, "%d", &flags);
 
     if ((flags & 0x01) != 0)      /* one_time data exists */
@@ -699,15 +729,54 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
         {
         p -= len;
         errors_to = string_copy(p);
-        }
+        }	
       }
 
     *(--p) = 0;   /* Terminate address */
+#ifdef EXPERIMENTAL_DSN
+    if ((flags & 0x02) != 0)      /* one_time data exists */
+      {
+      int len;
+      while (isdigit(*(--p)) || *p == ',' || *p == '-');
+      (void)sscanf(CS p+1, "%d,%d", &len, &dsn_flags);
+      *p = 0;
+      if (len > 0)
+        {
+        p -= len;
+        orcpt = string_copy(p);
+        }	
+      }
+
+    *(--p) = 0;   /* Terminate address */
+#endif  /* EXPERIMENTAL_DSN */
     }
+#ifdef EXPERIMENTAL_DSN
+  #ifndef COMPILE_UTILITY
+  else
+    {
+       DEBUG(D_deliver) debug_printf("**** SPOOL_IN - No additional fields\n");
+    }
+
+  if ((orcpt != NULL) || (dsn_flags != 0))
+    {
+    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: |%s| orcpt: |%s| dsn_flags: %d\n",
+      big_buffer, orcpt, dsn_flags);
+    }
+  if (errors_to != NULL)
+    {
+    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: |%s| errorsto: |%s|\n",
+      big_buffer, errors_to);
+    }
+  #endif  /* COMPILE_UTILITY */
+#endif  /* EXPERIMENTAL_DSN */
 
   recipients_list[recipients_count].address = string_copy(big_buffer);
   recipients_list[recipients_count].pno = pno;
   recipients_list[recipients_count].errors_to = errors_to;
+  #ifdef EXPERIMENTAL_DSN
+  recipients_list[recipients_count].orcpt = orcpt;
+  recipients_list[recipients_count].dsn_flags = dsn_flags;
+  #endif
   }
 
 /* The remainder of the spool header file contains the headers for the message,

@@ -145,6 +145,11 @@ BOOL    dkim_disable_verify      = FALSE;
 
 BOOL    dont_deliver           = FALSE;
 
+#ifdef EXPERIMENTAL_DSN
+int     dsn_ret                = 0;
+uschar *dsn_envid              = NULL;
+#endif
+
 #ifdef WITH_CONTENT_SCAN
 int     fake_response          = OK;
 #endif

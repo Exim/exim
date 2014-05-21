@@ -489,6 +489,8 @@ EXIM_MONITOR=eximon.bin
 # ownership
 # EXPERIMENTAL_CERTNAMES=yes
 
+# Uncomment the following line to add DSN support
+# EXPERIMENTAL_DSN=yes
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

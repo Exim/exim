@@ -121,6 +121,9 @@ static BOOL auth_advertised;
 #ifdef SUPPORT_TLS
 static BOOL tls_advertised;
 #endif
+#ifdef EXPERIMENTAL_DSN
+static BOOL dsn_advertised;
+#endif
 static BOOL esmtp;
 static BOOL helo_required = FALSE;
 static BOOL helo_verify = FALSE;
@@ -217,6 +220,9 @@ enum {
 #ifndef DISABLE_PRDR
   ENV_MAIL_OPT_PRDR,
 #endif
+#ifdef EXPERIMENTAL_DSN
+  ENV_MAIL_OPT_RET, ENV_MAIL_OPT_ENVID,
+#endif
   ENV_MAIL_OPT_NULL
   };
 typedef struct {
@@ -231,6 +237,10 @@ static env_mail_type_t env_mail_type_list[] = {
     { US"AUTH",   ENV_MAIL_OPT_AUTH,   TRUE  },
 #ifndef DISABLE_PRDR
     { US"PRDR",   ENV_MAIL_OPT_PRDR,   FALSE },
+#endif
+#ifdef EXPERIMENTAL_DSN
+    { US"RET",    ENV_MAIL_OPT_RET,    TRUE },
+    { US"ENVID",  ENV_MAIL_OPT_ENVID,  TRUE },
 #endif
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
   };
@@ -1488,6 +1498,13 @@ sender_address_unrewritten = NULL;  /* Set only after verify rewrite */
 sender_verified_list = NULL;        /* No senders verified */
 memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
+
+#ifdef EXPERIMENTAL_DSN
+/* Reset the DSN flags */
+dsn_ret = 0;
+dsn_envid = NULL;
+#endif
+
 authenticated_sender = NULL;
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 bmi_run = 0;
@@ -1836,6 +1853,9 @@ tls_in.ourcert = tls_in.peercert = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
 tls_advertised = FALSE;
+#endif
+#ifdef EXPERIMENTAL_DSN
+dsn_advertised = FALSE;
 #endif
 
 /* Reset ACL connection variables */
@@ -3126,6 +3146,10 @@ while (done <= 0)
   int ptr, size, rc;
   int c, i;
   auth_instance *au;
+#ifdef EXPERIMENTAL_DSN
+  uschar *orcpt = NULL;
+  int flags;
+#endif
 
   switch(smtp_read_command(TRUE))
     {
@@ -3470,6 +3494,9 @@ while (done <= 0)
     #ifdef SUPPORT_TLS
     tls_advertised = FALSE;
     #endif
+    #ifdef EXPERIMENTAL_DSN
+    dsn_advertised = FALSE;
+    #endif
 
     smtp_code = US"250 ";        /* Default response code plus space*/
     if (user_msg == NULL)
@@ -3552,6 +3579,16 @@ while (done <= 0)
         s = string_cat(s, &size, &ptr, smtp_code, 3);
         s = string_cat(s, &size, &ptr, US"-8BITMIME\r\n", 11);
         }
+
+      #ifdef EXPERIMENTAL_DSN
+      /* Advertise DSN support if configured to do so. */
+      if (verify_check_host(&dsn_advertise_hosts) != FAIL) 
+        {
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-DSN\r\n", 6);
+        dsn_advertised = TRUE;
+        }
+      #endif
 
       /* Advertise ETRN if there's an ACL checking whether a host is
       permitted to issue it; a check is made when any host actually tries. */
@@ -3807,6 +3844,45 @@ while (done <= 0)
           }
           arg_error = TRUE;
           break;
+
+        #ifdef EXPERIMENTAL_DSN
+  
+        /* Handle the two DSN options, but only if configured to do so (which
+        will have caused "DSN" to be given in the EHLO response). The code itself
+        is included only if configured in at build time. */
+
+        case ENV_MAIL_OPT_RET:
+          if (dsn_advertised) {
+            /* Check if RET has already been set */
+            if (dsn_ret > 0) {
+              synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"RET can be specified once only");
+              goto COMMAND_LOOP;
+            }
+            dsn_ret = (strcmpic(value, US"HDRS") == 0)? dsn_ret_hdrs :
+                    (strcmpic(value, US"FULL") == 0)? dsn_ret_full : 0;
+            DEBUG(D_receive) debug_printf("DSN_RET: %d\n", dsn_ret);
+            /* Check for invalid invalid value, and exit with error */
+            if (dsn_ret == 0) {
+              synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"Value for RET is invalid");
+              goto COMMAND_LOOP;
+            }
+          }
+          break;
+        case ENV_MAIL_OPT_ENVID:
+          if (dsn_advertised) {
+            /* Check if the dsn envid has been already set */
+            if (dsn_envid != NULL) {
+              synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"ENVID can be specified once only");
+              goto COMMAND_LOOP;
+            }
+            dsn_envid = string_copy(value);
+            DEBUG(D_receive) debug_printf("DSN_ENVID: %s\n", dsn_envid);
+          }
+          break;
+        #endif
 
         /* Handle the AUTH extension. If the value given is not "<>" and either
         the ACL says "yes" or there is no ACL but the sending host is
@@ -4084,6 +4160,86 @@ while (done <= 0)
       rcpt_fail_count++;
       break;
       }
+    
+    #ifdef EXPERIMENTAL_DSN
+    /* Set the DSN flags orcpt and dsn_flags from the session*/
+    orcpt = NULL;
+    flags = 0;
+
+    if (esmtp) for(;;)
+      {
+      uschar *name, *value, *end;
+      int size;
+
+      if (!extract_option(&name, &value))
+        {
+        break;
+        }
+
+      if (dsn_advertised && strcmpic(name, US"ORCPT") == 0)
+        {
+        /* Check whether orcpt has been already set */
+        if (orcpt != NULL) {
+          synprot_error(L_smtp_syntax_error, 501, NULL,
+            US"ORCPT can be specified once only");
+          goto COMMAND_LOOP;
+          }
+        orcpt = string_copy(value);
+        DEBUG(D_receive) debug_printf("DSN orcpt: %s\n", orcpt);
+        }
+
+      else if (dsn_advertised && strcmpic(name, US"NOTIFY") == 0)
+        {
+        /* Check if the notify flags have been already set */
+        if (flags > 0) {
+          synprot_error(L_smtp_syntax_error, 501, NULL,
+              US"NOTIFY can be specified once only");
+          goto COMMAND_LOOP;
+          }
+        if (strcmpic(value, US"NEVER") == 0) flags |= rf_notify_never; else
+          {
+          uschar *p = value;
+          while (*p != 0)
+            {
+            uschar *pp = p;
+            while (*pp != 0 && *pp != ',') pp++;
+              if (*pp == ',') *pp++ = 0;
+            if (strcmpic(p, US"SUCCESS") == 0) {
+                DEBUG(D_receive) debug_printf("DSN: Setting notify success\n");
+                flags |= rf_notify_success;
+              }
+            else if (strcmpic(p, US"FAILURE") == 0) {
+                DEBUG(D_receive) debug_printf("DSN: Setting notify failure\n");
+                flags |= rf_notify_failure;
+              }
+            else if (strcmpic(p, US"DELAY") == 0) {
+                DEBUG(D_receive) debug_printf("DSN: Setting notify delay\n");
+                flags |= rf_notify_delay;
+              }
+            else {
+              /* Catch any strange values */
+              synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"Invalid value for NOTIFY parameter");
+              goto COMMAND_LOOP;
+              }
+            p = pp;
+            }
+            DEBUG(D_receive) debug_printf("DSN Flags: %x\n", flags);
+          }
+        }
+
+      /* Unknown option. Stick back the terminator characters and break
+      the loop. An error for a malformed address will occur. */
+
+      else
+        {
+        DEBUG(D_receive) debug_printf("Invalid RCPT option: %s : %s\n", name, value);
+        name[-1] = ' ';
+        value[-1] = '=';
+        break;
+        }
+      }
+    #endif
 
     /* Apply SMTP rewriting then extract the working address. Don't allow "<>"
     as a recipient address */
@@ -4198,6 +4354,21 @@ while (done <= 0)
       if (user_msg == NULL) smtp_printf("250 Accepted\r\n");
         else smtp_user_msg(US"250", user_msg);
       receive_add_recipient(recipient, -1);
+      
+      #ifdef EXPERIMENTAL_DSN
+      /* Set the dsn flags in the recipients_list */
+      if (orcpt != NULL)
+        recipients_list[recipients_count-1].orcpt = orcpt;
+      else
+        recipients_list[recipients_count-1].orcpt = NULL;
+
+      if (flags != 0)
+        recipients_list[recipients_count-1].dsn_flags = flags;
+      else
+        recipients_list[recipients_count-1].dsn_flags = 0;
+      DEBUG(D_receive) debug_printf("DSN: orcpt: %s  flags: %d\n", recipients_list[recipients_count-1].orcpt, recipients_list[recipients_count-1].dsn_flags);
+      #endif
+      
       }
 
     /* The recipient was discarded */

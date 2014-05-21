@@ -229,6 +229,9 @@ static optionlist optionlist_config[] = {
  /* This option is now a no-op, retained for compability */
   { "drop_cr",                  opt_bool,        &drop_cr },
 /*********************************************************/
+#ifdef EXPERIMENTAL_DSN
+  { "dsn_advertise_hosts",      opt_stringptr,   &dsn_advertise_hosts },
+#endif
   { "dsn_from",                 opt_stringptr,   &dsn_from },
   { "envelope_to_remove",       opt_bool,        &envelope_to_remove },
   { "errors_copy",              opt_stringptr,   &errors_copy },

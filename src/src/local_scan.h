@@ -128,6 +128,10 @@ typedef struct recipient_item {
   uschar *address;              /* the recipient address */
   int     pno;                  /* parent number for "one_time" alias, or -1 */
   uschar *errors_to;            /* the errors_to address or NULL */
+#ifdef EXPERIMENTAL_DSN
+  uschar *orcpt;                /* DSN orcpt */
+  int     dsn_flags;            /* DSN flags */
+#endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   uschar *bmi_optin;
 #endif

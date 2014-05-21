@@ -331,7 +331,7 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
 return FALSE;
 }
 # endif	/*EXPERIMENTAL_CERTNAMES*/
-#endif	/*SUPPORY_TLS*/
+#endif	/*SUPPORT_TLS*/
 
 /* vi: aw ai sw=2
 */

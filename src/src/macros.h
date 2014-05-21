@@ -788,6 +788,29 @@ enum {
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
 
+#ifdef EXPERIMENTAL_DSN
+/* Flags for recipient_block, used in DSN support */
+
+#define rf_dsnlasthop           0x01  /* Do not propagate DSN any further */
+#define rf_notify_never         0x02  /* NOTIFY= settings */
+#define rf_notify_success       0x04
+#define rf_notify_failure       0x08
+#define rf_notify_delay         0x10
+
+#define rf_dsnflags  (rf_notify_never | rf_notify_success | \
+                      rf_notify_failure | rf_notify_delay)
+
+/* DSN RET types */
+
+#define dsn_ret_full            1
+#define dsn_ret_hdrs            2
+
+#define dsn_support_unknown     0
+#define dsn_support_yes         1
+#define dsn_support_no          2
+
+#endif
+
 /* Codes for the host_find_failed and host_all_ignored options. */
 
 #define hff_freeze   0

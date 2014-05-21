@@ -837,6 +837,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_CERTNAMES
   fprintf(f, " Experimental_Certnames");
 #endif
+#ifdef EXPERIMENTAL_DSN
+  fprintf(f, " Experimental_DSN");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");
@@ -2658,6 +2661,16 @@ for (i = 1; i < argc; i++)
       smtp_authenticated = TRUE;
       break;
       }
+
+    #ifdef EXPERIMENTAL_DSN
+    /* -MCD: set the smtp_use_dsn flag; this indicates that the host
+       that exim is connected to supports the esmtp extension DSN */
+    else if (strcmp(argrest, "CD") == 0)
+      {
+      smtp_use_dsn = TRUE;
+      break;
+      }
+    #endif
 
     /* -MCP: set the smtp_use_pipelining flag; this is useful only when
     it preceded -MC (see above) */
