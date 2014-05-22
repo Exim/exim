@@ -59,7 +59,8 @@ if (type == tod_epoch_l)
   {
   struct timeval tv;
   gettimeofday(&tv, NULL);
-  (void) sprintf(CS timebuf, "%ld%06ld", tv.tv_sec, tv.tv_usec );  /* Unix epoch/usec format */
+  /* Unix epoch/usec format */
+  (void) sprintf(CS timebuf, "%ld%06ld", tv.tv_sec, (long) tv.tv_usec );
   return timebuf;
   }
 

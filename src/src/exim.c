@@ -399,9 +399,10 @@ if (exim_tvcmp(&now_tv, then_tv) <= 0)
     if (!running_in_test_harness)
       {
       debug_printf("tick check: %lu.%06lu %lu.%06lu\n",
-        then_tv->tv_sec, then_tv->tv_usec, now_tv.tv_sec, now_tv.tv_usec);
+        then_tv->tv_sec, (long) then_tv->tv_usec,
+       	now_tv.tv_sec, (long) now_tv.tv_usec);
       debug_printf("waiting %lu.%06lu\n", itval.it_value.tv_sec,
-        itval.it_value.tv_usec);
+        (long) itval.it_value.tv_usec);
       }
     }
 
