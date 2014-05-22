@@ -1108,11 +1108,27 @@ an example, in my connect ACL, I have:
        logwrite = Internal Server Address: $received_ip_address:$received_port
 
 
-4. Runtime issues to be aware of:
+4. Recommended ACL additions:
    - Since the real connections are all coming from your proxy, and the
      per host connection tracking is done before Proxy Protocol is
      evaluated, smtp_accept_max_per_host must be set high enough to
      handle all of the parallel volume you expect per inbound proxy.
+   - With the smtp_accept_max_per_host set so high, you lose the ability
+     to protect your server from massive numbers of inbound connections
+     from one IP.  In order to prevent your server from being DOS'd, you
+     need to add a per connection ratelimit to your connect ACL.  I
+     suggest something like this:
+
+  # Set max number of connections per host
+  LIMIT   = 5
+  # Or do some kind of IP lookup in a flat file or database
+  # LIMIT = ${lookup{$sender_host_address}iplsearch{/etc/exim/proxy_limits}}
+
+  defer   message        = Too many connections from this IP right now
+          ratelimit      = LIMIT / 5s / per_conn / strict
+
+
+5. Runtime issues to be aware of:
    - The proxy has 3 seconds (hard-coded in the source code) to send the
      required Proxy Protocol header after it connects.  If it does not,
      the response to any commands will be:
@@ -1131,7 +1147,7 @@ an example, in my connect ACL, I have:
      mail programs from working because that would require mail from
      localhost to use Proxy Protocol.  Again, not advised!
 
-5. Example of a refused connection because the Proxy Protocol header was
+6. Example of a refused connection because the Proxy Protocol header was
 not sent from a host configured to use Proxy Protocol.  In the example,
 the 3 second timeout occurred (when a Proxy Protocol banner should have
 been sent), the banner was displayed to the user, but all commands are
