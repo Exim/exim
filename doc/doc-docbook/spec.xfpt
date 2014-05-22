@@ -25373,7 +25373,7 @@ dovecot_plain:
   driver = dovecot
   public_name = PLAIN
   server_socket = /var/run/dovecot/auth-client
-  server_set_id = $auth2
+  server_set_id = $auth1
 
 dovecot_ntlm:
   driver = dovecot
