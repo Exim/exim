@@ -121,6 +121,8 @@ JH/23 The PRDR feature is moved from being Experimental into the mainline.
 TL/11 Bug 1119: fix memory allocation in string_printing2().  Patch from
       Christian Aistleitner.
 
+JH/24 The OCSP stapling feature is moved from Experimental into the mainline.
+
 
 Exim version 4.82
 -----------------

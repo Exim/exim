@@ -114,7 +114,7 @@ extern uschar *tls_channelbinding_b64; /* string of base64 channel binding */
 extern uschar *tls_crl;                /* CRL File */
 extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */
 extern uschar *tls_dhparam;            /* DH param file */
-#if defined(EXPERIMENTAL_OCSP)
+#ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 #endif
 extern BOOL    tls_offered;            /* Server offered TLS */

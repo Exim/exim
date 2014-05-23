@@ -3019,7 +3019,7 @@ while (!done)
 	(void) tls_import_cert(ptr, &addr->ourcert);
       break;
 
-      #ifdef EXPERIMENTAL_OCSP
+      #ifndef DISABLE_OCSP
       case '4':
       addr->ocsp = OCSP_NOT_REQ;
       if (*ptr)
@@ -4167,7 +4167,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 	  *ptr++ = 0;
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
-      # ifdef EXPERIMENTAL_OCSP
+      #ifndef DISABLE_OCSP
       if (addr->ocsp > OCSP_NOT_REQ)
 	{
 	ptr = big_buffer;

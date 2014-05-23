@@ -43,7 +43,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 # include <gnutls/pkcs11.h>
 #endif
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
 #endif
 
@@ -216,7 +216,7 @@ static void exim_gnutls_logger_cb(int level, const char *message);
 
 static int exim_sni_handling_cb(gnutls_session_t session);
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 static int server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
   gnutls_datum_t * ocsp_response);
 #endif
@@ -809,7 +809,7 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 
 /* Set the OCSP stapling server info */
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 if (  !host	/* server */
    && tls_ocsp_file
    )
@@ -1485,7 +1485,7 @@ return 0;
 
 
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 
 static int
 server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
@@ -1705,7 +1705,7 @@ smtp_transport_options_block *ob = v_ob;
 int rc;
 const char *error;
 exim_gnutls_state_st *state = NULL;
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
   NULL, host->name, host->address, NULL) == OK;
 BOOL request_ocsp = require_ocsp ? TRUE
@@ -1787,7 +1787,8 @@ else
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }
 
-#ifdef EXPERIMENTAL_OCSP	/* since GnuTLS 3.1.3 */
+#ifndef DISABLE_OCSP
+			/* supported since GnuTLS 3.1.3 */
 if (request_ocsp)
   {
   DEBUG(D_tls) debug_printf("TLS: will request OCSP stapling\n");
@@ -1827,7 +1828,7 @@ if (state->verify_requirement != VERIFY_NONE &&
     !verify_certificate(state, &error))
   return tls_error(US"certificate verification failed", error, state->host);
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 if (require_ocsp)
   {
   DEBUG(D_tls)

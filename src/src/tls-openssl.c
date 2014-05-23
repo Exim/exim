@@ -22,13 +22,13 @@ functions from the OpenSSL library. */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 # include <openssl/ocsp.h>
 #endif
 
-#ifdef EXPERIMENTAL_OCSP
-#define EXIM_OCSP_SKEW_SECONDS (300L)
-#define EXIM_OCSP_MAX_AGE (-1L)
+#ifndef DISABLE_OCSP
+# define EXIM_OCSP_SKEW_SECONDS (300L)
+# define EXIM_OCSP_MAX_AGE (-1L)
 #endif
 
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
@@ -88,7 +88,7 @@ static BOOL reexpand_tls_files_for_sni = FALSE;
 typedef struct tls_ext_ctx_cb {
   uschar *certificate;
   uschar *privatekey;
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
   BOOL is_server;
   union {
     struct {
@@ -127,7 +127,7 @@ setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL opt
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static int tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg);
 #endif
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 static int tls_server_stapling_cb(SSL *s, void *arg);
 #endif
 
@@ -213,7 +213,7 @@ return rsa_key;
 
 
 /* Extreme debug
-#if defined(EXPERIMENTAL_OCSP)
+#ifndef DISABLE_OCSP
 void
 x509_store_dump_cert_s_names(X509_STORE * store)
 {
@@ -295,7 +295,7 @@ else if (X509_STORE_CTX_get_error_depth(x509ctx) != 0)
   {
   DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n",
      X509_STORE_CTX_get_error_depth(x509ctx), txt);
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
   if (tlsp == &tls_out && client_static_cbinfo->u_ocsp.client.verify_store)
     {	/* client, wanting stapling  */
     /* Add the server cert's signing chain as the one
@@ -486,7 +486,7 @@ return TRUE;
 
 
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 /*************************************************
 *       Load OCSP information into state         *
 *************************************************/
@@ -620,7 +620,7 @@ bad:
     }
 return;
 }
-#endif	/*EXPERIMENTAL_OCSP*/
+#endif	/*!DISABLE_OCSP*/
 
 
 
@@ -682,7 +682,7 @@ if (expanded != NULL && *expanded != 0)
       "SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
   }
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 if (cbinfo->is_server &&  cbinfo->u_ocsp.server.file != NULL)
   {
   if (!expand_check(cbinfo->u_ocsp.server.file, US"tls_ocsp_file", &expanded))
@@ -772,7 +772,7 @@ SSL_CTX_set_tlsext_servername_callback(server_sni, tls_servername_cb);
 SSL_CTX_set_tlsext_servername_arg(server_sni, cbinfo);
 if (cbinfo->server_cipher_list)
   SSL_CTX_set_cipher_list(server_sni, CS cbinfo->server_cipher_list);
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 if (cbinfo->u_ocsp.server.file)
   {
   SSL_CTX_set_tlsext_status_cb(server_sni, tls_server_stapling_cb);
@@ -801,7 +801,7 @@ return SSL_TLSEXT_ERR_OK;
 
 
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 
 /*************************************************
 *        Callback to handle OCSP Stapling        *
@@ -985,7 +985,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 OCSP_RESPONSE_free(rsp);
 return i;
 }
-#endif	/*EXPERIMENTAL_OCSP*/
+#endif	/*!DISABLE_OCSP*/
 
 
 
@@ -1011,7 +1011,7 @@ Returns:          OK/DEFER/FAIL
 static int
 tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
   uschar *privatekey,
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
   uschar *ocsp_file,
 #endif
   address_item *addr, tls_ext_ctx_cb ** cbp)
@@ -1024,7 +1024,7 @@ tls_ext_ctx_cb *cbinfo;
 cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 if ((cbinfo->is_server = host==NULL))
   {
   cbinfo->u_ocsp.server.file = ocsp_file;
@@ -1126,7 +1126,7 @@ if (rc != OK) return rc;
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
 if (host == NULL)		/* server */
   {
-# ifdef EXPERIMENTAL_OCSP
+# ifndef DISABLE_OCSP
   /* We check u_ocsp.server.file, not server.response, because we care about if
   the option exists, not what the current expansion might be, as SNI might
   change the certificate and OCSP file in use between now and the time the
@@ -1142,7 +1142,7 @@ if (host == NULL)		/* server */
   SSL_CTX_set_tlsext_servername_callback(*ctxp, tls_servername_cb);
   SSL_CTX_set_tlsext_servername_arg(*ctxp, cbinfo);
   }
-# ifdef EXPERIMENTAL_OCSP
+# ifndef DISABLE_OCSP
 else			/* client */
   if(ocsp_file)		/* wanting stapling */
     {
@@ -1379,7 +1379,7 @@ if (tls_in.active >= 0)
 the error. */
 
 rc = tls_init(&server_ctx, NULL, tls_dhparam, tls_certificate, tls_privatekey,
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
     tls_ocsp_file,
 #endif
     NULL, &server_static_cbinfo);
@@ -1549,7 +1549,7 @@ uschar *expciphers;
 X509* server_cert;
 int rc;
 static uschar cipherbuf[256];
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
   NULL, host->name, host->address, NULL) == OK;
 BOOL request_ocsp = require_ocsp ? TRUE
@@ -1559,7 +1559,7 @@ BOOL request_ocsp = require_ocsp ? TRUE
 
 rc = tls_init(&client_ctx, host, NULL,
     ob->tls_certificate, ob->tls_privatekey,
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
     (void *)(long)request_ocsp,
 #endif
     addr, &client_static_cbinfo);
@@ -1647,7 +1647,7 @@ if (ob->tls_sni)
     }
   }
 
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
 /* Request certificate status at connection-time.  If the server
 does OCSP stapling we will get the callback (set in tls_init()) */
 if (request_ocsp)

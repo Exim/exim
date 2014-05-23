@@ -808,6 +808,9 @@ fprintf(f, "Support for:");
 #ifndef DISABLE_PRDR
   fprintf(f, " PRDR");
 #endif
+#ifndef DISABLE_OCSP
+  fprintf(f, " OCSP");
+#endif
 #ifdef EXPERIMENTAL_SPF
   fprintf(f, " Experimental_SPF");
 #endif
@@ -822,9 +825,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_DMARC
   fprintf(f, " Experimental_DMARC");
-#endif
-#ifdef EXPERIMENTAL_OCSP
-  fprintf(f, " Experimental_OCSP");
 #endif
 #ifdef EXPERIMENTAL_PROXY
   fprintf(f, " Experimental_Proxy");

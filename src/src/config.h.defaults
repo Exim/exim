@@ -41,6 +41,8 @@ it's a default value. */
 #define DELIVER_IN_BUFFER_SIZE     8192
 #define DELIVER_OUT_BUFFER_SIZE    8192
 #define DISABLE_DKIM
+#define DISABLE_PRDR
+#define DISABLE_OCSP
 #define DISABLE_DNSSEC
 #define DISABLE_D_OPTION
 
@@ -169,7 +171,6 @@ it's a default value. */
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DMARC
 #define EXPERIMENTAL_DSN
-#define EXPERIMENTAL_OCSP
 #define EXPERIMENTAL_PROXY
 #define EXPERIMENTAL_REDIS
 #define EXPERIMENTAL_SPF

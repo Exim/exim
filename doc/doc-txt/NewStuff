@@ -39,8 +39,7 @@ Version 4.83
  7. New command-line option -C for exiqgrep to specify alternate exim.conf
     file when searching the queue.
 
- 8. EXPERIMENTAL_OCSP now supports GnuTLS also, if you have version 3.1.3
-    or later of that.
+ 8. OCSP now supports GnuTLS also, if you have version 3.1.3 or later of that.
 
  9. Support for DNSSEC on outbound connections.
 
@@ -50,6 +49,12 @@ Version 4.83
     for them added.
 
 11. PRDR is now supported dy default.
+
+12. OCSP stapling is now supported by default.
+
+13. If built with the EXPERIMENTAL_DSN feature enabled, Exim will output
+    Delivery Status Notification messages in MIME format, and negociate
+    DSN features per RFC 3461.
 
 
 Version 4.82

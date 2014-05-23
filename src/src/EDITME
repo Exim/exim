@@ -416,6 +416,13 @@ EXIM_MONITOR=eximon.bin
 # DISABLE_PRDR=yes
 
 #------------------------------------------------------------------------------
+# Uncomment the following line to remove OCSP stapling support in TLS,
+# from Exim.  Note it can only be supported when built with
+# GnuTLS 3.1.3 or later, or OpenSSL
+
+# DISABLE_OCSP=yes
+
+#------------------------------------------------------------------------------
 # By default, Exim has support for checking the AD bit in a DNS response, to
 # determine if DNSSEC validation was successful.  If your system libraries
 # do not support that bit, then set DISABLE_DNSSEC to "yes"
@@ -458,11 +465,6 @@ EXIM_MONITOR=eximon.bin
 # EXPERIMENTAL_BRIGHTMAIL=yes
 # CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
 # LDFLAGS += -lxml2_single -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
-
-# Uncomment the following line to add OCSP stapling support in TLS, if Exim
-# was built using OpenSSL, or with GnuTLS 3.1.3 or later.
-
-# EXPERIMENTAL_OCSP=yes
 
 # Uncomment the following line to add DMARC checking capability, implemented
 # using libopendmarc libraries.

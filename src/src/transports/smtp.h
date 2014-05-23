@@ -24,7 +24,7 @@ typedef struct {
 #ifndef DISABLE_PRDR
   uschar *hosts_try_prdr;
 #endif
-#ifdef EXPERIMENTAL_OCSP
+#ifndef DISABLE_OCSP
   uschar *hosts_request_ocsp;
   uschar *hosts_require_ocsp;
 #endif
