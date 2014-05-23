@@ -43,6 +43,11 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 # include <gnutls/pkcs11.h>
 #endif
+#if GNUTLS_VERSION_NUMBER < 0x030103 && !defined(DISABLE_OCSP)
+# warning "GnuTLS library version too old; define DISABLE_OCSP in Makefile"
+# define DISABLE_OCSP
+#endif
+
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
 #endif
