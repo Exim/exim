@@ -313,10 +313,9 @@ if ((altnames = tls_cert_subject_altname(cert, US"dns")))
 else if ((subjdn = tls_cert_subject(cert, NULL)))
   {
   int sn_sep = ',';
-  uschar * sn;
 
   dn_to_list(subjdn);
-  while (cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0))
+  while ((cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0)))
     {
     uschar * sn = subjdn;
     while ((certname = string_nextinlist(&sn, &sn_sep, NULL, 0)))

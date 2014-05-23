@@ -35,6 +35,11 @@ functions from the OpenSSL library. */
 # define EXIM_HAVE_OPENSSL_TLSEXT
 #endif
 
+#if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
+# warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
+# define DISABLE_OCSP
+#endif
+
 /* Structure for collecting random data for seeding. */
 
 typedef struct randstuff {
