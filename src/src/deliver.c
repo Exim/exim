@@ -842,17 +842,17 @@ else
 
 /* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
 
-if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
-    addr->message != NULL &&
-    ((addr->host_used != NULL) || (Ustrcmp(addr->transport->driver_name, "lmtp") == 0)))
+if (log_extra_selector & LX_smtp_confirmation &&
+    addr->message &&
+    (addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0))
   {
   int i;
   uschar *p = big_buffer;
   uschar *ss = addr->message;
   *p++ = '\"';
-  for (i = 0; i < 100 && ss[i] != 0; i++)
+  for (i = 0; i < 256 && ss[i] != 0; i++)	/* limit logged amount */
     {
-    if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\';
+    if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\'; /* quote \ and " */
     *p++ = ss[i];
     }
   *p++ = '\"';
