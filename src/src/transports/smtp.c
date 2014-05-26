@@ -1228,7 +1228,7 @@ uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 uschar *p;
 uschar buffer[4096];
 uschar inbuffer[4096];
-uschar outbuffer[1024];
+uschar outbuffer[4096];
 
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 

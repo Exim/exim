@@ -352,6 +352,10 @@ if (!string_vformat(big_buffer, big_buffer_size, CS format, ap))
 va_end(ap);
 count = Ustrlen(big_buffer);
 
+if (count > outblock->buffersize)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
+    "SMTP");
+
 if (count > outblock->buffersize - (outblock->ptr - outblock->buffer))
   {
   rc = outblock->cmd_count;                 /* flush resets */
