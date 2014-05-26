@@ -56,12 +56,15 @@ void * reset_point = store_get(0);
 const uschar * cp = string_unprinting(US buf);
 BIO * bp;
 X509 * x;
+int fail = 0;
 
 bp = BIO_new_mem_buf(US cp, -1);
-x = PEM_read_bio_X509(bp, NULL, 0, NULL);
-int fail = 0;
-if (!x)
+if (!(x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
+  {
+  log_write(0, LOG_MAIN, "TLS error in certificate import: %s",
+    ERR_error_string(ERR_get_error(), NULL));
   fail = 1;
+  }
 else
   *cert = (void *)x;
 BIO_free(bp);
@@ -75,9 +78,20 @@ tls_free_cert(void * cert)
 X509_free((X509 *)cert);
 }
 
+
 /*****************************************************
 *  Certificate field extraction routines
 *****************************************************/
+
+/* First, some internal service functions */
+
+static uschar *
+badalloc(void)
+{
+expand_string_message = US"allocation failure";
+return NULL;
+}
+
 static uschar *
 bio_string_copy(BIO * bp, int len)
 {
@@ -105,7 +119,11 @@ static uschar *
 asn1_time_copy(const ASN1_TIME * time, uschar * mod)
 {
 BIO * bp = BIO_new(BIO_s_mem());
-int len = ASN1_TIME_print(bp, time);
+int len;
+
+if (!bp) return badalloc();
+
+len = ASN1_TIME_print(bp, time);
 return mod &&  Ustrcmp(mod, "int") == 0
   ? bio_string_time_to_int(bp, len)
   : bio_string_copy(bp, len);
@@ -115,13 +133,25 @@ static uschar *
 x509_name_copy(X509_NAME * name)
 {
 BIO * bp = BIO_new(BIO_s_mem());
-int len_good =
+int len_good;
+
+if (!bp) return badalloc();
+
+len_good =
   X509_NAME_print_ex(bp, name, 0, XN_FLAG_RFC2253) >= 0
   ? 1 : 0;
 return bio_string_copy(bp, len_good);
 }
 
 /**/
+/* Now the extractors, called from expand.c
+Arguments:
+  cert		The certificate
+  mod		Optional modifiers for the operator
+
+Return:
+  Allocated string with extracted value
+*/
 
 uschar *
 tls_cert_issuer(void * cert, uschar * mod)
@@ -147,8 +177,11 @@ tls_cert_serial_number(void * cert, uschar * mod)
 {
 uschar txt[256];
 BIO * bp = BIO_new(BIO_s_mem());
-int len = i2a_ASN1_INTEGER(bp, X509_get_serialNumber((X509 *)cert));
+int len;
 
+if (!bp) return badalloc();
+
+len = i2a_ASN1_INTEGER(bp, X509_get_serialNumber((X509 *)cert));
 if (len < sizeof(txt))
   BIO_read(bp, txt, len);
 else
@@ -160,8 +193,10 @@ return string_copynlc(txt, len);	/* lowercase */
 uschar *
 tls_cert_signature(void * cert, uschar * mod)
 {
-BIO * bp = BIO_new(BIO_s_mem());
 uschar * cp = NULL;
+BIO * bp = BIO_new(BIO_s_mem());
+
+if (!bp) return badalloc();
 
 if (X509_print_ex(bp, (X509 *)cert, 0,
   X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL | 
@@ -208,6 +243,8 @@ long len;
 uschar * cp1;
 uschar * cp2;
 uschar * cp3;
+
+if (!bp) return badalloc();
 
 M_ASN1_OCTET_STRING_print(bp, adata);
 /* binary data, DER encoded */

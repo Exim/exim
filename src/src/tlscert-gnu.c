@@ -26,12 +26,16 @@ tls_export_cert(uschar * buf, size_t buflen, void * cert)
 {
 size_t sz = buflen;
 void * reset_point = store_get(0);
-int fail = 0;
+int fail;
 uschar * cp;
 
-if (gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
-    GNUTLS_X509_FMT_PEM, buf, &sz))
+if ((fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
+    GNUTLS_X509_FMT_PEM, buf, &sz)))
+  {
+  log_write(0, LOG_MAIN, "TLS error in certificate export: %s",
+    gnutls_strerror(fail));
   return 1;
+  }
 if ((cp = string_printing(buf)) != buf)
   {
   Ustrncpy(buf, cp, buflen);
@@ -55,8 +59,12 @@ gnutls_x509_crt_init(&crt);
 
 datum.data = string_unprinting(US buf);
 datum.size = Ustrlen(datum.data);
-if (gnutls_x509_crt_import(crt, &datum, GNUTLS_X509_FMT_PEM))
+if ((fail = gnutls_x509_crt_import(crt, &datum, GNUTLS_X509_FMT_PEM)))
+  {
+  log_write(0, LOG_MAIN, "TLS error in certificate import: %s",
+    gnutls_strerror(fail));
   fail = 1;
+  }
 else
   *cert = (void *)crt;
 
@@ -74,6 +82,9 @@ gnutls_global_deinit();
 /*****************************************************
 *  Certificate field extraction routines
 *****************************************************/
+
+/* First, some internal service functions */
+
 static uschar *
 g_err(const char * tag, const char * from, int gnutls_err)
 {
@@ -99,7 +110,16 @@ len = strftime(CS cp, 32, "%b %e %T %Y %Z", tp);
 return len > 0 ? cp : NULL;
 }
 
+
 /**/
+/* Now the extractors, called from expand.c
+Arguments:
+  cert		The certificate
+  mod		Optional modifiers for the operator
+
+Return:
+  Allocated string with extracted value
+*/
 
 uschar *
 tls_cert_issuer(void * cert, uschar * mod)
@@ -142,10 +162,12 @@ uschar bin[50], txt[150];
 size_t sz = sizeof(bin);
 uschar * sp;
 uschar * dp;
+int ret;
 
-if (gnutls_x509_crt_get_serial((gnutls_x509_crt_t)cert,
-    bin, &sz) || sz > sizeof(bin))
-  return NULL;
+if ((ret = gnutls_x509_crt_get_serial((gnutls_x509_crt_t)cert,
+    bin, &sz)))
+  return g_err("gs0", __FUNCTION__, ret);
+
 for(dp = txt, sp = bin; sz; dp += 2, sp++, sz--)
   sprintf(dp, "%.2x", *sp);
 for(sp = txt; sp[0]=='0' && sp[1]; ) sp++;	/* leading zeroes */
