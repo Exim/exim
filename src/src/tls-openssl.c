@@ -327,13 +327,25 @@ else
      	/* client, wanting hostname check */
 
 # if OPENSSL_VERSION_NUMBER >= 0x010100000L || OPENSSL_VERSION_NUMBER >= 0x010002000L
+#  ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
+#   define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
+#  endif
     {
     int sep = 0;
     uschar * list = verify_cert_hostnames;
     uschar * name;
-    while (name = string_nextinlist(&list, &sep, NULL, 0))
-      if (X509_check_host(cert, name, 0, 0))
+    int rc;
+    while ((name = string_nextinlist(&list, &sep, NULL, 0)))
+      if ((rc = X509_check_host(cert, name, 0,
+		  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS)))
+	{
+	if (rc < 0)
+	  {
+	  log_write(0, LOG_MAIN, "SSL verify error: internal error\n");
+	  name = NULL;
+	  }
 	break;
+	}
     if (!name)
       {
       log_write(0, LOG_MAIN,
