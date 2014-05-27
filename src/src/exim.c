@@ -267,6 +267,10 @@ will wait for ever, so we panic in this instance. (There was a case of this
 when a bug in a function that calls milliwait() caused it to pass invalid data.
 That's when I added the check. :-)
 
+We assume it to be not worth sleeping for under 100us; this value will
+require revisiting as hardware advances.  This avoids the issue of
+a zero-valued timer setting meaning "never fire".
+
 Argument:  an itimerval structure containing the interval
 Returns:   nothing
 */
@@ -276,6 +280,9 @@ milliwait(struct itimerval *itval)
 {
 sigset_t sigmask;
 sigset_t old_sigmask;
+
+if (itval->it_value.tv_usec < 100 && itval->it_value.tv_sec == 0)
+  return;
 (void)sigemptyset(&sigmask);                           /* Empty mask */
 (void)sigaddset(&sigmask, SIGALRM);                    /* Add SIGALRM */
 (void)sigprocmask(SIG_BLOCK, &sigmask, &old_sigmask);  /* Block SIGALRM */
@@ -310,8 +317,7 @@ struct itimerval itval;
 itval.it_interval.tv_sec = 0;
 itval.it_interval.tv_usec = 0;
 itval.it_value.tv_sec = msec/1000;
-if ((itval.it_value.tv_usec = (msec % 1000) * 1000) == 0)
-  itval.it_value.tv_usec = 1;
+itval.it_value.tv_usec = (msec % 1000) * 1000;
 milliwait(&itval);
 }
 
