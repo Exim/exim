@@ -684,6 +684,7 @@ while ((ch = (receive_getc)()) != EOF)
 
     case 1:                         /* After written "\n" */
     if (ch == '.') { ch_state = 3; continue; }
+    if (ch == '\r') { ch_state = 2; continue; }
     if (ch != '\n') ch_state = 0; else linelength = -1;
     break;
 

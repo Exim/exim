@@ -123,6 +123,9 @@ TL/11 Bug 1119: fix memory allocation in string_printing2().  Patch from
 
 JH/24 The OCSP stapling feature is moved from Experimental into the mainline.
 
+TL/12 Bug 1444: Fix improper \r\n sequence handling when writing spool
+      file.  Patch from Wolfgang Breyha.
+
 
 Exim version 4.82
 -----------------
