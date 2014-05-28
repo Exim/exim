@@ -181,20 +181,24 @@ int dmarc_process() {
     dmarc_abort = TRUE;
   else
   {
-    /* I strongly encourage anybody who can make this better to contact me directly!
-     * <cannonball> Is this an insane way to extract the email address from the From: header?
-     * <jgh_hm> it's sure a horrid layer-crossing....
-     * <cannonball> I'm not denying that :-/
-     * <jgh_hm> there may well be no better though
-     */
-    header_from_sender = expand_string(
-           string_sprintf("${domain:${extract{1}{:}{${addresses:\\N%s\\N}}}}",
-                          from_header->text) );
+    uschar * errormsg;
+    int dummy, domain;
+    uschar * p;
+    uschar saveend;
+
+    parse_allow_group = TRUE;
+    p = parse_find_address_end(from_header->text, FALSE);
+    saveend = *p; *p = '\0';
+    if ((header_from_sender = parse_extract_address(from_header->text, &errormsg,
+                                &dummy, &dummy, &domain, FALSE)))
+      header_from_sender += domain;
+    *p = saveend;
+
     /* The opendmarc library extracts the domain from the email address, but
      * only try to store it if it's not empty.  Otherwise, skip out of DMARC. */
-    if ((header_from_sender == NULL) || (strcmp( CCS header_from_sender, "") == 0))
+    if (!header_from_sender || (strcmp( CCS header_from_sender, "") == 0))
       dmarc_abort = TRUE;
-    libdm_status = (dmarc_abort == TRUE) ?
+    libdm_status = dmarc_abort ?
       DMARC_PARSE_OKAY :
       opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
     if (libdm_status != DMARC_PARSE_OKAY)
