@@ -249,6 +249,7 @@ static optionlist optionlist_config[] = {
   { "gnutls_allow_auto_pkcs11", opt_bool,        &gnutls_allow_auto_pkcs11 },
   { "gnutls_compat_mode",       opt_bool,        &gnutls_compat_mode },
   /* These three gnutls_require_* options stopped working in Exim 4.80 */
+  /* From 4.83 we log a warning; a future relase will remove them */
   { "gnutls_require_kx",        opt_stringptr,   &gnutls_require_kx },
   { "gnutls_require_mac",       opt_stringptr,   &gnutls_require_mac },
   { "gnutls_require_protocols", opt_stringptr,   &gnutls_require_proto },
@@ -3374,6 +3375,11 @@ if (openssl_options != NULL)
 # endif
   }
 #endif
+
+if (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto)
+  log_write(0, LOG_MAIN, "WARNING: main options"
+      " gnutls_require_kx, gnutls_require_mac and gnutls_require_protocols"
+      " are obsolete\n");
 }
 
 
