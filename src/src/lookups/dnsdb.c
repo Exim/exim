@@ -358,7 +358,9 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       : dns_is_secure(&dnsa) ? US"yes" : US"no";
 
     if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
-    if (rc != DNS_SUCCEED)
+    if (  rc != DNS_SUCCEED
+       || dnssec_mode == DEFER && !dns_is_secure(&dnsa)
+       )
       {
       if (defer_mode == DEFER)
 	{
@@ -367,11 +369,6 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 	}
       if (defer_mode == PASS) failrc = DEFER;         /* defer only if all do */
       continue;                                       /* treat defer as fail */
-      }
-    if (dnssec_mode == DEFER && !dns_is_secure(&dnsa))
-      {
-      failrc = DEFER;
-      continue;
       }
 
 
