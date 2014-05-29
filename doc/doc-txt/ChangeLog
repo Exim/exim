@@ -126,6 +126,9 @@ JH/24 The OCSP stapling feature is moved from Experimental into the mainline.
 TL/12 Bug 1444: Fix improper \r\n sequence handling when writing spool
       file.  Patch from Wolfgang Breyha.
 
+JH/25 Expand the coverage of the delivery $host and $host_address to
+      client authenticators run in verify callout.  Bug 1476.
+
 
 Exim version 4.82
 -----------------

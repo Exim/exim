@@ -524,9 +524,6 @@ else
       else active_hostname = s;
       }
 
-    deliver_host = deliver_host_address = NULL;
-    deliver_domain = save_deliver_domain;
-
     /* Wait for initial response, and send HELO. The smtp_write_command()
     function leaves its command in big_buffer. This is used in error responses.
     Initialize it in case the connection is rejected. */
@@ -720,7 +717,6 @@ else
     ;
     /* Clear down of the TLS, SMTP and TCP layers on error is handled below.  */
 
-
     /* Failure to accept HELO is cached; this blocks the whole domain for all
     senders. I/O errors and defer responses are not cached. */
 
@@ -757,6 +753,9 @@ else
 
       smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
         '2', callout);
+
+    deliver_host = deliver_host_address = NULL;
+    deliver_domain = save_deliver_domain;
 
     /* If the host does not accept MAIL FROM:<>, arrange to cache this
     information, but again, don't record anything for an I/O error or a defer. Do
