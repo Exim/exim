@@ -12103,7 +12103,8 @@ received. It is empty if there was no successful authentication. See also
 
 .vitem &$sender_host_dnssec$&
 .vindex "&$sender_host_dnssec$&"
-If &$sender_host_name$& has been populated (by reference, &%hosts_lookup%& or
+If an attempt to populate &$sender_host_name$& has been made
+(by reference, &%hosts_lookup%& or
 otherwise) then this boolean will have been set true if, and only if, the
 resolver library states that the reverse DNS was authenticated data.  At all
 other times, this variable is false.
