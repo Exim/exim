@@ -401,12 +401,14 @@ for them, but do not do any lookups at this time. */
 
 host_build_hostlist(&(ob->fallback_hostlist), ob->fallback_hosts, FALSE);
 
+#ifdef SUPPORT_TLS
 if (  ob->gnutls_require_kx
    || ob->gnutls_require_mac
    || ob->gnutls_require_proto)
   log_write(0, LOG_MAIN, "WARNING: smtp transport options"
     " gnutls_require_kx, gnutls_require_mac and gnutls_require_protocols"
     " are obsolete\n");
+#endif
 }
 
 

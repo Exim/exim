@@ -3374,12 +3374,12 @@ if (openssl_options != NULL)
       "openssl_options parse error: %s", openssl_options);
 # endif
   }
-#endif
 
 if (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto)
   log_write(0, LOG_MAIN, "WARNING: main options"
       " gnutls_require_kx, gnutls_require_mac and gnutls_require_protocols"
       " are obsolete\n");
+#endif	/*SUPPORT_TLS*/
 }
 
 
