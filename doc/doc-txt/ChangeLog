@@ -129,6 +129,9 @@ TL/12 Bug 1444: Fix improper \r\n sequence handling when writing spool
 JH/25 Expand the coverage of the delivery $host and $host_address to
       client authenticators run in verify callout.  Bug 1476.
 
+JH/26 Port service names are now accepted for tls_on_connect_ports, to
+      align with daemon_smtp_ports.  Bug 72.
+
 
 Exim version 4.82
 -----------------

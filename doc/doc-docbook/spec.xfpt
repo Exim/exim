@@ -12724,8 +12724,9 @@ option), the interfaces and ports on which it listens are controlled by the
 following options:
 
 .ilist
-&%daemon_smtp_ports%& contains a list of default ports. (For backward
-compatibility, this option can also be specified in the singular.)
+&%daemon_smtp_ports%& contains a list of default ports
+or service names.
+(For backward compatibility, this option can also be specified in the singular.)
 .next
 &%local_interfaces%& contains list of interface IP addresses on which to
 listen. Each item may optionally also specify a port.
@@ -12826,7 +12827,8 @@ value of &%daemon_smtp_ports%& is no longer relevant in this example.)
 Exim supports the obsolete SSMTP protocol (also known as SMTPS) that was used
 before the STARTTLS command was standardized for SMTP. Some legacy clients
 still use this protocol. If the &%tls_on_connect_ports%& option is set to a
-list of port numbers, connections to those ports must use SSMTP. The most
+list of port numbers or service names,
+connections to those ports must use SSMTP. The most
 common use of this option is expected to be
 .code
 tls_on_connect_ports = 465

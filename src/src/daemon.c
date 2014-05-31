@@ -1127,13 +1127,13 @@ if (daemon_listen && !inetd_wait_mode)
 
   list = daemon_smtp_port;
   sep = 0;
-  while ((s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size)) != NULL)
+  while ((s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size)))
     pct++;
   default_smtp_port = store_get((pct+1) * sizeof(int));
   list = daemon_smtp_port;
   sep = 0;
   for (pct = 0;
-       (s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size)) != NULL;
+       (s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size));
        pct++)
     {
     if (isdigit(*s))
@@ -1146,12 +1146,37 @@ if (daemon_listen && !inetd_wait_mode)
     else
       {
       struct servent *smtp_service = getservbyname(CS s, "tcp");
-      if (smtp_service == NULL)
+      if (!smtp_service)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
       default_smtp_port[pct] = ntohs(smtp_service->s_port);
       }
     }
   default_smtp_port[pct] = 0;
+
+  /* Check the list of TLS-on-connect ports and do name lookups if needed */
+
+  list = tls_in.on_connect_ports;
+  sep = 0;
+  while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+    if (!isdigit(*s))
+      {
+      list = tls_in.on_connect_ports;
+      tls_in.on_connect_ports = NULL;
+      sep = 0;
+      while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+	{
+        if (!isdigit(*s))
+	  {
+	  struct servent *smtp_service = getservbyname(CS s, "tcp");
+	  if (!smtp_service)
+	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
+	  s= string_sprintf("%d", (int)ntohs(smtp_service->s_port));
+	  }
+	tls_in.on_connect_ports = string_append_listele(tls_in.on_connect_ports,
+	    ':', s);
+	}
+      break;
+      }
 
   /* Create the list of local interfaces, possibly with ports included. This
   list may contain references to 0.0.0.0 and ::0 as wildcards. These special
@@ -2065,5 +2090,6 @@ for (;;)
 /* Control never reaches here */
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of exim_daemon.c */
-

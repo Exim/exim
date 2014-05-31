@@ -1181,17 +1181,13 @@ int sep = 0;
 uschar buffer[32];
 uschar *list = tls_in.on_connect_ports;
 uschar *s;
+uschar *end;
 
 if (tls_in.on_connect) return TRUE;
 
-while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
-  {
-  uschar *end;
-  int lport = Ustrtol(s, &end, 10);
-  if (*end != 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "tls_on_connect_ports "
-    "contains \"%s\", which is not a port number: exim abandoned", s);
-  if (lport == port) return TRUE;
-  }
+while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+  if (Ustrtol(s, &end, 10) == port)
+    return TRUE;
 
 return FALSE;
 }
