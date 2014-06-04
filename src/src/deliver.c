@@ -6497,7 +6497,7 @@ if (addr_senddsn != NULL)
     DEBUG(D_deliver) debug_printf("sending error message to: %s\n", sender_address);
   
     /* build unique id for MIME boundary */
-    snprintf(boundaryStr, 63, "%d-eximdsn-%d", time(NULL), rand());      
+    snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());      
     DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", boundaryStr);
   
     if (errors_reply_to != NULL) fprintf(f,"Reply-To: %s\n", errors_reply_to);
@@ -6755,7 +6755,7 @@ while (addr_failed != NULL)
 #ifdef EXPERIMENTAL_DSN
       /* generate boundary string and output MIME-Headers */
       uschar boundaryStr[64];
-      snprintf(boundaryStr, 63, "%d-eximdsn-%d", time(NULL), rand());
+      snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());
       fprintf(f,"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n", boundaryStr);
       fprintf(f,"MIME-Version: 1.0\n");
 #endif
@@ -7386,7 +7386,7 @@ else if (addr_defer != (address_item *)(+1))
 #ifdef EXPERIMENTAL_DSN
         /* generated boundary string and output MIME-Headers */
         uschar boundaryStr[64];
-        snprintf(boundaryStr, 63, "%d-eximdsn-%d", time(NULL), rand());
+        snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());
         fprintf(f,"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n", boundaryStr);
         fprintf(f,"MIME-Version: 1.0\n");
 #endif
