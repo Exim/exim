@@ -248,8 +248,14 @@ return -1;
 }
 
 
+
+/*************************************************
+*    Create connected socket to remote host      *
+*************************************************/
+
 /* Create a socket and connect to host (name or number, ipv6 ok)
    at one of port-range.
+
 Arguments:
   type          SOCK_DGRAM or SOCK_STREAM
   af            AF_INET6 or AF_INET for the socket type
@@ -317,8 +323,8 @@ else
 for (h = &shost; h != NULL; h = h->next)
   {
   fd = (Ustrchr(h->address, ':') != 0)
-    ? (fd6 < 0) ? (fd6 = ip_socket(SOCK_STREAM, af = AF_INET6)) : fd6
-    : (fd4 < 0) ? (fd4 = ip_socket(SOCK_STREAM, af = AF_INET )) : fd4;
+    ? (fd6 < 0) ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
+    : (fd4 < 0) ? (fd4 = ip_socket(type, af = AF_INET )) : fd4;
 
   if (fd < 0)
     {
@@ -340,8 +346,8 @@ for (h = &shost; h != NULL; h = h->next)
       }
   }
 
-*errstr = string_sprintf("failed to connect to "
-  "%s: couldn't connect to any host", hostname, strerror(errno));
+*errstr = string_sprintf("failed to connect to %s: "
+  "couldn't connect to any host: %s", hostname, strerror(errno));
 
 bad:
   close(fd4); close(fd6); return -1;

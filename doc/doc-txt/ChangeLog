@@ -132,6 +132,9 @@ JH/25 Expand the coverage of the delivery $host and $host_address to
 JH/26 Port service names are now accepted for tls_on_connect_ports, to
       align with daemon_smtp_ports.  Bug 72.
 
+TF/03 Fix udpsend. The ip_connectedsocket() function's socket type
+      support and error reporting did not work properly.
+
 
 Exim version 4.82
 -----------------
