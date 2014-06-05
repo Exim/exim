@@ -206,7 +206,11 @@ if (X509_print_ex(bp, (X509 *)cert, 0,
   X509_FLAG_NO_AUX) == 1)
   {
   long len = BIO_get_mem_data(bp, &cp);
-  cp = string_copyn(cp, len);
+
+  /* Strip leading "Signature Algorithm" line */
+  while (*cp && *cp != '\n') { cp++; len--; }
+
+  cp = string_copyn(cp+1, len-1);
   }
 BIO_free(bp);
 return cp;
@@ -215,7 +219,29 @@ return cp;
 uschar *
 tls_cert_signature_algorithm(void * cert, uschar * mod)
 {
-return string_copy(US OBJ_nid2ln(X509_get_signature_type((X509 *)cert)));
+uschar * cp = NULL;
+BIO * bp = BIO_new(BIO_s_mem());
+
+if (!bp) return badalloc();
+
+if (X509_print_ex(bp, (X509 *)cert, 0,
+  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL | 
+  /* X509_FLAG_NO_SIGNAME is the missing one */
+  X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY | 
+  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS | 
+  X509_FLAG_NO_SIGDUMP | X509_FLAG_NO_AUX) == 1)
+  {
+  long len = BIO_get_mem_data(bp, &cp);
+
+  /* Strip leading "    Signature Algorithm: " and trailing newline */
+  while (*cp && *cp != ':') { cp++; len--; }
+  do { cp++; len--; } while (*cp && *cp == ' ');
+  if (cp[len-1] == '\n') len--;
+
+  cp = string_copyn(cp, len);
+  }
+BIO_free(bp);
+return cp;
 }
 
 uschar *
