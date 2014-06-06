@@ -26,6 +26,21 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.83
+-----------------
+
+ * SPF condition results renamed "permerror" and "temperror".  The old
+   names are still accepted for back-compatability, for this release.
+
+ * TLS details are now logged on rejects, subject to log selectors.
+
+ * Items in headers_remove lists must now have any embedded list-separators
+   doubled.
+
+ * Attempted use of the deprecated options "gnutls_require_kx" et. al.
+   now result in logged warning.
+
+
 Exim version 4.82
 -----------------
 
