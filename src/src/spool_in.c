@@ -492,7 +492,7 @@ for (;;)
     if (Ustrncmp(p, "rozen", 5) == 0)
       {
       deliver_freeze = TRUE;
-      deliver_frozen_at = Uatoi(big_buffer + 7);
+      sscanf(big_buffer+7, TIME_T_FMT, &deliver_frozen_at);
       }
     break;
 

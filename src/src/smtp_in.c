@@ -1317,7 +1317,8 @@ for (i = 0; i < smtp_ch_index; i++)
 if (s != NULL) s[ptr] = 0; else s = US"";
 log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
   host_and_ident(FALSE),
-  readconf_printtime(time(NULL) - smtp_connection_start), s);
+  readconf_printtime( (int) ((long)time(NULL) - (long)smtp_connection_start)),
+  s);
 }
 
 

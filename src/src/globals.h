@@ -323,7 +323,7 @@ extern BOOL    deliver_drop_privilege; /* TRUE for unprivileged delivery */
 extern BOOL    deliver_firsttime;      /* True for first delivery attempt */
 extern BOOL    deliver_force;          /* TRUE if delivery was forced */
 extern BOOL    deliver_freeze;         /* TRUE if delivery is frozen */
-extern int     deliver_frozen_at;      /* Time of freezing */
+extern time_t  deliver_frozen_at;      /* Time of freezing */
 extern uschar *deliver_home;           /* Home directory for pipes */
 extern uschar *deliver_host;           /* (First) host for routed local deliveries */
                                        /* Remote host for filter */

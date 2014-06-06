@@ -74,8 +74,8 @@ if (type == tod_log) type = log_timezone? tod_log_zone : tod_log_bare;
 
 else if (type == tod_epoch)
   {
-  (void) sprintf(CS timebuf, "%d", (int)now);  /* Unix epoch format */
-  return timebuf;
+  (void) sprintf(CS timebuf, TIME_T_FMT, now);  /* Unix epoch format */
+  return timebuf;	/* NB the above will be wrong if time_t is FP */
   }
 
 else if (type == tod_zulu)

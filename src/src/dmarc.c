@@ -451,7 +451,7 @@ int dmarc_write_history_file()
   /* Generate the contents of the history file */
   history_buffer = string_sprintf("job %s\n", message_id);
   history_buffer = string_sprintf("%sreporter %s\n", history_buffer, primary_hostname);
-  history_buffer = string_sprintf("%sreceived %ld\n", history_buffer, time(NULL));
+  history_buffer = string_sprintf("%sreceived " TIME_T_FMT "\n", history_buffer, time(NULL));
   history_buffer = string_sprintf("%sipaddr %s\n", history_buffer, sender_host_address);
   history_buffer = string_sprintf("%sfrom %s\n", history_buffer, header_from_sender);
   history_buffer = string_sprintf("%smfrom %s\n", history_buffer,

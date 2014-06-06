@@ -863,16 +863,12 @@ if (log_extra_selector & LX_smtp_confirmation &&
 /* Time on queue and actual time taken to deliver */
 
 if ((log_extra_selector & LX_queue_time) != 0)
-  {
   s = string_append(s, &size, &ptr, 2, US" QT=",
-    readconf_printtime(time(NULL) - received_time));
-  }
+    readconf_printtime( (int) ((long)time(NULL) - (long)received_time)) );
 
 if ((log_extra_selector & LX_deliver_time) != 0)
-  {
   s = string_append(s, &size, &ptr, 2, US" DT=",
     readconf_printtime(addr->more_errno));
-  }
 
 /* string_cat() always leaves room for the terminator. Release the
 store we used to build the line after writing it. */
@@ -6497,7 +6493,8 @@ if (addr_senddsn != NULL)
     DEBUG(D_deliver) debug_printf("sending error message to: %s\n", sender_address);
   
     /* build unique id for MIME boundary */
-    snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());      
+    snprintf(boundaryStr, sizeof(boundaryStr)-1, TIME_T_FMT "-eximdsn-%d",
+      time(NULL), rand());
     DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", boundaryStr);
   
     if (errors_reply_to != NULL) fprintf(f,"Reply-To: %s\n", errors_reply_to);
@@ -7172,7 +7169,7 @@ if (addr_defer == NULL)
 
   if ((log_extra_selector & LX_queue_time_overall) != 0)
     log_write(0, LOG_MAIN, "Completed QT=%s",
-      readconf_printtime(time(NULL) - received_time));
+      readconf_printtime( (int) ((long)time(NULL) - (long)received_time)) );
   else
     log_write(0, LOG_MAIN, "Completed");
 

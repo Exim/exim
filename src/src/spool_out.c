@@ -210,7 +210,7 @@ if (authenticated_sender != NULL)
 if (allow_unqualified_recipient) fprintf(f, "-allow_unqualified_recipient\n");
 if (allow_unqualified_sender) fprintf(f, "-allow_unqualified_sender\n");
 if (deliver_firsttime) fprintf(f, "-deliver_firsttime\n");
-if (deliver_freeze) fprintf(f, "-frozen %d\n", deliver_frozen_at);
+if (deliver_freeze) fprintf(f, "-frozen " TIME_T_FMT "\n", deliver_frozen_at);
 if (dont_deliver) fprintf(f, "-N\n");
 if (host_lookup_deferred) fprintf(f, "-host_lookup_deferred\n");
 if (host_lookup_failed) fprintf(f, "-host_lookup_failed\n");

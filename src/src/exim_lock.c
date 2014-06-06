@@ -175,7 +175,7 @@ int  fd = -1;
 int  hd = -1;
 int  md = -1;
 int  yield = 0;
-int  now = time(NULL);
+time_t now = time(NULL);
 BOOL use_lockfile = FALSE;
 BOOL use_fcntl = FALSE;
 BOOL use_flock = FALSE;
@@ -300,8 +300,10 @@ if (use_lockfile)
   lockname = malloc(len + 8);
   sprintf(lockname, "%s.lock", filename);
   hitchname = malloc(len + 32 + (int)strlen(primary_hostname));
+
+  /* Presumably, this must match appendfile.c */
   sprintf(hitchname, "%s.%s.%08x.%08x", lockname, primary_hostname,
-    now, (int)getpid());
+    (unsigned int)now, (unsigned int)getpid());
 
   if (verbose)
     printf("exim_lock: lockname =  %s\n           hitchname = %s\n", lockname,

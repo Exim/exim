@@ -403,7 +403,7 @@ ip_recv(int sock, uschar *buffer, int buffsize, int timeout)
 {
 fd_set select_inset;
 struct timeval tv;
-int start_recv = time(NULL);
+time_t start_recv = time(NULL);
 int rc;
 
 /* Wait until the socket is ready */

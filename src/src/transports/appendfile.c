@@ -1620,6 +1620,7 @@ if (!isdirectory)
 
   if (ob->use_lockfile)
     {
+    /* cf. exim_lock.c */
     lockname = string_sprintf("%s.lock", filename);
     hitchname = string_sprintf( "%s.%s.%08x.%08x", lockname, primary_hostname,
       (unsigned int)(time(NULL)), (unsigned int)getpid());

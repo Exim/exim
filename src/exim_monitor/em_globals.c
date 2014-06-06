@@ -130,7 +130,7 @@ int     body_zerocount         = 0;
 
 BOOL    deliver_firsttime      = FALSE;
 BOOL    deliver_freeze         = FALSE;
-int     deliver_frozen_at      = 0;
+time_t  deliver_frozen_at      = 0;
 BOOL    deliver_manual_thaw    = FALSE;
 
 #ifndef DISABLE_DKIM
