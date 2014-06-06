@@ -46,6 +46,7 @@ send_to_server:
   hosts = 127.0.0.1
   port = PORT_S
   HAP
+  max_rcpt = 1000
 
 # ----- Retry -----
 
