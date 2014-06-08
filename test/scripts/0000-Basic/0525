@@ -13,7 +13,7 @@ DATA
 354 SEND
 *sleep 3
 ****
-write test-data 20000x80
+write test-data 200000x80
 mail from:<abc@xyz>
 RCPT TO:<def@pqr> 
 DATA
