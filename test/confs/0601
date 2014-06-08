@@ -1,0 +1,20 @@
+# Exim test configuration 0601
+# udpsend
+
+exim_path = EXIM_PATH
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+
+# ----- Main settings -----
+
+acl_smtp_connect = check
+
+
+# ----- ACL -----
+
+begin acl
+
+check:
+  warn	udpsend = <; 127.0.0.1 ; 1223 ; message from exim
+
+# End

@@ -1,0 +1,16 @@
+# udpsend
+#need_ipv4
+#
+#
+perl aux-fixed/0601.udpserver
+****
+#
+exim -bs -odi
+mail from:someone@some.domain
+rcpt to:CALLER@HOSTNAME
+data
+This is a test message.
+.
+quit
+***
+sleep 4

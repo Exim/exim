@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+use IO::Socket::INET;
+use IO::Select;
+
+if (fork != 0) {
+  sleep 1;
+  exit 0;
+}
+
+my ($select,$socket,$received_data);
+
+$socket = new IO::Socket::INET (
+  LocalPort => '1223',
+  Proto => 'udp',
+) or die "ERROR in Socket Creation : $!\n";
+
+$select = IO::Select->new($socket) or die "IO::Select $!";
+
+if (scalar ($select->can_read(5)) == 1) {
+	$socket->recv($recieved_data,1024);
+	print "received: $recieved_data\n";
+}
