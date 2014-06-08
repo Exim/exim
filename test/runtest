@@ -802,6 +802,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   s%(?<!sqlite)(?<!lsearch\*@)(?<!lsearch\*)(?<!lsearch)[0-?]TESTSUITE/aux-fixed/%0TESTSUITE/aux-fixed/%g;
 
   # ==========================================================
+  # MIME boundaries in RFC3461 DSN messages
+  s/\d{8,10}-eximdsn-\d{8,10}/NNNNNNNNNN-eximdsn-MMMMMMMMMM/;
+
+  # ==========================================================
   # Some munging is specific to the specific file types
 
   # ======== stdout ========
