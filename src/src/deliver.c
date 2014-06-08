@@ -6696,6 +6696,12 @@ while (addr_failed != NULL)
       BOOL to_sender = strcmpic(sender_address, bounce_recipient) == 0;
       int max = (bounce_return_size_limit/DELIVER_IN_BUFFER_SIZE + 1) *
         DELIVER_IN_BUFFER_SIZE;
+#ifdef EXPERIMENTAL_DSN
+      uschar boundaryStr[64];
+      uschar *dsnlimitmsg;
+      uschar *dsnnotifyhdr;
+      int topt;
+#endif
 
       DEBUG(D_deliver)
         debug_printf("sending error message to: %s\n", bounce_recipient);
@@ -6751,7 +6757,6 @@ while (addr_failed != NULL)
 
 #ifdef EXPERIMENTAL_DSN
       /* generate boundary string and output MIME-Headers */
-      uschar boundaryStr[64];
       snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());
       fprintf(f,"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n", boundaryStr);
       fprintf(f,"MIME-Version: 1.0\n");
@@ -7016,9 +7021,10 @@ wording. */
   
       fprintf(f,"\n--%s\n", boundaryStr);
 
-      uschar *dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
-      uschar *dsnnotifyhdr = NULL;
-      int topt = topt_add_return_path;
+      dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
+      dsnnotifyhdr = NULL;
+      topt = topt_add_return_path;
+
       /* RET=HDRS? top priority */
       if (dsn_ret == dsn_ret_hdrs)
         topt |= topt_no_body;
@@ -7360,6 +7366,9 @@ else if (addr_defer != (address_item *)(+1))
         uschar *wmf_text;
         FILE *wmf = NULL;
         FILE *f = fdopen(fd, "wb");
+#ifdef EXPERIMENTAL_DSN
+	uschar boundaryStr[64];
+#endif
 
         if (warn_message_file != NULL)
           {
@@ -7382,7 +7391,6 @@ else if (addr_defer != (address_item *)(+1))
 
 #ifdef EXPERIMENTAL_DSN
         /* generated boundary string and output MIME-Headers */
-        uschar boundaryStr[64];
         snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());
         fprintf(f,"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n", boundaryStr);
         fprintf(f,"MIME-Version: 1.0\n");
