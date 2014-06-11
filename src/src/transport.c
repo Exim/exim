@@ -975,24 +975,27 @@ return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
 *    External interface to write the message, while signing it with DKIM and/or Domainkeys         *
 ***************************************************************************************************/
 
-/* This function is a wrapper around transport_write_message(). It is only called
-   from the smtp transport if DKIM or Domainkeys support is compiled in.
-   The function sets up a replacement fd into a -K file, then calls the normal
-   function. This way, the exact bits that exim would have put "on the wire" will
-   end up in the file (except for TLS encapsulation, which is the very
-   very last thing). When we are done signing the file, send the
-   signed message down the original fd (or TLS fd).
+/* This function is a wrapper around transport_write_message().
+   It is only called from the smtp transport if DKIM or Domainkeys support
+   is compiled in.  The function sets up a replacement fd into a -K file,
+   then calls the normal function. This way, the exact bits that exim would
+   have put "on the wire" will end up in the file (except for TLS
+   encapsulation, which is the very very last thing). When we are done
+   signing the file, send the signed message down the original fd (or TLS fd).
 
-Arguments:     as for internal_transport_write_message() above, with additional
-               arguments:
-               uschar *dkim_private_key         DKIM: The private key to use (filename or plain data)
-               uschar *dkim_domain              DKIM: The domain to use
-               uschar *dkim_selector            DKIM: The selector to use.
-               uschar *dkim_canon               DKIM: The canonalization scheme to use, "simple" or "relaxed"
-               uschar *dkim_strict              DKIM: What to do if signing fails: 1/true  => throw error
-                                                                                   0/false => send anyway
-               uschar *dkim_sign_headers        DKIM: List of headers that should be included in signature
-                                                generation
+Arguments:
+  as for internal_transport_write_message() above, with additional arguments:
+   uschar *dkim_private_key  DKIM: The private key to use (filename or
+				    plain data)
+   uschar *dkim_domain       DKIM: The domain to use
+   uschar *dkim_selector     DKIM: The selector to use.
+   uschar *dkim_canon        DKIM: The canonalization scheme to use,
+				    "simple" or "relaxed"
+   uschar *dkim_strict       DKIM: What to do if signing fails:
+				  1/true  => throw error
+				  0/false => send anyway
+   uschar *dkim_sign_headers DKIM: List of headers that should be included
+				    in signature generation
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
 */
@@ -1005,87 +1008,98 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
   uschar *dkim_selector, uschar *dkim_canon, uschar *dkim_strict, uschar *dkim_sign_headers
   )
 {
-  int dkim_fd;
-  int save_errno = 0;
-  BOOL rc;
-  uschar dkim_spool_name[256];
-  char sbuf[2048];
-  int sread = 0;
-  int wwritten = 0;
-  uschar *dkim_signature = NULL;
-  off_t size = 0;
+int dkim_fd;
+int save_errno = 0;
+BOOL rc;
+uschar dkim_spool_name[256];
+char sbuf[2048];
+int sread = 0;
+int wwritten = 0;
+uschar *dkim_signature = NULL;
+off_t size = 0;
 
-  if (!( ((dkim_private_key != NULL) && (dkim_domain != NULL) && (dkim_selector != NULL)) )) {
-    /* If we can't sign, just call the original function. */
-    return transport_write_message(addr, fd, options,
-              size_limit, add_headers, remove_headers,
-              check_string, escape_string, rewrite_rules,
-              rewrite_existflags);
+/* If we can't sign, just call the original function. */
+
+if (!(dkim_private_key && dkim_domain && dkim_selector))
+  return transport_write_message(addr, fd, options,
+	    size_limit, add_headers, remove_headers,
+	    check_string, escape_string, rewrite_rules,
+	    rewrite_existflags);
+
+(void)string_format(dkim_spool_name, 256, "%s/input/%s/%s-%d-K",
+	spool_directory, message_subdir, message_id, (int)getpid());
+
+if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
+  {
+  /* Can't create spool file. Ugh. */
+  rc = FALSE;
+  save_errno = errno;
+  goto CLEANUP;
   }
 
-  (void)string_format(dkim_spool_name, 256, "%s/input/%s/%s-%d-K",
-          spool_directory, message_subdir, message_id, (int)getpid());
-  dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE);
-  if (dkim_fd < 0)
+/* Call original function to write the -K file */
+
+rc = transport_write_message(addr, dkim_fd, options,
+  size_limit, add_headers, remove_headers,
+  check_string, escape_string, rewrite_rules,
+  rewrite_existflags);
+
+/* Save error state. We must clean up before returning. */
+if (!rc)
+  {
+  save_errno = errno;
+  goto CLEANUP;
+  }
+
+if (dkim_private_key && dkim_domain && dkim_selector)
+  {
+  /* Rewind file and feed it to the goats^W DKIM lib */
+  lseek(dkim_fd, 0, SEEK_SET);
+  dkim_signature = dkim_exim_sign(dkim_fd,
+				  dkim_private_key,
+				  dkim_domain,
+				  dkim_selector,
+				  dkim_canon,
+				  dkim_sign_headers);
+  if (!dkim_signature)
     {
-    /* Can't create spool file. Ugh. */
-    rc = FALSE;
-    save_errno = errno;
-    goto CLEANUP;
-    }
-
-  /* Call original function */
-  rc = transport_write_message(addr, dkim_fd, options,
-    size_limit, add_headers, remove_headers,
-    check_string, escape_string, rewrite_rules,
-    rewrite_existflags);
-
-  /* Save error state. We must clean up before returning. */
-  if (!rc)
-    {
-    save_errno = errno;
-    goto CLEANUP;
-    }
-
-  if ( (dkim_private_key != NULL) && (dkim_domain != NULL) && (dkim_selector != NULL) ) {
-    /* Rewind file and feed it to the goats^W DKIM lib */
-    lseek(dkim_fd, 0, SEEK_SET);
-    dkim_signature = dkim_exim_sign(dkim_fd,
-                                    dkim_private_key,
-                                    dkim_domain,
-                                    dkim_selector,
-                                    dkim_canon,
-                                    dkim_sign_headers);
-    if (dkim_signature == NULL) {
-      if (dkim_strict != NULL) {
-        uschar *dkim_strict_result = expand_string(dkim_strict);
-        if (dkim_strict_result != NULL) {
-          if ( (strcmpic(dkim_strict,US"1") == 0) ||
-               (strcmpic(dkim_strict,US"true") == 0) ) {
-            /* Set errno to something halfway meaningful */
-            save_errno = EACCES;
-            log_write(0, LOG_MAIN, "DKIM: message could not be signed, and dkim_strict is set. Deferring message delivery.");
-            rc = FALSE;
-            goto CLEANUP;
-          }
-        }
+    if (dkim_strict)
+      {
+      uschar *dkim_strict_result = expand_string(dkim_strict);
+      if (dkim_strict_result)
+	if ( (strcmpic(dkim_strict,US"1") == 0) ||
+	     (strcmpic(dkim_strict,US"true") == 0) )
+	  {
+	  /* Set errno to something halfway meaningful */
+	  save_errno = EACCES;
+	  log_write(0, LOG_MAIN, "DKIM: message could not be signed,"
+	    " and dkim_strict is set. Deferring message delivery.");
+	  rc = FALSE;
+	  goto CLEANUP;
+	  }
       }
     }
-    else {
-      int siglen = Ustrlen(dkim_signature);
-      while(siglen > 0) {
-        #ifdef SUPPORT_TLS
-        if (tls_out.active == fd) wwritten = tls_write(FALSE, dkim_signature, siglen); else
-        #endif
-        wwritten = write(fd,dkim_signature,siglen);
-        if (wwritten == -1) {
-          /* error, bail out */
-          save_errno = errno;
-          rc = FALSE;
-          goto CLEANUP;
-        }
-        siglen -= wwritten;
-        dkim_signature += wwritten;
+  else
+    {
+    int siglen = Ustrlen(dkim_signature);
+    while(siglen > 0)
+      {
+#ifdef SUPPORT_TLS
+      wwritten = tls_out.active == fd
+	? tls_write(FALSE, dkim_signature, siglen)
+	: write(fd, dkim_signature, siglen);
+#else
+      wwritten = write(fd, dkim_signature, siglen);
+#endif
+      if (wwritten == -1)
+        {
+	/* error, bail out */
+	save_errno = errno;
+	rc = FALSE;
+	goto CLEANUP;
+	}
+      siglen -= wwritten;
+      dkim_signature += wwritten;
       }
     }
   }
@@ -1093,41 +1107,44 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
   /* Fetch file positition (the size) */
   size = lseek(dkim_fd,0,SEEK_CUR);
 
-  /* Rewind file */
-  lseek(dkim_fd, 0, SEEK_SET);
+/* Rewind file */
+lseek(dkim_fd, 0, SEEK_SET);
 
 #ifdef HAVE_LINUX_SENDFILE
-  /* We can use sendfile() to shove the file contents
-     to the socket. However only if we don't use TLS,
-     in which case theres another layer of indirection
-     before the data finally hits the socket. */
-  if (tls_out.active != fd)
+/* We can use sendfile() to shove the file contents
+   to the socket. However only if we don't use TLS,
+   as then there's another layer of indirection
+   before the data finally hits the socket. */
+if (tls_out.active != fd)
+  {
+  ssize_t copied = 0;
+  off_t offset = 0;
+  while(copied >= 0 && offset < size)
+    copied = sendfile(fd, dkim_fd, &offset, size - offset);
+  if (copied < 0)
     {
-    ssize_t copied = 0;
-    off_t offset = 0;
-    while((copied >= 0) && (offset<size))
-      {
-      copied = sendfile(fd, dkim_fd, &offset, (size - offset));
-      }
-    if (copied < 0)
-      {
-      save_errno = errno;
-      rc = FALSE;
-      }
-    goto CLEANUP;
+    save_errno = errno;
+    rc = FALSE;
     }
+  goto CLEANUP;
+  }
 #endif
 
-  /* Send file down the original fd */
-  while((sread = read(dkim_fd,sbuf,2048)) > 0)
+/* Send file down the original fd */
+while((sread = read(dkim_fd, sbuf, 2048)) > 0)
+  {
+  char *p = sbuf;
+  /* write the chunk */
+
+  while (sread)
     {
-    char *p = sbuf;
-    /* write the chunk */
-    DKIM_WRITE:
-    #ifdef SUPPORT_TLS
-    if (tls_out.active == fd) wwritten = tls_write(FALSE, US p, sread); else
-    #endif
-    wwritten = write(fd,p,sread);
+#ifdef SUPPORT_TLS
+    wwritten = tls_out.active == fd
+      ? tls_write(FALSE, US p, sread)
+      : write(fd, p, sread);
+#else
+    wwritten = write(fd, p, sread);
+#endif
     if (wwritten == -1)
       {
       /* error, bail out */
@@ -1135,28 +1152,24 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
       rc = FALSE;
       goto CLEANUP;
       }
-    if (wwritten < sread)
-      {
-      /* short write, try again */
-      p += wwritten;
-      sread -= wwritten;
-      goto DKIM_WRITE;
-      }
+    p += wwritten;
+    sread -= wwritten;
     }
+  }
 
-  if (sread == -1)
-    {
-    save_errno = errno;
-    rc = FALSE;
-    goto CLEANUP;
-    }
+if (sread == -1)
+  {
+  save_errno = errno;
+  rc = FALSE;
+  goto CLEANUP;
+  }
 
-  CLEANUP:
-  /* unlink -K file */
-  (void)close(dkim_fd);
-  Uunlink(dkim_spool_name);
-  errno = save_errno;
-  return rc;
+CLEANUP:
+/* unlink -K file */
+(void)close(dkim_fd);
+Uunlink(dkim_spool_name);
+errno = save_errno;
+return rc;
 }
 
 #endif
