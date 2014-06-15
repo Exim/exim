@@ -677,7 +677,7 @@ only when DBM support is available in Exim, and typically follows the use of a
 "write" command (see below) that creates the input file.
 
 
-  dumpdb <dbname>
+  dump <dbname>
 
 This command runs the exim_dumpdb utility on the testing spool directory, using
 the database name given, for example: "dumpdb retry".
@@ -731,7 +731,7 @@ to the screen.
   munge <name>
 
 This command requests custom munging of the test outputs.  The munge names
-used are coded in the runtest script.
+used are coded in the runtest script (look for 'name of munge').
 
 
   need_ipv4
