@@ -4667,6 +4667,9 @@ while (*s != 0)
 
         DEBUG(D_expand) debug_printf("connected to socket %s\n", sub_arg[0]);
 
+	/* Allow sequencing of test actions */
+	if (running_in_test_harness) millisleep(100);
+
         /* Write the request string, if not empty */
 
         if (sub_arg[1][0] != 0)
@@ -4689,6 +4692,8 @@ while (*s != 0)
         #ifdef SHUT_WR
         shutdown(fd, SHUT_WR);
         #endif
+
+	if (running_in_test_harness) millisleep(100);
 
         /* Now we need to read from the socket, under a timeout. The function
         that reads a file can be used. */
