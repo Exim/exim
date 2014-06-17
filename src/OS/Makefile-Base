@@ -32,7 +32,8 @@ FE       = $(FULLECHO)
 # up-to-date. Then the os-specific source files and the C configuration file
 # are set up, and finally it goes to the main Exim target.
 
-all:    $(EDITME) checklocalmake Makefile os.h os.c config.h version.h allexim
+all:       allexim
+config:    $(EDITME) checklocalmake Makefile os.h os.c config.h version.h
 
 checklocalmake:
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
@@ -94,14 +95,14 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 # therefore always be run, even if the files exist. This shouldn't in fact be a
 # problem, but it does no harm. Other make programs will just ignore this.
 
-.PHONY: all allexim buildauths buildlookups buildpdkim buildrouters \
+.PHONY: all config allexim buildauths buildlookups buildpdkim buildrouters \
         buildtransports checklocalmake clean
 
 
 # This is the real default target for all the various exim binaries and
 # scripts, once the configuring stuff is done.
 
-allexim: config.h $(EXIM_MONITOR) exicyclog exinext exiwhat \
+allexim: $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
         transport-filter.pl convert4r3 convert4r4 \
         exim_checkaccess \
@@ -116,7 +117,7 @@ buildconfig: buildconfig.c
 
 
 # Target for the exicyclog utility script
-exicyclog: Makefile config.h ../src/exicyclog.src
+exicyclog: config ../src/exicyclog.src
 	@rm -f exicyclog
 	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -141,7 +142,7 @@ exicyclog: Makefile config.h ../src/exicyclog.src
 	@echo ">>> exicyclog script built"
 
 # Target for the exinext utility script
-exinext: Makefile config.h ../src/exinext.src
+exinext: config ../src/exinext.src
 	@rm -f exinext
 	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -156,7 +157,7 @@ exinext: Makefile config.h ../src/exinext.src
 	@echo ">>> exinext script built"
 
 # Target for the exiwhat utility script
-exiwhat: Makefile config.h ../src/exiwhat.src
+exiwhat: config ../src/exiwhat.src
 	@rm -f exiwhat
 	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -177,7 +178,7 @@ exiwhat: Makefile config.h ../src/exiwhat.src
 	@echo ">>> exiwhat script built"
 
 # Target for the exim_checkaccess utility script
-exim_checkaccess: Makefile config.h ../src/exim_checkaccess.src
+exim_checkaccess: config ../src/exim_checkaccess.src
 	@rm -f exim_checkaccess
 	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
@@ -193,7 +194,7 @@ exim_checkaccess: Makefile config.h ../src/exim_checkaccess.src
 	@echo ">>> exim_checkaccess script built"; echo ""
 
 # Target for the Exim monitor start-up script
-eximon: Makefile config.h ../src/eximon.src ../OS/eximon.conf-Default \
+eximon: config ../src/eximon.src ../OS/eximon.conf-Default \
           ../Local/eximon.conf
 	@rm -f eximon
 	$(SHELL) $(SCRIPTS)/Configure-eximon
@@ -530,7 +531,7 @@ util-os.o:       $(HDRS) os.c
 # The local scan module depends only on its own special header, and is compiled
 # from a source whose location is set by configuration.
 
-local_scan.o:    Makefile config.h local_scan.h ../$(LOCAL_SCAN_SOURCE)
+local_scan.o:    config local_scan.h ../$(LOCAL_SCAN_SOURCE)
 	@echo "$(CC) local_scan.c"
 	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) -o local_scan.o ../$(LOCAL_SCAN_SOURCE)
 
@@ -648,7 +649,7 @@ $(MONBIN): $(HDRS)
 
 # The lookups library.
 
-buildlookups:
+buildlookups: config
 	 @cd lookups && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
@@ -657,7 +658,7 @@ buildlookups:
 
 # The routers library.
 
-buildrouters:
+buildrouters: config
 	 @cd routers && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -665,7 +666,7 @@ buildrouters:
 
 # The transports library.
 
-buildtransports:
+buildtransports: config
 	 @cd transports && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -673,7 +674,7 @@ buildtransports:
 
 # The library of authorization modules
 
-buildauths:
+buildauths: config
 	 @cd auths && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
@@ -682,7 +683,7 @@ buildauths:
 # The PDKIM library
 
 buildpdkim: pdkim/pdkim.a
-pdkim/pdkim.a: config.h
+pdkim/pdkim.a: config
 	 @cd pdkim && $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
