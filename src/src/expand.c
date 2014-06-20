@@ -348,25 +348,9 @@ enum {
 };
 
 
-/* Type for main variable table */
-
-typedef struct {
-  const char *name;
-  int         type;
-  void       *value;
-} var_entry;
-
-/* Type for entries pointing to address/length pairs. Not currently
-in use. */
-
-typedef struct {
-  uschar **address;
-  int  *length;
-} alblock;
-
 /* Types of table entry */
 
-enum {
+enum vtypes {
   vtype_int,            /* value is address of int */
   vtype_filter_int,     /* ditto, but recognized only when filtering */
   vtype_ino,            /* value is address of ino_t (not always an int) */
@@ -399,7 +383,23 @@ enum {
   #ifndef DISABLE_DKIM
   ,vtype_dkim           /* Lookup of value in DKIM signature */
   #endif
-  };
+};
+
+/* Type for main variable table */
+
+typedef struct {
+  const char *name;
+  enum vtypes type;
+  void       *value;
+} var_entry;
+
+/* Type for entries pointing to address/length pairs. Not currently
+in use. */
+
+typedef struct {
+  uschar **address;
+  int  *length;
+} alblock;
 
 static uschar * fn_recipients(void);
 
