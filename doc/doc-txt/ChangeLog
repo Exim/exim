@@ -375,7 +375,7 @@ TL/11 Bugzilla 1382 - Option ldap_require_cert overrides start_tls
 TL/12 Enhanced documentation in the ratelimit.pl script provided in
       the src/util/ subdirectory.
 
-TL/13 Bug 1301 - Imported transport SQL logging patch from Axel Rau
+TL/13 Bug 1031 - Imported transport SQL logging patch from Axel Rau
       renamed to Transport Post Delivery Action by Jeremy Harris, as
       EXPERIMENTAL_TPDA.
 
