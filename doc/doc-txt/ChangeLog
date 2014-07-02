@@ -135,6 +135,9 @@ JH/26 Port service names are now accepted for tls_on_connect_ports, to
 TF/03 Fix udpsend. The ip_connectedsocket() function's socket type
       support and error reporting did not work properly.
 
+TL/13 Bug 1495: Exiqgrep check if -C config file specified on cli exists
+      and is readable.  Patch from Andrew Colin Kissa.
+
 
 Exim version 4.82
 -----------------
