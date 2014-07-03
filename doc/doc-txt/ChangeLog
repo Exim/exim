@@ -138,6 +138,10 @@ TF/03 Fix udpsend. The ip_connectedsocket() function's socket type
 TL/13 Bug 1495: Exiqgrep check if -C config file specified on cli exists
       and is readable.  Patch from Andrew Colin Kissa.
 
+TL/14 Enhance documentation of ${run expansion and how it parses the
+      commandline after expansion, particularly in the case when an
+      unquoted variable expansion results in an empty value.
+
 
 Exim version 4.82
 -----------------

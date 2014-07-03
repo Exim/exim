@@ -9597,10 +9597,23 @@ expansion item above.
         {*&<&'string2'&>&*}}*&"
 .cindex "expansion" "running a command"
 .cindex "&%run%& expansion item"
-The command and its arguments are first expanded separately, and then the
-command is run in a separate process, but under the same uid and gid. As in
-other command executions from Exim, a shell is not used by default. If you want
+.new
+The command and its arguments are first expanded as one string. The string is
+split apart into individual arguments by spaces, and then the command is run
+in a separate process, but under the same uid and gid.  As in other command
+executions from Exim, a shell is not used by default. If the command requires
 a shell, you must explicitly code it.
+
+Since the arguments are split by spaces, when there is a variable expansion
+which has an empty result, it will cause the situation that the argument will
+simply be omitted when the program is actually executed by Exim. If the
+script/program requires a specific number of arguments and the expanded
+variable could possibly result in this empty expansion, the variable must be
+quoted. This is more difficult if the expanded variable itself could result
+in a string containing quotes, because it would with the quotes around the
+command arguments. A possible guard against this is to wrap the variable in
+the &%sg%& operator to change any quote marks to some other character.
+.wen
 
 The standard input for the command exists, but is empty. The standard output
 and standard error are set to the same file descriptor.
