@@ -9610,9 +9610,10 @@ simply be omitted when the program is actually executed by Exim. If the
 script/program requires a specific number of arguments and the expanded
 variable could possibly result in this empty expansion, the variable must be
 quoted. This is more difficult if the expanded variable itself could result
-in a string containing quotes, because it would with the quotes around the
-command arguments. A possible guard against this is to wrap the variable in
-the &%sg%& operator to change any quote marks to some other character.
+in a string containing quotes, because it would interfere with the quotes
+around the command arguments. A possible guard against this is to wrap the
+variable in the &%sg%& operator to change any quote marks to some other
+character.
 .wen
 
 The standard input for the command exists, but is empty. The standard output
