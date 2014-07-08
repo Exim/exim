@@ -677,7 +677,7 @@ static var_entry var_table[] = {
   { "tls_in_ourcert",      vtype_cert,        &tls_in.ourcert },
   { "tls_in_peercert",     vtype_cert,        &tls_in.peercert },
   { "tls_in_peerdn",       vtype_stringptr,   &tls_in.peerdn },
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+#if defined(SUPPORT_TLS)
   { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
 #endif
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
@@ -687,12 +687,12 @@ static var_entry var_table[] = {
   { "tls_out_ourcert",     vtype_cert,        &tls_out.ourcert },
   { "tls_out_peercert",    vtype_cert,        &tls_out.peercert },
   { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+#if defined(SUPPORT_TLS)
   { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
 #endif
 
   { "tls_peerdn",          vtype_stringptr,   &tls_in.peerdn },	/* mind the alphabetical order! */
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+#if defined(SUPPORT_TLS)
   { "tls_sni",             vtype_stringptr,   &tls_in.sni },	/* mind the alphabetical order! */
 #endif
 
