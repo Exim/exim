@@ -1,0 +1,10 @@
+# TLS: SNI
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+# Basic: is SNI set on tpt seen by server
+exim CALLER@test.ex
+Test message.
+****
+millisleep 500
+killdaemon

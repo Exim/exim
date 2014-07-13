@@ -142,6 +142,8 @@ TL/14 Enhance documentation of ${run expansion and how it parses the
       commandline after expansion, particularly in the case when an
       unquoted variable expansion results in an empty value.
 
+JH/27 The TLS SNI feature was broken in 4.82.  Fix it.
+
 
 Exim version 4.82
 -----------------

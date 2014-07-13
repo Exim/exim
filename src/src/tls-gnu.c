@@ -108,7 +108,6 @@ typedef struct exim_gnutls_state {
 
   uschar *exp_tls_certificate;
   uschar *exp_tls_privatekey;
-  uschar *exp_tls_sni;
   uschar *exp_tls_verify_certificates;
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
@@ -1086,15 +1085,15 @@ if (rc != OK) return rc;
 /* set SNI in client, only */
 if (host)
   {
-  if (!expand_check(state->tlsp->sni, US"tls_out_sni", &state->exp_tls_sni))
+  if (!expand_check(sni, US"tls_out_sni", &state->tlsp->sni))
     return DEFER;
-  if (state->exp_tls_sni && *state->exp_tls_sni)
+  if (state->tlsp->sni && *state->tlsp->sni)
     {
     DEBUG(D_tls)
-      debug_printf("Setting TLS client SNI to \"%s\"\n", state->exp_tls_sni);
-    sz = Ustrlen(state->exp_tls_sni);
+      debug_printf("Setting TLS client SNI to \"%s\"\n", state->tlsp->sni);
+    sz = Ustrlen(state->tlsp->sni);
     rc = gnutls_server_name_set(state->session,
-        GNUTLS_NAME_DNS, state->exp_tls_sni, sz);
+        GNUTLS_NAME_DNS, state->tlsp->sni, sz);
     exim_gnutls_err_check(US"gnutls_server_name_set");
     }
   }

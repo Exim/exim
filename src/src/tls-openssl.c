@@ -436,14 +436,11 @@ const char *pem;
 if (!expand_check(dhparam, US"tls_dhparam", &dhexpanded))
   return FALSE;
 
-if (dhexpanded == NULL || *dhexpanded == '\0')
-  {
+if (!dhexpanded || !*dhexpanded)
   bio = BIO_new_mem_buf(CS std_dh_prime_default(), -1);
-  }
 else if (dhexpanded[0] == '/')
   {
-  bio = BIO_new_file(CS dhexpanded, "r");
-  if (bio == NULL)
+  if (!(bio = BIO_new_file(CS dhexpanded, "r")))
     {
     tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
           host, US strerror(errno));
@@ -458,8 +455,7 @@ else
     return TRUE;
     }
 
-  pem = std_dh_prime_named(dhexpanded);
-  if (!pem)
+  if (!(pem = std_dh_prime_named(dhexpanded)))
     {
     tls_error(string_sprintf("Unknown standard DH prime \"%s\"", dhexpanded),
         host, US strerror(errno));
@@ -468,8 +464,7 @@ else
   bio = BIO_new_mem_buf(CS pem, -1);
   }
 
-dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
-if (dh == NULL)
+if (!(dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)))
   {
   BIO_free(bio);
   tls_error(string_sprintf("Could not read tls_dhparams \"%s\"", dhexpanded),
@@ -770,8 +765,7 @@ if (!reexpand_tls_files_for_sni)
 not confident that memcpy wouldn't break some internal reference counting.
 Especially since there's a references struct member, which would be off. */
 
-server_sni = SSL_CTX_new(SSLv23_server_method());
-if (!server_sni)
+if (!(server_sni = SSL_CTX_new(SSLv23_server_method())))
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
   DEBUG(D_tls) debug_printf("SSL_CTX_new() failed: %s\n", ssl_errstring);
@@ -805,8 +799,8 @@ OCSP information. */
 rc = tls_expand_session_files(server_sni, cbinfo);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
-rc = init_dh(server_sni, cbinfo->dhparam, NULL);
-if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+if (!init_dh(server_sni, cbinfo->dhparam, NULL))
+  return SSL_TLSEXT_ERR_NOACK;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
 SSL_set_SSL_CTX(s, server_sni);
@@ -1052,6 +1046,7 @@ else
   cbinfo->u_ocsp.client.verify_store = NULL;
 #endif
 cbinfo->dhparam = dhparam;
+cbinfo->server_cipher_list = NULL;
 cbinfo->host = host;
 
 SSL_load_error_strings();          /* basic set up */
