@@ -364,12 +364,17 @@ side, put in definitions for all the ones that Exim uses. */
 
  . T_CSA gets the domain's Client SMTP Authorization SRV record
 
+ . T_ADDRESSES looks up both AAAA (or A6) and A records
+
+If any of these names appear in the RRtype list at:
+  <http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml>
+then we should rename Exim's private type away from the conflict.
 */
 
 #define T_ZNS (-1)
 #define T_MXH (-2)
 #define T_CSA (-3)
-#define T_APL (-4)
+#define T_ADDRESSES (-4)
 
 /* The resolv.h header defines __P(x) on some Solaris 2.5.1 systems (without
 checking that it is already defined, in fact). This conflicts with other

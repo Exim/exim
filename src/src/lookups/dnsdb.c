@@ -54,7 +54,7 @@ static const char *type_names[] = {
 static int type_values[] = {
   T_A,
 #if HAVE_IPV6
-  T_APL,     /* Private type for AAAA + A */
+  T_ADDRESSES,     /* Private type for AAAA + A */
   T_AAAA,
   #ifdef SUPPORT_A6
   T_A6,
@@ -328,9 +328,9 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
     DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", domain);
 
     /* Do the lookup and sort out the result. There are four special types that
-    are handled specially: T_CSA, T_ZNS, T_APL and T_MXH.
+    are handled specially: T_CSA, T_ZNS, T_ADDRESSES and T_MXH.
     The first two are handled in a special lookup function so that the facility
-    could be used from other parts of the Exim code. T_APL is handled by looping
+    could be used from other parts of the Exim code. T_ADDRESSES is handled by looping
     over the types of A lookup.  T_MXH affects only what happens later on in
     this function, but for tidiness it is handled by the "special". If the
     lookup fails, continue with the next domain. In the case of DEFER, adjust
@@ -338,9 +338,9 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 
     found = domain;
 #if HAVE_IPV6
-    if (type == T_APL)		/* NB cannot happen unless HAVE_IPV6 */
+    if (type == T_ADDRESSES)		/* NB cannot happen unless HAVE_IPV6 */
       {
-      if (searchtype == T_APL)
+      if (searchtype == T_ADDRESSES)
 # if defined(SUPPORT_A6)
                                      searchtype = T_A6;
 # else
@@ -389,7 +389,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
           type == T_A6 ||
           #endif
           type == T_AAAA ||
-	  type == T_APL)
+          type == T_ADDRESSES)
         {
         dns_address *da;
         for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
@@ -527,7 +527,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       }    /* Loop for list of returned records */
 
            /* Loop for set of A-lookupu types */
-    } while (type == T_APL && searchtype != T_A);
+    } while (type == T_ADDRESSES && searchtype != T_A);
 
   }        /* Loop for list of domains */
 

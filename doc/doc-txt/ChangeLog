@@ -144,6 +144,10 @@ TL/14 Enhance documentation of ${run expansion and how it parses the
 
 JH/27 The TLS SNI feature was broken in 4.82.  Fix it.
 
+PP/02 Fix internal collision of T_APL on systems which support RFC3123
+      by renaming away from it.  Addresses GH issue 15, reported by
+      Jasper Wallace.
+
 
 Exim version 4.82
 -----------------
