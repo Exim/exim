@@ -359,7 +359,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 
     if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
     if (  rc != DNS_SUCCEED
-       || dnssec_mode == DEFER && !dns_is_secure(&dnsa)
+       || (dnssec_mode == DEFER && !dns_is_secure(&dnsa))
        )
       {
       if (defer_mode == DEFER)
