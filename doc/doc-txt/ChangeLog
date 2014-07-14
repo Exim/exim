@@ -148,6 +148,8 @@ PP/02 Fix internal collision of T_APL on systems which support RFC3123
       by renaming away from it.  Addresses GH issue 15, reported by
       Jasper Wallace.
 
+JH/28 Fix parsing of MIME headers for parameters with quoted semicolons.
+
 
 Exim version 4.82
 -----------------

@@ -391,11 +391,11 @@ int mime_get_header(FILE *f, uschar *header) {
       /* we have hit a non-whitespace char, start copying value data */
       header_value_mode = 2;
 
-      /* skip quotes */
-      if (c == '"') continue;
+      if (c == '"')       /* flip "quoted" mode */
+        header_value_mode = header_value_mode==2 ? 3 : 2;
 
-      /* leave value mode on ';' */
-      if (c == ';') {
+      /* leave value mode on unquoted ';' */
+      if (header_value_mode == 2 && c == ';') {
         header_value_mode = 0;
       };
       /* -------------------------------- */
@@ -570,7 +570,12 @@ int mime_acl_check(uschar *acl, FILE *f, struct mime_boundary_context *context,
               if (strncmpic(mime_parameter_list[j].name,p,mime_parameter_list[j].namelen) == 0) {
                 uschar *q = p + mime_parameter_list[j].namelen;
                 /* yes, grab the value and copy to its corresponding expansion variable */
-                while(*q != ';') q++;
+	        while (*q && *q != ';')
+                  {
+                  if (*q == '"') do q++; while (*q != '"');
+                  q++;
+                  }
+
                 param_value_len = (q - (p + mime_parameter_list[j].namelen));
                 param_value = (uschar *)malloc(param_value_len+1);
                 memset(param_value,0,param_value_len+1);
