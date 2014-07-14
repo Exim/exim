@@ -36,7 +36,10 @@ updating Exim to use the newer interface. */
 #define DYNLIB_FN_EXT "dylib"
 
 /* We currently need some assistance getting OFF_T_FMT correct on MacOS */
-#define OFF_T_FMT "%llu"
+#ifdef OFF_T_FMT
+# undef OFF_T_FMT
+#endif
+#define OFF_T_FMT "%lld"
 #define LONGLONG_T long int
 
 /* End */
