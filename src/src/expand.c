@@ -5908,7 +5908,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, (int)strlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp, (int)Ustrlen(cp));
 	  }
 	else
 #endif
