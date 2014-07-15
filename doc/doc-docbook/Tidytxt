@@ -20,6 +20,8 @@ foreach $line (@lines)
   $line =~ s/\x{c2}\x{a0}/ /g;
   # (2) bullet -> asterisk
   $line =~ s/\x{e2}\x{97}\x{8f}/*/g;
+  $line =~ s/\x{e2}\x{80}\x{a2}/*/g; # OpenSUSE
+  $line =~ s/\x{e2}\x{96}\x{a1}/*/g; # OpenSUSE
   # (3a) horizontal box drawing -> hyphen
   $line =~ s/\x{e2}\x{94}[\x{80}\x{81}\x{84}\x{85}\x{88}\x{89}]/-/g;
   $line =~ s/\x{e2}\x{95}[\x{8c}\x{8d}\x{90}]/-/g;
