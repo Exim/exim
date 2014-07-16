@@ -14,6 +14,7 @@
 /* Recursively called function */
 
 static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL, BOOL, BOOL *);
+static int_eximarith_t expanded_string_integer(uschar *, BOOL);
 
 #ifdef STAND_ALONE
 #ifndef SUPPORT_CRYPTEQ
@@ -2445,7 +2446,7 @@ switch(cond_type)
         }
       else
         {
-        num[i] = expand_string_integer(sub[i], FALSE);
+        num[i] = expanded_string_integer(sub[i], FALSE);
         if (expand_string_message != NULL) return NULL;
         }
       }
@@ -6679,7 +6680,7 @@ while (*s != 0)
         int_eximarith_t max;
         uschar *s;
 
-        max = expand_string_integer(sub, TRUE);
+        max = expanded_string_integer(sub, TRUE);
         if (expand_string_message != NULL)
           goto EXPAND_FAILED;
         s = string_sprintf("%d", vaguely_random_number((int)max));
@@ -6879,8 +6880,32 @@ Returns:  the integer value, or
 int_eximarith_t
 expand_string_integer(uschar *string, BOOL isplus)
 {
+return expanded_string_integer(expand_string(string), isplus);
+}
+
+
+/*************************************************
+ *         Interpret string as an integer        *
+ *************************************************/
+
+/* Convert a string (that has already been expanded) into an integer.
+
+This function is used inside the expansion code.
+
+Arguments:
+  s       the string to be expanded
+  isplus  TRUE if a non-negative number is expected
+
+Returns:  the integer value, or
+          -1 if string is NULL (which implies an expansion error)
+          -2 for an integer interpretation error
+          expand_string_message is set NULL for an OK integer
+*/
+
+static int_eximarith_t
+expanded_string_integer(uschar *s, BOOL isplus)
+{
 int_eximarith_t value;
-uschar *s = expand_string(string);
 uschar *msg = US"invalid integer \"%s\"";
 uschar *endptr;
 
