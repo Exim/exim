@@ -1,2 +1,3 @@
 ten-1.test.ex
 10.0.0.2
+trick: ${substr_2_2:65535}

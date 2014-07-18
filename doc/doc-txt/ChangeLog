@@ -150,6 +150,10 @@ PP/02 Fix internal collision of T_APL on systems which support RFC3123
 
 JH/28 Fix parsing of MIME headers for parameters with quoted semicolons.
 
+TL/15 SECURITY: prevent double expansion in math comparison functions
+      (can expand unsanitized data). Not remotely exploitable.
+      CVE-2014-2972
+
 
 Exim version 4.82
 -----------------

@@ -304,6 +304,7 @@
 > 5>3m:   n
 > Failed: invalid integer "3z "
 > Failed: integer expected but "a" found
+> Failed: integer expected but "${substr_2_2:65535}" found
 > 
 > >0:     n
 > =:      y
