@@ -14,7 +14,7 @@ extern int dcc_ok;
 #endif
 
 #ifdef EXPERIMENTAL_DMARC
-#include "dmarc.h"
+# include "dmarc.h"
 #endif /* EXPERIMENTAL_DMARC */
 
 /*************************************************

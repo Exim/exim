@@ -35,7 +35,7 @@ are needed by any of the other headers, including system headers. */
 /* If it didn't define os_find_running_interfaces, use the common function. */
 
 #ifndef os_find_running_interfaces
-#define os_find_running_interfaces os_common_find_running_interfaces
+# define os_find_running_interfaces os_common_find_running_interfaces
 #endif
 
 /* If it didn't define the base for "base 62" numbers, we really do use 62.
@@ -44,15 +44,15 @@ Darwin, with their case-insensitive file systems, that can't use base 62 for
 making unique names. */
 
 #ifndef BASE_62
-#define BASE_62 62
+# define BASE_62 62
 #endif
 
 /* The maximum value of localhost_number depends on the base being used */
 
 #if BASE_62 == 62
-#define LOCALHOST_MAX  16
+# define LOCALHOST_MAX  16
 #else
-#define LOCALHOST_MAX  10
+# define LOCALHOST_MAX  10
 #endif
 
 /* If not overridden by os.h, dynamic libraries have filenames ending .so */
@@ -77,11 +77,11 @@ making unique names. */
 
 #include <errno.h>
 #if defined(__svr4__) && defined(__sparc) && ! defined(__EXTENSIONS__)
-#define __EXTENSIONS__  /* so that SunOS 5 gets NGROUPS_MAX */
-#include <limits.h>
-#undef  __EXTENSIONS__
+# define __EXTENSIONS__  /* so that SunOS 5 gets NGROUPS_MAX */
+# include <limits.h>
+# undef  __EXTENSIONS__
 #else
-#include <limits.h>
+# include <limits.h>
 #endif
 
 /* C99 integer types, figure out how to undo this if needed for older systems */
@@ -91,19 +91,19 @@ making unique names. */
 /* Just in case some aged system doesn't define them... */
 
 #ifndef INT_MAX
-#define INT_MAX 2147483647
+# define INT_MAX 2147483647
 #endif
 
 #ifndef INT_MIN
-#define INT_MIN (-INT_MAX - 1)
+# define INT_MIN (-INT_MAX - 1)
 #endif
 
 #ifndef SHRT_MAX
-#define SHRT_MAX 32767
+# define SHRT_MAX 32767
 #endif
 
 #ifndef UCHAR_MAX
-#define UCHAR_MAX 255
+# define UCHAR_MAX 255
 #endif
 
 
@@ -118,11 +118,11 @@ making unique names. */
 /* Some systems have PATH_MAX and some have MAX_PATH_LEN. */
 
 #ifndef PATH_MAX
-#ifdef MAX_PATH_LEN
-#define PATH_MAX MAX_PATH_LEN
-#else
-#define PATH_MAX 1024
-#endif
+# ifdef MAX_PATH_LEN
+#  define PATH_MAX MAX_PATH_LEN
+# else
+#  define PATH_MAX 1024
+# endif
 #endif
 
 #include <sys/types.h>
@@ -130,7 +130,7 @@ making unique names. */
 #include <dirent.h>
 #include <netdb.h>
 #ifndef NO_POLL_H
-#include <poll.h>
+# include <poll.h>
 #endif
 #include <pwd.h>
 #include <grp.h>
@@ -140,11 +140,11 @@ making unique names. */
 in sys/file.h. */
 
 #ifndef LOCK_SH
-#define NO_FLOCK
+# define NO_FLOCK
 #endif
 
 #ifndef NO_SYSEXITS        /* some OS don't have this */
-#include <sysexits.h>
+# include <sysexits.h>
 #endif
 
 /* A few OS don't have socklen_t; their os.h files define EXIM_SOCKLEN_T to
@@ -152,22 +152,22 @@ be size_t or whatever. We used to use SOCKLEN_T, but then it was discovered
 that this is used by the AIX include files. */
 
 #ifndef EXIM_SOCKLEN_T
-#define EXIM_SOCKLEN_T socklen_t
+# define EXIM_SOCKLEN_T socklen_t
 #endif
 
 /* Ensure that the sysexits we reference are defined */
 
 #ifndef EX_UNAVAILABLE
-#define EX_UNAVAILABLE 69        /* service unavailable; used for execv fail */
+# define EX_UNAVAILABLE 69        /* service unavailable; used for execv fail */
 #endif
 #ifndef EX_CANTCREAT
-#define EX_CANTCREAT   73        /* can't create file: treat as temporary */
+# define EX_CANTCREAT   73        /* can't create file: treat as temporary */
 #endif
 #ifndef EX_TEMPFAIL
-#define EX_TEMPFAIL    75        /* temp failure; user is invited to retry */
+# define EX_TEMPFAIL    75        /* temp failure; user is invited to retry */
 #endif
 #ifndef EX_CONFIG
-#define EX_CONFIG      78        /* configuration error */
+# define EX_CONFIG      78        /* configuration error */
 #endif
 
 /* This one is not in any sysexits file that I've come across */
@@ -179,7 +179,7 @@ that this is used by the AIX include files. */
 #include <sys/param.h>
 
 #ifndef NO_SYS_RESOURCE_H  /* QNX doesn't have this */
-#include <sys/resource.h>
+# include <sys/resource.h>
 #endif
 
 #include <sys/socket.h>
@@ -190,7 +190,7 @@ so that it can appear in the code, even if it is never actually used when
 the code is run. It saves some #ifdef occurrences. */
 
 #ifndef AF_INET6
-#define AF_INET6 24
+# define AF_INET6 24
 #endif
 
 #include <sys/ioctl.h>
@@ -231,24 +231,24 @@ or a macro with entries f_frsize and f_bsize. */
   f_free. */
 
   #ifndef F_BAVAIL
-  #define F_BAVAIL f_bavail
+  # define F_BAVAIL f_bavail
   #endif
 
   #ifndef F_FAVAIL
-  #define F_FAVAIL f_ffree
+  # define F_FAVAIL f_ffree
   #endif
 
   /* All the systems I've been able to look at seem to have F_FILES */
 
   #ifndef F_FILES
-  #define F_FILES  f_files
+  # define F_FILES  f_files
   #endif
 
 #endif
 
 
 #ifndef  SIOCGIFCONF   /* HACK for SunOS 5 */
-#include <sys/sockio.h>
+# include <sys/sockio.h>
 #endif
 
 #include <sys/stat.h>
@@ -265,14 +265,14 @@ at definition time. [The code here used to assume they were, until I was
 disabused of the notion. Luckily, since EX_OK is not used, it didn't matter.] */
 
 #ifdef EX_OK
-#undef EX_OK
+# undef EX_OK
 #endif
 
 #include <unistd.h>
 
 #include <utime.h>
 #ifndef NO_NET_IF_H
-#include <net/if.h>
+# include <net/if.h>
 #endif
 #include <sys/un.h>
 #include <netinet/in.h>
@@ -308,22 +308,22 @@ included in arpa/nameser.h. Fudge them here. */
 header files. I don't suppose they have T_SRV either. */
 
 #ifndef T_TXT
-#define T_TXT 16
+# define T_TXT 16
 #endif
 
 #ifndef T_SRV
-#define T_SRV 33
+# define T_SRV 33
 #endif
 
 /* Many systems do not have T_SPF. */
 
 #ifndef T_SPF
-#define T_SPF 99
+# define T_SPF 99
 #endif
 
 /* New TLSA record for DANE */
 #ifndef T_TLSA
-#define T_TLSA 52
+# define T_TLSA 52
 #endif
 #define MAX_TLSA_EXPANDED_SIZE 8192
 
@@ -332,27 +332,27 @@ T_xxx macros, which seem to be non-standard nowadays. Just to be on the safe
 side, put in definitions for all the ones that Exim uses. */
 
 #ifndef T_A
-#define T_A 1
+# define T_A 1
 #endif
 
 #ifndef T_CNAME
-#define T_CNAME 5
+# define T_CNAME 5
 #endif
 
 #ifndef T_SOA
-#define T_SOA 6
+# define T_SOA 6
 #endif
 
 #ifndef T_MX
-#define T_MX 15
+# define T_MX 15
 #endif
 
 #ifndef T_NS
-#define T_NS 2
+# define T_NS 2
 #endif
 
 #ifndef T_PTR
-#define T_PTR 12
+# define T_PTR 12
 #endif
 
 
@@ -382,13 +382,13 @@ headers that behave likewise (see below), leading to compiler warnings. Arrange
 to undefine it if resolv.h defines it. */
 
 #if defined(__P)
-#define __P_WAS_DEFINED_BEFORE_RESOLV
+# define __P_WAS_DEFINED_BEFORE_RESOLV
 #endif
 
 #include <resolv.h>
 
 #if defined(__P) && ! defined (__P_WAS_DEFINED_BEFORE_RESOLV)
-#undef __P
+# undef __P
 #endif
 
 /* If not defined by os.h, we do nothing special to push DNS resolver state
@@ -410,7 +410,7 @@ have netinet/ip_var.h, so there's a general macro to control its inclusion. */
 #include <netinet/ip.h>
 
 #ifndef NO_IP_VAR_H
-#include <netinet/ip_var.h>
+# include <netinet/ip_var.h>
 #endif
 
 /* Linux (and some others) uses a different type for the 2nd argument of
@@ -418,20 +418,20 @@ iconv(). It's os.h file defines ICONV_ARG2_TYPE. For the rest, define a default
 here. */
 
 #ifndef ICONV_ARG2_TYPE
-#define ICONV_ARG2_TYPE const char **
+# define ICONV_ARG2_TYPE const char **
 #endif
 
 /* One OS uses a different type for the 5th argument of getsockopt */
 
 #ifndef GETSOCKOPT_ARG5_TYPE
-#define GETSOCKOPT_ARG5_TYPE socklen_t *
+# define GETSOCKOPT_ARG5_TYPE socklen_t *
 #endif
 
 /* One operating system uses a different type for the 2nd argument of select().
 Its os.h file defines SELECT_ARG2_TYPE. For the rest, define a default here. */
 
 #ifndef SELECT_ARG2_TYPE
-#define SELECT_ARG2_TYPE fd_set
+# define SELECT_ARG2_TYPE fd_set
 #endif
 
 /* One operating system uses a different type for the 4th argument of
@@ -439,7 +439,7 @@ dn_expand(). Its os.h file defines DN_EXPAND_ARG4_TYPE. For the rest, define a
 default here. */
 
 #ifndef DN_EXPAND_ARG4_TYPE
-#define DN_EXPAND_ARG4_TYPE char *
+# define DN_EXPAND_ARG4_TYPE char *
 #endif
 
 /* One operating system defines a different type for the yield of inet_addr().
@@ -450,7 +450,7 @@ changed, use a macro for the type, and define it here so that it is possible to
 use different values for specific OS if ever necessary. */
 
 #ifndef S_ADDR_TYPE
-#define S_ADDR_TYPE u_long
+# define S_ADDR_TYPE u_long
 #endif
 
 /* (At least) one operating system (Solaris) defines a different type for the
@@ -459,7 +459,7 @@ Its os.h file defines PAM_CONVERSE_ARG2_TYPE. For the rest, define a default
 here. */
 
 #ifndef PAM_CONVERSE_ARG2_TYPE
-#define PAM_CONVERSE_ARG2_TYPE const struct pam_message
+# define PAM_CONVERSE_ARG2_TYPE const struct pam_message
 #endif
 
 /* One operating system (SunOS4) defines getc, ungetc, feof, and ferror as
@@ -467,13 +467,13 @@ macros and not as functions. Exim needs them to be assignable functions. This
 flag gets set to cause this to be sorted out here. */
 
 #ifdef FUDGE_GETC_AND_FRIENDS
-#undef getc
+# undef getc
 extern int getc(FILE *);
-#undef ungetc
+# undef ungetc
 extern int ungetc(int, FILE *);
-#undef feof
+# undef feof
 extern int feof(FILE *);
-#undef ferror
+# undef ferror
 extern int ferror(FILE *);
 #endif
 
@@ -495,43 +495,43 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #include "osfunctions.h"
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-#include "bmi_spam.h"
+# include "bmi_spam.h"
 #endif
 #ifdef EXPERIMENTAL_SPF
-#include "spf.h"
+# include "spf.h"
 #endif
 #ifdef EXPERIMENTAL_SRS
-#include "srs.h"
+# include "srs.h"
 #endif
 #ifndef DISABLE_DKIM
-#include "dkim.h"
+# include "dkim.h"
 #endif
 #ifdef EXPERIMENTAL_DMARC
-#include "dmarc.h"
-#include <opendmarc/dmarc.h>
+# include "dmarc.h"
+# include <opendmarc/dmarc.h>
 #endif
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */
 
 #if HAVE_ICONV             /* Not all OS have this */
-#include <iconv.h>
+# include <iconv.h>
 #endif
 
 #if defined(USE_READLINE) || defined(EXPAND_DLFUNC) || defined (LOOKUP_MODULE_DIR)
-#include <dlfcn.h>
+# include <dlfcn.h>
 #endif
 
 #ifdef ENABLE_DISABLE_FSYNC
-#define EXIMfsync(f) (disable_fsync? 0 : fsync(f))
+# define EXIMfsync(f) (disable_fsync? 0 : fsync(f))
 #else
-#define EXIMfsync(f) fsync(f)
+# define EXIMfsync(f) fsync(f)
 #endif
 
 /* Backward compatibility; LOOKUP_LSEARCH now includes all three */
 
 #if (!defined LOOKUP_LSEARCH) && (defined LOOKUP_WILDLSEARCH || defined LOOKUP_NWILDLSEARCH)
-#define LOOKUP_LSEARCH yes
+# define LOOKUP_LSEARCH yes
 #endif
 
 /* Define a union to hold either an IPv4 or an IPv6 sockaddr structure; this
@@ -550,7 +550,7 @@ union sockaddr_46 {
 so that if USE_GNUTLS *is* set, we can assume SUPPORT_TLS is also set. */
 
 #ifndef SUPPORT_TLS
-#undef USE_GNUTLS
+# undef USE_GNUTLS
 #endif
 
 /* If SPOOL_DIRECTORY, LOG_FILE_PATH or PID_FILE_PATH have not been defined,
@@ -574,20 +574,20 @@ which will end up in config.h if supplied in OS/Makefile-xxx. If it is not set,
 default to EDQUOT if it exists, otherwise ENOSPC. */
 
 #ifndef ERRNO_QUOTA
-#ifdef  EDQUOT
-#define ERRNO_QUOTA EDQUOT
-#else
-#define ERRNO_QUOTA ENOSPC
-#endif
+# ifdef  EDQUOT
+#  define ERRNO_QUOTA EDQUOT
+# else
+#  define ERRNO_QUOTA ENOSPC
+# endif
 #endif
 
 /* Ensure PATH_MAX is defined */
 
 #ifndef PATH_MAX
   #ifdef MAXPATHLEN
-  #define PATH_MAX MAXPATHLEN
+  # define PATH_MAX MAXPATHLEN
   #else
-  #define PATH_MAX 1024
+  # define PATH_MAX 1024
   #endif
 #endif
 

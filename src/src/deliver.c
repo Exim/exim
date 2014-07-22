@@ -6497,71 +6497,73 @@ if (addr_senddsn != NULL)
       time(NULL), rand());
     DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", boundaryStr);
   
-    if (errors_reply_to != NULL) fprintf(f,"Reply-To: %s\n", errors_reply_to);
+    if (errors_reply_to)
+      fprintf(f, "Reply-To: %s\n", errors_reply_to);
  
-    fprintf(f,"Auto-Submitted: auto-generated\n");
-    fprintf(f,"From: Mail Delivery System <Mailer-Daemon@%s>\n", qualify_domain_sender);
-    fprintf(f,"To: %s\n", sender_address);
-    fprintf(f,"Subject: Delivery Status Notification\n");
-    fprintf(f,"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n", boundaryStr);
-    fprintf(f,"MIME-Version: 1.0\n\n");
+    fprintf(f, "Auto-Submitted: auto-generated\n"
+	"From: Mail Delivery System <Mailer-Daemon@%s>\n"
+	"To: %s\n"
+	"Subject: Delivery Status Notification\n"
+	"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n"
+	"MIME-Version: 1.0\n\n"
 
-    fprintf(f,"--%s\n", boundaryStr);
-    fprintf(f,"Content-type: text/plain; charset=us-ascii\n\n");
+	"--%s\n"
+	"Content-type: text/plain; charset=us-ascii\n\n"
    
-    fprintf(f,"This message was created automatically by mail delivery software.\n");
-    fprintf(f," ----- The following addresses had successful delivery notifications -----\n");
+	"This message was created automatically by mail delivery software.\n"
+	" ----- The following addresses had successful delivery notifications -----\n"
+      qualify_domain_sender, sender_addres, boundaryStrs, boundarySt);
 
     addr_dsntmp = addr_senddsn;
-    while(addr_dsntmp != NULL)
+    while(addr_dsntmp)
       {
-      if ((addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1) {
-        fprintf(f,"<%s> (relayed via non DSN router)\n\n", addr_dsntmp->address);
-        }
-      else if (addr_dsntmp->dsn_aware == dsn_support_no) {
-        fprintf(f,"<%s> (relayed to non-DSN-aware mailer)\n\n", addr_dsntmp->address);
-        } 
-      else {
-        fprintf(f,"<%s> (relayed via non \"Remote SMTP\" router)\n\n", addr_dsntmp->address);
-        }
+      fprintf(f, "<%s> (relayed %s)\n\n",
+	addr_dsntmp->address,
+	(addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1
+	  ? "via non DSN router"
+	  : addr_dsntmp->dsn_aware == dsn_support_no
+	  ? "to non-DSN-aware mailer"
+	  : "via non \"Remote SMTP\" router"
+	);
       addr_dsntmp = addr_dsntmp->next;
       }
-    fprintf(f,"--%s\n", boundaryStr);
-    fprintf(f,"Content-type: message/delivery-status\n\n");
-           
-    fprintf(f,"Reporting-MTA: dns; %s\n", smtp_active_hostname);
+    fprintf(f, "--%s\n"
+	"Content-type: message/delivery-status\n\n"
+	"Reporting-MTA: dns; %s\n",
+      boundaryStr, smtp_active_hostname);
+
     if (dsn_envid != NULL) {
       /* must be decoded from xtext: see RFC 3461:6.3a */
       uschar *xdec_envid;
       if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
-        fprintf(f,"Original-Envelope-ID: %s\n", dsn_envid);
+        fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
       else
-        fprintf(f,"X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
+        fprintf(f, "X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
       }
-    fprintf(f,"\n");
+    fputc('\n', f);
 
-    addr_dsntmp = addr_senddsn;
-    while(addr_dsntmp != NULL)
+    for (addr_dsntmp = addr_senddsn;
+	 addr_dsntmp;
+	 addr_dsntmp = addr_dsntmp->next)
       {
-      if (addr_dsntmp->dsn_orcpt != NULL) {
+      if (addr_dsntmp->dsn_orcpt)
         fprintf(f,"Original-Recipient: %s\n", addr_dsntmp->dsn_orcpt);
-        }
-      fprintf(f,"Action: delivered\n");
-      fprintf(f,"Final-Recipient: rfc822;%s\n", addr_dsntmp->address);
-      fprintf(f,"Status: 2.0.0\n");
-      if ((addr_dsntmp->host_used != NULL) && (addr_dsntmp->host_used->name != NULL))
-        fprintf(f,"Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n", addr_dsntmp->host_used->name);
+
+      fprintf(f, "Action: delivered\n"
+	  "Final-Recipient: rfc822;%s\n"
+	  "Status: 2.0.0\n",
+	addr_dsntmp->address);
+
+      if (addr_dsntmp->host_used && addr_dsntmp->host_used->name)
+        fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n",
+	  addr_dsntmp->host_used->name);
       else
-        if ((addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1)
-          fprintf(f,"Diagnostic-Code: X-Exim; relayed via non DSN router\n");
-        else
-          fprintf(f,"Diagnostic-Code: X-Exim; relayed via non SMTP router\n");
-      fprintf(f,"\n");
-      addr_dsntmp = addr_dsntmp->next;
+	fprintf(f,"Diagnostic-Code: X-Exim; relayed via non %s router\n",
+	  (addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1 ? "DSN" : "SMTP");
+      fputc('\n', f);
       }
 
-    fprintf(f,"--%s\n", boundaryStr);
-    fprintf(f,"Content-type: text/rfc822-headers\n\n");
+    fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", boundaryStr);
            
     fflush(f);
     transport_filter_argv = NULL;   /* Just in case */
@@ -6579,7 +6581,7 @@ if (addr_senddsn != NULL)
     rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
     }
   }
-#endif
+#endif	/*EXPERIMENTAL_DSN*/
 
 /* If any addresses failed, we must send a message to somebody, unless
 af_ignore_error is set, in which case no action is taken. It is possible for
@@ -6757,68 +6759,68 @@ while (addr_failed != NULL)
 
 #ifdef EXPERIMENTAL_DSN
       /* generate boundary string and output MIME-Headers */
-      snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());
-      fprintf(f,"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n", boundaryStr);
-      fprintf(f,"MIME-Version: 1.0\n");
+      snprintf(boundaryStr, sizeof(boundaryStr)-1, TIME_T_FMT "-eximdsn-%d",
+	time(NULL), rand());
+
+      fprintf(f, "Content-Type: multipart/report;"
+	    " report-type=delivery-status; boundary=%s\n"
+	  "MIME-Version: 1.0\n",
+	boundaryStr);
 #endif
 
       /* Open a template file if one is provided. Log failure to open, but
       carry on - default texts will be used. */
 
-      if (bounce_message_file != NULL)
-        {
-        emf = Ufopen(bounce_message_file, "rb");
-        if (emf == NULL)
+      if (bounce_message_file)
+        if (!(emf = Ufopen(bounce_message_file, "rb")))
           log_write(0, LOG_MAIN|LOG_PANIC, "Failed to open %s for error "
             "message texts: %s", bounce_message_file, strerror(errno));
-        }
 
       /* Quietly copy to configured additional addresses if required. */
 
-      bcc = moan_check_errorcopy(bounce_recipient);
-      if (bcc != NULL) fprintf(f, "Bcc: %s\n", bcc);
+      if ((bcc = moan_check_errorcopy(bounce_recipient)))
+	fprintf(f, "Bcc: %s\n", bcc);
 
       /* The texts for the message can be read from a template file; if there
       isn't one, or if it is too short, built-in texts are used. The first
       emf text is a Subject: and any other headers. */
 
-      emf_text = next_emf(emf, US"header");
-      if (emf_text != NULL) fprintf(f, "%s\n", emf_text); else
-        {
+      if ((emf_text = next_emf(emf, US"header")))
+	fprintf(f, "%s\n", emf_text);
+      else
         fprintf(f, "Subject: Mail delivery failed%s\n\n",
           to_sender? ": returning message to sender" : "");
-        }
 
 #ifdef EXPERIMENTAL_DSN
       /* output human readable part as text/plain section */
-      fprintf(f,"--%s\n", boundaryStr);
-      fprintf(f,"Content-type: text/plain; charset=us-ascii\n\n");
+      fprintf(f, "--%s\n"
+	  "Content-type: text/plain; charset=us-ascii\n\n",
+	boundaryStr);
 #endif
 
-      emf_text = next_emf(emf, US"intro");
-      if (emf_text != NULL) fprintf(f, "%s", CS emf_text); else
+      if ((emf_text = next_emf(emf, US"intro")))
+	fprintf(f, "%s", CS emf_text);
+      else
         {
         fprintf(f,
 /* This message has been reworded several times. It seems to be confusing to
 somebody, however it is worded. I have retreated to the original, simple
 wording. */
 "This message was created automatically by mail delivery software.\n");
-        if (bounce_message_text != NULL) fprintf(f, "%s", CS bounce_message_text);
+
+        if (bounce_message_text)
+	  fprintf(f, "%s", CS bounce_message_text);
         if (to_sender)
-          {
           fprintf(f,
 "\nA message that you sent could not be delivered to one or more of its\n"
 "recipients. This is a permanent error. The following address(es) failed:\n");
-          }
         else
-          {
           fprintf(f,
 "\nA message sent by\n\n  <%s>\n\n"
 "could not be delivered to one or more of its recipients. The following\n"
 "address(es) failed:\n", sender_address);
-          }
         }
-      fprintf(f, "\n");
+      fputc('\n', f);
 
       /* Process the addresses, leaving them on the msgchain if they have a
       file name for a return message. (There has already been a check in
@@ -6855,7 +6857,7 @@ wording. */
           }
         }
 
-      fprintf(f, "\n");
+      fputc('\n', f);
 
       /* Get the next text, whether we need it or not, so as to be
       positioned for the one after. */
@@ -6869,11 +6871,13 @@ wording. */
       fd, and the return_filename field in the *last* one will be set (to the
       name of the file). */
 
-      if (msgchain != NULL)
+      if (msgchain)
         {
         address_item *nextaddr;
 
-        if (emf_text != NULL) fprintf(f, "%s", CS emf_text); else
+        if (emf_text)
+	  fprintf(f, "%s", CS emf_text);
+	else
           fprintf(f,
             "The following text was generated during the delivery "
             "attempt%s:\n", (filecount > 1)? "s" : "");
@@ -6885,15 +6889,15 @@ wording. */
 
           /* List all the addresses that relate to this file */
 
-          fprintf(f, "\n");
-          while(addr != NULL)                   /* Insurance */
+	  fputc('\n', f);
+          while(addr)                   /* Insurance */
             {
             print_address_information(addr, f, US"------ ",  US"\n       ",
               US" ------\n");
-            if (addr->return_filename != NULL) break;
+            if (addr->return_filename) break;
             addr = addr->next;
             }
-          fprintf(f, "\n");
+	  fputc('\n', f);
 
           /* Now copy the file */
 
@@ -6916,32 +6920,35 @@ wording. */
           addr->next = handled_addr;
           handled_addr = topaddr;
           }
-        fprintf(f, "\n");
+	fputc('\n', f);
         }
 
 #ifdef EXPERIMENTAL_DSN
       /* output machine readable part */
-      fprintf(f,"--%s\n", boundaryStr);
-      fprintf(f,"Content-type: message/delivery-status\n\n");
- 
-      fprintf(f,"Reporting-MTA: dns; %s\n", smtp_active_hostname);
-      if (dsn_envid != NULL) {
+      fprintf(f, "--%s\n"
+	  "Content-type: message/delivery-status\n\n"
+	  "Reporting-MTA: dns; %s\n",
+	boundaryStr, smtp_active_hostname);
+
+      if (dsn_envid)
+	{
         /* must be decoded from xtext: see RFC 3461:6.3a */
         uschar *xdec_envid;
         if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
-          fprintf(f,"Original-Envelope-ID: %s\n", dsn_envid);
+          fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
         else
-          fprintf(f,"X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
+          fprintf(f, "X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
         }
-      fprintf(f,"\n");
+      fputc('\n', f);
  
-      for (addr = handled_addr; addr != NULL; addr = addr->next)
+      for (addr = handled_addr; addr; addr = addr->next)
         {
-        fprintf(f,"Action: failed\n");
-        fprintf(f,"Final-Recipient: rfc822;%s\n", addr->address);
-        fprintf(f,"Status: 5.0.0\n");
-        if ((addr->host_used != NULL) && (addr->host_used->name != NULL))
-          fprintf(f,"Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n", addr->host_used->name, addr->basic_errno);
+        fprintf(f, "Action: failed\n"
+	    "Final-Recipient: rfc822;%s\n", addr->address
+	    "Status: 5.0.0\n");
+        if (addr->host_used && addr->host_used->name)
+          fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n",
+	    addr->host_used->name, addr->basic_errno);
         }
 #endif
 
@@ -6958,7 +6965,9 @@ wording. */
         int topt = topt_add_return_path;
         if (!bounce_return_body) topt |= topt_no_body;
 
-        if (emf_text != NULL) fprintf(f, "%s", CS emf_text); else
+        if (emf_text)
+	  fprintf(f, "%s", CS emf_text);
+	else
           {
           if (bounce_return_body) fprintf(f,
 "------ This is a copy of the message, including all the headers. ------\n");
@@ -6981,18 +6990,17 @@ wording. */
           {
           struct stat statbuf;
           if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
-            {
-            if (emf_text != NULL) fprintf(f, "%s", CS emf_text); else
-              {
+            if (emf_text)
+	      fprintf(f, "%s", CS emf_text);
+	    else
               fprintf(f,
 "------ The body of the message is " OFF_T_FMT " characters long; only the first\n"
 "------ %d or so are included here.\n", statbuf.st_size, max);
-              }
-            }
           }
 
-        fprintf(f, "\n");
+	fputc('\n', f);
         fflush(f);
+
         transport_filter_argv = NULL;   /* Just in case */
         return_path = sender_address;   /* In case not previously set */
         transport_write_message(NULL, fileno(f), topt,
@@ -7001,10 +7009,10 @@ wording. */
 
       /* Write final text and close the template file if one is open */
 
-      if (emf != NULL)
+      if (emf)
         {
-        emf_text = next_emf(emf, US"final");
-        if (emf_text != NULL) fprintf(f, "%s", CS emf_text);
+        if ((emf_text = next_emf(emf, US"final")))
+	  fprintf(f, "%s", CS emf_text);
         (void)fclose(emf);
         }
 #else
@@ -7019,7 +7027,7 @@ wording. */
          bounce_return_size_limit is always honored.
       */
   
-      fprintf(f,"\n--%s\n", boundaryStr);
+      fprintf(f, "\n--%s\n", boundaryStr);
 
       dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
       dsnnotifyhdr = NULL;
@@ -7061,12 +7069,11 @@ wording. */
       fflush(f);
  
       /* we never add the final text. close the file */
-      if (emf != NULL)
+      if (emf)
         (void)fclose(emf);
  
-      fprintf(f,"\n");
-      fprintf(f,"--%s--\n", boundaryStr);
-#endif
+      fprintf(f, "\n--%s--\n", boundaryStr);
+#endif	/*EXPERIMENTAL_DSN*/
 
       /* Close the file, which should send an EOF to the child process
       that is receiving the message. Wait for it to finish. */
@@ -7370,7 +7377,7 @@ else if (addr_defer != (address_item *)(+1))
 	uschar boundaryStr[64];
 #endif
 
-        if (warn_message_file != NULL)
+        if (warn_message_file)
           {
           wmf = Ufopen(warn_message_file, "rb");
           if (wmf == NULL)
@@ -7383,7 +7390,7 @@ else if (addr_defer != (address_item *)(+1))
           string_sprintf("%d minutes", show_time/60):
           string_sprintf("%d hours", show_time/3600);
 
-        if (errors_reply_to != NULL)
+        if (errors_reply_to)
           fprintf(f, "Reply-To: %s\n", errors_reply_to);
         fprintf(f, "Auto-Submitted: auto-replied\n");
         moan_write_from(f);
@@ -7391,13 +7398,16 @@ else if (addr_defer != (address_item *)(+1))
 
 #ifdef EXPERIMENTAL_DSN
         /* generated boundary string and output MIME-Headers */
-        snprintf(boundaryStr, 63, "%l-eximdsn-%d", (long) time(NULL), rand());
-        fprintf(f,"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n", boundaryStr);
-        fprintf(f,"MIME-Version: 1.0\n");
+        snprintf(boundaryStr, sizeof(boundaryStr)-1,
+	  TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
+
+        fprintf(f, "Content-Type: multipart/report;"
+	    " report-type=delivery-status; boundary=%s\n"
+	    "MIME-Version: 1.0\n",
+	  boundaryStr);
 #endif
 
-        wmf_text = next_emf(wmf, US"header");
-        if (wmf_text != NULL)
+        if ((wmf_text = next_emf(wmf, US"header")))
           fprintf(f, "%s\n", wmf_text);
         else
           fprintf(f, "Subject: Warning: message %s delayed %s\n\n",
@@ -7405,12 +7415,14 @@ else if (addr_defer != (address_item *)(+1))
 
 #ifdef EXPERIMENTAL_DSN
         /* output human readable part as text/plain section */
-        fprintf(f,"--%s\n", boundaryStr);
-        fprintf(f,"Content-type: text/plain; charset=us-ascii\n\n");
+        fprintf(f, "--%s\n"
+	    "Content-type: text/plain; charset=us-ascii\n\n",
+	  boundaryStr);
 #endif
 
-        wmf_text = next_emf(wmf, US"intro");
-        if (wmf_text != NULL) fprintf(f, "%s", CS wmf_text); else
+        if ((wmf_text = next_emf(wmf, US"intro")))
+	  fprintf(f, "%s", CS wmf_text);
+	else
           {
           fprintf(f,
 "This message was created automatically by mail delivery software.\n");
@@ -7420,28 +7432,27 @@ else if (addr_defer != (address_item *)(+1))
 "A message that you sent has not yet been delivered to one or more of its\n"
 "recipients after more than ");
 
-          else fprintf(f,
+          else
+	    fprintf(f,
 "A message sent by\n\n  <%s>\n\n"
 "has not yet been delivered to one or more of its recipients after more than \n",
-          sender_address);
+	      sender_address);
 
-          fprintf(f, "%s on the queue on %s.\n\n", warnmsg_delay,
-            primary_hostname);
-          fprintf(f, "The message identifier is:     %s\n", message_id);
+          fprintf(f, "%s on the queue on %s.\n\n"
+	      "The message identifier is:     %s\n",
+	    warnmsg_delay, primary_hostname, message_id);
 
           for (h = header_list; h != NULL; h = h->next)
-            {
             if (strncmpic(h->text, US"Subject:", 8) == 0)
               fprintf(f, "The subject of the message is: %s", h->text + 9);
             else if (strncmpic(h->text, US"Date:", 5) == 0)
               fprintf(f, "The date of the message is:    %s", h->text + 6);
-            }
-          fprintf(f, "\n");
+          fputc('\n', f);
 
           fprintf(f, "The address%s to which the message has not yet been "
             "delivered %s:\n",
-            (addr_defer->next == NULL)? "" : "es",
-            (addr_defer->next == NULL)? "is": "are");
+            !addr_defer->next ? "" : "es",
+            !addr_defer->next ? "is": "are");
           }
 
         /* List the addresses, with error information if allowed */
@@ -7450,23 +7461,23 @@ else if (addr_defer != (address_item *)(+1))
         /* store addr_defer for machine readable part */
         address_item *addr_dsndefer = addr_defer;
 #endif
-        fprintf(f, "\n");
-        while (addr_defer != NULL)
+        fputc('\n', f);
+        while (addr_defer)
           {
           address_item *addr = addr_defer;
           addr_defer = addr->next;
           if (print_address_information(addr, f, US"  ", US"\n    ", US""))
             print_address_error(addr, f, US"Delay reason: ");
-          fprintf(f, "\n");
+          fputc('\n', f);
           }
-        fprintf(f, "\n");
+        fputc('\n', f);
 
         /* Final text */
 
-        if (wmf != NULL)
+        if (wmf)
           {
-          wmf_text = next_emf(wmf, US"final");
-          if (wmf_text != NULL) fprintf(f, "%s", CS wmf_text);
+          if ((wmf_text = next_emf(wmf, US"final")))
+	    fprintf(f, "%s", CS wmf_text);
           (void)fclose(wmf);
           }
         else
@@ -7480,11 +7491,15 @@ else if (addr_defer != (address_item *)(+1))
 
 #ifdef EXPERIMENTAL_DSN
         /* output machine readable part */
-        fprintf(f,"\n--%s\n", boundaryStr);
-        fprintf(f,"Content-type: message/delivery-status\n\n");
+        fprintf(f, "\n--%s\n"
+	    "Content-type: message/delivery-status\n\n"
+	    "Reporting-MTA: dns; %s\n",
+	  boundaryStr,
+	  smtp_active_hostname);
  
-        fprintf(f,"Reporting-MTA: dns; %s\n", smtp_active_hostname);
-        if (dsn_envid != NULL) {
+
+        if (dsn_envid)
+	  {
           /* must be decoded from xtext: see RFC 3461:6.3a */
           uschar *xdec_envid;
           if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
@@ -7492,24 +7507,25 @@ else if (addr_defer != (address_item *)(+1))
           else
             fprintf(f,"X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
           }
-        fprintf(f,"\n");
+        fputc('\n', f);
 
-        while (addr_dsndefer != NULL)
+        while (addr_dsndefer)
           {
-          if (addr_dsndefer->dsn_orcpt != NULL) {
+          if (addr_dsndefer->dsn_orcpt)
             fprintf(f,"Original-Recipient: %s\n", addr_dsndefer->dsn_orcpt);
-            }
+
           fprintf(f,"Action: delayed\n");
           fprintf(f,"Final-Recipient: rfc822;%s\n", addr_dsndefer->address);
           fprintf(f,"Status: 4.0.0\n");
-          if ((addr_dsndefer->host_used != NULL) && (addr_dsndefer->host_used->name != NULL))
+          if (addr_dsndefer->host_used && addr_dsndefer->host_used->name)
             fprintf(f,"Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n", 
-                      addr_dsndefer->host_used->name, addr_dsndefer->basic_errno);
+		    addr_dsndefer->host_used->name, addr_dsndefer->basic_errno);
           addr_dsndefer = addr_dsndefer->next;
           }
 
-        fprintf(f,"\n--%s\n", boundaryStr);
-        fprintf(f,"Content-type: text/rfc822-headers\n\n");
+        fprintf(f, "\n--%s\n"
+	    "Content-type: text/rfc822-headers\n\n",
+	  boundaryStr);
 
         fflush(f);
         /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
@@ -7520,11 +7536,10 @@ else if (addr_defer != (address_item *)(+1))
         transport_write_message(NULL, fileno(f), topt, 0, NULL, NULL, NULL, NULL, NULL, 0);
         fflush(f);
 
-        fprintf(f,"\n");
-        fprintf(f,"--%s--\n", boundaryStr);
+        fprintf(f,"\n--%s--\n", boundaryStr);
 
         fflush(f);
-#endif
+#endif	/*EXPERIMENTAL_DSN*/
 
         /* Close and wait for child process to complete, without a timeout.
         If there's an error, don't update the count. */

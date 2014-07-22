@@ -3431,8 +3431,8 @@ Returns:      1                success
               -1               syntax or execution error
 */
 
-static int parse_start(struct Sieve *filter, int exec,
-  address_item **generated)
+static int
+parse_start(struct Sieve *filter, int exec, address_item **generated)
 {
 filter->pc=filter->filter;
 filter->line=1;

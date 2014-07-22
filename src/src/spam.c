@@ -20,7 +20,9 @@ int spam_ok = 0;
 int spam_rc = 0;
 uschar *prev_spamd_address_work = NULL;
 
-int spam(uschar **listptr) {
+int
+spam(uschar **listptr)
+{
   int sep = 0;
   uschar *list = *listptr;
   uschar *user_name;
@@ -286,7 +288,7 @@ again:
             "spam acl condition: %s on spamd socket", strerror(errno));
         else {
           if (time(NULL) - start < SPAMD_TIMEOUT)
-          goto again;
+            goto again;
           log_write(0, LOG_MAIN|LOG_PANIC,
             "spam acl condition: timed out writing spamd socket");
         }
