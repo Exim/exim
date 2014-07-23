@@ -1879,7 +1879,8 @@ switch (vp->type)
   #endif
 
   }
-return NULL;  /* Fix broken static checkers, already done in if() above */
+
+return NULL;  /* Unknown variable. Silences static checkers. */
 }
 
 
