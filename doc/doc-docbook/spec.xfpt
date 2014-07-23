@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.80"
+.set previousversion "4.83"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -7005,7 +7005,6 @@ ${lookup dnsdb{a=one.host.com:two.host.com}}
 Thus, in the default case, as long as at least one of the DNS lookups
 yields some data, the lookup succeeds.
 
-.new
 .cindex "DNSSEC" "dns lookup"
 Use of &(DNSSEC)& is controlled by a dnssec modifier.
 The possible keywords are
@@ -7018,7 +7017,6 @@ is treated as equivalent to a temporary DNS error.
 The default is &"never"&.
 
 See also the &$lookup_dnssec_authenticated$& variable.
-.wen
 
 
 
@@ -7084,7 +7082,6 @@ With sufficiently modern LDAP libraries, Exim supports forcing TLS over regular
 LDAP connections, rather than the SSL-on-connect &`ldaps`&.
 See the &%ldap_start_tls%& option.
 
-.new
 Starting with Exim 4.83, the initialization of LDAP with TLS is more tightly
 controlled. Every part of the TLS configuration can be configured by settings in
 &_exim.conf_&. Depending on the version of the client libraries installed on
@@ -7094,7 +7091,6 @@ certificates. This revealed a nuance where the current UID that exim was
 running as could affect which config files it read. With Exim 4.83, these
 methods become optional, only taking effect if not specifically set in
 &_exim.conf_&.
-.wen
 
 
 .section "LDAP quoting" "SECID68"
@@ -7242,9 +7238,7 @@ them. The following names are recognized:
 &`USER       `&  set the DN, for authenticating the LDAP bind
 &`PASS       `&  set the password, likewise
 &`REFERRALS  `&  set the referrals parameter
-.new
 &`SERVERS    `&  set alternate server list for this query only
-.wen
 &`SIZE       `&  set the limit for the number of entries returned
 &`TIME       `&  set the maximum waiting time for a query
 .endd
@@ -7266,7 +7260,6 @@ Netscape SDK; for OpenLDAP no action is taken.
 The TIME parameter (also a number of seconds) is passed to the server to
 set a server-side limit on the time taken to complete a search.
 
-.new
 The SERVERS parameter allows you to specify an alternate list of ldap servers
 to use for an individual lookup.  The global ldap_servers option provides a
 default list of ldap servers, and a single lookup can specify a single ldap
@@ -7274,7 +7267,6 @@ server to use.  But when you need to do a lookup with a list of servers that is
 different than the default list (maybe different order, maybe a completely
 different set of servers), the SERVERS parameter allows you to specify this
 alternate list.
-.wen
 
 Here is an example of an LDAP query in an Exim lookup that uses some of these
 values. This is a single line, folded to fit on the page:
@@ -8354,7 +8346,6 @@ Both &`+include_unknown`& and &`+ignore_unknown`& may appear in the same
 list. The effect of each one lasts until the next, or until the end of the
 list.
 
-.new
 .section "Mixing wildcarded host names and addresses in host lists" &&&
          "SECTmixwilhos"
 .cindex "host list" "mixing names and addresses in"
@@ -8390,7 +8381,6 @@ If the first &%accept%& fails, Exim goes on to try the second one. See chapter
 &`+ignore_unknown`&, which was discussed in depth in the first example in
 this section.
 .endlist
-.wen
 
 
 .section "Temporary DNS errors when looking up host information" &&&
@@ -8885,7 +8875,6 @@ the expansion result is an empty string.
 If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
 
 
-.new
 .vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
        {*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
 .cindex "expansion" "extracting cerificate fields"
@@ -8948,7 +8937,6 @@ which is one of "dns", "uri" or "mail";
 if so the elenment tags are omitted.
 
 If not otherwise noted field values are presented in human-readable form.
-.wen
 
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
        {*&<&'arg'&>&*}...}*&"
@@ -9597,7 +9585,6 @@ expansion item above.
         {*&<&'string2'&>&*}}*&"
 .cindex "expansion" "running a command"
 .cindex "&%run%& expansion item"
-.new
 The command and its arguments are first expanded as one string. The string is
 split apart into individual arguments by spaces, and then the command is run
 in a separate process, but under the same uid and gid.  As in other command
@@ -9614,7 +9601,6 @@ in a string containing quotes, because it would interfere with the quotes
 around the command arguments. A possible guard against this is to wrap the
 variable in the &%sg%& operator to change any quote marks to some other
 character.
-.wen
 
 The standard input for the command exists, but is empty. The standard output
 and standard error are set to the same file descriptor.
@@ -11570,7 +11556,6 @@ ability to find the amount of free space (only true for experimental systems),
 the space value is -1. See also the &%check_log_space%& option.
 
 
-.new
 .vitem &$lookup_dnssec_authenticated$&
 .vindex "&$lookup_dnssec_authenticated$&"
 This variable is set after a DNS lookup done by
@@ -11578,7 +11563,6 @@ a dnsdb lookup expansion, dnslookup router or smtp transport.
 It will be empty if &(DNSSEC)& was not requested,
 &"no"& if the result was not labelled as authenticated data
 and &"yes"& if it was.
-.wen
 
 .vitem &$mailstore_basename$&
 .vindex "&$mailstore_basename$&"
@@ -12357,7 +12341,6 @@ on an outbound SMTP connection; the meaning of
 this depends upon the TLS implementation used.
 If TLS has not been negotiated, the value will be 0.
 
-.new
 .vitem &$tls_in_ourcert$&
 .vindex "&$tls_in_ourcert$&"
 This variable refers to the certificate presented to the peer of an
@@ -12365,9 +12348,7 @@ inbound connection when the message was received.
 It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%& or &%sha1%& operator,
 or a &%def%& condition.
-.wen
 
-.new
 .vitem &$tls_in_peercert$&
 .vindex "&$tls_in_peercert$&"
 This variable refers to the certificate presented by the peer of an
@@ -12375,25 +12356,20 @@ inbound connection when the message was received.
 It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%& or &%sha1%& operator,
 or a &%def%& condition.
-.wen
 
-.new
 .vitem &$tls_out_ourcert$&
 .vindex "&$tls_out_ourcert$&"
 This variable refers to the certificate presented to the peer of an
 outbound connection.  It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%& or &%sha1%& operator,
 or a &%def%& condition.
-.wen
 
-.new
 .vitem &$tls_out_peercert$&
 .vindex "&$tls_out_peercert$&"
 This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%& or &%sha1%& operator,
 or a &%def%& condition.
-.wen
 
 .vitem &$tls_in_certificate_verified$&
 .vindex "&$tls_in_certificate_verified$&"
@@ -17851,7 +17827,6 @@ when there is a DNS lookup error.
 
 
 
-.new
 .option dnssec_request_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
@@ -17860,11 +17835,9 @@ when there is a DNS lookup error.
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.
 This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
-.wen
 
 
 
-.new
 .option dnssec_require_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
@@ -17874,7 +17847,6 @@ DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set wil be ignored and logged as a host-lookup failure.
 This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
-.wen
 
 
 
@@ -22781,7 +22753,6 @@ See the &%search_parents%& option in chapter &<<CHAPdnslookup>>& for more
 details.
 
 
-.new
 .option dnssec_request_domains smtp "domain list&!!" unset
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
@@ -22790,11 +22761,9 @@ details.
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.
 This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
-.wen
 
 
 
-.new
 .option dnssec_require_domains smtp "domain list&!!" unset
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
@@ -22804,7 +22773,6 @@ DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set wil be ignored and logged as a host-lookup failure.
 This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
-.wen
 
 
 
@@ -28431,7 +28399,6 @@ This condition checks whether the sending host (the client) is authorized to
 send email. Details of how this works are given in section
 &<<SECTverifyCSA>>&.
 
-.new
 .vitem &*verify&~=&~header_names_ascii*&
 .cindex "&%verify%& ACL condition"
 .cindex "&ACL;" "verifying header names only ASCII"
@@ -28446,7 +28413,6 @@ allowable characters are decimal ASCII values 33 through 126.
 Exim itself will handle headers with non-ASCII characters, but it can cause
 problems for downstream applications, so this option will allow their
 detection and rejection in the DATA ACL's.
-.wen
 
 .vitem &*verify&~=&~header_sender/*&<&'options'&>
 .cindex "&%verify%& ACL condition"
@@ -35060,10 +35026,8 @@ or (in case &*-a*& switch is specified)
 .code
 exim -bp
 .endd
-.new
 The &*-C*& option is used to specify an alternate &_exim.conf_& which might
 contain alternate exim configuration the queue management might be using.
-.wen
 
 to obtain a queue listing, and then greps the output to select messages 
 that match given criteria. The following selection options are available:
