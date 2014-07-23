@@ -4,6 +4,9 @@ Change log file for Exim from version 4.21
 
 Exim version 4.84
 -----------------
+TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static
+      checkers that were complaining about end of non-void function with no
+      return.
 
 
 Exim version 4.83
