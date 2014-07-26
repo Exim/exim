@@ -10997,6 +10997,13 @@ precedes the expansion of the string. For example, the commands available in
 Exim filter files include an &%if%& command with its own regular expression
 matching condition.
 
+.new
+.vitem "&$acl_arg1$&, &$acl_arg2$&, etc$&"
+Within an acl condition, expansion condition or expansion item
+any arguments are copied to these variables,
+any unused variables being made empty.
+.wen
+
 .vitem "&$acl_c...$&"
 Values can be placed in these variables by the &%set%& modifier in an ACL. They
 can be given any name that starts with &$acl_c$& and is at least six characters
@@ -11017,6 +11024,12 @@ also reset by MAIL, RSET, EHLO, HELO, and after starting a TLS session. When a
 message is received, the values of these variables are saved with the message,
 and can be accessed by filters, routers, and transports during subsequent
 delivery.
+
+.new
+.vitem &$acl_narg$&
+Within an acl condition, expansion condition or expansion item
+this variable has the number of arguments.
+.wen
 
 .vitem &$acl_verify_message$&
 .vindex "&$acl_verify_message$&"
