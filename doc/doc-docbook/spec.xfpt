@@ -10998,7 +10998,7 @@ Exim filter files include an &%if%& command with its own regular expression
 matching condition.
 
 .new
-.vitem "&$acl_arg1$&, &$acl_arg2$&, etc$&"
+.vitem "&$acl_arg1$&, &$acl_arg2$&, etc"
 Within an acl condition, expansion condition or expansion item
 any arguments are copied to these variables,
 any unused variables being made empty.
