@@ -601,16 +601,28 @@ NEXT_PARAM_SEARCH:
 	    int param_value_len = 0;
 
 	    /* found an interesting parameter? */
-	    if (strncmpic(mp->name, p,mp->namelen) == 0)
+	    if (strncmpic(mp->name, p, mp->namelen) == 0)
 	      {
 	      uschar *q = p + mp->namelen;
+	      int size = 0;
+	      int ptr = 0;
+
 	      /* yes, grab the value and copy to its corresponding expansion variable */
-	      while(*q != ';') q++;
-	      param_value_len = (q - (p + mp->namelen));
-	      param_value = (uschar *)malloc(param_value_len+1);
-	      memset(param_value,0,param_value_len+1);
-	      q = p + mp->namelen;
-	      Ustrncpy(param_value, q, param_value_len);
+	      while(*q && *q != ';')		/* ; terminates */
+		{
+		if (*q == '"')
+		  {
+		  q++;				/* skip leading " */
+		  while(*q && *q != '"')	/* which protects ; */
+		    param_value = string_cat(param_value, &size, &ptr, q++, 1);
+		  if (*q) q++;			/* skip trailing " */
+		  }
+		else
+		  param_value = string_cat(param_value, &size, &ptr, q++, 1);
+		}
+	      param_value[ptr++] = '\0';
+	      param_value_len = ptr;
+
 	      param_value = rfc2047_decode(param_value, check_rfc2047_length, NULL, 32, &param_value_len, &q);
 	      debug_printf("Found %s MIME parameter in %s header, value is '%s'\n", mp->name, mime_header_list[i].name, param_value);
 	      *((uschar **)(mp->value)) = param_value;
