@@ -1008,13 +1008,14 @@ return i;
 of the library.  We allocate and return a context structure.
 
 Arguments:
+  ctxp            returned SSL context
   host            connected host, if client; NULL if server
   dhparam         DH parameter file
   certificate     certificate file
   privatekey      private key
   ocsp_file       file of stapling info (server); flag for require ocsp (client)
   addr            address if client; NULL if server (for some randomness)
-  cbp             place to put allocated context
+  cbp             place to put allocated callback context
 
 Returns:          OK/DEFER/FAIL
 */

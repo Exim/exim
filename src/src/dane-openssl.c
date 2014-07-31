@@ -1058,6 +1058,22 @@ list_free(((dane_selector) p)->mtype, dane_mtype_free);
 OPENSSL_free(p);
 }
 
+
+
+/*
+
+Tidy up once the connection is finished with.
+
+Arguments
+  ssl		The ssl connection handle
+
+=> Before calling SSL_free()
+tls_close() and tls_getc() [the error path] are the obvious places.
+Could we do it earlier - right after verification?  In tls_client_start()
+right after SSL_connect() returns, in that case.
+
+*/
+
 void
 DANESSL_cleanup(SSL *ssl)
 {
@@ -1104,6 +1120,28 @@ while(*src)
   }
 return head;
 }
+
+
+
+
+/*
+
+Call this for each TLSA record found for the target, after the
+DANE setup has been done on the ssl connection handle.
+
+Arguments:
+  ssl		Connection handle
+  usage		TLSA record field
+  selector	TLSA record field
+  mdname	??? message digest name?
+  data		??? TLSA record megalump?
+  dlen		length of data
+
+Return
+  -1 on error
+  0  action not taken
+  1  record accepted
+*/
 
 int
 DANESSL_add_tlsa(SSL *ssl, uint8_t usage, uint8_t selector, const char *mdname,
@@ -1254,6 +1292,30 @@ else if(klist)
 return 1;
 }
 
+
+
+
+/*
+Call this once we have an ssl connection handle but before
+making the TLS connection.
+
+=> In tls_client_start() after the call to SSL_new()
+and before the call to SSL_connect().  Exactly where
+probably does not matter.
+We probably want to keep our existing SNI handling;
+call this with NULL.
+
+Arguments:
+  ssl		Connection handle
+  sni_domain	Optional peer server name
+  hostnames	?? list of names - but what names?
+
+Return
+  -1 on fatal error
+  0  nonfatal error
+  1  success
+*/
+
 int
 DANESSL_init(SSL *ssl, const char *sni_domain, const char **hostnames)
 {
@@ -1311,6 +1373,25 @@ if(hostnames && !(dane->hosts = host_list_init(hostnames)))
 
 return 1;
 }
+
+
+/*
+
+Call this once we have a context to work with, but
+before DANESSL_init()
+
+=> in tls_client_start(), after tls_init() call gives us the ctx,
+if we decide we want to (policy) and can (TLSA records available)
+replacing (? what about fallback) everything from testing tls_verify_hosts
+down to just before calling SSL_new() for the conn handle.
+
+Arguments
+  ctx		SSL context
+
+Return
+  -1	Error
+  1	Success
+*/
 
 int
 DANESSL_CTX_init(SSL_CTX *ctx)
@@ -1383,6 +1464,15 @@ if(!EVP_get_digestbyname(LN_sha512)) EVP_add_digest(EVP_sha512());
 dane_idx = SSL_get_ex_new_index(0, 0, 0, 0, 0);
 }
 
+
+
+/*
+
+Call this once.  Probably early in startup will do; may need
+to be after SSL library init.
+
+*/
+
 int
 DANESSL_library_init(void)
 {
@@ -1398,6 +1488,7 @@ if(dane_idx >= 0 && EVP_get_digestbyname(LN_sha256) != 0)
 DANEerr(DANE_F_SSL_DANE_LIBRARY_INIT, DANE_R_DANE_SUPPORT);
 return 0;
 }
+
 
 #endif /* OPENSSL_VERSION_NUMBER */
 /* vi: aw ai sw=2
