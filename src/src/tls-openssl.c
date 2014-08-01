@@ -1608,16 +1608,16 @@ int rc;
 static uschar cipherbuf[256];
 
 #ifndef DISABLE_OCSP
-BOOL require_ocsp = FALSE;
 BOOL request_ocsp = FALSE;
+BOOL require_ocsp = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DANE
-BOOL dane_in_use;
+BOOL dane_in_use = FALSE;
 #endif
 
 #ifdef EXPERIMENTAL_DANE
 /*XXX TBD: test for transport options, and for TLSA records */
-dane_in_use = FALSE;
+/*dane_in_use = TRUE;*/
 
 if (!dane_in_use)
 #endif

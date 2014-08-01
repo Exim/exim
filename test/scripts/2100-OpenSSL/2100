@@ -4,7 +4,7 @@ exim -DSERVER=server -bd -oX PORT_D
 exim CALLER@test.ex
 Testing
 ****
-exim -qf
+exim -d+all -qf
 ****
 killdaemon
 no_msglog_check

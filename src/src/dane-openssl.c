@@ -859,6 +859,8 @@ X509 *cert = ctx->cert;             /* XXX: accessor? */
 int matched = 0;
 int chain_length = sk_X509_num(ctx->chain);
 
+DEBUG(D_tls) debug_printf("Dane library verify_chain fn called\n");
+
 issuer_rrs = dane->selectors[SSL_DANE_USAGE_LIMIT_ISSUER];
 leaf_rrs = dane->selectors[SSL_DANE_USAGE_LIMIT_LEAF];
 ctx->verify = dane->verify;
@@ -949,6 +951,8 @@ ssl_dane *dane;
 int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
 int matched;
 X509 *cert = ctx->cert;             /* XXX: accessor? */
+
+DEBUG(D_tls) debug_printf("Dane library verify_cert fn called\n");
 
 if(ssl_idx < 0)
   ssl_idx = SSL_get_ex_data_X509_STORE_CTX_idx();
@@ -1080,6 +1084,8 @@ DANESSL_cleanup(SSL *ssl)
 ssl_dane *dane;
 int u;
 
+DEBUG(D_tls) debug_printf("Dane library cleanup fn called\n");
+
 if(dane_idx < 0 || !(dane = SSL_get_ex_data(ssl, dane_idx)))
   return;
 (void) SSL_set_ex_data(ssl, dane_idx, 0);
@@ -1100,6 +1106,7 @@ if(dane->roots)
 if(dane->chain)
   sk_X509_pop_free(dane->chain, X509_free);
 OPENSSL_free(dane);
+DEBUG(D_tls) debug_printf("Dane library cleanup fn return\n");
 }
 
 static dane_host_list
@@ -1154,6 +1161,8 @@ dane_data_list d = 0;
 dane_cert_list xlist = 0;
 dane_pkey_list klist = 0;
 const EVP_MD *md = 0;
+
+DEBUG(D_tls) debug_printf("Dane add_tlsa\n");
 
 if(dane_idx < 0 || !(dane = SSL_get_ex_data(ssl, dane_idx)))
   {
@@ -1324,12 +1333,14 @@ int i;
 #ifdef OPENSSL_INTERNAL
 SSL_CTX *sctx = SSL_get_SSL_CTX(ssl);
 
+
 if(sctx->app_verify_callback != verify_cert)
   {
   DANEerr(DANE_F_SSL_DANE_INIT, DANE_R_SCTX_INIT);
   return -1;
   }
 #else
+DEBUG(D_tls) debug_printf("Dane ssl_init\n");
 if(dane_idx < 0)
   {
   DANEerr(DANE_F_SSL_DANE_INIT, DANE_R_LIBRARY_INIT);
@@ -1351,7 +1362,11 @@ if(!SSL_set_ex_data(ssl, dane_idx, dane))
   OPENSSL_free(dane);
   return 0;
   }
+DEBUG(D_tls) debug_printf("Dane ssl-init: new dane struct: %p\n", dane);
 
+dane->verify = 0;
+dane->hosts = 0;
+dane->thost = 0;
 dane->pkeys = 0;
 dane->certs = 0;
 dane->chain = 0;
@@ -1396,6 +1411,7 @@ Return
 int
 DANESSL_CTX_init(SSL_CTX *ctx)
 {
+DEBUG(D_tls) debug_printf("Dane ctx-init\n");
 if(dane_idx >= 0)
   {
   SSL_CTX_set_cert_verify_callback(ctx, verify_cert, 0);
@@ -1481,6 +1497,7 @@ Return
 int
 DANESSL_library_init(void)
 {
+DEBUG(D_tls) debug_printf("Dane lib-init\n");
 if(err_lib_dane < 0)
   init_once(&err_lib_dane, ERR_get_next_error_library, dane_init);
 
