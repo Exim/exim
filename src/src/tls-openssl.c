@@ -1534,6 +1534,50 @@ return OK;
 
 
 
+static int
+tls_client_basic_ctx_init(SSL_CTX * ctx,
+    host_item * host, smtp_transport_options_block * ob
+#ifdef EXPERIMENTAL_CERTNAMES
+    , tls_ext_ctx_cb * cbinfo
+#endif
+			  )
+{
+int rc;
+/* stick to the old behaviour for compatibility if tls_verify_certificates is 
+   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
+   the specified host patterns if one of them is defined */
+
+if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
+    (verify_check_host(&ob->tls_verify_hosts) == OK))
+  {
+  if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
+	ob->tls_crl, host, FALSE, verify_callback_client)) != OK)
+    return rc;
+  client_verify_optional = FALSE;
+
+#ifdef EXPERIMENTAL_CERTNAMES
+  if (ob->tls_verify_cert_hostnames)
+    {
+    if (!expand_check(ob->tls_verify_cert_hostnames,
+		      US"tls_verify_cert_hostnames",
+		      &cbinfo->verify_cert_hostnames))
+      return FAIL;
+    if (cbinfo->verify_cert_hostnames)
+      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+		      cbinfo->verify_cert_hostnames);
+    }
+#endif
+  }
+else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
+  {
+  if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
+	ob->tls_crl, host, TRUE, verify_callback_client)) != OK)
+    return rc;
+  client_verify_optional = TRUE;
+  }
+
+return OK;
+}
 
 /*************************************************
 *    Start a TLS session in a client             *
@@ -1562,12 +1606,30 @@ uschar *expciphers;
 X509* server_cert;
 int rc;
 static uschar cipherbuf[256];
+
 #ifndef DISABLE_OCSP
-BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
-  NULL, host->name, host->address, NULL) == OK;
-BOOL request_ocsp = require_ocsp ? TRUE
-  : verify_check_this_host(&ob->hosts_request_ocsp,
-      NULL, host->name, host->address, NULL) == OK;
+BOOL require_ocsp = FALSE;
+BOOL request_ocsp = FALSE;
+#endif
+#ifdef EXPERIMENTAL_DANE
+BOOL dane_in_use;
+#endif
+
+#ifdef EXPERIMENTAL_DANE
+/*XXX TBD: test for transport options, and for TLSA records */
+dane_in_use = FALSE;
+
+if (!dane_in_use)
+#endif
+
+#ifndef DISABLE_OCSP
+  {
+  require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
+    NULL, host->name, host->address, NULL) == OK;
+  request_ocsp = require_ocsp ? TRUE
+    : verify_check_this_host(&ob->hosts_request_ocsp,
+	NULL, host->name, host->address, NULL) == OK;
+  }
 #endif
 
 rc = tls_init(&client_ctx, host, NULL,
@@ -1598,38 +1660,24 @@ if (expciphers != NULL)
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
-/* stick to the old behaviour for compatibility if tls_verify_certificates is 
-   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
-   the specified host patterns if one of them is defined */
-
-if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
-    (verify_check_host(&ob->tls_verify_hosts) == OK))
+#ifdef EXPERIMENTAL_DANE
+if (dane_in_use)
   {
-  if ((rc = setup_certs(client_ctx, ob->tls_verify_certificates,
-	ob->tls_crl, host, FALSE, verify_callback_client)) != OK)
-    return rc;
-  client_verify_optional = FALSE;
+  if (!DANESSL_library_init())
+    return tls_error(US"library init", host, US"DANE library error");
+  if (DANESSL_CTX_init(client_ctx) <= 0)
+    return tls_error(US"context init", host, US"DANE library error");
+  }
+else
 
-#ifdef EXPERIMENTAL_CERTNAMES
-  if (ob->tls_verify_cert_hostnames)
-    {
-    if (!expand_check(ob->tls_verify_cert_hostnames,
-		      US"tls_verify_cert_hostnames",
-		      &client_static_cbinfo->verify_cert_hostnames))
-      return FAIL;
-    if (client_static_cbinfo->verify_cert_hostnames)
-      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
-		      client_static_cbinfo->verify_cert_hostnames);
-    }
 #endif
-  }
-else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
-  {
-  if ((rc = setup_certs(client_ctx, ob->tls_verify_certificates,
-	ob->tls_crl, host, TRUE, verify_callback_client)) != OK)
+
+  if ((rc = tls_client_basic_ctx_init(client_ctx, host, ob
+#ifdef EXPERIMENTAL_CERTNAMES
+				, client_static_cbinfo
+#endif
+				)) != OK)
     return rc;
-  client_verify_optional = TRUE;
-  }
 
 if ((client_ssl = SSL_new(client_ctx)) == NULL)
   return tls_error(US"SSL_new", host, NULL);
@@ -1671,6 +1719,23 @@ if (request_ocsp)
   }
 #endif
 
+#ifdef EXPERIMENTAL_DANE
+if (dane_in_use)
+  {
+  if (DANESSL_init(client_ssl, NULL, NULL /*??? hostnames*/) != 1)
+    return tls_error(US"hostnames load", host, US"DANE library error");
+
+  /*
+  foreach TLSA record
+    
+    DANESSL_add_tlsa(client_ssl, uint8_t usage, uint8_t selector,
+	const char *mdname,
+        unsigned const char *data, size_t dlen)
+  */
+  }
+#endif
+
+
 /* There doesn't seem to be a built-in timeout on connection. */
 
 DEBUG(D_tls) debug_printf("Calling SSL_connect\n");
@@ -1678,6 +1743,10 @@ sigalrm_seen = FALSE;
 alarm(ob->command_timeout);
 rc = SSL_connect(client_ssl);
 alarm(0);
+
+#ifdef EXPERIMENTAL_DANE
+DANESSL_cleanup(client_ssl);	/*XXX earliest possible callpoint. Too early? */
+#endif
 
 if (rc <= 0)
   return tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL);

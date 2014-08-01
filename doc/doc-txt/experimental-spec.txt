@@ -1130,6 +1130,7 @@ in a router. Exim will then send the success DSN himself if requested as if
 the next hop does not support DSN.
 Adding it to a redirect router makes no difference.
 
+
 Certificate name checking
 --------------------------------------------------------------
 The X509 certificates used for TLS are supposed be verified
@@ -1146,6 +1147,18 @@ Both Subject and Subject-Alternate-Name certificate fields
 are supported, as are wildcard certificates (limited to
 a single wildcard being the initial component of a 3-or-more
 component FQDN).
+
+
+DANE
+------------------------------------------------------------
+If dane is in use the following transport options are ignored:
+  tls_verify_hosts
+  tls_try_verify_hosts
+  tls_verify_certificates
+  tls_crl
+  tls_verify_cert_hostnames
+  hosts_require_ocsp
+  hosts_request_ocsp
 
 
 

@@ -2,15 +2,14 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) University of Cambridge 1995 - 2012, 2014 */
 /* See the file NOTICE for conditions of use and distribution. */
 
-/* This module provides TLS (aka SSL) support for Exim. The code for OpenSSL is
-based on a patch that was originally contributed by Steve Haslam. It was
-adapted from stunnel, a GPL program by Michal Trojnara. The code for GNU TLS is
-based on a patch contributed by Nikos Mavroyanopoulos. Because these packages
-are so very different, the functions for each are kept in separate files. The
-relevant file is #included as required, after any any common functions.
+/* This module provides DANE (RFC6659) support for Exim.  See also
+the draft RFC for DANE-over-SMTP, "SMTP security via opportunistic DANE TLS"
+(V. Dukhovni, W. Hardaker) - version 10, dated May 25, 2014.
+
+The code for DANE support with Openssl was provided by V.Dukhovni.
 
 No cryptographic code is included in Exim. All this module does is to call
 functions from the OpenSSL or GNU TLS libraries. */
@@ -30,15 +29,15 @@ static void dummy(int x) { dummy(x-1); }
 #else
 
 /* Enabling DANE without enabling TLS cannot work. Abort the compilation. */
-#ifndef SUPPORT_TLS
-#error DANE support requires that TLS support must be enabled. Abort build.
-#endif
+# ifndef SUPPORT_TLS
+#  error DANE support requires that TLS support must be enabled. Abort build.
+# endif
 
-#ifdef USE_GNUTLS
-#include "dane-gnu.c"
-#else
-#include "dane-openssl.c"
-#endif
+# ifdef USE_GNUTLS
+#  include "dane-gnu.c"
+# else
+#  include "dane-openssl.c"
+# endif
 
 
 #endif  /* EXPERIMENTAL_DANE */

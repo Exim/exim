@@ -1471,6 +1471,11 @@ dane_idx = SSL_get_ex_new_index(0, 0, 0, 0, 0);
 Call this once.  Probably early in startup will do; may need
 to be after SSL library init.
 
+=> put after call to tls_init() for now
+
+Return
+  1	Success
+  0	Fail
 */
 
 int

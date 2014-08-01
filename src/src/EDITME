@@ -494,6 +494,9 @@ EXIM_MONITOR=eximon.bin
 # Uncomment the following line to add DSN support
 # EXPERIMENTAL_DSN=yes
 
+# Uncomment the following line to add DANE support
+# EXPERIMENTAL_DANE=yes
+
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################
