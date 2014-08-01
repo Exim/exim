@@ -25376,6 +25376,9 @@ but it is present in many binary distributions.
 .scindex IIDdcotauth2 "authenticators" "&(dovecot)&"
 This authenticator is an interface to the authentication facility of the
 Dovecot POP/IMAP server, which can support a number of authentication methods.
+.new
+Note that Dovecot must be configured to use auth-client not auth-userdb.
+.wen
 If you are using Dovecot to authenticate POP/IMAP clients, it might be helpful
 to use the same mechanisms for SMTP authentication. This is a server
 authenticator only. There is only one option:
