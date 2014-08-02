@@ -6511,8 +6511,8 @@ if (addr_senddsn != NULL)
 	"Content-type: text/plain; charset=us-ascii\n\n"
    
 	"This message was created automatically by mail delivery software.\n"
-	" ----- The following addresses had successful delivery notifications -----\n"
-      qualify_domain_sender, sender_addres, boundaryStrs, boundarySt);
+	" ----- The following addresses had successful delivery notifications -----\n",
+      qualify_domain_sender, sender_address, boundaryStr, boundaryStr);
 
     addr_dsntmp = addr_senddsn;
     while(addr_dsntmp)
@@ -6944,8 +6944,9 @@ wording. */
       for (addr = handled_addr; addr; addr = addr->next)
         {
         fprintf(f, "Action: failed\n"
-	    "Final-Recipient: rfc822;%s\n", addr->address
-	    "Status: 5.0.0\n");
+	    "Final-Recipient: rfc822;%s\n"
+	    "Status: 5.0.0\n",
+	    addr->address);
         if (addr->host_used && addr->host_used->name)
           fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n",
 	    addr->host_used->name, addr->basic_errno);
