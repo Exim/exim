@@ -12421,6 +12421,26 @@ and then set to the outgoing cipher suite if one is negotiated. See chapter
 &<<CHAPTLS>>& for details of TLS support and chapter &<<CHAPsmtptrans>>& for
 details of the &(smtp)& transport.
 
+.new
+.vitem &$tls_in_ocsp$&
+.vindex "&$tls_in_ocsp$&"
+When a message is received from a remote client connection
+the result of any OCSP request from the client is encoded in this variable:
+.code
+0 OCSP proof was not requested (default value)
+1 No response to request
+2 Response not verified
+3 Verification failed
+4 Verification succeeded
+.endd
+
+.vitem &$tls_out_ocsp$&
+.vindex "&$tls_out_ocsp$&"
+When a message is sent to a remote host connection
+the result of any OCSP request made is encoded in this variable.
+See &$tls_in_ocsp$& for values.
+.wen
+
 .vitem &$tls_in_peerdn$&
 .vindex "&$tls_in_peerdn$&"
 .vindex "&$tls_peerdn$&"
@@ -26246,6 +26266,10 @@ file named by &%tls_ocsp_file%&.
 
 Note that the proof only covers the terminal server certificate,
 not any of the chain from CA to it.
+
+.new
+There is no current way to staple a proof for a client certificate.
+.wen
 
 .code
   A helper script "ocsp_fetch.pl" for fetching a proof from a CA
