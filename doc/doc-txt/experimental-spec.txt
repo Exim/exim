@@ -1151,15 +1151,100 @@ component FQDN).
 
 DANE
 ------------------------------------------------------------
+DNS-based Authentication of Named Entities, as applied
+to SMTP over TLS, provides assurance to a client that
+it is actually talking to the server it wants to rather
+than some attacker operating a Man In The Middle (MITM)
+operation.  The latter can terminate the TLS connection
+you make, and make another one to the server (so both
+you and the server still think you have an encrypted
+connection) and, if one of the "well known" set of
+Certificate Authorities has been suborned - something
+which *has* been seen already (2014), a verifiable
+certificate (if you're using normal root CAs, eg. the
+Mozilla set, as your trust anchors).
+
+What DANE does is replace the CAs with the DNS as the
+trust anchor.  The assurance is limited to a) the possibility
+that the DNS has been suborned, b) mistakes made by the
+admins of the target server.   The attack surface presented
+by (a) is thought to be smaller than that of the set
+of root CAs.
+
+DANE scales better than having to maintain (and
+side-channel communicate) copies of server certificates
+for every possible target server.  It also scales
+(slightly) better than having to maintain on an SMTP
+client a copy of the standard CAs bundle.  It also
+means not having to pay a CA for certificates.
+
+DANE requires a server operator to do three things:
+1) run DNSSEC.  This provides assurance to clients
+that DNS lookups they do for the server have not
+been tampered with.
+2) add TLSA DNS records.  These say what the server
+certificate for a TLS connection should be.
+3) offer a server certificate, or certificate chain,
+in TLS connections which is traceable to the one
+defined by (one of?) the TSLA records
+
+There are no changes to Exim specific to server-side
+operation of DANE.
+
+The TLSA record for the server may have "certificate
+usage" of DANE_TA(2) or DANE_EE(3).  The latter specifies
+the End Entity directly, i.e. the certificate involved
+is that of the server (and should be the sole one transmitted
+during the TLS handshake); this is appropriate for a
+single system, using a self-signed certificate.
+  DANE_TA usage is effectively declaring a specific CA
+to be used; this might be a private CA or a public,
+well-known one.  A private CA at simplest is just
+a self-signed certificate which is used to sign
+cerver certificates, but running one securely does
+require careful arrangement.  If a private CA is used
+then either all clients must be primed with it, or
+(probably simpler) the server TLS handshake must transmit
+the entire certificate chain from CA to server-certificate.
+If a public CA is used then all clients must be primed with it
+(losing one advantage of DANE) - but the attack surface is
+reduced from all public CAs to that single CA.
+DANE_TA is commonly used for several services and/or
+servers, each having a TLSA query-domain CNAME record,
+all of which point to a single TLSA record.
+
+The TLSA record should have a Selector field of SPKI(1)
+and a Matching Type fiels of SHA2-512(2).
+
+For use with the DANE_TA model, server certificates
+must have a correct name (SubjectName or SubjectAltName).
+
+The use of OCSP-stapling should be considered, allowing
+for fast revocation of certificates (which would otherwise
+be limited by the DNS TTL on the TLSA records).
+
+
+For client-side DANE there is a new smtp transport option,
+hosts_try_dane.  It does the obvious thing.
+[ may add a hosts_require_dane, too? ]
+[ should it be domain-based rather than host-based? ]
+
+DANE will only be usable if the target host has DNSSEC-secured
+MX, A and TLSA records.
+
+(TODO: specify when fallback happens vs. when the host is not used)
+
 If dane is in use the following transport options are ignored:
   tls_verify_hosts
   tls_try_verify_hosts
   tls_verify_certificates
   tls_crl
   tls_verify_cert_hostnames
-  hosts_require_ocsp
+  hosts_require_ocsp		(might rethink those two)
   hosts_request_ocsp
 
+Currently dnssec_request_domains must be active (need to think about that)
+and dnssec_require_domains is ignored.
 
 
 --------------------------------------------------------------
