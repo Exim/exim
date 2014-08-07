@@ -1602,8 +1602,8 @@ tls_client_start(int fd, host_item *host, address_item *addr,
 {
 smtp_transport_options_block * ob = v_ob;
 static uschar txt[256];
-uschar *expciphers;
-X509* server_cert;
+uschar * expciphers;
+X509 * server_cert;
 int rc;
 static uschar cipherbuf[256];
 
@@ -1612,14 +1612,70 @@ BOOL request_ocsp = FALSE;
 BOOL require_ocsp = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DANE
-BOOL dane_in_use = FALSE;
+dns_answer tlsa_dnsa;
+BOOL dane = FALSE;
+BOOL dane_required;
 #endif
 
 #ifdef EXPERIMENTAL_DANE
 /*XXX TBD: test for transport options, and for TLSA records */
-/*dane_in_use = TRUE;*/
+/*dane = TRUE;*/
 
-if (!dane_in_use)
+# ifdef notyet
+dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
+			  host->name, host->address, NULL) == OK;
+# else
+dane_required = FALSE;
+#endif
+
+if (host->dnssec == DS_YES)
+  {
+  if(  dane_required
+    || verify_check_this_host(&ob->hosts_try_dane, NULL,
+			  host->name, host->address, NULL) == OK
+    )
+    {
+    /* move this out to host.c given the similarity to dns_lookup() ? */
+    uschar buffer[300];
+    int prefix_length;	/* why do we want this? */
+    uschar * fullname = buffer;
+
+    /* TLSA lookup string */
+    (void)sprintf(CS buffer, "_%d._tcp.%n%.256s", host->port, &prefix_length,
+      host->name);
+
+    switch (rc = dns_lookup(&tlsa_dnsa, buffer, T_TLSA, &fullname))
+      {
+      case DNS_AGAIN:
+	return DEFER; /* just defer this TLS'd conn */
+
+      default:
+      case DNS_FAIL:
+	if (dane_required)
+	  {
+	  /* log that TLSA lookup failed */
+	  return FAIL;
+	  }
+	break;
+
+      case DNS_SUCCEED:
+	if (!dns_is_secure(&tlsa_dnsa))
+	  {
+	  /*log it - tlsa should never be non-dnssec */
+	  return DEFER;
+	  }
+	dane = TRUE;
+	break;
+      }
+    }
+  }
+else if (dane_required && !dane)
+  {
+  /* log that dnssec pre-req failed.  Hmm - what? */
+  return FAIL;
+  }
+
+if (!dane)	/*XXX todo: enable ocsp with dane */
 #endif
 
 #ifndef DISABLE_OCSP
@@ -1661,7 +1717,7 @@ if (expciphers != NULL)
   }
 
 #ifdef EXPERIMENTAL_DANE
-if (dane_in_use)
+if (dane)
   {
   if (!DANESSL_library_init())
     return tls_error(US"library init", host, US"DANE library error");
@@ -1720,18 +1776,46 @@ if (request_ocsp)
 #endif
 
 #ifdef EXPERIMENTAL_DANE
-if (dane_in_use)
+if (dane)
   {
-  if (DANESSL_init(client_ssl, NULL, NULL /*??? hostnames*/) != 1)
+  dns_record * rr;
+  dns_scan dnss;
+  uschar * hostnames[2] = { host->name, NULL };
+
+  if (DANESSL_init(client_ssl, NULL, hostnames) != 1)
     return tls_error(US"hostnames load", host, US"DANE library error");
 
-  /*
-  foreach TLSA record
-    
-    DANESSL_add_tlsa(client_ssl, uint8_t usage, uint8_t selector,
-	const char *mdname,
-        unsigned const char *data, size_t dlen)
-  */
+  for (rr = dns_next_rr(&tlsa_dnsa, &dnss, RESET_ANSWERS);
+       rr;
+       rr = dns_next_rr(&tlsa_dnsa, &dnss, RESET_NEXT)
+      ) if (rr->type == T_TLSA)
+    {
+    uschar * p = rr->data;
+    int usage, selector, mtype;
+    const char * mdname;
+
+    GETSHORT(usage, p);
+    GETSHORT(selector, p);
+    GETSHORT(mtype, p);
+
+    switch (mtype)
+      {
+      default: /* log bad */ return FAIL;
+      case 0:	mdname = NULL; break;
+      case 1:	mdname = "SHA2-256"; break;
+      case 2:	mdname = "SHA2-512"; break;
+      }
+
+    switch (DANESSL_add_tlsa(client_ssl,
+		(uint8_t) usage, (uint8_t) selector,
+		mdname, p, rr->size - (p - rr->data)))
+      {
+      default:
+      case 0:	/* action not taken; log error */
+        return FAIL;
+      case 1:	break;
+      }
+    }
   }
 #endif
 

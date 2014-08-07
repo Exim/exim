@@ -1317,7 +1317,7 @@ call this with NULL.
 Arguments:
   ssl		Connection handle
   sni_domain	Optional peer server name
-  hostnames	?? list of names - but what names?
+  hostnames	list of names to chack against peer cert
 
 Return
   -1 on fatal error
