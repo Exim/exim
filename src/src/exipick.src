@@ -1020,6 +1020,12 @@ sub _parse_header {
       return($self->_error("incorrect format: $_")) if (length($2) != $3);
       $self->{_recips}{$1} = { pno => $4, errors_to => $2 };
       $addr = $1;
+    } elsif (/^(\S*)\s(\S*)\s(\d+),(\d+)\s(\S*)\s(\d+),(-?\d+)#3$/) {
+      #print STDERR "exim4 new type #3 DSN (untested): $_\n";
+      return($self->_error("incorrect format: $_"))
+        if ((length($2) != $3) || (length($5) != $6));
+      $self->{_recips}{$1} = { pno => $7, errors_to => $5 };
+      $addr = $1;
     } elsif (/^.*#(\d+)$/) {
       #print STDERR "exim4 #$1 style (unimplemented): $_\n";
       $self->_error("exim4 #$1 style (unimplemented): $_");
