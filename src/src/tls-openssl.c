@@ -1829,7 +1829,8 @@ rc = SSL_connect(client_ssl);
 alarm(0);
 
 #ifdef EXPERIMENTAL_DANE
-DANESSL_cleanup(client_ssl);	/*XXX earliest possible callpoint. Too early? */
+if (dane)
+  DANESSL_cleanup(client_ssl);	/*XXX earliest possible callpoint. Too early? */
 #endif
 
 if (rc <= 0)
