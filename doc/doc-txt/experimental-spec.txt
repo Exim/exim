@@ -1224,10 +1224,9 @@ for fast revocation of certificates (which would otherwise
 be limited by the DNS TTL on the TLSA records).
 
 
-For client-side DANE there is a new smtp transport option,
-hosts_try_dane.  It does the obvious thing.
-[ may add a hosts_require_dane, too? ]
-[ should it be domain-based rather than host-based? ]
+For client-side DANE there are two new smtp transport options,
+hosts_try_dane and hosts_require_dane.  They do the obvious thing.
+[ should they be domain-based rather than host-based? ]
 
 DANE will only be usable if the target host has DNSSEC-secured
 MX, A and TLSA records.

@@ -60,6 +60,9 @@ send_to_server:
 #  tls_privatekey = DIR/aux-fixed/cert2
 #  tls_verify_certificates = DIR/aux-fixed/cert2
 
+#  hosts_try_dane = *
+  hosts_require_dane = *
+
 
 # ----- Retry -----
 

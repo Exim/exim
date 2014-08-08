@@ -109,6 +109,10 @@ optionlist smtp_transport_options[] = {
   { "hosts_require_auth",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_auth) },
 #ifdef SUPPORT_TLS
+# ifdef EXPERIMENTAL_DANE
+  { "hosts_require_dane",   opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_require_dane) },
+# endif
 # ifndef DISABLE_OCSP
   { "hosts_require_ocsp",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_ocsp) },
@@ -118,7 +122,7 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
-#ifdef EXPERIMENTAL_DANE
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
   { "hosts_try_dane",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
 #endif
@@ -206,6 +210,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_require_auth */
 #ifdef EXPERIMENTAL_DANE
   NULL,                /* hosts_try_dane */
+  NULL,                /* hosts_require_dane */
 #endif
 #ifndef DISABLE_PRDR
   NULL,                /* hosts_try_prdr */
@@ -1571,8 +1576,13 @@ if (tls_out.active >= 0)
 /* If the host is required to use a secure channel, ensure that we
 have one. */
 
-else if (verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-          host->address, NULL) == OK)
+else if (  verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+            host->address, NULL) == OK
+#ifdef EXPERIMENTAL_DANE
+	|| verify_check_this_host(&(ob->hosts_require_dane), NULL, host->name,
+            host->address, NULL) == OK
+#endif
+	)
   {
   save_errno = ERRNO_TLSREQUIRED;
   message = string_sprintf("a TLS session is required for %s [%s], but %s",
@@ -3268,10 +3278,16 @@ for (cutoff_retry = 0; expired &&
       happens inside smtp_deliver().] */
 
       #ifdef SUPPORT_TLS
-      if (rc == DEFER && first_addr->basic_errno == ERRNO_TLSFAILURE &&
-           ob->tls_tempfail_tryclear &&
-           verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-             host->address, NULL) != OK)
+      if (  rc == DEFER
+	 && first_addr->basic_errno == ERRNO_TLSFAILURE
+	 && ob->tls_tempfail_tryclear
+	 && verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+             host->address, NULL) != OK
+#ifdef EXPERIMENTAL_DANE
+	 && verify_check_this_host(&(ob->hosts_require_dane), NULL, host->name,
+             host->address, NULL) != OK
+#endif
+	 )
         {
         log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
           "to %s [%s] (not in hosts_require_tls)", host->name, host->address);

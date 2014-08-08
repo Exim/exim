@@ -1618,15 +1618,8 @@ BOOL dane_required;
 #endif
 
 #ifdef EXPERIMENTAL_DANE
-/*XXX TBD: test for transport options, and for TLSA records */
-/*dane = TRUE;*/
-
-# ifdef notyet
 dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
 			  host->name, host->address, NULL) == OK;
-# else
-dane_required = FALSE;
-#endif
 
 if (host->dnssec == DS_YES)
   {
@@ -1637,11 +1630,10 @@ if (host->dnssec == DS_YES)
     {
     /* move this out to host.c given the similarity to dns_lookup() ? */
     uschar buffer[300];
-    int prefix_length;	/* why do we want this? */
     uschar * fullname = buffer;
 
     /* TLSA lookup string */
-    (void)sprintf(CS buffer, "_%d._tcp.%n%.256s", host->port, &prefix_length,
+    (void)sprintf(CS buffer, "_%d._tcp.%.256s", host->port,
       host->name);
 
     switch (rc = dns_lookup(&tlsa_dnsa, buffer, T_TLSA, &fullname))
@@ -1653,7 +1645,7 @@ if (host->dnssec == DS_YES)
       case DNS_FAIL:
 	if (dane_required)
 	  {
-	  /* log that TLSA lookup failed */
+	  log_write(0, LOG_MAIN, "DANE error: TLSA lookup failed");
 	  return FAIL;
 	  }
 	break;
@@ -1661,7 +1653,7 @@ if (host->dnssec == DS_YES)
       case DNS_SUCCEED:
 	if (!dns_is_secure(&tlsa_dnsa))
 	  {
-	  /*log it - tlsa should never be non-dnssec */
+	  log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
 	  return DEFER;
 	  }
 	dane = TRUE;
@@ -1669,9 +1661,10 @@ if (host->dnssec == DS_YES)
       }
     }
   }
-else if (dane_required && !dane)
+else if (dane_required)
   {
-  /* log that dnssec pre-req failed.  Hmm - what? */
+  /* Hmm - what lookup, precisely? */
+  log_write(0, LOG_MAIN, "DANE error: previous lookup not DNSSEC");
   return FAIL;
   }
 
