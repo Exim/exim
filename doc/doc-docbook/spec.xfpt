@@ -5556,10 +5556,12 @@ unreachable.
 
 The next two lines are concerned with &'ident'& callbacks, as defined by RFC
 1413 (hence their names):
+.new
 .code
 rfc1413_hosts = *
 rfc1413_query_timeout = 0s
 .endd
+.wen
 These settings cause Exim to avoid ident callbacks for all incoming SMTP calls.
 Few hosts offer RFC1413 service these days; calls have to be
 terminated by a timeout and this needlessly delays the startup

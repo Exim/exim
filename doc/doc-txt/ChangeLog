@@ -8,6 +8,14 @@ TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static
       checkers that were complaining about end of non-void function with no
       return.
 
+JH/01 Bug 1513: Fix parsing of quoted parameter values in MIME headers.
+      This was a regression intruduced in 4.83 by another bugfix.
+
+JH/02 Fix broken compilation when EXPERIMENTAL_DSN is enabled.
+
+TL/02 Bug 1509: Fix exipick for enhanced spoolfile specification used when
+      EXPERIMENTAL_DNS is enabled.  Fix from Wolfgang Breyha.
+
 
 Exim version 4.83
 -----------------
