@@ -48,7 +48,11 @@ line in the zone file contains exactly this:
   PASS ON NOT FOUND
 
 and the domain is not found. It converts the the result to PASS_ON instead of
-HOST_NOT_FOUND. */
+HOST_NOT_FOUND.
+
+Any DNS record line in a zone file can be prefixed with "DNSSEC" and
+at least one space; if all the records found by a lookup are marked
+as such then the response will have the "AD" bit set. */
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -209,7 +213,7 @@ Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
 
 static int
 find_records(FILE *f, uschar *zone, uschar *domain, uschar *qtype,
-  int qtypelen, uschar **pkptr, int *countptr)
+  int qtypelen, uschar **pkptr, int *countptr, BOOL * dnssec)
 {
 int yield = HOST_NOT_FOUND;
 int domainlen = Ustrlen(domain);
@@ -233,6 +237,8 @@ if (typeptr->name == NULL)
 rrdomain[0] = 0;                 /* No previous domain */
 (void)fseek(f, 0, SEEK_SET);     /* Start again at the beginning */
 
+*dnssec = TRUE;			/* cancelled by first nonsecure rec found */
+
 /* Scan for RRs */
 
 while (fgets(CS buffer, sizeof(buffer), f) != NULL)
@@ -243,12 +249,13 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   int i, plen, value;
   int tvalue = typeptr->value;
   int qtlen = qtypelen;
+  BOOL rr_sec = FALSE;
 
   p = buffer;
   while (isspace(*p)) p++;
   if (*p == 0 || *p == ';') continue;
 
-  if (Ustrncmp(p, "PASS ON NOT FOUND", 17) == 0)
+  if (Ustrncmp(p, US"PASS ON NOT FOUND", 17) == 0)
     {
     pass_on_not_found = TRUE;
     continue;
@@ -259,6 +266,12 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   *ep = 0;
 
   p = buffer;
+  if (Ustrncmp(p, US"DNSSEC ", 7) == 0)	/* tagged as secure */
+    {
+    rr_sec = TRUE;
+    p += 7;
+    }
+
   if (!isspace(*p))
     {
     uschar *pp = rrdomain;
@@ -310,6 +323,9 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   else if (Ustrncmp(p, qtype, qtypelen) != 0 || !isspace(p[qtypelen])) continue;
 
   /* Found a relevant record */
+
+  if (!rr_sec)
+    *dnssec = FALSE;			/* cancel AD return */
 
   yield = 0;
   *countptr = *countptr + 1;
@@ -444,6 +460,7 @@ uschar buffer[256];
 uschar qtype[12];
 uschar packet[512];
 uschar *pk = packet;
+BOOL dnssec;
 
 if (argc != 4)
   {
@@ -545,7 +562,7 @@ if (f == NULL)
 /* Find the records we want, and add them to the result. */
 
 count = 0;
-yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count);
+yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count, &dnssec);
 if (yield == NO_RECOVERY) goto END_OFF;
 
 packet[6] = (count >> 8) & 255;
@@ -557,6 +574,9 @@ packet[7] = count & 255;
 packet[10] = 0;
 packet[11] = 0;
 
+if (dnssec)
+  ((HEADER *)packet)->ad = 1;
+
 /* Close the zone file, write the result, and return. */
 
 END_OFF:
@@ -565,4 +585,6 @@ END_OFF:
 return yield;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of fakens.c */

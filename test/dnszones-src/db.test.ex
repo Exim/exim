@@ -78,7 +78,7 @@ v6           AAAA    V6NET:ffff:836f:0a00:000a:0800:200a:c032
 
 ; Alias A and CNAME records for the local host, under the name "eximtesthost"
 
-eximtesthost     A       HOSTIPV4
+DNSSEC eximtesthost     A       HOSTIPV4
 alias-eximtesthost CNAME eximtesthost.test.ex.
 
 ; A bad CNAME
@@ -185,6 +185,8 @@ recurse.test.ex   A  V4NET.99.0.2
                       A   127.0.0.2
 
 ; -------- Testing MX records --------
+
+DNSSEC mxplain      MX  1  eximtesthost.
 
 mxcased      MX  5  ten-99.TEST.EX.
 

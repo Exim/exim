@@ -2,7 +2,7 @@
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-exim CALLER@test.ex
+exim CALLER@mxplain.test.ex
 Testing
 ****
 exim -d+all -qf
