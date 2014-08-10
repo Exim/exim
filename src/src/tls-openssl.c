@@ -386,6 +386,7 @@ return verify_callback(state, x509ctx, &tls_in, &server_verify_callback_called, 
 
 
 #ifdef EXPERIMENTAL_DANE
+
 /* This gets called *by* the dane library verify callback, which interposes
 itself.
 */
@@ -402,10 +403,12 @@ tls_out.peerdn = txt;
 tls_out.peercert = X509_dup(cert);
 
 if (state == 1)
+  tls_out.dane_verified =
   tls_out.certificate_verified = TRUE;
 return 1;
 }
-#endif
+
+#endif	/*EXPERIMENTAL_DANE*/
 
 
 /*************************************************
@@ -1442,6 +1445,9 @@ if (expciphers != NULL)
 optional, set up appropriately. */
 
 tls_in.certificate_verified = FALSE;
+#ifdef EXPERIMENTAL_DANE
+tls_in.dane_verified = FALSE;
+#endif
 server_verify_callback_called = FALSE;
 
 if (verify_check_host(&tls_verify_hosts) == OK)
@@ -1712,6 +1718,9 @@ rc = tls_init(&client_ctx, host, NULL,
 if (rc != OK) return rc;
 
 tls_out.certificate_verified = FALSE;
+#ifdef EXPERIMENTAL_DANE
+tls_out.dane_verified = FALSE;
+#endif
 client_verify_callback_called = FALSE;
 
 if (!expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",

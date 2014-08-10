@@ -697,7 +697,15 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
   if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
        addr->cipher != NULL)
     s = string_append(s, sizep, ptrp, 2, US" CV=",
-      testflag(addr, af_cert_verified)? "yes":"no");
+      testflag(addr, af_cert_verified)
+      ?
+#ifdef EXPERIMENTAL_DANE
+        testflag(addr, af_dane_verified)
+      ? "dane"
+      :
+#endif
+        "yes"
+      : "no");
   if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
     s = string_append(s, sizep, ptrp, 3, US" DN=\"",
       string_printing(addr->peerdn), US"\"");
@@ -4125,6 +4133,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
       /* The certificate verification status goes into the flags */
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
+      if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
 
       /* Use an X item only if there's something to send */
       #ifdef SUPPORT_TLS

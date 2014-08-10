@@ -284,6 +284,9 @@ dkim_collect_input = FALSE;
 
 #ifdef SUPPORT_TLS
 tls_in.certificate_verified = FALSE;
+# ifdef EXPERIMENTAL_DANE
+tls_in.dane_verified = FALSE;
+# endif
 tls_in.cipher = NULL;
 tls_in.ourcert = NULL;
 tls_in.peercert = NULL;

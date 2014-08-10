@@ -82,6 +82,9 @@ typedef struct {
   int     active;             /* fd/socket when in a TLS session */
   int     bits;               /* bits used in TLS session */
   BOOL    certificate_verified; /* Client certificate verified */
+#ifdef EXPERIMENTAL_DANE
+  BOOL    dane_verified;        /* ... via DANE */
+#endif
   uschar *cipher;             /* Cipher used */
   BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
   uschar *on_connect_ports;   /* Ports always tls-on-connect */

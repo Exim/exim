@@ -495,6 +495,9 @@ typedef struct address_item_propagated {
 # define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
 #endif
 #define af_force_command       0x10000000 /* force_command in pipe transport */
+#ifdef EXPERIMENTAL_DANE
+# define af_dane_verified      0x20000000 /* TLS cert verify done with DANE */
+#endif
 
 /* These flags must be propagated when a child is created */
 
