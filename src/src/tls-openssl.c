@@ -361,7 +361,7 @@ else
       return 0;				/* reject */
       }
 # endif
-#endif
+#endif	/*EXPERIMENTAL_CERTNAMES*/
 
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
     *calledp ? "" : " authenticated", txt);
@@ -384,6 +384,28 @@ verify_callback_server(int state, X509_STORE_CTX *x509ctx)
 return verify_callback(state, x509ctx, &tls_in, &server_verify_callback_called, &server_verify_optional);
 }
 
+
+#ifdef EXPERIMENTAL_DANE
+/* This gets called *by* the dane library verify callback, which interposes
+itself.
+*/
+static int
+verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
+{
+X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
+static uschar txt[256];
+
+X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+
+DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", txt);
+tls_out.peerdn = txt;
+tls_out.peercert = X509_dup(cert);
+
+if (state == 1)
+  tls_out.certificate_verified = TRUE;
+return 1;
+}
+#endif
 
 
 /*************************************************
@@ -997,7 +1019,6 @@ OCSP_RESPONSE_free(rsp);
 return i;
 }
 #endif	/*!DISABLE_OCSP*/
-
 
 
 /*************************************************
@@ -1713,6 +1734,8 @@ if (expciphers != NULL)
 #ifdef EXPERIMENTAL_DANE
 if (dane)
   {
+  SSL_CTX_set_verify(client_ctx, SSL_VERIFY_PEER, verify_callback_client_dane);
+
   if (!DANESSL_library_init())
     return tls_error(US"library init", host, NULL);
   if (DANESSL_CTX_init(client_ctx) <= 0)

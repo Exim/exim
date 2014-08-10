@@ -859,7 +859,7 @@ X509 *cert = ctx->cert;             /* XXX: accessor? */
 int matched = 0;
 int chain_length = sk_X509_num(ctx->chain);
 
-DEBUG(D_tls) debug_printf("Dane verify_chain\n");
+DEBUG(D_tls) debug_printf("Dane verify-chain\n");
 
 issuer_rrs = dane->selectors[SSL_DANE_USAGE_LIMIT_ISSUER];
 leaf_rrs = dane->selectors[SSL_DANE_USAGE_LIMIT_LEAF];
@@ -952,7 +952,7 @@ int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
 int matched;
 X509 *cert = ctx->cert;             /* XXX: accessor? */
 
-DEBUG(D_tls) debug_printf("Dane verify_cert\n");
+DEBUG(D_tls) debug_printf("Dane verify-cert\n");
 
 if(ssl_idx < 0)
   ssl_idx = SSL_get_ex_data_X509_STORE_CTX_idx();
@@ -1084,7 +1084,7 @@ DANESSL_cleanup(SSL *ssl)
 ssl_dane *dane;
 int u;
 
-DEBUG(D_tls) debug_printf("Dane library cleanup fn called\n");
+DEBUG(D_tls) debug_printf("Dane lib-cleanup\n");
 
 if(dane_idx < 0 || !(dane = SSL_get_ex_data(ssl, dane_idx)))
   return;
@@ -1106,7 +1106,6 @@ if(dane->roots)
 if(dane->chain)
   sk_X509_pop_free(dane->chain, X509_free);
 OPENSSL_free(dane);
-DEBUG(D_tls) debug_printf("Dane library cleanup fn return\n");
 }
 
 static dane_host_list

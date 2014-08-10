@@ -16,7 +16,7 @@ gecos_name = CALLER_NAME
 
 acl_smtp_rcpt = accept
 
-log_selector =  +tls_peerdn
+log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
 
 queue_only
 queue_run_in_order
