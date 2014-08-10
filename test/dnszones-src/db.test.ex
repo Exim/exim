@@ -79,10 +79,8 @@ v6           AAAA    V6NET:ffff:836f:0a00:000a:0800:200a:c032
 ; Alias A and CNAME records for the local host, under the name "eximtesthost"
 ; Make the A covered by DNSSEC and add a TLSA for it.
 
-DNSSEC eximtesthost     A       HOSTIPV4
+eximtesthost     A       HOSTIPV4
 alias-eximtesthost CNAME eximtesthost.test.ex.
-
-DNSSEC _1225._tcp.eximtesthost	TLSA	3 1 2 3d5eb81b1dfc3f93c1fa8819e3fb3fdb41bb590441d5f3811db17772f4bc6de29bdd7c4f4b723750dda871b99379192b3f979f03db1252c4f08b03ef7176528d
 
 ; A bad CNAME
 
@@ -188,8 +186,6 @@ recurse.test.ex   A  V4NET.99.0.2
                       A   127.0.0.2
 
 ; -------- Testing MX records --------
-
-DNSSEC mxplain      MX  1  eximtesthost.
 
 mxcased      MX  5  ten-99.TEST.EX.
 
@@ -386,5 +382,16 @@ _client._smtp.csa2  SRV  1 1 0  csa2.test.ex.
 
 csa1         A   V4NET.9.8.7
 csa2         A   V4NET.9.8.8
+
+; ------- Testing DANE ------------
+
+; full suite dns chain, sha512
+DNSSEC mxdane512ee MX  1  dane512ee.
+DNSSEC dane512ee   A       HOSTIPV4
+DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 3d5eb81b1dfc3f93c1fa8819e3fb3fdb41bb590441d5f3811db17772f4bc6de29bdd7c4f4b723750dda871b99379192b3f979f03db1252c4f08b03ef7176528d
+
+; A-only, sha256
+DNSSEC dane256ee   A       HOSTIPV4
+DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 2bb55f418bb03411a5007cecbfcd3ec1c94404312c0d53a44bb2166b32654db3
 
 ; End

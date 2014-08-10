@@ -2,8 +2,12 @@
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
+# TLSA (3 1 1)
+exim CALLER@dane256ee.test.ex
+Testing
+****
 # TLSA (3 1 2)
-exim CALLER@mxplain.test.ex
+exim CALLER@mxdane512ee.test.ex
 Testing
 ****
 exim -qf
