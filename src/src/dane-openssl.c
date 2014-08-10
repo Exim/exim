@@ -1162,7 +1162,8 @@ dane_cert_list xlist = 0;
 dane_pkey_list klist = 0;
 const EVP_MD *md = 0;
 
-DEBUG(D_tls) debug_printf("Dane add_tlsa\n");
+DEBUG(D_tls) debug_printf("Dane add-tlsa: usage %u sel %u mdname \"%s\"\n",
+			  usage, selector, mdname);
 
 if(dane_idx < 0 || !(dane = SSL_get_ex_data(ssl, dane_idx)))
   {
@@ -1340,7 +1341,7 @@ if(sctx->app_verify_callback != verify_cert)
   return -1;
   }
 #else
-DEBUG(D_tls) debug_printf("Dane ssl_init\n");
+DEBUG(D_tls) debug_printf("Dane ssl-init\n");
 if(dane_idx < 0)
   {
   DANEerr(DANE_F_SSL_DANE_INIT, DANE_R_LIBRARY_INIT);
@@ -1362,7 +1363,6 @@ if(!SSL_set_ex_data(ssl, dane_idx, dane))
   OPENSSL_free(dane);
   return 0;
   }
-DEBUG(D_tls) debug_printf("Dane ssl-init: new dane struct: %p\n", dane);
 
 dane->verify = 0;
 dane->hosts = 0;

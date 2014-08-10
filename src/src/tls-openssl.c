@@ -1663,8 +1663,8 @@ if (host->dnssec == DS_YES)
   }
 else if (dane_required)
   {
-  /* Hmm - what lookup, precisely? */
   /*XXX a shame we only find this after making tcp & smtp connection */
+  /* move the test earlier? */
   log_write(0, LOG_MAIN, "DANE error: previous lookup not DNSSEC");
   return FAIL;
   }
@@ -1714,9 +1714,9 @@ if (expciphers != NULL)
 if (dane)
   {
   if (!DANESSL_library_init())
-    return tls_error(US"library init", host, US"DANE library error");
+    return tls_error(US"library init", host, NULL);
   if (DANESSL_CTX_init(client_ctx) <= 0)
-    return tls_error(US"context init", host, US"DANE library error");
+    return tls_error(US"context init", host, NULL);
   }
 else
 
@@ -1777,7 +1777,7 @@ if (dane)
   uschar * hostnames[2] = { host->name, NULL };
 
   if (DANESSL_init(client_ssl, NULL, hostnames) != 1)
-    return tls_error(US"hostnames load", host, US"DANE library error");
+    return tls_error(US"hostnames load", host, NULL);
 
   for (rr = dns_next_rr(&tlsa_dnsa, &dnss, RESET_ANSWERS);
        rr;
@@ -1805,8 +1805,8 @@ if (dane)
 		mdname, p, rr->size - (p - rr->data)))
       {
       default:
-      case 0:	/* action not taken; log error */
-        return FAIL;
+      case 0:	/* action not taken */
+	return tls_error(US"tlsa load", host, NULL);
       case 1:	break;
       }
     }

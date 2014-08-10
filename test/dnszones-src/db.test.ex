@@ -77,9 +77,12 @@ badloop      A       V4NET.0.0.1
 v6           AAAA    V6NET:ffff:836f:0a00:000a:0800:200a:c032
 
 ; Alias A and CNAME records for the local host, under the name "eximtesthost"
+; Make the A covered by DNSSEC and add a TLSA for it.
 
 DNSSEC eximtesthost     A       HOSTIPV4
 alias-eximtesthost CNAME eximtesthost.test.ex.
+
+DNSSEC _1225._tcp.eximtesthost	TLSA	3 1 2 f000baaa
 
 ; A bad CNAME
 

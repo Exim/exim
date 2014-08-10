@@ -607,7 +607,7 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
   /* For an SRV lookup, skip over the first two components (the service and
   protocol names, which both start with an underscore). */
 
-  if (type == T_SRV)
+  if (type == T_SRV || type == T_TLSA)
     {
     while (*checkname++ != '.');
     while (*checkname++ != '.');

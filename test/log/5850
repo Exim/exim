@@ -1,6 +1,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 DANE error: TLSA lookup failed
+1999-03-02 09:44:33 10HmaX-0005vi-00 TLS error on connection to eximtesthost.test.ex [ip4.ip4.ip4.ip4] (tlsa load): error:8006C067:DANE library:func(108):Bad TLSA record digest
 1999-03-02 09:44:33 10HmaX-0005vi-00 == CALLER@mxplain.test.ex R=client T=send_to_server defer (-37): failure while setting up TLS session
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 

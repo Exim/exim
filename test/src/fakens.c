@@ -99,21 +99,25 @@ not defined, assume we are in this state. A really old system might not even
 know about AAAA and SRV at all. */
 
 #ifndef ns_t_a
-#define ns_t_a      T_A
-#define ns_t_ns     T_NS
-#define ns_t_cname  T_CNAME
-#define ns_t_soa    T_SOA
-#define ns_t_ptr    T_PTR
-#define ns_t_mx     T_MX
-#define ns_t_txt    T_TXT
-#define ns_t_aaaa   T_AAAA
-#define ns_t_srv    T_SRV
-#ifndef T_AAAA
-#define T_AAAA      28
-#endif
-#ifndef T_SRV
-#define T_SRV       33
-#endif
+# define ns_t_a      T_A
+# define ns_t_ns     T_NS
+# define ns_t_cname  T_CNAME
+# define ns_t_soa    T_SOA
+# define ns_t_ptr    T_PTR
+# define ns_t_mx     T_MX
+# define ns_t_txt    T_TXT
+# define ns_t_aaaa   T_AAAA
+# define ns_t_srv    T_SRV
+# define ns_t_tlsa   T_TLSA
+# ifndef T_AAAA
+#  define T_AAAA      28
+# endif
+# ifndef T_SRV
+#  define T_SRV       33
+# endif
+# ifndef T_TLSA
+#  define T_TLSA      52
+# endif
 #endif
 
 static tlist type_list[] = {
@@ -126,6 +130,7 @@ static tlist type_list[] = {
   { US"TXT",     ns_t_txt },
   { US"AAAA",    ns_t_aaaa },
   { US"SRV",     ns_t_srv },
+  { US"TLSA",    ns_t_tlsa },
   { NULL,        0 }
 };
 
@@ -189,6 +194,20 @@ while (*name != 0)
 return pk;
 }
 
+uschar *
+shortfield(uschar ** pp, uschar * pk)
+{
+unsigned value = 0;
+uschar * p = *pp;
+
+while (isdigit(*p)) value = value*10 + *p++ - '0';
+while (isspace(*p)) p++;
+*pp = p;
+*pk++ = (value >> 8) & 255;
+*pk++ = value & 255;
+return pk;
+}
+
 
 
 /*************************************************
@@ -237,7 +256,7 @@ if (typeptr->name == NULL)
 rrdomain[0] = 0;                 /* No previous domain */
 (void)fseek(f, 0, SEEK_SET);     /* Start again at the beginning */
 
-*dnssec = TRUE;			/* cancelled by first nonsecure rec found */
+*dnssec = TRUE;			/* cancelled by first nonsecure rec found */ 
 
 /* Scan for RRs */
 
@@ -387,11 +406,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     break;
 
     case ns_t_mx:
-    value = 0;
-    while (isdigit(*p)) value = value*10 + *p++ - '0';
-    while (isspace(*p)) p++;
-    *pk++ = (value >> 8) & 255;
-    *pk++ = value & 255;
+    pk = shortfield(&p, pk);
     if (ep[-1] != '.') sprintf(ep, "%s.", zone);
     pk = packname(p, pk);
     plen = Ustrlen(p);
@@ -402,6 +417,23 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     if (*p == '"') p++;   /* Should always be the case */
     while (*p != 0 && *p != '"') *pk++ = *p++;
     *pp = pk - pp - 1;
+    break;
+
+    case ns_t_tlsa:
+    pk = shortfield(&p, pk);	/* usage */
+    pk = shortfield(&p, pk);	/* selector */
+    pk = shortfield(&p, pk);	/* match type */
+    while (isxdigit(*p))
+      {
+      value = toupper(*p) - (isdigit(*p) ? '0' : '7') << 4;
+      if (isxdigit(*++p))
+	{
+	value |= toupper(*p) - (isdigit(*p) ? '0' : '7');
+	p++;
+	}
+      *pk++ = value & 255;
+      }
+
     break;
 
     case ns_t_srv:
