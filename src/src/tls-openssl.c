@@ -1696,7 +1696,6 @@ else if (dane_required)
   return FAIL;
   }
 
-if (!dane)	/*XXX todo: enable ocsp with dane */
 #endif
 
 #ifndef DISABLE_OCSP

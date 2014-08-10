@@ -1234,7 +1234,8 @@ must have a correct name (SubjectName or SubjectAltName).
 
 The use of OCSP-stapling should be considered, allowing
 for fast revocation of certificates (which would otherwise
-be limited by the DNS TTL on the TLSA records).
+be limited by the DNS TTL on the TLSA records).  However,
+this is likely to only be usable with DANE_TA.
 
 
 For client-side DANE there are two new smtp transport options,
@@ -1252,11 +1253,12 @@ If dane is in use the following transport options are ignored:
   tls_verify_certificates
   tls_crl
   tls_verify_cert_hostnames
-  hosts_require_ocsp		(might rethink those two)
-  hosts_request_ocsp
 
 Currently dnssec_request_domains must be active (need to think about that)
 and dnssec_require_domains is ignored.
+
+If verification was successful using DANE then the "CV" item
+in the delivery log line will show as "CV=dane".
 
 
 --------------------------------------------------------------
