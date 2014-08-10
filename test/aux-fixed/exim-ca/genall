@@ -17,6 +17,16 @@ do
     clica -D example.$tld -p password -s 201 -S server2.example.$tld
     clica -D example.$tld -p password -s 202 -S revoked2.example.$tld
     clica -D example.$tld -p password -s 203 -S expired2.example.$tld -m 1
+
+
+    # openssl seems to generate a file (ca_chain.pam) in an order it
+    # cannot then use (the key applies to the first cert in the file?).
+    # Generate a shuffled one.
+    cd example.$tld/server1.example.$tld
+    openssl pkcs12 -in server1.example.com.p12 -passin file:pwdfile -cacerts -out cacerts.pem -nokeys
+    cat server1.example.com.pem cacerts.pem > fullchain.pem
+    rm cacerts.pem
+    cd ../..
 done
 
 # and loop again

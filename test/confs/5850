@@ -24,9 +24,20 @@ queue_run_in_order
 tls_advertise_hosts = *
 
 # Set certificate only if server
+CDIR1 = DIR/aux-fixed
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
 
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-#tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = ${if eq {SERVER}{server} \
+	{${if eq {DETAILS}{ta} \
+		{CDIR2/fullchain.pem}\
+		{CDIR1/cert1}}}\
+	fail}
+
+tls_privatekey = ${if eq {SERVER}{server} \
+	{${if eq {DETAILS}{ta} \
+		{CDIR2/server1.example.com.unlocked.key}\
+		{CDIR1/cert1}}}\
+	fail}
 
 
 # ----- Routers -----
@@ -35,7 +46,7 @@ begin routers
 
 client:
   driver = dnslookup
-  condition = ${if eq {SERVER}{server}{no}{yes}}
+  condition = ${if eq {SERVER}{}}
   dnssec_request_domains = *
   self = send
   transport = send_to_server

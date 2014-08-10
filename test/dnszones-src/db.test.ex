@@ -394,4 +394,9 @@ DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 3d5eb81b1dfc3f93c1fa8819e3fb3fdb41bb5904
 DNSSEC dane256ee   A       HOSTIPV4
 DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 2bb55f418bb03411a5007cecbfcd3ec1c94404312c0d53a44bb2166b32654db3
 
+; full MX, sha256, TA-mode
+DNSSEC mxdane256ta MX  1  dane256ta.
+DNSSEC dane256ta   A       HOSTIPV4
+DNSSEC _1225._tcp.dane256ta TLSA  2 0 1 b2c6f27f2d16390b4f71cacc69742bf610d750534fab240516c0f2deb4042ad4
+
 ; End
