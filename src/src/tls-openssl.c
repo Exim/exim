@@ -1664,6 +1664,7 @@ if (host->dnssec == DS_YES)
 else if (dane_required)
   {
   /* Hmm - what lookup, precisely? */
+  /*XXX a shame we only find this after making tcp & smtp connection */
   log_write(0, LOG_MAIN, "DANE error: previous lookup not DNSSEC");
   return FAIL;
   }

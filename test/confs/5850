@@ -37,9 +37,11 @@ tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 begin routers
 
 client:
-  driver = accept
+  driver = dnslookup
   condition = ${if eq {SERVER}{server}{no}{yes}}
-  retry_use_local_part
+#  retry_use_local_part
+  dnssec_request_domains = *
+  self = send
   transport = send_to_server
 
 server:
@@ -54,7 +56,7 @@ begin transports
 send_to_server:
   driver = smtp
   allow_localhost
-  hosts = 127.0.0.1
+#  hosts = 127.0.0.1
   port = PORT_D
 #  tls_certificate = DIR/aux-fixed/cert2
 #  tls_privatekey = DIR/aux-fixed/cert2
