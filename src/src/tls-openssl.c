@@ -1796,8 +1796,8 @@ if (dane)
       {
       default: /* log bad */ return FAIL;
       case 0:	mdname = NULL; break;
-      case 1:	mdname = "SHA2-256"; break;
-      case 2:	mdname = "SHA2-512"; break;
+      case 1:	mdname = "sha256"; break;
+      case 2:	mdname = "sha512"; break;
       }
 
     switch (DANESSL_add_tlsa(client_ssl,

@@ -859,7 +859,7 @@ X509 *cert = ctx->cert;             /* XXX: accessor? */
 int matched = 0;
 int chain_length = sk_X509_num(ctx->chain);
 
-DEBUG(D_tls) debug_printf("Dane library verify_chain fn called\n");
+DEBUG(D_tls) debug_printf("Dane verify_chain\n");
 
 issuer_rrs = dane->selectors[SSL_DANE_USAGE_LIMIT_ISSUER];
 leaf_rrs = dane->selectors[SSL_DANE_USAGE_LIMIT_LEAF];
@@ -952,7 +952,7 @@ int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
 int matched;
 X509 *cert = ctx->cert;             /* XXX: accessor? */
 
-DEBUG(D_tls) debug_printf("Dane library verify_cert fn called\n");
+DEBUG(D_tls) debug_printf("Dane verify_cert\n");
 
 if(ssl_idx < 0)
   ssl_idx = SSL_get_ex_data_X509_STORE_CTX_idx();

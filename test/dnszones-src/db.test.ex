@@ -82,7 +82,7 @@ v6           AAAA    V6NET:ffff:836f:0a00:000a:0800:200a:c032
 DNSSEC eximtesthost     A       HOSTIPV4
 alias-eximtesthost CNAME eximtesthost.test.ex.
 
-DNSSEC _1225._tcp.eximtesthost	TLSA	3 1 2 f000baaa
+DNSSEC _1225._tcp.eximtesthost	TLSA	3 1 2 3d5eb81b1dfc3f93c1fa8819e3fb3fdb41bb590441d5f3811db17772f4bc6de29bdd7c4f4b723750dda871b99379192b3f979f03db1252c4f08b03ef7176528d
 
 ; A bad CNAME
 

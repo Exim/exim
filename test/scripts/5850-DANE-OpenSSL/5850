@@ -2,10 +2,11 @@
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
+# TLSA (3 1 2)
 exim CALLER@mxplain.test.ex
 Testing
 ****
-exim -d+all -qf
+exim -qf
 ****
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -qf

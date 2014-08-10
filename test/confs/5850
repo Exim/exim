@@ -26,10 +26,7 @@ tls_advertise_hosts = *
 # Set certificate only if server
 
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-
-#tls_verify_hosts = *
-#tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+#tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 
 # ----- Routers -----
@@ -39,7 +36,6 @@ begin routers
 client:
   driver = dnslookup
   condition = ${if eq {SERVER}{server}{no}{yes}}
-#  retry_use_local_part
   dnssec_request_domains = *
   self = send
   transport = send_to_server
@@ -56,11 +52,7 @@ begin transports
 send_to_server:
   driver = smtp
   allow_localhost
-#  hosts = 127.0.0.1
   port = PORT_D
-#  tls_certificate = DIR/aux-fixed/cert2
-#  tls_privatekey = DIR/aux-fixed/cert2
-#  tls_verify_certificates = DIR/aux-fixed/cert2
 
 #  hosts_try_dane = *
   hosts_require_dane = *

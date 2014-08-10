@@ -1181,7 +1181,10 @@ means not having to pay a CA for certificates.
 DANE requires a server operator to do three things:
 1) run DNSSEC.  This provides assurance to clients
 that DNS lookups they do for the server have not
-been tampered with.
+been tampered with.  The domain MX record applying
+to this server, its A record, its TLSA record and
+any associated CNAME records must all be covered by
+DNSSEC.
 2) add TLSA DNS records.  These say what the server
 certificate for a TLS connection should be.
 3) offer a server certificate, or certificate chain,
@@ -1214,7 +1217,17 @@ servers, each having a TLSA query-domain CNAME record,
 all of which point to a single TLSA record.
 
 The TLSA record should have a Selector field of SPKI(1)
-and a Matching Type fiels of SHA2-512(2).
+and a Matching Type field of SHA2-512(2).
+
+At the time of writing, https://www.huque.com/bin/gen_tlsa
+is useful for quickly generating TLSA records; and commands like
+
+  openssl x509 -in -pubkey -noout <certificate.pem \
+  | openssl rsa -outform der -pubin 2>/dev/null \
+  | openssl sha512 \
+  | awk '{print $2}'
+
+are workable for 4th-field hashes.
 
 For use with the DANE_TA model, server certificates
 must have a correct name (SubjectName or SubjectAltName).
