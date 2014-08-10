@@ -5,12 +5,12 @@
 DANE                                                         V. Dukhovni
 Internet-Draft                                                 Two Sigma
 Intended status: Standards Track                             W. Hardaker
-Expires: November 26, 2014                                       Parsons
-                                                            May 25, 2014
+Expires: February 3, 2015                                        Parsons
+                                                          August 2, 2014
 
 
                 SMTP security via opportunistic DANE TLS
-                   draft-ietf-dane-smtp-with-dane-10
+                   draft-ietf-dane-smtp-with-dane-11
 
 Abstract
 
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on November 26, 2014.
+   This Internet-Draft will expire on February 3, 2015.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 1]
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 1]
 
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
 
 
    the Trust Legal Provisions and are provided without warranty as
@@ -69,49 +69,49 @@ Table of Contents
      1.3.  SMTP channel security . . . . . . . . . . . . . . . . . .   6
        1.3.1.  STARTTLS downgrade attack . . . . . . . . . . . . . .   6
        1.3.2.  Insecure server name without DNSSEC . . . . . . . . .   7
-       1.3.3.  Sender policy does not scale  . . . . . . . . . . . .   7
+       1.3.3.  Sender policy does not scale  . . . . . . . . . . . .   8
        1.3.4.  Too many certification authorities  . . . . . . . . .   8
-   2.  Identifying applicable TLSA records . . . . . . . . . . . . .   8
-     2.1.  DNS considerations  . . . . . . . . . . . . . . . . . . .   8
-       2.1.1.  DNS errors, bogus and indeterminate responses . . . .   8
+   2.  Identifying applicable TLSA records . . . . . . . . . . . . .   9
+     2.1.  DNS considerations  . . . . . . . . . . . . . . . . . . .   9
+       2.1.1.  DNS errors, bogus and indeterminate responses . . . .   9
        2.1.2.  DNS error handling  . . . . . . . . . . . . . . . . .  11
-       2.1.3.  Stub resolver considerations  . . . . . . . . . . . .  11
-     2.2.  TLS discovery . . . . . . . . . . . . . . . . . . . . . .  12
-       2.2.1.  MX resolution . . . . . . . . . . . . . . . . . . . .  13
+       2.1.3.  Stub resolver considerations  . . . . . . . . . . . .  12
+     2.2.  TLS discovery . . . . . . . . . . . . . . . . . . . . . .  13
+       2.2.1.  MX resolution . . . . . . . . . . . . . . . . . . . .  14
        2.2.2.  Non-MX destinations . . . . . . . . . . . . . . . . .  15
        2.2.3.  TLSA record lookup  . . . . . . . . . . . . . . . . .  17
    3.  DANE authentication . . . . . . . . . . . . . . . . . . . . .  19
      3.1.  TLSA certificate usages . . . . . . . . . . . . . . . . .  19
-       3.1.1.  Certificate usage DANE-EE(3)  . . . . . . . . . . . .  20
-       3.1.2.  Certificate usage DANE-TA(2)  . . . . . . . . . . . .  21
-       3.1.3.  Certificate usages PKIX-TA(0) and PKIX-EE(1)  . . . .  22
-     3.2.  Certificate matching  . . . . . . . . . . . . . . . . . .  23
-       3.2.1.  DANE-EE(3) name checks  . . . . . . . . . . . . . . .  23
-       3.2.2.  DANE-TA(2) name checks  . . . . . . . . . . . . . . .  23
-       3.2.3.  Reference identifier matching . . . . . . . . . . . .  24
-   4.  Server key management . . . . . . . . . . . . . . . . . . . .  25
+       3.1.1.  Certificate usage DANE-EE(3)  . . . . . . . . . . . .  21
+       3.1.2.  Certificate usage DANE-TA(2)  . . . . . . . . . . . .  22
+       3.1.3.  Certificate usages PKIX-TA(0) and PKIX-EE(1)  . . . .  23
+     3.2.  Certificate matching  . . . . . . . . . . . . . . . . . .  24
+       3.2.1.  DANE-EE(3) name checks  . . . . . . . . . . . . . . .  24
+       3.2.2.  DANE-TA(2) name checks  . . . . . . . . . . . . . . .  24
+       3.2.3.  Reference identifier matching . . . . . . . . . . . .  25
+   4.  Server key management . . . . . . . . . . . . . . . . . . . .  26
    5.  Digest algorithm agility  . . . . . . . . . . . . . . . . . .  26
-   6.  Mandatory TLS Security  . . . . . . . . . . . . . . . . . . .  27
-   7.  Note on DANE for Message User Agents  . . . . . . . . . . . .  28
+   6.  Mandatory TLS Security  . . . . . . . . . . . . . . . . . . .  28
+   7.  Note on DANE for Message User Agents  . . . . . . . . . . . .  29
    8.  Interoperability considerations . . . . . . . . . . . . . . .  29
      8.1.  SNI support . . . . . . . . . . . . . . . . . . . . . . .  29
-     8.2.  Anonymous TLS cipher suites . . . . . . . . . . . . . . .  29
+     8.2.  Anonymous TLS cipher suites . . . . . . . . . . . . . . .  30
    9.  Operational Considerations  . . . . . . . . . . . . . . . . .  30
      9.1.  Client Operational Considerations . . . . . . . . . . . .  30
-     9.2.  Publisher Operational Considerations  . . . . . . . . . .  30
+     9.2.  Publisher Operational Considerations  . . . . . . . . . .  31
    10. Security Considerations . . . . . . . . . . . . . . . . . . .  31
-   11. IANA considerations . . . . . . . . . . . . . . . . . . . . .  31
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  31
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  32
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  32
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  33
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  33
+   11. IANA considerations . . . . . . . . . . . . . . . . . . . . .  32
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  32
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  33
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  33
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  34
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  34
 
 
 
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 2]
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 2]
 
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
 
 
 1.  Introduction
@@ -128,10 +128,10 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    This specification uses the presence of DANE TLSA records to securely
    signal TLS support and to publish the means by which SMTP clients can
    successfully authenticate legitimate SMTP servers.  This becomes
-   "opportunistic DANE TLS" and is resistant to downgrade and MITM
-   attacks.  It enables an incremental transition of the email backbone
-   to authenticated TLS delivery, with increased global protection as
-   adoption increases.
+   "opportunistic DANE TLS" and is resistant to downgrade and man-in-
+   the-middle (MITM) attacks.  It enables an incremental transition of
+   the email backbone to authenticated TLS delivery, with increased
+   global protection as adoption increases.
 
    With opportunistic DANE TLS, traffic from SMTP clients to domains
    that publish "usable" DANE TLSA records in accordance with this memo
@@ -165,9 +165,9 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 
 
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 3]
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 3]
 
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
 
 
    secure, bogus, insecure, indeterminate:  DNSSEC validation results,
@@ -177,15 +177,7 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    Security-Aware Stub Resolver:
       Capabilities of the stub resolver in use as defined in [RFC4033];
       note that this specification requires the use of a Security-Aware
-      Stub Resolver; Security-Oblivious stub-resolvers MUST NOT be used.
-
-   opportunistic DANE TLS:  Best-effort use of TLS, resistant to
-      downgrade attacks for destinations with DNSSEC-validated TLSA
-      records.  When opportunistic DANE TLS is determined to be
-      unavailable, clients should fall back to opportunistic TLS below.
-      Opportunistic DANE TLS requires support for DNSSEC, DANE and
-      STARTTLS on the client side and STARTTLS plus a DNSSEC published
-      TLSA record on the server side.
+      Stub Resolver.
 
    (pre-DANE) opportunistic TLS:  Best-effort use of TLS that is
       generally vulnerable to DNS forgery and STARTTLS downgrade
@@ -193,6 +185,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
       available, message transmission takes place in the clear.  MX
       record indirection generally precludes authentication even when
       TLS is available.
+
+   opportunistic DANE TLS:  Best-effort use of TLS, resistant to
+      downgrade attacks for destinations with DNSSEC-validated TLSA
+      records.  When opportunistic DANE TLS is determined to be
+      unavailable, clients should fall back to opportunistic TLS.
+      Opportunistic DANE TLS requires support for DNSSEC, DANE and
+      STARTTLS on the client side and STARTTLS plus a DNSSEC published
+      TLSA record on the server side.
 
    reference identifier:  (Special case of [RFC6125] definition).  One
       of the domain names associated by the SMTP client with the
@@ -212,22 +212,22 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    delayed delivery:  Email delivery is a multi-hop store & forward
       process.  When an MTA is unable forward a message that may become
-      deliverable later, the message is queued and delivery is retried
+      deliverable later the message is queued and delivery is retried
       periodically.  Some MTAs may be configured with a fallback next-
       hop destination that handles messages that the MTA would otherwise
-      queue and retry.  In these cases, messages that would otherwise
-      have to be delayed, may be sent to the fallback next-hop
-      destination instead.  The fallback destination may itself be
+      queue and retry.  When a fallback next-hop is configured, messages
+      that would otherwise have to be delayed may be sent to the
+      fallback next-hop destination instead.  The fallback destination
 
 
 
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 4]
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 4]
 
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
 
 
-      subject to opportunistic or mandatory DANE TLS as though it were
-      the original message destination.
+      may itself be subject to opportunistic or mandatory DANE TLS as
+      though it were the original message destination.
 
    original next hop destination:   The logical destination for mail
       delivery.  By default this is the domain portion of the recipient
@@ -277,9 +277,9 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 
 
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 5]
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 5]
 
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
 
 
 1.3.  SMTP channel security
@@ -307,15 +307,36 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 1.3.1.  STARTTLS downgrade attack
 
    The Simple Mail Transfer Protocol (SMTP) [RFC5321] is a single-hop
-   protocol in a multi-hop store & forward email delivery process.  SMTP
-   envelope recipient addresses are not transport addresses and are
-   security-agnostic.  Unlike the Hypertext Transfer Protocol (HTTP) and
-   its corresponding secured version, HTTPS, where the use of TLS is
-   signaled via the URI scheme, email recipient addresses do not
-   directly signal transport security policy.  Indeed, no such signaling
-   could work well with SMTP since TLS encryption of SMTP protects email
-   traffic on a hop-by-hop basis while email addresses could only
-   express end-to-end policy.
+   protocol in a multi-hop store & forward email delivery process.  An
+   SMTP envelope recipient address does not correspond to a specific
+   transport-layer endpoint address, rather at each relay hop the
+   transport-layer endpoint is the next-hop relay, while the envelope
+   recipient address typically remains the same.  Unlike the Hypertext
+   Transfer Protocol (HTTP) and its corresponding secured version,
+   HTTPS, where the use of TLS is signaled via the URI scheme, email
+   recipient addresses do not directly signal transport security policy.
+   Indeed, no such signaling could work well with SMTP since TLS
+   encryption of SMTP protects email traffic on a hop-by-hop basis while
+   email addresses could only express end-to-end policy.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 6]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    With no mechanism available to signal transport security policy, SMTP
    relays employ a best-effort "opportunistic" security model for TLS.
@@ -330,14 +351,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    security feature, such as the use of PKIX, can prevent this.  The
    attacker can simply disable TLS.
 
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 6]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
 1.3.2.  Insecure server name without DNSSEC
 
    With SMTP, DNS Mail Exchange (MX) records abstract the next-hop
@@ -349,12 +362,13 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    that the server's certificate binds the public key to a name that
    matches one of the client's reference identifiers.  A natural choice
    of reference identifier is the server's domain name.  However, with
-   SMTP, server names are obtained indirectly via MX records.  Without
-   DNSSEC, the MX lookup is vulnerable to MITM and DNS cache poisoning
-   attacks.  Active attackers can forge DNS replies with fake MX records
-   and can redirect email to servers with names of their choice.
-   Therefore, secure verification of SMTP TLS certificates matching the
-   server name is not possible without DNSSEC.
+   SMTP, server names are not directly encoded in the recipient address,
+   instead they are obtained indirectly via MX records.  Without DNSSEC,
+   the MX lookup is vulnerable to MITM and DNS cache poisoning attacks.
+   Active attackers can forge DNS replies with fake MX records and can
+   redirect email to servers with names of their choice.  Therefore,
+   secure verification of SMTP TLS certificates matching the server name
+   is not possible without DNSSEC.
 
    One might try to harden TLS for SMTP against DNS attacks by using the
    envelope recipient domain as a reference identifier and requiring
@@ -373,26 +387,24 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    large-scale deployment of authenticated TLS for SMTP requires that
    the DNS be secure.
 
+
+
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 7]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    Since SMTP security depends critically on DNSSEC, it is important to
    point out that consequently SMTP with DANE is the most conservative
    possible trust model.  It trusts only what must be trusted and no
    more.  Adding any other trusted actors to the mix can only reduce
    SMTP security.  A sender may choose to further harden DNSSEC for
-   selected high-value receiving domains, by configuring explicit trust
+   selected high-value receiving domains by configuring explicit trust
    anchors for those domains instead of relying on the chain of trust
-   from the root domain.  Detailed discussion of DNSSEC security
-   practices is out of scope for this document.
+   from the root domain.  However, detailed discussion of DNSSEC
+   security practices is out of scope for this document.
 
 1.3.3.  Sender policy does not scale
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 7]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
 
    Sending systems are in some cases explicitly configured to use TLS
    for mail sent to selected peer domains.  This requires sending MTAs
@@ -421,10 +433,22 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    trust anchor).  MTAs are not interactive applications where a human
    operator can make a decision (wisely or otherwise) to selectively
    disable TLS security policy when certificate chain verification
-   fails.  With no user to "click OK", the MTAs list of public CA trust
+   fails.  With no user to "click OK", the MTA's list of public CA trust
    anchors would need to be comprehensive in order to avoid bouncing
    mail addressed to sites that employ unknown Certification
    Authorities.
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 8]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    On the other hand, each trusted CA can issue certificates for any
    domain.  If even one of the configured CAs is compromised or operated
@@ -438,21 +462,9 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 2.1.1.  DNS errors, bogus and indeterminate responses
 
-
-
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 8]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    An SMTP client that implements opportunistic DANE TLS per this
    specification depends critically on the integrity of DNSSEC lookups,
-   as discussed in Section 1.3.  This section lists the DNS resolver
+   as discussed in Section 1.3.2.  This section lists the DNS resolver
    requirements needed to avoid downgrade attacks when using
    opportunistic DANE TLS.
 
@@ -475,42 +487,47 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
      There is no trust anchor that would indicate that a specific
      portion of the tree is secure.
 
+   To avoid further confusion, the adjective "anchorless" will be used
+   below to refer to domains or RRsets that are "indeterminate" in the
+   [RFC4033] sense, and the term "indeterminate" will be used
+   exclusively in the sense of [RFC4035].
+
    SMTP clients following this specification SHOULD NOT distinguish
-   between "insecure" and "indeterminate" in the [RFC4033] sense.  Both
-   "insecure" and RFC4033 "indeterminate" are handled identically: in
-   either case unvalidated data for the query domain is all that is and
-   can be available, and authentication using the data is impossible.
-   In what follows, when we say "insecure", we include also DNS results
-   for domains that lie in a portion of the DNS tree for which there is
-   no applicable trust anchor.  With the DNS root zone signed, we expect
-   that validating resolvers used by Internet-facing MTAs will be
-   configured with trust anchor data for the root zone.  Therefore,
-   RFC4033-style "indeterminate" domains should be rare in practice.
-   From here on, when we say "indeterminate", it is exclusively in the
-   sense of [RFC4035].
+   between "insecure" and "anchorless" DNS responses.  Both "insecure"
+   and "anchorless" RRsets MUST be handled identically: in either case
+   unvalidated data for the query domain is all that is and can be
+   available, and authentication using the data is impossible.  In what
+   follows, the term "insecure" will also includes the case of
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015                [Page 9]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
+   "anchorless" domains that lie in a portion of the DNS tree for which
+   there is no applicable trust anchor.  With the DNS root zone signed,
+   we expect that validating resolvers used by Internet-facing MTAs will
+   be configured with trust anchor data for the root zone, and that
+   therefore "anchorless" domains should be rare in practice.
 
    As noted in section 4.3 of [RFC4035], a security-aware DNS resolver
    MUST be able to determine whether a given non-error DNS response is
    "secure", "insecure", "bogus" or "indeterminate".  It is expected
    that most security-aware stub resolvers will not signal an
-   "indeterminate" security status in the RFC4035-sense to the
+   "indeterminate" security status (in the sense of RFC4035) to the
    application, and will signal a "bogus" or error result instead.  If a
    resolver does signal an RFC4035 "indeterminate" security status, this
    MUST be treated by the SMTP client as though a "bogus" or error
    result had been returned.
 
-
-
-Dukhovni & Hardaker     Expires November 26, 2014               [Page 9]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    An MTA making use of a non-validating security-aware stub resolver
    MAY use the stub resolver's ability, if available, to signal DNSSEC
    validation status based on information the stub resolver has learned
-   from an upstream validating recursive resolver.  In accordance with
-   section 4.9.3 of [RFC4035]:
+   from an upstream validating recursive resolver.  Security-Oblivious
+   stub-resolvers MUST NOT be used.  In accordance with section 4.9.3 of
+   [RFC4035]:
 
      ... a security-aware stub resolver MUST NOT place any reliance on
      signature validation allegedly performed on its behalf, except
@@ -536,6 +553,15 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    has not been left without an answer; it has learned that records of
    the requested type do not exist.
 
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 10]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    Security-aware stub resolvers will, of course, also signal DNS lookup
    errors in other cases, for example when processing a "ServFail"
    RCODE, which will not have an associated DNSSEC status.  All lookup
@@ -553,14 +579,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    Insecure results will leave the SMTP client with degraded channel
    security, but do not stand in the way of message delivery.  See
    section Section 2.2 for further details.
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 10]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
 
 2.1.2.  DNS error handling
 
@@ -591,16 +609,28 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    clients MUST NOT continue to connect to an SMTP server or destination
    whose TLSA record lookup fails.
 
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 11]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
 2.1.3.  Stub resolver considerations
 
+   SMTP clients that employ opportunistic DANE TLS to secure connections
+   to SMTP servers MUST NOT use Security-Oblivious stub-resolvers.
+
    A note about DNAME aliases: a query for a domain name whose ancestor
-   domain is a DNAME alias returns the DNAME RR for the ancestor domain,
+   domain is a DNAME alias returns the DNAME RR for the ancestor domain
    along with a CNAME that maps the query domain to the corresponding
    sub-domain of the target domain of the DNAME alias [RFC6672].
    Therefore, whenever we speak of CNAME aliases, we implicitly allow
    for the possibility that the alias in question is the result of an
    ancestor domain DNAME record.  Consequently, no explicit support for
-   DNAME records is needed in SMTP software, it is sufficient to process
+   DNAME records is needed in SMTP software; it is sufficient to process
    the resulting CNAME aliases.  DNAME records only require special
    processing in the validating stub-resolver library that checks the
    integrity of the combined DNAME + CNAME reply.  When DNSSEC
@@ -610,14 +640,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    When a stub resolver returns a response containing a CNAME alias that
    does not also contain the corresponding query results for the target
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 11]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    of the alias, the SMTP client will need to repeat the query at the
    target of the alias, and should do so recursively up to some
    configured or implementation-dependent recursion limit.  If at any
@@ -631,18 +653,27 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    final result) MUST be considered "insecure" regardless of whether any
    earlier CNAME records leading to the "insecure" record were "secure".
 
-   Note, a security-aware non-validating stub resolver may return to the
-   SMTP client an "insecure" reply received from a validating recursive
-   resolver that contains a CNAME record along with additional answers
-   recursively obtained starting at the target of the CNAME.  In this
-   all that one can say is that some record in the set of records
-   returned is "insecure", but it is possible that the initial CNAME
-   record and a subset of the subsequent records are "secure".
+   Note that a security-aware non-validating stub resolver may return to
+   the SMTP client an "insecure" reply received from a validating
+   recursive resolver that contains a CNAME record along with additional
+   answers recursively obtained starting at the target of the CNAME.  In
+   this case, the only possible conclusion is that some record in the
+   set of records returned is "insecure", and it is in fact possible
+   that the initial CNAME record and a subset of the subsequent records
+   are "secure".
 
    If the SMTP client needs to determine the security status of the DNS
-   zone containing the initial CNAME record, it may need to issue an a
+   zone containing the initial CNAME record, it may need to issue a
    separate query of type "CNAME" that returns only the initial CNAME
    record.  In particular in Section 2.2.2 when insecure A or AAAA
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 12]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    records are found for an SMTP server via a CNAME alias, it may be
    necessary to perform an additional CNAME query to determine whether
    the DNS zone in which the alias is published is signed.
@@ -665,22 +696,13 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    context is in the sense of Section 4.1 of [RFC6698].  Specifically,
    if the DNS lookup for a TLSA record returns:
 
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 12]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    A secure TLSA RRset with at least one usable record:  A connection to
       the MTA MUST be made using authenticated and encrypted TLS, using
       the techniques discussed in the rest of this document.  Failure to
       establish an authenticated TLS connection MUST result in falling
       back to the next SMTP server or delayed delivery.
 
-   A Secure non-empty TLSA RRset where all the records are unusable:  A
+   A secure non-empty TLSA RRset where all the records are unusable:  A
       connection to the MTA MUST be made via TLS, but authentication is
       not required.  Failure to establish an encrypted TLS connection
       MUST result in falling back to the next SMTP server or delayed
@@ -700,6 +722,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    An SMTP client MAY be configured to require DANE verified delivery
    for some destinations.  We will call such a configuration "mandatory
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 13]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    DANE TLS".  With mandatory DANE TLS, delivery proceeds only when
    "secure" TLSA records are used to establish an encrypted and
    authenticated TLS channel with the SMTP server.
@@ -708,8 +738,9 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    than a DNS domain, DANE TLS does not apply.  Delivery proceeds using
    any relevant security policy configured by the MTA administrator.
    Similarly, when an MX RRset incorrectly lists a network address in
-   lieu of an MX hostname, if the MTA chooses to connect to the network
-   address DANE TLSA does not apply for such a connection.
+   lieu of an MX hostname, if an MTA chooses to connect to the network
+   address in the non-conformat MX record, DANE TLSA does not apply for
+   such a connection.
 
    In the subsections that follow we explain how to locate the SMTP
    servers and the associated TLSA records for a given next-hop
@@ -722,14 +753,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    resolution and have MX records.  The TLSA records and the associated
    base domain are derived separately for each MX hostname that is used
    to attempt message delivery.  DANE TLS can authenticate message
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 13]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    delivery to the intended next-hop domain only when the MX records are
    obtained securely via a DNSSEC validated lookup.
 
@@ -749,11 +772,20 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    results in a CNAME alias, the MTA replaces the initial name with the
    resulting name and performs a new lookup with the new name.  MTAs
    typically support recursion in CNAME expansion, so this replacement
-   is performed repeatedly until the ultimate non-CNAME domain is found.
+   is performed repeatedly (up to the MTA's recursion limit) until the
+   ultimate non-CNAME domain is found.
 
    If the MX RRset (or any CNAME leading to it) is "insecure" (see
    Section 2.1.1), DANE TLS need not apply, and delivery MAY proceed via
    pre-DANE opportunistic TLS.  That said, the protocol in this memo is
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 14]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    an "opportunistic security" protocol, meaning that it strives to
    communicate with each peer as securely as possible, while maintaining
    broad interoperability.  Therefore, the SMTP client MAY proceed to
@@ -776,15 +808,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    intended next-hop domain.  When DANE TLS is mandatory (Section 6) for
    a given destination, delivery MUST be delayed when the MX RRset is
    not "secure".
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 14]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
 
    Otherwise, assuming no DNS errors (Section 2.1.1), the MX RRset is
    "secure", and the SMTP client MUST treat each MX hostname as a
@@ -812,6 +835,13 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
       resolution.  This frequently involves configuration set by the MTA
       administrator to handle some or all mail.
 
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 15]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    o  A next-hop destination domain subject to MX resolution that has no
       MX records.  In this case the domain's name is implicitly also its
       sole SMTP server name.
@@ -834,14 +864,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    If no address records are found, the destination is unreachable.  If
    address records are found, but the DNSSEC validation status of the
    first query response is "insecure" (see Section 2.1.3), the SMTP
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 15]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    client SHOULD NOT proceed to search for any associated TLSA records.
    With the problem domains, TLSA queries will lead to DNS lookup errors
    and cause messages to be consistently delayed and ultimately returned
@@ -853,7 +875,7 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    If the A and/or AAAA lookup of the "initial name" yields a CNAME, we
    replace it with the resulting name as if it were the initial name and
    perform a lookup again using the new name.  This replacement is
-   performed recursively.
+   performed recursively (up to the MTA's recursion limit).
 
    We consider the following cases for handling a DNS response for an A
    or AAAA DNS lookup:
@@ -861,6 +883,20 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    Not found:   When the DNS queries for A and/or AAAA records yield
       neither a list of addresses nor a CNAME (or CNAME expansion is not
       supported) the destination is unreachable.
+
+
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 16]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    Non-CNAME:   The answer is not a CNAME alias.  If the address RRset
       is "secure", TLSA lookups are performed as described in
@@ -881,22 +917,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
       network address RRset is "secure" (see Section 2.1.1).  Two
       candidate TLSA base domains are tried: the fully CNAME-expanded
       initial name and, failing that, then the initial name itself.
-
-
-
-
-
-
-
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 16]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
 
    In summary, if it is possible to securely obtain the full, CNAME-
    expanded, DNSSEC-validated address records for the input domain, then
@@ -925,13 +945,22 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    _25._tcp.mx.example.com. IN TLSA ?
 
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 17]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    The query response may be a CNAME, or the actual TLSA RRset.  If the
    response is a CNAME, the SMTP client (through the use of its
    security-aware stub resolver) restarts the TLSA query at the target
    domain, following CNAMEs as appropriate and keeping track of whether
    the entire chain is "secure".  If any "insecure" records are
    encountered, or the TLSA records don't exist, the next candidate TLSA
-   base is tried instead.
+   base domain is tried instead.
 
    If the ultimate response is a "secure" TLSA RRset, then the candidate
    TLSA base domain will be the actual TLSA base domain and the TLSA
@@ -946,14 +975,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    TLSA record publishers may leverage CNAMEs to reference a single
    authoritative TLSA RRset specifying a common Certification Authority
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 17]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    or a common end entity certificate to be used with multiple TLS
    services.  Such CNAME expansion does not change the SMTP client's
    notion of the TLSA base domain; thus, when _25._tcp.mx.example.com is
@@ -961,24 +982,34 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    reference identifier used together with the next-hop domain in peer
    certificate name checks.
 
-   Note, shared end entity certificate associations expose the
+   Note that shared end entity certificate associations expose the
    publishing domain to substitution attacks, where an MITM attacker can
    reroute traffic to a different server that shares the same end entity
-   certificate.  Such shared end entity records SHOULD be avoided unless
-   the servers in question are functionally equivalent (an active
-   attacker gains nothing by diverting client traffic from one such
-   server to another).
+   certificate.  Such shared end entity TLSA records SHOULD be avoided
+   unless the servers in question are functionally equivalent or employ
+   mutually incompatible protocols (an active attacker gains nothing by
+   diverting client traffic from one such server to another).
 
-   For example, given the DNSSEC validated records below:
+   A better example, employing a shared trust anchor rather than shared
+   end-entity certificates, is illustrated by the DNSSEC validated
+   records below:
 
      example.com.                IN MX 0 mx1.example.com.
      example.com.                IN MX 0 mx2.example.com.
-     _25._tcp.mx1.example.com.   IN CNAME tlsa211._dane.example.com.
-     _25._tcp.mx2.example.com.   IN CNAME tlsa211._dane.example.com.
-     tlsa211._dane.example.com.  IN TLSA 2 1 1 e3b0c44298fc1c149a...
+     _25._tcp.mx1.example.com.   IN CNAME tlsa201._dane.example.com.
+     _25._tcp.mx2.example.com.   IN CNAME tlsa201._dane.example.com.
+     tlsa201._dane.example.com.  IN TLSA 2 0 1 e3b0c44298fc1c149a...
 
    The SMTP servers mx1.example.com and mx2.example.com will be expected
    to have certificates issued under a common trust anchor, but each MX
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 18]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    hostname's TLSA base domain remains unchanged despite the above CNAME
    records.  Correspondingly, each SMTP server will be associated with a
    pair of reference identifiers consisting of its hostname plus the
@@ -1002,14 +1033,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    arise during CNAME expansion that are neither the original, nor the
    final name, are never candidate TLSA base domains, even if "secure".
 
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 18]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
 3.  DANE authentication
 
    This section describes which TLSA records are applicable to SMTP
@@ -1026,25 +1049,38 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    The DANE TLSA specification [RFC6698] defines multiple TLSA RR types
    via combinations of 3 numeric parameters.  The numeric values of
-   these parameters were later given symbolic names in
-   [I-D.ietf-dane-registry-acronyms].  The rest of the TLSA record is
-   the "certificate association data field", which specifies the full or
-   digest value of a certificate or public key.  The parameters are:
+   these parameters were later given symbolic names in [RFC7218].  The
+   rest of the TLSA record is the "certificate association data field",
+   which specifies the full or digest value of a certificate or public
+   key.  The parameters are:
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 19]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    The TLSA Certificate Usage field:  Section 2.1.1 of [RFC6698]
-      specifies 4 values: PKIX-TA(0), PKIX-EE(1), DANE-TA(2), and DANE-
-      EE(3).  There is an additional private-use value: PrivCert(255).
-      All other values are reserved for use by future specifications.
+      specifies four values: PKIX-TA(0), PKIX-EE(1), DANE-TA(2), and
+      DANE-EE(3).  There is an additional private-use value:
+      PrivCert(255).  All other values are reserved for use by future
+      specifications.
 
-   The selector field:  Section 2.1.2 of [RFC6698] specifies 2 values:
-      Cert(0), SPKI(1).  There is an additional private-use value:
+   The selector field:  Section 2.1.2 of [RFC6698] specifies two values:
+      Cert(0) and SPKI(1).  There is an additional private-use value:
       PrivSel(255).  All other values are reserved for use by future
       specifications.
 
-   The matching type field:  Section 2.1.3 of [RFC6698] specifies 3
-      values: Full(0), SHA2-256(1), SHA2-512(2).  There is an additional
-      private-use value: PrivMatch(255).  All other values are reserved
-      for use by future specifications.
+   The matching type field:  Section 2.1.3 of [RFC6698] specifies three
+      values: Full(0), SHA2-256(1) and SHA2-512(2).  There is an
+      additional private-use value: PrivMatch(255).  All other values
+      are reserved for use by future specifications.
 
    We may think of TLSA Certificate Usage values 0 through 3 as a
    combination of two one-bit flags.  The low bit chooses between trust
@@ -1053,19 +1089,11 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    The selector field specifies whether the TLSA RR matches the whole
    certificate: Cert(0), or just its subjectPublicKeyInfo: SPKI(1).  The
-   subjectPublicKeyInfo is an ASN.1 DER encoding of the certificate's
-   algorithm id, any parameters and the public key data.
+   subjectPublicKeyInfo is an ASN.1 DER ([X.690]) encoding of the
+   certificate's algorithm id, any parameters and the public key data.
 
    The matching type field specifies how the TLSA RR Certificate
    Association Data field is to be compared with the certificate or
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 19]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    public key.  A value of Full(0) means an exact match: the full DER
    encoding of the certificate or public key is given in the TLSA RR.  A
    value of SHA2-256(1) means that the association data matches the
@@ -1079,6 +1107,20 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    to interoperability or operational problems.  Because DANE TLS relies
    on coordinated changes to DNS and SMTP server settings, the best
    choice of records to publish will depend on site-specific practices.
+
+
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 20]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    The certificate usage element of a TLSA record plays a critical role
    in determining how the corresponding certificate association data
@@ -1114,14 +1156,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    MUST be considered authenticated even if none of the names in the
    certificate match the client's reference identity for the server.
 
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 20]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    Similarly, the expiration date of the server certificate MUST be
    ignored, the validity period of the TLSA record key binding is
    determined by the validity interval of the TLSA record DNSSEC
@@ -1134,6 +1168,15 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    match the server's default certificate.  Of course with SMTP servers
    it is simpler still to publish the same MX hostname for all the
    hosted domains.
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 21]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    For domains where it is practical to make coordinated changes in DNS
    TLSA records during SMTP server key rotation, it is often best to
@@ -1163,20 +1206,9 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
      example.com.                IN MX 0 mx1.example.com.
      example.com.                IN MX 0 mx2.example.com.
-     _25._tcp.mx1.example.com.   IN CNAME tlsa211._dane.example.com.
-     _25._tcp.mx2.example.com.   IN CNAME tlsa211._dane.example.com.
-     tlsa211._dane.example.com.  IN TLSA 2 1 1 e3b0c44298fc1c14....
-
-
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 21]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
+     _25._tcp.mx1.example.com.   IN CNAME tlsa201._dane.example.com.
+     _25._tcp.mx2.example.com.   IN CNAME tlsa201._dane.example.com.
+     tlsa201._dane.example.com.  IN TLSA 2 0 1 e3b0c44298fc1c14....
 
    With usage DANE-TA(2) the server certificates will need to have names
    that match one of the client's reference identifiers (see [RFC6125]).
@@ -1194,6 +1226,13 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    happens to be a public Certification Authority known to the SMTP
    client, authentication is likely to fail unless the TA certificate is
    included in the TLS server certificate message.
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 22]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    TLSA records with selector Full(0) are discouraged.  While these
    potentially obviate the need to transmit the TA certificate in the
@@ -1226,14 +1265,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    DNSSEC for secure MX records and DANE for STARTTLS support signaling,
    perform server identity verification or prevent STARTTLS downgrade
    attacks.  The use of PKIX CAs offers no added security since an
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 22]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    attacker capable of compromising DNSSEC is free to replace any PKIX-
    TA(0) or PKIX-EE(1) TLSA records with records bearing any convenient
    non-PKIX certificate usage.
@@ -1252,6 +1283,13 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    PKIX certificate usages cannot aid SMTP TLS security, they can only
    impede SMTP TLS interoperability.
 
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 23]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    SMTP client treatment of TLSA RRs with certificate usages PKIX-TA(0)
    or PKIX-EE(1) is undefined.  SMTP clients should generally treat such
    TLSA records as unusable.
@@ -1266,7 +1304,7 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 3.2.1.  DANE-EE(3) name checks
 
    The SMTP client MUST NOT perform certificate name checks with
-   certificate usage DANE-EE(3), see Section 3.1.1 above.
+   certificate usage DANE-EE(3); see Section 3.1.1 above.
 
 3.2.2.  DANE-TA(2) name checks
 
@@ -1282,14 +1320,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
       the MX lookup MUST be included as as a second reference
       identifier.  The CNAME-expanded original next-hop domain MUST be
       included as a third reference identifier if different from the
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 23]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
       original next-hop domain.  When the client MTA is employing DANE
       TLS security despite "insecure" MX redirection the MX hostname is
       the only reference identifier.
@@ -1306,6 +1336,15 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    interoperability with pre-DANE SMTP clients that are configured to
    look for the email domain name in server certificates.  For example,
    with "secure" DNS records as below:
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 24]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
      exchange.example.org.            IN CNAME mail.example.org.
      mail.example.org.                IN CNAME example.com.
@@ -1338,14 +1377,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 3.2.3.  Reference identifier matching
 
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 24]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    When name checks are applicable (certificate usage DANE-TA(2)), if
    the server certificate contains a Subject Alternative Name extension
    ([RFC5280]), with at least one DNS-ID ([RFC6125]) then only the DNS-
@@ -1363,6 +1394,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    remaining labels matching verbatim.  For example, the DNS-ID
    "*.example.com" matches the reference identifier "mx1.example.com".
    SMTP clients MAY, subject to local policy allow wildcards to match
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 25]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    multiple reference identifier labels, but servers cannot expect broad
    support for such a policy.  Therefore any wildcards in server
    certificates SHOULD match exactly one label in either the TLSA base
@@ -1394,14 +1433,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    the previous trust anchor have expired, its associated RRs can be
    removed from the TLSA RRset.
 
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 25]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    In the DANE-TA(2) key management model server operators do not
    generally need to update DNS TLSA records after initially creating a
    CNAME record that references the centrally operated DANE-TA(2) RRset.
@@ -1419,6 +1450,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    specify a protocol by which the SMTP client and TLSA record publisher
    can agree on the strongest shared algorithm.  Such a protocol would
    allow the client and server to avoid exposure to any deprecated
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 26]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    weaker algorithms that are published for compatibility with less
    capable clients, but should be ignored when possible.  We specify
    such a protocol below.
@@ -1450,14 +1489,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    clients can simply ignore all digest records except those that employ
    the strongest digest algorithm.  The ordering of digest algorithms by
    strength is not specified in advance, it is entirely up to the SMTP
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 26]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    client.  SMTP client implementations SHOULD make the digest algorithm
    preference order configurable.  Only the future will tell which
    algorithms might be weakened by new attacks and when.
@@ -1467,6 +1498,21 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    digest algorithm agility.  They neither trump the processing of
    records that employ digests, nor are they ignored in the presence of
    any records with a digest (i.e. non-zero) matching type.
+
+
+
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 27]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    SMTP clients SHOULD use digest algorithm agility when processing the
    DANE TLSA records of an SMTP server.  Algorithm agility is to be
@@ -1505,15 +1551,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 6.  Mandatory TLS Security
 
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 27]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    An MTA implementing this protocol may require a stronger security
    assurance when sending email to selected destinations.  The sending
    organization may need to send sensitive email and/or may have
@@ -1525,6 +1562,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    MX hostnames, a sending MTA can be configured to use the receiving
    domains's DANE TLSA records to authenticate the corresponding SMTP
    server.  Authentication via DANE TLSA records is easier to manage, as
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 28]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    changes in the receiver's expected certificate properties are made on
    the receiver end and don't require manually communicated
    configuration changes.  With mandatory DANE TLS, when no usable TLSA
@@ -1557,19 +1602,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    is left to future documents that focus specifically on SMTP security
    between MUAs and MSAs.
 
-
-
-
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 28]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
 8.  Interoperability considerations
 
 8.1.  SNI support
@@ -1586,6 +1618,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    Each SMTP server MUST present a certificate chain (see [RFC5246]
    Section 7.4.2) that matches at least one of the TLSA records.  The
    server MAY rely on SNI to determine which certificate chain to
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 29]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    present to the client.  Clients that don't send SNI information may
    not see the expected certificate chain.
 
@@ -1617,15 +1657,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    a mutually supported non-anonymous cipher suite or by correctly
    handling client connections that negotiate anonymous cipher suites.
 
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 29]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    Note that while SMTP server operators are under no obligation to
    enable anonymous cipher suites, no security is gained by sending
    certificates to clients that will ignore them.  Indeed support for
@@ -1643,6 +1674,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    failure to deliver time-sensitive email.  The sending MTA
    administrator may have to choose between letting email queue until
    the error is resolved and disabling opportunistic or mandatory DANE
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 30]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    TLS for one or more destinations.  The choice to disable DANE TLS
    security should not be made lightly.  Every reasonable effort should
    be made to determine that problems with mail delivery are the result
@@ -1670,17 +1709,10 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    chain, even when that TA certificate is a self-signed root
    certificate.
 
-   TLSA Publishers must follow the digest agility guidelines in
-   Section 5 and must make sure that all objects published in digest
+   TLSA Publishers MUST follow the digest agility guidelines in
+   Section 5 and MUST make sure that all objects published in digest
    form for a particular usage and selector are published with the same
    set of digest algorithms.
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 30]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
 
    TLSA Publishers should follow the TLSA publication size guidance
    found in [I-D.ietf-dane-ops] about "DANE DNS Record Size Guidelines".
@@ -1688,10 +1720,23 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 10.  Security Considerations
 
    This protocol leverages DANE TLSA records to implement MITM resistant
-   opportunistic channel security for SMTP.  For destination domains
-   that sign their MX records and publish signed TLSA records for their
-   MX hostnames, this protocol allows sending MTAs to securely discover
-   both the availability of TLS and how to authenticate the destination.
+   opportunistic security ([I-D.dukhovni-opportunistic-security]) for
+   SMTP.  For destination domains that sign their MX records and publish
+   signed TLSA records for their MX hostnames, this protocol allows
+   sending MTAs to securely discover both the availability of TLS and
+   how to authenticate the destination.
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 31]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    This protocol does not aim to secure all SMTP traffic, as that is not
    practical until DNSSEC and DANE adoption are universal.  The
@@ -1730,14 +1775,6 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
    The authors would like to extend great thanks to Tony Finch, who
    started the original version of a DANE SMTP document.  His work is
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 31]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    greatly appreciated and has been incorporated into this document.
    The authors would like to additionally thank Phil Pennock for his
    comments and advice on this document.
@@ -1748,6 +1785,14 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
    valuable review comments.  Thanks also to Wietse Venema who created
    Postfix, and whose advice and feedback were essential to the
    development of the Postfix DANE implementation.
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 32]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
 13.  References
 
@@ -1787,18 +1832,23 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
               Infrastructure Certificate and Certificate Revocation List
               (CRL) Profile", RFC 5280, May 2008.
 
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 32]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
-
-
    [RFC5321]  Klensin, J., "Simple Mail Transfer Protocol", RFC 5321,
               October 2008.
 
    [RFC6066]  Eastlake, D., "Transport Layer Security (TLS) Extensions:
               Extension Definitions", RFC 6066, January 2011.
+
+
+
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 33]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
 
    [RFC6125]  Saint-Andre, P. and J. Hodges, "Representation and
               Verification of Domain-Based Application Service Identity
@@ -1816,12 +1866,22 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
               of Named Entities (DANE) Transport Layer Security (TLS)
               Protocol: TLSA", RFC 6698, August 2012.
 
+   [RFC7218]  Gudmundsson, O., "Adding Acronyms to Simplify
+              Conversations about DNS-Based Authentication of Named
+              Entities (DANE)", RFC 7218, April 2014.
+
+   [X.690]    International Telecommunications Union, "Recommendation
+              ITU-T X.690 (2002) | ISO/IEC 8825-1:2002, Information
+              technology - ASN.1 encoding rules: Specification of Basic
+              Encoding Rules (BER), Canonical Encoding Rules (CER) and
+              Distinguished Encoding Rules (DER)", July 2002.
+
 13.2.  Informative References
 
-   [I-D.ietf-dane-registry-acronyms]
-              Gudmundsson, O., "Adding acronyms to simplify DANE
-              conversations", draft-ietf-dane-registry-acronyms-01 (work
-              in progress), October 2013.
+   [I-D.dukhovni-opportunistic-security]
+              Dukhovni, V., "Opportunistic Security: some protection
+              most of the time", draft-dukhovni-opportunistic-
+              security-01 (work in progress), July 2014.
 
    [I-D.ietf-dane-srv]
               Finch, T., "Using DNS-Based Authentication of Named
@@ -1836,18 +1896,20 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 Authors' Addresses
 
+
+
+
+
+
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 34]
+
+Internet-Draft  SMTP security via opportunistic DANE TLS     August 2014
+
+
    Viktor Dukhovni
    Two Sigma
 
    Email: ietf-dane@dukhovni.org
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 33]
-
-Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 
    Wes Hardaker
@@ -1895,10 +1957,4 @@ Internet-Draft  SMTP security via opportunistic DANE TLS        May 2014
 
 
 
-
-
-
-
-
-
-Dukhovni & Hardaker     Expires November 26, 2014              [Page 34]
+Dukhovni & Hardaker     Expires February 3, 2015               [Page 35]
