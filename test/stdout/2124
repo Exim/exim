@@ -22,7 +22,6 @@ Key file = aux-fixed/cert2
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A

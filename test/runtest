@@ -560,7 +560,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\buid=$parm_caller_uid\b/uid=CALLER_UID/g;
   s/\bgid=$parm_caller_gid\b/gid=CALLER_GID/g;
 
-  s/\bname=$parm_caller_gecos\b/name=CALLER_GECOS/g;
+  s/\bname="?$parm_caller_gecos"?/name=CALLER_GECOS/g;
 
   # When looking at spool files with -Mvh, we will find not only the caller
   # login, but also the uid and gid. It seems that $) in some Perls gives all
@@ -833,6 +833,11 @@ RESET_AFTER_EXTRA_LINE_READ:
         next;
         }
       }
+
+    # openssl version variances
+    next if /^SSL info: unknown state/;
+    next if /^SSL info: SSLv2\/v3 write client hello A/;
+
     }
 
   # ======== stderr ========

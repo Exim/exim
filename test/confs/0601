@@ -4,17 +4,12 @@
 exim_path = EXIM_PATH
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
+queue_only
 
 # ----- Main settings -----
 
-acl_smtp_connect = check
+acl_smtp_connect = accept udpsend = <; 127.0.0.1 ; 1223 ; message from exim
+acl_smtp_rcpt = accept
 
-
-# ----- ACL -----
-
-begin acl
-
-check:
-  warn	udpsend = <; 127.0.0.1 ; 1223 ; message from exim
 
 # End
