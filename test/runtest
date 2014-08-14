@@ -3358,9 +3358,20 @@ foreach $test (@test_list)
   undef %expected_msglogs;
 
   # Open the test's script
-
   open(SCRIPT, "scripts/$test") ||
     tests_exit(-1, "Failed to open \"scripts/$test\": $!");
+  # Run through the script once to set variables which should be global
+  while (<SCRIPT>)
+    {
+    if (/^no_message_check/) { $message_skip = 1; next; }
+    if (/^no_msglog_check/)  { $msglog_skip = 1; next; }
+    if (/^no_stderr_check/)  { $stderr_skip = 1; next; }
+    if (/^no_stdout_check/)  { $stdout_skip = 1; next; }
+    if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
+    if (/^sortlog/)          { $sortlog = 1; next; }
+    }
+  # Reset to beginning of file for per test interpreting/processing
+  seek(SCRIPT, 0, 0);
 
   # The first line in the script must be a comment that is used to identify
   # the set of tests as a whole.
@@ -3383,6 +3394,8 @@ foreach $test (@test_list)
     while (<SCRIPT>)
       {
       $lineno++;
+      # Could remove these variable settings because they are already
+      # set above, but doesn't hurt to leave them here.
       if (/^no_message_check/) { $message_skip = 1; next; }
       if (/^no_msglog_check/)  { $msglog_skip = 1; next; }
       if (/^no_stderr_check/)  { $stderr_skip = 1; next; }

@@ -2,6 +2,17 @@ Change log file for Exim from version 4.21
 -------------------------------------------
 
 
+Exim version 4.85
+-----------------
+TL/01 When running the test suite, the README says that variables such as
+      no_msglog_check are global and can be placed anywhere in a specific
+      test's script, however it was observed that placement needed to be near
+      the beginning for it to behave that way. Changed the runtest perl
+      script to read through the entire script once to detect and set these
+      variables, reset to the beginning of the script, and then run through
+      the script parsing/test process like normal.
+
+
 Exim version 4.84
 -----------------
 TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static
