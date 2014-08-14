@@ -913,7 +913,9 @@ vaguely_random_number(int max)
 #ifdef HAVE_ARC4RANDOM
       /* cryptographically strong randomness, common on *BSD platforms, not
       so much elsewhere.  Alas. */
+#ifndef NOT_HAVE_ARC4RANDOM_STIR
       arc4random_stir();
+#endif
 #elif defined(HAVE_SRANDOM) || defined(HAVE_SRANDOMDEV)
 #ifdef HAVE_SRANDOMDEV
       /* uses random(4) for seeding */
