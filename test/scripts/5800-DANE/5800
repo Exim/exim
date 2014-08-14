@@ -6,7 +6,7 @@
 
 exim -be
 
-dnslookup tpda: ${lookup dnsdb {tlsa=_1225._tcp.dane512ee.test.ex} \
+dnslookup tlsa: ${lookup dnsdb {tlsa=_1225._tcp.dane512ee.test.ex} \
                         {$value}{none}}
 
 ****
