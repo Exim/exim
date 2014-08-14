@@ -5556,12 +5556,10 @@ unreachable.
 
 The next two lines are concerned with &'ident'& callbacks, as defined by RFC
 1413 (hence their names):
-.new
 .code
 rfc1413_hosts = *
 rfc1413_query_timeout = 0s
 .endd
-.wen
 These settings cause Exim to avoid ident callbacks for all incoming SMTP calls.
 Few hosts offer RFC1413 service these days; calls have to be
 terminated by a timeout and this needlessly delays the startup
@@ -10999,12 +10997,10 @@ precedes the expansion of the string. For example, the commands available in
 Exim filter files include an &%if%& command with its own regular expression
 matching condition.
 
-.new
 .vitem "&$acl_arg1$&, &$acl_arg2$&, etc"
 Within an acl condition, expansion condition or expansion item
 any arguments are copied to these variables,
 any unused variables being made empty.
-.wen
 
 .vitem "&$acl_c...$&"
 Values can be placed in these variables by the &%set%& modifier in an ACL. They
@@ -11027,11 +11023,9 @@ message is received, the values of these variables are saved with the message,
 and can be accessed by filters, routers, and transports during subsequent
 delivery.
 
-.new
 .vitem &$acl_narg$&
 Within an acl condition, expansion condition or expansion item
 this variable has the number of arguments.
-.wen
 
 .vitem &$acl_verify_message$&
 .vindex "&$acl_verify_message$&"
@@ -12423,7 +12417,6 @@ and then set to the outgoing cipher suite if one is negotiated. See chapter
 &<<CHAPTLS>>& for details of TLS support and chapter &<<CHAPsmtptrans>>& for
 details of the &(smtp)& transport.
 
-.new
 .vitem &$tls_in_ocsp$&
 .vindex "&$tls_in_ocsp$&"
 When a message is received from a remote client connection
@@ -12441,7 +12434,6 @@ the result of any OCSP request from the client is encoded in this variable:
 When a message is sent to a remote host connection
 the result of any OCSP request made is encoded in this variable.
 See &$tls_in_ocsp$& for values.
-.wen
 
 .vitem &$tls_in_peerdn$&
 .vindex "&$tls_in_peerdn$&"
@@ -25398,9 +25390,7 @@ but it is present in many binary distributions.
 .scindex IIDdcotauth2 "authenticators" "&(dovecot)&"
 This authenticator is an interface to the authentication facility of the
 Dovecot POP/IMAP server, which can support a number of authentication methods.
-.new
 Note that Dovecot must be configured to use auth-client not auth-userdb.
-.wen
 If you are using Dovecot to authenticate POP/IMAP clients, it might be helpful
 to use the same mechanisms for SMTP authentication. This is a server
 authenticator only. There is only one option:
@@ -26269,9 +26259,7 @@ file named by &%tls_ocsp_file%&.
 Note that the proof only covers the terminal server certificate,
 not any of the chain from CA to it.
 
-.new
 There is no current way to staple a proof for a client certificate.
-.wen
 
 .code
   A helper script "ocsp_fetch.pl" for fetching a proof from a CA
