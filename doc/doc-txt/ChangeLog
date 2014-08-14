@@ -12,6 +12,11 @@ TL/01 When running the test suite, the README says that variables such as
       variables, reset to the beginning of the script, and then run through
       the script parsing/test process like normal.
 
+TL/02 The BSD's have an arc4random API. One of the functions to induce
+      adding randomness was arc4random_stir(), but it has been removed in
+      OpenBSD 5.5. Detect this OpenBSD version and skip calling this
+      function when detected.
+
 
 Exim version 4.84
 -----------------
