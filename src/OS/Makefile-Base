@@ -541,7 +541,6 @@ acl.o:           $(HDRS) acl.c
 child.o:         $(HDRS) child.c
 crypt16.o:       $(HDRS) crypt16.c
 daemon.o:        $(HDRS) daemon.c
-dane.o:          $(HDRS) dane.c dane-gnu.c dane-openssl.c
 dbfn.o:          $(HDRS) dbfn.c
 debug.o:         $(HDRS) debug.c
 deliver.o:       $(HDRS) deliver.c
@@ -603,10 +602,11 @@ demime.o:        $(HDRS) demime.c
 # Dependencies for EXPERIMENTAL_* modules
 
 bmi_spam.o:      $(HDRS) bmi_spam.c
-spf.o:           $(HDRS) spf.h spf.c
-srs.o:           $(HDRS) srs.h srs.c
+dane.o:		 $(HDRS) dane.c dane-gnu.c dane-openssl.c
 dcc.o:           $(HDRS) dcc.h dcc.c
 dmarc.o:         $(HDRS) dmarc.h dmarc.c
+spf.o:           $(HDRS) spf.h spf.c
+srs.o:           $(HDRS) srs.h srs.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles

@@ -4133,7 +4133,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
       /* The certificate verification status goes into the flags */
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
+#ifdef EXPERIMENTAL_DANE
       if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
+#endif
 
       /* Use an X item only if there's something to send */
       #ifdef SUPPORT_TLS
