@@ -195,6 +195,19 @@ return pk;
 }
 
 uschar *
+bytefield(uschar ** pp, uschar * pk)
+{
+unsigned value = 0;
+uschar * p = *pp;
+
+while (isdigit(*p)) value = value*10 + *p++ - '0';
+while (isspace(*p)) p++;
+*pp = p;
+*pk++ = value & 255;
+return pk;
+}
+
+uschar *
 shortfield(uschar ** pp, uschar * pk)
 {
 unsigned value = 0;
@@ -420,9 +433,9 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     break;
 
     case ns_t_tlsa:
-    pk = shortfield(&p, pk);	/* usage */
-    pk = shortfield(&p, pk);	/* selector */
-    pk = shortfield(&p, pk);	/* match type */
+    pk = bytefield(&p, pk);	/* usage */
+    pk = bytefield(&p, pk);	/* selector */
+    pk = bytefield(&p, pk);	/* match type */
     while (isxdigit(*p))
       {
       value = toupper(*p) - (isdigit(*p) ? '0' : '7') << 4;

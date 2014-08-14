@@ -1806,6 +1806,7 @@ if (dane)
   dns_record * rr;
   dns_scan dnss;
   uschar * hostnames[2] = { host->name, NULL };
+  int found = 0;
 
   if (DANESSL_init(client_ssl, NULL, hostnames) != 1)
     return tls_error(US"hostnames load", host, NULL);
@@ -1819,13 +1820,16 @@ if (dane)
     int usage, selector, mtype;
     const char * mdname;
 
-    GETSHORT(usage, p);
-    GETSHORT(selector, p);
-    GETSHORT(mtype, p);
+    found++;
+    usage = *p++;
+    selector = *p++;
+    mtype = *p++;
 
     switch (mtype)
       {
-      default: /* log bad */ return FAIL;
+      default:
+	log_write(0, LOG_MAIN, "DANE error: TLSA record w/bad mtype 0x%x", mtype);
+	return FAIL;
       case 0:	mdname = NULL; break;
       case 1:	mdname = "sha256"; break;
       case 2:	mdname = "sha512"; break;
@@ -1840,6 +1844,12 @@ if (dane)
 	return tls_error(US"tlsa load", host, NULL);
       case 1:	break;
       }
+    }
+
+  if (!found)
+    {
+    log_write(0, LOG_MAIN, "DANE error: No TLSA records");
+    return FAIL;
     }
   }
 #endif
