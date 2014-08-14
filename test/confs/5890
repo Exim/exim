@@ -1,0 +1,10 @@
+# Exim test configuration 5890
+# DANE common
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+
+# ----- Main settings -----
+
