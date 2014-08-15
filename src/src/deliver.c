@@ -7001,12 +7001,14 @@ wording. */
           {
           struct stat statbuf;
           if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
+	    {
             if (emf_text)
 	      fprintf(f, "%s", CS emf_text);
 	    else
               fprintf(f,
 "------ The body of the message is " OFF_T_FMT " characters long; only the first\n"
 "------ %d or so are included here.\n", statbuf.st_size, max);
+	    }
           }
 
 	fputc('\n', f);

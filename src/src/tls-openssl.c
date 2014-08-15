@@ -25,6 +25,10 @@ functions from the OpenSSL library. */
 #ifndef DISABLE_OCSP
 # include <openssl/ocsp.h>
 #endif
+#ifdef EXPERIMENTAL_DANE
+# include <danessl.h>
+#endif
+
 
 #ifndef DISABLE_OCSP
 # define EXIM_OCSP_SKEW_SECONDS (300L)
@@ -1805,7 +1809,7 @@ if (dane)
   {
   dns_record * rr;
   dns_scan dnss;
-  uschar * hostnames[2] = { host->name, NULL };
+  const char * hostnames[2] = { CS host->name, NULL };
   int found = 0;
 
   if (DANESSL_init(client_ssl, NULL, hostnames) != 1)

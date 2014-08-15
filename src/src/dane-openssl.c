@@ -202,9 +202,9 @@ for(matched = 0; !matched && slist; slist = slist->next)
   {
   dane_mtype_list m;
   unsigned char mdbuf[EVP_MAX_MD_SIZE];
-  unsigned char *buf;
+  unsigned char *buf = NULL;
   unsigned char *buf2;
-  unsigned int len;
+  unsigned int len = 0;
 
   /*
    * Extract ASN.1 DER form of certificate or public key.
@@ -679,6 +679,7 @@ int matched;
 matched = match(dane->selectors[SSL_DANE_USAGE_FIXED_LEAF], cert, 0);
 if(matched > 0)
   if(!ctx->chain)
+    {
     if(  (ctx->chain = sk_X509_new_null())
       && sk_X509_push(ctx->chain, cert))
       CRYPTO_add(&cert->references, 1, CRYPTO_LOCK_X509);
@@ -687,6 +688,7 @@ if(matched > 0)
       DANEerr(DANE_F_CHECK_END_ENTITY, ERR_R_MALLOC_FAILURE);
       return -1;
       }
+    }
 return matched;
 }
 
@@ -714,12 +716,14 @@ for(hosts = dane->hosts; hosts; hosts = hosts->next)
    * Sub-domain match: certid is any sub-domain of hostname.
    */
   if(match_subdomain)
+    {
     if(  (idlen = strlen(certid)) > (domlen = strlen(domain)) + 1
       && certid[idlen - domlen - 1] == '.'
       && !strcasecmp(certid + (idlen - domlen), domain))
       return 1;
     else
       continue;
+    }
 
   /*
    * Exact match and initial "*" match. The initial "*" in a certid

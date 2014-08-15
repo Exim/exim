@@ -103,6 +103,9 @@ tls_support tls_in = {
  -1,   /* tls_active */
  0,    /* tls_bits */
  FALSE,/* tls_certificate_verified */
+#ifdef EXPERIMENTAL_DANE
+ FALSE,/* dane_verified */
+#endif
  NULL, /* tls_cipher */
  FALSE,/* tls_on_connect */
  NULL, /* tls_on_connect_ports */
@@ -116,6 +119,9 @@ tls_support tls_out = {
  -1,   /* tls_active */
  0,    /* tls_bits */
  FALSE,/* tls_certificate_verified */
+#ifdef EXPERIMENTAL_DANE
+ FALSE,/* dane_verified */
+#endif
  NULL, /* tls_cipher */
  FALSE,/* tls_on_connect */
  NULL, /* tls_on_connect_ports */

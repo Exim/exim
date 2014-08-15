@@ -6368,14 +6368,14 @@ while (*s != 0)
 
       case EOP_UTF8CLEAN:
         {
-        int seq_len, index = 0;
+        int seq_len = 0, index = 0;
         int bytes_left = 0;
         uschar seq_buff[4];			/* accumulate utf-8 here */
         
         while (*sub != 0)
 	  {
 	  int complete;
-	  long codepoint;
+	  long codepoint = 0;
 	  uschar c;
 
 	  complete = 0;
