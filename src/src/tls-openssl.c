@@ -1693,6 +1693,8 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
       return tls_error(US"tlsa load", host, NULL);
     case 1:	break;
     }
+
+  tls_out.tlsa_usage |= 1<<usage;
   }
 
 if (found)
@@ -1745,6 +1747,7 @@ BOOL dane_required;
 
 #ifdef EXPERIMENTAL_DANE
 tls_out.dane_verified = FALSE;
+tls_out.tlsa_usage = 0;
 dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
 			  host->name, host->address, NULL) == OK;
 
@@ -1764,7 +1767,6 @@ else if (dane_required)
   log_write(0, LOG_MAIN, "DANE error: previous lookup not DNSSEC");
   return FAIL;
   }
-
 #endif
 
 #ifndef DISABLE_OCSP
@@ -1855,21 +1857,37 @@ if (ob->tls_sni)
     }
   }
 
+#ifdef EXPERIMENTAL_DANE
+if (dane)
+  if ((rc = dane_tlsa_load(client_ssl, host, &tlsa_dnsa)) != OK)
+    return rc;
+#endif
+
 #ifndef DISABLE_OCSP
 /* Request certificate status at connection-time.  If the server
 does OCSP stapling we will get the callback (set in tls_init()) */
+if (request_ocsp)
+  {
+  const uschar * s;
+  if (  (s = ob->hosts_require_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage")
+     || (s = ob->hosts_request_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage")
+     )
+    {	/* Re-eval now $tls_out_tlsa_usage is populated.  If
+    	this means we avoid the OCSP request, we wasted the setup
+	cost in tls_init(). */
+    require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
+      NULL, host->name, host->address, NULL) == OK;
+    request_ocsp = require_ocsp ? TRUE
+      : verify_check_this_host(&ob->hosts_request_ocsp,
+	  NULL, host->name, host->address, NULL) == OK;
+    }
+  }
 if (request_ocsp)
   {
   SSL_set_tlsext_status_type(client_ssl, TLSEXT_STATUSTYPE_ocsp);
   client_static_cbinfo->u_ocsp.client.verify_required = require_ocsp;
   tls_out.ocsp = OCSP_NOT_RESP;
   }
-#endif
-
-#ifdef EXPERIMENTAL_DANE
-if (dane)
-  if ((rc = dane_tlsa_load(client_ssl, host, &tlsa_dnsa)) != OK)
-    return rc;
 #endif
 
 

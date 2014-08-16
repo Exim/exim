@@ -84,6 +84,7 @@ typedef struct {
   BOOL    certificate_verified; /* Client certificate verified */
 #ifdef EXPERIMENTAL_DANE
   BOOL    dane_verified;        /* ... via DANE */
+  int     tlsa_usage;         /* TLSA record(s) usage */
 #endif
   uschar *cipher;             /* Cipher used */
   BOOL    on_connect;         /* For older MTAs that don't STARTTLS */

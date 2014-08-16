@@ -1235,7 +1235,25 @@ must have a correct name (SubjectName or SubjectAltName).
 The use of OCSP-stapling should be considered, allowing
 for fast revocation of certificates (which would otherwise
 be limited by the DNS TTL on the TLSA records).  However,
-this is likely to only be usable with DANE_TA.
+this is likely to only be usable with DANE_TA.  NOTE: the
+default is to request OCSP for all hosts; the certificate
+chain in DANE_EE usage will be insufficient to validate
+the OCSP proof and verification will fail.  Either disable
+OCSP completely or use the (new) variable $tls_out_tlsa_usage
+like so:
+
+  hosts_request_ocsp = ${if or { {= {4}{$tls_out_tlsa_usage}} \
+				 {= {0}{$tls_out_tlsa_usage}} } \
+                         {*}{}}
+The variable is a bitfield with numbered bits set for TLSA
+record usage codes. The zero above means DANE was not in use,
+the four means that only DANE_TA usage TLSA records were
+found. If the definition of hosts_require_ocsp or
+hosts_request_ocsp includes the string "tls_out_tlsa_usage",
+they are re-expanded in time to control the OCSP request.
+
+[ All a bit complicated.  Should we make that definition
+the default?  Should we override the user's definition? ]
 
 
 For client-side DANE there are two new smtp transport options,
@@ -1259,6 +1277,11 @@ and dnssec_require_domains is ignored.
 
 If verification was successful using DANE then the "CV" item
 in the delivery log line will show as "CV=dane".
+
+There is a new variable $tls_out_dane which will have "yes" if
+verification succeeded using DANE and "no" otherwise (only useful
+in combination with EXPERIMENTAL_TPDA), and a new variable
+$tls_out_tlsa_usage (detailed above).
 
 
 --------------------------------------------------------------
