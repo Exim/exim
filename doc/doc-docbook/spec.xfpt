@@ -7266,7 +7266,7 @@ default list of ldap servers, and a single lookup can specify a single ldap
 server to use.  But when you need to do a lookup with a list of servers that is
 different than the default list (maybe different order, maybe a completely
 different set of servers), the SERVERS parameter allows you to specify this
-alternate list.
+alternate list (colon-separated).
 
 Here is an example of an LDAP query in an Exim lookup that uses some of these
 values. This is a single line, folded to fit on the page:
