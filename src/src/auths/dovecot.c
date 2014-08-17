@@ -240,7 +240,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        uschar *p;
        int nargs, tmp;
        int crequid = 1, cont = 1, fd, ret = DEFER;
-       BOOL found = FALSE;
+       BOOL found = FALSE, have_mech_line = FALSE;
 
        HDEBUG(D_auth) debug_printf("dovecot authentication\n");
 
@@ -300,8 +300,20 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                                OUT("authentication socket protocol version mismatch");
                } else if (Ustrcmp(args[0], US"MECH") == 0) {
                        CHECK_COMMAND("MECH", 1, INT_MAX);
+                       have_mech_line = TRUE;
                        if (strcmpic(US args[1], ablock->public_name) == 0)
                                found = TRUE;
+               } else if (Ustrcmp(args[0], US"SPID") == 0) {
+                       /* Unfortunately the auth protocol handshake wasn't designed well
+                          to differentiate between auth-client/userdb/master. auth-userdb
+                          and auth-master send VERSION + SPID lines only and nothing
+                          afterwards, while auth-client sends VERSION + MECH + SPID +
+                          CUID + more. The simplest way that we can determine if we've
+                          connected to the correct socket is to see if MECH line exists or
+                          not (alternatively we'd have to have a small timeout after SPID
+                          to see if CUID is sent or not). */
+                       if (!have_mech_line)
+                               OUT("authentication socket type mismatch (connected to auth-master instead of auth-client)");
                } else if (Ustrcmp(args[0], US"DONE") == 0) {
                        CHECK_COMMAND("DONE", 0, 0);
                        cont = 0;
