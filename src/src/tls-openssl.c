@@ -1771,11 +1771,28 @@ else if (dane_required)
 
 #ifndef DISABLE_OCSP
   {
-  require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
-    NULL, host->name, host->address, NULL) == OK;
-  request_ocsp = require_ocsp ? TRUE
-    : verify_check_this_host(&ob->hosts_request_ocsp,
-	NULL, host->name, host->address, NULL) == OK;
+  if ((require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
+    NULL, host->name, host->address, NULL) == OK))
+    request_ocsp = TRUE;
+  else
+    {
+# ifdef EXPERIMENTAL_DANE
+    if (  dane
+       && ob->hosts_request_ocsp[0] == '*'
+       && ob->hosts_request_ocsp[1] == '\0'
+       )
+      {
+      /* Unchanged from default.  Use a safer one under DANE */
+      request_ocsp = TRUE;
+      ob->hosts_request_ocsp = US"${if or { {= {0}{$tls_out_tlsa_usage}} "
+					"   {= {4}{$tls_out_tlsa_usage}} } "
+				   " {*}{}}";
+      }
+    else
+# endif
+      request_ocsp = verify_check_this_host(&ob->hosts_request_ocsp,
+	  NULL, host->name, host->address, NULL) == OK;
+    }
   }
 #endif
 

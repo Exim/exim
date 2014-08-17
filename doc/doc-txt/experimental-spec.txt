@@ -1236,24 +1236,23 @@ The use of OCSP-stapling should be considered, allowing
 for fast revocation of certificates (which would otherwise
 be limited by the DNS TTL on the TLSA records).  However,
 this is likely to only be usable with DANE_TA.  NOTE: the
-default is to request OCSP for all hosts; the certificate
-chain in DANE_EE usage will be insufficient to validate
-the OCSP proof and verification will fail.  Either disable
-OCSP completely or use the (new) variable $tls_out_tlsa_usage
-like so:
+default of requesting OCSP for all hosts is modified iff
+DANE is in use, to:
 
-  hosts_request_ocsp = ${if or { {= {4}{$tls_out_tlsa_usage}} \
-				 {= {0}{$tls_out_tlsa_usage}} } \
+  hosts_request_ocsp = ${if or { {= {0}{$tls_out_tlsa_usage}} \
+				 {= {4}{$tls_out_tlsa_usage}} } \
                          {*}{}}
-The variable is a bitfield with numbered bits set for TLSA
-record usage codes. The zero above means DANE was not in use,
+
+The (new) variable $tls_out_tlsa_usage is a bitfield with
+numbered bits set for TLSA record usage codes.
+The zero above means DANE was not in use,
 the four means that only DANE_TA usage TLSA records were
 found. If the definition of hosts_require_ocsp or
 hosts_request_ocsp includes the string "tls_out_tlsa_usage",
 they are re-expanded in time to control the OCSP request.
 
-[ All a bit complicated.  Should we make that definition
-the default?  Should we override the user's definition? ]
+This modification of hosts_request_ocsp is only done if
+it has the default value of "*".
 
 
 For client-side DANE there are two new smtp transport options,
