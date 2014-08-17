@@ -1,4 +1,5 @@
-# Exim test configuration 0005
+# Exim test configuration 0600
+# utf8clean:string
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
