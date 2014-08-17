@@ -6376,16 +6376,14 @@ while (*s != 0)
         {
         int seq_len = 0, index = 0;
         int bytes_left = 0;
+	long codepoint = -1;
         uschar seq_buff[4];			/* accumulate utf-8 here */
         
         while (*sub != 0)
 	  {
-	  int complete;
-	  long codepoint = 0;
-	  uschar c;
+	  int complete = 0;
+	  uschar c = *sub++;
 
-	  complete = 0;
-	  c = *sub++;
 	  if (bytes_left)
 	    {
 	    if ((c & 0xc0) != 0x80)
@@ -6400,7 +6398,7 @@ while (*s != 0)
 	      if (--bytes_left == 0)		/* codepoint complete */
 		{
 		if(codepoint > 0x10FFFF)	/* is it too large? */
-		  complete = -1;	/* error */
+		  complete = -1;	/* error (RFC3629 limit) */
 		else
 		  {		/* finished; output utf-8 sequence */
 		  yield = string_cat(yield, &size, &ptr, seq_buff, seq_len);
