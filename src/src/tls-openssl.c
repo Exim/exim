@@ -1866,6 +1866,7 @@ if (dane)
 #ifndef DISABLE_OCSP
 /* Request certificate status at connection-time.  If the server
 does OCSP stapling we will get the callback (set in tls_init()) */
+# ifdef EXPERIMENTAL_DANE
 if (request_ocsp)
   {
   const uschar * s;
@@ -1882,6 +1883,8 @@ if (request_ocsp)
 	  NULL, host->name, host->address, NULL) == OK;
     }
   }
+# endif
+
 if (request_ocsp)
   {
   SSL_set_tlsext_status_type(client_ssl, TLSEXT_STATUSTYPE_ocsp);
