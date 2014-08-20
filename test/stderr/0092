@@ -30,6 +30,7 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 LOG: SMTP data timeout (message abandoned) on connection from [V4NET.0.0.1] F=<userx@test.ex>
 exim: timed out while reading - message abandoned
 exim: timed out while reading - message abandoned
@@ -61,6 +62,7 @@ exim: timed out while reading - message abandoned
 >>> no more routers
 >>> ----------- end verify ------------
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address
 LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 An error was detected while processing a file of BSMTP input.

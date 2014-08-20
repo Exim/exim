@@ -32,10 +32,16 @@ tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server2.example.com/
 #
 
 begin acl
-logger:
-  warn   logwrite =  $acl_arg1 $tpda_delivery_local_part
+
+ev_tls:
+  accept logwrite =  $tpda_event depth=$tpda_data \
+			<${certextract {subject} {$tls_out_peercert}}>
+#	 message = noooo
+
+ev_msg:
+  warn   logwrite =  $acl_arg1 $local_part
   warn   logwrite =  ${if !def:tls_out_ourcert \
-		{NO CLENT CERT presented} \
+		{NO CLIENT CERT presented} \
 		{Our cert SN: ${certextract{subject}{$tls_out_ourcert}}}}
   accept condition = ${if !def:tls_out_peercert}
 	 logwrite =  No Peer cert
@@ -51,6 +57,12 @@ logger:
 #	 logwrite =       ${certextract {ocsp_uri}	{$tls_out_peercert} {OCU <$value>}{(no OCU)}}
 	 logwrite =       ${certextract {crl_uri}	{$tls_out_peercert} {CRU <$value>}{(no CRU)}}
 
+logger:
+  accept condition = ${if eq {msg} {${listextract{1}{$tpda_event}}}}
+	 acl = ev_msg $tpda_event $acl_arg2
+  accept condition = ${if eq {tls} {${listextract{1}{$tpda_event}}}}
+	 message =   ${acl {ev_tls}}
+  accept
 
 # ----- Routers -----
 
@@ -81,8 +93,7 @@ send_to_server:
 {example.com/server1.example.com/ca_chain.pem}\
 {example.net/server1.example.net/ca_chain.pem}}
 
-  tpda_delivery_action =   ${acl {logger} {delivery} {$domain} }
-  tpda_host_defer_action = ${acl {logger} {deferral} {$domain} }
+  tpda_event_action =   ${acl {logger} {$tpda_event} {$domain} }
 
 # ----- Retry -----
 

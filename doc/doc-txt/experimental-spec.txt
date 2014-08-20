@@ -767,82 +767,83 @@ and (for SMTP transports) a second string on deferrals caused by a host error.
 This feature may be used, for example, to write exim internal log information
 (not available otherwise) into a database.
 
-In order to use the feature, you must set
+In order to use the feature, you must compile with
 
 EXPERIMENTAL_TPDA=yes
 
 in your Local/Makefile
 
-and define the expandable strings in the runtime config file, to
-be executed at end of delivery.
+and define the tpda_event_action option in the transport, to
+be expanded when the event fires.
 
-Additionally, there are 6 more variables, available at end of
-delivery:
+A new variable, $tpda_event, is set to the event type when the
+expansion is done.  The current list of events is:
 
-tpda_delivery_ip             IP of host, which has accepted delivery
-tpda_delivery_port           Port of remote host which has accepted delivery
-tpda_delivery_fqdn           FQDN of host, which has accepted delivery
-tpda_delivery_local_part     local part of address being delivered
-tpda_delivery_domain         domain part of address being delivered
-tpda_delivery_confirmation   SMTP confirmation message
+	msg:delivery
+	msg:host:defer
+	tcp:connect
+	tcp:close
+	tls:cert
+	smtp:connect
 
-In case of a deferral caused by a host-error:
-tpda_defer_errno             Error number
-tpda_defer_errstr            Error string possibly containing more details
+The expansion is called for all event types, and should use the $tpda_event
+value to decide when to act.  The variable data is a colon-separated
+list, describing an event tree.
 
-The $router_name and $transport_name variables are also usable.
+There is an auxilary variable, $tpda_data, for which the
+content is event_dependent:
 
+	msg:delivery		smtp confirmation mssage
+	msg:host:defer		error string
+	tls:cert		verification chain depth
+	smtp:connect		smtp banner
 
-To take action after successful deliveries, set the following option
-on any transport of interest.
+The msg:host:defer event populates one extra variable, $tpda_defer_errno.
 
-tpda_delivery_action
+The following variables are likely to be useful for most event types:
+
+	router_name, transport_name
+	local_part, domain
+	host, host_address, host_port
+	tls_out_peercert
+	lookup_dnssec_authenticated, tls_out_dane
+	sending_ip_address, sending_port
+
 
 An example might look like:
 
-tpda_delivery_action = \
-${lookup pgsql {SELECT * FROM record_Delivery( \
+tpda_event_action = ${if = {msg:delivery}{$tpda_event} \
+{${lookup pgsql {SELECT * FROM record_Delivery( \
     '${quote_pgsql:$sender_address_domain}',\
     '${quote_pgsql:${lc:$sender_address_local_part}}', \
-    '${quote_pgsql:$tpda_delivery_domain}', \
-    '${quote_pgsql:${lc:$tpda_delivery_local_part}}', \
-    '${quote_pgsql:$tpda_delivery_ip}', \
-    '${quote_pgsql:${lc:$tpda_delivery_fqdn}}', \
-    '${quote_pgsql:$message_exim_id}')}}
+    '${quote_pgsql:$domain}', \
+    '${quote_pgsql:${lc:$local_part}}', \
+    '${quote_pgsql:$host_address}', \
+    '${quote_pgsql:${lc:$host}}', \
+    '${quote_pgsql:$message_exim_id}')}} \
+} {}}
 
 The string is expanded after the delivery completes and any
 side-effects will happen.  The result is then discarded.
 Note that for complex operations an ACL expansion can be used.
 
+During the expansion the tpda_event variable will contain the
+string-list "msg:delivery".
 
-In order to log host deferrals, add the following option to an SMTP
-transport:
 
-tpda_host_defer_action
+The expansion of the tpda_event_action option should normally
+return an empty string.  Should it return anything else the
+following will be forced:
 
-This is a private option of the SMTP transport. It is intended to
-log failures of remote hosts. It is executed only when exim has
-attempted to deliver a message to a remote host and failed due to
-an error which doesn't seem to be related to the individual
-message, sender, or recipient address.
-See section 47.2 of the exim documentation for more details on how
-this is determined.
+	msg:delivery	(ignored)
+	msg:host:defer	(ignored)
+	tcp:connect	do not connect
+	tcp:close	(ignored)
+	tls:cert	refuse verification
+	smtp:connect	close connection
 
-Example:
 
-tpda_host_defer_action = \
-${lookup mysql {insert into delivlog set \
-    msgid = '${quote_mysql:$message_exim_id}', \
-    senderlp = '${quote_mysql:${lc:$sender_address_local_part}}', \
-    senderdom = '${quote_mysql:$sender_address_domain}', \
-    delivlp = '${quote_mysql:${lc:$tpda_delivery_local_part}}', \
-    delivdom = '${quote_mysql:$tpda_delivery_domain}', \
-    delivip = '${quote_mysql:$tpda_delivery_ip}', \
-    delivport = '${quote_mysql:$tpda_delivery_port}', \
-    delivfqdn = '${quote_mysql:$tpda_delivery_fqdn}', \
-    deliverrno = '${quote_mysql:$tpda_defer_errno}', \
-    deliverrstr = '${quote_mysql:$tpda_defer_errstr}' \
-    }}
+
 
 
 Redis Lookup

@@ -40,7 +40,9 @@ LOG: sender_host_name=
 >>>                = sender_ident=
 LOG: sender_ident=
 >>> accept: condition test succeeded in ACL "log"
+>>> end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
+>>> end of ACL "connect": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -81,7 +83,9 @@ LOG: sender_host_name=hostname
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
 >>> accept: condition test succeeded in ACL "log"
+>>> end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
+>>> end of ACL "connect": ACCEPT
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "mail"
 >>> processing "accept"
@@ -115,6 +119,7 @@ LOG: sender_host_name=hostname
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
 >>> accept: condition test succeeded in ACL "log"
+>>> end of ACL "log": ACCEPT
 >>> check acl = auth
 >>> using ACL "auth"
 >>> processing "accept"
@@ -123,7 +128,9 @@ LOG: sender_ident=ident
 >>> check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
 >>> accept: condition test succeeded in ACL "auth"
+>>> end of ACL "auth": ACCEPT
 >>> accept: condition test succeeded in ACL "mail"
+>>> end of ACL "mail": ACCEPT
 >>> using ACL "mail"
 >>> processing "accept"
 >>> check acl = log
@@ -156,6 +163,7 @@ LOG: sender_host_name=hostname
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
 >>> accept: condition test succeeded in ACL "log"
+>>> end of ACL "log": ACCEPT
 >>> check acl = auth
 >>> using ACL "auth"
 >>> processing "accept"
@@ -164,4 +172,6 @@ LOG: sender_ident=ident
 >>> check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
 >>> accept: condition test succeeded in ACL "auth"
+>>> end of ACL "auth": ACCEPT
 >>> accept: condition test succeeded in ACL "mail"
+>>> end of ACL "mail": ACCEPT

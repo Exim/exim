@@ -53,5 +53,6 @@ LOG: this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.
 >>> check condition = ${if !eq {${perl{foo_warn}}}{}}
 >>>                 = true
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 
 ******** SERVER ********

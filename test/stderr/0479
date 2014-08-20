@@ -67,6 +67,7 @@ sender a@b verified ok as rewritten-a@rewritten-b
 require: condition test succeeded in ACL "rcpt"
 processing "accept"
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<e@f>
 using ACL "rcpt"
@@ -80,6 +81,7 @@ using cached sender verify result
 require: condition test succeeded in ACL "rcpt"
 processing "accept"
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection

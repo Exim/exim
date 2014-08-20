@@ -11,6 +11,7 @@
 >>> check hosts = TESTSUITE/aux-var/0401.hosts1
 >>> host in "TESTSUITE/aux-var/0401.hosts1"? yes (matched "V4NET.9.8.7" in TESTSUITE/aux-var/0401.hosts1)
 >>> accept: condition test succeeded in ACL "connect"
+>>> end of ACL "connect": ACCEPT
 >>> xxx in helo_lookup_domains? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept"

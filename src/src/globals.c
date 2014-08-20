@@ -577,6 +577,7 @@ time_t  deliver_frozen_at      = 0;
 uschar *deliver_home           = NULL;
 uschar *deliver_host           = NULL;
 uschar *deliver_host_address   = NULL;
+int     deliver_host_port      = 0;
 uschar *deliver_in_buffer      = NULL;
 ino_t   deliver_inode          = 0;
 uschar *deliver_localpart      = NULL;
@@ -1326,13 +1327,8 @@ BOOL    timestamps_utc         = FALSE;
 
 #ifdef EXPERIMENTAL_TPDA
 int     tpda_defer_errno        = 0;
-uschar *tpda_defer_errstr       = NULL;
-uschar *tpda_delivery_ip        = NULL;
-int     tpda_delivery_port      = 0;
-uschar *tpda_delivery_fqdn      = NULL;
-uschar *tpda_delivery_local_part= NULL;
-uschar *tpda_delivery_domain    = NULL;
-uschar *tpda_delivery_confirmation = NULL;
+uschar *tpda_event              = NULL;
+uschar *tpda_data               = NULL;
 #endif
 
 transport_instance  *transports = NULL;

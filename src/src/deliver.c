@@ -141,11 +141,13 @@ the first address. */
 if (addr->host_list == NULL)
   {
   deliver_host = deliver_host_address = US"";
+  deliver_host_port = 0;
   }
 else
   {
   deliver_host = addr->host_list->name;
   deliver_host_address = addr->host_list->address;
+  deliver_host_port = addr->host_list->port;
   }
 
 deliver_recipients = addr;
@@ -705,6 +707,43 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 }
 #endif
 
+
+#ifdef EXPERIMENTAL_TPDA
+int
+tpda_raise_event(uschar * action, uschar * event, uschar * ev_data)
+{
+uschar * s;
+if (action)
+  {
+  DEBUG(D_deliver)
+    debug_printf("TPDA(%s): tpda_event_action=|%s| tpda_delivery_IP=%s\n",
+      event,
+      action, deliver_host_address);
+
+  tpda_event = event;
+  tpda_data =  ev_data;
+
+  if (!(s = expand_string(action)) && *expand_string_message)
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "failed to expand tpda_event_action %s in %s: %s\n",
+      event, transport_name, expand_string_message);
+
+  tpda_event = tpda_data = NULL;
+
+  /* If the expansion returns anything but an empty string, flag for
+  the caller to modify his normal processing
+  */
+  if (s && *s)
+    {
+    DEBUG(D_deliver)
+      debug_printf("TPDA(%s): event_action returned \"%s\"\n", s);
+    return DEFER;
+    }
+  }
+return OK;
+}
+#endif
+
 /* If msg is NULL this is a delivery log and logchar is used. Otherwise
 this is a nonstandard call; no two-character delivery flag is written
 but sender-host and sender are prefixed and "msg" is inserted in the log line.
@@ -728,12 +767,7 @@ have a pointer to the host item that succeeded; local deliveries can have a
 pointer to a single host item in their host list, for use by the transport. */
 
 #ifdef EXPERIMENTAL_TPDA
-  tpda_delivery_ip = NULL;	/* presume no successful remote delivery */
-  tpda_delivery_port = 0;
-  tpda_delivery_fqdn = NULL;
-  tpda_delivery_local_part = NULL;
-  tpda_delivery_domain = NULL;
-  tpda_delivery_confirmation = NULL;
+  /* presume no successful remote delivery */
   lookup_dnssec_authenticated = NULL;
 #endif
 
@@ -782,13 +816,8 @@ if ((log_extra_selector & LX_delivery_size) != 0)
 
 if (addr->transport->info->local)
   {
-  if (addr->host_list != NULL)
-    {
+  if (addr->host_list)
     s = string_append(s, &size, &ptr, 2, US" H=", addr->host_list->name);
-    #ifdef EXPERIMENTAL_TPDA
-      tpda_delivery_fqdn = addr->host_list->name;
-    #endif
-    }
   if (addr->shadow_message != NULL)
     s = string_cat(s, &size, &ptr, addr->shadow_message,
       Ustrlen(addr->shadow_message));
@@ -804,24 +833,20 @@ else
     if (continue_sequence > 1)
       s = string_cat(s, &size, &ptr, US"*", 1);
 
-    #ifdef EXPERIMENTAL_TPDA
-    tpda_delivery_ip =           addr->host_used->address;
-    tpda_delivery_port =         addr->host_used->port;
-    tpda_delivery_fqdn =         addr->host_used->name;
-    tpda_delivery_local_part =   addr->local_part;
-    tpda_delivery_domain =       addr->domain;
-    tpda_delivery_confirmation = addr->message;
+#ifdef EXPERIMENTAL_TPDA
+    deliver_host_address = addr->host_used->address;
+    deliver_host_port =    addr->host_used->port;
 
     /* DNS lookup status */
     lookup_dnssec_authenticated = addr->host_used->dnssec==DS_YES ? US"yes"
 			      : addr->host_used->dnssec==DS_NO ? US"no"
 			      : NULL;
-    #endif
+#endif
     }
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   s = d_tlslog(s, &size, &ptr, addr);
-  #endif
+#endif
 
   if (addr->authenticator)
     {
@@ -834,10 +859,10 @@ else
       }
     }
 
-  #ifndef DISABLE_PRDR
+#ifndef DISABLE_PRDR
   if (addr->flags & af_prdr_used)
     s = string_append(s, &size, &ptr, 1, US" PRDR");
-  #endif
+#endif
   }
 
 /* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
@@ -877,19 +902,22 @@ s[ptr] = 0;
 log_write(0, flags, "%s", s);
 
 #ifdef EXPERIMENTAL_TPDA
-if (addr->transport->tpda_delivery_action)
   {
-  DEBUG(D_deliver)
-    debug_printf("  TPDA(Delivery): tpda_deliver_action=|%s| tpda_delivery_IP=%s\n",
-      addr->transport->tpda_delivery_action, tpda_delivery_ip);
+  uschar * save_domain = deliver_domain;
+  uschar * save_local =  deliver_localpart;
 
-  router_name =    addr->router->name;
-  transport_name = addr->transport->name;
-  if (!expand_string(addr->transport->tpda_delivery_action) && *expand_string_message)
-    log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand tpda_deliver_action in %s: %s\n",
-      transport_name, expand_string_message);
-  router_name = NULL;
-  transport_name = NULL;
+  router_name =    addr->router ? addr->router->name : NULL;
+  transport_name = addr->transport ? addr->transport->name : NULL;
+  deliver_domain = addr->domain;
+  deliver_localpart = addr->local_part;
+
+  (void) tpda_raise_event(addr->transport->tpda_event_action, US"msg:delivery",
+	    addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
+	    ? addr->message : NULL);
+
+  deliver_localpart = save_local;
+  deliver_domain =    save_domain;
+  router_name = transport_name = NULL;
   }
 #endif
 store_reset(reset_point);
@@ -1089,7 +1117,7 @@ if (result == OK)
     }
 
   /* Certificates for logging (via TPDA) */
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   tls_out.ourcert = addr->ourcert;
   addr->ourcert = NULL;
   tls_out.peercert = addr->peercert;
@@ -1098,11 +1126,11 @@ if (result == OK)
   tls_out.cipher = addr->cipher;
   tls_out.peerdn = addr->peerdn;
   tls_out.ocsp = addr->ocsp;
-  #endif
+#endif
 
   delivery_log(LOG_MAIN, addr, logchar, NULL);
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   if (tls_out.ourcert)
     {
     tls_free_cert(tls_out.ourcert);
@@ -1116,7 +1144,7 @@ if (result == OK)
   tls_out.cipher = NULL;
   tls_out.peerdn = NULL;
   tls_out.ocsp = OCSP_NOT_REQ;
-  #endif
+#endif
   }
 
 
@@ -1297,9 +1325,9 @@ else
   if (addr->host_used != NULL)
     s = d_hostlog(s, &size, &ptr, addr);
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   s = d_tlslog(s, &size, &ptr, addr);
-  #endif
+#endif
 
   if (addr->basic_errno > 0)
     s = string_append(s, &size, &ptr, 2, US": ",
@@ -1888,19 +1916,19 @@ if ((pid = fork()) == 0)
   diagnosis that it's reasonable to make them something that has to be explicitly requested.
   */
 
-  #ifdef RLIMIT_CORE
+#ifdef RLIMIT_CORE
   struct rlimit rl;
   rl.rlim_cur = 0;
   rl.rlim_max = 0;
   if (setrlimit(RLIMIT_CORE, &rl) < 0)
     {
-    #ifdef SETRLIMIT_NOT_SUPPORTED
+# ifdef SETRLIMIT_NOT_SUPPORTED
     if (errno != ENOSYS && errno != ENOTSUP)
-    #endif
+# endif
       log_write(0, LOG_MAIN|LOG_PANIC, "setrlimit(RLIMIT_CORE) failed: %s",
         strerror(errno));
     }
-  #endif
+#endif
 
   /* Reset the random number generator, so different processes don't all
   have the same sequence. */
@@ -2987,7 +3015,7 @@ while (!done)
     it in with the other info, in order to keep each message short enough to
     guarantee it won't be split in the pipe. */
 
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     case 'X':
     if (addr == NULL) goto ADDR_MISMATCH;          /* Below, in 'A' handler */
     switch (*ptr++)
@@ -3015,17 +3043,17 @@ while (!done)
 	(void) tls_import_cert(ptr, &addr->ourcert);
       break;
 
-      #ifndef DISABLE_OCSP
+# ifndef DISABLE_OCSP
       case '4':
       addr->ocsp = OCSP_NOT_REQ;
       if (*ptr)
 	addr->ocsp = *ptr - '0';
       break;
-      #endif
+# endif
       }
     while (*ptr++);
     break;
-    #endif	/*SUPPORT_TLS*/
+#endif	/*SUPPORT_TLS*/
 
     case 'C':	/* client authenticator information */
     switch (*ptr++)
@@ -3049,14 +3077,14 @@ while (!done)
     break;
 #endif
 
-    #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
     case 'D':
     if (addr == NULL) break;
     memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
     ptr += sizeof(addr->dsn_aware);
     DEBUG(D_deliver) debug_printf("DSN read: addr->dsn_aware = %d\n", addr->dsn_aware);
     break;
-    #endif
+#endif
 
     case 'A':
     if (addr == NULL)
@@ -3954,11 +3982,11 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     that it can use either of them, though it prefers O_NONBLOCK, which
     distinguishes between EOF and no-more-data. */
 
-    #ifdef O_NONBLOCK
+#ifdef O_NONBLOCK
     (void)fcntl(pfd[pipe_read], F_SETFL, O_NONBLOCK);
-    #else
+#else
     (void)fcntl(pfd[pipe_read], F_SETFL, O_NDELAY);
-    #endif
+#endif
 
     /* If the maximum number of subprocesses already exist, wait for a process
     to finish. If we ran out of file descriptors, parmax will have been reduced
@@ -4127,7 +4155,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
 
       /* Use an X item only if there's something to send */
-      #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
       if (addr->cipher)
         {
         ptr = big_buffer;
@@ -4163,7 +4191,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 	  *ptr++ = 0;
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
-      #ifndef DISABLE_OCSP
+# ifndef DISABLE_OCSP
       if (addr->ocsp > OCSP_NOT_REQ)
 	{
 	ptr = big_buffer;
@@ -4171,8 +4199,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 	while(*ptr++);
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
-      # endif
-      #endif	/*SUPPORT_TLS*/
+# endif
+#endif	/*SUPPORT_TLS*/
 
       if (client_authenticator)
         {
@@ -4196,17 +4224,17 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
 	}
 
-      #ifndef DISABLE_PRDR
+#ifndef DISABLE_PRDR
       if (addr->flags & af_prdr_used)
 	rmt_dlv_checked_write(fd, "P", 1);
-      #endif
+#endif
 
-      #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
       big_buffer[0] = 'D';
       memcpy(big_buffer+1, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, big_buffer, sizeof(addr->dsn_aware) + 1);
       DEBUG(D_deliver) debug_printf("DSN write: addr->dsn_aware = %d\n", addr->dsn_aware);
-      #endif
+#endif
 
       /* Retry information: for most success cases this will be null. */
 
@@ -4921,7 +4949,7 @@ attempted. */
 
 if (deliver_freeze)
   {
-  #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
+#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
   /* Moving to another directory removes the message from Exim's view. Other
   tools must be used to deal with it. Logging of this action happens in
   spool_move_message() and its subfunctions. */
@@ -4929,7 +4957,7 @@ if (deliver_freeze)
   if (move_frozen_messages &&
       spool_move_message(id, message_subdir, US"", US"F"))
     return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
-  #endif
+#endif
 
   /* For all frozen messages (bounces or not), timeout_frozen_after sets the
   maximum time to keep messages that are frozen. Thaw if we reach it, with a
@@ -5358,13 +5386,13 @@ if (process_recipients != RECIP_IGNORE)
       if (r->pno >= 0)
         new->onetime_parent = recipients_list[r->pno].address;
 
-      #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
       /* If DSN support is enabled, set the dsn flags and the original receipt 
          to be passed on to other DSN enabled MTAs */
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
       DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: %d\n", new->dsn_orcpt, new->dsn_flags);
-      #endif
+#endif
 
       switch (process_recipients)
         {
@@ -6300,21 +6328,21 @@ if (addr_remote != NULL)
     regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
       FALSE, TRUE);
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   if (regex_STARTTLS == NULL) regex_STARTTLS =
     regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
-  #endif
+#endif
 
-  #ifndef DISABLE_PRDR
+#ifndef DISABLE_PRDR
   if (regex_PRDR == NULL) regex_PRDR =
     regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
-  #endif
+#endif
 
-  #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
   /* Set the regex to check for DSN support on remote MTA */
   if (regex_DSN == NULL) regex_DSN  =
     regex_must_compile(US"\\n250[\\s\\-]DSN(\\s|\\n|$)", FALSE, TRUE);
-  #endif
+#endif
 
   /* Now sort the addresses if required, and do the deliveries. The yield of
   do_remote_deliveries is FALSE when mua_wrapper is set and all addresses
@@ -7653,10 +7681,10 @@ if (remove_journal)
 
   /* Move the message off the spool if reqested */
 
-  #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
+#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
   if (deliver_freeze && move_frozen_messages)
     (void)spool_move_message(id, message_subdir, US"", US"F");
-  #endif
+#endif
   }
 
 /* Closing the data file frees the lock; if the file has been unlinked it

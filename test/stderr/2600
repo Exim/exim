@@ -157,6 +157,7 @@ accept: condition test failed in ACL "check_recipient"
 processing "deny"
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
@@ -186,6 +187,7 @@ accept: condition test failed in ACL "check_recipient"
 processing "deny"
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
@@ -244,6 +246,7 @@ lookup yielded: name=ok id=10.10.10.10
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
 host in "+relay_hosts"? yes (matched "+relay_hosts")
 accept: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
@@ -267,6 +270,7 @@ lookup yielded: name=ok id=10.10.10.10
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
 host in "+relay_hosts"? yes (matched "+relay_hosts")
 accept: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

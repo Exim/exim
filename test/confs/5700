@@ -18,22 +18,58 @@ acl_smtp_data = accept
 
 begin acl
 
-logger:
-    accept condition = ${if eq {$acl_arg2}{domain1}}
-	   logwrite = \
-	    $acl_arg1 \
-	    ip <$tpda_delivery_ip> \
-	    port <$tpda_delivery_port> \
-	    fqdn <$tpda_delivery_fqdn> \
-	    local_part <$tpda_delivery_local_part> \
-	    domain <$tpda_delivery_domain> \
-	    confirmation <$tpda_delivery_confirmation> \
-	    errno <$tpda_defer_errno> \
-	    errstr <$tpda_defer_errstr> \
+ev_tcp:
+    accept condition = ${if eq {$tpda_event}{tcp:connect}}
+	   logwrite = . [$host_address]:$sending_port
+    accept condition = ${if eq {$tpda_event}{tcp:close}}
+	   logwrite = . [$sending_ip_address] -> \
+			[$host_address]:$host_port
+    accept
+
+ev_smtp:
+    accept
+	   logwrite = . [$sending_ip_address] -> \
+			[$host_address]:$host_port
+	   logwrite = . banner <$tpda_data>
+
+ev_msg:
+    accept condition = ${if !eq {$acl_arg2}{domain1}}
+	   logwrite = $this_expansion_will_fail
+
+    accept condition = ${if eq {$acl_arg1}{msg:delivery}}
+	   logwrite = . \
+	    delivery \
+	    ip <$host_address> \
+	    port <$host_port> \
+	    fqdn <$host> \
+	    local_part <$local_part> \
+	    domain <$domain> \
+	    confirmation <$tpda_data> \
 	    router <$router_name> \
 	    transport <$transport_name>
 
-    accept logwrite = $this_expansion_will_fail
+    accept condition = ${if eq {$acl_arg1}{msg:host:defer}}
+	   logwrite = . \
+	    deferral \
+	    ip <$host_address> \
+	    port <$host_port> \
+	    fqdn <$host> \
+	    local_part <$local_part> \
+	    domain <$domain> \
+	    errno <$tpda_defer_errno> \
+	    errstr <$tpda_data> \
+	    router <$router_name> \
+	    transport <$transport_name>
+
+logger:
+    warn   logwrite = event $tpda_event
+    accept condition = ${if eq {tcp} {${listextract{1}{$tpda_event}}}}
+	   acl = ev_tcp
+    accept condition = ${if eq {smtp} {${listextract{1}{$tpda_event}}}}
+	   acl = ev_smtp
+    accept condition = ${if eq {msg} {${listextract{1}{$tpda_event}}}}
+	   acl = ev_msg $tpda_event $acl_arg2
+
 
 # ----- Routers -----
 
@@ -61,7 +97,6 @@ smtp:
   port = PORT_S
   command_timeout = 1s
   final_timeout = 1s
-  tpda_delivery_action =   ${acl {logger} {delivery} {$domain} }
-  tpda_host_defer_action = ${acl {logger} {deferral} {$domain} }
+  tpda_event_action =   ${acl {logger} {$tpda_event} {$domain} }
 
 # End

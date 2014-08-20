@@ -188,7 +188,7 @@ typedef struct transport_instance {
   BOOL    log_defer_output;
   BOOL    retry_use_local_part;   /* Defaults true for local, false for remote */
 #ifdef EXPERIMENTAL_TPDA
-  uschar  *tpda_delivery_action;  /* String to expand on success */
+  uschar  *tpda_event_action;     /* String to expand on notable events */
 #endif
 } transport_instance;
 

@@ -110,6 +110,7 @@ one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? no (end of list)
@@ -119,6 +120,7 @@ one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -152,6 +154,7 @@ one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? yes (matched "V4NET.9.8.7")
@@ -162,6 +165,7 @@ one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

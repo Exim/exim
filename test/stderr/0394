@@ -13,6 +13,7 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> processing "require"
 >>> check verify = reverse_host_lookup
 >>> require: condition test failed in ACL "connect"
+>>> end of ACL "connect": not OK
 LOG: H=[V4NET.255.255.255] rejected connection in "connect" ACL: host lookup failed (failed to find host name from IP address)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "*")

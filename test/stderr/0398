@@ -156,6 +156,7 @@ address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<xyz@local>
 using ACL "rcpt"
@@ -234,6 +235,7 @@ address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 mail.test.ex closing connection

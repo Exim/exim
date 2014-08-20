@@ -23,6 +23,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> (Use -bhc if you want the callouts to happen.)
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "mail"
+>>> end of ACL "mail": ACCEPT
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -111,6 +112,7 @@ wrote positive callout cache address record
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"
+end of ACL "mail": ACCEPT
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -185,6 +187,7 @@ callout cache: address record is positive
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"
+end of ACL "mail": ACCEPT
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -218,6 +221,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> callout cache: address record is positive
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "mail"
+>>> end of ACL "mail": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -258,6 +262,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> wrote positive callout cache address record
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "mail"
+>>> end of ACL "mail": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)

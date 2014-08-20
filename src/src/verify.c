@@ -462,6 +462,7 @@ else
 
     deliver_host = host->name;
     deliver_host_address = host->address;
+    deliver_host_port = host->port;
     deliver_domain = addr->domain;
 
     if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
@@ -501,7 +502,12 @@ else
     tls_retry_connection:
 
     inblock.sock = outblock.sock =
-      smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL);
+      smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL
+#ifdef EXPERIMENTAL_TPDA
+    /*XXX tpda action? NULL for now. */
+		  , NULL
+#endif
+		  );
     /* reconsider DSCP here */
     if (inblock.sock < 0)
       {
@@ -533,11 +539,22 @@ else
     /* Unless ssl-on-connect, wait for the initial greeting */
     smtps_redo_greeting:
 
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     if (!smtps || (smtps && tls_out.active >= 0))
-    #endif
+#endif
+      {
       if (!(done= smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout)))
         goto RESPONSE_FAILED;
+
+#ifdef EXPERIMENTAL_TPDA
+      if (tpda_raise_event(addr->transport->tpda_event_action,
+			    US"smtp:connect", responsebuffer) == DEFER)
+	{
+	/* Logging?  Debug? */
+	goto RESPONSE_FAILED;
+	}
+#endif
+      }
 
     /* Not worth checking greeting line for ESMTP support */
     if (!(esmtp = verify_check_this_host(&(ob->hosts_avoid_esmtp), NULL,
@@ -547,14 +564,14 @@ else
 
     tls_redo_helo:
 
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     if (smtps  &&  tls_out.active < 0)	/* ssl-on-connect, first pass */
       {
       tls_offered = TRUE;
       ob->tls_tempfail_tryclear = FALSE;
       }
-      else				/* all other cases */
-    #endif
+    else				/* all other cases */
+#endif
 
       { esmtp_retry:
 
@@ -568,26 +585,26 @@ else
 	  done= FALSE;
 	  goto RESPONSE_FAILED;
 	  }
-        #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
         tls_offered = FALSE;
-        #endif
+#endif
         esmtp = FALSE;
         goto esmtp_retry;			/* fallback to HELO */
         }
 
       /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
-      #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
       if (esmtp && !suppress_tls &&  tls_out.active < 0)
-        {
-          if (regex_STARTTLS == NULL) regex_STARTTLS =
-	    regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
+	{
+	if (regex_STARTTLS == NULL) regex_STARTTLS =
+	  regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
 
-          tls_offered = pcre_exec(regex_STARTTLS, NULL, CS responsebuffer,
-			Ustrlen(responsebuffer), 0, PCRE_EOPT, NULL, 0) >= 0;
+	tls_offered = pcre_exec(regex_STARTTLS, NULL, CS responsebuffer,
+		      Ustrlen(responsebuffer), 0, PCRE_EOPT, NULL, 0) >= 0;
 	}
       else
         tls_offered = FALSE;
-      #endif
+#endif
       }
 
     /* If TLS is available on this connection attempt to
@@ -598,7 +615,7 @@ else
     the client not be required to use TLS. If the response is bad, copy the buffer
     for error analysis. */
 
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     if (tls_offered &&
     	verify_check_this_host(&(ob->hosts_avoid_tls), NULL, host->name,
   	  host->address, NULL) != OK &&
@@ -623,11 +640,11 @@ else
         {
         if (errno != 0 || buffer2[0] == 0 ||
         	(buffer2[0] == '4' && !ob->tls_tempfail_tryclear))
-  	{
-  	Ustrncpy(responsebuffer, buffer2, sizeof(responsebuffer));
-  	done= FALSE;
-  	goto RESPONSE_FAILED;
-  	}
+	  {
+	  Ustrncpy(responsebuffer, buffer2, sizeof(responsebuffer));
+	  done= FALSE;
+	  goto RESPONSE_FAILED;
+	  }
         }
 
        /* STARTTLS accepted or ssl-on-connect: try to negotiate a TLS session. */
@@ -637,29 +654,33 @@ else
 	int rc;
 
 	ob->command_timeout = callout;
-        rc = tls_client_start(inblock.sock, host, addr, ob);
+        rc = tls_client_start(inblock.sock, host, addr, addr->transport);
 	ob->command_timeout = oldtimeout;
 
         /* TLS negotiation failed; give an error.  Try in clear on a new connection,
            if the options permit it for this host. */
         if (rc != OK)
           {
-  	if (rc == DEFER && ob->tls_tempfail_tryclear && !smtps &&
-  	   verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-  	     host->address, NULL) != OK)
-  	  {
-            (void)close(inblock.sock);
-  	  log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
-  	    "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
-  	  suppress_tls = TRUE;
-  	  goto tls_retry_connection;
-  	  }
-  	/*save_errno = ERRNO_TLSFAILURE;*/
-  	/*message = US"failure while setting up TLS session";*/
-  	send_quit = FALSE;
-  	done= FALSE;
-  	goto TLS_FAILED;
-  	}
+	  if (rc == DEFER && ob->tls_tempfail_tryclear && !smtps &&
+	     verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+	       host->address, NULL) != OK)
+	    {
+	    (void)close(inblock.sock);
+#ifdef EXPERIMENTAL_TPDA
+	    (void) tpda_raise_event(addr->transport->tpda_event_action,
+				    US"tcp:close", NULL);
+#endif
+	    log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
+	      "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
+	    suppress_tls = TRUE;
+	    goto tls_retry_connection;
+	    }
+	  /*save_errno = ERRNO_TLSFAILURE;*/
+	  /*message = US"failure while setting up TLS session";*/
+	  send_quit = FALSE;
+	  done= FALSE;
+	  goto TLS_FAILED;
+	  }
 
         /* TLS session is set up.  Copy info for logging. */
         addr->cipher = tls_out.cipher;
@@ -667,7 +688,7 @@ else
 
         /* For SMTPS we need to wait for the initial OK response, then do HELO. */
         if (smtps)
-  	 goto smtps_redo_greeting;
+	  goto smtps_redo_greeting;
 
         /* For STARTTLS we need to redo EHLO */
         goto tls_redo_helo;
@@ -702,13 +723,13 @@ else
         cutthrough_delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
         }
-      #ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
       if (ob->dkim_domain)
         {
         cutthrough_delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
         }
-      #endif
+#endif
       }
 
     SEND_FAILED:
@@ -994,10 +1015,14 @@ else
         cancel_cutthrough_connection("multiple verify calls");
       if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
 
-      #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
       tls_close(FALSE, TRUE);
-      #endif
+#endif
       (void)close(inblock.sock);
+#ifdef EXPERIMENTAL_TPDA
+      (void) tpda_raise_event(addr->transport->tpda_event_action,
+			      US"tcp:close", NULL);
+#endif
       }
 
     }    /* Loop through all hosts, while !done */

@@ -8,11 +8,13 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmaY-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -24,11 +26,13 @@ LOG: 10HmaY-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmaZ-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Cc:" header is: <abcd@x.y.z
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -40,11 +44,13 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: '>' missing at end of address: failing address in "Resent-To:" header is: <xyz@a.b.c.d
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -56,11 +62,13 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unmatched doublequote in local part: failing address in "Cc:" header begins: "abcd@x.y.z (missing quote),\n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addresses.addresses.addresses,   \n  longlonglonglonglong@long.long.long.long.long.long.long.long,\n  listlistlistlistlist@list.list.list.list.list.list.list.list,\n  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,\n  addressesaddresses@addresses.addre
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -72,11 +80,13 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: unqualified address not permitted: failing address in "Cc:" header is: <abcd>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -88,6 +98,7 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -95,4 +106,5 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.9] P=smtp S=sss

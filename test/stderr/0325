@@ -32,4 +32,5 @@ r4: $local_part_data = LOCAL PART DATA
 >>> xxx in "+test_local_parts"? yes (matched "+test_local_parts" - cached)
 >>>   message: \$domain_data=$domain_data \$local_part_data=$local_part_data
 >>> deny: condition test succeeded in ACL "a1"
+>>> end of ACL "a1": DENY
 LOG: H=[V4NET.0.0.0] F=<a@b.c> rejected RCPT xxx@a.b.c: $domain_data=DOMAIN DATA $local_part_data=LOCAL PART DATA

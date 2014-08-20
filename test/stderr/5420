@@ -32,6 +32,7 @@ expanding: $local_part
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
+end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
@@ -98,6 +99,7 @@ expanding: ${if eq {$address_data}{userz}{*}{:}}
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
 expanding: ${tod_full}
@@ -192,6 +194,7 @@ expanding: $local_part
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
+end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
@@ -232,6 +235,7 @@ expanding: ${if eq {$address_data}{usery}{*}{:}}
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
 expanding: ${tod_full}
@@ -326,6 +330,7 @@ expanding: $local_part
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
+end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
@@ -366,6 +371,7 @@ expanding: ${if eq {$address_data}{usery}{*}{:}}
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
 expanding: ${tod_full}

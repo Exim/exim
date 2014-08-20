@@ -55,6 +55,7 @@ routed by r1 router
 ----------- end verify ------------
 sender U@W.x.y verified ok as U@x.y
 accept: condition test succeeded in ACL "acl_rcpt"
+end of ACL "acl_rcpt": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

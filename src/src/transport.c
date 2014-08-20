@@ -95,8 +95,8 @@ optionlist optionlist_transports[] = {
   { "shadow_transport", opt_stringptr|opt_public,
                  (void *)offsetof(transport_instance, shadow) },
 #ifdef EXPERIMENTAL_TPDA
-  { "tpda_delivery_action",opt_stringptr | opt_public,
-                 (void *)offsetof(transport_instance, tpda_delivery_action) },
+  { "tpda_event_action",opt_stringptr | opt_public,
+                 (void *)offsetof(transport_instance, tpda_event_action) },
 #endif
   { "transport_filter", opt_stringptr|opt_public,
                  (void *)offsetof(transport_instance, filter_command) },

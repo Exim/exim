@@ -21,5 +21,6 @@ MUNGED: ::1 will be omitted in what follows
 LOG: H=[127.0.0.1] Warning: accepted etrn #some.random.domain
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_etrn"
+>>> end of ACL "check_etrn": ACCEPT
 >>> ETRN command is: exim -R
 >>> ETRN command execution skipped

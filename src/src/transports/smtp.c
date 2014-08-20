@@ -172,10 +172,6 @@ optionlist smtp_transport_options[] = {
   { "tls_verify_hosts",     opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_verify_hosts) }
 #endif
-#ifdef EXPERIMENTAL_TPDA
- ,{ "tpda_host_defer_action", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, tpda_host_defer_action) },
-#endif
 };
 
 /* Size of the options list. An extern variable has to be used so that its
@@ -260,9 +256,6 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* dkim_selector */
   NULL,                /* dkim_sign_headers */
   NULL                 /* dkim_strict */
-#endif
-#ifdef EXPERIMENTAL_TPDA
- ,NULL                 /* tpda_host_defer_action */
 #endif
 };
 
@@ -485,7 +478,8 @@ Arguments:
 Returns:         TRUE if an SMTP "QUIT" command should be sent, else FALSE
 */
 
-static BOOL check_response(host_item *host, int *errno_value, int more_errno,
+static BOOL
+check_response(host_item *host, int *errno_value, int more_errno,
   uschar *buffer, int *yield, uschar **message, BOOL *pass_message)
 {
 uschar *pl = US"";
@@ -636,7 +630,6 @@ else
    It might, for example, be used to write to the database log.
 
 Arguments:
-  ob                    transport options block
   addr                  the address item containing error information
   host                  the current host
 
@@ -644,36 +637,39 @@ Returns:   nothing
 */
 
 static void
-tpda_deferred(smtp_transport_options_block *ob, address_item *addr, host_item *host)
+tpda_deferred(address_item *addr, host_item *host)
 {
-uschar *action = ob->tpda_host_defer_action;
+uschar * action = addr->transport->tpda_event_action;
+uschar * save_domain;
+uschar * save_local;
+
 if (!action)
-	return;
+  return;
 
-tpda_delivery_ip =         string_copy(host->address);
-tpda_delivery_port =       (host->port == PORT_NONE)? 25 : host->port;
-tpda_delivery_fqdn =       string_copy(host->name);
-tpda_delivery_local_part = string_copy(addr->local_part);
-tpda_delivery_domain =     string_copy(addr->domain);
-tpda_defer_errno =         addr->basic_errno;
+save_domain = deliver_domain;
+save_local = deliver_localpart;
 
-tpda_defer_errstr = addr->message
-  ? addr->basic_errno > 0
-    ? string_sprintf("%s: %s", addr->message, strerror(addr->basic_errno))
-    : string_copy(addr->message)
-  : addr->basic_errno > 0
-    ? string_copy(US strerror(addr->basic_errno))
-    : NULL;
-
-DEBUG(D_transport)
-  debug_printf("  TPDA(host defer): tpda_host_defer_action=|%s| tpda_delivery_IP=%s\n",
-    action, tpda_delivery_ip);
+/*XXX would ip & port already be set up? */
+deliver_host_address = string_copy(host->address);
+deliver_host_port =    (host->port == PORT_NONE)? 25 : host->port;
+tpda_defer_errno =     addr->basic_errno;
 
 router_name =    addr->router->name;
 transport_name = addr->transport->name;
-if (!expand_string(action) && *expand_string_message)
-  log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand tpda_defer_action in %s: %s\n",
-    transport_name, expand_string_message);
+deliver_domain = addr->domain;
+deliver_localpart = addr->local_part;
+
+(void) tpda_raise_event(action, US"msg:host:defer",
+    addr->message
+      ? addr->basic_errno > 0
+	? string_sprintf("%s: %s", addr->message, strerror(addr->basic_errno))
+	: string_copy(addr->message)
+      : addr->basic_errno > 0
+	? string_copy(US strerror(addr->basic_errno))
+	: NULL);
+
+deliver_localpart = save_local;
+deliver_domain =    save_domain;
 router_name = transport_name = NULL;
 }
 #endif
@@ -940,147 +936,147 @@ smtp_auth(uschar *buffer, unsigned bufsize, address_item *addrlist, host_item *h
     smtp_transport_options_block *ob, BOOL is_esmtp,
     smtp_inblock *ibp, smtp_outblock *obp)
 {
-  int require_auth;
-  uschar *fail_reason = US"server did not advertise AUTH support";
+int require_auth;
+uschar *fail_reason = US"server did not advertise AUTH support";
 
-  smtp_authenticated = FALSE;
-  client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
-  require_auth = verify_check_this_host(&(ob->hosts_require_auth), NULL,
-    host->name, host->address, NULL);
+smtp_authenticated = FALSE;
+client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
+require_auth = verify_check_this_host(&(ob->hosts_require_auth), NULL,
+  host->name, host->address, NULL);
 
-  if (is_esmtp && !regex_AUTH) regex_AUTH =
-      regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
-            FALSE, TRUE);
+if (is_esmtp && !regex_AUTH) regex_AUTH =
+    regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
+	  FALSE, TRUE);
 
-  if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
+if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
+  {
+  uschar *names = string_copyn(expand_nstring[1], expand_nlength[1]);
+  expand_nmax = -1;                          /* reset */
+
+  /* Must not do this check until after we have saved the result of the
+  regex match above. */
+
+  if (require_auth == OK ||
+      verify_check_this_host(&(ob->hosts_try_auth), NULL, host->name,
+	host->address, NULL) == OK)
     {
-    uschar *names = string_copyn(expand_nstring[1], expand_nlength[1]);
-    expand_nmax = -1;                          /* reset */
+    auth_instance *au;
+    fail_reason = US"no common mechanisms were found";
 
-    /* Must not do this check until after we have saved the result of the
-    regex match above. */
+    DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
 
-    if (require_auth == OK ||
-        verify_check_this_host(&(ob->hosts_try_auth), NULL, host->name,
-          host->address, NULL) == OK)
+    /* Scan the configured authenticators looking for one which is configured
+    for use as a client, which is not suppressed by client_condition, and
+    whose name matches an authentication mechanism supported by the server.
+    If one is found, attempt to authenticate by calling its client function.
+    */
+
+    for (au = auths; !smtp_authenticated && au != NULL; au = au->next)
       {
-      auth_instance *au;
-      fail_reason = US"no common mechanisms were found";
+      uschar *p = names;
+      if (!au->client ||
+	  (au->client_condition != NULL &&
+	   !expand_check_condition(au->client_condition, au->name,
+	     US"client authenticator")))
+	{
+	DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
+	  au->name,
+	  (au->client)? "client_condition is false" :
+			"not configured as a client");
+	continue;
+	}
 
-      DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
+      /* Loop to scan supported server mechanisms */
 
-      /* Scan the configured authenticators looking for one which is configured
-      for use as a client, which is not suppressed by client_condition, and
-      whose name matches an authentication mechanism supported by the server.
-      If one is found, attempt to authenticate by calling its client function.
-      */
+      while (*p != 0)
+	{
+	int rc;
+	int len = Ustrlen(au->public_name);
+	while (isspace(*p)) p++;
 
-      for (au = auths; !smtp_authenticated && au != NULL; au = au->next)
-        {
-        uschar *p = names;
-        if (!au->client ||
-            (au->client_condition != NULL &&
-             !expand_check_condition(au->client_condition, au->name,
-               US"client authenticator")))
-          {
-          DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
-            au->name,
-            (au->client)? "client_condition is false" :
-                          "not configured as a client");
-          continue;
-          }
+	if (strncmpic(au->public_name, p, len) != 0 ||
+	    (p[len] != 0 && !isspace(p[len])))
+	  {
+	  while (*p != 0 && !isspace(*p)) p++;
+	  continue;
+	  }
 
-        /* Loop to scan supported server mechanisms */
+	/* Found data for a listed mechanism. Call its client entry. Set
+	a flag in the outblock so that data is overwritten after sending so
+	that reflections don't show it. */
 
-        while (*p != 0)
-          {
-          int rc;
-          int len = Ustrlen(au->public_name);
-          while (isspace(*p)) p++;
+	fail_reason = US"authentication attempt(s) failed";
+	obp->authenticating = TRUE;
+	rc = (au->info->clientcode)(au, ibp, obp,
+	  ob->command_timeout, buffer, bufsize);
+	obp->authenticating = FALSE;
+	DEBUG(D_transport) debug_printf("%s authenticator yielded %d\n",
+	  au->name, rc);
 
-          if (strncmpic(au->public_name, p, len) != 0 ||
-              (p[len] != 0 && !isspace(p[len])))
-            {
-            while (*p != 0 && !isspace(*p)) p++;
-            continue;
-            }
+	/* A temporary authentication failure must hold up delivery to
+	this host. After a permanent authentication failure, we carry on
+	to try other authentication methods. If all fail hard, try to
+	deliver the message unauthenticated unless require_auth was set. */
 
-          /* Found data for a listed mechanism. Call its client entry. Set
-          a flag in the outblock so that data is overwritten after sending so
-          that reflections don't show it. */
+	switch(rc)
+	  {
+	  case OK:
+	  smtp_authenticated = TRUE;   /* stops the outer loop */
+	  client_authenticator = au->name;
+	  if (au->set_client_id != NULL)
+	    client_authenticated_id = expand_string(au->set_client_id);
+	  break;
 
-          fail_reason = US"authentication attempt(s) failed";
-          obp->authenticating = TRUE;
-          rc = (au->info->clientcode)(au, ibp, obp,
-            ob->command_timeout, buffer, bufsize);
-          obp->authenticating = FALSE;
-          DEBUG(D_transport) debug_printf("%s authenticator yielded %d\n",
-            au->name, rc);
+	  /* Failure after writing a command */
 
-          /* A temporary authentication failure must hold up delivery to
-          this host. After a permanent authentication failure, we carry on
-          to try other authentication methods. If all fail hard, try to
-          deliver the message unauthenticated unless require_auth was set. */
+	  case FAIL_SEND:
+	  return FAIL_SEND;
 
-          switch(rc)
-            {
-            case OK:
-            smtp_authenticated = TRUE;   /* stops the outer loop */
-	    client_authenticator = au->name;
-	    if (au->set_client_id != NULL)
-	      client_authenticated_id = expand_string(au->set_client_id);
-            break;
+	  /* Failure after reading a response */
 
-            /* Failure after writing a command */
+	  case FAIL:
+	  if (errno != 0 || buffer[0] != '5') return FAIL;
+	  log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
+	    au->name, host->name, host->address, buffer);
+	  break;
 
-            case FAIL_SEND:
-            return FAIL_SEND;
+	  /* Failure by some other means. In effect, the authenticator
+	  decided it wasn't prepared to handle this case. Typically this
+	  is the result of "fail" in an expansion string. Do we need to
+	  log anything here? Feb 2006: a message is now put in the buffer
+	  if logging is required. */
 
-            /* Failure after reading a response */
+	  case CANCELLED:
+	  if (*buffer != 0)
+	    log_write(0, LOG_MAIN, "%s authenticator cancelled "
+	      "authentication H=%s [%s] %s", au->name, host->name,
+	      host->address, buffer);
+	  break;
 
-            case FAIL:
-            if (errno != 0 || buffer[0] != '5') return FAIL;
-            log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
-              au->name, host->name, host->address, buffer);
-            break;
+	  /* Internal problem, message in buffer. */
 
-            /* Failure by some other means. In effect, the authenticator
-            decided it wasn't prepared to handle this case. Typically this
-            is the result of "fail" in an expansion string. Do we need to
-            log anything here? Feb 2006: a message is now put in the buffer
-            if logging is required. */
+	  case ERROR:
+	  set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE);
+	  return ERROR;
+	  }
 
-            case CANCELLED:
-            if (*buffer != 0)
-              log_write(0, LOG_MAIN, "%s authenticator cancelled "
-                "authentication H=%s [%s] %s", au->name, host->name,
-                host->address, buffer);
-            break;
-
-            /* Internal problem, message in buffer. */
-
-            case ERROR:
-            set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE);
-            return ERROR;
-            }
-
-          break;  /* If not authenticated, try next authenticator */
-          }       /* Loop for scanning supported server mechanisms */
-        }         /* Loop for further authenticators */
-      }
+	break;  /* If not authenticated, try next authenticator */
+	}       /* Loop for scanning supported server mechanisms */
+      }         /* Loop for further authenticators */
     }
+  }
 
-  /* If we haven't authenticated, but are required to, give up. */
+/* If we haven't authenticated, but are required to, give up. */
 
-  if (require_auth == OK && !smtp_authenticated)
-    {
-    set_errno(addrlist, ERRNO_AUTHFAIL,
-      string_sprintf("authentication required but %s", fail_reason), DEFER,
-      FALSE);
-    return DEFER;
-    }
+if (require_auth == OK && !smtp_authenticated)
+  {
+  set_errno(addrlist, ERRNO_AUTHFAIL,
+    string_sprintf("authentication required but %s", fail_reason), DEFER,
+    FALSE);
+  return DEFER;
+  }
 
-  return OK;
+return OK;
 }
 
 
@@ -1283,9 +1279,14 @@ specially so they can be identified for retries. */
 
 if (continue_hostname == NULL)
   {
+  /* This puts port into host->port */
   inblock.sock = outblock.sock =
     smtp_connect(host, host_af, port, interface, ob->connect_timeout,
-      ob->keepalive, ob->dscp);   /* This puts port into host->port */
+		  ob->keepalive, ob->dscp
+#ifdef EXPERIMENTAL_TPDA
+		  , tblock->tpda_event_action
+#endif
+		);
 
   if (inblock.sock < 0)
     {
@@ -1308,6 +1309,17 @@ if (continue_hostname == NULL)
     {
     if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
       ob->command_timeout)) goto RESPONSE_FAILED;
+
+#ifdef EXPERIMENTAL_TPDA
+    if (tpda_raise_event(tblock->tpda_event_action, US"smtp:connect", buffer)
+	== DEFER)
+	{
+	uschar *message = US"deferred by smtp:connect event expansion";
+	set_errno(addrlist, 0, message, DEFER, FALSE);
+	yield = DEFER;
+	goto SEND_QUIT;
+	}
+#endif
 
     /* Now check if the helo_data expansion went well, and sign off cleanly if
     it didn't. */
@@ -1363,7 +1375,7 @@ goto SEND_QUIT;
   /* Alas; be careful, since this goto is not an error-out, so conceivably
   we might set data between here and the target which we assume to exist
   and be usable.  I can see this coming back to bite us. */
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   if (smtps)
     {
     tls_offered = TRUE;
@@ -1372,7 +1384,7 @@ goto SEND_QUIT;
     smtp_command = US"SSL-on-connect";
     goto TLS_NEGOTIATE;
     }
-  #endif
+#endif
 
   if (esmtp)
     {
@@ -1409,13 +1421,13 @@ goto SEND_QUIT;
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   tls_offered = esmtp &&
     pcre_exec(regex_STARTTLS, NULL, CS buffer, Ustrlen(buffer), 0,
       PCRE_EOPT, NULL, 0) >= 0;
-  #endif
+#endif
 
-  #ifndef DISABLE_PRDR
+#ifndef DISABLE_PRDR
   prdr_offered = esmtp &&
     (pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
       PCRE_EOPT, NULL, 0) >= 0) &&
@@ -1424,7 +1436,7 @@ goto SEND_QUIT;
 
   if (prdr_offered)
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
-  #endif
+#endif
   }
 
 /* For continuing deliveries down the same channel, the socket is the standard
@@ -1481,7 +1493,7 @@ if (tls_offered && !suppress_tls &&
   else
   TLS_NEGOTIATE:
     {
-    int rc = tls_client_start(inblock.sock, host, addrlist, ob);
+    int rc = tls_client_start(inblock.sock, host, addrlist, tblock);
 
     /* TLS negotiation failed; give an error. From outside, this function may
     be called again to try in clear on a new connection, if the options permit
@@ -1582,9 +1594,9 @@ continued session down a previously-used socket, we haven't just done EHLO, so
 we skip this. */
 
 if (continue_hostname == NULL
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     || tls_out.active >= 0
-    #endif
+#endif
     )
   {
   /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
@@ -1721,12 +1733,11 @@ if (prdr_offered)
 	  {			/* at least two recipients to send */
 	  prdr_active = TRUE;
 	  sprintf(CS p, " PRDR"); p += 5;
-	  goto prdr_is_active;
+	  break;
 	  }
       break;
       }
   }
-prdr_is_active:
 #endif
 
 #ifdef EXPERIMENTAL_DSN
@@ -1769,7 +1780,10 @@ otherwise no check - this feature is expected to be used with LMTP and other
 cases where non-standard addresses (e.g. without domains) might be required. */
 
 if (smtp_mail_auth_str(p, sizeof(buffer) - (p-buffer), addrlist, ob))
-    return ERROR;
+  {
+  yield = ERROR;
+  goto SEND_QUIT;
+  }
 
 /* From here until we send the DATA command, we can make use of PIPELINING
 if the server host supports it. The code has to be able to check the responses
@@ -1823,25 +1837,22 @@ for (addr = first_addr;
   int count;
   BOOL no_flush;
 
-  #ifdef EXPERIMENTAL_DSN
-  if(smtp_use_dsn)
-    addr->dsn_aware = dsn_support_yes;
-  else
-    addr->dsn_aware = dsn_support_no;
-  #endif
+#ifdef EXPERIMENTAL_DSN
+  addr->dsn_aware = smtp_use_dsn ? dsn_support_yes : dsn_support_no;
+#endif
 
   if (addr->transport_return != PENDING_DEFER) continue;
 
   address_count++;
   no_flush = smtp_use_pipelining && (!mua_wrapper || addr->next != NULL);
 
-  #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
   /* Add any DSN flags to the rcpt command and add to the sent string */
 
   p = buffer;
   *p = 0;
 
-  if ((smtp_use_dsn) && ((addr->dsn_flags & rf_dsnlasthop) != 1))
+  if (smtp_use_dsn && (addr->dsn_flags & rf_dsnlasthop) != 1)
     {
     if ((addr->dsn_flags & rf_dsnflags) != 0)
       {
@@ -1850,7 +1861,6 @@ for (addr = first_addr;
       strcpy(p, " NOTIFY=");
       while (*p) p++;
       for (i = 0; i < 4; i++)
-        {
         if ((addr->dsn_flags & rf_list[i]) != 0)
           {
           if (!first) *p++ = ',';
@@ -1858,16 +1868,16 @@ for (addr = first_addr;
           strcpy(p, rf_names[i]);
           while (*p) p++;
           }
-        }
       }
 
-    if (addr->dsn_orcpt != NULL) {
+    if (addr->dsn_orcpt != NULL)
+      {
       string_format(p, sizeof(buffer) - (p-buffer), " ORCPT=%s",
         addr->dsn_orcpt);
       while (*p) p++;
       }
     }
-  #endif
+#endif
 
 
   /* Now send the RCPT command, and process outstanding responses when
@@ -1875,13 +1885,13 @@ for (addr = first_addr;
   yield as OK, because this error can often mean that there is a problem with
   just one address, so we don't want to delay the host. */
 
-  #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
   count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s%s\r\n",
     transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr, buffer);
-  #else
+#else
   count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s\r\n",
     transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr);
-  #endif
+#endif
 
   if (count < 0) goto SEND_FAILED;
   if (count > 0)
@@ -1972,6 +1982,7 @@ if (!ok) ok = TRUE; else
   DEBUG(D_transport|D_v)
     debug_printf("  SMTP>> writing message and terminating \".\"\n");
   transport_count = 0;
+
 #ifndef DISABLE_DKIM
   ok = dkim_transport_write_message(addrlist, inblock.sock,
     topt_use_crlf | topt_end_dot | topt_escape_headers |
@@ -2098,9 +2109,9 @@ if (!ok) ok = TRUE; else
     /* Set up confirmation if needed - applies only to SMTP */
 
     if (
-        #ifndef EXPERIMENTAL_TPDA
+#ifndef EXPERIMENTAL_TPDA
           (log_extra_selector & LX_smtp_confirmation) != 0 &&
-        #endif
+#endif
           !lmtp
        )
       {
@@ -2276,10 +2287,10 @@ if (!ok)
   in message and save_errno, and setting_up will always be true. Treat as
   a temporary error. */
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   TLS_FAILED:
   code = '4';
-  #endif
+#endif
 
   /* If the failure happened while setting up the call, see if the failure was
   a 5xx response (this will either be on connection, or following HELO - a 5xx
@@ -2472,7 +2483,7 @@ if (completed_address && ok && send_quit)
       when TLS is shut down. We test for this by sending a new EHLO. If we
       don't get a good response, we don't attempt to pass the socket on. */
 
-      #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
       if (tls_out.active >= 0)
         {
         tls_close(FALSE, TRUE);
@@ -2483,7 +2494,7 @@ if (completed_address && ok && send_quit)
                smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
                  ob->command_timeout);
         }
-      #endif
+#endif
 
       /* If the socket is successfully passed, we musn't send QUIT (or
       indeed anything!) from here. */
@@ -2539,6 +2550,11 @@ specified in the transports, and therefore not visible at top level, in which
 case continue_more won't get set. */
 
 (void)close(inblock.sock);
+
+#ifdef EXPERIMENTAL_TPDA
+(void) tpda_raise_event(tblock->tpda_event_action, US"tcp:close", NULL);
+#endif
+
 continue_transport = NULL;
 continue_hostname = NULL;
 return yield;
@@ -2627,13 +2643,13 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   addr->basic_errno = 0;
   addr->more_errno = (host->mx >= 0)? 'M' : 'A';
   addr->message = NULL;
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   addr->cipher = NULL;
   addr->ourcert = NULL;
   addr->peercert = NULL;
   addr->peerdn = NULL;
   addr->ocsp = OCSP_NOT_REQ;
-  #endif
+#endif
   }
 return first_addr;
 }
@@ -3246,10 +3262,10 @@ for (cutoff_retry = 0; expired &&
                          first_addr->basic_errno != ERRNO_TLSFAILURE)
         write_logs(first_addr, host);
 
-      #ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_TPDA
       if (rc == DEFER)
-        tpda_deferred(ob, first_addr, host);
-      #endif
+        tpda_deferred(first_addr, host);
+#endif
 
       /* If STARTTLS was accepted, but there was a failure in setting up the
       TLS session (usually a certificate screwup), and the host is not in
@@ -3260,7 +3276,7 @@ for (cutoff_retry = 0; expired &&
       session, so the in-clear transmission after those errors, if permitted,
       happens inside smtp_deliver().] */
 
-      #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
       if (rc == DEFER && first_addr->basic_errno == ERRNO_TLSFAILURE &&
            ob->tls_tempfail_tryclear &&
            verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
@@ -3273,12 +3289,12 @@ for (cutoff_retry = 0; expired &&
           expanded_hosts != NULL, &message_defer, TRUE);
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
           write_logs(first_addr, host);
-        #ifdef EXPERIMENTAL_TPDA
+# ifdef EXPERIMENTAL_TPDA
         if (rc == DEFER)
-          tpda_deferred(ob, first_addr, host);
-        #endif
+          tpda_deferred(first_addr, host);
+# endif
         }
-      #endif
+#endif
       }
 
     /* Delivery attempt finished */

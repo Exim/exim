@@ -21,6 +21,7 @@
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -32,6 +33,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -55,6 +57,7 @@ LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -66,6 +69,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=
 LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -90,6 +94,7 @@ LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -101,6 +106,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -124,6 +130,7 @@ LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -135,6 +142,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=
 LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -159,6 +167,7 @@ LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_rcpt
@@ -171,6 +180,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> warn: condition test succeeded in ACL "check_rcpt"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_rcpt
@@ -183,6 +193,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> warn: condition test succeeded in ACL "check_rcpt"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -196,6 +207,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=3.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -223,6 +235,7 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> warn: condition test failed in ACL "check_rcpt2"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt2"
+>>> end of ACL "check_rcpt2": ACCEPT
 >>> using ACL "check_rcpt2"
 >>> processing "warn"
 >>> check ratelimit = 1/1m/per_rcpt/noupdate
@@ -239,6 +252,7 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> warn: condition test failed in ACL "check_rcpt2"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt2"
+>>> end of ACL "check_rcpt2": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -253,4 +267,5 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] Warning: DATA: sender_rate=19.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] F=<> rejected after DATA

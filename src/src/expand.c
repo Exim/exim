@@ -501,6 +501,7 @@ static var_entry var_table[] = {
   { "host_data",           vtype_stringptr,   &host_data },
   { "host_lookup_deferred",vtype_int,         &host_lookup_deferred },
   { "host_lookup_failed",  vtype_int,         &host_lookup_failed },
+  { "host_port",           vtype_int,         &deliver_host_port },
   { "inode",               vtype_ino,         &deliver_inode },
   { "interface_address",   vtype_stringptr,   &interface_address },
   { "interface_port",      vtype_int,         &interface_port },
@@ -706,14 +707,12 @@ static var_entry var_table[] = {
   { "tod_zone",            vtype_todzone,     NULL },
   { "tod_zulu",            vtype_todzulu,     NULL },
 #ifdef EXPERIMENTAL_TPDA
+  { "tpda_data",           vtype_stringptr,   &tpda_data },
+
+  /*XXX want to use generic vars for as many of these as possible*/
   { "tpda_defer_errno",     vtype_int,         &tpda_defer_errno },
-  { "tpda_defer_errstr",    vtype_stringptr,   &tpda_defer_errstr },
-  { "tpda_delivery_confirmation", vtype_stringptr,   &tpda_delivery_confirmation },
-  { "tpda_delivery_domain", vtype_stringptr,   &tpda_delivery_domain },
-  { "tpda_delivery_fqdn",   vtype_stringptr,   &tpda_delivery_fqdn },
-  { "tpda_delivery_ip",     vtype_stringptr,   &tpda_delivery_ip },
-  { "tpda_delivery_local_part",vtype_stringptr,&tpda_delivery_local_part },
-  { "tpda_delivery_port",   vtype_int,         &tpda_delivery_port },
+
+  { "tpda_event",          vtype_stringptr,   &tpda_event },
 #endif
   { "transport_name",      vtype_stringptr,   &transport_name },
   { "value",               vtype_stringptr,   &lookup_value },

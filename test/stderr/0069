@@ -23,6 +23,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> check hosts = +include_unknown : ^ten-1\\.test\\.ex
 >>> host in "+include_unknown : ^ten-1\.test\.ex"? yes (matched "^ten-1\.test\.ex")
 >>> deny: condition test succeeded in ACL "check_recipientx"
+>>> end of ACL "check_recipientx": DENY
 LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<x@y> rejected RCPT <x@test.ex>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -47,6 +48,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in "+include_unknown : ^ten-1\.test\.ex"? yes (failed to find host name for V4NET.0.0.13)
 LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> deny: condition test succeeded in ACL "check_recipientx"
+>>> end of ACL "check_recipientx": DENY
 LOG: H=[V4NET.0.0.13] F=<userx@myhost.test.ex> rejected RCPT <x@test.ex>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -70,6 +72,7 @@ LOG: no IP address found for host non.existent.invalid (during SMTP connection f
 >>> processing "deny"
 >>>   message: "Denied"
 >>> deny: condition test succeeded in ACL "check_recipienty"
+>>> end of ACL "check_recipienty": DENY
 LOG: H=[V4NET.0.0.13] F=<userx@test.ex> rejected RCPT <y@test.ex>: "Denied"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -91,6 +94,7 @@ LOG: no IP address found for host non.existent.invalid (during SMTP connection f
 >>> failed to find IP address for non.existent.invalid: item ignored by +ignore_unknown
 >>> host in "+ignore_unknown : non.existent.invalid : V4NET.0.0.13"? yes (matched "V4NET.0.0.13")
 >>> accept: condition test succeeded in ACL "check_recipientz"
+>>> end of ACL "check_recipientz": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -114,6 +118,7 @@ LOG: list matching forced to fail: failed to find IP address for non.existent.in
 >>> processing "deny"
 >>>   message: "Denied"
 >>> deny: condition test succeeded in ACL "check_recipienty"
+>>> end of ACL "check_recipienty": DENY
 LOG: H=[V4NET.0.0.13] F=<userx@test.ex> rejected RCPT <y@test.ex>: "Denied"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -137,6 +142,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 LOG: DNS lookup of test.again.dns deferred: accepted by +include_defer
 >>> deny: condition test succeeded in ACL "check_recipienta"
+>>> end of ACL "check_recipienta": DENY
 LOG: H=[V4NET.0.0.13] F=<userx@myhost.test.ex> rejected RCPT <a@test.ex>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -176,3 +182,4 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> DNS lookup of test.again.dns deferred: item ignored by +ignore_defer
 >>> host in "+ignore_defer : test.again.dns : V4NET.0.0.13"? yes (matched "V4NET.0.0.13")
 >>> accept: condition test succeeded in ACL "check_recipientc"
+>>> end of ACL "check_recipientc": ACCEPT

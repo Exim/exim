@@ -13,6 +13,7 @@
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test succeeded in ACL "check_mail"
+>>> end of ACL "check_mail": ACCEPT
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> csa2.test.ex in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")

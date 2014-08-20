@@ -28,6 +28,7 @@ check logwrite = $sender_host_address accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
 accept: condition test succeeded in ACL "connect"
+end of ACL "connect": ACCEPT
 using ACL "mail"
 processing "warn"
   message: added header line
@@ -66,6 +67,7 @@ check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argu
 LOG: MAIN REJECT
   mail accepted "mail from:<ok@test1>" "<ok@test1>"
 accept: condition test succeeded in ACL "mail"
+end of ACL "mail": ACCEPT
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
@@ -82,6 +84,7 @@ check logwrite = :panic: rcpt accepted
 LOG: PANIC
   rcpt accepted
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
@@ -95,6 +98,7 @@ check logwrite = :panic: rcpt accepted
 LOG: PANIC
   rcpt accepted
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -129,6 +133,7 @@ check logwrite = $sender_host_address accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
 accept: condition test succeeded in ACL "connect"
+end of ACL "connect": ACCEPT
 using ACL "mail"
 processing "warn"
   message: added header line
@@ -153,6 +158,7 @@ check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argu
 LOG: MAIN REJECT
   mail accepted "mail from:<ok@test3>" "<ok@test3>"
 accept: condition test succeeded in ACL "mail"
+end of ACL "mail": ACCEPT
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
@@ -171,6 +177,7 @@ check logwrite = :panic: rcpt accepted
 LOG: PANIC
   rcpt accepted
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 host in ignore_fromline_hosts? no (option unset)
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: added header line

@@ -13,8 +13,10 @@
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_from"
+>>> end of ACL "check_from": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -23,6 +25,7 @@
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -39,14 +42,17 @@ LOG: 10HmaX-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_from"
+>>> end of ACL "check_from": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "﻿Received" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -63,14 +69,17 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> usery@exim.test.ex in "usery@exim.test.ex"? yes (matched "usery@exim.test.ex")
 >>> check set acl_m_message = I do not like your message
 >>> accept: condition test succeeded in ACL "check_from"
+>>> end of ACL "check_from": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -87,14 +96,17 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.10.10.10] F=<usery@exim.test.ex> rejected after D
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_from"
+>>> end of ACL "check_from": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>>   message: ${if def:acl_m_message {$acl_m_message}}
 >>> check verify = header_names_ascii
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after DATA: Invalid character in header "Subjec⍅" found
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -111,8 +123,10 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_from"
+>>> end of ACL "check_from": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -121,6 +135,7 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.10.10.10] F=<userx@exim.test.ex> rejected after D
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -137,8 +152,10 @@ LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> accept: condition test failed in ACL "check_from"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_from"
+>>> end of ACL "check_from": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -147,4 +164,5 @@ LOG: 10HmaY-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaZ-0005vi-00 <= userx@exim.test.ex H=[V4NET.10.10.10] P=smtp S=sss

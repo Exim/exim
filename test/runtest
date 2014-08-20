@@ -1293,7 +1293,7 @@ $munges =
     { 'mainlog' => 's/\(gnutls_handshake\): Error in the push function/\(gnutls_handshake\): A TLS packet with unexpected length was received/', },
 
     'tpda' =>
-    { 'stdout' => '/tpda_delivery_action =/', },
+    { 'stdout' => '/tpda_event_action =/', },
 
   };
 

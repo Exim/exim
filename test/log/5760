@@ -3,8 +3,8 @@
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.com/CN=clica CA
 1999-03-02 09:44:33 10HmaX-0005vi-00 TLS error on connection to 127.0.0.1 [127.0.0.1] (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmaX-0005vi-00 deferral bad
-1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLENT CERT presented
+1999-03-02 09:44:33 10HmaX-0005vi-00 msg:host:defer bad
+1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
 1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
 1999-03-02 09:44:33 10HmaX-0005vi-00 ver <2>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=clica CA,O=example.com>
@@ -18,12 +18,15 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no CRU)
 1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session failure: delivering unencrypted to 127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
 1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 delivery bad
-1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLENT CERT presented
+1999-03-02 09:44:33 10HmaX-0005vi-00 msg:delivery bad
+1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
 1999-03-02 09:44:33 10HmaX-0005vi-00 No Peer cert
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=2 <CN=clica CA,O=example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=1 <CN=clica Signing Cert,O=example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=0 <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaY-0005vi-00 delivery good
+1999-03-02 09:44:33 10HmaY-0005vi-00 msg:delivery good
 1999-03-02 09:44:33 10HmaY-0005vi-00 Our cert SN: CN=server2.example.com
 1999-03-02 09:44:33 10HmaY-0005vi-00 Peer cert:
 1999-03-02 09:44:33 10HmaY-0005vi-00 ver <2>

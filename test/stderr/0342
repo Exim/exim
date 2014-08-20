@@ -22,3 +22,4 @@
 >>> deny: condition test failed in ACL "check_rcpt"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": ACCEPT
