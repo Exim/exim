@@ -19,6 +19,7 @@
 >>> test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> other.ex in percent_hack_domains? list match deferred for testdb;defer
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a@other.ex>: defer in percent_hack_domains check
 >>> testhack.ex in percent_hack_domains? yes (matched "testhack.ex")
@@ -35,6 +36,7 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> testhack2.ex in percent_hack_domains? list match deferred for testdb;defer
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a%b@testhack2.ex>: defer in percent_hack_domains check
 >>> yesrelay.ex in percent_hack_domains? no (matched "!*relay.ex")
@@ -53,6 +55,7 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
 >>> yesrelay.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> norelay.ex in percent_hack_domains? no (matched "!*relay.ex")
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -87,6 +90,7 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
 >>> yesrelay.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> testhack.ex in percent_hack_domains? yes (matched "testhack.ex")
 >>> norelay.ex in percent_hack_domains? no (matched "!*relay.ex")
 >>> using ACL "check_recipient"

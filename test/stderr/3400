@@ -13,6 +13,7 @@
 >>> warn: condition test failed in ACL "check_connect"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_connect"
+>>> end of ACL "check_connect": ACCEPT
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
 >>> processing "deny"
@@ -22,6 +23,7 @@
 >>> deny: condition test failed in ACL "check_vrfy"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
@@ -38,6 +40,7 @@
 >>> check hosts = 10.0.0.0/24
 >>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
 >>> accept: condition test succeeded in ACL "check_expn"
+>>> end of ACL "check_expn": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
@@ -60,6 +63,7 @@ LOG: ETRN #abcd received from [10.0.0.2]
 LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_etrn"
+>>> end of ACL "check_etrn": ACCEPT
 >>> ETRN command is: exim -R
 >>> ETRN command execution skipped
 >>> host in hosts_connection_nolog? no (option unset)
@@ -77,6 +81,7 @@ LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>> warn: condition test failed in ACL "check_connect"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_connect"
+>>> end of ACL "check_connect": ACCEPT
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? yes (matched "10.0.0.1")
@@ -89,6 +94,7 @@ LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": DENY
 LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication required
 >>> using ACL "check_expn"
 >>> processing "deny"
@@ -97,6 +103,7 @@ LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication requir
 >>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_expn"
+>>> end of ACL "check_expn": DENY
 LOG: H=(test.host) [10.0.0.1] rejected EXPN list@test.ex: authentication required
 LOG: ETRN abcd received from (test.host) [10.0.0.1]
 >>> using ACL "check_etrn"
@@ -106,6 +113,7 @@ LOG: ETRN abcd received from (test.host) [10.0.0.1]
 >>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_etrn"
+>>> end of ACL "check_etrn": DENY
 LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
 >>> using ACL "check_recipient"
 >>> processing "warn"
@@ -126,6 +134,7 @@ LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
 >>>   message: authentication required
 >>> check !authenticated = *
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@test.ex>: authentication required
 >>> mylogin authenticator server_condition:
 >>>   $auth1 = userx secret
@@ -157,6 +166,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>> check hosts = 10.0.0.5
@@ -195,6 +205,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> processing "deny"
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT <userx@cus.cam.ac.uk>: relay not permitted
 >>> using ACL "check_vrfy"
 >>> processing "deny"
@@ -206,6 +217,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> deny: condition test failed in ACL "check_vrfy"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
@@ -225,6 +237,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT
 >>> check hosts = 10.0.0.0/24
 >>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
 >>> accept: condition test succeeded in ACL "check_expn"
+>>> end of ACL "check_expn": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
@@ -250,6 +263,7 @@ LOG: ETRN #abcd received from (test.host) [10.0.0.1]
 LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_etrn"
+>>> end of ACL "check_etrn": ACCEPT
 >>> ETRN command is: exim -R
 >>> ETRN command execution skipped
 >>> host in hosts_connection_nolog? no (option unset)
@@ -267,6 +281,7 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> warn: condition test failed in ACL "check_connect"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_connect"
+>>> end of ACL "check_connect": ACCEPT
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? no (end of list)
@@ -345,6 +360,7 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> check authenticated = *
 >>> mylogin in "*"? yes (matched "*")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -360,6 +376,7 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> warn: condition test failed in ACL "check_connect"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_connect"
+>>> end of ACL "check_connect": ACCEPT
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? no (end of list)
@@ -401,6 +418,7 @@ host in "10.0.0.6"? no (end of list)
 warn: condition test failed in ACL "check_connect"
 processing "accept"
 accept: condition test succeeded in ACL "check_connect"
+end of ACL "check_connect": ACCEPT
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< ehlo testing.testing

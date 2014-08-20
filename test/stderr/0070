@@ -33,6 +33,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> verifying EHLO/HELO argument "NULL"
 >>> no EHLO/HELO command was issued
 >>> require: condition test failed in ACL "rcpt"
+>>> end of ACL "rcpt": not OK
 LOG: H=[V4NET.0.0.13] F=<userx@cus.cam.ac.uk> rejected RCPT <a@b>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -59,6 +60,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   message: helo not verified
 >>> check verify = helo
 >>> require: condition test failed in ACL "rcpt"
+>>> end of ACL "rcpt": not OK
 LOG: H=([V4NET.0.0.1]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -88,6 +90,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing "deny"
 >>>   message: helo did verify
 >>> deny: condition test succeeded in ACL "rcpt"
+>>> end of ACL "rcpt": DENY
 LOG: H=([V4NET.0.0.2]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -213,6 +216,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "[V4NET.0.0.99]"
 >>> require: condition test failed in ACL "rcpt"
+>>> end of ACL "rcpt": not OK
 LOG: H=([V4NET.0.0.99]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -242,6 +246,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing "deny"
 >>>   message: helo did verify
 >>> deny: condition test succeeded in ACL "rcpt"
+>>> end of ACL "rcpt": DENY
 LOG: H=([V4NET.0.0.13]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -272,4 +277,5 @@ MUNGED: ::1 will be omitted in what follows
 >>> getting IP address for rhubarb
 >>> no IP address found for host rhubarb (during SMTP connection from (rhubarb) [99.99.99.99])
 >>> require: condition test failed in ACL "rcpt"
+>>> end of ACL "rcpt": not OK
 LOG: H=(rhubarb) [99.99.99.99] F=<a@b> rejected RCPT <c@d>: helo not verified

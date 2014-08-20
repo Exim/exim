@@ -16,6 +16,7 @@
 >>> b.c in "b.c"? yes (matched "b.c")
 >>> a@b.c in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "a@b.c")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<a@b.c> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -27,6 +28,7 @@ LOG: H=[1.1.1.1] F=<a@b.c> rejected RCPT <x@test.ex>
 >>> b.c in "b.c"? yes (matched "b.c")
 >>> a@B.C in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "a@b.c")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<a@B.C> rejected RCPT <x@test.ex>
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_recipient"
@@ -39,6 +41,7 @@ LOG: H=[1.1.1.1] F=<a@B.C> rejected RCPT <x@test.ex>
 >>> b.c in "b.c"? yes (matched "b.c")
 >>> A@b.c in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "a@b.c")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<A@b.c> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -50,6 +53,7 @@ LOG: H=[1.1.1.1] F=<A@b.c> rejected RCPT <x@test.ex>
 >>> b.c in "b.c"? yes (matched "b.c")
 >>> A@B.C in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "a@b.c")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<A@B.C> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -61,6 +65,7 @@ LOG: H=[1.1.1.1] F=<A@B.C> rejected RCPT <x@test.ex>
 >>> y.z in "Y.Z"? yes (matched "Y.Z")
 >>> x@y.z in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "X@Y.Z")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<x@y.z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -72,6 +77,7 @@ LOG: H=[1.1.1.1] F=<x@y.z> rejected RCPT <x@test.ex>
 >>> y.z in "Y.Z"? yes (matched "Y.Z")
 >>> x@Y.Z in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "X@Y.Z")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<x@Y.Z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -83,6 +89,7 @@ LOG: H=[1.1.1.1] F=<x@Y.Z> rejected RCPT <x@test.ex>
 >>> y.z in "Y.Z"? yes (matched "Y.Z")
 >>> X@y.z in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "X@Y.Z")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<X@y.z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -94,6 +101,7 @@ LOG: H=[1.1.1.1] F=<X@y.z> rejected RCPT <x@test.ex>
 >>> y.z in "Y.Z"? yes (matched "Y.Z")
 >>> X@Y.Z in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "X@Y.Z")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<X@Y.Z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -104,6 +112,7 @@ LOG: H=[1.1.1.1] F=<X@Y.Z> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> ax@e.f in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "^\Dx@e\.f")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<ax@e.f> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -114,6 +123,7 @@ LOG: H=[1.1.1.1] F=<ax@e.f> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> ay@g.h in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "^\DY@G\.H")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<ay@g.h> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -124,6 +134,7 @@ LOG: H=[1.1.1.1] F=<ay@g.h> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> bX@E.F in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "^\Dx@e\.f")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<bX@E.F> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -134,6 +145,7 @@ LOG: H=[1.1.1.1] F=<bX@E.F> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> bY@G.H in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "^\DY@G\.H")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<bY@G.H> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -149,6 +161,7 @@ LOG: H=[1.1.1.1] F=<bY@G.H> rejected RCPT <x@test.ex>
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
@@ -163,6 +176,7 @@ LOG: H=[1.1.1.1] F=<bY@G.H> rejected RCPT <x@test.ex>
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
@@ -172,6 +186,7 @@ LOG: H=[1.1.1.1] F=<bY@G.H> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> q@aa.com in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<q@aa.com> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -182,6 +197,7 @@ LOG: H=[1.1.1.1] F=<q@aa.com> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> q@AA.COM in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<q@AA.COM> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -192,6 +208,7 @@ LOG: H=[1.1.1.1] F=<q@AA.COM> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> Q@bb.com in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<Q@bb.com> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -202,6 +219,7 @@ LOG: H=[1.1.1.1] F=<Q@bb.com> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> Q@BB.Com in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<Q@BB.Com> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -212,6 +230,7 @@ LOG: H=[1.1.1.1] F=<Q@BB.Com> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> cc@dd.com in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<cc@dd.com> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -222,6 +241,7 @@ LOG: H=[1.1.1.1] F=<cc@dd.com> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> CC@DD.COM in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<CC@DD.COM> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -237,6 +257,7 @@ LOG: H=[1.1.1.1] F=<CC@DD.COM> rejected RCPT <x@test.ex>
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
@@ -246,6 +267,7 @@ LOG: H=[1.1.1.1] F=<CC@DD.COM> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> q@nn.com in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<q@nn.com> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -256,6 +278,7 @@ LOG: H=[1.1.1.1] F=<q@nn.com> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> Q@NN.COM in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<Q@NN.COM> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -266,6 +289,7 @@ LOG: H=[1.1.1.1] F=<Q@NN.COM> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> q@MM.com in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<q@MM.com> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -276,6 +300,7 @@ LOG: H=[1.1.1.1] F=<q@MM.com> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> Pp@Qq.com in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<Pp@Qq.com> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -286,6 +311,7 @@ LOG: H=[1.1.1.1] F=<Pp@Qq.com> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> abcd@aa.bb in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<abcd@aa.bb> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -296,6 +322,7 @@ LOG: H=[1.1.1.1] F=<abcd@aa.bb> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> ABCD@aa.bb in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<ABCD@aa.bb> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -306,6 +333,7 @@ LOG: H=[1.1.1.1] F=<ABCD@aa.bb> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> ax@aa.bb in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<ax@aa.bb> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -316,6 +344,7 @@ LOG: H=[1.1.1.1] F=<ax@aa.bb> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> bX@aa.bb in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<bX@aa.bb> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -326,6 +355,7 @@ LOG: H=[1.1.1.1] F=<bX@aa.bb> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> Ay@aa.bb in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<Ay@aa.bb> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -336,6 +366,7 @@ LOG: H=[1.1.1.1] F=<Ay@aa.bb> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> BY@aa.bb in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<BY@aa.bb> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -346,6 +377,7 @@ LOG: H=[1.1.1.1] F=<BY@aa.bb> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> blocked@xy.zz in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<blocked@xy.zz> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -356,4 +388,5 @@ LOG: H=[1.1.1.1] F=<blocked@xy.zz> rejected RCPT <x@test.ex>
 >>> check senders = a@b.c : X@Y.Z : ^\\Dx@e\\.f : ^\\DY@G\\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain
 >>> BLOCKED@zz.xy in "a@b.c : X@Y.Z : ^\Dx@e\.f : ^\DY@G\.H :lsearch*@;TESTSUITE/aux-fixed/0003.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0003.rej.bydomain")
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<BLOCKED@zz.xy> rejected RCPT <x@test.ex>

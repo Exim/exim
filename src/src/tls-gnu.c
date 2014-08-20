@@ -47,6 +47,10 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # warning "GnuTLS library version too old; define DISABLE_OCSP in Makefile"
 # define DISABLE_OCSP
 #endif
+#if GNUTLS_VERSION_NUMBER < 0x020a00 && defined(EXPERIMENTAL_TPDA)
+# warning "GnuTLS library version too old; TPDA tls:cert event unsupported"
+# undef EXPERIMENTAL_TPDA
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
@@ -115,6 +119,9 @@ typedef struct exim_gnutls_state {
 #ifdef EXPERIMENTAL_CERTNAMES
   uschar *exp_tls_verify_cert_hostnames;
 #endif
+#ifdef EXPERIMENTAL_TPDA
+  uschar *event_action;
+#endif
 
   tls_support *tlsp;	/* set in tls_init() */
 
@@ -133,6 +140,9 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
 #ifdef EXPERIMENTAL_CERTNAMES
                                             NULL,
 #endif
+#ifdef EXPERIMENTAL_TPDA
+                                            NULL,
+#endif
   NULL,
   NULL, 0, 0, 0, 0,
 };
@@ -144,7 +154,9 @@ context we're currently dealing with" pointer and rely upon being
 single-threaded to keep from processing data on an inbound TLS connection while
 talking to another TLS connection for an outbound check.  This does mean that
 there's no way for heart-beats to be responded to, for the duration of the
-second connection. */
+second connection.
+XXX But see gnutls_session_get_ptr()
+*/
 
 static exim_gnutls_state_st state_server, state_client;
 
@@ -174,18 +186,18 @@ static BOOL exim_gnutls_base_init_done = FALSE;
 the library logging; a value less than 0 disables the calls to set up logging
 callbacks. */
 #ifndef EXIM_GNUTLS_LIBRARY_LOG_LEVEL
-#define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
+# define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
 #endif
 
 #ifndef EXIM_CLIENT_DH_MIN_BITS
-#define EXIM_CLIENT_DH_MIN_BITS 1024
+# define EXIM_CLIENT_DH_MIN_BITS 1024
 #endif
 
 /* With GnuTLS 2.12.x+ we have gnutls_sec_param_to_pk_bits() with which we
 can ask for a bit-strength.  Without that, we stick to the constant we had
 before, for now. */
 #ifndef EXIM_SERVER_DH_BITS_PRE2_12
-#define EXIM_SERVER_DH_BITS_PRE2_12 1024
+# define EXIM_SERVER_DH_BITS_PRE2_12 1024
 #endif
 
 #define exim_gnutls_err_check(Label) do { \
@@ -1512,6 +1524,52 @@ return 0;
 #endif
 
 
+#ifdef EXPERIMENTAL_TPDA
+/*
+We use this callback to get observability and detail-level control
+for an exim client TLS connection, raising a TPDA tls:cert event
+for each cert in the chain presented by the server.  Any event
+can deny verification.
+
+Return 0 for the handshake to continue or non-zero to terminate.
+*/
+
+static int
+client_verify_cb(gnutls_session_t session)
+{
+const gnutls_datum * cert_list;
+unsigned int cert_list_size = 0;
+gnutls_x509_crt_t crt;
+int rc;
+exim_gnutls_state_st * state = gnutls_session_get_ptr(session);
+
+cert_list = gnutls_certificate_get_peers(session, &cert_list_size);
+if (cert_list)
+  while (cert_list_size--)
+  {
+  rc = import_cert(&cert_list[cert_list_size], &crt);
+  if (rc != GNUTLS_E_SUCCESS)
+    {
+    DEBUG(D_tls) debug_printf("TLS: peer cert problem: depth %d: %s\n",
+      cert_list_size, gnutls_strerror(rc));
+    break;
+    }
+
+  state->tlsp->peercert = crt;
+  if (tpda_raise_event(state->event_action,
+	      US"tls:cert", string_sprintf("%d", cert_list_size)) == DEFER)
+    {
+    log_write(0, LOG_MAIN,
+	      "SSL verify denied by event-action: depth=%d", cert_list_size);
+    return 1;                     /* reject */
+    }
+  state->tlsp->peercert = NULL;
+  }
+
+return 0;
+}
+
+#endif
 
 
 
@@ -1694,7 +1752,7 @@ Arguments:
   fd                the fd of the connection
   host              connected host (for messages)
   addr              the first address (not used)
-  ob                smtp transport options
+  tb                transport (always smtp)
 
 Returns:            OK/DEFER/FAIL (because using common functions),
                     but for a client, DEFER and FAIL have the same meaning
@@ -1703,9 +1761,10 @@ Returns:            OK/DEFER/FAIL (because using common functions),
 int
 tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
-    void *v_ob)
+    transport_instance *tb)
 {
-smtp_transport_options_block *ob = v_ob;
+smtp_transport_options_block *ob =
+  (smtp_transport_options_block *)tb->options_block;
 int rc;
 const char *error;
 exim_gnutls_state_st *state = NULL;
@@ -1801,6 +1860,15 @@ if (request_ocsp)
     return tls_error(US"cert-status-req",
 		    gnutls_strerror(rc), state->host);
   tls_out.ocsp = OCSP_NOT_RESP;
+  }
+#endif
+
+#ifdef EXPERIMENTAL_TPDA
+if (tb->tpda_event_action)
+  {
+  state->event_action = tb->tpda_event_action;
+  gnutls_session_set_ptr(state->session, state);
+  gnutls_certificate_set_verify_function(state->x509_cred, client_verify_cb);
   }
 #endif
 

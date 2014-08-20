@@ -332,6 +332,7 @@ extern uschar *deliver_home;           /* Home directory for pipes */
 extern uschar *deliver_host;           /* (First) host for routed local deliveries */
                                        /* Remote host for filter */
 extern uschar *deliver_host_address;   /* Address for remote delivery filter */
+extern int     deliver_host_port;      /* Address for remote delivery filter */
 extern uschar *deliver_in_buffer;      /* Buffer for copying file */
 extern ino_t   deliver_inode;          /* Inode for appendfile */
 extern uschar *deliver_localpart;      /* The local part for delivery */
@@ -877,13 +878,8 @@ extern BOOL    timestamps_utc;         /* Use UTC for all times */
 
 #ifdef EXPERIMENTAL_TPDA
 extern int     tpda_defer_errno;        /* error number set when a remote delivery is deferred with a host error */
-extern uschar *tpda_defer_errstr;       /* error string set when a remote delivery is deferred with a host error */
-extern uschar *tpda_delivery_ip;        /* IP of host, which has accepted delivery */
-extern int     tpda_delivery_port;       /* port of host, which has accepted delivery */
-extern uschar *tpda_delivery_fqdn;      /* FQDN of host, which has accepted delivery */
-extern uschar *tpda_delivery_local_part;/* local part of address being delivered */
-extern uschar *tpda_delivery_domain;    /* domain part of address being delivered */
-extern uschar *tpda_delivery_confirmation; /* SMTP confirmation message */
+extern uschar *tpda_event;		/* event classification */
+extern uschar *tpda_data;;		/* event data */
 #endif
 
 extern uschar *transport_name;         /* Name of transport last started */

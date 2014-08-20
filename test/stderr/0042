@@ -9,6 +9,7 @@
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
@@ -19,6 +20,7 @@
 >>> routed by localuser router
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing junkjunk@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
@@ -29,6 +31,7 @@
 LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing expan@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")

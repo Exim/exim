@@ -12,12 +12,25 @@ TL/01 When running the test suite, the README says that variables such as
       variables, reset to the beginning of the script, and then run through
       the script parsing/test process like normal.
 
+TL/02 The BSD's have an arc4random API. One of the functions to induce
+      adding randomness was arc4random_stir(), but it has been removed in
+      OpenBSD 5.5. Detect this OpenBSD version and skip calling this
+      function when detected.
+
 
 Exim version 4.84
 -----------------
 TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static
       checkers that were complaining about end of non-void function with no
       return.
+
+JH/01 Bug 1513: Fix parsing of quoted parameter values in MIME headers.
+      This was a regression intruduced in 4.83 by another bugfix.
+
+JH/02 Fix broken compilation when EXPERIMENTAL_DSN is enabled.
+
+TL/02 Bug 1509: Fix exipick for enhanced spoolfile specification used when
+      EXPERIMENTAL_DNS is enabled.  Fix from Wolfgang Breyha.
 
 
 Exim version 4.83

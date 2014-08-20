@@ -12,6 +12,7 @@
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -28,6 +29,7 @@
 >>> host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "1.2.3.4")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[1.2.3.4] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -43,6 +45,7 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[1.2.3.4] P=smtp S=sss
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -62,6 +65,7 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[1.2.3.4] P=smtp S=sss
 >>> processing "deny"
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.2.3.5] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=[1.2.3.5] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -78,6 +82,7 @@ LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=[1.2.3.5] P=smtp S=sss
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -94,6 +99,7 @@ LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=[1.2.3.5] P=smtp S=sss
 >>> host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "1.2.0.0/16")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=[1.2.4.5] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -109,6 +115,7 @@ LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=[1.2.4.5] P=smtp S=sss
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -128,6 +135,7 @@ LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=[1.2.4.5] P=smtp S=sss
 >>> processing "deny"
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[1.3.2.4] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=[1.3.2.4] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -144,6 +152,7 @@ LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=[1.3.2.4] P=smtp S=sss
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -160,6 +169,7 @@ LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=[1.3.2.4] P=smtp S=sss
 >>> host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net16-lsearch;TESTSUITE/aux-fixed/0065.nets")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=[131.111.8.2] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -175,6 +185,7 @@ LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=[131.111.8.2] P=smtp S=sss
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -191,6 +202,7 @@ LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=[131.111.8.2] P=smtp S=sss
 >>> host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net24-lsearch;TESTSUITE/aux-fixed/0065.nets")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=[192.152.98.3] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -206,6 +218,7 @@ LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=[192.152.98.3] P=smtp S=ss
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -222,4 +235,5 @@ LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=[192.152.98.3] P=smtp S=ss
 >>> host in "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : net16-lsearch;TESTSUITE/aux-fixed/0065.nets : net24-lsearch;TESTSUITE/aux-fixed/0065.nets : net-lsearch;TESTSUITE/aux-fixed/0065.nets"? yes (matched "net-lsearch;TESTSUITE/aux-fixed/0065.nets")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 LOG: 10HmbD-0005vi-00 <= userx@somehost.example.com H=[192.153.98.4] P=smtp S=sss

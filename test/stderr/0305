@@ -12,6 +12,7 @@
 >>> ten-1.test.ex in "ten-1.test.ex"? yes (matched "ten-1.test.ex")
 >>> ten-1.test.ex in "+ok_domains"? yes (matched "+ok_domains")
 >>> accept: condition test succeeded in ACL "acl1"
+>>> end of ACL "acl1": ACCEPT
 >>> using ACL "acl1"
 >>> processing "accept"
 >>> check domains = +ok_domains

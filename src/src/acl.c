@@ -4129,7 +4129,11 @@ while (acl != NULL)
   switch(acl->verb)
     {
     case ACL_ACCEPT:
-    if (cond == OK || cond == DISCARD) return cond;
+    if (cond == OK || cond == DISCARD)
+      {
+      HDEBUG(D_acl) debug_printf("end of %s: ACCEPT\n", acl_name);
+      return cond;
+      }
     if (endpass_seen)
       {
       HDEBUG(D_acl) debug_printf("accept: endpass encountered - denying access\n");
@@ -4140,17 +4144,26 @@ while (acl != NULL)
     case ACL_DEFER:
     if (cond == OK)
       {
+      HDEBUG(D_acl) debug_printf("end of %s: DEFER\n", acl_name);
       acl_temp_details = TRUE;
       return DEFER;
       }
     break;
 
     case ACL_DENY:
-    if (cond == OK) return FAIL;
+    if (cond == OK)
+      {
+      HDEBUG(D_acl) debug_printf("end of %s: DENY\n", acl_name);
+      return FAIL;
+      }
     break;
 
     case ACL_DISCARD:
-    if (cond == OK || cond == DISCARD) return DISCARD;
+    if (cond == OK || cond == DISCARD)
+      {
+      HDEBUG(D_acl) debug_printf("end of %s: DISCARD\n", acl_name);
+      return DISCARD;
+      }
     if (endpass_seen)
       {
       HDEBUG(D_acl) debug_printf("discard: endpass encountered - denying access\n");
@@ -4159,11 +4172,19 @@ while (acl != NULL)
     break;
 
     case ACL_DROP:
-    if (cond == OK) return FAIL_DROP;
+    if (cond == OK)
+      {
+      HDEBUG(D_acl) debug_printf("end of %s: DROP\n", acl_name);
+      return FAIL_DROP;
+      }
     break;
 
     case ACL_REQUIRE:
-    if (cond != OK) return cond;
+    if (cond != OK)
+      {
+      HDEBUG(D_acl) debug_printf("end of %s: not OK\n", acl_name);
+      return cond;
+      }
     break;
 
     case ACL_WARN:

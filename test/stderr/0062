@@ -12,6 +12,7 @@
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -39,10 +40,12 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing "deny"
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 >>> using ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -58,6 +61,7 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -82,9 +86,11 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-2.test.ex")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=ten-2.test.ex [V4NET.0.0.2] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -100,6 +106,7 @@ LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=ten-2.test.ex [V4NET.0.0.2
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
@@ -130,7 +137,9 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-3-alias.test.ex")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=ten-3.test.ex [V4NET.0.0.3] P=smtp S=sss

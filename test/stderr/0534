@@ -11,3 +11,4 @@
 >>> check hosts = 5.6.7.8
 >>> host in "5.6.7.8"? yes (matched "5.6.7.8")
 >>> accept: condition test succeeded in ACL "two"
+>>> end of ACL "two": ACCEPT

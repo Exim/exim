@@ -12,6 +12,7 @@ LOG: MAIN
   rcpt for userx@domain.com
 created log directory TESTSUITE/spool/log
 accept: condition test succeeded in ACL "ar"
+end of ACL "ar": ACCEPT
 ----------- start cutthrough setup ------------
 Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
   SMTP<< 220 ESMTP
@@ -24,6 +25,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Send data
 ----------- start cutthrough headers send -----------
@@ -57,6 +59,7 @@ check logwrite = rcpt for $local_part@$domain
 LOG: MAIN
   rcpt for userz@domain.com
 accept: condition test succeeded in ACL "ar"
+end of ACL "ar": ACCEPT
 ----------- start cutthrough setup ------------
 Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
   SMTP<< 220 SMTP only spoken here
@@ -71,6 +74,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Send data
 ----------- start cutthrough headers send -----------
@@ -104,6 +108,7 @@ check logwrite = rcpt for $local_part@$domain
 LOG: MAIN
   rcpt for usery@domain.com
 accept: condition test succeeded in ACL "ar"
+end of ACL "ar": ACCEPT
 ----------- start cutthrough setup ------------
 Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
   SMTP<< 220 ESMTP
@@ -122,6 +127,7 @@ check logwrite = rcpt for $local_part@$domain
 LOG: MAIN
   rcpt for userx@domain.com
 accept: condition test succeeded in ACL "ar"
+end of ACL "ar": ACCEPT
   SMTP>> QUIT
 ----------- cutthrough shutdown (more than one recipient) ------------
 LOG: MAIN
@@ -186,6 +192,7 @@ check logwrite = rcpt for $local_part@$domain
 LOG: MAIN
   rcpt for userx@domain.com
 accept: condition test succeeded in ACL "ar"
+end of ACL "ar": ACCEPT
 ----------- start cutthrough setup ------------
 Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
   SMTP<< 220 ESMTP
@@ -198,6 +205,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Send data
 ----------- start cutthrough headers send -----------

@@ -68,6 +68,7 @@ require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
   message: No such user here
 deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
+end of ACL "TESTSUITE/aux-fixed/0386.acl1": DENY
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
   H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
@@ -113,6 +114,7 @@ require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
   message: No such user here
 deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
+end of ACL "TESTSUITE/aux-fixed/0386.acl1": DENY
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
   H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
@@ -175,6 +177,7 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 processing "accept"
 accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
+end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -335,6 +338,7 @@ LOG: MAIN
   H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
 processing "accept"
 accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
+end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself

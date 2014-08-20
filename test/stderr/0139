@@ -37,6 +37,7 @@
 >>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_mail"
+>>> end of ACL "check_mail": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
@@ -87,6 +88,7 @@
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
@@ -123,6 +125,7 @@
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -164,6 +167,7 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_mail"
+>>> end of ACL "check_mail": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
@@ -182,6 +186,7 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
 >>> => that means V4NET.11.12.15 is listed at rbl3.test.ex
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.test.ex>: host is listed in rbl3.test.ex with value 127.0.0.3
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -226,6 +231,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_mail"
+>>> end of ACL "check_mail": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -267,6 +273,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_mail"
+>>> end of ACL "check_mail": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -290,6 +297,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> warn: condition test succeeded in ACL "check_helo"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_helo"
+>>> end of ACL "check_helo": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -361,6 +369,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> warn: condition test failed in ACL "check_vrfy"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
 >>> calling system_aliases router

@@ -85,9 +85,6 @@ typedef struct {
   uschar *dkim_sign_headers;
   uschar *dkim_strict;
 #endif
-#ifdef EXPERIMENTAL_TPDA
-  uschar *tpda_host_defer_action;
-#endif
 } smtp_transport_options_block;
 
 /* Data for reading the private options. */

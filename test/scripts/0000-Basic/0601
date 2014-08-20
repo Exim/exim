@@ -13,4 +13,5 @@ This is a test message.
 .
 quit
 ***
-sleep 4
+sleep 2
+no_msglog_check

@@ -24,6 +24,7 @@
 >>> routed by r5 router
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "rcpt"
+>>> end of ACL "rcpt": ACCEPT
 >>> using ACL "rcpt"
 >>> processing "accept"
 >>> check verify = recipient
@@ -35,6 +36,7 @@
 >>> routed by r2 router
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "rcpt"
+>>> end of ACL "rcpt": ACCEPT
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "rcpt"
 >>> processing "accept"

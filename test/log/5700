@@ -1,19 +1,43 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1]:-1
+1999-03-02 09:44:33 10HmaY-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaY-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
-1999-03-02 09:44:33 10HmaY-0005vi-00 delivery ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> confirmation <250 OK> errno <0> errstr <> router <others> transport <smtp>
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 . delivery ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> confirmation <250 OK> router <others> transport <smtp>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qqf
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1]:-1
+1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaX-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@domain2 R=others T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
-1999-03-02 09:44:33 10HmaX-0005vi-00 failed to expand tpda_deliver_action in smtp: error from acl "logger"
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 failed to expand tpda_event_action msg:delivery in smtp: error from acl "logger"
 
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qqf
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1]:-1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
 1999-03-02 09:44:33 10HmaZ-0005vi-00 SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after EHLO the.local.host.name: Connection timed out
-1999-03-02 09:44:33 10HmaZ-0005vi-00 deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> confirmation <> errno <110> errstr <SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after EHLO the.local.host.name: Connection timed out> router <others> transport <smtp>
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:host:defer
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> errno <110> errstr <SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after EHLO the.local.host.name: Connection timed out> router <others> transport <smtp>
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 R=others T=smtp defer (dd): Connection timed out: SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after EHLO the.local.host.name
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** userx@domain1: retry timeout exceeded
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss

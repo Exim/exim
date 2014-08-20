@@ -29,3 +29,4 @@
 >>> nl.demon.net in "nl.demon.net"? yes (matched "nl.demon.net")
 >>> nl.demon.net in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT

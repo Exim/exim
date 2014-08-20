@@ -23,6 +23,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> fail_sender router forced address failure
 >>> ----------- end verify ------------
 >>> require: condition test failed in ACL "check_recipient"
+>>> end of ACL "check_recipient": not OK
 LOG: H=[V4NET.0.0.0] sender verify fail for <user@bad.domain>: remote host address is the local host
 LOG: H=[V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -53,6 +54,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=localhost address=127.0.0.1
 >>> ----------- end verify ------------
 >>> require: condition test failed in ACL "check_recipient"
+>>> end of ACL "check_recipient": not OK
 LOG: H=[V4NET.0.0.0] sender verify fail for <user@bad.domain2>: fail_sender2 router forced verify failure
 LOG: H=[V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -87,4 +89,5 @@ LOG: H=[V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: Sender 
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 LOG: 10HmaX-0005vi-00 <= user@ten-1.test.ex H=[V4NET.0.0.0] P=smtp S=sss

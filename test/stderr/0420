@@ -27,6 +27,7 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -51,6 +52,7 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself

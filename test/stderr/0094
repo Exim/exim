@@ -27,6 +27,7 @@ LOG: no host name found for IP address V4NET.11.12.13
 >>> processing "deny"
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "0.0.0.0/0")
@@ -61,6 +62,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing "deny"
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -125,6 +127,7 @@ check domains = +local_domains
 test.ex in "test.ex"? yes (matched "test.ex")
 test.ex in "+local_domains"? yes (matched "+local_domains")
 accept: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<userx@cam.ac.uk>
 using ACL "check_recipient"
@@ -145,6 +148,7 @@ accept: condition test failed in ACL "check_recipient"
 processing "deny"
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=oneback.test.ex [V4NET.99.99.90] F=<userx@test.ex> rejected RCPT <userx@cam.ac.uk>: relay not permitted

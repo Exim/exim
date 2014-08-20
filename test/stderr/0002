@@ -185,6 +185,7 @@ host in "<
  partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
  1.2.3.4"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
 deny: condition test succeeded in ACL "connect1"
+end of ACL "connect1": DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
@@ -245,8 +246,10 @@ search_tidyup called
 >>> using ACL "connect0"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "connect0"
+>>> end of ACL "connect0": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
@@ -256,9 +259,11 @@ LOG: 10HmaX-0005vi-00 Subject is: ""
 >>> processing "deny"
 >>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmaX-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -269,9 +274,11 @@ LOG: 10HmaY-0005vi-00 Subject is: ""
 >>> processing "deny"
 >>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<a@b>
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -282,9 +289,11 @@ LOG: 10HmaZ-0005vi-00 Subject is: ""
 >>> processing "deny"
 >>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<c@d>
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -295,9 +304,11 @@ LOG: 10HmbA-0005vi-00 Subject is: ""
 >>> processing "deny"
 >>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmbA-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -308,6 +319,7 @@ LOG: 10HmbB-0005vi-00 Subject is: ""
 >>> processing "deny"
 >>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmbB-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x@y>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -320,8 +332,10 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x
 >>> using ACL "connect0"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "connect0"
+>>> end of ACL "connect0": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -332,6 +346,7 @@ LOG: 10HmbC-0005vi-00 Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_i
 >>> processing "deny"
 >>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmbC-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -344,8 +359,10 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> using ACL "connect0"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "connect0"
+>>> end of ACL "connect0": ACCEPT
 >>> processing "accept"
 >>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -356,6 +373,7 @@ LOG: 10HmbD-0005vi-00 Subject is: " here we go: a string that is going to be enc
 >>> processing "deny"
 >>>   message: reply_address=<$reply_address>
 >>> deny: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": DENY
 LOG: 10HmbD-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 Exim version x.yz ....
 changed uid/gid: -C, -D, -be or -bf forces real uid

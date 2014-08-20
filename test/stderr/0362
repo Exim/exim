@@ -73,6 +73,7 @@ routed by r2 router
   transport: t2
 ----------- end verify ------------
 accept: condition test succeeded in ACL "check_rcpt"
+end of ACL "check_rcpt": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection

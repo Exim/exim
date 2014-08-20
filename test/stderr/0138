@@ -24,6 +24,7 @@
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
@@ -40,6 +41,7 @@
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] P=esmtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -116,5 +118,6 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.13] P=esmtp S=sss

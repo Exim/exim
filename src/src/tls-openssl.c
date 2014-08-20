@@ -120,6 +120,9 @@ typedef struct tls_ext_ctx_cb {
 #ifdef EXPERIMENTAL_CERTNAMES
   uschar * verify_cert_hostnames;
 #endif
+#ifdef EXPERIMENTAL_TPDA
+  uschar * event_action;
+#endif
 } tls_ext_ctx_cb;
 
 /* should figure out a cleanup of API to handle state preserved per
@@ -266,6 +269,9 @@ when asked. We get here only if a certificate has been received. Handling of
 optional verification for this case is done when requesting SSL to verify, by
 setting SSL_VERIFY_FAIL_IF_NO_PEER_CERT in the non-optional case.
 
+May be called multiple times for different issues with a certificate, even
+for a given "depth" in the certificate chain.
+
 Arguments:
   state      current yes/no state as 1/0
   x509ctx    certificate information.
@@ -279,6 +285,7 @@ verify_callback(int state, X509_STORE_CTX *x509ctx,
   tls_support *tlsp, BOOL *calledp, BOOL *optionalp)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
+int depth = X509_STORE_CTX_get_error_depth(x509ctx);
 static uschar txt[256];
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
@@ -286,7 +293,7 @@ X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
 if (state == 0)
   {
   log_write(0, LOG_MAIN, "SSL verify error: depth=%d error=%s cert=%s",
-    X509_STORE_CTX_get_error_depth(x509ctx),
+    depth,
     X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
     txt);
   tlsp->certificate_verified = FALSE;
@@ -300,10 +307,9 @@ if (state == 0)
     "tls_try_verify_hosts)\n");
   }
 
-else if (X509_STORE_CTX_get_error_depth(x509ctx) != 0)
+else if (depth != 0)
   {
-  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n",
-     X509_STORE_CTX_get_error_depth(x509ctx), txt);
+  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n", depth, txt);
 #ifndef DISABLE_OCSP
   if (tlsp == &tls_out && client_static_cbinfo->u_ocsp.client.verify_store)
     {	/* client, wanting stapling  */
@@ -313,6 +319,23 @@ else if (X509_STORE_CTX_get_error_depth(x509ctx) != 0)
     if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
                              cert))
       ERR_clear_error();
+    }
+#endif
+#ifdef EXPERIMENTAL_TPDA
+  if (tlsp == &tls_out && client_static_cbinfo->event_action)
+    {
+    tlsp->peercert = X509_dup(cert);
+    if (tpda_raise_event(client_static_cbinfo->event_action,
+		    US"tls:cert", string_sprintf("%d", depth)) == DEFER)
+      {
+      log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
+			      "depth=%d cert=%s", depth, txt);
+      tlsp->certificate_verified = FALSE;
+      *calledp = TRUE;
+      return 0;			    /* reject */
+      }
+    X509_free(tlsp->peercert);
+    tlsp->peercert = NULL;
     }
 #endif
   }
@@ -367,13 +390,28 @@ else
 # endif
 #endif	/*EXPERIMENTAL_CERTNAMES*/
 
+#ifdef EXPERIMENTAL_TPDA
+  if (tlsp == &tls_out)
+    {
+    if (tpda_raise_event(client_static_cbinfo->event_action,
+		    US"tls:cert", US"0") == DEFER)
+      {
+      log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
+			      "depth=0 cert=%s", txt);
+      tlsp->certificate_verified = FALSE;
+      *calledp = TRUE;
+      return 0;			    /* reject */
+      }
+    }
+#endif
+
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
     *calledp ? "" : " authenticated", txt);
   if (!*calledp) tlsp->certificate_verified = TRUE;
   *calledp = TRUE;
   }
 
-return 1;   /* accept */
+return 1;   /* accept, at least for this level */
 }
 
 static int
@@ -917,7 +955,7 @@ if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
  {
   tls_out.ocsp = OCSP_FAILED;
   if (log_extra_selector & LX_tls_cipher)
-    log_write(0, LOG_MAIN, "Received TLS status response, parse error");
+    log_write(0, LOG_MAIN, "Received TLS cert status response, parse error");
   else
     DEBUG(D_tls) debug_printf(" parse error\n");
   return 0;
@@ -927,7 +965,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
   {
   tls_out.ocsp = OCSP_FAILED;
   if (log_extra_selector & LX_tls_cipher)
-    log_write(0, LOG_MAIN, "Received TLS status response, error parsing response");
+    log_write(0, LOG_MAIN, "Received TLS cert status response, error parsing response");
   else
     DEBUG(D_tls) debug_printf(" error parsing response\n");
   OCSP_RESPONSE_free(rsp);
@@ -957,6 +995,8 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       tls_out.ocsp = OCSP_FAILED;
+      if (log_extra_selector & LX_tls_cipher)
+	log_write(0, LOG_MAIN, "Received TLS cert status response, itself unverifiable");
       BIO_printf(bp, "OCSP response verify failure\n");
       ERR_print_errors(bp);
       i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
@@ -1059,7 +1099,7 @@ tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
 long init_options;
 int rc;
 BOOL okay;
-tls_ext_ctx_cb *cbinfo;
+tls_ext_ctx_cb * cbinfo;
 
 cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
@@ -1077,6 +1117,9 @@ else
 cbinfo->dhparam = dhparam;
 cbinfo->server_cipher_list = NULL;
 cbinfo->host = host;
+#ifdef EXPERIMENTAL_TPDA
+cbinfo->event_action = NULL;
+#endif
 
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
@@ -1717,7 +1760,7 @@ Argument:
   fd               the fd of the connection
   host             connected host (for messages)
   addr             the first address
-  ob               smtp transport options
+  tb               transport (always smtp)
 
 Returns:           OK on success
                    FAIL otherwise - note that tls_error() will not give DEFER
@@ -1726,9 +1769,10 @@ Returns:           OK on success
 
 int
 tls_client_start(int fd, host_item *host, address_item *addr,
-  void *v_ob)
+  transport_instance *tb)
 {
-smtp_transport_options_block * ob = v_ob;
+smtp_transport_options_block * ob =
+  (smtp_transport_options_block *)tb->options_block;
 static uschar txt[256];
 uschar * expciphers;
 X509 * server_cert;
@@ -1910,6 +1954,9 @@ if (request_ocsp)
   }
 #endif
 
+#ifdef EXPERIMENTAL_TPDA
+client_static_cbinfo->event_action = tb->tpda_event_action;
+#endif
 
 /* There doesn't seem to be a built-in timeout on connection. */
 

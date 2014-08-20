@@ -26,6 +26,7 @@
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -35,6 +36,7 @@
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -64,6 +66,7 @@ LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -73,6 +76,7 @@ LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaY-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -102,6 +106,7 @@ LOG: 10HmaY-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -113,6 +118,7 @@ LOG: 10HmaY-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> badbad in "userx"? no (end of list)
 >>> no more routers
 >>> require: condition test failed in ACL "check_message"
+>>> end of ACL "check_message": not OK
 LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -142,6 +148,7 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@test.ex> rejected after DATA: 
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -157,6 +164,7 @@ LOG: 10HmbA-0005vi-00 H=[V4NET.10.10.10] F=<userx@test.ex> rejected after DATA: 
 >>> require: condition test succeeded in ACL "check_message"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_message"
+>>> end of ACL "check_message": ACCEPT
 LOG: 10HmaZ-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -186,6 +194,7 @@ LOG: 10HmaZ-0005vi-00 <= userx@test.ex H=[V4NET.10.10.10] P=smtp S=sss
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"

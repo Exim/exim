@@ -44,7 +44,7 @@ extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);
 
 extern int     tls_client_start(int, host_item *, address_item *,
-		 void *);
+		 transport_instance *);
 extern void    tls_close(BOOL, BOOL);
 extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
@@ -337,7 +337,11 @@ extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
 extern void    sigalrm_handler(int);
 extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
-extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL, const uschar *);
+extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL, const uschar *
+#ifdef EXPERIMENTAL_TPDA
+		       , uschar *
+#endif
+		       );
 extern int     smtp_feof(void);
 extern int     smtp_ferror(void);
 extern uschar *smtp_get_connection_info(void);

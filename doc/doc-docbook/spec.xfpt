@@ -7266,7 +7266,7 @@ default list of ldap servers, and a single lookup can specify a single ldap
 server to use.  But when you need to do a lookup with a list of servers that is
 different than the default list (maybe different order, maybe a completely
 different set of servers), the SERVERS parameter allows you to specify this
-alternate list.
+alternate list (colon-separated).
 
 Here is an example of an LDAP query in an Exim lookup that uses some of these
 values. This is a single line, folded to fit on the page:
@@ -10997,12 +10997,10 @@ precedes the expansion of the string. For example, the commands available in
 Exim filter files include an &%if%& command with its own regular expression
 matching condition.
 
-.new
 .vitem "&$acl_arg1$&, &$acl_arg2$&, etc"
 Within an acl condition, expansion condition or expansion item
 any arguments are copied to these variables,
 any unused variables being made empty.
-.wen
 
 .vitem "&$acl_c...$&"
 Values can be placed in these variables by the &%set%& modifier in an ACL. They
@@ -11025,11 +11023,9 @@ message is received, the values of these variables are saved with the message,
 and can be accessed by filters, routers, and transports during subsequent
 delivery.
 
-.new
 .vitem &$acl_narg$&
 Within an acl condition, expansion condition or expansion item
 this variable has the number of arguments.
-.wen
 
 .vitem &$acl_verify_message$&
 .vindex "&$acl_verify_message$&"
@@ -11416,6 +11412,11 @@ the result, the name is not accepted, and &$host_lookup_deferred$& is set to
 .vitem &$host_lookup_failed$&
 .vindex "&$host_lookup_failed$&"
 See &$host_lookup_deferred$&.
+
+.vitem &$host_port$&
+.vindex "&$host_port$&"
+This variable is set to the remote host's TCP port whenever &$host$& is set
+for an outbound connection.
 
 
 .vitem &$inode$&
@@ -12359,7 +12360,9 @@ If TLS has not been negotiated, the value will be 0.
 This variable refers to the certificate presented to the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
-&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+.new
+&%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
+.wen
 or a &%def%& condition.
 
 .vitem &$tls_in_peercert$&
@@ -12367,21 +12370,27 @@ or a &%def%& condition.
 This variable refers to the certificate presented by the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
-&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+.new
+&%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
+.wen
 or a &%def%& condition.
 
 .vitem &$tls_out_ourcert$&
 .vindex "&$tls_out_ourcert$&"
 This variable refers to the certificate presented to the peer of an
 outbound connection.  It is only useful as the argument of a
-&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+.new
+&%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
+.wen
 or a &%def%& condition.
 
 .vitem &$tls_out_peercert$&
 .vindex "&$tls_out_peercert$&"
 This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
-&%certextract%& expansion item, &%md5%& or &%sha1%& operator,
+.new
+&%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
+.wen
 or a &%def%& condition.
 
 .vitem &$tls_in_certificate_verified$&
@@ -12420,6 +12429,24 @@ cleared before any outgoing SMTP connection is made,
 and then set to the outgoing cipher suite if one is negotiated. See chapter
 &<<CHAPTLS>>& for details of TLS support and chapter &<<CHAPsmtptrans>>& for
 details of the &(smtp)& transport.
+
+.vitem &$tls_in_ocsp$&
+.vindex "&$tls_in_ocsp$&"
+When a message is received from a remote client connection
+the result of any OCSP request from the client is encoded in this variable:
+.code
+0 OCSP proof was not requested (default value)
+1 No response to request
+2 Response not verified
+3 Verification failed
+4 Verification succeeded
+.endd
+
+.vitem &$tls_out_ocsp$&
+.vindex "&$tls_out_ocsp$&"
+When a message is sent to a remote host connection
+the result of any OCSP request made is encoded in this variable.
+See &$tls_in_ocsp$& for values.
 
 .vitem &$tls_in_peerdn$&
 .vindex "&$tls_in_peerdn$&"
@@ -25376,6 +25403,7 @@ but it is present in many binary distributions.
 .scindex IIDdcotauth2 "authenticators" "&(dovecot)&"
 This authenticator is an interface to the authentication facility of the
 Dovecot POP/IMAP server, which can support a number of authentication methods.
+Note that Dovecot must be configured to use auth-client not auth-userdb.
 If you are using Dovecot to authenticate POP/IMAP clients, it might be helpful
 to use the same mechanisms for SMTP authentication. This is a server
 authenticator only. There is only one option:
@@ -26243,6 +26271,8 @@ file named by &%tls_ocsp_file%&.
 
 Note that the proof only covers the terminal server certificate,
 not any of the chain from CA to it.
+
+There is no current way to staple a proof for a client certificate.
 
 .code
   A helper script "ocsp_fetch.pl" for fetching a proof from a CA
@@ -27607,6 +27637,11 @@ anyway. If the message contains newlines, this gives rise to a multi-line SMTP
 response.
 
 .vindex "&$acl_verify_message$&"
+.new
+For ACLs that are called by an &%acl =%& ACL condition, the message is
+stored in &$acl_verify_message$&, from which the calling ACL may use it.
+.wen
+
 If &%message%& is used on a statement that verifies an address, the message
 specified overrides any message that is generated by the verification process.
 However, the original message is available in the variable

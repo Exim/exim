@@ -25,6 +25,7 @@
 >>> no more routers
 >>> ----------- end verify ------------
 >>> require: condition test failed in ACL "check_recipient"
+>>> end of ACL "check_recipient": not OK
 LOG: H=(exim.test.ex) [V4NET.0.0.97] sender verify fail for <junkjunk@exim.test.ex>: Unrouteable address
 LOG: H=(exim.test.ex) [V4NET.0.0.97] F=<junkjunk@exim.test.ex> rejected RCPT <postmaster@exim.test.ex>: Sender verify failed
 LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjunk@exim.test.ex>
@@ -77,6 +78,7 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjun
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
@@ -99,6 +101,7 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjun
 >>> no more routers
 >>> ----------- end verify ------------
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=(exim.test.ex) [V4NET.0.0.97] F=<postmaster@exim.test.ex> rejected RCPT junkjunk@exim.test.ex: Unrouteable address
 >>> using ACL "check_recipient"
 >>> processing "accept"
@@ -120,5 +123,6 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] F=<postmaster@exim.test.ex> rejected RCPT j
 >>> system_aliases router forced address failure
 >>> ----------- end verify ------------
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=(exim.test.ex) [V4NET.0.0.97] F=<postmaster@exim.test.ex> rejected RCPT fail@exim.test.ex: this alias is forced to fail
 LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (QUIT) from <postmaster@exim.test.ex> for postmaster@exim.test.ex

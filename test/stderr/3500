@@ -58,6 +58,7 @@
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=cram_md5:tim S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -93,5 +94,6 @@ LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect aut
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? yes (matched "10.0.0.5")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaZ-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.5] P=esmtp S=sss

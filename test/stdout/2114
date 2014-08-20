@@ -20,7 +20,6 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A
@@ -58,7 +57,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A
@@ -112,7 +110,6 @@ Key file = aux-fixed/cert2
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A
@@ -164,7 +161,6 @@ Key file = aux-fixed/cert2
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A
@@ -216,7 +212,6 @@ Key file = aux-fixed/cert1
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A
@@ -257,7 +252,6 @@ Key file = aux-fixed/cert1
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A
@@ -311,7 +305,6 @@ Key file = aux-fixed/cert2
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A
@@ -352,7 +345,6 @@ Key file = aux-fixed/cert1
 Attempting to start TLS
 SSL info: before/connect initialization
 SSL info: before/connect initialization
-SSL info: SSLv2/v3 write client hello A
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
 SSL info: SSLv3 read server key exchange A

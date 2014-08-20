@@ -52,6 +52,7 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<abc@domain.>
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -76,6 +77,7 @@ using ACL "check_data"
 processing "accept"
 check verify = header_syntax
 accept: condition test succeeded in ACL "check_data"
+end of ACL "check_data": ACCEPT
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
@@ -114,6 +116,7 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<abc@xyz>
 processing "accept"
 accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself

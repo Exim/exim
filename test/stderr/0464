@@ -163,6 +163,7 @@ routed by r2 router
 require: condition test succeeded in ACL "rcpt"
 processing "accept"
 accept: condition test succeeded in ACL "rcpt"
+end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

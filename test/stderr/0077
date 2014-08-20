@@ -22,6 +22,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -43,6 +44,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -62,4 +64,5 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=localhost address=127.0.0.1
 >>> host in "! @ : ! localhost"? yes (end of list)
 >>> deny: condition test succeeded in ACL "check_recipient"
+>>> end of ACL "check_recipient": DENY
 LOG: H=[V4NET.0.0.1] F=<x@test.ex> rejected RCPT <x@test.ex>

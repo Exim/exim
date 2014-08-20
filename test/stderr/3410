@@ -30,6 +30,7 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> check authenticated = *
 >>> auth1 in "*"? yes (matched "*")
 >>> accept: condition test succeeded in ACL "acl_5_6_9"
+>>> end of ACL "acl_5_6_9": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -60,6 +61,7 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> check authenticated = auth1
 >>> auth1 in "auth1"? yes (matched "auth1")
 >>> accept: condition test succeeded in ACL "acl_5_6_10"
+>>> end of ACL "acl_5_6_10": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)

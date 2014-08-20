@@ -19,4 +19,5 @@
 >>> ----------- end verify ------------
 >>>   message: >$acl_verify_message< ++++
 >>> defer: condition test succeeded in ACL "check_rcpt"
+>>> end of ACL "check_rcpt": DEFER
 LOG: H=(a.b.c.d) [1.2.3.4] F=<> temporarily rejected RCPT <x@mxt2.test.ex>: all relevant MX records point to non-existent hosts
