@@ -17,6 +17,9 @@ TL/02 The BSD's have an arc4random API. One of the functions to induce
       OpenBSD 5.5. Detect this OpenBSD version and skip calling this
       function when detected.
 
+JH/01 Expand the EXPERIMENTAL_TPDA feature.  Several different events now
+      cause callback expansion.
+
 
 Exim version 4.84
 -----------------
@@ -30,7 +33,7 @@ JH/01 Bug 1513: Fix parsing of quoted parameter values in MIME headers.
 JH/02 Fix broken compilation when EXPERIMENTAL_DSN is enabled.
 
 TL/02 Bug 1509: Fix exipick for enhanced spoolfile specification used when
-      EXPERIMENTAL_DNS is enabled.  Fix from Wolfgang Breyha.
+      EXPERIMENTAL_DSN is enabled.  Fix from Wolfgang Breyha.
 
 
 Exim version 4.83
