@@ -437,12 +437,34 @@ verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 static uschar txt[256];
+#ifdef EXPERIMENTAL_TPDA
+int depth = X509_STORE_CTX_get_error_depth(x509ctx);
+#endif
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
 
 DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", txt);
 tls_out.peerdn = txt;
 tls_out.peercert = X509_dup(cert);
+
+#ifdef EXPERIMENTAL_TPDA
+  if (client_static_cbinfo->event_action)
+    {
+    if (tpda_raise_event(client_static_cbinfo->event_action,
+		    US"tls:cert", string_sprintf("%d", depth)) == DEFER)
+      {
+      log_write(0, LOG_MAIN, "DANE verify denied by event-action: "
+			      "depth=%d cert=%s", depth, txt);
+      tls_out.certificate_verified = FALSE;
+      return 0;			    /* reject */
+      }
+    if (depth != 0)
+      {
+      X509_free(tls_out.peercert);
+      tls_out.peercert = NULL;
+      }
+    }
+#endif
 
 if (state == 1)
   tls_out.dane_verified =
@@ -1952,6 +1974,10 @@ if (request_ocsp)
   client_static_cbinfo->u_ocsp.client.verify_required = require_ocsp;
   tls_out.ocsp = OCSP_NOT_RESP;
   }
+#endif
+
+#ifdef EXPERIMENTAL_TPDA
+client_static_cbinfo->event_action = tb->tpda_event_action;
 #endif
 
 #ifdef EXPERIMENTAL_TPDA

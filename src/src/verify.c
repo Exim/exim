@@ -660,7 +660,7 @@ else
         /* TLS negotiation failed; give an error.  Try in clear on a new connection,
            if the options permit it for this host. */
         if (rc != OK)
-	  {
+          {
 	  if (  rc == DEFER
 	     && ob->tls_tempfail_tryclear
 	     && !smtps
@@ -672,7 +672,11 @@ else
 #endif
 	     )
 	    {
-	      (void)close(inblock.sock);
+	    (void)close(inblock.sock);
+#ifdef EXPERIMENTAL_TPDA
+	    (void) tpda_raise_event(addr->transport->tpda_event_action,
+				    US"tcp:close", NULL);
+#endif
 	    log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
 	      "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
 	    suppress_tls = TRUE;

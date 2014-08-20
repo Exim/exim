@@ -1134,6 +1134,9 @@ if (result == OK)
   tls_out.cipher = addr->cipher;
   tls_out.peerdn = addr->peerdn;
   tls_out.ocsp = addr->ocsp;
+# ifdef EXPERIMENTAL_DANE
+  tls_out.dane_verified = testflag(addr, af_dane_verified);
+# endif
 #endif
 
   delivery_log(LOG_MAIN, addr, logchar, NULL);
@@ -1152,6 +1155,9 @@ if (result == OK)
   tls_out.cipher = NULL;
   tls_out.peerdn = NULL;
   tls_out.ocsp = OCSP_NOT_REQ;
+# ifdef EXPERIMENTAL_DANE
+  tls_out.dane_verified = FALSE;
+# endif
 #endif
   }
 
