@@ -13,6 +13,8 @@ gecos_name = CALLER_NAME
 acl_smtp_rcpt = accept
 acl_smtp_data = accept
 
+delivery_event_action = ${acl {logger}}
+
 
 # ----- ACL -----
 
@@ -32,11 +34,29 @@ ev_smtp:
 			[$host_address]:$host_port
 	   logwrite = . banner <$tpda_data>
 
+ev_msg_fail:
+    accept condition = ${if eq {$tpda_event}{msg:fail:delivery}}
+	   logwrite = . \
+	    refused by fdqn <$host> \
+	    local_part <$local_part> \
+	    domain <$domain> \
+
+    accept logwrite = . \
+	    local_part <$local_part> \
+	    domain <$domain> \
+	    reason <$tpda_data>
+
 ev_msg:
-    accept condition = ${if !eq {$acl_arg2}{domain1}}
+    accept condition = ${if eq {fail} {${listextract{2}{$tpda_event}}}}
+	   acl = ev_msg_fail
+
+    accept condition = ${if eq {$tpda_event}{msg:complete}}
+	   logwrite = . finished: $message_exim_id
+
+    accept condition = ${if !eq {$domain}{domain1}}
 	   logwrite = $this_expansion_will_fail
 
-    accept condition = ${if eq {$acl_arg1}{msg:delivery}}
+    accept condition = ${if eq {$tpda_event}{msg:delivery}}
 	   logwrite = . \
 	    delivery \
 	    ip <$host_address> \
@@ -48,7 +68,7 @@ ev_msg:
 	    router <$router_name> \
 	    transport <$transport_name>
 
-    accept condition = ${if eq {$acl_arg1}{msg:host:defer}}
+    accept condition = ${if eq {$tpda_event}{msg:host:defer}}
 	   logwrite = . \
 	    deferral \
 	    ip <$host_address> \
@@ -68,7 +88,7 @@ logger:
     accept condition = ${if eq {smtp} {${listextract{1}{$tpda_event}}}}
 	   acl = ev_smtp
     accept condition = ${if eq {msg} {${listextract{1}{$tpda_event}}}}
-	   acl = ev_msg $tpda_event $acl_arg2
+	   acl = ev_msg
 
 
 # ----- Routers -----
@@ -97,6 +117,6 @@ smtp:
   port = PORT_S
   command_timeout = 1s
   final_timeout = 1s
-  tpda_event_action =   ${acl {logger} {$tpda_event} {$domain} }
+  tpda_event_action =   ${acl {logger}}
 
 # End

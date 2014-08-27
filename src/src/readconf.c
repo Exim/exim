@@ -205,6 +205,9 @@ static optionlist optionlist_config[] = {
   { "deliver_drop_privilege",   opt_bool,        &deliver_drop_privilege },
   { "deliver_queue_load_max",   opt_fixed,       &deliver_queue_load_max },
   { "delivery_date_remove",     opt_bool,        &delivery_date_remove },
+#ifdef EXPERIMENTAL_TPDA
+  { "delivery_event_action",    opt_stringptr,   &delivery_event_action },
+#endif
 #ifdef ENABLE_DISABLE_FSYNC
   { "disable_fsync",            opt_bool,        &disable_fsync },
 #endif

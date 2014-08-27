@@ -762,8 +762,10 @@ b. Configure, somewhere before the DATA ACL, the control option to
 Transport post-delivery actions
 --------------------------------------------------------------
 
-An arbitrary per-transport string can be expanded on successful delivery,
+An arbitrary per-transport string can be expanded upon various transport events
 and (for SMTP transports) a second string on deferrals caused by a host error.
+Additionally a main-section configuration option can be expanded on some
+per-message events.
 This feature may be used, for example, to write exim internal log information
 (not available otherwise) into a database.
 
@@ -773,18 +775,23 @@ EXPERIMENTAL_TPDA=yes
 
 in your Local/Makefile
 
-and define the tpda_event_action option in the transport, to
-be expanded when the event fires.
+and define one or both of
+- the tpda_event_action option in the transport
+- the delivery_event_action
+to be expanded when the event fires.
 
 A new variable, $tpda_event, is set to the event type when the
 expansion is done.  The current list of events is:
 
-	msg:delivery
-	msg:host:defer
-	tcp:connect
-	tcp:close
-	tls:cert
-	smtp:connect
+	msg:complete		main		per message
+	msg:delivery		transport	per recipient
+	msg:host:defer		transport	per attempt
+	msg:fail:delivery	main		per recipient
+	msg:fail:internal	main		per recipient
+	tcp:connect		transport	per connection
+	tcp:close		transport	per connection
+	tls:cert		transport	per certificate in verification chain
+	smtp:connect		transport	per connection
 
 The expansion is called for all event types, and should use the $tpda_event
 value to decide when to act.  The variable data is a colon-separated
@@ -800,7 +807,7 @@ content is event_dependent:
 
 The msg:host:defer event populates one extra variable, $tpda_defer_errno.
 
-The following variables are likely to be useful for most event types:
+The following variables are likely to be useful depending on the event type:
 
 	router_name, transport_name
 	local_part, domain
@@ -808,6 +815,7 @@ The following variables are likely to be useful for most event types:
 	tls_out_peercert
 	lookup_dnssec_authenticated, tls_out_dane
 	sending_ip_address, sending_port
+	message_exim_id
 
 
 An example might look like:
@@ -823,12 +831,9 @@ tpda_event_action = ${if = {msg:delivery}{$tpda_event} \
     '${quote_pgsql:$message_exim_id}')}} \
 } {}}
 
-The string is expanded after the delivery completes and any
+The string is expanded for each of the supported events and any
 side-effects will happen.  The result is then discarded.
 Note that for complex operations an ACL expansion can be used.
-
-During the expansion the tpda_event variable will contain the
-string-list "msg:delivery".
 
 
 The expansion of the tpda_event_action option should normally
@@ -837,6 +842,7 @@ following will be forced:
 
 	msg:delivery	(ignored)
 	msg:host:defer	(ignored)
+	msg:fail:delivery (ignored)
 	tcp:connect	do not connect
 	tcp:close	(ignored)
 	tls:cert	refuse verification

@@ -872,7 +872,8 @@ extern BOOL    timestamps_utc;         /* Use UTC for all times */
 #ifdef EXPERIMENTAL_TPDA
 extern int     tpda_defer_errno;        /* error number set when a remote delivery is deferred with a host error */
 extern uschar *tpda_event;		/* event classification */
-extern uschar *tpda_data;;		/* event data */
+extern uschar *tpda_data;		/* event data */
+extern uschar *delivery_event_action;   /* expansion for delivery events */
 #endif
 
 extern uschar *transport_name;         /* Name of transport last started */

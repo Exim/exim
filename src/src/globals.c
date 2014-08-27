@@ -1327,8 +1327,9 @@ BOOL    timestamps_utc         = FALSE;
 
 #ifdef EXPERIMENTAL_TPDA
 int     tpda_defer_errno        = 0;
-uschar *tpda_event              = NULL;
-uschar *tpda_data               = NULL;
+uschar *tpda_event              = NULL;	/* event name */
+uschar *tpda_data               = NULL;	/* auxilary data for event */
+uschar *delivery_event_action   = NULL;	/* expansion for delivery events */
 #endif
 
 transport_instance  *transports = NULL;

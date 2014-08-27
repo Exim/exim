@@ -708,6 +708,8 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 #endif
 
 
+
+
 #ifdef EXPERIMENTAL_TPDA
 int
 tpda_raise_event(uschar * action, uschar * event, uschar * ev_data)
@@ -742,7 +744,32 @@ if (action)
   }
 return OK;
 }
-#endif
+
+static void
+tpda_msg_event(uschar * event, address_item * addr)
+{
+uschar * save_domain = deliver_domain;
+uschar * save_local =  deliver_localpart;
+
+if (!addr->transport)
+  return;
+
+router_name =    addr->router ? addr->router->name : NULL;
+transport_name = addr->transport->name;
+deliver_domain = addr->domain;
+deliver_localpart = addr->local_part;
+
+(void) tpda_raise_event(addr->transport->tpda_event_action, event,
+	  addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
+	  ? addr->message : NULL);
+
+deliver_localpart = save_local;
+deliver_domain =    save_domain;
+router_name = transport_name = NULL;
+}
+#endif	/*EXPERIMENTAL_TPDA*/
+
+
 
 /* If msg is NULL this is a delivery log and logchar is used. Otherwise
 this is a nonstandard call; no two-character delivery flag is written
@@ -902,24 +929,10 @@ s[ptr] = 0;
 log_write(0, flags, "%s", s);
 
 #ifdef EXPERIMENTAL_TPDA
-  {
-  uschar * save_domain = deliver_domain;
-  uschar * save_local =  deliver_localpart;
-
-  router_name =    addr->router ? addr->router->name : NULL;
-  transport_name = addr->transport ? addr->transport->name : NULL;
-  deliver_domain = addr->domain;
-  deliver_localpart = addr->local_part;
-
-  (void) tpda_raise_event(addr->transport->tpda_event_action, US"msg:delivery",
-	    addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
-	    ? addr->message : NULL);
-
-  deliver_localpart = save_local;
-  deliver_domain =    save_domain;
-  router_name = transport_name = NULL;
-  }
+/*XXX cutthrough calls this also for non-delivery...*/
+tpda_msg_event(US"msg:delivery", addr);
 #endif
+
 store_reset(reset_point);
 return;
 }
@@ -1347,6 +1360,11 @@ else
     deliver_msglog("%s %s\n", now, s);
 
   log_write(0, LOG_MAIN, "** %s", s);
+
+#ifdef EXPERIMENTAL_TPDA
+  tpda_msg_event(US"msg:fail:delivery", addr);
+#endif
+
   store_reset(reset_point);
   }
 
@@ -5462,6 +5480,25 @@ if (process_recipients != RECIP_IGNORE)
         addr_last = new;
         break;
         }
+
+#ifdef EXPERIMENTAL_TPDA
+      if (process_recipients != RECIP_ACCEPT)
+	{
+	uschar * save_local =  deliver_localpart;
+	uschar * save_domain = deliver_domain;
+
+	deliver_localpart = expand_string(
+		      string_sprintf("${local_part:%s}", new->address));
+	deliver_domain =    expand_string(
+		      string_sprintf("${domain:%s}", new->address));
+
+	(void) tpda_raise_event(delivery_event_action,
+		      US"msg:fail:internal", new->message);
+
+	deliver_localpart = save_local;
+	deliver_domain =    save_domain;
+	}
+#endif
       }
     }
   }
@@ -7217,7 +7254,11 @@ if (addr_defer == NULL)
 
   /* Unset deliver_freeze so that we won't try to move the spool files further down */
   deliver_freeze = FALSE;
-  }
+
+#ifdef EXPERIMENTAL_TPDA
+  (void) tpda_raise_event(delivery_event_action, US"msg:complete", NULL);
+#endif
+}
 
 /* If there are deferred addresses, we are keeping this message because it is
 not yet completed. Lose any temporary files that were catching output from

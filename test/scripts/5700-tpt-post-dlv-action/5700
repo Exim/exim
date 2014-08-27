@@ -1,4 +1,4 @@
-# Arbtirary expansion after transport
+# Arbitrary expansion after transport
 # (EXPERIMENTAL_TPDA)
 #
 need_ipv4
@@ -62,3 +62,33 @@ A message which will hit a timeout at the destination server
 .
 ****
 #
+#
+#
+#
+#
+exim -odq userx@domain1
+A message which will get refused
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL
+250 OK
+RCPT
+550 GO AWAY
+QUIT
+220 OK
+****
+exim -qqf
+****
+#
+#
+#
+#
+exim -odq userx@domain1
+A message we will cancel from the queue
+****
+exim -odi -Mg $msg1
+****

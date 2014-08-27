@@ -11673,7 +11673,7 @@ This variable is like &$message_headers$& except that no processing of the
 contents of header lines is done.
 
 .vitem &$message_id$&
-This is an old name for &$message_exim_id$&, which is now deprecated.
+This is an old name for &$message_exim_id$&. It is now deprecated.
 
 .vitem &$message_linecount$&
 .vindex "&$message_linecount$&"
