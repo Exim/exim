@@ -7338,6 +7338,10 @@ If you specify multiple attributes, the result contains space-separated, quoted
 strings, each preceded by the attribute name and an equals sign. Within the
 quotes, the quote character, backslash, and newline are escaped with
 backslashes, and commas are used to separate multiple values for the attribute.
+.new
+Any commas in attribute values are doubled
+(permitting treatment of the values as a comma-separated list).
+.wen
 Apart from the escaping, the string within quotes takes the same form as the
 output when a single attribute is requested. Specifying no attributes is the
 same as specifying all of an entry's attributes.
@@ -7347,21 +7351,26 @@ LDAP query, and the second is the data that is returned. The attribute called
 &%attr1%& has two values, whereas &%attr2%& has only one value:
 .code
 ldap:///o=base?attr1?sub?(uid=fred)
-value1.1, value1.2
+value1.1,value1.2
 
 ldap:///o=base?attr2?sub?(uid=fred)
 value two
 
 ldap:///o=base?attr1,attr2?sub?(uid=fred)
-attr1="value1.1, value1.2" attr2="value two"
+attr1="value1.1,value1.2" attr2="value two"
 
 ldap:///o=base??sub?(uid=fred)
-objectClass="top" attr1="value1.1, value1.2" attr2="value two"
+objectClass="top" attr1="value1.1,value1.2" attr2="value two"
 .endd
-The &%extract%& operator in string expansions can be used to pick out
-individual fields from data that consists of &'key'&=&'value'& pairs. You can
+You can
 make use of Exim's &%-be%& option to run expansion tests and thereby check the
 results of LDAP lookups.
+The &%extract%& operator in string expansions can be used to pick out
+individual fields from data that consists of &'key'&=&'value'& pairs.
+.new
+The &%listextract%& operator should be used to pick out individual values
+of attributes, even when only a single value is expected.
+.wen
 
 
 
