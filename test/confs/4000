@@ -12,40 +12,13 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = check_rcpt
-acl_smtp_data = check_data
-acl_not_smtp  = check_data
+acl_smtp_rcpt = accept
 acl_smtp_mime = check_mime
-acl_not_smtp_mime = check_mime
-
-av_scanner = clamd:CLAMSOCKET
 
 
 # ----- ACL -----
 
 begin acl
-
-check_rcpt:
-  accept
-
-check_data:
-  deny     message = Found $malware_name
-           malware = *
-
-  warn     spam    = nobody
-
-  warn     set acl_m0 = $spam_score_int
-
-  warn     message = X-Regex: Regex matched
-           regex   = THIS REGEX
-
-  warn     condition = ${if !eq{$h_fakereject:}{}}
-           control   = fakereject
-
-  warn     condition = ${if !eq{$h_fakedefer:}{}}
-           control   = fakedefer
-
-  accept
 
 check_mime:
   warn     decode  = default
@@ -62,10 +35,6 @@ check_mime:
                         X-$mime_part_count-is-rfc822: $mime_is_rfc822\n\
                         X-$mime_part_count-decode-filename: $mime_decoded_filename\n\
                         X-$mime_part_count-content-size: $mime_content_size
-  warn     mime_regex = (?s)\
-                        (?=Test quoted-printable =)\
-                        (?=.*?Continued line with this)
-           add_header = X-mime-regex: matched
   accept
 
 
@@ -76,10 +45,6 @@ begin routers
 r1:
   driver = accept
   transport = t1
-  headers_add = X-Router-SSint: \
-                ${if eq {$spam_score_int}{$acl_m0}\
-                {was preserved}{was not preserver}}
-
 
 # ----- Transports -----
 

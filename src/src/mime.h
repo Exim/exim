@@ -40,15 +40,15 @@ static int mime_header_list_size = sizeof(mime_header_list)/sizeof(mime_header);
 
 
 typedef struct mime_parameter {
-  uschar *name;
-  int    namelen;
-  void   *value;
+  uschar *  name;
+  int       namelen;
+  uschar ** value;
 } mime_parameter;
 
 static mime_parameter mime_parameter_list[] = {
-  { US"name=", 5, &mime_filename },
+  { US"name=",     5, &mime_filename },
   { US"filename=", 9, &mime_filename },
-  { US"charset=", 8, &mime_charset },
+  { US"charset=",  8, &mime_charset },
   { US"boundary=", 9, &mime_boundary }
 };
 

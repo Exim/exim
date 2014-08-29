@@ -620,12 +620,18 @@ NEXT_PARAM_SEARCH:
 		else
 		  param_value = string_cat(param_value, &size, &ptr, q++, 1);
 		}
-	      param_value[ptr++] = '\0';
-	      param_value_len = ptr;
+	      if (param_value)
+		{
+		param_value[ptr++] = '\0';
+		param_value_len = ptr;
 
-	      param_value = rfc2047_decode(param_value, check_rfc2047_length, NULL, 32, &param_value_len, &q);
-	      debug_printf("Found %s MIME parameter in %s header, value is '%s'\n", mp->name, mime_header_list[i].name, param_value);
-	      *((uschar **)(mp->value)) = param_value;
+		param_value = rfc2047_decode(param_value,
+		      check_rfc2047_length, NULL, 32, &param_value_len, &q);
+		debug_printf("Found %s MIME parameter in %s header, "
+		      "value is '%s'\n", mp->name, mime_header_list[i].name,
+		      param_value);
+		}
+	      *mp->value = param_value;
 	      p += (mp->namelen + param_value_len + 1);
 	      goto NEXT_PARAM_SEARCH;
 	    }

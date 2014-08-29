@@ -1,0 +1,212 @@
+# Basic exiscan feature tests
+echo ==> This test may take a bit of time, depending on exactly
+echo ==> how your SpamAssassin is configured.
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+A message without any headers.
+.
+quit
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Fri, 17 Dec 2004 16:13:04 +0100
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+
+OK, this should look like a genuine message.
+.
+quit
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: 99Junk99@somewhere.com
+To:
+Subject: MAKE MONEY FAST!!!!
+Message-id: abcde
+
+This should be enough to trip the threshold.
+.
+quit
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Fri, 17 Dec 2004 16:13:04 +0100
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+FakeReject: test fakereject
+
+OK, this should look like a genuine message, but
+it will trip on THIS REGEX.
+.
+quit
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3058@test.ex>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="T4sUOijqQbZv57TR"
+Content-Disposition: inline
+Subject: [exim] Re: Bug#286074: eximstats: uses message count as data for
+	the "volume" charts
+X-BeenThere: a-list00@exim.org
+X-Mailman-Version: 2.1.5
+Precedence: list
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Test quoted-printable =3D    
+Space at end of line=40
+Continued line =    
+with this text.
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+There was a part of the patch missing, complete one is attached.
+     sorry for wasting your time
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=working-patch
+
+--- /usr/sbin/eximstats 2004-12-17 13:36:44.381983753 +0100
++++ eximstats	2004-12-17 13:47:37.763185260 +0100
+@@ -1107,11 +1107,11 @@
+   if (scalar @chartdatanames < $ntopchart)
+     {
+     push(@chartdatanames, $key);
+-    push(@chartdatavals, $$m_count{$key});
++    push(@chartdatavals, $$m_data{$key});
+     }
+   else
+     {
+-    $chartotherval += $$m_count{$key};
++    $chartotherval += $$m_data{$key};
+     }
+   }
+ push(@chartdatanames, "Other");
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+-- 
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****
+# Non-smtp message 
+exim -odi userx@test.ex
+A message without any headers.
+.
+****
+# Non-smtp MIME message
+exim -odi userx@test.ex
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3058@test.ex>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="T4sUOijqQbZv57TR"
+Content-Disposition: inline
+Subject: [exim] Re: Bug#286074: eximstats: uses message count as data for
+	the "volume" charts
+X-BeenThere: a-list00@exim.org
+X-Mailman-Version: 2.1.5
+Precedence: list
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+There was a part of the patch missing, complete one is attached.
+     sorry for wasting your time
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=working-patch
+
+--- /usr/sbin/eximstats 2004-12-17 13:36:44.381983753 +0100
++++ eximstats	2004-12-17 13:47:37.763185260 +0100
+@@ -1107,11 +1107,11 @@
+   if (scalar @chartdatanames < $ntopchart)
+     {
+     push(@chartdatanames, $key);
+-    push(@chartdatavals, $$m_count{$key});
++    push(@chartdatavals, $$m_data{$key});
+     }
+   else
+     {
+-    $chartotherval += $$m_count{$key};
++    $chartotherval += $$m_data{$key};
+     }
+   }
+ push(@chartdatanames, "Other");
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+-- 
+
+--T4sUOijqQbZv57TR--
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Fri, 17 Dec 2004 16:13:04 +0100
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+FakeDefer: test fakedefer
+
+OK, this should look like a genuine message, but
+it will trip on THIS REGEX.
+.
+quit
+****
+# Very simple virus test
+exim -odi -bs
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Subject: a virus test
+
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+.
+quit
+****
