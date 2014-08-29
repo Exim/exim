@@ -22,7 +22,7 @@ begin acl
 
 ev_tcp:
     accept condition = ${if eq {$tpda_event}{tcp:connect}}
-	   logwrite = . [$host_address]:$sending_port
+	   logwrite = . [$host_address]:$host_port
     accept condition = ${if eq {$tpda_event}{tcp:close}}
 	   logwrite = . [$sending_ip_address] -> \
 			[$host_address]:$host_port
