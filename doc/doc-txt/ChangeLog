@@ -20,6 +20,11 @@ TL/02 The BSD's have an arc4random API. One of the functions to induce
 JH/01 Expand the EXPERIMENTAL_TPDA feature.  Several different events now
       cause callback expansion.
 
+TL/03 Bugzilla 1518: Clarify "condition" processing in routers; that
+      syntax errors in an expansion can be treated as a string instead of
+      logging or causing an error, due to the internal use of bool_lax
+      instead of bool when processing it.
+
 
 Exim version 4.84
 -----------------

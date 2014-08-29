@@ -16822,6 +16822,39 @@ If the expansion fails (other than forced failure) delivery is deferred. Some
 of the other precondition options are common special cases that could in fact
 be specified using &%condition%&.
 
+.new
+When originally designed, Exim's ACL system enforced very strict parsing
+of the &%condition%& expansion everywhere it was being processed.
+Through the 4.7x release cycle, the &%condition%& processing while in a
+router became more loose, internally adopting the use of &%bool_lax%&
+instead of the more rigid &%bool%&.  This is best illustrated in an
+example:
+.code
+# This used to fail with a syntax error, now it
+# treats any extra characters as a string
+
+$ exim -be '${if eq {${lc:GOOGLE.com}} {google.com}} {yes} {no}}'
+true {yes} {no}}
+
+$ exim -be '${if eq {${lc:WHOIS.com}} {google.com}} {yes} {no}}'
+ {yes} {no}}
+.endd
+In each example above, the &%if%& statement actually ends after
+&"{google.com}}"&.  Since no true or false braces were defined, the
+default &%if%& behavior is to return a boolean true or a null answer
+(which evaluates to false). The rest of the line is then treated as a
+string. So the first example resulted in the boolean answer &"true"&
+with the string &" {yes} {no}}"& appended to it. The second example
+resulted in the null output (indicating false) with the string
+&" {yes} {no}}"& appended to it.
+
+In fact you can put excess forward braces in too.  In the router
+&%condition%&, Exim's ACL parser only looks for &"{"& symbols when they
+mean something, like after a &"$"& or when required as part of a
+conditional.  But otherwise &"{"& and &"}"& are treated as ordinary
+string characters.
+.wen
+
 
 .option debug_print routers string&!! unset
 .cindex "testing" "variables in drivers"
