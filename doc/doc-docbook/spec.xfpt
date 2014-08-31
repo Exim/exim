@@ -7346,22 +7346,25 @@ Apart from the escaping, the string within quotes takes the same form as the
 output when a single attribute is requested. Specifying no attributes is the
 same as specifying all of an entry's attributes.
 
+.new
 Here are some examples of the output format. The first line of each pair is an
 LDAP query, and the second is the data that is returned. The attribute called
-&%attr1%& has two values, whereas &%attr2%& has only one value:
+&%attr1%& has two values, one of them with an embedded comma, whereas
+&%attr2%& has only one value:
 .code
 ldap:///o=base?attr1?sub?(uid=fred)
-value1.1,value1.2
+value1.1,value1,,2
 
 ldap:///o=base?attr2?sub?(uid=fred)
 value two
 
 ldap:///o=base?attr1,attr2?sub?(uid=fred)
-attr1="value1.1,value1.2" attr2="value two"
+attr1="value1.1,value1,,2" attr2="value two"
 
 ldap:///o=base??sub?(uid=fred)
-objectClass="top" attr1="value1.1,value1.2" attr2="value two"
+objectClass="top" attr1="value1.1,value1,,2" attr2="value two"
 .endd
+.wen
 You can
 make use of Exim's &%-be%& option to run expansion tests and thereby check the
 results of LDAP lookups.
@@ -7370,6 +7373,8 @@ individual fields from data that consists of &'key'&=&'value'& pairs.
 .new
 The &%listextract%& operator should be used to pick out individual values
 of attributes, even when only a single value is expected.
+The doubling of embedded commas allows you to use the returned data as a
+comma separated list (using the "<," syntax for changing the input list separator)
 .wen
 
 
