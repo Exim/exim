@@ -1395,7 +1395,7 @@ transport_instance  transport_defaults = {
     TRUE_UNSET                /* retry_use_local_part: BOOL, but set neither
                                  1 nor 0 so can detect unset */
 #ifdef EXPERIMENTAL_TPDA
-   ,NULL		      /* tpda_delivery_action */
+   ,NULL		      /* tpda_event_action */
 #endif
 };
 
