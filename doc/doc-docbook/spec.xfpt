@@ -7374,7 +7374,7 @@ individual fields from data that consists of &'key'&=&'value'& pairs.
 The &%listextract%& operator should be used to pick out individual values
 of attributes, even when only a single value is expected.
 The doubling of embedded commas allows you to use the returned data as a
-comma separated list (using the "<," syntax for changing the input list separator)
+comma separated list (using the "<," syntax for changing the input list separator).
 .wen
 
 
