@@ -1253,7 +1253,9 @@ hosts_request_ocsp includes the string "tls_out_tlsa_usage",
 they are re-expanded in time to control the OCSP request.
 
 This modification of hosts_request_ocsp is only done if
-it has the default value of "*".
+it has the default value of "*".  Admins who change it, and
+those who use hosts_require_ocsp, should consider the interaction
+with DANE in their OCSP settings.
 
 
 For client-side DANE there are two new smtp transport options,
