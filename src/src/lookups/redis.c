@@ -211,7 +211,7 @@ perform_redis_search(uschar *command, uschar *server, uschar **resultptr,
 
                break;
        case REDIS_REPLY_INTEGER:
-               ttmp = (redis_reply->integer == 1) ? US"true" : US"false";
+               ttmp = (redis_reply->integer != 0) ? US"true" : US"false";
                result = string_cat(result, &ssize, &offset, US ttmp, Ustrlen(ttmp));
                break;
        case REDIS_REPLY_STRING:
