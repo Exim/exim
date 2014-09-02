@@ -25,6 +25,9 @@ TL/03 Bugzilla 1518: Clarify "condition" processing in routers; that
       logging or causing an error, due to the internal use of bool_lax
       instead of bool when processing it.
 
+JH/02 Add EXPERIMENTAL_DANE, allowing for using the DNS as trust-anchor for
+      server certificates when making smtp deliveries.
+
 
 Exim version 4.84
 -----------------

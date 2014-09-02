@@ -661,9 +661,16 @@ else
            if the options permit it for this host. */
         if (rc != OK)
           {
-	  if (rc == DEFER && ob->tls_tempfail_tryclear && !smtps &&
-	     verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-	       host->address, NULL) != OK)
+	  if (  rc == DEFER
+	     && ob->tls_tempfail_tryclear
+	     && !smtps
+	     && verify_check_this_host(&(ob->hosts_require_tls), NULL,
+	       host->name, host->address, NULL) != OK
+#ifdef EXPERIMENTAL_DANE
+	     && verify_check_this_host(&(ob->hosts_require_dane), NULL,
+	       host->name, host->address, NULL) != OK
+#endif
+	     )
 	    {
 	    (void)close(inblock.sock);
 #ifdef EXPERIMENTAL_TPDA
@@ -697,8 +704,13 @@ else
 
     /* If the host is required to use a secure channel, ensure that we have one. */
     if (tls_out.active < 0)
-      if (verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-      	host->address, NULL) == OK)
+      if (  verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+	      host->address, NULL) == OK
+#ifdef EXPERIMENTAL_DANE
+	 || verify_check_this_host(&(ob->hosts_require_dane), NULL, host->name,
+	      host->address, NULL) == OK
+#endif
+	 )
         {
         /*save_errno = ERRNO_TLSREQUIRED;*/
         log_write(0, LOG_MAIN, "a TLS session is required for %s [%s], but %s",

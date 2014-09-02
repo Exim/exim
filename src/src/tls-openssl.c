@@ -25,6 +25,10 @@ functions from the OpenSSL library. */
 #ifndef DISABLE_OCSP
 # include <openssl/ocsp.h>
 #endif
+#ifdef EXPERIMENTAL_DANE
+# include <danessl.h>
+#endif
+
 
 #ifndef DISABLE_OCSP
 # define EXIM_OCSP_SKEW_SECONDS (300L)
@@ -422,6 +426,53 @@ verify_callback_server(int state, X509_STORE_CTX *x509ctx)
 return verify_callback(state, x509ctx, &tls_in, &server_verify_callback_called, &server_verify_optional);
 }
 
+
+#ifdef EXPERIMENTAL_DANE
+
+/* This gets called *by* the dane library verify callback, which interposes
+itself.
+*/
+static int
+verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
+{
+X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
+static uschar txt[256];
+#ifdef EXPERIMENTAL_TPDA
+int depth = X509_STORE_CTX_get_error_depth(x509ctx);
+#endif
+
+X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+
+DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", txt);
+tls_out.peerdn = txt;
+tls_out.peercert = X509_dup(cert);
+
+#ifdef EXPERIMENTAL_TPDA
+  if (client_static_cbinfo->event_action)
+    {
+    if (tpda_raise_event(client_static_cbinfo->event_action,
+		    US"tls:cert", string_sprintf("%d", depth)) == DEFER)
+      {
+      log_write(0, LOG_MAIN, "DANE verify denied by event-action: "
+			      "depth=%d cert=%s", depth, txt);
+      tls_out.certificate_verified = FALSE;
+      return 0;			    /* reject */
+      }
+    if (depth != 0)
+      {
+      X509_free(tls_out.peercert);
+      tls_out.peercert = NULL;
+      }
+    }
+#endif
+
+if (state == 1)
+  tls_out.dane_verified =
+  tls_out.certificate_verified = TRUE;
+return 1;
+}
+
+#endif	/*EXPERIMENTAL_DANE*/
 
 
 /*************************************************
@@ -1039,7 +1090,6 @@ return i;
 #endif	/*!DISABLE_OCSP*/
 
 
-
 /*************************************************
 *            Initialize for TLS                  *
 *************************************************/
@@ -1048,13 +1098,14 @@ return i;
 of the library.  We allocate and return a context structure.
 
 Arguments:
+  ctxp            returned SSL context
   host            connected host, if client; NULL if server
   dhparam         DH parameter file
   certificate     certificate file
   privatekey      private key
   ocsp_file       file of stapling info (server); flag for require ocsp (client)
   addr            address if client; NULL if server (for some randomness)
-  cbp             place to put allocated context
+  cbp             place to put allocated callback context
 
 Returns:          OK/DEFER/FAIL
 */
@@ -1463,6 +1514,9 @@ if (expciphers != NULL)
 optional, set up appropriately. */
 
 tls_in.certificate_verified = FALSE;
+#ifdef EXPERIMENTAL_DANE
+tls_in.dane_verified = FALSE;
+#endif
 server_verify_callback_called = FALSE;
 
 if (verify_check_host(&tls_verify_hosts) == OK)
@@ -1576,6 +1630,147 @@ return OK;
 
 
 
+static int
+tls_client_basic_ctx_init(SSL_CTX * ctx,
+    host_item * host, smtp_transport_options_block * ob
+#ifdef EXPERIMENTAL_CERTNAMES
+    , tls_ext_ctx_cb * cbinfo
+#endif
+			  )
+{
+int rc;
+/* stick to the old behaviour for compatibility if tls_verify_certificates is 
+   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
+   the specified host patterns if one of them is defined */
+
+if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
+    (verify_check_host(&ob->tls_verify_hosts) == OK))
+  {
+  if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
+	ob->tls_crl, host, FALSE, verify_callback_client)) != OK)
+    return rc;
+  client_verify_optional = FALSE;
+
+#ifdef EXPERIMENTAL_CERTNAMES
+  if (ob->tls_verify_cert_hostnames)
+    {
+    if (!expand_check(ob->tls_verify_cert_hostnames,
+		      US"tls_verify_cert_hostnames",
+		      &cbinfo->verify_cert_hostnames))
+      return FAIL;
+    if (cbinfo->verify_cert_hostnames)
+      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+		      cbinfo->verify_cert_hostnames);
+    }
+#endif
+  }
+else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
+  {
+  if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
+	ob->tls_crl, host, TRUE, verify_callback_client)) != OK)
+    return rc;
+  client_verify_optional = TRUE;
+  }
+
+return OK;
+}
+
+
+#ifdef EXPERIMENTAL_DANE
+static int
+tlsa_lookup(host_item * host, dns_answer * dnsa,
+  BOOL dane_required, BOOL * dane)
+{
+/* move this out to host.c given the similarity to dns_lookup() ? */
+uschar buffer[300];
+uschar * fullname = buffer;
+
+/* TLSA lookup string */
+(void)sprintf(CS buffer, "_%d._tcp.%.256s", host->port, host->name);
+
+switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
+  {
+  case DNS_AGAIN:
+    return DEFER; /* just defer this TLS'd conn */
+
+  default:
+  case DNS_FAIL:
+    if (dane_required)
+      {
+      log_write(0, LOG_MAIN, "DANE error: TLSA lookup failed");
+      return FAIL;
+      }
+    break;
+
+  case DNS_SUCCEED:
+    if (!dns_is_secure(dnsa))
+      {
+      log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
+      return DEFER;
+      }
+    *dane = TRUE;
+    break;
+  }
+return OK;
+}
+
+
+static int
+dane_tlsa_load(SSL * ssl, host_item * host, dns_answer * dnsa)
+{
+dns_record * rr;
+dns_scan dnss;
+const char * hostnames[2] = { CS host->name, NULL };
+int found = 0;
+
+if (DANESSL_init(ssl, NULL, hostnames) != 1)
+  return tls_error(US"hostnames load", host, NULL);
+
+for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
+     rr;
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+    ) if (rr->type == T_TLSA)
+  {
+  uschar * p = rr->data;
+  uint8_t usage, selector, mtype;
+  const char * mdname;
+
+  found++;
+  usage = *p++;
+  selector = *p++;
+  mtype = *p++;
+
+  switch (mtype)
+    {
+    default:
+      log_write(0, LOG_MAIN,
+		"DANE error: TLSA record w/bad mtype 0x%x", mtype);
+      return FAIL;
+    case 0:	mdname = NULL; break;
+    case 1:	mdname = "sha256"; break;
+    case 2:	mdname = "sha512"; break;
+    }
+
+  switch (DANESSL_add_tlsa(ssl, usage, selector, mdname, p, rr->size - 3))
+    {
+    default:
+    case 0:	/* action not taken */
+      return tls_error(US"tlsa load", host, NULL);
+    case 1:	break;
+    }
+
+  tls_out.tlsa_usage |= 1<<usage;
+  }
+
+if (found)
+  return OK;
+
+log_write(0, LOG_MAIN, "DANE error: No TLSA records");
+return FAIL;
+}
+#endif	/*EXPERIMENTAL_DANE*/
+
+
 
 /*************************************************
 *    Start a TLS session in a client             *
@@ -1601,16 +1796,70 @@ tls_client_start(int fd, host_item *host, address_item *addr,
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
 static uschar txt[256];
-uschar *expciphers;
-X509* server_cert;
+uschar * expciphers;
+X509 * server_cert;
 int rc;
 static uschar cipherbuf[256];
+
 #ifndef DISABLE_OCSP
-BOOL require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
-  NULL, host->name, host->address, NULL) == OK;
-BOOL request_ocsp = require_ocsp ? TRUE
-  : verify_check_this_host(&ob->hosts_request_ocsp,
-      NULL, host->name, host->address, NULL) == OK;
+BOOL request_ocsp = FALSE;
+BOOL require_ocsp = FALSE;
+#endif
+#ifdef EXPERIMENTAL_DANE
+dns_answer tlsa_dnsa;
+BOOL dane = FALSE;
+BOOL dane_required;
+#endif
+
+#ifdef EXPERIMENTAL_DANE
+tls_out.dane_verified = FALSE;
+tls_out.tlsa_usage = 0;
+dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
+			  host->name, host->address, NULL) == OK;
+
+if (host->dnssec == DS_YES)
+  {
+  if(  dane_required
+    || verify_check_this_host(&ob->hosts_try_dane, NULL,
+			  host->name, host->address, NULL) == OK
+    )
+    if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
+      return rc;
+  }
+else if (dane_required)
+  {
+  /*XXX a shame we only find this after making tcp & smtp connection */
+  /* move the test earlier? */
+  log_write(0, LOG_MAIN, "DANE error: previous lookup not DNSSEC");
+  return FAIL;
+  }
+#endif
+
+#ifndef DISABLE_OCSP
+  {
+  if ((require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
+    NULL, host->name, host->address, NULL) == OK))
+    request_ocsp = TRUE;
+  else
+    {
+# ifdef EXPERIMENTAL_DANE
+    if (  dane
+       && ob->hosts_request_ocsp[0] == '*'
+       && ob->hosts_request_ocsp[1] == '\0'
+       )
+      {
+      /* Unchanged from default.  Use a safer one under DANE */
+      request_ocsp = TRUE;
+      ob->hosts_request_ocsp = US"${if or { {= {0}{$tls_out_tlsa_usage}} "
+					"   {= {4}{$tls_out_tlsa_usage}} } "
+				   " {*}{}}";
+      }
+    else
+# endif
+      request_ocsp = verify_check_this_host(&ob->hosts_request_ocsp,
+	  NULL, host->name, host->address, NULL) == OK;
+    }
+  }
 #endif
 
 rc = tls_init(&client_ctx, host, NULL,
@@ -1641,38 +1890,26 @@ if (expciphers != NULL)
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
-/* stick to the old behaviour for compatibility if tls_verify_certificates is 
-   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
-   the specified host patterns if one of them is defined */
-
-if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
-    (verify_check_host(&ob->tls_verify_hosts) == OK))
+#ifdef EXPERIMENTAL_DANE
+if (dane)
   {
-  if ((rc = setup_certs(client_ctx, ob->tls_verify_certificates,
-	ob->tls_crl, host, FALSE, verify_callback_client)) != OK)
-    return rc;
-  client_verify_optional = FALSE;
+  SSL_CTX_set_verify(client_ctx, SSL_VERIFY_PEER, verify_callback_client_dane);
 
-#ifdef EXPERIMENTAL_CERTNAMES
-  if (ob->tls_verify_cert_hostnames)
-    {
-    if (!expand_check(ob->tls_verify_cert_hostnames,
-		      US"tls_verify_cert_hostnames",
-		      &client_static_cbinfo->verify_cert_hostnames))
-      return FAIL;
-    if (client_static_cbinfo->verify_cert_hostnames)
-      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
-		      client_static_cbinfo->verify_cert_hostnames);
-    }
+  if (!DANESSL_library_init())
+    return tls_error(US"library init", host, NULL);
+  if (DANESSL_CTX_init(client_ctx) <= 0)
+    return tls_error(US"context init", host, NULL);
+  }
+else
+
 #endif
-  }
-else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
-  {
-  if ((rc = setup_certs(client_ctx, ob->tls_verify_certificates,
-	ob->tls_crl, host, TRUE, verify_callback_client)) != OK)
+
+  if ((rc = tls_client_basic_ctx_init(client_ctx, host, ob
+#ifdef EXPERIMENTAL_CERTNAMES
+				, client_static_cbinfo
+#endif
+				)) != OK)
     return rc;
-  client_verify_optional = TRUE;
-  }
 
 if ((client_ssl = SSL_new(client_ctx)) == NULL)
   return tls_error(US"SSL_new", host, NULL);
@@ -1703,15 +1940,44 @@ if (ob->tls_sni)
     }
   }
 
+#ifdef EXPERIMENTAL_DANE
+if (dane)
+  if ((rc = dane_tlsa_load(client_ssl, host, &tlsa_dnsa)) != OK)
+    return rc;
+#endif
+
 #ifndef DISABLE_OCSP
 /* Request certificate status at connection-time.  If the server
 does OCSP stapling we will get the callback (set in tls_init()) */
+# ifdef EXPERIMENTAL_DANE
+if (request_ocsp)
+  {
+  const uschar * s;
+  if (  (s = ob->hosts_require_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage")
+     || (s = ob->hosts_request_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage")
+     )
+    {	/* Re-eval now $tls_out_tlsa_usage is populated.  If
+    	this means we avoid the OCSP request, we wasted the setup
+	cost in tls_init(). */
+    require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
+      NULL, host->name, host->address, NULL) == OK;
+    request_ocsp = require_ocsp ? TRUE
+      : verify_check_this_host(&ob->hosts_request_ocsp,
+	  NULL, host->name, host->address, NULL) == OK;
+    }
+  }
+# endif
+
 if (request_ocsp)
   {
   SSL_set_tlsext_status_type(client_ssl, TLSEXT_STATUSTYPE_ocsp);
   client_static_cbinfo->u_ocsp.client.verify_required = require_ocsp;
   tls_out.ocsp = OCSP_NOT_RESP;
   }
+#endif
+
+#ifdef EXPERIMENTAL_TPDA
+client_static_cbinfo->event_action = tb->tpda_event_action;
 #endif
 
 #ifdef EXPERIMENTAL_TPDA
@@ -1725,6 +1991,11 @@ sigalrm_seen = FALSE;
 alarm(ob->command_timeout);
 rc = SSL_connect(client_ssl);
 alarm(0);
+
+#ifdef EXPERIMENTAL_DANE
+if (dane)
+  DANESSL_cleanup(client_ssl);
+#endif
 
 if (rc <= 0)
   return tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL);

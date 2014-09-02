@@ -103,6 +103,10 @@ tls_support tls_in = {
  -1,   /* tls_active */
  0,    /* tls_bits */
  FALSE,/* tls_certificate_verified */
+#ifdef EXPERIMENTAL_DANE
+ FALSE,/* dane_verified */
+ 0,    /* tlsa_usage */
+#endif
  NULL, /* tls_cipher */
  FALSE,/* tls_on_connect */
  NULL, /* tls_on_connect_ports */
@@ -116,6 +120,10 @@ tls_support tls_out = {
  -1,   /* tls_active */
  0,    /* tls_bits */
  FALSE,/* tls_certificate_verified */
+#ifdef EXPERIMENTAL_DANE
+ FALSE,/* dane_verified */
+ 0,    /* tlsa_usage */
+#endif
  NULL, /* tls_cipher */
  FALSE,/* tls_on_connect */
  NULL, /* tls_on_connect_ports */
@@ -634,6 +642,9 @@ BOOL    dmarc_enable_forensic   = FALSE;
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;
 BOOL    dns_csa_use_reverse    = TRUE;
+#ifdef EXPERIMENTAL_DANE
+int     dns_dane_ok            = -1;
+#endif
 uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
@@ -1385,7 +1396,7 @@ transport_instance  transport_defaults = {
     TRUE_UNSET                /* retry_use_local_part: BOOL, but set neither
                                  1 nor 0 so can detect unset */
 #ifdef EXPERIMENTAL_TPDA
-   ,NULL		      /* tpda_delivery_action */
+   ,NULL		      /* tpda_event_action */
 #endif
 };
 

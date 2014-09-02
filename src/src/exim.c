@@ -827,6 +827,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   fprintf(f, " Experimental_Brightmail");
 #endif
+#ifdef EXPERIMENTAL_DANE
+  fprintf(f, " Experimental_DANE");
+#endif
 #ifdef EXPERIMENTAL_DCC
   fprintf(f, " Experimental_DCC");
 #endif

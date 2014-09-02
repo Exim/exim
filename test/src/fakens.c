@@ -48,7 +48,11 @@ line in the zone file contains exactly this:
   PASS ON NOT FOUND
 
 and the domain is not found. It converts the the result to PASS_ON instead of
-HOST_NOT_FOUND. */
+HOST_NOT_FOUND.
+
+Any DNS record line in a zone file can be prefixed with "DNSSEC" and
+at least one space; if all the records found by a lookup are marked
+as such then the response will have the "AD" bit set. */
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -95,21 +99,25 @@ not defined, assume we are in this state. A really old system might not even
 know about AAAA and SRV at all. */
 
 #ifndef ns_t_a
-#define ns_t_a      T_A
-#define ns_t_ns     T_NS
-#define ns_t_cname  T_CNAME
-#define ns_t_soa    T_SOA
-#define ns_t_ptr    T_PTR
-#define ns_t_mx     T_MX
-#define ns_t_txt    T_TXT
-#define ns_t_aaaa   T_AAAA
-#define ns_t_srv    T_SRV
-#ifndef T_AAAA
-#define T_AAAA      28
-#endif
-#ifndef T_SRV
-#define T_SRV       33
-#endif
+# define ns_t_a      T_A
+# define ns_t_ns     T_NS
+# define ns_t_cname  T_CNAME
+# define ns_t_soa    T_SOA
+# define ns_t_ptr    T_PTR
+# define ns_t_mx     T_MX
+# define ns_t_txt    T_TXT
+# define ns_t_aaaa   T_AAAA
+# define ns_t_srv    T_SRV
+# define ns_t_tlsa   T_TLSA
+# ifndef T_AAAA
+#  define T_AAAA      28
+# endif
+# ifndef T_SRV
+#  define T_SRV       33
+# endif
+# ifndef T_TLSA
+#  define T_TLSA      52
+# endif
 #endif
 
 static tlist type_list[] = {
@@ -122,6 +130,7 @@ static tlist type_list[] = {
   { US"TXT",     ns_t_txt },
   { US"AAAA",    ns_t_aaaa },
   { US"SRV",     ns_t_srv },
+  { US"TLSA",    ns_t_tlsa },
   { NULL,        0 }
 };
 
@@ -185,6 +194,33 @@ while (*name != 0)
 return pk;
 }
 
+uschar *
+bytefield(uschar ** pp, uschar * pk)
+{
+unsigned value = 0;
+uschar * p = *pp;
+
+while (isdigit(*p)) value = value*10 + *p++ - '0';
+while (isspace(*p)) p++;
+*pp = p;
+*pk++ = value & 255;
+return pk;
+}
+
+uschar *
+shortfield(uschar ** pp, uschar * pk)
+{
+unsigned value = 0;
+uschar * p = *pp;
+
+while (isdigit(*p)) value = value*10 + *p++ - '0';
+while (isspace(*p)) p++;
+*pp = p;
+*pk++ = (value >> 8) & 255;
+*pk++ = value & 255;
+return pk;
+}
+
 
 
 /*************************************************
@@ -209,7 +245,7 @@ Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
 
 static int
 find_records(FILE *f, uschar *zone, uschar *domain, uschar *qtype,
-  int qtypelen, uschar **pkptr, int *countptr)
+  int qtypelen, uschar **pkptr, int *countptr, BOOL * dnssec)
 {
 int yield = HOST_NOT_FOUND;
 int domainlen = Ustrlen(domain);
@@ -233,6 +269,8 @@ if (typeptr->name == NULL)
 rrdomain[0] = 0;                 /* No previous domain */
 (void)fseek(f, 0, SEEK_SET);     /* Start again at the beginning */
 
+*dnssec = TRUE;			/* cancelled by first nonsecure rec found */ 
+
 /* Scan for RRs */
 
 while (fgets(CS buffer, sizeof(buffer), f) != NULL)
@@ -243,12 +281,13 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   int i, plen, value;
   int tvalue = typeptr->value;
   int qtlen = qtypelen;
+  BOOL rr_sec = FALSE;
 
   p = buffer;
   while (isspace(*p)) p++;
   if (*p == 0 || *p == ';') continue;
 
-  if (Ustrncmp(p, "PASS ON NOT FOUND", 17) == 0)
+  if (Ustrncmp(p, US"PASS ON NOT FOUND", 17) == 0)
     {
     pass_on_not_found = TRUE;
     continue;
@@ -259,6 +298,12 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   *ep = 0;
 
   p = buffer;
+  if (Ustrncmp(p, US"DNSSEC ", 7) == 0)	/* tagged as secure */
+    {
+    rr_sec = TRUE;
+    p += 7;
+    }
+
   if (!isspace(*p))
     {
     uschar *pp = rrdomain;
@@ -310,6 +355,9 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   else if (Ustrncmp(p, qtype, qtypelen) != 0 || !isspace(p[qtypelen])) continue;
 
   /* Found a relevant record */
+
+  if (!rr_sec)
+    *dnssec = FALSE;			/* cancel AD return */
 
   yield = 0;
   *countptr = *countptr + 1;
@@ -371,11 +419,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     break;
 
     case ns_t_mx:
-    value = 0;
-    while (isdigit(*p)) value = value*10 + *p++ - '0';
-    while (isspace(*p)) p++;
-    *pk++ = (value >> 8) & 255;
-    *pk++ = value & 255;
+    pk = shortfield(&p, pk);
     if (ep[-1] != '.') sprintf(ep, "%s.", zone);
     pk = packname(p, pk);
     plen = Ustrlen(p);
@@ -386,6 +430,23 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     if (*p == '"') p++;   /* Should always be the case */
     while (*p != 0 && *p != '"') *pk++ = *p++;
     *pp = pk - pp - 1;
+    break;
+
+    case ns_t_tlsa:
+    pk = bytefield(&p, pk);	/* usage */
+    pk = bytefield(&p, pk);	/* selector */
+    pk = bytefield(&p, pk);	/* match type */
+    while (isxdigit(*p))
+      {
+      value = toupper(*p) - (isdigit(*p) ? '0' : '7') << 4;
+      if (isxdigit(*++p))
+	{
+	value |= toupper(*p) - (isdigit(*p) ? '0' : '7');
+	p++;
+	}
+      *pk++ = value & 255;
+      }
+
     break;
 
     case ns_t_srv:
@@ -444,6 +505,7 @@ uschar buffer[256];
 uschar qtype[12];
 uschar packet[512];
 uschar *pk = packet;
+BOOL dnssec;
 
 if (argc != 4)
   {
@@ -545,7 +607,7 @@ if (f == NULL)
 /* Find the records we want, and add them to the result. */
 
 count = 0;
-yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count);
+yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count, &dnssec);
 if (yield == NO_RECOVERY) goto END_OFF;
 
 packet[6] = (count >> 8) & 255;
@@ -557,6 +619,9 @@ packet[7] = count & 255;
 packet[10] = 0;
 packet[11] = 0;
 
+if (dnssec)
+  ((HEADER *)packet)->ad = 1;
+
 /* Close the zone file, write the result, and return. */
 
 END_OFF:
@@ -565,4 +630,6 @@ END_OFF:
 return yield;
 }
 
+/* vi: aw ai sw=2
+*/
 /* End of fakens.c */

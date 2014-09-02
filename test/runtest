@@ -999,6 +999,11 @@ RESET_AFTER_EXTRA_LINE_READ:
         @saved = ();
         }
 
+    # Skip hosts_require_dane checks when the options
+    # are unset, because dane ain't always there.
+
+    next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
+
       # Skip some lines that Exim puts out at the start of debugging output
       # because they will be different in different binaries.
 

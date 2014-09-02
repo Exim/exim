@@ -2207,7 +2207,7 @@ Returns:       HOST_FIND_FAILED     couldn't find A record
 static int
 set_address_from_dns(host_item *host, host_item **lastptr,
   uschar *ignore_target_hosts, BOOL allow_ip, uschar **fully_qualified_name,
-  BOOL dnssec_requested, BOOL dnssec_require)
+  BOOL dnssec_request, BOOL dnssec_require)
 {
 dns_record *rr;
 host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
@@ -2268,7 +2268,7 @@ for (; i >= 0; i--)
   dns_scan dnss;
 
   int rc = dns_lookup(&dnsa, host->name, type, fully_qualified_name);
-  lookup_dnssec_authenticated = !dnssec_requested ? NULL
+  lookup_dnssec_authenticated = !dnssec_request ? NULL
     : dns_is_secure(&dnsa) ? US"yes" : US"no";
 
   /* We want to return HOST_FIND_AGAIN if one of the A, A6, or AAAA lookups
@@ -2292,11 +2292,31 @@ for (; i >= 0; i--)
     if (rc != DNS_NOMATCH && rc != DNS_NODATA) v6_find_again = TRUE;
     continue;
     }
-  if (dnssec_require && !dns_is_secure(&dnsa))
+
+  if (dnssec_request)
     {
-    log_write(L_host_lookup_failed, LOG_MAIN, "dnssec fail on %s for %.256s",
+    if (dns_is_secure(&dnsa))
+      {
+      DEBUG(D_host_lookup) debug_printf("%s A DNSSEC\n", host->name);
+      if (host->dnssec == DS_UNK) /* set in host_find_bydns() */
+	host->dnssec = DS_YES;
+      }
+    else
+      {
+      if (dnssec_require)
+	{
+	log_write(L_host_lookup_failed, LOG_MAIN,
+		"dnssec fail on %s for %.256s",
 		i>1 ? "A6" : i>0 ? "AAAA" : "A", host->name);
-    continue;
+	continue;
+	}
+      if (host->dnssec == DS_YES) /* set in host_find_bydns() */
+	{
+	DEBUG(D_host_lookup) debug_printf("%s A cancel DNSSEC\n", host->name);
+	host->dnssec = DS_NO;
+	lookup_dnssec_authenticated = US"no";
+	}
+      }
     }
 
   /* Lookup succeeded: fill in the given host item with the first non-ignored
@@ -2562,9 +2582,14 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   if (dnssec_request)
     {
     if (dns_is_secure(&dnsa))
-      { dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
+      { 
+      DEBUG(D_host_lookup) debug_printf("%s MX DNSSEC\n", host->name);
+      dnssec = DS_YES; lookup_dnssec_authenticated = US"yes";
+      }
     else
-      { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
+      {
+      dnssec = DS_NO; lookup_dnssec_authenticated = US"no";
+      }
     }
 
   switch (rc)
@@ -2578,7 +2603,7 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
       log_write(L_host_lookup_failed, LOG_MAIN,
 		  "dnssec fail on MX for %.256s", host->name);
       rc = DNS_FAIL;
-      /*FALLTRHOUGH*/
+      /*FALLTHROUGH*/
 
     case DNS_FAIL:
     case DNS_AGAIN:
@@ -2609,18 +2634,10 @@ if (rc != DNS_SUCCEED)
   last = host;        /* End of local chainlet */
   host->mx = MX_NONE;
   host->port = PORT_NONE;
-  dnssec = DS_UNK;
+  host->dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
   rc = set_address_from_dns(host, &last, ignore_target_hosts, FALSE,
     fully_qualified_name, dnssec_request, dnssec_require);
-
-  if (dnssec_request)
-    {
-    if (dns_is_secure(&dnsa))
-      { dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
-    else
-      { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
-    }
 
   /* If one or more address records have been found, check that none of them
   are local. Since we know the host items all have their IP addresses

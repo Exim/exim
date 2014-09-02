@@ -699,7 +699,15 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
   if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
        addr->cipher != NULL)
     s = string_append(s, sizep, ptrp, 2, US" CV=",
-      testflag(addr, af_cert_verified)? "yes":"no");
+      testflag(addr, af_cert_verified)
+      ?
+#ifdef EXPERIMENTAL_DANE
+        testflag(addr, af_dane_verified)
+      ? "dane"
+      :
+#endif
+        "yes"
+      : "no");
   if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
     s = string_append(s, sizep, ptrp, 3, US" DN=\"",
       string_printing(addr->peerdn), US"\"");
@@ -1139,6 +1147,9 @@ if (result == OK)
   tls_out.cipher = addr->cipher;
   tls_out.peerdn = addr->peerdn;
   tls_out.ocsp = addr->ocsp;
+# ifdef EXPERIMENTAL_DANE
+  tls_out.dane_verified = testflag(addr, af_dane_verified);
+# endif
 #endif
 
   delivery_log(LOG_MAIN, addr, logchar, NULL);
@@ -1157,6 +1168,9 @@ if (result == OK)
   tls_out.cipher = NULL;
   tls_out.peerdn = NULL;
   tls_out.ocsp = OCSP_NOT_REQ;
+# ifdef EXPERIMENTAL_DANE
+  tls_out.dane_verified = FALSE;
+# endif
 #endif
   }
 
@@ -4171,6 +4185,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
       /* The certificate verification status goes into the flags */
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
+#ifdef EXPERIMENTAL_DANE
+      if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
+#endif
 
       /* Use an X item only if there's something to send */
 #ifdef SUPPORT_TLS
@@ -7056,12 +7073,14 @@ wording. */
           {
           struct stat statbuf;
           if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
+	    {
             if (emf_text)
 	      fprintf(f, "%s", CS emf_text);
 	    else
               fprintf(f,
 "------ The body of the message is " OFF_T_FMT " characters long; only the first\n"
 "------ %d or so are included here.\n", statbuf.st_size, max);
+	    }
           }
 
 	fputc('\n', f);

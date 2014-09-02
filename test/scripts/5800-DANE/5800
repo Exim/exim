@@ -1,0 +1,12 @@
+# Expansion test for DANE.
+#
+# Some systems seem to use 1-byte fields for the leading
+# 3 fields in a TLSA record, others 2-bytes.
+# We need the result to match the string in dnszones-src/db.test.ex
+
+exim -be
+
+dnslookup tlsa: ${lookup dnsdb {tlsa=_1225._tcp.dane512ee.test.ex} \
+                        {$value}{none}}
+
+****

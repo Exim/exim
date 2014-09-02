@@ -284,6 +284,9 @@ dkim_collect_input = FALSE;
 
 #ifdef SUPPORT_TLS
 tls_in.certificate_verified = FALSE;
+# ifdef EXPERIMENTAL_DANE
+tls_in.dane_verified = FALSE;
+# endif
 tls_in.cipher = NULL;
 tls_in.ourcert = NULL;
 tls_in.peercert = NULL;
@@ -492,7 +495,7 @@ for (;;)
     if (Ustrncmp(p, "rozen", 5) == 0)
       {
       deliver_freeze = TRUE;
-      sscanf(big_buffer+7, TIME_T_FMT, &deliver_frozen_at);
+      sscanf(CS big_buffer+7, TIME_T_FMT, &deliver_frozen_at);
       }
     break;
 

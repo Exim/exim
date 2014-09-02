@@ -21,6 +21,10 @@ typedef struct {
   uschar *serialize_hosts;
   uschar *hosts_try_auth;
   uschar *hosts_require_auth;
+#ifdef EXPERIMENTAL_DANE
+  uschar *hosts_try_dane;
+  uschar *hosts_require_dane;
+#endif
 #ifndef DISABLE_PRDR
   uschar *hosts_try_prdr;
 #endif

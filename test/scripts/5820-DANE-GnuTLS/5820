@@ -1,0 +1,14 @@
+# DANE client: general
+#
+gnutls
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim CALLER@test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qf
+****

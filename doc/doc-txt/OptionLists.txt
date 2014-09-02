@@ -181,6 +181,7 @@ dns_check_names_pattern              string          +             main         
 dns_csa_search_limit                 integer         5             main              4.60
 dns_csa_use_reverse                  boolean         true          main              4.60
 dns_dnssec_ok                        integer         -1            main              4.82
+dns_dane_ok                          integer         -1            main              4.83
 dns_ipv4_lookup                      boolean         false         main              3.20
 dns_qualify_single                   boolean         true          smtp
 dns_retrans                          time            0s            main              1.60
