@@ -2752,6 +2752,8 @@ switch(cond_type)
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
+      DEBUG(D_expand) debug_printf("condition: %s\n", name);
+
       tempcond = FALSE;
       if (cond_type == ECOND_INLISTI)
         compare = strcmpic;
@@ -2838,6 +2840,8 @@ switch(cond_type)
     {
     int sep = 0;
     uschar *save_iterate_item = iterate_item;
+
+    DEBUG(D_expand) debug_printf("condition: %s\n", name);
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
@@ -5229,25 +5233,28 @@ while (*s != 0)
             while (len > 0 && isspace(p[len-1])) len--;
             p[len] = 0;
 
-            if (*p == 0 && !skipping)
-              {
-              expand_string_message = US"first argument of \"extract\" must "
-                "not be empty";
-              goto EXPAND_FAILED;
-              }
+            if (!skipping)
+	      {
+	      if (*p == 0)
+		{
+		expand_string_message = US"first argument of \"extract\" must "
+		  "not be empty";
+		goto EXPAND_FAILED;
+		}
 
-            if (*p == '-')
-              {
-              field_number = -1;
-              p++;
-              }
-            while (*p != 0 && isdigit(*p)) x = x * 10 + *p++ - '0';
-            if (*p == 0)
-              {
-              field_number *= x;
-              j = 3;               /* Need 3 args */
-              field_number_set = TRUE;
-              }
+	      if (*p == '-')
+		{
+		field_number = -1;
+		p++;
+		}
+	      while (*p != 0 && isdigit(*p)) x = x * 10 + *p++ - '0';
+	      if (*p == 0)
+		{
+		field_number *= x;
+		j = 3;               /* Need 3 args */
+		field_number_set = TRUE;
+		}
+	      }
             }
           }
         else goto EXPAND_FAILED_CURLY;
