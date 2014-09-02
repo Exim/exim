@@ -17,6 +17,9 @@ TL/02 The BSD's have an arc4random API. One of the functions to induce
       OpenBSD 5.5. Detect this OpenBSD version and skip calling this
       function when detected.
 
+JH/01 Add EXPERIMENTAL_DANE, allowing for using the DNS as trust-anchor for
+      server certificates when making smtp deliveries.
+
 
 Exim version 4.84
 -----------------
