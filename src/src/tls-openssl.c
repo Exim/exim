@@ -1678,44 +1678,6 @@ return OK;
 
 #ifdef EXPERIMENTAL_DANE
 static int
-tlsa_lookup(host_item * host, dns_answer * dnsa,
-  BOOL dane_required, BOOL * dane)
-{
-/* move this out to host.c given the similarity to dns_lookup() ? */
-uschar buffer[300];
-uschar * fullname = buffer;
-
-/* TLSA lookup string */
-(void)sprintf(CS buffer, "_%d._tcp.%.256s", host->port, host->name);
-
-switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
-  {
-  case DNS_AGAIN:
-    return DEFER; /* just defer this TLS'd conn */
-
-  default:
-  case DNS_FAIL:
-    if (dane_required)
-      {
-      log_write(0, LOG_MAIN, "DANE error: TLSA lookup failed");
-      return FAIL;
-      }
-    break;
-
-  case DNS_SUCCEED:
-    if (!dns_is_secure(dnsa))
-      {
-      log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
-      return DEFER;
-      }
-    *dane = TRUE;
-    break;
-  }
-return OK;
-}
-
-
-static int
 dane_tlsa_load(SSL * ssl, host_item * host, dns_answer * dnsa)
 {
 dns_record * rr;
@@ -1783,6 +1745,7 @@ Argument:
   host             connected host (for messages)
   addr             the first address
   tb               transport (always smtp)
+  tlsa_dnsa        tlsa lookup, if DANE, else null
 
 Returns:           OK on success
                    FAIL otherwise - note that tls_error() will not give DEFER
@@ -1791,7 +1754,11 @@ Returns:           OK on success
 
 int
 tls_client_start(int fd, host_item *host, address_item *addr,
-  transport_instance *tb)
+  transport_instance *tb
+#ifdef EXPERIMENTAL_DANE
+  , dns_answer * tlsa_dnsa
+#endif
+  )
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
@@ -1805,34 +1772,9 @@ static uschar cipherbuf[256];
 BOOL request_ocsp = FALSE;
 BOOL require_ocsp = FALSE;
 #endif
-#ifdef EXPERIMENTAL_DANE
-dns_answer tlsa_dnsa;
-BOOL dane = FALSE;
-BOOL dane_required;
-#endif
 
 #ifdef EXPERIMENTAL_DANE
-tls_out.dane_verified = FALSE;
 tls_out.tlsa_usage = 0;
-dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
-			  host->name, host->address, NULL) == OK;
-
-if (host->dnssec == DS_YES)
-  {
-  if(  dane_required
-    || verify_check_this_host(&ob->hosts_try_dane, NULL,
-			  host->name, host->address, NULL) == OK
-    )
-    if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
-      return rc;
-  }
-else if (dane_required)
-  {
-  /*XXX a shame we only find this after making tcp & smtp connection */
-  /* move the test earlier? */
-  log_write(0, LOG_MAIN, "DANE error: previous lookup not DNSSEC");
-  return FAIL;
-  }
 #endif
 
 #ifndef DISABLE_OCSP
@@ -1843,7 +1785,7 @@ else if (dane_required)
   else
     {
 # ifdef EXPERIMENTAL_DANE
-    if (  dane
+    if (  tlsa_dnsa
        && ob->hosts_request_ocsp[0] == '*'
        && ob->hosts_request_ocsp[1] == '\0'
        )
@@ -1891,7 +1833,7 @@ if (expciphers != NULL)
   }
 
 #ifdef EXPERIMENTAL_DANE
-if (dane)
+if (tlsa_dnsa)
   {
   SSL_CTX_set_verify(client_ctx, SSL_VERIFY_PEER, verify_callback_client_dane);
 
@@ -1941,8 +1883,8 @@ if (ob->tls_sni)
   }
 
 #ifdef EXPERIMENTAL_DANE
-if (dane)
-  if ((rc = dane_tlsa_load(client_ssl, host, &tlsa_dnsa)) != OK)
+if (tlsa_dnsa)
+  if ((rc = dane_tlsa_load(client_ssl, host, tlsa_dnsa)) != OK)
     return rc;
 #endif
 
@@ -1980,10 +1922,6 @@ if (request_ocsp)
 client_static_cbinfo->event_action = tb->tpda_event_action;
 #endif
 
-#ifdef EXPERIMENTAL_TPDA
-client_static_cbinfo->event_action = tb->tpda_event_action;
-#endif
-
 /* There doesn't seem to be a built-in timeout on connection. */
 
 DEBUG(D_tls) debug_printf("Calling SSL_connect\n");
@@ -1993,7 +1931,7 @@ rc = SSL_connect(client_ssl);
 alarm(0);
 
 #ifdef EXPERIMENTAL_DANE
-if (dane)
+if (tlsa_dnsa)
   DANESSL_cleanup(client_ssl);
 #endif
 

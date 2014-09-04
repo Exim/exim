@@ -426,6 +426,10 @@ else
     BOOL esmtp;
     BOOL suppress_tls = FALSE;
     uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+    BOOL dane = FALSE;
+    dns_answer tlsa_dnsa;
+#endif
     uschar inbuffer[4096];
     uschar outbuffer[1024];
     uschar responsebuffer[4096];
@@ -477,6 +481,37 @@ else
 
 
     HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", interface, port);
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+      {
+      BOOL dane_required;
+      int rc;
+
+      tls_out.dane_verified = FALSE;
+      tls_out.tlsa_usage = 0;
+
+      dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
+				host->name, host->address, NULL) == OK;
+
+      if (host->dnssec == DS_YES)
+	{
+	if(  dane_required
+	  || verify_check_this_host(&ob->hosts_try_dane, NULL,
+				host->name, host->address, NULL) == OK
+	  )
+	  if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
+	    return rc;
+	}
+      else if (dane_required)
+	{
+	log_write(0, LOG_MAIN, "DANE error: %s lookup not DNSSEC", host->name);
+	return FAIL;
+	}
+
+      if (dane)
+	ob->tls_tempfail_tryclear = FALSE;
+      }
+#endif  /*DANE*/
 
     /* Set up the buffer for reading SMTP response packets. */
 
@@ -654,7 +689,11 @@ else
 	int rc;
 
 	ob->command_timeout = callout;
-        rc = tls_client_start(inblock.sock, host, addr, addr->transport);
+        rc = tls_client_start(inblock.sock, host, addr, addr->transport
+#ifdef EXPERIMENTAL_DANE
+			    , dane ? &tlsa_dnsa : NULL
+#endif
+			    );
 	ob->command_timeout = oldtimeout;
 
         /* TLS negotiation failed; give an error.  Try in clear on a new connection,
@@ -666,10 +705,6 @@ else
 	     && !smtps
 	     && verify_check_this_host(&(ob->hosts_require_tls), NULL,
 	       host->name, host->address, NULL) != OK
-#ifdef EXPERIMENTAL_DANE
-	     && verify_check_this_host(&(ob->hosts_require_dane), NULL,
-	       host->name, host->address, NULL) != OK
-#endif
 	     )
 	    {
 	    (void)close(inblock.sock);
@@ -704,12 +739,12 @@ else
 
     /* If the host is required to use a secure channel, ensure that we have one. */
     if (tls_out.active < 0)
-      if (  verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-	      host->address, NULL) == OK
+      if (
 #ifdef EXPERIMENTAL_DANE
-	 || verify_check_this_host(&(ob->hosts_require_dane), NULL, host->name,
-	      host->address, NULL) == OK
+	 dane ||
 #endif
+         verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+	      host->address, NULL) == OK
 	 )
         {
         /*save_errno = ERRNO_TLSREQUIRED;*/

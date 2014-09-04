@@ -1178,6 +1178,10 @@ admins of the target server.   The attack surface presented
 by (a) is thought to be smaller than that of the set
 of root CAs.
 
+It also allows the server to declare (implicitly) that
+connections to it should use TLS.  An MITM could simply
+fail to pass on a server's STARTTLS.
+
 DANE scales better than having to maintain (and
 side-channel communicate) copies of server certificates
 for every possible target server.  It also scales
@@ -1202,12 +1206,12 @@ There are no changes to Exim specific to server-side
 operation of DANE.
 
 The TLSA record for the server may have "certificate
-usage" of DANE_TA(2) or DANE_EE(3).  The latter specifies
+usage" of DANE-TA(2) or DANE-EE(3).  The latter specifies
 the End Entity directly, i.e. the certificate involved
 is that of the server (and should be the sole one transmitted
 during the TLS handshake); this is appropriate for a
 single system, using a self-signed certificate.
-  DANE_TA usage is effectively declaring a specific CA
+  DANE-TA usage is effectively declaring a specific CA
 to be used; this might be a private CA or a public,
 well-known one.  A private CA at simplest is just
 a self-signed certificate which is used to sign
@@ -1219,7 +1223,7 @@ the entire certificate chain from CA to server-certificate.
 If a public CA is used then all clients must be primed with it
 (losing one advantage of DANE) - but the attack surface is
 reduced from all public CAs to that single CA.
-DANE_TA is commonly used for several services and/or
+DANE-TA is commonly used for several services and/or
 servers, each having a TLSA query-domain CNAME record,
 all of which point to a single TLSA record.
 
@@ -1236,13 +1240,13 @@ is useful for quickly generating TLSA records; and commands like
 
 are workable for 4th-field hashes.
 
-For use with the DANE_TA model, server certificates
+For use with the DANE-TA model, server certificates
 must have a correct name (SubjectName or SubjectAltName).
 
 The use of OCSP-stapling should be considered, allowing
 for fast revocation of certificates (which would otherwise
 be limited by the DNS TTL on the TLSA records).  However,
-this is likely to only be usable with DANE_TA.  NOTE: the
+this is likely to only be usable with DANE-TA.  NOTE: the
 default of requesting OCSP for all hosts is modified iff
 DANE is in use, to:
 
@@ -1253,10 +1257,10 @@ DANE is in use, to:
 The (new) variable $tls_out_tlsa_usage is a bitfield with
 numbered bits set for TLSA record usage codes.
 The zero above means DANE was not in use,
-the four means that only DANE_TA usage TLSA records were
-found. If the definition of hosts_require_ocsp or
-hosts_request_ocsp includes the string "tls_out_tlsa_usage",
-they are re-expanded in time to control the OCSP request.
+the four means that only DANE-TA usage TLSA records were
+found. If the definition of hosts_request_ocsp includes the
+string "tls_out_tlsa_usage", they are re-expanded in time to
+control the OCSP request.
 
 This modification of hosts_request_ocsp is only done if
 it has the default value of "*".  Admins who change it, and
@@ -1271,9 +1275,15 @@ hosts_try_dane and hosts_require_dane.  They do the obvious thing.
 DANE will only be usable if the target host has DNSSEC-secured
 MX, A and TLSA records.
 
+A TLSA lookup will be done if either of the above options match
+and the host-lookup succeded using dnssec.
+If the TLSA lookup succeeds, a TLS connection will be required
+for the host.
+
 (TODO: specify when fallback happens vs. when the host is not used)
 
 If dane is in use the following transport options are ignored:
+  hosts_require_tls
   tls_verify_hosts
   tls_try_verify_hosts
   tls_verify_certificates

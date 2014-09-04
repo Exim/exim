@@ -212,7 +212,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_try_prdr */
 #endif
 #ifndef DISABLE_OCSP
-  US"*",               /* hosts_request_ocsp (except under DANE) */
+  US"*",               /* hosts_request_ocsp (except under DANE; tls_client_start()) */
   NULL,                /* hosts_require_ocsp */
 #endif
   NULL,                /* hosts_require_tls */
@@ -1148,6 +1148,46 @@ return FALSE;
 
 
 
+#ifdef EXPERIMENTAL_DANE
+int
+tlsa_lookup(host_item * host, dns_answer * dnsa,
+  BOOL dane_required, BOOL * dane)
+{
+/* move this out to host.c given the similarity to dns_lookup() ? */
+uschar buffer[300];
+uschar * fullname = buffer;
+
+/* TLSA lookup string */
+(void)sprintf(CS buffer, "_%d._tcp.%.256s", host->port, host->name);
+
+switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
+  {
+  case DNS_AGAIN:
+    return DEFER; /* just defer this TLS'd conn */
+
+  default:
+  case DNS_FAIL:
+    if (dane_required)
+      {
+      log_write(0, LOG_MAIN, "DANE error: TLSA lookup failed");
+      return FAIL;
+      }
+    break;
+
+  case DNS_SUCCEED:
+    if (!dns_is_secure(dnsa))
+      {
+      log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
+      return DEFER;
+      }
+    *dane = TRUE;
+    break;
+  }
+return OK;
+}
+#endif
+
+
 /*************************************************
 *       Deliver address list to given host       *
 *************************************************/
@@ -1225,6 +1265,10 @@ BOOL prdr_active;
 #endif
 #ifdef EXPERIMENTAL_DSN
 BOOL dsn_all_lasthop = TRUE;
+#endif
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+BOOL dane = FALSE;
+dns_answer tlsa_dnsa;
 #endif
 smtp_inblock inblock;
 smtp_outblock outblock;
@@ -1306,6 +1350,36 @@ if (continue_hostname == NULL)
       NULL, DEFER, FALSE);
     return DEFER;
     }
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+    {
+    BOOL dane_required;
+
+    tls_out.dane_verified = FALSE;
+    tls_out.tlsa_usage = 0;
+
+    dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
+			      host->name, host->address, NULL) == OK;
+
+    if (host->dnssec == DS_YES)
+      {
+      if(  dane_required
+	|| verify_check_this_host(&ob->hosts_try_dane, NULL,
+			      host->name, host->address, NULL) == OK
+	)
+	if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
+	  return rc;
+      }
+    else if (dane_required)
+      {
+      log_write(0, LOG_MAIN, "DANE error: %s lookup not DNSSEC", host->name);
+      return FAIL;
+      }
+
+    if (dane)
+      ob->tls_tempfail_tryclear = FALSE;
+    }
+#endif	/*DANE*/
 
   /* Expand the greeting message while waiting for the initial response. (Makes
   sense if helo_data contains ${lookup dnsdb ...} stuff). The expansion is
@@ -1505,7 +1579,11 @@ if (tls_offered && !suppress_tls &&
   else
   TLS_NEGOTIATE:
     {
-    int rc = tls_client_start(inblock.sock, host, addrlist, tblock);
+    int rc = tls_client_start(inblock.sock, host, addrlist, tblock
+# ifdef EXPERIMENTAL_DANE
+			     , dane ? &tlsa_dnsa : NULL
+# endif
+			     );
 
     /* TLS negotiation failed; give an error. From outside, this function may
     be called again to try in clear on a new connection, if the options permit
@@ -1588,12 +1666,12 @@ if (tls_out.active >= 0)
 /* If the host is required to use a secure channel, ensure that we
 have one. */
 
-else if (  verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+else if (
+# ifdef EXPERIMENTAL_DANE
+	dane ||
+# endif
+        verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
             host->address, NULL) == OK
-#ifdef EXPERIMENTAL_DANE
-	|| verify_check_this_host(&(ob->hosts_require_dane), NULL, host->name,
-            host->address, NULL) == OK
-#endif
 	)
   {
   save_errno = ERRNO_TLSREQUIRED;
@@ -1603,7 +1681,7 @@ else if (  verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
                  "the server did not offer TLS support");
   goto TLS_FAILED;
   }
-#endif
+#endif	/*SUPPORT_TLS*/
 
 /* If TLS is active, we have just started it up and re-done the EHLO command,
 so its response needs to be analyzed. If TLS is not active and this is a
@@ -3299,10 +3377,6 @@ for (cutoff_retry = 0; expired &&
 	 && ob->tls_tempfail_tryclear
 	 && verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
              host->address, NULL) != OK
-# ifdef EXPERIMENTAL_DANE
-	 && verify_check_this_host(&(ob->hosts_require_dane), NULL, host->name,
-             host->address, NULL) != OK
-# endif
 	 )
         {
         log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
