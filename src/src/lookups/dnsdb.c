@@ -295,10 +295,15 @@ if (type == T_PTR && keystring[0] != '<' &&
 /* SPF strings should be concatenated without a separator, thus make
 it the default if not defined (see RFC 4408 section 3.1.3).
 Multiple SPF records are forbidden (section 3.1.2) but are currently
-not handled specially, thus they are concatenated with \n by default. */
+not handled specially, thus they are concatenated with \n by default.
+MX priority and value are space-separated by default.
+SRV and TLSA record parts are space-separated by default. */
 
-if (type == T_SPF && outsep2 == NULL)
-  outsep2 = US"";
+if (!outsep2) switch(type)
+  {
+  case T_SPF:                         outsep2 = US"";  break;
+  case T_SRV: case T_MX: case T_TLSA: outsep2 = US" "; break;
+  }
 
 /* Now scan the list and do a lookup for each item */
 
@@ -442,7 +447,8 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
         matching_type = *p++;
         /* What's left after removing the first 3 bytes above */
         payload_length = rr->size - 3;
-        sp += sprintf(CS s, "%d %d %d ", usage, selector, matching_type);
+        sp += sprintf(CS s, "%d%c%d%c%d%c", usage, *outsep2,
+		selector, *outsep2, matching_type, *outsep2);
         /* Now append the cert/identifier, one hex char at a time */
         for (i=0;
              i < payload_length && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4);
@@ -466,7 +472,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
         else if (type == T_MX)
           {
           GETSHORT(priority, p);
-          sprintf(CS s, "%d ", priority);
+          sprintf(CS s, "%d%c", priority, *outsep2);
           yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
           }
         else if (type == T_SRV)
@@ -474,7 +480,8 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
           GETSHORT(priority, p);
           GETSHORT(weight, p);
           GETSHORT(port, p);
-          sprintf(CS s, "%d %d %d ", priority, weight, port);
+          sprintf(CS s, "%d%c%d%c%d%c", priority, *outsep2,
+					weight, *outsep2, port, *outsep2);
           yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
           }
         else if (type == T_CSA)

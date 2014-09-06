@@ -27,6 +27,7 @@ ten-1:ten2                 ${lookup dnsdb{a=ten-1.test.ex:ten-2.test.ex}}
 ten-1:defer:ten2           ${lookup dnsdb{a=ten-1.test.ex:test.again.dns:ten-2.test.ex}}
 ten-1|ten2                 ${lookup dnsdb{a=<|ten-1.test.ex|ten-2.test.ex}}
 mxt1;mxt2 | output         ${lookup dnsdb{>|mx=<;mxt1.test.ex;mxt2.test.ex}}
+mxt1;mxt2 | output+field   ${lookup dnsdb{>|,:mx=<;mxt1.test.ex;mxt2.test.ex}}
 mxt1;mxt2 | output         ${lookup dnsdb{>|mxh=<;mxt1.test.ex;mxt2.test.ex}}
 13/14 rbl                  ${lookup dnsdb{> 13.12.11.V4NET.rbl.test.ex:13.12.11.V4NET.rbl.test.ex}}
 double ptr                 ${lookup dnsdb{ptr=V4NET.0.0.1:V4NET.0.0.2}}

@@ -6875,12 +6875,6 @@ ${lookup dnsdb{ptr=192.168.4.5}{$value}fail}
 If the data for a PTR record is not a syntactically valid IP address, it is not
 altered and nothing is added.
 
-.cindex "MX record" "in &(dnsdb)& lookup"
-.cindex "SRV record" "in &(dnsdb)& lookup"
-For an MX lookup, both the preference value and the host name are returned for
-each record, separated by a space. For an SRV lookup, the priority, weight,
-port, and host name are returned for each record, separated by spaces.
-
 For any record type, if multiple records are found (or, for A6 lookups, if a
 single record leads to multiple addresses), the data is returned as a
 concatenation, with newline as the default separator. The order, of course,
@@ -6892,6 +6886,16 @@ ${lookup dnsdb{>: a=host1.example}}
 .endd
 It is permitted to specify a space as the separator character. Further
 white space is ignored.
+
+.cindex "MX record" "in &(dnsdb)& lookup"
+.cindex "SRV record" "in &(dnsdb)& lookup"
+For an MX lookup, both the preference value and the host name are returned for
+each record, separated by a space. For an SRV lookup, the priority, weight,
+port, and host name are returned for each record, separated by spaces.
+.new
+An alternate field separator can be specified using a comma after the main
+separator character, followed immediately by the field separator.
+.wen
 
 .cindex "TXT record" "in &(dnsdb)& lookup"
 .cindex "SPF record" "in &(dnsdb)& lookup"

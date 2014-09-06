@@ -28,6 +28,7 @@ V4NET.0.0.2
 > ten-1|ten2                 V4NET.0.0.1
 V4NET.0.0.2
 > mxt1;mxt2 | output         5 eximtesthost.test.ex|5 not-exist.test.ex
+> mxt1;mxt2 | output+field   5:eximtesthost.test.ex|5:not-exist.test.ex
 > mxt1;mxt2 | output         eximtesthost.test.ex|not-exist.test.ex
 > 13/14 rbl                  This is a test blacklisting message This is a test blacklisting message
 > double ptr                 ten-1.test.ex
