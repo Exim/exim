@@ -82,6 +82,13 @@ listextract: ${listextract{-5}{a:b:c:d}}
 listextract: ${listextract{ 5}{a:b:c:d}{}{fail}}
 listextract: ${listextract{ 5}{a:b:c:d}{}fail}
 
+sort: ${sort{3:2:1:4}{<}{$item}}
+sort: ${sort {<, 3,2,1,4}{>}{$item}}
+sort: ${sort{c:B:a:aa}{lti}{$item}}
+sort: ${sort{666 r99.ex.com:10 smtp.ex.com:100 r2.ex.com}{<}{${sg {$item}{([0-9]*).*\$}{\$1}}}}
+sort: ${sort{666,r99.ex.com:10,smtp.ex.com:100,r2.ex.com}{<}{${listextract{1}{<,$item}}}}
+sort: "${sort{}{<}{$item}}"
+
 # Tests with iscntrl() and illegal separators
 
 map: ${map{<\n a\n\nb\nc}{'$item'}}

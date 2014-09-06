@@ -127,6 +127,7 @@ static uschar *item_table[] = {
   US"reduce",
   US"run",
   US"sg",
+  US"sort",
   US"substr",
   US"tr" };
 
@@ -152,6 +153,7 @@ enum {
   EITEM_REDUCE,
   EITEM_RUN,
   EITEM_SG,
+  EITEM_SORT,
   EITEM_SUBSTR,
   EITEM_TR };
 
@@ -5631,6 +5633,145 @@ while (*s != 0)
 
       iterate_item = save_iterate_item;
       continue;
+      }
+
+    case EITEM_SORT:
+      {
+      int sep = 0;
+      uschar *srclist, *cmp, *xtract;
+      uschar *srcitem;
+      uschar *dstlist = NULL;
+      uschar *dstkeylist = NULL;
+      uschar * tmp;
+      uschar *save_iterate_item = iterate_item;
+
+      while (isspace(*s)) s++;
+      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+
+      srclist = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
+      if (!srclist) goto EXPAND_FAILED;
+      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+
+      while (isspace(*s)) s++;
+      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+
+      cmp = expand_string_internal(s, TRUE, &s, skipping, FALSE, &resetok);
+      if (!cmp) goto EXPAND_FAILED;
+      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+
+      while (isspace(*s)) s++;
+      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+
+      xtract = s;
+      tmp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok);
+      if (!tmp) goto EXPAND_FAILED;
+      xtract = string_copyn(xtract, s - xtract);
+
+      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+							/*{*/
+      if (*s++ != '}')
+        {						/*{*/
+        expand_string_message = US"missing } at end of \"sort\"";
+        goto EXPAND_FAILED;
+        }
+
+      if (skipping) continue;
+
+      while ((srcitem = string_nextinlist(&srclist, &sep, NULL, 0)))
+        {
+	uschar * dstitem;
+	uschar * newlist = NULL;
+	uschar * newkeylist = NULL;
+	uschar * srcfield;
+
+        DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, srcitem);
+
+	/* extract field for comparisons */
+	iterate_item = srcitem;
+	if (  !(srcfield = expand_string_internal(xtract, FALSE, NULL, FALSE,
+					  TRUE, &resetok))
+	   || !*srcfield)
+	  {
+	  expand_string_message = string_sprintf(
+	      "field-extract in sort: \"%s\"", xtract);
+	  goto EXPAND_FAILED;
+	  }
+
+	/* Insertion sort */
+
+	/* copy output list until new-item < list-item */
+	while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
+	  {
+	  uschar * dstfield;
+	  uschar * expr;
+	  BOOL before;
+
+	  /* field for comparison */
+	  if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
+	    goto sort_mismatch;
+
+	  /* build and run condition string */
+	  expr = string_sprintf("%s{%s}{%s}", cmp, srcfield, dstfield);
+
+	  DEBUG(D_expand) debug_printf("%s: cond = \"%s\"\n", name, expr);
+	  if (!eval_condition(expr, &resetok, &before))
+	    {
+	    expand_string_message = string_sprintf("comparison in sort: %s",
+		expr);
+	    goto EXPAND_FAILED;
+	    }
+
+	  if (before)
+	    {
+	    /* New-item sorts before this dst-item.  Append new-item,
+	    then dst-item, then remainder of dst list. */
+
+	    newlist = string_append_listele(newlist, sep, srcitem);
+	    newkeylist = string_append_listele(newkeylist, sep, srcfield);
+	    srcitem = NULL;
+
+	    newlist = string_append_listele(newlist, sep, dstitem);
+	    newkeylist = string_append_listele(newkeylist, sep, dstfield);
+
+	    while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
+	      {
+	      if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
+		goto sort_mismatch;
+	      newlist = string_append_listele(newlist, sep, dstitem);
+	      newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	      }
+
+	    break;
+	    }
+
+	  newlist = string_append_listele(newlist, sep, dstitem);
+	  newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	  }
+
+	/* If we ran out of dstlist without consuming srcitem, append it */
+	if (srcitem)
+	  {
+	  newlist = string_append_listele(newlist, sep, srcitem);
+	  newkeylist = string_append_listele(newkeylist, sep, srcfield);
+	  }
+
+	dstlist = newlist;
+	dstkeylist = newkeylist;
+
+        DEBUG(D_expand) debug_printf("%s: dstlist = \"%s\"\n", name, dstlist);
+        DEBUG(D_expand) debug_printf("%s: dstkeylist = \"%s\"\n", name, dstkeylist);
+	}
+
+      if (dstlist)
+	yield = string_cat(yield, &size, &ptr, dstlist, Ustrlen(dstlist));
+
+      /* Restore preserved $item */
+      iterate_item = save_iterate_item;
+      continue;
+
+      sort_mismatch:
+	expand_string_message = US"Internal error in sort (list mismatch)";
+	goto EXPAND_FAILED;
       }
 
 

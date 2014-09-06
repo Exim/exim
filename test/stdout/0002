@@ -71,6 +71,13 @@
 > listextract: fail
 > Failed: "extract" failed and "fail" requested
 > 
+> sort: 1:2:3:4
+> sort: 4,3,2,1
+> sort: a:aa:B:c
+> sort: 10 smtp.ex.com:100 r2.ex.com:666 r99.ex.com
+> sort: 10,smtp.ex.com:100,r2.ex.com:666,r99.ex.com
+> sort: ""
+> 
 > # Tests with iscntrl() and illegal separators
 > 
 > map: 'a'

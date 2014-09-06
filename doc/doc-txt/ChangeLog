@@ -30,6 +30,8 @@ JH/02 Add EXPERIMENTAL_DANE, allowing for using the DNS as trust-anchor for
 
 JH/03 Support secondary-separator specifier for MX, SRV, TLSA lookups.
 
+JH/04 Add ${sort {list}{condition}{extractor}} expansion item.
+
 
 Exim version 4.84
 -----------------

@@ -9698,6 +9698,37 @@ the regular expression from string expansion.
 
 
 
+.new
+.vitem &*${sort{*&<&'string'&>&*}{*&<&'comparator'&>&*}{*&<&'extractor'&>&*}}*&
+.cindex sorting a list
+.cindex list sorting
+After expansion, <&'string'&> is interpreted as a list, colon-separated by
+default, but the separator can be changed in the usual way.
+The <&'comparator'&> argument is interpreted as the operator
+of a two-argument expansion condition.
+The numeric operators plus ge, gt, le, lt (and ~i variants) are supported.
+The comparison should return true when applied to two values
+if the first value should sort before the second value.
+The <&'extractor'&> expansion is applied repeatedly to elements of the list,
+the element being placed in &$item$&,
+to give values for comparison.
+
+The item result is a sorted list,
+with the original list separator,
+of the list elements (in full) of the original.
+
+Examples:
+.code
+${sort{3:2:1:4}{<}{$item}}
+.endd
+sorts a list of numbers, and
+.code
+${sort {$lookup dnsdb{>:,,mx=example.com}} {<} {${listextract{1}{<,$item}}}}
+.endd
+will sort an MX lookup into priority order.
+.wen
+
+
 .vitem &*${substr{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
 .cindex "&%substr%& expansion item"
 .cindex "substring extraction"
