@@ -16828,15 +16828,18 @@ of the other precondition options are common special cases that could in fact
 be specified using &%condition%&.
 
 .new
-When originally designed, Exim's ACL system enforced very strict parsing
-of the &%condition%& expansion everywhere it was being processed.
-Through the 4.7x release cycle, the &%condition%& processing while in a
-router became more loose, internally adopting the use of &%bool_lax%&
-instead of the more rigid &%bool%&.  This is best illustrated in an
-example:
+Historical note: We have &%condition%& on ACLs and on Routers.  Routers
+are far older, and use one set of semantics.  ACLs are newer and when
+they were created, the ACL &%condition%& process was given far stricter
+parse semantics.  The &%bool{}&% expansion condition uses the same rules as
+ACLs.  The &%bool_lax{}%& expansion condition uses the same rules as
+Routers.  More pointedly, the &%bool_lax{}%& was written to match the existing
+Router rules processing behavior.
+
+This is best illustrated in an example:
 .code
-# This used to fail with a syntax error, now it
-# treats any extra characters as a string
+# If used in an ACL condition will fail with a syntax error, but
+# in a router condition any extra characters are treated as a string
 
 $ exim -be '${if eq {${lc:GOOGLE.com}} {google.com}} {yes} {no}}'
 true {yes} {no}}
@@ -16854,10 +16857,16 @@ resulted in the null output (indicating false) with the string
 &" {yes} {no}}"& appended to it.
 
 In fact you can put excess forward braces in too.  In the router
-&%condition%&, Exim's ACL parser only looks for &"{"& symbols when they
+&%condition%&, Exim's parser only looks for &"{"& symbols when they
 mean something, like after a &"$"& or when required as part of a
 conditional.  But otherwise &"{"& and &"}"& are treated as ordinary
 string characters.
+
+Thus, in a Router, the above expansion strings will both always evaluate
+true, as the result of expansion is a non-empty string which doesn't
+match an explicit false value.  This can be tricky to debug.  By
+contrast, in an ACL either of those strings will always result in an
+expansion error because the result doesn't look sufficiently boolean.
 .wen
 
 
