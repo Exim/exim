@@ -16866,7 +16866,7 @@ be specified using &%condition%&.
 Historical note: We have &%condition%& on ACLs and on Routers.  Routers
 are far older, and use one set of semantics.  ACLs are newer and when
 they were created, the ACL &%condition%& process was given far stricter
-parse semantics.  The &%bool{}&% expansion condition uses the same rules as
+parse semantics.  The &%bool{}%& expansion condition uses the same rules as
 ACLs.  The &%bool_lax{}%& expansion condition uses the same rules as
 Routers.  More pointedly, the &%bool_lax{}%& was written to match the existing
 Router rules processing behavior.
