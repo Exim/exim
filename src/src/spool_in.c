@@ -360,6 +360,7 @@ originator_login = string_copy(big_buffer);
 originator_uid = (uid_t)uid;
 originator_gid = (gid_t)gid;
 
+/* envelope from */
 if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
 n = Ustrlen(big_buffer);
 if (n < 3 || big_buffer[0] != '<' || big_buffer[n-2] != '>')
@@ -369,6 +370,7 @@ sender_address = store_get(n-2);
 Ustrncpy(sender_address, big_buffer+1, n-3);
 sender_address[n-3] = 0;
 
+/* time */
 if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
 if (sscanf(CS big_buffer, "%d %d", &received_time, &warning_count) != 2)
   goto SPOOL_FORMAT_ERROR;
@@ -397,9 +399,22 @@ version that left new-style flags written on the spool. */
 p = big_buffer + 2;
 for (;;)
   {
+  int len;
   if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
   if (big_buffer[0] != '-') break;
-  big_buffer[Ustrlen(big_buffer) - 1] = 0;
+  while (  (len = Ustrlen(big_buffer)) == big_buffer_size-1
+	&& big_buffer[len-1] != '\n'
+	)
+    {	/* buffer not big enough for line; certs make this possible */
+    uschar * buf;
+    if (big_buffer_size >= BIG_BUFFER_SIZE*4) goto SPOOL_READ_ERROR;
+    buf = store_get_perm(big_buffer_size *= 2);
+    memcpy(buf, big_buffer, --len);
+    big_buffer = buf;
+    if (Ufgets(big_buffer+len, big_buffer_size-len, f) == NULL)
+      goto SPOOL_READ_ERROR;
+    }
+  big_buffer[len-1] = 0;
 
   switch(big_buffer[1])
     {
@@ -469,16 +484,16 @@ for (;;)
       body_linecount = Uatoi(big_buffer + 15);
     else if (Ustrncmp(p, "ody_zerocount", 13) == 0)
       body_zerocount = Uatoi(big_buffer + 15);
-    #ifdef EXPERIMENTAL_BRIGHTMAIL
+#ifdef EXPERIMENTAL_BRIGHTMAIL
     else if (Ustrncmp(p, "mi_verdicts ", 12) == 0)
       bmi_verdicts = string_copy(big_buffer + 14);
-    #endif
+#endif
     break;
 
     case 'd':
     if (Ustrcmp(p, "eliver_firsttime") == 0)
       deliver_firsttime = TRUE;
-    #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
     /* Check if the dsn flags have been set in the header file */
     else if (Ustrncmp(p, "sn_ret", 6) == 0)
       {
@@ -488,7 +503,7 @@ for (;;)
       {
       dsn_envid = string_copy(big_buffer + 11);
       }
-    #endif
+#endif
     break;
 
     case 'f':
@@ -558,24 +573,24 @@ for (;;)
     case 's':
     if (Ustrncmp(p, "ender_set_untrusted", 19) == 0)
       sender_set_untrusted = TRUE;
-    #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
-    #endif
+#endif
     break;
 
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     case 't':
     if (Ustrncmp(p, "ls_certificate_verified", 23) == 0)
       tls_in.certificate_verified = TRUE;
     else if (Ustrncmp(p, "ls_cipher", 9) == 0)
       tls_in.cipher = string_copy(big_buffer + 12);
-#ifndef COMPILE_UTILITY
+# ifndef COMPILE_UTILITY	/* tls support fns not built in */
     else if (Ustrncmp(p, "ls_ourcert", 10) == 0)
       (void) tls_import_cert(big_buffer + 13, &tls_in.ourcert);
     else if (Ustrncmp(p, "ls_peercert", 11) == 0)
       (void) tls_import_cert(big_buffer + 14, &tls_in.peercert);
-#endif
+# endif
     else if (Ustrncmp(p, "ls_peerdn", 9) == 0)
       tls_in.peerdn = string_unprinting(string_copy(big_buffer + 12));
     else if (Ustrncmp(p, "ls_sni", 6) == 0)
@@ -583,7 +598,7 @@ for (;;)
     else if (Ustrncmp(p, "ls_ocsp", 7) == 0)
       tls_in.ocsp = big_buffer[10] - '0';
     break;
-    #endif
+#endif
 
     default:    /* Present because some compilers complain if all */
     break;      /* possibilities are not covered. */
@@ -634,10 +649,10 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   {
   int nn;
   int pno = -1;
-  #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
   int dsn_flags = 0;
   uschar *orcpt = NULL;
-  #endif
+#endif
   uschar *errors_to = NULL;
   uschar *p;
 
@@ -714,11 +729,9 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     {
     int flags;
 
-    #ifdef EXPERIMENTAL_DSN
-    #ifndef COMPILE_UTILITY
-      DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim 4 standard format spoolfile\n");
-    #endif  /* COMPILE_UTILITY */
-    #endif
+#if defined(EXPERIMENTAL_DSN) && !defined (COMPILE_UTILITY)
+    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim 4 standard format spoolfile\n");
+#endif
 
     (void)sscanf(CS p+1, "%d", &flags);
 
@@ -753,12 +766,9 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     *(--p) = 0;   /* Terminate address */
 #endif  /* EXPERIMENTAL_DSN */
     }
-#ifdef EXPERIMENTAL_DSN
-  #ifndef COMPILE_UTILITY
+#if defined(EXPERIMENTAL_DSN) && !defined(COMPILE_UTILITY)
   else
-    {
-       DEBUG(D_deliver) debug_printf("**** SPOOL_IN - No additional fields\n");
-    }
+    { DEBUG(D_deliver) debug_printf("**** SPOOL_IN - No additional fields\n"); }
 
   if ((orcpt != NULL) || (dsn_flags != 0))
     {
@@ -770,16 +780,15 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: |%s| errorsto: |%s|\n",
       big_buffer, errors_to);
     }
-  #endif  /* COMPILE_UTILITY */
 #endif  /* EXPERIMENTAL_DSN */
 
   recipients_list[recipients_count].address = string_copy(big_buffer);
   recipients_list[recipients_count].pno = pno;
   recipients_list[recipients_count].errors_to = errors_to;
-  #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
   recipients_list[recipients_count].orcpt = orcpt;
   recipients_list[recipients_count].dsn_flags = dsn_flags;
-  #endif
+#endif
   }
 
 /* The remainder of the spool header file contains the headers for the message,
@@ -862,9 +871,9 @@ if (errno != 0)
   {
   n = errno;
 
-  #ifndef COMPILE_UTILITY
+#ifndef COMPILE_UTILITY
   DEBUG(D_any) debug_printf("Error while reading spool file %s\n", name);
-  #endif  /* COMPILE_UTILITY */
+#endif  /* COMPILE_UTILITY */
 
   fclose(f);
   errno = n;

@@ -90,7 +90,7 @@ distclean:; $(RM_COMMAND) -rf build-* cscope*
 cscope.files: FRC
 	echo "-q" > $@
 	echo "-p3" >> $@
-	find src Local OS -name "*.[cshyl]" -print \
+	find src Local OS exim_monitor -name "*.[cshyl]" -print \
 		    -o -name "os.h*" -print \
 		    -o -name "*akefile*" -print \
 		    -o -name EDITME -print >> $@

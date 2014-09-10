@@ -613,7 +613,6 @@ message_subdir[1] = 0;
 constructing file names and things. This call will initialize
 the store_get() function. */
 
-big_buffer_size = 1024;
 big_buffer = store_get(big_buffer_size);
 
 /* Set up the version string and date and output them */
