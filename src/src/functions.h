@@ -408,6 +408,11 @@ extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
 extern uschar *tod_stamp(int);
+
+#ifdef EXPERIMENTAL_TPDA
+extern int     tpda_raise_event(uschar *, uschar *, uschar *);
+#endif
+
 extern void    tls_modify_variables(tls_support *);
 extern BOOL    transport_check_waiting(uschar *, uschar *, int, uschar *,
                  BOOL *);

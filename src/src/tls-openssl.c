@@ -1895,8 +1895,8 @@ does OCSP stapling we will get the callback (set in tls_init()) */
 if (request_ocsp)
   {
   const uschar * s;
-  if (  (s = ob->hosts_require_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage")
-     || (s = ob->hosts_request_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage")
+  if (  ((s = ob->hosts_require_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage"))
+     || ((s = ob->hosts_request_ocsp) && Ustrstr(s, US"tls_out_tlsa_usage"))
      )
     {	/* Re-eval now $tls_out_tlsa_usage is populated.  If
     	this means we avoid the OCSP request, we wasted the setup

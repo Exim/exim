@@ -746,7 +746,7 @@ if (action)
   if (s && *s)
     {
     DEBUG(D_deliver)
-      debug_printf("TPDA(%s): event_action returned \"%s\"\n", s);
+      debug_printf("TPDA(%s): event_action returned \"%s\"\n", event, s);
     return DEFER;
     }
   }
