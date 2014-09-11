@@ -797,7 +797,13 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
             DEBUG(D_lookup) debug_printf("LDAP attr loop %s:%s\n", attr, value);
 
-            if (values != firstval)
+	    /* In case we requested one attribute only but got
+	     * several times into that attr loop, we need to append
+	     * the additional values. (This may happen if you derive 
+	     * attributeTypes B and C from A and then query for A.)
+	     * In all other cases we detect the different attribute
+	     * and append only every non first value. */
+	    if ((attr_count == 1 && data) || (values != firstval))
               data = string_cat(data, &size, &ptr, US",", 1);
 
             /* For multiple attributes, the data is in quotes. We must escape
