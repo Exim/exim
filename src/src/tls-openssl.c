@@ -1376,9 +1376,14 @@ if (expcerts != NULL && *expcerts != '\0')
           !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
       return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
 
+    /* Load the list of CAs for which we will accept certs, for sending
+    to the client.  XXX only for file source, not dir? */
     if (file != NULL)
       {
-      SSL_CTX_set_client_CA_list(sctx, SSL_load_client_CA_file(CS file));
+      STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
+DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
+				  sk_X509_NAME_num(names));
+      SSL_CTX_set_client_CA_list(sctx, names);
       }
     }
 
