@@ -60,6 +60,11 @@ return $seconds;
 
 my (%saved, %id_list, $pattern, $queue_time, $insensitive, $invert);
 
+# If using "related" option, have to track extra message IDs
+my $related;
+my $related_re='';
+my @Mids = ();
+
 sub do_line {
 
 # Convert syslog lines to mainlog format, as in eximstats.
@@ -90,8 +95,16 @@ if (defined $id)
     }
   else
     {
-    $id_list{$id} = 1 if defined $id_list{$id} ||
-      ($insensitive && /$pattern/io) || /$pattern/o;
+    if (defined $id_list{$id} ||
+      ($insensitive && /$pattern/io) || /$pattern/o)
+      {
+      $id_list{$id} = 1;
+      get_related_ids($id) if $related;
+      }
+    elsif ($related && $related_re)
+      {
+      grep_for_related($_, $id);
+      }
     }
 
   # See if this is a completion for some message. If it is interesting,
@@ -173,16 +186,30 @@ sub detect_compressor_capable
   return $cmdline;
   }
 
+sub grep_for_related {
+  my ($line,$id) = @_;
+  $id_list{$id} = 1 if $line =~ m/$related_re/;
+}
+
+sub get_related_ids {
+  my ($id) = @_;
+  push @Mids, $id unless grep /\b$id\b/, @Mids;
+  my $re = join '|', @Mids;
+  $related_re = qr/$re/;
+}
+
 # The main program. Extract the pattern and make sure any relevant characters
 # are quoted if the -l flag is given. The -t flag gives a time-on-queue value
-# which is an additional condition.
+# which is an additional condition. The -M flag will also display "related"
+# loglines (msgid from matched lines is searched in following lines).
 
-getopts('Ilvt:',\my %args);
+getopts('Ilvt:M',\my %args);
 $queue_time  = $args{'t'}? $args{'t'} : -1;
 $insensitive = $args{'I'}? 0 : 1;
 $invert      = $args{'v'}? 1 : 0;
+$related     = $args{'M'}? 1 : 0;
 
-die "usage: exigrep [-I] [-l] [-t <seconds>] [-v] <pattern> [<log file>]...\n"
+die "usage: exigrep [-I] [-l] [-M] [-t <seconds>] [-v] <pattern> [<log file>]...\n"
   if ($#ARGV < 0);
 
 $pattern = shift @ARGV;

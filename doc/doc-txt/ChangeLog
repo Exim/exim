@@ -32,6 +32,8 @@ JH/03 Support secondary-separator specifier for MX, SRV, TLSA lookups.
 
 JH/04 Add ${sort {list}{condition}{extractor}} expansion item.
 
+TL/04 Bugzilla 1216: Add -M (related messages) option to exigrep.
+
 
 Exim version 4.84
 -----------------

@@ -35273,9 +35273,11 @@ given message, or all mail for a given user, or for a given host, for example.
 The input files can be in Exim log format or syslog format.
 If a matching log line is not associated with a specific message, it is
 included in &'exigrep'&'s output without any additional lines. The usage is:
+.new
 .display
-&`exigrep [-t<`&&'n'&&`>] [-I] [-l] [-v] <`&&'pattern'&&`> [<`&&'log file'&&`>] ...`&
+&`exigrep [-t<`&&'n'&&`>] [-I] [-l] [-M] [-v] <`&&'pattern'&&`> [<`&&'log file'&&`>] ...`&
 .endd
+.wen
 If no log file names are given on the command line, the standard input is read.
 
 The &%-t%& argument specifies a number of seconds. It adds an additional
@@ -35294,6 +35296,21 @@ regular expression.
 
 The &%-v%& option inverts the matching condition. That is, a line is selected
 if it does &'not'& match the pattern.
+
+.new
+The &%-M%& options means &"related messages"&. &'exigrep'& will show messages
+that are generated as a result/response to a message that &'exigrep'& matched
+normally.
+
+Example of &%-M%&:
+user_a sends a message to user_b, which generates a bounce back to user_b. If
+&'exigrep'& is used to search for &"user_a"&, only the first message will be
+displayed.  But if &'exigrep'& is used to search for &"user_b"&, the first and
+the second (bounce) message will be displayed. Using &%-M%& with &'exigrep'&
+when searching for &"user_a"& will show both messages since the bounce is
+&"related"& to or a &"result"& of the first message that was found by the
+search term.
+.wen
 
 If the location of a &'zcat'& command is known from the definition of
 ZCAT_COMMAND in &_Local/Makefile_&, &'exigrep'& automatically passes any file
