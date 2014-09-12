@@ -1784,28 +1784,29 @@ tls_out.tlsa_usage = 0;
 
 #ifndef DISABLE_OCSP
   {
+# ifdef EXPERIMENTAL_DANE
+  if (  tlsa_dnsa
+     && ob->hosts_request_ocsp[0] == '*'
+     && ob->hosts_request_ocsp[1] == '\0'
+     )
+    {
+    /* Unchanged from default.  Use a safer one under DANE */
+    request_ocsp = TRUE;
+    ob->hosts_request_ocsp = US"${if or { {= {0}{$tls_out_tlsa_usage}} "
+				      "   {= {4}{$tls_out_tlsa_usage}} } "
+				 " {*}{}}";
+    }
+# endif
+
   if ((require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
     NULL, host->name, host->address, NULL) == OK))
     request_ocsp = TRUE;
   else
-    {
 # ifdef EXPERIMENTAL_DANE
-    if (  tlsa_dnsa
-       && ob->hosts_request_ocsp[0] == '*'
-       && ob->hosts_request_ocsp[1] == '\0'
-       )
-      {
-      /* Unchanged from default.  Use a safer one under DANE */
-      request_ocsp = TRUE;
-      ob->hosts_request_ocsp = US"${if or { {= {0}{$tls_out_tlsa_usage}} "
-					"   {= {4}{$tls_out_tlsa_usage}} } "
-				   " {*}{}}";
-      }
-    else
+    if (!request_ocsp)
 # endif
       request_ocsp = verify_check_this_host(&ob->hosts_request_ocsp,
 	  NULL, host->name, host->address, NULL) == OK;
-    }
   }
 #endif
 
