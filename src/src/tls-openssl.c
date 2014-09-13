@@ -1702,22 +1702,23 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   uint8_t usage, selector, mtype;
   const char * mdname;
 
-  found++;
   usage = *p++;
+
+  /* Only DANE-TA(2) and DANE-EE(3) are supported */
+  if (usage != 2 && usage != 3) continue;
+
   selector = *p++;
   mtype = *p++;
 
   switch (mtype)
     {
-    default:
-      log_write(0, LOG_MAIN,
-		"DANE error: TLSA record w/bad mtype 0x%x", mtype);
-      return FAIL;
-    case 0:	mdname = NULL; break;
-    case 1:	mdname = "sha256"; break;
-    case 2:	mdname = "sha512"; break;
+    default: continue;	/* Only match-types 0, 1, 2 are supported */
+    case 0:  mdname = NULL; break;
+    case 1:  mdname = "sha256"; break;
+    case 2:  mdname = "sha512"; break;
     }
 
+  found++;
   switch (DANESSL_add_tlsa(ssl, usage, selector, mdname, p, rr->size - 3))
     {
     default:
@@ -1732,7 +1733,7 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
 if (found)
   return OK;
 
-log_write(0, LOG_MAIN, "DANE error: No TLSA records");
+log_write(0, LOG_MAIN, "DANE error: No usable TLSA records");
 return FAIL;
 }
 #endif	/*EXPERIMENTAL_DANE*/
