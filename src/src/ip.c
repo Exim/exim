@@ -346,8 +346,8 @@ for (h = &shost; h != NULL; h = h->next)
       }
   }
 
-*errstr = string_sprintf("failed to connect to %s: "
-  "couldn't connect to any host: %s", hostname, strerror(errno));
+*errstr = string_sprintf("failed to connect to any address for %s: %s",
+  hostname, strerror(errno));
 
 bad:
   close(fd4); close(fd6); return -1;
