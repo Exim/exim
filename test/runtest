@@ -165,7 +165,7 @@ if (exists $TEST_STATE->{exim_pid})
   {
   $pid = $TEST_STATE->{exim_pid};
   print "Tidyup: killing wait-mode daemon pid=$pid\n";
-  system("sudo kill -SIGINT $pid");
+  system("sudo kill -INT $pid");
   }
 
 if (opendir(DIR, "spool"))
@@ -179,7 +179,7 @@ if (opendir(DIR, "spool"))
     chomp($pid = <PID>);
     close(PID);
     print "Tidyup: killing daemon pid=$pid\n";
-    system("sudo rm -f spool/$spool; sudo kill -SIGINT $pid");
+    system("sudo rm -f spool/$spool; sudo kill -INT $pid");
     }
   }
 else
