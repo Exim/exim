@@ -1752,14 +1752,14 @@ if (/^killdaemon/)
     print ">> killdaemon: recovered pid $pid\n" if $debug;
     if ($pid)
       {
-      run_system("sudo /bin/kill -SIGINT $pid");
+      run_system("sudo /bin/kill -INT $pid");
       wait;
       }
     } else {
     $pid = `cat $parm_cwd/spool/exim-daemon.*`;
     if ($pid)
       {
-      run_system("sudo /bin/kill -SIGINT $pid");
+      run_system("sudo /bin/kill -INT $pid");
       close DAEMONCMD;                                   # Waits for process
       }
     }
