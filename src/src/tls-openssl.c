@@ -1377,7 +1377,16 @@ if (expcerts != NULL && *expcerts != '\0')
       return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
 
     /* Load the list of CAs for which we will accept certs, for sending
-    to the client.  XXX only for file source, not dir? */
+    to the client.  This is only for the one-file tls_verify_certificates
+    variant.
+    If a list isn't loaded into the server, but
+    some verify locations are set, the server end appears to make
+    a wildcard reqest for client certs.
+    Meanwhile, the client library as deafult behaviour *ignores* the list
+    we send over the wire - see man SSL_CTX_set_client_cert_cb.
+    Because of this, and that the dir variant is likely only used for
+    the public-CA bundle (not for a private CA), not worth fixing.
+    */
     if (file != NULL)
       {
       STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
