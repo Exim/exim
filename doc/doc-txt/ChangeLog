@@ -34,6 +34,8 @@ JH/04 Add ${sort {list}{condition}{extractor}} expansion item.
 
 TL/04 Bugzilla 1216: Add -M (related messages) option to exigrep.
 
+TL/05 GitHub Issue 18: Adjust logic testing for true/false in redis lookups.
+      Merged patch from Sebastian Wiedenroth.
 
 Exim version 4.84
 -----------------
