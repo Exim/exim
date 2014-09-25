@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
-1999-03-02 09:44:33 10HmaX-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
-1999-03-02 09:44:33 10HmaX-0005vi-00 ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] Connection refused
-1999-03-02 09:44:33 10HmaX-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
-1999-03-02 09:44:33 10HmaX-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] Connection refused
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1] Connection refused
 1999-03-02 09:44:33 10HmaX-0005vi-00 == a@test.ex R=all T=smtp defer (dd): Connection refused

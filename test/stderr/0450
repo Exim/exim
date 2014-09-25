@@ -19,7 +19,7 @@ checking status of 127.0.0.1
 delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
 Connecting to 127.0.0.1 [127.0.0.1]:1225 ... failed: Connection refused
 LOG: MAIN
-  127.0.0.1 [127.0.0.1] Connection refused
+  H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1225: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
@@ -47,7 +47,7 @@ no message retry record
 delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
 Connecting to 127.0.0.1 [127.0.0.1]:1226 ... failed: Connection refused
 LOG: MAIN
-  127.0.0.1 [127.0.0.1] Connection refused
+  H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1226: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database

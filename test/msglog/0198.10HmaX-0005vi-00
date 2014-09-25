@@ -1,4 +1,4 @@
 1999-03-02 09:44:33 Received from CALLER@the.local.host.name U=CALLER P=local-bsmtp S=sss id=E10HmaY-0005vi-00@the.local.host.name
 1999-03-02 09:44:33 routing failed for usery@copy.domain: Unrouteable address
-1999-03-02 09:44:33 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 userx@copy.domain R=check_file T=pass_on defer (dd): Network Error

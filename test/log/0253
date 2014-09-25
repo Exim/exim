@@ -7,7 +7,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= pqr@x.y.z U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx@myhost.test.ex P=<pqr=userx+myhost.test.ex@verp.domain> R=r3 T=t3 H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => phil@myhost.test.ex P=<pqr=phil+myhost.test.ex@verp.domain> R=r3 T=t3 H=127.0.0.1 [127.0.0.1] C="250 OK"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ** fail@myhost.test.ex P=<pqr=fail+myhost.test.ex@verp.domain> R=r3 T=t3: SMTP error from remote mail server after RCPT TO:<fail@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** fail@myhost.test.ex P=<pqr=fail+myhost.test.ex@verp.domain> R=r3 T=t3 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<fail@myhost.test.ex>: 550 Recipient not OK
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 => lmn <lmn@myhost.test.ex> P=<> R=r0 T=t0
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

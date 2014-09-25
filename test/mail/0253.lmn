@@ -20,8 +20,9 @@ could not be delivered to one or more of its recipients. The following
 address(es) failed:
 
   fail@myhost.test.ex
+  host 127.0.0.1 [127.0.0.1]
     SMTP error from remote mail server after RCPT TO:<fail@myhost.test.ex>:
-  host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
+    550 Recipient not OK
 
 ------ This is a copy of the message, including all the headers. ------
 

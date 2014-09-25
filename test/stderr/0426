@@ -48,7 +48,7 @@ After routing:
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
 LOG: MAIN
-  ** x@uppercase.test.ex R=r1 T=t1: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: host uppercase.test.ex [127.0.0.1]: 550 Unknown
+  ** x@uppercase.test.ex R=r1 T=t1 H=uppercase.test.ex [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: 550 Unknown
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

@@ -17,8 +17,9 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   userx@domain1
+  host 127.0.0.1 [127.0.0.1]
     SMTP error from remote mail server after initial connection:
-  host 127.0.0.1 [127.0.0.1]: 550 Go away
+    550 Go away
 
 ------ This is a copy of the message, including all the headers. ------
 
@@ -53,11 +54,13 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   usery@domain2
+  host 127.0.0.1 [127.0.0.1]
     SMTP error from remote mail server after HELO the.local.host.name:
-  host 127.0.0.1 [127.0.0.1]: 550 Go away
+    550 Go away
   userx@domain1
+  host 127.0.0.1 [127.0.0.1]
     SMTP error from remote mail server after HELO the.local.host.name:
-  host 127.0.0.1 [127.0.0.1]: 550 Go away
+    550 Go away
 
 ------ This is a copy of the message, including all the headers. ------
 

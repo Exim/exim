@@ -294,12 +294,15 @@ void
 retry_add_item(address_item *addr, uschar *key, int flags)
 {
 retry_item *rti = store_get(sizeof(retry_item));
+host_item * host = addr->host_used;
 rti->next = addr->retries;
 addr->retries = rti;
 rti->key = key;
 rti->basic_errno = addr->basic_errno;
 rti->more_errno = addr->more_errno;
-rti->message = addr->message;
+rti->message = host
+  ? string_sprintf("H=%s [%s]: %s", host->name, host->address, addr->message)
+  : addr->message;
 rti->flags = flags;
 
 DEBUG(D_transport|D_retry)

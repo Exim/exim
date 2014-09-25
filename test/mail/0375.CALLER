@@ -18,8 +18,9 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   e1@myhost.test.ex
+  host 127.0.0.1 [127.0.0.1]
     SMTP error from remote mail server after RCPT TO:<e1@myhost.test.ex>:
-  host 127.0.0.1 [127.0.0.1]: 550 hard error
+    550 hard error
 
 ------ This is a copy of the message, including all the headers. ------
 

@@ -806,17 +806,17 @@ LOG: MAIN
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
-  == d2@myhost.test.ex R=ut4 T=ut4 defer (-44): SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 450 soft error
+  == d2@myhost.test.ex R=ut4 T=ut4 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: 450 soft error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-ut4.lockfile
 LOG: MAIN
-  ** d3@myhost.test.ex P=<> R=ut4 T=ut4: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 550 hard error
+  ** d3@myhost.test.ex P=<> R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-ut5.lockfile
 LOG: MAIN
-  ** e1@myhost.test.ex P=<> R=ut5 T=ut5: SMTP error from remote mail server after RCPT TO:<e1@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 550 hard error
+  ** e1@myhost.test.ex P=<> R=ut5 T=ut5 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<e1@myhost.test.ex>: 550 hard error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-ut6.lockfile
@@ -825,12 +825,12 @@ LOG: MAIN
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
-  == f2@myhost.test.ex R=ut6 T=ut6 defer (-44): SMTP error from remote mail server after RCPT TO:<f2@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 450 soft error
+  == f2@myhost.test.ex R=ut6 T=ut6 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<f2@myhost.test.ex>: 450 soft error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-ut6.lockfile
 LOG: MAIN
-  ** f3@myhost.test.ex P=<CALLER@myhost.test.ex> R=ut6 T=ut6: SMTP error from remote mail server after RCPT TO:<f3@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 550 hard error
+  ** f3@myhost.test.ex P=<CALLER@myhost.test.ex> R=ut6 T=ut6 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<f3@myhost.test.ex>: 550 hard error
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN

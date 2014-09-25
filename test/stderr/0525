@@ -15,8 +15,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 354 SEND
   SMTP>> writing message and terminating "."
 LOG: MAIN
-  SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after sending data block (ddd bytes written): Connection timed out
+  H=127.0.0.1 [127.0.0.1]: SMTP timeout after sending data block (ddd bytes written): Connection timed out
 LOG: MAIN
-  == def@pqr R=r1 T=t1 defer (dd): Connection timed out: SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after sending data block (ddd bytes written)
+  == def@pqr R=r1 T=t1 defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after sending data block (ddd bytes written)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT

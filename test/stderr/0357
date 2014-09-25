@@ -28,7 +28,7 @@ added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   added retry item
 LOG: MAIN
-  == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  == userx@test.ex R=r1 T=t1 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 Processing retry items
 Succeeded addresses:
 Failed addresses:
@@ -39,7 +39,7 @@ retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+1 expired=0
-  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -79,7 +79,7 @@ reading retry information for R:userx@test.ex from subprocess
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   delete item not added: non-delete item exists
 LOG: MAIN
-  == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  == userx@test.ex R=r1 T=t1 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 Processing retry items
 Succeeded addresses:
 Failed addresses:
@@ -92,7 +92,7 @@ retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+1 expired=0
-  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 LOG: queue_run MAIN
   End queue run: pid=pppp
@@ -133,7 +133,7 @@ reading retry information for R:userx@test.ex from subprocess
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   delete item not added: non-delete item exists
 LOG: MAIN
-  == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  == userx@test.ex R=r1 T=t1 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 Processing retry items
 Succeeded addresses:
 Failed addresses:
@@ -146,7 +146,7 @@ retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+2 expired=0
-  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 LOG: queue_run MAIN
   End queue run: pid=pppp

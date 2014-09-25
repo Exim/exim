@@ -433,6 +433,7 @@ Arguments:
   msg            to put in each address's message field
   rc             to put in each address's transport_return field
   pass_message   if TRUE, set the "pass message" flag in the address
+  host           if set, mark addrs as having used this host
 
 If errno_value has the special value ERRNO_CONNECTTIMEOUT, ETIMEDOUT is put in
 the errno field, and RTEF_CTOUT is ORed into the more_errno field, to indicate
@@ -443,7 +444,7 @@ Returns:       nothing
 
 static void
 set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
-  BOOL pass_message)
+  BOOL pass_message, host_item * host)
 {
 address_item *addr;
 int orvalue = 0;
@@ -463,6 +464,8 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
     if (pass_message) setflag(addr, af_pass_message);
     }
   addr->transport_return = rc;
+  if (host)
+    addr->host_used = host;
   }
 }
 
@@ -508,8 +511,8 @@ if (smtp_use_pipelining &&
 
 if (*errno_value == ETIMEDOUT)
   {
-  *message = US string_sprintf("SMTP timeout while connected to %s [%s] "
-    "after %s%s", host->name, host->address, pl, smtp_command);
+  *message = US string_sprintf("SMTP timeout after %s%s",
+      pl, smtp_command);
   if (transport_count > 0)
     *message = US string_sprintf("%s (%d bytes written)", *message,
       transport_count);
@@ -522,13 +525,11 @@ if (*errno_value == ERRNO_SMTPFORMAT)
   {
   uschar *malfresp = string_printing(buffer);
   while (isspace(*malfresp)) malfresp++;
-  if (*malfresp == 0)
-    *message = string_sprintf("Malformed SMTP reply (an empty line) from "
-      "%s [%s] in response to %s%s", host->name, host->address, pl,
-      smtp_command);
-  else
-    *message = string_sprintf("Malformed SMTP reply from %s [%s] in response "
-      "to %s%s: %s", host->name, host->address, pl, smtp_command, malfresp);
+  *message = *malfresp == 0
+    ? string_sprintf("Malformed SMTP reply (an empty line) "
+	"in response to %s%s", pl, smtp_command)
+    : string_sprintf("Malformed SMTP reply in response to %s%s: %s",
+	pl, smtp_command, malfresp);
   return FALSE;
   }
 
@@ -568,7 +569,7 @@ if (buffer[0] != 0)
   {
   uschar *s = string_printing(buffer);
   *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
-    "host %s [%s]: %s", pl, smtp_command, host->name, host->address, s);
+    "%s", pl, smtp_command, s);
   *pass_message = TRUE;
   *yield = buffer[0];
   return TRUE;
@@ -583,8 +584,8 @@ assume the connection is now dead. */
 if (*errno_value == 0 || *errno_value == ECONNRESET)
   {
   *errno_value = ERRNO_SMTPCLOSED;
-  *message = US string_sprintf("Remote host %s [%s] closed connection "
-    "in response to %s%s", host->name, host->address, pl, smtp_command);
+  *message = US string_sprintf("Remote host closed connection "
+    "in response to %s%s",  pl, smtp_command);
   }
 else *message = US string_sprintf("%s [%s]", host->name, host->address);
 
@@ -609,9 +610,11 @@ Returns:   nothing
 static void
 write_logs(address_item *addr, host_item *host)
 {
-if (addr->message != NULL)
+uschar * message = string_sprintf("H=%s [%s]", host->name, host->address);
+
+if (addr->message)
   {
-  uschar *message = addr->message;
+  message = string_sprintf("%s: %s", message, addr->message);
   if (addr->basic_errno > 0)
     message = string_sprintf("%s: %s", message, strerror(addr->basic_errno));
   log_write(0, LOG_MAIN, "%s", message);
@@ -619,16 +622,20 @@ if (addr->message != NULL)
   }
 else
   {
-  uschar *msg =
-    ((log_extra_selector & LX_outgoing_port) != 0)?
-    string_sprintf("%s [%s]:%d", host->name, host->address,
-      (host->port == PORT_NONE)? 25 : host->port)
-    :
-    string_sprintf("%s [%s]", host->name, host->address);
-  log_write(0, LOG_MAIN, "%s %s", msg, strerror(addr->basic_errno));
-  deliver_msglog("%s %s %s\n", tod_stamp(tod_log), msg,
-    strerror(addr->basic_errno));
+  if (log_extra_selector & LX_outgoing_port)
+    message = string_sprintf("%s:%d", message,
+		host->port == PORT_NONE ? 25 : host->port);
+  log_write(0, LOG_MAIN, "%s %s", message, strerror(addr->basic_errno));
+  deliver_msglog("%s %s %s\n", tod_stamp(tod_log), message,
+		strerror(addr->basic_errno));
   }
+}
+
+static void
+msglog_line(host_item * host, uschar * message)
+{
+  deliver_msglog("%s H=%s [%s] %s\n", tod_stamp(tod_log),
+    host->name, host->address, message);
 }
 
 
@@ -777,6 +784,14 @@ if (pending_MAIL)
         }
       errno = save_errno;
       }
+
+    if (pending_DATA) count--;  /* Number of RCPT responses to come */
+    while (count-- > 0)		/* Mark any pending addrs with the host used */
+      {
+      while (addr->transport_return != PENDING_DEFER) addr = addr->next;
+      addr->host_used = host;
+      addr = addr->next;
+      }
     return -3;
     }
   }
@@ -792,6 +807,7 @@ while (count-- > 0)
   while (addr->transport_return != PENDING_DEFER) addr = addr->next;
 
   /* The address was accepted */
+  addr->host_used = host;
 
   if (smtp_read_response(inblock, buffer, buffsize, '2', timeout))
     {
@@ -816,10 +832,9 @@ while (count-- > 0)
   else if (errno == ETIMEDOUT)
     {
     int save_errno = errno;
-    uschar *message = string_sprintf("SMTP timeout while connected to %s [%s] "
-      "after RCPT TO:<%s>", host->name, host->address,
-      transport_rcpt_address(addr, include_affixes));
-    set_errno(addrlist, save_errno, message, DEFER, FALSE);
+    uschar *message = string_sprintf("SMTP timeout after RCPT TO:<%s>",
+			  transport_rcpt_address(addr, include_affixes));
+    set_errno(addrlist, save_errno, message, DEFER, FALSE, NULL);
     retry_add_item(addr, addr->address_retry_key, 0);
     update_waiting = FALSE;
     return -1;
@@ -843,10 +858,10 @@ while (count-- > 0)
     {
     addr->message =
       string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
-        "host %s [%s]: %s", transport_rcpt_address(addr, include_affixes),
-        host->name, host->address, string_printing(buffer));
+	"%s", transport_rcpt_address(addr, include_affixes),
+	string_printing(buffer));
     setflag(addr, af_pass_message);
-    deliver_msglog("%s %s\n", tod_stamp(tod_log), addr->message);
+    msglog_line(host, addr->message);
 
     /* The response was 5xx */
 
@@ -864,9 +879,11 @@ while (count-- > 0)
       addr->basic_errno = ERRNO_RCPT4XX;
       addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
 
-      /* Log temporary errors if there are more hosts to be tried. */
+      /* Log temporary errors if there are more hosts to be tried.
+      If not, log this last one in the == line. */
 
-      if (host->next != NULL) log_write(0, LOG_MAIN, "%s", addr->message);
+      if (host->next)
+	log_write(0, LOG_MAIN, "H=%s [%s]: %s", host->name, host->address, addr->message);
 
       /* Do not put this message on the list of those waiting for specific
       hosts, as otherwise it is likely to be tried too often. */
@@ -1068,7 +1085,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 	  /* Internal problem, message in buffer. */
 
 	  case ERROR:
-	  set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE);
+	  set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE, NULL);
 	  return ERROR;
 	  }
 
@@ -1084,7 +1101,7 @@ if (require_auth == OK && !smtp_authenticated)
   {
   set_errno(addrlist, ERRNO_AUTHFAIL,
     string_sprintf("authentication required but %s", fail_reason), DEFER,
-    FALSE);
+    FALSE, NULL);
   return DEFER;
   }
 
@@ -1123,7 +1140,7 @@ if (ob->authenticated_sender != NULL)
       {
       uschar *message = string_sprintf("failed to expand "
         "authenticated_sender: %s", expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE);
+      set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
       return TRUE;
       }
     }
@@ -1324,7 +1341,7 @@ tls_modify_variables(&tls_out);
 #ifndef SUPPORT_TLS
 if (smtps)
   {
-  set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE);
+  set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE, NULL);
   return ERROR;
   }
 #endif
@@ -1347,7 +1364,7 @@ if (continue_hostname == NULL)
   if (inblock.sock < 0)
     {
     set_errno(addrlist, (errno == ETIMEDOUT)? ERRNO_CONNECTTIMEOUT : errno,
-      NULL, DEFER, FALSE);
+      NULL, DEFER, FALSE, NULL);
     return DEFER;
     }
 
@@ -1401,7 +1418,7 @@ if (continue_hostname == NULL)
 	== DEFER)
 	{
 	uschar *message = US"deferred by smtp:connect event expansion";
-	set_errno(addrlist, 0, message, DEFER, FALSE);
+	set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
 	yield = DEFER;
 	goto SEND_QUIT;
 	}
@@ -1414,7 +1431,7 @@ if (continue_hostname == NULL)
       {
       uschar *message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE);
+      set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -1600,7 +1617,6 @@ if (tls_offered && !suppress_tls &&
     /* TLS session is set up */
 
     for (addr = addrlist; addr != NULL; addr = addr->next)
-      {
       if (addr->transport_return == PENDING_DEFER)
         {
         addr->cipher = tls_out.cipher;
@@ -1609,7 +1625,6 @@ if (tls_offered && !suppress_tls &&
         addr->peerdn = tls_out.peerdn;
 	addr->ocsp = tls_out.ocsp;
         }
-      }
     }
   }
 
@@ -1633,7 +1648,7 @@ if (tls_out.active >= 0)
       {
       uschar *message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE);
+      set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -1675,8 +1690,7 @@ else if (
 	)
   {
   save_errno = ERRNO_TLSREQUIRED;
-  message = string_sprintf("a TLS session is required for %s [%s], but %s",
-    host->name, host->address,
+  message = string_sprintf("a TLS session is required, but %s",
     tls_offered? "an attempt to start TLS failed" :
                  "the server did not offer TLS support");
   goto TLS_FAILED;
@@ -1777,7 +1791,7 @@ if (tblock->filter_command != NULL)
   if (!rc)
     {
     set_errno(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
-      FALSE);
+      FALSE, NULL);
     yield = ERROR;
     goto SEND_QUIT;
     }
@@ -2026,7 +2040,7 @@ if (mua_wrapper)
   if (badaddr != NULL)
     {
     set_errno(addrlist, 0, badaddr->message, FAIL,
-      testflag(badaddr, af_pass_message));
+      testflag(badaddr, af_pass_message), NULL);
     ok = FALSE;
     }
   }
@@ -2400,12 +2414,10 @@ if (!ok)
   if (setting_up)
     {
     if (code == '5')
-      {
-      set_errno(addrlist, save_errno, message, FAIL, pass_message);
-      }
+      set_errno(addrlist, save_errno, message, FAIL, pass_message, host);
     else
       {
-      set_errno(addrlist, save_errno, message, DEFER, pass_message);
+      set_errno(addrlist, save_errno, message, DEFER, pass_message, host);
       yield = DEFER;
       }
     }
@@ -2461,7 +2473,7 @@ if (!ok)
       {
       if (mua_wrapper) code = '5';  /* Force hard failure in wrapper mode */
       set_errno(addrlist, save_errno, message, (code == '5')? FAIL : DEFER,
-        pass_message);
+        pass_message, host);
 
       /* If there's an errno, the message contains just the identity of
       the host. */
@@ -2471,7 +2483,7 @@ if (!ok)
         if (save_errno > 0)
           message = US string_sprintf("%s: %s", message, strerror(save_errno));
         if (host->next != NULL) log_write(0, LOG_MAIN, "%s", message);
-        deliver_msglog("%s %s\n", tod_stamp(tod_log), message);
+	msglog_line(host, message);
         *message_defer = TRUE;
         }
       }
@@ -2486,7 +2498,7 @@ if (!ok)
       {
       yield = (save_errno == ERRNO_CHHEADER_FAIL ||
                save_errno == ERRNO_FILTER_FAIL)? ERROR : DEFER;
-      set_errno(addrlist, save_errno, message, DEFER, pass_message);
+      set_errno(addrlist, save_errno, message, DEFER, pass_message, host);
       }
     }
   }
@@ -2557,7 +2569,8 @@ if (completed_address && ok && send_quit)
           &pass_message);
         if (!send_quit)
           {
-          DEBUG(D_transport) debug_printf("%s\n", msg);
+          DEBUG(D_transport) debug_printf("H=%s [%s] %s\n",
+	    host->name, host->address, msg);
           }
         }
       }
@@ -2603,7 +2616,7 @@ if (completed_address && ok && send_quit)
 
     /* If RSET failed and there are addresses left, they get deferred. */
 
-    else set_errno(first_addr, errno, msg, DEFER, FALSE);
+    else set_errno(first_addr, errno, msg, DEFER, FALSE, host);
     }
   }
 
@@ -3283,7 +3296,7 @@ for (cutoff_retry = 0; expired &&
     if (dont_deliver)
       {
       host_item *host2;
-      set_errno(addrlist, 0, NULL, OK, FALSE);
+      set_errno(addrlist, 0, NULL, OK, FALSE, NULL);
       for (addr = addrlist; addr != NULL; addr = addr->next)
         {
         addr->host_used = host;
