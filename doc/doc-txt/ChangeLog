@@ -37,6 +37,13 @@ TL/04 Bugzilla 1216: Add -M (related messages) option to exigrep.
 TL/05 GitHub Issue 18: Adjust logic testing for true/false in redis lookups.
       Merged patch from Sebastian Wiedenroth.
 
+JH/05 Fix results-pipe from transport process.  Several recipients, combined
+      with certificate use, exposed issues where response data items split
+      over buffer boundaries were not parsed properly.  This eventually
+      resulted in duplicates being sent.  This issue only became common enough
+      to notice due to the introduction of conection certificate information,
+      the item size being so much larger.  Found and fixed by Wolfgang Breyha.
+
 Exim version 4.84
 -----------------
 TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static
