@@ -1,6 +1,18 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.84+fixes
+-----------------------
+Cherry-Picked from the master development branch
+for complaints please contact hs@schlittermann.de
+-------------------------------------------------
+
+JH/05 Fix results-pipe from transport process.  Several recipients, combined
+      with certificate use, exposed issues where response data items split
+      over buffer boundaries were not parsed properly.  This eventually
+      resulted in duplicates being sent.  This issue only became common enough
+      to notice due to the introduction of conection certificate information,
+      the item size being so much larger.  Found and fixed by Wolfgang Breyha.
 
 Exim version 4.84
 -----------------

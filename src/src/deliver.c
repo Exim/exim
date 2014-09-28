@@ -2823,6 +2823,8 @@ uschar *ptr = endptr;
 uschar *msg = p->msg;
 BOOL done = p->done;
 BOOL unfinished = TRUE;
+/* minimum size to read is header size including id, subid and length */
+int required = PIPE_HEADER_SIZE;
 
 /* Loop through all items, reading from the pipe when necessary. The pipe
 is set up to be non-blocking, but there are two different Unix mechanisms in
@@ -2845,12 +2847,15 @@ while (!done)
   {
   retry_item *r, **rp;
   int remaining = endptr - ptr;
+  uschar header[PIPE_HEADER_SIZE + 1];
+  uschar id, subid;
+  uschar *endc;
 
   /* Read (first time) or top up the chars in the buffer if necessary.
   There will be only one read if we get all the available data (i.e. don't
   fill the buffer completely). */
 
-  if (remaining < 2500 && unfinished)
+  if (remaining < required && unfinished)
     {
     int len;
     int available = big_buffer_size - remaining;
@@ -2883,17 +2888,64 @@ while (!done)
     won't read any more, as "unfinished" will get set FALSE. */
 
     endptr += len;
+    remaining += len;
     unfinished = len == available;
     }
 
   /* If we are at the end of the available data, exit the loop. */
-
   if (ptr >= endptr) break;
+
+  /* copy and read header */
+  memcpy(header, ptr, PIPE_HEADER_SIZE);
+  header[PIPE_HEADER_SIZE] = '\0';
+  id = header[0];
+  subid = header[1];
+  required = Ustrtol(header + 2, &endc, 10) + PIPE_HEADER_SIZE;     /* header + data */
+  if (*endc)
+    {
+    msg = string_sprintf("failed to read pipe from transport process "
+      "%d for transport %s: error reading size from header", pid, addr->transport->driver_name);
+    done = TRUE;
+    break;
+    }
+
+  DEBUG(D_deliver)
+    debug_printf("header read  id:%c,subid:%c,size:%s,required:%d,remaining:%d,unfinished:%d\n",
+                    id, subid, header+2, required, remaining, unfinished);
+
+  /* is there room for the dataset we want to read ? */
+  if (required > big_buffer_size - PIPE_HEADER_SIZE)
+    {
+    msg = string_sprintf("failed to read pipe from transport process "
+      "%d for transport %s: big_buffer too small! required size=%d buffer size=%d", pid, addr->transport->driver_name,
+      required, big_buffer_size - PIPE_HEADER_SIZE);
+    done = TRUE;
+    break;
+    }
+
+  /* we wrote all datasets with atomic write() calls
+     remaining < required only happens if big_buffer was too small
+     to get all available data from pipe. unfinished has to be true
+     as well. */
+  if (remaining < required)
+    if (unfinished)
+      continue;
+    else
+      {
+      msg = string_sprintf("failed to read pipe from transport process "
+        "%d for transport %s: required size=%d > remaining size=%d and unfinished=false",
+        pid, addr->transport->driver_name, required, remaining);
+      done = TRUE;
+      break;
+      }
+
+  /* step behind the header */
+  ptr += PIPE_HEADER_SIZE;
 
   /* Handle each possible type of item, assuming the complete item is
   available in store. */
 
-  switch (*ptr++)
+  switch (id)
     {
     /* Host items exist only if any hosts were marked unusable. Match
     up by checking the IP address. */
@@ -2990,7 +3042,7 @@ while (!done)
     #ifdef SUPPORT_TLS
     case 'X':
     if (addr == NULL) goto ADDR_MISMATCH;          /* Below, in 'A' handler */
-    switch (*ptr++)
+    switch (subid)
       {
       case '1':
       addr->cipher = NULL;
@@ -3028,7 +3080,7 @@ while (!done)
     #endif	/*SUPPORT_TLS*/
 
     case 'C':	/* client authenticator information */
-    switch (*ptr++)
+    switch (subid)
       {
       case '1':
 	addr->authenticator = (*ptr)? string_copy(ptr) : NULL;
@@ -3051,7 +3103,7 @@ while (!done)
 
     #ifdef EXPERIMENTAL_DSN
     case 'D':
-    if (addr == NULL) break;
+    if (addr == NULL) goto ADDR_MISMATCH;
     memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
     ptr += sizeof(addr->dsn_aware);
     DEBUG(D_deliver) debug_printf("DSN read: addr->dsn_aware = %d\n", addr->dsn_aware);
@@ -3119,7 +3171,7 @@ while (!done)
       continue_hostname = NULL;
       }
     done = TRUE;
-    DEBUG(D_deliver) debug_printf("Z%c item read\n", *ptr);
+    DEBUG(D_deliver) debug_printf("Z0%c item read\n", *ptr);
     break;
 
     /* Anything else is a disaster. */
@@ -3572,9 +3624,40 @@ while (parcount > max)
 
 
 static void
-rmt_dlv_checked_write(int fd, void * buf, int size)
+rmt_dlv_checked_write(int fd, char id, char subid, void * buf, int size)
 {
-int ret = write(fd, buf, size);
+uschar	writebuffer[PIPE_HEADER_SIZE + BIG_BUFFER_SIZE];
+int     header_length;
+
+/* we assume that size can't get larger then BIG_BUFFER_SIZE which currently is set to 16k */
+/* complain to log if someone tries with buffer sizes we can't handle*/
+
+if (size > 99999)
+{
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "Failed writing transport result to pipe: can't handle buffers > 99999 bytes. truncating!\n");
+  size = 99999;
+}
+
+/* to keep the write() atomic we build header in writebuffer and copy buf behind */
+/* two write() calls would increase the complexity of reading from pipe */
+
+/* convert size to human readable string prepended by id and subid */
+header_length = snprintf(writebuffer, PIPE_HEADER_SIZE+1, "%c%c%05d", id, subid, size);
+if (header_length != PIPE_HEADER_SIZE)
+{
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "header snprintf failed\n");
+  writebuffer[0] = '\0';
+}
+
+DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%d,final:%s\n",
+                                 id, subid, size, writebuffer);
+
+if (buf && size > 0)
+  memcpy(writebuffer + PIPE_HEADER_SIZE, buf, size);
+
+size += PIPE_HEADER_SIZE;
+int ret = write(fd, writebuffer, size);
 if(ret != size)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed writing transport result to pipe: %s\n",
     ret == -1 ? strerror(errno) : "short write");
@@ -4100,8 +4183,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     for (h = addr->host_list; h != NULL; h = h->next)
       {
       if (h->address == NULL || h->status < hstatus_unusable) continue;
-      sprintf(CS big_buffer, "H%c%c%s", h->status, h->why, h->address);
-      rmt_dlv_checked_write(fd, big_buffer, Ustrlen(big_buffer+3) + 4);
+      sprintf(CS big_buffer, "%c%c%s", h->status, h->why, h->address);
+      rmt_dlv_checked_write(fd, 'H', '0', big_buffer, Ustrlen(big_buffer+2) + 3);
       }
 
     /* The number of bytes written. This is the same for each address. Even
@@ -4109,9 +4192,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     size of each one is the same, and it's that value we have got because
     transport_count gets reset before calling transport_write_message(). */
 
-    big_buffer[0] = 'S';
-    memcpy(big_buffer+1, &transport_count, sizeof(transport_count));
-    rmt_dlv_checked_write(fd, big_buffer, sizeof(transport_count) + 1);
+    memcpy(big_buffer, &transport_count, sizeof(transport_count));
+    rmt_dlv_checked_write(fd, 'S', '0', big_buffer, sizeof(transport_count));
 
     /* Information about what happened to each address. Four item types are
     used: an optional 'X' item first, for TLS information, then an optional "C"
@@ -4131,7 +4213,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       if (addr->cipher)
         {
         ptr = big_buffer;
-        sprintf(CS ptr, "X1%.128s", addr->cipher);
+        sprintf(CS ptr, "%.128s", addr->cipher);
         while(*ptr++);
         if (!addr->peerdn)
 	  *ptr++ = 0;
@@ -4141,35 +4223,33 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
           while(*ptr++);
           }
 
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'X', '1', big_buffer, ptr - big_buffer);
         }
       if (addr->peercert)
 	{
         ptr = big_buffer;
-	*ptr++ = 'X'; *ptr++ = '2';
 	if (!tls_export_cert(ptr, big_buffer_size-2, addr->peercert))
 	  while(*ptr++);
 	else
 	  *ptr++ = 0;
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'X', '2', big_buffer, ptr - big_buffer);
 	}
       if (addr->ourcert)
 	{
         ptr = big_buffer;
-	*ptr++ = 'X'; *ptr++ = '3';
 	if (!tls_export_cert(ptr, big_buffer_size-2, addr->ourcert))
 	  while(*ptr++);
 	else
 	  *ptr++ = 0;
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'X', '3', big_buffer, ptr - big_buffer);
 	}
       #ifndef DISABLE_OCSP
       if (addr->ocsp > OCSP_NOT_REQ)
 	{
 	ptr = big_buffer;
-	sprintf(CS ptr, "X4%c", addr->ocsp + '0');
+	sprintf(CS ptr, "%c", addr->ocsp + '0');
 	while(*ptr++);
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'X', '4', big_buffer, ptr - big_buffer);
 	}
       # endif
       #endif	/*SUPPORT_TLS*/
@@ -4177,34 +4257,33 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       if (client_authenticator)
         {
         ptr = big_buffer;
-	sprintf(CS big_buffer, "C1%.64s", client_authenticator);
+	sprintf(CS big_buffer, "%.64s", client_authenticator);
         while(*ptr++);
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'C', '1', big_buffer, ptr - big_buffer);
 	}
       if (client_authenticated_id)
         {
         ptr = big_buffer;
-	sprintf(CS big_buffer, "C2%.64s", client_authenticated_id);
+	sprintf(CS big_buffer, "%.64s", client_authenticated_id);
         while(*ptr++);
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'C', '2', big_buffer, ptr - big_buffer);
 	}
       if (client_authenticated_sender)
         {
         ptr = big_buffer;
-	sprintf(CS big_buffer, "C3%.64s", client_authenticated_sender);
+	sprintf(CS big_buffer, "%.64s", client_authenticated_sender);
         while(*ptr++);
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'C', '3', big_buffer, ptr - big_buffer);
 	}
 
       #ifndef DISABLE_PRDR
       if (addr->flags & af_prdr_used)
-	rmt_dlv_checked_write(fd, "P", 1);
+	rmt_dlv_checked_write(fd, 'P', '0', NULL, 0);
       #endif
 
       #ifdef EXPERIMENTAL_DSN
-      big_buffer[0] = 'D';
-      memcpy(big_buffer+1, &addr->dsn_aware, sizeof(addr->dsn_aware));
-      rmt_dlv_checked_write(fd, big_buffer, sizeof(addr->dsn_aware) + 1);
+      memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
+      rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));
       DEBUG(D_deliver) debug_printf("DSN write: addr->dsn_aware = %d\n", addr->dsn_aware);
       #endif
 
@@ -4213,7 +4292,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       for (r = addr->retries; r != NULL; r = r->next)
         {
         uschar *ptr;
-        sprintf(CS big_buffer, "R%c%.500s", r->flags, r->key);
+        sprintf(CS big_buffer, "%c%.500s", r->flags, r->key);
         ptr = big_buffer + Ustrlen(big_buffer+2) + 3;
         memcpy(ptr, &(r->basic_errno), sizeof(r->basic_errno));
         ptr += sizeof(r->basic_errno);
@@ -4224,13 +4303,13 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
           sprintf(CS ptr, "%.512s", r->message);
           while(*ptr++);
           }
-        rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+        rmt_dlv_checked_write(fd, 'R', '0', big_buffer, ptr - big_buffer);
         }
 
       /* The rest of the information goes in an 'A' item. */
 
-      ptr = big_buffer + 3;
-      sprintf(CS big_buffer, "A%c%c", addr->transport_return,
+      ptr = big_buffer + 2;
+      sprintf(CS big_buffer, "%c%c", addr->transport_return,
         addr->special_action);
       memcpy(ptr, &(addr->basic_errno), sizeof(addr->basic_errno));
       ptr += sizeof(addr->basic_errno);
@@ -4265,7 +4344,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 	       : addr->host_used->dnssec==DS_NO ? '1' : '0';
 
         }
-      rmt_dlv_checked_write(fd, big_buffer, ptr - big_buffer);
+      rmt_dlv_checked_write(fd, 'A', '0', big_buffer, ptr - big_buffer);
       }
 
     /* Add termination flag, close the pipe, and that's it. The character
@@ -4273,9 +4352,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     A change from non-NULL to NULL indicates a problem with a continuing
     connection. */
 
-    big_buffer[0] = 'Z';
-    big_buffer[1] = (continue_transport == NULL)? '0' : '1';
-    rmt_dlv_checked_write(fd, big_buffer, 2);
+    big_buffer[0] = (continue_transport == NULL)? '0' : '1';
+    rmt_dlv_checked_write(fd, 'Z', '0', big_buffer, 1);
     (void)close(fd);
     exit(EXIT_SUCCESS);
     }
@@ -5359,7 +5437,7 @@ if (process_recipients != RECIP_IGNORE)
         new->onetime_parent = recipients_list[r->pno].address;
 
       #ifdef EXPERIMENTAL_DSN
-      /* If DSN support is enabled, set the dsn flags and the original receipt 
+      /* If DSN support is enabled, set the dsn flags and the original receipt
          to be passed on to other DSN enabled MTAs */
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
@@ -6458,7 +6536,7 @@ while(addr_dsntmp != NULL)
     }
   else
     {
-      DEBUG(D_deliver) debug_printf("DSN: *** NOT SENDING DSN SUCCESS Message ***\n"); 
+      DEBUG(D_deliver) debug_printf("DSN: *** NOT SENDING DSN SUCCESS Message ***\n");
     }
 
   addr_dsntmp = addr_dsntmp->next;
@@ -6469,11 +6547,11 @@ if (addr_senddsn != NULL)
   pid_t pid;
   int fd;
 
-  /* create exim process to send message */      
+  /* create exim process to send message */
   pid = child_open_exim(&fd);
 
   DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %d\n", pid);
-     
+
   if (pid < 0)  /* Creation of child failed */
     {
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
@@ -6482,24 +6560,24 @@ if (addr_senddsn != NULL)
 
       DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
 
-    }    
+    }
   else  /* Creation of child succeeded */
     {
     FILE *f = fdopen(fd, "wb");
     /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
     int topt = topt_add_return_path | topt_no_body;
     uschar boundaryStr[64];
-     
+
     DEBUG(D_deliver) debug_printf("sending error message to: %s\n", sender_address);
-  
+
     /* build unique id for MIME boundary */
     snprintf(boundaryStr, sizeof(boundaryStr)-1, TIME_T_FMT "-eximdsn-%d",
       time(NULL), rand());
     DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", boundaryStr);
-  
+
     if (errors_reply_to)
       fprintf(f, "Reply-To: %s\n", errors_reply_to);
- 
+
     fprintf(f, "Auto-Submitted: auto-generated\n"
 	"From: Mail Delivery System <Mailer-Daemon@%s>\n"
 	"To: %s\n"
@@ -6509,7 +6587,7 @@ if (addr_senddsn != NULL)
 
 	"--%s\n"
 	"Content-type: text/plain; charset=us-ascii\n\n"
-   
+
 	"This message was created automatically by mail delivery software.\n"
 	" ----- The following addresses had successful delivery notifications -----\n",
       qualify_domain_sender, sender_address, boundaryStr, boundaryStr);
@@ -6564,16 +6642,16 @@ if (addr_senddsn != NULL)
       }
 
     fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", boundaryStr);
-           
+
     fflush(f);
     transport_filter_argv = NULL;   /* Just in case */
     return_path = sender_address;   /* In case not previously set */
-           
+
     /* Write the original email out */
     transport_write_message(NULL, fileno(f), topt, 0, NULL, NULL, NULL, NULL, NULL, 0);
     fflush(f);
 
-    fprintf(f,"\n");       
+    fprintf(f,"\n");
     fprintf(f,"--%s--\n", boundaryStr);
 
     fflush(f);
@@ -6940,7 +7018,7 @@ wording. */
           fprintf(f, "X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
         }
       fputc('\n', f);
- 
+
       for (addr = handled_addr; addr; addr = addr->next)
         {
         fprintf(f, "Action: failed\n"
@@ -7018,16 +7096,16 @@ wording. */
         }
 #else
       /* add message body
-         we ignore the intro text from template and add 
+         we ignore the intro text from template and add
          the text for bounce_return_size_limit at the end.
-  
+
          bounce_return_message is ignored
          in case RET= is defined we honor these values
          otherwise bounce_return_body is honored.
-         
+
          bounce_return_size_limit is always honored.
       */
-  
+
       fprintf(f, "\n--%s\n", boundaryStr);
 
       dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
@@ -7056,7 +7134,7 @@ wording. */
               dsnnotifyhdr = dsnlimitmsg;
             }
           }
-  
+
       if (topt & topt_no_body)
         fprintf(f,"Content-type: text/rfc822-headers\n\n");
       else
@@ -7068,11 +7146,11 @@ wording. */
       transport_write_message(NULL, fileno(f), topt,
         0, dsnnotifyhdr, NULL, NULL, NULL, NULL, 0);
       fflush(f);
- 
+
       /* we never add the final text. close the file */
       if (emf)
         (void)fclose(emf);
- 
+
       fprintf(f, "\n--%s--\n", boundaryStr);
 #endif	/*EXPERIMENTAL_DSN*/
 
@@ -7497,7 +7575,7 @@ else if (addr_defer != (address_item *)(+1))
 	    "Reporting-MTA: dns; %s\n",
 	  boundaryStr,
 	  smtp_active_hostname);
- 
+
 
         if (dsn_envid)
 	  {
@@ -7519,7 +7597,7 @@ else if (addr_defer != (address_item *)(+1))
           fprintf(f,"Final-Recipient: rfc822;%s\n", addr_dsndefer->address);
           fprintf(f,"Status: 4.0.0\n");
           if (addr_dsndefer->host_used && addr_dsndefer->host_used->name)
-            fprintf(f,"Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n", 
+            fprintf(f,"Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n",
 		    addr_dsndefer->host_used->name, addr_dsndefer->basic_errno);
           addr_dsndefer = addr_dsndefer->next;
           }
