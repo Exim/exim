@@ -22,7 +22,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
@@ -59,7 +58,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
@@ -112,7 +110,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
@@ -163,7 +160,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
@@ -214,7 +210,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
@@ -254,7 +249,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
@@ -307,7 +301,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
@@ -347,7 +340,6 @@ SSL info: before/connect initialization
 SSL info: before/connect initialization
 SSL info: SSLv3 read server hello A
 SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server key exchange A
 SSL info: SSLv3 read server certificate request A
 SSL info: SSLv3 read server done A
 SSL info: SSLv3 write client certificate A
