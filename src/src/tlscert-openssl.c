@@ -344,7 +344,7 @@ while (sk_GENERAL_NAME_num(san) > 0)
   if (ele[len])	/* not nul-terminated */
     ele = string_copyn(ele, len);
 
-  if (strnlen(CS ele, len) == len)	/* ignore any with embedded nul */
+  if (Ustrlen(ele) == len)	/* ignore any with embedded nul */
     list = string_append_listele(list, sep,
 	  match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
