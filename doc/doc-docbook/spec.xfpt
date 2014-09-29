@@ -28307,6 +28307,8 @@ can be appended; they appear within the called ACL in $acl_arg1 to $acl_arg9,
 and $acl_narg is set to the count of values.
 Previous values of these variables are restored after the call returns.
 The name and values are expanded separately.
+Note that spaces in complex expansions which are used as arguments
+will act as argument separators.
 
 If the nested &%acl%& returns &"drop"& and the outer condition denies access,
 the connection is dropped. If it returns &"discard"&, the verb must be
@@ -32520,6 +32522,9 @@ headers_remove = return-receipt-to:acknowledge-to
 Multiple &%headers_remove%& options for a single router or transport can be
 specified; the arguments will append to a single header-names list.
 Each item is separately expanded.
+Note that colons in complex expansions which are used to
+form all or part of a &%headers_remove%& list
+will act as list separators.
 
 When &%headers_add%& or &%headers_remove%& is specified on a router,
 items are expanded at routing time,
