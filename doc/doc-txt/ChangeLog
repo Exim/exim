@@ -44,6 +44,11 @@ JH/05 Fix results-pipe from transport process.  Several recipients, combined
       to notice due to the introduction of conection certificate information,
       the item size being so much larger.  Found and fixed by Wolfgang Breyha.
 
+JH/06 Bug 1533: Fix truncation of items in headers_remove lists.  A fixed
+      size buffer was used, resulting in syntax errors when an expansion
+      exceeded it.
+
+
 Exim version 4.84
 -----------------
 TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static

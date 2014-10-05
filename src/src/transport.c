@@ -643,8 +643,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
       {
       int sep = ':';         /* This is specified as a colon-separated list */
       uschar *s, *ss;
-      uschar buffer[128];
-      while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+      while ((s = string_nextinlist(&list, &sep, NULL, 0)))
 	{
 	int len;
 
