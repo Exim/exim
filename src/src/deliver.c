@@ -2988,16 +2988,15 @@ while (!done)
      to get all available data from pipe. unfinished has to be true 
      as well. */
   if (remaining < required)
+    {
     if (unfinished)
       continue;
-    else
-      {
-      msg = string_sprintf("failed to read pipe from transport process "
-        "%d for transport %s: required size=%d > remaining size=%d and unfinished=false", 
-        pid, addr->transport->driver_name, required, remaining);
-      done = TRUE;
-      break;
-      }
+    msg = string_sprintf("failed to read pipe from transport process "
+      "%d for transport %s: required size=%d > remaining size=%d and unfinished=false", 
+      pid, addr->transport->driver_name, required, remaining);
+    done = TRUE;
+    break;
+    }
 
   /* step behind the header */
   ptr += PIPE_HEADER_SIZE;
