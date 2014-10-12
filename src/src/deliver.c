@@ -873,6 +873,7 @@ else
 #ifdef EXPERIMENTAL_TPDA
     deliver_host_address = addr->host_used->address;
     deliver_host_port =    addr->host_used->port;
+    deliver_host =         addr->host_used->name;
 
     /* DNS lookup status */
     lookup_dnssec_authenticated = addr->host_used->dnssec==DS_YES ? US"yes"
