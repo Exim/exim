@@ -3702,7 +3702,7 @@ if (size > 99999)
 /* two write() calls would increase the complexity of reading from pipe */
 
 /* convert size to human readable string prepended by id and subid */
-header_length = snprintf(writebuffer, PIPE_HEADER_SIZE+1, "%c%c%05d", id, subid, size);
+header_length = snprintf(CS writebuffer, PIPE_HEADER_SIZE+1, "%c%c%05d", id, subid, size);
 if (header_length != PIPE_HEADER_SIZE)
 {
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "header snprintf failed\n");
@@ -4341,9 +4341,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 #ifndef DISABLE_PRDR
       if (addr->flags & af_prdr_used)
 	rmt_dlv_checked_write(fd, 'P', '0', NULL, 0);
-      #endif
+#endif
 
-      #ifdef EXPERIMENTAL_DSN
+#ifdef EXPERIMENTAL_DSN
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));
       DEBUG(D_deliver) debug_printf("DSN write: addr->dsn_aware = %d\n", addr->dsn_aware);
