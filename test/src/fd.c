@@ -50,7 +50,8 @@ if (filter)
   {
   int len;
   while ((len = read(0, buffer, sizeof(buffer))) > 0)
-    write(1, buffer, len);
+    if (write(1, buffer, len) < 0)
+	exit(1);
   }
 
 p += sprintf(p, "max fd = %d\n", (int)mac_maxfd);

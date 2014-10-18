@@ -518,7 +518,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
       strcmp(argv[argi], "--help") == 0 ||
       strcmp(argv[argi], "-h") == 0)
     {
-    printf(HELP_MESSAGE);
+    puts(HELP_MESSAGE);
     exit(0);
     }
   if (strcmp(argv[argi], "-tls-on-connect") == 0)
@@ -549,13 +549,13 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
       }
     if (tmplong > 10000L)
       {
-      fprintf(stderr, "Unreasonably long wait of %d seconds requested\n",
+      fprintf(stderr, "Unreasonably long wait of %ld seconds requested\n",
         tmplong);
       exit(1);
       }
     if (tmplong < 0L)
       {
-      fprintf(stderr, "Timeout must not be negative (%d)\n", tmplong);
+      fprintf(stderr, "Timeout must not be negative (%ld)\n", tmplong);
       exit(1);
       }
     timeout = (int) tmplong;
