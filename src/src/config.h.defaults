@@ -176,7 +176,7 @@ it's a default value. */
 #define EXPERIMENTAL_REDIS
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS
-#define EXPERIMENTAL_TPDA
+#define EXPERIMENTAL_EVENT
 
 /* For developers */
 #define WANT_DEEPER_PRINTF_CHECKS

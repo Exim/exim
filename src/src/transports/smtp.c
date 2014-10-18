@@ -640,7 +640,7 @@ msglog_line(host_item * host, uschar * message)
 
 
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
 /*************************************************
 *   Post-defer action                            *
 *************************************************/
@@ -656,9 +656,9 @@ Returns:   nothing
 */
 
 static void
-tpda_deferred(address_item *addr, host_item *host)
+deferred_event_raise(address_item *addr, host_item *host)
 {
-uschar * action = addr->transport->tpda_event_action;
+uschar * action = addr->transport->event_action;
 uschar * save_domain;
 uschar * save_local;
 
@@ -670,15 +670,15 @@ save_local = deliver_localpart;
 
 /*XXX would ip & port already be set up? */
 deliver_host_address = string_copy(host->address);
-deliver_host_port =    (host->port == PORT_NONE)? 25 : host->port;
-tpda_defer_errno =     addr->basic_errno;
+deliver_host_port =    host->port == PORT_NONE ? 25 : host->port;
+event_defer_errno =    addr->basic_errno;
 
 router_name =    addr->router->name;
 transport_name = addr->transport->name;
 deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;
 
-(void) tpda_raise_event(action, US"msg:host:defer",
+(void) event_raise(action, US"msg:host:defer",
     addr->message
       ? addr->basic_errno > 0
 	? string_sprintf("%s: %s", addr->message, strerror(addr->basic_errno))
@@ -1356,8 +1356,8 @@ if (continue_hostname == NULL)
   inblock.sock = outblock.sock =
     smtp_connect(host, host_af, port, interface, ob->connect_timeout,
 		  ob->keepalive, ob->dscp
-#ifdef EXPERIMENTAL_TPDA
-		  , tblock->tpda_event_action
+#ifdef EXPERIMENTAL_EVENT
+		  , tblock->event_action
 #endif
 		);
 
@@ -1413,8 +1413,8 @@ if (continue_hostname == NULL)
     if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
       ob->command_timeout)) goto RESPONSE_FAILED;
 
-#ifdef EXPERIMENTAL_TPDA
-    if (tpda_raise_event(tblock->tpda_event_action, US"smtp:connect", buffer)
+#ifdef EXPERIMENTAL_EVENT
+    if (event_raise(tblock->event_action, US"smtp:connect", buffer)
 	== DEFER)
 	{
 	uschar *message = US"deferred by smtp:connect event expansion";
@@ -2218,7 +2218,7 @@ if (!ok) ok = TRUE; else
     /* Set up confirmation if needed - applies only to SMTP */
 
     if (
-#ifndef EXPERIMENTAL_TPDA
+#ifndef EXPERIMENTAL_EVENT
           (log_extra_selector & LX_smtp_confirmation) != 0 &&
 #endif
           !lmtp
@@ -2659,8 +2659,8 @@ case continue_more won't get set. */
 
 (void)close(inblock.sock);
 
-#ifdef EXPERIMENTAL_TPDA
-(void) tpda_raise_event(tblock->tpda_event_action, US"tcp:close", NULL);
+#ifdef EXPERIMENTAL_EVENT
+(void) event_raise(tblock->event_action, US"tcp:close", NULL);
 #endif
 
 continue_transport = NULL;
@@ -3370,9 +3370,9 @@ for (cutoff_retry = 0; expired &&
                          first_addr->basic_errno != ERRNO_TLSFAILURE)
         write_logs(first_addr, host);
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
       if (rc == DEFER)
-        tpda_deferred(first_addr, host);
+        deferred_event_raise(first_addr, host);
 #endif
 
       /* If STARTTLS was accepted, but there was a failure in setting up the
@@ -3399,9 +3399,9 @@ for (cutoff_retry = 0; expired &&
           expanded_hosts != NULL, &message_defer, TRUE);
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
           write_logs(first_addr, host);
-# ifdef EXPERIMENTAL_TPDA
+# ifdef EXPERIMENTAL_EVENT
         if (rc == DEFER)
-          tpda_deferred(first_addr, host);
+          deferred_event_raise(first_addr, host);
 # endif
         }
 #endif	/*SUPPORT_TLS*/

@@ -120,7 +120,7 @@ typedef struct tls_ext_ctx_cb {
 #ifdef EXPERIMENTAL_CERTNAMES
   uschar * verify_cert_hostnames;
 #endif
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
   uschar * event_action;
 #endif
 } tls_ext_ctx_cb;
@@ -322,11 +322,11 @@ else if (depth != 0)
       ERR_clear_error();
     }
 #endif
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
   if (tlsp == &tls_out && client_static_cbinfo->event_action)
     {
     tlsp->peercert = X509_dup(cert);
-    if (tpda_raise_event(client_static_cbinfo->event_action,
+    if (event_raise(client_static_cbinfo->event_action,
 		    US"tls:cert", string_sprintf("%d", depth)) == DEFER)
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
@@ -391,10 +391,10 @@ else
 # endif
 #endif	/*EXPERIMENTAL_CERTNAMES*/
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
   if (tlsp == &tls_out)
     {
-    if (tpda_raise_event(client_static_cbinfo->event_action,
+    if (event_raise(client_static_cbinfo->event_action,
 		    US"tls:cert", US"0") == DEFER)
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
@@ -438,7 +438,7 @@ verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 static uschar txt[256];
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
 #endif
 
@@ -448,10 +448,10 @@ DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", txt);
 tls_out.peerdn = txt;
 tls_out.peercert = X509_dup(cert);
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
   if (client_static_cbinfo->event_action)
     {
-    if (tpda_raise_event(client_static_cbinfo->event_action,
+    if (event_raise(client_static_cbinfo->event_action,
 		    US"tls:cert", string_sprintf("%d", depth)) == DEFER)
       {
       log_write(0, LOG_MAIN, "DANE verify denied by event-action: "
@@ -1140,7 +1140,7 @@ else
 cbinfo->dhparam = dhparam;
 cbinfo->server_cipher_list = NULL;
 cbinfo->host = host;
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
 cbinfo->event_action = NULL;
 #endif
 
@@ -1935,8 +1935,8 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_TPDA
-client_static_cbinfo->event_action = tb->tpda_event_action;
+#ifdef EXPERIMENTAL_EVENT
+client_static_cbinfo->event_action = tb->event_action;
 #endif
 
 /* There doesn't seem to be a built-in timeout on connection. */

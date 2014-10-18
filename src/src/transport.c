@@ -66,6 +66,10 @@ optionlist optionlist_transports[] = {
                  (void *)offsetof(transport_instance, driver_name) },
   { "envelope_to_add",   opt_bool|opt_public,
                  (void *)(offsetof(transport_instance, envelope_to_add)) },
+#ifdef EXPERIMENTAL_EVENT
+  { "event_action",     opt_stringptr | opt_public,
+                 (void *)offsetof(transport_instance, event_action) },
+#endif
   { "group",             opt_expand_gid|opt_public,
                  (void *)offsetof(transport_instance, gid) },
   { "headers_add",      opt_stringptr|opt_public|opt_rep_str,
@@ -94,10 +98,6 @@ optionlist optionlist_transports[] = {
                  (void *)offsetof(transport_instance, shadow_condition) },
   { "shadow_transport", opt_stringptr|opt_public,
                  (void *)offsetof(transport_instance, shadow) },
-#ifdef EXPERIMENTAL_TPDA
-  { "tpda_event_action",opt_stringptr | opt_public,
-                 (void *)offsetof(transport_instance, tpda_event_action) },
-#endif
   { "transport_filter", opt_stringptr|opt_public,
                  (void *)offsetof(transport_instance, filter_command) },
   { "transport_filter_timeout", opt_time|opt_public,

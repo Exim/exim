@@ -165,7 +165,7 @@ Arguments:
   timeout     timeout value or 0
   keepalive   TRUE to use keepalive
   dscp        DSCP value to assign to socket
-  tpda_event  event expansion
+  event       event expansion
 
 Returns:      connected socket number, or -1 with errno set
 */
@@ -173,8 +173,8 @@ Returns:      connected socket number, or -1 with errno set
 int
 smtp_connect(host_item *host, int host_af, int port, uschar *interface,
   int timeout, BOOL keepalive, const uschar *dscp
-#ifdef EXPERIMENTAL_TPDA
-  , uschar * tpda_event
+#ifdef EXPERIMENTAL_EVENT
+  , uschar * event
 #endif
   )
 {
@@ -203,11 +203,11 @@ HDEBUG(D_transport|D_acl|D_v)
       host->address, port, interface);
   }
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
   /*XXX Called from both delivery and verify.  Is that status observable? */
   deliver_host_address = host->address;
   deliver_host_port = port;
-  if (tpda_raise_event(tpda_event, US"tcp:connect", NULL) == DEFER) return -1;
+  if (event_raise(event, US"tcp:connect", NULL) == DEFER) return -1;
 #endif
 
 /* Create the socket */

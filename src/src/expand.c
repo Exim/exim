@@ -490,6 +490,14 @@ static var_entry var_table[] = {
   { "dnslist_value",       vtype_stringptr,   &dnslist_value },
   { "domain",              vtype_stringptr,   &deliver_domain },
   { "domain_data",         vtype_stringptr,   &deliver_domain_data },
+#ifdef EXPERIMENTAL_EVENT
+  { "event_data",          vtype_stringptr,   &event_data },
+
+  /*XXX want to use generic vars for as many of these as possible*/
+  { "event_defer_errno",   vtype_int,         &event_defer_errno },
+
+  { "event_name",          vtype_stringptr,   &event_name },
+#endif
   { "exim_gid",            vtype_gid,         &exim_gid },
   { "exim_path",           vtype_stringptr,   &exim_path },
   { "exim_uid",            vtype_uid,         &exim_uid },
@@ -714,14 +722,6 @@ static var_entry var_table[] = {
   { "tod_logfile",         vtype_todlf,       NULL },
   { "tod_zone",            vtype_todzone,     NULL },
   { "tod_zulu",            vtype_todzulu,     NULL },
-#ifdef EXPERIMENTAL_TPDA
-  { "tpda_data",           vtype_stringptr,   &tpda_data },
-
-  /*XXX want to use generic vars for as many of these as possible*/
-  { "tpda_defer_errno",     vtype_int,         &tpda_defer_errno },
-
-  { "tpda_event",          vtype_stringptr,   &tpda_event },
-#endif
   { "transport_name",      vtype_stringptr,   &transport_name },
   { "value",               vtype_stringptr,   &lookup_value },
   { "version_number",      vtype_stringptr,   &version_string },

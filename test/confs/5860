@@ -43,13 +43,13 @@ tls_privatekey = ${if eq {SERVER}{server} \
 begin acl
 
 logger:
-  accept condition = ${if eq {tls} {${listextract{1}{$tpda_event}}}}
-	 logwrite = $tpda_event depth = $tpda_data \
+  accept condition = ${if eq {tls} {${listextract{1}{$event_name}}}}
+	 logwrite = $event_name depth = $event_data \
 			<${certextract {subject} {$tls_out_peercert}}>
 #  message = noooo
 
-  accept condition = ${if eq {msg} {${listextract{1}{$tpda_event}}}}
-	 logwrite = $tpda_event dane=$tls_out_dane
+  accept condition = ${if eq {msg} {${listextract{1}{$event_name}}}}
+	 logwrite = $event_name dane=$tls_out_dane
   accept
 
 # ----- Routers -----
@@ -83,6 +83,6 @@ send_to_server:
 				 {= {0}{$tls_out_tlsa_usage}} } \
                         {*}{}}
 
-  tpda_event_action =   ${acl {logger}}
+  event_action =   ${acl {logger}}
 
 # End

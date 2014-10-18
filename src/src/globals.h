@@ -418,6 +418,14 @@ extern int     error_handling;         /* Error handling style */
 extern uschar *errors_copy;            /* For taking copies of errors */
 extern uschar *errors_reply_to;        /* Reply-to for error messages */
 extern int     errors_sender_rc;       /* Return after message to sender*/
+
+#ifdef EXPERIMENTAL_EVENT
+extern uschar *event_action;           /* expansion for delivery events */
+extern uschar *event_data;	       /* event data */
+extern int     event_defer_errno;      /* error number set when a remote delivery is deferred with a host error */
+extern uschar *event_name;	       /* event classification */
+#endif
+
 extern gid_t   exim_gid;               /* To be used with exim_uid */
 extern BOOL    exim_gid_set;           /* TRUE if exim_gid set */
 extern uschar *exim_path;              /* Path to exec exim */
@@ -875,13 +883,6 @@ extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
 extern BOOL    timestamps_utc;         /* Use UTC for all times */
-
-#ifdef EXPERIMENTAL_TPDA
-extern int     tpda_defer_errno;        /* error number set when a remote delivery is deferred with a host error */
-extern uschar *tpda_event;		/* event classification */
-extern uschar *tpda_data;		/* event data */
-extern uschar *delivery_event_action;   /* expansion for delivery events */
-#endif
 
 extern uschar *transport_name;         /* Name of transport last started */
 extern int     transport_count;        /* Count of bytes transported */

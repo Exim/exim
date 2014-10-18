@@ -47,9 +47,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # warning "GnuTLS library version too old; define DISABLE_OCSP in Makefile"
 # define DISABLE_OCSP
 #endif
-#if GNUTLS_VERSION_NUMBER < 0x020a00 && defined(EXPERIMENTAL_TPDA)
-# warning "GnuTLS library version too old; TPDA tls:cert event unsupported"
-# undef EXPERIMENTAL_TPDA
+#if GNUTLS_VERSION_NUMBER < 0x020a00 && defined(EXPERIMENTAL_EVENT)
+# warning "GnuTLS library version too old; tls:cert event unsupported"
+# undef EXPERIMENTAL_EVENT
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030306
 # define SUPPORT_CA_DIR
@@ -124,7 +124,7 @@ typedef struct exim_gnutls_state {
 #ifdef EXPERIMENTAL_CERTNAMES
   uschar *exp_tls_verify_cert_hostnames;
 #endif
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
   uschar *event_action;
 #endif
 
@@ -145,7 +145,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
 #ifdef EXPERIMENTAL_CERTNAMES
                                             NULL,
 #endif
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
                                             NULL,
 #endif
   NULL,
@@ -1542,10 +1542,10 @@ return 0;
 #endif
 
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
 /*
 We use this callback to get observability and detail-level control
-for an exim client TLS connection, raising a TPDA tls:cert event
+for an exim client TLS connection, raising a tls:cert event
 for each cert in the chain presented by the server.  Any event
 can deny verification.
 
@@ -1574,7 +1574,7 @@ if (cert_list)
     }
 
   state->tlsp->peercert = crt;
-  if (tpda_raise_event(state->event_action,
+  if (event_raise(state->event_action,
 	      US"tls:cert", string_sprintf("%d", cert_list_size)) == DEFER)
     {
     log_write(0, LOG_MAIN,
@@ -1885,10 +1885,10 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_TPDA
-if (tb->tpda_event_action)
+#ifdef EXPERIMENTAL_EVENT
+if (tb->event_action)
   {
-  state->event_action = tb->tpda_event_action;
+  state->event_action = tb->event_action;
   gnutls_session_set_ptr(state->session, state);
   gnutls_certificate_set_verify_function(state->x509_cred, client_verify_cb);
   }

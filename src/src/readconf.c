@@ -205,9 +205,6 @@ static optionlist optionlist_config[] = {
   { "deliver_drop_privilege",   opt_bool,        &deliver_drop_privilege },
   { "deliver_queue_load_max",   opt_fixed,       &deliver_queue_load_max },
   { "delivery_date_remove",     opt_bool,        &delivery_date_remove },
-#ifdef EXPERIMENTAL_TPDA
-  { "delivery_event_action",    opt_stringptr,   &delivery_event_action },
-#endif
 #ifdef ENABLE_DISABLE_FSYNC
   { "disable_fsync",            opt_bool,        &disable_fsync },
 #endif
@@ -239,6 +236,9 @@ static optionlist optionlist_config[] = {
   { "envelope_to_remove",       opt_bool,        &envelope_to_remove },
   { "errors_copy",              opt_stringptr,   &errors_copy },
   { "errors_reply_to",          opt_stringptr,   &errors_reply_to },
+#ifdef EXPERIMENTAL_EVENT
+  { "event_action",             opt_stringptr,   &event_action },
+#endif
   { "exim_group",               opt_gid,         &exim_gid },
   { "exim_path",                opt_stringptr,   &exim_path },
   { "exim_user",                opt_uid,         &exim_uid },

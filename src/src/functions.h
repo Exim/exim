@@ -157,6 +157,9 @@ extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 
 extern void    enq_end(uschar *);
 extern BOOL    enq_start(uschar *);
+#ifdef EXPERIMENTAL_EVENT
+extern int     event_raise(uschar *, uschar *, uschar *);
+#endif
 extern void    exim_exit(int);
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
@@ -347,7 +350,7 @@ extern void    sigalrm_handler(int);
 extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
 extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL, const uschar *
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
 		       , uschar *
 #endif
 		       );
@@ -408,10 +411,6 @@ extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
 extern uschar *tod_stamp(int);
-
-#ifdef EXPERIMENTAL_TPDA
-extern int     tpda_raise_event(uschar *, uschar *, uschar *);
-#endif
 
 extern void    tls_modify_variables(tls_support *);
 extern BOOL    transport_check_waiting(uschar *, uschar *, int, uschar *,

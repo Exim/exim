@@ -1336,11 +1336,11 @@ int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;
 BOOL    timestamps_utc         = FALSE;
 
-#ifdef EXPERIMENTAL_TPDA
-int     tpda_defer_errno        = 0;
-uschar *tpda_event              = NULL;	/* event name */
-uschar *tpda_data               = NULL;	/* auxilary data for event */
-uschar *delivery_event_action   = NULL;	/* expansion for delivery events */
+#ifdef EXPERIMENTAL_EVENT
+uschar *event_action             = NULL;	/* expansion for delivery events */
+uschar *event_data               = NULL;	/* auxilary data variable for event */
+int     event_defer_errno        = 0;
+uschar *event_name               = NULL;	/* event name variable */
 #endif
 
 transport_instance  *transports = NULL;
@@ -1395,8 +1395,8 @@ transport_instance  transport_defaults = {
     FALSE,                    /* log_defer_output */
     TRUE_UNSET                /* retry_use_local_part: BOOL, but set neither
                                  1 nor 0 so can detect unset */
-#ifdef EXPERIMENTAL_TPDA
-   ,NULL		      /* tpda_event_action */
+#ifdef EXPERIMENTAL_EVENT
+   ,NULL		      /* event_action */
 #endif
 };
 

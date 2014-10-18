@@ -538,8 +538,8 @@ else
 
     inblock.sock = outblock.sock =
       smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL
-#ifdef EXPERIMENTAL_TPDA
-    /*XXX tpda action? NULL for now. */
+#ifdef EXPERIMENTAL_EVENT
+    /*XXX event action? NULL for now. */
 		  , NULL
 #endif
 		  );
@@ -581,8 +581,8 @@ else
       if (!(done= smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout)))
         goto RESPONSE_FAILED;
 
-#ifdef EXPERIMENTAL_TPDA
-      if (tpda_raise_event(addr->transport->tpda_event_action,
+#ifdef EXPERIMENTAL_EVENT
+      if (event_raise(addr->transport->event_action,
 			    US"smtp:connect", responsebuffer) == DEFER)
 	{
 	/* Logging?  Debug? */
@@ -708,8 +708,8 @@ else
 	     )
 	    {
 	    (void)close(inblock.sock);
-#ifdef EXPERIMENTAL_TPDA
-	    (void) tpda_raise_event(addr->transport->tpda_event_action,
+#ifdef EXPERIMENTAL_EVENT
+	    (void) event_raise(addr->transport->event_action,
 				    US"tcp:close", NULL);
 #endif
 	    log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
@@ -1066,8 +1066,8 @@ else
       tls_close(FALSE, TRUE);
 #endif
       (void)close(inblock.sock);
-#ifdef EXPERIMENTAL_TPDA
-      (void) tpda_raise_event(addr->transport->tpda_event_action,
+#ifdef EXPERIMENTAL_EVENT
+      (void) event_raise(addr->transport->event_action,
 			      US"tcp:close", NULL);
 #endif
       }

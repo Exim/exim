@@ -759,11 +759,12 @@ b. Configure, somewhere before the DATA ACL, the control option to
 
 
 
-Transport post-delivery actions
+Event Actions
 --------------------------------------------------------------
 
-An arbitrary per-transport string can be expanded upon various transport events
-and (for SMTP transports) a second string on deferrals caused by a host error.
+(Renamed from TPDA, Transport post-delivery actions)
+
+An arbitrary per-transport string can be expanded upon various transport events.
 Additionally a main-section configuration option can be expanded on some
 per-message events.
 This feature may be used, for example, to write exim internal log information
@@ -771,33 +772,33 @@ This feature may be used, for example, to write exim internal log information
 
 In order to use the feature, you must compile with
 
-EXPERIMENTAL_TPDA=yes
+EXPERIMENTAL_EVENT=yes
 
 in your Local/Makefile
 
 and define one or both of
-- the tpda_event_action option in the transport
-- the delivery_event_action
+- the event_action option in the transport
+- the event_action main option
 to be expanded when the event fires.
 
-A new variable, $tpda_event, is set to the event type when the
+A new variable, $event_name, is set to the event type when the
 expansion is done.  The current list of events is:
 
-	msg:complete		main		per message
-	msg:delivery		transport	per recipient
-	msg:host:defer		transport	per attempt
-	msg:fail:delivery	main		per recipient
-	msg:fail:internal	main		per recipient
-	tcp:connect		transport	per connection
-	tcp:close		transport	per connection
-	tls:cert		transport	per certificate in verification chain
-	smtp:connect		transport	per connection
+ msg:complete		after  main	  per message
+ msg:delivery		after  transport  per recipient
+ msg:host:defer		after  transport  per attempt
+ msg:fail:delivery	after  main	  per recipient
+ msg:fail:internal	after  main	  per recipient
+ tcp:connect		before transport  per connection
+ tcp:close		after  transport  per connection
+ tls:cert		before transport  per certificate in verification chain
+ smtp:connect		after  transport  per connection
 
-The expansion is called for all event types, and should use the $tpda_event
+The expansion is called for all event types, and should use the $event_name
 value to decide when to act.  The variable data is a colon-separated
 list, describing an event tree.
 
-There is an auxilary variable, $tpda_data, for which the
+There is an auxilary variable, $event_data, for which the
 content is event_dependent:
 
 	msg:delivery		smtp confirmation mssage
@@ -805,7 +806,7 @@ content is event_dependent:
 	tls:cert		verification chain depth
 	smtp:connect		smtp banner
 
-The msg:host:defer event populates one extra variable, $tpda_defer_errno.
+The msg:host:defer event populates one extra variable, $event_defer_errno.
 
 The following variables are likely to be useful depending on the event type:
 
@@ -820,7 +821,7 @@ The following variables are likely to be useful depending on the event type:
 
 An example might look like:
 
-tpda_event_action = ${if = {msg:delivery}{$tpda_event} \
+event_action = ${if = {msg:delivery}{$event_name} \
 {${lookup pgsql {SELECT * FROM record_Delivery( \
     '${quote_pgsql:$sender_address_domain}',\
     '${quote_pgsql:${lc:$sender_address_local_part}}', \
@@ -831,12 +832,12 @@ tpda_event_action = ${if = {msg:delivery}{$tpda_event} \
     '${quote_pgsql:$message_exim_id}')}} \
 } {}}
 
-The string is expanded for each of the supported events and any
-side-effects will happen.  The result is then discarded.
+The string is expanded when each of the supported events occur
+and any side-effects of the expansion will happen.
 Note that for complex operations an ACL expansion can be used.
 
 
-The expansion of the tpda_event_action option should normally
+The expansion of the event_action option should normally
 return an empty string.  Should it return anything else the
 following will be forced:
 
@@ -848,6 +849,7 @@ following will be forced:
 	tls:cert	refuse verification
 	smtp:connect	close connection
 
+No other use is made of the result string.
 
 
 

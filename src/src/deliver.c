@@ -718,27 +718,27 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 
 
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
 int
-tpda_raise_event(uschar * action, uschar * event, uschar * ev_data)
+event_raise(uschar * action, uschar * event, uschar * ev_data)
 {
 uschar * s;
 if (action)
   {
   DEBUG(D_deliver)
-    debug_printf("TPDA(%s): tpda_event_action=|%s| tpda_delivery_IP=%s\n",
+    debug_printf("Event(%s): event_action=|%s| delivery_IP=%s\n",
       event,
       action, deliver_host_address);
 
-  tpda_event = event;
-  tpda_data =  ev_data;
+  event_name = event;
+  event_data = ev_data;
 
   if (!(s = expand_string(action)) && *expand_string_message)
     log_write(0, LOG_MAIN|LOG_PANIC,
-      "failed to expand tpda_event_action %s in %s: %s\n",
+      "failed to expand event_action %s in %s: %s\n",
       event, transport_name, expand_string_message);
 
-  tpda_event = tpda_data = NULL;
+  event_name = event_data = NULL;
 
   /* If the expansion returns anything but an empty string, flag for
   the caller to modify his normal processing
@@ -746,7 +746,7 @@ if (action)
   if (s && *s)
     {
     DEBUG(D_deliver)
-      debug_printf("TPDA(%s): event_action returned \"%s\"\n", event, s);
+      debug_printf("Event(%s): event_action returned \"%s\"\n", event, s);
     return DEFER;
     }
   }
@@ -754,7 +754,7 @@ return OK;
 }
 
 static void
-tpda_msg_event(uschar * event, address_item * addr)
+msg_event_raise(uschar * event, address_item * addr)
 {
 uschar * save_domain = deliver_domain;
 uschar * save_local =  deliver_localpart;
@@ -769,7 +769,7 @@ deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;
 deliver_host =   addr->host_used ? addr->host_used->name : NULL;
 
-(void) tpda_raise_event(addr->transport->tpda_event_action, event,
+(void) event_raise(addr->transport->event_action, event,
 	  addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
 	  ? addr->message : NULL);
 
@@ -778,7 +778,7 @@ deliver_localpart = save_local;
 deliver_domain =    save_domain;
 router_name = transport_name = NULL;
 }
-#endif	/*EXPERIMENTAL_TPDA*/
+#endif	/*EXPERIMENTAL_EVENT*/
 
 
 
@@ -803,7 +803,7 @@ the log line, and reset the store afterwards. Remote deliveries should always
 have a pointer to the host item that succeeded; local deliveries can have a
 pointer to a single host item in their host list, for use by the transport. */
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
   /* presume no successful remote delivery */
   lookup_dnssec_authenticated = NULL;
 #endif
@@ -870,7 +870,7 @@ else
     if (continue_sequence > 1)
       s = string_cat(s, &size, &ptr, US"*", 1);
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
     deliver_host_address = addr->host_used->address;
     deliver_host_port =    addr->host_used->port;
     deliver_host =         addr->host_used->name;
@@ -939,8 +939,8 @@ store we used to build the line after writing it. */
 s[ptr] = 0;
 log_write(0, flags, "%s", s);
 
-#ifdef EXPERIMENTAL_TPDA
-if (!msg) tpda_msg_event(US"msg:delivery", addr);
+#ifdef EXPERIMENTAL_EVENT
+if (!msg) msg_event_raise(US"msg:delivery", addr);
 #endif
 
 store_reset(reset_point);
@@ -1138,7 +1138,7 @@ if (result == OK)
     child_done(addr, now);
     }
 
-  /* Certificates for logging (via TPDA) */
+  /* Certificates for logging (via events) */
 #ifdef SUPPORT_TLS
   tls_out.ourcert = addr->ourcert;
   addr->ourcert = NULL;
@@ -1381,8 +1381,8 @@ else
 
   log_write(0, LOG_MAIN, "** %s", s);
 
-#ifdef EXPERIMENTAL_TPDA
-  tpda_msg_event(US"msg:fail:delivery", addr);
+#ifdef EXPERIMENTAL_EVENT
+  msg_event_raise(US"msg:fail:delivery", addr);
 #endif
 
   store_reset(reset_point);
@@ -5585,7 +5585,7 @@ if (process_recipients != RECIP_IGNORE)
         break;
         }
 
-#ifdef EXPERIMENTAL_TPDA
+#ifdef EXPERIMENTAL_EVENT
       if (process_recipients != RECIP_ACCEPT)
 	{
 	uschar * save_local =  deliver_localpart;
@@ -5596,7 +5596,7 @@ if (process_recipients != RECIP_IGNORE)
 	deliver_domain =    expand_string(
 		      string_sprintf("${domain:%s}", new->address));
 
-	(void) tpda_raise_event(delivery_event_action,
+	(void) event_raise(event_action,
 		      US"msg:fail:internal", new->message);
 
 	deliver_localpart = save_local;
@@ -7364,8 +7364,8 @@ if (addr_defer == NULL)
   /* Unset deliver_freeze so that we won't try to move the spool files further down */
   deliver_freeze = FALSE;
 
-#ifdef EXPERIMENTAL_TPDA
-  (void) tpda_raise_event(delivery_event_action, US"msg:complete", NULL);
+#ifdef EXPERIMENTAL_EVENT
+  (void) event_raise(event_action, US"msg:complete", NULL);
 #endif
 }
 

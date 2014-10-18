@@ -839,8 +839,8 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_PROXY
   fprintf(f, " Experimental_Proxy");
 #endif
-#ifdef EXPERIMENTAL_TPDA
-  fprintf(f, " Experimental_TPDA");
+#ifdef EXPERIMENTAL_EVENT
+  fprintf(f, " Experimental_Event");
 #endif
 #ifdef EXPERIMENTAL_REDIS
   fprintf(f, " Experimental_Redis");

@@ -1,5 +1,5 @@
 # Exim test configuration 5658
-# OCSP stapling, client, tpda
+# OCSP stapling, client, events
 
 SERVER =
 
@@ -52,7 +52,7 @@ check_data:
   accept
 
 logger:
-  accept condition = ${if !eq {msg} {${listextract{1}{$tpda_event}}}}
+  accept condition = ${if !eq {msg} {${listextract{1}{$event_name}}}}
   warn	logwrite = client ocsp status: $tls_out_ocsp \
     (${listextract {${eval:$tls_out_ocsp+1}} \
 		{notreq:notresp:vfynotdone:failed:verified}})
@@ -100,7 +100,7 @@ send_to_server1:
   headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
     (${listextract {${eval:$tls_out_ocsp+1}} \
 		{notreq:notresp:vfynotdone:failed:verified}})
-  tpda_event_action =	${acl {logger}}
+  event_action =	${acl {logger}}
 
 send_to_server2:
   driver = smtp
@@ -113,7 +113,7 @@ send_to_server2:
   headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
     (${listextract {${eval:$tls_out_ocsp+1}} \
 		{notreq:notresp:vfynotdone:failed:verified}})
-  tpda_event_action =	${acl {logger}}
+  event_action =	${acl {logger}}
 
 send_to_server3:
   driver = smtp
@@ -128,7 +128,7 @@ send_to_server3:
   headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
     (${listextract {${eval:$tls_out_ocsp+1}} \
 		{notreq:notresp:vfynotdone:failed:verified}})
-  tpda_event_action =	${acl {logger}}
+  event_action =	${acl {logger}}
 
 send_to_server4:
   driver = smtp
@@ -144,7 +144,7 @@ send_to_server4:
   headers_add = X-TLS-out: OCSP status $tls_out_ocsp \
     (${listextract {${eval:$tls_out_ocsp+1}} \
 		{notreq:notresp:vfynotdone:failed:verified}})
-  tpda_event_action =	${acl {logger}}
+  event_action =	${acl {logger}}
 
 
 # ----- Retry -----
