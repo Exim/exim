@@ -51,6 +51,11 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # warning "GnuTLS library version too old; TPDA tls:cert event unsupported"
 # undef EXPERIMENTAL_TPDA
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030306
+# define SUPPORT_CA_DIR
+#else
+# undef  SUPPORT_CA_DIR
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
@@ -884,6 +889,7 @@ if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
   return DEFER;
   }
 
+#ifndef SUPPORT_CA_DIR
 /* The test suite passes in /dev/null; we could check for that path explicitly,
 but who knows if someone has some weird FIFO which always dumps some certs, or
 other weirdness.  The thing we really want to check is that it's not a
@@ -899,6 +905,7 @@ if (S_ISDIR(statbuf.st_mode))
       state->exp_tls_verify_certificates);
   return DEFER;
   }
+#endif
 
 DEBUG(D_tls) debug_printf("verify certificates = %s size=" OFF_T_FMT "\n",
         state->exp_tls_verify_certificates, statbuf.st_size);
@@ -910,8 +917,18 @@ if (statbuf.st_size == 0)
   return OK;
   }
 
-cert_count = gnutls_certificate_set_x509_trust_file(state->x509_cred,
+cert_count =
+
+#ifdef SUPPORT_CA_DIR
+  (statbuf.st_mode & S_IFMT) == S_IFDIR
+  ?
+  gnutls_certificate_set_x509_trust_dir(state->x509_cred,
+    CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM)
+  :
+#endif
+  gnutls_certificate_set_x509_trust_file(state->x509_cred,
     CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM);
+
 if (cert_count < 0)
   {
   rc = cert_count;

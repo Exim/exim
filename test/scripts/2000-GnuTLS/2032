@@ -1,0 +1,95 @@
+# TLS server: server ca cert from directory
+# - tests all disabled until GnuTLS 3.3.6 (or later) is in common use
+# - or we get a library-version dependency mechanism in the testsuite
+#
+#gnutls
+#exim -DSERVER=server -bd -oX PORT_D
+#****
+#client-gnutls 127.0.0.1 PORT_D
+#??? 220
+#ehlo rhu.barb
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250
+#starttls
+#??? 220
+#mail from:<CALLER@test.ex>
+#??? 250
+#rcpt to:<CALLER@test.ex>
+#??? 250
+#DATA
+#??? 3
+#This is a test encrypted message.
+#.
+#??? 250
+#quit
+#??? 221
+#****
+#client-gnutls 127.0.0.1 PORT_D
+#??? 220
+#ehlo rhu.barb
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250
+#starttls
+#??? 220
+#mail from:<"name with spaces"@test.ex>
+#??? 250
+#rcpt to:<CALLER@test.ex>
+#??? 250
+#DATA
+#??? 3
+#This is a test encrypted message.
+#.
+#??? 250
+#quit
+#??? 221
+#****
+#client-gnutls HOSTIPV4 PORT_D
+#??? 220
+#ehlo rhu.barb
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250
+#starttls
+#??? 220
+#****
+#client-gnutls HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+#??? 220
+#ehlo rhu.barb
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250-
+#??? 250
+#starttls
+#??? 220
+#mail from:<CALLER@test.ex>
+#??? 250
+#rcpt to:<CALLER@test.ex>
+#??? 250
+#DATA
+#??? 3
+#This is a test encrypted message from a verified host.
+#.
+#??? 250
+#quit
+#??? 221
+#****
+#killdaemon
+#exim -qf
+#****
+#exim -bh 10.0.0.1
+#starttls
+#quit
+#****

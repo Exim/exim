@@ -112,6 +112,18 @@ do
     openssl crl -in $CADIR/crl.v2 -inform der -out $CADIR/crl.v2.pem
 done
 
+# Finally, a single certificate-directory
+cd example.com/server1.example.com
+mkdir -f certdir
+cd certdir
+f=../../CA/CA.pem
+h=`openssl x509 -hash -noout -in $f`
+ln -s $f $h.0
+f=../../CA/Signer.pem
+h=`openssl x509 -hash -noout -in $f`
+ln -s $f $h.0
+cd ../..
+
 find example.* -type d -print0 | xargs -0 chmod 755
 find example.* -type f -print0 | xargs -0 chmod 644
 

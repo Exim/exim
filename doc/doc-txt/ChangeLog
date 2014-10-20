@@ -48,6 +48,9 @@ JH/06 Bug 1533: Fix truncation of items in headers_remove lists.  A fixed
       size buffer was used, resulting in syntax errors when an expansion
       exceeded it.
 
+JH/07 Add support for directories of certificates when compiled with a GnuTLS
+      version 3.3.6 or later.
+
 
 Exim version 4.84
 -----------------

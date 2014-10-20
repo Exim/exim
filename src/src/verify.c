@@ -1044,9 +1044,7 @@ else
       cutthrough_addr = *addr;		/* Save the address_item for later logging */
       cutthrough_addr.next =	  NULL;
       cutthrough_addr.host_used = store_get(sizeof(host_item));
-      cutthrough_addr.host_used->name =    host->name;
-      cutthrough_addr.host_used->address = host->address;
-      cutthrough_addr.host_used->port =    port;
+      *(cutthrough_addr.host_used) = *host;
       if (addr->parent)
         *(cutthrough_addr.parent = store_get(sizeof(address_item)))= *addr->parent;
       ctblock.buffer = ctbuffer;

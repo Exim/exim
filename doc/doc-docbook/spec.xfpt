@@ -16484,9 +16484,11 @@ See &%tls_verify_hosts%& below.
 The value of this option is expanded, and must then be the absolute path to
 a file containing permitted certificates for clients that
 match &%tls_verify_hosts%& or &%tls_try_verify_hosts%&. Alternatively, if you
-are using OpenSSL, you can set &%tls_verify_certificates%& to the name of a
-directory containing certificate files. This does not work with GnuTLS; the
-option must be set to the name of a single file if you are using GnuTLS.
+are using either GnuTLS version 3.3.6 (or later) or OpenSSL,
+you can set &%tls_verify_certificates%& to the name of a
+directory containing certificate files.
+For earlier versions of GnuTLS
+the option must be set to the name of a single file.
 
 These certificates should be for the certificate authorities trusted, rather
 than the public cert of individual clients.  With both OpenSSL and GnuTLS, if
@@ -23432,10 +23434,14 @@ certificate verification succeeds.
 .vindex "&$host_address$&"
 The value of this option must be the absolute path to a file containing
 permitted server certificates, for use when setting up an encrypted connection.
-Alternatively, if you are using OpenSSL, you can set
+Alternatively,
+if you are using either GnuTLS version 3.3.6 (or later) or OpenSSL,
+you can set
 &%tls_verify_certificates%& to the name of a directory containing certificate
-files. This does not work with GnuTLS; the option must be set to the name of a
-single file if you are using GnuTLS. The values of &$host$& and
+files.
+For earlier versions of GnuTLS the option must be set to the name of a
+single file.
+The values of &$host$& and
 &$host_address$& are set to the name and address of the server during the
 expansion of this option. See chapter &<<CHAPTLS>>& for details of TLS.
 
@@ -25917,7 +25923,8 @@ There are some differences in usage when using GnuTLS instead of OpenSSL:
 
 .ilist
 The &%tls_verify_certificates%& option must contain the name of a file, not the
-name of a directory (for OpenSSL it can be either).
+name of a directory for GnuTLS versions before 3.3.6
+(for later versions, or OpenSSL, it can be either).
 .next
 The default value for &%tls_dhparam%& differs for historical reasons.
 .next
