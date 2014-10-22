@@ -3,4 +3,4 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 == userx@myhost.test.ex R=r1 T=t2 defer (-24): Transport filter process failed (127): unable to execute command
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@myhost.test.ex R=r1 T=t3 defer (-24): transport filter process failed (127): unable to execute command
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@myhost.test.ex R=r1 T=t3 defer (-24) H=127.0.0.1 [127.0.0.1]: transport filter process failed (127): unable to execute command

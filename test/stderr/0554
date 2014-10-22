@@ -21,7 +21,7 @@ added retry item for R:x@y:<CALLER@myhost.test.ex>: errno=-44 more_errno=dd,A fl
 reading retry information for R:x@y:<CALLER@myhost.test.ex> from subprocess
   added retry item
 LOG: MAIN
-  == x@y R=r1 T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  == x@y R=r1 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 Processing retry items
 Succeeded addresses:
 Failed addresses:
@@ -32,7 +32,7 @@ retry for R:x@y:<CALLER@myhost.test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:x@y:<CALLER@myhost.test.ex>
   first failed=dddd last try=dddd next try=+1 expired=0
-  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....

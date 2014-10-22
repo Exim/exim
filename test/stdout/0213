@@ -1,5 +1,5 @@
 +++++++++++++++++++++++++++
-  T:127.0.0.1:127.0.0.1:1224 -19 65 Malformed SMTP reply from 127.0.0.1 [127.0.0.1] in response to RCPT TO:<userx@domain1>: 550 The answer is no, but I am going to make sure it is a very
+  T:127.0.0.1:127.0.0.1:1224 -19 65 H=127.0.0.1 [127.0.0.1]: Malformed SMTP reply in response to RCPT TO:<userx@domain1>: 550 The answer is no, but I am going to make sure it is a very l
 first failed = time last try = time2 next try = time2 + 3600
 
 ******** SERVER ********

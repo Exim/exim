@@ -758,6 +758,7 @@ tpda_msg_event(uschar * event, address_item * addr)
 {
 uschar * save_domain = deliver_domain;
 uschar * save_local =  deliver_localpart;
+uschar * save_host =   deliver_host;
 
 if (!addr->transport)
   return;
@@ -766,11 +767,13 @@ router_name =    addr->router ? addr->router->name : NULL;
 transport_name = addr->transport->name;
 deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;
+deliver_host =   addr->host_used ? addr->host_used->name : NULL;
 
 (void) tpda_raise_event(addr->transport->tpda_event_action, event,
 	  addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
 	  ? addr->message : NULL);
 
+deliver_host =      save_host;
 deliver_localpart = save_local;
 deliver_domain =    save_domain;
 router_name = transport_name = NULL;
@@ -794,7 +797,6 @@ int size = 256;         /* Used for a temporary, */
 int ptr = 0;            /* expanding buffer, for */
 uschar *s;              /* building log lines;   */
 void *reset_point;      /* released afterwards.  */
-
 
 /* Log the delivery on the main log. We use an extensible string to build up
 the log line, and reset the store afterwards. Remote deliveries should always
@@ -871,6 +873,7 @@ else
 #ifdef EXPERIMENTAL_TPDA
     deliver_host_address = addr->host_used->address;
     deliver_host_port =    addr->host_used->port;
+    deliver_host =         addr->host_used->name;
 
     /* DNS lookup status */
     lookup_dnssec_authenticated = addr->host_used->dnssec==DS_YES ? US"yes"
@@ -937,8 +940,7 @@ s[ptr] = 0;
 log_write(0, flags, "%s", s);
 
 #ifdef EXPERIMENTAL_TPDA
-/*XXX cutthrough calls this also for non-delivery...*/
-tpda_msg_event(US"msg:delivery", addr);
+if (!msg) tpda_msg_event(US"msg:delivery", addr);
 #endif
 
 store_reset(reset_point);
@@ -978,7 +980,6 @@ int size = 256;         /* Used for a temporary, */
 int ptr = 0;            /* expanding buffer, for */
 uschar *s;              /* building log lines;   */
 void *reset_point;      /* released afterwards.  */
-
 
 DEBUG(D_deliver) debug_printf("post-process %s (%d)\n", addr->address, result);
 
@@ -1254,6 +1255,11 @@ else if (result == DEFER || result == PANIC)
     if (addr->basic_errno > 0)
       s = string_append(s, &size, &ptr, 2, US": ",
         US strerror(addr->basic_errno));
+
+    if (addr->host_used)
+      s = string_append(s, &size, &ptr, 5,
+			US" H=", addr->host_used->name,
+			US" [",  addr->host_used->address, US"]");
 
     if (addr->message != NULL)
       s = string_append(s, &size, &ptr, 2, US": ", addr->message);
@@ -4717,6 +4723,10 @@ if (ancestor != addr)
       string_printing(original));
   }
 
+if (addr->host_used)
+  fprintf(f, "\n    host %s [%s]",
+	  addr->host_used->name, addr->host_used->address);
+
 fprintf(f, "%s", CS se);
 return yield;
 }
@@ -6549,6 +6559,7 @@ if (mua_wrapper)
     {
     uschar *s = (addr_failed->user_message != NULL)?
       addr_failed->user_message : addr_failed->message;
+    host_item * host;
 
     fprintf(stderr, "Delivery failed: ");
     if (addr_failed->basic_errno > 0)
@@ -6556,6 +6567,8 @@ if (mua_wrapper)
       fprintf(stderr, "%s", strerror(addr_failed->basic_errno));
       if (s != NULL) fprintf(stderr, ": ");
       }
+    if ((host = addr_failed->host_used))
+      fprintf(stderr, "H=%s [%s]: ", host->name, host->address);
     if (s == NULL)
       {
       if (addr_failed->basic_errno <= 0) fprintf(stderr, "unknown error");

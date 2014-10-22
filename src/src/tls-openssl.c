@@ -167,26 +167,27 @@ Returns:    OK/DEFER/FAIL
 static int
 tls_error(uschar *prefix, host_item *host, uschar *msg)
 {
-if (msg == NULL)
+if (!msg)
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
   msg = (uschar *)ssl_errstring;
   }
 
-if (host == NULL)
+if (host)
+  {
+  log_write(0, LOG_MAIN, "H=%s [%s] TLS error on connection (%s): %s",
+    host->name, host->address, prefix, msg);
+  return FAIL;
+  }
+else
   {
   uschar *conn_info = smtp_get_connection_info();
   if (Ustrncmp(conn_info, US"SMTP ", 5) == 0)
     conn_info += 5;
+  /* I'd like to get separated H= here, but too hard for now */
   log_write(0, LOG_MAIN, "TLS error on %s (%s): %s",
     conn_info, prefix, msg);
   return DEFER;
-  }
-else
-  {
-  log_write(0, LOG_MAIN, "TLS error on connection to %s [%s] (%s): %s",
-    host->name, host->address, prefix, msg);
-  return FAIL;
   }
 }
 

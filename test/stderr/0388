@@ -91,7 +91,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<x@y>
   SMTP<< 451 Temporary error
 LOG: MAIN
-  SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
   SMTP>> QUIT
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for x@y: result OK
@@ -108,7 +108,7 @@ V4NET.0.0.0 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0] (x@y)
 Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... failed: Network Error
 LOG: MAIN
-  V4NET.0.0.0 [V4NET.0.0.0] Network Error
+  H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0] for x@y: result DEFER
 added retry item for T:V4NET.0.0.0:V4NET.0.0.0:1224: errno=dd more_errno=dd,A flags=2
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run smtp for x@y in subprocess)
@@ -120,7 +120,7 @@ reading retry information for T:V4NET.0.0.0:V4NET.0.0.0:1224 from subprocess
 reading retry information for R:x@y from subprocess
   added retry item
 LOG: MAIN
-  == x@y R=r1 T=smtp defer (dd): Network Error
+  == x@y R=r1 T=smtp defer (dd): Network Error H=127.0.0.1 [127.0.0.1]
 changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
@@ -142,7 +142,7 @@ dbfn_read: key=R:x@y
 failing_interval=ttt message_age=ttt
 Writing retry data for R:x@y
   first failed=dddd last try=dddd next try=+1 expired=1
-  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+  errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 dbfn_write: key=R:x@y
 address match test: subject=*@V4NET.0.0.0 pattern=*
 V4NET.0.0.0 in "*"? yes (matched "*")

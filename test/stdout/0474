@@ -1,11 +1,11 @@
 +++++++++++++++++++++++++++
-  T:127.0.0.1:127.0.0.1:1224:10HmaX-0005vi-00 0 65 SMTP error from remote mail server after end of data: host 127.0.0.1 [127.0.0.1]: 850 NONSENSE
+  T:127.0.0.1:127.0.0.1:1224:10HmaX-0005vi-00 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 850 NONSENSE
 first failed = time last try = time2 next try = time2 + 10
 +++++++++++++++++++++++++++
-  T:127.0.0.1:127.0.0.1:1224:10HmaX-0005vi-00 0 65 SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: host 127.0.0.1 [127.0.0.1]: 850 RUBBISH
+  T:127.0.0.1:127.0.0.1:1224:10HmaX-0005vi-00 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 850 RUBBISH
 first failed = time last try = time2 next try = time2 + 10
 +++++++++++++++++++++++++++
-  R:abcd@xyz:<CALLER@the.local.host.name> -44 12865 SMTP error from remote mail server after RCPT TO:<abcd@xyz>: host 127.0.0.1 [127.0.0.1]: 850 RUBBISH
+  R:abcd@xyz:<CALLER@the.local.host.name> -44 12865 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<abcd@xyz>: 850 RUBBISH
 first failed = time last try = time2 next try = time2 + 10
 
 ******** SERVER ********

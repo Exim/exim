@@ -16,6 +16,7 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   userx@test.ex
+  host 127.0.0.1 [127.0.0.1]
     LMTP error after DATA: 450 TEMPERROR: retry timeout exceeded
 
 ------ This is a copy of the message, including all the headers. ------
@@ -48,6 +49,7 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   userx@retry.test.ex
+  host 127.0.0.1 [127.0.0.1]
     LMTP error after DATA: 450 TEMPERROR: retry timeout exceeded
 
 ------ This is a copy of the message, including all the headers. ------
@@ -81,8 +83,9 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   userx@test.ex
+  host 127.0.0.1 [127.0.0.1]
     SMTP error from remote mail server after RCPT TO:<userx@test.ex>:
-  host 127.0.0.1 [127.0.0.1]: 450 TEMPERROR: retry timeout exceeded
+    450 TEMPERROR: retry timeout exceeded
 
 ------ This is a copy of the message, including all the headers. ------
 

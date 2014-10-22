@@ -2,8 +2,8 @@
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 -> b@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** c@test.ex R=all T=smtp: SMTP error from remote mail server after RCPT TO:<c@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** d@test.ex R=all T=smtp: SMTP error from remote mail server after RCPT TO:<d@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** c@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<c@test.ex>: 550 Recipient not OK
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** d@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d@test.ex>: 550 Recipient not OK
 1999-03-02 09:44:33 10HmaX-0005vi-00 => e@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 => f@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
@@ -15,12 +15,12 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ** a@test.ex R=all T=smtp: SMTP error from remote mail server after RCPT TO:<a@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ** b@test.ex R=all T=smtp: SMTP error from remote mail server after RCPT TO:<b@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** a@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<a@test.ex>: 550 Recipient not OK
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** b@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 550 Recipient not OK
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => c@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 -> d@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ** e@test.ex R=all T=smtp: SMTP error from remote mail server after RCPT TO:<e@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ** f@test.ex R=all T=smtp: SMTP error from remote mail server after RCPT TO:<f@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** e@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<e@test.ex>: 550 Recipient not OK
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** f@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<f@test.ex>: 550 Recipient not OK
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => g@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 -> h@test.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss

@@ -28,20 +28,20 @@ using PIPELINING
   SMTP>> DATA
   SMTP<< 250 OK
   SMTP<< 550 NO
-Remote host 127.0.0.1 [127.0.0.1] closed connection in response to pipelined DATA
+Remote host closed connection in response to pipelined DATA
 error for DATA ignored: pipelining is in use and there were no good recipients
 ok=1 send_quit=1 send_rset=1 continue_more=0 yield=0 first_address is NULL
 transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
   SMTP>> RSET
-Remote host 127.0.0.1 [127.0.0.1] closed connection in response to RSET
+H=127.0.0.1 [127.0.0.1] Remote host closed connection in response to RSET
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for userx@test.ex: result OK
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run t1 for userx@test.ex in subprocess)
 set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaX-0005vi-00
 LOG: MAIN
-  ** userx@test.ex R=r1 T=t1: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+  ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 550 NO
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 writing data block fd=dddd size=sss timeout=0
 Exim version x.yz ....
@@ -68,7 +68,7 @@ delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name
 set_process_info: pppp delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
 LOG: MAIN
-  127.0.0.1 [127.0.0.1] Connection refused
+  H=127.0.0.1 [127.0.0.1] Connection refused
 set_process_info: pppp delivering 10HmaZ-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for CALLER@the.local.host.name: result DEFER
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address

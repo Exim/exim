@@ -1,4 +1,4 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 == x@y R=r1 T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+1999-03-02 09:44:33 10HmaX-0005vi-00 == x@y R=r1 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 1999-03-02 09:44:33 10HmaX-0005vi-00 => x@y R=r1 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

@@ -1,9 +1,9 @@
 1999-03-02 09:44:33 Received from CALLER@the.local.host.name U=CALLER P=local S=sss
 1999-03-02 09:44:33 userx@copy.domain <userx@copy.domain>: makecopy transport succeeded
 1999-03-02 09:44:33 usery@copy.domain <usery@copy.domain>: makecopy transport succeeded
-1999-03-02 09:44:33 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 userx@copy.domain R=passall T=pass_on defer (dd): Network Error
 1999-03-02 09:44:33 usery@copy.domain R=passall T=pass_on defer (dd): Network Error
-1999-03-02 09:44:33 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 userx@copy.domain R=passall T=pass_on defer (dd): Network Error
 1999-03-02 09:44:33 usery@copy.domain R=passall T=pass_on defer (dd): Network Error

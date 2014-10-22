@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** x@uppercase.test.ex R=r1 T=t1: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: host uppercase.test.ex [127.0.0.1]: 550 Unknown
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** x@uppercase.test.ex R=r1 T=t1 H=uppercase.test.ex [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: 550 Unknown
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@test.ex> R=r0
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

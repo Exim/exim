@@ -1,26 +1,26 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaY-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0): SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
-1999-03-02 09:44:33 10HmaY-0005vi-00 SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
-1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=smarthost T=smtp defer (0) H=thishost.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 host deferred
+1999-03-02 09:44:33 10HmaY-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
+1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=smarthost T=smtp defer (-44) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Recipient deferred
 1999-03-02 09:44:33 End queue run: pid=pppp
 
 ******** SERVER ********

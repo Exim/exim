@@ -748,9 +748,11 @@ else
 	 )
         {
         /*save_errno = ERRNO_TLSREQUIRED;*/
-        log_write(0, LOG_MAIN, "a TLS session is required for %s [%s], but %s",
+        log_write(0, LOG_MAIN,
+	  "H=%s [%s]: a TLS session is required for this host, but %s",
           host->name, host->address,
-  	tls_offered? "an attempt to start TLS failed" : "the server did not offer TLS support");
+	  tls_offered ? "an attempt to start TLS failed"
+		      : "the server did not offer TLS support");
         done= FALSE;
         goto TLS_FAILED;
         }

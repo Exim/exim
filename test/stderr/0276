@@ -15,13 +15,13 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 500 NO
   SMTP>> QUIT
 LOG: MAIN
-  ** userx@test.ex R=r1 T=t1: SMTP error from remote mail server after pipelined DATA: host 127.0.0.1 [127.0.0.1]: 500 NO
+  ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 500 NO
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 delivering 10HmaY-0005vi-00
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
 LOG: MAIN
-  127.0.0.1 [127.0.0.1] Connection refused
+  H=127.0.0.1 [127.0.0.1] Connection refused
 LOG: MAIN
   == CALLER@test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN
@@ -48,13 +48,13 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 500 NO
   SMTP>> QUIT
 LOG: MAIN
-  ** userx@test.ex R=r1 T=t1: SMTP error from remote mail server after DATA: host 127.0.0.1 [127.0.0.1]: 500 NO
+  ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 500 NO
 LOG: MAIN
   <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
 delivering 10HmbA-0005vi-00
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
 LOG: MAIN
-  127.0.0.1 [127.0.0.1] Connection refused
+  H=127.0.0.1 [127.0.0.1] Connection refused
 LOG: MAIN
   == CALLER@test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN

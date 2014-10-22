@@ -14,6 +14,7 @@
 >>> require: condition test succeeded in ACL "acl_rcpt_1"
 >>> processing "accept"
 >>> accept: condition test succeeded in ACL "acl_rcpt_1"
+>>> end of ACL "acl_rcpt_1": ACCEPT
 >>> using ACL "acl_rcpt_6"
 >>> processing "require"
 >>>   message: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1
@@ -24,4 +25,5 @@
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> mxt11a.test.ex in "<+ @mx_any/ignore=<;127.0.0.1;::1"? no (end of list)
 >>> require: condition test failed in ACL "acl_rcpt_6"
+>>> end of ACL "acl_rcpt_6": not OK
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <6@mxt11a.test.ex>: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1

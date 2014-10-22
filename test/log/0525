@@ -1,3 +1,3 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after sending data block (ddd bytes written): Connection timed out
-1999-03-02 09:44:33 10HmaX-0005vi-00 == def@pqr R=r1 T=t1 defer (dd): Connection timed out: SMTP timeout while connected to 127.0.0.1 [127.0.0.1] after sending data block (ddd bytes written)
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP timeout after sending data block (ddd bytes written): Connection timed out
+1999-03-02 09:44:33 10HmaX-0005vi-00 == def@pqr R=r1 T=t1 defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after sending data block (ddd bytes written)

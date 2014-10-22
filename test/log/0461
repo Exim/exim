@@ -1,13 +1,13 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmaY-0005vi-00 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmaZ-0005vi-00 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
@@ -17,10 +17,10 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbC-0005vi-00 V4NET.0.0.2 [V4NET.0.0.2] Network Error
+1999-03-02 09:44:33 10HmbC-0005vi-00 H=V4NET.0.0.2 [V4NET.0.0.2] Network Error
 1999-03-02 09:44:33 10HmbC-0005vi-00 == userx@test.ex R=r1 T=t1 defer (dd): Network Error
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmbC-0005vi-00 V4NET.0.0.2 [V4NET.0.0.2] Network Error
+1999-03-02 09:44:33 10HmbC-0005vi-00 H=V4NET.0.0.2 [V4NET.0.0.2] Network Error
 1999-03-02 09:44:33 10HmbC-0005vi-00 == userx@test.ex R=r1 T=t1 defer (dd): Network Error
 1999-03-02 09:44:33 10HmbC-0005vi-00 ** userx@test.ex: retry timeout exceeded
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss
