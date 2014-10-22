@@ -17,6 +17,7 @@ LOG: H=[2001:0ab8:037f:0020:0000:0000:0000:0001] Warning: matched hostlist
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
 >>>                 = true
 >>> accept: condition test succeeded in ACL "check_connect"
+>>> end of ACL "check_connect": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "*")
 >>> looking up host name for V6NET:1234:0005:0006:0007:0008:0abc:000d
