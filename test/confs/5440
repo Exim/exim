@@ -1,4 +1,4 @@
-# Exim test configuration 2012
+# Exim test configuration 5440
 # TLS client: verify certificate from server - fails
 
 SERVER=

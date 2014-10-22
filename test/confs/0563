@@ -1,3 +1,5 @@
+# Exim test configuration 0563
+
 qualify_domain = testexim.test.ex
 localpartlist aliases = joe:sam:tom
 

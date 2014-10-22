@@ -1,4 +1,4 @@
-# Exim test configuration 5601
+# Exim test configuration 5608
 # OCSP stapling, client, tpda
 
 SERVER =

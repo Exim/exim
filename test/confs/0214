@@ -1,4 +1,4 @@
-# Exim test configuration 215
+# Exim test configuration 0214
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns

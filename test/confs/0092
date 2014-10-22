@@ -1,11 +1,11 @@
+# Exim test configuration 0092
+
 acl_smtp_rcpt = check_recipient
 acl_smtp_data = check_message
 
 domainlist local_domains = test.ex : *.test.ex
 
 domainlist relay_domains = test.ex
-
-# Exim test configuration 0092
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
