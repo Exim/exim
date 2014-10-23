@@ -1545,15 +1545,15 @@ return 0;
 #ifdef EXPERIMENTAL_EVENT
 /*
 We use this callback to get observability and detail-level control
-for an exim client TLS connection, raising a tls:cert event
-for each cert in the chain presented by the server.  Any event
+for an exim TLS connection (either direction), raising a tls:cert event
+for each cert in the chain presented by the peer.  Any event
 can deny verification.
 
 Return 0 for the handshake to continue or non-zero to terminate.
 */
 
 static int
-client_verify_cb(gnutls_session_t session)
+verify_cb(gnutls_session_t session)
 {
 const gnutls_datum * cert_list;
 unsigned int cert_list_size = 0;
@@ -1663,6 +1663,15 @@ else
   state->verify_requirement = VERIFY_NONE;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }
+
+#ifdef EXPERIMENTAL_EVENT
+if (event_action)
+  {
+  state->event_action = event_action;
+  gnutls_session_set_ptr(state->session, state);
+  gnutls_certificate_set_verify_function(state->x509_cred, verify_cb);
+  }
+#endif
 
 /* Register SNI handling; always, even if not in tls_certificate, so that the
 expansion variable $tls_sni is always available. */
@@ -1890,7 +1899,7 @@ if (tb->event_action)
   {
   state->event_action = tb->event_action;
   gnutls_session_set_ptr(state->session, state);
-  gnutls_certificate_set_verify_function(state->x509_cred, client_verify_cb);
+  gnutls_certificate_set_verify_function(state->x509_cred, verify_cb);
   }
 #endif
 

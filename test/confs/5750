@@ -29,9 +29,18 @@ tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.e
 tls_verify_hosts = *
 tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server2.example.com/ca_chain.pem
 
+event_action = ${acl {server_cert_log}}
+
 #
 
 begin acl
+
+server_cert_log:
+  accept condition = ${if eq {tls:cert}{$event_name}}
+	 logwrite =  [$sender_host_address] \
+			depth=$event_data \
+			${certextract{subject}{$tls_in_peercert}}
+  accept
 
 ev_tls:
   accept logwrite =  $event_name depth=$event_data \

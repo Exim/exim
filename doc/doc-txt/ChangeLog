@@ -55,7 +55,9 @@ JH/08 Rename the TPDA expermimental facility to Event Actions.  The #ifdef
       is EXPERIMENTAL_EVENT, the main-configuration and transport options
       both become "event_action", the variables become $event_name, $event_data
       and $event_defer_errno.  There is a new variable $verify_mode, usable in
-      routers, transports and related events.
+      routers, transports and related events.  The tls:cert event is now also
+      raised for inbound connections, if the main configuration event_action
+      option is defined.
 
 
 Exim version 4.84

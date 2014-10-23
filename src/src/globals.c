@@ -668,6 +668,13 @@ uschar *errors_copy            = NULL;
 int     error_handling         = ERRORS_SENDER;
 uschar *errors_reply_to        = NULL;
 int     errors_sender_rc       = EXIT_FAILURE;
+#ifdef EXPERIMENTAL_EVENT
+uschar *event_action             = NULL;	/* expansion for delivery events */
+uschar *event_data               = NULL;	/* auxilary data variable for event */
+int     event_defer_errno        = 0;
+uschar *event_name               = NULL;	/* event name variable */
+#endif
+
 
 gid_t   exim_gid               = EXIM_GID;
 BOOL    exim_gid_set           = TRUE;          /* This gid is always set */
@@ -1335,13 +1342,6 @@ int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;
 BOOL    timestamps_utc         = FALSE;
-
-#ifdef EXPERIMENTAL_EVENT
-uschar *event_action             = NULL;	/* expansion for delivery events */
-uschar *event_data               = NULL;	/* auxilary data variable for event */
-int     event_defer_errno        = 0;
-uschar *event_name               = NULL;	/* event name variable */
-#endif
 
 transport_instance  *transports = NULL;
 

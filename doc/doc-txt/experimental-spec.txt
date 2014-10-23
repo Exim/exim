@@ -791,7 +791,7 @@ expansion is done.  The current list of events is:
  msg:fail:internal	after  main	  per recipient
  tcp:connect		before transport  per connection
  tcp:close		after  transport  per connection
- tls:cert		before transport  per certificate in verification chain
+ tls:cert		before both	  per certificate in verification chain
  smtp:connect		after  transport  per connection
 
 The expansion is called for all event types, and should use the $event_name
@@ -852,6 +852,10 @@ following will be forced:
 No other use is made of the result string.
 
 
+Known issues:
+- the tls:cert event is only called for the cert chain elements
+  received over the wire, with GnuTLS.  OpenSSL gives the entire
+  chain including thse loaded locally.
 
 
 Redis Lookup

@@ -47,4 +47,7 @@
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 [127.0.0.1] depth=2 CN=clica CA,O=example.com
+1999-03-02 09:44:33 [127.0.0.1] depth=1 CN=clica Signing Cert,O=example.com
+1999-03-02 09:44:33 [127.0.0.1] depth=0 CN=server2.example.com
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:AES256-SHA:256 DN="/CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex

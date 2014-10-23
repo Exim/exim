@@ -287,6 +287,7 @@ verify_callback(int state, X509_STORE_CTX *x509ctx,
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
+uschar * ev;
 static uschar txt[256];
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
@@ -323,11 +324,11 @@ else if (depth != 0)
     }
 #endif
 #ifdef EXPERIMENTAL_EVENT
-  if (tlsp == &tls_out && client_static_cbinfo->event_action)
+  ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
+  if (ev)
     {
     tlsp->peercert = X509_dup(cert);
-    if (event_raise(client_static_cbinfo->event_action,
-		    US"tls:cert", string_sprintf("%d", depth)) == DEFER)
+    if (event_raise(ev, US"tls:cert", string_sprintf("%d", depth)) == DEFER)
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
 			      "depth=%d cert=%s", depth, txt);
@@ -392,10 +393,9 @@ else
 #endif	/*EXPERIMENTAL_CERTNAMES*/
 
 #ifdef EXPERIMENTAL_EVENT
-  if (tlsp == &tls_out)
-    {
-    if (event_raise(client_static_cbinfo->event_action,
-		    US"tls:cert", US"0") == DEFER)
+  ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
+  if (ev)
+    if (event_raise(ev, US"tls:cert", US"0") == DEFER)
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
 			      "depth=0 cert=%s", txt);
@@ -403,7 +403,6 @@ else
       *calledp = TRUE;
       return 0;			    /* reject */
       }
-    }
 #endif
 
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
