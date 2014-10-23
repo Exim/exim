@@ -468,6 +468,7 @@ else
     deliver_host_address = host->address;
     deliver_host_port = host->port;
     deliver_domain = addr->domain;
+    transport_name = addr->transport->name;
 
     if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
             US"callout") ||
@@ -548,6 +549,7 @@ else
       {
       addr->message = string_sprintf("could not connect to %s [%s]: %s",
           host->name, host->address, strerror(errno));
+      transport_name = NULL;
       deliver_host = deliver_host_address = NULL;
       deliver_domain = save_deliver_domain;
       continue;
@@ -879,9 +881,7 @@ else
         /* If accepted, we aren't going to do any further tests below. */
 
         if (random_ok)
-          {
           new_domain_record.random_result = ccache_accept;
-          }
 
         /* Otherwise, cache a real negative response, and get back to the right
         state to send RCPT. Unless there's some problem such as a dropped
@@ -1852,8 +1852,10 @@ while (addr_new != NULL)
 #ifdef SUPPORT_TLS
 	  deliver_set_expansions(addr);
 #endif
+	  verify_mode = is_recipient ? US"R" : US"S";
           rc = do_callout(addr, host_list, &tf, callout, callout_overall,
             callout_connect, options, se_mailfrom, pm_mailfrom);
+	  verify_mode = NULL;
           }
         }
       else

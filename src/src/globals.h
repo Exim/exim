@@ -919,6 +919,7 @@ extern uschar *warnmsg_delay;          /* String form of delay time */
 extern uschar *warnmsg_recipients;     /* Recipients of warning message */
 extern BOOL    write_rejectlog;        /* Control of reject logging */
 
+extern uschar *verify_mode;	       /* Running a router in verify mode */
 extern uschar *version_copyright;      /* Copyright notice */
 extern uschar *version_date;           /* Date of compilation */
 extern uschar *version_cnumber;        /* Compile number */

@@ -54,7 +54,8 @@ JH/07 Add support for directories of certificates when compiled with a GnuTLS
 JH/08 Rename the TPDA expermimental facility to Event Actions.  The #ifdef
       is EXPERIMENTAL_EVENT, the main-configuration and transport options
       both become "event_action", the variables become $event_name, $event_data
-      and $event_defer_errno.
+      and $event_defer_errno.  There is a new variable $verify_mode, usable in
+      routers, transports and related events.
 
 
 Exim version 4.84

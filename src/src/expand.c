@@ -724,6 +724,7 @@ static var_entry var_table[] = {
   { "tod_zulu",            vtype_todzulu,     NULL },
   { "transport_name",      vtype_stringptr,   &transport_name },
   { "value",               vtype_stringptr,   &lookup_value },
+  { "verify_mode",         vtype_stringptr,   &verify_mode },
   { "version_number",      vtype_stringptr,   &version_string },
   { "warn_message_delay",  vtype_stringptr,   &warnmsg_delay },
   { "warn_message_recipient",vtype_stringptr, &warnmsg_recipients },

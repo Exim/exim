@@ -816,7 +816,7 @@ The following variables are likely to be useful depending on the event type:
 	tls_out_peercert
 	lookup_dnssec_authenticated, tls_out_dane
 	sending_ip_address, sending_port
-	message_exim_id
+	message_exim_id, verify_mode
 
 
 An example might look like:

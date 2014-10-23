@@ -12592,6 +12592,13 @@ This variable contains the result of an expansion lookup, extraction operation,
 or external command, as described above. It is also used during a
 &*reduce*& expansion.
 
+.vitem &$verify_mode$&
+.vindex "&$verify_mode$&"
+While a router or transport is being run in verify mode
+or for cutthrough delivery,
+contains "S" for sender-verification or "R" for recipient-verification.
+Otherwise, empty.
+
 .vitem &$version_number$&
 .vindex "&$version_number$&"
 The version number of Exim.
@@ -17779,6 +17786,7 @@ delivering in cutthrough mode
 or testing recipient verification using &%-bv%&.
 See section &<<SECTrouprecon>>& for a list of the order in which preconditions
 are evaluated.
+See also the &$verify_mode$& variable.
 
 
 .option verify_sender routers&!? boolean true
@@ -17786,6 +17794,7 @@ If this option is false, the router is skipped when verifying sender addresses
 or testing sender verification using &%-bvs%&.
 See section &<<SECTrouprecon>>& for a list of the order in which preconditions
 are evaluated.
+See also the &$verify_mode$& variable.
 .ecindex IIDgenoprou1
 .ecindex IIDgenoprou2
 
