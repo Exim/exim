@@ -2010,7 +2010,8 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
     for ($i = @msglist; $i > 0; $i--) { $args =~ s/\$msg$i/$msglist[$i-1]/g; }
     if ( $args =~ /\$msg\d/ )
       {
-      tests_exit(-1, "Not enough messages in spool, for test $testno line $lineno\n");
+      tests_exit(-1, "Not enough messages in spool, for test $testno line $lineno\n")
+        unless $force_continue;
       }
     }
 
