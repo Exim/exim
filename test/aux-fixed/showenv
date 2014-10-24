@@ -3,8 +3,10 @@
 # This script outputs certain information about the environment, for use when
 # testing pipe transports.
 
+name=`whoami 2>/dev/null` || name=`who . . | awk '{print $1}'`
+
 echo Test pipe script
-echo Running as: `whoami`
+echo Running as: $name
 echo ------------------
 echo Args:
 while [ "$1" != "" ]; do
