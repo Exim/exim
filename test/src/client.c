@@ -326,7 +326,7 @@ gnutls_error(uschar *prefix, int err)
 fprintf(stderr, "GnuTLS connection error: %s:", prefix);
 if (err != 0) fprintf(stderr, " %s", gnutls_strerror(err));
 fprintf(stderr, "\n");
-exit(1);
+exit(98);
 }
 
 
@@ -359,7 +359,7 @@ fd = open("aux-fixed/gnutls-params", O_RDONLY, 0);
 if (fd < 0)
   {
   fprintf(stderr, "Failed to open spool/gnutls-params: %s\n", strerror(errno));
-  exit(1);
+  exit(97);
   }
 
 if (fstat(fd, &statbuf) < 0)
@@ -532,7 +532,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
     if (argc < ++argi + 1)
       {
       fprintf(stderr, "Missing required certificate file for ocsp option\n");
-      exit(1);
+      exit(96);
       }
     ocsp_stapling = argv[argi++];
     }
@@ -545,18 +545,18 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
       {
       fprintf(stderr, "Failed to parse seconds from option <%s>\n",
         argv[argi]);
-      exit(1);
+      exit(95);
       }
     if (tmplong > 10000L)
       {
       fprintf(stderr, "Unreasonably long wait of %ld seconds requested\n",
         tmplong);
-      exit(1);
+      exit(94);
       }
     if (tmplong < 0L)
       {
       fprintf(stderr, "Timeout must not be negative (%ld)\n", tmplong);
-      exit(1);
+      exit(93);
       }
     timeout = (int) tmplong;
     argi++;
@@ -564,7 +564,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
   else
     {
     fprintf(stderr, "Unrecognized option %s\n", argv[argi]);
-    exit(1);
+    exit(92);
     }
   }
 
@@ -573,7 +573,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
 if (argc < argi+1)
   {
   fprintf(stderr, "No IP address given\n");
-  exit(1);
+  exit(91);
   }
 
 address = argv[argi++];
@@ -584,7 +584,7 @@ host_af = (strchr(address, ':') != NULL)? AF_INET6 : AF_INET;
 if (argc < argi+1)
   {
   fprintf(stderr, "No port number given\n");
-  exit(1);
+  exit(90);
   }
 
 port = atoi(argv[argi++]);
@@ -626,7 +626,7 @@ sock = socket(host_af, SOCK_STREAM, 0);
 if (sock < 0)
   {
   printf("socket creation failed: %s\n", strerror(errno));
-  exit(1);
+  exit(89);
   }
 
 /* Bind to a specific interface if requested. On an IPv6 system, this has
@@ -651,7 +651,7 @@ if (interface != NULL)
       if (inet_pton(AF_INET6, interface, &s_in6.sin6_addr) != 1)
         {
         printf("Unable to parse \"%s\"", interface);
-        exit(1);
+        exit(88);
         }
       }
     else
@@ -672,7 +672,7 @@ if (interface != NULL)
       {
       printf("Unable to bind outgoing SMTP call to %s: %s",
         interface, strerror(errno));
-      exit(1);
+      exit(87);
       }
     }
   }
@@ -688,7 +688,7 @@ if (host_af == AF_INET6)
   if (inet_pton(host_af, address, &s_in6.sin6_addr) != 1)
     {
     printf("Unable to parse \"%s\"", address);
-    exit(1);
+    exit(86);
     }
   }
 else
@@ -718,7 +718,7 @@ if (rc < 0)
   {
   close(sock);
   printf("failed: %s\n", strerror(save_errno));
-  exit(1);
+  exit(85);
   }
 
 printf("connected\n");
@@ -734,7 +734,7 @@ ctx = SSL_CTX_new(SSLv23_method());
 if (ctx == NULL)
   {
   printf ("SSL_CTX_new failed\n");
-  exit(1);
+  exit(84);
   }
 
 if (certfile != NULL)
@@ -742,7 +742,7 @@ if (certfile != NULL)
   if (!SSL_CTX_use_certificate_file(ctx, certfile, SSL_FILETYPE_PEM))
     {
     printf("SSL_CTX_use_certificate_file failed\n");
-    exit(1);
+    exit(83);
     }
   printf("Certificate file = %s\n", certfile);
   }
@@ -752,7 +752,7 @@ if (keyfile != NULL)
   if (!SSL_CTX_use_PrivateKey_file(ctx, keyfile, SSL_FILETYPE_PEM))
     {
     printf("SSL_CTX_use_PrivateKey_file failed\n");
-    exit(1);
+    exit(82);
     }
   printf("Key file = %s\n", keyfile);
   }
@@ -852,13 +852,13 @@ while (fgets(outbuffer, sizeof(outbuffer), stdin) != NULL)
       if (rc < 0)
         {
         printf("Read error %s\n", strerror(errno));
-        exit(1)  ;
+        exit(81)  ;
         }
       else if (rc == 0)
         {
         printf("Unexpected EOF read\n");
         close(sock);
-        exit(1);
+        exit(80);
         }
       else
         {
@@ -879,7 +879,7 @@ while (fgets(outbuffer, sizeof(outbuffer), stdin) != NULL)
     if (strncmp(lineptr, outbuffer + 4, (int)strlen(outbuffer) - 4) != 0)
       {
       printf("\n******** Input mismatch ********\n");
-      exit(1);
+      exit(79);
       }
 
     #ifdef HAVE_TLS
@@ -974,7 +974,7 @@ int rc;
       {
       printf("Unconsumed input: %s", inptr);
       printf("   About to send: %s\n", outbuffer);
-      exit(1);
+      exit(78);
       }
 
     #ifdef HAVE_TLS
@@ -987,7 +987,7 @@ int rc;
       if (!tls_active)
         {
         printf("STOPTLS read when TLS not active\n");
-        exit(1);
+        exit(77);
         }
       printf("Shutting down TLS encryption\n");
 
@@ -1055,7 +1055,7 @@ int rc;
         if (rc < 0)
           {
           printf("GnuTLS write error: %s\n", gnutls_strerror(rc));
-          exit(1);
+          exit(76);
           }
       #endif
       }
@@ -1068,7 +1068,7 @@ int rc;
     if (rc < 0)
       {
       printf("Write error: %s\n", strerror(errno));
-      exit(1);
+      exit(75);
       }
     }
   }
