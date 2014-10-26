@@ -836,7 +836,7 @@ This command runs the auxiliary "client" program that simulates an SMTP client.
 It is controlled by a script read from its standard input, details of which are
 given below. There are two options. One is -t, which must be followed directly
 by a number, to specify the command timeout in seconds (e.g. -t5). The default
-timeout is 1 second. The other option is -tls-on-connect, which causes the
+timeout is 5 seconds. The other option is -tls-on-connect, which causes the
 client to try to start up a TLS session as soon as it has connected, without
 using the STARTTLS command. The client program connects to the given IP address
 and port, using the specified interface, if one is given.

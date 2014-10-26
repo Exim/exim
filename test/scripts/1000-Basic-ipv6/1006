@@ -21,7 +21,7 @@ quit
 killdaemon
 exim -DSERVER=server -DD6=disable_ipv6 -bd -oX PORT_D
 ****
-1
+85
 client HOSTIPV6 PORT_D
 ****
 killdaemon

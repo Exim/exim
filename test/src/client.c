@@ -717,7 +717,7 @@ an externally applied timeout if the signal handler has been run. */
 if (rc < 0)
   {
   close(sock);
-  printf("failed: %s\n", strerror(save_errno));
+  printf("connect failed: %s\n", strerror(save_errno));
   exit(85);
   }
 
