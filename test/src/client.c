@@ -489,7 +489,7 @@ char *keyfile = NULL;
 char *end = NULL;
 int argi = 1;
 int host_af, port, s_len, rc, sock, save_errno;
-int timeout = 1;
+int timeout = 5;
 int tls_active = 0;
 int sent_starttls = 0;
 int tls_on_connect = 0;
