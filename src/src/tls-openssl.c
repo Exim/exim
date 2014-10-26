@@ -38,6 +38,13 @@ functions from the OpenSSL library. */
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
 # define EXIM_HAVE_OPENSSL_TLSEXT
 #endif
+#if OPENSSL_VERSION_NUMBER >= 0x010100000L
+# define EXIM_HAVE_OPENSSL_CHECKHOST
+#endif
+#if OPENSSL_VERSION_NUMBER >= 0x010000000L \
+    && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
+# define EXIM_HAVE_OPENSSL_CHECKHOST
+#endif
 
 #if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
 # warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
@@ -355,7 +362,7 @@ else
      && ((verify_cert_hostnames = client_static_cbinfo->verify_cert_hostnames)))
      	/* client, wanting hostname check */
 
-# if OPENSSL_VERSION_NUMBER >= 0x010100000L || OPENSSL_VERSION_NUMBER >= 0x010002000L
+# if EXIM_HAVE_OPENSSL_CHECKHOST
 #  ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
 #   define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
 #  endif
