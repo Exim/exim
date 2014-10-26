@@ -59,6 +59,11 @@ JH/08 Rename the TPDA expermimental facility to Event Actions.  The #ifdef
       raised for inbound connections, if the main configuration event_action
       option is defined.
 
+JH/09 When compiled with OpenSSL and EXPERIMENTAL_CERTNAMES, the checks on
+      server certificate names available under the smtp transport option
+      "tls_verify_cert_hostname" now do not permit multi-component wildcard
+      matches.
+
 
 Exim version 4.84
 -----------------
