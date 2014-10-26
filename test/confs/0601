@@ -8,8 +8,7 @@ queue_only
 
 # ----- Main settings -----
 
-acl_smtp_connect = accept udpsend = <; 127.0.0.1 ; 1223 ; message from exim
-acl_smtp_rcpt = accept
+acl_smtp_rcpt = accept udpsend = <; 127.0.0.1 ; 1223 ; message from exim
 
 
 # End
