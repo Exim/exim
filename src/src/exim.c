@@ -12,6 +12,13 @@ Also a few functions that don't naturally fit elsewhere. */
 
 #include "exim.h"
 
+#ifdef USE_GNUTLS
+# include <gnutls/gnutls.h>
+# if GNUTLS_VERSION_NUMBER < 0x030103 && !defined(DISABLE_OCSP)
+#  define DISABLE_OCSP
+# endif
+#endif
+
 extern void init_lookup_list(void);
 
 
