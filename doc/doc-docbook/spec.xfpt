@@ -26197,8 +26197,11 @@ tls_privatekey = /some/file/name
 These options are, in fact, expanded strings, so you can make them depend on
 the identity of the client that is connected if you wish. The first file
 contains the server's X509 certificate, and the second contains the private key
-that goes with it. These files need to be readable by the Exim user, and must
-always be given as full path names. They can be the same file if both the
+that goes with it. These files need to be
+PEM format and readable by the Exim user, and must
+always be given as full path names.
+The key must not be password-protected.
+They can be the same file if both the
 certificate and the key are contained within it. If &%tls_privatekey%& is not
 set, or if its expansion is forced to fail or results in an empty string, this
 is assumed to be the case. The certificate file may also contain intermediate
