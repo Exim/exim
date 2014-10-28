@@ -43,11 +43,15 @@ on all interfaces, unless the option -noipv6 is given. */
 #include <utime.h>
 
 #ifdef AF_INET6
-#define HAVE_IPV6 1
+# define HAVE_IPV6 1
 #endif
 
 #ifndef S_ADDR_TYPE
-#define S_ADDR_TYPE u_long
+# define S_ADDR_TYPE u_long
+#endif
+
+#ifndef CS
+# define CS (char *)
 #endif
 
 
@@ -379,16 +383,16 @@ because that would cause it to wait for this process, which it doesn't yet want
 to do. The driving script adds the "++++" automatically - it doesn't actually
 appear in the test script. */
 
-while (fgets(buffer, sizeof(buffer), stdin) != NULL)
+while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
   {
   line *next;
-  int n = (int)strlen(buffer);
+  int n = (int)strlen(CS buffer);
   while (n > 0 && isspace(buffer[n-1])) n--;
   buffer[n] = 0;
-  if (strcmp(buffer, "++++") == 0) break;
+  if (strcmp(CS buffer, "++++") == 0) break;
   next = malloc(sizeof(line) + n);
   next->next = NULL;
-  strcpy(next->line, buffer);
+  strcpy(next->line, CS buffer);
   if (last == NULL) script = last = next;
     else last->next = next;
   last = next;
@@ -464,7 +468,7 @@ for (count = 0; count < connection_count; count++)
   dup_accept_socket = dup(accept_socket);
 
   if (port > 0)
-    printf("\nConnection request from [%s]\n", host_ntoa(&accepted, buffer));
+    printf("\nConnection request from [%s]\n", host_ntoa(&accepted, CS buffer));
   else
     {
     printf("\nConnection request\n");
@@ -572,7 +576,7 @@ for (count = 0; count < connection_count; count++)
         {
         int n;
         alarm(timeout);
-        if (fgets(buffer+offset, sizeof(buffer)-offset, in) == NULL)
+        if (fgets(CS buffer+offset, sizeof(buffer)-offset, in) == NULL)
           {
           printf("%sxpected EOF read from client\n",
             (strncmp(ss, "*eof", 4) == 0)? "E" : "Une");
@@ -580,14 +584,14 @@ for (count = 0; count < connection_count; count++)
           goto END_OFF;
           }
         alarm(0);
-        n = (int)strlen(buffer);
+        n = (int)strlen(CS buffer);
         while (n > 0 && isspace(buffer[n-1])) n--;
         buffer[n] = 0;
         printf("%s\n", buffer);
-        if (!data || strcmp(buffer, ".") == 0) break;
+        if (!data || strcmp(CS buffer, ".") == 0) break;
         }
 
-      if (strncmp(ss, buffer, (int)strlen(ss)) != 0)
+      if (strncmp(ss, CS buffer, (int)strlen(ss)) != 0)
         {
         printf("Comparison failed - bailing out\n");
         printf("Expected: %s\n", ss);

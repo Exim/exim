@@ -818,15 +818,15 @@ if (tls_on_connect)
   }
 #endif
 
-while (fgets(outbuffer, sizeof(outbuffer), stdin) != NULL)
+while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
   {
-  int n = (int)strlen(outbuffer);
+  int n = (int)strlen(CS outbuffer);
   while (n > 0 && isspace(outbuffer[n-1])) n--;
   outbuffer[n] = 0;
 
   /* Expect incoming */
 
-  if (strncmp(outbuffer, "??? ", 4) == 0)
+  if (strncmp(CS outbuffer, "??? ", 4) == 0)
     {
     unsigned char *lineptr;
     printf("%s\n", outbuffer);
@@ -876,7 +876,7 @@ while (fgets(outbuffer, sizeof(outbuffer), stdin) != NULL)
       }
 
     printf("<<< %s\n", lineptr);
-    if (strncmp(lineptr, outbuffer + 4, (int)strlen(outbuffer) - 4) != 0)
+    if (strncmp(CS lineptr, CS outbuffer + 4, (int)strlen(CS outbuffer) - 4) != 0)
       {
       printf("\n******** Input mismatch ********\n");
       exit(79);
@@ -958,10 +958,10 @@ int rc;
 
   /* Wait for a bit before proceeding */
 
-  else if (strncmp(outbuffer, "+++ ", 4) == 0)
+  else if (strncmp(CS outbuffer, "+++ ", 4) == 0)
     {
     printf("%s\n", outbuffer);
-    sleep(atoi(outbuffer + 4));
+    sleep(atoi(CS outbuffer + 4));
     }
 
   /* Send outgoing, but barf if unconsumed incoming */
@@ -1024,11 +1024,11 @@ int rc;
     #endif
 
     printf(">>> %s\n", outbuffer);
-    strcpy(outbuffer + n, "\r\n");
+    strcpy(CS outbuffer + n, "\r\n");
 
     /* Turn "\n" and "\r" into the relevant characters. This is a hack. */
 
-    while ((escape = strstr(outbuffer, "\\r")) != NULL)
+    while ((escape = US strstr(CS outbuffer, "\\r")) != NULL)
       {
       *escape = '\r';
       memmove(escape + 1, escape + 2,  (n + 2) - (escape - outbuffer) - 2);
