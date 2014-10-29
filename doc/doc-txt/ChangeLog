@@ -59,6 +59,9 @@ JH/08 Rename the TPDA expermimental facility to Event Actions.  The #ifdef
       raised for inbound connections, if the main configuration event_action
       option is defined.
 
+TL/06 In test suite, disable OCSP for old versions of openssl which contained
+      early OCSP support, but no stapling (appears to be less than 1.0.0).
+
 
 Exim version 4.84
 -----------------

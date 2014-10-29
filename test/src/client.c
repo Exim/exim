@@ -58,11 +58,6 @@ static int sigalrm_seen = 0;
 
 /* TLS support can be optionally included, either for OpenSSL or GnuTLS. The
 latter needs a whole pile of tables. */
-#if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
-# warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
-# define DISABLE_OCSP
-#endif
-
 #ifdef HAVE_OPENSSL
 # define HAVE_TLS
 # include <openssl/crypto.h>
@@ -71,6 +66,10 @@ latter needs a whole pile of tables. */
 # include <openssl/ssl.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
+# if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
+#  warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
+#  define DISABLE_OCSP
+# endif
 # ifndef DISABLE_OCSP
 #  include <openssl/ocsp.h>
 # endif
