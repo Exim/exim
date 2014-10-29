@@ -485,7 +485,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\d\d-[A-Z][a-z]{2}-\d{4}\s\d\d:\d\d:\d\d/07-Mar-2000 12:21:52/g;
 
   # Time on queue tolerance
-  s/QT=1s/QT=0s/;
+  s/(QT|D)=1s/$1=0s/;
 
   # Eximstats heading
   s/Exim\sstatistics\sfrom\s\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\sto\s
@@ -1290,6 +1290,7 @@ return 1;
 #  paniclog, rejectlog, mainlog, stdout, stderr, msglog, mail
 # Search strings starting with 's' do substitutions;
 # with '/' do line-skips.
+# Triggered by a scriptfile line "munge <name>"
 ##################################################
 $munges =
   { 'dnssec' =>
@@ -1301,8 +1302,11 @@ $munges =
     'gnutls_handshake' =>
     { 'mainlog' => 's/\(gnutls_handshake\): Error in the push function/\(gnutls_handshake\): A TLS packet with unexpected length was received/', },
 
-    'tpda' =>
-    { 'stdout' => '/tpda_event_action =/', },
+    'optional_events' =>
+    { 'stdout' => '/event_action =/', },
+
+    'optional_ocsp' =>
+    { 'stderr' => '/127.0.0.1 in hosts_requ(ire|est)_ocsp/', },
 
   };
 

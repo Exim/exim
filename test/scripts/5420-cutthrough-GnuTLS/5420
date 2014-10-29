@@ -1,4 +1,7 @@
 # cutthrough_delivery to target offering TLS
+#
+munge optional_ocsp
+#
 exim -DSERVER=server -bd -oX PORT_D
 ****
 exim -d-all+acl+transport+expand+lists -bs

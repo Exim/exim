@@ -1,5 +1,7 @@
 # .ifdef etc
-munge tpda
+#
+munge optional_events
+#
 exim -bP accept_8bitmime acl_not_smtp acl_smtp_auth acl_smtp_connect acl_smtp_data acl_smtp_etrn acl_smtp_expn acl_smtp_mail acl_smtp_rcpt acl_smtp_vrfy
 ****
 exim -DAA -bP accept_8bitmime acl_not_smtp acl_smtp_auth acl_smtp_connect acl_smtp_data acl_smtp_etrn acl_smtp_expn acl_smtp_mail acl_smtp_rcpt acl_smtp_vrfy
