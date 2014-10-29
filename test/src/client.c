@@ -58,6 +58,10 @@ static int sigalrm_seen = 0;
 
 /* TLS support can be optionally included, either for OpenSSL or GnuTLS. The
 latter needs a whole pile of tables. */
+#if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
+# warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
+# define DISABLE_OCSP
+#endif
 
 #ifdef HAVE_OPENSSL
 # define HAVE_TLS
@@ -67,7 +71,9 @@ latter needs a whole pile of tables. */
 # include <openssl/ssl.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
-# include <openssl/ocsp.h>
+# ifndef DISABLE_OCSP
+#  include <openssl/ocsp.h>
+# endif
 #endif
 
 
@@ -188,6 +194,7 @@ setup_verify(BIO *bp, char *CAfile, char *CApath)
 }
 
 
+#ifndef DISABLE_OCSP
 static int
 tls_client_stapling_cb(SSL *s, void *arg)
 {
@@ -238,6 +245,7 @@ else
 X509_STORE_free(store);
 return ret;
 }
+#endif
 
 
 /*************************************************
@@ -257,12 +265,14 @@ SSL_set_session_id_context(*ssl, sid_ctx, strlen(sid_ctx));
 SSL_set_fd (*ssl, sock);
 SSL_set_connect_state(*ssl);
 
+#ifndef DISABLE_OCSP
 if (ocsp_stapling)
   {
   SSL_CTX_set_tlsext_status_cb(ctx, tls_client_stapling_cb);
   SSL_CTX_set_tlsext_status_arg(ctx, BIO_new_fp(stdout, BIO_NOCLOSE));
   SSL_set_tlsext_status_type(*ssl, TLSEXT_STATUSTYPE_ocsp);
   }
+#endif
 
 signal(SIGALRM, sigalrm_handler_flag);
 sigalrm_seen = 0;
