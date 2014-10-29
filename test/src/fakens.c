@@ -57,6 +57,7 @@ as such then the response will have the "AD" bit set. */
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <netdb.h>
 #include <errno.h>
@@ -156,7 +157,7 @@ uschar *yield;
 char buffer[256];
 va_list ap;
 va_start(ap, format);
-vsprintf(buffer, format, ap);
+vsprintf(buffer, CS format, ap);
 va_end(ap);
 yield = (uschar *)malloc(Ustrlen(buffer) + 1);
 Ustrcpy(yield, buffer);
@@ -420,7 +421,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
     case ns_t_mx:
     pk = shortfield(&p, pk);
-    if (ep[-1] != '.') sprintf(ep, "%s.", zone);
+    if (ep[-1] != '.') sprintf(US ep, "%s.", zone);
     pk = packname(p, pk);
     plen = Ustrlen(p);
     break;
@@ -464,7 +465,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     case ns_t_cname:
     case ns_t_ns:
     case ns_t_ptr:
-    if (ep[-1] != '.') sprintf(ep, "%s.", zone);
+    if (ep[-1] != '.') sprintf(US ep, "%s.", zone);
     pk = packname(p, pk);
     plen = Ustrlen(p);
     break;
@@ -515,7 +516,7 @@ if (argc != 4)
 
 /* Find the zones */
 
-(void)sprintf(buffer, "%s/../dnszones", argv[1]);
+(void)sprintf(US buffer, "%s/../dnszones", argv[1]);
 
 d = opendir(CCS buffer);
 if (d == NULL)
@@ -527,20 +528,20 @@ if (d == NULL)
 
 while ((de = readdir(d)) != NULL)
   {
-  uschar *name = de->d_name;
+  uschar *name = US de->d_name;
   if (Ustrncmp(name, "qualify.", 8) == 0)
     {
-    qualify = fcopystring("%s", name + 7);
+    qualify = fcopystring(US "%s", name + 7);
     continue;
     }
   if (Ustrncmp(name, "db.", 3) != 0) continue;
   if (Ustrncmp(name + 3, "ip4.", 4) == 0)
-    zones[zonecount].zone = fcopystring("%s.in-addr.arpa", name + 6);
+    zones[zonecount].zone = fcopystring(US "%s.in-addr.arpa", name + 6);
   else if (Ustrncmp(name + 3, "ip6.", 4) == 0)
-    zones[zonecount].zone = fcopystring("%s.ip6.arpa", name + 6);
+    zones[zonecount].zone = fcopystring(US "%s.ip6.arpa", name + 6);
   else
-    zones[zonecount].zone = fcopystring("%s", name + 2);
-  zones[zonecount++].zonefile = fcopystring("%s", name);
+    zones[zonecount].zone = fcopystring(US "%s", name + 2);
+  zones[zonecount++].zonefile = fcopystring(US "%s", name);
   }
 (void)closedir(d);
 
@@ -586,7 +587,7 @@ if (zonefile == NULL)
   return PASS_ON;
   }
 
-(void)sprintf(buffer, "%s/../dnszones/%s", argv[1], zonefile);
+(void)sprintf(US buffer, "%s/../dnszones/%s", argv[1], zonefile);
 
 /* Initialize the start of the response packet. We don't have to fake up
 everything, because we know that Exim will look only at the answer and
@@ -597,7 +598,7 @@ pk += 12;
 
 /* Open the zone file. */
 
-f = fopen(buffer, "r");
+f = fopen(US buffer, "r");
 if (f == NULL)
   {
   fprintf(stderr, "fakens: failed to open %s: %s\n", buffer, strerror(errno));

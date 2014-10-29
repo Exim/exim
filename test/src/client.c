@@ -248,7 +248,7 @@ int
 tls_start(int sock, SSL **ssl, SSL_CTX *ctx)
 {
 int rc;
-static const char *sid_ctx = "exim";
+static const unsigned char *sid_ctx = "exim";
 
 RAND_load_file("client.c", -1);   /* Not *very* random! */
 
@@ -981,8 +981,8 @@ int rc;
 
     /* Shutdown TLS */
 
-    if (strcmp(outbuffer, "stoptls") == 0 ||
-        strcmp(outbuffer, "STOPTLS") == 0)
+    if (strcmp(CS outbuffer, "stoptls") == 0 ||
+        strcmp(CS outbuffer, "STOPTLS") == 0)
       {
       if (!tls_active)
         {
@@ -1009,14 +1009,14 @@ int rc;
 
     /* Remember that we sent STARTTLS */
 
-    sent_starttls = (strcmp(outbuffer, "starttls") == 0 ||
-                     strcmp(outbuffer, "STARTTLS") == 0);
+    sent_starttls = (strcmp(CS outbuffer, "starttls") == 0 ||
+                     strcmp(CS outbuffer, "STARTTLS") == 0);
 
     /* Fudge: if the command is "starttls_wait", we send the starttls bit,
     but we haven't set the flag, so that there is no negotiation. This is for
     testing the server's timeout. */
 
-    if (strcmp(outbuffer, "starttls_wait") == 0)
+    if (strcmp(CS outbuffer, "starttls_wait") == 0)
       {
       outbuffer[8] = 0;
       n = 8;
@@ -1035,7 +1035,7 @@ int rc;
       n--;
       }
 
-    while ((escape = strstr(outbuffer, "\\n")) != NULL)
+    while ((escape = US strstr(CS outbuffer, "\\n")) != NULL)
       {
       *escape = '\n';
       memmove(escape + 1, escape + 2,  (n + 2) - (escape - outbuffer) - 2);
