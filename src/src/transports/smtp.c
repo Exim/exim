@@ -1415,7 +1415,10 @@ if (continue_hostname == NULL)
 
 #ifdef EXPERIMENTAL_EVENT
       {
-      uschar * s = event_raise(tblock->event_action, US"smtp:connect", buffer);
+      uschar * s;
+      lookup_dnssec_authenticated = host->dnssec==DS_YES ? US"yes"
+	: host->dnssec==DS_NO ? US"no" : NULL;
+      s = event_raise(tblock->event_action, US"smtp:connect", buffer);
       if (s)
 	{
 	set_errno(addrlist, 0,

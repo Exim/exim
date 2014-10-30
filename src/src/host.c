@@ -3068,8 +3068,9 @@ DEBUG(D_host_lookup)
     yield);
   for (h = host; h != last->next; h = h->next)
     {
-    debug_printf("  %s %s MX=%d ", h->name,
-      (h->address == NULL)? US"<null>" : h->address, h->mx);
+    debug_printf("  %s %s MX=%d %s", h->name,
+      !h->address ? US"<null>" : h->address, h->mx,
+      h->dnssec == DS_YES ? US"DNSSEC " : US"");
     if (h->port != PORT_NONE) debug_printf("port=%d ", h->port);
     if (h->status >= hstatus_unusable) debug_printf("*");
     debug_printf("\n");
