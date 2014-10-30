@@ -719,7 +719,7 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 
 
 #ifdef EXPERIMENTAL_EVENT
-int
+uschar *
 event_raise(uschar * action, uschar * event, uschar * ev_data)
 {
 uschar * s;
@@ -747,10 +747,10 @@ if (action)
     {
     DEBUG(D_deliver)
       debug_printf("Event(%s): event_action returned \"%s\"\n", event, s);
-    return DEFER;
+    return s;
     }
   }
-return OK;
+return NULL;
 }
 
 static void

@@ -1414,14 +1414,17 @@ if (continue_hostname == NULL)
       ob->command_timeout)) goto RESPONSE_FAILED;
 
 #ifdef EXPERIMENTAL_EVENT
-    if (event_raise(tblock->event_action, US"smtp:connect", buffer)
-	== DEFER)
+      {
+      uschar * s = event_raise(tblock->event_action, US"smtp:connect", buffer);
+      if (s)
 	{
-	uschar *message = US"deferred by smtp:connect event expansion";
-	set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
+	set_errno(addrlist, 0,
+	  string_sprintf("deferred by smtp:connect event expansion: %s", s),
+	  DEFER, FALSE, NULL);
 	yield = DEFER;
 	goto SEND_QUIT;
 	}
+      }
 #endif
 
     /* Now check if the helo_data expansion went well, and sign off cleanly if

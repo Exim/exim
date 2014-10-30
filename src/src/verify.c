@@ -585,7 +585,7 @@ else
 
 #ifdef EXPERIMENTAL_EVENT
       if (event_raise(addr->transport->event_action,
-			    US"smtp:connect", responsebuffer) == DEFER)
+			    US"smtp:connect", responsebuffer))
 	{
 	/* Logging?  Debug? */
 	goto RESPONSE_FAILED;

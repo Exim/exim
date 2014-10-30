@@ -204,10 +204,10 @@ HDEBUG(D_transport|D_acl|D_v)
   }
 
 #ifdef EXPERIMENTAL_EVENT
-  /*XXX Called from both delivery and verify.  Is that status observable? */
   deliver_host_address = host->address;
   deliver_host_port = port;
-  if (event_raise(event, US"tcp:connect", NULL) == DEFER) return -1;
+  if (event_raise(event, US"tcp:connect", NULL)) return -1;
+  /* Logging?  Debug? */
 #endif
 
 /* Create the socket */

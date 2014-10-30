@@ -1559,6 +1559,7 @@ const gnutls_datum * cert_list;
 unsigned int cert_list_size = 0;
 gnutls_x509_crt_t crt;
 int rc;
+uschar * yield;
 exim_gnutls_state_st * state = gnutls_session_get_ptr(session);
 
 cert_list = gnutls_certificate_get_peers(session, &cert_list_size);
@@ -1574,11 +1575,12 @@ if (cert_list)
     }
 
   state->tlsp->peercert = crt;
-  if (event_raise(state->event_action,
-	      US"tls:cert", string_sprintf("%d", cert_list_size)) == DEFER)
+  if ((yield = event_raise(state->event_action,
+	      US"tls:cert", string_sprintf("%d", cert_list_size))))
     {
     log_write(0, LOG_MAIN,
-	      "SSL verify denied by event-action: depth=%d", cert_list_size);
+	      "SSL verify denied by event-action: depth=%d: %s",
+	      cert_list_size, yield);
     return 1;                     /* reject */
     }
   state->tlsp->peercert = NULL;

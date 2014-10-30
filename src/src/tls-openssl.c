@@ -294,8 +294,11 @@ verify_callback(int state, X509_STORE_CTX *x509ctx,
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
-uschar * ev;
 static uschar txt[256];
+#ifdef EXPERIMENTAL_EVENT
+uschar * ev;
+uschar * yield;
+#endif
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
 
@@ -335,10 +338,10 @@ else if (depth != 0)
   if (ev)
     {
     tlsp->peercert = X509_dup(cert);
-    if (event_raise(ev, US"tls:cert", string_sprintf("%d", depth)) == DEFER)
+    if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth))))
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
-			      "depth=%d cert=%s", depth, txt);
+			      "depth=%d cert=%s: %s", depth, txt, yield);
       tlsp->certificate_verified = FALSE;
       *calledp = TRUE;
       return 0;			    /* reject */
@@ -402,10 +405,10 @@ else
 #ifdef EXPERIMENTAL_EVENT
   ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
   if (ev)
-    if (event_raise(ev, US"tls:cert", US"0") == DEFER)
+    if ((yield = event_raise(ev, US"tls:cert", US"0")))
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
-			      "depth=0 cert=%s", txt);
+			      "depth=0 cert=%s: %s", txt, yield);
       tlsp->certificate_verified = FALSE;
       *calledp = TRUE;
       return 0;			    /* reject */
@@ -446,6 +449,7 @@ X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 static uschar txt[256];
 #ifdef EXPERIMENTAL_EVENT
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
+uschar * yield;
 #endif
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
@@ -457,11 +461,11 @@ tls_out.peercert = X509_dup(cert);
 #ifdef EXPERIMENTAL_EVENT
   if (client_static_cbinfo->event_action)
     {
-    if (event_raise(client_static_cbinfo->event_action,
-		    US"tls:cert", string_sprintf("%d", depth)) == DEFER)
+    if ((yield = event_raise(client_static_cbinfo->event_action,
+		    US"tls:cert", string_sprintf("%d", depth))))
       {
       log_write(0, LOG_MAIN, "DANE verify denied by event-action: "
-			      "depth=%d cert=%s", depth, txt);
+			      "depth=%d cert=%s: %s", depth, txt, yield);
       tls_out.certificate_verified = FALSE;
       return 0;			    /* reject */
       }

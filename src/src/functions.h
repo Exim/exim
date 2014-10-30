@@ -158,7 +158,7 @@ extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 extern void    enq_end(uschar *);
 extern BOOL    enq_start(uschar *);
 #ifdef EXPERIMENTAL_EVENT
-extern int     event_raise(uschar *, uschar *, uschar *);
+extern uschar *event_raise(uschar *, uschar *, uschar *);
 #endif
 extern void    exim_exit(int);
 extern void    exim_nullstd(void);
