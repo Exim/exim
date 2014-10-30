@@ -66,7 +66,8 @@ latter needs a whole pile of tables. */
 # include <openssl/ssl.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
-# if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
+
+# if OPENSSL_VERSION_NUMBER < 0x0090806fL && !defined(DISABLE_OCSP) && !defined(OPENSSL_NO_TLSEXT)
 #  warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
 #  define DISABLE_OCSP
 # endif
