@@ -308,7 +308,6 @@ if (state == 0)
     depth,
     X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
     txt);
-  tlsp->certificate_verified = FALSE;
   *calledp = TRUE;
   if (!*optionalp)
     {
@@ -342,9 +341,11 @@ else if (depth != 0)
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
 			      "depth=%d cert=%s: %s", depth, txt, yield);
-      tlsp->certificate_verified = FALSE;
       *calledp = TRUE;
-      return 0;			    /* reject */
+      if (!*optionalp)
+	return 0;			    /* reject */
+      DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
+	"(host in tls_try_verify_hosts)\n");
       }
     X509_free(tlsp->peercert);
     tlsp->peercert = NULL;
@@ -389,7 +390,11 @@ else
       {
       log_write(0, LOG_MAIN,
 	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
-      return 0;				/* reject */
+      *calledp = TRUE;
+      if (!*optionalp)
+	return 0;			    /* reject */
+      DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
+	"tls_try_verify_hosts)\n");
       }
     }
 # else
@@ -397,7 +402,11 @@ else
       {
       log_write(0, LOG_MAIN,
 	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
-      return 0;				/* reject */
+      *calledp = TRUE;
+      if (!*optionalp)
+	return 0;			    /* reject */
+      DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
+	"tls_try_verify_hosts)\n");
       }
 # endif
 #endif	/*EXPERIMENTAL_CERTNAMES*/
@@ -409,9 +418,11 @@ else
       {
       log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
 			      "depth=0 cert=%s: %s", txt, yield);
-      tlsp->certificate_verified = FALSE;
       *calledp = TRUE;
-      return 0;			    /* reject */
+      if (!*optionalp)
+	return 0;			    /* reject */
+      DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
+	"(host in tls_try_verify_hosts)\n");
       }
 #endif
 
