@@ -421,7 +421,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
     case ns_t_mx:
     pk = shortfield(&p, pk);
-    if (ep[-1] != '.') sprintf(US ep, "%s.", zone);
+    if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
     pk = packname(p, pk);
     plen = Ustrlen(p);
     break;
@@ -465,7 +465,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     case ns_t_cname:
     case ns_t_ns:
     case ns_t_ptr:
-    if (ep[-1] != '.') sprintf(US ep, "%s.", zone);
+    if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
     pk = packname(p, pk);
     plen = Ustrlen(p);
     break;
@@ -516,7 +516,7 @@ if (argc != 4)
 
 /* Find the zones */
 
-(void)sprintf(US buffer, "%s/../dnszones", argv[1]);
+(void)sprintf(CS buffer, "%s/../dnszones", argv[1]);
 
 d = opendir(CCS buffer);
 if (d == NULL)
@@ -587,7 +587,7 @@ if (zonefile == NULL)
   return PASS_ON;
   }
 
-(void)sprintf(US buffer, "%s/../dnszones/%s", argv[1], zonefile);
+(void)sprintf(CS buffer, "%s/../dnszones/%s", argv[1], zonefile);
 
 /* Initialize the start of the response packet. We don't have to fake up
 everything, because we know that Exim will look only at the answer and
@@ -598,7 +598,7 @@ pk += 12;
 
 /* Open the zone file. */
 
-f = fopen(US buffer, "r");
+f = fopen(CS buffer, "r");
 if (f == NULL)
   {
   fprintf(stderr, "fakens: failed to open %s: %s\n", buffer, strerror(errno));

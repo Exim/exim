@@ -896,7 +896,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # As of Exim 4.74, we log when a setgid fails; because we invoke Exim
     # with -be, privileges will have been dropped, so this will always
     # be the case
-    next if /^changing group to \d+ failed: Operation not permitted/;
+    next if /^changing group to \d+ failed: (Operation not permitted|Not owner)/;
 
     # We might not keep this check; rather than change all the tests, just
     # ignore it as long as it succeeds; then we only need to change the
@@ -1027,6 +1027,14 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     next;
+    }
+
+  # ======== log ========
+
+  elsif ($is_log)
+    {
+    # Berkeley DB version differences
+    next if / Berkeley DB error: /;
     }
 
   # ======== All files other than stderr ========
@@ -2728,7 +2736,7 @@ $pwcomm = $pwcomm;
 
 $parm_caller_group = getgrgid($parm_caller_gid);
 
-print "Program caller is $parm_caller, whose group is $parm_caller_group\n";
+print "Program caller is $parm_caller ($parm_caller_uid), whose group is $parm_caller_group ($parm_caller_gid)\n";
 print "Home directory is $parm_caller_home\n";
 
 unless (defined $parm_eximgroup)
