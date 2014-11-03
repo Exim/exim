@@ -3,7 +3,9 @@
 # This script outputs certain information about the environment, for use when
 # testing pipe transports.
 
-name=`id -un`
+cmd=/usr/xpg4/bin/id
+[ -x $cmd ] || cmd=id
+name=`$cmd -un`
 
 echo Test pipe script
 echo Running as: $name

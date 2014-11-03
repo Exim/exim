@@ -256,12 +256,12 @@ int
 tls_start(int sock, SSL **ssl, SSL_CTX *ctx)
 {
 int rc;
-static const unsigned char *sid_ctx = "exim";
+static const unsigned char *sid_ctx = US"exim";
 
 RAND_load_file("client.c", -1);   /* Not *very* random! */
 
 *ssl = SSL_new (ctx);
-SSL_set_session_id_context(*ssl, sid_ctx, strlen(sid_ctx));
+SSL_set_session_id_context(*ssl, sid_ctx, strlen(CS sid_ctx));
 SSL_set_fd (*ssl, sock);
 SSL_set_connect_state(*ssl);
 
