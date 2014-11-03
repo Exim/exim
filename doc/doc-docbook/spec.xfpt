@@ -12152,8 +12152,9 @@ the &%-bs%& or &%-bS%& options.
 
 .vitem &$sender_host_address$&
 .vindex "&$sender_host_address$&"
-When a message is received from a remote host, this variable contains that
-host's IP address. For locally submitted messages, it is empty.
+When a message is received from a remote host using SMTP,
+this variable contains that
+host's IP address. For locally non-SMTP submitted messages, it is empty.
 
 .vitem &$sender_host_authenticated$&
 .vindex "&$sender_host_authenticated$&"
