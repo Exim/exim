@@ -584,12 +584,16 @@ else
         goto RESPONSE_FAILED;
 
 #ifdef EXPERIMENTAL_EVENT
+      lookup_dnssec_authenticated = host->dnssec==DS_YES ? US"yes"
+	: host->dnssec==DS_NO ? US"no" : NULL;
       if (event_raise(addr->transport->event_action,
 			    US"smtp:connect", responsebuffer))
 	{
+	lookup_dnssec_authenticated = NULL;
 	/* Logging?  Debug? */
 	goto RESPONSE_FAILED;
 	}
+      lookup_dnssec_authenticated = NULL;
 #endif
       }
 
