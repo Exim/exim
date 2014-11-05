@@ -370,6 +370,9 @@ else
 #  ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
 #   define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
 #  endif
+#  ifndef X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS
+#   define X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS 0
+#  endif
     {
     int sep = 0;
     uschar * list = verify_cert_hostnames;
@@ -377,7 +380,8 @@ else
     int rc;
     while ((name = string_nextinlist(&list, &sep, NULL, 0)))
       if ((rc = X509_check_host(cert, name, 0,
-		  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS)))
+		  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
+		  | X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS)))
 	{
 	if (rc < 0)
 	  {

@@ -62,6 +62,11 @@ JH/08 Rename the TPDA expermimental facility to Event Actions.  The #ifdef
 TL/06 In test suite, disable OCSP for old versions of openssl which contained
       early OCSP support, but no stapling (appears to be less than 1.0.0).
 
+JH/09 When compiled with OpenSSL and EXPERIMENTAL_CERTNAMES, the checks on
+      server certificate names available under the smtp transport option
+      "tls_verify_cert_hostname" now do not permit multi-component wildcard
+      matches.
+
 
 Exim version 4.84
 -----------------
