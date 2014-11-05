@@ -15062,16 +15062,21 @@ yourself in the foot in various unpleasant ways.  This option should not be
 adjusted lightly.  An unrecognised item will be detected at startup, by
 invoking Exim with the &%-bV%& flag.
 
+The option affects Exim operating both as a server and as a client.
+
 Historical note: prior to release 4.80, Exim defaulted this value to
 "+dont_insert_empty_fragments", which may still be needed for compatibility
 with some clients, but which lowers security by increasing exposure to
 some now infamous attacks.
 
-An example:
+Examples:
 .code
 # Make both old MS and old Eudora happy:
 openssl_options = -all +microsoft_big_sslv3_buffer \
                        +dont_insert_empty_fragments
+
+# Disable older protocol versions:
+openssl_options = +no_sslv2 +no_sslv3
 .endd
 
 Possible options may include:
@@ -26131,7 +26136,8 @@ The GnuTLS library allows the caller to provide a "priority string", documented
 as part of the &[gnutls_priority_init]& function.  This is very similar to the
 ciphersuite specification in OpenSSL.
 
-The &%tls_require_ciphers%& option is treated as the GnuTLS priority string.
+The &%tls_require_ciphers%& option is treated as the GnuTLS priority string
+and controls both protocols and ciphers.
 
 The &%tls_require_ciphers%& option is available both as an global option,
 controlling how Exim behaves as a server, and also as an option of the
@@ -26147,6 +26153,12 @@ but beware that this relates to GnuTLS 3, which may be newer than the version
 installed on your system.  If you are using GnuTLS 3,
 &url(http://www.gnutls.org/manual/gnutls.html#Listing-the-ciphersuites-in-a-priority-string, then the example code)
 on that site can be used to test a given string.
+
+For example:
+.code
+# Disable older versions of protocols
+tls_require_ciphers = NORMAL:%LATEST_RECORD_VERSION:-VERS-SSL3.0
+.endd
 
 Prior to Exim 4.80, an older API of GnuTLS was used, and Exim supported three
 additional options, "&%gnutls_require_kx%&", "&%gnutls_require_mac%&" and
