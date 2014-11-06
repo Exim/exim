@@ -1846,17 +1846,13 @@ if ((  state->exp_tls_verify_certificates
    )
   {
 #ifdef EXPERIMENTAL_CERTNAMES
-  if (ob->tls_verify_cert_hostnames)
+  if (verify_check_host(&ob->tls_verify_cert_hostnames) == OK)
     {
     DEBUG(D_tls)
       debug_printf("TLS: server cert incl. hostname verification required.\n");
     state->verify_requirement = VERIFY_WITHHOST;
-    if (!expand_check(ob->tls_verify_cert_hostnames,
-		      US"tls_verify_cert_hostnames",
-		      &state->exp_tls_verify_cert_hostnames))
-      return FAIL;
-    if (state->exp_tls_verify_cert_hostnames)
-      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+    state->exp_tls_verify_cert_hostnames = host->name;
+    DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
 		      state->exp_tls_verify_cert_hostnames);
     }
   else

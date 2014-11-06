@@ -1,5 +1,5 @@
 # Exim test configuration 5440
-# TLS client: verify certificate from server - fails
+# TLS client: verify certificate from server - name-fails
 
 SERVER=
 
@@ -131,11 +131,12 @@ send_to_server_crypt:
   tls_verify_certificates = CA2
   tls_try_verify_hosts = *
 
-# this will fail to verify the cert at HOSTIPV4 and fallback to unencrypted
+# this will fail to verify the cert at HOSTNAME and fallback to unencrypted
+# Fail due to lack of correct CA
 send_to_server_req_fail:
   driver = smtp
   allow_localhost
-  hosts = HOSTIPV4
+  hosts = HOSTNAME
   port = PORT_D
   tls_certificate = CERT2
   tls_privatekey = CERT2
@@ -144,29 +145,31 @@ send_to_server_req_fail:
   tls_verify_hosts = *
 
 # this will fail to verify the cert name and fallback to unencrypted
+# fail because the cert is "server1.example.com" and the test system is something else
 send_to_server_req_failname:
   driver = smtp
   allow_localhost
-  hosts = HOSTIPV4
+  hosts = HOSTNAME
   port = PORT_D
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
   tls_verify_certificates = CA1
-  tls_verify_cert_hostnames = server1.example.net : server1.example.org
+  tls_verify_cert_hostnames = *
   tls_verify_hosts = *
 
 # this will pass the cert verify including name check
+# our stunt DNS has an A record for server1.example.com -> HOSTIPV4
 send_to_server_req_passname:
   driver = smtp
   allow_localhost
-  hosts = HOSTIPV4
+  hosts = server1.example.com
   port = PORT_D
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
   tls_verify_certificates = CA1
-  tls_verify_cert_hostnames = noway.example.com : server1.example.com
+  tls_verify_cert_hostnames = *
   tls_verify_hosts = *
 
 # End

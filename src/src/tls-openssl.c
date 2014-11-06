@@ -1692,14 +1692,10 @@ if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
   client_verify_optional = FALSE;
 
 #ifdef EXPERIMENTAL_CERTNAMES
-  if (ob->tls_verify_cert_hostnames)
+  if (verify_check_host(&ob->tls_verify_cert_hostnames) == OK)
     {
-    if (!expand_check(ob->tls_verify_cert_hostnames,
-		      US"tls_verify_cert_hostnames",
-		      &cbinfo->verify_cert_hostnames))
-      return FAIL;
-    if (cbinfo->verify_cert_hostnames)
-      DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+    cbinfo->verify_cert_hostnames = host->name;
+    DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
 		      cbinfo->verify_cert_hostnames);
     }
 #endif

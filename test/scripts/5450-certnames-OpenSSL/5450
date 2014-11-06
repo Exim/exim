@@ -1,12 +1,15 @@
-# TLS client: verify certificate from server - fails
+# TLS client: verify certificate from server - name-fails
 exim -DSERVER=server -bd -oX PORT_D
 ****
+# this will fail to verify the cert at HOSTIPV4 and fallback to unencrypted
 exim userq@test.ex
 Testing
 ****
+# this will fail to verify the cert name and fallback to unencrypted
 exim userr@test.ex
 Testing
 ****
+# this will pass the cert verify including name check
 exim users@test.ex
 Testing
 ****
