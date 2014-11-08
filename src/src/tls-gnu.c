@@ -75,11 +75,7 @@ Changes:
 /* Values for verify_requirement */
 
 enum peer_verify_requirement
-  { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED
-#ifdef EXPERIMENTAL_CERTNAMES
-    ,VERIFY_WITHHOST
-#endif
-  };
+  { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED };
 
 /* This holds most state for server or client; with this, we can set up an
 outbound TLS-enabled connection in an ACL callout, while not stomping all
@@ -1390,7 +1386,7 @@ if (rc < 0 ||
 else
   {
 #ifdef EXPERIMENTAL_CERTNAMES
-  if (state->verify_requirement == VERIFY_WITHHOST)
+  if (state->exp_tls_verify_cert_hostnames)
     {
     int sep = 0;
     uschar * list = state->exp_tls_verify_cert_hostnames;
@@ -1402,9 +1398,13 @@ else
       {
       DEBUG(D_tls)
 	debug_printf("TLS certificate verification failed: cert name mismatch\n");
-      gnutls_alert_send(state->session,
-	GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
-      return FALSE;
+      if (state->verify_requirement >= VERIFY_REQUIRED)
+	{
+	gnutls_alert_send(state->session,
+	  GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
+	return FALSE;
+	}
+      return TRUE;
       }
     }
 #endif
@@ -1771,6 +1771,23 @@ return OK;
 
 
 
+#ifdef EXPERIMENTAL_CERTNAMES
+static void
+tls_client_setup_hostname_checks(host_item * host, exim_gnutls_state_st * state,
+  smtp_transport_options_block * ob)
+{
+if (verify_check_this_host(&ob->tls_verify_cert_hostnames, NULL,
+	    host->name, host->address, NULL) == OK)
+  {
+  state->exp_tls_verify_cert_hostnames = host->name;
+  DEBUG(D_tls)
+    debug_printf("TLS: server cert verification includes hostname: \"%s\".\n",
+		    state->exp_tls_verify_cert_hostnames);
+  }
+}
+#endif
+
+
 /*************************************************
 *    Start a TLS session in a client             *
 *************************************************/
@@ -1837,35 +1854,28 @@ if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
 set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 
-if ((  state->exp_tls_verify_certificates
-    && !ob->tls_verify_hosts
-    && !ob->tls_try_verify_hosts
-    )
-    ||
-    verify_check_host(&ob->tls_verify_hosts) == OK
+if (  (  state->exp_tls_verify_certificates
+      && !ob->tls_verify_hosts
+      && !ob->tls_try_verify_hosts
+      )
+    || verify_check_this_host(&ob->tls_verify_hosts, NULL,
+	      host->name, host->address, NULL) == OK
    )
   {
 #ifdef EXPERIMENTAL_CERTNAMES
-  if (verify_check_host(&ob->tls_verify_cert_hostnames) == OK)
-    {
-    DEBUG(D_tls)
-      debug_printf("TLS: server cert incl. hostname verification required.\n");
-    state->verify_requirement = VERIFY_WITHHOST;
-    state->exp_tls_verify_cert_hostnames = host->name;
-    DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
-		      state->exp_tls_verify_cert_hostnames);
-    }
-  else
+  tls_client_setup_hostname_checks(host, state, ob);
 #endif
-    {
-    DEBUG(D_tls)
-      debug_printf("TLS: server certificate verification required.\n");
-    state->verify_requirement = VERIFY_REQUIRED;
-    }
+  DEBUG(D_tls)
+    debug_printf("TLS: server certificate verification required.\n");
+  state->verify_requirement = VERIFY_REQUIRED;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
   }
-else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
+else if (verify_check_this_host(&ob->tls_try_verify_hosts, NULL,
+	      host->name, host->address, NULL) == OK)
   {
+#ifdef EXPERIMENTAL_CERTNAMES
+  tls_client_setup_hostname_checks(host, state, ob);
+#endif
   DEBUG(D_tls)
     debug_printf("TLS: server certificate verification optional.\n");
   state->verify_requirement = VERIFY_OPTIONAL;

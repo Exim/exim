@@ -1173,7 +1173,7 @@ component FQDN).
 The equivalent check on the server for client certificates is not
 implemented.  At least one major email provider is using a client
 certificate which fails this check.  They do not retry either without
-hte client certificate or in clear.
+the client certificate or in clear.
 
 It is possible to duplicate the effect of this checking by
 creative use of Events.

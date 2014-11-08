@@ -88,6 +88,11 @@ client_s:
   retry_use_local_part
   transport = send_to_server_req_passname
 
+client_t:
+  driver = accept
+  local_parts = usert
+  retry_use_local_part
+  transport = send_to_server_req_failcarryon
 
 # ----- Transports -----
 
@@ -171,5 +176,19 @@ send_to_server_req_passname:
   tls_verify_certificates = CA1
   tls_verify_cert_hostnames = *
   tls_verify_hosts = *
+
+# this will fail to verify the cert name but carry on (try-verify mode)
+# fail because the cert is "server1.example.com" and the test system is something else
+send_to_server_req_failcarryon:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTNAME
+  port = PORT_D
+  tls_certificate = CERT2
+  tls_privatekey = CERT2
+
+  tls_verify_certificates = CA1
+  tls_verify_cert_hostnames = *
+  tls_try_verify_hosts = *
 
 # End

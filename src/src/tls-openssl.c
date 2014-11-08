@@ -1683,31 +1683,30 @@ int rc;
    set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
    the specified host patterns if one of them is defined */
 
-if ((!ob->tls_verify_hosts && !ob->tls_try_verify_hosts) ||
-    (verify_check_host(&ob->tls_verify_hosts) == OK))
-  {
-  if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
-	ob->tls_crl, host, FALSE, verify_callback_client)) != OK)
-    return rc;
+if (  (!ob->tls_verify_hosts && !ob->tls_try_verify_hosts)
+   || (verify_check_this_host(&ob->tls_verify_hosts, NULL,
+		host->name, host->address, NULL) == OK)
+   )
   client_verify_optional = FALSE;
+else if (verify_check_this_host(&ob->tls_try_verify_hosts, NULL,
+		host->name, host->address, NULL) == OK)
+  client_verify_optional = TRUE;
+else
+  return OK;
+
+if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
+      ob->tls_crl, host, client_verify_optional, verify_callback_client)) != OK)
+  return rc;
 
 #ifdef EXPERIMENTAL_CERTNAMES
-  if (verify_check_host(&ob->tls_verify_cert_hostnames) == OK)
-    {
-    cbinfo->verify_cert_hostnames = host->name;
-    DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
-		      cbinfo->verify_cert_hostnames);
-    }
-#endif
-  }
-else if (verify_check_host(&ob->tls_try_verify_hosts) == OK)
+if (verify_check_this_host(&ob->tls_verify_cert_hostnames, NULL,
+	      host->name, host->address, NULL) == OK)
   {
-  if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
-	ob->tls_crl, host, TRUE, verify_callback_client)) != OK)
-    return rc;
-  client_verify_optional = TRUE;
+  cbinfo->verify_cert_hostnames = host->name;
+  DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
+		    cbinfo->verify_cert_hostnames);
   }
-
+#endif
 return OK;
 }
 

@@ -13,6 +13,10 @@ Testing
 exim users@test.ex
 Testing
 ****
+# this will fail to verify the cert name but carry on (try-verify mode)
+exim usert@test.ex
+Testing
+****
 exim -qf
 ****
 killdaemon
