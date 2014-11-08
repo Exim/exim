@@ -1,0 +1,25 @@
+; This is a testing zone file for use when testing DNS handling in Exim. This
+; is a fake zone of no real use - hence no SOA record. The zone name is
+; example.com. This file is passed through the substitution mechanism before being
+; used by the fakens auxiliary program. This inserts the actual IP addresses
+; of the local host into the zone.
+
+; NOTE (1): apart from ::1, IPv6 addresses must always have 8 components. Do
+; not abbreviate them by using the :: feature. Leading zeros in components may,
+; however, be omitted.
+
+; NOTE (2): the fakens program is very simple and assumes that the buffer into
+; which is puts the response is always going to be big enough. In other words,
+; the expectation is for just a few RRs for each query.
+
+; NOTE (3): the top-level networks for testing addresses are parameterized by
+; the use of V4NET and V6NET. These networks should be such that no real
+; host ever uses them.
+
+example.com.     NS      exim.example.com.
+
+; Alias A record for the local host, under the name "server1"
+
+server1     A       HOSTIPV4
+
+; End
