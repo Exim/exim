@@ -67,6 +67,10 @@ JH/09 When compiled with OpenSSL and EXPERIMENTAL_CERTNAMES, the checks on
       "tls_verify_cert_hostname" now do not permit multi-component wildcard
       matches.
 
+JH/10 Time-related extraction expansions from certificates now use the main
+      option "timezone" setting for output formatting, and are consistent
+      between OpenSSL and GnuTLS compilations.  Bug 1541.
+
 
 Exim version 4.84
 -----------------

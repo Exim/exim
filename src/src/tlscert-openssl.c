@@ -103,30 +103,65 @@ return cp;
 }
 
 static uschar *
-bio_string_time_to_int(BIO * bp, int len)
+asn1_time_copy(const ASN1_TIME * asntime, uschar * mod)
 {
-uschar * cp = US"";
-struct tm t;
-len = len > 0 ? (int) BIO_get_mem_data(bp, &cp) : 0;
-/*XXX %Z might be glibc-specific? */
-(void) strptime(CS cp, "%b%t%e%t%T%t%Y%t%Z", &t);
-BIO_free(bp);
-/*XXX timegm might not be portable? */
-return string_sprintf("%u", (unsigned) timegm(&t));
-}
-
-static uschar *
-asn1_time_copy(const ASN1_TIME * time, uschar * mod)
-{
+uschar * s = NULL;
 BIO * bp = BIO_new(BIO_s_mem());
 int len;
 
-if (!bp) return badalloc();
+if (!bp)
+  return badalloc();
+len = ASN1_TIME_print(bp, asntime);
+len = len > 0 ? (int) BIO_get_mem_data(bp, &s) : 0;
 
-len = ASN1_TIME_print(bp, time);
-return mod &&  Ustrcmp(mod, "int") == 0
-  ? bio_string_time_to_int(bp, len)
-  : bio_string_copy(bp, len);
+if (mod && Ustrcmp(mod, "raw") == 0)		/* native ASN */
+  s = string_copyn(s, len);
+else
+  {
+  struct tm tm;
+  struct tm * tm_p = &tm;
+  BOOL mod_tz;
+  char * tz = to_tz("GMT0");	/* need to call strptime with baseline TZ */
+
+  /* Parse OpenSSL ASN1_TIME_print output.  A shame there seems to
+  be no other interface for the times.
+  */
+
+  /*XXX %Z might be glibc-specific?  Solaris has it, at least*/
+  /*XXX should we switch to POSIX locale for this? */
+  tm.tm_isdst = 0;
+  if (!strptime(CCS s, "%b %e %T %Y %Z", &tm))
+    expand_string_message = US"failed time conversion";
+
+  else
+    {
+    time_t t = mktime(&tm);	/* make the tm self-consistent */
+
+    if (mod && Ustrcmp(mod, "int") == 0)	/* seconds since epoch */
+      s = string_sprintf("%u", t);
+
+    else
+      {
+      if (!timestamps_utc)	/* decoded string in local TZ */
+	{				/* shift to local TZ */
+	restore_tz(tz);
+	mod_tz = FALSE;
+	tm_p = localtime(&t);
+	}
+      /* "utc" is default, and rfc5280 says cert times should be Zulu */
+
+      /* convert to string in our format */
+      len = 32;
+      s = store_get(len);
+      strftime(CS s, (size_t)len, "%b %e %T %Y %z", tm_p);
+      }
+    }
+
+  if (mod_tz);
+    restore_tz(tz);
+  }
+BIO_free(bp);
+return s;
 }
 
 static uschar *

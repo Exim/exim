@@ -98,15 +98,20 @@ static uschar *
 time_copy(time_t t, uschar * mod)
 {
 uschar * cp;
-struct tm * tp;
-size_t len;
+size_t len = 32;
 
 if (mod && Ustrcmp(mod, "int") == 0)
   return string_sprintf("%u", (unsigned)t);
 
-cp = store_get(32);
-tp = gmtime(&t);
-len = strftime(CS cp, 32, "%b %e %T %Y %Z", tp);
+cp = store_get(len);
+if (timestamps_utc)
+  {
+  char * tz = to_tz("GMT0");
+  len = strftime(CS cp, len, "%b %e %T %Y %Z", gmtime(&t));
+  restore_tz(tz);
+  }
+else
+  len = strftime(CS cp, len, "%b %e %T %Y %Z", localtime(&t));
 return len > 0 ? cp : NULL;
 }
 

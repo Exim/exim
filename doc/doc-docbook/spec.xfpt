@@ -8939,8 +8939,10 @@ a right angle-bracket followed immediately by the new separator.
 Recognised RDN type labels include "CN", "O", "OU" and "DC".
 
 The field selectors marked as "time" above
-may output a number of seconds since epoch
-if the modifier "int" is used.
+take an optional modifier of "int"
+for which the result is the number of seconds since epoch.
+Otherwise the result is a human-readable string
+in the timezone selected by the main "timezone" option.
 
 The field selectors marked as "list" above return a list,
 newline-separated by default,

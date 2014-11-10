@@ -8,6 +8,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+timezone = UTC
 
 # ----- Main settings -----
 

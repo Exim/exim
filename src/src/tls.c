@@ -81,6 +81,28 @@ return TRUE;
 
 
 /*************************************************
+*        Timezone environment flipping           *
+*************************************************/
+
+static uschar *
+to_tz(uschar * tz)
+{
+  uschar * old = US getenv("TZ");
+  setenv("TZ", CS tz, 1);
+  tzset(); 
+  return old;
+}
+static void
+restore_tz(uschar * tz)
+{
+  if (tz)
+    setenv("TZ", CS tz, 1);
+  else
+    unsetenv("TZ");
+  tzset(); 
+}
+
+/*************************************************
 *        Many functions are package-specific     *
 *************************************************/
 
