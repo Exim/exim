@@ -72,7 +72,6 @@ writing to file TESTSUITE/test-mail/userx
 writing data block fd=dddd size=sss timeout=0
 process pppp running as transport filter: write=dddd read=dddd
 writing data block fd=dddd size=sss timeout=0
-writing error 32: Broken pipe
 process pppp writing to transport filter
 copying from the filter
 waiting for filter process

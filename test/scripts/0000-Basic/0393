@@ -1,4 +1,7 @@
 # empty transport filter
+#
+munge no_tpt_filter_epipe
+#
 exim -d-all+transport -odi userx
 Testing with filter
 ****
