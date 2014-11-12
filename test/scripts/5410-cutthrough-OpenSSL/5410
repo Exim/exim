@@ -1,4 +1,7 @@
-# cutthrough_delivery to target offerring TLS
+# cutthrough_delivery to target offering TLS
+#
+munge optional_cert_hostnames
+#
 exim -DSERVER=server -bd -oX PORT_D
 ****
 # this one should succeed

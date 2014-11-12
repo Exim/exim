@@ -1319,6 +1319,9 @@ $munges =
     'no_tpt_filter_epipe' =>
     { 'stderr' => '/^writing error 32: Broken pipe$/' },
 
+    'optional_cert_hostnames' =>
+    { 'stderr' => '/in tls_verify_cert_hostnames\? no/' },
+
   };
 
 
