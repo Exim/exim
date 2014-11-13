@@ -71,6 +71,18 @@ JH/10 Time-related extraction expansions from certificates now use the main
       option "timezone" setting for output formatting, and are consistent
       between OpenSSL and GnuTLS compilations.  Bug 1541.
 
+JH/11 Fix a crash in mime ACL when meeting a zero-length parameter in the
+      incoming message.
+
+JH/12 Bug 1527: Autogrow buffer used in reading spool files.  Since they now
+      include certificate info, eximon was claiming there were spoolfile
+      syntax errors.
+
+JH/13 Buf 1521: Fix ldap lookup for single-attr request, multiple-attr return.
+
+JH/14 Log delivery-related information more consistently, using the sequence
+      "H=<name> [<ip>]" wherever possible.
+
 
 Exim version 4.84
 -----------------
