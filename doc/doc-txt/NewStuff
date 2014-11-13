@@ -6,6 +6,26 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.85
+------------
+
+ 1. If built with EXPERIMENTAL_DANE feature enabled, Exim will follow the
+    DANE smtp draft to assess a secure chain of trust of the certificate
+    used to establish the TLS connection based on a TLSA record in the
+    domain of the sender.
+
+ 2. The EXPERIMENTAL_TPDA feature has been renamed to EXPERIMENTAL_EVENT
+    and several new events have been created. The reason is because it has
+    been expanded beyond just firing events during the transport phase. Any
+    existing TPDA transport options will have to be rewritten to use a new
+    $event_name expansion variable in a condition. Refer to the
+    experimental-spec.txt for details and examples.
+
+ 3. The EXPERIMENTAL_CERTNAMES features is an enhancement to verify that
+    server certs used for TLS match the result of the MX lookup. It does
+    not use the same mechanism as DANE.
+
+
 Version 4.84
 ------------
 
