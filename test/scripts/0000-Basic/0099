@@ -1,5 +1,8 @@
 # retry data
-exim -odi userx@far.away.ex
+#
+#
+# This should add an entry for "thishost.test.ex"
+exim -odi userx@simple
 Test message
 ****
 dump retry
@@ -10,7 +13,20 @@ dump retry
 sleep 3
 exim -odi -q
 ****
+#
+# This should add two entries for "localhost.test.ex" (ipv4, ipv6)
+exim -odi usery@complex
+Test message 2
+****
 dump retry
+#
+# and one for thishost without its IP
+exim -odi -DRETRY=retry_include_ip_address=no userz@simple
+Test message
+****
+dump retry
+#
+#
 exim -brt x@dark.star.ex
 ****
 exim -brt x@a.b.c

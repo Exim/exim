@@ -1,5 +1,7 @@
 # Exim test configuration 0099
 
+RETRY =
+
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 rfc1413_query_timeout = 0s
@@ -21,7 +23,9 @@ begin routers
 
 all:
   driver = manualroute
-  route_list = "* 127.0.0.1 byname"
+  route_list = simple  thishost.test.ex  byname \
+	     ; complex localhost.test.ex byname \
+	     ; *       127.0.0.1         byname
   self = send
   transport = smtp
 
@@ -33,6 +37,7 @@ begin transports
 smtp:
   driver = smtp
   port = 999
+  RETRY
 
 
 # ----- Retry -----
