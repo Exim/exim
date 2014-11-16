@@ -148,6 +148,7 @@ typedef struct transport_instance {
   uschar *home_dir;               /* ) Used only for local transports   */
   uschar *current_dir;            /* )                                  */
                                   /**************************************/
+  uschar *expand_multi_domain;    /* )                                  */
   BOOL    multi_domain;           /* )                                  */
   BOOL    overrides_hosts;        /* ) Used only for remote transports  */
   int     max_addresses;          /* )                                  */
