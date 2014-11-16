@@ -48,7 +48,7 @@ Version 4.83
 
  4. New malware type "sock".  Talks over a Unix or TCP socket, sending one
     command line and matching a regex against the return data for trigger
-    and a second regex to extract malware_name.  The mail spoofile name can
+    and a second regex to extract malware_name.  The mail spoolfile name can
     be included in the command line.
 
  5. The smtp transport now supports options "tls_verify_hosts" and
