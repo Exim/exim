@@ -23224,7 +23224,7 @@ so can cause parallel connections to the same host if &%remote_max_parallel%&
 permits this.
 
 
-.option multi_domain smtp boolean true
+.option multi_domain smtp boolean&!! true
 .vindex "&$domain$&"
 When this option is set, the &(smtp)& transport can handle a number of
 addresses containing a mixture of different domains provided they all resolve
@@ -23233,6 +23233,9 @@ handling only one domain at a time. This is useful if you want to use
 &$domain$& in an expansion for the transport, because it is set only when there
 is a single domain involved in a remote delivery.
 
+It is expanded per-address and can depend on any of
+&$address_data$&, &$domain_data$&, &$local_part_data$&,
+&$host$&, &$host_address$& and &$host_port$&.
 
 .option port smtp string&!! "see below"
 .cindex "port" "sending TCP/IP"

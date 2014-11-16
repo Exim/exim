@@ -19,6 +19,8 @@ before the lower case letters). Some live in the transport_instance block so as
 to be publicly visible; these are flagged with opt_public. */
 
 optionlist smtp_transport_options[] = {
+  { "*expand_multi_domain",             opt_stringptr | opt_hidden | opt_public,
+      (void *)offsetof(transport_instance, expand_multi_domain) },
   { "*expand_retry_include_ip_address", opt_stringptr | opt_hidden,
        (void *)(offsetof(smtp_transport_options_block, expand_retry_include_ip_address)) },
 
@@ -145,7 +147,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, lmtp_ignore_quota) },
   { "max_rcpt",             opt_int | opt_public,
       (void *)offsetof(transport_instance, max_addresses) },
-  { "multi_domain",         opt_bool | opt_public,
+  { "multi_domain",         opt_expand_bool | opt_public,
       (void *)offsetof(transport_instance, multi_domain) },
   { "port",                 opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, port) },

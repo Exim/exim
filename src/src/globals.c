@@ -1356,6 +1356,7 @@ transport_instance  transport_defaults = {
     NULL,                     /* batch_id */
     NULL,                     /* home_dir */
     NULL,                     /* current_dir */
+    NULL,                     /* expand-multi-domain */
     TRUE,                     /* multi-domain */
     FALSE,                    /* overrides_hosts */
     100,                      /* max_addresses */

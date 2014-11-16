@@ -3844,9 +3844,20 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     }
 
   /* Get the flag which specifies whether the transport can handle different
-  domains that nevertheless resolve to the same set of hosts. */
+  domains that nevertheless resolve to the same set of hosts. If it needs
+  expanding, get variables set: $address_data, $domain_data, $localpart_data,
+  $host, $host_address, $host_port. */
+  if (tp->expand_multi_domain)
+    deliver_set_expansions(addr);
 
-  multi_domain = tp->multi_domain;
+  if (exp_bool(addr, US"transport", tp->name, D_transport,
+		US"multi_domain", tp->multi_domain, tp->expand_multi_domain,
+		&multi_domain) != OK)
+    {
+    deliver_set_expansions(NULL);
+    remote_post_process(addr, LOG_MAIN|LOG_PANIC, addr->message, fallback);
+    continue;
+    }
 
   /* Get the maximum it can handle in one envelope, with zero meaning
   unlimited, which is forced for the MUA wrapper case. */
@@ -3915,26 +3926,35 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   entirely different domains. The host list pointers can be NULL in the case
   where the hosts are defined in the transport. There is also a configured
   maximum limit of addresses that can be handled at once (see comments above
-  for how it is computed). */
+  for how it is computed).
+  If the transport does not handle multiple domains, enforce that also,
+  and if it might need a per-address check for this, re-evaluate it.
+  */
 
   while ((next = *anchor) != NULL && address_count < address_count_max)
     {
-    if ((multi_domain || Ustrcmp(next->domain, addr->domain) == 0)
-        &&
-        tp == next->transport
-        &&
-        same_hosts(next->host_list, addr->host_list)
-        &&
-        same_strings(next->p.errors_address, addr->p.errors_address)
-        &&
-        same_headers(next->p.extra_headers, addr->p.extra_headers)
-        &&
-        same_ugid(tp, next, addr)
-        &&
-        (next->p.remove_headers == addr->p.remove_headers ||
-          (next->p.remove_headers != NULL &&
-           addr->p.remove_headers != NULL &&
-           Ustrcmp(next->p.remove_headers, addr->p.remove_headers) == 0)))
+    BOOL md;
+    if (  (multi_domain || Ustrcmp(next->domain, addr->domain) == 0)
+       && tp == next->transport
+       && same_hosts(next->host_list, addr->host_list)
+       && same_strings(next->p.errors_address, addr->p.errors_address)
+       && same_headers(next->p.extra_headers, addr->p.extra_headers)
+       && same_ugid(tp, next, addr)
+       && (  next->p.remove_headers == addr->p.remove_headers
+	  || (  next->p.remove_headers != NULL
+	     && addr->p.remove_headers != NULL
+	     && Ustrcmp(next->p.remove_headers, addr->p.remove_headers) == 0
+	  )  )
+       && (  !multi_domain
+	  || (  (
+		!tp->expand_multi_domain || (deliver_set_expansions(next), 1),
+	        exp_bool(addr,
+		    US"transport", next->transport->name, D_transport,
+		    US"multi_domain", next->transport->multi_domain,
+		    next->transport->expand_multi_domain, &md) == OK
+	        )
+	     && md
+       )  )  )
       {
       *anchor = next->next;
       next->next = NULL;
@@ -3944,6 +3964,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       address_count++;
       }
     else anchor = &(next->next);
+    deliver_set_expansions(NULL);
     }
 
   /* If we are acting as an MUA wrapper, all addresses must go in a single

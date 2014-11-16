@@ -1,0 +1,66 @@
+# multi_domain option on smtp transport
+#
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+exim userx@domA.ex usery@domB.ex
+Test message
+****
+# Default case: can multi-domain
+exim -q
+****
+#
+#
+exim userx@domA.ex usery@domB.ex
+Test message
+****
+# Equivalent explicit case: can multi-domain
+exim -DOPTION=multi_domain=yes -q
+****
+#
+#
+exim userx@domA.ex usery@domB.ex
+Test message
+****
+# no multi-domain
+exim -DOPTION=multi_domain=no -q
+#
+#
+exim userx@domA.ex usery@domB.ex
+Test message
+****
+# Expanded case: can multi-domain
+exim -DOPTION='multi_domain=${if bool{1} {true}{false}}' -q
+****
+#
+#
+exim userx@domA.ex usery@domB.ex
+Test message
+****
+# Expanded case: no multi-domain (1)
+exim -DOPTION='multi_domain=${if eqi {$address_data}{domA.ex} {no}{yes}}' -q
+****
+#
+#
+exim userx@domA.ex usery@domB.ex
+Test message
+****
+# Expanded case: no multi-domain (2)
+exim -DOPTION='multi_domain=${if match_domain {$address_data}{domZ.ex : domY.ex : domB.ex} {no}{yes}}' -q
+****
+#
+#
+exim userx@domA.ex usery@domA.ex userz@domC.ex
+Test message
+****
+# Expanded case: both yes and no
+exim -DOPTION='multi_domain=${if eqi {$address_data}{domA.ex} {no}{yes}}' -q
+****
+#
+#
+killdaemon
+no_msglog_check
+#
+#
+##
