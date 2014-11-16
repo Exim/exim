@@ -20,6 +20,26 @@ first failed = time last try = time2 next try = time2 + 900
 first failed = time last try = time2 next try = time2 + 900
   T:thishost.test.ex:127.0.0.1:999 dd 65 Connection refused
 first failed = time last try = time2 next try = time2 + 900
++++++++++++++++++++++++++++
+  T:localhost.test.ex:127.0.0.1:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+  T:localhost.test.ex:::1:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+  T:thishost.test.ex:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+  T:thishost.test.ex:127.0.0.1:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
++++++++++++++++++++++++++++
+  T:localhost.test.ex:127.0.0.1:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+  T:localhost.test.ex:::1:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+  T:thishost.test.ex:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+  T:localhost.test.ex:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+  T:thishost.test.ex:127.0.0.1:999 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
 Retry rule: *.star.ex  *  F,3d,10m; 
 Retry rule: lsearch*@;TESTSUITE/aux-fixed/0099.rlist  *  F,1d,3m; 
 Retry rule: !*.not.ex  *  F,2d,15m; 

@@ -1488,7 +1488,7 @@ if (type < opt_bool || type > opt_bool_last)
   }
 
 /* If a boolean wasn't preceded by "no[t]_" it can be followed by = and
-true/false/yes/no, or, in the case of opt_expanded_bool, a general string that
+true/false/yes/no, or, in the case of opt_expand_bool, a general string that
 ultimately expands to one of those values. */
 
 else if (*s != 0 && (offset != 0 || *s != '='))

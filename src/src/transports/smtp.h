@@ -58,6 +58,7 @@ typedef struct {
   BOOL    hosts_randomize;
   BOOL    keepalive;
   BOOL    lmtp_ignore_quota;
+  uschar *expand_retry_include_ip_address;
   BOOL    retry_include_ip_address;
 #ifdef SUPPORT_TLS
   uschar *tls_certificate;

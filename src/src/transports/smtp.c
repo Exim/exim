@@ -19,6 +19,9 @@ before the lower case letters). Some live in the transport_instance block so as
 to be publicly visible; these are flagged with opt_public. */
 
 optionlist smtp_transport_options[] = {
+  { "*expand_retry_include_ip_address", opt_stringptr | opt_hidden,
+       (void *)(offsetof(smtp_transport_options_block, expand_retry_include_ip_address)) },
+
   { "address_retry_include_sender", opt_bool,
       (void *)offsetof(smtp_transport_options_block, address_retry_include_sender) },
   { "allow_localhost",      opt_bool,
@@ -148,7 +151,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, port) },
   { "protocol",             opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, protocol) },
-  { "retry_include_ip_address", opt_bool,
+  { "retry_include_ip_address", opt_expand_bool,
       (void *)offsetof(smtp_transport_options_block, retry_include_ip_address) },
   { "serialize_hosts",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, serialize_hosts) },
@@ -241,6 +244,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   FALSE,               /* hosts_randomize */
   TRUE,                /* keepalive */
   FALSE,               /* lmtp_ignore_quota */
+  NULL,		       /* expand_retry_include_ip_address */
   TRUE                 /* retry_include_ip_address */
 #ifdef SUPPORT_TLS
  ,NULL,                /* tls_certificate */
@@ -3194,14 +3198,20 @@ for (cutoff_retry = 0; expired &&
 
     if (cutoff_retry == 0)
       {
+      BOOL incl_ip;
       /* Ensure the status of the address is set by checking retry data if
-      necessary. There maybe host-specific retry data (applicable to all
+      necessary. There may be host-specific retry data (applicable to all
       messages) and also data for retries of a specific message at this host.
       If either of these retry records are actually read, the keys used are
       returned to save recomputing them later. */
 
+      if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
+		US"retry_include_ip_address", ob->retry_include_ip_address,
+		ob->expand_retry_include_ip_address, &incl_ip) != OK)
+	continue;	/* with next host */
+
       host_is_expired = retry_check_address(addrlist->domain, host, pistring,
-        ob->retry_include_ip_address, &retry_host_key, &retry_message_key);
+        incl_ip, &retry_host_key, &retry_message_key);
 
       DEBUG(D_transport) debug_printf("%s [%s]%s status = %s\n", host->name,
         (host->address == NULL)? US"" : host->address, pistring,
@@ -3439,7 +3449,13 @@ for (cutoff_retry = 0; expired &&
       int delete_flag = (rc != DEFER)? rf_delete : 0;
       if (retry_host_key == NULL)
         {
-        retry_host_key = ob->retry_include_ip_address?
+	BOOL incl_ip;
+	if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
+		  US"retry_include_ip_address", ob->retry_include_ip_address,
+		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
+	  incl_ip = TRUE;	/* error; use most-specific retry record */
+
+        retry_host_key = incl_ip ?
           string_sprintf("T:%S:%s%s", host->name, host->address, pistring) :
           string_sprintf("T:%S%s", host->name, pistring);
         }
@@ -3481,7 +3497,13 @@ for (cutoff_retry = 0; expired &&
       int delete_flag = message_defer? 0 : rf_delete;
       if (retry_message_key == NULL)
         {
-        retry_message_key = ob->retry_include_ip_address?
+	BOOL incl_ip;
+	if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
+		  US"retry_include_ip_address", ob->retry_include_ip_address,
+		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
+	  incl_ip = TRUE;	/* error; use most-specific retry record */
+
+        retry_message_key = incl_ip ?
           string_sprintf("T:%S:%s%s:%s", host->name, host->address, pistring,
             message_id) :
           string_sprintf("T:%S%s:%s", host->name, pistring, message_id);
