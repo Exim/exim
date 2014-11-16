@@ -1306,67 +1306,6 @@ return yield;
 
 
 /*************************************************
-*           Sort out "more" or "unseen"          *
-*************************************************/
-
-/* These values are usually fixed boolean values, but they are permitted to be
-expanded strings.
-
-Arguments:
-  addr       address being routed
-  rname      the router name
-  oname      the option name
-  bvalue     the router's boolean value
-  svalue     the router's string value
-  rvalue     where to put the returned value
-
-Returns:     OK     value placed in rvalue
-             DEFER  expansion failed
-*/
-
-static int
-exp_bool(address_item *addr, uschar *rname, uschar *oname, BOOL bvalue,
-  uschar *svalue, BOOL *rvalue)
-{
-uschar *expanded;
-if (svalue == NULL) { *rvalue = bvalue; return OK; }
-
-expanded = expand_string(svalue);
-if (expanded == NULL)
-  {
-  if (expand_string_forcedfail)
-    {
-    DEBUG(D_route) debug_printf("expansion of \"%s\" forced failure\n", oname);
-    *rvalue = bvalue;
-    return OK;
-    }
-  addr->message = string_sprintf("failed to expand \"%s\" in %s router: %s",
-      oname, rname, expand_string_message);
-  DEBUG(D_route) debug_printf("%s\n", addr->message);
-  return DEFER;
-  }
-
-DEBUG(D_route) debug_printf("expansion of \"%s\" yields \"%s\"\n", oname,
-  expanded);
-
-if (strcmpic(expanded, US"true") == 0 || strcmpic(expanded, US"yes") == 0)
-  *rvalue = TRUE;
-else if (strcmpic(expanded, US"false") == 0 || strcmpic(expanded, US"no") == 0)
-  *rvalue = FALSE;
-else
-  {
-  addr->message = string_sprintf("\"%s\" is not a valid value for the "
-    "\"%s\" option in the %s router", expanded, oname, rname);
-  return DEFER;
-  }
-
-return OK;
-}
-
-
-
-
-/*************************************************
 *            Handle an unseen routing            *
 *************************************************/
 
@@ -1689,8 +1628,8 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
         /* Expand "more" if necessary; DEFER => an expansion failed */
 
-        yield = exp_bool(addr, r->name, US"more", r->more, r->expand_more,
-          &more);
+        yield = exp_bool(addr, US"router", r->name, D_route,
+			US"more", r->more, r->expand_more, &more);
         if (yield != OK) goto ROUTE_EXIT;
 
         if (!more)
@@ -1799,7 +1738,8 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
     {
     /* Expand "more" if necessary */
 
-    yield = exp_bool(addr, r->name, US"more", r->more, r->expand_more, &more);
+    yield = exp_bool(addr, US"router", r->name, D_route,
+		       	US"more", r->more, r->expand_more, &more);
     if (yield != OK) goto ROUTE_EXIT;
 
     if (!more)
@@ -1939,8 +1879,8 @@ if (r->translate_ip_address != NULL)
 /* See if this is an unseen routing; first expand the option if necessary.
 DEFER can be given if the expansion fails */
 
-yield = exp_bool(addr, r->name, US"unseen", r->unseen, r->expand_unseen,
-  &unseen);
+yield = exp_bool(addr, US"router", r->name, D_route,
+	       	US"unseen", r->unseen, r->expand_unseen, &unseen);
 if (yield != OK) goto ROUTE_EXIT;
 
 /* Debugging output recording a successful routing */

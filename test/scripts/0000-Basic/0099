@@ -26,6 +26,18 @@ Test message
 ****
 dump retry
 #
+# expanded option, giving true, should leave the localhost pair unchanged
+exim -odi -DRETRY='retry_include_ip_address=${if eq{with}{$local_part} {yes}{no}}' with@complex
+Test message
+****
+dump retry
+#
+# expanded option, giving false, should add another localhost entry, without IP
+exim -odi -DRETRY='retry_include_ip_address=${if eq{with}{$local_part} {yes}{no}}' without@complex
+Test message
+****
+dump retry
+#
 #
 exim -brt x@dark.star.ex
 ****

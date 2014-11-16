@@ -23268,7 +23268,7 @@ connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
 The Internet standards bodies strongly discourage use of this mode.
 
 
-.option retry_include_ip_address smtp boolean true
+.option retry_include_ip_address smtp boolean&!! true
 Exim normally includes both the host name and the IP address in the key it
 constructs for indexing retry data after a temporary delivery failure. This
 means that when one of several IP addresses for a host is failing, it gets
@@ -23278,9 +23278,8 @@ addresses is not affected.
 However, in some dialup environments hosts are assigned a different IP address
 each time they connect. In this situation the use of the IP address as part of
 the retry key leads to undesirable behaviour. Setting this option false causes
-Exim to use only the host name. This should normally be done on a separate
-instance of the &(smtp)& transport, set up specially to handle the dialup
-hosts.
+Exim to use only the host name.
+Since it is expanded it can be made to depend on the host or domain.
 
 
 .option serialize_hosts smtp "host list&!!" unset

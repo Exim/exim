@@ -7138,6 +7138,67 @@ return -2;
 }
 
 
+/* These values are usually fixed boolean values, but they are permitted to be
+expanded strings.
+
+Arguments:
+  addr       address being routed
+  mtype      the module type
+  mname      the module name
+  dbg_opt    debug selectors
+  oname      the option name
+  bvalue     the router's boolean value
+  svalue     the router's string value
+  rvalue     where to put the returned value
+
+Returns:     OK     value placed in rvalue
+             DEFER  expansion failed
+*/
+
+int
+exp_bool(address_item *addr,
+  uschar *mtype, uschar *mname, unsigned dbg_opt,
+  uschar *oname, BOOL bvalue,
+  uschar *svalue, BOOL *rvalue)
+{
+uschar *expanded;
+if (svalue == NULL) { *rvalue = bvalue; return OK; }
+
+expanded = expand_string(svalue);
+if (expanded == NULL)
+  {
+  if (expand_string_forcedfail)
+    {
+    DEBUG(dbg_opt) debug_printf("expansion of \"%s\" forced failure\n", oname);
+    *rvalue = bvalue;
+    return OK;
+    }
+  addr->message = string_sprintf("failed to expand \"%s\" in %s %s: %s",
+      oname, mname, mtype, expand_string_message);
+  DEBUG(dbg_opt) debug_printf("%s\n", addr->message);
+  return DEFER;
+  }
+
+DEBUG(dbg_opt) debug_printf("expansion of \"%s\" yields \"%s\"\n", oname,
+  expanded);
+
+if (strcmpic(expanded, US"true") == 0 || strcmpic(expanded, US"yes") == 0)
+  *rvalue = TRUE;
+else if (strcmpic(expanded, US"false") == 0 || strcmpic(expanded, US"no") == 0)
+  *rvalue = FALSE;
+else
+  {
+  addr->message = string_sprintf("\"%s\" is not a valid value for the "
+    "\"%s\" option in the %s %s", expanded, oname, mname, mtype);
+  return DEFER;
+  }
+
+return OK;
+}
+
+
+
+
 /*************************************************
 **************************************************
 *             Stand-alone test program           *

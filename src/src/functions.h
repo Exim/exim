@@ -165,6 +165,9 @@ extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
 extern int     exim_tvcmp(struct timeval *, struct timeval *);
 extern void    exim_wait_tick(struct timeval *, int);
+extern int     exp_bool(address_item *addr,
+  uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,
+  uschar *svalue, BOOL *rvalue);
 extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
 extern uschar *expand_string(uschar *);
 extern uschar *expand_string_copy(uschar *);
