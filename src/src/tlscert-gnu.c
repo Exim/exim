@@ -106,7 +106,7 @@ if (mod && Ustrcmp(mod, "int") == 0)
 cp = store_get(len);
 if (timestamps_utc)
   {
-  char * tz = to_tz("GMT0");
+  uschar * tz = to_tz(US"GMT0");
   len = strftime(CS cp, len, "%b %e %T %Y %Z", gmtime(&t));
   restore_tz(tz);
   }

@@ -165,7 +165,7 @@ Returns:      pointer to the buffer
 uschar *
 string_format_size(int size, uschar *buffer)
 {
-if (size == 0) Ustrcpy(CS buffer, "     ");
+if (size == 0) Ustrcpy(buffer, "     ");
 else if (size < 1024) sprintf(CS buffer, "%5d", size);
 else if (size < 10*1024)
   sprintf(CS buffer, "%4.1fK", (double)size / 1024.0);

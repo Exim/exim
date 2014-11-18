@@ -6660,14 +6660,13 @@ if (addr_senddsn != NULL)
     FILE *f = fdopen(fd, "wb");
     /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
     int topt = topt_add_return_path | topt_no_body;
-    uschar boundaryStr[64];
+    uschar * bound;
      
     DEBUG(D_deliver) debug_printf("sending error message to: %s\n", sender_address);
   
     /* build unique id for MIME boundary */
-    snprintf(boundaryStr, sizeof(boundaryStr)-1, TIME_T_FMT "-eximdsn-%d",
-      time(NULL), rand());
-    DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", boundaryStr);
+    bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
+    DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", bound);
   
     if (errors_reply_to)
       fprintf(f, "Reply-To: %s\n", errors_reply_to);
@@ -6684,7 +6683,7 @@ if (addr_senddsn != NULL)
    
 	"This message was created automatically by mail delivery software.\n"
 	" ----- The following addresses had successful delivery notifications -----\n",
-      qualify_domain_sender, sender_address, boundaryStr, boundaryStr);
+      qualify_domain_sender, sender_address, bound, bound);
 
     addr_dsntmp = addr_senddsn;
     while(addr_dsntmp)
@@ -6702,7 +6701,7 @@ if (addr_senddsn != NULL)
     fprintf(f, "--%s\n"
 	"Content-type: message/delivery-status\n\n"
 	"Reporting-MTA: dns; %s\n",
-      boundaryStr, smtp_active_hostname);
+      bound, smtp_active_hostname);
 
     if (dsn_envid != NULL) {
       /* must be decoded from xtext: see RFC 3461:6.3a */
@@ -6735,7 +6734,7 @@ if (addr_senddsn != NULL)
       fputc('\n', f);
       }
 
-    fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", boundaryStr);
+    fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", bound);
            
     fflush(f);
     transport_filter_argv = NULL;   /* Just in case */
@@ -6746,7 +6745,7 @@ if (addr_senddsn != NULL)
     fflush(f);
 
     fprintf(f,"\n");       
-    fprintf(f,"--%s--\n", boundaryStr);
+    fprintf(f,"--%s--\n", bound);
 
     fflush(f);
     fclose(f);
@@ -6871,7 +6870,7 @@ while (addr_failed != NULL)
       int max = (bounce_return_size_limit/DELIVER_IN_BUFFER_SIZE + 1) *
         DELIVER_IN_BUFFER_SIZE;
 #ifdef EXPERIMENTAL_DSN
-      uschar boundaryStr[64];
+      uschar * bound;
       uschar *dsnlimitmsg;
       uschar *dsnnotifyhdr;
       int topt;
@@ -6931,13 +6930,12 @@ while (addr_failed != NULL)
 
 #ifdef EXPERIMENTAL_DSN
       /* generate boundary string and output MIME-Headers */
-      snprintf(boundaryStr, sizeof(boundaryStr)-1, TIME_T_FMT "-eximdsn-%d",
-	time(NULL), rand());
+      bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
 
       fprintf(f, "Content-Type: multipart/report;"
 	    " report-type=delivery-status; boundary=%s\n"
 	  "MIME-Version: 1.0\n",
-	boundaryStr);
+	bound);
 #endif
 
       /* Open a template file if one is provided. Log failure to open, but
@@ -6967,7 +6965,7 @@ while (addr_failed != NULL)
       /* output human readable part as text/plain section */
       fprintf(f, "--%s\n"
 	  "Content-type: text/plain; charset=us-ascii\n\n",
-	boundaryStr);
+	bound);
 #endif
 
       if ((emf_text = next_emf(emf, US"intro")))
@@ -7100,7 +7098,7 @@ wording. */
       fprintf(f, "--%s\n"
 	  "Content-type: message/delivery-status\n\n"
 	  "Reporting-MTA: dns; %s\n",
-	boundaryStr, smtp_active_hostname);
+	bound, smtp_active_hostname);
 
       if (dsn_envid)
 	{
@@ -7202,7 +7200,7 @@ wording. */
          bounce_return_size_limit is always honored.
       */
   
-      fprintf(f, "\n--%s\n", boundaryStr);
+      fprintf(f, "\n--%s\n", bound);
 
       dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
       dsnnotifyhdr = NULL;
@@ -7247,7 +7245,7 @@ wording. */
       if (emf)
         (void)fclose(emf);
  
-      fprintf(f, "\n--%s--\n", boundaryStr);
+      fprintf(f, "\n--%s--\n", bound);
 #endif	/*EXPERIMENTAL_DSN*/
 
       /* Close the file, which should send an EOF to the child process
@@ -7553,7 +7551,7 @@ else if (addr_defer != (address_item *)(+1))
         FILE *wmf = NULL;
         FILE *f = fdopen(fd, "wb");
 #ifdef EXPERIMENTAL_DSN
-	uschar boundaryStr[64];
+	uschar * bound;
 #endif
 
         if (warn_message_file)
@@ -7577,13 +7575,12 @@ else if (addr_defer != (address_item *)(+1))
 
 #ifdef EXPERIMENTAL_DSN
         /* generated boundary string and output MIME-Headers */
-        snprintf(boundaryStr, sizeof(boundaryStr)-1,
-	  TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
+        bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
 
         fprintf(f, "Content-Type: multipart/report;"
 	    " report-type=delivery-status; boundary=%s\n"
 	    "MIME-Version: 1.0\n",
-	  boundaryStr);
+	  bound);
 #endif
 
         if ((wmf_text = next_emf(wmf, US"header")))
@@ -7596,7 +7593,7 @@ else if (addr_defer != (address_item *)(+1))
         /* output human readable part as text/plain section */
         fprintf(f, "--%s\n"
 	    "Content-type: text/plain; charset=us-ascii\n\n",
-	  boundaryStr);
+	  bound);
 #endif
 
         if ((wmf_text = next_emf(wmf, US"intro")))
@@ -7673,7 +7670,7 @@ else if (addr_defer != (address_item *)(+1))
         fprintf(f, "\n--%s\n"
 	    "Content-type: message/delivery-status\n\n"
 	    "Reporting-MTA: dns; %s\n",
-	  boundaryStr,
+	  bound,
 	  smtp_active_hostname);
  
 
@@ -7704,7 +7701,7 @@ else if (addr_defer != (address_item *)(+1))
 
         fprintf(f, "\n--%s\n"
 	    "Content-type: text/rfc822-headers\n\n",
-	  boundaryStr);
+	  bound);
 
         fflush(f);
         /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
@@ -7715,7 +7712,7 @@ else if (addr_defer != (address_item *)(+1))
         transport_write_message(NULL, fileno(f), topt, 0, NULL, NULL, NULL, NULL, NULL, 0);
         fflush(f);
 
-        fprintf(f,"\n--%s--\n", boundaryStr);
+        fprintf(f,"\n--%s--\n", bound);
 
         fflush(f);
 #endif	/*EXPERIMENTAL_DSN*/

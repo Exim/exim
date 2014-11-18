@@ -121,7 +121,7 @@ else
   struct tm tm;
   struct tm * tm_p = &tm;
   BOOL mod_tz;
-  char * tz = to_tz("GMT0");	/* need to call strptime with baseline TZ */
+  uschar * tz = to_tz(US"GMT0");    /* need to call strptime with baseline TZ */
 
   /* Parse OpenSSL ASN1_TIME_print output.  A shame there seems to
   be no other interface for the times.

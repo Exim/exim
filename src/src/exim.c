@@ -2683,7 +2683,7 @@ for (i = 1; i < argc; i++)
     #ifdef EXPERIMENTAL_DSN
     /* -MCD: set the smtp_use_dsn flag; this indicates that the host
        that exim is connected to supports the esmtp extension DSN */
-    else if (strcmp(argrest, "CD") == 0)
+    else if (Ustrcmp(argrest, "CD") == 0)
       {
       smtp_use_dsn = TRUE;
       break;

@@ -277,7 +277,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 static int     rf_list[] = {rf_notify_never, rf_notify_success,
                             rf_notify_failure, rf_notify_delay };
 
-static uschar *rf_names[] = { "NEVER", "SUCCESS", "FAILURE", "DELAY" };
+static uschar *rf_names[] = { US"NEVER", US"SUCCESS", US"FAILURE", US"DELAY" };
 #endif
 
 
@@ -1871,12 +1871,12 @@ if ((smtp_use_dsn) && (dsn_all_lasthop == FALSE))
   {
   if (dsn_ret == dsn_ret_hdrs)
     {
-    strcpy(p, " RET=HDRS");
+    Ustrcpy(p, " RET=HDRS");
     while (*p) p++;
     }
   else if (dsn_ret == dsn_ret_full)
     {
-    strcpy(p, " RET=FULL");
+    Ustrcpy(p, " RET=FULL");
     while (*p) p++;
     }
   if (dsn_envid != NULL)
@@ -1973,14 +1973,14 @@ for (addr = first_addr;
       {
       int i;
       BOOL first = TRUE;
-      strcpy(p, " NOTIFY=");
+      Ustrcpy(p, " NOTIFY=");
       while (*p) p++;
       for (i = 0; i < 4; i++)
         if ((addr->dsn_flags & rf_list[i]) != 0)
           {
           if (!first) *p++ = ',';
           first = FALSE;
-          strcpy(p, rf_names[i]);
+          Ustrcpy(p, rf_names[i]);
           while (*p) p++;
           }
       }

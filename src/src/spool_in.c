@@ -496,13 +496,9 @@ for (;;)
 #ifdef EXPERIMENTAL_DSN
     /* Check if the dsn flags have been set in the header file */
     else if (Ustrncmp(p, "sn_ret", 6) == 0)
-      {
-      dsn_ret= atoi(big_buffer + 8);
-      }
+      dsn_ret= atoi(CS big_buffer + 8);
     else if (Ustrncmp(p, "sn_envid", 8) == 0)
-      {
       dsn_envid = string_copy(big_buffer + 11);
-      }
 #endif
     break;
 

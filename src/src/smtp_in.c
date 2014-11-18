@@ -4169,18 +4169,16 @@ while (done <= 0)
 
     if (esmtp) for(;;)
       {
-      uschar *name, *value, *end;
-      int size;
+      uschar *name, *value;
 
       if (!extract_option(&name, &value))
-        {
         break;
-        }
 
       if (dsn_advertised && strcmpic(name, US"ORCPT") == 0)
         {
         /* Check whether orcpt has been already set */
-        if (orcpt != NULL) {
+        if (orcpt)
+	  {
           synprot_error(L_smtp_syntax_error, 501, NULL,
             US"ORCPT can be specified once only");
           goto COMMAND_LOOP;
@@ -4192,32 +4190,39 @@ while (done <= 0)
       else if (dsn_advertised && strcmpic(name, US"NOTIFY") == 0)
         {
         /* Check if the notify flags have been already set */
-        if (flags > 0) {
+        if (flags > 0)
+	  {
           synprot_error(L_smtp_syntax_error, 501, NULL,
               US"NOTIFY can be specified once only");
           goto COMMAND_LOOP;
           }
-        if (strcmpic(value, US"NEVER") == 0) flags |= rf_notify_never; else
+        if (strcmpic(value, US"NEVER") == 0)
+	  flags |= rf_notify_never;
+	else
           {
           uschar *p = value;
           while (*p != 0)
             {
             uschar *pp = p;
             while (*pp != 0 && *pp != ',') pp++;
-              if (*pp == ',') *pp++ = 0;
-            if (strcmpic(p, US"SUCCESS") == 0) {
-                DEBUG(D_receive) debug_printf("DSN: Setting notify success\n");
-                flags |= rf_notify_success;
+	    if (*pp == ',') *pp++ = 0;
+            if (strcmpic(p, US"SUCCESS") == 0)
+	      {
+	      DEBUG(D_receive) debug_printf("DSN: Setting notify success\n");
+	      flags |= rf_notify_success;
               }
-            else if (strcmpic(p, US"FAILURE") == 0) {
-                DEBUG(D_receive) debug_printf("DSN: Setting notify failure\n");
-                flags |= rf_notify_failure;
+            else if (strcmpic(p, US"FAILURE") == 0)
+	      {
+	      DEBUG(D_receive) debug_printf("DSN: Setting notify failure\n");
+	      flags |= rf_notify_failure;
               }
-            else if (strcmpic(p, US"DELAY") == 0) {
-                DEBUG(D_receive) debug_printf("DSN: Setting notify delay\n");
-                flags |= rf_notify_delay;
+            else if (strcmpic(p, US"DELAY") == 0)
+	      {
+	      DEBUG(D_receive) debug_printf("DSN: Setting notify delay\n");
+	      flags |= rf_notify_delay;
               }
-            else {
+            else
+	      {
               /* Catch any strange values */
               synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"Invalid value for NOTIFY parameter");
