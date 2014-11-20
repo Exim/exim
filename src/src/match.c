@@ -15,8 +15,8 @@
 strings, domains, and local parts. */
 
 typedef struct check_string_block {
-  uschar *origsubject;               /* caseful; keep these two first, in */
-  uschar *subject;                   /* step with the block below */
+  const uschar *origsubject;           /* caseful; keep these two first, in */
+  const uschar *subject;               /* step with the block below */
   int    expand_setup;
   BOOL   use_partial;
   BOOL   caseless;
@@ -94,7 +94,7 @@ Returns:       OK    if matched
 static int
 check_string(void *arg, uschar *pattern, uschar **valueptr, uschar **error)
 {
-check_string_block *cb = (check_string_block *)arg;
+const check_string_block *cb = arg;
 int search_type, partial, affixlen, starflags;
 int expand_setup = cb->expand_setup;
 uschar *affix;
@@ -111,7 +111,7 @@ if (valueptr != NULL) *valueptr = NULL;  /* For non-lookup matches */
 it works if the pattern uses (?-i) to turn off case-independence, overriding
 "caseless". */
 
-s = (pattern[0] == '^')? cb->origsubject : cb->subject;
+s = string_copy(pattern[0] == '^' ? cb->origsubject : cb->subject);
 
 /* If required to set up $0, initialize the data but don't turn on by setting
 expand_nmax until the match is assured. */
@@ -131,7 +131,7 @@ if (pattern[0] == '^')
   {
   const pcre *re = regex_must_compile(pattern, cb->caseless, FALSE);
   return ((expand_setup < 0)?
-           pcre_exec(re, NULL, CS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) >= 0
+           pcre_exec(re, NULL, CCS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) >= 0
            :
            regex_match_and_setup(re, s, 0, expand_setup)
          )?
@@ -366,7 +366,7 @@ Arguments:
   type         MCL_STRING, MCL_DOMAIN, MCL_HOST, MCL_ADDRESS, or MCL_LOCALPART
 */
 
-static uschar *
+static const uschar *
 get_check_key(void *arg, int type)
 {
 switch(type)
@@ -489,7 +489,7 @@ else
   if (type == MCL_DOMAIN && deliver_domain == NULL)
     {
     check_string_block *cb = (check_string_block *)arg;
-    deliver_domain = cb->subject;
+    deliver_domain = string_copy(cb->subject);
     list = expand_string(*listptr);
     deliver_domain = NULL;
     }
@@ -701,7 +701,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
         cached = US" - cached";
         if (valueptr != NULL)
           {
-          uschar *key = get_check_key(arg, type);
+          const uschar *key = get_check_key(arg, type);
           namedlist_cacheblock *p;
           for (p = nb->cache_data; p != NULL; p = p->next)
             {
@@ -952,7 +952,8 @@ Returns:         OK    if matched a non-negated item
 */
 
 int
-match_isinlist(uschar *s, uschar **listptr, int sep, tree_node **anchorptr,
+match_isinlist(const uschar *s, uschar **listptr, int sep,
+   tree_node **anchorptr,
   unsigned int *cache_bits, int type, BOOL caseless, uschar **valueptr)
 {
 unsigned int *local_cache_bits = cache_bits;

@@ -46,7 +46,7 @@ Returns:      length of returned data, or -1 on error (h_errno set)
 */
 
 static int
-fakens_search(uschar *domain, int type, uschar *answerptr, int size)
+fakens_search(const uschar *domain, int type, uschar *answerptr, int size)
 {
 int len = Ustrlen(domain);
 int asize = size;                  /* Locally modified */
@@ -443,7 +443,7 @@ Returns:    bool indicating presence of AD bit
 */
 
 BOOL
-dns_is_secure(dns_answer *dnsa)
+dns_is_secure(const dns_answer *dnsa)
 {
 #ifdef DISABLE_DNSSEC
 DEBUG(D_dns)
@@ -510,7 +510,7 @@ Returns:     the return code
 */
 
 static int
-dns_return(uschar *name, int type, int rc)
+dns_return(const uschar * name, int type, int rc)
 {
 res_state resp = os_get_dns_resolver_res();
 tree_node *node = store_get_perm(sizeof(tree_node) + 290);
@@ -549,7 +549,7 @@ Returns:    DNS_SUCCEED   successful lookup
 */
 
 int
-dns_basic_lookup(dns_answer *dnsa, uschar *name, int type)
+dns_basic_lookup(dns_answer *dnsa, const uschar *name, int type)
 {
 #ifndef STAND_ALONE
 int rc = -1;
@@ -597,7 +597,7 @@ For SRV records, we omit the initial _smtp._tcp. components at the start. */
 
 if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
   {
-  uschar *checkname = name;
+  const uschar *checkname = name;
   int ovector[3*(EXPAND_MAXN+1)];
 
   if (regex_check_dns_names == NULL)
@@ -613,7 +613,7 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
     while (*checkname++ != '.');
     }
 
-  if (pcre_exec(regex_check_dns_names, NULL, CS checkname, Ustrlen(checkname),
+  if (pcre_exec(regex_check_dns_names, NULL, CCS checkname, Ustrlen(checkname),
       0, PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int)) < 0)
     {
     DEBUG(D_dns)
@@ -650,7 +650,7 @@ domains, and interfaces to a fake nameserver for certain special zones. */
 if (running_in_test_harness)
   dnsa->answerlen = fakens_search(name, type, dnsa->answer, MAXPACKET);
 else
-  dnsa->answerlen = res_search(CS name, C_IN, type, dnsa->answer, MAXPACKET);
+  dnsa->answerlen = res_search(CCS name, C_IN, type, dnsa->answer, MAXPACKET);
 
 if (dnsa->answerlen > MAXPACKET)
   {
@@ -671,9 +671,9 @@ if (dnsa->answerlen < 0) switch (h_errno)
     name, dns_text_type(type));
 
   /* Cut this out for various test programs */
-  #ifndef STAND_ALONE
+#ifndef STAND_ALONE
   save = deliver_domain;
-  deliver_domain = name;  /* set $domain */
+  deliver_domain = string_copy(name);  /* set $domain */
   rc = match_isinlist(name, &dns_again_means_nonexist, 0, NULL, NULL,
     MCL_DOMAIN, TRUE, NULL);
   deliver_domain = save;
@@ -686,9 +686,9 @@ if (dnsa->answerlen < 0) switch (h_errno)
     "DNS_NOMATCH\n", name);
   return dns_return(name, type, DNS_NOMATCH);
 
-  #else   /* For stand-alone tests */
+#else   /* For stand-alone tests */
   return dns_return(name, type, DNS_AGAIN);
-  #endif
+#endif
 
   case NO_RECOVERY:
   DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_RECOVERY\n"
@@ -749,10 +749,11 @@ Returns:                DNS_SUCCEED   successful lookup
 */
 
 int
-dns_lookup(dns_answer *dnsa, uschar *name, int type, uschar **fully_qualified_name)
+dns_lookup(dns_answer *dnsa, const uschar *name, int type,
+  uschar **fully_qualified_name)
 {
 int i;
-uschar *orig_name = name;
+const uschar *orig_name = name;
 
 /* Loop to follow CNAME chains so far, but no further... */
 
@@ -816,7 +817,7 @@ for (i = 0; i < 10; i++)
 
   if (cname_rr.data == NULL) return DNS_FAIL;
   datalen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256);
+    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, sizeof(data));
   if (datalen < 0) return DNS_FAIL;
   name = data;
 
@@ -858,7 +859,7 @@ Returns:                DNS_SUCCEED   successful lookup
 */
 
 int
-dns_special_lookup(dns_answer *dnsa, uschar *name, int type,
+dns_special_lookup(dns_answer *dnsa, const uschar *name, int type,
   uschar **fully_qualified_name)
 {
 if (type >= 0) return dns_lookup(dnsa, name, type, fully_qualified_name);
@@ -872,7 +873,7 @@ root servers. */
 
 if (type == T_ZNS)
   {
-  uschar *d = name;
+  const uschar *d = name;
   while (d != 0)
     {
     int rc = dns_lookup(dnsa, d, T_NS, fully_qualified_name);
@@ -905,7 +906,7 @@ if (type == T_CSA)
   rc = dns_lookup(dnsa, srvname, T_SRV, NULL);
   if (rc == DNS_SUCCEED || rc == DNS_AGAIN)
     {
-    if (rc == DNS_SUCCEED) *fully_qualified_name = name;
+    if (rc == DNS_SUCCEED) *fully_qualified_name = string_copy(name);
     return rc;
     }
 

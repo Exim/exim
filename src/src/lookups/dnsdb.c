@@ -498,7 +498,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
           the subdomain assertions in the port field, else analyse the direct
           authorization status in the weight field. */
 
-          if (found != domain)
+          if (Ustrcmp(found, domain) != 0)
             {
             if (port & 1) *s = 'X';         /* explicit authorization required */
             else *s = '?';                  /* no subdomain assertions here */

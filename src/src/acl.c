@@ -1550,7 +1550,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   assertion: legitimate SMTP clients are all explicitly authorized with CSA
   SRV records of their own. */
 
-  if (found != domain)
+  if (Ustrcmp(found, domain) != 0)
     {
     if (port & 1)
       return t->data.val = CSA_FAIL_EXPLICIT;

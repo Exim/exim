@@ -457,7 +457,7 @@ Returns:  copy of string in new store, with letters lowercased
 */
 
 uschar *
-string_copylc(uschar *s)
+string_copylc(const uschar *s)
 {
 uschar *ss = store_get(Ustrlen(s) + 1);
 uschar *p = ss;
@@ -483,7 +483,7 @@ Returns:    copy of string in new store
 */
 
 uschar *
-string_copyn(uschar *s, int n)
+string_copyn(const uschar *s, int n)
 {
 uschar *ss = store_get(n + 1);
 Ustrncpy(ss, s, n);

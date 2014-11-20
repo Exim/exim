@@ -191,7 +191,7 @@ extern int     smtp_fflush(void);
 extern void    smtp_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    smtp_vprintf(const char *, va_list);
 extern uschar *string_copy(const uschar *);
-extern uschar *string_copyn(uschar *, int);
+extern uschar *string_copyn(const uschar *, int);
 extern uschar *string_sprintf(const char *, ...) ALMOST_PRINTF(1,2);
 
 /* End of local_scan.h */
