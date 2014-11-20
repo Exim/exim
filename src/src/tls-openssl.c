@@ -1684,12 +1684,10 @@ int rc;
    the specified host patterns if one of them is defined */
 
 if (  (!ob->tls_verify_hosts && !ob->tls_try_verify_hosts)
-   || (verify_check_this_host(&ob->tls_verify_hosts, NULL,
-		host->name, host->address, NULL) == OK)
+   || (verify_check_given_host(&ob->tls_verify_hosts, host) == OK)
    )
   client_verify_optional = FALSE;
-else if (verify_check_this_host(&ob->tls_try_verify_hosts, NULL,
-		host->name, host->address, NULL) == OK)
+else if (verify_check_given_host(&ob->tls_try_verify_hosts, host) == OK)
   client_verify_optional = TRUE;
 else
   return OK;
@@ -1699,8 +1697,7 @@ if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
   return rc;
 
 #ifdef EXPERIMENTAL_CERTNAMES
-if (verify_check_this_host(&ob->tls_verify_cert_hostnames, NULL,
-	      host->name, host->address, NULL) == OK)
+if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
   cbinfo->verify_cert_hostnames = host->name;
   DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
@@ -1829,15 +1826,15 @@ tls_out.tlsa_usage = 0;
     }
 # endif
 
-  if ((require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
-    NULL, host->name, host->address, NULL) == OK))
+  if ((require_ocsp =
+	verify_check_given_host(&ob->hosts_require_ocsp, host) == OK))
     request_ocsp = TRUE;
   else
 # ifdef EXPERIMENTAL_DANE
     if (!request_ocsp)
 # endif
-      request_ocsp = verify_check_this_host(&ob->hosts_request_ocsp,
-	  NULL, host->name, host->address, NULL) == OK;
+      request_ocsp =
+	verify_check_given_host(&ob->hosts_request_ocsp, host) == OK;
   }
 #endif
 
@@ -1940,11 +1937,9 @@ if (request_ocsp)
     {	/* Re-eval now $tls_out_tlsa_usage is populated.  If
     	this means we avoid the OCSP request, we wasted the setup
 	cost in tls_init(). */
-    require_ocsp = verify_check_this_host(&ob->hosts_require_ocsp,
-      NULL, host->name, host->address, NULL) == OK;
-    request_ocsp = require_ocsp ? TRUE
-      : verify_check_this_host(&ob->hosts_request_ocsp,
-	  NULL, host->name, host->address, NULL) == OK;
+    require_ocsp = verify_check_given_host(&ob->hosts_require_ocsp, host) == OK;
+    request_ocsp = require_ocsp
+      || verify_check_given_host(&ob->hosts_request_ocsp, host) == OK;
     }
   }
 # endif

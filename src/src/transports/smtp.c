@@ -976,8 +976,7 @@ uschar *fail_reason = US"server did not advertise AUTH support";
 
 smtp_authenticated = FALSE;
 client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
-require_auth = verify_check_this_host(&(ob->hosts_require_auth), NULL,
-  host->name, host->address, NULL);
+require_auth = verify_check_given_host(&ob->hosts_require_auth, host);
 
 if (is_esmtp && !regex_AUTH) regex_AUTH =
     regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
@@ -992,8 +991,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
   regex match above. */
 
   if (require_auth == OK ||
-      verify_check_this_host(&(ob->hosts_try_auth), NULL, host->name,
-	host->address, NULL) == OK)
+      verify_check_given_host(&ob->hosts_try_auth, host) == OK)
     {
     auth_instance *au;
     fail_reason = US"no common mechanisms were found";
@@ -1379,14 +1377,12 @@ if (continue_hostname == NULL)
     tls_out.dane_verified = FALSE;
     tls_out.tlsa_usage = 0;
 
-    dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
-			      host->name, host->address, NULL) == OK;
+    dane_required = verify_check_given_host(&ob->hosts_require_dane, host) == OK;
 
     if (host->dnssec == DS_YES)
       {
       if(  dane_required
-	|| verify_check_this_host(&ob->hosts_try_dane, NULL,
-			      host->name, host->address, NULL) == OK
+	|| verify_check_given_host(&ob->hosts_try_dane, host) == OK
 	)
 	if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
 	  return rc;
@@ -1482,8 +1478,7 @@ goto SEND_QUIT;
   mailers use upper case for some reason (the RFC is quite clear about case
   independence) so, for peace of mind, I gave in. */
 
-  esmtp = verify_check_this_host(&(ob->hosts_avoid_esmtp), NULL,
-     host->name, host->address, NULL) != OK;
+  esmtp = verify_check_given_host(&ob->hosts_avoid_esmtp, host) != OK;
 
   /* Alas; be careful, since this goto is not an error-out, so conceivably
   we might set data between here and the target which we assume to exist
@@ -1541,11 +1536,10 @@ goto SEND_QUIT;
 #endif
 
 #ifndef DISABLE_PRDR
-  prdr_offered = esmtp &&
-    (pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0) &&
-    (verify_check_this_host(&(ob->hosts_try_prdr), NULL, host->name,
-      host->address, NULL) == OK);
+  prdr_offered = esmtp
+    && pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
+		  PCRE_EOPT, NULL, 0) >= 0
+    && verify_check_given_host(&ob->hosts_try_prdr, host) == OK;
 
   if (prdr_offered)
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
@@ -1575,9 +1569,9 @@ the client not be required to use TLS. If the response is bad, copy the buffer
 for error analysis. */
 
 #ifdef SUPPORT_TLS
-if (tls_offered && !suppress_tls &&
-      verify_check_this_host(&(ob->hosts_avoid_tls), NULL, host->name,
-        host->address, NULL) != OK)
+if (  tls_offered
+   && !suppress_tls
+   && verify_check_given_host(&ob->hosts_avoid_tls, host) != OK)
   {
   uschar buffer2[4096];
   if (smtp_write_command(&outblock, FALSE, "STARTTLS\r\n") < 0)
@@ -1695,8 +1689,7 @@ else if (
 # ifdef EXPERIMENTAL_DANE
 	dane ||
 # endif
-        verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-            host->address, NULL) == OK
+        verify_check_given_host(&ob->hosts_require_tls, host) == OK
 	)
   {
   save_errno = ERRNO_TLSREQUIRED;
@@ -1736,21 +1729,19 @@ if (continue_hostname == NULL
   the current host, esmtp will be false, so PIPELINING can never be used. If
   the current host matches hosts_avoid_pipelining, don't do it. */
 
-  smtp_use_pipelining = esmtp &&
-    verify_check_this_host(&(ob->hosts_avoid_pipelining), NULL, host->name,
-      host->address, NULL) != OK &&
-    pcre_exec(regex_PIPELINING, NULL, CS buffer, Ustrlen(CS buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0;
+  smtp_use_pipelining = esmtp
+    && verify_check_given_host(&ob->hosts_avoid_pipelining, host) != OK
+    && pcre_exec(regex_PIPELINING, NULL, CS buffer, Ustrlen(CS buffer), 0,
+		  PCRE_EOPT, NULL, 0) >= 0;
 
   DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
     smtp_use_pipelining? "" : "not ");
 
 #ifndef DISABLE_PRDR
-  prdr_offered = esmtp &&
-    pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(CS buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0 &&
-    verify_check_this_host(&(ob->hosts_try_prdr), NULL, host->name,
-      host->address, NULL) == OK;
+  prdr_offered = esmtp
+    && pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(CS buffer), 0,
+      PCRE_EOPT, NULL, 0) >= 0
+    && verify_check_given_host(&ob->hosts_try_prdr, host) == OK;
 
   if (prdr_offered)
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
@@ -2537,15 +2528,15 @@ DEBUG(D_transport)
 if (completed_address && ok && send_quit)
   {
   BOOL more;
-  if (first_addr != NULL || continue_more ||
-        (
-           (tls_out.active < 0 ||
-           verify_check_this_host(&(ob->hosts_nopass_tls), NULL, host->name,
-             host->address, NULL) != OK)
+  if (  first_addr != NULL
+     || continue_more
+     || (  (  tls_out.active < 0
+           || verify_check_given_host(&ob->hosts_nopass_tls, host) != OK
+	   )
         &&
            transport_check_waiting(tblock->name, host->name,
              tblock->connection_max_messages, new_message_id, &more)
-        ))
+     )  )
     {
     uschar *msg;
     BOOL pass_message;
@@ -3260,8 +3251,7 @@ for (cutoff_retry = 0; expired &&
     sending the message down a pre-existing connection. */
 
     if (!continuing &&
-        verify_check_this_host(&(ob->serialize_hosts), NULL, host->name,
-          host->address, NULL) == OK)
+        verify_check_given_host(&ob->serialize_hosts, host) == OK)
       {
       serialize_key = string_sprintf("host-serialize-%s", host->name);
       if (!enq_start(serialize_key))
@@ -3404,8 +3394,7 @@ for (cutoff_retry = 0; expired &&
       if (  rc == DEFER
 	 && first_addr->basic_errno == ERRNO_TLSFAILURE
 	 && ob->tls_tempfail_tryclear
-	 && verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-             host->address, NULL) != OK
+	 && verify_check_given_host(&ob->hosts_require_tls, host) != OK
 	 )
         {
         log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "

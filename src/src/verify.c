@@ -491,14 +491,13 @@ else
       tls_out.dane_verified = FALSE;
       tls_out.tlsa_usage = 0;
 
-      dane_required = verify_check_this_host(&ob->hosts_require_dane, NULL,
-				host->name, host->address, NULL) == OK;
+      dane_required =
+	verify_check_given_host(&ob->hosts_require_dane, host) == OK;
 
       if (host->dnssec == DS_YES)
 	{
 	if(  dane_required
-	  || verify_check_this_host(&ob->hosts_try_dane, NULL,
-				host->name, host->address, NULL) == OK
+	  || verify_check_given_host(&ob->hosts_try_dane, host) == OK
 	  )
 	  if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
 	    return rc;
@@ -598,8 +597,7 @@ else
       }
 
     /* Not worth checking greeting line for ESMTP support */
-    if (!(esmtp = verify_check_this_host(&(ob->hosts_avoid_esmtp), NULL,
-      host->name, host->address, NULL) != OK))
+    if (!(esmtp = verify_check_given_host(&(ob->hosts_avoid_esmtp), host) != OK))
       DEBUG(D_transport)
         debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
 
@@ -657,11 +655,9 @@ else
     for error analysis. */
 
 #ifdef SUPPORT_TLS
-    if (tls_offered &&
-    	verify_check_this_host(&(ob->hosts_avoid_tls), NULL, host->name,
-  	  host->address, NULL) != OK &&
-    	verify_check_this_host(&(ob->hosts_verify_avoid_tls), NULL, host->name,
-  	  host->address, NULL) != OK
+    if (  tls_offered
+       && verify_check_given_host(&ob->hosts_avoid_tls, host) != OK
+       && verify_check_given_host(&ob->hosts_verify_avoid_tls, host) != OK
        )
       {
       uschar buffer2[4096];
@@ -709,8 +705,7 @@ else
 	  if (  rc == DEFER
 	     && ob->tls_tempfail_tryclear
 	     && !smtps
-	     && verify_check_this_host(&(ob->hosts_require_tls), NULL,
-	       host->name, host->address, NULL) != OK
+	     && verify_check_given_host(&ob->hosts_require_tls, host) != OK
 	     )
 	    {
 	    (void)close(inblock.sock);
@@ -749,8 +744,7 @@ else
 #ifdef EXPERIMENTAL_DANE
 	 dane ||
 #endif
-         verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
-	      host->address, NULL) == OK
+         verify_check_given_host(&ob->hosts_require_tls, host) == OK
 	 )
         {
         /*save_errno = ERRNO_TLSREQUIRED;*/
@@ -3161,6 +3155,15 @@ return rc;
 
 
 
+
+/*************************************************
+*      Check the given host item matches a list  *
+*************************************************/
+int
+verify_check_given_host(uschar **listptr, host_item *host)
+{
+return verify_check_this_host(listptr, NULL, host->name, host->address, NULL);
+}
 
 /*************************************************
 *      Check the remote host matches a list      *
