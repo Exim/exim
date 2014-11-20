@@ -455,6 +455,14 @@ return h->ad ? TRUE : FALSE;
 #endif
 }
 
+static void
+dns_set_insecure(dns_answer * dnsa)
+{
+HEADER * h = (HEADER *)dnsa->answer;
+h->ad = 0;
+}
+
+
 
 
 
@@ -752,7 +760,8 @@ int
 dns_lookup(dns_answer *dnsa, uschar *name, int type, uschar **fully_qualified_name)
 {
 int i;
-uschar *orig_name = name;
+const uschar *orig_name = name;
+BOOL secure_so_far = TRUE;
 
 /* Loop to follow CNAME chains so far, but no further... */
 
@@ -824,6 +833,9 @@ for (i = 0; i < 10; i++)
     cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256);
   if (datalen < 0) return DNS_FAIL;
   name = data;
+
+  if (!dns_is_secure(dnsa))
+    secure_so_far = FALSE;
 
   DEBUG(D_dns) debug_printf("CNAME found: change to %s\n", name);
   }       /* Loop back to do another lookup */
