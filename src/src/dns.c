@@ -754,6 +754,7 @@ dns_lookup(dns_answer *dnsa, const uschar *name, int type,
 {
 int i;
 const uschar *orig_name = name;
+BOOL secure_so_far = TRUE;
 
 /* Loop to follow CNAME chains so far, but no further... */
 
@@ -808,7 +809,12 @@ for (i = 0; i < 10; i++)
 
   /* If any data records of the correct type were found, we are done. */
 
-  if (type_rr.data != NULL) return DNS_SUCCEED;
+  if (type_rr.data != NULL)
+    {
+    if (!secure_so_far)	/* mark insecure if any element of CNAME chain was */
+      ((HEADER *)dnsa->answer)->ad = 0;
+    return DNS_SUCCEED;
+    }
 
   /* If there are no data records, we need to re-scan the DNS using the
   domain given in the CNAME record, which should exist (otherwise we should
@@ -820,6 +826,9 @@ for (i = 0; i < 10; i++)
     cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, sizeof(data));
   if (datalen < 0) return DNS_FAIL;
   name = data;
+
+  if (!dns_is_secure(dnsa))
+    secure_so_far = FALSE;
 
   DEBUG(D_dns) debug_printf("CNAME found: change to %s\n", name);
   }       /* Loop back to do another lookup */
