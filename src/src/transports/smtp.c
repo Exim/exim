@@ -1231,8 +1231,6 @@ Arguments:
   port            default TCP/IP port to use, in host byte order
   interface       interface to bind to, or NULL
   tblock          transport instance block
-  copy_host       TRUE if host set in addr->host_used must be copied, because
-                    it is specific to this call of the transport
   message_defer   set TRUE if yield is OK, but all addresses were deferred
                     because of a non-recipient, non-host failure, that is, a
                     4xx response to MAIL FROM, DATA, or ".". This is a defer
@@ -1253,7 +1251,7 @@ Returns:          OK    - the connection was made and the delivery attempted;
 
 static int
 smtp_deliver(address_item *addrlist, host_item *host, int host_af, int port,
-  uschar *interface, transport_instance *tblock, BOOL copy_host,
+  uschar *interface, transport_instance *tblock,
   BOOL *message_defer, BOOL suppress_tls)
 {
 address_item *addr;
@@ -2205,21 +2203,8 @@ if (!ok) ok = TRUE; else
     int flag = '=';
     int delivery_time = (int)(time(NULL) - start_delivery_time);
     int len;
-    host_item *thost;
     uschar *conf = NULL;
     send_rset = FALSE;
-
-    /* Make a copy of the host if it is local to this invocation
-    of the transport. */
-
-    if (copy_host)
-      {
-      thost = store_get(sizeof(host_item));
-      *thost = *host;
-      thost->name = string_copy(host->name);
-      thost->address = string_copy(host->address);
-      }
-    else thost = host;
 
     /* Set up confirmation if needed - applies only to SMTP */
 
@@ -2291,7 +2276,7 @@ if (!ok) ok = TRUE; else
 
       addr->transport_return = OK;
       addr->more_errno = delivery_time;
-      addr->host_used = thost;
+      addr->host_used = host;
       addr->special_action = flag;
       addr->message = conf;
 #ifndef DISABLE_PRDR
@@ -2853,8 +2838,7 @@ if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
 
     if (Ustrchr(s, '$') != NULL)
       {
-      expanded_hosts = expand_string(s);
-      if (expanded_hosts == NULL)
+      if (!(expanded_hosts = expand_string(s)))
         {
         addrlist->message = string_sprintf("failed to expand list of hosts "
           "\"%s\" in %s transport: %s", s, tblock->name, expand_string_message);
@@ -2882,7 +2866,7 @@ if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
     /* If there was no expansion of hosts, save the host list for
     next time. */
 
-    if (expanded_hosts == NULL) ob->hostlist = hostlist;
+    if (!expanded_hosts) ob->hostlist = hostlist;
     }
 
   /* This is not the first time this transport has been run in this delivery;
@@ -3335,6 +3319,20 @@ for (cutoff_retry = 0; expired &&
 
     else
       {
+      host_item * thost;
+      /* Make a copy of the host if it is local to this invocation
+       of the transport. */
+
+      if (expanded_hosts)
+	{
+	thost = store_get(sizeof(host_item));
+	*thost = *host;
+	thost->name = string_copy(host->name);
+	thost->address = string_copy(host->address);
+	}
+      else
+        thost = host;
+
       if (!host_is_expired && ++unexpired_hosts_tried >= ob->hosts_max_try)
         {
         host_item *h;
@@ -3354,8 +3352,8 @@ for (cutoff_retry = 0; expired &&
       /* Attempt the delivery. */
 
       total_hosts_tried++;
-      rc = smtp_deliver(addrlist, host, host_af, port, interface, tblock,
-        expanded_hosts != NULL, &message_defer, FALSE);
+      rc = smtp_deliver(addrlist, thost, host_af, port, interface, tblock,
+        &message_defer, FALSE);
 
       /* Yield is one of:
          OK     => connection made, each address contains its result;
@@ -3401,8 +3399,8 @@ for (cutoff_retry = 0; expired &&
         log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
           "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
         first_addr = prepare_addresses(addrlist, host);
-        rc = smtp_deliver(addrlist, host, host_af, port, interface, tblock,
-          expanded_hosts != NULL, &message_defer, TRUE);
+        rc = smtp_deliver(addrlist, thost, host_af, port, interface, tblock,
+          &message_defer, TRUE);
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
           write_logs(first_addr, host);
 # ifdef EXPERIMENTAL_EVENT
