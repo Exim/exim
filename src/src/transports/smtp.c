@@ -1167,7 +1167,7 @@ return FALSE;
 
 #ifdef EXPERIMENTAL_DANE
 int
-tlsa_lookup(host_item * host, dns_answer * dnsa,
+tlsa_lookup(const host_item * host, dns_answer * dnsa,
   BOOL dane_required, BOOL * dane)
 {
 /* move this out to host.c given the similarity to dns_lookup() ? */

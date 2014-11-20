@@ -172,7 +172,7 @@ Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(uschar *prefix, host_item *host, uschar *msg)
+tls_error(uschar * prefix, const host_item * host, uschar *  msg)
 {
 if (!msg)
   {
@@ -541,7 +541,7 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_dh(SSL_CTX *sctx, uschar *dhparam, host_item *host)
+init_dh(SSL_CTX *sctx, uschar *dhparam, const host_item *host)
 {
 BIO *bio;
 DH *dh;

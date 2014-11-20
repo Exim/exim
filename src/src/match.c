@@ -438,7 +438,7 @@ Returns:       OK    if matched a non-negated item
 int
 match_check_list(uschar **listptr, int sep, tree_node **anchorptr,
   unsigned int **cache_ptr, int (*func)(void *,uschar *,uschar **,uschar **),
-  void *arg, int type, uschar *name, uschar **valueptr)
+  void *arg, int type, const uschar *name, uschar **valueptr)
 {
 int yield = OK;
 unsigned int *original_cache_bits = *cache_ptr;

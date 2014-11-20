@@ -72,7 +72,7 @@ extern BOOL    tls_is_name_for_cert(uschar *, void *);
 # endif
 
 # ifdef EXPERIMENTAL_DANE
-extern int     tlsa_lookup(host_item *, dns_answer *, BOOL, BOOL *);
+extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL, BOOL *);
 # endif
 
 #endif	/*SUPPORT_TLS*/
@@ -224,7 +224,7 @@ extern int     match_address_list(uschar *, BOOL, BOOL, uschar **,
                  unsigned int *, int, int, uschar **);
 extern int     match_check_list(uschar **, int, tree_node **, unsigned int **,
                  int(*)(void *, uschar *, uschar **, uschar **), void *, int,
-                 uschar *, uschar **);
+                 const uschar *, uschar **);
 extern int     match_isinlist(uschar *, uschar **, int, tree_node **,
                  unsigned int *, int, BOOL, uschar **);
 extern int     match_check_string(uschar *, uschar *, int, BOOL, BOOL, BOOL,
