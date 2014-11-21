@@ -18,5 +18,6 @@ $select = IO::Select->new($socket) or die "IO::Select $!";
 
 if (scalar ($select->can_read(5)) == 1) {
 	$socket->recv($recieved_data,1024);
+	select(undef, undef, undef, 0.5);
 	print "received: $recieved_data\n";
 }
