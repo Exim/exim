@@ -13562,8 +13562,9 @@ This option defines the ACL that is run after an SMTP DATA command has been
 processed and the message itself has been received, but before the final
 acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
 
-.option acl_smtp_data_prdr main string&!! unset
-.cindex "DATA" "ACL for"
+.option acl_smtp_data_prdr main string&!! accept
+.cindex "PRDR" "ACL for"
+.cindex "DATA" "PRDR ACL for"
 .cindex "&ACL;" "PRDR-related"
 .cindex "&ACL;" "per-user data processing"
 This option defines the ACL that,
@@ -23175,11 +23176,12 @@ connects. If authentication fails, Exim will try to transfer the message
 unauthenticated. See also &%hosts_require_auth%&, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
-.option hosts_try_prdr smtp "host list&!!" unset
+.option hosts_try_prdr smtp "host list&!!" *
 .cindex "PRDR" "enabling, optional in client"
 This option provides a list of servers to which, provided they announce
 PRDR support, Exim will attempt to negotiate PRDR
 for multi-recipient messages.
+The option can usually be left as default.
 
 .option interface smtp "string list&!!" unset
 .cindex "bind IP address"
@@ -26926,6 +26928,7 @@ This ACL is evaluated after &%acl_smtp_dkim%& but before &%acl_smtp_data%&.
 
 
 .section "The SMTP PRDR ACL" "SECTPRDRACL"
+.cindex "PRDR" "ACL for"
 .oindex "&%prdr_enable%&"
 The &%acl_smtp_data_prdr%& ACL is available only when Exim is compiled
 with PRDR support enabled (which is the default).
@@ -26934,8 +26937,9 @@ client and server for a message, and more than one recipient
 has been accepted.
 
 The ACL test specfied by &%acl_smtp_data_prdr%& happens after a message
-has been recieved, and is executed for each recipient of the message.
-The test may accept or deny for inividual recipients.
+has been recieved, and is executed once for each recipient of the message
+with &$local_part$& and &$domain$& valid.
+The test may accept, defer or deny for inividual recipients.
 The &%acl_smtp_data%& will still be called after this ACL and
 can reject the message overall, even if this ACL has accepted it
 for some or all recipients.
