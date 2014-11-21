@@ -180,22 +180,7 @@ incoming messages, but neither of these affect its handling of message data.
 achieves what the user wants more often than other strategies.
 
 
-2.3 Use of EHLO/HELO [3.2]
---------------------------
-
-[Client MTAs should always start with EHLO, not HELO.]
-
-Exim sends EHLO only when it finds the string "ESMTP" in an SMTP greeting
-message. If EHLO is refused with a 5xx return code, it then reverts to HELO as
-required, but it does not contain logic for converting to HELO on other errors
-such as loss of connection or timeout after EHLO. That is one reason why it
-doesn't always send EHLO; there are reported to be ancient SMTP servers out
-there which collapse on receiving EHLO. (There is also at least one server
-whose banner reads "<host name> ignores ESMTP", but it is RFC 821 compliant in
-that it responds with 5O0 to EHLO, so Exim successfully reverts to HELO.)
-
-
-2.4 Closing the connection [4.1.1.10]
+2.3 Closing the connection [4.1.1.10]
 -------------------------------------
 
 [Client must wait for response to QUIT before closing the connection.]
@@ -214,7 +199,7 @@ before the response arrives. The subsequent arrival of the response then causes
 bad behaviour.
 
 
-2.5 IPv6 address literals [4.1.2]
+2.4 IPv6 address literals [4.1.2]
 ---------------------------------
 
 [IPv6 address literals are introduced by "IPv6".]
@@ -225,7 +210,7 @@ prefix. At present, it does not even recognize the prefix. When IPv6 becomes
 more widespread, Exim will follow whatever the common usage is.
 
 
-2.6 Underscores in domain names [4.1.2]
+2.5 Underscores in domain names [4.1.2]
 ---------------------------------------
 
 [Underscores are not legal in domain names.]
@@ -241,7 +226,7 @@ it will accept any old junk after EHLO or HELO. Such is the woeful state of
 some SMTP clients.)
 
 
-2.7 Removal of return-path headers [4.4]
+2.6 Removal of return-path headers [4.4]
 ----------------------------------------
 
 [Relaying MTAs should not remove return-path.]
@@ -252,7 +237,7 @@ not. Indeed, for some messages it might be both a relay and a final destination
 MTA for the same message.
 
 
-2.8 Randomizing the order of addresses of multihomed hosts [5]
+2.7 Randomizing the order of addresses of multihomed hosts [5]
 --------------------------------------------------------------
 
 [Multihomed host addresses should not be randomized.]
@@ -263,7 +248,7 @@ use. (Note: this is not the same as randomizing equal-valued MX records. That
 is required by the RFC.)
 
 
-2.9 Handling "MX points to self" [5]
+2.8 Handling "MX points to self" [5]
 ------------------------------------
 
 [MX points to self must be treated as an error.]
@@ -274,7 +259,7 @@ Exim configuration is compliant, but it is possible to configure Exim to behave
 differently, and there are several situations where this can be useful.
 
 
-2.10 Source routing [6.1]
+2.9 Source routing [6.1]
 -------------------------
 
 [Source routes should be stripped.]
@@ -286,7 +271,7 @@ does not add host routing to reverse-paths when processing a source-routed
 forward-path.
 
 
-2.11 Loop detection [6.2]
+2.10 Loop detection [6.2]
 -------------------------
 
 [Loop count for Received: headers should be at least 100.]
@@ -296,7 +281,7 @@ these days seem to accumulate less than half a dozen Received: headers, and
 even a couple of forwardings don't bring this anywhere near 30.
 
 
-2.12 Addition of missing headers [6.3]
+2.11 Addition of missing headers [6.3]
 --------------------------------------
 
 [Missing headers may be added, and domains qualified, only if client is
@@ -307,7 +292,7 @@ the source of the message, and likewise when it expands non-fully-qualified
 domains, it does so independently of the message's source.
 
 
-2.13 Syntax of MAIL and RCPT commands [4.1.1.2, 4.1.1.3]
+2.12 Syntax of MAIL and RCPT commands [4.1.1.2, 4.1.1.3]
 --------------------------------------------------------
 
 Exim is more relaxed than the RFC requires:
@@ -325,7 +310,7 @@ Exim is more relaxed than the RFC requires:
     unquoted full stops.
 
 
-2.14 Non-fully-qualified domains [2.3.5]
+2.13 Non-fully-qualified domains [2.3.5]
 ----------------------------------------
 
 [All domains must be fully qualified.]
@@ -341,7 +326,7 @@ as well as to locally-originated addresses. Address re-writing could also be
 used for this purpose.
 
 
-2.15 Unqualified addresses [4.1.2]
+2.14 Unqualified addresses [4.1.2]
 ----------------------------------
 
 [Addresses in SMTP commands must include domains.]
@@ -358,7 +343,7 @@ domains in SMTP commands. Any such address that is accepted (including
 <postmaster>) is qualified by adding the value of the qualify_domain option.
 
 
-2.16 VRFY and EXPN [3.5.1, 3.5.2, 3.5.3, 7.3]
+2.15 VRFY and EXPN [3.5.1, 3.5.2, 3.5.3, 7.3]
 ---------------------------------------------
 
 [VRFY and EXPN should be supported.]
@@ -367,7 +352,7 @@ Exim does not support VRFY and EXPN by default, but a list of hosts and
 networks for which they are permitted can be given.
 
 
-2.17 Checking of EHLO/HELO commands [4.1.4]
+2.16 Checking of EHLO/HELO commands [4.1.4]
 -------------------------------------------
 
 [Client must send EHLO. Server must not refuse message if EHLO/HELO check
@@ -387,13 +372,13 @@ It is possible to specify exception lists of hosts and/or networks for which
 this check does not apply.
 
 
-2.18 Format of delivery error messages [3.7]
+2.17 Format of delivery error messages [3.7]
 --------------------------------------------
 
 [Standard report formats should be used if possible.]
 
-Exim's delivery failure reports do not conform to the format described in RFC
-1894.
+Exim's delivery failure reports are MIME format, and might be RFC1894
+conformant, but this has not been verified.
 
 
 ## End ##
