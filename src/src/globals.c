@@ -234,7 +234,7 @@ uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
 #ifndef DISABLE_PRDR
-uschar *acl_smtp_data_prdr     = NULL;
+uschar *acl_smtp_data_prdr     = US"accept";
 #endif
 #ifndef DISABLE_DKIM
 uschar *acl_smtp_dkim          = NULL;

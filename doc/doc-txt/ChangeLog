@@ -9,6 +9,9 @@ JH/01 Bug 1545: The smtp transport option "retry_include_ip_address" is now
 
 JH/02 The smtp transport option "multi_domain" is now expanded.
 
+JH/03 The smtp transport now requests PRDR by default, if the server offers
+      it.
+
 
 Exim version 4.85
 -----------------

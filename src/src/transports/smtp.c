@@ -214,7 +214,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_require_dane */
 #endif
 #ifndef DISABLE_PRDR
-  NULL,                /* hosts_try_prdr */
+  US"*",                /* hosts_try_prdr */
 #endif
 #ifndef DISABLE_OCSP
   US"*",               /* hosts_request_ocsp (except under DANE; tls_client_start()) */
