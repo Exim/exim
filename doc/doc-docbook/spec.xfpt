@@ -11932,10 +11932,7 @@ on which interface and/or port is being used for the incoming connection. The
 values of &$received_ip_address$& and &$received_port$& are saved with any
 messages that are received, thus making these variables available at delivery
 time.
-
-&*Note:*& There are no equivalent variables for outgoing connections, because
-the values are unknown (unless they are explicitly set by options of the
-&(smtp)& transport).
+For outbound connections see &$sending_ip_address$&.
 
 .vitem &$received_port$&
 .vindex "&$received_port$&"
