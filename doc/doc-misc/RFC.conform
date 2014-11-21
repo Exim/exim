@@ -372,13 +372,13 @@ It is possible to specify exception lists of hosts and/or networks for which
 this check does not apply.
 
 
-2.18 Format of delivery error messages [3.7]
+2.17 Format of delivery error messages [3.7]
 --------------------------------------------
 
 [Standard report formats should be used if possible.]
 
-Exim's delivery failure reports do not conform to the format described in RFC
-1894.
+Exim's delivery failure reports are MIME format, and might be RFC1894
+conformant, but this has not been verified.
 
 
 ## End ##
