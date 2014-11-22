@@ -23428,7 +23428,7 @@ unknown state), opens a new one to the same host, and then tries the delivery
 in clear.
 
 
-.option tls_try_verify_hosts smtp "host list&!! unset
+.option tls_try_verify_hosts smtp "host list&!!" unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
 This option gives a list of hosts for which, on encrypted connections,
@@ -23464,7 +23464,7 @@ if neither tls_verify_hosts nor tls_try_verify_hosts are set
 and certificate verification fails the TLS connection is closed.
 
 
-.option tls_verify_hosts smtp "host list&!! unset
+.option tls_verify_hosts smtp "host list&!!" unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
 This option gives a list of hosts for which. on encrypted connections,
