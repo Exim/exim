@@ -104,6 +104,7 @@ send_to_server_failcert:
   tls_privatekey = CERT2
 
   tls_verify_certificates = CA2
+  tls_verify_cert_hostnames =
 
 # this will fail to verify the cert at HOSTIPV4 so fail the crypt, then retry on 127.1; ok
 send_to_server_retry:
@@ -117,6 +118,7 @@ send_to_server_retry:
 
   tls_verify_certificates = \
     ${if eq{$host_address}{127.0.0.1}{CA1}{CA2}}
+  tls_verify_cert_hostnames =
 
 # this will fail to verify the cert but continue unverified though crypted
 send_to_server_crypt:
@@ -130,6 +132,7 @@ send_to_server_crypt:
 
   tls_verify_certificates = CA2
   tls_try_verify_hosts = *
+  tls_verify_cert_hostnames =
 
 # this will fail to verify the cert at HOSTIPV4 and fallback to unencrypted
 send_to_server_req_fail:
@@ -142,31 +145,32 @@ send_to_server_req_fail:
 
   tls_verify_certificates = CA2
   tls_verify_hosts = *
+  tls_verify_cert_hostnames =
 
-# # this will fail to verify the cert name and fallback to unencrypted
-# send_to_server_req_failname:
-#   driver = smtp
-#   allow_localhost
-#   hosts = HOSTIPV4
-#   port = PORT_D
-#   tls_certificate = CERT2
-#   tls_privatekey = CERT2
-# 
-#   tls_verify_certificates = CA1
-#   tls_verify_cert_hostnames = server1.example.net : server1.example.org
-#   tls_verify_hosts = *
-# 
-# # this will pass the cert verify including name check
-# send_to_server_req_passname:
-#   driver = smtp
-#   allow_localhost
-#   hosts = HOSTIPV4
-#   port = PORT_D
-#   tls_certificate = CERT2
-#   tls_privatekey = CERT2
-# 
-#   tls_verify_certificates = CA1
-#   tls_verify_cert_hostnames = noway.example.com : server1.example.com
-#   tls_verify_hosts = *
+ # this will fail to verify the cert name and fallback to unencrypted
+ send_to_server_req_failname:
+   driver = smtp
+   allow_localhost
+   hosts = HOSTIPV4
+   port = PORT_D
+   tls_certificate = CERT2
+   tls_privatekey = CERT2
+ 
+   tls_verify_certificates = CA1
+   tls_verify_cert_hostnames = server1.example.net : server1.example.org
+   tls_verify_hosts = *
+ 
+ # this will pass the cert verify including name check
+ send_to_server_req_passname:
+   driver = smtp
+   allow_localhost
+   hosts = HOSTIPV4
+   port = PORT_D
+   tls_certificate = CERT2
+   tls_privatekey = CERT2
+ 
+   tls_verify_certificates = CA1
+   tls_verify_cert_hostnames = noway.example.com : server1.example.com
+   tls_verify_hosts = *
 
 # End

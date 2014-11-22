@@ -167,7 +167,6 @@ it's a default value. */
 
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_BRIGHTMAIL
-#define EXPERIMENTAL_CERTNAMES
 #define EXPERIMENTAL_DANE
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DMARC

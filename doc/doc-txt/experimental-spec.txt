@@ -1146,41 +1146,6 @@ Adding it to a redirect router makes no difference.
 
 
 
-Certificate name checking
---------------------------------------------------------------
-The X509 certificates used for TLS are supposed be verified
-that they are owned by the expected host.  The coding of TLS
-support to date has not made these checks.
-
-If built with EXPERIMENTAL_CERTNAMES defined, code is
-included to do so for server certificates, and a new smtp transport option
-"tls_verify_cert_hostnames" supported which takes a hostlist
-which must match the target host for the additional checks must be made.
-The option currently defaults to empty, but this may change in
-the future.  "*" is probably a suitable value.
-Whether certificate verification is done at all, and the result of
-it failing, is stll under the control of "tls_verify_hosts" nad
-"tls_try_verify_hosts".
-
-The name being checked is that for the host, generally
-the result of an MX lookup.
-
-Both Subject and Subject-Alternate-Name certificate fields
-are supported, as are wildcard certificates (limited to
-a single wildcard being the initial component of a 3-or-more
-component FQDN).
-
-The equivalent check on the server for client certificates is not
-implemented.  At least one major email provider is using a client
-certificate which fails this check.  They do not retry either without
-the client certificate or in clear.
-
-It is possible to duplicate the effect of this checking by
-creative use of Events.
-
-
-
-
 DANE
 ------------------------------------------------------------
 DNS-based Authentication of Named Entities, as applied

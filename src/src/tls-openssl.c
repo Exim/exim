@@ -123,10 +123,7 @@ typedef struct tls_ext_ctx_cb {
   uschar *server_cipher_list;
   /* only passed down to tls_error: */
   host_item *host;
-
-#ifdef EXPERIMENTAL_CERTNAMES
   uschar * verify_cert_hostnames;
-#endif
 #ifdef EXPERIMENTAL_EVENT
   uschar * event_action;
 #endif
@@ -354,14 +351,11 @@ else if (depth != 0)
   }
 else
   {
-#ifdef EXPERIMENTAL_CERTNAMES
   uschar * verify_cert_hostnames;
-#endif
 
   tlsp->peerdn = txt;
   tlsp->peercert = X509_dup(cert);
 
-#ifdef EXPERIMENTAL_CERTNAMES
   if (  tlsp == &tls_out
      && ((verify_cert_hostnames = client_static_cbinfo->verify_cert_hostnames)))
      	/* client, wanting hostname check */
@@ -413,7 +407,6 @@ else
 	"tls_try_verify_hosts)\n");
       }
 # endif
-#endif	/*EXPERIMENTAL_CERTNAMES*/
 
 #ifdef EXPERIMENTAL_EVENT
   ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
@@ -1289,9 +1282,7 @@ else			/* client */
 # endif
 #endif
 
-#ifdef EXPERIMENTAL_CERTNAMES
 cbinfo->verify_cert_hostnames = NULL;
-#endif
 
 /* Set up the RSA callback */
 
@@ -1672,10 +1663,7 @@ return OK;
 
 static int
 tls_client_basic_ctx_init(SSL_CTX * ctx,
-    host_item * host, smtp_transport_options_block * ob
-#ifdef EXPERIMENTAL_CERTNAMES
-    , tls_ext_ctx_cb * cbinfo
-#endif
+    host_item * host, smtp_transport_options_block * ob, tls_ext_ctx_cb * cbinfo
 			  )
 {
 int rc;
@@ -1696,14 +1684,12 @@ if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
       ob->tls_crl, host, client_verify_optional, verify_callback_client)) != OK)
   return rc;
 
-#ifdef EXPERIMENTAL_CERTNAMES
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
   cbinfo->verify_cert_hostnames = host->name;
   DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
 		    cbinfo->verify_cert_hostnames);
   }
-#endif
 return OK;
 }
 
@@ -1880,11 +1866,8 @@ else
 
 #endif
 
-  if ((rc = tls_client_basic_ctx_init(client_ctx, host, ob
-#ifdef EXPERIMENTAL_CERTNAMES
-				, client_static_cbinfo
-#endif
-				)) != OK)
+  if ((rc = tls_client_basic_ctx_init(client_ctx, host, ob, client_static_cbinfo))
+      != OK)
     return rc;
 
 if ((client_ssl = SSL_new(client_ctx)) == NULL)

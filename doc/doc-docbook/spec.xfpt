@@ -23435,7 +23435,7 @@ unknown state), opens a new one to the same host, and then tries the delivery
 in clear.
 
 
-.option tls_try_verify_hosts smtp "host list&!! unset
+.option tls_try_verify_hosts smtp "host list&!!" unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
 This option gives a list of hosts for which, on encrypted connections,
@@ -23446,6 +23446,19 @@ TLS connections will be denied to hosts using self-signed certificates
 when &%tls_verify_certificates%& is set.
 The &$tls_out_certificate_verified$& variable is set when
 certificate verification succeeds.
+
+
+.option tls_verify_cert_hostnames smtp "host list&!!" *
+.cindex "TLS" "server certificate hostname verification"
+.cindex "certificate" "verification of server"
+This option give a list of hosts for which,
+while verifying the server certificate,
+checks will be included on the host name
+(note that this will generally be the result of a DNS MX lookup)
+versus Subject and Subject-Alternate-Name fields.  Wildcard names are permitted
+limited to being the initial component of a 3-or-more component FQDN.
+
+There is no equivalent checking on client certificates.
 
 
 .option tls_verify_certificates smtp string&!! unset
@@ -23471,7 +23484,7 @@ if neither tls_verify_hosts nor tls_try_verify_hosts are set
 and certificate verification fails the TLS connection is closed.
 
 
-.option tls_verify_hosts smtp "host list&!! unset
+.option tls_verify_hosts smtp "host list&!!" unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
 This option gives a list of hosts for which. on encrypted connections,

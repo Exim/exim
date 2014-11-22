@@ -12,6 +12,11 @@ JH/02 The smtp transport option "multi_domain" is now expanded.
 JH/03 The smtp transport now requests PRDR by default, if the server offers
       it.
 
+JH/04 Certificate name checking on server certificates, when exim is a client,
+      is now done by default.  The transport option tls_verify_cert_hostname
+      can be used to disable this per-host.  The build option
+      EXPERIMENTAL_CERTNAMES is withdrawn.
+
 
 Exim version 4.85
 -----------------

@@ -176,10 +176,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, tls_tempfail_tryclear) },
   { "tls_try_verify_hosts", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_try_verify_hosts) },
-#ifdef EXPERIMENTAL_CERTNAMES
   { "tls_verify_cert_hostnames", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block,tls_verify_cert_hostnames)},
-#endif
   { "tls_verify_certificates", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_verify_certificates) },
   { "tls_verify_hosts",     opt_stringptr,
@@ -262,10 +260,8 @@ smtp_transport_options_block smtp_transport_option_defaults = {
                        /* tls_dh_min_bits */
   TRUE,                /* tls_tempfail_tryclear */
   NULL,                /* tls_verify_hosts */
-  NULL                 /* tls_try_verify_hosts */
-# ifdef EXPERIMENTAL_CERTNAMES
- ,NULL                 /* tls_verify_cert_hostnames */
-# endif
+  NULL,                /* tls_try_verify_hosts */
+  US"*"                /* tls_verify_cert_hostnames */
 #endif
 #ifndef DISABLE_DKIM
  ,NULL,                /* dkim_canon */
