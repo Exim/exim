@@ -43,7 +43,7 @@ exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 exim -odq CALLER@thishost.test.ex
 Testing
 ****
-exim -qf
+exim -DOPT=no_certname -qf
 ****
 killdaemon
 #

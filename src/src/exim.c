@@ -853,9 +853,6 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_REDIS
   fprintf(f, " Experimental_Redis");
 #endif
-#ifdef EXPERIMENTAL_CERTNAMES
-  fprintf(f, " Experimental_Certnames");
-#endif
 #ifdef EXPERIMENTAL_DSN
   fprintf(f, " Experimental_DSN");
 #endif

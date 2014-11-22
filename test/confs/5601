@@ -90,6 +90,7 @@ send_to_server1:
   hosts = HOSTIPV4
   port = PORT_D
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_verify_cert_hostnames =
   hosts_require_tls = *
   hosts_request_ocsp = :
   headers_add = X-TLS-out: ocsp status $tls_out_ocsp \
@@ -102,6 +103,7 @@ send_to_server2:
   hosts = HOSTIPV4
   port = PORT_D
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_verify_cert_hostnames =
   hosts_require_tls = *
 # note no ocsp mention here
   headers_add = X-TLS-out: ocsp status $tls_out_ocsp \
@@ -115,6 +117,7 @@ send_to_server3:
   port = PORT_D
   helo_data = helo.data.changed
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_verify_cert_hostnames =
   hosts_require_tls =  *
   hosts_require_ocsp = *
   headers_add = X-TLS-out: ocsp status $tls_out_ocsp \
@@ -128,6 +131,7 @@ send_to_server4:
   port = PORT_D
   helo_data = helo.data.changed
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_verify_cert_hostnames =
   protocol =           smtps
   hosts_require_tls =  *
   hosts_require_ocsp = *

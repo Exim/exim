@@ -67,9 +67,7 @@ extern void    tls_version_report(FILE *);
 extern BOOL    tls_openssl_options_parse(uschar *, long *);
 # endif
 extern uschar * tls_field_from_dn(uschar *, uschar *);
-# ifdef EXPERIMENTAL_CERTNAMES
 extern BOOL    tls_is_name_for_cert(uschar *, void *);
-# endif
 
 # ifdef EXPERIMENTAL_DANE
 extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL, BOOL *);

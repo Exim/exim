@@ -68,6 +68,7 @@ send_to_server:
   hosts_request_ocsp = ${if or { {= {4}{$tls_out_tlsa_usage}} \
 				 {= {0}{$tls_out_tlsa_usage}} } \
                         {*}{}}
+  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
   tls_try_verify_hosts = thishost.test.ex
   tls_verify_certificates = CDIR2/ca_chain.pem
 

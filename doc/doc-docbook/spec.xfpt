@@ -23435,6 +23435,19 @@ The &$tls_out_certificate_verified$& variable is set when
 certificate verification succeeds.
 
 
+.option tls_verify_cert_hostnames smtp "host list&!!" *
+.cindex "TLS" "server certificate hostname verification"
+.cindex "certificate" "verification of server"
+This option give a list of hosts for which,
+while verifying the server certificate,
+checks will be included on the host name
+(note that this will generally be the result of a DNS MX lookup)
+versus Subject and Subject-Alternate-Name fields.  Wildcard names are permitted
+limited to being the initial component of a 3-or-more component FQDN.
+
+There is no equivalent checking on client certificates.
+
+
 .option tls_verify_certificates smtp string&!! unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"

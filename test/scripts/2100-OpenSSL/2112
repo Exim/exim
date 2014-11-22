@@ -13,6 +13,12 @@ Testing
 exim userq@test.ex
 Testing
 ****
+exim userr@test.ex
+Testing
+****
+exim users@test.ex
+Testing
+****
 exim -qf
 ****
 killdaemon

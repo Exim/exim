@@ -117,9 +117,7 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
   uschar *exp_tls_ocsp_file;
-#ifdef EXPERIMENTAL_CERTNAMES
   uschar *exp_tls_verify_cert_hostnames;
-#endif
 #ifdef EXPERIMENTAL_EVENT
   uschar *event_action;
 #endif
@@ -138,9 +136,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-#ifdef EXPERIMENTAL_CERTNAMES
-                                            NULL,
-#endif
+  NULL,
 #ifdef EXPERIMENTAL_EVENT
                                             NULL,
 #endif
@@ -1385,7 +1381,6 @@ if (rc < 0 ||
 
 else
   {
-#ifdef EXPERIMENTAL_CERTNAMES
   if (state->exp_tls_verify_cert_hostnames)
     {
     int sep = 0;
@@ -1407,7 +1402,6 @@ else
       return TRUE;
       }
     }
-#endif
   state->peer_cert_verified = TRUE;
   DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=\"%s\"\n",
       state->peerdn ? state->peerdn : US"<unset>");
@@ -1771,7 +1765,6 @@ return OK;
 
 
 
-#ifdef EXPERIMENTAL_CERTNAMES
 static void
 tls_client_setup_hostname_checks(host_item * host, exim_gnutls_state_st * state,
   smtp_transport_options_block * ob)
@@ -1784,7 +1777,6 @@ if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
 		    state->exp_tls_verify_cert_hostnames);
   }
 }
-#endif
 
 
 /*************************************************
@@ -1859,9 +1851,7 @@ if (  (  state->exp_tls_verify_certificates
     || verify_check_given_host(&ob->tls_verify_hosts, host) == OK
    )
   {
-#ifdef EXPERIMENTAL_CERTNAMES
   tls_client_setup_hostname_checks(host, state, ob);
-#endif
   DEBUG(D_tls)
     debug_printf("TLS: server certificate verification required.\n");
   state->verify_requirement = VERIFY_REQUIRED;
@@ -1869,9 +1859,7 @@ if (  (  state->exp_tls_verify_certificates
   }
 else if (verify_check_given_host(&ob->tls_try_verify_hosts, host) == OK)
   {
-#ifdef EXPERIMENTAL_CERTNAMES
   tls_client_setup_hostname_checks(host, state, ob);
-#endif
   DEBUG(D_tls)
     debug_printf("TLS: server certificate verification optional.\n");
   state->verify_requirement = VERIFY_OPTIONAL;

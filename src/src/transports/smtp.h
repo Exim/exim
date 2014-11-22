@@ -74,9 +74,7 @@ typedef struct {
   BOOL    tls_tempfail_tryclear;
   uschar *tls_verify_hosts;
   uschar *tls_try_verify_hosts;
-# ifdef EXPERIMENTAL_CERTNAMES
   uschar *tls_verify_cert_hostnames;
-# endif
 #endif
 #ifndef DISABLE_DKIM
   uschar *dkim_domain;
