@@ -22,7 +22,9 @@ JH/05 The value of the tls_verify_certificates smtp transport and main options
       For GnuTLS, only version 3.0.20 or later.
 
 JH/06 Verification of the server certificate for a TLS connection is now tried
-      (but not required) by default.
+      (but not required) by default.  The verification status is now logged by
+      default, for both outbound TLS and client-certificate supplying inbound
+      TLS connections
 
 
 Exim version 4.85

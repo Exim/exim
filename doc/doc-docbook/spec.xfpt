@@ -34820,7 +34820,7 @@ selection marked by asterisks:
 &` smtp_protocol_error        `&  SMTP protocol errors
 &` smtp_syntax_error          `&  SMTP syntax errors
 &` subject                    `&  contents of &'Subject:'& on <= lines
-&` tls_certificate_verified   `&  certificate verification status
+&`*tls_certificate_verified   `&  certificate verification status
 &`*tls_cipher                 `&  TLS cipher suite on <= and => lines
 &` tls_peerdn                 `&  TLS peer DN on <= and => lines
 &` tls_sni                    `&  TLS SNI on <= lines
