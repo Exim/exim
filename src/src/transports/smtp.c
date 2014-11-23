@@ -255,7 +255,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* gnutls_require_mac */
   NULL,                /* gnutls_require_proto */
   NULL,                /* tls_sni */
-  NULL,                /* tls_verify_certificates */
+  US"system",          /* tls_verify_certificates */
   EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
                        /* tls_dh_min_bits */
   TRUE,                /* tls_tempfail_tryclear */

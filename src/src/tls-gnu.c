@@ -853,7 +853,11 @@ error message is provided. However, if we just refrain from setting anything up
 in that case, certificate verification fails, which seems to be the correct
 behaviour. */
 
-if (state->tls_verify_certificates && *state->tls_verify_certificates)
+if (  state->tls_verify_certificates && *state->tls_verify_certificates
+#ifndef SUPPORT_SYSDEFAULT_CABUNDLE
+   && Ustrcmp(state->exp_tls_verify_certificates, "system") != 0
+#endif
+   )
   {
   if (!expand_check_tlsvar(tls_verify_certificates))
     return DEFER;

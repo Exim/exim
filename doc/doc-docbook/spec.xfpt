@@ -16494,7 +16494,7 @@ preference order of the available ciphers. Details are given in sections
 See &%tls_verify_hosts%& below.
 
 
-.option tls_verify_certificates main string&!! unset
+.option tls_verify_certificates main string&!! system
 .cindex "TLS" "client certificate verification"
 .cindex "certificate" "verification of client"
 The value of this option is expanded, and must then be either the
@@ -16505,7 +16505,8 @@ match &%tls_verify_hosts%& or &%tls_try_verify_hosts%&.
 
 The "system" value for the option will use a
 system default location compiled into the SSL library.
-This is not available for GnuTLS versions preceding 3.0.20 and an explicit location
+This is not available for GnuTLS versions preceding 3.0.20,
+and will be taken as empty; an explicit location
 must be specified.
 
 The use of a directory for the option value is not avilable for GnuTLS versions
@@ -23471,7 +23472,7 @@ limited to being the initial component of a 3-or-more component FQDN.
 There is no equivalent checking on client certificates.
 
 
-.option tls_verify_certificates smtp string&!! unset
+.option tls_verify_certificates smtp string&!! system
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
 .vindex "&$host$&"
@@ -23483,7 +23484,8 @@ a file or directory containing permitted certificates for servers,
 for use when setting up an encrypted connection.
 
 The "system" value for the option will use a location compiled into the SSL library.
-This is not available for GnuTLS versions preceding 3.0.20 and an explicit location
+This is not available for GnuTLS versions preceding 3.0.20; a value of "system"
+is taken as empty and an explicit location
 must be specified.
 
 The use of a directory for the option value is not avilable for GnuTLS versions
@@ -26492,7 +26494,7 @@ if it requests it. If the server is Exim, it will request a certificate only if
 &%tls_verify_hosts%& or &%tls_try_verify_hosts%& matches the client.
 
 If the &%tls_verify_certificates%& option is set on the &(smtp)& transport, it
-specified a collection of expected server certificates.
+specifies a collection of expected server certificates.
 These may be the system default set (depeding on library version),
 a file or,
 depnding on liibrary version, a directory,

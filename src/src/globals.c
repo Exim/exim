@@ -166,7 +166,7 @@ uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
 uschar *tls_try_verify_hosts   = NULL;
-uschar *tls_verify_certificates= NULL;
+uschar *tls_verify_certificates= US"system";
 uschar *tls_verify_hosts       = NULL;
 #endif
 
