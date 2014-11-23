@@ -443,6 +443,7 @@ set all the bits in a multi-word selector. */
                        LX_rejected_header         | \
                        LX_sender_verify_fail      | \
                        LX_smtp_confirmation       | \
+                       LX_tls_certificate_verified| \
                        LX_tls_cipher) & 0x7fffffff)
 
 /* Private error numbers for delivery failures, set negative so as not
