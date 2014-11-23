@@ -16497,21 +16497,31 @@ See &%tls_verify_hosts%& below.
 .option tls_verify_certificates main string&!! unset
 .cindex "TLS" "client certificate verification"
 .cindex "certificate" "verification of client"
-The value of this option is expanded, and must then be the absolute path to
-a file containing permitted certificates for clients that
-match &%tls_verify_hosts%& or &%tls_try_verify_hosts%&. Alternatively, if you
-are using either GnuTLS version 3.3.6 (or later) or OpenSSL,
-you can set &%tls_verify_certificates%& to the name of a
-directory containing certificate files.
-For earlier versions of GnuTLS
-the option must be set to the name of a single file.
+The value of this option is expanded, and must then be either the
+word "system"
+or the absolute path to
+a file or directory containing permitted certificates for clients that
+match &%tls_verify_hosts%& or &%tls_try_verify_hosts%&.
+
+The "system" value for the option will use a
+system default location compiled into the SSL library.
+This is not available for GnuTLS versions preceding 3.0.20 and an explicit location
+must be specified.
+
+The use of a directory for the option value is not avilable for GnuTLS versions
+preceding 3.3.6 and a single file must be used.
+
+With OpenSSL the certificates specified
+explicitly
+either by file or directory
+are added to those given by the system default location.
 
 These certificates should be for the certificate authorities trusted, rather
 than the public cert of individual clients.  With both OpenSSL and GnuTLS, if
 the value is a file then the certificates are sent by Exim as a server to
 connecting clients, defining the list of accepted certificate authorities.
 Thus the values defined should be considered public data.  To avoid this,
-use OpenSSL with a directory.
+use the explicit directory version.
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
@@ -23443,7 +23453,7 @@ certificate verification will be tried but need not succeed.
 The &%tls_verify_certificates%& option must also be set.
 Note that unless the host is in this list
 TLS connections will be denied to hosts using self-signed certificates
-when &%tls_verify_certificates%& is set.
+when &%tls_verify_certificates%& is matched.
 The &$tls_out_certificate_verified$& variable is set when
 certificate verification succeeds.
 
@@ -23466,15 +23476,24 @@ There is no equivalent checking on client certificates.
 .cindex "certificate" "verification of server"
 .vindex "&$host$&"
 .vindex "&$host_address$&"
-The value of this option must be the absolute path to a file containing
-permitted server certificates, for use when setting up an encrypted connection.
-Alternatively,
-if you are using either GnuTLS version 3.3.6 (or later) or OpenSSL,
-you can set
-&%tls_verify_certificates%& to the name of a directory containing certificate
-files.
-For earlier versions of GnuTLS the option must be set to the name of a
-single file.
+The value of this option must be either the
+word "system"
+or the absolute path to
+a file or directory containing permitted certificates for servers,
+for use when setting up an encrypted connection.
+
+The "system" value for the option will use a location compiled into the SSL library.
+This is not available for GnuTLS versions preceding 3.0.20 and an explicit location
+must be specified.
+
+The use of a directory for the option value is not avilable for GnuTLS versions
+preceding 3.3.6 and a single file must be used.
+
+With OpenSSL the certificates specified
+explicitly
+either by file or directory
+are added to those given by the system default location.
+
 The values of &$host$& and
 &$host_address$& are set to the name and address of the server during the
 expansion of this option. See chapter &<<CHAPTLS>>& for details of TLS.
@@ -25956,8 +25975,9 @@ include files and libraries for GnuTLS can be found.
 There are some differences in usage when using GnuTLS instead of OpenSSL:
 
 .ilist
-The &%tls_verify_certificates%& option must contain the name of a file, not the
-name of a directory for GnuTLS versions before 3.3.6
+The &%tls_verify_certificates%& option
+cannot be the path of a directory
+for GnuTLS versions before 3.3.6
 (for later versions, or OpenSSL, it can be either).
 .next
 The default value for &%tls_dhparam%& differs for historical reasons.
@@ -26309,8 +26329,10 @@ session with a client, you must set either &%tls_verify_hosts%& or
 apply to all TLS connections. For any host that matches one of these options,
 Exim requests a certificate as part of the setup of the TLS session. The
 contents of the certificate are verified by comparing it with a list of
-expected certificates. These must be available in a file or,
-for OpenSSL only (not GnuTLS), a directory, identified by
+expected certificates.
+These may be the system default set (depending on library version),
+an explicit file or,
+depending on library version, a directory, identified by
 &%tls_verify_certificates%&.
 
 A file can contain multiple certificates, concatenated end to end. If a
@@ -26470,9 +26492,13 @@ if it requests it. If the server is Exim, it will request a certificate only if
 &%tls_verify_hosts%& or &%tls_try_verify_hosts%& matches the client.
 
 If the &%tls_verify_certificates%& option is set on the &(smtp)& transport, it
+specified a collection of expected server certificates.
+These may be the system default set (depeding on library version),
+a file or,
+depnding on liibrary version, a directory,
 must name a file or,
-for OpenSSL only (not GnuTLS), a directory, that contains a collection of
-expected server certificates. The client verifies the server's certificate
+for OpenSSL only (not GnuTLS), a directory.
+The client verifies the server's certificate
 against this collection, taking into account any revoked certificates that are
 in the list defined by &%tls_crl%&.
 Failure to verify fails the TLS connection unless either of the
