@@ -103,6 +103,7 @@ send_to_server:
 {example.com/server1.example.com/ca_chain.pem}\
 {example.net/server1.example.net/ca_chain.pem}}
   tls_verify_cert_hostnames =
+  tls_try_verify_hosts =
 
   event_action =   ${acl {logger} {$event_name} {$domain} }
 

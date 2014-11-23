@@ -73,6 +73,7 @@ send_to_server1:
   port = PORT_D
   tls_sni = fred
   hosts_require_tls = *
+  tls_try_verify_hosts = :
 
 send_to_server2:
   driver = smtp
@@ -81,6 +82,7 @@ send_to_server2:
   port = PORT_D
   tls_sni = bill
   hosts_require_tls = *
+  tls_try_verify_hosts = :
 
 
 # ----- Retry -----

@@ -260,7 +260,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
                        /* tls_dh_min_bits */
   TRUE,                /* tls_tempfail_tryclear */
   NULL,                /* tls_verify_hosts */
-  NULL,                /* tls_try_verify_hosts */
+  US"*",               /* tls_try_verify_hosts */
   US"*"                /* tls_verify_cert_hostnames */
 #endif
 #ifndef DISABLE_DKIM

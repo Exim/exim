@@ -82,7 +82,8 @@ expanding: ${if eq {$address_data}{userz}{*}{:}}
   SMTP>> STARTTLS
   SMTP<< 220 TLS go ahead
 127.0.0.1 in tls_verify_hosts? no (option unset)
-127.0.0.1 in tls_try_verify_hosts? no (option unset)
+127.0.0.1 in tls_try_verify_hosts? yes (matched "*")
+127.0.0.1 in tls_verify_cert_hostnames? yes (matched "*")
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800

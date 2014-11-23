@@ -853,14 +853,14 @@ error message is provided. However, if we just refrain from setting anything up
 in that case, certificate verification fails, which seems to be the correct
 behaviour. */
 
-if (  state->tls_verify_certificates && *state->tls_verify_certificates
-#ifndef SUPPORT_SYSDEFAULT_CABUNDLE
-   && Ustrcmp(state->exp_tls_verify_certificates, "system") != 0
-#endif
-   )
+if (state->tls_verify_certificates && *state->tls_verify_certificates)
   {
   if (!expand_check_tlsvar(tls_verify_certificates))
     return DEFER;
+#ifndef SUPPORT_SYSDEFAULT_CABUNDLE
+  if (Ustrcmp(state->exp_tls_verify_certificates, "system") == 0)
+    state->exp_tls_verify_certificates = NULL;
+#endif
   if (state->tls_crl && *state->tls_crl)
     if (!expand_check_tlsvar(tls_crl))
       return DEFER;
@@ -1860,7 +1860,7 @@ the specified host patterns if one of them is defined */
 
 if (  (  state->exp_tls_verify_certificates
       && !ob->tls_verify_hosts
-      && !ob->tls_try_verify_hosts
+      && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
       )
     || verify_check_given_host(&ob->tls_verify_hosts, host) == OK
    )
