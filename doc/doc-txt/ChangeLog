@@ -17,6 +17,10 @@ JH/04 Certificate name checking on server certificates, when exim is a client,
       can be used to disable this per-host.  The build option
       EXPERIMENTAL_CERTNAMES is withdrawn.
 
+JH/05 The value of the tls_verify_certificates smtp transport and main options
+      can now be the word "system" to access the system default CA bundle.
+      For GnuTLS, only version 3.0.20 or later.
+
 
 Exim version 4.85
 -----------------

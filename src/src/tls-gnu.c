@@ -56,6 +56,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #else
 # undef  SUPPORT_CA_DIR
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030314
+# define SUPPORT_SYSDEFAULT_CABUNDLE
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
@@ -874,58 +877,65 @@ else
   return OK;
   }
 
-if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
+#ifdef SUPPORT_SYSDEFAULT_CABUNDLE
+if (Ustrcmp(state->exp_tls_verify_certificates, "system") == 0)
+  cert_count = gnutls_certificate_set_x509_system_trust(state->x509_cred);
+else
+#endif
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "could not stat %s "
-      "(tls_verify_certificates): %s", state->exp_tls_verify_certificates,
-      strerror(errno));
-  return DEFER;
-  }
+  if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "could not stat %s "
+	"(tls_verify_certificates): %s", state->exp_tls_verify_certificates,
+	strerror(errno));
+    return DEFER;
+    }
 
 #ifndef SUPPORT_CA_DIR
-/* The test suite passes in /dev/null; we could check for that path explicitly,
-but who knows if someone has some weird FIFO which always dumps some certs, or
-other weirdness.  The thing we really want to check is that it's not a
-directory, since while OpenSSL supports that, GnuTLS does not.
-So s/!S_ISREG/S_ISDIR/ and change some messsaging ... */
-if (S_ISDIR(statbuf.st_mode))
-  {
-  DEBUG(D_tls)
-    debug_printf("verify certificates path is a dir: \"%s\"\n",
-        state->exp_tls_verify_certificates);
-  log_write(0, LOG_MAIN|LOG_PANIC,
-      "tls_verify_certificates \"%s\" is a directory",
-      state->exp_tls_verify_certificates);
-  return DEFER;
-  }
+  /* The test suite passes in /dev/null; we could check for that path explicitly,
+  but who knows if someone has some weird FIFO which always dumps some certs, or
+  other weirdness.  The thing we really want to check is that it's not a
+  directory, since while OpenSSL supports that, GnuTLS does not.
+  So s/!S_ISREG/S_ISDIR/ and change some messsaging ... */
+  if (S_ISDIR(statbuf.st_mode))
+    {
+    DEBUG(D_tls)
+      debug_printf("verify certificates path is a dir: \"%s\"\n",
+	  state->exp_tls_verify_certificates);
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	"tls_verify_certificates \"%s\" is a directory",
+	state->exp_tls_verify_certificates);
+    return DEFER;
+    }
 #endif
 
-DEBUG(D_tls) debug_printf("verify certificates = %s size=" OFF_T_FMT "\n",
-        state->exp_tls_verify_certificates, statbuf.st_size);
+  DEBUG(D_tls) debug_printf("verify certificates = %s size=" OFF_T_FMT "\n",
+	  state->exp_tls_verify_certificates, statbuf.st_size);
 
-if (statbuf.st_size == 0)
-  {
-  DEBUG(D_tls)
-    debug_printf("cert file empty, no certs, no verification, ignoring any CRL\n");
-  return OK;
-  }
+  if (statbuf.st_size == 0)
+    {
+    DEBUG(D_tls)
+      debug_printf("cert file empty, no certs, no verification, ignoring any CRL\n");
+    return OK;
+    }
 
-cert_count =
+  cert_count =
 
 #ifdef SUPPORT_CA_DIR
-  (statbuf.st_mode & S_IFMT) == S_IFDIR
-  ?
-  gnutls_certificate_set_x509_trust_dir(state->x509_cred,
-    CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM)
-  :
+    (statbuf.st_mode & S_IFMT) == S_IFDIR
+    ?
+    gnutls_certificate_set_x509_trust_dir(state->x509_cred,
+      CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM)
+    :
 #endif
-  gnutls_certificate_set_x509_trust_file(state->x509_cred,
-    CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM);
+    gnutls_certificate_set_x509_trust_file(state->x509_cred,
+      CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM);
+  }
 
 if (cert_count < 0)
   {
   rc = cert_count;
-  exim_gnutls_err_check(US"gnutls_certificate_set_x509_trust_file");
+  exim_gnutls_err_check(US"setting certificate trust");
   }
 DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n", cert_count);
 

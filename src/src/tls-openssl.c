@@ -1366,50 +1366,65 @@ if (!expand_check(certs, US"tls_verify_certificates", &expcerts))
 
 if (expcerts != NULL && *expcerts != '\0')
   {
-  struct stat statbuf;
-  if (!SSL_CTX_set_default_verify_paths(sctx))
-    return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
-
-  if (Ustat(expcerts, &statbuf) < 0)
+  if (Ustrcmp(expcerts, "system") == 0)
     {
-    log_write(0, LOG_MAIN|LOG_PANIC,
-      "failed to stat %s for certificates", expcerts);
-    return DEFER;
+    /* Tell the library to use its compiled-in location for the system default
+    CA bundle, only */
+
+    if (!SSL_CTX_set_default_verify_paths(sctx))
+      return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
     }
   else
     {
-    uschar *file, *dir;
-    if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
-      { file = NULL; dir = expcerts; }
-    else
-      { file = expcerts; dir = NULL; }
+    struct stat statbuf;
 
-    /* If a certificate file is empty, the next function fails with an
-    unhelpful error message. If we skip it, we get the correct behaviour (no
-    certificates are recognized, but the error message is still misleading (it
-    says no certificate was supplied.) But this is better. */
+    /* Tell the library to use its compiled-in location for the system default
+    CA bundle. Those given by the exim config are additional to these */
 
-    if ((file == NULL || statbuf.st_size > 0) &&
-          !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
-      return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
+    if (!SSL_CTX_set_default_verify_paths(sctx))
+      return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
 
-    /* Load the list of CAs for which we will accept certs, for sending
-    to the client.  This is only for the one-file tls_verify_certificates
-    variant.
-    If a list isn't loaded into the server, but
-    some verify locations are set, the server end appears to make
-    a wildcard reqest for client certs.
-    Meanwhile, the client library as deafult behaviour *ignores* the list
-    we send over the wire - see man SSL_CTX_set_client_cert_cb.
-    Because of this, and that the dir variant is likely only used for
-    the public-CA bundle (not for a private CA), not worth fixing.
-    */
-    if (file != NULL)
+    if (Ustat(expcerts, &statbuf) < 0)
       {
-      STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
-DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
-				  sk_X509_NAME_num(names));
-      SSL_CTX_set_client_CA_list(sctx, names);
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"failed to stat %s for certificates", expcerts);
+      return DEFER;
+      }
+    else
+      {
+      uschar *file, *dir;
+      if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
+	{ file = NULL; dir = expcerts; }
+      else
+	{ file = expcerts; dir = NULL; }
+
+      /* If a certificate file is empty, the next function fails with an
+      unhelpful error message. If we skip it, we get the correct behaviour (no
+      certificates are recognized, but the error message is still misleading (it
+      says no certificate was supplied.) But this is better. */
+
+      if ((file == NULL || statbuf.st_size > 0) &&
+	    !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
+	return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
+
+      /* Load the list of CAs for which we will accept certs, for sending
+      to the client.  This is only for the one-file tls_verify_certificates
+      variant.
+      If a list isn't loaded into the server, but
+      some verify locations are set, the server end appears to make
+      a wildcard reqest for client certs.
+      Meanwhile, the client library as deafult behaviour *ignores* the list
+      we send over the wire - see man SSL_CTX_set_client_cert_cb.
+      Because of this, and that the dir variant is likely only used for
+      the public-CA bundle (not for a private CA), not worth fixing.
+      */
+      if (file != NULL)
+	{
+	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
+  DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
+				    sk_X509_NAME_num(names));
+	SSL_CTX_set_client_CA_list(sctx, names);
+	}
       }
     }
 
