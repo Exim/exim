@@ -16502,12 +16502,17 @@ directory containing certificate files.
 For earlier versions of GnuTLS
 the option must be set to the name of a single file.
 
+With OpenSSL the certificates specified
+explicitly
+either by file or directory
+are added to those given by the system default location.
+
 These certificates should be for the certificate authorities trusted, rather
 than the public cert of individual clients.  With both OpenSSL and GnuTLS, if
 the value is a file then the certificates are sent by Exim as a server to
 connecting clients, defining the list of accepted certificate authorities.
 Thus the values defined should be considered public data.  To avoid this,
-use OpenSSL with a directory.
+use the explicit directory version.
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
@@ -23436,7 +23441,7 @@ certificate verification will be tried but need not succeed.
 The &%tls_verify_certificates%& option must also be set.
 Note that unless the host is in this list
 TLS connections will be denied to hosts using self-signed certificates
-when &%tls_verify_certificates%& is set.
+when &%tls_verify_certificates%& is matched.
 The &$tls_out_certificate_verified$& variable is set when
 certificate verification succeeds.
 
@@ -23455,6 +23460,12 @@ you can set
 files.
 For earlier versions of GnuTLS the option must be set to the name of a
 single file.
+
+With OpenSSL the certificates specified
+explicitly
+either by file or directory
+are added to those given by the system default location.
+
 The values of &$host$& and
 &$host_address$& are set to the name and address of the server during the
 expansion of this option. See chapter &<<CHAPTLS>>& for details of TLS.
