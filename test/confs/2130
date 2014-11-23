@@ -60,12 +60,14 @@ send_to_server1:
   hosts = HOSTIPV4
   port = PORT_D
   tls_sni = fred
+  tls_try_verify_hosts = :
 
 send_to_server2:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  tls_try_verify_hosts = :
 
 
 # ----- Retry -----

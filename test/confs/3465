@@ -67,6 +67,7 @@ t1:
   hosts = 127.0.0.1
   port = PORT_D
   hosts_avoid_tls = HOSTS_AVOID_TLS
+  tls_try_verify_hosts = :
   hosts_require_auth = *
   allow_localhost
 

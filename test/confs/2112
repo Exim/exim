@@ -104,6 +104,7 @@ send_to_server_failcert:
   tls_privatekey = CERT2
 
   tls_verify_certificates = CA2
+  tls_try_verify_hosts =
   tls_verify_cert_hostnames =
 
 # this will fail to verify the cert at HOSTIPV4 so fail the crypt, then retry on 127.1; ok
@@ -118,6 +119,7 @@ send_to_server_retry:
 
   tls_verify_certificates = \
     ${if eq{$host_address}{127.0.0.1}{CA1}{CA2}}
+  tls_try_verify_hosts =
   tls_verify_cert_hostnames =
 
 # this will fail to verify the cert but continue unverified though crypted

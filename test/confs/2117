@@ -60,6 +60,7 @@ send_to_server:
   hosts = 127.0.0.1
   hosts_nopass_tls = *
   port = PORT_D
+  tls_try_verify_hosts = :
 
 
 # ----- Retry -----

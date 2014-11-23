@@ -53,6 +53,7 @@ send_to_server:
   hosts_require_tls = HOSTIPV4
   tls_require_ciphers = DES-CBC3-SHA
   port = PORT_D
+  tls_try_verify_hosts = :
 
 
 # ----- Retry -----

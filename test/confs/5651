@@ -116,6 +116,7 @@ send_to_server3:
   helo_data = helo.data.changed
   #tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
   tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_try_verify_hosts =
   tls_verify_cert_hostnames =
   hosts_require_tls =  *
   hosts_require_ocsp = *

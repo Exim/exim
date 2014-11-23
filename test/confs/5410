@@ -54,6 +54,7 @@ smtp:
   port = PORT_D
   hosts_avoid_tls =        ${if eq {$address_data}{usery}{*}{:}}
   hosts_verify_avoid_tls = ${if eq {$address_data}{userz}{*}{:}}
+  tls_try_verify_hosts = :
 
 
 # End

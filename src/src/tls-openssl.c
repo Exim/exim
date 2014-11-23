@@ -1686,7 +1686,9 @@ int rc;
    set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
    the specified host patterns if one of them is defined */
 
-if (  (!ob->tls_verify_hosts && !ob->tls_try_verify_hosts)
+if (  (  !ob->tls_verify_hosts
+      && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
+      )
    || (verify_check_given_host(&ob->tls_verify_hosts, host) == OK)
    )
   client_verify_optional = FALSE;

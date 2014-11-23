@@ -57,6 +57,7 @@ t1:
   hosts = 127.0.0.1 : HOSTIPV4
   port = PORT_D
   allow_localhost
+  tls_try_verify_hosts = :
 
 t2:
   driver = appendfile
