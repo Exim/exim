@@ -33,6 +33,11 @@ static void dummy(int x) { dummy(x-1); }
 #  error DANE support requires that TLS support must be enabled. Abort build.
 # endif
 
+/* DNSSEC support is also required */
+# ifndef RES_USE_DNSSEC
+#  error DANE support requires that the DNS reolver library supports DNSSEC
+# endif
+
 # ifdef USE_GNUTLS
 #  include "dane-gnu.c"
 # else
