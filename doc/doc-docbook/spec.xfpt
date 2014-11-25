@@ -26573,7 +26573,7 @@ during TLS session handshake, to permit alternative values to be chosen:
 &%tls_verify_certificates%&
 .next
 .vindex "&%tls_ocsp_file%&"
-&%tls_verify_certificates%&
+&%tls_ocsp_file%&
 .endlist
 
 Great care should be taken to deal with matters of case, various injection
