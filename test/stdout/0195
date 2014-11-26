@@ -1,33 +1,33 @@
 +++++++++++++++++++++++++++
   R:userx@myhost.test.ex -1 0 forcibly deferred
 first failed = time last try = time2 next try = time2 + 10
-  R:userz@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
   R:usery@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
-+++++++++++++++++++++++++++
-  R:userx@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
-  R:userz@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
-  R:usery@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
-+++++++++++++++++++++++++++
-  R:userx@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
-  R:userz@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
-  R:usery@myhost.test.ex -1 0 forcibly deferred
-first failed = time last try = time2 next try = time2 + 10
-+++++++++++++++++++++++++++
-  R:userx@myhost.test.ex -1 0 forcibly deferred
 first failed = time last try = time2 next try = time2 + 10
   R:userz@myhost.test.ex -1 0 forcibly deferred
 first failed = time last try = time2 next try = time2 + 10
 +++++++++++++++++++++++++++
   R:userx@myhost.test.ex -1 0 forcibly deferred
 first failed = time last try = time2 next try = time2 + 10
+  R:usery@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
   R:userz@myhost.test.ex -1 0 forcibly deferred
 first failed = time last try = time2 next try = time2 + 10
++++++++++++++++++++++++++++
+  R:userx@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
   R:usery@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
+  R:userz@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
++++++++++++++++++++++++++++
+  R:userx@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
+  R:userz@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
++++++++++++++++++++++++++++
+  R:userx@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
+  R:usery@myhost.test.ex -1 0 forcibly deferred
+first failed = time last try = time2 next try = time2 + 10
+  R:userz@myhost.test.ex -1 0 forcibly deferred
 first failed = time last try = time2 next try = time2 + 10

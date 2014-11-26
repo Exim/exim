@@ -1666,19 +1666,42 @@ if (/^dump\s+(\S+)/)
   my(@temp);
   print ">> ./eximdir/exim_dumpdb $parm_cwd/spool $which\n" if $debug;
   open(IN, "./eximdir/exim_dumpdb $parm_cwd/spool $which |");
-  @temp = <IN>;
-  close(IN);
-  if ($which eq "callout")
-    {
-    @temp = sort {
-                 my($aa) = substr $a, 21;
-                 my($bb) = substr $b, 21;
-                 return $aa cmp $bb;
-                 } @temp;
-    }
   open(OUT, ">>test-stdout");
   print OUT "+++++++++++++++++++++++++++\n";
-  print OUT @temp;
+
+  if ($which eq "retry")
+    {
+    $/ = "\n  ";
+    @temp = <IN>;
+    $/ = "\n";
+
+    @temp = sort {
+                   my($aa) = split(' ', $a);
+                   my($bb) = split(' ', $b);
+                   return $aa cmp $bb;
+                 } @temp;
+
+    foreach $item (@temp)
+      {
+      $item =~ s/^\s*(.*)\n(.*)\n?\s*$/\1\n\2/m;
+      print OUT "  $item\n";
+      }
+    }
+  else
+    {
+    @temp = <IN>;
+    if ($which eq "callout")
+      {
+      @temp = sort {
+                   my($aa) = substr $a, 21;
+                   my($bb) = substr $b, 21;
+                   return $aa cmp $bb;
+                   } @temp;
+      }
+    print OUT @temp;
+    }
+
+  close(IN);
   close(OUT);
   return 1;
   }
