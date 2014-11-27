@@ -204,7 +204,7 @@ extern int     host_scan_for_local_hosts(host_item *, host_item **, BOOL *);
 
 extern void    invert_address(uschar *, uschar *);
 extern int     ip_bind(int, int, uschar *, int);
-extern int     ip_connect(int, int, uschar *, int, int);
+extern int     ip_connect(int, int, const uschar *, int, int);
 extern int     ip_connectedsocket(int, const uschar *, int, int,
                  int, host_item *, uschar **);
 extern int     ip_get_address_family(int);
