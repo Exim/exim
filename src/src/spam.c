@@ -129,7 +129,8 @@ spam(uschar **listptr)
         (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
       /* grok spamd address and port */
-      if( sscanf(CS address, "%s %u", this_spamd->tcp_addr, &(this_spamd->tcp_port)) != 2 ) {
+      if (sscanf(CS address, "%23s %u", this_spamd->tcp_addr, &(this_spamd->tcp_port)) != 2)
+        {
         log_write(0, LOG_MAIN,
           "spam acl condition: warning - invalid spamd address: '%s'", address);
         continue;
