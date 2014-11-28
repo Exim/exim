@@ -15,6 +15,7 @@ gecos_name = CALLER_NAME
 primary_hostname = primary.test.ex
 qualify_domain = test.ex
 retry_data_expire = 2s
+log_selector = +received_recipients
 
 
 # ----- Routers -----
@@ -24,7 +25,7 @@ begin routers
 all:
   driver = manualroute
   route_list = simple  thishost.test.ex  byname \
-	     ; complex localhost.test.ex byname \
+	     ; complex thisloop.test.ex  byname \
 	     ; *       127.0.0.1         byname
   self = send
   transport = smtp
