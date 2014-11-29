@@ -2352,7 +2352,10 @@ rate measurement as opposed to rate limiting. */
 
 sender_rate_limit = string_nextinlist(&arg, &sep, NULL, 0);
 if (sender_rate_limit == NULL)
+  {
   limit = -1.0;
+  ss = NULL;	/* compiler quietening */
+  }
 else
   {
   limit = Ustrtod(sender_rate_limit, &ss);
