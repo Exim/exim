@@ -6,6 +6,14 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.86
+------------
+
+ 1. Support for using the system standard CA bundle.
+
+ 2. New expansion items $config_file, $config_dir, containing the file
+    and directory name of the main configuration file. Also $exim_version.
+
 Version 4.85
 ------------
 
@@ -24,9 +32,6 @@ Version 4.85
  3. The EXPERIMENTAL_CERTNAMES features is an enhancement to verify that
     server certs used for TLS match the result of the MX lookup. It does
     not use the same mechanism as DANE.
-
- 4. New expansion items $config_file, $config_dir, containing the file
-    and directory name of the main configuration file. 
 
 
 Version 4.84

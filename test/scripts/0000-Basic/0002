@@ -15,6 +15,7 @@ exim -be
 # Some fixed variables
 
 exim_path: $exim_path
+exim_version: $exim_version
 config_dir: $config_dir
 config_file: $config_file
 primary_hostname: $primary_hostname
