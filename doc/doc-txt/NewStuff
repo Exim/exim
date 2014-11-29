@@ -25,6 +25,9 @@ Version 4.85
     server certs used for TLS match the result of the MX lookup. It does
     not use the same mechanism as DANE.
 
+ 4. New expansion items $config_file, $config_dir, containing the file
+    and directory name of the main configuration file. 
+
 
 Version 4.84
 ------------

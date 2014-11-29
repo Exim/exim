@@ -496,6 +496,7 @@ gid_t   config_gid             = CONFIGURE_GROUP;
 uschar *config_main_filelist   = US CONFIGURE_FILE
                          "\0<-----------Space to patch configure_filename->";
 uschar *config_main_filename   = NULL;
+uschar *config_main_directory  = NULL;
 
 #ifdef CONFIGURE_OWNER
 uid_t   config_uid             = CONFIGURE_OWNER;

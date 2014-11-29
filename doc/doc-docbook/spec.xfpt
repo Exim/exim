@@ -11259,6 +11259,17 @@ The building process for Exim keeps a count of the number
 of times it has been compiled. This serves to distinguish different
 compilations of the same version of the program.
 
+.vitem &$config_dir$&
+.vindex "&$config_dir$&"
+The directory name of the main configuration file. That is, the content of
+&$config_file$& with the last component stripped. The value does not
+contain the trailing slash. If &$config_file$& does not contain a slash,
+&$config_dir$& is ".".
+
+.vitem &$config_file$&
+.vindex "&$config_file$&"
+The name of the main configuration file Exim is using.
+
 .vitem &$demime_errorlevel$&
 .vindex "&$demime_errorlevel$&"
 This variable is available when Exim is compiled with
