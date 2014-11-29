@@ -2014,7 +2014,7 @@ static int
 eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
 {
 int i;
-uschar *tmp;
+uschar * tmp = NULL;
 int sav_narg = acl_narg;
 int ret;
 extern int acl_where;

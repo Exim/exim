@@ -1011,29 +1011,19 @@ if (acl_removed_headers != NULL)
   {
   DEBUG(D_receive|D_acl) debug_printf(">>Headers removed by %s ACL:\n", acl_name);
 
-  for (h = header_list; h != NULL; h = h->next)
+  for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
     {
-    uschar *list;
-    BOOL include_header;
-
-    if (h->type == htype_old) continue;
-
-    include_header = TRUE;
-    list = acl_removed_headers;
-
+    uschar * list = acl_removed_headers;
     int sep = ':';         /* This is specified as a colon-separated list */
     uschar *s;
     uschar buffer[128];
-    while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
-            != NULL)
-      {
-      int len = Ustrlen(s);
-      if (header_testname(h, s, len, FALSE))
+
+    while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+      if (header_testname(h, s, Ustrlen(s), FALSE))
 	{
 	h->type = htype_old;
         DEBUG(D_receive|D_acl) debug_printf("  %s", h->text);
 	}
-      }
     }
   acl_removed_headers = NULL;
   DEBUG(D_receive|D_acl) debug_printf(">>\n");
@@ -1242,7 +1232,6 @@ if (Ustrlen(rfc822_file_path) > 0)
 if (rc == OK)
   {
   uschar temp_path[1024];
-  int n;
   struct dirent *entry;
   DIR *tempdir;
 
@@ -1250,7 +1239,6 @@ if (rc == OK)
     message_id);
 
   tempdir = opendir(CS temp_path);
-  n = 0;
   do
     {
     entry = readdir(tempdir);

@@ -443,7 +443,7 @@ Returns:    bool indicating presence of AD bit
 */
 
 BOOL
-dns_is_secure(const dns_answer *dnsa)
+dns_is_secure(const dns_answer * dnsa)
 {
 #ifdef DISABLE_DNSSEC
 DEBUG(D_dns)
@@ -453,6 +453,13 @@ return FALSE;
 HEADER *h = (HEADER *)dnsa->answer;
 return h->ad ? TRUE : FALSE;
 #endif
+}
+
+static void
+dns_set_insecure(dns_answer * dnsa)
+{
+HEADER * h = (HEADER *)dnsa->answer;
+h->ad = 0;
 }
 
 
@@ -812,7 +819,7 @@ for (i = 0; i < 10; i++)
   if (type_rr.data != NULL)
     {
     if (!secure_so_far)	/* mark insecure if any element of CNAME chain was */
-      ((HEADER *)dnsa->answer)->ad = 0;
+      dns_set_insecure(dnsa);
     return DNS_SUCCEED;
     }
 
@@ -1023,7 +1030,7 @@ if (type == T_CSA)
       /* Extract the numerical SRV fields (p is incremented) */
       p = rr->data;
       GETSHORT(priority, p);
-      GETSHORT(weight, p);
+      GETSHORT(weight, p);	weight = weight; /* compiler quietening */
       GETSHORT(port, p);
 
       /* Check the CSA version number */

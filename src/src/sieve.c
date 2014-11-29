@@ -2970,7 +2970,6 @@ while (*filter->pc)
     int m;
     struct String from;
     struct String importance;
-    struct String *options;
     struct String message;
     struct String method;
     struct Notification *already;
@@ -2991,7 +2990,6 @@ while (*filter->pc)
     from.length=-1;
     importance.character=(uschar*)0;
     importance.length=-1;
-    options=(struct String*)0;
     message.character=(uschar*)0;
     message.length=-1;
     recipient=NULL;
