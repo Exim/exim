@@ -1242,42 +1242,40 @@ if (Ustrlen(rfc822_file_path) > 0)
 if (rc == OK)
   {
   uschar temp_path[1024];
-  int n;
-  struct dirent *entry;
-  DIR *tempdir;
+  struct dirent * entry;
+  DIR * tempdir;
 
-  (void)string_format(temp_path, 1024, "%s/scan/%s", spool_directory,
-    message_id);
+  (void) string_format(temp_path, sizeof(temp_path), "%s/scan/%s",
+    spool_directory, message_id);
 
   tempdir = opendir(CS temp_path);
-  n = 0;
-  do
+  for (;;)
     {
-    entry = readdir(tempdir);
-    if (entry == NULL) break;
-    if (strncmpic(US entry->d_name,US"__rfc822_",9) == 0)
+    if (!(entry = readdir(tempdir)))
+      break;
+    if (strncmpic(US entry->d_name, US"__rfc822_", 9) == 0)
       {
-      (void)string_format(rfc822_file_path, 2048,"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
-      debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n", rfc822_file_path);
+      (void) string_format(rfc822_file_path, sizeof(rfc822_file_path),
+	"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
+      debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n",
+	rfc822_file_path);
       break;
       }
-    } while (1);
+    }
   closedir(tempdir);
 
-  if (entry != NULL)
+  if (entry)
     {
-    mbox_file = Ufopen(rfc822_file_path,"rb");
-    if (mbox_file == NULL)
+    if ((mbox_file = Ufopen(rfc822_file_path, "rb")))
       {
-      log_write(0, LOG_PANIC,
-         "acl_smtp_mime: can't open RFC822 spool file, skipping.");
-      unlink(CS rfc822_file_path);
-      goto END_MIME_ACL;
+      /* set RFC822 expansion variable */
+      mime_is_rfc822 = 1;
+      mime_part_count_buffer = mime_part_count;
+      goto MIME_ACL_CHECK;
       }
-    /* set RFC822 expansion variable */
-    mime_is_rfc822 = 1;
-    mime_part_count_buffer = mime_part_count;
-    goto MIME_ACL_CHECK;
+    log_write(0, LOG_PANIC,
+       "acl_smtp_mime: can't open RFC822 spool file, skipping.");
+    unlink(CS rfc822_file_path);
     }
   }
 

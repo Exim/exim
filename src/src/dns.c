@@ -807,7 +807,12 @@ for (i = 0; i < 10; i++)
 
   /* If any data records of the correct type were found, we are done. */
 
-  if (type_rr.data != NULL) return DNS_SUCCEED;
+  if (type_rr.data != NULL)
+    {
+    if (!secure_so_far)	/* mark insecure if any element of CNAME chain was */
+      dns_set_insecure(dnsa);
+    return DNS_SUCCEED;
+    }
 
   /* If there are no data records, we need to re-scan the DNS using the
   domain given in the CNAME record, which should exist (otherwise we should
