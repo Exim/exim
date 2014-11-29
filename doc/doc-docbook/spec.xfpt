@@ -11377,6 +11377,13 @@ This variable contains the path to the Exim binary.
 .vindex "&$exim_uid$&"
 This variable contains the numerical value of the Exim user id.
 
+.vitem &$exim_version$&
+.vindex "&$exim_uid$&"
+This variable contains the version string of the Exim build.
+The first character is a major version number, currently 4.
+Then after a dot, the next group of digits is a minor version number.
+There may be other characters following the minor version.
+
 .vitem &$found_extension$&
 .vindex "&$found_extension$&"
 This variable is available when Exim is compiled with the

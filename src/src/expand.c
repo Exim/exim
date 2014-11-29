@@ -503,6 +503,7 @@ static var_entry var_table[] = {
   { "exim_gid",            vtype_gid,         &exim_gid },
   { "exim_path",           vtype_stringptr,   &exim_path },
   { "exim_uid",            vtype_uid,         &exim_uid },
+  { "exim_version",        vtype_stringptr,   &version_string },
 #ifdef WITH_OLD_DEMIME
   { "found_extension",     vtype_stringptr,   &found_extension },
 #endif

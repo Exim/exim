@@ -6,6 +6,7 @@
 > # Some fixed variables
 > 
 > exim_path: TESTSUITE/eximdir/exim
+> exim_version: x.yz
 > config_dir: TESTSUITE
 > config_file: TESTSUITE/test-config
 > primary_hostname: myhost.test.ex
