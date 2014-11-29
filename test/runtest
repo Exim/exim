@@ -491,6 +491,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/Exim\sstatistics\sfrom\s\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\sto\s
     \d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Exim statistics from <time> to <time>/x;
 
+  # Treat ECONNRESET the same as ECONNREFUSED.  At least some systems give
+  # us the former on a new connection.
+  s/(could not connect to .*: Connection) reset by peer$/$1 refused/;
 
   # ======== TLS certificate algorithms ========
   # Test machines might have various different TLS library versions supporting
@@ -1683,7 +1686,7 @@ if (/^dump\s+(\S+)/)
 
     foreach $item (@temp)
       {
-      $item =~ s/^\s*(.*)\n(.*)\n?\s*$/\1\n\2/m;
+      $item =~ s/^\s*(.*)\n(.*)\n?\s*$/$1\n$2/m;
       print OUT "  $item\n";
       }
     }
