@@ -30366,6 +30366,17 @@ av_scanner = drweb:192.168.2.20 31337
 If you omit the argument, the default path &_/usr/local/drweb/run/drwebd.sock_&
 is used. Thanks to Alex Miller for contributing the code for this scanner.
 
+.vitem &%f-protd%&
+.cindex "virus scanners" "f-protd"
+The f-protd scanner is accessed via HTTP over TCP.
+One argument is taken, being a space-separated hostname and port number
+(or port-range).
+For example:
+.code
+av_scanner = f-protd:localhost 10200-10204
+.endd
+If you omit the argument, the default values show above are used.
+
 .vitem &%fsecure%&
 .cindex "virus scanners" "F-Secure"
 The F-Secure daemon scanner (&url(http://www.f-secure.com)) takes one
