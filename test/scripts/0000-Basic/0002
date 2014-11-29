@@ -15,6 +15,8 @@ exim -be
 # Some fixed variables
 
 exim_path: $exim_path
+config_dir: $config_dir
+config_file: $config_file
 primary_hostname: $primary_hostname
 primary_hostname: ${primary_hostname}
 qualify_domain: $qualify_domain

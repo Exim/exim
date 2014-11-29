@@ -282,6 +282,7 @@ extern gid_t   config_gid;             /* Additional group owner */
 extern int     config_lineno;          /* Line number */
 extern uschar *config_main_filelist;   /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */
+extern uschar *config_main_directory;  /* Directory where the main config file was found */
 #ifdef CONFIGURE_OWNER
 extern uid_t   config_uid;             /* Additional owner */
 #endif

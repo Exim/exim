@@ -6,6 +6,8 @@
 > # Some fixed variables
 > 
 > exim_path: TESTSUITE/eximdir/exim
+> config_dir: TESTSUITE
+> config_file: TESTSUITE/test-config
 > primary_hostname: myhost.test.ex
 > primary_hostname: myhost.test.ex
 > qualify_domain: myhost.test.ex
