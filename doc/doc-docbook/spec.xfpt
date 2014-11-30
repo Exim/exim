@@ -30356,9 +30356,13 @@ av_scanner = cmdline:\
 .endd
 .vitem &%drweb%&
 .cindex "virus scanners" "DrWeb"
-The DrWeb daemon scanner (&url(http://www.sald.com/)) interface takes one
-argument, either a full path to a UNIX socket, or an IP address and port
-separated by white space, as in these examples:
+The DrWeb daemon scanner (&url(http://www.sald.com/)) interface
+takes one option,
+either a full path to a UNIX socket,
+or host and port specifiers separated by white space.
+The host may be a name or an IP address; the port is either a
+single number or a pair of numbers with a dash between.
+For example:
 .code
 av_scanner = drweb:/var/run/drwebd.sock
 av_scanner = drweb:192.168.2.20 31337
