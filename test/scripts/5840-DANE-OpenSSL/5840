@@ -3,28 +3,47 @@
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
 # TLSA (3 1 1)
-exim CALLER@dane256ee.test.ex
+exim -odq CALLER@dane256ee.test.ex
 Testing
 ****
 # TLSA (3 1 2)
-exim CALLER@mxdane512ee.test.ex
+exim -odq CALLER@mxdane512ee.test.ex
 Testing
 ****
 exim -qf
 ****
 killdaemon
-exim -DSERVER=server -DDETAILS=ee -DNOTDAEMON -qf
-****
 #
 #
 exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
 ****
 # TLSA (2 0 1)
-exim CALLER@mxdane256ta.test.ex
+exim -odq CALLER@mxdane256ta.test.ex
 Testing
 ****
 exim -qf
 ****
 killdaemon
-exim -DSERVER=server -DDETAILS=ta -DNOTDAEMON -qf
+#
+# A server with a nonverifying cert and no TLSA
+# Check we get a non-CV but TLS connection, with try_dane but no require_dane
+exim -DSERVER=server -DDETAILS=no -bd -oX PORT_D
 ****
+exim -odq CALLER@thishost.test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+#
+# A server with a verifying cert and no TLSA
+# Check we get a CV and TLS connection, with try_dane but no require_dane
+exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
+****
+exim -odq CALLER@thishost.test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+#

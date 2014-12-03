@@ -18,7 +18,6 @@ acl_smtp_rcpt = accept
 
 log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
 
-queue_only
 queue_run_in_order
 
 tls_advertise_hosts = *
@@ -28,17 +27,16 @@ CDIR1 = DIR/aux-fixed
 CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
 
 tls_certificate = ${if eq {SERVER}{server} \
-	{${if eq {DETAILS}{ta} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}}} \
 		{CDIR2/fullchain.pem}\
 		{CDIR1/cert1}}}\
 	fail}
 
 tls_privatekey = ${if eq {SERVER}{server} \
-	{${if eq {DETAILS}{ta} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}}} \
 		{CDIR2/server1.example.com.unlocked.key}\
 		{CDIR1/cert1}}}\
 	fail}
-
 
 # ----- Routers -----
 
@@ -65,11 +63,14 @@ send_to_server:
   allow_localhost
   port = PORT_D
 
-#  hosts_try_dane = *
-  hosts_require_dane = *
+  hosts_try_dane =     *
+  hosts_require_dane = !thishost.test.ex
   hosts_request_ocsp = ${if or { {= {4}{$tls_out_tlsa_usage}} \
 				 {= {0}{$tls_out_tlsa_usage}} } \
                         {*}{}}
+  tls_try_verify_hosts = thishost.test.ex
+  tls_verify_certificates = CDIR2/ca_chain.pem
+
 
 
 # ----- Retry -----
