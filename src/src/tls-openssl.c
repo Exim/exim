@@ -1872,7 +1872,9 @@ if (expciphers != NULL)
 #ifdef EXPERIMENTAL_DANE
 if (tlsa_dnsa)
   {
-  SSL_CTX_set_verify(client_ctx, SSL_VERIFY_PEER, verify_callback_client_dane);
+  SSL_CTX_set_verify(client_ctx,
+    SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+    verify_callback_client_dane);
 
   if (!DANESSL_library_init())
     return tls_error(US"library init", host, NULL);
