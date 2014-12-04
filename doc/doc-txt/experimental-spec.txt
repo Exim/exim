@@ -1302,18 +1302,23 @@ MX, A and TLSA records.
 
 A TLSA lookup will be done if either of the above options match
 and the host-lookup succeded using dnssec.
-If the TLSA lookup succeeds, a TLS connection will be required
-for the host.
+If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
+will be required for the host.
 
 (TODO: specify when fallback happens vs. when the host is not used)
 
-If dane is in use the following transport options are ignored:
+If DANE is requested and useable (see above) the following transport
+options are ignored:
   hosts_require_tls
   tls_verify_hosts
   tls_try_verify_hosts
   tls_verify_certificates
   tls_crl
   tls_verify_cert_hostnames
+
+If DANE is not usable, whether requested or not, and CA-anchored
+verification evaluation is wanted, the above variables should be set
+appropriately.
 
 Currently dnssec_request_domains must be active (need to think about that)
 and dnssec_require_domains is ignored.
