@@ -5567,7 +5567,7 @@ of an incoming SMTP connection.
 If you have hosts for which you trust RFC1413 and need this
 information, you can change this.
 
-This line enables an efficiency SMTP option.  It is negociated by clients
+This line enables an efficiency SMTP option.  It is negotiated by clients
 and not expected to cause problems but can be disabled if needed.
 .code
 prdr_enable = true
