@@ -15658,13 +15658,15 @@ the time of delivery. They are normally used only for final local deliveries.
 This option is an obsolete synonym for &%bounce_return_size_limit%&.
 
 
-.option rfc1413_hosts main "host list&!!" *
+.option rfc1413_hosts main "host list&!!" @[]
 .cindex "RFC 1413"
 .cindex "host" "for RFC 1413 calls"
-RFC 1413 identification calls are made to any client host which matches an item
-in the list.
+RFC 1413 identification calls are made to any client host which matches
+an item in the list.
+The default value specifies just this host, being any local interface
+for the system.
 
-.option rfc1413_query_timeout main time 5s
+.option rfc1413_query_timeout main time 0s
 .cindex "RFC 1413" "query timeout"
 .cindex "timeout" "for RFC 1413 call"
 This sets the timeout on RFC 1413 identification calls. If it is set to zero,
