@@ -9509,7 +9509,7 @@ locks out the use of this expansion item in filter files.
 .cindex "expansion" "inserting from a socket"
 .cindex "socket, use of in expansion"
 .cindex "&%readsocket%& expansion item"
-This item inserts data from a Unix domain or Internet socket into the expanded
+This item inserts data from a Unix domain or TCP socket into the expanded
 string. The minimal way of using it uses just two arguments, as in these
 examples:
 .code
