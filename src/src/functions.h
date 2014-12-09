@@ -216,6 +216,10 @@ extern void    ip_keepalive(int, uschar *, BOOL);
 extern int     ip_recv(int, uschar *, int, int);
 extern int     ip_socket(int, int);
 
+extern int     ip_tcpsocket(const uschar *, uschar **, int);
+extern int     ip_unixsocket(const uschar *, uschar **);
+extern int     ip_streamsocket(const uschar *, uschar **, int);
+
 extern uschar *local_part_quote(uschar *);
 extern int     log_create(uschar *);
 extern int     log_create_as_exim(uschar *);
