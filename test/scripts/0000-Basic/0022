@@ -91,7 +91,7 @@ exim -bp
 ****
 exim -DSERVER=server -odq -bd -oX PORT_D
 ****
-client -t5 127.0.0.1 PORT_D
+client -t5 127.0.0.1 PORT_D 127.0.0.1
 ??? 220
 mail from:<x@y>
 ??? 250

@@ -50,6 +50,7 @@ smtp:
   driver = smtp
   hosts_try_auth = *
   port = PORT_S
+  interface = 127.0.0.1
 
 
 # ----- Retry -----

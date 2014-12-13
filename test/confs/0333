@@ -38,6 +38,7 @@ t1:
   hosts = 127.0.0.1
   hosts_override
   port = PORT_S
+  interface = 127.0.0.1
 
 
 # ----- Retry -----

@@ -69,6 +69,7 @@ t3:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  interface = 127.0.0.1
   max_rcpt = 1
   allow_localhost
   return_path = pqr=$local_part+$domain@verp.domain

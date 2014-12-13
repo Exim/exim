@@ -11,8 +11,8 @@ Considering ok@localhost
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -57,8 +57,8 @@ Considering ok@localhost
 Attempting full verification using callout
 callout cache: found domain record
 callout cache: address record expired
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... failed: Connection refused
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify defer for <ok@localhost>: could not connect to 127.0.0.1 [127.0.0.1]: Connection refused
 created log directory TESTSUITE/spool/log
@@ -80,8 +80,8 @@ Considering bad@localhost
 Attempting full verification using callout
 callout cache: found domain record
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -134,8 +134,8 @@ Considering ok@localhost
 Attempting full verification using callout
 callout cache: found domain record
 callout cache: address record expired
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -184,8 +184,8 @@ Considering ok@otherhost
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -244,8 +244,8 @@ Considering ok@otherhost2
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -298,8 +298,8 @@ Considering ok@otherhost3
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -342,8 +342,8 @@ Considering ok@otherhost4
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -386,8 +386,8 @@ Considering ok@otherhost41
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -447,8 +447,8 @@ Considering ok@otherhost21
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -484,8 +484,8 @@ Attempting full verification using callout
 callout cache: found domain record
 callout cache: domain accepts RCPT TO:<postmaster@domain>
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -513,8 +513,8 @@ Considering ok@otherhost31
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -549,8 +549,8 @@ Attempting full verification using callout
 callout cache: found domain record
 callout cache: domain rejects random addresses
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -578,8 +578,8 @@ Considering okokok@otherhost31
 Attempting full verification using callout
 callout cache: domain record expired
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -613,8 +613,8 @@ Considering okok@otherhost51
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -644,8 +644,8 @@ Considering okokok@otherhost52
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -681,8 +681,8 @@ Considering abcd@x.y.z
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -713,8 +713,8 @@ Considering abcd@x.y.z
 Attempting full verification using callout
 callout cache: found domain record
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -742,8 +742,8 @@ Considering ok@otherhost9
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -780,8 +780,8 @@ Considering z@test.ex
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=NULL port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+interface=127.0.0.1 port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK

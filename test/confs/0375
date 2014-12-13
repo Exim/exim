@@ -119,6 +119,7 @@ ut4:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  interface = 127.0.0.1
   allow_localhost
   max_rcpt = 1
   disable_logging
@@ -129,6 +130,7 @@ ut5:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  interface = 127.0.0.1
   allow_localhost
   max_rcpt = 1
   disable_logging
@@ -140,6 +142,7 @@ ut6:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  interface = 127.0.0.1
   allow_localhost
   max_rcpt = 1
   disable_logging

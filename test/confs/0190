@@ -94,6 +94,7 @@ smtp:
 smtp2:
   driver = smtp
   port = PORT_S
+  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
 
 smtp3:
   driver = smtp
@@ -101,6 +102,7 @@ smtp3:
   max_rcpt = 2
   connection_max_messages = 1
   port = PORT_S
+  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
 
 
 # ----- Retry -----

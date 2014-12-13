@@ -3,7 +3,7 @@ need_ipv4
 #
 exim -DSERVER=server -bd -oX PORT_D3
 ****
-client 127.0.0.1 PORT_D
+client 127.0.0.1 PORT_D 127.0.0.1
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -23,7 +23,7 @@ This is a test message.
 quit
 ??? 221
 ****
-client 127.0.0.1 PORT_D2
+client 127.0.0.1 PORT_D2 127.0.0.1
 ??? 220
 ehlo rhu.barb
 ??? 250-

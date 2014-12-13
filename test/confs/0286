@@ -39,6 +39,7 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_S
+  interface = 127.0.0.1
   max_rcpt = 2
   connection_max_messages = 3
 

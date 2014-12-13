@@ -41,6 +41,7 @@ t1:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  interface = 127.0.0.1
   allow_localhost
   helo_data = ${if eq{$domain}{yes1}{localhost}{aname}}
 
@@ -48,6 +49,7 @@ t2:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  interface = 127.0.0.1
   allow_localhost
 
 # End

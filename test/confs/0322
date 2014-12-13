@@ -38,6 +38,7 @@ smtp:
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_S
+  interface = 127.0.0.1
 
 
 # End

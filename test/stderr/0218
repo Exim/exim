@@ -15,7 +15,7 @@ queue running combined directories
 delivering 10HmaX-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
@@ -73,7 +73,7 @@ queue running combined directories
 delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
@@ -99,7 +99,7 @@ LOG: MAIN
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 LOG: MAIN
@@ -129,7 +129,7 @@ T: send_to_server  (ACL)
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK

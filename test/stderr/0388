@@ -79,7 +79,7 @@ returned from EXIM_DBOPEN
 no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (x@y)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
@@ -110,12 +110,12 @@ Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... failed: Network Error
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0] for x@y: result DEFER
-added retry item for T:V4NET.0.0.0:V4NET.0.0.0:1224: errno=dd more_errno=dd,A flags=2
+added retry item for T:V4NET.0.0.0:V4NET.0.0.0:1224/NULL: errno=dd more_errno=dd,A flags=2
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run smtp for x@y in subprocess)
 search_tidyup called
 set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaX-0005vi-00
-reading retry information for T:V4NET.0.0.0:V4NET.0.0.0:1224 from subprocess
+reading retry information for T:V4NET.0.0.0:V4NET.0.0.0:1224/NULL from subprocess
   added retry item
 reading retry information for R:x@y from subprocess
   added retry item
@@ -147,14 +147,14 @@ dbfn_write: key=R:x@y
 address match test: subject=*@V4NET.0.0.0 pattern=*
 V4NET.0.0.0 in "*"? yes (matched "*")
 *@V4NET.0.0.0 in "*"? yes (matched "*")
-retry for T:V4NET.0.0.0:V4NET.0.0.0:1224 (y) = * 0 0
-dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
+retry for T:V4NET.0.0.0:V4NET.0.0.0:1224/NULL (y) = * 0 0
+dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:1224/NULL
 failing_interval=ttt message_age=ttt
 on queue longer than maximum retry
-Writing retry data for T:V4NET.0.0.0:V4NET.0.0.0:1224
+Writing retry data for T:V4NET.0.0.0:V4NET.0.0.0:1224/NULL
   first failed=dddd last try=dddd next try=+0 expired=0
   errno=dd more_errno=dd,A Network Error
-dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
+dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224/NULL
 timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded

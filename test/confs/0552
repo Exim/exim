@@ -50,8 +50,9 @@ begin transports
 
 t1:
   driver = smtp
-  port = PORT_D
   hosts = 127.0.0.1
+  port = PORT_D
+  interface = 127.0.0.1
   allow_localhost
   command_timeout = 2s
 

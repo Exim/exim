@@ -3,7 +3,7 @@ need_ipv4
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client 127.0.0.1 PORT_D
+client 127.0.0.1 PORT_D 127.0.0.1
 ??? 220
 ehlo abcd\r\nmail from:<userx@test.ex>
 ??? 250-
@@ -15,7 +15,7 @@ ehlo abcd\r\nmail from:<userx@test.ex>
 quit
 ??? 221
 ****
-client 127.0.0.1 PORT_D
+client 127.0.0.1 PORT_D 127.0.0.1
 ??? 220
 ehlo abcd
 ??? 250-
@@ -39,7 +39,7 @@ quit
 ??? 221
 ****
 # For this one, the check will be dyamically turned on again
-client 127.0.0.1 PORT_D
+client 127.0.0.1 PORT_D 127.0.0.1
 ??? 220
 ehlo en.force
 ??? 250-

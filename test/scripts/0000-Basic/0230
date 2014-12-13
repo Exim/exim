@@ -17,7 +17,7 @@ quit
 ??? 221
 +++ 1
 ****
-client 127.0.0.1 PORT_D
+client 127.0.0.1 PORT_D 127.0.0.1
 ??? 220
 mail from:<x@y.x>
 ??? 250

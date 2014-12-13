@@ -36,6 +36,7 @@ smtp:
   driver = smtp
   hosts_max_try = 1
   port = PORT_S
+  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
   connect_timeout = 2s
   address_retry_include_sender = false
 

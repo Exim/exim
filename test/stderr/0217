@@ -1,7 +1,7 @@
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 delivering 10HmbL-0005vi-00
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
@@ -827,7 +827,7 @@ LOG: MAIN
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 delivering 10HmbP-0005vi-00
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK

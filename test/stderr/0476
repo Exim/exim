@@ -16,7 +16,7 @@ checking status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 status = usable
 delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO the.local.host.name
   SMTP<< 250-server id
@@ -66,7 +66,7 @@ checking status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111 status = usable
 delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
 set_process_info: pppp delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 set_process_info: pppp delivering 10HmaZ-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for CALLER@the.local.host.name: result DEFER

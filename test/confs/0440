@@ -33,6 +33,7 @@ begin transports
 t1:
   driver = smtp
   port = PORT_S
+  interface = 127.0.0.1
   transport_filter = /bin/cat
 
 
