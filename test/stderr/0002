@@ -116,7 +116,7 @@ expanding: No
 expanding: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
    result: ----> No lookup yet: No
 looking up host name for V4NET.0.0.1
-IP address lookup yielded ten-1.test.ex
+IP address lookup yielded "ten-1.test.ex"
 using host_fake_gethostbyname for ten-1.test.ex (IPv4)
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
@@ -159,7 +159,7 @@ sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/
 looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
-IP address lookup yielded ten-1.test.ex
+IP address lookup yielded "ten-1.test.ex"
 using host_fake_gethostbyname for ten-1.test.ex (IPv4)
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded

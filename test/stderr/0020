@@ -1,7 +1,7 @@
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "10.250.104.0/21")
 >>> looking up host name for 10.250.104.42
->>> IP address lookup yielded manyhome.test.ex
+>>> IP address lookup yielded "manyhome.test.ex"
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=manyhome.test.ex address=10.250.104.0

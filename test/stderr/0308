@@ -32,7 +32,7 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> check hosts = *.test.ex
 >>> sender host name required, to match against *.test.ex
 >>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded ten-1.test.ex
+>>> IP address lookup yielded "ten-1.test.ex"
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
