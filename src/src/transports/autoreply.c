@@ -676,6 +676,7 @@ if (ff != NULL)
       }
     else fprintf(f, "%s", CS big_buffer);
     }
+  (void) fclose(ff);
   }
 
 /* Copy the original message if required, observing the return size
