@@ -528,26 +528,24 @@ while(1)
    */
   if (context != NULL)
     {
-    while(fgets(CS header, MIME_MAX_HEADER_SIZE, f) != NULL)
+    while(fgets(CS header, MIME_MAX_HEADER_SIZE, f))
       {
       /* boundary line must start with 2 dashes */
-      if (Ustrncmp(header,"--",2) == 0)
-        {
-	if (Ustrncmp((header+2),context->boundary,Ustrlen(context->boundary)) == 0)
+      if (  Ustrncmp(header, "--", 2) == 0
+	 && Ustrncmp(header+2, context->boundary, Ustrlen(context->boundary)) == 0)
+	{
+	/* found boundary */
+	if (Ustrncmp((header+2+Ustrlen(context->boundary)), "--", 2) == 0)
 	  {
-	  /* found boundary */
-	  if (Ustrncmp((header+2+Ustrlen(context->boundary)),"--",2) == 0)
-	    {
-	    /* END boundary found */
-	    debug_printf("End boundary found %s\n", context->boundary);
-	    return rc;
-	    }
-	  else
-	    debug_printf("Next part with boundary %s\n", context->boundary);
-
-	  /* can't use break here */
-	  goto DECODE_HEADERS;
+	  /* END boundary found */
+	  debug_printf("End boundary found %s\n", context->boundary);
+	  return rc;
 	  }
+	else
+	  debug_printf("Next part with boundary %s\n", context->boundary);
+
+	/* can't use break here */
+	goto DECODE_HEADERS;
 	}
       }
     /* Hit EOF or read error. Ugh. */
@@ -557,92 +555,103 @@ while(1)
 
 DECODE_HEADERS:
   /* parse headers, set up expansion variables */
-  while (mime_get_header(f,header))
+  while (mime_get_header(f, header))
     {
     int i;
     /* loop through header list */
     for (i = 0; i < mime_header_list_size; i++)
-      {
-      uschar *header_value = NULL;
-      int header_value_len = 0;
+      if (strncmpic(mime_header_list[i].name,
+	    header, mime_header_list[i].namelen) == 0)
+	{				/* found an interesting header */
+	uschar * header_value;
+	int header_value_len;
+	uschar * p = header + mime_header_list[i].namelen;
 
-      /* found an interesting header? */
-      if (strncmpic(mime_header_list[i].name,header,mime_header_list[i].namelen) == 0)
-	{
-	uschar *p = header + mime_header_list[i].namelen;
-	/* yes, grab the value (normalize to lower case)
-	   and copy to its corresponding expansion variable */
+	/* grab the value (normalize to lower case)
+	and copy to its corresponding expansion variable */
 	while(*p != ';')
 	  {
 	  *p = tolower(*p);
 	  p++;
 	  }
-	header_value_len = (p - (header + mime_header_list[i].namelen));
-	header_value = (uschar *)malloc(header_value_len+1);
-	memset(header_value,0,header_value_len+1);
+	header_value_len = p - (header + mime_header_list[i].namelen);
 	p = header + mime_header_list[i].namelen;
-	Ustrncpy(header_value, p, header_value_len);
-	debug_printf("Found %s MIME header, value is '%s'\n", mime_header_list[i].name, header_value);
+	header_value = string_copyn(p, header_value_len);
+	debug_printf("Found %s MIME header, value is '%s'\n",
+			mime_header_list[i].name, header_value);
 	*((uschar **)(mime_header_list[i].value)) = header_value;
 
 	/* make p point to the next character after the closing ';' */
-	p += (header_value_len+1);
+	p += header_value_len+1;
 
-	/* grab all param=value tags on the remaining line, check if they are interesting */
+	/* grab all param=value tags on the remaining line,
+	check if they are interesting */
 NEXT_PARAM_SEARCH:
-	while (*p != 0)
+	while (*p)
 	  {
 	  mime_parameter * mp;
 	  for (mp = mime_parameter_list;
 	       mp < &mime_parameter_list[mime_parameter_list_size];
 	       mp++)
 	    {
-	    uschar *param_value = NULL;
-	    int param_value_len = 0;
+	    uschar * param_value = NULL;
 
 	    /* found an interesting parameter? */
 	    if (strncmpic(mp->name, p, mp->namelen) == 0)
 	      {
-	      uschar *q = p + mp->namelen;
+	      uschar * q = p + mp->namelen;
+	      int plen = 0;
 	      int size = 0;
 	      int ptr = 0;
 
 	      /* yes, grab the value and copy to its corresponding expansion variable */
 	      while(*q && *q != ';')		/* ; terminates */
-		{
 		if (*q == '"')
 		  {
 		  q++;				/* skip leading " */
-		  while(*q && *q != '"')	/* which protects ; */
+		  plen++;			/* and account for the skip */
+		  while(*q && *q != '"')	/* " protects ; */
+		    {
 		    param_value = string_cat(param_value, &size, &ptr, q++, 1);
-		  if (*q) q++;			/* skip trailing " */
+		    plen++;
+		    }
+		  if (*q)
+		    {
+		    q++;			/* skip trailing " */
+		    plen++;
+		    }
 		  }
 		else
+		  {
 		  param_value = string_cat(param_value, &size, &ptr, q++, 1);
-		}
+		  plen++;
+		  }
+
 	      if (param_value)
 		{
 		param_value[ptr++] = '\0';
-		param_value_len = ptr;
 
 		param_value = rfc2047_decode(param_value,
-		      check_rfc2047_length, NULL, 32, &param_value_len, &q);
+		      check_rfc2047_length, NULL, 32, NULL, &q);
 		debug_printf("Found %s MIME parameter in %s header, "
 		      "value is '%s'\n", mp->name, mime_header_list[i].name,
 		      param_value);
 		}
 	      *mp->value = param_value;
-	      p += (mp->namelen + param_value_len + 1);
+	      p += mp->namelen + plen + 1;	/* name=, content, ; */
 	      goto NEXT_PARAM_SEARCH;
 	    }
 	  }
 	  /* There is something, but not one of our interesting parameters.
 	     Advance to the next semicolon */
-	  while(*p != ';') p++;
+	  while(*p != ';')
+	    {
+	    if (*p == '"') while(*++p && *p != '"') ;
+	    p++;
+	    }
 	  p++;
 	}
       }
-    }
   }
 
   /* set additional flag variables (easier access) */

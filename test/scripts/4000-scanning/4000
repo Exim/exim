@@ -97,3 +97,32 @@ foobar
 .
 quit
 ****
+#
+#
+# This one has a different rotten parameter, but should not induce a crash
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: text/html;
+        charset=UTF-8;
+        name=""
+Content-Disposition: inline
+Subject: Nasty
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****

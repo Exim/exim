@@ -4,3 +4,6 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3058@test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3059@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
