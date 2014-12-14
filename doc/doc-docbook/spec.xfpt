@@ -30330,27 +30330,35 @@ The following scanner types are supported in this release:
 .vlist
 .vitem &%avast%&
 .cindex "virus scanners" "avast"
-This is the scanner daemon of Avast version 1.1.7 and 1.1.6
-(as reported by "/bin/avast -v").
-You can get a trial version at &url(http://www.avast.com).
-This scanner type requires one option,
-either a full path to a UNIX socket,
+This is the scanner daemon of Avast. It has been tested with Avast Core
+Security (currenty at version 1.1.7).
+You can get a trial version at &url(http://www.avast.com) or for Linux
+at &url(http://www.avast.com/linux-server-antivirus).
+This scanner type takes one option,
+which can be either a full path to a UNIX socket,
 or host and port specifiers separated by white space.
-The host may a name or an IP address; the port is either a
+The host may be a name or an IP address; the port is either a
 single number or a pair of numbers with a dash between.
 Any further options are given, on separate lines,
 to the daemon as options before the main scan command.
 For example:
 .code
-av_scanner = avast:/var/run/avast4/local.sock:FLAGS -fullfiles:SENSITIVITY -pup
+av_scanner = avast:/var/run/avast/scan.sock:FLAGS -fullfiles:SENSITIVITY -pup
 av_scanner = avast:192.168.2.22 5036
 .endd
 If you omit the argument, the default path
-&_/var/run/avast4/local.sock_&
+&_/var/run/avast/scan.sock_&
 is used.
 If you use a remote host,
 you need to make Exim's spool directory available to it,
 as the scanner is passed a file path, not file contents.
+For information about available commands and their options you may use 
+.code
+$ socat UNIX:/var/run/avast/scan.sock STDIO:
+    FLAGS
+    SENSITIVITY
+    PACK
+.endd
 
 
 .vitem &%aveserver%&
