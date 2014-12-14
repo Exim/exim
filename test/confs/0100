@@ -77,7 +77,6 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_S
-  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
 
 filtered_smtp:
   driver = smtp

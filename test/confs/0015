@@ -106,7 +106,6 @@ delivery_s:
   hosts = 127.0.0.1
   port = PORT_S
   allow_localhost
-  interface = 127.0.0.1
 
 address_reply:
   driver = autoreply

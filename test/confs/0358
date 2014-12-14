@@ -31,7 +31,6 @@ t1:
   hosts = 127.0.0.1
   allow_localhost
   port = PORT_S
-  interface = 127.0.0.1
 
 
 # ----- Retry -----

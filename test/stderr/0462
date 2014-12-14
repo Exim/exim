@@ -11,8 +11,8 @@ Considering Ok@localhost
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=127.0.0.1 port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -60,8 +60,8 @@ Considering NOTok@elsewhere
 Attempting full verification using callout
 callout cache: no domain record found
 callout cache: no address record found
-interface=127.0.0.1 port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
@@ -93,8 +93,8 @@ Considering NOTok2@elsewhere
 Attempting full verification using callout
 callout cache: found domain record
 callout cache: no address record found
-interface=127.0.0.1 port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK

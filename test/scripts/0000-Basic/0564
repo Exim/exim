@@ -3,7 +3,7 @@ need_ipv4
 #
 exim -DSERVER=wait:PORT_D -bw
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo abcd
 ??? 250-

@@ -11,8 +11,8 @@ Considering r11@two.test.ex
 Attempting full verification using callout
 callout cache: found domain record
 callout cache: no address record found
-interface=127.0.0.1 port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO the.local.host.name
   SMTP<< 250 OK
@@ -40,8 +40,8 @@ Considering r11@two.test.ex
 Attempting full verification using callout
 callout cache: found domain record
 callout cache: no address record found
-interface=127.0.0.1 port=1224
-Connecting to 127.0.0.1 [127.0.0.1]:1224 from 127.0.0.1 ... connected
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
 SMTP timeout
 LOG: MAIN REJECT
   U=CALLER F=<x11@two.test.ex> temporarily rejected RCPT r11@two.test.ex: Could not complete recipient verify callout

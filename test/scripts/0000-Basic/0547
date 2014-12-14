@@ -3,15 +3,15 @@ need_ipv4
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 quit
 ??? 221
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo x.y.z
 ??? 250
@@ -24,7 +24,7 @@ VRFY a@b.c
 quit
 ??? 221
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo x.y.z
 ??? 250

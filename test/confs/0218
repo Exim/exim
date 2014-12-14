@@ -56,7 +56,6 @@ send_to_server:
   command_timeout = 1s
   hosts = 127.0.0.1
   port = PORT_S
-  interface = 127.0.0.1
   debug_print = T: $transport_name  (${acl {expand_check}})
 
 

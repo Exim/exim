@@ -70,7 +70,6 @@ smtp_rewrite:
   headers_rewrite = *@domain1 $1-rewrite@domain2 f :\
                     *@domain1 $1-other@domain2
   port = PORT_S
-  interface = 127.0.0.1
 
 
 # ----- Retry -----

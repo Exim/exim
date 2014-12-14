@@ -31,9 +31,8 @@ begin transports
 
 t1:
   driver = smtp
-  hosts = ${if eq {$sender_host_address}{}{$local_part}{V4NET.0.0.2}}
   port = PORT_D
-  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
+  hosts = ${if eq {$sender_host_address}{}{$local_part}{V4NET.0.0.2}}
   allow_localhost
   connect_timeout = 1s
 

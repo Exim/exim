@@ -34,7 +34,6 @@ begin transports
 t1:
   driver = smtp
   port = PORT_S
-  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
 
 
 # End

@@ -45,7 +45,6 @@ begin transports
 
 t1:
   driver = smtp
-  interface = 127.0.0.1
 
 
 # End

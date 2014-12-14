@@ -6,7 +6,7 @@ no_msglog_check
 #    z rejected, all after data per PRDR spec
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -39,7 +39,7 @@ sleep 1
 #
 #
 # 2: traditional data acl should be called, resulting in an overall reject
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -70,7 +70,7 @@ sleep 1
 #
 # 3: PRDR should be avoided for a single-recipient message
 # even though the client showed support.
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -94,7 +94,7 @@ quit
 sleep 1
 #
 # 4: double temp-reject
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -123,7 +123,7 @@ quit
 sleep 1
 #
 # 5: double reject
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-

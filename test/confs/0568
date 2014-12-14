@@ -56,7 +56,6 @@ t1:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
-  interface = 127.0.0.1
   allow_localhost
   hosts_try_auth = *
 
@@ -64,7 +63,6 @@ t2:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
-  interface = 127.0.0.1
   allow_localhost
   hosts_try_auth = *
   authenticated_sender= brian

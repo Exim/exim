@@ -50,7 +50,6 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_D
-  interface = 127.0.0.1
   command_timeout = 2s
 
 

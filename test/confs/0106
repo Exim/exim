@@ -34,7 +34,6 @@ smtp:
   command_timeout = 1s
   final_timeout = 1s
   port = PORT_S
-  interface = 127.0.0.1
 
 # ----- Retry -----
 

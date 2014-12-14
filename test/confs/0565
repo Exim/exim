@@ -39,13 +39,11 @@ begin transports
 remote_smtp:
   driver = smtp
   port = PORT_S
-  interface = 127.0.0.1
   allow_localhost
 
 remote_smtp_hdrs:
   driver = smtp
   port = PORT_S
-  interface = 127.0.0.1
   allow_localhost
   headers_only
 

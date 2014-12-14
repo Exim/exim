@@ -3,7 +3,7 @@ need_ipv4
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client -t5 127.0.0.1 PORT_D 127.0.0.1
+client -t5 127.0.0.1 PORT_D
 ??? 220
 ehlo abcd
 ??? 250-

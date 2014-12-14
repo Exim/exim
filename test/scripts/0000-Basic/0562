@@ -3,7 +3,7 @@ need_ipv4
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo abcd
 ??? 250-
@@ -18,14 +18,14 @@ mail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
 This is a test message.
 +++ 2
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 +++ 2
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 unknown
 ??? 500
@@ -36,7 +36,7 @@ unknown
 unknown
 ??? 500
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 vrfy
 ??? 252
@@ -49,7 +49,7 @@ vrfy
 vrfy
 ??? 554
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo abcd
 ??? 250-

@@ -3,7 +3,7 @@ need_ipv4
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -61,7 +61,7 @@ killdaemon
 millisleep 500
 exim -DSERVER=server -DSUBMISSION_OPTIONS=/domain=a.b.c/sender_retain -bd -oX PORT_D
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -86,7 +86,7 @@ killdaemon
 millisleep 500
 exim -DSERVER=server -DSUBMISSION_OPTIONS=/domain=a.b.c/name=SomeName -bd -oX PORT_D
 ****
-client 127.0.0.1 PORT_D 127.0.0.1
+client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-

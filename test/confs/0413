@@ -56,7 +56,6 @@ t1:
   hosts = 127.0.0.1
   allow_localhost
   port = PORT_S
-  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
 
 t2:
   driver = smtp
@@ -64,7 +63,6 @@ t2:
   hosts_override
   allow_localhost
   port = PORT_S
-  interface = 127.0.0.1
 
 
 # End

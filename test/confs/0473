@@ -47,6 +47,5 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_S
-  interface = 127.0.0.1
 
 # End

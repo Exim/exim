@@ -45,6 +45,5 @@ smtp:
   headers_add = X-TAID: >$authenticated_id<
   hosts_try_auth = *
   port = PORT_S
-  interface = 127.0.0.1
 
 # End

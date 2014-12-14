@@ -29,7 +29,6 @@ t1:
   driver = smtp
   hosts = 127.0.0.1 : HOSTIPV4
   port = PORT_S
-  interface = ${if eq {$host}{127.0.0.1} {127.0.0.1}}
   allow_localhost
   helo_data = \
     ${if eq{$sending_ip_address}{127.0.0.1}{Tweedledum}{Tweedledee}} \
