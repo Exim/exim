@@ -1,4 +1,4 @@
-# Exim test configuration 0568
+# Exim test configuration 3416
 # Recipient callout with AUTH
 
 exim_path = EXIM_PATH
