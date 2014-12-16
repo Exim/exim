@@ -13,4 +13,5 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=1
+**** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=0

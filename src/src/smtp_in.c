@@ -121,9 +121,7 @@ static BOOL auth_advertised;
 #ifdef SUPPORT_TLS
 static BOOL tls_advertised;
 #endif
-#ifdef EXPERIMENTAL_DSN
 static BOOL dsn_advertised;
-#endif
 static BOOL esmtp;
 static BOOL helo_required = FALSE;
 static BOOL helo_verify = FALSE;
@@ -220,9 +218,7 @@ enum {
 #ifndef DISABLE_PRDR
   ENV_MAIL_OPT_PRDR,
 #endif
-#ifdef EXPERIMENTAL_DSN
   ENV_MAIL_OPT_RET, ENV_MAIL_OPT_ENVID,
-#endif
   ENV_MAIL_OPT_NULL
   };
 typedef struct {
@@ -238,10 +234,8 @@ static env_mail_type_t env_mail_type_list[] = {
 #ifndef DISABLE_PRDR
     { US"PRDR",   ENV_MAIL_OPT_PRDR,   FALSE },
 #endif
-#ifdef EXPERIMENTAL_DSN
     { US"RET",    ENV_MAIL_OPT_RET,    TRUE },
     { US"ENVID",  ENV_MAIL_OPT_ENVID,  TRUE },
-#endif
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
   };
 
@@ -1500,11 +1494,9 @@ sender_verified_list = NULL;        /* No senders verified */
 memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 
-#ifdef EXPERIMENTAL_DSN
 /* Reset the DSN flags */
 dsn_ret = 0;
 dsn_envid = NULL;
-#endif
 
 authenticated_sender = NULL;
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -1855,9 +1847,7 @@ tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
 tls_advertised = FALSE;
 #endif
-#ifdef EXPERIMENTAL_DSN
 dsn_advertised = FALSE;
-#endif
 
 /* Reset ACL connection variables */
 
@@ -3147,10 +3137,8 @@ while (done <= 0)
   int ptr, size, rc;
   int c, i;
   auth_instance *au;
-#ifdef EXPERIMENTAL_DSN
   uschar *orcpt = NULL;
   int flags;
-#endif
 
   switch(smtp_read_command(TRUE))
     {
@@ -3495,9 +3483,7 @@ while (done <= 0)
     #ifdef SUPPORT_TLS
     tls_advertised = FALSE;
     #endif
-    #ifdef EXPERIMENTAL_DSN
     dsn_advertised = FALSE;
-    #endif
 
     smtp_code = US"250 ";        /* Default response code plus space*/
     if (user_msg == NULL)
@@ -3581,7 +3567,6 @@ while (done <= 0)
         s = string_cat(s, &size, &ptr, US"-8BITMIME\r\n", 11);
         }
 
-      #ifdef EXPERIMENTAL_DSN
       /* Advertise DSN support if configured to do so. */
       if (verify_check_host(&dsn_advertise_hosts) != FAIL) 
         {
@@ -3589,7 +3574,6 @@ while (done <= 0)
         s = string_cat(s, &size, &ptr, US"-DSN\r\n", 6);
         dsn_advertised = TRUE;
         }
-      #endif
 
       /* Advertise ETRN if there's an ACL checking whether a host is
       permitted to issue it; a check is made when any host actually tries. */
@@ -3846,8 +3830,6 @@ while (done <= 0)
           arg_error = TRUE;
           break;
 
-        #ifdef EXPERIMENTAL_DSN
-  
         /* Handle the two DSN options, but only if configured to do so (which
         will have caused "DSN" to be given in the EHLO response). The code itself
         is included only if configured in at build time. */
@@ -3883,7 +3865,6 @@ while (done <= 0)
             DEBUG(D_receive) debug_printf("DSN_ENVID: %s\n", dsn_envid);
           }
           break;
-        #endif
 
         /* Handle the AUTH extension. If the value given is not "<>" and either
         the ACL says "yes" or there is no ACL but the sending host is
@@ -4161,8 +4142,7 @@ while (done <= 0)
       rcpt_fail_count++;
       break;
       }
-    
-    #ifdef EXPERIMENTAL_DSN
+
     /* Set the DSN flags orcpt and dsn_flags from the session*/
     orcpt = NULL;
     flags = 0;
@@ -4245,7 +4225,6 @@ while (done <= 0)
         break;
         }
       }
-    #endif
 
     /* Apply SMTP rewriting then extract the working address. Don't allow "<>"
     as a recipient address */
@@ -4360,8 +4339,7 @@ while (done <= 0)
       if (user_msg == NULL) smtp_printf("250 Accepted\r\n");
         else smtp_user_msg(US"250", user_msg);
       receive_add_recipient(recipient, -1);
-      
-      #ifdef EXPERIMENTAL_DSN
+ 
       /* Set the dsn flags in the recipients_list */
       if (orcpt != NULL)
         recipients_list[recipients_count-1].orcpt = orcpt;
@@ -4373,8 +4351,6 @@ while (done <= 0)
       else
         recipients_list[recipients_count-1].dsn_flags = 0;
       DEBUG(D_receive) debug_printf("DSN: orcpt: %s  flags: %d\n", recipients_list[recipients_count-1].orcpt, recipients_list[recipients_count-1].dsn_flags);
-      #endif
-      
       }
 
     /* The recipient was discarded */

@@ -6,9 +6,14 @@ X-Failed-Recipients: list1@lists.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: anyone@anywhere
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -18,7 +23,17 @@ recipients. This is a permanent error. The following address(es) failed:
   list1@lists.test.ex
     list1@lists.test.ex is a closed mailing list
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;list1@lists.test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <anyone@anywhere>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -30,6 +45,8 @@ From: anyone@anywhere
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
@@ -38,9 +55,14 @@ X-Failed-Recipients: nonlist@lists.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: anyone@anywhere
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -50,7 +72,17 @@ recipients. This is a permanent error. The following address(es) failed:
   nonlist@lists.test.ex
     nonlist@lists.test.ex is a closed mailing list
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;nonlist@lists.test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <anyone@anywhere>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -61,4 +93,6 @@ Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 From: anyone@anywhere
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
 

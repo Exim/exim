@@ -8,6 +8,10 @@ trusted user
 admin user
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: rr1 propagating DSN
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
+DSN: r3 propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=
 sender address = CALLER@test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
@@ -80,6 +84,10 @@ trusted user
 admin user
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: rr1 propagating DSN
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
+DSN: r3 propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=
 sender address = user1@fun.1
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID

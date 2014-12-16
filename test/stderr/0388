@@ -3,6 +3,8 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+DSN: r0 propagating DSN
+DSN: r1 propagating DSN
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
@@ -168,6 +170,8 @@ trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: r0 propagating DSN
+DSN: r1 propagating DSN
 originator: uid=EXIM_UID gid=EXIM_GID login=EXIMUSER name=
 sender address = 
 set_process_info: pppp accepting a local non-SMTP message from <>
@@ -178,6 +182,8 @@ X-Failed-Recipients: x@y
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 
 rewrite_one_header: type=F:
@@ -190,6 +196,8 @@ search_tidyup called
   Auto-Submitted: auto-replied
 F From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 T To: CALLER@myhost.test.ex
+  Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+  MIME-Version: 1.0
   Subject: Mail delivery failed: returning message to sender
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -213,6 +221,8 @@ changed uid/gid: forcing real = effective
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: r0 propagating DSN
+DSN: r1 propagating DSN
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile

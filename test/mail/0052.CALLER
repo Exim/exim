@@ -9,9 +9,14 @@ X-Failed-Recipients: xx99@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmaY-0005vi-00@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -21,7 +26,17 @@ recipients. This is a permanent error. The following address(es) failed:
   xx99@test.ex
     Unrouteable address
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.ex
+
+Action: failed
+Final-Recipient: rfc822;xx99@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.ex>
 Received: from CALLER by myhost.ex with local (Exim x.yz)
@@ -34,6 +49,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message 1.
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Return-path: <>
 Envelope-to: CALLER@myhost.ex
@@ -45,9 +62,14 @@ X-Failed-Recipients: !two@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbC-0005vi-00@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -57,7 +79,17 @@ recipients. This is a permanent error. The following address(es) failed:
   !two@test.ex
     Unrouteable address
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.ex
+
+Action: failed
+Final-Recipient: rfc822;!two@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.ex>
 Received: from CALLER by myhost.ex with local (Exim x.yz)
@@ -69,4 +101,6 @@ From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message 4.
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
 

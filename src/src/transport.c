@@ -1842,10 +1842,8 @@ if ((pid = fork()) == 0)
 
   argv = child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
-  #ifdef EXPERIMENTAL_DSN
   /* Call with the dsn flag */
   if (smtp_use_dsn) argv[i++] = US"-MCD";
-  #endif
 
   if (smtp_authenticated) argv[i++] = US"-MCA";
 

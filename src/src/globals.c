@@ -134,13 +134,11 @@ tls_support tls_out = {
  0     /* tls_ocsp */
 };
 
-#ifdef EXPERIMENTAL_DSN
 uschar *dsn_envid              = NULL;
 int     dsn_ret                = 0;
 const pcre  *regex_DSN         = NULL;
 BOOL    smtp_use_dsn           = FALSE;
 uschar *dsn_advertise_hosts    = NULL;
-#endif
 
 #ifdef SUPPORT_TLS
 BOOL    gnutls_compat_mode     = FALSE;
@@ -361,11 +359,9 @@ address_item address_defaults = {
   NULL,			/* authenticator */
   NULL,			/* auth_id */
   NULL,			/* auth_sndr */
-  #ifdef EXPERIMENTAL_DSN
   NULL,                 /* dsn_orcpt */
   0,                    /* dsn_flags */
   0,                    /* dsn_aware */
-  #endif
   (uid_t)(-1),          /* uid */
   (gid_t)(-1),          /* gid */
   0,                    /* flags */
@@ -1149,9 +1145,7 @@ router_instance  router_defaults = {
     TRUE,                      /* verify_sender */
     FALSE,                     /* uid_set */
     FALSE,                     /* unseen */
-#ifdef EXPERIMENTAL_DSN
     FALSE,                     /* dsn_lasthop */
-#endif
 
     self_freeze,               /* self_code */
     (uid_t)(-1),               /* uid */

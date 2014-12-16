@@ -245,13 +245,11 @@ if (tls_in.ourcert)
 if (tls_in.ocsp)	 fprintf(f, "-tls_ocsp %d\n",   tls_in.ocsp);
 #endif
 
-#ifdef EXPERIMENTAL_DSN
 /* Write the dsn flags to the spool header file */
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_envid %s\n", dsn_envid);
 if (dsn_envid != NULL) fprintf(f, "-dsn_envid %s\n", dsn_envid);
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_ret %d\n", dsn_ret);
 if (dsn_ret != 0) fprintf(f, "-dsn_ret %d\n", dsn_ret);
-#endif
 
 /* To complete the envelope, write out the tree of non-recipients, followed by
 the list of recipients. These won't be disjoint the first time, when no
@@ -263,34 +261,21 @@ fprintf(f, "%d\n", recipients_count);
 for (i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
-#ifdef EXPERIMENTAL_DSN
 DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
-#endif
-  if (r->pno < 0 && r->errors_to == NULL
-    #ifdef EXPERIMENTAL_DSN
-     && r->dsn_flags == 0
-    #endif
-    )
+  if (r->pno < 0 && r->errors_to == NULL && r->dsn_flags == 0)
     fprintf(f, "%s\n", r->address);
   else
     {
     uschar *errors_to = (r->errors_to == NULL)? US"" : r->errors_to;
-    #ifdef EXPERIMENTAL_DSN
     /* for DSN SUPPORT extend exim 4 spool in a compatible way by
        adding new values upfront and add flag 0x02 */
     uschar *orcpt = (r->orcpt == NULL)? US"" : r->orcpt;
     fprintf(f, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt), r->dsn_flags,
       errors_to, Ustrlen(errors_to), r->pno);
-    #else
-    fprintf(f, "%s %s %d,%d#1\n", r->address, errors_to,
-      Ustrlen(errors_to), r->pno);
-    #endif
     }
     
-    #ifdef EXPERIMENTAL_DSN
       DEBUG(D_deliver) debug_printf("DSN: **** SPOOL_OUT - address: |%s| errorsto: |%s| orcpt: |%s| dsn_flags: %d\n",
          r->address, r->errors_to, r->orcpt, r->dsn_flags);
-    #endif
   }
 
 /* Put a blank line before the headers */

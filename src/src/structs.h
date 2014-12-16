@@ -286,9 +286,7 @@ typedef struct router_instance {
   BOOL    verify_sender;          /* Use this router when verifying a sender */
   BOOL    uid_set;                /* Flag to indicate uid is set */
   BOOL    unseen;                 /* If TRUE carry on, even after success */
-#ifdef EXPERIMENTAL_DSN
   BOOL    dsn_lasthop;            /* If TRUE, this router is a DSN endpoint */
-#endif
 
   int     self_code;              /* Encoded version of "self" */
   uid_t   uid;                    /* Fixed uid value */
@@ -560,11 +558,9 @@ typedef struct address_item {
   uschar *auth_id;		  /* auth "login" name used by transport */
   uschar *auth_sndr;		  /* AUTH arg to SMTP MAIL, used by transport */
 
-  #ifdef EXPERIMENTAL_DSN
   uschar *dsn_orcpt;              /* DSN orcpt value */
   int     dsn_flags;              /* DSN flags */
   int     dsn_aware;              /* DSN aware flag */
-  #endif
 
   uid_t   uid;                    /* uid for transporting */
   gid_t   gid;                    /* gid for transporting */

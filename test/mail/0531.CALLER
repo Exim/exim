@@ -6,9 +6,14 @@ X-Failed-Recipients: userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -19,7 +24,19 @@ recipients. This is a permanent error. The following address(es) failed:
   host 127.0.0.1 [127.0.0.1]
     LMTP error after DATA: 450 TEMPERROR: retry timeout exceeded
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;userx@test.ex
+Status: 5.0.0
+Remote-MTA: dns; 127.0.0.1
+Diagnostic-Code: smtp; 0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -31,6 +48,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
@@ -39,9 +58,14 @@ X-Failed-Recipients: userx@retry.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -52,7 +76,19 @@ recipients. This is a permanent error. The following address(es) failed:
   host 127.0.0.1 [127.0.0.1]
     LMTP error after DATA: 450 TEMPERROR: retry timeout exceeded
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;userx@retry.test.ex
+Status: 5.0.0
+Remote-MTA: dns; 127.0.0.1
+Diagnostic-Code: smtp; 0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -65,6 +101,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
@@ -73,9 +111,14 @@ X-Failed-Recipients: userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -87,7 +130,19 @@ recipients. This is a permanent error. The following address(es) failed:
     SMTP error from remote mail server after RCPT TO:<userx@test.ex>:
     450 TEMPERROR: retry timeout exceeded
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;userx@test.ex
+Status: 5.0.0
+Remote-MTA: dns; 127.0.0.1
+Diagnostic-Code: smtp; -44
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -99,4 +154,6 @@ From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
 

@@ -806,7 +806,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # ==========================================================
   # MIME boundaries in RFC3461 DSN messages
-  s/\d{8,10}-eximdsn-\d{8,10}/NNNNNNNNNN-eximdsn-MMMMMMMMMM/;
+  s/\d{8,10}-eximdsn-\d{7,10}/NNNNNNNNNN-eximdsn-MMMMMMMMMM/;
 
   # ==========================================================
   # Some munging is specific to the specific file types

@@ -266,6 +266,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_try_verify_hosts? no (end of list)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> rhubarb in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "rcpt"
 >>> processing "require"

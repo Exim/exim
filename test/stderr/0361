@@ -12,6 +12,10 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
+DSN: r3 propagating DSN
+DSN: r4 propagating DSN
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -40,6 +44,10 @@ P Received: from CALLER by the.local.host.name with local (Exim x.yz)
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |kilos@recurse.test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -51,6 +59,10 @@ changed uid/gid: forcing real = effective
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
+DSN: r3 propagating DSN
+DSN: r4 propagating DSN
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
@@ -62,7 +74,9 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=1
+**** SPOOL_IN - No additional fields
 body_linecount=0 message_linecount=7
+DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   kilos@recurse.test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
@@ -219,6 +233,22 @@ LOG: MAIN
 changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+DSN: processing router : r4
+DSN: processing successful delivery address: kilos@recurse.test.ex.test.ex
+DSN: Sender_address: CALLER@test.ex
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: kilos@recurse.test.ex.test.ex
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: processing router : r3
+DSN: processing successful delivery address: kilos@recurse.test.ex.test.ex
+DSN: Sender_address: CALLER@test.ex
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: kilos@recurse.test.ex.test.ex
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
 LOG: MAIN
   Completed
 end delivery of 10HmaY-0005vi-00

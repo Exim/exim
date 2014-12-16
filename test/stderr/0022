@@ -5,6 +5,7 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: accept propagating DSN
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -34,6 +35,7 @@ processing "accept"
 accept: condition test succeeded in ACL "warn_empty"
 end of ACL "warn_empty": ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -69,6 +71,7 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: accept propagating DSN
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -101,6 +104,7 @@ processing "accept"
 accept: condition test succeeded in ACL "warn_log"
 end of ACL "warn_log": ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -136,6 +140,7 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: accept propagating DSN
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -166,6 +171,7 @@ processing "accept"
 accept: condition test succeeded in ACL "warn_user"
 end of ACL "warn_user": ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called

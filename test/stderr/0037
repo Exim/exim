@@ -2,12 +2,24 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: check_vars propagating DSN
+DSN: fail_read_filter propagating DSN
+DSN: prepend_filter propagating DSN
+DSN: userfilter propagating DSN
+DSN: user_accept1 propagating DSN
+DSN: user_accept2 propagating DSN
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: check_vars propagating DSN
+DSN: fail_read_filter propagating DSN
+DSN: prepend_filter propagating DSN
+DSN: userfilter propagating DSN
+DSN: user_accept1 propagating DSN
+DSN: user_accept2 propagating DSN
 rda_interpret (file): TESTSUITE/aux-var/0037.F
 expanded: TESTSUITE/aux-var/0037.F
 ssss bytes read from TESTSUITE/aux-var/0037.F

@@ -6,6 +6,7 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
    result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
  in tls_advertise_hosts? yes (matched "*")
 expanding: SERVER
@@ -167,6 +168,7 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
    result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
  in tls_advertise_hosts? yes (matched "*")
 expanding: SERVER
@@ -303,6 +305,7 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
    result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
  in tls_advertise_hosts? yes (matched "*")
 expanding: SERVER

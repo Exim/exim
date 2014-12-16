@@ -9,9 +9,14 @@ X-Failed-Recipients: userx@bad.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmaZ-0005vi-00@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -21,7 +26,17 @@ recipients. This is a permanent error. The following address(es) failed:
   userx@bad.ex
     Unrouteable address
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.ex
+
+Action: failed
+Final-Recipient: rfc822;userx@bad.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.ex>
 Received: from CALLER by myhost.ex with local (Exim x.yz)
@@ -34,6 +49,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message 2.
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Return-path: <>
 Envelope-to: CALLER@myhost.ex
@@ -45,9 +62,14 @@ X-Failed-Recipients: userx@badbad.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbB-0005vi-00@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -57,7 +79,17 @@ recipients. This is a permanent error. The following address(es) failed:
   userx@badbad.ex
     unrouteable mail domain "badbad.ex" (:fail:)
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.ex
+
+Action: failed
+Final-Recipient: rfc822;userx@badbad.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.ex>
 Received: from CALLER by myhost.ex with local (Exim x.yz)
@@ -70,6 +102,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message 3.
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Return-path: <>
 Envelope-to: CALLER@myhost.ex
@@ -81,9 +115,14 @@ X-Failed-Recipients: userx@domain4.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbE-0005vi-00@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -93,7 +132,17 @@ recipients. This is a permanent error. The following address(es) failed:
   userx@domain4.ex
     Unrouteable address
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.ex
+
+Action: failed
+Final-Recipient: rfc822;userx@domain4.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.ex>
 Received: from CALLER by myhost.ex with local (Exim x.yz)
@@ -106,6 +155,8 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message 5.
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Return-path: <>
 Envelope-to: CALLER@myhost.ex
@@ -117,9 +168,14 @@ X-Failed-Recipients: userx@domain2.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbG-0005vi-00@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -129,7 +185,17 @@ recipients. This is a permanent error. The following address(es) failed:
   userx@domain2.ex
     unrouteable mail domain "domain2.ex" (:fail:)
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.ex
+
+Action: failed
+Final-Recipient: rfc822;userx@domain2.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@myhost.ex>
 Received: from CALLER by myhost.ex with local (Exim x.yz)
@@ -141,4 +207,6 @@ From: CALLER_NAME <CALLER@myhost.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message 6.
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
 

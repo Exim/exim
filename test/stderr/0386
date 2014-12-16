@@ -8,6 +8,7 @@ trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: r1 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -134,6 +135,7 @@ trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: r1 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -179,6 +181,7 @@ processing "accept"
 accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -202,6 +205,10 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
@@ -216,6 +223,7 @@ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: r1 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
@@ -229,7 +237,9 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=1
+**** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
+DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   2@b 
 locking TESTSUITE/spool/db/retry.lockfile
@@ -312,6 +322,14 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
 end of retry processing
+DSN: processing router : r1
+DSN: processing successful delivery address: 2@b
+DSN: Sender_address: x@y
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: 2@b
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00
@@ -340,6 +358,7 @@ processing "accept"
 accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 end of ACL "TESTSUITE/aux-fixed/0386.acl2": ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -363,6 +382,10 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
@@ -377,6 +400,7 @@ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: r1 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
@@ -390,7 +414,9 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=1
+**** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
+DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   2@b 
 locking TESTSUITE/spool/db/retry.lockfile
@@ -472,6 +498,14 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
 end of retry processing
+DSN: processing router : r1
+DSN: processing successful delivery address: 2@b
+DSN: Sender_address: x@y
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: 2@b
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
 LOG: MAIN
   Completed
 end delivery of 10HmaY-0005vi-00

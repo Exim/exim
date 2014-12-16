@@ -7,6 +7,8 @@ changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -132,6 +134,10 @@ P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -146,6 +152,8 @@ trusted user
 admin user
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
@@ -157,7 +165,9 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=1
+**** SPOOL_IN - No additional fields
 body_linecount=0 message_linecount=159
+DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
@@ -244,6 +254,8 @@ changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -281,6 +293,1224 @@ P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |sender@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
@@ -294,6 +1524,8 @@ trusted user
 admin user
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
@@ -305,7 +1537,1223 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=608
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
+**** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=9
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   sender@test.ex 
   sender@test.ex 
@@ -15565,6 +18013,14 @@ sender@test.ex: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing
+DSN: processing router : r1
+DSN: processing successful delivery address: sender@test.ex
+DSN: Sender_address: 
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: sender@test.ex
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
 LOG: MAIN
   Completed
 end delivery of 10HmaY-0005vi-00
@@ -15594,6 +18050,22 @@ userx@test.ex: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing
+DSN: processing router : r2
+DSN: processing successful delivery address: >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...
+DSN: Sender_address: CALLER@test.ex
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: processing router : r2
+DSN: processing successful delivery address: userx@test.ex
+DSN: Sender_address: CALLER@test.ex
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: userx@test.ex
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00

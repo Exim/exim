@@ -63,10 +63,8 @@ static address_item *addr_new = NULL;
 static address_item *addr_remote = NULL;
 static address_item *addr_route = NULL;
 static address_item *addr_succeed = NULL;
-#ifdef EXPERIMENTAL_DSN
 static address_item *addr_dsntmp = NULL;
 static address_item *addr_senddsn = NULL;
-#endif
 
 static FILE *message_log = NULL;
 static BOOL update_spool;
@@ -3166,14 +3164,12 @@ while (!done)
     break;
 #endif
 
-#ifdef EXPERIMENTAL_DSN
     case 'D':
     if (addr == NULL) goto ADDR_MISMATCH;
     memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
     ptr += sizeof(addr->dsn_aware);
     DEBUG(D_deliver) debug_printf("DSN read: addr->dsn_aware = %d\n", addr->dsn_aware);
     break;
-#endif
 
     case 'A':
     if (addr == NULL)
@@ -4370,11 +4366,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 	rmt_dlv_checked_write(fd, 'P', '0', NULL, 0);
 #endif
 
-#ifdef EXPERIMENTAL_DSN
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));
       DEBUG(D_deliver) debug_printf("DSN write: addr->dsn_aware = %d\n", addr->dsn_aware);
-#endif
 
       /* Retry information: for most success cases this will be null. */
 
@@ -5529,13 +5523,11 @@ if (process_recipients != RECIP_IGNORE)
       if (r->pno >= 0)
         new->onetime_parent = recipients_list[r->pno].address;
 
-#ifdef EXPERIMENTAL_DSN
       /* If DSN support is enabled, set the dsn flags and the original receipt 
          to be passed on to other DSN enabled MTAs */
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
       DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: %d\n", new->dsn_orcpt, new->dsn_flags);
-#endif
 
       switch (process_recipients)
         {
@@ -6500,11 +6492,9 @@ if (addr_remote != NULL)
     regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
 #endif
 
-#ifdef EXPERIMENTAL_DSN
   /* Set the regex to check for DSN support on remote MTA */
   if (regex_DSN == NULL) regex_DSN  =
     regex_must_compile(US"\\n250[\\s\\-]DSN(\\s|\\n|$)", FALSE, TRUE);
-#endif
 
   /* Now sort the addresses if required, and do the deliveries. The yield of
   do_remote_deliveries is FALSE when mua_wrapper is set and all addresses
@@ -6613,7 +6603,6 @@ prevents actual delivery. */
 
 else if (!dont_deliver) retry_update(&addr_defer, &addr_failed, &addr_succeed);
 
-#ifdef EXPERIMENTAL_DSN
 /* Send DSN for successful messages */
 addr_dsntmp = addr_succeed;
 addr_senddsn = NULL;
@@ -6773,7 +6762,6 @@ if (addr_senddsn != NULL)
     rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
     }
   }
-#endif	/*EXPERIMENTAL_DSN*/
 
 /* If any addresses failed, we must send a message to somebody, unless
 af_ignore_error is set, in which case no action is taken. It is possible for
@@ -6832,11 +6820,9 @@ while (addr_failed != NULL)
   it from the list, throw away any saved message file, log it, and
   mark the recipient done. */
 
-  if (testflag(addr_failed, af_ignore_error)
-#ifdef EXPERIMENTAL_DSN
-      || (((addr_failed->dsn_flags & rf_dsnflags) != 0)
-         && ((addr_failed->dsn_flags & rf_notify_failure) != rf_notify_failure))
-#endif
+  if (  testflag(addr_failed, af_ignore_error)
+     || (  ((addr_failed->dsn_flags & rf_dsnflags) != 0)
+        && ((addr_failed->dsn_flags & rf_notify_failure) != rf_notify_failure))
      )
   {
     addr = addr_failed;
@@ -6890,12 +6876,10 @@ while (addr_failed != NULL)
       BOOL to_sender = strcmpic(sender_address, bounce_recipient) == 0;
       int max = (bounce_return_size_limit/DELIVER_IN_BUFFER_SIZE + 1) *
         DELIVER_IN_BUFFER_SIZE;
-#ifdef EXPERIMENTAL_DSN
       uschar * bound;
       uschar *dsnlimitmsg;
       uschar *dsnnotifyhdr;
       int topt;
-#endif
 
       DEBUG(D_deliver)
         debug_printf("sending error message to: %s\n", bounce_recipient);
@@ -6949,7 +6933,6 @@ while (addr_failed != NULL)
       moan_write_from(f);
       fprintf(f, "To: %s\n", bounce_recipient);
 
-#ifdef EXPERIMENTAL_DSN
       /* generate boundary string and output MIME-Headers */
       bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
 
@@ -6957,7 +6940,6 @@ while (addr_failed != NULL)
 	    " report-type=delivery-status; boundary=%s\n"
 	  "MIME-Version: 1.0\n",
 	bound);
-#endif
 
       /* Open a template file if one is provided. Log failure to open, but
       carry on - default texts will be used. */
@@ -6982,12 +6964,10 @@ while (addr_failed != NULL)
         fprintf(f, "Subject: Mail delivery failed%s\n\n",
           to_sender? ": returning message to sender" : "");
 
-#ifdef EXPERIMENTAL_DSN
       /* output human readable part as text/plain section */
       fprintf(f, "--%s\n"
 	  "Content-type: text/plain; charset=us-ascii\n\n",
 	bound);
-#endif
 
       if ((emf_text = next_emf(emf, US"intro")))
 	fprintf(f, "%s", CS emf_text);
@@ -7114,7 +7094,6 @@ wording. */
 	fputc('\n', f);
         }
 
-#ifdef EXPERIMENTAL_DSN
       /* output machine readable part */
       fprintf(f, "--%s\n"
 	  "Content-type: message/delivery-status\n\n"
@@ -7142,7 +7121,6 @@ wording. */
           fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n",
 	    addr->host_used->name, addr->basic_errno);
         }
-#endif
 
       /* Now copy the message, trying to give an intelligible comment if
       it is too long for it all to be copied. The limit isn't strictly
@@ -7151,65 +7129,6 @@ wording. */
 
       emf_text = next_emf(emf, US"copy");
 
-#ifndef EXPERIMENTAL_DSN
-      if (bounce_return_message)
-        {
-        int topt = topt_add_return_path;
-        if (!bounce_return_body) topt |= topt_no_body;
-
-        if (emf_text)
-	  fprintf(f, "%s", CS emf_text);
-	else
-          {
-          if (bounce_return_body) fprintf(f,
-"------ This is a copy of the message, including all the headers. ------\n");
-          else fprintf(f,
-"------ This is a copy of the message's headers. ------\n");
-          }
-
-        /* While reading the "truncated" message, set return_size_limit to
-        the actual max testing value, rounded. We need to read the message
-        whether we are going to use it or not. */
-
-          {
-          int temp = bounce_return_size_limit;
-          bounce_return_size_limit = (max/1000)*1000;
-          emf_text = next_emf(emf, US"truncated");
-          bounce_return_size_limit = temp;
-          }
-
-        if (bounce_return_body && bounce_return_size_limit > 0)
-          {
-          struct stat statbuf;
-          if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
-	    {
-            if (emf_text)
-	      fprintf(f, "%s", CS emf_text);
-	    else
-              fprintf(f,
-"------ The body of the message is " OFF_T_FMT " characters long; only the first\n"
-"------ %d or so are included here.\n", statbuf.st_size, max);
-	    }
-          }
-
-	fputc('\n', f);
-        fflush(f);
-
-        transport_filter_argv = NULL;   /* Just in case */
-        return_path = sender_address;   /* In case not previously set */
-        transport_write_message(NULL, fileno(f), topt,
-          bounce_return_size_limit, NULL, NULL, NULL, NULL, NULL, 0);
-        }
-
-      /* Write final text and close the template file if one is open */
-
-      if (emf)
-        {
-        if ((emf_text = next_emf(emf, US"final")))
-	  fprintf(f, "%s", CS emf_text);
-        (void)fclose(emf);
-        }
-#else
       /* add message body
          we ignore the intro text from template and add 
          the text for bounce_return_size_limit at the end.
@@ -7267,7 +7186,6 @@ wording. */
         (void)fclose(emf);
  
       fprintf(f, "\n--%s--\n", bound);
-#endif	/*EXPERIMENTAL_DSN*/
 
       /* Close the file, which should send an EOF to the child process
       that is receiving the message. Wait for it to finish. */
@@ -7502,15 +7420,18 @@ else if (addr_defer != (address_item *)(+1))
   is not sent. Another attempt will be made at the next delivery attempt (if
   it also defers). */
 
-  if (!queue_2stage && delivery_attempted &&
-#ifdef EXPERIMENTAL_DSN
-      (((addr_defer->dsn_flags & rf_dsnflags) == 0) ||
-       (addr_defer->dsn_flags & rf_notify_delay) == rf_notify_delay) &&
-#endif
-      delay_warning[1] > 0 && sender_address[0] != 0 &&
-       (delay_warning_condition == NULL ||
-          expand_check_condition(delay_warning_condition,
-            US"delay_warning", US"option")))
+  if (  !queue_2stage
+     && delivery_attempted
+     && (  ((addr_defer->dsn_flags & rf_dsnflags) == 0)
+        || (addr_defer->dsn_flags & rf_notify_delay) == rf_notify_delay
+	)
+     && delay_warning[1] > 0
+     && sender_address[0] != 0
+     && (  delay_warning_condition == NULL
+        || expand_check_condition(delay_warning_condition,
+            US"delay_warning", US"option")
+	)
+     )
     {
     int count;
     int show_time;
@@ -7571,9 +7492,7 @@ else if (addr_defer != (address_item *)(+1))
         uschar *wmf_text;
         FILE *wmf = NULL;
         FILE *f = fdopen(fd, "wb");
-#ifdef EXPERIMENTAL_DSN
 	uschar * bound;
-#endif
 
         if (warn_message_file)
           {
@@ -7594,7 +7513,6 @@ else if (addr_defer != (address_item *)(+1))
         moan_write_from(f);
         fprintf(f, "To: %s\n", recipients);
 
-#ifdef EXPERIMENTAL_DSN
         /* generated boundary string and output MIME-Headers */
         bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
 
@@ -7602,7 +7520,6 @@ else if (addr_defer != (address_item *)(+1))
 	    " report-type=delivery-status; boundary=%s\n"
 	    "MIME-Version: 1.0\n",
 	  bound);
-#endif
 
         if ((wmf_text = next_emf(wmf, US"header")))
           fprintf(f, "%s\n", wmf_text);
@@ -7610,12 +7527,10 @@ else if (addr_defer != (address_item *)(+1))
           fprintf(f, "Subject: Warning: message %s delayed %s\n\n",
             message_id, warnmsg_delay);
 
-#ifdef EXPERIMENTAL_DSN
         /* output human readable part as text/plain section */
         fprintf(f, "--%s\n"
 	    "Content-type: text/plain; charset=us-ascii\n\n",
 	  bound);
-#endif
 
         if ((wmf_text = next_emf(wmf, US"intro")))
 	  fprintf(f, "%s", CS wmf_text);
@@ -7654,10 +7569,8 @@ else if (addr_defer != (address_item *)(+1))
 
         /* List the addresses, with error information if allowed */
 
-#ifdef EXPERIMENTAL_DSN
         /* store addr_defer for machine readable part */
         address_item *addr_dsndefer = addr_defer;
-#endif
         fputc('\n', f);
         while (addr_defer)
           {
@@ -7686,7 +7599,6 @@ else if (addr_defer != (address_item *)(+1))
 "and when that happens, the message will be returned to you.\n");
           }
 
-#ifdef EXPERIMENTAL_DSN
         /* output machine readable part */
         fprintf(f, "\n--%s\n"
 	    "Content-type: message/delivery-status\n\n"
@@ -7736,7 +7648,6 @@ else if (addr_defer != (address_item *)(+1))
         fprintf(f,"\n--%s--\n", bound);
 
         fflush(f);
-#endif	/*EXPERIMENTAL_DSN*/
 
         /* Close and wait for child process to complete, without a timeout.
         If there's an error, don't update the count. */

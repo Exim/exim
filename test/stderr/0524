@@ -7,6 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> csa1.test.ex in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"
@@ -16,6 +17,7 @@
 >>> end of ACL "check_mail": ACCEPT
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> csa2.test.ex in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"
@@ -33,6 +35,7 @@ LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization 
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> csa1.test.ex in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"
@@ -43,6 +46,7 @@ LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization 
 LOG: H=(csa1.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization failed (client address mismatch)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> csa2.test.ex in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "check_mail"
 >>> processing "accept"

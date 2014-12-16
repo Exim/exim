@@ -86,6 +86,7 @@ LOG: sender_ident=ident
 >>> end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "mail"
 >>> processing "accept"
