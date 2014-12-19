@@ -4808,8 +4808,54 @@ while (*s != 0)
 }
 
 
+/***********************************************************
+*         Print Diagnostic-Code for an address             *
+************************************************************/
 
+/* This function is called to print the error information out of an address for
+a bounce or a warning message. It tries to format the message reasonably as
+required by RFC 3461 by adding a space after each newline
 
+we assume that this function is only called if addr->host_used is set and if so
+a useable addr->message is available containing some Exim description with ": \n" 
+ending, followed by the L/SMTP error message.
+
+Arguments:
+  addr         the address
+  f            the FILE to print on
+
+Returns:       nothing
+*/
+
+static void
+print_dsn_diagnostic_code(const address_item *addr, FILE *f)
+{
+uschar * s;
+
+/* check host_used, af_pass_message flag and addr->message for safety reasons */
+if (!addr->host_used && testflag(addr, af_pass_message) && addr->message)
+  return;
+
+/* search first ": ". we assume to find the remote-MTA answer there */
+DEBUG(D_deliver)
+  debug_printf("DSN Diagnostic-Code: addr->dsn_message = %s\n", addr->message);
+if (!(s = Ustrstr(addr->message, ": ")))
+  return;				/* not found, bail out */
+
+fprintf(f, "Diagnostic-Code: smtp; ");
+
+s += 2;  /* skip ": " */
+while (*s)
+  if (*s == '\\' && s[1] == 'n')
+    {
+    fputs("\n ", f);    /* as defined in RFC 3461 */
+    s += 2;
+    }
+  else
+    fputc(*s++, f);
+
+fputc('\n', f);
+}
 
 
 /*************************************************
@@ -6754,8 +6800,7 @@ if (addr_senddsn != NULL)
     transport_write_message(NULL, fileno(f), topt, 0, NULL, NULL, NULL, NULL, NULL, 0);
     fflush(f);
 
-    fprintf(f,"\n");       
-    fprintf(f,"--%s--\n", bound);
+    fprintf(f,"\n--%s--\n", bound);
 
     fflush(f);
     fclose(f);
@@ -7118,8 +7163,11 @@ wording. */
 	    "Status: 5.0.0\n",
 	    addr->address);
         if (addr->host_used && addr->host_used->name)
-          fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n",
-	    addr->host_used->name, addr->basic_errno);
+          {
+          fprintf(f, "Remote-MTA: dns; %s\n",
+	    addr->host_used->name);
+          print_dsn_diagnostic_code(addr, f);
+          }
         }
 
       /* Now copy the message, trying to give an intelligible comment if
@@ -7627,8 +7675,11 @@ else if (addr_defer != (address_item *)(+1))
           fprintf(f,"Final-Recipient: rfc822;%s\n", addr_dsndefer->address);
           fprintf(f,"Status: 4.0.0\n");
           if (addr_dsndefer->host_used && addr_dsndefer->host_used->name)
-            fprintf(f,"Remote-MTA: dns; %s\nDiagnostic-Code: smtp; %d\n", 
-		    addr_dsndefer->host_used->name, addr_dsndefer->basic_errno);
+            {
+            fprintf(f,"Remote-MTA: dns; %s\n", 
+		    addr_dsndefer->host_used->name);
+            print_dsn_diagnostic_code(addr_dsndefer, f);
+            }
           addr_dsndefer = addr_dsndefer->next;
           }
 

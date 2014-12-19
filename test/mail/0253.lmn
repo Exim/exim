@@ -38,7 +38,7 @@ Action: failed
 Final-Recipient: rfc822;fail@myhost.test.ex
 Status: 5.0.0
 Remote-MTA: dns; 127.0.0.1
-Diagnostic-Code: smtp; 0
+Diagnostic-Code: smtp; 550 Recipient not OK
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
 Content-type: message/rfc822
