@@ -496,6 +496,7 @@ to conflict with system errno values. */
 #define ERRNO_MAIL4XX        (-45)   /* MAIL gave 4xx error */
 #define ERRNO_DATA4XX        (-46)   /* DATA gave 4xx error */
 #define ERRNO_PROXYFAIL      (-47)   /* Negotiation failed for proxy configured host */
+#define ERRNO_AUTHPROB       (-48)   /* Autheticator "other" failure */
 
 /* These must be last, so all retry deferments can easily be identified */
 

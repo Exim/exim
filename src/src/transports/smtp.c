@@ -454,19 +454,19 @@ if (errno_value == ERRNO_CONNECTTIMEOUT)
   orvalue = RTEF_CTOUT;
   }
 for (addr = addrlist; addr != NULL; addr = addr->next)
-  {
-  if (addr->transport_return < PENDING) continue;
-  addr->basic_errno = errno_value;
-  addr->more_errno |= orvalue;
-  if (msg != NULL)
+  if (addr->transport_return >= PENDING)
     {
-    addr->message = msg;
-    if (pass_message) setflag(addr, af_pass_message);
+    addr->basic_errno = errno_value;
+    addr->more_errno |= orvalue;
+    if (msg != NULL)
+      {
+      addr->message = msg;
+      if (pass_message) setflag(addr, af_pass_message);
+      }
+    addr->transport_return = rc;
+    if (host)
+      addr->host_used = host;
     }
-  addr->transport_return = rc;
-  if (host)
-    addr->host_used = host;
-  }
 }
 
 
@@ -831,10 +831,9 @@ while (count-- > 0)
 
   else if (errno == ETIMEDOUT)
     {
-    int save_errno = errno;
     uschar *message = string_sprintf("SMTP timeout after RCPT TO:<%s>",
 			  transport_rcpt_address(addr, include_affixes));
-    set_errno(addrlist, save_errno, message, DEFER, FALSE, NULL);
+    set_errno(addrlist, ETIMEDOUT, message, DEFER, FALSE, NULL);
     retry_add_item(addr, addr->address_retry_key, 0);
     update_waiting = FALSE;
     return -1;
@@ -1083,7 +1082,8 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 	  /* Internal problem, message in buffer. */
 
 	  case ERROR:
-	  set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE, NULL);
+	  set_errno(addrlist, ERRNO_AUTHPROB, string_copy(buffer),
+		    DEFER, FALSE, NULL);
 	  return ERROR;
 	  }
 
@@ -1138,7 +1138,7 @@ if (ob->authenticated_sender != NULL)
       {
       uschar *message = string_sprintf("failed to expand "
         "authenticated_sender: %s", expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
+      set_errno(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, NULL);
       return TRUE;
       }
     }
@@ -1335,7 +1335,8 @@ tls_modify_variables(&tls_out);
 #ifndef SUPPORT_TLS
 if (smtps)
   {
-  set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE, NULL);
+  set_errno(addrlist, ERRNO_TLSFAILURE, US"TLS support not available",
+	    DEFER, FALSE, NULL);
   return ERROR;
   }
 #endif
@@ -1413,7 +1414,7 @@ if (continue_hostname == NULL)
       s = event_raise(tblock->event_action, US"smtp:connect", buffer);
       if (s)
 	{
-	set_errno(addrlist, 0,
+	set_errno(addrlist, ERRNO_EXPANDFAIL,
 	  string_sprintf("deferred by smtp:connect event expansion: %s", s),
 	  DEFER, FALSE, NULL);
 	yield = DEFER;
@@ -1429,7 +1430,7 @@ if (continue_hostname == NULL)
       {
       uschar *message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
+      set_errno(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, NULL);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -1644,7 +1645,7 @@ if (tls_out.active >= 0)
       {
       uschar *message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);
-      set_errno(addrlist, 0, message, DEFER, FALSE, NULL);
+      set_errno(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, NULL);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -2012,16 +2013,15 @@ RCPT. */
 if (mua_wrapper)
   {
   address_item *badaddr;
-  for (badaddr = first_addr; badaddr != NULL; badaddr = badaddr->next)
-    {
-    if (badaddr->transport_return != PENDING_OK) break;
-    }
-  if (badaddr != NULL)
-    {
-    set_errno(addrlist, 0, badaddr->message, FAIL,
-      testflag(badaddr, af_pass_message), NULL);
-    ok = FALSE;
-    }
+  for (badaddr = first_addr; badaddr; badaddr = badaddr->next)
+    if (badaddr->transport_return != PENDING_OK)
+      {
+      /*XXX could we find a better errno than 0 here? */
+      set_errno(addrlist, 0, badaddr->message, FAIL,
+	testflag(badaddr, af_pass_message), NULL);
+      ok = FALSE;
+      break;
+      }
   }
 
 /* If ok is TRUE, we know we have got at least one good recipient, and must now
@@ -2710,21 +2710,21 @@ prepare_addresses(address_item *addrlist, host_item *host)
 address_item *first_addr = NULL;
 address_item *addr;
 for (addr = addrlist; addr != NULL; addr = addr->next)
-  {
-  if (addr->transport_return != DEFER) continue;
-  if (first_addr == NULL) first_addr = addr;
-  addr->transport_return = PENDING_DEFER;
-  addr->basic_errno = 0;
-  addr->more_errno = (host->mx >= 0)? 'M' : 'A';
-  addr->message = NULL;
+  if (addr->transport_return == DEFER)
+    {
+    if (first_addr == NULL) first_addr = addr;
+    addr->transport_return = PENDING_DEFER;
+    addr->basic_errno = 0;
+    addr->more_errno = (host->mx >= 0)? 'M' : 'A';
+    addr->message = NULL;
 #ifdef SUPPORT_TLS
-  addr->cipher = NULL;
-  addr->ourcert = NULL;
-  addr->peercert = NULL;
-  addr->peerdn = NULL;
-  addr->ocsp = OCSP_NOT_REQ;
+    addr->cipher = NULL;
+    addr->ourcert = NULL;
+    addr->peercert = NULL;
+    addr->peerdn = NULL;
+    addr->ocsp = OCSP_NOT_REQ;
 #endif
-  }
+    }
 return first_addr;
 }
 
