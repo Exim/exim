@@ -1,0 +1,64 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaZ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+451 Temporary local problem - please try later
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on TESTSUITE/eximdir/avast_sock ... 
+Connection request
+>LF>220 ready
+<FLAGS -fullfiles
+>LF>210 FLAGS DATA
+>LF>200 FLAGS OK
+<SCAN TESTSUITE/spool/scan/10HmaZ-0005vi-00
+>LF>210 SCAN DATA
+>LF>blah	[+]
+>LF>200 SCAN OK
+<QUIT
+Unexpected EOF read from client
+End of script
+Listening on TESTSUITE/eximdir/avast_sock ... 
+Connection request
+>LF>220 ready
+<SCAN TESTSUITE/spool/scan/10HmaX-0005vi-00
+>LF>210 SCAN DATA
+>LF>blah	[E]
+>LF>200 SCAN OK
+Unexpected EOF read from client
+Listening on TESTSUITE/eximdir/avast_sock ... 
+Connection request
+>LF>220 ready
+<SCAN TESTSUITE/spool/scan/10HmaY-0005vi-00
+>LF>210 SCAN DATA
+>LF>b\ l\ a\ h	[L]9.9	9 VNAME
+>LF>200 SCAN OK
+Unexpected EOF read from client
