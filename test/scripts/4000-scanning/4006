@@ -1,0 +1,80 @@
+# content scan interface: avast
+#
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<FLAGS -fullfiles
+>LF>210 FLAGS DATA
+>LF>200 FLAGS OK
+<SCAN
+>LF>210 SCAN DATA
+>LF>blah	[+]
+>LF>200 SCAN OK
+<QUIT
+<*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION="FLAGS -fullfiles"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>blah	[E]
+>LF>200 SCAN OK
+<QUIT
+<*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: defer this one
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>b\ l\ a\ h	[L]9.9	9 VNAME
+>LF>200 SCAN OK
+<QUIT
+<*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+.
+quit
+****
