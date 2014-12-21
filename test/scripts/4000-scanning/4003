@@ -1,0 +1,62 @@
+# content scan interface: fsecure
+#
+server DIR/eximdir/fsec_sock
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<SCAN
+>LF>random ignored line
+>LF>random ignored line 2
+>LF>OK	Scan ok.
+*eof
+****
+#
+#
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/fsec_sock
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<SCAN
+>LF>xxxINFECTED	blah	VNAME	blah
+>LF>OK	Scan ok.
+*eof
+****
+#
+#
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+.
+quit
+****

@@ -1,0 +1,67 @@
+# content scan interface: clamav
+#
+# SCAN command interface, on a unix socket, only.  No ExtendedDetectionInfo.
+#
+server DIR/eximdir/clam_sock
+<SCAN
+>LF>scanned_file_name: OK
+<*eof
+****
+#
+#
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/clam_sock
+<SCAN
+>LF>scanned_file_name: 666 ERROR
+<*eof
+****
+#
+#
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: defer this one
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/clam_sock
+<SCAN
+>LF>scanned_file_name: VNAME FOUND
+<*eof
+****
+#
+#
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+.
+quit
+****
