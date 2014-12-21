@@ -1,0 +1,33 @@
+# Exim test configuration 4001
+# Content-scan: f-protd interface
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+av_scanner = f-protd : localhost PORT_S
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = c_data
+
+begin acl
+
+c_data:
+  accept !malware = *
+  deny	 logwrite = malware_name $malware_name
+
+# ----- Routers -----
+
+begin routers
+
+r:
+  driver = redirect
+  data = :blackhole:
+
+# End
