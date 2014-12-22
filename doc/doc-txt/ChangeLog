@@ -78,10 +78,14 @@ JH/12 Bug 1527: Autogrow buffer used in reading spool files.  Since they now
       include certificate info, eximon was claiming there were spoolfile
       syntax errors.
 
-JH/13 Buf 1521: Fix ldap lookup for single-attr request, multiple-attr return.
+JH/13 Bug 1521: Fix ldap lookup for single-attr request, multiple-attr return.
 
 JH/14 Log delivery-related information more consistently, using the sequence
       "H=<name> [<ip>]" wherever possible.
+
+TL/07 Bug 1547: Omit RFCs from release. Draft and RFCs have licenses which
+      are problematic for Debian distribution, omit them from the release
+      tarball.
 
 
 Exim version 4.84

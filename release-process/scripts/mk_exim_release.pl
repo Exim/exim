@@ -223,7 +223,11 @@ sub move_text_docs_into_pkg {
         next
           if ( ( $fn eq 'ABOUT' )
             || ( $fn eq 'ChangeLog.0' )
-            || ( $fn eq 'test-harness.txt' ) );
+            || ( $fn eq 'test-harness.txt' )
+            # Debian issue re licensing of RFCs
+            || ( $fn =~ /^draft-ietf-.*/ )
+            || ( $fn =~ /^rfc.*/ )
+             );
         move( $file, File::Spec->catfile( $new_docdir, $fn ) );
     }
 }
