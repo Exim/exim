@@ -2540,8 +2540,8 @@ else
       uschar *basename;
 
       (void)gettimeofday(&msg_tv, NULL);
-      basename = string_sprintf("%lu.H%luP%lu.%s", msg_tv.tv_sec,
-        msg_tv.tv_usec, getpid(), primary_hostname);
+      basename = string_sprintf(TIME_T_FMT ".H%luP%lu.%s",
+       	msg_tv.tv_sec, msg_tv.tv_usec, getpid(), primary_hostname);
 
       filename = dataname = string_sprintf("tmp/%s", basename);
       newname = string_sprintf("new/%s", basename);
