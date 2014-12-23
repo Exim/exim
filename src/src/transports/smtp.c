@@ -273,14 +273,12 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 #endif
 };
 
-#ifdef EXPERIMENTAL_DSN
 /* some DSN flags for use later */
 
 static int     rf_list[] = {rf_notify_never, rf_notify_success,
                             rf_notify_failure, rf_notify_delay };
 
 static uschar *rf_names[] = { US"NEVER", US"SUCCESS", US"FAILURE", US"DELAY" };
-#endif
 
 
 
@@ -1278,9 +1276,7 @@ BOOL pass_message = FALSE;
 BOOL prdr_offered = FALSE;
 BOOL prdr_active;
 #endif
-#ifdef EXPERIMENTAL_DSN
 BOOL dsn_all_lasthop = TRUE;
-#endif
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
 BOOL dane = FALSE;
 dns_answer tlsa_dnsa;
@@ -1743,12 +1739,10 @@ if (continue_hostname == NULL
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
-#ifdef EXPERIMENTAL_DSN
   /* Note if the server supports DSN */
   smtp_use_dsn = esmtp && pcre_exec(regex_DSN, NULL, CS buffer, (int)Ustrlen(CS buffer), 0,
        PCRE_EOPT, NULL, 0) >= 0;
   DEBUG(D_transport) debug_printf("use_dsn=%d\n", smtp_use_dsn);
-#endif
 
   /* Note if the response to EHLO specifies support for the AUTH extension.
   If it has, check that this host is one we want to authenticate to, and do
@@ -1846,7 +1840,6 @@ if (prdr_offered)
   }
 #endif
 
-#ifdef EXPERIMENTAL_DSN
 /* check if all addresses have lasthop flag */
 /* do not send RET and ENVID if true */
 dsn_all_lasthop = TRUE;
@@ -1876,7 +1869,6 @@ if ((smtp_use_dsn) && (dsn_all_lasthop == FALSE))
     while (*p) p++;
     }
   }
-#endif
 
 /* If an authenticated_sender override has been specified for this transport
 instance, expand it. If the expansion is forced to fail, and there was already
@@ -1943,16 +1935,13 @@ for (addr = first_addr;
   int count;
   BOOL no_flush;
 
-#ifdef EXPERIMENTAL_DSN
   addr->dsn_aware = smtp_use_dsn ? dsn_support_yes : dsn_support_no;
-#endif
 
   if (addr->transport_return != PENDING_DEFER) continue;
 
   address_count++;
   no_flush = smtp_use_pipelining && (!mua_wrapper || addr->next != NULL);
 
-#ifdef EXPERIMENTAL_DSN
   /* Add any DSN flags to the rcpt command and add to the sent string */
 
   p = buffer;
@@ -1983,21 +1972,14 @@ for (addr = first_addr;
       while (*p) p++;
       }
     }
-#endif
-
 
   /* Now send the RCPT command, and process outstanding responses when
   necessary. After a timeout on RCPT, we just end the function, leaving the
   yield as OK, because this error can often mean that there is a problem with
   just one address, so we don't want to delay the host. */
 
-#ifdef EXPERIMENTAL_DSN
   count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s%s\r\n",
     transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr, buffer);
-#else
-  count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s\r\n",
-    transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr);
-#endif
 
   if (count < 0) goto SEND_FAILED;
   if (count > 0)

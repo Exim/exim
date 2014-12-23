@@ -1084,66 +1084,6 @@ QUIT
 221 mail.example.net closing connection
 
 
-DSN Support
---------------------------------------------------------------
-
-DSN Support tries to add RFC 3461 support to Exim. It adds support for
-*) the additional parameters for MAIL FROM and RCPT TO
-*) RFC complient MIME DSN messages for all of
-   success, failure and delay notifications
-*) dsn_advertise_hosts main option to select which hosts are able
-   to use the extension
-*) dsn_lasthop router switch to end DSN processing
-
-In case of failure reports this means that the last three parts, the message body
-intro, size info and final text, of the defined template are ignored since there is no
-logical place to put them in the MIME message.
-
-All the other changes are made without changing any defaults
-
-Building exim:
---------------
-
-Define
-EXPERIMENTAL_DSN=YES
-in your Local/Makefile.
-
-Configuration:
---------------
-All DSNs are sent in MIME format if you built exim with EXPERIMENTAL_DSN=YES
-No option needed to activate it, and no way to turn it off.
-
-Failure and delay DSNs are triggered as usual except a sender used NOTIFY=...
-to prevent them.
-
-Support for Success DSNs is added and activated by NOTIFY=SUCCESS by clients.
-
-Add
-dsn_advertise_hosts = *
-or a more restrictive host_list to announce DSN in EHLO answers
-
-Those hosts can then use NOTIFY,ENVID,RET,ORCPT options.
-
-If a message is relayed to a DSN aware host without changing the envelope
-recipient the options are passed along and no success DSN is generated.
-
-A redirect router will always trigger a success DSN if requested and the DSN
-options are not passed any further.
-
-A success DSN always contains the recipient address as submitted by the
-client as required by RFC. Rewritten addresses are never exposed.
-
-If you used DSN patch up to 1.3 before remove all "dsn_process" switches from
-your routers since you don't need them anymore. There is no way to "gag"
-success DSNs anymore. Announcing DSN means answering as requested.
-
-You can prevent Exim from passing DSN options along to other DSN aware hosts by defining
-dsn_lasthop
-in a router. Exim will then send the success DSN himself if requested as if
-the next hop does not support DSN.
-Adding it to a redirect router makes no difference.
-
-
 
 
 DANE

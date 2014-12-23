@@ -83,6 +83,7 @@ LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>> accept: condition test succeeded in ACL "check_connect"
 >>> end of ACL "check_connect": ACCEPT
 >>> test.host in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? yes (matched "10.0.0.1")
 >>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
@@ -283,6 +284,7 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> accept: condition test succeeded in ACL "check_connect"
 >>> end of ACL "check_connect": ACCEPT
 >>> test.host in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? no (end of list)
 >>> host in "10.0.0.4"? no (end of list)
@@ -378,6 +380,7 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> accept: condition test succeeded in ACL "check_connect"
 >>> end of ACL "check_connect": ACCEPT
 >>> test.host in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? no (end of list)
 >>> host in "10.0.0.4"? yes (matched "10.0.0.4")
@@ -392,6 +395,8 @@ trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: fail_remote_domains propagating DSN
+DSN: localuser propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -426,6 +431,7 @@ testing.testing in helo_lookup_domains? no (end of list)
 sender_fullhost = (testing.testing) [10.0.0.5]
 sender_rcvhost = [10.0.0.5] (helo=testing.testing ident=CALLER)
 set_process_info: pppp handling incoming connection from (testing.testing) [10.0.0.5] U=CALLER
+host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 host in "10.0.0.1"? no (end of list)
 host in "10.0.0.4"? no (end of list)

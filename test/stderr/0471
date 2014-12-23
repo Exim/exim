@@ -25375,6 +25375,10 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |r1@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss

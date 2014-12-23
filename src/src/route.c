@@ -58,10 +58,8 @@ optionlist optionlist_routers[] = {
                  (void *)offsetof(router_instance, domains) },
   { "driver",             opt_stringptr|opt_public,
                  (void *)offsetof(router_instance, driver_name) },
-  #ifdef EXPERIMENTAL_DSN
   { "dsn_lasthop",        opt_bool|opt_public,
                  (void *)offsetof(router_instance, dsn_lasthop) },
-  #endif
   { "errors_to",          opt_stringptr|opt_public,
                  (void *)(offsetof(router_instance, errors_to)) },
   { "expn",               opt_bool|opt_public,
@@ -275,14 +273,12 @@ for (r = routers; r != NULL; r = r->next)
   if (r->pass_router_name != NULL)
     set_router(r, r->pass_router_name, &(r->pass_router), TRUE);
 
-  #ifdef EXPERIMENTAL_DSN
-    DEBUG(D_route) {
+  DEBUG(D_route) {
       if (r->dsn_lasthop == FALSE)
         debug_printf("DSN: %s propagating DSN\n", r->name);
       else
         debug_printf("DSN: %s lasthop set\n", r->name);
       }
-  #endif
   }
 }
 
@@ -1364,10 +1360,8 @@ new->p.errors_address = parent->p.errors_address;
 
 copyflag(new, addr, af_propagate);
 new->p.address_data = addr->p.address_data;
-#ifdef EXPERIMENTAL_DSN
 new->dsn_flags = addr->dsn_flags;
 new->dsn_orcpt = addr->dsn_orcpt;
-#endif
 
 
 /* As it has turned out, we haven't set headers_add or headers_remove for the
@@ -1675,7 +1669,6 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
   /* Run the router, and handle the consequences. */
 
-#ifdef EXPERIMENTAL_DSN
 /* ... but let us check on DSN before. If this should be the last hop for DSN
    set flag
 */
@@ -1684,7 +1677,6 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
     addr->dsn_flags |= rf_dsnlasthop;
     HDEBUG(D_route) debug_printf("DSN: last hop for %s\n", addr->address);
   }
-#endif
 
   HDEBUG(D_route) debug_printf("calling %s router\n", r->name);
 

@@ -7,6 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> remote.host in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> test.ex in percent_hack_domains? no (matched "!test.ex")
 >>> using ACL "check_recipient"

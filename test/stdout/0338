@@ -19,7 +19,7 @@ NY a2-userx@test.ex
 NN userx@test.ex
 2
 userx@test.ex
-a1-userx@test.ex postmaster@test.ex 18,0#1
+a1-userx@test.ex  0,0 postmaster@test.ex 18,0#3
 
 dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)

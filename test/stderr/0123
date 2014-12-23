@@ -3,6 +3,12 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+DSN: l1 propagating DSN
+DSN: l2 propagating DSN
+DSN: l3 propagating DSN
+DSN: c1 propagating DSN
+DSN: c2 propagating DSN
+DSN: c3 propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID

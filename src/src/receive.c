@@ -497,10 +497,8 @@ recipients_list[recipients_count].bmi_optin = bmi_current_optin;
 /* reset optin string pointer for next recipient */
 bmi_current_optin = NULL;
 #endif
-#ifdef EXPERIMENTAL_DSN
 recipients_list[recipients_count].orcpt = NULL;
 recipients_list[recipients_count].dsn_flags = 0;
-#endif
 recipients_list[recipients_count++].errors_to = NULL;
 }
 

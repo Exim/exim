@@ -299,10 +299,8 @@ tls_in.ocsp = OCSP_NOT_REQ;
 spam_score_int = NULL;
 #endif
 
-#ifdef EXPERIMENTAL_DSN
 dsn_ret = 0;
 dsn_envid = NULL;
-#endif
 
 /* Generate the full name and open the file. If message_subdir is already
 set, just look in the given directory. Otherwise, look in both the split
@@ -493,13 +491,11 @@ for (;;)
     case 'd':
     if (Ustrcmp(p, "eliver_firsttime") == 0)
       deliver_firsttime = TRUE;
-#ifdef EXPERIMENTAL_DSN
     /* Check if the dsn flags have been set in the header file */
     else if (Ustrncmp(p, "sn_ret", 6) == 0)
       dsn_ret= atoi(CS big_buffer + 8);
     else if (Ustrncmp(p, "sn_envid", 8) == 0)
       dsn_envid = string_copy(big_buffer + 11);
-#endif
     break;
 
     case 'f':
@@ -645,10 +641,8 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   {
   int nn;
   int pno = -1;
-#ifdef EXPERIMENTAL_DSN
   int dsn_flags = 0;
   uschar *orcpt = NULL;
-#endif
   uschar *errors_to = NULL;
   uschar *p;
 
@@ -725,7 +719,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     {
     int flags;
 
-#if defined(EXPERIMENTAL_DSN) && !defined (COMPILE_UTILITY)
+#if !defined (COMPILE_UTILITY)
     DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim 4 standard format spoolfile\n");
 #endif
 
@@ -745,7 +739,6 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
       }
 
     *(--p) = 0;   /* Terminate address */
-#ifdef EXPERIMENTAL_DSN
     if ((flags & 0x02) != 0)      /* one_time data exists */
       {
       int len;
@@ -760,9 +753,8 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
       }
 
     *(--p) = 0;   /* Terminate address */
-#endif  /* EXPERIMENTAL_DSN */
     }
-#if defined(EXPERIMENTAL_DSN) && !defined(COMPILE_UTILITY)
+#if !defined(COMPILE_UTILITY)
   else
     { DEBUG(D_deliver) debug_printf("**** SPOOL_IN - No additional fields\n"); }
 
@@ -776,15 +768,13 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: |%s| errorsto: |%s|\n",
       big_buffer, errors_to);
     }
-#endif  /* EXPERIMENTAL_DSN */
+#endif
 
   recipients_list[recipients_count].address = string_copy(big_buffer);
   recipients_list[recipients_count].pno = pno;
   recipients_list[recipients_count].errors_to = errors_to;
-#ifdef EXPERIMENTAL_DSN
   recipients_list[recipients_count].orcpt = orcpt;
   recipients_list[recipients_count].dsn_flags = dsn_flags;
-#endif
   }
 
 /* The remainder of the spool header file contains the headers for the message,

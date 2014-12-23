@@ -54,6 +54,7 @@ processing "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -81,6 +82,10 @@ end of ACL "check_data": ACCEPT
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |abc@domain| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= <> U=CALLER P=local-smtp S=sss
@@ -118,6 +123,7 @@ processing "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called

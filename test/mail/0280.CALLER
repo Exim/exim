@@ -5,9 +5,14 @@ X-Failed-Recipients: spqr@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: spqr@test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -17,7 +22,17 @@ recipients. This is a permanent error. The following address(es) failed:
   spqr@test.ex
     Unrouteable address
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;spqr@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <spqr@test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -29,6 +44,8 @@ From: spqr@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
@@ -36,9 +53,14 @@ X-Failed-Recipients: abcd@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: abcd@test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -48,7 +70,17 @@ recipients. This is a permanent error. The following address(es) failed:
   abcd@test.ex
     Unrouteable address
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;abcd@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <abcd@test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -59,4 +91,6 @@ Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: abcd@test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
 

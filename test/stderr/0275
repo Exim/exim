@@ -5,6 +5,15 @@ configuration file is TESTSUITE/test-config
 admin user
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: r00 propagating DSN
+DSN: r01 propagating DSN
+DSN: r02 propagating DSN
+DSN: r03 propagating DSN
+DSN: r04 propagating DSN
+DSN: r05 propagating DSN
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
+DSN: r3 propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
@@ -106,6 +115,15 @@ changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: r00 propagating DSN
+DSN: r01 propagating DSN
+DSN: r02 propagating DSN
+DSN: r03 propagating DSN
+DSN: r04 propagating DSN
+DSN: r05 propagating DSN
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
+DSN: r3 propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@test.ex>
@@ -132,6 +150,10 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -146,6 +168,15 @@ trusted user
 admin user
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+DSN: r00 propagating DSN
+DSN: r01 propagating DSN
+DSN: r02 propagating DSN
+DSN: r03 propagating DSN
+DSN: r04 propagating DSN
+DSN: r05 propagating DSN
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
+DSN: r3 propagating DSN
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
 reading spool file 10HmaX-0005vi-00-H
@@ -155,7 +186,9 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=1
+**** SPOOL_IN - No additional fields
 body_linecount=0 message_linecount=7
+DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
@@ -301,6 +334,14 @@ userx@test.ex: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing
+DSN: processing router : r3
+DSN: processing successful delivery address: userx@test.ex
+DSN: Sender_address: CALLER@test.ex
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: userx@test.ex
+DSN: Remote SMTP server supports DSN: 0
+DSN: *** NOT SENDING DSN SUCCESS Message ***
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00

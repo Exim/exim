@@ -6,9 +6,14 @@ X-Failed-Recipients: pipe@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
 
 This message was created automatically by mail delivery software.
 
@@ -26,7 +31,17 @@ max fd = dddd
   1 opt=0 STATUS
   2 opt=0 STATUS
 
------- This is a copy of the message, including all the headers. ------
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; the.local.host.name
+
+Action: failed
+Final-Recipient: rfc822;pipe@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
 
 Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
@@ -37,4 +52,6 @@ From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
 

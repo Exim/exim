@@ -5,6 +5,7 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+DSN: r1 propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 sender_fullhost = [1.2.3.4]
@@ -57,6 +58,7 @@ sender U@W.x.y verified ok as U@x.y
 accept: condition test succeeded in ACL "acl_rcpt"
 end of ACL "acl_rcpt": ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN

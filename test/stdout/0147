@@ -25,6 +25,7 @@ debug_print =
 no_disable_logging
 domains = 
 driver = accept
+no_dsn_lasthop
 errors_to = 
 expn
 no_fail_verify_recipient

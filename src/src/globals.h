@@ -130,13 +130,11 @@ extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */
 #endif
 
-#ifdef EXPERIMENTAL_DSN
 extern uschar  *dsn_envid;             /* DSN envid string */
 extern int      dsn_ret;               /* DSN ret type*/
 extern const pcre  *regex_DSN;         /* For recognizing DSN settings */
 extern BOOL     smtp_use_dsn;          /* Global for passed connections */
 extern uschar  *dsn_advertise_hosts;   /* host for which TLS is advertised */
-#endif
 
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. */

@@ -3811,6 +3811,12 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 connection to the remote host has been authenticated.
 
+.vitem &%-MCD%&
+.oindex "&%-MCD%&"
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the &%-MC%& option. It signifies that the
+remote host supports the ESMTP &_DSN_& extension.
+
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
 This option is not intended for use by external callers. It is used internally
@@ -13409,6 +13415,7 @@ See also the &'Policy controls'& section above.
 .table2
 .row &%accept_8bitmime%&             "advertise 8BITMIME"
 .row &%auth_advertise_hosts%&        "advertise AUTH to these hosts"
+.row &%dsn_advertise_hosts%&         "advertise DSN extensions to these hosts"
 .row &%ignore_fromline_hosts%&       "allow &""From ""& from these hosts"
 .row &%ignore_fromline_local%&       "allow &""From ""& from local SMTP"
 .row &%pipelining_advertise_hosts%&  "advertise pipelining to these hosts"
@@ -14149,6 +14156,18 @@ If the resolver library does not support EDNS0 then this option has no effect.
 This is an obsolete option that is now a no-op. It used to affect the way Exim
 handled CR and LF characters in incoming messages. What happens now is
 described in section &<<SECTlineendings>>&.
+
+.option dsn_advertise_hosts main "host list&!!" unset
+.cindex "bounce messages" "success"
+.cindex "DSN" "success"
+.cindex "Delivery Status Notification" "success"
+DSN extensions (RFC3461) will be advertised in the EHLO message to,
+and accepted from, these hosts.
+Hosts may use the NOTIFY and ENVID options on RCPT TO commands,
+and RET and ORCPT options on MAIL FROM commands.
+A NOTIFY=SUCCESS option requests success-DSN messages.
+A NOTIFY= option with no argument requests that no delay or failure DSNs
+are sent.
 
 .option dsn_from main "string&!!" "see below"
 .cindex "&'From:'& header line" "in bounces"
@@ -16981,6 +17000,15 @@ This option must always be set. It specifies which of the available routers is
 to be used.
 
 
+.option dsn_lasthop routers boolean false
+.cindex "DSN" "success"
+.cindex "Delivery Status Notification" "success"
+If this option is set true, and extended DSN (RFC3461) processing is in effect,
+Exim will not pass on DSN requests to downstream DSN-aware hosts but will
+instead send a success DSN as if the next hop does not support DSN.
+Not effective on redirect routers.
+
+
 
 .option errors_to routers string&!! unset
 .cindex "envelope sender"
@@ -18986,6 +19014,11 @@ The generic &%transport%& option must not be set for &(redirect)& routers.
 However, there are some private options which define transports for delivery to
 files and pipes, and for generating autoreplies. See the &%file_transport%&,
 &%pipe_transport%& and &%reply_transport%& descriptions below.
+
+If success DSNs have been requested
+.cindex "DSN" "success"
+.cindex "Delivery Status Notification" "success"
+redirection triggers one and the DSN options are not passed any further.
 
 
 
@@ -33471,13 +33504,8 @@ failing addresses with their error messages.
 The third item is used to introduce any text from pipe transports that is to be
 returned to the sender. It is omitted if there is no such text.
 .next
-The fourth item is used to introduce the copy of the message that is returned
-as part of the error report.
-.next
-The fifth item is added after the fourth one if the returned message is
-truncated because it is bigger than &%return_size_limit%&.
-.next
-The sixth item is added after the copy of the original message.
+The fourth, fifth and sixth items will be ignored and may be empty.
+The fields exist for back-compatibility
 .endlist
 
 The default state (&%bounce_message_file%& unset) is equivalent to the

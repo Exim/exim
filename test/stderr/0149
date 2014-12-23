@@ -1,6 +1,9 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+DSN: domainlist1 propagating DSN
+DSN: domainlist2 propagating DSN
+DSN: local propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@ten
 --------> domainlist1 router <--------

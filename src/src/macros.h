@@ -793,7 +793,6 @@ enum {
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
 
-#ifdef EXPERIMENTAL_DSN
 /* Flags for recipient_block, used in DSN support */
 
 #define rf_dsnlasthop           0x01  /* Do not propagate DSN any further */
@@ -814,7 +813,6 @@ enum {
 #define dsn_support_yes         1
 #define dsn_support_no          2
 
-#endif
 
 /* Codes for the host_find_failed and host_all_ignored options. */
 

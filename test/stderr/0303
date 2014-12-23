@@ -30,6 +30,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
+>>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -72,6 +73,7 @@ SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = ([V4NET.2.3.4]) [V4NET.2.3.4]
 sender_rcvhost = [V4NET.2.3.4]
 set_process_info: pppp handling incoming connection from ([V4NET.2.3.4]) [V4NET.2.3.4]
+host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 SMTP>> 250-myhost.test.ex Hello [V4NET.2.3.4] [V4NET.2.3.4]
 250-SIZE 52428800
@@ -85,6 +87,7 @@ processing "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -142,6 +145,7 @@ SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = host.name.tld [V4NET.2.3.4]
 sender_rcvhost = host.name.tld ([V4NET.2.3.4])
 set_process_info: pppp handling incoming connection from host.name.tld [V4NET.2.3.4]
+host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 SMTP>> 250-myhost.test.ex Hello host.name.tld [V4NET.2.3.4]
 250-SIZE 52428800
@@ -155,6 +159,7 @@ processing "accept"
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called

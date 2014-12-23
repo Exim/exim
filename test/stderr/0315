@@ -1,6 +1,8 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
@@ -8,6 +10,8 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 delivering 10HmaX-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
@@ -59,12 +63,16 @@ LOG: MAIN
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: r1 propagating DSN
+DSN: r2 propagating DSN
 delivering 10HmaY-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
