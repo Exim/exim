@@ -13,7 +13,6 @@ C1C2 this should be a comment
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
-rfc1413_query_timeout = 0s
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""

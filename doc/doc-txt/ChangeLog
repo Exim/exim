@@ -26,6 +26,9 @@ JH/06 Verification of the server certificate for a TLS connection is now tried
       default, for both outbound TLS and client-certificate supplying inbound
       TLS connections
 
+JH/07 Changed the default rfc1413 lookup settings to disable calls.  Few
+      sites use this now.
+
 
 Exim version 4.85
 -----------------
