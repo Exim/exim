@@ -48,7 +48,7 @@ spam(uschar **listptr)
   fd_set select_fd;
 #endif
   uschar *spamd_address_work;
-  static const char * loglabel = US"spam acl condition:";
+  static const uschar * loglabel = US"spam acl condition:";
 
   /* stop compiler warning */
   result = 0;

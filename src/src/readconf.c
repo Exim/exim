@@ -3009,9 +3009,9 @@ if (config_file != NULL)
   uschar *p;
   config_filename = config_main_filename = string_copy(filename);
 
-  p = strrchr(filename, '/');
+  p = Ustrrchr(filename, '/');
   config_main_directory = p ? string_copyn(filename, p - filename) 
-                            : string_copy(".");
+                            : string_copy(US".");
   }
 else
   {
