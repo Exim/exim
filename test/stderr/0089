@@ -49,7 +49,7 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> host in host_reject_connection? no (option unset)
 >>> sender host name required, to match against *N-99.test.EX
 >>> looking up host name for V4NET.0.0.99
->>> IP address lookup yielded ten-99.test.ex
+>>> IP address lookup yielded "ten-99.test.ex"
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-99.test.ex address=V4NET.0.0.99

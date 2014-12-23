@@ -32,7 +32,7 @@ LOG: H=[V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: rel
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "0.0.0.0/0")
 >>> looking up host name for V4NET.0.0.1
->>> IP address lookup yielded ten-1.test.ex
+>>> IP address lookup yielded "ten-1.test.ex"
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=ten-1.test.ex address=V4NET.0.0.1
@@ -84,8 +84,8 @@ host in host_lookup? yes (matched "0.0.0.0/0")
 looking up host name for V4NET.99.99.90
 DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) succeeded
-IP address lookup yielded oneback.test.ex
-  alias host1.masq.test.ex
+IP address lookup yielded "oneback.test.ex"
+  alias "host1.masq.test.ex"
 using host_fake_gethostbyname for oneback.test.ex (IPv4)
 DNS lookup of oneback.test.ex (A) using fakens
 DNS lookup of oneback.test.ex (A) succeeded

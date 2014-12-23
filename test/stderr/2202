@@ -45,7 +45,7 @@ sender host name required, to match against *.cioce.test.again.dns
 looking up host name for ip4.ip4.ip4.ip4
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
-IP address lookup yielded the.local.host.name
+IP address lookup yielded "the.local.host.name"
 using host_fake_gethostbyname for the.local.host.name (IPv4)
 DNS lookup of the.local.host.name (A) using fakens
 DNS lookup of the.local.host.name (A) succeeded

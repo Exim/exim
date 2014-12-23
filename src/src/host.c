@@ -1742,8 +1742,8 @@ if (sender_host_name == NULL)
 HDEBUG(D_host_lookup)
   {
   uschar **aliases = sender_host_aliases;
-  debug_printf("IP address lookup yielded %s\n", sender_host_name);
-  while (*aliases != NULL) debug_printf("  alias %s\n", *aliases++);
+  debug_printf("IP address lookup yielded \"%s\"\n", sender_host_name);
+  while (*aliases != NULL) debug_printf("  alias \"%s\"\n", *aliases++);
   }
 
 /* We need to verify that a forward lookup on the name we found does indeed

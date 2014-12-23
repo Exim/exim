@@ -37,8 +37,8 @@ sender host name required, to match against *.gov.uk.test.ex
 looking up host name for V4NET.99.99.97
 DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) succeeded
-IP address lookup yielded x.gov.uk.test.ex
-  alias x.co.uk.test.ex
+IP address lookup yielded "x.gov.uk.test.ex"
+  alias "x.co.uk.test.ex"
 using host_fake_gethostbyname for x.gov.uk.test.ex (IPv4)
 DNS lookup of x.gov.uk.test.ex (A) using fakens
 DNS lookup of x.gov.uk.test.ex (A) succeeded
