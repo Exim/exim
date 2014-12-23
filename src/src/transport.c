@@ -1015,7 +1015,6 @@ char sbuf[2048];
 int sread = 0;
 int wwritten = 0;
 uschar *dkim_signature = NULL;
-off_t size = 0;
 
 /* If we can't sign, just call the original function. */
 
@@ -1103,12 +1102,6 @@ if (dkim_private_key && dkim_domain && dkim_selector)
     }
   }
 
-/* Fetch file size */
-size = lseek(dkim_fd, 0, SEEK_END);
-
-/* Rewind file */
-lseek(dkim_fd, 0, SEEK_SET);
-
 #ifdef HAVE_LINUX_SENDFILE
 /* We can use sendfile() to shove the file contents
    to the socket. However only if we don't use TLS,
@@ -1116,8 +1109,13 @@ lseek(dkim_fd, 0, SEEK_SET);
    before the data finally hits the socket. */
 if (tls_out.active != fd)
   {
+  off_t size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
   ssize_t copied = 0;
   off_t offset = 0;
+
+  /* Rewind file */
+  lseek(dkim_fd, 0, SEEK_SET);
+
   while(copied >= 0 && offset < size)
     copied = sendfile(fd, dkim_fd, &offset, size - offset);
   if (copied < 0)
@@ -1125,42 +1123,47 @@ if (tls_out.active != fd)
     save_errno = errno;
     rc = FALSE;
     }
-  goto CLEANUP;
   }
+else
+
 #endif
 
-/* Send file down the original fd */
-while((sread = read(dkim_fd, sbuf, 2048)) > 0)
   {
-  char *p = sbuf;
-  /* write the chunk */
+  /* Rewind file */
+  lseek(dkim_fd, 0, SEEK_SET);
 
-  while (sread)
+  /* Send file down the original fd */
+  while((sread = read(dkim_fd, sbuf, 2048)) > 0)
     {
-#ifdef SUPPORT_TLS
-    wwritten = tls_out.active == fd
-      ? tls_write(FALSE, US p, sread)
-      : write(fd, p, sread);
-#else
-    wwritten = write(fd, p, sread);
-#endif
-    if (wwritten == -1)
-      {
-      /* error, bail out */
-      save_errno = errno;
-      rc = FALSE;
-      goto CLEANUP;
-      }
-    p += wwritten;
-    sread -= wwritten;
-    }
-  }
+    char *p = sbuf;
+    /* write the chunk */
 
-if (sread == -1)
-  {
-  save_errno = errno;
-  rc = FALSE;
-  goto CLEANUP;
+    while (sread)
+      {
+#ifdef SUPPORT_TLS
+      wwritten = tls_out.active == fd
+	? tls_write(FALSE, US p, sread)
+	: write(fd, p, sread);
+#else
+      wwritten = write(fd, p, sread);
+#endif
+      if (wwritten == -1)
+	{
+	/* error, bail out */
+	save_errno = errno;
+	rc = FALSE;
+	goto CLEANUP;
+	}
+      p += wwritten;
+      sread -= wwritten;
+      }
+    }
+
+  if (sread == -1)
+    {
+    save_errno = errno;
+    rc = FALSE;
+    }
   }
 
 CLEANUP:

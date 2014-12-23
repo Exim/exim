@@ -95,11 +95,8 @@ spam(uschar **listptr)
     spam_ok = 0;
 
   /* if we scanned for this username last time, just return */
-  if ( spam_ok && Ustrcmp(prev_user_name, user_name) == 0)
-    if (override)
-      return OK;
-    else
-      return spam_rc;
+  if (spam_ok && Ustrcmp(prev_user_name, user_name) == 0)
+    return override ? OK : spam_rc;
 
   /* make sure the eml mbox file is spooled up */
   mbox_file = spool_mbox(&mbox_size, NULL);
