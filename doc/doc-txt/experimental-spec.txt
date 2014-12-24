@@ -821,7 +821,7 @@ The following variables are likely to be useful depending on the event type:
 
 An example might look like:
 
-event_action = ${if = {msg:delivery}{$event_name} \
+event_action = ${if eq {msg:delivery}{$event_name} \
 {${lookup pgsql {SELECT * FROM record_Delivery( \
     '${quote_pgsql:$sender_address_domain}',\
     '${quote_pgsql:${lc:$sender_address_local_part}}', \
