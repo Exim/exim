@@ -8,6 +8,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
 1999-03-02 09:44:33 10HmaX-0005vi-00 ver <2>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=clica CA,O=example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=clica CA;O=example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SNO <example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <CN=clica CA,O=example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:04 2012 +0000>
 1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:34:04 2038 +0000>
@@ -31,6 +33,8 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 Peer cert:
 1999-03-02 09:44:33 10HmaY-0005vi-00 ver <2>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SN  <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SN; <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SNO <>
 1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <CN=clica Signing Cert,O=example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:05 2012 +0000>
 1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Jan  1 12:34:05 2038 +0000>

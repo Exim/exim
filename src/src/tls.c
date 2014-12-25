@@ -246,7 +246,7 @@ NOTE: We modify the supplied dn string during operation.
 
 Arguments:
 	dn	Distinguished Name string
-	mod	string containing optional list-sep and
+	mod	list containing optional output list-sep and
 		field selector match, comma-separated
 Return:
 	allocated string with list of matching fields,
@@ -267,13 +267,15 @@ while ((ele = string_nextinlist(&mod, &insep, NULL, 0)))
   if (ele[0] != '>')
     match = ele;	/* field tag to match */
   else if (ele[1])
-    outsep = ele[1];	/* nondefault separator */
+    outsep = ele[1];	/* nondefault output separator */
 
 dn_to_list(dn);
 insep = ',';
-len = Ustrlen(match);
+len = match ? Ustrlen(match) : -1;
 while ((ele = string_nextinlist(&dn, &insep, NULL, 0)))
-  if (Ustrncmp(ele, match, len) == 0 && ele[len] == '=')
+  if (  !match
+     || Ustrncmp(ele, match, len) == 0 && ele[len] == '='
+     )
     list = string_append_listele(list, outsep, ele+len+1);
 return list;
 }

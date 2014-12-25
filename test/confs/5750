@@ -58,6 +58,8 @@ ev_msg:
   accept logwrite = Peer cert:
 	 logwrite =  ver <${certextract {version}	{$tls_out_peercert}}>
 	 logwrite =  SN  <${certextract {subject}	{$tls_out_peercert}}>
+	 logwrite =  SN; <${certextract {subject,>;}    {$tls_out_peercert}}>
+	 logwrite =  SNCN<${certextract {subject,CN}    {$tls_out_peercert}}>
          logwrite =  IN  <${certextract {issuer}	{$tls_out_peercert}}>
          logwrite =  NB  <${certextract {notbefore}	{$tls_out_peercert}}>
          logwrite =  NA  <${certextract {notafter}	{$tls_out_peercert}}>
