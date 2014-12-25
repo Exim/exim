@@ -271,10 +271,18 @@ while ((ele = string_nextinlist(&mod, &insep, NULL, 0)))
 
 dn_to_list(dn);
 insep = ',';
-len = Ustrlen(match);
-while ((ele = string_nextinlist(&dn, &insep, NULL, 0)))
-  if (Ustrncmp(ele, match, len) == 0 && ele[len] == '=')
-    list = string_append_listele(list, outsep, ele+len+1);
+if (match)
+  {
+  len = Ustrlen(match);
+  while ((ele = string_nextinlist(&dn, &insep, NULL, 0)))
+    if (Ustrncmp(ele, match, len) == 0 && ele[len] == '=')
+      list = string_append_listele(list, outsep, ele+len+1);
+  }
+else
+  {
+  while ((ele = string_nextinlist(&dn, &insep, NULL, 0)))
+    list = string_append_listele(list, outsep, ele);
+  }
 return list;
 }
 
