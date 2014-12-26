@@ -275,13 +275,15 @@ verify_callback(int state, X509_STORE_CTX *x509ctx,
   tls_support *tlsp, BOOL *calledp, BOOL *optionalp)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
-static uschar txt[256];
-
-X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+uschar txt[256];
+static uschar peerdn[256];
 
 if (tlsp->peercert)
   X509_free(tlsp->peercert);
 tlsp->peercert = X509_dup(cert);
+
+X509_NAME_oneline(X509_get_subject_name(cert), CS peerdn, sizeof(peerdn));
+tlsp->peerdn = peerdn;
 
 if (state == 0)
   {
@@ -320,8 +322,6 @@ else
 #ifdef EXPERIMENTAL_CERTNAMES
   uschar * verify_cert_hostnames;
 #endif
-
-  tlsp->peerdn = txt;
 
 #ifdef EXPERIMENTAL_CERTNAMES
   if (  tlsp == &tls_out
