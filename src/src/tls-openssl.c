@@ -279,6 +279,8 @@ static uschar txt[256];
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
 
+if (tlsp->peercert)
+  X509_free(tlsp->peercert);
 tlsp->peercert = X509_dup(cert);
 
 if (state == 0)
