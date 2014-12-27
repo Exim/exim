@@ -30343,10 +30343,12 @@ It supports a &"generic"& interface to scanners called via the shell, and
 specialized interfaces for &"daemon"& type virus scanners, which are resident
 in memory and thus are much faster.
 
+A timeout of 2 minutes is applied to a scanner call;
+if it expires then a defer action is taken.
 
 .oindex "&%av_scanner%&"
-You can set the &%av_scanner%& option in first part of the Exim configuration
-file to specify which scanner to use, together with any additional options that
+You can set the &%av_scanner%& option in the main part of the configuration
+to specify which scanner to use, together with any additional options that
 are needed. The basic syntax is as follows:
 .display
 &`av_scanner = <`&&'scanner-type'&&`>:<`&&'option1'&&`>:<`&&'option2'&&`>:[...]`&

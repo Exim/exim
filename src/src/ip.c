@@ -384,39 +384,37 @@ if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE,
 *         Receive from a socket with timeout     *
 *************************************************/
 
-/* The timeout is implemented using select(), and we loop to cover select()
-getting interrupted, and the possibility of select() returning with a positive
-result but no ready descriptor. Is this in fact possible?
-
+/*
 Arguments:
-  sock        the socket
-  buffer      to read into
-  bufsize     the buffer size
-  timeout     the timeout
-
-Returns:      > 0 => that much data read
-              <= 0 on error or EOF; errno set - zero for EOF
+  fd          the file descriptor
+  timeout     the timeout, seconds
+Returns:      TRUE => ready for i/o
+              FALSE => timed out, or other error
 */
-
-int
-ip_recv(int sock, uschar *buffer, int buffsize, int timeout)
+BOOL
+fd_ready(int fd, int timeout)
 {
 fd_set select_inset;
 struct timeval tv;
 time_t start_recv = time(NULL);
 int rc;
 
+if (timeout <= 0)
+  {
+  errno = ETIMEDOUT;
+  return FALSE;
+  }
 /* Wait until the socket is ready */
 
 for (;;)
   {
   FD_ZERO (&select_inset);
-  FD_SET (sock, &select_inset);
+  FD_SET (fd, &select_inset);
   tv.tv_sec = timeout;
   tv.tv_usec = 0;
 
-  DEBUG(D_transport) debug_printf("waiting for data on socket\n");
-  rc = select(sock + 1, (SELECT_ARG2_TYPE *)&select_inset, NULL, NULL, &tv);
+  DEBUG(D_transport) debug_printf("waiting for data on fd\n");
+  rc = select(fd + 1, (SELECT_ARG2_TYPE *)&select_inset, NULL, NULL, &tv);
 
   /* If some interrupt arrived, just retry. We presume this to be rare,
   but it can happen (e.g. the SIGUSR1 signal sent by exiwhat causes
@@ -440,13 +438,37 @@ for (;;)
   if (rc <= 0)
     {
     errno = ETIMEDOUT;
-    return -1;
+    return FALSE;
     }
 
   /* If the socket is ready, break out of the loop. */
 
-  if (FD_ISSET(sock, &select_inset)) break;
+  if (FD_ISSET(fd, &select_inset)) break;
   }
+return TRUE;
+}
+
+/* The timeout is implemented using select(), and we loop to cover select()
+getting interrupted, and the possibility of select() returning with a positive
+result but no ready descriptor. Is this in fact possible?
+
+Arguments:
+  sock        the socket
+  buffer      to read into
+  bufsize     the buffer size
+  timeout     the timeout
+
+Returns:      > 0 => that much data read
+              <= 0 on error or EOF; errno set - zero for EOF
+*/
+
+int
+ip_recv(int sock, uschar *buffer, int buffsize, int timeout)
+{
+int rc;
+
+if (!fd_ready(sock, timeout))
+  return -1;
 
 /* The socket is ready, read from it (via TLS if it's active). On EOF (i.e.
 close down of the connection), set errno to zero; otherwise leave it alone. */

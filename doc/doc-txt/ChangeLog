@@ -35,6 +35,8 @@ JH/08 The EXPERIMENTAL_DSN compile option is no longer needed; all Delivery
       under the control of the dsn_advertise_hosts option, and routers may
       have a dsn_lasthop option.
 
+JH/09 A timeout of 2 minutes is now applied to all malware scanner types.
+
 
 
 Exim version 4.85

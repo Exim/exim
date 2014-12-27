@@ -172,6 +172,8 @@ extern uschar *expand_string_copy(uschar *);
 extern int_eximarith_t expand_string_integer(uschar *, BOOL);
 extern void    modify_variable(uschar *, void *);
 
+extern BOOL    fd_ready(int, int);
+
 extern int     filter_interpret(uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);
 extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
@@ -275,9 +277,6 @@ extern void    queue_count(void);
 extern void    queue_run(uschar *, uschar *, BOOL);
 
 extern int     random_number(int);
-#ifdef WITH_CONTENT_SCAN
-extern int     recv_line(int, uschar *, int);
-#endif
 extern int     rda_interpret(redirect_block *, int, uschar *, uschar *,
                  uschar *, uschar *, uschar *, ugid_block *, address_item **,
                  uschar **, error_block **, int *, uschar *);
