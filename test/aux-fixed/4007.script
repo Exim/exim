@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ x$1 = "x-o" ]
+then
+  shift
+  action=$1
+  shift
+fi
+
+if [ -r $1 ]
+then
+  echo "scanning file $1"
+else
+  echo "$1 not readable"
+  exit 1
+fi
+
+case $action in
+accept) ;;
+reject) echo "VNAME found in file $1";;
+esac
+
