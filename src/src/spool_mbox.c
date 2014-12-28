@@ -26,7 +26,9 @@ uschar spooled_message_id[17];
 /* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size
  * normally, source_file_override is NULL */
 
-FILE *spool_mbox(unsigned long *mbox_file_size, uschar *source_file_override) {
+FILE *
+spool_mbox(unsigned long *mbox_file_size, const uschar *source_file_override)
+{
   uschar message_subdir[2];
   uschar buffer[16384];
   uschar *temp_string;

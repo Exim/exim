@@ -2979,7 +2979,7 @@ uschar *debug_opts = NULL;
 uschar *p = NULL;
 int rc = OK;
 #ifdef WITH_CONTENT_SCAN
-int sep = '/';
+int sep = -'/';
 #endif
 
 for (; cb != NULL; cb = cb->next)
@@ -3580,21 +3580,28 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     #ifdef WITH_CONTENT_SCAN
-    case ACLC_MALWARE:
+    case ACLC_MALWARE:			/* Run the malware backend. */
       {
       /* Separate the regular expression and any optional parameters. */
       uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
-      /* Run the malware backend. */
-      rc = malware(&ss);
-      /* Modify return code based upon the existance of options. */
-      while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
-            != NULL) {
-        if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
-          {
-          /* FAIL so that the message is passed to the next ACL */
-          rc = FAIL;
-          }
-        }
+      uschar *opt;
+      BOOL defer_ok = FALSE;
+      int timeout = 0;
+
+      while ((opt = string_nextinlist(&arg, &sep, NULL, 0)))
+        if (strcmpic(opt, US"defer_ok") == 0)
+	  defer_ok = TRUE;
+	else if (  strncmpic(opt, US"tmo=", 4) == 0
+		&& (timeout = readconf_readtime(opt+4, '\0', FALSE)) < 0
+		)
+	  {
+	  *log_msgptr = string_sprintf("bad timeout value in '%s'", opt);
+	  return ERROR;
+	  }
+
+      rc = malware(ss, timeout);
+      if (rc == DEFER && defer_ok)
+	rc = FAIL;	/* FAIL so that the message is passed to the next ACL */
       }
     break;
 

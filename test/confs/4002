@@ -8,6 +8,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+log_selector = +subject
 
 av_scanner = aveserver : DIR/eximdir/aveserver_sock
 
@@ -19,7 +20,7 @@ acl_smtp_data = c_data
 begin acl
 
 c_data:
-  accept !malware = *
+  accept !malware = * OPT
   deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----

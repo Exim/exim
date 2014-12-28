@@ -15,7 +15,7 @@ server DIR/eximdir/avast_sock
 #
 #
 #
-exim -odi -bs -DOPTION="FLAGS -fullfiles"
+exim -odi -bs -DOPTION="FLAGS -fullfiles" -DINSERT=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -41,13 +41,13 @@ server DIR/eximdir/avast_sock
 #
 #
 #
-exim -odi -bs -DOPTION=
+exim -odi -bs -DOPTION= -DINSERT=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
 data
 Date: Fri, 17 Dec 2004 14:35:01 +0100
-Subject: defer this one
+Subject: defer this one, the scanner had an error
 
 .
 quit
@@ -67,13 +67,53 @@ server DIR/eximdir/avast_sock
 #
 #
 #
-exim -odi -bs -DOPTION=
+exim -odi -bs -DOPTION= -DINSERT="/defer_ok"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
 data
 Date: Fri, 17 Dec 2004 14:35:01 +0100
 Subject: message should be rejected
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/avast_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPTION= -DINSERT="/tmo=2s"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be tmp-rejected due to timeout
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/avast_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPTION= -DINSERT="/tmo=2s/defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted despite timeout
 
 .
 quit

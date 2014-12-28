@@ -19,7 +19,7 @@ acl_smtp_data = c_data
 begin acl
 
 c_data:
-  accept !malware = *
+  accept !malware = * OPT
   deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----
