@@ -18,5 +18,6 @@ fi
 case $action in
 accept) ;;
 reject) echo "VNAME found in file $1";;
+pause3) sleep 3;;
 esac
 

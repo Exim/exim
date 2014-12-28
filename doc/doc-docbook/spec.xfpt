@@ -30335,7 +30335,7 @@ It supports a &"generic"& interface to scanners called via the shell, and
 specialized interfaces for &"daemon"& type virus scanners, which are resident
 in memory and thus are much faster.
 
-A timeout of 2 minutes is applied to a scanner call;
+A timeout of 2 minutes is applied to a scanner call (by default);
 if it expires then a defer action is taken.
 
 .oindex "&%av_scanner%&"
@@ -30579,7 +30579,8 @@ which case each use of the &%malware%& condition causes a new scan of the
 message.
 
 The &%malware%& condition takes a right-hand argument that is expanded before
-use. It can then be one of
+use and taken as a list, slash-separated by default.
+The first element can then be one of
 
 .ilist
 &"true"&, &"*"&, or &"1"&, in which case the message is scanned for viruses.
@@ -30592,11 +30593,21 @@ the condition fails immediately.
 A regular expression, in which case the message is scanned for viruses. The
 condition succeeds if a virus is found and its name matches the regular
 expression. This allows you to take special actions on certain types of virus.
+Note that &"/"& characters in the RE must be doubled due to the list-processing,
+unless the separator is changed (in the usual way).
 .endlist
 
-You can append &`/defer_ok`& to the &%malware%& condition to accept messages
-even if there is a problem with the virus scanner. Otherwise, such a problem
-causes the ACL to defer.
+You can append a &`defer_ok`& element to the &%malware%& argument list to accept
+messages even if there is a problem with the virus scanner.
+Otherwise, such a problem causes the ACL to defer.
+
+You can append a &`tmo=<val>`& element to the &%malware%& argument list to
+specify a non-default timeout.  The default is two minutes.
+For example:
+.code
+malware = * / defer_ok / tmo=10s
+.endd
+A timeout causes the ACL to defer.
 
 .vindex "&$malware_name$&"
 When a virus is found, the condition sets up an expansion variable called

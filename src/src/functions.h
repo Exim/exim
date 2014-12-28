@@ -220,7 +220,7 @@ extern int     log_create_as_exim(uschar *);
 extern void    log_close_all(void);
 
 #ifdef WITH_CONTENT_SCAN
-extern int     malware(uschar **);
+extern int     malware(const uschar *, int);
 extern int     malware_in_file(uschar *);
 #endif
 extern int     match_address_list(uschar *, BOOL, BOOL, uschar **,
@@ -375,7 +375,7 @@ extern BOOL    smtp_verify_helo(void);
 extern int     smtp_write_command(smtp_outblock *, BOOL, const char *, ...) PRINTF_FUNCTION(3,4);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(uschar **);
-extern FILE   *spool_mbox(unsigned long *, uschar *);
+extern FILE   *spool_mbox(unsigned long *, const uschar *);
 #endif
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
 extern BOOL    spool_open_datafile(uschar *);

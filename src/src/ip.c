@@ -413,7 +413,7 @@ for (;;)
   tv.tv_sec = timeout;
   tv.tv_usec = 0;
 
-  DEBUG(D_transport) debug_printf("waiting for data on fd\n");
+  /*DEBUG(D_transport) debug_printf("waiting for data on fd\n");*/
   rc = select(fd + 1, (SELECT_ARG2_TYPE *)&select_inset, NULL, NULL, &tv);
 
   /* If some interrupt arrived, just retry. We presume this to be rare,

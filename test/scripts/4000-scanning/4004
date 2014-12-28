@@ -8,7 +8,7 @@ server DIR/eximdir/sophie_sock
 #
 #
 #
-exim -odi -bs
+exim -odi -bs -DOPT=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -30,7 +30,7 @@ server DIR/eximdir/sophie_sock
 #
 #
 #
-exim -odi -bs
+exim -odi -bs -DOPT=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -52,13 +52,53 @@ server DIR/eximdir/sophie_sock
 #
 #
 #
-exim -odi -bs
+exim -odi -bs -DOPT=/defer_ok
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
 data
 Date: Fri, 17 Dec 2004 14:35:01 +0100
 Subject: message should be rejected
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/sophie_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT=/tmo=2s
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be tmp-rejected due to timeout
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/sophie_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT=/tmo=2s/defer_ok
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted destpite timeout
 
 .
 quit

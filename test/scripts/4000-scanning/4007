@@ -1,7 +1,7 @@
 # content scan interface: cmdline
 #
 #
-exim -DOPT=accept -odi -bs
+exim -DOPT=accept -odi -bs -DINSERT=
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
@@ -14,14 +14,43 @@ quit
 ****
 #
 #
+# the defer_ok should not prevent rejection
 #
-exim -DOPT=reject -odi -bs
+exim -DOPT=reject -odi -bs -DINSERT="/defer_ok"
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
 data
 Date: Fri, 17 Dec 2004 14:35:01 +0100
 Subject: message should be rejected
+
+.
+quit
+****
+#
+#
+#
+exim -DOPT=pause3 -odi -bs -DINSERT="/tmo=2s"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be tmp-rejected due to timeout
+
+.
+quit
+****
+#
+#
+#
+exim -DOPT=pause3 -odi -bs -DINSERT="/tmo=2s/defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted despite a timeout
 
 .
 quit
