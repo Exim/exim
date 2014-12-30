@@ -71,8 +71,8 @@ JH/10 Time-related extraction expansions from certificates now use the main
       option "timezone" setting for output formatting, and are consistent
       between OpenSSL and GnuTLS compilations.  Bug 1541.
 
-JH/11 Fix a crash in mime ACL when meeting a zero-length parameter in the
-      incoming message.
+JH/11 Fix a crash in mime ACL when meeting a zero-length, quoted or RFC2047-
+      encoded parameter in the incoming message.  Bug 1558.
 
 JH/12 Bug 1527: Autogrow buffer used in reading spool files.  Since they now
       include certificate info, eximon was claiming there were spoolfile
@@ -86,6 +86,14 @@ JH/14 Log delivery-related information more consistently, using the sequence
 TL/07 Bug 1547: Omit RFCs from release. Draft and RFCs have licenses which
       are problematic for Debian distribution, omit them from the release
       tarball.
+
+JH/15 Updates and fixes to the EXPERIMENTAL_DSN feature.
+
+JH/16 Fix string representation of time values on 64bit time_t anchitectures.
+      Bug 1561.
+
+JH/17 Fix a null-indirection in certextract expansions when a nondefault
+      output list separator was used.
 
 
 Exim version 4.84
