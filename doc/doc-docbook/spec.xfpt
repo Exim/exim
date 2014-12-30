@@ -30603,7 +30603,7 @@ specify a non-default timeout.  The default is two minutes.
 For example:
 .code
 malware = * / defer_ok / tmo=10s
-.endc
+.endd
 A timeout causes the ACL to defer.
 
 .vindex "&$malware_name$&"
