@@ -599,46 +599,35 @@ NEXT_PARAM_SEARCH:
 	    /* found an interesting parameter? */
 	    if (strncmpic(mp->name, p, mp->namelen) == 0)
 	      {
-	      uschar * q = p + mp->namelen;
-	      int plen = 0;
 	      int size = 0;
 	      int ptr = 0;
 
 	      /* yes, grab the value and copy to its corresponding expansion variable */
-	      while(*q && *q != ';')		/* ; terminates */
-		if (*q == '"')
+	      p += mp->namelen;
+	      while(*p && *p != ';')		/* ; terminates */
+		if (*p == '"')
 		  {
-		  q++;				/* skip leading " */
-		  plen++;			/* and account for the skip */
-		  while(*q && *q != '"')	/* " protects ; */
-		    {
-		    param_value = string_cat(param_value, &size, &ptr, q++, 1);
-		    plen++;
-		    }
-		  if (*q)
-		    {
-		    q++;			/* skip trailing " */
-		    plen++;
-		    }
+		  p++;				/* skip leading " */
+		  while(*p && *p != '"')	/* " protects ; */
+		    param_value = string_cat(param_value, &size, &ptr, p++, 1);
+		  if (*p) p++;			/* skip trailing " */
 		  }
 		else
-		  {
-		  param_value = string_cat(param_value, &size, &ptr, q++, 1);
-		  plen++;
-		  }
+		  param_value = string_cat(param_value, &size, &ptr, p++, 1);
+	      if (*p) p++;			/* skip trailing ; */
 
 	      if (param_value)
 		{
+		uschar * dummy;
 		param_value[ptr++] = '\0';
 
 		param_value = rfc2047_decode(param_value,
-		      check_rfc2047_length, NULL, 32, NULL, &q);
+		      check_rfc2047_length, NULL, 32, NULL, &dummy);
 		debug_printf("Found %s MIME parameter in %s header, "
 		      "value is '%s'\n", mp->name, mime_header_list[i].name,
 		      param_value);
 		}
 	      *mp->value = param_value;
-	      p += mp->namelen + plen + 1;	/* name=, content, ; */
 	      goto NEXT_PARAM_SEARCH;
 	    }
 	  }
