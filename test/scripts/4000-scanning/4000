@@ -153,3 +153,35 @@ foobar
 .
 quit
 ****
+#
+#
+# This one has a some unrecognised params
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        garbage1;
+        garbage2=foo;
+        garbage3="bar"foo;
+        charset=UTF-8;
+        garbage4=";
+Content-Disposition: inline
+Subject: Nasty4
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****

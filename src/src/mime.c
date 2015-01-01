@@ -589,6 +589,7 @@ DECODE_HEADERS:
 NEXT_PARAM_SEARCH:
 	while (*p)
 	  {
+	  /* debug_printf("  considering paramlist '%s'\n", p); */
 	  mime_parameter * mp;
 	  for (mp = mime_parameter_list;
 	       mp < &mime_parameter_list[mime_parameter_list_size];
@@ -623,7 +624,7 @@ NEXT_PARAM_SEARCH:
 
 		param_value = rfc2047_decode(param_value,
 		      check_rfc2047_length, NULL, 32, NULL, &dummy);
-		debug_printf("Found %s MIME parameter in %s header, "
+		debug_printf(" Found %s MIME parameter in %s header, "
 		      "value is '%s'\n", mp->name, mime_header_list[i].name,
 		      param_value);
 		}
@@ -631,14 +632,17 @@ NEXT_PARAM_SEARCH:
 	      goto NEXT_PARAM_SEARCH;
 	    }
 	  }
-	  /* There is something, but not one of our interesting parameters.
-	     Advance to the next semicolon */
-	  while(*p != ';')
+	/* There is something, but not one of our interesting parameters.
+	   Advance to the next unquoted semicolon */
+	while(*p && *p != ';')
+	  if (*p == '"')
 	    {
-	    if (*p == '"') while(*++p && *p != '"') ;
-	    p++;
+	    while(*++p && *p != '"') ;
+	    if (*p) p++;
 	    }
-	  p++;
+	  else
+	    p++;
+	if (*p) p++;
 	}
       }
   }
