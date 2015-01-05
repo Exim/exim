@@ -6912,6 +6912,46 @@ ${lookup dnsdb{spf=example.org}}
 It is permitted to specify a space as the separator character. Further
 white space is ignored.
 
+.section "Dnsdb lookup modifiers" "SECTdnsdb_mod"
+.cindex "dnsdb modifiers"
+.cindex "modifiers" "dnsdb"
+.cindex "options" "dnsdb"
+Modifiers for &(dnsdb)& lookups are givien by optional keywords,
+each followed by a comma,
+that may appear before the record type.
+
+The &(dnsdb)& lookup fails only if all the DNS lookups fail. If there is a
+temporary DNS error for any of them, the behaviour is controlled by
+a defer-option modifier.
+The possible keywords are
+&"defer_strict"&, &"defer_never"&, and &"defer_lax"&.
+With &"strict"& behaviour, any temporary DNS error causes the
+whole lookup to defer. With &"never"& behaviour, a temporary DNS error is
+ignored, and the behaviour is as if the DNS lookup failed to find anything.
+With &"lax"& behaviour, all the queries are attempted, but a temporary DNS
+error causes the whole lookup to defer only if none of the other lookups
+succeed. The default is &"lax"&, so the following lookups are equivalent:
+.code
+${lookup dnsdb{defer_lax,a=one.host.com:two.host.com}}
+${lookup dnsdb{a=one.host.com:two.host.com}}
+.endd
+Thus, in the default case, as long as at least one of the DNS lookups
+yields some data, the lookup succeeds.
+
+.cindex "DNSSEC" "dns lookup"
+Use of &(DNSSEC)& is controlled by a dnssec modifier.
+The possible keywords are
+&"dnssec_strict"&, &"dnssec_lax"&, and &"dnssec_never"&.
+With &"strict"& or &"lax"& DNSSEC information is requested
+with the lookup.
+With &"strict"& a response from the DNS resolver that
+is not labelled as authenticated data
+is treated as equivalent to a temporary DNS error.
+The default is &"never"&.
+
+See also the &$lookup_dnssec_authenticated$& variable.
+
+
 .section "Pseudo dnsdb record types" "SECID66"
 .cindex "MX record" "in &(dnsdb)& lookup"
 By default, both the preference value and the host name are returned for
@@ -6986,41 +7026,6 @@ case, it does not treat it as a list.
 The data from each lookup is concatenated, with newline separators by default,
 in the same way that multiple DNS records for a single item are handled. A
 different separator can be specified, as described above.
-
-Modifiers for &(dnsdb)& lookups are givien by optional keywords,
-each followed by a comma,
-that may appear before the record type.
-
-The &(dnsdb)& lookup fails only if all the DNS lookups fail. If there is a
-temporary DNS error for any of them, the behaviour is controlled by
-a defer-option modifier.
-The possible keywords are
-&"defer_strict"&, &"defer_never"&, and &"defer_lax"&.
-With &"strict"& behaviour, any temporary DNS error causes the
-whole lookup to defer. With &"never"& behaviour, a temporary DNS error is
-ignored, and the behaviour is as if the DNS lookup failed to find anything.
-With &"lax"& behaviour, all the queries are attempted, but a temporary DNS
-error causes the whole lookup to defer only if none of the other lookups
-succeed. The default is &"lax"&, so the following lookups are equivalent:
-.code
-${lookup dnsdb{defer_lax,a=one.host.com:two.host.com}}
-${lookup dnsdb{a=one.host.com:two.host.com}}
-.endd
-Thus, in the default case, as long as at least one of the DNS lookups
-yields some data, the lookup succeeds.
-
-.cindex "DNSSEC" "dns lookup"
-Use of &(DNSSEC)& is controlled by a dnssec modifier.
-The possible keywords are
-&"dnssec_strict"&, &"dnssec_lax"&, and &"dnssec_never"&.
-With &"strict"& or &"lax"& DNSSEC information is requested
-with the lookup.
-With &"strict"& a response from the DNS resolver that
-is not labelled as authenticated data
-is treated as equivalent to a temporary DNS error.
-The default is &"never"&.
-
-See also the &$lookup_dnssec_authenticated$& variable.
 
 
 
