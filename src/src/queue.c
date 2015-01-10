@@ -767,26 +767,39 @@ if (!recurse)
 /* Called as a result of -bpc
 
 Arguments:  none
-Returns:    nothing
+Returns:    count
 */
 
-void
+unsigned
 queue_count(void)
 {
 int subcount;
-int count = 0;
+unsigned count = 0;
 uschar subdirs[64];
 
-for (queue_filename *f = queue_get_spool_list(
+for (queue_filename * f = queue_get_spool_list(
 				-1,             /* entire queue */
 				subdirs,        /* for holding sub list */
 				&subcount,      /* for subcount */
 				FALSE);         /* not random */
     f; f = f->next) count++;
-fprintf(stdout, "%d\n", count);
+return count;
 }
 
 
+#define QUEUE_SIZE_AGE 60	/* update rate for queue_size */
+
+unsigned
+queue_count_cached(void)
+{
+time_t now;
+if ((now = time(NULL)) >= queue_size_next)
+  {
+  queue_size = queue_count();
+  queue_size_next = now + (f.running_in_test_harness ? 3 : QUEUE_SIZE_AGE);
+  }
+return queue_size;
+}
 
 /************************************************
 *          List extra deliveries                *
@@ -1511,11 +1524,12 @@ memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) >= 0)
   {
   struct sockaddr_un sun = {.sun_family = AF_UNIX};
+  int len = offsetof(struct sockaddr_un, sun_path) + 1
+    + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s",
+       NOTIFIER_SOCKET_NAME);
+  sun.sun_path[0] = 0;
 
-  snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s",
-    spool_directory, NOTIFIER_SOCKET_NAME);
-
-  if (sendto(fd, buf, sizeof(buf), 0, &sun, sizeof(sun)) < 0)
+  if (sendto(fd, buf, sizeof(buf), 0, &sun, len) < 0)
     DEBUG(D_queue_run)
       debug_printf("%s: sendto %s\n", __FUNCTION__, strerror(errno));
   close(fd);

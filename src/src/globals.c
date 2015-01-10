@@ -1208,6 +1208,8 @@ int     queue_only_load        = -1;
 uschar *queue_run_max          = US"5";
 pid_t   queue_run_pid          = (pid_t)0;
 int     queue_run_pipe         = -1;
+unsigned queue_size            = 0;
+time_t  queue_size_next        = 0;
 uschar *queue_smtp_domains     = NULL;
 
 uint32_t random_seed	       = 0;

@@ -1,0 +1,19 @@
+# $queue_size
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+exim a@test.ex
+****
+exim a@test.ex
+****
+exim a@test.ex
+Subject: msg 3
+****
+sleep 4
+exim a@test.ex
+Subject: msg 4
+****
+#
+killdaemon
+no_msglog_check

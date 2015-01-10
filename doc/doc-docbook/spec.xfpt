@@ -12854,6 +12854,13 @@ or if not set, the value of &$qualify_domain$&.
 .cindex queues named
 The name of the spool queue in use; empty for the default queue.
 
+.vitem &$queue_size$&
+.vindex "&$queue_size$&"
+.cindex "queue" "size of"
+.cindex "spool" "number of messages"
+This variable contains the number of messages queued.
+It is evaluated on demand, but no more often than once every minute.
+
 .vitem &$r_...$&
 .vindex &$r_...$&
 .cindex router variables

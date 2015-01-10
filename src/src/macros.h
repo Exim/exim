@@ -1101,6 +1101,7 @@ should not be one active. */
 
 
 #define NOTIFIER_SOCKET_NAME	"exim_daemon_notify"
-#define NOTIFY_MSG_QRUN	1	/* Notify message types */
+#define NOTIFY_MSG_QRUN		1	/* Notify message types */
+#define NOTIFY_QUEUE_SIZE_REQ	2
 
 /* End of macros.h */

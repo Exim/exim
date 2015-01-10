@@ -1211,6 +1211,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # are unset, because dane ain't always there.
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
 
+    # daemon notifier socket
+    s/^\d+ creating notifier socket$/ppppp creating notifier socket/;
+
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
 

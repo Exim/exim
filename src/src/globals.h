@@ -805,6 +805,8 @@ extern uschar *queue_only_file;        /* Queue if file exists/not-exists */
 extern BOOL    queue_only_override;    /* Allow override from command line */
 extern BOOL    queue_run_in_order;     /* As opposed to random */
 extern uschar *queue_run_max;          /* Max queue runners */
+extern unsigned queue_size;            /* items in queue */
+extern time_t  queue_size_next;        /* next time to evaluate queue_size */
 extern uschar *queue_smtp_domains;     /* Ditto, for these domains */
 
 extern unsigned int random_seed;       /* Seed for random numbers */

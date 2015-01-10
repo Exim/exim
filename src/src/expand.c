@@ -466,6 +466,7 @@ typedef struct {
 
 static uschar * fn_recipients(void);
 typedef uschar * stringptr_fn_t(void);
+static uschar * fn_queue_size(void);
 
 /* This table must be kept in alphabetical order. */
 
@@ -669,6 +670,7 @@ static var_entry var_table[] = {
   { "qualify_domain",      vtype_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",   vtype_stringptr,   &qualify_domain_recipient },
   { "queue_name",          vtype_stringptr,   &queue_name },
+  { "queue_size",          vtype_string_func, &fn_queue_size },
   { "rcpt_count",          vtype_int,         &rcpt_count },
   { "rcpt_defer_count",    vtype_int,         &rcpt_defer_count },
   { "rcpt_fail_count",     vtype_int,         &rcpt_fail_count },
@@ -1737,6 +1739,65 @@ for (int i = 0; i < recipients_count; i++)
   g = string_append2_listele_n(g, US", ", s, Ustrlen(s));
   }
 return g ? g->s : NULL;
+}
+
+
+/*************************************************
+*               Return size of queue             *
+*************************************************/
+/* Ask the daemon for the queue size */
+
+static uschar *
+fn_queue_size(void)
+{
+struct sockaddr_un sun = {.sun_family = AF_UNIX};
+uschar buf[16];
+int fd;
+ssize_t len;
+const uschar * where;
+
+if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
+  {
+  DEBUG(D_expand) debug_printf(" socket: %s\n", strerror(errno));
+  return NULL;
+  }
+
+#define ABSTRACT_CLIENT
+#ifdef ABSTRACT_CLIENT
+sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
+len = offsetof(struct sockaddr_un, sun_path) + 1
+  + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "exim_%d", getpid());
+#else
+len = offsetof(struct sockaddr_un, sun_path)
+  + snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/p_%d",
+      spool_directory, getpid());
+#endif
+
+if (bind(fd, &sun, len) < 0) { where = US"bind"; goto bad; }
+
+#ifdef notdef
+debug_printf("local%s '%s'\n", *sun.sun_path ? "" : " abstract",
+  sun.sun_path+ (*sun.sun_path ? 0 : 1));
+#endif
+
+sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
+len = offsetof(struct sockaddr_un, sun_path) + 1
+  + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
+
+if (connect(fd, &sun, len) < 0) { where = US"connect"; goto bad; }
+
+buf[0] = NOTIFY_QUEUE_SIZE_REQ;
+if (send(fd, buf, 1, 0) < 0) { where = US"send"; goto bad; }
+
+if ((len = recv(fd, buf, sizeof(buf), 0)) < 0) { where = US"recv"; goto bad; }
+
+close(fd);
+return string_copyn(buf, len);
+
+bad:
+  close(fd);
+  DEBUG(D_expand) debug_printf(" %s: %s\n", where, strerror(errno));
+  return NULL;
 }
 
 

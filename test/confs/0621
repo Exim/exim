@@ -1,0 +1,22 @@
+# Exim test configuration 0621
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+queue_only
+
+log_selector = +millisec
+
+acl_not_smtp = on_rcpt
+
+begin acl
+
+on_rcpt:
+  accept logwrite = queue_size: $queue_size
+
+
+# End

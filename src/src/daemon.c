@@ -983,6 +983,7 @@ daemon_notifier_socket(void)
 int fd;
 const uschar * where;
 struct sockaddr_un sun = {.sun_family = AF_UNIX};
+int len;
 
 DEBUG(D_any) debug_printf("creating notifier socket\n");
 
@@ -996,10 +997,12 @@ if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0))) < 0)
 (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 #endif
 
-snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s",
-  spool_directory, NOTIFIER_SOCKET_NAME);
+sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
+len = offsetof(struct sockaddr_un, sun_path) + 1
+  + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
+
 where = US"bind";
-if (bind(fd, (const struct sockaddr *)&sun, sizeof(sun)) < 0)
+if (bind(fd, (const struct sockaddr *)&sun, len) < 0)
   goto bad;
 
 where = US"SO_PASSCRED";
@@ -1023,9 +1026,10 @@ static BOOL
 daemon_notification(void)
 {
 uschar buf[256], cbuf[256];
+struct sockaddr_un sun;
 struct iovec iov = {.iov_base = buf, .iov_len = sizeof(buf)-1};
-struct msghdr msg = { .msg_name = NULL,
-		      .msg_namelen = 0,
+struct msghdr msg = { .msg_name = &sun,
+		      .msg_namelen = sizeof(sun),
 		      .msg_iov = &iov,
 		      .msg_iovlen = 1,
 		      .msg_control = cbuf,
@@ -1037,6 +1041,14 @@ struct cmsghdr * cp;
 buf[sizeof(buf)-1] = 0;
 if ((sz = recvmsg(daemon_notifier_fd, &msg, 0)) <= 0) return FALSE;
 if (sz >= sizeof(buf)) return FALSE;
+
+#ifdef notdef
+debug_printf("addrlen %d\n", msg.msg_namelen);
+#endif
+DEBUG(D_queue_run) debug_printf("%s from addr%s '%s'\n", __FUNCTION__,
+  *sun.sun_path ? "" : " abstract", sun.sun_path+ (*sun.sun_path ? 0 : 1));
+
+/* Refuse to handle the item unless the peer has good credentials */
 
 for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
      cp;
@@ -1064,6 +1076,20 @@ switch (buf[0])
     memcpy(queuerun_msgid, buf+1, MESSAGE_ID_LENGTH+1);
     return TRUE;
 #endif	/*EXPERIMENTAL_QUEUE_RAMP*/
+
+  case NOTIFY_QUEUE_SIZE_REQ:
+    {
+    uschar buf[16];
+    int len = snprintf(CS buf, sizeof(buf), "%u", queue_count_cached());
+
+    DEBUG(D_queue_run)
+      debug_printf("%s: queue size request: %s\n", __FUNCTION__, buf);
+
+    if (sendto(daemon_notifier_fd, buf, len, 0, &sun, msg.msg_namelen) < 0)
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"%s: sendto: %s\n", __FUNCTION__, strerror(errno));
+    return FALSE;
+    }
   }
 return FALSE;
 }

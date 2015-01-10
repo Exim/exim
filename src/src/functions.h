@@ -363,7 +363,8 @@ extern int     vaguely_random_number_fallback(int);
 
 extern BOOL    queue_action(uschar *, int, uschar **, int, int);
 extern void    queue_check_only(void);
-extern void    queue_count(void);
+extern unsigned queue_count(void);
+extern unsigned queue_count_cached(void);
 extern void    queue_list(int, uschar **, int);
 #ifdef EXPERIMENTAL_QUEUE_RAMP
 extern void    queue_notify_daemon(const uschar * hostname);

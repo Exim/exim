@@ -4363,7 +4363,7 @@ if (list_queue)
 if (count_queue)
   {
   set_process_info("counting the queue");
-  queue_count();
+  fprintf(stdout, "%u\n", queue_count());
   exit(EXIT_SUCCESS);
   }
 
