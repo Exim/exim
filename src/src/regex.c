@@ -242,4 +242,4 @@ int mime_regex(uschar **listptr) {
   return FAIL;
 }
 
-#endif
+#endif /* WITH_CONTENT_SCAN */

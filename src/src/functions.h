@@ -126,6 +126,7 @@ extern void    debug_vprintf(const char *, va_list);
 extern void    decode_bits(unsigned int *, unsigned int *,
                   int, int, uschar *, bit_table *, int, uschar *, int);
 extern address_item *deliver_make_addr(uschar *, BOOL);
+extern void    deliver_init(void);
 extern void    delivery_log(int, address_item *, int, uschar *);
 extern int     deliver_message(uschar *, BOOL, BOOL);
 extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
@@ -142,11 +143,12 @@ extern BOOL    dkim_transport_write_message(address_item *, int, int,
                    int, uschar *, uschar *, uschar *, uschar *, uschar *, uschar *);
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
+extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
 extern void    dns_build_reverse(uschar *, uschar *);
 extern void    dns_init(BOOL, BOOL, BOOL);
-extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
 extern BOOL    dns_is_secure(const dns_answer *);
 extern int     dns_lookup(dns_answer *, const uschar *, int, uschar **);
+extern void    dns_pattern_init(void);
 extern int     dns_special_lookup(dns_answer *, const uschar *, int, uschar **);
 extern dns_record *dns_next_rr(dns_answer *, dns_scan *, int);
 extern uschar *dns_text_type(int);
@@ -222,6 +224,7 @@ extern void    log_close_all(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     malware(const uschar *, int);
 extern int     malware_in_file(uschar *);
+extern void    malware_init(void);
 #endif
 extern int     match_address_list(uschar *, BOOL, BOOL, uschar **,
                  unsigned int *, int, int, uschar **);
@@ -303,7 +306,7 @@ extern void    receive_swallow_smtp(void);
 extern int     regex(uschar **);
 #endif
 extern BOOL    regex_match_and_setup(const pcre *, const uschar *, int, int);
-extern const pcre *regex_must_compile(uschar *, BOOL, BOOL);
+extern const pcre *regex_must_compile(const uschar *, BOOL, BOOL);
 extern void    retry_add_item(address_item *, uschar *, int);
 extern BOOL    retry_check_address(uschar *, host_item *, uschar *, BOOL,
                  uschar **, uschar **);
