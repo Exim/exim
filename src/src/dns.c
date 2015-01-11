@@ -608,9 +608,7 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
   uschar *checkname = name;
   int ovector[3*(EXPAND_MAXN+1)];
 
-  if (regex_check_dns_names == NULL)
-    regex_check_dns_names =
-      regex_must_compile(check_dns_names_pattern, FALSE, TRUE);
+  dns_pattern_init();
 
   /* For an SRV lookup, skip over the first two components (the service and
   protocol names, which both start with an underscore). */
@@ -1270,6 +1268,16 @@ else
 #endif  /* HAVE_IPV6 */
 
 return yield;
+}
+
+
+
+void
+dns_pattern_init(void)
+{
+if (check_dns_names_pattern[0] != 0 && !regex_check_dns_names)
+  regex_check_dns_names =
+    regex_must_compile(check_dns_names_pattern, FALSE, TRUE);
 }
 
 /* vi: aw ai sw=2

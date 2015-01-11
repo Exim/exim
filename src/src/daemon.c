@@ -1700,6 +1700,15 @@ else
     readconf_printtime(queue_interval));
   }
 
+/* Do any work it might be useful to amortize over our children
+(eg: compile regex) */
+
+deliver_init();
+dns_pattern_init();
+
+#ifdef WITH_CONTENT_SCAN
+malware_init();
+#endif
 
 /* Close the log so it can be renamed and moved. In the few cases below where
 this long-running process writes to the log (always exceptional conditions), it

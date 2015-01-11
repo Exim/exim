@@ -88,7 +88,7 @@ Returns:      pointer to the compiled pattern
 */
 
 const pcre *
-regex_must_compile(uschar *pattern, BOOL caseless, BOOL use_malloc)
+regex_must_compile(const uschar *pattern, BOOL caseless, BOOL use_malloc)
 {
 int offset;
 int options = PCRE_COPT;
@@ -100,7 +100,7 @@ if (use_malloc)
   pcre_free = function_store_free;
   }
 if (caseless) options |= PCRE_CASELESS;
-yield = pcre_compile(CS pattern, options, (const char **)&error, &offset, NULL);
+yield = pcre_compile(CCS pattern, options, (const char **)&error, &offset, NULL);
 pcre_malloc = function_store_get;
 pcre_free = function_dummy_free;
 if (yield == NULL)

@@ -6518,29 +6518,7 @@ if (addr_remote != NULL)
   /* Precompile some regex that are used to recognize parameters in response
   to an EHLO command, if they aren't already compiled. */
 
-  if (regex_PIPELINING == NULL) regex_PIPELINING =
-    regex_must_compile(US"\\n250[\\s\\-]PIPELINING(\\s|\\n|$)", FALSE, TRUE);
-
-  if (regex_SIZE == NULL) regex_SIZE =
-    regex_must_compile(US"\\n250[\\s\\-]SIZE(\\s|\\n|$)", FALSE, TRUE);
-
-  if (regex_AUTH == NULL) regex_AUTH =
-    regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
-      FALSE, TRUE);
-
-#ifdef SUPPORT_TLS
-  if (regex_STARTTLS == NULL) regex_STARTTLS =
-    regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
-#endif
-
-#ifndef DISABLE_PRDR
-  if (regex_PRDR == NULL) regex_PRDR =
-    regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
-#endif
-
-  /* Set the regex to check for DSN support on remote MTA */
-  if (regex_DSN == NULL) regex_DSN  =
-    regex_must_compile(US"\\n250[\\s\\-]DSN(\\s|\\n|$)", FALSE, TRUE);
+  deliver_init();
 
   /* Now sort the addresses if required, and do the deliveries. The yield of
   do_remote_deliveries is FALSE when mua_wrapper is set and all addresses
@@ -7835,6 +7813,39 @@ search_tidyup();
 acl_where = ACL_WHERE_UNKNOWN;
 return final_yield;
 }
+
+
+
+void
+deliver_init(void)
+{
+if (!regex_PIPELINING) regex_PIPELINING =
+  regex_must_compile(US"\\n250[\\s\\-]PIPELINING(\\s|\\n|$)", FALSE, TRUE);
+
+if (!regex_SIZE) regex_SIZE =
+  regex_must_compile(US"\\n250[\\s\\-]SIZE(\\s|\\n|$)", FALSE, TRUE);
+
+if (!regex_AUTH) regex_AUTH =
+  regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
+    FALSE, TRUE);
+
+#ifdef SUPPORT_TLS
+if (!regex_STARTTLS) regex_STARTTLS =
+  regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
+#endif
+
+#ifndef DISABLE_PRDR
+if (!regex_PRDR) regex_PRDR =
+  regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
+#endif
+
+if (!regex_DSN) regex_DSN  =
+  regex_must_compile(US"\\n250[\\s\\-]DSN(\\s|\\n|$)", FALSE, TRUE);
+
+if (!regex_IGNOREQUOTA) regex_IGNOREQUOTA =
+  regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", FALSE, TRUE);
+}
+
 
 /* vi: aw ai sw=2
 */
