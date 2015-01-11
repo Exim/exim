@@ -1500,6 +1500,7 @@ uschar *ftest_domain = NULL;
 uschar *ftest_localpart = NULL;
 uschar *ftest_prefix = NULL;
 uschar *ftest_suffix = NULL;
+uschar *log_oneline = NULL;
 uschar *malware_test_file = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
@@ -3383,13 +3384,20 @@ for (i = 1; i < argc; i++)
 
     case 'X':
     if (*argrest == '\0')
-      {
       if (++i >= argc)
         {
         fprintf(stderr, "exim: string expected after -X\n");
         exit(EXIT_FAILURE);
         }
-      }
+    break;
+
+    case 'z':
+    if (*argrest == '\0')
+      if (++i < argc) log_oneline = argv[i]; else
+        {
+        fprintf(stderr, "exim: file name expected after %s\n", argv[i-1]);
+        exit(EXIT_FAILURE);
+        }
     break;
 
     /* All other initial characters are errors */
@@ -3831,6 +3839,17 @@ which is only permitted to be 32 characters or less. See RFC 3164. */
 if (Ustrlen(syslog_processname) > 32)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "syslog_processname is longer than 32 chars: aborting");
+
+if (log_oneline)
+  {
+  if (admin_user)
+    {
+    log_write(0, LOG_MAIN, "%s", log_oneline);
+    return EXIT_SUCCESS;
+    }
+  else
+    return EXIT_FAILURE;
+  }
 
 /* In some operating systems, the environment variable TMPDIR controls where
 temporary files are created; Exim doesn't use these (apart from when delivering

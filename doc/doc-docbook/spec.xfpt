@@ -4646,6 +4646,13 @@ this option.
 .oindex "&%-X%&"
 This option is interpreted by Sendmail to cause debug information to be sent
 to the named file.  It is ignored by Exim.
+
+.vitem &%-z%&&~<&'log line'&>
+.oindex "&%-z%&"
+This option writes its argument to Exim's logfile.
+Use is restricted to administrators; the intent is for operational notes.
+Quotes should be used to maintain a multi-word item as a single argument,
+under most shells.
 .endlist
 
 .ecindex IIDclo1
