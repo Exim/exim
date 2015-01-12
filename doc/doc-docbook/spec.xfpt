@@ -16086,7 +16086,7 @@ See &%smtp_ratelimit_hosts%& above.
 See &%smtp_ratelimit_hosts%& above.
 
 
-.option smtp_receive_timeout main time 5m
+.option smtp_receive_timeout main time&!! 5m
 .cindex "timeout" "for SMTP input"
 .cindex "SMTP" "input timeout"
 This sets a timeout value for SMTP reception. It applies to all forms of SMTP
@@ -16100,6 +16100,10 @@ SMTP data timeout on connection from...
 .endd
 The former means that Exim was expecting to read an SMTP command; the latter
 means that it was in the DATA phase, reading the contents of a message.
+
+If the first character of the option is a &"$"& the option is
+expanded before use and may depend on
+&$sender_host_name$&, &$sender_host_address$& and &$sender_host_port$&.
 
 
 .oindex "&%-os%&"

@@ -801,6 +801,7 @@ extern uschar *smtp_ratelimit_mail;    /* Parameters for MAIL limiting */
 extern uschar *smtp_ratelimit_rcpt;    /* Parameters for RCPT limiting */
 extern uschar *smtp_read_error;        /* Message for SMTP input error */
 extern int     smtp_receive_timeout;   /* Applies to each received line */
+extern uschar *smtp_receive_timeout_s; /* ... expandable version */
 extern uschar *smtp_reserve_hosts;     /* Hosts for reserved slots */
 extern BOOL    smtp_return_error_details; /* TRUE to return full info */
 extern int     smtp_rlm_base;          /* Base interval for MAIL rate limit */

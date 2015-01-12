@@ -629,7 +629,7 @@ can be easily tested as a group. That is the only use of opt_bool_last. */
 enum { opt_bit = 32, opt_bool_verify, opt_bool_set, opt_expand_bool,
   opt_bool_last,
   opt_rewrite, opt_timelist, opt_uid, opt_gid, opt_uidlist, opt_gidlist,
-  opt_expand_uid, opt_expand_gid, opt_void };
+  opt_expand_uid, opt_expand_gid, opt_func, opt_void };
 
 /* There's a high-ish bit which is used to flag duplicate options, kept
 for compatibility, which shouldn't be output. Also used for hidden options
