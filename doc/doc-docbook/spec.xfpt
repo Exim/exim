@@ -6892,10 +6892,8 @@ white space is ignored.
 For an MX lookup, both the preference value and the host name are returned for
 each record, separated by a space. For an SRV lookup, the priority, weight,
 port, and host name are returned for each record, separated by spaces.
-.new
 An alternate field separator can be specified using a comma after the main
 separator character, followed immediately by the field separator.
-.wen
 
 .cindex "TXT record" "in &(dnsdb)& lookup"
 .cindex "SPF record" "in &(dnsdb)& lookup"
@@ -7347,15 +7345,12 @@ If you specify multiple attributes, the result contains space-separated, quoted
 strings, each preceded by the attribute name and an equals sign. Within the
 quotes, the quote character, backslash, and newline are escaped with
 backslashes, and commas are used to separate multiple values for the attribute.
-.new
 Any commas in attribute values are doubled
 (permitting treatment of the values as a comma-separated list).
-.wen
 Apart from the escaping, the string within quotes takes the same form as the
 output when a single attribute is requested. Specifying no attributes is the
 same as specifying all of an entry's attributes.
 
-.new
 Here are some examples of the output format. The first line of each pair is an
 LDAP query, and the second is the data that is returned. The attribute called
 &%attr1%& has two values, one of them with an embedded comma, whereas
@@ -7373,18 +7368,15 @@ attr1="value1.1,value1,,2" attr2="value two"
 ldap:///o=base??sub?(uid=fred)
 objectClass="top" attr1="value1.1,value1,,2" attr2="value two"
 .endd
-.wen
 You can
 make use of Exim's &%-be%& option to run expansion tests and thereby check the
 results of LDAP lookups.
 The &%extract%& operator in string expansions can be used to pick out
 individual fields from data that consists of &'key'&=&'value'& pairs.
-.new
 The &%listextract%& operator should be used to pick out individual values
 of attributes, even when only a single value is expected.
 The doubling of embedded commas allows you to use the returned data as a
 comma separated list (using the "<," syntax for changing the input list separator).
-.wen
 
 
 
@@ -9705,7 +9697,6 @@ the regular expression from string expansion.
 
 
 
-.new
 .vitem &*${sort{*&<&'string'&>&*}{*&<&'comparator'&>&*}{*&<&'extractor'&>&*}}*&
 .cindex sorting a list
 .cindex list sorting
@@ -9733,7 +9724,6 @@ sorts a list of numbers, and
 ${sort {$lookup dnsdb{>:,,mx=example.com}} {<} {${listextract{1}{<,$item}}}}
 .endd
 will sort an MX lookup into priority order.
-.wen
 
 
 .vitem &*${substr{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
@@ -12414,9 +12404,7 @@ If TLS has not been negotiated, the value will be 0.
 This variable refers to the certificate presented to the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
-.new
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
-.wen
 or a &%def%& condition.
 
 .vitem &$tls_in_peercert$&
@@ -12424,27 +12412,21 @@ or a &%def%& condition.
 This variable refers to the certificate presented by the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
-.new
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
-.wen
 or a &%def%& condition.
 
 .vitem &$tls_out_ourcert$&
 .vindex "&$tls_out_ourcert$&"
 This variable refers to the certificate presented to the peer of an
 outbound connection.  It is only useful as the argument of a
-.new
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
-.wen
 or a &%def%& condition.
 
 .vitem &$tls_out_peercert$&
 .vindex "&$tls_out_peercert$&"
 This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
-.new
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
-.wen
 or a &%def%& condition.
 
 .vitem &$tls_in_certificate_verified$&
@@ -16886,7 +16868,6 @@ If the expansion fails (other than forced failure) delivery is deferred. Some
 of the other precondition options are common special cases that could in fact
 be specified using &%condition%&.
 
-.new
 Historical note: We have &%condition%& on ACLs and on Routers.  Routers
 are far older, and use one set of semantics.  ACLs are newer and when
 they were created, the ACL &%condition%& process was given far stricter
@@ -16926,7 +16907,6 @@ true, as the result of expansion is a non-empty string which doesn't
 match an explicit false value.  This can be tricky to debug.  By
 contrast, in an ACL either of those strings will always result in an
 expansion error because the result doesn't look sufficiently boolean.
-.wen
 
 
 .option debug_print routers string&!! unset
@@ -27775,10 +27755,8 @@ anyway. If the message contains newlines, this gives rise to a multi-line SMTP
 response.
 
 .vindex "&$acl_verify_message$&"
-.new
 For ACLs that are called by an &%acl =%& ACL condition, the message is
 stored in &$acl_verify_message$&, from which the calling ACL may use it.
-.wen
 
 If &%message%& is used on a statement that verifies an address, the message
 specified overrides any message that is generated by the verification process.
@@ -35347,11 +35325,9 @@ given message, or all mail for a given user, or for a given host, for example.
 The input files can be in Exim log format or syslog format.
 If a matching log line is not associated with a specific message, it is
 included in &'exigrep'&'s output without any additional lines. The usage is:
-.new
 .display
 &`exigrep [-t<`&&'n'&&`>] [-I] [-l] [-M] [-v] <`&&'pattern'&&`> [<`&&'log file'&&`>] ...`&
 .endd
-.wen
 If no log file names are given on the command line, the standard input is read.
 
 The &%-t%& argument specifies a number of seconds. It adds an additional
@@ -35371,7 +35347,6 @@ regular expression.
 The &%-v%& option inverts the matching condition. That is, a line is selected
 if it does &'not'& match the pattern.
 
-.new
 The &%-M%& options means &"related messages"&. &'exigrep'& will show messages
 that are generated as a result/response to a message that &'exigrep'& matched
 normally.
@@ -35384,7 +35359,6 @@ the second (bounce) message will be displayed. Using &%-M%& with &'exigrep'&
 when searching for &"user_a"& will show both messages since the bounce is
 &"related"& to or a &"result"& of the first message that was found by the
 search term.
-.wen
 
 If the location of a &'zcat'& command is known from the definition of
 ZCAT_COMMAND in &_Local/Makefile_&, &'exigrep'& automatically passes any file
