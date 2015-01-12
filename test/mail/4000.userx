@@ -271,7 +271,6 @@ Content-Type: text/plain;
         garbage3="bar"foo;
         charset=UTF-8;
         garbage4=";
-        garbage5="
 Content-Disposition: inline
 Subject: Nasty4
 Sender: CALLER_NAME <CALLER@myhost.test.ex>
