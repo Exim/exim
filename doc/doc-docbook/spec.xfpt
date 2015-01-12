@@ -3811,11 +3811,13 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 connection to the remote host has been authenticated.
 
+.new
 .vitem &%-MCD%&
 .oindex "&%-MCD%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 remote host supports the ESMTP &_DSN_& extension.
+.wen
 
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
@@ -11260,6 +11262,7 @@ The building process for Exim keeps a count of the number
 of times it has been compiled. This serves to distinguish different
 compilations of the same version of the program.
 
+.new
 .vitem &$config_dir$&
 .vindex "&$config_dir$&"
 The directory name of the main configuration file. That is, the content of
@@ -11270,6 +11273,7 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vitem &$config_file$&
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
+.wen
 
 .vitem &$demime_errorlevel$&
 .vindex "&$demime_errorlevel$&"
@@ -11378,12 +11382,14 @@ This variable contains the path to the Exim binary.
 .vindex "&$exim_uid$&"
 This variable contains the numerical value of the Exim user id.
 
+.new
 .vitem &$exim_version$&
 .vindex "&$exim_uid$&"
 This variable contains the version string of the Exim build.
 The first character is a major version number, currently 4.
 Then after a dot, the next group of digits is a minor version number.
 There may be other characters following the minor version.
+.wen
 
 .vitem &$found_extension$&
 .vindex "&$found_extension$&"
@@ -13571,11 +13577,13 @@ This option defines the ACL that is run after an SMTP DATA command has been
 processed and the message itself has been received, but before the final
 acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
 
+.new
 .option acl_smtp_data_prdr main string&!! accept
 .cindex "PRDR" "ACL for"
 .cindex "DATA" "PRDR ACL for"
 .cindex "&ACL;" "PRDR-related"
 .cindex "&ACL;" "per-user data processing"
+.wen
 This option defines the ACL that,
 if the PRDR feature has been negotiated,
 is run for each recipient after an SMTP DATA command has been
@@ -14157,6 +14165,7 @@ This is an obsolete option that is now a no-op. It used to affect the way Exim
 handled CR and LF characters in incoming messages. What happens now is
 described in section &<<SECTlineendings>>&.
 
+.new
 .option dsn_advertise_hosts main "host list&!!" unset
 .cindex "bounce messages" "success"
 .cindex "DSN" "success"
@@ -14168,6 +14177,7 @@ and RET and ORCPT options on MAIL FROM commands.
 A NOTIFY=SUCCESS option requests success-DSN messages.
 A NOTIFY= option with no argument requests that no delay or failure DSNs
 are sent.
+.wen
 
 .option dsn_from main "string&!!" "see below"
 .cindex "&'From:'& header line" "in bounces"
@@ -15661,6 +15671,7 @@ the time of delivery. They are normally used only for final local deliveries.
 This option is an obsolete synonym for &%bounce_return_size_limit%&.
 
 
+.new
 .option rfc1413_hosts main "host list&!!" @[]
 .cindex "RFC 1413"
 .cindex "host" "for RFC 1413 calls"
@@ -15668,8 +15679,11 @@ RFC 1413 identification calls are made to any client host which matches
 an item in the list.
 The default value specifies just this host, being any local interface
 for the system.
+.wen
 
+.new
 .option rfc1413_query_timeout main time 0s
+.wen
 .cindex "RFC 1413" "query timeout"
 .cindex "timeout" "for RFC 1413 call"
 This sets the timeout on RFC 1413 identification calls. If it is set to zero,
@@ -16517,6 +16531,7 @@ preference order of the available ciphers. Details are given in sections
 See &%tls_verify_hosts%& below.
 
 
+.new
 .option tls_verify_certificates main string&!! system
 .cindex "TLS" "client certificate verification"
 .cindex "certificate" "verification of client"
@@ -16539,11 +16554,7 @@ With OpenSSL the certificates specified
 explicitly
 either by file or directory
 are added to those given by the system default location.
-
-With OpenSSL the certificates specified
-explicitly
-either by file or directory
-are added to those given by the system default location.
+.wen
 
 These certificates should be for the certificate authorities trusted, rather
 than the public cert of individual clients.  With both OpenSSL and GnuTLS, if
@@ -17000,6 +17011,7 @@ This option must always be set. It specifies which of the available routers is
 to be used.
 
 
+.new
 .option dsn_lasthop routers boolean false
 .cindex "DSN" "success"
 .cindex "Delivery Status Notification" "success"
@@ -17007,6 +17019,7 @@ If this option is set true, and extended DSN (RFC3461) processing is in effect,
 Exim will not pass on DSN requests to downstream DSN-aware hosts but will
 instead send a success DSN as if the next hop does not support DSN.
 Not effective on redirect routers.
+.wen
 
 
 
@@ -19015,10 +19028,12 @@ However, there are some private options which define transports for delivery to
 files and pipes, and for generating autoreplies. See the &%file_transport%&,
 &%pipe_transport%& and &%reply_transport%& descriptions below.
 
+.new
 If success DSNs have been requested
 .cindex "DSN" "success"
 .cindex "Delivery Status Notification" "success"
 redirection triggers one and the DSN options are not passed any further.
+.wen
 
 
 
@@ -23227,12 +23242,14 @@ connects. If authentication fails, Exim will try to transfer the message
 unauthenticated. See also &%hosts_require_auth%&, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
+.new
 .option hosts_try_prdr smtp "host list&!!" *
 .cindex "PRDR" "enabling, optional in client"
 This option provides a list of servers to which, provided they announce
 PRDR support, Exim will attempt to negotiate PRDR
 for multi-recipient messages.
 The option can usually be left as default.
+.wen
 
 .option interface smtp "string list&!!" unset
 .cindex "bind IP address"
@@ -23299,9 +23316,11 @@ handling only one domain at a time. This is useful if you want to use
 &$domain$& in an expansion for the transport, because it is set only when there
 is a single domain involved in a remote delivery.
 
+.new
 It is expanded per-address and can depend on any of
 &$address_data$&, &$domain_data$&, &$local_part_data$&,
 &$host$&, &$host_address$& and &$host_port$&.
+.wen
 
 .option port smtp string&!! "see below"
 .cindex "port" "sending TCP/IP"
@@ -23348,7 +23367,9 @@ However, in some dialup environments hosts are assigned a different IP address
 each time they connect. In this situation the use of the IP address as part of
 the retry key leads to undesirable behaviour. Setting this option false causes
 Exim to use only the host name.
+.new
 Since it is expanded it can be made to depend on the host or domain.
+.wen
 
 
 .option serialize_hosts smtp "host list&!!" unset
@@ -23486,7 +23507,9 @@ unknown state), opens a new one to the same host, and then tries the delivery
 in clear.
 
 
+.new
 .option tls_try_verify_hosts smtp "host list&!!" *
+.wen
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
 This option gives a list of hosts for which, on encrypted connections,
@@ -23499,6 +23522,7 @@ The &$tls_out_certificate_verified$& variable is set when
 certificate verification succeeds.
 
 
+.new
 .option tls_verify_cert_hostnames smtp "host list&!!" *
 .cindex "TLS" "server certificate hostname verification"
 .cindex "certificate" "verification of server"
@@ -23510,8 +23534,10 @@ versus Subject and Subject-Alternate-Name fields.  Wildcard names are permitted
 limited to being the initial component of a 3-or-more component FQDN.
 
 There is no equivalent checking on client certificates.
+.wen
 
 
+.new
 .option tls_verify_certificates smtp string&!! system
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
@@ -23530,6 +23556,7 @@ must be specified.
 
 The use of a directory for the option value is not avilable for GnuTLS versions
 preceding 3.3.6 and a single file must be used.
+.wen
 
 With OpenSSL the certificates specified
 explicitly
@@ -26373,7 +26400,9 @@ apply to all TLS connections. For any host that matches one of these options,
 Exim requests a certificate as part of the setup of the TLS session. The
 contents of the certificate are verified by comparing it with a list of
 expected certificates.
+.new
 These may be the system default set (depending on library version),
+.wen
 an explicit file or,
 depending on library version, a directory, identified by
 &%tls_verify_certificates%&.
@@ -26536,7 +26565,9 @@ if it requests it. If the server is Exim, it will request a certificate only if
 
 If the &%tls_verify_certificates%& option is set on the &(smtp)& transport, it
 specifies a collection of expected server certificates.
-These may be the system default set (depeding on library version),
+.new
+These may be the system default set (depending on library version),
+.wen
 a file or,
 depnding on liibrary version, a directory,
 must name a file or,
@@ -30335,8 +30366,10 @@ It supports a &"generic"& interface to scanners called via the shell, and
 specialized interfaces for &"daemon"& type virus scanners, which are resident
 in memory and thus are much faster.
 
+.new
 A timeout of 2 minutes is applied to a scanner call (by default);
 if it expires then a defer action is taken.
+.wen
 
 .oindex "&%av_scanner%&"
 You can set the &%av_scanner%& option in the main part of the configuration
@@ -30355,6 +30388,7 @@ The usual list-parsing of the content (see &<<SECTlistconstruct>>&) applies.
 The following scanner types are supported in this release:
 
 .vlist
+.new
 .vitem &%avast%&
 .cindex "virus scanners" "avast"
 This is the scanner daemon of Avast. It has been tested with Avast Core
@@ -30386,6 +30420,7 @@ $ socat UNIX:/var/run/avast/scan.sock STDIO:
     SENSITIVITY
     PACK
 .endd
+.wen
 
 
 .vitem &%aveserver%&
@@ -30579,7 +30614,9 @@ which case each use of the &%malware%& condition causes a new scan of the
 message.
 
 The &%malware%& condition takes a right-hand argument that is expanded before
+.new
 use and taken as a list, slash-separated by default.
+.wen
 The first element can then be one of
 
 .ilist
@@ -30593,14 +30630,17 @@ the condition fails immediately.
 A regular expression, in which case the message is scanned for viruses. The
 condition succeeds if a virus is found and its name matches the regular
 expression. This allows you to take special actions on certain types of virus.
+.new
 Note that &"/"& characters in the RE must be doubled due to the list-processing,
 unless the separator is changed (in the usual way).
+.wen
 .endlist
 
 You can append a &`defer_ok`& element to the &%malware%& argument list to accept
 messages even if there is a problem with the virus scanner.
 Otherwise, such a problem causes the ACL to defer.
 
+.new
 You can append a &`tmo=<val>`& element to the &%malware%& argument list to
 specify a non-default timeout.  The default is two minutes.
 For example:
@@ -30608,6 +30648,7 @@ For example:
 malware = * / defer_ok / tmo=10s
 .endd
 A timeout causes the ACL to defer.
+.wen
 
 .vindex "&$malware_name$&"
 When a virus is found, the condition sets up an expansion variable called
@@ -33550,8 +33591,10 @@ failing addresses with their error messages.
 The third item is used to introduce any text from pipe transports that is to be
 returned to the sender. It is omitted if there is no such text.
 .next
+.new
 The fourth, fifth and sixth items will be ignored and may be empty.
 The fields exist for back-compatibility
+.wen
 .endlist
 
 The default state (&%bounce_message_file%& unset) is equivalent to the
@@ -34914,7 +34957,9 @@ selection marked by asterisks:
 &` smtp_protocol_error        `&  SMTP protocol errors
 &` smtp_syntax_error          `&  SMTP syntax errors
 &` subject                    `&  contents of &'Subject:'& on <= lines
+.new
 &`*tls_certificate_verified   `&  certificate verification status
+.wen
 &`*tls_cipher                 `&  TLS cipher suite on <= and => lines
 &` tls_peerdn                 `&  TLS peer DN on <= and => lines
 &` tls_sni                    `&  TLS SNI on <= lines
