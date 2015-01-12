@@ -4647,7 +4647,7 @@ this option.
 This option is interpreted by Sendmail to cause debug information to be sent
 to the named file.  It is ignored by Exim.
 
-.vitem &%-z%&&~<&'log line'&>
+.vitem &%-z%&&~<&'log-line'&>
 .oindex "&%-z%&"
 This option writes its argument to Exim's logfile.
 Use is restricted to administrators; the intent is for operational notes.
