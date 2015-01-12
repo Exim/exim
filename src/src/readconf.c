@@ -11,6 +11,9 @@ implementation of the conditional .ifdef etc. */
 
 #include "exim.h"
 
+static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
+
+
 #define CSTATE_STACK_SIZE 10
 
 
@@ -392,7 +395,7 @@ static optionlist optionlist_config[] = {
   { "smtp_ratelimit_hosts",     opt_stringptr,   &smtp_ratelimit_hosts },
   { "smtp_ratelimit_mail",      opt_stringptr,   &smtp_ratelimit_mail },
   { "smtp_ratelimit_rcpt",      opt_stringptr,   &smtp_ratelimit_rcpt },
-  { "smtp_receive_timeout",     opt_time,        &smtp_receive_timeout },
+  { "smtp_receive_timeout",     opt_func,        &fn_smtp_receive_timeout },
   { "smtp_reserve_hosts",       opt_stringptr,   &smtp_reserve_hosts },
   { "smtp_return_error_details",opt_bool,        &smtp_return_error_details },
 #ifdef WITH_CONTENT_SCAN
@@ -1027,7 +1030,7 @@ Returns:        the time value, or -1 on syntax error
 */
 
 int
-readconf_readtime(uschar *s, int terminator, BOOL return_msec)
+readconf_readtime(const uschar *s, int terminator, BOOL return_msec)
 {
 int yield = 0;
 for (;;)
@@ -1036,7 +1039,7 @@ for (;;)
   double fraction;
 
   if (!isdigit(*s)) return -1;
-  (void)sscanf(CS s, "%d%n", &value, &count);
+  (void)sscanf(CCS s, "%d%n", &value, &count);
   s += count;
 
   switch (*s)
@@ -1050,7 +1053,7 @@ for (;;)
 
     case '.':
     if (!return_msec) return -1;
-    (void)sscanf(CS s, "%lf%n", &fraction, &count);
+    (void)sscanf(CCS s, "%lf%n", &fraction, &count);
     s += count;
     if (*s++ != 's') return -1;
     yield += (int)(fraction * 1000.0);
@@ -1349,6 +1352,26 @@ if (*s != 0) extra_chars_error(s, US"string value for ", name, US"");
 return yield;
 }
 
+
+/*************************************************
+*            Custom-handler options              *
+*************************************************/
+static void
+fn_smtp_receive_timeout(const uschar * name, const uschar * str)
+{
+int value;
+
+if (*str == '$')
+  smtp_receive_timeout_s = string_copy(str);
+else
+  {
+  /* "smtp_receive_timeout",     opt_time,        &smtp_receive_timeout */
+  smtp_receive_timeout = readconf_readtime(str, 0, FALSE);
+  if (smtp_receive_timeout < 0)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "invalid time value for %s",
+      name);
+  }
+}
 
 /*************************************************
 *            Handle option line                  *
@@ -2116,9 +2139,15 @@ switch (type)
         name);
     if (count > 0 && list[2] == 0) count = 0;
     list[1] = count;
+    break;
     }
 
-  break;
+  case opt_func:
+    {
+    void (*fn)() = ol->value;
+    fn(name, s);
+    break;
+    }
   }
 
 return TRUE;

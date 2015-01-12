@@ -292,7 +292,7 @@ extern void    readconf_main(void);
 extern void    readconf_print(uschar *, uschar *, BOOL);
 extern uschar *readconf_printtime(int);
 extern uschar *readconf_readname(uschar *, int, uschar *);
-extern int     readconf_readtime(uschar *, int, BOOL);
+extern int     readconf_readtime(const uschar *, int, BOOL);
 extern void    readconf_rest();
 extern uschar *readconf_retry_error(uschar *, uschar *, int *, int *);
 extern void    read_message_body(BOOL);

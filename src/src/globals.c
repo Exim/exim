@@ -1254,6 +1254,7 @@ uschar *smtp_ratelimit_mail    = NULL;
 uschar *smtp_ratelimit_rcpt    = NULL;
 uschar *smtp_read_error        = US"";
 int     smtp_receive_timeout   = 5*60;
+uschar *smtp_receive_timeout_s = NULL;
 uschar *smtp_reserve_hosts     = NULL;
 BOOL    smtp_return_error_details = FALSE;
 int     smtp_rlm_base          = 0;

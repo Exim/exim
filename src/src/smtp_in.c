@@ -2129,6 +2129,19 @@ if (!sender_host_unknown)
   set_process_info("handling incoming connection from %s",
     host_and_ident(FALSE));
 
+  /* Expand smtp_receive_timeout, if needed */
+
+  if (smtp_receive_timeout_s)
+    {
+    uschar * exp;
+    if (  !(exp = expand_string(smtp_receive_timeout_s))
+       || !(*exp)
+       || (smtp_receive_timeout = readconf_readtime(exp, 0, FALSE)) < 0
+       )
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"bad value for smtp_receive_timeout: '%s'", exp ? exp : US"");
+    }
+
   /* Start up TLS if tls_on_connect is set. This is for supporting the legacy
   smtps port for use with older style SSL MTAs. */
 

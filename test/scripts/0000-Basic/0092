@@ -19,6 +19,13 @@ data
 The quick brown fox
 ****
 1
+3 exim -d+expand '-DOPT=${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s' -bh V4NET.0.0.1
+mail from:userx@test.ex
+rcpt to:userx@test.ex
+data
+The quick brown fox
+****
+1
 3 exim userx@test.ex
 ****
 1

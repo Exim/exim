@@ -17,7 +17,8 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
-smtp_receive_timeout = 2s
+OPT = 2s
+smtp_receive_timeout = OPT
 receive_timeout = 2s
 
 
