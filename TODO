@@ -1,0 +1,27 @@
+
+Spec documents:
+RFC6530 Overview and Framework for Internationalized Email
+RFC5890 Internationalized Domain Names for Applications (IDNA):
+		Definitions and Document Framework
+RFC6533 Internationalized Delivery Status and Disposition Notifications
+
+- rcpt verification for an internationalized message should require the
+destination supports the SMTPUTF8 extension
+
+- transport ditto; nonsupport equates to perm-rej an triggers a bounce
+
+- DSN support extended per rfc 6533
+
+======================
+
+An "international" flag on the message?
+An is-international expansion condition?
+
+helo-time option handling
+dsn handling
+logging
+- international msg
+- presentation of local-part in log
+encoding of local_part
+encoding transform string-expansions
+Recieved-by header tracking info
