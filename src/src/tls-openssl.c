@@ -300,7 +300,12 @@ uschar * ev;
 uschar * yield;
 #endif
 
+if (tlsp->peercert)
+  X509_free(tlsp->peercert);
+tlsp->peercert = X509_dup(cert);
+
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+tlsp->peerdn = txt;
 
 if (state == 0)
   {
@@ -311,7 +316,6 @@ if (state == 0)
   *calledp = TRUE;
   if (!*optionalp)
     {
-    tlsp->peercert = X509_dup(cert);
     return 0;			    /* reject */
     }
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
@@ -357,9 +361,6 @@ else
 #ifdef EXPERIMENTAL_CERTNAMES
   uschar * verify_cert_hostnames;
 #endif
-
-  tlsp->peerdn = txt;
-  tlsp->peercert = X509_dup(cert);
 
 #ifdef EXPERIMENTAL_CERTNAMES
   if (  tlsp == &tls_out
