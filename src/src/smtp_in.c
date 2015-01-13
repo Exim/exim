@@ -4448,7 +4448,7 @@ while (done <= 0)
     ACL may have delayed.  To handle cutthrough delivery enforce a dummy call
     to get the DATA command sent. */
 
-    if (acl_smtp_predata == NULL && cutthrough_fd < 0) rc = OK; else
+    if (acl_smtp_predata == NULL && cutthrough.fd < 0) rc = OK; else
       {
       uschar * acl= acl_smtp_predata ? acl_smtp_predata : US"accept";
       enable_dollar_recipients = TRUE;

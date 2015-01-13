@@ -44,6 +44,9 @@ JH/10 The smtp_receive_timeout main option is now expanded before use.
 JH/11 The incoming_interface log option now also enables logging of the
       local interface on delivery outgoing connections.
 
+JH/12 The cutthrough-routing facility now supports multi-recipient mails,
+      if the interface and destination host and port all match.
+
 
 
 Exim version 4.85

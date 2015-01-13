@@ -506,8 +506,11 @@ int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 
 uschar *csa_status             = NULL;
-BOOL    cutthrough_delivery    = FALSE;
-int     cutthrough_fd          = -1;
+cut_t   cutthrough = {
+  FALSE,				/* delivery: when to attempt */
+  -1,					/* fd: open connection */
+  0,					/* nrcpt: number of addresses */
+};
 
 BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";

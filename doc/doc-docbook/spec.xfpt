@@ -28003,14 +28003,18 @@ is what is wanted for subsequent tests.
 .cindex "cutthrough" "requesting"
 This option requests delivery be attempted while the item is being received.
 
-The option usable in the RCPT ACL.
+The option is usable in the RCPT ACL.
 If enabled for a message recieved via smtp and routed to an smtp transport,
-and the message has only one recipient,
+and only one transport, interface, destination host and port combination
+is used for all recipients of the message,
 then the delivery connection is made while the receiving connection is open
 and data is copied from one to the other.
 
+An attempt to set this option for any recipient but the first
+for a mail will be quietly ignored.
 If a recipient-verify callout connection is subsequently
-requested in the same ACL it is held open and used for the data,
+requested in the same ACL it is held open and used for
+any subsequent receipients and the data,
 otherwise one is made after the initial RCPT ACL completes.
 
 Note that routers are used in verify mode,
@@ -28022,12 +28026,13 @@ Headers may be modified by routers (subject to the above) and transports.
 Cutthrough delivery is not supported via transport-filters or when DKIM signing
 of outgoing messages is done, because it sends data to the ultimate destination
 before the entire message has been received from the source.
+It is not supported for messages recieved with the SMTP PRDR option in use.
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
 If there is a temporary error the item is queued for later delivery in the
 usual fashion. If the item is successfully delivered in cutthrough mode
-the log line is tagged with ">>" rather than "=>" and appears
+the delivery log lines are tagged with ">>" rather than "=>" and appear
 before the acceptance "<=" line.
 
 Delivery in this mode avoids the generation of a bounce mail to a

@@ -997,7 +997,7 @@ switch(where)
   case ACL_WHERE_DKIM:
   case ACL_WHERE_MIME:
   case ACL_WHERE_DATA:
-    if (cutthrough_fd >= 0 && (acl_removed_headers || acl_added_headers))
+    if (cutthrough.fd >= 0 && (acl_removed_headers || acl_added_headers))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Header modification in data ACLs"
 			" will not take effect on cutthrough deliveries");
@@ -2807,12 +2807,11 @@ if (filter_test != FTEST_NONE)
   }
 
 /* Cutthrough delivery:
-	We have to create the Received header now rather than at the end of reception,
-	so the timestamp behaviour is a change to the normal case.
-	XXX Ensure this gets documented XXX.
-	Having created it, send the headers to the destination.
-*/
-if (cutthrough_fd >= 0)
+We have to create the Received header now rather than at the end of reception,
+so the timestamp behaviour is a change to the normal case.
+XXX Ensure this gets documented XXX.
+Having created it, send the headers to the destination. */
+if (cutthrough.fd >= 0)
   {
   if (received_count > received_headers_max)
     {
@@ -3184,56 +3183,61 @@ else
           rc = OK;
           while ((item = string_nextinlist(&ptr, &sep,
                                            itembuf,
-                                           sizeof(itembuf))) != NULL)
+                                           sizeof(itembuf))))
             {
             /* Prevent running ACL for an empty item */
             if (!item || (item[0] == '\0')) continue;
-            /* Only run ACL once for each domain or identity, no matter how often it
-               appears in the expanded list. */
-            if (seen_items != NULL)
+
+            /* Only run ACL once for each domain or identity,
+	    no matter how often it appears in the expanded list. */
+            if (seen_items)
               {
               uschar *seen_item = NULL;
               uschar seen_item_buf[256];
               uschar *seen_items_list = seen_items;
-              int seen_this_item = 0;
+              BOOL seen_this_item = FALSE;
 
               while ((seen_item = string_nextinlist(&seen_items_list, &sep,
                                                     seen_item_buf,
-                                                    sizeof(seen_item_buf))) != NULL)
-                {
-                  if (Ustrcmp(seen_item,item) == 0)
-                    {
-                      seen_this_item = 1;
-                      break;
-                    }
-                }
+                                                    sizeof(seen_item_buf))))
+		if (Ustrcmp(seen_item,item) == 0)
+		  {
+		  seen_this_item = TRUE;
+		  break;
+		  }
 
-              if (seen_this_item > 0)
+              if (seen_this_item)
                 {
                 DEBUG(D_receive)
-                  debug_printf("acl_smtp_dkim: skipping signer %s, already seen\n", item);
+                  debug_printf("acl_smtp_dkim: skipping signer %s, "
+		    "already seen\n", item);
                 continue;
                 }
 
-              seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,":");
+              seen_items = string_append(seen_items, &seen_items_size,
+		&seen_items_offset, 1, ":");
               }
 
-            seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,item);
+            seen_items = string_append(seen_items, &seen_items_size,
+	      &seen_items_offset, 1, item);
             seen_items[seen_items_offset] = '\0';
 
             DEBUG(D_receive)
-              debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n", item);
+              debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n",
+		item);
 
             dkim_exim_acl_setup(item);
-            rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, &user_msg, &log_msg);
+            rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim,
+		  &user_msg, &log_msg);
 
             if (rc != OK)
-              {
-                DEBUG(D_receive)
-                  debug_printf("acl_smtp_dkim: acl_check returned %d on %s, skipping remaining items\n", rc, item);
-	        cancel_cutthrough_connection("dkim acl not ok");
-                break;
-              }
+	      {
+	      DEBUG(D_receive)
+		debug_printf("acl_smtp_dkim: acl_check returned %d on %s, "
+		  "skipping remaining items\n", rc, item);
+	      cancel_cutthrough_connection("dkim acl not ok");
+	      break;
+	      }
             }
           add_acl_headers(ACL_WHERE_DKIM, US"DKIM");
           if (rc == DISCARD)
@@ -3957,7 +3961,7 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
-if(cutthrough_fd >= 0)
+if(cutthrough.fd >= 0)
   {
   uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
 					/* Logging was done in finaldot() */
@@ -4103,7 +4107,7 @@ if (smtp_input)
       case TMP_REJ: message_id[0] = 0;	  /* Prevent a delivery from starting */
       default:break;
       }
-    cutthrough_delivery = FALSE;
+    cutthrough.delivery = FALSE;
     }
 
   /* For batched SMTP, generate an error message on failure, and do

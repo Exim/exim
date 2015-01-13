@@ -3354,19 +3354,27 @@ for (; cb != NULL; cb = cb->next)
       break;
 
       case CONTROL_CUTTHROUGH_DELIVERY:
-      if (deliver_freeze)
-        *log_msgptr = US"frozen";
-      else if (queue_only_policy)
-        *log_msgptr = US"queue-only";
-      else if (fake_response == FAIL)
-        *log_msgptr = US"fakereject";
+      if (prdr_requested)
+	/* Too hard to think about for now.  We might in future cutthrough
+	the case where both sides handle prdr and this-node prdr acl
+	is "accept" */
+        *log_msgptr = string_sprintf(US"PRDR on %s reception\n", arg);
       else
 	{
-	cutthrough_delivery = TRUE;
-	break;
+	if (deliver_freeze)
+	  *log_msgptr = US"frozen";
+	else if (queue_only_policy)
+	  *log_msgptr = US"queue-only";
+	else if (fake_response == FAIL)
+	  *log_msgptr = US"fakereject";
+	else
+	  {
+	  if (rcpt_count == 1) cutthrough.delivery = TRUE;
+	  break;
+	  }
+	*log_msgptr = string_sprintf("\"control=%s\" on %s item",
+				      arg, *log_msgptr);
 	}
-      *log_msgptr = string_sprintf("\"control=%s\" on %s item",
-				    arg, *log_msgptr);
       return ERROR;
       }
     break;
@@ -4351,9 +4359,9 @@ ratelimiters_cmd = NULL;
 log_reject_target = LOG_MAIN|LOG_REJECT;
 
 #ifndef DISABLE_PRDR
-if (where == ACL_WHERE_RCPT || where == ACL_WHERE_PRDR )
+if (where == ACL_WHERE_RCPT || where == ACL_WHERE_PRDR)
 #else
-if (where == ACL_WHERE_RCPT )
+if (where == ACL_WHERE_RCPT)
 #endif
   {
   adb = address_defaults;
@@ -4397,9 +4405,7 @@ case ACL_WHERE_RCPT:
 #ifndef DISABLE_PRDR
 case ACL_WHERE_PRDR:
 #endif
-  if( rcpt_count > 1 )
-    cancel_cutthrough_connection("more than one recipient");
-  else if (rc == OK  &&  cutthrough_delivery  &&  cutthrough_fd < 0)
+  if (rc == OK  &&  cutthrough.delivery  && rcpt_count > cutthrough.nrcpt)
     open_cutthrough_connection(addr);
   break;
 

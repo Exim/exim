@@ -14,7 +14,6 @@ caching was contributed by Kevin Fleming (but I hacked it around a bit). */
 
 #define CUTTHROUGH_CMD_TIMEOUT  30	/* timeout for cutthrough-routing calls */
 #define CUTTHROUGH_DATA_TIMEOUT 60	/* timeout for cutthrough-routing calls */
-address_item cutthrough_addr;
 static smtp_outblock ctblock;
 uschar ctbuffer[8192];
 
@@ -39,6 +38,7 @@ static tree_node *dnsbl_cache = NULL;
 #define MT_NOT 1
 #define MT_ALL 2
 
+static uschar cutthrough_response(char, uschar **);
 
 
 /*************************************************
@@ -189,12 +189,12 @@ from_address = US"";
 
 if (is_recipient)
   {
-  if ((options & vopt_callout_recipsender) != 0)
+  if (options & vopt_callout_recipsender)
     {
     address_key = string_sprintf("%s/<%s>", addr->address, sender_address);
     from_address = sender_address;
     }
-  else if ((options & vopt_callout_recippmaster) != 0)
+  else if (options & vopt_callout_recippmaster)
     {
     address_key = string_sprintf("%s/<postmaster@%s>", addr->address,
       qualify_domain_sender);
@@ -409,6 +409,113 @@ else
   optimization. */
 
   if (smtp_out != NULL && !disable_callout_flush) mac_smtp_fflush();
+
+/* cutthrough-multi: if a nonfirst rcpt has the same routing as the first,
+and we are holding a cutthrough conn open, we can just append the rcpt to
+that conn for verification purposes (and later delivery also).  Simplest
+coding means skipping this whole loop and doing the append separately.
+
+We will need to remember it has been appended so that rcpt-acl tail code
+can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
+*/
+
+  /* Can we re-use an open cutthrough connection? */
+  if (  cutthrough.fd >= 0
+     && (options & (vopt_callout_recipsender | vopt_callout_recippmaster))
+	== vopt_callout_recipsender
+     && !random_local_part
+     && !pm_mailfrom
+     )
+    {
+    if (addr->transport == cutthrough.addr.transport)
+      for (host = host_list; host; host = host->next)
+	if (Ustrcmp(host->address, cutthrough.host.address) == 0)
+	  {
+	  int host_af;
+	  uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
+	  int port = 25;
+
+	  deliver_host = host->name;
+	  deliver_host_address = host->address;
+	  deliver_host_port = host->port;
+	  deliver_domain = addr->domain;
+	  transport_name = addr->transport->name;
+
+	  host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET:AF_INET6;
+
+	  if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
+		  US"callout") ||
+	      !smtp_get_port(tf->port, addr, &port, US"callout"))
+	    log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
+	      addr->message);
+
+	  if (  (  interface == cutthrough.interface
+	        || (  interface
+	           && cutthrough.interface
+		   && Ustrcmp(interface, cutthrough.interface) == 0
+		)  )
+	     && port == cutthrough.host.port
+	     )
+	    {
+	    uschar * resp;
+
+	    /* Match!  Send the RCPT TO, append the addr, set done */
+	    done =
+	      smtp_write_command(&ctblock, FALSE, "RCPT TO:<%.1000s>\r\n",
+		transport_rcpt_address(addr,
+		  (addr->transport == NULL)? FALSE :
+		   addr->transport->rcpt_include_affixes)) >= 0 &&
+	      cutthrough_response('2', &resp) == '2';
+
+	    /* This would go horribly wrong if a callout fail was ignored by ACL.
+	    We punt by abandoning cutthrough on a reject, like the
+	    first-rcpt does. */
+
+	    if (done)
+	      {
+	      address_item * na = store_get(sizeof(address_item));
+	      *na = cutthrough.addr;
+	      cutthrough.addr = *addr;
+	      cutthrough.addr.host_used = &cutthrough.host;
+	      cutthrough.addr.next = na;
+
+	      cutthrough.nrcpt++;
+	      }
+	    else
+	      {
+	      cancel_cutthrough_connection("recipient rejected");
+	      if (errno == ETIMEDOUT)
+		{
+		HDEBUG(D_verify) debug_printf("SMTP timeout\n");
+		}
+	      else if (errno == 0)
+		{
+		if (*resp == 0)
+		  Ustrcpy(resp, US"connection dropped");
+
+		addr->message =
+		  string_sprintf("response to \"%s\" from %s [%s] was: %s",
+		    big_buffer, host->name, host->address,
+		    string_printing(resp));
+
+		addr->user_message =
+		  string_sprintf("Callout verification failed:\n%s", resp);
+
+		/* Hard rejection ends the process */
+
+		if (resp[0] == '5')   /* Address rejected */
+		  {
+		  yield = FAIL;
+		  done = TRUE;
+		  }
+		}
+	      }
+	    }
+	  break;
+	  }
+    if (!done)
+      cancel_cutthrough_connection("incompatible connection");
+    }
 
   /* Now make connections to the hosts and do real callouts. The list of hosts
   is passed in as an argument. */
@@ -692,9 +799,9 @@ else
 
 	ob->command_timeout = callout;
         rc = tls_client_start(inblock.sock, host, addr, addr->transport
-#ifdef EXPERIMENTAL_DANE
+# ifdef EXPERIMENTAL_DANE
 			    , dane ? &tlsa_dnsa : NULL
-#endif
+# endif
 			    );
 	ob->command_timeout = oldtimeout;
 
@@ -709,10 +816,10 @@ else
 	     )
 	    {
 	    (void)close(inblock.sock);
-#ifdef EXPERIMENTAL_EVENT
+# ifdef EXPERIMENTAL_EVENT
 	    (void) event_raise(addr->transport->event_action,
 				    US"tcp:close", NULL);
-#endif
+# endif
 	    log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
 	      "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
 	    suppress_tls = TRUE;
@@ -741,9 +848,9 @@ else
     /* If the host is required to use a secure channel, ensure that we have one. */
     if (tls_out.active < 0)
       if (
-#ifdef EXPERIMENTAL_DANE
+# ifdef EXPERIMENTAL_DANE
 	 dane ||
-#endif
+# endif
          verify_check_given_host(&ob->hosts_require_tls, host) == OK
 	 )
         {
@@ -757,7 +864,7 @@ else
         goto TLS_FAILED;
         }
 
-    #endif /*SUPPORT_TLS*/
+#endif /*SUPPORT_TLS*/
 
     done = TRUE; /* so far so good; have response to HELO */
 
@@ -765,17 +872,17 @@ else
 
     /* For now, transport_filter by cutthrough-delivery is not supported */
     /* Need proper integration with the proper transport mechanism. */
-    if (cutthrough_delivery)
+    if (cutthrough.delivery)
       {
       if (addr->transport->filter_command)
         {
-        cutthrough_delivery= FALSE;
+        cutthrough.delivery = FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
         }
 #ifndef DISABLE_DKIM
       if (ob->dkim_domain)
         {
-        cutthrough_delivery= FALSE;
+        cutthrough.delivery = FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
         }
 #endif
@@ -887,6 +994,8 @@ else
 
         else if (errno == 0)
           {
+	  cancel_cutthrough_connection("random-recipient");
+
           if (randombuffer[0] == '5')
             new_domain_record.random_result = ccache_reject;
 
@@ -932,8 +1041,9 @@ else
 
         if (done && pm_mailfrom != NULL)
           {
-          /*XXX not suitable for cutthrough - sequencing problems */
-  	cutthrough_delivery= FALSE;
+          /*XXX not suitable for cutthrough - we cannot afford to do an RSET
+	  and lose the original mail-from */
+	cancel_cutthrough_connection("postmaster verify");
   	HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of postmaster verify\n");
 
           done =
@@ -1028,30 +1138,34 @@ else
 
     /* End the SMTP conversation and close the connection. */
 
-    /* Cutthrough - on a successfull connect and recipient-verify with use-sender
-    and we have no cutthrough conn so far
+    /* Cutthrough - on a successfull connect and recipient-verify with
+    use-sender and we are 1st rcpt and have no cutthrough conn so far
     here is where we want to leave the conn open */
-    if (  cutthrough_delivery
+    if (  cutthrough.delivery
+       && rcpt_count == 1
        && done
        && yield == OK
        && (options & (vopt_callout_recipsender|vopt_callout_recippmaster)) == vopt_callout_recipsender
        && !random_local_part
        && !pm_mailfrom
-       && cutthrough_fd < 0
+       && cutthrough.fd < 0
        )
       {
-      cutthrough_fd= outblock.sock;	/* We assume no buffer in use in the outblock */
-      cutthrough_addr = *addr;		/* Save the address_item for later logging */
-      cutthrough_addr.next =	  NULL;
-      cutthrough_addr.host_used = store_get(sizeof(host_item));
-      *(cutthrough_addr.host_used) = *host;
+      cutthrough.fd = outblock.sock;	/* We assume no buffer in use in the outblock */
+      cutthrough.nrcpt = 1;
+      cutthrough.interface = interface;
+      cutthrough.host = *host;
+      cutthrough.addr = *addr;		/* Save the address_item for later logging */
+      cutthrough.addr.next =	  NULL;
+      cutthrough.addr.host_used = &cutthrough.host;
       if (addr->parent)
-        *(cutthrough_addr.parent = store_get(sizeof(address_item)))= *addr->parent;
+        *(cutthrough.addr.parent = store_get(sizeof(address_item))) =
+	  *addr->parent;
       ctblock.buffer = ctbuffer;
       ctblock.buffersize = sizeof(ctbuffer);
       ctblock.ptr = ctbuffer;
       /* ctblock.cmd_count = 0; ctblock.authenticating = FALSE; */
-      ctblock.sock = cutthrough_fd;
+      ctblock.sock = cutthrough.fd;
       }
     else
       {
@@ -1176,7 +1290,8 @@ address_item addr2;
 get rewritten. */
 
 addr2 = *addr;
-HDEBUG(D_acl) debug_printf("----------- start cutthrough setup ------------\n");
+HDEBUG(D_acl) debug_printf("----------- %s cutthrough setup ------------\n",
+  rcpt_count > 1 ? "more" : "start");
 (void) verify_address(&addr2, NULL,
 	vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache,
 	CUTTHROUGH_CMD_TIMEOUT, -1, -1,
@@ -1191,14 +1306,14 @@ return;
 static BOOL
 cutthrough_send(int n)
 {
-if(cutthrough_fd < 0)
+if(cutthrough.fd < 0)
   return TRUE;
 
 if(
 #ifdef SUPPORT_TLS
-   (tls_out.active == cutthrough_fd) ? tls_write(FALSE, ctblock.buffer, n) :
+   (tls_out.active == cutthrough.fd) ? tls_write(FALSE, ctblock.buffer, n) :
 #endif
-   send(cutthrough_fd, ctblock.buffer, n, 0) > 0
+   send(cutthrough.fd, ctblock.buffer, n, 0) > 0
   )
 {
   transport_count += n;
@@ -1230,7 +1345,7 @@ return TRUE;
 BOOL
 cutthrough_puts(uschar * cp, int n)
 {
-if (cutthrough_fd < 0)       return TRUE;
+if (cutthrough.fd < 0)       return TRUE;
 if (_cutthrough_puts(cp, n)) return TRUE;
 cancel_cutthrough_connection("transmit failed");
 return FALSE;
@@ -1238,7 +1353,7 @@ return FALSE;
 
 
 static BOOL
-_cutthrough_flush_send( void )
+_cutthrough_flush_send(void)
 {
 int n= ctblock.ptr-ctblock.buffer;
 
@@ -1251,7 +1366,7 @@ return TRUE;
 
 /* Send out any bufferred output.  Return boolean success. */
 BOOL
-cutthrough_flush_send( void )
+cutthrough_flush_send(void)
 {
 if (_cutthrough_flush_send()) return TRUE;
 cancel_cutthrough_connection("transmit failed");
@@ -1260,7 +1375,7 @@ return FALSE;
 
 
 BOOL
-cutthrough_put_nl( void )
+cutthrough_put_nl(void)
 {
 return cutthrough_puts(US"\r\n", 2);
 }
@@ -1278,7 +1393,7 @@ inblock.buffer = inbuffer;
 inblock.buffersize = sizeof(inbuffer);
 inblock.ptr = inbuffer;
 inblock.ptrend = inbuffer;
-inblock.sock = cutthrough_fd;
+inblock.sock = cutthrough.fd;
 /* this relies on (inblock.sock == tls_out.active) */
 if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, CUTTHROUGH_DATA_TIMEOUT))
   cancel_cutthrough_connection("target timeout on read");
@@ -1286,7 +1401,7 @@ if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect,
 if(copy != NULL)
   {
   uschar * cp;
-  *copy= cp= string_copy(responsebuffer);
+  *copy = cp = string_copy(responsebuffer);
   /* Trim the trailing end of line */
   cp += Ustrlen(responsebuffer);
   if(cp > *copy  &&  cp[-1] == '\n') *--cp = '\0';
@@ -1299,9 +1414,9 @@ return responsebuffer[0];
 
 /* Negotiate dataphase with the cutthrough target, returning success boolean */
 BOOL
-cutthrough_predata( void )
+cutthrough_predata(void)
 {
-if(cutthrough_fd < 0)
+if(cutthrough.fd < 0)
   return FALSE;
 
 HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> DATA\n");
@@ -1332,9 +1447,9 @@ return TRUE;
 /* Expands newlines to wire format (CR,NL).           */
 /* Also sends header-terminating blank line.          */
 BOOL
-cutthrough_headers_send( void )
+cutthrough_headers_send(void)
 {
-if(cutthrough_fd < 0)
+if(cutthrough.fd < 0)
   return FALSE;
 
 /* We share a routine with the mainline transport to handle header add/remove/rewrites,
@@ -1342,10 +1457,12 @@ if(cutthrough_fd < 0)
 */
 HDEBUG(D_acl) debug_printf("----------- start cutthrough headers send -----------\n");
 
-if (!transport_headers_send(&cutthrough_addr, cutthrough_fd,
-	cutthrough_addr.transport->add_headers, cutthrough_addr.transport->remove_headers,
+if (!transport_headers_send(&cutthrough.addr, cutthrough.fd,
+	cutthrough.addr.transport->add_headers,
+	cutthrough.addr.transport->remove_headers,
 	&cutthrough_write_chunk, TRUE,
-	cutthrough_addr.transport->rewrite_rules, cutthrough_addr.transport->rewrite_existflags))
+	cutthrough.addr.transport->rewrite_rules,
+	cutthrough.addr.transport->rewrite_existflags))
   return FALSE;
 
 HDEBUG(D_acl) debug_printf("----------- done cutthrough headers send ------------\n");
@@ -1354,9 +1471,9 @@ return TRUE;
 
 
 static void
-close_cutthrough_connection( const char * why )
+close_cutthrough_connection(const char * why)
 {
-if(cutthrough_fd >= 0)
+if(cutthrough.fd >= 0)
   {
   /* We could be sending this after a bunch of data, but that is ok as
      the only way to cancel the transfer in dataphase is to drop the tcp
@@ -1371,18 +1488,18 @@ if(cutthrough_fd >= 0)
   #ifdef SUPPORT_TLS
   tls_close(FALSE, TRUE);
   #endif
-  (void)close(cutthrough_fd);
-  cutthrough_fd= -1;
+  (void)close(cutthrough.fd);
+  cutthrough.fd = -1;
   HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown (%s) ------------\n", why);
   }
 ctblock.ptr = ctbuffer;
 }
 
 void
-cancel_cutthrough_connection( const char * why )
+cancel_cutthrough_connection(const char * why)
 {
 close_cutthrough_connection(why);
-cutthrough_delivery= FALSE;
+cutthrough.delivery = FALSE;
 }
 
 
@@ -1394,33 +1511,45 @@ cutthrough_delivery= FALSE;
    Return smtp response-class digit.
 */
 uschar *
-cutthrough_finaldot( void )
+cutthrough_finaldot(void)
 {
+uschar res;
+address_item * addr;
 HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> .\n");
 
 /* Assume data finshed with new-line */
-if(!cutthrough_puts(US".", 1) || !cutthrough_put_nl() || !cutthrough_flush_send())
-  return cutthrough_addr.message;
+if(  !cutthrough_puts(US".", 1)
+  || !cutthrough_put_nl()
+  || !cutthrough_flush_send()
+  )
+  return cutthrough.addr.message;
 
-switch(cutthrough_response('2', &cutthrough_addr.message))
+res = cutthrough_response('2', &cutthrough.addr.message);
+for (addr = &cutthrough.addr; addr; addr = addr->next)
   {
-  case '2':
-    delivery_log(LOG_MAIN, &cutthrough_addr, (int)'>', NULL);
-    close_cutthrough_connection("delivered");
-    break;
+  addr->message = cutthrough.addr.message;
+  switch(res)
+    {
+    case '2':
+      delivery_log(LOG_MAIN, addr, (int)'>', NULL);
+      close_cutthrough_connection("delivered");
+      break;
 
-  case '4':
-    delivery_log(LOG_MAIN, &cutthrough_addr, 0, US"tmp-reject from cutthrough after DATA:");
-    break;
+    case '4':
+      delivery_log(LOG_MAIN, addr, 0,
+	US"tmp-reject from cutthrough after DATA:");
+      break;
 
-  case '5':
-    delivery_log(LOG_MAIN|LOG_REJECT, &cutthrough_addr, 0, US"rejected after DATA:");
-    break;
+    case '5':
+      delivery_log(LOG_MAIN|LOG_REJECT, addr, 0,
+	US"rejected after DATA:");
+      break;
 
-  default:
-    break;
+    default:
+      break;
+    }
   }
-  return cutthrough_addr.message;
+return cutthrough.addr.message;
 }
 
 

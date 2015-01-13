@@ -291,8 +291,16 @@ extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */
-extern BOOL    cutthrough_delivery;    /* Deliver in foreground */
-extern int     cutthrough_fd;          /* Connection for ditto */
+
+typedef struct {
+  BOOL         delivery;               /* When to attempt */
+  int          fd;                     /* Open connection */
+  int          nrcpt;                  /* Count of addresses */
+  uschar *     interface;              /* (address of) */
+  host_item    host;                   /* Host used */
+  address_item addr;                   /* (Chain of) addresses */
+} cut_t;
+extern cut_t cutthrough;               /* Deliver-concurrently */
 
 extern BOOL    daemon_listen;          /* True if listening required */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
