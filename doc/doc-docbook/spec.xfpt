@@ -9736,7 +9736,7 @@ ${sort{3:2:1:4}{<}{$item}}
 .endd
 sorts a list of numbers, and
 .code
-${sort {$lookup dnsdb{>:,,mx=example.com}} {<} {${listextract{1}{<,$item}}}}
+${sort {${lookup dnsdb{>:,,mx=example.com}}} {<} {${listextract{1}{<,$item}}}}
 .endd
 will sort an MX lookup into priority order.
 
