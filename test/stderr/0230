@@ -1,5 +1,5 @@
 >>> host in hosts_connection_nolog? no (option unset)
-LOG: SMTP connection from [192.168.1.2]:1115
+LOG: SMTP connection from [192.168.1.2]:1117
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
@@ -7,6 +7,6 @@ LOG: SMTP connection from [192.168.1.2]:1115
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
-LOG: SMTP connection from [192.168.1.2]:1115 closed by QUIT
+LOG: SMTP connection from [192.168.1.2]:1117 closed by QUIT
 
 ******** SERVER ********

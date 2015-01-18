@@ -34943,8 +34943,8 @@ selection marked by asterisks:
 &`*etrn                       `&  ETRN commands
 &`*host_lookup_failed         `&  as it says
 &` ident_timeout              `&  timeout for ident connection
-&` incoming_interface         `&  incoming interface on <= lines
-&` incoming_port              `&  incoming port on <= lines
+&` incoming_interface         `&  local interface on <= and => lines
+&` incoming_port              `&  remote port on <= lines
 &`*lost_incoming_connection   `&  as it says (includes timeouts)
 &` outgoing_port              `&  add remote port to => lines
 &`*queue_run                  `&  start and end queue runs
@@ -35063,12 +35063,16 @@ routing email addresses, but it does apply to &"byname"& lookups.
 client's ident port times out.
 .next
 .cindex "log" "incoming interface"
+.cindex "log" "local interface"
+.cindex "log" "local address and port"
+.cindex "TCP/IP" "logging local address and port"
 .cindex "interface" "logging"
 &%incoming_interface%&: The interface on which a message was received is added
 to the &"<="& line as an IP address in square brackets, tagged by I= and
 followed by a colon and the port number. The local interface and port are also
-added to other SMTP log lines, for example &"SMTP connection from"&, and to
-rejection lines.
+added to other SMTP log lines, for example &"SMTP connection from"& and to
+rejection lines
+and (despite the name) the local interface is added to &"=>"& lines..
 .next
 .cindex "log" "incoming remote port"
 .cindex "port" "logging remote"

@@ -817,6 +817,10 @@ else
   s = string_append(s, &size, &ptr, 2, US"> ", log_address);
   }
 
+if (log_extra_selector & LX_incoming_interface  &&  sending_ip_address)
+  s = string_append(s, &size, &ptr, 3, US" I=[", sending_ip_address, US"]");
+  /* for the port:  string_sprintf("%d", sending_port) */
+
 if ((log_extra_selector & LX_sender_on_delivery) != 0  ||  msg)
   s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
 
@@ -3219,6 +3223,14 @@ while (!done)
     addr = addr->next;
     break;
 
+    /* Local interface address/port */
+    case 'I':
+    if (*ptr) sending_ip_address = string_copy(ptr);
+    while (*ptr++) ;
+    if (*ptr) sending_port = atoi(ptr);
+    while (*ptr++) ;
+    break;
+
     /* Z marks the logical end of the data. It is followed by '0' if
     continue_transport was NULL at the end of transporting, otherwise '1'.
     We need to know when it becomes NULL during a delivery down a passed SMTP
@@ -4428,6 +4440,18 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
         }
       rmt_dlv_checked_write(fd, 'A', '0', big_buffer, ptr - big_buffer);
+      }
+
+    /* Local interface address/port */
+    if (log_extra_selector & LX_incoming_interface  &&  sending_ip_address)
+      {
+      uschar * ptr = big_buffer;
+      sprintf(CS ptr, "%.128s", sending_ip_address);
+      while(*ptr++);
+      sprintf(CS ptr, "%d", sending_port);
+      while(*ptr++);
+
+      rmt_dlv_checked_write(fd, 'I', '0', big_buffer, ptr - big_buffer);
       }
 
     /* Add termination flag, close the pipe, and that's it. The character

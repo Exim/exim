@@ -41,6 +41,9 @@ JH/09 A timeout of 2 minutes is now applied to all malware scanner types by
 
 JH/10 The smtp_receive_timeout main option is now expanded before use.
 
+JH/11 The incoming_interface log option now also enables logging of the
+      local interface on delivery outgoing connections.
+
 
 
 Exim version 4.85

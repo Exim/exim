@@ -36,6 +36,14 @@ check_recipient:
 
 begin routers
 
+.ifdef RT
+to_server:
+  driver = manualroute
+  transport = remote
+  route_list = * 127.0.0.1
+  self = send
+.endif
+
 fail_remote_domains:
   driver = redirect
   domains = ! +local_domains
@@ -57,6 +65,9 @@ local_delivery:
   headers_add = Port: $sender_host_port
   user = CALLER
 
+remote:
+  driver = smtp
+  port = PORT_D
 
 # ----- Retry -----
 
