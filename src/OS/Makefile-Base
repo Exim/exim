@@ -32,7 +32,7 @@ FE       = $(FULLECHO)
 # up-to-date. Then the os-specific source files and the C configuration file
 # are set up, and finally it goes to the main Exim target.
 
-all:       allexim
+all:       utils exim
 config:    $(EDITME) checklocalmake Makefile os.h os.c config.h version.h
 
 checklocalmake:
@@ -95,19 +95,16 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 # therefore always be run, even if the files exist. This shouldn't in fact be a
 # problem, but it does no harm. Other make programs will just ignore this.
 
-.PHONY: all config allexim buildauths buildlookups buildpdkim buildrouters \
+.PHONY: all config utils \
+	buildauths buildlookups buildpdkim buildrouters \
         buildtransports checklocalmake clean
 
 
-# This is the real default target for all the various exim binaries and
-# scripts, once the configuring stuff is done.
-
-allexim: $(EXIM_MONITOR) exicyclog exinext exiwhat \
+utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
         transport-filter.pl convert4r3 convert4r4 \
         exim_checkaccess \
-        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock \
-        exim
+        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock
 
 
 # Targets for special-purpose configuration header builders

@@ -28,6 +28,14 @@ buildname=$${build:-`$(SHELL) scripts/os-type`-`$(SHELL) scripts/arch-type`}
 all: Local/Makefile configure
 	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS)
 
+
+# This pair for the convinience of of the Debian maintainers
+exim: Local/Makefile configure
+	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS) exim
+utils: Local/Makefile configure
+	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS) utils
+
+
 Local/Makefile:
 	@echo ""
 	@echo "*** Please create Local/Makefile by copying src/EDITME and making"
