@@ -535,6 +535,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
     BOOL dane = FALSE;
+    BOOL dane_required;
     dns_answer tlsa_dnsa;
 #endif
     uschar inbuffer[4096];
@@ -592,7 +593,6 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
       {
-      BOOL dane_required;
       int rc;
 
       tls_out.dane_verified = FALSE;
@@ -797,6 +797,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	int oldtimeout = ob->command_timeout;
 	int rc;
 
+	tls_negotiate:
 	ob->command_timeout = callout;
         rc = tls_client_start(inblock.sock, host, addr, addr->transport
 # ifdef EXPERIMENTAL_DANE
@@ -805,26 +806,44 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 			    );
 	ob->command_timeout = oldtimeout;
 
-        /* TLS negotiation failed; give an error.  Try in clear on a new connection,
-           if the options permit it for this host. */
+        /* TLS negotiation failed; give an error.  Try in clear on a new
+	connection, if the options permit it for this host. */
         if (rc != OK)
           {
-	  if (  rc == DEFER
-	     && ob->tls_tempfail_tryclear
-	     && !smtps
-	     && verify_check_given_host(&ob->hosts_require_tls, host) != OK
-	     )
+	  if (rc == DEFER)
 	    {
 	    (void)close(inblock.sock);
 # ifdef EXPERIMENTAL_EVENT
 	    (void) event_raise(addr->transport->event_action,
 				    US"tcp:close", NULL);
 # endif
-	    log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
-	      "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
-	    suppress_tls = TRUE;
-	    goto tls_retry_connection;
+# ifdef EXPERIMENTAL_DANE
+	    if (dane)
+	      {
+	      if (!dane_required)
+		{
+		log_write(0, LOG_MAIN, "DANE attempt failed;"
+		  " trying CA-root TLS to %s [%s] (not in hosts_require_dane)",
+		  host->name, host->address);
+		dane = FALSE;
+		goto tls_negotiate;
+		}
+	      }
+	    else
+# endif
+	      if (  ob->tls_tempfail_tryclear
+		 && !smtps
+		 && verify_check_given_host(&ob->hosts_require_tls, host) != OK
+		 )
+	      {
+	      log_write(0, LOG_MAIN, "TLS session failure:"
+		" delivering unencrypted to %s [%s] (not in hosts_require_tls)",
+		host->name, host->address);
+	      suppress_tls = TRUE;
+	      goto tls_retry_connection;
+	      }
 	    }
+
 	  /*save_errno = ERRNO_TLSFAILURE;*/
 	  /*message = US"failure while setting up TLS session";*/
 	  send_quit = FALSE;

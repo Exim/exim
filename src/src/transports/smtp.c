@@ -1279,6 +1279,7 @@ BOOL prdr_active;
 BOOL dsn_all_lasthop = TRUE;
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
 BOOL dane = FALSE;
+BOOL dane_required;
 dns_answer tlsa_dnsa;
 #endif
 smtp_inblock inblock;
@@ -1365,8 +1366,6 @@ if (continue_hostname == NULL)
 
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
     {
-    BOOL dane_required;
-
     tls_out.dane_verified = FALSE;
     tls_out.tlsa_usage = 0;
 
@@ -1605,6 +1604,17 @@ if (  tls_offered
 
     if (rc != OK)
       {
+# ifdef EXPERIMENTAL_DANE
+      if (rc == DEFER && dane && !dane_required)
+	{
+	log_write(0, LOG_MAIN, "DANE attempt failed;"
+	  " trying CA-root TLS to %s [%s] (not in hosts_require_dane)",
+	  host->name, host->address);
+	dane = FALSE;
+	goto TLS_NEGOTIATE;
+	}
+# endif
+
       save_errno = ERRNO_TLSFAILURE;
       message = US"failure while setting up TLS session";
       send_quit = FALSE;

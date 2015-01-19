@@ -1764,7 +1764,7 @@ if (found)
   return OK;
 
 log_write(0, LOG_MAIN, "DANE error: No usable TLSA records");
-return FAIL;
+return DEFER;
 }
 #endif	/*EXPERIMENTAL_DANE*/
 
