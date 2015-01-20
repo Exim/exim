@@ -8,43 +8,55 @@ P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 F From: @
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
-1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
-Envelope-from: <>
+1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<x@y> rejected after DATA: '>' missing at end of address: failing address in "To:" header is: <dummy@gmail.com
+Envelope-from: <x@y>
 Envelope-to: <x@y>
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <x@y>)
 	id 10HmaY-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-F From: <x@y>, @
+T To: <dummy@gmail.com
+  Subject: incomprehensible
+F From: <forged@sender.com
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
-1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
 Envelope-from: <>
 Envelope-to: <x@y>
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaZ-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-F From: <x@y>
+F From: <x@y>, @
 I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmbA-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
+Envelope-from: <>
+Envelope-to: <x@y>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+F From: <x@y>
+I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
   X-warning: this is a test warning
-1999-03-02 09:44:33 10HmbA-0005vi-00 U=CALLER F=<x@y> rejected after DATA: body contains trigger
+1999-03-02 09:44:33 10HmbB-0005vi-00 U=CALLER F=<x@y> rejected after DATA: body contains trigger
 Envelope-from: <x@y>
 Envelope-to: <x@y>
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <x@y>)
-	id 10HmbA-0005vi-00
+	id 10HmbB-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 F From: x@y
   Date: Tue, 2 Mar 1999 09:44:33 +0000
-1999-03-02 09:44:33 10HmbB-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmbC-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
 Envelope-from: <>
 Envelope-to: <userx@test.ex>
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
-	id 10HmbB-0005vi-00
+	id 10HmbC-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 T to: group name: x@y, p@q;
 R reply-to: group name:;
-I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+I Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
   X-warning: this is a test warning

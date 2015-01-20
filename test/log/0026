@@ -1,16 +1,27 @@
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 $h_from: 'x@y'
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 $h_from: '@'
 1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
-1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
-1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> U=CALLER P=local-smtp S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 U=CALLER F=<x@y> rejected after DATA: body contains trigger
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
-1999-03-02 09:44:33 10HmbE-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 $h_from: '<forged@sender.com'
+1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<x@y> rejected after DATA: '>' missing at end of address: failing address in "To:" header is: <dummy@gmail.com
+1999-03-02 09:44:33 10HmaZ-0005vi-00 $h_from: '<x@y>, @'
+1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
+1999-03-02 09:44:33 10HmbA-0005vi-00 $h_from: '<x@y>'
+1999-03-02 09:44:33 10HmbA-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmbE-0005vi-00 $h_from: '<postmaster@test.ex>'
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 U=CALLER F=<x@y> rejected after DATA: body contains trigger
+1999-03-02 09:44:33 10HmbF-0005vi-00 $h_from: 'x@y'
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmbF-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 $h_from: 'x@y'
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmbG-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
+1999-03-02 09:44:33 10HmbH-0005vi-00 $h_from: 'userx@test.ex'
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 $h_from: ''
+1999-03-02 09:44:33 10HmbC-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line

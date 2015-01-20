@@ -20,6 +20,19 @@ Message 2
 .
 quit
 ****
+# Syntax error (version 2) in header => should fail
+exim -odq -bs
+mail from:<x@y>
+rcpt to:<x@y>
+data
+To: <dummy@gmail.com
+Subject: incomprehensible
+From: <forged@sender.com
+
+Message 2a
+.
+quit
+****
 # Syntax error in header => should fail even with null sender
 exim -odq -bs
 mail from:<>

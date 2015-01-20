@@ -24,6 +24,7 @@ begin acl
 acl_data:
   deny     log_message = body contains trigger
            condition = ${if match{$message_body}{trigger}{yes}{no}}
+  warn	   logwrite = \$h_from: '$h_from:'
   require  verify = header_syntax
   warn     message = X-warning: this is a test warning
   accept   senders = ! :
