@@ -30756,26 +30756,44 @@ spamd_address = 127.0.0.1 11333 variant=rspamd
 
 As of version 2.60, &%SpamAssassin%& also supports communication over UNIX
 sockets. If you want to us these, supply &%spamd_address%& with an absolute
-file name instead of a address/port pair:
+file name instead of an address/port pair:
 .code
 spamd_address = /var/run/spamd_socket
 .endd
 You can have multiple &%spamd%& servers to improve scalability. These can
 reside on other hardware reachable over the network. To specify multiple
 &%spamd%& servers, put multiple address/port pairs in the &%spamd_address%&
-option, separated with colons:
+option, separated with colons (the separator can be changed in the usual way):
 .code
 spamd_address = 192.168.2.10 783 : \
                 192.168.2.11 783 : \
                 192.168.2.12 783
 .endd
-Up to 32 &%spamd%& servers are supported. The servers are queried in a random
-fashion. When a server fails to respond to the connection attempt, all other
+Up to 32 &%spamd%& servers are supported.
+When a server fails to respond to the connection attempt, all other
 servers are tried until one succeeds. If no server responds, the &%spam%&
 condition defers.
 
-&*Warning*&: It is not possible to use the UNIX socket connection method with
-multiple &%spamd%& servers.
+.new
+Unix and TCP socket specifications may be mixed in any order.
+Each element of the list is a list itself, space-separated by default
+and changeable in the usual way.
+Elements after the first for Unix sockets, or second for TCP socket,
+are options.
+The supported option are:
+.code
+variant=rspamd      Use Rspamd rather than SpamAssassin protocol
+time=<start>-<end>  Use only between these times of day
+weight=<value>      Selection bias
+backup              Use only if all non-backup servers fail
+.endd
+
+Time specifications for the &`time`& option are <hour>.<minute>.<second>
+in the local time zone; each element being one or more digits.
+
+Servers are queried in a random fashion, weighted by the selection bias.
+The default value for selection bias is 1.
+.wen
 
 The &%spamd_address%& variable is expanded before use if it starts with
 a dollar sign. In this case, the expansion may return a string that is

@@ -17,13 +17,20 @@
 
 /* SHUT_WR seems to be undefined on Unixware ? */
 #ifndef SHUT_WR
-#define SHUT_WR 1
+# define SHUT_WR 1
 #endif
 
-typedef struct spamd_address_container {
-  uschar tcp_addr[24];
-  unsigned short int tcp_port;
-  BOOL is_rspamd;
+/* default weight */
+#define SPAMD_WEIGHT 1
+
+typedef struct spamd_address_container
+{
+  uschar * hostname;
+  unsigned short tcp_port;
+  int is_rspamd:1;
+  int is_failed:1;
+  int is_backup:1;
+  unsigned int weight;
 } spamd_address_container;
 
 #endif
