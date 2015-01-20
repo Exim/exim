@@ -1149,6 +1149,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
        && !random_local_part
        && !pm_mailfrom
        && cutthrough.fd < 0
+       && !lmtp
        )
       {
       cutthrough.fd = outblock.sock;	/* We assume no buffer in use in the outblock */
