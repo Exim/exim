@@ -1275,6 +1275,7 @@ BOOL    smtp_use_size          = FALSE;
 uschar *spamd_address          = US"127.0.0.1 783";
 uschar *spam_bar               = NULL;
 uschar *spam_report            = NULL;
+uschar *spam_action            = NULL;
 uschar *spam_score             = NULL;
 uschar *spam_score_int         = NULL;
 #endif

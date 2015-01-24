@@ -30711,14 +30711,23 @@ deny message = This message contains malware ($malware_name)
 .endd
 
 
-.section "Scanning with SpamAssassin" "SECTscanspamass"
+.section "Scanning with SpamAssassin and Rspamd" "SECTscanspamass"
 .cindex "content scanning" "for spam"
 .cindex "spam scanning"
 .cindex "SpamAssassin"
+.cindex "Rspamd"
 The &%spam%& ACL condition calls SpamAssassin's &%spamd%& daemon to get a spam
-score and a report for the message. You can get SpamAssassin at
-&url(http://www.spamassassin.org), or, if you have a working Perl
-installation, you can use CPAN by running:
+score and a report for the message.
+.new
+Support is also provided for Rspamd (which can speak SpamAssassin's protocol but
+provides reduced functionality when used in this mode).
+
+For more information about installation and configuration of SpamAssassin or 
+Rspamd refer to their respective websites at
+&url(http://spamassassin.apache.org) and &url(http://www.rspamd.com)
+.wen
+
+SpamAssassin can be installed with CPAN by running:
 .code
 perl -MCPAN -e 'install Mail::SpamAssassin'
 .endd
@@ -30727,17 +30736,27 @@ documentation to see how you can tweak it. The default installation should work
 nicely, however.
 
 .oindex "&%spamd_address%&"
-After having installed and configured SpamAssassin, start the &%spamd%& daemon.
-By default, it listens on 127.0.0.1, TCP port 783. If you use another host or
-port for &%spamd%&, you must set the &%spamd_address%& option in the global
-part of the Exim configuration as follows (example):
+By default, SpamAssassin listens on 127.0.0.1, TCP port 783 and if you 
+intend to use an instance running on the local host you do not need to set
+&%spamd_address%&. If you intend to use another host or port for SpamAssassin,
+you must set the &%spamd_address%& option in the global part of the Exim
+configuration as follows (example):
 .code
 spamd_address = 192.168.99.45 387
 .endd
-You do not need to set this option if you use the default. As of version 2.60,
-&%spamd%& also supports communication over UNIX sockets. If you want to use
-these, supply &%spamd_address%& with an absolute file name instead of a
-address/port pair:
+
+.new
+To use Rspamd (which by default listens on all local addresses
+on TCP port 11333)
+you should add &%variant=rspamd%& after the address/port pair, for example:
+.code
+spamd_address = 127.0.0.1 11333 variant=rspamd
+.endd
+.wen
+
+As of version 2.60, &%SpamAssassin%& also supports communication over UNIX
+sockets. If you want to us these, supply &%spamd_address%& with an absolute
+file name instead of a address/port pair:
 .code
 spamd_address = /var/run/spamd_socket
 .endd
@@ -30773,7 +30792,10 @@ The right-hand side of the &%spam%& condition specifies a name. This is
 relevant if you have set up multiple SpamAssassin profiles. If you do not want
 to scan using a specific profile, but rather use the SpamAssassin system-wide
 default profile, you can scan for an unknown name, or simply use &"nobody"&.
-However, you must put something on the right-hand side.
+.new
+Rspamd does not use this setting. However, you must put something on the
+right-hand side.
+.wen
 
 The name allows you to use per-domain or per-user antispam profiles in
 principle, but this is not straightforward in practice, because a message may
@@ -30827,6 +30849,14 @@ headers, since MUAs can match on such strings.
 .vitem &$spam_report$&
 A multiline text table, containing the full SpamAssassin report for the
 message. Useful for inclusion in headers or reject messages.
+
+.new
+.vitem &$spam_action$&
+For SpamAssassin either 'reject' or 'no action' depending on the
+spam score versus threshold.
+For Rspamd, the recommended action.
+.wen
+
 .endlist
 
 The &%spam%& condition caches its results unless expansion in

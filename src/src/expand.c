@@ -655,6 +655,7 @@ static var_entry var_table[] = {
   { "sn8",                 vtype_filter_int,  &filter_sn[8] },
   { "sn9",                 vtype_filter_int,  &filter_sn[9] },
 #ifdef WITH_CONTENT_SCAN
+  { "spam_action",         vtype_stringptr,   &spam_action },
   { "spam_bar",            vtype_stringptr,   &spam_bar },
   { "spam_report",         vtype_stringptr,   &spam_report },
   { "spam_score",          vtype_stringptr,   &spam_score },

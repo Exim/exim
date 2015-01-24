@@ -827,6 +827,7 @@ extern BOOL    smtp_use_size;          /* Global for passed connections */
 extern uschar *spamd_address;          /* address for the spamassassin daemon */
 extern uschar *spam_bar;               /* the spam "bar" (textual representation of spam_score) */
 extern uschar *spam_report;            /* the spamd report (multiline) */
+extern uschar *spam_action;            /* the spamd recommended-action */
 extern uschar *spam_score;             /* the spam score (float) */
 extern uschar *spam_score_int;         /* spam_score * 10 (int) */
 #endif

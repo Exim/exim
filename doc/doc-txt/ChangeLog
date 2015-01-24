@@ -50,6 +50,9 @@ JH/12 The cutthrough-routing facility now supports multi-recipient mails,
 JH/13 Bug 344: The verify = reverse_host_lookup ACL condition now accepts a
       /defer_ok option.
 
+JH/14 Bug 1573: The spam= ACL condition now additionally supports Rspamd.
+      Patch from Andrew Lewis.
+
 
 
 Exim version 4.85

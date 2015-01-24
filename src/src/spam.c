@@ -14,6 +14,7 @@
 uschar spam_score_buffer[16];
 uschar spam_score_int_buffer[16];
 uschar spam_bar_buffer[128];
+uschar spam_action_buffer[32];
 uschar spam_report_buffer[32600];
 uschar prev_user_name[128] = "";
 int spam_ok = 0;
@@ -32,9 +33,11 @@ spam(uschar **listptr)
   int spamd_sock = -1;
   uschar spamd_buffer[32600];
   int i, j, offset, result;
+  BOOL is_rspamd;
   uschar spamd_version[8];
+  uschar spamd_short_result[8];
   uschar spamd_score_char;
-  double spamd_threshold, spamd_score;
+  double spamd_threshold, spamd_score, spamd_reject_score;
   int spamd_report_offset;
   uschar *p,*q;
   int override = 0;
@@ -132,8 +135,11 @@ spam(uschar **listptr)
       spamd_address_container *this_spamd =
         (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
+      /* Check for spamd variant */
+      this_spamd->is_rspamd = Ustrstr(address, "variant=rspamd") != NULL;
+
       /* grok spamd address and port */
-      if (sscanf(CS address, "%23s %u", this_spamd->tcp_addr, &this_spamd->tcp_port) != 2)
+      if (sscanf(CS address, "%23s %hu", this_spamd->tcp_addr, &this_spamd->tcp_port) != 2)
         {
         log_write(0, LOG_MAIN,
           "%s warning - invalid spamd address: '%s'", loglabel, address);
@@ -181,8 +187,11 @@ spam(uschar **listptr)
                      spamd_address_vector[current_server]->tcp_addr,
                      spamd_address_vector[current_server]->tcp_port,
                      5 ) > -1)
+	{
         /* connection OK */
+        is_rspamd = spamd_address_vector[current_server]->is_rspamd;
         break;
+	}
 
       log_write(0, LOG_MAIN|LOG_PANIC,
          "%s warning - spamd connection to %s, port %u failed: %s",
@@ -221,14 +230,27 @@ spam(uschar **listptr)
       }
 
     server.sun_family = AF_UNIX;
-    Ustrcpy(server.sun_path, spamd_address_work);
+
+    is_rspamd = (p = Ustrstr(spamd_address_work, "variant=rspamd")) != NULL;
+    if (is_rspamd)
+      {
+      /* strip spaces */
+      p--;
+      while (p > spamd_address_work && isspace (*p))
+        p--;
+      Ustrncpy(server.sun_path, spamd_address_work, p - spamd_address_work + 1);
+      /* zero terminate */
+      server.sun_path[p - spamd_address_work + 1] = 0;
+      }
+    else
+      Ustrcpy(server.sun_path, spamd_address_work);
 
     if (connect(spamd_sock, (struct sockaddr *) &server, sizeof(struct sockaddr_un)) < 0)
       {
       log_write(0, LOG_MAIN|LOG_PANIC,
                 "%s spamd: unable to connect to UNIX socket %s (%s)",
 		loglabel,
-                spamd_address_work, strerror(errno) );
+                server.sun_path, strerror(errno) );
       (void)fclose(mbox_file);
       (void)close(spamd_sock);
       return DEFER;
@@ -244,15 +266,39 @@ spam(uschar **listptr)
     return DEFER;
     }
 
+  (void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
   /* now we are connected to spamd on spamd_sock */
-  (void)string_format(spamd_buffer,
-           sizeof(spamd_buffer),
-           "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n",
-           user_name,
-           mbox_size);
-
-  /* send our request */
-  if (send(spamd_sock, spamd_buffer, Ustrlen(spamd_buffer), 0) < 0)
+  if (is_rspamd)
+    {				/* rspamd variant */
+    uschar *req_str;
+    const char *helo;
+    const char *fcrdns;
+ 
+    req_str = string_sprintf("CHECK RSPAMC/1.3\r\nContent-length: %lu\r\n"
+      "Queue-Id: %s\r\nFrom: <%s>\r\nRecipient-Number: %d\r\n", mbox_size,
+      message_id, sender_address, recipients_count);
+    for (i = 0; i < recipients_count; i ++)
+      req_str = string_sprintf("%sRcpt: <%s>\r\n", req_str, recipients_list[i].address);
+    if ((helo = expand_string(US"$sender_helo_name")) != NULL && *helo != '\0')
+      req_str = string_sprintf("%sHelo: %s\r\n", req_str, helo);
+    if ((fcrdns = expand_string(US"$sender_host_name")) != NULL && *fcrdns != '\0')
+      req_str = string_sprintf("%sHostname: %s\r\n", req_str, fcrdns);
+    if (sender_host_address != NULL)
+      req_str = string_sprintf("%sIP: %s\r\n", req_str, sender_host_address);
+    req_str = string_sprintf("%s\r\n", req_str);
+    wrote = send(spamd_sock, req_str, Ustrlen(req_str), 0); 
+    }
+    else
+    {				/* spamassassin variant */
+    (void)string_format(spamd_buffer,
+            sizeof(spamd_buffer),
+            "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n",
+            user_name,
+            mbox_size);
+    /* send our request */
+    wrote = send(spamd_sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
+    }
+  if (wrote == -1)
     {
     (void)close(spamd_sock);
     log_write(0, LOG_MAIN|LOG_PANIC,
@@ -370,23 +416,51 @@ again:
   /* reading done */
   (void)close(spamd_sock);
 
-  /* dig in the spamd output and put the report in a multiline header, if requested */
-  if (sscanf(CS spamd_buffer,
-	      "SPAMD/%7s 0 EX_OK\r\nContent-length: %*u\r\n\r\n%lf/%lf\r\n%n",
-	      spamd_version, &spamd_score, &spamd_threshold,
-	      &spamd_report_offset) != 3)
-    {
-
-    /* try to fall back to pre-2.50 spamd output */
-    if (sscanf(CS spamd_buffer,
-		"SPAMD/%7s 0 EX_OK\r\nSpam: %*s ; %lf / %lf\r\n\r\n%n",
-                spamd_version, &spamd_score, &spamd_threshold,
-		&spamd_report_offset) != 3 )
+  if (is_rspamd)
+    {				/* rspamd variant of reply */
+    int r;
+    if ((r = sscanf(CS spamd_buffer,
+	    "RSPAMD/%7s 0 EX_OK\r\nMetric: default; %7s %lf / %lf / %lf\r\n%n",
+	    spamd_version, spamd_short_result, &spamd_score, &spamd_threshold,
+	    &spamd_reject_score, &spamd_report_offset)) != 5)
       {
-      log_write(0, LOG_MAIN|LOG_PANIC,
-         "%s cannot parse spamd output", loglabel);
-      return DEFER;
+        log_write(0, LOG_MAIN|LOG_PANIC,
+                  "%s cannot parse spamd output: %d", loglabel, r);
+        return DEFER;
       }
+    /* now parse action */
+    p = &spamd_buffer[spamd_report_offset];
+
+    if (Ustrncmp(p, "Action: ", sizeof("Action: ") - 1) == 0)
+      {
+      p += sizeof("Action: ") - 1;
+      q = &spam_action_buffer[0];
+      while (*p && *p != '\r' && (q - spam_action_buffer) < sizeof(spam_action_buffer) - 1)
+        *q++ = *p++;
+      *q = '\0';
+      }
+    }
+  else
+    {				/* spamassassin */
+    /* dig in the spamd output and put the report in a multiline header,
+    if requested */
+    if (sscanf(CS spamd_buffer,
+	 "SPAMD/%7s 0 EX_OK\r\nContent-length: %*u\r\n\r\n%lf/%lf\r\n%n",
+	 spamd_version,&spamd_score,&spamd_threshold,&spamd_report_offset) != 3)
+      {
+        /* try to fall back to pre-2.50 spamd output */
+        if (sscanf(CS spamd_buffer,
+	     "SPAMD/%7s 0 EX_OK\r\nSpam: %*s ; %lf / %lf\r\n\r\n%n",
+	     spamd_version,&spamd_score,&spamd_threshold,&spamd_report_offset) != 3)
+          {
+	  log_write(0, LOG_MAIN|LOG_PANIC,
+		    "%s cannot parse spamd output", loglabel);
+	  return DEFER;
+          }
+      }
+
+    Ustrcpy(spam_action_buffer,
+      spamd_score >= spamd_threshold ? "reject" : "no action");
     }
 
   /* Create report. Since this is a multiline string,
@@ -416,6 +490,7 @@ again:
     *q-- = '\0';
 
   spam_report = spam_report_buffer;
+  spam_action = spam_action_buffer;
 
   /* create spam bar */
   spamd_score_char = spamd_score > 0 ? '+' : '-';
@@ -433,25 +508,20 @@ again:
   spam_bar = spam_bar_buffer;
 
   /* create "float" spam score */
-  (void)string_format(spam_score_buffer, sizeof(spam_score_buffer),"%.1f", spamd_score);
+  (void)string_format(spam_score_buffer, sizeof(spam_score_buffer),
+	  "%.1f", spamd_score);
   spam_score = spam_score_buffer;
 
   /* create "int" spam score */
   j = (int)((spamd_score + 0.001)*10);
-  (void)string_format(spam_score_int_buffer, sizeof(spam_score_int_buffer), "%d", j);
+  (void)string_format(spam_score_int_buffer, sizeof(spam_score_int_buffer),
+	  "%d", j);
   spam_score_int = spam_score_int_buffer;
 
   /* compare threshold against score */
-  if (spamd_score >= spamd_threshold)
-    {
-    /* spam as determined by user's threshold */
-    spam_rc = OK;
-    }
-  else
-    {
-    /* not spam */
-    spam_rc = FAIL;
-    }
+  spam_rc = spamd_score >= spamd_threshold
+    ? OK	/* spam as determined by user's threshold */
+    : FAIL;	/* not spam */
 
   /* remember expanded spamd_address if needed */
   if (spamd_address_work != spamd_address)
@@ -461,10 +531,9 @@ again:
   Ustrcpy(prev_user_name, user_name);
   spam_ok = 1;
 
-  if (override) /* always return OK, no matter what the score */
-    return OK;
-  else
-    return spam_rc;
+  return override
+    ? OK		/* always return OK, no matter what the score */
+    : spam_rc;
 }
 
 #endif
