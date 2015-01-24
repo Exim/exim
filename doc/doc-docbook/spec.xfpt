@@ -28824,7 +28824,7 @@ verified is redirected to a single address, verification continues with the new
 address, and in that case, the subsequent value of &$address_data$& is the
 value for the child address.
 
-.vitem &*verify&~=&~reverse_host_lookup*&
+.vitem &*verify&~=&~reverse_host_lookup/*&<&'options'&>
 .cindex "&%verify%& ACL condition"
 .cindex "&ACL;" "verifying host reverse lookup"
 .cindex "host" "verifying reverse lookup"
@@ -28834,6 +28834,9 @@ was needed for checking a host list, or if the host matched &%host_lookup%&.)
 Verification ensures that the host name obtained from a reverse DNS lookup, or
 one of its aliases, does, when it is itself looked up in the DNS, yield the
 original IP address.
+
+There is one possible option, &`defer_ok`&.  If this is present and a
+DNS operation returns a temporary error, the verify condition succeeds.
 
 If this condition is used for a locally generated message (that is, when there
 is no client host involved), it always succeeds.

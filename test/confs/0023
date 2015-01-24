@@ -98,6 +98,10 @@ acl_9_9_9:
 acl_V4NET_0_0:
   require verify = reverse_host_lookup
   accept
+acl_V4NET_99_99:
+  accept  local_parts = defer_ok
+	  verify = reverse_host_lookup/defer_ok
+  accept  verify = reverse_host_lookup
 
 acl_V4NET_11_12:
   deny    message = host in DNS list $dnslist_domain: $dnslist_text

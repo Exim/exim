@@ -47,6 +47,9 @@ JH/11 The incoming_interface log option now also enables logging of the
 JH/12 The cutthrough-routing facility now supports multi-recipient mails,
       if the interface and destination host and port all match.
 
+JH/13 Bug 344: The verify = reverse_host_lookup ACL condition now accepts a
+      /defer_ok option.
+
 
 
 Exim version 4.85

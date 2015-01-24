@@ -1662,7 +1662,7 @@ typedef struct {
   unsigned alt_opt_sep;		/* >0 Non-/ option separator (custom parser) */
   } verify_type_t;
 static verify_type_t verify_type_list[] = {
-    { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	~0,	TRUE, 0 },
+    { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	~0,	FALSE, 0 },
     { US"certificate",	  	VERIFY_CERT,	 	~0,	TRUE, 0 },
     { US"helo",	  		VERIFY_HELO,	 	~0,	TRUE, 0 },
     { US"csa",	  		VERIFY_CSA,	 	~0,	FALSE, 0 },
@@ -1783,7 +1783,11 @@ switch(vp->value)
   {
   case VERIFY_REV_HOST_LKUP:
     if (sender_host_address == NULL) return OK;
-    return acl_verify_reverse(user_msgptr, log_msgptr);
+    if ((rc = acl_verify_reverse(user_msgptr, log_msgptr)) == DEFER)
+      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+	if (strcmpic(ss, US"defer_ok") == 0)
+	  return OK;
+    return rc;
 
   case VERIFY_CERT:
     /* TLS certificate verification is done at STARTTLS time; here we just
