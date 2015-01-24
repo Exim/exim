@@ -1,0 +1,37 @@
+# Exim test configuration 4008
+# Content-scan: rspamd interface
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+log_selector = +subject
+
+spamd_address = 127.0.0.1 11333 variant=rspamd
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = c_data
+
+begin acl
+
+c_data:
+  warn
+    spam = nobody
+  warn
+    log_message = $spam_action $spam_report
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+r:
+  driver = redirect
+  data = :blackhole:
+
+# End

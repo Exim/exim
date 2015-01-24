@@ -1,0 +1,55 @@
+# content scan interface: spamassassin
+server 7833
+<REPORT SPAMC
+<User:
+<Content-length:
+<
+<From 
+<X-Envelope-From
+<X-Envelope-To
+<Received: 
+<	by 
+<	(envelope
+<	id 
+<	for 
+<Content-type: text/plain
+<Message-Id:
+<From:
+<Date:
+<
+<test
+>SPAMD/1.1 0 EX_OK
+>Spam: False ; 4.5 / 5.0
+>
+>Spam detection software, running on the system "demo",
+>has NOT identified this incoming email as spam.  The original
+>message has been attached to this so you can view it or label
+>similar future email.  If you have any questions, see
+>@@CONTACT_ADDRESS@@ for details.
+>
+>Content preview:  test [...] 
+>
+>Content analysis details:   (4.5 points, 5.0 required)
+>
+> pts rule name              description
+>---- ---------------------- --------------------------------------------------
+>-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+> 1.2 MISSING_HEADERS        Missing To: header
+> 1.0 MISSING_FROM           Missing From: header
+> 1.8 MISSING_SUBJECT        Missing Subject: header
+> 1.4 MISSING_DATE           Missing Date: header
+> 0.1 MISSING_MID            Missing Message-Id: header
+>
+*eof
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Content-type: text/plain
+
+test
+.
+quit
+****
