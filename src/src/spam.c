@@ -263,6 +263,7 @@ start = time(NULL);
   uschar *address;
   uschar *spamd_address_list_ptr = spamd_address_work;
   spamd_address_container * spamd_address_vector[32];
+  spamd_address_container * this_spamd;
 
 
   /* Check how many spamd servers we have
@@ -274,10 +275,10 @@ start = time(NULL);
     int sublist_sep = -(int)' ';	/* default space-sep */
     unsigned args;
     uschar * s;
-    spamd_address_container * this_spamd =
-      (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
     HDEBUG(D_acl) debug_printf("spamd: addr entry '%s'\n", address);
+    this_spamd =
+      (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
     for (sublist = address, args = 0, spamd_param_init(this_spamd);
 	 s = string_nextinlist(&sublist, &sublist_sep, NULL, 0);
@@ -312,15 +313,13 @@ start = time(NULL);
     log_write(0, LOG_MAIN|LOG_PANIC,
        "%s no useable spamd server addresses in spamd_address configuration option.",
        loglabel);
-    (void)fclose(mbox_file);
-    return DEFER;
+    goto defer;
     }
 
   while (1)
     {
     struct hostent *he;
     int i;
-    spamd_address_container * this_spamd;
     BOOL is_local;
 
     current_server = spamd_get_server(spamd_address_vector, num_servers);
@@ -341,20 +340,16 @@ start = time(NULL);
 		  "%s spamd: unable to acquire socket (%s)",
 		  loglabel,
 		  strerror(errno));
-	(void)fclose(mbox_file);
-	return DEFER;
+	goto defer;
 	}
 
       server.sun_family = AF_UNIX;
       Ustrcpy(server.sun_path, this_spamd->hostname);
 
       if (connect(spamd_sock, (struct sockaddr *) &server, sizeof(struct sockaddr_un)) >= 0)
-	{
-	is_rspamd = this_spamd->is_rspamd;
 	break;					/* connection OK */
-	}
 
-      log_write(0, LOG_MAIN|LOG_PANIC,
+      log_write(0, LOG_MAIN,
 		"%s spamd: unable to connect to UNIX socket %s (%s)",
 		loglabel, server.sun_path, strerror(errno) );
       }
@@ -364,8 +359,7 @@ start = time(NULL);
 	{
 	log_write(0, LOG_MAIN|LOG_PANIC,
 	   "%s error creating IP socket for spamd", loglabel);
-	(void)fclose(mbox_file);
-	return DEFER;
+	goto defer;
 	}
 
       /*XXX should we use getaddrinfo? */
@@ -379,12 +373,9 @@ start = time(NULL);
 
 	if (ip_connect(spamd_sock, AF_INET, US inet_ntoa(in),
 		       this_spamd->tcp_port, 5) > -1)
-	  {
-	  is_rspamd = this_spamd->is_rspamd;
 	  break;				/* connection OK */
-	  }
 
-	log_write(0, LOG_MAIN|LOG_PANIC,
+	log_write(0, LOG_MAIN,
 	   "%s warning - spamd connection to '%s', port %u failed: %s",
 	   loglabel,
 	   this_spamd->hostname, this_spamd->tcp_port, strerror(errno));
@@ -398,19 +389,18 @@ start = time(NULL);
 	{
 	log_write(0, LOG_MAIN|LOG_PANIC, "%s all spamd servers failed",
 	  loglabel);
-	(void)fclose(mbox_file);
-	return DEFER;
+	goto defer;
 	}
       }
     }
+    is_rspamd = this_spamd->is_rspamd;
   }
 
 if (spamd_sock == -1)
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
       "programming fault, spamd_sock unexpectedly unset");
-  (void)fclose(mbox_file);
-  return DEFER;
+  goto defer;
   }
 
 (void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
@@ -450,8 +440,7 @@ if (wrote == -1)
   (void)close(spamd_sock);
   log_write(0, LOG_MAIN|LOG_PANIC,
        "%s spamd send failed: %s", loglabel, strerror(errno));
-  (void)fclose(mbox_file);
-  return DEFER;
+  goto defer;
   }
 
 /* now send the file */
@@ -504,8 +493,7 @@ again:
 	  "%s timed out writing spamd socket", loglabel);
 	}
       (void)close(spamd_sock);
-      (void)fclose(mbox_file);
-      return DEFER;
+      goto defer;
       }
 
     wrote = send(spamd_sock,spamd_buffer + offset,read - offset,0);
@@ -514,8 +502,7 @@ again:
       log_write(0, LOG_MAIN|LOG_PANIC,
 	  "%s %s on spamd socket", loglabel, strerror(errno));
       (void)close(spamd_sock);
-      (void)fclose(mbox_file);
-      return DEFER;
+      goto defer;
       }
     if (offset + wrote != read)
       {
@@ -531,8 +518,7 @@ if (ferror(mbox_file))
   log_write(0, LOG_MAIN|LOG_PANIC,
     "%s error reading spool file: %s", loglabel, strerror(errno));
   (void)close(spamd_sock);
-  (void)fclose(mbox_file);
-  return DEFER;
+  goto defer;
   }
 
 (void)fclose(mbox_file);
@@ -679,6 +665,10 @@ spam_ok = 1;
 return override
   ? OK		/* always return OK, no matter what the score */
   : spam_rc;
+
+defer:
+  (void)fclose(mbox_file);
+  return DEFER;
 }
 
 #endif
