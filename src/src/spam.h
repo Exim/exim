@@ -22,7 +22,8 @@
 
 typedef struct spamd_address_container {
   uschar tcp_addr[24];
-  unsigned int tcp_port;
+  unsigned short int tcp_port;
+  BOOL is_rspamd;
 } spamd_address_container;
 
 #endif
