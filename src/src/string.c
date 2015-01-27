@@ -1008,6 +1008,46 @@ new = string_cat(new, &sz, &off, ele, Ustrlen(ele));
 new[off] = '\0';
 return new;
 }
+
+
+static const uschar *
+Ustrnchr(const uschar * s, int c, unsigned * len)
+{
+while (*len)
+  {
+  if (!*s) return NULL;
+  if (*s == c) return s;
+  s++;
+  *len--;
+  }
+return NULL;
+}
+
+uschar *
+string_append_listele_n(uschar * list, uschar sep, const uschar * ele,
+  unsigned len)
+{
+uschar * new = NULL;
+int sz = 0, off = 0;
+const uschar * sp;
+
+if (list)
+  {
+  new = string_cat(new, &sz, &off, list, Ustrlen(list));
+  new = string_cat(new, &sz, &off, &sep, 1);
+  }
+
+while((sp = Ustrnchr(ele, sep, &len)))
+  {
+  new = string_cat(new, &sz, &off, ele, sp-ele+1);
+  new = string_cat(new, &sz, &off, &sep, 1);
+  ele = sp+1;
+  len--;
+  }
+new = string_cat(new, &sz, &off, ele, len);
+new[off] = '\0';
+return new;
+}
 #endif  /* COMPILE_UTILITY */
 
 

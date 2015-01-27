@@ -406,9 +406,13 @@ for (i = 0; i < adsnum; i++)
   ACCESS_DESCRIPTION * ad = sk_ACCESS_DESCRIPTION_value(ads, i);
 
   if (ad && OBJ_obj2nid(ad->method) == NID_ad_OCSP)
-    list = string_append_listele(list, sep,
-	      ASN1_STRING_data(ad->location->d.ia5));
+    {
+    uschar * ele = ASN1_STRING_data(ad->location->d.ia5);
+    int len =  ASN1_STRING_length(ad->location->d.ia5);
+    list = string_append_listele_n(list, sep, ele, len);
+    }
   }
+sk_ACCESS_DESCRIPTION_free(ads);
 return list;
 }
 
@@ -439,9 +443,13 @@ if (dps) for (i = 0; i < dpsnum; i++)
       if (  (np = sk_GENERAL_NAME_value(names, j))
 	 && np->type == GEN_URI
 	 )
-	list = string_append_listele(list, sep,
-		ASN1_STRING_data(np->d.uniformResourceIdentifier));
+	{
+	uschar * ele = ASN1_STRING_data(np->d.uniformResourceIdentifier);
+	int len =  ASN1_STRING_length(np->d.uniformResourceIdentifier);
+	list = string_append_listele_n(list, sep, ele, len);
+	}
     }
+sk_DIST_POINT_free(dps);
 return list;
 }
 
