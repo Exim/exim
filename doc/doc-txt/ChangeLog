@@ -37,7 +37,7 @@ JH/08 The EXPERIMENTAL_DSN compile option is no longer needed; all Delivery
 
 JH/09 A timeout of 2 minutes is now applied to all malware scanner types by
       default, modifiable by a malware= option.  The list separator for
-      the options can now be changed in the usual way.
+      the options can now be changed in the usual way.  Bug 68.
 
 JH/10 The smtp_receive_timeout main option is now expanded before use.
 
@@ -60,6 +60,9 @@ JH/15 Bug 670: The spamd_address main option (for the spam= ACL condition)
 JH/16 The spamd_address main option now supports a mixed list of local
       and remote servers.  Remote servers can be IPv6 addresses, and
       specify a port-range.
+
+JH/17 Bug 68: The spamd_address main option now supports an optional
+      timeout value per server.
 
 
 

@@ -30790,12 +30790,19 @@ The supported option are:
 .code
 variant=rspamd      Use Rspamd rather than SpamAssassin protocol
 time=<start>-<end>  Use only between these times of day
+tmo=<timespec>      Connection time limit.
 weight=<value>      Selection bias
 backup              Use only if all non-backup servers fail
 .endd
 
 Time specifications for the &`time`& option are <hour>.<minute>.<second>
 in the local time zone; each element being one or more digits.
+Either the seconds or both minutes and seconds, plus the leading &`.`&
+characters, may be omitted and will be taken as zero.
+
+Timeout specifications for the &`tmo`& option are the usual Exim
+time interval standard, eg. &`20s`& or &`1m`&.
+The default value is two minutes.
 
 Servers are queried in a random fashion, weighted by the selection bias.
 The default value for selection bias is 1.

@@ -21,7 +21,9 @@ int spam_ok = 0;
 int spam_rc = 0;
 uschar *prev_spamd_address_work = NULL;
 
+static int timeout_sec;
 static const uschar * loglabel = US"spam acl condition:";
+
 
 static int
 spamd_param_init(spamd_address_container *spamd)
@@ -38,7 +40,7 @@ static int
 spamd_param(const uschar *param, spamd_address_container *spamd)
 {
 static int timesinceday = -1;
-uschar buffer[256];
+const uschar * s;
 
 /* check backup parameter */
 if (Ustrcmp(param, "backup") == 0)
@@ -58,32 +60,30 @@ if (sscanf(param, "weight=%u", &spamd->weight))
   }
 
 /* check time parameter */
-if (sscanf(param, "time=%s", buffer))
+if (Ustrncmp(param, "time=", 5) == 0)
   {
   unsigned int start_h = 0, start_m = 0, start_s = 0;
   unsigned int end_h = 24, end_m = 0, end_s = 0;
   unsigned int time_start, time_end;
-  uschar *start_string;
-  uschar *end_string;
-  uschar *delimiter;
+  const uschar * end_string;
 
-  if ((delimiter = US strchr(CS buffer, '-')))
+  s = param+5;
+  if ((end_string = Ustrchr(s, '-')))
     {
-    *delimiter   = '\0';
-    start_string = buffer;
-    end_string   = delimiter + 1;
-    if (sscanf(CS end_string, "%u.%u.%u", &end_h, &end_m, &end_s) == 0 ||
-      sscanf(CS start_string, "%u.%u.%u", &start_h, &start_m, &start_s) == 0)
+    end_string++;
+    if (  sscanf(CS end_string, "%u.%u.%u", &end_h,   &end_m,   &end_s)   == 0
+       || sscanf(CS s,          "%u.%u.%u", &start_h, &start_m, &start_s) == 0
+       )
       {
       log_write(0, LOG_MAIN,
-	"%s warning - invalid spamd time value: '%s'", loglabel, buffer);
+	"%s warning - invalid spamd time value: '%s'", loglabel, s);
       return -1; /* syntax error */
       }
     }
   else
     {
     log_write(0, LOG_MAIN,
-    "%s warning - invalid spamd time value: '%s'", loglabel, buffer);
+      "%s warning - invalid spamd time value: '%s'", loglabel, s);
     return -1; /* syntax error */
     }
 
@@ -106,6 +106,19 @@ if (sscanf(param, "time=%s", buffer))
 if (Ustrcmp(param, "variant=rspamd") == 0)
   {
   spamd->is_rspamd = TRUE;
+  return 0;
+  }
+
+if (Ustrncmp(param, "tmo=", 4) == 0)
+  {
+  int sec = readconf_readtime((s = param+4), '\0', FALSE);
+  if (sec < 0)
+    {
+    log_write(0, LOG_MAIN,
+      "%s warning - invalid spamd timeout value: '%s'", loglabel, s);
+    return -1; /* syntax error */
+    }
+  timeout_sec = sec;
   return 0;
   }
 
@@ -210,6 +223,8 @@ if ((user_name = string_nextinlist(&list, &sep,
 if ( (Ustrcmp(user_name,"0") == 0) ||
      (strcmpic(user_name,US"false") == 0) )
   return FAIL;
+
+timeout_sec = SPAMD_TIMEOUT;
 
 /* if there is an additional option, check if it is "true" */
 if (strcmpic(list,US"true") == 0)
@@ -434,7 +449,7 @@ again:
 	  "%s %s on spamd socket", loglabel, strerror(errno));
       else
 	{
-	if (time(NULL) - start < SPAMD_TIMEOUT)
+	if (time(NULL) - start < timeout_sec)
 	  goto again;
 	log_write(0, LOG_MAIN|LOG_PANIC,
 	  "%s timed out writing spamd socket", loglabel);
@@ -479,7 +494,7 @@ offset = 0;
 while ((i = ip_recv(spamd_sock,
 		   spamd_buffer + offset,
 		   sizeof(spamd_buffer) - offset - 1,
-		   SPAMD_TIMEOUT - time(NULL) + start)) > 0 )
+		   timeout_sec - time(NULL) + start)) > 0 )
   offset += i;
 
 /* error handling */
