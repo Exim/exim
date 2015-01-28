@@ -263,8 +263,7 @@ start = time(NULL);
   uschar *address;
   uschar *spamd_address_list_ptr = spamd_address_work;
   spamd_address_container * spamd_address_vector[32];
-  spamd_address_container * this_spamd;
-
+  spamd_address_container * sd;
 
   /* Check how many spamd servers we have
      and register their addresses */
@@ -277,10 +276,9 @@ start = time(NULL);
     uschar * s;
 
     HDEBUG(D_acl) debug_printf("spamd: addr entry '%s'\n", address);
-    this_spamd =
-      (spamd_address_container *)store_get(sizeof(spamd_address_container));
+    sd = (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
-    for (sublist = address, args = 0, spamd_param_init(this_spamd);
+    for (sublist = address, args = 0, spamd_param_init(sd);
 	 s = string_nextinlist(&sublist, &sublist_sep, NULL, 0);
 	 args++
 	 )
@@ -288,11 +286,13 @@ start = time(NULL);
 	HDEBUG(D_acl) debug_printf("spamd: addr parm '%s'\n", s);
 	switch (args)
 	{
-	case 0:   this_spamd->hostname = s;
+	case 0:   sd->hostspec = s;
 		  if (*s == '/') args++;	/* local; no port */
 		  break;
-	case 1:   this_spamd->tcp_port = atoi(s); break;
-	default:  spamd_param(s, this_spamd);	 break;
+	case 1:   sd->hostspec = string_sprintf("%s %s", sd->hostspec, s);
+		  break;
+	default:  spamd_param(s, sd);
+		  break;
 	}
       }
     if (args < 2)
@@ -302,7 +302,7 @@ start = time(NULL);
       continue;
       }
 
-    spamd_address_vector[num_servers] = this_spamd;
+    spamd_address_vector[num_servers] = sd;
     if (++num_servers > 31)
       break;
     }
@@ -318,82 +318,29 @@ start = time(NULL);
 
   while (1)
     {
-    struct hostent *he;
-    int i;
-    BOOL is_local;
+    uschar * errstr;
 
     current_server = spamd_get_server(spamd_address_vector, num_servers);
-    this_spamd = spamd_address_vector[current_server];
+    sd = spamd_address_vector[current_server];
 
-    is_local = *this_spamd->hostname == '/';
-
-    debug_printf(is_local
-		 ? "trying server %s\n" : "trying server %s, port %u\n",
-		 this_spamd->hostname, this_spamd->tcp_port);
+    debug_printf("trying server %s\n", sd->hostspec);
 
     /* contact a spamd */
-    if (is_local)
+    if ((spamd_sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0)
+      break;
+
+    log_write(0, LOG_MAIN, "%s spamd: %s", loglabel, errstr);
+    sd->is_failed = TRUE;
+
+    current_server = spamd_get_server(spamd_address_vector, num_servers);
+    if (current_server < 0)
       {
-      if ((spamd_sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-	{
-	log_write(0, LOG_MAIN|LOG_PANIC,
-		  "%s spamd: unable to acquire socket (%s)",
-		  loglabel,
-		  strerror(errno));
-	goto defer;
-	}
-
-      server.sun_family = AF_UNIX;
-      Ustrcpy(server.sun_path, this_spamd->hostname);
-
-      if (connect(spamd_sock, (struct sockaddr *) &server, sizeof(struct sockaddr_un)) >= 0)
-	break;					/* connection OK */
-
-      log_write(0, LOG_MAIN,
-		"%s spamd: unable to connect to UNIX socket %s (%s)",
-		loglabel, server.sun_path, strerror(errno) );
-      }
-    else
-      {
-      if ((spamd_sock = ip_socket(SOCK_STREAM, AF_INET)) < 0)
-	{
-	log_write(0, LOG_MAIN|LOG_PANIC,
-	   "%s error creating IP socket for spamd", loglabel);
-	goto defer;
-	}
-
-      /*XXX should we use getaddrinfo? */
-      if (!(he = gethostbyname(CS this_spamd->hostname)))
-	log_write(0, LOG_MAIN|LOG_PANIC,
-	  "%s failed to lookup host '%s'", loglabel, this_spamd->hostname);
-
-      else
-	{
-	struct in_addr in = *(struct in_addr *) he->h_addr_list[0];
-
-	if (ip_connect(spamd_sock, AF_INET, US inet_ntoa(in),
-		       this_spamd->tcp_port, 5) > -1)
-	  break;				/* connection OK */
-
-	log_write(0, LOG_MAIN,
-	   "%s warning - spamd connection to '%s', port %u failed: %s",
-	   loglabel,
-	   this_spamd->hostname, this_spamd->tcp_port, strerror(errno));
-	}
-
-      (void)close(spamd_sock);
-
-      this_spamd->is_failed = TRUE;
-      current_server = spamd_get_server(spamd_address_vector, num_servers);
-      if (current_server < 0)
-	{
-	log_write(0, LOG_MAIN|LOG_PANIC, "%s all spamd servers failed",
-	  loglabel);
-	goto defer;
-	}
+      log_write(0, LOG_MAIN|LOG_PANIC, "%s all spamd servers failed",
+	loglabel);
+      goto defer;
       }
     }
-    is_rspamd = this_spamd->is_rspamd;
+    is_rspamd = sd->is_rspamd;
   }
 
 if (spamd_sock == -1)
@@ -672,3 +619,5 @@ defer:
 }
 
 #endif
+/* vi: aw ai sw=2
+*/

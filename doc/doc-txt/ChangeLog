@@ -58,7 +58,8 @@ JH/15 Bug 670: The spamd_address main option (for the spam= ACL condition)
       modifiers per server.  Patch originally by <rommer@active.by>.
 
 JH/16 The spamd_address main option now supports a mixed list of local
-      and remote servers.
+      and remote servers.  Remote servers can be IPv6 addresses, and
+      specify a port-range.
 
 
 

@@ -25,8 +25,7 @@
 
 typedef struct spamd_address_container
 {
-  uschar * hostname;
-  unsigned short tcp_port;
+  uschar * hostspec;
   int is_rspamd:1;
   int is_failed:1;
   int is_backup:1;
