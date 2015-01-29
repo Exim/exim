@@ -7,4 +7,6 @@ exim -odi userx
 Remove-Me: this header is to be removed
 Another: This is another header
 Remove-Me-Also: me too!
+Remove-Me-Too: me too!
+Remove-Me-Too2: me too!
 ****

@@ -24,6 +24,7 @@ r2:
   driver = redirect
   headers_remove = Remove-Me-Also:
   headers_remove = Remove-Me:
+  headers_remove = <; Remove-Me-Too ; Remove-Me-Too2
   data = $local_part@domain
 
 r3:

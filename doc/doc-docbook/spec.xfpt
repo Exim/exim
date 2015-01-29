@@ -17154,7 +17154,10 @@ and the discussion in chapter &<<CHAPenvironment>>&.
 .option headers_add routers list&!! unset
 .cindex "header lines" "adding"
 .cindex "router" "adding header lines"
-This option specifies a list of text headers, newline-separated,
+This option specifies a list of text headers,
+.new
+newline-separated (by default, changeable in the usual way),
+.wen
 that is associated with any addresses that are accepted by the router.
 Each item is separately expanded, at routing time.  However, this
 option has no effect when an address is just being verified. The way in which
@@ -17191,7 +17194,10 @@ avoided. The &%repeat_use%& option of the &%redirect%& router may be of help.
 .option headers_remove routers list&!! unset
 .cindex "header lines" "removing"
 .cindex "router" "removing header lines"
-This option specifies a list of text headers, colon-separated,
+This option specifies a list of text headers,
+.new
+colon-separated (by default, changeable in the usual way),
+.wen
 that is associated with any addresses that are accepted by the router.
 Each item is separately expanded, at routing time.  However, this
 option has no effect when an address is just being verified. The way in which
@@ -20238,7 +20244,10 @@ value that the router supplies, and also overriding any value associated with
 .option headers_add transports list&!! unset
 .cindex "header lines" "adding in transport"
 .cindex "transport" "header lines; adding"
-This option specifies a list of text headers, newline-separated,
+This option specifies a list of text headers,
+.new
+newline-separated (by default, changeable in the usual way),
+.wen
 which are (separately) expanded and added to the header
 portion of a message as it is transported, as described in section
 &<<SECTheadersaddrem>>&. Additional header lines can also be specified by
@@ -20263,7 +20272,10 @@ checked, since this option does not automatically suppress them.
 .option headers_remove transports list&!! unset
 .cindex "header lines" "removing"
 .cindex "transport" "header lines; removing"
-This option specifies a list of header names, colon-separated;
+This option specifies a list of header names,
+.new
+colon-separated (by default, changeable in the usual way);
+.wen
 these headers are omitted from the message as it is transported, as described
 in section &<<SECTheadersaddrem>>&. Header removal can also be specified by
 routers.

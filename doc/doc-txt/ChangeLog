@@ -64,6 +64,9 @@ JH/16 The spamd_address main option now supports a mixed list of local
 JH/17 Bug 68: The spamd_address main option now supports an optional
       timeout value per server.
 
+JH/18 Bug 1581: Router and transport options headers_add/remove can
+      now have the list separator specified.
+
 
 
 Exim version 4.85

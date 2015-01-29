@@ -1597,18 +1597,16 @@ switch (type)
       }
     else if (ol->type & opt_rep_str)
       {
-      uschar sep = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
-      uschar * cp;
+      uschar sep_o = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
+      int    sep_i = -(int)sep_o;
+      uschar * list = sptr;
+      uschar * s;
+      uschar * list_o = *str_target;
 
-      /* Strip trailing whitespace and seperators */
-      for (cp = sptr + Ustrlen(sptr) - 1;
-	  cp >= sptr && (*cp == '\n' || *cp == '\t' || *cp == ' ' || *cp == sep);
-	  cp--) *cp = '\0';
-
-      if (cp >= sptr)
-	*str_target = string_copy_malloc(
-		      *str_target ? string_sprintf("%s%c%s", *str_target, sep, sptr)
-				  : sptr);
+      while ((s = string_nextinlist(&list, &sep_i, NULL, 0)))
+	list_o = string_append_listele(list_o, sep_o, s);
+      if (list_o)
+	*str_target = string_copy_malloc(list_o);
       }
     else
       {
