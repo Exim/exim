@@ -90,9 +90,8 @@ if (rblock->remove_headers)
   uschar * list = rblock->remove_headers;
   int sep = ':';
   uschar * s;
-  uschar buffer[128];
 
-  while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+  while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     if (!(s = expand_string(s)))
       {
       if (!expand_string_forcedfail)
