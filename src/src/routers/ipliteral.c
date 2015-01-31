@@ -99,8 +99,8 @@ ipliteral_router_options_block *ob =
   (ipliteral_router_options_block *)(rblock->options_block);
 */
 host_item *h;
-uschar *domain = addr->domain;
-uschar *ip;
+const uschar *domain = addr->domain;
+const uschar *ip;
 int len = Ustrlen(domain);
 int rc, ipv;
 
@@ -116,29 +116,23 @@ declines. Otherwise route to the single IP address, setting the host name to
 "(unnamed)". */
 
 if (domain[0] != '[' || domain[len-1] != ']') return DECLINE;
-domain[len-1] = 0;  /* temporarily */
-
-ip = domain + 1;
+ip = string_copyn(domain+1, len-2);
 if (strncmpic(ip, US"IPV6:", 5) == 0 || strncmpic(ip, US"IPV4:", 5) == 0)
   ip += 5;
 
 ipv = string_is_ip_address(ip, NULL);
 if (ipv == 0 || (disable_ipv6 && ipv == 6))
-  {
-  domain[len-1] = ']';
   return DECLINE;
-  }
 
 /* It seems unlikely that ignore_target_hosts will be used with this router,
 but if it is set, it should probably work. */
 
-if (verify_check_this_host(&(rblock->ignore_target_hosts), NULL, domain,
-      ip, NULL) == OK)
+if (verify_check_this_host(CUSS&rblock->ignore_target_hosts,
+       	NULL, domain, ip, NULL) == OK)
   {
   DEBUG(D_route)
       debug_printf("%s is in ignore_target_hosts\n", ip);
   addr->message = US"IP literal host explicitly ignored";
-  domain[len-1] = ']';
   return DECLINE;
   }
 
@@ -149,8 +143,7 @@ h = store_get(sizeof(host_item));
 h->next = NULL;
 h->address = string_copy(ip);
 h->port = PORT_NONE;
-domain[len-1] = ']';   /* restore */
-h->name = string_copy(domain);
+h->name = domain;
 h->mx = MX_NONE;
 h->status = hstatus_unknown;
 h->why = hwhy_unknown;

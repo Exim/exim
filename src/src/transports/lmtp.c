@@ -171,7 +171,7 @@ if (*errno_value == ERRNO_WRITEINCOMPLETE)
 
 if (buffer[0] != 0)
   {
-  uschar *s = string_printing(buffer);
+  const uschar *s = string_printing(buffer);
   *message = string_sprintf("LMTP error after %s: %s", big_buffer, s);
   *yield = buffer[0];
   return TRUE;
@@ -460,7 +460,7 @@ BOOL yield = FALSE;
 address_item *addr;
 uschar *igquotstr = US"";
 uschar *sockname = NULL;
-uschar **argv;
+const uschar **argv;
 uschar buffer[256];
 
 DEBUG(D_transport) debug_printf("%s transport entered\n", tblock->name);
@@ -469,13 +469,29 @@ DEBUG(D_transport) debug_printf("%s transport entered\n", tblock->name);
 not both. When a command is specified, call the common function for creating an
 argument list and expanding the items. */
 
-if (ob->cmd != NULL)
+if (ob->cmd)
   {
   DEBUG(D_transport) debug_printf("using command %s\n", ob->cmd);
   sprintf(CS buffer, "%.50s transport", tblock->name);
   if (!transport_set_up_command(&argv, ob->cmd, TRUE, PANIC, addrlist, buffer,
        NULL))
     return FALSE;
+
+  /* If the -N option is set, can't do any more. Presume all has gone well. */
+  if (dont_deliver)
+    goto MINUS_N;
+
+/* As this is a local transport, we are already running with the required
+uid/gid and current directory. Request that the new process be a process group
+leader, so we can kill it and all its children on an error. */
+
+  if ((pid = child_open(USS argv, NULL, 0, &fd_in, &fd_out, TRUE)) < 0)
+    {
+    addrlist->message = string_sprintf(
+      "Failed to create child process for %s transport: %s", tblock->name,
+        strerror(errno));
+    return FALSE;
+    }
   }
 
 /* When a socket is specified, expand the string and create a socket. */
@@ -498,38 +514,11 @@ else
         ob->skt, tblock->name, strerror(errno));
     return FALSE;
     }
-  }
 
-/* If the -N option is set, can't do any more. Presume all has gone well. */
+  /* If the -N option is set, can't do any more. Presume all has gone well. */
+  if (dont_deliver)
+    goto MINUS_N;
 
-if (dont_deliver)
-  {
-  DEBUG(D_transport)
-    debug_printf("*** delivery by %s transport bypassed by -N option",
-      tblock->name);
-  addrlist->transport_return = OK;
-  return FALSE;
-  }
-
-/* As this is a local transport, we are already running with the required
-uid/gid and current directory. Request that the new process be a process group
-leader, so we can kill it and all its children on an error. */
-
-if (ob->cmd != NULL)
-  {
-  if ((pid = child_open(argv, NULL, 0, &fd_in, &fd_out, TRUE)) < 0)
-    {
-    addrlist->message = string_sprintf(
-      "Failed to create child process for %s transport: %s", tblock->name,
-        strerror(errno));
-    return FALSE;
-    }
-  }
-
-/* For a socket, try to make the connection */
-
-else
-  {
   sockun.sun_family = AF_UNIX;
   sprintf(sockun.sun_path, "%.*s", (int)(sizeof(sockun.sun_path)-1), sockname);
   if(connect(fd_out, (struct sockaddr *)(&sockun), sizeof(sockun)) == -1)
@@ -540,6 +529,7 @@ else
     return FALSE;
     }
   }
+
 
 /* Make the output we are going to read into a file. */
 
@@ -666,8 +656,9 @@ if (send_data)
       addr->transport_return = OK;
       if ((log_extra_selector & LX_smtp_confirmation) != 0)
         {
-        uschar *s = string_printing(buffer);
-        addr->message = (s == buffer)? (uschar *)string_copy(s) : s;
+        const uschar *s = string_printing(buffer);
+	/* de-const safe here as string_printing known to have alloc'n'copied */
+        addr->message = (s == buffer)? (uschar *)string_copy(s) : US s;
         }
       }
     /* If the response has failed badly, use it for all the remaining pending
@@ -784,6 +775,14 @@ DEBUG(D_transport)
   debug_printf("%s transport yields %d\n", tblock->name, yield);
 
 return yield;
+
+
+MINUS_N:
+  DEBUG(D_transport)
+    debug_printf("*** delivery by %s transport bypassed by -N option",
+      tblock->name);
+  addrlist->transport_return = OK;
+  return FALSE;
 }
 
 /* End of transport/lmtp.c */

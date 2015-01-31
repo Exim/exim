@@ -127,7 +127,7 @@ deliver_set_expansions(address_item *addr)
 {
 if (addr == NULL)
   {
-  uschar ***p = address_expansions;
+  const uschar ***p = address_expansions;
   while (*p != NULL) **p++ = NULL;
   return;
   }
@@ -718,7 +718,7 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 
 #ifdef EXPERIMENTAL_EVENT
 uschar *
-event_raise(uschar * action, uschar * event, uschar * ev_data)
+event_raise(uschar * action, const uschar * event, uschar * ev_data)
 {
 uschar * s;
 if (action)
@@ -752,11 +752,11 @@ return NULL;
 }
 
 static void
-msg_event_raise(uschar * event, address_item * addr)
+msg_event_raise(const uschar * event, const address_item * addr)
 {
-uschar * save_domain = deliver_domain;
+const uschar * save_domain = deliver_domain;
 uschar * save_local =  deliver_localpart;
-uschar * save_host =   deliver_host;
+const uschar * save_host = deliver_host;
 
 if (!addr->transport)
   return;
@@ -1018,7 +1018,10 @@ malformed, it won't ever have gone near LDAP.) */
 
 if (addr->message != NULL)
   {
-  addr->message = string_printing(addr->message);
+  const uschar * s = string_printing(addr->message);
+  if (s != addr->message)
+    addr->message = US s;
+    /* deconst cast ok as string_printing known to have alloc'n'copied */
   if (((Ustrstr(addr->message, "failed to expand") != NULL) || (Ustrstr(addr->message, "expansion of ") != NULL)) &&
       (Ustrstr(addr->message, "mysql") != NULL ||
        Ustrstr(addr->message, "pgsql") != NULL ||
@@ -1075,11 +1078,12 @@ if (addr->return_file >= 0 && addr->return_filename != NULL)
         if (s != NULL)
           {
           uschar *p = big_buffer + Ustrlen(big_buffer);
+	  const uschar * sp;
           while (p > big_buffer && isspace(p[-1])) p--;
           *p = 0;
-          s = string_printing(big_buffer);
+          sp = string_printing(big_buffer);
           log_write(0, LOG_MAIN, "<%s>: %s transport output: %s",
-            addr->address, tb->name, s);
+            addr->address, tb->name, sp);
           }
         (void)fclose(f);
         }
@@ -2779,7 +2783,7 @@ sort_remote_deliveries(void)
 {
 int sep = 0;
 address_item **aptr = &addr_remote;
-uschar *listptr = remote_sort_domains;
+const uschar *listptr = remote_sort_domains;
 uschar *pattern;
 uschar patbuf[256];
 
@@ -2794,7 +2798,7 @@ while (*aptr != NULL &&
     {
     address_item **next;
     deliver_domain = (*aptr)->domain;   /* set $domain */
-    if (match_isinlist(deliver_domain, &pattern, UCHAR_MAX+1,
+    if (match_isinlist(deliver_domain, (const uschar **)&pattern, UCHAR_MAX+1,
           &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK)
       {
       aptr = &((*aptr)->next);
@@ -2804,7 +2808,7 @@ while (*aptr != NULL &&
     next = &((*aptr)->next);
     while (*next != NULL &&
            (deliver_domain = (*next)->domain,  /* Set $domain */
-            match_isinlist(deliver_domain, &pattern, UCHAR_MAX+1,
+            match_isinlist(deliver_domain, (const uschar **)&pattern, UCHAR_MAX+1,
               &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL)) != OK)
       next = &((*next)->next);
 
@@ -4580,7 +4584,7 @@ if (percent_hack_domains != NULL)
 
   deliver_domain = addr->domain;  /* set $domain */
 
-  while ((rc = match_isinlist(deliver_domain, &percent_hack_domains, 0,
+  while ((rc = match_isinlist(deliver_domain, (const uschar **)&percent_hack_domains, 0,
            &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
              == OK &&
          (t = Ustrrchr(local_part, '%')) != NULL)
@@ -5672,7 +5676,7 @@ if (process_recipients != RECIP_IGNORE)
       if (process_recipients != RECIP_ACCEPT)
 	{
 	uschar * save_local =  deliver_localpart;
-	uschar * save_domain = deliver_domain;
+	const uschar * save_domain = deliver_domain;
 
 	deliver_localpart = expand_string(
 		      string_sprintf("${local_part:%s}", new->address));
@@ -5937,7 +5941,7 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
 
     deliver_domain = addr->domain;  /* set $domain */
     if (!forced && hold_domains != NULL &&
-         (rc = match_isinlist(addr->domain, &hold_domains, 0,
+         (rc = match_isinlist(addr->domain, (const uschar **)&hold_domains, 0,
            &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE,
            NULL)) != FAIL)
       {
@@ -6144,7 +6148,7 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
       addr_route = addr->next;
 
       deliver_domain = addr->domain;  /* set $domain */
-      if ((rc = match_isinlist(addr->domain, &queue_domains, 0,
+      if ((rc = match_isinlist(addr->domain, (const uschar **)&queue_domains, 0,
             &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
               != OK)
         {
@@ -6177,7 +6181,7 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
     {
     int rc;
     address_item *addr = addr_route;
-    uschar *old_domain = addr->domain;
+    const uschar *old_domain = addr->domain;
     uschar *old_unique = addr->unique;
     addr_route = addr->next;
     addr->next = NULL;
@@ -7400,7 +7404,8 @@ else if (addr_defer != (address_item *)(+1))
 
     if (deliver_domain != NULL)
       {
-      uschar *d = (testflag(addr, af_pfr))? addr->parent->domain : addr->domain;
+      const uschar *d = testflag(addr, af_pfr)
+	? addr->parent->domain : addr->domain;
 
       /* The domain may be unset for an address that has never been routed
       because the system filter froze the message. */

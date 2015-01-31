@@ -118,7 +118,7 @@ Returns:        a hostent structure or NULL for an error
 */
 
 static struct hostent *
-host_fake_gethostbyname(uschar *name, int af, int *error_num)
+host_fake_gethostbyname(const uschar *name, int af, int *error_num)
 {
 #if HAVE_IPV6
 int alen = (af == AF_INET)? sizeof(struct in_addr):sizeof(struct in6_addr);
@@ -127,7 +127,7 @@ int alen = sizeof(struct in_addr);
 #endif
 
 int ipa;
-uschar *lname = name;
+const uschar *lname = name;
 uschar *adds;
 uschar **alist;
 struct hostent *yield;
@@ -295,19 +295,18 @@ Returns:      nothing
 */
 
 void
-host_build_hostlist(host_item **anchor, uschar *list, BOOL randomize)
+host_build_hostlist(host_item **anchor, const uschar *list, BOOL randomize)
 {
 int sep = 0;
 int fake_mx = MX_NONE;          /* This value is actually -1 */
 uschar *name;
-uschar buffer[1024];
 
 if (list == NULL) return;
 if (randomize) fake_mx--;       /* Start at -2 for randomizing */
 
 *anchor = NULL;
 
-while ((name = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
+while ((name = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
   {
   host_item *h;
 
@@ -318,7 +317,7 @@ while ((name = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
     }
 
   h = store_get(sizeof(host_item));
-  h->name = string_copy(name);
+  h->name = name;
   h->address = NULL;
   h->port = PORT_NONE;
   h->mx = fake_mx;
@@ -444,7 +443,7 @@ Returns:    a port number or PORT_NONE
 int
 host_item_get_port(host_item *h)
 {
-uschar *p;
+const uschar *p;
 int port, x;
 int len = Ustrlen(h->name);
 
@@ -718,7 +717,7 @@ Returns:      a chain of ip_address_items, each containing to a textual
 */
 
 ip_address_item *
-host_build_ifacelist(uschar *list, uschar *name)
+host_build_ifacelist(const uschar *list, uschar *name)
 {
 int sep = 0;
 uschar *s;
@@ -811,9 +810,9 @@ ip_address_item *running_interfaces = NULL;
 if (local_interface_data == NULL)
   {
   void *reset_item = store_get(0);
-  ip_address_item *dlist = host_build_ifacelist(local_interfaces,
+  ip_address_item *dlist = host_build_ifacelist(CUS local_interfaces,
     US"local_interfaces");
-  ip_address_item *xlist = host_build_ifacelist(extra_local_interfaces,
+  ip_address_item *xlist = host_build_ifacelist(CUS extra_local_interfaces,
     US"extra_local_interfaces");
   ip_address_item *ipa;
 
@@ -972,7 +971,7 @@ Returns:     the number of ints used
 */
 
 int
-host_aton(uschar *address, int *bin)
+host_aton(const uschar *address, int *bin)
 {
 int x[4];
 int v4offset = 0;
@@ -984,8 +983,8 @@ supported. */
 
 if (Ustrchr(address, ':') != NULL)
   {
-  uschar *p = address;
-  uschar *component[8];
+  const uschar *p = address;
+  const uschar *component[8];
   BOOL ipv4_ends = FALSE;
   int ci = 0;
   int nulloffset = 0;
@@ -1179,7 +1178,7 @@ host_is_tls_on_connect_port(int port)
 {
 int sep = 0;
 uschar buffer[32];
-uschar *list = tls_in.on_connect_ports;
+const uschar *list = tls_in.on_connect_ports;
 uschar *s;
 uschar *end;
 
@@ -1214,7 +1213,7 @@ Returns:
 */
 
 BOOL
-host_is_in_net(uschar *host, uschar *net, int maskoffset)
+host_is_in_net(const uschar *host, const uschar *net, int maskoffset)
 {
 int i;
 int address[4];
@@ -1329,9 +1328,9 @@ for (h = host; h != last->next; h = h->next)
   if (hosts_treat_as_local != NULL)
     {
     int rc;
-    uschar *save = deliver_domain;
+    const uschar *save = deliver_domain;
     deliver_domain = h->name;   /* set $domain */
-    rc = match_isinlist(string_copylc(h->name), &hosts_treat_as_local, 0,
+    rc = match_isinlist(string_copylc(h->name), CUSS &hosts_treat_as_local, 0,
       &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL);
     deliver_domain = save;
     if (rc == OK) goto FOUND_LOCAL;
@@ -1590,7 +1589,7 @@ uschar *hname, *save_hostname;
 uschar **aliases;
 uschar buffer[256];
 uschar *ordername;
-uschar *list = host_lookup_order;
+const uschar *list = host_lookup_order;
 dns_record *rr;
 dns_answer dnsa;
 dns_scan dnss;
@@ -1892,8 +1891,8 @@ Returns:                 HOST_FIND_FAILED  Failed to find the host or domain
 */
 
 int
-host_find_byname(host_item *host, uschar *ignore_target_hosts, int flags,
-  uschar **fully_qualified_name, BOOL local_host_check)
+host_find_byname(host_item *host, const uschar *ignore_target_hosts, int flags,
+  const uschar **fully_qualified_name, BOOL local_host_check)
 {
 int i, yield, times;
 uschar **addrlist;
@@ -1909,7 +1908,7 @@ dns_again_means_nonexist. */
 
 if (running_in_test_harness)
   {
-  uschar *endname = host->name + Ustrlen(host->name);
+  const uschar *endname = host->name + Ustrlen(host->name);
   if (Ustrcmp(endname - 14, "test.again.dns") == 0) goto RETURN_AGAIN;
   }
 
@@ -1932,8 +1931,8 @@ lookups here (except when testing standalone). */
   #else
   if (disable_ipv6 ||
     (dns_ipv4_lookup != NULL &&
-        match_isinlist(host->name, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
-          TRUE, NULL) == OK))
+        match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
+	  MCL_DOMAIN, TRUE, NULL) == OK))
   #endif
 
     { af = AF_INET; times = 1; }
@@ -2116,7 +2115,7 @@ yield = local_host_check?
 
 HDEBUG(D_host_lookup)
   {
-  host_item *h;
+  const host_item *h;
   if (fully_qualified_name != NULL)
     debug_printf("fully qualified name = %s\n", *fully_qualified_name);
   debug_printf("%s looked up these IP addresses:\n",
@@ -2146,9 +2145,9 @@ RETURN_AGAIN:
   {
   #ifndef STAND_ALONE
   int rc;
-  uschar *save = deliver_domain;
+  const uschar *save = deliver_domain;
   deliver_domain = host->name;  /* set $domain */
-  rc = match_isinlist(host->name, &dns_again_means_nonexist, 0, NULL, NULL,
+  rc = match_isinlist(host->name, CUSS &dns_again_means_nonexist, 0, NULL, NULL,
     MCL_DOMAIN, TRUE, NULL);
   deliver_domain = save;
   if (rc == OK)
@@ -2206,7 +2205,8 @@ Returns:       HOST_FIND_FAILED     couldn't find A record
 
 static int
 set_address_from_dns(host_item *host, host_item **lastptr,
-  uschar *ignore_target_hosts, BOOL allow_ip, uschar **fully_qualified_name,
+  const uschar *ignore_target_hosts, BOOL allow_ip,
+  const uschar **fully_qualified_name,
   BOOL dnssec_request, BOOL dnssec_require)
 {
 dns_record *rr;
@@ -2241,8 +2241,8 @@ loop once only, looking only for A records. */
 #if HAVE_IPV6
   #ifndef STAND_ALONE
     if (disable_ipv6 || (dns_ipv4_lookup != NULL &&
-        match_isinlist(host->name, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
-        TRUE, NULL) == OK))
+        match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
+	  MCL_DOMAIN, TRUE, NULL) == OK))
       i = 0;    /* look up A records only */
     else
   #endif        /* STAND_ALONE */
@@ -2481,10 +2481,10 @@ Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
 */
 
 int
-host_find_bydns(host_item *host, uschar *ignore_target_hosts, int whichrrs,
+host_find_bydns(host_item *host, const uschar *ignore_target_hosts, int whichrrs,
   uschar *srv_service, uschar *srv_fail_domains, uschar *mx_fail_domains,
   uschar *dnssec_request_domains, uschar *dnssec_require_domains,
-  uschar **fully_qualified_name, BOOL *removed)
+  const uschar **fully_qualified_name, BOOL *removed)
 {
 host_item *h, *last;
 dns_record *rr;
@@ -2493,10 +2493,10 @@ int ind_type = 0;
 int yield;
 dns_answer dnsa;
 dns_scan dnss;
-BOOL dnssec_require = match_isinlist(host->name, &dnssec_require_domains,
+BOOL dnssec_require = match_isinlist(host->name, CUSS &dnssec_require_domains,
 				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
 BOOL dnssec_request = dnssec_require
-		    || match_isinlist(host->name, &dnssec_request_domains,
+		    || match_isinlist(host->name, CUSS &dnssec_request_domains,
 				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
 dnssec_status_t dnssec;
 
@@ -2531,7 +2531,7 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
 
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
-  rc = dns_lookup(&dnsa, buffer, ind_type, &temp_fully_qualified_name);
+  rc = dns_lookup(&dnsa, buffer, ind_type, CUSS &temp_fully_qualified_name);
 
   if (dnssec_request)
     {
@@ -2556,8 +2556,8 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
   if (rc == DNS_FAIL || rc == DNS_AGAIN)
     {
     #ifndef STAND_ALONE
-    if (match_isinlist(host->name, &srv_fail_domains, 0, NULL, NULL, MCL_DOMAIN,
-        TRUE, NULL) != OK)
+    if (match_isinlist(host->name, CUSS &srv_fail_domains, 0, NULL, NULL,
+	MCL_DOMAIN, TRUE, NULL) != OK)
     #endif
       { yield = HOST_FIND_AGAIN; goto out; }
     DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
@@ -2608,8 +2608,8 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
     case DNS_FAIL:
     case DNS_AGAIN:
       #ifndef STAND_ALONE
-      if (match_isinlist(host->name, &mx_fail_domains, 0, NULL, NULL, MCL_DOMAIN,
-	  TRUE, NULL) != OK)
+      if (match_isinlist(host->name, CUSS &mx_fail_domains, 0, NULL, NULL,
+	  MCL_DOMAIN, TRUE, NULL) != OK)
       #endif
 	{ yield = HOST_FIND_AGAIN; goto out; }
       DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "

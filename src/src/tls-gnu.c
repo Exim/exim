@@ -120,7 +120,7 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
   uschar *exp_tls_ocsp_file;
-  uschar *exp_tls_verify_cert_hostnames;
+  const uschar *exp_tls_verify_cert_hostnames;
 #ifdef EXPERIMENTAL_EVENT
   uschar *event_action;
 #endif
@@ -1398,7 +1398,7 @@ else
   if (state->exp_tls_verify_cert_hostnames)
     {
     int sep = 0;
-    uschar * list = state->exp_tls_verify_cert_hostnames;
+    const uschar * list = state->exp_tls_verify_cert_hostnames;
     uschar * name;
     while (name = string_nextinlist(&list, &sep, NULL, 0))
       if (gnutls_x509_crt_check_hostname(state->tlsp->peercert, CS name))

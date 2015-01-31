@@ -127,7 +127,7 @@ which may start with '<' in order to set a specific separator. The default
 separator, as always, is colon. */
 
 static int
-dnsdb_find(void *handle, uschar *filename, uschar *keystring, int length,
+dnsdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 int rc;
@@ -138,8 +138,8 @@ int defer_mode = PASS;
 int dnssec_mode = OK;
 int type;
 int failrc = FAIL;
-uschar *outsep = US"\n";
-uschar *outsep2 = NULL;
+const uschar *outsep = CUS"\n";
+const uschar *outsep2 = NULL;
 uschar *equals, *domain, *found;
 uschar buffer[256];
 
@@ -353,11 +353,11 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 # endif
       else if (searchtype == T_A6)   searchtype = T_AAAA;
       else if (searchtype == T_AAAA) searchtype = T_A;
-      rc = dns_special_lookup(&dnsa, domain, searchtype, &found);
+      rc = dns_special_lookup(&dnsa, domain, searchtype, CUSS &found);
       }
     else
 #endif
-      rc = dns_special_lookup(&dnsa, domain, type, &found);
+      rc = dns_special_lookup(&dnsa, domain, type, CUSS &found);
 
     lookup_dnssec_authenticated = dnssec_mode==OK ? NULL
       : dns_is_secure(&dnsa) ? US"yes" : US"no";

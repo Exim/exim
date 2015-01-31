@@ -66,6 +66,7 @@ almost always literal strings. */
 #define US   (unsigned char *)
 #define CUS  (const unsigned char *)
 #define USS  (unsigned char **)
+#define CUSS (const unsigned char **)
 
 /* The C library string functions expect "char *" arguments. Use macros to
 avoid having to write a cast each time. We do this for string and file

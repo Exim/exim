@@ -2737,8 +2737,8 @@ Returns:      2                success by stop
               1                other success
               -1               syntax or execution error
 */
-static int parse_commands(struct Sieve *filter, int exec,
-  address_item **generated)
+static int
+parse_commands(struct Sieve *filter, int exec, address_item **generated)
 {
 while (*filter->pc)
   {
@@ -3360,7 +3360,8 @@ while (*filter->pc)
           /* Allocation is larger than neccessary, but enough even for split MIME words */
           buffer_capacity=32+4*subject.length;
           buffer=store_get(buffer_capacity);
-          addr->reply->subject=parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
+	  /* deconst cast safe as we pass in a non-const item */
+          addr->reply->subject = US parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
           addr->reply->oncelog=once;
           addr->reply->once_repeat=days*86400;
 

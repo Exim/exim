@@ -13,8 +13,8 @@
 
 /* Recursively called function */
 
-static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL, BOOL, BOOL *);
-static int_eximarith_t expanded_string_integer(uschar *, BOOL);
+static uschar *expand_string_internal(const uschar *, BOOL, const uschar **, BOOL, BOOL, BOOL *);
+static int_eximarith_t expanded_string_integer(const uschar *, BOOL);
 
 #ifdef STAND_ALONE
 #ifndef SUPPORT_CRYPTEQ
@@ -975,8 +975,8 @@ Note: The test for *s != 0 in the while loop is necessary because
 Ustrchr() yields non-NULL if the character is zero (which is not something
 I expected). */
 
-static uschar *
-read_name(uschar *name, int max, uschar *s, uschar *extras)
+static const uschar *
+read_name(uschar *name, int max, const uschar *s, uschar *extras)
 {
 int ptr = 0;
 while (*s != 0 && (isalnum(*s) || Ustrchr(extras, *s) != NULL))
@@ -1009,8 +1009,8 @@ Arguments:
 Returns:    a pointer to the first character after the header name
 */
 
-static uschar *
-read_header_name(uschar *name, int max, uschar *s)
+static const uschar *
+read_header_name(uschar *name, int max, const uschar *s)
 {
 int prelen = Ustrchr(name, '_') - name + 1;
 int ptr = Ustrlen(name) - prelen;
@@ -1047,6 +1047,14 @@ while (isdigit(*s)) *n = *n * 10 + (*s++ - '0');
 return s;
 }
 
+static const uschar *
+read_cnumber(int *n, const uschar *s)
+{
+*n = 0;
+while (isdigit(*s)) *n = *n * 10 + (*s++ - '0');
+return s;
+}
+
 
 
 /*************************************************
@@ -1064,7 +1072,7 @@ Returns:    NULL if the subfield was not found, or
 */
 
 static uschar *
-expand_getkeyed(uschar *key, uschar *s)
+expand_getkeyed(uschar *key, const uschar *s)
 {
 int length = Ustrlen(key);
 while (isspace(*s)) s++;
@@ -1075,7 +1083,7 @@ while (*s != 0)
   {
   int dkeylength;
   uschar *data;
-  uschar *dkey = s;
+  const uschar *dkey = s;
 
   while (*s != 0 && *s != '=' && !isspace(*s)) s++;
   dkeylength = s - dkey;
@@ -1186,9 +1194,9 @@ return fieldtext;
 
 
 static uschar *
-expand_getlistele(int field, uschar * list)
+expand_getlistele(int field, const uschar * list)
 {
-uschar * tlist= list;
+const uschar * tlist= list;
 int sep= 0;
 uschar dummy;
 
@@ -1938,11 +1946,11 @@ Returns:     0 OK; string pointer updated
 */
 
 static int
-read_subs(uschar **sub, int n, int m, uschar **sptr, BOOL skipping,
+read_subs(uschar **sub, int n, int m, const uschar **sptr, BOOL skipping,
   BOOL check_end, uschar *name, BOOL *resetok)
 {
 int i;
-uschar *s = *sptr;
+const uschar *s = *sptr;
 
 while (isspace(*s)) s++;
 for (i = 0; i < n; i++)
@@ -2074,8 +2082,8 @@ Returns:   a pointer to the first character after the condition, or
            NULL after an error
 */
 
-static uschar *
-eval_condition(uschar *s, BOOL *resetok, BOOL *yield)
+static const uschar *
+eval_condition(const uschar *s, BOOL *resetok, BOOL *yield)
 {
 BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
@@ -2085,7 +2093,7 @@ int i, rc, cond_type, roffset;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar name[256];
-uschar *sub[10];
+const uschar *sub[10];
 
 const pcre *re;
 const uschar *rerror;
@@ -2305,6 +2313,7 @@ switch(cond_type)
   case ECOND_ACL:
     /* ${if acl {{name}{arg1}{arg2}...}  {yes}{no}} */
     {
+    uschar *sub[10];
     uschar *user_msg;
     BOOL cond = FALSE;
     int size = 0;
@@ -2755,6 +2764,7 @@ switch(cond_type)
     case ECOND_INLIST:
     case ECOND_INLISTI:
       {
+      const uschar * list = sub[1];
       int sep = 0;
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
@@ -2762,12 +2772,10 @@ switch(cond_type)
       DEBUG(D_expand) debug_printf("condition: %s\n", name);
 
       tempcond = FALSE;
-      if (cond_type == ECOND_INLISTI)
-        compare = strcmpic;
-      else
-        compare = (int (*)(const uschar *, const uschar *)) strcmp;
+      compare = cond_type == ECOND_INLISTI
+        ? strcmpic : (int (*)(const uschar *, const uschar *)) strcmp;
 
-      while ((iterate_item = string_nextinlist(&sub[1], &sep, NULL, 0)) != NULL)
+      while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)))
         if (compare(sub[0], iterate_item) == 0)
           {
           tempcond = TRUE;
@@ -2845,6 +2853,7 @@ switch(cond_type)
   case ECOND_FORALL:
   case ECOND_FORANY:
     {
+    const uschar * list;
     int sep = 0;
     uschar *save_iterate_item = iterate_item;
 
@@ -2884,7 +2893,8 @@ switch(cond_type)
       }
 
     if (yield != NULL) *yield = !testfor;
-    while ((iterate_item = string_nextinlist(&sub[0], &sep, NULL, 0)) != NULL)
+    list = sub[0];
+    while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
       {
       DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, iterate_item);
       if (!eval_condition(sub[1], resetok, &tempcond))
@@ -3102,11 +3112,11 @@ Returns:         0 OK; lookup_value has been reset to save_lookup
 */
 
 static int
-process_yesno(BOOL skipping, BOOL yes, uschar *save_lookup, uschar **sptr,
+process_yesno(BOOL skipping, BOOL yes, uschar *save_lookup, const uschar **sptr,
   uschar **yieldptr, int *sizeptr, int *ptrptr, uschar *type, BOOL *resetok)
 {
 int rc = 0;
-uschar *s = *sptr;    /* Local value */
+const uschar *s = *sptr;    /* Local value */
 uschar *sub1, *sub2;
 
 /* If there are no following strings, we substitute the contents of $value for
@@ -3184,7 +3194,8 @@ inside another lookup or if or extract. */
 else if (*s != '}')
   {
   uschar name[256];
-  s = read_name(name, sizeof(name), s, US"_");
+  /* deconst cast ok here as source is s anyway */
+  s = US read_name(name, sizeof(name), s, US"_");
   if (Ustrcmp(name, "fail") == 0)
     {
     if (!yes && !skipping)
@@ -3753,14 +3764,14 @@ Returns:         NULL if expansion fails:
 */
 
 static uschar *
-expand_string_internal(uschar *string, BOOL ket_ends, uschar **left,
+expand_string_internal(const uschar *string, BOOL ket_ends, const uschar **left,
   BOOL skipping, BOOL honour_dollar, BOOL *resetok_p)
 {
 int ptr = 0;
 int size = Ustrlen(string)+ 64;
 int item_type;
 uschar *yield = store_get(size);
-uschar *s = string;
+const uschar *s = string;
 uschar *save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
 BOOL resetok = TRUE;
@@ -3788,7 +3799,7 @@ while (*s != 0)
 
     if (s[1] == 'N')
       {
-      uschar *t = s + 2;
+      const uschar * t = s + 2;
       for (s = t; *s != 0; s++) if (*s == '\\' && s[1] == 'N') break;
       yield = string_cat(yield, &size, &ptr, t, s - t);
       if (*s != 0) s += 2;
@@ -3904,7 +3915,7 @@ while (*s != 0)
   if (isdigit(*s))
     {
     int n;
-    s = read_number(&n, s);
+    s = read_cnumber(&n, s);
     if (n >= 0 && n <= expand_nmax)
       yield = string_cat(yield, &size, &ptr, expand_nstring[n],
         expand_nlength[n]);
@@ -3925,7 +3936,7 @@ while (*s != 0)
   if (isdigit((*(++s))))
     {
     int n;
-    s = read_number(&n, s);		/*{*/
+    s = read_cnumber(&n, s);		/*{*/
     if (*s++ != '}')
       {					/*{*/
       expand_string_message = US"} expected after number";
@@ -4002,7 +4013,7 @@ while (*s != 0)
     case EITEM_IF:
       {
       BOOL cond = FALSE;
-      uschar *next_s;
+      const uschar *next_s;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
@@ -4054,7 +4065,8 @@ while (*s != 0)
       int stype, partial, affixlen, starflags;
       int expand_setup = 0;
       int nameptr = 0;
-      uschar *key, *filename, *affix;
+      uschar *key, *filename;
+      const uschar *affix;
       uschar *save_lookup_value = lookup_value;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
@@ -4772,7 +4784,7 @@ while (*s != 0)
       {
       FILE *f;
       uschar *arg;
-      uschar **argv;
+      const uschar **argv;
       pid_t pid;
       int fd_in, fd_out;
       int lsize = 0;
@@ -4810,7 +4822,7 @@ while (*s != 0)
 
         /* Create the child process, making it a group leader. */
 
-        pid = child_open(argv, NULL, 0077, &fd_in, &fd_out, TRUE);
+        pid = child_open(USS argv, NULL, 0077, &fd_in, &fd_out, TRUE);
 
         if (pid < 0)
           {
@@ -5472,7 +5484,7 @@ while (*s != 0)
       int sep = 0;
       int save_ptr = ptr;
       uschar outsep[2] = { '\0', '\0' };
-      uschar *list, *expr, *temp;
+      const uschar *list, *expr, *temp;
       uschar *save_iterate_item = iterate_item;
       uschar *save_lookup_value = lookup_value;
 
@@ -5485,11 +5497,12 @@ while (*s != 0)
 
       if (item_type == EITEM_REDUCE)
         {
+	uschar * t;
         while (isspace(*s)) s++;
         if (*s++ != '{') goto EXPAND_FAILED_CURLY;
-        temp = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
+        t = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
         if (temp == NULL) goto EXPAND_FAILED;
-        lookup_value = temp;
+        lookup_value = t;
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
         }
 
@@ -5510,9 +5523,7 @@ while (*s != 0)
         if (temp != NULL) s = temp;
         }
       else
-        {
         temp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok);
-        }
 
       if (temp == NULL)
         {
@@ -5570,7 +5581,8 @@ while (*s != 0)
 
         else
           {
-          temp = expand_string_internal(expr, TRUE, NULL, skipping, TRUE, &resetok);
+	  uschar * t = expand_string_internal(expr, TRUE, NULL, skipping, TRUE, &resetok);
+          temp = t;
           if (temp == NULL)
             {
             iterate_item = save_iterate_item;
@@ -5580,7 +5592,7 @@ while (*s != 0)
             }
           if (item_type == EITEM_REDUCE)
             {
-            lookup_value = temp;      /* Update the value of $value */
+            lookup_value = t;         /* Update the value of $value */
             continue;                 /* and continue the iteration */
             }
           }
@@ -5643,10 +5655,9 @@ while (*s != 0)
     case EITEM_SORT:
       {
       int sep = 0;
-      uschar *srclist, *cmp, *xtract;
+      const uschar *srclist, *cmp, *xtract;
       uschar *srcitem;
-      uschar *dstlist = NULL;
-      uschar *dstkeylist = NULL;
+      const uschar *dstlist = NULL, *dstkeylist = NULL;
       uschar * tmp;
       uschar *save_iterate_item = iterate_item;
 
@@ -5920,7 +5931,7 @@ while (*s != 0)
       case EOP_SHA256:
 	if (s[1] == '$')
 	  {
-	  uschar * s1 = s;
+	  const uschar * s1 = s;
 	  sub = expand_string_internal(s+2, TRUE, &s1, skipping,
 		  FALSE, &resetok);
 	  if (!sub)       goto EXPAND_FAILED;		/*{*/
@@ -6151,7 +6162,7 @@ while (*s != 0)
 	uschar * cp;
 	uschar buffer[256];
 
-	while (string_nextinlist(&sub, &sep, buffer, sizeof(buffer)) != NULL) cnt++;
+	while (string_nextinlist(CUSS &sub, &sep, buffer, sizeof(buffer)) != NULL) cnt++;
 	cp = string_sprintf("%d", cnt);
         yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
         continue;
@@ -6163,7 +6174,7 @@ while (*s != 0)
       case EOP_LISTNAMED:
 	{
 	tree_node *t = NULL;
-	uschar * list;
+	const uschar * list;
 	int sep = 0;
 	uschar * item;
 	uschar * suffix = US"";
@@ -6482,7 +6493,7 @@ while (*s != 0)
       case EOP_RFC2047:
         {
         uschar buffer[2048];
-        uschar *string = parse_quote_2047(sub, Ustrlen(sub), headers_charset,
+	const uschar *string = parse_quote_2047(sub, Ustrlen(sub), headers_charset,
           buffer, sizeof(buffer), FALSE);
         yield = string_cat(yield, &size, &ptr, string, Ustrlen(string));
         continue;
@@ -6612,7 +6623,7 @@ while (*s != 0)
 
       case EOP_ESCAPE:
         {
-        uschar *t = string_printing(sub);
+        const uschar *t = string_printing(sub);
         yield = string_cat(yield, &size, &ptr, t, Ustrlen(t));
         continue;
         }
@@ -7000,23 +7011,35 @@ return (Ustrpbrk(string, "$\\") == NULL)? string :
 
 
 
+const uschar *
+expand_cstring(const uschar *string)
+{
+search_find_defer = FALSE;
+malformed_header = FALSE;
+return (Ustrpbrk(string, "$\\") == NULL)? string :
+  expand_string_internal(string, FALSE, NULL, FALSE, TRUE, NULL);
+}
+
+
+
 /*************************************************
 *              Expand and copy                   *
 *************************************************/
 
 /* Now and again we want to expand a string and be sure that the result is in a
 new bit of store. This function does that.
+Since we know it has been copied, the de-const cast is safe.
 
 Argument: the string to be expanded
 Returns:  the expanded string, always in a new bit of store, or NULL
 */
 
 uschar *
-expand_string_copy(uschar *string)
+expand_string_copy(const uschar *string)
 {
-uschar *yield = expand_string(string);
+const uschar *yield = expand_cstring(string);
 if (yield == string) yield = string_copy(string);
-return yield;
+return US yield;
 }
 
 
@@ -7063,7 +7086,7 @@ Returns:  the integer value, or
 */
 
 static int_eximarith_t
-expanded_string_integer(uschar *s, BOOL isplus)
+expanded_string_integer(const uschar *s, BOOL isplus)
 {
 int_eximarith_t value;
 uschar *msg = US"invalid integer \"%s\"";

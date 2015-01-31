@@ -75,7 +75,7 @@ Returns:     nothing
 */
 
 void
-debug_print_argv(uschar **argv)
+debug_print_argv(const uschar ** argv)
 {
 debug_printf("exec");
 while (*argv != NULL) debug_printf(" %.256s", *argv++);

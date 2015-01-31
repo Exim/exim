@@ -62,7 +62,7 @@ Returns:     +ve => valid lookup name; value is offset in lookup_list
 */
 
 int
-search_findtype(uschar *name, int len)
+search_findtype(const uschar *name, int len)
 {
 int bot = 0;
 int top = lookup_list_count;
@@ -121,12 +121,12 @@ Returns:     +ve => valid lookup name; value is offset in lookup_list
 */
 
 int
-search_findtype_partial(uschar *name, int *ptypeptr, uschar **ptypeaff,
+search_findtype_partial(const uschar *name, int *ptypeptr, const uschar **ptypeaff,
   int *afflen, int *starflags)
 {
 int len, stype;
 int pv = -1;
-uschar *ss = name;
+const uschar *ss = name;
 
 *starflags = 0;
 *ptypeaff = NULL;
@@ -601,7 +601,7 @@ Returns:         a pointer to a dynamic string containing the answer,
 
 uschar *
 search_find(void *handle, uschar *filename, uschar *keystring, int partial,
-  uschar *affix, int affixlen, int starflags, int *expand_setup)
+  const uschar *affix, int affixlen, int starflags, int *expand_setup)
 {
 tree_node *t = (tree_node *)handle;
 BOOL set_null_wild = FALSE;

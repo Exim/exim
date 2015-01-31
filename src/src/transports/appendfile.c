@@ -664,7 +664,7 @@ Returns:       pointer to the required transport, or NULL
 transport_instance *
 check_file_format(int cfd, transport_instance *tblock, address_item *addr)
 {
-uschar *format =
+const uschar *format =
   ((appendfile_transport_options_block *)(tblock->options_block))->file_format;
 uschar data[256];
 int len = read(cfd, data, sizeof(data));

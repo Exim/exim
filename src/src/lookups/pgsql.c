@@ -118,7 +118,7 @@ Returns:       OK, FAIL, or DEFER
 */
 
 static int
-perform_pgsql_search(uschar *query, uschar *server, uschar **resultptr,
+perform_pgsql_search(const uschar *query, uschar *server, uschar **resultptr,
   uschar **errmsg, BOOL *defer_break, BOOL *do_cache)
 {
 PGconn *pg_conn = NULL;
@@ -398,7 +398,7 @@ query is deferred with a retryable error is now in a separate function that is
 shared with other SQL lookups. */
 
 static int
-pgsql_find(void *handle, uschar *filename, uschar *query, int length,
+pgsql_find(void *handle, uschar *filename, const uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,

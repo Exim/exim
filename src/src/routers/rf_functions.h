@@ -11,7 +11,7 @@
 extern void rf_add_generated(router_instance *, address_item **,
               address_item *, address_item *, uschar *, header_line *,
               uschar *, ugid_block *, struct passwd *);
-extern void rf_change_domain(address_item *, uschar *, BOOL, address_item **);
+extern void rf_change_domain(address_item *, const uschar *, BOOL, address_item **);
 extern uschar *rf_expand_data(address_item *, uschar *, int *);
 extern int  rf_get_errors_address(address_item *, router_instance *,
               BOOL, uschar **);

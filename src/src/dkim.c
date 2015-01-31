@@ -383,12 +383,11 @@ uschar *dkim_exim_expand_defaults(int what) {
 }
 
 
-uschar *dkim_exim_sign(int dkim_fd,
-                       uschar *dkim_private_key,
-                       uschar *dkim_domain,
-                       uschar *dkim_selector,
-                       uschar *dkim_canon,
-                       uschar *dkim_sign_headers) {
+uschar *
+dkim_exim_sign(int dkim_fd, uschar *dkim_private_key,
+       const uschar *dkim_domain, uschar *dkim_selector,
+       uschar *dkim_canon, uschar *dkim_sign_headers)
+{
   int sep = 0;
   uschar *seen_items = NULL;
   int seen_items_size = 0;
@@ -412,7 +411,7 @@ uschar *dkim_exim_sign(int dkim_fd,
 
   store_pool = POOL_MAIN;
 
-  dkim_domain = expand_string(dkim_domain);
+  dkim_domain = expand_cstring(dkim_domain);
   if (dkim_domain == NULL) {
     /* expansion error, do not send message. */
     log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
@@ -429,7 +428,7 @@ uschar *dkim_exim_sign(int dkim_fd,
     /* Only sign once for each domain, no matter how often it
        appears in the expanded list. */
     if (seen_items != NULL) {
-      uschar *seen_items_list = seen_items;
+      const uschar *seen_items_list = seen_items;
       if (match_isinlist(dkim_signing_domain,
                          &seen_items_list,0,NULL,NULL,MCL_STRING,TRUE,NULL) == OK)
         continue;

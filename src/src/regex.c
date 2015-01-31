@@ -25,9 +25,11 @@ uschar regex_match_string_buffer[1024];
 extern FILE *mime_stream;
 extern uschar *mime_current_boundary;
 
-int regex(uschar **listptr) {
+int
+regex(const uschar **listptr)
+{
   int sep = 0;
-  uschar *list = *listptr;
+  const uschar *list = *listptr;
   uschar *regex_string;
   uschar regex_string_buffer[1024];
   unsigned long mbox_size;
@@ -138,9 +140,11 @@ int regex(uschar **listptr) {
 }
 
 
-int mime_regex(uschar **listptr) {
+int
+mime_regex(const uschar **listptr)
+{
   int sep = 0;
-  uschar *list = *listptr;
+  const uschar *list = *listptr;
   uschar *regex_string;
   uschar regex_string_buffer[1024];
   pcre *re;
@@ -195,7 +199,7 @@ int mime_regex(uschar **listptr) {
 
   /* check if the file is already decoded */
   if (mime_decoded_filename == NULL) {
-    uschar *empty = US"";
+    const uschar *empty = US"";
     /* no, decode it first */
     mime_decode(&empty);
     if (mime_decoded_filename == NULL) {

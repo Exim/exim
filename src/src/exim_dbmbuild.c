@@ -88,10 +88,10 @@ Returns:   the value of the character escape
 */
 
 int
-string_interpret_escape(uschar **pp)
+string_interpret_escape(const uschar **pp)
 {
 int ch;
-uschar *p = *pp;
+const uschar *p = *pp;
 ch = *(++p);
 if (isdigit(ch) && ch != '8' && ch != '9')
   {
@@ -329,7 +329,7 @@ while (Ufgets(line, max_insize, f) != NULL)
       keystart = t;
       while (*s != 0 && *s != '\"')
         {
-        if (*s == '\\') *t++ = string_interpret_escape(&s);
+        if (*s == '\\') *t++ = string_interpret_escape((const uschar **)&s);
           else *t++ = *s;
         s++;
         }

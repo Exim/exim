@@ -64,7 +64,7 @@ list of MX hosts. If the first host is the local host, act according to the
 prev = NULL;
 for (h = addr->host_list; h != NULL; h = next_h)
   {
-  uschar *canonical_name;
+  const uschar *canonical_name;
   int rc, len, port;
 
   next_h = h->next;

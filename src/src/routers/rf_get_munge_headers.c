@@ -36,7 +36,7 @@ rf_get_munge_headers(address_item *addr, router_instance *rblock,
 
 if (rblock->extra_headers)
   {
-  uschar * list = rblock->extra_headers;
+  const uschar * list = rblock->extra_headers;
   int sep = '\n';
   uschar * s;
   int slen;
@@ -87,7 +87,7 @@ if (rblock->extra_headers)
 /* Expand items from colon-sep list separately, then build new list */
 if (rblock->remove_headers)
   {
-  uschar * list = rblock->remove_headers;
+  const uschar * list = rblock->remove_headers;
   int sep = ':';
   uschar * s;
 

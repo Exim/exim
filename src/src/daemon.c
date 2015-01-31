@@ -1048,7 +1048,7 @@ if (daemon_listen && !inetd_wait_mode)
   int sep;
   int pct = 0;
   uschar *s;
-  uschar *list;
+  const uschar * list;
   uschar *local_iface_source = US"local_interfaces";
   ip_address_item *ipa;
   ip_address_item **pipa;
@@ -1071,8 +1071,7 @@ if (daemon_listen && !inetd_wait_mode)
 
     list = override_local_interfaces;
     sep = 0;
-    while ((s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size))
-           != NULL)
+    while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
       {
       uschar joinstr[4];
       uschar **ptr;
@@ -1127,13 +1126,13 @@ if (daemon_listen && !inetd_wait_mode)
 
   list = daemon_smtp_port;
   sep = 0;
-  while ((s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size)))
+  while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
     pct++;
   default_smtp_port = store_get((pct+1) * sizeof(int));
   list = daemon_smtp_port;
   sep = 0;
   for (pct = 0;
-       (s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size));
+       (s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size));
        pct++)
     {
     if (isdigit(*s))

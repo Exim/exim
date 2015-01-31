@@ -355,7 +355,7 @@ while (*(++ptr) != 0 && *ptr != '\"' && *ptr != '\n')
         }
       }
 
-    *bp++ = string_interpret_escape(&ptr);
+    *bp++ = string_interpret_escape(CUSS &ptr);
     }
   }
 
@@ -2021,7 +2021,7 @@ while (commands != NULL)
         {
         int sep = 0;
         uschar *ss;
-        uschar *list = s;
+        const uschar *list = s;
         uschar buffer[128];
         while ((ss = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
                != NULL)
@@ -2057,7 +2057,7 @@ while (commands != NULL)
     DEFERFREEZEFAIL:
     fmsg = expargs[0];
     if (Ustrlen(fmsg) > 1024) Ustrcpy(fmsg + 1000, " ... (truncated)");
-    fmsg = string_printing(fmsg);
+    fmsg = US string_printing(fmsg);
     *error_pointer = fmsg;
 
     if (filter_test != FTEST_NONE)
@@ -2351,7 +2351,7 @@ while (commands != NULL)
     case testprint_command:
     if (filter_test != FTEST_NONE || (debug_selector & D_filter) != 0)
       {
-      uschar *s = string_printing(expargs[0]);
+      const uschar *s = string_printing(expargs[0]);
       if (filter_test == FTEST_NONE)
         debug_printf("Filter: testprint: %s\n", s);
       else

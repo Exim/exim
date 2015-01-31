@@ -633,7 +633,7 @@ Then check addr->p.remove_headers too, provided that addr is not NULL. */
 for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
   {
   int i;
-  uschar *list = remove_headers;
+  const uschar *list = remove_headers;
 
   BOOL include_header = TRUE;
 
@@ -740,7 +740,7 @@ if (add_headers)
   int sep = '\n';
   uschar * s;
 
-  while ((s = string_nextinlist(&add_headers, &sep, NULL, 0)))
+  while ((s = string_nextinlist(CUSS &add_headers, &sep, NULL, 0)))
     if (!(s = expand_string(s)))
       {
       if (!expand_string_forcedfail)
@@ -1245,8 +1245,8 @@ yield = FALSE;
 write_pid = (pid_t)(-1);
 
 (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
-filter_pid = child_open(transport_filter_argv, NULL, 077, &fd_write, &fd_read,
-  FALSE);
+filter_pid = child_open(USS transport_filter_argv, NULL, 077,
+ &fd_write, &fd_read, FALSE);
 (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) & ~FD_CLOEXEC);
 if (filter_pid < 0) goto TIDY_UP;      /* errno set */
 
@@ -1484,7 +1484,7 @@ void
 transport_update_waiting(host_item *hostlist, uschar *tpname)
 {
 uschar buffer[256];
-uschar *prevname = US"";
+const uschar *prevname = US"";
 host_item *host;
 open_db dbblock;
 open_db *dbm_file;
@@ -1630,7 +1630,7 @@ Returns:             TRUE if new_message_id set; FALSE otherwise
 */
 
 BOOL
-transport_check_waiting(uschar *transport_name, uschar *hostname,
+transport_check_waiting(const uschar *transport_name, const uschar *hostname,
   int local_message_max, uschar *new_message_id, BOOL *more)
 {
 dbdata_wait *host_record;
@@ -1816,8 +1816,8 @@ Returns:          FALSE if fork fails; TRUE otherwise
 */
 
 BOOL
-transport_pass_socket(uschar *transport_name, uschar *hostname,
-  uschar *hostaddress, uschar *id, int socket_fd)
+transport_pass_socket(const uschar *transport_name, const uschar *hostname,
+  const uschar *hostaddress, uschar *id, int socket_fd)
 {
 pid_t pid;
 int status;
@@ -1827,7 +1827,7 @@ DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 if ((pid = fork()) == 0)
   {
   int i = 16;
-  uschar **argv;
+  const uschar **argv;
 
   /* Disconnect entirely from the parent process. If we are running in the
   test harness, wait for a bit to allow the previous process time to finish,
@@ -1840,7 +1840,7 @@ if ((pid = fork()) == 0)
   /* Set up the calling arguments; use the standard function for the basics,
   but we have a number of extras that may be added. */
 
-  argv = child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
+  argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
   /* Call with the dsn flag */
   if (smtp_use_dsn) argv[i++] = US"-MCD";
@@ -1862,9 +1862,9 @@ if ((pid = fork()) == 0)
     }
 
   argv[i++] = US"-MC";
-  argv[i++] = transport_name;
-  argv[i++] = hostname;
-  argv[i++] = hostaddress;
+  argv[i++] = US transport_name;
+  argv[i++] = US hostname;
+  argv[i++] = US hostaddress;
   argv[i++] = string_sprintf("%d", continue_sequence + 1);
   argv[i++] = id;
   argv[i++] = NULL;
@@ -1918,7 +1918,7 @@ case, no addresses are passed.
 
 Arguments:
   argvptr            pointer to anchor for argv vector
-  cmd                points to the command string
+  cmd                points to the command string (modified IN PLACE)
   expand_arguments   true if expansion is to occur
   expand_failed      error value to set if expansion fails; not relevant if
                      addr == NULL
@@ -1932,11 +1932,12 @@ Returns:             TRUE if all went well; otherwise an error will be
 */
 
 BOOL
-transport_set_up_command(uschar ***argvptr, uschar *cmd, BOOL expand_arguments,
-  int expand_failed, address_item *addr, uschar *etext, uschar **errptr)
+transport_set_up_command(const uschar ***argvptr, uschar *cmd,
+  BOOL expand_arguments, int expand_failed, address_item *addr,
+  uschar *etext, uschar **errptr)
 {
 address_item *ad;
-uschar **argv;
+const uschar **argv;
 uschar *s, *ss;
 int address_count = 0;
 int argcount = 0;
@@ -1970,7 +1971,7 @@ while (*s != 0 && argcount < max_args)
     if (*s != 0) s++;
     *ss++ = 0;
     }
-  else argv[argcount++] = string_dequote(&s);
+  else argv[argcount++] = string_copy(string_dequote(CUSS &s));
   while (isspace(*s)) s++;
   }
 
@@ -2099,7 +2100,8 @@ if (expand_arguments)
           if (*s != 0) s++;
           *ss++ = 0;
           }
-        else address_pipe_argv[address_pipe_argcount++] = string_dequote(&s);
+        else address_pipe_argv[address_pipe_argcount++] =
+	      string_copy(string_dequote(CUSS &s));
         while (isspace(*s)) s++; /* strip space after arg */
         }
 
@@ -2167,9 +2169,9 @@ if (expand_arguments)
 
     else
       {
-      uschar *expanded_arg;
+      const uschar *expanded_arg;
       enable_dollar_recipients = allow_dollar_recipients;
-      expanded_arg = expand_string(argv[i]);
+      expanded_arg = expand_cstring(argv[i]);
       enable_dollar_recipients = FALSE;
 
       if (expanded_arg == NULL)

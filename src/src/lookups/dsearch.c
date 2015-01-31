@@ -66,7 +66,7 @@ scanning the directory, as it is hopefully faster to let the OS do the scanning
 for us. */
 
 int
-static dsearch_find(void *handle, uschar *dirname, uschar *keystring, int length,
+static dsearch_find(void *handle, uschar *dirname, const uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 struct stat statbuf;

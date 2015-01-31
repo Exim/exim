@@ -257,9 +257,9 @@ Returns:     nothing
 */
 
 void
-dns_build_reverse(uschar *string, uschar *buffer)
+dns_build_reverse(const uschar *string, uschar *buffer)
 {
-uschar *p = string + Ustrlen(string);
+const uschar *p = string + Ustrlen(string);
 uschar *pp = buffer;
 
 /* Handle IPv4 address */
@@ -271,7 +271,7 @@ if (Ustrchr(string, ':') == NULL)
   int i;
   for (i = 0; i < 4; i++)
     {
-    uschar *ppp = p;
+    const uschar *ppp = p;
     while (ppp > string && ppp[-1] != '.') ppp--;
     Ustrncpy(pp, ppp, p - ppp);
     pp += p - ppp;
@@ -560,7 +560,7 @@ dns_basic_lookup(dns_answer *dnsa, const uschar *name, int type)
 {
 #ifndef STAND_ALONE
 int rc = -1;
-uschar *save;
+const uschar *save_domain;
 #endif
 res_state resp = os_get_dns_resolver_res();
 
@@ -677,11 +677,11 @@ if (dnsa->answerlen < 0) switch (h_errno)
 
   /* Cut this out for various test programs */
 #ifndef STAND_ALONE
-  save = deliver_domain;
+  save_domain = deliver_domain;
   deliver_domain = string_copy(name);  /* set $domain */
-  rc = match_isinlist(name, &dns_again_means_nonexist, 0, NULL, NULL,
+  rc = match_isinlist(name, (const uschar **)&dns_again_means_nonexist, 0, NULL, NULL,
     MCL_DOMAIN, TRUE, NULL);
-  deliver_domain = save;
+  deliver_domain = save_domain;
   if (rc != OK)
     {
     DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
@@ -755,7 +755,7 @@ Returns:                DNS_SUCCEED   successful lookup
 
 int
 dns_lookup(dns_answer *dnsa, const uschar *name, int type,
-  uschar **fully_qualified_name)
+  const uschar **fully_qualified_name)
 {
 int i;
 const uschar *orig_name = name;
@@ -874,7 +874,7 @@ Returns:                DNS_SUCCEED   successful lookup
 
 int
 dns_special_lookup(dns_answer *dnsa, const uschar *name, int type,
-  uschar **fully_qualified_name)
+  const uschar **fully_qualified_name)
 {
 if (type >= 0) return dns_lookup(dnsa, name, type, fully_qualified_name);
 

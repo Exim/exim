@@ -192,24 +192,24 @@ BOOL (*receive_smtp_buffered)(void) = NULL;   /* Only used for SMTP */
 when verifying one address while routing/verifying another. We have to have
 the size explicit, because it is referenced from more than one module. */
 
-uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
-  &deliver_address_data,
-  &deliver_domain,
-  &deliver_domain_data,
-  &deliver_domain_orig,
-  &deliver_domain_parent,
-  &deliver_localpart,
-  &deliver_localpart_data,
-  &deliver_localpart_orig,
-  &deliver_localpart_parent,
-  &deliver_localpart_prefix,
-  &deliver_localpart_suffix,
-  (uschar **)(&deliver_recipients),
-  &deliver_host,
-  &deliver_home,
-  &address_file,
-  &address_pipe,
-  &self_hostname,
+const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
+  CUSS &deliver_address_data,
+  CUSS &deliver_domain,
+  CUSS &deliver_domain_data,
+  CUSS &deliver_domain_orig,
+  CUSS &deliver_domain_parent,
+  CUSS &deliver_localpart,
+  CUSS &deliver_localpart_data,
+  CUSS &deliver_localpart_orig,
+  CUSS &deliver_localpart_parent,
+  CUSS &deliver_localpart_prefix,
+  CUSS &deliver_localpart_suffix,
+  CUSS (uschar **)(&deliver_recipients),
+  CUSS &deliver_host,
+  CUSS &deliver_home,
+  CUSS &address_file,
+  CUSS &address_pipe,
+  CUSS &self_hostname,
   NULL };
 
 int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
@@ -573,18 +573,18 @@ uschar *delay_warning_condition=
 BOOL    delivery_date_remove   = TRUE;
 uschar *deliver_address_data   = NULL;
 int     deliver_datafile       = -1;
-uschar *deliver_domain         = NULL;
+const uschar *deliver_domain   = NULL;
 uschar *deliver_domain_data    = NULL;
-uschar *deliver_domain_orig    = NULL;
-uschar *deliver_domain_parent  = NULL;
+const uschar *deliver_domain_orig = NULL;
+const uschar *deliver_domain_parent = NULL;
 BOOL    deliver_drop_privilege = FALSE;
 BOOL    deliver_firsttime      = FALSE;
 BOOL    deliver_force          = FALSE;
 BOOL    deliver_freeze         = FALSE;
 time_t  deliver_frozen_at      = 0;
 uschar *deliver_home           = NULL;
-uschar *deliver_host           = NULL;
-uschar *deliver_host_address   = NULL;
+const uschar *deliver_host     = NULL;
+const uschar *deliver_host_address = NULL;
 int     deliver_host_port      = 0;
 uschar *deliver_in_buffer      = NULL;
 ino_t   deliver_inode          = 0;
@@ -672,7 +672,7 @@ int     errors_sender_rc       = EXIT_FAILURE;
 uschar *event_action             = NULL;	/* expansion for delivery events */
 uschar *event_data               = NULL;	/* auxilary data variable for event */
 int     event_defer_errno        = 0;
-uschar *event_name               = NULL;	/* event name variable */
+const uschar *event_name         = NULL;	/* event name variable */
 #endif
 
 
@@ -975,7 +975,7 @@ uschar *prvscheck_keynum       = NULL;
 uschar *prvscheck_result       = NULL;
 
 
-uschar *qualify_domain_recipient = NULL;
+const uschar *qualify_domain_recipient = NULL;
 uschar *qualify_domain_sender  = NULL;
 BOOL    queue_2stage           = FALSE;
 uschar *queue_domains          = NULL;
@@ -1404,7 +1404,7 @@ transport_instance  transport_defaults = {
 int     transport_count;
 uschar *transport_name          = NULL;
 int     transport_newlines;
-uschar **transport_filter_argv  = NULL;
+const uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;
 BOOL    transport_filter_timed_out = FALSE;
 int     transport_write_timeout= 0;

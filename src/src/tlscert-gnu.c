@@ -27,7 +27,7 @@ tls_export_cert(uschar * buf, size_t buflen, void * cert)
 size_t sz = buflen;
 void * reset_point = store_get(0);
 int fail;
-uschar * cp;
+const uschar * cp;
 
 if ((fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
     GNUTLS_X509_FMT_PEM, buf, &sz)))

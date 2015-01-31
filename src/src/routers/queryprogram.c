@@ -192,7 +192,7 @@ int fd_in, fd_out, len, rc;
 pid_t pid;
 struct passwd *upw = NULL;
 uschar buffer[1024];
-uschar **argvptr;
+const uschar **argvptr;
 uschar *rword, *rdata, *s;
 address_item_propagated addr_prop;
 queryprogram_router_options_block *ob =

@@ -123,7 +123,7 @@ typedef struct tls_ext_ctx_cb {
   uschar *server_cipher_list;
   /* only passed down to tls_error: */
   host_item *host;
-  uschar * verify_cert_hostnames;
+  const uschar * verify_cert_hostnames;
 #ifdef EXPERIMENTAL_EVENT
   uschar * event_action;
 #endif
@@ -351,7 +351,7 @@ else if (depth != 0)
   }
 else
   {
-  uschar * verify_cert_hostnames;
+  const uschar * verify_cert_hostnames;
 
   tlsp->peerdn = txt;
   tlsp->peercert = X509_dup(cert);
@@ -369,7 +369,7 @@ else
 #  endif
     {
     int sep = 0;
-    uschar * list = verify_cert_hostnames;
+    const uschar * list = verify_cert_hostnames;
     uschar * name;
     int rc;
     while ((name = string_nextinlist(&list, &sep, NULL, 0)))

@@ -59,8 +59,8 @@ typedef enum {DS_UNK=-1, DS_NO, DS_YES} dnssec_status_t;
 
 typedef struct host_item {
   struct host_item *next;
-  uschar *name;                   /* Host name */
-  uschar *address;                /* IP address in text form */
+  const uschar *name;             /* Host name */
+  const uschar *address;          /* IP address in text form */
   int     port;                   /* port value in host order (if SRV lookup) */
   int     mx;                     /* MX value if found via MX records */
   int     sort_key;               /* MX*1000 plus random "fraction" */
@@ -530,7 +530,7 @@ typedef struct address_item {
   uschar *local_part;             /* points to cc or lc version */
   uschar *prefix;                 /* stripped prefix of local part */
   uschar *suffix;                 /* stripped suffix of local part */
-  uschar *domain;                 /* working domain (lower cased) */
+  const uschar *domain;           /* working domain (lower cased) */
 
   uschar *address_retry_key;      /* retry key including full address */
   uschar *domain_retry_key;       /* retry key for domain only */
@@ -597,7 +597,7 @@ typedef struct {
 
 typedef struct error_block {
   struct error_block *next;
-  uschar *text1;
+  const uschar *text1;
   uschar *text2;
 } error_block;
 
@@ -750,9 +750,9 @@ typedef struct redirect_block {
 /* Structure for passing arguments to check_host() */
 
 typedef struct check_host_block {
-  uschar *host_name;
-  uschar *host_address;
-  uschar *host_ipv4;
+  const uschar *host_name;
+  const uschar *host_address;
+  const uschar *host_ipv4;
   BOOL   negative;
 } check_host_block;
 
@@ -768,7 +768,7 @@ typedef struct namedlist_cacheblock {
 /* Structure for holding data for an entry in a named list */
 
 typedef struct namedlist_block {
-  uschar *string;                    /* the list string */
+  const uschar *string;              /* the list string */
   namedlist_cacheblock *cache_data;  /* cached domain_data or localpart_data */
   int number;                        /* the number of the list for caching */
 } namedlist_block;

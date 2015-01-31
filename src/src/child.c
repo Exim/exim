@@ -141,7 +141,7 @@ if (exec_type == CEE_RETURN_ARGV)
 failure. We know that there will always be at least one extra option in the
 call when exec() is done here, so it can be used to add to the panic data. */
 
-DEBUG(D_exec) debug_print_argv(argv);
+DEBUG(D_exec) debug_print_argv(CUSS argv);
 exim_nullstd();                            /* Make sure std{in,out,err} exist */
 execv(CS argv[0], (char *const *)argv);
 
@@ -307,8 +307,9 @@ Returns:      the pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
-child_open_uid(uschar **argv, uschar **envp, int newumask, uid_t *newuid,
-  gid_t *newgid, int *infdptr, int *outfdptr, uschar *wd, BOOL make_leader)
+child_open_uid(const uschar **argv, const uschar **envp, int newumask,
+  uid_t *newuid, gid_t *newgid, int *infdptr, int *outfdptr, uschar *wd,
+  BOOL make_leader)
 {
 int save_errno;
 int inpfd[2], outpfd[2];
@@ -387,7 +388,7 @@ if (pid == 0)
   /* Now do the exec */
 
   if (envp == NULL) execv(CS argv[0], (char *const *)argv);
-    else execve(CS argv[0], (char *const *)argv, (char *const *)envp);
+  else execve(CS argv[0], (char *const *)argv, (char *const *)envp);
 
   /* Failed to execv. Signal this failure using EX_EXECFAILED. We are
   losing the actual errno we got back, because there is no way to return
@@ -450,8 +451,8 @@ pid_t
 child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
   int *outfdptr, BOOL make_leader)
 {
-return child_open_uid(argv, envp, newumask, NULL, NULL, infdptr, outfdptr,
-  NULL, make_leader);
+return child_open_uid(CUSS argv, CUSS envp, newumask, NULL, NULL,
+  infdptr, outfdptr, NULL, make_leader);
 }
 
 

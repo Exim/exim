@@ -283,10 +283,10 @@ return f;
 
 
 int
-mime_decode(uschar **listptr)
+mime_decode(const uschar **listptr)
 {
 int sep = 0;
-uschar *list = *listptr;
+const uschar *list = *listptr;
 uschar *option;
 uschar option_buffer[1024];
 uschar decode_path[1024];
@@ -696,7 +696,7 @@ NEXT_PARAM_SEARCH:
   else if ( (mime_content_type != NULL) &&
 	  (Ustrncmp(mime_content_type,"message/rfc822",14) == 0) )
     {
-    uschar *rfc822name = NULL;
+    const uschar *rfc822name = NULL;
     uschar filename[2048];
     int file_nr = 0;
     int result = 0;

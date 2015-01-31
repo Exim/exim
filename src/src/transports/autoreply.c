@@ -157,12 +157,13 @@ if (ss == NULL)
 if (type != cke_text) for (t = ss; *t != 0; t++)
   {
   int c = *t;
+  const uschar * sp;
   if (mac_isprint(c)) continue;
   if (type == cke_hdr && c == '\n' && (t[1] == ' ' || t[1] == '\t')) continue;
-  s = string_printing(s);
+  sp = string_printing(s);
   addr->transport_return = FAIL;
   addr->message = string_sprintf("Expansion of \"%s\" in %s transport "
-    "contains non-printing character %d", s, name, c);
+    "contains non-printing character %d", sp, name, c);
   return NULL;
   }
 
@@ -187,7 +188,7 @@ Returns:      nothing
 */
 
 static void
-check_never_mail(uschar **listptr, uschar *never_mail)
+check_never_mail(uschar **listptr, const uschar *never_mail)
 {
 uschar *s = *listptr;
 
@@ -379,7 +380,7 @@ remove those that match. */
 
 if (ob->never_mail != NULL)
   {
-  uschar *never_mail = expand_string(ob->never_mail);
+  const uschar *never_mail = expand_string(ob->never_mail);
 
   if (never_mail == NULL)
     {

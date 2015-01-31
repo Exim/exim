@@ -672,9 +672,9 @@ if (!path_inspected)
     {
     int sep = ':';              /* Fixed separator - outside use */
     uschar *s;
-    uschar *ss = log_file_path;
+    const uschar *ss = log_file_path;
     logging_mode = 0;
-    while ((s = string_nextinlist(&ss,&sep,log_buffer,LOG_BUFFER_SIZE)) != NULL)
+    while ((s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE)))
       {
       if (Ustrcmp(s, "syslog") == 0)
         logging_mode |= LOG_MODE_SYSLOG;
@@ -698,9 +698,8 @@ if (!path_inspected)
         else
           {
           uschar *t;
-          uschar *tt = US LOG_FILE_PATH;
-          while ((t = string_nextinlist(&tt,&sep,log_buffer,LOG_BUFFER_SIZE))
-                != NULL)
+          const uschar *tt = US LOG_FILE_PATH;
+          while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
             {
             if (Ustrcmp(t, "syslog") == 0 || t[0] == 0) continue;
             file_path = string_copy(t);

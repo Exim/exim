@@ -14,7 +14,6 @@
 >>> calling r1 router
 >>> routed by r1 router
 >>> local host found for non-MX address
->>> fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
@@ -74,7 +73,6 @@ routed by r1 router
   transport: t1
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
-fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
@@ -171,7 +169,6 @@ routed by r1 router
   transport: t1
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
-fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
@@ -213,7 +210,6 @@ search_tidyup called
 >>> calling r1 router
 >>> routed by r1 router
 >>> local host found for non-MX address
->>> fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
@@ -240,7 +236,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> calling r1 router
 >>> routed by r1 router
 >>> local host found for non-MX address
->>> fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
@@ -281,7 +276,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> calling r1 router
 >>> routed by r1 router
 >>> local host found for non-MX address
->>> fully qualified name = 127.0.0.1
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1

@@ -444,7 +444,7 @@ Returns:     -1 on error, else 0
 */
 
 static int
-rda_write_string(int fd, uschar *s)
+rda_write_string(int fd, const uschar *s)
 {
 int len = (s == NULL)? 0 : Ustrlen(s) + 1;
 return (  write(fd, &len, sizeof(int)) != sizeof(int)

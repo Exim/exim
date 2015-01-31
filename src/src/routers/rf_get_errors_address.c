@@ -84,8 +84,8 @@ else
   BOOL save_address_test_mode = address_test_mode;
   int save1 = 0;
   int i;
-  uschar ***p;
-  uschar *address_expansions_save[ADDRESS_EXPANSIONS_COUNT];
+  const uschar ***p;
+  const uschar *address_expansions_save[ADDRESS_EXPANSIONS_COUNT];
   address_item *snew = deliver_make_addr(s, FALSE);
 
   if (sender_address != NULL)

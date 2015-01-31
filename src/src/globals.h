@@ -150,7 +150,7 @@ extern BOOL (*receive_smtp_buffered)(void);
 the size of this vector set explicitly, because it is referenced from more than
 one module. */
 
-extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
+extern const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 
 /* General global variables */
 
@@ -326,19 +326,19 @@ extern BOOL    delivery_date_remove;   /* Remove delivery-date headers */
 
 extern uschar *deliver_address_data;   /* Arbitrary data for an address */
 extern int     deliver_datafile;       /* FD for data part of message */
-extern uschar *deliver_domain;         /* The local domain for delivery */
+extern const uschar *deliver_domain;   /* The local domain for delivery */
 extern uschar *deliver_domain_data;    /* From domain lookup */
-extern uschar *deliver_domain_orig;    /* The original local domain for delivery */
-extern uschar *deliver_domain_parent;  /* The parent domain for delivery */
+extern const uschar *deliver_domain_orig; /* The original local domain for delivery */
+extern const uschar *deliver_domain_parent; /* The parent domain for delivery */
 extern BOOL    deliver_drop_privilege; /* TRUE for unprivileged delivery */
 extern BOOL    deliver_firsttime;      /* True for first delivery attempt */
 extern BOOL    deliver_force;          /* TRUE if delivery was forced */
 extern BOOL    deliver_freeze;         /* TRUE if delivery is frozen */
 extern time_t  deliver_frozen_at;      /* Time of freezing */
 extern uschar *deliver_home;           /* Home directory for pipes */
-extern uschar *deliver_host;           /* (First) host for routed local deliveries */
+extern const uschar *deliver_host;     /* (First) host for routed local deliveries */
                                        /* Remote host for filter */
-extern uschar *deliver_host_address;   /* Address for remote delivery filter */
+extern const uschar *deliver_host_address; /* Address for remote delivery filter */
 extern int     deliver_host_port;      /* Address for remote delivery filter */
 extern uschar *deliver_in_buffer;      /* Buffer for copying file */
 extern ino_t   deliver_inode;          /* Inode for appendfile */
@@ -430,7 +430,7 @@ extern int     errors_sender_rc;       /* Return after message to sender*/
 extern uschar *event_action;           /* expansion for delivery events */
 extern uschar *event_data;	       /* event data */
 extern int     event_defer_errno;      /* error number set when a remote delivery is deferred with a host error */
-extern uschar *event_name;	       /* event classification */
+extern const uschar *event_name;       /* event classification */
 #endif
 
 extern gid_t   exim_gid;               /* To be used with exim_uid */
@@ -648,7 +648,7 @@ extern uschar *prvscheck_address;      /* Set during prvscheck expansion item */
 extern uschar *prvscheck_keynum;       /* Set during prvscheck expansion item */
 extern uschar *prvscheck_result;       /* Set during prvscheck expansion item */
 
-extern uschar *qualify_domain_recipient; /* Domain to qualify recipients with */
+extern const uschar *qualify_domain_recipient; /* Domain to qualify recipients with */
 extern uschar *qualify_domain_sender;  /* Domain to qualify senders with */
 extern BOOL    queue_2stage;           /* Run queue in 2-stage manner */
 extern uschar *queue_domains;          /* Queue these domains */
@@ -896,7 +896,7 @@ extern BOOL    timestamps_utc;         /* Use UTC for all times */
 extern uschar *transport_name;         /* Name of transport last started */
 extern int     transport_count;        /* Count of bytes transported */
 extern int     transport_newlines;     /* Accurate count of number of newline chars transported */
-extern uschar **transport_filter_argv; /* For on-the-fly filtering */
+extern const uschar **transport_filter_argv; /* For on-the-fly filtering */
 extern int     transport_filter_timeout; /* Timeout for same */
 extern BOOL    transport_filter_timed_out; /* True if it did */
 

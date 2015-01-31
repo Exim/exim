@@ -45,9 +45,11 @@ int flushbuffer (int socket, uschar *buffer)
   return retval;
 }
 
-int dcc_process(uschar **listptr) {
+int
+dcc_process(uschar **listptr)
+{
   int sep = 0;
-  uschar *list = *listptr;
+  const uschar *list = *listptr;
   FILE *data_file;
   uschar *dcc_default_ip_option = US"127.0.0.1";
   uschar *dcc_helo_option = US"localhost";

@@ -34,13 +34,14 @@ Returns:         the return from the lookup function, or DEFER
 */
 
 int
-lf_sqlperform(uschar *name, uschar *optionname, uschar *optserverlist,
-  uschar *query, uschar **result, uschar **errmsg, BOOL *do_cache,
-  int(*fn)(uschar *, uschar *, uschar **, uschar **, BOOL *, BOOL *))
+lf_sqlperform(const uschar *name, const uschar *optionname,
+  const uschar *optserverlist, const uschar *query,
+  uschar **result, uschar **errmsg, BOOL *do_cache,
+  int(*fn)(const uschar *, uschar *, uschar **, uschar **, BOOL *, BOOL *))
 {
 int sep, rc;
 uschar *server;
-uschar *serverlist;
+const uschar *serverlist;
 uschar buffer[512];
 BOOL defer_break = FALSE;
 
@@ -68,8 +69,8 @@ if (Ustrncmp(query, "servers", 7) != 0)
 else
   {
   int qsep;
-  uschar *s, *ss;
-  uschar *qserverlist;
+  const uschar *s, *ss;
+  const uschar *qserverlist;
   uschar *qserver;
   uschar qbuffer[512];
 

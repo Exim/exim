@@ -802,7 +802,7 @@ static uschar *ratelimit_option_string[] = {
 
 /* Enable recursion between acl_check_internal() and acl_check_condition() */
 
-static int acl_check_wargs(int, address_item *, uschar *, int, uschar **,
+static int acl_check_wargs(int, address_item *, const uschar *, int, uschar **,
     uschar **);
 
 
@@ -1049,9 +1049,9 @@ Returns:    nothing
 */
 
 static void
-setup_header(uschar *hstring)
+setup_header(const uschar *hstring)
 {
-uschar *p, *q;
+const uschar *p, *q;
 int hlen = Ustrlen(hstring);
 
 /* Ignore any leading newlines */
@@ -1059,14 +1059,24 @@ while (*hstring == '\n') hstring++, hlen--;
 
 /* An empty string does nothing; ensure exactly one final newline. */
 if (hlen <= 0) return;
-if (hstring[--hlen] != '\n') hstring = string_sprintf("%s\n", hstring);
-else while(hstring[--hlen] == '\n') hstring[hlen+1] = '\0';
+if (hstring[--hlen] != '\n')
+  q = string_sprintf("%s\n", hstring);
+else if (hstring[hlen-1] == '\n')
+  {
+  uschar * s = string_copy(hstring);
+  while(s[--hlen] == '\n')
+    s[hlen+1] = '\0';
+  q = s;
+  }
+else
+  q = hstring;
 
 /* Loop for multiple header lines, taking care about continuations */
 
-for (p = q = hstring; *p != 0; )
+for (p = q; *p != 0; )
   {
-  uschar *s;
+  const uschar *s;
+  uschar * hdr;
   int newtype = htype_add_bot;
   header_line **hptr = &acl_added_headers;
 
@@ -1114,14 +1124,14 @@ for (p = q = hstring; *p != 0; )
     if (*s == ':' || !isgraph(*s)) break;
     }
 
-  s = string_sprintf("%s%.*s", (*s == ':')? "" : "X-ACL-Warn: ", (int) (q - p), p);
-  hlen = Ustrlen(s);
+  hdr = string_sprintf("%s%.*s", (*s == ':')? "" : "X-ACL-Warn: ", (int) (q - p), p);
+  hlen = Ustrlen(hdr);
 
   /* See if this line has already been added */
 
   while (*hptr != NULL)
     {
-    if (Ustrncmp((*hptr)->text, s, hlen) == 0) break;
+    if (Ustrncmp((*hptr)->text, hdr, hlen) == 0) break;
     hptr = &((*hptr)->next);
     }
 
@@ -1130,7 +1140,7 @@ for (p = q = hstring; *p != 0; )
   if (*hptr == NULL)
     {
     header_line *h = store_get(sizeof(header_line));
-    h->text = s;
+    h->text = hdr;
     h->next = NULL;
     h->type = newtype;
     h->slen = hlen;
@@ -1197,15 +1207,12 @@ Returns:    nothing
 */
 
 static void
-setup_remove_header(uschar *hnames)
+setup_remove_header(const uschar *hnames)
 {
 if (*hnames != 0)
-  {
-  if (acl_removed_headers == NULL)
-    acl_removed_headers = hnames;
-  else
-    acl_removed_headers = string_sprintf("%s : %s", acl_removed_headers, hnames);
-  }
+  acl_removed_headers = acl_removed_headers
+    ? string_sprintf("%s : %s", acl_removed_headers, hnames)
+    : string_copy(hnames);
 }
 
 
@@ -1444,10 +1451,11 @@ Returns:    CSA_UNKNOWN    no valid CSA record found
 */
 
 static int
-acl_verify_csa(uschar *domain)
+acl_verify_csa(const uschar *domain)
 {
 tree_node *t;
-uschar *found, *p;
+const uschar *found;
+uschar *p;
 int priority, weight, port;
 dns_answer dnsa;
 dns_scan dnss;
@@ -1470,7 +1478,7 @@ containing a keyword and a colon before the actual IP address. */
 
 if (domain[0] == '[')
   {
-  uschar *start = Ustrchr(domain, ':');
+  const uschar *start = Ustrchr(domain, ':');
   if (start == NULL) start = domain;
   domain = string_copyn(start + 1, Ustrlen(start) - 2);
   }
@@ -1726,7 +1734,7 @@ Returns:       OK        verification condition succeeded
 */
 
 static int
-acl_verify(int where, address_item *addr, uschar *arg,
+acl_verify(int where, address_item *addr, const uschar *arg,
   uschar **user_msgptr, uschar **log_msgptr, int *basic_errno)
 {
 int sep = '/';
@@ -1750,7 +1758,7 @@ an error if options are given for items that don't expect them.
 */
 
 uschar *slash = Ustrchr(arg, '/');
-uschar *list = arg;
+const uschar *list = arg;
 uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
 verify_type_t * vp;
 
@@ -1915,12 +1923,13 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
       while (isspace(*ss)) ss++;
       if (*ss++ == '=')
         {
+	const uschar * sublist = ss;
         int optsep = ',';
         uschar *opt;
         uschar buffer[256];
-        while (isspace(*ss)) ss++;
+        while (isspace(*sublist)) sublist++;
 
-        while ((opt = string_nextinlist(&ss, &optsep, buffer, sizeof(buffer)))
+        while ((opt = string_nextinlist(&sublist, &optsep, buffer, sizeof(buffer)))
               != NULL)
           {
 	  callout_opt_t * op;
@@ -2243,7 +2252,7 @@ Returns:      CONTROL_xxx value
 */
 
 static int
-decode_control(uschar *arg, uschar **pptr, int where, uschar **log_msgptr)
+decode_control(const uschar *arg, const uschar **pptr, int where, uschar **log_msgptr)
 {
 int len;
 control_def *d;
@@ -2328,7 +2337,7 @@ Returns:       OK        - Sender's rate is above limit
 */
 
 static int
-acl_ratelimit(uschar *arg, int where, uschar **log_msgptr)
+acl_ratelimit(const uschar *arg, int where, uschar **log_msgptr)
 {
 double limit, period, count;
 uschar *ss;
@@ -2857,7 +2866,7 @@ Returns:       OK        - Completed.
 */
 
 static int
-acl_udpsend(uschar *arg, uschar **log_msgptr)
+acl_udpsend(const uschar *arg, uschar **log_msgptr)
 {
 int sep = 0;
 uschar *hostname;
@@ -2983,7 +2992,6 @@ uschar *user_message = NULL;
 uschar *log_message = NULL;
 uschar *debug_tag = NULL;
 uschar *debug_opts = NULL;
-uschar *p = NULL;
 int rc = OK;
 #ifdef WITH_CONTENT_SCAN
 int sep = -'/';
@@ -2991,7 +2999,7 @@ int sep = -'/';
 
 for (; cb != NULL; cb = cb->next)
   {
-  uschar *arg;
+  const uschar *arg;
   int control_type;
 
   /* The message and log_message items set up messages to be used in
@@ -3130,268 +3138,272 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_CONTROL:
-    control_type = decode_control(arg, &p, where, log_msgptr);
-
-    /* Check if this control makes sense at this time */
-
-    if ((control_forbids[control_type] & (1 << where)) != 0)
       {
-      *log_msgptr = string_sprintf("cannot use \"control=%s\" in %s ACL",
-        controls[control_type], acl_wherenames[where]);
-      return ERROR;
-      }
+      const uschar *p = NULL;
+      control_type = decode_control(arg, &p, where, log_msgptr);
 
-    switch(control_type)
-      {
-      case CONTROL_AUTH_UNADVERTISED:
-      allow_auth_unadvertised = TRUE;
-      break;
+      /* Check if this control makes sense at this time */
 
-      #ifdef EXPERIMENTAL_BRIGHTMAIL
-      case CONTROL_BMI_RUN:
-      bmi_run = 1;
-      break;
-      #endif
-
-      #ifndef DISABLE_DKIM
-      case CONTROL_DKIM_VERIFY:
-      dkim_disable_verify = TRUE;
-      #ifdef EXPERIMENTAL_DMARC
-      /* Since DKIM was blocked, skip DMARC too */
-      dmarc_disable_verify = TRUE;
-      dmarc_enable_forensic = FALSE;
-      #endif
-      break;
-      #endif
-
-      #ifdef EXPERIMENTAL_DMARC
-      case CONTROL_DMARC_VERIFY:
-      dmarc_disable_verify = TRUE;
-      break;
-
-      case CONTROL_DMARC_FORENSIC:
-      dmarc_enable_forensic = TRUE;
-      break;
-      #endif
-
-      case CONTROL_DSCP:
-      if (*p == '/')
-        {
-        int fd, af, level, optname, value;
-        /* If we are acting on stdin, the setsockopt may fail if stdin is not
-        a socket; we can accept that, we'll just debug-log failures anyway. */
-        fd = fileno(smtp_in);
-        af = ip_get_address_family(fd);
-        if (af < 0)
-          {
-          HDEBUG(D_acl)
-            debug_printf("smtp input is probably not a socket [%s], not setting DSCP\n",
-                strerror(errno));
-          break;
-          }
-        if (dscp_lookup(p+1, af, &level, &optname, &value))
-          {
-          if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
-            {
-            HDEBUG(D_acl) debug_printf("failed to set input DSCP[%s]: %s\n",
-                p+1, strerror(errno));
-            }
-          else
-            {
-            HDEBUG(D_acl) debug_printf("set input DSCP to \"%s\"\n", p+1);
-            }
-          }
-        else
-          {
-          *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
-          return ERROR;
-          }
-        }
-      else
-        {
-        *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
-        return ERROR;
-        }
-      break;
-
-      case CONTROL_ERROR:
-      return ERROR;
-
-      case CONTROL_CASEFUL_LOCAL_PART:
-      deliver_localpart = addr->cc_local_part;
-      break;
-
-      case CONTROL_CASELOWER_LOCAL_PART:
-      deliver_localpart = addr->lc_local_part;
-      break;
-
-      case CONTROL_ENFORCE_SYNC:
-      smtp_enforce_sync = TRUE;
-      break;
-
-      case CONTROL_NO_ENFORCE_SYNC:
-      smtp_enforce_sync = FALSE;
-      break;
-
-      #ifdef WITH_CONTENT_SCAN
-      case CONTROL_NO_MBOX_UNSPOOL:
-      no_mbox_unspool = TRUE;
-      break;
-      #endif
-
-      case CONTROL_NO_MULTILINE:
-      no_multiline_responses = TRUE;
-      break;
-
-      case CONTROL_NO_PIPELINING:
-      pipelining_enable = FALSE;
-      break;
-
-      case CONTROL_NO_DELAY_FLUSH:
-      disable_delay_flush = TRUE;
-      break;
-
-      case CONTROL_NO_CALLOUT_FLUSH:
-      disable_callout_flush = TRUE;
-      break;
-
-      case CONTROL_FAKEREJECT:
-      cancel_cutthrough_connection("fakereject");
-      case CONTROL_FAKEDEFER:
-      fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
-      if (*p == '/')
-        {
-        uschar *pp = p + 1;
-        while (*pp != 0) pp++;
-        fake_response_text = expand_string(string_copyn(p+1, pp-p-1));
-        p = pp;
-        }
-       else
-        {
-        /* Explicitly reset to default string */
-        fake_response_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
-        }
-      break;
-
-      case CONTROL_FREEZE:
-      deliver_freeze = TRUE;
-      deliver_frozen_at = time(NULL);
-      freeze_tell = freeze_tell_config;       /* Reset to configured value */
-      if (Ustrncmp(p, "/no_tell", 8) == 0)
-        {
-        p += 8;
-        freeze_tell = NULL;
-        }
-      if (*p != 0)
-        {
-        *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
-        return ERROR;
-        }
-      cancel_cutthrough_connection("item frozen");
-      break;
-
-      case CONTROL_QUEUE_ONLY:
-      queue_only_policy = TRUE;
-      cancel_cutthrough_connection("queueing forced");
-      break;
-
-      case CONTROL_SUBMISSION:
-      originator_name = US"";
-      submission_mode = TRUE;
-      while (*p == '/')
-        {
-        if (Ustrncmp(p, "/sender_retain", 14) == 0)
-          {
-          p += 14;
-          active_local_sender_retain = TRUE;
-          active_local_from_check = FALSE;
-          }
-        else if (Ustrncmp(p, "/domain=", 8) == 0)
-          {
-          uschar *pp = p + 8;
-          while (*pp != 0 && *pp != '/') pp++;
-          submission_domain = string_copyn(p+8, pp-p-8);
-          p = pp;
-          }
-        /* The name= option must be last, because it swallows the rest of
-        the string. */
-        else if (Ustrncmp(p, "/name=", 6) == 0)
-          {
-          uschar *pp = p + 6;
-          while (*pp != 0) pp++;
-          submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
-            big_buffer, big_buffer_size));
-          p = pp;
-          }
-        else break;
-        }
-      if (*p != 0)
-        {
-        *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
-        return ERROR;
-        }
-      break;
-
-      case CONTROL_DEBUG:
-      while (*p == '/')
-        {
-        if (Ustrncmp(p, "/tag=", 5) == 0)
-          {
-          uschar *pp = p + 5;
-          while (*pp != '\0' && *pp != '/') pp++;
-          debug_tag = string_copyn(p+5, pp-p-5);
-          p = pp;
-          }
-        else if (Ustrncmp(p, "/opts=", 6) == 0)
-          {
-          uschar *pp = p + 6;
-          while (*pp != '\0' && *pp != '/') pp++;
-          debug_opts = string_copyn(p+6, pp-p-6);
-          p = pp;
-          }
-        }
-        debug_logging_activate(debug_tag, debug_opts);
-      break;
-
-      case CONTROL_SUPPRESS_LOCAL_FIXUPS:
-      suppress_local_fixups = TRUE;
-      break;
-
-      case CONTROL_CUTTHROUGH_DELIVERY:
-      if (prdr_requested)
-	/* Too hard to think about for now.  We might in future cutthrough
-	the case where both sides handle prdr and this-node prdr acl
-	is "accept" */
-        *log_msgptr = string_sprintf(US"PRDR on %s reception\n", arg);
-      else
+      if ((control_forbids[control_type] & (1 << where)) != 0)
 	{
-	if (deliver_freeze)
-	  *log_msgptr = US"frozen";
-	else if (queue_only_policy)
-	  *log_msgptr = US"queue-only";
-	else if (fake_response == FAIL)
-	  *log_msgptr = US"fakereject";
+	*log_msgptr = string_sprintf("cannot use \"control=%s\" in %s ACL",
+	  controls[control_type], acl_wherenames[where]);
+	return ERROR;
+	}
+
+      switch(control_type)
+	{
+	case CONTROL_AUTH_UNADVERTISED:
+	allow_auth_unadvertised = TRUE;
+	break;
+
+	#ifdef EXPERIMENTAL_BRIGHTMAIL
+	case CONTROL_BMI_RUN:
+	bmi_run = 1;
+	break;
+	#endif
+
+	#ifndef DISABLE_DKIM
+	case CONTROL_DKIM_VERIFY:
+	dkim_disable_verify = TRUE;
+	#ifdef EXPERIMENTAL_DMARC
+	/* Since DKIM was blocked, skip DMARC too */
+	dmarc_disable_verify = TRUE;
+	dmarc_enable_forensic = FALSE;
+	#endif
+	break;
+	#endif
+
+	#ifdef EXPERIMENTAL_DMARC
+	case CONTROL_DMARC_VERIFY:
+	dmarc_disable_verify = TRUE;
+	break;
+
+	case CONTROL_DMARC_FORENSIC:
+	dmarc_enable_forensic = TRUE;
+	break;
+	#endif
+
+	case CONTROL_DSCP:
+	if (*p == '/')
+	  {
+	  int fd, af, level, optname, value;
+	  /* If we are acting on stdin, the setsockopt may fail if stdin is not
+	  a socket; we can accept that, we'll just debug-log failures anyway. */
+	  fd = fileno(smtp_in);
+	  af = ip_get_address_family(fd);
+	  if (af < 0)
+	    {
+	    HDEBUG(D_acl)
+	      debug_printf("smtp input is probably not a socket [%s], not setting DSCP\n",
+		  strerror(errno));
+	    break;
+	    }
+	  if (dscp_lookup(p+1, af, &level, &optname, &value))
+	    {
+	    if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
+	      {
+	      HDEBUG(D_acl) debug_printf("failed to set input DSCP[%s]: %s\n",
+		  p+1, strerror(errno));
+	      }
+	    else
+	      {
+	      HDEBUG(D_acl) debug_printf("set input DSCP to \"%s\"\n", p+1);
+	      }
+	    }
+	  else
+	    {
+	    *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
+	    return ERROR;
+	    }
+	  }
 	else
 	  {
-	  if (rcpt_count == 1) cutthrough.delivery = TRUE;
-	  break;
+	  *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+	  return ERROR;
 	  }
-	*log_msgptr = string_sprintf("\"control=%s\" on %s item",
-				      arg, *log_msgptr);
+	break;
+
+	case CONTROL_ERROR:
+	return ERROR;
+
+	case CONTROL_CASEFUL_LOCAL_PART:
+	deliver_localpart = addr->cc_local_part;
+	break;
+
+	case CONTROL_CASELOWER_LOCAL_PART:
+	deliver_localpart = addr->lc_local_part;
+	break;
+
+	case CONTROL_ENFORCE_SYNC:
+	smtp_enforce_sync = TRUE;
+	break;
+
+	case CONTROL_NO_ENFORCE_SYNC:
+	smtp_enforce_sync = FALSE;
+	break;
+
+	#ifdef WITH_CONTENT_SCAN
+	case CONTROL_NO_MBOX_UNSPOOL:
+	no_mbox_unspool = TRUE;
+	break;
+	#endif
+
+	case CONTROL_NO_MULTILINE:
+	no_multiline_responses = TRUE;
+	break;
+
+	case CONTROL_NO_PIPELINING:
+	pipelining_enable = FALSE;
+	break;
+
+	case CONTROL_NO_DELAY_FLUSH:
+	disable_delay_flush = TRUE;
+	break;
+
+	case CONTROL_NO_CALLOUT_FLUSH:
+	disable_callout_flush = TRUE;
+	break;
+
+	case CONTROL_FAKEREJECT:
+	cancel_cutthrough_connection("fakereject");
+	case CONTROL_FAKEDEFER:
+	fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
+	if (*p == '/')
+	  {
+	  const uschar *pp = p + 1;
+	  while (*pp != 0) pp++;
+	  fake_response_text = expand_string(string_copyn(p+1, pp-p-1));
+	  p = pp;
+	  }
+	 else
+	  {
+	  /* Explicitly reset to default string */
+	  fake_response_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
+	  }
+	break;
+
+	case CONTROL_FREEZE:
+	deliver_freeze = TRUE;
+	deliver_frozen_at = time(NULL);
+	freeze_tell = freeze_tell_config;       /* Reset to configured value */
+	if (Ustrncmp(p, "/no_tell", 8) == 0)
+	  {
+	  p += 8;
+	  freeze_tell = NULL;
+	  }
+	if (*p != 0)
+	  {
+	  *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+	  return ERROR;
+	  }
+	cancel_cutthrough_connection("item frozen");
+	break;
+
+	case CONTROL_QUEUE_ONLY:
+	queue_only_policy = TRUE;
+	cancel_cutthrough_connection("queueing forced");
+	break;
+
+	case CONTROL_SUBMISSION:
+	originator_name = US"";
+	submission_mode = TRUE;
+	while (*p == '/')
+	  {
+	  if (Ustrncmp(p, "/sender_retain", 14) == 0)
+	    {
+	    p += 14;
+	    active_local_sender_retain = TRUE;
+	    active_local_from_check = FALSE;
+	    }
+	  else if (Ustrncmp(p, "/domain=", 8) == 0)
+	    {
+	    const uschar *pp = p + 8;
+	    while (*pp != 0 && *pp != '/') pp++;
+	    submission_domain = string_copyn(p+8, pp-p-8);
+	    p = pp;
+	    }
+	  /* The name= option must be last, because it swallows the rest of
+	  the string. */
+	  else if (Ustrncmp(p, "/name=", 6) == 0)
+	    {
+	    const uschar *pp = p + 6;
+	    while (*pp != 0) pp++;
+	    submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
+	      big_buffer, big_buffer_size));
+	    p = pp;
+	    }
+	  else break;
+	  }
+	if (*p != 0)
+	  {
+	  *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+	  return ERROR;
+	  }
+	break;
+
+	case CONTROL_DEBUG:
+	while (*p == '/')
+	  {
+	  if (Ustrncmp(p, "/tag=", 5) == 0)
+	    {
+	    const uschar *pp = p + 5;
+	    while (*pp != '\0' && *pp != '/') pp++;
+	    debug_tag = string_copyn(p+5, pp-p-5);
+	    p = pp;
+	    }
+	  else if (Ustrncmp(p, "/opts=", 6) == 0)
+	    {
+	    const uschar *pp = p + 6;
+	    while (*pp != '\0' && *pp != '/') pp++;
+	    debug_opts = string_copyn(p+6, pp-p-6);
+	    p = pp;
+	    }
+	  }
+	  debug_logging_activate(debug_tag, debug_opts);
+	break;
+
+	case CONTROL_SUPPRESS_LOCAL_FIXUPS:
+	suppress_local_fixups = TRUE;
+	break;
+
+	case CONTROL_CUTTHROUGH_DELIVERY:
+	if (prdr_requested)
+	  /* Too hard to think about for now.  We might in future cutthrough
+	  the case where both sides handle prdr and this-node prdr acl
+	  is "accept" */
+	  *log_msgptr = string_sprintf(US"PRDR on %s reception\n", arg);
+	else
+	  {
+	  if (deliver_freeze)
+	    *log_msgptr = US"frozen";
+	  else if (queue_only_policy)
+	    *log_msgptr = US"queue-only";
+	  else if (fake_response == FAIL)
+	    *log_msgptr = US"fakereject";
+	  else
+	    {
+	    if (rcpt_count == 1) cutthrough.delivery = TRUE;
+	    break;
+	    }
+	  *log_msgptr = string_sprintf("\"control=%s\" on %s item",
+					arg, *log_msgptr);
+	  }
+	return ERROR;
 	}
-      return ERROR;
+      break;
       }
-    break;
 
     #ifdef EXPERIMENTAL_DCC
     case ACLC_DCC:
       {
       /* Seperate the regular expression and any optional parameters. */
-      uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
+      const uschar * list = arg;
+      uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the dcc backend. */
       rc = dcc_process(&ss);
       /* Modify return code based upon the existance of options. */
-      while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
+      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
             != NULL) {
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           {
@@ -3495,7 +3507,7 @@ for (; cb != NULL; cb = cb->next)
 
     case ACLC_DOMAINS:
     rc = match_isinlist(addr->domain, &arg, 0, &domainlist_anchor,
-      addr->domain_cache, MCL_DOMAIN, TRUE, &deliver_domain_data);
+      addr->domain_cache, MCL_DOMAIN, TRUE, CUSS &deliver_domain_data);
     break;
 
     /* The value in tls_cipher is the full cipher name, for example,
@@ -3528,21 +3540,22 @@ for (; cb != NULL; cb = cb->next)
 
     case ACLC_HOSTS:
     rc = verify_check_this_host(&arg, sender_host_cache, NULL,
-      (sender_host_address == NULL)? US"" : sender_host_address, &host_data);
+      (sender_host_address == NULL)? US"" : sender_host_address,
+      CUSS &host_data);
     if (host_data != NULL) host_data = string_copy_malloc(host_data);
     break;
 
     case ACLC_LOCAL_PARTS:
     rc = match_isinlist(addr->cc_local_part, &arg, 0,
       &localpartlist_anchor, addr->localpart_cache, MCL_LOCALPART, TRUE,
-      &deliver_localpart_data);
+      CUSS &deliver_localpart_data);
     break;
 
     case ACLC_LOG_REJECT_TARGET:
       {
       int logbits = 0;
       int sep = 0;
-      uschar *s = arg;
+      const uschar *s = arg;
       uschar *ss;
       while ((ss = string_nextinlist(&s, &sep, big_buffer, big_buffer_size))
               != NULL)
@@ -3564,7 +3577,7 @@ for (; cb != NULL; cb = cb->next)
     case ACLC_LOGWRITE:
       {
       int logbits = 0;
-      uschar *s = arg;
+      const uschar *s = arg;
       if (*s == ':')
         {
         s++;
@@ -3598,12 +3611,13 @@ for (; cb != NULL; cb = cb->next)
     case ACLC_MALWARE:			/* Run the malware backend. */
       {
       /* Separate the regular expression and any optional parameters. */
-      uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
+      const uschar * list = arg;
+      uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       uschar *opt;
       BOOL defer_ok = FALSE;
       int timeout = 0;
 
-      while ((opt = string_nextinlist(&arg, &sep, NULL, 0)))
+      while ((opt = string_nextinlist(&list, &sep, NULL, 0)))
         if (strcmpic(opt, US"defer_ok") == 0)
 	  defer_ok = TRUE;
 	else if (  strncmpic(opt, US"tmo=", 4) == 0
@@ -3630,8 +3644,8 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_RECIPIENTS:
-    rc = match_address_list(addr->address, TRUE, TRUE, &arg, NULL, -1, 0,
-      &recipient_data);
+    rc = match_address_list((const uschar *)addr->address, TRUE, TRUE, &arg, NULL, -1, 0,
+      CUSS &recipient_data);
     break;
 
     #ifdef WITH_CONTENT_SCAN
@@ -3655,8 +3669,8 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_SENDERS:
-    rc = match_address_list(sender_address, TRUE, TRUE, &arg,
-      sender_address_cache, -1, 0, &sender_data);
+    rc = match_address_list((const uschar *)sender_address, TRUE, TRUE, &arg,
+      sender_address_cache, -1, 0, CUSS &sender_data);
     break;
 
     /* Connection variables must persist forever */
@@ -3674,11 +3688,12 @@ for (; cb != NULL; cb = cb->next)
     case ACLC_SPAM:
       {
       /* Seperate the regular expression and any optional parameters. */
-      uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
+      const uschar * list = arg;
+      uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the spam backend. */
-      rc = spam(&ss);
+      rc = spam(CUSS &ss);
       /* Modify return code based upon the existance of options. */
-      while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
+      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
             != NULL) {
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           {
@@ -4244,7 +4259,7 @@ return FAIL;
 the name of an ACL followed optionally by up to 9 space-separated arguments.
 The name and args are separately expanded.  Args go into $acl_arg globals. */
 static int
-acl_check_wargs(int where, address_item *addr, uschar *s, int level,
+acl_check_wargs(int where, address_item *addr, const uschar *s, int level,
   uschar **user_msgptr, uschar **log_msgptr)
 {
 uschar * tmp;

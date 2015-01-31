@@ -1085,7 +1085,7 @@ Returns:      the value, or -1 on error
 */
 
 static int
-readconf_readfixed(uschar *s, int terminator)
+readconf_readfixed(const uschar *s, int terminator)
 {
 int yield = 0;
 int value, count;
@@ -1191,7 +1191,7 @@ Returns:     doesn't return; dies
 */
 
 static void
-extra_chars_error(uschar *s, uschar *t1, uschar *t2, uschar *t3)
+extra_chars_error(const uschar *s, const uschar *t1, const uschar *t2, const uschar *t3)
 {
 uschar *comment = US"";
 if (*s == '#') comment = US" (# is comment only at line start)";
@@ -1227,7 +1227,7 @@ Returns:      the control block for the parsed rule.
 */
 
 static rewrite_rule *
-readconf_one_rewrite(uschar *p, int *existflags, BOOL isglobal)
+readconf_one_rewrite(const uschar *p, int *existflags, BOOL isglobal)
 {
 rewrite_rule *next = store_get(sizeof(rewrite_rule));
 
@@ -1333,10 +1333,10 @@ Returns:    pointer to the string
 */
 
 static uschar *
-read_string(uschar *s, uschar *name)
+read_string(const uschar *s, const uschar *name)
 {
 uschar *yield;
-uschar *ss;
+const uschar *ss;
 
 if (*s != '\"') return string_copy(s);
 
@@ -1599,7 +1599,7 @@ switch (type)
       {
       uschar sep_o = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
       int    sep_i = -(int)sep_o;
-      uschar * list = sptr;
+      const uschar * list = sptr;
       uschar * s;
       uschar * list_o = *str_target;
 
@@ -1649,8 +1649,7 @@ switch (type)
         flagptr = (int *)((uschar *)data_block + (long int)(ol3->value));
         }
 
-      while ((p = string_nextinlist(&sptr, &sep, big_buffer, BIG_BUFFER_SIZE))
-              != NULL)
+      while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
         {
         rewrite_rule *next = readconf_one_rewrite(p, flagptr, FALSE);
         *chain = next;
@@ -1774,8 +1773,8 @@ switch (type)
       int count = 1;
       uid_t *list;
       int ptr = 0;
-      uschar *p;
-      uschar *op = expand_string (sptr);
+      const uschar *p;
+      const uschar *op = expand_string (sptr);
 
       if (op == NULL)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
@@ -1815,8 +1814,8 @@ switch (type)
       int count = 1;
       gid_t *list;
       int ptr = 0;
-      uschar *p;
-      uschar *op = expand_string (sptr);
+      const uschar *p;
+      const uschar *op = expand_string (sptr);
 
       if (op == NULL)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
@@ -2966,7 +2965,7 @@ readconf_main(void)
 int sep = 0;
 struct stat statbuf;
 uschar *s, *filename;
-uschar *list = config_main_filelist;
+const uschar *list = config_main_filelist;
 
 /* Loop through the possible file names */
 
@@ -3138,7 +3137,7 @@ don't force the case. */
 
 if (primary_hostname == NULL)
   {
-  uschar *hostname;
+  const uschar *hostname;
   struct utsname uts;
   if (uname(&uts) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "uname() failed to yield host name");
@@ -3151,8 +3150,8 @@ if (primary_hostname == NULL)
 
     #if HAVE_IPV6
     if (!disable_ipv6 && (dns_ipv4_lookup == NULL ||
-         match_isinlist(hostname, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
-           TRUE, NULL) != OK))
+         match_isinlist(hostname, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
+	    MCL_DOMAIN, TRUE, NULL) != OK))
       af = AF_INET6;
     #else
     af = AF_INET;
@@ -3212,7 +3211,7 @@ or %M. However, it must NOT contain % followed by anything else. */
 
 if (*log_file_path != 0)
   {
-  uschar *ss, *sss;
+  const uschar *ss, *sss;
   int sep = ':';                       /* Fixed for log file path */
   s = expand_string(log_file_path);
   if (s == NULL)
@@ -3699,10 +3698,10 @@ Returns:       NULL if decoded correctly; else points to error text
 */
 
 uschar *
-readconf_retry_error(uschar *pp, uschar *p, int *basic_errno, int *more_errno)
+readconf_retry_error(const uschar *pp, const uschar *p, int *basic_errno, int *more_errno)
 {
 int len;
-uschar *q = pp;
+const uschar *q = pp;
 while (q < p && *q != '_') q++;
 len = q - pp;
 
@@ -3731,7 +3730,7 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
     {
     int i;
     int xlen = p - q - 1;
-    uschar *x = q + 1;
+    const uschar *x = q + 1;
 
     static uschar *extras[] =
       { US"A", US"MX", US"connect", US"connect_A",  US"connect_MX" };
@@ -3835,10 +3834,10 @@ Returns:    time in seconds or fixed point number * 1000
 */
 
 static int
-retry_arg(uschar **paddr, int type)
+retry_arg(const uschar **paddr, int type)
 {
-uschar *p = *paddr;
-uschar *pp;
+const uschar *p = *paddr;
+const uschar *pp;
 
 if (*p++ != ',') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "comma expected");
 
@@ -3867,12 +3866,13 @@ readconf_retries(void)
 {
 retry_config **chain = &retries;
 retry_config *next;
-uschar *p;
+const uschar *p;
 
 while ((p = get_config_line()) != NULL)
   {
   retry_rule **rchain;
-  uschar *pp, *error;
+  const uschar *pp;
+  uschar *error;
 
   next = store_get(sizeof(retry_config));
   next->next = NULL;

@@ -106,6 +106,13 @@ don't make the file descriptors two-way. */
 #define DEBUG(x)      if ((debug_selector & (x)) != 0)
 #define HDEBUG(x)     if (host_checking || (debug_selector & (x)) != 0)
 
+#define PTR_CHK(ptr) \
+do { \
+if ((void *)ptr > (void *)store_get(0)) \
+  debug_printf("BUG: ptr '%s' beyond arena at %s:%d\n", \
+       	mac_expanded_string(ptr), __FUNCTION__, __LINE__); \
+} while(0)
+
 /* The default From: text for DSNs */
 
 #define DEFAULT_DSN_FROM "Mail Delivery System <Mailer-Daemon@$qualify_domain>"

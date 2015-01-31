@@ -177,10 +177,10 @@ return -1;
 
 
 int
-spam(uschar **listptr)
+spam(const uschar **listptr)
 {
 int sep = 0;
-uschar *list = *listptr;
+const uschar *list = *listptr;
 uschar *user_name;
 uschar user_name_buffer[128];
 unsigned long mbox_size;
@@ -276,7 +276,7 @@ start = time(NULL);
   int num_servers = 0;
   int current_server;
   uschar *address;
-  uschar *spamd_address_list_ptr = spamd_address_work;
+  const uschar *spamd_address_list_ptr = spamd_address_work;
   spamd_address_container * spamd_address_vector[32];
   spamd_address_container * sd;
 
@@ -285,7 +285,7 @@ start = time(NULL);
   while ((address = string_nextinlist(&spamd_address_list_ptr, &sep,
 				      NULL, 0)) != NULL)
     {
-    uschar * sublist;
+    const uschar * sublist;
     int sublist_sep = -(int)' ';	/* default space-sep */
     unsigned args;
     uschar * s;

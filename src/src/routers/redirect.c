@@ -517,7 +517,7 @@ int redirect_router_entry(
 redirect_router_options_block *ob =
   (redirect_router_options_block *)(rblock->options_block);
 address_item *generated = NULL;
-uschar *save_qualify_domain_recipient = qualify_domain_recipient;
+const uschar *save_qualify_domain_recipient = qualify_domain_recipient;
 uschar *discarded = US"discarded";
 address_item_propagated addr_prop;
 error_block *eblock = NULL;

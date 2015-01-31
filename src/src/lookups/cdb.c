@@ -272,7 +272,7 @@ cdb_check(void *handle,
 static int
 cdb_find(void *handle,
         uschar *filename,
-        uschar *keystring,
+        const uschar *keystring,
         int  key_len,
         uschar **result,
         uschar **errmsg,

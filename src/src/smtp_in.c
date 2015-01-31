@@ -3132,7 +3132,7 @@ value. The values are 2 larger than the required yield of the function. */
 
 while (done <= 0)
   {
-  uschar **argv;
+  const uschar **argv;
   uschar *etrn_command;
   uschar *etrn_serialize_key;
   uschar *errmess;
@@ -3140,7 +3140,7 @@ while (done <= 0)
   uschar *user_msg = NULL;
   uschar *recipient = NULL;
   uschar *hello = NULL;
-  uschar *set_id = NULL;
+  const uschar *set_id = NULL;
   uschar *s, *ss;
   BOOL was_rej_mail = FALSE;
   BOOL was_rcpt = FALSE;
@@ -3424,7 +3424,7 @@ while (done <= 0)
 
       if (sender_host_name == NULL &&
            (deliver_domain = sender_helo_name,  /* set $domain */
-            match_isinlist(sender_helo_name, &helo_lookup_domains, 0,
+            match_isinlist(sender_helo_name, CUSS &helo_lookup_domains, 0,
               &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL)) == OK)
         (void)host_name_lookup();
 
@@ -4850,7 +4850,7 @@ while (done <= 0)
         break;
         }
       etrn_command = US"exim -R";
-      argv = child_exec_exim(CEE_RETURN_ARGV, TRUE, NULL, TRUE, 2, US"-R",
+      argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, NULL, TRUE, 2, US"-R",
         smtp_cmd_data);
       }
 

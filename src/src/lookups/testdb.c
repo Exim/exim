@@ -37,7 +37,7 @@ return (void *)(1);    /* Just return something non-null */
 /* See local README for interface description. */
 
 static int
-testdb_find(void *handle, uschar *filename, uschar *query, int length,
+testdb_find(void *handle, uschar *filename, const uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 handle = handle;          /* Keep picky compilers happy */

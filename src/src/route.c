@@ -319,11 +319,11 @@ Returns:        length of matching prefix or zero
 */
 
 int
-route_check_prefix(uschar *local_part, uschar *prefixes)
+route_check_prefix(const uschar *local_part, const uschar *prefixes)
 {
 int sep = 0;
 uschar *prefix;
-uschar *listptr = prefixes;
+const uschar *listptr = prefixes;
 uschar prebuf[64];
 
 while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf)))
@@ -332,7 +332,7 @@ while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf)))
   int plen = Ustrlen(prefix);
   if (prefix[0] == '*')
     {
-    uschar *p;
+    const uschar *p;
     prefix++;
     for (p = local_part + Ustrlen(local_part) - (--plen);
          p >= local_part; p--)
@@ -363,12 +363,12 @@ Returns:        length of matching suffix or zero
 */
 
 int
-route_check_suffix(uschar *local_part, uschar *suffixes)
+route_check_suffix(const uschar *local_part, const uschar *suffixes)
 {
 int sep = 0;
 int alen = Ustrlen(local_part);
 uschar *suffix;
-uschar *listptr = suffixes;
+const uschar *listptr = suffixes;
 uschar sufbuf[64];
 
 while ((suffix = string_nextinlist(&listptr, &sep, sufbuf, sizeof(sufbuf)))
@@ -377,7 +377,7 @@ while ((suffix = string_nextinlist(&listptr, &sep, sufbuf, sizeof(sufbuf)))
   int slen = Ustrlen(suffix);
   if (suffix[slen-1] == '*')
     {
-    uschar *p, *pend;
+    const uschar *p, *pend;
     pend = local_part + alen - (--slen) + 1;
     for (p = local_part; p < pend; p++)
       if (strncmpic(suffix, p, slen) == 0) return alen - (p - local_part);
@@ -420,9 +420,9 @@ Returns:         OK     item is in list
 */
 
 static int
-route_check_dls(uschar *rname, uschar *type, uschar *list, tree_node
-  **anchorptr, unsigned int *cache_bits, int listtype, uschar *domloc,
-  uschar **ldata, BOOL caseless, uschar **perror)
+route_check_dls(uschar *rname, uschar *type, const uschar *list,
+  tree_node **anchorptr, unsigned int *cache_bits, int listtype,
+  const uschar *domloc, const uschar **ldata, BOOL caseless, uschar **perror)
 {
 int rc;
 
@@ -442,7 +442,7 @@ else
   {
   uschar *address = (sender_address == NULL)? US"" : sender_address;
   rc = match_address_list(address, TRUE, TRUE, &list, cache_bits, -1, 0,
-    &sender_data);
+    CUSS &sender_data);
   }
 
 switch(rc)
@@ -570,14 +570,15 @@ Returns:   OK if s == NULL or all tests are as required
            SKIP otherwise
 */
 
-int
-check_files(uschar *s, uschar **perror)
+static int
+check_files(const uschar *s, uschar **perror)
 {
 int sep = 0;              /* List has default separators */
 uid_t uid = 0;            /* For picky compilers */
 gid_t gid = 0;            /* For picky compilers */
 BOOL ugid_set = FALSE;
-uschar *check, *listptr;
+const uschar *listptr;
+uschar *check;
 uschar buffer[1024];
 
 if (s == NULL) return OK;
@@ -585,8 +586,7 @@ if (s == NULL) return OK;
 DEBUG(D_route) debug_printf("checking require_files\n");
 
 listptr = s;
-while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer)))
-        != NULL)
+while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
   {
   int rc;
   int eacces_code = 0;
@@ -885,8 +885,8 @@ if (verify == v_expn && !r->expn)
 /* Skip this router if there's a domain mismatch. */
 
 if ((rc = route_check_dls(r->name, US"domains", r->domains, &domainlist_anchor,
-     addr->domain_cache, TRUE, addr->domain, &deliver_domain_data, MCL_DOMAIN,
-     perror)) != OK)
+     addr->domain_cache, TRUE, addr->domain, CUSS &deliver_domain_data,
+     MCL_DOMAIN, perror)) != OK)
   return rc;
 
 /* Skip this router if there's a local part mismatch. We want to pass over the
@@ -913,8 +913,8 @@ else
 
 if ((rc = route_check_dls(r->name, US"local_parts", r->local_parts,
        &localpartlist_anchor, localpart_cache, MCL_LOCALPART,
-       check_local_part, &deliver_localpart_data, !r->caseful_local_part,
-       perror)) != OK)
+       check_local_part, CUSS &deliver_localpart_data,
+       !r->caseful_local_part, perror)) != OK)
   return rc;
 
 /* If the check_local_user option is set, check that the local_part is the
@@ -1088,7 +1088,7 @@ static uschar lastgecos[128];
 static uschar lastshell[128];
 
 BOOL
-route_finduser(uschar *s, struct passwd **pw, uid_t *return_uid)
+route_finduser(const uschar *s, struct passwd **pw, uid_t *return_uid)
 {
 BOOL cache_set = (Ustrcmp(lastname, s) == 0);
 
@@ -1437,7 +1437,7 @@ route_address(address_item *addr, address_item **paddr_local,
 int yield = OK;
 BOOL unseen;
 router_instance *r, *nextr;
-uschar *old_domain = addr->domain;
+const uschar *old_domain = addr->domain;
 
 HDEBUG(D_route)
   {

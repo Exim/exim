@@ -294,17 +294,21 @@ Returns: a pointer to the retrieved record, or
 */
 
 void *
-dbfn_read_with_length(open_db *dbblock, uschar *key, int *length)
+dbfn_read_with_length(open_db *dbblock, const uschar *key, int *length)
 {
 void *yield;
 EXIM_DATUM key_datum, result_datum;
+int klen = Ustrlen(key) + 1;
+uschar * key_copy = store_get(klen);
+
+memcpy(key_copy, key, klen);
 
 DEBUG(D_hints_lookup) debug_printf("dbfn_read: key=%s\n", key);
 
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
 EXIM_DATUM_INIT(result_datum);      /* to be cleared before use. */
-EXIM_DATUM_DATA(key_datum) = CS key;
-EXIM_DATUM_SIZE(key_datum) = Ustrlen(key) + 1;
+EXIM_DATUM_DATA(key_datum) = CS key_copy;
+EXIM_DATUM_SIZE(key_datum) = klen;
 
 if (!EXIM_DBGET(dbblock->dbptr, key_datum, result_datum)) return NULL;
 
@@ -334,18 +338,22 @@ Returns:    the yield of the underlying dbm or db "write" function. If this
 */
 
 int
-dbfn_write(open_db *dbblock, uschar *key, void *ptr, int length)
+dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
 {
 EXIM_DATUM key_datum, value_datum;
 dbdata_generic *gptr = (dbdata_generic *)ptr;
+int klen = Ustrlen(key) + 1;
+uschar * key_copy = store_get(klen);
+
+memcpy(key_copy, key, klen);
 gptr->time_stamp = time(NULL);
 
 DEBUG(D_hints_lookup) debug_printf("dbfn_write: key=%s\n", key);
 
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
 EXIM_DATUM_INIT(value_datum);       /* to be cleared before use. */
-EXIM_DATUM_DATA(key_datum) = CS key;
-EXIM_DATUM_SIZE(key_datum) = Ustrlen(key) + 1;
+EXIM_DATUM_DATA(key_datum) = CS key_copy;
+EXIM_DATUM_SIZE(key_datum) = klen;
 EXIM_DATUM_DATA(value_datum) = CS ptr;
 EXIM_DATUM_SIZE(value_datum) = length;
 return EXIM_DBPUT(dbblock->dbptr, key_datum, value_datum);
@@ -366,12 +374,16 @@ Returns: the yield of the underlying dbm or db "delete" function.
 */
 
 int
-dbfn_delete(open_db *dbblock, uschar *key)
+dbfn_delete(open_db *dbblock, const uschar *key)
 {
+int klen = Ustrlen(key) + 1;
+uschar * key_copy = store_get(klen);
+
+memcpy(key_copy, key, klen);
 EXIM_DATUM key_datum;
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require clearing */
-EXIM_DATUM_DATA(key_datum) = CS key;
-EXIM_DATUM_SIZE(key_datum) = Ustrlen(key) + 1;
+EXIM_DATUM_DATA(key_datum) = CS key_copy;
+EXIM_DATUM_SIZE(key_datum) = klen;
 return EXIM_DBDEL(dbblock->dbptr, key_datum);
 }
 

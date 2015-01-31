@@ -1345,7 +1345,8 @@ queue_check_only(void)
 BOOL *set;
 int sep = 0;
 struct stat statbuf;
-uschar *s, *ss, *name;
+const uschar *s;
+uschar *ss, *name;
 uschar buffer[1024];
 
 if (queue_only_file == NULL) return;

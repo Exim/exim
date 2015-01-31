@@ -84,7 +84,7 @@ Returns:       OK, FAIL, or DEFER
 */
 
 static int
-perform_mysql_search(uschar *query, uschar *server, uschar **resultptr,
+perform_mysql_search(const uschar *query, uschar *server, uschar **resultptr,
   uschar **errmsg, BOOL *defer_break, BOOL *do_cache)
 {
 MYSQL *mysql_handle = NULL;        /* Keep compilers happy */
@@ -340,7 +340,7 @@ query is deferred with a retryable error is now in a separate function that is
 shared with other SQL lookups. */
 
 static int
-mysql_find(void *handle, uschar *filename, uschar *query, int length,
+mysql_find(void *handle, uschar *filename, const uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 return lf_sqlperform(US"MySQL", US"mysql_servers", mysql_servers, query,

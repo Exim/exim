@@ -29,7 +29,7 @@ Returns:        TRUE if the ultimate timeout has been reached
 */
 
 BOOL
-retry_ultimate_address_timeout(uschar *retry_key, uschar *domain,
+retry_ultimate_address_timeout(uschar *retry_key, const uschar *domain,
   dbdata_retry *retry_record, time_t now)
 {
 BOOL address_timeout;
@@ -122,7 +122,7 @@ Returns:    TRUE if the host has expired but is usable because
 */
 
 BOOL
-retry_check_address(uschar *domain, host_item *host, uschar *portstring,
+retry_check_address(const uschar *domain, host_item *host, uschar *portstring,
   BOOL include_ip_address, uschar **retry_host_key, uschar **retry_message_key)
 {
 BOOL yield = FALSE;
@@ -343,12 +343,11 @@ Returns:       pointer to retry rule, or NULL
 */
 
 retry_config *
-retry_find_config(uschar *key, uschar *alternate, int basic_errno,
+retry_find_config(const uschar *key, const uschar *alternate, int basic_errno,
   int more_errno)
 {
 int replace = 0;
-uschar *use_key, *use_alternate;
-uschar *colon = Ustrchr(key, ':');
+const uschar *colon = Ustrchr(key, ':');
 retry_config *yield;
 
 /* If there's a colon in the key, there are two possibilities:
@@ -357,8 +356,7 @@ retry_config *yield;
 
       hostname:ip+port
 
-    In this case, we temporarily replace the colon with a zero, to terminate
-    the string after the host name.
+    In this case, we copy the host name.
 
 (2) This is a key for a pipe, file, or autoreply delivery, in the format
 
@@ -369,28 +367,22 @@ retry_config *yield;
     with a letter or a digit. In this case we want to use the original address
     to search for a retry rule. */
 
-if (colon != NULL)
-  {
-  if (isalnum(*key))
-    replace = ':';
-  else
-    key = Ustrrchr(key, ':') + 1;   /* Take from the last colon */
-  }
-
-if (replace == 0) colon = key + Ustrlen(key);
-*colon = 0;
+if (colon)
+  key = isalnum(*key)
+    ? string_copyn(key, colon-key)	/* the hostname */
+    : Ustrrchr(key, ':') + 1;		/* Take from the last colon */
 
 /* Sort out the keys */
 
-use_key = (Ustrchr(key, '@') != NULL)? key : string_sprintf("*@%s", key);
-use_alternate = (alternate == NULL)? NULL : string_sprintf("*@%s", alternate);
+if (!Ustrchr(key, '@')) key = string_sprintf("*@%s", key);
+if (alternate)    alternate = string_sprintf("*@%s", alternate);
 
 /* Scan the configured retry items. */
 
 for (yield = retries; yield != NULL; yield = yield->next)
   {
-  uschar *plist = yield->pattern;
-  uschar *slist = yield->senders;
+  const uschar *plist = yield->pattern;
+  const uschar *slist = yield->senders;
 
   /* If a specific error is set for this item, check that we are handling that
   specific error, and if so, check any additional error information if
@@ -489,15 +481,14 @@ for (yield = retries; yield != NULL; yield = yield->next)
   /* Check for a match between the address list item at the start of this retry
   rule and either the main or alternate keys. */
 
-  if (match_address_list(use_key, TRUE, TRUE, &plist, NULL, -1, UCHAR_MAX+1,
+  if (match_address_list(key, TRUE, TRUE, &plist, NULL, -1, UCHAR_MAX+1,
         NULL) == OK ||
-     (use_alternate != NULL &&
-      match_address_list(use_alternate, TRUE, TRUE, &plist, NULL, -1,
+     (alternate != NULL &&
+      match_address_list(alternate, TRUE, TRUE, &plist, NULL, -1,
         UCHAR_MAX+1, NULL) == OK))
     break;
   }
 
-*colon = replace;
 return yield;
 }
 
@@ -665,7 +656,7 @@ for (i = 0; i < 3; i++)
 
         message = (rti->basic_errno > 0)? US strerror(rti->basic_errno) :
           (rti->message == NULL)?
-          US"unknown error" : string_printing(rti->message);
+          US"unknown error" : US string_printing(rti->message);
         message_length = Ustrlen(message);
         if (message_length > 150) message_length = 150;
 

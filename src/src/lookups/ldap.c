@@ -130,9 +130,10 @@ Returns:        OK or FAIL or DEFER
 */
 
 static int
-perform_ldap_search(uschar *ldap_url, uschar *server, int s_port, int search_type,
-  uschar **res, uschar **errmsg, BOOL *defer_break, uschar *user, uschar *password,
-  int sizelimit, int timelimit, int tcplimit, int dereference, void *referrals)
+perform_ldap_search(const uschar *ldap_url, uschar *server, int s_port,
+  int search_type, uschar **res, uschar **errmsg, BOOL *defer_break,
+  uschar *user, uschar *password, int sizelimit, int timelimit, int tcplimit,
+  int dereference, void *referrals)
 {
 LDAPURLDesc     *ludp = NULL;
 LDAPMessage     *result = NULL;
@@ -1125,7 +1126,7 @@ Returns:        OK or FAIL or DEFER
 */
 
 static int
-control_ldap_search(uschar *ldap_url, int search_type, uschar **res,
+control_ldap_search(const uschar *ldap_url, int search_type, uschar **res,
   uschar **errmsg)
 {
 BOOL defer_break = FALSE;
@@ -1135,12 +1136,13 @@ int tcplimit = 0;
 int sep = 0;
 int dereference = LDAP_DEREF_NEVER;
 void* referrals = LDAP_OPT_ON;
-uschar *url = ldap_url;
-uschar *p;
+const uschar *url = ldap_url;
+const uschar *p;
 uschar *user = NULL;
 uschar *password = NULL;
 uschar *local_servers = NULL;
-uschar *server, *list;
+uschar *server;
+const uschar *list;
 uschar buffer[512];
 
 while (isspace(*url)) url++;
@@ -1152,7 +1154,7 @@ NAME has the value "ldap". */
 
 while (strncmpic(url, US"ldap", 4) != 0)
   {
-  uschar *name = url;
+  const uschar *name = url;
   while (*url != 0 && *url != '=') url++;
   if (*url == '=')
     {
@@ -1336,7 +1338,7 @@ are handled by a common function, with a flag to differentiate between them.
 The handle and filename arguments are not used. */
 
 static int
-eldap_find(void *handle, uschar *filename, uschar *ldap_url, int length,
+eldap_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 /* Keep picky compilers happy */
@@ -1345,7 +1347,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_SINGLE, result, errmsg));
 }
 
 static int
-eldapm_find(void *handle, uschar *filename, uschar *ldap_url, int length,
+eldapm_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 /* Keep picky compilers happy */
@@ -1354,7 +1356,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_MULTIPLE, result, errmsg));
 }
 
 static int
-eldapdn_find(void *handle, uschar *filename, uschar *ldap_url, int length,
+eldapdn_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 /* Keep picky compilers happy */
@@ -1363,7 +1365,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_DN, result, errmsg));
 }
 
 int
-eldapauth_find(void *handle, uschar *filename, uschar *ldap_url, int length,
+eldapauth_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 /* Keep picky compilers happy */

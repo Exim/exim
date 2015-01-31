@@ -328,7 +328,7 @@ Returns:    pointer to node, or NULL if not found
 */
 
 tree_node *
-tree_search(tree_node *p, uschar *name)
+tree_search(tree_node *p, const uschar *name)
 {
 while (p != NULL)
   {

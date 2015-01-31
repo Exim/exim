@@ -58,7 +58,7 @@ Returns:            the cache record if a non-expired one exists, else NULL
 */
 
 static dbdata_callout_cache *
-get_callout_cache_record(open_db *dbm_file, uschar *key, uschar *type,
+get_callout_cache_record(open_db *dbm_file, const uschar *key, uschar *type,
   int positive_expire, int negative_expire)
 {
 BOOL negative;
@@ -164,7 +164,7 @@ BOOL done = FALSE;
 uschar *address_key;
 uschar *from_address;
 uschar *random_local_part = NULL;
-uschar *save_deliver_domain = deliver_domain;
+const uschar *save_deliver_domain = deliver_domain;
 uschar **failure_ptr = is_recipient?
   &recipient_verify_failure : &sender_verify_failure;
 open_db dbblock;
@@ -704,7 +704,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       }
 
     /* Not worth checking greeting line for ESMTP support */
-    if (!(esmtp = verify_check_given_host(&(ob->hosts_avoid_esmtp), host) != OK))
+    if (!(esmtp = verify_check_given_host(&ob->hosts_avoid_esmtp, host) != OK))
       DEBUG(D_transport)
         debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
 
@@ -1922,7 +1922,7 @@ while (addr_new != NULL)
         if (tf.hosts != NULL && (host_list == NULL || tf.hosts_override))
           {
           uschar *s;
-          uschar *save_deliver_domain = deliver_domain;
+          const uschar *save_deliver_domain = deliver_domain;
           uschar *save_deliver_localpart = deliver_localpart;
 
           host_list = NULL;    /* Ignore the router's hosts */
@@ -1942,7 +1942,6 @@ while (addr_new != NULL)
           else
             {
             int flags;
-            uschar *canonical_name;
             host_item *host, *nexthost;
             host_build_hostlist(&host_list, s, tf.hosts_randomize);
 
@@ -1961,7 +1960,7 @@ while (addr_new != NULL)
               nexthost = host->next;
               if (tf.gethostbyname ||
                   string_is_ip_address(host->name, NULL) != 0)
-                (void)host_find_byname(host, NULL, flags, &canonical_name, TRUE);
+                (void)host_find_byname(host, NULL, flags, NULL, TRUE);
               else
 		{
 		uschar * d_request = NULL, * d_require = NULL;
@@ -1975,7 +1974,7 @@ while (addr_new != NULL)
 		  }
 
                 (void)host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-		  d_request, d_require, &canonical_name, NULL);
+		  d_request, d_require, NULL, NULL);
 		}
               }
             }
@@ -2371,7 +2370,8 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
         verb = US"begins";
         }
 
-      *msgptr = string_printing(
+      /* deconst cast ok as we're passing a non-const to string_printing() */
+      *msgptr = US string_printing(
         string_sprintf("%s: failing address in \"%.*s:\" header %s: %.*s",
           errmess, tt - h->text, h->text, verb, len, s));
 
@@ -2892,9 +2892,9 @@ if (*p == 0) goto END_OFF;
 /* The rest of the line is the data we want. We turn it into printing
 characters when we save it, so that it cannot mess up the format of any logging
 or Received: lines into which it gets inserted. We keep a maximum of 127
-characters. */
+characters. The deconst cast is ok as we fed a nonconst to string_printing() */
 
-sender_ident = string_printing(string_copyn(p, 127));
+sender_ident = US string_printing(string_copyn(p, 127));
 DEBUG(D_ident) debug_printf("sender_ident = %s\n", sender_ident);
 
 END_OFF:
@@ -2939,7 +2939,7 @@ Returns:         OK      matched
 */
 
 int
-check_host(void *arg, uschar *ss, uschar **valueptr, uschar **error)
+check_host(void *arg, const uschar *ss, const uschar **valueptr, uschar **error)
 {
 check_host_block *cb = (check_host_block *)arg;
 int mlen = -1;
@@ -2947,7 +2947,7 @@ int maskoffset;
 BOOL iplookup = FALSE;
 BOOL isquery = FALSE;
 BOOL isiponly = cb->host_name != NULL && cb->host_name[0] == 0;
-uschar *t;
+const uschar *t;
 uschar *semicolon;
 uschar **aliases;
 
@@ -3160,7 +3160,7 @@ on spec. */
 
 if ((semicolon = Ustrchr(ss, ';')) != NULL)
   {
-  uschar *affix;
+  const uschar *affix;
   int partial, affixlen, starflags, id;
 
   *semicolon = 0;
@@ -3261,12 +3261,12 @@ determined from the IP address, the result is FAIL unless the item
 "+allow_unknown" was met earlier in the list, in which case OK is returned. */
 
 int
-verify_check_this_host(uschar **listptr, unsigned int *cache_bits,
-  uschar *host_name, uschar *host_address, uschar **valueptr)
+verify_check_this_host(const uschar **listptr, unsigned int *cache_bits,
+  const uschar *host_name, const uschar *host_address, const uschar **valueptr)
 {
 int rc;
 unsigned int *local_cache_bits = cache_bits;
-uschar *save_host_address = deliver_host_address;
+const uschar *save_host_address = deliver_host_address;
 check_host_block cb;
 cb.host_name = host_name;
 cb.host_address = host_address;
@@ -3311,7 +3311,7 @@ return rc;
 int
 verify_check_given_host(uschar **listptr, host_item *host)
 {
-return verify_check_this_host(listptr, NULL, host->name, host->address, NULL);
+return verify_check_this_host(CUSS listptr, NULL, host->name, host->address, NULL);
 }
 
 /*************************************************
@@ -3333,7 +3333,7 @@ Returns:               the yield of verify_check_this_host(),
 int
 verify_check_host(uschar **listptr)
 {
-return verify_check_this_host(listptr, sender_host_cache, NULL,
+return verify_check_this_host(CUSS listptr, sender_host_cache, NULL,
   (sender_host_address == NULL)? US"" : sender_host_address, NULL);
 }
 
@@ -3564,7 +3564,7 @@ if (cb->rc == DNS_SUCCEED)
       {
       int ipsep = ',';
       uschar ip[46];
-      uschar *ptr = iplist;
+      const uschar *ptr = iplist;
       uschar *res;
 
       /* Handle exact matching */
@@ -3767,11 +3767,11 @@ Returns:    OK      successful lookup (i.e. the address is on the list), or
 */
 
 int
-verify_check_dnsbl(uschar **listptr)
+verify_check_dnsbl(const uschar **listptr)
 {
 int sep = 0;
 int defer_return = FAIL;
-uschar *list = *listptr;
+const uschar *list = *listptr;
 uschar *domain;
 uschar *s;
 uschar buffer[1024];
@@ -3917,7 +3917,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     uschar keybuffer[256];
     uschar keyrevadd[128];
 
-    while ((keydomain = string_nextinlist(&key, &keysep, keybuffer,
+    while ((keydomain = string_nextinlist(CUSS &key, &keysep, keybuffer,
             sizeof(keybuffer))) != NULL)
       {
       uschar *prepend = keydomain;

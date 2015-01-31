@@ -2308,7 +2308,7 @@ for (i = 1; i < argc; i++)
               if (nr_configs)
                 {
                 int sep = 0;
-                uschar *list = argrest;
+                const uschar *list = argrest;
                 uschar *filename;
                 while (trusted_config && (filename = string_nextinlist(&list,
                         &sep, big_buffer, big_buffer_size)) != NULL)
@@ -3995,7 +3995,7 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
   for (i = 0; i < argc; i++)
     {
     int len = Ustrlen(argv[i]);
-    uschar *printing;
+    const uschar *printing;
     uschar *quote;
     if (p + len + 8 >= big_buffer + big_buffer_size)
       {
@@ -4007,7 +4007,7 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
     printing = string_printing(argv[i]);
     if (printing[0] == 0) quote = US"\""; else
       {
-      uschar *pp = printing;
+      const uschar *pp = printing;
       quote = US"";
       while (*pp != 0) if (isspace(*pp++)) { quote = US"\""; break; }
       }

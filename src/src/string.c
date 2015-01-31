@@ -224,13 +224,13 @@ Returns:   the value of the character escape
 */
 
 int
-string_interpret_escape(uschar **pp)
+string_interpret_escape(const uschar **pp)
 {
 #ifdef COMPILE_UTILITY
 const uschar *hex_digits= CUS"0123456789abcdef";
 #endif
 int ch;
-uschar *p = *pp;
+const uschar *p = *pp;
 ch = *(++p);
 if (isdigit(ch) && ch != '8' && ch != '9')
   {
@@ -284,12 +284,12 @@ Arguments:
 Returns:        string with non-printers encoded as printing sequences
 */
 
-uschar *
-string_printing2(uschar *s, BOOL allow_tab)
+const uschar *
+string_printing2(const uschar *s, BOOL allow_tab)
 {
 int nonprintcount = 0;
 int length = 0;
-uschar *t = s;
+const uschar *t = s;
 uschar *ss, *tt;
 
 while (*t != 0)
@@ -374,7 +374,7 @@ while (*p)
   {
   if (*p == '\\')
     {
-    *q++ = string_interpret_escape(&p);
+    *q++ = string_interpret_escape((const uschar **)&p);
     p++;
     }
   else
@@ -437,7 +437,7 @@ Returns:  copy of string in new store
 */
 
 uschar *
-string_copy_malloc(uschar *s)
+string_copy_malloc(const uschar *s)
 {
 int len = Ustrlen(s) + 1;
 uschar *ss = store_malloc(len);
@@ -639,9 +639,9 @@ Returns:   the new string
 */
 
 uschar *
-string_dequote(uschar **sptr)
+string_dequote(const uschar **sptr)
 {
-uschar *s = *sptr;
+const uschar *s = *sptr;
 uschar *t, *yield;
 
 /* First find the end of the string */
@@ -868,10 +868,10 @@ Returns:     pointer to buffer, containing the next substring,
 */
 
 uschar *
-string_nextinlist(uschar **listptr, int *separator, uschar *buffer, int buflen)
+string_nextinlist(const uschar **listptr, int *separator, uschar *buffer, int buflen)
 {
-register int sep = *separator;
-register uschar *s = *listptr;
+int sep = *separator;
+const uschar *s = *listptr;
 BOOL sep_is_special;
 
 if (s == NULL) return NULL;
@@ -928,7 +928,7 @@ else
   {
   int size = 0;
   int ptr = 0;
-  uschar *ss;
+  const uschar *ss;
 
   /* We know that *s != 0 at this point. However, it might be pointing to a
   separator, which could indicate an empty string, or (if an ispunct()

@@ -866,11 +866,11 @@ Returns:       pointer to the original string, if no quoting needed, or
                the introduction
 */
 
-uschar *
-parse_quote_2047(uschar *string, int len, uschar *charset, uschar *buffer,
+const uschar *
+parse_quote_2047(const uschar *string, int len, uschar *charset, uschar *buffer,
   int buffer_size, BOOL fold)
 {
-uschar *s = string;
+const uschar *s = string;
 uschar *p, *t;
 int hlen;
 BOOL coded = FALSE;
@@ -985,12 +985,13 @@ Arguments:
 Returns:       the fixed RFC822 phrase
 */
 
-uschar *
-parse_fix_phrase(uschar *phrase, int len, uschar *buffer, int buffer_size)
+const uschar *
+parse_fix_phrase(const uschar *phrase, int len, uschar *buffer, int buffer_size)
 {
 int ch, i;
 BOOL quoted = FALSE;
-uschar *s, *t, *end, *yield;
+const uschar *s, *end;
+uschar *t, *yield;
 
 while (len > 0 && isspace(*phrase)) { phrase++; len--; }
 if (len > buffer_size/4) return US"Name too long";
@@ -1119,7 +1120,7 @@ while (s < end)
 
         else if (ch == '(')
           {
-          uschar *ss = s;     /* uschar after '(' */
+          const uschar *ss = s;     /* uschar after '(' */
           int level = 1;
           while(ss < end)
             {
@@ -1245,7 +1246,7 @@ Returns:      FF_DELIVERED      addresses extracted
 
 int
 parse_forward_list(uschar *s, int options, address_item **anchor,
-  uschar **error, uschar *incoming_domain, uschar *directory,
+  uschar **error, const uschar *incoming_domain, uschar *directory,
   error_block **syntax_errors)
 {
 int count = 0;

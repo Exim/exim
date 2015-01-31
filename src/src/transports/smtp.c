@@ -523,7 +523,7 @@ if (*errno_value == ETIMEDOUT)
 
 if (*errno_value == ERRNO_SMTPFORMAT)
   {
-  uschar *malfresp = string_printing(buffer);
+  const uschar *malfresp = string_printing(buffer);
   while (isspace(*malfresp)) malfresp++;
   *message = *malfresp == 0
     ? string_sprintf("Malformed SMTP reply (an empty line) "
@@ -567,7 +567,7 @@ if (*errno_value == ERRNO_WRITEINCOMPLETE)
 
 if (buffer[0] != 0)
   {
-  uschar *s = string_printing(buffer);
+  const uschar *s = string_printing(buffer);
   *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
     "%s", pl, smtp_command, s);
   *pass_message = TRUE;
@@ -659,7 +659,7 @@ static void
 deferred_event_raise(address_item *addr, host_item *host)
 {
 uschar * action = addr->transport->event_action;
-uschar * save_domain;
+const uschar * save_domain;
 uschar * save_local;
 
 if (!action)
@@ -1170,7 +1170,7 @@ tlsa_lookup(const host_item * host, dns_answer * dnsa,
 {
 /* move this out to host.c given the similarity to dns_lookup() ? */
 uschar buffer[300];
-uschar * fullname = buffer;
+const uschar * fullname = buffer;
 
 /* TLSA lookup string */
 (void)sprintf(CS buffer, "_%d._tcp.%.256s", host->port, host->name);
@@ -2200,8 +2200,9 @@ if (!ok) ok = TRUE; else
           !lmtp
        )
       {
-      uschar *s = string_printing(buffer);
-      conf = (s == buffer)? (uschar *)string_copy(s) : s;
+      const uschar *s = string_printing(buffer);
+      /* deconst cast ok here as string_printing was checked to have alloc'n'copied */
+      conf = (s == buffer)? (uschar *)string_copy(s) : US s;
       }
 
     /* Process all transported addresses - for LMTP or PRDR, read a status for
@@ -2251,8 +2252,9 @@ if (!ok) ok = TRUE; else
         completed_address = TRUE;   /* NOW we can set this flag */
         if ((log_extra_selector & LX_smtp_confirmation) != 0)
           {
-          uschar *s = string_printing(buffer);
-          conf = (s == buffer)? (uschar *)string_copy(s) : s;
+          const uschar *s = string_printing(buffer);
+	  /* deconst cast ok here as string_printing was checked to have alloc'n'copied */
+          conf = (s == buffer)? (uschar *)string_copy(s) : US s;
           }
         }
 
@@ -2857,7 +2859,8 @@ if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
   /* This is not the first time this transport has been run in this delivery;
   the host list was built previously. */
 
-  else hostlist = ob->hostlist;
+  else
+    hostlist = ob->hostlist;
   }
 
 /* The host list was supplied with the address. If hosts_randomize is set, we
@@ -2901,11 +2904,9 @@ else if (ob->hosts_randomize && hostlist->mx == MX_NONE && !continuing)
   hostlist = addrlist->host_list = newlist;
   }
 
-
 /* Sort out the default port.  */
 
 if (!smtp_get_port(ob->port, addrlist, &port, tid)) return FALSE;
-
 
 /* For each host-plus-IP-address on the list:
 
@@ -3003,7 +3004,6 @@ for (cutoff_retry = 0; expired &&
       {
       int new_port, flags;
       host_item *hh;
-      uschar *canonical_name;
 
       if (host->status >= hstatus_unusable)
         {
@@ -3031,11 +3031,11 @@ for (cutoff_retry = 0; expired &&
       if (ob->dns_search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
       if (ob->gethostbyname || string_is_ip_address(host->name, NULL) != 0)
-        rc = host_find_byname(host, NULL, flags, &canonical_name, TRUE);
+        rc = host_find_byname(host, NULL, flags, NULL, TRUE);
       else
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
 	  ob->dnssec_request_domains, ob->dnssec_require_domains,
-          &canonical_name, NULL);
+          NULL, NULL);
 
       /* Update the host (and any additional blocks, resulting from
       multihoming) with a host-specific port, if any. */
@@ -3111,7 +3111,8 @@ for (cutoff_retry = 0; expired &&
     doing a two-stage queue run, don't do this if forcing. */
 
     if ((!deliver_force || queue_2stage) && (queue_smtp ||
-        match_isinlist(addrlist->domain, &queue_smtp_domains, 0,
+        match_isinlist(addrlist->domain,
+	  (const uschar **)&queue_smtp_domains, 0,
           &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK))
       {
       expired = FALSE;

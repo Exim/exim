@@ -598,7 +598,7 @@ uschar *
 moan_check_errorcopy(uschar *recipient)
 {
 uschar *item, *localpart, *domain;
-uschar *listptr = errors_copy;
+const uschar *listptr = errors_copy;
 uschar *yield = NULL;
 uschar buffer[256];
 int sep = 0;
@@ -619,8 +619,8 @@ llen = domain++ - recipient;
 while ((item = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer)))
        != NULL)
   {
-  uschar *newaddress = item;
-  uschar *pattern = string_dequote(&newaddress);
+  const uschar *newaddress = item;
+  const uschar *pattern = string_dequote(&newaddress);
 
   /* If no new address found, just skip this item. */
 

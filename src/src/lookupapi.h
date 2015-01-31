@@ -30,7 +30,7 @@ typedef struct lookup_info {
   int (*find)(                    /* find function */
     void *,                       /* handle */
     uschar *,                     /* file name or NULL */
-    uschar *,                     /* key or query */
+    const uschar *,               /* key or query */
     int,                          /* length of key or query */
     uschar **,                    /* for returning answer */
     uschar **,                    /* for error message */

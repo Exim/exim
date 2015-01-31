@@ -254,7 +254,7 @@ Return:
 */
 
 uschar *
-tls_field_from_dn(uschar * dn, uschar * mod)
+tls_field_from_dn(uschar * dn, const uschar * mod)
 {
 int insep = ',';
 uschar outsep = '\n';
@@ -272,7 +272,7 @@ while ((ele = string_nextinlist(&mod, &insep, NULL, 0)))
 dn_to_list(dn);
 insep = ',';
 len = match ? Ustrlen(match) : -1;
-while ((ele = string_nextinlist(&dn, &insep, NULL, 0)))
+while ((ele = string_nextinlist(CUSS &dn, &insep, NULL, 0)))
   if (  !match
      || Ustrncmp(ele, match, len) == 0 && ele[len] == '='
      )
@@ -313,7 +313,7 @@ Returns:
 */
 
 BOOL
-tls_is_name_for_cert(uschar * namelist, void * cert)
+tls_is_name_for_cert(const uschar * namelist, void * cert)
 {
 uschar * altnames = tls_cert_subject_altname(cert, US"dns");
 uschar * subjdn;
@@ -326,7 +326,7 @@ if ((altnames = tls_cert_subject_altname(cert, US"dns")))
   int alt_sep = '\n';
   while ((cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0)))
     {
-    uschar * an = altnames;
+    const uschar * an = altnames;
     while ((certname = string_nextinlist(&an, &alt_sep, NULL, 0)))
       if (is_name_match(cmpname, certname))
 	return TRUE;
@@ -340,7 +340,7 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
   dn_to_list(subjdn);
   while ((cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0)))
     {
-    uschar * sn = subjdn;
+    const uschar * sn = subjdn;
     while ((certname = string_nextinlist(&sn, &sn_sep, NULL, 0)))
       if (  *certname++ == 'C'
 	 && *certname++ == 'N'

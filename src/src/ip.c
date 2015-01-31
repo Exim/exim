@@ -421,7 +421,7 @@ Returns:     nothing
 */
 
 void
-ip_keepalive(int sock, uschar *address, BOOL torf)
+ip_keepalive(int sock, const uschar *address, BOOL torf)
 {
 int fodder = 1;
 if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE,

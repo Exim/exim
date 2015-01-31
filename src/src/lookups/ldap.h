@@ -7,7 +7,7 @@
 
 /* Header for eldapauth_find */
 
-extern int     eldapauth_find(void *, uschar *, uschar *, int, uschar **,
+extern int     eldapauth_find(void *, uschar *, const uschar *, int, uschar **,
                  uschar **, BOOL *);
 
 /* End of lookups/ldap.h */

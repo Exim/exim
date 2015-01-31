@@ -146,10 +146,10 @@ dnslookup_router_options_block *ob =
   (dnslookup_router_options_block *)(rblock->options_block);
 uschar *srv_service = NULL;
 uschar *widen = NULL;
-uschar *pre_widen = addr->domain;
-uschar *post_widen = NULL;
-uschar *fully_qualified_name;
-uschar *listptr;
+const uschar *pre_widen = addr->domain;
+const uschar *post_widen = NULL;
+const uschar *fully_qualified_name;
+const uschar *listptr;
 uschar widen_buffer[256];
 
 addr_new = addr_new;          /* Keep picky compilers happy */
@@ -266,7 +266,7 @@ for (;;)
     if (ob->search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
     }
 
-  rc = host_find_bydns(&h, rblock->ignore_target_hosts, flags, srv_service,
+  rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags, srv_service,
     ob->srv_fail_domains, ob->mx_fail_domains,
     ob->dnssec_request_domains, ob->dnssec_require_domains,
     &fully_qualified_name, &removed);
@@ -279,7 +279,8 @@ for (;;)
   if ((rc == HOST_FOUND || rc == HOST_FOUND_LOCAL) && h.mx < 0 &&
        ob->mx_domains != NULL)
     {
-    switch(match_isinlist(fully_qualified_name, &(ob->mx_domains), 0,
+    switch(match_isinlist(fully_qualified_name,
+          (const uschar **)&(ob->mx_domains), 0,
           &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
       {
       case DEFER:

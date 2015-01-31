@@ -5,7 +5,7 @@
 /* Copyright (c) University of Cambridge, 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
-uschar *dkim_exim_sign(int,uschar *,uschar *,uschar *,uschar *,uschar *);
+uschar *dkim_exim_sign(int, uschar *, const uschar *, uschar *, uschar *, uschar *);
 void    dkim_exim_verify_init(void);
 void    dkim_exim_verify_feed(uschar *, int);
 void    dkim_exim_verify_finish(void);

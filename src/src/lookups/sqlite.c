@@ -80,7 +80,7 @@ return 0;
 
 
 static int
-sqlite_find(void *handle, uschar *filename, uschar *query, int length,
+sqlite_find(void *handle, uschar *filename, const uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 int ret;

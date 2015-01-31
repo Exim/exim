@@ -87,7 +87,7 @@ if (newsender == NULL || untrusted_set_sender == NULL) return FALSE;
 qnewsender = (Ustrchr(newsender, '@') != NULL)?
   newsender : string_sprintf("%s@%s", newsender, qualify_domain_sender);
 return
-  match_address_list(qnewsender, TRUE, TRUE, &untrusted_set_sender, NULL, -1,
+  match_address_list(qnewsender, TRUE, TRUE, CUSS &untrusted_set_sender, NULL, -1,
     0, NULL) == OK;
 }
 
@@ -142,17 +142,16 @@ appearance of "syslog" in it. */
 else
   {
   int sep = ':';              /* Not variable - outside scripts use */
-  uschar *p = log_file_path;
+  const uschar *p = log_file_path;
   name = US"log";
 
   /* An empty log_file_path means "use the default". This is the same as an
   empty item in a list. */
 
   if (*p == 0) p = US":";
-  while ((path = string_nextinlist(&p, &sep, buffer, sizeof(buffer))) != NULL)
-    {
-    if (Ustrcmp(path, "syslog") != 0) break;
-    }
+  while ((path = string_nextinlist(&p, &sep, buffer, sizeof(buffer))))
+    if (Ustrcmp(path, "syslog") != 0)
+      break;
 
   if (path == NULL)  /* No log files */
     {
@@ -1011,7 +1010,7 @@ if (acl_removed_headers != NULL)
 
   for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
     {
-    uschar * list = acl_removed_headers;
+    const uschar * list = acl_removed_headers;
     int sep = ':';         /* This is specified as a colon-separated list */
     uschar *s;
     uschar buffer[128];
@@ -3173,7 +3172,7 @@ else
         else
           {
           int sep = 0;
-          uschar *ptr = dkim_verify_signers_expanded;
+          const uschar *ptr = dkim_verify_signers_expanded;
           uschar *item = NULL;
           uschar *seen_items = NULL;
           int     seen_items_size = 0;
@@ -3194,7 +3193,7 @@ else
               {
               uschar *seen_item = NULL;
               uschar seen_item_buf[256];
-              uschar *seen_items_list = seen_items;
+              const uschar *seen_items_list = seen_items;
               BOOL seen_this_item = FALSE;
 
               while ((seen_item = string_nextinlist(&seen_items_list, &sep,
@@ -4125,9 +4124,9 @@ starting. */
 
 if (blackholed_by != NULL)
   {
-  uschar *detail = (local_scan_data != NULL)?
-    string_printing(local_scan_data) :
-    string_sprintf("(%s discarded recipients)", blackholed_by);
+  const uschar *detail = local_scan_data
+    ? string_printing(local_scan_data)
+    : string_sprintf("(%s discarded recipients)", blackholed_by);
   log_write(0, LOG_MAIN, "=> blackhole %s%s", detail, blackhole_log_msg);
   log_write(0, LOG_MAIN, "Completed");
   message_id[0] = 0;

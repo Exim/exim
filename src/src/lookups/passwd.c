@@ -33,7 +33,7 @@ return (void *)(-1);     /* Just return something non-null */
 /* See local README for interface description */
 
 static int
-passwd_find(void *handle, uschar *filename, uschar *keystring, int length,
+passwd_find(void *handle, uschar *filename, const uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 struct passwd *pw;

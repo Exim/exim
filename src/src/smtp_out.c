@@ -37,7 +37,7 @@ BOOL
 smtp_get_interface(uschar *istring, int host_af, address_item *addr,
   BOOL *changed, uschar **interface, uschar *msg)
 {
-uschar *expint;
+const uschar * expint;
 uschar *iface;
 int sep = 0;
 
