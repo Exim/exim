@@ -143,6 +143,7 @@ int connection_count = 1;
 int count;
 int on = 1;
 int timeout = 5;
+int initial_pause = 0;
 int use_ipv4 = 1;
 int use_ipv6 = 1;
 int debug = 0;
@@ -180,6 +181,7 @@ while (na < argc && argv[na][0] == '-')
   {
   if (strcmp(argv[na], "-d") == 0) debug = 1;
   else if (strcmp(argv[na], "-t") == 0) timeout = atoi(argv[++na]);
+  else if (strcmp(argv[na], "-i") == 0) initial_pause = atoi(argv[++na]);
   else if (strcmp(argv[na], "-noipv4") == 0) use_ipv4 = 0;
   else if (strcmp(argv[na], "-noipv6") == 0) use_ipv6 = 0;
   else
@@ -213,11 +215,22 @@ na++;
 if (na < argc) connection_count = atoi(argv[na]);
 
 
+/* Initial pause (before creating listen sockets */
+if (initial_pause > 0)
+  {
+  if (debug)
+    printf("%d: Inital pause of %d seconds\n", time(NULL), initial_pause);
+  else
+    printf("Inital pause of %d seconds\n", initial_pause);
+  while (initial_pause > 0)
+    initial_pause = sleep(initial_pause);
+  }
+
 /* Create sockets */
 
 if (port == 0)  /* Unix domain */
   {
-  if (debug) printf("Creating Unix domain socket\n");
+  if (debug) printf("%d: Creating Unix domain socket\n", time(NULL));
   listen_socket[udn] = socket(PF_UNIX, SOCK_STREAM, 0);
   if (listen_socket[udn] < 0)
     {

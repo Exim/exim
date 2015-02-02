@@ -21,7 +21,6 @@ int spam_ok = 0;
 int spam_rc = 0;
 uschar *prev_spamd_address_work = NULL;
 
-static int timeout_sec;
 static const uschar * loglabel = US"spam acl condition:";
 
 
@@ -29,9 +28,11 @@ static int
 spamd_param_init(spamd_address_container *spamd)
 {
 /* default spamd server weight, time and backup value */
-spamd->weight = SPAMD_WEIGHT;
 spamd->is_failed = FALSE;
 spamd->is_backup = FALSE;
+spamd->weight = SPAMD_WEIGHT;
+spamd->timeout = SPAMD_TIMEOUT;
+spamd->retry = 0;
 return 0;
 }
 
@@ -41,6 +42,7 @@ spamd_param(const uschar *param, spamd_address_container *spamd)
 {
 static int timesinceday = -1;
 const uschar * s;
+const uschar * name;
 
 /* check backup parameter */
 if (Ustrcmp(param, "backup") == 0)
@@ -67,6 +69,7 @@ if (Ustrncmp(param, "time=", 5) == 0)
   unsigned int time_start, time_end;
   const uschar * end_string;
 
+  name = US"time";
   s = param+5;
   if ((end_string = Ustrchr(s, '-')))
     {
@@ -74,18 +77,10 @@ if (Ustrncmp(param, "time=", 5) == 0)
     if (  sscanf(CS end_string, "%u.%u.%u", &end_h,   &end_m,   &end_s)   == 0
        || sscanf(CS s,          "%u.%u.%u", &start_h, &start_m, &start_s) == 0
        )
-      {
-      log_write(0, LOG_MAIN,
-	"%s warning - invalid spamd time value: '%s'", loglabel, s);
-      return -1; /* syntax error */
-      }
+      goto badval;
     }
   else
-    {
-    log_write(0, LOG_MAIN,
-      "%s warning - invalid spamd time value: '%s'", loglabel, s);
-    return -1; /* syntax error */
-    }
+    goto badval;
 
   if (timesinceday < 0)
     {
@@ -112,19 +107,31 @@ if (Ustrcmp(param, "variant=rspamd") == 0)
 if (Ustrncmp(param, "tmo=", 4) == 0)
   {
   int sec = readconf_readtime((s = param+4), '\0', FALSE);
+  name = US"timeout";
   if (sec < 0)
-    {
-    log_write(0, LOG_MAIN,
-      "%s warning - invalid spamd timeout value: '%s'", loglabel, s);
-    return -1; /* syntax error */
-    }
-  timeout_sec = sec;
+    goto badval;
+  spamd->timeout = sec;
+  return 0;
+  }
+
+if (Ustrncmp(param, "retry=", 6) == 0)
+  {
+  int sec = readconf_readtime((s = param+6), '\0', FALSE);
+  name = US"retry";
+  if (sec < 0)
+    goto badval;
+  spamd->retry = sec;
   return 0;
   }
 
 log_write(0, LOG_MAIN, "%s warning - invalid spamd parameter: '%s'",
   loglabel, param);
 return -1; /* syntax error */
+
+badval:
+  log_write(0, LOG_MAIN,
+    "%s warning - invalid spamd %s value: '%s'", loglabel, name, s);
+  return -1; /* syntax error */
 }
 
 
@@ -188,7 +195,6 @@ FILE *mbox_file;
 int spamd_sock = -1;
 uschar spamd_buffer[32600];
 int i, j, offset, result;
-BOOL is_rspamd;
 uschar spamd_version[8];
 uschar spamd_short_result[8];
 uschar spamd_score_char;
@@ -206,6 +212,7 @@ struct timeval select_tv;         /* and applied by PH */
 fd_set select_fd;
 #endif
 uschar *spamd_address_work;
+spamd_address_container * sd;
 
 /* stop compiler warning */
 result = 0;
@@ -223,8 +230,6 @@ if ((user_name = string_nextinlist(&list, &sep,
 if ( (Ustrcmp(user_name,"0") == 0) ||
      (strcmpic(user_name,US"false") == 0) )
   return FAIL;
-
-timeout_sec = SPAMD_TIMEOUT;
 
 /* if there is an additional option, check if it is "true" */
 if (strcmpic(list,US"true") == 0)
@@ -278,7 +283,6 @@ start = time(NULL);
   uschar *address;
   const uschar *spamd_address_list_ptr = spamd_address_work;
   spamd_address_container * spamd_address_vector[32];
-  spamd_address_container * sd;
 
   /* Check how many spamd servers we have
      and register their addresses */
@@ -298,7 +302,7 @@ start = time(NULL);
 	 args++
 	 )
       {
-	HDEBUG(D_acl) debug_printf("spamd: addr parm '%s'\n", s);
+	HDEBUG(D_acl) debug_printf("spamd:  addr parm '%s'\n", s);
 	switch (args)
 	{
 	case 0:   sd->hostspec = s;
@@ -331,17 +335,24 @@ start = time(NULL);
     goto defer;
     }
 
-  while (1)
+  current_server = spamd_get_server(spamd_address_vector, num_servers);
+  sd = spamd_address_vector[current_server];
+  for(;;)
     {
     uschar * errstr;
 
-    current_server = spamd_get_server(spamd_address_vector, num_servers);
-    sd = spamd_address_vector[current_server];
-
     debug_printf("trying server %s\n", sd->hostspec);
 
-    /* contact a spamd */
-    if ((spamd_sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0)
+    for (;;)
+      {
+      if (  (spamd_sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0
+         || sd->retry <= 0
+	 )
+	break;
+      debug_printf("server %s: retry conn\n", sd->hostspec);
+      while (sd->retry > 0) sd->retry = sleep(sd->retry);
+      }
+    if (spamd_sock >= 0)
       break;
 
     log_write(0, LOG_MAIN, "%s spamd: %s", loglabel, errstr);
@@ -350,12 +361,11 @@ start = time(NULL);
     current_server = spamd_get_server(spamd_address_vector, num_servers);
     if (current_server < 0)
       {
-      log_write(0, LOG_MAIN|LOG_PANIC, "%s all spamd servers failed",
-	loglabel);
+      log_write(0, LOG_MAIN|LOG_PANIC, "%s all spamd servers failed", loglabel);
       goto defer;
       }
+    sd = spamd_address_vector[current_server];
     }
-    is_rspamd = sd->is_rspamd;
   }
 
 if (spamd_sock == -1)
@@ -367,7 +377,7 @@ if (spamd_sock == -1)
 
 (void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
 /* now we are connected to spamd on spamd_sock */
-if (is_rspamd)
+if (sd->is_rspamd)
   {				/* rspamd variant */
   uschar *req_str;
   const char *helo;
@@ -449,7 +459,7 @@ again:
 	  "%s %s on spamd socket", loglabel, strerror(errno));
       else
 	{
-	if (time(NULL) - start < timeout_sec)
+	if (time(NULL) - start < sd->timeout)
 	  goto again;
 	log_write(0, LOG_MAIN|LOG_PANIC,
 	  "%s timed out writing spamd socket", loglabel);
@@ -494,7 +504,7 @@ offset = 0;
 while ((i = ip_recv(spamd_sock,
 		   spamd_buffer + offset,
 		   sizeof(spamd_buffer) - offset - 1,
-		   timeout_sec - time(NULL) + start)) > 0 )
+		   sd->timeout - time(NULL) + start)) > 0 )
   offset += i;
 
 /* error handling */
@@ -509,7 +519,7 @@ if (i <= 0 && errno != 0)
 /* reading done */
 (void)close(spamd_sock);
 
-if (is_rspamd)
+if (sd->is_rspamd)
   {				/* rspamd variant of reply */
   int r;
   if ((r = sscanf(CS spamd_buffer,

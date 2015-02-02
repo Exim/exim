@@ -107,4 +107,23 @@ quit
 ****
 #
 #
-# Need to additionally test the timeout / defer_ok case
+#
+#
+server -i 2 DIR/eximdir/clam_sock
+<SCAN
+>LF>scanned_file_name: OK
+<*eof
+****
+#
+exim -odi -bs -DCONTROL="retry=4s"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted after a retry
+
+.
+quit
+****
+#

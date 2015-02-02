@@ -30,6 +30,8 @@ typedef struct spamd_address_container
   int is_failed:1;
   int is_backup:1;
   unsigned int weight;
+  unsigned int timeout;
+  unsigned int retry;
 } spamd_address_container;
 
 #endif

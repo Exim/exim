@@ -30470,17 +30470,39 @@ av_scanner = aveserver:/var/run/aveserver
 This daemon-type scanner is GPL and free. You can get it at
 &url(http://www.clamav.net/). Some older versions of clamd do not seem to
 unpack MIME containers, so it used to be recommended to unpack MIME attachments
-in the MIME ACL. This no longer believed to be necessary. One option is
-required: either the path and name of a UNIX socket file, or a hostname or IP
-number, and a port, separated by space, as in the second of these examples:
+in the MIME ACL. This is no longer believed to be necessary.
+
+The options are a list of server specifiers, which may be
+a UNIX socket specification,
+a TCP socket specification,
+or a (global) option.
+
+A socket specification consists of a space-separated list.
+For a Unix socket the first element is a full path for the socket,
+for a TCP socket the first element is the IP address
+and the second a port number,
+Any further elements are per-server (non-global) options.
+These per-server options are supported:
+.code
+retry=<timespec>	Retry on connect fail
+.endd
+
+The &`retry`& option specifies a time after which a single retry for
+a failed connect is made.  The default is to not retry.
+
+If a Unix socket file is specified, only one server is supported.
+
+Examples:
 .code
 av_scanner = clamd:/opt/clamd/socket
 av_scanner = clamd:192.0.2.3 1234
 av_scanner = clamd:192.0.2.3 1234:local
+av_scanner = clamd:192.0.2.3 1234 retry=10s
 av_scanner = clamd:192.0.2.3 1234 : 192.0.2.4 1234
 .endd
-If the value of av_scanner points to a UNIX socket file or contains the local
-keyword, then the ClamAV interface will pass a filename containing the data
+If the value of av_scanner points to a UNIX socket file or contains the
+&`local`&
+option, then the ClamAV interface will pass a filename containing the data
 to be scanned, which will should normally result in less I/O happening and be
 more efficient.  Normally in the TCP case, the data is streamed to ClamAV as
 Exim does not assume that there is a common filesystem with the remote host.
@@ -30731,8 +30753,7 @@ deny message = This message contains malware ($malware_name)
 The &%spam%& ACL condition calls SpamAssassin's &%spamd%& daemon to get a spam
 score and a report for the message.
 .new
-Support is also provided for Rspamd (which can speak SpamAssassin's protocol but
-provides reduced functionality when used in this mode).
+Support is also provided for Rspamd.
 
 For more information about installation and configuration of SpamAssassin or 
 Rspamd refer to their respective websites at
@@ -30802,9 +30823,10 @@ The supported option are:
 .code
 variant=rspamd      Use Rspamd rather than SpamAssassin protocol
 time=<start>-<end>  Use only between these times of day
-tmo=<timespec>      Connection time limit.
+tmo=<timespec>      Connection time limit
 weight=<value>      Selection bias
 backup              Use only if all non-backup servers fail
+retry=<timespec>	Retry on connect fail
 .endd
 
 Time specifications for the &`time`& option are <hour>.<minute>.<second>
@@ -30812,9 +30834,15 @@ in the local time zone; each element being one or more digits.
 Either the seconds or both minutes and seconds, plus the leading &`.`&
 characters, may be omitted and will be taken as zero.
 
-Timeout specifications for the &`tmo`& option are the usual Exim
-time interval standard, eg. &`20s`& or &`1m`&.
+Timeout specifications for the &`tmo`& and &`retry`& options
+are the usual Exim time interval standard, eg. &`20s`& or &`1m`&.
+
+The &`tmo`& option specifies an overall timeout for communication.
 The default value is two minutes.
+
+The &`retry`& option specifies a time after which a single retry for
+a failed connect is made.
+The default is to not retry.
 
 Servers are queried in a random fashion, weighted by the selection bias.
 The default value for selection bias is 1.

@@ -1,6 +1,8 @@
 # Exim test configuration 4009
 # Content-scan: spamassassin interface
 
+OPT=
+
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
@@ -10,7 +12,7 @@ gecos_pattern = ""
 gecos_name = CALLER_NAME
 log_selector = +subject
 
-spamd_address = 127.0.0.1 7833
+spamd_address = 127.0.0.1 7833 OPT
 
 # ----- Main settings -----
 

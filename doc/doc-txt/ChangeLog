@@ -67,6 +67,9 @@ JH/17 Bug 68: The spamd_address main option now supports an optional
 JH/18 Bug 1581: Router and transport options headers_add/remove can
       now have the list separator specified.
 
+JH/19 Bug 392: spamd_address, and clamd av_scanner, now support retry
+      option values. 
+
 
 
 Exim version 4.85

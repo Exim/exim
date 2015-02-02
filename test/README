@@ -897,12 +897,14 @@ input, details of which are given below. A number of options are implemented:
 
   -d       causes the server to output debugging information
 
-  -t       sets a timeout in seconds (default 5) for when the server is
+  -t <sec> sets a timeout (default 5) for when the server is
            awaiting an incoming connection
 
   -noipv4  causes the server not to set up an IPv4 socket
 
   -noipv6  causes the server not to set up an IPv6 socket
+
+  -i <sec> sets an initial pause, to delay before creating the listen sockets
 
 By default, in an IPv6 environment, both kinds of socket are set up. However,
 the test script knows which interfaces actually exist on the host, and it adds

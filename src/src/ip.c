@@ -337,7 +337,8 @@ for (h = &shost; h != NULL; h = h->next)
       {
       if (fd != fd6) close(fd6);
       if (fd != fd4) close(fd4);
-      if (connhost) {
+      if (connhost)
+	{
 	h->port = port;
 	*connhost = *h;
 	connhost->next = NULL;
@@ -720,3 +721,5 @@ for (i=0; i < dscp_table_size; ++i)
 
 
 /* End of ip.c */
+/* vi: aw ai sw=2
+*/
