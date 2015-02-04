@@ -245,6 +245,7 @@ for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
     {
     X509 * current_cert= tmp_obj->data.x509;
     X509_NAME_oneline(X509_get_subject_name(current_cert), CS name, sizeof(name));
+	txt[sizeof(name)-1] = '\0';
     debug_printf(" %s\n", name);
     }
   }
@@ -298,10 +299,12 @@ uschar * yield;
 #endif
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+txt[sizeof(txt)-1] = '\0';
 
 if (state == 0)
   {
-  log_write(0, LOG_MAIN, "SSL verify error: depth=%d error=%s cert=%s",
+  log_write(0, LOG_MAIN, "[%s] SSL verify error: depth=%d error=%s cert=%s",
+	tlsp == &tls_out ? deliver_host_address : sender_host_address,
     depth,
     X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
     txt);
@@ -336,8 +339,10 @@ else if (depth != 0)
     tlsp->peercert = X509_dup(cert);
     if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth))))
       {
-      log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
-			      "depth=%d cert=%s: %s", depth, txt, yield);
+      log_write(0, LOG_MAIN, "[%s] SSL verify denied by event-action: "
+		  "depth=%d cert=%s: %s",
+		tlsp == &tls_out ? deliver_host_address : sender_host_address,
+		depth, txt, yield);
       *calledp = TRUE;
       if (!*optionalp)
 	return 0;			    /* reject */
@@ -379,7 +384,8 @@ else
 	{
 	if (rc < 0)
 	  {
-	  log_write(0, LOG_MAIN, "SSL verify error: internal error\n");
+	  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error\n",
+		tlsp == &tls_out ? deliver_host_address : sender_host_address);
 	  name = NULL;
 	  }
 	break;
@@ -387,7 +393,9 @@ else
     if (!name)
       {
       log_write(0, LOG_MAIN,
-	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
+		"[%s] SSL verify error: certificate name mismatch: \"%s\"\n",
+		tlsp == &tls_out ? deliver_host_address : sender_host_address,
+		txt);
       *calledp = TRUE;
       if (!*optionalp)
 	return 0;			    /* reject */
@@ -399,7 +407,9 @@ else
     if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
       {
       log_write(0, LOG_MAIN,
-	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
+		"[%s] SSL verify error: certificate name mismatch: \"%s\"\n",
+		tlsp == &tls_out ? deliver_host_address : sender_host_address,
+		txt);
       *calledp = TRUE;
       if (!*optionalp)
 	return 0;			    /* reject */
@@ -413,8 +423,10 @@ else
   if (ev)
     if ((yield = event_raise(ev, US"tls:cert", US"0")))
       {
-      log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
-			      "depth=0 cert=%s: %s", txt, yield);
+      log_write(0, LOG_MAIN, "[%s] SSL verify denied by event-action: "
+		  "depth=0 cert=%s: %s",
+		tlsp == &tls_out ? deliver_host_address : sender_host_address,
+		txt, yield);
       *calledp = TRUE;
       if (!*optionalp)
 	return 0;			    /* reject */
@@ -461,6 +473,7 @@ uschar * yield;
 #endif
 
 X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+txt[sizeof(txt)-1] = '\0';
 
 DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", txt);
 tls_out.peerdn = txt;
@@ -1981,6 +1994,7 @@ if (server_cert)
   {
   tls_out.peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
     CS txt, sizeof(txt));
+  txt[sizeof(txt)-1] = '\0';
   tls_out.peerdn = txt;		/*XXX a static buffer... */
   }
 else

@@ -3,12 +3,12 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
+1999-03-02 09:44:33 10HmaX-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=the.local.host.name [ip4.ip4.ip4.ip4] TLS error on connection (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session failure: delivering unencrypted to the.local.host.name [ip4.ip4.ip4.ip4] (not in hosts_require_tls)
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userq@test.ex R=client_q T=send_to_server_req_fail H=the.local.host.name [ip4.ip4.ip4.ip4] C="250 OK id=10HmbB-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 SSL verify error: certificate name mismatch: "/CN=server1.example.com"
+1999-03-02 09:44:33 10HmaY-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: "/CN=server1.example.com"
 
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=the.local.host.name [ip4.ip4.ip4.ip4] TLS error on connection (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaY-0005vi-00 TLS session failure: delivering unencrypted to the.local.host.name [ip4.ip4.ip4.ip4] (not in hosts_require_tls)
@@ -16,7 +16,7 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => users@test.ex R=client_s T=send_to_server_req_passname H=server1.example.com [ip4.ip4.ip4.ip4] X=TLSv1:AES256-SHA:256 CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbD-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 SSL verify error: certificate name mismatch: "/CN=server1.example.com"
+1999-03-02 09:44:33 10HmbA-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: "/CN=server1.example.com"
 
 1999-03-02 09:44:33 10HmbA-0005vi-00 => usert@test.ex R=client_t T=send_to_server_req_failcarryon H=the.local.host.name [ip4.ip4.ip4.ip4] X=TLSv1:AES256-SHA:256 CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
