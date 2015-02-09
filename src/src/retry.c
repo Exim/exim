@@ -346,7 +346,6 @@ retry_config *
 retry_find_config(const uschar *key, const uschar *alternate, int basic_errno,
   int more_errno)
 {
-int replace = 0;
 const uschar *colon = Ustrchr(key, ':');
 retry_config *yield;
 

@@ -88,8 +88,8 @@ Returns:   OK if authentication succeeded
 */
 
 int
-auth_call_saslauthd(uschar *username, uschar *password, uschar *service,
-  uschar *realm, uschar **errptr)
+auth_call_saslauthd(const uschar *username, const uschar *password,
+  const uschar *service, const uschar *realm, uschar **errptr)
 {
 uschar *reply = NULL;
 

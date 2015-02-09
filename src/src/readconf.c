@@ -1359,8 +1359,6 @@ return yield;
 static void
 fn_smtp_receive_timeout(const uschar * name, const uschar * str)
 {
-int value;
-
 if (*str == '$')
   smtp_receive_timeout_s = string_copy(str);
 else

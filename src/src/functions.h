@@ -88,9 +88,9 @@ extern uschar *auth_b64encode(uschar *, int);
 extern int     auth_b64decode(uschar *, uschar **);
 extern int     auth_call_pam(uschar *, uschar **);
 extern int     auth_call_pwcheck(uschar *, uschar **);
-extern int     auth_call_radius(uschar *, uschar **);
-extern int     auth_call_saslauthd(uschar *, uschar *, uschar *, uschar *,
-                 uschar **);
+extern int     auth_call_radius(const uschar *, uschar **);
+extern int     auth_call_saslauthd(const uschar *, const uschar *,
+	         const uschar *, const uschar *, uschar **);
 extern int     auth_check_serv_cond(auth_instance *);
 extern int     auth_check_some_cond(auth_instance *, uschar *, uschar *, int);
 
@@ -169,8 +169,8 @@ extern int     exp_bool(address_item *addr,
   uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,
   uschar *svalue, BOOL *rvalue);
 extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
-extern uschar *expand_string(uschar *);
-extern const uschar *expand_cstring(const uschar *);
+extern uschar *expand_string(uschar *);	/* public, cannot make const */
+extern const uschar *expand_cstring(const uschar *); /* ... so use this one */
 extern uschar *expand_string_copy(const uschar *);
 extern int_eximarith_t expand_string_integer(uschar *, BOOL);
 extern void    modify_variable(uschar *, void *);

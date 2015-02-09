@@ -3372,7 +3372,7 @@ for (; cb != NULL; cb = cb->next)
 	  /* Too hard to think about for now.  We might in future cutthrough
 	  the case where both sides handle prdr and this-node prdr acl
 	  is "accept" */
-	  *log_msgptr = string_sprintf(US"PRDR on %s reception\n", arg);
+	  *log_msgptr = string_sprintf("PRDR on %s reception\n", arg);
 	else
 	  {
 	  if (deliver_freeze)

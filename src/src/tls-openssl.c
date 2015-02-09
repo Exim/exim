@@ -384,7 +384,7 @@ else
 	{
 	if (rc < 0)
 	  {
-	  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error\n",
+	  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error",
 		tlsp == &tls_out ? deliver_host_address : sender_host_address);
 	  name = NULL;
 	  }
@@ -393,7 +393,7 @@ else
     if (!name)
       {
       log_write(0, LOG_MAIN,
-		"[%s] SSL verify error: certificate name mismatch: \"%s\"\n",
+		"[%s] SSL verify error: certificate name mismatch: \"%s\"",
 		tlsp == &tls_out ? deliver_host_address : sender_host_address,
 		txt);
       *calledp = TRUE;
@@ -407,7 +407,7 @@ else
     if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
       {
       log_write(0, LOG_MAIN,
-		"[%s] SSL verify error: certificate name mismatch: \"%s\"\n",
+		"[%s] SSL verify error: certificate name mismatch: \"%s\"",
 		tlsp == &tls_out ? deliver_host_address : sender_host_address,
 		txt);
       *calledp = TRUE;

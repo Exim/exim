@@ -16,7 +16,6 @@ LOG: MAIN
   [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
 LOG: MAIN
   [127.0.0.1] SSL verify error: certificate name mismatch: "/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock"
-
   SMTP>> EHLO helo.data.changed
   SMTP<< 250-myhost.test.ex Hello helo.data.changed [127.0.0.1]
          250-SIZE 52428800
@@ -52,7 +51,6 @@ LOG: MAIN
   [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
 LOG: MAIN
   [127.0.0.1] SSL verify error: certificate name mismatch: "/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock"
-
   SMTP>> EHLO helo.data.changed
   SMTP<< 250-myhost.test.ex Hello helo.data.changed [127.0.0.1]
          250-SIZE 52428800
@@ -89,7 +87,6 @@ LOG: MAIN
   [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
 LOG: MAIN
   [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: "/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock"
-
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800

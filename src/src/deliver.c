@@ -3231,7 +3231,7 @@ while (!done)
     case 'I':
     if (*ptr) sending_ip_address = string_copy(ptr);
     while (*ptr++) ;
-    if (*ptr) sending_port = atoi(ptr);
+    if (*ptr) sending_port = atoi(CS ptr);
     while (*ptr++) ;
     break;
 

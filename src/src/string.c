@@ -1013,12 +1013,17 @@ return new;
 static const uschar *
 Ustrnchr(const uschar * s, int c, unsigned * len)
 {
-while (*len)
+unsigned siz = *len;
+while (siz)
   {
   if (!*s) return NULL;
-  if (*s == c) return s;
+  if (*s == c)
+    {
+    *len = siz;
+    return s;
+    }
   s++;
-  *len--;
+  siz--;
   }
 return NULL;
 }

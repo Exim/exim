@@ -2026,15 +2026,15 @@ static int
 eval_acl(uschar ** sub, int nsub, uschar ** user_msgp)
 {
 int i;
-uschar * tmp = NULL;
 int sav_narg = acl_narg;
 int ret;
+uschar * dummy_logmsg;
 extern int acl_where;
 
 if(--nsub > sizeof(acl_arg)/sizeof(*acl_arg)) nsub = sizeof(acl_arg)/sizeof(*acl_arg);
 for (i = 0; i < nsub && sub[i+1]; i++)
   {
-  tmp = acl_arg[i];
+  uschar * tmp = acl_arg[i];
   acl_arg[i] = sub[i+1];	/* place callers args in the globals */
   sub[i+1] = tmp;		/* stash the old args using our caller's storage */
   }
@@ -2051,7 +2051,7 @@ DEBUG(D_expand)
     acl_narg>0 ? acl_arg[0] : US"<none>",
     acl_narg>1 ? " +more"   : "");
 
-ret = acl_eval(acl_where, sub[0], user_msgp, &tmp);
+ret = acl_eval(acl_where, sub[0], user_msgp, &dummy_logmsg);
 
 for (i = 0; i < nsub; i++)
   acl_arg[i] = sub[i+1];	/* restore old args */
