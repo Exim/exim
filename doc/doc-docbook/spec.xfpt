@@ -30874,6 +30874,12 @@ have multiple recipients, not necessarily all in the same domain. Because the
 &%spam%& condition has to be called from a DATA ACL in order to be able to
 read the contents of the message, the variables &$local_part$& and &$domain$&
 are not set.
+Careful enforcement of single-recipient messages
+(eg. by responding with defer in the recipient ACL for all recipients
+after the first),
+or the use of PRDR,
+.cindex "PRDR" "use for per-user SpamAssassin profiles"
+are needed to use this feature.
 
 The right-hand side of the &%spam%& condition is expanded before being used, so
 you can put lookups or conditions there. When the right-hand side evaluates to
