@@ -5501,7 +5501,7 @@ while (*s != 0)
         while (isspace(*s)) s++;
         if (*s++ != '{') goto EXPAND_FAILED_CURLY;
         t = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
-        if (temp == NULL) goto EXPAND_FAILED;
+        if (!t) goto EXPAND_FAILED;
         lookup_value = t;
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
         }

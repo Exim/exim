@@ -86,7 +86,7 @@ extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
 extern uschar *auth_b64encode(uschar *, int);
 extern int     auth_b64decode(uschar *, uschar **);
-extern int     auth_call_pam(uschar *, uschar **);
+extern int     auth_call_pam(const uschar *, uschar **);
 extern int     auth_call_pwcheck(uschar *, uschar **);
 extern int     auth_call_radius(const uschar *, uschar **);
 extern int     auth_call_saslauthd(const uschar *, const uschar *,
