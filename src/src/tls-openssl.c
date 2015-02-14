@@ -245,7 +245,7 @@ for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
     {
     X509 * current_cert= tmp_obj->data.x509;
     X509_NAME_oneline(X509_get_subject_name(current_cert), CS name, sizeof(name));
-	txt[sizeof(name)-1] = '\0';
+	name[sizeof(name)-1] = '\0';
     debug_printf(" %s\n", name);
     }
   }
@@ -254,21 +254,58 @@ for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
 */
 
 
+#ifdef EXPERIMENTAL_EVENT
+static int
+verify_event(tls_support * tlsp, X509 * cert, int depth, const uschar * dn,
+  BOOL *calledp, const BOOL *optionalp, const uschar * what)
+{
+uschar * ev;
+uschar * yield;
+X509 * old_cert;
+
+ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
+if (ev)
+  {
+  old_cert = tlsp->peercert;
+  tlsp->peercert = X509_dup(cert);
+  /* NB we do not bother setting peerdn */
+  if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth))))
+    {
+    log_write(0, LOG_MAIN, "[%s] %s verify denied by event-action: "
+		"depth=%d cert=%s: %s",
+	      tlsp == &tls_out ? deliver_host_address : sender_host_address,
+	      what, depth, dn, yield);
+    *calledp = TRUE;
+    if (!*optionalp)
+      {
+      if (old_cert) tlsp->peercert = old_cert;	/* restore 1st failing cert */
+      return 1;			    /* reject (leaving peercert set) */
+      }
+    DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
+      "(host in tls_try_verify_hosts)\n");
+    }
+  X509_free(tlsp->peercert);
+  tlsp->peercert = old_cert;
+  }
+return 0;
+}
+#endif
+
 /*************************************************
 *        Callback for verification               *
 *************************************************/
 
 /* The SSL library does certificate verification if set up to do so. This
 callback has the current yes/no state is in "state". If verification succeeded,
-we set up the tls_peerdn string. If verification failed, what happens depends
-on whether the client is required to present a verifiable certificate or not.
+we set the certificate-verified flag. If verification failed, what happens
+depends on whether the client is required to present a verifiable certificate
+or not.
 
 If verification is optional, we change the state to yes, but still log the
 verification error. For some reason (it really would help to have proper
 documentation of OpenSSL), this callback function then gets called again, this
-time with state = 1. In fact, that's useful, because we can set up the peerdn
-value, but we must take care not to set the private verified flag on the second
-time through.
+time with state = 1.  We must take care not to set the private verified flag on
+the second time through.
 
 Note: this function is not called if the client fails to present a certificate
 when asked. We get here only if a certificate has been received. Handling of
@@ -292,14 +329,10 @@ verify_callback(int state, X509_STORE_CTX *x509ctx,
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
-static uschar txt[256];
-#ifdef EXPERIMENTAL_EVENT
-uschar * ev;
-uschar * yield;
-#endif
+uschar dn[256];
 
-X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
-txt[sizeof(txt)-1] = '\0';
+X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
+dn[sizeof(dn)-1] = '\0';
 
 if (state == 0)
   {
@@ -307,12 +340,13 @@ if (state == 0)
 	tlsp == &tls_out ? deliver_host_address : sender_host_address,
     depth,
     X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
-    txt);
+    dn);
   *calledp = TRUE;
   if (!*optionalp)
     {
-    tlsp->peercert = X509_dup(cert);
-    return 0;			    /* reject */
+    if (!tlsp->peercert)
+      tlsp->peercert = X509_dup(cert);	/* record failing cert */
+    return 0;				/* reject */
     }
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
     "tls_try_verify_hosts)\n");
@@ -320,7 +354,7 @@ if (state == 0)
 
 else if (depth != 0)
   {
-  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n", depth, txt);
+  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n", depth, dn);
 #ifndef DISABLE_OCSP
   if (tlsp == &tls_out && client_static_cbinfo->u_ocsp.client.verify_store)
     {	/* client, wanting stapling  */
@@ -333,46 +367,26 @@ else if (depth != 0)
     }
 #endif
 #ifdef EXPERIMENTAL_EVENT
-  ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
-  if (ev)
-    {
-    tlsp->peercert = X509_dup(cert);
-    if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth))))
-      {
-      log_write(0, LOG_MAIN, "[%s] SSL verify denied by event-action: "
-		  "depth=%d cert=%s: %s",
-		tlsp == &tls_out ? deliver_host_address : sender_host_address,
-		depth, txt, yield);
-      *calledp = TRUE;
-      if (!*optionalp)
-	return 0;			    /* reject */
-      DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
-	"(host in tls_try_verify_hosts)\n");
-      }
-    X509_free(tlsp->peercert);
-    tlsp->peercert = NULL;
-    }
+    if (verify_event(tlsp, cert, depth, dn, calledp, optionalp, US"SSL"))
+      return 0;				/* reject, with peercert set */
 #endif
   }
 else
   {
   const uschar * verify_cert_hostnames;
 
-  tlsp->peerdn = txt;
-  tlsp->peercert = X509_dup(cert);
-
   if (  tlsp == &tls_out
      && ((verify_cert_hostnames = client_static_cbinfo->verify_cert_hostnames)))
      	/* client, wanting hostname check */
-
-# if EXIM_HAVE_OPENSSL_CHECKHOST
-#  ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
-#   define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
-#  endif
-#  ifndef X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS
-#   define X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS 0
-#  endif
     {
+
+#if EXIM_HAVE_OPENSSL_CHECKHOST
+# ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
+#  define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
+# endif
+# ifndef X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS
+#  define X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS 0
+# endif
     int sep = 0;
     const uschar * list = verify_cert_hostnames;
     uschar * name;
@@ -391,52 +405,33 @@ else
 	break;
 	}
     if (!name)
+#else
+    if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
+#endif
       {
       log_write(0, LOG_MAIN,
 		"[%s] SSL verify error: certificate name mismatch: \"%s\"",
 		tlsp == &tls_out ? deliver_host_address : sender_host_address,
-		txt);
+		dn);
       *calledp = TRUE;
       if (!*optionalp)
-	return 0;			    /* reject */
+	{
+	if (!tlsp->peercert)
+	  tlsp->peercert = X509_dup(cert);	/* record failing cert */
+	return 0;				/* reject */
+	}
       DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
 	"tls_try_verify_hosts)\n");
       }
     }
-# else
-    if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
-      {
-      log_write(0, LOG_MAIN,
-		"[%s] SSL verify error: certificate name mismatch: \"%s\"",
-		tlsp == &tls_out ? deliver_host_address : sender_host_address,
-		txt);
-      *calledp = TRUE;
-      if (!*optionalp)
-	return 0;			    /* reject */
-      DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
-	"tls_try_verify_hosts)\n");
-      }
-# endif
 
 #ifdef EXPERIMENTAL_EVENT
-  ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
-  if (ev)
-    if ((yield = event_raise(ev, US"tls:cert", US"0")))
-      {
-      log_write(0, LOG_MAIN, "[%s] SSL verify denied by event-action: "
-		  "depth=0 cert=%s: %s",
-		tlsp == &tls_out ? deliver_host_address : sender_host_address,
-		txt, yield);
-      *calledp = TRUE;
-      if (!*optionalp)
-	return 0;			    /* reject */
-      DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
-	"(host in tls_try_verify_hosts)\n");
-      }
+  if (verify_event(tlsp, cert, depth, dn, calledp, optionalp, US"SSL"))
+    return 0;				/* reject, with peercert set */
 #endif
 
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
-    *calledp ? "" : " authenticated", txt);
+    *calledp ? "" : " authenticated", dn);
   if (!*calledp) tlsp->certificate_verified = TRUE;
   *calledp = TRUE;
   }
@@ -466,36 +461,22 @@ static int
 verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
-static uschar txt[256];
+uschar dn[256];
 #ifdef EXPERIMENTAL_EVENT
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
 uschar * yield;
+BOOL dummy_called, optional = FALSE;
 #endif
 
-X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
-txt[sizeof(txt)-1] = '\0';
+X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
+dn[sizeof(dn)-1] = '\0';
 
-DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", txt);
-tls_out.peerdn = txt;
-tls_out.peercert = X509_dup(cert);
+DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", dn);
 
 #ifdef EXPERIMENTAL_EVENT
-  if (client_static_cbinfo->event_action)
-    {
-    if ((yield = event_raise(client_static_cbinfo->event_action,
-		    US"tls:cert", string_sprintf("%d", depth))))
-      {
-      log_write(0, LOG_MAIN, "DANE verify denied by event-action: "
-			      "depth=%d cert=%s: %s", depth, txt, yield);
-      tls_out.certificate_verified = FALSE;
-      return 0;			    /* reject */
-      }
-    if (depth != 0)
-      {
-      X509_free(tls_out.peercert);
-      tls_out.peercert = NULL;
-      }
-    }
+  if (verify_event(&tls_out, cert, depth, dn,
+	  &dummy_called, &optional, US"DANE"))
+    return 0;				/* reject, with peercert set */
 #endif
 
 if (state == 1)
@@ -1223,7 +1204,7 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
+DEBUG(D_tls) SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
 
 /* Automatically re-try reads/writes after renegotiation. */
 (void) SSL_CTX_set_mode(*ctxp, SSL_MODE_AUTO_RETRY);
@@ -1344,6 +1325,29 @@ string_format(cipherbuf, bsize, "%s:%s:%u", ver,
   SSL_CIPHER_get_name(c), *bits);
 
 DEBUG(D_tls) debug_printf("Cipher: %s\n", cipherbuf);
+}
+
+
+static void
+peer_cert(SSL * ssl, tls_support * tlsp, uschar * peerdn, unsigned bsize)
+{
+/*XXX we might consider a list-of-certs variable for the cert chain.
+SSL_get_peer_cert_chain(SSL*).  We'd need a new variable type and support
+in list-handling functions, also consider the difference between the entire
+chain and the elements sent by the peer. */
+
+/* Will have already noted peercert on a verify fail; possibly not the leaf */
+if (!tlsp->peercert)
+  tlsp->peercert = SSL_get_peer_certificate(ssl);
+/* Beware anonymous ciphers which lead to server_cert being NULL */
+if (tlsp->peercert)
+  {
+  X509_NAME_oneline(X509_get_subject_name(tlsp->peercert), CS peerdn, bsize);
+  peerdn[bsize-1] = '\0';
+  tlsp->peerdn = peerdn;		/*XXX a static buffer... */
+  }
+else
+  tlsp->peerdn = NULL;
 }
 
 
@@ -1529,6 +1533,8 @@ tls_server_start(const uschar *require_ciphers)
 int rc;
 uschar *expciphers;
 tls_ext_ctx_cb *cbinfo;
+X509 * peercert;
+static uschar peerdn[256];
 static uschar cipherbuf[256];
 
 /* Check for previous activation */
@@ -1650,6 +1656,8 @@ DEBUG(D_tls) debug_printf("SSL_accept was successful\n");
 
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize things. */
+
+peer_cert(server_ssl, &tls_in, peerdn, sizeof(peerdn));
 
 construct_cipher_name(server_ssl, cipherbuf, sizeof(cipherbuf), &tls_in.bits);
 tls_in.cipher = cipherbuf;
@@ -1811,9 +1819,8 @@ tls_client_start(int fd, host_item *host, address_item *addr,
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
-static uschar txt[256];
+static uschar peerdn[256];
 uschar * expciphers;
-X509 * server_cert;
 int rc;
 static uschar cipherbuf[256];
 
@@ -1987,18 +1994,7 @@ if (rc <= 0)
 
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 
-/* Beware anonymous ciphers which lead to server_cert being NULL */
-/*XXX server_cert is never freed... use X509_free() */
-server_cert = SSL_get_peer_certificate (client_ssl);
-if (server_cert)
-  {
-  tls_out.peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
-    CS txt, sizeof(txt));
-  txt[sizeof(txt)-1] = '\0';
-  tls_out.peerdn = txt;		/*XXX a static buffer... */
-  }
-else
-  tls_out.peerdn = NULL;
+peer_cert(client_ssl, &tls_out, peerdn, sizeof(peerdn));
 
 construct_cipher_name(client_ssl, cipherbuf, sizeof(cipherbuf), &tls_out.bits);
 tls_out.cipher = cipherbuf;

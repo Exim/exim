@@ -12451,6 +12451,8 @@ inbound connection when the message was received.
 It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
+If certificate verification fails it may refer to a failing chain element
+which is not the leaf.
 
 .vitem &$tls_out_ourcert$&
 .vindex "&$tls_out_ourcert$&"
@@ -12465,6 +12467,8 @@ This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
+If certificate verification fails it may refer to a failing chain element
+which is not the leaf.
 
 .vitem &$tls_in_certificate_verified$&
 .vindex "&$tls_in_certificate_verified$&"
@@ -12528,6 +12532,8 @@ When a message is received from a remote host over an encrypted SMTP
 connection, and Exim is configured to request a certificate from the client,
 the value of the Distinguished Name of the certificate is made available in the
 &$tls_in_peerdn$& during subsequent processing.
+If certificate verification fails it may refer to a failing chain element
+which is not the leaf.
 
 The deprecated &$tls_peerdn$& variable refers to the inbound side
 except when used in the context of an outbound SMTP delivery, when it refers to
@@ -12539,6 +12545,8 @@ When a message is being delivered to a remote host over an encrypted SMTP
 connection, and Exim is configured to request a certificate from the server,
 the value of the Distinguished Name of the certificate is made available in the
 &$tls_out_peerdn$& during subsequent processing.
+If certificate verification fails it may refer to a failing chain element
+which is not the leaf.
 
 .vitem &$tls_in_sni$&
 .vindex "&$tls_in_sni$&"

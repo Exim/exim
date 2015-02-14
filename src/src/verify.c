@@ -636,7 +636,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     outblock.authenticating = FALSE;
 
     /* Reset the parameters of a TLS session */
-    tls_out.cipher = tls_out.peerdn = NULL;
+    tls_out.cipher = tls_out.peerdn = tls_out.peercert = NULL;
 
     /* Connect to the host; on failure, just loop for the next one, but we
     set the error for the last one. Use the callout_connect timeout. */

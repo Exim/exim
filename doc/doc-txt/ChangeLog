@@ -70,6 +70,9 @@ JH/18 Bug 1581: Router and transport options headers_add/remove can
 JH/19 Bug 392: spamd_address, and clamd av_scanner, now support retry
       option values. 
 
+JH/20 BUG 1571: Ensure that $tls_in_peerdn is set, when verification fails
+      under OpenSSL.
+
 
 
 Exim version 4.85
