@@ -380,8 +380,9 @@ if (spamd_sock == -1)
 if (sd->is_rspamd)
   {				/* rspamd variant */
   uschar *req_str;
-  const char *helo;
-  const char *fcrdns;
+  const uschar * helo;
+  const uschar * fcrdns;
+  const uschar * authid;
 
   req_str = string_sprintf("CHECK RSPAMC/1.3\r\nContent-length: %lu\r\n"
     "Queue-Id: %s\r\nFrom: <%s>\r\nRecipient-Number: %d\r\n", mbox_size,
@@ -394,10 +395,12 @@ if (sd->is_rspamd)
     req_str = string_sprintf("%sHostname: %s\r\n", req_str, fcrdns);
   if (sender_host_address != NULL)
     req_str = string_sprintf("%sIP: %s\r\n", req_str, sender_host_address);
+  if ((authid = expand_string(US"$authenticated_id")) != NULL && *authid != '\0')
+    req_str = string_sprintf("%sUser: %s\r\n", req_str, authid);
   req_str = string_sprintf("%s\r\n", req_str);
   wrote = send(spamd_sock, req_str, Ustrlen(req_str), 0); 
   }
-  else
+else
   {				/* spamassassin variant */
   (void)string_format(spamd_buffer,
 	  sizeof(spamd_buffer),
@@ -407,6 +410,7 @@ if (sd->is_rspamd)
   /* send our request */
   wrote = send(spamd_sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
   }
+
 if (wrote == -1)
   {
   (void)close(spamd_sock);
@@ -527,9 +531,9 @@ if (sd->is_rspamd)
 	  spamd_version, spamd_short_result, &spamd_score, &spamd_threshold,
 	  &spamd_reject_score, &spamd_report_offset)) != 5)
     {
-      log_write(0, LOG_MAIN|LOG_PANIC,
-		"%s cannot parse spamd output: %d", loglabel, r);
-      return DEFER;
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	      "%s cannot parse spamd output: %d", loglabel, r);
+    return DEFER;
     }
   /* now parse action */
   p = &spamd_buffer[spamd_report_offset];

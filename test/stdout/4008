@@ -20,6 +20,7 @@ Connection request from [127.0.0.1]
 <Recipient-Number: 1
 <Rcpt: <userx@test.ex>
 <Helo: test.ex
+<User: CALLER
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 <X-Envelope-From: <CALLER@myhost.test.ex>
