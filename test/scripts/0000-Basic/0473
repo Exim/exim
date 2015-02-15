@@ -150,6 +150,34 @@ rcpt to: r11@two.test.ex
 quit
 ****
 dump callout
+#
+# callout target dumps after random-reject
+server PORT_S 2
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Bad receipient, dropping conn
+>*eof
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -DUSE_SENDER=,random -bs
+ehlo xxxx
+mail from: x12@three.test.ex
+rcpt to: r12@three.test.ex
+quit
+****
+dump callout
 server PORT_S
 220 Server ready
 EHLO

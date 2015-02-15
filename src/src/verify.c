@@ -388,12 +388,9 @@ else
   log the fact, but carry on without randomming. */
 
   if (callout_random && callout_random_local_part != NULL)
-    {
-    random_local_part = expand_string(callout_random_local_part);
-    if (random_local_part == NULL)
+    if (!(random_local_part = expand_string(callout_random_local_part)))
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
         "callout_random_local_part: %s", expand_string_message);
-    }
 
   /* Default the connect and overall callout timeouts if not set, and record the
   time we are starting so that we can enforce it. */
@@ -635,13 +632,13 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     outblock.cmd_count = 0;
     outblock.authenticating = FALSE;
 
-    /* Reset the parameters of a TLS session */
-    tls_out.cipher = tls_out.peerdn = tls_out.peercert = NULL;
-
     /* Connect to the host; on failure, just loop for the next one, but we
     set the error for the last one. Use the callout_connect timeout. */
 
     tls_retry_connection:
+
+    /* Reset the parameters of a TLS session */
+    tls_out.cipher = tls_out.peerdn = tls_out.peercert = NULL;
 
     inblock.sock = outblock.sock =
       smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL
@@ -1009,10 +1006,15 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
         /* Otherwise, cache a real negative response, and get back to the right
         state to send RCPT. Unless there's some problem such as a dropped
-        connection, we expect to succeed, because the commands succeeded above. */
+        connection, we expect to succeed, because the commands succeeded above.
+	However, some servers drop the connection after responding to  an
+	invalid recipient, so on (any) error we drop and remake the connection.
+	*/
 
         else if (errno == 0)
           {
+	  /* This would be ok for 1st rcpt a cutthrough, but no way to
+	  handle a subsequent.  So refuse to support any */
 	  cancel_cutthrough_connection("random-recipient");
 
           if (randombuffer[0] == '5')
@@ -1027,6 +1029,22 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
               from_address) >= 0 &&
             smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
               '2', callout);
+
+	  if (!done)
+	    {
+	    HDEBUG(D_acl|D_v)
+	      debug_printf("problem after random/rset/mfrom; reopen conn\n");
+	    random_local_part = NULL;
+#ifdef SUPPORT_TLS
+	    tls_close(FALSE, TRUE);
+#endif
+	    (void)close(inblock.sock);
+#ifdef EXPERIMENTAL_EVENT
+	    (void) event_raise(addr->transport->event_action,
+			      US"tcp:close", NULL);
+#endif
+	    goto tls_retry_connection;
+	    }
           }
         else done = FALSE;    /* Some timeout/connection problem */
         }                     /* Random check */
@@ -1060,8 +1078,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
         if (done && pm_mailfrom != NULL)
           {
-          /*XXX not suitable for cutthrough - we cannot afford to do an RSET
-	  and lose the original mail-from */
+          /* Could possibly shift before main verify, just above, and be ok
+	  for cutthrough.  But no way to handle a subsequent rcpt, so just
+	  refuse any */
 	cancel_cutthrough_connection("postmaster verify");
   	HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of postmaster verify\n");
 
