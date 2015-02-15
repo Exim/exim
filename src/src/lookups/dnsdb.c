@@ -34,9 +34,6 @@ static const char *type_names[] = {
 #if HAVE_IPV6
   "a+",
   "aaaa",
-  #ifdef SUPPORT_A6
-  "a6",
-  #endif
 #endif
   "cname",
   "csa",
@@ -56,9 +53,6 @@ static int type_values[] = {
 #if HAVE_IPV6
   T_ADDRESSES,     /* Private type for AAAA + A */
   T_AAAA,
-  #ifdef SUPPORT_A6
-  T_A6,
-  #endif
 #endif
   T_CNAME,
   T_CSA,     /* Private type for "Client SMTP Authorization". */
@@ -345,13 +339,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 #if HAVE_IPV6
     if (type == T_ADDRESSES)		/* NB cannot happen unless HAVE_IPV6 */
       {
-      if (searchtype == T_ADDRESSES)
-# if defined(SUPPORT_A6)
-                                     searchtype = T_A6;
-# else
-                                     searchtype = T_AAAA;
-# endif
-      else if (searchtype == T_A6)   searchtype = T_AAAA;
+      if (searchtype == T_ADDRESSES) searchtype = T_AAAA;
       else if (searchtype == T_AAAA) searchtype = T_A;
       rc = dns_special_lookup(&dnsa, domain, searchtype, CUSS &found);
       }
@@ -389,12 +377,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       separator between them, just as for between several records. However, A6
       support is not normally configured these days. */
 
-      if (type == T_A ||
-          #ifdef SUPPORT_A6
-          type == T_A6 ||
-          #endif
-          type == T_AAAA ||
-          type == T_ADDRESSES)
+      if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {
         dns_address *da;
         for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)

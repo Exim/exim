@@ -16,6 +16,12 @@ Version 4.86
 
  3. New "malware=" support for Avast.
 
+ 4. New "spam=" variant option for Rspamd.
+
+ 5. Assorted options on malware= and spam= scanners.
+
+ 6. A commandline option to write a comment into the logfile.
+
 Version 4.85
 ------------
 

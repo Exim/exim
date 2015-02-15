@@ -1985,10 +1985,9 @@ Two different types of DNS record for handling IPv6 addresses have been
 defined. AAAA records (analogous to A records for IPv4) are in use, and are
 currently seen as the mainstream. Another record type called A6 was proposed
 as better than AAAA because it had more flexibility. However, it was felt to be
-over-complex, and its status was reduced to &"experimental"&. It is not known
-if anyone is actually using A6 records. Exim has support for A6 records, but
-this is included only if you set &`SUPPORT_A6=YES`& in &_Local/Makefile_&. The
-support has not been tested for some time.
+over-complex, and its status was reduced to &"experimental"&. Exim used to
+have a compile option for including A6 record support but this has now been
+withdrawn.
 
 
 
@@ -6880,8 +6879,8 @@ is used on its own as the result. If the lookup does not succeed, the
 &<<SECTforexpfai>>& for an explanation of what this means.
 
 The supported DNS record types are A, CNAME, MX, NS, PTR, SPF, SRV, TLSA and TXT,
-and, when Exim is compiled with IPv6 support, AAAA (and A6 if that is also
-configured). If no type is given, TXT is assumed. When the type is PTR,
+and, when Exim is compiled with IPv6 support, AAAA.
+If no type is given, TXT is assumed. When the type is PTR,
 the data can be an IP address, written as normal; inversion and the addition of
 &%in-addr.arpa%& or &%ip6.arpa%& happens automatically. For example:
 .code
@@ -6890,8 +6889,7 @@ ${lookup dnsdb{ptr=192.168.4.5}{$value}fail}
 If the data for a PTR record is not a syntactically valid IP address, it is not
 altered and nothing is added.
 
-For any record type, if multiple records are found (or, for A6 lookups, if a
-single record leads to multiple addresses), the data is returned as a
+For any record type, if multiple records are found, the data is returned as a
 concatenation, with newline as the default separator. The order, of course,
 depends on the DNS resolver. You can specify a different separator character
 between multiple records by putting a right angle-bracket followed immediately
@@ -7013,7 +7011,7 @@ The authorization code can be &"Y"& for yes, &"N"& for no, &"X"& for explicit
 authorization required but absent, or &"?"& for unknown.
 
 .cindex "A+" "in &(dnsdb)& lookup"
-The pseudo-type A+ performs an A6 lookup (if configured) followed by an AAAA
+The pseudo-type A+ performs an AAAA
 and then an A lookup.  All results are returned; defer processing
 (see below) is handled separately for each lookup.  Example:
 .code
@@ -18069,7 +18067,7 @@ when there is a DNS lookup error.
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.
-This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
 
 
@@ -18081,7 +18079,7 @@ This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set wil be ignored and logged as a host-lookup failure.
-This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
 
 
@@ -23008,7 +23006,7 @@ details.
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.
-This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
 
 
@@ -23020,7 +23018,7 @@ This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set wil be ignored and logged as a host-lookup failure.
-This applies to all of the SRV, MX A6, AAAA, A lookup sequence.
+This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
 
 

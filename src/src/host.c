@@ -2247,11 +2247,7 @@ loop once only, looking only for A records. */
     else
   #endif        /* STAND_ALONE */
 
-  #ifdef SUPPORT_A6
-  i = 2;        /* look up A6 and AAAA and A records */
-  #else
   i = 1;        /* look up AAAA and A records */
-  #endif        /* SUPPORT_A6 */
 
 /* The IPv4 world */
 

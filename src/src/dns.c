@@ -10,16 +10,6 @@
 #include "exim.h"
 
 
-/* Function declaration needed for mutual recursion when A6 records
-are supported. */
-
-#if HAVE_IPV6
-#ifdef SUPPORT_A6
-static void dns_complete_a6(dns_address ***, dns_answer *, dns_record *,
-  int, uschar *);
-#endif
-#endif
-
 
 /*************************************************
 *               Fake DNS resolver                *
@@ -640,22 +630,16 @@ the IP address instead of returning -1 with h_error=HOST_NOT_FOUND. Some
 nameservers are also believed to do this. It is, of course, contrary to the
 specification of the DNS, so we lock it out. */
 
-if ((
-    #ifdef SUPPORT_A6
-    type == T_A6 ||
-    #endif
-    type == T_A || type == T_AAAA) &&
-    string_is_ip_address(name, NULL) != 0)
+if ((type == T_A || type == T_AAAA) && string_is_ip_address(name, NULL) != 0)
   return DNS_NOMATCH;
 
 /* If we are running in the test harness, instead of calling the normal resolver
 (res_search), we call fakens_search(), which recognizes certain special
 domains, and interfaces to a fake nameserver for certain special zones. */
 
-if (running_in_test_harness)
-  dnsa->answerlen = fakens_search(name, type, dnsa->answer, MAXPACKET);
-else
-  dnsa->answerlen = res_search(CCS name, C_IN, type, dnsa->answer, MAXPACKET);
+dnsa->answerlen = running_in_test_harness
+  ? fakens_search(name, type, dnsa->answer, MAXPACKET)
+  : res_search(CCS name, C_IN, type, dnsa->answer, MAXPACKET);
 
 if (dnsa->answerlen > MAXPACKET)
   {
@@ -1052,164 +1036,6 @@ return DNS_FAIL;
 
 
 
-/* Support for A6 records has been commented out since they were demoted to
-experimental status at IETF 51. */
-
-#if HAVE_IPV6 && defined(SUPPORT_A6)
-
-/*************************************************
-*        Search DNS block for prefix RRs         *
-*************************************************/
-
-/* Called from dns_complete_a6() to search an additional section or a main
-answer section for required prefix records to complete an IPv6 address obtained
-from an A6 record. For each prefix record, a recursive call to dns_complete_a6
-is made, with a new copy of the address so far.
-
-Arguments:
-  dnsa       the DNS answer block
-  which      RESET_ADDITIONAL or RESET_ANSWERS
-  name       name of prefix record
-  yptrptr    pointer to the pointer that points to where to hang the next
-               dns_address structure
-  bits       number of bits we have already got
-  bitvec     the bits we have already got
-
-Returns:     TRUE if any records were found
-*/
-
-static BOOL
-dns_find_prefix(dns_answer *dnsa, int which, uschar *name, dns_address
-  ***yptrptr, int bits, uschar *bitvec)
-{
-BOOL yield = FALSE;
-dns_record *rr;
-dns_scan dnss;
-
-for (rr = dns_next_rr(dnsa, &dnss, which);
-     rr != NULL;
-     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-  {
-  uschar cbitvec[16];
-  if (rr->type != T_A6 || strcmpic(rr->name, name) != 0) continue;
-  yield = TRUE;
-  memcpy(cbitvec, bitvec, sizeof(cbitvec));
-  dns_complete_a6(yptrptr, dnsa, rr, bits, cbitvec);
-  }
-
-return yield;
-}
-
-
-
-/*************************************************
-*            Follow chains of A6 records         *
-*************************************************/
-
-/* A6 records may be incomplete, with pointers to other records containing more
-bits of the address. There can be a tree structure, leading to a number of
-addresses originating from a single initial A6 record.
-
-Arguments:
-  yptrptr    pointer to the pointer that points to where to hang the next
-               dns_address structure
-  dnsa       the current DNS answer block
-  rr         the RR we have at present
-  bits       number of bits we have already got
-  bitvec     the bits we have already got
-
-Returns:     nothing
-*/
-
-static void
-dns_complete_a6(dns_address ***yptrptr, dns_answer *dnsa, dns_record *rr,
-  int bits, uschar *bitvec)
-{
-static uschar bitmask[] = { 0xff, 0xfe, 0xfc, 0xf8, 0xf0, 0xe0, 0xc0, 0x80 };
-uschar *p = (uschar *)(rr->data);
-int prefix_len, suffix_len;
-int i, j, k;
-uschar *chainptr;
-uschar chain[264];
-dns_answer cdnsa;
-
-/* The prefix length is the first byte. It defines the prefix which is missing
-from the data in this record as a number of bits. Zero means this is the end of
-a chain. The suffix is the data in this record; only sufficient bytes to hold
-it are supplied. There may be zero bytes. We have to ignore trailing bits that
-we have already obtained from earlier RRs in the chain. */
-
-prefix_len = *p++;                      /* bits */
-suffix_len = (128 - prefix_len + 7)/8;  /* bytes */
-
-/* If the prefix in this record is greater than the prefix in the previous
-record in the chain, we have to ignore the record (RFC 2874). */
-
-if (prefix_len > 128 - bits) return;
-
-/* In this little loop, the number of bits up to and including the current byte
-is held in k. If we have none of the bits in this byte, we can just or it into
-the current data. If we have all of the bits in this byte, we skip it.
-Otherwise, some masking has to be done. */
-
-for (i = suffix_len - 1, j = 15, k = 8; i >= 0; i--)
-  {
-  int required = k - bits;
-  if (required >= 8) bitvec[j] |= p[i];
-    else if (required > 0) bitvec[j] |= p[i] & bitmask[required];
-  j--;     /* I tried putting these in the "for" statement, but gcc muttered */
-  k += 8;  /* about computed values not being used. */
-  }
-
-/* If the prefix_length is zero, we are at the end of a chain. Build a
-dns_address item with the current data, hang it onto the end of the chain,
-adjust the hanging pointer, and we are done. */
-
-if (prefix_len == 0)
-  {
-  dns_address *new = store_get(sizeof(dns_address) + 50);
-  inet_ntop(AF_INET6, bitvec, CS new->address, 50);
-  new->next = NULL;
-  **yptrptr = new;
-  *yptrptr = &(new->next);
-  return;
-  }
-
-/* Prefix length is not zero. Reset the number of bits that we have collected
-so far, and extract the chain name. */
-
-bits = 128 - prefix_len;
-p += suffix_len;
-
-chainptr = chain;
-while ((i = *p++) != 0)
-  {
-  if (chainptr != chain) *chainptr++ = '.';
-  memcpy(chainptr, p, i);
-  chainptr += i;
-  p += i;
-  }
-*chainptr = 0;
-chainptr = chain;
-
-/* Now scan the current DNS response record to see if the additional section
-contains the records we want. This processing can be cut out for testing
-purposes. */
-
-if (dns_find_prefix(dnsa, RESET_ADDITIONAL, chainptr, yptrptr, bits, bitvec))
-  return;
-
-/* No chain records were found in the current DNS response block. Do a new DNS
-lookup to try to find these records. This opens up the possibility of DNS
-failures. We ignore them at this point; if all branches of the tree fail, there
-will be no addresses at the end. */
-
-if (dns_lookup(&cdnsa, chainptr, T_A6, NULL) == DNS_SUCCEED)
-  (void)dns_find_prefix(&cdnsa, RESET_ANSWERS, chainptr, yptrptr, bits, bitvec);
-}
-#endif  /* HAVE_IPV6 && defined(SUPPORT_A6) */
-
-
 
 
 /*************************************************
@@ -1234,12 +1060,7 @@ dns_address_from_rr(dns_answer *dnsa, dns_record *rr)
 {
 dns_address *yield = NULL;
 
-#if HAVE_IPV6 && defined(SUPPORT_A6)
-dns_address **yieldptr = &yield;
-uschar bitvec[16];
-#else
 dnsa = dnsa;    /* Stop picky compilers warning */
-#endif
 
 if (rr->type == T_A)
   {
@@ -1250,14 +1071,6 @@ if (rr->type == T_A)
   }
 
 #if HAVE_IPV6
-
-#ifdef SUPPORT_A6
-else if (rr->type == T_A6)
-  {
-  memset(bitvec, 0, sizeof(bitvec));
-  dns_complete_a6(&yieldptr, dnsa, rr, 0, bitvec);
-  }
-#endif  /* SUPPORT_A6 */
 
 else
   {

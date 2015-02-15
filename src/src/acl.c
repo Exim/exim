@@ -1396,9 +1396,6 @@ for (rr = dns_next_rr(dnsa, dnss, reset);
   if (rr->type != T_A
     #if HAVE_IPV6
       && rr->type != T_AAAA
-      #ifdef SUPPORT_A6
-        && rr->type != T_A6
-      #endif
     #endif
   ) continue;
 
@@ -1618,24 +1615,20 @@ else
   type = T_A;
 
 
-#if HAVE_IPV6 && defined(SUPPORT_A6)
-DNS_LOOKUP_AGAIN:
-#endif
-
 lookup_dnssec_authenticated = NULL;
 switch (dns_lookup(&dnsa, target, type, NULL))
   {
   /* If something bad happened (most commonly DNS_AGAIN), defer. */
 
   default:
-  return t->data.val = CSA_DEFER_ADDR;
+    return t->data.val = CSA_DEFER_ADDR;
 
   /* If the query succeeded, scan the addresses and return the result. */
 
   case DNS_SUCCEED:
-  rc = acl_verify_csa_address(&dnsa, &dnss, RESET_ANSWERS, target);
-  if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
-  /* else fall through */
+    rc = acl_verify_csa_address(&dnsa, &dnss, RESET_ANSWERS, target);
+    if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
+    /* else fall through */
 
   /* If the target has no IP addresses, the client cannot have an authorized
   IP address. However, if the target site uses A6 records (not AAAA records)
@@ -1643,12 +1636,7 @@ switch (dns_lookup(&dnsa, target, type, NULL))
 
   case DNS_NOMATCH:
   case DNS_NODATA:
-
-  #if HAVE_IPV6 && defined(SUPPORT_A6)
-  if (type == T_AAAA) { type = T_A6; goto DNS_LOOKUP_AGAIN; }
-  #endif
-
-  return t->data.val = CSA_FAIL_NOADDR;
+    return t->data.val = CSA_FAIL_NOADDR;
   }
 }
 
