@@ -54,7 +54,7 @@ JH/14 Bug 1573: The spam= ACL condition now additionally supports Rspamd.
       Patch from Andrew Lewis.
 
 JH/15 Bug 670: The spamd_address main option (for the spam= ACL condition)
-      now supports optional time-restrictions, weighting, and backup-only
+      now supports optional time-restrictions, weighting, and priority
       modifiers per server.  Patch originally by <rommer@active.by>.
 
 JH/16 The spamd_address main option now supports a mixed list of local

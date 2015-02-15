@@ -30829,20 +30829,29 @@ Elements after the first for Unix sockets, or second for TCP socket,
 are options.
 The supported option are:
 .code
-variant=rspamd      Use Rspamd rather than SpamAssassin protocol
-time=<start>-<end>  Use only between these times of day
-tmo=<timespec>      Connection time limit
+pri=<priority>      Selection priority
 weight=<value>      Selection bias
-backup              Use only if all non-backup servers fail
-retry=<timespec>	Retry on connect fail
+time=<start>-<end>  Use only between these times of day
+retry=<timespec>    Retry on connect fail
+tmo=<timespec>      Connection time limit
+variant=rspamd      Use Rspamd rather than SpamAssassin protocol
 .endd
+
+The &`pri`& option specifies a priority for the server within the list,
+higher values being tried first.
+The deafult priority is 1.
+
+The &`weight`& option specifies a selection bias.
+Within a priority set
+servers are queried in a random fashion, weighted by this value.
+The default value for selection bias is 1.
 
 Time specifications for the &`time`& option are <hour>.<minute>.<second>
 in the local time zone; each element being one or more digits.
 Either the seconds or both minutes and seconds, plus the leading &`.`&
 characters, may be omitted and will be taken as zero.
 
-Timeout specifications for the &`tmo`& and &`retry`& options
+Timeout specifications for the &`retry`& and &`tmo`& options
 are the usual Exim time interval standard, eg. &`20s`& or &`1m`&.
 
 The &`tmo`& option specifies an overall timeout for communication.
@@ -30851,9 +30860,6 @@ The default value is two minutes.
 The &`retry`& option specifies a time after which a single retry for
 a failed connect is made.
 The default is to not retry.
-
-Servers are queried in a random fashion, weighted by the selection bias.
-The default value for selection bias is 1.
 .wen
 
 The &%spamd_address%& variable is expanded before use if it starts with

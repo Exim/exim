@@ -27,12 +27,12 @@ static const uschar * loglabel = US"spam acl condition:";
 static int
 spamd_param_init(spamd_address_container *spamd)
 {
-/* default spamd server weight, time and backup value */
+/* default spamd server weight, time and priority value */
 spamd->is_failed = FALSE;
-spamd->is_backup = FALSE;
 spamd->weight = SPAMD_WEIGHT;
 spamd->timeout = SPAMD_TIMEOUT;
 spamd->retry = 0;
+spamd->priority = 1;
 return 0;
 }
 
@@ -44,16 +44,11 @@ static int timesinceday = -1;
 const uschar * s;
 const uschar * name;
 
-/* check backup parameter */
-if (Ustrcmp(param, "backup") == 0)
-  {
-  spamd->is_backup = TRUE;
-  return 0; /* OK */
-  }
-
 /*XXX more clever parsing could discard embedded spaces? */
 
-/* check weight parameter */
+if (sscanf(param, "pri=%u", &spamd->priority))
+  return 0; /* OK */
+
 if (sscanf(param, "weight=%u", &spamd->weight))
   {
   if (spamd->weight == 0) /* this server disabled: skip it */
@@ -61,7 +56,6 @@ if (sscanf(param, "weight=%u", &spamd->weight))
   return 0; /* OK */
   }
 
-/* check time parameter */
 if (Ustrncmp(param, "time=", 5) == 0)
   {
   unsigned int start_h = 0, start_m = 0, start_s = 0;
@@ -136,46 +130,50 @@ badval:
 
 
 static int
-spamd_get_server(spamd_address_container **spamds, int num_servers)
+spamd_get_server(spamd_address_container ** spamds, int num_servers)
 {
 unsigned int i;
-long rnd, weights = 0;
-static BOOL srandomed = 0;
-BOOL usebackup = FALSE;
+spamd_address_container * sd;
+long rnd, weights;
+unsigned pri;
+static BOOL srandomed = FALSE;
 
-for (;;)
+/* seedup, if we have only 1 server */
+if (num_servers == 1)
+  return (spamds[0]->is_failed ? -1 : 0);
+
+/* init ranmod */
+if (!srandomed)
   {
-  /* seedup, if we have only 1 server */
-  if (num_servers == 1)
-    return (spamds[0]->is_failed ? -1 : 0);
-
-  /* init ranmod */
-  if (!srandomed)
-    {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    srandom((unsigned int)(tv.tv_usec/1000));
-    srandomed = TRUE;
-    }
-
-  /* get sum of all weights */
-  for (i = 0; i < num_servers; i++)
-    if (!spamds[i]->is_failed && spamds[i]->is_backup == usebackup)
-      weights += spamds[i]->weight;
-
-  if (weights != 0)
-    break;
-  if (usebackup)	/* all servers failed (backups too) */
-    return -1;
-  usebackup = TRUE;
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  srandom((unsigned int)(tv.tv_usec/1000));
+  srandomed = TRUE;
   }
 
-rnd = random() % weights;
+/* scan for highest pri */
+for (pri = 0, i = 0; i < num_servers; i++)
+  {
+  sd = spamds[i];
+  if (!sd->is_failed && sd->priority > pri) pri = sd->priority;
+  }
 
-for (i = 0; i < num_servers; i++)
-  if (!spamds[i]->is_failed && spamds[i]->is_backup == usebackup)
-    if ((rnd -= spamds[i]->weight) < 0)
+/* get sum of weights */
+for (weights = 0, i = 0; i < num_servers; i++)
+  {
+  sd = spamds[i];
+  if (!sd->is_failed && sd->priority == pri) weights += sd->weight;
+  }
+if (weights == 0)	/* all servers failed */
+  return -1;
+
+for (rnd = random() % weights, i = 0; i < num_servers; i++)
+  {
+  sd = spamds[i];
+  if (!sd->is_failed && sd->priority == pri)
+    if ((rnd -= sd->weight) <= 0)
       return i;
+  }
 
 log_write(0, LOG_MAIN|LOG_PANIC,
   "%s unknown error (memory/cpu corruption?)", loglabel);
@@ -251,7 +249,7 @@ if (*spamd_address == '$')
 else
   spamd_address_work = spamd_address;
 
-HDEBUG(D_acl) debug_printf("spamd: addrlist '%s'\n", spamd_address_work);
+DEBUG(D_acl) debug_printf("spamd: addrlist '%s'\n", spamd_address_work);
 
 /* check if previous spamd_address was expanded and has changed. dump cached results if so */
 if (  spam_ok
@@ -280,12 +278,13 @@ start = time(NULL);
   {
   int num_servers = 0;
   int current_server;
-  uschar *address;
-  const uschar *spamd_address_list_ptr = spamd_address_work;
+  uschar * address;
+  const uschar * spamd_address_list_ptr = spamd_address_work;
   spamd_address_container * spamd_address_vector[32];
 
   /* Check how many spamd servers we have
      and register their addresses */
+  sep = 0;				/* default colon-sep */
   while ((address = string_nextinlist(&spamd_address_list_ptr, &sep,
 				      NULL, 0)) != NULL)
     {
@@ -294,7 +293,7 @@ start = time(NULL);
     unsigned args;
     uschar * s;
 
-    HDEBUG(D_acl) debug_printf("spamd: addr entry '%s'\n", address);
+    DEBUG(D_acl) debug_printf("spamd: addr entry '%s'\n", address);
     sd = (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
     for (sublist = address, args = 0, spamd_param_init(sd);
@@ -302,7 +301,7 @@ start = time(NULL);
 	 args++
 	 )
       {
-	HDEBUG(D_acl) debug_printf("spamd:  addr parm '%s'\n", s);
+	DEBUG(D_acl) debug_printf("spamd:  addr parm '%s'\n", s);
 	switch (args)
 	{
 	case 0:   sd->hostspec = s;
