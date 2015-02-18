@@ -1,5 +1,7 @@
 # content scan interface: f-protd
 #
+munge loopback
+#
 server PORT_S
 <GET
 <

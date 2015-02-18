@@ -1325,6 +1325,9 @@ $munges =
     'optional_cert_hostnames' =>
     { 'stderr' => '/in tls_verify_cert_hostnames\? no/' },
 
+    'loopback' =>
+    { 'stdout' => 's/[[](127\.0\.0\.1|::1)]/[IP_LOOPBACK_ADDR]/' },
+
   };
 
 
@@ -1342,7 +1345,7 @@ $munges =
 #  [4] TRUE if this is a log file whose deliveries must be sorted
 #  [5] an optional custom munge command
 #
-# Arguments: Optionally, name of a custom munge to run.
+# Arguments: Optionally, name of a single custom munge to run.
 # Returns:   0 if the output compared equal
 #            1 if re-run needed (files may have been updated)
 
@@ -3405,6 +3408,7 @@ foreach $test (@test_list)
   $stdout_skip = 0;
   $rmfiltertest = 0;
   $is_ipv6test = 0;
+  $TEST_STATE->{munge} = "";
 
   # Remove the associative arrays used to hold checked mail files and msglogs
 

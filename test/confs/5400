@@ -31,7 +31,7 @@ begin routers
 
 dns:
   driver = dnslookup
-  domains = localhost.test.ex : thishost.test.ex
+  domains = localhost.test.ex : localhost4.test.ex : thishost.test.ex
   self = send
   transport = smtp
 

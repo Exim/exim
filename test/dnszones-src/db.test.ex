@@ -45,6 +45,8 @@ mx.π        A       V4NET.255.255.255
 ; A non-standard name for localhost
 
 thishost     A       127.0.0.1
+localhost4   A       127.0.0.1
+
 
 ; Something that gives both the IP and the loopback
 

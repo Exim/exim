@@ -1,5 +1,6 @@
 # cutthrough_delivery basic operation
 need_ipv4
+munge loopback
 #
 server PORT_S
 220 ESMTP
@@ -401,7 +402,7 @@ QUIT
 exim -bs
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
-RCPT TO:<userx@localhost.test.ex>
+RCPT TO:<userx@localhost4.test.ex>
 RCPT TO:<usery@thishost.test.ex>
 DATA
 

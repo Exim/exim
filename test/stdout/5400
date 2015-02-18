@@ -489,7 +489,7 @@ EHLO myhost.test.ex
 250 OK
 MAIL FROM:<CALLER@myhost.test.ex>
 250 Sender OK
-RCPT TO:<userx@localhost.test.ex>
+RCPT TO:<userx@localhost4.test.ex>
 250 ok rcpt-1
 RCPT TO:<usery@thishost.test.ex>
 250 ok rcpt-2
