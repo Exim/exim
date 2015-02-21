@@ -4077,18 +4077,11 @@ while (acl != NULL)
   int cond;
   int basic_errno = 0;
   BOOL endpass_seen = FALSE;
+  BOOL acl_quit_check = level == 0
+    && (where == ACL_WHERE_QUIT || where == ACL_WHERE_NOTQUIT);
 
   *log_msgptr = *user_msgptr = NULL;
   acl_temp_details = FALSE;
-
-  if ((where == ACL_WHERE_QUIT || where == ACL_WHERE_NOTQUIT) &&
-      acl->verb != ACL_ACCEPT &&
-      acl->verb != ACL_WARN)
-    {
-    *log_msgptr = string_sprintf("\"%s\" is not allowed in a QUIT or not-QUIT ACL",
-      verbs[acl->verb]);
-    return ERROR;
-    }
 
   HDEBUG(D_acl) debug_printf("processing \"%s\"\n", verbs[acl->verb]);
 
@@ -4170,6 +4163,7 @@ while (acl != NULL)
     if (cond == OK)
       {
       HDEBUG(D_acl) debug_printf("end of %s: DEFER\n", acl_name);
+      if (acl_quit_check) goto badquit;
       acl_temp_details = TRUE;
       return DEFER;
       }
@@ -4179,6 +4173,7 @@ while (acl != NULL)
     if (cond == OK)
       {
       HDEBUG(D_acl) debug_printf("end of %s: DENY\n", acl_name);
+      if (acl_quit_check) goto badquit;
       return FAIL;
       }
     break;
@@ -4187,6 +4182,7 @@ while (acl != NULL)
     if (cond == OK || cond == DISCARD)
       {
       HDEBUG(D_acl) debug_printf("end of %s: DISCARD\n", acl_name);
+      if (acl_quit_check) goto badquit;
       return DISCARD;
       }
     if (endpass_seen)
@@ -4200,6 +4196,7 @@ while (acl != NULL)
     if (cond == OK)
       {
       HDEBUG(D_acl) debug_printf("end of %s: DROP\n", acl_name);
+      if (acl_quit_check) goto badquit;
       return FAIL_DROP;
       }
     break;
@@ -4208,6 +4205,7 @@ while (acl != NULL)
     if (cond != OK)
       {
       HDEBUG(D_acl) debug_printf("end of %s: not OK\n", acl_name);
+      if (acl_quit_check) goto badquit;
       return cond;
       }
     break;
@@ -4238,6 +4236,11 @@ while (acl != NULL)
 
 HDEBUG(D_acl) debug_printf("end of %s: implicit DENY\n", acl_name);
 return FAIL;
+
+badquit:
+  *log_msgptr = string_sprintf("QUIT or not-QUIT teplevel ACL may not fail "
+    "('%s' verb used incorrectly)", verbs[acl->verb]);
+  return ERROR;
 }
 
 

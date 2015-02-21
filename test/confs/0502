@@ -33,11 +33,17 @@ check_mail:
   warn  set acl_c1 = ${eval:$acl_c1+1}
   accept
 
+q_sub:
+  deny
+
 check_quit:
   warn     logwrite = Messages received: $acl_c1
            logwrite = Messages accepted: $acl_c0
            logwrite = Recipients:        $acl_c2
            logwrite = Accepted:          $acl_c3
+
+  require  !acl = q_sub
+
   LAST
 
 check_rcpt:

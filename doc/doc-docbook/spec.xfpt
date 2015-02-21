@@ -27105,8 +27105,8 @@ the feature was not requested by the client.
 .cindex "QUIT, ACL for"
 The ACL for the SMTP QUIT command is anomalous, in that the outcome of the ACL
 does not affect the response code to QUIT, which is always 221. Thus, the ACL
-does not in fact control any access. For this reason, the only verbs that are
-permitted are &%accept%& and &%warn%&.
+does not in fact control any access. For this reason, it may only accept
+or warn as its final result.
 
 This ACL can be used for tasks such as custom logging at the end of an SMTP
 session. For example, you can use ACL variables in other ACLs to count
