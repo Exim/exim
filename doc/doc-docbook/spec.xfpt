@@ -13288,6 +13288,7 @@ listed in more than one group.
 .row &%acl_smtp_mail%&               "ACL for MAIL"
 .row &%acl_smtp_mailauth%&           "ACL for AUTH on MAIL command"
 .row &%acl_smtp_mime%&               "ACL for MIME parts"
+.row &%acl_smtp_notquit%&            "ACL for non-QUIT terminations"
 .row &%acl_smtp_predata%&            "ACL for start of data"
 .row &%acl_smtp_quit%&               "ACL for QUIT"
 .row &%acl_smtp_rcpt%&               "ACL for RCPT"
@@ -13636,6 +13637,12 @@ a MAIL command. See chapter &<<CHAPACL>>& for details of ACLs, and chapter
 This option is available when Exim is built with the content-scanning
 extension. It defines the ACL that is run for each MIME part in a message. See
 section &<<SECTscanmimepart>>& for details.
+
+.option acl_smtp_notquit main string&!! unset
+.cindex "not-QUIT, ACL for"
+This option defines the ACL that is run when an SMTP session
+ends without a QUIT command being received.
+See chapter &<<CHAPACL>>& for further details.
 
 .option acl_smtp_predata main string&!! unset
 This option defines the ACL that is run when an SMTP DATA command is
