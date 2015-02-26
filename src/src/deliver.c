@@ -911,11 +911,12 @@ if (log_extra_selector & LX_smtp_confirmation &&
     addr->message &&
     (addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0))
   {
-  int i;
+  unsigned i;
+  unsigned lim = MIN(big_buffer_size, 1024);
   uschar *p = big_buffer;
   uschar *ss = addr->message;
   *p++ = '\"';
-  for (i = 0; i < 256 && ss[i] != 0; i++)	/* limit logged amount */
+  for (i = 0; i < lim && ss[i] != 0; i++)	/* limit logged amount */
     {
     if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\'; /* quote \ and " */
     *p++ = ss[i];

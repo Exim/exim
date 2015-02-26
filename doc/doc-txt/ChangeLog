@@ -78,6 +78,9 @@ JH/21 Support for the A6 type of dns record is withdrawn.
 JH/22 Bug 608: The result of a QUIT or not-QUIT toplevel ACL now matters
       rather than the verbs used.
 
+JH/23 Bug 1572: Increase limit on SMTP confirmation message copy size
+      from 255 to 1024 chars.
+
 
 
 Exim version 4.85
