@@ -3696,7 +3696,8 @@ Returns:       NULL if decoded correctly; else points to error text
 */
 
 uschar *
-readconf_retry_error(const uschar *pp, const uschar *p, int *basic_errno, int *more_errno)
+readconf_retry_error(const uschar *pp, const uschar *p,
+  int *basic_errno, int *more_errno)
 {
 int len;
 const uschar *q = pp;
@@ -3736,24 +3737,19 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
       { 'A',   'M',    RTEF_CTOUT,  RTEF_CTOUT|'A', RTEF_CTOUT|'M' };
 
     for (i = 0; i < sizeof(extras)/sizeof(uschar *); i++)
-      {
       if (strncmpic(x, extras[i], xlen) == 0)
         {
         *more_errno = values[i];
         break;
         }
-      }
 
     if (i >= sizeof(extras)/sizeof(uschar *))
-      {
       if (strncmpic(x, US"DNS", xlen) == 0)
-        {
         log_write(0, LOG_MAIN|LOG_PANIC, "\"timeout_dns\" is no longer "
           "available in retry rules (it has never worked) - treated as "
           "\"timeout\"");
-        }
-      else return US"\"A\", \"MX\", or \"connect\" expected after \"timeout\"";
-      }
+      else
+        return US"\"A\", \"MX\", or \"connect\" expected after \"timeout\"";
     }
   }
 
@@ -3780,8 +3776,8 @@ else if (strncmpic(pp, US"mail_4", 6) == 0 ||
     return string_sprintf("%.4s_4 must be followed by xx, dx, or dd, where "
       "x is literal and d is any digit", pp);
 
-  *basic_errno = (*pp == 'm')? ERRNO_MAIL4XX :
-                 (*pp == 'r')? ERRNO_RCPT4XX : ERRNO_DATA4XX;
+  *basic_errno = *pp == 'm' ? ERRNO_MAIL4XX :
+                 *pp == 'r' ? ERRNO_RCPT4XX : ERRNO_DATA4XX;
   *more_errno = x << 8;
   }
 
@@ -3794,6 +3790,9 @@ else if (strncmpic(pp, US"lost_connection", p - pp) == 0)
 
 else if (strncmpic(pp, US"tls_required", p - pp) == 0)
   *basic_errno = ERRNO_TLSREQUIRED;
+
+else if (strncmpic(pp, US"lookup", p - pp) == 0)
+  *basic_errno = ERRNO_UNKNOWNHOST;
 
 else if (len != 1 || Ustrncmp(pp, "*", 1) != 0)
   return string_sprintf("unknown or malformed retry error \"%.*s\"", (int) (p-pp), pp);
@@ -3849,10 +3848,8 @@ if (*p != 0 && !isspace(*p) && *p != ',' && *p != ';')
 *paddr = p;
 switch (type)
   {
-  case 0:
-  return readconf_readtime(pp, *p, FALSE);
-  case 1:
-  return readconf_readfixed(pp, *p);
+  case 0: return readconf_readtime(pp, *p, FALSE);
+  case 1: return readconf_readfixed(pp, *p);
   }
 return 0;    /* Keep picky compilers happy */
 }
@@ -3866,7 +3863,7 @@ retry_config **chain = &retries;
 retry_config *next;
 const uschar *p;
 
-while ((p = get_config_line()) != NULL)
+while ((p = get_config_line()))
   {
   retry_rule **rchain;
   const uschar *pp;
@@ -3890,8 +3887,8 @@ while ((p = get_config_line()) != NULL)
 
   /* Test error names for things we understand. */
 
-  if ((error = readconf_retry_error(pp, p, &(next->basic_errno),
-       &(next->more_errno))) != NULL)
+  if ((error = readconf_retry_error(pp, p, &next->basic_errno,
+       &next->more_errno)))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%s", error);
 
   /* There may be an optional address list of senders to be used as another
@@ -3928,18 +3925,18 @@ while ((p = get_config_line()) != NULL)
     switch (rule->rule)
       {
       case 'F':   /* Fixed interval */
-      rule->p1 = retry_arg(&p, 0);
-      break;
+	rule->p1 = retry_arg(&p, 0);
+	break;
 
       case 'G':   /* Geometrically increasing intervals */
       case 'H':   /* Ditto, but with randomness */
-      rule->p1 = retry_arg(&p, 0);
-      rule->p2 = retry_arg(&p, 1);
-      break;
+	rule->p1 = retry_arg(&p, 0);
+	rule->p2 = retry_arg(&p, 1);
+	break;
 
       default:
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "unknown retry rule letter");
-      break;
+	log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "unknown retry rule letter");
+	break;
       }
 
     if (rule->timeout <= 0 || rule->p1 <= 0 ||

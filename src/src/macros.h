@@ -487,7 +487,7 @@ to conflict with system errno values. */
 #define ERRNO_UIDFAIL        (-29)   /* Failed to get uid */
 #define ERRNO_BADTRANSPORT   (-30)   /* Unset or non-existent transport */
 #define ERRNO_MBXLENGTH      (-31)   /* MBX length mismatch */
-#define ERRNO_UNKNOWNHOST    (-32)   /* Lookup failed in smtp transport */
+#define ERRNO_UNKNOWNHOST    (-32)   /* Lookup failed routing or in smtp tpt */
 #define ERRNO_FORMATUNKNOWN  (-33)   /* Can't match format in appendfile */
 #define ERRNO_BADCREATE      (-34)   /* Creation outside home in appendfile */
 #define ERRNO_LISTDEFER      (-35)   /* Can't check a list; lookup defer */

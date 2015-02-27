@@ -168,6 +168,7 @@ for (h = addr->host_list; h != NULL; h = next_h)
     if (hff_code == hff_pass) return PASS;
     if (hff_code == hff_decline) return DECLINE;
 
+    addr->basic_errno = ERRNO_UNKNOWNHOST;
     addr->message =
       string_sprintf("lookup of host \"%s\" failed in %s router%s",
         h->name, rblock->name,

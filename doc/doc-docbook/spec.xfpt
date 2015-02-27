@@ -17989,6 +17989,9 @@ There are a few cases where a &(dnslookup)& router will decline to accept
 an address; if such a router is expected to handle "all remaining non-local
 domains", then it is important to set &%no_more%&.
 
+The router will defer rather than decline if the domain
+is found in the &%fail_defer_domains%& router option.
+
 Reasons for a &(dnslookup)& router to decline currently include:
 .ilist
 The domain does not exist in DNS
@@ -18088,6 +18091,17 @@ the dnssec request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set wil be ignored and logged as a host-lookup failure.
 This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
+
+
+.option fail_defer_domains dnslookup "domain list&!!" unset
+.cindex "MX record" "not found"
+DNS lookups for domains matching &%fail_defer_domains%&
+which find no matching record will cause the router to defer
+rather than the default behaviour of decline.
+This maybe be useful for queueing messages for a newly created
+domain while the DNS configuration is not ready.
+However, it will result in any message with mistyped domains
+also being queued.
 
 
 .option mx_domains dnslookup "domain list&!!" unset
@@ -24359,6 +24373,13 @@ LMTP (either the &(lmtp)& transport, or the &(smtp)& transport in LMTP mode).
 A server unexpectedly closed the SMTP connection. There may, of course,
 legitimate reasons for this (host died, network died), but if it repeats a lot
 for the same host, it indicates something odd.
+
+.vitem %&lookup%&
+A DNS lookup for a host failed.
+Note that a &%dnslookup%& router will need to have matched
+its &%fail_defer_domains%& option for this retry type to be usable.
+Also note that a &%manualroute%& router will probably need
+its &%host_find_failed%& option set to &%defer&%.
 
 .vitem &%refused_MX%&
 A connection to a host obtained from an MX record was refused.

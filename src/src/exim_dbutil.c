@@ -642,19 +642,6 @@ while (key != NULL)
         printf("\n");
         }
 
-      /* Old-style domain record, without separate timestamps. This code can
-      eventually be thrown away, say in 5 years' time (it's now Feb 2003). */
-
-      else
-        {
-        printf("%s %s callout=%s postmaster=%s random=%s\n",
-          print_time(((dbdata_generic *)value)->time_stamp),
-          keybuffer,
-          print_cache(callout->result),
-          print_cache(callout->postmaster_result),
-          print_cache(callout->random_result));
-        }
-
       break;
 
       case type_ratelimit:
