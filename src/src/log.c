@@ -556,6 +556,23 @@ return total_written;
 }
 
 
+
+static void
+set_file_path(void)
+{
+int sep = ':';              /* Fixed separator - outside use */
+uschar *t;
+const uschar *tt = US LOG_FILE_PATH;
+while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
+  {
+  if (Ustrcmp(t, "syslog") == 0 || t[0] == 0) continue;
+  file_path = string_copy(t);
+  break;
+  }
+}
+
+
+
 /*************************************************
 *            Write message to log file           *
 *************************************************/
@@ -668,7 +685,7 @@ if (!path_inspected)
   /* If nothing has been set, don't waste effort... the default values for the
   statics are file_path="" and logging_mode = LOG_MODE_FILE. */
 
-  if (log_file_path[0] != 0)
+  if (*log_file_path)
     {
     int sep = ':';              /* Fixed separator - outside use */
     uschar *s;
@@ -685,10 +702,8 @@ if (!path_inspected)
 
         /* If a non-empty path is given, use it */
 
-        if (s[0] != 0)
-          {
+        if (*s)
           file_path = string_copy(s);
-          }
 
         /* If the path is empty, we want to use the first non-empty, non-
         syslog item in LOG_FILE_PATH, if there is one, since the value of
@@ -696,16 +711,7 @@ if (!path_inspected)
         use the ultimate default in the spool directory. */
 
         else
-          {
-          uschar *t;
-          const uschar *tt = US LOG_FILE_PATH;
-          while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
-            {
-            if (Ustrcmp(t, "syslog") == 0 || t[0] == 0) continue;
-            file_path = string_copy(t);
-            break;
-            }
-          }  /* Empty item in log_file_path */
+	  set_file_path();  /* Empty item in log_file_path */
         }    /* First non-syslog item in log_file_path */
       }      /* Scan of log_file_path */
     }
@@ -728,10 +734,8 @@ if (!path_inspected)
   should work since we have now set up the routing. */
 
   if (multiple)
-    {
     log_write(0, LOG_MAIN|LOG_PANIC,
       "More than one path given in log_file_path: using %s", file_path);
-    }
   }
 
 /* If debugging, show all log entries, but don't show headers. Do it all
@@ -1335,6 +1339,12 @@ if (opts)
   decode_bits(&debug_selector, NULL, D_memory, 0, opts,
       debug_options, debug_options_count, US"debug", DEBUG_FROM_CONFIG);
   }
+
+/* When activating from a transport process we may never have logged at all
+resulting in certain setup not having been done.  Hack this for now so we
+do not segfault; note that nondefault log locations will not work */
+
+if (!*file_path) set_file_path();
 
 open_log(&fd, lt_debug, tag_name);
 
