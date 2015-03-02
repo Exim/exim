@@ -623,10 +623,10 @@ exim will send these forensic emails.  It's also advised that you
 configure a dmarc_forensic_sender because the default sender address
 construction might be inadequate.
 
-  control = dmarc_forensic_enable
+  control = dmarc_enable_forensic
 
 (AGAIN: You can choose not to send these forensic reports by simply
-not putting the dmarc_forensic_enable control line at any point in
+not putting the dmarc_enable_forensic control line at any point in
 your exim config.  If you don't tell it to send them, it will not
 send them.)
 
@@ -755,7 +755,7 @@ b. Configure, somewhere before the DATA ACL, the control option to
 
   deny    dmarc_status   = reject
           !authenticated = *
-          message        = Message from $domain_used_domain failed sender's DMARC policy, REJECT
+          message        = Message from $dmarc_used_domain failed sender's DMARC policy, REJECT
 
 
 
