@@ -24374,7 +24374,7 @@ A server unexpectedly closed the SMTP connection. There may, of course,
 legitimate reasons for this (host died, network died), but if it repeats a lot
 for the same host, it indicates something odd.
 
-.vitem %&lookup%&
+.vitem &%lookup%&
 A DNS lookup for a host failed.
 Note that a &%dnslookup%& router will need to have matched
 its &%fail_defer_domains%& option for this retry type to be usable.
