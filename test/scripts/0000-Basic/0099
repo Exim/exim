@@ -81,3 +81,6 @@ exim -brt x@not.not.ex
 ****
 exim -brt x@nonexist.test.ex lookup
 ****
+#
+#
+no_msglog_check
