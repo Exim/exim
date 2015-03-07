@@ -38,6 +38,7 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;b1@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;d3@myhost.test.ex
 Status: 5.0.0

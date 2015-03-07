@@ -32,6 +32,7 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;/a/b/c
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;|/p/q/r
 Status: 5.0.0

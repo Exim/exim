@@ -912,7 +912,7 @@ if (log_extra_selector & LX_smtp_confirmation &&
     (addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0))
   {
   unsigned i;
-  unsigned lim = MIN(big_buffer_size, 1024);
+  unsigned lim = big_buffer_size < 1024 ? big_buffer_size : 1024;
   uschar *p = big_buffer;
   uschar *ss = addr->message;
   *p++ = '\"';
@@ -6715,8 +6715,7 @@ if (addr_senddsn != NULL)
       "create child process to send failure message: %s", getpid(),
       getppid(), strerror(errno));
 
-      DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
-
+    DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
     }    
   else  /* Creation of child succeeded */
     {
@@ -6725,7 +6724,8 @@ if (addr_senddsn != NULL)
     int topt = topt_add_return_path | topt_no_body;
     uschar * bound;
      
-    DEBUG(D_deliver) debug_printf("sending error message to: %s\n", sender_address);
+    DEBUG(D_deliver)
+      debug_printf("sending error message to: %s\n", sender_address);
   
     /* build unique id for MIME boundary */
     bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
@@ -6748,9 +6748,8 @@ if (addr_senddsn != NULL)
 	" ----- The following addresses had successful delivery notifications -----\n",
       qualify_domain_sender, sender_address, bound, bound);
 
-    addr_dsntmp = addr_senddsn;
-    while(addr_dsntmp)
-      {
+    for (addr_dsntmp = addr_senddsn; addr_dsntmp;
+	 addr_dsntmp = addr_dsntmp->next)
       fprintf(f, "<%s> (relayed %s)\n\n",
 	addr_dsntmp->address,
 	(addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1
@@ -6759,15 +6758,14 @@ if (addr_senddsn != NULL)
 	  ? "to non-DSN-aware mailer"
 	  : "via non \"Remote SMTP\" router"
 	);
-      addr_dsntmp = addr_dsntmp->next;
-      }
+
     fprintf(f, "--%s\n"
 	"Content-type: message/delivery-status\n\n"
 	"Reporting-MTA: dns; %s\n",
       bound, smtp_active_hostname);
 
-    if (dsn_envid != NULL) {
-      /* must be decoded from xtext: see RFC 3461:6.3a */
+    if (dsn_envid)
+      {			/* must be decoded from xtext: see RFC 3461:6.3a */
       uschar *xdec_envid;
       if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
         fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
@@ -6789,12 +6787,11 @@ if (addr_senddsn != NULL)
 	addr_dsntmp->address);
 
       if (addr_dsntmp->host_used && addr_dsntmp->host_used->name)
-        fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n",
+        fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n\n",
 	  addr_dsntmp->host_used->name);
       else
-	fprintf(f,"Diagnostic-Code: X-Exim; relayed via non %s router\n",
+	fprintf(f, "Diagnostic-Code: X-Exim; relayed via non %s router\n\n",
 	  (addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1 ? "DSN" : "SMTP");
-      fputc('\n', f);
       }
 
     fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", bound);
@@ -6876,16 +6873,16 @@ while (addr_failed != NULL)
      || (  ((addr_failed->dsn_flags & rf_dsnflags) != 0)
         && ((addr_failed->dsn_flags & rf_notify_failure) != rf_notify_failure))
      )
-  {
+    {
     addr = addr_failed;
     addr_failed = addr->next;
     if (addr->return_filename != NULL) Uunlink(addr->return_filename);
 
     log_write(0, LOG_MAIN, "%s%s%s%s: error ignored",
       addr->address,
-      (addr->parent == NULL)? US"" : US" <",
-      (addr->parent == NULL)? US"" : addr->parent->address,
-      (addr->parent == NULL)? US"" : US">");
+      !addr->parent ? US"" : US" <",
+      !addr->parent ? US"" : addr->parent->address,
+      !addr->parent ? US"" : US">");
 
     address_done(addr, logtod);
     child_done(addr, logtod);
@@ -6901,16 +6898,12 @@ while (addr_failed != NULL)
 
   else
     {
-    bounce_recipient = (addr_failed->p.errors_address == NULL)?
-      sender_address : addr_failed->p.errors_address;
+    bounce_recipient = addr_failed->p.errors_address
+      ? addr_failed->p.errors_address : sender_address;
 
     /* Make a subprocess to send a message */
 
-    pid = child_open_exim(&fd);
-
-    /* Creation of child failed */
-
-    if (pid < 0)
+    if ((pid = child_open_exim(&fd)) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
         "create child process to send failure message: %s", getpid(),
         getppid(), strerror(errno));
@@ -6941,20 +6934,16 @@ while (addr_failed != NULL)
 
       paddr = &addr_failed;
       for (addr = addr_failed; addr != NULL; addr = *paddr)
-        {
-        if (Ustrcmp(bounce_recipient, (addr->p.errors_address == NULL)?
-              sender_address : addr->p.errors_address) != 0)
-          {
-          paddr = &(addr->next);      /* Not the same; skip */
-          }
-        else                          /* The same - dechain */
-          {
+        if (Ustrcmp(bounce_recipient, addr->p.errors_address
+	      ? addr->p.errors_address : sender_address) == 0)
+          {                          /* The same - dechain */
           *paddr = addr->next;
           *pmsgchain = addr;
           addr->next = NULL;
           pmsgchain = &(addr->next);
           }
-        }
+        else
+          paddr = &addr->next;        /* Not the same; skip */
 
       /* Include X-Failed-Recipients: for automatic interpretation, but do
       not let any one header line get too long. We do this by starting a
@@ -6979,7 +6968,7 @@ while (addr_failed != NULL)
 
       /* Output the standard headers */
 
-      if (errors_reply_to != NULL)
+      if (errors_reply_to)
         fprintf(f, "Reply-To: %s\n", errors_reply_to);
       fprintf(f, "Auto-Submitted: auto-replied\n");
       moan_write_from(f);
@@ -7175,6 +7164,7 @@ wording. */
 	    addr->host_used->name);
           print_dsn_diagnostic_code(addr, f);
           }
+	fputc('\n', f);
         }
 
       /* Now copy the message, trying to give an intelligible comment if
@@ -7195,7 +7185,7 @@ wording. */
          bounce_return_size_limit is always honored.
       */
   
-      fprintf(f, "\n--%s\n", bound);
+      fprintf(f, "--%s\n", bound);
 
       dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
       dsnnotifyhdr = NULL;
@@ -7224,10 +7214,9 @@ wording. */
             }
           }
   
-      if (topt & topt_no_body)
-        fprintf(f,"Content-type: text/rfc822-headers\n\n");
-      else
-        fprintf(f,"Content-type: message/rfc822\n\n");
+      fputs(topt & topt_no_body ? "Content-type: text/rfc822-headers\n\n"
+				: "Content-type: message/rfc822\n\n",
+	    f);
 
       fflush(f);
       transport_filter_argv = NULL;   /* Just in case */
@@ -7327,11 +7316,9 @@ if (addr_defer == NULL)
           "msglog.OLD directory", spoolname);
       }
     else
-      {
       if (Uunlink(spoolname) < 0)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
 		  spoolname, strerror(errno));
-      }
     }
 
   /* Remove the two message files. */
@@ -7674,24 +7661,25 @@ else if (addr_defer != (address_item *)(+1))
           }
         fputc('\n', f);
 
-        while (addr_dsndefer)
+        for ( ; addr_dsndefer; addr_dsndefer = addr_dsndefer->next)
           {
           if (addr_dsndefer->dsn_orcpt)
-            fprintf(f,"Original-Recipient: %s\n", addr_dsndefer->dsn_orcpt);
+            fprintf(f, "Original-Recipient: %s\n", addr_dsndefer->dsn_orcpt);
 
-          fprintf(f,"Action: delayed\n");
-          fprintf(f,"Final-Recipient: rfc822;%s\n", addr_dsndefer->address);
-          fprintf(f,"Status: 4.0.0\n");
+          fprintf(f, "Action: delayed\n"
+	      "Final-Recipient: rfc822;%s\n"
+	      "Status: 4.0.0\n",
+	    addr_dsndefer->address);
           if (addr_dsndefer->host_used && addr_dsndefer->host_used->name)
             {
-            fprintf(f,"Remote-MTA: dns; %s\n", 
+            fprintf(f, "Remote-MTA: dns; %s\n", 
 		    addr_dsndefer->host_used->name);
             print_dsn_diagnostic_code(addr_dsndefer, f);
             }
-          addr_dsndefer = addr_dsndefer->next;
+	  fputc('\n', f);
           }
 
-        fprintf(f, "\n--%s\n"
+        fprintf(f, "--%s\n"
 	    "Content-type: text/rfc822-headers\n\n",
 	  bound);
 

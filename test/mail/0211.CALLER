@@ -96,6 +96,7 @@ Final-Recipient: rfc822;userx@domain1
 Status: 5.0.0
 Remote-MTA: dns; 127.0.0.1
 Diagnostic-Code: smtp; 550 Go away
+
 Action: failed
 Final-Recipient: rfc822;usery@domain2
 Status: 5.0.0
