@@ -24379,7 +24379,7 @@ A DNS lookup for a host failed.
 Note that a &%dnslookup%& router will need to have matched
 its &%fail_defer_domains%& option for this retry type to be usable.
 Also note that a &%manualroute%& router will probably need
-its &%host_find_failed%& option set to &%defer&%.
+its &%host_find_failed%& option set to &%defer%&.
 
 .vitem &%refused_MX%&
 A connection to a host obtained from an MX record was refused.
