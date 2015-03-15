@@ -791,4 +791,7 @@ typedef struct acl_block {
   int verb;
 } acl_block;
 
+/* smtp transport calc outbound_ip */
+typedef BOOL (*oicf) (uschar *message_id, void *data);
+
 /* End of structs.h */

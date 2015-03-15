@@ -1,0 +1,667 @@
+# retry: database continuation record
+# Exim test configuration 0604
+#
+echo Note this takes 3 minutes to run
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+exim -bs
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+This is a test message.
+It has three lines.
+This is the last line.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 1
+ 
+This is message number 1.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 2
+ 
+This is message number 2.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 3
+ 
+This is message number 3.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 4
+ 
+This is message number 4.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 5
+ 
+This is message number 5.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 6
+ 
+This is message number 6.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 7
+ 
+This is message number 7.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 8
+ 
+This is message number 8.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 9
+ 
+This is message number 9.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 10
+ 
+This is message number 10.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 11
+ 
+This is message number 11.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 12
+ 
+This is message number 12.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 13
+ 
+This is message number 13.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 14
+ 
+This is message number 14.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 15
+ 
+This is message number 15.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 16
+ 
+This is message number 16.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 17
+ 
+This is message number 17.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 18
+ 
+This is message number 18.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 19
+ 
+This is message number 19.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 20
+ 
+This is message number 20.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 21
+ 
+This is message number 21.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 22
+ 
+This is message number 22.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 23
+ 
+This is message number 23.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 24
+ 
+This is message number 24.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 25
+ 
+This is message number 25.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 26
+ 
+This is message number 26.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 27
+ 
+This is message number 27.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 28
+ 
+This is message number 28.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 29
+ 
+This is message number 29.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 30
+ 
+This is message number 30.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 31
+ 
+This is message number 31.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 32
+ 
+This is message number 32.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 33
+ 
+This is message number 33.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 34
+ 
+This is message number 34.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 35
+ 
+This is message number 35.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 36
+ 
+This is message number 36.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 37
+ 
+This is message number 37.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 38
+ 
+This is message number 38.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 39
+ 
+This is message number 39.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 40
+ 
+This is message number 40.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 41
+ 
+This is message number 41.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 42
+ 
+This is message number 42.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 43
+ 
+This is message number 43.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 44
+ 
+This is message number 44.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 45
+ 
+This is message number 45.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 46
+ 
+This is message number 46.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 47
+ 
+This is message number 47.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 48
+ 
+This is message number 48.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 49
+ 
+This is message number 49.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 50
+ 
+This is message number 50.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 51
+ 
+This is message number 51.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 52
+ 
+This is message number 52.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 53
+ 
+This is message number 53.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 54
+ 
+This is message number 54.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 55
+ 
+This is message number 55.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 56
+ 
+This is message number 56.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 57
+ 
+This is message number 57.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 58
+ 
+This is message number 58.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 59
+ 
+This is message number 59.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 60
+ 
+This is message number 60.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 61
+ 
+This is message number 61.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 62
+ 
+This is message number 62.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 63
+ 
+This is message number 63.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 64
+ 
+This is message number 64.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 65
+ 
+This is message number 65.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 66
+ 
+This is message number 66.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 67
+ 
+This is message number 67.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 68
+ 
+This is message number 68.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 69
+ 
+This is message number 69.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 70
+ 
+This is message number 70.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 71
+ 
+This is message number 71.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 72
+ 
+This is message number 72.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 73
+ 
+This is message number 73.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 74
+ 
+This is message number 74.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 75
+ 
+This is message number 75.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 76
+ 
+This is message number 76.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 77
+ 
+This is message number 77.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 78
+ 
+This is message number 78.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 79
+ 
+This is message number 79.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: message_id 80
+ 
+This is message number 80.
+.
+quit
+****
+#
+#
+exim -qq
+****
+#
+#
+killdaemon
+no_msglog_check
+

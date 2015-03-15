@@ -700,8 +700,6 @@ router_name = transport_name = NULL;
 }
 #endif
 
-
-
 /*************************************************
 *           Synchronize SMTP responses           *
 *************************************************/
@@ -1210,6 +1208,80 @@ return OK;
 #endif
 
 
+
+typedef struct smtp_compare_s
+{
+    uschar                          *current_sender_address;
+    struct transport_instance       *tblock;
+} smtp_compare_t;
+
+/*
+Create a unique string that identifies this message, it is based on
+sender_address, helo_data and tls_certificate if enabled.  */
+
+static uschar *
+smtp_local_identity(uschar * sender, struct transport_instance * tblock)
+{
+address_item * addr1;
+uschar * if1 = US"";
+uschar * helo1 = US"";
+#ifdef SUPPORT_TLS
+uschar * tlsc1 = US"";
+#endif
+uschar * save_sender_address = sender_address;
+uschar * local_identity = NULL;
+smtp_transport_options_block * ob =
+  (smtp_transport_options_block *)tblock->options_block;
+
+sender_address = sender;
+
+addr1 = deliver_make_addr (sender, TRUE);
+deliver_set_expansions(addr1);
+
+if (ob->interface)
+  if1 = expand_string(ob->interface);
+
+if (ob->helo_data)
+  helo1 = expand_string(ob->helo_data);
+
+#ifdef SUPPORT_TLS
+if (ob->tls_certificate)
+  tlsc1 = expand_string(ob->tls_certificate);
+local_identity = string_sprintf ("%s^%s^%s", if1, helo1, tlsc1);
+#else
+local_identity = string_sprintf ("%s^%s", if1, helo1);
+#endif
+
+deliver_set_expansions(NULL);
+sender_address = save_sender_address;
+
+return local_identity;
+}
+
+
+
+/* This routine is a callback that is called from transport_check_waiting.
+This function will evaluate the incoming message versus the previous
+message.  If the incoming message is using a different local identity then
+we will veto this new message.  */
+
+static BOOL
+smtp_are_same_identities(uschar * message_id, smtp_compare_t * s_compare)
+{
+uschar * save_sender_address = sender_address;
+uschar * current_local_identity =
+  smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
+uschar * new_sender_address = deliver_get_sender_address(message_id);
+uschar * message_local_identity =
+  smtp_local_identity(new_sender_address, s_compare->tblock);
+
+sender_address = save_sender_address;
+
+return Ustrcmp(current_local_identity, message_local_identity) == 0;
+}
+
+
+
 /*************************************************
 *       Deliver address list to given host       *
 *************************************************/
@@ -1293,13 +1365,16 @@ smtp_inblock inblock;
 smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
 uschar *igquotstr = US"";
+
 uschar *helo_data = NULL;
+
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 uschar *p;
 uschar buffer[4096];
 uschar inbuffer[4096];
 uschar outbuffer[4096];
+address_item * current_address;
 
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 
@@ -2520,6 +2595,11 @@ DEBUG(D_transport)
 if (completed_address && ok && send_quit)
   {
   BOOL more;
+  smtp_compare_t t_compare;
+
+  t_compare.tblock = tblock;
+  t_compare.current_sender_address = sender_address;
+
   if (  first_addr != NULL
      || continue_more
      || (  (  tls_out.active < 0
@@ -2527,7 +2607,8 @@ if (completed_address && ok && send_quit)
 	   )
         &&
            transport_check_waiting(tblock->name, host->name,
-             tblock->connection_max_messages, new_message_id, &more)
+             tblock->connection_max_messages, new_message_id, &more,
+	     (oicf)smtp_are_same_identities, (void*)&t_compare)
      )  )
     {
     uschar *msg;

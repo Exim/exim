@@ -133,6 +133,9 @@ extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    deliver_set_expansions(address_item *);
 extern int     deliver_split_address(address_item *);
 extern void    deliver_succeeded(address_item *);
+
+extern uschar *deliver_get_sender_address (uschar *id);
+
 #ifdef WITH_OLD_DEMIME
 extern int     demime(uschar **);
 #endif
@@ -424,7 +427,7 @@ extern uschar *tod_stamp(int);
 
 extern void    tls_modify_variables(tls_support *);
 extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, uschar *,
-                 BOOL *);
+                 BOOL *, oicf, void*);
 extern void    transport_init(void);
 extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uschar *, uschar *,
                  int);

@@ -228,14 +228,11 @@ alarm(0);
 can't think of any other way of doing this. It converts a connection refused
 into a timeout if the timeout is set to 999999. */
 
-if (running_in_test_harness)
+if (running_in_test_harness  && save_errno == ECONNREFUSED && timeout == 999999)
   {
-  if (save_errno == ECONNREFUSED && timeout == 999999)
-    {
-    rc = -1;
-    save_errno = EINTR;
-    sigalrm_seen = TRUE;
-    }
+  rc = -1;
+  save_errno = EINTR;
+  sigalrm_seen = TRUE;
   }
 
 /* Success */
@@ -245,7 +242,7 @@ if (rc >= 0) return 0;
 /* A failure whose error code is "Interrupted system call" is in fact
 an externally applied timeout if the signal handler has been run. */
 
-errno = (save_errno == EINTR && sigalrm_seen)? ETIMEDOUT : save_errno;
+errno = save_errno == EINTR && sigalrm_seen ? ETIMEDOUT : save_errno;
 return -1;
 }
 
@@ -360,53 +357,57 @@ bad:
 int
 ip_tcpsocket(const uschar * hostport, uschar ** errstr, int tmo)
 {
-  int scan;
-  uschar hostname[256];
-  unsigned int portlow, porthigh;
+int scan;
+uschar hostname[256];
+unsigned int portlow, porthigh;
 
-  /* extract host and port part */
-  scan = sscanf(CS hostport, "%255s %u-%u", hostname, &portlow, &porthigh);
-  if ( scan != 3 ) {
-    if ( scan != 2 ) {
-      *errstr = string_sprintf("invalid socket '%s'", hostport);
-      return -1;
+/* extract host and port part */
+scan = sscanf(CS hostport, "%255s %u-%u", hostname, &portlow, &porthigh);
+if (scan != 3)
+  {
+  if (scan != 2)
+    {
+    *errstr = string_sprintf("invalid socket '%s'", hostport);
+    return -1;
     }
-    porthigh = portlow;
+  porthigh = portlow;
   }
 
-  return ip_connectedsocket(SOCK_STREAM, hostname, portlow, porthigh,
-			    tmo, NULL, errstr);
+return ip_connectedsocket(SOCK_STREAM, hostname, portlow, porthigh,
+			  tmo, NULL, errstr);
 }
 
 int
 ip_unixsocket(const uschar * path, uschar ** errstr)
 {
-  int sock;
-  struct sockaddr_un server;
+int sock;
+struct sockaddr_un server;
 
-  if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
-    *errstr = US"can't open UNIX socket.";
-    return -1;
+if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+  {
+  *errstr = US"can't open UNIX socket.";
+  return -1;
   }
 
-  server.sun_family = AF_UNIX;
-  Ustrncpy(server.sun_path, path, sizeof(server.sun_path)-1);
-  server.sun_path[sizeof(server.sun_path)-1] = '\0';
-  if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0) {
-    int err = errno;
-    (void)close(sock);
-    *errstr =  string_sprintf("unable to connect to UNIX socket (%s): %s",
-		  path, strerror(err));
-    return -1;
-    }
-  return sock;
+server.sun_family = AF_UNIX;
+Ustrncpy(server.sun_path, path, sizeof(server.sun_path)-1);
+server.sun_path[sizeof(server.sun_path)-1] = '\0';
+if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0)
+  {
+  int err = errno;
+  (void)close(sock);
+  *errstr = string_sprintf("unable to connect to UNIX socket (%s): %s",
+		path, strerror(err));
+  return -1;
+  }
+return sock;
 }
 
 int
 ip_streamsocket(const uschar * spec, uschar ** errstr, int tmo)
 {
-  return *spec == '/'
-    ? ip_unixsocket(spec, errstr) : ip_tcpsocket(spec, errstr, tmo);
+return *spec == '/'
+  ? ip_unixsocket(spec, errstr) : ip_tcpsocket(spec, errstr, tmo);
 }
 
 /*************************************************
@@ -461,7 +462,7 @@ if (timeout <= 0)
   }
 /* Wait until the socket is ready */
 
-for (;;)
+do
   {
   FD_ZERO (&select_inset);
   FD_SET (fd, &select_inset);
@@ -497,9 +498,8 @@ for (;;)
     }
 
   /* If the socket is ready, break out of the loop. */
-
-  if (FD_ISSET(fd, &select_inset)) break;
   }
+while (!FD_ISSET(fd, &select_inset));
 return TRUE;
 }
 
@@ -702,13 +702,9 @@ while (last > first)
     return TRUE;
     }
   else if (c > 0)
-    {
     first = middle + 1;
-    }
   else
-    {
     last = middle;
-    }
   }
 return FALSE;
 }

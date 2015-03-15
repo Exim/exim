@@ -7865,6 +7865,22 @@ if (!regex_IGNOREQUOTA) regex_IGNOREQUOTA =
 }
 
 
+uschar *
+deliver_get_sender_address (uschar * id)
+{
+if (!spool_open_datafile(id))
+  return NULL;
+
+sprintf(CS spoolname, "%s-H", id);
+if (spool_read_header(spoolname, TRUE, TRUE) != spool_read_OK)
+  return NULL;
+
+(void)close(deliver_datafile);
+deliver_datafile = -1;
+
+return sender_address;
+}
+
 /* vi: aw ai sw=2
 */
 /* End of deliver.c */
