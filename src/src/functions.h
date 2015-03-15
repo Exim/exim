@@ -208,6 +208,7 @@ extern uschar *host_ntoa(int, const void *, uschar *, int *);
 extern int     host_scan_for_local_hosts(host_item *, host_item **, BOOL *);
 
 extern void    invert_address(uschar *, uschar *);
+extern int     ip_addr(void *, int, const uschar *, int);
 extern int     ip_bind(int, int, uschar *, int);
 extern int     ip_connect(int, int, const uschar *, int, int);
 extern int     ip_connectedsocket(int, const uschar *, int, int,
@@ -358,11 +359,10 @@ extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
 extern void    sigalrm_handler(int);
 extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
-extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL, const uschar *
-#ifdef EXPERIMENTAL_EVENT
-		       , uschar *
-#endif
-		       );
+extern int     smtp_connect(host_item *, int, int, uschar *, int,
+	       	 transport_instance *);
+extern int     smtp_sock_connect(host_item *, int, int, uschar *,
+		 transport_instance * tb, int);
 extern int     smtp_feof(void);
 extern int     smtp_ferror(void);
 extern uschar *smtp_get_connection_info(void);

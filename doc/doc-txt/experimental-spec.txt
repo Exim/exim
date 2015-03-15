@@ -1086,6 +1086,39 @@ QUIT
 
 
 
+SOCKS
+------------------------------------------------------------
+Support for proxying outbound SMTP via a Socks 5 proxy
+(RFC 1928) is included if Exim is compiled with
+EXPERIMENTAL_SOCKS defined.
+
+If an smtp transport has a nonempty socks_proxy option
+defined, this is active.  The option is expanded and
+should be a list (colon-separated by default) of
+proxy specifiers.  Each proxy specifier is a list
+(space-separated by default) where the initial element
+is an IP address and any subsequent elements are options.
+
+Options are a string <name>=<value>.
+These options are currently defined:
+- "auth", with possible values "none" and "name".
+  Using "name" selects username/password authentication
+  per RFC 1929. Default is "none".
+- "name" sets the authentication username. Default is empty.
+- "pass" sets the authentication password. Default is empty.
+- "port" sets the tcp port number for the proxy. Default is 1080.
+- "tmo" sets a connection timeout in seconds for this proxy. Default is 5.
+
+Proxies from the list are tried in order until
+one responds.  The timeout for the overall connection
+applies to the set of proxied attempts.
+
+If events are used, the remote IP/port during a
+tcp:connect event will be that of the proxy.
+
+
+
+
 DANE
 ------------------------------------------------------------
 DNS-based Authentication of Named Entities, as applied

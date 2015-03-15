@@ -59,7 +59,7 @@ server DIR/eximdir/avast_sock
 >LF>220 ready
 <SCAN
 >LF>210 SCAN DATA
->LF>b\ l\ a\ h	[L]9.9	9 VNAME
+>LF>b\\ l\\ a\\ h	[L]9.9	9 VNAME
 >LF>200 SCAN OK
 <QUIT
 <*eof

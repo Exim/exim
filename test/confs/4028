@@ -1,0 +1,63 @@
+# Exim test configuration 4028
+# starttls over socks
+
+OPT =
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector =  +tls_peerdn
+domainlist local_domains = test.ex : *.test.ex
+acl_smtp_rcpt = accept
+
+tls_advertise_hosts = *
+
+# Set certificate only if server
+
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+tls_verify_hosts = *
+tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = manualroute
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  route_list = * 127.0.0.1
+  self = send
+  transport = my_smtp
+  no_more
+
+server:
+  driver = redirect
+  data = :blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+my_smtp:
+  driver = smtp
+  port = PORT_D
+  socks_proxy = 127.0.0.1 port=1080 OPT
+  tls_certificate = DIR/aux-fixed/cert2
+  tls_privatekey = DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_try_verify_hosts = *
+
+
+
+# End

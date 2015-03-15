@@ -853,6 +853,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_REDIS
   fprintf(f, " Experimental_Redis");
 #endif
+#ifdef EXPERIMENTAL_SOCKS
+  fprintf(f, " Experimental_SOCKS");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");

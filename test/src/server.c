@@ -57,6 +57,7 @@ on all interfaces, unless the option -noipv6 is given. */
 
 typedef struct line {
   struct line *next;
+  unsigned len;
   char line[1];
 } line;
 
@@ -123,6 +124,25 @@ return buffer;
 }
 
 
+
+static void
+printit(char * s, int n)
+{
+while(n--)
+  {
+  unsigned char c = *s++;
+  if (c == '\\')
+    printf("\\\\");
+  else if (c >= ' ' && c <= '~')	/* assumes ascii */
+    putchar(c);
+  else
+    printf("\\x%02x", c);
+  }
+putchar('\n');
+}
+
+
+
 /*************************************************
 *                 Main Program                   *
 *************************************************/
@@ -152,6 +172,7 @@ line *script = NULL;
 line *last = NULL;
 line *s;
 FILE *in, *out;
+int linebuf = 1;
 
 char *sockname = NULL;
 unsigned char buffer[10240];
@@ -394,18 +415,39 @@ script of things to do. A line containing "++++" is treated as end of file.
 This is so that the Perl driving script doesn't have to close the pipe -
 because that would cause it to wait for this process, which it doesn't yet want
 to do. The driving script adds the "++++" automatically - it doesn't actually
-appear in the test script. */
+appear in the test script. Within lines we interpret \xNN and \\ groups */
 
 while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
   {
   line *next;
+  char * d;
   int n = (int)strlen(CS buffer);
+
+  if (n > 1 && buffer[0] == '>' && buffer[1] == '>')
+    linebuf = 0;
   while (n > 0 && isspace(buffer[n-1])) n--;
   buffer[n] = 0;
   if (strcmp(CS buffer, "++++") == 0) break;
   next = malloc(sizeof(line) + n);
   next->next = NULL;
-  strcpy(next->line, CS buffer);
+  d = next->line;
+    {
+    char * s = CS buffer;
+    do
+      {
+      char ch;
+      char cl = *s;
+      if (cl == '\\' && (cl = *++s) == 'x')
+	{
+	if ((ch = *++s - '0') > 9 && (ch -= 'A'-'9'-1) > 15) ch -= 'a'-'A';
+	if ((cl = *++s - '0') > 9 && (cl -= 'A'-'9'-1) > 15) cl -= 'a'-'A';
+	cl |= ch << 4;
+	}
+      *d++ = cl;
+      }
+    while (*s++);
+    }
+  next->len = d - next->line - 1;
   if (last == NULL) script = last = next;
     else last->next = next;
   last = next;
@@ -529,7 +571,8 @@ for (count = 0; count < connection_count; count++)
     if (ss[0] == '>')
       {
       char *end = "\r\n";
-      printf("%s\n", ss++);
+      unsigned len = s->len;
+      printit(ss++, len--);
 
       if (strncmp(ss, "*eof", 4) == 0)
         {
@@ -538,13 +581,14 @@ for (count = 0; count < connection_count; count++)
         }
 
       if (*ss == '>')
-        { end = ""; ss++; }
+        { end = ""; ss++; len--; }
       else if (strncmp(ss, "CR>", 3) == 0)
-        { end = "\r"; ss += 3; }
+        { end = "\r"; ss += 3; len -= 3; }
       else if (strncmp(ss, "LF>", 3) == 0)
-        { end = "\n"; ss += 3; }
+        { end = "\n"; ss += 3; len -= 3; }
 
-      fprintf(out, "%s%s", ss, end);
+      fwrite(ss, 1, len, out);
+      if (*end) fprintf(out, end);
       }
 
     else if (isdigit((unsigned char)ss[0]))
@@ -569,47 +613,93 @@ for (count = 0; count < connection_count; count++)
     connection. Read command line or data lines; the latter are indicated
     by the expected line being just ".". If the line starts with '<', that
     doesn't form part of the expected input. (This allows for incoming data
-    starting with a digit.) */
+    starting with a digit.) If the line starts with '<<' we operate in
+    unbuffered rather than line mode and assume that a single read gets the
+    entire message. */
 
     else
       {
       int offset;
       int data = strcmp(ss, ".") == 0;
 
-      if (ss[0] == '<')
+      if (ss[0] != '<')
+	offset = 0;
+      else
         {
         buffer[0] = '<';
-        offset = 1;
+	if (ss[1] != '<')
+	  offset = 1;
+	else
+	  {
+	  buffer[1] = '<';
+	  offset = 2;
+	  }
         }
-      else offset = 0;
 
       fflush(out);
 
-      for (;;)
-        {
-        int n;
-        alarm(timeout);
-        if (fgets(CS buffer+offset, sizeof(buffer)-offset, in) == NULL)
-          {
-          printf("%sxpected EOF read from client\n",
-            (strncmp(ss, "*eof", 4) == 0)? "E" : "Une");
-          s = s->next;
-          goto END_OFF;
-          }
-        alarm(0);
-        n = (int)strlen(CS buffer);
-        while (n > 0 && isspace(buffer[n-1])) n--;
-        buffer[n] = 0;
-        printf("%s\n", buffer);
-        if (!data || strcmp(CS buffer, ".") == 0) break;
-        }
+      if (!linebuf)
+	{
+	int n;
+	char c;
 
-      if (strncmp(ss, CS buffer, (int)strlen(ss)) != 0)
-        {
-        printf("Comparison failed - bailing out\n");
-        printf("Expected: %s\n", ss);
-        break;
-        }
+	alarm(timeout);
+	n = read(dup_accept_socket, CS buffer+offset, s->len - offset);
+	if (n == 0)
+	  {
+	  printf("%sxpected EOF read from client\n",
+	    (strncmp(ss, "*eof", 4) == 0)? "E" : "Une");
+	  s = s->next;
+	  goto END_OFF;
+	  }
+	if (offset != 2)
+	  while (read(dup_accept_socket, &c, 1) == 1 && c != '\n') ;
+	alarm(0);
+	n += offset;
+
+	printit(buffer, n);
+
+	if (data) do
+	  {
+	  n = (read(dup_accept_socket, &c, 1) == 1 && c == '.');
+	  while (c != '\n' && read(dup_accept_socket, &c, 1) == 1)
+	    ;
+	  } while (!n);
+	else if (memcmp(ss, buffer, n) != 0)
+	  {
+	  printf("Comparison failed - bailing out\nExpected: ");
+	  printit(ss, n);
+	  break;
+	  }
+	}
+      else
+	{
+	for (;;)
+	  {
+	  int n;
+	  alarm(timeout);
+	  if (fgets(CS buffer+offset, sizeof(buffer)-offset, in) == NULL)
+	    {
+	    printf("%sxpected EOF read from client\n",
+	      (strncmp(ss, "*eof", 4) == 0)? "E" : "Une");
+	    s = s->next;
+	    goto END_OFF;
+	    }
+	  alarm(0);
+	  n = (int)strlen(CS buffer);
+	  while (n > 0 && isspace(buffer[n-1])) n--;
+	  buffer[n] = 0;
+	  printf("%s\n", buffer);
+	  if (!data || strcmp(CS buffer, ".") == 0) break;
+	  }
+
+	if (strncmp(ss, CS buffer, (int)strlen(ss)) != 0)
+	  {
+	  printf("Comparison failed - bailing out\n");
+	  printf("Expected: %s\n", ss);
+	  break;
+	  }
+	}
       }
     }
 

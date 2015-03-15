@@ -63,7 +63,7 @@ Connection request
 >LF>200 FLAGS OK
 <SCAN TESTSUITE/spool/scan/10HmbB-0005vi-00
 >LF>210 SCAN DATA
->LF>blah	[+]
+>LF>blah\x09[+]
 >LF>200 SCAN OK
 <QUIT
 Unexpected EOF read from client
@@ -73,7 +73,7 @@ Connection request
 >LF>220 ready
 <SCAN TESTSUITE/spool/scan/10HmaX-0005vi-00
 >LF>210 SCAN DATA
->LF>blah	[E]
+>LF>blah\x09[E]
 >LF>200 SCAN OK
 Unexpected EOF read from client
 Listening on TESTSUITE/eximdir/avast_sock ... 
@@ -81,7 +81,7 @@ Connection request
 >LF>220 ready
 <SCAN TESTSUITE/spool/scan/10HmbA-0005vi-00
 >LF>210 SCAN DATA
->LF>b\ l\ a\ h	[L]9.9	9 VNAME
+>LF>b\\ l\\ a\\ h\x09[L]9.9\x099 VNAME
 >LF>200 SCAN OK
 Unexpected EOF read from client
 Listening on TESTSUITE/eximdir/avast_sock ... 

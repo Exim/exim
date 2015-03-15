@@ -105,6 +105,7 @@ ln -s ../../src/transports/pipe.h           pipe.h
 ln -s ../../src/transports/pipe.c           pipe.c
 ln -s ../../src/transports/smtp.h           smtp.h
 ln -s ../../src/transports/smtp.c           smtp.c
+ln -s ../../src/transports/smtp_socks.c     smtp_socks.c
 
 ln -s ../../src/transports/tf_maildir.c     tf_maildir.c
 ln -s ../../src/transports/tf_maildir.h     tf_maildir.h

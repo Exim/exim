@@ -1,0 +1,30 @@
+# socks5 proxy on smtp/starttls transport
+#
+munge loopback
+#
+#
+# a TLS-capable server to receive the mail
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+#
+# THIS TEST ASSUMES we have a socks proxy
+# running and listening on 1080
+#
+# a mail sender
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be sent
+
+via null-auth proxy
+.
+quit
+****
+#
+#
+killdaemon
+no_msglog_check

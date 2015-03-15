@@ -1021,7 +1021,10 @@ are of the following kinds:
     (d) If the line starts with ">*eof", nothing is sent and the connection
           is closed.
 
-    The data that is sent starts after the initial '>' sequence.
+    The data that is sent starts after the initial '>' sequence.  Within
+    each line the sequence '\x' followed by two hex digits can be used
+    to specify an arbitrary byte value.  The sequence '\\' specifies a
+    single backslash.
 
 (2) A line that starts with "*sleep" specifies a number of seconds to wait
     before proceeding.
@@ -1035,7 +1038,10 @@ are of the following kinds:
 (5) Otherwise, the line defines the start of an input line that the client
     is expected to send. To allow for lines that start with digits, the line
     may start with '<', which is not taken as part of the input data. If the
-    input does not match, the server bombs out with an error message.
+    lines starts with '<<' then only the characters are expected; no return-
+    linefeed terminator. If the input does not match, the server bombs out
+    with an error message.  Backslash-escape sequences may be used in the
+    line content as for output lines.
 
 Here is a simple example of server use in a test script:
 

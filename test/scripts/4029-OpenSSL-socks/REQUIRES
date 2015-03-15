@@ -1,0 +1,4 @@
+support Experimental_SOCKS
+support OpenSSL
+running IPv4
+running socks

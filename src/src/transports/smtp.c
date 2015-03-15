@@ -159,6 +159,10 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, serialize_hosts) },
   { "size_addition",        opt_int,
       (void *)offsetof(smtp_transport_options_block, size_addition) }
+#ifdef EXPERIMENTAL_SOCKS
+ ,{ "socks_proxy",          opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, socks_proxy) }
+#endif
 #ifdef SUPPORT_TLS
  ,{ "tls_certificate",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_certificate) },
@@ -246,6 +250,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   FALSE,               /* lmtp_ignore_quota */
   NULL,		       /* expand_retry_include_ip_address */
   TRUE                 /* retry_include_ip_address */
+#ifdef EXPERIMENTAL_SOCKS
+#endif
+ ,NULL                 /* socks_proxy */
 #ifdef SUPPORT_TLS
  ,NULL,                /* tls_certificate */
   NULL,                /* tls_crl */
@@ -1350,12 +1357,7 @@ if (continue_hostname == NULL)
   {
   /* This puts port into host->port */
   inblock.sock = outblock.sock =
-    smtp_connect(host, host_af, port, interface, ob->connect_timeout,
-		  ob->keepalive, ob->dscp
-#ifdef EXPERIMENTAL_EVENT
-		  , tblock->event_action
-#endif
-		);
+    smtp_connect(host, host_af, port, interface, ob->connect_timeout, tblock);
 
   if (inblock.sock < 0)
     {

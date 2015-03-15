@@ -494,6 +494,9 @@ EXIM_MONITOR=eximon.bin
 # Uncomment the following line to add DANE support
 # EXPERIMENTAL_DANE=yes
 
+# Uncomment the following line to add SOCKS support
+# EXPERIMENTAL_SOCKS=yes
+
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################

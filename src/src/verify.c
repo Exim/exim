@@ -641,13 +641,8 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     tls_out.cipher = tls_out.peerdn = tls_out.peercert = NULL;
 
     inblock.sock = outblock.sock =
-      smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL
-#ifdef EXPERIMENTAL_EVENT
-    /*XXX event action? NULL for now. */
-		  , NULL
-#endif
-		  );
-    /* reconsider DSCP here */
+      smtp_connect(host, host_af, port, interface, callout_connect,
+		  addr->transport);
     if (inblock.sock < 0)
       {
       addr->message = string_sprintf("could not connect to %s [%s]: %s",

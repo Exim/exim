@@ -97,6 +97,47 @@ ip_addrinfo(const uschar *address, struct sockaddr_in6 *saddr)
 *         Bind socket to interface and port      *
 *************************************************/
 
+int
+ip_addr(void * sin_, int af, const uschar * address, int port)
+{
+union sockaddr_46 * sin = sin_;
+memset(sin, 0, sizeof(sin));
+
+/* Setup code when using an IPv6 socket. The wildcard address is ":", to
+ensure an IPv6 socket is used. */
+
+#if HAVE_IPV6
+if (af == AF_INET6)
+  {
+  if (address[0] == ':' && address[1] == 0)
+    {
+    sin->v6.sin6_family = AF_INET6;
+    sin->v6.sin6_addr = in6addr_any;
+    }
+  else
+    ip_addrinfo(address, &sin->v6);  /* Panic-dies on error */
+  sin->v6.sin6_port = htons(port);
+  return sizeof(sin->v6);
+  }
+else
+#else     /* HAVE_IPv6 */
+af = af;  /* Avoid compiler warning */
+#endif    /* HAVE_IPV6 */
+
+/* Setup code when using IPv4 socket. The wildcard address is "". */
+
+  {
+  sin->v4.sin_family = AF_INET;
+  sin->v4.sin_port = htons(port);
+  sin->v4.sin_addr.s_addr = address[0] == 0
+    ? (S_ADDR_TYPE)INADDR_ANY
+    : (S_ADDR_TYPE)inet_addr(CS address);
+  return sizeof(sin->v4);
+  }
+}
+
+
+
 /* This function binds a socket to a local interface address and port. For a
 wildcard IPv6 bind, the address is ":".
 
@@ -112,47 +153,8 @@ Returns:         the result of bind()
 int
 ip_bind(int sock, int af, uschar *address, int port)
 {
-int s_len;
 union sockaddr_46 sin;
-memset(&sin, 0, sizeof(sin));
-
-/* Setup code when using an IPv6 socket. The wildcard address is ":", to
-ensure an IPv6 socket is used. */
-
-#if HAVE_IPV6
-if (af == AF_INET6)
-  {
-  if (address[0] == ':' && address[1] == 0)
-    {
-    sin.v6.sin6_family = AF_INET6;
-    sin.v6.sin6_addr = in6addr_any;
-    }
-  else
-    {
-    ip_addrinfo(address, &sin.v6);  /* Panic-dies on error */
-    }
-  sin.v6.sin6_port = htons(port);
-  s_len = sizeof(sin.v6);
-  }
-else
-#else     /* HAVE_IPv6 */
-af = af;  /* Avoid compiler warning */
-#endif    /* HAVE_IPV6 */
-
-/* Setup code when using IPv4 socket. The wildcard address is "". */
-
-  {
-  sin.v4.sin_family = AF_INET;
-  sin.v4.sin_port = htons(port);
-  s_len = sizeof(sin.v4);
-  if (address[0] == 0)
-    sin.v4.sin_addr.s_addr = (S_ADDR_TYPE)INADDR_ANY;
-  else
-    sin.v4.sin_addr.s_addr = (S_ADDR_TYPE)inet_addr(CS address);
-  }
-
-/* Now we can call the bind() function */
-
+int s_len = ip_addr(&sin, af, address, port);
 return bind(sock, (struct sockaddr *)&sin, s_len);
 }
 
