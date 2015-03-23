@@ -251,8 +251,8 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,		       /* expand_retry_include_ip_address */
   TRUE                 /* retry_include_ip_address */
 #ifdef EXPERIMENTAL_SOCKS
-#endif
  ,NULL                 /* socks_proxy */
+#endif
 #ifdef SUPPORT_TLS
  ,NULL,                /* tls_certificate */
   NULL,                /* tls_crl */

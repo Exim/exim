@@ -1632,8 +1632,6 @@ Arguments:
 Returns:             TRUE if new_message_id set; FALSE otherwise
 */
 
-typedef struct msgq_s msgq_t;
-
 typedef struct msgq_s
 {
     uschar  message_id [MESSAGE_ID_LENGTH + 1];
