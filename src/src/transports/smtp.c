@@ -1450,11 +1450,12 @@ if (continue_hostname == NULL)
 
     if (host->dnssec == DS_YES)
       {
-      if(  dane_required
-	|| verify_check_given_host(&ob->hosts_try_dane, host) == OK
+      if(  (  dane_required
+	   || verify_check_given_host(&ob->hosts_try_dane, host) == OK
+	   )
+	&& (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK
 	)
-	if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
-	  return rc;
+	return rc;
       }
     else if (dane_required)
       {

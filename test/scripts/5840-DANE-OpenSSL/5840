@@ -12,6 +12,13 @@ Testing
 ****
 exim -qf
 ****
+#
+#
+# Recipient callout
+exim -DOPT=callout -bhc 127.0.0.1
+MAIL FROM: <CALLER@myhost.test.ex>
+RCPT TO: <CALLER@dane256ee.test.ex>
+****
 killdaemon
 #
 #

@@ -575,9 +575,10 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     deliver_domain = addr->domain;
     transport_name = addr->transport->name;
 
-    if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
-            US"callout") ||
-        !smtp_get_port(tf->port, addr, &port, US"callout"))
+    if (  !smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
+            US"callout")
+       || !smtp_get_port(tf->port, addr, &port, US"callout")
+       )
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
         addr->message);
 
@@ -587,35 +588,6 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
 
     HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", interface, port);
-
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
-      {
-      int rc;
-
-      tls_out.dane_verified = FALSE;
-      tls_out.tlsa_usage = 0;
-
-      dane_required =
-	verify_check_given_host(&ob->hosts_require_dane, host) == OK;
-
-      if (host->dnssec == DS_YES)
-	{
-	if(  dane_required
-	  || verify_check_given_host(&ob->hosts_try_dane, host) == OK
-	  )
-	  if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK)
-	    return rc;
-	}
-      else if (dane_required)
-	{
-	log_write(0, LOG_MAIN, "DANE error: %s lookup not DNSSEC", host->name);
-	return FAIL;
-	}
-
-      if (dane)
-	ob->tls_tempfail_tryclear = FALSE;
-      }
-#endif  /*DANE*/
 
     /* Set up the buffer for reading SMTP response packets. */
 
@@ -652,6 +624,36 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       deliver_domain = save_deliver_domain;
       continue;
       }
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+      {
+      int rc;
+
+      tls_out.dane_verified = FALSE;
+      tls_out.tlsa_usage = 0;
+
+      dane_required =
+	verify_check_given_host(&ob->hosts_require_dane, host) == OK;
+
+      if (host->dnssec == DS_YES)
+	{
+	if(  (  dane_required
+	     || verify_check_given_host(&ob->hosts_try_dane, host) == OK
+	     )
+	  && (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK
+	  )
+	  return rc;
+	}
+      else if (dane_required)
+	{
+	log_write(0, LOG_MAIN, "DANE error: %s lookup not DNSSEC", host->name);
+	return FAIL;
+	}
+
+      if (dane)
+	ob->tls_tempfail_tryclear = FALSE;
+      }
+#endif  /*DANE*/
 
     /* Expand the helo_data string to find the host name to use. */
 

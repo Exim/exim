@@ -13,7 +13,11 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+.ifndef OPT
 acl_smtp_rcpt = accept
+.else
+acl_smtp_rcpt = accept verify = recipient/callout
+.endif
 
 log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
 
@@ -62,6 +66,7 @@ send_to_server:
   allow_localhost
   port = PORT_D
 
+  hosts_verify_avoid_tls = :
   hosts_try_dane =     *
   hosts_require_dane = !thishost.test.ex
   hosts_request_ocsp = ${if or { {= {4}{$tls_out_tlsa_usage}} \
