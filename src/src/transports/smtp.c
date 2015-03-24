@@ -224,7 +224,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 #endif
   NULL,                /* hosts_require_tls */
   NULL,                /* hosts_avoid_tls */
-  US"*",               /* hosts_verify_avoid_tls */
+  NULL,                /* hosts_verify_avoid_tls */
   NULL,                /* hosts_avoid_pipelining */
   NULL,                /* hosts_avoid_esmtp */
   NULL,                /* hosts_nopass_tls */

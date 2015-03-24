@@ -81,6 +81,8 @@ JH/22 Bug 608: The result of a QUIT or not-QUIT toplevel ACL now matters
 JH/23 Bug 1572: Increase limit on SMTP confirmation message copy size
       from 255 to 1024 chars.
 
+JH/24 Verification callouts now attempt to use TLS by default.
+
 
 
 Exim version 4.85

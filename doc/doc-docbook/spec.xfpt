@@ -23190,12 +23190,13 @@ that matches this list, even if the server host advertises PIPELINING support.
 Exim will not try to start a TLS session when delivering to any host that
 matches this list. See chapter &<<CHAPTLS>>& for details of TLS.
 
-.option hosts_verify_avoid_tls smtp "host list&!!" *
+.new
+.option hosts_verify_avoid_tls smtp "host list&!!" unset
 .cindex "TLS" "avoiding for certain hosts"
 Exim will not try to start a TLS session for a verify callout,
 or when delivering in cutthrough mode,
 to any host that matches this list.
-Note that the default is to not use TLS.
+.wen
 
 
 .option hosts_max_try smtp integer 5
