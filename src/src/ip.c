@@ -101,7 +101,7 @@ int
 ip_addr(void * sin_, int af, const uschar * address, int port)
 {
 union sockaddr_46 * sin = sin_;
-memset(sin, 0, sizeof(sin));
+memset(sin, 0, sizeof(*sin));
 
 /* Setup code when using an IPv6 socket. The wildcard address is ":", to
 ensure an IPv6 socket is used. */

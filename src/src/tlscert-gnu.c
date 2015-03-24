@@ -182,7 +182,7 @@ return string_copy(sp);
 uschar *
 tls_cert_signature(void * cert, uschar * mod)
 {
-uschar * cp1;
+uschar * cp1 = NULL;
 uschar * cp2;
 uschar * cp3;
 size_t len = 0;
