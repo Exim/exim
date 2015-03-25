@@ -133,6 +133,9 @@ static BOOL rcpt_smtp_response_same;
 static BOOL rcpt_in_progress;
 static int  nonmail_command_count;
 static BOOL smtp_exit_function_called = 0;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+static BOOL smtputf8_advertised;
+#endif
 static int  synprot_error_count;
 static int  unknown_command_count;
 static int  sync_cmd_limit;
@@ -158,6 +161,8 @@ QUIT is also "falsely" labelled as a mail command so that it doesn't up the
 count of non-mail commands and possibly provoke an error. */
 
 static smtp_cmd_list cmd_list[] = {
+  /* name         len                     cmd     has_arg is_mail_cmd */
+
   { "rset",       sizeof("rset")-1,       RSET_CMD, FALSE, FALSE },  /* First */
   { "helo",       sizeof("helo")-1,       HELO_CMD, TRUE,  FALSE },
   { "ehlo",       sizeof("ehlo")-1,       EHLO_CMD, TRUE,  FALSE },
@@ -219,6 +224,9 @@ enum {
   ENV_MAIL_OPT_PRDR,
 #endif
   ENV_MAIL_OPT_RET, ENV_MAIL_OPT_ENVID,
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  ENV_MAIL_OPT_UTF8,
+#endif
   ENV_MAIL_OPT_NULL
   };
 typedef struct {
@@ -236,6 +244,9 @@ static env_mail_type_t env_mail_type_list[] = {
 #endif
     { US"RET",    ENV_MAIL_OPT_RET,    TRUE },
     { US"ENVID",  ENV_MAIL_OPT_ENVID,  TRUE },
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    { US"SMTPUTF8",ENV_MAIL_OPT_UTF8,  FALSE },		/* rfc6531 */
+#endif
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
   };
 
@@ -1494,6 +1505,8 @@ sender_verified_list = NULL;        /* No senders verified */
 memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 
+prdr_requested = FALSE;
+
 /* Reset the DSN flags */
 dsn_ret = 0;
 dsn_envid = NULL;
@@ -1513,6 +1526,9 @@ spf_header_comment = NULL;
 spf_received = NULL;
 spf_result = NULL;
 spf_smtp_comment = NULL;
+#endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+message_smtputf8 = FALSE;
 #endif
 body_linecount = body_zerocount = 0;
 
@@ -1848,6 +1864,9 @@ tls_in.ocsp = OCSP_NOT_REQ;
 tls_advertised = FALSE;
 #endif
 dsn_advertised = FALSE;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+smtputf8_advertised = FALSE;
+#endif
 
 /* Reset ACL connection variables */
 
@@ -3493,10 +3512,13 @@ while (done <= 0)
 
     auth_advertised = FALSE;
     pipelining_advertised = FALSE;
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     tls_advertised = FALSE;
-    #endif
+#endif
     dsn_advertised = FALSE;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    smtputf8_advertised = FALSE;
+#endif
 
     smtp_code = US"250 ";        /* Default response code plus space*/
     if (user_msg == NULL)
@@ -3667,7 +3689,7 @@ while (done <= 0)
       tls_advertise_hosts. We must *not* advertise if we are already in a
       secure connection. */
 
-      #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
       if (tls_in.active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         {
@@ -3675,16 +3697,26 @@ while (done <= 0)
         s = string_cat(s, &size, &ptr, US"-STARTTLS\r\n", 11);
         tls_advertised = TRUE;
         }
-      #endif
+#endif
 
-      #ifndef DISABLE_PRDR
+#ifndef DISABLE_PRDR
       /* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
       if (prdr_enable)
         {
         s = string_cat(s, &size, &ptr, smtp_code, 3);
         s = string_cat(s, &size, &ptr, US"-PRDR\r\n", 7);
 	}
-      #endif
+#endif
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      if (  accept_8bitmime
+         && verify_check_host(&smtputf8_advertise_hosts) != FAIL)
+	{
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-SMTPUTF8\r\n", 11);
+        smtputf8_advertised = TRUE;
+	}
+#endif
 
       /* Finish off the multiline reply with one that is always available. */
 
@@ -3697,9 +3729,9 @@ while (done <= 0)
 
     s[ptr] = 0;
 
-    #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
     if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr); else
-    #endif
+#endif
 
       {
       int i = fwrite(s, 1, ptr, smtp_out); i = i; /* compiler quietening */
@@ -3955,6 +3987,12 @@ while (done <= 0)
           break;
 #endif
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+        case ENV_MAIL_OPT_UTF8:
+	  if (smtputf8_advertised)
+	    message_smtputf8 = TRUE;
+	  break;
+#endif
         /* Unknown option. Stick back the terminator characters and break
         the loop.  Do the name-terminator second as extract_option sets
 	value==name when it found no equal-sign.
