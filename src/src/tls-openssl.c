@@ -380,7 +380,7 @@ else
      	/* client, wanting hostname check */
     {
 
-#if EXIM_HAVE_OPENSSL_CHECKHOST
+#ifdef EXIM_HAVE_OPENSSL_CHECKHOST
 # ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
 #  define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
 # endif
@@ -394,7 +394,8 @@ else
     while ((name = string_nextinlist(&list, &sep, NULL, 0)))
       if ((rc = X509_check_host(cert, name, 0,
 		  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
-		  | X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS)))
+		  | X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS,
+		  NULL)))
 	{
 	if (rc < 0)
 	  {
