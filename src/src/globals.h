@@ -570,6 +570,9 @@ extern int     message_linecount;      /* As it says */
 extern BOOL    message_logs;           /* TRUE to write message logs */
 extern int     message_size;           /* Size of message */
 extern uschar *message_size_limit;     /* As it says */
+#ifdef EXPERIMENTAL_INTERNATIONAL
+extern BOOL    message_smtputf8;       /* Internationalized mail handling */
+#endif
 extern uschar  message_subdir[];       /* Subdirectory for messages */
 extern uschar *message_reference;      /* Reference for error messages */
 

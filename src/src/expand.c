@@ -549,6 +549,9 @@ static var_entry var_table[] = {
   { "message_id",          vtype_stringptr,   &message_id },
   { "message_linecount",   vtype_int,         &message_linecount },
   { "message_size",        vtype_int,         &message_size },
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  { "message_smtputf8",    vtype_bool,        &message_smtputf8 },
+#endif
 #ifdef WITH_CONTENT_SCAN
   { "mime_anomaly_level",  vtype_int,         &mime_anomaly_level },
   { "mime_anomaly_text",   vtype_stringptr,   &mime_anomaly_text },

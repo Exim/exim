@@ -906,6 +906,9 @@ int     message_linecount      = 0;
 BOOL    message_logs           = TRUE;
 int     message_size           = 0;
 uschar *message_size_limit     = US"50M";
+#ifdef EXPERIMENTAL_INTERNATIONAL
+BOOL    message_smtputf8       = FALSE;
+#endif
 uschar  message_subdir[2]      = { 0, 0 };
 uschar *message_reference      = NULL;
 
