@@ -398,6 +398,9 @@ static optionlist optionlist_config[] = {
   { "smtp_receive_timeout",     opt_func,        &fn_smtp_receive_timeout },
   { "smtp_reserve_hosts",       opt_stringptr,   &smtp_reserve_hosts },
   { "smtp_return_error_details",opt_bool,        &smtp_return_error_details },
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  { "smtputf8_advertise_hosts", opt_stringptr,   &smtputf8_advertise_hosts },
+#endif
 #ifdef WITH_CONTENT_SCAN
   { "spamd_address",            opt_stringptr,   &spamd_address },
 #endif

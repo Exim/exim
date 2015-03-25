@@ -825,6 +825,9 @@ extern int     smtp_rlr_limit;         /* Max delay */
 extern int     smtp_rlr_threshold;     /* Threshold for RCPT rate limit */
 extern BOOL    smtp_use_pipelining;    /* Global for passed connections */
 extern BOOL    smtp_use_size;          /* Global for passed connections */
+#ifdef EXPERIMENTAL_INTERNATIONAL
+extern uschar *smtputf8_advertise_hosts; /* ingress control */
+#endif
 
 #ifdef WITH_CONTENT_SCAN
 extern uschar *spamd_address;          /* address for the spamassassin daemon */

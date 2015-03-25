@@ -1273,6 +1273,9 @@ int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
 BOOL    smtp_use_pipelining    = FALSE;
 BOOL    smtp_use_size          = FALSE;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+uschar *smtputf8_advertise_hosts = US"*";
+#endif
 
 #ifdef WITH_CONTENT_SCAN
 uschar *spamd_address          = US"127.0.0.1 783";
