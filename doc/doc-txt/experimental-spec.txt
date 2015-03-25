@@ -1270,6 +1270,14 @@ in combination with EXPERIMENTAL_EVENT), and a new variable
 $tls_out_tlsa_usage (detailed above).
 
 
+
+SMTPUTF8
+------------------------------------------------------------
+Internationalised mail name handling.
+RFCs 6530, 6533, 5890
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

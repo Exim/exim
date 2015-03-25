@@ -856,6 +856,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_SOCKS
   fprintf(f, " Experimental_SOCKS");
 #endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  fprintf(f, " Experimental_International");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");
