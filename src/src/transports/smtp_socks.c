@@ -229,6 +229,7 @@ while ((proxy_spec = string_nextinlist(&proxy_list, &sep, NULL, 0)))
 
   /* send connect (ipver, ipaddr, port) */
   buf[0] = 5; buf[1] = 1; buf[2] = 0; buf[3] = host_af == AF_INET6 ? 4 : 1;
+#if HAVE_IPV6
   if (host_af == AF_INET6)
     {
     memcpy(buf+4, &sin.v6.sin6_addr,       sizeof(sin.v6.sin6_addr));
@@ -237,6 +238,7 @@ while ((proxy_spec = string_nextinlist(&proxy_list, &sep, NULL, 0)))
     size = 4+sizeof(sin.v6.sin6_addr)+sizeof(sin.v6.sin6_port);
     }
   else
+#endif
     {
     memcpy(buf+4, &sin.v4.sin_addr.s_addr, sizeof(sin.v4.sin_addr.s_addr));
     memcpy(buf+4+sizeof(sin.v4.sin_addr.s_addr),
