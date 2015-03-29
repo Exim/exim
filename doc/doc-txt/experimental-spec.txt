@@ -1276,6 +1276,7 @@ SMTPUTF8
 Internationalised mail name handling.
 RFCs 6530, 6533, 5890
 
+Compile with libidn.
 
 
 --------------------------------------------------------------

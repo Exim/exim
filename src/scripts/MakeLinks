@@ -276,6 +276,7 @@ ln -s ../src/dane.c            dane.c
 ln -s ../src/dane-gnu.c        dane-gnu.c
 ln -s ../src/dane-openssl.c    dane-openssl.c
 ln -s ../src/danessl.h         danessl.h
+ln -s ../src/utf8.c            utf8.c
 
 
 # End of MakeLinks

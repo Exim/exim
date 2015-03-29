@@ -14,14 +14,34 @@ destination supports the SMTPUTF8 extension
 
 ======================
 
-An "international" flag on the message?
-An is-international expansion condition?
+to-Alabel convert of helo name
 
-helo-time option handling
-dsn handling
+++ An "international" flag on the message?
+++ An is-international expansion condition?
+
+++ helo-time option handling
+conversion of utf-8 domains on input	rfc5890
+- deconversion on forwarding
+- deconversion for trace headers
+dsn handling				rfc6533
 logging
 - international msg
 - presentation of local-part in log
+-- a log option?
 encoding of local_part
 encoding transform string-expansions
 Recieved-by header tracking info
+- WITH protocol types get UTF8 prefix
+
+forwarding checks			rfc6530 7.1 -3-
+- rcpt-time rejects get 533 mailbox name not allowed
+- mail-time rejects get 550 mailbox unavailable
+- bounces (see dsn handling)
+
+
+expansions for to- and from-Alabel ?	bug1567
+
+enhanced status codes?			rfc5248++
+
+VRFY
+EXPN

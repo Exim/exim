@@ -412,12 +412,21 @@ extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4
 extern uschar *string_format_size(int, uschar *);
 extern int     string_interpret_escape(const uschar **);
 extern int     string_is_ip_address(const uschar *, int *);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+extern BOOL    string_is_utf8(const uschar *);
+#endif
 extern uschar *string_log_address(address_item *, BOOL, BOOL);
 extern uschar *string_nextinlist(const uschar **, int *, uschar *, int);
 extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern const uschar *string_printing2(const uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+extern uschar *string_domain_alabel_to_utf8(const uschar *, uschar **);
+extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
+extern uschar *string_localpart_alabel_to_utf8(const uschar *, uschar **);
+extern uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
+#endif
 extern BOOL    string_vformat(uschar *, int, const char *, va_list);
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
