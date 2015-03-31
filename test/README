@@ -116,6 +116,9 @@ In order to run this test suite, the following requirements must be met:
 
 (9) Exim must be built with TRUSTED_CONFIG_LIST support, so that the test
     configs can be placed into it.  A suitable file location is .../exim/test/trusted_configs
+    with content .../exim/test/test-config [fill out the ... to make full
+    paths].  This file should be owner/group matching CONFIGURE_OWNER/GROUP,
+    or root/root.  The config files in .../exim/test/confs/ should be owner/group the same.
     DISABLE_D_OPTION must not be used. If ALT_CONFIG_PREFIX is used, it
     must contain the directory of the test-suite.  WHITELIST_D_MACROS should contain:
     
