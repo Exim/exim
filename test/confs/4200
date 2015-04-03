@@ -1,0 +1,12 @@
+# Exim test configuration 4200
+
+exim_path = EXIM_PATH
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+# ----- ACL -----
+
+# End

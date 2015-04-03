@@ -1276,7 +1276,13 @@ SMTPUTF8
 Internationalised mail name handling.
 RFCs 6530, 6533, 5890
 
-Compile with libidn.
+Compile with EXPERIMENTAL_INTERNATIONAL and libidn.
+
+Expansion operators:
+	${utf8_domain_to_alabel:str}
+	${utf8_domain_from_alabel:str}
+	${utf8_localpart_to_alabel:str}
+	${utf8_localpart_from_alabel:str}
 
 
 --------------------------------------------------------------

@@ -168,7 +168,14 @@ static uschar *op_table_underscore[] = {
   US"quote_local_part",
   US"reverse_ip",
   US"time_eval",
-  US"time_interval"};
+  US"time_interval"
+#ifdef EXPERIMENTAL_INTERNATIONAL
+ ,US"utf8_domain_from_alabel",
+  US"utf8_domain_to_alabel",
+  US"utf8_localpart_from_alabel",
+  US"utf8_localpart_to_alabel"
+#endif
+  };
 
 enum {
   EOP_FROM_UTF8,
@@ -176,7 +183,14 @@ enum {
   EOP_QUOTE_LOCAL_PART,
   EOP_REVERSE_IP,
   EOP_TIME_EVAL,
-  EOP_TIME_INTERVAL };
+  EOP_TIME_INTERVAL
+#ifdef EXPERIMENTAL_INTERNATIONAL
+ ,EOP_UTF8_DOMAIN_FROM_ALABEL,
+  EOP_UTF8_DOMAIN_TO_ALABEL,
+  EOP_UTF8_LOCALPART_FROM_ALABEL,
+  EOP_UTF8_LOCALPART_TO_ALABEL
+#endif
+  };
 
 static uschar *op_table_main[] = {
   US"address",
@@ -6555,16 +6569,13 @@ while (*s != 0)
 	  if (bytes_left)
 	    {
 	    if ((c & 0xc0) != 0x80)
-	      {
 		    /* wrong continuation byte; invalidate all bytes */
 	      complete = 1; /* error */
-	      }
 	    else
 	      {
 	      codepoint = (codepoint << 6) | (c & 0x3f);
 	      seq_buff[index++] = c;
 	      if (--bytes_left == 0)		/* codepoint complete */
-		{
 		if(codepoint > 0x10FFFF)	/* is it too large? */
 		  complete = -1;	/* error (RFC3629 limit) */
 		else
@@ -6572,7 +6583,6 @@ while (*s != 0)
 		  yield = string_cat(yield, &size, &ptr, seq_buff, seq_len);
 		  index = 0;
 		  }
-		}
 	      }
 	    }
 	  else	/* no bytes left: new sequence */
@@ -6615,12 +6625,74 @@ while (*s != 0)
 	    yield = string_cat(yield, &size, &ptr, UTF8_REPLACEMENT_CHAR, 1);
 	    }
 	  if ((complete == 1) && ((c & 0x80) == 0))
-	    { /* ASCII character follows incomplete sequence */
+			/* ASCII character follows incomplete sequence */
 	      yield = string_cat(yield, &size, &ptr, &c, 1);
-	    }
 	  }
         continue;
         }
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      case EOP_UTF8_DOMAIN_TO_ALABEL:
+	{
+        uschar * error = NULL;
+	uschar * s = string_domain_utf8_to_alabel(sub, &error);
+	if (error)
+	  {
+	  expand_string_message = string_sprintf(
+	    "error converting utf8 (%s) to alabel: %s",
+	    string_printing(sub), error);
+	  goto EXPAND_FAILED;
+	  }
+	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        continue;
+	}
+
+      case EOP_UTF8_DOMAIN_FROM_ALABEL:
+	{
+        uschar * error = NULL;
+	uschar * s = string_domain_alabel_to_utf8(sub, &error);
+	if (error)
+	  {
+	  expand_string_message = string_sprintf(
+	    "error converting alabel (%s) to utf8: %s",
+	    string_printing(sub), error);
+	  goto EXPAND_FAILED;
+	  }
+	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        continue;
+	}
+
+      case EOP_UTF8_LOCALPART_TO_ALABEL:
+	{
+        uschar * error = NULL;
+	uschar * s = string_localpart_utf8_to_alabel(sub, &error);
+	if (error)
+	  {
+	  expand_string_message = string_sprintf(
+	    "error converting utf8 (%s) to alabel: %s",
+	    string_printing(sub), error);
+	  goto EXPAND_FAILED;
+	  }
+	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	DEBUG(D_expand) debug_printf("yield: '%s'\n", yield);
+        continue;
+	}
+
+      case EOP_UTF8_LOCALPART_FROM_ALABEL:
+	{
+        uschar * error = NULL;
+	uschar * s = string_localpart_alabel_to_utf8(sub, &error);
+	if (error)
+	  {
+	  expand_string_message = string_sprintf(
+	    "error converting alabel (%s) to utf8: %s",
+	    string_printing(sub), error);
+	  goto EXPAND_FAILED;
+	  }
+	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        continue;
+	}
+#endif	/* EXPERIMENTAL_INTERNATIONAL */
 
       /* escape turns all non-printing characters into escape sequences. */
 
