@@ -202,7 +202,7 @@ static uschar *smtp_names[] =
   US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET", US"STARTTLS",
   US"VRFY" };
 
-static uschar *protocols[] = {
+static uschar *protocols_local[] = {
   US"local-smtp",        /* HELO */
   US"local-smtps",       /* The rare case EHLO->STARTTLS->HELO */
   US"local-esmtp",       /* EHLO */
@@ -210,12 +210,19 @@ static uschar *protocols[] = {
   US"local-esmtpa",      /* EHLO->AUTH */
   US"local-esmtpsa"      /* EHLO->STARTTLS->EHLO->AUTH */
   };
+static uschar *protocols[] = {
+  US"smtp",              /* HELO */
+  US"smtps",             /* The rare case EHLO->STARTTLS->HELO */
+  US"esmtp",             /* EHLO */
+  US"esmtps",            /* EHLO->STARTTLS->EHLO */
+  US"esmtpa",            /* EHLO->AUTH */
+  US"esmtpsa"            /* EHLO->STARTTLS->EHLO->AUTH */
+  };
 
 #define pnormal  0
 #define pextend  2
 #define pcrpted  1  /* added to pextend or pnormal */
 #define pauthed  2  /* added to pextend */
-#define pnlocal  6  /* offset to remove "local" */
 
 /* Sanity check and validate optional args to MAIL FROM: envelope */
 enum {
@@ -1894,7 +1901,7 @@ reset later if any of EHLO/AUTH/STARTTLS are received. */
 
 else
   received_protocol =
-    protocols[pnormal] + ((sender_host_address != NULL)? pnlocal : 0);
+    (sender_host_address ? protocols : protocols_local) [pnormal];
 
 /* Set up the buffer for inputting using direct read() calls, and arrange to
 call the local functions instead of the standard C ones. */
@@ -3314,9 +3321,10 @@ while (done <= 0)
         sender_host_authenticated = au->name;
         authentication_failed = FALSE;
         authenticated_fail_id = NULL;   /* Impossible to already be set? */
+
         received_protocol =
-          protocols[pextend + pauthed + ((tls_in.active >= 0)? pcrpted:0)] +
-            ((sender_host_address != NULL)? pnlocal : 0);
+	  (sender_host_address ? protocols : protocols_local)
+	    [pextend + pauthed + (tls_in.active >= 0 ? pcrpted:0)];
         s = ss = US"235 Authentication succeeded";
         authenticated_by = au;
         break;
@@ -3746,16 +3754,13 @@ while (done <= 0)
     helo_seen = TRUE;
 
     /* Reset the protocol and the state, abandoning any previous message. */
-
-    received_protocol = (esmtp?
-      protocols[pextend +
-        ((sender_host_authenticated != NULL)? pauthed : 0) +
-        ((tls_in.active >= 0)? pcrpted : 0)]
-      :
-      protocols[pnormal + ((tls_in.active >= 0)? pcrpted : 0)])
-      +
-      ((sender_host_address != NULL)? pnlocal : 0);
-
+    received_protocol =
+      (sender_host_address ? protocols : protocols_local)
+	[ (esmtp
+	  ? pextend + (sender_host_authenticated ? pauthed : 0)
+	  : pnormal)
+	+ (tls_in.active >= 0 ? pcrpted : 0)
+	];
     smtp_reset(reset_point);
     toomany = FALSE;
     break;   /* HELO/EHLO */
@@ -3960,7 +3965,7 @@ while (done <= 0)
 		    expand_check_condition(authenticated_by->mail_auth_condition,
 			authenticated_by->name, US"authenticator"))
 		  break;     /* Accept the AUTH */
-
+    
 		ignore_msg = US"server_mail_auth_condition failed";
 		if (authenticated_id != NULL)
 		  ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
@@ -3997,7 +4002,10 @@ while (done <= 0)
 #ifdef EXPERIMENTAL_INTERNATIONAL
         case ENV_MAIL_OPT_UTF8:
 	  if (smtputf8_advertised)
+	    {
+	    DEBUG(D_receive) debug_printf("smtputf8 requested\n");
 	    message_smtputf8 = allow_utf8_domains = TRUE;
+	    }
 	  break;
 #endif
         /* Unknown option. Stick back the terminator characters and break
@@ -4670,13 +4678,13 @@ while (done <= 0)
         set_process_info("handling incoming TLS connection from %s",
           host_and_ident(FALSE));
         }
-      received_protocol = (esmtp?
-        protocols[pextend + pcrpted +
-          ((sender_host_authenticated != NULL)? pauthed : 0)]
-        :
-        protocols[pnormal + pcrpted])
-        +
-        ((sender_host_address != NULL)? pnlocal : 0);
+      received_protocol =
+	(sender_host_address ? protocols : protocols_local)
+	  [ (esmtp
+	    ? pextend + (sender_host_authenticated ? pauthed : 0)
+	    : pnormal)
+	  + (tls_in.active >= 0 ? pcrpted : 0)
+	  ];
 
       sender_host_authenticated = NULL;
       authenticated_id = NULL;
