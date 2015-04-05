@@ -1291,7 +1291,7 @@ The option allow_utf8_domains is set to true for this
 message, but all DNS lookups are converted to a-label form.
 
 Log lines and Received-by: header lines will aquire a "utf8"
-prefix on the 'with' element, eg. utf8esmtp.
+prefix on the protocol element, eg. utf8esmtp.
 
 Expansion operators:
 	${utf8_domain_to_alabel:str}

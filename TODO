@@ -23,23 +23,26 @@ to-Alabel convert of helo name
 ++ helo-time option handling
 ++ conversion of utf-8 domains for DNS	rfc5890
 -- MSA mode: convert on forward?
+--- mua-wrapper
+--- acl control?
 
 dsn handling				rfc6533
 logging
-- international msg
+++ - international msg
 - presentation of local-part in log
 -- a log option?
 encoding of local_part
 
-Recieved-by header tracking info
-- WITH protocol types get UTF8 prefix
-- use for logging also
+++ Recieved-by header tracking info
+++ - WITH protocol types get UTF8 prefix
+++ - use for logging also
 
 forwarding checks			rfc6530 7.1 -3-
 - rcpt-time rejects get 533 mailbox name not allowed
 - mail-time rejects get 550 mailbox unavailable
 - bounces (see dsn handling)
 
+flag in spool file
 
 ++ expansions for to- and from-Alabel ?	bug1567
 

@@ -4005,6 +4005,7 @@ while (done <= 0)
 	    {
 	    DEBUG(D_receive) debug_printf("smtputf8 requested\n");
 	    message_smtputf8 = allow_utf8_domains = TRUE;
+	    received_protocol = string_sprintf("utf8%s", received_protocol);
 	    }
 	  break;
 #endif
