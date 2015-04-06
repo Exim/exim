@@ -2303,8 +2303,22 @@ if (extract_recip)
         pp = recipient = store_get(ss - s + 1);
         for (p = s; p < ss; p++) if (*p != '\n') *pp++ = *p;
         *pp = 0;
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	{
+	BOOL b = allow_utf8_domains;
+	allow_utf8_domains = TRUE;
+#endif
         recipient = parse_extract_address(recipient, &errmess, &start, &end,
           &domain, FALSE);
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	if (string_is_utf8(recipient))
+	  message_smtputf8 = TRUE;
+	else
+	  allow_utf8_domains = b;
+	}
+#endif
 
         /* Keep a list of all the bad addresses so we can send a single
         error message at the end. However, an empty address is not an error;

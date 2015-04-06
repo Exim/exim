@@ -570,6 +570,16 @@ if (*errno_value == ERRNO_WRITEINCOMPLETE)
   return FALSE;
   }
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+/* Handle lack of advertised SMTPUTF8, for international message */
+if (*errno_value == ERRNO_UTF8_FWD)
+  {
+  *message = US string_sprintf("utf8 support required for forwarding");
+  DEBUG(D_deliver|D_transport) debug_printf("%s\n", *message);
+  return TRUE;
+  }
+#endif
+
 /* Handle error responses from the remote mailer. */
 
 if (buffer[0] != 0)
@@ -2524,24 +2534,29 @@ if (!ok)
 
     switch(save_errno)
       {
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      case ERRNO_UTF8_FWD:
+        code = '5';
+      /*FALLTHROUGH*/
+#endif
       case 0:
       case ERRNO_MAIL4XX:
       case ERRNO_DATA4XX:
-      message_error = TRUE;
-      break;
+	message_error = TRUE;
+	break;
 
       case ETIMEDOUT:
-      message_error = Ustrncmp(smtp_command,"MAIL",4) == 0 ||
-                      Ustrncmp(smtp_command,"end ",4) == 0;
-      break;
+	message_error = Ustrncmp(smtp_command,"MAIL",4) == 0 ||
+			Ustrncmp(smtp_command,"end ",4) == 0;
+	break;
 
       case ERRNO_SMTPCLOSED:
-      message_error = Ustrncmp(smtp_command,"end ",4) == 0;
-      break;
+	message_error = Ustrncmp(smtp_command,"end ",4) == 0;
+	break;
 
       default:
-      message_error = FALSE;
-      break;
+	message_error = FALSE;
+	break;
       }
 
     /* Handle the cases that are treated as message errors. These are:
@@ -2549,6 +2564,7 @@ if (!ok)
       (a) negative response or timeout after MAIL
       (b) negative response after DATA
       (c) negative response or timeout or dropped connection after "."
+      (d) utf8 support required and not offered
 
     It won't be a negative response or timeout after RCPT, as that is dealt
     with separately above. The action in all cases is to set an appropriate

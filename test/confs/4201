@@ -1,4 +1,7 @@
 # Exim test configuration 4201
+# SMTPUTF8 handling
+
+OPTION = *
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -20,7 +23,7 @@ queue_only
 queue_run_in_order
 .endif
 
-smtputf8_advertise_hosts = *
+smtputf8_advertise_hosts = OPTION
 
 
 # ----- ACL -----
@@ -28,6 +31,10 @@ smtputf8_advertise_hosts = *
 begin acl
 
 check_recipient:
+
+.ifndef SERVER
+  accept domains = *
+.endif
   accept hosts = :
   accept domains = +local_domains
   deny   message = relay not permitted
@@ -51,9 +58,14 @@ localuser:
 
 rmt:
   driver = manualroute
+  domains = +local_domains
   route_data = <;[127.0.0.1]:PORT_D
   transport = rmt_smtp
   self = send
+
+hole:
+  driver = redirect
+  data = :blackhole:
 
 .endif
 

@@ -2519,7 +2519,7 @@ for (i = 1; i < argc; i++)
 
     case 'f':
       {
-      int start, end;
+      int dummy_start, dummy_end;
       uschar *errmess;
       if (*argrest == 0)
         {
@@ -2527,9 +2527,7 @@ for (i = 1; i < argc; i++)
           { badarg = TRUE; break; }
         }
       if (*argrest == 0)
-        {
         sender_address = string_sprintf("");  /* Ensure writeable memory */
-        }
       else
         {
         uschar *temp = argrest + Ustrlen(argrest) - 1;
@@ -2537,8 +2535,15 @@ for (i = 1; i < argc; i++)
         if (temp >= argrest && *temp == '.') f_end_dot = TRUE;
         allow_domain_literals = TRUE;
         strip_trailing_dot = TRUE;
-        sender_address = parse_extract_address(argrest, &errmess, &start, &end,
-          &sender_address_domain, TRUE);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	allow_utf8_domains = TRUE;
+#endif
+        sender_address = parse_extract_address(argrest, &errmess,
+          &dummy_start, &dummy_end, &sender_address_domain, TRUE);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	message_smtputf8 =  string_is_utf8(sender_address);
+	allow_utf8_domains = FALSE;
+#endif
         allow_domain_literals = FALSE;
         strip_trailing_dot = FALSE;
         if (sender_address == NULL)
@@ -5358,7 +5363,6 @@ while (more)
 
         if (recipients_max > 0 && ++rcount > recipients_max &&
             !extract_recipients)
-          {
           if (error_handling == ERRORS_STDERR)
             {
             fprintf(stderr, "exim: too many recipients\n");
@@ -5370,11 +5374,22 @@ while (more)
               moan_to_sender(ERRMESS_TOOMANYRECIP, NULL, NULL, stdin, TRUE)?
                 errors_sender_rc : EXIT_FAILURE;
             }
-          }
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	{
+	BOOL b = allow_utf8_domains;
+	allow_utf8_domains = TRUE;
+#endif
         recipient =
           parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	if (string_is_utf8(recipient))
+	  message_smtputf8 = TRUE;
+	else
+	  allow_utf8_domains = b;
+	}
+#endif
         if (domain == 0 && !allow_unqualified_recipient)
           {
           recipient = NULL;
@@ -5474,9 +5489,7 @@ while (more)
       return_path = string_copy(sender_address);
       }
     else
-      {
       printf("Return-path = %s\n", (return_path[0] == 0)? US"<>" : return_path);
-      }
     printf("Sender      = %s\n", (sender_address[0] == 0)? US"<>" : sender_address);
 
     receive_add_recipient(
