@@ -704,6 +704,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   # ======== Other error numbers ========
   s/errno=\d+/errno=dd/g;
 
+  # ======== System Error Messages ======
+  # depending on the underlaying file system the error message seems to differ
+  s/(?: is not a regular file)|(?: has too many links \(\d+\))/ not a regular file or too many links/;
 
   # ======== Output from ls ========
   # Different operating systems use different spacing on long output
