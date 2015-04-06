@@ -2438,7 +2438,7 @@ if (++synprot_error_count > smtp_max_synprot_errors)
   yield = 1;
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
     "syntax or protocol errors (last command was \"%s\")",
-    host_and_ident(FALSE), smtp_cmd_buffer);
+    host_and_ident(FALSE), string_printing(smtp_cmd_buffer));
   }
 
 if (code > 0)
@@ -3397,7 +3397,7 @@ while (done <= 0)
         {
         log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
           "syntax or protocol errors (last command was \"%s\")",
-          host_and_ident(FALSE), smtp_cmd_buffer);
+          host_and_ident(FALSE), string_printing(smtp_cmd_buffer));
         done = 1;
         }
 
@@ -5015,7 +5015,7 @@ while (done <= 0)
       done = 2;
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
         "unrecognized commands (last was \"%s\")", host_and_ident(FALSE),
-        smtp_cmd_buffer);
+        string_printing(smtp_cmd_buffer));
       }
     else
       done = synprot_error(L_smtp_syntax_error, 500, NULL,
