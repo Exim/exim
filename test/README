@@ -79,6 +79,8 @@ In order to run this test suite, the following requirements must be met:
     and "xyz" and single letters that are used in the tests. The test suite
     expects the login to have a gecos name; I think it will now run if the
     gecos field is empty but there may be anomalies.
+    The login must not contain a dash or an equal sign. (Otherwise some tests
+    about local_from_{suffix,prefix} will fail.)
 
 (4) The directory into which you unpack the test suite must be accessible by
     the Exim user, so that code running as exim can access the files therein.
