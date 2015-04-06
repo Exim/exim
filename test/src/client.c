@@ -480,7 +480,14 @@ return session;
 *************************************************/
 
 const char * const HELP_MESSAGE = "\n\
-Usage: client\n\
+Usage: client\n"
+#ifdef HAVE_TLS
+"\
+          [-tls-on-connect]\n\
+          [-ocsp]\n"
+#endif
+"\
+          [-tn] n seconds timeout\n\
           <IP address>\n\
           <port>\n\
           [<outgoing interface>]\n\
