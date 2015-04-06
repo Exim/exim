@@ -2405,12 +2405,13 @@ symlink("$parm_cwd/confs/0000", "$parm_cwd/test-config")
 
 print("Probing with config file: $parm_cwd/test-config\n");
 open(EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " .
-               "-bP exim_user exim_group|") ||
+               "-bP exim_user exim_group 2>&1|") ||
   die "** Cannot run $parm_exim: $!\n";
 while(<EXIMINFO>)
   {
   $parm_eximuser = $1 if /^exim_user = (.*)$/;
   $parm_eximgroup = $1 if /^exim_group = (.*)$/;
+  $parm_trusted_config_list = $1 if /^TRUSTED_CONFIG_LIST:.*?"(.*?)"$/;
   }
 close(EXIMINFO);
 
@@ -2431,6 +2432,34 @@ if (defined $parm_eximgroup)
   {
   if ($parm_eximgroup =~ /^\d+$/) { $parm_exim_gid = $parm_eximgroup; }
     else { $parm_exim_gid = getgrnam($parm_eximgroup); }
+  }
+
+# check the permissions on the TRUSTED_CONFIG_LIST
+if (defined $parm_trusted_config_list)
+  {
+  die "TRUSTED_CONFIG_LIST: $parm_trusted_config_list: $!\n"
+    if not -f $parm_trusted_config_list;
+
+  die "TRUSTED_CONFIG_LIST $parm_trusted_config_list must not be world writable!\n"
+    if 02 & (stat _)[2];
+
+  die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list %d is group writable, but not owned by group '%s' or '%s'.\n",
+  (stat _)[1],
+    scalar(getgrgid 0), scalar(getgrgid $>)
+    if (020 & (stat _)[2]) and not ((stat _)[5] == $> or (stat _)[5] == 0);
+
+  die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list is not owned by user '%s' or '%s'.\n",
+  scalar(getpwuid 0), scalar(getpwuid $>)
+     if (not (-o _ or (stat _)[4] == 0));
+
+  open(TCL, $parm_trusted_config_list) or die "Can't open $parm_trusted_config_list: $!\n";
+  my $test_config = getcwd() . '/test-config';
+  die "Can't find '$test_config' in TRUSTED_CONFIG_LIST $parm_trusted_config_list."
+  if not grep { /^$test_config$/ } <TCL>;
+  }
+else
+  {
+  die "Unable to check the TRUSTED_CONFIG_LIST, seems to be empty?\n";
   }
 
 open(EXIMINFO, "$parm_exim -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
