@@ -2253,9 +2253,10 @@ else
 ##################################################
 
 # If the first character of the first argument is '/', the argument is taken
-# as the path to the binary.
+# as the path to the binary. If the first argument does not start with a
+# '/' but exists in the file system, it's assumed to be the Exim binary.
 
-$parm_exim = (@ARGV > 0 && $ARGV[0] =~ m?^/?)? shift @ARGV : "";
+$parm_exim = (@ARGV > 0 && (-x $ARGV[0] or $ARGV[0] =~ m?^/?))? Cwd::abs_path(shift @ARGV) : "";
 print "Exim binary is $parm_exim\n" if $parm_exim ne "";
 
 
