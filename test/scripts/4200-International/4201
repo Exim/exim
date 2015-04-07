@@ -73,13 +73,18 @@ QUIT
 #
 #
 killdaemon
+sleep 1
+exim -DSERVER=server -qqff
+****
+#
+#
 exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
 ****
 #
 # forwarding fails when target does not support SMTPUTF8
 exim -bs -odi
 EHLO client.ffail
-MAIL FROM: <यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.com> SMTPUTF8
+MAIL FROM: <यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local> SMTPUTF8
 RCPT TO: <userz@test.ex>
 DATA
 Subject: test
@@ -92,7 +97,6 @@ QUIT
 #
 #
 killdaemon
-exim -DSERVER=server -qq
+#
+exim -qfl
 ****
-no_msglog_check
-

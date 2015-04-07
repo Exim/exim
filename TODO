@@ -32,6 +32,8 @@ retries
 - apply to a-label or utf8 form?
 
 dsn handling				rfc6533
+- ORCPT param: utf8 vs. unitext encoded
+-- to/from unitext expansions ( foo\x{HEXPOINT}  - 2-6 hex digits )
 
 logging
 ++ - international msg

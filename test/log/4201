@@ -3,17 +3,23 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= ليهمابتكلموشعربي؟@czech.Pročprostěnemluvíčesky.com H=(client) [127.0.0.1] P=utf8esmtp S=sss for userx@test.ex
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= 他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com U=CALLER P=utf8local-esmtp S=sss for usery@test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= 他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtp S=sss id=E10HmaZ-0005vi-00@the.local.host.name for usery@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery@test.ex R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery@test.ex F=<他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.com U=CALLER P=utf8local-esmtp S=sss for userz@test.ex
-1999-03-02 09:44:33 10HmbB-0005vi-00 ** userz@test.ex R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1]: utf8 support required for forwarding
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss for यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.com
-1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.com> R=hole
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 Start queue run: pid=pppp -qqff
 1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <userx@test.ex> R=localuser
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <userx@test.ex> R=localuser
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <usery@test.ex> R=localuser
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qqff
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local U=CALLER P=utf8local-esmtp S=sss for userz@test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** userz@test.ex F=<यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1]: utf8 support required for forwarding
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss for यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local
+1999-03-02 09:44:33 10HmbC-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp -qfl
+1999-03-02 09:44:33 10HmbC-0005vi-00 => TESTSUITE/test-mail/यहलोगहिन्दीक्योंनहींबोलसकतेहैं <यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local> F=<> R=bounces T=local_delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qfl

@@ -6664,29 +6664,36 @@ else if (!dont_deliver) retry_update(&addr_defer, &addr_failed, &addr_succeed);
 addr_dsntmp = addr_succeed;
 addr_senddsn = NULL;
 
-while(addr_dsntmp != NULL)
+while(addr_dsntmp)
   {
-  DEBUG(D_deliver)
-    debug_printf("DSN: processing router : %s\n", addr_dsntmp->router->name);
-
-  DEBUG(D_deliver)
-    debug_printf("DSN: processing successful delivery address: %s\n", addr_dsntmp->address);
-
   /* af_ignore_error not honored here. it's not an error */
-
-  DEBUG(D_deliver) debug_printf("DSN: Sender_address: %s\n", sender_address);
-  DEBUG(D_deliver) debug_printf("DSN: orcpt: %s  flags: %d\n", addr_dsntmp->dsn_orcpt, addr_dsntmp->dsn_flags);
-  DEBUG(D_deliver) debug_printf("DSN: envid: %s  ret: %d\n", dsn_envid, dsn_ret);
-  DEBUG(D_deliver) debug_printf("DSN: Final recipient: %s\n", addr_dsntmp->address);
-  DEBUG(D_deliver) debug_printf("DSN: Remote SMTP server supports DSN: %d\n", addr_dsntmp->dsn_aware);
+  DEBUG(D_deliver)
+    {
+    debug_printf("DSN: processing router : %s\n"
+      "DSN: processing successful delivery address: %s\n"
+      "DSN: Sender_address: %s\n"
+      "DSN: orcpt: %s  flags: %d\n"
+      "DSN: envid: %s  ret: %d\n"
+      "DSN: Final recipient: %s\n"
+      "DSN: Remote SMTP server supports DSN: %d\n",
+      addr_dsntmp->router->name,
+      addr_dsntmp->address,
+      sender_address,
+      addr_dsntmp->dsn_orcpt, addr_dsntmp->dsn_flags,
+      dsn_envid, dsn_ret,
+      addr_dsntmp->address,
+      addr_dsntmp->dsn_aware
+      );
+    }
 
   /* send report if next hop not DSN aware or a router flagged "last DSN hop"
      and a report was requested */
-  if (((addr_dsntmp->dsn_aware != dsn_support_yes) ||
-       ((addr_dsntmp->dsn_flags & rf_dsnlasthop) != 0))
-      &&
-      (((addr_dsntmp->dsn_flags & rf_dsnflags) != 0) &&
-        ((addr_dsntmp->dsn_flags & rf_notify_success) != 0)))
+  if (  (  addr_dsntmp->dsn_aware != dsn_support_yes
+	|| addr_dsntmp->dsn_flags & rf_dsnlasthop
+        )
+     && addr_dsntmp->dsn_flags & rf_dsnflags
+     && addr_dsntmp->dsn_flags & rf_notify_success
+     )
     {
     /* copy and relink address_item and send report with all of them at once later */
     address_item *addr_next;
@@ -6696,14 +6703,12 @@ while(addr_dsntmp != NULL)
     addr_senddsn->next = addr_next;
     }
   else
-    {
-      DEBUG(D_deliver) debug_printf("DSN: *** NOT SENDING DSN SUCCESS Message ***\n"); 
-    }
+    DEBUG(D_deliver) debug_printf("DSN: not sending DSN success message\n"); 
 
   addr_dsntmp = addr_dsntmp->next;
   }
 
-if (addr_senddsn != NULL)
+if (addr_senddsn)
   {
   pid_t pid;
   int fd;
@@ -6860,8 +6865,8 @@ while (addr_failed != NULL)
 
   if (sender_address[0] == 0 && addr_failed->p.errors_address == NULL)
     {
-    if (!testflag(addr_failed, af_retry_timedout) &&
-        !testflag(addr_failed, af_ignore_error))
+    if (  !testflag(addr_failed, af_retry_timedout)
+       && !testflag(addr_failed, af_ignore_error))
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "internal error: bounce message "
         "failure is neither frozen nor ignored (it's been ignored)");
@@ -6874,8 +6879,8 @@ while (addr_failed != NULL)
   mark the recipient done. */
 
   if (  testflag(addr_failed, af_ignore_error)
-     || (  ((addr_failed->dsn_flags & rf_dsnflags) != 0)
-        && ((addr_failed->dsn_flags & rf_notify_failure) != rf_notify_failure))
+     || (  addr_failed->dsn_flags & rf_dsnflags
+        && (addr_failed->dsn_flags & rf_notify_failure) != rf_notify_failure)
      )
     {
     addr = addr_failed;
@@ -7140,10 +7145,18 @@ wording. */
         }
 
       /* output machine readable part */
-      fprintf(f, "--%s\n"
-	  "Content-type: message/delivery-status\n\n"
-	  "Reporting-MTA: dns; %s\n",
-	bound, smtp_active_hostname);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      if (message_smtputf8)
+	fprintf(f, "--%s\n"
+	    "Content-type: message/global-delivery-status\n\n"
+	    "Reporting-MTA: dns; %s\n",
+	  bound, smtp_active_hostname);
+      else
+#endif
+	fprintf(f, "--%s\n"
+	    "Content-type: message/delivery-status\n\n"
+	    "Reporting-MTA: dns; %s\n",
+	  bound, smtp_active_hostname);
 
       if (dsn_envid)
 	{
@@ -7218,9 +7231,16 @@ wording. */
             }
           }
   
-      fputs(topt & topt_no_body ? "Content-type: text/rfc822-headers\n\n"
-				: "Content-type: message/rfc822\n\n",
-	    f);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      if (message_smtputf8)
+	fputs(topt & topt_no_body ? "Content-type: message/global-headers\n\n"
+				  : "Content-type: message/global\n\n",
+	      f);
+      else
+#endif
+	fputs(topt & topt_no_body ? "Content-type: text/rfc822-headers\n\n"
+				  : "Content-type: message/rfc822\n\n",
+	      f);
 
       fflush(f);
       transport_filter_argv = NULL;   /* Just in case */
