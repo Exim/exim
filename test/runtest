@@ -2207,6 +2207,15 @@ return $yield;            # Ran command and waited
 autoflush STDOUT 1;
 print "Exim tester $testversion\n";
 
+# extend the PATH with .../sbin
+# we map all (.../bin) to (.../sbin:.../bin)
+$ENV{PATH} = do {
+  my %seen = map { $_, 1 } split /:/, $ENV{PATH};
+  join ':' => map { m{(.*)/bin$} 
+                ? ( $seen{"$1/sbin"} ? () : ("$1/sbin"), $_) 
+                : ($_) } 
+      split /:/, $ENV{PATH};
+};
 
 ##################################################
 #      Some tests check created file modes       #
