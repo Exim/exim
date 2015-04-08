@@ -413,6 +413,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # Random local part in callout cache testing
   s/myhost.test.ex-\d+-testing/myhost.test.ex-dddddddd-testing/;
+  s/the.local.host.name-\d+-testing/the.local.host.name-dddddddd-testing/;
 
   # File descriptor numbers may vary
   s/^writing data block fd=\d+/writing data block fd=dddd/;

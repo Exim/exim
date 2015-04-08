@@ -2,6 +2,7 @@
 # SMTPUTF8 handling
 
 OPTION = *
+CONTROL =
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -12,7 +13,7 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
-domainlist local_domains = test.ex
+domainlist local_domains = test.ex : cname
 
 acl_smtp_rcpt = check_recipient
 acl_not_smtp = non_smtp
@@ -32,20 +33,32 @@ smtputf8_advertise_hosts = OPTION
 
 begin acl
 
-check_recipient:
 
-.ifndef SERVER
-  accept domains = *
-.endif
+.ifdef SERVER
+
+check_recipient:
   accept hosts = :
   accept domains = +local_domains
+	 local_parts = ^user.*\$
   deny   message = relay not permitted
 
-.ifndef SERVER
+.else
+
+sub:
+.ifdef CONTROL
+  require CONTROL
+.endif
+  accept
+
+check_recipient:
+  accept domains = *
+	 acl = sub
+
 non_smtp:
   accept senders = :
 	 control = queue_only
   accept
+
 .endif
 
 # ----- Routers -----

@@ -4382,6 +4382,9 @@ if (where == ACL_WHERE_RCPT)
     *log_msgptr = US"defer in percent_hack_domains check";
     return DEFER;
     }
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  addr->p.utf8 = message_smtputf8;
+#endif
   deliver_domain = addr->domain;
   deliver_localpart = addr->local_part;
   }

@@ -920,6 +920,25 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         }
       }
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    else if (  addr->p.utf8
+	    && !(  esmtp
+		&& (  regex_UTF8
+		   || ( (regex_UTF8 = regex_must_compile(
+			  US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE)),
+		      TRUE
+		   )  )
+		&& pcre_exec(regex_UTF8, NULL, CS responsebuffer,
+		    Ustrlen(responsebuffer), 0, PCRE_EOPT, NULL, 0) >= 0
+	    )   )
+      {
+      HDEBUG(D_acl|D_v) debug_printf("utf8 required but not offered\n");
+      errno = ERRNO_UTF8_FWD;
+      setflag(addr, af_verify_nsfail);
+      done = FALSE;
+      }
+#endif
+
     /* If we haven't authenticated, but are required to, give up. */
     /* Try to AUTH */
 
@@ -937,7 +956,13 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       ( (addr->auth_sndr = client_authenticated_sender),
 
     /* Send the MAIL command */
-        (smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>%s\r\n",
+        (smtp_write_command(&outblock, FALSE,
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	  addr->p.utf8
+	  ? "MAIL FROM:<%s>%s SMTPUTF8\r\n"
+	  :
+#endif
+	    "MAIL FROM:<%s>%s\r\n",
           from_address, responsebuffer) >= 0)
       )  &&
 
@@ -1022,7 +1047,13 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
             smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
               '2', callout) &&
 
-            smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>\r\n",
+            smtp_write_command(&outblock, FALSE,
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	      addr->p.utf8
+	      ? "MAIL FROM:<%s> SMTPUTF8\r\n"
+	      :
+#endif
+	        "MAIL FROM:<%s>\r\n",
               from_address) >= 0 &&
             smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
               '2', callout);
@@ -1146,6 +1177,21 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         HDEBUG(D_verify) debug_printf("SMTP timeout\n");
         send_quit = FALSE;
         }
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      else if (errno == ERRNO_UTF8_FWD)
+	{
+	extern int acl_where;	/* src/acl.c */
+	errno = 0;
+	addr->message = string_sprintf(
+	    "response to \"%s\" from %s [%s] did not include SMTPUTF8",
+            big_buffer, host->name, host->address);
+        addr->user_message = acl_where == ACL_WHERE_RCPT
+	  ? US"533 mailbox name not allowed"
+	  : US"550 mailbox unavailable";
+	yield = FAIL;
+	done = TRUE;
+	}
+#endif
       else if (errno == 0)
         {
         if (*responsebuffer == 0) Ustrcpy(responsebuffer, US"connection dropped");
