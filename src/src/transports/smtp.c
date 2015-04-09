@@ -574,7 +574,7 @@ if (*errno_value == ERRNO_WRITEINCOMPLETE)
 /* Handle lack of advertised SMTPUTF8, for international message */
 if (*errno_value == ERRNO_UTF8_FWD)
   {
-  *message = US string_sprintf("utf8 support required but not offerred for forwarding");
+  *message = US string_sprintf("utf8 support required but not offered for forwarding");
   DEBUG(D_deliver|D_transport) debug_printf("%s\n", *message);
   return TRUE;
   }

@@ -2079,6 +2079,9 @@ else if (verify_sender_address != NULL)
     uschar *save_address_data = deliver_address_data;
 
     sender_vaddr = deliver_make_addr(verify_sender_address, TRUE);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    sender_vaddr->p.utf8 = message_smtputf8;
+#endif
     if (no_details) setflag(sender_vaddr, af_sverify_told);
     if (verify_sender_address[0] != 0)
       {
