@@ -296,6 +296,8 @@ typedef struct router_instance {
   transport_instance *transport;  /* Transport block (when found) */
   struct router_instance *pass_router; /* Actual router for passed address */
   struct router_instance *redirect_router; /* Actual router for generated address */
+  uschar  *dnssec_request_domains;	/* ask for DNSSEC XXX */
+  uschar  *dnssec_require_domains;	/* require DNSSEC XXX */
 } router_instance;
 
 

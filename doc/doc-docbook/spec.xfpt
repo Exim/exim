@@ -17018,6 +17018,25 @@ or for any deliveries caused by this router. You should not set this option
 unless you really, really know what you are doing. See also the generic
 transport option of the same name.
 
+.option dnssec_request_domains routers "domain list&!!" unset
+.cindex "MX record" "security"
+.cindex "DNSSEC" "MX lookup"
+.cindex "security" "MX lookup"
+.cindex "DNS" "DNSSEC"
+DNS lookups for domains matching &%dnssec_request_domains%& will be done with
+the dnssec request bit set.
+This applies to all of the SRV, MX, AAAA, A lookup sequence.
+
+.option dnssec_require_domains routers "domain list&!!" unset
+.cindex "MX record" "security"
+.cindex "DNSSEC" "MX lookup"
+.cindex "security" "MX lookup"
+.cindex "DNS" "DNSSEC"
+DNS lookups for domains matching &%dnssec_request_domains%& will be done with
+the dnssec request bit set.  Any returns not having the Authenticated Data bit
+(AD bit) set wil be ignored and logged as a host-lookup failure.
+This applies to all of the SRV, MX, AAAA, A lookup sequence.
+
 
 .option domains routers&!? "domain list&!!" unset
 .cindex "router" "restricting to specific domains"
@@ -18068,28 +18087,6 @@ trying to split an SMTP load between hosts of different power.
 See section &<<SECTprowitdnsloo>>& above for a discussion of Exim's behaviour
 when there is a DNS lookup error.
 
-
-
-.option dnssec_request_domains dnslookup "domain list&!!" unset
-.cindex "MX record" "security"
-.cindex "DNSSEC" "MX lookup"
-.cindex "security" "MX lookup"
-.cindex "DNS" "DNSSEC"
-DNS lookups for domains matching &%dnssec_request_domains%& will be done with
-the dnssec request bit set.
-This applies to all of the SRV, MX, AAAA, A lookup sequence.
-
-
-
-.option dnssec_require_domains dnslookup "domain list&!!" unset
-.cindex "MX record" "security"
-.cindex "DNSSEC" "MX lookup"
-.cindex "security" "MX lookup"
-.cindex "DNS" "DNSSEC"
-DNS lookups for domains matching &%dnssec_request_domains%& will be done with
-the dnssec request bit set.  Any returns not having the Authenticated Data bit
-(AD bit) set wil be ignored and logged as a host-lookup failure.
-This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
 
 

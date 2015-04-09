@@ -94,8 +94,8 @@ for (h = addr->host_list; h != NULL; h = next_h)
         NULL,                           /* SRV service not relevant */
         NULL,                           /* failing srv domains not relevant */
         NULL,                           /* no special mx failing domains */
-	NULL,                           /* no dnssec request XXX ? */
-	NULL,                           /* no dnssec require XXX ? */
+	rblock->dnssec_request_domains,         /* no dnssec request XXX ? */
+	rblock->dnssec_require_domains,         /* no dnssec require XXX ? */
         NULL,                           /* fully_qualified_name */
         NULL);                          /* indicate local host removed */
     }
@@ -120,7 +120,8 @@ for (h = addr->host_list; h != NULL; h = next_h)
     DEBUG(D_route|D_host_lookup) debug_printf("doing DNS lookup\n");
     rc = host_find_bydns(h, ignore_target_hosts, HOST_FIND_BY_A, NULL, NULL,
       NULL,
-      NULL, NULL,	/*XXX dnssec? */
+      rblock->dnssec_request_domains,         /* no dnssec request XXX ? */
+      rblock->dnssec_require_domains,         /* no dnssec require XXX ? */
       &canonical_name, &removed);
     if (rc == HOST_FOUND)
       {

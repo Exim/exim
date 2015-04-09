@@ -1168,7 +1168,10 @@ router_instance  router_defaults = {
     NULL,                      /* fallback_hostlist */
     NULL,                      /* transport instance */
     NULL,                      /* pass_router */
-    NULL                       /* redirect_router */
+    NULL,                      /* redirect_router */
+
+    NULL,                      /* dnssec_request_domains */
+    NULL                       /* dnssec_require_domains */
 };
 
 uschar *router_name            = NULL;

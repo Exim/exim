@@ -83,6 +83,8 @@ JH/23 Bug 1572: Increase limit on SMTP confirmation message copy size
 
 JH/24 Verification callouts now attempt to use TLS by default.
 
+HS/01 DNSSEC options (dnssec_require_domains, dnssec_request_domains) 
+      are generic router options now. The defaults didn't change.
 
 
 Exim version 4.85
