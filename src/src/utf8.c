@@ -125,6 +125,25 @@ return res;
 }
 
 
+/*************************************************
+*         Report the library versions.           *
+*************************************************/
+
+/* See a description in tls-openssl.c for an explanation of why this exists.
+
+Arguments:   a FILE* to print the results to
+Returns:     nothing
+*/
+
+void
+utf8_version_report(FILE *f)
+{
+fprintf(f, "Library version: IDN: Compile: %s\n"
+           "                      Runtime: %s\n",
+	STRINGPREP_VERSION,
+	stringprep_check_version(NULL));
+}
+
 #endif	/* whole file */
 
 /* vi: aw ai sw=2

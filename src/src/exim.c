@@ -1022,6 +1022,9 @@ DEBUG(D_any) do {
 #ifdef SUPPORT_TLS
   tls_version_report(f);
 #endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  utf8_version_report(f);
+#endif
 
   for (authi = auths_available; *authi->driver_name != '\0'; ++authi) {
     if (authi->version_report) {
