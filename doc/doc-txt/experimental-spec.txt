@@ -1288,7 +1288,8 @@ international handling for the message is enabled and
 the expansion variable $message_smtputf8 will have value TRUE.
 
 The option allow_utf8_domains is set to true for this
-message, but all DNS lookups are converted to a-label form.
+message. All DNS lookups are converted to a-label form
+whatever the setting of allow_utf8_domains.
 
 Log lines and Received-by: header lines will aquire a "utf8"
 prefix on the protocol element, eg. utf8esmtp.
