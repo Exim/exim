@@ -2080,7 +2080,7 @@ else if (verify_sender_address != NULL)
 
     sender_vaddr = deliver_make_addr(verify_sender_address, TRUE);
 #ifdef EXPERIMENTAL_INTERNATIONAL
-    sender_vaddr->p.utf8 = message_smtputf8;
+    sender_vaddr->prop.utf8 = message_smtputf8;
 #endif
     if (no_details) setflag(sender_vaddr, af_sverify_told);
     if (verify_sender_address[0] != 0)
@@ -2138,7 +2138,7 @@ else if (verify_sender_address != NULL)
 
   /* Put the sender address_data value into $sender_address_data */
 
-  sender_address_data = sender_vaddr->p.address_data;
+  sender_address_data = sender_vaddr->prop.address_data;
   }
 
 /* A recipient address just gets a straightforward verify; again we must handle
@@ -2168,7 +2168,7 @@ else
   if (testflag((&addr2), af_pass_message)) acl_temp_details = TRUE;
 
   /* Make $address_data visible */
-  deliver_address_data = addr2.p.address_data;
+  deliver_address_data = addr2.prop.address_data;
   }
 
 /* We have a result from the relevant test. Handle defer overrides first. */
@@ -2187,13 +2187,9 @@ sender_verified_failed to the address item that actually failed. */
 if (rc != OK && verify_sender_address != NULL)
   {
   if (rc != DEFER)
-    {
     *log_msgptr = *user_msgptr = US"Sender verify failed";
-    }
   else if (*basic_errno != ERRNO_CALLOUTDEFER)
-    {
     *log_msgptr = *user_msgptr = US"Could not complete sender verify";
-    }
   else
     {
     *log_msgptr = US"Could not complete sender verify callout";
@@ -4386,7 +4382,7 @@ if (where == ACL_WHERE_RCPT)
     return DEFER;
     }
 #ifdef EXPERIMENTAL_INTERNATIONAL
-  addr->p.utf8 = message_smtputf8;
+  addr->prop.utf8 = message_smtputf8;
 #endif
   deliver_domain = addr->domain;
   deliver_localpart = addr->local_part;

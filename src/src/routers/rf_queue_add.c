@@ -36,8 +36,8 @@ BOOL
 rf_queue_add(address_item *addr, address_item **paddr_local,
   address_item **paddr_remote, router_instance *rblock, struct passwd *pw)
 {
-addr->p.domain_data = deliver_domain_data;         /* Save these values for */
-addr->p.localpart_data = deliver_localpart_data;   /* use in the transport */
+addr->prop.domain_data = deliver_domain_data;         /* Save these values for */
+addr->prop.localpart_data = deliver_localpart_data;   /* use in the transport */
 
 /* Handle a local transport */
 
@@ -95,9 +95,9 @@ DEBUG(D_route)
   debug_printf("queued for %s transport: local_part = %s\ndomain = %s\n"
     "  errors_to=%s\n",
     (addr->transport == NULL)? US"<unset>" : addr->transport->name,
-    addr->local_part, addr->domain, addr->p.errors_address);
-  debug_printf("  domain_data=%s localpart_data=%s\n", addr->p.domain_data,
-    addr->p.localpart_data);
+    addr->local_part, addr->domain, addr->prop.errors_address);
+  debug_printf("  domain_data=%s localpart_data=%s\n", addr->prop.domain_data,
+    addr->prop.localpart_data);
   }
 
 return TRUE;

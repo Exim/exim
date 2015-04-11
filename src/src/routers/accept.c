@@ -118,9 +118,9 @@ if (!rf_get_transport(rblock->transport_name, &(rblock->transport),
   addr, rblock->name, NULL)) return DEFER;
 
 addr->transport = rblock->transport;
-addr->p.errors_address = errors_to;
-addr->p.extra_headers = extra_headers;
-addr->p.remove_headers = remove_headers;
+addr->prop.errors_address = errors_to;
+addr->prop.extra_headers = extra_headers;
+addr->prop.remove_headers = remove_headers;
 
 return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)? OK : DEFER;
 }

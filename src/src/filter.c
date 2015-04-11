@@ -1821,7 +1821,7 @@ while (commands != NULL)
       set in a system filter and to the local address in user filters. */
 
       addr = deliver_make_addr(expargs[0], TRUE);  /* TRUE => copy s */
-      addr->p.errors_address = (s == NULL)?
+      addr->prop.errors_address = (s == NULL)?
         s : string_copy(s);                        /* Default is NULL */
       if (commands->noerror) setflag(addr, af_ignore_error);
       addr->next = *generated;

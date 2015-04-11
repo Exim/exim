@@ -1630,7 +1630,7 @@ goto SEND_QUIT;
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
   utf8_offered = esmtp
-    && addrlist->p.utf8
+    && addrlist->prop.utf8
     && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
 		  PCRE_EOPT, NULL, 0) >= 0;
 #endif
@@ -1850,7 +1850,7 @@ if (continue_hostname == NULL
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
   utf8_offered = esmtp
-    && addrlist->p.utf8
+    && addrlist->prop.utf8
     && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
 		  PCRE_EOPT, NULL, 0) >= 0;
 #endif
@@ -1883,7 +1883,7 @@ setting_up = FALSE;
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
 /* If this is an international message we need the host to speak SMTPUTF8 */
-if (addrlist->p.utf8 && !utf8_offered)
+if (addrlist->prop.utf8 && !utf8_offered)
   {
   errno = ERRNO_UTF8_FWD;
   goto RESPONSE_FAILED;
@@ -1967,7 +1967,7 @@ if (prdr_offered)
 #endif
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-if (addrlist->p.utf8)
+if (addrlist->prop.utf8)
   sprintf(CS p, " SMTPUTF8"), p += 9;
 #endif
 

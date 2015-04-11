@@ -377,7 +377,7 @@ new_addr = deliver_make_addr(reroute, TRUE);
 new_addr->parent = addr;
 
 copyflag(new_addr, addr, af_propagate);
-new_addr->p = addr->p;
+new_addr->prop = addr->prop;
 
 if (addr->child_count == SHRT_MAX)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
@@ -389,11 +389,11 @@ new_addr->next = *addr_new;
 /* Set up the errors address, if any, and the additional and removeable headers
 for this new address. */
 
-rc = rf_get_errors_address(addr, rblock, verify, &(new_addr->p.errors_address));
+rc = rf_get_errors_address(addr, rblock, verify, &new_addr->prop.errors_address);
 if (rc != OK) return rc;
 
-rc = rf_get_munge_headers(addr, rblock, &(new_addr->p.extra_headers),
-  &(new_addr->p.remove_headers));
+rc = rf_get_munge_headers(addr, rblock, &new_addr->prop.extra_headers,
+  &new_addr->prop.remove_headers);
 if (rc != OK) return rc;
 
 return OK;

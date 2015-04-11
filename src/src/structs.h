@@ -584,7 +584,7 @@ typedef struct address_item {
                                   /* (  also  */
                                   /* ( contains verify rc in sender verify cache */
   short int transport_return;     /* result of delivery attempt */
-  address_item_propagated p;      /* fields that are propagated to children */
+  address_item_propagated prop;   /* fields that are propagated to children */
 } address_item;
 
 /* The table of header names consists of items of this type */

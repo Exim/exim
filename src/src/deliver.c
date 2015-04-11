@@ -149,9 +149,9 @@ else
   }
 
 deliver_recipients = addr;
-deliver_address_data = addr->p.address_data;
-deliver_domain_data = addr->p.domain_data;
-deliver_localpart_data = addr->p.localpart_data;
+deliver_address_data = addr->prop.address_data;
+deliver_domain_data = addr->prop.domain_data;
+deliver_localpart_data = addr->prop.localpart_data;
 
 /* These may be unset for multiple addresses */
 
@@ -825,8 +825,8 @@ if ((log_extra_selector & LX_sender_on_delivery) != 0  ||  msg)
   s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
 
 #ifdef EXPERIMENTAL_SRS
-if(addr->p.srs_sender)
-  s = string_append(s, &size, &ptr, 3, US" SRS=<", addr->p.srs_sender, US">");
+if(addr->prop.srs_sender)
+  s = string_append(s, &size, &ptr, 3, US" SRS=<", addr->prop.srs_sender, US">");
 #endif
 
 /* You might think that the return path must always be set for a successful
@@ -1093,7 +1093,7 @@ if (addr->return_file >= 0 && addr->return_filename != NULL)
     /* Handle returning options, but only if there is an address to return
     the text to. */
 
-    if (sender_address[0] != 0 || addr->p.errors_address != NULL)
+    if (sender_address[0] != 0 || addr->prop.errors_address != NULL)
       {
       if (tb->return_output)
         {
@@ -1310,7 +1310,7 @@ else
 
   if (!testflag(addr, af_ignore_error) &&
       (addr->special_action == SPECIAL_FREEZE ||
-        (sender_address[0] == 0 && addr->p.errors_address == NULL)
+        (sender_address[0] == 0 && addr->prop.errors_address == NULL)
       ))
     {
     frozen_info = (addr->special_action == SPECIAL_FREEZE)? US"" :
@@ -1810,11 +1810,11 @@ transport_instance *tp = addr->transport;
 /* Set up the return path from the errors or sender address. If the transport
 has its own return path setting, expand it and replace the existing value. */
 
-if(addr->p.errors_address != NULL)
-  return_path = addr->p.errors_address;
+if(addr->prop.errors_address != NULL)
+  return_path = addr->prop.errors_address;
 #ifdef EXPERIMENTAL_SRS
-else if(addr->p.srs_sender != NULL)
-  return_path = addr->p.srs_sender;
+else if(addr->prop.srs_sender != NULL)
+  return_path = addr->prop.srs_sender;
 #endif
 else
   return_path = sender_address;
@@ -2426,9 +2426,9 @@ while (addr_local != NULL)
         (addr->flags & (af_pfr|af_file)) == (next->flags & (af_pfr|af_file)) &&
         (!uses_lp  || Ustrcmp(next->local_part, addr->local_part) == 0) &&
         (!uses_dom || Ustrcmp(next->domain, addr->domain) == 0) &&
-        same_strings(next->p.errors_address, addr->p.errors_address) &&
-        same_headers(next->p.extra_headers, addr->p.extra_headers) &&
-        same_strings(next->p.remove_headers, addr->p.remove_headers) &&
+        same_strings(next->prop.errors_address, addr->prop.errors_address) &&
+        same_headers(next->prop.extra_headers, addr->prop.extra_headers) &&
+        same_strings(next->prop.remove_headers, addr->prop.remove_headers) &&
         same_ugid(tp, addr, next) &&
         ((addr->host_list == NULL && next->host_list == NULL) ||
          (addr->host_list != NULL && next->host_list != NULL &&
@@ -3950,13 +3950,13 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     if (  (multi_domain || Ustrcmp(next->domain, addr->domain) == 0)
        && tp == next->transport
        && same_hosts(next->host_list, addr->host_list)
-       && same_strings(next->p.errors_address, addr->p.errors_address)
-       && same_headers(next->p.extra_headers, addr->p.extra_headers)
+       && same_strings(next->prop.errors_address, addr->prop.errors_address)
+       && same_headers(next->prop.extra_headers, addr->prop.extra_headers)
        && same_ugid(tp, next, addr)
-       && (  next->p.remove_headers == addr->p.remove_headers
-	  || (  next->p.remove_headers != NULL
-	     && addr->p.remove_headers != NULL
-	     && Ustrcmp(next->p.remove_headers, addr->p.remove_headers) == 0
+       && (  next->prop.remove_headers == addr->prop.remove_headers
+	  || (  next->prop.remove_headers
+	     && addr->prop.remove_headers
+	     && Ustrcmp(next->prop.remove_headers, addr->prop.remove_headers) == 0
 	  )  )
        && (  !multi_domain
 	  || (  (
@@ -4000,11 +4000,11 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   /* Compute the return path, expanding a new one if required. The old one
   must be set first, as it might be referred to in the expansion. */
 
-  if(addr->p.errors_address != NULL)
-    return_path = addr->p.errors_address;
+  if(addr->prop.errors_address != NULL)
+    return_path = addr->prop.errors_address;
 #ifdef EXPERIMENTAL_SRS
-  else if(addr->p.srs_sender != NULL)
-    return_path = addr->p.srs_sender;
+  else if(addr->prop.srs_sender != NULL)
+    return_path = addr->prop.srs_sender;
 #endif
   else
     return_path = sender_address;
@@ -5593,9 +5593,9 @@ if (process_recipients != RECIP_IGNORE)
       {
       recipient_item *r = recipients_list + i;
       address_item *new = deliver_make_addr(r->address, FALSE);
-      new->p.errors_address = r->errors_to;
+      new->prop.errors_address = r->errors_to;
 #ifdef EXPERIMENTAL_INTERNATIONAL
-      new->p.utf8 = message_smtputf8;
+      new->prop.utf8 = message_smtputf8;
       DEBUG(D_deliver) debug_printf("utf8: %c\n", message_smtputf8 ? 'T':'F');
 #endif
 
@@ -6193,8 +6193,8 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
 
     /* Just in case some router parameter refers to it. */
 
-    return_path = (addr->p.errors_address != NULL)?
-      addr->p.errors_address : sender_address;
+    return_path = (addr->prop.errors_address != NULL)?
+      addr->prop.errors_address : sender_address;
 
     /* If a router defers an address, add a retry item. Whether or not to
     use the local part in the key is a property of the router. */
@@ -6264,8 +6264,8 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
 
     if (addr_remote == addr &&
         addr->router->same_domain_copy_routing &&
-        addr->p.extra_headers == NULL &&
-        addr->p.remove_headers == NULL &&
+        addr->prop.extra_headers == NULL &&
+        addr->prop.remove_headers == NULL &&
         old_domain == addr->domain)
       {
       address_item **chain = &addr_route;
@@ -6292,7 +6292,7 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
         addr2->transport = addr->transport;
         addr2->host_list = addr->host_list;
         addr2->fallback_hosts = addr->fallback_hosts;
-        addr2->p.errors_address = addr->p.errors_address;
+        addr2->prop.errors_address = addr->prop.errors_address;
         copyflag(addr2, addr, af_hide_child | af_local_host_removed);
 
         DEBUG(D_deliver|D_route)
@@ -6863,7 +6863,7 @@ while (addr_failed != NULL)
   If neither of these cases obtains, something has gone wrong. Log the
   incident, but then ignore the error. */
 
-  if (sender_address[0] == 0 && addr_failed->p.errors_address == NULL)
+  if (sender_address[0] == 0 && addr_failed->prop.errors_address == NULL)
     {
     if (  !testflag(addr_failed, af_retry_timedout)
        && !testflag(addr_failed, af_ignore_error))
@@ -6907,8 +6907,8 @@ while (addr_failed != NULL)
 
   else
     {
-    bounce_recipient = addr_failed->p.errors_address
-      ? addr_failed->p.errors_address : sender_address;
+    bounce_recipient = addr_failed->prop.errors_address
+      ? addr_failed->prop.errors_address : sender_address;
 
     /* Make a subprocess to send a message */
 
@@ -6943,8 +6943,8 @@ while (addr_failed != NULL)
 
       paddr = &addr_failed;
       for (addr = addr_failed; addr != NULL; addr = *paddr)
-        if (Ustrcmp(bounce_recipient, addr->p.errors_address
-	      ? addr->p.errors_address : sender_address) == 0)
+        if (Ustrcmp(bounce_recipient, addr->prop.errors_address
+	      ? addr->prop.errors_address : sender_address) == 0)
           {                          /* The same - dechain */
           *paddr = addr->next;
           *pmsgchain = addr;
@@ -7455,7 +7455,7 @@ else if (addr_defer != (address_item *)(+1))
         DEBUG(D_deliver) debug_printf("one_time: adding %s in place of %s\n",
           otaddr->address, otaddr->parent->address);
         receive_add_recipient(otaddr->address, t);
-        recipients_list[recipients_count-1].errors_to = otaddr->p.errors_address;
+        recipients_list[recipients_count-1].errors_to = otaddr->prop.errors_address;
         tree_add_nonrecipient(otaddr->parent->address);
         update_spool = TRUE;
         }
@@ -7467,7 +7467,7 @@ else if (addr_defer != (address_item *)(+1))
 
     if (sender_address[0] != 0)
       {
-      if (addr->p.errors_address == NULL)
+      if (addr->prop.errors_address == NULL)
         {
         if (Ustrstr(recipients, sender_address) == NULL)
           recipients = string_sprintf("%s%s%s", recipients,
@@ -7475,9 +7475,9 @@ else if (addr_defer != (address_item *)(+1))
         }
       else
         {
-        if (Ustrstr(recipients, addr->p.errors_address) == NULL)
+        if (Ustrstr(recipients, addr->prop.errors_address) == NULL)
           recipients = string_sprintf("%s%s%s", recipients,
-            (recipients[0] == 0)? "" : ",", addr->p.errors_address);
+            (recipients[0] == 0)? "" : ",", addr->prop.errors_address);
         }
       }
     }
