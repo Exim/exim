@@ -451,6 +451,11 @@ while (generated != NULL)
       }
     }
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    next->prop.utf8 = string_is_utf8(next->address)
+      || (sender_address && string_is_utf8(sender_address));
+#endif
+
   DEBUG(D_route)
     {
     debug_printf("%s router generated %s\n  %serrors_to=%s transport=%s\n",
@@ -469,6 +474,10 @@ while (generated != NULL)
       debug_printf("gid=%ld ", (long int)(next->gid));
     else
       debug_printf("gid=unset ");
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    if (next->prop.utf8) debug_printf("utf8 ");
+#endif
 
     debug_printf("home=%s\n", next->home_dir);
     }

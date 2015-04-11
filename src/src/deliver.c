@@ -5596,7 +5596,7 @@ if (process_recipients != RECIP_IGNORE)
       new->prop.errors_address = r->errors_to;
 #ifdef EXPERIMENTAL_INTERNATIONAL
       new->prop.utf8 = message_smtputf8;
-      DEBUG(D_deliver) debug_printf("utf8: %c\n", message_smtputf8 ? 'T':'F');
+      DEBUG(D_deliver) if (message_smtputf8) debug_printf("utf8\n");
 #endif
 
       if (r->pno >= 0)
@@ -5606,7 +5606,8 @@ if (process_recipients != RECIP_IGNORE)
          to be passed on to other DSN enabled MTAs */
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
-      DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: %d\n", new->dsn_orcpt, new->dsn_flags);
+      DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: %d\n",
+	new->dsn_orcpt, new->dsn_flags);
 
       switch (process_recipients)
         {
