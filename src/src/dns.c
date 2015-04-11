@@ -584,7 +584,7 @@ if (previous != NULL)
   if ((alabel = string_domain_utf8_to_alabel(name, &errstr)), errstr)
     {
     DEBUG(D_dns)
-      debug_printf("DNS name '%s' utf8 conversion to alabel failed: %s", name,
+      debug_printf("DNS name '%s' utf8 conversion to alabel failed: %s\n", name,
         errstr);
     host_find_failed_syntax = TRUE;
     return DNS_NOMATCH;

@@ -33,7 +33,7 @@ uschar * s;
 int rc;
 
 s = US stringprep_utf8_nfkc_normalize(CCS utf8, -1);
-if (  (rc = idna_to_ascii_8z(CCS s, CSS &s1, IDNA_USE_STD3_ASCII_RULES))
+if (  (rc = idna_to_ascii_8z(CCS s, CSS &s1, IDNA_ALLOW_UNASSIGNED))
    != IDNA_SUCCESS)
   {
   free(s);
