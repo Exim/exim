@@ -1270,6 +1270,51 @@ in combination with EXPERIMENTAL_EVENT), and a new variable
 $tls_out_tlsa_usage (detailed above).
 
 
+
+SMTPUTF8
+------------------------------------------------------------
+Internationalised mail name handling.
+RFCs 6530, 6533, 5890
+
+Compile with EXPERIMENTAL_INTERNATIONAL and libidn.
+
+New main config option smtputf8_advertise_hosts, default '*',
+a host list.  If this matches the sending host and
+accept_8bitmime is true (the default) then the ESMTP option
+SMTPUTF8 will be advertised.
+
+If the sender specifies the SMTPUTF8 option on a MAIL command
+international handling for the message is enabled and
+the expansion variable $message_smtputf8 will have value TRUE.
+
+The option allow_utf8_domains is set to true for this
+message. All DNS lookups are converted to a-label form
+whatever the setting of allow_utf8_domains.
+
+Both localparts and domain are maintained as the original
+utf8 form internally; any matching or regex use will
+require appropriate care.  Filenames created, eg. by
+the appendfile transport, will have utf8 name.
+
+Helo names sent by the smtp transport will have any utf8
+components expanded to a-label form.
+
+Log lines and Received-by: header lines will aquire a "utf8"
+prefix on the protocol element, eg. utf8esmtp.
+
+New expansion operators:
+	${utf8_domain_to_alabel:str}
+	${utf8_domain_from_alabel:str}
+	${utf8_localpart_to_alabel:str}
+	${utf8_localpart_from_alabel:str}
+
+Known issues:
+ - Currently LMTP is not supported.
+ - DSN unitext handling is not present
+ - no provision for converting logging from UTF-8
+ - VRFY and EXPN not handled
+ - MSA mode not handled (!)
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

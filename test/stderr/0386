@@ -329,7 +329,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: 2@b
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00
@@ -505,7 +505,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: 2@b
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaY-0005vi-00

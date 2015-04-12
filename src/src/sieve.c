@@ -1072,7 +1072,7 @@ if (file)
   setflag(new_addr, af_pfr|af_file);
   new_addr->mode = 0;
   }
-new_addr->p.errors_address = NULL;
+new_addr->prop.errors_address = NULL;
 new_addr->next = *generated;
 *generated = new_addr;
 }

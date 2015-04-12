@@ -570,6 +570,16 @@ if (*errno_value == ERRNO_WRITEINCOMPLETE)
   return FALSE;
   }
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+/* Handle lack of advertised SMTPUTF8, for international message */
+if (*errno_value == ERRNO_UTF8_FWD)
+  {
+  *message = US string_sprintf("utf8 support required but not offered for forwarding");
+  DEBUG(D_deliver|D_transport) debug_printf("%s\n", *message);
+  return TRUE;
+  }
+#endif
+
 /* Handle error responses from the remote mailer. */
 
 if (buffer[0] != 0)
@@ -1355,6 +1365,9 @@ BOOL pass_message = FALSE;
 BOOL prdr_offered = FALSE;
 BOOL prdr_active;
 #endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+BOOL utf8_offered = FALSE;
+#endif
 BOOL dsn_all_lasthop = TRUE;
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
 BOOL dane = FALSE;
@@ -1473,6 +1486,19 @@ if (continue_hostname == NULL)
   delayed till here so that $sending_interface and $sending_port are set. */
 
   helo_data = expand_string(ob->helo_data);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  if (helo_data)
+    {
+    uschar * errstr = NULL;
+    if ((helo_data = string_domain_utf8_to_alabel(helo_data, &errstr)), errstr)
+      {
+      errstr = string_sprintf("failed to expand helo_data: %s", errstr);
+      set_errno(addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE, NULL);
+      yield = DEFER;
+      goto SEND_QUIT;
+      }
+    }
+#endif
 
   /* The first thing is to wait for an initial OK response. The dreaded "goto"
   is nevertheless a reasonably clean way of programming this kind of logic,
@@ -1613,6 +1639,13 @@ goto SEND_QUIT;
 
   if (prdr_offered)
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
+#endif
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  utf8_offered = esmtp
+    && addrlist->prop.utf8
+    && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
+		  PCRE_EOPT, NULL, 0) >= 0;
 #endif
   }
 
@@ -1821,16 +1854,24 @@ if (continue_hostname == NULL
 #ifndef DISABLE_PRDR
   prdr_offered = esmtp
     && pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(CS buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0
+		  PCRE_EOPT, NULL, 0) >= 0
     && verify_check_given_host(&ob->hosts_try_prdr, host) == OK;
 
   if (prdr_offered)
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  utf8_offered = esmtp
+    && addrlist->prop.utf8
+    && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
+		  PCRE_EOPT, NULL, 0) >= 0;
+#endif
+
   /* Note if the server supports DSN */
-  smtp_use_dsn = esmtp && pcre_exec(regex_DSN, NULL, CS buffer, (int)Ustrlen(CS buffer), 0,
-       PCRE_EOPT, NULL, 0) >= 0;
+  smtp_use_dsn = esmtp
+    && pcre_exec(regex_DSN, NULL, CS buffer, Ustrlen(CS buffer), 0,
+		  PCRE_EOPT, NULL, 0) >= 0;
   DEBUG(D_transport) debug_printf("use_dsn=%d\n", smtp_use_dsn);
 
   /* Note if the response to EHLO specifies support for the AUTH extension.
@@ -1852,6 +1893,15 @@ if (continue_hostname == NULL
 message-specific. */
 
 setting_up = FALSE;
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+/* If this is an international message we need the host to speak SMTPUTF8 */
+if (addrlist->prop.utf8 && !utf8_offered)
+  {
+  errno = ERRNO_UTF8_FWD;
+  goto RESPONSE_FAILED;
+  }
+#endif
 
 /* If there is a filter command specified for this transport, we can now
 set it up. This cannot be done until the identify of the host is known. */
@@ -1929,18 +1979,25 @@ if (prdr_offered)
   }
 #endif
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+if (addrlist->prop.utf8)
+  sprintf(CS p, " SMTPUTF8"), p += 9;
+#endif
+
 /* check if all addresses have lasthop flag */
 /* do not send RET and ENVID if true */
-dsn_all_lasthop = TRUE;
-for (addr = first_addr;
+for (dsn_all_lasthop = TRUE, addr = first_addr;
      address_count < max_rcpt && addr != NULL;
      addr = addr->next)
   if ((addr->dsn_flags & rf_dsnlasthop) != 1)
+    {
     dsn_all_lasthop = FALSE;
+    break;
+    }
 
 /* Add any DSN flags to the mail command */
 
-if ((smtp_use_dsn) && (dsn_all_lasthop == FALSE))
+if (smtp_use_dsn && !dsn_all_lasthop)
   {
   if (dsn_ret == dsn_ret_hdrs)
     {
@@ -1981,27 +2038,27 @@ buffer. */
 pending_MAIL = TRUE;     /* The block starts with MAIL */
 
 rc = smtp_write_command(&outblock, smtp_use_pipelining,
-       "MAIL FROM:<%s>%s\r\n", return_path, buffer);
+	"MAIL FROM:<%s>%s\r\n", return_path, buffer);
 mail_command = string_copy(big_buffer);  /* Save for later error message */
 
 switch(rc)
   {
   case -1:                /* Transmission error */
-  goto SEND_FAILED;
+    goto SEND_FAILED;
 
   case +1:                /* Block was sent */
-  if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
+    if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
        ob->command_timeout))
-    {
-    if (errno == 0 && buffer[0] == '4')
       {
-      errno = ERRNO_MAIL4XX;
-      addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+      if (errno == 0 && buffer[0] == '4')
+	{
+	errno = ERRNO_MAIL4XX;
+	addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+	}
+      goto RESPONSE_FAILED;
       }
-    goto RESPONSE_FAILED;
-    }
-  pending_MAIL = FALSE;
-  break;
+    pending_MAIL = FALSE;
+    break;
   }
 
 /* Pass over all the relevant recipient addresses for this host, which are the
@@ -2490,24 +2547,29 @@ if (!ok)
 
     switch(save_errno)
       {
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      case ERRNO_UTF8_FWD:
+        code = '5';
+      /*FALLTHROUGH*/
+#endif
       case 0:
       case ERRNO_MAIL4XX:
       case ERRNO_DATA4XX:
-      message_error = TRUE;
-      break;
+	message_error = TRUE;
+	break;
 
       case ETIMEDOUT:
-      message_error = Ustrncmp(smtp_command,"MAIL",4) == 0 ||
-                      Ustrncmp(smtp_command,"end ",4) == 0;
-      break;
+	message_error = Ustrncmp(smtp_command,"MAIL",4) == 0 ||
+			Ustrncmp(smtp_command,"end ",4) == 0;
+	break;
 
       case ERRNO_SMTPCLOSED:
-      message_error = Ustrncmp(smtp_command,"end ",4) == 0;
-      break;
+	message_error = Ustrncmp(smtp_command,"end ",4) == 0;
+	break;
 
       default:
-      message_error = FALSE;
-      break;
+	message_error = FALSE;
+	break;
       }
 
     /* Handle the cases that are treated as message errors. These are:
@@ -2515,6 +2577,7 @@ if (!ok)
       (a) negative response or timeout after MAIL
       (b) negative response after DATA
       (c) negative response or timeout or dropped connection after "."
+      (d) utf8 support required and not offered
 
     It won't be a negative response or timeout after RCPT, as that is dealt
     with separately above. The action in all cases is to set an appropriate

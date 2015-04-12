@@ -114,7 +114,7 @@ while (generated != NULL)
 
   next->parent = addr;
   orflag(next, addr, af_propagate);
-  next->p = *addr_prop;
+  next->prop = *addr_prop;
   next->start_router = rblock->redirect_router;
 
   next->next = *addr_new;
@@ -216,11 +216,11 @@ errors address and extra header stuff. */
 
 addr_prop.address_data = deliver_address_data;
 
-rc = rf_get_errors_address(addr, rblock, verify, &(addr_prop.errors_address));
+rc = rf_get_errors_address(addr, rblock, verify, &addr_prop.errors_address);
 if (rc != OK) return rc;
 
-rc = rf_get_munge_headers(addr, rblock, &(addr_prop.extra_headers),
-  &(addr_prop.remove_headers));
+rc = rf_get_munge_headers(addr, rblock, &addr_prop.extra_headers,
+  &addr_prop.remove_headers);
 if (rc != OK) return rc;
 
 /* Get the fixed or expanded uid under which the command is to run
@@ -526,7 +526,7 @@ lookup_value = NULL;
 
 /* Put the errors address, extra headers, and address_data into this address */
 
-addr->p = addr_prop;
+addr->prop = addr_prop;
 
 /* Queue the address for local or remote delivery. */
 

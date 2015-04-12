@@ -459,6 +459,9 @@ typedef struct address_item_propagated {
   #ifdef EXPERIMENTAL_SRS
   uschar *srs_sender;             /* Change return path when delivering */
   #endif
+  #ifdef EXPERIMENTAL_INTERNATIONAL
+  BOOL    utf8;			  /* requires SMTPUTF8 processing */
+  #endif
 } address_item_propagated;
 
 /* Bits for the flags field below */
@@ -581,7 +584,7 @@ typedef struct address_item {
                                   /* (  also  */
                                   /* ( contains verify rc in sender verify cache */
   short int transport_return;     /* result of delivery attempt */
-  address_item_propagated p;      /* fields that are propagated to children */
+  address_item_propagated prop;   /* fields that are propagated to children */
 } address_item;
 
 /* The table of header names consists of items of this type */

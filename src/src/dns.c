@@ -576,6 +576,23 @@ if (previous != NULL)
   return previous->data.val;
   }
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+/* Convert all names to a-label form before doing lookup */
+  {
+  uschar * alabel;
+  uschar * errstr = NULL;
+  if ((alabel = string_domain_utf8_to_alabel(name, &errstr)), errstr)
+    {
+    DEBUG(D_dns)
+      debug_printf("DNS name '%s' utf8 conversion to alabel failed: %s\n", name,
+        errstr);
+    host_find_failed_syntax = TRUE;
+    return DNS_NOMATCH;
+    }
+  name = alabel;
+  }
+#endif
+
 /* If configured, check the hygene of the name passed to lookup. Otherwise,
 although DNS lookups may give REFUSED at the lower level, some resolvers
 turn this into TRY_AGAIN, which is silly. Give a NOMATCH return, since such

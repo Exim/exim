@@ -421,13 +421,13 @@ else if (ob->check_secondary_mx && !testflag(addr, af_local_host_removed))
 
 /* Set up the errors address, if any. */
 
-rc = rf_get_errors_address(addr, rblock, verify, &(addr->p.errors_address));
+rc = rf_get_errors_address(addr, rblock, verify, &addr->prop.errors_address);
 if (rc != OK) return rc;
 
 /* Set up the additional and removeable headers for this address. */
 
-rc = rf_get_munge_headers(addr, rblock, &(addr->p.extra_headers),
-  &(addr->p.remove_headers));
+rc = rf_get_munge_headers(addr, rblock, &addr->prop.extra_headers,
+  &addr->prop.remove_headers);
 if (rc != OK) return rc;
 
 /* Get store in which to preserve the original host item, chained on

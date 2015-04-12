@@ -38,7 +38,7 @@ rf_get_errors_address(address_item *addr, router_instance *rblock,
 {
 uschar *s;
 
-*errors_to = addr->p.errors_address;
+*errors_to = addr->prop.errors_address;
 if (rblock->errors_to == NULL) return OK;
 
 s = expand_string(rblock->errors_to);

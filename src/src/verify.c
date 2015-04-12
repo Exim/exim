@@ -920,6 +920,25 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         }
       }
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    else if (  addr->prop.utf8
+	    && !(  esmtp
+		&& (  regex_UTF8
+		   || ( (regex_UTF8 = regex_must_compile(
+			  US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE)),
+		      TRUE
+		   )  )
+		&& pcre_exec(regex_UTF8, NULL, CS responsebuffer,
+		    Ustrlen(responsebuffer), 0, PCRE_EOPT, NULL, 0) >= 0
+	    )   )
+      {
+      HDEBUG(D_acl|D_v) debug_printf("utf8 required but not offered\n");
+      errno = ERRNO_UTF8_FWD;
+      setflag(addr, af_verify_nsfail);
+      done = FALSE;
+      }
+#endif
+
     /* If we haven't authenticated, but are required to, give up. */
     /* Try to AUTH */
 
@@ -937,7 +956,13 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       ( (addr->auth_sndr = client_authenticated_sender),
 
     /* Send the MAIL command */
-        (smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>%s\r\n",
+        (smtp_write_command(&outblock, FALSE,
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	  addr->prop.utf8
+	  ? "MAIL FROM:<%s>%s SMTPUTF8\r\n"
+	  :
+#endif
+	    "MAIL FROM:<%s>%s\r\n",
           from_address, responsebuffer) >= 0)
       )  &&
 
@@ -1022,7 +1047,13 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
             smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
               '2', callout) &&
 
-            smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>\r\n",
+            smtp_write_command(&outblock, FALSE,
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	      addr->prop.utf8
+	      ? "MAIL FROM:<%s> SMTPUTF8\r\n"
+	      :
+#endif
+	        "MAIL FROM:<%s>\r\n",
               from_address) >= 0 &&
             smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
               '2', callout);
@@ -1146,6 +1177,21 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         HDEBUG(D_verify) debug_printf("SMTP timeout\n");
         send_quit = FALSE;
         }
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      else if (errno == ERRNO_UTF8_FWD)
+	{
+	extern int acl_where;	/* src/acl.c */
+	errno = 0;
+	addr->message = string_sprintf(
+	    "response to \"%s\" from %s [%s] did not include SMTPUTF8",
+            big_buffer, host->name, host->address);
+        addr->user_message = acl_where == ACL_WHERE_RCPT
+	  ? US"533 mailbox name not allowed"
+	  : US"550 mailbox unavailable";
+	yield = FAIL;
+	done = TRUE;
+	}
+#endif
       else if (errno == 0)
         {
         if (*responsebuffer == 0) Ustrcpy(responsebuffer, US"connection dropped");
@@ -1616,7 +1662,7 @@ if (addr != vaddr)
   vaddr->user_message = addr->user_message;
   vaddr->basic_errno = addr->basic_errno;
   vaddr->more_errno = addr->more_errno;
-  vaddr->p.address_data = addr->p.address_data;
+  vaddr->prop.address_data = addr->prop.address_data;
   copyflag(vaddr, addr, af_pass_message);
   }
 return yield;
@@ -1877,8 +1923,8 @@ while (addr_new != NULL)
 
   /* Just in case some router parameter refers to it. */
 
-  return_path = (addr->p.errors_address != NULL)?
-    addr->p.errors_address : sender_address;
+  return_path = (addr->prop.errors_address != NULL)?
+    addr->prop.errors_address : sender_address;
 
   /* Split the address into domain and local part, handling the %-hack if
   necessary, and then route it. While routing a sender address, set
@@ -2171,7 +2217,7 @@ while (addr_new != NULL)
       /* If we have carried on to verify a child address, we want the value
       of $address_data to be that of the child */
 
-      vaddr->p.address_data = addr->p.address_data;
+      vaddr->prop.address_data = addr->prop.address_data;
       yield = OK;
       goto out;
       }
@@ -2203,8 +2249,8 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 
     fprintf(f, "%s", CS addr->address);
 #ifdef EXPERIMENTAL_SRS
-    if(addr->p.srs_sender)
-      fprintf(f, "    [srs = %s]", addr->p.srs_sender);
+    if(addr->prop.srs_sender)
+      fprintf(f, "    [srs = %s]", addr->prop.srs_sender);
 #endif
 
     /* If the address is a duplicate, show something about it. */

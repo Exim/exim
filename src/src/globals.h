@@ -570,6 +570,10 @@ extern int     message_linecount;      /* As it says */
 extern BOOL    message_logs;           /* TRUE to write message logs */
 extern int     message_size;           /* Size of message */
 extern uschar *message_size_limit;     /* As it says */
+#ifdef EXPERIMENTAL_INTERNATIONAL
+extern BOOL    message_smtputf8;       /* Internationalized mail handling */
+const extern pcre *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
+#endif
 extern uschar  message_subdir[];       /* Subdirectory for messages */
 extern uschar *message_reference;      /* Reference for error messages */
 
@@ -822,6 +826,9 @@ extern int     smtp_rlr_limit;         /* Max delay */
 extern int     smtp_rlr_threshold;     /* Threshold for RCPT rate limit */
 extern BOOL    smtp_use_pipelining;    /* Global for passed connections */
 extern BOOL    smtp_use_size;          /* Global for passed connections */
+#ifdef EXPERIMENTAL_INTERNATIONAL
+extern uschar *smtputf8_advertise_hosts; /* ingress control */
+#endif
 
 #ifdef WITH_CONTENT_SCAN
 extern uschar *spamd_address;          /* address for the spamassassin daemon */

@@ -628,7 +628,7 @@ that means they were rewritten, or are a record of envelope rewriting, or
 were removed (e.g. Bcc). If remove_headers is not null, skip any headers that
 match any entries therein.  It is a colon-sep list; expand the items
 separately and squash any empty ones.
-Then check addr->p.remove_headers too, provided that addr is not NULL. */
+Then check addr->prop.remove_headers too, provided that addr is not NULL. */
 
 for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
   {
@@ -637,7 +637,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
 
   BOOL include_header = TRUE;
 
-  for (i = 0; i < 2; i++)    /* For remove_headers && addr->p.remove_headers */
+  for (i = 0; i < 2; i++)    /* For remove_headers && addr->prop.remove_headers */
     {
     if (list)
       {
@@ -661,7 +661,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
 	}
       if (s != NULL) { include_header = FALSE; break; }
       }
-    if (addr != NULL) list = addr->p.remove_headers;
+    if (addr != NULL) list = addr->prop.remove_headers;
     }
 
   /* If this header is to be output, try to rewrite it if there are rewriting
@@ -709,7 +709,7 @@ Headers added to an address by a router are guaranteed to end with a newline.
 if (addr)
   {
   int i;
-  header_line *hprev = addr->p.extra_headers;
+  header_line *hprev = addr->prop.extra_headers;
   header_line *hnext;
   for (i = 0; i < 2; i++)
     {
@@ -914,7 +914,7 @@ if ((options & topt_no_headers) == 0)
   /* Then the message's headers. Don't write any that are flagged as "old";
   that means they were rewritten, or are a record of envelope rewriting, or
   were removed (e.g. Bcc). If remove_headers is not null, skip any headers that
-  match any entries therein. Then check addr->p.remove_headers too, provided that
+  match any entries therein. Then check addr->prop.remove_headers too, provided that
   addr is not NULL. */
   if (!transport_headers_send(addr, fd, add_headers, remove_headers, &write_chunk,
 	use_crlf, rewrite_rules, rewrite_existflags))

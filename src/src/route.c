@@ -1342,8 +1342,8 @@ from the original address' parent, if present, otherwise unset. */
 
 *parent = *addr;
 parent->child_count = 2;
-parent->p.errors_address =
-  (addr->parent == NULL)? NULL : addr->parent->p.errors_address;
+parent->prop.errors_address =
+  (addr->parent == NULL)? NULL : addr->parent->prop.errors_address;
 
 /* The routed address gets a new parent. */
 
@@ -1354,12 +1354,12 @@ was set from the original parent (or to NULL) - see above. We do NOT want to
 take the errors address from the unseen router. */
 
 new->parent = parent;
-new->p.errors_address = parent->p.errors_address;
+new->prop.errors_address = parent->prop.errors_address;
 
 /* Copy the propagated flags and address_data from the original. */
 
 copyflag(new, addr, af_propagate);
-new->p.address_data = addr->p.address_data;
+new->prop.address_data = addr->prop.address_data;
 new->dsn_flags = addr->dsn_flags;
 new->dsn_orcpt = addr->dsn_orcpt;
 
@@ -1645,7 +1645,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
         goto ROUTE_EXIT;
         }
       }
-    addr->p.address_data = deliver_address_data;
+    addr->prop.address_data = deliver_address_data;
     }
 
   /* We are finally cleared for take-off with this router. Clear the the flag
@@ -1891,8 +1891,8 @@ DEBUG(D_route)
   debug_printf("  transport: %s\n", (addr->transport == NULL)?
     US"<none>" : addr->transport->name);
 
-  if (addr->p.errors_address != NULL)
-    debug_printf("  errors to %s\n", addr->p.errors_address);
+  if (addr->prop.errors_address != NULL)
+    debug_printf("  errors to %s\n", addr->prop.errors_address);
 
   for (h = addr->host_list; h != NULL; h = h->next)
     {

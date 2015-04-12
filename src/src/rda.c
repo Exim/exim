@@ -723,7 +723,7 @@ if ((pid = fork()) == 0)
 	    != sizeof(addr->mode)
          || write(fd, &(addr->flags), sizeof(addr->flags))
 	    != sizeof(addr->flags)
-         || rda_write_string(fd, addr->p.errors_address) != 0
+         || rda_write_string(fd, addr->prop.errors_address) != 0
 	 )
 	goto bad;
 
@@ -892,7 +892,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     if (read(fd, &(addr->mode), sizeof(addr->mode)) != sizeof(addr->mode) ||
         read(fd, &(addr->flags), sizeof(addr->flags)) != sizeof(addr->flags) ||
-        !rda_read_string(fd, &(addr->p.errors_address))) goto DISASTER;
+        !rda_read_string(fd, &(addr->prop.errors_address))) goto DISASTER;
 
     /* Next comes a possible setting for $thisaddress and any numerical
     variables for pipe expansion, terminated by a NULL string. The maximum

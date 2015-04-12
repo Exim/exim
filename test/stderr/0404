@@ -18020,7 +18020,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: sender@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaY-0005vi-00
@@ -18057,7 +18057,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 DSN: processing router : r2
 DSN: processing successful delivery address: userx@test.ex
 DSN: Sender_address: CALLER@test.ex
@@ -18065,7 +18065,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: userx@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00

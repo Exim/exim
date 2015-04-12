@@ -52,7 +52,7 @@ domain cache. Then copy over the propagating fields from the parent. Then set
 up the new fields. */
 
 *addr = address_defaults;
-addr->p = parent->p;
+addr->prop = parent->prop;
 
 addr->address = address;
 addr->unique = string_copy(address);
