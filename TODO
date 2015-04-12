@@ -14,8 +14,8 @@ destination supports the SMTPUTF8 extension
 
 ======================
 
-to-Alabel convert of helo name
-- smtp transport
+++ to-Alabel convert of helo name
+++ - smtp transport
 
 ++ An "international" flag on the message?
 ++ An is-international expansion condition?

@@ -54,6 +54,7 @@ string_domain_alabel_to_utf8(const uschar * alabel, uschar ** err)
 uschar * s1;
 uschar * s;
 int rc;
+
 if (  (rc = idna_to_unicode_8z8z(CCS alabel, CSS &s1, IDNA_USE_STD3_ASCII_RULES))
    != IDNA_SUCCESS)
   {

@@ -1486,6 +1486,19 @@ if (continue_hostname == NULL)
   delayed till here so that $sending_interface and $sending_port are set. */
 
   helo_data = expand_string(ob->helo_data);
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  if (helo_data)
+    {
+    uschar * errstr = NULL;
+    if ((helo_data = string_domain_utf8_to_alabel(helo_data, &errstr)), errstr)
+      {
+      errstr = string_sprintf("failed to expand helo_data: %s", errstr);
+      set_errno(addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE, NULL);
+      yield = DEFER;
+      goto SEND_QUIT;
+      }
+    }
+#endif
 
   /* The first thing is to wait for an initial OK response. The dreaded "goto"
   is nevertheless a reasonably clean way of programming this kind of logic,
