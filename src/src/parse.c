@@ -550,9 +550,7 @@ read_addr_spec(uschar *s, uschar *t, int term, uschar **errorptr,
 {
 s = read_local_part(s, t, errorptr, FALSE);
 if (*errorptr == NULL)
-  {
   if (*s != term)
-    {
     if (*s != '@')
       *errorptr = string_sprintf("\"@\" or \".\" expected after \"%s\"", t);
     else
@@ -562,8 +560,6 @@ if (*errorptr == NULL)
       *domainptr = t;
       s = read_domain(s, t, errorptr);
       }
-    }
-  }
 return s;
 }
 
@@ -744,7 +740,7 @@ if (*s == '<')
   while (bracket_count-- > 0) if (*s++ != '>')
     {
     *errorptr = (s[-1] == 0)? US"'>' missing at end of address" :
-      string_sprintf("malformed address: %.32s may not follow %.*s",
+      string_sprintf("malformed address A: %.32s may not follow %.*s",
         s-1, s - (uschar *)mailbox - 1, mailbox);
     goto PARSE_FAILED;
     }
@@ -797,7 +793,7 @@ if (*s != 0)
     }
   else
     {
-    *errorptr = string_sprintf("malformed address: %.32s may not follow %.*s",
+    *errorptr = string_sprintf("malformed address B: %.32s may not follow %.*s",
       s, s - (uschar *)mailbox, mailbox);
     goto PARSE_FAILED;
     }
@@ -817,7 +813,7 @@ if (*end - *start > ADDRESS_MAXLENGTH)
   return NULL;
   }
 
-return (uschar *)yield;
+return yield;
 
 /* Use goto (via the macro FAILED) to get to here from a variety of places.
 We might have an empty address in a group - the caller can choose to ignore

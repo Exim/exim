@@ -15,23 +15,25 @@ destination supports the SMTPUTF8 extension
 ======================
 
 to-Alabel convert of helo name
+- smtp transport
 
 ++ An "international" flag on the message?
 ++ An is-international expansion condition?
 
 ++ helo-time option handling
-conversion of utf-8 domains on input	rfc5890
-- deconversion on forwarding
-- deconversion for trace headers
+++ conversion of utf-8 domains for DNS	rfc5890
+-- MSA mode: convert on forward?
+
 dsn handling				rfc6533
 logging
 - international msg
 - presentation of local-part in log
 -- a log option?
 encoding of local_part
-encoding transform string-expansions
+
 Recieved-by header tracking info
 - WITH protocol types get UTF8 prefix
+- use for logging also
 
 forwarding checks			rfc6530 7.1 -3-
 - rcpt-time rejects get 533 mailbox name not allowed
@@ -39,9 +41,11 @@ forwarding checks			rfc6530 7.1 -3-
 - bounces (see dsn handling)
 
 
-expansions for to- and from-Alabel ?	bug1567
+++ expansions for to- and from-Alabel ?	bug1567
 
 enhanced status codes?			rfc5248++
 
 VRFY
 EXPN
+
+non-smtp input

@@ -1278,6 +1278,21 @@ RFCs 6530, 6533, 5890
 
 Compile with EXPERIMENTAL_INTERNATIONAL and libidn.
 
+Main config option smtputf8_advertise_hosts, default '*',
+a host list.  If this matches the sending host and
+accept_8bitmime is true (the default) then the ESMTP option
+SMTPUTF8 will be advertised.
+
+If the sender specifies the SMTPUTF8 option on a MAIL command
+international handling for the message is enabled and
+the expansion variable $message_smtputf8 will have value TRUE.
+
+The option allow_utf8_domains is set to true for this
+message, but all DNS lookups are converted to a-label form.
+
+Log lines and Received-by: header lines will aquire a "utf8"
+prefix on the 'with' element, eg. utf8esmtp.
+
 Expansion operators:
 	${utf8_domain_to_alabel:str}
 	${utf8_domain_from_alabel:str}

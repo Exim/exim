@@ -3828,10 +3828,8 @@ while (done <= 0)
            (char *)mail_args < (char *)env_mail_type_list + sizeof(env_mail_type_list);
            mail_args++
           )
-        {
         if (strcmpic(name, mail_args->name) == 0)
           break;
-        }
       if (mail_args->need_value && strcmpic(value, US"") == 0)
         break;
 
@@ -3859,16 +3857,17 @@ while (done <= 0)
         and "7BIT" as body types, but take no action. */
         case ENV_MAIL_OPT_BODY:
           if (accept_8bitmime) {
-            if (strcmpic(value, US"8BITMIME") == 0) {
+            if (strcmpic(value, US"8BITMIME") == 0)
               body_8bitmime = 8;
-            } else if (strcmpic(value, US"7BIT") == 0) {
+            else if (strcmpic(value, US"7BIT") == 0)
               body_8bitmime = 7;
-            } else {
+            else
+	      {
               body_8bitmime = 0;
               done = synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"invalid data for BODY");
               goto COMMAND_LOOP;
-            }
+              }
             DEBUG(D_receive) debug_printf("8BITMIME: %d\n", body_8bitmime);
 	    break;
           }
@@ -3880,35 +3879,43 @@ while (done <= 0)
         is included only if configured in at build time. */
 
         case ENV_MAIL_OPT_RET:
-          if (dsn_advertised) {
+          if (dsn_advertised)
+	    {
             /* Check if RET has already been set */
-            if (dsn_ret > 0) {
+            if (dsn_ret > 0)
+	      {
               synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"RET can be specified once only");
               goto COMMAND_LOOP;
-            }
-            dsn_ret = (strcmpic(value, US"HDRS") == 0)? dsn_ret_hdrs :
-                    (strcmpic(value, US"FULL") == 0)? dsn_ret_full : 0;
+	      }
+            dsn_ret = strcmpic(value, US"HDRS") == 0
+	      ? dsn_ret_hdrs
+	      : strcmpic(value, US"FULL") == 0
+	      ? dsn_ret_full
+	      : 0;
             DEBUG(D_receive) debug_printf("DSN_RET: %d\n", dsn_ret);
             /* Check for invalid invalid value, and exit with error */
-            if (dsn_ret == 0) {
+            if (dsn_ret == 0)
+	      {
               synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"Value for RET is invalid");
               goto COMMAND_LOOP;
-            }
-          }
+	      }
+	    }
           break;
         case ENV_MAIL_OPT_ENVID:
-          if (dsn_advertised) {
+          if (dsn_advertised)
+	    {
             /* Check if the dsn envid has been already set */
-            if (dsn_envid != NULL) {
+            if (dsn_envid != NULL)
+	      {
               synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"ENVID can be specified once only");
               goto COMMAND_LOOP;
-            }
+	      }
             dsn_envid = string_copy(value);
             DEBUG(D_receive) debug_printf("DSN_ENVID: %s\n", dsn_envid);
-          }
+	    }
           break;
 
         /* Handle the AUTH extension. If the value given is not "<>" and either
@@ -3948,34 +3955,34 @@ while (done <= 0)
             switch (rc)
               {
               case OK:
-              if (authenticated_by == NULL ||
-                  authenticated_by->mail_auth_condition == NULL ||
-                  expand_check_condition(authenticated_by->mail_auth_condition,
-                      authenticated_by->name, US"authenticator"))
-                break;     /* Accept the AUTH */
-  
-              ignore_msg = US"server_mail_auth_condition failed";
-              if (authenticated_id != NULL)
-                ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
-                  ignore_msg, authenticated_id);
+		if (authenticated_by == NULL ||
+		    authenticated_by->mail_auth_condition == NULL ||
+		    expand_check_condition(authenticated_by->mail_auth_condition,
+			authenticated_by->name, US"authenticator"))
+		  break;     /* Accept the AUTH */
+
+		ignore_msg = US"server_mail_auth_condition failed";
+		if (authenticated_id != NULL)
+		  ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
+		    ignore_msg, authenticated_id);
   
               /* Fall through */
   
               case FAIL:
-              authenticated_sender = NULL;
-              log_write(0, LOG_MAIN, "ignoring AUTH=%s from %s (%s)",
-                value, host_and_ident(TRUE), ignore_msg);
-              break;
+		authenticated_sender = NULL;
+		log_write(0, LOG_MAIN, "ignoring AUTH=%s from %s (%s)",
+		  value, host_and_ident(TRUE), ignore_msg);
+		break;
   
               /* Should only get DEFER or ERROR here. Put back terminator
               overrides for error message */
   
               default:
-              value[-1] = '=';
-              name[-1] = ' ';
-              (void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
-                log_msg);
-              goto COMMAND_LOOP;
+		value[-1] = '=';
+		name[-1] = ' ';
+		(void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
+		  log_msg);
+		goto COMMAND_LOOP;
               }
             }
             break;
@@ -3990,7 +3997,7 @@ while (done <= 0)
 #ifdef EXPERIMENTAL_INTERNATIONAL
         case ENV_MAIL_OPT_UTF8:
 	  if (smtputf8_advertised)
-	    message_smtputf8 = TRUE;
+	    message_smtputf8 = allow_utf8_domains = TRUE;
 	  break;
 #endif
         /* Unknown option. Stick back the terminator characters and break
@@ -4025,9 +4032,10 @@ while (done <= 0)
     /* Now extract the address, first applying any SMTP-time rewriting. The
     TRUE flag allows "<>" as a sender address. */
 
-    raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_cmd_data;
+    raw_sender = rewrite_existflags & rewrite_smtp
+      ? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+		    global_rewrite_rules)
+      : smtp_cmd_data;
 
     /* rfc821_domains = TRUE; << no longer needed */
     raw_sender =

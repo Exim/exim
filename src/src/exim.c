@@ -3705,6 +3705,10 @@ is equivalent to the ability to modify a setuid binary!
 This needs to happen before we read the main configuration. */
 init_lookup_list();
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+if (running_in_test_harness) smtputf8_advertise_hosts = NULL;
+#endif
+
 /* Read the main runtime configuration data; this gives up if there
 is a failure. It leaves the configuration file open so that the subsequent
 configuration data for delivery can be read if needed. */

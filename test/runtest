@@ -844,7 +844,6 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^SSL info: unknown state/;
     next if /^SSL info: SSLv2\/v3 write client hello A/;
     next if /^SSL info: SSLv3 read server key exchange A/;
-
     }
 
   # ======== stderr ========
@@ -1011,6 +1010,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
 
+    # Experimental_International
+    next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
+
       # Skip some lines that Exim puts out at the start of debugging output
       # because they will be different in different binaries.
 
@@ -1027,6 +1029,8 @@ RESET_AFTER_EXTRA_LINE_READ:
                 /^Fixed never_users:/ ||
                 /^Size of off_t:/
                 );
+
+
       }
 
     next;
