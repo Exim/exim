@@ -459,6 +459,9 @@ typedef struct address_item_propagated {
   #ifdef EXPERIMENTAL_SRS
   uschar *srs_sender;             /* Change return path when delivering */
   #endif
+  #ifdef EXPERIMENTAL_INTERNATIONAL
+  BOOL    utf8;			  /* requires SMTPUTF8 processing */
+  #endif
 } address_item_propagated;
 
 /* Bits for the flags field below */

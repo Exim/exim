@@ -5594,6 +5594,10 @@ if (process_recipients != RECIP_IGNORE)
       recipient_item *r = recipients_list + i;
       address_item *new = deliver_make_addr(r->address, FALSE);
       new->p.errors_address = r->errors_to;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      new->p.utf8 = message_smtputf8;
+      DEBUG(D_deliver) debug_printf("utf8: %c\n", message_smtputf8 ? 'T':'F');
+#endif
 
       if (r->pno >= 0)
         new->onetime_parent = recipients_list[r->pno].address;
@@ -7855,6 +7859,11 @@ if (!regex_STARTTLS) regex_STARTTLS =
 #ifndef DISABLE_PRDR
 if (!regex_PRDR) regex_PRDR =
   regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
+#endif
+
+#ifdef SUPPORT_TLS
+if (!regex_UTF8) regex_UTF8 =
+  regex_must_compile(US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE);
 #endif
 
 if (!regex_DSN) regex_DSN  =

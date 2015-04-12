@@ -15,8 +15,10 @@ acl_smtp_rcpt = check_recipient
 trusted_users = CALLER
 log_selector = +received_recipients
 
+.ifdef SERVER
 queue_only
 queue_run_in_order
+.endif
 
 smtputf8_advertise_hosts = *
 
@@ -34,6 +36,8 @@ check_recipient:
 
 begin routers
 
+.ifdef SERVER
+
 fail_remote_domains:
   driver = redirect
   domains = ! +local_domains
@@ -42,6 +46,16 @@ fail_remote_domains:
 localuser:
   driver = redirect
   data = :blackhole:
+
+.else
+
+rmt:
+  driver = manualroute
+  route_data = <;[127.0.0.1]:PORT_D
+  transport = rmt_smtp
+  self = send
+
+.endif
 
 # ----- Transports -----
 
@@ -56,5 +70,8 @@ local_delivery:
                  X-message-linecount: $message_linecount\n\
                  X-received-count: $received_count"
   return_path_add
+
+rmt_smtp:
+  driver = smtp
 
 # End

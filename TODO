@@ -26,7 +26,13 @@ to-Alabel convert of helo name
 --- mua-wrapper
 --- acl control?
 
+++ flag in spool file
+
+retries
+- apply to a-label or utf8 form?
+
 dsn handling				rfc6533
+
 logging
 ++ - international msg
 - presentation of local-part in log
@@ -41,8 +47,6 @@ forwarding checks			rfc6530 7.1 -3-
 - rcpt-time rejects get 533 mailbox name not allowed
 - mail-time rejects get 550 mailbox unavailable
 - bounces (see dsn handling)
-
-flag in spool file
 
 ++ expansions for to- and from-Alabel ?	bug1567
 

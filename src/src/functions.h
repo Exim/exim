@@ -422,6 +422,7 @@ extern const uschar *string_printing2(const uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
 #ifdef EXPERIMENTAL_INTERNATIONAL
+extern uschar *string_address_alabel_to_utf8(const uschar *, uschar **);
 extern uschar *string_address_utf8_to_alabel(uschar *, uschar **, int *);
 extern uschar *string_domain_alabel_to_utf8(const uschar *, uschar **);
 extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);

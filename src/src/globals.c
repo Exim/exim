@@ -175,6 +175,10 @@ BOOL    prdr_requested         = FALSE;
 const pcre *regex_PRDR         = NULL;
 #endif
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+const pcre *regex_UTF8         = NULL;
+#endif
+
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
@@ -383,6 +387,9 @@ address_item address_defaults = {
     NULL,               /* remove_headers */
 #ifdef EXPERIMENTAL_SRS
     NULL,               /* srs_sender */
+#endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    FALSE,		/* utf8 */
 #endif
   }
 };

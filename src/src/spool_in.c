@@ -299,6 +299,10 @@ tls_in.ocsp = OCSP_NOT_REQ;
 spam_score_int = NULL;
 #endif
 
+#if defined(EXPERIMENTAL_INTERNATIONAL) && !defined(COMPILE_UTILITY)
+message_smtputf8 = FALSE;
+#endif
+
 dsn_ret = 0;
 dsn_envid = NULL;
 
@@ -568,6 +572,10 @@ for (;;)
 #ifdef WITH_CONTENT_SCAN
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
+#endif
+#if defined(EXPERIMENTAL_INTERNATIONAL) && !defined(COMPILE_UTILITY)
+    else if (Ustrncmp(p, "mtputf8", 7) == 0)
+      message_smtputf8 = TRUE;
 #endif
     break;
 

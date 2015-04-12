@@ -740,7 +740,7 @@ if (*s == '<')
   while (bracket_count-- > 0) if (*s++ != '>')
     {
     *errorptr = (s[-1] == 0)? US"'>' missing at end of address" :
-      string_sprintf("malformed address A: %.32s may not follow %.*s",
+      string_sprintf("malformed address: %.32s may not follow %.*s",
         s-1, s - (uschar *)mailbox - 1, mailbox);
     goto PARSE_FAILED;
     }
@@ -793,7 +793,7 @@ if (*s != 0)
     }
   else
     {
-    *errorptr = string_sprintf("malformed address B: %.32s may not follow %.*s",
+    *errorptr = string_sprintf("malformed address: %.32s may not follow %.*s",
       s, s - (uschar *)mailbox, mailbox);
     goto PARSE_FAILED;
     }

@@ -245,6 +245,10 @@ if (tls_in.ourcert)
 if (tls_in.ocsp)	 fprintf(f, "-tls_ocsp %d\n",   tls_in.ocsp);
 #endif
 
+#ifdef EXPERIMENTAL_INTERNATIONAL
+if (message_smtputf8)    fprintf(f, "-smtputf8\n");
+#endif
+
 /* Write the dsn flags to the spool header file */
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_envid %s\n", dsn_envid);
 if (dsn_envid != NULL) fprintf(f, "-dsn_envid %s\n", dsn_envid);

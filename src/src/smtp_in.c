@@ -4409,16 +4409,12 @@ while (done <= 0)
       receive_add_recipient(recipient, -1);
  
       /* Set the dsn flags in the recipients_list */
-      if (orcpt != NULL)
-        recipients_list[recipients_count-1].orcpt = orcpt;
-      else
-        recipients_list[recipients_count-1].orcpt = NULL;
+      recipients_list[recipients_count-1].orcpt = orcpt;
+      recipients_list[recipients_count-1].dsn_flags = flags;
 
-      if (flags != 0)
-        recipients_list[recipients_count-1].dsn_flags = flags;
-      else
-        recipients_list[recipients_count-1].dsn_flags = 0;
-      DEBUG(D_receive) debug_printf("DSN: orcpt: %s  flags: %d\n", recipients_list[recipients_count-1].orcpt, recipients_list[recipients_count-1].dsn_flags);
+      DEBUG(D_receive) debug_printf("DSN: orcpt: %s  flags: %d\n",
+	recipients_list[recipients_count-1].orcpt,
+	recipients_list[recipients_count-1].dsn_flags);
       }
 
     /* The recipient was discarded */

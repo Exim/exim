@@ -57,6 +57,21 @@ QUIT
 ****
 #
 #
+# utf-8 from, -bs input and forwarding
+exim -bs -odi
+EHLO client.bh
+MAIL FROM: <他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com> SMTPUTF8
+RCPT TO: <usery@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+#
+#
+#
 killdaemon
 exim -DSERVER=server -qq
 ****
