@@ -1274,6 +1274,9 @@ switch(action)
       {
       if (action == MSG_ADD_RECIPIENT)
         {
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	if (string_is_utf8(recipient)) allow_utf8_domains = message_smtputf8 = TRUE;
+#endif
         receive_add_recipient(recipient, -1);
         log_write(0, LOG_MAIN, "recipient <%s> added by %s",
           recipient, username);
@@ -1297,6 +1300,9 @@ switch(action)
         }
       else  /* MSG_EDIT_SENDER */
         {
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	if (string_is_utf8(recipient)) allow_utf8_domains = message_smtputf8 = TRUE;
+#endif
         sender_address = recipient;
         log_write(0, LOG_MAIN, "sender address changed to <%s> by %s",
           recipient, username);

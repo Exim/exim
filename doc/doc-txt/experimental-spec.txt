@@ -1313,7 +1313,6 @@ Known issues:
  - DSN unitext handling is not present
  - no provision for converting logging from UTF-8
  - VRFY and EXPN not handled
- - non-smtp input not handled  (!)
  - MSA mode not handled (!)
 
 --------------------------------------------------------------

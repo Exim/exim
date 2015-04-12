@@ -3,7 +3,7 @@ Return-path: <>
 Envelope-to: यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local
 Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
-	id 10HmbC-0005vi-00
+	id 10HmbI-0005vi-00
 	for यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local; Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: userz@test.ex
 Auto-Submitted: auto-replied
@@ -12,7 +12,7 @@ To: यहलोगहिन्दीक्योंनहींबोलसक�
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbI-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-body-linecount: 38
 X-message-linecount: 50
@@ -46,10 +46,10 @@ Return-path: <यहलोगहिन्दीक्योंनहींबो
 Received: from CALLER (helo=client.ffail)
 	by the.local.host.name with utf8local-esmtp (Exim x.yz)
 	(envelope-from <यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local>)
-	id 10HmbB-0005vi-00
+	id 10HmbH-0005vi-00
 	for userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test
-Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
 From: यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
