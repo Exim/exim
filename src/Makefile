@@ -101,6 +101,7 @@ cscope.files: FRC
 	find src Local OS exim_monitor -name "*.[cshyl]" -print \
 		    -o -name "os.h*" -print \
 		    -o -name "*akefile*" -print \
+		    -o -name config.h.defaults -print \
 		    -o -name EDITME -print >> $@
 	ls OS/* >> $@
 

@@ -499,8 +499,8 @@ EXIM_MONITOR=eximon.bin
 
 # Uncomment the following to add Internationalisation features. You need to
 # have the IDN library installed.
-EXPERIMENTAL_INTERNATIONAL=yes
-LDFLAGS += -lidn
+#EXPERIMENTAL_INTERNATIONAL=yes
+#LDFLAGS += -lidn
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
