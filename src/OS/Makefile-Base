@@ -445,8 +445,28 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
 # in one. This list is overkill, but it doesn't really take much time to
 # rebuild Exim on a modern computer.
 
-HDRS  =    config.h    dbfunctions.h    dbstuff.h    exim.h    functions.h    globals.h    local_scan.h    macros.h    mytypes.h    structs.h
-PHDRS = ../config.h ../dbfunctions.h ../dbstuff.h ../exim.h ../functions.h ../globals.h ../local_scan.h ../macros.h ../mytypes.h ../structs.h
+HDRS  =	config.h \
+	dbfunctions.h \
+	dbstuff.h \
+	exim.h \
+	functions.h \
+	globals.h \
+	local_scan.h \
+	macros.h \
+	mytypes.h \
+	structs.h \
+	os.h
+PHDRS = ../config.h \
+	../dbfunctions.h \
+	../dbstuff.h \
+	../exim.h \
+	../functions.h \
+	../globals.h \
+	../local_scan.h \
+	../macros.h \
+	../mytypes.h \
+	../structs.h \
+	../os.h
 
 .SUFFIXES: .o .c
 .c.o:;  @echo "$(CC) $*.c"
