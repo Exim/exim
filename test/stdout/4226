@@ -1,0 +1,62 @@
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello CALLER at client.bh
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-STARTTLS
+250-SMTPUTF8
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello CALLER at client.bh
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-STARTTLS
+250-SMTPUTF8
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaZ-0005vi-00
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello CALLER at client.sfail
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-STARTTLS
+250-SMTPUTF8
+250 HELP
+250 OK
+550-Callback setup failed while verifying <userA@test.ex>
+550-533 mailbox name not allowed
+550-The initial connection, or a HELO or MAIL FROM:<> command was
+550-rejected. Refusing MAIL FROM:<> does not help fight spam, disregards
+550-RFC requirements, and stops you from receiving standard bounce
+550-messages. This host does not accept mail from domains whose servers
+550-refuse bounces.
+550 Sender verify failed
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello CALLER at client.sfail
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-STARTTLS
+250-SMTPUTF8
+250 HELP
+250 OK
+550-Callback setup failed while verifying <userB.જેઠીમધ@test.ex>
+550-533 mailbox name not allowed
+550-The initial connection, or a HELO or MAIL FROM:<> command was
+550-rejected. Refusing MAIL FROM:<> does not help fight spam, disregards
+550-RFC requirements, and stops you from receiving standard bounce
+550-messages. This host does not accept mail from domains whose servers
+550-refuse bounces.
+550 Sender verify failed
+221 the.local.host.name closing connection
