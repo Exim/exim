@@ -7882,7 +7882,7 @@ if (!regex_PRDR) regex_PRDR =
   regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
 #endif
 
-#ifdef SUPPORT_TLS
+#ifdef EXPERIMENTAL_INTERNATIONAL
 if (!regex_UTF8) regex_UTF8 =
   regex_must_compile(US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE);
 #endif
