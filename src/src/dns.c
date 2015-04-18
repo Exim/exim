@@ -581,6 +581,8 @@ if (previous != NULL)
   {
   uschar * alabel;
   uschar * errstr = NULL;
+  DEBUG(D_dns) if (string_is_utf8(name))
+    debug_printf("convert utf8 '%s' to alabel for for lookup\n", name);
   if ((alabel = string_domain_utf8_to_alabel(name, &errstr)), errstr)
     {
     DEBUG(D_dns)
@@ -738,7 +740,8 @@ won't return any.
 If fully_qualified_name is not NULL, set it to point to the full name
 returned by the resolver, if this is different to what it is given, unless
 the returned name starts with "*" as some nameservers seem to be returning
-wildcards in this form.
+wildcards in this form.  In international mode "different" means "alabel
+forms are different".
 
 Arguments:
   dnsa                  pointer to dns_answer structure
@@ -799,18 +802,19 @@ for (i = 0; i < 10; i++)
 
   if (i == 0 && fully_qualified_name != NULL)
     {
-    if (cname_rr.data != NULL)
-      {
-      if (Ustrcmp(cname_rr.name, *fully_qualified_name) != 0 &&
-          cname_rr.name[0] != '*')
-        *fully_qualified_name = string_copy_dnsdomain(cname_rr.name);
-      }
-    else if (type_rr.data != NULL)
-      {
-      if (Ustrcmp(type_rr.name, *fully_qualified_name) != 0 &&
-          type_rr.name[0] != '*')
-        *fully_qualified_name = string_copy_dnsdomain(type_rr.name);
-      }
+    uschar * rr_name = cname_rr.data ? cname_rr.name
+      : type_rr.data ? type_rr.name : NULL;
+    if (  rr_name
+       && Ustrcmp(rr_name, *fully_qualified_name) != 0
+       && rr_name[0] != '*'
+#ifdef EXPERIMENTAL_INTERNATIONAL
+       && (  !string_is_utf8(*fully_qualified_name)
+	  || Ustrcmp(rr_name,
+	       string_domain_utf8_to_alabel(*fully_qualified_name, NULL)) != 0
+	  )
+#endif
+       )
+        *fully_qualified_name = string_copy_dnsdomain(rr_name);
     }
 
   /* If any data records of the correct type were found, we are done. */

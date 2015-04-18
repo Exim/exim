@@ -1,5 +1,4 @@
 syntax error: domain missing or malformed
-bounce@xn--1xa.test.ex
-    <-- bounce@π.test.ex
+bounce@π.test.ex
   router = r1, transport = t1
   host mx.xn--1xa.test.ex [V4NET.255.255.255] MX=0

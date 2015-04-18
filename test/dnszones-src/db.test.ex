@@ -38,9 +38,9 @@ dontqualify  A       V4NET.255.255.254
 
 UpperCase    A       127.0.0.1
 
-; A host with UTF-8 characters used for its lookup ( π.test.ex )
+; A host with punycoded UTF-8 characters used for its lookup ( mx.π.test.ex )
 
-mx.xn--1xa   A       V4NET.255.255.255
+mx.xn--1xa         A       V4NET.255.255.255
 
 ; A non-standard name for localhost
 
@@ -358,9 +358,13 @@ mxt97        MX  1  ten-1.test.ex.
 
 mxt1c        MX  1  dontqualify.
 
-; MX with UTF-8 characters used for its lookup ( π.test.ex )
+; MX with punycoded UTF-8 characters used for its lookup ( π.test.ex )
 
-xn--1xa      MX  0  mx.xn--1xa.test.ex.
+xn--1xa      MX  0  mx.π.test.ex.
+
+; MX with actual UTF-8 characters in its name, for allow_utf8_domains mode test
+
+π            MX  0  mx.xn--1xa.test.ex.
 
 ; -------- Testing SRV records --------
 
