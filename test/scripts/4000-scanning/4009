@@ -1,5 +1,10 @@
 # content scan interface: spamassassin
 #
+# The spooled file for scanning includes the test-runner's user name
+# hence size varies.  Munge that.
+munge scanfile_size
+#
+#
 # A good-comms test, returning not-spam.
 # (we could use a second one that returns is-spam...)
 server 7833

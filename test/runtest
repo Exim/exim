@@ -1333,6 +1333,9 @@ $munges =
     'loopback' =>
     { 'stdout' => 's/[[](127\.0\.0\.1|::1)]/[IP_LOOPBACK_ADDR]/' },
 
+    'scanfile_size' =>
+    { 'stdout' => 's/(Content-length:) \d\d\d/$1 ddd/' },
+
   };
 
 

@@ -1,4 +1,9 @@
 # content scan interface: rspamd
+#
+# The spooled file for scanning includes the test-runner's user name
+# hence size varies.  Munge that.
+munge scanfile_size
+#
 server 11333
 <CHECK RSPAMC/1.3
 <Content-length: 
@@ -17,9 +22,10 @@ server 11333
 <	(envelope
 <	id 
 <	for 
+<From:
 <Content-type: text/plain
 <Message-Id:
-<From:
+<Sender:
 <Date:
 <
 <test
@@ -36,6 +42,7 @@ ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>
 data
+From: MAILER_DAEMON <>
 Content-type: text/plain
 
 test

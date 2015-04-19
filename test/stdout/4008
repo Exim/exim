@@ -14,7 +14,7 @@
 Listening on port 11333 ... 
 Connection request from [127.0.0.1]
 <CHECK RSPAMC/1.3
-<Content-length: 479
+<Content-length: ddd
 <Queue-Id: 10HmaX-0005vi-00
 <From: <CALLER@myhost.test.ex>
 <Recipient-Number: 1
@@ -30,9 +30,10 @@ Connection request from [127.0.0.1]
 <	(envelope-from <CALLER@myhost.test.ex>)
 <	id 10HmaX-0005vi-00
 <	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+<From: MAILER_DAEMON <>
 <Content-type: text/plain
 <Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
-<From: CALLER_NAME <CALLER@myhost.test.ex>
+<Sender: CALLER_NAME <CALLER@myhost.test.ex>
 <Date: Tue, 2 Mar 1999 09:44:33 +0000
 <
 <test

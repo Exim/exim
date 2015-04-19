@@ -48,7 +48,7 @@ Listening on port 7833 ...
 Connection request from [127.0.0.1]
 <REPORT SPAMC/1.2
 <User: nobody
-<Content-length: 479
+<Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 <X-Envelope-From: <CALLER@myhost.test.ex>
@@ -92,7 +92,7 @@ Listening on port 7833 ...
 Connection request from [127.0.0.1]
 <REPORT SPAMC/1.2
 <User: nobody
-<Content-length: 479
+<Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 <X-Envelope-From: <CALLER@myhost.test.ex>
@@ -137,7 +137,7 @@ Listening on port 7833 ...
 Connection request from [127.0.0.1]
 <REPORT SPAMC/1.2
 <User: nobody
-<Content-length: 479
+<Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 <X-Envelope-From: <CALLER@myhost.test.ex>
@@ -181,7 +181,7 @@ Listening on port 7833 ...
 Connection request from [127.0.0.1]
 <REPORT SPAMC/1.2
 <User: nobody
-<Content-length: 479
+<Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 <X-Envelope-From: <CALLER@myhost.test.ex>

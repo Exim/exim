@@ -340,7 +340,7 @@ start = time(NULL);
     {
     uschar * errstr;
 
-    debug_printf("trying server %s\n", sd->hostspec);
+    DEBUG(D_acl) debug_printf("spamd: trying server %s\n", sd->hostspec);
 
     for (;;)
       {
@@ -348,7 +348,7 @@ start = time(NULL);
          || sd->retry <= 0
 	 )
 	break;
-      debug_printf("server %s: retry conn\n", sd->hostspec);
+      DEBUG(D_acl) debug_printf("sspamd: erver %s: retry conn\n", sd->hostspec);
       while (sd->retry > 0) sd->retry = sleep(sd->retry);
       }
     if (spamd_sock >= 0)
@@ -384,8 +384,8 @@ if (sd->is_rspamd)
   const uschar * authid;
 
   req_str = string_sprintf("CHECK RSPAMC/1.3\r\nContent-length: %lu\r\n"
-    "Queue-Id: %s\r\nFrom: <%s>\r\nRecipient-Number: %d\r\n", mbox_size,
-    message_id, sender_address, recipients_count);
+    "Queue-Id: %s\r\nFrom: <%s>\r\nRecipient-Number: %d\r\n",
+    mbox_size, message_id, sender_address, recipients_count);
   for (i = 0; i < recipients_count; i ++)
     req_str = string_sprintf("%sRcpt: <%s>\r\n", req_str, recipients_list[i].address);
   if ((helo = expand_string(US"$sender_helo_name")) != NULL && *helo != '\0')
