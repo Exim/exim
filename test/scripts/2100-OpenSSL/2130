@@ -8,3 +8,4 @@ Test message.
 ****
 millisleep 500
 killdaemon
+sleep 2
