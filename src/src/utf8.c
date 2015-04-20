@@ -24,6 +24,7 @@ return FALSE;
 
 /**************************************************/
 /* Domain conversions */
+/* the *err string pointer should be null before the call */
 
 uschar *
 string_domain_utf8_to_alabel(const uschar * utf8, uschar ** err)
@@ -68,6 +69,7 @@ return s;
 
 /**************************************************/
 /* localpart conversions */
+/* the *err string pointer should be null before the call */
 
 
 uschar *
@@ -124,6 +126,31 @@ res = string_copyn(s, p_len);
 free(s);
 return res;
 }
+
+
+/**************************************************/
+/* whole address conversion */
+/* the *err string pointer should be null before the call */
+
+uschar *
+string_address_utf8_to_alabel(const uschar * utf8, uschar ** err)
+{
+const uschar * s;
+uschar * l;
+uschar * d;
+
+for (s = utf8; *s; s++)
+  if (*s == '@')
+    {
+    l = string_copyn(utf8, s - utf8);
+    return   (l = string_localpart_utf8_to_alabel(l, err), err && *err)
+	  || (d = string_domain_utf8_to_alabel(++s, err),  err && *err)
+      ? NULL
+      : string_sprintf("%s@%s", l, d);
+    }
+return string_localpart_utf8_to_alabel(utf8, err);
+}
+
 
 
 /*************************************************

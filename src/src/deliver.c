@@ -822,7 +822,14 @@ if (log_extra_selector & LX_incoming_interface  &&  sending_ip_address)
   /* for the port:  string_sprintf("%d", sending_port) */
 
 if ((log_extra_selector & LX_sender_on_delivery) != 0  ||  msg)
-  s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
+  s = string_append(s, &size, &ptr, 3, US" F=<",
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    testflag(addr, af_utf8_downcvt)
+    ? string_address_utf8_to_alabel(sender_address, NULL)
+    :
+#endif
+      sender_address,
+  US">");
 
 #ifdef EXPERIMENTAL_SRS
 if(addr->prop.srs_sender)
@@ -5595,7 +5602,11 @@ if (process_recipients != RECIP_IGNORE)
       address_item *new = deliver_make_addr(r->address, FALSE);
       new->prop.errors_address = r->errors_to;
 #ifdef EXPERIMENTAL_INTERNATIONAL
-      new->prop.utf8 = message_smtputf8;
+      if ((new->prop.utf8_msg = message_smtputf8))
+	{
+	new->prop.utf8_downcvt =       message_utf8_downconvert == 1;
+	new->prop.utf8_downcvt_maybe = message_utf8_downconvert == -1;
+	}
       DEBUG(D_deliver) if (message_smtputf8) debug_printf("utf8\n");
 #endif
 

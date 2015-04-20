@@ -915,6 +915,7 @@ int     message_size           = 0;
 uschar *message_size_limit     = US"50M";
 #ifdef EXPERIMENTAL_INTERNATIONAL
 BOOL    message_smtputf8       = FALSE;
+int     message_utf8_downconvert = 0;	/* -1 ifneeded; 0 never; 1 always */
 #endif
 uschar  message_subdir[2]      = { 0, 0 };
 uschar *message_reference      = NULL;

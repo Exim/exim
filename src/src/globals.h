@@ -572,6 +572,7 @@ extern int     message_size;           /* Size of message */
 extern uschar *message_size_limit;     /* As it says */
 #ifdef EXPERIMENTAL_INTERNATIONAL
 extern BOOL    message_smtputf8;       /* Internationalized mail handling */
+extern int     message_utf8_downconvert; /* convert from utf8 */
 const extern pcre *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
 #endif
 extern uschar  message_subdir[];       /* Subdirectory for messages */

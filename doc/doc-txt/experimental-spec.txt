@@ -1308,12 +1308,22 @@ New expansion operators:
 	${utf8_localpart_to_alabel:str}
 	${utf8_localpart_from_alabel:str}
 
+New "control = utf8_downconvert" ACL modifier,
+sets a flag requiring that addresses are converted to
+a-label form before smtp delivery, for use in a
+Message Submission Agent context.  Can also be
+phrased as "control = utf8_downconvert/1" and is
+mandatory.  The flag defaults to zero and can be cleared
+by "control = utf8_downconvert/0".  The value "-1"
+may also be used, to use a-label for only if the
+destination host does not support SMTPUTF8.
+
 Known issues:
  - Currently LMTP is not supported.
  - DSN unitext handling is not present
  - no provision for converting logging from UTF-8
  - VRFY and EXPN not handled
- - MSA mode not handled (!)
+ - mua_wrapper not handled
 
 --------------------------------------------------------------
 End of file

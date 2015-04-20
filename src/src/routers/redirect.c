@@ -452,7 +452,7 @@ while (generated != NULL)
     }
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-    next->prop.utf8 = string_is_utf8(next->address)
+    next->prop.utf8_msg = string_is_utf8(next->address)
       || (sender_address && string_is_utf8(sender_address));
 #endif
 
@@ -476,7 +476,7 @@ while (generated != NULL)
       debug_printf("gid=unset ");
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-    if (next->prop.utf8) debug_printf("utf8 ");
+    if (next->prop.utf8_msg) debug_printf("utf8 ");
 #endif
 
     debug_printf("home=%s\n", next->home_dir);

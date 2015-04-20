@@ -173,6 +173,9 @@ dbdata_callout_cache new_domain_record;
 dbdata_callout_cache_address new_address_record;
 host_item *host;
 time_t callout_start_time;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+BOOL utf8_offered = FALSE;
+#endif
 
 new_domain_record.result = ccache_unknown;
 new_domain_record.postmaster_result = ccache_unknown;
@@ -921,19 +924,32 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       }
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-    else if (  addr->prop.utf8
+    else if (  addr->prop.utf8_msg
+	    && !addr->prop.utf8_downcvt
 	    && !(  esmtp
 		&& (  regex_UTF8
 		   || ( (regex_UTF8 = regex_must_compile(
 			  US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE)),
 		      TRUE
 		   )  )
-		&& pcre_exec(regex_UTF8, NULL, CS responsebuffer,
-		    Ustrlen(responsebuffer), 0, PCRE_EOPT, NULL, 0) >= 0
-	    )   )
+		&& (  (utf8_offered = pcre_exec(regex_UTF8, NULL,
+			    CS responsebuffer, Ustrlen(responsebuffer),
+			    0, PCRE_EOPT, NULL, 0) >= 0)
+		   || addr->prop.utf8_downcvt_maybe
+	    )   )  )
       {
       HDEBUG(D_acl|D_v) debug_printf("utf8 required but not offered\n");
       errno = ERRNO_UTF8_FWD;
+      setflag(addr, af_verify_nsfail);
+      done = FALSE;
+      }
+    else if (  addr->prop.utf8_msg
+	    && (addr->prop.utf8_downcvt || !utf8_offered)
+	    && (from_address = string_address_utf8_to_alabel(from_address,
+				      &addr->message), addr->message)
+	    )
+      {
+      errno = ERRNO_EXPANDFAIL;
       setflag(addr, af_verify_nsfail);
       done = FALSE;
       }
@@ -958,7 +974,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     /* Send the MAIL command */
         (smtp_write_command(&outblock, FALSE,
 #ifdef EXPERIMENTAL_INTERNATIONAL
-	  addr->prop.utf8
+	  addr->prop.utf8_msg
 	  ? "MAIL FROM:<%s>%s SMTPUTF8\r\n"
 	  :
 #endif
@@ -1049,7 +1065,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
             smtp_write_command(&outblock, FALSE,
 #ifdef EXPERIMENTAL_INTERNATIONAL
-	      addr->prop.utf8
+	      addr->prop.utf8_msg
 	      ? "MAIL FROM:<%s> SMTPUTF8\r\n"
 	      :
 #endif

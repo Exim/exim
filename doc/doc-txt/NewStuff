@@ -23,7 +23,10 @@ Version 4.86
  6. A commandline option to write a comment into the logfile.
 
  7. If built with EXPERIMENTAL_SOCKS feature enabled, the smtp transport can
-    be configured to make connections via socks5 proxies
+    be configured to make connections via socks5 proxies.
+
+ 8. If built with EXPERIMENTAL_INTERNATIONAL, support is included for
+    the transmission of UTF-8 envelope addresses.
 
 
 Version 4.85

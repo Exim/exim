@@ -1366,6 +1366,7 @@ BOOL prdr_offered = FALSE;
 BOOL prdr_active;
 #endif
 #ifdef EXPERIMENTAL_INTERNATIONAL
+BOOL utf8_needed = FALSE;
 BOOL utf8_offered = FALSE;
 #endif
 BOOL dsn_all_lasthop = TRUE;
@@ -1642,10 +1643,17 @@ goto SEND_QUIT;
 #endif
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-  utf8_offered = esmtp
-    && addrlist->prop.utf8
-    && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
-		  PCRE_EOPT, NULL, 0) >= 0;
+  if (addrlist->prop.utf8_msg)
+    {
+    utf8_needed =  !addrlist->prop.utf8_downcvt
+		&& !addrlist->prop.utf8_downcvt_maybe;
+    DEBUG(D_transport) if (!utf8_needed) debug_printf("utf8: %s downconvert\n",
+      addrlist->prop.utf8_downcvt ? "mandatory" : "optional");
+
+    utf8_offered = esmtp
+      && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
+		    PCRE_EOPT, NULL, 0) >= 0;
+    }
 #endif
   }
 
@@ -1862,10 +1870,10 @@ if (continue_hostname == NULL
 #endif
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-  utf8_offered = esmtp
-    && addrlist->prop.utf8
-    && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
-		  PCRE_EOPT, NULL, 0) >= 0;
+  if (addrlist->prop.utf8_msg)
+    utf8_offered = esmtp
+      && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
+		    PCRE_EOPT, NULL, 0) >= 0;
 #endif
 
   /* Note if the server supports DSN */
@@ -1896,7 +1904,7 @@ setting_up = FALSE;
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
 /* If this is an international message we need the host to speak SMTPUTF8 */
-if (addrlist->prop.utf8 && !utf8_offered)
+if (utf8_needed && !utf8_offered)
   {
   errno = ERRNO_UTF8_FWD;
   goto RESPONSE_FAILED;
@@ -1980,7 +1988,7 @@ if (prdr_offered)
 #endif
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-if (addrlist->prop.utf8)
+if (addrlist->prop.utf8_msg && !addrlist->prop.utf8_downcvt && utf8_offered)
   sprintf(CS p, " SMTPUTF8"), p += 9;
 #endif
 
@@ -2037,8 +2045,31 @@ buffer. */
 
 pending_MAIL = TRUE;     /* The block starts with MAIL */
 
-rc = smtp_write_command(&outblock, smtp_use_pipelining,
-	"MAIL FROM:<%s>%s\r\n", return_path, buffer);
+  {
+  uschar * s = return_path;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  uschar * errstr = NULL;
+
+  /* If we must downconvert, do the from-address here.  Remember we had to
+  for the to-addresses (done below), and also (ugly) for re-doing when building
+  the delivery log line. */
+
+  if (addrlist->prop.utf8_msg && (addrlist->prop.utf8_downcvt || !utf8_offered))
+    {
+    if (s = string_address_utf8_to_alabel(return_path, &errstr), errstr)
+      {
+      set_errno(addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE, NULL);
+      yield = ERROR;
+      goto SEND_QUIT;
+      }
+    setflag(addrlist, af_utf8_downcvt);
+    }
+#endif
+
+  rc = smtp_write_command(&outblock, smtp_use_pipelining,
+	  "MAIL FROM:<%s>%s\r\n", s, buffer);
+  }
+
 mail_command = string_copy(big_buffer);  /* Save for later error message */
 
 switch(rc)
@@ -2080,6 +2111,7 @@ for (addr = first_addr;
   {
   int count;
   BOOL no_flush;
+  uschar * rcpt_addr;
 
   addr->dsn_aware = smtp_use_dsn ? dsn_support_yes : dsn_support_no;
 
@@ -2124,8 +2156,24 @@ for (addr = first_addr;
   yield as OK, because this error can often mean that there is a problem with
   just one address, so we don't want to delay the host. */
 
+  rcpt_addr = transport_rcpt_address(addr, tblock->rcpt_include_affixes);
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  {
+  uschar * dummy_errstr;
+  if (  testflag(addrlist, af_utf8_downcvt)
+     && (rcpt_addr = string_address_utf8_to_alabel(rcpt_addr, &dummy_errstr),
+	 dummy_errstr
+     )  )
+    {
+    errno = ERRNO_EXPANDFAIL;
+    goto SEND_FAILED;
+    }
+  }
+#endif
+
   count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s%s\r\n",
-    transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr, buffer);
+    rcpt_addr, igquotstr, buffer);
 
   if (count < 0) goto SEND_FAILED;
   if (count > 0)

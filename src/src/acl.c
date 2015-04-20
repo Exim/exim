@@ -181,17 +181,17 @@ that follows! */
 
 enum {
   CONTROL_AUTH_UNADVERTISED,
-  #ifdef EXPERIMENTAL_BRIGHTMAIL
+#ifdef EXPERIMENTAL_BRIGHTMAIL
   CONTROL_BMI_RUN,
-  #endif
+#endif
   CONTROL_DEBUG,
-  #ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
-  #endif
-  #ifdef EXPERIMENTAL_DMARC
+#endif
+#ifdef EXPERIMENTAL_DMARC
   CONTROL_DMARC_VERIFY,
   CONTROL_DMARC_FORENSIC,
-  #endif
+#endif
   CONTROL_DSCP,
   CONTROL_ERROR,
   CONTROL_CASEFUL_LOCAL_PART,
@@ -203,11 +203,14 @@ enum {
   CONTROL_QUEUE_ONLY,
   CONTROL_SUBMISSION,
   CONTROL_SUPPRESS_LOCAL_FIXUPS,
-  #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
   CONTROL_NO_MBOX_UNSPOOL,
-  #endif
+#endif
   CONTROL_FAKEDEFER,
   CONTROL_FAKEREJECT,
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  CONTROL_UTF8_DOWNCONVERT,
+#endif
   CONTROL_NO_MULTILINE,
   CONTROL_NO_PIPELINING,
   CONTROL_NO_DELAY_FLUSH,
@@ -221,17 +224,17 @@ and should be tidied up. */
 
 static uschar *controls[] = {
   US"allow_auth_unadvertised",
-  #ifdef EXPERIMENTAL_BRIGHTMAIL
+#ifdef EXPERIMENTAL_BRIGHTMAIL
   US"bmi_run",
-  #endif
+#endif
   US"debug",
-  #ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
   US"dkim_disable_verify",
-  #endif
-  #ifdef EXPERIMENTAL_DMARC
+#endif
+#ifdef EXPERIMENTAL_DMARC
   US"dmarc_disable_verify",
   US"dmarc_enable_forensic",
-  #endif
+#endif
   US"dscp",
   US"error",
   US"caseful_local_part",
@@ -243,11 +246,14 @@ static uschar *controls[] = {
   US"queue_only",
   US"submission",
   US"suppress_local_fixups",
-  #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
   US"no_mbox_unspool",
-  #endif
+#endif
   US"fakedefer",
   US"fakereject",
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  US"utf8_downconvert",
+#endif
   US"no_multiline_responses",
   US"no_pipelining",
   US"no_delay_flush",
@@ -600,26 +606,26 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)),   /* allow_auth_unadvertised */
 
-  #ifdef EXPERIMENTAL_BRIGHTMAIL
+#ifdef EXPERIMENTAL_BRIGHTMAIL
   0,                                               /* bmi_run */
-  #endif
+#endif
 
   0,                                               /* debug */
 
-  #ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_disable_verify */
-  #ifndef DISABLE_PRDR
+# ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif
+# endif
     (1<<ACL_WHERE_NOTSMTP_START),
-  #endif
+#endif
 
-  #ifdef EXPERIMENTAL_DMARC
+#ifdef EXPERIMENTAL_DMARC
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_disable_verify */
     (1<<ACL_WHERE_NOTSMTP_START),
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_enable_forensic */
     (1<<ACL_WHERE_NOTSMTP_START),
-  #endif
+#endif
 
   (1<<ACL_WHERE_NOTSMTP)|
     (1<<ACL_WHERE_NOTSMTP_START)|
@@ -663,29 +669,33 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_NOTSMTP_START)),
 
-  #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* no_mbox_unspool */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
     // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
     (1<<ACL_WHERE_MIME)),
-  #endif
+#endif
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakedefer */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-  #ifndef DISABLE_PRDR
+#ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif
+#endif
     (1<<ACL_WHERE_MIME)),
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-  #ifndef DISABLE_PRDR
+#ifndef DISABLE_PRDR
     (1<<ACL_WHERE_PRDR)|
-  #endif
+#endif
     (1<<ACL_WHERE_MIME)),
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  0,                                               /* utf8_downconvert */
+#endif
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* no_multiline */
     (1<<ACL_WHERE_NOTSMTP_START),
@@ -709,37 +719,40 @@ typedef struct control_def {
 } control_def;
 
 static control_def controls_list[] = {
-  { US"allow_auth_unadvertised", CONTROL_AUTH_UNADVERTISED, FALSE },
+  { US"allow_auth_unadvertised", CONTROL_AUTH_UNADVERTISED,     FALSE },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  { US"bmi_run",                 CONTROL_BMI_RUN, FALSE },
+  { US"bmi_run",                 CONTROL_BMI_RUN,               FALSE },
 #endif
-  { US"debug",                   CONTROL_DEBUG, TRUE },
+  { US"debug",                   CONTROL_DEBUG,                 TRUE },
 #ifndef DISABLE_DKIM
-  { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY, FALSE },
+  { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY,           FALSE },
 #endif
 #ifdef EXPERIMENTAL_DMARC
-  { US"dmarc_disable_verify",    CONTROL_DMARC_VERIFY, FALSE },
-  { US"dmarc_enable_forensic",   CONTROL_DMARC_FORENSIC, FALSE },
+  { US"dmarc_disable_verify",    CONTROL_DMARC_VERIFY,          FALSE },
+  { US"dmarc_enable_forensic",   CONTROL_DMARC_FORENSIC,        FALSE },
 #endif
-  { US"dscp",                    CONTROL_DSCP, TRUE },
-  { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
-  { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
-  { US"enforce_sync",            CONTROL_ENFORCE_SYNC, FALSE },
-  { US"freeze",                  CONTROL_FREEZE, TRUE },
-  { US"no_callout_flush",        CONTROL_NO_CALLOUT_FLUSH, FALSE },
-  { US"no_delay_flush",          CONTROL_NO_DELAY_FLUSH, FALSE },
-  { US"no_enforce_sync",         CONTROL_NO_ENFORCE_SYNC, FALSE },
-  { US"no_multiline_responses",  CONTROL_NO_MULTILINE, FALSE },
-  { US"no_pipelining",           CONTROL_NO_PIPELINING, FALSE },
-  { US"queue_only",              CONTROL_QUEUE_ONLY, FALSE },
+  { US"dscp",                    CONTROL_DSCP,                  TRUE },
+  { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART,    FALSE },
+  { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART,  FALSE },
+  { US"enforce_sync",            CONTROL_ENFORCE_SYNC,          FALSE },
+  { US"freeze",                  CONTROL_FREEZE,                TRUE },
+  { US"no_callout_flush",        CONTROL_NO_CALLOUT_FLUSH,      FALSE },
+  { US"no_delay_flush",          CONTROL_NO_DELAY_FLUSH,        FALSE },
+  { US"no_enforce_sync",         CONTROL_NO_ENFORCE_SYNC,       FALSE },
+  { US"no_multiline_responses",  CONTROL_NO_MULTILINE,          FALSE },
+  { US"no_pipelining",           CONTROL_NO_PIPELINING,         FALSE },
+  { US"queue_only",              CONTROL_QUEUE_ONLY,            FALSE },
 #ifdef WITH_CONTENT_SCAN
-  { US"no_mbox_unspool",         CONTROL_NO_MBOX_UNSPOOL, FALSE },
+  { US"no_mbox_unspool",         CONTROL_NO_MBOX_UNSPOOL,       FALSE },
 #endif
-  { US"fakedefer",               CONTROL_FAKEDEFER, TRUE },
-  { US"fakereject",              CONTROL_FAKEREJECT, TRUE },
-  { US"submission",              CONTROL_SUBMISSION, TRUE },
+  { US"fakedefer",               CONTROL_FAKEDEFER,             TRUE },
+  { US"fakereject",              CONTROL_FAKEREJECT,            TRUE },
+  { US"submission",              CONTROL_SUBMISSION,            TRUE },
   { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE },
-  { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY, FALSE }
+  { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY,   FALSE },
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  { US"utf8_downconvert",        CONTROL_UTF8_DOWNCONVERT,      TRUE }
+#endif
   };
 
 /* Support data structures for Client SMTP Authorization. acl_verify_csa()
@@ -2080,7 +2093,11 @@ else if (verify_sender_address != NULL)
 
     sender_vaddr = deliver_make_addr(verify_sender_address, TRUE);
 #ifdef EXPERIMENTAL_INTERNATIONAL
-    sender_vaddr->prop.utf8 = message_smtputf8;
+    if ((sender_vaddr->prop.utf8_msg = message_smtputf8))
+      {
+      sender_vaddr->prop.utf8_downcvt =       message_utf8_downconvert == 1;
+      sender_vaddr->prop.utf8_downcvt_maybe = message_utf8_downconvert == -1;
+      }
 #endif
     if (no_details) setflag(sender_vaddr, af_sverify_told);
     if (verify_sender_address[0] != 0)
@@ -3377,6 +3394,24 @@ for (; cb != NULL; cb = cb->next)
 					arg, *log_msgptr);
 	  }
 	return ERROR;
+
+    #ifdef EXPERIMENTAL_INTERNATIONAL
+	case CONTROL_UTF8_DOWNCONVERT:
+	if (*p == '/')
+	  {
+	  if (p[1] == '1') { message_utf8_downconvert = 1; p += 2; break; }
+	  if (p[1] == '0') { message_utf8_downconvert = 0; p += 2; break; }
+	  if (p[1] == '-' && p[2] == '1')
+			   { message_utf8_downconvert = -1; p += 3; break; }
+	  *log_msgptr = US"bad option value for control=utf8_downconvert";
+	  }
+	else
+	  {
+	  message_utf8_downconvert = 1; break;
+	  }
+	return ERROR;
+    #endif
+
 	}
       break;
       }
@@ -3390,14 +3425,9 @@ for (; cb != NULL; cb = cb->next)
       /* Run the dcc backend. */
       rc = dcc_process(&ss);
       /* Modify return code based upon the existance of options. */
-      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
-            != NULL) {
+      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
-          {
-          /* FAIL so that the message is passed to the next ACL */
-          rc = FAIL;
-          }
-        }
+          rc = FAIL;   /* FAIL so that the message is passed to the next ACL */
       }
     break;
     #endif
@@ -4382,7 +4412,11 @@ if (where == ACL_WHERE_RCPT)
     return DEFER;
     }
 #ifdef EXPERIMENTAL_INTERNATIONAL
-  addr->prop.utf8 = message_smtputf8;
+  if ((addr->prop.utf8_msg = message_smtputf8))
+    {
+    addr->prop.utf8_downcvt =       message_utf8_downconvert == 1;
+    addr->prop.utf8_downcvt_maybe = message_utf8_downconvert == -1;
+    }
 #endif
   deliver_domain = addr->domain;
   deliver_localpart = addr->local_part;

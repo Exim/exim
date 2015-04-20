@@ -246,7 +246,12 @@ if (tls_in.ocsp)	 fprintf(f, "-tls_ocsp %d\n",   tls_in.ocsp);
 #endif
 
 #ifdef EXPERIMENTAL_INTERNATIONAL
-if (message_smtputf8)    fprintf(f, "-smtputf8\n");
+if (message_smtputf8)
+  {
+  fprintf(f, "-smtputf8\n");
+  if (message_utf8_downconvert)
+    fprintf(f, "-utf8_downcvt%s\n", message_utf8_downconvert < 0 ? "_opt" : "");
+  }
 #endif
 
 /* Write the dsn flags to the spool header file */
@@ -508,3 +513,5 @@ return TRUE;
 #endif
 
 /* End of spool_out.c */
+/* vi: aw ai sw=2
+*/

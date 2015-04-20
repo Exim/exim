@@ -301,6 +301,7 @@ spam_score_int = NULL;
 
 #if defined(EXPERIMENTAL_INTERNATIONAL) && !defined(COMPILE_UTILITY)
 message_smtputf8 = FALSE;
+message_utf8_downconvert = 0;
 #endif
 
 dsn_ret = 0;
@@ -597,6 +598,15 @@ for (;;)
       tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
     else if (Ustrncmp(p, "ls_ocsp", 7) == 0)
       tls_in.ocsp = big_buffer[10] - '0';
+    break;
+#endif
+
+#if defined(EXPERIMENTAL_INTERNATIONAL) && !defined(COMPILE_UTILITY)
+    case 'u':
+    if (Ustrncmp(p, "tf8_downcvt", 11) == 0)
+      message_utf8_downconvert = 1;
+    else if (Ustrncmp(p, "tf8_downcvt_opt", 15) == 0)
+      message_utf8_downconvert = -1;
     break;
 #endif
 

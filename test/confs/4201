@@ -39,7 +39,7 @@ begin acl
 check_recipient:
   accept hosts = :
   accept domains = +local_domains
-	 local_parts = ^user.*\$
+	 local_parts = ^(xn--)?user.*\$
   deny   message = relay not permitted
 
 .else

@@ -460,7 +460,9 @@ typedef struct address_item_propagated {
   uschar *srs_sender;             /* Change return path when delivering */
   #endif
   #ifdef EXPERIMENTAL_INTERNATIONAL
-  BOOL    utf8;			  /* requires SMTPUTF8 processing */
+  BOOL    utf8_msg:1;		  /* requires SMTPUTF8 processing */
+  BOOL	  utf8_downcvt:1;	  /* mandatory downconvert on delivery */
+  BOOL	  utf8_downcvt_maybe:1;	  /* optional downconvert on delivery */
   #endif
 } address_item_propagated;
 
@@ -499,6 +501,9 @@ typedef struct address_item_propagated {
 #define af_force_command       0x10000000 /* force_command in pipe transport */
 #ifdef EXPERIMENTAL_DANE
 # define af_dane_verified      0x20000000 /* TLS cert verify done with DANE */
+#endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+# define af_utf8_downcvt       0x40000000 /* downconvert was done for delivery */
 #endif
 
 /* These flags must be propagated when a child is created */

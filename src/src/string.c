@@ -1547,14 +1547,35 @@ static uschar *
 string_get_localpart(address_item *addr, uschar *yield, int *sizeptr,
   int *ptrptr)
 {
-if (testflag(addr, af_include_affixes) && addr->prefix != NULL)
-  yield = string_cat(yield, sizeptr, ptrptr, addr->prefix,
-    Ustrlen(addr->prefix));
-yield = string_cat(yield, sizeptr, ptrptr, addr->local_part,
-  Ustrlen(addr->local_part));
-if (testflag(addr, af_include_affixes) && addr->suffix != NULL)
-  yield = string_cat(yield, sizeptr, ptrptr, addr->suffix,
-    Ustrlen(addr->suffix));
+uschar * s;
+
+s = addr->prefix;
+if (testflag(addr, af_include_affixes) && s)
+  {
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  if (testflag(addr, af_utf8_downcvt))
+    s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+  }
+
+s = addr->local_part;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+if (testflag(addr, af_utf8_downcvt))
+  s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+
+s = addr->suffix;
+if (testflag(addr, af_include_affixes) && s)
+  {
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  if (testflag(addr, af_utf8_downcvt))
+    s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+  }
+
 return yield;
 }
 
@@ -1615,10 +1636,15 @@ else
   {
   if (addr->local_part != NULL)
     {
+    const uschar * s;
     yield = string_get_localpart(addr, yield, &size, &ptr);
     yield = string_cat(yield, &size, &ptr, US"@", 1);
-    yield = string_cat(yield, &size, &ptr, addr->domain,
-      Ustrlen(addr->domain) );
+    s = addr->domain;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    if (testflag(addr, af_utf8_downcvt))
+      s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s) );
     }
   else
     {
