@@ -5606,8 +5606,11 @@ if (process_recipients != RECIP_IGNORE)
 	{
 	new->prop.utf8_downcvt =       message_utf8_downconvert == 1;
 	new->prop.utf8_downcvt_maybe = message_utf8_downconvert == -1;
+	DEBUG(D_deliver) debug_printf("utf8, downconvert %s\n",
+	  new->prop.utf8_downcvt ? "yes"
+	  : new->prop.utf8_downcvt_maybe ? "ifneeded"
+	  : "no");
 	}
-      DEBUG(D_deliver) if (message_smtputf8) debug_printf("utf8\n");
 #endif
 
       if (r->pno >= 0)

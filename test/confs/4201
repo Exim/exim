@@ -4,6 +4,7 @@
 OPTION = *
 CONTROL =
 INSERT =
+SUB =
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -28,6 +29,8 @@ queue_run_in_order
 .endif
 
 smtputf8_advertise_hosts = OPTION
+
+SUB
 
 
 # ----- ACL -----

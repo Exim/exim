@@ -605,7 +605,7 @@ for (;;)
     case 'u':
     if (Ustrncmp(p, "tf8_downcvt", 11) == 0)
       message_utf8_downconvert = 1;
-    else if (Ustrncmp(p, "tf8_downcvt_opt", 15) == 0)
+    else if (Ustrncmp(p, "tf8_optdowncvt", 15) == 0)
       message_utf8_downconvert = -1;
     break;
 #endif

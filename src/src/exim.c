@@ -5088,6 +5088,9 @@ if (mua_wrapper)
   deliver_drop_privilege = TRUE;
   queue_smtp = FALSE;
   queue_smtp_domains = NULL;
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  message_utf8_downconvert = -1;	/* convert-if-needed */
+#endif
   }
 
 

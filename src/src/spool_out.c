@@ -250,7 +250,7 @@ if (message_smtputf8)
   {
   fprintf(f, "-smtputf8\n");
   if (message_utf8_downconvert)
-    fprintf(f, "-utf8_downcvt%s\n", message_utf8_downconvert < 0 ? "_opt" : "");
+    fprintf(f, "-utf8_%sdowncvt\n", message_utf8_downconvert < 0 ? "opt" : "");
   }
 #endif
 
