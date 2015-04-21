@@ -76,10 +76,16 @@ uschar *
 string_localpart_utf8_to_alabel(const uschar * utf8, uschar ** err)
 {
 size_t ucs4_len;
-punycode_uint * p = (punycode_uint *) stringprep_utf8_to_ucs4(CCS utf8, -1, &ucs4_len);
-size_t p_len = ucs4_len*4;	/* this multiplier is pure guesswork */
-uschar * res = store_get(p_len+5);
+punycode_uint * p;
+size_t p_len;
+uschar * res;
 int rc;
+
+if (!string_is_utf8(utf8)) return string_copy(utf8);
+
+p = (punycode_uint *) stringprep_utf8_to_ucs4(CCS utf8, -1, &ucs4_len);
+p_len = ucs4_len*4;	/* this multiplier is pure guesswork */
+res = store_get(p_len+5);
 
 res[0] = 'x'; res[1] = 'n'; res[2] = res[3] = '-';
 
@@ -139,16 +145,26 @@ const uschar * s;
 uschar * l;
 uschar * d;
 
+if (!*utf8) return string_copy(utf8);
+
+DEBUG(D_expand) debug_printf("addr from utf8 <%s>", utf8);
+
 for (s = utf8; *s; s++)
   if (*s == '@')
     {
     l = string_copyn(utf8, s - utf8);
-    return   (l = string_localpart_utf8_to_alabel(l, err), err && *err)
-	  || (d = string_domain_utf8_to_alabel(++s, err),  err && *err)
-      ? NULL
-      : string_sprintf("%s@%s", l, d);
+    if (  (l = string_localpart_utf8_to_alabel(l, err), err && *err)
+       || (d = string_domain_utf8_to_alabel(++s, err),  err && *err)
+       )
+      return NULL;
+    l = string_sprintf("%s@%s", l, d);
+    DEBUG(D_expand) debug_printf(" -> <%s>\n", l);
+    return l;
     }
-return string_localpart_utf8_to_alabel(utf8, err);
+
+l =  string_localpart_utf8_to_alabel(utf8, err);
+DEBUG(D_expand) debug_printf(" -> <%s>\n", l);
+return l;
 }
 
 

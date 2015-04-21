@@ -3399,15 +3399,38 @@ for (; cb != NULL; cb = cb->next)
 	case CONTROL_UTF8_DOWNCONVERT:
 	if (*p == '/')
 	  {
-	  if (p[1] == '1') { message_utf8_downconvert = 1; p += 2; break; }
-	  if (p[1] == '0') { message_utf8_downconvert = 0; p += 2; break; }
+	  if (p[1] == '1')
+	    {
+	    message_utf8_downconvert = 1;
+	    addr->prop.utf8_downcvt = TRUE;
+	    addr->prop.utf8_downcvt_maybe = FALSE;
+	    p += 2;
+	    break;
+	    }
+	  if (p[1] == '0')
+	    {
+	    message_utf8_downconvert = 0;
+	    addr->prop.utf8_downcvt = FALSE;
+	    addr->prop.utf8_downcvt_maybe = FALSE;
+	    p += 2;
+	    break;
+	    }
 	  if (p[1] == '-' && p[2] == '1')
-			   { message_utf8_downconvert = -1; p += 3; break; }
+	    {
+	    message_utf8_downconvert = -1;
+	    addr->prop.utf8_downcvt = FALSE;
+	    addr->prop.utf8_downcvt_maybe = TRUE;
+	    p += 3;
+	    break;
+	    }
 	  *log_msgptr = US"bad option value for control=utf8_downconvert";
 	  }
 	else
 	  {
-	  message_utf8_downconvert = 1; break;
+	  message_utf8_downconvert = 1;
+	  addr->prop.utf8_downcvt = TRUE;
+	  addr->prop.utf8_downcvt_maybe = FALSE;
+	  break;
 	  }
 	return ERROR;
     #endif

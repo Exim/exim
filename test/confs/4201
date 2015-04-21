@@ -3,6 +3,7 @@
 
 OPTION = *
 CONTROL =
+INSERT =
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -45,6 +46,9 @@ check_recipient:
 .else
 
 sub:
+.ifdef INSERT
+  require INSERT
+.endif
 .ifdef CONTROL
   require CONTROL
 .endif

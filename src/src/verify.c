@@ -945,9 +945,11 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       }
     else if (  addr->prop.utf8_msg
 	    && (addr->prop.utf8_downcvt || !utf8_offered)
-	    && (from_address = string_address_utf8_to_alabel(from_address,
-				      &addr->message), addr->message)
-	    )
+	    && (setflag(addr, af_utf8_downcvt),
+	        from_address = string_address_utf8_to_alabel(from_address,
+				      &addr->message),
+		addr->message
+	    )  )
       {
       errno = ERRNO_EXPANDFAIL;
       setflag(addr, af_verify_nsfail);
@@ -974,7 +976,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     /* Send the MAIL command */
         (smtp_write_command(&outblock, FALSE,
 #ifdef EXPERIMENTAL_INTERNATIONAL
-	  addr->prop.utf8_msg
+	  addr->prop.utf8_msg && !addr->prop.utf8_downcvt
 	  ? "MAIL FROM:<%s>%s SMTPUTF8\r\n"
 	  :
 #endif
@@ -1017,6 +1019,23 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     else
       {
+      const uschar * rcpt_domain = addr->domain;
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+      uschar * errstr = NULL;
+      if (  testflag(addr, af_utf8_downcvt)
+	 && (rcpt_domain = string_domain_utf8_to_alabel(rcpt_domain,
+				    &errstr), errstr)
+	 )
+	{
+	addr->message = errstr;
+	errno = ERRNO_EXPANDFAIL;
+	setflag(addr, af_verify_nsfail);
+	done = FALSE;
+	rcpt_domain = US"";  /*XXX errorhandling! */
+	}
+#endif
+
       new_domain_record.result =
         (old_domain_cache_result == ccache_reject_mfnull)?
           ccache_reject_mfnull: ccache_accept;
@@ -1029,7 +1048,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         BOOL random_ok =
           smtp_write_command(&outblock, FALSE,
             "RCPT TO:<%.1000s@%.1000s>\r\n", random_local_part,
-            addr->domain) >= 0 &&
+            rcpt_domain) >= 0 &&
           smtp_read_response(&inblock, randombuffer,
             sizeof(randombuffer), '2', callout);
 
@@ -1065,7 +1084,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
             smtp_write_command(&outblock, FALSE,
 #ifdef EXPERIMENTAL_INTERNATIONAL
-	      addr->prop.utf8_msg
+	      addr->prop.utf8_msg && !addr->prop.utf8_downcvt
 	      ? "MAIL FROM:<%s> SMTPUTF8\r\n"
 	      :
 #endif
@@ -1101,11 +1120,27 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         /* Get the rcpt_include_affixes flag from the transport if there is one,
         but assume FALSE if there is not. */
 
+	uschar * rcpt = transport_rcpt_address(addr,
+              addr->transport ? addr->transport->rcpt_include_affixes : FALSE);
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+	/*XXX should the conversion be moved into transport_rcpt_address() ? */
+	uschar * dummy_errstr = NULL;
+	if (  testflag(addr, af_utf8_downcvt)
+	   && (rcpt = string_address_utf8_to_alabel(rcpt, &dummy_errstr),
+	       dummy_errstr
+	   )  )
+	{
+	errno = ERRNO_EXPANDFAIL;
+	*failure_ptr = US"recipient";
+	done = FALSE;
+	}
+	else
+#endif
+
         done =
           smtp_write_command(&outblock, FALSE, "RCPT TO:<%.1000s>\r\n",
-            transport_rcpt_address(addr,
-              (addr->transport == NULL)? FALSE :
-               addr->transport->rcpt_include_affixes)) >= 0 &&
+            rcpt) >= 0 &&
           smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
             '2', callout);
 
@@ -1142,7 +1177,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
             ((
             smtp_write_command(&outblock, FALSE,
-              "RCPT TO:<postmaster@%.1000s>\r\n", addr->domain) >= 0 &&
+              "RCPT TO:<postmaster@%.1000s>\r\n", rcpt_domain) >= 0 &&
             smtp_read_response(&inblock, responsebuffer,
               sizeof(responsebuffer), '2', callout)
             )
