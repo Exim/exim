@@ -1785,7 +1785,12 @@ tls_client_setup_hostname_checks(host_item * host, exim_gnutls_state_st * state,
 {
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
-  state->exp_tls_verify_cert_hostnames = host->name;
+  state->exp_tls_verify_cert_hostnames =
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    string_domain_utf8_to_alabel(host->name, NULL);
+#else
+    host->name;
+#endif
   DEBUG(D_tls)
     debug_printf("TLS: server cert verification includes hostname: \"%s\".\n",
 		    state->exp_tls_verify_cert_hostnames);

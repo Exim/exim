@@ -1725,7 +1725,12 @@ if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
 
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
-  cbinfo->verify_cert_hostnames = host->name;
+  cbinfo->verify_cert_hostnames =
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    string_domain_utf8_to_alabel(host->name, NULL);
+#else
+    host->name;
+#endif
   DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
 		    cbinfo->verify_cert_hostnames);
   }

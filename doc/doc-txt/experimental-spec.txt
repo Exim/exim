@@ -1299,6 +1299,9 @@ the appendfile transport, will have utf8 name.
 Helo names sent by the smtp transport will have any utf8
 components expanded to a-label form.
 
+Any certificate name checks will be done using the a-label
+form of the name.
+
 Log lines and Received-by: header lines will aquire a "utf8"
 prefix on the protocol element, eg. utf8esmtp.
 
