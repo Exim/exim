@@ -1318,12 +1318,21 @@ by "control = utf8_downconvert/0".  The value "-1"
 may also be used, to use a-label for only if the
 destination host does not support SMTPUTF8.
 
+If mua_wrapper is set, the utf8_downconvert control
+defaults to -1 (convert if needed).
+
+
+There is no explicit support for VRFY and EXPN.
+Configurations supporting these should inspect
+$smtp_command_argument for an SMTPUTF8 argument.
+
+There is no support for LMTP on Unix sockets.
+Using the "lmtp" protocol option on an smtp transport,
+for LMTP over TCP, should work as expected.
+
 Known issues:
- - Currently LMTP is not supported.
  - DSN unitext handling is not present
- - no provision for converting logging from UTF-8
- - VRFY and EXPN not handled
- - mua_wrapper not handled
+ - no provision for converting logging from or to UTF-8
 
 --------------------------------------------------------------
 End of file
