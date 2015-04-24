@@ -231,6 +231,7 @@ char *pdkim_strncat(pdkim_str *str, const char *data, int len) {
 char *pdkim_strcat(pdkim_str *str, const char *cstr) {
   return pdkim_strncat(str, cstr, strlen(cstr));
 }
+
 char *pdkim_numcat(pdkim_str *str, unsigned long num) {
   char minibuf[20];
   snprintf(minibuf,20,"%lu",num);
@@ -1195,86 +1196,216 @@ DLLEXPORT int pdkim_feed (pdkim_ctx *ctx,
   return PDKIM_OK;
 }
 
+/*
+ * RFC 5322 specifies that header line length SHOULD be no more than 78
+ * lets make it so!
+ *  pdkim_headcat
+ * returns char*
+ *
+ * col: this int holds and receives column number (octets since last '\n')
+ * str: partial string to append to
+ * pad: padding, split line or space after before or after eg: ";" 
+ * intro: - must join to payload eg "h=", usually the tag name
+ * payload: eg base64 data - long data can be split arbitrarily.
+ *
+ * this code doesn't fold the header in some of the places that RFC4871
+ * allows: As per RFC5322(2.2.3) it only folds before or after tag-value
+ * pairs and inside long values. it also always spaces or breaks after the
+ * "pad" 
+ *
+ * no guarantees are made for output given out-of range input. like tag
+ * names loinger than 78, or bogus col. Input is assumed to be free of line breaks.
+ */
+
+static char *pdkim_headcat(int *col, pdkim_str *str, const char*pad,const char *intro, const char *payload ) {
+  size_t l;
+  if( pad)
+  {
+    l = strlen(pad);
+    if( *col + l > 78 )
+    {
+      pdkim_strcat(str, "\r\n\t");
+      *col=1;
+    }
+    pdkim_strncat(str, pad,l);
+    *col +=l;
+  }
+
+  l=(pad?1:0) + (intro?strlen(intro):0 );
+
+  if( *col + l > 78 )
+  { /*can't fit intro - start a new line to make room.*/
+    pdkim_strcat(str, "\r\n\t");
+    *col=1;
+    l= intro?strlen(intro):0;
+  }
+
+  l += payload ? strlen(payload):0 ;
+
+  while(l>77)
+  { /* this fragment will not fit on a single line */
+    if( pad )
+    {
+      pdkim_strcat(str, " ");
+      *col +=1;
+      pad=NULL; // only want this once
+      l--;
+    }
+    if( intro )
+    {
+      size_t sl=strlen(intro);
+      pdkim_strncat(str, intro,sl);
+      *col +=sl;
+      l-=sl;
+      intro=NULL; // only want this once
+    }
+    if(payload)
+    {
+      size_t sl=strlen(payload);
+      size_t chomp = *col+sl < 77 ? sl : 78-*col;
+      pdkim_strncat(str, payload,chomp);
+      *col +=chomp;
+      payload+=chomp;
+      l-=chomp-1;
+    }
+    // the while precondition tells us it didn't fit.
+    pdkim_strcat(str, "\r\n\t");
+    *col=1;
+  }
+  if( *col + l > 78 )
+  {
+    pdkim_strcat(str, "\r\n\t");
+    *col=1;
+    pad=NULL;
+  }
+
+  if( pad )
+  {
+    pdkim_strcat(str, " ");
+    *col +=1;
+    pad=NULL;
+  }
+
+  if( intro )
+  {
+    size_t sl=strlen(intro);
+    pdkim_strncat(str, intro,sl);
+    *col +=sl;
+    l-=sl;
+    intro=NULL;
+  }
+  if(payload)
+  {
+    size_t sl=strlen(payload);
+    pdkim_strncat(str, payload,sl);
+    *col +=sl;
+  }
+
+  return str->str;
+}
 
 /* -------------------------------------------------------------------------- */
 char *pdkim_create_header(pdkim_signature *sig, int final) {
   char *rc = NULL;
   char *base64_bh = NULL;
   char *base64_b  = NULL;
+  int col=0;
   pdkim_str *hdr = pdkim_strnew("DKIM-Signature: v="PDKIM_SIGNATURE_VERSION);
   if (hdr == NULL) return NULL;
+  pdkim_str *canon_all = pdkim_strnew(pdkim_canons[sig->canon_headers]);
+  if (canon_all == NULL) goto BAIL;
 
   base64_bh = pdkim_encode_base64(sig->bodyhash, sig->bodyhash_len);
   if (base64_bh == NULL) goto BAIL;
 
+  col=strlen(hdr->str);
+
   /* Required and static bits */
   if (
-        pdkim_strcat(hdr,"; a=")                                &&
-        pdkim_strcat(hdr,pdkim_algos[sig->algo])                &&
-        pdkim_strcat(hdr,"; q=")                                &&
-        pdkim_strcat(hdr,pdkim_querymethods[sig->querymethod])  &&
-        pdkim_strcat(hdr,"; c=")                                &&
-        pdkim_strcat(hdr,pdkim_canons[sig->canon_headers])      &&
-        pdkim_strcat(hdr,"/")                                   &&
-        pdkim_strcat(hdr,pdkim_canons[sig->canon_body])         &&
-        pdkim_strcat(hdr,"; d=")                                &&
-        pdkim_strcat(hdr,sig->domain)                           &&
-        pdkim_strcat(hdr,"; s=")                                &&
-        pdkim_strcat(hdr,sig->selector)                         &&
-        pdkim_strcat(hdr,";\r\n\th=")                           &&
-        pdkim_strcat(hdr,sig->headernames)                      &&
-        pdkim_strcat(hdr,"; bh=")                               &&
-        pdkim_strcat(hdr,base64_bh)                             &&
-        pdkim_strcat(hdr,";\r\n\t")
+        pdkim_headcat(&col,hdr,";","a=",pdkim_algos[sig->algo]) &&
+        pdkim_headcat(&col,hdr,";","q=",pdkim_querymethods[sig->querymethod])  &&
+          pdkim_strcat(canon_all,"/")                           &&
+          pdkim_strcat(canon_all,pdkim_canons[sig->canon_body]) &&
+        pdkim_headcat(&col,hdr,";","c=",canon_all->str)         &&
+        pdkim_headcat(&col,hdr,";","d=",sig->domain)            &&
+        pdkim_headcat(&col,hdr,";","s=",sig->selector)
      ) {
+    /* list of eader names can be split between items. */
+    {
+      char *n=strdup(sig->headernames);
+      char *f=n;
+      char *i="h=";
+      char *s=";";
+      if(!n) goto BAIL;
+      while (*n)
+      {
+          char *c=strchr(n,':');
+          if(c) *c='\0';
+          if(!i)
+          {
+            if (!pdkim_headcat(&col,hdr,NULL,NULL,":"))
+            {
+              free(f);
+              goto BAIL;
+            }
+          }
+          if( !pdkim_headcat(&col,hdr,s,i,n))
+          {
+            free(f);
+            goto BAIL;
+          }
+          if(c) n=c+1 ; else break;
+          s=NULL;
+          i=NULL;
+      }
+      free(f);
+    }
+    if(!pdkim_headcat(&col,hdr,";","bh=",base64_bh))
+        goto BAIL;
+
     /* Optional bits */
     if (sig->identity != NULL) {
-      if (!( pdkim_strcat(hdr,"i=")                             &&
-             pdkim_strcat(hdr,sig->identity)                    &&
-             pdkim_strcat(hdr,";") ) ) {
+      if(!pdkim_headcat(&col,hdr,";","i=",sig->identity)){
         goto BAIL;
       }
     }
+
     if (sig->created > 0) {
-      if (!( pdkim_strcat(hdr,"t=")                             &&
-             pdkim_numcat(hdr,sig->created)                     &&
-             pdkim_strcat(hdr,";") ) ) {
+      char minibuf[20];
+      snprintf(minibuf,20,"%lu",sig->created);
+      if(!pdkim_headcat(&col,hdr,";","t=",minibuf)) {
         goto BAIL;
       }
     }
     if (sig->expires > 0) {
-      if (!( pdkim_strcat(hdr,"x=")                             &&
-             pdkim_numcat(hdr,sig->expires)                     &&
-             pdkim_strcat(hdr,";") ) ) {
+      char minibuf[20];
+      snprintf(minibuf,20,"%lu",sig->expires);
+      if(!pdkim_headcat(&col,hdr,";","x=",minibuf)) {
         goto BAIL;
       }
     }
     if (sig->bodylength >= 0) {
-      if (!( pdkim_strcat(hdr,"l=")                             &&
-             pdkim_numcat(hdr,sig->bodylength)                  &&
-             pdkim_strcat(hdr,";") ) ) {
+      char minibuf[20];
+      snprintf(minibuf,20,"%lu",sig->bodylength);
+      if(!pdkim_headcat(&col,hdr,";","l=",minibuf)) {
         goto BAIL;
       }
     }
-    /* Extra linebreak */
-    if (hdr->str[(hdr->len)-1] == ';') {
-      if (!pdkim_strcat(hdr," \r\n\t")) goto BAIL;
-    }
+
     /* Preliminary or final version? */
     if (final) {
       base64_b = pdkim_encode_base64(sig->sigdata, sig->sigdata_len);
       if (base64_b == NULL) goto BAIL;
-      if (
-            pdkim_strcat(hdr,"b=")                              &&
-            pdkim_strcat(hdr,base64_b)                          &&
-            pdkim_strcat(hdr,";")
-         ) goto DONE;
+      if(!pdkim_headcat(&col,hdr,";","b=",base64_b)) goto BAIL;
     }
     else {
-      if (pdkim_strcat(hdr,"b=;")) goto DONE;
+      if(!pdkim_headcat(&col,hdr,";","b=","")) goto BAIL;
     }
 
-    goto BAIL;
+    /* add trailing semicolon: I'm not sure if this is actually needed */
+    if(!pdkim_headcat(&col,hdr,NULL,";","")) goto BAIL;
+
+    goto DONE;
   }
 
   DONE:
@@ -1282,6 +1413,7 @@ char *pdkim_create_header(pdkim_signature *sig, int final) {
 
   BAIL:
   pdkim_strfree(hdr);
+  if (canon_all != NULL) pdkim_strfree(canon_all);
   if (base64_bh != NULL) free(base64_bh);
   if (base64_b  != NULL) free(base64_b);
   return rc;
