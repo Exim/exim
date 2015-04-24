@@ -129,8 +129,8 @@ using regex for maildir directory selection: ^(?:cur|new|\..*)$
 looking for maildirsize in TESTSUITE/test-mail/userx
 TESTSUITE/test-mail/userx/maildirsize does not exist: recalculating
 MUNGED: the check_dir_size lines have been sorted to ensure consistency
-check_dir_size: dir=TESTSUITE/test-mail/userx/cur sum=0 count=0
-check_dir_size: dir=TESTSUITE/test-mail/userx/new sum=0 count=0
+check_dir_size: dir=TESTSUITE/test-mail/userx/cur sum=0 count=dd
+check_dir_size: dir=TESTSUITE/test-mail/userx/new sum=0 count=dd
 skipping TESTSUITE/test-mail/userx/tmp: dir_regex does not match
 maildir_compute_size: path=TESTSUITE/test-mail/userx
   sum=0 filecount=0 timestamp=ddddddd

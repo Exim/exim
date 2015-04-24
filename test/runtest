@@ -732,8 +732,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/this message = \d+\b/this message = sss/;
   s/Size of headers = \d+/Size of headers = sss/;
   s/sum=(?!0)\d+/sum=dddd/;
-  s/(?<=sum=dddd )count=(?!0)\d+\b/count=dd/;
-  s/(?<=sum=0 )count=(?!0)\d+\b/count=dd/;
+  s/(?<=sum=dddd )count=\d+\b/count=dd/;
+  s/(?<=sum=0 )count=\d+\b/count=dd/;
   s/,S is \d+\b/,S is ddddd/;
   s/\+0100,\d+;/+0100,ddd;/;
   s/\(\d+ bytes written\)/(ddd bytes written)/;
