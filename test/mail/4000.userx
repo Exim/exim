@@ -295,3 +295,68 @@ foobar
 
 --T4sUOijqQbZv57TR--
 
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER (helo=test.ex)
+	by myhost.test.ex with local-esmtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbC-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-ID: <20041217133501.GA3058@test.ex>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="T4sUOijqQbZv57TR"
+From: CALLER_NAME <CALLER@myhost.test.ex>
+X-0-content-type: multipart/mixed
+X-0-filename: 
+X-0-charset: 
+X-0-boundary: T4sUOijqQbZv57TR
+X-0-content-disposition: 
+X-0-content-transfer-encoding: 
+X-0-content-id: 
+X-0-content-description: 
+X-0-is-multipart: 1
+X-0-is-coverletter: 1
+X-0-is-rfc822: 0
+X-0-decode-filename: TESTSUITE/spool/scan/10HmbC-0005vi-00/10HmbC-0005vi-00-00000
+X-0-content-size: 1
+X-1-content-type: text/plain
+X-1-filename: test ä test1
+X-1-charset: us-ascii
+X-1-boundary: 
+X-1-content-disposition: attachment
+X-1-content-transfer-encoding: 
+X-1-content-id: 
+X-1-content-description: 
+X-1-is-multipart: 0
+X-1-is-coverletter: 1
+X-1-is-rfc822: 0
+X-1-decode-filename: TESTSUITE/spool/scan/10HmbC-0005vi-00/10HmbC-0005vi-00-00001
+X-1-content-size: 1
+X-2-content-type: text/plain
+X-2-filename: test ä test2
+X-2-charset: us-ascii
+X-2-boundary: 
+X-2-content-disposition: attachment
+X-2-content-transfer-encoding: 
+X-2-content-id: 
+X-2-content-description: 
+X-2-is-multipart: 0
+X-2-is-coverletter: 0
+X-2-is-rfc822: 0
+X-2-decode-filename: TESTSUITE/spool/scan/10HmbC-0005vi-00/10HmbC-0005vi-00-00002
+X-2-content-size: 1
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="=?iso-8859-1?Q?test_=E4_test1?="
+
+(content 1: filename is rfc2047 encoded)
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename*=ISO-8859-1''%74%65%73%74%20%E4%20%74%65%73%74%32
+
+(content 2: filename is rfc2231 encoded)
+
+--T4sUOijqQbZv57TR--
+

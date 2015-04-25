@@ -31157,7 +31157,8 @@ containing the decoded data.
 This is perhaps the most important of the MIME variables. It contains a
 proposed filename for an attachment, if one was found in either the
 &'Content-Type:'& or &'Content-Disposition:'& headers. The filename will be
-RFC2047 decoded, but no additional sanity checks are done. If no filename was
+RFC2047 or RFC2231 decoded, but no additional sanity checks are done.
+ If no filename was
 found, this variable contains the empty string.
 
 .vitem &$mime_is_coverletter$&

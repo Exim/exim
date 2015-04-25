@@ -12,6 +12,9 @@ a string as a text string. This is sometimes useful for debugging output. */
 #define mac_string(s) # s
 #define mac_expanded_string(s) mac_string(s)
 
+/* Number of elements of an array */
+#define nelem(arr) (sizeof(arr) / sizeof(*arr))
+
 
 /* When running in the test harness, the load average is fudged. */
 
@@ -156,11 +159,11 @@ into big_buffer_size and in some circumstances increased. It should be at least
 as long as the maximum path length. */
 
 #if defined PATH_MAX && PATH_MAX > 16384
-#define BIG_BUFFER_SIZE PATH_MAX
+# define BIG_BUFFER_SIZE PATH_MAX
 #elif defined MAXPATHLEN && MAXPATHLEN > 16384
-#define BIG_BUFFER_SIZE MAXPATHLEN
+# define BIG_BUFFER_SIZE MAXPATHLEN
 #else
-#define BIG_BUFFER_SIZE 16384
+# define BIG_BUFFER_SIZE 16384
 #endif
 
 /* header size of pipe content 

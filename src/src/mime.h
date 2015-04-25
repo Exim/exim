@@ -22,17 +22,17 @@ struct mime_boundary_context
 };
 
 typedef struct mime_header {
-  uschar *name;
-  int    namelen;
-  void   *value;
+  uschar *  name;
+  int       namelen;
+  uschar ** value;
 } mime_header;
 
 static mime_header mime_header_list[] = {
-  { US"content-type:", 13, &mime_content_type },
-  { US"content-disposition:", 20, &mime_content_disposition },
+  { US"content-type:",              13, &mime_content_type },
+  { US"content-disposition:",       20, &mime_content_disposition },
   { US"content-transfer-encoding:", 26, &mime_content_transfer_encoding },
-  { US"content-id:", 11, &mime_content_id },
-  { US"content-description:", 20 , &mime_content_description }
+  { US"content-id:",                11, &mime_content_id },
+  { US"content-description:",       20, &mime_content_description }
 };
 
 static int mime_header_list_size = sizeof(mime_header_list)/sizeof(mime_header);
@@ -48,11 +48,9 @@ typedef struct mime_parameter {
 static mime_parameter mime_parameter_list[] = {
   { US"name=",     5, &mime_filename },
   { US"filename=", 9, &mime_filename },
-  { US"charset=",  8, &mime_charset },
+  { US"charset=",  8, &mime_charset  },
   { US"boundary=", 9, &mime_boundary }
 };
-
-static int mime_parameter_list_size = sizeof(mime_parameter_list)/sizeof(mime_parameter);
 
 
 /* MIME Anomaly list */
