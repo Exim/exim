@@ -19,5 +19,5 @@ QUIT
 ****
 #
 killdaemon
-exim -DSERVER=server -qqff
+exim -DSERVER=server -DNOTDAEMON -qqff
 ****
