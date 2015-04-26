@@ -543,6 +543,32 @@ return s;
 }
 
 
+static uschar *
+rfc2231_to_2047(const uschar * fname, const uschar * charset, int * len)
+{
+int size = 0, ptr = 0;
+uschar * val = string_cat(NULL, &size, &ptr, US"=?", 2);
+uschar c;
+
+val = string_cat(val, &size, &ptr, charset, Ustrlen(charset));
+val = string_cat(val, &size, &ptr, US"?Q?", 3);
+
+while ((c = *fname))
+  if (c == '%' && isxdigit(fname[1]) && isxdigit(fname[2]))
+    {
+    val = string_cat(val, &size, &ptr, US"=", 1);
+    val = string_cat(val, &size, &ptr, ++fname, 2);
+    fname += 2;
+    }
+  else
+    val = string_cat(val, &size, &ptr, fname++, 1);
+
+val = string_cat(val, &size, &ptr, US"?=", 2);
+val[*len = ptr] = '\0';
+return val;
+}
+
+
 int
 mime_acl_check(uschar *acl, FILE *f, struct mime_boundary_context *context,
     uschar **user_msgptr, uschar **log_msgptr)
@@ -689,11 +715,7 @@ while(1)
 		else
 		  p = q;
 
-		temp_string = expand_string(string_sprintf(
-		  "=?%s?Q?${sg{%s}{\\N%%([\\dA-Fa-f]{2})\\N}{=\\$1}}?=",
-		  mime_filename_charset, p));
-		slen = Ustrlen(temp_string);
-
+		temp_string = rfc2231_to_2047(p, mime_filename_charset, &slen);
 		temp_string = rfc2047_decode(temp_string, FALSE, NULL, 32,
 		  NULL, &err_msg);
 		size = Ustrlen(temp_string);
