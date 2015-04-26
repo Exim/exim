@@ -20,4 +20,7 @@ typedef struct flock flock_t;
 
 typedef struct __res_state *res_state;
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

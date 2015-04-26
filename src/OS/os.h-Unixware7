@@ -2,7 +2,6 @@
 
 #define NO_SYSEXITS
 
-#define ICONV_ARG2_TYPE char **
 #define EXIM_SOCKLEN_T size_t
 
 #define LOAD_AVG_NEEDS_ROOT

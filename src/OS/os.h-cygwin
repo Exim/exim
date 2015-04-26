@@ -48,4 +48,7 @@ struct  { \
   DWORD SubAuthority[n]; \
 } name = { SID_REVISION, n, {SECURITY_NT_AUTHORITY}, {sid}}
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

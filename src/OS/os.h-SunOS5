@@ -28,4 +28,7 @@ it seems. */
 
 #define PAM_CONVERSE_ARG2_TYPE  struct pam_message
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

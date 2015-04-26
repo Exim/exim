@@ -418,7 +418,7 @@ iconv(). It's os.h file defines ICONV_ARG2_TYPE. For the rest, define a default
 here. */
 
 #ifndef ICONV_ARG2_TYPE
-# define ICONV_ARG2_TYPE const char **
+# define ICONV_ARG2_TYPE char **
 #endif
 
 /* One OS uses a different type for the 5th argument of getsockopt */

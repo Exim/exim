@@ -13,7 +13,4 @@ changed. */
 /* Still not "socklen_t", which is the most common setting */
 #define EXIM_SOCKLEN_T       int
 
-/* The default for this is "const char **" */
-#define ICONV_ARG2_TYPE      char **
-
 /* End */
