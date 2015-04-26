@@ -224,7 +224,7 @@ if (@ARGV)
   foreach (@ARGV)
     {
     my $filename = $_;
-    if ($filename =~ /\.(?:COMPRESS_SUFFIX)$/o)
+    if (-x 'ZCAT_COMMAND' && $filename =~ /\.(?:COMPRESS_SUFFIX)$/o)
       {
       open(LOG, "ZCAT_COMMAND $filename |") ||
         die "Unable to zcat $filename: $!\n";

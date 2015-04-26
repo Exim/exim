@@ -35713,6 +35713,8 @@ search term.
 If the location of a &'zcat'& command is known from the definition of
 ZCAT_COMMAND in &_Local/Makefile_&, &'exigrep'& automatically passes any file
 whose name ends in COMPRESS_SUFFIX through &'zcat'& as it searches it.
+If the ZCAT_COMMAND is not executable, &'exigrep'& tries to use
+autodetection of some well known compression extensions.
 
 
 .section "Selecting messages by various criteria (exipick)" "SECTexipick"

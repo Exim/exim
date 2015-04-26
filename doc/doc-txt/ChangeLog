@@ -89,6 +89,9 @@ HS/01 DNSSEC options (dnssec_require_domains, dnssec_request_domains)
 JH/25 Bug 466: Add RFC2322 support for MIME attachment filenames.
       Original patch from Alexander Shikoff, worked over by JH.
 
+HS/02 Bug 1575: exigrep falls back to autodetection of compressed
+      files if ZCAT_COMMAND is not executable.
+
 
 Exim version 4.85
 -----------------
