@@ -173,6 +173,7 @@ line *last = NULL;
 line *s;
 FILE *in, *out;
 int linebuf = 1;
+char *pidfile = NULL;
 
 char *sockname = NULL;
 unsigned char buffer[10240];
@@ -205,6 +206,7 @@ while (na < argc && argv[na][0] == '-')
   else if (strcmp(argv[na], "-i") == 0) initial_pause = atoi(argv[++na]);
   else if (strcmp(argv[na], "-noipv4") == 0) use_ipv4 = 0;
   else if (strcmp(argv[na], "-noipv6") == 0) use_ipv6 = 0;
+  else if (strcmp(argv[na], "-oP") == 0) pidfile = argv[++na];
   else
     {
     printf("server: unknown option %s\n", argv[na]);
@@ -408,6 +410,18 @@ for (i = 0; i <= skn; i++)
     }
   }
 
+
+if (pidfile)
+  {
+  FILE * p;
+  if (!(p = fopen(pidfile, "w")))
+    {
+    fprintf(stderr, "pidfile create failed: %s\n", strerror(errno));
+    exit(1);
+    }
+  fprintf(p, "%ld\n", (long)getpid());
+  fclose(p);
+  }
 
 /* This program handles only a fixed number of connections, in sequence. Before
 waiting for the first connection, read the standard input, which contains the

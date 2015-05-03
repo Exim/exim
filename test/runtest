@@ -1926,7 +1926,8 @@ if (/^(ln|ls|du|mkdir|mkfifo|touch|cp|cat)\s/ ||
 
 if (/^server\s+(.*)$/)
   {
-  $cmd = "./bin/server $server_opts $1 >>test-stdout-server";
+  $pidfile = "$parm_cwd/aux-var/server-daemon.pid";
+  $cmd = "./bin/server $server_opts -oP $pidfile $1 >>test-stdout-server";
   print ">> $cmd\n" if ($debug);
   $server_pid = open SERVERCMD, "|$cmd" || tests_exit(-1, "Failed to run $cmd");
   SERVERCMD->autoflush(1);
@@ -1940,10 +1941,9 @@ if (/^server\s+(.*)$/)
   print SERVERCMD "++++\n"; # Send end to server; can't send EOF yet
                             # because close() waits for the process.
 
-  # This gives the server time to get started; otherwise the next
+  # Interlock the server startup; otherwise the next
   # process may not find it there when it expects it.
-
-  select(undef, undef, undef, 0.5);
+  while (! stat("$pidfile") ) { select(undef, undef, undef, 0.3); }
   return 3;
   }
 
@@ -2119,6 +2119,7 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
 
   if ($cmd =~ /\s-DSERVER=server\s/ && $cmd !~ /\s-DNOTDAEMON\s/)
     {
+    $pidfile = "$parm_cwd/spool/exim-daemon.pid";
     if ($debug) { printf ">> daemon: $cmd\n"; }
     run_system("sudo mkdir spool/log 2>/dev/null");
     run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
@@ -2129,12 +2130,23 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
     # file is written to the spool directory, in case the Exim binary was
     # built with PID_FILE_PATH pointing somewhere else.
 
-    $cmd =~ s!\s-bd\s! -bdf -oP $parm_cwd/spool/exim-daemon.pid !;
+    if ($cmd =~ /\s-oP\s/)
+      {
+      ($pidfile = $cmd) =~ s/^.*-oP ([^ ]+).*$/$1/;
+      $cmd =~ s!\s-bd\s! -bdf !;
+      }
+    else
+      {
+      $pidfile = "$parm_cwd/spool/exim-daemon.pid";
+      $cmd =~ s!\s-bd\s! -bdf -oP $pidfile !;
+      }
     print ">> |${cmd}-server\n" if ($debug);
     open DAEMONCMD, "|${cmd}-server" || tests_exit(-1, "Failed to run $cmd");
     DAEMONCMD->autoflush(1);
     while (<SCRIPT>) { $lineno++; last if /^\*{4}\s*$/; }   # Ignore any input
-    select(undef, undef, undef, 0.3);             # Let the daemon get going
+
+    # Interlock with daemon startup
+    while (! stat("$pidfile") ) { select(undef, undef, undef, 0.3); }
     return 3;                                     # Don't wait
     }
   elsif ($cmd =~ /\s-DSERVER=wait:(\d+)\s/)
@@ -3590,6 +3602,8 @@ foreach $test (@test_list)
     my($expectrc) = 0;
     my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE);
     my($cmdrc) = $?;
+
+$0 = "[runtest $testno]";
 
     if ($debug) {
       print ">> rc=$rc cmdrc=$cmdrc\n";
