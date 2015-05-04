@@ -14,7 +14,7 @@ Test message 1.
 #
 #
 killdaemon
-exim -DSERVER=server -qqff
+exim -DSERVER=server -DNOTDAEMON -qqff
 ****
 #
 #
@@ -32,7 +32,7 @@ Test message 1.
 #
 #
 killdaemon
-exim -DSERVER=server -qqff
+exim -DSERVER=server -DNOTDAEMON -qqff
 ****
 #
 #

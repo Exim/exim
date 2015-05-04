@@ -23,6 +23,6 @@ Test message 3.
 #
 #
 killdaemon
-exim -DSERVER=server -qqff
+exim -DSERVER=server -DNOTDAEMON -qqff
 ****
 no_msglog_check

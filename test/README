@@ -887,6 +887,11 @@ example:
 Finally, "exim" can be preceded by "sudo", to run Exim as root. If more than
 one of these prefixes is present, they must be in the above order.
 
+If the options include "-DSERVER" but not "-DNOTDAEMON", the script waits for
+Exim to start but then continues without waiting for it to terminate. Typically
+this will be for a daemon-mode "-bd" operation.  The daemon should be later
+terminated using "killdaemon".
+
 
   exim_exim [<options>] [<arguments>]
 
