@@ -160,7 +160,10 @@ DATA
 QUIT
 ****
 #
-#
+# The "exim" above should have waited on completion for the "server" before
+# but apparently not; without this delay ordering is messed up.
+# Unsatifactory.
+millisleep 500
 #
 #
 #
@@ -209,6 +212,7 @@ QUIT
 ****
 #
 #
+millisleep 500
 #
 #
 #
@@ -277,6 +281,7 @@ QUIT
 ****
 #
 #
+millisleep 500
 #
 #
 #
@@ -377,6 +382,7 @@ QUIT
 ****
 #
 #
+millisleep 500
 #
 #
 #
