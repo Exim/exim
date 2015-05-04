@@ -114,6 +114,9 @@ static uschar *item_table[] = {
   US"hash",
   US"hmac",
   US"if",
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  US"imapfolder",
+#endif
   US"length",
   US"listextract",
   US"lookup",
@@ -140,6 +143,9 @@ enum {
   EITEM_HASH,
   EITEM_HMAC,
   EITEM_IF,
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  EITEM_IMAPFOLDER,
+#endif
   EITEM_LENGTH,
   EITEM_LISTEXTRACT,
   EITEM_LOOKUP,
@@ -4069,6 +4075,45 @@ while (*s != 0)
         save_expand_nlength);
       continue;
       }
+
+#ifdef EXPERIMENTAL_INTERNATIONAL
+    case EITEM_IMAPFOLDER:
+      {				/* ${imapfolder {name}{sep]{specials}} */
+      uschar *sub_arg[3];
+      uschar *encoded;
+
+      switch(read_subs(sub_arg, 3, 1, &s, skipping, TRUE, name, &resetok))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+
+      if (sub_arg[1] == NULL)		/* One argument */
+	{
+	sub_arg[1] = "/";		/* default separator */
+	sub_arg[2] = NULL;
+	}
+      else if (sub_arg[2] == NULL)	/* Two arguments */
+	sub_arg[2] = NULL;
+
+      if (Ustrlen(sub_arg[1]) != 1)
+	{
+	expand_string_message = 
+	  string_sprintf(
+		"IMAP folder separator must be one character, found \"%s\"", 
+		sub_arg[1]);
+	goto EXPAND_FAILED;
+	}
+
+      if (!(encoded = imap_utf7_encode(sub_arg[0], headers_charset,
+			  sub_arg[1][0], sub_arg[2], &expand_string_message)))
+	goto EXPAND_FAILED;
+      if (!skipping)
+	yield = string_cat(yield, &size, &ptr, encoded, Ustrlen(encoded));
+      continue;
+      }
+#endif
 
     /* Handle database lookups unless locked out. If "skipping" is TRUE, we are
     expanding an internal string that isn't actually going to be used. All we

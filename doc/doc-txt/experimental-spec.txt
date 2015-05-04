@@ -1271,8 +1271,9 @@ $tls_out_tlsa_usage (detailed above).
 
 
 
-SMTPUTF8
+INTERNATIONAL
 ------------------------------------------------------------
+SMTPUTF8
 Internationalised mail name handling.
 RFCs 6530, 6533, 5890
 
@@ -1336,6 +1337,36 @@ for LMTP over TCP, should work as expected.
 Known issues:
  - DSN unitext handling is not present
  - no provision for converting logging from or to UTF-8
+
+----
+IMAP folder names
+
+New expansion operator:
+
+${imapfolder {<string>} {<sep>} {<specials>}}
+
+The string is converted from the charset specified by the headers charset 
+command (in a filter file) or headers_charset global option, to the
+modified UTF-7 encoding specified by RFC 2060, with the following
+exception: All occurences of <sep> (which has to be a single character)
+are replaced with periods ("."), and all periods and slashes that aren't
+<sep> and are not in the <specials> string are BASE64 encoded.
+
+The third argument can be omitted, defaulting to an empty string.
+The second argument can be omitted, defaulting to "/".
+
+This is the encoding used by Courier for Maildir names on disk, and followed
+by many other IMAP servers.
+
+   Example 1: ${imapfolder {Foo/Bar}}       yields "Foo.Bar".
+   Example 2: ${imapfolder {Foo/Bar}{.}{/}} yields "Foo&AC8-Bar".
+   Example 3: ${imapfolder {Räksmörgås}}    yields "R&AOQ-ksm&APY-rg&AOU-s".
+
+Note that the source charset setting is vital, and also that characters
+must be representable in UTF-16.
+
+
+
 
 --------------------------------------------------------------
 End of file

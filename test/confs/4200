@@ -7,6 +7,8 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+headers_charset = UTF8
+
 # ----- ACL -----
 
 # End

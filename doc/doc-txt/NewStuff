@@ -28,6 +28,9 @@ Version 4.86
  8. If built with EXPERIMENTAL_INTERNATIONAL, support is included for
     the transmission of UTF-8 envelope addresses.
 
+ 9. If built with EXPERIMENTAL_INTERNATIONAL, an expansion item for a commonly
+    used encoding of Maildir folder names.
+
 
 Version 4.85
 ------------

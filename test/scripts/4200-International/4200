@@ -1,4 +1,4 @@
-# Internationalised mail: expansions
+# Internationalisation: expansions
 #
 # Sample strings taken from RFC3942
 
@@ -92,5 +92,17 @@ korean: ${utf8_localpart_from_alabel:xn--989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5
 ${utf8_domain_from_alabel:russian.xn--b1abfaaepdrnnbgefbaDotcwatmq2g4l.com}
 ${utf8_domain_from_alabel:spanish.xn--PorqunopuedensimplementehablarenEspaol-fmd56a.com}
 ${utf8_domain_from_alabel:vietnamese.xn--TisaohkhngthchnitingVit-kjcr8268qyxafd2f1b9g.com}
+
+===========
+
+${imapfolder {Foo/Bar}}
+Foo.Bar
+
+${imapfolder {Foo/Bar} {.} {/}}
+Foo&AC8-Bar
+
+${imapfolder{Räksmörgås}}
+R&AOQ-ksm&APY-rg&AOU-s
+
 
 ****

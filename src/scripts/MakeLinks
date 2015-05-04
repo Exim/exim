@@ -266,16 +266,17 @@ ln -s ../src/demime.h          demime.h
 # EXPERIMENTAL_*
 ln -s ../src/bmi_spam.c        bmi_spam.c
 ln -s ../src/bmi_spam.h        bmi_spam.h
-ln -s ../src/spf.c             spf.c
-ln -s ../src/spf.h             spf.h
-ln -s ../src/srs.c             srs.c
-ln -s ../src/srs.h             srs.h
 ln -s ../src/dcc.c             dcc.c
 ln -s ../src/dcc.h             dcc.h
 ln -s ../src/dane.c            dane.c
 ln -s ../src/dane-gnu.c        dane-gnu.c
 ln -s ../src/dane-openssl.c    dane-openssl.c
 ln -s ../src/danessl.h         danessl.h
+ln -s ../src/imap_utf7.c       imap_utf7.c
+ln -s ../src/spf.c             spf.c
+ln -s ../src/spf.h             spf.h
+ln -s ../src/srs.c             srs.c
+ln -s ../src/srs.h             srs.h
 ln -s ../src/utf8.c            utf8.c
 
 
