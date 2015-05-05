@@ -740,7 +740,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
 
         case DEFER:
         if (error == NULL)
-          error = string_sprintf("DNS lookup of %s deferred", ss);
+          error = string_sprintf("DNS lookup of \"%s\" deferred", ss);
         if (ignore_defer)
           {
           HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_defer\n",
@@ -752,6 +752,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
           log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
           return OK;
           }
+        if (!search_error_message) search_error_message = error;
         goto DEFER_RETURN;
 
         /* The ERROR return occurs when checking hosts, when either a forward

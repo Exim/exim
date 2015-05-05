@@ -1,0 +1,17 @@
+# Exim test configuration 0605
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept hosts = test.again.dns
+
+queue_only
+
+# End
+

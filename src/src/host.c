@@ -1995,11 +1995,11 @@ for (i = 1; i <= times;
     switch (error_num)
       {
       case HOST_NOT_FOUND: error = US"HOST_NOT_FOUND"; break;
-      case TRY_AGAIN: error = US"TRY_AGAIN"; break;
-      case NO_RECOVERY: error = US"NO_RECOVERY"; break;
-      case NO_DATA: error = US"NO_DATA"; break;
+      case TRY_AGAIN:      error = US"TRY_AGAIN"; break;
+      case NO_RECOVERY:    error = US"NO_RECOVERY"; break;
+      case NO_DATA:        error = US"NO_DATA"; break;
       #if NO_DATA != NO_ADDRESS
-      case NO_ADDRESS: error = US"NO_ADDRESS"; break;
+      case NO_ADDRESS:     error = US"NO_ADDRESS"; break;
       #endif
       default: error = US"?"; break;
       }

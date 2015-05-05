@@ -3582,7 +3582,8 @@ for (; cb != NULL; cb = cb->next)
     rc = verify_check_this_host(&arg, sender_host_cache, NULL,
       (sender_host_address == NULL)? US"" : sender_host_address,
       CUSS &host_data);
-    if (host_data != NULL) host_data = string_copy_malloc(host_data);
+    if (rc == DEFER) *log_msgptr = search_error_message;
+    if (host_data) host_data = string_copy_malloc(host_data);
     break;
 
     case ACLC_LOCAL_PARTS:
@@ -3597,8 +3598,7 @@ for (; cb != NULL; cb = cb->next)
       int sep = 0;
       const uschar *s = arg;
       uschar *ss;
-      while ((ss = string_nextinlist(&s, &sep, big_buffer, big_buffer_size))
-              != NULL)
+      while ((ss = string_nextinlist(&s, &sep, big_buffer, big_buffer_size)))
         {
         if (Ustrcmp(ss, "main") == 0) logbits |= LOG_MAIN;
         else if (Ustrcmp(ss, "panic") == 0) logbits |= LOG_PANIC;
