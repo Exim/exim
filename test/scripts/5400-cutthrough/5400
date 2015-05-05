@@ -149,7 +149,10 @@ DATA
 QUIT
 250 OK
 ****
-exim -bs
+#
+# Foregound delivery needed else the following subtest reception logging happens before this ones
+# delivery process logs and terminates; the interlock is only on the parent exim terminating.
+exim -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<no@domain.com>
@@ -160,10 +163,6 @@ DATA
 QUIT
 ****
 #
-# The "exim" above should have waited on completion for the "server" before
-# but apparently not; without this delay ordering is messed up.
-# Unsatifactory.
-millisleep 500
 #
 #
 #
@@ -200,7 +199,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -bs
+exim -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@domain.com>
@@ -212,7 +211,6 @@ QUIT
 ****
 #
 #
-millisleep 500
 #
 #
 #
@@ -269,7 +267,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -bs
+exim -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@domain.com>
@@ -281,7 +279,6 @@ QUIT
 ****
 #
 #
-millisleep 500
 #
 #
 #
@@ -370,7 +367,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -bs
+exim -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@domain.com>
@@ -382,7 +379,6 @@ QUIT
 ****
 #
 #
-millisleep 500
 #
 #
 #
@@ -405,7 +401,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -bs
+exim -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@localhost4.test.ex>
@@ -419,5 +415,4 @@ QUIT
 #
 #
 #
-#
-sleep 1
+# End
