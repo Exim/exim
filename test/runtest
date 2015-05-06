@@ -20,6 +20,7 @@ use Socket;
 use Time::Local;
 use Cwd;
 use File::Basename;
+use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ('Smart::Comments' => '####');
 
 
 # Start by initializing some global variables
@@ -321,6 +322,8 @@ my($file) = $_[0];
 my($extra) = $_[1];
 my($yield) = 0;
 my(@saved) = ();
+
+local $_;
 
 open(IN, "$file") || tests_exit(-1, "Failed to open $file: $!");
 
@@ -1069,7 +1072,7 @@ return $yield;
 # Arguments: [0] the prompt string
 #            [1] if there is a U in the prompt and $force_update is true
 #            [2] if there is a C in the prompt and $force_continue is true
-# Returns:   nothing (it sets $_)
+# Returns:   returns the answer
 
 sub interact{
 print $_[0];
@@ -1177,6 +1180,8 @@ if (! -e $sf_current)
     last if (/^u$/i);
     }
   }
+
+#### $_
 
 # Control reaches here if either (a) there is a saved file ($sf), or (b) there
 # was a request to create a saved file. First, create the munged file from any
