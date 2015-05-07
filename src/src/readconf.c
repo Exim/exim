@@ -373,6 +373,7 @@ static optionlist optionlist_config[] = {
   { "rfc1413_hosts",            opt_stringptr,   &rfc1413_hosts },
   { "rfc1413_query_timeout",    opt_time,        &rfc1413_query_timeout },
   { "sender_unqualified_hosts", opt_stringptr,   &sender_unqualified_hosts },
+  { "slow_lookup_log",          opt_int,         &slow_lookup_log },
   { "smtp_accept_keepalive",    opt_bool,        &smtp_accept_keepalive },
   { "smtp_accept_max",          opt_int,         &smtp_accept_max },
   { "smtp_accept_max_nonmail",  opt_int,         &smtp_accept_max_nonmail },

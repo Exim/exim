@@ -1,0 +1,24 @@
+# Exim test configuration 0606
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+slow_lookup_log = 1000
+
+acl_smtp_rcpt = accept verify = recipient
+
+queue_only
+
+begin routers
+
+all:
+  driver = dnslookup
+  verify_only
+  self = send
+
+# End
+

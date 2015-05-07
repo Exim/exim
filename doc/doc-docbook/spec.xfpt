@@ -13175,6 +13175,7 @@ listed in more than one group.
 .row &%message_logs%&                "create per-message logs"
 .row &%preserve_message_logs%&       "after message completion"
 .row &%process_log_path%&            "for SIGUSR1 and &'exiwhat'&"
+.row &%slow_lookup_log%&             "control logging of slow DNS lookups"
 .row &%syslog_duplication%&          "controls duplicate log lines on syslog"
 .row &%syslog_facility%&             "set syslog &""facility""& field"
 .row &%syslog_processname%&          "set syslog &""ident""& field"
@@ -14163,6 +14164,7 @@ take. I haven't found any documentation about timeouts on DNS lookups; these
 parameter values are available in the external resolver interface structure,
 but nowhere does it seem to describe how they are used or what you might want
 to set in them.
+See also the &%slow_lookup_log%& option.
 
 
 .option dns_retry main integer 0
@@ -15720,6 +15722,16 @@ not reject unqualified addresses in headers that contain sender addresses, but
 it qualifies them only if the message came from a host that matches
 &%sender_unqualified_hosts%&, or if the message was submitted locally (not
 using TCP/IP), and the &%-bnq%& option was not set.
+
+
+.option slow_lookup_log main integer 0
+.cindex "logging" "slow lookups"
+.cindex "dns" "logging slow lookups"
+This option controls logging of slow lookups.
+If the value is nonzero it is taken as a number of milliseconds
+and lookups taking longer than this are logged.
+Currently this applies only to DNS lookups.
+
 
 
 .option smtp_accept_keepalive main boolean true

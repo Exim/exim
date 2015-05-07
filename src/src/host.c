@@ -94,6 +94,53 @@ random_seed = 1103515245 * random_seed + 12345;
 return (unsigned int)(random_seed >> 16) % limit;
 }
 
+/*************************************************
+*      Wrappers for logging lookup times         *
+*************************************************/
+
+/* When the 'slow_lookup_log' variable is enabled, these wrappers will
+write to the log file all (potential) dns lookups that take more than
+slow_lookup_log milliseconds
+*/
+
+static void
+log_long_lookup(const uschar * type, const uschar * data, unsigned long msec)
+{
+log_write(0, LOG_MAIN, "Long %s lookup for '%s': %lu msec",
+  type, data, msec);
+}
+
+
+/* returns the current system epoch time in milliseconds. */
+static unsigned long
+get_time_in_ms()
+{
+struct timeval tmp_time;
+unsigned long seconds, microseconds;
+
+gettimeofday(&tmp_time, NULL);
+seconds = (unsigned long) tmp_time.tv_sec;
+microseconds = (unsigned long) tmp_time.tv_usec;
+return seconds*1000 + microseconds/1000;
+}
+
+
+static int
+dns_lookup_timerwrap(dns_answer *dnsa, const uschar *name, int type,
+  const uschar **fully_qualified_name)
+{
+int retval;
+unsigned long time_msec;
+
+if (!slow_lookup_log)
+  return dns_lookup(dnsa, name, type, fully_qualified_name);
+
+time_msec = get_time_in_ms();
+retval = dns_lookup(dnsa, name, type, fully_qualified_name);
+if ((time_msec = get_time_in_ms() - time_msec) > slow_lookup_log)
+  log_long_lookup(US"name", name, time_msec);
+return retval;
+}
 
 
 /*************************************************
@@ -217,7 +264,7 @@ if (ipa != 0)
 else
   {
   int type = (af == AF_INET)? T_A:T_AAAA;
-  int rc = dns_lookup(&dnsa, lname, type, NULL);
+  int rc = dns_lookup_timerwrap(&dnsa, lname, type, NULL);
   int count = 0;
 
   lookup_dnssec_authenticated = NULL;
@@ -1454,6 +1501,9 @@ int len;
 uschar *s, *t;
 struct hostent *hosts;
 struct in_addr addr;
+unsigned long time_msec;
+
+if (slow_lookup_log) time_msec = get_time_in_ms();
 
 /* Lookup on IPv6 system */
 
@@ -1488,6 +1538,11 @@ else
 addr.s_addr = (S_ADDR_TYPE)inet_addr(CS sender_host_address);
 hosts = gethostbyaddr(CS(&addr), sizeof(addr), AF_INET);
 #endif
+
+if (  slow_lookup_log
+   && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log
+   )
+  log_long_lookup(US"name", sender_host_address, time_msec);
 
 /* Failed to look up the host. */
 
@@ -1621,7 +1676,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
     {
     dns_init(FALSE, FALSE, FALSE);    /* dnssec ctrl by dns_dnssec_ok glbl */
     dns_build_reverse(sender_host_address, buffer);
-    rc = dns_lookup(&dnsa, buffer, T_PTR, NULL);
+    rc = dns_lookup_timerwrap(&dnsa, buffer, T_PTR, NULL);
 
     /* The first record we come across is used for the name; others are
     considered to be aliases. We have to scan twice, in order to find out the
@@ -1961,10 +2016,13 @@ for (i = 1; i <= times;
   BOOL ipv4_addr;
   int error_num = 0;
   struct hostent *hostdata;
+  unsigned long time_msec;
 
   #ifdef STAND_ALONE
   printf("Looking up: %s\n", host->name);
   #endif
+
+  if (slow_lookup_log) time_msec = get_time_in_ms();
 
   #if HAVE_IPV6
   if (running_in_test_harness)
@@ -1988,6 +2046,11 @@ for (i = 1; i <= times;
     error_num = h_errno;
     }
   #endif   /* HAVE_IPV6 */
+
+  if (  slow_lookup_log
+     && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log
+	 )
+	log_long_lookup(US"name", host->name, time_msec);
 
   if (hostdata == NULL)
     {
@@ -2263,7 +2326,7 @@ for (; i >= 0; i--)
   dns_answer dnsa;
   dns_scan dnss;
 
-  int rc = dns_lookup(&dnsa, host->name, type, fully_qualified_name);
+  int rc = dns_lookup_timerwrap(&dnsa, host->name, type, fully_qualified_name);
   lookup_dnssec_authenticated = !dnssec_request ? NULL
     : dns_is_secure(&dnsa) ? US"yes" : US"no";
 
@@ -2527,7 +2590,7 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
 
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
-  rc = dns_lookup(&dnsa, buffer, ind_type, CUSS &temp_fully_qualified_name);
+  rc = dns_lookup_timerwrap(&dnsa, buffer, ind_type, CUSS &temp_fully_qualified_name);
 
   if (dnssec_request)
     {
@@ -2573,7 +2636,7 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   ind_type = T_MX;
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
-  rc = dns_lookup(&dnsa, host->name, ind_type, fully_qualified_name);
+  rc = dns_lookup_timerwrap(&dnsa, host->name, ind_type, fully_qualified_name);
 
   if (dnssec_request)
     {
@@ -3078,9 +3141,6 @@ out:
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 return yield;
 }
-
-
-
 
 /*************************************************
 **************************************************

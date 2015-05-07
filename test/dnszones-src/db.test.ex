@@ -405,4 +405,10 @@ DNSSEC mxdane256ta MX  1  dane256ta.
 DNSSEC dane256ta   A       HOSTIPV4
 DNSSEC _1225._tcp.dane256ta TLSA  2 0 1 b2c6f27f2d16390b4f71cacc69742bf610d750534fab240516c0f2deb4042ad4
 
+; ------- Testing delays ------------
+
+DELAY=500  delay500  A HOSTIPV4
+DELAY=1500 delay1500 A HOSTIPV4
+
+
 ; End

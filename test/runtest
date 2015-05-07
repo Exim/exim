@@ -1367,6 +1367,9 @@ $munges =
     'scanfile_size' =>
     { 'stdout' => 's/(Content-length:) \d\d\d/$1 ddd/' },
 
+    'delay_1500' =>
+    { 'stderr' => 's/(1[5-9]|23\d)\d\d msec/ssss msec/' },
+
   };
 
 

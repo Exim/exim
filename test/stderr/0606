@@ -1,0 +1,39 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
+>>> processing "accept"
+>>> check verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing should_log@delay1500.test.ex
+>>> calling all router
+LOG: Long name lookup for 'delay1500.test.ex': ssss msec
+>>> local host found for non-MX address
+>>> routed by all router
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
+>>> processing "accept"
+>>> check verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing should_not_log@delay500.test.ex
+>>> calling all router
+>>> local host found for non-MX address
+>>> routed by all router
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT

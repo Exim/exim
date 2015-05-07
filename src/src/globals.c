@@ -1230,6 +1230,7 @@ uschar *sending_ip_address     = NULL;
 int     sending_port           = -1;
 SIGNAL_BOOL sigalrm_seen       = FALSE;
 uschar **sighup_argv           = NULL;
+int     slow_lookup_log        = 0;	/* millisecs, zero disables */
 int     smtp_accept_count      = 0;
 BOOL    smtp_accept_keepalive  = TRUE;
 int     smtp_accept_max        = 20;

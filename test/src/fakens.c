@@ -50,6 +50,9 @@ line in the zone file contains exactly this:
 and the domain is not found. It converts the the result to PASS_ON instead of
 HOST_NOT_FOUND.
 
+Any DNS record line in a zone file can be prefixed with "DELAY=" and
+a number of milliseconds (followed by whitespace).
+
 Any DNS record line in a zone file can be prefixed with "DNSSEC" and
 at least one space; if all the records found by a lookup are marked
 as such then the response will have the "AD" bit set. */
@@ -63,6 +66,7 @@ as such then the response will have the "AD" bit set. */
 #include <errno.h>
 #include <arpa/nameser.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <dirent.h>
 
 #define FALSE         0
@@ -224,6 +228,38 @@ return pk;
 
 
 
+/*************************************************/
+
+static void
+milliwait(struct itimerval *itval)
+{
+sigset_t sigmask;
+sigset_t old_sigmask;
+
+if (itval->it_value.tv_usec < 100 && itval->it_value.tv_sec == 0)
+  return;
+(void)sigemptyset(&sigmask);                           /* Empty mask */
+(void)sigaddset(&sigmask, SIGALRM);                    /* Add SIGALRM */
+(void)sigprocmask(SIG_BLOCK, &sigmask, &old_sigmask);  /* Block SIGALRM */
+(void)setitimer(ITIMER_REAL, itval, NULL);             /* Start timer */
+(void)sigfillset(&sigmask);                            /* All signals */
+(void)sigdelset(&sigmask, SIGALRM);                    /* Remove SIGALRM */
+(void)sigsuspend(&sigmask);                            /* Until SIGALRM */
+(void)sigprocmask(SIG_SETMASK, &old_sigmask, NULL);    /* Restore mask */
+}
+
+static void
+millisleep(int msec)
+{
+struct itimerval itval;
+itval.it_interval.tv_sec = 0;
+itval.it_interval.tv_usec = 0;
+itval.it_value.tv_sec = msec/1000;
+itval.it_value.tv_usec = (msec % 1000) * 1000;
+milliwait(&itval);
+}
+
+
 /*************************************************
 *              Scan file for RRs                 *
 *************************************************/
@@ -283,6 +319,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   int tvalue = typeptr->value;
   int qtlen = qtypelen;
   BOOL rr_sec = FALSE;
+  int delay = 0;
 
   p = buffer;
   while (isspace(*p)) p++;
@@ -299,11 +336,22 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   *ep = 0;
 
   p = buffer;
-  if (Ustrncmp(p, US"DNSSEC ", 7) == 0)	/* tagged as secure */
-    {
-    rr_sec = TRUE;
-    p += 7;
-    }
+  for (;;)
+	{
+	if (Ustrncmp(p, US"DNSSEC ", 7) == 0)	/* tagged as secure */
+	  {
+	  rr_sec = TRUE;
+	  p += 7;
+	  }
+	else if (Ustrncmp(p, US"DELAY=", 6) == 0)	/* delay beforee response */
+	  {
+	  for (p += 6; *p >= '0' && *p <= '9'; p++)
+		delay = delay*10 + *p - '0';
+	  while (isspace(*p)) p++;
+	  }
+	else
+	  break;
+	}
 
   if (!isspace(*p))
     {
@@ -356,6 +404,9 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   else if (Ustrncmp(p, qtype, qtypelen) != 0 || !isspace(p[qtypelen])) continue;
 
   /* Found a relevant record */
+
+  if (delay)
+    millisleep(delay);
 
   if (!rr_sec)
     *dnssec = FALSE;			/* cancel AD return */
@@ -482,6 +533,10 @@ return (yield == HOST_NOT_FOUND && pass_on_not_found)? PASS_ON : yield;
 }
 
 
+static  void
+alarmfn(int sig)
+{
+}
 
 /*************************************************
 *           Entry point and main program         *
@@ -507,6 +562,8 @@ uschar qtype[12];
 uschar packet[512];
 uschar *pk = packet;
 BOOL dnssec;
+
+signal(SIGALRM, alarmfn);
 
 if (argc != 4)
   {
