@@ -64,6 +64,7 @@ as such then the response will have the "AD" bit set. */
 #include <string.h>
 #include <netdb.h>
 #include <errno.h>
+#include <signal.h>
 #include <arpa/nameser.h>
 #include <sys/types.h>
 #include <sys/time.h>
