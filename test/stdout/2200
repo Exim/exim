@@ -43,3 +43,8 @@ ten-2.test.ex
 > defer_never:defer          
 > Failed: lookup of "defer_strict,a=test.again.dns:ten-1.test.ex" gave DEFER: 
 > 
+> # Retry timeout and count.  This only tests the syntax; we do not
+> # have any good way of testing the function.
+> 
+> delay1500                  ip4.ip4.ip4.ip4
+> 

@@ -102,21 +102,28 @@ no separator. With neither of these options specified, only the first item
 is output.  Similarly for "SPF" records, but the default for joining multiple
 items in one SPF record is the empty string, for direct concatenation.
 
-(c) If the next sequence of characters is 'defer_FOO' followed by a comma,
-the defer behaviour is set to FOO. The possible behaviours are: 'strict', where
-any defer causes the whole lookup to defer; 'lax', where a defer causes the
-whole lookup to defer only if none of the DNS queries succeeds; and 'never',
-where all defers are as if the lookup failed. The default is 'lax'.
+(c) Options, all comma-terminated, in any order.  Any unrecognised option
+terminates option processing.  Recognised options are:
 
-(d) Another optional comma-sep field: 'dnssec_FOO', with 'strict', 'lax'
-and 'never' (default); can appear before or after (c).  The meanings are
+- 'defer_FOO':  set the defer behaviour to FOO.  The possible behaviours are:
+'strict', where any defer causes the whole lookup to defer; 'lax', where a defer
+causes the whole lookup to defer only if none of the DNS queries succeeds; and
+'never', where all defers are as if the lookup failed. The default is 'lax'.
+
+- 'dnssec_FOO', with 'strict', 'lax' and 'never' (default).  The meanings are
 require, try and don't-try dnssec respectively.
 
-(e) If the next sequence of characters is a sequence of letters and digits
+- 'retrans_VAL', set the timeout value.  VAL is an Exim time specification
+(eg "5s").  The default is set by the main configuration option 'dns_retrans'.
+
+- 'retry_VAL', set the retry count on timeouts.  VAL is an integer.  The
+default is set by the main configuration option "dns_retry".
+
+(d) If the next sequence of characters is a sequence of letters and digits
 followed by '=', it is interpreted as the name of the DNS record type. The
 default is "TXT".
 
-(f) Then there follows list of domain names. This is a generalized Exim list,
+(e) Then there follows list of domain names. This is a generalized Exim list,
 which may start with '<' in order to set a specific separator. The default
 separator, as always, is colon. */
 
@@ -130,12 +137,13 @@ int ptr = 0;
 int sep = 0;
 int defer_mode = PASS;
 int dnssec_mode = OK;
+int save_retrans = dns_retrans;
+int save_retry =   dns_retry;
 int type;
 int failrc = FAIL;
 const uschar *outsep = CUS"\n";
 const uschar *outsep2 = NULL;
 uschar *equals, *domain, *found;
-uschar buffer[256];
 
 /* Because we're the working in the search pool, we try to reclaim as much
 store as possible later, so we preallocate the result here */
@@ -174,58 +182,62 @@ if (*keystring == '>')
 
 /* Check for a modifier keyword. */
 
-while (  strncmpic(keystring, US"defer_", 6) == 0
-      || strncmpic(keystring, US"dnssec_", 7) == 0
-      )
+for (;;)
   {
   if (strncmpic(keystring, US"defer_", 6) == 0)
     {
     keystring += 6;
     if (strncmpic(keystring, US"strict", 6) == 0)
-      {
-      defer_mode = DEFER;
-      keystring += 6;
-      }
+      { defer_mode = DEFER; keystring += 6; }
     else if (strncmpic(keystring, US"lax", 3) == 0)
-      {
-      defer_mode = PASS;
-      keystring += 3;
-      }
+      { defer_mode = PASS; keystring += 3; }
     else if (strncmpic(keystring, US"never", 5) == 0)
-      {
-      defer_mode = OK;
-      keystring += 5;
-      }
+      { defer_mode = OK; keystring += 5; }
     else
       {
       *errmsg = US"unsupported dnsdb defer behaviour";
       return DEFER;
       }
     }
-  else
+  else if (strncmpic(keystring, US"dnssec_", 7) == 0)
     {
     keystring += 7;
     if (strncmpic(keystring, US"strict", 6) == 0)
-      {
-      dnssec_mode = DEFER;
-      keystring += 6;
-      }
+      { dnssec_mode = DEFER; keystring += 6; }
     else if (strncmpic(keystring, US"lax", 3) == 0)
-      {
-      dnssec_mode = PASS;
-      keystring += 3;
-      }
+      { dnssec_mode = PASS; keystring += 3; }
     else if (strncmpic(keystring, US"never", 5) == 0)
-      {
-      dnssec_mode = OK;
-      keystring += 5;
-      }
+      { dnssec_mode = OK; keystring += 5; }
     else
       {
       *errmsg = US"unsupported dnsdb dnssec behaviour";
       return DEFER;
       }
     }
+  else if (strncmpic(keystring, US"retrans_", 8) == 0)
+    {
+    int timeout_sec;
+    if ((timeout_sec = readconf_readtime(keystring += 8, ',', FALSE)) <= 0)
+      {
+      *errmsg = US"unsupported dnsdb timeout value";
+      return DEFER;
+      }
+    dns_retrans = timeout_sec;
+    while (*keystring != ',') keystring++;
+    }
+  else if (strncmpic(keystring, US"retry_", 6) == 0)
+    {
+    int retries;
+    if ((retries = (int)strtol(keystring + 6, CSS &keystring, 0)) < 0)
+      {
+      *errmsg = US"unsupported dnsdb retry count";
+      return DEFER;
+      }
+    dns_retry = retries;
+    }
+  else
+    break;
+
   while (isspace(*keystring)) keystring++;
   if (*keystring++ != ',')
     {
@@ -301,8 +313,7 @@ if (!outsep2) switch(type)
 
 /* Now scan the list and do a lookup for each item */
 
-while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
-        != NULL)
+while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
   {
   uschar rbuffer[256];
   int searchtype = (type == T_CSA)? T_SRV :         /* record type we want */
@@ -357,6 +368,8 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       {
       if (defer_mode == DEFER)
 	{
+	dns_retrans = save_retrans;
+	dns_retry = save_retry;
 	dns_init(FALSE, FALSE, FALSE);			/* clr dnssec bit */
 	return DEFER;					/* always defer */
 	}
@@ -528,6 +541,8 @@ store_reset(yield + ptr + 1);
 /* If ptr == 0 we have not found anything. Otherwise, insert the terminating
 zero and return the result. */
 
+dns_retrans = save_retrans;
+dns_retry = save_retry;
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 
 if (ptr == 0) return failrc;

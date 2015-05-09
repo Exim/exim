@@ -92,6 +92,8 @@ JH/25 Bug 466: Add RFC2322 support for MIME attachment filenames.
 HS/02 Bug 1575: exigrep falls back to autodetection of compressed
       files if ZCAT_COMMAND is not executable.
 
+JH/26 Bug 1539: Add timout/retry options on dnsdb lookups.
+
 
 Exim version 4.85
 -----------------

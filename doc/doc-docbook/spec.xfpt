@@ -6962,6 +6962,17 @@ The default is &"never"&.
 
 See also the &$lookup_dnssec_authenticated$& variable.
 
+.cindex timeout "dns lookup"
+.cindex "DNS" timeout
+Timeout for the dnsdb lookup can be controlled by a retrans modifier.
+The form is &"retrans_VAL"& where VAL is an Exim time specification
+(eg &"5s"&).
+The default value is set by the main configuration option &%dns_retrans%&.
+
+Retries for the dnsdb lookup can be controlled by a retry modifier.
+The form if &"retry_VAL"& where VAL is an integer.
+The default count is set by the main configuration option &%dns_retry%&.
+
 
 .section "Pseudo dnsdb record types" "SECID66"
 .cindex "MX record" "in &(dnsdb)& lookup"
@@ -14155,6 +14166,8 @@ servers have all been upgraded, there should be no need for this option.
 
 .option dns_retrans main time 0s
 .cindex "DNS" "resolver options"
+.cindex timeout "dns lookup"
+.cindex "DNS" timeout
 The options &%dns_retrans%& and &%dns_retry%& can be used to set the
 retransmission and retry parameters for DNS lookups. Values of zero (the
 defaults) leave the system default settings unchanged. The first value is the

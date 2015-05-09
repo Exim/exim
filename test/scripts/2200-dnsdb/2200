@@ -40,4 +40,9 @@ defer_lax:ten-1            ${lookup dnsdb{defer_lax,a=test.again.dns:ten-1.test.
 defer_never:ten-1          ${lookup dnsdb{defer_never,a=test.again.dns:ten-1.test.ex}}
 defer_never:defer          ${lookup dnsdb{defer_never,a=test.again.dns:test.again.dns}}
 defer_strict:ten-1         ${lookup dnsdb{defer_strict,a=test.again.dns:ten-1.test.ex}}
+
+# Retry timeout and count.  This only tests the syntax; we do not
+# have any good way of testing the function.
+
+delay1500                  ${lookup dnsdb{retrans_1s,retry_2,a=delay1500.test.ex}}
 ****
