@@ -6878,16 +6878,9 @@ is used on its own as the result. If the lookup does not succeed, the
 &`fail`& keyword causes a &'forced expansion failure'& &-- see section
 &<<SECTforexpfai>>& for an explanation of what this means.
 
-The supported DNS record types are A, CNAME, MX, NS, PTR, SPF, SRV, TLSA and TXT,
-and, when Exim is compiled with IPv6 support, AAAA.
-If no type is given, TXT is assumed. When the type is PTR,
-the data can be an IP address, written as normal; inversion and the addition of
-&%in-addr.arpa%& or &%ip6.arpa%& happens automatically. For example:
-.code
-${lookup dnsdb{ptr=192.168.4.5}{$value}fail}
-.endd
-If the data for a PTR record is not a syntactically valid IP address, it is not
-altered and nothing is added.
+The supported DNS record types are A, CNAME, MX, NS, PTR, SOA, SPF, SRV, TLSA
+and TXT, and, when Exim is compiled with IPv6 support, AAAA.
+If no type is given, TXT is assumed.
 
 For any record type, if multiple records are found, the data is returned as a
 concatenation, with newline as the default separator. The order, of course,
@@ -6899,21 +6892,33 @@ ${lookup dnsdb{>: a=host1.example}}
 .endd
 It is permitted to specify a space as the separator character. Further
 white space is ignored.
+For lookup types that return multiple fields per record,
+an alternate field separator can be specified using a comma after the main
+separator character, followed immediately by the field separator.
+
+.cindex "PTR record" "in &(dnsdb)& lookup"
+When the type is PTR,
+the data can be an IP address, written as normal; inversion and the addition of
+&%in-addr.arpa%& or &%ip6.arpa%& happens automatically. For example:
+.code
+${lookup dnsdb{ptr=192.168.4.5}{$value}fail}
+.endd
+If the data for a PTR record is not a syntactically valid IP address, it is not
+altered and nothing is added.
 
 .cindex "MX record" "in &(dnsdb)& lookup"
 .cindex "SRV record" "in &(dnsdb)& lookup"
 For an MX lookup, both the preference value and the host name are returned for
 each record, separated by a space. For an SRV lookup, the priority, weight,
 port, and host name are returned for each record, separated by spaces.
-An alternate field separator can be specified using a comma after the main
-separator character, followed immediately by the field separator.
+The field separator can be modified as above.
 
 .cindex "TXT record" "in &(dnsdb)& lookup"
 .cindex "SPF record" "in &(dnsdb)& lookup"
 For TXT records with multiple items of data, only the first item is returned,
-unless a separator for them is specified using a comma after the separator
-character followed immediately by the TXT record item separator. To concatenate
-items without a separator, use a semicolon instead. For SPF records the
+unless a field separator is specified.
+To concatenate items without a separator, use a semicolon instead.
+For SPF records the
 default behaviour is to concatenate multiple items without using a separator.
 .code
 ${lookup dnsdb{>\n,: txt=a.b.example}}
@@ -6922,6 +6927,15 @@ ${lookup dnsdb{spf=example.org}}
 .endd
 It is permitted to specify a space as the separator character. Further
 white space is ignored.
+
+.cindex "SOA record" "in &(dnsdb)& lookup"
+For an SOA lookup, while no result is obtained the lookup is redone with
+successively more leading components dropped from the given domain.
+Only the primary-nameserver field is returned unless a field separator is
+specified.
+.code
+${lookup dnsdb{>:,; soa=a.b.example.com}}
+.endd
 
 .section "Dnsdb lookup modifiers" "SECTdnsdb_mod"
 .cindex "dnsdb modifiers"
@@ -9722,8 +9736,9 @@ the regular expression from string expansion.
 
 
 .vitem &*${sort{*&<&'string'&>&*}{*&<&'comparator'&>&*}{*&<&'extractor'&>&*}}*&
-.cindex sorting a list
+.cindex sorting "a list"
 .cindex list sorting
+.cindex expansion "list sorting"
 After expansion, <&'string'&> is interpreted as a list, colon-separated by
 default, but the separator can be changed in the usual way.
 The <&'comparator'&> argument is interpreted as the operator

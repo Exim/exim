@@ -1,5 +1,5 @@
 ; This is a testing zone file for use when testing DNS handling in Exim. This
-; is a fake zone of no real use - hence no SOA record. The zone name is
+; is a fake zone of no real use. The zone name is
 ; test.ex. This file is passed through the substitution mechanism before being
 ; used by the fakens auxiliary program. This inserts the actual IP addresses
 ; of the local host into the zone.
@@ -17,6 +17,7 @@
 ; host ever uses them.
 
 test.ex.     NS      exim.test.ex.
+test.ex.     SOA     exim.test.ex. hostmaster.exim.test.ex 1430683638 1200 120 604800 3600
 
 test.ex.     TXT     "A TXT record for test.ex."
 s/lash       TXT     "A TXT record for s/lash.test.ex."

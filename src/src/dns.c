@@ -881,173 +881,179 @@ int
 dns_special_lookup(dns_answer *dnsa, const uschar *name, int type,
   const uschar **fully_qualified_name)
 {
-if (type >= 0) return dns_lookup(dnsa, name, type, fully_qualified_name);
-
-/* The "mx hosts only" type doesn't require any special action here */
-
-if (type == T_MXH) return dns_lookup(dnsa, name, T_MX, fully_qualified_name);
-
-/* Find nameservers for the domain or the nearest enclosing zone, excluding the
-root servers. */
-
-if (type == T_ZNS)
+switch (type)
   {
-  const uschar *d = name;
-  while (d != 0)
-    {
-    int rc = dns_lookup(dnsa, d, T_NS, fully_qualified_name);
-    if (rc != DNS_NOMATCH && rc != DNS_NODATA) return rc;
-    while (*d != 0 && *d != '.') d++;
-    if (*d++ == 0) break;
-    }
-  return DNS_NOMATCH;
-  }
+  /* The "mx hosts only" type doesn't require any special action here */
+  case T_MXH:
+	return dns_lookup(dnsa, name, T_MX, fully_qualified_name);
 
-/* Try to look up the Client SMTP Authorization SRV record for the name. If
-there isn't one, search from the top downwards for a CSA record in a parent
-domain, which might be making assertions about subdomains. If we find a record
-we set fully_qualified_name to whichever lookup succeeded, so that the caller
-can tell whether to look at the explicit authorization field or the subdomain
-assertion field. */
+  /* Find nameservers for the domain or the nearest enclosing zone, excluding
+  the root servers. */
+  case T_ZNS:
+	type = T_NS;
+	/* FALLTHROUGH */
+  case T_SOA:
+	{
+	const uschar *d = name;
+	while (d != 0)
+	  {
+	  int rc = dns_lookup(dnsa, d, type, fully_qualified_name);
+	  if (rc != DNS_NOMATCH && rc != DNS_NODATA) return rc;
+	  while (*d != 0 && *d != '.') d++;
+	  if (*d++ == 0) break;
+	  }
+	return DNS_NOMATCH;
+	}
 
-if (type == T_CSA)
-  {
-  uschar *srvname, *namesuff, *tld, *p;
-  int priority, weight, port;
-  int limit, rc, i;
-  BOOL ipv6;
-  dns_record *rr;
-  dns_scan dnss;
+  /* Try to look up the Client SMTP Authorization SRV record for the name. If
+  there isn't one, search from the top downwards for a CSA record in a parent
+  domain, which might be making assertions about subdomains. If we find a record
+  we set fully_qualified_name to whichever lookup succeeded, so that the caller
+  can tell whether to look at the explicit authorization field or the subdomain
+  assertion field. */
+  case T_CSA:
+	{
+	uschar *srvname, *namesuff, *tld, *p;
+	int priority, weight, port;
+	int limit, rc, i;
+	BOOL ipv6;
+	dns_record *rr;
+	dns_scan dnss;
 
-  DEBUG(D_dns) debug_printf("CSA lookup of %s\n", name);
+	DEBUG(D_dns) debug_printf("CSA lookup of %s\n", name);
 
-  srvname = string_sprintf("_client._smtp.%s", name);
-  rc = dns_lookup(dnsa, srvname, T_SRV, NULL);
-  if (rc == DNS_SUCCEED || rc == DNS_AGAIN)
-    {
-    if (rc == DNS_SUCCEED) *fully_qualified_name = string_copy(name);
-    return rc;
-    }
+	srvname = string_sprintf("_client._smtp.%s", name);
+	rc = dns_lookup(dnsa, srvname, T_SRV, NULL);
+	if (rc == DNS_SUCCEED || rc == DNS_AGAIN)
+	  {
+	  if (rc == DNS_SUCCEED) *fully_qualified_name = string_copy(name);
+	  return rc;
+	  }
 
-  /* Search for CSA subdomain assertion SRV records from the top downwards,
-  starting with the 2nd level domain. This order maximizes cache-friendliness.
-  We skip the top level domains to avoid loading their nameservers and because
-  we know they'll never have CSA SRV records. */
+	/* Search for CSA subdomain assertion SRV records from the top downwards,
+	starting with the 2nd level domain. This order maximizes cache-friendliness.
+	We skip the top level domains to avoid loading their nameservers and because
+	we know they'll never have CSA SRV records. */
 
-  namesuff = Ustrrchr(name, '.');
-  if (namesuff == NULL) return DNS_NOMATCH;
-  tld = namesuff + 1;
-  ipv6 = FALSE;
-  limit = dns_csa_search_limit;
+	namesuff = Ustrrchr(name, '.');
+	if (namesuff == NULL) return DNS_NOMATCH;
+	tld = namesuff + 1;
+	ipv6 = FALSE;
+	limit = dns_csa_search_limit;
 
-  /* Use more appropriate search parameters if we are in the reverse DNS. */
+	/* Use more appropriate search parameters if we are in the reverse DNS. */
 
-  if (strcmpic(namesuff, US".arpa") == 0)
-    {
-    if (namesuff - 8 > name && strcmpic(namesuff - 8, US".in-addr.arpa") == 0)
-      {
-      namesuff -= 8;
-      tld = namesuff + 1;
-      limit = 3;
-      }
-    else if (namesuff - 4 > name && strcmpic(namesuff - 4, US".ip6.arpa") == 0)
-      {
-      namesuff -= 4;
-      tld = namesuff + 1;
-      ipv6 = TRUE;
-      limit = 3;
-      }
-    }
+	if (strcmpic(namesuff, US".arpa") == 0)
+	  {
+	  if (namesuff - 8 > name && strcmpic(namesuff - 8, US".in-addr.arpa") == 0)
+		{
+		namesuff -= 8;
+		tld = namesuff + 1;
+		limit = 3;
+		}
+	  else if (namesuff - 4 > name && strcmpic(namesuff - 4, US".ip6.arpa") == 0)
+		{
+		namesuff -= 4;
+		tld = namesuff + 1;
+		ipv6 = TRUE;
+		limit = 3;
+		}
+	  }
 
-  DEBUG(D_dns) debug_printf("CSA TLD %s\n", tld);
+	DEBUG(D_dns) debug_printf("CSA TLD %s\n", tld);
 
-  /* Do not perform the search if the top level or 2nd level domains do not
-  exist. This is quite common, and when it occurs all the search queries would
-  go to the root or TLD name servers, which is not friendly. So we check the
-  AUTHORITY section; if it contains the root's SOA record or the TLD's SOA then
-  the TLD or the 2LD (respectively) doesn't exist and we can skip the search.
-  If the TLD and the 2LD exist but the explicit CSA record lookup failed, then
-  the AUTHORITY SOA will be the 2LD's or a subdomain thereof. */
+	/* Do not perform the search if the top level or 2nd level domains do not
+	exist. This is quite common, and when it occurs all the search queries would
+	go to the root or TLD name servers, which is not friendly. So we check the
+	AUTHORITY section; if it contains the root's SOA record or the TLD's SOA then
+	the TLD or the 2LD (respectively) doesn't exist and we can skip the search.
+	If the TLD and the 2LD exist but the explicit CSA record lookup failed, then
+	the AUTHORITY SOA will be the 2LD's or a subdomain thereof. */
 
-  if (rc == DNS_NOMATCH)
-    {
-    /* This is really gross. The successful return value from res_search() is
-    the packet length, which is stored in dnsa->answerlen. If we get a
-    negative DNS reply then res_search() returns -1, which causes the bounds
-    checks for name decompression to fail when it is treated as a packet
-    length, which in turn causes the authority search to fail. The correct
-    packet length has been lost inside libresolv, so we have to guess a
-    replacement value. (The only way to fix this properly would be to
-    re-implement res_search() and res_query() so that they don't muddle their
-    success and packet length return values.) For added safety we only reset
-    the packet length if the packet header looks plausible. */
+	if (rc == DNS_NOMATCH)
+	  {
+	  /* This is really gross. The successful return value from res_search() is
+	  the packet length, which is stored in dnsa->answerlen. If we get a
+	  negative DNS reply then res_search() returns -1, which causes the bounds
+	  checks for name decompression to fail when it is treated as a packet
+	  length, which in turn causes the authority search to fail. The correct
+	  packet length has been lost inside libresolv, so we have to guess a
+	  replacement value. (The only way to fix this properly would be to
+	  re-implement res_search() and res_query() so that they don't muddle their
+	  success and packet length return values.) For added safety we only reset
+	  the packet length if the packet header looks plausible. */
 
-    HEADER *h = (HEADER *)dnsa->answer;
-    if (h->qr == 1 && h->opcode == QUERY && h->tc == 0
-        && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
-        && ntohs(h->qdcount) == 1 && ntohs(h->ancount) == 0
-        && ntohs(h->nscount) >= 1)
-      dnsa->answerlen = MAXPACKET;
+	  HEADER *h = (HEADER *)dnsa->answer;
+	  if (h->qr == 1 && h->opcode == QUERY && h->tc == 0
+		  && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
+		  && ntohs(h->qdcount) == 1 && ntohs(h->ancount) == 0
+		  && ntohs(h->nscount) >= 1)
+		dnsa->answerlen = MAXPACKET;
 
-    for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
-         rr != NULL;
-         rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-      if (rr->type != T_SOA) continue;
-      else if (strcmpic(rr->name, US"") == 0 ||
-               strcmpic(rr->name, tld) == 0) return DNS_NOMATCH;
-      else break;
-    }
+	  for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
+		   rr != NULL;
+		   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+		if (rr->type != T_SOA) continue;
+		else if (strcmpic(rr->name, US"") == 0 ||
+				 strcmpic(rr->name, tld) == 0) return DNS_NOMATCH;
+		else break;
+	  }
 
-  for (i = 0; i < limit; i++)
-    {
-    if (ipv6)
-      {
-      /* Scan through the IPv6 reverse DNS in chunks of 16 bits worth of IP
-      address, i.e. 4 hex chars and 4 dots, i.e. 8 chars. */
-      namesuff -= 8;
-      if (namesuff <= name) return DNS_NOMATCH;
-      }
-    else
-      /* Find the start of the preceding domain name label. */
-      do
-        if (--namesuff <= name) return DNS_NOMATCH;
-      while (*namesuff != '.');
+	for (i = 0; i < limit; i++)
+	  {
+	  if (ipv6)
+		{
+		/* Scan through the IPv6 reverse DNS in chunks of 16 bits worth of IP
+		address, i.e. 4 hex chars and 4 dots, i.e. 8 chars. */
+		namesuff -= 8;
+		if (namesuff <= name) return DNS_NOMATCH;
+		}
+	  else
+		/* Find the start of the preceding domain name label. */
+		do
+		  if (--namesuff <= name) return DNS_NOMATCH;
+		while (*namesuff != '.');
 
-    DEBUG(D_dns) debug_printf("CSA parent search at %s\n", namesuff + 1);
+	  DEBUG(D_dns) debug_printf("CSA parent search at %s\n", namesuff + 1);
 
-    srvname = string_sprintf("_client._smtp.%s", namesuff + 1);
-    rc = dns_lookup(dnsa, srvname, T_SRV, NULL);
-    if (rc == DNS_AGAIN) return rc;
-    if (rc != DNS_SUCCEED) continue;
+	  srvname = string_sprintf("_client._smtp.%s", namesuff + 1);
+	  rc = dns_lookup(dnsa, srvname, T_SRV, NULL);
+	  if (rc == DNS_AGAIN) return rc;
+	  if (rc != DNS_SUCCEED) continue;
 
-    /* Check that the SRV record we have found is worth returning. We don't
-    just return the first one we find, because some lower level SRV record
-    might make stricter assertions than its parent domain. */
+	  /* Check that the SRV record we have found is worth returning. We don't
+	  just return the first one we find, because some lower level SRV record
+	  might make stricter assertions than its parent domain. */
 
-    for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
-         rr != NULL;
-         rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-      {
-      if (rr->type != T_SRV) continue;
+	  for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
+		   rr != NULL;
+		   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+		{
+		if (rr->type != T_SRV) continue;
 
-      /* Extract the numerical SRV fields (p is incremented) */
-      p = rr->data;
-      GETSHORT(priority, p);
-      GETSHORT(weight, p);	weight = weight; /* compiler quietening */
-      GETSHORT(port, p);
+		/* Extract the numerical SRV fields (p is incremented) */
+		p = rr->data;
+		GETSHORT(priority, p);
+		GETSHORT(weight, p);	weight = weight; /* compiler quietening */
+		GETSHORT(port, p);
 
-      /* Check the CSA version number */
-      if (priority != 1) continue;
+		/* Check the CSA version number */
+		if (priority != 1) continue;
 
-      /* If it's making an interesting assertion, return this response. */
-      if (port & 1)
-        {
-        *fully_qualified_name = namesuff + 1;
-        return DNS_SUCCEED;
-        }
-      }
-    }
-  return DNS_NOMATCH;
+		/* If it's making an interesting assertion, return this response. */
+		if (port & 1)
+		  {
+		  *fully_qualified_name = namesuff + 1;
+		  return DNS_SUCCEED;
+		  }
+		}
+	  }
+	return DNS_NOMATCH;
+	}
+
+  default:
+	if (type >= 0)
+	  return dns_lookup(dnsa, name, type, fully_qualified_name);
   }
 
 /* Control should never reach here */
@@ -1064,16 +1070,13 @@ return DNS_FAIL;
 *************************************************/
 
 /* The record type is either T_A for an IPv4 address or T_AAAA (or T_A6 when
-supported) for an IPv6 address. In the A6 case, there may be several addresses,
-generated by following chains. A recursive function does all the hard work. A6
-records now look like passing into history, so the code is only included when
-explicitly asked for.
+supported) for an IPv6 address.
 
 Argument:
   dnsa       the DNS answer block
   rr         the RR
 
-Returns:     pointer a chain of dns_address items
+Returns:     pointer to a chain of dns_address items
 */
 
 dns_address *
@@ -1085,7 +1088,7 @@ dnsa = dnsa;    /* Stop picky compilers warning */
 
 if (rr->type == T_A)
   {
-  uschar *p = (uschar *)(rr->data);
+  uschar *p = US rr->data;
   yield = store_get(sizeof(dns_address) + 20);
   (void)sprintf(CS yield->address, "%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
   yield->next = NULL;
@@ -1096,7 +1099,7 @@ if (rr->type == T_A)
 else
   {
   yield = store_get(sizeof(dns_address) + 50);
-  inet_ntop(AF_INET6, (uschar *)(rr->data), CS yield->address, 50);
+  inet_ntop(AF_INET6, US rr->data, CS yield->address, 50);
   yield->next = NULL;
   }
 #endif  /* HAVE_IPV6 */

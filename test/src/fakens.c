@@ -130,7 +130,7 @@ static tlist type_list[] = {
   { US"A",       ns_t_a },
   { US"NS",      ns_t_ns },
   { US"CNAME",   ns_t_cname },
-/*  { US"SOA",     ns_t_soa },  Not currently in use */
+  { US"SOA",     ns_t_soa },
   { US"PTR",     ns_t_ptr },
   { US"MX",      ns_t_mx },
   { US"TXT",     ns_t_txt },
@@ -227,6 +227,22 @@ while (isspace(*p)) p++;
 return pk;
 }
 
+uschar *
+longfield(uschar ** pp, uschar * pk)
+{
+unsigned long value = 0;
+uschar * p = *pp;
+
+while (isdigit(*p)) value = value*10 + *p++ - '0';
+while (isspace(*p)) p++;
+*pp = p;
+*pk++ = (value >> 24) & 255;
+*pk++ = (value >> 16) & 255;
+*pk++ = (value >> 8) & 255;
+*pk++ = value & 255;
+return pk;
+}
+
 
 
 /*************************************************/
@@ -316,7 +332,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   uschar *rdlptr;
   uschar *p, *ep, *pp;
   BOOL found_cname = FALSE;
-  int i, plen, value;
+  int i, value;
   int tvalue = typeptr->value;
   int qtlen = qtypelen;
   BOOL rr_sec = FALSE;
@@ -436,60 +452,72 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
   switch (tvalue)
     {
-    case ns_t_soa:  /* Not currently used */
-    break;
+    case ns_t_soa:
+      p = strtok(p, " ");
+      ep = p + strlen(p);
+      if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
+      pk = packname(p, pk);			/* primary ns */
+      p = strtok(NULL, " ");
+      pk = packname(p , pk);			/* responsible mailbox */
+      *(p += strlen(p)) = ' ';
+      while (isspace(*p)) p++;
+      pk = longfield(&p, pk);			/* serial */
+      pk = longfield(&p, pk);			/* refresh */
+      pk = longfield(&p, pk);			/* retry */
+      pk = longfield(&p, pk);			/* expire */
+      pk = longfield(&p, pk);			/* minimum */
+      break;
 
     case ns_t_a:
-    for (i = 0; i < 4; i++)
-      {
-      value = 0;
-      while (isdigit(*p)) value = value*10 + *p++ - '0';
-      *pk++ = value;
-      p++;
-      }
-    break;
+      for (i = 0; i < 4; i++)
+	{
+	value = 0;
+	while (isdigit(*p)) value = value*10 + *p++ - '0';
+	*pk++ = value;
+	p++;
+	}
+      break;
 
     /* The only occurrence of a double colon is for ::1 */
     case ns_t_aaaa:
-    if (Ustrcmp(p, "::1") == 0)
-      {
-      memset(pk, 0, 15);
-      pk += 15;
-      *pk++ = 1;
-      }
-    else for (i = 0; i < 8; i++)
-      {
-      value = 0;
-      while (isxdigit(*p))
-        {
-        value = value * 16 + toupper(*p) - (isdigit(*p)? '0' : '7');
-        p++;
-        }
-      *pk++ = (value >> 8) & 255;
-      *pk++ = value & 255;
-      p++;
-      }
-    break;
+      if (Ustrcmp(p, "::1") == 0)
+	{
+	memset(pk, 0, 15);
+	pk += 15;
+	*pk++ = 1;
+	}
+      else for (i = 0; i < 8; i++)
+	{
+	value = 0;
+	while (isxdigit(*p))
+	  {
+	  value = value * 16 + toupper(*p) - (isdigit(*p)? '0' : '7');
+	  p++;
+	  }
+	*pk++ = (value >> 8) & 255;
+	*pk++ = value & 255;
+	p++;
+	}
+      break;
 
     case ns_t_mx:
-    pk = shortfield(&p, pk);
-    if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
-    pk = packname(p, pk);
-    plen = Ustrlen(p);
-    break;
+      pk = shortfield(&p, pk);
+      if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
+      pk = packname(p, pk);
+      break;
 
     case ns_t_txt:
-    pp = pk++;
-    if (*p == '"') p++;   /* Should always be the case */
-    while (*p != 0 && *p != '"') *pk++ = *p++;
-    *pp = pk - pp - 1;
-    break;
+      pp = pk++;
+      if (*p == '"') p++;   /* Should always be the case */
+      while (*p != 0 && *p != '"') *pk++ = *p++;
+      *pp = pk - pp - 1;
+      break;
 
     case ns_t_tlsa:
-    pk = bytefield(&p, pk);	/* usage */
-    pk = bytefield(&p, pk);	/* selector */
-    pk = bytefield(&p, pk);	/* match type */
-    while (isxdigit(*p))
+      pk = bytefield(&p, pk);	/* usage */
+      pk = bytefield(&p, pk);	/* selector */
+      pk = bytefield(&p, pk);	/* match type */
+      while (isxdigit(*p))
       {
       value = toupper(*p) - (isdigit(*p) ? '0' : '7') << 4;
       if (isxdigit(*++p))
@@ -500,27 +528,26 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       *pk++ = value & 255;
       }
 
-    break;
+      break;
 
     case ns_t_srv:
-    for (i = 0; i < 3; i++)
-      {
-      value = 0;
-      while (isdigit(*p)) value = value*10 + *p++ - '0';
-      while (isspace(*p)) p++;
-      *pk++ = (value >> 8) & 255;
-      *pk++ = value & 255;
-      }
+      for (i = 0; i < 3; i++)
+	{
+	value = 0;
+	while (isdigit(*p)) value = value*10 + *p++ - '0';
+	while (isspace(*p)) p++;
+	*pk++ = (value >> 8) & 255;
+	*pk++ = value & 255;
+	}
 
     /* Fall through */
 
     case ns_t_cname:
     case ns_t_ns:
     case ns_t_ptr:
-    if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
-    pk = packname(p, pk);
-    plen = Ustrlen(p);
-    break;
+      if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
+      pk = packname(p, pk);
+      break;
     }
 
   /* Fill in the length, and we are done with this RR */

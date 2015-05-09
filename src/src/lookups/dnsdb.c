@@ -41,6 +41,7 @@ static const char *type_names[] = {
   "mxh",
   "ns",
   "ptr",
+  "soa",
   "spf",
   "srv",
   "tlsa",
@@ -60,6 +61,7 @@ static int type_values[] = {
   T_MXH,     /* Private type for "MX hostnames" */
   T_NS,
   T_PTR,
+  T_SOA,
   T_SPF,
   T_SRV,
   T_TLSA,
@@ -386,10 +388,6 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       {
       if (rr->type != searchtype) continue;
 
-      /* There may be several addresses from an A6 record. Put the configured
-      separator between them, just as for between several records. However, A6
-      support is not normally configured these days. */
-
       if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {
         dns_address *da;
@@ -436,7 +434,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
         uint16_t i, payload_length;
         uschar s[MAX_TLSA_EXPANDED_SIZE];
 	uschar * sp = s;
-        uschar *p = (uschar *)(rr->data);
+        uschar * p = US rr->data;
 
         usage = *p++;
         selector = *p++;
@@ -449,72 +447,75 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
         for (i=0;
              i < payload_length && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4);
              i++)
-          {
           sp += sprintf(CS sp, "%02x", (unsigned char)p[i]);
-          }
+
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
-      else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */
+      else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SOA, T_SRV */
         {
         int priority, weight, port;
         uschar s[264];
-        uschar *p = (uschar *)(rr->data);
+        uschar * p = US rr->data;
 
-        if (type == T_MXH)
-          {
-          /* mxh ignores the priority number and includes only the hostnames */
-          GETSHORT(priority, p);
-          }
-        else if (type == T_MX)
-          {
-          GETSHORT(priority, p);
-          sprintf(CS s, "%d%c", priority, *outsep2);
-          yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-          }
-        else if (type == T_SRV)
-          {
-          GETSHORT(priority, p);
-          GETSHORT(weight, p);
-          GETSHORT(port, p);
-          sprintf(CS s, "%d%c%d%c%d%c", priority, *outsep2,
-					weight, *outsep2, port, *outsep2);
-          yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-          }
-        else if (type == T_CSA)
-          {
-          /* See acl_verify_csa() for more comments about CSA. */
+	switch (type)
+	  {
+	  case T_MXH:
+	    /* mxh ignores the priority number and includes only the hostnames */
+	    GETSHORT(priority, p);
+	    break;
 
-          GETSHORT(priority, p);
-          GETSHORT(weight, p);
-          GETSHORT(port, p);
+	  case T_MX:
+	    GETSHORT(priority, p);
+	    sprintf(CS s, "%d%c", priority, *outsep2);
+	    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	    break;
 
-          if (priority != 1) continue;      /* CSA version must be 1 */
+	  case T_SRV:
+	    GETSHORT(priority, p);
+	    GETSHORT(weight, p);
+	    GETSHORT(port, p);
+	    sprintf(CS s, "%d%c%d%c%d%c", priority, *outsep2,
+			      weight, *outsep2, port, *outsep2);
+	    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	    break;
 
-          /* If the CSA record we found is not the one we asked for, analyse
-          the subdomain assertions in the port field, else analyse the direct
-          authorization status in the weight field. */
+	  case T_CSA:
+	    /* See acl_verify_csa() for more comments about CSA. */
+	    GETSHORT(priority, p);
+	    GETSHORT(weight, p);
+	    GETSHORT(port, p);
 
-          if (Ustrcmp(found, domain) != 0)
-            {
-            if (port & 1) *s = 'X';         /* explicit authorization required */
-            else *s = '?';                  /* no subdomain assertions here */
-            }
-          else
-            {
-            if (weight < 2) *s = 'N';       /* not authorized */
-            else if (weight == 2) *s = 'Y'; /* authorized */
-            else if (weight == 3) *s = '?'; /* unauthorizable */
-            else continue;                  /* invalid */
-            }
+	    if (priority != 1) continue;      /* CSA version must be 1 */
 
-          s[1] = ' ';
-          yield = string_cat(yield, &size, &ptr, s, 2);
-          }
+	    /* If the CSA record we found is not the one we asked for, analyse
+	    the subdomain assertions in the port field, else analyse the direct
+	    authorization status in the weight field. */
+
+	    if (Ustrcmp(found, domain) != 0)
+	      {
+	      if (port & 1) *s = 'X';         /* explicit authorization required */
+	      else *s = '?';                  /* no subdomain assertions here */
+	      }
+	    else
+	      {
+	      if (weight < 2) *s = 'N';       /* not authorized */
+	      else if (weight == 2) *s = 'Y'; /* authorized */
+	      else if (weight == 3) *s = '?'; /* unauthorizable */
+	      else continue;                  /* invalid */
+	      }
+
+	    s[1] = ' ';
+	    yield = string_cat(yield, &size, &ptr, s, 2);
+	    break;
+
+	  default:
+	    break;
+	  }
 
         /* GETSHORT() has advanced the pointer to the target domain. */
 
         rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
-          (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));
+          (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
 
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
@@ -526,6 +527,32 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
           break;
           }
         else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+
+	if (type == T_SOA && outsep2 != NULL)
+	  {
+	  unsigned long serial, refresh, retry, expire, minimum;
+
+	  p += rc;
+	  yield = string_cat(yield, &size, &ptr, outsep2, 1);
+
+	  rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+	    (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
+	  if (rc < 0)
+	    {
+	    log_write(0, LOG_MAIN, "responsible-mailbox truncated: type=%s "
+	      "domain=%s", dns_text_type(type), domain);
+	    break;
+	    }
+	  else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+
+	  p += rc;
+	  GETLONG(serial, p); GETLONG(refresh, p);
+	  GETLONG(retry,  p); GETLONG(expire,  p); GETLONG(minimum, p);
+	  sprintf(CS s, "%c%d%c%d%c%d%c%d%c%d",
+	    *outsep2, serial, *outsep2, refresh,
+	    *outsep2, retry,  *outsep2, expire,  *outsep2, minimum);
+	  yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	  }
         }
       }    /* Loop for list of returned records */
 

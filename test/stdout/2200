@@ -19,6 +19,9 @@
 > csa=csa1.test.ex           Y csa1.test.ex
 > csa=csa2.test.ex           N csa2.test.ex
 > 
+> soa=test.ex                exim.test.ex
+> soa=a.test.ex              exim.test.ex hostmaster.exim.test.ex 1430683638 1200 120 604800 3600
+> 
 > # DNS lookups with multiple items
 > 
 > ten-1:ten2                 V4NET.0.0.1

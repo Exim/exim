@@ -21,6 +21,9 @@ srv=_smtp._tcp.nosmtp.test.ex    ${lookup dnsdb{srv=_smtp._tcp.nosmtp.test.ex}{$
 csa=csa1.test.ex           ${lookup dnsdb{csa=csa1.test.ex}}
 csa=csa2.test.ex           ${lookup dnsdb{csa=csa2.test.ex}}
 
+soa=test.ex                ${lookup dnsdb{soa=test.ex}{$value}{fail}}
+soa=a.test.ex              ${lookup dnsdb{>:, soa=test.ex}{$value}{fail}}
+
 # DNS lookups with multiple items
 
 ten-1:ten2                 ${lookup dnsdb{a=ten-1.test.ex:ten-2.test.ex}}

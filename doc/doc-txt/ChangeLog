@@ -94,6 +94,8 @@ HS/02 Bug 1575: exigrep falls back to autodetection of compressed
 
 JH/26 Bug 1539: Add timout/retry options on dnsdb lookups.
 
+JH/27 Bug 286: Support SOA lookup in dnsdb lookups.
+
 
 Exim version 4.85
 -----------------
