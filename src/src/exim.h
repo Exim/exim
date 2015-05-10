@@ -591,4 +591,9 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
   #endif
 #endif
 
+/* DANE w/o DNSSEC is useless */
+#if defined(EXPERIMENTAL_DANE) && defined(DISABLE_DNSSEC)
+  #undef DISABLE_DNSSEC
+#endif
+
 /* End of exim.h */

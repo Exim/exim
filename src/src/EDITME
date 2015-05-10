@@ -426,6 +426,7 @@ EXIM_MONITOR=eximon.bin
 # By default, Exim has support for checking the AD bit in a DNS response, to
 # determine if DNSSEC validation was successful.  If your system libraries
 # do not support that bit, then set DISABLE_DNSSEC to "yes"
+# Note: Enabling EXPERIMENTAL_DANE unconditionally overrides this setting.
 
 # DISABLE_DNSSEC=yes
 
@@ -492,6 +493,7 @@ EXIM_MONITOR=eximon.bin
 # EXPERIMENTAL_CERTNAMES=yes
 
 # Uncomment the following line to add DANE support
+# Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # EXPERIMENTAL_DANE=yes
 
 # Uncomment the following line to add SOCKS support
