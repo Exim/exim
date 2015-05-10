@@ -1,5 +1,20 @@
 #! /usr/bin/perl
 
+use strict;
+use warnings;
+use Getopt::Long;
+
+
+# For now we can't rely on a perl >= 5.14 on
+# the build sites, thus we throw away all unicode
+# awarness and do the matching byte by byte
+binmode STDIN;
+binmode STDOUT;
+
+GetOptions(
+    'u|utf8!' => \my $want_utf8,	# do not replace unicode characters
+) or die "Usage: $0 [-u|--utf8]\n";
+
 # Script to tidy up the output of w3m when it makes a text file. First we
 # convert sequences of blank lines into a single blank line, to get everything
 # uniform. Then we go through and insert blank lines before chapter and
@@ -11,32 +26,36 @@
 # (2) It uses U+25CF as its bullet character.
 # (3) It inserts a whole slew of "box drawing" characters round the heading.
 
-@lines = <>;
+my @lines = <>;
+my $lastwasblank = 0;
 
-$lastwasblank = 0;
-foreach $line (@lines)
+foreach my $line (@lines)
   {
   # (1) non-break space -> normal space
   $line =~ s/\x{c2}\x{a0}/ /g;
-  # (2) bullet -> asterisk
-  $line =~ s/\x{e2}\x{97}\x{8f}/*/g;
-  $line =~ s/\x{e2}\x{80}\x{a2}/*/g; # OpenSUSE
-  $line =~ s/\x{e2}\x{96}\x{a1}/*/g; # OpenSUSE
-  # (3a) horizontal box drawing -> hyphen
-  $line =~ s/\x{e2}\x{94}[\x{80}\x{81}\x{84}\x{85}\x{88}\x{89}]/-/g;
-  $line =~ s/\x{e2}\x{95}[\x{8c}\x{8d}\x{90}]/-/g;
-  $line =~ s/\x{e2}\x{95}[\x{b4}\x{b6}\x{b8}\x{ba}\x{bc}\x{be}]/-/g;
-  # (3b) vertical box drawing -> bar
-  $line =~ s/\x{e2}\x{94}[\x{82}\x{83}\x{86}\x{87}\x{8a}\x{8b}]/|/g;
-  $line =~ s/\x{e2}\x{95}[\x{8e}\x{8f}\x{91}]/|/g;
-  $line =~ s/\x{e2}\x{95}[\x{b5}\x{b7}\x{b9}\x{bb}\x{bd}\x{bf}]/|/g;
-  # (3c) corner box drawing -> plus
-  $line =~ s/\x{e2}\x{94}[\x{8c}-\x{bf}]/+/g;
-  $line =~ s/\x{e2}\x{95}[\x{80}-\x{8b}\x{92}-\x{b0}]/+/g;
-  # other
-  $line =~ s/\x{e2}\x{95}\x{b1}/\//g;
-  $line =~ s/\x{e2}\x{95}\x{b2}/\\/g;
-  $line =~ s/\x{e2}\x{95}\x{b3}/X/g;
+
+  unless ($want_utf8)
+    {
+    # (2) bullet -> asterisk
+    $line =~ s/\x{e2}\x{97}\x{8f}/*/g;
+    $line =~ s/\x{e2}\x{80}\x{a2}/*/g; # OpenSUSE
+    $line =~ s/\x{e2}\x{96}\x{a1}/*/g; # OpenSUSE
+    # (3a) horizontal box drawing -> hyphen
+    $line =~ s/\x{e2}\x{94}[\x{80}\x{81}\x{84}\x{85}\x{88}\x{89}]/-/g;
+    $line =~ s/\x{e2}\x{95}[\x{8c}\x{8d}\x{90}]/-/g;
+    $line =~ s/\x{e2}\x{95}[\x{b4}\x{b6}\x{b8}\x{ba}\x{bc}\x{be}]/-/g;
+    # (3b) vertical box drawing -> bar
+    $line =~ s/\x{e2}\x{94}[\x{82}\x{83}\x{86}\x{87}\x{8a}\x{8b}]/|/g;
+    $line =~ s/\x{e2}\x{95}[\x{8e}\x{8f}\x{91}]/|/g;
+    $line =~ s/\x{e2}\x{95}[\x{b5}\x{b7}\x{b9}\x{bb}\x{bd}\x{bf}]/|/g;
+    # (3c) corner box drawing -> plus
+    $line =~ s/\x{e2}\x{94}[\x{8c}-\x{bf}]/+/g;
+    $line =~ s/\x{e2}\x{95}[\x{80}-\x{8b}\x{92}-\x{b0}]/+/g;
+    # other
+    $line =~ s/\x{e2}\x{95}\x{b1}/\//g;
+    $line =~ s/\x{e2}\x{95}\x{b2}/\\/g;
+    $line =~ s/\x{e2}\x{95}\x{b3}/X/g;
+    }
 
   # w3m rendering issue apparently only seen by pdp
   # affects section numbers after the ToC, some info on spool-file -lines, etc
@@ -54,6 +73,7 @@ foreach $line (@lines)
 
 # Find start of TOC, uppercasing its title
 
+my $i = 0;
 for ($i = 0; $i < scalar @lines; $i++)
   {
   $lines[$i] = "TABLE OF CONTENTS\n" if $lines[$i] =~ /^Table of Contents/;
@@ -69,7 +89,8 @@ for ($i++; $i < scalar @lines; $i++)
 # looking for preceding and following blank lines, and then matching against
 # the numbers.
 
-$chapter = 0;
+my $chapter = 0;
+my $section;
 for (; $i < scalar @lines; $i++)
   {
   next if $lines[$i-1] !~ /^$/ || $lines[$i+1] !~ /^$/;
