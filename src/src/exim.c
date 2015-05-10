@@ -820,6 +820,9 @@ fprintf(f, "Support for:");
 #ifdef WITH_OLD_DEMIME
   fprintf(f, " Old_Demime");
 #endif
+#ifndef DISABLE_DNSSEC
+  fprintf(f, " DNSSEC");
+#endif
 #ifndef DISABLE_PRDR
   fprintf(f, " PRDR");
 #endif
