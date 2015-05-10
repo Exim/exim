@@ -2380,7 +2380,10 @@ for (; i >= 0; i--)
 
   /* Lookup succeeded: fill in the given host item with the first non-ignored
   address found; create additional items for any others. A single A6 record
-  may generate more than one address. */
+  may generate more than one address.  The lookup had a chance to update the
+  fqdn; we do not want any later times round the loop to do so. */
+
+  fully_qualified_name = NULL;
 
   for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
        rr != NULL;

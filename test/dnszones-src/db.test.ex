@@ -155,6 +155,12 @@ testsub.sub  A       V4NET.99.0.3
 
 recurse.test.ex   A  V4NET.99.0.2
 
+; a CNAME pointing to a name with both ipv4 and ipv6 A-records
+; and one with only ipv4
+
+cname46      CNAME   localhost
+cname4       CNAME   thishost
+
 ; -------- Testing RBL records -------
 
 ; V4NET.11.12.13 is deliberately not reverse-registered

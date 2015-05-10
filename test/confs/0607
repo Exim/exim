@@ -1,0 +1,41 @@
+# Exim test configuration 0607
+
+SERVER =
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+log_selector = +received_recipients +sender_on_delivery
+
+acl_smtp_rcpt = accept
+queue_only
+queue_run_in_order
+
+#---------------
+
+begin routers
+
+dump:
+  driver = redirect
+  condition = ${if eq {SERVER}{server}{yes}{no}}
+  data = :blackhole:
+
+all:
+  driver = dnslookup
+  self = send
+  transport = out
+
+#---------------
+
+begin transports
+
+out:
+  driver = smtp
+  port = PORT_D
+
+# End
+

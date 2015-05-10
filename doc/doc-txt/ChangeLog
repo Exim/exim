@@ -96,6 +96,11 @@ JH/26 Bug 1539: Add timout/retry options on dnsdb lookups.
 
 JH/27 Bug 286: Support SOA lookup in dnsdb lookups.
 
+JH/28 Bug 1588: Do not use the A lookup following an AAAA for setting the FQDN.
+      Normally benign, it bites when the pair was led to by a CNAME;
+      modern usage is to not canoicalize the domain to a CNAME target
+      (and we were inconsistent anyway for A-only vs AAAA+A).
+
 
 Exim version 4.85
 -----------------

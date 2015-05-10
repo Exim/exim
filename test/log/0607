@@ -1,0 +1,14 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss for testx@cname46.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss for testx@cname4.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmaX-0005vi-00 => testx@cname46.test.ex F=<CALLER@the.local.host.name> R=all T=out H=localhost.test.ex [::1] C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 => testx@cname4.test.ex F=<CALLER@the.local.host.name> R=all T=out H=thishost.test.ex [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qq
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4)
+1999-03-02 09:44:33 no host name found for IP address ::1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name H=(the.local.host.name) [::1] P=esmtp S=sss id=E10HmaX-0005vi-00@the.local.host.name for testx@cname46.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtp S=sss id=E10HmaY-0005vi-00@the.local.host.name for testx@cname4.test.ex

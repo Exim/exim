@@ -1,0 +1,32 @@
+# delivery to cname
+# Exim test configuration 0607
+#
+need_ipv6
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <testx@cname46.test.ex>
+DATA
+Subject: test
+
+foo
+.
+RSET
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <testx@cname4.test.ex>
+DATA
+Subject: test
+
+foo
+.
+QUIT
+****
+#
+exim -qq
+****
+#
+killdaemon
+no_msglog_check
