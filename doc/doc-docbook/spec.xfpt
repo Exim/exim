@@ -17074,7 +17074,7 @@ This applies to all of the SRV, MX, AAAA, A lookup sequence.
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.  Any returns not having the Authenticated Data bit
-(AD bit) set wil be ignored and logged as a host-lookup failure.
+(AD bit) set will be ignored and logged as a host-lookup failure.
 This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
 
