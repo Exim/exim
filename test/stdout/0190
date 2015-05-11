@@ -1,114 +1,114 @@
 x@x
   router = others, transport = smtp2
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
 x@y
   router = others, transport = smtp2
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
 x@z
   router = others, transport = smtp2
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
 x@batch
   router = batched, transport = smtp2
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 y@batch
   router = batched, transport = smtp2
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 z@batch
   router = batched, transport = smtp2
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 x@batch2
   router = batched, transport = smtp2
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 y@batch2
   router = batched, transport = smtp2
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 x@batch3
   router = batched2, transport = smtp2
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 y@batch3
   router = batched2, transport = smtp2
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 x@batch4
   router = batched2, transport = smtp2
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 y@batch4
   router = batched2, transport = smtp2
-  host V4NET.0.0.2 [V4NET.0.0.2] 
-  host V4NET.0.0.1 [V4NET.0.0.1] 
-  host V4NET.0.0.3 [V4NET.0.0.3] 
-  host V4NET.0.0.5 [V4NET.0.0.5] 
-  host V4NET.0.0.6 [V4NET.0.0.6] 
-  host V4NET.0.0.4 [V4NET.0.0.4] 
-  host V4NET.0.0.7 [V4NET.0.0.7] 
+  host V4NET.0.0.2 [V4NET.0.0.2]  ad=no
+  host V4NET.0.0.1 [V4NET.0.0.1]  ad=no
+  host V4NET.0.0.3 [V4NET.0.0.3]  ad=no
+  host V4NET.0.0.5 [V4NET.0.0.5]  ad=no
+  host V4NET.0.0.6 [V4NET.0.0.6]  ad=no
+  host V4NET.0.0.4 [V4NET.0.0.4]  ad=no
+  host V4NET.0.0.7 [V4NET.0.0.7]  ad=no
 userx@bdomain1
   router = r3, transport = smtp2
-  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
-  host 127.0.0.1 [127.0.0.1] 
-  host the.local.host.name [ip4.ip4.ip4.ip4] 
+  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]  ad=no
+  host 127.0.0.1 [127.0.0.1]     ad=no
+  host the.local.host.name [ip4.ip4.ip4.ip4]  ad=no
 userx@bdomain2
   router = r3, transport = smtp2
-  host the.local.host.name [ip4.ip4.ip4.ip4] 
-  host 127.0.0.1 [127.0.0.1] 
-  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
+  host the.local.host.name [ip4.ip4.ip4.ip4]  ad=no
+  host 127.0.0.1 [127.0.0.1]     ad=no
+  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]  ad=no
 userx@bdomain3
   router = r3, transport = smtp2
-  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
-  host 127.0.0.1 [127.0.0.1] 
-  host the.local.host.name [ip4.ip4.ip4.ip4] 
+  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]  ad=no
+  host 127.0.0.1 [127.0.0.1]     ad=no
+  host the.local.host.name [ip4.ip4.ip4.ip4]  ad=no
 
 ******** SERVER ********
 Listening on port 1224 ... 

@@ -2364,6 +2364,12 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
         while (len++ < maxaddlen) fprintf(f," ");
         if (h->mx >= 0) fprintf(f, "MX=%d", h->mx);
         if (h->port != PORT_NONE) fprintf(f, " port=%d", h->port);
+        if (running_in_test_harness)
+#ifndef DISABLE_DNSSEC
+          fprintf(f, " ad=%s", h->dnssec==DS_YES ? "yes" : "no");
+#else
+          fprintf(f, " ad=no");
+#endif
         if (h->status == hstatus_unusable) fprintf(f, " ** unusable **");
         fprintf(f, "\n");
         }

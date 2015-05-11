@@ -7,20 +7,20 @@ userx@mxt5.test.ex cannot be resolved at this time: lowest numbered MX record po
 userx@mxt5.test.ex cannot be resolved at this time: lowest numbered MX record points to local host
 userx@mxt6.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] MX=5
+  host ten-1.test.ex [V4NET.0.0.1] MX=5 ad=no
 userx@mxt7.test.ex
   router = lookuphost, transport = smtp
-  host ten-2.test.ex [V4NET.0.0.2] MX=5
-  host ten-3.test.ex [V4NET.0.0.3] MX=6
+  host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
+  host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
 userx@mxt7.test.ex
   router = lookuphost, transport = smtp
-  host ten-2.test.ex [V4NET.0.0.2] MX=5
-  host ten-3.test.ex [V4NET.0.0.3] MX=6
+  host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
+  host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
 userx@mxt8.test.ex
   router = lookuphost, transport = smtp
-  host ten-2.test.ex [V4NET.0.0.2] MX=5
-  host ten-3.test.ex [V4NET.0.0.3] MX=6
+  host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
+  host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
 userx@mxt8.test.ex
   router = lookuphost, transport = smtp
-  host ten-2.test.ex [V4NET.0.0.2] MX=5
-  host ten-3.test.ex [V4NET.0.0.3] MX=6
+  host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
+  host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
