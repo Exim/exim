@@ -23,7 +23,7 @@ If not, it passes its arguments on to res_search(). The fake nameserver may
 also return a code specifying that the name should be passed on.
 
 Background: the original test suite required a real nameserver to carry the
-test zones, whereas the new test suit has the fake server for portability. This
+test zones, whereas the new test suite has the fake server for portability. This
 code supports both.
 
 Arguments:
@@ -128,6 +128,10 @@ if (stat(CS utilname, &statbuf) >= 0)
     case 5: /* Pass on to res_search() */
     DEBUG(D_dns) debug_printf("fakens returned PASS_ON\n");
     }
+  }
+else
+  {
+    DEBUG(D_dns) debug_printf("fakens (%s) not found\n", utilname);
   }
 
 /* fakens utility not found, or it returned "pass on" */
