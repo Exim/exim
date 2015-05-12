@@ -81,8 +81,8 @@ if (len >= 13 && Ustrcmp(endname - 13, "test.fail.dns") == 0)
 
 /* Look for the fakens utility, and if it exists, call it. */
 
-(void)string_format(utilname, sizeof(utilname), "%s/../bin/fakens",
-  spool_directory);
+(void)string_format(utilname, sizeof(utilname), "%s/bin/fakens",
+  config_main_directory);
 
 if (stat(CS utilname, &statbuf) >= 0)
   {
@@ -90,11 +90,11 @@ if (stat(CS utilname, &statbuf) >= 0)
   int infd, outfd, rc;
   uschar *argv[5];
 
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n",
-    name, dns_text_type(type));
+  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens `%s'\n",
+    name, dns_text_type(type), utilname);
 
   argv[0] = utilname;
-  argv[1] = spool_directory;
+  argv[1] = config_main_directory;
   argv[2] = name;
   argv[3] = dns_text_type(type);
   argv[4] = NULL;

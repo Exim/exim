@@ -7,8 +7,8 @@ avoids the need to install special zones in a real nameserver. When Exim is
 running in its (new) test harness, DNS lookups are first passed to this program
 instead of to the real resolver. (With a few exceptions - see the discussion in
 the test suite's README file.) The program is also passed the name of the Exim
-spool directory; it expects to find its "zone files" in ../dnszones relative to
-that directory. Note that there is little checking in this program. The fake
+spool directory; it expects to find its "zone files" in dnszones relative to
+exim config_main_directory. Note that there is little checking in this program. The fake
 zone files are assumed to be syntactically valid.
 
 The zones that are handled are found by scanning the dnszones directory. A file
@@ -601,7 +601,7 @@ if (argc != 4)
 
 /* Find the zones */
 
-(void)sprintf(CS buffer, "%s/../dnszones", argv[1]);
+(void)sprintf(CS buffer, "%s/dnszones", argv[1]);
 
 d = opendir(CCS buffer);
 if (d == NULL)
@@ -672,7 +672,7 @@ if (zonefile == NULL)
   return PASS_ON;
   }
 
-(void)sprintf(CS buffer, "%s/../dnszones/%s", argv[1], zonefile);
+(void)sprintf(CS buffer, "%s/dnszones/%s", argv[1], zonefile);
 
 /* Initialize the start of the response packet. We don't have to fake up
 everything, because we know that Exim will look only at the answer and
