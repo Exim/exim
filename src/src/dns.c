@@ -462,6 +462,17 @@ HEADER * h = (HEADER *)dnsa->answer;
 h->ad = 0;
 }
 
+/************************************************
+ *	Check whether the AA bit is set		*
+ *	We need this to warn if we requested AD *
+ *	from a authoritive server		*
+ ************************************************/
+
+BOOL
+dns_is_aa(const dns_answer *dnsa)
+{
+return ((HEADER*)dnsa->answer)->aa;
+}
 
 
 

@@ -2228,7 +2228,8 @@ Arguments:
   fully_qualified_name  if not NULL, return fully qualified name here if
                           the contents are different (i.e. it must be preset
                           to something)
-  dnnssec_require	if TRUE check the DNS result AD bit
+  dnssec_request	if TRUE request the AD bit
+  dnssec_require	if TRUE require the AD bit
 
 Returns:       HOST_FIND_FAILED     couldn't find A record
                HOST_FIND_AGAIN      try again later
@@ -2299,6 +2300,12 @@ for (; i >= 0; i--)
   int rc = dns_lookup_timerwrap(&dnsa, host->name, type, fully_qualified_name);
   lookup_dnssec_authenticated = !dnssec_request ? NULL
     : dns_is_secure(&dnsa) ? US"yes" : US"no";
+
+  DEBUG(D_dns)
+    if ((dnssec_request || dnssec_require)
+	& !dns_is_secure(&dnsa)
+	& dns_is_aa(&dnsa))
+      debug_printf("DNS lookup of %.256s (A/AAA/A6) asked for AD, but got AA\n", host->name);
 
   /* We want to return HOST_FIND_AGAIN if one of the A, A6, or AAAA lookups
   fails or times out, but not if another one succeeds. (In the early
@@ -2544,7 +2551,7 @@ dns_init((whichrrs & HOST_FIND_QUALIFY_SINGLE) != 0,
 host_find_failed_syntax = FALSE;
 
 /* First, if requested, look for SRV records. The service name is given; we
-assume TCP progocol. DNS domain names are constrained to a maximum of 256
+assume TCP protocol. DNS domain names are constrained to a maximum of 256
 characters, so the code below should be safe. */
 
 if ((whichrrs & HOST_FIND_BY_SRV) != 0)
@@ -2564,6 +2571,12 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
   rc = dns_lookup_timerwrap(&dnsa, buffer, ind_type, CUSS &temp_fully_qualified_name);
+
+  DEBUG(D_dns)
+    if ((dnssec_request || dnssec_require)
+	& !dns_is_secure(&dnsa)
+	& dns_is_aa(&dnsa))
+      debug_printf("DNS lookup of %.256s (SRV) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
     {
@@ -2610,6 +2623,12 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
   rc = dns_lookup_timerwrap(&dnsa, host->name, ind_type, fully_qualified_name);
+
+  DEBUG(D_dns)
+    if ((dnssec_request || dnssec_require)
+	& !dns_is_secure(&dnsa)
+	& dns_is_aa(&dnsa))
+      debug_printf("DNS lookup of %.256s (MX) asked for AD, but got AA\n", host->name);
 
   if (dnssec_request)
     {
