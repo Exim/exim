@@ -396,6 +396,16 @@ _client._smtp.csa2  SRV  1 1 0  csa2.test.ex.
 csa1         A   V4NET.9.8.7
 csa2         A   V4NET.9.8.8
 
+; ------- Testing DNSSEC ----------
+
+mx-unsec-a-unsec        MX 5 a-unsec
+mx-unsec-a-sec          MX 5 a-sec
+DNSSEC mx-sec-a-unsec   MX 5 a-unsec
+DNSSEC mx-sec-a-sec     MX 5 a-sec
+
+a-unsec       A V4NET.0.0.100
+DNSSEC a-sec  A V4NET.0.0.100
+
 ; ------- Testing DANE ------------
 
 ; full suite dns chain, sha512

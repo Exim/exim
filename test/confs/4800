@@ -1,0 +1,10 @@
+
+begin routers
+  dnslookup:
+     driver = dnslookup
+     dnssec_request_domains = *
+     transport = smtp
+
+begin transports
+  smtp:
+     driver = smtp

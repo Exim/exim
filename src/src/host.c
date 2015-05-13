@@ -2047,10 +2047,9 @@ for (i = 1; i <= times;
     }
   #endif   /* HAVE_IPV6 */
 
-  if (  slow_lookup_log
-     && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log
-	 )
-	log_long_lookup(US"name", host->name, time_msec);
+  if (slow_lookup_log
+      && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log)
+    log_long_lookup(US"name", host->name, time_msec);
 
   if (hostdata == NULL)
     {
