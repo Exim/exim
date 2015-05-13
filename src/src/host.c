@@ -2305,7 +2305,7 @@ for (; i >= 0; i--)
     if ((dnssec_request || dnssec_require)
 	& !dns_is_secure(&dnsa)
 	& dns_is_aa(&dnsa))
-      debug_printf("DNS lookup of %.256s (A/AAA/A6) asked for AD, but got AA\n", host->name);
+      debug_printf("DNS lookup of %.256s (A/AAA/A6) requested AD, but got AA\n", host->name);
 
   /* We want to return HOST_FIND_AGAIN if one of the A, A6, or AAAA lookups
   fails or times out, but not if another one succeeds. (In the early
@@ -2628,7 +2628,7 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
     if ((dnssec_request || dnssec_require)
 	& !dns_is_secure(&dnsa)
 	& dns_is_aa(&dnsa))
-      debug_printf("DNS lookup of %.256s (MX) asked for AD, but got AA\n", host->name);
+      debug_printf("DNS lookup of %.256s (MX) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
     {
