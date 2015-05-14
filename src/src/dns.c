@@ -90,8 +90,7 @@ if (stat(CS utilname, &statbuf) >= 0)
   int infd, outfd, rc;
   uschar *argv[5];
 
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens `%s'\n",
-    name, dns_text_type(type), utilname);
+  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n", name, dns_text_type(type));
 
   argv[0] = utilname;
   argv[1] = config_main_directory;
