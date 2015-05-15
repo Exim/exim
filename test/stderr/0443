@@ -14,8 +14,8 @@
 >>> calling r1 router
 >>> routed by r1 router
 >>> Attempting full verification using callout
->>> callout cache: no domain record found
->>> callout cache: no address record found
+>>> callout cache: no domain record found for ten-1.test.ex
+>>> callout cache: no address record found for x@ten-1.test.ex
 >>> cannot callout via null transport
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "rcpt"

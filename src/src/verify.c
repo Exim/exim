@@ -70,7 +70,7 @@ cache_record = dbfn_read_with_length(dbm_file, key, &length);
 
 if (cache_record == NULL)
   {
-  HDEBUG(D_verify) debug_printf("callout cache: no %s record found\n", type);
+  HDEBUG(D_verify) debug_printf("callout cache: no %s record found for %s\n", type, key);
   return NULL;
   }
 
@@ -84,7 +84,7 @@ now = time(NULL);
 
 if (now - cache_record->time_stamp > expire)
   {
-  HDEBUG(D_verify) debug_printf("callout cache: %s record expired\n", type);
+  HDEBUG(D_verify) debug_printf("callout cache: %s record expired for %s\n", type, key);
   return NULL;
   }
 
@@ -111,7 +111,7 @@ if (type[0] == 'd' && cache_record->result != ccache_reject)
     cache_record->random_result = ccache_unknown;
   }
 
-HDEBUG(D_verify) debug_printf("callout cache: found %s record\n", type);
+HDEBUG(D_verify) debug_printf("callout cache: found %s record for %s\n", type, key);
 return cache_record;
 }
 

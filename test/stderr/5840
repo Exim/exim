@@ -15,8 +15,8 @@
 >>> local host found for non-MX address
 >>> routed by client router
 >>> Attempting full verification using callout
->>> callout cache: no domain record found
->>> callout cache: no address record found
+>>> callout cache: no domain record found for dane256ee.test.ex
+>>> callout cache: no address record found for CALLER@dane256ee.test.ex
 >>> interface=NULL port=1225
 >>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:1225 ... connected
 MUNGED: ::1 will be omitted in what follows

@@ -9,8 +9,8 @@ Verifying r11@two.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering r11@two.test.ex
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: no address record found
+callout cache: found domain record for two.test.ex
+callout cache: no address record found for r11@two.test.ex
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -38,8 +38,8 @@ Verifying r11@two.test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering r11@two.test.ex
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: no address record found
+callout cache: found domain record for two.test.ex
+callout cache: no address record found for r11@two.test.ex
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
 SMTP timeout

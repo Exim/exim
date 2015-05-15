@@ -83,9 +83,9 @@ EXIM_DBOPEN(TESTSUITE/spool/db/callout)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=y
-callout cache: no domain record found
+callout cache: no domain record found for y
 dbfn_read: key=x@y
-callout cache: no address record found
+callout cache: no address record found for x@y
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 server ready
@@ -179,9 +179,9 @@ EXIM_DBOPEN(TESTSUITE/spool/db/callout)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=y
-callout cache: found domain record
+callout cache: found domain record for y
 dbfn_read: key=x@y
-callout cache: found address record
+callout cache: found address record for x@y
 callout cache: address record is positive
 ----------- end verify ------------
 sender x@y verified ok
@@ -214,8 +214,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
->>> callout cache: found domain record
->>> callout cache: found address record
+>>> callout cache: found domain record for y
+>>> callout cache: found address record for x@y
 >>> callout cache: address record is positive
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "mail"
@@ -240,8 +240,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
->>> callout cache: no domain record found
->>> callout cache: no address record found
+>>> callout cache: no domain record found for b
+>>> callout cache: no address record found for a@b
 >>> interface=NULL port=1224
 >>> Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
 >>>   SMTP<< 220 server ready
@@ -280,8 +280,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> Attempting full verification using callout
->>> callout cache: no domain record found
->>> callout cache: no address record found
+>>> callout cache: no domain record found for q
+>>> callout cache: no address record found for p1@q
 >>> interface=NULL port=1224
 >>> Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
 >>>   SMTP<< 220 server ready
