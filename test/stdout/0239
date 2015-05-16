@@ -10,4 +10,4 @@ userx@localhost
   host a.host.name ad=no
 userx@smtp
   router = sss, transport = smtp
-  host 127.0.0.1 [127.0.0.1]  ad=no
+  host 127.0.0.1 [127.0.0.1] ad=no

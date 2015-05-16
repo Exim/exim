@@ -1,19 +1,19 @@
 x@manual.route
   router = r1, transport = t1
-  host ten-1.test.ex [V4NET.0.0.1]  ad=no
+  host ten-1.test.ex [V4NET.0.0.1] ad=no
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
   host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
 x@manual.route
   router = r1, transport = t1
-  host ten-1.test.ex [V4NET.0.0.1]  ad=no
+  host ten-1.test.ex [V4NET.0.0.1] ad=no
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
   host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
-  host ten-6.test.ex [V4NET.0.0.6]  ad=no
+  host ten-6.test.ex [V4NET.0.0.6] ad=no
 x@manual.route
   router = r1, transport = t1
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
   host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
-  host ten-6.test.ex [V4NET.0.0.6]  ad=no
+  host ten-6.test.ex [V4NET.0.0.6] ad=no
 x@random.manual.route
   router = r2, transport = t1
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
@@ -22,38 +22,38 @@ x@random.manual.route
   router = r2, transport = t1
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
   host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
-  host ten-1.test.ex [V4NET.0.0.1]  ad=no
+  host ten-1.test.ex [V4NET.0.0.1] ad=no
 x@random.manual.route
   router = r2, transport = t1
-  host ten-6.test.ex [V4NET.0.0.6]  ad=no
+  host ten-6.test.ex [V4NET.0.0.6] ad=no
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
   host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
-  host ten-1.test.ex [V4NET.0.0.1]  ad=no
+  host ten-1.test.ex [V4NET.0.0.1] ad=no
 y@random.manual.route
   router = r2, transport = t1
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
   host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
-  host ten-6.test.ex [V4NET.0.0.6]  ad=no
-  host ten-1.test.ex [V4NET.0.0.1]  ad=no
+  host ten-6.test.ex [V4NET.0.0.6] ad=no
+  host ten-1.test.ex [V4NET.0.0.1] ad=no
 x@random.manual.route
   router = r2, transport = t1
-  host ten-6.test.ex [V4NET.0.0.6]  ad=no
+  host ten-6.test.ex [V4NET.0.0.6] ad=no
   host ten-2.test.ex [V4NET.0.0.2] MX=5 ad=no
   host ten-3.test.ex [V4NET.0.0.3] MX=6 ad=no
 x@manual.route
   router = r1, transport = t1
-  host ten-1.test.ex [V4NET.0.0.1]  ad=no
+  host ten-1.test.ex [V4NET.0.0.1] ad=no
 x@manual.route cannot be resolved at this time: lowest numbered MX record points to local host
 x@manual.route
   router = r1, transport = t1
   host ten-1.test.ex [V4NET.0.0.1] MX=5 ad=no
   host eximtesthost.test.ex [ip4.ip4.ip4.ip4] MX=5 ad=no
-  host ten-6.test.ex [V4NET.0.0.6]     ad=no
+  host ten-6.test.ex [V4NET.0.0.6] ad=no
 x@manual.route is undeliverable: lowest numbered MX record points to local host
 x@random.manual.route cannot be resolved at this time: lookup of host "localhost.test.ex" failed in r2 router
 x@random.manual.route
   router = r2, transport = t1
-  host ten-6.test.ex [V4NET.0.0.6]  ad=no
+  host ten-6.test.ex [V4NET.0.0.6] ad=no
   host ten-1.test.ex [V4NET.0.0.1] MX=6 ad=no
 x@manual.route
   router = r1, transport = t1
