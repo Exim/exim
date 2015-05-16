@@ -1029,11 +1029,9 @@ DEBUG(D_any) do {
   utf8_version_report(f);
 #endif
 
-  for (authi = auths_available; *authi->driver_name != '\0'; ++authi) {
-    if (authi->version_report) {
+  for (authi = auths_available; *authi->driver_name != '\0'; ++authi)
+    if (authi->version_report)
       (*authi->version_report)(f);
-    }
-  }
 
   /* PCRE_PRERELEASE is either defined and empty or a bare sequence of
   characters; unless it's an ancient version of PCRE in which case it
@@ -1053,10 +1051,8 @@ DEBUG(D_any) do {
 
   init_lookup_list();
   for (i = 0; i < lookup_list_count; i++)
-    {
     if (lookup_list[i]->version_report)
       lookup_list[i]->version_report(f);
-    }
 
 #ifdef WHITELIST_D_MACROS
   fprintf(f, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);

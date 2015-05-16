@@ -38,7 +38,7 @@ return 0;
 
 
 static int
-spamd_param(const uschar *param, spamd_address_container *spamd)
+spamd_param(const uschar * param, spamd_address_container * spamd)
 {
 static int timesinceday = -1;
 const uschar * s;
@@ -46,10 +46,10 @@ const uschar * name;
 
 /*XXX more clever parsing could discard embedded spaces? */
 
-if (sscanf(param, "pri=%u", &spamd->priority))
+if (sscanf(CCS param, "pri=%u", &spamd->priority))
   return 0; /* OK */
 
-if (sscanf(param, "weight=%u", &spamd->weight))
+if (sscanf(CCS param, "weight=%u", &spamd->weight))
   {
   if (spamd->weight == 0) /* this server disabled: skip it */
     return 1;
@@ -202,7 +202,6 @@ uschar *p,*q;
 int override = 0;
 time_t start;
 size_t read, wrote;
-struct sockaddr_un server;
 #ifndef NO_POLL_H
 struct pollfd pollfd;
 #else                               /* Patch posted by Erik ? for OS X */

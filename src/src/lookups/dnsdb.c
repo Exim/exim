@@ -230,7 +230,7 @@ for (;;)
   else if (strncmpic(keystring, US"retry_", 6) == 0)
     {
     int retries;
-    if ((retries = (int)strtol(keystring + 6, CSS &keystring, 0)) < 0)
+    if ((retries = (int)strtol(CCS keystring + 6, CSS &keystring, 0)) < 0)
       {
       *errmsg = US"unsupported dnsdb retry count";
       return DEFER;
@@ -548,7 +548,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  p += rc;
 	  GETLONG(serial, p); GETLONG(refresh, p);
 	  GETLONG(retry,  p); GETLONG(expire,  p); GETLONG(minimum, p);
-	  sprintf(CS s, "%c%d%c%d%c%d%c%d%c%d",
+	  sprintf(CS s, "%c%lu%c%lu%c%lu%c%lu%c%lu",
 	    *outsep2, serial, *outsep2, refresh,
 	    *outsep2, retry,  *outsep2, expire,  *outsep2, minimum);
 	  yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));

@@ -8965,7 +8965,7 @@ The field selectors marked as "RFC4514" above
 output a Distinguished Name string which is
 not quite
 parseable by Exim as a comma-separated tagged list
-(the exceptions being elements containin commas).
+(the exceptions being elements containing commas).
 RDN elements of a single type may be selected by
 a modifier of the type label; if so the expansion
 result is a list (newline-separated by default).

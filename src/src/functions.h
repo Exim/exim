@@ -465,6 +465,9 @@ extern void    tree_walk(tree_node *, void (*)(uschar*, uschar*, void*), void *)
 #ifdef WITH_CONTENT_SCAN
 extern void    unspool_mbox(void);
 #endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+extern void    utf8_version_report(FILE *);
+#endif
 
 extern int     verify_address(address_item *, FILE *, int, int, int, int,
                  uschar *, uschar *, BOOL *);

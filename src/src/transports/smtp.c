@@ -1388,7 +1388,6 @@ uschar *p;
 uschar buffer[4096];
 uschar inbuffer[4096];
 uschar outbuffer[4096];
-address_item * current_address;
 
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 

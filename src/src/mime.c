@@ -640,8 +640,6 @@ while(1)
 	 mh < mime_header_list + mime_header_list_size;
 	 mh++) if (strncmpic(mh->name, header, mh->namelen) == 0)
       {
-      uschar * header_value = NULL;
-      int header_value_len = 0;
       uschar * p = header + mh->namelen;
       uschar * q;
 
@@ -671,8 +669,8 @@ while(1)
 	  DEBUG(D_acl) debug_printf("  considering paramlist '%s'\n", p);
 
 	  if (  !mime_filename
-	     && strncmpic("content-disposition:", header, 20) == 0
-	     && strncmpic("filename*", p, 9) == 0
+	     && strncmpic(CUS"content-disposition:", header, 20) == 0
+	     && strncmpic(CUS"filename*", p, 9) == 0
 	     )
 	    {					/* RFC 2231 filename */
 	    uschar * q;
@@ -765,7 +763,7 @@ while(1)
 	  if (*p) p++;
 	  }				/* param scan on line */
 
-	if (strncmpic("content-disposition:", header, 20) == 0)
+	if (strncmpic(CUS"content-disposition:", header, 20) == 0)
 	  {
 	  if (decoding_failed) mime_filename = mime_fname_rfc2231;
 

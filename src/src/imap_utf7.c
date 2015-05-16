@@ -25,7 +25,7 @@ uschar *outptr = outbuf;
 iconv_t icd;
 #endif
 
-if (!specials) specials = "";
+if (!specials) specials = US"";
 
 /* Pass over the string. If it consists entirely of "normal" characters
    (possibly with leading seps), return it as is. */
@@ -37,7 +37,7 @@ for (s = string; *s; s++)
      || *s < 0x20
      || strchr("./&", *s)
      || *s == sep
-     || strchr(specials, *s)
+     || Ustrchr(specials, *s)
      )
     break;
   }
@@ -49,7 +49,7 @@ sptr = string;
 slen = Ustrlen(string);
 
 #if HAVE_ICONV
-if ((icd = iconv_open(US"UTF-16BE", charset)) == (iconv_t)-1)
+if ((icd = iconv_open("UTF-16BE", CCS charset)) == (iconv_t)-1)
   {
   *error = string_sprintf(
 	"imapfolder: iconv_open(\"UTF-16BE\", \"%s\") failed: %s%s",

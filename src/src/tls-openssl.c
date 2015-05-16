@@ -465,7 +465,6 @@ X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 uschar dn[256];
 #ifdef EXPERIMENTAL_EVENT
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
-uschar * yield;
 BOOL dummy_called, optional = FALSE;
 #endif
 
@@ -1534,7 +1533,6 @@ tls_server_start(const uschar *require_ciphers)
 int rc;
 uschar *expciphers;
 tls_ext_ctx_cb *cbinfo;
-X509 * peercert;
 static uschar peerdn[256];
 static uschar cipherbuf[256];
 

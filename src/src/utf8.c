@@ -89,7 +89,7 @@ res = store_get(p_len+5);
 
 res[0] = 'x'; res[1] = 'n'; res[2] = res[3] = '-';
 
-if ((rc = punycode_encode(ucs4_len, p, NULL, &p_len, res+4)) != PUNYCODE_SUCCESS)
+if ((rc = punycode_encode(ucs4_len, p, NULL, &p_len, CS res+4)) != PUNYCODE_SUCCESS)
   {
   DEBUG(D_expand) debug_printf("l_u2a: bad '%s'\n", punycode_strerror(rc));
   free(p);
@@ -106,7 +106,7 @@ return res;
 uschar *
 string_localpart_alabel_to_utf8(const uschar * alabel, uschar ** err)
 {
-size_t p_len = strlen(alabel);
+size_t p_len = Ustrlen(alabel);
 punycode_uint * p;
 uschar * s;
 uschar * res;
