@@ -2076,18 +2076,17 @@ while (addr_new != NULL)
                 (void)host_find_byname(host, NULL, flags, NULL, TRUE);
               else
 		{
-		uschar * d_request = NULL, * d_require = NULL;
+		dnssec_domains * dnssec_domains = NULL;
 		if (Ustrcmp(addr->transport->driver_name, "smtp") == 0)
 		  {
 		  smtp_transport_options_block * ob =
 		      (smtp_transport_options_block *)
 			addr->transport->options_block;
-		  d_request = ob->dnssec_request_domains;
-		  d_require = ob->dnssec_require_domains;
+		  dnssec_domains = &ob->dnssec;
 		  }
 
                 (void)host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-		  d_request, d_require, NULL, NULL);
+		  dnssec_domains, NULL, NULL);
 		}
               }
             }

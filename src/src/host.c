@@ -1942,7 +1942,7 @@ some circumstances when the get..byname() function actually calls the DNS. */
 
 dns_init((flags & HOST_FIND_QUALIFY_SINGLE) != 0,
          (flags & HOST_FIND_SEARCH_PARENTS) != 0,
-	 FALSE);	/*XXX dnssec? */
+	 FALSE);		/* Cannot retrieve dnssec status so do not request */
 
 /* In an IPv6 world, unless IPv6 has been disabled, we need to scan for both
 kinds of address, so go round the loop twice. Note that we have ensured that
@@ -2494,8 +2494,8 @@ Arguments:
   srv_service           when SRV used, the service name
   srv_fail_domains      DNS errors for these domains => assume nonexist
   mx_fail_domains       DNS errors for these domains => assume nonexist
-  dnssec_request_domains => make dnssec request
-  dnssec_require_domains => ditto and nonexist failures
+  dnssec_d.request =>   make dnssec request: domainlist
+  dnssec_d.require =>   ditto and nonexist failures
   fully_qualified_name  if not NULL, return fully-qualified name
   removed               set TRUE if local host was removed from the list
 
@@ -2513,7 +2513,7 @@ Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
 int
 host_find_bydns(host_item *host, const uschar *ignore_target_hosts, int whichrrs,
   uschar *srv_service, uschar *srv_fail_domains, uschar *mx_fail_domains,
-  uschar *dnssec_request_domains, uschar *dnssec_require_domains,
+  const dnssec_domains *dnssec_d,
   const uschar **fully_qualified_name, BOOL *removed)
 {
 host_item *h, *last;
@@ -2523,11 +2523,13 @@ int ind_type = 0;
 int yield;
 dns_answer dnsa;
 dns_scan dnss;
-BOOL dnssec_require = match_isinlist(host->name, CUSS &dnssec_require_domains,
+BOOL dnssec_require = dnssec_d
+		    && match_isinlist(host->name, CUSS &dnssec_d->require,
 				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
 BOOL dnssec_request = dnssec_require
-		    || match_isinlist(host->name, CUSS &dnssec_request_domains,
-				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
+		    || (  dnssec_d
+		       && match_isinlist(host->name, CUSS &dnssec_d->request,
+				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK);
 dnssec_status_t dnssec;
 
 /* Set the default fully qualified name to the incoming name, initialize the
@@ -3203,6 +3205,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else
     {
     int flags = whichrrs;
+    dnssec d;
 
     h.name = buffer;
     h.next = NULL;
@@ -3215,12 +3218,13 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     if (qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
     if (search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
+    d.request = request_dnssec ? &h.name : NULL;
+    d.require = require_dnssec ? &h.name : NULL;
+
     rc = byname
       ? host_find_byname(&h, NULL, flags, &fully_qualified_name, TRUE)
       : host_find_bydns(&h, NULL, flags, US"smtp", NULL, NULL,
-			request_dnssec ? &h.name : NULL,
-			require_dnssec ? &h.name : NULL,
-			&fully_qualified_name, NULL);
+			&d, &fully_qualified_name, NULL);
 
     if (rc == HOST_FIND_FAILED) printf("Failed\n");
       else if (rc == HOST_FIND_AGAIN) printf("Again\n");

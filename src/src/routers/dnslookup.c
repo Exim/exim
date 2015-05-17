@@ -265,8 +265,7 @@ for (;;)
 
   rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags, srv_service,
     ob->srv_fail_domains, ob->mx_fail_domains,
-    rblock->dnssec_request_domains, rblock->dnssec_require_domains,
-    &fully_qualified_name, &removed);
+    &rblock->dnssec, &fully_qualified_name, &removed);
   if (removed) setflag(addr, af_local_host_removed);
 
   /* If host found with only address records, test for the domain's being in

@@ -61,9 +61,9 @@ optionlist smtp_transport_options[] = {
   { "dns_search_parents",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_search_parents) },
   { "dnssec_request_domains", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dnssec_request_domains) },
+      (void *)offsetof(smtp_transport_options_block, dnssec.request) },
   { "dnssec_require_domains", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dnssec_require_domains) },
+      (void *)offsetof(smtp_transport_options_block, dnssec.require) },
   { "dscp",                 opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dscp) },
   { "fallback_hosts",       opt_stringptr,
@@ -3228,7 +3228,7 @@ for (cutoff_retry = 0; expired &&
         rc = host_find_byname(host, NULL, flags, NULL, TRUE);
       else
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-	  ob->dnssec_request_domains, ob->dnssec_require_domains,
+	  &ob->dnssec,		/* domains for request/require */
           NULL, NULL);
 
       /* Update the host (and any additional blocks, resulting from

@@ -221,8 +221,7 @@ if (cb->at_is_special && pattern[0] == '@')
       NULL,                /* service name not relevant */
       NULL,                /* srv_fail_domains not relevant */
       NULL,                /* mx_fail_domains not relevant */
-      NULL,                /* no dnssec request XXX ? */
-      NULL,                /* no dnssec require XXX ? */
+      NULL,                /* no dnssec request/require XXX ? */
       NULL,                /* no feedback FQDN */
       &removed);           /* feedback if local removed */
 

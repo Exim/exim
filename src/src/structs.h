@@ -218,6 +218,11 @@ typedef struct transport_info {
 
 
 
+typedef struct {
+  uschar *request;
+  uschar *require;
+} dnssec_domains;
+
 /* Structure for holding information about the configured routers. */
 
 typedef struct router_instance {
@@ -296,8 +301,8 @@ typedef struct router_instance {
   transport_instance *transport;  /* Transport block (when found) */
   struct router_instance *pass_router; /* Actual router for passed address */
   struct router_instance *redirect_router; /* Actual router for generated address */
-  uschar  *dnssec_request_domains;	/* ask for DNSSEC XXX */
-  uschar  *dnssec_require_domains;	/* require DNSSEC XXX */
+
+  dnssec_domains dnssec;
 } router_instance;
 
 
