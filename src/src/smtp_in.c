@@ -4425,13 +4425,11 @@ while (done <= 0)
         else smtp_user_msg(US"250", user_msg);
       rcpt_fail_count++;
       discarded = TRUE;
-      log_write(0, LOG_MAIN|LOG_REJECT, "%s F=<%s> rejected RCPT %s: "
+      log_write(0, LOG_MAIN|LOG_REJECT, "%s F=<%s> RCPT %s: "
         "discarded by %s ACL%s%s", host_and_ident(TRUE),
-        (sender_address_unrewritten != NULL)?
-        sender_address_unrewritten : sender_address,
+        sender_address_unrewritten? sender_address_unrewritten : sender_address,
         smtp_cmd_argument, recipients_discarded? "MAIL" : "RCPT",
-        (log_msg == NULL)? US"" : US": ",
-        (log_msg == NULL)? US"" : log_msg);
+        log_msg ? US": " : US"", log_msg ? log_msg : US"");
       }
 
     /* Either the ACL failed the address, or it was deferred. */
