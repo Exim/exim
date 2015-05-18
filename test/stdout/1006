@@ -1,20 +1,20 @@
 dnslookup@mx46.test.ex
   router = r1, transport = smtp
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
-  host 46.test.ex [V4NET.0.0.4] MX=46
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46 ad=no
+  host 46.test.ex [V4NET.0.0.4] MX=46 ad=no
 manualroute@test.ex
   router = r2, transport = smtp
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] 
-  host 46.test.ex [V4NET.0.0.4] 
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] ad=no
+  host 46.test.ex [V4NET.0.0.4] ad=no
 dnslookup@v6.test.ex
   router = r1, transport = smtp
-  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] 
+  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] ad=no
 dnslookup@mx46.test.ex
   router = r1, transport = smtp
-  host 46.test.ex [V4NET.0.0.4] MX=46
+  host 46.test.ex [V4NET.0.0.4] MX=46 ad=no
 manualroute@test.ex
   router = r2, transport = smtp
-  host 46.test.ex [V4NET.0.0.4] 
+  host 46.test.ex [V4NET.0.0.4] ad=no
 dnslookup@v6.test.ex is undeliverable: Unrouteable address
 Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 ??? 220
