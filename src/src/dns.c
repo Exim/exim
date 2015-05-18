@@ -112,6 +112,13 @@ if (stat(CS utilname, &statbuf) >= 0)
     asize -= rc;      /* may need to be passed on to res_search(). */
     }
 
+  /* If we ran out of output buffer before exhasting the return,
+  carry on reading and counting it. */
+
+  if (asize == 0)
+    while ((rc = read(outfd, name, sizeof(name))) > 0)
+      len += rc;
+
   if (rc < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "read from fakens failed: %s",
       strerror(errno));

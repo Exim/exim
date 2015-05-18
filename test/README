@@ -1134,6 +1134,16 @@ directory by applying the standard substitutions. The test suite also builds
 dynamic zone files for the name of the current host and its IP address(es). The
 idea is that there should not be any need to rely on an external DNS.
 
+The fakens program handles some names programmatically rather than using the
+fake zone files.  These are:
+
+  manyhome.test.ex  This name is used for testing hosts with ridiculously large
+                    numbers of IP addresses; 2048 IP addresses are generated
+                    and returned. Doing it this way saves having to make the
+                    interface to fakens handle more records that can fit in the
+                    data block. The addresses that are generated are in the
+                    10.250.0.0/16 network.
+
 The domain names that are handled directly by Exim, without being passed to
 fakens, are:
 
@@ -1153,13 +1163,6 @@ running in the test harness. The test code handles a few special names
 directly; for all the others it uses DNS lookups, which are then handled as
 just described. Thus, the use of /etc/hosts is completely bypassed. The names
 that are specially handled are:
-
-  manyhome.test.ex  This name is used for testing hosts with ridiculously large
-                    numbers of IP addresses; 2048 IP addresses are generated
-                    and returned. Doing it this way saves having to make the
-                    interface to fakens handle more records that can fit in the
-                    data block. The addresses that are generated are in the
-                    10.250.0.0/16 network.
 
   localhost         Always returns 127.0.0.1 or ::1, for IPv4 and IPv6 lookups,
                     respectively.

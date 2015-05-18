@@ -354,21 +354,20 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
   p = buffer;
   for (;;)
-	{
-	if (Ustrncmp(p, US"DNSSEC ", 7) == 0)	/* tagged as secure */
-	  {
-	  rr_sec = TRUE;
-	  p += 7;
-	  }
-	else if (Ustrncmp(p, US"DELAY=", 6) == 0)	/* delay beforee response */
-	  {
-	  for (p += 6; *p >= '0' && *p <= '9'; p++)
-		delay = delay*10 + *p - '0';
-	  while (isspace(*p)) p++;
-	  }
-	else
-	  break;
-	}
+    {
+    if (Ustrncmp(p, US"DNSSEC ", 7) == 0)	/* tagged as secure */
+      {
+      rr_sec = TRUE;
+      p += 7;
+      }
+    else if (Ustrncmp(p, US"DELAY=", 6) == 0)	/* delay before response */
+      {
+      for (p += 6; *p >= '0' && *p <= '9'; p++) delay = delay*10 + *p - '0';
+      while (isspace(*p)) p++;
+      }
+    else
+      break;
+    }
 
   if (!isspace(*p))
     {
@@ -587,7 +586,7 @@ uschar *zonefile = NULL;
 uschar domain[256];
 uschar buffer[256];
 uschar qtype[12];
-uschar packet[512];
+uschar packet[2048 * 32 + 32];
 uschar *pk = packet;
 BOOL dnssec;
 
@@ -636,7 +635,8 @@ Ustrncpy(qtype, argv[3], sizeof(qtype));
 qtypelen = Ustrlen(qtype);
 for (p = qtype; *p != 0; p++) *p = toupper(*p);
 
-/* Find the domain, lower case it, check that it is in a zone that we handle,
+/* Find the domain, lower case it, deal with any specials,
+check that it is in a zone that we handle,
 and set up the zone file name. The zone names in the table all start with a
 dot. */
 
@@ -645,6 +645,41 @@ if (argv[2][domlen-1] == '.') domlen--;
 Ustrncpy(domain, argv[2], domlen);
 domain[domlen] = 0;
 for (i = 0; i < domlen; i++) domain[i] = tolower(domain[i]);
+
+if (Ustrcmp(domain, "manyhome.test.ex") == 0 && Ustrcmp(qtype, "A") == 0)
+  {
+  uschar *pk = packet + 12;
+  uschar *rdlptr;
+  int i, j;
+
+  memset(packet, 0, 12);
+
+  for (i = 104; i <= 111; i++) for (j = 0; j <= 255; j++)
+    {
+    pk = packname(domain, pk);
+    *pk++ = (ns_t_a >> 8) & 255;
+    *pk++ = (ns_t_a) & 255;
+    *pk++ = 0;
+    *pk++ = 1;     /* class = IN */
+    pk += 4;       /* TTL field; don't care */
+    rdlptr = pk;   /* remember rdlength field */
+    pk += 2;
+
+    *pk++ = 10; *pk++ = 250; *pk++ = i; *pk++ = j;
+
+    rdlptr[0] = ((pk - rdlptr - 2) >> 8) & 255;
+    rdlptr[1] = (pk - rdlptr - 2) & 255;
+    }
+
+  packet[6] = (2048 >> 8) & 255;
+  packet[7] = 2048 & 255;
+  packet[10] = 0;
+  packet[11] = 0;
+
+  (void)fwrite(packet, 1, pk - packet, stdout);
+  return 0;
+  }
+
 
 if (Ustrchr(domain, '.') == NULL && qualify != NULL &&
     Ustrcmp(domain, "dontqualify") != 0)
