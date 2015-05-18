@@ -1086,31 +1086,36 @@ Argument:
   dnsa       the DNS answer block
   rr         the RR
 
-Returns:     pointer to a chain of dns_address items
+Returns:     pointer to a chain of dns_address items; NULL when the dnsa was overrun
 */
 
 dns_address *
 dns_address_from_rr(dns_answer *dnsa, dns_record *rr)
 {
-dns_address *yield = NULL;
-
-dnsa = dnsa;    /* Stop picky compilers warning */
+dns_address * yield = NULL;
+uschar * dnsa_lim = dnsa->answer + dnsa->answerlen;
 
 if (rr->type == T_A)
   {
   uschar *p = US rr->data;
-  yield = store_get(sizeof(dns_address) + 20);
-  (void)sprintf(CS yield->address, "%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
-  yield->next = NULL;
+  if (p + 4 <= dnsa_lim)
+    {
+    yield = store_get(sizeof(dns_address) + 20);
+    (void)sprintf(CS yield->address, "%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
+    yield->next = NULL;
+    }
   }
 
 #if HAVE_IPV6
 
 else
   {
-  yield = store_get(sizeof(dns_address) + 50);
-  inet_ntop(AF_INET6, US rr->data, CS yield->address, 50);
-  yield->next = NULL;
+  if (rr->data + 16 <= dnsa_lim)
+    {
+    yield = store_get(sizeof(dns_address) + 50);
+    inet_ntop(AF_INET6, US rr->data, CS yield->address, 50);
+    yield->next = NULL;
+    }
   }
 #endif  /* HAVE_IPV6 */
 

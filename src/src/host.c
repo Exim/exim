@@ -251,11 +251,10 @@ else
     }
 
   for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-       rr != NULL;
+       rr;
        rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-    {
-    if (rr->type == type) count++;
-    }
+    if (rr->type == type)
+      count++;
 
   yield = store_get(sizeof(struct hostent));
   alist = store_get((count + 1) * sizeof(char **));
@@ -268,14 +267,14 @@ else
   yield->h_addr_list = CSS alist;
 
   for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-       rr != NULL;
+       rr;
        rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
     {
     int i, n;
     int x[4];
     dns_address *da;
     if (rr->type != type) continue;
-    da = dns_address_from_rr(&dnsa, rr);
+    if (!(da = dns_address_from_rr(&dnsa, rr))) break;
     *alist++ = adds;
     n = host_aton(da->address, x);
     for (i = 0; i < n; i++)
@@ -2356,7 +2355,7 @@ for (; i >= 0; i--)
   fully_qualified_name = NULL;
 
   for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-       rr != NULL;
+       rr;
        rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
     {
     if (rr->type == type)
@@ -2368,15 +2367,14 @@ for (; i >= 0; i--)
 
       DEBUG(D_host_lookup)
         {
-        if (da == NULL)
-          debug_printf("no addresses extracted from A6 RR for %s\n",
+        if (!da) debug_printf("no addresses extracted from A6 RR for %s\n",
             host->name);
         }
 
       /* This loop runs only once for A and AAAA records, but may run
       several times for an A6 record that generated multiple addresses. */
 
-      for (; da != NULL; da = da->next)
+      for (; da; da = da->next)
         {
         #ifndef STAND_ALONE
         if (ignore_target_hosts != NULL &&

@@ -67,7 +67,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=manyhome.test.ex address=10.250.104.60
 >>>   name=manyhome.test.ex address=10.250.104.61
 >>>   name=manyhome.test.ex address=10.250.104.62
->>>   name=manyhome.test.ex address=0.0.0.0
 >>> checking addresses for manyhome.test.ex
 >>>   10.250.104.0
 >>>   10.250.104.1

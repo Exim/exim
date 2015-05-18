@@ -842,6 +842,7 @@ match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
 ****
 # Sender host name and address etc, all unset
 exim -be
+-be Sender host name and address etc, all unset
 -oMa  sender_host_address = $sender_host_address
       sender_host_port = $sender_host_port
 -oMaa sender_host_authenticated = $sender_host_authenticated
@@ -855,6 +856,7 @@ exim -be
 ****
 # Sender host name and address etc, all set except host name.
 exim -d-all+expand -be -oMa V4NET.0.0.1.1234 -oMaa AAA -oMai philip -oMas xx@yy.zz -oMi 1.1.1.1.99 -oMr special -oMt me
+-be Sender host name and address etc, all set except host name.
 -oMa  sender_host_address = $sender_host_address
       sender_host_port = $sender_host_port
 -oMaa sender_host_authenticated = $sender_host_authenticated
@@ -867,17 +869,20 @@ exim -d-all+expand -be -oMa V4NET.0.0.1.1234 -oMaa AAA -oMai philip -oMas xx@yy.
 ****
 # Sender host name explicitly set
 exim -be -oMa V4NET.0.0.1.1234 -oMs my.host.name
+-be Sender host name explicitly set
 -oMa  sender_host_address = $sender_host_address
       sender_host_port = $sender_host_port
 -oMs  sender_host_name = $sender_host_name
 ****
 # Sender host name lookup fails (V4NET.11.12.13 is not reverse registered)
 exim -be -oMa V4NET.11.12.13
+be Sender host name lookup fails (V4NET.11.12.13 is not reverse registered)
 -oMs  sender_host_name = $sender_host_name
       host_lookup_failed = $host_lookup_failed
 ****
 # Sender host name and protocol set by Sendmail-compatible option
 exim -be -pspecial:host.name
+-be Sender host name and protocol set by Sendmail-compatible option
 -p  received_protocol = $received_protocol
 -p  sender_host_name = $sender_host_name
 ****
@@ -886,6 +891,7 @@ exim -be -pspecial:host.name
 # we are skipping. The debug output for this test will show when
 # the lookup occurs.
 exim -d-all+host_lookup+expand -be -oMa V4NET.0.0.1.1234 -oMaa AAA -oMai philip -oMas xx@yy.zz -oMi 1.1.1.1.99 -oMr special -oMt me
+-be Sender host name and address etc, all set except host name
 -oMa  sender_host_address = $sender_host_address
       sender_host_port = $sender_host_port
 -oMaa sender_host_authenticated = $sender_host_authenticated

@@ -391,7 +391,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {
         dns_address *da;
-        for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
+        for (da = dns_address_from_rr(&dnsa, rr); da; da = da->next)
           {
           if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
           yield = string_cat(yield, &size, &ptr, da->address,

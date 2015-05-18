@@ -3620,13 +3620,13 @@ if (t == NULL)
     dns_record *rr;
     dns_address **addrp = &(cb->rhs);
     for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-         rr != NULL;
+         rr;
          rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
       {
       if (rr->type == T_A)
         {
         dns_address *da = dns_address_from_rr(&dnsa, rr);
-        if (da != NULL)
+        if (da)
           {
           *addrp = da;
           while (da->next != NULL) da = da->next;
