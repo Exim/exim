@@ -46,13 +46,12 @@ looking up host name for ip4.ip4.ip4.ip4
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "the.local.host.name"
-using host_fake_gethostbyname for the.local.host.name (IPv4)
 DNS lookup of the.local.host.name (A) using fakens
 DNS lookup of the.local.host.name (A) succeeded
-MUNGED: ::1 will be omitted in what follows
-get[host|ipnode]byname[2] looked up these IP addresses:
-  name=the.local.host.name address=ip4.ip4.ip4.ip4
+local host found for non-MX address
+the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 checking addresses for the.local.host.name
+Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
 sender_fullhost = the.local.host.name [ip4.ip4.ip4.ip4]
 sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4])

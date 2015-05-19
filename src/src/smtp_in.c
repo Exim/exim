@@ -3009,6 +3009,7 @@ else
 
     if (helo_verified)
       {
+      /*XXX have sender_host_dnssec */
       HDEBUG(D_receive) debug_printf("matched host name\n");
       }
     else
@@ -3018,6 +3019,7 @@ else
         {
         helo_verified = strcmpic(*aliases++, sender_helo_name) == 0;
         if (helo_verified) break;
+      /*XXX have sender_host_dnssec */
         }
       HDEBUG(D_receive)
         {
@@ -3039,6 +3041,8 @@ else
     h.next = NULL;
     HDEBUG(D_receive) debug_printf("getting IP address for %s\n",
       sender_helo_name);
+/*XXX would like to determine dnssec status here */
+/* need to change to bydns */
     rc = host_find_byname(&h, NULL, 0, NULL, TRUE);
     if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
       {

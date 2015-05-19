@@ -309,8 +309,8 @@ else if (string_is_ip_address(hostname, NULL) != 0)
 else
   {
   shost.name = string_copy(hostname);
-  if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE, NULL,
-      FALSE) != HOST_FOUND)
+  if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE,
+      NULL, FALSE) != HOST_FOUND)
     {
     *errstr = string_sprintf("no IP address found for host %s", shost.name);
     return -1;

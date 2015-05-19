@@ -1639,8 +1639,7 @@ if (running_in_test_harness &&
 /* Do lookups directly in the DNS or via gethostbyaddr() (or equivalent), in
 the order specified by the host_lookup_order option. */
 
-while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
-        != NULL)
+while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
   {
   if (strcmpic(ordername, US"bydns") == 0)
     {
@@ -1661,8 +1660,6 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
       int count = 0;
       int old_pool = store_pool;
 
-      /* Ideally we'd check DNSSEC both forward and reverse, but we use the
-      gethost* routines for forward, so can't do that unless/until we rewrite. */
       sender_host_dnssec = dns_is_secure(&dnsa);
       DEBUG(D_dns)
         debug_printf("Reverse DNS security status: %s\n",
@@ -1710,8 +1707,8 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
             "empty name: treated as non-existent host name\n");
           continue;
           }
-        if (sender_host_name == NULL) sender_host_name = s;
-          else *aptr++ = s;
+        if (!sender_host_name) sender_host_name = s;
+	else *aptr++ = s;
         while (*s != 0) { *s = tolower(*s); s++; }
         }
 
@@ -1790,21 +1787,30 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
   int rc;
   BOOL ok = FALSE;
   host_item h;
+  dnssec_domains d;
+
   h.next = NULL;
   h.name = hname;
   h.mx = MX_NONE;
   h.address = NULL;
+  d.request = sender_host_dnssec ? US"*" : NULL;;
+  d.require = NULL;
 
-  /* When called with the last argument FALSE, host_find_byname() won't return
-  HOST_FOUND_LOCAL. If the incoming address is an IPv4 address expressed in
-  IPv6 format, we must compare the IPv4 part to any IPv4 addresses. */
-
-  if ((rc = host_find_byname(&h, NULL, 0, NULL, FALSE)) == HOST_FOUND)
+  if (  (rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A,
+	  NULL, NULL, NULL, &d, NULL, NULL)) == HOST_FOUND
+     || rc == HOST_FOUND_LOCAL
+     )
     {
     host_item *hh;
     HDEBUG(D_host_lookup) debug_printf("checking addresses for %s\n", hname);
+
+    /* If the forward lookup was not secure we cancel the is-secure variable */
+
+    DEBUG(D_dns) debug_printf("Forward DNS security status: %s\n",
+	  h.dnssec == DS_YES ? "DNSSEC verified (AD)" : "unverified");
+    if (h.dnssec != DS_YES) sender_host_dnssec = FALSE;
+
     for (hh = &h; hh != NULL; hh = hh->next)
-      {
       if (host_is_in_net(hh->address, sender_host_address, 0))
         {
         HDEBUG(D_host_lookup) debug_printf("  %s OK\n", hh->address);
@@ -1812,10 +1818,8 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
         break;
         }
       else
-        {
         HDEBUG(D_host_lookup) debug_printf("  %s\n", hh->address);
-        }
-      }
+
     if (!ok) HDEBUG(D_host_lookup)
       debug_printf("no IP address for %s matched %s\n", hname,
         sender_host_address);
@@ -1828,9 +1832,7 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
     return DEFER;
     }
   else
-    {
     HDEBUG(D_host_lookup) debug_printf("no IP addresses found for %s\n", hname);
-    }
 
   /* If this name is no good, and it's the sender name, set it null pro tem;
   if it's an alias, just remove it from the list. */
@@ -2539,8 +2541,7 @@ that gets set for DNS syntax check errors. */
 if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
 dns_init((whichrrs & HOST_FIND_QUALIFY_SINGLE) != 0,
          (whichrrs & HOST_FIND_SEARCH_PARENTS) != 0,
-	 dnssec_request
-	 );
+	 dnssec_request);
 host_find_failed_syntax = FALSE;
 
 /* First, if requested, look for SRV records. The service name is given; we

@@ -9,9 +9,6 @@
 >>> myhost.test.ex in helo_lookup_domains? yes (matched "@")
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in hosts_connection_nolog? no (option unset)
@@ -25,9 +22,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> [127.0.0.1] in helo_lookup_domains? yes (matched "@[]")
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in dsn_advertise_hosts? no (option unset)

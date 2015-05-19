@@ -117,10 +117,7 @@ expanding: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
    result: ----> No lookup yet: No
 looking up host name for V4NET.0.0.1
 IP address lookup yielded "ten-1.test.ex"
-using host_fake_gethostbyname for ten-1.test.ex (IPv4)
-MUNGED: ::1 will be omitted in what follows
-get[host|ipnode]byname[2] looked up these IP addresses:
-  name=ten-1.test.ex address=V4NET.0.0.1
+ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 checking addresses for ten-1.test.ex
   V4NET.0.0.1 OK
 sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
@@ -160,13 +157,11 @@ looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "ten-1.test.ex"
-using host_fake_gethostbyname for ten-1.test.ex (IPv4)
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
-MUNGED: ::1 will be omitted in what follows
-get[host|ipnode]byname[2] looked up these IP addresses:
-  name=ten-1.test.ex address=V4NET.0.0.1
+ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 checking addresses for ten-1.test.ex
+Forward DNS security status: unverified
   V4NET.0.0.1 OK
 sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
 sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1])

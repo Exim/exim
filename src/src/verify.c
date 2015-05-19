@@ -3245,6 +3245,10 @@ if (*t == 0)
   h.address = NULL;
   h.mx = MX_NONE;
 
+  /* Using byname rather than bydns here means we cannot determine dnssec
+  status.  On the other hand it is unclear how that could be either
+  propagated up or enforced. */
+
   rc = host_find_byname(&h, NULL, HOST_FIND_QUALIFY_SINGLE, NULL, FALSE);
   if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
     {

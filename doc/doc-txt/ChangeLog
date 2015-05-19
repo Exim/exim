@@ -103,6 +103,9 @@ JH/28 Bug 1588: Do not use the A lookup following an AAAA for setting the FQDN.
 
 JH/29 Bug 1632: Removed the word "rejected" from line logged for ACL discards.
 
+JH/30 Check the forward DNS lookup for DNSSEC, in addition to the reverse,
+      when evaluating $sender_host_dnssec.
+
 
 Exim version 4.85
 -----------------

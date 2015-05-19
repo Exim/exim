@@ -207,6 +207,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     host->address = host->name;
   else
     {
+/*XXX might want dnssec request/require on an iplookup router? */
     int rc = host_find_byname(host, NULL, HOST_FIND_QUALIFY_SINGLE, NULL, TRUE);
     if (rc == HOST_FIND_FAILED || rc == HOST_FIND_AGAIN) continue;
     }

@@ -2,114 +2,27 @@
 >>> host in host_lookup? yes (matched "10.250.104.0/21")
 >>> looking up host name for 10.250.104.42
 >>> IP address lookup yielded "manyhome.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=manyhome.test.ex address=10.250.104.0
->>>   name=manyhome.test.ex address=10.250.104.1
->>>   name=manyhome.test.ex address=10.250.104.2
->>>   name=manyhome.test.ex address=10.250.104.3
->>>   name=manyhome.test.ex address=10.250.104.4
->>>   name=manyhome.test.ex address=10.250.104.5
->>>   name=manyhome.test.ex address=10.250.104.6
->>>   name=manyhome.test.ex address=10.250.104.7
->>>   name=manyhome.test.ex address=10.250.104.8
->>>   name=manyhome.test.ex address=10.250.104.9
->>>   name=manyhome.test.ex address=10.250.104.10
->>>   name=manyhome.test.ex address=10.250.104.11
->>>   name=manyhome.test.ex address=10.250.104.12
->>>   name=manyhome.test.ex address=10.250.104.13
->>>   name=manyhome.test.ex address=10.250.104.14
->>>   name=manyhome.test.ex address=10.250.104.15
->>>   name=manyhome.test.ex address=10.250.104.16
->>>   name=manyhome.test.ex address=10.250.104.17
->>>   name=manyhome.test.ex address=10.250.104.18
->>>   name=manyhome.test.ex address=10.250.104.19
->>>   name=manyhome.test.ex address=10.250.104.20
->>>   name=manyhome.test.ex address=10.250.104.21
->>>   name=manyhome.test.ex address=10.250.104.22
->>>   name=manyhome.test.ex address=10.250.104.23
->>>   name=manyhome.test.ex address=10.250.104.24
->>>   name=manyhome.test.ex address=10.250.104.25
->>>   name=manyhome.test.ex address=10.250.104.26
->>>   name=manyhome.test.ex address=10.250.104.27
->>>   name=manyhome.test.ex address=10.250.104.28
->>>   name=manyhome.test.ex address=10.250.104.29
->>>   name=manyhome.test.ex address=10.250.104.30
->>>   name=manyhome.test.ex address=10.250.104.31
->>>   name=manyhome.test.ex address=10.250.104.32
->>>   name=manyhome.test.ex address=10.250.104.33
->>>   name=manyhome.test.ex address=10.250.104.34
->>>   name=manyhome.test.ex address=10.250.104.35
->>>   name=manyhome.test.ex address=10.250.104.36
->>>   name=manyhome.test.ex address=10.250.104.37
->>>   name=manyhome.test.ex address=10.250.104.38
->>>   name=manyhome.test.ex address=10.250.104.39
->>>   name=manyhome.test.ex address=10.250.104.40
->>>   name=manyhome.test.ex address=10.250.104.41
->>>   name=manyhome.test.ex address=10.250.104.42
->>>   name=manyhome.test.ex address=10.250.104.43
->>>   name=manyhome.test.ex address=10.250.104.44
->>>   name=manyhome.test.ex address=10.250.104.45
->>>   name=manyhome.test.ex address=10.250.104.46
->>>   name=manyhome.test.ex address=10.250.104.47
->>>   name=manyhome.test.ex address=10.250.104.48
->>>   name=manyhome.test.ex address=10.250.104.49
->>>   name=manyhome.test.ex address=10.250.104.50
->>>   name=manyhome.test.ex address=10.250.104.51
->>>   name=manyhome.test.ex address=10.250.104.52
->>>   name=manyhome.test.ex address=10.250.104.53
->>>   name=manyhome.test.ex address=10.250.104.54
->>>   name=manyhome.test.ex address=10.250.104.55
->>>   name=manyhome.test.ex address=10.250.104.56
->>>   name=manyhome.test.ex address=10.250.104.57
->>>   name=manyhome.test.ex address=10.250.104.58
->>>   name=manyhome.test.ex address=10.250.104.59
->>>   name=manyhome.test.ex address=10.250.104.60
->>>   name=manyhome.test.ex address=10.250.104.61
->>>   name=manyhome.test.ex address=10.250.104.62
 >>> checking addresses for manyhome.test.ex
->>>   10.250.104.0
->>>   10.250.104.1
->>>   10.250.104.2
->>>   10.250.104.3
->>>   10.250.104.4
->>>   10.250.104.5
->>>   10.250.104.6
->>>   10.250.104.7
->>>   10.250.104.8
->>>   10.250.104.9
->>>   10.250.104.10
->>>   10.250.104.11
->>>   10.250.104.12
->>>   10.250.104.13
->>>   10.250.104.14
->>>   10.250.104.15
->>>   10.250.104.16
+>>>   10.250.104.51
 >>>   10.250.104.17
->>>   10.250.104.18
->>>   10.250.104.19
->>>   10.250.104.20
->>>   10.250.104.21
->>>   10.250.104.22
->>>   10.250.104.23
->>>   10.250.104.24
->>>   10.250.104.25
+>>>   10.250.104.2
 >>>   10.250.104.26
->>>   10.250.104.27
->>>   10.250.104.28
->>>   10.250.104.29
->>>   10.250.104.30
->>>   10.250.104.31
->>>   10.250.104.32
->>>   10.250.104.33
->>>   10.250.104.34
->>>   10.250.104.35
->>>   10.250.104.36
->>>   10.250.104.37
->>>   10.250.104.38
+>>>   10.250.104.8
+>>>   10.250.104.18
+>>>   10.250.104.25
+>>>   10.250.104.21
 >>>   10.250.104.39
->>>   10.250.104.40
+>>>   10.250.104.32
+>>>   10.250.104.29
+>>>   10.250.104.23
+>>>   10.250.104.43
+>>>   10.250.104.46
+>>>   10.250.104.28
+>>>   10.250.104.4
 >>>   10.250.104.41
+>>>   10.250.104.15
+>>>   10.250.104.14
+>>>   10.250.104.45
 >>>   10.250.104.42 OK
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)

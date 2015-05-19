@@ -12223,7 +12223,8 @@ received. It is empty if there was no successful authentication. See also
 If an attempt to populate &$sender_host_name$& has been made
 (by reference, &%hosts_lookup%& or
 otherwise) then this boolean will have been set true if, and only if, the
-resolver library states that the reverse DNS was authenticated data.  At all
+resolver library states that both
+the reverse and forward DNS were authenticated data.  At all
 other times, this variable is false.
 
 It is likely that you will need to coerce DNSSEC support on in the resolver
@@ -12234,9 +12235,6 @@ dns_dnssec_ok = 1
 
 Exim does not perform DNSSEC validation itself, instead leaving that to a
 validating resolver (eg, unbound, or bind with suitable configuration).
-
-Exim does not (currently) check to see if the forward DNS was also secured
-with DNSSEC, only the reverse DNS.
 
 If you have changed &%host_lookup_order%& so that &`bydns`& is not the first
 mechanism in the list, then this variable will be false.

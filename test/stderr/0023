@@ -1089,14 +1089,8 @@ LOG: H=[28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3-alias.test.ex address=V4NET.0.0.3
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> require: condition test succeeded in ACL "acl_V4NET_0_0"
@@ -1139,6 +1133,7 @@ LOG: H=[V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse l
 >>> looking up host name for V4NET.99.99.96
 >>> IP address lookup yielded "x.test.again.dns"
 >>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test deferred in ACL "acl_V4NET_99_99"
 LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferred for reverse lookup check
@@ -1158,6 +1153,7 @@ LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferr
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.99.99.96
 >>> IP address lookup yielded "x.test.again.dns"
+>>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temporary error for host name lookup
 >>> accept: condition test succeeded in ACL "acl_V4NET_99_99"
