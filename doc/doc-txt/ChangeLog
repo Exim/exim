@@ -106,6 +106,9 @@ JH/29 Bug 1632: Removed the word "rejected" from line logged for ACL discards.
 JH/30 Check the forward DNS lookup for DNSSEC, in addition to the reverse,
       when evaluating $sender_host_dnssec.
 
+JH/31 Check the HELO verification lookup for DNSSEC, adding new
+      $sender_helo_dnssec variable.
+
 
 Exim version 4.85
 -----------------

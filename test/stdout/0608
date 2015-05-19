@@ -1,0 +1,14 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO localhost
+??? 250
+<<< 250 myhost.test.ex Hello localhost [127.0.0.1]
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO l-sec
+??? 250
+<<< 250 myhost.test.ex Hello localhost [127.0.0.1]
+End of script

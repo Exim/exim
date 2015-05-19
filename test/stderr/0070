@@ -137,10 +137,10 @@ MUNGED: ::1 will be omitted in what follows
 >>> matched alias ten-3-alias.test.ex
 >>> verifying EHLO/HELO argument "ten-3xtra.test.ex"
 >>> getting IP address for ten-3xtra.test.ex
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3xtra.test.ex address=V4NET.0.0.3
+>>> ten-3xtra.test.ex in ""? no (end of list)
+>>> ten-3xtra.test.ex in "*"? yes (matched "*")
 >>> IP address for ten-3xtra.test.ex matches calling address
+>>> Forward DNS security status: unverified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -158,7 +158,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> getting IP address for rhubarb
->>> no IP address found for host rhubarb (during SMTP connection from (rhubarb) [V4NET.0.0.1])
+>>> rhubarb in ""? no (end of list)
+>>> rhubarb in "*"? yes (matched "*")
 LOG: rejected "EHLO rhubarb" from (rhubarb) [V4NET.0.0.1]
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -178,7 +179,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name for 99.99.99.99
 >>> Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
->>> no IP address found for host rhubarb (during SMTP connection from (rhubarb) [99.99.99.99])
+>>> rhubarb in ""? no (end of list)
+>>> rhubarb in "*"? yes (matched "*")
 LOG: temporarily rejected "EHLO rhubarb" from (rhubarb) [99.99.99.99]
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -264,7 +266,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name for 99.99.99.99
 >>> Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
->>> no IP address found for host rhubarb (during SMTP connection from (rhubarb) [99.99.99.99])
+>>> rhubarb in ""? no (end of list)
+>>> rhubarb in "*"? yes (matched "*")
 >>> require: condition test failed in ACL "rcpt"
 >>> end of ACL "rcpt": not OK
 LOG: H=(rhubarb) [99.99.99.99] F=<a@b> rejected RCPT <c@d>: helo not verified

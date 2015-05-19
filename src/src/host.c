@@ -1668,11 +1668,10 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
       store_pool = POOL_PERM;        /* Save names in permanent storage */
 
       for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-           rr != NULL;
+           rr;
            rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-        {
-        if (rr->type == T_PTR) count++;
-        }
+        if (rr->type == T_PTR)
+	  count++;
 
       /* Get store for the list of aliases. For compatibility with
       gethostbyaddr, we make an empty list if there are none. */
@@ -1682,7 +1681,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
       /* Re-scan and extract the names */
 
       for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-           rr != NULL;
+           rr;
            rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
         {
         uschar *s = NULL;

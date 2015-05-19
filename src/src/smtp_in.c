@@ -3003,31 +3003,25 @@ else
 
   /* If a host name is known, check it and all its aliases. */
 
-  if (sender_host_name != NULL)
-    {
-    helo_verified = strcmpic(sender_host_name, sender_helo_name) == 0;
-
-    if (helo_verified)
+  if (sender_host_name)
+    if ((helo_verified = strcmpic(sender_host_name, sender_helo_name) == 0))
       {
-      /*XXX have sender_host_dnssec */
+      sender_helo_dnssec = sender_host_dnssec;
       HDEBUG(D_receive) debug_printf("matched host name\n");
       }
     else
       {
       uschar **aliases = sender_host_aliases;
-      while (*aliases != NULL)
-        {
-        helo_verified = strcmpic(*aliases++, sender_helo_name) == 0;
-        if (helo_verified) break;
-      /*XXX have sender_host_dnssec */
-        }
-      HDEBUG(D_receive)
-        {
-        if (helo_verified)
+      while (*aliases)
+        if ((helo_verified = strcmpic(*aliases++, sender_helo_name) == 0))
+	  {
+	  sender_helo_dnssec = sender_host_dnssec;
+	  break;
+	  }
+
+      HDEBUG(D_receive) if (helo_verified)
           debug_printf("matched alias %s\n", *(--aliases));
-        }
       }
-    }
 
   /* Final attempt: try a forward lookup of the helo name */
 
@@ -3035,31 +3029,34 @@ else
     {
     int rc;
     host_item h;
+    dnssec_domains d;
+    host_item *hh;
+
     h.name = sender_helo_name;
     h.address = NULL;
     h.mx = MX_NONE;
     h.next = NULL;
+    d.request = US"*";
+    d.require = US"";
+
     HDEBUG(D_receive) debug_printf("getting IP address for %s\n",
       sender_helo_name);
-/*XXX would like to determine dnssec status here */
-/* need to change to bydns */
-    rc = host_find_byname(&h, NULL, 0, NULL, TRUE);
+    rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A,
+			  NULL, NULL, NULL, &d, NULL, NULL);
     if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
-      {
-      host_item *hh = &h;
-      while (hh != NULL)
-        {
+      for (hh = &h; hh; hh = hh->next)
         if (Ustrcmp(hh->address, sender_host_address) == 0)
           {
           helo_verified = TRUE;
+	  if (h.dnssec == DS_YES) sender_helo_dnssec = TRUE;
           HDEBUG(D_receive)
-            debug_printf("IP address for %s matches calling address\n",
-              sender_helo_name);
+	    {
+            debug_printf("IP address for %s matches calling address\n"
+	      "Forward DNS security status: %sverified\n",
+              sender_helo_name, sender_helo_dnssec ? "" : "un");
+	    }
           break;
           }
-        hh = hh->next;
-        }
-      }
     }
   }
 
@@ -3473,7 +3470,7 @@ while (done <= 0)
       now obsolescent, since the verification can now be requested selectively
       at ACL time. */
 
-      helo_verified = helo_verify_failed = FALSE;
+      helo_verified = helo_verify_failed = sender_helo_dnssec = FALSE;
       if (helo_required || helo_verify)
         {
         BOOL tempfail = !smtp_verify_helo();

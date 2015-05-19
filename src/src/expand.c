@@ -648,6 +648,7 @@ static var_entry var_table[] = {
   { "sender_address_local_part", vtype_localpart, &sender_address },
   { "sender_data",         vtype_stringptr,   &sender_data },
   { "sender_fullhost",     vtype_stringptr,   &sender_fullhost },
+  { "sender_helo_dnssec",  vtype_bool,        &sender_helo_dnssec },
   { "sender_helo_name",    vtype_stringptr,   &sender_helo_name },
   { "sender_host_address", vtype_stringptr,   &sender_host_address },
   { "sender_host_authenticated",vtype_stringptr, &sender_host_authenticated },

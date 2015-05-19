@@ -406,6 +406,8 @@ DNSSEC mx-sec-a-sec     MX 5 a-sec
 a-unsec       A V4NET.0.0.100
 DNSSEC a-sec  A V4NET.0.0.100
 
+DNSSEC l-sec  A 127.0.0.1
+
 ; ------- Testing DANE ------------
 
 ; full suite dns chain, sha512

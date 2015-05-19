@@ -11415,7 +11415,7 @@ This variable contains the numerical value of the Exim user id.
 
 .new
 .vitem &$exim_version$&
-.vindex "&$exim_uid$&"
+.vindex "&$exim_version$&"
 This variable contains the version string of the Exim build.
 The first character is a major version number, currently 4.
 Then after a dot, the next group of digits is a minor version number.
@@ -11681,6 +11681,7 @@ the space value is -1. See also the &%check_log_space%& option.
 .vindex "&$lookup_dnssec_authenticated$&"
 This variable is set after a DNS lookup done by
 a dnsdb lookup expansion, dnslookup router or smtp transport.
+.cindex "DNS" "DNSSEC"
 It will be empty if &(DNSSEC)& was not requested,
 &"no"& if the result was not labelled as authenticated data
 and &"yes"& if it was.
@@ -12198,6 +12199,14 @@ verification either failed or was not requested. A host name in parentheses is
 the argument of a HELO or EHLO command. This is omitted if it is identical to
 the verified host name or to the host's IP address in square brackets.
 
+.new
+.vitem &$sender_helo_dnssec$&
+.vindex "&$sender_helo_dnssec$&"
+This boolean variable is true if a successful HELO verification was
+.cindex "DNS" "DNSSEC"
+done using DNS information the resolver library stated was authenticatied data.
+.wen
+
 .vitem &$sender_helo_name$&
 .vindex "&$sender_helo_name$&"
 When a message is received from a remote host that has issued a HELO or EHLO
@@ -12227,6 +12236,7 @@ resolver library states that both
 the reverse and forward DNS were authenticated data.  At all
 other times, this variable is false.
 
+.cindex "DNS" "DNSSEC"
 It is likely that you will need to coerce DNSSEC support on in the resolver
 library, by setting:
 .code
@@ -14535,13 +14545,16 @@ is an IP literal matching the calling address of the host, or
 matches the host name that Exim obtains by doing a reverse lookup of the
 calling host address, or
 .next
-when looked up using &[gethostbyname()]& (or &[getipnodebyname()]& when
-available) yields the calling host address.
+when looked up in DNS yields the calling host address.
 .endlist
 
 However, the EHLO or HELO command is not rejected if any of the checks
 fail. Processing continues, but the result of the check is remembered, and can
 be detected later in an ACL by the &`verify = helo`& condition.
+
+If DNS was used for successful verification, the variable
+.cindex "DNS" "DNSSEC"
+&$helo_verify_dnssec$& records the DNSSEC status of the lookups.
 
 .option helo_verify_hosts main "host list&!!" unset
 .cindex "HELO verifying" "mandatory"

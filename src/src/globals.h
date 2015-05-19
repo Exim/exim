@@ -755,6 +755,7 @@ extern uschar *sender_address_unrewritten; /* Set if rewritten by verify */
 extern uschar *sender_data;            /* lookup result for senders */
 extern unsigned int sender_domain_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for sender domain */
 extern uschar *sender_fullhost;        /* Sender host name + address */
+extern BOOL    sender_helo_dnssec;     /* True if HELO verify used DNS and was DNSSEC */
 extern uschar *sender_helo_name;       /* Host name from HELO/EHLO */
 extern uschar **sender_host_aliases;   /* Points to list of alias names */
 extern unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for incoming host */

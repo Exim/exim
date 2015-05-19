@@ -1202,6 +1202,7 @@ uschar *sender_address_unrewritten = NULL;
 uschar *sender_data            = NULL;
 unsigned int sender_domain_cache[(MAX_NAMED_LIST * 2)/32];
 uschar *sender_fullhost        = NULL;
+BOOL    sender_helo_dnssec     = FALSE;
 uschar *sender_helo_name       = NULL;
 uschar **sender_host_aliases   = &no_aliases;
 uschar *sender_host_address    = NULL;
