@@ -2904,7 +2904,7 @@ while (($parm_ipv4 eq "" || $parm_ipv6 eq "") && ($_ = <IFCONFIG>))
       $_ =~ /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)\s/i)
     {
     $ip = $1;
-    next if ($ip =~ /^127\./);
+    next if ($ip =~ /^127\./ || $ip =~ /^10\./);
     $parm_ipv4 = $ip;
     }
 
