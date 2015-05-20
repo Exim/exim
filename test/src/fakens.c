@@ -55,7 +55,13 @@ a number of milliseconds (followed by whitespace).
 
 Any DNS record line in a zone file can be prefixed with "DNSSEC" and
 at least one space; if all the records found by a lookup are marked
-as such then the response will have the "AD" bit set. */
+as such then the response will have the "AD" bit set. 
+
+Any DNS record line in a zone file can be prefixed with "AA" and
+at least one space; if all the records found by a lookup are marked
+as such then the response will have the "AA" bit set.
+
+*/
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -292,6 +298,8 @@ Arguments:
   qtypelen    the length of qtype
   pkptr       points to the output buffer pointer; this is updated
   countptr    points to the record count; this is updated
+  dnssec      points to the AD flag indicator; this updated
+  aa	      points to the AA flag indicator; this updated
 
 Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
               PASS_ON - the latter if a "PASS ON NOT FOUND" line is seen
@@ -299,7 +307,7 @@ Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
 
 static int
 find_records(FILE *f, uschar *zone, uschar *domain, uschar *qtype,
-  int qtypelen, uschar **pkptr, int *countptr, BOOL * dnssec)
+  int qtypelen, uschar **pkptr, int *countptr, BOOL * dnssec, BOOL * aa)
 {
 int yield = HOST_NOT_FOUND;
 int domainlen = Ustrlen(domain);
@@ -324,6 +332,7 @@ rrdomain[0] = 0;                 /* No previous domain */
 (void)fseek(f, 0, SEEK_SET);     /* Start again at the beginning */
 
 *dnssec = TRUE;			/* cancelled by first nonsecure rec found */ 
+*aa = TRUE;			/* cancelled by first non-authoritive record */
 
 /* Scan for RRs */
 
@@ -336,6 +345,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   int tvalue = typeptr->value;
   int qtlen = qtypelen;
   BOOL rr_sec = FALSE;
+  BOOL rr_aa = FALSE;
   int delay = 0;
 
   p = buffer;
@@ -359,6 +369,11 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       {
       rr_sec = TRUE;
       p += 7;
+      }
+    else if (Ustrncmp(p, US"AA ", 3) == 0)	/* tagged as authoritive */
+      {
+      rr_aa = TRUE;
+      p += 3;
       }
     else if (Ustrncmp(p, US"DELAY=", 6) == 0)	/* delay before response */
       {
@@ -426,6 +441,9 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
   if (!rr_sec)
     *dnssec = FALSE;			/* cancel AD return */
+
+  if (!rr_aa)
+    *aa = FALSE;			/* cancel AA return */
 
   yield = 0;
   *countptr = *countptr + 1;
@@ -589,6 +607,7 @@ uschar qtype[12];
 uschar packet[2048 * 32 + 32];
 uschar *pk = packet;
 BOOL dnssec;
+BOOL aa;
 
 signal(SIGALRM, alarmfn);
 
@@ -728,7 +747,7 @@ if (f == NULL)
 /* Find the records we want, and add them to the result. */
 
 count = 0;
-yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count, &dnssec);
+yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count, &dnssec, &aa);
 if (yield == NO_RECOVERY) goto END_OFF;
 
 packet[6] = (count >> 8) & 255;
@@ -743,6 +762,9 @@ packet[11] = 0;
 if (dnssec)
   ((HEADER *)packet)->ad = 1;
 
+if (aa)
+  ((HEADER *)packet)->aa = 1;
+
 /* Close the zone file, write the result, and return. */
 
 END_OFF:
@@ -751,6 +773,6 @@ END_OFF:
 return yield;
 }
 
-/* vi: aw ai sw=2
+/* vi: aw ai sw=2 sts=2 ts=8 et
 */
 /* End of fakens.c */
