@@ -402,11 +402,14 @@ mx-unsec-a-unsec        MX 5 a-unsec
 mx-unsec-a-sec          MX 5 a-sec
 DNSSEC mx-sec-a-unsec   MX 5 a-unsec
 DNSSEC mx-sec-a-sec     MX 5 a-sec
+DNSSEC mx-sec-a-aa      MX 5 a-aa
+AA mx-aa-a-sec		MX 5 a-sec
 
 a-unsec       A V4NET.0.0.100
 DNSSEC a-sec  A V4NET.0.0.100
-
 DNSSEC l-sec  A 127.0.0.1
+
+AA a-aa A V4NET.0.0.100
 
 ; ------- Testing DANE ------------
 
