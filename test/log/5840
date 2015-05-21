@@ -23,6 +23,12 @@
 1999-03-02 09:44:33 10HmbF-0005vi-00 => CALLER@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbG-0005vi-00"
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdanelazy.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbH-0005vi-00 H=danelazy.test.ex [ip4.ip4.ip4.ip4]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbH-0005vi-00 H=danelazy2.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbH-0005vi-00 == CALLER@mxdanelazy.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
@@ -44,3 +50,4 @@
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:AES256-SHA:256 CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225

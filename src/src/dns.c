@@ -137,7 +137,7 @@ if (stat(CS utilname, &statbuf) >= 0)
   }
 else
   {
-    DEBUG(D_dns) debug_printf("fakens (%s) not found\n", utilname);
+  DEBUG(D_dns) debug_printf("fakens (%s) not found\n", utilname);
   }
 
 /* fakens utility not found, or it returned "pass on" */

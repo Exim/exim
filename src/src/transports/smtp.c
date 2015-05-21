@@ -1468,12 +1468,20 @@ if (continue_hostname == NULL)
 	   )
 	&& (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK
 	)
-	return rc;
+	{
+	set_errno(addrlist, ERRNO_DNSDEFER,
+	  string_sprintf("DANE error: tlsa lookup %s",
+	    rc == DEFER ? "DEFER" : "FAIL"),
+	  rc, FALSE, NULL);
+	return  rc;
+	}
       }
     else if (dane_required)
       {
-      log_write(0, LOG_MAIN, "DANE error: %s lookup not DNSSEC", host->name);
-      return FAIL;
+      set_errno(addrlist, ERRNO_DNSDEFER,
+	string_sprintf("DANE error: %s lookup not DNSSEC", host->name),
+	FAIL, FALSE, NULL);
+      return  FAIL;
       }
 
     if (dane)
@@ -3690,16 +3698,12 @@ for (cutoff_retry = 0; expired &&
     case, see if any of them are deferred. */
 
     if (rc == OK)
-      {
-      for (addr = addrlist; addr != NULL; addr = addr->next)
-        {
+      for (addr = addrlist; addr; addr = addr->next)
         if (addr->transport_return == DEFER)
           {
           some_deferred = TRUE;
           break;
           }
-        }
-      }
 
     /* If no addresses deferred or the result was ERROR, return. We do this for
     ERROR because a failing filter set-up or add_headers expansion is likely to

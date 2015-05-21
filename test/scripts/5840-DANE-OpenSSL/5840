@@ -54,3 +54,15 @@ exim -DOPT=no_certname -qf
 ****
 killdaemon
 #
+#
+# A server with two MXs for which both TLSA lookups return defer
+exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
+****
+# TLSA (3 1 2)
+exim -odq CALLER@mxdanelazy.test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+no_msglog_check
