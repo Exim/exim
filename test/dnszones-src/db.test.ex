@@ -403,41 +403,44 @@ mx-unsec-a-sec          MX 5 a-sec
 DNSSEC mx-sec-a-unsec   MX 5 a-unsec
 DNSSEC mx-sec-a-sec     MX 5 a-sec
 DNSSEC mx-sec-a-aa      MX 5 a-aa
-AA mx-aa-a-sec		MX 5 a-sec
+AA mx-aa-a-sec          MX 5 a-sec
 
-a-unsec       A V4NET.0.0.100
-DNSSEC a-sec  A V4NET.0.0.100
-DNSSEC l-sec  A 127.0.0.1
+a-unsec        A V4NET.0.0.100
+DNSSEC a-sec   A V4NET.0.0.100
+DNSSEC l-sec   A 127.0.0.1
 
-AA a-aa A V4NET.0.0.100
+AA a-aa        A V4NET.0.0.100
 
 ; ------- Testing DANE ------------
 
 ; full suite dns chain, sha512
-DNSSEC mxdane512ee MX  1  dane512ee
-DNSSEC dane512ee   A      HOSTIPV4
+DNSSEC mxdane512ee          MX  1  dane512ee
+DNSSEC dane512ee            A      HOSTIPV4
 DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 3d5eb81b1dfc3f93c1fa8819e3fb3fdb41bb590441d5f3811db17772f4bc6de29bdd7c4f4b723750dda871b99379192b3f979f03db1252c4f08b03ef7176528d
 
 ; A-only, sha256
-DNSSEC dane256ee   A      HOSTIPV4
+DNSSEC dane256ee            A      HOSTIPV4
 DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 2bb55f418bb03411a5007cecbfcd3ec1c94404312c0d53a44bb2166b32654db3
 
 ; full MX, sha256, TA-mode
-DNSSEC mxdane256ta MX  1  dane256ta
-DNSSEC dane256ta   A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ta TLSA  2 0 1 b2c6f27f2d16390b4f71cacc69742bf610d750534fab240516c0f2deb4042ad4
+DNSSEC mxdane256ta          MX  1  dane256ta
+DNSSEC dane256ta            A      HOSTIPV4
+DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 b2c6f27f2d16390b4f71cacc69742bf610d750534fab240516c0f2deb4042ad4
 
-; ------- Testing DANE ------------
 
-; full suite dns chain, sha512
-DNSSEC mxdanelazy MX  1   danelazy
-DNSSEC mxdanelazy MX  2   danelazy2
+; A multiple-return MX where all TLSA lookups defer
+DNSSEC mxdanelazy           MX  1   danelazy
+DNSSEC                      MX  2   danelazy2
 
-DNSSEC danelazy   A       HOSTIPV4
-DNSSEC danelazy2  A       127.0.0.1
+DNSSEC danelazy             A       HOSTIPV4
+DNSSEC danelazy2            A       127.0.0.1
 
-DNSSEC _1225._tcp.danelazy  CNAME test.again.dns.
-DNSSEC _1225._tcp.danelazy2 CNAME test.again.dns.
+DNSSEC _1225._tcp.danelazy  CNAME   test.again.dns.
+DNSSEC _1225._tcp.danelazy2 CNAME   test.again.dns.
+
+; hosts with no TLSA
+DNSSEC dane.no.1            A       HOSTIPV4
+DNSSEC dane.no.2            A       127.0.0.1
 
 ; ------- Testing delays ------------
 

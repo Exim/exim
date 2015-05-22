@@ -1198,10 +1198,7 @@ switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
   default:
   case DNS_FAIL:
     if (dane_required)
-      {
-      log_write(0, LOG_MAIN, "DANE error: TLSA lookup failed");
       return FAIL;
-      }
     break;
 
   case DNS_SUCCEED:
@@ -1467,6 +1464,7 @@ if (continue_hostname == NULL)
 	   || verify_check_given_host(&ob->hosts_try_dane, host) == OK
 	   )
 	&& (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK
+	&& dane_required
 	)
 	{
 	set_errno(addrlist, ERRNO_DNSDEFER,

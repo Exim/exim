@@ -51,14 +51,14 @@ and the domain is not found. It converts the the result to PASS_ON instead of
 HOST_NOT_FOUND.
 
 Any DNS record line in a zone file can be prefixed with "DELAY=" and
-a number of milliseconds (followed by whitespace).
+a number of milliseconds (followed by one space).
 
-Any DNS record line in a zone file can be prefixed with "DNSSEC" and
-at least one space; if all the records found by a lookup are marked
+Any DNS record line in a zone file can be prefixed with "DNSSEC ";
+if all the records found by a lookup are marked
 as such then the response will have the "AD" bit set. 
 
-Any DNS record line in a zone file can be prefixed with "AA" and
-at least one space; if all the records found by a lookup are marked
+Any DNS record line in a zone file can be prefixed with "AA "
+if all the records found by a lookup are marked
 as such then the response will have the "AA" bit set.
 
 */
@@ -378,13 +378,13 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     else if (Ustrncmp(p, US"DELAY=", 6) == 0)	/* delay before response */
       {
       for (p += 6; *p >= '0' && *p <= '9'; p++) delay = delay*10 + *p - '0';
-      while (isspace(*p)) p++;
+      if (isspace(*p)) p++;
       }
     else
       break;
     }
 
-  if (!isspace(*p))
+  if (!isspace(*p))     /* new domain name */
     {
     uschar *pp = rrdomain;
     uschar *PP = RRdomain;
@@ -403,7 +403,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       pp[-1] = 0;
       PP[-1] = 0;
       }
-    }
+    }                   /* else use previous line's domain name */
 
   /* Compare domain names; first check for a wildcard */
 
