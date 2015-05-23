@@ -444,7 +444,7 @@ DNSSEC dane.no.2            A       127.0.0.1
 
 ; ------- Testing delays ------------
 
-DELAY=500  delay500  A HOSTIPV4
+DELAY=500 delay500   A HOSTIPV4
 DELAY=1500 delay1500 A HOSTIPV4
 
 

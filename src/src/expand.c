@@ -94,10 +94,6 @@ bcrypt ({CRYPT}$2a$).
 
 
 
-#ifndef nelements
-# define nelements(arr) (sizeof(arr) / sizeof(*arr))
-#endif
-
 /*************************************************
 *            Local statics and tables            *
 *************************************************/
@@ -237,7 +233,7 @@ static uschar *op_table_main[] = {
   US"utf8clean" };
 
 enum {
-  EOP_ADDRESS =  sizeof(op_table_underscore)/sizeof(uschar *),
+  EOP_ADDRESS =  nelem(op_table_underscore),
   EOP_ADDRESSES,
   EOP_BASE62,
   EOP_BASE62D,
@@ -762,7 +758,7 @@ static var_entry var_table[] = {
   { "warnmsg_recipients",  vtype_stringptr,   &warnmsg_recipients }
 };
 
-static int var_table_size = sizeof(var_table)/sizeof(var_entry);
+static int var_table_size = nelem(var_table);
 static uschar var_buffer[256];
 static BOOL malformed_header;
 
@@ -1287,7 +1283,7 @@ if (*field >= '0' && *field <= '9')
   return tls_cert_ext_by_oid(*(void **)vp->value, field, 0);
 
 for(cp = certfields;
-    cp < certfields + nelements(certfields);
+    cp < certfields + nelem(certfields);
     cp++)
   if (Ustrncmp(cp->name, field, cp->namelen) == 0)
     {
@@ -1457,7 +1453,7 @@ unsigned long int total = 0; /* no overflow */
 
 while (*s != 0)
   {
-  if (i == 0) i = sizeof(prime)/sizeof(int) - 1;
+  if (i == 0) i = nelem(prime) - 1;
   total += prime[i--] * (unsigned int)(*s++);
   }
 
@@ -2055,7 +2051,7 @@ int ret;
 uschar * dummy_logmsg;
 extern int acl_where;
 
-if(--nsub > sizeof(acl_arg)/sizeof(*acl_arg)) nsub = sizeof(acl_arg)/sizeof(*acl_arg);
+if(--nsub > nelem(acl_arg)) nsub = nelem(acl_arg);
 for (i = 0; i < nsub && sub[i+1]; i++)
   {
   uschar * tmp = acl_arg[i];
@@ -2157,7 +2153,7 @@ if (name[0] == 0)
 
 /* Find which condition we are dealing with, and switch on it */
 
-cond_type = chop_match(name, cond_table, sizeof(cond_table)/sizeof(uschar *));
+cond_type = chop_match(name, cond_table, nelem(cond_table));
 switch(cond_type)
   {
   /* def: tests for a non-empty variable, or for the existence of a header. If
@@ -2346,7 +2342,7 @@ switch(cond_type)
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
-    switch(read_subs(sub, sizeof(sub)/sizeof(*sub), 1,
+    switch(read_subs(sub, nelem(sub), 1,
       &s, yield == NULL, TRUE, US"acl", resetok))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
@@ -2356,7 +2352,7 @@ switch(cond_type)
       }
 
     *resetok = FALSE;
-    if (yield != NULL) switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+    if (yield != NULL) switch(eval_acl(sub, nelem(sub), &user_msg))
 	{
 	case OK:
 	  cond = TRUE;
@@ -2388,29 +2384,32 @@ switch(cond_type)
   in their own set of braces. */
 
   case ECOND_SASLAUTHD:
-  #ifndef CYRUS_SASLAUTHD_SOCKET
-  goto COND_FAILED_NOT_COMPILED;
-  #else
-  while (isspace(*s)) s++;
-  if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
-  switch(read_subs(sub, 4, 2, &s, yield == NULL, TRUE, US"saslauthd", resetok))
+#ifndef CYRUS_SASLAUTHD_SOCKET
+    goto COND_FAILED_NOT_COMPILED;
+#else
     {
-    case 1: expand_string_message = US"too few arguments or bracketing "
-      "error for saslauthd";
-    case 2:
-    case 3: return NULL;
+    uschar *sub[4];
+    while (isspace(*s)) s++;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
+    switch(read_subs(sub, nelem(sub), 2, &s, yield == NULL, TRUE, US"saslauthd",
+		    resetok))
+      {
+      case 1: expand_string_message = US"too few arguments or bracketing "
+	"error for saslauthd";
+      case 2:
+      case 3: return NULL;
+      }
+    if (sub[2] == NULL) sub[3] = NULL;  /* realm if no service */
+    if (yield != NULL)
+      {
+      int rc = auth_call_saslauthd(sub[0], sub[1], sub[2], sub[3],
+	&expand_string_message);
+      if (rc == ERROR || rc == DEFER) return NULL;
+      *yield = (rc == OK) == testfor;
+      }
+    return s;
     }
-  if (sub[2] == NULL) sub[3] = NULL;  /* realm if no service */
-  if (yield != NULL)
-    {
-    int rc;
-    rc = auth_call_saslauthd(sub[0], sub[1], sub[2], sub[3],
-      &expand_string_message);
-    if (rc == ERROR || rc == DEFER) return NULL;
-    *yield = (rc == OK) == testfor;
-    }
-  return s;
-  #endif /* CYRUS_SASLAUTHD_SOCKET */
+#endif /* CYRUS_SASLAUTHD_SOCKET */
 
 
   /* symbolic operators for numeric and string comparison, and a number of
@@ -3983,7 +3982,7 @@ while (*s != 0)
   OK. */
 
   s = read_name(name, sizeof(name), s, US"_-");
-  item_type = chop_match(name, item_table, sizeof(item_table)/sizeof(uschar *));
+  item_type = chop_match(name, item_table, nelem(item_table));
 
   switch(item_type)
     {
@@ -4011,7 +4010,7 @@ while (*s != 0)
       if (skipping) continue;
 
       resetok = FALSE;
-      switch(eval_acl(sub, sizeof(sub)/sizeof(*sub), &user_msg))
+      switch(eval_acl(sub, nelem(sub), &user_msg))
 	{
 	case OK:
 	case FAIL:
@@ -4083,7 +4082,8 @@ while (*s != 0)
       uschar *sub_arg[3];
       uschar *encoded;
 
-      switch(read_subs(sub_arg, 3, 1, &s, skipping, TRUE, name, &resetok))
+      switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, skipping, TRUE, name,
+		      &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -4092,13 +4092,10 @@ while (*s != 0)
 
       if (sub_arg[1] == NULL)		/* One argument */
 	{
-	sub_arg[1] = "/";		/* default separator */
+	sub_arg[1] = US"/";		/* default separator */
 	sub_arg[2] = NULL;
 	}
-      else if (sub_arg[2] == NULL)	/* Two arguments */
-	sub_arg[2] = NULL;
-
-      if (Ustrlen(sub_arg[1]) != 1)
+      else if (Ustrlen(sub_arg[1]) != 1)
 	{
 	expand_string_message = 
 	  string_sprintf(
@@ -5205,7 +5202,7 @@ while (*s != 0)
         {
         int ovector[3*(EXPAND_MAXN+1)];
         int n = pcre_exec(re, NULL, CS subject, slen, moffset + moffsetextra,
-          PCRE_EOPT | emptyopt, ovector, sizeof(ovector)/sizeof(int));
+          PCRE_EOPT | emptyopt, ovector, nelem(ovector));
         int nn;
         uschar *insert;
 
@@ -5974,13 +5971,12 @@ while (*s != 0)
     the arguments and then scan the main table. */
 
     if ((c = chop_match(name, op_table_underscore,
-	sizeof(op_table_underscore)/sizeof(uschar *))) < 0)
+			nelem(op_table_underscore))) < 0)
       {
       arg = Ustrchr(name, '_');
       if (arg != NULL) *arg = 0;
-      c = chop_match(name, op_table_main,
-        sizeof(op_table_main)/sizeof(uschar *));
-      if (c >= 0) c += sizeof(op_table_underscore)/sizeof(uschar *);
+      c = chop_match(name, op_table_main, nelem(op_table_main));
+      if (c >= 0) c += nelem(op_table_underscore);
       if (arg != NULL) *arg++ = '_';   /* Put back for error messages */
       }
 
@@ -7361,7 +7357,7 @@ regex_match_and_setup(const pcre *re, uschar *subject, int options, int setup)
 {
 int ovector[3*(EXPAND_MAXN+1)];
 int n = pcre_exec(re, NULL, subject, Ustrlen(subject), 0, PCRE_EOPT|options,
-  ovector, sizeof(ovector)/sizeof(int));
+  ovector, nelem(ovector));
 BOOL yield = n >= 0;
 if (n == 0) n = EXPAND_MAXN + 1;
 if (yield)

@@ -1170,8 +1170,7 @@ router_instance  router_defaults = {
     NULL,                      /* pass_router */
     NULL,                      /* redirect_router */
 
-    NULL,                      /* dnssec_request_domains */
-    NULL                       /* dnssec_require_domains */
+    { NULL, NULL },            /* dnssec_domains {require,request} */
 };
 
 uschar *router_name            = NULL;

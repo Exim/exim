@@ -12,8 +12,8 @@ int ptr = 0;
 int size = 0;
 size_t slen;
 uschar *sptr, *yield = NULL;
-int i, j;
-uschar c;
+int i = 0, j;	/* compiler quietening */
+uschar c = 0;	/* compiler quietening */
 BOOL base64mode = FALSE;
 BOOL lastsep = FALSE;
 uschar utf16buf[256];
@@ -92,7 +92,7 @@ while (slen > 0)
     if (  s[0] != 0
        || s[1] >= 0x7f
        || s[1] < 0x20
-       || (strchr(specials, s[1]) && s[1] != sep)
+       || (Ustrchr(specials, s[1]) && s[1] != sep)
        )
       {
       lastsep = FALSE;

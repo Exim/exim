@@ -1643,7 +1643,7 @@ transport_check_waiting(const uschar *transport_name, const uschar *hostname,
   int local_message_max, uschar *new_message_id, BOOL *more, oicf oicf_func, void *oicf_data)
 {
 dbdata_wait *host_record;
-int host_length, path_len;
+int host_length;
 open_db dbblock;
 open_db *dbm_file;
 uschar buffer[256];

@@ -1987,7 +1987,7 @@ for (i = 1; i <= times;
   BOOL ipv4_addr;
   int error_num = 0;
   struct hostent *hostdata;
-  unsigned long time_msec;
+  unsigned long time_msec = 0;	/* compiler quietening */
 
   #ifdef STAND_ALONE
   printf("Looking up: %s\n", host->name);
@@ -2018,7 +2018,7 @@ for (i = 1; i <= times;
     }
   #endif   /* HAVE_IPV6 */
 
-  if (slow_lookup_log
+  if (   slow_lookup_log
       && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log)
     log_long_lookup(US"name", host->name, time_msec);
 
@@ -2265,11 +2265,10 @@ if (allow_ip && string_is_ip_address(host->name, NULL) != 0)
   return HOST_FOUND;
   }
 
-/* On an IPv6 system, unless IPv6 is disabled, go round the loop up to three
-times, looking for A6 and AAAA records the first two times. However, unless
+/* On an IPv6 system, unless IPv6 is disabled, go round the loop up to twice,
+looking for AAAA records the first time. However, unless
 doing standalone testing, we force an IPv4 lookup if the domain matches
-dns_ipv4_lookup is set. Since A6 records look like being abandoned, support
-them only if explicitly configured to do so. On an IPv4 system, go round the
+dns_ipv4_lookup is set.  On an IPv4 system, go round the
 loop once only, looking only for A records. */
 
 #if HAVE_IPV6
@@ -2291,7 +2290,7 @@ loop once only, looking only for A records. */
 
 for (; i >= 0; i--)
   {
-  static int types[] = { T_A, T_AAAA, T_A6 };
+  static int types[] = { T_A, T_AAAA };
   int type = types[i];
   int randoffset = (i == 0)? 500 : 0;  /* Ensures v6 sorts before v4 */
   dns_answer dnsa;
@@ -2302,12 +2301,13 @@ for (; i >= 0; i--)
     : dns_is_secure(&dnsa) ? US"yes" : US"no";
 
   DEBUG(D_dns)
-    if ((dnssec_request || dnssec_require)
-	& !dns_is_secure(&dnsa)
-	& dns_is_aa(&dnsa))
-      debug_printf("DNS lookup of %.256s (A/AAA/A6) requested AD, but got AA\n", host->name);
+    if (  (dnssec_request || dnssec_require)
+       && !dns_is_secure(&dnsa)
+       && dns_is_aa(&dnsa)
+       )
+      debug_printf("DNS lookup of %.256s (A/AAAA) requested AD, but got AA\n", host->name);
 
-  /* We want to return HOST_FIND_AGAIN if one of the A, A6, or AAAA lookups
+  /* We want to return HOST_FIND_AGAIN if one of the A or AAAA lookups
   fails or times out, but not if another one succeeds. (In the early
   IPv6 days there are name servers that always fail on AAAA, but are happy
   to give out an A record. We want to proceed with that A record.) */
@@ -2316,13 +2316,13 @@ for (; i >= 0; i--)
     {
     if (i == 0)  /* Just tried for an A record, i.e. end of loop */
       {
-      if (host->address != NULL) return HOST_FOUND;  /* A6 or AAAA was found */
+      if (host->address != NULL) return HOST_FOUND;  /* AAAA was found */
       if (rc == DNS_AGAIN || rc == DNS_FAIL || v6_find_again)
         return HOST_FIND_AGAIN;
       return HOST_FIND_FAILED;    /* DNS_NOMATCH or DNS_NODATA */
       }
 
-    /* Tried for an A6 or AAAA record: remember if this was a temporary
+    /* Tried for an AAAA record: remember if this was a temporary
     error, and look for the next record type. */
 
     if (rc != DNS_NOMATCH && rc != DNS_NODATA) v6_find_again = TRUE;
@@ -2343,7 +2343,7 @@ for (; i >= 0; i--)
 	{
 	log_write(L_host_lookup_failed, LOG_MAIN,
 		"dnssec fail on %s for %.256s",
-		i>1 ? "A6" : i>0 ? "AAAA" : "A", host->name);
+		i>0 ? "AAAA" : "A", host->name);
 	continue;
 	}
       if (host->dnssec == DS_YES) /* set in host_find_bydns() */
@@ -2374,10 +2374,8 @@ for (; i >= 0; i--)
       da = dns_address_from_rr(&dnsa, rr);
 
       DEBUG(D_host_lookup)
-        {
         if (!da) debug_printf("no addresses extracted from A6 RR for %s\n",
             host->name);
-        }
 
       /* This loop runs only once for A and AAAA records, but may run
       several times for an A6 record that generated multiple addresses. */
@@ -2469,10 +2467,10 @@ for (; i >= 0; i--)
     }
   }
 
-/* Control gets here only if the third lookup (the A record) succeeded.
+/* Control gets here only if the econdookup (the A record) succeeded.
 However, the address may not be filled in if it was ignored. */
 
-return (host->address == NULL)? HOST_IGNORED : HOST_FOUND;
+return host->address ? HOST_FOUND : HOST_IGNORED;
 }
 
 

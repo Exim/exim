@@ -241,8 +241,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   FALSE,               /* gethostbyname */
   TRUE,                /* dns_qualify_single */
   FALSE,               /* dns_search_parents */
-  NULL,                /* dnssec_request_domains */
-  NULL,                /* dnssec_require_domains */
+  { NULL, NULL },      /* dnssec_domains {request,require} */
   TRUE,                /* delay_after_cutoff */
   FALSE,               /* hosts_override */
   FALSE,               /* hosts_randomize */
@@ -1369,7 +1368,7 @@ BOOL utf8_offered = FALSE;
 BOOL dsn_all_lasthop = TRUE;
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
 BOOL dane = FALSE;
-BOOL dane_required;
+BOOL dane_required = verify_check_given_host(&ob->hosts_require_dane, host) == OK;
 dns_answer tlsa_dnsa;
 #endif
 smtp_inblock inblock;
@@ -1455,8 +1454,6 @@ if (continue_hostname == NULL)
     {
     tls_out.dane_verified = FALSE;
     tls_out.tlsa_usage = 0;
-
-    dane_required = verify_check_given_host(&ob->hosts_require_dane, host) == OK;
 
     if (host->dnssec == DS_YES)
       {

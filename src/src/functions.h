@@ -149,6 +149,7 @@ extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
 extern void    dns_build_reverse(const uschar *, uschar *);
 extern void    dns_init(BOOL, BOOL, BOOL);
+extern BOOL    dns_is_aa(const dns_answer *);
 extern BOOL    dns_is_secure(const dns_answer *);
 extern int     dns_lookup(dns_answer *, const uschar *, int, const uschar **);
 extern void    dns_pattern_init(void);
