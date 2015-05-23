@@ -9031,6 +9031,30 @@ When compiling a function that is to be used in this way with gcc,
 you need to add &%-shared%& to the gcc command. Also, in the Exim build-time
 configuration, you must add &%-export-dynamic%& to EXTRALIBS.
 
+
+.vitem "&*${env{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}}*&"
+.cindex "expansion" "extracting value from environment"
+.cindex "environment" "value from"
+The key is first expanded separately, and leading and trailing white space
+removed.
+This is then searched for as a name in the environment.
+If a variable is found then its value is placed in &$value$&
+and <&'string1'&> is expanded, otherwise <&'string2'&> is expanded.
+
+Instead of {<&'string2'&>} the word &"fail"& (not in curly brackets) can
+appear, for example:
+.code
+${env{USER}{$value} fail }
+.endd
+This forces an expansion failure (see section &<<SECTforexpfai>>&);
+{<&'string1'&>} must be present for &"fail"& to be recognized.
+
+If {<&'string2'&>} is omitted an empty string is substituted on 
+search failure.
+If {<&'string1'&>} is omitted the search result is substituted on
+search success.
+
+
 .vitem "&*${extract{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
        {*&<&'string3'&>&*}}*&"
 .cindex "expansion" "extracting substrings by key"

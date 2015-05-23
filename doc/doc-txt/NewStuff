@@ -33,6 +33,8 @@ Version 4.86
 
 10. A logging option for slow DNS lookups,
 
+11. New ${env {<variable>}} expansion.
+
 
 Version 4.85
 ------------

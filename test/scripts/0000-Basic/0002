@@ -827,6 +827,11 @@ ${if forany{a:b:c}\
 
 ${if ={1}{1} {true}{${if ={1}{1} {true}{${if ={1}{1}{true}fail}}}}}
 
+# Environment access
+
+${env {USER}}
+${env {NO_SUCH_VARIABLE} {oops, success} {correct}}
+
 ****
 # Test "escape" with print_topbitchars
 exim -be -DPTBC=print_topbitchars

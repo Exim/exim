@@ -105,6 +105,7 @@ static uschar *item_table[] = {
   US"acl",
   US"certextract",
   US"dlfunc",
+  US"env",
   US"extract",
   US"filter",
   US"hash",
@@ -134,6 +135,7 @@ enum {
   EITEM_ACL,
   EITEM_CERTEXTRACT,
   EITEM_DLFUNC,
+  EITEM_ENV,
   EITEM_EXTRACT,
   EITEM_FILTER,
   EITEM_HASH,
@@ -4001,7 +4003,8 @@ while (*s != 0)
       uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
       uschar *user_msg;
 
-      switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl", &resetok))
+      switch(read_subs(sub, nelem(sub), 1, &s, skipping, TRUE, US"acl",
+		      &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5859,12 +5862,12 @@ while (*s != 0)
     #define EXPAND_DLFUNC_MAX_ARGS 8
 
     case EITEM_DLFUNC:
-    #ifndef EXPAND_DLFUNC
-    expand_string_message = US"\"${dlfunc\" encountered, but this facility "	/*}*/
-      "is not included in this binary";
-    goto EXPAND_FAILED;
+#ifndef EXPAND_DLFUNC
+      expand_string_message = US"\"${dlfunc\" encountered, but this facility "	/*}*/
+	"is not included in this binary";
+      goto EXPAND_FAILED;
 
-    #else   /* EXPAND_DLFUNC */
+#else   /* EXPAND_DLFUNC */
       {
       tree_node *t;
       exim_dlfunc_t *func;
@@ -5950,7 +5953,39 @@ while (*s != 0)
         goto EXPAND_FAILED;
         }
       }
-    #endif /* EXPAND_DLFUNC */
+#endif /* EXPAND_DLFUNC */
+
+    case EITEM_ENV:	/* ${env {name} {val_if_found} {val_if_unfound}} */
+      {
+      uschar * key;
+      uschar *save_lookup_value = lookup_value;
+
+      while (isspace(*s)) s++;
+      if (*s != '{')					/*}*/
+	goto EXPAND_FAILED;
+
+      key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
+      if (!key) goto EXPAND_FAILED;			/*{*/
+      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+
+      lookup_value = US getenv(CS key);
+
+      switch(process_yesno(
+               skipping,                     /* were previously skipping */
+               lookup_value != NULL,         /* success/failure indicator */
+               save_lookup_value,            /* value to reset for string2 */
+               &s,                           /* input pointer */
+               &yield,                       /* output pointer */
+               &size,                        /* output size */
+               &ptr,                         /* output current point */
+               US"env",                      /* condition type */
+	       &resetok))
+        {
+        case 1: goto EXPAND_FAILED;          /* when all is well, the */
+        case 2: goto EXPAND_FAILED_CURLY;    /* returned value is 0 */
+        }
+      continue;
+      }
     }	/* EITEM_* switch */
 
   /* Control reaches here if the name is not recognized as one of the more
