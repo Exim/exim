@@ -1144,19 +1144,12 @@ fake zone files.  These are:
                     data block. The addresses that are generated are in the
                     10.250.0.0/16 network.
 
-The domain names that are handled directly by Exim, without being passed to
-fakens, are:
-
   test.again.dns    This always provokes a TRY_AGAIN response, for testing the
                     handling of temporary DNS error. If the full domain name
                     starts with digits, a delay of that many seconds occurs.
 
   test.fail.dns     This always provokes a NO_RECOVERY response, for testing
                     DNS server failures.
-
-This special handling could now be done in the fakens program, but while the
-old test suite is still being used it has to be done in Exim itself, so for the
-moment it remains there.
 
 The use of gethostbyname() and its IPv6 friends is also subverted when Exim is
 running in the test harness. The test code handles a few special names

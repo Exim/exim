@@ -53,32 +53,6 @@ Ustrncpy(name, domain, len);
 name[len] = 0;
 endname = name + len;
 
-/* This code, for forcing TRY_AGAIN and NO_RECOVERY, is here so that it works
-for the old test suite that uses a real nameserver. When the old test suite is
-eventually abandoned, this code could be moved into the fakens utility. */
-
-if (len >= 14 && Ustrcmp(endname - 14, "test.again.dns") == 0)
-  {
-  int delay = Uatoi(name);  /* digits at the start of the name */
-  DEBUG(D_dns) debug_printf("Return from DNS lookup of %s (%s) faked for testing\n",
-    name, dns_text_type(type));
-  if (delay > 0)
-    {
-    DEBUG(D_dns) debug_printf("delaying %d seconds\n", delay);
-    sleep(delay);
-    }
-  h_errno = TRY_AGAIN;
-  return -1;
-  }
-
-if (len >= 13 && Ustrcmp(endname - 13, "test.fail.dns") == 0)
-  {
-  DEBUG(D_dns) debug_printf("Return from DNS lookup of %s (%s) faked for testing\n",
-    name, dns_text_type(type));
-  h_errno = NO_RECOVERY;
-  return -1;
-  }
-
 /* Look for the fakens utility, and if it exists, call it. */
 
 (void)string_format(utilname, sizeof(utilname), "%s/bin/fakens",

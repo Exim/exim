@@ -36,7 +36,7 @@ internal_search_find: file="NULL"
   type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns"
 database lookup required for >:defer_never,mxh=cioce.test.again.dns
 dnsdb key: cioce.test.again.dns
-Return from DNS lookup of cioce.test.again.dns (MX) faked for testing
+DNS lookup of cioce.test.again.dns (MX) using fakens
 DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
@@ -55,8 +55,15 @@ Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
 sender_fullhost = the.local.host.name [ip4.ip4.ip4.ip4]
 sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4])
+using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
+DNS lookup of cioce.test.again.dns (A) using fakens
+DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
-cioce.test.again.dns is in dns_again_means_nonexist: returning HOST_FIND_FAILED
+cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+get[host|ipnode]byname[2](af=inet) returned 1 (HOST_NOT_FOUND)
+no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
+LOG: host_lookup_failed MAIN
+  no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
 failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "? no (end of list)
 accept: condition test failed in ACL "rcpt"

@@ -583,6 +583,55 @@ alarmfn(int sig)
 {
 }
 
+
+/*************************************************
+*     Special-purpose domains                    *
+*************************************************/
+
+static int
+special_manyhome(uschar * packet, uschar * domain)
+{
+uschar *pk = packet + 12;
+uschar *rdlptr;
+int i, j;
+
+memset(packet, 0, 12);
+
+for (i = 104; i <= 111; i++) for (j = 0; j <= 255; j++)
+  {
+  pk = packname(domain, pk);
+  *pk++ = (ns_t_a >> 8) & 255;
+  *pk++ = (ns_t_a) & 255;
+  *pk++ = 0;
+  *pk++ = 1;     /* class = IN */
+  pk += 4;       /* TTL field; don't care */
+  rdlptr = pk;   /* remember rdlength field */
+  pk += 2;
+
+  *pk++ = 10; *pk++ = 250; *pk++ = i; *pk++ = j;
+
+  rdlptr[0] = ((pk - rdlptr - 2) >> 8) & 255;
+  rdlptr[1] = (pk - rdlptr - 2) & 255;
+  }
+
+packet[6] = (2048 >> 8) & 255;
+packet[7] = 2048 & 255;
+packet[10] = 0;
+packet[11] = 0;
+
+(void)fwrite(packet, 1, pk - packet, stdout);
+return 0;
+}
+
+static int
+special_again(uschar * packet, uschar * domain)
+{
+int delay = atoi(CCS domain);  /* digits at the start of the name */
+if (delay > 0) sleep(delay);
+return TRY_AGAIN;
+}
+
+
 /*************************************************
 *           Entry point and main program         *
 *************************************************/
@@ -666,38 +715,11 @@ domain[domlen] = 0;
 for (i = 0; i < domlen; i++) domain[i] = tolower(domain[i]);
 
 if (Ustrcmp(domain, "manyhome.test.ex") == 0 && Ustrcmp(qtype, "A") == 0)
-  {
-  uschar *pk = packet + 12;
-  uschar *rdlptr;
-  int i, j;
-
-  memset(packet, 0, 12);
-
-  for (i = 104; i <= 111; i++) for (j = 0; j <= 255; j++)
-    {
-    pk = packname(domain, pk);
-    *pk++ = (ns_t_a >> 8) & 255;
-    *pk++ = (ns_t_a) & 255;
-    *pk++ = 0;
-    *pk++ = 1;     /* class = IN */
-    pk += 4;       /* TTL field; don't care */
-    rdlptr = pk;   /* remember rdlength field */
-    pk += 2;
-
-    *pk++ = 10; *pk++ = 250; *pk++ = i; *pk++ = j;
-
-    rdlptr[0] = ((pk - rdlptr - 2) >> 8) & 255;
-    rdlptr[1] = (pk - rdlptr - 2) & 255;
-    }
-
-  packet[6] = (2048 >> 8) & 255;
-  packet[7] = 2048 & 255;
-  packet[10] = 0;
-  packet[11] = 0;
-
-  (void)fwrite(packet, 1, pk - packet, stdout);
-  return 0;
-  }
+  return special_manyhome(packet, domain);
+else if (domlen >= 14 && Ustrcmp(domain + domlen - 14, "test.again.dns") == 0)
+  return special_again(packet, domain);
+else if (domlen >= 13 && Ustrcmp(domain + domlen - 13, "test.fail.dns") == 0)
+  return NO_RECOVERY;
 
 
 if (Ustrchr(domain, '.') == NULL && qualify != NULL &&

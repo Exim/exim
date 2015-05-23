@@ -1928,16 +1928,6 @@ BOOL temp_error = FALSE;
 int af;
 #endif
 
-/* If we are in the test harness, a name ending in .test.again.dns always
-forces a temporary error response, unless the name is in
-dns_again_means_nonexist. */
-
-if (running_in_test_harness)
-  {
-  const uschar *endname = host->name + Ustrlen(host->name);
-  if (Ustrcmp(endname - 14, "test.again.dns") == 0) goto RETURN_AGAIN;
-  }
-
 /* Make sure DNS options are set as required. This appears to be necessary in
 some circumstances when the get..byname() function actually calls the DNS. */
 
