@@ -1461,14 +1461,14 @@ if (continue_hostname == NULL)
 	   || verify_check_given_host(&ob->hosts_try_dane, host) == OK
 	   )
 	&& (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK
-	&& dane_required
+	&& dane_required	/* do not error on only dane-requested */
 	)
 	{
 	set_errno(addrlist, ERRNO_DNSDEFER,
 	  string_sprintf("DANE error: tlsa lookup %s",
 	    rc == DEFER ? "DEFER" : "FAIL"),
 	  rc, FALSE, NULL);
-	return  rc;
+	return rc;
 	}
       }
     else if (dane_required)

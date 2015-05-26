@@ -109,6 +109,8 @@ JH/30 Check the forward DNS lookup for DNSSEC, in addition to the reverse,
 JH/31 Check the HELO verification lookup for DNSSEC, adding new
       $sender_helo_dnssec variable.
 
+JH/32 Bug 1397: Enable ECDHE on OpenSSL, just the NIST P-256 curve.
+
 
 Exim version 4.85
 -----------------
