@@ -13436,6 +13436,7 @@ listed in more than one group.
 .row &%tls_crl%&                     "certificate revocation list"
 .row &%tls_dh_max_bits%&             "clamp D-H bit count suggestion"
 .row &%tls_dhparam%&                 "DH parameters for server"
+.row &%tls_eccurve%&                 "EC curve selection for server"
 .row &%tls_ocsp_file%&               "location of server certificate status proof"
 .row &%tls_on_connect_ports%&        "specify SSMTP (SMTPS) ports"
 .row &%tls_privatekey%&              "location of server private key"
@@ -16627,7 +16628,22 @@ prior to the 4.80 release, as Debian used to patch Exim to raise the minimum
 acceptable bound from 1024 to 2048.
 
 
+.option tls_eccurve main string&!! prime256v1
+.cindex TLS "EC cryptography"
+If built with a recent-enough version of OpenSSL,
+this option selects a EC curve for use by Exim.
+
+Curve names of the form &'prime256v1'& are accepted.
+For even more-recent library versions, names of the form &'P-512'&
+are also accepted, plus the special value &'auto'&
+which tell the library to choose.
+
+If the option is set to an empty string, no EC curves will be enabled.
+
+
 .option tls_ocsp_file main string&!! unset
+.cindex TLS "certificate status"
+.cindex TLS "OCSP proof file"
 This option
 must if set expand to the absolute path to a file which contains a current
 status proof for the server's certificate, as obtained from the
@@ -16635,6 +16651,8 @@ Certificate Authority.
 
 
 .option tls_on_connect_ports main "string list" unset
+.cindex SSMTP
+.cindex SMTPS
 This option specifies a list of incoming SSMTP (aka SMTPS) ports that should
 operate the obsolete SSMTP (SMTPS) protocol, where a TLS session is immediately
 set up without waiting for the client to issue a STARTTLS command. For

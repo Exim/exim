@@ -22,6 +22,9 @@ functions from the OpenSSL library. */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#ifndef OPENSSL_NO_ECDH
+# include <openssl/ec.h>
+#endif
 #ifndef DISABLE_OCSP
 # include <openssl/ocsp.h>
 #endif
@@ -58,6 +61,16 @@ functions from the OpenSSL library. */
 # if OPENSSL_VERSION_NUMBER >= 0x010000000L \
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
+# endif
+
+# if !defined(OPENSSL_NO_ECDH)
+#  if OPENSSL_VERSION_NUMBER >= 0x0090800fL
+#   define EXIM_HAVE_ECDH
+#  endif
+#  if OPENSSL_VERSION_NUMBER >= 0x10002000L
+#   define EXIM_HAVE_OPENSSL_ECDH_AUTO
+#   define EXIM_HAVE_OPENSSL_EC_NIST2NID
+#  endif
 # endif
 #endif
 
@@ -644,42 +657,74 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_ecdh(SSL_CTX *sctx, host_item *host)
+init_ecdh(SSL_CTX * sctx, host_item * host)
 {
+EC_KEY * ecdh;
+uschar * exp_curve;
+int nid;
+BOOL rv;
+
+#ifdef OPENSSL_NO_ECDH
+return TRUE;
+#else
+
 if (host)	/* No ECDH setup for clients, only for servers */
   return TRUE;
 
-#ifndef SSL_CTX_set_tmp_ecdh
-/* No elliptic curve API in OpenSSL, skip it */
+# ifndef EXIM_HAVE_ECDH
 DEBUG(D_tls)
   debug_printf("No OpenSSL API to define ECDH parameters, skipping\n");
 return TRUE;
-#else
-# ifndef NID_X9_62_prime256v1
-/* For now, stick to NIST P-256 to get "something" running.
-If that's not available, bail */
-DEBUG(D_tls)
-  debug_printf("NIST P-256 EC curve not available, skipping ECDH setup\n");
-return TRUE;
 # else
+
+if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve))
+  return FALSE;
+if (!exp_curve || !*exp_curve)
+  return TRUE;
+
+#  ifdef EXIM_HAVE_OPENSSL_ECDH_AUTO
+/* check if new enough library to support auto ECDH temp key parameter selection */
+if (Ustrcmp(exp_curve, "auto") == 0)
   {
-  EC_KEY * ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-  BOOL rv;
-
-  /* The "tmp" in the name here refers to setting a tempoary key
-  not to the stability of the interface. */
-
-  if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) != 0))
-    {
-    DEBUG(D_tls) debug_printf("ECDH: enable NIST P-256 curve\n");
-    }
-  else
-    tls_error(US"Error enabling NIST P-256 curve", host, NULL);
-  EC_KEY_free(ecdh);
-  return rv;
+  DEBUG(D_tls) debug_printf(
+    "ECDH temp key parameter settings: OpenSSL 1.2+ autoselection\n");
+  SSL_CTX_set_ecdh_auto(sctx, 1);
+  return TRUE;
   }
-# endif
-#endif
+#  endif
+
+DEBUG(D_tls) debug_printf("ECDH: curve '%s'\n", exp_curve);
+if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
+#   ifdef EXIM_HAVE_OPENSSL_EC_NIST2NID
+   && (nid = EC_curve_nist2nid(CCS exp_curve)) == NID_undef
+#   endif
+   )
+  {
+  tls_error(string_sprintf("Unknown curve name tls_eccurve '%s'",
+      exp_curve),
+    host, NULL);
+  return FALSE;
+  }
+
+if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
+  {
+  tls_error("Unable to create ec curve", host, NULL);
+  return FALSE;
+  }
+
+/* The "tmp" in the name here refers to setting a temporary key
+not to the stability of the interface. */
+
+if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
+  tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), host, NULL);
+else
+  DEBUG(D_tls) debug_printf("ECDH: enabled '%s' curve\n", exp_curve);
+
+EC_KEY_free(ecdh);
+return !rv;
+
+# endif	/*EXIM_HAVE_ECDH*/
+#endif /*OPENSSL_NO_ECDH*/
 }
 
 
@@ -1321,6 +1366,7 @@ else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
 
 /* Initialize with DH parameters if supplied */
+/* Initialize ECDH temp key parameter selection */
 
 if (  !init_dh(*ctxp, dhparam, host)
    || !init_ecdh(*ctxp, host)
