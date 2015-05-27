@@ -14953,8 +14953,9 @@ section &<<SECTmessiden>>&.
 This option sets the path which is used to determine the names of Exim's log
 files, or indicates that logging is to be to syslog, or both. It is expanded
 when Exim is entered, so it can, for example, contain a reference to the host
-name. If no specific path is set for the log files at compile or run time, they
-are written in a sub-directory called &_log_& in Exim's spool directory.
+name. If no specific path is set for the log files at compile or run time,
+or if the option is unset at run time (i.e.  &`log_file_path = `&)
+they are written in a sub-directory called &_log_& in Exim's spool directory.
 Chapter &<<CHAPlog>>& contains further details about Exim's logging, and
 section &<<SECTwhelogwri>>& describes how the contents of &%log_file_path%& are
 used. If this string is fixed at your installation (contains no expansion
@@ -34671,8 +34672,9 @@ equivalent to the setting:
 .code
 log_file_path = $spool_directory/log/%slog
 .endd
-If you do not specify anything at build time or run time, that is where the
-logs are written.
+If you do not specify anything at build time or run time,
+or if you unset the option at run time (i.e. &`log_file_path = `&),
+that is where the logs are written.
 
 A log file path may also contain &`%D`& or &`%M`& if datestamped log file names
 are in use &-- see section &<<SECTdatlogfil>>& below.

@@ -79,11 +79,12 @@ LOG_FILE_PATH=`$EXIM_PATH -C $config -bP log_file_path | sed 's/.*=[  ]*//'`
 
 # If log_file_path is "syslog" then logging is only to syslog, and the monitor
 # is unable to display a log tail unless EXIMON_LOG_FILE_PATH is set to tell
-# it where the log data is. Otherwise, remove any occurrences of
-# "syslog:" or ":syslog" (spaces allowed in various places) and look at the
-# remainder of the entry. If it's null, the default is "mainlog" in the
-# "log" directory in the spool directory. Otherwise, set the name from the
-# given path.
+# it where the log data is. If log_file_path is unset (i.e. empty) the default
+# is "mainlog" in the "log" directory in the spool directory. Otherwise,
+# remove any occurrences of "syslog:" or ":syslog" (spaces allowed in various
+# places) and look at the remainder of the entry. If it's null, check whether
+# LOG_FILE_NAME was set a compile time and contains a path. Otherwise fall
+# back to the default path.
 
 if [ "$EXIMON_LOG_FILE_PATH" != "" ] ; then
   LOG_FILE_NAME="$EXIMON_LOG_FILE_PATH"
@@ -94,6 +95,8 @@ elif [ "$LOG_FILE_PATH" = "syslog" ] ; then
   echo MAIL.INFO syslog messages into a separate file, you can point eximon at
   echo that file with the EXIMON_LOG_FILE_PATH environment variable.
   echo \*\*\*
+elif [ "$LOG_FILE_PATH" = "" ] ; then
+    LOG_FILE_NAME=$SPOOL_DIRECTORY/log/mainlog
 else
   LOG_FILE_NAME=`echo $LOG_FILE_PATH | \
     sed -e 's/ *: *syslog *: */:/' \
@@ -101,7 +104,17 @@ else
         -e 's/^ *syslog *: *//' \
         -e 's/%s/main/'`
   if [ "$LOG_FILE_NAME" = "" ] ; then
-    LOG_FILE_NAME=$SPOOL_DIRECTORY/log/mainlog
+    COMPILETIMEDEFAULT=`$EXIM_PATH -C /dev/null -bP log_file_path | \
+      sed -e 's/.*=[  ]*//' \
+        -e 's/ *: *syslog *: */:/' \
+        -e 's/ *: *syslog *$//' \
+        -e 's/^ *syslog *: *//' \
+        -e 's/%s/main/'`
+    if [ "$COMPILETIMEDEFAULT" != "" ] ; then
+      LOG_FILE_NAME="$COMPILETIMEDEFAULT"
+    else
+      LOG_FILE_NAME=$SPOOL_DIRECTORY/log/mainlog
+    fi
   fi
 fi
 
