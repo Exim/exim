@@ -83,6 +83,10 @@ $parm_port_d4 = 1228;        # Additional for daemon
 # Manually set locale
 $ENV{'LC_ALL'} = 'C';
 
+# In some environments USER does not exists, but we
+# need it for some test(s)
+$ENV{USER} = getpwuid($>)
+  if not exists $ENV{USER};
 
 
 ###############################################################################
