@@ -11,6 +11,7 @@ gecos_name = CALLER_NAME
 
 acl_smtp_rcpt = accept
 trusted_users = CALLER
+log_selector = +smtp_no_mail
 
 
 # ----- Routers -----

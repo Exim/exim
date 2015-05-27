@@ -111,6 +111,8 @@ JH/31 Check the HELO verification lookup for DNSSEC, adding new
 
 JH/32 Bug 1397: Enable ECDHE on OpenSSL, just the NIST P-256 curve.
 
+JH/33 Bug 1346: Note MAIL cmd seen in -bS batch, to avoid smtp_no_mail log.
+
 
 Exim version 4.85
 -----------------

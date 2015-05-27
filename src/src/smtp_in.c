@@ -1645,6 +1645,7 @@ while (done <= 0)
     it is the canonical extracted address which is all that is kept. */
 
     case MAIL_CMD:
+    smtp_mailcmd_count++;              /* Count for no-mail log */
     if (sender_address != NULL)
       /* The function moan_smtp_batch() does not return. */
       moan_smtp_batch(smtp_cmd_buffer, "503 Sender already given");
