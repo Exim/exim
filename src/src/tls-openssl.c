@@ -38,12 +38,27 @@ functions from the OpenSSL library. */
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
 # define EXIM_HAVE_OPENSSL_TLSEXT
 #endif
-#if OPENSSL_VERSION_NUMBER >= 0x010100000L
-# define EXIM_HAVE_OPENSSL_CHECKHOST
-#endif
-#if OPENSSL_VERSION_NUMBER >= 0x010000000L \
+
+/*
+ * X509_check_host provides sane certificate hostname checking, but was added
+ * to OpenSSL late, after other projects forked off the code-base.  So in
+ * addition to guarding against the base version number, beware that LibreSSL
+ * does not (at this time) support this function.
+ *
+ * If LibreSSL gains a different API, perhaps via libtls, then we'll probably
+ * opt to disentangle and ask a LibreSSL user to provide glue for a third
+ * crypto provider for libtls instead of continuing to tie the OpenSSL glue
+ * into even twistier knots.  If LibreSSL gains the same API, we can just
+ * change this guard and punt the issue for a while longer.
+ */
+#ifndef LIBRESSL_VERSION_NUMBER
+# if OPENSSL_VERSION_NUMBER >= 0x010100000L
+#  define EXIM_HAVE_OPENSSL_CHECKHOST
+# endif
+# if OPENSSL_VERSION_NUMBER >= 0x010000000L \
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
-# define EXIM_HAVE_OPENSSL_CHECKHOST
+#  define EXIM_HAVE_OPENSSL_CHECKHOST
+# endif
 #endif
 
 #if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
