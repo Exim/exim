@@ -31,9 +31,11 @@ Version 4.86
  9. If built with EXPERIMENTAL_INTERNATIONAL, an expansion item for a commonly
     used encoding of Maildir folder names.
 
-10. A logging option for slow DNS lookups,
+10. A logging option for slow DNS lookups.
 
 11. New ${env {<variable>}} expansion.
+
+12. A non-SMTP authenticator using information from TLS client certificates.
 
 
 Version 4.85

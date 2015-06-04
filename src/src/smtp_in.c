@@ -71,6 +71,7 @@ enum {
   VRFY_CMD, EXPN_CMD, NOOP_CMD, /* RFC as requiring synchronization */
   ETRN_CMD,                     /* This by analogy with TURN from the RFC */
   STARTTLS_CMD,                 /* Required by the STARTTLS RFC */
+  TLS_AUTH_CMD,			/* auto-command at start of SSL */
 
   /* This is a dummy to identify the non-sync commands when pipelining */
 
@@ -169,6 +170,7 @@ static smtp_cmd_list cmd_list[] = {
   { "auth",       sizeof("auth")-1,       AUTH_CMD, TRUE,  TRUE  },
   #ifdef SUPPORT_TLS
   { "starttls",   sizeof("starttls")-1,   STARTTLS_CMD, FALSE, FALSE },
+  { "tls_auth",   0,                      TLS_AUTH_CMD, FALSE, TRUE },
   #endif
 
 /* If you change anything above here, also fix the definitions below. */
@@ -192,6 +194,7 @@ static smtp_cmd_list *cmd_list_end =
 #define CMD_LIST_EHLO      2
 #define CMD_LIST_AUTH      3
 #define CMD_LIST_STARTTLS  4
+#define CMD_LIST_TLS_AUTH  5
 
 /* This list of names is used for performing the smtp_no_mail logging action.
 It must be kept in step with the SCH_xxx enumerations. */
@@ -3094,6 +3097,113 @@ smtp_respond(code, len, TRUE, user_msg);
 
 
 
+static int
+smtp_in_auth(auth_instance *au, uschar ** s, uschar ** ss)
+{
+const uschar *set_id = NULL;
+int rc, i;
+
+/* Run the checking code, passing the remainder of the command line as
+data. Initials the $auth<n> variables as empty. Initialize $0 empty and set
+it as the only set numerical variable. The authenticator may set $auth<n>
+and also set other numeric variables. The $auth<n> variables are preferred
+nowadays; the numerical variables remain for backwards compatibility.
+
+Afterwards, have a go at expanding the set_id string, even if
+authentication failed - for bad passwords it can be useful to log the
+userid. On success, require set_id to expand and exist, and put it in
+authenticated_id. Save this in permanent store, as the working store gets
+reset at HELO, RSET, etc. */
+
+for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
+expand_nmax = 0;
+expand_nlength[0] = 0;   /* $0 contains nothing */
+
+rc = (au->info->servercode)(au, smtp_cmd_data);
+if (au->set_id) set_id = expand_string(au->set_id);
+expand_nmax = -1;        /* Reset numeric variables */
+for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;   /* Reset $auth<n> */
+
+/* The value of authenticated_id is stored in the spool file and printed in
+log lines. It must not contain binary zeros or newline characters. In
+normal use, it never will, but when playing around or testing, this error
+can (did) happen. To guard against this, ensure that the id contains only
+printing characters. */
+
+if (set_id) set_id = string_printing(set_id);
+
+/* For the non-OK cases, set up additional logging data if set_id
+is not empty. */
+
+if (rc != OK)
+  set_id = set_id && *set_id
+    ? string_sprintf(" (set_id=%s)", set_id) : US"";
+
+/* Switch on the result */
+
+switch(rc)
+  {
+  case OK:
+  if (!au->set_id || set_id)    /* Complete success */
+    {
+    if (set_id) authenticated_id = string_copy_malloc(set_id);
+    sender_host_authenticated = au->name;
+    authentication_failed = FALSE;
+    authenticated_fail_id = NULL;   /* Impossible to already be set? */
+
+    received_protocol =
+      (sender_host_address ? protocols : protocols_local)
+	[pextend + pauthed + (tls_in.active >= 0 ? pcrpted:0)];
+    *s = *ss = US"235 Authentication succeeded";
+    authenticated_by = au;
+    break;
+    }
+
+  /* Authentication succeeded, but we failed to expand the set_id string.
+  Treat this as a temporary error. */
+
+  auth_defer_msg = expand_string_message;
+  /* Fall through */
+
+  case DEFER:
+  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+  *s = string_sprintf("435 Unable to authenticate at present%s",
+    auth_defer_user_msg);
+  *ss = string_sprintf("435 Unable to authenticate at present%s: %s",
+    set_id, auth_defer_msg);
+  break;
+
+  case BAD64:
+  *s = *ss = US"501 Invalid base64 data";
+  break;
+
+  case CANCELLED:
+  *s = *ss = US"501 Authentication cancelled";
+  break;
+
+  case UNEXPECTED:
+  *s = *ss = US"553 Initial data not expected";
+  break;
+
+  case FAIL:
+  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+  *s = US"535 Incorrect authentication data";
+  *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
+  break;
+
+  default:
+  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+  *s = US"435 Internal error";
+  *ss = string_sprintf("435 Internal error%s: return %d from authentication "
+    "check", set_id, rc);
+  break;
+  }
+
+return rc;
+}
+
+
+
 /*************************************************
 *       Initialize for SMTP incoming message     *
 *************************************************/
@@ -3145,6 +3255,7 @@ cmd_list[CMD_LIST_HELO].is_mail_cmd = TRUE;
 cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
 #ifdef SUPPORT_TLS
 cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = TRUE;
+cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
 #endif
 
 /* Set the local signal handler for SIGTERM - it tries to end off tidily */
@@ -3168,7 +3279,6 @@ while (done <= 0)
   uschar *user_msg = NULL;
   uschar *recipient = NULL;
   uschar *hello = NULL;
-  const uschar *set_id = NULL;
   uschar *s, *ss;
   BOOL was_rej_mail = FALSE;
   BOOL was_rcpt = FALSE;
@@ -3180,6 +3290,41 @@ while (done <= 0)
   auth_instance *au;
   uschar *orcpt = NULL;
   int flags;
+
+#if defined(SUPPORT_TLS) && defined(AUTH_TLS)
+  /* Check once per STARTTLS or SSL-on-connect for a TLS AUTH */
+  if (  tls_in.active >= 0
+     && tls_in.peercert
+     && tls_in.certificate_verified
+     && cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd
+     )
+    {
+    cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = FALSE;
+    if (acl_smtp_auth)
+      {
+      rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth, &user_msg, &log_msg);
+      if (rc != OK)
+        {
+        done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
+        continue;
+        }
+      }
+
+    for (au = auths; au; au = au->next)
+      if (strcmpic(US"tls", au->driver_name) == 0)
+	{
+	smtp_cmd_data = NULL;
+
+	if ((c = smtp_in_auth(au, &s, &ss)) != OK)
+	  log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
+	    au->name, host_and_ident(FALSE), ss);
+	else
+	  DEBUG(D_auth) debug_printf("tls auth succeeded\n");
+
+	break;
+	}
+    }
+#endif
 
   switch(smtp_read_command(TRUE))
     {
@@ -3208,13 +3353,13 @@ while (done <= 0)
         US"AUTH command used when not advertised");
       break;
       }
-    if (sender_host_authenticated != NULL)
+    if (sender_host_authenticated)
       {
       done = synprot_error(L_smtp_protocol_error, 503, NULL,
         US"already authenticated");
       break;
       }
-    if (sender_address != NULL)
+    if (sender_address)
       {
       done = synprot_error(L_smtp_protocol_error, 503, NULL,
         US"not permitted in mail transaction");
@@ -3223,7 +3368,7 @@ while (done <= 0)
 
     /* Check the ACL */
 
-    if (acl_smtp_auth != NULL)
+    if (acl_smtp_auth)
       {
       rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth, &user_msg, &log_msg);
       if (rc != OK)
@@ -3260,122 +3405,23 @@ while (done <= 0)
     as a server and which has been advertised (unless, sigh, allow_auth_
     unadvertised is set). */
 
-    for (au = auths; au != NULL; au = au->next)
-      {
+    for (au = auths; au; au = au->next)
       if (strcmpic(s, au->public_name) == 0 && au->server &&
-          (au->advertised || allow_auth_unadvertised)) break;
-      }
+          (au->advertised || allow_auth_unadvertised))
+	break;
 
-    if (au == NULL)
+    if (au)
       {
+      c = smtp_in_auth(au, &s, &ss);
+
+      smtp_printf("%s\r\n", s);
+      if (c != OK)
+	log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
+	  au->name, host_and_ident(FALSE), ss);
+      }
+    else
       done = synprot_error(L_smtp_protocol_error, 504, NULL,
         string_sprintf("%s authentication mechanism not supported", s));
-      break;
-      }
-
-    /* Run the checking code, passing the remainder of the command line as
-    data. Initials the $auth<n> variables as empty. Initialize $0 empty and set
-    it as the only set numerical variable. The authenticator may set $auth<n>
-    and also set other numeric variables. The $auth<n> variables are preferred
-    nowadays; the numerical variables remain for backwards compatibility.
-
-    Afterwards, have a go at expanding the set_id string, even if
-    authentication failed - for bad passwords it can be useful to log the
-    userid. On success, require set_id to expand and exist, and put it in
-    authenticated_id. Save this in permanent store, as the working store gets
-    reset at HELO, RSET, etc. */
-
-    for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
-    expand_nmax = 0;
-    expand_nlength[0] = 0;   /* $0 contains nothing */
-
-    c = (au->info->servercode)(au, smtp_cmd_data);
-    if (au->set_id != NULL) set_id = expand_string(au->set_id);
-    expand_nmax = -1;        /* Reset numeric variables */
-    for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;   /* Reset $auth<n> */
-
-    /* The value of authenticated_id is stored in the spool file and printed in
-    log lines. It must not contain binary zeros or newline characters. In
-    normal use, it never will, but when playing around or testing, this error
-    can (did) happen. To guard against this, ensure that the id contains only
-    printing characters. */
-
-    if (set_id != NULL) set_id = string_printing(set_id);
-
-    /* For the non-OK cases, set up additional logging data if set_id
-    is not empty. */
-
-    if (c != OK)
-      {
-      if (set_id != NULL && *set_id != 0)
-        set_id = string_sprintf(" (set_id=%s)", set_id);
-      else set_id = US"";
-      }
-
-    /* Switch on the result */
-
-    switch(c)
-      {
-      case OK:
-      if (au->set_id == NULL || set_id != NULL)    /* Complete success */
-        {
-        if (set_id != NULL) authenticated_id = string_copy_malloc(set_id);
-        sender_host_authenticated = au->name;
-        authentication_failed = FALSE;
-        authenticated_fail_id = NULL;   /* Impossible to already be set? */
-
-        received_protocol =
-	  (sender_host_address ? protocols : protocols_local)
-	    [pextend + pauthed + (tls_in.active >= 0 ? pcrpted:0)];
-        s = ss = US"235 Authentication succeeded";
-        authenticated_by = au;
-        break;
-        }
-
-      /* Authentication succeeded, but we failed to expand the set_id string.
-      Treat this as a temporary error. */
-
-      auth_defer_msg = expand_string_message;
-      /* Fall through */
-
-      case DEFER:
-      if (set_id != NULL) authenticated_fail_id = string_copy_malloc(set_id);
-      s = string_sprintf("435 Unable to authenticate at present%s",
-        auth_defer_user_msg);
-      ss = string_sprintf("435 Unable to authenticate at present%s: %s",
-        set_id, auth_defer_msg);
-      break;
-
-      case BAD64:
-      s = ss = US"501 Invalid base64 data";
-      break;
-
-      case CANCELLED:
-      s = ss = US"501 Authentication cancelled";
-      break;
-
-      case UNEXPECTED:
-      s = ss = US"553 Initial data not expected";
-      break;
-
-      case FAIL:
-      if (set_id != NULL) authenticated_fail_id = string_copy_malloc(set_id);
-      s = US"535 Incorrect authentication data";
-      ss = string_sprintf("535 Incorrect authentication data%s", set_id);
-      break;
-
-      default:
-      if (set_id != NULL) authenticated_fail_id = string_copy_malloc(set_id);
-      s = US"435 Internal error";
-      ss = string_sprintf("435 Internal error%s: return %d from authentication "
-        "check", set_id, c);
-      break;
-      }
-
-    smtp_printf("%s\r\n", s);
-    if (c != OK)
-      log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
-        au->name, host_and_ident(FALSE), ss);
 
     break;  /* AUTH_CMD */
 
@@ -3661,38 +3707,40 @@ while (done <= 0)
       letters, so output the names in upper case, though we actually recognize
       them in either case in the AUTH command. */
 
-      if (auths != NULL)
-        {
-        if (verify_check_host(&auth_advertise_hosts) == OK)
-          {
-          auth_instance *au;
-          BOOL first = TRUE;
-          for (au = auths; au != NULL; au = au->next)
-            {
-            if (au->server && (au->advertise_condition == NULL ||
-                expand_check_condition(au->advertise_condition, au->name,
-                US"authenticator")))
-              {
-              int saveptr;
-              if (first)
-                {
-                s = string_cat(s, &size, &ptr, smtp_code, 3);
-                s = string_cat(s, &size, &ptr, US"-AUTH", 5);
-                first = FALSE;
-                auth_advertised = TRUE;
-                }
-              saveptr = ptr;
-              s = string_cat(s, &size, &ptr, US" ", 1);
-              s = string_cat(s, &size, &ptr, au->public_name,
-                Ustrlen(au->public_name));
-              while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
-              au->advertised = TRUE;
-              }
-            else au->advertised = FALSE;
-            }
-          if (!first) s = string_cat(s, &size, &ptr, US"\r\n", 2);
-          }
-        }
+      if (  auths
+#if defined(SUPPORT_TLS) && defined(AUTH_TLS)
+	 && !sender_host_authenticated
+#endif
+         && verify_check_host(&auth_advertise_hosts) == OK
+	 )
+	{
+	auth_instance *au;
+	BOOL first = TRUE;
+	for (au = auths; au; au = au->next)
+	  if (au->server && (au->advertise_condition == NULL ||
+	      expand_check_condition(au->advertise_condition, au->name,
+	      US"authenticator")))
+	    {
+	    int saveptr;
+	    if (first)
+	      {
+	      s = string_cat(s, &size, &ptr, smtp_code, 3);
+	      s = string_cat(s, &size, &ptr, US"-AUTH", 5);
+	      first = FALSE;
+	      auth_advertised = TRUE;
+	      }
+	    saveptr = ptr;
+	    s = string_cat(s, &size, &ptr, US" ", 1);
+	    s = string_cat(s, &size, &ptr, au->public_name,
+	      Ustrlen(au->public_name));
+	    while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
+	    au->advertised = TRUE;
+	    }
+	  else
+	    au->advertised = FALSE;
+
+	if (!first) s = string_cat(s, &size, &ptr, US"\r\n", 2);
+	}
 
       /* Advertise TLS (Transport Level Security) aka SSL (Secure Socket Layer)
       if it has been included in the binary, and the host matches
@@ -4667,6 +4715,7 @@ while (done <= 0)
         helo_seen = esmtp = auth_advertised = pipelining_advertised = FALSE;
       cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
       cmd_list[CMD_LIST_AUTH].is_mail_cmd = TRUE;
+      cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
       if (sender_helo_name != NULL)
         {
         store_free(sender_helo_name);

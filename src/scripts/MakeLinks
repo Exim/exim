@@ -73,7 +73,7 @@ for f in README Makefile b64encode.c b64decode.c call_pam.c call_pwcheck.c \
   gsasl_exim.h get_data.c get_no64_data.c heimdal_gssapi.c heimdal_gssapi.h \
   md5.c xtextencode.c xtextdecode.c cram_md5.c cram_md5.h plaintext.c plaintext.h \
   pwcheck.c pwcheck.h auth-spa.c auth-spa.h dovecot.c dovecot.h sha1.c spa.c \
-  spa.h
+  spa.h tls.c tls.h
 do
   ln -s ../../src/auths/$f $f
 done

@@ -637,6 +637,7 @@ FIXED_NEVER_USERS=root
 # AUTH_HEIMDAL_GSSAPI_PC=heimdal-gssapi
 # AUTH_PLAINTEXT=yes
 # AUTH_SPA=yes
+# AUTH_TLS=yes
 
 
 #------------------------------------------------------------------------------

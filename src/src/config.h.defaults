@@ -24,6 +24,7 @@ it's a default value. */
 #define AUTH_HEIMDAL_GSSAPI
 #define AUTH_PLAINTEXT
 #define AUTH_SPA
+#define AUTH_TLS
 
 #define AUTH_VARS                     3
 

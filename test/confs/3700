@@ -1,0 +1,86 @@
+# Exim test configuration 3700
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+log_selector = +received_recipients +outgoing_port
+
+# ----- Main settings -----
+
+acl_smtp_mail = check_authd
+acl_smtp_rcpt = check_authd
+queue_only
+queue_run_in_order
+trusted_users = CALLER
+
+tls_on_connect_ports = PORT_S
+tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
+
+tls_verify_hosts = *
+tls_verify_certificates = DIR/aux-fixed/cert2
+
+
+# ----- ACL -----
+
+begin acl
+
+check_authd:
+  deny     message = authentication required
+          !authenticated = *
+  accept
+
+
+# ----- Authentication -----
+
+begin authenticators
+
+tls:
+  driver = tls
+  server_debug_print = +++TLS \$auth1="$auth1"
+  server_param1 =    ${quote:${certextract {subject,CN,>:} \
+                                  {$tls_in_peercert}}}
+  server_condition = ${if def:auth1}
+  server_set_id =    $auth1
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = ${if eq {$local_part}{smtps} {t2}{t1}}
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_D
+  allow_localhost
+  tls_certificate =         DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
+
+t2:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  protocol = smtps
+  allow_localhost
+  tls_certificate =         DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
+
+# End

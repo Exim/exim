@@ -331,7 +331,7 @@ tls_cert_subject_altname(void * cert, uschar * mod)
 uschar * list = NULL;
 STACK_OF(GENERAL_NAME) * san = (STACK_OF(GENERAL_NAME) *)
   X509_get_ext_d2i((X509 *)cert, NID_subject_alt_name, NULL, NULL);
-uschar sep = '\n';
+uschar osep = '\n';
 uschar * tag = US"";
 uschar * ele;
 int match = -1;
@@ -339,16 +339,15 @@ int len;
 
 if (!san) return NULL;
 
-while (mod)
+while (mod && *mod)
   {
-  if (*mod == '>' && *++mod) sep = *mod++;
-  else if (Ustrcmp(mod, "dns")==0) { match = GEN_DNS; mod += 3; }
-  else if (Ustrcmp(mod, "uri")==0) { match = GEN_URI; mod += 3; }
-  else if (Ustrcmp(mod, "mail")==0) { match = GEN_EMAIL; mod += 4; }
-  else continue;
+  if (*mod == '>' && *++mod) osep = *mod++;
+  else if (Ustrncmp(mod,"dns",3)==0) { match = GEN_DNS; mod += 3; }
+  else if (Ustrncmp(mod,"uri",3)==0) { match = GEN_URI; mod += 3; }
+  else if (Ustrncmp(mod,"mail",4)==0) { match = GEN_EMAIL; mod += 4; }
+  else mod++;
 
-  if (*mod++ != ',')
-    break;
+  if (*mod == ',') mod++;
   }
 
 while (sk_GENERAL_NAME_num(san) > 0)
@@ -380,7 +379,7 @@ while (sk_GENERAL_NAME_num(san) > 0)
     ele = string_copyn(ele, len);
 
   if (Ustrlen(ele) == len)	/* ignore any with embedded nul */
-    list = string_append_listele(list, sep,
+    list = string_append_listele(list, osep,
 	  match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 

@@ -53,6 +53,10 @@ set to NULL for those that are not compiled into the binary. */
 #include "auths/spa.h"
 #endif
 
+#ifdef AUTH_TLS
+#include "auths/tls.h"
+#endif
+
 auth_info auths_available[] = {
 
 /* Checking by an expansion condition on plain text */
@@ -151,6 +155,20 @@ auth_info auths_available[] = {
   auth_spa_init,                             /* init function */
   auth_spa_server,                           /* server function */
   auth_spa_client,                           /* client function */
+  NULL                                       /* diagnostic function */
+  },
+#endif
+
+#ifdef AUTH_TLS
+  {
+  US"tls",                                   /* lookup name */
+  auth_tls_options,
+  &auth_tls_options_count,
+  &auth_tls_option_defaults,
+  sizeof(auth_tls_options_block),
+  auth_tls_init,                             /* init function */
+  auth_tls_server,                           /* server function */
+  NULL,                                      /* client function */
   NULL                                       /* diagnostic function */
   },
 #endif

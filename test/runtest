@@ -1375,6 +1375,9 @@ $munges =
     'delay_1500' =>
     { 'stderr' => 's/(1[5-9]|23\d)\d\d msec/ssss msec/' },
 
+    'tls_anycipher' =>
+    { 'mainlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /' },
+
   };
 
 

@@ -24866,6 +24866,7 @@ AUTH_GSASL=yes
 AUTH_HEIMDAL_GSSAPI=yes
 AUTH_PLAINTEXT=yes
 AUTH_SPA=yes
+AUTH_TLS=yes
 .endd
 in &_Local/Makefile_&, respectively. The first of these supports the CRAM-MD5
 authentication mechanism (RFC 2195), and the second provides an interface to
@@ -24880,6 +24881,8 @@ The sixth can be configured to support
 the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism, which is
 not formally documented, but used by several MUAs. The seventh authenticator
 supports Microsoft's &'Secure Password Authentication'& mechanism.
+The eighth is an Exim authenticator but not an SMTP one;
+instead it can use information from a TLS negotiation.
 
 The authenticators are configured using the same syntax as other drivers (see
 section &<<SECTfordricon>>&). If no authenticators are required, no
@@ -26083,6 +26086,81 @@ msn:
 .ecindex IIDspaauth2
 
 
+
+
+
+. ////////////////////////////////////////////////////////////////////////////
+. ////////////////////////////////////////////////////////////////////////////
+
+.new
+.chapter "The tls authenticator" "CHAPtlsauth"
+.scindex IIDtlsauth1 "&(tls)& authenticator"
+.scindex IIDtlsauth2 "authenticators" "&(tls)&"
+.cindex "authentication" "Client Certificate"
+.cindex "authentication" "X509"
+.cindex "Certificate-based authentication"
+The &(tls)& authenticator provides server support for
+authentication based on client certificates.
+
+It is not an SMTP authentication mechanism and is not
+advertised by the server as part of the SMTP EHLO response.
+It is an Exim authenticator in the sense that it affects
+the protocol element of the log line, can be tested for
+by the &%authenticated%& ACL condition, and can set
+the &$authenticated_id$& variable.
+
+The client must present a verifiable certificate,
+for which it must have been requested via the
+&%tls_verify_hosts%& or &%tls_try_verify_hosts%& main options
+(see &<<CHAPTLS>>&).
+
+If an authenticator of this type is configured it is
+run before any SMTP-level communication is done,
+and can authenticate the connection.
+If it does, SMTP suthentication is not offered.
+
+A maximum of one authenticator of this type may be present.
+
+
+.cindex "options" "&(tls)& authenticator (server)"
+The &(tls)& authenticator has three server options:
+
+.option server_param1 tls string&!! unset
+.cindex "variables (&$auth1$& &$auth2$& etc)" "in &(tls)& authenticator"
+This option is expanded after the TLS negotiation and
+the result is placed in &$auth1$&.
+If the expansion is forced to fail, authentication fails. Any other expansion
+failure causes a temporary error code to be returned.
+
+.option server_param2 tls string&!! unset
+.option server_param3 tls string&!! unset
+As above, for &$auth2$& and &$auth3$&.
+
+&%server_param1%& may also be spelled &%server_param%&.
+
+
+Example:
+.code
+tls:
+  driver = tls
+  server_param1 =     ${certextract {subj_altname,mail,>:} \
+                                    {$tls_in_peercert}}
+  server_condition =  ${if forany {$auth1} \
+                            {!= {0} \
+                                {${lookup ldap{ldap:///\
+                         mailname=${quote_ldap_dn:${lc:$item}},\
+                         ou=users,LDAP_DC?mailid} {$value}{0} \
+                       }    }   } }
+  server_set_id =     ${if = {1}{${listcount:$auth1}} {$auth1}{}}
+.endd
+.ecindex IIDtlsauth1
+.ecindex IIDtlsauth2
+.wen
+
+
+Note that because authentication is traditionally an SMTP operation,
+the &%authenticated%& ACL condition cannot be used in
+a connect- or helo-ACL.
 
 
 

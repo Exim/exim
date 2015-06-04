@@ -937,6 +937,9 @@ fprintf(f, "Authenticators:");
 #ifdef AUTH_SPA
   fprintf(f, " spa");
 #endif
+#ifdef AUTH_TLS
+  fprintf(f, " tls");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Routers:");

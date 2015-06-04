@@ -1024,7 +1024,7 @@ uschar *response_der;
 int response_der_len;
 
 DEBUG(D_tls)
-  debug_printf("Received TLS status request (OCSP stapling); %s response.",
+  debug_printf("Received TLS status request (OCSP stapling); %s response\n",
     cbinfo->u_ocsp.server.response ? "have" : "lack");
 
 tls_in.ocsp = OCSP_NOT_RESP;
