@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 1995 - 2007 */
+/* Copyright (c) University of Cambridge, 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Code for DKIM support. Other DKIM relevant code is in

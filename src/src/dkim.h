@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 1995 - 2007 */
+/* Copyright (c) University of Cambridge, 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 uschar *dkim_exim_sign(int, uschar *, const uschar *, uschar *, uschar *, uschar *);

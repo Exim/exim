@@ -18,6 +18,9 @@
  *   Changed over to using unsigned chars
  *   Makes use of lf_check_file() for file checking
  * --------------------------------------------------------------
+ * Modified by The Exim Maintainers 2015:
+ *   const propagation
+ * --------------------------------------------------------------
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of

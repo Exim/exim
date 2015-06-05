@@ -2,7 +2,7 @@
 # appropriate links, and then creating and running the main makefile in that
 # directory.
 
-# Copyright (c) University of Cambridge, 1995 - 2014
+# Copyright (c) University of Cambridge, 1995 - 2015
 # See the file NOTICE for conditions of use and distribution.
 
 # IRIX make uses the shell that is in the SHELL variable, which often defaults

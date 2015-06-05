@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Wolfgang Breyha 2005-2013
+/* Copyright (c) Wolfgang Breyha 2005 - 2015
  * Vienna University Computer Center
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
