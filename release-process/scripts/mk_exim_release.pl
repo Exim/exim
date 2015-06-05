@@ -193,7 +193,7 @@ sub build_documentation {
 
     my $docdir = File::Spec->catdir( $context->{release_tree}, 'doc', 'doc-docbook' );
     # documentation building gets the truncated release, without RC
-    system("cd '$docdir' && ./OS-Fixups && make EXIM_VER=$context->{trelease} everything") == 0
+    system("cd '$docdir' && ./OS-Fixups && $context->{make_cmd} EXIM_VER=$context->{trelease} everything") == 0
       || croak "Doc build failed";
 
     copy_docbook_files($context);
@@ -363,6 +363,7 @@ sub create_tar_files {
         tmp_dir     => File::Temp->newdir(),
         webgen_base => "$FindBin::Bin/../../../exim-website",
         tar_cmd     => 'tar',
+        make_cmd    => 'make',
         compressors => {
                 gzip    => 1,
                 bzip2   => 1,
@@ -377,7 +378,8 @@ sub create_tar_files {
         GetOptions(
             'directory=s'   => \$context->{directory},
             'webgen_base=s' => \$context->{webgen_base},
-            'tar'           => \$context->{tar_cmd},
+            'tar=s'         => \$context->{tar_cmd},
+            'make=s'        => \$context->{make_cmd},
             'lzip!'         => \$context->{compressors}{lzip},
             'verbose!'      => \$verbose,
             'debug!'        => \$debug,
@@ -425,6 +427,7 @@ mk_exim_release.pl [options] version
    --help              display this help and exits
    --man               displays man page
    --tar=cmd           command to use for tar
+   --make=cmd          command to use for make
    --directory=dir     dir to package
    --no-lzip           do not create .tar.lz files
    --delete            Delete packaging directory at start
@@ -443,6 +446,11 @@ to be output.
 Use to override the path to the tar command; without this, will search for
 gtar, and if not found use tar.  Need GNU tar for lzip, unless --no-lzip is
 used.
+
+=item B<--make>
+
+Use to override the path/name of the make command.
+Useful sometimes to force gmake.
 
 =item B<--lzip>
 
