@@ -236,6 +236,13 @@ host_lookup = *
 #rfc1413_query_timeout = 5s
 
 
+# Enable an efficiency feature.  We advertise the feature; clients
+# may request to use it.  For multi-recipient mails we then can
+# reject or accept per-user after the message is received.
+#
+prdr_enable = true
+
+
 # By default, Exim expects all envelope addresses to be fully qualified, that
 # is, they must contain both a local part and a domain. If you want to accept
 # unqualified addresses (just a local part) from certain hosts, you can specify
