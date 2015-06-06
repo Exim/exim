@@ -5598,6 +5598,13 @@ find that they send unqualified addresses. The two commented-out options:
 show how you can specify hosts that are permitted to send unqualified sender
 and recipient addresses, respectively.
 
+The &%log_selector%& option is used to increase the detail of logging
+over the default:
+.code
+log_selector = +smtp_protocol_error +smtp_syntax_error \
+               +tls_certificate_verified
+.endd
+
 The &%percent_hack_domains%& option is also commented out:
 .code
 # percent_hack_domains =

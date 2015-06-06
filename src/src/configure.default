@@ -249,6 +249,13 @@ host_lookup = *
 # and/or qualify_recipient (see above).
 
 
+# Unless you run a high-volume site you probably want more logging
+# detail than the default.  Adjust to suit.
+
+log_selector = +smtp_protocol_error +smtp_syntax_error \
+	+tls_certificate_verified
+
+
 # If you want Exim to support the "percent hack" for certain domains,
 # uncomment the following line and provide a list of domains. The "percent
 # hack" is the feature by which mail addressed to x%y@z (where z is one of
