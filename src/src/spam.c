@@ -28,6 +28,7 @@ static int
 spamd_param_init(spamd_address_container *spamd)
 {
 /* default spamd server weight, time and priority value */
+spamd->is_rspamd = FALSE;
 spamd->is_failed = FALSE;
 spamd->weight = SPAMD_WEIGHT;
 spamd->timeout = SPAMD_TIMEOUT;
