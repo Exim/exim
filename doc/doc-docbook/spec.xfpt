@@ -11342,6 +11342,34 @@ This variable is available when Exim is compiled with the
 content-scanning extension and the obsolete &%demime%& condition. For details,
 see section &<<SECTdemimecond>>&.
 
+.vitem &$dkim_cur_signer$& &&&
+       &$dkim_verify_status$& &&&
+       &$dkim_verify_reason$& &&&
+       &$dkim_domain$& &&&
+       &$dkim_identity$& &&&
+       &$dkim_selector$& &&&
+       &$dkim_algo$& &&&
+       &$dkim_canon_body$& &&&
+       &$dkim_canon_headers$& &&&
+       &$dkim_copiedheaders$& &&&
+       &$dkim_bodylength$& &&&
+       &$dkim_created$& &&&
+       &$dkim_expires$& &&&
+       &$dkim_headernames$& &&&
+       &$dkim_key_testing$& &&&
+       &$dkim_key_nosubdomains$& &&&
+       &$dkim_key_srvtype$& &&&
+       &$dkim_key_granularity$& &&&
+       &$dkim_key_notes$&
+These variables are only available within the DKIM ACL.
+For details see chapter &<<CHAPdkim>>&.
+
+.vitem &$dkim_signers$&
+.vindex &$dkim_signers$&
+When a message has been received this variable contains
+a colon-separated list of signer domains and identities for the message.
+For details see chapter &<<CHAPdkim>>&.
+
 .vitem &$dnslist_domain$& &&&
        &$dnslist_matched$& &&&
        &$dnslist_text$& &&&
@@ -13455,6 +13483,7 @@ listed in more than one group.
 See also the &'Policy controls'& section above.
 
 .table2
+.row &%dkim_verify_signers%&         "DKIM domain for which DKIM ACL is run"
 .row &%host_lookup%&                 "host name looked up for these hosts"
 .row &%host_lookup_order%&           "order of DNS and local name lookups"
 .row &%recipient_unqualified_hosts%& "may send unqualified recipients"
@@ -13662,6 +13691,12 @@ if the PRDR feature has been negotiated,
 is run for each recipient after an SMTP DATA command has been
 processed and the message itself has been received, but before the
 acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
+
+.option acl_smtp_dkim main string&!! unset
+.cindex DKIM "ACL for"
+This option defines the ACL that is run for each DKIM signature
+of a received message.
+See chapter &<<CHAPdkim>>& for further details.
 
 .option acl_smtp_etrn main string&!! unset
 .cindex "ETRN" "ACL for"
@@ -14136,6 +14171,14 @@ activities take place. AAAA records are never looked up, and any IPv6 addresses
 that are listed in &%local_interfaces%&, data for the &%manualroute%& router,
 etc. are ignored. If IP literals are enabled, the &(ipliteral)& router declines
 to handle IPv6 literal addresses.
+
+
+.option dkim_verify_signers main "domain list&!!" $dkim_signers
+.cindex DKIM "controlling calls to the ACL"
+This option gives a list of DKIM domains for which the DKIM ACL is run.
+It is expanded after the message is received; by default it runs
+the ACL once for each signature in the message.
+See chapter &<<CHAPdkim>>&.
 
 
 .option dns_again_means_nonexist main "domain list&!!" unset
@@ -27092,6 +27135,7 @@ options in the main part of the configuration. These options are:
 .cindex "EXPN" "ACL for"
 .cindex "HELO" "ACL for"
 .cindex "EHLO" "ACL for"
+.cindex "DKIM" "ACL for"
 .cindex "MAIL" "ACL for"
 .cindex "QUIT, ACL for"
 .cindex "RCPT" "ACL for"
@@ -27110,6 +27154,7 @@ options in the main part of the configuration. These options are:
 .irow &%acl_smtp_connect%&     "ACL for start of SMTP connection"
 .irow &%acl_smtp_data%&        "ACL after DATA is complete"
 .irow &%acl_smtp_data_prdr%&   "ACL for each recipient, after DATA is complete"
+.irow &%acl_smtp_dkim%&        "ACL for each DKIM signer"
 .irow &%acl_smtp_etrn%&        "ACL for ETRN"
 .irow &%acl_smtp_expn%&        "ACL for EXPN"
 .irow &%acl_smtp_helo%&        "ACL for HELO or EHLO"
