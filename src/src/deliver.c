@@ -4852,9 +4852,9 @@ while (*s != 0)
 a bounce or a warning message. It tries to format the message reasonably as
 required by RFC 3461 by adding a space after each newline
 
-we assume that this function is only called if addr->host_used is set and if so
-a useable addr->message is available containing some Exim description with ": \n" 
-ending, followed by the L/SMTP error message.
+it uses the same logic as print_address_error() above. if af_pass_message is true
+and addr->message is set it uses the remote host answer. if not addr->user_message
+is used instead if available.
 
 Arguments:
   addr         the address
@@ -4866,21 +4866,33 @@ Returns:       nothing
 static void
 print_dsn_diagnostic_code(const address_item *addr, FILE *f)
 {
-uschar * s;
 
-/* check host_used, af_pass_message flag and addr->message for safety reasons */
-if (!addr->host_used && testflag(addr, af_pass_message) && addr->message)
+uschar *s = testflag(addr, af_pass_message) ? addr->message : NULL;
+
+/* af_pass_message and addr->message set ? print remote host answer */
+if (s)
+  {
+  DEBUG(D_deliver)
+    debug_printf("DSN Diagnostic-Code: addr->message = %s\n", addr->message);
+
+  /* search first ": ". we assume to find the remote-MTA answer there */
+  if (!(s = Ustrstr(addr->message, ": ")))
+    return;				/* not found, bail out */
+  s += 2;  /* skip ": " */
+  fprintf(f, "Diagnostic-Code: smtp; ");
+  }
+/* user_message set? use it instead */
+else if ((s = addr->user_message))
+  {
+  DEBUG(D_deliver)
+    debug_printf("DSN Diagnostic-Code: addr->user_message = %s\n", s);
+  /* local errors like timeout get 426 */
+  fprintf(f, "Diagnostic-Code: smtp; 426 ");
+  }
+/* no message available. do nothing */
+else
   return;
 
-/* search first ": ". we assume to find the remote-MTA answer there */
-DEBUG(D_deliver)
-  debug_printf("DSN Diagnostic-Code: addr->dsn_message = %s\n", addr->message);
-if (!(s = Ustrstr(addr->message, ": ")))
-  return;				/* not found, bail out */
-
-fprintf(f, "Diagnostic-Code: smtp; ");
-
-s += 2;  /* skip ": " */
 while (*s)
   if (*s == '\\' && s[1] == 'n')
     {
