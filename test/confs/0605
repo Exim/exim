@@ -9,6 +9,8 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+disable_ipv6 = true
+
 acl_smtp_rcpt = accept hosts = test.again.dns
 
 queue_only

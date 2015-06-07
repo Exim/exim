@@ -1,6 +1,7 @@
 # dns retry in hostlist
 # Exim test configuration 0605
 #
+need_ipv4
 #
 exim -bh HOSTIPV4
 helo test

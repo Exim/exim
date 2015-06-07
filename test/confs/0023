@@ -12,6 +12,8 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+disable_ipv6 = true
+
 addresslist ok_senders = ok@ok.ok
 
 domainlist local_domains = test.ex : *.test.ex

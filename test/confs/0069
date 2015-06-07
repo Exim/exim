@@ -12,6 +12,8 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+disable_ipv6 = true
+
 domainlist local_domains = test.ex : myhost.ex
 
 acl_smtp_rcpt = check_recipient$local_part

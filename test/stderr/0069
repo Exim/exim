@@ -137,7 +137,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> processing "deny"
 >>> check hosts = +include_defer : test.again.dns
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
->>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from [V4NET.0.0.13])
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 LOG: DNS lookup of "test.again.dns" deferred: accepted by +include_defer
@@ -160,7 +159,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> processing "accept"
 >>> check hosts = test.again.dns : V4NET.0.0.13
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
->>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from [V4NET.0.0.13])
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> host in "test.again.dns : V4NET.0.0.13"? list match deferred for test.again.dns
@@ -181,7 +179,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> using ACL "check_recipientc"
 >>> processing "accept"
 >>> check hosts = +ignore_defer : test.again.dns : V4NET.0.0.13
->>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from [V4NET.0.0.13])
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
