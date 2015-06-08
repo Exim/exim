@@ -1,0 +1,52 @@
+
+******** SERVER ********
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+ppppp daemon_smtp_port overridden by -oX:
+ppppp   <: ppppp
+ppppp listening on all interfaces (IPvppppp) port ppppp
+ppppp pid written to TESTSUITE/spool/exim-daemon.pid
+ppppp LOG: MAIN
+ppppp   exim x.yz daemon started: pid=ppppp, no queue runs, listening for SMTP on port ppppp (IPvppppp)
+ppppp daemon running with uid=ppppp gid=ppppp euid=ppppp egid=ppppp
+ppppp Listening...
+ppppp Connection request from ppppp.ppppp.ppppp.ppppp port ppppp
+ppppp LOG: smtp_connection MAIN
+ppppp   SMTP connection from [ppppp.ppppp.ppppp.ppppp] (TCP/IP connection count = ppppp)
+ppppp ppppp SMTP accept process running
+ppppp Listening...
+ppppp Process ppppp is handling incoming connection from [ppppp.ppppp.ppppp.ppppp]
+ppppp Process ppppp is ready for new message
+ppppp using ACL "delayppppp_accept"
+ppppp processing "accept"
+ppppp check delay = ppppps
+ppppp delay modifier requests ppppp-second delay
+ppppp accept: condition test succeeded in ACL "delayppppp_accept"
+ppppp end of ACL "delayppppp_accept": ACCEPT
+ppppp LOG: smtp_connection MAIN
+ppppp   SMTP connection from [ppppp.ppppp.ppppp.ppppp] closed by QUIT
+ppppp child ppppp ended: status=pppppxppppp
+ppppp   normal exit, ppppp
+ppppp ppppp SMTP accept processes now running
+ppppp Listening...
+ppppp Connection request from ppppp.ppppp.ppppp.ppppp port ppppp
+ppppp LOG: smtp_connection MAIN
+ppppp   SMTP connection from [ppppp.ppppp.ppppp.ppppp] (TCP/IP connection count = ppppp)
+ppppp ppppp SMTP accept process running
+ppppp Listening...
+ppppp Process ppppp is handling incoming connection from [ppppp.ppppp.ppppp.ppppp]
+ppppp Process ppppp is ready for new message
+ppppp using ACL "delayppppp_accept"
+ppppp processing "accept"
+ppppp check delay = ppppps
+ppppp delay modifier requests ppppp-second delay
+ppppp delay cancelled by peer close
+ppppp accept: condition test succeeded in ACL "delayppppp_accept"
+ppppp end of ACL "delayppppp_accept": ACCEPT
+ppppp LOG: lost_incoming_connection MAIN
+ppppp   unexpected disconnection while reading SMTP command from [ppppp.ppppp.ppppp.ppppp]
+ppppp child ppppp ended: status=pppppxppppp
+ppppp   normal exit, ppppp
+ppppp ppppp SMTP accept processes now running
+ppppp Listening...

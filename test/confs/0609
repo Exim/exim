@@ -1,0 +1,47 @@
+# Exim test configuration 0609
+# Long ACL delays
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+disable_ipv6 = true
+
+acl_smtp_rcpt = delay4_accept
+log_selector = +smtp_connection
+#hosts_connection_nolog = : 127.0.0.1
+
+
+# ----- ACLs -----
+
+begin acl
+
+delay4_accept:
+  accept   delay = 4s
+
+# ----- Routers -----
+
+begin routers
+
+accept:
+  driver = accept
+  transport = appendfile
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

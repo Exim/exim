@@ -1378,6 +1378,9 @@ $munges =
     'tls_anycipher' =>
     { 'mainlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /' },
 
+    'debug_pid' =>
+    { 'stderr' => 's/\d{1,5}/ppppp/g' },
+
   };
 
 

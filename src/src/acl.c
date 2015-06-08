@@ -3480,17 +3480,7 @@ for (; cb != NULL; cb = cb->next)
             debug_printf("delay skipped in -bh checking mode\n");
           }
 
-        /* It appears to be impossible to detect that a TCP/IP connection has
-        gone away without reading from it. This means that we cannot shorten
-        the delay below if the client goes away, because we cannot discover
-        that the client has closed its end of the connection. (The connection
-        is actually in a half-closed state, waiting for the server to close its
-        end.) It would be nice to be able to detect this state, so that the
-        Exim process is not held up unnecessarily. However, it seems that we
-        can't. The poll() function does not do the right thing, and in any case
-        it is not always available.
-
-        NOTE 1: If ever this state of affairs changes, remember that we may be
+	/* NOTE 1: Remember that we may be
         dealing with stdin/stdout here, in addition to TCP/IP connections.
         Also, delays may be specified for non-SMTP input, where smtp_out and
         smtp_in will be NULL. Whatever is done must work in all cases.
@@ -3501,8 +3491,36 @@ for (; cb != NULL; cb = cb->next)
 
         else
           {
-          if (smtp_out != NULL && !disable_delay_flush) mac_smtp_fflush();
+          if (smtp_out != NULL && !disable_delay_flush)
+	    mac_smtp_fflush();
+
+#if !defined(NO_POLL_H) && defined (_GNU_SOURCE)
+	    {
+	    struct pollfd p;
+	    nfds_t n = 0;
+	    if (smtp_out)
+	      {
+	      p.fd = fileno(smtp_out);
+	      p.events = POLLRDHUP;
+	      n = 1;
+	      }
+	    if (poll(&p, n, delay*1000) > 0)
+	      HDEBUG(D_acl) debug_printf("delay cancelled by peer close\n");
+	    }
+#else
+        /* It appears to be impossible to detect that a TCP/IP connection has
+        gone away without reading from it. This means that we cannot shorten
+        the delay below if the client goes away, because we cannot discover
+        that the client has closed its end of the connection. (The connection
+        is actually in a half-closed state, waiting for the server to close its
+        end.) It would be nice to be able to detect this state, so that the
+        Exim process is not held up unnecessarily. However, it seems that we
+        can't. The poll() function does not do the right thing, and in any case
+        it is not always available.
+        */
+
           while (delay > 0) delay = sleep(delay);
+#endif
           }
         }
       }
