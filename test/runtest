@@ -875,7 +875,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # IP address lookups use gethostbyname() when IPv6 is not supported,
     # and gethostbyname2() or getipnodebyname() when it is.
 
-    s/\bgethostbyname2?|\bgetipnodebyname/get[host|ipnode]byname[2]/;
+    s/\b(gethostbyname2?|\bgetipnodebyname)(\(af=inet\))?/get[host|ipnode]byname[2]/;
 
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;

@@ -60,7 +60,7 @@ DNS lookup of cioce.test.again.dns (A) using fakens
 DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
-get[host|ipnode]byname[2](af=inet) returned 1 (HOST_NOT_FOUND)
+get[host|ipnode]byname[2] returned 1 (HOST_NOT_FOUND)
 no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
 LOG: host_lookup_failed MAIN
   no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
