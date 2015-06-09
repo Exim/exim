@@ -3494,7 +3494,7 @@ for (; cb != NULL; cb = cb->next)
           if (smtp_out != NULL && !disable_delay_flush)
 	    mac_smtp_fflush();
 
-#if !defined(NO_POLL_H) && defined (_GNU_SOURCE)
+#if !defined(NO_POLL_H) && defined (POLLRDHUP)
 	    {
 	    struct pollfd p;
 	    nfds_t n = 0;
