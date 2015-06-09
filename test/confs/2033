@@ -23,6 +23,8 @@ KEY2 =  FX/cert2
 
 # ----- Main settings -----
 
+disable_ipv6 = true
+
 acl_smtp_rcpt = accept
 
 log_selector =  +tls_peerdn+tls_certificate_verified
