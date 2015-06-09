@@ -1019,6 +1019,9 @@ RESET_AFTER_EXTRA_LINE_READ:
         @saved = ();
         }
 
+    # remote port numbers vary
+    s/(Connection request from 127.0.0.1 port) \d{1,5}/$1 sssss/;
+
     # Skip hosts_require_dane checks when the options
     # are unset, because dane ain't always there.
 
@@ -1379,7 +1382,7 @@ $munges =
     { 'mainlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /' },
 
     'debug_pid' =>
-    { 'stderr' => 's/\d{1,5}/ppppp/g' },
+    { 'stderr' => 's/(^\s{0,4}|(?<=Process )|(?<=child ))\d{1,5}/ppppp/g' },
 
   };
 

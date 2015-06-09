@@ -4,49 +4,49 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 ppppp daemon_smtp_port overridden by -oX:
-ppppp   <: ppppp
-ppppp listening on all interfaces (IPvppppp) port ppppp
+ppppp   <: 1225
+ppppp listening on all interfaces (IPv4) port 1225
 ppppp pid written to TESTSUITE/spool/exim-daemon.pid
 ppppp LOG: MAIN
-ppppp   exim x.yz daemon started: pid=ppppp, no queue runs, listening for SMTP on port ppppp (IPvppppp)
-ppppp daemon running with uid=ppppp gid=ppppp euid=ppppp egid=ppppp
+ppppp   exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+ppppp daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 ppppp Listening...
-ppppp Connection request from ppppp.ppppp.ppppp.ppppp port ppppp
+ppppp Connection request from 127.0.0.1 port sssss
 ppppp LOG: smtp_connection MAIN
-ppppp   SMTP connection from [ppppp.ppppp.ppppp.ppppp] (TCP/IP connection count = ppppp)
-ppppp ppppp SMTP accept process running
+ppppp   SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+ppppp 1 SMTP accept process running
 ppppp Listening...
-ppppp Process ppppp is handling incoming connection from [ppppp.ppppp.ppppp.ppppp]
+ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
-ppppp using ACL "delayppppp_accept"
+ppppp using ACL "delay4_accept"
 ppppp processing "accept"
-ppppp check delay = ppppps
-ppppp delay modifier requests ppppp-second delay
-ppppp accept: condition test succeeded in ACL "delayppppp_accept"
-ppppp end of ACL "delayppppp_accept": ACCEPT
+ppppp check delay = 4s
+ppppp delay modifier requests 4-second delay
+ppppp accept: condition test succeeded in ACL "delay4_accept"
+ppppp end of ACL "delay4_accept": ACCEPT
 ppppp LOG: smtp_connection MAIN
-ppppp   SMTP connection from [ppppp.ppppp.ppppp.ppppp] closed by QUIT
-ppppp child ppppp ended: status=pppppxppppp
-ppppp   normal exit, ppppp
-ppppp ppppp SMTP accept processes now running
+ppppp   SMTP connection from [127.0.0.1] closed by QUIT
+ppppp child ppppp ended: status=0x0
+ppppp   normal exit, 0
+ppppp 0 SMTP accept processes now running
 ppppp Listening...
-ppppp Connection request from ppppp.ppppp.ppppp.ppppp port ppppp
+ppppp Connection request from 127.0.0.1 port sssss
 ppppp LOG: smtp_connection MAIN
-ppppp   SMTP connection from [ppppp.ppppp.ppppp.ppppp] (TCP/IP connection count = ppppp)
-ppppp ppppp SMTP accept process running
+ppppp   SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+ppppp 1 SMTP accept process running
 ppppp Listening...
-ppppp Process ppppp is handling incoming connection from [ppppp.ppppp.ppppp.ppppp]
+ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
-ppppp using ACL "delayppppp_accept"
+ppppp using ACL "delay4_accept"
 ppppp processing "accept"
-ppppp check delay = ppppps
-ppppp delay modifier requests ppppp-second delay
+ppppp check delay = 4s
+ppppp delay modifier requests 4-second delay
 ppppp delay cancelled by peer close
-ppppp accept: condition test succeeded in ACL "delayppppp_accept"
-ppppp end of ACL "delayppppp_accept": ACCEPT
+ppppp accept: condition test succeeded in ACL "delay4_accept"
+ppppp end of ACL "delay4_accept": ACCEPT
 ppppp LOG: lost_incoming_connection MAIN
-ppppp   unexpected disconnection while reading SMTP command from [ppppp.ppppp.ppppp.ppppp]
-ppppp child ppppp ended: status=pppppxppppp
-ppppp   normal exit, ppppp
-ppppp ppppp SMTP accept processes now running
+ppppp   unexpected disconnection while reading SMTP command from [127.0.0.1]
+ppppp child ppppp ended: status=0x100
+ppppp   normal exit, 1
+ppppp 0 SMTP accept processes now running
 ppppp Listening...
