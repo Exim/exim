@@ -54,7 +54,7 @@ smtp:
 
 begin retry
 
-thishost.test.ex  *  F,15s,1s
+thishost.test.ex  *  F,20s,2s
 *                 *  F,1s,1s; F,1s,5s
 
 # End
