@@ -4815,15 +4815,12 @@ print_address_error(address_item *addr, FILE *f, uschar *t)
 int count = Ustrlen(t);
 uschar *s = testflag(addr, af_pass_message)? addr->message : NULL;
 
-if (s == NULL)
-  {
-  if (addr->user_message != NULL) s = addr->user_message; else return;
-  }
+if (!s && !(s = addr->user_message))
+  return;
 
 fprintf(f, "\n    %s", t);
 
-while (*s != 0)
-  {
+while (*s)
   if (*s == '\\' && s[1] == 'n')
     {
     fprintf(f, "\n    ");
@@ -4840,7 +4837,6 @@ while (*s != 0)
       count = 0;
       }
     }
-  }
 }
 
 
@@ -4866,7 +4862,6 @@ Returns:       nothing
 static void
 print_dsn_diagnostic_code(const address_item *addr, FILE *f)
 {
-
 uschar *s = testflag(addr, af_pass_message) ? addr->message : NULL;
 
 /* af_pass_message and addr->message set ? print remote host answer */
