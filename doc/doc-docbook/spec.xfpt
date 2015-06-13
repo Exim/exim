@@ -25652,7 +25652,7 @@ cyrusless_crammd5:
   driver = cram_md5
   public_name = CRAM-MD5
   server_secret = ${lookup{$auth1:mail.example.org:userPassword}\
-                  dbmjz{/etc/sasldb2}}
+                  dbmjz{/etc/sasldb2}{$value}fail}
   server_set_id = $auth1
 .endd
 
