@@ -22,11 +22,10 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 #ifndef POLARSSL_RSA_H
 #define POLARSSL_RSA_H
 
-#include "bignum.h"
+#include "polarssl/bignum.h"
 
 /*
  * RSA Error codes
@@ -41,72 +40,6 @@
 #define POLARSSL_ERR_RSA_OUTPUT_TOO_LARGE                  -0x0470
 #define POLARSSL_ERR_RSA_RNG_FAILED                        -0x0480
 
-/* *************** begin copy from x509.h  ************************/
-/*
- * ASN1 Error codes
- *
- * These error codes will be OR'ed to X509 error codes for
- * higher error granularity.
- */
-#define POLARSSL_ERR_ASN1_OUT_OF_DATA                      0x0014
-#define POLARSSL_ERR_ASN1_UNEXPECTED_TAG                   0x0016
-#define POLARSSL_ERR_ASN1_INVALID_LENGTH                   0x0018
-#define POLARSSL_ERR_ASN1_LENGTH_MISMATCH                  0x001A
-#define POLARSSL_ERR_ASN1_INVALID_DATA                     0x001C
-
-/*
- * X509 Error codes
- */
-#define POLARSSL_ERR_X509_FEATURE_UNAVAILABLE              -0x0020
-#define POLARSSL_ERR_X509_CERT_INVALID_PEM                 -0x0040
-#define POLARSSL_ERR_X509_CERT_INVALID_FORMAT              -0x0060
-#define POLARSSL_ERR_X509_CERT_INVALID_VERSION             -0x0080
-#define POLARSSL_ERR_X509_CERT_INVALID_SERIAL              -0x00A0
-#define POLARSSL_ERR_X509_CERT_INVALID_ALG                 -0x00C0
-#define POLARSSL_ERR_X509_CERT_INVALID_NAME                -0x00E0
-#define POLARSSL_ERR_X509_CERT_INVALID_DATE                -0x0100
-#define POLARSSL_ERR_X509_CERT_INVALID_PUBKEY              -0x0120
-#define POLARSSL_ERR_X509_CERT_INVALID_SIGNATURE           -0x0140
-#define POLARSSL_ERR_X509_CERT_INVALID_EXTENSIONS          -0x0160
-#define POLARSSL_ERR_X509_CERT_UNKNOWN_VERSION             -0x0180
-#define POLARSSL_ERR_X509_CERT_UNKNOWN_SIG_ALG             -0x01A0
-#define POLARSSL_ERR_X509_CERT_UNKNOWN_PK_ALG              -0x01C0
-#define POLARSSL_ERR_X509_CERT_SIG_MISMATCH                -0x01E0
-#define POLARSSL_ERR_X509_CERT_VERIFY_FAILED               -0x0200
-#define POLARSSL_ERR_X509_KEY_INVALID_PEM                  -0x0220
-#define POLARSSL_ERR_X509_KEY_INVALID_VERSION              -0x0240
-#define POLARSSL_ERR_X509_KEY_INVALID_FORMAT               -0x0260
-#define POLARSSL_ERR_X509_KEY_INVALID_ENC_IV               -0x0280
-#define POLARSSL_ERR_X509_KEY_UNKNOWN_ENC_ALG              -0x02A0
-#define POLARSSL_ERR_X509_KEY_PASSWORD_REQUIRED            -0x02C0
-#define POLARSSL_ERR_X509_KEY_PASSWORD_MISMATCH            -0x02E0
-#define POLARSSL_ERR_X509_POINT_ERROR                      -0x0300
-#define POLARSSL_ERR_X509_VALUE_TO_LENGTH                  -0x0320
-
-/*
- * DER constants
- */
-#define ASN1_BOOLEAN                 0x01
-#define ASN1_INTEGER                 0x02
-#define ASN1_BIT_STRING              0x03
-#define ASN1_OCTET_STRING            0x04
-#define ASN1_NULL                    0x05
-#define ASN1_OID                     0x06
-#define ASN1_UTF8_STRING             0x0C
-#define ASN1_SEQUENCE                0x10
-#define ASN1_SET                     0x11
-#define ASN1_PRINTABLE_STRING        0x13
-#define ASN1_T61_STRING              0x14
-#define ASN1_IA5_STRING              0x16
-#define ASN1_UTC_TIME                0x17
-#define ASN1_GENERALIZED_TIME        0x18
-#define ASN1_UNIVERSAL_STRING        0x1C
-#define ASN1_BMP_STRING              0x1E
-#define ASN1_PRIMITIVE               0x00
-#define ASN1_CONSTRUCTED             0x20
-#define ASN1_CONTEXT_SPECIFIC        0x80
-/* ***************   end copy from x509.h  ************************/
-
 /*
  * PKCS#1 constants
  */
@@ -114,11 +47,11 @@
 #define SIG_RSA_MD2     2
 #define SIG_RSA_MD4     3
 #define SIG_RSA_MD5     4
-#define SIG_RSA_SHA1    5
-#define SIG_RSA_SHA224  14
-#define SIG_RSA_SHA256  11
-#define SIG_RSA_SHA384  12
-#define SIG_RSA_SHA512  13
+#define SIG_RSA_SHA1	5
+#define SIG_RSA_SHA224	14
+#define SIG_RSA_SHA256	11
+#define	SIG_RSA_SHA384	12
+#define SIG_RSA_SHA512	13
 
 #define RSA_PUBLIC      0
 #define RSA_PRIVATE     1
@@ -129,28 +62,28 @@
 #define RSA_SIGN        1
 #define RSA_CRYPT       2
 
-#define ASN1_STR_CONSTRUCTED_SEQUENCE "\x30"
-#define ASN1_STR_NULL                 "\x05"
-#define ASN1_STR_OID                  "\x06"
-#define ASN1_STR_OCTET_STRING         "\x04"
+#define ASN1_STR_CONSTRUCTED_SEQUENCE	"\x30"
+#define ASN1_STR_NULL			        "\x05"
+#define ASN1_STR_OID			        "\x06"
+#define ASN1_STR_OCTET_STRING		    "\x04"
 
-#define OID_DIGEST_ALG_MDX            "\x2A\x86\x48\x86\xF7\x0D\x02\x00"
-#define OID_HASH_ALG_SHA1             "\x2b\x0e\x03\x02\x1a"
-#define OID_HASH_ALG_SHA2X            "\x60\x86\x48\x01\x65\x03\x04\x02\x00"
+#define OID_DIGEST_ALG_MDX	        "\x2A\x86\x48\x86\xF7\x0D\x02\x00"
+#define OID_HASH_ALG_SHA1	        "\x2b\x0e\x03\x02\x1a"
+#define OID_HASH_ALG_SHA2X	        "\x60\x86\x48\x01\x65\x03\x04\x02\x00"
 
-#define OID_ISO_MEMBER_BODIES         "\x2a"
-#define OID_ISO_IDENTIFIED_ORG        "\x2b"
+#define OID_ISO_MEMBER_BODIES	    "\x2a"
+#define OID_ISO_IDENTIFIED_ORG	    "\x2b"
 
 /*
  * ISO Member bodies OID parts
  */
-#define OID_COUNTRY_US                "\x86\x48"
-#define OID_RSA_DATA_SECURITY         "\x86\xf7\x0d"
+#define OID_COUNTRY_US		        "\x86\x48"
+#define OID_RSA_DATA_SECURITY	    "\x86\xf7\x0d"
 
 /*
  * ISO Identified organization OID parts
  */
-#define OID_OIW_SECSIG_SHA1           "\x0e\x03\x02\x1a"
+#define OID_OIW_SECSIG_SHA1	        "\x0e\x03\x02\x1a"
 
 /*
  * DigestInfo ::= SEQUENCE {
@@ -161,31 +94,31 @@
  *
  * Digest ::= OCTET STRING
  */
-#define ASN1_HASH_MDX \
-( \
-    ASN1_STR_CONSTRUCTED_SEQUENCE "\x20" \
-    ASN1_STR_CONSTRUCTED_SEQUENCE "\x0C" \
-    ASN1_STR_OID "\x08" \
-    OID_DIGEST_ALG_MDX \
-    ASN1_STR_NULL "\x00" \
-    ASN1_STR_OCTET_STRING "\x10" \
+#define ASN1_HASH_MDX					        \
+(							                    \
+    ASN1_STR_CONSTRUCTED_SEQUENCE "\x20"		\
+      ASN1_STR_CONSTRUCTED_SEQUENCE "\x0C"		\
+        ASN1_STR_OID "\x08"				        \
+	  OID_DIGEST_ALG_MDX				        \
+	ASN1_STR_NULL "\x00"				        \
+      ASN1_STR_OCTET_STRING "\x10"			    \
 )
 
-#define ASN1_HASH_SHA1 \
-    ASN1_STR_CONSTRUCTED_SEQUENCE "\x21" \
-    ASN1_STR_CONSTRUCTED_SEQUENCE "\x09" \
-    ASN1_STR_OID "\x05" \
-    OID_HASH_ALG_SHA1 \
-    ASN1_STR_NULL "\x00" \
-    ASN1_STR_OCTET_STRING "\x14"
+#define ASN1_HASH_SHA1					        \
+    ASN1_STR_CONSTRUCTED_SEQUENCE "\x21"		\
+      ASN1_STR_CONSTRUCTED_SEQUENCE "\x09"		\
+        ASN1_STR_OID "\x05"				        \
+	  OID_HASH_ALG_SHA1				            \
+        ASN1_STR_NULL "\x00"				    \
+      ASN1_STR_OCTET_STRING "\x14"
 
-#define ASN1_HASH_SHA2X \
-    ASN1_STR_CONSTRUCTED_SEQUENCE "\x11" \
-    ASN1_STR_CONSTRUCTED_SEQUENCE "\x0d" \
-    ASN1_STR_OID "\x09" \
-    OID_HASH_ALG_SHA2X \
-    ASN1_STR_NULL "\x00" \
-    ASN1_STR_OCTET_STRING "\x00"
+#define ASN1_HASH_SHA2X					        \
+    ASN1_STR_CONSTRUCTED_SEQUENCE "\x11"		\
+      ASN1_STR_CONSTRUCTED_SEQUENCE "\x0d"		\
+        ASN1_STR_OID "\x09"				        \
+	  OID_HASH_ALG_SHA2X				        \
+        ASN1_STR_NULL "\x00"				    \
+      ASN1_STR_OCTET_STRING "\x00"
 
 /**
  * \brief          RSA context structure
@@ -339,7 +272,7 @@ int rsa_pkcs1_encrypt( rsa_context *ctx,
  * \param input    buffer holding the encrypted data
  * \param output   buffer that will hold the plaintext
  * \param olen     will contain the plaintext length
- * \param output_max_len  maximum length of the output buffer
+ * \param output_max_len	maximum length of the output buffer
  *
  * \return         0 if successful, or an POLARSSL_ERR_RSA_XXX error code
  *
@@ -351,7 +284,7 @@ int rsa_pkcs1_decrypt( rsa_context *ctx,
                        int mode, int *olen,
                        const unsigned char *input,
                        unsigned char *output,
-                       int output_max_len );
+		               int output_max_len );
 
 /**
  * \brief          Do a private RSA to sign a message digest
@@ -406,11 +339,12 @@ int rsa_pkcs1_verify( rsa_context *ctx,
  */
 void rsa_free( rsa_context *ctx );
 
-/* PDKIM declarations (not part of polarssl) */
-int rsa_parse_public_key( rsa_context *rsa, unsigned char *buf, int buflen );
-int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
-                                     unsigned char *pwd, int pwdlen );
-
+/**
+ * \brief          Checkup routine
+ *
+ * \return         0 if successful, or 1 if the test failed
+ */
+int rsa_self_test( int verbose );
 
 #ifdef __cplusplus
 }

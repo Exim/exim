@@ -29,115 +29,15 @@
  *  http://www.cacr.math.uwaterloo.ca/hac/about/chap8.pdf
  */
 
-#include "rsa.h"
-#include "base64.h"
+#include "polarssl/config.h"
+
+#if defined(POLARSSL_RSA_C)
+
+#include "polarssl/rsa.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
-/* *************** begin copy from x509parse.c ********************/
-/*
- * ASN.1 DER decoding routines
- */
-static int asn1_get_len( unsigned char **p,
-                         const unsigned char *end,
-                         int *len )
-{
-    if( ( end - *p ) < 1 )
-        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-    if( ( **p & 0x80 ) == 0 )
-        *len = *(*p)++;
-    else
-    {
-        switch( **p & 0x7F )
-        {
-        case 1:
-            if( ( end - *p ) < 2 )
-                return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-            *len = (*p)[1];
-            (*p) += 2;
-            break;
-
-        case 2:
-            if( ( end - *p ) < 3 )
-                return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-            *len = ( (*p)[1] << 8 ) | (*p)[2];
-            (*p) += 3;
-            break;
-
-        default:
-            return( POLARSSL_ERR_ASN1_INVALID_LENGTH );
-            break;
-        }
-    }
-
-    if( *len > (int) ( end - *p ) )
-        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-    return( 0 );
-}
-
-static int asn1_get_tag( unsigned char **p,
-                         const unsigned char *end,
-                         int *len, int tag )
-{
-    if( ( end - *p ) < 1 )
-        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-    if( **p != tag )
-        return( POLARSSL_ERR_ASN1_UNEXPECTED_TAG );
-
-    (*p)++;
-
-    return( asn1_get_len( p, end, len ) );
-}
-
-static int asn1_get_int( unsigned char **p,
-                         const unsigned char *end,
-                         int *val )
-{
-    int ret, len;
-
-    if( ( ret = asn1_get_tag( p, end, &len, ASN1_INTEGER ) ) != 0 )
-        return( ret );
-
-    if( len > (int) sizeof( int ) || ( **p & 0x80 ) != 0 )
-        return( POLARSSL_ERR_ASN1_INVALID_LENGTH );
-
-    *val = 0;
-
-    while( len-- > 0 )
-    {
-        *val = ( *val << 8 ) | **p;
-        (*p)++;
-    }
-
-    return( 0 );
-}
-
-static int asn1_get_mpi( unsigned char **p,
-                         const unsigned char *end,
-                         mpi *X )
-{
-    int ret, len;
-
-    if( ( ret = asn1_get_tag( p, end, &len, ASN1_INTEGER ) ) != 0 )
-        return( ret );
-
-    ret = mpi_read_binary( X, *p, len );
-
-    *p += len;
-
-    return( ret );
-}
-/* ***************   end copy from x509parse.c ********************/
-
-
-
 
 /*
  * Initialize an RSA context
@@ -496,7 +396,7 @@ int rsa_pkcs1_decrypt( rsa_context *ctx,
     }
 
     if (ilen - (int)(p - buf) > output_max_len)
-      return( POLARSSL_ERR_RSA_OUTPUT_TOO_LARGE );
+    	return( POLARSSL_ERR_RSA_OUTPUT_TOO_LARGE );
 
     *olen = ilen - (int)(p - buf);
     memcpy( output, p, *olen );
@@ -713,7 +613,7 @@ int rsa_pkcs1_verify( rsa_context *ctx,
         ( len == 19 + 48 && p[14] == 2 && hash_id == SIG_RSA_SHA384 ) ||
         ( len == 19 + 64 && p[14] == 3 && hash_id == SIG_RSA_SHA512 ) )
     {
-        c = p[1] - 17;
+    	c = p[1] - 17;
         p[1] = 17;
         p[14] = 0;
 
@@ -747,211 +647,177 @@ void rsa_free( rsa_context *ctx )
               &ctx->E,  &ctx->N,  NULL );
 }
 
+#if defined(POLARSSL_SELF_TEST)
 
-/* PDKIM code (not copied from polarssl) */
+#include "polarssl/sha1.h"
+
 /*
- * Parse a public RSA key
+ * Example RSA-1024 keypair, for test purposes
+ */
+#define KEY_LEN 128
 
-OpenSSL RSA public key ASN1 container
-  0:d=0  hl=3 l= 159 cons: SEQUENCE
-  3:d=1  hl=2 l=  13 cons: SEQUENCE
-  5:d=2  hl=2 l=   9 prim: OBJECT:rsaEncryption
- 16:d=2  hl=2 l=   0 prim: NULL
- 18:d=1  hl=3 l= 141 prim: BIT STRING:RSAPublicKey (below)
+#define RSA_N   "9292758453063D803DD603D5E777D788" \
+                "8ED1D5BF35786190FA2F23EBC0848AEA" \
+                "DDA92CA6C3D80B32C4D109BE0F36D6AE" \
+                "7130B9CED7ACDF54CFC7555AC14EEBAB" \
+                "93A89813FBF3C4F8066D2D800F7C38A8" \
+                "1AE31942917403FF4946B0A83D3D3E05" \
+                "EE57C6F5F5606FB5D4BC6CD34EE0801A" \
+                "5E94BB77B07507233A0BC7BAC8F90F79"
 
-RSAPublicKey ASN1 container
-  0:d=0  hl=3 l= 137 cons: SEQUENCE
-  3:d=1  hl=3 l= 129 prim: INTEGER:Public modulus
-135:d=1  hl=2 l=   3 prim: INTEGER:Public exponent
-*/
+#define RSA_E   "10001"
 
-int rsa_parse_public_key( rsa_context *rsa, unsigned char *buf, int buflen )
+#define RSA_D   "24BF6185468786FDD303083D25E64EFC" \
+                "66CA472BC44D253102F8B4A9D3BFA750" \
+                "91386C0077937FE33FA3252D28855837" \
+                "AE1B484A8A9A45F7EE8C0C634F99E8CD" \
+                "DF79C5CE07EE72C7F123142198164234" \
+                "CABB724CF78B8173B9F880FC86322407" \
+                "AF1FEDFDDE2BEB674CA15F3E81A1521E" \
+                "071513A1E85B5DFA031F21ECAE91A34D"
+
+#define RSA_P   "C36D0EB7FCD285223CFB5AABA5BDA3D8" \
+                "2C01CAD19EA484A87EA4377637E75500" \
+                "FCB2005C5C7DD6EC4AC023CDA285D796" \
+                "C3D9E75E1EFC42488BB4F1D13AC30A57"
+
+#define RSA_Q   "C000DF51A7C77AE8D7C7370C1FF55B69" \
+                "E211C2B9E5DB1ED0BF61D0D9899620F4" \
+                "910E4168387E3C30AA1E00C339A79508" \
+                "8452DD96A9A5EA5D9DCA68DA636032AF"
+
+#define RSA_DP  "C1ACF567564274FB07A0BBAD5D26E298" \
+                "3C94D22288ACD763FD8E5600ED4A702D" \
+                "F84198A5F06C2E72236AE490C93F07F8" \
+                "3CC559CD27BC2D1CA488811730BB5725"
+
+#define RSA_DQ  "4959CBF6F8FEF750AEE6977C155579C7" \
+                "D8AAEA56749EA28623272E4F7D0592AF" \
+                "7C1F1313CAC9471B5C523BFE592F517B" \
+                "407A1BD76C164B93DA2D32A383E58357"
+
+#define RSA_QP  "9AE7FBC99546432DF71896FC239EADAE" \
+                "F38D18D2B2F0E2DD275AA977E2BF4411" \
+                "F5A3B2A5D33605AEBBCCBA7FEB9F2D2F" \
+                "A74206CEC169D74BF5A8C50D6F48EA08"
+
+#define PT_LEN  24
+#define RSA_PT  "\xAA\xBB\xCC\x03\x02\x01\x00\xFF\xFF\xFF\xFF\xFF" \
+                "\x11\x22\x33\x0A\x0B\x0C\xCC\xDD\xDD\xDD\xDD\xDD"
+
+static int myrand( void *rng_state )
 {
-    unsigned char *p, *end;
-    int ret, len;
+    if( rng_state != NULL )
+        rng_state  = NULL;
 
-    p = buf;
-    end = buf+buflen;
-
-    if( ( ret = asn1_get_tag( &p, end, &len,
-            ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) != 0 ) {
-        return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
-    }
-
-    if( ( ret = asn1_get_tag( &p, end, &len,
-            ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) == 0 ) {
-        /* Skip over embedded rsaEncryption Object */
-        p+=len;
-
-        /* The RSAPublicKey ASN1 container is wrapped in a BIT STRING */
-        if( ( ret = asn1_get_tag( &p, end, &len,
-                ASN1_BIT_STRING ) ) != 0 ) {
-            return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
-        }
-
-        /* Limit range to that BIT STRING */
-        end = p + len;
-        p++;
-
-        if( ( ret = asn1_get_tag( &p, end, &len,
-                ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) != 0 ) {
-            return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
-        }
-    }
-
-    if ( ( ( ret = asn1_get_mpi( &p, end, &(rsa->N)  ) ) == 0 ) &&
-         ( ( ret = asn1_get_mpi( &p, end, &(rsa->E)  ) ) == 0 ) ) {
-        rsa->len = mpi_size( &rsa->N );
-        return 0;
-    }
-
-    return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
+    return( rand() );
 }
 
 /*
- * Parse a private RSA key
+ * Checkup routine
  */
-int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
-                                     unsigned char *pwd, int pwdlen )
+int rsa_self_test( int verbose )
 {
-    int ret, len, enc;
-    unsigned char *s1, *s2;
-    unsigned char *p, *end;
+    int len;
+    rsa_context rsa;
+    unsigned char sha1sum[20];
+    unsigned char rsa_plaintext[PT_LEN];
+    unsigned char rsa_decrypted[PT_LEN];
+    unsigned char rsa_ciphertext[KEY_LEN];
 
-    s1 = (unsigned char *) strstr( (char *) buf,
-        "-----BEGIN RSA PRIVATE KEY-----" );
+    rsa_init( &rsa, RSA_PKCS_V15, 0 );
 
-    if( s1 != NULL )
+    rsa.len = KEY_LEN;
+    mpi_read_string( &rsa.N , 16, RSA_N  );
+    mpi_read_string( &rsa.E , 16, RSA_E  );
+    mpi_read_string( &rsa.D , 16, RSA_D  );
+    mpi_read_string( &rsa.P , 16, RSA_P  );
+    mpi_read_string( &rsa.Q , 16, RSA_Q  );
+    mpi_read_string( &rsa.DP, 16, RSA_DP );
+    mpi_read_string( &rsa.DQ, 16, RSA_DQ );
+    mpi_read_string( &rsa.QP, 16, RSA_QP );
+
+    if( verbose != 0 )
+        printf( "  RSA key validation: " );
+
+    if( rsa_check_pubkey(  &rsa ) != 0 ||
+        rsa_check_privkey( &rsa ) != 0 )
     {
-        s2 = (unsigned char *) strstr( (char *) buf,
-            "-----END RSA PRIVATE KEY-----" );
+        if( verbose != 0 )
+            printf( "failed\n" );
 
-        if( s2 == NULL || s2 <= s1 )
-            return( POLARSSL_ERR_X509_KEY_INVALID_PEM );
-
-        s1 += 31;
-        if( *s1 == '\r' ) s1++;
-        if( *s1 == '\n' ) s1++;
-            else return( POLARSSL_ERR_X509_KEY_INVALID_PEM );
-
-        enc = 0;
-
-        if( memcmp( s1, "Proc-Type: 4,ENCRYPTED", 22 ) == 0 )
-        {
-            return( POLARSSL_ERR_X509_FEATURE_UNAVAILABLE );
-        }
-
-        len = 0;
-        ret = base64_decode( NULL, &len, s1, s2 - s1 );
-
-        if( ret == POLARSSL_ERR_BASE64_INVALID_CHARACTER )
-            return( ret | POLARSSL_ERR_X509_KEY_INVALID_PEM );
-
-        if( ( buf = (unsigned char *) malloc( len ) ) == NULL )
-            return( 1 );
-
-        if( ( ret = base64_decode( buf, &len, s1, s2 - s1 ) ) != 0 )
-        {
-            free( buf );
-            return( ret | POLARSSL_ERR_X509_KEY_INVALID_PEM );
-        }
-
-        buflen = len;
-
-        if( enc != 0 )
-        {
-            return( POLARSSL_ERR_X509_FEATURE_UNAVAILABLE );
-        }
+        return( 1 );
     }
 
-    memset( rsa, 0, sizeof( rsa_context ) );
+    if( verbose != 0 )
+        printf( "passed\n  PKCS#1 encryption : " );
 
-    p = buf;
-    end = buf + buflen;
+    memcpy( rsa_plaintext, RSA_PT, PT_LEN );
 
-    /*
-     *  RSAPrivateKey ::= SEQUENCE {
-     *      version           Version,
-     *      modulus           INTEGER,  -- n
-     *      publicExponent    INTEGER,  -- e
-     *      privateExponent   INTEGER,  -- d
-     *      prime1            INTEGER,  -- p
-     *      prime2            INTEGER,  -- q
-     *      exponent1         INTEGER,  -- d mod (p-1)
-     *      exponent2         INTEGER,  -- d mod (q-1)
-     *      coefficient       INTEGER,  -- (inverse of q) mod p
-     *      otherPrimeInfos   OtherPrimeInfos OPTIONAL
-     *  }
-     */
-    if( ( ret = asn1_get_tag( &p, end, &len,
-            ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) != 0 )
+    if( rsa_pkcs1_encrypt( &rsa, &myrand, NULL, RSA_PUBLIC, PT_LEN,
+                           rsa_plaintext, rsa_ciphertext ) != 0 )
     {
-        if( s1 != NULL )
-            free( buf );
+        if( verbose != 0 )
+            printf( "failed\n" );
 
-        rsa_free( rsa );
-        return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
+        return( 1 );
     }
 
-    end = p + len;
+    if( verbose != 0 )
+        printf( "passed\n  PKCS#1 decryption : " );
 
-    if( ( ret = asn1_get_int( &p, end, &rsa->ver ) ) != 0 )
+    if( rsa_pkcs1_decrypt( &rsa, RSA_PRIVATE, &len,
+                           rsa_ciphertext, rsa_decrypted,
+			   sizeof(rsa_decrypted) ) != 0 )
     {
-        if( s1 != NULL )
-            free( buf );
+        if( verbose != 0 )
+            printf( "failed\n" );
 
-        rsa_free( rsa );
-        return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
+        return( 1 );
     }
 
-    if( rsa->ver != 0 )
+    if( memcmp( rsa_decrypted, rsa_plaintext, len ) != 0 )
     {
-        if( s1 != NULL )
-            free( buf );
+        if( verbose != 0 )
+            printf( "failed\n" );
 
-        rsa_free( rsa );
-        return( ret | POLARSSL_ERR_X509_KEY_INVALID_VERSION );
+        return( 1 );
     }
 
-    if( ( ret = asn1_get_mpi( &p, end, &rsa->N  ) ) != 0 ||
-        ( ret = asn1_get_mpi( &p, end, &rsa->E  ) ) != 0 ||
-        ( ret = asn1_get_mpi( &p, end, &rsa->D  ) ) != 0 ||
-        ( ret = asn1_get_mpi( &p, end, &rsa->P  ) ) != 0 ||
-        ( ret = asn1_get_mpi( &p, end, &rsa->Q  ) ) != 0 ||
-        ( ret = asn1_get_mpi( &p, end, &rsa->DP ) ) != 0 ||
-        ( ret = asn1_get_mpi( &p, end, &rsa->DQ ) ) != 0 ||
-        ( ret = asn1_get_mpi( &p, end, &rsa->QP ) ) != 0 )
-    {
-        if( s1 != NULL )
-            free( buf );
+    if( verbose != 0 )
+        printf( "passed\n  PKCS#1 data sign  : " );
 
-        rsa_free( rsa );
-        return( ret | POLARSSL_ERR_X509_KEY_INVALID_FORMAT );
+    sha1( rsa_plaintext, PT_LEN, sha1sum );
+
+    if( rsa_pkcs1_sign( &rsa, RSA_PRIVATE, SIG_RSA_SHA1, 20,
+                        sha1sum, rsa_ciphertext ) != 0 )
+    {
+        if( verbose != 0 )
+            printf( "failed\n" );
+
+        return( 1 );
     }
 
-    rsa->len = mpi_size( &rsa->N );
+    if( verbose != 0 )
+        printf( "passed\n  PKCS#1 sig. verify: " );
 
-    if( p != end )
+    if( rsa_pkcs1_verify( &rsa, RSA_PUBLIC, SIG_RSA_SHA1, 20,
+                          sha1sum, rsa_ciphertext ) != 0 )
     {
-        if( s1 != NULL )
-            free( buf );
+        if( verbose != 0 )
+            printf( "failed\n" );
 
-        rsa_free( rsa );
-        return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT |
-                POLARSSL_ERR_ASN1_LENGTH_MISMATCH );
+        return( 1 );
     }
 
-    if( ( ret = rsa_check_privkey( rsa ) ) != 0 )
-    {
-        if( s1 != NULL )
-            free( buf );
+    if( verbose != 0 )
+        printf( "passed\n\n" );
 
-        rsa_free( rsa );
-        return( ret );
-    }
-
-    if( s1 != NULL )
-        free( buf );
+    rsa_free( &rsa );
 
     return( 0 );
 }
+
+#endif
+
+#endif

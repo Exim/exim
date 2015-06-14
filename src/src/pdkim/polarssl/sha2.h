@@ -22,7 +22,6 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 #ifndef POLARSSL_SHA2_H
 #define POLARSSL_SHA2_H
 
@@ -145,6 +144,13 @@ void sha2_hmac_reset( sha2_context *ctx );
 void sha2_hmac( const unsigned char *key, int keylen,
                 const unsigned char *input, int ilen,
                 unsigned char output[32], int is224 );
+
+/**
+ * \brief          Checkup routine
+ *
+ * \return         0 if successful, or 1 if the test failed
+ */
+int sha2_self_test( int verbose );
 
 #ifdef __cplusplus
 }

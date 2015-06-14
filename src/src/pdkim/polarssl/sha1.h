@@ -22,7 +22,6 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 #ifndef POLARSSL_SHA1_H
 #define POLARSSL_SHA1_H
 
@@ -33,7 +32,6 @@
 #define HAVE_SHA1_CONTEXT
 typedef struct sha1_context sha1_context;
 #endif
-
 struct sha1_context
 {
     unsigned long total[2];     /*!< number of bytes processed  */
@@ -137,6 +135,13 @@ void sha1_hmac_reset( sha1_context *ctx );
 void sha1_hmac( const unsigned char *key, int keylen,
                 const unsigned char *input, int ilen,
                 unsigned char output[20] );
+
+/**
+ * \brief          Checkup routine
+ *
+ * \return         0 if successful, or 1 if the test failed
+ */
+int sha1_self_test( int verbose );
 
 #ifdef __cplusplus
 }

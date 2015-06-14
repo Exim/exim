@@ -26,11 +26,12 @@
 #include <ctype.h>
 
 #include "pdkim.h"
+#include "pdkim-rsa.h"
 
-#include "sha1.h"
-#include "sha2.h"
-#include "rsa.h"
-#include "base64.h"
+#include "polarssl/sha1.h"
+#include "polarssl/sha2.h"
+#include "polarssl/rsa.h"
+#include "polarssl/base64.h"
 
 #define PDKIM_SIGNATURE_VERSION     "1"
 #define PDKIM_PUB_RECORD_VERSION    "DKIM1"

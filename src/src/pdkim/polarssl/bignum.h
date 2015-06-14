@@ -22,7 +22,6 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 #ifndef POLARSSL_BIGNUM_H
 #define POLARSSL_BIGNUM_H
 
@@ -519,6 +518,13 @@ int mpi_is_prime( mpi *X, int (*f_rng)(void *), void *p_rng );
  */
 int mpi_gen_prime( mpi *X, int nbits, int dh_flag,
                    int (*f_rng)(void *), void *p_rng );
+
+/**
+ * \brief          Checkup routine
+ *
+ * \return         0 if successful, or 1 if the test failed
+ */
+int mpi_self_test( int verbose );
 
 #ifdef __cplusplus
 }
