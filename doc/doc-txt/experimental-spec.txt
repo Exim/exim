@@ -795,8 +795,10 @@ expansion is done.  The current list of events is:
  smtp:connect		after  transport  per connection
 
 The expansion is called for all event types, and should use the $event_name
-value to decide when to act.  The variable data is a colon-separated
-list, describing an event tree.
+variable to decide when to act.  The value of the variable is a colon-separated
+list, defining a position in the tree of possible events; it may be used as
+a list or just matched on as a whole.  There will be no whitespace.
+
 
 There is an auxilary variable, $event_data, for which the
 content is event_dependent:
@@ -855,7 +857,7 @@ No other use is made of the result string.
 Known issues:
 - the tls:cert event is only called for the cert chain elements
   received over the wire, with GnuTLS.  OpenSSL gives the entire
-  chain including thse loaded locally.
+  chain including those loaded locally.
 
 
 Redis Lookup
