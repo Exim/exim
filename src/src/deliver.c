@@ -4876,17 +4876,8 @@ if (s)
   s += 2;  /* skip ": " */
   fprintf(f, "Diagnostic-Code: smtp; ");
   }
-/* user_message set? use it instead */
-else if ((s = addr->user_message))
-  {
-  DEBUG(D_deliver)
-    debug_printf("DSN Diagnostic-Code: addr->user_message = %s\n", s);
-  /* local errors like timeout get 426 */
-  fprintf(f, "Diagnostic-Code: smtp; 426 ");
-  }
 /* no message available. do nothing */
-else
-  return;
+else return;
 
 while (*s)
   if (*s == '\\' && s[1] == 'n')
