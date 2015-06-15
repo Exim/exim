@@ -38,6 +38,7 @@ Version 4.86
 12. A non-SMTP authenticator using information from TLS client certificates.
 
 13. Main option "tls_eccurve" for selecting an Elliptic Curve for TLS.
+    Patch originally by Wolfgang Breyha.
 
 
 Version 4.85
