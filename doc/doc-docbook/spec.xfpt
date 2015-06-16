@@ -5010,7 +5010,8 @@ message_size_limit = 50M
 message_size_limit = 100M
 .endif
 .endd
-sets a message size limit of 50M if the macro &`AAA`& is defined, and 100M
+sets a message size limit of 50M if the macro &`AAA`& is defined
+(or &`A`& or &`AA`&), and 100M
 otherwise. If there is more than one macro named on the line, the condition
 is true if any of them are defined. That is, it is an &"or"& condition. To
 obtain an &"and"& condition, you need to use nested &`.ifdef`&s.
@@ -29709,7 +29710,7 @@ The &%per_rcpt%& option causes Exim to limit the rate at which recipients are
 accepted. It can be used in the &%acl_smtp_rcpt%&, &%acl_smtp_predata%&,
 &%acl_smtp_mime%&, &%acl_smtp_data%&, or &%acl_smtp_rcpt%& ACLs. In
 &%acl_smtp_rcpt%& the rate is updated one recipient at a time; in the other
-ACLs the rate is updated with the total recipient count in one go. Note that
+ACLs the rate is updated with the total (accepted) recipient count in one go. Note that
 in either case the rate limiting engine will see a message with many
 recipients as a large high-speed burst.
 
