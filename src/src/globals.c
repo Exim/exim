@@ -657,6 +657,7 @@ uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
 int     dns_dnssec_ok          = -1; /* <0 = not coerced */
+uschar *dns_trust_aa           = NULL;
 int     dns_use_edns0          = -1; /* <0 = not coerced */
 uschar *dnslist_domain         = NULL;
 uschar *dnslist_matched        = NULL;

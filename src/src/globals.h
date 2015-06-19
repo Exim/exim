@@ -404,6 +404,7 @@ extern int     dns_dane_ok;            /* Ok to use DANE when checking TLS authe
 extern int     dns_retrans;            /* Retransmission time setting */
 extern int     dns_retry;              /* Number of retries */
 extern int     dns_dnssec_ok;          /* When constructing DNS query, set DO flag */
+extern uschar *dns_trust_aa;           /* DNSSEC trust AA as AD */
 extern int     dns_use_edns0;          /* Coerce EDNS0 support on/off in resolver. */
 extern uschar *dnslist_domain;         /* DNS (black) list domain */
 extern uschar *dnslist_matched;        /* DNS (black) list matched key */

@@ -402,6 +402,26 @@ return &(dnss->srr);
 }
 
 
+/* Extract the AUTHORITY info from the answer. If the
+ * answer isn't authoritive (AA) we do not extract anything.
+ * We've to search for SOA or NS records, since there may be
+ * other records (e.g. NSEC3) too.
+ */
+static const uschar*
+dns_extract_auth_name(const dns_answer *dnsa)	/* FIXME: const dns_answer */
+{
+    dns_scan dnss;
+    dns_record *rr;
+    HEADER *h = (HEADER *) dnsa->answer;
+    if (!h->nscount || !h->aa) return NULL;
+    for (rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_AUTHORITY);
+	 rr;
+	 rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_NEXT))
+      if (rr->type == T_SOA || rr->type == T_NS) return rr->name;
+    return NULL;
+}
+
+
 
 
 /*************************************************
@@ -410,7 +430,7 @@ return &(dnss->srr);
 
 /* We do not perform DNSSEC work ourselves; if the administrator has installed
 a verifying resolver which sets AD as appropriate, though, we'll use that.
-(AD = Authentic Data)
+(AD = Authentic Data, AA = Authoritive Answer)
 
 Argument:   pointer to dns answer block
 Returns:    bool indicating presence of AD bit
@@ -424,8 +444,31 @@ DEBUG(D_dns)
   debug_printf("DNSSEC support disabled at build-time; dns_is_secure() false\n");
 return FALSE;
 #else
-HEADER *h = (HEADER *)dnsa->answer;
-return h->ad ? TRUE : FALSE;
+HEADER *h = (HEADER *) dnsa->answer;
+
+if (h->ad) return TRUE;
+else
+  {
+  /* If the resolver we ask is authoritive for the domain in question, it
+  * may not set the AD but the AA bit. If we explicitly trust
+  * the resolver for that domain (via a domainlist in dns_trust_aa),
+  * we return TRUE to indicate a secure answer.
+  */
+  const uschar *auth_name;
+  const uschar *trusted;
+
+  if (!h->aa || !dns_trust_aa) return FALSE;
+
+  trusted = expand_string(dns_trust_aa);
+  auth_name = dns_extract_auth_name(dnsa);
+  if (OK != match_isinlist(auth_name, &trusted, 0, NULL, NULL, MCL_DOMAIN, TRUE, NULL)) 
+    return FALSE;
+
+  DEBUG(D_dns)
+    debug_printf("DNS faked the AD bit (got AA and matched with dns_trust_aa (%s in %s))\n", auth_name, dns_trust_aa);
+
+  return TRUE;
+}
 #endif
 }
 
@@ -439,7 +482,7 @@ h->ad = 0;
 /************************************************
  *	Check whether the AA bit is set		*
  *	We need this to warn if we requested AD *
- *	from a authoritive server		*
+ *	from an authoritive server		*
  ************************************************/
 
 BOOL
@@ -512,8 +555,6 @@ node->data.val = rc;
 (void)tree_insertnode(&tree_dns_fails, node);
 return rc;
 }
-
-
 
 /*************************************************
 *              Do basic DNS lookup               *
@@ -854,7 +895,7 @@ return DNS_FAIL;
 *    Do a DNS lookup and handle virtual types   *
 ************************************************/
 
-/* This function handles some invented "lookup types" that synthesize feature
+/* This function handles some invented "lookup types" that synthesize features
 not available in the basic types. The special types all have negative values.
 Positive type values are passed straight on to dns_lookup().
 
