@@ -403,22 +403,24 @@ return &(dnss->srr);
 
 
 /* Extract the AUTHORITY info from the answer. If the
- * answer isn't authoritive (AA) we do not extract anything.
- * We've to search for SOA or NS records, since there may be
- * other records (e.g. NSEC3) too.
- */
-static const uschar*
-dns_extract_auth_name(const dns_answer *dnsa)	/* FIXME: const dns_answer */
+answer isn't authoritive (AA) we do not extract anything.
+We've to search for SOA or NS records, since there may be
+other records (e.g. NSEC3) too.
+*/
+
+static const uschar *
+dns_extract_auth_name(const dns_answer * dnsa)	/* FIXME: const dns_answer */
 {
-    dns_scan dnss;
-    dns_record *rr;
-    HEADER *h = (HEADER *) dnsa->answer;
-    if (!h->nscount || !h->aa) return NULL;
-    for (rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_AUTHORITY);
-	 rr;
-	 rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_NEXT))
-      if (rr->type == T_SOA || rr->type == T_NS) return rr->name;
-    return NULL;
+dns_scan dnss;
+dns_record * rr;
+HEADER * h = (HEADER *) dnsa->answer;
+
+if (!h->nscount || !h->aa) return NULL;
+for (rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_AUTHORITY);
+     rr;
+     rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_NEXT))
+  if (rr->type == T_SOA || rr->type == T_NS) return rr->name;
+return NULL;
 }
 
 
@@ -444,31 +446,32 @@ DEBUG(D_dns)
   debug_printf("DNSSEC support disabled at build-time; dns_is_secure() false\n");
 return FALSE;
 #else
-HEADER *h = (HEADER *) dnsa->answer;
+HEADER * h = (HEADER *) dnsa->answer;
+const uschar * auth_name;
+const uschar * trusted;
 
 if (h->ad) return TRUE;
-else
-  {
-  /* If the resolver we ask is authoritive for the domain in question, it
-  * may not set the AD but the AA bit. If we explicitly trust
-  * the resolver for that domain (via a domainlist in dns_trust_aa),
-  * we return TRUE to indicate a secure answer.
-  */
-  const uschar *auth_name;
-  const uschar *trusted;
 
-  if (!h->aa || !dns_trust_aa) return FALSE;
+/* If the resolver we ask is authoritive for the domain in question, it
+* may not set the AD but the AA bit. If we explicitly trust
+* the resolver for that domain (via a domainlist in dns_trust_aa),
+* we return TRUE to indicate a secure answer.
+*/
 
-  trusted = expand_string(dns_trust_aa);
-  auth_name = dns_extract_auth_name(dnsa);
-  if (OK != match_isinlist(auth_name, &trusted, 0, NULL, NULL, MCL_DOMAIN, TRUE, NULL)) 
-    return FALSE;
+if (  !h->aa
+   || !dns_trust_aa
+   || !*(trusted = expand_string(dns_trust_aa))
+   || !(auth_name = dns_extract_auth_name(dnsa))
+   || OK != match_isinlist(auth_name, &trusted, 0, NULL, NULL,
+			    MCL_DOMAIN, TRUE, NULL) 
+   )
+  return FALSE;
 
-  DEBUG(D_dns)
-    debug_printf("DNS faked the AD bit (got AA and matched with dns_trust_aa (%s in %s))\n", auth_name, dns_trust_aa);
+DEBUG(D_dns) debug_printf("DNS faked the AD bit "
+  "(got AA and matched with dns_trust_aa (%s in %s))\n",
+  auth_name, dns_trust_aa);
 
-  return TRUE;
-}
+return TRUE;
 #endif
 }
 

@@ -40,6 +40,9 @@ Version 4.86
 13. Main option "tls_eccurve" for selecting an Elliptic Curve for TLS.
     Patch originally by Wolfgang Breyha.
 
+14. Main option "dns_trust_aa" for trusting your local nameserver at the
+    same level as DNSSEC.
+
 
 Version 4.85
 ------------

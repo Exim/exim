@@ -11745,6 +11745,9 @@ a dnsdb lookup expansion, dnslookup router or smtp transport.
 It will be empty if &(DNSSEC)& was not requested,
 &"no"& if the result was not labelled as authenticated data
 and &"yes"& if it was.
+Results that are labelled as authoritive answer that match
+the $%dns_trust_aa%& configuration variable count also
+as authenticated data.
 
 .vitem &$mailstore_basename$&
 .vindex "&$mailstore_basename$&"
@@ -13586,6 +13589,7 @@ See also the &'Policy controls'& section above.
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
+.row &%dns_trust_aa%&                "nameservers trusted as authentic"
 .row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
@@ -14283,6 +14287,23 @@ See also the &%slow_lookup_log%& option.
 See &%dns_retrans%& above.
 
 
+.option dns_trust_aa main domain list&!! unset
+.cindex "DNS" "resolver options"
+.cindex "DNS" "DNSSEC"
+If this option is set then lookup results marked with an AA bit
+(Authoratative Answer) are trusted when they come from one
+of the listed domains, as if they were marked as having been
+DNSSEC-verified.
+
+Use this option only if you talk directly to the resolver
+for your local domains, and list only it.
+It is needed when the resolver does not return an AD bit
+for its local domains.
+The first SOA or NS record appearing in the results is compared
+against the option value.
+
+
+.cindex "DNS" "resolver options"
 .option dns_use_edns0 main integer -1
 .cindex "DNS" "resolver options"
 .cindex "DNS" "EDNS0"
