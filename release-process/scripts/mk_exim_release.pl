@@ -117,7 +117,7 @@ sub make_version_script {
     }
 
     my $srcdir    = File::Spec->catdir( $context->{release_tree}, 'src', 'src' );
-    chdir $srcdir or die "chdir $srcdir: $\n";
+    chdir $srcdir or die "chdir $srcdir: $!\n";
 
     if ( -f "version.sh" ) {
         print( "WARNING: version.sh already exists - leaving it in place\n" );
@@ -297,6 +297,7 @@ sub do_cleanup {
     my $context = shift;
 
     print "Cleaning up\n" if ($verbose);
+    chdir( $context->{directory} ) || die;
     rmtree( $context->{release_tree}, { verbose => $debug } );
     rmtree( $context->{docbook},      { verbose => $debug } );
     rmtree( $context->{pkgdirs},      { verbose => $debug } );
