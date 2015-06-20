@@ -11746,7 +11746,7 @@ It will be empty if &(DNSSEC)& was not requested,
 &"no"& if the result was not labelled as authenticated data
 and &"yes"& if it was.
 Results that are labelled as authoritive answer that match
-the $%dns_trust_aa%& configuration variable count also
+the $%dns_trust_aa%$ configuration variable count also
 as authenticated data.
 
 .vitem &$mailstore_basename$&
