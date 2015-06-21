@@ -460,7 +460,8 @@ if (h->ad) return TRUE;
 
 if (  !h->aa
    || !dns_trust_aa
-   || !*(trusted = expand_string(dns_trust_aa))
+   || !(trusted = expand_string(dns_trust_aa))
+   || !*trusted
    || !(auth_name = dns_extract_auth_name(dnsa))
    || OK != match_isinlist(auth_name, &trusted, 0, NULL, NULL,
 			    MCL_DOMAIN, TRUE, NULL) 
