@@ -402,11 +402,16 @@ return &(dnss->srr);
 }
 
 
-/* Extract the AUTHORITY info from the answer. If the
-answer isn't authoritive (AA) we do not extract anything.
-We've to search for SOA or NS records, since there may be
-other records (e.g. NSEC3) too.
-*/
+/* Extract the AUTHORITY information from the answer. If the
+answer isn't authoritive (AA not set), we do not extract anything.
+
+The AUTHORITIVE section contains NS records if
+the name in question was found, it contains a SOA record
+otherwise. (This is just from experience and some tests, is there
+some spec?)
+
+We've cycle through the AUTHORITY section, since it may contain
+other records (e.g. NSEC3) too.  */
 
 static const uschar *
 dns_extract_auth_name(const dns_answer * dnsa)	/* FIXME: const dns_answer */
@@ -419,7 +424,7 @@ if (!h->nscount || !h->aa) return NULL;
 for (rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_AUTHORITY);
      rr;
      rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_NEXT))
-  if (rr->type == T_SOA || rr->type == T_NS) return rr->name;
+  if (rr->type == h->ancount ? T_NS : T_SOA) return rr->name;
 return NULL;
 }
 
