@@ -46,8 +46,9 @@ if (rblock->extra_headers)
       {
       if (!expand_string_forcedfail)
 	{
-	addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
-	  rblock->name, rblock->extra_headers, expand_string_message);
+	addr->message = string_sprintf(
+	  "%s router failed to expand add_headers item \"%s\": %s",
+	  rblock->name, s, expand_string_message);
 	return DEFER;
 	}
       }
@@ -96,8 +97,9 @@ if (rblock->remove_headers)
       {
       if (!expand_string_forcedfail)
 	{
-	addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
-	  rblock->name, rblock->remove_headers, expand_string_message);
+	addr->message = string_sprintf(
+	  "%s router failed to expand remove_headers item \"%s\": %s",
+	  rblock->name, s, expand_string_message);
 	return DEFER;
 	}
       }
@@ -108,4 +110,6 @@ if (rblock->remove_headers)
 return OK;
 }
 
+/* vi: aw ai sw=4
+*/
 /* End of rf_get_munge_headers.c */
