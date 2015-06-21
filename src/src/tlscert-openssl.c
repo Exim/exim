@@ -55,8 +55,10 @@ tls_import_cert(const uschar * buf, void ** cert)
 void * reset_point = store_get(0);
 const uschar * cp = string_unprinting(US buf);
 BIO * bp;
-X509 * x;
+X509 * x = *(X509 **)cert;
 int fail = 0;
+
+if (x) X509_free(x);
 
 bp = BIO_new_mem_buf(US cp, -1);
 if (!(x = PEM_read_bio_X509(bp, NULL, 0, NULL)))

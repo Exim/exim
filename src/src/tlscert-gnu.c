@@ -51,10 +51,14 @@ tls_import_cert(const uschar * buf, void ** cert)
 {
 void * reset_point = store_get(0);
 gnutls_datum_t datum;
-gnutls_x509_crt_t crt;
+gnutls_x509_crt_t crt = *(gnutls_x509_crt_t *)cert;
 int fail = 0;
 
-gnutls_global_init();
+if (crt)
+  gnutls_x509_crt_deinit(crt);
+else
+  gnutls_global_init();
+
 gnutls_x509_crt_init(&crt);
 
 datum.data = string_unprinting(US buf);

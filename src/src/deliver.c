@@ -3135,15 +3135,17 @@ while (!done)
       break;
 
       case '2':
-      addr->peercert = NULL;
       if (*ptr)
 	(void) tls_import_cert(ptr, &addr->peercert);
+      else
+	addr->peercert = NULL;
       break;
 
       case '3':
-      addr->ourcert = NULL;
       if (*ptr)
 	(void) tls_import_cert(ptr, &addr->ourcert);
+      else
+	addr->ourcert = NULL;
       break;
 
 # ifndef DISABLE_OCSP
