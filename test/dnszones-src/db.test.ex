@@ -15,6 +15,9 @@
 ; NOTE (3): the top-level networks for testing addresses are parameterized by
 ; the use of V4NET and V6NET. These networks should be such that no real
 ; host ever uses them.
+;
+; Several prefixes may be used, see the source in src/fakens.c for a complete list
+; and description.
 
 test.ex.     NS      exim.test.ex.
 test.ex.     SOA     exim.test.ex. hostmaster.exim.test.ex 1430683638 1200 120 604800 3600

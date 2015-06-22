@@ -55,7 +55,7 @@ a number of milliseconds (followed by one space).
 
 Any DNS record line in a zone file can be prefixed with "DNSSEC ";
 if all the records found by a lookup are marked
-as such then the response will have the "AD" bit set. 
+as such then the response will have the "AD" bit set.
 
 Any DNS record line in a zone file can be prefixed with "AA "
 if all the records found by a lookup are marked
@@ -298,8 +298,8 @@ Arguments:
   qtypelen    the length of qtype
   pkptr       points to the output buffer pointer; this is updated
   countptr    points to the record count; this is updated
-  dnssec      points to the AD flag indicator; this updated
-  aa	      points to the AA flag indicator; this updated
+  dnssec      points to the AD flag indicator; this is updated
+  aa          points to the AA flag indicator; this is updated
 
 Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
               PASS_ON - the latter if a "PASS ON NOT FOUND" line is seen
@@ -318,8 +318,8 @@ uschar buffer[256];
 uschar rrdomain[256];
 uschar RRdomain[256];
 
-/* Decode the required type */
 
+/* Decode the required type */
 for (typeptr = type_list; typeptr->name != NULL; typeptr++)
   { if (Ustrcmp(typeptr->name, qtype) == 0) break; }
 if (typeptr->name == NULL)
@@ -331,8 +331,8 @@ if (typeptr->name == NULL)
 rrdomain[0] = 0;                 /* No previous domain */
 (void)fseek(f, 0, SEEK_SET);     /* Start again at the beginning */
 
-*dnssec = TRUE;			/* cancelled by first nonsecure rec found */ 
-*aa = TRUE;			/* cancelled by first non-authoritive record */
+if (dnssec) *dnssec = TRUE;     /* cancelled by first nonsecure rec found */
+if (aa) *aa = TRUE;             /* cancelled by first non-aa rec found */
 
 /* Scan for RRs */
 
@@ -365,17 +365,17 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   p = buffer;
   for (;;)
     {
-    if (Ustrncmp(p, US"DNSSEC ", 7) == 0)	/* tagged as secure */
+    if (Ustrncmp(p, US"DNSSEC ", 7) == 0)       /* tagged as secure */
       {
       rr_sec = TRUE;
       p += 7;
       }
-    else if (Ustrncmp(p, US"AA ", 3) == 0)	/* tagged as authoritive */
+    else if (Ustrncmp(p, US"AA ", 3) == 0)      /* tagged as authoritive */
       {
       rr_aa = TRUE;
       p += 3;
       }
-    else if (Ustrncmp(p, US"DELAY=", 6) == 0)	/* delay before response */
+    else if (Ustrncmp(p, US"DELAY=", 6) == 0)   /* delay before response */
       {
       for (p += 6; *p >= '0' && *p <= '9'; p++) delay = delay*10 + *p - '0';
       if (isspace(*p)) p++;
@@ -435,15 +435,14 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   else if (Ustrncmp(p, qtype, qtypelen) != 0 || !isspace(p[qtypelen])) continue;
 
   /* Found a relevant record */
-
   if (delay)
     millisleep(delay);
 
-  if (!rr_sec)
-    *dnssec = FALSE;			/* cancel AD return */
+  if (dnssec && !rr_sec)
+    *dnssec = FALSE;                    /* cancel AD return */
 
-  if (!rr_aa)
-    *aa = FALSE;			/* cancel AA return */
+  if (aa && !rr_aa)
+    *aa = FALSE;                        /* cancel AA return */
 
   yield = 0;
   *countptr = *countptr + 1;
@@ -473,48 +472,48 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       p = strtok(p, " ");
       ep = p + strlen(p);
       if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
-      pk = packname(p, pk);			/* primary ns */
+      pk = packname(p, pk);                     /* primary ns */
       p = strtok(NULL, " ");
-      pk = packname(p , pk);			/* responsible mailbox */
+      pk = packname(p , pk);                    /* responsible mailbox */
       *(p += strlen(p)) = ' ';
       while (isspace(*p)) p++;
-      pk = longfield(&p, pk);			/* serial */
-      pk = longfield(&p, pk);			/* refresh */
-      pk = longfield(&p, pk);			/* retry */
-      pk = longfield(&p, pk);			/* expire */
-      pk = longfield(&p, pk);			/* minimum */
+      pk = longfield(&p, pk);                   /* serial */
+      pk = longfield(&p, pk);                   /* refresh */
+      pk = longfield(&p, pk);                   /* retry */
+      pk = longfield(&p, pk);                   /* expire */
+      pk = longfield(&p, pk);                   /* minimum */
       break;
 
     case ns_t_a:
       for (i = 0; i < 4; i++)
-	{
-	value = 0;
-	while (isdigit(*p)) value = value*10 + *p++ - '0';
-	*pk++ = value;
-	p++;
-	}
+        {
+        value = 0;
+        while (isdigit(*p)) value = value*10 + *p++ - '0';
+        *pk++ = value;
+        p++;
+        }
       break;
 
     /* The only occurrence of a double colon is for ::1 */
     case ns_t_aaaa:
       if (Ustrcmp(p, "::1") == 0)
-	{
-	memset(pk, 0, 15);
-	pk += 15;
-	*pk++ = 1;
-	}
+        {
+        memset(pk, 0, 15);
+        pk += 15;
+        *pk++ = 1;
+        }
       else for (i = 0; i < 8; i++)
-	{
-	value = 0;
-	while (isxdigit(*p))
-	  {
-	  value = value * 16 + toupper(*p) - (isdigit(*p)? '0' : '7');
-	  p++;
-	  }
-	*pk++ = (value >> 8) & 255;
-	*pk++ = value & 255;
-	p++;
-	}
+        {
+        value = 0;
+        while (isxdigit(*p))
+          {
+          value = value * 16 + toupper(*p) - (isdigit(*p)? '0' : '7');
+          p++;
+          }
+        *pk++ = (value >> 8) & 255;
+        *pk++ = value & 255;
+        p++;
+        }
       break;
 
     case ns_t_mx:
@@ -531,17 +530,17 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       break;
 
     case ns_t_tlsa:
-      pk = bytefield(&p, pk);	/* usage */
-      pk = bytefield(&p, pk);	/* selector */
-      pk = bytefield(&p, pk);	/* match type */
+      pk = bytefield(&p, pk);   /* usage */
+      pk = bytefield(&p, pk);   /* selector */
+      pk = bytefield(&p, pk);   /* match type */
       while (isxdigit(*p))
       {
       value = toupper(*p) - (isdigit(*p) ? '0' : '7') << 4;
       if (isxdigit(*++p))
-	{
-	value |= toupper(*p) - (isdigit(*p) ? '0' : '7');
-	p++;
-	}
+        {
+        value |= toupper(*p) - (isdigit(*p) ? '0' : '7');
+        p++;
+        }
       *pk++ = value & 255;
       }
 
@@ -549,13 +548,13 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
     case ns_t_srv:
       for (i = 0; i < 3; i++)
-	{
-	value = 0;
-	while (isdigit(*p)) value = value*10 + *p++ - '0';
-	while (isspace(*p)) p++;
-	*pk++ = (value >> 8) & 255;
-	*pk++ = value & 255;
-	}
+        {
+        value = 0;
+        while (isdigit(*p)) value = value*10 + *p++ - '0';
+        while (isspace(*p)) p++;
+        *pk++ = (value >> 8) & 255;
+        *pk++ = value & 255;
+        }
 
     /* Fall through */
 
@@ -654,6 +653,7 @@ uschar domain[256];
 uschar buffer[256];
 uschar qtype[12];
 uschar packet[2048 * 32 + 32];
+HEADER *header = (HEADER *)packet;
 uschar *pk = packet;
 BOOL dnssec;
 BOOL aa;
@@ -771,21 +771,28 @@ if (f == NULL)
 count = 0;
 yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count, &dnssec, &aa);
 if (yield == NO_RECOVERY) goto END_OFF;
+header->ancount = htons(count);
 
-packet[6] = (count >> 8) & 255;
-packet[7] = count & 255;
+/* If the AA bit should be set (as indicated by the AA prefix in the zone file),
+we are expected to return some records in the authortive section. Bind9: If
+there is data in the answer section, the authoritive section contains the NS
+records, otherwise it contains the SOA record.  Currently we mimic this
+behaviour for the first case (there is some answer record).
+*/
+
+if (aa)
+  find_records(f, zone, zone[0] == '.' ? zone+1 : zone, US"NS", 2, &pk, &count, NULL, NULL);
+header->nscount = htons(count - ntohs(header->ancount));
 
 /* There is no need to return any additional records because Exim no longer
 (from release 4.61) makes any use of them. */
-
-packet[10] = 0;
-packet[11] = 0;
+header->arcount = 0;
 
 if (dnssec)
-  ((HEADER *)packet)->ad = 1;
+  header->ad = 1;
 
 if (aa)
-  ((HEADER *)packet)->aa = 1;
+  header->aa = 1;
 
 /* Close the zone file, write the result, and return. */
 
