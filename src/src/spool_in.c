@@ -288,8 +288,10 @@ tls_in.certificate_verified = FALSE;
 tls_in.dane_verified = FALSE;
 # endif
 tls_in.cipher = NULL;
-tls_in.ourcert = NULL;
-tls_in.peercert = NULL;
+# ifndef COMPILE_UTILITY	/* tls support fns not built in */
+tls_free_cert(&tls_in.ourcert);
+tls_free_cert(&tls_in.peercert);
+# endif
 tls_in.peerdn = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;

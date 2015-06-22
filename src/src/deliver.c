@@ -1170,16 +1170,8 @@ if (result == OK)
   delivery_log(LOG_MAIN, addr, logchar, NULL);
 
 #ifdef SUPPORT_TLS
-  if (tls_out.ourcert)
-    {
-    tls_free_cert(tls_out.ourcert);
-    tls_out.ourcert = NULL;
-    }
-  if (tls_out.peercert)
-    {
-    tls_free_cert(tls_out.peercert);
-    tls_out.peercert = NULL;
-    }
+  tls_free_cert(&tls_out.ourcert);
+  tls_free_cert(&tls_out.peercert);
   tls_out.cipher = NULL;
   tls_out.peerdn = NULL;
   tls_out.ocsp = OCSP_NOT_REQ;

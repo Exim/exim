@@ -45,15 +45,15 @@ extern uschar * tls_cert_fprt_sha256(void *);
 
 extern int     tls_client_start(int, host_item *, address_item *,
 		 transport_instance *
-#ifdef EXPERIMENTAL_DANE
+# ifdef EXPERIMENTAL_DANE
 		, dns_answer *
-#endif
+# endif
 				);
 extern void    tls_close(BOOL, BOOL);
 extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
-extern void    tls_free_cert(void *);
+extern void    tls_free_cert(void **);
 extern int     tls_getc(void);
 extern int     tls_import_cert(const uschar *, void **);
 extern int     tls_read(BOOL, uschar *, size_t);

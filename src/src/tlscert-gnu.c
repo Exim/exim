@@ -77,10 +77,15 @@ return fail;
 }
 
 void
-tls_free_cert(void * cert)
+tls_free_cert(void ** cert)
 {
-gnutls_x509_crt_deinit((gnutls_x509_crt_t) cert);
-gnutls_global_deinit();
+gnutls_x509_crt_t crt = *(gnutls_x509_crt_t *)cert;
+if (crt)
+  {
+  gnutls_x509_crt_deinit(crt);
+  gnutls_global_deinit();
+  *cert = NULL;
+  }
 }
 
 /*****************************************************

@@ -75,9 +75,14 @@ return fail;
 }
 
 void
-tls_free_cert(void * cert)
+tls_free_cert(void ** cert)
 {
-X509_free((X509 *)cert);
+X509 * x = *(X509 **)cert;
+if (x)
+  {
+  X509_free(x);
+  *cert = NULL;
+  }
 }
 
 
