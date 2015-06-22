@@ -1,0 +1,11 @@
+dns_trust_aa = *
+
+begin routers
+  dnslookup:
+     driver = dnslookup
+     dnssec_require_domains = *
+     transport = smtp
+
+begin transports
+  smtp:
+     driver = smtp

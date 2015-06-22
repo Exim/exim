@@ -1,0 +1,4 @@
+# check debug output AD/AA and dns_trust_aa
+exim -d-all+dns -bt foo@mx-sec-a-aa.test.ex
+****
+exim -d-all+dns -bt foo@mx-aa-a-sec.test.ex
