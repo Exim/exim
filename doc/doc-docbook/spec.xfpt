@@ -1985,9 +1985,12 @@ Two different types of DNS record for handling IPv6 addresses have been
 defined. AAAA records (analogous to A records for IPv4) are in use, and are
 currently seen as the mainstream. Another record type called A6 was proposed
 as better than AAAA because it had more flexibility. However, it was felt to be
-over-complex, and its status was reduced to &"experimental"&. Exim used to
+over-complex, and its status was reduced to &"experimental"&.
+.new
+Exim used to
 have a compile option for including A6 record support but this has now been
 withdrawn.
+.wen
 
 
 
@@ -4648,12 +4651,14 @@ this option.
 This option is interpreted by Sendmail to cause debug information to be sent
 to the named file.  It is ignored by Exim.
 
+.new
 .vitem &%-z%&&~<&'log-line'&>
 .oindex "&%-z%&"
 This option writes its argument to Exim's logfile.
 Use is restricted to administrators; the intent is for operational notes.
 Quotes should be used to maintain a multi-word item as a single argument,
 under most shells.
+.wen
 .endlist
 
 .ecindex IIDclo1
@@ -5599,12 +5604,14 @@ find that they send unqualified addresses. The two commented-out options:
 show how you can specify hosts that are permitted to send unqualified sender
 and recipient addresses, respectively.
 
+.new
 The &%log_selector%& option is used to increase the detail of logging
 over the default:
 .code
 log_selector = +smtp_protocol_error +smtp_syntax_error \
                +tls_certificate_verified
 .endd
+.wen
 
 The &%percent_hack_domains%& option is also commented out:
 .code
@@ -6886,9 +6893,11 @@ is used on its own as the result. If the lookup does not succeed, the
 &`fail`& keyword causes a &'forced expansion failure'& &-- see section
 &<<SECTforexpfai>>& for an explanation of what this means.
 
+.new
 The supported DNS record types are A, CNAME, MX, NS, PTR, SOA, SPF, SRV, TLSA
 and TXT, and, when Exim is compiled with IPv6 support, AAAA.
 If no type is given, TXT is assumed.
+.wen
 
 For any record type, if multiple records are found, the data is returned as a
 concatenation, with newline as the default separator. The order, of course,
@@ -6936,6 +6945,7 @@ ${lookup dnsdb{spf=example.org}}
 It is permitted to specify a space as the separator character. Further
 white space is ignored.
 
+.new
 .cindex "SOA record" "in &(dnsdb)& lookup"
 For an SOA lookup, while no result is obtained the lookup is redone with
 successively more leading components dropped from the given domain.
@@ -6944,6 +6954,7 @@ specified.
 .code
 ${lookup dnsdb{>:,; soa=a.b.example.com}}
 .endd
+.wen
 
 .section "Dnsdb lookup modifiers" "SECTdnsdb_mod"
 .cindex "dnsdb modifiers"
@@ -6984,6 +6995,7 @@ The default is &"never"&.
 
 See also the &$lookup_dnssec_authenticated$& variable.
 
+.new
 .cindex timeout "dns lookup"
 .cindex "DNS" timeout
 Timeout for the dnsdb lookup can be controlled by a retrans modifier.
@@ -6994,6 +7006,7 @@ The default value is set by the main configuration option &%dns_retrans%&.
 Retries for the dnsdb lookup can be controlled by a retry modifier.
 The form if &"retry_VAL"& where VAL is an integer.
 The default count is set by the main configuration option &%dns_retry%&.
+.wen
 
 
 .section "Pseudo dnsdb record types" "SECID66"
@@ -9040,6 +9053,7 @@ you need to add &%-shared%& to the gcc command. Also, in the Exim build-time
 configuration, you must add &%-export-dynamic%& to EXTRALIBS.
 
 
+.new
 .vitem "&*${env{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}}*&"
 .cindex "expansion" "extracting value from environment"
 .cindex "environment" "value from"
@@ -9061,6 +9075,7 @@ If {<&'string2'&>} is omitted an empty string is substituted on
 search failure.
 If {<&'string1'&>} is omitted the search result is substituted on
 search success.
+.wen
 
 
 .vitem "&*${extract{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
@@ -11350,6 +11365,7 @@ This variable is available when Exim is compiled with the
 content-scanning extension and the obsolete &%demime%& condition. For details,
 see section &<<SECTdemimecond>>&.
 
+.new
 .vitem &$dkim_cur_signer$& &&&
        &$dkim_verify_status$& &&&
        &$dkim_verify_reason$& &&&
@@ -11377,6 +11393,7 @@ For details see chapter &<<CHAPdkim>>&.
 When a message has been received this variable contains
 a colon-separated list of signer domains and identities for the message.
 For details see chapter &<<CHAPdkim>>&.
+.wen
 
 .vitem &$dnslist_domain$& &&&
        &$dnslist_matched$& &&&
@@ -11745,9 +11762,11 @@ a dnsdb lookup expansion, dnslookup router or smtp transport.
 It will be empty if &(DNSSEC)& was not requested,
 &"no"& if the result was not labelled as authenticated data
 and &"yes"& if it was.
+.new
 Results that are labelled as authoritive answer that match
 the $%dns_trust_aa%$ configuration variable count also
 as authenticated data.
+.wen
 
 .vitem &$mailstore_basename$&
 .vindex "&$mailstore_basename$&"
@@ -12546,8 +12565,10 @@ inbound connection when the message was received.
 It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
+.new
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
+.wen
 
 .vitem &$tls_out_ourcert$&
 .vindex "&$tls_out_ourcert$&"
@@ -12562,8 +12583,10 @@ This variable refers to the certificate presented by the peer of an
 outbound connection.  It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
+.new
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
+.wen
 
 .vitem &$tls_in_certificate_verified$&
 .vindex "&$tls_in_certificate_verified$&"
@@ -12627,8 +12650,10 @@ When a message is received from a remote host over an encrypted SMTP
 connection, and Exim is configured to request a certificate from the client,
 the value of the Distinguished Name of the certificate is made available in the
 &$tls_in_peerdn$& during subsequent processing.
+.new
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
+.wen
 
 The deprecated &$tls_peerdn$& variable refers to the inbound side
 except when used in the context of an outbound SMTP delivery, when it refers to
@@ -12640,8 +12665,10 @@ When a message is being delivered to a remote host over an encrypted SMTP
 connection, and Exim is configured to request a certificate from the server,
 the value of the Distinguished Name of the certificate is made available in the
 &$tls_out_peerdn$& during subsequent processing.
+.new
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
+.wen
 
 .vitem &$tls_in_sni$&
 .vindex "&$tls_in_sni$&"
@@ -13705,11 +13732,13 @@ is run for each recipient after an SMTP DATA command has been
 processed and the message itself has been received, but before the
 acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
 
+.new
 .option acl_smtp_dkim main string&!! unset
 .cindex DKIM "ACL for"
 This option defines the ACL that is run for each DKIM signature
 of a received message.
 See chapter &<<CHAPdkim>>& for further details.
+.wen
 
 .option acl_smtp_etrn main string&!! unset
 .cindex "ETRN" "ACL for"
@@ -13745,11 +13774,13 @@ This option is available when Exim is built with the content-scanning
 extension. It defines the ACL that is run for each MIME part in a message. See
 section &<<SECTscanmimepart>>& for details.
 
+.new
 .option acl_smtp_notquit main string&!! unset
 .cindex "not-QUIT, ACL for"
 This option defines the ACL that is run when an SMTP session
 ends without a QUIT command being received.
 See chapter &<<CHAPACL>>& for further details.
+.wen
 
 .option acl_smtp_predata main string&!! unset
 This option defines the ACL that is run when an SMTP DATA command is
@@ -14186,12 +14217,14 @@ etc. are ignored. If IP literals are enabled, the &(ipliteral)& router declines
 to handle IPv6 literal addresses.
 
 
+.new
 .option dkim_verify_signers main "domain list&!!" $dkim_signers
 .cindex DKIM "controlling calls to the ACL"
 This option gives a list of DKIM domains for which the DKIM ACL is run.
 It is expanded after the message is received; by default it runs
 the ACL once for each signature in the message.
 See chapter &<<CHAPdkim>>&.
+.wen
 
 
 .option dns_again_means_nonexist main "domain list&!!" unset
@@ -14280,13 +14313,16 @@ take. I haven't found any documentation about timeouts on DNS lookups; these
 parameter values are available in the external resolver interface structure,
 but nowhere does it seem to describe how they are used or what you might want
 to set in them.
+.new
 See also the &%slow_lookup_log%& option.
+.wen
 
 
 .option dns_retry main integer 0
 See &%dns_retrans%& above.
 
 
+.new
 .option dns_trust_aa main domain list&!! unset
 .cindex "DNS" "resolver options"
 .cindex "DNS" "DNSSEC"
@@ -14301,6 +14337,7 @@ It is needed when the resolver does not return an AD bit
 for its local domains.
 The first SOA or NS record appearing in the results is compared
 against the option value.
+.wen
 
 
 .cindex "DNS" "resolver options"
@@ -15861,6 +15898,7 @@ it qualifies them only if the message came from a host that matches
 using TCP/IP), and the &%-bnq%& option was not set.
 
 
+.new
 .option slow_lookup_log main integer 0
 .cindex "logging" "slow lookups"
 .cindex "dns" "logging slow lookups"
@@ -15868,6 +15906,7 @@ This option controls logging of slow lookups.
 If the value is nonzero it is taken as a number of milliseconds
 and lookups taking longer than this are logged.
 Currently this applies only to DNS lookups.
+.wen
 
 
 
@@ -16261,9 +16300,11 @@ SMTP data timeout on connection from...
 The former means that Exim was expecting to read an SMTP command; the latter
 means that it was in the DATA phase, reading the contents of a message.
 
+.new
 If the first character of the option is a &"$"& the option is
 expanded before use and may depend on
 &$sender_host_name$&, &$sender_host_address$& and &$sender_host_port$&.
+.wen
 
 
 .oindex "&%-os%&"
@@ -16650,6 +16691,7 @@ prior to the 4.80 release, as Debian used to patch Exim to raise the minimum
 acceptable bound from 1024 to 2048.
 
 
+.new
 .option tls_eccurve main string&!! prime256v1
 .cindex TLS "EC cryptography"
 If built with a recent-enough version of OpenSSL,
@@ -16661,6 +16703,7 @@ are also accepted, plus the special value &'auto'&
 which tell the library to choose.
 
 If the option is set to an empty string, no EC curves will be enabled.
+.wen
 
 
 .option tls_ocsp_file main string&!! unset
@@ -17184,6 +17227,7 @@ or for any deliveries caused by this router. You should not set this option
 unless you really, really know what you are doing. See also the generic
 transport option of the same name.
 
+.new
 .option dnssec_request_domains routers "domain list&!!" unset
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
@@ -17202,6 +17246,7 @@ DNS lookups for domains matching &%dnssec_request_domains%& will be done with
 the dnssec request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set will be ignored and logged as a host-lookup failure.
 This applies to all of the SRV, MX, AAAA, A lookup sequence.
+.wen
 
 
 .option domains routers&!? "domain list&!!" unset
@@ -17421,9 +17466,11 @@ removal requests are deleted when the address is passed on to subsequent
 routers, and this can lead to problems with duplicates -- see the similar
 warning for &%headers_add%& above.
 
+.new
 &*Warning 3*&: Because of the separate expansion of the list items,
 items that contain a list separator must have it doubled.
 To avoid this, change the list separator (&<<SECTlistsepchange>>&).
+.wen
 
 
 
@@ -18179,8 +18226,10 @@ There are a few cases where a &(dnslookup)& router will decline to accept
 an address; if such a router is expected to handle "all remaining non-local
 domains", then it is important to set &%no_more%&.
 
+.new
 The router will defer rather than decline if the domain
 is found in the &%fail_defer_domains%& router option.
+.wen
 
 Reasons for a &(dnslookup)& router to decline currently include:
 .ilist
@@ -18261,6 +18310,7 @@ when there is a DNS lookup error.
 
 
 
+.new
 .option fail_defer_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "not found"
 DNS lookups for domains matching &%fail_defer_domains%&
@@ -18270,6 +18320,7 @@ This maybe be useful for queueing messages for a newly created
 domain while the DNS configuration is not ready.
 However, it will result in any message with mistyped domains
 also being queued.
+.wen
 
 
 .option mx_domains dnslookup "domain list&!!" unset
@@ -24547,12 +24598,14 @@ A server unexpectedly closed the SMTP connection. There may, of course,
 legitimate reasons for this (host died, network died), but if it repeats a lot
 for the same host, it indicates something odd.
 
+.new
 .vitem &%lookup%&
 A DNS lookup for a host failed.
 Note that a &%dnslookup%& router will need to have matched
 its &%fail_defer_domains%& option for this retry type to be usable.
 Also note that a &%manualroute%& router will probably need
 its &%host_find_failed%& option set to &%defer%&.
+.wen
 
 .vitem &%refused_MX%&
 A connection to a host obtained from an MX record was refused.
@@ -24980,8 +25033,10 @@ The sixth can be configured to support
 the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism, which is
 not formally documented, but used by several MUAs. The seventh authenticator
 supports Microsoft's &'Secure Password Authentication'& mechanism.
+.new
 The eighth is an Exim authenticator but not an SMTP one;
 instead it can use information from a TLS negotiation.
+.wen
 
 The authenticators are configured using the same syntax as other drivers (see
 section &<<SECTfordricon>>&). If no authenticators are required, no
@@ -27386,8 +27441,11 @@ the feature was not requested by the client.
 .cindex "QUIT, ACL for"
 The ACL for the SMTP QUIT command is anomalous, in that the outcome of the ACL
 does not affect the response code to QUIT, which is always 221. Thus, the ACL
-does not in fact control any access. For this reason, it may only accept
+does not in fact control any access.
+.new
+For this reason, it may only accept
 or warn as its final result.
+.wen
 
 This ACL can be used for tasks such as custom logging at the end of an SMTP
 session. For example, you can use ACL variables in other ACLs to count
@@ -28304,8 +28362,10 @@ This option requests delivery be attempted while the item is being received.
 
 The option is usable in the RCPT ACL.
 If enabled for a message recieved via smtp and routed to an smtp transport,
+.new
 and only one transport, interface, destination host and port combination
 is used for all recipients of the message,
+.wen
 then the delivery connection is made while the receiving connection is open
 and data is copied from one to the other.
 
@@ -28313,7 +28373,9 @@ An attempt to set this option for any recipient but the first
 for a mail will be quietly ignored.
 If a recipient-verify callout connection is subsequently
 requested in the same ACL it is held open and used for
+.new
 any subsequent receipients and the data,
+.wen
 otherwise one is made after the initial RCPT ACL completes.
 
 Note that routers are used in verify mode,
@@ -28325,7 +28387,9 @@ Headers may be modified by routers (subject to the above) and transports.
 Cutthrough delivery is not supported via transport-filters or when DKIM signing
 of outgoing messages is done, because it sends data to the ultimate destination
 before the entire message has been received from the source.
+.new
 It is not supported for messages recieved with the SMTP PRDR option in use.
+.wen
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
@@ -29134,8 +29198,10 @@ Verification ensures that the host name obtained from a reverse DNS lookup, or
 one of its aliases, does, when it is itself looked up in the DNS, yield the
 original IP address.
 
+.new
 There is one possible option, &`defer_ok`&.  If this is present and a
 DNS operation returns a temporary error, the verify condition succeeds.
+.wen
 
 If this condition is used for a locally generated message (that is, when there
 is no client host involved), it always succeeds.
@@ -31164,15 +31230,17 @@ right-hand side.
 The name allows you to use per-domain or per-user antispam profiles in
 principle, but this is not straightforward in practice, because a message may
 have multiple recipients, not necessarily all in the same domain. Because the
-&%spam%& condition has to be called from a DATA ACL in order to be able to
+&%spam%& condition has to be called from a DATA-time ACL in order to be able to
 read the contents of the message, the variables &$local_part$& and &$domain$&
 are not set.
+.new
 Careful enforcement of single-recipient messages
 (eg. by responding with defer in the recipient ACL for all recipients
 after the first),
 or the use of PRDR,
 .cindex "PRDR" "use for per-user SpamAssassin profiles"
 are needed to use this feature.
+.wen
 
 The right-hand side of the &%spam%& condition is expanded before being used, so
 you can put lookups or conditions there. When the right-hand side evaluates to
@@ -31419,7 +31487,11 @@ containing the decoded data.
 This is perhaps the most important of the MIME variables. It contains a
 proposed filename for an attachment, if one was found in either the
 &'Content-Type:'& or &'Content-Disposition:'& headers. The filename will be
-RFC2047 or RFC2231 decoded, but no additional sanity checks are done.
+RFC2047
+.new
+or RFC2231
+.wen
+decoded, but no additional sanity checks are done.
  If no filename was
 found, this variable contains the empty string.
 
@@ -35360,7 +35432,9 @@ selection marked by asterisks:
 &`*etrn                       `&  ETRN commands
 &`*host_lookup_failed         `&  as it says
 &` ident_timeout              `&  timeout for ident connection
+.new
 &` incoming_interface         `&  local interface on <= and => lines
+.wen
 &` incoming_port              `&  remote port on <= lines
 &`*lost_incoming_connection   `&  as it says (includes timeouts)
 &` outgoing_port              `&  add remote port to => lines
@@ -35489,7 +35563,9 @@ to the &"<="& line as an IP address in square brackets, tagged by I= and
 followed by a colon and the port number. The local interface and port are also
 added to other SMTP log lines, for example &"SMTP connection from"& and to
 rejection lines
+.new
 and (despite the name) the local interface is added to &"=>"& lines..
+.wen
 .next
 .cindex "log" "incoming remote port"
 .cindex "port" "logging remote"
