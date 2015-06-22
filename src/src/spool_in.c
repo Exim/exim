@@ -298,6 +298,8 @@ tls_in.ocsp = OCSP_NOT_REQ;
 #endif
 
 #ifdef WITH_CONTENT_SCAN
+spam_bar = NULL;
+spam_score = NULL;
 spam_score_int = NULL;
 #endif
 
@@ -573,6 +575,10 @@ for (;;)
     if (Ustrncmp(p, "ender_set_untrusted", 19) == 0)
       sender_set_untrusted = TRUE;
 #ifdef WITH_CONTENT_SCAN
+    else if (Ustrncmp(p, "pam_bar ", 8) == 0)
+      spam_bar = string_copy(big_buffer + 10);
+    else if (Ustrncmp(p, "pam_score ", 10) == 0)
+      spam_score = string_copy(big_buffer + 12);
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
 #endif

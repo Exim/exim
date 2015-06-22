@@ -218,7 +218,9 @@ if (sender_local) fprintf(f, "-local\n");
 if (local_error_message) fprintf(f, "-localerror\n");
 if (local_scan_data != NULL) fprintf(f, "-local_scan %s\n", local_scan_data);
 #ifdef WITH_CONTENT_SCAN
-if (spam_score_int != NULL) fprintf(f,"-spam_score_int %s\n", spam_score_int);
+if (spam_bar)       fprintf(f,"-spam_bar %s\n",       spam_bar);
+if (spam_score)     fprintf(f,"-spam_score %s\n",     spam_score);
+if (spam_score_int) fprintf(f,"-spam_score_int %s\n", spam_score_int);
 #endif
 if (deliver_manual_thaw) fprintf(f, "-manual_thaw\n");
 if (sender_set_untrusted) fprintf(f, "-sender_set_untrusted\n");

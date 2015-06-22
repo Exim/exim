@@ -31196,7 +31196,11 @@ it always return &"true"& by appending &`:true`& to the username.
 
 .cindex "spam scanning" "returned variables"
 When the &%spam%& condition is run, it sets up a number of expansion
-variables. These variables are saved with the received message, thus they are
+variables.
+.new
+Except for &$spam_report$&,
+.wen
+these variables are saved with the received message so are
 available for use at delivery time.
 
 .vlist
@@ -31219,6 +31223,9 @@ headers, since MUAs can match on such strings.
 .vitem &$spam_report$&
 A multiline text table, containing the full SpamAssassin report for the
 message. Useful for inclusion in headers or reject messages.
+.new
+This variable is only usable in a DATA-time ACL.
+.wen
 
 .new
 .vitem &$spam_action$&
