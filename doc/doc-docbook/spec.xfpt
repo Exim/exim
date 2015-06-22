@@ -14343,7 +14343,7 @@ to use DANE for remote delivery to a server that is listed in the DNS
 zones that your resolver is authoritive for).
 
 If the DNS answer packet has the AA bit set and contains resource record
-in the answer section, the name of first NS record appearing in the
+in the answer section, the name of the first NS record appearing in the
 authority section is compared against the list. If the answer packet is
 authoritive but the answer section is empty, the name of the first SOA
 record in the authoritive section is used instead.
