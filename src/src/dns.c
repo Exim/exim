@@ -424,7 +424,7 @@ if (!h->nscount || !h->aa) return NULL;
 for (rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_AUTHORITY);
      rr;
      rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_NEXT))
-  if (rr->type == h->ancount ? T_NS : T_SOA) return rr->name;
+  if (rr->type == (h->ancount ? T_NS : T_SOA)) return rr->name;
 return NULL;
 }
 
