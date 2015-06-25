@@ -7682,6 +7682,12 @@ host, email address, or local part, respectively. In the sections below, the
 different types of pattern for each case are described, but first we cover some
 general facilities that apply to all four kinds of list.
 
+.new
+Note that other parts of Exim use a &'string list'& which does not
+support all the complexity availible in
+domain, host, address and local part lists.
+.wen
+
 
 
 .section "Expansion of lists" "SECID75"
