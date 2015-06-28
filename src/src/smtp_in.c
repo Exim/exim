@@ -3293,7 +3293,7 @@ while (done <= 0)
   pid_t pid;
   int start, end, sender_domain, recipient_domain;
   int ptr, size, rc;
-  int c, i;
+  int c;
   auth_instance *au;
   uschar *orcpt = NULL;
   int flags;

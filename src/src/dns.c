@@ -40,7 +40,6 @@ fakens_search(const uschar *domain, int type, uschar *answerptr, int size)
 {
 int len = Ustrlen(domain);
 int asize = size;                  /* Locally modified */
-uschar *endname;
 uschar name[256];
 uschar utilname[256];
 uschar *aptr = answerptr;          /* Locally modified */
@@ -51,7 +50,6 @@ struct stat statbuf;
 if (domain[len - 1] == '.') len--;
 Ustrncpy(name, domain, len);
 name[len] = 0;
-endname = name + len;
 
 /* Look for the fakens utility, and if it exists, call it. */
 
@@ -86,7 +84,7 @@ if (stat(CS utilname, &statbuf) >= 0)
     asize -= rc;      /* may need to be passed on to res_search(). */
     }
 
-  /* If we ran out of output buffer before exhasting the return,
+  /* If we ran out of output buffer before exhausting the return,
   carry on reading and counting it. */
 
   if (asize == 0)

@@ -127,7 +127,7 @@ if ((rc = punycode_decode(p_len, CCS alabel+4, &p_len, p, NULL)) != PUNYCODE_SUC
   return NULL;
   }
 
-s = stringprep_ucs4_to_utf8(p, p_len, NULL, &p_len);
+s = US stringprep_ucs4_to_utf8(p, p_len, NULL, &p_len);
 res = string_copyn(s, p_len);
 free(s);
 return res;

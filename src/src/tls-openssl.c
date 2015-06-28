@@ -708,7 +708,7 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
 
 if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
   {
-  tls_error("Unable to create ec curve", host, NULL);
+  tls_error(US"Unable to create ec curve", host, NULL);
   return FALSE;
   }
 
