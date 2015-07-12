@@ -1515,7 +1515,9 @@ sender_verified_list = NULL;        /* No senders verified */
 memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 
+#ifndef DISABLE_PRDR
 prdr_requested = FALSE;
+#endif
 
 /* Reset the DSN flags */
 dsn_ret = 0;

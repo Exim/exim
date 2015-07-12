@@ -3372,7 +3372,11 @@ for (; cb != NULL; cb = cb->next)
 	break;
 
 	case CONTROL_CUTTHROUGH_DELIVERY:
+#ifndef DISABLE_PRDR
 	if (prdr_requested)
+#else
+	if (0)
+#endif
 	  /* Too hard to think about for now.  We might in future cutthrough
 	  the case where both sides handle prdr and this-node prdr acl
 	  is "accept" */
