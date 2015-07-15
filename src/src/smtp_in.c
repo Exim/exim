@@ -159,7 +159,10 @@ AUTH is already forbidden. After a TLS session is started, AUTH's flag is again
 forced TRUE, to allow for the re-authentication that can happen at that point.
 
 QUIT is also "falsely" labelled as a mail command so that it doesn't up the
-count of non-mail commands and possibly provoke an error. */
+count of non-mail commands and possibly provoke an error.
+
+tls_auth is a pseudo-command, never expected in input.  It is activated
+on TLS startup and looks for a tls authenticator. */
 
 static smtp_cmd_list cmd_list[] = {
   /* name         len                     cmd     has_arg is_mail_cmd */
@@ -1028,10 +1031,12 @@ for (p = cmd_list; p < cmd_list_end; p++)
       continue;
     }
   #endif
-  if (strncmpic(smtp_cmd_buffer, US p->name, p->len) == 0 &&
-       (smtp_cmd_buffer[p->len-1] == ':' ||   /* "mail from:" or "rcpt to:" */
-        smtp_cmd_buffer[p->len] == 0 ||
-        smtp_cmd_buffer[p->len] == ' '))
+  if (  p->len
+     && strncmpic(smtp_cmd_buffer, US p->name, p->len) == 0
+     && (  smtp_cmd_buffer[p->len-1] == ':'    /* "mail from:" or "rcpt to:" */
+        || smtp_cmd_buffer[p->len] == 0
+	|| smtp_cmd_buffer[p->len] == ' '
+     )  )
     {
     if (smtp_inptr < smtp_inend &&                     /* Outstanding input */
         p->cmd < sync_cmd_limit &&                     /* Command should sync */
