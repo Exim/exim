@@ -35467,7 +35467,7 @@ selection marked by asterisks:
 &`*size_reject                `&  rejection because too big
 &`*skip_delivery              `&  delivery skipped in a queue run
 &`*smtp_confirmation          `&  SMTP confirmation on => lines
-&` smtp_connection            `&  SMTP connections
+&` smtp_connection            `&  incoming SMTP connections
 &` smtp_incomplete_transaction`&  incomplete SMTP transactions
 &` smtp_mailauth              `&  AUTH argument to MAIL commands
 &` smtp_no_mail               `&  session with no MAIL commands
@@ -35695,7 +35695,7 @@ response.
 .next
 .cindex "log" "SMTP connections"
 .cindex "SMTP" "logging connections"
-&%smtp_connection%&: A log line is written whenever an SMTP connection is
+&%smtp_connection%&: A log line is written whenever an incoming SMTP connection is
 established or closed, unless the connection is from a host that matches
 &%hosts_connection_nolog%&. (In contrast, &%lost_incoming_connection%& applies
 only when the closure is unexpected.) This applies to connections from local
