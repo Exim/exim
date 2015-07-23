@@ -2034,9 +2034,6 @@ For example, on a Sun system running Solaris 8, the directory
 .cindex "symbolic link" "to source files"
 Symbolic links to relevant source files are installed in the build directory.
 
-&*Warning*&: The &%-j%& (parallel) flag must not be used with &'make'&; the
-building process fails if it is set.
-
 If this is the first time &'make'& has been run, it calls a script that builds
 a make file inside the build directory, using the configuration files from the
 &_Local_& directory. The new make file is then passed to another instance of
