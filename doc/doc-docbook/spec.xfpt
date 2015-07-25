@@ -6243,12 +6243,14 @@ cause parts of the string to be replaced by data that is obtained from the
 lookup. Lookups of this type are conditional expansion items. Different results
 can be defined for the cases of lookup success and failure. See chapter
 &<<CHAPexpand>>&, where string expansions are described in detail.
+The key for the lookup is specified as part of the string expansion.
 .next
 Lists of domains, hosts, and email addresses can contain lookup requests as a
 way of avoiding excessively long linear lists. In this case, the data that is
 returned by the lookup is often (but not always) discarded; whether the lookup
 succeeds or fails is what really counts. These kinds of list are described in
 chapter &<<CHAPdomhosaddlists>>&.
+The key for the lookup is given by the context in which the list is expanded.
 .endlist
 
 String expansions, lists, and lookups interact with each other in such a way
