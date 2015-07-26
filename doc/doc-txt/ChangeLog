@@ -2,6 +2,10 @@ Change log file for Exim from version 4.21
 -------------------------------------------
 
 
+Exim version 4.87
+-----------------
+
+
 Exim version 4.86
 -----------------
 JH/01 Bug 1545: The smtp transport option "retry_include_ip_address" is now
