@@ -35333,6 +35333,9 @@ selection marked by asterisks:
 
 &` all                        `&  all of the above
 .endd
+See also the &%slow_lookup_log%& main configuration option,
+section &<<SECID99>>&
+
 More details on each of these items follows:
 
 .ilist
