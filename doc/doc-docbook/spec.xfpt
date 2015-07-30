@@ -31165,7 +31165,8 @@ The integer value is useful for numeric comparisons in conditions.
 A string consisting of a number of &"+"& or &"-"& characters, representing the
 integer part of the spam score value. A spam score of 4.4 would have a
 &$spam_bar$& value of &"++++"&. This is useful for inclusion in warning
-headers, since MUAs can match on such strings.
+headers, since MUAs can match on such strings. The maximum length of the
+spam bar is 50 characters.
 
 .vitem &$spam_report$&
 A multiline text table, containing the full SpamAssassin report for the

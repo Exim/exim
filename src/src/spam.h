@@ -12,7 +12,8 @@
 /* timeout for reading and writing spamd */
 #define SPAMD_TIMEOUT 120
 
-/* maximum length of the spam bar */
+/* maximum length of the spam bar, please update the
+ * spec, the max length is mentioned there */
 #define MAX_SPAM_BAR_CHARS 50
 
 /* SHUT_WR seems to be undefined on Unixware ? */
