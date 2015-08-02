@@ -176,6 +176,8 @@ static const char * const exim_default_gnutls_priority = "NORMAL";
 
 static BOOL exim_gnutls_base_init_done = FALSE;
 
+static BOOL gnutls_buggy_ocsp = FALSE;
+
 
 /* ------------------------------------------------------------------------ */
 /* macros */
@@ -831,18 +833,25 @@ if (  !host	/* server */
    && tls_ocsp_file
    )
   {
-  if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
-	&state->exp_tls_ocsp_file))
-    return DEFER;
+  if (gnutls_buggy_ocsp)
+    {
+    DEBUG(D_tls) debug_printf("GnuTLS library is buggy for OCSP; avoiding\n");
+    }
+  else
+    {
+    if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
+	  &state->exp_tls_ocsp_file))
+      return DEFER;
 
-  /* Use the full callback method for stapling just to get observability.
-  More efficient would be to read the file once only, if it never changed
-  (due to SNI). Would need restart on file update, or watch datestamp.  */
+    /* Use the full callback method for stapling just to get observability.
+    More efficient would be to read the file once only, if it never changed
+    (due to SNI). Would need restart on file update, or watch datestamp.  */
 
-  gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
-    server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
+    gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
+      server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
 
-  DEBUG(D_tls) debug_printf("OCSP response file = %s\n", state->exp_tls_ocsp_file);
+    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", state->exp_tls_ocsp_file);
+    }
   }
 #endif
 
@@ -1011,6 +1020,35 @@ return OK;
 *            Initialize for GnuTLS               *
 *************************************************/
 
+
+static BOOL
+tls_is_buggy_ocsp(void)
+{
+const uschar * s;
+uschar maj, mid, mic;
+
+s = CUS gnutls_check_version(NULL);
+maj = atoi(CCS s);
+if (maj == 3)
+  {
+  while (*s && *s != '.') s++;
+  mid = atoi(CCS ++s);
+  if (mid <= 2)
+    return TRUE;
+  else if (mid >= 5)
+    return FALSE;
+  else
+    {
+    while (*s && *s != '.') s++;
+    mic = atoi(CCS ++s);
+    return mic <= (mid == 3 ? 16 : 3);
+    }
+  }
+return FALSE;
+}
+
+
+
 /* Called from both server and client code. In the case of a server, errors
 before actual TLS negotiation return DEFER.
 
@@ -1073,6 +1111,9 @@ if (!exim_gnutls_base_init_done)
     gnutls_global_set_log_level(EXIM_GNUTLS_LIBRARY_LOG_LEVEL);
     }
 #endif
+
+  if ((gnutls_buggy_ocsp = tls_is_buggy_ocsp()))
+    log_write(0, LOG_MAIN, "OCSP unusable with this GnuTLS library version");
 
   exim_gnutls_base_init_done = TRUE;
   }
