@@ -842,7 +842,7 @@ if (  !host	/* server */
   gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
     server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
 
-  DEBUG(D_tls) debug_printf("Set OCSP response file %s\n", &state->exp_tls_ocsp_file);
+  DEBUG(D_tls) debug_printf("OCSP response file = %s\n", state->exp_tls_ocsp_file);
   }
 #endif
 
