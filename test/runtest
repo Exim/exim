@@ -773,6 +773,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/(TLS error on connection (?:from .* )?\(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
 
+  # ======== GnuTLS problems ========
+  next if /OCSP unusable with this GnuTLS library version/;
+
   # ======== Maildir things ========
   # timestamp output in maildir processing
   s/(timestamp=|\(timestamp_only\): )\d+/$1ddddddd/g;
