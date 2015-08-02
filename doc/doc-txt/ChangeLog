@@ -4,6 +4,10 @@ Change log file for Exim from version 4.21
 
 Exim version 4.87
 -----------------
+JH/01 Bug 1664: Disable OCSP for GnuTLS library versions at/before 3.3.16
+      and 3.4.4 - once the server is enabled to respond to an OCSP request
+      it does even when not requested, resulting in a stapling non-aware
+      client dropping the TLS connection.
 
 
 Exim version 4.86

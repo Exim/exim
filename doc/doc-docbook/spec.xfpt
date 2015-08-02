@@ -16668,6 +16668,10 @@ must if set expand to the absolute path to a file which contains a current
 status proof for the server's certificate, as obtained from the
 Certificate Authority.
 
+.new
+Usable for GnuTLS 3.4.4 or 3.3.17 or OpenSSL 1.1.0 (or later).
+.wen
+
 
 .option tls_on_connect_ports main "string list" unset
 .cindex SSMTP
@@ -26754,7 +26758,9 @@ starts retrying to fetch an OCSP proof some time before its current
 proof expires.  The downside is that it requires server support.
 
 Unless Exim is built with the support disabled,
-or with GnuTLS earlier than version 3.1.3,
+.new
+or with GnuTLS earlier than version 3.3.16 / 3.4.8
+.wen
 support for OCSP stapling is included.
 
 There is a global option called &%tls_ocsp_file%&.
