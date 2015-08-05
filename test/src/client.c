@@ -84,9 +84,9 @@ latter needs a whole pile of tables. */
 # if GNUTLS_VERSION_NUMBER >= 0x030103
 #  define HAVE_OCSP
 #  include <gnutls/ocsp.h>
-#  ifndef GNUTLS_NO_EXTENSIONS
-#   define GNUTLS_NO_EXTENSIONS 0
-#  endif
+# endif
+# ifndef GNUTLS_NO_EXTENSIONS
+#  define GNUTLS_NO_EXTENSIONS 0
 # endif
 
 # define DH_BITS      768

@@ -91,9 +91,6 @@ exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
 #
-# Temporarily (I hope) use OpenSSL-based client, as GnuTLS is buggy and always requests (and understands)
-# stapling
-#
 client-gnutls \
  HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
 ??? 220

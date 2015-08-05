@@ -2,7 +2,9 @@
 #
 #
 #
-# 1: Server sends good staple on request
+exim -z '1: Server sends good staple on request'
+****
+#
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
@@ -30,7 +32,9 @@ killdaemon
 #
 #
 #
-# 2: Server does not staple an outdated response
+exim -z '2: Server does not staple an outdated response'
+****
+#
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
 ****
@@ -54,7 +58,9 @@ killdaemon
 #
 #
 #
-# 3: Server does not staple a response for a revoked cert
+exim -z '3: Server does not staple a response for a revoked cert'
+****
+#
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
 ****
@@ -71,6 +77,39 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+****
+killdaemon
+#
+#
+#
+#
+#
+exim -z '4: Connection functions when server is prepared to staple but client does not request it'
+****
+#
+exim -bd -oX PORT_D -DSERVER=server \
+ -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+****
+#
+client-ssl \
+ HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+ehlo rhu.barb.tls
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+quit
 ****
 killdaemon
 #
