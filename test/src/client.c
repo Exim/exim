@@ -84,6 +84,9 @@ latter needs a whole pile of tables. */
 # if GNUTLS_VERSION_NUMBER >= 0x030103
 #  define HAVE_OCSP
 #  include <gnutls/ocsp.h>
+#  ifndef GNUTLS_NO_EXTENSIONS
+#   define GNUTLS_NO_EXTENSIONS 0
+#  endif
 # endif
 
 # define DH_BITS      768
@@ -451,7 +454,7 @@ tls_session_init(void)
 {
 gnutls_session session;
 
-gnutls_init(&session, GNUTLS_CLIENT);
+gnutls_init(&session, GNUTLS_CLIENT | GNUTLS_NO_EXTENSIONS);
 
 gnutls_cipher_set_priority(session, default_cipher_priority);
 gnutls_compression_set_priority(session, comp_priority);

@@ -94,8 +94,7 @@ exim -bd -oX PORT_D -DSERVER=server \
 # Temporarily (I hope) use OpenSSL-based client, as GnuTLS is buggy and always requests (and understands)
 # stapling
 #
-#client-gnutls \
-client-ssl \
+client-gnutls \
  HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
 ??? 220
 ehlo rhu.barb
