@@ -659,14 +659,14 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 static BOOL
 init_ecdh(SSL_CTX * sctx, host_item * host)
 {
+#ifdef OPENSSL_NO_ECDH
+return TRUE;
+#else
+
 EC_KEY * ecdh;
 uschar * exp_curve;
 int nid;
 BOOL rv;
-
-#ifdef OPENSSL_NO_ECDH
-return TRUE;
-#else
 
 if (host)	/* No ECDH setup for clients, only for servers */
   return TRUE;
