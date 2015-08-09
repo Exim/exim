@@ -127,7 +127,7 @@ else
   {
   struct tm tm;
   struct tm * tm_p = &tm;
-  BOOL mod_tz;
+  BOOL mod_tz = TRUE;
   uschar * tz = to_tz(US"GMT0");    /* need to call strptime with baseline TZ */
 
   /* Parse OpenSSL ASN1_TIME_print output.  A shame there seems to
@@ -164,7 +164,7 @@ else
       }
     }
 
-  if (mod_tz);
+  if (mod_tz)
     restore_tz(tz);
   }
 BIO_free(bp);

@@ -297,7 +297,7 @@ start = time(NULL);
     sd = (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
     for (sublist = address, args = 0, spamd_param_init(sd);
-	 s = string_nextinlist(&sublist, &sublist_sep, NULL, 0);
+	 (s = string_nextinlist(&sublist, &sublist_sep, NULL, 0));
 	 args++
 	 )
       {
