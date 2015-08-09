@@ -499,7 +499,7 @@ do
 
   /* If the socket is ready, break out of the loop. */
   }
-while (!FD_ISSET(fd, &select_inset));
+while (rc < 0 || !FD_ISSET(fd, &select_inset));
 return TRUE;
 }
 
