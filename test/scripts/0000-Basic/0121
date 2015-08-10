@@ -1,4 +1,4 @@
-# Sender verification (envelope and header)
+# Sender verification SMTP (envelope and header)
 exim -bh 127.0.0.1
 mail from:<unknown@test.ex>
 rcpt to:<userx@test.ex>
@@ -27,5 +27,23 @@ rcpt to:<userx@test.ex>
 data
 from: <defer@test.ex>
 .
+quit
+****
+# Sender verification (ESMTP)
+exim -bh 127.0.0.1
+ehlo foo.bar
+mail from:<ab@localhost1>
+rset
+ehlo foo.bar
+mail from:<"a b"@localhost2>
+rset
+ehlo foo.bar
+mail from:<"a b"@localhost3> SIZE=1234
+rset
+ehlo foo.bar
+mail from:"a b"@localhost4 SIZE=1234
+rset
+ehlo foo.bar
+mail from:<"a b"@localhost5> PRDR
 quit
 ****
