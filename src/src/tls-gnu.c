@@ -176,7 +176,9 @@ static const char * const exim_default_gnutls_priority = "NORMAL";
 
 static BOOL exim_gnutls_base_init_done = FALSE;
 
+#ifndef DISABLE_OCSP
 static BOOL gnutls_buggy_ocsp = FALSE;
+#endif
 
 
 /* ------------------------------------------------------------------------ */
@@ -1021,6 +1023,8 @@ return OK;
 *************************************************/
 
 
+#ifndef DISABLE_OCSP
+
 static BOOL
 tls_is_buggy_ocsp(void)
 {
@@ -1047,6 +1051,7 @@ if (maj == 3)
 return FALSE;
 }
 
+#endif
 
 
 /* Called from both server and client code. In the case of a server, errors
@@ -1112,8 +1117,10 @@ if (!exim_gnutls_base_init_done)
     }
 #endif
 
-  if ((gnutls_buggy_ocsp = tls_is_buggy_ocsp()))
+#ifndef DISABLE_OCSP
+  if (tls_ocsp_file && (gnutls_buggy_ocsp = tls_is_buggy_ocsp()))
     log_write(0, LOG_MAIN, "OCSP unusable with this GnuTLS library version");
+#endif
 
   exim_gnutls_base_init_done = TRUE;
   }
