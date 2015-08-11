@@ -9,6 +9,7 @@
 
 
 #include "exim.h"
+#include <assert.h>
 
 
 /* Initialize for TCP wrappers if so configured. It appears that the macro
@@ -232,6 +233,7 @@ static uschar *protocols[] = {
 
 /* Sanity check and validate optional args to MAIL FROM: envelope */
 enum {
+  ENV_MAIL_OPT_NULL,
   ENV_MAIL_OPT_SIZE, ENV_MAIL_OPT_BODY, ENV_MAIL_OPT_AUTH,
 #ifndef DISABLE_PRDR
   ENV_MAIL_OPT_PRDR,
@@ -240,7 +242,6 @@ enum {
 #ifdef EXPERIMENTAL_INTERNATIONAL
   ENV_MAIL_OPT_UTF8,
 #endif
-  ENV_MAIL_OPT_NULL
   };
 typedef struct {
   uschar *   name;  /* option requested during MAIL cmd */
@@ -260,7 +261,8 @@ static env_mail_type_t env_mail_type_list[] = {
 #ifdef EXPERIMENTAL_INTERNATIONAL
     { US"SMTPUTF8",ENV_MAIL_OPT_UTF8,  FALSE },		/* rfc6531 */
 #endif
-    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
+    /* keep this the last entry */
+    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE },
   };
 
 /* When reading SMTP from a remote host, we have to use our own versions of the
@@ -3887,7 +3889,7 @@ while (done <= 0)
       if (!extract_option(&name, &value)) break;
 
       for (mail_args = env_mail_type_list;
-           (char *)mail_args < (char *)env_mail_type_list + sizeof(env_mail_type_list);
+           mail_args->value != ENV_MAIL_OPT_NULL;
            mail_args++
           )
         if (strcmpic(name, mail_args->name) == 0)
@@ -4066,15 +4068,17 @@ while (done <= 0)
 	    }
 	  break;
 #endif
-        /* Unknown option. Stick back the terminator characters and break
+        /* No valid option. Stick back the terminator characters and break
         the loop.  Do the name-terminator second as extract_option sets
-	value==name when it found no equal-sign.
-	An error for a malformed address will occur. */
-        default:
+        value==name when it found no equal-sign.
+        An error for a malformed address will occur. */
+        case ENV_MAIL_OPT_NULL:
           value[-1] = '=';
           name[-1] = ' ';
           arg_error = TRUE;
           break;
+
+        default:  assert(0);
         }
       /* Break out of for loop if switch() had bad argument or
          when start of the email address is reached */
