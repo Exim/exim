@@ -3212,7 +3212,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else
     {
     int flags = whichrrs;
-    dnssec d;
+    dnssec_domains d;
 
     h.name = buffer;
     h.next = NULL;

@@ -743,11 +743,11 @@ sa-os.o:         $(HDRS) os.c
 # These are the test targets themselves
 
 test_dbfn:   config.h dbfn.c dummies.o sa-globals.o sa-os.o store.o \
-	       string.o tod.o version.o
+	       string.o tod.o version.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE dbfn.c
 	$(LNCC) -o test_dbfn $(LFLAGS) dbfn.o \
 	  dummies.o sa-globals.o sa-os.o store.o string.o \
-	  tod.o version.o $(LIBS) $(DBMLIB)
+	  tod.o version.o utf8.o $(LIBS) $(DBMLIB) $(LDFLAGS)
 	rm -f dbfn.o
 
 test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o os.o \
@@ -761,23 +761,24 @@ test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o os.o \
 	  tod.o tree.o $(LIBS) $(LIBRESOLV)
 	rm -f child.o dummies.o host.o dns.o
 
-test_os:     os.h os.c dummies.o sa-globals.o store.o string.o tod.o
+test_os:     os.h os.c dummies.o sa-globals.o store.o string.o tod.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE os.c
 	$(LNCC) -o test_os $(LFLAGS) os.o dummies.o \
-	  sa-globals.o store.o string.o tod.o $(LIBS)
+	  sa-globals.o store.o string.o tod.o utf8.o $(LIBS) $(LDFLAGS)
 	rm -f os.o
 
 test_parse:  config.h parse.c dummies.o sa-globals.o \
-	     store.o string.o tod.o version.o
+	     store.o string.o tod.o version.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE parse.c
 	$(LNCC) -o test_parse $(LFLAGS) parse.o \
-	  dummies.o sa-globals.o store.o string.o tod.o version.o
+	  dummies.o sa-globals.o store.o string.o tod.o version.o \
+	  utf8.o $(LDFLAGS)
 	rm -f parse.o
 
-test_string: config.h string.c dummies.o sa-globals.o store.o tod.o
+test_string: config.h string.c dummies.o sa-globals.o store.o tod.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE string.c
 	$(LNCC) -o test_string $(LFLAGS) -DSTAND_ALONE string.o \
-	  dummies.o sa-globals.o store.o tod.o $(LIBS)
+	  dummies.o sa-globals.o store.o tod.o utf8.o $(LIBS) $(LDFLAGS)
 	rm -f string.o
 
 # End
