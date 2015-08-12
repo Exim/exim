@@ -451,8 +451,8 @@ BOOL
 fd_ready(int fd, int timeout)
 {
 fd_set select_inset;
-struct timeval tv;
 time_t start_recv = time(NULL);
+int time_left = timeout;
 int rc;
 
 if (timeout <= 0)
@@ -464,10 +464,9 @@ if (timeout <= 0)
 
 do
   {
+  struct timeval tv = { time_left, 0 };
   FD_ZERO (&select_inset);
   FD_SET (fd, &select_inset);
-  tv.tv_sec = timeout;
-  tv.tv_usec = 0;
 
   /*DEBUG(D_transport) debug_printf("waiting for data on fd\n");*/
   rc = select(fd + 1, (SELECT_ARG2_TYPE *)&select_inset, NULL, NULL, &tv);
@@ -479,17 +478,15 @@ do
   Aug 2004: Somebody set up a cron job that ran exiwhat every 2 minutes, making
   the interrupt not at all rare. Since the timeout is typically more than 2
   minutes, the effect was to block the timeout completely. To prevent this
-  happening again, we do an explicit time test. */
+  happening again, we do an explicit time test and adjust the timeout
+  accordingly */
 
   if (rc < 0 && errno == EINTR)
     {
     DEBUG(D_transport) debug_printf("EINTR while waiting for socket data\n");
-    if (time(NULL) - start_recv < timeout) continue;
-    DEBUG(D_transport) debug_printf("total wait time exceeds timeout\n");
+    /* Watch out, 'continue' jumps to the condition, not to the loops top */
+    if (time_left = timeout - (time(NULL) - start_recv)) continue;
     }
-
-  /* Handle a timeout, and treat any other select error as a timeout, including
-  an EINTR when we have been in this loop for longer than timeout. */
 
   if (rc <= 0)
     {
@@ -497,7 +494,8 @@ do
     return FALSE;
     }
 
-  /* If the socket is ready, break out of the loop. */
+  /* Checking the FD_ISSET is not enough, if we're interrupted, the
+  select_inset may still contain the 'input'. */
   }
 while (rc < 0 || !FD_ISSET(fd, &select_inset));
 return TRUE;
