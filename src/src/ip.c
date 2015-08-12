@@ -455,7 +455,7 @@ time_t start_recv = time(NULL);
 int time_left = timeout;
 int rc;
 
-if (timeout <= 0)
+if (time_left <= 0)
   {
   errno = ETIMEDOUT;
   return FALSE;
@@ -484,8 +484,10 @@ do
   if (rc < 0 && errno == EINTR)
     {
     DEBUG(D_transport) debug_printf("EINTR while waiting for socket data\n");
+
     /* Watch out, 'continue' jumps to the condition, not to the loops top */
-    if (time_left = timeout - (time(NULL) - start_recv)) continue;
+    time_left = timeout - (time(NULL) - start_recv);
+    if (time_left > 0) continue;
     }
 
   if (rc <= 0)
