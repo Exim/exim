@@ -198,6 +198,19 @@ int len = sizeof(accepted);
 
 
 /* Sort out the arguments */
+if (argc > 1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")))
+  {
+  printf("Usage: %s [options]\n", argv[0]);
+  puts("Options"
+       "\n\t-d       debug"
+       "\n\t-i n     n seconds initial delay"
+       "\n\t-noipv4  disable ipv4"
+       "\n\t-noipv6  disable ipv6"
+       "\n\t-oP file write PID to file"
+       "\n\t-t n     n seconds timeout"
+  );
+  exit(0);
+  }
 
 while (na < argc && argv[na][0] == '-')
   {
@@ -209,7 +222,7 @@ while (na < argc && argv[na][0] == '-')
   else if (strcmp(argv[na], "-oP") == 0) pidfile = argv[++na];
   else
     {
-    printf("server: unknown option %s\n", argv[na]);
+    printf("server: unknown option %s, try -h or --help\n", argv[na]);
     exit(1);
     }
   na++;
