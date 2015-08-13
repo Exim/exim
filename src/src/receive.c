@@ -1118,8 +1118,7 @@ add_host_info_for_log(uschar *s, int *sizeptr, int *ptrptr)
 if (sender_fullhost != NULL)
   {
   s = string_append(s, sizeptr, ptrptr, 2, US" H=", sender_fullhost);
-  if ((log_extra_selector & LX_incoming_interface) != 0 &&
-       interface_address != NULL)
+  if (LOGGING(incoming_interface) && interface_address != NULL)
     {
     uschar *ss = string_sprintf(" I=[%s]:%d", interface_address,
       interface_port);
@@ -2529,7 +2528,7 @@ if (msgid_header == NULL &&
 rewriting. Must copy the count, because later ACLs and the local_scan()
 function may mess with the real recipients. */
 
-if ((log_extra_selector & LX_received_recipients) != 0)
+if (LOGGING(received_recipients))
   {
   raw_recipients = store_get(recipients_count * sizeof(uschar *));
   for (i = 0; i < recipients_count; i++)
@@ -3573,7 +3572,7 @@ else
     goto TEMPREJECT;
 
     case LOCAL_SCAN_REJECT_NOLOGHDR:
-    log_extra_selector &= ~LX_rejected_header;
+    BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
     /* Fall through */
 
     case LOCAL_SCAN_REJECT:
@@ -3582,7 +3581,7 @@ else
     break;
 
     case LOCAL_SCAN_TEMPREJECT_NOLOGHDR:
-    log_extra_selector &= ~LX_rejected_header;
+    BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
     /* Fall through */
 
     case LOCAL_SCAN_TEMPREJECT:
@@ -3747,15 +3746,15 @@ if (message_reference != NULL)
 s = add_host_info_for_log(s, &size, &sptr);
 
 #ifdef SUPPORT_TLS
-if (log_extra_selector & LX_tls_cipher && tls_in.cipher)
+if (LOGGING(tls_cipher) && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" X=", tls_in.cipher);
-if (log_extra_selector & LX_tls_certificate_verified && tls_in.cipher)
+if (LOGGING(tls_certificate_verified) && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" CV=",
     tls_in.certificate_verified? "yes":"no");
-if (log_extra_selector & LX_tls_peerdn && tls_in.peerdn)
+if (LOGGING(tls_peerdn) && tls_in.peerdn)
   s = string_append(s, &size, &sptr, 3, US" DN=\"",
     string_printing(tls_in.peerdn), US"\"");
-if (log_extra_selector & LX_tls_sni && tls_in.sni)
+if (LOGGING(tls_sni) && tls_in.sni)
   s = string_append(s, &size, &sptr, 3, US" SNI=\"",
     string_printing(tls_in.sni), US"\"");
 #endif
@@ -3766,7 +3765,7 @@ if (sender_host_authenticated)
   if (authenticated_id != NULL)
     {
     s = string_append(s, &size, &sptr, 2, US":", authenticated_id);
-    if (log_extra_selector & LX_smtp_mailauth  &&  authenticated_sender != NULL)
+    if (LOGGING(smtp_mailauth) && authenticated_sender != NULL)
       s = string_append(s, &size, &sptr, 2, US":", authenticated_sender);
     }
   }
@@ -3777,7 +3776,7 @@ if (prdr_requested)
 #endif
 
 #ifdef EXPERIMENTAL_PROXY
-if (proxy_session &&  log_extra_selector & LX_proxy)
+if (proxy_session && LOGGING(proxy))
   s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host_address);
 #endif
 
@@ -3788,7 +3787,7 @@ s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
    0 ... no BODY= used
    7 ... 7BIT
    8 ... 8BITMIME */
-if (log_extra_selector & LX_8bitmime)
+if (LOGGING(8bitmime))
   {
   sprintf(CS big_buffer, "%d", body_8bitmime);
   s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
@@ -3814,7 +3813,7 @@ if (msgid_header != NULL)
 /* If subject logging is turned on, create suitable printing-character
 text. By expanding $h_subject: we make use of the MIME decoding. */
 
-if ((log_extra_selector & LX_subject) != 0 && subject_header != NULL)
+if (LOGGING(subject) && subject_header != NULL)
   {
   int i;
   uschar *p = big_buffer;
@@ -4003,8 +4002,8 @@ if(!smtp_reply)
 #endif
   {
   log_write(0, LOG_MAIN |
-    (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
-    (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
+    (LOGGING(received_recipients)? LOG_RECIPIENTS : 0) |
+    (LOGGING(received_sender)? LOG_SENDER : 0),
     "%s", s);
 
   /* Log any control actions taken by an ACL or local_scan(). */

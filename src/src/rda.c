@@ -635,7 +635,7 @@ if ((pid = fork()) == 0)
     {
     DEBUG(D_rewrite) debug_printf("turned off address rewrite logging (not "
       "root or exim in this process)\n");
-    log_write_selector &= ~L_address_rewrite;
+    BIT_CLEAR(log_selector, log_selector_size, Li_address_rewrite);
     }
 
   /* Now do the business */

@@ -247,8 +247,7 @@ for (rule = rewrite_rules;
 
   /* We have a validly rewritten address */
 
-  if ((log_write_selector & L_address_rewrite) != 0 ||
-      (debug_selector & D_rewrite) != 0)
+  if (LOGGING(address_rewrite) || (debug_selector & D_rewrite) != 0)
     {
     int i;
     const uschar *where = CUS"?";

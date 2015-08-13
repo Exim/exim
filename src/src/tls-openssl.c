@@ -1111,8 +1111,7 @@ len = SSL_get_tlsext_status_ocsp_resp(s, &p);
 if(!p)
  {
   /* Expect this when we requested ocsp but got none */
-  if (  cbinfo->u_ocsp.client.verify_required
-     && log_extra_selector & LX_tls_cipher)
+  if (cbinfo->u_ocsp.client.verify_required && LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Received TLS status callback, null content");
   else
     DEBUG(D_tls) debug_printf(" null\n");
@@ -1122,7 +1121,7 @@ if(!p)
 if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
  {
   tls_out.ocsp = OCSP_FAILED;
-  if (log_extra_selector & LX_tls_cipher)
+  if (LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Received TLS cert status response, parse error");
   else
     DEBUG(D_tls) debug_printf(" parse error\n");
@@ -1132,7 +1131,7 @@ if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
 if(!(bs = OCSP_response_get1_basic(rsp)))
   {
   tls_out.ocsp = OCSP_FAILED;
-  if (log_extra_selector & LX_tls_cipher)
+  if (LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Received TLS cert status response, error parsing response");
   else
     DEBUG(D_tls) debug_printf(" error parsing response\n");
@@ -1163,7 +1162,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       tls_out.ocsp = OCSP_FAILED;
-      if (log_extra_selector & LX_tls_cipher)
+      if (LOGGING(tls_cipher))
 	log_write(0, LOG_MAIN, "Received TLS cert status response, itself unverifiable");
       BIO_printf(bp, "OCSP response verify failure\n");
       ERR_print_errors(bp);

@@ -38,7 +38,7 @@ typedef struct macro_item {
 
 typedef struct bit_table {
   uschar *name;
-  unsigned int bit;
+  int bit;
 } bit_table;
 
 /* Block for holding a uid and gid, possibly unset, and an initgroups flag. */

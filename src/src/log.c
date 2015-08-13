@@ -613,7 +613,7 @@ If a message_id exists, we include it after the timestamp.
 
 Arguments:
   selector  write to main log or LOG_INFO only if this value is zero, or if
-              its bit is set in log_write_selector
+              its bit is set in log_selector[0]
   flags     each bit indicates some independent action:
               LOG_SENDER      add raw sender to the message
               LOG_RECIPIENTS  add raw recipients list to message
@@ -749,15 +749,12 @@ DEBUG(D_any|D_v)
   Ustrcpy(ptr, "LOG:");
   ptr += 4;
 
-  /* Show the options that were passed into the call. These are those whose
-  flag values do not have the 0x80000000 bit in them. Note that this
-  automatically exclude the "all" setting. */
+  /* Show the selector that was passed into the call. */
 
   for (i = 0; i < log_options_count; i++)
     {
     unsigned int bit = log_options[i].bit;
-    if ((bit & 0x80000000) != 0) continue;
-    if ((selector & bit) != 0)
+    if (bit < BITWORDSIZE && selector == BIT(bit))
       {
       *ptr++ = ' ';
       Ustrcpy(ptr, log_options[i].name);
@@ -809,7 +806,7 @@ ptr = log_buffer;
 sprintf(CS ptr, "%s ", tod_stamp(tod_log));
 while(*ptr) ptr++;
 
-if ((log_extra_selector & LX_pid) != 0)
+if (LOGGING(pid))
   {
   sprintf(CS ptr, "[%d] ", (int)getpid());
   while (*ptr) ptr++;
@@ -869,7 +866,7 @@ or unless there is no log_stderr (expn called from daemon, for example). */
 if (!really_exim || log_testing_mode)
   {
   if (debug_selector == 0 && log_stderr != NULL &&
-      (selector == 0 || (selector & log_write_selector) != 0))
+      (selector == 0 || (selector & log_selector[0]) != 0))
     {
     if (host_checking)
       fprintf(log_stderr, "LOG: %s", CS(log_buffer + 20));  /* no timestamp */
@@ -887,7 +884,7 @@ has been renamed. Therefore, do a stat() and see if the inode has changed, and
 if so, re-open. */
 
 if ((flags & LOG_MAIN) != 0 &&
-    (selector == 0 || (selector & log_write_selector) != 0))
+    (selector == 0 || (selector & log_selector[0]) != 0))
   {
   if ((logging_mode & LOG_MODE_SYSLOG) != 0 &&
       (syslog_duplication || (flags & (LOG_REJECT|LOG_PANIC)) == 0))
@@ -956,7 +953,7 @@ if ((flags & LOG_REJECT) != 0)
   {
   header_line *h;
 
-  if (header_list != NULL && (log_extra_selector & LX_rejected_header) != 0)
+  if (header_list != NULL && LOGGING(rejected_header))
     {
     if (recipients_count > 0)
       {
@@ -1142,6 +1139,35 @@ syslog_open = FALSE;
 
 
 /*************************************************
+*             Multi-bit set or clear             *
+*************************************************/
+
+/* These functions take a list of bit indexes (terminated by -1) and
+clear or set the corresponding bits in the selector.
+
+Arguments:
+  selector       address of the bit string
+  selsize        number of words in the bit string
+  bits           list of bits to set
+*/
+
+void
+bits_clear(unsigned int *selector, size_t selsize, int *bits)
+{
+for(; *bits != -1; ++bits)
+  BIT_CLEAR(selector, selsize, *bits);
+}
+
+void
+bits_set(unsigned int *selector, size_t selsize, int *bits)
+{
+for(; *bits != -1; ++bits)
+  BIT_SET(selector, selsize, *bits);
+}
+
+
+
+/*************************************************
 *         Decode bit settings for log/debug      *
 *************************************************/
 
@@ -1151,13 +1177,9 @@ also recognizes a numeric setting of the form =<number>, but this is not
 intended for user use. It's an easy way for Exim to pass the debug settings
 when it is re-exec'ed.
 
-The log options are held in two unsigned ints (because there became too many
-for one). The top bit in the table means "put in 2nd selector". This does not
-yet apply to debug options, so the "=" facility sets only the first selector.
-
-The "all" selector, which must be equal to 0xffffffff, is recognized specially.
-It sets all the bits in both selectors. However, there is a facility for then
-unsetting certain bits, because we want to turn off "memory" in the debug case.
+The option table is a list of names and bit indexes. The index -1
+means "set all bits, except for those listed in notall". The notall
+list is terminated by -1.
 
 The action taken for bad values varies depending upon why we're here.
 For log messages, or if the debugging is triggered from config, then we write
@@ -1165,10 +1187,9 @@ to the log on the way out.  For debug setting triggered from the command-line,
 we treat it as an unknown option: error message to stderr and die.
 
 Arguments:
-  selector1      address of the first bit string
-  selector2      address of the second bit string, or NULL
-  notall1        bits to exclude from "all" for selector1
-  notall2        bits to exclude from "all" for selector2
+  selector       address of the bit string
+  selsize        number of words in the bit string
+  notall         list of bits to exclude from "all"
   string         the configured string
   options        the table of option names
   count          size of table
@@ -1179,9 +1200,8 @@ Returns:         nothing on success - bomb out on failure
 */
 
 void
-decode_bits(unsigned int *selector1, unsigned int *selector2, int notall1,
-  int notall2, uschar *string, bit_table *options, int count, uschar *which,
-  int flags)
+decode_bits(unsigned int *selector, size_t selsize, int *notall,
+  uschar *string, bit_table *options, int count, uschar *which, int flags)
 {
 uschar *errmsg;
 if (string == NULL) return;
@@ -1189,7 +1209,8 @@ if (string == NULL) return;
 if (*string == '=')
   {
   char *end;    /* Not uschar */
-  *selector1 = strtoul(CS string+1, &end, 0);
+  memset(selector, 0, sizeof(*selector)*selsize);
+  *selector = strtoul(CS string+1, &end, 0);
   if (*end == 0) return;
   errmsg = string_sprintf("malformed numeric %s_selector setting: %s", which,
     string);
@@ -1232,40 +1253,22 @@ else for(;;)
       if (middle->name[len] != 0) c = -1; else
         {
         unsigned int bit = middle->bit;
-        unsigned int *selector;
 
-        /* The value with all bits set means "force all bits in both selectors"
-        in the case where two are being handled. However, the top bit in the
-        second selector is never set. When setting, some bits can be excluded.
-        */
+	if (bit == -1)
+	  {
+	  if (adding)
+	    {
+	    memset(selector, -1, sizeof(*selector)*selsize);
+	    bits_clear(selector, selsize, notall);
+	    }
+	  else
+	    memset(selector, 0, sizeof(*selector)*selsize);
+	  }
+	else if (adding)
+	  BIT_SET(selector, selsize, bit);
+	else
+	  BIT_CLEAR(selector, selsize, bit);
 
-        if (bit == 0xffffffff)
-          {
-          if (adding)
-            {
-            *selector1 = 0xffffffff ^ notall1;
-            if (selector2 != NULL) *selector2 = 0x7fffffff ^ notall2;
-            }
-          else
-            {
-            *selector1 = 0;
-            if (selector2 != NULL) *selector2 = 0;
-            }
-          }
-
-        /* Otherwise, the 0x80000000 bit means "this value, without the top
-        bit, belongs in the second selector". */
-
-        else
-          {
-          if ((bit & 0x80000000) != 0)
-            {
-            selector = selector2;
-            bit &= 0x7fffffff;
-            }
-          else selector = selector1;
-          if (adding) *selector |= bit; else *selector &= ~bit;
-          }
         break;  /* Out of loop to match selector name */
         }
       }
@@ -1335,10 +1338,8 @@ if (tag_name != NULL && (Ustrchr(tag_name, '/') != NULL))
 
 debug_selector = D_default;
 if (opts)
-  {
-  decode_bits(&debug_selector, NULL, D_memory, 0, opts,
+  decode_bits(&debug_selector, 1, debug_notall, opts,
       debug_options, debug_options_count, US"debug", DEBUG_FROM_CONFIG);
-  }
 
 /* When activating from a transport process we may never have logged at all
 resulting in certain setup not having been done.  Hack this for now so we

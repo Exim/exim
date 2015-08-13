@@ -1234,8 +1234,7 @@ if (sender_host_unknown || sender_host_notsocket)
 if (is_inetd)
   return string_sprintf("SMTP connection from %s (via inetd)", hostname);
 
-if ((log_extra_selector & LX_incoming_interface) != 0 &&
-     interface_address != NULL)
+if (LOGGING(incoming_interface) && interface_address != NULL)
   return string_sprintf("SMTP connection from %s I=[%s]:%d", hostname,
     interface_address, interface_port);
 
@@ -1260,16 +1259,15 @@ s_tlslog(uschar * s, int * sizep, int * ptrp)
   int size = sizep ? *sizep : 0;
   int ptr = ptrp ? *ptrp : 0;
 
-  if ((log_extra_selector & LX_tls_cipher) != 0 && tls_in.cipher != NULL)
+  if (LOGGING(tls_cipher) && tls_in.cipher != NULL)
     s = string_append(s, &size, &ptr, 2, US" X=", tls_in.cipher);
-  if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-       tls_in.cipher != NULL)
+  if (LOGGING(tls_certificate_verified) && tls_in.cipher != NULL)
     s = string_append(s, &size, &ptr, 2, US" CV=",
       tls_in.certificate_verified? "yes":"no");
-  if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_in.peerdn != NULL)
+  if (LOGGING(tls_peerdn) && tls_in.peerdn != NULL)
     s = string_append(s, &size, &ptr, 3, US" DN=\"",
       string_printing(tls_in.peerdn), US"\"");
-  if ((log_extra_selector & LX_tls_sni) != 0 && tls_in.sni != NULL)
+  if (LOGGING(tls_sni) && tls_in.sni != NULL)
     s = string_append(s, &size, &ptr, 3, US" SNI=\"",
       string_printing(tls_in.sni), US"\"");
 
@@ -1301,7 +1299,7 @@ smtp_log_no_mail(void)
 int size, ptr, i;
 uschar *s, *sep;
 
-if (smtp_mailcmd_count > 0 || (log_extra_selector & LX_smtp_no_mail) == 0)
+if (smtp_mailcmd_count > 0 || !LOGGING(smtp_no_mail))
   return;
 
 s = NULL;
@@ -2510,8 +2508,8 @@ static void
 incomplete_transaction_log(uschar *what)
 {
 if (sender_address == NULL ||                 /* No transaction in progress */
-    (log_write_selector & L_smtp_incomplete_transaction) == 0  /* Not logging */
-  ) return;
+    !LOGGING(smtp_incomplete_transaction))
+  return;
 
 /* Build list of recipients for logging */
 
@@ -2762,7 +2760,7 @@ if (sender_verified_failed != NULL &&
 
   setflag(sender_verified_failed, af_sverify_told);
 
-  if (rc != FAIL || (log_extra_selector & LX_sender_verify_fail) != 0)
+  if (rc != FAIL || LOGGING(sender_verify_fail))
     log_write(0, LOG_MAIN|LOG_REJECT, "%s sender verify %s for <%s>%s",
       host_and_ident(TRUE),
       ((sender_verified_failed->special_action & 255) == DEFER)? "defer":"fail",

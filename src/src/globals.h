@@ -319,6 +319,7 @@ extern uschar *dccifd_options;         /* options for the dccifd daemon */
 extern BOOL    debug_daemon;           /* Debug the daemon process only */
 extern int     debug_fd;               /* The fd for debug_file */
 extern FILE   *debug_file;             /* Where to write debugging info */
+extern int     debug_notall[];         /* Debug options excluded from +all */
 extern bit_table debug_options[];      /* Table of debug options */
 extern int     debug_options_count;    /* Size of table */
 extern int     delay_warning[];        /* Times between warnings */
@@ -531,16 +532,17 @@ extern uid_t   local_user_uid;         /* As it says; may be set in routers */
 extern tree_node *localpartlist_anchor;/* Tree of defined localpart lists */
 extern int     localpartlist_count;    /* Number defined */
 extern uschar *log_buffer;             /* For constructing log entries */
-extern unsigned int log_extra_selector;/* Bit map of logging options other than used by log_write() */
+extern int     log_default[];          /* Initialization list for log_selector */
 extern uschar *log_file_path;          /* If unset, use default */
+extern int     log_notall[];           /* Log options excluded from +all */
 extern bit_table log_options[];        /* Table of options */
 extern int     log_options_count;      /* Size of table */
 extern int     log_reject_target;      /* Target log for ACL rejections */
+extern unsigned int log_selector[];    /* Bit map of logging options */
 extern uschar *log_selector_string;    /* As supplied in the config */
 extern FILE   *log_stderr;             /* Copy of stderr for log use, or NULL */
 extern BOOL    log_testing_mode;       /* TRUE in various testing modes */
 extern BOOL    log_timezone;           /* TRUE to include the timezone in log lines */
-extern unsigned int log_write_selector;/* Bit map of logging options for log_write() */
 extern uschar *login_sender_address;   /* The actual sender address */
 extern lookup_info **lookup_list;      /* Array of pointers to available lookups */
 extern int     lookup_list_count;      /* Number of entries in the list */

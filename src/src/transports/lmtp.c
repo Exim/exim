@@ -654,7 +654,7 @@ if (send_data)
     if (lmtp_read_response(out, buffer, sizeof(buffer), '2', timeout))
       {
       addr->transport_return = OK;
-      if ((log_extra_selector & LX_smtp_confirmation) != 0)
+      if (LOGGING(smtp_confirmation))
         {
         const uschar *s = string_printing(buffer);
 	/* de-const safe here as string_printing known to have alloc'n'copied */

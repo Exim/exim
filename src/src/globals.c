@@ -536,40 +536,45 @@ uschar *dccifd_options         = US"header";
 BOOL    debug_daemon           = FALSE;
 int     debug_fd               = -1;
 FILE   *debug_file             = NULL;
-bit_table debug_options[]      = {
-  { US"acl",            D_acl },
-  { US"all",            D_all },
-  { US"auth",           D_auth },
-  { US"deliver",        D_deliver },
-  { US"dns",            D_dns },
-  { US"dnsbl",          D_dnsbl },
-  { US"exec",           D_exec },
-  { US"expand",         D_expand },
-  { US"filter",         D_filter },
-  { US"hints_lookup",   D_hints_lookup },
-  { US"host_lookup",    D_host_lookup },
-  { US"ident",          D_ident },
-  { US"interface",      D_interface },
-  { US"lists",          D_lists },
-  { US"load",           D_load },
-  { US"local_scan",     D_local_scan },
-  { US"lookup",         D_lookup },
-  { US"memory",         D_memory },
-  { US"pid",            D_pid },
-  { US"process_info",   D_process_info },
-  { US"queue_run",      D_queue_run },
-  { US"receive",        D_receive },
-  { US"resolver",       D_resolver },
-  { US"retry",          D_retry },
-  { US"rewrite",        D_rewrite },
-  { US"route",          D_route },
-  { US"timestamp",      D_timestamp },
-  { US"tls",            D_tls },
-  { US"transport",      D_transport },
-  { US"uid",            D_uid },
-  { US"verify",         D_verify }
+int     debug_notall[]         = {
+  Di_memory,
+  -1
 };
-int     debug_options_count    = sizeof(debug_options)/sizeof(bit_table);
+bit_table debug_options[]      = { /* must be in alphabetical order */
+  BIT_TABLE(D, acl),
+  BIT_TABLE(D, all),
+  BIT_TABLE(D, auth),
+  BIT_TABLE(D, deliver),
+  BIT_TABLE(D, dns),
+  BIT_TABLE(D, dnsbl),
+  BIT_TABLE(D, exec),
+  BIT_TABLE(D, expand),
+  BIT_TABLE(D, filter),
+  BIT_TABLE(D, hints_lookup),
+  BIT_TABLE(D, host_lookup),
+  BIT_TABLE(D, ident),
+  BIT_TABLE(D, interface),
+  BIT_TABLE(D, lists),
+  BIT_TABLE(D, load),
+  BIT_TABLE(D, local_scan),
+  BIT_TABLE(D, lookup),
+  BIT_TABLE(D, memory),
+  BIT_TABLE(D, pid),
+  BIT_TABLE(D, process_info),
+  BIT_TABLE(D, queue_run),
+  BIT_TABLE(D, receive),
+  BIT_TABLE(D, resolver),
+  BIT_TABLE(D, retry),
+  BIT_TABLE(D, rewrite),
+  BIT_TABLE(D, route),
+  BIT_TABLE(D, timestamp),
+  BIT_TABLE(D, tls),
+  BIT_TABLE(D, transport),
+  BIT_TABLE(D, uid),
+  BIT_TABLE(D, verify),
+};
+int     debug_options_count    = nelem(debug_options);
+
 unsigned int debug_selector    = 0;
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
 uschar *delay_warning_condition=
@@ -813,78 +818,91 @@ uid_t   local_user_uid         = (uid_t)(-1);
 tree_node *localpartlist_anchor= NULL;
 int     localpartlist_count    = 0;
 uschar *log_buffer             = NULL;
-unsigned int log_extra_selector = LX_default;
+
+int     log_default[]          = { /* for initializing log_selector */
+  Li_acl_warn_skipped,
+  Li_connection_reject,
+  Li_delay_delivery,
+  Li_dnslist_defer,
+  Li_etrn,
+  Li_host_lookup_failed,
+  Li_lost_incoming_connection,
+  Li_queue_run,
+  Li_rejected_header,
+  Li_retry_defer,
+  Li_sender_verify_fail,
+  Li_size_reject,
+  Li_skip_delivery,
+  Li_smtp_confirmation,
+  Li_tls_certificate_verified,
+  Li_tls_cipher,
+  -1
+};
+
 uschar *log_file_path          = US LOG_FILE_PATH
                            "\0<--------------Space to patch log_file_path->";
 
-/* Those log options with L_xxx identifiers have values less than 0x800000 and
-are the ones that get put into log_write_selector. They can be used in calls to
-log_write() to test for the bit. The options with LX_xxx identifiers have
-values greater than 0x80000000 and are put into log_extra_selector (without the
-top bit). They are never used in calls to log_write(), but are tested
-independently. This separation became necessary when the number of log
-selectors was getting close to filling a 32-bit word. */
-
-/* Note that this list must be in alphabetical order. */
-
-bit_table log_options[]        = {
-  { US"8bitmime",                     LX_8bitmime },
-  { US"acl_warn_skipped",             LX_acl_warn_skipped },
-  { US"address_rewrite",              L_address_rewrite },
-  { US"all",                          L_all },
-  { US"all_parents",                  L_all_parents },
-  { US"arguments",                    LX_arguments },
-  { US"connection_reject",            L_connection_reject },
-  { US"delay_delivery",               L_delay_delivery },
-  { US"deliver_time",                 LX_deliver_time },
-  { US"delivery_size",                LX_delivery_size },
-  { US"dnslist_defer",                L_dnslist_defer },
-  { US"etrn",                         L_etrn },
-  { US"host_lookup_failed",           L_host_lookup_failed },
-  { US"ident_timeout",                LX_ident_timeout },
-  { US"incoming_interface",           LX_incoming_interface },
-  { US"incoming_port",                LX_incoming_port },
-  { US"lost_incoming_connection",     L_lost_incoming_connection },
-  { US"outgoing_port",                LX_outgoing_port },
-  { US"pid",                          LX_pid },
-#ifdef EXPERIMENTAL_PROXY
-  { US"proxy",                        LX_proxy },
-#endif
-  { US"queue_run",                    L_queue_run },
-  { US"queue_time",                   LX_queue_time },
-  { US"queue_time_overall",           LX_queue_time_overall },
-  { US"received_recipients",          LX_received_recipients },
-  { US"received_sender",              LX_received_sender },
-  { US"rejected_header",              LX_rejected_header },
-  { US"rejected_headers",             LX_rejected_header },
-  { US"retry_defer",                  L_retry_defer },
-  { US"return_path_on_delivery",      LX_return_path_on_delivery },
-  { US"sender_on_delivery",           LX_sender_on_delivery },
-  { US"sender_verify_fail",           LX_sender_verify_fail },
-  { US"size_reject",                  L_size_reject },
-  { US"skip_delivery",                L_skip_delivery },
-  { US"smtp_confirmation",            LX_smtp_confirmation },
-  { US"smtp_connection",              L_smtp_connection },
-  { US"smtp_incomplete_transaction",  L_smtp_incomplete_transaction },
-  { US"smtp_mailauth",                LX_smtp_mailauth },
-  { US"smtp_no_mail",                 LX_smtp_no_mail },
-  { US"smtp_protocol_error",          L_smtp_protocol_error },
-  { US"smtp_syntax_error",            L_smtp_syntax_error },
-  { US"subject",                      LX_subject },
-  { US"tls_certificate_verified",     LX_tls_certificate_verified },
-  { US"tls_cipher",                   LX_tls_cipher },
-  { US"tls_peerdn",                   LX_tls_peerdn },
-  { US"tls_sni",                      LX_tls_sni },
-  { US"unknown_in_list",              LX_unknown_in_list }
+int     log_notall[]           = {
+  -1
 };
+bit_table log_options[]        = { /* must be in alphabetical order */
+  BIT_TABLE(L, 8bitmime),
+  BIT_TABLE(L, acl_warn_skipped),
+  BIT_TABLE(L, address_rewrite),
+  BIT_TABLE(L, all),
+  BIT_TABLE(L, all_parents),
+  BIT_TABLE(L, arguments),
+  BIT_TABLE(L, connection_reject),
+  BIT_TABLE(L, delay_delivery),
+  BIT_TABLE(L, deliver_time),
+  BIT_TABLE(L, delivery_size),
+  BIT_TABLE(L, dnslist_defer),
+  BIT_TABLE(L, etrn),
+  BIT_TABLE(L, host_lookup_failed),
+  BIT_TABLE(L, ident_timeout),
+  BIT_TABLE(L, incoming_interface),
+  BIT_TABLE(L, incoming_port),
+  BIT_TABLE(L, lost_incoming_connection),
+  BIT_TABLE(L, outgoing_port),
+  BIT_TABLE(L, pid),
+#ifdef EXPERIMENTAL_PROXY
+  BIT_TABLE(L, proxy),
+#endif
+  BIT_TABLE(L, queue_run),
+  BIT_TABLE(L, queue_time),
+  BIT_TABLE(L, queue_time_overall),
+  BIT_TABLE(L, received_recipients),
+  BIT_TABLE(L, received_sender),
+  BIT_TABLE(L, rejected_header),
+  { US"rejected_headers", Li_rejected_header },
+  BIT_TABLE(L, retry_defer),
+  BIT_TABLE(L, return_path_on_delivery),
+  BIT_TABLE(L, sender_on_delivery),
+  BIT_TABLE(L, sender_verify_fail),
+  BIT_TABLE(L, size_reject),
+  BIT_TABLE(L, skip_delivery),
+  BIT_TABLE(L, smtp_confirmation),
+  BIT_TABLE(L, smtp_connection),
+  BIT_TABLE(L, smtp_incomplete_transaction),
+  BIT_TABLE(L, smtp_mailauth),
+  BIT_TABLE(L, smtp_no_mail),
+  BIT_TABLE(L, smtp_protocol_error),
+  BIT_TABLE(L, smtp_syntax_error),
+  BIT_TABLE(L, subject),
+  BIT_TABLE(L, tls_certificate_verified),
+  BIT_TABLE(L, tls_cipher),
+  BIT_TABLE(L, tls_peerdn),
+  BIT_TABLE(L, tls_sni),
+  BIT_TABLE(L, unknown_in_list),
+};
+int     log_options_count      = nelem(log_options);
 
-int     log_options_count      = sizeof(log_options)/sizeof(bit_table);
 int     log_reject_target      = 0;
+unsigned int log_selector[log_selector_size]; /* initialized in main() */
 uschar *log_selector_string    = NULL;
 FILE   *log_stderr             = NULL;
 BOOL    log_testing_mode       = FALSE;
 BOOL    log_timezone           = FALSE;
-unsigned int log_write_selector= L_default;
 uschar *login_sender_address   = NULL;
 uschar *lookup_dnssec_authenticated = NULL;
 int     lookup_open_max        = 25;

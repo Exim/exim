@@ -638,7 +638,7 @@ if (addr->message)
   }
 else
   {
-  if (log_extra_selector & LX_outgoing_port)
+  if (LOGGING(outgoing_port))
     message = string_sprintf("%s:%d", message,
 		host->port == PORT_NONE ? 25 : host->port);
   log_write(0, LOG_MAIN, "%s %s", message, strerror(addr->basic_errno));
@@ -2380,7 +2380,7 @@ if (!ok) ok = TRUE; else
 
     if (
 #ifndef EXPERIMENTAL_EVENT
-          (log_extra_selector & LX_smtp_confirmation) != 0 &&
+          LOGGING(smtp_confirmation) &&
 #endif
           !lmtp
        )
@@ -2435,7 +2435,7 @@ if (!ok) ok = TRUE; else
           continue;
           }
         completed_address = TRUE;   /* NOW we can set this flag */
-        if ((log_extra_selector & LX_smtp_confirmation) != 0)
+        if (LOGGING(smtp_confirmation))
           {
           const uschar *s = string_printing(buffer);
 	  /* deconst cast ok here as string_printing was checked to have alloc'n'copied */

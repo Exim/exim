@@ -682,7 +682,7 @@ d_hostlog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 {
   s = string_append(s, sizep, ptrp, 5, US" H=", addr->host_used->name,
     US" [", addr->host_used->address, US"]");
-  if ((log_extra_selector & LX_outgoing_port) != 0)
+  if (LOGGING(outgoing_port))
     s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
       addr->host_used->port));
   return s;
@@ -692,10 +692,9 @@ d_hostlog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 static uschar *
 d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 {
-  if ((log_extra_selector & LX_tls_cipher) != 0 && addr->cipher != NULL)
+  if (LOGGING(tls_cipher) && addr->cipher != NULL)
     s = string_append(s, sizep, ptrp, 2, US" X=", addr->cipher);
-  if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-       addr->cipher != NULL)
+  if (LOGGING(tls_certificate_verified) && addr->cipher != NULL)
     s = string_append(s, sizep, ptrp, 2, US" CV=",
       testflag(addr, af_cert_verified)
       ?
@@ -706,7 +705,7 @@ d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 #endif
         "yes"
       : "no");
-  if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
+  if (LOGGING(tls_peerdn) && addr->peerdn != NULL)
     s = string_append(s, sizep, ptrp, 3, US" DN=\"",
       string_printing(addr->peerdn), US"\"");
   return s;
@@ -808,7 +807,7 @@ pointer to a single host item in their host list, for use by the transport. */
 
 s = reset_point = store_get(size);
 
-log_address = string_log_address(addr, (log_write_selector & L_all_parents) != 0, TRUE);
+log_address = string_log_address(addr, LOGGING(all_parents), TRUE);
 if (msg)
   s = string_append(s, &size, &ptr, 3, host_and_ident(TRUE), US" ", log_address);
 else
@@ -817,11 +816,11 @@ else
   s = string_append(s, &size, &ptr, 2, US"> ", log_address);
   }
 
-if (log_extra_selector & LX_incoming_interface  &&  sending_ip_address)
+if (LOGGING(incoming_interface) && sending_ip_address)
   s = string_append(s, &size, &ptr, 3, US" I=[", sending_ip_address, US"]");
   /* for the port:  string_sprintf("%d", sending_port) */
 
-if ((log_extra_selector & LX_sender_on_delivery) != 0  ||  msg)
+if (LOGGING(sender_on_delivery) || msg)
   s = string_append(s, &size, &ptr, 3, US" F=<",
 #ifdef EXPERIMENTAL_INTERNATIONAL
     testflag(addr, af_utf8_downcvt)
@@ -841,8 +840,7 @@ delivery; indeed, I did for some time, until this statement crashed. The case
 when it is not set is for a delivery to /dev/null which is optimised by not
 being run at all. */
 
-if (used_return_path != NULL &&
-      (log_extra_selector & LX_return_path_on_delivery) != 0)
+if (used_return_path != NULL && LOGGING(return_path_on_delivery))
   s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
 
 if (msg)
@@ -854,7 +852,7 @@ if (addr->router != NULL)
 
 s = string_append(s, &size, &ptr, 2, US" T=", addr->transport->name);
 
-if ((log_extra_selector & LX_delivery_size) != 0)
+if (LOGGING(delivery_size))
   s = string_append(s, &size, &ptr, 2, US" S=",
     string_sprintf("%d", transport_count));
 
@@ -901,7 +899,7 @@ else
     if (addr->auth_id)
       {
       s = string_append(s, &size, &ptr, 2, US":", addr->auth_id);
-      if (log_extra_selector & LX_smtp_mailauth  &&  addr->auth_sndr)
+      if (LOGGING(smtp_mailauth) && addr->auth_sndr)
         s = string_append(s, &size, &ptr, 2, US":", addr->auth_sndr);
       }
     }
@@ -914,8 +912,7 @@ else
 
 /* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
 
-if (log_extra_selector & LX_smtp_confirmation &&
-    addr->message &&
+if (LOGGING(smtp_confirmation) && addr->message &&
     (addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0))
   {
   unsigned i;
@@ -935,11 +932,11 @@ if (log_extra_selector & LX_smtp_confirmation &&
 
 /* Time on queue and actual time taken to deliver */
 
-if ((log_extra_selector & LX_queue_time) != 0)
+if (LOGGING(queue_time))
   s = string_append(s, &size, &ptr, 2, US" QT=",
     readconf_printtime( (int) ((long)time(NULL) - (long)received_time)) );
 
-if ((log_extra_selector & LX_deliver_time) != 0)
+if (LOGGING(deliver_time))
   s = string_append(s, &size, &ptr, 2, US" DT=",
     readconf_printtime(addr->more_errno));
 
@@ -1230,8 +1227,7 @@ else if (result == DEFER || result == PANIC)
     /* Create the address string for logging. Must not do this earlier, because
     an OK result may be changed to FAIL when a pipe returns text. */
 
-    log_address = string_log_address(addr,
-      (log_write_selector & L_all_parents) != 0, result == OK);
+    log_address = string_log_address(addr, LOGGING(all_parents), result == OK);
 
     s = string_cat(s, &size, &ptr, log_address, Ustrlen(log_address));
 
@@ -1342,18 +1338,16 @@ else
   /* Create the address string for logging. Must not do this earlier, because
   an OK result may be changed to FAIL when a pipe returns text. */
 
-  log_address = string_log_address(addr,
-    (log_write_selector & L_all_parents) != 0, result == OK);
+  log_address = string_log_address(addr, LOGGING(all_parents), result == OK);
 
   s = string_cat(s, &size, &ptr, log_address, Ustrlen(log_address));
 
-  if ((log_extra_selector & LX_sender_on_delivery) != 0)
+  if (LOGGING(sender_on_delivery))
     s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
 
   /* Return path may not be set if no delivery actually happened */
 
-  if (used_return_path != NULL &&
-      (log_extra_selector & LX_return_path_on_delivery) != 0)
+  if (used_return_path != NULL && LOGGING(return_path_on_delivery))
     s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
 
   if (addr->router != NULL)
@@ -4449,7 +4443,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       }
 
     /* Local interface address/port */
-    if (log_extra_selector & LX_incoming_interface  &&  sending_ip_address)
+    if (LOGGING(incoming_interface) && sending_ip_address)
       {
       uschar * ptr = big_buffer;
       sprintf(CS ptr, "%.128s", sending_ip_address);
@@ -7365,7 +7359,7 @@ if (addr_defer == NULL)
 
   /* Log the end of this message, with queue time if requested. */
 
-  if ((log_extra_selector & LX_queue_time_overall) != 0)
+  if (LOGGING(queue_time_overall))
     log_write(0, LOG_MAIN, "Completed QT=%s",
       readconf_printtime( (int) ((long)time(NULL) - (long)received_time)) );
   else

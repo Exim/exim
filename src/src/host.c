@@ -544,7 +544,7 @@ use this directly as the first item for Received: because it ain't an RFC 2822
 domain. Sigh. */
 
 address = string_sprintf("[%s]:%d", sender_host_address, sender_host_port);
-if ((log_extra_selector & LX_incoming_port) == 0 || sender_host_port <= 0)
+if (!LOGGING(incoming_port) || sender_host_port <= 0)
   *(Ustrrchr(address, ':')) = 0;
 
 /* If there's no EHLO/HELO data, we can't show it. */
@@ -695,8 +695,7 @@ else
   {
   uschar *flag = useflag? US"H=" : US"";
   uschar *iface = US"";
-  if ((log_extra_selector & LX_incoming_interface) != 0 &&
-       interface_address != NULL)
+  if (LOGGING(incoming_interface) && interface_address != NULL)
     iface = string_sprintf(" I=[%s]:%d", interface_address, interface_port);
   if (sender_ident == NULL)
     (void)string_format(big_buffer, big_buffer_size, "%s%s%s",

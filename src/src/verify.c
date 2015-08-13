@@ -2916,7 +2916,7 @@ if (ip_bind(sock, host_af, interface_address, 0) < 0)
 if (ip_connect(sock, host_af, sender_host_address, port, rfc1413_query_timeout)
      < 0)
   {
-  if (errno == ETIMEDOUT && (log_extra_selector & LX_ident_timeout) != 0)
+  if (errno == ETIMEDOUT && LOGGING(ident_timeout))
     {
     log_write(0, LOG_MAIN, "ident connection to %s timed out",
       sender_host_address);

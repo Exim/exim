@@ -321,46 +321,84 @@ for having to swallow the rest of an SMTP message is whether the value is
 #define END_SIZE       4    /* Reading ended because message too big */
 #define END_WERROR     5    /* Write error while reading the message */
 
-/* Options bits for debugging; D_v and D_local_scan are also in local_scan.h */
+/* Bit masks for debug and log selectors */
 
-#define D_v                          0x00000001
-#define D_local_scan                 0x00000002
+/* Assume words are 32 bits wide. Tiny waste of space on 64 bit
+platforms, but this ensures bit vectors always work the same way. */
+#define BITWORDSIZE 32
 
-#define D_acl                        0x00000004
-#define D_auth                       0x00000008
-#define D_deliver                    0x00000010
-#define D_dns                        0x00000020
-#define D_dnsbl                      0x00000040
-#define D_exec                       0x00000080
-#define D_expand                     0x00000100
-#define D_filter                     0x00000200
-#define D_hints_lookup               0x00000400
-#define D_host_lookup                0x00000800
-#define D_ident                      0x00001000
-#define D_interface                  0x00002000
-#define D_lists                      0x00004000
-#define D_load                       0x00008000
-#define D_lookup                     0x00010000
-#define D_memory                     0x00020000
-#define D_pid                        0x00040000
-#define D_process_info               0x00080000
-#define D_queue_run                  0x00100000
-#define D_receive                    0x00200000
-#define D_resolver                   0x00400000
-#define D_retry                      0x00800000
-#define D_rewrite                    0x01000000
-#define D_route                      0x02000000
-#define D_timestamp                  0x04000000
-#define D_tls                        0x08000000
-#define D_transport                  0x10000000
-#define D_uid                        0x20000000
-#define D_verify                     0x40000000
+/* This macro is for single-word bit vectors: the debug selector,
+and the first word of the log selector. */
+#define BIT(n) (1 << (n))
 
-/* The D_all value must always have all bits set, as it is recognized specially
-by the function that decodes debug and log selectors. This is to enable it to
-set all the bits in a multi-word selector. Debug doesn't use this yet, but we
-are getting close. In fact, we want to omit "memory" for -d+all, but can't
-handle this here. It is fudged externally. */
+/* And these are for multi-word vectors. */
+#define BITWORD(n) (     (n) / BITWORDSIZE)
+#define BITMASK(n) (1 << (n) % BITWORDSIZE)
+
+#define BIT_CLEAR(s,z,n) ((s)[BITWORD(n)] &= ~BITMASK(n))
+#define BIT_SET(s,z,n)   ((s)[BITWORD(n)] |=  BITMASK(n))
+#define BIT_TEST(s,z,n) (((s)[BITWORD(n)] &   BITMASK(n)) != 0)
+
+/* Used in globals.c for initializing bit_table structures. T will be either
+D or L correspondong to the debug and log selector bits declared below. */
+
+#define BIT_TABLE(T,name) { US #name, T##i_##name }
+
+/* IOTA allows us to keep an implicit sequential count, like a simple enum,
+but we can have sequentially numbered identifiers which are not declared
+sequentially. We use this for more compact declarations of bit indexes and
+masks, alternating between sequential bit index and corresponding mask. */
+
+#define IOTA(iota)      (__LINE__ - iota)
+#define IOTA_INIT(zero) (__LINE__ - zero + 1)
+
+/* Options bits for debugging. DEBUG_BIT() declares both a bit index and the
+corresponding mask. Di_all is a special value recognized by decode_bits().
+
+Exim's code assumes in a number of places that the debug_selector is one
+word, and this is exposed in the local_scan ABI. The D_v and D_local_scan bit
+masks are part of the local_scan API so are #defined in local_scan.h */
+
+#define DEBUG_BIT(name) Di_##name = IOTA(Di_iota), D_##name = BIT(Di_##name)
+
+enum {
+  Di_all        = -1,
+  Di_v          = 0,
+  Di_local_scan = 1,
+
+  Di_iota = IOTA_INIT(2),
+  DEBUG_BIT(acl),
+  DEBUG_BIT(auth),
+  DEBUG_BIT(deliver),
+  DEBUG_BIT(dns),
+  DEBUG_BIT(dnsbl),
+  DEBUG_BIT(exec),
+  DEBUG_BIT(expand),
+  DEBUG_BIT(filter),
+  DEBUG_BIT(hints_lookup),
+  DEBUG_BIT(host_lookup),
+  DEBUG_BIT(ident),
+  DEBUG_BIT(interface),
+  DEBUG_BIT(lists),
+  DEBUG_BIT(load),
+  DEBUG_BIT(lookup),
+  DEBUG_BIT(memory),
+  DEBUG_BIT(pid),
+  DEBUG_BIT(process_info),
+  DEBUG_BIT(queue_run),
+  DEBUG_BIT(receive),
+  DEBUG_BIT(resolver),
+  DEBUG_BIT(retry),
+  DEBUG_BIT(rewrite),
+  DEBUG_BIT(route),
+  DEBUG_BIT(timestamp),
+  DEBUG_BIT(tls),
+  DEBUG_BIT(transport),
+  DEBUG_BIT(uid),
+  DEBUG_BIT(verify),
+};
+
+/* Multi-bit debug masks */
 
 #define D_all                        0xffffffff
 
@@ -380,81 +418,67 @@ handle this here. It is fudged externally. */
                                          D_timestamp   | \
                                          D_resolver))
 
-/* Options bits for logging. Those that will end up in log_write_selector have
-values < 0x80000000. They can be used in calls to log_write(). The others have
-values > 0x80000000 and are put into log_extra_selector (without the top bit).
-These are only ever tested independently. "All" is a magic value that is used
-only in the name table to set all options in both bit maps. */
+/* Options bits for logging. Those that have values < BITWORDSIZE can be used
+in calls to log_write(). The others are put into later words in log_selector
+and are only ever tested independently, so they do not need bit mask
+declarations. The Li_all value is recognized specially by decode_bits(). */
 
-/* The L_all value must always have all bits set, as it is recognized specially
-by the function that decodes debug and log selectors. This is to enable it to
-set all the bits in a multi-word selector. */
+#define LOG_BIT(name) Li_##name = IOTA(Li_iota), L_##name = BIT(Li_##name)
 
-#define L_all                          0xffffffff
+enum {
+  Li_all = -1,
 
-#define L_address_rewrite              0x00000001
-#define L_all_parents                  0x00000002
-#define L_connection_reject            0x00000004
-#define L_delay_delivery               0x00000008
-#define L_dnslist_defer                0x00000010
-#define L_etrn                         0x00000020
-#define L_host_lookup_failed           0x00000040
-#define L_lost_incoming_connection     0x00000080
-#define L_queue_run                    0x00000100
-#define L_retry_defer                  0x00000200
-#define L_size_reject                  0x00000400
-#define L_skip_delivery                0x00000800
-#define L_smtp_connection              0x00001000
-#define L_smtp_incomplete_transaction  0x00002000
-#define L_smtp_protocol_error          0x00004000
-#define L_smtp_syntax_error            0x00008000
+  Li_iota = IOTA_INIT(0),
+  LOG_BIT(address_rewrite),
+  LOG_BIT(all_parents),
+  LOG_BIT(connection_reject),
+  LOG_BIT(delay_delivery),
+  LOG_BIT(dnslist_defer),
+  LOG_BIT(etrn),
+  LOG_BIT(host_lookup_failed),
+  LOG_BIT(lost_incoming_connection),
+  LOG_BIT(queue_run),
+  LOG_BIT(retry_defer),
+  LOG_BIT(size_reject),
+  LOG_BIT(skip_delivery),
+  LOG_BIT(smtp_connection),
+  LOG_BIT(smtp_incomplete_transaction),
+  LOG_BIT(smtp_protocol_error),
+  LOG_BIT(smtp_syntax_error),
 
-#define LX_acl_warn_skipped            0x80000001
-#define LX_arguments                   0x80000002
-#define LX_deliver_time                0x80000004
-#define LX_delivery_size               0x80000008
-#define LX_ident_timeout               0x80000010
-#define LX_incoming_interface          0x80000020
-#define LX_incoming_port               0x80000040
-#define LX_outgoing_port               0x80000080
-#define LX_pid                         0x80000100
-#define LX_queue_time                  0x80000200
-#define LX_queue_time_overall          0x80000400
-#define LX_received_sender             0x80000800
-#define LX_received_recipients         0x80001000
-#define LX_rejected_header             0x80002000
-#define LX_return_path_on_delivery     0x80004000
-#define LX_sender_on_delivery          0x80008000
-#define LX_sender_verify_fail          0x80010000
-#define LX_smtp_confirmation           0x80020000
-#define LX_smtp_no_mail                0x80040000
-#define LX_subject                     0x80080000
-#define LX_tls_certificate_verified    0x80100000
-#define LX_tls_cipher                  0x80200000
-#define LX_tls_peerdn                  0x80400000
-#define LX_tls_sni                     0x80800000
-#define LX_unknown_in_list             0x81000000
-#define LX_8bitmime                    0x82000000
-#define LX_smtp_mailauth               0x84000000
-#define LX_proxy                       0x88000000
+  Li_acl_warn_skipped = BITWORDSIZE,
+  Li_arguments,
+  Li_deliver_time,
+  Li_delivery_size,
+  Li_ident_timeout,
+  Li_incoming_interface,
+  Li_incoming_port,
+  Li_outgoing_port,
+  Li_pid,
+  Li_queue_time,
+  Li_queue_time_overall,
+  Li_received_sender,
+  Li_received_recipients,
+  Li_rejected_header,
+  Li_return_path_on_delivery,
+  Li_sender_on_delivery,
+  Li_sender_verify_fail,
+  Li_smtp_confirmation,
+  Li_smtp_no_mail,
+  Li_subject,
+  Li_tls_certificate_verified,
+  Li_tls_cipher,
+  Li_tls_peerdn,
+  Li_tls_sni,
+  Li_unknown_in_list,
+  Li_8bitmime,
+  Li_smtp_mailauth,
+  Li_proxy,
 
-#define L_default     (L_connection_reject        | \
-                       L_delay_delivery           | \
-                       L_dnslist_defer            | \
-                       L_etrn                     | \
-                       L_host_lookup_failed       | \
-                       L_lost_incoming_connection | \
-                       L_queue_run                | \
-                       L_retry_defer              | \
-                       L_size_reject              | \
-                       L_skip_delivery)
+  log_selector_size = BITWORD(Li_proxy) + 1
+};
 
-#define LX_default   ((LX_acl_warn_skipped        | \
-                       LX_rejected_header         | \
-                       LX_sender_verify_fail      | \
-                       LX_smtp_confirmation       | \
-                       LX_tls_certificate_verified| \
-                       LX_tls_cipher) & 0x7fffffff)
+#define LOGGING(opt) BIT_TEST(log_selector, log_selector_size, Li_##opt)
 
 /* Private error numbers for delivery failures, set negative so as not
 to conflict with system errno values. */

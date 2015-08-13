@@ -145,7 +145,7 @@ int dup_accept_socket = -1;
 int max_for_this_host = 0;
 int wfsize = 0;
 int wfptr = 0;
-int use_log_write_selector = log_write_selector;
+int save_log_selector = *log_selector;
 uschar *whofrom = NULL;
 
 void *reset_point = store_get(0);
@@ -206,11 +206,11 @@ memory is reclaimed. */
 
 whofrom = string_append(whofrom, &wfsize, &wfptr, 3, "[", sender_host_address, "]");
 
-if ((log_extra_selector & LX_incoming_port) != 0)
+if (LOGGING(incoming_port))
   whofrom = string_append(whofrom, &wfsize, &wfptr, 2, ":", string_sprintf("%d",
     sender_host_port));
 
-if ((log_extra_selector & LX_incoming_interface) != 0)
+if (LOGGING(incoming_interface))
   whofrom = string_append(whofrom, &wfsize, &wfptr, 4, " I=[",
     interface_address, "]:", string_sprintf("%d", interface_port));
 
@@ -338,11 +338,11 @@ the generalized logging code each time when the selector is false. If the
 selector is set, check whether the host is on the list for logging. If not,
 arrange to unset the selector in the subprocess. */
 
-if ((log_write_selector & L_smtp_connection) != 0)
+if (LOGGING(smtp_connection))
   {
   uschar *list = hosts_connection_nolog;
   if (list != NULL && verify_check_host(&list) == OK)
-    use_log_write_selector &= ~L_smtp_connection;
+    save_log_selector &= ~L_smtp_connection;
   else
     log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %s "
       "(TCP/IP connection count = %d)", whofrom, smtp_accept_count + 1);
@@ -372,7 +372,7 @@ if (pid == 0)
 
   /* May have been modified for the subprocess */
 
-  log_write_selector = use_log_write_selector;
+  *log_selector = save_log_selector;
 
   /* Get the local interface address into permanent store */
 

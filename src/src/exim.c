@@ -1639,6 +1639,10 @@ if (log_buffer == NULL)
   exit(EXIT_FAILURE);
   }
 
+/* Initialize the default log options. */
+
+bits_set(log_selector, log_selector_size, log_default);
+
 /* Set log_stderr to stderr, provided that stderr exists. This gets reset to
 NULL when the daemon is run and the file is closed. We have to use this
 indirection, because some systems don't allow writing to the variable "stderr".
@@ -2451,8 +2455,8 @@ for (i = 1; i < argc; i++)
         argrest++;
         }
       if (*argrest != 0)
-        decode_bits(&selector, NULL, D_memory, 0, argrest, debug_options,
-          debug_options_count, US"debug", 0);
+        decode_bits(&selector, 1, debug_notall, argrest,
+          debug_options, debug_options_count, US"debug", 0);
       debug_selector = selector;
       }
     break;
@@ -3787,14 +3791,17 @@ else
 
 /* Handle the decoding of logging options. */
 
-decode_bits(&log_write_selector, &log_extra_selector, 0, 0,
+decode_bits(log_selector, log_selector_size, log_notall,
   log_selector_string, log_options, log_options_count, US"log", 0);
 
 DEBUG(D_any)
   {
+  int i;
   debug_printf("configuration file is %s\n", config_main_filename);
-  debug_printf("log selectors = %08x %08x\n", log_write_selector,
-    log_extra_selector);
+  debug_printf("log selectors =");
+  for (i = 0; i < log_selector_size; i++)
+    debug_printf(" %08x", log_selector[i]);
+  debug_printf("\n");
   }
 
 /* If domain literals are not allowed, check the sender address that was
@@ -4001,7 +4008,7 @@ a debugging feature for finding out what arguments certain MUAs actually use.
 Don't attempt it if logging is disabled, or if listing variables or if
 verifying/testing addresses or expansions. */
 
-if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
+if (((debug_selector & D_any) != 0 || LOGGING(arguments))
       && really_exim && !list_options && !checking)
   {
   int i;
@@ -4036,7 +4043,7 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
     while (*p) p++;
     }
 
-  if ((log_extra_selector & LX_arguments) != 0)
+  if (LOGGING(arguments))
     log_write(0, LOG_MAIN, "%s", big_buffer);
   else
     debug_printf("%s\n", big_buffer);
@@ -5021,7 +5028,7 @@ if (host_checking)
       sender_host_address);
 
   if (verify_check_host(&hosts_connection_nolog) == OK)
-    log_write_selector &= ~L_smtp_connection;
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
 
   /* NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
@@ -5195,7 +5202,7 @@ if (smtp_input)
   smtp_in = stdin;
   smtp_out = stdout;
   if (verify_check_host(&hosts_connection_nolog) == OK)
-    log_write_selector &= ~L_smtp_connection;
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
   if (!smtp_start_session())
     {

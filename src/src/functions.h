@@ -99,6 +99,9 @@ extern int     auth_get_no64_data(uschar **, uschar *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
+extern void    bits_clear(unsigned int *, size_t, int *);
+extern void    bits_set(unsigned int *, size_t, int *);
+
 extern void    cancel_cutthrough_connection(const char *);
 extern int     check_host(void *, const uschar *, const uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
@@ -123,8 +126,8 @@ extern void    debug_print_ids(uschar *);
 extern void    debug_print_string(uschar *);
 extern void    debug_print_tree(tree_node *);
 extern void    debug_vprintf(const char *, va_list);
-extern void    decode_bits(unsigned int *, unsigned int *,
-                  int, int, uschar *, bit_table *, int, uschar *, int);
+extern void    decode_bits(unsigned int *, size_t, int *,
+	           uschar *, bit_table *, int, uschar *, int);
 extern address_item *deliver_make_addr(uschar *, BOOL);
 extern void    deliver_init(void);
 extern void    delivery_log(int, address_item *, int, uschar *);

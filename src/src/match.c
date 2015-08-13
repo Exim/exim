@@ -771,7 +771,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
             include_unknown? "yes":"no", error);
           if (!include_unknown)
             {
-            if ((log_extra_selector & LX_unknown_in_list) != 0)
+            if (LOGGING(unknown_in_list))
               log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
             return FAIL;
             }
@@ -880,7 +880,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
           (void)fclose(f);
           if (!include_unknown)
             {
-            if ((log_extra_selector & LX_unknown_in_list) != 0)
+            if (LOGGING(unknown_in_list))
               log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
             return FAIL;
             }

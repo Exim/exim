@@ -4287,7 +4287,7 @@ while (acl != NULL)
     case ACL_WARN:
     if (cond == OK)
       acl_warn(where, *user_msgptr, *log_msgptr);
-    else if (cond == DEFER && (log_extra_selector & LX_acl_warn_skipped) != 0)
+    else if (cond == DEFER && LOGGING(acl_warn_skipped))
       log_write(0, LOG_MAIN, "%s Warning: ACL \"warn\" statement skipped: "
         "condition test deferred%s%s", host_and_ident(TRUE),
         (*log_msgptr == NULL)? US"" : US": ",
