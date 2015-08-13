@@ -474,8 +474,9 @@ enum {
   Li_8bitmime,
   Li_smtp_mailauth,
   Li_proxy,
+  Li_outgoing_interface,
 
-  log_selector_size = BITWORD(Li_proxy) + 1
+  log_selector_size = BITWORD(Li_outgoing_interface) + 1
 };
 
 #define LOGGING(opt) BIT_TEST(log_selector, log_selector_size, Li_##opt)

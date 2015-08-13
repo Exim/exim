@@ -753,8 +753,8 @@ DEBUG(D_any|D_v)
 
   for (i = 0; i < log_options_count; i++)
     {
-    unsigned int bit = log_options[i].bit;
-    if (bit < BITWORDSIZE && selector == BIT(bit))
+    unsigned int bitnum = log_options[i].bit;
+    if (bitnum < BITWORDSIZE && selector == BIT(bitnum))
       {
       *ptr++ = ' ';
       Ustrcpy(ptr, log_options[i].name);

@@ -676,39 +676,78 @@ while (addr->parent != NULL)
 
 
 
+/*************************************************
+*      Delivery logging support functions        *
+*************************************************/
+
+/* The LOGGING() checks in d_log_interface() are complicated for backwards
+compatibility. When outgoing interface logging was originally added, it was
+conditional on just incoming_interface (which is off by default). The
+outgoing_interface option is on by default to preserve this behaviour, but
+you can enable incoming_interface and disable outgoing_interface to get I=
+fields on incoming lines only.
+
+Arguments:
+  s         The log line buffer
+  sizep     Pointer to the buffer size
+  ptrp      Pointer to current index into buffer
+  addr      The address to be logged
+
+Returns:    New value for s
+*/
 
 static uschar *
-d_hostlog(uschar * s, int * sizep, int * ptrp, address_item * addr)
+d_log_interface(uschar *s, int *sizep, int *ptrp)
 {
-  s = string_append(s, sizep, ptrp, 5, US" H=", addr->host_used->name,
-    US" [", addr->host_used->address, US"]");
+if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
+    && sending_ip_address != NULL)
+  {
+  s = string_append(s, sizep, ptrp, 2, US" I=[", sending_ip_address);
   if (LOGGING(outgoing_port))
-    s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
-      addr->host_used->port));
-  return s;
+    s = string_append(s, sizep, ptrp, 2, US"]:",
+      string_sprintf("%d", sending_port));
+  else
+    s = string_cat(s, sizep, ptrp, "]", 1);
+  }
+return s;
 }
+
+
+
+static uschar *
+d_hostlog(uschar *s, int *sizep, int *ptrp, address_item *addr)
+{
+s = string_append(s, sizep, ptrp, 5, US" H=", addr->host_used->name,
+  US" [", addr->host_used->address, US"]");
+if (LOGGING(outgoing_port))
+  s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
+    addr->host_used->port));
+return d_log_interface(s, sizep, ptrp);
+}
+
+
 
 #ifdef SUPPORT_TLS
 static uschar *
 d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
 {
-  if (LOGGING(tls_cipher) && addr->cipher != NULL)
-    s = string_append(s, sizep, ptrp, 2, US" X=", addr->cipher);
-  if (LOGGING(tls_certificate_verified) && addr->cipher != NULL)
-    s = string_append(s, sizep, ptrp, 2, US" CV=",
-      testflag(addr, af_cert_verified)
-      ?
+if (LOGGING(tls_cipher) && addr->cipher != NULL)
+  s = string_append(s, sizep, ptrp, 2, US" X=", addr->cipher);
+if (LOGGING(tls_certificate_verified) && addr->cipher != NULL)
+  s = string_append(s, sizep, ptrp, 2, US" CV=",
+    testflag(addr, af_cert_verified)
+    ?
 #ifdef EXPERIMENTAL_DANE
-        testflag(addr, af_dane_verified)
-      ? "dane"
-      :
+      testflag(addr, af_dane_verified)
+    ? "dane"
+    :
 #endif
-        "yes"
-      : "no");
-  if (LOGGING(tls_peerdn) && addr->peerdn != NULL)
-    s = string_append(s, sizep, ptrp, 3, US" DN=\"",
-      string_printing(addr->peerdn), US"\"");
-  return s;
+      "yes"
+    : "no");
+if (LOGGING(tls_peerdn) && addr->peerdn != NULL)
+  s = string_append(s, sizep, ptrp, 3, US" DN=\"",
+    string_printing(addr->peerdn), US"\"");
+return s;
 }
 #endif
 
@@ -816,10 +855,6 @@ else
   s = string_append(s, &size, &ptr, 2, US"> ", log_address);
   }
 
-if (LOGGING(incoming_interface) && sending_ip_address)
-  s = string_append(s, &size, &ptr, 3, US" I=[", sending_ip_address, US"]");
-  /* for the port:  string_sprintf("%d", sending_port) */
-
 if (LOGGING(sender_on_delivery) || msg)
   s = string_append(s, &size, &ptr, 3, US" F=<",
 #ifdef EXPERIMENTAL_INTERNATIONAL
@@ -862,6 +897,7 @@ if (addr->transport->info->local)
   {
   if (addr->host_list)
     s = string_append(s, &size, &ptr, 2, US" H=", addr->host_list->name);
+  s = d_log_interface(s, &size, &ptr);
   if (addr->shadow_message != NULL)
     s = string_cat(s, &size, &ptr, addr->shadow_message,
       Ustrlen(addr->shadow_message));

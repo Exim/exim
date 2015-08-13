@@ -12,6 +12,12 @@ JH/01 Bug 1664: Disable OCSP for GnuTLS library versions at/before 3.3.16
 TF/01 Code cleanup: Overhaul the debug_selector and log_selector machinery to
       support variable-length bit vectors. No functional change.
 
+TF/02 Improve the consistency of logging incoming and outgoing interfaces.
+      The I= interface field on outgoing lines is now after the H= remote
+      host field, same as incoming lines. There is a separate
+      outgoing_interface log selector which allows you to disable the
+      outgoing I= field.
+
 
 Exim version 4.86
 -----------------

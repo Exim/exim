@@ -15,7 +15,7 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= x@y.x H=[V4NET.9.8.7]:1112 U=root P=smtp S=sss
 1999-03-02 09:44:33 SMTP connection from root closed by QUIT
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbB-0005vi-00 => x@test.ex I=[127.0.0.1] R=to_server T=remote H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 => x@test.ex R=to_server T=remote H=127.0.0.1 [127.0.0.1] I=[127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 

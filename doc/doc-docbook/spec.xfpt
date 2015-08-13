@@ -35313,6 +35313,9 @@ selection marked by asterisks:
 &` incoming_interface         `&  local interface on <= and => lines
 &` incoming_port              `&  remote port on <= lines
 &`*lost_incoming_connection   `&  as it says (includes timeouts)
+.new
+&` outgoing_interface         `&  local interface on => lines
+.wen
 &` outgoing_port              `&  add remote port to => lines
 &`*queue_run                  `&  start and end queue runs
 &` queue_time                 `&  time on queue for one recipient
@@ -35438,9 +35441,11 @@ client's ident port times out.
 &%incoming_interface%&: The interface on which a message was received is added
 to the &"<="& line as an IP address in square brackets, tagged by I= and
 followed by a colon and the port number. The local interface and port are also
-added to other SMTP log lines, for example &"SMTP connection from"& and to
-rejection lines
-and (despite the name) the local interface is added to &"=>"& lines..
+added to other SMTP log lines, for example &"SMTP connection from"&, to
+rejection lines, and (despite the name) to outgoing &"=>"& and &"->"& lines.
+.new
+The latter can be disabled by turning off the &%outgoing_interface%& option.
+.wen
 .next
 .cindex "log" "incoming remote port"
 .cindex "port" "logging remote"
@@ -35458,13 +35463,30 @@ important with the widening use of NAT (see RFC 2505).
 &%lost_incoming_connection%&: A log line is written when an incoming SMTP
 connection is unexpectedly dropped.
 .next
+.cindex "log" "outgoing interface"
+.cindex "log" "local interface"
+.cindex "log" "local address and port"
+.cindex "TCP/IP" "logging local address and port"
+.cindex "interface" "logging"
+.new
+&%outgoing_interface%&: If &%incoming_interface%& is turned on, then the
+interface on which a message was sent is added to delivery lines as an I= tag
+followed by IP address in square brackets. You can disable this by turning
+off the &%outgoing_interface%& option.
+.wen
+.next
 .cindex "log" "outgoing remote port"
 .cindex "port" "logging outgoint remote"
 .cindex "TCP/IP" "logging ougtoing remote port"
 &%outgoing_port%&: The remote port number is added to delivery log lines (those
-containing => tags) following the IP address. This option is not included in
-the default setting, because for most ordinary configurations, the remote port
-number is always 25 (the SMTP port).
+containing => tags) following the IP address.
+.new
+The local port is also added if &%incoming_interface%& and
+&%outgoing_interface%& are both enabled.
+.wen
+This option is not included in the default setting, because for most ordinary
+configurations, the remote port number is always 25 (the SMTP port), and the
+local port is a random ephemeral port.
 .next
 .cindex "log" "process ids in"
 .cindex "pid (process id)" "in log lines"
