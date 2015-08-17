@@ -9264,10 +9264,11 @@ by earlier ACLs are visible.
 Upper case and lower case letters are synonymous in header names. If the
 following character is white space, the terminating colon may be omitted, but
 this is not recommended, because you may then forget it when it is needed. When
-white space terminates the header name, it is included in the expanded string.
-If the message does not contain the given header, the expansion item is
-replaced by an empty string. (See the &%def%& condition in section
-&<<SECTexpcond>>& for a means of testing for the existence of a header.)
+white space terminates the header name, this white space is included in the
+expanded string.  If the message does not contain the given header, the 
+expansion item is replaced by an empty string. (See the &%def%& condition in 
+section &<<SECTexpcond>>& for a means of testing for the existence of a 
+header.)
 
 If there is more than one header with the same name, they are all concatenated
 to form the substitution string, up to a maximum length of 64K. Unless
