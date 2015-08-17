@@ -448,6 +448,17 @@ spf_guess = v=spf1 a/16 mx/16 ptr ?all
 would relax host matching rules to a broader network range.
 
 
+A lookup expansion is also available. It takes an email
+address as the key and an IP address as the database:
+
+  $lookup (username@domain} spf {ip.ip.ip.ip}}
+
+The lookup will return the same result strings as they can appear in
+$spf_result (pass,fail,softfail,neutral,none,err_perm,err_temp).
+Currently, only IPv4 addresses are supported.
+
+
+
 SRS (Sender Rewriting Scheme) Support
 --------------------------------------------------------------
 
