@@ -1752,7 +1752,7 @@ while (1)
     {
     if (split_spool_directory)
 	sprintf(CS spool_file, "%s%c/%s-D",
-		      spool_dir, new_message_id[5], msgq[i].message_id);
+		      spool_dir, msgq[i].message_id[5], msgq[i].message_id);
     else
 	sprintf(CS spool_file, "%s%s-D", spool_dir, msgq[i].message_id);
 
