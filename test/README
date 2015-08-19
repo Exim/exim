@@ -213,10 +213,12 @@ THE RUNTEST SCRIPT
 ------------------
 
 If you do not supply any arguments to ./runtest, it searches for an Exim
-source tree at the same level as the test suite directory. It then looks for an
-Exim binary in a "build" directory of that source tree. If there are several
-Exim source trees, it chooses the latest version of Exim. Consider the
-following example:
+source tree at the same level as the test suite directory. A source tree
+is a source tree, if it contains a build-* directory.
+
+It then looks for an Exim binary in a "build" directory of that source
+tree. If there are several Exim source trees, it chooses the latest
+version of Exim. Consider the following example:
 
   $ ls -F /source/exim
   exim-4.60/  exim-4.62/  exim-testsuite-x.xx/
@@ -259,6 +261,17 @@ There are some options for the ./runtest script itself:
             runtest option. In that case, "diff -u" is used for comparisons.
             (If it turns out that most people prefer to use diff, I'll change
             the default.)
+
+  -FLAVOR <flavor>
+  -FLAVOUR <flavour>
+            This allows "overrides" for the test results. It's intended
+            use is to deal with distro specific differences in the test
+            output. The default flavour is "foo". If during the test
+            run differences between the current and the expected output
+            are found and no flavour file exists already, you may update
+            the "common" expected output or you may create a flavour
+            file. If  a flavour file already exists, any updates will go
+            into that flavour file!
 
   -KEEP     Normally, after a successful run, the test output files are
             deleted. This option prevents this. It is useful when running a
