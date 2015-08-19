@@ -2393,7 +2393,7 @@ if ($parm_exim eq "")
     # directory. Thus, we should choose the highest version of Exim that has
     # been compiled.
 
-    if ($f eq "exim4" || $f eq "exim-snapshot")
+    if ($f eq "exim4" || $f eq "exim-snapshot" || $f eq 'src')
       { $srcdir = $f; }
     else
       { $srcdir = $f
