@@ -1274,14 +1274,19 @@ we will veto this new message.  */
 static BOOL
 smtp_are_same_identities(uschar * message_id, smtp_compare_t * s_compare)
 {
-uschar * save_sender_address = sender_address;
-uschar * current_local_identity =
-  smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
-uschar * new_sender_address = deliver_get_sender_address(message_id);
-uschar * message_local_identity =
-  smtp_local_identity(new_sender_address, s_compare->tblock);
 
-sender_address = save_sender_address;
+uschar * message_local_identity,
+       * current_local_identity,
+       * new_sender_address;
+
+current_local_identity =
+  smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
+
+if (!(new_sender_address = deliver_get_sender_address(message_id)))
+    return 0;
+
+message_local_identity =
+  smtp_local_identity(new_sender_address, s_compare->tblock);
 
 return Ustrcmp(current_local_identity, message_local_identity) == 0;
 }

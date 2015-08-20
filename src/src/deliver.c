@@ -9,6 +9,7 @@
 
 
 #include "exim.h"
+#include <assert.h>
 
 
 /* Data block for keeping track of subprocesses for parallel remote
@@ -7904,17 +7905,36 @@ if (!regex_IGNOREQUOTA) regex_IGNOREQUOTA =
 uschar *
 deliver_get_sender_address (uschar * id)
 {
+int rc;
+uschar * new_sender_address,
+       * save_sender_address;
+
 if (!spool_open_datafile(id))
   return NULL;
 
+/* Save and restore the global sender_address.  I'm not sure if we should
+not save/restore all the other global variables too, because
+spool_read_header() may change all of them. But OTOH, when this
+deliver_get_sender_address() gets called, the current message is done
+already and nobody needs the globals anymore. (HS12, 2015-08-21) */
+
 sprintf(CS spoolname, "%s-H", id);
-if (spool_read_header(spoolname, TRUE, TRUE) != spool_read_OK)
+save_sender_address = sender_address;
+
+rc = spool_read_header(spoolname, TRUE, TRUE);
+
+new_sender_address = sender_address;
+sender_address = save_sender_address;
+
+if (rc != spool_read_OK)
   return NULL;
+
+assert(new_sender_address);
 
 (void)close(deliver_datafile);
 deliver_datafile = -1;
 
-return sender_address;
+return new_sender_address;
 }
 
 /* vi: aw ai sw=2
