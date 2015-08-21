@@ -1803,27 +1803,27 @@ switch(vp->value)
     test whether it was successful or not. (This is for optional verification; for
     mandatory verification, the connection doesn't last this long.) */
 
-      if (tls_in.certificate_verified) return OK;
-      *user_msgptr = US"no verified certificate";
-      return FAIL;
+    if (tls_in.certificate_verified) return OK;
+    *user_msgptr = US"no verified certificate";
+    return FAIL;
 
   case VERIFY_HELO:
     /* We can test the result of optional HELO verification that might have
     occurred earlier. If not, we can attempt the verification now. */
 
-      if (!helo_verified && !helo_verify_failed) smtp_verify_helo();
-      return helo_verified? OK : FAIL;
+    if (!helo_verified && !helo_verify_failed) smtp_verify_helo();
+    return helo_verified? OK : FAIL;
 
   case VERIFY_CSA:
     /* Do Client SMTP Authorization checks in a separate function, and turn the
     result code into user-friendly strings. */
 
-      rc = acl_verify_csa(list);
-      *log_msgptr = *user_msgptr = string_sprintf("client SMTP authorization %s",
+    rc = acl_verify_csa(list);
+    *log_msgptr = *user_msgptr = string_sprintf("client SMTP authorization %s",
                                               csa_reason_string[rc]);
-      csa_status = csa_status_string[rc];
-      DEBUG(D_acl) debug_printf("CSA result %s\n", csa_status);
-      return csa_return_code[rc];
+    csa_status = csa_status_string[rc];
+    DEBUG(D_acl) debug_printf("CSA result %s\n", csa_status);
+    return csa_return_code[rc];
 
   case VERIFY_HDR_SYNTAX:
     /* Check that all relevant header lines have the correct syntax. If there is
@@ -1832,8 +1832,11 @@ switch(vp->value)
     always). */
 
     rc = verify_check_headers(log_msgptr);
-    if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
-      *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
+    if (rc != OK && *log_msgptr)
+      if (smtp_return_error_details)
+	*user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
+      else
+	acl_verify_message = *log_msgptr;
     return rc;
 
   case VERIFY_HDR_NAMES_ASCII:
@@ -3788,7 +3791,8 @@ for (; cb != NULL; cb = cb->next)
 
     case ACLC_VERIFY:
     rc = acl_verify(where, addr, arg, user_msgptr, log_msgptr, basic_errno);
-    acl_verify_message = *user_msgptr;
+    if (*user_msgptr)
+      acl_verify_message = *user_msgptr;
     if (verb == ACL_WARN) *user_msgptr = NULL;
     break;
 
