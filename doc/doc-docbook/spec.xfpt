@@ -29037,7 +29037,8 @@ This condition is relevant only in an ACL that is run after a message has been
 received, that is, in an ACL specified by &%acl_smtp_data%& or
 &%acl_not_smtp%&. It checks the syntax of all header lines that can contain
 lists of addresses (&'Sender:'&, &'From:'&, &'Reply-To:'&, &'To:'&, &'Cc:'&,
-and &'Bcc:'&). Unqualified addresses (local parts without domains) are
+and &'Bcc:'&), returning true if there are no problems.
+Unqualified addresses (local parts without domains) are
 permitted only in locally generated messages and from hosts that match
 &%sender_unqualified_hosts%& or &%recipient_unqualified_hosts%&, as
 appropriate.
