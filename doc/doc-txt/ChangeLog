@@ -25,6 +25,12 @@ JH/02 Bug 728: Close logfiles after a daemon-process "exceptional" log write.
       leaving it open for efficiency as that will be quickly detected by the
       check on the next write.
 
+HS/01 Bug 1671: Fix post transport crash.
+      Processing the wait-<transport> messages could crash the delivery
+      process if the message IDs didn't exist for some reason. When
+      using 'split_spool_directory=yes' the construction of the spool
+      file name failed already, exposing the same netto behaviour.
+
 
 Exim version 4.86
 -----------------
