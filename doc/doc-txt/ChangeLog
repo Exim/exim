@@ -18,6 +18,13 @@ TF/02 Improve the consistency of logging incoming and outgoing interfaces.
       outgoing_interface log selector which allows you to disable the
       outgoing I= field.
 
+JH/02 Bug 728: Close logfiles after a daemon-process "exceptional" log write.
+      If not running log_selector +smtp_connection the mainlog would be held
+      open indefinitely after a "too many connections" event, including to a
+      deleted file after a log rotate. Leave the per net connection logging
+      leaving it open for efficiency as that will be quickly detected by the
+      check on the next write.
+
 
 Exim version 4.86
 -----------------
