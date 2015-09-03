@@ -34,7 +34,7 @@ begin routers
 others:
   driver = manualroute
   domains = ! +local_domains
-  route_list = * 127.0.0.1 byname
+  route_list = * localhost4.test.ex byname
   self = send
   transport = smtp
   no_more
