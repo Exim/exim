@@ -717,8 +717,9 @@ extern const pcre  *regex_From;        /* For recognizing "From_" lines */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
-extern const pcre  *regex_smtp_code;   /* For recognizing SMTP codes */
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
+extern const pcre  *regex_smtp_code;   /* For recognizing SMTP codes */
+extern uschar *regex_vars[];           /* $regexN variables */
 #ifdef WHITELIST_D_MACROS
 extern const pcre  *regex_whitelisted_macro; /* For -D macro values */
 #endif

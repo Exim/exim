@@ -1753,6 +1753,8 @@ regex_whitelisted_macro =
   regex_must_compile(US"^[A-Za-z0-9_/.-]*$", FALSE, TRUE);
 #endif
 
+for (i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
+
 
 /* If the program is called as "mailq" treat it as equivalent to "exim -bp";
 this seems to be a generally accepted convention, since one finds symbolic

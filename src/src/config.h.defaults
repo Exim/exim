@@ -116,6 +116,8 @@ it's a default value. */
 #define RADIUS_CONFIG_FILE
 #define RADIUS_LIB_TYPE
 
+#define REGEX_VARS                 9
+
 #define ROUTER_ACCEPT
 #define ROUTER_DNSLOOKUP
 #define ROUTER_IPLITERAL

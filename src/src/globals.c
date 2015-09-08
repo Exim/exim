@@ -1090,8 +1090,9 @@ const pcre *regex_From         = NULL;
 const pcre *regex_IGNOREQUOTA  = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
-const pcre *regex_smtp_code    = NULL;
 const pcre *regex_ismsgid      = NULL;
+const pcre *regex_smtp_code    = NULL;
+uschar *regex_vars[REGEX_VARS];
 #ifdef WHITELIST_D_MACROS
 const pcre *regex_whitelisted_macro = NULL;
 #endif

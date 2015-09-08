@@ -31,6 +31,9 @@ HS/01 Bug 1671: Fix post transport crash.
       using 'split_spool_directory=yes' the construction of the spool
       file name failed already, exposing the same netto behaviour.
 
+JH/03 Bug 425: Capture substrings in $regex1, $regex2 etc from regex &
+      mime_regex ACL conditions.
+
 
 Exim version 4.86
 -----------------

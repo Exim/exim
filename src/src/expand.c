@@ -1726,7 +1726,14 @@ if (Ustrncmp(name, "auth", 4) == 0)
   uschar *endptr;
   int n = Ustrtoul(name + 4, &endptr, 10);
   if (*endptr == 0 && n != 0 && n <= AUTH_VARS)
-    return (auth_vars[n-1] == NULL)? US"" : auth_vars[n-1];
+    return !auth_vars[n-1] ? US"" : auth_vars[n-1];
+  }
+else if (Ustrncmp(name, "regex", 5) == 0)
+  {
+  uschar *endptr;
+  int n = Ustrtoul(name + 5, &endptr, 10);
+  if (*endptr == 0 && n != 0 && n <= REGEX_VARS)
+    return !regex_vars[n-1] ? US"" : regex_vars[n-1];
   }
 
 /* For all other variables, search the table */

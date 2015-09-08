@@ -11110,7 +11110,8 @@ support for TLS or the content scanning extension.
 When a &%match%& expansion condition succeeds, these variables contain the
 captured substrings identified by the regular expression during subsequent
 processing of the success string of the containing &%if%& expansion item.
-However, they do not retain their values afterwards; in fact, their previous
+In the expansion condition case
+they do not retain their values afterwards; in fact, their previous
 values are restored at the end of processing an &%if%& item. The numerical
 variables may also be set externally by some other matching process which
 precedes the expansion of the string. For example, the commands available in
@@ -12156,6 +12157,12 @@ increases for each accepted recipient. It can be referenced in an ACL.
 .vindex "&$regex_match_string$&"
 This variable is set to contain the matching regular expression after a
 &%regex%& ACL condition has matched (see section &<<SECTscanregex>>&).
+
+.vitem "&$regex1$&, &$regex2$&, etc"
+.cindex "regex submatch variables (&$1regex$& &$2regex$& etc)"
+When a &%regex%& or &%mime_regex%& ACL condition succeeds,
+these variables contain the
+captured substrings identified by the regular expression.
 
 
 .vitem &$reply_address$&
@@ -31463,6 +31470,8 @@ deny message = contains blacklisted regex ($regex_match_string)
 The conditions returns true if any one of the regular expressions matches. The
 &$regex_match_string$& expansion variable is then set up and contains the
 matching regular expression.
+The expansion variables &$regex1$& &$regex2$& etc
+are set to any substrings captured by the regular expression.
 
 &*Warning*&: With large messages, these conditions can be fairly
 CPU-intensive.

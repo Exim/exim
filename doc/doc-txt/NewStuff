@@ -9,6 +9,9 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.87
 ------------
 
+ 1. The ACL conditions regex and mime_regex now capture substrings
+    into numeric variables $regex1 to 9, like the "match" expansion condition.
+
 
 Version 4.86
 ------------
