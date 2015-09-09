@@ -3223,41 +3223,56 @@ while (!done)
       break;
       }
 
-    addr->transport_return = *ptr++;
-    addr->special_action = *ptr++;
-    memcpy(&(addr->basic_errno), ptr, sizeof(addr->basic_errno));
-    ptr += sizeof(addr->basic_errno);
-    memcpy(&(addr->more_errno), ptr, sizeof(addr->more_errno));
-    ptr += sizeof(addr->more_errno);
-    memcpy(&(addr->flags), ptr, sizeof(addr->flags));
-    ptr += sizeof(addr->flags);
-    addr->message = (*ptr)? string_copy(ptr) : NULL;
-    while(*ptr++);
-    addr->user_message = (*ptr)? string_copy(ptr) : NULL;
-    while(*ptr++);
-
-    /* Always two strings for host information, followed by the port number and DNSSEC mark */
-
-    if (*ptr != 0)
+    switch (subid)
       {
-      h = store_get(sizeof(host_item));
-      h->name = string_copy(ptr);
-      while (*ptr++);
-      h->address = string_copy(ptr);
-      while(*ptr++);
-      memcpy(&(h->port), ptr, sizeof(h->port));
-      ptr += sizeof(h->port);
-      h->dnssec = *ptr == '2' ? DS_YES
-		: *ptr == '1' ? DS_NO
-		: DS_UNK;
-      ptr++;
-      addr->host_used = h;
+#ifdef EXPERIMENTAL_DSN_INFO
+      case '1':	/* must arrive before A0, and applies to that addr */
+      		/* Two strings: smtp_greeting and helo_response */
+	addr->smtp_greeting = string_copy(ptr);
+	while(*ptr++);
+	addr->helo_response = string_copy(ptr);
+	while(*ptr++);
+	break;
+#endif
+
+      case '0':
+	addr->transport_return = *ptr++;
+	addr->special_action = *ptr++;
+	memcpy(&(addr->basic_errno), ptr, sizeof(addr->basic_errno));
+	ptr += sizeof(addr->basic_errno);
+	memcpy(&(addr->more_errno), ptr, sizeof(addr->more_errno));
+	ptr += sizeof(addr->more_errno);
+	memcpy(&(addr->flags), ptr, sizeof(addr->flags));
+	ptr += sizeof(addr->flags);
+	addr->message = (*ptr)? string_copy(ptr) : NULL;
+	while(*ptr++);
+	addr->user_message = (*ptr)? string_copy(ptr) : NULL;
+	while(*ptr++);
+
+	/* Always two strings for host information, followed by the port number and DNSSEC mark */
+
+	if (*ptr != 0)
+	  {
+	  h = store_get(sizeof(host_item));
+	  h->name = string_copy(ptr);
+	  while (*ptr++);
+	  h->address = string_copy(ptr);
+	  while(*ptr++);
+	  memcpy(&(h->port), ptr, sizeof(h->port));
+	  ptr += sizeof(h->port);
+	  h->dnssec = *ptr == '2' ? DS_YES
+		    : *ptr == '1' ? DS_NO
+		    : DS_UNK;
+	  ptr++;
+	  addr->host_used = h;
+	  }
+	else ptr++;
+
+	/* Finished with this address */
+
+	addr = addr->next;
+	break;
       }
-    else ptr++;
-
-    /* Finished with this address */
-
-    addr = addr->next;
     break;
 
     /* Local interface address/port */
@@ -4423,7 +4438,6 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
       for (r = addr->retries; r != NULL; r = r->next)
         {
-        uschar *ptr;
         sprintf(CS big_buffer, "%c%.500s", r->flags, r->key);
         ptr = big_buffer + Ustrlen(big_buffer+2) + 3;
         memcpy(ptr, &(r->basic_errno), sizeof(r->basic_errno));
@@ -4438,11 +4452,31 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         rmt_dlv_checked_write(fd, 'R', '0', big_buffer, ptr - big_buffer);
         }
 
-      /* The rest of the information goes in an 'A' item. */
+#ifdef EXPERIMENTAL_DSN_INFO
+/*um, are they really per-addr?  Other per-conn stuff is not (auth, tls).  But host_used is! */
+      if (addr->smtp_greeting)
+	{
+	ptr = big_buffer;
+	DEBUG(D_deliver) debug_printf("smtp_greeting '%s'\n", addr->smtp_greeting);
+        sprintf(CS ptr, "%.128s", addr->smtp_greeting);
+        while(*ptr++);
+	if (addr->helo_response)
+	  {
+	  DEBUG(D_deliver) debug_printf("helo_response '%s'\n", addr->helo_response);
+	  sprintf(CS ptr, "%.128s", addr->helo_response);
+	  while(*ptr++);
+	  }
+	else
+	  *ptr++ = '\0';
+        rmt_dlv_checked_write(fd, 'A', '1', big_buffer, ptr - big_buffer);
+	}
+#endif
 
-      ptr = big_buffer + 2;
+      /* The rest of the information goes in an 'A0' item. */
+
       sprintf(CS big_buffer, "%c%c", addr->transport_return,
         addr->special_action);
+      ptr = big_buffer + 2;
       memcpy(ptr, &(addr->basic_errno), sizeof(addr->basic_errno));
       ptr += sizeof(addr->basic_errno);
       memcpy(ptr, &(addr->more_errno), sizeof(addr->more_errno));
@@ -4480,7 +4514,11 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       }
 
     /* Local interface address/port */
+#ifdef EXPERIMENTAL_DSN_INFO
+    if (sending_ip_address)
+#else
     if (LOGGING(incoming_interface) && sending_ip_address)
+#endif
       {
       uschar * ptr = big_buffer;
       sprintf(CS ptr, "%.128s", sending_ip_address);
@@ -7209,16 +7247,32 @@ wording. */
  
       for (addr = handled_addr; addr; addr = addr->next)
         {
+	host_item * hu;
         fprintf(f, "Action: failed\n"
 	    "Final-Recipient: rfc822;%s\n"
 	    "Status: 5.0.0\n",
 	    addr->address);
-        if (addr->host_used && addr->host_used->name)
-          {
-          fprintf(f, "Remote-MTA: dns; %s\n",
-	    addr->host_used->name);
-          print_dsn_diagnostic_code(addr, f);
-          }
+        if ((hu = addr->host_used) && hu->name)
+	  {
+	  const uschar * s;
+	  fprintf(f, "Remote-MTA: dns; %s\n",
+	    hu->name);
+#ifdef EXPERIMENTAL_DSN_INFO
+	  if (hu->address)
+	    {
+	    uschar * p = hu->port == 25
+	      ? US"" : string_sprintf(":%d", hu->port);
+	    fprintf(f, "Remote-MTA: X-ip; [%s]%s\n", hu->address, p);
+	    }
+	  if ((s = addr->smtp_greeting) && *s)
+	    fprintf(f, "X-Remote-MTA-smtp-greeting: X-str; %s\n", s);
+	  if ((s = addr->helo_response) && *s)
+	    fprintf(f, "X-Remote-MTA-helo-response: X-str; %s\n", s);
+	  if ((s = addr->message) && *s)
+	    fprintf(f, "X-Exim-Diagnostic: X-str; %s\n", s);
+#endif
+	  print_dsn_diagnostic_code(addr, f);
+	  }
 	fputc('\n', f);
         }
 

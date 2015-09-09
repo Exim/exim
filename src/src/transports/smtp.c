@@ -440,6 +440,8 @@ Arguments:
   rc             to put in each address's transport_return field
   pass_message   if TRUE, set the "pass message" flag in the address
   host           if set, mark addrs as having used this host
+  smtp_greeting  from peer
+  helo_response  from peer
 
 If errno_value has the special value ERRNO_CONNECTTIMEOUT, ETIMEDOUT is put in
 the errno field, and RTEF_CTOUT is ORed into the more_errno field, to indicate
@@ -450,7 +452,11 @@ Returns:       nothing
 
 static void
 set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
-  BOOL pass_message, host_item * host)
+  BOOL pass_message, host_item * host
+#ifdef EXPERIMENTAL_DSN_INFO
+  , const uschar * smtp_greeting, const uschar * helo_response
+#endif
+  )
 {
 address_item *addr;
 int orvalue = 0;
@@ -459,7 +465,7 @@ if (errno_value == ERRNO_CONNECTTIMEOUT)
   errno_value = ETIMEDOUT;
   orvalue = RTEF_CTOUT;
   }
-for (addr = addrlist; addr != NULL; addr = addr->next)
+for (addr = addrlist; addr; addr = addr->next)
   if (addr->transport_return >= PENDING)
     {
     addr->basic_errno = errno_value;
@@ -471,10 +477,31 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
       }
     addr->transport_return = rc;
     if (host)
+      {
       addr->host_used = host;
+#ifdef EXPERIMENTAL_DSN_INFO
+      if (smtp_greeting)
+	{uschar * s = Ustrchr(smtp_greeting, '\n'); if (s) *s = '\0';}
+      addr->smtp_greeting = smtp_greeting;
+
+      if (helo_response)
+	{uschar * s = Ustrchr(helo_response, '\n'); if (s) *s = '\0';}
+      addr->helo_response = helo_response;
+#endif
+      }
     }
 }
 
+static void
+set_errno_nohost(address_item *addrlist, int errno_value, uschar *msg, int rc,
+  BOOL pass_message)
+{
+set_errno(addrlist, errno_value, msg, rc, pass_message, NULL
+#ifdef EXPERIMENTAL_DSN_INFO
+	  , NULL, NULL
+#endif
+	  );
+}
 
 
 /*************************************************
@@ -847,7 +874,7 @@ while (count-- > 0)
     {
     uschar *message = string_sprintf("SMTP timeout after RCPT TO:<%s>",
 			  transport_rcpt_address(addr, include_affixes));
-    set_errno(addrlist, ETIMEDOUT, message, DEFER, FALSE, NULL);
+    set_errno_nohost(addrlist, ETIMEDOUT, message, DEFER, FALSE);
     retry_add_item(addr, addr->address_retry_key, 0);
     update_waiting = FALSE;
     return -1;
@@ -1096,8 +1123,8 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 	  /* Internal problem, message in buffer. */
 
 	  case ERROR:
-	  set_errno(addrlist, ERRNO_AUTHPROB, string_copy(buffer),
-		    DEFER, FALSE, NULL);
+	  set_errno_nohost(addrlist, ERRNO_AUTHPROB, string_copy(buffer),
+		    DEFER, FALSE);
 	  return ERROR;
 	  }
 
@@ -1111,9 +1138,9 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 
 if (require_auth == OK && !smtp_authenticated)
   {
-  set_errno(addrlist, ERRNO_AUTHFAIL,
+  set_errno_nohost(addrlist, ERRNO_AUTHFAIL,
     string_sprintf("authentication required but %s", fail_reason), DEFER,
-    FALSE, NULL);
+    FALSE);
   return DEFER;
   }
 
@@ -1152,7 +1179,7 @@ if (ob->authenticated_sender != NULL)
       {
       uschar *message = string_sprintf("failed to expand "
         "authenticated_sender: %s", expand_string_message);
-      set_errno(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, NULL);
+      set_errno_nohost(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
       return TRUE;
       }
     }
@@ -1381,6 +1408,10 @@ smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
 uschar *igquotstr = US"";
 
+#ifdef EXPERIMENTAL_DSN_INFO
+uschar *smtp_greeting = NULL;
+uschar *helo_response = NULL;
+#endif
 uschar *helo_data = NULL;
 
 uschar *message = NULL;
@@ -1432,8 +1463,8 @@ tls_modify_variables(&tls_out);
 #ifndef SUPPORT_TLS
 if (smtps)
   {
-  set_errno(addrlist, ERRNO_TLSFAILURE, US"TLS support not available",
-	    DEFER, FALSE, NULL);
+  set_errno_nohost(addrlist, ERRNO_TLSFAILURE, US"TLS support not available",
+	    DEFER, FALSE);
   return ERROR;
   }
 #endif
@@ -1450,8 +1481,8 @@ if (continue_hostname == NULL)
 
   if (inblock.sock < 0)
     {
-    set_errno(addrlist, (errno == ETIMEDOUT)? ERRNO_CONNECTTIMEOUT : errno,
-      NULL, DEFER, FALSE, NULL);
+    set_errno_nohost(addrlist, (errno == ETIMEDOUT)? ERRNO_CONNECTTIMEOUT : errno,
+      NULL, DEFER, FALSE);
     return DEFER;
     }
 
@@ -1469,18 +1500,18 @@ if (continue_hostname == NULL)
 	&& dane_required	/* do not error on only dane-requested */
 	)
 	{
-	set_errno(addrlist, ERRNO_DNSDEFER,
+	set_errno_nohost(addrlist, ERRNO_DNSDEFER,
 	  string_sprintf("DANE error: tlsa lookup %s",
 	    rc == DEFER ? "DEFER" : "FAIL"),
-	  rc, FALSE, NULL);
+	  rc, FALSE);
 	return rc;
 	}
       }
     else if (dane_required)
       {
-      set_errno(addrlist, ERRNO_DNSDEFER,
+      set_errno_nohost(addrlist, ERRNO_DNSDEFER,
 	string_sprintf("DANE error: %s lookup not DNSSEC", host->name),
-	FAIL, FALSE, NULL);
+	FAIL, FALSE);
       return  FAIL;
       }
 
@@ -1501,7 +1532,7 @@ if (continue_hostname == NULL)
     if ((helo_data = string_domain_utf8_to_alabel(helo_data, &errstr)), errstr)
       {
       errstr = string_sprintf("failed to expand helo_data: %s", errstr);
-      set_errno(addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE, NULL);
+      set_errno_nohost(addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -1514,8 +1545,12 @@ if (continue_hostname == NULL)
 
   if (!smtps)
     {
-    if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-      ob->command_timeout)) goto RESPONSE_FAILED;
+    BOOL good_response = smtp_read_response(&inblock, buffer, sizeof(buffer),
+      '2', ob->command_timeout);
+#ifdef EXPERIMENTAL_DSN_INFO
+    smtp_greeting = string_copy(buffer);
+#endif
+    if (!good_response) goto RESPONSE_FAILED;
 
 #ifdef EXPERIMENTAL_EVENT
       {
@@ -1525,9 +1560,9 @@ if (continue_hostname == NULL)
       s = event_raise(tblock->event_action, US"smtp:connect", buffer);
       if (s)
 	{
-	set_errno(addrlist, ERRNO_EXPANDFAIL,
+	set_errno_nohost(addrlist, ERRNO_EXPANDFAIL,
 	  string_sprintf("deferred by smtp:connect event expansion: %s", s),
-	  DEFER, FALSE, NULL);
+	  DEFER, FALSE);
 	yield = DEFER;
 	goto SEND_QUIT;
 	}
@@ -1541,7 +1576,7 @@ if (continue_hostname == NULL)
       {
       uschar *message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);
-      set_errno(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, NULL);
+      set_errno_nohost(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -1606,9 +1641,18 @@ goto SEND_QUIT;
     if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
            ob->command_timeout))
       {
-      if (errno != 0 || buffer[0] == 0 || lmtp) goto RESPONSE_FAILED;
+      if (errno != 0 || buffer[0] == 0 || lmtp)
+	{
+#ifdef EXPERIMENTAL_DSN_INFO
+	helo_response = string_copy(buffer);
+#endif
+	goto RESPONSE_FAILED;
+	}
       esmtp = FALSE;
       }
+#ifdef EXPERIMENTAL_DSN_INFO
+    helo_response = string_copy(buffer);
+#endif
     }
   else
     {
@@ -1618,10 +1662,16 @@ goto SEND_QUIT;
 
   if (!esmtp)
     {
+    BOOL good_response;
+
     if (smtp_write_command(&outblock, FALSE, "HELO %s\r\n", helo_data) < 0)
       goto SEND_FAILED;
-    if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-      ob->command_timeout)) goto RESPONSE_FAILED;
+    good_response = smtp_read_response(&inblock, buffer, sizeof(buffer),
+      '2', ob->command_timeout);
+#ifdef EXPERIMENTAL_DSN_INFO
+    helo_response = string_copy(buffer);
+#endif
+    if (!good_response) goto RESPONSE_FAILED;
     }
 
   /* Set IGNOREQUOTA if the response to LHLO specifies support and the
@@ -1670,6 +1720,11 @@ below). Set up the pointer to where subsequent commands will be left, for
 error messages. Note that smtp_use_size and smtp_use_pipelining will have been
 set from the command line if they were set in the process that passed the
 connection on. */
+
+/*XXX continue case needs to propagate DSN_INFO, prob. in deliver.c
+as the contine goes via transport_pass_socket() and doublefork and exec.
+It does not wait.  Unclear how we keep separate host's responses
+separate - we could match up by host ip+port as a bodge. */
 
 else
   {
@@ -1749,7 +1804,7 @@ if (  tls_offered
 
     /* TLS session is set up */
 
-    for (addr = addrlist; addr != NULL; addr = addr->next)
+    for (addr = addrlist; addr; addr = addr->next)
       if (addr->transport_return == PENDING_DEFER)
         {
         addr->cipher = tls_out.cipher;
@@ -1774,6 +1829,8 @@ start of the Exim process (in exim.c). */
 if (tls_out.active >= 0)
   {
   char *greeting_cmd;
+  BOOL good_response;
+
   if (helo_data == NULL)
     {
     helo_data = expand_string(ob->helo_data);
@@ -1781,7 +1838,7 @@ if (tls_out.active >= 0)
       {
       uschar *message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);
-      set_errno(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, NULL);
+      set_errno_nohost(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -1790,8 +1847,12 @@ if (tls_out.active >= 0)
   /* For SMTPS we need to wait for the initial OK response. */
   if (smtps)
     {
-    if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-      ob->command_timeout)) goto RESPONSE_FAILED;
+    good_response = smtp_read_response(&inblock, buffer, sizeof(buffer),
+      '2', ob->command_timeout);
+#ifdef EXPERIMENTAL_DSN_INFO
+    smtp_greeting = string_copy(buffer);
+#endif
+    if (!good_response) goto RESPONSE_FAILED;
     }
 
   if (esmtp)
@@ -1806,9 +1867,12 @@ if (tls_out.active >= 0)
   if (smtp_write_command(&outblock, FALSE, "%s %s\r\n",
         lmtp? "LHLO" : greeting_cmd, helo_data) < 0)
     goto SEND_FAILED;
-  if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-       ob->command_timeout))
-    goto RESPONSE_FAILED;
+  good_response = smtp_read_response(&inblock, buffer, sizeof(buffer),
+    '2', ob->command_timeout);
+#ifdef EXPERIMENTAL_DSN_INFO
+  helo_response = string_copy(buffer);
+#endif
+  if (!good_response) goto RESPONSE_FAILED;
   }
 
 /* If the host is required to use a secure channel, ensure that we
@@ -1935,8 +1999,8 @@ if (tblock->filter_command != NULL)
 
   if (!rc)
     {
-    set_errno(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
-      FALSE, NULL);
+    set_errno_nohost(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
+      FALSE);
     yield = ERROR;
     goto SEND_QUIT;
     }
@@ -2065,7 +2129,7 @@ pending_MAIL = TRUE;     /* The block starts with MAIL */
     {
     if (s = string_address_utf8_to_alabel(return_path, &errstr), errstr)
       {
-      set_errno(addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE, NULL);
+      set_errno_nohost(addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE);
       yield = ERROR;
       goto SEND_QUIT;
       }
@@ -2217,8 +2281,8 @@ if (mua_wrapper)
     if (badaddr->transport_return != PENDING_OK)
       {
       /*XXX could we find a better errno than 0 here? */
-      set_errno(addrlist, 0, badaddr->message, FAIL,
-	testflag(badaddr, af_pass_message), NULL);
+      set_errno_nohost(addrlist, 0, badaddr->message, FAIL,
+	testflag(badaddr, af_pass_message));
       ok = FALSE;
       break;
       }
@@ -2475,7 +2539,7 @@ if (!ok) ok = TRUE; else
         else
           sprintf(CS buffer, "%.500s\n", addr->unique);
 
-        DEBUG(D_deliver) debug_printf("journalling %s", buffer);
+        DEBUG(D_deliver) debug_printf("journalling %s\n", buffer);
         len = Ustrlen(CS buffer);
         if (write(journal_fd, buffer, len) != len)
           log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
@@ -2512,7 +2576,7 @@ if (!ok) ok = TRUE; else
           else
             sprintf(CS buffer, "%.500s\n", addr->unique);
 
-          DEBUG(D_deliver) debug_printf("journalling(PRDR) %s", buffer);
+          DEBUG(D_deliver) debug_printf("journalling(PRDR) %s\n", buffer);
           len = Ustrlen(CS buffer);
           if (write(journal_fd, buffer, len) != len)
             log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
@@ -2542,22 +2606,27 @@ the problem is not related to this specific message. */
 
 if (!ok)
   {
-  int code;
+  int code, set_rc;
+  uschar * set_message;
 
   RESPONSE_FAILED:
-  save_errno = errno;
-  message = NULL;
-  send_quit = check_response(host, &save_errno, addrlist->more_errno,
-    buffer, &code, &message, &pass_message);
-  goto FAILED;
+    {
+    save_errno = errno;
+    message = NULL;
+    send_quit = check_response(host, &save_errno, addrlist->more_errno,
+      buffer, &code, &message, &pass_message);
+    goto FAILED;
+    }
 
   SEND_FAILED:
-  save_errno = errno;
-  code = '4';
-  message = US string_sprintf("send() to %s [%s] failed: %s",
-    host->name, host->address, strerror(save_errno));
-  send_quit = FALSE;
-  goto FAILED;
+    {
+    save_errno = errno;
+    code = '4';
+    message = US string_sprintf("send() to %s [%s] failed: %s",
+      host->name, host->address, strerror(save_errno));
+    send_quit = FALSE;
+    goto FAILED;
+    }
 
   /* This label is jumped to directly when a TLS negotiation has failed,
   or was not done for a host for which it is required. Values will be set
@@ -2578,16 +2647,14 @@ if (!ok)
 
   FAILED:
   ok = FALSE;                /* For when reached by GOTO */
+  set_message = message;
 
   if (setting_up)
     {
     if (code == '5')
-      set_errno(addrlist, save_errno, message, FAIL, pass_message, host);
+      set_rc = FAIL;
     else
-      {
-      set_errno(addrlist, save_errno, message, DEFER, pass_message, host);
-      yield = DEFER;
-      }
+      yield = set_rc = DEFER;
     }
 
   /* We want to handle timeouts after MAIL or "." and loss of connection after
@@ -2646,14 +2713,15 @@ if (!ok)
     if (message_error)
       {
       if (mua_wrapper) code = '5';  /* Force hard failure in wrapper mode */
-      set_errno(addrlist, save_errno, message, (code == '5')? FAIL : DEFER,
-        pass_message, host);
 
       /* If there's an errno, the message contains just the identity of
       the host. */
 
-      if (code != '5')     /* Anything other than 5 is treated as temporary */
+      if (code == '5')
+	set_rc = FAIL;
+      else		/* Anything other than 5 is treated as temporary */
         {
+	set_rc = DEFER;
         if (save_errno > 0)
           message = US string_sprintf("%s: %s", message, strerror(save_errno));
         if (host->next != NULL) log_write(0, LOG_MAIN, "%s", message);
@@ -2670,11 +2738,17 @@ if (!ok)
 
     else
       {
+      set_rc = DEFER;
       yield = (save_errno == ERRNO_CHHEADER_FAIL ||
                save_errno == ERRNO_FILTER_FAIL)? ERROR : DEFER;
-      set_errno(addrlist, save_errno, message, DEFER, pass_message, host);
       }
     }
+
+  set_errno(addrlist, save_errno, set_message, set_rc, pass_message, host
+#ifdef EXPERIMENTAL_DSN_INFO
+	    , smtp_greeting, helo_response
+#endif
+	    );
   }
 
 
@@ -2787,6 +2861,9 @@ if (completed_address && ok && send_quit)
       /* If the socket is successfully passed, we musn't send QUIT (or
       indeed anything!) from here. */
 
+/*XXX DSN_INFO: assume likely to do new HELO; but for greet we'll want to
+propagate it from the initial
+*/
       if (ok && transport_pass_socket(tblock->name, host->name, host->address,
             new_message_id, inblock.sock))
         {
@@ -2796,7 +2873,11 @@ if (completed_address && ok && send_quit)
 
     /* If RSET failed and there are addresses left, they get deferred. */
 
-    else set_errno(first_addr, errno, msg, DEFER, FALSE, host);
+    else set_errno(first_addr, errno, msg, DEFER, FALSE, host
+#ifdef EXPERIMENTAL_DSN_INFO
+		  , smtp_greeting, helo_response
+#endif
+		  );
     }
   }
 
@@ -2937,6 +3018,10 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
     addr->peercert = NULL;
     addr->peerdn = NULL;
     addr->ocsp = OCSP_NOT_REQ;
+#endif
+#ifdef EXPERIMENTAL_DSN_INFO
+    addr->smtp_greeting = NULL;
+    addr->helo_response = NULL;
 #endif
     }
 return first_addr;
@@ -3479,7 +3564,7 @@ for (cutoff_retry = 0; expired &&
     if (dont_deliver)
       {
       host_item *host2;
-      set_errno(addrlist, 0, NULL, OK, FALSE, NULL);
+      set_errno_nohost(addrlist, 0, NULL, OK, FALSE);
       for (addr = addrlist; addr != NULL; addr = addr->next)
         {
         addr->host_used = host;

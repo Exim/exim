@@ -561,13 +561,18 @@ typedef struct address_item {
   uschar *self_hostname;          /* after self=pass */
   uschar *shadow_message;         /* info about shadow transporting */
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   uschar *cipher;                 /* Cipher used for transport */
   void   *ourcert;                /* Certificate offered to peer, binary */
   void   *peercert;               /* Certificate from peer, binary */
   uschar *peerdn;                 /* DN of server's certificate */
   int    ocsp;			  /* OCSP status of peer cert */
-  #endif
+#endif
+
+#ifdef EXPERIMENTAL_DSN_INFO
+  const uschar *smtp_greeting;	  /* peer self-identification */
+  const uschar *helo_response;	  /* peer message */
+#endif
 
   uschar *authenticator;	  /* auth driver name used by transport */
   uschar *auth_id;		  /* auth "login" name used by transport */

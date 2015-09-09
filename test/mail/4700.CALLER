@@ -1,0 +1,131 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: userx@domain1
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: CALLER@test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  userx@domain1
+  host localhost4.test.ex [127.0.0.1]
+    SMTP error from remote mail server after initial connection:
+    550 Go away
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; the.local.host.name
+
+Action: failed
+Final-Recipient: rfc822;userx@domain1
+Status: 5.0.0
+Remote-MTA: dns; localhost4.test.ex
+Remote-MTA: X-ip; [127.0.0.1]:1111
+X-Remote-MTA-smtp-greeting: X-str; 550 Go away
+X-Exim-Diagnostic: X-str; SMTP error from remote mail server after initial connection: 550 Go away
+Diagnostic-Code: smtp; 550 Go away
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <CALLER@test.ex>
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@domain1; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message 1
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: usery@domain2,
+  userx@domain1
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: CALLER@test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  usery@domain2
+  host localhost4.test.ex [127.0.0.1]
+    SMTP error from remote mail server after HELO the.local.host.name:
+    550 Go away
+  userx@domain1
+  host localhost4.test.ex [127.0.0.1]
+    SMTP error from remote mail server after HELO the.local.host.name:
+    550 Go away
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; the.local.host.name
+
+Action: failed
+Final-Recipient: rfc822;userx@domain1
+Status: 5.0.0
+Remote-MTA: dns; localhost4.test.ex
+Remote-MTA: X-ip; [127.0.0.1]:1111
+X-Remote-MTA-smtp-greeting: X-str; 220 Connected OK
+X-Remote-MTA-helo-response: X-str; 550 Go away
+X-Exim-Diagnostic: X-str; SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
+Diagnostic-Code: smtp; 550 Go away
+
+Action: failed
+Final-Recipient: rfc822;usery@domain2
+Status: 5.0.0
+Remote-MTA: dns; localhost4.test.ex
+Remote-MTA: X-ip; [127.0.0.1]:1111
+X-Remote-MTA-smtp-greeting: X-str; 220 Connected OK
+X-Remote-MTA-helo-response: X-str; 550 Go away
+X-Exim-Diagnostic: X-str; SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
+Diagnostic-Code: smtp; 550 Go away
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <CALLER@test.ex>
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message 2
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+

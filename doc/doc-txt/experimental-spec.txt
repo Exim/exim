@@ -1380,6 +1380,49 @@ must be representable in UTF-16.
 
 
 
+DSN extra information
+---------------------
+If compiled with EXPERIMENTAL_DSN_INFO extra information will be added
+to DSN fail messages ("bounces"), when available.  The intent is to aid
+tracing of specific failing messages, when presented with a "bounce"
+complaint and needing to search logs.
+
+
+The remote MTA IP address, with port number if nonstandard.
+Example:
+  Remote-MTA: X-ip; [127.0.0.1]:587
+Rationale:
+  Several addresses may correspond to the (already available)
+  dns name for the remote MTA.
+
+The remote MTA connect-time greeting.
+Example:
+  X-Remote-MTA-smtp-greeting: X-str; 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+Rationale:
+  This string sometimes presents the remote MTA's idea of its
+  own name, and sometimes identifies the MTA software.
+
+The remote MTA response to HELO or EHLO.
+Example:
+  X-Remote-MTA-helo-response: X-str; 250-the.local.host.name Hello localhost [127.0.0.1]
+Limitations:
+  Only the first line of a multiline response is recorded.
+Rationale:
+  This string sometimes presents the remote MTA's view of
+  the peer IP connecting to it.
+
+The reporting MTA detailed diagnostic.
+Example:
+  X-Exim-Diagnostic: X-str; SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
+Rationale:
+  This string somtimes give extra information over the
+  existing (already available) Diagnostic-Code field.
+
+
+Note that non-RFC-documented field names and data types are used.
+
+
+
 
 --------------------------------------------------------------
 End of file

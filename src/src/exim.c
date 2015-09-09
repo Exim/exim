@@ -847,6 +847,12 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_DMARC
   fprintf(f, " Experimental_DMARC");
 #endif
+#ifdef EXPERIMENTAL_DSN_INFO
+  fprintf(f, " Experimental_DSN_info");
+#endif
+#ifdef EXPERIMENTAL_INTERNATIONAL
+  fprintf(f, " Experimental_International");
+#endif
 #ifdef EXPERIMENTAL_PROXY
   fprintf(f, " Experimental_Proxy");
 #endif
@@ -858,9 +864,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_SOCKS
   fprintf(f, " Experimental_SOCKS");
-#endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
-  fprintf(f, " Experimental_International");
 #endif
 fprintf(f, "\n");
 

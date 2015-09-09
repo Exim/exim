@@ -34,6 +34,10 @@ HS/01 Bug 1671: Fix post transport crash.
 JH/03 Bug 425: Capture substrings in $regex1, $regex2 etc from regex &
       mime_regex ACL conditions.
 
+JH/04 Bug 1686: When compiled with EXPERIMENTAL_DSN_INFO: Add extra information
+      to DSN fail messages (bounces): remote IP, remote greeting, remote response
+      to HELO, local diagnostic string.
+
 
 Exim version 4.86
 -----------------

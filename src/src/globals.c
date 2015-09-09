@@ -354,13 +354,17 @@ address_item address_defaults = {
   NULL,                 /* return_filename */
   NULL,                 /* self_hostname */
   NULL,                 /* shadow_message */
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   NULL,                 /* cipher */
   NULL,			/* ourcert */
   NULL,			/* peercert */
   NULL,                 /* peerdn */
   OCSP_NOT_REQ,         /* ocsp */
-  #endif
+#endif
+#ifdef EXPERIMENTAL_DSN_INFO
+  NULL,			/* smtp_greeting */
+  NULL,			/* helo_response */
+#endif
   NULL,			/* authenticator */
   NULL,			/* auth_id */
   NULL,			/* auth_sndr */
