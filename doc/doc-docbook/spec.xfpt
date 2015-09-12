@@ -11319,9 +11319,11 @@ not the same as the user id of the originator of a message (see
 &$originator_uid$&). If Exim re-execs itself, this variable in the new
 incarnation normally contains the Exim uid.
 
-.vitem &$compile_date$&
-.vindex "&$compile_date$&"
-The date on which the Exim binary was compiled.
+.vitem &$callout_address$&
+.vitem &$callout_address$&
+.vindex "&$callout_address$&"
+After a callout for verification, spamd or malware daemon service, the
+address that was connected to.
 
 .vitem &$compile_number$&
 .vindex "&$compile_number$&"
@@ -30962,6 +30964,10 @@ malware = * / defer_ok / tmo=10s
 .endd
 A timeout causes the ACL to defer.
 
+.vindex "&$callout_address$&"
+When a connection is made to the scanner the expansion variable &$callout_address$&
+is set to record the actual address used.
+
 .vindex "&$malware_name$&"
 When a virus is found, the condition sets up an expansion variable called
 &$malware_name$& that contains the name of the virus. You can use it in a
@@ -31111,6 +31117,10 @@ The &%spamd_address%& variable is expanded before use if it starts with
 a dollar sign. In this case, the expansion may return a string that is
 used as the list so that multiple spamd servers can be the result of an
 expansion.
+
+.vindex "&$callout_address$&"
+When a connection is made to the server the expansion variable &$callout_address$&
+is set to record the actual address used.
 
 .section "Calling SpamAssassin from an Exim ACL" "SECID206"
 Here is a simple example of the use of the &%spam%& condition in a DATA ACL:

@@ -284,6 +284,8 @@ if (host->port != PORT_NONE)
   }
 else host->port = port;    /* Set the port actually used */
 
+callout_address = string_sprintf("[%s]:%d", host->address, port);
+
 HDEBUG(D_transport|D_acl|D_v)
   {
   uschar * s = US" ";
@@ -291,8 +293,7 @@ HDEBUG(D_transport|D_acl|D_v)
 #ifdef EXPERIMENTAL_SOCKS
   if (ob->socks_proxy) s = string_sprintf("%svia proxy ", s);
 #endif
-  debug_printf("Connecting to %s [%s]:%d%s... ",
-    host->name, host->address, port, s);
+  debug_printf("Connecting to %s %s%s... ", host->name, callout_address, s);
   }
 
 /* Create and connect the socket */

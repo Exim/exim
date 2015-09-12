@@ -478,6 +478,7 @@ int     bounce_return_size_limit = 100*1024;
 uschar *bounce_sender_authentication = NULL;
 int     bsmtp_transaction_linecount = 0;
 
+uschar *callout_address        = NULL;
 int     callout_cache_domain_positive_expire = 7*24*60*60;
 int     callout_cache_domain_negative_expire = 3*60*60;
 int     callout_cache_positive_expire = 24*60*60;

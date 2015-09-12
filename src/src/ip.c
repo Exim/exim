@@ -237,7 +237,11 @@ if (running_in_test_harness  && save_errno == ECONNREFUSED && timeout == 999999)
 
 /* Success */
 
-if (rc >= 0) return 0;
+if (rc >= 0)
+  {
+  callout_address = string_sprintf("[%s]:%d", address, port);
+  return 0;
+  }
 
 /* A failure whose error code is "Interrupted system call" is in fact
 an externally applied timeout if the signal handler has been run. */
@@ -400,6 +404,7 @@ if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0)
 		path, strerror(err));
   return -1;
   }
+callout_address = string_copy(path);
 return sock;
 }
 

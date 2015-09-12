@@ -20,7 +20,7 @@ begin acl
 
 c_data:
   accept !malware = * OPT
-  deny	 logwrite = malware_name $malware_name
+  deny	 logwrite = $callout_address malware_name $malware_name
 
 # ----- Routers -----
 

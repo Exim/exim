@@ -255,6 +255,7 @@ extern int     bounce_return_size_limit; /* Max amount to return */
 extern uschar *bounce_sender_authentication; /* AUTH address for bounces */
 extern int     bsmtp_transaction_linecount; /* Start of last transaction */
 
+extern uschar *callout_address;         /* Address used for a malware/spamd/verify etc. callout */
 extern int     callout_cache_domain_positive_expire; /* Time for positive domain callout cache records to expire */
 extern int     callout_cache_domain_negative_expire; /* Time for negative domain callout cache records to expire */
 extern int     callout_cache_positive_expire; /* Time for positive callout cache records to expire */

@@ -12,6 +12,9 @@ Version 4.87
  1. The ACL conditions regex and mime_regex now capture substrings
     into numeric variables $regex1 to 9, like the "match" expansion condition.
 
+ 2. New $callout_address variable records the address used for a spam=,
+    malware= or verify= callout.
+
 
 Version 4.86
 ------------

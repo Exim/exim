@@ -25,7 +25,7 @@ c_data:
   warn
     spam = nobody
   warn
-    log_message = $spam_action $spam_report
+    log_message = $callout_address $spam_action $spam_report
   accept
 
 # ----- Routers -----
