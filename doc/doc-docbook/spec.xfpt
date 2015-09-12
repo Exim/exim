@@ -11320,7 +11320,6 @@ not the same as the user id of the originator of a message (see
 incarnation normally contains the Exim uid.
 
 .vitem &$callout_address$&
-.vitem &$callout_address$&
 .vindex "&$callout_address$&"
 After a callout for verification, spamd or malware daemon service, the
 address that was connected to.
