@@ -3322,12 +3322,10 @@ while (done <= 0)
 	{
 	smtp_cmd_data = NULL;
 
-	if ((c = smtp_in_auth(au, &s, &ss)) != OK)
-	  log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
-	    au->name, host_and_ident(FALSE), ss);
-	else
+	if (smtp_in_auth(au, &s, &ss) == OK)
 	  DEBUG(D_auth) debug_printf("tls auth succeeded\n");
-
+	else
+	  DEBUG(D_auth) debug_printf("tls auth not succeeded\n");
 	break;
 	}
     }

@@ -38,6 +38,11 @@ JH/04 Bug 1686: When compiled with EXPERIMENTAL_DSN_INFO: Add extra information
       to DSN fail messages (bounces): remote IP, remote greeting, remote response
       to HELO, local diagnostic string.
 
+JH/05 Downgrade message for a TLS-certificate-based authentication fail from
+      log line to debug.  Even when configured with a tls authenticator many
+      client connections are expected to not authenticate in this way, so
+      an authenticate fail is not an error.
+
 
 Exim version 4.86
 -----------------
