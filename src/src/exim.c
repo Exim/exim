@@ -230,7 +230,7 @@ to disrupt whatever is going on outside the signal handler. */
 
 if (fd < 0) return;
 
-{int dummy = write(fd, process_info, process_info_len); dummy = dummy; }
+(void)write(fd, process_info, process_info_len);
 (void)close(fd);
 }
 

@@ -1603,7 +1603,7 @@ if (inetd_wait_mode)
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, launched with listening socket, %s",
     version_string, getpid(), big_buffer);
-  set_process_info("daemon: pre-listening socket");
+  set_process_info("daemon(%s): pre-listening socket", version_string);
 
   /* set up the timeout logic */
   sigalrm_seen = 1;
@@ -1688,7 +1688,7 @@ else if (daemon_listen)
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, %s, listening for %s",
     version_string, getpid(), qinfo, big_buffer);
-  set_process_info("daemon: %s, listening for %s", qinfo, big_buffer);
+  set_process_info("daemon(%s): %s, listening for %s", version_string, qinfo, big_buffer);
   }
 
 else
@@ -1696,7 +1696,8 @@ else
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, -q%s, not listening for SMTP",
     version_string, getpid(), readconf_printtime(queue_interval));
-  set_process_info("daemon: -q%s, not listening",
+  set_process_info("daemon(%s): -q%s, not listening",
+    version_string,
     readconf_printtime(queue_interval));
   }
 

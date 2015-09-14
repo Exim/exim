@@ -14,7 +14,7 @@ changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 LOG: MAIN
   exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225
+set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 Exim version x.yz ....
@@ -31,6 +31,6 @@ changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 LOG: MAIN
   exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225
+set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
