@@ -43,6 +43,9 @@ JH/05 Downgrade message for a TLS-certificate-based authentication fail from
       client connections are expected to not authenticate in this way, so
       an authenticate fail is not an error.
 
+HS/02 Add the Exim version string to the process info.  This way exiwhat
+      gives some more detail about the running daemon.
+
 
 Exim version 4.86
 -----------------
