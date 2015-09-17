@@ -9390,7 +9390,7 @@ yields &"42"&, and
 .code
 ${listextract{-3}{<, x,42,99,& Mailer,,/bin/bash}{result: $value}}
 .endd
-yields &"result: 99"&.
+yields &"result: 42"&.
 
 If {<&'string3'&>} is omitted, an empty string is used for string3.
 If {<&'string2'&>} is also omitted, the value that was
