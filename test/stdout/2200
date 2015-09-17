@@ -51,3 +51,6 @@ ten-2.test.ex
 > 
 > delay1500                  ip4.ip4.ip4.ip4
 > 
+> a=localhost.test.ex        127.0.0.1
+> a=localhost.test.ex        127.0.0.1
+> 

@@ -87,7 +87,7 @@ the keylength in order to include the terminating zero. */
 
 static int
 dbmdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 EXIM_DB *d = (EXIM_DB *)handle;
 EXIM_DATUM key, data;
@@ -120,7 +120,7 @@ return FAIL;
 
 int
 static dbmnz_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
   do_cache);
@@ -140,7 +140,7 @@ return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
 
 static int
 dbmjz_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 uschar *key_item, *key_buffer, *key_p;
 const uschar *key_elems = keystring;

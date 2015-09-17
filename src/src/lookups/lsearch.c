@@ -323,7 +323,7 @@ return FAIL;
 
 static int
 lsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -340,7 +340,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 static int
 wildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -357,7 +357,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 static int
 nwildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -375,7 +375,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 static int
 iplsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 if ((length == 1 && keystring[0] == '*') ||

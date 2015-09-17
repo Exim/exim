@@ -119,7 +119,7 @@ Returns:       OK, FAIL, or DEFER
 
 static int
 perform_pgsql_search(const uschar *query, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, BOOL *do_cache)
+  uschar **errmsg, BOOL *defer_break, uint *do_cache)
 {
 PGconn *pg_conn = NULL;
 PGresult *pg_result = NULL;
@@ -290,10 +290,10 @@ else
     /* The command was successful but did not return any data since it was
      * not SELECT but either an INSERT, UPDATE or DELETE statement. Tell the
      * high level code to not cache this query, and clean the current cache for
-     * this handle by setting *do_cache FALSE. */
+     * this handle by setting *do_cache zero. */
     result = string_copy(US PQcmdTuples(pg_result));
     offset = Ustrlen(result);
-    *do_cache = FALSE;
+    *do_cache = 0;
     DEBUG(D_lookup) debug_printf("PGSQL: command does not return any data "
       "but was successful. Rows affected: %s\n", result);
 
@@ -399,7 +399,7 @@ shared with other SQL lookups. */
 
 static int
 pgsql_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,
   result, errmsg, do_cache, perform_pgsql_search);

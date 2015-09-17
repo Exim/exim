@@ -21,6 +21,7 @@ uschar ctbuffer[8192];
 /* Structure for caching DNSBL lookups */
 
 typedef struct dnsbl_cache_block {
+  time_t expiry;
   dns_address *rhs;
   uschar *text;
   int rc;
@@ -3584,21 +3585,37 @@ if (!string_format(query, sizeof(query), "%s.%s", prepend, domain))
 
 /* Look for this query in the cache. */
 
-t = tree_search(dnsbl_cache, query);
+if (  (t = tree_search(dnsbl_cache, query))
+   && (cb = t->data.ptr)->expiry > time(NULL)
+   )
+
+/* Previous lookup was cached */
+
+  {
+  HDEBUG(D_dnsbl) debug_printf("using result of previous DNS lookup\n");
+  }
 
 /* If not cached from a previous lookup, we must do a DNS lookup, and
 cache the result in permanent memory. */
 
-if (t == NULL)
+else
   {
+  uint ttl = UINT_MAX;
+
   store_pool = POOL_PERM;
 
-  /* Set up a tree entry to cache the lookup */
+  if (t)
+    {
+    HDEBUG(D_dnsbl) debug_printf("cached data found but past valid time; ");
+    }
 
-  t = store_get(sizeof(tree_node) + Ustrlen(query));
-  Ustrcpy(t->name, query);
-  t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block));
-  (void)tree_insertnode(&dnsbl_cache, t);
+  else
+    {	/* Set up a tree entry to cache the lookup */
+    t = store_get(sizeof(tree_node) + Ustrlen(query));
+    Ustrcpy(t->name, query);
+    t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block));
+    (void)tree_insertnode(&dnsbl_cache, t);
+    }
 
   /* Do the DNS loopup . */
 
@@ -3634,6 +3651,7 @@ if (t == NULL)
           *addrp = da;
           while (da->next != NULL) da = da->next;
           addrp = &(da->next);
+	  if (ttl > rr->ttl) ttl = rr->ttl;
           }
         }
       }
@@ -3645,15 +3663,8 @@ if (t == NULL)
     if (cb->rhs == NULL) cb->rc = DNS_NODATA;
     }
 
+  cb->expiry = time(NULL)+ttl;
   store_pool = old_pool;
-  }
-
-/* Previous lookup was cached */
-
-else
-  {
-  HDEBUG(D_dnsbl) debug_printf("using result of previous DNS lookup\n");
-  cb = t->data.ptr;
   }
 
 /* We now have the result of the DNS lookup, either newly done, or cached

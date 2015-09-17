@@ -1,4 +1,5 @@
 # Exim test configuration 2200
+# Check for dnsdb cache TTL handling
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -7,5 +8,21 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_not_smtp = check_rcpt
+queue_only
+
+begin acl
+
+check_rcpt:
+  warn
+	set acl_m1 =    ${map {<,$recipients} \
+				{${lookup dnsdb{a=${domain:$item}}{$value}fail}}}
+	delay =		4s
+	set acl_m1 =    ${map {<,$recipients} \
+				{${lookup dnsdb{a=${domain:$item}}{$value}fail}}}
+  accept
 
 # End

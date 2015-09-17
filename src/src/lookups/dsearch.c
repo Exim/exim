@@ -67,7 +67,7 @@ for us. */
 
 int
 static dsearch_find(void *handle, uschar *dirname, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 struct stat statbuf;
 int save_errno;

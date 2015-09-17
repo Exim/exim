@@ -279,7 +279,7 @@ cdb_find(void *handle,
         int  key_len,
         uschar **result,
         uschar **errmsg,
-        BOOL *do_cache)
+        uint *do_cache)
 {
   struct cdb_state * cdbp = handle;
   uint32 item_key_len,

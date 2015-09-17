@@ -662,6 +662,16 @@ typedef struct tree_node {
   uschar  name[1];                /* node name - variable length */
 } tree_node;
 
+/* Structure for holding time-limited data such as DNS returns.
+We use this rather than extending tree_node to avoid wasting
+space for most tree use (variables...) at the cost of complexity
+for the lookups cache */
+
+typedef struct expiring_data {
+  time_t expiry;		  /* if nonzero, data invalid after this time */
+  void   *ptr;			  /* pointer to data */
+} expiring_data;
+
 /* Structure for holding the handle and the cached last lookup for searches.
 This block is pointed to by the tree entry for the file. The file can get
 closed if too many are opened at once. There is a LRU chain for deciding which
@@ -681,6 +691,7 @@ uncompressed, but the data pointer is into the raw data. */
 typedef struct {
   uschar  name[DNS_MAXNAME];      /* domain name */
   int     type;                   /* record type */
+  unsigned short ttl;		  /* time-to-live, seconds */
   int     size;                   /* size of data */
   uschar *data;                   /* pointer to data */
 } dns_record;
