@@ -517,7 +517,7 @@ deferred with a retryable error. */
 
 static int
 oracle_find(void *handle, uschar *filename, uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 int sep = 0;
 uschar *server;

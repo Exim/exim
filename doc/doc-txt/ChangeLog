@@ -20,6 +20,9 @@ HS/01 Bug 1671: Fix post transport crash.
       using 'split_spool_directory=yes' the construction of the spool
       file name failed already, exposing the same netto behaviour.
 
+JH/06 Bug 1395: time-limit cacheing of DNS lookups, to the TTL value.  This may
+      matter for fast-change records such as DNSBLs.
+
 Exim version 4.86
 -----------------
 JH/01 Bug 1545: The smtp transport option "retry_include_ip_address" is now

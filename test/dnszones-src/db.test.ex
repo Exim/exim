@@ -51,6 +51,10 @@ mx.xn--1xa         A       V4NET.255.255.255
 thishost     A       127.0.0.1
 localhost4   A       127.0.0.1
 
+; A localhost with short TTL
+
+TTL=2 shorthost A    127.0.0.1
+
 
 ; Something that gives both the IP and the loopback
 
@@ -170,7 +174,7 @@ cname4       CNAME   thishost
 
 13.12.11.V4NET.rbl    A   127.0.0.2
                       TXT "This is a test blacklisting message"
-14.12.11.V4NET.rbl    A   127.0.0.2
+TTL=2 14.12.11.V4NET.rbl A 127.0.0.2
                       TXT "This is a test blacklisting message"
 15.12.11.V4NET.rbl    A   127.0.0.2
                       TXT "This is a very long blacklisting message, continuing for ages and ages and certainly being longer than 128 characters which was a previous limit on the length that Exim was prepared to handle."

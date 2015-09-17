@@ -390,7 +390,8 @@ from the following bytes. */
 
 dnss->aptr += namelen;
 GETSHORT(dnss->srr.type, dnss->aptr); /* Record type */
-dnss->aptr += 6;                      /* Don't want class or TTL */
+dnss->aptr += 2;                      /* Don't want class */
+GETLONG(dnss->srr.ttl, dnss->aptr);   /* TTL */
 GETSHORT(dnss->srr.size, dnss->aptr); /* Size of data portion */
 dnss->srr.data = dnss->aptr;          /* The record's data follows */
 dnss->aptr += dnss->srr.size;         /* Advance to next RR */

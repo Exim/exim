@@ -1,0 +1,52 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+search_open: dnsdb "NULL"
+search_find: file="NULL"
+  key="a=localhost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="a=localhost.test.ex"
+database lookup required for a=localhost.test.ex
+dnsdb key: localhost.test.ex
+lookup yielded: 127.0.0.1
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="a=localhost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="a=localhost.test.ex"
+cached data used for lookup of a=localhost.test.ex
+lookup yielded: 127.0.0.1
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+search_tidyup called
+search_tidyup called
+search_open: dnsdb "NULL"
+search_find: file="NULL"
+  key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="a=shorthost.test.ex"
+database lookup required for a=shorthost.test.ex
+dnsdb key: shorthost.test.ex
+lookup yielded: 127.0.0.1
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="a=shorthost.test.ex"
+cached data found but past valid time; database lookup required for a=shorthost.test.ex
+dnsdb key: shorthost.test.ex
+lookup yielded: 127.0.0.1
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

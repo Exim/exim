@@ -34,7 +34,7 @@ typedef struct lookup_info {
     int,                          /* length of key or query */
     uschar **,                    /* for returning answer */
     uschar **,                    /* for error message */
-    BOOL *);                      /* to request cache cleanup */
+    uint *);                      /* cache TTL, sconds */
   void (*close)(                  /* close function */
     void *);                      /* handle */
   void (*tidy)(void);             /* tidy function */
@@ -46,9 +46,10 @@ typedef struct lookup_info {
 } lookup_info;
 
 /* This magic number is used by the following lookup_module_info structure
-   for checking API compatibility. It's equivalent to the string"LMM2" */
-#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4d32
+   for checking API compatibility. It used to be equivalent to the string"LMM3" */
+#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4933
 /* Version 2 adds: version_report */
+/* Version 3 change: non/cache becomes TTL in seconds */
 
 typedef struct lookup_module_info {
   uint magic;

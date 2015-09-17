@@ -131,7 +131,7 @@ separator, as always, is colon. */
 
 static int
 dnsdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 int rc;
 int size = 256;
@@ -387,6 +387,9 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
          rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
       {
       if (rr->type != searchtype) continue;
+
+      if (*do_cache > rr->ttl)
+	*do_cache = rr->ttl;
 
       if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {

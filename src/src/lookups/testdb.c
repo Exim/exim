@@ -38,7 +38,7 @@ return (void *)(1);    /* Just return something non-null */
 
 static int
 testdb_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 handle = handle;          /* Keep picky compilers happy */
 filename = filename;
@@ -57,7 +57,7 @@ if (Ustrcmp(query, "defer") == 0)
   return DEFER;
   }
 
-if (Ustrcmp(query, "nocache") == 0) *do_cache = FALSE;
+if (Ustrcmp(query, "nocache") == 0) *do_cache = 0;
 
 *result = string_copy(query);
 return OK;
