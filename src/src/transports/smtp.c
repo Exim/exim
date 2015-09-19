@@ -3259,7 +3259,6 @@ for (cutoff_retry = 0; expired &&
     BOOL serialized = FALSE;
     BOOL host_is_expired = FALSE;
     BOOL message_defer = FALSE;
-    BOOL ifchanges = FALSE;
     BOOL some_deferred = FALSE;
     address_item *first_addr = NULL;
     uschar *interface = NULL;
@@ -3435,15 +3434,18 @@ for (cutoff_retry = 0; expired &&
     if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
 
     /* Select IPv4 or IPv6, and choose an outgoing interface. If the interface
-    string changes upon expansion, we must add it to the key that is used for
-    retries, because connections to the same host from a different interface
-    should be treated separately. */
+    string is set, even if constant (as different transports can have different
+    constant settings), we must add it to the key that is used for retries,
+    because connections to the same host from a different interface should be
+    treated separately. */
 
     host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET : AF_INET6;
-    if (!smtp_get_interface(ob->interface, host_af, addrlist, &ifchanges,
-         &interface, tid))
-      return FALSE;
-    if (ifchanges) pistring = string_sprintf("%s/%s", pistring, interface);
+    if ((rs = ob->interface) && *rs)
+      {
+      if (!smtp_get_interface(rs, host_af, addrlist, &interface, tid))
+	return FALSE;
+      pistring = string_sprintf("%s/%s", pistring, interface);
+      }
 
     /* The first time round the outer loop, check the status of the host by
     inspecting the retry data. The second time round, we are interested only

@@ -444,7 +444,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
 	  host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET:AF_INET6;
 
-	  if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
+	  if (!smtp_get_interface(tf->interface, host_af, addr, &interface,
 		  US"callout") ||
 	      !smtp_get_port(tf->port, addr, &port, US"callout"))
 	    log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
@@ -579,7 +579,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     deliver_domain = addr->domain;
     transport_name = addr->transport->name;
 
-    if (  !smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
+    if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
             US"callout")
        || !smtp_get_port(tf->port, addr, &port, US"callout")
        )

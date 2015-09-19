@@ -26,7 +26,6 @@ Arguments:
                which case the function does nothing
   host_af    AF_INET or AF_INET6 for the outgoing IP address
   addr       the mail address being handled (for setting errors)
-  changed    if not NULL, set TRUE if expansion actually changed istring
   interface  point this to the interface
   msg        to add to any error message
 
@@ -36,7 +35,7 @@ Returns:     TRUE on success, FALSE on failure, with error message
 
 BOOL
 smtp_get_interface(uschar *istring, int host_af, address_item *addr,
-  BOOL *changed, uschar **interface, uschar *msg)
+  uschar **interface, uschar *msg)
 {
 const uschar * expint;
 uschar *iface;
@@ -53,8 +52,6 @@ if (expint == NULL)
       "option for %s: %s", msg, expand_string_message);
   return FALSE;
   }
-
-if (changed != NULL) *changed = expint != istring;
 
 while (isspace(*expint)) expint++;
 if (*expint == 0) return TRUE;

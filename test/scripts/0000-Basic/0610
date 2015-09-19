@@ -1,0 +1,33 @@
+# retry: transport with fixed interface
+# Exim test configuration 0610
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+exim -bs
+MAIL FROM:<t1@dustyshoes.tld>
+RCPT TO:<fred@anotherone.tld>
+DATA
+This is a test message.
+.
+RSET
+MAIL FROM:<t2@dustybelt.tld>
+RCPT TO:<fred@anotherone.tld>
+DATA
+Subject: second
+
+This is a second test message.
+.
+QUIT
+****
+#
+#
+exim -qq
+****
+#
+# Should get two separate retry records.
+dump retry
+#
+#
+killdaemon
+no_msglog_check
