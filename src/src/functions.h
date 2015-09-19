@@ -374,7 +374,7 @@ extern int     smtp_sock_connect(host_item *, int, int, uschar *,
 extern int     smtp_feof(void);
 extern int     smtp_ferror(void);
 extern uschar *smtp_get_connection_info(void);
-extern BOOL    smtp_get_interface(uschar *, int, address_item *, BOOL *,
+extern BOOL    smtp_get_interface(uschar *, int, address_item *,
                  uschar **, uschar *);
 extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(void);
