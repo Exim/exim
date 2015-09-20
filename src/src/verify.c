@@ -3600,7 +3600,7 @@ cache the result in permanent memory. */
 
 else
   {
-  uint ttl = UINT_MAX;
+  uint ttl = 3600;
 
   store_pool = POOL_PERM;
 
@@ -3633,7 +3633,10 @@ else
 
   Quite apart from one A6 RR generating multiple addresses, there are DNS
   lists that return more than one A record, so we must handle multiple
-  addresses generated in that way as well. */
+  addresses generated in that way as well.
+
+  Mark the cache entry with the "now" plus the minimum of the address TTLs,
+  or some suitably far-future time if none were found. */
 
   if (cb->rc == DNS_SUCCEED)
     {
