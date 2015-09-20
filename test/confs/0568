@@ -15,7 +15,6 @@ gecos_name = CALLER_NAME
 acl_smtp_rcpt = check_rcpt
 acl_smtp_data = check_data
 acl_not_smtp  = check_data
-acl_smtp_mime = check_mime
 
 
 # ----- ACL -----
