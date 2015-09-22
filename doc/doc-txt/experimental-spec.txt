@@ -480,6 +480,7 @@ in your Local/Makefile.
 
 DCC Support
 --------------------------------------------------------------
+Distributed Checksum Clearinghouse; http://www.rhyolite.com/dcc/
 
 *) Building exim
 
