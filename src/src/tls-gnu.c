@@ -56,7 +56,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #else
 # undef  SUPPORT_CA_DIR
 #endif
-#if GNUTLS_VERSION_NUMBER >= 0x030314
+#if GNUTLS_VERSION_NUMBER >= 0x030014
 # define SUPPORT_SYSDEFAULT_CABUNDLE
 #endif
 
