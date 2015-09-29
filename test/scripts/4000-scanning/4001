@@ -1,5 +1,5 @@
 # content scan interface: f-protd
-#
+need_ipv4
 munge loopback
 #
 server PORT_S

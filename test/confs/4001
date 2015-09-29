@@ -9,7 +9,7 @@ log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 
-av_scanner = f-protd : localhost PORT_S
+av_scanner = f-protd : localhost4 PORT_S
 
 # ----- Main settings -----
 
