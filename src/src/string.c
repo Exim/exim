@@ -717,8 +717,9 @@ uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
 va_start(ap, format);
 if (!string_vformat(buffer, sizeof(buffer), format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "string_sprintf expansion was longer than " SIZE_T_FMT " (%s)",
-    sizeof(buffer), format);
+    "string_sprintf expansion was longer than " SIZE_T_FMT
+    "; format string was (%s)\nexpansion started '%.32s'",
+    sizeof(buffer), format, buffer);
 va_end(ap);
 return string_copy(buffer);
 }
