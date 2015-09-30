@@ -11,6 +11,7 @@ gecos_name = CALLER_NAME
 # ----- Main settings -----
 
 trusted_users = CALLER
+disable_ipv6
 
 acl_smtp_rcpt = check_rcpt
 acl_not_smtp = check_sndr

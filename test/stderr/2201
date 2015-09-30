@@ -193,7 +193,6 @@ trusted user
 admin user
 ppppp daemon_smtp_port overridden by -oX:
 ppppp   <: 1225
-ppppp listening on all interfaces (IPv6) port 1225
 ppppp listening on all interfaces (IPv4) port 1225
 ppppp pid written to TESTSUITE/spool/exim-daemon.pid
 ppppp LOG: MAIN

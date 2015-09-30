@@ -1,4 +1,5 @@
 # query-style lookup in domains, local_parts, senders
+need_ipv4
 munge debug_pid
 exim -d -bt test.ex@test.ex unknown@test.ex
 ****
