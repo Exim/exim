@@ -348,7 +348,7 @@ start = time(NULL);
          || sd->retry <= 0
 	 )
 	break;
-      DEBUG(D_acl) debug_printf("sspamd: erver %s: retry conn\n", sd->hostspec);
+      DEBUG(D_acl) debug_printf("spamd: server %s: retry conn\n", sd->hostspec);
       while (sd->retry > 0) sd->retry = sleep(sd->retry);
       }
     if (spamd_sock >= 0)
@@ -397,7 +397,7 @@ if (sd->is_rspamd)
   if ((authid = expand_string(US"$authenticated_id")) != NULL && *authid != '\0')
     req_str = string_sprintf("%sUser: %s\r\n", req_str, authid);
   req_str = string_sprintf("%s\r\n", req_str);
-  wrote = send(spamd_sock, req_str, Ustrlen(req_str), 0); 
+  wrote = send(spamd_sock, req_str, Ustrlen(req_str), 0);
   }
 else
   {				/* spamassassin variant */
