@@ -150,7 +150,6 @@ Return value:
 int
 socks_sock_connect(host_item * host, int host_af, int port, uschar * interface,
   transport_instance * tb, int timeout)
-
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;

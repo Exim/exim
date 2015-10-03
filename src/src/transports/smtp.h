@@ -111,8 +111,8 @@ extern int     smtp_auth(uschar *, unsigned, address_item *, host_item *,
 extern BOOL    smtp_mail_auth_str(uschar *, unsigned,
 		 address_item *, smtp_transport_options_block *);
 
-#ifdef EXPERMENTAL_SOCKS
-extern int     socks_sock_connect(host_item, int, int, uschar *,
+#ifdef EXPERIMENTAL_SOCKS
+extern int     socks_sock_connect(host_item *, int, int, uschar *,
 	         transport_instance *, int);
 #endif
 
