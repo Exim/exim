@@ -166,7 +166,7 @@ set_router(router_instance *r, uschar *name, router_instance **ptr, BOOL after)
 BOOL afterthis = FALSE;
 router_instance *rr;
 
-for (rr = routers; rr != NULL; rr = rr->next)
+for (rr = routers; rr; rr = rr->next)
   {
   if (Ustrcmp(name, rr->name) == 0)
     {
@@ -176,7 +176,7 @@ for (rr = routers; rr != NULL; rr = rr->next)
   if (rr == r) afterthis = TRUE;
   }
 
-if (rr == NULL)
+if (!rr)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "new_router \"%s\" not found for \"%s\" router", name, r->name);
 
@@ -212,7 +212,7 @@ readconf_driver_init(US"router",
   optionlist_routers,                 /* generic options */
   optionlist_routers_size);
 
-for (r = routers; r != NULL; r = r->next)
+for (r = routers; r; r = r->next)
   {
   uschar *s = r->self;
 
@@ -277,12 +277,8 @@ for (r = routers; r != NULL; r = r->next)
   if (r->pass_router_name != NULL)
     set_router(r, r->pass_router_name, &(r->pass_router), TRUE);
 
-  DEBUG(D_route) {
-      if (r->dsn_lasthop == FALSE)
-        debug_printf("DSN: %s propagating DSN\n", r->name);
-      else
-        debug_printf("DSN: %s lasthop set\n", r->name);
-      }
+  DEBUG(D_route) debug_printf("DSN: %s %s\n", r->name,
+	r->dsn_lasthop ? "lasthop set" : "propagating DSN");
   }
 }
 
@@ -301,8 +297,8 @@ void
 route_tidyup(void)
 {
 router_instance *r;
-for (r = routers; r != NULL; r = r->next)
-  if (r->info->tidyup != NULL) (r->info->tidyup)(r);
+for (r = routers; r; r = r->next)
+  if (r->info->tidyup) (r->info->tidyup)(r);
 }
 
 
@@ -330,8 +326,7 @@ uschar *prefix;
 const uschar *listptr = prefixes;
 uschar prebuf[64];
 
-while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf)))
-       != NULL)
+while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf))))
   {
   int plen = Ustrlen(prefix);
   if (prefix[0] == '*')
@@ -375,8 +370,7 @@ uschar *suffix;
 const uschar *listptr = suffixes;
 uschar sufbuf[64];
 
-while ((suffix = string_nextinlist(&listptr, &sep, sufbuf, sizeof(sufbuf)))
-     != NULL)
+while ((suffix = string_nextinlist(&listptr, &sep, sufbuf, sizeof(sufbuf))))
   {
   int slen = Ustrlen(suffix);
   if (suffix[slen-1] == '*')
@@ -428,42 +422,33 @@ route_check_dls(uschar *rname, uschar *type, const uschar *list,
   tree_node **anchorptr, unsigned int *cache_bits, int listtype,
   const uschar *domloc, const uschar **ldata, BOOL caseless, uschar **perror)
 {
-int rc;
-
-if (list == NULL) return OK;   /* Empty list always succeeds */
+if (!list) return OK;   /* Empty list always succeeds */
 
 DEBUG(D_route) debug_printf("checking %s\n", type);
 
 /* The domain and local part use the same matching function, whereas sender
 has its own code. */
 
-if (domloc != NULL)
-  {
-  rc = match_isinlist(domloc, &list, 0, anchorptr, cache_bits, listtype,
-    caseless, ldata);
-  }
-else
-  {
-  uschar *address = (sender_address == NULL)? US"" : sender_address;
-  rc = match_address_list(address, TRUE, TRUE, &list, cache_bits, -1, 0,
-    CUSS &sender_data);
-  }
-
-switch(rc)
+switch(domloc
+  ? match_isinlist(domloc, &list, 0, anchorptr, cache_bits, listtype,
+    caseless, ldata)
+  : match_address_list(sender_address ? sender_address : US"",
+    TRUE, TRUE, &list, cache_bits, -1, 0, CUSS &sender_data)
+      )
   {
   case OK:
-  return OK;
+    return OK;
 
   case FAIL:
-  *perror = string_sprintf("%s router skipped: %s mismatch", rname, type);
-  DEBUG(D_route) debug_printf("%s\n", *perror);
-  return SKIP;
+    *perror = string_sprintf("%s router skipped: %s mismatch", rname, type);
+    DEBUG(D_route) debug_printf("%s\n", *perror);
+    return SKIP;
 
   default:      /* Paranoia, and keeps compilers happy */
   case DEFER:
-  *perror = string_sprintf("%s check lookup or other defer", type);
-  DEBUG(D_route) debug_printf("%s\n", *perror);
-  return DEFER;
+    *perror = string_sprintf("%s check lookup or other defer", type);
+    DEBUG(D_route) debug_printf("%s\n", *perror);
+    return DEFER;
   }
 }
 
@@ -510,9 +495,9 @@ uschar *sp = rp + 1;
 DEBUG(D_route) debug_printf("route_check_access(%s,%d,%d,%o)\n", path,
   (int)uid, (int)gid, bits);
 
-if (rp == NULL) return FALSE;
+if (!rp) return FALSE;
 
-while ((slash = Ustrchr(sp, '/')) != NULL)
+while ((slash = Ustrchr(sp, '/')))
   {
   *slash = 0;
   DEBUG(D_route) debug_printf("stat %s\n", rp);
@@ -585,7 +570,7 @@ const uschar *listptr;
 uschar *check;
 uschar buffer[1024];
 
-if (s == NULL) return OK;
+if (!s) return OK;
 
 DEBUG(D_route) debug_printf("checking require_files\n");
 
@@ -598,7 +583,7 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
   struct stat statbuf;
   uschar *ss = expand_string(check);
 
-  if (ss == NULL)
+  if (!ss)
     {
     if (expand_string_forcedfail) continue;
     *perror = string_sprintf("failed to expand \"%s\" for require_files: %s",
@@ -900,7 +885,7 @@ because that doesn't have the prefix or suffix stripped. A bit of massaging is
 required. Also, we only use the match cache for local parts that have not had
 a prefix or suffix stripped. */
 
-if (addr->prefix == NULL && addr->suffix == NULL)
+if (!addr->prefix && !addr->suffix)
   {
   localpart_cache = addr->localpart_cache;
   check_local_part = addr->cc_local_part;
@@ -909,9 +894,9 @@ else
   {
   localpart_cache = NULL;
   check_local_part = string_copy(addr->cc_local_part);
-  if (addr->prefix != NULL)
+  if (addr->prefix)
     check_local_part += Ustrlen(addr->prefix);
-  if (addr->suffix != NULL)
+  if (addr->suffix)
     check_local_part[Ustrlen(check_local_part) - Ustrlen(addr->suffix)] = 0;
   }
 
@@ -947,10 +932,10 @@ check_local_user before any subsequent expansions are done. Otherwise, $home
 could mean different things for different options, which would be extremely
 confusing. */
 
-if (r->router_home_directory != NULL)
+if (r->router_home_directory)
   {
   uschar *router_home = expand_string(r->router_home_directory);
-  if (router_home == NULL)
+  if (!router_home)
     {
     if (!expand_string_forcedfail)
       {
@@ -992,7 +977,7 @@ if ((rc = check_files(r->require_files, perror)) != OK)
 
 /* Now the general condition test. */
 
-if (r->condition != NULL)
+if (r->condition)
   {
   DEBUG(D_route) debug_printf("checking \"condition\"\n");
   if (!expand_check_condition(r->condition, r->name, US"router"))
@@ -1011,42 +996,44 @@ if (r->condition != NULL)
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 /* check if a specific Brightmail AntiSpam rule fired on the message */
-if (r->bmi_rule != NULL) {
+if (r->bmi_rule)
+  {
   DEBUG(D_route) debug_printf("checking bmi_rule\n");
-  if (bmi_check_rule(bmi_base64_verdict, r->bmi_rule) == 0) {
-    /* none of the rules fired */
+  if (bmi_check_rule(bmi_base64_verdict, r->bmi_rule) == 0)
+    {    /* none of the rules fired */
     DEBUG(D_route)
       debug_printf("%s router skipped: none of bmi_rule rules fired\n", r->name);
     return SKIP;
-  };
-};
+    }
+  }
 
 /* check if message should not be delivered */
-if (r->bmi_dont_deliver) {
-  if (bmi_deliver == 1) {
-    DEBUG(D_route)
-      debug_printf("%s router skipped: bmi_dont_deliver is FALSE\n", r->name);
-    return SKIP;
-  };
-};
+if (r->bmi_dont_deliver && bmi_deliver == 1)
+  {
+  DEBUG(D_route)
+    debug_printf("%s router skipped: bmi_dont_deliver is FALSE\n", r->name);
+  return SKIP;
+  }
 
 /* check if message should go to an alternate location */
-if (r->bmi_deliver_alternate) {
-  if ((bmi_deliver == 0) || (bmi_alt_location == NULL)) {
-    DEBUG(D_route)
-      debug_printf("%s router skipped: bmi_deliver_alternate is FALSE\n", r->name);
-    return SKIP;
-  };
-};
+if (  r->bmi_deliver_alternate
+   && (bmi_deliver == 0 || !bmi_alt_location)
+   )
+  {
+  DEBUG(D_route)
+    debug_printf("%s router skipped: bmi_deliver_alternate is FALSE\n", r->name);
+  return SKIP;
+  }
 
 /* check if message should go to default location */
-if (r->bmi_deliver_default) {
-  if ((bmi_deliver == 0) || (bmi_alt_location != NULL)) {
-    DEBUG(D_route)
-      debug_printf("%s router skipped: bmi_deliver_default is FALSE\n", r->name);
-    return SKIP;
-  };
-};
+if (  r->bmi_deliver_default
+   && (bmi_deliver == 0 || bmi_alt_location)
+   )
+  {
+  DEBUG(D_route)
+    debug_printf("%s router skipped: bmi_deliver_default is FALSE\n", r->name);
+  return SKIP;
+  }
 #endif
 
 /* All the checks passed. */
@@ -1103,11 +1090,11 @@ if (!cache_set)
   {
   int i = 0;
 
-  if (return_uid != NULL && (isdigit(*s) || *s == '-') &&
+  if (return_uid && (isdigit(*s) || *s == '-') &&
        s[Ustrspn(s+1, "0123456789")+1] == 0)
     {
     *return_uid = (uid_t)Uatoi(s);
-    if (pw != NULL) *pw = NULL;
+    if (pw) *pw = NULL;
     return TRUE;
     }
 
@@ -1127,12 +1114,12 @@ if (!cache_set)
   else for (;;)
     {
     errno = 0;
-    if ((lastpw = getpwnam(CS s)) != NULL) break;
+    if ((lastpw = getpwnam(CS s))) break;
     if (++i > finduser_retries) break;
     sleep(1);
     }
 
-  if (lastpw != NULL)
+  if (lastpw)
     {
     pwcopy.pw_uid = lastpw->pw_uid;
     pwcopy.pw_gid = lastpw->pw_gid;
@@ -1146,26 +1133,21 @@ if (!cache_set)
     lastpw = &pwcopy;
     }
 
-  else DEBUG(D_uid)
-    {
-    if (errno != 0) debug_printf("getpwnam(%s) failed: %s\n", s,
-      strerror(errno));
-    }
+  else DEBUG(D_uid) if (errno != 0)
+    debug_printf("getpwnam(%s) failed: %s\n", s, strerror(errno));
   }
 
-if (lastpw == NULL)
+if (!lastpw)
   {
   DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
   return FALSE;
   }
-else
-  {
-  DEBUG(D_uid) debug_printf("getpwnam() succeeded uid=%d gid=%d\n",
-    lastpw->pw_uid, lastpw->pw_gid);
-  }
 
-if (return_uid != NULL) *return_uid = lastpw->pw_uid;
-if (pw != NULL) *pw = lastpw;
+DEBUG(D_uid) debug_printf("getpwnam() succeeded uid=%d gid=%d\n",
+    lastpw->pw_uid, lastpw->pw_gid);
+
+if (return_uid) *return_uid = lastpw->pw_uid;
+if (pw) *pw = lastpw;
 
 return TRUE;
 }
@@ -1203,7 +1185,7 @@ if ((isdigit(*s) || *s == '-') && s[Ustrspn(s+1, "0123456789")+1] == 0)
 
 for (;;)
   {
-  if ((gr = getgrnam(CS s)) != NULL)
+  if ((gr = getgrnam(CS s)))
     {
     *return_gid = gr->gr_gid;
     return TRUE;
@@ -1242,7 +1224,7 @@ route_find_expanded_user(uschar *string, uschar *driver_name,
 {
 uschar *user = expand_string(string);
 
-if (user == NULL)
+if (!user)
   {
   *errmsg = string_sprintf("Failed to expand user string \"%s\" for the "
     "%s %s: %s", string, driver_name, driver_type, expand_string_message);
@@ -1284,7 +1266,7 @@ route_find_expanded_group(uschar *string, uschar *driver_name, uschar *driver_ty
 BOOL yield = TRUE;
 uschar *group = expand_string(string);
 
-if (group == NULL)
+if (!group)
   {
   *errmsg = string_sprintf("Failed to expand group string \"%s\" for the "
     "%s %s: %s", string, driver_name, driver_type, expand_string_message);
@@ -1347,7 +1329,7 @@ from the original address' parent, if present, otherwise unset. */
 *parent = *addr;
 parent->child_count = 2;
 parent->prop.errors_address =
-  (addr->parent == NULL)? NULL : addr->parent->prop.errors_address;
+  addr->parent ? addr->parent->prop.errors_address : NULL;
 
 /* The routed address gets a new parent. */
 
@@ -1394,8 +1376,7 @@ delivered. If so, we take it off the relevant queue so that it isn't delivered
 again. Otherwise, it was an alias or something, and the addresses it generated
 are handled in the normal way. */
 
-if (addr->transport != NULL &&
-    tree_search(tree_nonrecipients, addr->unique) != NULL)
+if (addr->transport && tree_search(tree_nonrecipients, addr->unique))
   {
   DEBUG(D_route)
     debug_printf("\"unseen\" delivery previously done - discarded\n");
@@ -1453,8 +1434,7 @@ HDEBUG(D_route)
 encounters an error. If the address has start_router set, we begin from there
 instead of at the first router. */
 
-for (r = (addr->start_router == NULL)? routers : addr->start_router;
-     r != NULL; r = nextr)
+for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   {
   uschar *error;
   struct passwd *pw = NULL;
@@ -1493,7 +1473,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
   continally adding to an address, for example), put a long stop counter on
   the number of parents. */
 
-  for (parent = addr->parent; parent != NULL; parent = parent->parent)
+  for (parent = addr->parent; parent; parent = parent->parent)
     {
     if (parent->router == r)
       {
@@ -1547,7 +1527,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
   and setting the prefix. Skip the router if the prefix doesn't match,
   unless the prefix is optional. */
 
-  if (r->prefix != NULL)
+  if (r->prefix)
     {
     int plen = route_check_prefix(addr->local_part, r->prefix);
     if (plen > 0)
@@ -1566,7 +1546,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
   /* Handle any configured suffix likewise. */
 
-  if (r->suffix != NULL)
+  if (r->suffix)
     {
     int slen = route_check_suffix(addr->local_part, r->suffix);
     if (slen > 0)
@@ -1613,11 +1593,11 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
   success, the string is attached to the address for all subsequent processing.
   */
 
-  if (r->address_data != NULL)
+  if (r->address_data)
     {
     DEBUG(D_route) debug_printf("processing address_data\n");
     deliver_address_data = expand_string(r->address_data);
-    if (deliver_address_data == NULL)
+    if (!deliver_address_data)
       {
       if (expand_string_forcedfail)
         {
@@ -1660,7 +1640,7 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
   clearflag(addr, af_local_host_removed);
 
-  if (pw != NULL)
+  if (pw)
     {
     pwcopy.pw_name = CS string_copy(US pw->pw_name);
     pwcopy.pw_uid = pw->pw_uid;
@@ -1673,10 +1653,10 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
   /* Run the router, and handle the consequences. */
 
-/* ... but let us check on DSN before. If this should be the last hop for DSN
-   set flag
-*/
-  if ((r->dsn_lasthop == TRUE) && ((addr->dsn_flags & rf_dsnlasthop) == 0))
+  /* ... but let us check on DSN before. If this should be the last hop for DSN
+  set flag. */
+
+  if (r->dsn_lasthop && !(addr->dsn_flags & rf_dsnlasthop))
   {
     addr->dsn_flags |= rf_dsnlasthop;
     HDEBUG(D_route) debug_printf("DSN: last hop for %s\n", addr->address);
@@ -1754,16 +1734,16 @@ prematurely, either because a router succeeded, or because of some special
 router response. Note that FAIL errors and errors detected before actually
 running a router go direct to ROUTE_EXIT from code above. */
 
-if (r == NULL)
+if (!r)
   {
   HDEBUG(D_route) debug_printf("no more routers\n");
-  if (addr->message == NULL)
+  if (!addr->message)
     {
     uschar *message = US"Unrouteable address";
-    if (addr->router != NULL && addr->router->cannot_route_message != NULL)
+    if (addr->router && addr->router->cannot_route_message)
       {
       uschar *expmessage = expand_string(addr->router->cannot_route_message);
-      if (expmessage == NULL)
+      if (!expmessage)
         {
         if (!expand_string_forcedfail)
           log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
@@ -1816,23 +1796,23 @@ networking, so it is included in the binary only if requested. */
 
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
 
-if (r->translate_ip_address != NULL)
+if (r->translate_ip_address)
   {
   int rc;
   int old_pool = store_pool;
   host_item *h;
-  for (h = addr->host_list; h != NULL; h = h->next)
+  for (h = addr->host_list; h; h = h->next)
     {
     uschar *newaddress;
     uschar *oldaddress, *oldname;
 
-    if (h->address == NULL) continue;
+    if (!h->address) continue;
 
     deliver_host_address = h->address;
     newaddress = expand_string(r->translate_ip_address);
     deliver_host_address = NULL;
 
-    if (newaddress == NULL)
+    if (!newaddress)
       {
       if (expand_string_forcedfail) continue;
       addr->basic_errno = ERRNO_EXPANDFAIL;
@@ -1881,11 +1861,8 @@ if (yield != OK) goto ROUTE_EXIT;
 
 /* Debugging output recording a successful routing */
 
-HDEBUG(D_route)
-  {
-  debug_printf("routed by %s router%s\n", r->name,
+HDEBUG(D_route) debug_printf("routed by %s router%s\n", r->name,
     unseen? " (unseen)" : "");
-  }
 
 DEBUG(D_route)
   {
@@ -1895,13 +1872,13 @@ DEBUG(D_route)
   debug_printf("  transport: %s\n", (addr->transport == NULL)?
     US"<none>" : addr->transport->name);
 
-  if (addr->prop.errors_address != NULL)
+  if (addr->prop.errors_address)
     debug_printf("  errors to %s\n", addr->prop.errors_address);
 
-  for (h = addr->host_list; h != NULL; h = h->next)
+  for (h = addr->host_list; h; h = h->next)
     {
     debug_printf("  host %s", h->name);
-    if (h->address != NULL) debug_printf(" [%s]", h->address);
+    if (h->address) debug_printf(" [%s]", h->address);
     if (h->mx >= 0) debug_printf(" MX=%d", h->mx);
       else if (h->mx != MX_NONE) debug_printf(" rgroup=%d", h->mx);
     if (h->port != PORT_NONE) debug_printf(" port=%d", h->port);
@@ -1914,7 +1891,7 @@ DEBUG(D_route)
 the "unseen" option (ignore if there are no further routers). */
 
 addr->message = NULL;
-if (unseen && r->next != NULL)
+if (unseen && r->next)
   route_unseen(r->name, addr, paddr_local, paddr_remote, addr_new);
 
 /* Unset the address expansions, and return the final result. */
