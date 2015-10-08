@@ -84,6 +84,8 @@ optionlist optionlist_transports[] = {
                  (void *)offsetof(transport_instance, home_dir) },
   { "initgroups",       opt_bool|opt_public,
                  (void *)offsetof(transport_instance, initgroups) },
+  { "max_parallel",     opt_stringptr|opt_public,
+                 (void *)offsetof(transport_instance, max_parallel) },
   { "message_size_limit", opt_stringptr|opt_public,
                  (void *)offsetof(transport_instance, message_size_limit) },
   { "rcpt_include_affixes", opt_bool|opt_public,

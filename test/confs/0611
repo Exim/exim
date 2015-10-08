@@ -1,0 +1,68 @@
+# Exim test configuration 0611
+# max_parallel on transport
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+queue_run_in_order
+log_selector = +received_recipients
+
+acl_smtp_rcpt = accept ${if eq {SERVER}{server} {delay = 2s}}
+
+# ----- Routers -----
+
+begin routers
+
+server:
+  condition = ${if eq {SERVER}{server} {yes}{no}}
+  driver = redirect
+  data = :blackhole:
+
+rmt_client:
+  local_parts =	a:b:c
+  driver =	manualroute
+  route_list =	* 127.0.0.1
+  self =	send
+  transport =	smtp
+
+lcl_client:
+  local_parts = x:y:z
+  driver =	accept
+  transport =	pipe
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver =	smtp
+  port =	PORT_D
+  max_rcpt =	1
+  connection_max_messages = 1
+  max_parallel = 2
+
+pipe:
+  driver =	pipe
+  command =	"sleep 2; cat > /dev/null"
+  use_shell =	true
+  max_parallel = 1
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,1h,10m
+
+
+# End

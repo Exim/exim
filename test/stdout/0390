@@ -52,6 +52,7 @@ headers_remove =
 headers_rewrite = 
 home_directory = 
 no_initgroups
+max_parallel = 
 message_size_limit = 
 no_rcpt_include_affixes
 retry_use_local_part
@@ -106,6 +107,7 @@ headers_remove =
 headers_rewrite = 
 home_directory = 
 no_initgroups
+max_parallel = 
 message_size_limit = 
 no_rcpt_include_affixes
 retry_use_local_part

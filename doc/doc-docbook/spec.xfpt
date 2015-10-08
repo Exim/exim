@@ -1575,7 +1575,7 @@ If a host is unreachable for a period of time, a number of messages may be
 waiting for it by the time it recovers, and sending them in a single SMTP
 connection is clearly beneficial. Whenever a delivery to a remote host is
 deferred,
-.cindex "hints database"
+.cindex "hints database" "deferred deliveries"
 Exim makes a note in its hints database, and whenever a successful
 SMTP delivery has happened, it looks to see if any other messages are waiting
 for the same host. If any are found, they are sent over the same SMTP
@@ -20539,6 +20539,32 @@ transport, the &[initgroups()]& function is called when running the transport
 to ensure that any additional groups associated with the uid are set up.
 
 
+.new
+.option max_parallel transports integer&!! unset
+.cindex limit "transport parallelism"
+.cindex transport "parallel processes"
+.cindex transport "concurrency limit"
+.cindex "delivery" "parallelism for transport"
+If this option is set and expands to an integer greater than zero
+it limits the number of concurrent runs of the transport.
+The control does not apply to shadow transports.
+
+.cindex "hints database" "transport concurrency control"
+Exim implements this control by means of a hints database in which a record is
+incremented whenever a transport process is beaing created. The record
+is decremented and possibly removed when the process terminates.
+Obviously there is scope for
+records to get left lying around if there is a system or program crash. To
+guard against this, Exim ignores any records that are more than six hours old.
+
+If you use this option, you should also arrange to delete the
+relevant hints database whenever your system reboots. The names of the files
+start with &_misc_& and they are kept in the &_spool/db_& directory. There
+may be one or two files, depending on the type of DBM in use. The same files
+are used for ETRN and smtp transport serialization.
+.wen
+
+
 .option message_size_limit transports string&!! 0
 .cindex "limit" "message size per transport"
 .cindex "size" "of message, limit"
@@ -22436,6 +22462,10 @@ If two messages arrive at almost the same time, and both are routed to a pipe
 delivery, the two pipe transports may be run concurrently. You must ensure that
 any pipe commands you set up are robust against this happening. If the commands
 write to a file, the &%exim_lock%& utility might be of use.
+.new
+Alternatively the &%max_parallel%& option could be used with a value
+of "1" to enforce serialization.
+.wen
 
 
 
@@ -23617,6 +23647,10 @@ relevant hints database whenever your system reboots. The names of the files
 start with &_misc_& and they are kept in the &_spool/db_& directory. There
 may be one or two files, depending on the type of DBM in use. The same files
 are used for ETRN serialization.
+
+.new
+See also the &%max_parallel%& generic transport option.
+.wen
 
 
 .option size_addition smtp integer 1024
@@ -36265,6 +36299,9 @@ Serializing ETRN runs (when &%smtp_etrn_serialize%& is set)
 .next
 Serializing delivery to a specific host (when &%serialize_hosts%& is set in an
 &(smtp)& transport)
+.next
+Limiting the concurrency of specific transports (when &%max_parallel%& is set
+in a transport)
 .endlist
 
 
