@@ -163,7 +163,7 @@ extern void    dscp_list_to_stream(FILE *);
 extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 
 extern void    enq_end(uschar *);
-extern BOOL    enq_start(uschar *);
+extern BOOL    enq_start(uschar *, unsigned);
 #ifdef EXPERIMENTAL_EVENT
 extern uschar *event_raise(uschar *, const uschar *, uschar *);
 #endif

@@ -3532,7 +3532,7 @@ for (cutoff_retry = 0; expired &&
         verify_check_given_host(&ob->serialize_hosts, host) == OK)
       {
       serialize_key = string_sprintf("host-serialize-%s", host->name);
-      if (!enq_start(serialize_key))
+      if (!enq_start(serialize_key, 1))
         {
         DEBUG(D_transport)
           debug_printf("skipping host %s because another Exim process "
