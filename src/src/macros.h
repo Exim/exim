@@ -545,6 +545,7 @@ to conflict with system errno values. */
 #define ERRNO_HRETRY         (-53)   /* Not time for any remote host */
 #define ERRNO_LOCAL_ONLY     (-54)   /* Local-only delivery */
 #define ERRNO_QUEUE_DOMAIN   (-55)   /* Domain in queue_domains */
+#define ERRNO_TRETRY         (-56)   /* Transport concurrency limit */
 
 /* Special actions to take after failure or deferment. */
 
