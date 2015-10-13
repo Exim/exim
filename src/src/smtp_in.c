@@ -4979,7 +4979,7 @@ while (done <= 0)
     /* If ETRN queue runs are to be serialized, check the database to
     ensure one isn't already running. */
 
-    if (smtp_etrn_serialize && !enq_start(etrn_serialize_key))
+    if (smtp_etrn_serialize && !enq_start(etrn_serialize_key, 1))
       {
       smtp_printf("458 Already processing %s\r\n", smtp_cmd_data);
       break;

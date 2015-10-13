@@ -1424,6 +1424,7 @@ transport_instance  transport_defaults = {
     NULL,                     /* remove_headers */
     NULL,                     /* return_path */
     NULL,                     /* debug_string */
+    NULL,                     /* max_parallel */
     NULL,                     /* message_size_limit */
     NULL,                     /* headers_rewrite */
     NULL,                     /* rewrite_rules */

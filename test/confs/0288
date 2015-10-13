@@ -1,4 +1,5 @@
 # Exim test configuration 0288
+# serialize_hosts option on smtp transport
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns

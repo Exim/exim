@@ -1,0 +1,43 @@
+# max_parallel on transport
+need_ipv4
+#
+# Remote transport:
+# preload the spool
+exim -odq a b c
+.
+****
+#
+# a slow server as a test target
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# First and second messages should go, as separate conns due to
+# connection_max_messages, third is deferred
+# as third transport run denied by max_parallel
+exim -q
+****
+#
+#
+# Remaining message on queue should go immediately; no delay
+# associated with retry rules
+exim -q
+****
+killdaemon
+#
+########
+#
+#
+# Local transport:
+# Only one message should go as the transport takes a long
+# time and we set max_parallel=1 to serialize it
+exim y
+****
+exim z
+****
+#
+#
+sleep 3
+#
+# Remaining message on queue should go immediately; no delay
+# associated with retry rules
+exim -q

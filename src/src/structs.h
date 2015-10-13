@@ -171,6 +171,7 @@ typedef struct transport_instance {
   uschar *remove_headers;         /* Remove these headers */
   uschar *return_path;            /* Overriding (rewriting) return path */
   uschar *debug_string;           /* Debugging output */
+  uschar *max_parallel;           /* Number of concurrent instances */
   uschar *message_size_limit;     /* Biggest message this transport handles */
   uschar *headers_rewrite;        /* Rules for rewriting headers */
   rewrite_rule *rewrite_rules;    /* Parsed rewriting rules */
