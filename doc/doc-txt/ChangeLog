@@ -54,6 +54,10 @@ JH/07 Bug 1678: Always record an interface option value, if set,  as part of a
       different interface settings and the retry behaviour needs to be kept
       distinct.
 
+JH/08 Bug 1586: exiqgrep now refuses to run if there are unexpected arguments.
+
+JH/09 Bug 1700: ignore space & tab embedded in base64 during decode.
+
 
 Exim version 4.86
 -----------------
