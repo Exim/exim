@@ -11,7 +11,6 @@ void    dkim_exim_verify_feed(uschar *, int);
 void    dkim_exim_verify_finish(void);
 void    dkim_exim_acl_setup(uschar *);
 uschar *dkim_exim_expand_query(int);
-uschar *dkim_exim_expand_defaults(int);
 
 #define DKIM_ALGO               1
 #define DKIM_BODYLENGTH         2
