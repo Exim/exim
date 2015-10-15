@@ -128,20 +128,22 @@ int base64_decode( unsigned char *dst, int *dlen,
 
     for( i = j = n = 0; i < slen; i++ )
     {
+	unsigned char c = src[i];
+
         if( ( slen - i ) >= 2 &&
-            src[i] == '\r' && src[i + 1] == '\n' )
+            c == '\r' && src[i + 1] == '\n' )
             continue;
 
-        if( src[i] == '\n' )
+        if( c == '\n' || c == ' ' || c == '\t' )
             continue;
 
-        if( src[i] == '=' && ++j > 2 )
+        if( c == '=' && ++j > 2 )
             return( POLARSSL_ERR_BASE64_INVALID_CHARACTER );
 
-        if( src[i] > 127 || base64_dec_map[src[i]] == 127 )
+        if( c > 127 || base64_dec_map[src[i]] == 127 )
             return( POLARSSL_ERR_BASE64_INVALID_CHARACTER );
 
-        if( base64_dec_map[src[i]] < 64 && j != 0 )
+        if( base64_dec_map[c] < 64 && j != 0 )
             return( POLARSSL_ERR_BASE64_INVALID_CHARACTER );
 
         n++;
@@ -160,11 +162,13 @@ int base64_decode( unsigned char *dst, int *dlen,
 
    for( j = 3, n = x = 0, p = dst; i > 0; i--, src++ )
    {
-        if( *src == '\r' || *src == '\n' )
+	unsigned char c = *src;
+
+        if( c == '\r' || c == '\n' || c == ' ' || c == '\t' )
             continue;
 
-        j -= ( base64_dec_map[*src] == 64 );
-        x  = (x << 6) | ( base64_dec_map[*src] & 0x3F );
+        j -= ( base64_dec_map[c] == 64 );
+        x  = (x << 6) | ( base64_dec_map[c] & 0x3F );
 
         if( ++n == 4 )
         {

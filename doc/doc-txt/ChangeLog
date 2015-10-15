@@ -30,6 +30,9 @@ JH/07 Bug 1678: Always record an interface option value, if set,  as part of a
 
 JH/13 Bug 1708: avoid misaligned access in cached lookup.
 
+JH/09 Bug 1700: ignore space & tab embedded in base64 during decode.
+
+
 Exim version 4.86
 -----------------
 JH/01 Bug 1545: The smtp transport option "retry_include_ip_address" is now
