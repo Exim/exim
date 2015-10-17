@@ -44,6 +44,7 @@ if ($^O eq 'darwin') { # aka MacOS X
 };
 
 getopts('hf:r:y:o:s:C:zxlibRca',\%opt);
+if ($ARGV[0]) { &help; exit;}
 if ($opt{h}) { &help; exit;}
 if ($opt{a}) { $eargs = '-bp'; }
 if ($opt{C} && -e $opt{C} && -f $opt{C} && -R $opt{C}) { $eargs .= ' -C '.$opt{C}; }
