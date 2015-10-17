@@ -60,10 +60,10 @@ Returns:   OK if authentication succeeded
 */
 
 int
-auth_call_radius(uschar *s, uschar **errptr)
+auth_call_radius(const uschar *s, uschar **errptr)
 {
 uschar *user;
-uschar *radius_args = s;
+const uschar *radius_args = s;
 int result;
 int sep = 0;
 
