@@ -940,6 +940,9 @@ ZCAT_COMMAND=/usr/bin/zcat
 # RADIUSCLIENT is the radiusclient library; you probably need to add
 #   -lradiusclient to EXTRALIBS.
 #
+# RADIUSCLIENTNEW is the freeradius-client library; you probably need to add
+#   -lfreeradius-client to EXTRALIBS.
+#
 # The API for the radiusclient library was changed at release 0.4.0.
 # Unfortunately, the header file does not define a version number that clients
 # can use to support both the old and new APIs. If you are using version 0.4.0

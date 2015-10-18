@@ -38,7 +38,11 @@ using its original API. At release 0.4.0 the API changed. */
   #if !defined(RADIUS_LIB_RADIUSCLIENT) && !defined(RADIUS_LIB_RADIUSCLIENTNEW)
   #define RADIUS_LIB_RADIUSCLIENT
   #endif
+  #ifdef RADIUS_LIB_RADIUSCLIENTNEW
+  #include <freeradius-client.h>
+  #else
   #include <radiusclient.h>
+  #endif
 #endif
 
 
