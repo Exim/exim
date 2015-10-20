@@ -4800,8 +4800,8 @@ help with this. See the comments in &_src/EDITME_& for details.
 Exim's configuration file is divided into a number of different parts. General
 option settings must always appear at the start of the file. The other parts
 are all optional, and may appear in any order. Each part other than the first
-is introduced by the word &"begin"& followed by the name of the part. The
-optional parts are:
+is introduced by the word &"begin"& followed by at least one literal
+space, and the name of the part. The optional parts are:
 
 .ilist
 &'ACL'&: Access control lists for controlling incoming SMTP mail (see chapter
