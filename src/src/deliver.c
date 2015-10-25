@@ -1929,7 +1929,7 @@ address. This feature is not available for shadow transports. */
 
 if (  !shadowing
    && (  tp->return_output || tp->return_fail_output
-      || tp->log_output || tp->log_fail_output
+      || tp->log_output || tp->log_fail_output || tp->log_defer_output
    )  )
   {
   uschar *error;

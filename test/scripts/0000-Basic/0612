@@ -1,0 +1,6 @@
+# log_defer_output on pipe transport
+#
+exim a
+****
+sleep 1
+no_msglog_check

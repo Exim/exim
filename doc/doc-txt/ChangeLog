@@ -58,6 +58,8 @@ JH/08 Bug 1586: exiqgrep now refuses to run if there are unexpected arguments.
 
 JH/09 Bug 1700: ignore space & tab embedded in base64 during decode.
 
+JH/10 Bug 840: fix log_defer_output option of pipe transport
+
 
 Exim version 4.86
 -----------------
