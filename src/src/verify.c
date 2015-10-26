@@ -1313,8 +1313,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #endif
       (void)close(inblock.sock);
 #ifdef EXPERIMENTAL_EVENT
-      (void) event_raise(addr->transport->event_action,
-			      US"tcp:close", NULL);
+      (void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
 #endif
       }
 
@@ -2004,6 +2003,7 @@ while (addr_new != NULL)
     if (callout > 0)
       {
       host_item *host_list = addr->host_list;
+      transport_instance * tp;
 
       /* Make up some data for use in the case where there is no remote
       transport. */
@@ -2025,9 +2025,9 @@ while (addr_new != NULL)
       transport's options, so as to mimic what would happen if we were really
       sending a message to this address. */
 
-      if (addr->transport != NULL && !addr->transport->info->local)
+      if ((tp = addr->transport) && !tp->info->local)
         {
-        (void)(addr->transport->setup)(addr->transport, addr, &tf, 0, 0, NULL);
+        (void)(tp->setup)(tp, addr, &tf, 0, 0, NULL);
 
         /* If the transport has hosts and the router does not, or if the
         transport is configured to override the router's hosts, we must build a
@@ -2051,7 +2051,7 @@ while (addr_new != NULL)
             {
             log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
               "\"%s\" in %s transport for callout: %s", tf.hosts,
-              addr->transport->name, expand_string_message);
+              tp->name, expand_string_message);
             }
           else
             {
@@ -2078,11 +2078,10 @@ while (addr_new != NULL)
               else
 		{
 		dnssec_domains * dnssec_domains = NULL;
-		if (Ustrcmp(addr->transport->driver_name, "smtp") == 0)
+		if (Ustrcmp(tp->driver_name, "smtp") == 0)
 		  {
 		  smtp_transport_options_block * ob =
-		      (smtp_transport_options_block *)
-			addr->transport->options_block;
+		      (smtp_transport_options_block *) tp->options_block;
 		  dnssec_domains = &ob->dnssec;
 		  }
 
@@ -2291,11 +2290,12 @@ if (allok && addr_local == NULL && addr_remote == NULL)
   }
 
 for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
-  {
-  while (addr_list != NULL)
+  while (addr_list)
     {
     address_item *addr = addr_list;
     address_item *p = addr->parent;
+    transport_instance * tp = addr->transport;
+
     addr_list = addr->next;
 
     fprintf(f, "%s", CS addr->address);
@@ -2309,73 +2309,56 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     if (!testflag(addr, af_pfr))
       {
       tree_node *tnode;
-      if ((tnode = tree_search(tree_duplicates, addr->unique)) != NULL)
+      if ((tnode = tree_search(tree_duplicates, addr->unique)))
         fprintf(f, "   [duplicate, would not be delivered]");
       else tree_add_duplicate(addr->unique, addr);
       }
 
     /* Now show its parents */
 
-    while (p != NULL)
-      {
+    for (p = addr->parent; p; p = p->parent)
       fprintf(f, "\n    <-- %s", p->address);
-      p = p->parent;
-      }
     fprintf(f, "\n  ");
 
     /* Show router, and transport */
 
-    fprintf(f, "router = %s, ", addr->router->name);
-    fprintf(f, "transport = %s\n", (addr->transport == NULL)? US"unset" :
-      addr->transport->name);
+    fprintf(f, "router = %s, transport = %s\n",
+      addr->router->name, tp ? tp->name : US"unset");
 
     /* Show any hosts that are set up by a router unless the transport
     is going to override them; fiddle a bit to get a nice format. */
 
-    if (addr->host_list != NULL && addr->transport != NULL &&
-        !addr->transport->overrides_hosts)
+    if (addr->host_list && tp && !tp->overrides_hosts)
       {
       host_item *h;
       int maxlen = 0;
       int maxaddlen = 0;
-      for (h = addr->host_list; h != NULL; h = h->next)
-        {
+      for (h = addr->host_list; h; h = h->next)
+        {				/* get max lengths of host names, addrs */
         int len = Ustrlen(h->name);
         if (len > maxlen) maxlen = len;
-        len = (h->address != NULL)? Ustrlen(h->address) : 7;
+        len = h->address ? Ustrlen(h->address) : 7;
         if (len > maxaddlen) maxaddlen = len;
         }
-      for (h = addr->host_list; h != NULL; h = h->next)
-        {
-        int len = Ustrlen(h->name);
-        fprintf(f, "  host %s ", h->name);
-        while (len++ < maxlen) fprintf(f, " ");
-        if (h->address != NULL)
-          {
-          fprintf(f, "[%s] ", h->address);
-          len = Ustrlen(h->address);
-          }
-        else if (!addr->transport->info->local)  /* Omit [unknown] for local */
-          {
-          fprintf(f, "[unknown] ");
-          len = 7;
-          }
-        else len = -3;
-        while (len++ < maxaddlen) fprintf(f," ");
-        if (h->mx >= 0) fprintf(f, "MX=%d", h->mx);
+      for (h = addr->host_list; h; h = h->next)
+	{
+	fprintf(f, "  host %-*s ", maxlen, h->name);
+
+	if (h->address)
+	  fprintf(f, "[%s%-*c", h->address, maxaddlen+1 - Ustrlen(h->address), ']');
+	else if (tp->info->local)
+	  fprintf(f, " %-*s ", maxaddlen, "");  /* Omit [unknown] for local */
+	else
+	  fprintf(f, "[%s%-*c", "unknown", maxaddlen+1 - 7, ']');
+
+        if (h->mx >= 0) fprintf(f, " MX=%d", h->mx);
         if (h->port != PORT_NONE) fprintf(f, " port=%d", h->port);
-        if (running_in_test_harness)
-#ifndef DISABLE_DNSSEC
-          fprintf(f, " ad=%s", h->dnssec==DS_YES ? "yes" : "no");
-#else
-          fprintf(f, " ad=no");
-#endif
-        if (h->status == hstatus_unusable) fprintf(f, " ** unusable **");
-        fprintf(f, "\n");
+        if (running_in_test_harness  &&  h->dnssec == DS_YES) fputs(" AD", f);
+        if (h->status == hstatus_unusable) fputs(" ** unusable **", f);
+	fputc('\n', f);
         }
       }
     }
-  }
 
 /* Yield will be DEFER or FAIL if any one address has, only for full_info (which is
 the -bv or -bt case). */

@@ -1,32 +1,32 @@
 x@46.test.ex
   router = r1, transport = t1
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] ad=no
-  host 46.test.ex [V4NET.0.0.4] ad=no
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031]
+  host 46.test.ex [V4NET.0.0.4] 
 x@mx46.test.ex
   router = r1, transport = t1
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46 ad=no
-  host 46.test.ex [V4NET.0.0.4] MX=46 ad=no
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
+  host 46.test.ex [V4NET.0.0.4] MX=46
 x@mx246.test.ex
   router = r1, transport = t1
-  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] MX=10 ad=no
-  host ten-1.test.ex [V4NET.0.0.1] MX=10 ad=no
+  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] MX=10
+  host ten-1.test.ex [V4NET.0.0.1] MX=10
 x@mx4646.test.ex
   router = r1, transport = t1
-  host 46b.test.ex [V6NET:ffff:836f:a00:a:800:200a:c033] MX=46 ad=no
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46 ad=no
-  host 46b.test.ex [V4NET.0.0.5] MX=46 ad=no
-  host 46.test.ex [V4NET.0.0.4] MX=46 ad=no
+  host 46b.test.ex [V6NET:ffff:836f:a00:a:800:200a:c033] MX=46
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
+  host 46b.test.ex [V4NET.0.0.5] MX=46
+  host 46.test.ex [V4NET.0.0.4] MX=46
 x@mx46466.test.ex
   router = r1, transport = t1
-  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] MX=46 ad=no
-  host 46b.test.ex [V6NET:ffff:836f:a00:a:800:200a:c033] MX=46 ad=no
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46 ad=no
-  host 46b.test.ex [V4NET.0.0.5] MX=46 ad=no
-  host 46.test.ex [V4NET.0.0.4] MX=46 ad=no
+  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] MX=46
+  host 46b.test.ex [V6NET:ffff:836f:a00:a:800:200a:c033] MX=46
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
+  host 46b.test.ex [V4NET.0.0.5] MX=46
+  host 46.test.ex [V4NET.0.0.4] MX=46
 x@mx46466b.test.ex
   router = r1, transport = t1
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46 ad=no
-  host 46.test.ex [V4NET.0.0.4] MX=46 ad=no
-  host 46b.test.ex [V6NET:ffff:836f:a00:a:800:200a:c033] MX=47 ad=no
-  host 46b.test.ex [V4NET.0.0.5] MX=47 ad=no
-  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] MX=48 ad=no
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
+  host 46.test.ex [V4NET.0.0.4] MX=46
+  host 46b.test.ex [V6NET:ffff:836f:a00:a:800:200a:c033] MX=47
+  host 46b.test.ex [V4NET.0.0.5] MX=47
+  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] MX=48

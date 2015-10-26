@@ -1,5 +1,7 @@
 # log_defer_output on pipe transport
 #
+#XXX maybe collapse into 0048?
+#
 exim a
 ****
 sleep 1
