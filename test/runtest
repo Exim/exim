@@ -2061,12 +2061,12 @@ if (/^client/ || /^(sudo\s+)?perl\b/)
 # not drop privilege when -C and -D options are present. To run the exim
 # command as root, we use sudo.
 
-elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
+elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+)?\s+(.*)$/)
   {
-  $args = $5;
+  $args = $6;
   my($envset) = (defined $1)? $1      : "";
-  my($sudo)   = (defined $3)? "sudo " : "";
-  my($special)= (defined $4)? $4      : "";
+  my($sudo)   = (defined $3)? "sudo " . (defined $4 ? "-u $4 ":"")  : "";
+  my($special)= (defined $5)? $5      : "";
   $wait_time  = (defined $2)? $2      : 0;
 
   # Return 2 rather than 1 afterwards
@@ -2126,7 +2126,6 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
          "-DEXIM_PATH=$parm_cwd/eximdir/exim$special " .
          "-C $parm_cwd/test-config $args " .
          ">>test-stdout 2>>test-stderr";
-
   # If the command is starting an Exim daemon, we run it in the same
   # way as the "server" command above, that is, we don't want to wait
   # for the process to finish. That happens when "killdaemon" is obeyed later
@@ -3737,6 +3736,7 @@ $0 = "[runtest $testno]";
   close SCRIPT;
 
   # The script has finished. Check the all the output that was generated. The
+  # function returns 0 if all is well, 1 if we should rerun the test (the files
   # function returns 0 if all is well, 1 if we should rerun the test (the files
   # have been updated). It does not return if the user responds Q to a prompt.
 
