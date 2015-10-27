@@ -60,6 +60,9 @@ JH/09 Bug 1700: ignore space & tab embedded in base64 during decode.
 
 JH/10 Bug 840: fix log_defer_output option of pipe transport
 
+JH/11 Bug 830: use same host for all RCPTS of a message, even under
+      hosts_randomize.  This matters a lot when combined with mua_wrapper.
+
 
 Exim version 4.86
 -----------------

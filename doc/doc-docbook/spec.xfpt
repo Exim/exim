@@ -31127,7 +31127,7 @@ In the latter case, the range is tried in strict order.
 
 Elements after the first for Unix sockets, or second for TCP socket,
 are options.
-The supported option are:
+The supported options are:
 .code
 pri=<priority>      Selection priority
 weight=<value>      Selection bias
