@@ -1,0 +1,14 @@
+# manualroute, hosts_randomize and multiple recipients
+#
+#
+exim -z '"Network error" here is expected. We must not get an mua_wrapper fault.'
+****
+#
+1
+exim -bm a b c d
+Subject: test
+
+data
+.
+****
+no_msglog_check

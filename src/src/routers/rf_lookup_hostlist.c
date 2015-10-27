@@ -61,14 +61,13 @@ host, omit it and any subsequent hosts - i.e. treat the list like an ordered
 list of MX hosts. If the first host is the local host, act according to the
 "self" option in the configuration. */
 
-prev = NULL;
-for (h = addr->host_list; h != NULL; h = next_h)
+for (prev = NULL, h = addr->host_list; h; h = next_h)
   {
   const uschar *canonical_name;
-  int rc, len, port;
+  int rc, len, port, mx, sort_key;
 
   next_h = h->next;
-  if (h->address != NULL) { prev = h; continue; }
+  if (h->address) { prev = h; continue; }
 
   DEBUG(D_route|D_host_lookup)
     debug_printf("finding IP address for %s\n", h->name);
@@ -78,8 +77,15 @@ for (h = addr->host_list; h != NULL; h = next_h)
 
   port = host_item_get_port(h);
 
+  /* Store the previous mx and sort_key values, which were assigned in
+  host_build_hostlist and will be overwritten by host_find_bydns. */
+
+  mx = h->mx;
+  sort_key = h->sort_key;
+
   /* If the name ends with "/MX", we interpret it to mean "the list of hosts
-  pointed to by MX records with this name". */
+  pointed to by MX records with this name", and the MX record values override
+  the ordering from host_build_hostlist. */
 
   len = Ustrlen(h->name);
   if (len > 3 && strcmpic(h->name + len - 3, US"/mx") == 0)
@@ -87,6 +93,7 @@ for (h = addr->host_list; h != NULL; h = next_h)
     DEBUG(D_route|D_host_lookup)
       debug_printf("doing DNS MX lookup for %s\n", h->name);
 
+    mx = MX_NONE;
     h->name = string_copyn(h->name, len - 3);
     rc = host_find_bydns(h,
         ignore_target_hosts,
@@ -117,23 +124,23 @@ for (h = addr->host_list; h != NULL; h = next_h)
     {
     BOOL removed;
     DEBUG(D_route|D_host_lookup) debug_printf("doing DNS lookup\n");
-    rc = host_find_bydns(h, ignore_target_hosts, HOST_FIND_BY_A, NULL, NULL,
-      NULL,
-      &rblock->dnssec,			/* domains for request/require */
-      &canonical_name, &removed);
-    if (rc == HOST_FOUND)
+    switch (rc = host_find_bydns(h, ignore_target_hosts, HOST_FIND_BY_A, NULL,
+	NULL, NULL,
+	&rblock->dnssec,			/* domains for request/require */
+	&canonical_name, &removed))
       {
-      if (removed) setflag(addr, af_local_host_removed);
-      }
-    else if (rc == HOST_FIND_FAILED)
-      {
-      if (lookup_type == lk_default)
-        {
-        DEBUG(D_route|D_host_lookup)
-          debug_printf("DNS lookup failed: trying getipnodebyname\n");
-        rc = host_find_byname(h, ignore_target_hosts, HOST_FIND_QUALIFY_SINGLE,
-          &canonical_name, TRUE);
-        }
+      case HOST_FOUND:
+        if (removed) setflag(addr, af_local_host_removed);
+	break;
+      case HOST_FIND_FAILED:
+	if (lookup_type == lk_default)
+	  {
+	  DEBUG(D_route|D_host_lookup)
+	    debug_printf("DNS lookup failed: trying getipnodebyname\n");
+	  rc = host_find_byname(h, ignore_target_hosts, HOST_FIND_QUALIFY_SINGLE,
+	    &canonical_name, TRUE);
+	  }
+	break;
       }
     }
 
@@ -180,12 +187,23 @@ for (h = addr->host_list; h != NULL; h = next_h)
     return DEFER;
     }
 
-  /* Deal with a port setting */
+  /* Deal with the settings that were previously cleared:
+  port, mx and sort_key. */
 
   if (port != PORT_NONE)
     {
     host_item *hh;
     for (hh = h; hh != next_h; hh = hh->next) hh->port = port;
+    }
+
+  if (mx != MX_NONE)
+    {
+    host_item *hh;
+    for (hh = h; hh != next_h; hh = hh->next)
+      {
+      hh->mx = mx;
+      hh->sort_key = sort_key;
+      }
     }
 
   /* A local host gets chopped, with its successors, if there are previous
@@ -194,7 +212,7 @@ for (h = addr->host_list; h != NULL; h = next_h)
 
   if (rc == HOST_FOUND_LOCAL && !self_send)
     {
-    if (prev != NULL)
+    if (prev)
       {
       DEBUG(D_route)
         {
