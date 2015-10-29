@@ -7321,7 +7321,7 @@ The TIME parameter (also a number of seconds) is passed to the server to
 set a server-side limit on the time taken to complete a search.
 
 The SERVERS parameter allows you to specify an alternate list of ldap servers
-to use for an individual lookup.  The global ldap_servers option provides a
+to use for an individual lookup.  The global &%ldap_default_servers%& option provides a
 default list of ldap servers, and a single lookup can specify a single ldap
 server to use.  But when you need to do a lookup with a list of servers that is
 different than the default list (maybe different order, maybe a completely
