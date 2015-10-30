@@ -1608,8 +1608,9 @@ if (!route_findgroup(US CONFIGURE_GROUPNAME, &config_gid))
   }
 #endif
 
-/* In the Cygwin environment, some initialization needs doing. It is fudged
-in by means of this macro. */
+/* In the Cygwin environment, some initialization used to need doing.
+It was fudged in by means of this macro; now no longer but we'll leave
+it in case of others. */
 
 #ifdef OS_INIT
 OS_INIT
