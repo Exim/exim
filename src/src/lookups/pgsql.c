@@ -413,12 +413,6 @@ return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,
 
 /* The characters that always need to be quoted (with backslash) are newline,
 tab, carriage return, backspace, backslash itself, and the quote characters.
-Percent and underscore are only special in contexts where they can be wild
-cards, and this isn't usually the case for data inserted from messages, since
-that isn't likely to be treated as a pattern of any kind. However, pgsql seems
-to allow escaping "on spec". If you use something like "where id="ab\%cd" it
-does treat the string as "ab%cd". So we can safely quote percent and
-underscore. [This is different to MySQL, where you can't do this.]
 
 The original code quoted single quotes as \' which is documented as valid in
 the O'Reilly book "Practical PostgreSQL" (first edition) as an alternative to
@@ -448,7 +442,7 @@ uschar *quoted;
 if (opt != NULL) return NULL;     /* No options recognized */
 
 while ((c = *t++) != 0)
-  if (Ustrchr("\n\t\r\b\'\"\\%_", c) != NULL) count++;
+  if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
 if (count == 0) return s;
 t = quoted = store_get(Ustrlen(s) + count + 1);
@@ -460,7 +454,7 @@ while ((c = *s++) != 0)
     *t++ = '\'';
     *t++ = '\'';
     }
-  else if (Ustrchr("\n\t\r\b\"\\%_", c) != NULL)
+  else if (Ustrchr("\n\t\r\b\"\\", c) != NULL)
     {
     *t++ = '\\';
     switch(c)

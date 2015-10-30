@@ -7537,13 +7537,12 @@ a query is successfully processed. The result of a query may be that no data is
 found, but that is still a successful query. In other words, the list of
 servers provides a backup facility, not a list of different places to look.
 
+.new
 The &%quote_mysql%&, &%quote_pgsql%&, and &%quote_oracle%& expansion operators
 convert newline, tab, carriage return, and backspace to \n, \t, \r, and \b
 respectively, and the characters single-quote, double-quote, and backslash
-itself are escaped with backslashes. The &%quote_pgsql%& expansion operator, in
-addition, escapes the percent and underscore characters. This cannot be done
-for MySQL because these escapes are not recognized in contexts where these
-characters are not special.
+itself are escaped with backslashes.
+.wen
 
 .section "Specifying the server in the query" "SECTspeserque"
 For MySQL and PostgreSQL lookups (but not currently for Oracle and InterBase),

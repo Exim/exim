@@ -63,6 +63,9 @@ JH/10 Bug 840: fix log_defer_output option of pipe transport
 JH/11 Bug 830: use same host for all RCPTS of a message, even under
       hosts_randomize.  This matters a lot when combined with mua_wrapper.
 
+JH/12 Bug 1706: percent and underbar characters are no longer excaped by the
+      ${quote_pgsql:<string>} operator.
+
 
 Exim version 4.86
 -----------------
