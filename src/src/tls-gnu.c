@@ -1907,7 +1907,7 @@ if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
   gnutls_dh_set_prime_bits(state->session, dh_min_bits);
   }
 
-/* Stick to the old behaviour for compatibility if tls_verify_certificates is 
+/* Stick to the old behaviour for compatibility if tls_verify_certificates is
 set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 

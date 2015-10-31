@@ -166,7 +166,7 @@ as long as the maximum path length. */
 # define BIG_BUFFER_SIZE 16384
 #endif
 
-/* header size of pipe content 
+/* header size of pipe content
    currently: char id, char subid, char[5] length */
 #define PIPE_HEADER_SIZE 7
 

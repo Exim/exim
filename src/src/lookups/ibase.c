@@ -577,7 +577,7 @@ static lookup_info _lookup_info = {
 #ifdef DYNLOOKUP
 #define ibase_lookup_module_info _lookup_module_info
 #endif
- 
+
 static lookup_info *_lookup_list[] = { &_lookup_info };
 lookup_module_info ibase_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 

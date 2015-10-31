@@ -241,9 +241,9 @@ BIO * bp = BIO_new(BIO_s_mem());
 if (!bp) return badalloc();
 
 if (X509_print_ex(bp, (X509 *)cert, 0,
-  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL | 
-  X509_FLAG_NO_SIGNAME | X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY | 
-  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS | 
+  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL |
+  X509_FLAG_NO_SIGNAME | X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY |
+  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS |
   /* X509_FLAG_NO_SIGDUMP is the missing one */
   X509_FLAG_NO_AUX) == 1)
   {
@@ -267,10 +267,10 @@ BIO * bp = BIO_new(BIO_s_mem());
 if (!bp) return badalloc();
 
 if (X509_print_ex(bp, (X509 *)cert, 0,
-  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL | 
+  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL |
   /* X509_FLAG_NO_SIGNAME is the missing one */
-  X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY | 
-  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS | 
+  X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY |
+  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS |
   X509_FLAG_NO_SIGDUMP | X509_FLAG_NO_AUX) == 1)
   {
   long len = BIO_get_mem_data(bp, &cp);
@@ -482,19 +482,19 @@ for (j = 0; j < (int)n; j++) sprintf(CS cp+2*j, "%02X", md[j]);
 return(cp);
 }
 
-uschar * 
+uschar *
 tls_cert_fprt_md5(void * cert)
 {
 return fingerprint((X509 *)cert, EVP_md5());
 }
 
-uschar * 
+uschar *
 tls_cert_fprt_sha1(void * cert)
 {
 return fingerprint((X509 *)cert, EVP_sha1());
 }
 
-uschar * 
+uschar *
 tls_cert_fprt_sha256(void * cert)
 {
 return fingerprint((X509 *)cert, EVP_sha256());

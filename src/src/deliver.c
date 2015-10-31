@@ -3060,7 +3060,7 @@ while (!done)
 
   /* copy and read header */
   memcpy(header, ptr, PIPE_HEADER_SIZE);
-  header[PIPE_HEADER_SIZE] = '\0'; 
+  header[PIPE_HEADER_SIZE] = '\0';
   id = header[0];
   subid = header[1];
   required = Ustrtol(header + 2, &endc, 10) + PIPE_HEADER_SIZE;     /* header + data */
@@ -3073,7 +3073,7 @@ while (!done)
     }
 
   DEBUG(D_deliver)
-    debug_printf("header read  id:%c,subid:%c,size:%s,required:%d,remaining:%d,unfinished:%d\n", 
+    debug_printf("header read  id:%c,subid:%c,size:%s,required:%d,remaining:%d,unfinished:%d\n",
                     id, subid, header+2, required, remaining, unfinished);
 
   /* is there room for the dataset we want to read ? */
@@ -3086,16 +3086,16 @@ while (!done)
     break;
     }
 
-  /* we wrote all datasets with atomic write() calls 
+  /* we wrote all datasets with atomic write() calls
      remaining < required only happens if big_buffer was too small
-     to get all available data from pipe. unfinished has to be true 
+     to get all available data from pipe. unfinished has to be true
      as well. */
   if (remaining < required)
     {
     if (unfinished)
       continue;
     msg = string_sprintf("failed to read pipe from transport process "
-      "%d for transport %s: required size=%d > remaining size=%d and unfinished=false", 
+      "%d for transport %s: required size=%d > remaining size=%d and unfinished=false",
       pid, addr->transport->driver_name, required, remaining);
     done = TRUE;
     break;
@@ -3103,7 +3103,7 @@ while (!done)
 
   /* step behind the header */
   ptr += PIPE_HEADER_SIZE;
- 
+
   /* Handle each possible type of item, assuming the complete item is
   available in store. */
 
@@ -3822,7 +3822,7 @@ int     header_length;
 
 if (size > 99999)
   {
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, 
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "Failed writing transport result to pipe: can't handle buffers > 99999 bytes. truncating!\n");
   size = 99999;
   }
@@ -3838,7 +3838,7 @@ if (header_length != PIPE_HEADER_SIZE)
   writebuffer[0] = '\0';
   }
 
-DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%d,final:%s\n", 
+DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%d,final:%s\n",
                                  id, subid, size, writebuffer);
 
 if (buf && size > 0)
@@ -5751,7 +5751,7 @@ if (process_recipients != RECIP_IGNORE)
       if (r->pno >= 0)
         new->onetime_parent = recipients_list[r->pno].address;
 
-      /* If DSN support is enabled, set the dsn flags and the original receipt 
+      /* If DSN support is enabled, set the dsn flags and the original receipt
          to be passed on to other DSN enabled MTAs */
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
@@ -6850,7 +6850,7 @@ while(addr_dsntmp)
     addr_senddsn->next = addr_next;
     }
   else
-    DEBUG(D_deliver) debug_printf("DSN: not sending DSN success message\n"); 
+    DEBUG(D_deliver) debug_printf("DSN: not sending DSN success message\n");
 
   addr_dsntmp = addr_dsntmp->next;
   }
@@ -6860,11 +6860,11 @@ if (addr_senddsn)
   pid_t pid;
   int fd;
 
-  /* create exim process to send message */      
+  /* create exim process to send message */
   pid = child_open_exim(&fd);
 
   DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %d\n", pid);
-     
+
   if (pid < 0)  /* Creation of child failed */
     {
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
@@ -6872,24 +6872,24 @@ if (addr_senddsn)
       getppid(), strerror(errno));
 
     DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
-    }    
+    }
   else  /* Creation of child succeeded */
     {
     FILE *f = fdopen(fd, "wb");
     /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
     int topt = topt_add_return_path | topt_no_body;
     uschar * bound;
-     
+
     DEBUG(D_deliver)
       debug_printf("sending error message to: %s\n", sender_address);
-  
+
     /* build unique id for MIME boundary */
     bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
     DEBUG(D_deliver) debug_printf("DSN: MIME boundary: %s\n", bound);
-  
+
     if (errors_reply_to)
       fprintf(f, "Reply-To: %s\n", errors_reply_to);
- 
+
     fprintf(f, "Auto-Submitted: auto-generated\n"
 	"From: Mail Delivery System <Mailer-Daemon@%s>\n"
 	"To: %s\n"
@@ -6899,7 +6899,7 @@ if (addr_senddsn)
 
 	"--%s\n"
 	"Content-type: text/plain; charset=us-ascii\n\n"
-   
+
 	"This message was created automatically by mail delivery software.\n"
 	" ----- The following addresses had successful delivery notifications -----\n",
       qualify_domain_sender, sender_address, bound, bound);
@@ -6951,11 +6951,11 @@ if (addr_senddsn)
       }
 
     fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", bound);
-           
+
     fflush(f);
     transport_filter_argv = NULL;   /* Just in case */
     return_path = sender_address;   /* In case not previously set */
-           
+
     /* Write the original email out */
     transport_write_message(NULL, fileno(f), topt, 0, NULL, NULL, NULL, NULL, NULL, 0);
     fflush(f);
@@ -7315,7 +7315,7 @@ wording. */
           fprintf(f, "X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
         }
       fputc('\n', f);
- 
+
       for (addr = handled_addr; addr; addr = addr->next)
         {
 	host_item * hu;
@@ -7355,16 +7355,16 @@ wording. */
       emf_text = next_emf(emf, US"copy");
 
       /* add message body
-         we ignore the intro text from template and add 
+         we ignore the intro text from template and add
          the text for bounce_return_size_limit at the end.
-  
+
          bounce_return_message is ignored
          in case RET= is defined we honor these values
          otherwise bounce_return_body is honored.
-         
+
          bounce_return_size_limit is always honored.
       */
-  
+
       fprintf(f, "--%s\n", bound);
 
       dsnlimitmsg = US"X-Exim-DSN-Information: Due to administrative limits only headers are returned";
@@ -7393,7 +7393,7 @@ wording. */
               dsnnotifyhdr = dsnlimitmsg;
             }
           }
-  
+
 #ifdef EXPERIMENTAL_INTERNATIONAL
       if (message_smtputf8)
 	fputs(topt & topt_no_body ? "Content-type: message/global-headers\n\n"
@@ -7411,11 +7411,11 @@ wording. */
       transport_write_message(NULL, fileno(f), topt,
         0, dsnnotifyhdr, NULL, NULL, NULL, NULL, 0);
       fflush(f);
- 
+
       /* we never add the final text. close the file */
       if (emf)
         (void)fclose(emf);
- 
+
       fprintf(f, "\n--%s--\n", bound);
 
       /* Close the file, which should send an EOF to the child process
@@ -7831,7 +7831,7 @@ else if (addr_defer != (address_item *)(+1))
 	    "Reporting-MTA: dns; %s\n",
 	  bound,
 	  smtp_active_hostname);
- 
+
 
         if (dsn_envid)
 	  {
@@ -7855,7 +7855,7 @@ else if (addr_defer != (address_item *)(+1))
 	    addr_dsndefer->address);
           if (addr_dsndefer->host_used && addr_dsndefer->host_used->name)
             {
-            fprintf(f, "Remote-MTA: dns; %s\n", 
+            fprintf(f, "Remote-MTA: dns; %s\n",
 		    addr_dsndefer->host_used->name);
             print_dsn_diagnostic_code(addr_dsndefer, f);
             }

@@ -800,7 +800,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
 	    /* In case we requested one attribute only but got
 	     * several times into that attr loop, we need to append
-	     * the additional values. (This may happen if you derive 
+	     * the additional values. (This may happen if you derive
 	     * attributeTypes B and C from A and then query for A.)
 	     * In all other cases we detect the different attribute
 	     * and append only every non first value. */

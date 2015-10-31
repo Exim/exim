@@ -1267,7 +1267,7 @@ certfield * cp;
 
 if (!(vp = find_var_ent(certvar)))
   {
-  expand_string_message = 
+  expand_string_message =
     string_sprintf("no variable named \"%s\"", certvar);
   return NULL;          /* Unknown variable name */
   }
@@ -1275,7 +1275,7 @@ if (!(vp = find_var_ent(certvar)))
 want to do that in future */
 if (vp->type != vtype_cert)
   {
-  expand_string_message = 
+  expand_string_message =
     string_sprintf("\"%s\" is not a certificate", certvar);
   return NULL;          /* Unknown variable name */
   }
@@ -1295,7 +1295,7 @@ for(cp = certfields;
     return (*cp->getfn)( *(void **)vp->value, modifier );
     }
 
-expand_string_message = 
+expand_string_message =
   string_sprintf("bad field selector \"%s\" for certextract", field);
 return NULL;
 }
@@ -4108,9 +4108,9 @@ while (*s != 0)
 	}
       else if (Ustrlen(sub_arg[1]) != 1)
 	{
-	expand_string_message = 
+	expand_string_message =
 	  string_sprintf(
-		"IMAP folder separator must be one character, found \"%s\"", 
+		"IMAP folder separator must be one character, found \"%s\"",
 		sub_arg[1]);
 	goto EXPAND_FAILED;
 	}
@@ -6636,7 +6636,7 @@ while (*s != 0)
         }
 
 	  /* replace illegal UTF-8 sequences by replacement character  */
-	  
+
       #define UTF8_REPLACEMENT_CHAR US"?"
 
       case EOP_UTF8CLEAN:
@@ -6645,7 +6645,7 @@ while (*s != 0)
         int bytes_left = 0;
 	long codepoint = -1;
         uschar seq_buff[4];			/* accumulate utf-8 here */
-        
+
         while (*sub != 0)
 	  {
 	  int complete = 0;

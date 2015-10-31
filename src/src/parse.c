@@ -906,7 +906,7 @@ for (; len > 0; len--)
       {
       *t++ = '_';
       first_byte = FALSE;
-      } 
+      }
     else
       {
       sprintf(CS t, "=%02X", ch);

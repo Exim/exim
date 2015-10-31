@@ -761,7 +761,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
         {
         p -= len;
         errors_to = string_copy(p);
-        }	
+        }
       }
 
     *(--p) = 0;   /* Terminate address */
@@ -775,7 +775,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
         {
         p -= len;
         orcpt = string_copy(p);
-        }	
+        }
       }
 
     *(--p) = 0;   /* Terminate address */

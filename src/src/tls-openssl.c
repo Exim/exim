@@ -388,7 +388,7 @@ else if (depth != 0)
     {	/* client, wanting stapling  */
     /* Add the server cert's signing chain as the one
     for the verification of the OCSP stapled information. */
-  
+
     if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
                              cert))
       ERR_clear_error();
@@ -1838,7 +1838,7 @@ tls_client_basic_ctx_init(SSL_CTX * ctx,
 			  )
 {
 int rc;
-/* stick to the old behaviour for compatibility if tls_verify_certificates is 
+/* stick to the old behaviour for compatibility if tls_verify_certificates is
    set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
    the specified host patterns if one of them is defined */
 

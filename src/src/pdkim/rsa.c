@@ -178,7 +178,7 @@ int rsa_gen_key( rsa_context *ctx,
 
     do
     {
-        MPI_CHK( mpi_gen_prime( &ctx->P, ( nbits + 1 ) >> 1, 0, 
+        MPI_CHK( mpi_gen_prime( &ctx->P, ( nbits + 1 ) >> 1, 0,
                                 f_rng, p_rng ) );
 
         MPI_CHK( mpi_gen_prime( &ctx->Q, ( nbits + 1 ) >> 1, 0,
@@ -224,7 +224,7 @@ cleanup:
         return( POLARSSL_ERR_RSA_KEY_GEN_FAILED | ret );
     }
 
-    return( 0 );   
+    return( 0 );
 }
 
 #endif
@@ -276,7 +276,7 @@ int rsa_check_privkey( const rsa_context *ctx )
     MPI_CHK( mpi_gcd( &G, &ctx->E, &H  ) );
 
     MPI_CHK( mpi_gcd( &G2, &P1, &Q1 ) );
-    MPI_CHK( mpi_div_mpi( &L1, &L2, &H, &G2 ) );  
+    MPI_CHK( mpi_div_mpi( &L1, &L2, &H, &G2 ) );
     MPI_CHK( mpi_mod_mpi( &I, &DE, &L1  ) );
 
     /*
@@ -291,7 +291,7 @@ int rsa_check_privkey( const rsa_context *ctx )
         return( 0 );
     }
 
-    
+
 cleanup:
 
     mpi_free( &G, &I, &H, &Q1, &P1, &DE, &PQ, &G2, &L1, &L2, NULL );

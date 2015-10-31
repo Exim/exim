@@ -328,11 +328,11 @@ for(index = 0;; index++)
   switch (ret)
     {
     case GNUTLS_SAN_DNSNAME:    tag = US"DNS";  break;
-    case GNUTLS_SAN_URI:        tag = US"URI";  break; 
+    case GNUTLS_SAN_URI:        tag = US"URI";  break;
     case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
     default: continue;        /* ignore unrecognised types */
     }
-  list = string_append_listele(list, sep, 
+  list = string_append_listele(list, sep,
           match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 /*NOTREACHED*/
@@ -368,7 +368,7 @@ for(index = 0;; index++)
 
 #else
 
-expand_string_message = 
+expand_string_message =
   string_sprintf("%s: OCSP support with GnuTLS requires version 3.0.0\n",
     __FUNCTION__);
 return NULL;

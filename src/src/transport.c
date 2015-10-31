@@ -1068,7 +1068,7 @@ if (dkim_private_key && dkim_domain && dkim_selector)
       uschar *dkim_strict_result = expand_string(dkim_strict);
       if (dkim_strict_result)
 	if ( (strcmpic(dkim_strict,US"1") == 0) ||
-	     (strcmpic(dkim_strict,US"true") == 0) ) 
+	     (strcmpic(dkim_strict,US"true") == 0) )
 	  {
 	  /* Set errno to something halfway meaningful */
 	  save_errno = EACCES;
@@ -1855,7 +1855,7 @@ test but the code should work */
 
   if (!bContinuation)
     {
-    Ustrcpy (new_message_id, message_id); 
+    Ustrcpy (new_message_id, message_id);
     dbfn_close(dbm_file);
     return FALSE;
     }

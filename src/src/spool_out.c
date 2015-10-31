@@ -284,7 +284,7 @@ DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
     fprintf(f, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt), r->dsn_flags,
       errors_to, Ustrlen(errors_to), r->pno);
     }
-    
+
       DEBUG(D_deliver) debug_printf("DSN: **** SPOOL_OUT - address: |%s| errorsto: |%s| orcpt: |%s| dsn_flags: %d\n",
          r->address, r->errors_to, r->orcpt, r->dsn_flags);
   }

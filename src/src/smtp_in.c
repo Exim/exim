@@ -37,10 +37,10 @@ uschar *tcp_wrappers_name;
 /* Size of buffer for reading SMTP commands. We used to use 512, as defined
 by RFC 821. However, RFC 1869 specifies that this must be increased for SMTP
 commands that accept arguments, and this in particular applies to AUTH, where
-the data can be quite long.  More recently this value was 2048 in Exim; 
+the data can be quite long.  More recently this value was 2048 in Exim;
 however, RFC 4954 (circa 2007) recommends 12288 bytes to handle AUTH.  Clients
-such as Thunderbird will send an AUTH with an initial-response for GSSAPI. 
-The maximum size of a Kerberos ticket under Windows 2003 is 12000 bytes, and 
+such as Thunderbird will send an AUTH with an initial-response for GSSAPI.
+The maximum size of a Kerberos ticket under Windows 2003 is 12000 bytes, and
 we need room to handle large base64-encoded AUTHs for GSSAPI.
 */
 
@@ -3664,7 +3664,7 @@ while (done <= 0)
         }
 
       /* Advertise DSN support if configured to do so. */
-      if (verify_check_host(&dsn_advertise_hosts) != FAIL) 
+      if (verify_check_host(&dsn_advertise_hosts) != FAIL)
         {
         s = string_cat(s, &size, &ptr, smtp_code, 3);
         s = string_cat(s, &size, &ptr, US"-DSN\r\n", 6);
@@ -4011,7 +4011,7 @@ while (done <= 0)
               rc = acl_check(ACL_WHERE_MAILAUTH, NULL, acl_smtp_mailauth,
                 &user_msg, &log_msg);
               }
-  
+
             switch (rc)
               {
               case OK:
@@ -4020,23 +4020,23 @@ while (done <= 0)
 		    expand_check_condition(authenticated_by->mail_auth_condition,
 			authenticated_by->name, US"authenticator"))
 		  break;     /* Accept the AUTH */
-    
+
 		ignore_msg = US"server_mail_auth_condition failed";
 		if (authenticated_id != NULL)
 		  ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
 		    ignore_msg, authenticated_id);
-  
+
               /* Fall through */
-  
+
               case FAIL:
 		authenticated_sender = NULL;
 		log_write(0, LOG_MAIN, "ignoring AUTH=%s from %s (%s)",
 		  value, host_and_ident(TRUE), ignore_msg);
 		break;
-  
+
               /* Should only get DEFER or ERROR here. Put back terminator
               overrides for error message */
-  
+
               default:
 		value[-1] = '=';
 		name[-1] = ' ';
@@ -4206,7 +4206,7 @@ while (done <= 0)
                     US"",
                   #endif
                     US"\r\n");
-      else 
+      else
         {
       #ifndef DISABLE_PRDR
         if (prdr_requested)
@@ -4464,7 +4464,7 @@ while (done <= 0)
       if (user_msg == NULL) smtp_printf("250 Accepted\r\n");
         else smtp_user_msg(US"250", user_msg);
       receive_add_recipient(recipient, -1);
- 
+
       /* Set the dsn flags in the recipients_list */
       recipients_list[recipients_count-1].orcpt = orcpt;
       recipients_list[recipients_count-1].dsn_flags = flags;

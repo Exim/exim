@@ -144,18 +144,18 @@ dcc_process(uschar **listptr)
   bzero(opts,sizeof(opts));
   Ustrncpy(opts, dccifd_options, sizeof(opts)-1);
   /* if $acl_m_dcc_override_client_ip is set use it */
-  if (((override_client_ip = expand_string(US"$acl_m_dcc_override_client_ip")) != NULL) && 
+  if (((override_client_ip = expand_string(US"$acl_m_dcc_override_client_ip")) != NULL) &&
        (override_client_ip[0] != '\0')) {
     Ustrncpy(client_ip, override_client_ip, sizeof(client_ip)-1);
     DEBUG(D_acl)
       debug_printf("DCC: Client IP (overridden): %s\n", client_ip);
-  } 
+  }
   else if(sender_host_address) {
   /* else if $sender_host_address is available use that? */
     Ustrncpy(client_ip, sender_host_address, sizeof(client_ip)-1);
     DEBUG(D_acl)
       debug_printf("DCC: Client IP (sender_host_address): %s\n", client_ip);
-  } 
+  }
   else {
     /* sender_host_address is NULL which means it comes from localhost */
     Ustrncpy(client_ip, dcc_default_ip_option, sizeof(client_ip)-1);
@@ -451,7 +451,7 @@ dcc_process(uschar **listptr)
           /* The third and following lines are the X-DCC header,
            * so we store it in dcc_header_str. */
           /* check if we don't get more than we can handle */
-          if(k < sizeof(dcc_header_str)) { 
+          if(k < sizeof(dcc_header_str)) {
             dcc_header_str[k] = recvbuf[i];
             k++;
           }

@@ -1083,7 +1083,7 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
                                       ctx->cur_header->str);
       if (list == NULL) return PDKIM_ERR_OOM;
       sig->headers = list;
-  
+
       NEXT_SIG:
       sig = sig->next;
     }
@@ -1204,14 +1204,14 @@ DLLEXPORT int pdkim_feed (pdkim_ctx *ctx,
  *
  * col: this int holds and receives column number (octets since last '\n')
  * str: partial string to append to
- * pad: padding, split line or space after before or after eg: ";" 
+ * pad: padding, split line or space after before or after eg: ";"
  * intro: - must join to payload eg "h=", usually the tag name
  * payload: eg base64 data - long data can be split arbitrarily.
  *
  * this code doesn't fold the header in some of the places that RFC4871
  * allows: As per RFC5322(2.2.3) it only folds before or after tag-value
  * pairs and inside long values. it also always spaces or breaks after the
- * "pad" 
+ * "pad"
  *
  * no guarantees are made for output given out-of range input. like tag
  * names loinger than 78, or bogus col. Input is assumed to be free of line breaks.

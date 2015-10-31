@@ -57,7 +57,7 @@ if ((icd = iconv_open("UTF-16BE", CCS charset)) == (iconv_t)-1)
     errno == EINVAL ? " (maybe unsupported conversion)" : "");
   return NULL;
   }
-#endif  
+#endif
 
 while (slen > 0)
   {
@@ -76,7 +76,7 @@ while (slen > 0)
     return NULL;
     }
 #else
-  for (utf16ptr = utf16buf; 
+  for (utf16ptr = utf16buf;
        slen > 0 && (utf16ptr - utf16buf) < sizeof(utf16buf);
        utf16ptr += 2, slen--, sptr++)
     {
@@ -97,14 +97,14 @@ while (slen > 0)
       {
       lastsep = FALSE;
       /* Encode as modified BASE64 */
-      if (!base64mode) 
+      if (!base64mode)
         {
         *outptr++ = '&';
         base64mode = TRUE;
         i = 0;
         }
 
-      for (j = 0; j < 2; j++, s++) switch (i++) 
+      for (j = 0; j < 2; j++, s++) switch (i++)
 	{
 	case 0:
 	  /* Top 6 bits of the first octet */
@@ -130,7 +130,7 @@ while (slen > 0)
       /* Encode as self (almost) */
       if (base64mode)
         {
-        switch (i) 
+        switch (i)
           {
           case 1:
 		/* Remaining bottom 2 bits of the last octet */
@@ -176,11 +176,11 @@ while (slen > 0)
       }
 
     }
-  } /* End of input string */  
+  } /* End of input string */
 
-if (base64mode) 
+if (base64mode)
   {
-  switch (i) 
+  switch (i)
     {
     case 1:
       /* Remaining bottom 2 bits of the last octet */

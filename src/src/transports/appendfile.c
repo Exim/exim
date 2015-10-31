@@ -186,7 +186,7 @@ appendfile_transport_options_block appendfile_transport_option_defaults = {
   NULL,           /* quota_warn_threshold */
   NULL,           /* mailbox_size_string */
   NULL,           /* mailbox_filecount_string */
-  NULL,           /* expand_maildir_use_size_file */ 
+  NULL,           /* expand_maildir_use_size_file */
   US"^(?:cur|new|\\..*)$",  /* maildir_dir_regex */
   NULL,           /* maildir_tag */
   NULL,           /* maildirfolder_create_regex */
@@ -276,7 +276,7 @@ uid = uid;
 gid = gid;
 
 if (ob->expand_maildir_use_size_file)
-	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file, 
+	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file,
 		US"`maildir_use_size_file` in transport", tblock->name);
 
 /* Loop for quota, quota_filecount, quota_warn_threshold, mailbox_size,
