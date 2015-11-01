@@ -78,6 +78,15 @@ JH/16 Bug 1714: Permit an empty string as expansion result for transport
 
 JH/17 Bug 1713: Fix non-PDKIM_DEBUG build.  Patch from Jasen Betts.
 
+JH/18 Bug 1709: When built with TLS support, the tls_advertise_hosts option now
+      defaults to "*" (all hosts).  The variable is now available when not built
+      with TLS, default unset, mainly to enable keeping the testuite sane.
+      If a server certificate is not supplied (via tls_certificate) an error is
+      logged, and clients will find TLS connections fail on startup.  Presumably
+      they will retry in-clear.
+      Packagers of Exim are strongly encouraged to create a server certificate
+      at installation time.
+
 
 Exim version 4.86
 -----------------

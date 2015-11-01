@@ -8,6 +8,7 @@ log_file_path = DIR/spool/log/%slog
 log_selector = +8bitmime
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
 

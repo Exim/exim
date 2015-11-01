@@ -5,6 +5,7 @@ exim_path = EXIM_PATH
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
 spool_directory = DIR/spool
+tls_advertise_hosts =
 
 # ----- Main settings -----
 

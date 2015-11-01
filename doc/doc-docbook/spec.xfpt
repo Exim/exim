@@ -16558,7 +16558,9 @@ runs. This is appropriate behaviour for obtaining wall-clock time on some, but
 unfortunately not all, operating systems.
 
 
-.option tls_advertise_hosts main "host list&!!" unset
+.new
+.option tls_advertise_hosts main "host list&!!" *
+.wen
 .cindex "TLS" "advertising"
 .cindex "encryption" "on SMTP connection"
 .cindex "SMTP" "encrypted connection"
@@ -16566,6 +16568,11 @@ When Exim is built with support for TLS encrypted connections, the availability
 of the STARTTLS command to set up an encrypted session is advertised in
 response to EHLO only to those client hosts that match this option. See
 chapter &<<CHAPTLS>>& for details of Exim's support for TLS.
+.new
+Note that the default value requires that a certificate be supplied
+using the &%tls_certificate%& option.  If no certificate is available then
+the &%tls_advertise_hosts%& option should be set empty.
+.wen
 
 
 .option tls_certificate main string&!! unset

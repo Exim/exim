@@ -1,1 +1,72 @@
-0211
+# Exim test configuration 0211
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+acl_smtp_rcpt = check_recipient
+
+log_selector = +sender_on_delivery
+qualify_domain = test.ex
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_recipient:
+  accept  hosts = :
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+
+# ----- Routers -----
+
+begin routers
+
+others:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * localhost4.test.ex byname
+  self = send
+  transport = smtp
+  no_more
+
+all:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  return_path_add
+  user = CALLER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,8h
+
+
+# End

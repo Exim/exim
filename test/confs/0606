@@ -6,6 +6,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/SERVER%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 slow_lookup_log = 1000
 

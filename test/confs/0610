@@ -11,6 +11,7 @@ log_file_path = DIR/spool/log/SERVER%slog
 log_selector = +sender_on_delivery
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
 

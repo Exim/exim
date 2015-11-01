@@ -112,16 +112,15 @@ extern uschar *gnutls_require_kx;      /* So some can be avoided */
 extern uschar *gnutls_require_proto;   /* So some can be avoided */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
-extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 extern uschar *tls_certificate;        /* Certificate file */
 extern uschar *tls_channelbinding_b64; /* string of base64 channel binding */
 extern uschar *tls_crl;                /* CRL File */
 extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */
 extern uschar *tls_dhparam;            /* DH param file */
 extern uschar *tls_eccurve;            /* EC curve */
-#ifndef DISABLE_OCSP
+# ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
-#endif
+# endif
 extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
@@ -130,6 +129,7 @@ extern uschar *tls_try_verify_hosts;   /* Optional client verification */
 extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */
 #endif
+extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 
 extern uschar  *dsn_envid;             /* DSN envid string */
 extern int      dsn_ret;               /* DSN ret type*/

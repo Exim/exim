@@ -443,8 +443,8 @@ static optionlist optionlist_config[] = {
 #endif
   { "timeout_frozen_after",     opt_time,        &timeout_frozen_after },
   { "timezone",                 opt_stringptr,   &timezone_string },
-#ifdef SUPPORT_TLS
   { "tls_advertise_hosts",      opt_stringptr,   &tls_advertise_hosts },
+#ifdef SUPPORT_TLS
   { "tls_certificate",          opt_stringptr,   &tls_certificate },
   { "tls_crl",                  opt_stringptr,   &tls_crl },
   { "tls_dh_max_bits",          opt_int,         &tls_dh_max_bits },
@@ -2894,6 +2894,18 @@ const uschar *errmsg;
 pid_t pid;
 int rc, status;
 void (*oldsignal)(int);
+
+/* If TLS will never be used, no point checking ciphers */
+
+if (  !tls_advertise_hosts
+   || !*tls_advertise_hosts
+   || Ustrcmp(tls_advertise_hosts, ":") == 0
+   )
+  return TRUE;
+else if (!tls_certificate)
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Warning: No server certificate defined; TLS connections will fail.\n"
+    " Suggested action: either install a certificate or change tls_advertise_hosts option");
 
 oldsignal = signal(SIGCHLD, SIG_DFL);
 

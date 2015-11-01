@@ -10,6 +10,7 @@ log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 log_selector = +smtp_mailauth
+tls_advertise_hosts =
 
 # ----- Main settings -----
 

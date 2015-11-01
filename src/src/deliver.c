@@ -7326,8 +7326,7 @@ wording. */
         if ((hu = addr->host_used) && hu->name)
 	  {
 	  const uschar * s;
-	  fprintf(f, "Remote-MTA: dns; %s\n",
-	    hu->name);
+	  fprintf(f, "Remote-MTA: dns; %s\n", hu->name);
 #ifdef EXPERIMENTAL_DSN_INFO
 	  if (hu->address)
 	    {

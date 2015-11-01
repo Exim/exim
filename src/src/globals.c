@@ -148,7 +148,7 @@ uschar *gnutls_require_kx      = NULL;
 uschar *gnutls_require_proto   = NULL;
 uschar *openssl_options        = NULL;
 const pcre *regex_STARTTLS     = NULL;
-uschar *tls_advertise_hosts    = NULL;    /* This is deliberate */
+uschar *tls_advertise_hosts    = US"*";
 uschar *tls_certificate        = NULL;
 uschar *tls_crl                = NULL;
 /* This default matches NSS DH_MAX_P_BITS value at current time (2012), because
@@ -157,9 +157,9 @@ bit-count as "NORMAL" (2432) and Thunderbird dropping connection. */
 int     tls_dh_max_bits        = 2236;
 uschar *tls_dhparam            = NULL;
 uschar *tls_eccurve            = US"prime256v1";
-#ifndef DISABLE_OCSP
+# ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
-#endif
+# endif
 BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
@@ -167,6 +167,8 @@ uschar *tls_require_ciphers    = NULL;
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= US"system";
 uschar *tls_verify_hosts       = NULL;
+#else	/*!SUPPORT_TLS*/
+uschar *tls_advertise_hosts    = NULL;
 #endif
 
 #ifndef DISABLE_PRDR

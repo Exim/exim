@@ -3,7 +3,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-tls_validate_require_cipher child ppppp ended: status=0x0
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
