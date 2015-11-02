@@ -540,10 +540,10 @@ else
       }
     else
       {
-      t = store_get(sizeof(tree_node) + len + sizeof(expiring_data));
-      e = (expiring_data *)((char *)t + sizeof(tree_node) + len);
+      e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len);
       e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
       e->ptr = data;
+      t = (tree_node *)(e+1);
       memcpy(t->name, keystring, len);
       t->data.ptr = e;
       tree_insertnode(&c->item_cache, t);
