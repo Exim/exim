@@ -11989,6 +11989,13 @@ a single-component name, Exim calls &[gethostbyname()]& (or
 qualified host name. See also &$smtp_active_hostname$&.
 
 
+.new
+.vitem &$prdr_requested$&
+.cindex "PRDR" "variable for"
+This variable is set to &"yes"& if PRDR was requested by the client for the
+current message, otherwise &"no"&.
+.wen
+
 .vitem &$prvscheck_address$&
 This variable is used in conjunction with the &%prvscheck%& expansion item,
 which is described in sections &<<SECTexpansionitems>>& and
@@ -27393,8 +27400,12 @@ for some or all recipients.
 PRDR may be used to support per-user content filtering.  Without it
 one must defer any recipient after the first that has a different
 content-filter configuration.  With PRDR, the RCPT-time check
-for this can be disabled when the MAIL-time $smtp_command included
-"PRDR".  Any required difference in behaviour of the main DATA-time
+.new
+.cindex "PRDR" "variable for"
+for this can be disabled when the variable &$prdr_requested$&
+is &"yes"&.
+.wen
+Any required difference in behaviour of the main DATA-time
 ACL should however depend on the PRDR-time ACL having run, as Exim
 will avoid doing so in some situations (e.g.  single-recipient mails).
 

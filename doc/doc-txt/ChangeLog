@@ -68,6 +68,11 @@ JH/12 Bug 1706: percent and underbar characters are no longer escaped by the
 
 JH/13 Bug 1708: avoid misaligned access in cached lookup.
 
+JH/14 Change header file name for freeradius-client.  Relevant if compiling
+      with Radius support; from the Gentoo tree and checked under Fedora.
+
+JH/15 Bug 1712: Introduce $prdr_requested flag variable
+
 
 Exim version 4.86
 -----------------
