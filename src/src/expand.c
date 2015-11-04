@@ -210,6 +210,8 @@ static uschar *op_table_main[] = {
   US"hash",
   US"hex2b64",
   US"hexquote",
+  US"ipv6denorm",
+  US"ipv6norm",
   US"l",
   US"lc",
   US"length",
@@ -248,6 +250,8 @@ enum {
   EOP_HASH,
   EOP_HEX2B64,
   EOP_HEXQUOTE,
+  EOP_IPV6DENORM,
+  EOP_IPV6NORM,
   EOP_L,
   EOP_LC,
   EOP_LENGTH,
@@ -6405,6 +6409,39 @@ while (*s != 0)
           host_nmtoa(count, binary, mask, buffer, '.'));
         continue;
         }
+
+      case EOP_IPV6NORM:
+      case EOP_IPV6DENORM:
+	{
+        int type = string_is_ip_address(sub, NULL);
+	int binary[4];
+	uschar buffer[44];
+
+	switch (type)
+	  {
+	  case 6:
+	    (void) host_aton(sub, binary);
+	    break;
+
+	  case 4:	/* convert to IPv4-mapped IPv6 */
+	    binary[0] = binary[1] = 0;
+	    binary[2] = 0x0000ffff;
+	    (void) host_aton(sub, binary+3);
+	    break;
+
+	  case 0:
+	    expand_string_message =
+	      string_sprintf("\"%s\" is not an IP address", sub);
+	    goto EXPAND_FAILED;
+	  }
+
+	yield = string_cat(yield, &size, &ptr, buffer,
+		  c == EOP_IPV6NORM
+		    ? ipv6_nmtoa(binary, buffer)
+		    : host_nmtoa(4, binary, -1, buffer, ':')
+		  );
+	continue;
+	}
 
       case EOP_ADDRESS:
       case EOP_LOCAL_PART:

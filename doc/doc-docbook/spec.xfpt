@@ -10107,6 +10107,27 @@ as is, and other byte values are converted to &`\xNN`&, for example a
 byte value 127 is converted to &`\x7f`&.
 
 
+.new
+.vitem &*${ipv6denorm:*&<&'string'&>&*}*&
+.cindex "&%ipv6denorm%& expansion item"
+.cindex "IP address" normalisation
+This expands an IPv6 address to a full eight-element colon-separated set
+of hex digits including leading zeroes.
+A trailing ipv4-style dotted-decimal set is converted to hex.
+Pure IPv4 addresses are converted to IPv4-mapped IPv6.
+
+.vitem &*${ipv6norm:*&<&'string'&>&*}*&
+.cindex "&%ipv6norm%& expansion item"
+.cindex "IP address" normalisation
+.cindex "IP address" "canonical form"
+This converts an IPv6 address to canonical form.
+Leading zeroes of groups are omitted, and the longest
+set of zero-valued groups is replaced with a double colon.
+A trailing ipv4-style dotted-decimal set is converted to hex.
+Pure IPv4 addresses are converted to IPv4-mapped IPv6.
+.wen
+
+
 .vitem &*${lc:*&<&'string'&>&*}*&
 .cindex "case forcing in strings"
 .cindex "string" "case forcing"

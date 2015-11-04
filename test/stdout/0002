@@ -189,6 +189,17 @@
 > mask:   0.0.0.0/0
 > Failed: missing mask value in "192.168.10.206"
 > Failed: "a.b.c.d" is not an IP address
+> ipv6denorm: 0000:0000:0000:0000:0000:0000:0000:0001
+> ipv6denorm: fe00:0000:0000:0000:0000:0000:0000:0001
+> ipv6denorm: 0000:0000:0000:0000:0000:ffff:c0a8:0001
+> ipv6denorm: fe80:0000:0000:0000:0000:0000:c0a8:0001
+> ipv6norm:   ::1
+> ipv6norm:   2a00::
+> ipv6norm:   2a00::1
+> ipv6norm:   2a00:eadf::1:0
+> ipv6norm:   2a00:eadf:0:1::
+> ipv6norm:   2a00::
+> ipv6norm:   2a00:2:3:4:5:6:7:8
 > nhash:  19 0/61
 > lc/uc:  the quick  BROWN FOX
 > length: The quick  abc

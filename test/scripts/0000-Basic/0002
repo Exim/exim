@@ -208,6 +208,17 @@ mask:   ${mask:192.168.10.206/33}
 mask:   ${mask:192.168.10.206/0}
 mask:   ${mask:192.168.10.206}
 mask:   ${mask:a.b.c.d}
+ipv6denorm: ${ipv6denorm:::1}
+ipv6denorm: ${ipv6denorm:fe00::1}
+ipv6denorm: ${ipv6denorm:192.168.0.1}
+ipv6denorm: ${ipv6denorm:fe80::192.168.0.1}
+ipv6norm:   ${ipv6norm:0:0:0::1}
+ipv6norm:   ${ipv6norm:2a00::0}
+ipv6norm:   ${ipv6norm:2a00::1}
+ipv6norm:   ${ipv6norm:2a00:eadf:0000:0000:0000:0000:0001:0000}
+ipv6norm:   ${ipv6norm:2a00:eadf:0000:0001:0000:0000:0000:0000}
+ipv6norm:   ${ipv6norm:2a00:0:0:0::}
+ipv6norm:   ${ipv6norm:2a00:2:3:4:5:6:7:8}
 nhash:  ${nhash_24:monty} ${nhash_8_63:monty python}
 lc/uc:  ${lc:The Quick} ${uc: Brown Fox}
 length: ${length_10:The quick brown fox} ${l_10:abc}

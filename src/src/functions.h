@@ -233,6 +233,8 @@ extern int     ip_tcpsocket(const uschar *, uschar **, int);
 extern int     ip_unixsocket(const uschar *, uschar **);
 extern int     ip_streamsocket(const uschar *, uschar **, int);
 
+extern int     ipv6_nmtoa(int *, uschar *);
+
 extern uschar *local_part_quote(uschar *);
 extern int     log_create(uschar *);
 extern int     log_create_as_exim(uschar *);

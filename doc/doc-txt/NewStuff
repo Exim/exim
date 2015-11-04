@@ -17,6 +17,13 @@ Version 4.87
 
  3. Transports now take a "max_parallel" option, to limit concurrency.
 
+ 4. Expansion operators ${ipv6norm:<string>} and ${ipv6denorm:<string>}.
+    The latter expands to a 8-element colon-sep set of hex digits including
+    leading zeroes. A trailing ipv4-style dotted-decimal set is converted
+    to hex.  Pure ipv4 addresses are converted to IPv4-mapped IPv6.
+    The former operator strips leading zeroes and collapses the longest
+    set of 0-groups to a double-colon.
+
 
 Version 4.86
 ------------
