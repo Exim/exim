@@ -70,18 +70,51 @@ lock file created
 mailbox TESTSUITE/test-mail/userx is locked
 writing to file TESTSUITE/test-mail/userx
 writing data block fd=dddd size=sss timeout=0
-process pppp running as transport filter: write=dddd read=dddd
 writing data block fd=dddd size=sss timeout=0
-process pppp writing to transport filter
-copying from the filter
-waiting for filter process
-filter process returned 127
-waiting for writing process
-end of filtering transport writing: yield=0
-errno=-24 more_errno=dd
-appendfile yields 10 with errno=-24 more_errno=dd
-t1 transport returned PANIC for userx@test.ex
-LOG: MAIN PANIC
-  == userx@test.ex R=r1 T=t1 defer (-24): transport filter process failed (127) while writing to TESTSUITE/test-mail/userx: unable to execute command
+writing data block fd=dddd size=sss timeout=0
+appendfile yields 0 with errno=dd more_errno=dd
+t1 transport returned OK for userx@test.ex
+LOG: MAIN
+  => userx <userx@test.ex> R=r1 T=t1
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> userx@test.ex <--------
+direct command:
+  argv[0] = ${if={1}{1}{}{}}
+direct command after expansion:
+  argv[0] = 
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=0 warning=0
+  file=TESTSUITE/test-mail/userx format=unix
+  message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  message_suffix=\n
+  maildir_use_size_file=no
+  locking by lockfile fcntl 
+lock name: TESTSUITE/test-mail/userx.lock
+hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
+lock file created
+mailbox TESTSUITE/test-mail/userx is locked
+writing to file TESTSUITE/test-mail/userx
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+appendfile yields 0 with errno=dd more_errno=dd
+t1 transport returned OK for userx@test.ex
+LOG: MAIN
+  => userx <userx@test.ex> R=r1 T=t1
+LOG: MAIN
+  Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

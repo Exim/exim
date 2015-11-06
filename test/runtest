@@ -1362,9 +1362,6 @@ $munges =
     'optional_ocsp' =>
     { 'stderr' => '/127.0.0.1 in hosts_requ(ire|est)_ocsp/' },
 
-    'no_tpt_filter_epipe' =>
-    { 'stderr' => '/^writing error 32: Broken pipe$/' },
-
     'optional_cert_hostnames' =>
     { 'stderr' => '/in tls_verify_cert_hostnames\? no/' },
 

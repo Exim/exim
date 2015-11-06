@@ -20717,6 +20717,9 @@ headers that some sites insist on.
 This option sets up a filtering (in the Unix shell sense) process for messages
 at transport time. It should not be confused with mail filtering as set up by
 individual users or via a system filter.
+.new
+If unset, or expanding to an empty string, no filtering is done.
+.wen
 
 When the message is about to be written out, the command specified by
 &%transport_filter%& is started up in a separate, parallel process, and

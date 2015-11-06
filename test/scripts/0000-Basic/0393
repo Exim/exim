@@ -1,10 +1,11 @@
 # empty transport filter
 #
-munge no_tpt_filter_epipe
-#
 exim -d-all+transport -odi userx
 Testing with filter
 ****
 exim -DFILTER= -d-all+transport -odi userx
 Testing without filter
+****
+exim -DFILTER='${if={1}{1}{}{}}'  -d-all+transport -odi userx
+Testing with expand-to-empty filter
 ****

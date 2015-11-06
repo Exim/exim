@@ -1213,7 +1213,10 @@ transport_filter_timed_out = FALSE;
 /* If there is no filter command set up, call the internal function that does
 the actual work, passing it the incoming fd, and return its result. */
 
-if (transport_filter_argv == NULL)
+if (  !transport_filter_argv
+   || !*transport_filter_argv
+   || !**transport_filter_argv
+   )
   return internal_transport_write_message(addr, fd, options, size_limit,
     add_headers, remove_headers, check_string, escape_string,
     rewrite_rules, rewrite_existflags);
