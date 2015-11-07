@@ -76,6 +76,8 @@ JH/15 Bug 1712: Introduce $prdr_requested flag variable
 JH/16 Bug 1714: Permit an empty string as expansion result for transport
       option transport_filter, meaning no filtering.
 
+JH/17 Bug 1713: Fix non-PDKIM_DEBUG build.  Patch from Jasen Betts.
+
 
 Exim version 4.86
 -----------------

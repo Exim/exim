@@ -607,7 +607,7 @@ tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) verify.c
-dkim.o:          $(HDRS) dkim.c
+dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
@@ -620,19 +620,19 @@ spool_mbox.o:    $(HDRS) spool_mbox.c
 
 # Dependencies for WITH_OLD_DEMIME modules
 
-demime.o:        $(HDRS) demime.c
+demime.o:       $(HDRS) demime.c
 
 
 # Dependencies for EXPERIMENTAL_* modules
 
-bmi_spam.o:		$(HDRS) bmi_spam.c
-dane.o:			$(HDRS) dane.c dane-gnu.c dane-openssl.c
-dcc.o:			$(HDRS) dcc.h dcc.c
-dmarc.o:		$(HDRS) dmarc.h dmarc.c
+bmi_spam.o:	$(HDRS) bmi_spam.c
+dane.o:		$(HDRS) dane.c dane-gnu.c dane-openssl.c
+dcc.o:		$(HDRS) dcc.h dcc.c
+dmarc.o:	$(HDRS) pdkim/pdkim.h dmarc.h dmarc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c
-spf.o:			$(HDRS) spf.h spf.c
-srs.o:			$(HDRS) srs.h srs.c
-utf8.o:			$(HDRS) utf8.c
+spf.o:		$(HDRS) spf.h spf.c
+srs.o:		$(HDRS) srs.h srs.c
+utf8.o:		$(HDRS) utf8.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles

@@ -14,7 +14,7 @@ pdkim.a:         $(OBJ)
 
 base64.o:           $(HDRS) base64.c
 bignum.o:           $(HDRS) bignum.c
-pdkim.o:            $(HDRS) pdkim.c
+pdkim.o:            $(HDRS) pdkim.h pdkim.c
 rsa.o:              $(HDRS) rsa.c
 sha1.o:             $(HDRS) sha1.c
 sha2.o:             $(HDRS) sha2.c
