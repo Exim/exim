@@ -1,1 +1,41 @@
-../0000-Basic/0211
+# DSN extra information
+need_ipv4
+#
+server PORT_S
+450 I'm busy
+QUIT
+250 OK
+****
+exim -odi userx@domain1
+Test message 1
+****
+server PORT_S
+220 Connected OK
+EHLO
+450 I'm busy
+HELO
+450 I'm busy
+QUIT
+250 OK
+****
+exim -qf
+****
+server PORT_S
+550 Go away
+QUIT
+250 OK
+****
+exim -qf
+****
+server PORT_S
+220 Connected OK
+EHLO
+550 Go away
+HELO
+550 Go away
+QUIT
+250 OK
+****
+exim -odi userx@domain1 usery@domain2
+Test message 2
+****

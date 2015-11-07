@@ -1380,6 +1380,10 @@ $munges =
     'debug_pid' =>
     { 'stderr' => 's/(^\s{0,4}|(?<=Process )|(?<=child ))\d{1,5}/ppppp/g' },
 
+    'optional_dsn_info' =>
+    { 'mail' => '/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/'
+    }
+
   };
 
 

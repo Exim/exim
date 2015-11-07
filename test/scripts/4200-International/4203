@@ -1,5 +1,6 @@
 # Internationalised mail: forwarding fail
 # Exim test configuration 4203
+munge optional_dsn_info
 #
 exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
 ****

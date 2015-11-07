@@ -14,8 +14,6 @@ MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
-X-body-linecount: 38
-X-message-linecount: 50
 X-received-count: 1
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
