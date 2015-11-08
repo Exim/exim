@@ -2,6 +2,8 @@
 #
 #XXX maybe collapse into 0048?
 #
+munge sys_bindir
+#
 exim a
 ****
 sleep 1

@@ -1382,7 +1382,10 @@ $munges =
 
     'optional_dsn_info' =>
     { 'mail' => '/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/'
-    }
+    },
+
+    'sys_bindir' =>
+    { 'mainlog' => 's%/(usr/)?bin/%SYSBINDIR/%' },
 
   };
 
