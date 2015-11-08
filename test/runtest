@@ -2458,8 +2458,13 @@ if ($parm_exim eq "")
 
 # deal with TRUSTED_CONFIG_LIST restrictions
 unlink("$parm_cwd/test-config") if -e "$parm_cwd/test-config";
-symlink("$parm_cwd/confs/0000", "$parm_cwd/test-config")
-  or die "Unable to link initial config into place: $!\n";
+open (IN, "$parm_cwd/confs/0000") ||
+  tests_exit(-1, "Couldn't open $parm_cwd/confs/0000: $!\n");
+open (OUT, ">test-config") ||
+  tests_exit(-1, "Couldn't open test-config: $!\n");
+while (<IN>) { print OUT; }
+close(IN);
+close(OUT);
 
 print("Probing with config file: $parm_cwd/test-config\n");
 open(EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " .
