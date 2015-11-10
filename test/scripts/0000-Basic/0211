@@ -2,6 +2,8 @@
 need_ipv4
 munge optional_dsn_info
 #
+exim -z "Test: temp-rej connect"
+****
 server PORT_S
 450 I'm busy
 QUIT
@@ -9,6 +11,9 @@ QUIT
 ****
 exim -odi userx@domain1
 Test message 1
+****
+#
+exim -z "Test: temp-rej helo"
 ****
 server PORT_S
 220 Connected OK
@@ -21,12 +26,26 @@ QUIT
 ****
 exim -qf
 ****
+#
+exim -z "Test: drop conn after banner"
+****
+server PORT_S
+220 Connected OK
+****
+exim -qf
+****
+#
+exim -z "Test: reject connect"
+****
 server PORT_S
 550 Go away
 QUIT
 250 OK
 ****
 exim -qf
+****
+#
+exim -z "Test: reject helo"
 ****
 server PORT_S
 220 Connected OK

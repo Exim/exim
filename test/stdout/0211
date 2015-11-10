@@ -18,6 +18,10 @@ QUIT
 End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
+220 Connected OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
 550 Go away
 QUIT
 250 OK

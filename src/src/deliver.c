@@ -1288,9 +1288,17 @@ else if (result == DEFER || result == PANIC)
         US strerror(addr->basic_errno));
 
     if (addr->host_used)
+      {
       s = string_append(s, &size, &ptr, 5,
 			US" H=", addr->host_used->name,
 			US" [",  addr->host_used->address, US"]");
+      if (LOGGING(outgoing_port))
+	{
+	int port = addr->host_used->port;
+	s = string_append(s, &size, &ptr, 2,
+	      US":", port == PORT_NONE ? US"25" : string_sprintf("%d", port));
+	}
+      }
 
     if (addr->message)
       s = string_append(s, &size, &ptr, 2, US": ", addr->message);

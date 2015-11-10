@@ -655,6 +655,9 @@ write_logs(address_item *addr, host_item *host)
 {
 uschar * message = string_sprintf("H=%s [%s]", host->name, host->address);
 
+if (LOGGING(outgoing_port))
+  message = string_sprintf("%s:%d", message,
+	      host->port == PORT_NONE ? 25 : host->port);
 if (addr->message)
   {
   message = string_sprintf("%s: %s", message, addr->message);
@@ -665,9 +668,6 @@ if (addr->message)
   }
 else
   {
-  if (LOGGING(outgoing_port))
-    message = string_sprintf("%s:%d", message,
-		host->port == PORT_NONE ? 25 : host->port);
   log_write(0, LOG_MAIN, "%s %s", message, strerror(addr->basic_errno));
   deliver_msglog("%s %s %s\n", tod_stamp(tod_log), message,
 		strerror(addr->basic_errno));
@@ -3618,15 +3618,14 @@ for (cutoff_retry = 0; expired &&
         host_item *h;
         DEBUG(D_transport)
           debug_printf("hosts_max_try limit reached with this host\n");
-        for (h = host; h != NULL; h = h->next)
-          if (h->mx != host->mx) break;
-        if (h != NULL)
-          {
-          nexthost = h;
-          unexpired_hosts_tried--;
-          DEBUG(D_transport) debug_printf("however, a higher MX host exists "
-            "and will be tried\n");
-          }
+        for (h = host; h; h = h->next) if (h->mx != host->mx)
+	  {
+	  nexthost = h;
+	  unexpired_hosts_tried--;
+	  DEBUG(D_transport) debug_printf("however, a higher MX host exists "
+	    "and will be tried\n");
+	  break;
+	  }
         }
 
       /* Attempt the delivery. */
