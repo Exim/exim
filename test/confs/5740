@@ -1,4 +1,4 @@
-# Exim test configuration 5608
+# Exim test configuration 5740
 # OCSP stapling, client, events
 
 SERVER =

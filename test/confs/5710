@@ -1,4 +1,4 @@
-# Exim test configuration 5750 (dup of 5760)
+# Exim test configuration 5710 (dup of 5720)
 # $tls_out_peercert - GnuTLS
 
 SERVER=

@@ -1,4 +1,4 @@
-# Exim test configuration 5760 (dup of 5750)
+# Exim test configuration 5720 (dup of 5710)
 # $tls_out_peercert - OpenSSL
 
 SERVER=
