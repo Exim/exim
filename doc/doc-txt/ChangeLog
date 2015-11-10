@@ -90,6 +90,12 @@ JH/18 Bug 1709: When built with TLS support, the tls_advertise_hosts option now
 HS/03 Add -bP config_file as a synonym for -bP configure_file, for consistency
       with the $config_file variable.
 
+JH/19 Two additional event types: msg:rcpt:defer and msg:rcpt:host:defer. Both
+      in transport context, after the attempt, and per-recipient. The latter type
+      is per host attempted.  The event data is the error message, and the errno
+      information encodes the lookup type (A vs. MX) used for the (first) host,
+      and the trailing two digits of the smtp 4xx reponse.
+
 
 Exim version 4.86
 -----------------

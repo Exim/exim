@@ -46,6 +46,18 @@ ev_msg_fail:
 	    domain <$domain> \
 	    reason <$event_data>
 
+ev_msg_log:
+    accept logwrite = . \
+	    $acl_arg1 \
+	    ip <$host_address> \
+	    port <$host_port> \
+	    fqdn <$host> \
+	    local_part <$local_part> \
+	    domain <$domain> \
+	    $acl_arg2 \
+	    router <$router_name> \
+	    transport <$transport_name>
+
 ev_msg:
     accept condition = ${if eq {fail} {${listextract{2}{$event_name}}}}
 	   acl = ev_msg_fail
@@ -57,29 +69,21 @@ ev_msg:
 	   logwrite = $this_expansion_will_fail
 
     accept condition = ${if eq {$event_name}{msg:delivery}}
-	   logwrite = . \
-	    delivery \
-	    ip <$host_address> \
-	    port <$host_port> \
-	    fqdn <$host> \
-	    local_part <$local_part> \
-	    domain <$domain> \
-	    confirmation <$event_data> \
-	    router <$router_name> \
-	    transport <$transport_name>
+	   acl = ev_msg_log delivery "confirmation <$event_data>"
 
     accept condition = ${if eq {$event_name}{msg:host:defer}}
-	   logwrite = . \
-	    deferral \
-	    ip <$host_address> \
-	    port <$host_port> \
-	    fqdn <$host> \
-	    local_part <$local_part> \
-	    domain <$domain> \
-	    errno <$event_defer_errno> \
-	    errstr <$event_data> \
-	    router <$router_name> \
-	    transport <$transport_name>
+	   acl = ev_msg_log "host deferral" \
+			"errno <$event_defer_errno> errstr <$event_data>"
+
+    accept condition = ${if eq {$event_name}{msg:rcpt:defer}}
+	   set acl_m_ev_lkup =	${eval:$event_defer_errno & 0xff}
+	   set acl_m_ev_lkup =	${if = {$acl_m_ev_lkup}{65} {A} \
+				{ ${if = {$acl_m_ev_lkup}{77} {MX} \
+				  {$acl_m_ev_lkup}}}}
+	   set acl_m_ev_code =  4${eval:$event_defer_errno >>8}
+	   acl = ev_msg_log "rcpt deferral" \
+			"err <$event_defer_errno>:<$acl_m_ev_lkup:$acl_m_ev_code> \
+			errstr <$event_data>"
 
 logger:
     warn   logwrite = event $event_name
@@ -105,6 +109,7 @@ others:
   route_list = * 127.0.0.1 byname
   self = send
   transport = smtp
+  errors_to = ""
   no_more
 
 

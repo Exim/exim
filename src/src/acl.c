@@ -3743,7 +3743,12 @@ for (; cb != NULL; cb = cb->next)
     case ACLC_SET:
       {
       int old_pool = store_pool;
-      if (cb->u.varname[0] == 'c') store_pool = POOL_PERM;
+      if (  cb->u.varname[0] == 'c'
+#ifdef EXPERIMENTAL_EVENT
+	 || event_name		/* An event is being delivered */
+#endif
+	 )
+        store_pool = POOL_PERM;
       acl_var_create(cb->u.varname)->data.ptr = string_copy(arg);
       store_pool = old_pool;
       }

@@ -798,6 +798,8 @@ expansion is done.  The current list of events is:
 
  msg:complete		after  main	  per message
  msg:delivery		after  transport  per recipient
+ msg:rcpt:host:defer 	after  transport  per recipient per host
+ msg:rcpt:defer 	after  transport  per recipient
  msg:host:defer		after  transport  per attempt
  msg:fail:delivery	after  main	  per recipient
  msg:fail:internal	after  main	  per recipient
@@ -811,16 +813,20 @@ variable to decide when to act.  The value of the variable is a colon-separated
 list, defining a position in the tree of possible events; it may be used as
 a list or just matched on as a whole.  There will be no whitespace.
 
+New event types may be added in the future.
+
 
 There is an auxilary variable, $event_data, for which the
 content is event_dependent:
 
 	msg:delivery		smtp confirmation mssage
+	msg:rcpt:host:defer	error string
+	msg:rcpt:defer		error string
 	msg:host:defer		error string
 	tls:cert		verification chain depth
 	smtp:connect		smtp banner
 
-The msg:host:defer event populates one extra variable, $event_defer_errno.
+The :defer events populate one extra variable, $event_defer_errno.
 
 The following variables are likely to be useful depending on the event type:
 
@@ -848,7 +854,14 @@ event_action = ${if eq {msg:delivery}{$event_name} \
 
 The string is expanded when each of the supported events occur
 and any side-effects of the expansion will happen.
-Note that for complex operations an ACL expansion can be used.
+
+Note that for complex operations an ACL expansion can be used,
+however due to the multiple contexts the Exim operates in
+a) variables set in events raised from transports will not
+   be visible outside that transport call.
+b) acl_m variables in a server context are lost on a new connection,
+   and after helo/ehlo/mail/starttls/rset commands
+
 
 
 The expansion of the event_action option should normally

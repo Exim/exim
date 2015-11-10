@@ -166,6 +166,7 @@ extern void    enq_end(uschar *);
 extern BOOL    enq_start(uschar *, unsigned);
 #ifdef EXPERIMENTAL_EVENT
 extern uschar *event_raise(uschar *, const uschar *, uschar *);
+extern void    msg_event_raise(const uschar *, const address_item *);
 #endif
 extern void    exim_exit(int);
 extern void    exim_nullstd(void);

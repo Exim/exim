@@ -919,11 +919,21 @@ while (count-- > 0)
       addr->basic_errno = ERRNO_RCPT4XX;
       addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
 
+#ifdef EXPERIMENTAL_EVENT
+      event_defer_errno = addr->more_errno;
+      msg_event_raise(US"msg:rcpt:host:defer", addr);
+#endif
+
       /* Log temporary errors if there are more hosts to be tried.
       If not, log this last one in the == line. */
 
       if (host->next)
 	log_write(0, LOG_MAIN, "H=%s [%s]: %s", host->name, host->address, addr->message);
+
+#ifdef EXPERIMENTAL_EVENT
+      else
+	msg_event_raise(US"msg:rcpt:defer", addr);
+#endif
 
       /* Do not put this message on the list of those waiting for specific
       hosts, as otherwise it is likely to be tried too often. */
