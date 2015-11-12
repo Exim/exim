@@ -3110,8 +3110,9 @@ mysql_servers = <value not displayable>
 If &%config%& is given as an argument, the config is
 output, as it was parsed, any include file resolved, any comment removed.
 
-If &%configure_file%& is given as an argument, the name of the run time
-configuration file is output.
+If &%config_file%& is given as an argument, the name of the run time
+configuration file is output. (&%configure_file%& works too, for
+backward compatibility.)
 If a list of configuration files was supplied, the value that is output here
 is the name of the file that was actually used.
 

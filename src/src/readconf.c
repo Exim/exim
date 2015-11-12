@@ -2534,7 +2534,9 @@ causes the value of any main configuration variable to be output if the
 second argument is NULL. There are some special values:
 
   all                print all main configuration options
-  configure_file     print the name of the configuration file
+  config_file        print the name of the configuration file
+                     (configure_file will still work, for backward
+                     compatibility)
   routers            print the routers' configurations
   transports         print the transports' configuration
   authenticators     print the authenticators' configuration
@@ -2602,7 +2604,8 @@ if (type == NULL)
     return;
     }
 
-  if (Ustrcmp(name, "configure_file") == 0)
+  if ( Ustrcmp(name, "configure_file") == 0
+     ||Ustrcmp(name, "config_file") == 0)
     {
     printf("%s\n", CS config_main_filename);
     return;
