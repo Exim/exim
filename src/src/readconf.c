@@ -12,7 +12,9 @@ implementation of the conditional .ifdef etc. */
 #include "exim.h"
 
 static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
-
+static void save_config_line(const uschar* line);
+static void save_config_position(const uschar *file, int line);
+static void print_config(BOOL admin);
 
 #define CSTATE_STACK_SIZE 10
 
@@ -25,6 +27,15 @@ typedef struct config_file_item {
   FILE *file;
   int lineno;
 } config_file_item;
+
+/* Structure for chain of configuration lines (-bP config) */
+
+typedef struct config_line_item {
+  struct config_line_item *next;
+  uschar *line;
+} config_line_item;
+
+static config_line_item* config_lines;
 
 /* Structure of table of conditional words and their state transitions */
 
@@ -43,6 +54,8 @@ typedef struct syslog_fac_item {
   int    value;
 } syslog_fac_item;
 
+/* constants */
+static const char * const hidden = "<value not displayable>";
 
 /* Static variables */
 
@@ -697,6 +710,8 @@ for (;;)
       config_filename = config_file_stack->filename;
       config_lineno = config_file_stack->lineno;
       config_file_stack = config_file_stack->next;
+      if (config_lines)
+        save_config_position(config_filename, config_lineno);
       continue;
       }
 
@@ -713,6 +728,9 @@ for (;;)
 
   config_lineno++;
   newlen = len + Ustrlen(big_buffer + len);
+
+  if (config_lines && config_lineno == 1)
+    save_config_position(config_filename, config_lineno);
 
   /* Handle pathologically long physical lines - yes, it did happen - by
   extending big_buffer at this point. The code also copes with very long
@@ -902,6 +920,8 @@ for (;;)
 
     if (include_if_exists != 0 && (Ustat(ss, &statbuf) != 0)) continue;
 
+    if (config_lines)
+      save_config_position(config_filename, config_lineno);
     save = store_get(sizeof(config_file_item));
     save->next = config_file_stack;
     config_file_stack = save;
@@ -958,6 +978,10 @@ next_section, truncate it. It will be unrecognized later, because all the known
 section names do fit. Leave space for pluralizing. */
 
 s = big_buffer + startoffset;            /* First non-space character */
+
+if (config_lines)
+  save_config_line(s);
+
 if (strncmpic(s, US"begin ", 6) == 0)
   {
   s += 6;
@@ -2246,7 +2270,6 @@ if (ol == NULL)
 
 if (!admin_user && (ol->type & opt_secure) != 0)
   {
-  const char * const hidden = "<value not displayable>";
   if (no_labels)
     printf("%s\n", hidden);
   else
@@ -2522,6 +2545,7 @@ second argument is NULL. There are some special values:
   macro_list         print a list of macro names
   +name              print a named list item
   local_scan         print the local_scan options
+  config             print the configuration as it is parsed
 
 If the second argument is not NULL, it must be one of "router", "transport",
 "authenticator" or "macro" in which case the first argument identifies the
@@ -2609,6 +2633,12 @@ if (type == NULL)
         local_scan_options_count, no_labels);
       }
     #endif
+    return;
+    }
+
+  if (Ustrcmp(name, "config") == 0)
+    {
+    print_config(admin_user);
     return;
     }
 
@@ -4195,6 +4225,102 @@ while(next_section[0] != 0)
   }
 
 (void)fclose(config_file);
+}
+
+/* Init the storage for the pre-parsed config lines */
+void
+readconf_save_config(const uschar *s)
+{
+  save_config_line(string_sprintf("# Exim Configuration (%s)",
+    running_in_test_harness ? US"X" : s));
+}
+
+static void
+save_config_position(const uschar *file, int line)
+{
+  save_config_line(string_sprintf("# %d \"%s\"", line, file));
+}
+
+/* Append a pre-parsed logical line to the config lines store,
+this operates on a global (static) list that holds all the pre-parsed
+config lines */
+static void
+save_config_line(const uschar* line)
+{
+static config_line_item *current;
+config_line_item *next;
+
+next = (config_line_item*) store_get(sizeof(config_line_item));
+next->line = string_copy(line);
+next->next = NULL;
+
+if (!config_lines) config_lines = next;
+else current->next = next;
+
+current = next;
+}
+
+/* List the parsed config lines, care about nice formatting and
+hide the <hide> values unless we're the admin user */
+void
+print_config(BOOL admin)
+{
+config_line_item *i;
+const int TS = 2;
+int indent = 0;
+
+for (i = config_lines; i; i = i->next)
+  {
+  const uschar *current;
+  uschar *p;
+
+  /* skip over to the first non-space */
+  for (current = i->line; *current && isspace(*current); ++current)
+    ;
+
+  if (*current == '\0')
+    continue;
+
+  /* TODO: Collapse or insert spaces around the first '=' */
+
+  /* # lines */
+  if (current[0] == '#')
+    {
+    puts(current);
+    continue;
+    }
+
+  /* begin lines are left aligned */
+  if (strncmp(current, "begin", 5) == 0 && isspace(current[5]))
+    {
+    puts(current);
+    indent = TS;
+    continue;
+    }
+
+  /* router/acl/transport block names */
+  if (current[strlen(current)-1] == ':' && !strchr(current, '='))
+    {
+    printf("%*s%s\n", TS, "", current);
+    indent = 2 * TS;
+    continue;
+    }
+
+  /* as admin we don't care, as we do for "public" lines */
+  if (admin || (!isupper(*current) && (strcmp(current, "hide") != 0)))
+    {
+    printf("%*s%s\n", indent, "", current);
+    continue;
+    }
+
+  /* hidden lines */
+  if (p = strchr(current, '='))
+    {
+    *p = '\0';
+    printf("%*s%s = %s\n", indent, "", current, hidden);
+    continue;
+    }
+  }
 }
 
 /* vi: aw ai sw=2

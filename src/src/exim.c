@@ -1492,6 +1492,7 @@ BOOL f_end_dot = FALSE;
 BOOL deliver_give_up = FALSE;
 BOOL list_queue = FALSE;
 BOOL list_options = FALSE;
+BOOL list_config = FALSE;
 BOOL local_queue_only;
 BOOL more = TRUE;
 BOOL one_msg_action = FALSE;
@@ -2156,9 +2157,19 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "P") == 0)
       {
-      list_options = TRUE;
-      debug_selector |= D_v;
-      debug_file = stderr;
+      /* -bP config: we need to setup here, because later,
+       * when list_options is checked, the config is read already */
+      if (argv[i+1] && Ustrcmp(argv[i+1], "config") == 0)
+        {
+        list_config = TRUE;
+        readconf_save_config(version_string);
+        }
+      else
+        {
+        list_options = TRUE;
+        debug_selector |= D_v;
+        debug_file = stderr;
+        }
       }
 
     /* -brt: Test retry configuration lookup */
@@ -4534,6 +4545,13 @@ if (list_options)
         }
       else readconf_print(argv[i], NULL, flag_n);
       }
+  exim_exit(EXIT_SUCCESS);
+  }
+
+if (list_config)
+  {
+  set_process_info("listing config");
+  readconf_print(US"config", NULL, FALSE);
   exim_exit(EXIT_SUCCESS);
   }
 

@@ -3107,6 +3107,9 @@ users, the output is as in this example:
 .code
 mysql_servers = <value not displayable>
 .endd
+If &%config%& is given as an argument, the config is
+output, as it was parsed, any include file resolved, any comment removed.
+
 If &%configure_file%& is given as an argument, the name of the run time
 configuration file is output.
 If a list of configuration files was supplied, the value that is output here
