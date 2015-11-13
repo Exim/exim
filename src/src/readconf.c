@@ -4246,7 +4246,8 @@ save_config_position(const uschar *file, int line)
 
 /* Append a pre-parsed logical line to the config lines store,
 this operates on a global (static) list that holds all the pre-parsed
-config lines */
+config lines, we do no further processing here, output formatting and
+honouring of <hide> or macros will be done during output */
 static void
 save_config_line(const uschar* line)
 {
@@ -4309,20 +4310,23 @@ for (i = config_lines; i; i = i->next)
     continue;
     }
 
-  /* as admin we don't care, as we do for "public" lines */
-  if (admin || (!isupper(*current) && (strcmp(current, "hide") != 0)))
+  /* hidden lines (MACROS or prefixed with hide) */
+  if (!admin && (isupper(*current)
+    || (strncmp(current, "hide", 4) == 0 && isspace(current[4]))))
     {
-    printf("%*s%s\n", indent, "", current);
+    if (p = strchr(current, '='))
+      {
+      *p = '\0';
+      printf("%*s%s = %s\n", indent, "", current, hidden);
+      }
+    /* e.g.: hide split_spool_directory */
+    else printf("%*s\n", indent, hidden);
     continue;
     }
 
-  /* hidden lines */
-  if (p = strchr(current, '='))
-    {
-    *p = '\0';
-    printf("%*s%s = %s\n", indent, "", current, hidden);
-    continue;
-    }
+  /* rest is public */
+  printf("%*s%s\n", indent, "", current);
+  continue;
   }
 }
 
