@@ -87,6 +87,9 @@ JH/18 Bug 1709: When built with TLS support, the tls_advertise_hosts option now
       Packagers of Exim are strongly encouraged to create a server certificate
       at installation time.
 
+HS/03 Add -bP config_file as a synonym for -bP configure_file, for consistency
+      with the $config_file variable.
+
 
 Exim version 4.86
 -----------------

@@ -24,6 +24,8 @@ Version 4.87
     The former operator strips leading zeroes and collapses the longest
     set of 0-groups to a double-colon.
 
+ 5. New "-bP config" support, to dump the effective configuration.
+
 
 Version 4.86
 ------------
