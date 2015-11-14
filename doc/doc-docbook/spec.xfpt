@@ -7592,13 +7592,17 @@ ${lookup pgsql{servers=master/db/name/pw; UPDATE ...} }
 .section "Special MySQL features" "SECID73"
 For MySQL, an empty host name or the use of &"localhost"& in &%mysql_servers%&
 causes a connection to the server on the local host by means of a Unix domain
-socket. An alternate socket can be specified in parentheses. The full syntax of
-each item in &%mysql_servers%& is:
+socket. An alternate socket can be specified in parentheses.
+.new
+An option group name for MySQL option files can be specified in square brackets;
+the default value is &"exim"&.
+.wen
+The full syntax of each item in &%mysql_servers%& is:
 .display
-<&'hostname'&>::<&'port'&>(<&'socket name'&>)/<&'database'&>/&&&
-  <&'user'&>/<&'password'&>
+<&'hostname'&>::<&'port'&>(<&'socket name'&>)[<&'option group'&>]/&&&
+  <&'database'&>/<&'user'&>/<&'password'&>
 .endd
-Any of the three sub-parts of the first field can be omitted. For normal use on
+Any of the four sub-parts of the first field can be omitted. For normal use on
 the local host it can be left blank or set to just &"localhost"&.
 
 No database need be supplied &-- but if it is absent here, it must be given in

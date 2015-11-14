@@ -102,6 +102,8 @@ GF/01 Bug 1715: Fix for race condition in exicyclog, where exim could attempt
       installations where exicyclog is run as root, rather than exim user;
       result is that the running daemon panics and dies.
 
+JH/20 Bug 1701: For MySQL lookups, support MySQL config file option group names.
+
 
 Exim version 4.86
 -----------------

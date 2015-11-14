@@ -125,42 +125,50 @@ sdata[0] = server;   /* What's left at the start */
 
 /* See if we have a cached connection to the server */
 
-for (cn = mysql_connections; cn != NULL; cn = cn->next)
-  {
+for (cn = mysql_connections; cn; cn = cn->next)
   if (Ustrcmp(cn->server, server_copy) == 0)
     {
     mysql_handle = cn->handle;
     break;
     }
-  }
 
 /* If no cached connection, we must set one up. Mysql allows for a host name
 and port to be specified. It also allows the name of a Unix socket to be used.
 Unfortunately, this contains slashes, but its use is expected to be rare, so
 the rather cumbersome syntax shouldn't inconvenience too many people. We use
-this:  host:port(socket)  where all the parts are optional. */
+this:  host:port(socket)[group]  where all the parts are optional.
+The "group" parameter specifies an option group from a MySQL option file. */
 
-if (cn == NULL)
+if (!cn)
   {
   uschar *p;
   uschar *socket = NULL;
   int port = 0;
+  uschar *group = US"exim";
 
-  if ((p = Ustrchr(sdata[0], '(')) != NULL)
+  if ((p = Ustrchr(sdata[0], '[')))
     {
     *p++ = 0;
-    socket = p;
-    while (*p != 0 && *p != ')') p++;
+    group = p;
+    while (*p && *p != ']') p++;
     *p = 0;
     }
 
-  if ((p = Ustrchr(sdata[0], ':')) != NULL)
+  if ((p = Ustrchr(sdata[0], '(')))
+    {
+    *p++ = 0;
+    socket = p;
+    while (*p && *p != ')') p++;
+    *p = 0;
+    }
+
+  if ((p = Ustrchr(sdata[0], ':')))
     {
     *p++ = 0;
     port = Uatoi(p);
     }
 
-  if (Ustrchr(sdata[0], '/') != NULL)
+  if (Ustrchr(sdata[0], '/'))
     {
     *errmsg = string_sprintf("unexpected slash in MySQL server hostname: %s",
       sdata[0]);
@@ -181,6 +189,7 @@ if (cn == NULL)
 
   mysql_handle = store_get(sizeof(MYSQL));
   mysql_init(mysql_handle);
+  mysql_options(mysql_handle, MYSQL_READ_DEFAULT_GROUP, CS group);
   if (mysql_real_connect(mysql_handle,
       /*  host        user         passwd     database */
       CS sdata[0], CS sdata[2], CS sdata[3], CS sdata[1],
