@@ -35193,7 +35193,7 @@ data when a message is received. See section &<<SECTlogselector>>& below.
 .cindex "log" "delivery line"
 The format of the single-line entry in the main log that is written for every
 delivery is shown in one of the examples below, for local and remote
-deliveries, respectively. Each example has been split into two lines in order
+deliveries, respectively. Each example has been split into multiple lines in order
 to fit it on the page:
 .code
 2002-10-31 08:59:13 16ZCW1-0005MB-00 => marv
