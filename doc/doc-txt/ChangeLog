@@ -96,6 +96,12 @@ JH/19 Two additional event types: msg:rcpt:defer and msg:rcpt:host:defer. Both
       information encodes the lookup type (A vs. MX) used for the (first) host,
       and the trailing two digits of the smtp 4xx reponse.
 
+GF/01 Bug 1715: Fix for race condition in exicyclog, where exim could attempt
+      to write to mainlog (or rejectlog, paniclog) in the window between file
+      creation and permissions/ownership being changed. Particularly affects
+      installations where exicyclog is run as root, rather than exim user;
+      result is that the running daemon panics and dies.
+
 
 Exim version 4.86
 -----------------
