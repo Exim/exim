@@ -282,28 +282,34 @@ done
 
 if [ $keep -gt 99 ]; then first=001; else first=01; fi
 
+# Grab our pid ro avoid race in file creation
+ourpid=$$
+
 if [ -f $mainlog ]; then
   $mv $mainlog $mainlog.$first
   $chown $user:$group $mainlog.$first
-  $touch $mainlog
-  $chown $user:$group $mainlog
-  $chmod 640 $mainlog
+  $touch $mainlog.$ourpid
+  $chown $user:$group $mainlog.$ourpid
+  $chmod 640 $mainlog.$ourpid
+  $mv $mainlog.$ourpid $mainlog
 fi
 
 if [ -f $rejectlog ]; then
   $mv $rejectlog $rejectlog.$first
   $chown $user:$group $rejectlog.$first
-  $touch $rejectlog
-  $chown $user:$group $rejectlog
-  $chmod 640 $rejectlog
+  $touch $rejectlog.$ourpid
+  $chown $user:$group $rejectlog.$ourpid
+  $chmod 640 $rejectlog.$ourpid
+  $mv $rejectlog.$ourpid $rejectlog
 fi
 
 if [ -f $paniclog ]; then
   $mv $paniclog $paniclog.$first
   $chown $user:$group $paniclog.$first
-  $touch $paniclog
-  $chown $user:$group $paniclog
-  $chmod 640 $paniclog
+  $touch $paniclog.$ourpid
+  $chown $user:$group $paniclog.$ourpid
+  $chmod 640 $paniclog.$ourpid
+  $mv $paniclog.$ourpid $paniclog
 fi
 
 # Now scan the (0)02 and later files, compressing where necessary, and
