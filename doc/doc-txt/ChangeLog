@@ -104,6 +104,11 @@ GF/01 Bug 1715: Fix for race condition in exicyclog, where exim could attempt
 
 JH/20 Bug 1701: For MySQL lookups, support MySQL config file option group names.
 
+JH/21 Bug 1720: Add support for priority groups and weighted-random proxy
+      selection for the EXPERIMENTAL_SOCKS feature, via new per-proxy options
+      "pri" and "weight".  Note that the previous implicit priority given by the
+      list order is no longer honoured.
+
 
 Exim version 4.86
 -----------------

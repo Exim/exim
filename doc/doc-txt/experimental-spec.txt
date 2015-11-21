@@ -1135,10 +1135,15 @@ These options are currently defined:
 - "pass" sets the authentication password. Default is empty.
 - "port" sets the tcp port number for the proxy. Default is 1080.
 - "tmo" sets a connection timeout in seconds for this proxy. Default is 5.
+- "pri" specifies a priority for the server within the list, higher
+  values being tried first. The default priority is 1.
+- "weight" specifies a selection bias. Within a priority set servers
+  are queried in a random fashion, weighted by this value. The default
+  value for selection bias is 1.
 
-Proxies from the list are tried in order until
-one responds.  The timeout for the overall connection
-applies to the set of proxied attempts.
+Proxies from the list are tried according to their priority
+and weight settings until one responds.  The timeout for the
+overall connection applies to the set of proxied attempts.
 
 If events are used, the remote IP/port during a
 tcp:connect event will be that of the proxy.
