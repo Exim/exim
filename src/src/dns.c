@@ -1112,8 +1112,7 @@ return DNS_FAIL;
 *          Get address(es) from DNS record       *
 *************************************************/
 
-/* The record type is either T_A for an IPv4 address or T_AAAA (or T_A6 when
-supported) for an IPv6 address.
+/* The record type is either T_A for an IPv4 address or T_AAAA for an IPv6 address.
 
 Argument:
   dnsa       the DNS answer block
@@ -1145,8 +1144,11 @@ else
   {
   if (rr->data + 16 <= dnsa_lim)
     {
+    struct in6_addr in6;
+    int i;
+    for (i = 0; i < 16; i++) in6.__in6_u.__u6_addr8[i] = rr->data[i];
     yield = store_get(sizeof(dns_address) + 50);
-    inet_ntop(AF_INET6, US rr->data, CS yield->address, 50);
+    inet_ntop(AF_INET6, &in6, CS yield->address, 50);
     yield->next = NULL;
     }
   }

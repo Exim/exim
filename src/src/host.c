@@ -2408,10 +2408,7 @@ for (; i >= 0; i--)
     {
     if (rr->type == type)
       {
-      /* dns_address *da = dns_address_from_rr(&dnsa, rr); */
-
-      dns_address *da;
-      da = dns_address_from_rr(&dnsa, rr);
+      dns_address *da = dns_address_from_rr(&dnsa, rr);
 
       DEBUG(D_host_lookup)
         if (!da) debug_printf("no addresses extracted from A6 RR for %s\n",
