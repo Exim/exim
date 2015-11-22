@@ -861,6 +861,8 @@ a) variables set in events raised from transports will not
    be visible outside that transport call.
 b) acl_m variables in a server context are lost on a new connection,
    and after helo/ehlo/mail/starttls/rset commands
+Using an ACL expansion with the logwrite modifier can be a
+useful way of writing to the main log.
 
 
 
