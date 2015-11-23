@@ -78,6 +78,7 @@ a number of seconds (followed by one space).
 #include <sys/types.h>
 #include <sys/time.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #define FALSE         0
 #define TRUE          1
