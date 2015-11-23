@@ -75,6 +75,7 @@ a number of seconds (followed by one space).
 #include <errno.h>
 #include <signal.h>
 #include <arpa/nameser.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <dirent.h>
@@ -501,35 +502,13 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       break;
 
     case ns_t_a:
-      for (i = 0; i < 4; i++)
-        {
-        value = 0;
-        while (isdigit(*p)) value = value*10 + *p++ - '0';
-        *pk++ = value;
-        p++;
-        }
+      inet_pton(AF_INET, p, pk);                /* FIXME: error checking */
+      pk += 4;
       break;
 
-    /* The only occurrence of a double colon is for ::1 */
     case ns_t_aaaa:
-      if (Ustrcmp(p, "::1") == 0)
-        {
-        memset(pk, 0, 15);
-        pk += 15;
-        *pk++ = 1;
-        }
-      else for (i = 0; i < 8; i++)
-        {
-        value = 0;
-        while (isxdigit(*p))
-          {
-          value = value * 16 + toupper(*p) - (isdigit(*p)? '0' : '7');
-          p++;
-          }
-        *pk++ = (value >> 8) & 255;
-        *pk++ = value & 255;
-        p++;
-        }
+      inet_pton(AF_INET6, p, pk);               /* FIXME: error checking */
+      pk += 16;
       break;
 
     case ns_t_mx:
