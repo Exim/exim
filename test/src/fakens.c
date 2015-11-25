@@ -99,7 +99,7 @@ typedef unsigned char uschar;
 #define Ustrlen(s)         (int)strlen(CCS(s))
 #define Ustrncmp(s,t,n)    strncmp(CCS(s),CCS(t),n)
 #define Ustrncpy(s,t,n)    strncpy(CS(s),CCS(t),n)
-#define Ustrtok(s,t)       strtok(CS(s),CCS(t))
+#define Ustrtok(s,t)       (uschar*)strtok(CS(s),CCS(t))
 
 typedef struct zoneitem {
   uschar *zone;
@@ -488,12 +488,12 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     {
     case ns_t_soa:
       p = Ustrtok(p, " ");
-      ep = p + strlen(p);
+      ep = p + Ustrlen(p);
       if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
       pk = packname(p, pk);                     /* primary ns */
       p = Ustrtok(NULL, " ");
       pk = packname(p , pk);                    /* responsible mailbox */
-      *(p += strlen(p)) = ' ';
+      *(p += Ustrlen(p)) = ' ';
       while (isspace(*p)) p++;
       pk = longfield(&p, pk);                   /* serial */
       pk = longfield(&p, pk);                   /* refresh */
@@ -503,12 +503,12 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       break;
 
     case ns_t_a:
-      inet_pton(AF_INET, p, pk);                /* FIXME: error checking */
+      inet_pton(AF_INET, CCS p, pk);                /* FIXME: error checking */
       pk += 4;
       break;
 
     case ns_t_aaaa:
-      inet_pton(AF_INET6, p, pk);               /* FIXME: error checking */
+      inet_pton(AF_INET6, CCS p, pk);               /* FIXME: error checking */
       pk += 16;
       break;
 
