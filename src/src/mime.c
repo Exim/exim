@@ -550,7 +550,8 @@ int size = 0, ptr = 0;
 uschar * val = string_cat(NULL, &size, &ptr, US"=?", 2);
 uschar c;
 
-val = string_cat(val, &size, &ptr, charset, Ustrlen(charset));
+if (charset)
+  val = string_cat(val, &size, &ptr, charset, Ustrlen(charset));
 val = string_cat(val, &size, &ptr, US"?Q?", 3);
 
 while ((c = *fname))
@@ -607,7 +608,7 @@ while(1)
     if (!fgets(CS header, MIME_MAX_HEADER_SIZE, f))
       {
       /* Hit EOF or read error. Ugh. */
-      DEBUG(D_acl) debug_printf("Hit EOF ...\n");
+      DEBUG(D_acl) debug_printf("MIME: Hit EOF ...\n");
       return rc;
       }
 
@@ -619,12 +620,12 @@ while(1)
       if (Ustrncmp((header+2+Ustrlen(context->boundary)), "--", 2) == 0)
 	{
 	/* END boundary found */
-	DEBUG(D_acl) debug_printf("End boundary found %s\n",
+	DEBUG(D_acl) debug_printf("MIME: End boundary found %s\n",
 	  context->boundary);
 	return rc;
 	}
 
-      DEBUG(D_acl) debug_printf("Next part with boundary %s\n",
+      DEBUG(D_acl) debug_printf("MIME: Next part with boundary %s\n",
 	context->boundary);
       break;
       }
@@ -648,7 +649,7 @@ while(1)
 
       for (q = p; *q != ';' && *q; q++) ;
       *mh->value = string_copynlc(p, q-p);
-      DEBUG(D_acl) debug_printf("found %s MIME header, value is '%s'\n",
+      DEBUG(D_acl) debug_printf("MIME: found %s header, value is '%s'\n",
 	mh->name, *mh->value);
 
       if (*(p = q)) p++;			/* jump past the ; */
@@ -666,7 +667,7 @@ while(1)
 	  {
 	  mime_parameter * mp;
 
-	  DEBUG(D_acl) debug_printf("  considering paramlist '%s'\n", p);
+	  DEBUG(D_acl) debug_printf("MIME:   considering paramlist '%s'\n", p);
 
 	  if (  !mime_filename
 	     && strncmpic(CUS"content-disposition:", header, 20) == 0
@@ -700,22 +701,27 @@ while(1)
 		  uschar * s = q;
 
 		  /* look for a ' in the "filename" */
-		  while(*s != '\'' && *s) s++;	/* s is ' or NUL */
+		  while(*s != '\'' && *s) s++;	/* s is 1st ' or NUL */
 
 		  if ((size = s-q) > 0)
-		    {
 		    mime_filename_charset = string_copyn(q, size);
-		    p = s;
 
-		    while(*p == '\'' && *p) p++; /* p is after ' */
-		    }
+		  if (*(p = s)) p++;
+		  while(*p == '\'') p++;	/* p is after 2nd ' */
 		  }
 		else
 		  p = q;
 
+		DEBUG(D_acl) debug_printf("MIME:    charset %s fname '%s'\n",
+		  mime_filename_charset ? mime_filename_charset : US"<NULL>", p);
+
 		temp_string = rfc2231_to_2047(p, mime_filename_charset, &slen);
-		temp_string = rfc2047_decode(temp_string, FALSE, NULL, 32,
+		DEBUG(D_acl) debug_printf("MIME:    2047-name %s\n", temp_string);
+
+		temp_string = rfc2047_decode(temp_string, FALSE, NULL, ' ',
 		  NULL, &err_msg);
+		DEBUG(D_acl) debug_printf("MIME:    plain-name %s\n", temp_string);
+
 		size = Ustrlen(temp_string);
 
 		if (size == slen)
@@ -750,7 +756,7 @@ while(1)
 		    &dummy_errstr)
 		: NULL;
 	      DEBUG(D_acl) debug_printf(
-		" found %s MIME parameter in %s header, value '%s'\n",
+		"MIME:  found %s parameter in %s header, value '%s'\n",
 		mp->name, mh->name, *mp->value);
 
 	      break;			/* done matching param names */
@@ -768,7 +774,7 @@ while(1)
 	  if (decoding_failed) mime_filename = mime_fname_rfc2231;
 
 	  DEBUG(D_acl) debug_printf(
-	    " found %s MIME parameter in %s header, value is '%s'\n",
+	    "MIME:  found %s parameter in %s header, value is '%s'\n",
 	    "filename", mh->name, mime_filename);
 	  }
 	}
@@ -809,8 +815,9 @@ while(1)
        (nested_context.boundary != NULL) &&
        (Ustrncmp(mime_content_type,"multipart",9) == 0) )
     {
-    DEBUG(D_acl) debug_printf("Entering multipart recursion, boundary '%s'\n",
-      nested_context.boundary);
+    DEBUG(D_acl)
+      debug_printf("MIME: Entering multipart recursion, boundary '%s'\n",
+	nested_context.boundary);
 
     nested_context.context =
       context && context->context == MBC_ATTACHMENT
