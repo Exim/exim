@@ -65,7 +65,7 @@ bin/checkaccess:src/checkaccess.c Makefile
 		@echo " "
 
 bin/fakens:     src/fakens.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens src/fakens.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens src/fakens.c $(LIBS)
 		@echo ">>> bin/fakens command built"
 		@echo " "
 
