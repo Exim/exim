@@ -99,6 +99,7 @@ typedef unsigned char uschar;
 #define Ustrlen(s)         (int)strlen(CCS(s))
 #define Ustrncmp(s,t,n)    strncmp(CCS(s),CCS(t),n)
 #define Ustrncpy(s,t,n)    strncpy(CS(s),CCS(t),n)
+#define Ustrtok(s,t)       strtok(CS(s),CCS(t))
 
 typedef struct zoneitem {
   uschar *zone;
@@ -486,11 +487,11 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   switch (tvalue)
     {
     case ns_t_soa:
-      p = strtok(p, " ");
+      p = Ustrtok(p, " ");
       ep = p + strlen(p);
       if (ep[-1] != '.') sprintf(CS ep, "%s.", zone);
       pk = packname(p, pk);                     /* primary ns */
-      p = strtok(NULL, " ");
+      p = Ustrtok(NULL, " ");
       pk = packname(p , pk);                    /* responsible mailbox */
       *(p += strlen(p)) = ' ';
       while (isspace(*p)) p++;
