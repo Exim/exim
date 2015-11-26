@@ -3552,6 +3552,9 @@ example:
 exim '-D ABC = something' ...
 .endd
 &%-D%& may be repeated up to 10 times on a command line.
+.new
+Only macro names up to 22 letters long can be set.
+.wen
 
 
 .vitem &%-d%&<&'debug&~options'&>
