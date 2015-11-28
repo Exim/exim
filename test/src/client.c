@@ -841,8 +841,9 @@ if (tls_on_connect)
 while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
   {
   int n = (int)strlen(CS outbuffer);
-  while (n > 0 && isspace(outbuffer[n-1])) n--;
-  outbuffer[n] = 0;
+
+  /* Strip trailing newline */
+  if (outbuffer[n-1] == '\n') outbuffer[--n] = 0;
 
   /* Expect incoming */
 

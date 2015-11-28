@@ -14,8 +14,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 3
 <<< 354 Enter message, ending with "." on a line by itself
 >>> From                                                                                                                                                                                                                              : userx
->>> 
->>> This is junk
+>>>   
+>>> This is junk 
 >>> .
 ??? 5
 <<< 550 Administrative prohibition
