@@ -7388,7 +7388,7 @@ SMTP authentication. See the &%ldapauth%& expansion string condition in chapter
 The &(ldapdn)& lookup type returns the Distinguished Name from a single entry
 as a sequence of values, for example
 .code
-cn=manager, o=University of Cambridge, c=UK
+cn=manager,o=University of Cambridge,c=UK
 .endd
 The &(ldap)& lookup type generates an error if more than one entry matches the
 search filter, whereas &(ldapm)& permits this case, and inserts a newline in
@@ -7399,7 +7399,8 @@ directory.
 
 In the common case where you specify a single attribute in your LDAP query, the
 result is not quoted, and does not contain the attribute name. If the attribute
-has multiple values, they are separated by commas.
+has multiple values, they are separated by commas. Any comma that is
+part of an attribute's value is doubled.
 
 If you specify multiple attributes, the result contains space-separated, quoted
 strings, each preceded by the attribute name and an equals sign. Within the
@@ -7414,13 +7415,18 @@ same as specifying all of an entry's attributes.
 Here are some examples of the output format. The first line of each pair is an
 LDAP query, and the second is the data that is returned. The attribute called
 &%attr1%& has two values, one of them with an embedded comma, whereas
-&%attr2%& has only one value:
+&%attr2%& has only one value. Both attributes are derived from &%attr%&
+(they have SUP &%attr%& in their schema definitions).
+
 .code
 ldap:///o=base?attr1?sub?(uid=fred)
 value1.1,value1,,2
 
 ldap:///o=base?attr2?sub?(uid=fred)
 value two
+
+ldap:///o=base?attr?sub?(uid=fred)
+value1.1,value1,,2,value two
 
 ldap:///o=base?attr1,attr2?sub?(uid=fred)
 attr1="value1.1,value1,,2" attr2="value two"
