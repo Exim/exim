@@ -596,7 +596,7 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
           pdkim_strtrim(cur_val);
           #ifdef PDKIM_DEBUG
           if (ctx->debug_stream)
-            fprintf(ctx->debug_stream, "%s=%s\n", cur_tag->str, cur_val->str);
+            fprintf(ctx->debug_stream, " %s=%s\n", cur_tag->str, cur_val->str);
           #endif
           switch (cur_tag->str[0]) {
             case 'b':
@@ -674,7 +674,7 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
             default:
               #ifdef PDKIM_DEBUG
               if (ctx->debug_stream)
-                fprintf(ctx->debug_stream, "Unknown tag encountered\n");
+                fprintf(ctx->debug_stream, " Unknown tag encountered\n");
               #endif
             break;
           }
@@ -799,7 +799,7 @@ pdkim_pubkey *pdkim_parse_pubkey_record(pdkim_ctx *ctx, char *raw_record) {
           pdkim_strtrim(cur_val);
           #ifdef PDKIM_DEBUG
           if (ctx->debug_stream)
-            fprintf(ctx->debug_stream, "%s=%s\n", cur_tag->str, cur_val->str);
+            fprintf(ctx->debug_stream, " %s=%s\n", cur_tag->str, cur_val->str);
           #endif
           switch (cur_tag->str[0]) {
             case 'v':
@@ -833,7 +833,7 @@ pdkim_pubkey *pdkim_parse_pubkey_record(pdkim_ctx *ctx, char *raw_record) {
             default:
               #ifdef PDKIM_DEBUG
               if (ctx->debug_stream)
-                fprintf(ctx->debug_stream, "Unknown tag encountered\n");
+                fprintf(ctx->debug_stream, " Unknown tag encountered\n");
               #endif
             break;
           }
@@ -925,7 +925,7 @@ int pdkim_update_bodyhash(pdkim_ctx *ctx, const char *data, int len) {
       sig->signed_body_bytes += canon_len;
 #ifdef PDKIM_DEBUG
       if (ctx->debug_stream!=NULL)
-        pdkim_quoteprint(ctx->debug_stream,canon_data,canon_len,0);
+        pdkim_quoteprint(ctx->debug_stream,canon_data,canon_len,1);
 #endif
     }
 
@@ -1037,6 +1037,23 @@ int pdkim_bodyline_complete(pdkim_ctx *ctx) {
     goto BAIL;
   }
 
+  if (  ctx->sig
+     && ctx->sig->canon_body == PDKIM_CANON_RELAXED) {
+    /* Lines with just spaces need to be buffered too */
+    char *check = p;
+    while(memcmp(check,"\r\n",2) != 0) {
+      char c = *check;
+
+      if (c != '\t' && c != ' ')
+	goto PROCESS;
+      check++;
+    }
+
+    ctx->num_buffered_crlf++;
+    goto BAIL;
+  }
+
+  PROCESS:
   /* At this point, we have a non-empty line, so release the buffered ones. */
   while (ctx->num_buffered_crlf) {
     pdkim_update_bodyhash(ctx,"\r\n",2);
@@ -1699,7 +1716,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
       if (ctx->debug_stream) {
         fprintf(ctx->debug_stream,
                 "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-        fprintf(ctx->debug_stream,"Raw record: ");
+        fprintf(ctx->debug_stream," Raw record: ");
         pdkim_quoteprint(ctx->debug_stream, dns_txt_reply, strlen(dns_txt_reply), 1);
       }
       #endif
@@ -1710,7 +1727,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
         sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
         #ifdef PDKIM_DEBUG
         if (ctx->debug_stream) {
-          fprintf(ctx->debug_stream,"Error while parsing public key record\n");
+          fprintf(ctx->debug_stream," Error while parsing public key record\n");
           fprintf(ctx->debug_stream,
             "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
         }

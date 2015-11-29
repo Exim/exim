@@ -231,7 +231,6 @@ dkim_exim_acl_setup(uschar * id)
 pdkim_signature * sig;
 uschar * cmp_val;
 
-
 dkim_cur_sig = NULL;
 dkim_cur_signer = id;
 
