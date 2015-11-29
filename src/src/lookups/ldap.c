@@ -713,10 +713,15 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
         LDAP_RES_SEARCH_ENTRY)
   {
   LDAPMessage  *e;
+  int valuecount;   /* We can see an attr spread across several
+                    entries. If B is derived from A and we request
+                    A and the directory contains both, A and B,
+                    then we get two entries, one for A and one for B.
+                    Here we just count the values per entry */
 
   DEBUG(D_lookup) debug_printf("LDAP result loop\n");
 
-  for(e = ldap_first_entry(lcp->ld, result);
+  for(e = ldap_first_entry(lcp->ld, result), valuecount = 0;
       e != NULL;
       e = ldap_next_entry(lcp->ld, e))
     {
@@ -775,6 +780,11 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
               attr = US ldap_next_attribute(lcp->ld, e, ber))
       {
       DEBUG(D_lookup) debug_printf("LDAP attr loop\n");
+
+      /* In case of attrs_requested == 1 we just count the values, in all other cases
+      (0, >1) we count the values per attribute */
+      if (attrs_requested != 1) valuecount = 0;
+
       if (attr[0] != 0)
         {
         /* Get array of values for this attribute. */
@@ -797,6 +807,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             {
             uschar *value = *values;
             int len = Ustrlen(value);
+            ++valuecount;
 
             DEBUG(D_lookup) debug_printf("LDAP value loop %s:%s\n", attr, value);
 
@@ -806,7 +817,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             then query for A.) In all other cases we detect the different
             attribute and append only every non first value. */
 
-	    if ((attr_count == 1 && data) || (values != firstval))
+            if (data && valuecount > 1)
               data = string_cat(data, &size, &ptr, US",", 1);
 
             /* For multiple attributes, the data is in quotes. We must escape
