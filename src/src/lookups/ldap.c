@@ -714,7 +714,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
   {
   LDAPMessage  *e;
 
-  DEBUG(D_lookup) debug_printf("ldap_result loop\n");
+  DEBUG(D_lookup) debug_printf("LDAP result loop\n");
 
   for(e = ldap_first_entry(lcp->ld, result);
       e != NULL;
@@ -774,6 +774,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
               attr != NULL;
               attr = US ldap_next_attribute(lcp->ld, e, ber))
       {
+      DEBUG(D_lookup) debug_printf("LDAP attr loop\n");
       if (attr[0] != 0)
         {
         /* Get array of values for this attribute. */
@@ -797,7 +798,8 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             uschar *value = *values;
             int len = Ustrlen(value);
 
-            DEBUG(D_lookup) debug_printf("LDAP attr loop %s:%s\n", attr, value);
+            DEBUG(D_lookup) debug_printf("LDAP value loop %s:%s\n", attr, value);
+
 
 	    /* In case we requested one attribute only but got
 	     * several times into that attr loop, we need to append
