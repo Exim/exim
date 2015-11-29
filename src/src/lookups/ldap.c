@@ -156,7 +156,7 @@ uschar *error1 = NULL;   /* string representation of errcode (static) */
 uschar *error2 = NULL;   /* error message from the server */
 uschar *matched = NULL;  /* partially matched DN */
 
-int    attr_count = 0;
+int    attrs_requested = 0;
 int    error_yield = DEFER;
 int    msgid;
 int    rc, ldap_rc, ldap_parse_rc;
@@ -248,7 +248,7 @@ if (host != NULL)
 /* Count the attributes; we need this later to tell us how to format results */
 
 for (attrp = USS ludp->lud_attrs; attrp != NULL && *attrp != NULL; attrp++)
-  attr_count++;
+  attrs_requested++;
 
 /* See if we can find a cached connection to this host. The port is not
 relevant for ldapi. The host name pointer is set to NULL if no host was given
@@ -781,7 +781,8 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
         if ((firstval = values = USS ldap_get_values(lcp->ld, e, CS attr))
              != NULL)
           {
-          if (attr_count != 1)
+
+          if (attrs_requested != 1)
             {
             if (insert_space)
               data = string_cat(data, &size, &ptr, US" ", 1);
@@ -810,7 +811,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             /* For multiple attributes, the data is in quotes. We must escape
             internal quotes, backslashes, newlines, and must double commas. */
 
-            if (attr_count != 1)
+            if (attrs_requested != 1)
               {
               int j;
               for (j = 0; j < len; j++)
@@ -851,7 +852,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
           /* Closing quote at the end of the data for a named attribute. */
 
-          if (attr_count != 1)
+          if (attrs_requested != 1)
             data = string_cat(data, &size, &ptr, US"\"", 1);
 
           /* Free the values */
