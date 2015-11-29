@@ -765,10 +765,10 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
     /* Otherwise, loop through the entry, grabbing attribute values. If there's
     only one attribute being retrieved, no attribute name is given, and the
-    result is not quoted. Multiple values are separated by (comma, space).
+    result is not quoted. Multiple values are separated by (comma).
     If more than one attribute is being retrieved, the data is given as a
-    sequence of name=value pairs, with the value always in quotes. If there are
-    multiple values, they are given within the quotes, comma separated. */
+    sequence of name=value pairs, separated by (space), with the value always in quotes.
+    If there are multiple values, they are given within the quotes, comma separated. */
 
     else for (attr = US ldap_first_attribute(lcp->ld, e, &ber);
               attr != NULL;
