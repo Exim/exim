@@ -1,0 +1,17 @@
+Received: from xxxxxxxx.sproing.at ([127.0.0.1]:6225 helo=xxxxxxxx.sproing.at)
+	by yyyyyyyyyy.sproing.at with esmtp (Exim 4.86)
+	(envelope-from <postmaster@sproing.at>)
+	id 1a2FuN-0007pz-HD
+	for eximdkimtest@sproing.at; Fri, 27 Nov 2015 11:05:39 +0100
+From: <postmaster@test.ex>
+To: <eximdkimtest@sproing.at>
+Subject: test
+Date: Fri, 27 Nov 2015 11:05:38 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+
+
+
+
+
+

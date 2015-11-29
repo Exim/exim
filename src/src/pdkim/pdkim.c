@@ -987,11 +987,11 @@ int pdkim_finish_bodyhash(pdkim_ctx *ctx) {
       else {
         #ifdef PDKIM_DEBUG
         if (ctx->debug_stream) {
-          fprintf(ctx->debug_stream, "PDKIM [%s] Body hash did NOT verify\n",
-                  sig->domain);
           fprintf(ctx->debug_stream, "PDKIM [%s] bh signature: ", sig->domain);
           pdkim_hexprint(ctx->debug_stream, sig->bodyhash,
                            (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32,1);
+          fprintf(ctx->debug_stream, "PDKIM [%s] Body hash did NOT verify\n",
+                  sig->domain);
         }
         #endif
         sig->verify_status     = PDKIM_VERIFY_FAIL;
@@ -1022,6 +1022,12 @@ int pdkim_bodyline_complete(pdkim_ctx *ctx) {
   if (ctx->input_mode == PDKIM_INPUT_SMTP) {
     /* Terminate on EOD marker */
     if (memcmp(p,".\r\n",3) == 0) {
+      /* In simple body mode, if any empty lines were buffered,
+      replace with one. rfc 4871 3.4.3 */
+      if (ctx->sig && ctx->sig->canon_body == PDKIM_CANON_SIMPLE
+	 && ctx->num_buffered_crlf > 0)
+	pdkim_update_bodyhash(ctx,"\r\n",2);
+
       ctx->seen_eod = 1;
       goto BAIL;
     }
