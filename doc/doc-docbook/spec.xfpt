@@ -1860,7 +1860,7 @@ described RFC 2047. This makes it possible to transmit characters that are not
 in the ASCII character set, and to label them as being in a particular
 character set. When Exim is inspecting header lines by means of the &%$h_%&
 mechanism, it decodes them, and translates them into a specified character set
-(default ISO-8859-1). The translation is possible only if the operating system
+(default is set at build time). The translation is possible only if the operating system
 supports the &[iconv()]& function.
 
 However, some of the operating systems that supply &[iconv()]& do not support
@@ -10328,7 +10328,7 @@ f.7.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 This operator encodes text according to the rules of RFC 2047. This is an
 encoding that is used in header lines to encode non-ASCII characters. It is
 assumed that the input string is in the encoding specified by the
-&%headers_charset%& option, which defaults to ISO-8859-1. If the string
+&%headers_charset%& option, which gets its default at build time. If the string
 contains only characters in the range 33&--126, and no instances of the
 characters
 .code
@@ -24357,7 +24357,7 @@ replaced, not just the working part. The replacement must be a complete RFC
 2822 address, including the angle brackets if necessary. If text outside angle
 brackets contains a character whose value is greater than 126 or less than 32
 (except for tab), the text is encoded according to RFC 2047. The character set
-is taken from &%headers_charset%&, which defaults to ISO-8859-1.
+is taken from &%headers_charset%&, which gets its default at build time.
 
 When the &"w"& flag is set on a rule that causes an envelope address to be
 rewritten, all but the working part of the replacement address is discarded.
