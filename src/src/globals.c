@@ -637,13 +637,14 @@ BOOL    disable_ipv6           = FALSE;
 BOOL    disable_logging        = FALSE;
 
 #ifndef DISABLE_DKIM
+BOOL    dkim_collect_input       = FALSE;
 uschar *dkim_cur_signer          = NULL;
+BOOL    dkim_disable_verify      = FALSE;
+int     dkim_key_length          = 0;
 uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
 uschar *dkim_verify_signers      = US"$dkim_signers";
-BOOL    dkim_collect_input       = FALSE;
-BOOL    dkim_disable_verify      = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DMARC
 BOOL    dmarc_has_been_checked  = FALSE;

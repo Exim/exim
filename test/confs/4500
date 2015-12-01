@@ -14,6 +14,7 @@ tls_advertise_hosts =
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
+acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
 
 queue_only
 queue_run_in_order

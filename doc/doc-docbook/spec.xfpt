@@ -11417,7 +11417,8 @@ see section &<<SECTdemimecond>>&.
        &$dkim_key_nosubdomains$& &&&
        &$dkim_key_srvtype$& &&&
        &$dkim_key_granularity$& &&&
-       &$dkim_key_notes$&
+       &$dkim_key_notes$& &&&
+       &$dkim_key_length$&
 These variables are only available within the DKIM ACL.
 For details see chapter &<<CHAPdkim>>&.
 
@@ -37962,6 +37963,8 @@ Key granularity (tag g=) from the key record. Defaults to "*" if not specified
 in the key record.
 .vitem &%$dkim_key_notes%&
 Notes from the key record (tag n=).
+.vitem &%$dkim_key_length%&
+Number of bits in the key.
 .endlist
 
 In addition, two ACL conditions are provided:

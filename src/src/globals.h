@@ -374,13 +374,14 @@ extern BOOL    disable_ipv6;           /* Don't do any IPv6 things */
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */
 
 #ifndef DISABLE_DKIM
+extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP input is fed to DKIM validation */
 extern uschar *dkim_cur_signer;        /* Expansion variable, holds the current "signer" domain or identity during a acl_smtp_dkim run */
+extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
+extern int     dkim_key_length;        /* Expansion variable, length of signing key in bits */
 extern uschar *dkim_signers;           /* Expansion variable, holds colon-separated list of domains and identities that have signed a message */
 extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
 extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */
 extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for each of which we call the DKIM ACL */
-extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP input is fed to DKIM validation */
-extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
 #ifdef EXPERIMENTAL_DMARC
 extern BOOL    dmarc_has_been_checked; /* Global variable to check if test has been called yet */

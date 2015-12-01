@@ -127,12 +127,14 @@ for (sig = dkim_signatures; sig; sig = sig->next)
   /* Log a line for each signature */
 
   uschar *logmsg = string_append(NULL, &size, &ptr, 5,
-	string_sprintf("d=%s s=%s c=%s/%s a=%s ",
+	string_sprintf("d=%s s=%s c=%s/%s a=%s b=%d ",
 	      sig->domain,
 	      sig->selector,
 	      sig->canon_headers == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
 	      sig->canon_body == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
-	      sig->algo == PDKIM_ALGO_RSA_SHA256 ?  "rsa-sha256" : "rsa-sha1"),
+	      sig->algo == PDKIM_ALGO_RSA_SHA256 ?  "rsa-sha256" : "rsa-sha1",
+	      sig->sigdata_len * 8
+	      ),
 
 	sig->identity ? string_sprintf("i=%s ", sig->identity) : US"",
 	sig->created > 0 ? string_sprintf("t=%lu ", sig->created) : US"",
@@ -256,6 +258,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     dkim_signing_domain = US sig->domain;
     dkim_signing_selector = US sig->selector;
+    dkim_key_length = sig->sigdata_len * 8;
     return;
     }
 }

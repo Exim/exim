@@ -26,6 +26,8 @@ Version 4.87
 
  5. New "-bP config" support, to dump the effective configuration.
 
+ 6. New $dkim_key_length variable.
+
 
 Version 4.86
 ------------

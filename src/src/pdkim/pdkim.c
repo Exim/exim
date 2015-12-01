@@ -141,22 +141,22 @@ for (i = 0; i<len; i++)
   const int c = p[i];
   switch (c)
     {
-    case ' ' : fprintf(stream,"{SP}"); break;
-    case '\t': fprintf(stream,"{TB}"); break;
-    case '\r': fprintf(stream,"{CR}"); break;
-    case '\n': fprintf(stream,"{LF}"); break;
-    case '{' : fprintf(stream,"{BO}"); break;
-    case '}' : fprintf(stream,"{BC}"); break;
+    case ' ' : fprintf(stream, "{SP}"); break;
+    case '\t': fprintf(stream, "{TB}"); break;
+    case '\r': fprintf(stream, "{CR}"); break;
+    case '\n': fprintf(stream, "{LF}"); break;
+    case '{' : fprintf(stream, "{BO}"); break;
+    case '}' : fprintf(stream, "{BC}"); break;
     default:
       if ( (c < 32) || (c > 127) )
-	fprintf(stream,"{%02x}",c);
+	fprintf(stream, "{%02x}", c);
       else
-	fputc(c,stream);
+	fputc(c, stream);
       break;
     }
   }
 if (lf)
-  fputc('\n',stream);
+  fputc('\n', stream);
 }
 
 void
@@ -168,10 +168,10 @@ const unsigned char *p = (const unsigned char *)data;
 for (i =0 ; i<len; i++)
   {
   const int c = p[i];
-  fprintf(stream,"%02x",c);
+  fprintf(stream, "%02x", c);
   }
 if (lf)
-  fputc('\n',stream);
+  fputc('\n', stream);
 }
 #endif
 
@@ -184,7 +184,7 @@ pdkim_append_stringlist(pdkim_stringlist *base, char *str)
 pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
 
 if (!new_entry) return NULL;
-memset(new_entry,0,sizeof(pdkim_stringlist));
+memset(new_entry, 0, sizeof(pdkim_stringlist));
 if (!(new_entry->value = strdup(str))) return NULL;
 if (base)
   {
@@ -203,7 +203,7 @@ pdkim_prepend_stringlist(pdkim_stringlist *base, char *str)
 pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
 
 if (!new_entry) return NULL;
-memset(new_entry,0,sizeof(pdkim_stringlist));
+memset(new_entry, 0, sizeof(pdkim_stringlist));
 if (!(new_entry->value = strdup(str))) return NULL;
 if (base)
   new_entry->next = base;
@@ -221,7 +221,7 @@ unsigned int len = cstr ? strlen(cstr) : 0;
 pdkim_str *p = malloc(sizeof(pdkim_str));
 
 if (!p) return NULL;
-memset(p,0,sizeof(pdkim_str));
+memset(p, 0, sizeof(pdkim_str));
 if (!(p->str = malloc(len+1)))
   {
   free(p);
@@ -230,7 +230,7 @@ if (!(p->str = malloc(len+1)))
 p->allocated = len+1;
 p->len = len;
 if (cstr)
-  strcpy(p->str,cstr);
+  strcpy(p->str, cstr);
 else
   p->str[p->len] = '\0';
 return p;
@@ -265,8 +265,8 @@ char *
 pdkim_numcat(pdkim_str *str, unsigned long num)
 {
 char minibuf[20];
-snprintf(minibuf,20,"%lu",num);
-return pdkim_strcat(str,minibuf);
+snprintf(minibuf, 20, "%lu", num);
+return pdkim_strcat(str, minibuf);
 }
 
 char *
@@ -402,14 +402,14 @@ char *q;
 int rc = PDKIM_FAIL;
 
 /* Get header name */
-char *hcolon = strchr(header,':');
+char *hcolon = strchr(header, ':');
 
 if (!hcolon) return rc; /* This isn't a header */
 
 if (!(hname = malloc((hcolon-header)+1)))
   return PDKIM_ERR_OOM;
-memset(hname,0,(hcolon-header)+1);
-strncpy(hname,header,(hcolon-header));
+memset(hname, 0, (hcolon-header)+1);
+strncpy(hname, header, (hcolon-header));
 
 /* Copy tick-off list locally, so we can punch zeroes into it */
 if (!(lcopy = strdup(tick)))
@@ -418,12 +418,12 @@ if (!(lcopy = strdup(tick)))
   return PDKIM_ERR_OOM;
   }
 p = lcopy;
-q = strchr(p,':');
+q = strchr(p, ':');
 while (q)
   {
   *q = '\0';
 
-  if (strcasecmp(p,hname) == 0)
+  if (strcasecmp(p, hname) == 0)
     {
     rc = PDKIM_OK;
     /* Invalidate header name instance in tick-off list */
@@ -432,10 +432,10 @@ while (q)
     }
 
   p = q+1;
-  q = strchr(p,':');
+  q = strchr(p, ':');
   }
 
-if (strcasecmp(p,hname) == 0)
+if (strcasecmp(p, hname) == 0)
   {
   rc = PDKIM_OK;
   /* Invalidate header name instance in tick-off list */
@@ -496,7 +496,7 @@ for (p = header; *p != '\0'; p++)
 if (q > relaxed && q[-1] == ' ') q--; /* Squash eventual trailing SP */
 *q = '\0';
 
-if (crlf) strcat(relaxed,"\r\n");
+if (crlf) strcat(relaxed, "\r\n");
 return relaxed;
 }
 
@@ -614,7 +614,7 @@ pdkim_signature *
 pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr)
 {
 pdkim_signature *sig ;
-char *p,*q;
+char *p, *q;
 pdkim_str *cur_tag = NULL;
 pdkim_str *cur_val = NULL;
 BOOL past_hname = FALSE;
@@ -623,7 +623,7 @@ int where = PDKIM_HDR_LIMBO;
 int i;
 
 if (!(sig = malloc(sizeof(pdkim_signature)))) return NULL;
-memset(sig,0,sizeof(pdkim_signature));
+memset(sig, 0, sizeof(pdkim_signature));
 sig->bodylength = -1;
 
 if (!(sig->rawsig_no_b_val = malloc(strlen(raw_hdr)+1)))
@@ -806,6 +806,8 @@ if (ctx->debug_stream)
 		   sig->rawsig_no_b_val,
 		   strlen(sig->rawsig_no_b_val), 1);
   fprintf(ctx->debug_stream,
+	  "PDKIM >> Sig size: %4d bits\n", sig->sigdata_len*8);
+  fprintf(ctx->debug_stream,
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 #endif
@@ -837,7 +839,7 @@ pdkim_str *cur_val = NULL;
 int where = PDKIM_HDR_LIMBO;
 
 if (!(pub = malloc(sizeof(pdkim_pubkey)))) return NULL;
-memset(pub,0,sizeof(pdkim_pubkey));
+memset(pub, 0, sizeof(pdkim_pubkey));
 
 for (p = raw_record; ; p++)
   {
@@ -910,8 +912,8 @@ for (p = raw_record; ; p++)
 	  case 's':
 	    pub->srvtype = strdup(cur_val->str); break;
 	  case 't':
-	    if (strchr(cur_val->str,'y') != NULL) pub->testing = 1;
-	    if (strchr(cur_val->str,'s') != NULL) pub->no_subdomaining = 1;
+	    if (strchr(cur_val->str, 'y') != NULL) pub->testing = 1;
+	    if (strchr(cur_val->str, 's') != NULL) pub->no_subdomaining = 1;
 	    break;
 	  default:
 #ifdef PDKIM_DEBUG
@@ -1012,9 +1014,9 @@ while (sig)
   if (canon_len > 0)
     {
     if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-      sha1_update(sig->sha1_body,(unsigned char *)canon_data,canon_len);
+      sha1_update(sig->sha1_body, (unsigned char *)canon_data, canon_len);
     else
-      sha2_update(sig->sha2_body,(unsigned char *)canon_data,canon_len);
+      sha2_update(sig->sha2_body, (unsigned char *)canon_data, canon_len);
 
     sig->signed_body_bytes += canon_len;
 #ifdef PDKIM_DEBUG
@@ -1044,9 +1046,9 @@ while (sig)
   unsigned char bh[32]; /* SHA-256 = 32 Bytes,  SHA-1 = 20 Bytes */
 
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-    sha1_finish(sig->sha1_body,bh);
+    sha1_finish(sig->sha1_body, bh);
   else
-    sha2_finish(sig->sha2_body,bh);
+    sha2_finish(sig->sha2_body, bh);
 
 #ifdef PDKIM_DEBUG
   if (ctx->debug_stream)
@@ -1055,7 +1057,7 @@ while (sig)
       sig->domain, sig->signed_body_bytes);
     fprintf(ctx->debug_stream, "PDKIM [%s] bh  computed: ", sig->domain);
     pdkim_hexprint(ctx->debug_stream, (char *)bh,
-		   (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32,1);
+		   (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32, 1);
     }
 #endif
 
@@ -1094,7 +1096,7 @@ while (sig)
         {
 	fprintf(ctx->debug_stream, "PDKIM [%s] bh signature: ", sig->domain);
 	pdkim_hexprint(ctx->debug_stream, sig->bodyhash,
-			 (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32,1);
+			 (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32, 1);
 	fprintf(ctx->debug_stream, "PDKIM [%s] Body hash did NOT verify\n",
 		sig->domain);
 	}
@@ -1137,7 +1139,7 @@ if (ctx->input_mode == PDKIM_INPUT_SMTP)
     if (  ctx->sig && ctx->sig->canon_body == PDKIM_CANON_SIMPLE
        && ctx->num_buffered_crlf > 0
        )
-      pdkim_update_bodyhash(ctx, "\r\n",2);
+      pdkim_update_bodyhash(ctx, "\r\n", 2);
 
     ctx->seen_eod = 1;
     goto BAIL;
@@ -1256,11 +1258,11 @@ if (ctx->mode == PDKIM_MODE_VERIFY)
 	last_sig->next = new_sig;
 	}
       }
-    else
 #ifdef PDKIM_DEBUG
+    else
       if (ctx->debug_stream)
         {
-	fprintf(ctx->debug_stream,"Error while parsing signature header\n");
+	fprintf(ctx->debug_stream, "Error while parsing signature header\n");
 	fprintf(ctx->debug_stream,
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 	}
@@ -1272,8 +1274,7 @@ if (ctx->mode == PDKIM_MODE_VERIFY)
     {
     pdkim_stringlist *list;
 
-    if (!(list = pdkim_prepend_stringlist(ctx->headers,
-				    ctx->cur_header->str)))
+    if (!(list = pdkim_prepend_stringlist(ctx->headers, ctx->cur_header->str)))
       return PDKIM_ERR_OOM;
     ctx->headers = list;
     }
@@ -1421,7 +1422,7 @@ while (l>77)
     {
     size_t sl = strlen(intro);
 
-    pdkim_strncat(str, intro,sl);
+    pdkim_strncat(str, intro, sl);
     *col += sl;
     l -= sl;
     intro = NULL; /* only want this once */
@@ -1432,7 +1433,7 @@ while (l>77)
     size_t sl = strlen(payload);
     size_t chomp = *col+sl < 77 ? sl : 78-*col;
 
-    pdkim_strncat(str, payload,chomp);
+    pdkim_strncat(str, payload, chomp);
     *col += chomp;
     payload += chomp;
     l -= chomp-1;
@@ -1503,14 +1504,13 @@ if (!(base64_bh = pdkim_encode_base64(sig->bodyhash, sig->bodyhash_len)))
 col = strlen(hdr->str);
 
 /* Required and static bits */
-if (
-      pdkim_headcat(&col,hdr,";","a=",pdkim_algos[sig->algo]) &&
-      pdkim_headcat(&col,hdr,";","q=",pdkim_querymethods[sig->querymethod])  &&
-	pdkim_strcat(canon_all,"/")                           &&
-	pdkim_strcat(canon_all,pdkim_canons[sig->canon_body]) &&
-      pdkim_headcat(&col,hdr,";","c=",canon_all->str)         &&
-      pdkim_headcat(&col,hdr,";","d=",sig->domain)            &&
-      pdkim_headcat(&col,hdr,";","s=",sig->selector)
+if (  pdkim_headcat(&col, hdr, ";", "a=", pdkim_algos[sig->algo])
+   && pdkim_headcat(&col, hdr, ";", "q=", pdkim_querymethods[sig->querymethod])
+   && pdkim_strcat(canon_all, "/")
+   && pdkim_strcat(canon_all, pdkim_canons[sig->canon_body])
+   && pdkim_headcat(&col, hdr, ";", "c=", canon_all->str)
+   && pdkim_headcat(&col, hdr, ";", "d=", sig->domain)
+   && pdkim_headcat(&col, hdr, ";", "s=", sig->selector)
    )
   {
   /* list of eader names can be split between items. */
@@ -1523,18 +1523,18 @@ if (
     if (!n) goto BAIL;
     while (*n)
       {
-      char *c = strchr(n,':');
+      char *c = strchr(n, ':');
 
       if (c) *c ='\0';
 
       if (!i)
-	if (!pdkim_headcat(&col,hdr,NULL,NULL,":"))
+	if (!pdkim_headcat(&col, hdr, NULL, NULL, ":"))
 	  {
 	  free(f);
 	  goto BAIL;
 	  }
 
-      if (!pdkim_headcat(&col,hdr,s,i,n))
+      if (!pdkim_headcat(&col, hdr, s, i, n))
 	{
 	free(f);
 	goto BAIL;
@@ -1562,7 +1562,7 @@ if (
     {
     char minibuf[20];
 
-    snprintf(minibuf,20,"%lu",sig->created);
+    snprintf(minibuf, 20, "%lu", sig->created);
     if(!pdkim_headcat(&col, hdr, ";", "t=", minibuf))
       goto BAIL;
   }
@@ -1571,7 +1571,7 @@ if (
     {
     char minibuf[20];
 
-    snprintf(minibuf,20,"%lu",sig->expires);
+    snprintf(minibuf, 20, "%lu", sig->expires);
     if(!pdkim_headcat(&col, hdr, ";", "x=", minibuf))
       goto BAIL;
     }
@@ -1580,7 +1580,7 @@ if (
     {
     char minibuf[20];
 
-    snprintf(minibuf,20,"%lu",sig->bodylength);
+    snprintf(minibuf, 20, "%lu", sig->bodylength);
     if(!pdkim_headcat(&col, hdr, ";", "l=", minibuf))
       goto BAIL;
     }
@@ -1598,7 +1598,7 @@ if (
       goto BAIL;
 
   /* add trailing semicolon: I'm not sure if this is actually needed */
-  if (!pdkim_headcat(&col,hdr,NULL,";",""))
+  if (!pdkim_headcat(&col, hdr, NULL, ";", ""))
     goto BAIL;
   }
 
@@ -1667,7 +1667,7 @@ while (sig)
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
     sha1_starts(&sha1_headers);
   else
-    sha2_starts(&sha2_headers,0);
+    sha2_starts(&sha2_headers, 0);
 
 #ifdef PDKIM_DEBUG
   if (ctx->debug_stream)
@@ -1687,14 +1687,14 @@ while (sig)
       {
       char *rh = NULL;
       /* Collect header names (Note: colon presence is guaranteed here) */
-      char *q = strchr(p->value,':');
+      char *q = strchr(p->value, ':');
 
       if (!(pdkim_strncat(headernames, p->value,
 			(q-(p->value)) + (p->next ? 1 : 0))))
 	return PDKIM_ERR_OOM;
 
       rh = sig->canon_headers == PDKIM_CANON_RELAXED
-	? pdkim_relax_header(p->value,1) /* cook header for relaxed canon */
+	? pdkim_relax_header(p->value, 1) /* cook header for relaxed canon */
 	: strdup(p->value);              /* just copy it for simple canon */
       if (!rh)
 	return PDKIM_ERR_OOM;
@@ -1731,28 +1731,28 @@ while (sig)
 
     while(1)
       {
-      if ((q = strchr(p,':')))
+      if ((q = strchr(p, ':')))
 	*q = '\0';
 
       for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
 	if (  hdrs->tag == 0
-	   && strncasecmp(hdrs->value,p,strlen(p)) == 0
+	   && strncasecmp(hdrs->value, p, strlen(p)) == 0
 	   && (hdrs->value)[strlen(p)] == ':'
 	   )
 	  {
 	  char *rh;
 
 	  rh = sig->canon_headers == PDKIM_CANON_RELAXED
-	    ? pdkim_relax_header(hdrs->value,1)  /* cook header for relaxed canon */
+	    ? pdkim_relax_header(hdrs->value, 1) /* cook header for relaxed canon */
 	    : strdup(hdrs->value);               /* just copy it for simple canon */
 	  if (!rh)
 	    return PDKIM_ERR_OOM;
 
 	  /* Feed header to the hash algorithm */
 	  if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-	    sha1_update(&(sha1_headers), (unsigned char *)rh, strlen(rh));
+	    sha1_update(&sha1_headers, (unsigned char *)rh, strlen(rh));
 	  else
-	    sha2_update(&(sha2_headers), (unsigned char *)rh, strlen(rh));
+	    sha2_update(&sha2_headers, (unsigned char *)rh, strlen(rh));
 
 #ifdef PDKIM_DEBUG
 	  if (ctx->debug_stream)
@@ -1819,8 +1819,8 @@ while (sig)
   /* Finalize header hash */
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
     {
-    sha1_update(&(sha1_headers), (unsigned char *)sig_hdr, strlen(sig_hdr));
-    sha1_finish(&(sha1_headers), (unsigned char *)headerhash);
+    sha1_update(&sha1_headers, (unsigned char *)sig_hdr, strlen(sig_hdr));
+    sha1_finish(&sha1_headers, (unsigned char *)headerhash);
 
 #ifdef PDKIM_DEBUG
     if (ctx->debug_stream)
@@ -1832,8 +1832,8 @@ while (sig)
     }
   else
     {
-    sha2_update(&(sha2_headers), (unsigned char *)sig_hdr, strlen(sig_hdr));
-    sha2_finish(&(sha2_headers), (unsigned char *)headerhash);
+    sha2_update(&sha2_headers, (unsigned char *)sig_hdr, strlen(sig_hdr));
+    sha2_finish(&sha2_headers, (unsigned char *)headerhash);
 
 #ifdef PDKIM_DEBUG
     if (ctx->debug_stream)
@@ -1880,7 +1880,7 @@ while (sig)
       }
 #endif
 
-    if (!(sig->signature_header = pdkim_create_header(ctx->sig,1)))
+    if (!(sig->signature_header = pdkim_create_header(ctx->sig, 1)))
       return PDKIM_ERR_OOM;
     }
 
@@ -1904,9 +1904,9 @@ while (sig)
     memset(dns_txt_reply, 0, PDKIM_DNS_TXT_MAX_RECLEN);
     memset(dns_txt_name , 0, PDKIM_DNS_TXT_MAX_NAMELEN);
 
-    if (snprintf(dns_txt_name,PDKIM_DNS_TXT_MAX_NAMELEN,
+    if (snprintf(dns_txt_name, PDKIM_DNS_TXT_MAX_NAMELEN,
 		 "%s._domainkey.%s.",
-		 sig->selector,sig->domain) >= PDKIM_DNS_TXT_MAX_NAMELEN)
+		 sig->selector, sig->domain) >= PDKIM_DNS_TXT_MAX_NAMELEN)
       {
       sig->verify_status =      PDKIM_VERIFY_INVALID;
       sig->verify_ext_status =  PDKIM_VERIFY_INVALID_BUFFER_SIZE;
@@ -1926,12 +1926,12 @@ while (sig)
       {
       fprintf(ctx->debug_stream,
 	      "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-      fprintf(ctx->debug_stream," Raw record: ");
+      fprintf(ctx->debug_stream, " Raw record: ");
       pdkim_quoteprint(ctx->debug_stream, dns_txt_reply, strlen(dns_txt_reply), 1);
       }
 #endif
 
-    if (!(sig->pubkey = pdkim_parse_pubkey_record(ctx,dns_txt_reply)))
+    if (!(sig->pubkey = pdkim_parse_pubkey_record(ctx, dns_txt_reply)))
       {
       sig->verify_status =      PDKIM_VERIFY_INVALID;
       sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
@@ -1939,7 +1939,7 @@ while (sig)
 #ifdef PDKIM_DEBUG
       if (ctx->debug_stream)
         {
-	fprintf(ctx->debug_stream," Error while parsing public key record\n");
+	fprintf(ctx->debug_stream, " Error while parsing public key record\n");
 	fprintf(ctx->debug_stream,
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 	}
@@ -2020,7 +2020,7 @@ pdkim_ctx *ctx = malloc(sizeof(pdkim_ctx));
 
 if (!ctx)
   return NULL;
-memset(ctx,0,sizeof(pdkim_ctx));
+memset(ctx, 0, sizeof(pdkim_ctx));
 
 if (!(ctx->linebuf = malloc(PDKIM_MAX_BODY_LINE_LEN)))
   {
@@ -2049,7 +2049,7 @@ if (!domain || !selector || !rsa_privkey)
 
 if (!(ctx = malloc(sizeof(pdkim_ctx))))
   return NULL;
-memset(ctx,0,sizeof(pdkim_ctx));
+memset(ctx, 0, sizeof(pdkim_ctx));
 
 if (!(ctx->linebuf = malloc(PDKIM_MAX_BODY_LINE_LEN)))
   {
@@ -2063,7 +2063,7 @@ if (!(sig = malloc(sizeof(pdkim_signature))))
   free(ctx);
   return NULL;
   }
-memset(sig,0,sizeof(pdkim_signature));
+memset(sig, 0, sizeof(pdkim_signature));
 
 sig->bodylength = -1;
 
@@ -2084,7 +2084,7 @@ sha1_starts(ctx->sig->sha1_body);
 
 if (!(ctx->sig->sha2_body = malloc(sizeof(sha2_context))))
   goto BAIL;
-sha2_starts(ctx->sig->sha2_body,0);
+sha2_starts(ctx->sig->sha2_body, 0);
 
 return ctx;
 

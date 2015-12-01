@@ -493,6 +493,7 @@ static var_entry var_table[] = {
   { "dkim_headernames",    vtype_dkim,        (void *)DKIM_HEADERNAMES },
   { "dkim_identity",       vtype_dkim,        (void *)DKIM_IDENTITY },
   { "dkim_key_granularity",vtype_dkim,        (void *)DKIM_KEY_GRANULARITY },
+  { "dkim_key_length",     vtype_int,         &dkim_key_length },
   { "dkim_key_nosubdomains",vtype_dkim,       (void *)DKIM_NOSUBDOMAINS },
   { "dkim_key_notes",      vtype_dkim,        (void *)DKIM_KEY_NOTES },
   { "dkim_key_srvtype",    vtype_dkim,        (void *)DKIM_KEY_SRVTYPE },
