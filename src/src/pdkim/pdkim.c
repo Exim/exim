@@ -1122,6 +1122,7 @@ pdkim_bodyline_complete(pdkim_ctx *ctx)
 {
 char *p = ctx->linebuf;
 int   n = ctx->linebuf_offset;
+pdkim_signature *sig = ctx->sig;	/*XXX assumes only one sig */
 
 /* Ignore extra data if we've seen the end-of-data marker */
 if (ctx->seen_eod) goto BAIL;
@@ -1136,7 +1137,8 @@ if (ctx->input_mode == PDKIM_INPUT_SMTP)
     {
     /* In simple body mode, if any empty lines were buffered,
     replace with one. rfc 4871 3.4.3 */
-    if (  ctx->sig && ctx->sig->canon_body == PDKIM_CANON_SIMPLE
+    if (  sig && sig->canon_body == PDKIM_CANON_SIMPLE
+       && sig->signed_body_bytes == 0
        && ctx->num_buffered_crlf > 0
        )
       pdkim_update_bodyhash(ctx, "\r\n", 2);
@@ -1159,9 +1161,7 @@ if (memcmp(p, "\r\n", 2) == 0)
   goto BAIL;
   }
 
-if (  ctx->sig
-   && ctx->sig->canon_body == PDKIM_CANON_RELAXED
-   )
+if (sig && sig->canon_body == PDKIM_CANON_RELAXED)
   {
   /* Lines with just spaces need to be buffered too */
   char *check = p;
