@@ -215,7 +215,6 @@ ppppp DNS list check: rbl.test.ex/V4NET.11.12.14
 ppppp cached data found but past valid time; new DNS lookup for 14.12.11.V4NET.rbl.test.ex
 ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
-PDKIM >> Hashed body data, canonicalized >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ppppp LOG: MAIN
 ppppp   <= a@shorthost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 ppppp Process ppppp is ready for new message

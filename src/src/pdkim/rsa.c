@@ -787,7 +787,7 @@ int rsa_self_test( int verbose )
     if( verbose != 0 )
         printf( "passed\n  PKCS#1 data sign  : " );
 
-    sha1( rsa_plaintext, PT_LEN, sha1sum );
+    polarssl_sha1( rsa_plaintext, PT_LEN, sha1sum );
 
     if( rsa_pkcs1_sign( &rsa, RSA_PRIVATE, SIG_RSA_SHA1, 20,
                         sha1sum, rsa_ciphertext ) != 0 )

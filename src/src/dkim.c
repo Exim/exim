@@ -69,12 +69,8 @@ if (dkim_verify_ctx)
 
 /* Create new context */
 
-dkim_verify_ctx = pdkim_init_verify(PDKIM_INPUT_SMTP, &dkim_exim_query_dns_txt);
+dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt);
 dkim_collect_input = !!dkim_verify_ctx;
-#ifdef PDKIM_DEBUG
-if (dkim_collect_input)
-  pdkim_set_debug_stream(dkim_verify_ctx, debug_file);
-#endif
 }
 
 
@@ -565,13 +561,9 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     dkim_private_key_expanded = big_buffer;
     }
 
-  ctx = pdkim_init_sign(PDKIM_INPUT_SMTP,
-			 (char *) dkim_signing_domain,
+  ctx = pdkim_init_sign( (char *) dkim_signing_domain,
 			 (char *) dkim_signing_selector,
 			 (char *) dkim_private_key_expanded);
-#ifdef PDKIM_DEBUG
-  pdkim_set_debug_stream(ctx, debug_file);
-#endif
   pdkim_set_optional(ctx,
 		      (char *) dkim_sign_headers_expanded,
 		      NULL,

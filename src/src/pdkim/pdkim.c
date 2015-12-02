@@ -20,12 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-
-#include "../mytypes.h"
+#include "../exim.h"
 #include "pdkim.h"
 #include "pdkim-rsa.h"
 
@@ -129,51 +124,46 @@ const char *pdkim_verify_ext_status_str(int ext_status) {
 
 /* -------------------------------------------------------------------------- */
 /* Print debugging functions */
-#ifdef PDKIM_DEBUG
 void
-pdkim_quoteprint(FILE *stream, const char *data, int len, int lf)
+pdkim_quoteprint(const char *data, int len, int lf)
 {
 int i;
 const unsigned char *p = (const unsigned char *)data;
 
-for (i = 0; i<len; i++)
+for (i = 0; i < len; i++)
   {
   const int c = p[i];
   switch (c)
     {
-    case ' ' : fprintf(stream, "{SP}"); break;
-    case '\t': fprintf(stream, "{TB}"); break;
-    case '\r': fprintf(stream, "{CR}"); break;
-    case '\n': fprintf(stream, "{LF}"); break;
-    case '{' : fprintf(stream, "{BO}"); break;
-    case '}' : fprintf(stream, "{BC}"); break;
+    case ' ' : debug_printf("{SP}"); break;
+    case '\t': debug_printf("{TB}"); break;
+    case '\r': debug_printf("{CR}"); break;
+    case '\n': debug_printf("{LF}"); break;
+    case '{' : debug_printf("{BO}"); break;
+    case '}' : debug_printf("{BC}"); break;
     default:
       if ( (c < 32) || (c > 127) )
-	fprintf(stream, "{%02x}", c);
+	debug_printf("{%02x}", c);
       else
-	fputc(c, stream);
+	debug_printf("%c", c);
       break;
     }
   }
 if (lf)
-  fputc('\n', stream);
+  debug_printf("\n");
 }
 
 void
-pdkim_hexprint(FILE *stream, const char *data, int len, int lf)
+pdkim_hexprint(const char *data, int len, int lf)
 {
 int i;
 const unsigned char *p = (const unsigned char *)data;
 
-for (i =0 ; i<len; i++)
-  {
-  const int c = p[i];
-  fprintf(stream, "%02x", c);
-  }
+for (i = 0 ; i < len; i++)
+  debug_printf("%02x", p[i]);
 if (lf)
-  fputc('\n', stream);
+  debug_printf("\n");
 }
-#endif
 
 
 /* -------------------------------------------------------------------------- */
@@ -692,10 +682,7 @@ for (p = raw_hdr; ; p++)
         {
 	pdkim_strtrim(cur_val);
 
-#ifdef PDKIM_DEBUG
-	if (ctx->debug_stream)
-	  fprintf(ctx->debug_stream, " %s=%s\n", cur_tag->str, cur_val->str);
-#endif
+	DEBUG(D_acl) debug_printf(" %s=%s\n", cur_tag->str, cur_val->str);
 
 	switch (cur_tag->str[0])
 	  {
@@ -755,10 +742,7 @@ for (p = raw_hdr; ; p++)
 	  case 'z':
 	    sig->copiedheaders = pdkim_decode_qp(cur_val->str); break;
 	  default:
-#ifdef PDKIM_DEBUG
-	    if (ctx->debug_stream)
-	      fprintf(ctx->debug_stream, " Unknown tag encountered\n");
-#endif
+	    DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
 	    break;
 	  }
 	}
@@ -797,20 +781,16 @@ q--;
 while (q > sig->rawsig_no_b_val  && (*q == '\r' || *q == '\n'))
   *q = '\0'; q--;	/*XXX questionable code layout; possible bug */
 
-#ifdef PDKIM_DEBUG
-if (ctx->debug_stream)
+DEBUG(D_acl)
   {
-  fprintf(ctx->debug_stream,
+  debug_printf(
 	  "PDKIM >> Raw signature w/o b= tag value >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-  pdkim_quoteprint(ctx->debug_stream,
-		   sig->rawsig_no_b_val,
-		   strlen(sig->rawsig_no_b_val), 1);
-  fprintf(ctx->debug_stream,
+  pdkim_quoteprint(sig->rawsig_no_b_val, strlen(sig->rawsig_no_b_val), 1);
+  debug_printf(
 	  "PDKIM >> Sig size: %4d bits\n", sig->sigdata_len*8);
-  fprintf(ctx->debug_stream,
+  debug_printf(
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
-#endif
 
 if (  !(sig->sha1_body = malloc(sizeof(sha1_context)))
    || !(sig->sha2_body = malloc(sizeof(sha2_context)))
@@ -886,10 +866,7 @@ for (p = raw_record; ; p++)
       if (cur_tag->len > 0)
         {
 	pdkim_strtrim(cur_val);
-#ifdef PDKIM_DEBUG
-	if (ctx->debug_stream)
-	  fprintf(ctx->debug_stream, " %s=%s\n", cur_tag->str, cur_val->str);
-#endif
+	DEBUG(D_acl) debug_printf(" %s=%s\n", cur_tag->str, cur_val->str);
 
 	switch (cur_tag->str[0])
 	  {
@@ -916,10 +893,7 @@ for (p = raw_record; ; p++)
 	    if (strchr(cur_val->str, 's') != NULL) pub->no_subdomaining = 1;
 	    break;
 	  default:
-#ifdef PDKIM_DEBUG
-	    if (ctx->debug_stream)
-	      fprintf(ctx->debug_stream, " Unknown tag encountered\n");
-#endif
+	    DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
 	    break;
 	  }
 	}
@@ -1019,10 +993,7 @@ while (sig)
       sha2_update(sig->sha2_body, (unsigned char *)canon_data, canon_len);
 
     sig->signed_body_bytes += canon_len;
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
-      pdkim_quoteprint(ctx->debug_stream, canon_data, canon_len, 1);
-#endif
+    DEBUG(D_acl) pdkim_quoteprint(canon_data, canon_len, 1);
     }
 
   sig = sig->next;
@@ -1050,16 +1021,13 @@ while (sig)
   else
     sha2_finish(sig->sha2_body, bh);
 
-#ifdef PDKIM_DEBUG
-  if (ctx->debug_stream)
+  DEBUG(D_acl)
     {
-    fprintf(ctx->debug_stream, "PDKIM [%s] Body bytes hashed: %lu\n",
-      sig->domain, sig->signed_body_bytes);
-    fprintf(ctx->debug_stream, "PDKIM [%s] bh  computed: ", sig->domain);
-    pdkim_hexprint(ctx->debug_stream, (char *)bh,
-		   (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32, 1);
+    debug_printf("PDKIM [%s] Body bytes hashed: %lu\n"
+		 "PDKIM [%s] bh  computed: ",
+		sig->domain, sig->signed_body_bytes, sig->domain);
+    pdkim_hexprint((char *)bh, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32, 1);
     }
-#endif
 
   /* SIGNING -------------------------------------------------------------- */
   if (ctx->mode == PDKIM_MODE_SIGN)
@@ -1083,24 +1051,17 @@ while (sig)
     if (memcmp(bh, sig->bodyhash,
 	       (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32) == 0)
       {
-#ifdef PDKIM_DEBUG
-      if (ctx->debug_stream)
-	fprintf(ctx->debug_stream, "PDKIM [%s] Body hash verified OK\n",
-		sig->domain);
-#endif
+      DEBUG(D_acl) debug_printf("PDKIM [%s] Body hash verified OK\n", sig->domain);
       }
     else
       {
-#ifdef PDKIM_DEBUG
-      if (ctx->debug_stream)
+      DEBUG(D_acl)
         {
-	fprintf(ctx->debug_stream, "PDKIM [%s] bh signature: ", sig->domain);
-	pdkim_hexprint(ctx->debug_stream, sig->bodyhash,
-			 (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32, 1);
-	fprintf(ctx->debug_stream, "PDKIM [%s] Body hash did NOT verify\n",
-		sig->domain);
+	debug_printf("PDKIM [%s] bh signature: ", sig->domain);
+	pdkim_hexprint(sig->bodyhash,
+			 sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32, 1);
+	debug_printf("PDKIM [%s] Body hash did NOT verify\n", sig->domain);
 	}
-#endif
       sig->verify_status     = PDKIM_VERIFY_FAIL;
       sig->verify_ext_status = PDKIM_VERIFY_FAIL_BODY;
       }
@@ -1117,7 +1078,7 @@ return PDKIM_OK;
 /* -------------------------------------------------------------------------- */
 /* Callback from pdkim_feed below for processing complete body lines */
 
-int
+static int
 pdkim_bodyline_complete(pdkim_ctx *ctx)
 {
 char *p = ctx->linebuf;
@@ -1128,30 +1089,30 @@ pdkim_signature *sig = ctx->sig;	/*XXX assumes only one sig */
 if (ctx->seen_eod) goto BAIL;
 
 /* We've always got one extra byte to stuff a zero ... */
-ctx->linebuf[(ctx->linebuf_offset)] = '\0';
+ctx->linebuf[ctx->linebuf_offset] = '\0';
 
-if (ctx->input_mode == PDKIM_INPUT_SMTP)
+/* Terminate on EOD marker */
+if (memcmp(p, ".\r\n", 3) == 0)
   {
-  /* Terminate on EOD marker */
-  if (memcmp(p, ".\r\n", 3) == 0)
-    {
-    /* In simple body mode, if any empty lines were buffered,
-    replace with one. rfc 4871 3.4.3 */
-    if (  sig && sig->canon_body == PDKIM_CANON_SIMPLE
-       && sig->signed_body_bytes == 0
-       && ctx->num_buffered_crlf > 0
-       )
-      pdkim_update_bodyhash(ctx, "\r\n", 2);
+  /* In simple body mode, if any empty lines were buffered,
+  replace with one. rfc 4871 3.4.3 */
+  /*XXX checking the signed-body-bytes is a gross hack; I think
+  it indicates that all linebreaks should be buffered, including
+  the one terminating a text line */
+  if (  sig && sig->canon_body == PDKIM_CANON_SIMPLE
+     && sig->signed_body_bytes == 0
+     && ctx->num_buffered_crlf > 0
+     )
+    pdkim_update_bodyhash(ctx, "\r\n", 2);
 
-    ctx->seen_eod = 1;
-    goto BAIL;
-    }
-  /* Unstuff dots */
-  if (memcmp(p, "..", 2) == 0)
-    {
-    p++;
-    n--;
-    }
+  ctx->seen_eod = TRUE;
+  goto BAIL;
+  }
+/* Unstuff dots */
+if (memcmp(p, "..", 2) == 0)
+  {
+  p++;
+  n--;
   }
 
 /* Empty lines need to be buffered until we find a non-empty line */
@@ -1201,8 +1162,6 @@ return PDKIM_OK;
 int
 pdkim_header_complete(pdkim_ctx *ctx)
 {
-pdkim_signature *sig = ctx->sig;
-
 /* Special case: The last header can have an extra \r appended */
 if ( (ctx->cur_header->len > 1) &&
      (ctx->cur_header->str[(ctx->cur_header->len)-1] == '\r') )
@@ -1216,7 +1175,10 @@ if (ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
 
 /* SIGNING -------------------------------------------------------------- */
 if (ctx->mode == PDKIM_MODE_SIGN)
-  for ( ; sig; sig = sig->next)			/* Traverse all signatures */
+  {
+  pdkim_signature *sig;
+
+  for (sig = ctx->sig; sig; sig = sig->next)			/* Traverse all signatures */
     if (header_name_match(ctx->cur_header->str,
 			  sig->sign_headers?
 			    sig->sign_headers:
@@ -1230,7 +1192,9 @@ if (ctx->mode == PDKIM_MODE_SIGN)
 	return PDKIM_ERR_OOM;
       sig->headers = list;
       }
+  }
 
+/* VERIFICATION ----------------------------------------------------------- */
 /* DKIM-Signature: headers are added to the verification list */
 if (ctx->mode == PDKIM_MODE_VERIFY)
   {
@@ -1241,11 +1205,8 @@ if (ctx->mode == PDKIM_MODE_VERIFY)
     pdkim_signature *new_sig;
 
     /* Create and chain new signature block */
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
-      fprintf(ctx->debug_stream,
+    DEBUG(D_acl) debug_printf(
 	"PDKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-#endif
 
     if ((new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header->str)))
       {
@@ -1258,15 +1219,10 @@ if (ctx->mode == PDKIM_MODE_VERIFY)
 	last_sig->next = new_sig;
 	}
       }
-#ifdef PDKIM_DEBUG
     else
-      if (ctx->debug_stream)
-        {
-	fprintf(ctx->debug_stream, "Error while parsing signature header\n");
-	fprintf(ctx->debug_stream,
+      DEBUG(D_acl) debug_printf(
+	  "Error while parsing signature header\n"
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-	}
-#endif
     }
 
   /* every other header is stored for signature verification */
@@ -1302,7 +1258,7 @@ for (p = 0; p<len; p++)
   if (ctx->past_headers)
     {
     /* Processing body byte */
-    ctx->linebuf[(ctx->linebuf_offset)++] = c;
+    ctx->linebuf[ctx->linebuf_offset++] = c;
     if (c == '\n')
       {
       int rc = pdkim_bodyline_complete(ctx); /* End of line */
@@ -1323,17 +1279,14 @@ for (p = 0; p<len; p++)
 	  int rc = pdkim_header_complete(ctx); /* Seen last header line */
 	  if (rc != PDKIM_OK) return rc;
 
-	  ctx->past_headers = 1;
+	  ctx->past_headers = TRUE;
 	  ctx->seen_lf = 0;
-#ifdef PDKIM_DEBUG
-	  if (ctx->debug_stream)
-	    fprintf(ctx->debug_stream,
+	  DEBUG(D_acl) debug_printf(
 	      "PDKIM >> Hashed body data, canonicalized >>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-#endif
 	  continue;
 	  }
 	else
-	  ctx->seen_lf = 1;
+	  ctx->seen_lf = TRUE;
 	}
       else if (ctx->seen_lf)
         {
@@ -1342,7 +1295,7 @@ for (p = 0; p<len; p++)
 	  int rc = pdkim_header_complete(ctx); /* End of header */
 	  if (rc != PDKIM_OK) return rc;
 	  }
-	ctx->seen_lf = 0;
+	ctx->seen_lf = FALSE;
 	}
       }
 
@@ -1631,21 +1584,8 @@ if (ctx->cur_header && ctx->cur_header->len)
   pdkim_update_bodyhash(ctx, "\r\n", 2);
   }
 else
-  {
-  /* For non-smtp input, check if there's an unfinished line in the
-     body line buffer. If that is the case, we must add a CRLF to the
-     hash to properly terminate the message. */
-  if ((ctx->input_mode == PDKIM_INPUT_NORMAL) && ctx->linebuf_offset)
-    {
-    pdkim_update_bodyhash(ctx, ctx->linebuf, ctx->linebuf_offset);
-    pdkim_update_bodyhash(ctx, "\r\n", 2);
-    }
-#ifdef PDKIM_DEBUG
-  if (ctx->debug_stream)
-    fprintf(ctx->debug_stream,
+  DEBUG(D_acl) debug_printf(
       "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-#endif
-  }
 
 /* Build (and/or evaluate) body hash */
 if (pdkim_finish_bodyhash(ctx) != PDKIM_OK)
@@ -1669,11 +1609,8 @@ while (sig)
   else
     sha2_starts(&sha2_headers, 0);
 
-#ifdef PDKIM_DEBUG
-  if (ctx->debug_stream)
-    fprintf(ctx->debug_stream,
-	    "PDKIM >> Hashed header data, canonicalized, in sequence >>>>>>>>>>>>>>\n");
-#endif
+  DEBUG(D_acl) debug_printf(
+      "PDKIM >> Hashed header data, canonicalized, in sequence >>>>>>>>>>>>>>\n");
 
   /* SIGNING ---------------------------------------------------------------- */
   /* When signing, walk through our header list and add them to the hash. As we
@@ -1705,10 +1642,7 @@ while (sig)
       else
 	sha2_update(&(sha2_headers), (unsigned char *)rh, strlen(rh));
 
-#ifdef PDKIM_DEBUG
-      if (ctx->debug_stream)
-	pdkim_quoteprint(ctx->debug_stream, rh, strlen(rh), 1);
-#endif
+      DEBUG(D_acl) pdkim_quoteprint(rh, strlen(rh), 1);
       free(rh);
       }
     }
@@ -1754,10 +1688,7 @@ while (sig)
 	  else
 	    sha2_update(&sha2_headers, (unsigned char *)rh, strlen(rh));
 
-#ifdef PDKIM_DEBUG
-	  if (ctx->debug_stream)
-	    pdkim_quoteprint(ctx->debug_stream, rh, strlen(rh), 1);
-#endif
+	  DEBUG(D_acl) pdkim_quoteprint(rh, strlen(rh), 1);
 	  free(rh);
 	  hdrs->tag = 1;
 	  break;
@@ -1769,11 +1700,8 @@ while (sig)
     free(b);
     }
 
-#ifdef PDKIM_DEBUG
-  if (ctx->debug_stream)
-    fprintf(ctx->debug_stream,
+  DEBUG(D_acl) debug_printf(
 	    "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-#endif
 
   /* SIGNING ---------------------------------------------------------------- */
   if (ctx->mode == PDKIM_MODE_SIGN)
@@ -1805,16 +1733,14 @@ while (sig)
     sig_hdr = relaxed_hdr;
     }
 
-#ifdef PDKIM_DEBUG
-  if (ctx->debug_stream)
+  DEBUG(D_acl)
     {
-    fprintf(ctx->debug_stream,
+    debug_printf(
 	    "PDKIM >> Signed DKIM-Signature header, canonicalized >>>>>>>>>>>>>>>>>\n");
-    pdkim_quoteprint(ctx->debug_stream, sig_hdr, strlen(sig_hdr), 1);
-    fprintf(ctx->debug_stream,
+    pdkim_quoteprint(sig_hdr, strlen(sig_hdr), 1);
+    debug_printf(
 	    "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     }
-#endif
 
   /* Finalize header hash */
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
@@ -1822,26 +1748,22 @@ while (sig)
     sha1_update(&sha1_headers, (unsigned char *)sig_hdr, strlen(sig_hdr));
     sha1_finish(&sha1_headers, (unsigned char *)headerhash);
 
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
+    DEBUG(D_acl)
       {
-      fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
-      pdkim_hexprint(ctx->debug_stream, headerhash, 20, 1);
+      debug_printf( "PDKIM [%s] hh computed: ", sig->domain);
+      pdkim_hexprint(headerhash, 20, 1);
       }
-#endif
     }
   else
     {
     sha2_update(&sha2_headers, (unsigned char *)sig_hdr, strlen(sig_hdr));
     sha2_finish(&sha2_headers, (unsigned char *)headerhash);
 
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
+    DEBUG(D_acl)
       {
-      fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
-      pdkim_hexprint(ctx->debug_stream, headerhash, 32, 1);
+      debug_printf("PDKIM [%s] hh computed: ", sig->domain);
+      pdkim_hexprint(headerhash, 32, 1);
       }
-#endif
     }
 
   free(sig_hdr);
@@ -1872,13 +1794,11 @@ while (sig)
 
     rsa_free(&rsa);
 
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
+    DEBUG(D_acl)
       {
-      fprintf(ctx->debug_stream, "PDKIM [%s] b computed: ", sig->domain);
-      pdkim_hexprint(ctx->debug_stream, sig->sigdata, sig->sigdata_len, 1);
+      debug_printf( "PDKIM [%s] b computed: ", sig->domain);
+      pdkim_hexprint(sig->sigdata, sig->sigdata_len, 1);
       }
-#endif
 
     if (!(sig->signature_header = pdkim_create_header(ctx->sig, 1)))
       return PDKIM_ERR_OOM;
@@ -1921,37 +1841,27 @@ while (sig)
       goto NEXT_VERIFY;
       }
 
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
+    DEBUG(D_acl)
       {
-      fprintf(ctx->debug_stream,
-	      "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-      fprintf(ctx->debug_stream, " Raw record: ");
-      pdkim_quoteprint(ctx->debug_stream, dns_txt_reply, strlen(dns_txt_reply), 1);
+      debug_printf(
+	      "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
+	      " Raw record: ");
+      pdkim_quoteprint(dns_txt_reply, strlen(dns_txt_reply), 1);
       }
-#endif
 
     if (!(sig->pubkey = pdkim_parse_pubkey_record(ctx, dns_txt_reply)))
       {
       sig->verify_status =      PDKIM_VERIFY_INVALID;
       sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
 
-#ifdef PDKIM_DEBUG
-      if (ctx->debug_stream)
-        {
-	fprintf(ctx->debug_stream, " Error while parsing public key record\n");
-	fprintf(ctx->debug_stream,
+      DEBUG(D_acl) debug_printf(
+	  " Error while parsing public key record\n"
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-	}
-#endif
       goto NEXT_VERIFY;
       }
 
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
-      fprintf(ctx->debug_stream,
+    DEBUG(D_acl) debug_printf(
 	"PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-#endif
 
     if (rsa_parse_public_key(&rsa,
 			    (unsigned char *)sig->pubkey->key,
@@ -1982,18 +1892,16 @@ while (sig)
 
 NEXT_VERIFY:
 
-#ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
+    DEBUG(D_acl)
       {
-      fprintf(ctx->debug_stream, "PDKIM [%s] signature status: %s",
+      debug_printf("PDKIM [%s] signature status: %s",
 	      sig->domain, pdkim_verify_status_str(sig->verify_status));
       if (sig->verify_ext_status > 0)
-	fprintf(ctx->debug_stream, " (%s)\n",
+	debug_printf(" (%s)\n",
 		pdkim_verify_ext_status_str(sig->verify_ext_status));
       else
-	fprintf(ctx->debug_stream, "\n");
+	debug_printf("\n");
       }
-#endif
 
     rsa_free(&rsa);
     free(dns_txt_name);
@@ -2014,7 +1922,7 @@ return PDKIM_OK;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_verify(int input_mode, int(*dns_txt_callback)(char *, char *))
+pdkim_init_verify(int(*dns_txt_callback)(char *, char *))
 {
 pdkim_ctx *ctx = malloc(sizeof(pdkim_ctx));
 
@@ -2029,7 +1937,6 @@ if (!(ctx->linebuf = malloc(PDKIM_MAX_BODY_LINE_LEN)))
   }
 
 ctx->mode = PDKIM_MODE_VERIFY;
-ctx->input_mode = input_mode;
 ctx->dns_txt_callback = dns_txt_callback;
 
 return ctx;
@@ -2039,7 +1946,7 @@ return ctx;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_sign(int input_mode, char *domain, char *selector, char *rsa_privkey)
+pdkim_init_sign(char *domain, char *selector, char *rsa_privkey)
 {
 pdkim_ctx *ctx;
 pdkim_signature *sig;
@@ -2068,7 +1975,6 @@ memset(sig, 0, sizeof(pdkim_signature));
 sig->bodylength = -1;
 
 ctx->mode = PDKIM_MODE_SIGN;
-ctx->input_mode = input_mode;
 ctx->sig = sig;
 
 ctx->sig->domain = strdup(domain);
@@ -2125,13 +2031,4 @@ ctx->sig->expires = expires;
 return PDKIM_OK;
 }
 
-/* -------------------------------------------------------------------------- */
-
-#ifdef PDKIM_DEBUG
-DLLEXPORT void
-pdkim_set_debug_stream(pdkim_ctx *ctx, FILE *debug_stream)
-{
-ctx->debug_stream = debug_stream;
-}
-#endif
 

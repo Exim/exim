@@ -315,7 +315,7 @@ void sha1_finish( sha1_context *ctx, unsigned char output[20] )
 /*
  * output = SHA-1( input buffer )
  */
-void sha1( const unsigned char *input, int ilen, unsigned char output[20] )
+void polarssl_sha1( const unsigned char *input, int ilen, unsigned char output[20] )
 {
     sha1_context ctx;
 
@@ -368,7 +368,7 @@ void sha1_hmac_starts( sha1_context *ctx, const unsigned char *key, int keylen )
 
     if( keylen > 64 )
     {
-        sha1( key, keylen, sum );
+        polarssl_sha1( key, keylen, sum );
         keylen = 20;
         key = sum;
     }
