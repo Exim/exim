@@ -80,6 +80,9 @@ a number of seconds (followed by one space).
 #include <sys/time.h>
 #include <dirent.h>
 #include <unistd.h>
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
 
 #define FALSE         0
 #define TRUE          1

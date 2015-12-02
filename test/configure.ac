@@ -15,6 +15,7 @@ AC_PROG_CC
 
 dnl Checks for header files.
 
+AC_CHECK_HEADERS(sys/socket.h)
 AC_CHECK_HEADERS(openssl/crypto.h,[CLIENT_SSL=bin/client-ssl])
 AC_CHECK_HEADERS(gnutls/gnutls.h,[CLIENT_GNUTLS=bin/client-gnutls])
 
