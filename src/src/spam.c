@@ -414,7 +414,7 @@ if (wrote == -1)
   {
   (void)close(spamd_sock);
   log_write(0, LOG_MAIN|LOG_PANIC,
-       "%s spamd send failed: %s", loglabel, strerror(errno));
+       "%s spamd %s send failed: %s", loglabel, callout_address, strerror(errno));
   goto defer;
   }
 
@@ -459,13 +459,13 @@ again:
       {
       if (result == -1)
 	log_write(0, LOG_MAIN|LOG_PANIC,
-	  "%s %s on spamd socket", loglabel, strerror(errno));
+	  "%s %s on spamd %s socket", loglabel, callout_address, strerror(errno));
       else
 	{
 	if (time(NULL) - start < sd->timeout)
 	  goto again;
 	log_write(0, LOG_MAIN|LOG_PANIC,
-	  "%s timed out writing spamd socket", loglabel);
+	  "%s timed out writing spamd %s, socket", loglabel, callout_address);
 	}
       (void)close(spamd_sock);
       goto defer;
@@ -475,7 +475,7 @@ again:
     if (wrote == -1)
       {
       log_write(0, LOG_MAIN|LOG_PANIC,
-	  "%s %s on spamd socket", loglabel, strerror(errno));
+	  "%s %s on spamd %s socket", loglabel, callout_address, strerror(errno));
       (void)close(spamd_sock);
       goto defer;
       }
@@ -514,7 +514,7 @@ while ((i = ip_recv(spamd_sock,
 if (i <= 0 && errno != 0)
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
-       "%s error reading from spamd socket: %s", loglabel, strerror(errno));
+       "%s error reading from spamd %s, socket: %s", loglabel, callout_address, strerror(errno));
   (void)close(spamd_sock);
   return DEFER;
   }
@@ -531,7 +531,7 @@ if (sd->is_rspamd)
 	  &spamd_reject_score, &spamd_report_offset)) != 5)
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
-	      "%s cannot parse spamd output: %d", loglabel, r);
+	      "%s cannot parse spamd %s, output: %d", loglabel, callout_address, r);
     return DEFER;
     }
   /* now parse action */
@@ -560,7 +560,7 @@ else
 	   spamd_version,&spamd_score,&spamd_threshold,&spamd_report_offset) != 3)
 	{
 	log_write(0, LOG_MAIN|LOG_PANIC,
-		  "%s cannot parse spamd output", loglabel);
+		  "%s cannot parse spamd %s output", loglabel, callout_address);
 	return DEFER;
 	}
     }
