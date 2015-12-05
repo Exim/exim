@@ -12033,6 +12033,16 @@ qualified host name. See also &$smtp_active_hostname$&.
 
 
 .new
+.vitem &$proxy_host_address$& &&&
+       &$proxy_host_port$& &&&
+       &$proxy_target_address$& &&&
+       &$proxy_target_port$& &&&
+       &$proxy_session$&
+These variables are only available when built with Proxy Protocol support
+For details see chapter &<<SECTproxyInbound>>&.
+.wen
+
+.new
 .vitem &$prdr_requested$&
 .cindex "PRDR" "variable for"
 This variable is set to &"yes"& if PRDR was requested by the client for the
@@ -13469,6 +13479,7 @@ listed in more than one group.
 .row &%helo_verify_hosts%&           "HELO hard-checked for these hosts"
 .row &%host_lookup%&                 "host name looked up for these hosts"
 .row &%host_lookup_order%&           "order of DNS and local name lookups"
+.row &%hosts_proxy%&                 "use proxy protocol for these hosts"
 .row &%host_reject_connection%&      "reject connection from these hosts"
 .row &%hosts_treat_as_local%&        "useful in some cluster configurations"
 .row &%local_scan_timeout%&          "timeout for &[local_scan()]&"
@@ -14822,6 +14833,14 @@ hosts_connection_nolog = :
 .endd
 If the &%smtp_connection%& log selector is not set, this option has no effect.
 
+
+
+.new
+.option hosts_proxy main "host list&!!" unset
+.cindex proxy "proxy protocol"
+This option enables use of Proxy Protocol proxies for incoming
+connections.  For details see &<<SECTproxyInbound>>&.
+.wen
 
 
 .option hosts_treat_as_local main "domain list&!!" unset
@@ -35461,6 +35480,9 @@ selection marked by asterisks:
 &` queue_time                 `&  time on queue for one recipient
 &` queue_time_overall         `&  time on queue for whole message
 &` pid                        `&  Exim process id
+.new
+&` proxy                      `&  proxy address on <= lines
+.wen
 &` received_recipients        `&  recipients on <= lines
 &` received_sender            `&  sender on <= lines
 &`*rejected_header            `&  header contents on reject log
@@ -35585,6 +35607,16 @@ added to other SMTP log lines, for example &"SMTP connection from"&, to
 rejection lines, and (despite the name) to outgoing &"=>"& and &"->"& lines.
 .new
 The latter can be disabled by turning off the &%outgoing_interface%& option.
+.wen
+.next
+.new
+.cindex log "incoming proxy address"
+.cindex proxy "logging proxy address"
+.cindex "TCP/IP" "logging proxy address"
+&%proxy%&: The internal (closest to the system running Exim) IP address
+of the proxy, tagged by PRX=, on the &"<="& line for a message accepted
+on a proxied connection.
+See &<<SECTproxyInbound>>& for more information.
 .wen
 .next
 .cindex "log" "incoming remote port"
@@ -38025,6 +38057,74 @@ for more information of what they mean.
 A proxy is an intermediate system through which communication is passed.
 Proxies may provide a security, availability or load-distribution function.
 
+
+.section "Inbound proxies" SECTproxyInbound
+.cindex proxy inbound
+.cindex proxy "server side"
+.cindex proxy "Proxy protocol"
+.cindex "Proxy protocol" proxy
+
+Exim has support for receiving inbound SMTP connections via a proxy
+that uses &"Proxy Protocol"& to speak to it.
+To include this support, include &"SUPPORT_PROXY=yes"&
+in Local/Makefile.
+
+It was built on specifications from:
+http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt
+That URL was revised in May 2014 to version 2 spec:
+http://git.1wt.eu/web?p=haproxy.git;a=commitdiff;h=afb768340c9d7e50d8e
+
+The purpose of this facility is so that an application load balancer,
+such as HAProxy, can sit in front of several Exim servers
+to distribute load.
+Exim uses the local protocol communication with the proxy to obtain
+the remote SMTP system IP address and port information.
+There is no logging if a host passes or
+fails Proxy Protocol negotiation, but it can easily be determined and
+recorded in an ACL (example is below).
+
+Use of a proxy is enabled by setting the &%hosts_proxy%&
+main configuration option to a hostlist; connections from these
+hosts will use Proxy Protocol.
+
+To log the IP of the proxy in the incoming logline, add &"+proxy"&
+to the &%log_selector%& option.
+This will add a component tagged with &"PRX="& to the line.
+
+The following expansion variables are usable
+(&"internal"& and &"external"& here refer to the interfaces
+of the proxy):
+.display
+&'proxy_host_address   '& internal IP address of the proxy
+&'proxy_host_port      '& internal TCP port of the proxy
+&'proxy_target_address '& external IP address of the proxy
+&'proxy_target_port    '& external TCP port of the proxy
+&'proxy_session        '& boolean: SMTP connection via proxy
+.endd
+If &$proxy_session$& is set but &$proxy_host_address$& is empty
+there was a protocol error.
+
+Since the real connections are all coming from the proxy, and the
+per host connection tracking is done before Proxy Protocol is
+evaluated, &%smtp_accept_max_per_host%& must be set high enough to
+handle all of the parallel volume you expect per inbound proxy.
+With the option set so high, you lose the ability
+to protect your server from many connections from one IP.
+In order to prevent your server from overload, you
+need to add a per connection ratelimit to your connect ACL.
+A possible solution is:
+.display
+  # Set max number of connections per host
+  LIMIT   = 5
+  # Or do some kind of IP lookup in a flat file or database
+  # LIMIT = ${lookup{$sender_host_address}iplsearch{/etc/exim/proxy_limits}}
+
+  defer   message        = Too many connections from this IP right now
+          ratelimit      = LIMIT / 5s / per_conn / strict
+.endd
+
+
+
 .section "Outbound proxies" SECTproxySOCKS
 .cindex proxy outbound
 .cindex proxy "client side"
@@ -38035,7 +38135,8 @@ using a protocol called SOCKS5 (defined by RFC1928).
 The support can be optionally included by defining SUPPORT_SOCKS=yes in
 Local/Makefile.
 
-Use of a proxy is enabled by setting the &%socks_proxy%& on an smtp transport.
+Use of a proxy is enabled by setting the &%socks_proxy%& option
+on an smtp transport.
 The option value is expanded and should then be a list
 (colon-separated by default) of proxy specifiers.
 Each proxy specifier is a list

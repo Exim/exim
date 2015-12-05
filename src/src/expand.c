@@ -615,7 +615,7 @@ static var_entry var_table[] = {
   { "prdr_requested",      vtype_bool,        &prdr_requested },
 #endif
   { "primary_hostname",    vtype_stringptr,   &primary_hostname },
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
   { "proxy_host_address",  vtype_stringptr,   &proxy_host_address },
   { "proxy_host_port",     vtype_int,         &proxy_host_port },
   { "proxy_session",       vtype_bool,        &proxy_session },

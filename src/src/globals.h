@@ -645,10 +645,10 @@ extern int     process_info_len;
 extern uschar *process_log_path;       /* Alternate path */
 extern BOOL    prod_requires_admin;    /* TRUE if prodding requires admin */
 
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
+extern uschar *hosts_proxy;            /* Hostlist which (require) use proxy protocol */
 extern uschar *proxy_host_address;     /* IP of host being proxied */
 extern int     proxy_host_port;        /* Port of host being proxied */
-extern uschar *proxy_required_hosts;   /* Hostlist which (require) use proxy protocol */
 extern BOOL    proxy_session;          /* TRUE if receiving mail from valid proxy  */
 extern BOOL    proxy_session_failed;   /* TRUE if required proxy negotiation failed */
 extern uschar *proxy_target_address;   /* IP of proxy server inbound */

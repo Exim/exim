@@ -194,7 +194,7 @@ record. */
 /* Wait this long before determining that a Proxy Protocol configured
 host isn't speaking the protocol, and so is disallowed. Can be moved to
 runtime configuration if per site settings become needed. */
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
 #define PROXY_NEGOTIATION_TIMEOUT_SEC 3
 #define PROXY_NEGOTIATION_TIMEOUT_USEC 0
 #endif

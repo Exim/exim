@@ -96,7 +96,7 @@ enum {
 
   QUIT_CMD, HELP_CMD,
 
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
   PROXY_FAIL_IGNORE_CMD,
 #endif
 
@@ -583,7 +583,7 @@ exim_exit(EXIT_FAILURE);
 
 
 
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
 /*************************************************
 *     Restore socket timeout to previous value   *
 *************************************************/
@@ -620,7 +620,7 @@ int rc;
 /* Cannot configure local connection as a proxy inbound */
 if (sender_host_address == NULL) return proxy_session;
 
-rc = verify_check_this_host(&proxy_required_hosts, NULL, NULL,
+rc = verify_check_this_host(&hosts_proxy, NULL, NULL,
                            sender_host_address, NULL);
 if (rc == OK)
   {
@@ -1025,7 +1025,7 @@ if required. */
 
 for (p = cmd_list; p < cmd_list_end; p++)
   {
-  #ifdef EXPERIMENTAL_PROXY
+  #ifdef SUPPORT_PROXY
   /* Only allow QUIT command if Proxy Protocol parsing failed */
   if (proxy_session && proxy_session_failed)
     {
@@ -1082,7 +1082,7 @@ for (p = cmd_list; p < cmd_list_end; p++)
     }
   }
 
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
 /* Only allow QUIT command if Proxy Protocol parsing failed */
 if (proxy_session && proxy_session_failed)
   return PROXY_FAIL_IGNORE_CMD;
@@ -2311,7 +2311,7 @@ if (!sender_host_unknown)
 
 if (smtp_batched_input) return TRUE;
 
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
 /* If valid Proxy Protocol source is connecting, set up session.
  * Failure will not allow any SMTP function other than QUIT. */
 proxy_session = FALSE;
@@ -5103,11 +5103,11 @@ while (done <= 0)
     done = 1;   /* Pretend eof - drops connection */
     break;
 
-    #ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
     case PROXY_FAIL_IGNORE_CMD:
     smtp_printf("503 Command refused, required Proxy negotiation failed\r\n");
     break;
-    #endif
+#endif
 
     default:
     if (unknown_command_count++ >= smtp_max_unknown_commands)

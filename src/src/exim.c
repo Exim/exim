@@ -829,6 +829,9 @@ fprintf(f, "Support for:");
 #ifndef DISABLE_PRDR
   fprintf(f, " PRDR");
 #endif
+#ifdef SUPPORT_PROXY
+  fprintf(f, " PROXY");
+#endif
 #ifdef SUPPORT_SOCKS
   fprintf(f, " SOCKS");
 #endif
@@ -855,9 +858,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_INTERNATIONAL
   fprintf(f, " Experimental_International");
-#endif
-#ifdef EXPERIMENTAL_PROXY
-  fprintf(f, " Experimental_Proxy");
 #endif
 #ifdef EXPERIMENTAL_EVENT
   fprintf(f, " Experimental_Event");

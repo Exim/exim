@@ -3775,7 +3775,7 @@ if (prdr_requested)
   s = string_append(s, &size, &sptr, 1, US" PRDR");
 #endif
 
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
 if (proxy_session && LOGGING(proxy))
   s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host_address);
 #endif

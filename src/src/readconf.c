@@ -285,6 +285,9 @@ static optionlist optionlist_config[] = {
   { "host_lookup_order",        opt_stringptr,   &host_lookup_order },
   { "host_reject_connection",   opt_stringptr,   &host_reject_connection },
   { "hosts_connection_nolog",   opt_stringptr,   &hosts_connection_nolog },
+#ifdef SUPPORT_PROXY
+  { "hosts_proxy",              opt_stringptr,   &proxy_required_hosts },
+#endif
   { "hosts_treat_as_local",     opt_stringptr,   &hosts_treat_as_local },
 #ifdef LOOKUP_IBASE
   { "ibase_servers",            opt_stringptr,   &ibase_servers },
@@ -354,9 +357,6 @@ static optionlist optionlist_config[] = {
   { "print_topbitchars",        opt_bool,        &print_topbitchars },
   { "process_log_path",         opt_stringptr,   &process_log_path },
   { "prod_requires_admin",      opt_bool,        &prod_requires_admin },
-#ifdef EXPERIMENTAL_PROXY
-  { "proxy_required_hosts",     opt_stringptr,   &proxy_required_hosts },
-#endif
   { "qualify_domain",           opt_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",        opt_stringptr,   &qualify_domain_recipient },
   { "queue_domains",            opt_stringptr,   &queue_domains },

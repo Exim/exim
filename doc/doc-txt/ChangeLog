@@ -115,6 +115,10 @@ JH/22 Bugs 963, 1721: Fix some corner cases in message body canonicalisation
 JH/23 Move SOCKS5 support from Experimental to mainline, enabled for a build
       by defining SUPPORT_SOCKS.
 
+JH/26 Move PROXY support from Experimental to mainline, enabled for a build
+      by defining SUPPORT_PROXY.  Note that the proxy_required_hosts option
+      is renamed to hosts_proxy.
+
 
 Exim version 4.86
 -----------------

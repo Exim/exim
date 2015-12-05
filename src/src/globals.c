@@ -875,7 +875,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, outgoing_interface),
   BIT_TABLE(L, outgoing_port),
   BIT_TABLE(L, pid),
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
   BIT_TABLE(L, proxy),
 #endif
   BIT_TABLE(L, queue_run),
@@ -1001,10 +1001,10 @@ int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
 BOOL    prod_requires_admin    = TRUE;
 
-#ifdef EXPERIMENTAL_PROXY
+#ifdef SUPPORT_PROXY
+uschar *hosts_proxy            = US"";
 uschar *proxy_host_address     = US"";
 int     proxy_host_port        = 0;
-uschar *proxy_required_hosts   = US"";
 BOOL    proxy_session          = FALSE;
 BOOL    proxy_session_failed   = FALSE;
 uschar *proxy_target_address   = US"";

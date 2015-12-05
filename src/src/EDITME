@@ -402,6 +402,7 @@ EXIM_MONITOR=eximon.bin
 #
 # WITH_OLD_CLAMAV_STREAM=yes
 
+
 #------------------------------------------------------------------------------
 # By default Exim includes code to support DKIM (DomainKeys Identified
 # Mail, RFC4871) signing and verification.  Verification of signatures is
@@ -486,9 +487,6 @@ EXIM_MONITOR=eximon.bin
 # EXPERIMENTAL_REDIS=yes
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lhiredis
-
-# Uncomment the following line to enable Experimental Proxy Protocol
-# EXPERIMENTAL_PROXY=yes
 
 # Uncomment the following line to enable support for checking certificate
 # ownership
@@ -921,10 +919,17 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 #------------------------------------------------------------------------------
 # Proxying.
-# If you may want to use outbound (client-side) proxying, uncomment the SOCKS
-# line below.
+#
+# If you may want to use outbound (client-side) proxying, using Socks5,
+# uncomment the line below.
 
 # SUPPORT_SOCKS=yes
+
+# If you may want to use inbound (server-side) proxying, using Proxy Protocol,
+# uncomment the line below.
+
+# SUPPORT_PROXY=yes
+
 
 
 #------------------------------------------------------------------------------
