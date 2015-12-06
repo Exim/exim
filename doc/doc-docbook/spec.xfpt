@@ -7314,6 +7314,8 @@ The value of the DEREFERENCE parameter must be one of the words &"never"&,
 must be &"follow"& (the default) or &"nofollow"&. The latter stops the LDAP
 library from trying to follow referrals issued by the LDAP server.
 
+.cindex LDAP timeout
+.cindex timeout "LDAP lookup"
 The name CONNECT is an obsolete name for NETTIME, retained for
 backwards compatibility. This timeout (specified as a number of seconds) is
 enforced from the client end for operations that can be carried out over a
@@ -7663,6 +7665,8 @@ domainlist relay_to_domains = sqlite;/some/thing/sqlitedb \
 The only character affected by the &%quote_sqlite%& operator is a single
 quote, which it doubles.
 
+.cindex timeout SQLite
+.cindex sqlite "lookup timeout"
 The SQLite library handles multiple simultaneous accesses to the database
 internally. Multiple readers are permitted, but only one process can
 update at once. Attempts to access the database while it is being updated
