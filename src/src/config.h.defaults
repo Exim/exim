@@ -41,10 +41,11 @@ it's a default value. */
 #define DEFAULT_CRYPT              crypt
 #define DELIVER_IN_BUFFER_SIZE     8192
 #define DELIVER_OUT_BUFFER_SIZE    8192
+#define DISABLE_DNSSEC
 #define DISABLE_DKIM
 #define DISABLE_PRDR
 #define DISABLE_OCSP
-#define DISABLE_DNSSEC
+#define DISABLE_SOCKS
 #define DISABLE_D_OPTION
 
 #define ENABLE_DISABLE_FSYNC
@@ -178,7 +179,6 @@ it's a default value. */
 #define EXPERIMENTAL_INTERNATIONAL
 #define EXPERIMENTAL_PROXY
 #define EXPERIMENTAL_REDIS
-#define EXPERIMENTAL_SOCKS
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS
 

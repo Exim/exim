@@ -159,7 +159,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, serialize_hosts) },
   { "size_addition",        opt_int,
       (void *)offsetof(smtp_transport_options_block, size_addition) }
-#ifdef EXPERIMENTAL_SOCKS
+#ifndef DISABLE_SOCKS
  ,{ "socks_proxy",          opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, socks_proxy) }
 #endif
@@ -249,7 +249,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   FALSE,               /* lmtp_ignore_quota */
   NULL,		       /* expand_retry_include_ip_address */
   TRUE                 /* retry_include_ip_address */
-#ifdef EXPERIMENTAL_SOCKS
+#ifndef DISABLE_SOCKS
  ,NULL                 /* socks_proxy */
 #endif
 #ifdef SUPPORT_TLS

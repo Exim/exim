@@ -10,7 +10,7 @@
 #include "../exim.h"
 #include "smtp.h"
 
-#ifdef EXPERIMENTAL_SOCKS	/* entire file */
+#ifndef DISABLE_SOCKS	/* entire file */
 
 #ifndef nelem
 # define nelem(arr) (sizeof(arr)/sizeof(*arr))

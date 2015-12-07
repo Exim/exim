@@ -112,6 +112,9 @@ JH/21 Bug 1720: Add support for priority groups and weighted-random proxy
 JH/22 Bugs 963, 1721: Fix some corner cases in message body canonicalisation
       for DKIM processing.
 
+JH/23 Move SOCKS5 support from Experimental to mainline.  It can be left out
+      from a build by defining DISABLE_SOCKS.
+
 
 Exim version 4.86
 -----------------

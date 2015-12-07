@@ -814,20 +814,23 @@ fprintf(f, "Support for:");
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");
 #endif
-#ifndef DISABLE_DKIM
-  fprintf(f, " DKIM");
-#endif
 #ifdef WITH_OLD_DEMIME
   fprintf(f, " Old_Demime");
+#endif
+#ifndef DISABLE_DKIM
+  fprintf(f, " DKIM");
 #endif
 #ifndef DISABLE_DNSSEC
   fprintf(f, " DNSSEC");
 #endif
+#ifndef DISABLE_OCSP
+  fprintf(f, " OCSP");
+#endif
 #ifndef DISABLE_PRDR
   fprintf(f, " PRDR");
 #endif
-#ifndef DISABLE_OCSP
-  fprintf(f, " OCSP");
+#ifndef DISABLE_SOCKS
+  fprintf(f, " SOCKS");
 #endif
 #ifdef EXPERIMENTAL_SPF
   fprintf(f, " Experimental_SPF");
@@ -861,9 +864,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_REDIS
   fprintf(f, " Experimental_Redis");
-#endif
-#ifdef EXPERIMENTAL_SOCKS
-  fprintf(f, " Experimental_SOCKS");
 #endif
 fprintf(f, "\n");
 

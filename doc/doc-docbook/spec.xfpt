@@ -23729,6 +23729,14 @@ Alternatively, if the value of &%size_addition%& is set negative, it disables
 the use of the SIZE option altogether.
 
 
+.new
+.option socks_proxy smtp string&!! unset
+.cindex proxy SOCKS
+This option enables use of SOCKS proxies for connections made by the
+transport.  For details see &<<SECTproxySOCKS>>&.
+.wen
+
+
 .option tls_certificate smtp string&!! unset
 .cindex "TLS" "client certificate, location of"
 .cindex "certificate" "client, location of"
@@ -38004,6 +38012,83 @@ The possible status keywords are: 'none','invalid','fail' and 'pass'. Please
 see the documentation of the &%$dkim_verify_status%& expansion variable above
 for more information of what they mean.
 .endlist
+
+. ////////////////////////////////////////////////////////////////////////////
+. ////////////////////////////////////////////////////////////////////////////
+
+.chapter "Proxies" "CHAPproxies" &&&
+         "Proxy support"
+.cindex "proxy support"
+.cindex "proxy" "access via"
+
+.new
+A proxy is an intermediate system through which communication is passed.
+Proxies may provide a security, availability or load-distribution function.
+
+.section "Outbound proxies" SECTproxySOCKS
+.cindex proxy outbound
+.cindex proxy "client side"
+.cindex proxy SOCKS
+.cindex SOCKS proxy
+Exim has support for sending outbound SMTP via a proxy
+using a protocol called SOCKS5 (defined by RFC1928).
+The support can be removed by defining DISABLE_SOCKS=yes in Local/Makefile.
+
+Use of a proxy is enabled by setting the &%socks_proxy%& on an smtp transport.
+The option value is expanded and should then be a list
+(colon-separated by default) of proxy specifiers.
+Each proxy specifier is a list
+(space-separated by default) where the initial element
+is an IP address and any subsequent elements are options.
+
+Options are a string <name>=<value>. 
+The list of options is in the following table:
+.display
+&`auth   `& authentication method
+&`name   `& authentication username
+&`pass   `& authentication password
+&`port   `& tcp port
+&`tmo    `& connection timeout
+&`pri    `& priority
+&`weight `& selection bias
+.endd
+
+More details on each of these options follows:
+
+.ilist
+.cindex authentication "to proxy"
+.cindex proxy authentication
+&%auth%&: Either &"none"& (default) or &"name"&.
+Using &"name"& selects username/password authentication per RFC 1929
+for access to the proxy.
+Default is &"none"&.
+.next
+&%name%&: sets the username for the &"name"& authentication method.
+Default is empty.
+.next
+&%pass%&: sets the password for the &"name"& authentication method.
+Default is empty.
+.next
+&%port%&: the TCP port number to use for the connection to the proxy.
+Default is 1080.
+.next
+&%tmo%&: sets a connection timeout in seconds for this proxy.
+Default is 5.
+.next
+&%pri%&: specifies a priority for the proxy within the list,
+higher values being tried first.
+The default priority is 1.
+.next
+&%weight%&: specifies a selection bias.
+Within a priority set servers are queried in a random fashion,
+weighted by this value.
+The default value for selection bias is 1.
+.endlist
+
+Proxies from the list are tried according to their priority
+and weight settings until one responds.  The timeout for the
+overall connection applies to the set of proxied attempts.
+.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
