@@ -45,7 +45,6 @@ it's a default value. */
 #define DISABLE_DKIM
 #define DISABLE_PRDR
 #define DISABLE_OCSP
-#define DISABLE_SOCKS
 #define DISABLE_D_OPTION
 
 #define ENABLE_DISABLE_FSYNC
@@ -139,6 +138,7 @@ it's a default value. */
 #define SUPPORT_MBX
 #define SUPPORT_MOVE_FROZEN_MESSAGES
 #define SUPPORT_PAM
+#define SUPPORT_SOCKS
 #define SUPPORT_TLS
 #define SUPPORT_TRANSLATE_IP_ADDRESS
 

@@ -829,7 +829,7 @@ fprintf(f, "Support for:");
 #ifndef DISABLE_PRDR
   fprintf(f, " PRDR");
 #endif
-#ifndef DISABLE_SOCKS
+#ifdef SUPPORT_SOCKS
   fprintf(f, " SOCKS");
 #endif
 #ifdef EXPERIMENTAL_SPF

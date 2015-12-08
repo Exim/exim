@@ -59,7 +59,7 @@ typedef struct {
   BOOL    lmtp_ignore_quota;
   uschar *expand_retry_include_ip_address;
   BOOL    retry_include_ip_address;
-#ifndef DISABLE_SOCKS
+#ifdef SUPPORT_SOCKS
   uschar *socks_proxy;
 #endif
 #ifdef SUPPORT_TLS
@@ -111,7 +111,7 @@ extern int     smtp_auth(uschar *, unsigned, address_item *, host_item *,
 extern BOOL    smtp_mail_auth_str(uschar *, unsigned,
 		 address_item *, smtp_transport_options_block *);
 
-#ifndef DISABLE_SOCKS
+#ifdef SUPPORT_SOCKS
 extern int     socks_sock_connect(host_item *, int, int, uschar *,
 	         transport_instance *, int);
 #endif

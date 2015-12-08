@@ -267,7 +267,7 @@ int
 smtp_connect(host_item *host, int host_af, int port, uschar *interface,
   int timeout, transport_instance * tb)
 {
-#ifndef DISABLE_SOCKS
+#ifdef SUPPORT_SOCKS
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
 #endif
@@ -287,7 +287,7 @@ HDEBUG(D_transport|D_acl|D_v)
   {
   uschar * s = US" ";
   if (interface) s = string_sprintf(" from %s ", interface);
-#ifndef DISABLE_SOCKS
+#ifdef SUPPORT_SOCKS
   if (ob->socks_proxy) s = string_sprintf("%svia proxy ", s);
 #endif
   debug_printf("Connecting to %s %s%s... ", host->name, callout_address, s);
@@ -295,7 +295,7 @@ HDEBUG(D_transport|D_acl|D_v)
 
 /* Create and connect the socket */
 
-#ifndef DISABLE_SOCKS
+#ifdef SUPPORT_SOCKS
 if (ob->socks_proxy)
   return socks_sock_connect(host, host_af, port, interface, tb, timeout);
 #endif

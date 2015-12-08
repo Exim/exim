@@ -392,6 +392,7 @@ EXIM_MONITOR=eximon.bin
 
 # WITH_OLD_DEMIME=yes
 
+#------------------------------------------------------------------------------
 # If you're using ClamAV and are backporting fixes to an old version, instead
 # of staying current (which is the more usual approach) then you may need to
 # use an older API which uses a STREAM command, now deprecated, instead of
@@ -429,13 +430,6 @@ EXIM_MONITOR=eximon.bin
 # Note: Enabling EXPERIMENTAL_DANE unconditionally overrides this setting.
 
 # DISABLE_DNSSEC=yes
-
-
-#------------------------------------------------------------------------------
-# By default Exim has support for connecting outbound via a SOCK5 proxy.
-# To remove this support uncomment the following line.
-
-# DISABLE_SOCKS=yes
 
 
 #------------------------------------------------------------------------------
@@ -923,6 +917,14 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 # You probably need to add -lpam to EXTRALIBS, and in some releases of
 # GNU/Linux -ldl is also needed.
+
+
+#------------------------------------------------------------------------------
+# Proxying.
+# If you may want to use outbound (client-side) proxying, uncomment the SOCKS
+# line below.
+
+# SUPPORT_SOCKS=yes
 
 
 #------------------------------------------------------------------------------

@@ -38032,7 +38032,8 @@ Proxies may provide a security, availability or load-distribution function.
 .cindex SOCKS proxy
 Exim has support for sending outbound SMTP via a proxy
 using a protocol called SOCKS5 (defined by RFC1928).
-The support can be removed by defining DISABLE_SOCKS=yes in Local/Makefile.
+The support can be optionally included by defining SUPPORT_SOCKS=yes in
+Local/Makefile.
 
 Use of a proxy is enabled by setting the &%socks_proxy%& on an smtp transport.
 The option value is expanded and should then be a list
