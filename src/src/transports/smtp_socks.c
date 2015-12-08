@@ -290,7 +290,11 @@ for(;;)
 
   if ((fd = smtp_sock_connect(&proxy, proxy_af, sob->port,
 	      interface, tb, sob->timeout)) >= 0)
+    {
+    proxy_local_address = string_copy(proxy.address);
+    proxy_local_port = sob->port;
     break;
+    }
 
   log_write(0, LOG_MAIN, "%s: %s", __FUNCTION__, strerror(errno));
   sob->is_failed = TRUE;
@@ -373,11 +377,13 @@ if (  buf[0] != 5
    )
   goto proxy_err;
 
-/*XXX log proxy outbound addr/port? */
+proxy_external_address = string_copy(
+  host_ntoa(buf[3] == 4 ? AF_INET6 : AF_INET, buf+4, NULL, NULL));
+proxy_external_port = ntohs(*((uint16_t *)(buf + (buf[3] == 4 ? 20 : 8))));
+proxy_session = TRUE;
+
 HDEBUG(D_transport|D_acl|D_v)
-  debug_printf("  proxy farside local: [%s]:%d\n",
-    host_ntoa(buf[3] == 4 ? AF_INET6 : AF_INET, buf+4, NULL, NULL),
-    ntohs(*((uint16_t *)(buf + (buf[3] == 4 ? 20 : 8)))));
+  debug_printf("  proxy farside: [%s]:%d\n", proxy_external_address, proxy_external_port);
 
 return fd;
 

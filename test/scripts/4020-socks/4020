@@ -3,7 +3,7 @@
 munge loopback
 #
 # auth: null
-server PORT_S
+server PORT_D
 <<\x05\x01\x00
 >>\x05\x00
 <<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
@@ -42,7 +42,7 @@ quit
 #
 #
 # auth: username/password
-server PORT_S
+server PORT_D
 <<\x05\x01\x02
 >>\x05\x02
 <<\x01\x04fred\x05fubar

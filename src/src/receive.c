@@ -3777,7 +3777,7 @@ if (prdr_requested)
 
 #ifdef SUPPORT_PROXY
 if (proxy_session && LOGGING(proxy))
-  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host_address);
+  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_local_address);
 #endif
 
 sprintf(CS big_buffer, "%d", msg_size);

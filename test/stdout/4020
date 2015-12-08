@@ -22,7 +22,7 @@
 221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 1224 ... 
+Listening on port 1225 ... 
 Connection request from [ip4.ip4.ip4.ip4]
 <<\x05\x01\x00
 >>\x05\x00
@@ -43,7 +43,7 @@ R
 QUIT
 250 bye
 End of script
-Listening on port 1224 ... 
+Listening on port 1225 ... 
 Connection request from [ip4.ip4.ip4.ip4]
 <<\x05\x01\x02
 >>\x05\x02

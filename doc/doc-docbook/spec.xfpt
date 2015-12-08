@@ -12038,7 +12038,8 @@ qualified host name. See also &$smtp_active_hostname$&.
        &$proxy_target_address$& &&&
        &$proxy_target_port$& &&&
        &$proxy_session$&
-These variables are only available when built with Proxy Protocol support
+These variables are only available when built with Proxy Protocol
+or Socks5 support
 For details see chapter &<<SECTproxyInbound>>&.
 .wen
 
@@ -35481,7 +35482,7 @@ selection marked by asterisks:
 &` queue_time_overall         `&  time on queue for whole message
 &` pid                        `&  Exim process id
 .new
-&` proxy                      `&  proxy address on <= lines
+&` proxy                      `&  proxy address on <= and => lines
 .wen
 &` received_recipients        `&  recipients on <= lines
 &` received_sender            `&  sender on <= lines
@@ -35615,7 +35616,8 @@ The latter can be disabled by turning off the &%outgoing_interface%& option.
 .cindex "TCP/IP" "logging proxy address"
 &%proxy%&: The internal (closest to the system running Exim) IP address
 of the proxy, tagged by PRX=, on the &"<="& line for a message accepted
-on a proxied connection.
+on a proxied connection
+or the &"=>"& line for a message delivered on a proxied connection..
 See &<<SECTproxyInbound>>& for more information.
 .wen
 .next
@@ -38087,10 +38089,6 @@ Use of a proxy is enabled by setting the &%hosts_proxy%&
 main configuration option to a hostlist; connections from these
 hosts will use Proxy Protocol.
 
-To log the IP of the proxy in the incoming logline, add &"+proxy"&
-to the &%log_selector%& option.
-This will add a component tagged with &"PRX="& to the line.
-
 The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces
 of the proxy):
@@ -38190,6 +38188,11 @@ The default value for selection bias is 1.
 Proxies from the list are tried according to their priority
 and weight settings until one responds.  The timeout for the
 overall connection applies to the set of proxied attempts.
+
+.section Logging SECTproxyLog
+To log the (local) IP of a proxy in the incoming or delivery logline,
+add &"+proxy"& to the &%log_selector%& option.
+This will add a component tagged with &"PRX="& to the line.
 .wen
 
 . ////////////////////////////////////////////////////////////////////////////

@@ -117,7 +117,8 @@ JH/23 Move SOCKS5 support from Experimental to mainline, enabled for a build
 
 JH/26 Move PROXY support from Experimental to mainline, enabled for a build
       by defining SUPPORT_PROXY.  Note that the proxy_required_hosts option
-      is renamed to hosts_proxy.
+      is renamed to hosts_proxy, and the proxy_{host,target}_{address,port}.
+      variables are renamed to proxy_{local,external}_{address,port}.
 
 
 Exim version 4.86

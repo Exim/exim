@@ -718,8 +718,21 @@ s = string_append(s, sizep, ptrp, 5, US" H=", addr->host_used->name,
 if (LOGGING(outgoing_port))
   s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
     addr->host_used->port));
+
+#ifdef SUPPORT_SOCKS
+if (LOGGING(proxy) && proxy_local_address)
+  {
+  s = string_append(s, sizep, ptrp, 3, US" PRX=[", proxy_local_address, US"]");
+  if (LOGGING(outgoing_port))
+    s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
+      proxy_local_port));
+  }
+#endif
+
 return d_log_interface(s, sizep, ptrp);
 }
+
+
 
 
 
@@ -3297,6 +3310,21 @@ while (!done)
 
     switch (subid)
       {
+#ifdef SUPPORT_SOCKS
+      case '2':	/* proxy information; must arrive before A0 and applies to that addr XXX oops*/
+	proxy_session = TRUE;	/*XXX shouod this be cleared somewhere? */
+	if (*ptr == 0)
+	  ptr++;
+	else
+	  {
+	  proxy_local_address = string_copy(ptr);
+	  while(*ptr++);
+	  memcpy(&proxy_local_port, ptr, sizeof(proxy_local_port));
+	  ptr += sizeof(proxy_local_port);
+	  }
+	break;
+#endif
+
 #ifdef EXPERIMENTAL_DSN_INFO
       case '1':	/* must arrive before A0, and applies to that addr */
       		/* Two strings: smtp_greeting and helo_response */
@@ -4441,15 +4469,13 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 #ifdef SUPPORT_TLS
       if (addr->cipher)
         {
-        ptr = big_buffer;
-        sprintf(CS ptr, "%.128s", addr->cipher);
-        while(*ptr++);
+        ptr = big_buffer + sprintf(CS big_buffer, "%.128s", addr->cipher) + 1;
         if (!addr->peerdn)
 	  *ptr++ = 0;
 	else
           {
-          sprintf(CS ptr, "%.512s", addr->peerdn);
-          while(*ptr++);
+          ptr += sprintf(CS ptr, "%.512s", addr->peerdn);
+          ptr++;
           }
 
         rmt_dlv_checked_write(fd, 'X', '1', big_buffer, ptr - big_buffer);
@@ -4475,9 +4501,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 # ifndef DISABLE_OCSP
       if (addr->ocsp > OCSP_NOT_REQ)
 	{
-	ptr = big_buffer;
-	sprintf(CS ptr, "%c", addr->ocsp + '0');
-	while(*ptr++);
+	ptr = big_buffer + sprintf(CS big_buffer, "%c", addr->ocsp + '0') + 1;
         rmt_dlv_checked_write(fd, 'X', '4', big_buffer, ptr - big_buffer);
 	}
 # endif
@@ -4485,23 +4509,17 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 
       if (client_authenticator)
         {
-        ptr = big_buffer;
-	sprintf(CS big_buffer, "%.64s", client_authenticator);
-        while(*ptr++);
+	ptr = big_buffer + sprintf(CS big_buffer, "%.64s", client_authenticator) + 1;
         rmt_dlv_checked_write(fd, 'C', '1', big_buffer, ptr - big_buffer);
 	}
       if (client_authenticated_id)
         {
-        ptr = big_buffer;
-	sprintf(CS big_buffer, "%.64s", client_authenticated_id);
-        while(*ptr++);
+        ptr = big_buffer + sprintf(CS big_buffer, "%.64s", client_authenticated_id) + 1;
         rmt_dlv_checked_write(fd, 'C', '2', big_buffer, ptr - big_buffer);
 	}
       if (client_authenticated_sender)
         {
-        ptr = big_buffer;
-	sprintf(CS big_buffer, "%.64s", client_authenticated_sender);
-        while(*ptr++);
+        ptr = big_buffer + sprintf(CS big_buffer, "%.64s", client_authenticated_sender) + 1;
         rmt_dlv_checked_write(fd, 'C', '3', big_buffer, ptr - big_buffer);
 	}
 
@@ -4532,19 +4550,34 @@ for (delivery_count = 0; addr_remote; delivery_count++)
         rmt_dlv_checked_write(fd, 'R', '0', big_buffer, ptr - big_buffer);
         }
 
+#ifdef SUPPORT_SOCKS
+      if (LOGGING(proxy) && proxy_session)
+	{
+	ptr = big_buffer;
+	if (proxy_local_address)
+	  {
+	  DEBUG(D_deliver) debug_printf("proxy_local_address '%s'\n", proxy_local_address);
+	  ptr = big_buffer + sprintf(CS ptr, "%.128s", proxy_local_address) + 1;
+	  DEBUG(D_deliver) debug_printf("proxy_local_port %d\n", proxy_local_port);
+	  memcpy(ptr, &proxy_local_port, sizeof(proxy_local_port));
+	  ptr += sizeof(proxy_local_port);
+	  }
+	else
+	  *ptr++ = '\0';
+	rmt_dlv_checked_write(fd, 'A', '2', big_buffer, ptr - big_buffer);
+	}
+#endif
+
 #ifdef EXPERIMENTAL_DSN_INFO
 /*um, are they really per-addr?  Other per-conn stuff is not (auth, tls).  But host_used is! */
       if (addr->smtp_greeting)
 	{
-	ptr = big_buffer;
 	DEBUG(D_deliver) debug_printf("smtp_greeting '%s'\n", addr->smtp_greeting);
-        sprintf(CS ptr, "%.128s", addr->smtp_greeting);
-        while(*ptr++);
+	ptr = big_buffer + sprintf(CS big_buffer, "%.128s", addr->smtp_greeting) + 1;
 	if (addr->helo_response)
 	  {
 	  DEBUG(D_deliver) debug_printf("helo_response '%s'\n", addr->helo_response);
-	  sprintf(CS ptr, "%.128s", addr->helo_response);
-	  while(*ptr++);
+	  ptr += sprintf(CS ptr, "%.128s", addr->helo_response) + 1;
 	  }
 	else
 	  *ptr++ = '\0';
@@ -4554,8 +4587,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 
       /* The rest of the information goes in an 'A0' item. */
 
-      sprintf(CS big_buffer, "%c%c", addr->transport_return,
-        addr->special_action);
+      sprintf(CS big_buffer, "%c%c", addr->transport_return, addr->special_action);
       ptr = big_buffer + 2;
       memcpy(ptr, &(addr->basic_errno), sizeof(addr->basic_errno));
       ptr += sizeof(addr->basic_errno);
@@ -4565,23 +4597,15 @@ for (delivery_count = 0; addr_remote; delivery_count++)
       ptr += sizeof(addr->flags);
 
       if (!addr->message) *ptr++ = 0; else
-        {
-        sprintf(CS ptr, "%.1024s", addr->message);
-        while(*ptr++);
-        }
+        ptr += sprintf(CS ptr, "%.1024s", addr->message) + 1;
 
       if (!addr->user_message) *ptr++ = 0; else
-        {
-        sprintf(CS ptr, "%.1024s", addr->user_message);
-        while(*ptr++);
-        }
+        ptr += sprintf(CS ptr, "%.1024s", addr->user_message) + 1;
 
       if (!addr->host_used) *ptr++ = 0; else
         {
-        sprintf(CS ptr, "%.256s", addr->host_used->name);
-        while(*ptr++);
-        sprintf(CS ptr, "%.64s", addr->host_used->address);
-        while(*ptr++);
+        ptr += sprintf(CS ptr, "%.256s", addr->host_used->name) + 1;
+        ptr += sprintf(CS ptr, "%.64s", addr->host_used->address) + 1;
         memcpy(ptr, &(addr->host_used->port), sizeof(addr->host_used->port));
         ptr += sizeof(addr->host_used->port);
 
@@ -4600,12 +4624,9 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     if (LOGGING(incoming_interface) && sending_ip_address)
 #endif
       {
-      uschar * ptr = big_buffer;
-      sprintf(CS ptr, "%.128s", sending_ip_address);
-      while(*ptr++);
-      sprintf(CS ptr, "%d", sending_port);
-      while(*ptr++);
-
+      uschar * ptr;
+      ptr = big_buffer + sprintf(CS big_buffer, "%.128s", sending_ip_address) + 1;
+      ptr += sprintf(CS ptr, "%d", sending_port) + 1;
       rmt_dlv_checked_write(fd, 'I', '0', big_buffer, ptr - big_buffer);
       }
 

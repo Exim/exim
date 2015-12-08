@@ -761,10 +761,10 @@ if (ret >= 16 &&
             DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
             return ERRNO_PROXYFAIL;
             }
-          proxy_host_address  = sender_host_address;
+          proxy_local_address = sender_host_address;
           sender_host_address = string_copy(US tmpip);
           tmpport             = ntohs(hdr.v2.addr.ip4.src_port);
-          proxy_host_port     = sender_host_port;
+          proxy_local_port    = sender_host_port;
           sender_host_port    = tmpport;
           /* Save dest ip/port */
           tmpaddr.sin_addr.s_addr = hdr.v2.addr.ip4.dst_addr;
@@ -787,10 +787,10 @@ if (ret >= 16 &&
             DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
             return ERRNO_PROXYFAIL;
             }
-          proxy_host_address  = sender_host_address;
+          proxy_local_address = sender_host_address;
           sender_host_address = string_copy(US tmpip6);
           tmpport             = ntohs(hdr.v2.addr.ip6.src_port);
-          proxy_host_port     = sender_host_port;
+          proxy_local_port    = sender_host_port;
           sender_host_port    = tmpport;
           /* Save dest ip/port */
           memmove(tmpaddr6.sin6_addr.s6_addr, hdr.v2.addr.ip6.dst_addr, 16);
@@ -881,7 +881,7 @@ else if (ret >= 8 &&
       debug_printf("Proxied src arg is not an %s address\n", iptype);
     goto proxyfail;
     }
-  proxy_host_address = sender_host_address;
+  proxy_local_address = sender_host_address;
   sender_host_address = p;
   p = sp + 1;
   if ((sp = Ustrchr(p, ' ')) == NULL)
@@ -912,7 +912,7 @@ else if (ret >= 8 &&
       debug_printf("Proxied src port '%s' not an integer\n", p);
     goto proxyfail;
     }
-  proxy_host_port = sender_host_port;
+  proxy_local_port = sender_host_port;
   sender_host_port = tmp_port;
   p = sp + 1;
   if ((sp = Ustrchr(p, '\0')) == NULL)
