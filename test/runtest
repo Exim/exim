@@ -1026,6 +1026,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
 
+    # SUPPORT_PROXY
+    next if /host in hosts_proxy\?/;
+
     # Experimental_International
     next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
 
