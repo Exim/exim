@@ -286,7 +286,7 @@ static optionlist optionlist_config[] = {
   { "host_reject_connection",   opt_stringptr,   &host_reject_connection },
   { "hosts_connection_nolog",   opt_stringptr,   &hosts_connection_nolog },
 #ifdef SUPPORT_PROXY
-  { "hosts_proxy",              opt_stringptr,   &proxy_required_hosts },
+  { "hosts_proxy",              opt_stringptr,   &hosts_proxy },
 #endif
   { "hosts_treat_as_local",     opt_stringptr,   &hosts_treat_as_local },
 #ifdef LOOKUP_IBASE

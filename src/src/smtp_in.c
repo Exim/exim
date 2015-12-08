@@ -620,7 +620,7 @@ int rc;
 /* Cannot configure local connection as a proxy inbound */
 if (sender_host_address == NULL) return proxy_session;
 
-rc = verify_check_this_host(&hosts_proxy, NULL, NULL,
+rc = verify_check_this_host(CUSS &hosts_proxy, NULL, NULL,
                            sender_host_address, NULL);
 if (rc == OK)
   {
@@ -774,9 +774,9 @@ if (ret >= 16 &&
             DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
             return ERRNO_PROXYFAIL;
             }
-          proxy_target_address = string_copy(US tmpip);
+          proxy_external_address = string_copy(US tmpip);
           tmpport              = ntohs(hdr.v2.addr.ip4.dst_port);
-          proxy_target_port    = tmpport;
+          proxy_external_port  = tmpport;
           goto done;
         case 0x21:  /* TCPv6 address type */
           iptype = US"IPv6";
@@ -800,9 +800,9 @@ if (ret >= 16 &&
             DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
             return ERRNO_PROXYFAIL;
             }
-          proxy_target_address = string_copy(US tmpip6);
+          proxy_external_address = string_copy(US tmpip6);
           tmpport              = ntohs(hdr.v2.addr.ip6.dst_port);
-          proxy_target_port    = tmpport;
+          proxy_external_port  = tmpport;
           goto done;
         default:
           DEBUG(D_receive)
@@ -897,7 +897,7 @@ else if (ret >= 8 &&
       debug_printf("Proxy dest arg is not an %s address\n", iptype);
     goto proxyfail;
     }
-  proxy_target_address = p;
+  proxy_external_address = p;
   p = sp + 1;
   if ((sp = Ustrchr(p, ' ')) == NULL)
     {
@@ -927,7 +927,7 @@ else if (ret >= 8 &&
       debug_printf("Proxy dest port '%s' not an integer\n", p);
     goto proxyfail;
     }
-  proxy_target_port = tmp_port;
+  proxy_external_port = tmp_port;
   /* Already checked for /r /n above. Good V1 header received. */
   goto done;
   }
