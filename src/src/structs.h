@@ -467,7 +467,7 @@ typedef struct address_item_propagated {
   #ifdef EXPERIMENTAL_SRS
   uschar *srs_sender;             /* Change return path when delivering */
   #endif
-  #ifdef EXPERIMENTAL_INTERNATIONAL
+  #ifdef SUPPORT_I18N
   BOOL    utf8_msg:1;		  /* requires SMTPUTF8 processing */
   BOOL	  utf8_downcvt:1;	  /* mandatory downconvert on delivery */
   BOOL	  utf8_downcvt_maybe:1;	  /* optional downconvert on delivery */
@@ -510,7 +510,7 @@ typedef struct address_item_propagated {
 #ifdef EXPERIMENTAL_DANE
 # define af_dane_verified      0x20000000 /* TLS cert verify done with DANE */
 #endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 # define af_utf8_downcvt       0x40000000 /* downconvert was done for delivery */
 #endif
 

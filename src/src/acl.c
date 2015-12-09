@@ -208,7 +208,7 @@ enum {
 #endif
   CONTROL_FAKEDEFER,
   CONTROL_FAKEREJECT,
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   CONTROL_UTF8_DOWNCONVERT,
 #endif
   CONTROL_NO_MULTILINE,
@@ -251,7 +251,7 @@ static uschar *controls[] = {
 #endif
   US"fakedefer",
   US"fakereject",
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   US"utf8_downconvert",
 #endif
   US"no_multiline_responses",
@@ -693,7 +693,7 @@ static unsigned int control_forbids[] = {
 #endif
     (1<<ACL_WHERE_MIME)),
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   0,                                               /* utf8_downconvert */
 #endif
 
@@ -750,7 +750,7 @@ static control_def controls_list[] = {
   { US"submission",              CONTROL_SUBMISSION,            TRUE },
   { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE },
   { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY,   FALSE },
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   { US"utf8_downconvert",        CONTROL_UTF8_DOWNCONVERT,      TRUE }
 #endif
   };
@@ -2095,7 +2095,7 @@ else if (verify_sender_address != NULL)
     uschar *save_address_data = deliver_address_data;
 
     sender_vaddr = deliver_make_addr(verify_sender_address, TRUE);
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     if ((sender_vaddr->prop.utf8_msg = message_smtputf8))
       {
       sender_vaddr->prop.utf8_downcvt =       message_utf8_downconvert == 1;
@@ -3402,7 +3402,7 @@ for (; cb != NULL; cb = cb->next)
 	  }
 	return ERROR;
 
-    #ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	case CONTROL_UTF8_DOWNCONVERT:
 	if (*p == '/')
 	  {
@@ -3440,7 +3440,7 @@ for (; cb != NULL; cb = cb->next)
 	  break;
 	  }
 	return ERROR;
-    #endif
+#endif
 
 	}
       break;
@@ -4465,7 +4465,7 @@ if (where == ACL_WHERE_RCPT)
     *log_msgptr = US"defer in percent_hack_domains check";
     return DEFER;
     }
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   if ((addr->prop.utf8_msg = message_smtputf8))
     {
     addr->prop.utf8_downcvt =       message_utf8_downconvert == 1;

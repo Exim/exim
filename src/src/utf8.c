@@ -8,7 +8,7 @@
 
 #include "exim.h"
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 
 #include <idna.h>
 #include <punycode.h>

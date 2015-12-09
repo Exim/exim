@@ -596,7 +596,7 @@ if (*errno_value == ERRNO_WRITEINCOMPLETE)
   return FALSE;
   }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 /* Handle lack of advertised SMTPUTF8, for international message */
 if (*errno_value == ERRNO_UTF8_FWD)
   {
@@ -1403,7 +1403,7 @@ BOOL pass_message = FALSE;
 BOOL prdr_offered = FALSE;
 BOOL prdr_active;
 #endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 BOOL utf8_needed = FALSE;
 BOOL utf8_offered = FALSE;
 #endif
@@ -1535,7 +1535,7 @@ if (continue_hostname == NULL)
   delayed till here so that $sending_interface and $sending_port are set. */
 
   helo_data = expand_string(ob->helo_data);
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   if (helo_data)
     {
     uschar * errstr = NULL;
@@ -1709,7 +1709,7 @@ goto SEND_QUIT;
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   if (addrlist->prop.utf8_msg)
     {
     utf8_needed =  !addrlist->prop.utf8_downcvt
@@ -1950,7 +1950,7 @@ if (continue_hostname == NULL
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   if (addrlist->prop.utf8_msg)
     utf8_offered = esmtp
       && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
@@ -1983,7 +1983,7 @@ message-specific. */
 
 setting_up = FALSE;
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 /* If this is an international message we need the host to speak SMTPUTF8 */
 if (utf8_needed && !utf8_offered)
   {
@@ -2068,7 +2068,7 @@ if (prdr_offered)
   }
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 if (addrlist->prop.utf8_msg && !addrlist->prop.utf8_downcvt && utf8_offered)
   sprintf(CS p, " SMTPUTF8"), p += 9;
 #endif
@@ -2128,7 +2128,7 @@ pending_MAIL = TRUE;     /* The block starts with MAIL */
 
   {
   uschar * s = return_path;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   uschar * errstr = NULL;
 
   /* If we must downconvert, do the from-address here.  Remember we had to
@@ -2239,7 +2239,7 @@ for (addr = first_addr;
 
   rcpt_addr = transport_rcpt_address(addr, tblock->rcpt_include_affixes);
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   {
   uschar * dummy_errstr;
   if (  testflag(addrlist, af_utf8_downcvt)
@@ -2679,7 +2679,7 @@ if (!ok)
 
     switch(save_errno)
       {
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       case ERRNO_UTF8_FWD:
         code = '5';
       /*FALLTHROUGH*/

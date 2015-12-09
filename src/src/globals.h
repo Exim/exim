@@ -576,7 +576,7 @@ extern int     message_linecount;      /* As it says */
 extern BOOL    message_logs;           /* TRUE to write message logs */
 extern int     message_size;           /* Size of message */
 extern uschar *message_size_limit;     /* As it says */
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 extern BOOL    message_smtputf8;       /* Internationalized mail handling */
 extern int     message_utf8_downconvert; /* convert from utf8 */
 const extern pcre *regex_UTF8;         /* For recognizing SMTPUTF8 settings */
@@ -836,7 +836,7 @@ extern int     smtp_rlr_limit;         /* Max delay */
 extern int     smtp_rlr_threshold;     /* Threshold for RCPT rate limit */
 extern BOOL    smtp_use_pipelining;    /* Global for passed connections */
 extern BOOL    smtp_use_size;          /* Global for passed connections */
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 extern uschar *smtputf8_advertise_hosts; /* ingress control */
 #endif
 

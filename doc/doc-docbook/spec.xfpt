@@ -9373,6 +9373,19 @@ you can use
 condition = ${if >{$acl_m4}{3}}
 .endd
 
+
+
+.new
+.vitem &*${imapfolder{*&<&'foldername'&>&*}}*&
+.cindex expansion "imap folder"
+.cindex "&%imapfolder%& expansion item"
+This item converts a (possibly multilevel, or with non-ASCII characters)
+folder specification to a Maildir name for filesystem use.
+For information on internationalisation support see &<<SECTi18nMDA>>&.
+.wen
+
+
+
 .vitem &*${length{*&<&'string1'&>&*}{*&<&'string2'&>&*}}*&
 .cindex "expansion" "string truncation"
 .cindex "&%length%& expansion item"
@@ -10464,6 +10477,23 @@ This forces the letters in the string into upper-case.
 .cindex "expansion" "utf-8 forcing"
 .cindex "&%utf8clean%& expansion item"
 This replaces any invalid utf-8 sequence in the string by the character &`?`&.
+
+.new
+.vitem "&*${utf8_domain_to_alabel:*&<&'string'&>&*}*&" &&&
+       "&*${utf8_domain_from_alabel:*&<&'string'&>&*}*&" &&&
+       "&*${utf8_localpart_to_alabel:*&<&'string'&>&*}*&" &&&
+       "&*${utf8_localpart_from_alabel:*&<&'string'&>&*}*&"
+.cindex expansion UTF-8
+.cindex UTF-8 expansion
+.cindex EAI
+.cindex internationalisation
+.cindex "&%utf8_domain_to_alabel%& expansion item"
+.cindex "&%utf8_domain_from_alabel%& expansion item"
+.cindex "&%utf8_localpart_to_alabel%& expansion item"
+.cindex "&%utf8_localpart_from_alabel%& expansion item"
+These convert EAI mail name components between UTF-8 and a-label forms.
+For information on internationalisation support see &<<SECTi18nMTA>>&.
+.wen
 .endlist
 
 
@@ -13615,6 +13645,7 @@ See also the &'Policy controls'& section above.
 .row &%ignore_fromline_local%&       "allow &""From ""& from local SMTP"
 .row &%pipelining_advertise_hosts%&  "advertise pipelining to these hosts"
 .row &%prdr_enable%&                 "advertise PRDR to all hosts"
+.row &%smtputf8_advertise_hosts%&    "advertise SMTPUTF8 to these hosts"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .endtable
 
@@ -16377,6 +16408,17 @@ example, instead of &"Administrative prohibition"&, it might give:
 550-Rejected after DATA: '>' missing at end of address:
 550 failing address in "From" header is: <user@dom.ain
 .endd
+
+
+.new
+.option smtputf8_advertise_hosts main "host list&!!" *
+.cindex "SMTPUTF8" "advertising"
+When Exim is built with support for internationalised mail names,
+the availability therof is advertised in
+response to EHLO only to those client hosts that match this option. See
+chapter &<<CHAPi18n>>& for details of Exim's support for internationalisation.
+.wen
+
 
 .option spamd_address main string "see below"
 This option is available when Exim is compiled with the content-scanning
@@ -28665,6 +28707,13 @@ data is read.
 
 &*Note:*& This control applies only to the current message, not to any others
 that are being submitted at the same time using &%-bs%& or &%-bS%&.
+
+.new
+.vitem &*control&~=&~utf8_downconvert*&
+This control enables conversion of UTF-8 in message addresses
+to a-label form.
+For details see &<<SECTi18nMTA>>&.
+.wen
 .endlist vlist
 
 
@@ -35215,6 +35264,7 @@ extensions (ESMTP), encryption, or authentication were used. If the SMTP
 session was encrypted, there is an additional X field that records the cipher
 suite that was used.
 
+.cindex log protocol
 The protocol is set to &"esmtpsa"& or &"esmtpa"& for messages received from
 hosts that have authenticated themselves using the SMTP AUTH command. The first
 value is used when the SMTP connection was encrypted (&"secure"&). In this case
@@ -35385,6 +35435,7 @@ the following table:
 &`id  `&        message id for incoming message
 &`P   `&        on &`<=`& lines: protocol used
 &`    `&        on &`=>`& and &`**`& lines: return path
+&`PRX `&        on &'<='& and&`=>`& lines: proxy address
 &`QT  `&        on &`=>`& lines: time spent on queue so far
 &`    `&        on &"Completed"& lines: time spent on queue
 &`R   `&        on &`<=`& lines: reference for local bounce
@@ -38144,13 +38195,13 @@ is an IP address and any subsequent elements are options.
 Options are a string <name>=<value>. 
 The list of options is in the following table:
 .display
-&`auth   `& authentication method
-&`name   `& authentication username
-&`pass   `& authentication password
-&`port   `& tcp port
-&`tmo    `& connection timeout
-&`pri    `& priority
-&`weight `& selection bias
+&'auth   '& authentication method
+&'name   '& authentication username
+&'pass   '& authentication password
+&'port   '& tcp port
+&'tmo    '& connection timeout
+&'pri    '& priority
+&'weight '& selection bias
 .endd
 
 More details on each of these options follows:
@@ -38193,6 +38244,127 @@ overall connection applies to the set of proxied attempts.
 To log the (local) IP of a proxy in the incoming or delivery logline,
 add &"+proxy"& to the &%log_selector%& option.
 This will add a component tagged with &"PRX="& to the line.
+.wen
+
+. ////////////////////////////////////////////////////////////////////////////
+. ////////////////////////////////////////////////////////////////////////////
+
+.chapter "Internationalisation" "CHAPi18n" &&&
+         "Internationalisation""
+.cindex internationalisation "email address"
+.cindex EAI
+.cindex i18n
+.cindex UTF-8 "mail name handling"
+
+.new
+Exim has support for Internationalised mail names.
+To include this it must be built with SUPPORT_I18N and the libidn library.
+Standards supported are RFCs 2060, 5890, 6530 and 6533.
+
+.section "MTA operations" SECTi18nMTA
+.cindex SMTPUTF8 "ESMTP option"
+The main configuration option &%smtputf8_advertise_hosts%& specifies
+a host list.  If this matches the sending host and
+accept_8bitmime is true (the default) then the ESMTP option
+SMTPUTF8 will be advertised.
+
+If the sender specifies the SMTPUTF8 option on a MAIL command
+international handling for the message is enabled and
+the expansion variable &$message_smtputf8$& will have value TRUE.
+
+The option &%allow_utf8_domains%& is set to true for this
+message. All DNS lookups are converted to a-label form
+whatever the setting of &%allow_utf8_domains%&
+when Exim is built with SUPPORT_I18N.
+
+Both localparts and domain are maintained as the original
+UTF-8 form internally; any comparison or regular-expression use will
+require appropriate care.  Filenames created, eg. by
+the appendfile transport, will have UTF-8 names.
+
+Helo names sent by the smtp transport will have any UTF-8
+components expanded to a-label form,
+and any certificate name checks will be done using the a-label
+form of the name.
+
+.cindex log protocol
+.cindex SMTPUTF8 logging
+Log lines and Received-by: header lines will acquire a "utf8"
+prefix on the protocol element, eg. utf8esmtp.
+
+The following expansion operator can be used:
+.code
+${utf8_domain_to_alabel:str}
+${utf8_domain_from_alabel:str}
+${utf8_localpart_to_alabel:str}
+${utf8_localpart_from_alabel:str}
+.endd
+
+ACLs may use the following modifier:
+.display
+control = utf8_downconvert
+control = utf8_downconvert/<value>
+.endd
+This sets a flag requiring that addresses are converted to
+a-label form before smtp delivery, for use in a
+Message Submission Agent context.
+If a value is appended it may be:
+.display
+&`1  `& (default) mandatory downconversion
+&`0  `& no downconversion
+&`-1 `& if SMTPUTF8 not supported by destination host
+.endd
+
+If mua_wrapper is set, the utf8_downconvert control
+is initially set to -1.
+
+
+There is no explicit support for VRFY and EXPN.
+Configurations supporting these should inspect
+&$smtp_command_argument$& for an SMTPUTF8 argument.
+
+There is no support for LMTP on Unix sockets.
+Using the "lmtp" protocol option on an smtp transport,
+for LMTP over TCP, should work as expected.
+
+There is no support for DSN unitext handling,
+and no provision for converting logging from or to UTF-8.
+
+
+
+.section "MDA operations" SECTi18nMDA
+To aid in constructing names suitable for IMAP folders
+the following expansion operator can be used:
+.code
+${imapfolder {<string>} {<sep>} {<specials>}}
+.endd
+
+The string is converted from the charset specified by
+the "headers charset" command (in a filter file)
+or &%headers_charset%& main configuration option (otherwise),
+to the
+modified UTF-7 encoding specified by RFC 2060,
+with the following exception: All occurences of <sep>
+(which has to be a single character)
+are replaced with periods ("."), and all periods and slashes that are not
+<sep> and are not in the <specials> string are BASE64 encoded.
+
+The third argument can be omitted, defaulting to an empty string.
+The second argument can be omitted, defaulting to "/".
+
+This is the encoding used by Courier for Maildir names on disk, and followed
+by many other IMAP servers.
+
+Examples:
+.display
+&`${imapfolder {Foo/Bar}}       `& yields &`Foo.Bar`&
+&`${imapfolder {Foo/Bar}{.}{/}} `& yields &`Foo&&AC8-Bar`&
+&`${imapfolder {Räksmörgås}}    `& yields &`R&&AOQ-ksm&&APY-rg&&AOU-s`&
+.endd
+
+Note that the source charset setting is vital, and also that characters
+must be representable in UTF-16.
+
 .wen
 
 . ////////////////////////////////////////////////////////////////////////////

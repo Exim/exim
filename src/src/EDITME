@@ -496,11 +496,6 @@ EXIM_MONITOR=eximon.bin
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # EXPERIMENTAL_DANE=yes
 
-# Uncomment the following to add Internationalisation features. You need to
-# have the IDN library installed.
-# EXPERIMENTAL_INTERNATIONAL=yes
-# LDFLAGS += -lidn
-
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################
@@ -930,6 +925,17 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 # SUPPORT_PROXY=yes
 
+
+#------------------------------------------------------------------------------
+# Internationalisation.
+#
+# Uncomment the following to include Internationalisation features.  This is the
+# SMTPUTF8 ESMTP extension, and associated facilities for handling UTF8 domain
+# and localparts, per RFCs 5890, 6530 and 6533.
+# You need to have the IDN library installed.
+
+# SUPPORT_I18N=yes
+# LDFLAGS += -lidn
 
 
 #------------------------------------------------------------------------------

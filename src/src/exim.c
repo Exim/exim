@@ -823,6 +823,9 @@ fprintf(f, "Support for:");
 #ifndef DISABLE_DNSSEC
   fprintf(f, " DNSSEC");
 #endif
+#ifdef SUPPORT_I18N
+  fprintf(f, " I18N");
+#endif
 #ifndef DISABLE_OCSP
   fprintf(f, " OCSP");
 #endif
@@ -855,9 +858,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   fprintf(f, " Experimental_DSN_info");
-#endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
-  fprintf(f, " Experimental_International");
 #endif
 #ifdef EXPERIMENTAL_EVENT
   fprintf(f, " Experimental_Event");
@@ -1031,7 +1031,7 @@ DEBUG(D_any) do {
 #ifdef SUPPORT_TLS
   tls_version_report(f);
 #endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   utf8_version_report(f);
 #endif
 
@@ -2561,12 +2561,12 @@ for (i = 1; i < argc; i++)
         if (temp >= argrest && *temp == '.') f_end_dot = TRUE;
         allow_domain_literals = TRUE;
         strip_trailing_dot = TRUE;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	allow_utf8_domains = TRUE;
 #endif
         sender_address = parse_extract_address(argrest, &errmess,
           &dummy_start, &dummy_end, &sender_address_domain, TRUE);
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	message_smtputf8 =  string_is_utf8(sender_address);
 	allow_utf8_domains = FALSE;
 #endif
@@ -3736,7 +3736,7 @@ is equivalent to the ability to modify a setuid binary!
 This needs to happen before we read the main configuration. */
 init_lookup_list();
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 if (running_in_test_harness) smtputf8_advertise_hosts = NULL;
 #endif
 
@@ -5121,7 +5121,7 @@ if (mua_wrapper)
   deliver_drop_privilege = TRUE;
   queue_smtp = FALSE;
   queue_smtp_domains = NULL;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   message_utf8_downconvert = -1;	/* convert-if-needed */
 #endif
   }
@@ -5414,7 +5414,7 @@ while (more)
                 errors_sender_rc : EXIT_FAILURE;
             }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	{
 	BOOL b = allow_utf8_domains;
 	allow_utf8_domains = TRUE;
@@ -5422,7 +5422,7 @@ while (more)
         recipient =
           parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	if (string_is_utf8(recipient))
 	  message_smtputf8 = TRUE;
 	else

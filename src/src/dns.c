@@ -620,7 +620,7 @@ if (previous != NULL)
   return previous->data.val;
   }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 /* Convert all names to a-label form before doing lookup */
   {
   uschar * alabel;
@@ -851,7 +851,7 @@ for (i = 0; i < 10; i++)
     if (  rr_name
        && Ustrcmp(rr_name, *fully_qualified_name) != 0
        && rr_name[0] != '*'
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
        && (  !string_is_utf8(*fully_qualified_name)
 	  || Ustrcmp(rr_name,
 	       string_domain_utf8_to_alabel(*fully_qualified_name, NULL)) != 0

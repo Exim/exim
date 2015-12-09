@@ -120,6 +120,9 @@ JH/26 Move PROXY support from Experimental to mainline, enabled for a build
       is renamed to hosts_proxy, and the proxy_{host,target}_{address,port}.
       variables are renamed to proxy_{local,external}_{address,port}.
 
+JH/27 Move Internationalisation support from Experimental to mainline, enabled
+      for a build by defining SUPPORT_I18N
+
 
 Exim version 4.86
 -----------------

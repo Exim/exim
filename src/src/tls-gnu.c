@@ -1834,7 +1834,7 @@ tls_client_setup_hostname_checks(host_item * host, exim_gnutls_state_st * state,
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
   state->exp_tls_verify_cert_hostnames =
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     string_domain_utf8_to_alabel(host->name, NULL);
 #else
     host->name;

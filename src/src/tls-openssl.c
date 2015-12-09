@@ -1860,7 +1860,7 @@ if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
   cbinfo->verify_cert_hostnames =
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     string_domain_utf8_to_alabel(host->name, NULL);
 #else
     host->name;

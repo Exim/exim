@@ -1553,7 +1553,7 @@ uschar * s;
 s = addr->prefix;
 if (testflag(addr, af_include_affixes) && s)
   {
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   if (testflag(addr, af_utf8_downcvt))
     s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
@@ -1561,7 +1561,7 @@ if (testflag(addr, af_include_affixes) && s)
   }
 
 s = addr->local_part;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 if (testflag(addr, af_utf8_downcvt))
   s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
@@ -1570,7 +1570,7 @@ yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
 s = addr->suffix;
 if (testflag(addr, af_include_affixes) && s)
   {
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   if (testflag(addr, af_utf8_downcvt))
     s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
@@ -1641,7 +1641,7 @@ else
     yield = string_get_localpart(addr, yield, &size, &ptr);
     yield = string_cat(yield, &size, &ptr, US"@", 1);
     s = addr->domain;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     if (testflag(addr, af_utf8_downcvt))
       s = string_localpart_utf8_to_alabel(s, NULL);
 #endif

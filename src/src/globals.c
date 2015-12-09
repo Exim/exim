@@ -178,7 +178,7 @@ BOOL    prdr_requested         = FALSE;
 const pcre *regex_PRDR         = NULL;
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 const pcre *regex_UTF8         = NULL;
 #endif
 
@@ -395,7 +395,7 @@ address_item address_defaults = {
 #ifdef EXPERIMENTAL_SRS
     NULL,               /* srs_sender */
 #endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     FALSE,		/* utf8 */
 #endif
   }
@@ -943,7 +943,7 @@ int     message_linecount      = 0;
 BOOL    message_logs           = TRUE;
 int     message_size           = 0;
 uschar *message_size_limit     = US"50M";
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 BOOL    message_smtputf8       = FALSE;
 int     message_utf8_downconvert = 0;	/* -1 ifneeded; 0 never; 1 always */
 #endif
@@ -1316,7 +1316,7 @@ int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
 BOOL    smtp_use_pipelining    = FALSE;
 BOOL    smtp_use_size          = FALSE;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 uschar *smtputf8_advertise_hosts = US"*";	/* overridden under test-harness */
 #endif
 

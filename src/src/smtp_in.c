@@ -135,7 +135,7 @@ static BOOL rcpt_smtp_response_same;
 static BOOL rcpt_in_progress;
 static int  nonmail_command_count;
 static BOOL smtp_exit_function_called = 0;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 static BOOL smtputf8_advertised;
 #endif
 static int  synprot_error_count;
@@ -239,7 +239,7 @@ enum {
   ENV_MAIL_OPT_PRDR,
 #endif
   ENV_MAIL_OPT_RET, ENV_MAIL_OPT_ENVID,
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   ENV_MAIL_OPT_UTF8,
 #endif
   };
@@ -258,7 +258,7 @@ static env_mail_type_t env_mail_type_list[] = {
 #endif
     { US"RET",    ENV_MAIL_OPT_RET,    TRUE },
     { US"ENVID",  ENV_MAIL_OPT_ENVID,  TRUE },
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     { US"SMTPUTF8",ENV_MAIL_OPT_UTF8,  FALSE },		/* rfc6531 */
 #endif
     /* keep this the last entry */
@@ -1544,7 +1544,7 @@ spf_received = NULL;
 spf_result = NULL;
 spf_smtp_comment = NULL;
 #endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
 #endif
 body_linecount = body_zerocount = 0;
@@ -1882,7 +1882,7 @@ tls_in.ocsp = OCSP_NOT_REQ;
 tls_advertised = FALSE;
 #endif
 dsn_advertised = FALSE;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 smtputf8_advertised = FALSE;
 #endif
 
@@ -3577,7 +3577,7 @@ while (done <= 0)
     tls_advertised = FALSE;
 #endif
     dsn_advertised = FALSE;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     smtputf8_advertised = FALSE;
 #endif
 
@@ -3771,7 +3771,7 @@ while (done <= 0)
 	}
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       if (  accept_8bitmime
          && verify_check_host(&smtputf8_advertise_hosts) != FAIL)
 	{
@@ -4054,7 +4054,7 @@ while (done <= 0)
           break;
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
         case ENV_MAIL_OPT_UTF8:
 	  if (smtputf8_advertised)
 	    {

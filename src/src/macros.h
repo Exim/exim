@@ -533,7 +533,7 @@ to conflict with system errno values. */
 #define ERRNO_PROXYFAIL      (-47)   /* Negotiation failed for proxy configured host */
 #define ERRNO_AUTHPROB       (-48)   /* Authenticator "other" failure */
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 # define ERRNO_UTF8_FWD      (-49)   /* target not supporting SMTPUTF8 */
 #endif
 

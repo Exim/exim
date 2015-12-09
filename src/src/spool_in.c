@@ -303,7 +303,7 @@ spam_score = NULL;
 spam_score_int = NULL;
 #endif
 
-#if defined(EXPERIMENTAL_INTERNATIONAL) && !defined(COMPILE_UTILITY)
+#if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
 message_smtputf8 = FALSE;
 message_utf8_downconvert = 0;
 #endif
@@ -582,7 +582,7 @@ for (;;)
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
 #endif
-#if defined(EXPERIMENTAL_INTERNATIONAL) && !defined(COMPILE_UTILITY)
+#if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
     else if (Ustrncmp(p, "mtputf8", 7) == 0)
       message_smtputf8 = TRUE;
 #endif
@@ -609,7 +609,7 @@ for (;;)
     break;
 #endif
 
-#if defined(EXPERIMENTAL_INTERNATIONAL) && !defined(COMPILE_UTILITY)
+#if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
     case 'u':
     if (Ustrncmp(p, "tf8_downcvt", 11) == 0)
       message_utf8_downconvert = 1;

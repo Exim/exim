@@ -111,7 +111,7 @@ static uschar *item_table[] = {
   US"hash",
   US"hmac",
   US"if",
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   US"imapfolder",
 #endif
   US"length",
@@ -141,7 +141,7 @@ enum {
   EITEM_HASH,
   EITEM_HMAC,
   EITEM_IF,
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   EITEM_IMAPFOLDER,
 #endif
   EITEM_LENGTH,
@@ -173,7 +173,7 @@ static uschar *op_table_underscore[] = {
   US"reverse_ip",
   US"time_eval",
   US"time_interval"
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
  ,US"utf8_domain_from_alabel",
   US"utf8_domain_to_alabel",
   US"utf8_localpart_from_alabel",
@@ -188,7 +188,7 @@ enum {
   EOP_REVERSE_IP,
   EOP_TIME_EVAL,
   EOP_TIME_INTERVAL
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
  ,EOP_UTF8_DOMAIN_FROM_ALABEL,
   EOP_UTF8_DOMAIN_TO_ALABEL,
   EOP_UTF8_LOCALPART_FROM_ALABEL,
@@ -573,7 +573,7 @@ static var_entry var_table[] = {
   { "message_id",          vtype_stringptr,   &message_id },
   { "message_linecount",   vtype_int,         &message_linecount },
   { "message_size",        vtype_int,         &message_size },
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
   { "message_smtputf8",    vtype_bool,        &message_smtputf8 },
 #endif
 #ifdef WITH_CONTENT_SCAN
@@ -4095,7 +4095,7 @@ while (*s != 0)
       continue;
       }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     case EITEM_IMAPFOLDER:
       {				/* ${imapfolder {name}{sep]{specials}} */
       uschar *sub_arg[3];
@@ -6757,7 +6757,7 @@ while (*s != 0)
         continue;
         }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       case EOP_UTF8_DOMAIN_TO_ALABEL:
 	{
         uschar * error = NULL;

@@ -247,7 +247,7 @@ if (tls_in.ourcert)
 if (tls_in.ocsp)	 fprintf(f, "-tls_ocsp %d\n",   tls_in.ocsp);
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 if (message_smtputf8)
   {
   fprintf(f, "-smtputf8\n");

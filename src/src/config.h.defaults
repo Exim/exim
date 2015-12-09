@@ -131,8 +131,8 @@ it's a default value. */
 #define SPOOL_MODE                 0640
 #define STRING_SPRINTF_BUFFER_SIZE (8192 * 4)
 
-#define SUPPORT_A6
 #define SUPPORT_CRYPTEQ
+#define SUPPORT_I18N
 #define SUPPORT_MAILDIR
 #define SUPPORT_MAILSTORE
 #define SUPPORT_MBX
@@ -177,7 +177,6 @@ it's a default value. */
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_DMARC
 #define EXPERIMENTAL_EVENT
-#define EXPERIMENTAL_INTERNATIONAL
 #define EXPERIMENTAL_REDIS
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS

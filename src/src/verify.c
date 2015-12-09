@@ -174,7 +174,7 @@ dbdata_callout_cache new_domain_record;
 dbdata_callout_cache_address new_address_record;
 host_item *host;
 time_t callout_start_time;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 BOOL utf8_offered = FALSE;
 #endif
 
@@ -924,7 +924,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         }
       }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     else if (  addr->prop.utf8_msg
 	    && !addr->prop.utf8_downcvt
 	    && !(  esmtp
@@ -976,7 +976,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     /* Send the MAIL command */
         (smtp_write_command(&outblock, FALSE,
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	  addr->prop.utf8_msg && !addr->prop.utf8_downcvt
 	  ? "MAIL FROM:<%s>%s SMTPUTF8\r\n"
 	  :
@@ -1022,7 +1022,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       {
       const uschar * rcpt_domain = addr->domain;
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       uschar * errstr = NULL;
       if (  testflag(addr, af_utf8_downcvt)
 	 && (rcpt_domain = string_domain_utf8_to_alabel(rcpt_domain,
@@ -1084,7 +1084,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
               '2', callout) &&
 
             smtp_write_command(&outblock, FALSE,
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	      addr->prop.utf8_msg && !addr->prop.utf8_downcvt
 	      ? "MAIL FROM:<%s> SMTPUTF8\r\n"
 	      :
@@ -1124,7 +1124,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	uschar * rcpt = transport_rcpt_address(addr,
               addr->transport ? addr->transport->rcpt_include_affixes : FALSE);
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	/*XXX should the conversion be moved into transport_rcpt_address() ? */
 	uschar * dummy_errstr = NULL;
 	if (  testflag(addr, af_utf8_downcvt)
@@ -1229,7 +1229,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         HDEBUG(D_verify) debug_printf("SMTP timeout\n");
         send_quit = FALSE;
         }
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       else if (errno == ERRNO_UTF8_FWD)
 	{
 	extern int acl_where;	/* src/acl.c */

@@ -872,7 +872,7 @@ else
 
 if (LOGGING(sender_on_delivery) || msg)
   s = string_append(s, &size, &ptr, 3, US" F=<",
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     testflag(addr, af_utf8_downcvt)
     ? string_address_utf8_to_alabel(sender_address, NULL)
     :
@@ -5771,7 +5771,7 @@ if (process_recipients != RECIP_IGNORE)
       recipient_item *r = recipients_list + i;
       address_item *new = deliver_make_addr(r->address, FALSE);
       new->prop.errors_address = r->errors_to;
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       if ((new->prop.utf8_msg = message_smtputf8))
 	{
 	new->prop.utf8_downcvt =       message_utf8_downconvert == 1;
@@ -7327,7 +7327,7 @@ wording. */
         }
 
       /* output machine readable part */
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       if (message_smtputf8)
 	fprintf(f, "--%s\n"
 	    "Content-type: message/global-delivery-status\n\n"
@@ -7428,7 +7428,7 @@ wording. */
             }
           }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
       if (message_smtputf8)
 	fputs(topt & topt_no_body ? "Content-type: message/global-headers\n\n"
 				  : "Content-type: message/global\n\n",
@@ -8074,7 +8074,7 @@ if (!regex_PRDR) regex_PRDR =
   regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
 #endif
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 if (!regex_UTF8) regex_UTF8 =
   regex_must_compile(US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE);
 #endif

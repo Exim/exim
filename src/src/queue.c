@@ -1274,7 +1274,7 @@ switch(action)
       {
       if (action == MSG_ADD_RECIPIENT)
         {
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	if (string_is_utf8(recipient)) allow_utf8_domains = message_smtputf8 = TRUE;
 #endif
         receive_add_recipient(recipient, -1);
@@ -1300,7 +1300,7 @@ switch(action)
         }
       else  /* MSG_EDIT_SENDER */
         {
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	if (string_is_utf8(recipient)) allow_utf8_domains = message_smtputf8 = TRUE;
 #endif
         sender_address = recipient;

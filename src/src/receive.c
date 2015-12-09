@@ -2303,7 +2303,7 @@ if (extract_recip)
         for (p = s; p < ss; p++) if (*p != '\n') *pp++ = *p;
         *pp = 0;
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	{
 	BOOL b = allow_utf8_domains;
 	allow_utf8_domains = TRUE;
@@ -2311,7 +2311,7 @@ if (extract_recip)
         recipient = parse_extract_address(recipient, &errmess, &start, &end,
           &domain, FALSE);
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 	if (string_is_utf8(recipient))
 	  message_smtputf8 = TRUE;
 	else

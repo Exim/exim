@@ -424,7 +424,7 @@ extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4
 extern uschar *string_format_size(int, uschar *);
 extern int     string_interpret_escape(const uschar **);
 extern int     string_is_ip_address(const uschar *, int *);
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 extern BOOL    string_is_utf8(const uschar *);
 #endif
 extern uschar *string_log_address(address_item *, BOOL, BOOL);
@@ -433,7 +433,7 @@ extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern const uschar *string_printing2(const uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 extern uschar *string_address_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_domain_alabel_to_utf8(const uschar *, uschar **);
 extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
@@ -474,7 +474,7 @@ extern void    tree_walk(tree_node *, void (*)(uschar*, uschar*, void*), void *)
 #ifdef WITH_CONTENT_SCAN
 extern void    unspool_mbox(void);
 #endif
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 extern void    utf8_version_report(FILE *);
 #endif
 

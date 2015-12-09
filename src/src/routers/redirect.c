@@ -451,7 +451,7 @@ while (generated != NULL)
       }
     }
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     next->prop.utf8_msg = string_is_utf8(next->address)
       || (sender_address && string_is_utf8(sender_address));
 #endif
@@ -475,7 +475,7 @@ while (generated != NULL)
     else
       debug_printf("gid=unset ");
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
     if (next->prop.utf8_msg) debug_printf("utf8 ");
 #endif
 

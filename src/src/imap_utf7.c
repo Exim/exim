@@ -1,6 +1,6 @@
 #include "exim.h"
 
-#ifdef EXPERIMENTAL_INTERNATIONAL
+#ifdef SUPPORT_I18N
 
 uschar *
 imap_utf7_encode(uschar *string, const uschar *charset, uschar sep,
