@@ -123,6 +123,9 @@ JH/26 Move PROXY support from Experimental to mainline, enabled for a build
 JH/27 Move Internationalisation support from Experimental to mainline, enabled
       for a build by defining SUPPORT_I18N
 
+JH/28 Bug 1745: Fix redis lookups to handle (quoted) spaces embedded in parts
+      of the query string, and make ${quote_redis:} do that quoting.
+
 
 Exim version 4.86
 -----------------
