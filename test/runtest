@@ -2210,6 +2210,45 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+)?\s+(.*
     }
   }
 
+# The "background" command is run but not waited-for, like exim -DSERVER=server.
+# One script line is read and fork-exec'd.  The PID is stored for a later
+# killdaemon.
+
+elsif (/^background$/)
+  {
+  my $line;
+#  $pidfile = "$parm_cwd/aux-var/server-daemon.pid";
+
+  $_ = <SCRIPT>; $lineno++;
+  chomp;
+  $line = $_;
+  if ($debug) { printf ">> daemon: $line >>test-stdout 2>>test-stderr\n"; }
+
+  my $pid = fork();
+  if (not defined $pid) { die "** fork failed: $!\n" }
+  if (not $pid) {
+    print "[$$]>> ${line}\n" if ($debug);
+    close(STDIN);
+    open(STDIN, "<", "test-stdout");
+    close(STDOUT);
+    open(STDOUT, ">>", "test-stdout");
+    close(STDERR);
+    open(STDERR, ">>", "test-stderr-server");
+    exec "exec ${line}";
+    exit(1);
+  }
+
+#  open(my $fh, ">", $pidfile) ||
+#      tests_exit(-1, "Failed to open $pidfile: $!");
+#  printf($fh, "%d\n", $pid);
+#  close($fh);
+
+  while (<SCRIPT>) { $lineno++; last if /^\*{4}\s*$/; }   # Ignore any input
+  select(undef, undef, undef, 0.3);             # Let the daemon get going
+  return (3, { exim_pid => $pid });             # Don't wait
+  }
+
+
 
 # Unknown command
 
@@ -2809,6 +2848,22 @@ if (defined $parm_support{'Content_Scanning'})
     }
   }
 
+
+##################################################
+#       Check for redis                          #
+##################################################
+if (defined $parm_support{'Experimental_Redis'})
+  {
+  if (system("redis-server -v 2>/dev/null >/dev/null") == 0)
+    {
+    print "The redis-server command works\n";
+    $parm_running{'redis'} = ' ';
+    }
+  else
+    {
+    print "The redis-server command failed: assume Redis not installed\n";
+    }
+  }
 
 ##################################################
 #         Test for the basic requirements        #

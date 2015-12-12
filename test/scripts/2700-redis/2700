@@ -1,0 +1,12 @@
+# Redis lookups and quoting
+#
+background
+redis-server
+****
+exim -be -d-all+expand+lookup
+${lookup redis{set keyname ${quote_redis:objvalue plus}}}
+${lookup redis{get keyname}}
+****
+#
+killdaemon
+no_stderr_check

@@ -840,6 +840,12 @@ terminated by four asterisks. Even if no data is required for the particular
 usage, the asterisks must be given.
 
 
+  background
+
+This command takes one script line and runs it in the background,
+in parallel with following commands.  For external daemons, eg. redis-server.
+
+
   catwrite <file name> [nxm[=start-of-line-text]]*
 
 This command operates like the "write" command, which is described below,
