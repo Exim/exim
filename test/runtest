@@ -2857,7 +2857,7 @@ if (defined $parm_support{'Content_Scanning'})
 ##################################################
 #       Check for redis                          #
 ##################################################
-if (defined $parm_support{'Experimental_Redis'})
+if (defined $parm_lookups{'redis'})
   {
   if (system("redis-server -v 2>/dev/null >/dev/null") == 0)
     {

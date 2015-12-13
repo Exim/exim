@@ -7482,22 +7482,22 @@ for (i = 1; i < argc; i++)
     if (Ustrspn(argv[i], "abcdefghijklmnopqrtsuvwxyz0123456789-.:/") ==
         Ustrlen(argv[i]))
       {
-      #ifdef LOOKUP_LDAP
+#ifdef LOOKUP_LDAP
       eldap_default_servers = argv[i];
-      #endif
-      #ifdef LOOKUP_MYSQL
+#endif
+#ifdef LOOKUP_MYSQL
       mysql_servers = argv[i];
-      #endif
-      #ifdef LOOKUP_PGSQL
+#endif
+#ifdef LOOKUP_PGSQL
       pgsql_servers = argv[i];
-      #endif
-      #ifdef EXPERIMENTAL_REDIS
+#endif
+#ifdef LOOKUP_REDIS
       redis_servers = argv[i];
-      #endif
+#endif
       }
-  #ifdef EXIM_PERL
+#ifdef EXIM_PERL
   else opt_perl_startup = argv[i];
-  #endif
+#endif
   }
 
 printf("Testing string expansion: debug_level = %d\n\n", debug_level);

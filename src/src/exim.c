@@ -862,9 +862,6 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_DSN_INFO
   fprintf(f, " Experimental_DSN_info");
 #endif
-#ifdef EXPERIMENTAL_REDIS
-  fprintf(f, " Experimental_Redis");
-#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");
@@ -906,6 +903,9 @@ fprintf(f, "Lookups (built-in):");
 #endif
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
   fprintf(f, " pgsql");
+#endif
+#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
+  fprintf(f, " redis");
 #endif
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
   fprintf(f, " sqlite");

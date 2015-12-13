@@ -375,7 +375,7 @@ static optionlist optionlist_config[] = {
   { "recipient_unqualified_hosts", opt_stringptr, &recipient_unqualified_hosts },
   { "recipients_max",           opt_int,         &recipients_max },
   { "recipients_max_reject",    opt_bool,        &recipients_max_reject },
-#ifdef EXPERIMENTAL_REDIS
+#ifdef LOOKUP_REDIS
   { "redis_servers",            opt_stringptr,   &redis_servers },
 #endif
   { "remote_max_parallel",      opt_int,         &remote_max_parallel },

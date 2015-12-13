@@ -6625,6 +6625,14 @@ password value. For example:
 PostgreSQL database. See section &<<SECTsql>>&.
 
 .next
+.new
+.cindex "Redis lookup type"
+.cindex lookup Redis
+&(redis)&: The format of the query is an SQL statement that is passed to a
+Redis database. See section &<<SECTsql>>&.
+.wen
+
+.next
 .cindex "sqlite lookup type"
 .cindex "lookup" "sqlite"
 &(sqlite)&: The format of the query is a file name followed by an SQL statement
@@ -7489,7 +7497,10 @@ operator is to double any quote characters within the text.
 .cindex "lookup" "Oracle"
 .cindex "InterBase lookup type"
 .cindex "lookup" "InterBase"
-Exim can support lookups in InterBase, MySQL, Oracle, PostgreSQL, and SQLite
+.cindex "Redis lookup type"
+.cindex lookup Redis
+Exim can support lookups in InterBase, MySQL, Oracle, PostgreSQL, Redis,
+and SQLite
 databases. Queries for these databases contain SQL statements, so an example
 might be
 .code
@@ -7516,7 +7527,7 @@ If the result of the query yields more than one row, it is all concatenated,
 with a newline between the data for each row.
 
 
-.section "More about MySQL, PostgreSQL, Oracle, and InterBase" "SECID72"
+.section "More about MySQL, PostgreSQL, Oracle, InterBase, and Redis" "SECID72"
 .cindex "MySQL" "lookup type"
 .cindex "PostgreSQL lookup type"
 .cindex "lookup" "MySQL"
@@ -7525,13 +7536,18 @@ with a newline between the data for each row.
 .cindex "lookup" "Oracle"
 .cindex "InterBase lookup type"
 .cindex "lookup" "InterBase"
-If any MySQL, PostgreSQL, Oracle, or InterBase lookups are used, the
-&%mysql_servers%&, &%pgsql_servers%&, &%oracle_servers%&, or &%ibase_servers%&
+.cindex "Redis lookup type"
+.cindex lookup Redis
+If any MySQL, PostgreSQL, Oracle, InterBase or Redis lookups are used, the
+&%mysql_servers%&, &%pgsql_servers%&, &%oracle_servers%&, &%ibase_servers%&,
+or &%redis_servers%&
 option (as appropriate) must be set to a colon-separated list of server
 information.
-(For MySQL and PostgreSQL only, the global option need not be set if all
+(For MySQL and PostgreSQL, the global option need not be set if all
 queries contain their own server information &-- see section
-&<<SECTspeserque>>&.) Each item in the list is a slash-separated list of four
+&<<SECTspeserque>>&.)
+For all but Redis
+each item in the list is a slash-separated list of four
 items: host name, database name, user name, and password. In the case of
 Oracle, the host name field is used for the &"service name"&, and the database
 name field is not used and should be empty. For example:
@@ -7553,14 +7569,35 @@ found, but that is still a successful query. In other words, the list of
 servers provides a backup facility, not a list of different places to look.
 
 .new
+For Redis the global option need not be specified if all queries contain their
+own server information &-- see section &<<SECTspeserque>>&.
+If specified, the option must be set to a colon-separated list of server
+information.
+Each item in the list is a slash-separated list of three items:
+host, database number, and password.
+.olist
+The host is required and may be either an IPv4 address and optional
+port number (separated by a colon, which needs doubling due to the
+higher-level list), or a Unix socket pathname enclosed in parentheses
+.next
+The database number is optional; if present that number is selected in the backend
+.next
+The password is optional; if present it is used to authenticate to the backend
+.endlist
+.wen
+
+.new
 The &%quote_mysql%&, &%quote_pgsql%&, and &%quote_oracle%& expansion operators
 convert newline, tab, carriage return, and backspace to \n, \t, \r, and \b
 respectively, and the characters single-quote, double-quote, and backslash
 itself are escaped with backslashes.
+
+The &%quote_redis%& expansion operator
+escapes whitespace and backslash characters with a backslash.
 .wen
 
 .section "Specifying the server in the query" "SECTspeserque"
-For MySQL and PostgreSQL lookups (but not currently for Oracle and InterBase),
+For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle and InterBase),
 it is possible to specify a list of servers with an individual query. This is
 done by starting the query with
 .display

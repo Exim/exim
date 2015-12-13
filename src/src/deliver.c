@@ -1085,9 +1085,7 @@ if (addr->message)
 	)
      && (  Ustrstr(s, "mysql")   != NULL
         || Ustrstr(s, "pgsql")   != NULL
-#ifdef EXPERIMENTAL_REDIS
 	|| Ustrstr(s, "redis")   != NULL
-#endif
 	|| Ustrstr(s, "sqlite")  != NULL
 	|| Ustrstr(s, "ldap:")   != NULL
 	|| Ustrstr(s, "ldapdn:") != NULL

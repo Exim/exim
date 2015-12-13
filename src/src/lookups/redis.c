@@ -7,7 +7,7 @@
 
 #include "../exim.h"
 
-#ifdef EXPERIMENTAL_REDIS
+#ifdef LOOKUP_REDIS
 
 #include "lf_functions.h"
 
@@ -118,7 +118,7 @@ if (sdata[2][0] == 0) sdata[2] = NULL;
 
 /* See if we have a cached connection to the server */
 
-for (cn = redis_connections; cn != NULL; cn = cn->next)
+for (cn = redis_connections; cn; cn = cn->next)
   if (Ustrcmp(cn->server, server_copy) == 0)
     {
     redis_handle = cn->handle;
@@ -458,11 +458,11 @@ static lookup_info redis_lookup_info = {
 };
 
 #ifdef DYNLOOKUP
-#define redis_lookup_module_info _lookup_module_info
+# define redis_lookup_module_info _lookup_module_info
 #endif /* DYNLOOKUP */
 
 static lookup_info *_lookup_list[] = { &redis_lookup_info };
 lookup_module_info redis_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
-#endif /* EXPERIMENTAL_REDIS */
+#endif /* LOOKUP_REDIS */
 /* End of lookups/redis.c */

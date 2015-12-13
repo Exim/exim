@@ -134,6 +134,9 @@ JH/30 Updated DANE implementation code to current from Viktor Dukhovni.
 JH/31 Fix bug with hosts_connection_nolog and named-lists which were wrongly
       cached by the daemon.
 
+JH/32 Move Redis support from Experimental to mainline, enabled for a build
+      by defining LOOKUP_REDIS. The libhiredis library is required.
+
 
 Exim version 4.86
 -----------------

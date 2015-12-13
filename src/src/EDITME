@@ -288,6 +288,11 @@ TRANSPORT_SMTP=yes
 # library.
 # NOTE: LDAP cannot be built as a module!
 #
+# For Redis you need to have hiredis installed on your system
+# (https://github.com/redis/hiredis).
+# Depending on where it is installed you may have to edit the CFLAGS
+# (often += -I/usr/local/include) and LDFLAGS (-lhiredis) lines.
+
 # If your system has pkg-config then the _INCLUDE/_LIBS setting can be
 # handled for you automatically by also defining the _PC variable to reference
 # the name of the pkg-config package, if such is available.
@@ -306,6 +311,7 @@ LOOKUP_DNSDB=yes
 # LOOKUP_ORACLE=yes
 # LOOKUP_PASSWD=yes
 # LOOKUP_PGSQL=yes
+# LOOKUP_REDIS=yes
 # LOOKUP_SQLITE=yes
 # LOOKUP_SQLITE_PC=sqlite3
 # LOOKUP_WHOSON=yes
@@ -357,7 +363,8 @@ PCRE_CONFIG=yes
 # the command for linking Exim itself, not on any auxiliary programs. You
 # don't need to set LOOKUP_INCLUDE if the relevant directories are already
 # specified in INCLUDE. The settings below are just examples; -lpq is for
-# PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite.
+# PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite, -lhiredis
+# is for Redis.
 #
 # You do not need to use this for any lookup information added via pkg-config.
 
@@ -479,14 +486,6 @@ EXIM_MONITOR=eximon.bin
 # EXPERIMENTAL_DMARC=yes
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lopendmarc
-
-
-# Uncomment the following line to add Redis lookup support
-# You need to have hiredis installed on your system (https://github.com/redis/hiredis).
-# Depending on where it is installed you may have to edit the CFLAGS and LDFLAGS lines.
-# EXPERIMENTAL_REDIS=yes
-# CFLAGS += -I/usr/local/include
-# LDFLAGS += -lhiredis
 
 # Uncomment the following line to enable support for checking certificate
 # ownership

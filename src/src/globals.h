@@ -62,7 +62,7 @@ extern uschar *oracle_servers;         /* List of servers and connect info */
 extern uschar *pgsql_servers;          /* List of servers and connect info */
 #endif
 
-#ifdef EXPERIMENTAL_REDIS
+#ifdef LOOKUP_REDIS
 extern uschar *redis_servers;          /* List of servers and connect info */
 #endif
 
