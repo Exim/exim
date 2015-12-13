@@ -1184,7 +1184,7 @@ ipv6_nmtoa(int * binary, uschar * buffer)
 {
 int i, j, k;
 uschar * c = buffer;
-uschar * d;
+uschar * d = NULL;	/* shut insufficiently "clever" compiler up */
 
 for (i = 0; i < 4; i++)
   {			/* expand to text */
@@ -1217,7 +1217,7 @@ if (k >= 0)
   c = d + 2*(k+1);
   if (d == buffer) c--;	/* need extra colon */
   *d++ = ':';	/* 1st 0 */
-  while (*d++ = *c++) ;
+  while ((*d++ = *c++)) ;
   }
 else
   d = c;

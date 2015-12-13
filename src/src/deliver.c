@@ -703,7 +703,7 @@ if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
   s = LOGGING(outgoing_port)
     ? string_append(s, sizep, ptrp, 2, US"]:",
 	string_sprintf("%d", sending_port))
-    : string_cat(s, sizep, ptrp, "]", 1);
+    : string_cat(s, sizep, ptrp, US"]", 1);
   }
 return s;
 }

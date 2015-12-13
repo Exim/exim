@@ -4289,44 +4289,42 @@ for (i = config_lines; i; i = i->next)
 
   /* # lines */
   if (current[0] == '#')
-    {
-    puts(current);
-    continue;
-    }
+    puts(CCS current);
 
   /* begin lines are left aligned */
-  if (strncmp(current, "begin", 5) == 0 && isspace(current[5]))
+  else if (Ustrncmp(current, "begin", 5) == 0 && isspace(current[5]))
     {
-    puts(current);
+    puts(CCS current);
     indent = TS;
-    continue;
     }
 
   /* router/acl/transport block names */
-  if (current[strlen(current)-1] == ':' && !strchr(current, '='))
+  else if (current[strlen(current)-1] == ':' && !Ustrchr(current, '='))
     {
     printf("%*s%s\n", TS, "", current);
     indent = 2 * TS;
-    continue;
     }
 
   /* hidden lines (MACROS or prefixed with hide) */
-  if (!admin && (isupper(*current)
-    || (strncmp(current, "hide", 4) == 0 && isspace(current[4]))))
+  else if (  !admin
+	  && (  isupper(*current)
+	     || Ustrncmp(current, "hide", 4) == 0 && isspace(current[4])
+	     )
+	  )
     {
-    if (p = strchr(current, '='))
+    if (p = Ustrchr(current, '='))
       {
       *p = '\0';
       printf("%*s%s = %s\n", indent, "", current, hidden);
       }
     /* e.g.: hide split_spool_directory */
-    else printf("%*s\n", indent, hidden);
-    continue;
+    else
+      printf("%*s\n", indent, hidden);
     }
 
-  /* rest is public */
-  printf("%*s%s\n", indent, "", current);
-  continue;
+  else
+    /* rest is public */
+    printf("%*s%s\n", indent, "", current);
   }
 }
 

@@ -496,6 +496,9 @@ EXIM_MONITOR=eximon.bin
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # EXPERIMENTAL_DANE=yes
 
+# Uncomment the following to include extra information in fail DSN message (bounces)
+# EXPERIMENTAL_DSN_INFO=yes
+
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################
