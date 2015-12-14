@@ -1,4 +1,4 @@
 support GnuTLS
 support OCSP
-support Experimental_Event
+support Event
 running IPv4
