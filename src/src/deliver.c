@@ -763,7 +763,7 @@ return s;
 
 
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 uschar *
 event_raise(uschar * action, const uschar * event, uschar * ev_data)
 {
@@ -829,7 +829,7 @@ deliver_localpart = save_local;
 deliver_domain =    save_domain;
 router_name = transport_name = NULL;
 }
-#endif	/*EXPERIMENTAL_EVENT*/
+#endif	/*DISABLE_EVENT*/
 
 
 
@@ -854,7 +854,7 @@ the log line, and reset the store afterwards. Remote deliveries should always
 have a pointer to the host item that succeeded; local deliveries can have a
 pointer to a single host item in their host list, for use by the transport. */
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   /* presume no successful remote delivery */
   lookup_dnssec_authenticated = NULL;
 #endif
@@ -928,7 +928,7 @@ else
     if (continue_sequence > 1)
       s = string_cat(s, &size, &ptr, US"*", 1);
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
     deliver_host_address = addr->host_used->address;
     deliver_host_port =    addr->host_used->port;
     deliver_host =         addr->host_used->name;
@@ -999,7 +999,7 @@ store we used to build the line after writing it. */
 s[ptr] = 0;
 log_write(0, flags, "%s", s);
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 if (!msg) msg_event_raise(US"msg:delivery", addr);
 #endif
 
@@ -1439,7 +1439,7 @@ else
 
   log_write(0, LOG_MAIN, "** %s", s);
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   msg_event_raise(US"msg:fail:delivery", addr);
 #endif
 
@@ -5862,7 +5862,7 @@ if (process_recipients != RECIP_IGNORE)
         break;
         }
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
       if (process_recipients != RECIP_ACCEPT)
 	{
 	uschar * save_local =  deliver_localpart;
@@ -7564,7 +7564,7 @@ if (!addr_defer)
   /* Unset deliver_freeze so that we won't try to move the spool files further down */
   deliver_freeze = FALSE;
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   (void) event_raise(event_action, US"msg:complete", NULL);
 #endif
   }

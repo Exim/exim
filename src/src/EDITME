@@ -432,6 +432,10 @@ EXIM_MONITOR=eximon.bin
 
 # DISABLE_DNSSEC=yes
 
+# To disable support for Events set DISABLE_EVENT to "yes"
+
+# DISABLE_EVENT=yes
+
 
 #------------------------------------------------------------------------------
 # Compiling Exim with experimental features. These are documented in
@@ -476,10 +480,6 @@ EXIM_MONITOR=eximon.bin
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lopendmarc
 
-
-# Uncomment the following line to support Events,
-# eg. for logging to a database.
-# EXPERIMENTAL_EVENT=yes
 
 # Uncomment the following line to add Redis lookup support
 # You need to have hiredis installed on your system (https://github.com/redis/hiredis).

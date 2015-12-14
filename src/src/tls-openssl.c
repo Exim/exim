@@ -152,7 +152,7 @@ typedef struct tls_ext_ctx_cb {
   /* only passed down to tls_error: */
   host_item *host;
   const uschar * verify_cert_hostnames;
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   uschar * event_action;
 #endif
 } tls_ext_ctx_cb;
@@ -282,7 +282,7 @@ for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
 */
 
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 static int
 verify_event(tls_support * tlsp, X509 * cert, int depth, const uschar * dn,
   BOOL *calledp, const BOOL *optionalp, const uschar * what)
@@ -394,7 +394,7 @@ else if (depth != 0)
       ERR_clear_error();
     }
 #endif
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
     if (verify_event(tlsp, cert, depth, dn, calledp, optionalp, US"SSL"))
       return 0;				/* reject, with peercert set */
 #endif
@@ -454,7 +454,7 @@ else
       }
     }
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   if (verify_event(tlsp, cert, depth, dn, calledp, optionalp, US"SSL"))
     return 0;				/* reject, with peercert set */
 #endif
@@ -491,7 +491,7 @@ verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 uschar dn[256];
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
 BOOL dummy_called, optional = FALSE;
 #endif
@@ -501,7 +501,7 @@ dn[sizeof(dn)-1] = '\0';
 
 DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", dn);
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   if (verify_event(&tls_out, cert, depth, dn,
 	  &dummy_called, &optional, US"DANE"))
     return 0;				/* reject, with peercert set */
@@ -1284,7 +1284,7 @@ else
 cbinfo->dhparam = dhparam;
 cbinfo->server_cipher_list = NULL;
 cbinfo->host = host;
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 cbinfo->event_action = NULL;
 #endif
 
@@ -2112,7 +2112,7 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 client_static_cbinfo->event_action = tb->event_action;
 #endif
 

@@ -3744,7 +3744,7 @@ for (; cb != NULL; cb = cb->next)
       {
       int old_pool = store_pool;
       if (  cb->u.varname[0] == 'c'
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 	 || event_name		/* An event is being delivered */
 #endif
 	 )

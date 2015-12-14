@@ -516,7 +516,7 @@ static var_entry var_table[] = {
   { "dnslist_value",       vtype_stringptr,   &dnslist_value },
   { "domain",              vtype_stringptr,   &deliver_domain },
   { "domain_data",         vtype_stringptr,   &deliver_domain_data },
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   { "event_data",          vtype_stringptr,   &event_data },
 
   /*XXX want to use generic vars for as many of these as possible*/

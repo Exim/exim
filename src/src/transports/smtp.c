@@ -683,7 +683,7 @@ msglog_line(host_item * host, uschar * message)
 
 
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 /*************************************************
 *   Post-defer action                            *
 *************************************************/
@@ -919,7 +919,7 @@ while (count-- > 0)
       addr->basic_errno = ERRNO_RCPT4XX;
       addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
       event_defer_errno = addr->more_errno;
       msg_event_raise(US"msg:rcpt:host:defer", addr);
 #endif
@@ -930,7 +930,7 @@ while (count-- > 0)
       if (host->next)
 	log_write(0, LOG_MAIN, "H=%s [%s]: %s", host->name, host->address, addr->message);
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
       else
 	msg_event_raise(US"msg:rcpt:defer", addr);
 #endif
@@ -1562,7 +1562,7 @@ if (continue_hostname == NULL)
 #endif
     if (!good_response) goto RESPONSE_FAILED;
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
       {
       uschar * s;
       lookup_dnssec_authenticated = host->dnssec==DS_YES ? US"yes"
@@ -2458,7 +2458,7 @@ if (!ok) ok = TRUE; else
     /* Set up confirmation if needed - applies only to SMTP */
 
     if (
-#ifndef EXPERIMENTAL_EVENT
+#ifdef DISABLE_EVENT
           LOGGING(smtp_confirmation) &&
 #endif
           !lmtp
@@ -2930,7 +2930,7 @@ case continue_more won't get set. */
 
 (void)close(inblock.sock);
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 (void) event_raise(tblock->event_action, US"tcp:close", NULL);
 #endif
 
@@ -3663,7 +3663,7 @@ for (cutoff_retry = 0; expired &&
                          first_addr->basic_errno != ERRNO_TLSFAILURE)
         write_logs(first_addr, host);
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
       if (rc == DEFER)
         deferred_event_raise(first_addr, host);
 #endif
@@ -3691,7 +3691,7 @@ for (cutoff_retry = 0; expired &&
           &message_defer, TRUE);
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
           write_logs(first_addr, host);
-# ifdef EXPERIMENTAL_EVENT
+# ifndef DISABLE_EVENT
         if (rc == DEFER)
           deferred_event_raise(first_addr, host);
 # endif

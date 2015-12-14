@@ -66,7 +66,7 @@ optionlist optionlist_transports[] = {
                  (void *)offsetof(transport_instance, driver_name) },
   { "envelope_to_add",   opt_bool|opt_public,
                  (void *)(offsetof(transport_instance, envelope_to_add)) },
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   { "event_action",     opt_stringptr | opt_public,
                  (void *)offsetof(transport_instance, event_action) },
 #endif

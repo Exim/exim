@@ -155,7 +155,7 @@ int sock;
 int on = 1;
 int save_errno = 0;
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 deliver_host_address = host->address;
 deliver_host_port = port;
 if (event_raise(tb->event_action, US"tcp:connect", NULL)) return -1;

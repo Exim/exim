@@ -251,7 +251,7 @@ static optionlist optionlist_config[] = {
   { "envelope_to_remove",       opt_bool,        &envelope_to_remove },
   { "errors_copy",              opt_stringptr,   &errors_copy },
   { "errors_reply_to",          opt_stringptr,   &errors_reply_to },
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   { "event_action",             opt_stringptr,   &event_action },
 #endif
   { "exim_group",               opt_gid,         &exim_gid },

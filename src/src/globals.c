@@ -690,7 +690,7 @@ uschar *errors_copy            = NULL;
 int     error_handling         = ERRORS_SENDER;
 uschar *errors_reply_to        = NULL;
 int     errors_sender_rc       = EXIT_FAILURE;
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 uschar *event_action             = NULL;	/* expansion for delivery events */
 uschar *event_data               = NULL;	/* auxilary data variable for event */
 int     event_defer_errno        = 0;
@@ -1446,7 +1446,7 @@ transport_instance  transport_defaults = {
     FALSE,                    /* log_defer_output */
     TRUE_UNSET                /* retry_use_local_part: BOOL, but set neither
                                  1 nor 0 so can detect unset */
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
    ,NULL		      /* event_action */
 #endif
 };

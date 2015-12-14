@@ -687,7 +687,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       if (!(done= smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout)))
         goto RESPONSE_FAILED;
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
       lookup_dnssec_authenticated = host->dnssec==DS_YES ? US"yes"
 	: host->dnssec==DS_NO ? US"no" : NULL;
       if (event_raise(addr->transport->event_action,
@@ -811,7 +811,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	  if (rc == DEFER)
 	    {
 	    (void)close(inblock.sock);
-# ifdef EXPERIMENTAL_EVENT
+# ifndef DISABLE_EVENT
 	    (void) event_raise(addr->transport->event_action,
 				    US"tcp:close", NULL);
 # endif
@@ -1103,7 +1103,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	    tls_close(FALSE, TRUE);
 #endif
 	    (void)close(inblock.sock);
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 	    (void) event_raise(addr->transport->event_action,
 			      US"tcp:close", NULL);
 #endif
@@ -1312,7 +1312,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       tls_close(FALSE, TRUE);
 #endif
       (void)close(inblock.sock);
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
       (void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
 #endif
       }

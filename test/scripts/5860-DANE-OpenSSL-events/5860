@@ -1,4 +1,4 @@
-# DANE client: TPDA
+# DANE client: events
 #
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****

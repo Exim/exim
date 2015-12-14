@@ -47,9 +47,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # warning "GnuTLS library version too old; define DISABLE_OCSP in Makefile"
 # define DISABLE_OCSP
 #endif
-#if GNUTLS_VERSION_NUMBER < 0x020a00 && defined(EXPERIMENTAL_EVENT)
+#if GNUTLS_VERSION_NUMBER < 0x020a00 && !defined(DISABLE_EVENT)
 # warning "GnuTLS library version too old; tls:cert event unsupported"
-# undef EXPERIMENTAL_EVENT
+# define DISABLE_EVENT
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030306
 # define SUPPORT_CA_DIR
@@ -121,7 +121,7 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_require_ciphers;
   uschar *exp_tls_ocsp_file;
   const uschar *exp_tls_verify_cert_hostnames;
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   uschar *event_action;
 #endif
 
@@ -140,7 +140,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL,
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
                                             NULL,
 #endif
   NULL,
@@ -1598,7 +1598,7 @@ return 0;
 #endif
 
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 /*
 We use this callback to get observability and detail-level control
 for an exim TLS connection (either direction), raising a tls:cert event
@@ -1722,7 +1722,7 @@ else
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 if (event_action)
   {
   state->event_action = event_action;
@@ -1953,7 +1953,7 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 if (tb->event_action)
   {
   state->event_action = tb->event_action;

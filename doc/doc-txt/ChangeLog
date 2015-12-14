@@ -126,6 +126,9 @@ JH/27 Move Internationalisation support from Experimental to mainline, enabled
 JH/28 Bug 1745: Fix redis lookups to handle (quoted) spaces embedded in parts
       of the query string, and make ${quote_redis:} do that quoting.
 
+JH/29 Move Events support from Experimental to mainline, enabled by default
+      and removable for a build by defining DISABLE_EVENT.
+
 
 Exim version 4.86
 -----------------

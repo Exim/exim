@@ -431,7 +431,7 @@ extern uschar *errors_copy;            /* For taking copies of errors */
 extern uschar *errors_reply_to;        /* Reply-to for error messages */
 extern int     errors_sender_rc;       /* Return after message to sender*/
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 extern uschar *event_action;           /* expansion for delivery events */
 extern uschar *event_data;	       /* event data */
 extern int     event_defer_errno;      /* error number set when a remote delivery is deferred with a host error */

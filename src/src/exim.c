@@ -823,6 +823,9 @@ fprintf(f, "Support for:");
 #ifndef DISABLE_DNSSEC
   fprintf(f, " DNSSEC");
 #endif
+#ifndef DISABLE_EVENT
+  fprintf(f, " Event");
+#endif
 #ifdef SUPPORT_I18N
   fprintf(f, " I18N");
 #endif
@@ -858,9 +861,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   fprintf(f, " Experimental_DSN_info");
-#endif
-#ifdef EXPERIMENTAL_EVENT
-  fprintf(f, " Experimental_Event");
 #endif
 #ifdef EXPERIMENTAL_REDIS
   fprintf(f, " Experimental_Redis");
