@@ -16,7 +16,6 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 => usery@test.ex R=client_y T=send_to_server_retry H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbD-0005vi-00"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmaZ-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=certificate not trusted cert=/CN=server1.example.com
 1999-03-02 09:44:33 10HmaZ-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to verify the first certificate cert=/CN=server1.example.com
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => userz@test.ex R=client_z T=send_to_server_crypt H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:AES256-SHA:256 CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

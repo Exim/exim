@@ -857,6 +857,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^SSL info: unknown state/;
     next if /^SSL info: SSLv2\/v3 write client hello A/;
     next if /^SSL info: SSLv3 read server key exchange A/;
+    next if /SSL verify error: depth=0 error=certificate not trusted/;
+    s/SSL3_READ_BYTES/ssl3_read_bytes/;
     }
 
   # ======== stderr ========
