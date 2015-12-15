@@ -936,31 +936,30 @@ else
    */
   if (leaf_rrs)
     matched = match(leaf_rrs, xn, 0);
-    if (issuer_rrs)
+
+  if (!matched && issuer_rrs)
+    for (n = chain_length-1; !matched && n >= 0; --n)
       {
-      for (n = chain_length-1; !matched && n >= 0; --n)
-	{
-	xn = sk_X509_value(ctx->chain, n);
-	if (n > 0 || X509_check_issued(xn, xn) == X509_V_OK)
-	  matched = match(issuer_rrs, xn, n);
-	}
+      xn = sk_X509_value(ctx->chain, n);
+      if (n > 0 || X509_check_issued(xn, xn) == X509_V_OK)
+	matched = match(issuer_rrs, xn, n);
       }
 
-    if (!matched)
-      {
-      ctx->current_cert = cert;
-      ctx->error_depth = 0;
-      X509_STORE_CTX_set_error(ctx, X509_V_ERR_CERT_UNTRUSTED);
-      if (!cb(0, ctx))
-	return 0;
-      }
-    else
-      {
-      dane->mdpth = n;
-      dane->match = xn;
-      X509_up_ref(xn);
-      }
+  if (!matched)
+    {
+    ctx->current_cert = cert;
+    ctx->error_depth = 0;
+    X509_STORE_CTX_set_error(ctx, X509_V_ERR_CERT_UNTRUSTED);
+    if (!cb(0, ctx))
+      return 0;
     }
+  else
+    {
+    dane->mdpth = n;
+    dane->match = xn;
+    X509_up_ref(xn);
+    }
+  }
 
 return ctx->verify(ctx);
 }
