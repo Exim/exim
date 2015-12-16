@@ -25,7 +25,7 @@ KEY2 =  FX/cert2
 
 acl_smtp_rcpt = accept
 
-log_selector =  +tls_peerdn+tls_certificate_verified
+log_selector =  +tls_peerdn+tls_certificate_verified +received_recipients
 
 queue_only
 queue_run_in_order
@@ -148,8 +148,8 @@ send_to_server_req_fail:
   tls_verify_hosts = *
   tls_verify_cert_hostnames =
 
- # this will fail to verify the cert name and fallback to unencrypted
- send_to_server_req_failname:
+# this will fail to verify the cert name and fallback to unencrypted
+send_to_server_req_failname:
    driver = smtp
    allow_localhost
    hosts = HOSTIPV4
@@ -161,8 +161,8 @@ send_to_server_req_fail:
    tls_verify_cert_hostnames = server1.example.net : server1.example.org
    tls_verify_hosts = *
  
- # this will pass the cert verify including name check
- send_to_server_req_passname:
+# this will pass the cert verify including name check
+send_to_server_req_passname:
    driver = smtp
    allow_localhost
    hosts = HOSTIPV4

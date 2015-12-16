@@ -448,7 +448,7 @@ DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 2bb55f418bb03411a5007cecbfcd3ec1c9440431
 ;
 DNSSEC mxdane256ta          MX  1  dane256ta
 DNSSEC dane256ta            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 72f0326cc46e7e49d002b44cfce53f0f4b54a765944f9fa6f4d8f2e510478829
+DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 882be5ac06deafdc021a69daa457226153bfde6da7914813b0144b0fd31bf7ae
 
 
 ; A multiple-return MX where all TLSA lookups defer

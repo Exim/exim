@@ -129,6 +129,8 @@ JH/28 Bug 1745: Fix redis lookups to handle (quoted) spaces embedded in parts
 JH/29 Move Events support from Experimental to mainline, enabled by default
       and removable for a build by defining DISABLE_EVENT.
 
+JH/30 Updated DANE implementation code to current from Viktor Dukhovni.
+
 
 Exim version 4.86
 -----------------

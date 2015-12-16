@@ -345,15 +345,17 @@ May be called multiple times for different issues with a certificate, even
 for a given "depth" in the certificate chain.
 
 Arguments:
-  state      current yes/no state as 1/0
-  x509ctx    certificate information.
-  client     TRUE for client startup, FALSE for server startup
+  preverify_ok current yes/no state as 1/0
+  x509ctx      certificate information.
+  tlsp         per-direction (client vs. server) support data
+  calledp      has-been-called flag
+  optionalp    verification-is-optional flag
 
-Returns:     1 if verified, 0 if not
+Returns:     0 if verification should fail, otherwise 1
 */
 
 static int
-verify_callback(int state, X509_STORE_CTX *x509ctx,
+verify_callback(int preverify_ok, X509_STORE_CTX *x509ctx,
   tls_support *tlsp, BOOL *calledp, BOOL *optionalp)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
@@ -363,7 +365,7 @@ uschar dn[256];
 X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
 dn[sizeof(dn)-1] = '\0';
 
-if (state == 0)
+if (preverify_ok == 0)
   {
   log_write(0, LOG_MAIN, "[%s] SSL verify error: depth=%d error=%s cert=%s",
 	tlsp == &tls_out ? deliver_host_address : sender_host_address,
@@ -470,15 +472,17 @@ return 1;   /* accept, at least for this level */
 }
 
 static int
-verify_callback_client(int state, X509_STORE_CTX *x509ctx)
+verify_callback_client(int preverify_ok, X509_STORE_CTX *x509ctx)
 {
-return verify_callback(state, x509ctx, &tls_out, &client_verify_callback_called, &client_verify_optional);
+return verify_callback(preverify_ok, x509ctx, &tls_out,
+  &client_verify_callback_called, &client_verify_optional);
 }
 
 static int
-verify_callback_server(int state, X509_STORE_CTX *x509ctx)
+verify_callback_server(int preverify_ok, X509_STORE_CTX *x509ctx)
 {
-return verify_callback(state, x509ctx, &tls_in, &server_verify_callback_called, &server_verify_optional);
+return verify_callback(preverify_ok, x509ctx, &tls_in,
+  &server_verify_callback_called, &server_verify_optional);
 }
 
 
@@ -488,7 +492,7 @@ return verify_callback(state, x509ctx, &tls_in, &server_verify_callback_called, 
 itself.
 */
 static int
-verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
+verify_callback_client_dane(int preverify_ok, X509_STORE_CTX * x509ctx)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 uschar dn[256];
@@ -500,7 +504,8 @@ BOOL dummy_called, optional = FALSE;
 X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
 dn[sizeof(dn)-1] = '\0';
 
-DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", dn);
+DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s depth %d %s\n",
+  preverify_ok ? "ok":"BAD", depth, dn);
 
 #ifndef DISABLE_EVENT
   if (verify_event(&tls_out, cert, depth, dn,
@@ -508,10 +513,18 @@ DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", dn);
     return 0;				/* reject, with peercert set */
 #endif
 
-if (state == 1)
+if (preverify_ok == 1)
   tls_out.dane_verified =
   tls_out.certificate_verified = TRUE;
-return 1;
+else
+  {
+  int err = X509_STORE_CTX_get_error(x509ctx);
+  DEBUG(D_tls)
+    debug_printf(" - err %d '%s'\n", err, X509_verify_cert_error_string(err));
+  if (err = X509_V_ERR_APPLICATION_VERIFICATION)
+    preverify_ok = 1;
+  }
+return preverify_ok;
 }
 
 #endif	/*EXPERIMENTAL_DANE*/
@@ -1557,8 +1570,8 @@ if (expcerts != NULL && *expcerts != '\0')
       certificates are recognized, but the error message is still misleading (it
       says no certificate was supplied.) But this is better. */
 
-      if ((file == NULL || statbuf.st_size > 0) &&
-	    !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
+      if (  (!file || statbuf.st_size > 0)
+         && !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
 	return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
 
       /* Load the list of CAs for which we will accept certs, for sending
@@ -1572,10 +1585,11 @@ if (expcerts != NULL && *expcerts != '\0')
       Because of this, and that the dir variant is likely only used for
       the public-CA bundle (not for a private CA), not worth fixing.
       */
-      if (file != NULL)
+      if (file)
 	{
 	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
-  DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
+
+	DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
 				    sk_X509_NAME_num(names));
 	SSL_CTX_set_client_CA_list(sctx, names);
 	}

@@ -190,6 +190,8 @@ typedef struct ssl_dane
 # define X509_V_ERR_HOSTNAME_MISMATCH X509_V_ERR_APPLICATION_VERIFICATION
 #endif
 
+
+
 static int
 match(dane_selector_list slist, X509 *cert, int depth)
 {
@@ -840,6 +842,7 @@ if (gens)
 	continue;
       if (!(dane->mhost = OPENSSL_strdup(certid)))
 	matched = -1;
+      DEBUG(D_tls) debug_printf("Dane name_check: matched SAN %s\n", certid);
       break;
       }
     }
@@ -850,14 +853,16 @@ if (gens)
  * XXX: Should the subjectName be skipped when *any* altnames are present,
  * or only when DNS altnames are present?
  */
-if (got_altname == 0)
+if (!got_altname)
   {
   char *certid = parse_subject_name(cert);
-  if (certid != 0 && *certid
-    && (matched = match_name(certid, dane)) != 0)
+  if (certid != 0 && *certid && (matched = match_name(certid, dane)) != 0)
+    {
+    DEBUG(D_tls) debug_printf("Dane name_check: matched SN %s\n", certid);
     dane->mhost = OPENSSL_strdup(certid);
-    if (certid)
-      OPENSSL_free(certid);
+    }
+  if (certid)
+    OPENSSL_free(certid);
   }
 return matched;
 }
@@ -875,7 +880,7 @@ X509 *cert = ctx->cert;             /* XXX: accessor? */
 int matched = 0;
 int chain_length = sk_X509_num(ctx->chain);
 
-DEBUG(D_tls) debug_printf("Dane verify-chain\n");
+DEBUG(D_tls) debug_printf("Dane verify_chain\n");
 
 issuer_rrs = dane->selectors[DANESSL_USAGE_PKIX_TA];
 leaf_rrs = dane->selectors[DANESSL_USAGE_PKIX_EE];
@@ -897,29 +902,29 @@ if (!matched)
   }
 matched = 0;
 
-    /*
-     * Satisfy at least one usage 0 or 1 constraint, unless we've already
-     * matched a usage 2 trust anchor.
-     *
-     * XXX: internal_verify() doesn't callback with top certs that are not
-     * self-issued.  This should be fixed in a future OpenSSL.
-     */
-    if (dane->roots && sk_X509_num(dane->roots))
-      {
-      X509 *top = sk_X509_value(ctx->chain, dane->depth);
+/*
+ * Satisfy at least one usage 0 or 1 constraint, unless we've already
+ * matched a usage 2 trust anchor.
+ *
+ * XXX: internal_verify() doesn't callback with top certs that are not
+ * self-issued.  This should be fixed in a future OpenSSL.
+ */
+if (dane->roots && sk_X509_num(dane->roots))
+  {
+  X509 *top = sk_X509_value(ctx->chain, dane->depth);
 
-      dane->mdpth = dane->depth;
-      dane->match = top;
-      X509_up_ref(top);
+  dane->mdpth = dane->depth;
+  dane->match = top;
+  X509_up_ref(top);
 
 #ifndef NO_CALLBACK_WORKAROUND
-      if (X509_check_issued(top, top) != X509_V_OK)
-	{
-        ctx->error_depth = dane->depth;
-        ctx->current_cert = top;
-        if (!cb(1, ctx))
-          return 0;
-        }
+  if (X509_check_issued(top, top) != X509_V_OK)
+    {
+    ctx->error_depth = dane->depth;
+    ctx->current_cert = top;
+    if (!cb(1, ctx))
+      return 0;
+    }
 #endif
   /* Pop synthetic trust-anchor ancestors off the chain! */
   while (--chain_length > dane->depth)
@@ -936,6 +941,7 @@ else
    */
   if (leaf_rrs)
     matched = match(leaf_rrs, xn, 0);
+  if (matched) DEBUG(D_tls) debug_printf("Dane verify_chain: matched EE\n");
 
   if (!matched && issuer_rrs)
     for (n = chain_length-1; !matched && n >= 0; --n)
@@ -944,6 +950,8 @@ else
       if (n > 0 || X509_check_issued(xn, xn) == X509_V_OK)
 	matched = match(issuer_rrs, xn, n);
       }
+  if (matched) DEBUG(D_tls) debug_printf("Dane verify_chain: matched %s\n",
+    n>0 ? "CA" : "selfisssued EE");
 
   if (!matched)
     {
@@ -1001,7 +1009,7 @@ int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
 int matched;
 X509 *cert = ctx->cert;             /* XXX: accessor? */
 
-DEBUG(D_tls) debug_printf("Dane verify-cert\n");
+DEBUG(D_tls) debug_printf("Dane verify_cert\n");
 
 if (ssl_idx < 0)
   ssl_idx = SSL_get_ex_data_X509_STORE_CTX_idx();
@@ -1015,7 +1023,7 @@ ssl = X509_STORE_CTX_get_ex_data(ctx, ssl_idx);
 if (!(dane = SSL_get_ex_data(ssl, dane_idx)) || !cert)
   return X509_verify_cert(ctx);
 
-    /* Reset for verification of a new chain, perhaps a renegotiation. */
+/* Reset for verification of a new chain, perhaps a renegotiation. */
 dane_reset(dane);
 
 if (dane->selectors[DANESSL_USAGE_DANE_EE])
