@@ -93,15 +93,16 @@ latter needs a whole pile of tables. */
 
 /* Local static variables for GNUTLS */
 
-static gnutls_dh_params dh_params = NULL;
+static gnutls_dh_params_t dh_params = NULL;
 
 static gnutls_certificate_credentials_t x509_cred = NULL;
-static gnutls_session tls_session = NULL;
+static gnutls_session_t tls_session = NULL;
 
 static int  ssl_session_timeout = 200;
 
 /* Priorities for TLS algorithms to use. */
 
+#if GNUTLS_VERSION_NUMBER < 0x030400
 static const int protocol_priority[16] = { GNUTLS_TLS1, GNUTLS_SSL3, 0 };
 
 static const int kx_priority[16] = {
@@ -123,7 +124,7 @@ static const int mac_priority[16] = {
   0 };
 
 static const int comp_priority[16] = { GNUTLS_COMP_NULL, 0 };
-static const int cert_type_priority[16] = { GNUTLS_CRT_X509, 0 };
+#endif
 
 #endif	/*HAVE_GNUTLS*/
 
@@ -356,7 +357,7 @@ init_dh(void)
 {
 int fd;
 int ret;
-gnutls_datum m;
+gnutls_datum_t m;
 uschar filename[200];
 struct stat statbuf;
 
@@ -449,13 +450,14 @@ if (ocsp_stapling)
 *        Initialize a single GNUTLS session      *
 *************************************************/
 
-static gnutls_session
+static gnutls_session_t
 tls_session_init(void)
 {
-gnutls_session session;
+gnutls_session_t session;
 
 gnutls_init(&session, GNUTLS_CLIENT | GNUTLS_NO_EXTENSIONS);
 
+#if GNUTLS_VERSION_NUMBER < 0x030400
 gnutls_cipher_set_priority(session, default_cipher_priority);
 gnutls_compression_set_priority(session, comp_priority);
 gnutls_kx_set_priority(session, kx_priority);
@@ -463,6 +465,10 @@ gnutls_protocol_set_priority(session, protocol_priority);
 gnutls_mac_set_priority(session, mac_priority);
 
 gnutls_cred_set(session, GNUTLS_CRD_CERTIFICATE, x509_cred);
+#else
+gnutls_set_default_priority(session);
+gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, x509_cred);
+#endif
 
 gnutls_dh_set_prime_bits(session, DH_BITS);
 gnutls_db_set_cache_expiration(session, ssl_session_timeout);
@@ -794,7 +800,7 @@ tls_session = tls_session_init();
 if (ocsp_stapling)
   gnutls_ocsp_status_request_enable_client(tls_session, NULL, 0, NULL);
 #endif
-gnutls_transport_set_ptr(tls_session, (gnutls_transport_ptr)sock);
+gnutls_transport_set_ptr(tls_session, (gnutls_transport_ptr_t)(intptr_t)sock);
 
 /* When the server asks for a certificate and the client does not have one,
 there is a SIGPIPE error in the gnutls_handshake() function for some reason
@@ -815,24 +821,32 @@ if (tls_on_connect)
   {
   printf("Attempting to start TLS\n");
 
-  #ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
   tls_active = tls_start(sock, &ssl, ctx);
-  #endif
+#endif
 
-  #ifdef HAVE_GNUTLS
+#ifdef HAVE_GNUTLS
+  {
+  int rc;
   sigalrm_seen = FALSE;
   alarm(timeout);
-  tls_active = gnutls_handshake(tls_session) >= 0;
+  do {
+    rc = gnutls_handshake(tls_session);
+  } while (rc < 0 && gnutls_error_is_fatal(rc) == 0);
+  tls_active = rc >= 0;
   alarm(0);
-  #endif
+
+  if (!tls_active) printf("%s\n", gnutls_strerror(rc));
+  }
+#endif
 
   if (!tls_active)
     printf("Failed to start TLS\n");
-  #if defined(HAVE_GNUTLS) && defined(HAVE_OCSP)
+#if defined(HAVE_GNUTLS) && defined(HAVE_OCSP)
   else if (  ocsp_stapling
 	  && gnutls_ocsp_status_request_is_checked(tls_session, 0) == 0)
     printf("Failed to verify certificate status\n");
-  #endif
+#endif
   else
     printf("Succeeded in starting TLS\n");
   }
@@ -919,10 +933,18 @@ int rc;
         #endif
 
         #ifdef HAVE_GNUTLS
-        sigalrm_seen = FALSE;
-        alarm(timeout);
-        tls_active = gnutls_handshake(tls_session) >= 0;
-        alarm(0);
+	  {
+	  int rc;
+	  sigalrm_seen = FALSE;
+	  alarm(timeout);
+	  do {
+	    rc = gnutls_handshake(tls_session);
+	  } while (rc < 0 && gnutls_error_is_fatal(rc) == 0);
+	  tls_active = rc >= 0;
+	  alarm(0);
+
+	  if (!tls_active) printf("%s\n", gnutls_strerror(rc));
+	  }
         #endif
 
         if (!tls_active)

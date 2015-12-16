@@ -39,7 +39,8 @@ check_recipient:
                       DES-CBC3-SHA:\
                       DHE_RSA_AES_256_CBC_SHA1:\
                       DHE_RSA_3DES_EDE_CBC_SHA:\
-                      RSA_AES_256_CBC_SHA1
+                      RSA_AES_256_CBC_SHA1 :\
+		      ECDHE_RSA_AES_256_GCM_SHA384
   accept
 
 
