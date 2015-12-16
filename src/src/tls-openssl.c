@@ -294,6 +294,7 @@ X509 * old_cert;
 ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
 if (ev)
   {
+  DEBUG(D_tls) debug_printf("verify_event: %s %d\n", what, depth);
   old_cert = tlsp->peercert;
   tlsp->peercert = X509_dup(cert);
   /* NB we do not bother setting peerdn */
