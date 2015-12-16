@@ -107,18 +107,18 @@ restore_tz(uschar * tz)
 *************************************************/
 
 #ifdef USE_GNUTLS
-#include "tls-gnu.c"
-#include "tlscert-gnu.c"
+# include "tls-gnu.c"
+# include "tlscert-gnu.c"
 
-#define ssl_xfer_buffer (state_server.xfer_buffer)
-#define ssl_xfer_buffer_lwm (state_server.xfer_buffer_lwm)
-#define ssl_xfer_buffer_hwm (state_server.xfer_buffer_hwm)
-#define ssl_xfer_eof (state_server.xfer_eof)
-#define ssl_xfer_error (state_server.xfer_error)
+# define ssl_xfer_buffer (state_server.xfer_buffer)
+# define ssl_xfer_buffer_lwm (state_server.xfer_buffer_lwm)
+# define ssl_xfer_buffer_hwm (state_server.xfer_buffer_hwm)
+# define ssl_xfer_eof (state_server.xfer_eof)
+# define ssl_xfer_error (state_server.xfer_error)
 
 #else
-#include "tls-openssl.c"
-#include "tlscert-openssl.c"
+# include "tls-openssl.c"
+# include "tlscert-openssl.c"
 #endif
 
 

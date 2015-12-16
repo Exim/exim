@@ -339,7 +339,7 @@ tls_error(when, msg, state->host);
     } while (0)
 
 static int
-import_cert(const gnutls_datum * cert, gnutls_x509_crt_t * crtp)
+import_cert(const gnutls_datum_t * cert, gnutls_x509_crt_t * crtp)
 {
 int rc;
 
@@ -425,7 +425,7 @@ tlsp->sni =    state->received_sni;
 
 /* record our certificate */
   {
-  const gnutls_datum * cert = gnutls_certificate_get_ours(state->session);
+  const gnutls_datum_t * cert = gnutls_certificate_get_ours(state->session);
   gnutls_x509_crt_t crt;
 
   tlsp->ourcert = cert && import_cert(cert, &crt)==0 ? crt : NULL;
@@ -457,7 +457,7 @@ init_server_dh(void)
 {
 int fd, rc;
 unsigned int dh_bits;
-gnutls_datum m;
+gnutls_datum_t m;
 uschar filename_buf[PATH_MAX];
 uschar *filename = NULL;
 size_t sz;
@@ -1277,7 +1277,7 @@ static int
 peer_status(exim_gnutls_state_st *state)
 {
 uschar cipherbuf[256];
-const gnutls_datum *cert_list;
+const gnutls_datum_t *cert_list;
 int old_pool, rc;
 unsigned int cert_list_size = 0;
 gnutls_protocol_t protocol;
@@ -1611,7 +1611,7 @@ Return 0 for the handshake to continue or non-zero to terminate.
 static int
 verify_cb(gnutls_session_t session)
 {
-const gnutls_datum * cert_list;
+const gnutls_datum_t * cert_list;
 unsigned int cert_list_size = 0;
 gnutls_x509_crt_t crt;
 int rc;
@@ -1753,8 +1753,8 @@ if (!state->tlsp->on_connect)
 that the GnuTLS library doesn't. */
 
 gnutls_transport_set_ptr2(state->session,
-    (gnutls_transport_ptr)(long) fileno(smtp_in),
-    (gnutls_transport_ptr)(long) fileno(smtp_out));
+    (gnutls_transport_ptr_t)(long) fileno(smtp_in),
+    (gnutls_transport_ptr_t)(long) fileno(smtp_out));
 state->fd_in = fileno(smtp_in);
 state->fd_out = fileno(smtp_out);
 
@@ -1962,7 +1962,7 @@ if (tb->event_action)
   }
 #endif
 
-gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr)(long) fd);
+gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr_t)(long) fd);
 state->fd_in = fd;
 state->fd_out = fd;
 
