@@ -131,6 +131,9 @@ JH/29 Move Events support from Experimental to mainline, enabled by default
 
 JH/30 Updated DANE implementation code to current from Viktor Dukhovni.
 
+JH/31 Fix bug with hosts_connection_nolog and named-lists which were wrongly
+      cached by the daemon.
+
 
 Exim version 4.86
 -----------------

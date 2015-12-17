@@ -1,0 +1,17 @@
+# hosts_connection_nolog versus sender_host lists caching
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# Will not log connection due to hosts_connection_nolog
+client 127.0.0.1 PORT_D
+??? 220
+QUIT
+****
+#
+# Connection should be logged
+client HOSTIPV4 PORT_D
+??? 220
+QUIT
+****
+#
+killdaemon

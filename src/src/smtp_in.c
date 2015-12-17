@@ -1866,8 +1866,6 @@ pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
 smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
 
-memset(sender_host_cache, 0, sizeof(sender_host_cache));
-
 /* If receiving by -bs from a trusted user, or testing with -bh, we allow
 authentication settings from -oMaa to remain in force. */
 

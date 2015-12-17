@@ -5051,6 +5051,7 @@ if (host_checking)
     "**** This is not for real!\n\n",
       sender_host_address);
 
+  memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
     BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
@@ -5225,6 +5226,7 @@ if (smtp_input)
   {
   smtp_in = stdin;
   smtp_out = stdout;
+  memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
     BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
