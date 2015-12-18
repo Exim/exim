@@ -209,13 +209,13 @@ if(sdata[1])
   {
   uschar * argv[32];
   int i;
-  const uschar * s;
+  const uschar * s = command;
   int siz, ptr;
   uschar c;
 
   while (isspace(*s)) s++;
 
-  for (s = command, i = 0; *s && i < nele(argv); i++)
+  for (i = 0; *s && i < nele(argv); i++)
     {
     for (argv[i] = NULL, siz = ptr = 0; (c = *s) && !isspace(c); s++)
       if (c != '\\' || *++s)		/* backslash protects next char */
