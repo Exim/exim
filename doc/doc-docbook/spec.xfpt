@@ -11509,18 +11509,6 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
-.vitem &$demime_errorlevel$&
-.vindex "&$demime_errorlevel$&"
-This variable is available when Exim is compiled with
-the content-scanning extension and the obsolete &%demime%& condition. For
-details, see section &<<SECTdemimecond>>&.
-
-.vitem &$demime_reason$&
-.vindex "&$demime_reason$&"
-This variable is available when Exim is compiled with the
-content-scanning extension and the obsolete &%demime%& condition. For details,
-see section &<<SECTdemimecond>>&.
-
 .vitem &$dkim_cur_signer$& &&&
        &$dkim_verify_status$& &&&
        &$dkim_verify_reason$& &&&
@@ -11651,12 +11639,6 @@ This variable contains the version string of the Exim build.
 The first character is a major version number, currently 4.
 Then after a dot, the next group of digits is a minor version number.
 There may be other characters following the minor version.
-
-.vitem &$found_extension$&
-.vindex "&$found_extension$&"
-This variable is available when Exim is compiled with the
-content-scanning extension and the obsolete &%demime%& condition. For details,
-see section &<<SECTdemimecond>>&.
 
 .vitem &$header_$&<&'name'&>
 This is not strictly an expansion variable. It is expansion syntax for
@@ -29173,12 +29155,6 @@ If all goes well, the condition is true. It is false only if there are
 problems such as a syntax error or a memory shortage. For more details, see
 chapter &<<CHAPexiscan>>&.
 
-.vitem &*demime&~=&~*&<&'extension&~list'&>
-.cindex "&%demime%& ACL condition"
-This condition is available only when Exim is compiled with the
-content-scanning extension. Its use is described in section
-&<<SECTdemimecond>>&.
-
 .vitem &*dnslists&~=&~*&<&'list&~of&~domain&~names&~and&~other&~data'&>
 .cindex "&%dnslists%& ACL condition"
 .cindex "DNS list" "in ACL"
@@ -30989,10 +30965,6 @@ conditions.
 Two new main configuration options: &%av_scanner%& and &%spamd_address%&.
 .endlist
 
-There is another content-scanning configuration option for &_Local/Makefile_&,
-called WITH_OLD_DEMIME. If this is set, the old, deprecated &%demime%& ACL
-condition is compiled, in addition to all the other content-scanning features.
-
 Content-scanning is continually evolving, and new features are still being
 added. While such features are still unstable and liable to incompatible
 changes, they are made available in Exim by setting options whose names begin
@@ -31242,7 +31214,7 @@ This is a daemon type scanner that is aimed mainly at Polish users, though some
 parts of documentation are now available in English. You can get it at
 &url(http://linux.mks.com.pl/). The only option for this scanner type is
 the maximum number of processes used simultaneously to scan the attachments,
-provided that the demime facility is employed and also provided that mksd has
+provided that mksd has
 been run with at least the same number of child processes. For example:
 .code
 av_scanner = mksd:2
@@ -31333,23 +31305,17 @@ When a virus is found, the condition sets up an expansion variable called
 &%message%& modifier that specifies the error returned to the sender, and/or in
 logging data.
 
-If your virus scanner cannot unpack MIME and TNEF containers itself, you should
-use the &%demime%& condition (see section &<<SECTdemimecond>>&) before the
-&%malware%& condition.
-
 Beware the interaction of Exim's &%message_size_limit%& with any size limits
 imposed by your anti-virus scanner.
 
 Here is a very simple scanning example:
 .code
 deny message = This message contains malware ($malware_name)
-     demime = *
      malware = *
 .endd
 The next example accepts messages when there is a problem with the scanner:
 .code
 deny message = This message contains malware ($malware_name)
-     demime = *
      malware = */defer_ok
 .endd
 The next example shows how to use an ACL variable to scan with both sophie and
@@ -31845,90 +31811,6 @@ are set to any substrings captured by the regular expression.
 &*Warning*&: With large messages, these conditions can be fairly
 CPU-intensive.
 
-
-
-
-.section "The demime condition" "SECTdemimecond"
-.cindex "content scanning" "MIME checking"
-.cindex "MIME content scanning"
-The &%demime%& ACL condition provides MIME unpacking, sanity checking and file
-extension blocking. It is usable only in the DATA and non-SMTP ACLs. The
-&%demime%& condition uses a simpler interface to MIME decoding than the MIME
-ACL functionality, but provides no additional facilities. Please note that this
-condition is deprecated and kept only for backward compatibility. You must set
-the WITH_OLD_DEMIME option in &_Local/Makefile_& at build time to be able to
-use the &%demime%& condition.
-
-The &%demime%& condition unpacks MIME containers in the message. It detects
-errors in MIME containers and can match file extensions found in the message
-against a list. Using this facility produces files containing the unpacked MIME
-parts of the message in the temporary scan directory. If you do antivirus
-scanning, it is recommended that you use the &%demime%& condition before the
-antivirus (&%malware%&) condition.
-
-On the right-hand side of the &%demime%& condition you can pass a
-colon-separated list of file extensions that it should match against. For
-example:
-.code
-deny message = Found blacklisted file attachment
-     demime  = vbs:com:bat:pif:prf:lnk
-.endd
-If one of the file extensions is found, the condition is true, otherwise it is
-false. If there is a temporary error while demimeing (for example, &"disk
-full"&), the condition defers, and the message is temporarily rejected (unless
-the condition is on a &%warn%& verb).
-
-The right-hand side is expanded before being treated as a list, so you can have
-conditions and lookups there. If it expands to an empty string, &"false"&, or
-zero (&"0"&), no demimeing is done and the condition is false.
-
-The &%demime%& condition set the following variables:
-
-.vlist
-.vitem &$demime_errorlevel$&
-.vindex "&$demime_errorlevel$&"
-When an error is detected in a MIME container, this variable contains the
-severity of the error, as an integer number. The higher the value, the more
-severe the error (the current maximum value is 3). If this variable is unset or
-zero, no error occurred.
-
-.vitem &$demime_reason$&
-.vindex "&$demime_reason$&"
-When &$demime_errorlevel$& is greater than zero, this variable contains a
-human-readable text string describing the MIME error that occurred.
-.endlist
-
-.vlist
-.vitem &$found_extension$&
-.vindex "&$found_extension$&"
-When the &%demime%& condition is true, this variable contains the file
-extension it found.
-.endlist
-
-Both &$demime_errorlevel$& and &$demime_reason$& are set by the first call of
-the &%demime%& condition, and are not changed on subsequent calls.
-
-If you do not want to check for file extensions, but rather use the &%demime%&
-condition for unpacking or error checking purposes, pass &"*"& as the
-right-hand side value. Here is a more elaborate example of how to use this
-facility:
-.code
-# Reject messages with serious MIME container errors
-deny  message = Found MIME error ($demime_reason).
-      demime = *
-      condition = ${if >{$demime_errorlevel}{2}{1}{0}}
-
-# Reject known virus spreading file extensions.
-# Accepting these is pretty much braindead.
-deny  message = contains $found_extension file (blacklisted).
-      demime  = com:vbs:bat:pif:scr
-
-# Freeze .exe and .doc files. Postmaster can
-# examine them and eventually thaw them.
-deny  log_message = Another $found_extension file.
-      demime = exe:doc
-      control = freeze
-.endd
 .ecindex IIDcosca
 
 

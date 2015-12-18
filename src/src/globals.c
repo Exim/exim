@@ -625,11 +625,6 @@ uschar *deliver_selectstring   = NULL;
 BOOL    deliver_selectstring_regex = FALSE;
 uschar *deliver_selectstring_sender = NULL;
 BOOL    deliver_selectstring_sender_regex = FALSE;
-#ifdef WITH_OLD_DEMIME
-int     demime_errorlevel      = 0;
-int     demime_ok              = 0;
-uschar *demime_reason          = NULL;
-#endif
 BOOL    disable_callout_flush  = FALSE;
 BOOL    disable_delay_flush    = FALSE;
 #ifdef ENABLE_DISABLE_FSYNC
@@ -728,9 +723,6 @@ uschar *filter_test_sfile      = NULL;
 uschar *filter_test_ufile      = NULL;
 uschar *filter_thisaddress     = NULL;
 int     finduser_retries       = 0;
-#ifdef WITH_OLD_DEMIME
-uschar *found_extension        = NULL;
-#endif
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };
 uschar *freeze_tell            = NULL;
 uschar *freeze_tell_config     = NULL;

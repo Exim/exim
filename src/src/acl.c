@@ -65,9 +65,6 @@ enum { ACLC_ACL,
        ACLC_DECODE,
 #endif
        ACLC_DELAY,
-#ifdef WITH_OLD_DEMIME
-       ACLC_DEMIME,
-#endif
 #ifndef DISABLE_DKIM
        ACLC_DKIM_SIGNER,
        ACLC_DKIM_STATUS,
@@ -132,9 +129,6 @@ static uschar *conditions[] = {
   US"decode",
 #endif
   US"delay",
-#ifdef WITH_OLD_DEMIME
-  US"demime",
-#endif
 #ifndef DISABLE_DKIM
   US"dkim_signers",
   US"dkim_status",
@@ -281,9 +275,6 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* decode */
 #endif
   TRUE,    /* delay */
-#ifdef WITH_OLD_DEMIME
-  TRUE,    /* demime */
-#endif
 #ifndef DISABLE_DKIM
   TRUE,    /* dkim_signers */
   TRUE,    /* dkim_status */
@@ -346,9 +337,6 @@ static uschar cond_modifiers[] = {
   FALSE,   /* decode */
 #endif
   TRUE,    /* delay */
-#ifdef WITH_OLD_DEMIME
-  FALSE,   /* demime */
-#endif
 #ifndef DISABLE_DKIM
   FALSE,   /* dkim_signers */
   FALSE,   /* dkim_status */
@@ -452,15 +440,6 @@ static unsigned int cond_forbids[] = {
   #endif
 
   (1<<ACL_WHERE_NOTQUIT),                          /* delay */
-
-  #ifdef WITH_OLD_DEMIME
-  (unsigned int)
-  ~((1<<ACL_WHERE_DATA)|                           /* demime */
-  #ifndef DISABLE_PRDR
-    (1<<ACL_WHERE_PRDR)|
-  #endif
-    (1<<ACL_WHERE_NOTSMTP)),
-  #endif
 
   #ifndef DISABLE_DKIM
   (unsigned int)
@@ -3532,12 +3511,6 @@ for (; cb != NULL; cb = cb->next)
         }
       }
     break;
-
-    #ifdef WITH_OLD_DEMIME
-    case ACLC_DEMIME:
-      rc = demime(&arg);
-    break;
-    #endif
 
     #ifndef DISABLE_DKIM
     case ACLC_DKIM_SIGNER:

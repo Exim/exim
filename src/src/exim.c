@@ -814,9 +814,6 @@ fprintf(f, "Support for:");
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");
 #endif
-#ifdef WITH_OLD_DEMIME
-  fprintf(f, " Old_Demime");
-#endif
 #ifndef DISABLE_DKIM
   fprintf(f, " DKIM");
 #endif

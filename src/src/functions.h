@@ -141,9 +141,6 @@ extern void    deliver_succeeded(address_item *);
 
 extern uschar *deliver_get_sender_address (uschar *id);
 
-#ifdef WITH_OLD_DEMIME
-extern int     demime(const uschar **);
-#endif
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
 extern BOOL    dkim_transport_write_message(address_item *, int, int,

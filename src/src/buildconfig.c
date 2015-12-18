@@ -733,11 +733,10 @@ else if (isgroup)
   if (strcmp(name, "WITH_CONTENT_SCAN") == 0)
     {
     char *wcs = getenv("WITH_CONTENT_SCAN");
-    char *wod = getenv("WITH_OLD_DEMIME");
     char *dcc = getenv("EXPERIMENTAL_DCC");
-    if (wcs != NULL || wod != NULL || dcc != NULL)
-      fprintf(new, "#define WITH_CONTENT_SCAN     yes\n");
-    else fprintf(new, "/* WITH_CONTENT_SCAN not set */\n");
+    fprintf(new, wcs || dcc
+      ? "#define WITH_CONTENT_SCAN     yes\n"
+      : "/* WITH_CONTENT_SCAN not set */\n");
     continue;
     }
 

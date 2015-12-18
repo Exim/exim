@@ -480,10 +480,6 @@ static var_entry var_table[] = {
   { "dcc_header",          vtype_stringptr,   &dcc_header },
   { "dcc_result",          vtype_stringptr,   &dcc_result },
 #endif
-#ifdef WITH_OLD_DEMIME
-  { "demime_errorlevel",   vtype_int,         &demime_errorlevel },
-  { "demime_reason",       vtype_stringptr,   &demime_reason },
-#endif
 #ifndef DISABLE_DKIM
   { "dkim_algo",           vtype_dkim,        (void *)DKIM_ALGO },
   { "dkim_bodylength",     vtype_dkim,        (void *)DKIM_BODYLENGTH },
@@ -532,9 +528,6 @@ static var_entry var_table[] = {
   { "exim_path",           vtype_stringptr,   &exim_path },
   { "exim_uid",            vtype_uid,         &exim_uid },
   { "exim_version",        vtype_stringptr,   &version_string },
-#ifdef WITH_OLD_DEMIME
-  { "found_extension",     vtype_stringptr,   &found_extension },
-#endif
   { "headers_added",       vtype_string_func, &fn_hdrs_added },
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },

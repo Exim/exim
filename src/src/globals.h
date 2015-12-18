@@ -362,11 +362,6 @@ extern uschar *deliver_selectstring;   /* For selecting by recipient */
 extern BOOL    deliver_selectstring_regex; /* String is regex */
 extern uschar *deliver_selectstring_sender; /* For selecting by sender */
 extern BOOL    deliver_selectstring_sender_regex; /* String is regex */
-#ifdef WITH_OLD_DEMIME
-extern int     demime_errorlevel;      /* Severity of MIME error */
-extern int     demime_ok;              /* Nonzero if message has been demimed */
-extern uschar *demime_reason;          /* Reason for broken MIME container */
-#endif
 extern BOOL    disable_callout_flush;  /* Don't flush before callouts */
 extern BOOL    disable_delay_flush;    /* Don't flush before "delay" in ACL */
 #ifdef ENABLE_DISABLE_FSYNC
@@ -465,9 +460,6 @@ extern uschar *filter_test_ufile;      /* User filter test file */
 extern uschar *filter_thisaddress;     /* For address looping */
 extern int     finduser_retries;       /* Retry count for getpwnam() */
 extern uid_t   fixed_never_users[];    /* Can't be overridden */
-#ifdef WITH_OLD_DEMIME
-extern uschar *found_extension;        /* demime acl condition: file extension found */
-#endif
 extern uschar *freeze_tell;            /* Message on (some) freezings */
 extern uschar *freeze_tell_config;     /* The configured setting */
 extern uschar *fudged_queue_times;     /* For use in test harness */

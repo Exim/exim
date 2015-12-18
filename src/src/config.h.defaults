@@ -169,7 +169,6 @@ it's a default value. */
 #define WHITELIST_D_MACROS
 
 #define WITH_CONTENT_SCAN
-#define WITH_OLD_DEMIME
 #define WITH_OLD_CLAMAV_STREAM
 
 /* EXPERIMENTAL features */

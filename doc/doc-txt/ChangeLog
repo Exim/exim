@@ -1,11 +1,14 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
-
 Exim version 4.88
 -----------------
 JH/01 Use SIZE on MAIL FROM in a cutthrough connection, if the destination
       supports it and a size is available (ie. the sending peer gave us one).
+
+JH/02 The obsolete acl condition "demime" is removed (finally, after ten
+      years of being deprecated). The replacements are the ACLs
+      acl_smtp_mime and acl_not_smtp_mime.
 
 
 Exim version 4.87

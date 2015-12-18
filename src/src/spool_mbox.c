@@ -13,12 +13,6 @@ sub directory of exim's spool directory. */
 #include "exim.h"
 #ifdef WITH_CONTENT_SCAN
 
-/* externals, we must reset them on unspooling */
-#ifdef WITH_OLD_DEMIME
-extern int demime_ok;
-extern struct file_extension *file_extensions;
-#endif
-
 extern int malware_ok;
 extern int spam_ok;
 
@@ -193,20 +187,11 @@ return yield;
 
 
 
-/* remove mbox spool file, demimed files and temp directory */
 
+/* remove mbox spool file and temp directory */
 void
 unspool_mbox(void)
 {
-
-/* reset all exiscan state variables */
-#ifdef WITH_OLD_DEMIME
-demime_ok = 0;
-demime_errorlevel = 0;
-demime_reason = NULL;
-file_extensions = NULL;
-#endif
-
 spam_ok = 0;
 malware_ok = 0;
 

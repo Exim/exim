@@ -314,7 +314,6 @@ convert4r4: Makefile ../src/convert4r4.src
 # are thrown away by the linker.
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
-OBJ_WITH_OLD_DEMIME = demime.o
 OBJ_EXPERIMENTAL = bmi_spam.o \
 				dane.o \
 				dcc.o \
@@ -340,7 +339,7 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         environment.o \
         $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
-        $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
+        $(OBJ_EXPERIMENTAL)
 
 exim:   buildlookups buildauths pdkim/pdkim.a \
         buildrouters buildtransports \
@@ -641,11 +640,6 @@ mime.o:          $(HDRS) mime.h mime.c
 regex.o:         $(HDRS) regex.c
 spam.o:          $(HDRS) spam.c
 spool_mbox.o:    $(HDRS) spool_mbox.c
-
-
-# Dependencies for WITH_OLD_DEMIME modules
-
-demime.o:       $(HDRS) demime.c
 
 
 # Dependencies for EXPERIMENTAL_* modules
