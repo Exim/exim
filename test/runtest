@@ -771,6 +771,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # different wording in the error messages, so we cannot compare them.
 
   s/(TLS error on connection (?:from .* )?\(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
+  next if /SSL verify error: depth=0 error=certificate not trusted/;
 
   # ======== Maildir things ========
   # timestamp output in maildir processing
