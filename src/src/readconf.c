@@ -4299,7 +4299,7 @@ for (i = config_lines; i; i = i->next)
     }
 
   /* router/acl/transport block names */
-  else if (current[strlen(current)-1] == ':' && !Ustrchr(current, '='))
+  else if (current[Ustrlen(current)-1] == ':' && !Ustrchr(current, '='))
     {
     printf("%*s%s\n", TS, "", current);
     indent = 2 * TS;
@@ -4312,7 +4312,7 @@ for (i = config_lines; i; i = i->next)
 	     )
 	  )
     {
-    if (p = Ustrchr(current, '='))
+    if ((p = Ustrchr(current, '=')))
       {
       *p = '\0';
       printf("%*s%s = %s\n", indent, "", current, hidden);

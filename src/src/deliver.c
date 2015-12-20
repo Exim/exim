@@ -6840,16 +6840,13 @@ prevents actual delivery. */
 else if (!dont_deliver)
   retry_update(&addr_defer, &addr_failed, &addr_succeed);
 
-/* Send DSN for successful messages */
-addr_dsntmp = addr_succeed;
+/* Send DSN for successful messages if requested */
 addr_senddsn = NULL;
 
-while(addr_dsntmp)
+for (addr_dsntmp = addr_succeed; addr_dsntmp; addr_dsntmp = addr_dsntmp->next)
   {
   /* af_ignore_error not honored here. it's not an error */
-  DEBUG(D_deliver)
-    {
-    debug_printf("DSN: processing router : %s\n"
+  DEBUG(D_deliver) debug_printf("DSN: processing router : %s\n"
       "DSN: processing successful delivery address: %s\n"
       "DSN: Sender_address: %s\n"
       "DSN: orcpt: %s  flags: %d\n"
@@ -6864,7 +6861,6 @@ while(addr_dsntmp)
       addr_dsntmp->address,
       addr_dsntmp->dsn_aware
       );
-    }
 
   /* send report if next hop not DSN aware or a router flagged "last DSN hop"
      and a report was requested */
@@ -6884,8 +6880,6 @@ while(addr_dsntmp)
     }
   else
     DEBUG(D_deliver) debug_printf("DSN: not sending DSN success message\n");
-
-  addr_dsntmp = addr_dsntmp->next;
   }
 
 if (addr_senddsn)

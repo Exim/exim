@@ -487,10 +487,6 @@ EXIM_MONITOR=eximon.bin
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lopendmarc
 
-# Uncomment the following line to enable support for checking certificate
-# ownership
-# EXPERIMENTAL_CERTNAMES=yes
-
 # Uncomment the following line to add DANE support
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # EXPERIMENTAL_DANE=yes

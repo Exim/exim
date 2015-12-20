@@ -423,7 +423,7 @@ else
     uschar * name;
     int rc;
     while ((name = string_nextinlist(&list, &sep, NULL, 0)))
-      if ((rc = X509_check_host(cert, name, 0,
+      if ((rc = X509_check_host(cert, CCS name, 0,
 		  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
 		  | X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS,
 		  NULL)))
@@ -932,7 +932,7 @@ if (cbinfo->privatekey != NULL &&
 of the expansion is an empty string, ignore it also, and assume the private
 key is in the same file as the certificate. */
 
-if (expanded != NULL && *expanded != 0)
+if (expanded && *expanded)
   {
   DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
   if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
@@ -941,21 +941,22 @@ if (expanded != NULL && *expanded != 0)
   }
 
 #ifndef DISABLE_OCSP
-if (cbinfo->is_server &&  cbinfo->u_ocsp.server.file != NULL)
+if (cbinfo->is_server && cbinfo->u_ocsp.server.file)
   {
   if (!expand_check(cbinfo->u_ocsp.server.file, US"tls_ocsp_file", &expanded))
     return DEFER;
 
-  if (expanded != NULL && *expanded != 0)
+  if (expanded && *expanded)
     {
     DEBUG(D_tls) debug_printf("tls_ocsp_file %s\n", expanded);
-    if (cbinfo->u_ocsp.server.file_expanded &&
-        (Ustrcmp(expanded, cbinfo->u_ocsp.server.file_expanded) == 0))
+    if (  cbinfo->u_ocsp.server.file_expanded
+       && (Ustrcmp(expanded, cbinfo->u_ocsp.server.file_expanded) == 0))
       {
-      DEBUG(D_tls)
-        debug_printf("tls_ocsp_file value unchanged, using existing values.\n");
-      } else {
-        ocsp_load_response(sctx, cbinfo, expanded);
+      DEBUG(D_tls) debug_printf(" - value unchanged, using existing values\n");
+      }
+    else
+      {
+      ocsp_load_response(sctx, cbinfo, expanded);
       }
     }
   }
