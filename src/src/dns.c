@@ -483,8 +483,10 @@ return TRUE;
 static void
 dns_set_insecure(dns_answer * dnsa)
 {
+#ifndef DISABLE_DNSSEC
 HEADER * h = (HEADER *)dnsa->answer;
 h->ad = 0;
+#endif
 }
 
 /************************************************
@@ -496,7 +498,11 @@ h->ad = 0;
 BOOL
 dns_is_aa(const dns_answer *dnsa)
 {
+#ifdef DISABLE_DNSSEC
+return FALSE;
+#else
 return ((HEADER*)dnsa->answer)->aa;
+#endif
 }
 
 
