@@ -23,4 +23,12 @@ typedef struct __res_state *res_state;
 
 #define strtoll(a,b,c) strtoimax(a,b,c)
 
+/* Determined by sockaddr_un */
+
+struct sockaddr_storage
+{
+  short ss_family;
+  char __ss_padding[92];
+};
+
 /* End */
