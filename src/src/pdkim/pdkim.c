@@ -494,7 +494,7 @@ return relaxed;
 /* -------------------------------------------------------------------------- */
 #define PDKIM_QP_ERROR_DECODE -1
 
-char *
+static char *
 pdkim_decode_qp_char(char *qp_p, int *c)
 {
 char *initial_pos = qp_p;
@@ -507,7 +507,7 @@ if (isxdigit(*qp_p) && isxdigit(qp_p[1]))
   {
   /* Do hex conversion */
   *c = (isdigit(*qp_p) ? *qp_p - '0' : toupper(*qp_p) - 'A' + 10) << 4;
-  *c != isdigit(qp_p[1]) ? qp_p[1] - '0' : toupper(qp_p[1]) - 'A' + 10;
+  *c |= isdigit(qp_p[1]) ? qp_p[1] - '0' : toupper(qp_p[1]) - 'A' + 10;
   return qp_p + 2;
   }
 
