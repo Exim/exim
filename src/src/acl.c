@@ -475,8 +475,10 @@ static unsigned int cond_forbids[] = {
   ~(1<<ACL_WHERE_DATA),                            /* dmarc_status */
   #endif
 
-  (1<<ACL_WHERE_NOTSMTP)|                          /* dnslists */
-    (1<<ACL_WHERE_NOTSMTP_START),
+  /* Explicit key lookups can be made in non-smtp ACLs so pass
+  always and check in the verify processing itself. */
+
+  0,						   /* dnslists */
 
   (unsigned int)
   ~((1<<ACL_WHERE_RCPT)                            /* domains */
@@ -3567,7 +3569,7 @@ for (; cb != NULL; cb = cb->next)
     #endif
 
     case ACLC_DNSLISTS:
-    rc = verify_check_dnsbl(&arg);
+    rc = verify_check_dnsbl(where, &arg, log_msgptr);
     break;
 
     case ACLC_DOMAINS:

@@ -3876,7 +3876,9 @@ Note: an address for testing DUL is 192.203.178.4
 Note: a domain for testing RFCI is example.tld.dsn.rfc-ignorant.org
 
 Arguments:
+  where        the acl type
   listptr      the domain/address/data list
+  log_msgptr   log message on error
 
 Returns:    OK      successful lookup (i.e. the address is on the list), or
                       lookup deferred after +include_unknown
@@ -3886,7 +3888,7 @@ Returns:    OK      successful lookup (i.e. the address is on the list), or
 */
 
 int
-verify_check_dnsbl(const uschar **listptr)
+verify_check_dnsbl(int where, const uschar ** listptr, uschar ** log_msgptr)
 {
 int sep = 0;
 int defer_return = FAIL;
@@ -3933,21 +3935,19 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
 
   /* See if there's explicit data to be looked up */
 
-  key = Ustrchr(domain, '/');
-  if (key != NULL) *key++ = 0;
+  if ((key = Ustrchr(domain, '/'))) *key++ = 0;
 
   /* See if there's a list of addresses supplied after the domain name. This is
   introduced by an = or a & character; if preceded by = we require all matches
   and if preceded by ! we invert the result. */
 
-  iplist = Ustrchr(domain, '=');
-  if (iplist == NULL)
+  if (!(iplist = Ustrchr(domain, '=')))
     {
     bitmask = TRUE;
     iplist = Ustrchr(domain, '&');
     }
 
-  if (iplist != NULL)                          /* Found either = or & */
+  if (iplist)				       /* Found either = or & */
     {
     if (iplist > domain && iplist[-1] == '!')  /* Handle preceding ! */
       {
@@ -3965,6 +3965,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
       match_type |= MT_ALL;
       }
     }
+
 
   /* If there is a comma in the domain, it indicates that a second domain for
   looking up TXT records is provided, before the main domain. Otherwise we must
@@ -4011,6 +4012,13 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
 
   if (key == NULL)
     {
+    if (where == ACL_WHERE_NOTSMTP_START || where == ACL_WHERE_NOTSMTP)
+      {
+      *log_msgptr = string_sprintf
+	("cannot test auto-keyed dnslists condition in %s ACL",
+	  acl_wherenames[where]);
+      return ERROR;
+      }
     if (sender_host_address == NULL) return FAIL;    /* can never match */
     if (revadd[0] == 0) invert_address(revadd, sender_host_address);
     rc = one_check_dnsbl(domain, domain_txt, sender_host_address, revadd,

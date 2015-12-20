@@ -1,0 +1,14 @@
+# ACL - dnslists in non-smtp ACL
+#
+1
+exim -f ted@29.29.0.com -odq ok1@test.ex
+should fail
+.
+****
+#
+exim -f bill@29.29.29.com -odq ok1@test.ex
+should pass
+.
+****
+#
+no_msglog_check

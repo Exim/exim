@@ -480,7 +480,7 @@ extern void    utf8_version_report(FILE *);
 
 extern int     verify_address(address_item *, FILE *, int, int, int, int,
                  uschar *, uschar *, BOOL *);
-extern int     verify_check_dnsbl(const uschar **);
+extern int     verify_check_dnsbl(int, const uschar **, uschar **);
 extern int     verify_check_header_address(uschar **, uschar **, int, int, int,
                  uschar *, uschar *, int, int *);
 extern int     verify_check_headers(uschar **);

@@ -1,0 +1,78 @@
+# Exim test configuration 0571
+
+LOG_SELECTOR=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+disable_ipv6 = true
+
+addresslist ok_senders = ok@ok.ok
+
+domainlist local_domains = test.ex : *.test.ex
+
+qualify_domain = test.ex
+trusted_users = CALLER
+
+# Use first three components of from_domain to select ACL
+acl_not_smtp =  ${if def:sender_address \
+	{acl_${sg{${tr{$sender_address_domain}{.}{_}}}{^(.*)_.*\$}{\$1}}} \
+	{accept control=queue_only}}
+
+# ----- ACLs -----
+
+begin acl
+
+acl_29_29_29:
+  deny    dnslists = test.ex/$sender_address_domain
+  accept
+
+acl_29_29_0:
+  deny    dnslists = test.ex
+  accept
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/okbatch
+  user = CALLER
+  batch_max = 100
+  envelope_to_add
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+  driver = accept
+  local_parts = ^ok
+  transport = t2
+
+r1:
+  driver = accept
+  local_parts = ^userx : ^cond-
+  transport = t1
+
+r2:
+  driver = redirect
+  local_parts = fail
+  allow_fail
+  data = :fail: here is a fail message
+
+# End
