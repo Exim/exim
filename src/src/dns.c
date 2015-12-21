@@ -564,7 +564,7 @@ dns_return(const uschar * name, int type, int rc)
 res_state resp = os_get_dns_resolver_res();
 tree_node *node = store_get_perm(sizeof(tree_node) + 290);
 sprintf(CS node->name, "%.255s-%s-%lx", name, dns_text_type(type),
-  resp->options);
+  (unsigned long) resp->options);
 node->data.val = rc;
 (void)tree_insertnode(&tree_dns_fails, node);
 return rc;
@@ -613,7 +613,7 @@ have many addresses in the same domain. We rely on the resolver and name server
 caching for successful lookups. */
 
 sprintf(CS node_name, "%.255s-%s-%lx", name, dns_text_type(type),
-  resp->options);
+  (unsigned long) resp->options);
 previous = tree_search(tree_dns_fails, node_name);
 if (previous != NULL)
   {
@@ -1152,7 +1152,7 @@ else
     {
     struct in6_addr in6;
     int i;
-    for (i = 0; i < 16; i++) in6.__in6_u.__u6_addr8[i] = rr->data[i];
+    for (i = 0; i < 16; i++) in6.s6_addr[i] = rr->data[i];
     yield = store_get(sizeof(dns_address) + 50);
     inet_ntop(AF_INET6, &in6, CS yield->address, 50);
     yield->next = NULL;
