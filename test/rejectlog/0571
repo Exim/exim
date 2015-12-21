@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 F=<ted@29.29.0.com> rejected by non-SMTP ACL: cannot test keyless dnslists condition in non-SMTP ACL
+1999-03-02 09:44:33 10HmaX-0005vi-00 F=<ted@29.29.0.com> rejected by non-SMTP ACL: cannot test auto-keyed dnslists condition in non-SMTP ACL
 Envelope-from: <ted@29.29.0.com>
 Envelope-to: <ok1@test.ex>
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
