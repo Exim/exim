@@ -4275,7 +4275,7 @@ int indent = 0;
 
 for (i = config_lines; i; i = i->next)
   {
-  const uschar *current;
+  uschar *current;
   uschar *p;
 
   /* skip over to the first non-space */
@@ -4285,7 +4285,23 @@ for (i = config_lines; i; i = i->next)
   if (*current == '\0')
     continue;
 
-  /* TODO: Collapse or insert spaces around the first '=' */
+  /* Collapse runs of spaces. We stop this if we encounter one of the
+   * following characters: "'$, as this may indicate careful formatting */
+  for (p = current; *p; ++p)
+    {
+    uschar *next;
+    if (!isspace(*p)) continue;
+    if (*p != ' ') *p = ' ';
+
+    for (next = p; isspace(*next); ++next)
+      ;
+
+    if (next - p > 1)
+      memmove(p+1, next, strlen(next)+1);
+
+    if (*next == '"' || *next == '\'' || *next == '$')
+      break;
+    }
 
   /* # lines */
   if (current[0] == '#')
@@ -4294,6 +4310,7 @@ for (i = config_lines; i; i = i->next)
   /* begin lines are left aligned */
   else if (Ustrncmp(current, "begin", 5) == 0 && isspace(current[5]))
     {
+    puts("");
     puts(CCS current);
     indent = TS;
     }
@@ -4301,11 +4318,11 @@ for (i = config_lines; i; i = i->next)
   /* router/acl/transport block names */
   else if (current[Ustrlen(current)-1] == ':' && !Ustrchr(current, '='))
     {
-    printf("%*s%s\n", TS, "", current);
+    printf("\n%*s%s\n", TS, "", current);
     indent = 2 * TS;
     }
 
-  /* hidden lines (MACROS or prefixed with hide) */
+  /* hidden lines (all MACROS or lines prefixed with "hide") */
   else if (  !admin
 	  && (  isupper(*current)
 	     || Ustrncmp(current, "hide", 4) == 0 && isspace(current[4])
@@ -4315,7 +4332,7 @@ for (i = config_lines; i; i = i->next)
     if ((p = Ustrchr(current, '=')))
       {
       *p = '\0';
-      printf("%*s%s = %s\n", indent, "", current, hidden);
+      printf("%*s%s= %s\n", indent, "", current, hidden);
       }
     /* e.g.: hide split_spool_directory */
     else
