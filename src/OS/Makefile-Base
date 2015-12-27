@@ -620,7 +620,9 @@ spool_out.o:     $(HDRS) spool_out.c
 std-crypto.o:    $(HDRS) std-crypto.c
 store.o:         $(HDRS) store.c
 string.o:        $(HDRS) string.c
-tls.o:           $(HDRS) tls.c tls-gnu.c tlscert-gnu.c tls-openssl.c tlscert-openssl.c
+tls.o:           $(HDRS) tls.c setenv.c \
+		 tls-gnu.c tlscert-gnu.c \
+		 tls-openssl.c tlscert-openssl.c
 tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c

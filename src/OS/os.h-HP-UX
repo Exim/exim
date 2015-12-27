@@ -10,6 +10,7 @@
 #define FSCALE          1.0
 
 #define HAVE_SYS_STATVFS_H
+#define MISSING_UNSETENV_3
 
 #define F_FREESP           O_TRUNC
 #define NEED_H_ERRNO       1
