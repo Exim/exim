@@ -3,7 +3,7 @@
 OPT =
 
 exim_path = EXIM_PATH
-host_lookup_order = bydns
+hide host_lookup_order = bydns
 primary_hostname = myhost.test.ex
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
@@ -40,7 +40,7 @@ my_smtp:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_S
-  socks_proxy = 127.0.0.1 port=PORT_D OPT
+  hide socks_proxy = 127.0.0.1 port=PORT_D OPT
   debug_print = transport_name <$transport_name>
 
 

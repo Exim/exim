@@ -1,0 +1,133 @@
+spool_directory = TESTSUITE/spool
+
+host_lookup_order = bydns
+
+domainlist local_domains = test.ex : *.test.ex
+
+no_body_only
+current_directory = 
+debug_print = transport_name <$transport_name>
+no_delivery_date_add
+no_disable_logging
+driver = smtp
+no_envelope_to_add
+event_action = 
+group = 
+headers_add = 
+no_headers_only
+headers_remove = 
+headers_rewrite = 
+home_directory = 
+no_initgroups
+max_parallel = 
+message_size_limit = 
+no_rcpt_include_affixes
+no_retry_use_local_part
+return_path = 
+no_return_path_add
+shadow_condition = 
+shadow_transport = 
+transport_filter = 
+transport_filter_timeout = 5m
+user = 
+address_retry_include_sender
+no_allow_localhost
+authenticated_sender = 
+no_authenticated_sender_force
+command_timeout = 5m
+connect_timeout = 5m
+connection_max_messages = 500
+data_timeout = 5m
+delay_after_cutoff
+dkim_canon = 
+dkim_domain = 
+dkim_private_key = 
+dkim_selector = 
+dkim_sign_headers = 
+dkim_strict = 
+dns_qualify_single
+no_dns_search_parents
+dnssec_request_domains = 
+dnssec_require_domains = 
+dscp = 
+fallback_hosts = 
+final_timeout = 10m
+no_gethostbyname
+gnutls_require_kx = 
+gnutls_require_mac = 
+gnutls_require_protocols = 
+helo_data = $primary_hostname
+hosts = 
+hosts_avoid_esmtp = 
+hosts_avoid_pipelining = 
+hosts_avoid_tls = 
+hosts_max_try = 5
+hosts_max_try_hardlimit = 50
+hosts_nopass_tls = 
+no_hosts_override
+no_hosts_randomize
+hosts_request_ocsp = *
+hosts_require_auth = 
+hosts_require_dane = 
+hosts_require_ocsp = 
+hosts_require_tls = 
+hosts_try_auth = 
+hosts_try_dane = 
+hosts_try_prdr = *
+hosts_verify_avoid_tls = 
+interface = ip4.ip4.ip4.ip4
+keepalive
+no_lmtp_ignore_quota
+max_rcpt = 100
+multi_domain
+port = 1224
+protocol = smtp
+retry_include_ip_address
+serialize_hosts = 
+size_addition = 1024
+socks_proxy = 127.0.0.1 port=1225
+tls_certificate = 
+tls_crl = 
+tls_dh_min_bits = 1024
+tls_privatekey = 
+tls_require_ciphers = 
+tls_sni = 
+tls_tempfail_tryclear
+tls_try_verify_hosts = *
+tls_verify_cert_hostnames = *
+tls_verify_certificates = system
+tls_verify_hosts = 
+
+# Exim Configuration (X)
+# 1 "TESTSUITE/test-config"
+OPT =
+exim_path = TESTSUITE/eximdir/exim
+hide host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = TESTSUITE/spool
+log_file_path = TESTSUITE/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+log_selector = +proxy +outgoing_port
+domainlist local_domains = test.ex : *.test.ex
+acl_smtp_rcpt = accept
+
+begin routers
+
+  my_main_router:
+    driver = manualroute
+    route_list = * 127.0.0.1
+    self = send
+    transport = my_smtp
+    debug_print = router_name <$router_name>
+    no_more
+
+begin transports
+
+  my_smtp:
+    driver = smtp
+    interface = ip4.ip4.ip4.ip4
+    port = 1224
+    hide socks_proxy = 127.0.0.1 port=1225
+    debug_print = transport_name <$transport_name>
