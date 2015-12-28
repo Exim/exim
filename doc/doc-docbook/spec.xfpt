@@ -10282,10 +10282,13 @@ Letters in IPv6 addresses are always output in lower case.
 .vitem &*${md5:*&<&'string'&>&*}*&
 .cindex "MD5 hash"
 .cindex "expansion" "MD5 hash"
-.cindex "certificate fingerprint"
+.cindex certificate fingerprint
 .cindex "&%md5%& expansion item"
 The &%md5%& operator computes the MD5 hash value of the string, and returns it
 as a 32-digit hexadecimal number, in which any letters are in lower case.
+
+If the string is a single variable of type certificate,
+returns the MD5 hash fingerprint of the certificate.
 
 
 .vitem &*${nhash_*&<&'n'&>&*_*&<&'m'&>&*:*&<&'string'&>&*}*&
@@ -10420,15 +10423,18 @@ variables or headers inside regular expressions.
 .vitem &*${sha1:*&<&'string'&>&*}*&
 .cindex "SHA-1 hash"
 .cindex "expansion" "SHA-1 hashing"
-.cindex "certificate fingerprint"
+.cindex certificate fingerprint
 .cindex "&%sha2%& expansion item"
 The &%sha1%& operator computes the SHA-1 hash value of the string, and returns
 it as a 40-digit hexadecimal number, in which any letters are in upper case.
 
+If the string is a single variable of type certificate,
+returns the SHA-1 hash fingerprint of the certificate.
+
 
 .vitem &*${sha256:*&<&'certificate'&>&*}*&
 .cindex "SHA-256 hash"
-.cindex "certificate fingerprint"
+.cindex certificate fingerprint
 .cindex "expansion" "SHA-256 hashing"
 .cindex "&%sha256%& expansion item"
 The &%sha256%& operator computes the SHA-256 hash fingerprint of the
@@ -11327,7 +11333,7 @@ this variable holds the pipe command when the transport is running.
 .vitem "&$auth1$& &-- &$auth3$&"
 .vindex "&$auth1$&, &$auth2$&, etc"
 These variables are used in SMTP authenticators (see chapters
-&<<CHAPplaintext>>&&--&<<CHAPspa>>&). Elsewhere, they are empty.
+&<<CHAPplaintext>>&&--&<<CHAPtlsauth>>&). Elsewhere, they are empty.
 
 .vitem &$authenticated_id$&
 .cindex "authentication" "id"
@@ -12674,6 +12680,7 @@ If TLS has not been negotiated, the value will be 0.
 
 .vitem &$tls_in_ourcert$&
 .vindex "&$tls_in_ourcert$&"
+.cindex certificate veriables
 This variable refers to the certificate presented to the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
@@ -12764,6 +12771,7 @@ See &$tls_in_ocsp$& for values.
 .vitem &$tls_in_peerdn$&
 .vindex "&$tls_in_peerdn$&"
 .vindex "&$tls_peerdn$&"
+.cindex certificate "extracting fields"
 When a message is received from a remote host over an encrypted SMTP
 connection, and Exim is configured to request a certificate from the client,
 the value of the Distinguished Name of the certificate is made available in the
@@ -14997,6 +15005,7 @@ logged.
 
 .option ldap_ca_cert_dir main string unset
 .cindex "LDAP", "TLS CA certificate directory"
+.cindex certificate "directory for LDAP"
 This option indicates which directory contains CA certificates for verifying
 a TLS certificate presented by an LDAP server.
 While Exim does not provide a default value, your SSL library may.
@@ -15006,6 +15015,7 @@ and constrained to be a directory.
 
 .option ldap_ca_cert_file main string unset
 .cindex "LDAP", "TLS CA certificate file"
+.cindex certificate "file for LDAP"
 This option indicates which file contains CA certificates for verifying
 a TLS certificate presented by an LDAP server.
 While Exim does not provide a default value, your SSL library may.
@@ -15015,6 +15025,7 @@ and constrained to be a file.
 
 .option ldap_cert_file main string unset
 .cindex "LDAP" "TLS client certificate file"
+.cindex certificate "file for LDAP"
 This option indicates which file contains an TLS client certificate which
 Exim should present to the LDAP server during TLS negotiation.
 Should be used together with &%ldap_cert_key%&.
@@ -15022,6 +15033,7 @@ Should be used together with &%ldap_cert_key%&.
 
 .option ldap_cert_key main string unset
 .cindex "LDAP" "TLS client key file"
+.cindex certificate "key for LDAP"
 This option indicates which file contains the secret/private key to use
 to prove identity to the LDAP server during TLS negotiation.
 Should be used together with &%ldap_cert_file%&, which contains the
@@ -26461,6 +26473,24 @@ tls:
                        }    }   } }
   server_set_id =     ${if = {1}{${listcount:$auth1}} {$auth1}{}}
 .endd
+This accepts a client certificate that is verifiable against any
+of your configured trust-anchors
+which usually means the full set of public CAs)
+and which has a SAN with a good account name.
+Note that the client cert is on the wire in-clear, including the SAN,
+whereas a plaintext SMTP AUTH done inside TLS is not.
+
+. An alternative might use
+. .code
+.   server_param1 = ${sha256:$tls_in_peercert}
+. .endd
+. to require one of a set of specific certs that define a given account
+. (the verification is still required, but mostly irrelevant).
+. This would help for per-device use.
+. 
+. However, for the future we really need support for checking a
+. user cert in LDAP - which probably wants a base-64 DER.
+
 .ecindex IIDtlsauth1
 .ecindex IIDtlsauth2
 
@@ -38335,7 +38365,7 @@ UTF-8 form internally; any comparison or regular-expression use will
 require appropriate care.  Filenames created, eg. by
 the appendfile transport, will have UTF-8 names.
 
-Helo names sent by the smtp transport will have any UTF-8
+HELO names sent by the smtp transport will have any UTF-8
 components expanded to a-label form,
 and any certificate name checks will be done using the a-label
 form of the name.
