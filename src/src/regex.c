@@ -28,173 +28,172 @@ extern uschar *mime_current_boundary;
 static pcre_list *
 compile(const uschar * list)
 {
-  int sep = 0;
-  uschar *regex_string;
-  uschar regex_string_buffer[1024];
-  const char *pcre_error;
-  int pcre_erroffset;
-  pcre_list *re_list_head = NULL;
-  pcre_list *ri;
+int sep = 0;
+uschar *regex_string;
+const char *pcre_error;
+int pcre_erroffset;
+pcre_list *re_list_head = NULL;
+pcre_list *ri;
 
-  /* precompile our regexes */
-  while ((regex_string = string_nextinlist(&list, &sep,
-                                           regex_string_buffer,
-                                           sizeof(regex_string_buffer))) != NULL) {
+/* precompile our regexes */
+while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
+  if (strcmpic(regex_string, US"false") != 0 && Ustrcmp(regex_string, "0") != 0)
+    {
     pcre *re;
-
-    /* parse option */
-    if ( (strcmpic(regex_string,US"false") == 0) ||
-         (Ustrcmp(regex_string,"0") == 0) )
-      continue;				/* explicitly no matching */
 
     /* compile our regular expression */
     if (!(re = pcre_compile( CS regex_string,
-                       0, &pcre_error, &pcre_erroffset, NULL ))) {
+		       0, &pcre_error, &pcre_erroffset, NULL )))
+      {
       log_write(0, LOG_MAIN,
-           "regex acl condition warning - error in regex '%s': %s at offset %d, skipped.",
+	   "regex acl condition warning - error in regex '%s': %s at offset %d, skipped.",
 	   regex_string, pcre_error, pcre_erroffset);
       continue;
-    }
+      }
 
     ri = store_get(sizeof(pcre_list));
     ri->re = re;
-    ri->pcre_text = string_copy(regex_string);
+    ri->pcre_text = regex_string;
     ri->next = re_list_head;
     re_list_head = ri;
-  }
-  return re_list_head;
+    }
+return re_list_head;
 }
 
 static int
 matcher(pcre_list * re_list_head, uschar * linebuffer, int len)
 {
-  pcre_list * ri;
+pcre_list * ri;
 
-  for(ri = re_list_head; ri; ri = ri->next)
+for(ri = re_list_head; ri; ri = ri->next)
+  {
+  int ovec[3*(REGEX_VARS+1)];
+  int n, nn;
+
+  /* try matcher on the line */
+  n = pcre_exec(ri->re, NULL, CS linebuffer, len, 0, 0, ovec, nelem(ovec));
+  if (n > 0)
     {
-    int ovec[3*(REGEX_VARS+1)];
-    int n, nn;
+    Ustrncpy(regex_match_string_buffer, ri->pcre_text,
+	      sizeof(regex_match_string_buffer)-1);
+    regex_match_string = regex_match_string_buffer;
 
-    /* try matcher on the line */
-    n = pcre_exec(ri->re, NULL,
-	 CS linebuffer, len, 0, 0,
-	 ovec, nelem(ovec));
-    if (n > 0)
-      {
-      Ustrncpy(regex_match_string_buffer, ri->pcre_text, 1023);
-      regex_match_string = regex_match_string_buffer;
+    for (nn = 1; nn < n; nn++)
+      regex_vars[nn-1] =
+	string_copyn(linebuffer + ovec[nn*2], ovec[nn*2+1] - ovec[nn*2]);
 
-      for (nn = 1; nn < n; nn++)
-	regex_vars[nn-1] =
-	  string_copyn(linebuffer + ovec[nn*2], ovec[nn*2+1] - ovec[nn*2]);
-
-      return OK;
-      }
+    return OK;
     }
-  return FAIL;
+  }
+return FAIL;
 }
 
 int
 regex(const uschar **listptr)
 {
-  unsigned long mbox_size;
-  FILE *mbox_file;
-  pcre_list *re_list_head;
-  uschar *linebuffer;
-  long f_pos = 0;
-  int ret = FAIL;
+unsigned long mbox_size;
+FILE *mbox_file;
+pcre_list *re_list_head;
+uschar *linebuffer;
+long f_pos = 0;
+int ret = FAIL;
 
-  /* reset expansion variable */
-  regex_match_string = NULL;
+/* reset expansion variable */
+regex_match_string = NULL;
 
-  if (mime_stream == NULL) {			/* We are in the DATA ACL */
-    mbox_file = spool_mbox(&mbox_size, NULL);
-    if (mbox_file == NULL) {			/* error while spooling */
-      log_write(0, LOG_MAIN|LOG_PANIC,
-             "regex acl condition: error while creating mbox spool file");
-      return DEFER;
+if (!mime_stream)				/* We are in the DATA ACL */
+  {
+  if (!(mbox_file = spool_mbox(&mbox_size, NULL)))
+    {						/* error while spooling */
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	   "regex acl condition: error while creating mbox spool file");
+    return DEFER;
     }
   }
-  else {
-    f_pos = ftell(mime_stream);
-    mbox_file = mime_stream;
+else
+  {
+  f_pos = ftell(mime_stream);
+  mbox_file = mime_stream;
   }
 
-  /* precompile our regexes */
-  if (!(re_list_head = compile(*listptr)))
-    return FAIL;			/* no regexes -> nothing to do */
+/* precompile our regexes */
+if (!(re_list_head = compile(*listptr)))
+  return FAIL;			/* no regexes -> nothing to do */
 
-  /* match each line against all regexes */
-  linebuffer = store_get(32767);
-  while (fgets(CS linebuffer, 32767, mbox_file) != NULL) {
+/* match each line against all regexes */
+linebuffer = store_get(32767);
+while (fgets(CS linebuffer, 32767, mbox_file))
+  {
+  if (  mime_stream && mime_current_boundary		/* check boundary */
+     && Ustrncmp(linebuffer, "--", 2) == 0
+     && Ustrncmp((linebuffer+2), mime_current_boundary,
+		  Ustrlen(mime_current_boundary)) == 0)
+      break;						/* found boundary */
 
-    if (  mime_stream && mime_current_boundary		/* check boundary */
-       && Ustrncmp(linebuffer,"--",2) == 0
-       && Ustrncmp((linebuffer+2),mime_current_boundary,Ustrlen(mime_current_boundary)) == 0)
-	break;						/* found boundary */
-
-    if ((ret = matcher(re_list_head, linebuffer, (int)Ustrlen(linebuffer))) == OK)
-      goto done;
+  if ((ret = matcher(re_list_head, linebuffer, (int)Ustrlen(linebuffer))) == OK)
+    goto done;
   }
-  /* no matches ... */
+/* no matches ... */
 
 done:
-  if (mime_stream == NULL)
-    (void)fclose(mbox_file);
-  else {
-    clearerr(mime_stream);
-    fseek(mime_stream,f_pos,SEEK_SET);
-  };
+if (!mime_stream)
+  (void)fclose(mbox_file);
+else
+  {
+  clearerr(mime_stream);
+  fseek(mime_stream, f_pos, SEEK_SET);
+  }
 
-  return ret;
+return ret;
 }
 
 
 int
 mime_regex(const uschar **listptr)
 {
-  pcre_list *re_list_head = NULL;
-  FILE *f;
-  uschar *mime_subject = NULL;
-  int mime_subject_len = 0;
-  int ret;
+pcre_list *re_list_head = NULL;
+FILE *f;
+uschar *mime_subject = NULL;
+int mime_subject_len = 0;
+int ret;
 
-  /* reset expansion variable */
-  regex_match_string = NULL;
+/* reset expansion variable */
+regex_match_string = NULL;
 
-  /* precompile our regexes */
-  if (!(re_list_head = compile(*listptr)))
-    return FAIL;			/* no regexes -> nothing to do */
+/* precompile our regexes */
+if (!(re_list_head = compile(*listptr)))
+  return FAIL;			/* no regexes -> nothing to do */
 
-  /* check if the file is already decoded */
-  if (mime_decoded_filename == NULL) {
-    const uschar *empty = US"";
-    /* no, decode it first */
-    mime_decode(&empty);
-    if (mime_decoded_filename == NULL) {
-      /* decoding failed */
-      log_write(0, LOG_MAIN,
-           "mime_regex acl condition warning - could not decode MIME part to file.");
-      return DEFER;
+/* check if the file is already decoded */
+if (!mime_decoded_filename)
+  {				/* no, decode it first */
+  const uschar *empty = US"";
+  mime_decode(&empty);
+  if (!mime_decoded_filename)
+    {				/* decoding failed */
+    log_write(0, LOG_MAIN,
+       "mime_regex acl condition warning - could not decode MIME part to file");
+    return DEFER;
     }
   }
 
-  /* open file */
-  if (!(f = fopen(CS mime_decoded_filename, "rb"))) {
-    log_write(0, LOG_MAIN,
-         "mime_regex acl condition warning - can't open '%s' for reading.",
-	 mime_decoded_filename);
-    return DEFER;
+/* open file */
+if (!(f = fopen(CS mime_decoded_filename, "rb")))
+  {
+  log_write(0, LOG_MAIN,
+       "mime_regex acl condition warning - can't open '%s' for reading",
+       mime_decoded_filename);
+  return DEFER;
   }
 
-  /* get 32k memory */
-  mime_subject = (uschar *)store_get(32767);
+/* get 32k memory */
+mime_subject = store_get(32767);
 
-  mime_subject_len = fread(mime_subject, 1, 32766, f);
+mime_subject_len = fread(mime_subject, 1, 32766, f);
 
-  ret = matcher(re_list_head, mime_subject, mime_subject_len);
-  (void)fclose(f);
-  return ret;
+ret = matcher(re_list_head, mime_subject, mime_subject_len);
+(void)fclose(f);
+return ret;
 }
 
 #endif /* WITH_CONTENT_SCAN */

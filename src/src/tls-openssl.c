@@ -1532,25 +1532,17 @@ uschar *expcerts, *expcrl;
 if (!expand_check(certs, US"tls_verify_certificates", &expcerts))
   return DEFER;
 
-if (expcerts != NULL && *expcerts != '\0')
+if (expcerts && *expcerts)
   {
-  if (Ustrcmp(expcerts, "system") == 0)
-    {
-    /* Tell the library to use its compiled-in location for the system default
-    CA bundle, only */
+  /* Tell the library to use its compiled-in location for the system default
+  CA bundle. Then add the ones specified in the config, if any. */
 
-    if (!SSL_CTX_set_default_verify_paths(sctx))
-      return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
-    }
-  else
+  if (!SSL_CTX_set_default_verify_paths(sctx))
+    return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
+
+  if (Ustrcmp(expcerts, "system") != 0)
     {
     struct stat statbuf;
-
-    /* Tell the library to use its compiled-in location for the system default
-    CA bundle. Those given by the exim config are additional to these */
-
-    if (!SSL_CTX_set_default_verify_paths(sctx))
-      return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
 
     if (Ustat(expcerts, &statbuf) < 0)
       {
@@ -1581,7 +1573,7 @@ if (expcerts != NULL && *expcerts != '\0')
       If a list isn't loaded into the server, but
       some verify locations are set, the server end appears to make
       a wildcard reqest for client certs.
-      Meanwhile, the client library as deafult behaviour *ignores* the list
+      Meanwhile, the client library as default behaviour *ignores* the list
       we send over the wire - see man SSL_CTX_set_client_cert_cb.
       Because of this, and that the dir variant is likely only used for
       the public-CA bundle (not for a private CA), not worth fixing.
@@ -1599,20 +1591,20 @@ if (expcerts != NULL && *expcerts != '\0')
 
   /* Handle a certificate revocation list. */
 
-  #if OPENSSL_VERSION_NUMBER > 0x00907000L
+#if OPENSSL_VERSION_NUMBER > 0x00907000L
 
   /* This bit of code is now the version supplied by Lars Mainka. (I have
-   * merely reformatted it into the Exim code style.)
+  merely reformatted it into the Exim code style.)
 
-   * "From here I changed the code to add support for multiple crl's
-   * in pem format in one file or to support hashed directory entries in
-   * pem format instead of a file. This method now uses the library function
-   * X509_STORE_load_locations to add the CRL location to the SSL context.
-   * OpenSSL will then handle the verify against CA certs and CRLs by
-   * itself in the verify callback." */
+  "From here I changed the code to add support for multiple crl's
+  in pem format in one file or to support hashed directory entries in
+  pem format instead of a file. This method now uses the library function
+  X509_STORE_load_locations to add the CRL location to the SSL context.
+  OpenSSL will then handle the verify against CA certs and CRLs by
+  itself in the verify callback." */
 
   if (!expand_check(crl, US"tls_crl", &expcrl)) return DEFER;
-  if (expcrl != NULL && *expcrl != 0)
+  if (expcrl && *expcrl)
     {
     struct stat statbufcrl;
     if (Ustat(expcrl, &statbufcrl) < 0)
@@ -1648,7 +1640,7 @@ if (expcerts != NULL && *expcerts != '\0')
       }
     }
 
-  #endif  /* OPENSSL_VERSION_NUMBER > 0x00907000L */
+#endif  /* OPENSSL_VERSION_NUMBER > 0x00907000L */
 
   /* If verification is optional, don't fail if no certificate */
 
