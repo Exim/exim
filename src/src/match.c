@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for matching strings */
@@ -15,8 +15,8 @@
 strings, domains, and local parts. */
 
 typedef struct check_string_block {
-  uschar *origsubject;               /* caseful; keep these two first, in */
-  uschar *subject;                   /* step with the block below */
+  const uschar *origsubject;           /* caseful; keep these two first, in */
+  const uschar *subject;               /* step with the block below */
   int    expand_setup;
   BOOL   use_partial;
   BOOL   caseless;
@@ -28,7 +28,7 @@ typedef struct check_string_block {
 addresses. */
 
 typedef struct check_address_block {
-  uschar *origaddress;               /* caseful; keep these two first, in */
+  const uschar *origaddress;         /* caseful; keep these two first, in */
   uschar *address;                   /* step with the block above */
   int    expand_setup;
   BOOL   caseless;
@@ -92,12 +92,12 @@ Returns:       OK    if matched
 */
 
 static int
-check_string(void *arg, uschar *pattern, uschar **valueptr, uschar **error)
+check_string(void *arg, const uschar *pattern, const uschar **valueptr, uschar **error)
 {
-check_string_block *cb = (check_string_block *)arg;
+const check_string_block *cb = arg;
 int search_type, partial, affixlen, starflags;
 int expand_setup = cb->expand_setup;
-uschar *affix;
+const uschar *affix;
 uschar *s;
 uschar *filename = NULL;
 uschar *keyquery, *result, *semicolon;
@@ -111,7 +111,7 @@ if (valueptr != NULL) *valueptr = NULL;  /* For non-lookup matches */
 it works if the pattern uses (?-i) to turn off case-independence, overriding
 "caseless". */
 
-s = (pattern[0] == '^')? cb->origsubject : cb->subject;
+s = string_copy(pattern[0] == '^' ? cb->origsubject : cb->subject);
 
 /* If required to set up $0, initialize the data but don't turn on by setting
 expand_nmax until the match is assured. */
@@ -131,7 +131,7 @@ if (pattern[0] == '^')
   {
   const pcre *re = regex_must_compile(pattern, cb->caseless, FALSE);
   return ((expand_setup < 0)?
-           pcre_exec(re, NULL, CS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) >= 0
+           pcre_exec(re, NULL, CCS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) >= 0
            :
            regex_match_and_setup(re, s, 0, expand_setup)
          )?
@@ -192,8 +192,8 @@ if (cb->at_is_special && pattern[0] == '@')
     BOOL prim = FALSE;
     BOOL secy = FALSE;
     BOOL removed = FALSE;
-    uschar *ss = pattern + 4;
-    uschar *ignore_target_hosts = NULL;
+    const uschar *ss = pattern + 4;
+    const uschar *ignore_target_hosts = NULL;
 
     if (strncmpic(ss, US"any", 3) == 0) ss += 3;
     else if (strncmpic(ss, US"primary", 7) == 0)
@@ -221,8 +221,7 @@ if (cb->at_is_special && pattern[0] == '@')
       NULL,                /* service name not relevant */
       NULL,                /* srv_fail_domains not relevant */
       NULL,                /* mx_fail_domains not relevant */
-      NULL,                /* no dnssec request XXX ? */
-      NULL,                /* no dnssec require XXX ? */
+      NULL,                /* no dnssec request/require XXX ? */
       NULL,                /* no feedback FQDN */
       &removed);           /* feedback if local removed */
 
@@ -337,8 +336,8 @@ Returns:       OK    if matched
 */
 
 int
-match_check_string(uschar *s, uschar *pattern, int expand_setup,
-  BOOL use_partial, BOOL caseless, BOOL at_is_special, uschar **valueptr)
+match_check_string(const uschar *s, const uschar *pattern, int expand_setup,
+  BOOL use_partial, BOOL caseless, BOOL at_is_special, const uschar **valueptr)
 {
 check_string_block cb;
 cb.origsubject = s;
@@ -366,7 +365,7 @@ Arguments:
   type         MCL_STRING, MCL_DOMAIN, MCL_HOST, MCL_ADDRESS, or MCL_LOCALPART
 */
 
-static uschar *
+static const uschar *
 get_check_key(void *arg, int type)
 {
 switch(type)
@@ -436,9 +435,9 @@ Returns:       OK    if matched a non-negated item
 */
 
 int
-match_check_list(uschar **listptr, int sep, tree_node **anchorptr,
-  unsigned int **cache_ptr, int (*func)(void *,uschar *,uschar **,uschar **),
-  void *arg, int type, uschar *name, uschar **valueptr)
+match_check_list(const uschar **listptr, int sep, tree_node **anchorptr,
+  unsigned int **cache_ptr, int (*func)(void *,const uschar *,const uschar **,uschar **),
+  void *arg, int type, const uschar *name, const uschar **valueptr)
 {
 int yield = OK;
 unsigned int *original_cache_bits = *cache_ptr;
@@ -446,7 +445,7 @@ BOOL include_unknown = FALSE;
 BOOL ignore_unknown = FALSE;
 BOOL include_defer = FALSE;
 BOOL ignore_defer = FALSE;
-uschar *list;
+const uschar *list;
 uschar *sss;
 uschar *ot = NULL;
 uschar buffer[1024];
@@ -489,12 +488,12 @@ else
   if (type == MCL_DOMAIN && deliver_domain == NULL)
     {
     check_string_block *cb = (check_string_block *)arg;
-    deliver_domain = cb->subject;
-    list = expand_string(*listptr);
+    deliver_domain = string_copy(cb->subject);
+    list = expand_cstring(*listptr);
     deliver_domain = NULL;
     }
 
-  else list = expand_string(*listptr);
+  else list = expand_cstring(*listptr);
 
   if (list == NULL)
     {
@@ -701,7 +700,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
         cached = US" - cached";
         if (valueptr != NULL)
           {
-          uschar *key = get_check_key(arg, type);
+          const uschar *key = get_check_key(arg, type);
           namedlist_cacheblock *p;
           for (p = nb->cache_data; p != NULL; p = p->next)
             {
@@ -740,7 +739,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
 
         case DEFER:
         if (error == NULL)
-          error = string_sprintf("DNS lookup of %s deferred", ss);
+          error = string_sprintf("DNS lookup of \"%s\" deferred", ss);
         if (ignore_defer)
           {
           HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_defer\n",
@@ -752,6 +751,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
           log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
           return OK;
           }
+        if (!search_error_message) search_error_message = error;
         goto DEFER_RETURN;
 
         /* The ERROR return occurs when checking hosts, when either a forward
@@ -771,7 +771,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
             include_unknown? "yes":"no", error);
           if (!include_unknown)
             {
-            if ((log_extra_selector & LX_unknown_in_list) != 0)
+            if (LOGGING(unknown_in_list))
               log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
             return FAIL;
             }
@@ -880,7 +880,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
           (void)fclose(f);
           if (!include_unknown)
             {
-            if ((log_extra_selector & LX_unknown_in_list) != 0)
+            if (LOGGING(unknown_in_list))
               log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
             return FAIL;
             }
@@ -952,8 +952,9 @@ Returns:         OK    if matched a non-negated item
 */
 
 int
-match_isinlist(uschar *s, uschar **listptr, int sep, tree_node **anchorptr,
-  unsigned int *cache_bits, int type, BOOL caseless, uschar **valueptr)
+match_isinlist(const uschar *s, const uschar **listptr, int sep,
+   tree_node **anchorptr,
+  unsigned int *cache_bits, int type, BOOL caseless, const uschar **valueptr)
 {
 unsigned int *local_cache_bits = cache_bits;
 check_string_block cb;
@@ -999,16 +1000,17 @@ Returns:         OK     for a match
 */
 
 static int
-check_address(void *arg, uschar *pattern, uschar **valueptr, uschar **error)
+check_address(void *arg, const uschar *pattern, const uschar **valueptr, uschar **error)
 {
 check_address_block *cb = (check_address_block *)arg;
 check_string_block csb;
 int rc;
 int expand_inc = 0;
 unsigned int *null = NULL;
-uschar *listptr;
+const uschar *listptr;
 uschar *subject = cb->address;
-uschar *s, *pdomain, *sdomain;
+const uschar *s;
+uschar *pdomain, *sdomain;
 
 error = error;  /* Keep clever compilers from complaining */
 
@@ -1070,7 +1072,8 @@ looked up to obtain a list of local parts. If the subject's local part is just
 if (pattern[0] == '@' && pattern[1] == '@')
   {
   int watchdog = 50;
-  uschar *list, *key, *ss;
+  const uschar *key;
+  uschar *list, *ss;
   uschar buffer[1024];
 
   if (sdomain == subject + 1 && *subject == '*') return FAIL;
@@ -1083,7 +1086,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
     int sep = 0;
 
     if ((rc = match_check_string(key, pattern + 2, -1, TRUE, FALSE, FALSE,
-      &list)) != OK) return rc;
+      CUSS &list)) != OK) return rc;
 
     /* Check for chaining from the last item; set up the next key if one
     is found. */
@@ -1102,8 +1105,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
     /* Look up the local parts provided by the list; negation is permitted.
     If a local part has to begin with !, a regex can be used. */
 
-    while ((ss = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
-           != NULL)
+    while ((ss = string_nextinlist(CUSS &list, &sep, buffer, sizeof(buffer))))
       {
       int local_yield;
 
@@ -1278,9 +1280,9 @@ Returns:          OK    for a positive match, or end list after a negation;
 */
 
 int
-match_address_list(uschar *address, BOOL caseless, BOOL expand,
-  uschar **listptr, unsigned int *cache_bits, int expand_setup, int sep,
-  uschar **valueptr)
+match_address_list(const uschar *address, BOOL caseless, BOOL expand,
+  const uschar **listptr, unsigned int *cache_bits, int expand_setup, int sep,
+  const uschar **valueptr)
 {
 uschar *p;
 check_address_block ab;

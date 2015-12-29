@@ -3,11 +3,11 @@ userx@test.ex cannot be resolved at this time: lookup failed for all hosts in r1
 userx@test.ex cannot be resolved at this time: lookup failed for all hosts in r1 router: host_find_failed=ignore host_all_ignored=defer
 userx@test.ex
   router = r1, transport = t1
-  host 127.0.0.1 [127.0.0.1] 
+  host 127.0.0.1 [127.0.0.1]
 userx@test.ex
   router = r1, transport = t1
-  host 127.0.0.1 [127.0.0.1] 
-  host 127.0.0.2 [127.0.0.2] 
+  host 127.0.0.1 [127.0.0.1]
+  host 127.0.0.2 [127.0.0.2]
 userx@test.ex cannot be resolved at this time: lookup failed for all hosts in r1 router: host_find_failed=ignore host_all_ignored=defer
 userx@test.ex is undeliverable: Unrouteable address
 userx@test.ex is undeliverable: lookup failed for all hosts in r1 router: host_find_failed=ignore host_all_ignored=fail

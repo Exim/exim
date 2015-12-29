@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions concerned with rewriting headers */
@@ -118,7 +118,8 @@ for (rule = rewrite_rules;
   {
   int start, end, pdomain;
   int count = 0;
-  uschar *save_localpart, *save_domain;
+  uschar *save_localpart;
+  const uschar *save_domain;
   uschar *error, *new, *newparsed;
 
   /* Ensure that the flag matches the flags in the rule. */
@@ -162,7 +163,7 @@ for (rule = rewrite_rules;
     /* Use the general function for matching an address against a list (here
     just one item, so use the "impossible value" separator UCHAR_MAX+1). */
 
-    if (match_address_list(subject, FALSE, TRUE, &(rule->key), NULL, 0,
+    if (match_address_list(subject, FALSE, TRUE, CUSS &(rule->key), NULL, 0,
         UCHAR_MAX + 1, NULL) != OK)
       continue;
 
@@ -246,8 +247,7 @@ for (rule = rewrite_rules;
 
   /* We have a validly rewritten address */
 
-  if ((log_write_selector & L_address_rewrite) != 0 ||
-      (debug_selector & D_rewrite) != 0)
+  if (LOGGING(address_rewrite) || (debug_selector & D_rewrite) != 0)
     {
     int i;
     const uschar *where = CUS"?";
@@ -292,7 +292,7 @@ for (rule = rewrite_rules;
         {
         uschar *p1 = new + start - 1;
         uschar *p2 = new + end + 1;
-        uschar *pf1, *pf2;
+        const uschar *pf1, *pf2;
         uschar buff1[256], buff2[256];
 
         while (p1 > new && p1[-1] == ' ') p1--;
@@ -449,8 +449,9 @@ Returns:         NULL if header unchanged; otherwise the rewritten header
 */
 
 static header_line *
-rewrite_one_header(header_line *h, int flag, uschar *routed_old,
-  uschar *routed_new, rewrite_rule *rewrite_rules, int existflags, BOOL replace)
+rewrite_one_header(header_line *h, int flag,
+  const uschar *routed_old, const uschar *routed_new,
+  rewrite_rule *rewrite_rules, int existflags, BOOL replace)
 {
 int lastnewline = 0;
 header_line *newh = NULL;
@@ -717,7 +718,8 @@ Returns:         NULL if header unchanged; otherwise the rewritten header
 */
 
 header_line *
-rewrite_header(header_line *h, uschar *routed_old, uschar *routed_new,
+rewrite_header(header_line *h,
+  const uschar *routed_old, const uschar *routed_new,
   rewrite_rule *rewrite_rules, int existflags, BOOL replace)
 {
 switch (h->type)

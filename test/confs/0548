@@ -8,6 +8,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/SERVER%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -54,7 +55,7 @@ smtp:
 
 begin retry
 
-thishost.test.ex  *  F,15s,1s
+thishost.test.ex  *  F,20s,2s
 *                 *  F,1s,1s; F,1s,5s
 
 # End

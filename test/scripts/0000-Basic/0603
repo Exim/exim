@@ -1,0 +1,71 @@
+# retry: transport identity depending on sender
+# Exim test configuration 0603
+#
+# Add several messages going to the same location
+# And change smtp output based on senders domain
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+exim -bs
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+This is a test message.
+It has three lines.
+This is the last line.
+.
+RSET
+mail from:peter@dustybelt.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: second
+
+This is a second test message.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: third
+Reply-to: some@body
+
+This is a third test message.
+.
+RSET
+mail from:peter@dustybelt.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: secondA
+
+This is a secondA test message.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: third
+Reply-to: some@body
+
+This is a fourth test message.
+.
+RSET
+mail from:ralph@dustyshoes.tld
+rcpt to:bob@anotherone.tld
+data
+Subject: third
+Reply-to: some@body
+
+This is a fifth test message.
+.
+quit
+****
+#
+#
+exim -qq
+****
+#
+#
+killdaemon
+no_msglog_check
+

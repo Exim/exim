@@ -3,8 +3,8 @@ xx@mxt6.test.ex
   host ten-1.test.ex [V4NET.0.0.1] MX=5
 myhost.test.ex@mxt1.test.ex
   router = self, transport = remote_smtp
-  host myhost.test.ex [V4NET.10.10.10] 
+  host myhost.test.ex [V4NET.10.10.10]
 xx@mxt1.test.ex
   router = self2, transport = remote_smtp
-  host myhost.test.ex [V4NET.10.10.10] 
+  host myhost.test.ex [V4NET.10.10.10]
 xx@not.exist is undeliverable: Unrouteable address

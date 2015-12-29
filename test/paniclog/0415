@@ -1,20 +1,20 @@
-1999-03-02 09:44:33 Exim configuration error in line 19 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 20 of TESTSUITE/test-config:
   absolute value of integer "4000000M" is too large (overflow)
-1999-03-02 09:44:33 Exim configuration error in line 19 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 20 of TESTSUITE/test-config:
   extra characters follow integer value for check_spool_space
-1999-03-02 09:44:33 Exim configuration error in line 20 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 21 of TESTSUITE/test-config:
   integer "4000000000.123" is too large (overflow)
-1999-03-02 09:44:33 Exim configuration error in line 20 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 21 of TESTSUITE/test-config:
   integer "4000000.123" is too large (overflow)
-1999-03-02 09:44:33 Exim configuration error in line 22 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 23 of TESTSUITE/test-config:
   absolute value of integer "999999999999999999" is too large (overflow)
-1999-03-02 09:44:33 Exim configuration error in line 22 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 23 of TESTSUITE/test-config:
   absolute value of integer "999999999K" is too large (overflow)
-1999-03-02 09:44:33 Exim configuration error in line 22 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 23 of TESTSUITE/test-config:
   absolute value of integer "999999M" is too large (overflow)
-1999-03-02 09:44:33 Exim configuration error in line 22 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 23 of TESTSUITE/test-config:
   extra characters follow integer value for finduser_retries
-1999-03-02 09:44:33 Exim configuration error in line 22 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 23 of TESTSUITE/test-config:
   integer expected for finduser_retries
-1999-03-02 09:44:33 Exim configuration error in line 22 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 23 of TESTSUITE/test-config:
   extra characters follow integer value for finduser_retries

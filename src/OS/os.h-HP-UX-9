@@ -17,4 +17,7 @@
 
 typedef struct flock flock_t;
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

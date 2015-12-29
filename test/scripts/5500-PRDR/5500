@@ -35,7 +35,7 @@ Sender: sender@some.where
 quit
 ??? 221
 ****
-sleep 1
+millisleep 500
 #
 #
 # 2: traditional data acl should be called, resulting in an overall reject
@@ -65,7 +65,7 @@ Sender: sender@some.where
 quit
 ??? 221
 ****
-sleep 1
+millisleep 500
 #
 #
 # 3: PRDR should be avoided for a single-recipient message
@@ -91,7 +91,7 @@ Sender: sender@some.where
 quit
 ??? 221
 ****
-sleep 1
+millisleep 500
 #
 # 4: double temp-reject
 client 127.0.0.1 PORT_D
@@ -120,7 +120,7 @@ Sender: sender@some.where
 quit
 ??? 221
 ****
-sleep 1
+millisleep 500
 #
 # 5: double reject
 client 127.0.0.1 PORT_D
@@ -149,7 +149,31 @@ Sender: sender@some.where
 quit
 ??? 221
 ****
-sleep 1
+millisleep 500
+#
+# 6: no PRDR request
+client 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-PRDR
+??? 250
+mail from:<>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+data
+??? 354
+Sender: sender@some.where
+.
+??? 250
+quit
+??? 221
+****
+millisleep 500
 #
 killdaemon
 #

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* The default settings for Exim configuration variables. A #define without
@@ -24,6 +24,7 @@ it's a default value. */
 #define AUTH_HEIMDAL_GSSAPI
 #define AUTH_PLAINTEXT
 #define AUTH_SPA
+#define AUTH_TLS
 
 #define AUTH_VARS                     3
 
@@ -40,10 +41,11 @@ it's a default value. */
 #define DEFAULT_CRYPT              crypt
 #define DELIVER_IN_BUFFER_SIZE     8192
 #define DELIVER_OUT_BUFFER_SIZE    8192
+#define DISABLE_DNSSEC
 #define DISABLE_DKIM
+#define DISABLE_EVENT
 #define DISABLE_PRDR
 #define DISABLE_OCSP
-#define DISABLE_DNSSEC
 #define DISABLE_D_OPTION
 
 #define ENABLE_DISABLE_FSYNC
@@ -93,6 +95,7 @@ it's a default value. */
 #define LOOKUP_ORACLE
 #define LOOKUP_PASSWD
 #define LOOKUP_PGSQL
+#define LOOKUP_REDIS
 #define LOOKUP_SQLITE
 #define LOOKUP_TESTDB
 #define LOOKUP_WHOSON
@@ -115,6 +118,8 @@ it's a default value. */
 #define RADIUS_CONFIG_FILE
 #define RADIUS_LIB_TYPE
 
+#define REGEX_VARS                 9
+
 #define ROUTER_ACCEPT
 #define ROUTER_DNSLOOKUP
 #define ROUTER_IPLITERAL
@@ -128,13 +133,15 @@ it's a default value. */
 #define SPOOL_MODE                 0640
 #define STRING_SPRINTF_BUFFER_SIZE (8192 * 4)
 
-#define SUPPORT_A6
 #define SUPPORT_CRYPTEQ
+#define SUPPORT_I18N
 #define SUPPORT_MAILDIR
 #define SUPPORT_MAILSTORE
 #define SUPPORT_MBX
 #define SUPPORT_MOVE_FROZEN_MESSAGES
 #define SUPPORT_PAM
+#define SUPPORT_PROXY
+#define SUPPORT_SOCKS
 #define SUPPORT_TLS
 #define SUPPORT_TRANSLATE_IP_ADDRESS
 
@@ -169,12 +176,10 @@ it's a default value. */
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DANE
 #define EXPERIMENTAL_DCC
+#define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_DMARC
-#define EXPERIMENTAL_PROXY
-#define EXPERIMENTAL_REDIS
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS
-#define EXPERIMENTAL_EVENT
 
 /* For developers */
 #define WANT_DEEPER_PRINTF_CHECKS

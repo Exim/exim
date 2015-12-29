@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for maintaining binary balanced trees and some associated
@@ -328,7 +328,7 @@ Returns:    pointer to node, or NULL if not found
 */
 
 tree_node *
-tree_search(tree_node *p, uschar *name)
+tree_search(tree_node *p, const uschar *name)
 {
 while (p != NULL)
   {

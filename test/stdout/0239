@@ -1,13 +1,13 @@
 userx@localhost
   router = rrr, transport = local
-  host a.host.name           
+  host a.host.name          
 userx@localhost verified
 userx@localhost
   router = rrr, transport = local
-  host a.host.name           
+  host a.host.name          
 userx@localhost
   router = rrr, transport = local
-  host a.host.name           
+  host a.host.name          
 userx@smtp
   router = sss, transport = smtp
-  host 127.0.0.1 [127.0.0.1] 
+  host 127.0.0.1 [127.0.0.1]

@@ -1,6 +1,6 @@
 1999-03-02 09:44:33 U=CALLER temporarily rejected EHLO or HELO xxx
-1999-03-02 09:44:33 U=CALLER F=<discard@x.y> rejected RCPT <a@b>: discarded by MAIL ACL: discard message 2
-1999-03-02 09:44:33 U=CALLER F=<discard@x.y> rejected RCPT <discard@p.q>: discarded by MAIL ACL: discard message 2
-1999-03-02 09:44:33 U=CALLER F=<ok@x.y> rejected RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1
-1999-03-02 09:44:33 U=CALLER F=<ok@x.y> rejected RCPT <nested_discard@p.q>: discarded by RCPT ACL
-1999-03-02 09:44:33 U=CALLER F=<ok@x.y> rejected RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1
+1999-03-02 09:44:33 U=CALLER F=<discard@x.y> RCPT <a@b>: discarded by MAIL ACL: discard message 2
+1999-03-02 09:44:33 U=CALLER F=<discard@x.y> RCPT <discard@p.q>: discarded by MAIL ACL: discard message 2
+1999-03-02 09:44:33 U=CALLER F=<ok@x.y> RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1
+1999-03-02 09:44:33 U=CALLER F=<ok@x.y> RCPT <nested_discard@p.q>: discarded by RCPT ACL
+1999-03-02 09:44:33 U=CALLER F=<ok@x.y> RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1

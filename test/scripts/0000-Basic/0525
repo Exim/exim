@@ -1,7 +1,7 @@
 # Timeout while actually writing the data for a message
 need_ipv4
 #
-server PORT_S
+server -t 20 PORT_S
 220 Welcome
 EHLO
 250 Hi

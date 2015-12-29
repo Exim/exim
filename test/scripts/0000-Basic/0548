@@ -9,20 +9,27 @@ exim -DSERVER=server -bd -oX PORT_D
 exim -odi userx@test.ex
 Test message
 ****
+# defers from both
 dump retry
-sleep 2
-# At this point, the secondary host should have timed out
+millisleep 2100
+# At this point, the primary host retry rule ehould have timed out
+# and the secondary is ready for a retry
 exim -q
 ****
 dump retry
-sleep 1
+millisleep 2100
+# This should be similar
 exim -q
 ****
 dump retry
+# with luck this is tried within a second after the previous
+# so the primary gets tried (it's a new RCPT so the existing retry record is irrelevant)
+# but the secondary is not yet ready for a retry (host record)
 exim -odi usery@test.ex
 Test message 2.
 ****
-sleep 1
+dump retry
+millisleep 2000
 exim -q
 ****
 killdaemon

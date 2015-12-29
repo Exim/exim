@@ -29,9 +29,6 @@
 >>> sender host name required, to match against *-2.test.ex
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in "*-2.test.ex : *-3-alias.test.ex"? no (end of list)
@@ -78,9 +75,6 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1
 >>> sender host name required, to match against *-2.test.ex
 >>> looking up host name for V4NET.0.0.2
 >>> IP address lookup yielded "ten-2.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> checking addresses for ten-2.test.ex
 >>>   V4NET.0.0.2 OK
 >>> host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-2.test.ex")
@@ -124,14 +118,8 @@ LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=ten-2.test.ex [V4NET.0.0.2
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3-alias.test.ex address=V4NET.0.0.3
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-3-alias.test.ex")

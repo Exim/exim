@@ -1089,14 +1089,8 @@ LOG: H=[28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> looking up host name for V4NET.0.0.3
 >>> IP address lookup yielded "ten-3.test.ex"
 >>>   alias "ten-3-alias.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3.test.ex address=V4NET.0.0.3
 >>> checking addresses for ten-3.test.ex
 >>>   V4NET.0.0.3 OK
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-3-alias.test.ex address=V4NET.0.0.3
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
 >>> require: condition test succeeded in ACL "acl_V4NET_0_0"
@@ -1120,6 +1114,48 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> require: condition test failed in ACL "acl_V4NET_0_0"
 >>> end of ACL "acl_V4NET_0_0": not OK
 LOG: H=[V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse lookup check (failed to find host name from IP address)
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_V4NET_99_99"
+>>> processing "accept"
+>>> check local_parts = defer_ok
+>>> x in "defer_ok"? no (end of list)
+>>> accept: condition test failed in ACL "acl_V4NET_99_99"
+>>> processing "accept"
+>>> check verify = reverse_host_lookup
+>>> looking up host name to force name/address consistency check
+>>> looking up host name for V4NET.99.99.96
+>>> IP address lookup yielded "x.test.again.dns"
+>>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>> temporary error for host name lookup
+>>> accept: condition test deferred in ACL "acl_V4NET_99_99"
+LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferred for reverse lookup check
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_V4NET_99_99"
+>>> processing "accept"
+>>> check local_parts = defer_ok
+>>> defer_ok in "defer_ok"? yes (matched "defer_ok")
+>>> check verify = reverse_host_lookup/defer_ok
+>>> looking up host name to force name/address consistency check
+>>> looking up host name for V4NET.99.99.96
+>>> IP address lookup yielded "x.test.again.dns"
+>>> x.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>> temporary error for host name lookup
+>>> accept: condition test succeeded in ACL "acl_V4NET_99_99"
+>>> end of ACL "acl_V4NET_99_99": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)

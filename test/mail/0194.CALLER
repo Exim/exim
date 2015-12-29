@@ -42,9 +42,11 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userz@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;usery@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;userx@myhost.test.ex
 Status: 5.0.0
@@ -126,21 +128,27 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;three@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;two@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;one@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;six@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;five@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;four@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;seven@myhost.test.ex
 Status: 5.0.0
@@ -207,9 +215,11 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;userz@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;usery@myhost.test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;userx@myhost.test.ex
 Status: 5.0.0

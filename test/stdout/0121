@@ -35,3 +35,44 @@
 354 Enter message, ending with "." on a line by itself
 451 Temporary local problem - please try later
 221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello foo.bar [127.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Reset OK
+250-the.local.host.name Hello foo.bar [127.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Reset OK
+250-the.local.host.name Hello foo.bar [127.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Reset OK
+250-the.local.host.name Hello foo.bar [127.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Reset OK
+250-the.local.host.name Hello foo.bar [127.0.0.1]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+221 the.local.host.name closing connection

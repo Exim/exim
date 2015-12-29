@@ -1,17 +1,22 @@
 #!/bin/bash
 #
 
+set -e
+set -x
+
 echo Ensure time is set to 2012/11/01 12:34
 echo use -  date -u 110112342012
 echo hit return when ready
 read junk
 for tld in com org net
 do
-    clica -D example.$tld -p password -B 1024 -I -N example.$tld -F \
+    idir="example.$tld"
+    rm -fr "$idir"
+    clica -D "$idir" -p password -B 1024 -I -N example.$tld -F \
 	-C http://crl.example.$tld/latest.crl -O http://oscp/example.$tld/
 
     clica -D example.$tld -p password -s 101 -S server1.example.$tld \
-	-8 alternatename.server1.example.$tld,alternatename2.server1.example.$tld
+	-8 alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex
     clica -D example.$tld -p password -s 102 -S revoked1.example.$tld
     clica -D example.$tld -p password -s 103 -S expired1.example.$tld -m 1
     clica -D example.$tld -p password -s 201 -S server2.example.$tld
@@ -23,8 +28,8 @@ do
     # cannot then use (the key applies to the first cert in the file?).
     # Generate a shuffled one.
     cd example.$tld/server1.example.$tld
-    openssl pkcs12 -in server1.example.com.p12 -passin file:pwdfile -cacerts -out cacerts.pem -nokeys
-    cat server1.example.com.pem cacerts.pem > fullchain.pem
+    openssl pkcs12 -in server1.example.$tld.p12 -passin file:pwdfile -cacerts -out cacerts.pem -nokeys
+    cat server1.example.$tld.pem cacerts.pem > fullchain.pem
     rm cacerts.pem
     cd ../..
 done
@@ -81,7 +86,7 @@ do
 done
 
 echo Please to reset date to now.
-echo service ntpdate start
+echo 'service ntpdate start (not on a systemd though...)'
 echo 
 echo Then hit return
 read junk
@@ -114,15 +119,20 @@ done
 
 # Finally, a single certificate-directory
 cd example.com/server1.example.com
-mkdir -f certdir
+mkdir -p certdir
 cd certdir
 f=../../CA/CA.pem
 h=`openssl x509 -hash -noout -in $f`
+rm -f $h.0
 ln -s $f $h.0
 f=../../CA/Signer.pem
 h=`openssl x509 -hash -noout -in $f`
+rm -f $h.0
 ln -s $f $h.0
-cd ../..
+cd ../../..
+
+pwd
+ls -l
 
 find example.* -type d -print0 | xargs -0 chmod 755
 find example.* -type f -print0 | xargs -0 chmod 644

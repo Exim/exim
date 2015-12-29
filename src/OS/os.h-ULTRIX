@@ -12,4 +12,7 @@ a minority operating system, easiest just to say "no" until someone asks. */
 #define NO_OPENLOG
 typedef struct flock flock_t;
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

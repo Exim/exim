@@ -288,6 +288,11 @@ TRANSPORT_SMTP=yes
 # library.
 # NOTE: LDAP cannot be built as a module!
 #
+# For Redis you need to have hiredis installed on your system
+# (https://github.com/redis/hiredis).
+# Depending on where it is installed you may have to edit the CFLAGS
+# (often += -I/usr/local/include) and LDFLAGS (-lhiredis) lines.
+
 # If your system has pkg-config then the _INCLUDE/_LIBS setting can be
 # handled for you automatically by also defining the _PC variable to reference
 # the name of the pkg-config package, if such is available.
@@ -306,6 +311,7 @@ LOOKUP_DNSDB=yes
 # LOOKUP_ORACLE=yes
 # LOOKUP_PASSWD=yes
 # LOOKUP_PGSQL=yes
+# LOOKUP_REDIS=yes
 # LOOKUP_SQLITE=yes
 # LOOKUP_SQLITE_PC=sqlite3
 # LOOKUP_WHOSON=yes
@@ -336,7 +342,7 @@ LOOKUP_DNSDB=yes
 
 
 #------------------------------------------------------------------------------
-# The PCRE library is required for exim.  There is no longer an embedded
+# The PCRE library is required for Exim.  There is no longer an embedded
 # version of the PCRE library included with the source code, instead you
 # must use a system library or build your own copy of PCRE.
 # In either case you must specify the library link info here.  If the
@@ -357,7 +363,8 @@ PCRE_CONFIG=yes
 # the command for linking Exim itself, not on any auxiliary programs. You
 # don't need to set LOOKUP_INCLUDE if the relevant directories are already
 # specified in INCLUDE. The settings below are just examples; -lpq is for
-# PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite.
+# PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite, -lhiredis
+# is for Redis.
 #
 # You do not need to use this for any lookup information added via pkg-config.
 
@@ -392,6 +399,7 @@ EXIM_MONITOR=eximon.bin
 
 # WITH_OLD_DEMIME=yes
 
+#------------------------------------------------------------------------------
 # If you're using ClamAV and are backporting fixes to an old version, instead
 # of staying current (which is the more usual approach) then you may need to
 # use an older API which uses a STREAM command, now deprecated, instead of
@@ -400,6 +408,7 @@ EXIM_MONITOR=eximon.bin
 # code.  zINSTREAM was introduced with ClamAV 0.95.
 #
 # WITH_OLD_CLAMAV_STREAM=yes
+
 
 #------------------------------------------------------------------------------
 # By default Exim includes code to support DKIM (DomainKeys Identified
@@ -426,8 +435,13 @@ EXIM_MONITOR=eximon.bin
 # By default, Exim has support for checking the AD bit in a DNS response, to
 # determine if DNSSEC validation was successful.  If your system libraries
 # do not support that bit, then set DISABLE_DNSSEC to "yes"
+# Note: Enabling EXPERIMENTAL_DANE unconditionally overrides this setting.
 
 # DISABLE_DNSSEC=yes
+
+# To disable support for Events set DISABLE_EVENT to "yes"
+
+# DISABLE_EVENT=yes
 
 
 #------------------------------------------------------------------------------
@@ -437,6 +451,7 @@ EXIM_MONITOR=eximon.bin
 
 # Uncomment the following line to add support for talking to dccifd.  This
 # defaults the socket path to /usr/local/dcc/var/dccifd.
+# Doing so will also explicitly turn on the WITH_CONTENT_SCAN option.
 
 # EXPERIMENTAL_DCC=yes
 
@@ -472,27 +487,12 @@ EXIM_MONITOR=eximon.bin
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lopendmarc
 
-
-# Uncomment the following line to support Events,
-# eg. for logging to a database.
-# EXPERIMENTAL_EVENT=yes
-
-# Uncomment the following line to add Redis lookup support
-# You need to have hiredis installed on your system (https://github.com/redis/hiredis).
-# Depending on where it is installed you may have to edit the CFLAGS and LDFLAGS lines.
-# EXPERIMENTAL_REDIS=yes
-# CFLAGS += -I/usr/local/include
-# LDFLAGS += -lhiredis
-
-# Uncomment the following line to enable Experimental Proxy Protocol
-# EXPERIMENTAL_PROXY=yes
-
-# Uncomment the following line to enable support for checking certiticate
-# ownership
-# EXPERIMENTAL_CERTNAMES=yes
-
 # Uncomment the following line to add DANE support
+# Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # EXPERIMENTAL_DANE=yes
+
+# Uncomment the following to include extra information in fail DSN message (bounces)
+# EXPERIMENTAL_DSN_INFO=yes
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
@@ -627,6 +627,7 @@ FIXED_NEVER_USERS=root
 # AUTH_HEIMDAL_GSSAPI_PC=heimdal-gssapi
 # AUTH_PLAINTEXT=yes
 # AUTH_SPA=yes
+# AUTH_TLS=yes
 
 
 #------------------------------------------------------------------------------
@@ -790,7 +791,7 @@ HEADERS_CHARSET="ISO-8859-1"
 # with the extension "texinfo" in the doc directory. You may find that the
 # version number of the texinfo files is different to your Exim version number,
 # because the main documentation isn't updated as often as the code. For
-# example, if you have Exim version 4.43, the source tarball upacks into a
+# example, if you have Exim version 4.43, the source tarball unpacks into a
 # directory called exim-4.43, but the texinfo tarball unpacks into exim-4.40.
 # In this case, move the contents of exim-4.40/doc into exim-4.43/doc after you
 # have unpacked them. Then set INFO_DIRECTORY to the location of your info
@@ -868,8 +869,14 @@ COMPRESS_SUFFIX=gz
 # If the exigrep utility is fed compressed log files, it tries to uncompress
 # them using this command.
 
+# Leave it empty to enforce autodetection at runtime:
+# ZCAT_COMMAND=
+#
+# Omit the path if you want to use your system's PATH:
+# ZCAT_COMMAND=zcat
+#
+# Or specify the full pathname:
 ZCAT_COMMAND=/usr/bin/zcat
-
 
 #------------------------------------------------------------------------------
 # Compiling in support for embedded Perl: If you want to be able to
@@ -901,6 +908,32 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 # You probably need to add -lpam to EXTRALIBS, and in some releases of
 # GNU/Linux -ldl is also needed.
+
+
+#------------------------------------------------------------------------------
+# Proxying.
+#
+# If you may want to use outbound (client-side) proxying, using Socks5,
+# uncomment the line below.
+
+# SUPPORT_SOCKS=yes
+
+# If you may want to use inbound (server-side) proxying, using Proxy Protocol,
+# uncomment the line below.
+
+# SUPPORT_PROXY=yes
+
+
+#------------------------------------------------------------------------------
+# Internationalisation.
+#
+# Uncomment the following to include Internationalisation features.  This is the
+# SMTPUTF8 ESMTP extension, and associated facilities for handling UTF8 domain
+# and localparts, per RFCs 5890, 6530 and 6533.
+# You need to have the IDN library installed.
+
+# SUPPORT_I18N=yes
+# LDFLAGS += -lidn
 
 
 #------------------------------------------------------------------------------
@@ -945,7 +978,7 @@ ZCAT_COMMAND=/usr/bin/zcat
 # There is no need to install all of SASL on your system. You just need to run
 # ./configure --with-pwcheck, cd to the pwcheck directory within the sources,
 # make and make install. You must create the socket directory (default
-# /var/pwcheck) and chown it to exim's user and group. Once you have installed
+# /var/pwcheck) and chown it to Exim's user and group. Once you have installed
 # pwcheck, you should arrange for it to be started by root at boot time.
 
 # CYRUS_PWCHECK_SOCKET=/var/pwcheck/pwcheck
@@ -953,7 +986,7 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 #------------------------------------------------------------------------------
 # Support for authentication via the Cyrus SASL saslauthd daemon is available.
-# The Exim support, which is intented for use in conjunction with the SMTP AUTH
+# The Exim support, which is intended for use in conjunction with the SMTP AUTH
 # facilities, is included only when requested by setting the following
 # parameter to the location of the saslauthd daemon's socket.
 #
@@ -961,7 +994,7 @@ ZCAT_COMMAND=/usr/bin/zcat
 # ./configure --with-saslauthd (and any other options you need, for example, to
 # select or deselect authentication mechanisms), cd to the saslauthd directory
 # within the sources, make and make install. You must create the socket
-# directory (default /var/state/saslauthd) and chown it to exim's user and
+# directory (default /var/state/saslauthd) and chown it to Exim's user and
 # group. Once you have installed saslauthd, you should arrange for it to be
 # started by root at boot time.
 
@@ -1122,7 +1155,7 @@ TMPDIR="/tmp"
 # to handle the different cases. If CONFIGURE_FILE_USE_EUID is defined, then
 # Exim will first look for a configuration file whose name is that defined
 # by CONFIGURE_FILE, with the effective uid tacked on the end, separated by
-# a period (for eximple, /usr/exim/configure.0). If this file does not exist,
+# a period (for example, /usr/exim/configure.0). If this file does not exist,
 # then the bare configuration file name is tried. In the case when both
 # CONFIGURE_FILE_USE_EUID and CONFIGURE_FILE_USE_NODE are set, four files
 # are tried: <name>.<euid>.<node>, <name>.<node>, <name>.<euid>, and <name>.
@@ -1306,7 +1339,7 @@ TMPDIR="/tmp"
 
 
 #------------------------------------------------------------------------------
-# Expanding match_* second paramters: BE CAREFUL IF ENABLING THIS!
+# Expanding match_* second parameters: BE CAREFUL IF ENABLING THIS!
 # It has proven too easy in practice for administrators to configure security
 # problems into their Exim install, by treating match_domain{}{} and friends
 # as a form of string comparison, where the second string comes from untrusted

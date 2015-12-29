@@ -1,4 +1,4 @@
 a@b
   router = r1, transport = t1
-  host 1.2.3.4 [1.2.3.4] 
+  host 1.2.3.4 [1.2.3.4]
 a@b cannot be resolved at this time: remote host address is the local host

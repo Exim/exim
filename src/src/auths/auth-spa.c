@@ -368,7 +368,7 @@ void mdfour (unsigned char *out, unsigned char *in, int n);
 static const char base64digits[] =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-#define BAD    -1
+#define BAD    (char) -1
 static const char base64val[] = {
   BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD, BAD,
     BAD,

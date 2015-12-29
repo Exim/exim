@@ -38,6 +38,16 @@ Test message
 ****
 dump retry
 #
+# one for a lookup-failure (in manualroute)
+exim -odi userx@nonexist
+Test message
+****
+# one for a lookup-failure (in dnslookup)
+exim -odi userx@mxt2.test.ex
+Test message
+****
+dump retry
+#
 #
 exim -brt x@dark.star.ex
 ****
@@ -69,3 +79,8 @@ exim -f "d@e.f" -brt x@Q.abcd.ex
 ****
 exim -brt x@not.not.ex
 ****
+exim -brt x@nonexist.test.ex lookup
+****
+#
+#
+no_msglog_check

@@ -1,0 +1,28 @@
+# Internationalised mail: stdin input
+# Exim test configuration 4202
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+#
+# commandline/stdin input, normal rcpt & sender, forwarded
+exim -odi -f user.dontcare@test1.com userx@test.ex
+Test message 1.
+.
+****
+# commandline/stdin input, utf-8 rcpt, forwarded
+exim -odi -f user.dontcare@test1.com user.他们为什么不说中文@test.ex
+Test message 2.
+.
+****
+# commandline/stdin input, utf-8 sender, forwarded
+exim -odi -f 他们为什么不说中文@test1.com userx@test.ex
+Test message 3.
+.
+****
+#
+#
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qqff
+****
+no_msglog_check

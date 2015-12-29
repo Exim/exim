@@ -30,7 +30,7 @@ local_part=userx domain=test.again.dns
 calling lookuphost router
 lookuphost router called for userx@test.again.dns
   domain = test.again.dns
-Return from DNS lookup of test.again.dns (MX) faked for testing
+DNS lookup of test.again.dns (MX) using fakens
 DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
@@ -122,7 +122,7 @@ expanded list of hosts = "test.again.dns" options = bydns
 set transport smtp
 finding IP address for test.again.dns
 doing DNS lookup
-Return from DNS lookup of test.again.dns (A) faked for testing
+DNS lookup of test.again.dns (A) using fakens
 DNS lookup of test.again.dns (A) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
@@ -223,7 +223,7 @@ local_part=userx domain=test.fail.dns
 calling lookuphost router
 lookuphost router called for userx@test.fail.dns
   domain = test.fail.dns
-Return from DNS lookup of test.fail.dns (MX) faked for testing
+DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
 lookuphost router: defer for userx@test.fail.dns
@@ -314,7 +314,7 @@ expanded list of hosts = "test.fail.dns" options = bydns
 set transport smtp
 finding IP address for test.fail.dns
 doing DNS lookup
-Return from DNS lookup of test.fail.dns (A) faked for testing
+DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
 useryz router: defer for usery@test.fail.dns
@@ -599,7 +599,7 @@ srv in "^srv"? yes (matched "^srv")
 calling srv router
 srv router called for srv@test.again.dns
   domain = test.again.dns
-Return from DNS lookup of _smtp._tcp.test.again.dns (SRV) faked for testing
+DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
 _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
@@ -619,17 +619,17 @@ srv in "^srv"? yes (matched "^srv")
 calling srv router
 srv router called for srv@test.fail.dns
   domain = test.fail.dns
-Return from DNS lookup of _smtp._tcp.test.fail.dns (SRV) faked for testing
+DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
 returning DNS_FAIL
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
-Return from DNS lookup of test.fail.dns (MX) faked for testing
+DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
-Return from DNS lookup of test.fail.dns (A) faked for testing
+DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
 srv router: defer for srv@test.fail.dns

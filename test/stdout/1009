@@ -1,6 +1,6 @@
 x@46.test.ex
   router = r1, transport = t1
-  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] 
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031]
   host 46.test.ex [V4NET.0.0.4] 
 x@mx46.test.ex
   router = r1, transport = t1

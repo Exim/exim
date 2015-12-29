@@ -1,0 +1,13 @@
+# TLS authentication (server only)
+munge tls_anycipher
+#
+exim -DSERVER=server -bd -oX PORT_D:PORT_S
+****
+exim -f ok@test.ex x@y
+****
+exim -f ok@test.ex smtps@y
+****
+exim -q
+****
+killdaemon
+no_msglog_check

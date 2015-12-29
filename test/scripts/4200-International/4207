@@ -1,0 +1,24 @@
+# Internationalised mail: control = utf8_downconvert
+# Exim test configuration 4207
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+#
+# utf-8 from, mandatory downconvert
+exim -bs -odi -DCONTROL="control=utf8_downconvert"
+EHLO client.bh
+MAIL FROM: <他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com> SMTPUTF8
+RCPT TO: <user.세계의모든사람들이한국어를이해한다면얼마나좋을까@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+#
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qqff
+****
+no_msglog_check

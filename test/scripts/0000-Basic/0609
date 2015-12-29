@@ -1,0 +1,29 @@
+# Long ACL delay, truncated
+munge debug_pid
+need_ipv4
+#
+# We want the debug note of a truncated delay
+exim -d-all+acl -DSERVER=server -odq -bd -oX PORT_D
+****
+#
+# Server delays 4s before accepting RCPT
+client 127.0.0.1 PORT_D
+??? 220
+mail from:<x@y.test.ex>
+??? 250
+rcpt to:<delay4_accept@y.test.ex>
+??? 250
+quit
+??? 221
+****
+#
+# Server delays 4s before accepting RCPT
+# but client closes connection
+client 127.0.0.1 PORT_D
+??? 220
+mail from:<x@y.test.ex>
+??? 250
+rcpt to:<delay4_accept@y.test.ex>
+****
+killdaemon
+no_msglog_check

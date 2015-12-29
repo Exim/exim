@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Portions Copyright (c) The OpenSSL Project 1999 */
@@ -22,6 +22,9 @@ functions from the OpenSSL library. */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#ifndef OPENSSL_NO_ECDH
+# include <openssl/ec.h>
+#endif
 #ifndef DISABLE_OCSP
 # include <openssl/ocsp.h>
 #endif
@@ -38,12 +41,37 @@ functions from the OpenSSL library. */
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
 # define EXIM_HAVE_OPENSSL_TLSEXT
 #endif
-#if OPENSSL_VERSION_NUMBER >= 0x010100000L
-# define EXIM_HAVE_OPENSSL_CHECKHOST
-#endif
-#if OPENSSL_VERSION_NUMBER >= 0x010000000L \
+
+/*
+ * X509_check_host provides sane certificate hostname checking, but was added
+ * to OpenSSL late, after other projects forked off the code-base.  So in
+ * addition to guarding against the base version number, beware that LibreSSL
+ * does not (at this time) support this function.
+ *
+ * If LibreSSL gains a different API, perhaps via libtls, then we'll probably
+ * opt to disentangle and ask a LibreSSL user to provide glue for a third
+ * crypto provider for libtls instead of continuing to tie the OpenSSL glue
+ * into even twistier knots.  If LibreSSL gains the same API, we can just
+ * change this guard and punt the issue for a while longer.
+ */
+#ifndef LIBRESSL_VERSION_NUMBER
+# if OPENSSL_VERSION_NUMBER >= 0x010100000L
+#  define EXIM_HAVE_OPENSSL_CHECKHOST
+# endif
+# if OPENSSL_VERSION_NUMBER >= 0x010000000L \
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
-# define EXIM_HAVE_OPENSSL_CHECKHOST
+#  define EXIM_HAVE_OPENSSL_CHECKHOST
+# endif
+
+# if !defined(OPENSSL_NO_ECDH)
+#  if OPENSSL_VERSION_NUMBER >= 0x0090800fL
+#   define EXIM_HAVE_ECDH
+#  endif
+#  if OPENSSL_VERSION_NUMBER >= 0x10002000L
+#   define EXIM_HAVE_OPENSSL_ECDH_AUTO
+#   define EXIM_HAVE_OPENSSL_EC_NIST2NID
+#  endif
+# endif
 #endif
 
 #if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
@@ -123,8 +151,8 @@ typedef struct tls_ext_ctx_cb {
   uschar *server_cipher_list;
   /* only passed down to tls_error: */
   host_item *host;
-  uschar * verify_cert_hostnames;
-#ifdef EXPERIMENTAL_EVENT
+  const uschar * verify_cert_hostnames;
+#ifndef DISABLE_EVENT
   uschar * event_action;
 #endif
 } tls_ext_ctx_cb;
@@ -169,7 +197,7 @@ Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(uschar *prefix, host_item *host, uschar *msg)
+tls_error(uschar * prefix, const host_item * host, uschar *  msg)
 {
 if (!msg)
   {
@@ -245,6 +273,7 @@ for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
     {
     X509 * current_cert= tmp_obj->data.x509;
     X509_NAME_oneline(X509_get_subject_name(current_cert), CS name, sizeof(name));
+	name[sizeof(name)-1] = '\0';
     debug_printf(" %s\n", name);
     }
   }
@@ -253,21 +282,59 @@ for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
 */
 
 
+#ifndef DISABLE_EVENT
+static int
+verify_event(tls_support * tlsp, X509 * cert, int depth, const uschar * dn,
+  BOOL *calledp, const BOOL *optionalp, const uschar * what)
+{
+uschar * ev;
+uschar * yield;
+X509 * old_cert;
+
+ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
+if (ev)
+  {
+  DEBUG(D_tls) debug_printf("verify_event: %s %d\n", what, depth);
+  old_cert = tlsp->peercert;
+  tlsp->peercert = X509_dup(cert);
+  /* NB we do not bother setting peerdn */
+  if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth))))
+    {
+    log_write(0, LOG_MAIN, "[%s] %s verify denied by event-action: "
+		"depth=%d cert=%s: %s",
+	      tlsp == &tls_out ? deliver_host_address : sender_host_address,
+	      what, depth, dn, yield);
+    *calledp = TRUE;
+    if (!*optionalp)
+      {
+      if (old_cert) tlsp->peercert = old_cert;	/* restore 1st failing cert */
+      return 1;			    /* reject (leaving peercert set) */
+      }
+    DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
+      "(host in tls_try_verify_hosts)\n");
+    }
+  X509_free(tlsp->peercert);
+  tlsp->peercert = old_cert;
+  }
+return 0;
+}
+#endif
+
 /*************************************************
 *        Callback for verification               *
 *************************************************/
 
 /* The SSL library does certificate verification if set up to do so. This
 callback has the current yes/no state is in "state". If verification succeeded,
-we set up the tls_peerdn string. If verification failed, what happens depends
-on whether the client is required to present a verifiable certificate or not.
+we set the certificate-verified flag. If verification failed, what happens
+depends on whether the client is required to present a verifiable certificate
+or not.
 
 If verification is optional, we change the state to yes, but still log the
 verification error. For some reason (it really would help to have proper
 documentation of OpenSSL), this callback function then gets called again, this
-time with state = 1. In fact, that's useful, because we can set up the peerdn
-value, but we must take care not to set the private verified flag on the second
-time through.
+time with state = 1.  We must take care not to set the private verified flag on
+the second time through.
 
 Note: this function is not called if the client fails to present a certificate
 when asked. We get here only if a certificate has been received. Handling of
@@ -278,38 +345,39 @@ May be called multiple times for different issues with a certificate, even
 for a given "depth" in the certificate chain.
 
 Arguments:
-  state      current yes/no state as 1/0
-  x509ctx    certificate information.
-  client     TRUE for client startup, FALSE for server startup
+  preverify_ok current yes/no state as 1/0
+  x509ctx      certificate information.
+  tlsp         per-direction (client vs. server) support data
+  calledp      has-been-called flag
+  optionalp    verification-is-optional flag
 
-Returns:     1 if verified, 0 if not
+Returns:     0 if verification should fail, otherwise 1
 */
 
 static int
-verify_callback(int state, X509_STORE_CTX *x509ctx,
+verify_callback(int preverify_ok, X509_STORE_CTX *x509ctx,
   tls_support *tlsp, BOOL *calledp, BOOL *optionalp)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
-static uschar txt[256];
-#ifdef EXPERIMENTAL_EVENT
-uschar * ev;
-uschar * yield;
-#endif
+uschar dn[256];
 
-X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
+dn[sizeof(dn)-1] = '\0';
 
-if (state == 0)
+if (preverify_ok == 0)
   {
-  log_write(0, LOG_MAIN, "SSL verify error: depth=%d error=%s cert=%s",
+  log_write(0, LOG_MAIN, "[%s] SSL verify error: depth=%d error=%s cert=%s",
+	tlsp == &tls_out ? deliver_host_address : sender_host_address,
     depth,
     X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
-    txt);
+    dn);
   *calledp = TRUE;
   if (!*optionalp)
     {
-    tlsp->peercert = X509_dup(cert);
-    return 0;			    /* reject */
+    if (!tlsp->peercert)
+      tlsp->peercert = X509_dup(cert);	/* record failing cert */
+    return 0;				/* reject */
     }
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
     "tls_try_verify_hosts)\n");
@@ -317,114 +385,85 @@ if (state == 0)
 
 else if (depth != 0)
   {
-  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n", depth, txt);
+  DEBUG(D_tls) debug_printf("SSL verify ok: depth=%d SN=%s\n", depth, dn);
 #ifndef DISABLE_OCSP
   if (tlsp == &tls_out && client_static_cbinfo->u_ocsp.client.verify_store)
     {	/* client, wanting stapling  */
     /* Add the server cert's signing chain as the one
     for the verification of the OCSP stapled information. */
-  
+
     if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
                              cert))
       ERR_clear_error();
     }
 #endif
-#ifdef EXPERIMENTAL_EVENT
-  ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
-  if (ev)
-    {
-    tlsp->peercert = X509_dup(cert);
-    if ((yield = event_raise(ev, US"tls:cert", string_sprintf("%d", depth))))
-      {
-      log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
-			      "depth=%d cert=%s: %s", depth, txt, yield);
-      *calledp = TRUE;
-      if (!*optionalp)
-	return 0;			    /* reject */
-      DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
-	"(host in tls_try_verify_hosts)\n");
-      }
-    X509_free(tlsp->peercert);
-    tlsp->peercert = NULL;
-    }
+#ifndef DISABLE_EVENT
+    if (verify_event(tlsp, cert, depth, dn, calledp, optionalp, US"SSL"))
+      return 0;				/* reject, with peercert set */
 #endif
   }
 else
   {
-  uschar * verify_cert_hostnames;
-
-  tlsp->peerdn = txt;
-  tlsp->peercert = X509_dup(cert);
+  const uschar * verify_cert_hostnames;
 
   if (  tlsp == &tls_out
      && ((verify_cert_hostnames = client_static_cbinfo->verify_cert_hostnames)))
      	/* client, wanting hostname check */
-
-# if EXIM_HAVE_OPENSSL_CHECKHOST
-#  ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
-#   define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
-#  endif
-#  ifndef X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS
-#   define X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS 0
-#  endif
     {
+
+#ifdef EXIM_HAVE_OPENSSL_CHECKHOST
+# ifndef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
+#  define X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS 0
+# endif
+# ifndef X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS
+#  define X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS 0
+# endif
     int sep = 0;
-    uschar * list = verify_cert_hostnames;
+    const uschar * list = verify_cert_hostnames;
     uschar * name;
     int rc;
     while ((name = string_nextinlist(&list, &sep, NULL, 0)))
-      if ((rc = X509_check_host(cert, name, 0,
+      if ((rc = X509_check_host(cert, CCS name, 0,
 		  X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
-		  | X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS)))
+		  | X509_CHECK_FLAG_SINGLE_LABEL_SUBDOMAINS,
+		  NULL)))
 	{
 	if (rc < 0)
 	  {
-	  log_write(0, LOG_MAIN, "SSL verify error: internal error\n");
+	  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error",
+		tlsp == &tls_out ? deliver_host_address : sender_host_address);
 	  name = NULL;
 	  }
 	break;
 	}
     if (!name)
+#else
+    if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
+#endif
       {
       log_write(0, LOG_MAIN,
-	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
+		"[%s] SSL verify error: certificate name mismatch: \"%s\"",
+		tlsp == &tls_out ? deliver_host_address : sender_host_address,
+		dn);
       *calledp = TRUE;
       if (!*optionalp)
-	return 0;			    /* reject */
+	{
+	if (!tlsp->peercert)
+	  tlsp->peercert = X509_dup(cert);	/* record failing cert */
+	return 0;				/* reject */
+	}
       DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
 	"tls_try_verify_hosts)\n");
       }
     }
-# else
-    if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
-      {
-      log_write(0, LOG_MAIN,
-	"SSL verify error: certificate name mismatch: \"%s\"\n", txt);
-      *calledp = TRUE;
-      if (!*optionalp)
-	return 0;			    /* reject */
-      DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
-	"tls_try_verify_hosts)\n");
-      }
-# endif
 
-#ifdef EXPERIMENTAL_EVENT
-  ev = tlsp == &tls_out ? client_static_cbinfo->event_action : event_action;
-  if (ev)
-    if ((yield = event_raise(ev, US"tls:cert", US"0")))
-      {
-      log_write(0, LOG_MAIN, "SSL verify denied by event-action: "
-			      "depth=0 cert=%s: %s", txt, yield);
-      *calledp = TRUE;
-      if (!*optionalp)
-	return 0;			    /* reject */
-      DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
-	"(host in tls_try_verify_hosts)\n");
-      }
+#ifndef DISABLE_EVENT
+  if (verify_event(tlsp, cert, depth, dn, calledp, optionalp, US"SSL"))
+    return 0;				/* reject, with peercert set */
 #endif
 
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
-    *calledp ? "" : " authenticated", txt);
+    *calledp ? "" : " authenticated", dn);
   if (!*calledp) tlsp->certificate_verified = TRUE;
   *calledp = TRUE;
   }
@@ -433,15 +472,17 @@ return 1;   /* accept, at least for this level */
 }
 
 static int
-verify_callback_client(int state, X509_STORE_CTX *x509ctx)
+verify_callback_client(int preverify_ok, X509_STORE_CTX *x509ctx)
 {
-return verify_callback(state, x509ctx, &tls_out, &client_verify_callback_called, &client_verify_optional);
+return verify_callback(preverify_ok, x509ctx, &tls_out,
+  &client_verify_callback_called, &client_verify_optional);
 }
 
 static int
-verify_callback_server(int state, X509_STORE_CTX *x509ctx)
+verify_callback_server(int preverify_ok, X509_STORE_CTX *x509ctx)
 {
-return verify_callback(state, x509ctx, &tls_in, &server_verify_callback_called, &server_verify_optional);
+return verify_callback(preverify_ok, x509ctx, &tls_in,
+  &server_verify_callback_called, &server_verify_optional);
 }
 
 
@@ -451,44 +492,39 @@ return verify_callback(state, x509ctx, &tls_in, &server_verify_callback_called, 
 itself.
 */
 static int
-verify_callback_client_dane(int state, X509_STORE_CTX * x509ctx)
+verify_callback_client_dane(int preverify_ok, X509_STORE_CTX * x509ctx)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
-static uschar txt[256];
-#ifdef EXPERIMENTAL_EVENT
+uschar dn[256];
+#ifndef DISABLE_EVENT
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
-uschar * yield;
+BOOL dummy_called, optional = FALSE;
 #endif
 
-X509_NAME_oneline(X509_get_subject_name(cert), CS txt, sizeof(txt));
+X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
+dn[sizeof(dn)-1] = '\0';
 
-DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s\n", txt);
-tls_out.peerdn = txt;
-tls_out.peercert = X509_dup(cert);
+DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s depth %d %s\n",
+  preverify_ok ? "ok":"BAD", depth, dn);
 
-#ifdef EXPERIMENTAL_EVENT
-  if (client_static_cbinfo->event_action)
-    {
-    if ((yield = event_raise(client_static_cbinfo->event_action,
-		    US"tls:cert", string_sprintf("%d", depth))))
-      {
-      log_write(0, LOG_MAIN, "DANE verify denied by event-action: "
-			      "depth=%d cert=%s: %s", depth, txt, yield);
-      tls_out.certificate_verified = FALSE;
-      return 0;			    /* reject */
-      }
-    if (depth != 0)
-      {
-      X509_free(tls_out.peercert);
-      tls_out.peercert = NULL;
-      }
-    }
+#ifndef DISABLE_EVENT
+  if (verify_event(&tls_out, cert, depth, dn,
+	  &dummy_called, &optional, US"DANE"))
+    return 0;				/* reject, with peercert set */
 #endif
 
-if (state == 1)
+if (preverify_ok == 1)
   tls_out.dane_verified =
   tls_out.certificate_verified = TRUE;
-return 1;
+else
+  {
+  int err = X509_STORE_CTX_get_error(x509ctx);
+  DEBUG(D_tls)
+    debug_printf(" - err %d '%s'\n", err, X509_verify_cert_error_string(err));
+  if (err = X509_V_ERR_APPLICATION_VERIFICATION)
+    preverify_ok = 1;
+  }
+return preverify_ok;
 }
 
 #endif	/*EXPERIMENTAL_DANE*/
@@ -527,6 +563,7 @@ DEBUG(D_tls) debug_printf("SSL info: %s\n", SSL_state_string_long(s));
 /* If dhparam is set, expand it, and load up the parameters for DH encryption.
 
 Arguments:
+  sctx      The current SSL CTX (inbound or outbound)
   dhparam   DH parameter file or fixed parameter identity string
   host      connected host, if client; NULL if server
 
@@ -534,7 +571,7 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_dh(SSL_CTX *sctx, uschar *dhparam, host_item *host)
+init_dh(SSL_CTX *sctx, uschar *dhparam, const host_item *host)
 {
 BIO *bio;
 DH *dh;
@@ -601,6 +638,107 @@ DH_free(dh);
 BIO_free(bio);
 
 return TRUE;
+}
+
+
+
+
+/*************************************************
+*               Initialize for ECDH              *
+*************************************************/
+
+/* Load parameters for ECDH encryption.
+
+For now, we stick to NIST P-256 because: it's simple and easy to configure;
+it avoids any patent issues that might bite redistributors; despite events in
+the news and concerns over curve choices, we're not cryptographers, we're not
+pretending to be, and this is "good enough" to be better than no support,
+protecting against most adversaries.  Given another year or two, there might
+be sufficient clarity about a "right" way forward to let us make an informed
+decision, instead of a knee-jerk reaction.
+
+Longer-term, we should look at supporting both various named curves and
+external files generated with "openssl ecparam", much as we do for init_dh().
+We should also support "none" as a value, to explicitly avoid initialisation.
+
+Patches welcome.
+
+Arguments:
+  sctx      The current SSL CTX (inbound or outbound)
+  host      connected host, if client; NULL if server
+
+Returns:    TRUE if OK (nothing to set up, or setup worked)
+*/
+
+static BOOL
+init_ecdh(SSL_CTX * sctx, host_item * host)
+{
+#ifdef OPENSSL_NO_ECDH
+return TRUE;
+#else
+
+EC_KEY * ecdh;
+uschar * exp_curve;
+int nid;
+BOOL rv;
+
+if (host)	/* No ECDH setup for clients, only for servers */
+  return TRUE;
+
+# ifndef EXIM_HAVE_ECDH
+DEBUG(D_tls)
+  debug_printf("No OpenSSL API to define ECDH parameters, skipping\n");
+return TRUE;
+# else
+
+if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve))
+  return FALSE;
+if (!exp_curve || !*exp_curve)
+  return TRUE;
+
+#  ifdef EXIM_HAVE_OPENSSL_ECDH_AUTO
+/* check if new enough library to support auto ECDH temp key parameter selection */
+if (Ustrcmp(exp_curve, "auto") == 0)
+  {
+  DEBUG(D_tls) debug_printf(
+    "ECDH temp key parameter settings: OpenSSL 1.2+ autoselection\n");
+  SSL_CTX_set_ecdh_auto(sctx, 1);
+  return TRUE;
+  }
+#  endif
+
+DEBUG(D_tls) debug_printf("ECDH: curve '%s'\n", exp_curve);
+if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
+#   ifdef EXIM_HAVE_OPENSSL_EC_NIST2NID
+   && (nid = EC_curve_nist2nid(CCS exp_curve)) == NID_undef
+#   endif
+   )
+  {
+  tls_error(string_sprintf("Unknown curve name tls_eccurve '%s'",
+      exp_curve),
+    host, NULL);
+  return FALSE;
+  }
+
+if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
+  {
+  tls_error(US"Unable to create ec curve", host, NULL);
+  return FALSE;
+  }
+
+/* The "tmp" in the name here refers to setting a temporary key
+not to the stability of the interface. */
+
+if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
+  tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), host, NULL);
+else
+  DEBUG(D_tls) debug_printf("ECDH: enabled '%s' curve\n", exp_curve);
+
+EC_KEY_free(ecdh);
+return !rv;
+
+# endif	/*EXIM_HAVE_ECDH*/
+#endif /*OPENSSL_NO_ECDH*/
 }
 
 
@@ -794,7 +932,7 @@ if (cbinfo->privatekey != NULL &&
 of the expansion is an empty string, ignore it also, and assume the private
 key is in the same file as the certificate. */
 
-if (expanded != NULL && *expanded != 0)
+if (expanded && *expanded)
   {
   DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
   if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
@@ -803,21 +941,22 @@ if (expanded != NULL && *expanded != 0)
   }
 
 #ifndef DISABLE_OCSP
-if (cbinfo->is_server &&  cbinfo->u_ocsp.server.file != NULL)
+if (cbinfo->is_server && cbinfo->u_ocsp.server.file)
   {
   if (!expand_check(cbinfo->u_ocsp.server.file, US"tls_ocsp_file", &expanded))
     return DEFER;
 
-  if (expanded != NULL && *expanded != 0)
+  if (expanded && *expanded)
     {
     DEBUG(D_tls) debug_printf("tls_ocsp_file %s\n", expanded);
-    if (cbinfo->u_ocsp.server.file_expanded &&
-        (Ustrcmp(expanded, cbinfo->u_ocsp.server.file_expanded) == 0))
+    if (  cbinfo->u_ocsp.server.file_expanded
+       && (Ustrcmp(expanded, cbinfo->u_ocsp.server.file_expanded) == 0))
       {
-      DEBUG(D_tls)
-        debug_printf("tls_ocsp_file value unchanged, using existing values.\n");
-      } else {
-        ocsp_load_response(sctx, cbinfo, expanded);
+      DEBUG(D_tls) debug_printf(" - value unchanged, using existing values\n");
+      }
+    else
+      {
+      ocsp_load_response(sctx, cbinfo, expanded);
       }
     }
   }
@@ -889,6 +1028,12 @@ SSL_CTX_set_options(server_sni, SSL_CTX_get_options(server_ctx));
 SSL_CTX_set_timeout(server_sni, SSL_CTX_get_timeout(server_ctx));
 SSL_CTX_set_tlsext_servername_callback(server_sni, tls_servername_cb);
 SSL_CTX_set_tlsext_servername_arg(server_sni, cbinfo);
+
+if (  !init_dh(server_sni, cbinfo->dhparam, NULL)
+   || !init_ecdh(server_sni, NULL)
+   )
+  return SSL_TLSEXT_ERR_NOACK;
+
 if (cbinfo->server_cipher_list)
   SSL_CTX_set_cipher_list(server_sni, CS cbinfo->server_cipher_list);
 #ifndef DISABLE_OCSP
@@ -904,10 +1049,7 @@ if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 /* do this after setup_certs, because this can require the certs for verifying
 OCSP information. */
-rc = tls_expand_session_files(server_sni, cbinfo);
-if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
-
-if (!init_dh(server_sni, cbinfo->dhparam, NULL))
+if ((rc = tls_expand_session_files(server_sni, cbinfo)) != OK)
   return SSL_TLSEXT_ERR_NOACK;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
@@ -942,7 +1084,7 @@ uschar *response_der;
 int response_der_len;
 
 DEBUG(D_tls)
-  debug_printf("Received TLS status request (OCSP stapling); %s response.",
+  debug_printf("Received TLS status request (OCSP stapling); %s response\n",
     cbinfo->u_ocsp.server.response ? "have" : "lack");
 
 tls_in.ocsp = OCSP_NOT_RESP;
@@ -984,8 +1126,7 @@ len = SSL_get_tlsext_status_ocsp_resp(s, &p);
 if(!p)
  {
   /* Expect this when we requested ocsp but got none */
-  if (  cbinfo->u_ocsp.client.verify_required
-     && log_extra_selector & LX_tls_cipher)
+  if (cbinfo->u_ocsp.client.verify_required && LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Received TLS status callback, null content");
   else
     DEBUG(D_tls) debug_printf(" null\n");
@@ -995,7 +1136,7 @@ if(!p)
 if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
  {
   tls_out.ocsp = OCSP_FAILED;
-  if (log_extra_selector & LX_tls_cipher)
+  if (LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Received TLS cert status response, parse error");
   else
     DEBUG(D_tls) debug_printf(" parse error\n");
@@ -1005,7 +1146,7 @@ if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
 if(!(bs = OCSP_response_get1_basic(rsp)))
   {
   tls_out.ocsp = OCSP_FAILED;
-  if (log_extra_selector & LX_tls_cipher)
+  if (LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Received TLS cert status response, error parsing response");
   else
     DEBUG(D_tls) debug_printf(" error parsing response\n");
@@ -1036,7 +1177,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       tls_out.ocsp = OCSP_FAILED;
-      if (log_extra_selector & LX_tls_cipher)
+      if (LOGGING(tls_cipher))
 	log_write(0, LOG_MAIN, "Received TLS cert status response, itself unverifiable");
       BIO_printf(bp, "OCSP response verify failure\n");
       ERR_print_errors(bp);
@@ -1158,7 +1299,7 @@ else
 cbinfo->dhparam = dhparam;
 cbinfo->server_cipher_list = NULL;
 cbinfo->host = host;
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 cbinfo->event_action = NULL;
 #endif
 
@@ -1210,7 +1351,7 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
+DEBUG(D_tls) SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
 
 /* Automatically re-try reads/writes after renegotiation. */
 (void) SSL_CTX_set_mode(*ctxp, SSL_MODE_AUTO_RETRY);
@@ -1239,8 +1380,12 @@ else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
 
 /* Initialize with DH parameters if supplied */
+/* Initialize ECDH temp key parameter selection */
 
-if (!init_dh(*ctxp, dhparam, host)) return DEFER;
+if (  !init_dh(*ctxp, dhparam, host)
+   || !init_ecdh(*ctxp, host)
+   )
+  return DEFER;
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
@@ -1334,6 +1479,29 @@ DEBUG(D_tls) debug_printf("Cipher: %s\n", cipherbuf);
 }
 
 
+static void
+peer_cert(SSL * ssl, tls_support * tlsp, uschar * peerdn, unsigned bsize)
+{
+/*XXX we might consider a list-of-certs variable for the cert chain.
+SSL_get_peer_cert_chain(SSL*).  We'd need a new variable type and support
+in list-handling functions, also consider the difference between the entire
+chain and the elements sent by the peer. */
+
+/* Will have already noted peercert on a verify fail; possibly not the leaf */
+if (!tlsp->peercert)
+  tlsp->peercert = SSL_get_peer_certificate(ssl);
+/* Beware anonymous ciphers which lead to server_cert being NULL */
+if (tlsp->peercert)
+  {
+  X509_NAME_oneline(X509_get_subject_name(tlsp->peercert), CS peerdn, bsize);
+  peerdn[bsize-1] = '\0';
+  tlsp->peerdn = peerdn;		/*XXX a static buffer... */
+  }
+else
+  tlsp->peerdn = NULL;
+}
+
+
 
 
 
@@ -1364,25 +1532,17 @@ uschar *expcerts, *expcrl;
 if (!expand_check(certs, US"tls_verify_certificates", &expcerts))
   return DEFER;
 
-if (expcerts != NULL && *expcerts != '\0')
+if (expcerts && *expcerts)
   {
-  if (Ustrcmp(expcerts, "system") == 0)
-    {
-    /* Tell the library to use its compiled-in location for the system default
-    CA bundle, only */
+  /* Tell the library to use its compiled-in location for the system default
+  CA bundle. Then add the ones specified in the config, if any. */
 
-    if (!SSL_CTX_set_default_verify_paths(sctx))
-      return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
-    }
-  else
+  if (!SSL_CTX_set_default_verify_paths(sctx))
+    return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
+
+  if (Ustrcmp(expcerts, "system") != 0)
     {
     struct stat statbuf;
-
-    /* Tell the library to use its compiled-in location for the system default
-    CA bundle. Those given by the exim config are additional to these */
-
-    if (!SSL_CTX_set_default_verify_paths(sctx))
-      return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
 
     if (Ustat(expcerts, &statbuf) < 0)
       {
@@ -1403,8 +1563,8 @@ if (expcerts != NULL && *expcerts != '\0')
       certificates are recognized, but the error message is still misleading (it
       says no certificate was supplied.) But this is better. */
 
-      if ((file == NULL || statbuf.st_size > 0) &&
-	    !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
+      if (  (!file || statbuf.st_size > 0)
+         && !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
 	return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
 
       /* Load the list of CAs for which we will accept certs, for sending
@@ -1413,15 +1573,16 @@ if (expcerts != NULL && *expcerts != '\0')
       If a list isn't loaded into the server, but
       some verify locations are set, the server end appears to make
       a wildcard reqest for client certs.
-      Meanwhile, the client library as deafult behaviour *ignores* the list
+      Meanwhile, the client library as default behaviour *ignores* the list
       we send over the wire - see man SSL_CTX_set_client_cert_cb.
       Because of this, and that the dir variant is likely only used for
       the public-CA bundle (not for a private CA), not worth fixing.
       */
-      if (file != NULL)
+      if (file)
 	{
 	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
-  DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
+
+	DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
 				    sk_X509_NAME_num(names));
 	SSL_CTX_set_client_CA_list(sctx, names);
 	}
@@ -1430,20 +1591,20 @@ if (expcerts != NULL && *expcerts != '\0')
 
   /* Handle a certificate revocation list. */
 
-  #if OPENSSL_VERSION_NUMBER > 0x00907000L
+#if OPENSSL_VERSION_NUMBER > 0x00907000L
 
   /* This bit of code is now the version supplied by Lars Mainka. (I have
-   * merely reformatted it into the Exim code style.)
+  merely reformatted it into the Exim code style.)
 
-   * "From here I changed the code to add support for multiple crl's
-   * in pem format in one file or to support hashed directory entries in
-   * pem format instead of a file. This method now uses the library function
-   * X509_STORE_load_locations to add the CRL location to the SSL context.
-   * OpenSSL will then handle the verify against CA certs and CRLs by
-   * itself in the verify callback." */
+  "From here I changed the code to add support for multiple crl's
+  in pem format in one file or to support hashed directory entries in
+  pem format instead of a file. This method now uses the library function
+  X509_STORE_load_locations to add the CRL location to the SSL context.
+  OpenSSL will then handle the verify against CA certs and CRLs by
+  itself in the verify callback." */
 
   if (!expand_check(crl, US"tls_crl", &expcrl)) return DEFER;
-  if (expcrl != NULL && *expcrl != 0)
+  if (expcrl && *expcrl)
     {
     struct stat statbufcrl;
     if (Ustat(expcrl, &statbufcrl) < 0)
@@ -1479,7 +1640,7 @@ if (expcerts != NULL && *expcerts != '\0')
       }
     }
 
-  #endif  /* OPENSSL_VERSION_NUMBER > 0x00907000L */
+#endif  /* OPENSSL_VERSION_NUMBER > 0x00907000L */
 
   /* If verification is optional, don't fail if no certificate */
 
@@ -1516,6 +1677,7 @@ tls_server_start(const uschar *require_ciphers)
 int rc;
 uschar *expciphers;
 tls_ext_ctx_cb *cbinfo;
+static uschar peerdn[256];
 static uschar cipherbuf[256];
 
 /* Check for previous activation */
@@ -1638,6 +1800,8 @@ DEBUG(D_tls) debug_printf("SSL_accept was successful\n");
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize things. */
 
+peer_cert(server_ssl, &tls_in, peerdn, sizeof(peerdn));
+
 construct_cipher_name(server_ssl, cipherbuf, sizeof(cipherbuf), &tls_in.bits);
 tls_in.cipher = cipherbuf;
 
@@ -1682,7 +1846,7 @@ tls_client_basic_ctx_init(SSL_CTX * ctx,
 			  )
 {
 int rc;
-/* stick to the old behaviour for compatibility if tls_verify_certificates is 
+/* stick to the old behaviour for compatibility if tls_verify_certificates is
    set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
    the specified host patterns if one of them is defined */
 
@@ -1703,7 +1867,12 @@ if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
 
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
-  cbinfo->verify_cert_hostnames = host->name;
+  cbinfo->verify_cert_hostnames =
+#ifdef SUPPORT_I18N
+    string_domain_utf8_to_alabel(host->name, NULL);
+#else
+    host->name;
+#endif
   DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
 		    cbinfo->verify_cert_hostnames);
   }
@@ -1764,7 +1933,7 @@ if (found)
   return OK;
 
 log_write(0, LOG_MAIN, "DANE error: No usable TLSA records");
-return FAIL;
+return DEFER;
 }
 #endif	/*EXPERIMENTAL_DANE*/
 
@@ -1798,9 +1967,8 @@ tls_client_start(int fd, host_item *host, address_item *addr,
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
-static uschar txt[256];
+static uschar peerdn[256];
 uschar * expciphers;
-X509 * server_cert;
 int rc;
 static uschar cipherbuf[256];
 
@@ -1872,7 +2040,9 @@ if (expciphers != NULL)
 #ifdef EXPERIMENTAL_DANE
 if (tlsa_dnsa)
   {
-  SSL_CTX_set_verify(client_ctx, SSL_VERIFY_PEER, verify_callback_client_dane);
+  SSL_CTX_set_verify(client_ctx,
+    SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+    verify_callback_client_dane);
 
   if (!DANESSL_library_init())
     return tls_error(US"library init", host, NULL);
@@ -1950,7 +2120,7 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 client_static_cbinfo->event_action = tb->event_action;
 #endif
 
@@ -1972,17 +2142,7 @@ if (rc <= 0)
 
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 
-/* Beware anonymous ciphers which lead to server_cert being NULL */
-/*XXX server_cert is never freed... use X509_free() */
-server_cert = SSL_get_peer_certificate (client_ssl);
-if (server_cert)
-  {
-  tls_out.peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
-    CS txt, sizeof(txt));
-  tls_out.peerdn = txt;		/*XXX a static buffer... */
-  }
-else
-  tls_out.peerdn = NULL;
+peer_cert(client_ssl, &tls_out, peerdn, sizeof(peerdn));
 
 construct_cipher_name(client_ssl, cipherbuf, sizeof(cipherbuf), &tls_out.bits);
 tls_out.cipher = cipherbuf;

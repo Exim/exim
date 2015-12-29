@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions concerned with running Exim as a daemon */
@@ -145,7 +145,7 @@ int dup_accept_socket = -1;
 int max_for_this_host = 0;
 int wfsize = 0;
 int wfptr = 0;
-int use_log_write_selector = log_write_selector;
+int save_log_selector = *log_selector;
 uschar *whofrom = NULL;
 
 void *reset_point = store_get(0);
@@ -206,11 +206,11 @@ memory is reclaimed. */
 
 whofrom = string_append(whofrom, &wfsize, &wfptr, 3, "[", sender_host_address, "]");
 
-if ((log_extra_selector & LX_incoming_port) != 0)
+if (LOGGING(incoming_port))
   whofrom = string_append(whofrom, &wfsize, &wfptr, 2, ":", string_sprintf("%d",
     sender_host_port));
 
-if ((log_extra_selector & LX_incoming_interface) != 0)
+if (LOGGING(incoming_interface))
   whofrom = string_append(whofrom, &wfsize, &wfptr, 4, " I=[",
     interface_address, "]:", string_sprintf("%d", interface_port));
 
@@ -338,11 +338,12 @@ the generalized logging code each time when the selector is false. If the
 selector is set, check whether the host is on the list for logging. If not,
 arrange to unset the selector in the subprocess. */
 
-if ((log_write_selector & L_smtp_connection) != 0)
+if (LOGGING(smtp_connection))
   {
   uschar *list = hosts_connection_nolog;
+  memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (list != NULL && verify_check_host(&list) == OK)
-    use_log_write_selector &= ~L_smtp_connection;
+    save_log_selector &= ~L_smtp_connection;
   else
     log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %s "
       "(TCP/IP connection count = %d)", whofrom, smtp_accept_count + 1);
@@ -372,7 +373,7 @@ if (pid == 0)
 
   /* May have been modified for the subprocess */
 
-  log_write_selector = use_log_write_selector;
+  *log_selector = save_log_selector;
 
   /* Get the local interface address into permanent store */
 
@@ -735,6 +736,7 @@ else (void)close(dup_accept_socket);
 /* Release any store used in this process, including the store used for holding
 the incoming host address and an expanded active_hostname. */
 
+log_close_all();
 store_reset(reset_point);
 sender_host_address = NULL;
 }
@@ -1048,7 +1050,7 @@ if (daemon_listen && !inetd_wait_mode)
   int sep;
   int pct = 0;
   uschar *s;
-  uschar *list;
+  const uschar * list;
   uschar *local_iface_source = US"local_interfaces";
   ip_address_item *ipa;
   ip_address_item **pipa;
@@ -1071,8 +1073,7 @@ if (daemon_listen && !inetd_wait_mode)
 
     list = override_local_interfaces;
     sep = 0;
-    while ((s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size))
-           != NULL)
+    while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
       {
       uschar joinstr[4];
       uschar **ptr;
@@ -1127,13 +1128,13 @@ if (daemon_listen && !inetd_wait_mode)
 
   list = daemon_smtp_port;
   sep = 0;
-  while ((s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size)))
+  while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
     pct++;
   default_smtp_port = store_get((pct+1) * sizeof(int));
   list = daemon_smtp_port;
   sep = 0;
   for (pct = 0;
-       (s = string_nextinlist(&list,&sep,big_buffer,big_buffer_size));
+       (s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size));
        pct++)
     {
     if (isdigit(*s))
@@ -1603,7 +1604,7 @@ if (inetd_wait_mode)
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, launched with listening socket, %s",
     version_string, getpid(), big_buffer);
-  set_process_info("daemon: pre-listening socket");
+  set_process_info("daemon(%s): pre-listening socket", version_string);
 
   /* set up the timeout logic */
   sigalrm_seen = 1;
@@ -1688,7 +1689,7 @@ else if (daemon_listen)
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, %s, listening for %s",
     version_string, getpid(), qinfo, big_buffer);
-  set_process_info("daemon: %s, listening for %s", qinfo, big_buffer);
+  set_process_info("daemon(%s): %s, listening for %s", version_string, qinfo, big_buffer);
   }
 
 else
@@ -1696,7 +1697,8 @@ else
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, -q%s, not listening for SMTP",
     version_string, getpid(), readconf_printtime(queue_interval));
-  set_process_info("daemon: -q%s, not listening",
+  set_process_info("daemon(%s): -q%s, not listening",
+    version_string,
     readconf_printtime(queue_interval));
   }
 

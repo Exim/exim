@@ -1,0 +1,66 @@
+# Exim test configuration 0610
+
+SERVER =
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+#primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+log_selector = +sender_on_delivery
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+acl_smtp_connect = conn_chk
+acl_smtp_rcpt = accept
+
+untrusted_set_sender = *
+queue_only
+queue_run_in_order
+
+# ----- ACL -----
+
+begin acl
+
+conn_chk:
+  defer	condition = ${if eq {SERVER}{server}}
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  transport = $sender_address_local_part
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  interface = 127.0.0.1
+
+t2:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  interface = 127.0.0.2
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+# End
+

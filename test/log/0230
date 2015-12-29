@@ -11,15 +11,26 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 => x <x@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 SMTP connection from root
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= x@y.x H=[V4NET.9.8.7]:1112 U=root P=smtp S=sss
+1999-03-02 09:44:33 SMTP connection from root closed by QUIT
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 => x@test.ex R=to_server T=remote H=127.0.0.1 [127.0.0.1] I=[127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4]:1112 I=[ip4.ip4.ip4.ip4]:1225 (TCP/IP connection count = 1)
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= x@y.x H=[ip4.ip4.ip4.ip4]:1112 I=[ip4.ip4.ip4.ip4]:1225 P=smtp S=sss
-1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4]:1112 I=[ip4.ip4.ip4.ip4]:1225 closed by QUIT
-1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1113 I=[127.0.0.1]:1225 (TCP/IP connection count = 1)
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= x@y.x H=[127.0.0.1]:1113 I=[127.0.0.1]:1225 P=smtp S=sss
-1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1113 I=[127.0.0.1]:1225 closed by QUIT
-1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4]:1114 I=[ip4.ip4.ip4.ip4]:1225 (TCP/IP connection count = 1)
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= x@y.x H=(rhubarb) [ip4.ip4.ip4.ip4]:1114 I=[ip4.ip4.ip4.ip4]:1225 P=smtp S=sss
-1999-03-02 09:44:33 SMTP connection from (rhubarb) [ip4.ip4.ip4.ip4]:1114 I=[ip4.ip4.ip4.ip4]:1225 closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4]:1113 I=[ip4.ip4.ip4.ip4]:1225 (TCP/IP connection count = 1)
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= x@y.x H=[ip4.ip4.ip4.ip4]:1113 I=[ip4.ip4.ip4.ip4]:1225 P=smtp S=sss
+1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4]:1113 I=[ip4.ip4.ip4.ip4]:1225 closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1114 I=[127.0.0.1]:1225 (TCP/IP connection count = 1)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= x@y.x H=[127.0.0.1]:1114 I=[127.0.0.1]:1225 P=smtp S=sss
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1114 I=[127.0.0.1]:1225 closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [ip4.ip4.ip4.ip4]:1115 I=[ip4.ip4.ip4.ip4]:1225 (TCP/IP connection count = 1)
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= x@y.x H=(rhubarb) [ip4.ip4.ip4.ip4]:1115 I=[ip4.ip4.ip4.ip4]:1225 P=smtp S=sss
+1999-03-02 09:44:33 SMTP connection from (rhubarb) [ip4.ip4.ip4.ip4]:1115 I=[ip4.ip4.ip4.ip4]:1225 closed by QUIT
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1116 I=[127.0.0.1]:1225 (TCP/IP connection count = 1)
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= x@y.x H=localhost (myhost.test.ex) [127.0.0.1]:1116 I=[127.0.0.1]:1225 P=esmtp S=sss
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1]:1116 I=[127.0.0.1]:1225 closed by QUIT

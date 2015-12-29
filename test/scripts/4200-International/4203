@@ -1,0 +1,27 @@
+# Internationalised mail: forwarding fail
+# Exim test configuration 4203
+munge optional_dsn_info
+#
+exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
+****
+#
+# forwarding fails when target does not support SMTPUTF8
+exim -bs -odi
+EHLO client.ffail
+MAIL FROM: <यहलोगहिन्दीक्योंनहींबोलसकतेहैं@japanese.なぜみんな日本語を話してくれないのか.local> SMTPUTF8
+RCPT TO: <userz@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+#
+#
+#
+killdaemon
+#
+exim -qfl
+****
+#

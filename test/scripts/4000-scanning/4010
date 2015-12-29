@@ -1,0 +1,38 @@
+# ACL regex= test
+#
+# These tests are copies from testcase 4000;
+# they should be removed from there but I don't
+# run spamassassin so can't verify the change.
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Fri, 17 Dec 2004 16:13:04 +0100
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+
+OK, this should look like a genuine message.
+.
+quit
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Fri, 17 Dec 2004 16:13:04 +0100
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+FakeReject: test fakereject
+
+OK, this should look like a genuine message, but
+it will trip on THIS gazornenplaz REGEX.
+.
+quit
+****

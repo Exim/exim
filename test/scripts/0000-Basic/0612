@@ -1,0 +1,10 @@
+# log_defer_output on pipe transport
+#
+#XXX maybe collapse into 0048?
+#
+munge sys_bindir
+#
+exim a
+****
+sleep 1
+no_msglog_check

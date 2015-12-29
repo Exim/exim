@@ -1,9 +1,9 @@
 x@[abcd::dcba]
   router = r0, transport = t1
-  host [abcd::dcba] [abcd::dcba] 
+  host [abcd::dcba] [abcd::dcba]
 x@[IPv6:cba::abc]
   router = r0, transport = t1
-  host [ipv6:cba::abc] [cba::abc] 
+  host [ipv6:cba::abc] [cba::abc]
 x@[abcd::dcba]
   router = r3, transport = t1
 x@[IPv6:cba::abc]

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Michael Haardt 2003-2008 */
+/* Copyright (c) Michael Haardt 2003 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This code was contributed by Michael Haardt. */
@@ -1072,7 +1072,7 @@ if (file)
   setflag(new_addr, af_pfr|af_file);
   new_addr->mode = 0;
   }
-new_addr->p.errors_address = NULL;
+new_addr->prop.errors_address = NULL;
 new_addr->next = *generated;
 *generated = new_addr;
 }
@@ -2737,8 +2737,8 @@ Returns:      2                success by stop
               1                other success
               -1               syntax or execution error
 */
-static int parse_commands(struct Sieve *filter, int exec,
-  address_item **generated)
+static int
+parse_commands(struct Sieve *filter, int exec, address_item **generated)
 {
 while (*filter->pc)
   {
@@ -2970,7 +2970,6 @@ while (*filter->pc)
     int m;
     struct String from;
     struct String importance;
-    struct String *options;
     struct String message;
     struct String method;
     struct Notification *already;
@@ -2991,7 +2990,6 @@ while (*filter->pc)
     from.length=-1;
     importance.character=(uschar*)0;
     importance.length=-1;
-    options=(struct String*)0;
     message.character=(uschar*)0;
     message.length=-1;
     recipient=NULL;
@@ -3362,7 +3360,8 @@ while (*filter->pc)
           /* Allocation is larger than neccessary, but enough even for split MIME words */
           buffer_capacity=32+4*subject.length;
           buffer=store_get(buffer_capacity);
-          addr->reply->subject=parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
+	  /* deconst cast safe as we pass in a non-const item */
+          addr->reply->subject = US parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
           addr->reply->oncelog=once;
           addr->reply->once_repeat=days*86400;
 

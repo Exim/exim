@@ -37,6 +37,7 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;hbounce@test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;bounce@test.ex
 Status: 5.0.0
@@ -106,9 +107,11 @@ Reporting-MTA: dns; the.local.host.name
 Action: delayed
 Final-Recipient: rfc822;/no/such/file
 Status: 4.0.0
+
 Action: delayed
 Final-Recipient: rfc822;defer@test.ex
 Status: 4.0.0
+
 Action: delayed
 Final-Recipient: rfc822;hdefer@test.ex
 Status: 4.0.0

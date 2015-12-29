@@ -448,6 +448,17 @@ spf_guess = v=spf1 a/16 mx/16 ptr ?all
 would relax host matching rules to a broader network range.
 
 
+A lookup expansion is also available. It takes an email
+address as the key and an IP address as the database:
+
+  $lookup (username@domain} spf {ip.ip.ip.ip}}
+
+The lookup will return the same result strings as they can appear in
+$spf_result (pass,fail,softfail,neutral,none,err_perm,err_temp).
+Currently, only IPv4 addresses are supported.
+
+
+
 SRS (Sender Rewriting Scheme) Support
 --------------------------------------------------------------
 
@@ -469,6 +480,7 @@ in your Local/Makefile.
 
 DCC Support
 --------------------------------------------------------------
+Distributed Checksum Clearinghouse; http://www.rhyolite.com/dcc/
 
 *) Building exim
 
@@ -623,10 +635,10 @@ exim will send these forensic emails.  It's also advised that you
 configure a dmarc_forensic_sender because the default sender address
 construction might be inadequate.
 
-  control = dmarc_forensic_enable
+  control = dmarc_enable_forensic
 
 (AGAIN: You can choose not to send these forensic reports by simply
-not putting the dmarc_forensic_enable control line at any point in
+not putting the dmarc_enable_forensic control line at any point in
 your exim config.  If you don't tell it to send them, it will not
 send them.)
 
@@ -755,334 +767,7 @@ b. Configure, somewhere before the DATA ACL, the control option to
 
   deny    dmarc_status   = reject
           !authenticated = *
-          message        = Message from $domain_used_domain failed sender's DMARC policy, REJECT
-
-
-
-Event Actions
---------------------------------------------------------------
-
-(Renamed from TPDA, Transport post-delivery actions)
-
-An arbitrary per-transport string can be expanded upon various transport events.
-Additionally a main-section configuration option can be expanded on some
-per-message events.
-This feature may be used, for example, to write exim internal log information
-(not available otherwise) into a database.
-
-In order to use the feature, you must compile with
-
-EXPERIMENTAL_EVENT=yes
-
-in your Local/Makefile
-
-and define one or both of
-- the event_action option in the transport
-- the event_action main option
-to be expanded when the event fires.
-
-A new variable, $event_name, is set to the event type when the
-expansion is done.  The current list of events is:
-
- msg:complete		after  main	  per message
- msg:delivery		after  transport  per recipient
- msg:host:defer		after  transport  per attempt
- msg:fail:delivery	after  main	  per recipient
- msg:fail:internal	after  main	  per recipient
- tcp:connect		before transport  per connection
- tcp:close		after  transport  per connection
- tls:cert		before both	  per certificate in verification chain
- smtp:connect		after  transport  per connection
-
-The expansion is called for all event types, and should use the $event_name
-value to decide when to act.  The variable data is a colon-separated
-list, describing an event tree.
-
-There is an auxilary variable, $event_data, for which the
-content is event_dependent:
-
-	msg:delivery		smtp confirmation mssage
-	msg:host:defer		error string
-	tls:cert		verification chain depth
-	smtp:connect		smtp banner
-
-The msg:host:defer event populates one extra variable, $event_defer_errno.
-
-The following variables are likely to be useful depending on the event type:
-
-	router_name, transport_name
-	local_part, domain
-	host, host_address, host_port
-	tls_out_peercert
-	lookup_dnssec_authenticated, tls_out_dane
-	sending_ip_address, sending_port
-	message_exim_id, verify_mode
-
-
-An example might look like:
-
-event_action = ${if = {msg:delivery}{$event_name} \
-{${lookup pgsql {SELECT * FROM record_Delivery( \
-    '${quote_pgsql:$sender_address_domain}',\
-    '${quote_pgsql:${lc:$sender_address_local_part}}', \
-    '${quote_pgsql:$domain}', \
-    '${quote_pgsql:${lc:$local_part}}', \
-    '${quote_pgsql:$host_address}', \
-    '${quote_pgsql:${lc:$host}}', \
-    '${quote_pgsql:$message_exim_id}')}} \
-} {}}
-
-The string is expanded when each of the supported events occur
-and any side-effects of the expansion will happen.
-Note that for complex operations an ACL expansion can be used.
-
-
-The expansion of the event_action option should normally
-return an empty string.  Should it return anything else the
-following will be forced:
-
-	msg:delivery	(ignored)
-	msg:host:defer	(ignored)
-	msg:fail:delivery (ignored)
-	tcp:connect	do not connect
-	tcp:close	(ignored)
-	tls:cert	refuse verification
-	smtp:connect	close connection
-
-No other use is made of the result string.
-
-
-Known issues:
-- the tls:cert event is only called for the cert chain elements
-  received over the wire, with GnuTLS.  OpenSSL gives the entire
-  chain including thse loaded locally.
-
-
-Redis Lookup
---------------------------------------------------------------
-
-Redis is open source advanced key-value data store. This document
-does not explain the fundamentals, you should read and understand how
-it works by visiting the website at http://www.redis.io/.
-
-Redis lookup support is added via the hiredis library.  Visit:
-
-  https://github.com/redis/hiredis
-
-to obtain a copy, or find it in your operating systems package repository.
-If building from source, this description assumes that headers will be in
-/usr/local/include, and that the libraries are in /usr/local/lib.
-
-1. In order to build exim with Redis lookup support add
-
-EXPERIMENTAL_REDIS=yes
-
-to your Local/Makefile. (Re-)build/install exim. exim -d should show
-Experimental_Redis in the line "Support for:".
-
-EXPERIMENTAL_REDIS=yes
-LDFLAGS += -lhiredis
-# CFLAGS += -I/usr/local/include
-# LDFLAGS += -L/usr/local/lib
-
-The first line sets the feature to include the correct code, and
-the second line says to link the hiredis libraries into the
-exim binary.  The commented out lines should be uncommented if you
-built hiredis from source and installed in the default location.
-Adjust the paths if you installed them elsewhere, but you do not
-need to uncomment them if an rpm (or you) installed them in the
-package controlled locations (/usr/include and /usr/lib).
-
-
-2. Use the following global settings to configure Redis lookup support:
-
-Required:
-redis_servers       This option provides a list of Redis servers
-                    and associated connection data, to be used in
-                    conjunction with redis lookups. The option is
-                    only available if Exim is configured with Redis
-                    support.
-
-For example:
-
-redis_servers = 127.0.0.1/10/ - using database 10 with no password
-redis_servers = 127.0.0.1//password - to make use of the default database of 0 with a password
-redis_servers = 127.0.0.1// - for default database of 0 with no password
-
-3. Once you have the Redis servers defined you can then make use of the
-experimental Redis lookup by specifying ${lookup redis{}} in a lookup query.
-
-4. Example usage:
-
-(Host List)
-hostlist relay_from_ips = <\n ${lookup redis{SMEMBERS relay_from_ips}}
-
-Where relay_from_ips is a Redis set which contains entries such as "192.168.0.0/24" "10.0.0.0/8" and so on.
-The result set is returned as
-192.168.0.0/24
-10.0.0.0/8
-..
-.
-
-(Domain list)
-domainlist virtual_domains = ${lookup redis {HGET $domain domain}}
-
-Where $domain is a hash which includes the key 'domain' and the value '$domain'.
-
-(Adding or updating an existing key)
-set acl_c_spammer = ${if eq{${lookup redis{SPAMMER_SET}}}{OK}}
-
-Where SPAMMER_SET is a macro and it is defined as
-
-"SET SPAMMER <some_value>"
-
-(Getting a value from Redis)
-
-set acl_c_spam_host = ${lookup redis{GET...}}
-
-
-Proxy Protocol Support
---------------------------------------------------------------
-
-Exim now has Experimental "Proxy Protocol" support.  It was built on
-specifications from:
-http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt
-Above URL revised May 2014 to change version 2 spec:
-http://git.1wt.eu/web?p=haproxy.git;a=commitdiff;h=afb768340c9d7e50d8e
-
-The purpose of this function is so that an application load balancer,
-such as HAProxy, can sit in front of several Exim servers and Exim
-will log the IP that is connecting to the proxy server instead of
-the IP of the proxy server when it connects to Exim.  It resets the
-$sender_address_host and $sender_address_port to the IP:port of the
-connection to the proxy.  It also re-queries the DNS information for
-this new IP address so that the original sender's hostname and IP
-get logged in the Exim logfile.  There is no logging if a host passes or
-fails Proxy Protocol negotiation, but it can easily be determined and
-recorded in an ACL (example is below).
-
-1. To compile Exim with Proxy Protocol support, put this in
-Local/Makefile:
-
-EXPERIMENTAL_PROXY=yes
-
-2. Global configuration settings:
-
-proxy_required_hosts = HOSTLIST
-
-The proxy_required_hosts option will require any IP in that hostlist
-to use Proxy Protocol. The specification of Proxy Protocol is very
-strict, and if proxy negotiation fails, Exim will not allow any SMTP
-command other than QUIT. (See end of this section for an example.)
-The option is expanded when used, so it can be a hostlist as well as
-string of IP addresses.  Since it is expanded, specifying an alternate
-separator is supported for ease of use with IPv6 addresses.
-
-To log the IP of the proxy in the incoming logline, add:
-  log_selector = +proxy
-
-A default incoming logline (wrapped for appearance) will look like this:
-
-  2013-11-04 09:25:06 1VdNti-0001OY-1V <= me@example.net
-  H=mail.example.net [1.2.3.4] P=esmtp S=433
-
-With the log selector enabled, an email that was proxied through a
-Proxy Protocol server at 192.168.1.2 will look like this:
-
-  2013-11-04 09:25:06 1VdNti-0001OY-1V <= me@example.net
-  H=mail.example.net [1.2.3.4] P=esmtp PRX=192.168.1.2 S=433
-
-3. In the ACL's the following expansion variables are available.
-
-proxy_host_address   The (internal) src IP of the proxy server
-                     making the connection to the Exim server.
-proxy_host_port      The (internal) src port the proxy server is
-                     using to connect to the Exim server.
-proxy_target_address The dest (public) IP of the remote host to
-                     the proxy server.
-proxy_target_port    The dest port the remote host is using to
-                     connect to the proxy server.
-proxy_session        Boolean, yes/no, the connected host is required
-                     to use Proxy Protocol.
-
-There is no expansion for a failed proxy session, however you can detect
-it by checking if $proxy_session is true but $proxy_host is empty.  As
-an example, in my connect ACL, I have:
-
-  warn    condition      = ${if and{ {bool{$proxy_session}} \
-                                     {eq{$proxy_host_address}{}} } }
-          log_message    = Failed required proxy protocol negotiation \
-                           from $sender_host_name [$sender_host_address]
-
-  warn    condition      = ${if and{ {bool{$proxy_session}} \
-                                     {!eq{$proxy_host_address}{}} } }
-          # But don't log health probes from the proxy itself
-          condition      = ${if eq{$proxy_host_address}{$sender_host_address} \
-                                {false}{true}}
-          log_message    = Successfully proxied from $sender_host_name \
-                           [$sender_host_address] through proxy protocol \
-                           host $proxy_host_address
-
-  # Possibly more clear
-  warn logwrite = Remote Source Address: $sender_host_address:$sender_host_port
-       logwrite = Proxy Target Address: $proxy_target_address:$proxy_target_port
-       logwrite = Proxy Internal Address: $proxy_host_address:$proxy_host_port
-       logwrite = Internal Server Address: $received_ip_address:$received_port
-
-
-4. Recommended ACL additions:
-   - Since the real connections are all coming from your proxy, and the
-     per host connection tracking is done before Proxy Protocol is
-     evaluated, smtp_accept_max_per_host must be set high enough to
-     handle all of the parallel volume you expect per inbound proxy.
-   - With the smtp_accept_max_per_host set so high, you lose the ability
-     to protect your server from massive numbers of inbound connections
-     from one IP.  In order to prevent your server from being DOS'd, you
-     need to add a per connection ratelimit to your connect ACL.  I
-     suggest something like this:
-
-  # Set max number of connections per host
-  LIMIT   = 5
-  # Or do some kind of IP lookup in a flat file or database
-  # LIMIT = ${lookup{$sender_host_address}iplsearch{/etc/exim/proxy_limits}}
-
-  defer   message        = Too many connections from this IP right now
-          ratelimit      = LIMIT / 5s / per_conn / strict
-
-
-5. Runtime issues to be aware of:
-   - The proxy has 3 seconds (hard-coded in the source code) to send the
-     required Proxy Protocol header after it connects.  If it does not,
-     the response to any commands will be:
-     "503 Command refused, required Proxy negotiation failed"
-   - If the incoming connection is configured in Exim to be a Proxy
-     Protocol host, but the proxy is not sending the header, the banner
-     does not get sent until the timeout occurs.  If the sending host
-     sent any input (before the banner), this causes a standard Exim
-     synchronization error (i.e. trying to pipeline before PIPELINING
-     was advertised).
-   - This is not advised, but is mentioned for completeness if you have
-     a specific internal configuration that you want this:  If the Exim
-     server only has an internal IP address and no other machines in your
-     organization will connect to it to try to send email, you may
-     simply set the hostlist to "*", however, this will prevent local
-     mail programs from working because that would require mail from
-     localhost to use Proxy Protocol.  Again, not advised!
-
-6. Example of a refused connection because the Proxy Protocol header was
-not sent from a host configured to use Proxy Protocol.  In the example,
-the 3 second timeout occurred (when a Proxy Protocol banner should have
-been sent), the banner was displayed to the user, but all commands are
-rejected except for QUIT:
-
-# nc mail.example.net 25
-220-mail.example.net, ESMTP Exim 4.82+proxy, Mon, 04 Nov 2013 10:45:59
-220 -0800 RFC's enforced
-EHLO localhost
-503 Command refused, required Proxy negotiation failed
-QUIT
-221 mail.example.net closing connection
-
+          message        = Message from $dmarc_used_domain failed sender's DMARC policy, REJECT
 
 
 
@@ -1207,18 +892,23 @@ MX, A and TLSA records.
 
 A TLSA lookup will be done if either of the above options match
 and the host-lookup succeded using dnssec.
-If the TLSA lookup succeeds, a TLS connection will be required
-for the host.
+If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
+will be required for the host.
 
 (TODO: specify when fallback happens vs. when the host is not used)
 
-If dane is in use the following transport options are ignored:
+If DANE is requested and useable (see above) the following transport
+options are ignored:
   hosts_require_tls
   tls_verify_hosts
   tls_try_verify_hosts
   tls_verify_certificates
   tls_crl
   tls_verify_cert_hostnames
+
+If DANE is not usable, whether requested or not, and CA-anchored
+verification evaluation is wanted, the above variables should be set
+appropriately.
 
 Currently dnssec_request_domains must be active (need to think about that)
 and dnssec_require_domains is ignored.
@@ -1230,6 +920,51 @@ There is a new variable $tls_out_dane which will have "yes" if
 verification succeeded using DANE and "no" otherwise (only useful
 in combination with EXPERIMENTAL_EVENT), and a new variable
 $tls_out_tlsa_usage (detailed above).
+
+
+
+DSN extra information
+---------------------
+If compiled with EXPERIMENTAL_DSN_INFO extra information will be added
+to DSN fail messages ("bounces"), when available.  The intent is to aid
+tracing of specific failing messages, when presented with a "bounce"
+complaint and needing to search logs.
+
+
+The remote MTA IP address, with port number if nonstandard.
+Example:
+  Remote-MTA: X-ip; [127.0.0.1]:587
+Rationale:
+  Several addresses may correspond to the (already available)
+  dns name for the remote MTA.
+
+The remote MTA connect-time greeting.
+Example:
+  X-Remote-MTA-smtp-greeting: X-str; 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+Rationale:
+  This string sometimes presents the remote MTA's idea of its
+  own name, and sometimes identifies the MTA software.
+
+The remote MTA response to HELO or EHLO.
+Example:
+  X-Remote-MTA-helo-response: X-str; 250-the.local.host.name Hello localhost [127.0.0.1]
+Limitations:
+  Only the first line of a multiline response is recorded.
+Rationale:
+  This string sometimes presents the remote MTA's view of
+  the peer IP connecting to it.
+
+The reporting MTA detailed diagnostic.
+Example:
+  X-Exim-Diagnostic: X-str; SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
+Rationale:
+  This string somtimes give extra information over the
+  existing (already available) Diagnostic-Code field.
+
+
+Note that non-RFC-documented field names and data types are used.
+
+
 
 
 --------------------------------------------------------------

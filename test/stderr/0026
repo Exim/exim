@@ -16,11 +16,16 @@
 >>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
 >>>                 = no
 >>> deny: condition test failed in ACL "acl_data"
+>>> processing "warn"
+>>> check logwrite = \$h_from: '$h_from:'
+>>>                = $h_from: '@'
+LOG: 10HmbI-0005vi-00 $h_from: '@'
+>>> warn: condition test succeeded in ACL "acl_data"
 >>> processing "require"
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "acl_data"
 >>> end of ACL "acl_data": not OK
-LOG: 10HmbH-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
+LOG: 10HmbI-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -40,4 +45,4 @@ LOG: 10HmbH-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing o
 >>>                 = yes
 >>> deny: condition test succeeded in ACL "acl_data"
 >>> end of ACL "acl_data": DENY
-LOG: 10HmbI-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: body contains trigger
+LOG: 10HmbJ-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: body contains trigger

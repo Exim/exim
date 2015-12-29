@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2014 */
+/* Copyright (c) Jeremy Harris 2014 - 2015 */
 
 /* This file provides TLS/SSL support for Exim using the GnuTLS library,
 one of the available supported implementations.  This file is #included into
@@ -27,7 +27,7 @@ tls_export_cert(uschar * buf, size_t buflen, void * cert)
 size_t sz = buflen;
 void * reset_point = store_get(0);
 int fail;
-uschar * cp;
+const uschar * cp;
 
 if ((fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
     GNUTLS_X509_FMT_PEM, buf, &sz)))
@@ -51,10 +51,14 @@ tls_import_cert(const uschar * buf, void ** cert)
 {
 void * reset_point = store_get(0);
 gnutls_datum_t datum;
-gnutls_x509_crt_t crt;
+gnutls_x509_crt_t crt = *(gnutls_x509_crt_t *)cert;
 int fail = 0;
 
-gnutls_global_init();
+if (crt)
+  gnutls_x509_crt_deinit(crt);
+else
+  gnutls_global_init();
+
 gnutls_x509_crt_init(&crt);
 
 datum.data = string_unprinting(US buf);
@@ -73,10 +77,15 @@ return fail;
 }
 
 void
-tls_free_cert(void * cert)
+tls_free_cert(void ** cert)
 {
-gnutls_x509_crt_deinit((gnutls_x509_crt_t) cert);
-gnutls_global_deinit();
+gnutls_x509_crt_t crt = *(gnutls_x509_crt_t *)cert;
+if (crt)
+  {
+  gnutls_x509_crt_deinit(crt);
+  gnutls_global_deinit();
+  *cert = NULL;
+  }
 }
 
 /*****************************************************
@@ -182,7 +191,7 @@ return string_copy(sp);
 uschar *
 tls_cert_signature(void * cert, uschar * mod)
 {
-uschar * cp1;
+uschar * cp1 = NULL;
 uschar * cp2;
 uschar * cp3;
 size_t len = 0;
@@ -319,11 +328,11 @@ for(index = 0;; index++)
   switch (ret)
     {
     case GNUTLS_SAN_DNSNAME:    tag = US"DNS";  break;
-    case GNUTLS_SAN_URI:        tag = US"URI";  break; 
+    case GNUTLS_SAN_URI:        tag = US"URI";  break;
     case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
     default: continue;        /* ignore unrecognised types */
     }
-  list = string_append_listele(list, sep, 
+  list = string_append_listele(list, sep,
           match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 /*NOTREACHED*/
@@ -359,7 +368,7 @@ for(index = 0;; index++)
 
 #else
 
-expand_string_message = 
+expand_string_message =
   string_sprintf("%s: OCSP support with GnuTLS requires version 3.0.0\n",
     __FUNCTION__);
 return NULL;

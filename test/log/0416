@@ -3,15 +3,15 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for x@y
 1999-03-02 09:44:33 10HmaX-0005vi-00 => blackhole (non-SMTP ACL discarded recipients)
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 U=CALLER F=<discard@x.y> rejected RCPT <a@b>: discarded by MAIL ACL: discard message 2
-1999-03-02 09:44:33 U=CALLER F=<discard@x.y> rejected RCPT <discard@p.q>: discarded by MAIL ACL: discard message 2
+1999-03-02 09:44:33 U=CALLER F=<discard@x.y> RCPT <a@b>: discarded by MAIL ACL: discard message 2
+1999-03-02 09:44:33 U=CALLER F=<discard@x.y> RCPT <discard@p.q>: discarded by MAIL ACL: discard message 2
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => blackhole (MAIL ACL discarded recipients)
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 U=CALLER F=<ok@x.y> rejected RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1
-1999-03-02 09:44:33 U=CALLER F=<ok@x.y> rejected RCPT <nested_discard@p.q>: discarded by RCPT ACL
+1999-03-02 09:44:33 U=CALLER F=<ok@x.y> RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1
+1999-03-02 09:44:33 U=CALLER F=<ok@x.y> RCPT <nested_discard@p.q>: discarded by RCPT ACL
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local-smtp S=sss for a@b
-1999-03-02 09:44:33 U=CALLER F=<ok@x.y> rejected RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1
+1999-03-02 09:44:33 U=CALLER F=<ok@x.y> RCPT <discard@p.q>: discarded by RCPT ACL: discard message 1
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

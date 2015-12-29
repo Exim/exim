@@ -40,9 +40,11 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;userx@test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;abcd@test.ex
 Status: 5.0.0
+
 Action: failed
 Final-Recipient: rfc822;usery@test.ex
 Status: 5.0.0

@@ -22,7 +22,7 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   userx@domain1
-  host 127.0.0.1 [127.0.0.1]
+  host localhost4.test.ex [127.0.0.1]
     SMTP error from remote mail server after initial connection:
     550 Go away
 
@@ -34,7 +34,7 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;userx@domain1
 Status: 5.0.0
-Remote-MTA: dns; 127.0.0.1
+Remote-MTA: dns; localhost4.test.ex
 Diagnostic-Code: smtp; 550 Go away
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -78,11 +78,11 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   usery@domain2
-  host 127.0.0.1 [127.0.0.1]
+  host localhost4.test.ex [127.0.0.1]
     SMTP error from remote mail server after HELO the.local.host.name:
     550 Go away
   userx@domain1
-  host 127.0.0.1 [127.0.0.1]
+  host localhost4.test.ex [127.0.0.1]
     SMTP error from remote mail server after HELO the.local.host.name:
     550 Go away
 
@@ -94,12 +94,13 @@ Reporting-MTA: dns; the.local.host.name
 Action: failed
 Final-Recipient: rfc822;userx@domain1
 Status: 5.0.0
-Remote-MTA: dns; 127.0.0.1
+Remote-MTA: dns; localhost4.test.ex
 Diagnostic-Code: smtp; 550 Go away
+
 Action: failed
 Final-Recipient: rfc822;usery@domain2
 Status: 5.0.0
-Remote-MTA: dns; 127.0.0.1
+Remote-MTA: dns; localhost4.test.ex
 Diagnostic-Code: smtp; 550 Go away
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

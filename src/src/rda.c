@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code for extracting addresses from a forwarding list
@@ -444,7 +444,7 @@ Returns:     -1 on error, else 0
 */
 
 static int
-rda_write_string(int fd, uschar *s)
+rda_write_string(int fd, const uschar *s)
 {
 int len = (s == NULL)? 0 : Ustrlen(s) + 1;
 return (  write(fd, &len, sizeof(int)) != sizeof(int)
@@ -635,7 +635,7 @@ if ((pid = fork()) == 0)
     {
     DEBUG(D_rewrite) debug_printf("turned off address rewrite logging (not "
       "root or exim in this process)\n");
-    log_write_selector &= ~L_address_rewrite;
+    BIT_CLEAR(log_selector, log_selector_size, Li_address_rewrite);
     }
 
   /* Now do the business */
@@ -723,7 +723,7 @@ if ((pid = fork()) == 0)
 	    != sizeof(addr->mode)
          || write(fd, &(addr->flags), sizeof(addr->flags))
 	    != sizeof(addr->flags)
-         || rda_write_string(fd, addr->p.errors_address) != 0
+         || rda_write_string(fd, addr->prop.errors_address) != 0
 	 )
 	goto bad;
 
@@ -892,7 +892,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     if (read(fd, &(addr->mode), sizeof(addr->mode)) != sizeof(addr->mode) ||
         read(fd, &(addr->flags), sizeof(addr->flags)) != sizeof(addr->flags) ||
-        !rda_read_string(fd, &(addr->p.errors_address))) goto DISASTER;
+        !rda_read_string(fd, &(addr->prop.errors_address))) goto DISASTER;
 
     /* Next comes a possible setting for $thisaddress and any numerical
     variables for pipe expansion, terminated by a NULL string. The maximum

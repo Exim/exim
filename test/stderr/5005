@@ -129,8 +129,8 @@ using regex for maildir directory selection: ^(?:cur|new|\..*)$
 looking for maildirsize in TESTSUITE/test-mail/nofile
 TESTSUITE/test-mail/nofile/maildirsize does not exist: recalculating
 MUNGED: the check_dir_size lines have been sorted to ensure consistency
-check_dir_size: dir=TESTSUITE/test-mail/nofile/cur sum=0 count=0
-check_dir_size: dir=TESTSUITE/test-mail/nofile/new sum=0 count=0
+check_dir_size: dir=TESTSUITE/test-mail/nofile/cur sum=0 count=dd
+check_dir_size: dir=TESTSUITE/test-mail/nofile/new sum=0 count=dd
 skipping TESTSUITE/test-mail/nofile/tmp: dir_regex does not match
 maildir_compute_size: path=TESTSUITE/test-mail/nofile
   sum=0 filecount=0 timestamp=ddddddd
@@ -173,7 +173,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: nofile@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00
@@ -312,8 +312,8 @@ reading quota parameters from maildirsize data
 cached quota is out of date: recalculating
   quota=500 cached_quota=50 filecount_quota=0 cached_quota_filecount=2
 MUNGED: the check_dir_size lines have been sorted to ensure consistency
-check_dir_size: dir=TESTSUITE/test-mail/userx/cur sum=0 count=0
-check_dir_size: dir=TESTSUITE/test-mail/userx/new sum=0 count=0
+check_dir_size: dir=TESTSUITE/test-mail/userx/cur sum=0 count=dd
+check_dir_size: dir=TESTSUITE/test-mail/userx/new sum=0 count=dd
 skipping TESTSUITE/test-mail/userx/maildirsize: dir_regex does not match
 skipping TESTSUITE/test-mail/userx/tmp: dir_regex does not match
 maildir_compute_size: path=TESTSUITE/test-mail/userx
@@ -357,7 +357,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: userx@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaY-0005vi-00

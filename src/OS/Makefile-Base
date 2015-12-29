@@ -7,6 +7,7 @@
 
 SHELL      = $(MAKE_SHELL)
 SCRIPTS    = ../scripts
+O          = ../OS
 EDITME     = ../Local/Makefile
 EXIMON_EDITME = ../Local/eximon.conf
 
@@ -32,10 +33,10 @@ FE       = $(FULLECHO)
 # up-to-date. Then the os-specific source files and the C configuration file
 # are set up, and finally it goes to the main Exim target.
 
-all:       allexim
-config:    $(EDITME) checklocalmake Makefile os.h os.c config.h version.h
+all:       utils exim
+config:    $(EDITME) checklocalmake Makefile os.c config.h version.h
 
-checklocalmake:
+checklocalmake: 
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
 	  $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(ARCHTYPE) $(EDITME) || \
 	  $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE)-$(ARCHTYPE) $(EDITME); \
@@ -76,12 +77,29 @@ Makefile: ../OS/Makefile-Base ../OS/Makefile-Default \
 
 # Build (link) the os.h file
 
-os.h:
+os.h:	$(SCRIPTS)/Configure-os.h \
+	$(O)/os.h-AIX		$(O)/os.h-BSDI	$(O)/os.h-cygwin \
+	$(O)/os.h-Darwin	$(O)/os.h-DGUX	$(O)/os.h-DragonFly \
+	$(O)/os.h-FreeBSD	$(O)/os.h-GNU	$(O)/os.h-GNUkFreeBSD \
+	$(O)/os.h-GNUkNetBSD	$(O)/os.h-HI-OSF \
+	$(O)/os.h-HI-UX		$(O)/os.h-HP-UX	$(O)/os.h-HP-UX-9 \
+	$(O)/os.h-IRIX		$(O)/os.h-IRIX6	$(O)/os.h-IRIX632 \
+	$(O)/os.h-IRIX65	$(O)/os.h-Linux	$(O)/os.h-mips \
+	$(O)/os.h-NetBSD	$(O)/os.h-NetBSD-a.out \
+	$(O)/os.h-OpenBSD	$(O)/os.h-OpenUNIX	$(O)/os.h-OSF1 \
+	$(O)/os.h-QNX		$(O)/os.h-SCO		$(O)/os.h-SCO_SV \
+	$(O)/os.h-SunOS4	$(O)/os.h-SunOS5	$(O)/os.h-SunOS5-hal \
+	$(O)/os.h-ULTRIX	$(O)/os.h-UNIX_SV \
+	$(O)/os.h-Unixware7	$(O)/os.h-USG
 	$(SHELL) $(SCRIPTS)/Configure-os.h
 
 # Build the os.c file
 
-os.c:   ../src/os.c
+os.c:   ../src/os.c \
+	$(SCRIPTS)/Configure-os.c \
+	$(O)/os.c-cygwin	$(O)/os.c-GNU	$(O)/os.c-HI-OSF \
+	$(O)/os.c-IRIX		$(O)/os.c-IRIX6	$(O)/os.c-IRIX632 \
+	$(O)/os.c-IRIX65	$(O)/os.c-Linux	$(O)/os.c-OSF1
 	$(SHELL) $(SCRIPTS)/Configure-os.c
 
 # Build the config.h file.
@@ -95,19 +113,16 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 # therefore always be run, even if the files exist. This shouldn't in fact be a
 # problem, but it does no harm. Other make programs will just ignore this.
 
-.PHONY: all config allexim buildauths buildlookups buildpdkim buildrouters \
+.PHONY: all config utils \
+	buildauths buildlookups buildpdkim buildrouters \
         buildtransports checklocalmake clean
 
 
-# This is the real default target for all the various exim binaries and
-# scripts, once the configuring stuff is done.
-
-allexim: $(EXIM_MONITOR) exicyclog exinext exiwhat \
+utils: $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
         transport-filter.pl convert4r3 convert4r4 \
         exim_checkaccess \
-        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock \
-        exim
+        exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock
 
 
 # Targets for special-purpose configuration header builders
@@ -298,7 +313,14 @@ convert4r4: Makefile ../src/convert4r4.src
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_WITH_OLD_DEMIME = demime.o
-OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dcc.o dmarc.o dane.o
+OBJ_EXPERIMENTAL = bmi_spam.o \
+				dane.o \
+				dcc.o \
+				dmarc.o \
+				imap_utf7.o \
+				spf.o \
+				srs.o \
+				utf8.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
@@ -396,7 +418,7 @@ exim_dbmbuild: exim_dbmbuild.o
 
 # The utility for locking a mailbox while messing around with it
 
-exim_lock: exim_lock.c
+exim_lock: exim_lock.c os.h
 	@echo "$(CC) exim_lock.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) exim_lock.c
 	@echo "$(LNCC) -o exim_lock"
@@ -448,8 +470,28 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
 # in one. This list is overkill, but it doesn't really take much time to
 # rebuild Exim on a modern computer.
 
-HDRS  =    config.h    dbfunctions.h    dbstuff.h    exim.h    functions.h    globals.h    local_scan.h    macros.h    mytypes.h    structs.h
-PHDRS = ../config.h ../dbfunctions.h ../dbstuff.h ../exim.h ../functions.h ../globals.h ../local_scan.h ../macros.h ../mytypes.h ../structs.h
+HDRS  =	config.h \
+	dbfunctions.h \
+	dbstuff.h \
+	exim.h \
+	functions.h \
+	globals.h \
+	local_scan.h \
+	macros.h \
+	mytypes.h \
+	structs.h \
+	os.h
+PHDRS = ../config.h \
+	../dbfunctions.h \
+	../dbstuff.h \
+	../exim.h \
+	../functions.h \
+	../globals.h \
+	../local_scan.h \
+	../macros.h \
+	../mytypes.h \
+	../structs.h \
+	../os.h
 
 .SUFFIXES: .o .c
 .c.o:;  @echo "$(CC) $*.c"
@@ -578,12 +620,14 @@ spool_out.o:     $(HDRS) spool_out.c
 std-crypto.o:    $(HDRS) std-crypto.c
 store.o:         $(HDRS) store.c
 string.o:        $(HDRS) string.c
-tls.o:           $(HDRS) tls.c tls-gnu.c tlscert-gnu.c tls-openssl.c tlscert-openssl.c
+tls.o:           $(HDRS) tls.c setenv.c \
+		 tls-gnu.c tlscert-gnu.c \
+		 tls-openssl.c tlscert-openssl.c
 tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) verify.c
-dkim.o:          $(HDRS) dkim.c
+dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
@@ -596,17 +640,19 @@ spool_mbox.o:    $(HDRS) spool_mbox.c
 
 # Dependencies for WITH_OLD_DEMIME modules
 
-demime.o:        $(HDRS) demime.c
+demime.o:       $(HDRS) demime.c
 
 
 # Dependencies for EXPERIMENTAL_* modules
 
-bmi_spam.o:      $(HDRS) bmi_spam.c
-dane.o:		 $(HDRS) dane.c dane-gnu.c dane-openssl.c
-dcc.o:           $(HDRS) dcc.h dcc.c
-dmarc.o:         $(HDRS) dmarc.h dmarc.c
-spf.o:           $(HDRS) spf.h spf.c
-srs.o:           $(HDRS) srs.h srs.c
+bmi_spam.o:	$(HDRS) bmi_spam.c
+dane.o:		$(HDRS) dane.c dane-gnu.c dane-openssl.c
+dcc.o:		$(HDRS) dcc.h dcc.c
+dmarc.o:	$(HDRS) pdkim/pdkim.h dmarc.h dmarc.c
+imap_utf7.o:	$(HDRS) imap_utf7.c
+spf.o:		$(HDRS) spf.h spf.c
+srs.o:		$(HDRS) srs.h srs.c
+utf8.o:		$(HDRS) utf8.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles
@@ -717,11 +763,11 @@ sa-os.o:         $(HDRS) os.c
 # These are the test targets themselves
 
 test_dbfn:   config.h dbfn.c dummies.o sa-globals.o sa-os.o store.o \
-	       string.o tod.o version.o
+	       string.o tod.o version.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE dbfn.c
 	$(LNCC) -o test_dbfn $(LFLAGS) dbfn.o \
 	  dummies.o sa-globals.o sa-os.o store.o string.o \
-	  tod.o version.o $(LIBS) $(DBMLIB)
+	  tod.o version.o utf8.o $(LIBS) $(DBMLIB) $(LDFLAGS)
 	rm -f dbfn.o
 
 test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o os.o \
@@ -735,23 +781,24 @@ test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o os.o \
 	  tod.o tree.o $(LIBS) $(LIBRESOLV)
 	rm -f child.o dummies.o host.o dns.o
 
-test_os:     os.h os.c dummies.o sa-globals.o store.o string.o tod.o
+test_os:     os.h os.c dummies.o sa-globals.o store.o string.o tod.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE os.c
 	$(LNCC) -o test_os $(LFLAGS) os.o dummies.o \
-	  sa-globals.o store.o string.o tod.o $(LIBS)
+	  sa-globals.o store.o string.o tod.o utf8.o $(LIBS) $(LDFLAGS)
 	rm -f os.o
 
 test_parse:  config.h parse.c dummies.o sa-globals.o \
-	     store.o string.o tod.o version.o
+	     store.o string.o tod.o version.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE parse.c
 	$(LNCC) -o test_parse $(LFLAGS) parse.o \
-	  dummies.o sa-globals.o store.o string.o tod.o version.o
+	  dummies.o sa-globals.o store.o string.o tod.o version.o \
+	  utf8.o $(LDFLAGS)
 	rm -f parse.o
 
-test_string: config.h string.c dummies.o sa-globals.o store.o tod.o
+test_string: config.h string.c dummies.o sa-globals.o store.o tod.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE string.c
 	$(LNCC) -o test_string $(LFLAGS) -DSTAND_ALONE string.o \
-	  dummies.o sa-globals.o store.o tod.o $(LIBS)
+	  dummies.o sa-globals.o store.o tod.o utf8.o $(LIBS) $(LDFLAGS)
 	rm -f string.o
 
 # End

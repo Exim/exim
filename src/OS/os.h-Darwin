@@ -42,4 +42,7 @@ updating Exim to use the newer interface. */
 #define OFF_T_FMT "%lld"
 #define LONGLONG_T long int
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

@@ -1,3 +1,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= jc@rome H=forum.rome [1.1.1.1] U=jc44bc P=latin S=sss for userx@test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= jc@rome R=10HmaZ-0005vi-00 U=jc44bc P=local S=sss for userx@test.x
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.x> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

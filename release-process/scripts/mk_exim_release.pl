@@ -117,7 +117,7 @@ sub make_version_script {
     }
 
     my $srcdir    = File::Spec->catdir( $context->{release_tree}, 'src', 'src' );
-    chdir $srcdir or die "chdir $srcdir: $\n";
+    chdir $srcdir or die "chdir $srcdir: $!\n";
 
     if ( -f "version.sh" ) {
         print( "WARNING: version.sh already exists - leaving it in place\n" );
@@ -149,9 +149,9 @@ sub build_html_documentation {
     my @cmd = (
         $genpath,   '--spec',    $spec,                '--filter',
         $filter,    '--latest',  $context->{trelease}, '--tmpl',
-        $templates, '--docroot', $dir,                 '--localstatic',
-        (($verbose||$debug) ? '--verbose' : '')
+        $templates, '--docroot', $dir,                 '--localstatic'
     );
+    push @cmd, '--verbose' if $verbose or $debug;
 
     print "Executing ", join( ' ', @cmd ), "\n";
     system(@cmd);
@@ -193,7 +193,7 @@ sub build_documentation {
 
     my $docdir = File::Spec->catdir( $context->{release_tree}, 'doc', 'doc-docbook' );
     # documentation building gets the truncated release, without RC
-    system("cd '$docdir' && ./OS-Fixups && make EXIM_VER=$context->{trelease} everything") == 0
+    system("cd '$docdir' && ./OS-Fixups && $context->{make_cmd} EXIM_VER=$context->{trelease} everything") == 0
       || croak "Doc build failed";
 
     copy_docbook_files($context);
@@ -223,7 +223,11 @@ sub move_text_docs_into_pkg {
         next
           if ( ( $fn eq 'ABOUT' )
             || ( $fn eq 'ChangeLog.0' )
-            || ( $fn eq 'test-harness.txt' ) );
+            || ( $fn eq 'test-harness.txt' )
+            # Debian issue re licensing of RFCs
+            || ( $fn =~ /^draft-ietf-.*/ )
+            || ( $fn =~ /^rfc.*/ )
+             );
         move( $file, File::Spec->catfile( $new_docdir, $fn ) );
     }
 }
@@ -293,6 +297,7 @@ sub do_cleanup {
     my $context = shift;
 
     print "Cleaning up\n" if ($verbose);
+    chdir( $context->{directory} ) || die;
     rmtree( $context->{release_tree}, { verbose => $debug } );
     rmtree( $context->{docbook},      { verbose => $debug } );
     rmtree( $context->{pkgdirs},      { verbose => $debug } );
@@ -359,6 +364,7 @@ sub create_tar_files {
         tmp_dir     => File::Temp->newdir(),
         webgen_base => "$FindBin::Bin/../../../exim-website",
         tar_cmd     => 'tar',
+        make_cmd    => 'make',
         compressors => {
                 gzip    => 1,
                 bzip2   => 1,
@@ -373,7 +379,8 @@ sub create_tar_files {
         GetOptions(
             'directory=s'   => \$context->{directory},
             'webgen_base=s' => \$context->{webgen_base},
-            'tar'           => \$context->{tar_cmd},
+            'tar=s'         => \$context->{tar_cmd},
+            'make=s'        => \$context->{make_cmd},
             'lzip!'         => \$context->{compressors}{lzip},
             'verbose!'      => \$verbose,
             'debug!'        => \$debug,
@@ -421,6 +428,7 @@ mk_exim_release.pl [options] version
    --help              display this help and exits
    --man               displays man page
    --tar=cmd           command to use for tar
+   --make=cmd          command to use for make
    --directory=dir     dir to package
    --no-lzip           do not create .tar.lz files
    --delete            Delete packaging directory at start
@@ -439,6 +447,11 @@ to be output.
 Use to override the path to the tar command; without this, will search for
 gtar, and if not found use tar.  Need GNU tar for lzip, unless --no-lzip is
 used.
+
+=item B<--make>
+
+Use to override the path/name of the make command.
+Useful sometimes to force gmake.
 
 =item B<--lzip>
 

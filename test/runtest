@@ -14,11 +14,13 @@
 ###############################################################################
 
 #use strict;
-require Cwd;
 use Errno;
 use FileHandle;
 use Socket;
 use Time::Local;
+use Cwd;
+use File::Basename;
+use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ('Smart::Comments' => '####');
 
 
 # Start by initializing some global variables
@@ -43,6 +45,7 @@ $more = "less -XF";
 $optargs = "";
 $save_output = 0;
 $server_opts = "";
+$flavour = 'FOO';
 
 $have_ipv4 = 1;
 $have_ipv6 = 1;
@@ -80,6 +83,10 @@ $parm_port_d4 = 1228;        # Additional for daemon
 # Manually set locale
 $ENV{'LC_ALL'} = 'C';
 
+# In some environments USER does not exists, but we
+# need it for some test(s)
+$ENV{USER} = getpwuid($>)
+  if not exists $ENV{USER};
 
 
 ###############################################################################
@@ -320,6 +327,8 @@ my($extra) = $_[1];
 my($yield) = 0;
 my(@saved) = ();
 
+local $_;
+
 open(IN, "$file") || tests_exit(-1, "Failed to open $file: $!");
 
 my($is_log) = $file =~ /log/;
@@ -413,6 +422,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # Random local part in callout cache testing
   s/myhost.test.ex-\d+-testing/myhost.test.ex-dddddddd-testing/;
+  s/the.local.host.name-\d+-testing/the.local.host.name-dddddddd-testing/;
 
   # File descriptor numbers may vary
   s/^writing data block fd=\d+/writing data block fd=dddd/;
@@ -491,6 +501,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/Exim\sstatistics\sfrom\s\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\sto\s
     \d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Exim statistics from <time> to <time>/x;
 
+  # Treat ECONNRESET the same as ECONNREFUSED.  At least some systems give
+  # us the former on a new connection.
+  s/(could not connect to .*: Connection) reset by peer$/$1 refused/;
 
   # ======== TLS certificate algorithms ========
   # Test machines might have various different TLS library versions supporting
@@ -700,6 +713,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   # ======== Other error numbers ========
   s/errno=\d+/errno=dd/g;
 
+  # ======== System Error Messages ======
+  # depending on the underlaying file system the error message seems to differ
+  s/(?: is not a regular file)|(?: has too many links \(\d+\))/ not a regular file or too many links/;
 
   # ======== Output from ls ========
   # Different operating systems use different spacing on long output
@@ -728,8 +744,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/this message = \d+\b/this message = sss/;
   s/Size of headers = \d+/Size of headers = sss/;
   s/sum=(?!0)\d+/sum=dddd/;
-  s/(?<=sum=dddd )count=(?!0)\d+\b/count=dd/;
-  s/(?<=sum=0 )count=(?!0)\d+\b/count=dd/;
+  s/(?<=sum=dddd )count=\d+\b/count=dd/;
+  s/(?<=sum=0 )count=\d+\b/count=dd/;
   s/,S is \d+\b/,S is ddddd/;
   s/\+0100,\d+;/+0100,ddd;/;
   s/\(\d+ bytes written\)/(ddd bytes written)/;
@@ -755,6 +771,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # different wording in the error messages, so we cannot compare them.
 
   s/(TLS error on connection (?:from .* )?\(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
+  next if /SSL verify error: depth=0 error=certificate not trusted/;
 
   # ======== Maildir things ========
   # timestamp output in maildir processing
@@ -841,7 +858,11 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^SSL info: unknown state/;
     next if /^SSL info: SSLv2\/v3 write client hello A/;
     next if /^SSL info: SSLv3 read server key exchange A/;
+    next if /SSL verify error: depth=0 error=certificate not trusted/;
+    s/SSL3_READ_BYTES/ssl3_read_bytes/;
 
+    # gnutls version variances
+    next if /^Error in the pull function./;
     }
 
   # ======== stderr ========
@@ -859,7 +880,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # IP address lookups use gethostbyname() when IPv6 is not supported,
     # and gethostbyname2() or getipnodebyname() when it is.
 
-    s/\bgethostbyname2?|\bgetipnodebyname/get[host|ipnode]byname[2]/;
+    s/\b(gethostbyname2?|\bgetipnodebyname)(\(af=inet\))?/get[host|ipnode]byname[2]/;
 
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;
@@ -937,7 +958,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # are unset, because tls ain't always there.
 
     next if /in\s(?:tls_advertise_hosts\?|hosts_require_tls\?)
-                \sno\s\(option\sunset\)/x;
+                \sno\s\((option\sunset|end\sof\slist)\)/x;
 
     # Skip auxiliary group lists because they will vary.
 
@@ -1003,10 +1024,19 @@ RESET_AFTER_EXTRA_LINE_READ:
         @saved = ();
         }
 
+    # remote port numbers vary
+    s/(Connection request from 127.0.0.1 port) \d{1,5}/$1 sssss/;
+
     # Skip hosts_require_dane checks when the options
     # are unset, because dane ain't always there.
 
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
+
+    # SUPPORT_PROXY
+    next if /host in hosts_proxy\?/;
+
+    # Experimental_International
+    next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
 
       # Skip some lines that Exim puts out at the start of debugging output
       # because they will be different in different binaries.
@@ -1024,6 +1054,8 @@ RESET_AFTER_EXTRA_LINE_READ:
                 /^Fixed never_users:/ ||
                 /^Size of off_t:/
                 );
+
+
       }
 
     next;
@@ -1056,7 +1088,7 @@ return $yield;
 # Arguments: [0] the prompt string
 #            [1] if there is a U in the prompt and $force_update is true
 #            [2] if there is a C in the prompt and $force_continue is true
-# Returns:   nothing (it sets $_)
+# Returns:   returns the answer
 
 sub interact{
 print $_[0];
@@ -1119,7 +1151,13 @@ my($rf,$rsf,$mf,$sf,$sortfile,$extra) = @_;
 # If there is no saved file, the raw files must either not exist, or be
 # empty. The test ! -s is TRUE if the file does not exist or is empty.
 
-if (! -e $sf)
+# we check if there is a flavour specific file, but we remember
+# the original file name as "generic"
+$sf_generic = $sf;
+$sf_flavour = "$sf_generic.$flavour";
+$sf_current = -e $sf_flavour ? $sf_flavour : $sf_generic;
+
+if (! -e $sf_current)
   {
   return 0 if (! -s $rf && (! defined $rsf || ! -s $rsf));
 
@@ -1159,6 +1197,8 @@ if (! -e $sf)
     }
   }
 
+#### $_
+
 # Control reaches here if either (a) there is a saved file ($sf), or (b) there
 # was a request to create a saved file. First, create the munged file from any
 # data that does exist.
@@ -1186,7 +1226,7 @@ close(MUNGED);
 # a result of parallel deliveries. We load the munged file and sort sequences
 # of delivery lines.
 
-if (-e $sf)
+if (-e $sf_current)
   {
   # Deal with truncated text items
 
@@ -1197,7 +1237,7 @@ if (-e $sf)
     open(MUNGED, "$mf") || tests_exit(-1, "Failed to open $mf: $!");
     @munged = <MUNGED>;
     close(MUNGED);
-    open(SAVED, "$sf") || tests_exit(-1, "Failed to open $sf: $!");
+    open(SAVED, $sf_current) || tests_exit(-1, "Failed to open $sf_current: $!");
     @saved = <SAVED>;
     close(SAVED);
 
@@ -1259,31 +1299,46 @@ if (-e $sf)
 
   # Do the comparison
 
-  return 0 if (system("$cf '$mf' '$sf' >test-cf") == 0);
+  return 0 if (system("$cf '$mf' '$sf_current' >test-cf") == 0);
 
   # Handle comparison failure
 
-  print "** Comparison of $mf with $sf failed";
+  print "** Comparison of $mf with $sf_current failed";
   system("$more test-cf");
 
   print "\n";
   for (;;)
     {
-    interact("Continue, Retry, Update & retry, Quit? [Q] ", $force_update, $force_continue);
+    interact("Continue, Retry, Update current"
+	. ($sf_current ne $sf_flavour  ? "/Save for flavour '$flavour'" : "")
+	. " & retry, Quit? [Q] ", $force_update, $force_continue);
     tests_exit(1) if /^q?$/i;
-    log_failure($log_failed_filename, $testno, $sf) if (/^c$/i && $force_continue);
+    log_failure($log_failed_filename, $testno, $sf_current) if (/^c$/i && $force_continue);
     return 0 if /^c$/i;
     return 1 if /^r$/i;
-    last if (/^u$/i);
+    last if (/^[us]$/i);
     }
   }
 
 # Update or delete the saved file, and give the appropriate return code.
 
 if (-s $mf)
-  { tests_exit(-1, "Failed to cp $mf $sf") if system("cp '$mf' '$sf'") != 0; }
+  {
+	my $sf = /^u/i ? $sf_current : $sf_flavour;
+		tests_exit(-1, "Failed to cp $mf $sf") if system("cp '$mf' '$sf'") != 0;
+  }
 else
-  { tests_exit(-1, "Failed to unlink $sf") if !unlink($sf); }
+  {
+	# if we deal with a flavour file, we can't delete it, because next time the generic
+	# file would be used again
+	if ($sf_current eq $sf_flavour) {
+		open(FOO, ">$sf_current");
+		close(FOO);
+	}
+	else {
+		tests_exit(-1, "Failed to unlink $sf_current") if !unlink($sf_current);
+	}
+  }
 
 return 1;
 }
@@ -1316,11 +1371,30 @@ $munges =
     'optional_ocsp' =>
     { 'stderr' => '/127.0.0.1 in hosts_requ(ire|est)_ocsp/' },
 
-    'no_tpt_filter_epipe' =>
-    { 'stderr' => '/^writing error 32: Broken pipe$/' },
-
     'optional_cert_hostnames' =>
     { 'stderr' => '/in tls_verify_cert_hostnames\? no/' },
+
+    'loopback' =>
+    { 'stdout' => 's/[[](127\.0\.0\.1|::1)]/[IP_LOOPBACK_ADDR]/' },
+
+    'scanfile_size' =>
+    { 'stdout' => 's/(Content-length:) \d\d\d/$1 ddd/' },
+
+    'delay_1500' =>
+    { 'stderr' => 's/(1[5-9]|23\d)\d\d msec/ssss msec/' },
+
+    'tls_anycipher' =>
+    { 'mainlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /' },
+
+    'debug_pid' =>
+    { 'stderr' => 's/(^\s{0,4}|(?<=Process )|(?<=child ))\d{1,5}/ppppp/g' },
+
+    'optional_dsn_info' =>
+    { 'mail' => '/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/'
+    },
+
+    'sys_bindir' =>
+    { 'mainlog' => 's%/(usr/)?bin/%SYSBINDIR/%' },
 
   };
 
@@ -1339,7 +1413,7 @@ $munges =
 #  [4] TRUE if this is a log file whose deliveries must be sorted
 #  [5] an optional custom munge command
 #
-# Arguments: Optionally, name of a custom munge to run.
+# Arguments: Optionally, name of a single custom munge to run.
 # Returns:   0 if the output compared equal
 #            1 if re-run needed (files may have been updated)
 
@@ -1683,7 +1757,7 @@ if (/^dump\s+(\S+)/)
 
     foreach $item (@temp)
       {
-      $item =~ s/^\s*(.*)\n(.*)\n?\s*$/\1\n\2/m;
+      $item =~ s/^\s*(.*)\n(.*)\n?\s*$/$1\n$2/m;
       print OUT "  $item\n";
       }
     }
@@ -1886,7 +1960,8 @@ if (/^(ln|ls|du|mkdir|mkfifo|touch|cp|cat)\s/ ||
 
 if (/^server\s+(.*)$/)
   {
-  $cmd = "./bin/server $server_opts $1 >>test-stdout-server";
+  $pidfile = "$parm_cwd/aux-var/server-daemon.pid";
+  $cmd = "./bin/server $server_opts -oP $pidfile $1 >>test-stdout-server";
   print ">> $cmd\n" if ($debug);
   $server_pid = open SERVERCMD, "|$cmd" || tests_exit(-1, "Failed to run $cmd");
   SERVERCMD->autoflush(1);
@@ -1900,10 +1975,9 @@ if (/^server\s+(.*)$/)
   print SERVERCMD "++++\n"; # Send end to server; can't send EOF yet
                             # because close() waits for the process.
 
-  # This gives the server time to get started; otherwise the next
+  # Interlock the server startup; otherwise the next
   # process may not find it there when it expects it.
-
-  select(undef, undef, undef, 0.5);
+  while (! stat("$pidfile") ) { select(undef, undef, undef, 0.3); }
   return 3;
   }
 
@@ -2000,12 +2074,12 @@ if (/^client/ || /^(sudo\s+)?perl\b/)
 # not drop privilege when -C and -D options are present. To run the exim
 # command as root, we use sudo.
 
-elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
+elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+)?\s+(.*)$/)
   {
-  $args = $5;
+  $args = $6;
   my($envset) = (defined $1)? $1      : "";
-  my($sudo)   = (defined $3)? "sudo " : "";
-  my($special)= (defined $4)? $4      : "";
+  my($sudo)   = (defined $3)? "sudo " . (defined $4 ? "-u $4 ":"")  : "";
+  my($special)= (defined $5)? $5      : "";
   $wait_time  = (defined $2)? $2      : 0;
 
   # Return 2 rather than 1 afterwards
@@ -2065,7 +2139,6 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
          "-DEXIM_PATH=$parm_cwd/eximdir/exim$special " .
          "-C $parm_cwd/test-config $args " .
          ">>test-stdout 2>>test-stderr";
-
   # If the command is starting an Exim daemon, we run it in the same
   # way as the "server" command above, that is, we don't want to wait
   # for the process to finish. That happens when "killdaemon" is obeyed later
@@ -2079,6 +2152,7 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
 
   if ($cmd =~ /\s-DSERVER=server\s/ && $cmd !~ /\s-DNOTDAEMON\s/)
     {
+    $pidfile = "$parm_cwd/spool/exim-daemon.pid";
     if ($debug) { printf ">> daemon: $cmd\n"; }
     run_system("sudo mkdir spool/log 2>/dev/null");
     run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
@@ -2089,12 +2163,23 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
     # file is written to the spool directory, in case the Exim binary was
     # built with PID_FILE_PATH pointing somewhere else.
 
-    $cmd =~ s!\s-bd\s! -bdf -oP $parm_cwd/spool/exim-daemon.pid !;
+    if ($cmd =~ /\s-oP\s/)
+      {
+      ($pidfile = $cmd) =~ s/^.*-oP ([^ ]+).*$/$1/;
+      $cmd =~ s!\s-bd\s! -bdf !;
+      }
+    else
+      {
+      $pidfile = "$parm_cwd/spool/exim-daemon.pid";
+      $cmd =~ s!\s-bd\s! -bdf -oP $pidfile !;
+      }
     print ">> |${cmd}-server\n" if ($debug);
     open DAEMONCMD, "|${cmd}-server" || tests_exit(-1, "Failed to run $cmd");
     DAEMONCMD->autoflush(1);
     while (<SCRIPT>) { $lineno++; last if /^\*{4}\s*$/; }   # Ignore any input
-    select(undef, undef, undef, 0.3);             # Let the daemon get going
+
+    # Interlock with daemon startup
+    while (! stat("$pidfile") ) { select(undef, undef, undef, 0.3); }
     return 3;                                     # Don't wait
     }
   elsif ($cmd =~ /\s-DSERVER=wait:(\d+)\s/)
@@ -2130,6 +2215,45 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
     return (3, { exim_pid => $pid });             # Don't wait
     }
   }
+
+# The "background" command is run but not waited-for, like exim -DSERVER=server.
+# One script line is read and fork-exec'd.  The PID is stored for a later
+# killdaemon.
+
+elsif (/^background$/)
+  {
+  my $line;
+#  $pidfile = "$parm_cwd/aux-var/server-daemon.pid";
+
+  $_ = <SCRIPT>; $lineno++;
+  chomp;
+  $line = $_;
+  if ($debug) { printf ">> daemon: $line >>test-stdout 2>>test-stderr\n"; }
+
+  my $pid = fork();
+  if (not defined $pid) { die "** fork failed: $!\n" }
+  if (not $pid) {
+    print "[$$]>> ${line}\n" if ($debug);
+    close(STDIN);
+    open(STDIN, "<", "test-stdout");
+    close(STDOUT);
+    open(STDOUT, ">>", "test-stdout");
+    close(STDERR);
+    open(STDERR, ">>", "test-stderr-server");
+    exec "exec ${line}";
+    exit(1);
+  }
+
+#  open(my $fh, ">", $pidfile) ||
+#      tests_exit(-1, "Failed to open $pidfile: $!");
+#  printf($fh, "%d\n", $pid);
+#  close($fh);
+
+  while (<SCRIPT>) { $lineno++; last if /^\*{4}\s*$/; }   # Ignore any input
+  select(undef, undef, undef, 0.3);             # Let the daemon get going
+  return (3, { exim_pid => $pid });             # Don't wait
+  }
+
 
 
 # Unknown command
@@ -2190,6 +2314,15 @@ return $yield;            # Ran command and waited
 autoflush STDOUT 1;
 print "Exim tester $testversion\n";
 
+# extend the PATH with .../sbin
+# we map all (.../bin) to (.../sbin:.../bin)
+$ENV{PATH} = do {
+  my %seen = map { $_, 1 } split /:/, $ENV{PATH};
+  join ':' => map { m{(.*)/bin$} 
+                ? ( $seen{"$1/sbin"} ? () : ("$1/sbin"), $_) 
+                : ($_) } 
+      split /:/, $ENV{PATH};
+};
 
 ##################################################
 #      Some tests check created file modes       #
@@ -2227,9 +2360,10 @@ else
 ##################################################
 
 # If the first character of the first argument is '/', the argument is taken
-# as the path to the binary.
+# as the path to the binary. If the first argument does not start with a
+# '/' but exists in the file system, it's assumed to be the Exim binary.
 
-$parm_exim = (@ARGV > 0 && $ARGV[0] =~ m?^/?)? shift @ARGV : "";
+$parm_exim = (@ARGV > 0 && (-x $ARGV[0] or $ARGV[0] =~ m?^/?))? Cwd::abs_path(shift @ARGV) : "";
 print "Exim binary is $parm_exim\n" if $parm_exim ne "";
 
 
@@ -2256,6 +2390,7 @@ while (@ARGV > 0 && $ARGV[0] =~ /^-/)
     if ($arg eq "-NOIPV4") { $have_ipv4 = 0; next; }
     if ($arg eq "-NOIPV6") { $have_ipv6 = 0; next; }
     if ($arg eq "-KEEP")   { $save_output = 1; next; }
+    if ($arg =~ /^-FLAVOU?R$/) { $flavour = shift; next; }
     }
   $optargs .= " $arg";
   }
@@ -2308,7 +2443,7 @@ if ($parm_exim eq "")
     # directory. Thus, we should choose the highest version of Exim that has
     # been compiled.
 
-    if ($f eq "exim4" || $f eq "exim-snapshot")
+    if ($f eq "exim4" || $f eq "exim-snapshot" || $f eq 'src')
       { $srcdir = $f; }
     else
       { $srcdir = $f
@@ -2374,17 +2509,24 @@ if ($parm_exim eq "")
 
 # deal with TRUSTED_CONFIG_LIST restrictions
 unlink("$parm_cwd/test-config") if -e "$parm_cwd/test-config";
-symlink("$parm_cwd/confs/0000", "$parm_cwd/test-config")
-  or die "Unable to link initial config into place: $!\n";
+open (IN, "$parm_cwd/confs/0000") ||
+  tests_exit(-1, "Couldn't open $parm_cwd/confs/0000: $!\n");
+open (OUT, ">test-config") ||
+  tests_exit(-1, "Couldn't open test-config: $!\n");
+while (<IN>) { print OUT; }
+close(IN);
+close(OUT);
 
 print("Probing with config file: $parm_cwd/test-config\n");
 open(EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " .
-               "-bP exim_user exim_group|") ||
+               "-bP exim_user exim_group 2>&1|") ||
   die "** Cannot run $parm_exim: $!\n";
 while(<EXIMINFO>)
   {
   $parm_eximuser = $1 if /^exim_user = (.*)$/;
   $parm_eximgroup = $1 if /^exim_group = (.*)$/;
+  $parm_trusted_config_list = $1 if /^TRUSTED_CONFIG_LIST:.*?"(.*?)"$/;
+  print "$_" if /wrong owner/;
   }
 close(EXIMINFO);
 
@@ -2405,6 +2547,34 @@ if (defined $parm_eximgroup)
   {
   if ($parm_eximgroup =~ /^\d+$/) { $parm_exim_gid = $parm_eximgroup; }
     else { $parm_exim_gid = getgrnam($parm_eximgroup); }
+  }
+
+# check the permissions on the TRUSTED_CONFIG_LIST
+if (defined $parm_trusted_config_list)
+  {
+  die "TRUSTED_CONFIG_LIST: $parm_trusted_config_list: $!\n"
+    if not -f $parm_trusted_config_list;
+
+  die "TRUSTED_CONFIG_LIST $parm_trusted_config_list must not be world writable!\n"
+    if 02 & (stat _)[2];
+
+  die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list %d is group writable, but not owned by group '%s' or '%s'.\n",
+  (stat _)[1],
+    scalar(getgrgid 0), scalar(getgrgid $>)
+    if (020 & (stat _)[2]) and not ((stat _)[5] == $> or (stat _)[5] == 0);
+
+  die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list is not owned by user '%s' or '%s'.\n",
+  scalar(getpwuid 0), scalar(getpwuid $>)
+     if (not (-o _ or (stat _)[4] == 0));
+
+  open(TCL, $parm_trusted_config_list) or die "Can't open $parm_trusted_config_list: $!\n";
+  my $test_config = getcwd() . '/test-config';
+  die "Can't find '$test_config' in TRUSTED_CONFIG_LIST $parm_trusted_config_list."
+  if not grep { /^$test_config$/ } <TCL>;
+  }
+else
+  {
+  die "Unable to check the TRUSTED_CONFIG_LIST, seems to be empty?\n";
   }
 
 open(EXIMINFO, "$parm_exim -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
@@ -2686,6 +2856,22 @@ if (defined $parm_support{'Content_Scanning'})
 
 
 ##################################################
+#       Check for redis                          #
+##################################################
+if (defined $parm_lookups{'redis'})
+  {
+  if (system("redis-server -v 2>/dev/null >/dev/null") == 0)
+    {
+    print "The redis-server command works\n";
+    $parm_running{'redis'} = ' ';
+    }
+  else
+    {
+    print "The redis-server command failed: assume Redis not installed\n";
+    }
+  }
+
+##################################################
 #         Test for the basic requirements        #
 ##################################################
 
@@ -2803,7 +2989,7 @@ while (($parm_ipv4 eq "" || $parm_ipv6 eq "") && ($_ = <IFCONFIG>))
       $_ =~ /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)\s/i)
     {
     $ip = $1;
-    next if ($ip =~ /^127\./);
+    next if ($ip =~ /^127\./ || $ip =~ /^10\./);
     $parm_ipv4 = $ip;
     }
 
@@ -3054,7 +3240,7 @@ else
 # because the current binary does not support the right facilities, and also
 # those that are outside the numerical range selected.
 
-print "\nTest range is $test_start to $test_end\n";
+print "\nTest range is $test_start to $test_end (flavour $flavour)\n";
 print "Omitting \${dlfunc expansion tests (loadable module not present)\n"
   if $dlfunc_deleted;
 print "Omitting dbm tests (unable to copy exim_dbmbuild)\n"
@@ -3160,7 +3346,7 @@ for ($i = 0; $i < @test_dirs; $i++)
 
   foreach $test (@testlist)
     {
-    next if $test !~ /^\d{4}$/;
+    next if $test !~ /^\d{4}(?:\.\d+)?$/;
     next if $test < $test_start || $test > $test_end;
     push @test_list, "$testdir/$test";
     }
@@ -3346,7 +3532,7 @@ foreach $test (@test_list)
   local($lineno) = 0;
   local($commandno) = 0;
   local($subtestno) = 0;
-  local($testno) = substr($test, -4);
+  (local $testno = $test) =~ s|.*/||;
   local($sortlog) = 0;
 
   my($gnutls) = 0;
@@ -3402,6 +3588,7 @@ foreach $test (@test_list)
   $stdout_skip = 0;
   $rmfiltertest = 0;
   $is_ipv6test = 0;
+  $TEST_STATE->{munge} = "";
 
   # Remove the associative arrays used to hold checked mail files and msglogs
 
@@ -3509,6 +3696,8 @@ foreach $test (@test_list)
     my($expectrc) = 0;
     my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE);
     my($cmdrc) = $?;
+
+$0 = "[runtest $testno]";
 
     if ($debug) {
       print ">> rc=$rc cmdrc=$cmdrc\n";
@@ -3621,6 +3810,7 @@ foreach $test (@test_list)
   close SCRIPT;
 
   # The script has finished. Check the all the output that was generated. The
+  # function returns 0 if all is well, 1 if we should rerun the test (the files
   # function returns 0 if all is well, 1 if we should rerun the test (the files
   # have been updated). It does not return if the user responds Q to a prompt.
 

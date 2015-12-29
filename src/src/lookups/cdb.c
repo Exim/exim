@@ -18,6 +18,9 @@
  *   Changed over to using unsigned chars
  *   Makes use of lf_check_file() for file checking
  * --------------------------------------------------------------
+ * Modified by The Exim Maintainers 2015:
+ *   const propagation
+ * --------------------------------------------------------------
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -272,11 +275,11 @@ cdb_check(void *handle,
 static int
 cdb_find(void *handle,
         uschar *filename,
-        uschar *keystring,
+        const uschar *keystring,
         int  key_len,
         uschar **result,
         uschar **errmsg,
-        BOOL *do_cache)
+        uint *do_cache)
 {
   struct cdb_state * cdbp = handle;
   uint32 item_key_len,

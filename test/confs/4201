@@ -1,0 +1,128 @@
+# Exim test configuration 4201
+# SMTPUTF8 handling
+
+OPTION = *
+CONTROL =
+INSERT =
+SUB =
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : cname
+
+acl_smtp_rcpt = check_recipient
+acl_not_smtp = non_smtp
+
+trusted_users = CALLER
+log_selector = +received_recipients +sender_on_delivery
+
+.ifdef SERVER
+queue_only
+queue_run_in_order
+.endif
+
+smtputf8_advertise_hosts = OPTION
+
+SUB
+
+
+# ----- ACL -----
+
+begin acl
+
+
+.ifdef SERVER
+
+check_recipient:
+  accept hosts = :
+  accept domains = +local_domains
+	 local_parts = ^(xn--)?user.*\$
+  deny   message = relay not permitted
+
+.else
+
+sub:
+.ifdef INSERT
+  require INSERT
+.endif
+.ifdef CONTROL
+  require CONTROL
+.endif
+  accept
+
+check_recipient:
+  accept domains = *
+	 acl = sub
+
+non_smtp:
+  accept senders = :
+	 control = queue_only
+  accept
+
+.endif
+
+# ----- Routers -----
+
+begin routers
+
+.ifdef SERVER
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  data = :fail: unrouteable mail domain "$domain"
+
+bounces:
+  driver = redirect
+  condition = ${if eq {} {$sender_address}}
+  data = DIR/test-mail/$local_part
+  file_transport = local_delivery
+
+localuser:
+  driver = redirect
+  data = :blackhole:
+
+.else
+
+bounces:
+  driver = redirect
+  domains = *.local
+  data = DIR/test-mail/$local_part
+  file_transport = local_delivery
+
+rmt:
+  driver = manualroute
+  domains = +local_domains
+  route_data = <;[127.0.0.1]:PORT_D
+  transport = rmt_smtp
+  self = send
+
+.endif
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  user = CALLER
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  headers_add = "X-body-linecount: $body_linecount\n\
+                 X-message-linecount: $message_linecount\n\
+                 X-received-count: $received_count"
+  return_path_add
+
+rmt_smtp:
+  driver = smtp
+
+# End

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -34,9 +34,6 @@ static const char *type_names[] = {
 #if HAVE_IPV6
   "a+",
   "aaaa",
-  #ifdef SUPPORT_A6
-  "a6",
-  #endif
 #endif
   "cname",
   "csa",
@@ -44,6 +41,7 @@ static const char *type_names[] = {
   "mxh",
   "ns",
   "ptr",
+  "soa",
   "spf",
   "srv",
   "tlsa",
@@ -56,9 +54,6 @@ static int type_values[] = {
 #if HAVE_IPV6
   T_ADDRESSES,     /* Private type for AAAA + A */
   T_AAAA,
-  #ifdef SUPPORT_A6
-  T_A6,
-  #endif
 #endif
   T_CNAME,
   T_CSA,     /* Private type for "Client SMTP Authorization". */
@@ -66,6 +61,7 @@ static int type_values[] = {
   T_MXH,     /* Private type for "MX hostnames" */
   T_NS,
   T_PTR,
+  T_SOA,
   T_SPF,
   T_SRV,
   T_TLSA,
@@ -108,27 +104,34 @@ no separator. With neither of these options specified, only the first item
 is output.  Similarly for "SPF" records, but the default for joining multiple
 items in one SPF record is the empty string, for direct concatenation.
 
-(c) If the next sequence of characters is 'defer_FOO' followed by a comma,
-the defer behaviour is set to FOO. The possible behaviours are: 'strict', where
-any defer causes the whole lookup to defer; 'lax', where a defer causes the
-whole lookup to defer only if none of the DNS queries succeeds; and 'never',
-where all defers are as if the lookup failed. The default is 'lax'.
+(c) Options, all comma-terminated, in any order.  Any unrecognised option
+terminates option processing.  Recognised options are:
 
-(d) Another optional comma-sep field: 'dnssec_FOO', with 'strict', 'lax'
-and 'never' (default); can appear before or after (c).  The meanings are
+- 'defer_FOO':  set the defer behaviour to FOO.  The possible behaviours are:
+'strict', where any defer causes the whole lookup to defer; 'lax', where a defer
+causes the whole lookup to defer only if none of the DNS queries succeeds; and
+'never', where all defers are as if the lookup failed. The default is 'lax'.
+
+- 'dnssec_FOO', with 'strict', 'lax' and 'never' (default).  The meanings are
 require, try and don't-try dnssec respectively.
 
-(e) If the next sequence of characters is a sequence of letters and digits
+- 'retrans_VAL', set the timeout value.  VAL is an Exim time specification
+(eg "5s").  The default is set by the main configuration option 'dns_retrans'.
+
+- 'retry_VAL', set the retry count on timeouts.  VAL is an integer.  The
+default is set by the main configuration option "dns_retry".
+
+(d) If the next sequence of characters is a sequence of letters and digits
 followed by '=', it is interpreted as the name of the DNS record type. The
 default is "TXT".
 
-(f) Then there follows list of domain names. This is a generalized Exim list,
+(e) Then there follows list of domain names. This is a generalized Exim list,
 which may start with '<' in order to set a specific separator. The default
 separator, as always, is colon. */
 
 static int
-dnsdb_find(void *handle, uschar *filename, uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+dnsdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 int rc;
 int size = 256;
@@ -136,12 +139,13 @@ int ptr = 0;
 int sep = 0;
 int defer_mode = PASS;
 int dnssec_mode = OK;
+int save_retrans = dns_retrans;
+int save_retry =   dns_retry;
 int type;
 int failrc = FAIL;
-uschar *outsep = US"\n";
-uschar *outsep2 = NULL;
+const uschar *outsep = CUS"\n";
+const uschar *outsep2 = NULL;
 uschar *equals, *domain, *found;
-uschar buffer[256];
 
 /* Because we're the working in the search pool, we try to reclaim as much
 store as possible later, so we preallocate the result here */
@@ -180,58 +184,62 @@ if (*keystring == '>')
 
 /* Check for a modifier keyword. */
 
-while (  strncmpic(keystring, US"defer_", 6) == 0
-      || strncmpic(keystring, US"dnssec_", 7) == 0
-      )
+for (;;)
   {
   if (strncmpic(keystring, US"defer_", 6) == 0)
     {
     keystring += 6;
     if (strncmpic(keystring, US"strict", 6) == 0)
-      {
-      defer_mode = DEFER;
-      keystring += 6;
-      }
+      { defer_mode = DEFER; keystring += 6; }
     else if (strncmpic(keystring, US"lax", 3) == 0)
-      {
-      defer_mode = PASS;
-      keystring += 3;
-      }
+      { defer_mode = PASS; keystring += 3; }
     else if (strncmpic(keystring, US"never", 5) == 0)
-      {
-      defer_mode = OK;
-      keystring += 5;
-      }
+      { defer_mode = OK; keystring += 5; }
     else
       {
       *errmsg = US"unsupported dnsdb defer behaviour";
       return DEFER;
       }
     }
-  else
+  else if (strncmpic(keystring, US"dnssec_", 7) == 0)
     {
     keystring += 7;
     if (strncmpic(keystring, US"strict", 6) == 0)
-      {
-      dnssec_mode = DEFER;
-      keystring += 6;
-      }
+      { dnssec_mode = DEFER; keystring += 6; }
     else if (strncmpic(keystring, US"lax", 3) == 0)
-      {
-      dnssec_mode = PASS;
-      keystring += 3;
-      }
+      { dnssec_mode = PASS; keystring += 3; }
     else if (strncmpic(keystring, US"never", 5) == 0)
-      {
-      dnssec_mode = OK;
-      keystring += 5;
-      }
+      { dnssec_mode = OK; keystring += 5; }
     else
       {
       *errmsg = US"unsupported dnsdb dnssec behaviour";
       return DEFER;
       }
     }
+  else if (strncmpic(keystring, US"retrans_", 8) == 0)
+    {
+    int timeout_sec;
+    if ((timeout_sec = readconf_readtime(keystring += 8, ',', FALSE)) <= 0)
+      {
+      *errmsg = US"unsupported dnsdb timeout value";
+      return DEFER;
+      }
+    dns_retrans = timeout_sec;
+    while (*keystring != ',') keystring++;
+    }
+  else if (strncmpic(keystring, US"retry_", 6) == 0)
+    {
+    int retries;
+    if ((retries = (int)strtol(CCS keystring + 6, CSS &keystring, 0)) < 0)
+      {
+      *errmsg = US"unsupported dnsdb retry count";
+      return DEFER;
+      }
+    dns_retry = retries;
+    }
+  else
+    break;
+
   while (isspace(*keystring)) keystring++;
   if (*keystring++ != ',')
     {
@@ -307,8 +315,7 @@ if (!outsep2) switch(type)
 
 /* Now scan the list and do a lookup for each item */
 
-while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
-        != NULL)
+while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
   {
   uschar rbuffer[256];
   int searchtype = (type == T_CSA)? T_SRV :         /* record type we want */
@@ -345,19 +352,13 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 #if HAVE_IPV6
     if (type == T_ADDRESSES)		/* NB cannot happen unless HAVE_IPV6 */
       {
-      if (searchtype == T_ADDRESSES)
-# if defined(SUPPORT_A6)
-                                     searchtype = T_A6;
-# else
-                                     searchtype = T_AAAA;
-# endif
-      else if (searchtype == T_A6)   searchtype = T_AAAA;
+      if (searchtype == T_ADDRESSES) searchtype = T_AAAA;
       else if (searchtype == T_AAAA) searchtype = T_A;
-      rc = dns_special_lookup(&dnsa, domain, searchtype, &found);
+      rc = dns_special_lookup(&dnsa, domain, searchtype, CUSS &found);
       }
     else
 #endif
-      rc = dns_special_lookup(&dnsa, domain, type, &found);
+      rc = dns_special_lookup(&dnsa, domain, type, CUSS &found);
 
     lookup_dnssec_authenticated = dnssec_mode==OK ? NULL
       : dns_is_secure(&dnsa) ? US"yes" : US"no";
@@ -369,6 +370,8 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       {
       if (defer_mode == DEFER)
 	{
+	dns_retrans = save_retrans;
+	dns_retry = save_retry;
 	dns_init(FALSE, FALSE, FALSE);			/* clr dnssec bit */
 	return DEFER;					/* always defer */
 	}
@@ -385,19 +388,13 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       {
       if (rr->type != searchtype) continue;
 
-      /* There may be several addresses from an A6 record. Put the configured
-      separator between them, just as for between several records. However, A6
-      support is not normally configured these days. */
+      if (*do_cache > rr->ttl)
+	*do_cache = rr->ttl;
 
-      if (type == T_A ||
-          #ifdef SUPPORT_A6
-          type == T_A6 ||
-          #endif
-          type == T_AAAA ||
-          type == T_ADDRESSES)
+      if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {
         dns_address *da;
-        for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
+        for (da = dns_address_from_rr(&dnsa, rr); da; da = da->next)
           {
           if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
           yield = string_cat(yield, &size, &ptr, da->address,
@@ -440,7 +437,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
         uint16_t i, payload_length;
         uschar s[MAX_TLSA_EXPANDED_SIZE];
 	uschar * sp = s;
-        uschar *p = (uschar *)(rr->data);
+        uschar * p = US rr->data;
 
         usage = *p++;
         selector = *p++;
@@ -453,72 +450,75 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
         for (i=0;
              i < payload_length && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4);
              i++)
-          {
           sp += sprintf(CS sp, "%02x", (unsigned char)p[i]);
-          }
+
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
-      else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */
+      else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SOA, T_SRV */
         {
         int priority, weight, port;
         uschar s[264];
-        uschar *p = (uschar *)(rr->data);
+        uschar * p = US rr->data;
 
-        if (type == T_MXH)
-          {
-          /* mxh ignores the priority number and includes only the hostnames */
-          GETSHORT(priority, p);
-          }
-        else if (type == T_MX)
-          {
-          GETSHORT(priority, p);
-          sprintf(CS s, "%d%c", priority, *outsep2);
-          yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-          }
-        else if (type == T_SRV)
-          {
-          GETSHORT(priority, p);
-          GETSHORT(weight, p);
-          GETSHORT(port, p);
-          sprintf(CS s, "%d%c%d%c%d%c", priority, *outsep2,
-					weight, *outsep2, port, *outsep2);
-          yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-          }
-        else if (type == T_CSA)
-          {
-          /* See acl_verify_csa() for more comments about CSA. */
+	switch (type)
+	  {
+	  case T_MXH:
+	    /* mxh ignores the priority number and includes only the hostnames */
+	    GETSHORT(priority, p);
+	    break;
 
-          GETSHORT(priority, p);
-          GETSHORT(weight, p);
-          GETSHORT(port, p);
+	  case T_MX:
+	    GETSHORT(priority, p);
+	    sprintf(CS s, "%d%c", priority, *outsep2);
+	    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	    break;
 
-          if (priority != 1) continue;      /* CSA version must be 1 */
+	  case T_SRV:
+	    GETSHORT(priority, p);
+	    GETSHORT(weight, p);
+	    GETSHORT(port, p);
+	    sprintf(CS s, "%d%c%d%c%d%c", priority, *outsep2,
+			      weight, *outsep2, port, *outsep2);
+	    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	    break;
 
-          /* If the CSA record we found is not the one we asked for, analyse
-          the subdomain assertions in the port field, else analyse the direct
-          authorization status in the weight field. */
+	  case T_CSA:
+	    /* See acl_verify_csa() for more comments about CSA. */
+	    GETSHORT(priority, p);
+	    GETSHORT(weight, p);
+	    GETSHORT(port, p);
 
-          if (found != domain)
-            {
-            if (port & 1) *s = 'X';         /* explicit authorization required */
-            else *s = '?';                  /* no subdomain assertions here */
-            }
-          else
-            {
-            if (weight < 2) *s = 'N';       /* not authorized */
-            else if (weight == 2) *s = 'Y'; /* authorized */
-            else if (weight == 3) *s = '?'; /* unauthorizable */
-            else continue;                  /* invalid */
-            }
+	    if (priority != 1) continue;      /* CSA version must be 1 */
 
-          s[1] = ' ';
-          yield = string_cat(yield, &size, &ptr, s, 2);
-          }
+	    /* If the CSA record we found is not the one we asked for, analyse
+	    the subdomain assertions in the port field, else analyse the direct
+	    authorization status in the weight field. */
+
+	    if (Ustrcmp(found, domain) != 0)
+	      {
+	      if (port & 1) *s = 'X';         /* explicit authorization required */
+	      else *s = '?';                  /* no subdomain assertions here */
+	      }
+	    else
+	      {
+	      if (weight < 2) *s = 'N';       /* not authorized */
+	      else if (weight == 2) *s = 'Y'; /* authorized */
+	      else if (weight == 3) *s = '?'; /* unauthorizable */
+	      else continue;                  /* invalid */
+	      }
+
+	    s[1] = ' ';
+	    yield = string_cat(yield, &size, &ptr, s, 2);
+	    break;
+
+	  default:
+	    break;
+	  }
 
         /* GETSHORT() has advanced the pointer to the target domain. */
 
         rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
-          (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));
+          (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
 
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
@@ -530,6 +530,32 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
           break;
           }
         else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+
+	if (type == T_SOA && outsep2 != NULL)
+	  {
+	  unsigned long serial, refresh, retry, expire, minimum;
+
+	  p += rc;
+	  yield = string_cat(yield, &size, &ptr, outsep2, 1);
+
+	  rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+	    (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
+	  if (rc < 0)
+	    {
+	    log_write(0, LOG_MAIN, "responsible-mailbox truncated: type=%s "
+	      "domain=%s", dns_text_type(type), domain);
+	    break;
+	    }
+	  else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+
+	  p += rc;
+	  GETLONG(serial, p); GETLONG(refresh, p);
+	  GETLONG(retry,  p); GETLONG(expire,  p); GETLONG(minimum, p);
+	  sprintf(CS s, "%c%lu%c%lu%c%lu%c%lu%c%lu",
+	    *outsep2, serial, *outsep2, refresh,
+	    *outsep2, retry,  *outsep2, expire,  *outsep2, minimum);
+	  yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	  }
         }
       }    /* Loop for list of returned records */
 
@@ -545,6 +571,8 @@ store_reset(yield + ptr + 1);
 /* If ptr == 0 we have not found anything. Otherwise, insert the terminating
 zero and return the result. */
 
+dns_retrans = save_retrans;
+dns_retry = save_retry;
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 
 if (ptr == 0) return failrc;

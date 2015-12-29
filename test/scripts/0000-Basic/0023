@@ -1,4 +1,6 @@
 # ACL basic tests
+need_ipv4
+#
 exim -bh 1.2.3.4
 mail from:<x@y>
 rcpt to:<postmaster@test.ex>
@@ -187,6 +189,17 @@ quit
 exim -bh V4NET.0.0.97
 mail from:<>
 rcpt to:<x@y>
+quit
+****
+# This resolves to a name which will give `try again' when looked up
+exim -bh V4NET.99.99.96
+mail from:<>
+rcpt to:<x@y>
+quit
+****
+exim -bh V4NET.99.99.96
+mail from:<>
+rcpt to:<defer_ok@y>
 quit
 ****
 exim -bh 29.29.29.29

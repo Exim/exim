@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Many thanks to Stuart Lynne for contributing the original code for this
@@ -130,9 +130,10 @@ Returns:        OK or FAIL or DEFER
 */
 
 static int
-perform_ldap_search(uschar *ldap_url, uschar *server, int s_port, int search_type,
-  uschar **res, uschar **errmsg, BOOL *defer_break, uschar *user, uschar *password,
-  int sizelimit, int timelimit, int tcplimit, int dereference, void *referrals)
+perform_ldap_search(const uschar *ldap_url, uschar *server, int s_port,
+  int search_type, uschar **res, uschar **errmsg, BOOL *defer_break,
+  uschar *user, uschar *password, int sizelimit, int timelimit, int tcplimit,
+  int dereference, void *referrals)
 {
 LDAPURLDesc     *ludp = NULL;
 LDAPMessage     *result = NULL;
@@ -155,7 +156,7 @@ uschar *error1 = NULL;   /* string representation of errcode (static) */
 uschar *error2 = NULL;   /* error message from the server */
 uschar *matched = NULL;  /* partially matched DN */
 
-int    attr_count = 0;
+int    attrs_requested = 0;
 int    error_yield = DEFER;
 int    msgid;
 int    rc, ldap_rc, ldap_parse_rc;
@@ -247,7 +248,7 @@ if (host != NULL)
 /* Count the attributes; we need this later to tell us how to format results */
 
 for (attrp = USS ludp->lud_attrs; attrp != NULL && *attrp != NULL; attrp++)
-  attr_count++;
+  attrs_requested++;
 
 /* See if we can find a cached connection to this host. The port is not
 relevant for ldapi. The host name pointer is set to NULL if no host was given
@@ -712,10 +713,15 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
         LDAP_RES_SEARCH_ENTRY)
   {
   LDAPMessage  *e;
+  int valuecount;   /* We can see an attr spread across several
+                    entries. If B is derived from A and we request
+                    A and the directory contains both, A and B,
+                    then we get two entries, one for A and one for B.
+                    Here we just count the values per entry */
 
-  DEBUG(D_lookup) debug_printf("ldap_result loop\n");
+  DEBUG(D_lookup) debug_printf("LDAP result loop\n");
 
-  for(e = ldap_first_entry(lcp->ld, result);
+  for(e = ldap_first_entry(lcp->ld, result), valuecount = 0;
       e != NULL;
       e = ldap_next_entry(lcp->ld, e))
     {
@@ -764,15 +770,21 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
     /* Otherwise, loop through the entry, grabbing attribute values. If there's
     only one attribute being retrieved, no attribute name is given, and the
-    result is not quoted. Multiple values are separated by (comma, space).
+    result is not quoted. Multiple values are separated by (comma).
     If more than one attribute is being retrieved, the data is given as a
-    sequence of name=value pairs, with the value always in quotes. If there are
-    multiple values, they are given within the quotes, comma separated. */
+    sequence of name=value pairs, separated by (space), with the value always in quotes.
+    If there are multiple values, they are given within the quotes, comma separated. */
 
     else for (attr = US ldap_first_attribute(lcp->ld, e, &ber);
               attr != NULL;
               attr = US ldap_next_attribute(lcp->ld, e, ber))
       {
+      DEBUG(D_lookup) debug_printf("LDAP attr loop\n");
+
+      /* In case of attrs_requested == 1 we just count the values, in all other cases
+      (0, >1) we count the values per attribute */
+      if (attrs_requested != 1) valuecount = 0;
+
       if (attr[0] != 0)
         {
         /* Get array of values for this attribute. */
@@ -780,7 +792,8 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
         if ((firstval = values = USS ldap_get_values(lcp->ld, e, CS attr))
              != NULL)
           {
-          if (attr_count != 1)
+
+          if (attrs_requested != 1)
             {
             if (insert_space)
               data = string_cat(data, &size, &ptr, US" ", 1);
@@ -794,22 +807,23 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             {
             uschar *value = *values;
             int len = Ustrlen(value);
+            ++valuecount;
 
-            DEBUG(D_lookup) debug_printf("LDAP attr loop %s:%s\n", attr, value);
+            DEBUG(D_lookup) debug_printf("LDAP value loop %s:%s\n", attr, value);
 
-	    /* In case we requested one attribute only but got
-	     * several times into that attr loop, we need to append
-	     * the additional values. (This may happen if you derive 
-	     * attributeTypes B and C from A and then query for A.)
-	     * In all other cases we detect the different attribute
-	     * and append only every non first value. */
-	    if ((attr_count == 1 && data) || (values != firstval))
+            /* In case we requested one attribute only but got several times
+            into that attr loop, we need to append the additional values.
+            (This may happen if you derive attributeTypes B and C from A and
+            then query for A.) In all other cases we detect the different
+            attribute and append only every non first value. */
+
+            if (data && valuecount > 1)
               data = string_cat(data, &size, &ptr, US",", 1);
 
             /* For multiple attributes, the data is in quotes. We must escape
             internal quotes, backslashes, newlines, and must double commas. */
 
-            if (attr_count != 1)
+            if (attrs_requested != 1)
               {
               int j;
               for (j = 0; j < len; j++)
@@ -850,7 +864,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
           /* Closing quote at the end of the data for a named attribute. */
 
-          if (attr_count != 1)
+          if (attrs_requested != 1)
             data = string_cat(data, &size, &ptr, US"\"", 1);
 
           /* Free the values */
@@ -1125,7 +1139,7 @@ Returns:        OK or FAIL or DEFER
 */
 
 static int
-control_ldap_search(uschar *ldap_url, int search_type, uschar **res,
+control_ldap_search(const uschar *ldap_url, int search_type, uschar **res,
   uschar **errmsg)
 {
 BOOL defer_break = FALSE;
@@ -1135,12 +1149,13 @@ int tcplimit = 0;
 int sep = 0;
 int dereference = LDAP_DEREF_NEVER;
 void* referrals = LDAP_OPT_ON;
-uschar *url = ldap_url;
-uschar *p;
+const uschar *url = ldap_url;
+const uschar *p;
 uschar *user = NULL;
 uschar *password = NULL;
 uschar *local_servers = NULL;
-uschar *server, *list;
+uschar *server;
+const uschar *list;
 uschar buffer[512];
 
 while (isspace(*url)) url++;
@@ -1152,7 +1167,7 @@ NAME has the value "ldap". */
 
 while (strncmpic(url, US"ldap", 4) != 0)
   {
-  uschar *name = url;
+  const uschar *name = url;
   while (*url != 0 && *url != '=') url++;
   if (*url == '=')
     {
@@ -1336,8 +1351,8 @@ are handled by a common function, with a flag to differentiate between them.
 The handle and filename arguments are not used. */
 
 static int
-eldap_find(void *handle, uschar *filename, uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+eldap_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1345,8 +1360,8 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_SINGLE, result, errmsg));
 }
 
 static int
-eldapm_find(void *handle, uschar *filename, uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+eldapm_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1354,8 +1369,8 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_MULTIPLE, result, errmsg));
 }
 
 static int
-eldapdn_find(void *handle, uschar *filename, uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+eldapdn_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1363,8 +1378,8 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_DN, result, errmsg));
 }
 
 int
-eldapauth_find(void *handle, uschar *filename, uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+eldapauth_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;

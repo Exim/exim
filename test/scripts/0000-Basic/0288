@@ -1,9 +1,12 @@
 # serialize_hosts
 need_ipv4
 #
+# preload the spool
 exim -odq a b 
 .
 ****
+#
+# a slow server as a test target
 server PORT_S
 220 ESMTP
 EHLO
@@ -21,6 +24,32 @@ DATA
 QUIT
 250 OK
 ****
+#
+# First message should go; second does not wait for 1st complete
+# on same conn due to connection_max_messages, then is deferred
+# as second transport run aborted by serialize_hosts.
 exim -q
 ****
-no_msglog_check
+#
+# a server as a test target
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+#
+# Remaining message on queue should go immediately; no delay
+# associated with retry rules
+exim -q
+****

@@ -9,8 +9,8 @@ Verifying ok@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@localhost
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for localhost
+callout cache: no address record found for ok@localhost
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -38,8 +38,8 @@ Verifying ok@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@localhost
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: found address record
+callout cache: found domain record for localhost
+callout cache: found address record for ok@localhost
 callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
@@ -55,8 +55,8 @@ Verifying ok@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@localhost
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: address record expired
+callout cache: found domain record for localhost
+callout cache: address record expired for ok@localhost
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
 LOG: MAIN REJECT
@@ -78,8 +78,8 @@ Verifying bad@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering bad@localhost
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: no address record found
+callout cache: found domain record for localhost
+callout cache: no address record found for bad@localhost
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -111,8 +111,8 @@ Verifying bad@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering bad@localhost
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: found address record
+callout cache: found domain record for localhost
+callout cache: found address record for bad@localhost
 callout cache: address record is negative
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>
@@ -132,8 +132,8 @@ Verifying ok@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@localhost
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: address record expired
+callout cache: found domain record for localhost
+callout cache: address record expired for ok@localhost
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -162,7 +162,7 @@ Verifying ok@localhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@localhost
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for localhost
 callout cache: domain gave initial rejection, or does not accept HELO or MAIL FROM:<>
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify fail for <ok@localhost>
@@ -182,8 +182,8 @@ Verifying ok@otherhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost
+callout cache: no address record found for ok@otherhost
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -222,7 +222,7 @@ Verifying ok@otherhost
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for otherhost
 callout cache: domain does not accept RCPT TO:<postmaster@domain>
 LOG: MAIN REJECT
   H=[V4NET.0.0.2] U=root sender verify fail for <ok@otherhost>
@@ -242,8 +242,8 @@ Verifying ok@otherhost2
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost2
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost2
+callout cache: no address record found for ok@otherhost2
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -278,9 +278,9 @@ Verifying ok@otherhost2
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost2
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for otherhost2
 callout cache: domain accepts RCPT TO:<postmaster@domain>
-callout cache: found address record
+callout cache: found address record for ok@otherhost2
 callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
@@ -296,8 +296,8 @@ Verifying ok@otherhost3
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost3
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost3
+callout cache: no address record found for ok@otherhost3
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -324,7 +324,7 @@ Verifying otherok@otherhost3
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering otherok@otherhost3
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for otherhost3
 callout cache: domain accepts random addresses
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
@@ -340,8 +340,8 @@ Verifying ok@otherhost4
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost4
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost4
+callout cache: no address record found for ok@otherhost4
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -368,7 +368,7 @@ Verifying ok@otherhost4
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost4
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for otherhost4
 callout cache: domain accepts random addresses
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
@@ -384,8 +384,8 @@ Verifying ok@otherhost41
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost41
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost41
+callout cache: no address record found for ok@otherhost41
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -426,10 +426,10 @@ Verifying ok@otherhost41
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost41
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for otherhost41
 callout cache: domain rejects random addresses
 callout cache: domain accepts RCPT TO:<postmaster@domain>
-callout cache: found address record
+callout cache: found address record for ok@otherhost41
 callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
@@ -445,8 +445,8 @@ Verifying ok@otherhost21
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost21
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost21
+callout cache: no address record found for ok@otherhost21
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -481,9 +481,9 @@ Verifying ok2@otherhost21
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok2@otherhost21
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for otherhost21
 callout cache: domain accepts RCPT TO:<postmaster@domain>
-callout cache: no address record found
+callout cache: no address record found for ok2@otherhost21
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -511,8 +511,8 @@ Verifying ok@otherhost31
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost31
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost31
+callout cache: no address record found for ok@otherhost31
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -546,9 +546,9 @@ Verifying okok@otherhost31
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering okok@otherhost31
 Attempting full verification using callout
-callout cache: found domain record
+callout cache: found domain record for otherhost31
 callout cache: domain rejects random addresses
-callout cache: no address record found
+callout cache: no address record found for okok@otherhost31
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -576,8 +576,8 @@ Verifying okokok@otherhost31
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering okokok@otherhost31
 Attempting full verification using callout
-callout cache: domain record expired
-callout cache: no address record found
+callout cache: domain record expired for otherhost31
+callout cache: no address record found for okokok@otherhost31
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -611,8 +611,8 @@ Verifying okok@otherhost51
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering okok@otherhost51
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost51
+callout cache: no address record found for okok@otherhost51
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -642,8 +642,8 @@ Verifying okokok@otherhost52
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering okokok@otherhost52
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost52
+callout cache: no address record found for okokok@otherhost52
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -679,8 +679,8 @@ Verifying abcd@x.y.z
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abcd@x.y.z
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for x.y.z
+callout cache: no address record found for abcd@x.y.z/<somesender@a.domain>
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -711,8 +711,8 @@ Verifying abcd@x.y.z
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering abcd@x.y.z
 Attempting full verification using callout
-callout cache: found domain record
-callout cache: no address record found
+callout cache: found domain record for x.y.z
+callout cache: no address record found for abcd@x.y.z
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -740,8 +740,8 @@ Verifying ok@otherhost9
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering ok@otherhost9
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for otherhost9
+callout cache: no address record found for ok@otherhost9
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
@@ -778,8 +778,8 @@ Verifying z@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering z@test.ex
 Attempting full verification using callout
-callout cache: no domain record found
-callout cache: no address record found
+callout cache: no domain record found for test.ex
+callout cache: no address record found for z@test.ex/<postmaster@myhost.test.ex>
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready

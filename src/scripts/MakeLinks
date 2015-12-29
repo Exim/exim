@@ -27,254 +27,112 @@ echo ">>> Creating links to source files..."
 # Firstly the lookups
 mkdir lookups
 cd lookups
-ln -s ../../src/lookups/README           README
 # Makefile is generated
-ln -s ../../src/lookups/cdb.c            cdb.c
-ln -s ../../src/lookups/dbmdb.c          dbmdb.c
-ln -s ../../src/lookups/dnsdb.c          dnsdb.c
-ln -s ../../src/lookups/dsearch.c        dsearch.c
-ln -s ../../src/lookups/ibase.c          ibase.c
-ln -s ../../src/lookups/ldap.h           ldap.h
-ln -s ../../src/lookups/ldap.c           ldap.c
-ln -s ../../src/lookups/lsearch.c        lsearch.c
-ln -s ../../src/lookups/mysql.c          mysql.c
-ln -s ../../src/lookups/redis.c          redis.c
-ln -s ../../src/lookups/nis.c            nis.c
-ln -s ../../src/lookups/nisplus.c        nisplus.c
-ln -s ../../src/lookups/oracle.c         oracle.c
-ln -s ../../src/lookups/passwd.c         passwd.c
-ln -s ../../src/lookups/pgsql.c          pgsql.c
-ln -s ../../src/lookups/spf.c            spf.c
-ln -s ../../src/lookups/sqlite.c         sqlite.c
-ln -s ../../src/lookups/testdb.c         testdb.c
-ln -s ../../src/lookups/whoson.c         whoson.c
-
-ln -s ../../src/lookups/lf_functions.h   lf_functions.h
-ln -s ../../src/lookups/lf_check_file.c  lf_check_file.c
-ln -s ../../src/lookups/lf_quote.c       lf_quote.c
-ln -s ../../src/lookups/lf_sqlperform.c  lf_sqlperform.c
+for f in README cdb.c dbmdb.c dnsdb.c dsearch.c ibase.c ldap.h ldap.c \
+  lsearch.c mysql.c redis.c nis.c nisplus.c oracle.c passwd.c \
+  pgsql.c spf.c sqlite.c testdb.c whoson.c \
+  lf_functions.h lf_check_file.c lf_quote.c lf_sqlperform.c
+do
+  ln -s ../../src/lookups/$f $f
+done
 
 cd ..
 
 # Likewise for the code for the routers
 mkdir routers
 cd routers
-ln -s ../../src/routers/README           README
-ln -s ../../src/routers/Makefile         Makefile
-ln -s ../../src/routers/accept.h         accept.h
-ln -s ../../src/routers/accept.c         accept.c
-ln -s ../../src/routers/dnslookup.h      dnslookup.h
-ln -s ../../src/routers/dnslookup.c      dnslookup.c
-ln -s ../../src/routers/ipliteral.h      ipliteral.h
-ln -s ../../src/routers/ipliteral.c      ipliteral.c
-ln -s ../../src/routers/iplookup.h       iplookup.h
-ln -s ../../src/routers/iplookup.c       iplookup.c
-ln -s ../../src/routers/manualroute.h    manualroute.h
-ln -s ../../src/routers/manualroute.c    manualroute.c
-ln -s ../../src/routers/queryprogram.h   queryprogram.h
-ln -s ../../src/routers/queryprogram.c   queryprogram.c
-ln -s ../../src/routers/redirect.h       redirect.h
-ln -s ../../src/routers/redirect.c       redirect.c
-
-ln -s ../../src/routers/rf_functions.h          rf_functions.h
-ln -s ../../src/routers/rf_change_domain.c      rf_change_domain.c
-ln -s ../../src/routers/rf_expand_data.c        rf_expand_data.c
-ln -s ../../src/routers/rf_get_errors_address.c rf_get_errors_address.c
-ln -s ../../src/routers/rf_get_munge_headers.c  rf_get_munge_headers.c
-ln -s ../../src/routers/rf_get_transport.c      rf_get_transport.c
-ln -s ../../src/routers/rf_get_ugid.c           rf_get_ugid.c
-ln -s ../../src/routers/rf_queue_add.c          rf_queue_add.c
-ln -s ../../src/routers/rf_lookup_hostlist.c    rf_lookup_hostlist.c
-ln -s ../../src/routers/rf_self_action.c        rf_self_action.c
-ln -s ../../src/routers/rf_set_ugid.c           rf_set_ugid.c
+for f in README Makefile accept.h accept.c dnslookup.h dnslookup.c \
+  ipliteral.h ipliteral.c iplookup.h iplookup.c manualroute.h \
+  manualroute.c queryprogram.h queryprogram.c redirect.h redirect.c \
+  rf_functions.h rf_change_domain.c rf_expand_data.c rf_get_errors_address.c \
+  rf_get_munge_headers.c rf_get_transport.c rf_get_ugid.c rf_queue_add.c \
+  rf_lookup_hostlist.c rf_self_action.c rf_set_ugid.c
+do
+  ln -s ../../src/routers/$f $f
+done
 
 cd ..
 
 # Likewise for the code for the transports
 mkdir transports
 cd transports
-ln -s ../../src/transports/README           README
-ln -s ../../src/transports/Makefile         Makefile
-ln -s ../../src/transports/appendfile.h     appendfile.h
-ln -s ../../src/transports/appendfile.c     appendfile.c
-ln -s ../../src/transports/autoreply.h      autoreply.h
-ln -s ../../src/transports/autoreply.c      autoreply.c
-ln -s ../../src/transports/lmtp.h           lmtp.h
-ln -s ../../src/transports/lmtp.c           lmtp.c
-ln -s ../../src/transports/pipe.h           pipe.h
-ln -s ../../src/transports/pipe.c           pipe.c
-ln -s ../../src/transports/smtp.h           smtp.h
-ln -s ../../src/transports/smtp.c           smtp.c
-
-ln -s ../../src/transports/tf_maildir.c     tf_maildir.c
-ln -s ../../src/transports/tf_maildir.h     tf_maildir.h
+for f in README Makefile appendfile.h appendfile.c autoreply.h \
+  autoreply.c lmtp.h lmtp.c pipe.h pipe.c smtp.h smtp.c smtp_socks.c \
+  tf_maildir.c tf_maildir.h
+do
+  ln -s ../../src/transports/$f $f
+done
 
 cd ..
 
 # Likewise for the code for the authorization functions
 mkdir auths
 cd auths
-ln -s ../../src/auths/README             README
-ln -s ../../src/auths/Makefile           Makefile
-ln -s ../../src/auths/b64encode.c        b64encode.c
-ln -s ../../src/auths/b64decode.c        b64decode.c
-ln -s ../../src/auths/call_pam.c         call_pam.c
-ln -s ../../src/auths/call_pwcheck.c     call_pwcheck.c
-ln -s ../../src/auths/call_radius.c      call_radius.c
-ln -s ../../src/auths/check_serv_cond.c  check_serv_cond.c
-ln -s ../../src/auths/cyrus_sasl.c       cyrus_sasl.c
-ln -s ../../src/auths/cyrus_sasl.h       cyrus_sasl.h
-ln -s ../../src/auths/gsasl_exim.c       gsasl_exim.c
-ln -s ../../src/auths/gsasl_exim.h       gsasl_exim.h
-ln -s ../../src/auths/get_data.c         get_data.c
-ln -s ../../src/auths/get_no64_data.c    get_no64_data.c
-ln -s ../../src/auths/heimdal_gssapi.c   heimdal_gssapi.c
-ln -s ../../src/auths/heimdal_gssapi.h   heimdal_gssapi.h
-ln -s ../../src/auths/md5.c              md5.c
-ln -s ../../src/auths/xtextencode.c      xtextencode.c
-ln -s ../../src/auths/xtextdecode.c      xtextdecode.c
-ln -s ../../src/auths/cram_md5.c         cram_md5.c
-ln -s ../../src/auths/cram_md5.h         cram_md5.h
-ln -s ../../src/auths/plaintext.c        plaintext.c
-ln -s ../../src/auths/plaintext.h        plaintext.h
-ln -s ../../src/auths/pwcheck.c          pwcheck.c
-ln -s ../../src/auths/pwcheck.h          pwcheck.h
-ln -s ../../src/auths/auth-spa.c         auth-spa.c
-ln -s ../../src/auths/auth-spa.h         auth-spa.h
-ln -s ../../src/auths/dovecot.c          dovecot.c
-ln -s ../../src/auths/dovecot.h          dovecot.h
-ln -s ../../src/auths/sha1.c             sha1.c
-ln -s ../../src/auths/spa.c              spa.c
-ln -s ../../src/auths/spa.h              spa.h
+for f in README Makefile b64encode.c b64decode.c call_pam.c call_pwcheck.c \
+  call_radius.c check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl_exim.c \
+  gsasl_exim.h get_data.c get_no64_data.c heimdal_gssapi.c heimdal_gssapi.h \
+  md5.c xtextencode.c xtextdecode.c cram_md5.c cram_md5.h plaintext.c plaintext.h \
+  pwcheck.c pwcheck.h auth-spa.c auth-spa.h dovecot.c dovecot.h sha1.c spa.c \
+  spa.h tls.c tls.h
+do
+  ln -s ../../src/auths/$f $f
+done
 cd ..
 
 # Likewise for the code for the PDKIM library
 mkdir pdkim
 cd pdkim
-ln -s ../../src/pdkim/README             README
-ln -s ../../src/pdkim/Makefile           Makefile
-ln -s ../../src/pdkim/base64.c           base64.c
-ln -s ../../src/pdkim/base64.h           base64.h
-ln -s ../../src/pdkim/bignum.c           bignum.c
-ln -s ../../src/pdkim/bignum.h           bignum.h
-ln -s ../../src/pdkim/bn_mul.h           bn_mul.h
-ln -s ../../src/pdkim/pdkim.c            pdkim.c
-ln -s ../../src/pdkim/pdkim.h            pdkim.h
-ln -s ../../src/pdkim/rsa.c              rsa.c
-ln -s ../../src/pdkim/rsa.h              rsa.h
-ln -s ../../src/pdkim/sha1.c             sha1.c
-ln -s ../../src/pdkim/sha1.h             sha1.h
-ln -s ../../src/pdkim/sha2.c             sha2.c
-ln -s ../../src/pdkim/sha2.h             sha2.h
-cd ..
+for f in README Makefile base64.c bignum.c part-x509parse.c pdkim.c \
+  pdkim.h pdkim-rsa.c pdkim-rsa.h rsa.c sha1.c sha2.c
+do
+  ln -s ../../src/pdkim/$f $f
+done
+mkdir polarssl
+cd polarssl
+for i in `ls ../../../src/pdkim/polarssl/` ; do
+  ln -s ../../../src/pdkim/polarssl/$i $i
+done
+cd ../..
 
 # The basic source files for Exim and utilities. NB local_scan.h gets linked,
 # but local_scan.c does not, because its location is taken from the build-time
 # configuration. Likewise for the os.c file, which gets build dynamically.
 
-ln -s ../src/dbfunctions.h     dbfunctions.h
-ln -s ../src/dbstuff.h         dbstuff.h
-ln -s ../src/exim.h            exim.h
-ln -s ../src/functions.h       functions.h
-ln -s ../src/globals.h         globals.h
-ln -s ../src/local_scan.h      local_scan.h
-ln -s ../src/macros.h          macros.h
-ln -s ../src/mytypes.h         mytypes.h
-ln -s ../src/osfunctions.h     osfunctions.h
-ln -s ../src/store.h           store.h
-ln -s ../src/structs.h         structs.h
-ln -s ../src/lookupapi.h       lookupapi.h
-
-ln -s ../src/acl.c             acl.c
-ln -s ../src/buildconfig.c     buildconfig.c
-ln -s ../src/child.c           child.c
-ln -s ../src/crypt16.c         crypt16.c
-ln -s ../src/daemon.c          daemon.c
-ln -s ../src/dbfn.c            dbfn.c
-ln -s ../src/debug.c           debug.c
-ln -s ../src/deliver.c         deliver.c
-ln -s ../src/directory.c       directory.c
-ln -s ../src/dns.c             dns.c
-ln -s ../src/drtables.c        drtables.c
-ln -s ../src/dummies.c         dummies.c
-ln -s ../src/enq.c             enq.c
-ln -s ../src/exim.c            exim.c
-ln -s ../src/exim_dbmbuild.c   exim_dbmbuild.c
-ln -s ../src/exim_dbutil.c     exim_dbutil.c
-ln -s ../src/exim_lock.c       exim_lock.c
-ln -s ../src/expand.c          expand.c
-ln -s ../src/filter.c          filter.c
-ln -s ../src/filtertest.c      filtertest.c
-ln -s ../src/globals.c         globals.c
-ln -s ../src/header.c          header.c
-ln -s ../src/host.c            host.c
-ln -s ../src/ip.c              ip.c
-ln -s ../src/log.c             log.c
-ln -s ../src/lss.c             lss.c
-ln -s ../src/match.c           match.c
-ln -s ../src/moan.c            moan.c
-ln -s ../src/parse.c           parse.c
-ln -s ../src/perl.c            perl.c
-ln -s ../src/queue.c           queue.c
-ln -s ../src/rda.c             rda.c
-ln -s ../src/readconf.c        readconf.c
-ln -s ../src/receive.c         receive.c
-ln -s ../src/retry.c           retry.c
-ln -s ../src/rewrite.c         rewrite.c
-ln -s ../src/rfc2047.c         rfc2047.c
-ln -s ../src/route.c           route.c
-ln -s ../src/search.c          search.c
-ln -s ../src/sieve.c           sieve.c
-ln -s ../src/smtp_in.c         smtp_in.c
-ln -s ../src/smtp_out.c        smtp_out.c
-ln -s ../src/spool_in.c        spool_in.c
-ln -s ../src/spool_out.c       spool_out.c
-ln -s ../src/std-crypto.c      std-crypto.c
-ln -s ../src/store.c           store.c
-ln -s ../src/string.c          string.c
-ln -s ../src/tls.c             tls.c
-ln -s ../src/tlscert-gnu.c     tlscert-gnu.c
-ln -s ../src/tlscert-openssl.c tlscert-openssl.c
-ln -s ../src/tls-gnu.c         tls-gnu.c
-ln -s ../src/tls-openssl.c     tls-openssl.c
-ln -s ../src/tod.c             tod.c
-ln -s ../src/transport.c       transport.c
-ln -s ../src/tree.c            tree.c
-ln -s ../src/verify.c          verify.c
-ln -s ../src/version.c         version.c
-ln -s ../src/dkim.c            dkim.c
-ln -s ../src/dkim.h            dkim.h
-ln -s ../src/dmarc.c           dmarc.c
-ln -s ../src/dmarc.h           dmarc.h
-ln -s ../src/valgrind.h        valgrind.h
-ln -s ../src/memcheck.h        memcheck.h
+for f in dbfunctions.h dbstuff.h exim.h functions.h globals.h local_scan.h \
+  macros.h mytypes.h osfunctions.h store.h structs.h lookupapi.h \
+  \
+  acl.c buildconfig.c child.c crypt16.c daemon.c dbfn.c debug.c deliver.c \
+  directory.c dns.c drtables.c dummies.c enq.c exim.c exim_dbmbuild.c \
+  exim_dbutil.c exim_lock.c expand.c filter.c filtertest.c globals.c \
+  header.c host.c ip.c log.c lss.c match.c moan.c parse.c perl.c queue.c \
+  rda.c readconf.c receive.c retry.c rewrite.c rfc2047.c route.c search.c \
+  setenv.c \
+  sieve.c smtp_in.c smtp_out.c spool_in.c spool_out.c std-crypto.c store.c \
+  string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-gnu.c tls-openssl.c \
+  tod.c transport.c tree.c verify.c version.c dkim.c dkim.h dmarc.c dmarc.h \
+  valgrind.h memcheck.h
+do
+  ln -s ../src/$f $f
+done
 
 # WITH_CONTENT_SCAN
-ln -s ../src/spam.c            spam.c
-ln -s ../src/spam.h            spam.h
-ln -s ../src/spool_mbox.c      spool_mbox.c
-ln -s ../src/regex.c           regex.c
-ln -s ../src/mime.c            mime.c
-ln -s ../src/mime.h            mime.h
-ln -s ../src/malware.c         malware.c
+for f in  spam.c spam.h spool_mbox.c regex.c mime.c mime.h malware.c
+do
+  ln -s ../src/$f $f
+done
 
 # WITH_OLD_DEMIME
-ln -s ../src/demime.c          demime.c
-ln -s ../src/demime.h          demime.h
+for f in  demime.c demime.h
+do
+  ln -s ../src/$f $f
+done
 
 # EXPERIMENTAL_*
-ln -s ../src/bmi_spam.c        bmi_spam.c
-ln -s ../src/bmi_spam.h        bmi_spam.h
-ln -s ../src/spf.c             spf.c
-ln -s ../src/spf.h             spf.h
-ln -s ../src/srs.c             srs.c
-ln -s ../src/srs.h             srs.h
-ln -s ../src/dcc.c             dcc.c
-ln -s ../src/dcc.h             dcc.h
-ln -s ../src/dane.c            dane.c
-ln -s ../src/dane-gnu.c        dane-gnu.c
-ln -s ../src/dane-openssl.c    dane-openssl.c
-ln -s ../src/danessl.h         danessl.h
+for f in  bmi_spam.c bmi_spam.h dcc.c dcc.h dane.c dane-gnu.c dane-openssl.c \
+  danessl.h imap_utf7.c spf.c spf.h srs.c srs.h utf8.c
+do
+  ln -s ../src/$f $f
+done
 
 
 # End of MakeLinks

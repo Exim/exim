@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -139,8 +139,8 @@ Returns:    FALSE if domain expected and string is empty;
 */
 
 static BOOL
-parse_route_item(uschar *s, uschar **domain, uschar **hostlist,
-  uschar **options)
+parse_route_item(const uschar *s, const uschar **domain, const uschar **hostlist,
+  const uschar **options)
 {
 while (*s != 0 && isspace(*s)) s++;
 
@@ -226,9 +226,11 @@ manualroute_router_entry(
 {
 int rc, lookup_type;
 uschar *route_item = NULL;
-uschar *options = NULL;
-uschar *hostlist = NULL;
-uschar *domain, *newhostlist, *listptr;
+const uschar *options = NULL;
+const uschar *hostlist = NULL;
+const uschar *domain;
+uschar *newhostlist;
+const uschar *listptr;
 manualroute_router_options_block *ob =
   (manualroute_router_options_block *)(rblock->options_block);
 transport_instance *transport = NULL;
@@ -260,7 +262,7 @@ if (ob->route_list != NULL)
     /* Check the current domain; if it matches, break the loop */
 
     if ((rc = match_isinlist(addr->domain, &domain, UCHAR_MAX+1,
-           &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, &lookup_value)) == OK)
+           &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, CUSS &lookup_value)) == OK)
       break;
 
     /* If there was a problem doing the check, defer */
@@ -318,28 +320,26 @@ lookup_type = lk_default;
 
 while (*options != 0)
   {
-  int term;
-  uschar *s = options;
+  unsigned n;
+  const uschar *s = options;
   while (*options != 0 && !isspace(*options)) options++;
-  term = *options;
-  *options = 0;
+  n = options-s;
 
-  if (Ustrcmp(s, "randomize") == 0) randomize = TRUE;
-  else if (Ustrcmp(s, "no_randomize") == 0) randomize = FALSE;
-  else if (Ustrcmp(s, "byname") == 0) lookup_type = lk_byname;
-  else if (Ustrcmp(s, "bydns") == 0) lookup_type = lk_bydns;
+  if (Ustrncmp(s, "randomize", n) == 0) randomize = TRUE;
+  else if (Ustrncmp(s, "no_randomize", n) == 0) randomize = FALSE;
+  else if (Ustrncmp(s, "byname", n) == 0) lookup_type = lk_byname;
+  else if (Ustrncmp(s, "bydns", n) == 0) lookup_type = lk_bydns;
   else
     {
     transport_instance *t;
     for (t = transports; t != NULL; t = t->next)
-      {
       if (Ustrcmp(t->name, s) == 0)
         {
         transport = t;
         individual_transport_set = TRUE;
         break;
         }
-      }
+
     if (t == NULL)
       {
       s = string_sprintf("unknown routing option or transport name \"%s\"", s);
@@ -349,7 +349,7 @@ while (*options != 0)
       }
     }
 
-  if (term != 0)
+  if (*options)
     {
     options++;
     while (*options != 0 && isspace(*options)) options++;
@@ -358,13 +358,13 @@ while (*options != 0)
 
 /* Set up the errors address, if any. */
 
-rc = rf_get_errors_address(addr, rblock, verify, &(addr->p.errors_address));
+rc = rf_get_errors_address(addr, rblock, verify, &addr->prop.errors_address);
 if (rc != OK) return rc;
 
 /* Set up the additional and removeable headers for this address. */
 
-rc = rf_get_munge_headers(addr, rblock, &(addr->p.extra_headers),
-  &(addr->p.remove_headers));
+rc = rf_get_munge_headers(addr, rblock, &addr->prop.extra_headers,
+  &addr->prop.remove_headers);
 if (rc != OK) return rc;
 
 /* If an individual transport is not set, get the transport for this router, if

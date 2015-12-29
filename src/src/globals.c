@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* All the global variables are defined together in this one module, so
@@ -83,7 +83,7 @@ uschar *oracle_servers         = NULL;
 uschar *pgsql_servers          = NULL;
 #endif
 
-#ifdef EXPERIMENTAL_REDIS
+#ifdef LOOKUP_REDIS
 uschar *redis_servers          = NULL;
 #endif
 
@@ -148,7 +148,7 @@ uschar *gnutls_require_kx      = NULL;
 uschar *gnutls_require_proto   = NULL;
 uschar *openssl_options        = NULL;
 const pcre *regex_STARTTLS     = NULL;
-uschar *tls_advertise_hosts    = NULL;    /* This is deliberate */
+uschar *tls_advertise_hosts    = US"*";
 uschar *tls_certificate        = NULL;
 uschar *tls_crl                = NULL;
 /* This default matches NSS DH_MAX_P_BITS value at current time (2012), because
@@ -156,9 +156,10 @@ that's the interop problem which has been observed: GnuTLS suggesting a higher
 bit-count as "NORMAL" (2432) and Thunderbird dropping connection. */
 int     tls_dh_max_bits        = 2236;
 uschar *tls_dhparam            = NULL;
-#ifndef DISABLE_OCSP
+uschar *tls_eccurve            = US"prime256v1";
+# ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
-#endif
+# endif
 BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
@@ -166,6 +167,8 @@ uschar *tls_require_ciphers    = NULL;
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= US"system";
 uschar *tls_verify_hosts       = NULL;
+#else	/*!SUPPORT_TLS*/
+uschar *tls_advertise_hosts    = NULL;
 #endif
 
 #ifndef DISABLE_PRDR
@@ -173,6 +176,10 @@ uschar *tls_verify_hosts       = NULL;
 BOOL    prdr_enable            = FALSE;
 BOOL    prdr_requested         = FALSE;
 const pcre *regex_PRDR         = NULL;
+#endif
+
+#ifdef SUPPORT_I18N
+const pcre *regex_UTF8         = NULL;
 #endif
 
 /* Input-reading functions for messages, so we can use special ones for
@@ -192,24 +199,24 @@ BOOL (*receive_smtp_buffered)(void) = NULL;   /* Only used for SMTP */
 when verifying one address while routing/verifying another. We have to have
 the size explicit, because it is referenced from more than one module. */
 
-uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
-  &deliver_address_data,
-  &deliver_domain,
-  &deliver_domain_data,
-  &deliver_domain_orig,
-  &deliver_domain_parent,
-  &deliver_localpart,
-  &deliver_localpart_data,
-  &deliver_localpart_orig,
-  &deliver_localpart_parent,
-  &deliver_localpart_prefix,
-  &deliver_localpart_suffix,
-  (uschar **)(&deliver_recipients),
-  &deliver_host,
-  &deliver_home,
-  &address_file,
-  &address_pipe,
-  &self_hostname,
+const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
+  CUSS &deliver_address_data,
+  CUSS &deliver_domain,
+  CUSS &deliver_domain_data,
+  CUSS &deliver_domain_orig,
+  CUSS &deliver_domain_parent,
+  CUSS &deliver_localpart,
+  CUSS &deliver_localpart_data,
+  CUSS &deliver_localpart_orig,
+  CUSS &deliver_localpart_parent,
+  CUSS &deliver_localpart_prefix,
+  CUSS &deliver_localpart_suffix,
+  CUSS (uschar **)(&deliver_recipients),
+  CUSS &deliver_host,
+  CUSS &deliver_home,
+  CUSS &address_file,
+  CUSS &address_pipe,
+  CUSS &self_hostname,
   NULL };
 
 int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
@@ -349,13 +356,17 @@ address_item address_defaults = {
   NULL,                 /* return_filename */
   NULL,                 /* self_hostname */
   NULL,                 /* shadow_message */
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   NULL,                 /* cipher */
   NULL,			/* ourcert */
   NULL,			/* peercert */
   NULL,                 /* peerdn */
   OCSP_NOT_REQ,         /* ocsp */
-  #endif
+#endif
+#ifdef EXPERIMENTAL_DSN_INFO
+  NULL,			/* smtp_greeting */
+  NULL,			/* helo_response */
+#endif
   NULL,			/* authenticator */
   NULL,			/* auth_id */
   NULL,			/* auth_sndr */
@@ -383,6 +394,9 @@ address_item address_defaults = {
     NULL,               /* remove_headers */
 #ifdef EXPERIMENTAL_SRS
     NULL,               /* srs_sender */
+#endif
+#ifdef SUPPORT_I18N
+    FALSE,		/* utf8 */
 #endif
   }
 };
@@ -466,6 +480,7 @@ int     bounce_return_size_limit = 100*1024;
 uschar *bounce_sender_authentication = NULL;
 int     bsmtp_transaction_linecount = 0;
 
+uschar *callout_address        = NULL;
 int     callout_cache_domain_positive_expire = 7*24*60*60;
 int     callout_cache_domain_negative_expire = 3*60*60;
 int     callout_cache_positive_expire = 24*60*60;
@@ -506,8 +521,11 @@ int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 
 uschar *csa_status             = NULL;
-BOOL    cutthrough_delivery    = FALSE;
-int     cutthrough_fd          = -1;
+cut_t   cutthrough = {
+  FALSE,				/* delivery: when to attempt */
+  -1,					/* fd: open connection */
+  0,					/* nrcpt: number of addresses */
+};
 
 BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";
@@ -525,40 +543,45 @@ uschar *dccifd_options         = US"header";
 BOOL    debug_daemon           = FALSE;
 int     debug_fd               = -1;
 FILE   *debug_file             = NULL;
-bit_table debug_options[]      = {
-  { US"acl",            D_acl },
-  { US"all",            D_all },
-  { US"auth",           D_auth },
-  { US"deliver",        D_deliver },
-  { US"dns",            D_dns },
-  { US"dnsbl",          D_dnsbl },
-  { US"exec",           D_exec },
-  { US"expand",         D_expand },
-  { US"filter",         D_filter },
-  { US"hints_lookup",   D_hints_lookup },
-  { US"host_lookup",    D_host_lookup },
-  { US"ident",          D_ident },
-  { US"interface",      D_interface },
-  { US"lists",          D_lists },
-  { US"load",           D_load },
-  { US"local_scan",     D_local_scan },
-  { US"lookup",         D_lookup },
-  { US"memory",         D_memory },
-  { US"pid",            D_pid },
-  { US"process_info",   D_process_info },
-  { US"queue_run",      D_queue_run },
-  { US"receive",        D_receive },
-  { US"resolver",       D_resolver },
-  { US"retry",          D_retry },
-  { US"rewrite",        D_rewrite },
-  { US"route",          D_route },
-  { US"timestamp",      D_timestamp },
-  { US"tls",            D_tls },
-  { US"transport",      D_transport },
-  { US"uid",            D_uid },
-  { US"verify",         D_verify }
+int     debug_notall[]         = {
+  Di_memory,
+  -1
 };
-int     debug_options_count    = sizeof(debug_options)/sizeof(bit_table);
+bit_table debug_options[]      = { /* must be in alphabetical order */
+  BIT_TABLE(D, acl),
+  BIT_TABLE(D, all),
+  BIT_TABLE(D, auth),
+  BIT_TABLE(D, deliver),
+  BIT_TABLE(D, dns),
+  BIT_TABLE(D, dnsbl),
+  BIT_TABLE(D, exec),
+  BIT_TABLE(D, expand),
+  BIT_TABLE(D, filter),
+  BIT_TABLE(D, hints_lookup),
+  BIT_TABLE(D, host_lookup),
+  BIT_TABLE(D, ident),
+  BIT_TABLE(D, interface),
+  BIT_TABLE(D, lists),
+  BIT_TABLE(D, load),
+  BIT_TABLE(D, local_scan),
+  BIT_TABLE(D, lookup),
+  BIT_TABLE(D, memory),
+  BIT_TABLE(D, pid),
+  BIT_TABLE(D, process_info),
+  BIT_TABLE(D, queue_run),
+  BIT_TABLE(D, receive),
+  BIT_TABLE(D, resolver),
+  BIT_TABLE(D, retry),
+  BIT_TABLE(D, rewrite),
+  BIT_TABLE(D, route),
+  BIT_TABLE(D, timestamp),
+  BIT_TABLE(D, tls),
+  BIT_TABLE(D, transport),
+  BIT_TABLE(D, uid),
+  BIT_TABLE(D, verify),
+};
+int     debug_options_count    = nelem(debug_options);
+
 unsigned int debug_selector    = 0;
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
 uschar *delay_warning_condition=
@@ -570,18 +593,18 @@ uschar *delay_warning_condition=
 BOOL    delivery_date_remove   = TRUE;
 uschar *deliver_address_data   = NULL;
 int     deliver_datafile       = -1;
-uschar *deliver_domain         = NULL;
+const uschar *deliver_domain   = NULL;
 uschar *deliver_domain_data    = NULL;
-uschar *deliver_domain_orig    = NULL;
-uschar *deliver_domain_parent  = NULL;
+const uschar *deliver_domain_orig = NULL;
+const uschar *deliver_domain_parent = NULL;
 BOOL    deliver_drop_privilege = FALSE;
 BOOL    deliver_firsttime      = FALSE;
 BOOL    deliver_force          = FALSE;
 BOOL    deliver_freeze         = FALSE;
 time_t  deliver_frozen_at      = 0;
 uschar *deliver_home           = NULL;
-uschar *deliver_host           = NULL;
-uschar *deliver_host_address   = NULL;
+const uschar *deliver_host     = NULL;
+const uschar *deliver_host_address = NULL;
 int     deliver_host_port      = 0;
 uschar *deliver_in_buffer      = NULL;
 ino_t   deliver_inode          = 0;
@@ -614,13 +637,14 @@ BOOL    disable_ipv6           = FALSE;
 BOOL    disable_logging        = FALSE;
 
 #ifndef DISABLE_DKIM
+BOOL    dkim_collect_input       = FALSE;
 uschar *dkim_cur_signer          = NULL;
+BOOL    dkim_disable_verify      = FALSE;
+int     dkim_key_length          = 0;
 uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
 uschar *dkim_verify_signers      = US"$dkim_signers";
-BOOL    dkim_collect_input       = FALSE;
-BOOL    dkim_disable_verify      = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DMARC
 BOOL    dmarc_has_been_checked  = FALSE;
@@ -646,6 +670,7 @@ uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
 int     dns_dnssec_ok          = -1; /* <0 = not coerced */
+uschar *dns_trust_aa           = NULL;
 int     dns_use_edns0          = -1; /* <0 = not coerced */
 uschar *dnslist_domain         = NULL;
 uschar *dnslist_matched        = NULL;
@@ -665,11 +690,11 @@ uschar *errors_copy            = NULL;
 int     error_handling         = ERRORS_SENDER;
 uschar *errors_reply_to        = NULL;
 int     errors_sender_rc       = EXIT_FAILURE;
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 uschar *event_action             = NULL;	/* expansion for delivery events */
 uschar *event_data               = NULL;	/* auxilary data variable for event */
 int     event_defer_errno        = 0;
-uschar *event_name               = NULL;	/* event name variable */
+const uschar *event_name         = NULL;	/* event name variable */
 #endif
 
 
@@ -801,78 +826,93 @@ uid_t   local_user_uid         = (uid_t)(-1);
 tree_node *localpartlist_anchor= NULL;
 int     localpartlist_count    = 0;
 uschar *log_buffer             = NULL;
-unsigned int log_extra_selector = LX_default;
+
+int     log_default[]          = { /* for initializing log_selector */
+  Li_acl_warn_skipped,
+  Li_connection_reject,
+  Li_delay_delivery,
+  Li_dnslist_defer,
+  Li_etrn,
+  Li_host_lookup_failed,
+  Li_lost_incoming_connection,
+  Li_outgoing_interface, /* see d_log_interface in deliver.c */
+  Li_queue_run,
+  Li_rejected_header,
+  Li_retry_defer,
+  Li_sender_verify_fail,
+  Li_size_reject,
+  Li_skip_delivery,
+  Li_smtp_confirmation,
+  Li_tls_certificate_verified,
+  Li_tls_cipher,
+  -1
+};
+
 uschar *log_file_path          = US LOG_FILE_PATH
                            "\0<--------------Space to patch log_file_path->";
 
-/* Those log options with L_xxx identifiers have values less than 0x800000 and
-are the ones that get put into log_write_selector. They can be used in calls to
-log_write() to test for the bit. The options with LX_xxx identifiers have
-values greater than 0x80000000 and are put into log_extra_selector (without the
-top bit). They are never used in calls to log_write(), but are tested
-independently. This separation became necessary when the number of log
-selectors was getting close to filling a 32-bit word. */
-
-/* Note that this list must be in alphabetical order. */
-
-bit_table log_options[]        = {
-  { US"8bitmime",                     LX_8bitmime },
-  { US"acl_warn_skipped",             LX_acl_warn_skipped },
-  { US"address_rewrite",              L_address_rewrite },
-  { US"all",                          L_all },
-  { US"all_parents",                  L_all_parents },
-  { US"arguments",                    LX_arguments },
-  { US"connection_reject",            L_connection_reject },
-  { US"delay_delivery",               L_delay_delivery },
-  { US"deliver_time",                 LX_deliver_time },
-  { US"delivery_size",                LX_delivery_size },
-  { US"dnslist_defer",                L_dnslist_defer },
-  { US"etrn",                         L_etrn },
-  { US"host_lookup_failed",           L_host_lookup_failed },
-  { US"ident_timeout",                LX_ident_timeout },
-  { US"incoming_interface",           LX_incoming_interface },
-  { US"incoming_port",                LX_incoming_port },
-  { US"lost_incoming_connection",     L_lost_incoming_connection },
-  { US"outgoing_port",                LX_outgoing_port },
-  { US"pid",                          LX_pid },
-#ifdef EXPERIMENTAL_PROXY
-  { US"proxy",                        LX_proxy },
-#endif
-  { US"queue_run",                    L_queue_run },
-  { US"queue_time",                   LX_queue_time },
-  { US"queue_time_overall",           LX_queue_time_overall },
-  { US"received_recipients",          LX_received_recipients },
-  { US"received_sender",              LX_received_sender },
-  { US"rejected_header",              LX_rejected_header },
-  { US"rejected_headers",             LX_rejected_header },
-  { US"retry_defer",                  L_retry_defer },
-  { US"return_path_on_delivery",      LX_return_path_on_delivery },
-  { US"sender_on_delivery",           LX_sender_on_delivery },
-  { US"sender_verify_fail",           LX_sender_verify_fail },
-  { US"size_reject",                  L_size_reject },
-  { US"skip_delivery",                L_skip_delivery },
-  { US"smtp_confirmation",            LX_smtp_confirmation },
-  { US"smtp_connection",              L_smtp_connection },
-  { US"smtp_incomplete_transaction",  L_smtp_incomplete_transaction },
-  { US"smtp_mailauth",                LX_smtp_mailauth },
-  { US"smtp_no_mail",                 LX_smtp_no_mail },
-  { US"smtp_protocol_error",          L_smtp_protocol_error },
-  { US"smtp_syntax_error",            L_smtp_syntax_error },
-  { US"subject",                      LX_subject },
-  { US"tls_certificate_verified",     LX_tls_certificate_verified },
-  { US"tls_cipher",                   LX_tls_cipher },
-  { US"tls_peerdn",                   LX_tls_peerdn },
-  { US"tls_sni",                      LX_tls_sni },
-  { US"unknown_in_list",              LX_unknown_in_list }
+int     log_notall[]           = {
+  -1
 };
+bit_table log_options[]        = { /* must be in alphabetical order */
+  BIT_TABLE(L, 8bitmime),
+  BIT_TABLE(L, acl_warn_skipped),
+  BIT_TABLE(L, address_rewrite),
+  BIT_TABLE(L, all),
+  BIT_TABLE(L, all_parents),
+  BIT_TABLE(L, arguments),
+  BIT_TABLE(L, connection_reject),
+  BIT_TABLE(L, delay_delivery),
+  BIT_TABLE(L, deliver_time),
+  BIT_TABLE(L, delivery_size),
+  BIT_TABLE(L, dnslist_defer),
+  BIT_TABLE(L, etrn),
+  BIT_TABLE(L, host_lookup_failed),
+  BIT_TABLE(L, ident_timeout),
+  BIT_TABLE(L, incoming_interface),
+  BIT_TABLE(L, incoming_port),
+  BIT_TABLE(L, lost_incoming_connection),
+  BIT_TABLE(L, outgoing_interface),
+  BIT_TABLE(L, outgoing_port),
+  BIT_TABLE(L, pid),
+#if defined(SUPPORT_PROXY) || defined (SUPPORT_SOCKS)
+  BIT_TABLE(L, proxy),
+#endif
+  BIT_TABLE(L, queue_run),
+  BIT_TABLE(L, queue_time),
+  BIT_TABLE(L, queue_time_overall),
+  BIT_TABLE(L, received_recipients),
+  BIT_TABLE(L, received_sender),
+  BIT_TABLE(L, rejected_header),
+  { US"rejected_headers", Li_rejected_header },
+  BIT_TABLE(L, retry_defer),
+  BIT_TABLE(L, return_path_on_delivery),
+  BIT_TABLE(L, sender_on_delivery),
+  BIT_TABLE(L, sender_verify_fail),
+  BIT_TABLE(L, size_reject),
+  BIT_TABLE(L, skip_delivery),
+  BIT_TABLE(L, smtp_confirmation),
+  BIT_TABLE(L, smtp_connection),
+  BIT_TABLE(L, smtp_incomplete_transaction),
+  BIT_TABLE(L, smtp_mailauth),
+  BIT_TABLE(L, smtp_no_mail),
+  BIT_TABLE(L, smtp_protocol_error),
+  BIT_TABLE(L, smtp_syntax_error),
+  BIT_TABLE(L, subject),
+  BIT_TABLE(L, tls_certificate_verified),
+  BIT_TABLE(L, tls_cipher),
+  BIT_TABLE(L, tls_peerdn),
+  BIT_TABLE(L, tls_sni),
+  BIT_TABLE(L, unknown_in_list),
+};
+int     log_options_count      = nelem(log_options);
 
-int     log_options_count      = sizeof(log_options)/sizeof(bit_table);
 int     log_reject_target      = 0;
+unsigned int log_selector[log_selector_size]; /* initialized in main() */
 uschar *log_selector_string    = NULL;
 FILE   *log_stderr             = NULL;
 BOOL    log_testing_mode       = FALSE;
 BOOL    log_timezone           = FALSE;
-unsigned int log_write_selector= L_default;
 uschar *login_sender_address   = NULL;
 uschar *lookup_dnssec_authenticated = NULL;
 int     lookup_open_max        = 25;
@@ -903,6 +943,10 @@ int     message_linecount      = 0;
 BOOL    message_logs           = TRUE;
 int     message_size           = 0;
 uschar *message_size_limit     = US"50M";
+#ifdef SUPPORT_I18N
+BOOL    message_smtputf8       = FALSE;
+int     message_utf8_downconvert = 0;	/* -1 ifneeded; 0 never; 1 always */
+#endif
 uschar  message_subdir[2]      = { 0, 0 };
 uschar *message_reference      = NULL;
 
@@ -957,14 +1001,14 @@ int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
 BOOL    prod_requires_admin    = TRUE;
 
-#ifdef EXPERIMENTAL_PROXY
-uschar *proxy_host_address     = US"";
-int     proxy_host_port        = 0;
-uschar *proxy_required_hosts   = US"";
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
+uschar *hosts_proxy            = US"";
+uschar *proxy_external_address = US"";
+int     proxy_external_port    = 0;
+uschar *proxy_local_address    = US"";
+int     proxy_local_port       = 0;
 BOOL    proxy_session          = FALSE;
 BOOL    proxy_session_failed   = FALSE;
-uschar *proxy_target_address   = US"";
-int     proxy_target_port      = 0;
 #endif
 
 uschar *prvscheck_address      = NULL;
@@ -972,7 +1016,7 @@ uschar *prvscheck_keynum       = NULL;
 uschar *prvscheck_result       = NULL;
 
 
-uschar *qualify_domain_recipient = NULL;
+const uschar *qualify_domain_recipient = NULL;
 uschar *qualify_domain_sender  = NULL;
 BOOL    queue_2stage           = FALSE;
 uschar *queue_domains          = NULL;
@@ -1054,8 +1098,9 @@ const pcre *regex_From         = NULL;
 const pcre *regex_IGNOREQUOTA  = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
-const pcre *regex_smtp_code    = NULL;
 const pcre *regex_ismsgid      = NULL;
+const pcre *regex_smtp_code    = NULL;
+uschar *regex_vars[REGEX_VARS];
 #ifdef WHITELIST_D_MACROS
 const pcre *regex_whitelisted_macro = NULL;
 #endif
@@ -1154,7 +1199,9 @@ router_instance  router_defaults = {
     NULL,                      /* fallback_hostlist */
     NULL,                      /* transport instance */
     NULL,                      /* pass_router */
-    NULL                       /* redirect_router */
+    NULL,                      /* redirect_router */
+
+    { NULL, NULL },            /* dnssec_domains {require,request} */
 };
 
 uschar *router_name            = NULL;
@@ -1185,6 +1232,7 @@ uschar *sender_address_unrewritten = NULL;
 uschar *sender_data            = NULL;
 unsigned int sender_domain_cache[(MAX_NAMED_LIST * 2)/32];
 uschar *sender_fullhost        = NULL;
+BOOL    sender_helo_dnssec     = FALSE;
 uschar *sender_helo_name       = NULL;
 uschar **sender_host_aliases   = &no_aliases;
 uschar *sender_host_address    = NULL;
@@ -1213,6 +1261,7 @@ uschar *sending_ip_address     = NULL;
 int     sending_port           = -1;
 SIGNAL_BOOL sigalrm_seen       = FALSE;
 uschar **sighup_argv           = NULL;
+int     slow_lookup_log        = 0;	/* millisecs, zero disables */
 int     smtp_accept_count      = 0;
 BOOL    smtp_accept_keepalive  = TRUE;
 int     smtp_accept_max        = 20;
@@ -1267,11 +1316,15 @@ int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
 BOOL    smtp_use_pipelining    = FALSE;
 BOOL    smtp_use_size          = FALSE;
+#ifdef SUPPORT_I18N
+uschar *smtputf8_advertise_hosts = US"*";	/* overridden under test-harness */
+#endif
 
 #ifdef WITH_CONTENT_SCAN
 uschar *spamd_address          = US"127.0.0.1 783";
 uschar *spam_bar               = NULL;
 uschar *spam_report            = NULL;
+uschar *spam_action            = NULL;
 uschar *spam_score             = NULL;
 uschar *spam_score_int         = NULL;
 #endif
@@ -1374,6 +1427,7 @@ transport_instance  transport_defaults = {
     NULL,                     /* remove_headers */
     NULL,                     /* return_path */
     NULL,                     /* debug_string */
+    NULL,                     /* max_parallel */
     NULL,                     /* message_size_limit */
     NULL,                     /* headers_rewrite */
     NULL,                     /* rewrite_rules */
@@ -1392,7 +1446,7 @@ transport_instance  transport_defaults = {
     FALSE,                    /* log_defer_output */
     TRUE_UNSET                /* retry_use_local_part: BOOL, but set neither
                                  1 nor 0 so can detect unset */
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
    ,NULL		      /* event_action */
 #endif
 };
@@ -1400,7 +1454,7 @@ transport_instance  transport_defaults = {
 int     transport_count;
 uschar *transport_name          = NULL;
 int     transport_newlines;
-uschar **transport_filter_argv  = NULL;
+const uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;
 BOOL    transport_filter_timed_out = FALSE;
 int     transport_write_timeout= 0;
@@ -1447,8 +1501,8 @@ uschar *uucp_from_sender       = US"$1";
 
 uschar *verify_mode	       = NULL;
 uschar *version_copyright      =
- US"Copyright (c) University of Cambridge, 1995 - 2014\n"
-   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2014";
+ US"Copyright (c) University of Cambridge, 1995 - 2015\n"
+   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2015";
 uschar *version_date           = US"?";
 uschar *version_cnumber        = US"????";
 uschar *version_string         = US"?";

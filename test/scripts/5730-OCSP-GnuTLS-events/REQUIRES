@@ -1,0 +1,4 @@
+support GnuTLS
+support OCSP
+support Event
+running IPv4

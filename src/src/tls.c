@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module provides TLS (aka SSL) support for Exim. The code for OpenSSL is
@@ -84,11 +84,15 @@ return TRUE;
 *        Timezone environment flipping           *
 *************************************************/
 
+#ifdef MISSING_UNSETENV_3
+# include "setenv.c"
+#endif
+
 static uschar *
 to_tz(uschar * tz)
 {
   uschar * old = US getenv("TZ");
-  setenv("TZ", CS tz, 1);
+  (void) setenv("TZ", CCS tz, 1);
   tzset(); 
   return old;
 }
@@ -96,9 +100,9 @@ static void
 restore_tz(uschar * tz)
 {
   if (tz)
-    setenv("TZ", CS tz, 1);
+    (void) setenv("TZ", CCS tz, 1);
   else
-    unsetenv("TZ");
+    (void) unsetenv("TZ");
   tzset(); 
 }
 
@@ -107,18 +111,18 @@ restore_tz(uschar * tz)
 *************************************************/
 
 #ifdef USE_GNUTLS
-#include "tls-gnu.c"
-#include "tlscert-gnu.c"
+# include "tls-gnu.c"
+# include "tlscert-gnu.c"
 
-#define ssl_xfer_buffer (state_server.xfer_buffer)
-#define ssl_xfer_buffer_lwm (state_server.xfer_buffer_lwm)
-#define ssl_xfer_buffer_hwm (state_server.xfer_buffer_hwm)
-#define ssl_xfer_eof (state_server.xfer_eof)
-#define ssl_xfer_error (state_server.xfer_error)
+# define ssl_xfer_buffer (state_server.xfer_buffer)
+# define ssl_xfer_buffer_lwm (state_server.xfer_buffer_lwm)
+# define ssl_xfer_buffer_hwm (state_server.xfer_buffer_hwm)
+# define ssl_xfer_eof (state_server.xfer_eof)
+# define ssl_xfer_error (state_server.xfer_error)
 
 #else
-#include "tls-openssl.c"
-#include "tlscert-openssl.c"
+# include "tls-openssl.c"
+# include "tlscert-openssl.c"
 #endif
 
 
@@ -246,7 +250,7 @@ NOTE: We modify the supplied dn string during operation.
 
 Arguments:
 	dn	Distinguished Name string
-	mod	string containing optional list-sep and
+	mod	list containing optional output list-sep and
 		field selector match, comma-separated
 Return:
 	allocated string with list of matching fields,
@@ -254,7 +258,7 @@ Return:
 */
 
 uschar *
-tls_field_from_dn(uschar * dn, uschar * mod)
+tls_field_from_dn(uschar * dn, const uschar * mod)
 {
 int insep = ',';
 uschar outsep = '\n';
@@ -267,13 +271,15 @@ while ((ele = string_nextinlist(&mod, &insep, NULL, 0)))
   if (ele[0] != '>')
     match = ele;	/* field tag to match */
   else if (ele[1])
-    outsep = ele[1];	/* nondefault separator */
+    outsep = ele[1];	/* nondefault output separator */
 
 dn_to_list(dn);
 insep = ',';
-len = Ustrlen(match);
-while ((ele = string_nextinlist(&dn, &insep, NULL, 0)))
-  if (Ustrncmp(ele, match, len) == 0 && ele[len] == '=')
+len = match ? Ustrlen(match) : -1;
+while ((ele = string_nextinlist(CUSS &dn, &insep, NULL, 0)))
+  if (  !match
+     || Ustrncmp(ele, match, len) == 0 && ele[len] == '='
+     )
     list = string_append_listele(list, outsep, ele+len+1);
 return list;
 }
@@ -311,7 +317,7 @@ Returns:
 */
 
 BOOL
-tls_is_name_for_cert(uschar * namelist, void * cert)
+tls_is_name_for_cert(const uschar * namelist, void * cert)
 {
 uschar * altnames = tls_cert_subject_altname(cert, US"dns");
 uschar * subjdn;
@@ -324,7 +330,7 @@ if ((altnames = tls_cert_subject_altname(cert, US"dns")))
   int alt_sep = '\n';
   while ((cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0)))
     {
-    uschar * an = altnames;
+    const uschar * an = altnames;
     while ((certname = string_nextinlist(&an, &alt_sep, NULL, 0)))
       if (is_name_match(cmpname, certname))
 	return TRUE;
@@ -338,7 +344,7 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
   dn_to_list(subjdn);
   while ((cmpname = string_nextinlist(&namelist, &cmp_sep, NULL, 0)))
     {
-    uschar * sn = subjdn;
+    const uschar * sn = subjdn;
     while ((certname = string_nextinlist(&sn, &sn_sep, NULL, 0)))
       if (  *certname++ == 'C'
 	 && *certname++ == 'N'

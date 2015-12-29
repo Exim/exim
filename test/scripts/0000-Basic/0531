@@ -1,5 +1,6 @@
 # LMTP over TCP/IP - temporary error handling
 need_ipv4
+munge optional_dsn_info
 # This one has no retry time, so will be bounced immediately.
 #
 server PORT_S

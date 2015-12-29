@@ -97,3 +97,149 @@ foobar
 .
 quit
 ****
+#
+#
+# This one has a different rotten parameter, but should not induce a crash
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: text/html;
+        charset=UTF-8;
+        name=""
+Content-Disposition: inline
+Subject: Nasty
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****
+#
+#
+# This one has a 3rd rotten parameter style
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8""
+Content-Disposition: inline
+Subject: Nasty3
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****
+#
+#
+# This one has a some unrecognised params
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        garbage1;
+        garbage2=foo;
+        garbage3="bar"foo;
+        charset=UTF-8;
+        garbage4=";
+Content-Disposition: inline
+Subject: Nasty4
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****
+#
+# This one has two attachments, using different encodings
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Message-ID: <20041217133501.GA3058@test.ex>
+Subject: Nasty5
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="T4sUOijqQbZv57TR"
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="=?iso-8859-1?Q?test_=E4_test1?="
+
+(content 1: filename is rfc2047 encoded)
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename*=ISO-8859-1''%74%65%73%74%20%E4%20%74%65%73%74%32
+
+(content 2: filename is rfc2231 encoded)
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****
+#
+#
+# This one has a legit param; empty charset
+#
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133502.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: application/pdf;
+ name*=''2015.11.13%20-%20Pr%C3%A4sentation%20GI%20-%20LK.PDF
+Content-Disposition: attachment;
+ filename*=''2015.11.13%20-%20Pr%C3%A4sentation%20GI%20-%20LK.PDF
+Subject: Nasty6
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****

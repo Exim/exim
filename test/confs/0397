@@ -5,6 +5,7 @@ host_lookup_order = bydns
 spool_directory = DIR/spool
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
 

@@ -6,6 +6,29 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.87
+------------
+
+ 1. The ACL conditions regex and mime_regex now capture substrings
+    into numeric variables $regex1 to 9, like the "match" expansion condition.
+
+ 2. New $callout_address variable records the address used for a spam=,
+    malware= or verify= callout.
+
+ 3. Transports now take a "max_parallel" option, to limit concurrency.
+
+ 4. Expansion operators ${ipv6norm:<string>} and ${ipv6denorm:<string>}.
+    The latter expands to a 8-element colon-sep set of hex digits including
+    leading zeroes. A trailing ipv4-style dotted-decimal set is converted
+    to hex.  Pure ipv4 addresses are converted to IPv4-mapped IPv6.
+    The former operator strips leading zeroes and collapses the longest
+    set of 0-groups to a double-colon.
+
+ 5. New "-bP config" support, to dump the effective configuration.
+
+ 6. New $dkim_key_length variable.
+
+
 Version 4.86
 ------------
 
@@ -15,6 +38,34 @@ Version 4.86
     and directory name of the main configuration file. Also $exim_version.
 
  3. New "malware=" support for Avast.
+
+ 4. New "spam=" variant option for Rspamd.
+
+ 5. Assorted options on malware= and spam= scanners.
+
+ 6. A commandline option to write a comment into the logfile.
+
+ 7. If built with EXPERIMENTAL_SOCKS feature enabled, the smtp transport can
+    be configured to make connections via socks5 proxies.
+
+ 8. If built with EXPERIMENTAL_INTERNATIONAL, support is included for
+    the transmission of UTF-8 envelope addresses.
+
+ 9. If built with EXPERIMENTAL_INTERNATIONAL, an expansion item for a commonly
+    used encoding of Maildir folder names.
+
+10. A logging option for slow DNS lookups.
+
+11. New ${env {<variable>}} expansion.
+
+12. A non-SMTP authenticator using information from TLS client certificates.
+
+13. Main option "tls_eccurve" for selecting an Elliptic Curve for TLS.
+    Patch originally by Wolfgang Breyha.
+
+14. Main option "dns_trust_aa" for trusting your local nameserver at the
+    same level as DNSSEC.
+
 
 Version 4.85
 ------------

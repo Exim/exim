@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -32,7 +32,7 @@ Returns:      nothing
 */
 
 void
-rf_change_domain(address_item *addr, uschar *domain, BOOL rewrite,
+rf_change_domain(address_item *addr, const uschar *domain, BOOL rewrite,
   address_item **addr_new)
 {
 address_item *parent = store_get(sizeof(address_item));
@@ -52,7 +52,7 @@ domain cache. Then copy over the propagating fields from the parent. Then set
 up the new fields. */
 
 *addr = address_defaults;
-addr->p = parent->p;
+addr->prop = parent->prop;
 
 addr->address = address;
 addr->unique = string_copy(address);

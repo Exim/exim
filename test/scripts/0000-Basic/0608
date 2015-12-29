@@ -1,0 +1,20 @@
+# HELO verify dnssec
+# Exim test configuration 0608
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO localhost
+??? 250
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO l-sec
+??? 250
+****
+#
+killdaemon
+no_msglog_check

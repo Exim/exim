@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -36,7 +36,7 @@ data pointer passed to the conversation function. However, I was unable to get
 this to work on Solaris 2.6, so static variables are used instead. */
 
 static int pam_conv_had_error;
-static uschar *pam_args;
+static const uschar *pam_args;
 static BOOL pam_arg_ended;
 
 
@@ -129,7 +129,7 @@ Returns:   OK if authentication succeeded
 */
 
 int
-auth_call_pam(uschar *s, uschar **errptr)
+auth_call_pam(const uschar *s, uschar **errptr)
 {
 pam_handle_t *pamh = NULL;
 struct pam_conv pamc;

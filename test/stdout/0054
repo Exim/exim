@@ -1,4 +1,4 @@
 xxx@ten-1.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 xxx@ten-2.test.ex is undeliverable: Unrouteable address

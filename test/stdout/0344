@@ -1,12 +1,12 @@
 x@d1
   router = r1, transport = t1
-  host 192.168.4.3 [192.168.4.3] 
+  host 192.168.4.3 [192.168.4.3]
 x@d2
   router = r2, transport = t2
-  host V4NET.9.8.7 [V4NET.9.8.7] 
+  host V4NET.9.8.7 [V4NET.9.8.7]
 x@d30
   router = r3, transport = t4
-  host 1.2.3.4 [1.2.3.4] 
+  host 1.2.3.4 [1.2.3.4]
 x@d31
   router = r3, transport = t3
-  host 1.2.3.4 [1.2.3.4] 
+  host 1.2.3.4 [1.2.3.4]

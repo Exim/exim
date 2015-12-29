@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file is the header that is the only Exim header to be included in the
@@ -98,8 +98,8 @@ ABI is changed in a non backward compatible way. The minor number is increased
 each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
-#define LOCAL_SCAN_ABI_VERSION_MAJOR 1
-#define LOCAL_SCAN_ABI_VERSION_MINOR 1
+#define LOCAL_SCAN_ABI_VERSION_MAJOR 2
+#define LOCAL_SCAN_ABI_VERSION_MINOR 0
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
 
@@ -189,7 +189,7 @@ extern int     smtp_fflush(void);
 extern void    smtp_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    smtp_vprintf(const char *, va_list);
 extern uschar *string_copy(const uschar *);
-extern uschar *string_copyn(uschar *, int);
+extern uschar *string_copyn(const uschar *, int);
 extern uschar *string_sprintf(const char *, ...) ALMOST_PRINTF(1,2);
 
 /* End of local_scan.h */

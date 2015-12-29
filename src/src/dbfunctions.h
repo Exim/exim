@@ -2,18 +2,18 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
 /* Functions for reading/writing exim database files */
 
 void     dbfn_close(open_db *);
-int      dbfn_delete(open_db *, uschar *);
+int      dbfn_delete(open_db *, const uschar *);
 open_db *dbfn_open(uschar *, int, open_db *, BOOL);
-void    *dbfn_read_with_length(open_db *, uschar *, int *);
+void    *dbfn_read_with_length(open_db *, const uschar *, int *);
 uschar  *dbfn_scan(open_db *, BOOL, EXIM_CURSOR **);
-int      dbfn_write(open_db *, uschar *, void *, int);
+int      dbfn_write(open_db *, const uschar *, void *, int);
 
 /* Macro for the common call to read without wanting to know the length. */
 

@@ -1,6 +1,9 @@
 # Exim test configuration 4005
 # Content-scan: clamav interface
 
+OPT=
+CONTROL=
+
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
@@ -8,9 +11,11 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 log_selector = +subject
 
-av_scanner = clamd : DIR/eximdir/clam_sock
+#XXX we need an additional test for tcp-connected clamd
+av_scanner = clamd : DIR/eximdir/clam_sock CONTROL
 
 # ----- Main settings -----
 

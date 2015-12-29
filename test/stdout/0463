@@ -1,4 +1,4 @@
 x@ten-1.test.ex
     <-- x@ten-1
   router = all, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]

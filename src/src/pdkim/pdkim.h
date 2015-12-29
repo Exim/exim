@@ -21,11 +21,6 @@
  */
 
 /* -------------------------------------------------------------------------- */
-/* Debugging. This can also be enabled/disabled at run-time. I recommend to
-   leave it defined. */
-#define PDKIM_DEBUG
-
-/* -------------------------------------------------------------------------- */
 /* Length of the preallocated buffer for the "answer" from the dns/txt
    callback function. This should match the maximum RDLENGTH from DNS. */
 #define PDKIM_DNS_TXT_MAX_RECLEN    (1 << 16)
@@ -245,15 +240,10 @@ typedef struct pdkim_signature {
 /* Context to keep state between all operations. */
 #define PDKIM_MODE_SIGN     0
 #define PDKIM_MODE_VERIFY   1
-#define PDKIM_INPUT_NORMAL  0
-#define PDKIM_INPUT_SMTP    1
 typedef struct pdkim_ctx {
 
   /* PDKIM_MODE_VERIFY or PDKIM_MODE_SIGN */
   int mode;
-
-  /* PDKIM_INPUT_SMTP or PDKIM_INPUT_NORMAL */
-  int input_mode;
 
   /* One (signing) or several chained (verification) signatures */
   pdkim_signature *sig;
@@ -265,19 +255,12 @@ typedef struct pdkim_ctx {
   pdkim_str *cur_header;
   char      *linebuf;
   int        linebuf_offset;
-  int        seen_lf;
-  int        seen_eod;
-  int        past_headers;
+  BOOL       seen_lf;
+  BOOL       seen_eod;
+  BOOL       past_headers;
   int        num_buffered_crlf;
   int        num_headers;
   pdkim_stringlist *headers; /* Raw headers for verification         */
-
-#ifdef PDKIM_DEBUG
-  /* A FILE pointer. When not NULL, debug output will be generated
-    and sent to this stream */
-  FILE *debug_stream;
-#endif
-
 } pdkim_ctx;
 
 
@@ -291,10 +274,10 @@ extern "C" {
 #endif
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_sign    (int, char *, char *, char *);
+pdkim_ctx *pdkim_init_sign    (char *, char *, char *);
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_verify  (int, int(*)(char *, char *));
+pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *));
 
 DLLEXPORT
 int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,
@@ -309,11 +292,6 @@ int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **);
 
 DLLEXPORT
 void       pdkim_free_ctx     (pdkim_ctx *);
-
-#ifdef PDKIM_DEBUG
-DLLEXPORT
-void       pdkim_set_debug_stream(pdkim_ctx *, FILE *);
-#endif
 
 #ifdef __cplusplus
 }

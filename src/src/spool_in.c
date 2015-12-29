@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading spool files. When compiling for a utility (eximon),
@@ -288,15 +288,24 @@ tls_in.certificate_verified = FALSE;
 tls_in.dane_verified = FALSE;
 # endif
 tls_in.cipher = NULL;
-tls_in.ourcert = NULL;
-tls_in.peercert = NULL;
+# ifndef COMPILE_UTILITY	/* tls support fns not built in */
+tls_free_cert(&tls_in.ourcert);
+tls_free_cert(&tls_in.peercert);
+# endif
 tls_in.peerdn = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
 #endif
 
 #ifdef WITH_CONTENT_SCAN
+spam_bar = NULL;
+spam_score = NULL;
 spam_score_int = NULL;
+#endif
+
+#if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
+message_smtputf8 = FALSE;
+message_utf8_downconvert = 0;
 #endif
 
 dsn_ret = 0;
@@ -566,8 +575,16 @@ for (;;)
     if (Ustrncmp(p, "ender_set_untrusted", 19) == 0)
       sender_set_untrusted = TRUE;
 #ifdef WITH_CONTENT_SCAN
+    else if (Ustrncmp(p, "pam_bar ", 8) == 0)
+      spam_bar = string_copy(big_buffer + 10);
+    else if (Ustrncmp(p, "pam_score ", 10) == 0)
+      spam_score = string_copy(big_buffer + 12);
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
+#endif
+#if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
+    else if (Ustrncmp(p, "mtputf8", 7) == 0)
+      message_smtputf8 = TRUE;
 #endif
     break;
 
@@ -589,6 +606,15 @@ for (;;)
       tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
     else if (Ustrncmp(p, "ls_ocsp", 7) == 0)
       tls_in.ocsp = big_buffer[10] - '0';
+    break;
+#endif
+
+#if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
+    case 'u':
+    if (Ustrncmp(p, "tf8_downcvt", 11) == 0)
+      message_utf8_downconvert = 1;
+    else if (Ustrncmp(p, "tf8_optdowncvt", 15) == 0)
+      message_utf8_downconvert = -1;
     break;
 #endif
 
@@ -735,7 +761,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
         {
         p -= len;
         errors_to = string_copy(p);
-        }	
+        }
       }
 
     *(--p) = 0;   /* Terminate address */
@@ -749,7 +775,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
         {
         p -= len;
         orcpt = string_copy(p);
-        }	
+        }
       }
 
     *(--p) = 0;   /* Terminate address */

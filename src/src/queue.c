@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions that operate on the input queue. */
@@ -1274,6 +1274,9 @@ switch(action)
       {
       if (action == MSG_ADD_RECIPIENT)
         {
+#ifdef SUPPORT_I18N
+	if (string_is_utf8(recipient)) allow_utf8_domains = message_smtputf8 = TRUE;
+#endif
         receive_add_recipient(recipient, -1);
         log_write(0, LOG_MAIN, "recipient <%s> added by %s",
           recipient, username);
@@ -1297,6 +1300,9 @@ switch(action)
         }
       else  /* MSG_EDIT_SENDER */
         {
+#ifdef SUPPORT_I18N
+	if (string_is_utf8(recipient)) allow_utf8_domains = message_smtputf8 = TRUE;
+#endif
         sender_address = recipient;
         log_write(0, LOG_MAIN, "sender address changed to <%s> by %s",
           recipient, username);
@@ -1345,7 +1351,8 @@ queue_check_only(void)
 BOOL *set;
 int sep = 0;
 struct stat statbuf;
-uschar *s, *ss, *name;
+const uschar *s;
+uschar *ss, *name;
 uschar buffer[1024];
 
 if (queue_only_file == NULL) return;

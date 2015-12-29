@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -75,7 +75,7 @@ Returns:     nothing
 */
 
 void
-debug_print_argv(uschar **argv)
+debug_print_argv(const uschar ** argv)
 {
 debug_printf("exec");
 while (*argv != NULL) debug_printf(" %.256s", *argv++);

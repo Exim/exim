@@ -2,13 +2,14 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* A number of functions for driving outgoing SMTP calls. */
 
 
 #include "exim.h"
+#include "transports/smtp.h"
 
 
 
@@ -25,7 +26,6 @@ Arguments:
                which case the function does nothing
   host_af    AF_INET or AF_INET6 for the outgoing IP address
   addr       the mail address being handled (for setting errors)
-  changed    if not NULL, set TRUE if expansion actually changed istring
   interface  point this to the interface
   msg        to add to any error message
 
@@ -35,9 +35,9 @@ Returns:     TRUE on success, FALSE on failure, with error message
 
 BOOL
 smtp_get_interface(uschar *istring, int host_af, address_item *addr,
-  BOOL *changed, uschar **interface, uschar *msg)
+  uschar **interface, uschar *msg)
 {
-uschar *expint;
+const uschar * expint;
 uschar *iface;
 int sep = 0;
 
@@ -52,8 +52,6 @@ if (expint == NULL)
       "option for %s: %s", msg, expand_string_message);
   return FALSE;
   }
-
-if (changed != NULL) *changed = expint != istring;
 
 while (isspace(*expint)) expint++;
 if (*expint == 0) return TRUE;
@@ -143,74 +141,25 @@ return TRUE;
 
 
 
-/*************************************************
-*           Connect to remote host               *
-*************************************************/
-
-/* Create a socket, and connect it to a remote host. IPv6 addresses are
-detected by checking for a colon in the address. AF_INET6 is defined even on
-non-IPv6 systems, to enable the code to be less messy. However, on such systems
-host->address will always be an IPv4 address.
-
-The port field in the host item is used if it is set (usually router from SRV
-records or elsewhere). In other cases, the default passed as an argument is
-used, and the host item is updated with its value.
-
-Arguments:
-  host        host item containing name and address (and sometimes port)
-  host_af     AF_INET or AF_INET6
-  port        default remote port to connect to, in host byte order, for those
-                hosts whose port setting is PORT_NONE
-  interface   outgoing interface address or NULL
-  timeout     timeout value or 0
-  keepalive   TRUE to use keepalive
-  dscp        DSCP value to assign to socket
-  event       event expansion
-
-Returns:      connected socket number, or -1 with errno set
-*/
-
 int
-smtp_connect(host_item *host, int host_af, int port, uschar *interface,
-  int timeout, BOOL keepalive, const uschar *dscp
-#ifdef EXPERIMENTAL_EVENT
-  , uschar * event
-#endif
-  )
+smtp_sock_connect(host_item * host, int host_af, int port, uschar * interface,
+  transport_instance * tb, int timeout)
 {
-int on = 1;
-int save_errno = 0;
+smtp_transport_options_block * ob =
+  (smtp_transport_options_block *)tb->options_block;
+const uschar * dscp = ob->dscp;
 int dscp_value;
 int dscp_level;
 int dscp_option;
 int sock;
+int on = 1;
+int save_errno = 0;
 
-if (host->port != PORT_NONE)
-  {
-  HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("Transport port=%d replaced by host-specific port=%d\n", port,
-      host->port);
-  port = host->port;
-  }
-else host->port = port;    /* Set the port actually used */
-
-HDEBUG(D_transport|D_acl|D_v)
-  {
-  if (interface == NULL)
-    debug_printf("Connecting to %s [%s]:%d ... ",host->name,host->address,port);
-  else
-    debug_printf("Connecting to %s [%s]:%d from %s ... ", host->name,
-      host->address, port, interface);
-  }
-
-#ifdef EXPERIMENTAL_EVENT
-  deliver_host_address = host->address;
-  deliver_host_port = port;
-  if (event_raise(event, US"tcp:connect", NULL)) return -1;
-  /* Logging?  Debug? */
+#ifndef DISABLE_EVENT
+deliver_host_address = host->address;
+deliver_host_port = port;
+if (event_raise(tb->event_action, US"tcp:connect", NULL)) return -1;
 #endif
-
-/* Create the socket */
 
 if ((sock = ip_socket(SOCK_STREAM, host_af)) < 0) return -1;
 
@@ -232,15 +181,13 @@ if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
   option for both; ignore failures here */
   if (host_af == AF_INET6 &&
       dscp_lookup(dscp, AF_INET, &dscp_level, &dscp_option, &dscp_value))
-    {
     (void) setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value));
-    }
   }
 
 /* Bind to a specific interface if requested. Caller must ensure the interface
 is the same type (IPv4 or IPv6) as the outgoing address. */
 
-if (interface != NULL && ip_bind(sock, host_af, interface, 0) < 0)
+if (interface && ip_bind(sock, host_af, interface, 0) < 0)
   {
   save_errno = errno;
   HDEBUG(D_transport|D_acl|D_v)
@@ -286,9 +233,74 @@ else
     close(sock);
     return -1;
     }
-  if (keepalive) ip_keepalive(sock, host->address, TRUE);
+  if (ob->keepalive) ip_keepalive(sock, host->address, TRUE);
   return sock;
   }
+}
+
+/*************************************************
+*           Connect to remote host               *
+*************************************************/
+
+/* Create a socket, and connect it to a remote host. IPv6 addresses are
+detected by checking for a colon in the address. AF_INET6 is defined even on
+non-IPv6 systems, to enable the code to be less messy. However, on such systems
+host->address will always be an IPv4 address.
+
+The port field in the host item is used if it is set (usually router from SRV
+records or elsewhere). In other cases, the default passed as an argument is
+used, and the host item is updated with its value.
+
+Arguments:
+  host        host item containing name and address (and sometimes port)
+  host_af     AF_INET or AF_INET6
+  port        default remote port to connect to, in host byte order, for those
+                hosts whose port setting is PORT_NONE
+  interface   outgoing interface address or NULL
+  timeout     timeout value or 0
+  tb          transport
+
+Returns:      connected socket number, or -1 with errno set
+*/
+
+int
+smtp_connect(host_item *host, int host_af, int port, uschar *interface,
+  int timeout, transport_instance * tb)
+{
+#ifdef SUPPORT_SOCKS
+smtp_transport_options_block * ob =
+  (smtp_transport_options_block *)tb->options_block;
+#endif
+
+if (host->port != PORT_NONE)
+  {
+  HDEBUG(D_transport|D_acl|D_v)
+    debug_printf("Transport port=%d replaced by host-specific port=%d\n", port,
+      host->port);
+  port = host->port;
+  }
+else host->port = port;    /* Set the port actually used */
+
+callout_address = string_sprintf("[%s]:%d", host->address, port);
+
+HDEBUG(D_transport|D_acl|D_v)
+  {
+  uschar * s = US" ";
+  if (interface) s = string_sprintf(" from %s ", interface);
+#ifdef SUPPORT_SOCKS
+  if (ob->socks_proxy) s = string_sprintf("%svia proxy ", s);
+#endif
+  debug_printf("Connecting to %s %s%s... ", host->name, callout_address, s);
+  }
+
+/* Create and connect the socket */
+
+#ifdef SUPPORT_SOCKS
+if (ob->socks_proxy)
+  return socks_sock_connect(host, host_af, port, interface, tb, timeout);
+#endif
+
+return smtp_sock_connect(host, host_af, port, interface, tb, timeout);
 }
 
 
@@ -581,3 +593,5 @@ return buffer[0] == okdigit;
 }
 
 /* End of smtp_out.c */
+/* vi: aw ai sw=2
+*/

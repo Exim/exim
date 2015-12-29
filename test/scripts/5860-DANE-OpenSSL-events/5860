@@ -1,0 +1,30 @@
+# DANE client: events
+#
+exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
+****
+# TLSA (3 1 1)
+exim CALLER@dane256ee.test.ex
+Testing
+****
+# TLSA (3 1 2)
+exim CALLER@mxdane512ee.test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+exim -DSERVER=server -DDETAILS=ee -DNOTDAEMON -qf
+****
+#
+#
+exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
+****
+# TLSA (2 0 1)
+exim CALLER@mxdane256ta.test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+exim -DSERVER=server -DDETAILS=ta -DNOTDAEMON -qf
+****

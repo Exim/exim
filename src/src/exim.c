@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -131,10 +131,11 @@ Returns:      TRUE or FALSE
 */
 
 BOOL
-regex_match_and_setup(const pcre *re, uschar *subject, int options, int setup)
+regex_match_and_setup(const pcre *re, const uschar *subject, int options, int setup)
 {
 int ovector[3*(EXPAND_MAXN+1)];
-int n = pcre_exec(re, NULL, CS subject, Ustrlen(subject), 0,
+uschar * s = string_copy(subject);	/* de-constifying */
+int n = pcre_exec(re, NULL, CS s, Ustrlen(s), 0,
   PCRE_EOPT | options, ovector, sizeof(ovector)/sizeof(int));
 BOOL yield = n >= 0;
 if (n == 0) n = EXPAND_MAXN + 1;
@@ -144,7 +145,7 @@ if (yield)
   expand_nmax = (setup < 0)? 0 : setup + 1;
   for (nn = (setup < 0)? 0 : 2; nn < n*2; nn += 2)
     {
-    expand_nstring[expand_nmax] = subject + ovector[nn];
+    expand_nstring[expand_nmax] = s + ovector[nn];
     expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
     }
   expand_nmax--;
@@ -229,7 +230,7 @@ to disrupt whatever is going on outside the signal handler. */
 
 if (fd < 0) return;
 
-{int dummy = write(fd, process_info, process_info_len); dummy = dummy; }
+(void)write(fd, process_info, process_info_len);
 (void)close(fd);
 }
 
@@ -412,11 +413,11 @@ if (exim_tvcmp(&now_tv, then_tv) <= 0)
     {
     if (!running_in_test_harness)
       {
-      debug_printf("tick check: %lu.%06lu %lu.%06lu\n",
+      debug_printf("tick check: " TIME_T_FMT ".%06lu " TIME_T_FMT ".%06lu\n",
         then_tv->tv_sec, (long) then_tv->tv_usec,
        	now_tv.tv_sec, (long) now_tv.tv_usec);
-      debug_printf("waiting %lu.%06lu\n", itval.it_value.tv_sec,
-        (long) itval.it_value.tv_usec);
+      debug_printf("waiting " TIME_T_FMT ".%06lu\n",
+        itval.it_value.tv_sec, (long) itval.it_value.tv_usec);
       }
     }
 
@@ -813,17 +814,32 @@ fprintf(f, "Support for:");
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");
 #endif
+#ifdef WITH_OLD_DEMIME
+  fprintf(f, " Old_Demime");
+#endif
 #ifndef DISABLE_DKIM
   fprintf(f, " DKIM");
 #endif
-#ifdef WITH_OLD_DEMIME
-  fprintf(f, " Old_Demime");
+#ifndef DISABLE_DNSSEC
+  fprintf(f, " DNSSEC");
+#endif
+#ifndef DISABLE_EVENT
+  fprintf(f, " Event");
+#endif
+#ifdef SUPPORT_I18N
+  fprintf(f, " I18N");
+#endif
+#ifndef DISABLE_OCSP
+  fprintf(f, " OCSP");
 #endif
 #ifndef DISABLE_PRDR
   fprintf(f, " PRDR");
 #endif
-#ifndef DISABLE_OCSP
-  fprintf(f, " OCSP");
+#ifdef SUPPORT_PROXY
+  fprintf(f, " PROXY");
+#endif
+#ifdef SUPPORT_SOCKS
+  fprintf(f, " SOCKS");
 #endif
 #ifdef EXPERIMENTAL_SPF
   fprintf(f, " Experimental_SPF");
@@ -843,14 +859,8 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_DMARC
   fprintf(f, " Experimental_DMARC");
 #endif
-#ifdef EXPERIMENTAL_PROXY
-  fprintf(f, " Experimental_Proxy");
-#endif
-#ifdef EXPERIMENTAL_EVENT
-  fprintf(f, " Experimental_Event");
-#endif
-#ifdef EXPERIMENTAL_REDIS
-  fprintf(f, " Experimental_Redis");
+#ifdef EXPERIMENTAL_DSN_INFO
+  fprintf(f, " Experimental_DSN_info");
 #endif
 fprintf(f, "\n");
 
@@ -894,6 +904,9 @@ fprintf(f, "Lookups (built-in):");
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
   fprintf(f, " pgsql");
 #endif
+#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
+  fprintf(f, " redis");
+#endif
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
   fprintf(f, " sqlite");
 #endif
@@ -926,6 +939,9 @@ fprintf(f, "Authenticators:");
 #endif
 #ifdef AUTH_SPA
   fprintf(f, " spa");
+#endif
+#ifdef AUTH_TLS
+  fprintf(f, " tls");
 #endif
 fprintf(f, "\n");
 
@@ -1015,12 +1031,13 @@ DEBUG(D_any) do {
 #ifdef SUPPORT_TLS
   tls_version_report(f);
 #endif
+#ifdef SUPPORT_I18N
+  utf8_version_report(f);
+#endif
 
-  for (authi = auths_available; *authi->driver_name != '\0'; ++authi) {
-    if (authi->version_report) {
+  for (authi = auths_available; *authi->driver_name != '\0'; ++authi)
+    if (authi->version_report)
       (*authi->version_report)(f);
-    }
-  }
 
   /* PCRE_PRERELEASE is either defined and empty or a bare sequence of
   characters; unless it's an ancient version of PCRE in which case it
@@ -1040,10 +1057,8 @@ DEBUG(D_any) do {
 
   init_lookup_list();
   for (i = 0; i < lookup_list_count; i++)
-    {
     if (lookup_list[i]->version_report)
       lookup_list[i]->version_report(f);
-    }
 
 #ifdef WHITELIST_D_MACROS
   fprintf(f, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
@@ -1477,6 +1492,7 @@ BOOL f_end_dot = FALSE;
 BOOL deliver_give_up = FALSE;
 BOOL list_queue = FALSE;
 BOOL list_options = FALSE;
+BOOL list_config = FALSE;
 BOOL local_queue_only;
 BOOL more = TRUE;
 BOOL one_msg_action = FALSE;
@@ -1593,8 +1609,9 @@ if (!route_findgroup(US CONFIGURE_GROUPNAME, &config_gid))
   }
 #endif
 
-/* In the Cygwin environment, some initialization needs doing. It is fudged
-in by means of this macro. */
+/* In the Cygwin environment, some initialization used to need doing.
+It was fudged in by means of this macro; now no longer but we'll leave
+it in case of others. */
 
 #ifdef OS_INIT
 OS_INIT
@@ -1626,6 +1643,10 @@ if (log_buffer == NULL)
   fprintf(stderr, "exim: failed to get store for log buffer\n");
   exit(EXIT_FAILURE);
   }
+
+/* Initialize the default log options. */
+
+bits_set(log_selector, log_selector_size, log_default);
 
 /* Set log_stderr to stderr, provided that stderr exists. This gets reset to
 NULL when the daemon is run and the file is closed. We have to use this
@@ -1736,6 +1757,8 @@ given to -D for permissibility. */
 regex_whitelisted_macro =
   regex_must_compile(US"^[A-Za-z0-9_/.-]*$", FALSE, TRUE);
 #endif
+
+for (i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
 
 
 /* If the program is called as "mailq" treat it as equivalent to "exim -bp";
@@ -2134,9 +2157,19 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "P") == 0)
       {
-      list_options = TRUE;
-      debug_selector |= D_v;
-      debug_file = stderr;
+      /* -bP config: we need to setup here, because later,
+       * when list_options is checked, the config is read already */
+      if (argv[i+1] && Ustrcmp(argv[i+1], "config") == 0)
+        {
+        list_config = TRUE;
+        readconf_save_config(version_string);
+        }
+      else
+        {
+        list_options = TRUE;
+        debug_selector |= D_v;
+        debug_file = stderr;
+        }
       }
 
     /* -brt: Test retry configuration lookup */
@@ -2307,7 +2340,7 @@ for (i = 1; i < argc; i++)
               if (nr_configs)
                 {
                 int sep = 0;
-                uschar *list = argrest;
+                const uschar *list = argrest;
                 uschar *filename;
                 while (trusted_config && (filename = string_nextinlist(&list,
                         &sep, big_buffer, big_buffer_size)) != NULL)
@@ -2439,8 +2472,8 @@ for (i = 1; i < argc; i++)
         argrest++;
         }
       if (*argrest != 0)
-        decode_bits(&selector, NULL, D_memory, 0, argrest, debug_options,
-          debug_options_count, US"debug", 0);
+        decode_bits(&selector, 1, debug_notall, argrest,
+          debug_options, debug_options_count, US"debug", 0);
       debug_selector = selector;
       }
     break;
@@ -2512,7 +2545,7 @@ for (i = 1; i < argc; i++)
 
     case 'f':
       {
-      int start, end;
+      int dummy_start, dummy_end;
       uschar *errmess;
       if (*argrest == 0)
         {
@@ -2520,9 +2553,7 @@ for (i = 1; i < argc; i++)
           { badarg = TRUE; break; }
         }
       if (*argrest == 0)
-        {
         sender_address = string_sprintf("");  /* Ensure writeable memory */
-        }
       else
         {
         uschar *temp = argrest + Ustrlen(argrest) - 1;
@@ -2530,8 +2561,15 @@ for (i = 1; i < argc; i++)
         if (temp >= argrest && *temp == '.') f_end_dot = TRUE;
         allow_domain_literals = TRUE;
         strip_trailing_dot = TRUE;
-        sender_address = parse_extract_address(argrest, &errmess, &start, &end,
-          &sender_address_domain, TRUE);
+#ifdef SUPPORT_I18N
+	allow_utf8_domains = TRUE;
+#endif
+        sender_address = parse_extract_address(argrest, &errmess,
+          &dummy_start, &dummy_end, &sender_address_domain, TRUE);
+#ifdef SUPPORT_I18N
+	message_smtputf8 =  string_is_utf8(sender_address);
+	allow_utf8_domains = FALSE;
+#endif
         allow_domain_literals = FALSE;
         strip_trailing_dot = FALSE;
         if (sender_address == NULL)
@@ -3698,6 +3736,10 @@ is equivalent to the ability to modify a setuid binary!
 This needs to happen before we read the main configuration. */
 init_lookup_list();
 
+#ifdef SUPPORT_I18N
+if (running_in_test_harness) smtputf8_advertise_hosts = NULL;
+#endif
+
 /* Read the main runtime configuration data; this gives up if there
 is a failure. It leaves the configuration file open so that the subsequent
 configuration data for delivery can be read if needed. */
@@ -3766,14 +3808,17 @@ else
 
 /* Handle the decoding of logging options. */
 
-decode_bits(&log_write_selector, &log_extra_selector, 0, 0,
+decode_bits(log_selector, log_selector_size, log_notall,
   log_selector_string, log_options, log_options_count, US"log", 0);
 
 DEBUG(D_any)
   {
+  int i;
   debug_printf("configuration file is %s\n", config_main_filename);
-  debug_printf("log selectors = %08x %08x\n", log_write_selector,
-    log_extra_selector);
+  debug_printf("log selectors =");
+  for (i = 0; i < log_selector_size; i++)
+    debug_printf(" %08x", log_selector[i]);
+  debug_printf("\n");
   }
 
 /* If domain literals are not allowed, check the sender address that was
@@ -3980,7 +4025,7 @@ a debugging feature for finding out what arguments certain MUAs actually use.
 Don't attempt it if logging is disabled, or if listing variables or if
 verifying/testing addresses or expansions. */
 
-if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
+if (((debug_selector & D_any) != 0 || LOGGING(arguments))
       && really_exim && !list_options && !checking)
   {
   int i;
@@ -3994,7 +4039,7 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
   for (i = 0; i < argc; i++)
     {
     int len = Ustrlen(argv[i]);
-    uschar *printing;
+    const uschar *printing;
     uschar *quote;
     if (p + len + 8 >= big_buffer + big_buffer_size)
       {
@@ -4006,7 +4051,7 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
     printing = string_printing(argv[i]);
     if (printing[0] == 0) quote = US"\""; else
       {
-      uschar *pp = printing;
+      const uschar *pp = printing;
       quote = US"";
       while (*pp != 0) if (isspace(*pp++)) { quote = US"\""; break; }
       }
@@ -4015,7 +4060,7 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
     while (*p) p++;
     }
 
-  if ((log_extra_selector & LX_arguments) != 0)
+  if (LOGGING(arguments))
     log_write(0, LOG_MAIN, "%s", big_buffer);
   else
     debug_printf("%s\n", big_buffer);
@@ -4500,6 +4545,13 @@ if (list_options)
         }
       else readconf_print(argv[i], NULL, flag_n);
       }
+  exim_exit(EXIT_SUCCESS);
+  }
+
+if (list_config)
+  {
+  set_process_info("listing config");
+  readconf_print(US"config", NULL, FALSE);
   exim_exit(EXIT_SUCCESS);
   }
 
@@ -4999,8 +5051,9 @@ if (host_checking)
     "**** This is not for real!\n\n",
       sender_host_address);
 
+  memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
-    log_write_selector &= ~L_smtp_connection;
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
 
   /* NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
@@ -5069,6 +5122,9 @@ if (mua_wrapper)
   deliver_drop_privilege = TRUE;
   queue_smtp = FALSE;
   queue_smtp_domains = NULL;
+#ifdef SUPPORT_I18N
+  message_utf8_downconvert = -1;	/* convert-if-needed */
+#endif
   }
 
 
@@ -5170,8 +5226,9 @@ if (smtp_input)
   {
   smtp_in = stdin;
   smtp_out = stdout;
+  memset(sender_host_cache, 0, sizeof(sender_host_cache));
   if (verify_check_host(&hosts_connection_nolog) == OK)
-    log_write_selector &= ~L_smtp_connection;
+    BIT_CLEAR(log_selector, log_selector_size, Li_smtp_connection);
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
   if (!smtp_start_session())
     {
@@ -5347,7 +5404,6 @@ while (more)
 
         if (recipients_max > 0 && ++rcount > recipients_max &&
             !extract_recipients)
-          {
           if (error_handling == ERRORS_STDERR)
             {
             fprintf(stderr, "exim: too many recipients\n");
@@ -5359,11 +5415,22 @@ while (more)
               moan_to_sender(ERRMESS_TOOMANYRECIP, NULL, NULL, stdin, TRUE)?
                 errors_sender_rc : EXIT_FAILURE;
             }
-          }
 
+#ifdef SUPPORT_I18N
+	{
+	BOOL b = allow_utf8_domains;
+	allow_utf8_domains = TRUE;
+#endif
         recipient =
           parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
 
+#ifdef SUPPORT_I18N
+	if (string_is_utf8(recipient))
+	  message_smtputf8 = TRUE;
+	else
+	  allow_utf8_domains = b;
+	}
+#endif
         if (domain == 0 && !allow_unqualified_recipient)
           {
           recipient = NULL;
@@ -5463,9 +5530,7 @@ while (more)
       return_path = string_copy(sender_address);
       }
     else
-      {
       printf("Return-path = %s\n", (return_path[0] == 0)? US"<>" : return_path);
-      }
     printf("Sender      = %s\n", (sender_address[0] == 0)? US"<>" : sender_address);
 
     receive_add_recipient(

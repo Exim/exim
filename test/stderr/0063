@@ -29,9 +29,6 @@
 >>> sender host name required, to match against ^[^\d]+2
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in "^[^\d]+2"? no (end of list)
@@ -74,9 +71,6 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1
 >>> sender host name required, to match against ^[^\d]+2
 >>> looking up host name for V4NET.0.0.2
 >>> IP address lookup yielded "ten-2.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-2.test.ex address=V4NET.0.0.2
 >>> checking addresses for ten-2.test.ex
 >>>   V4NET.0.0.2 OK
 >>> host in "^[^\d]+2"? yes (matched "^[^\d]+2")

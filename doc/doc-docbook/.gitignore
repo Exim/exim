@@ -3,6 +3,7 @@ spec*.xml
 spec.ps
 spec.pdf
 spec.txt
+spec.utf8
 filter*.xml
 filter.ps
 filter.pdf

@@ -1,9 +1,9 @@
 userx@other2.test.ex
   router = lookuphost2, transport = smtp
-  host other2.test.ex [V4NET.12.3.1] 
+  host other2.test.ex [V4NET.12.3.1]
 userx@ten-5-6.test.ex
   router = domainlist, transport = smtp
-  host ten-5-6.test.ex [V4NET.0.0.5] 
+  host ten-5-6.test.ex [V4NET.0.0.5]
 userx@mxt7.test.ex
   router = lookuphost, transport = smtp
   host ten-3.test.ex [V4NET.0.0.3] MX=6
@@ -12,7 +12,7 @@ userx@mxt9.test.ex
   host ten-3.test.ex [V4NET.0.0.3] MX=7
 userx@eximtesthost.test.ex
   router = lookuphost2, transport = smtp
-  host eximtesthost.test.ex [ip4.ip4.ip4.ip4] 
+  host eximtesthost.test.ex [ip4.ip4.ip4.ip4]
 userx@localhost is undeliverable: Unrouteable address
 userx@mxt10.test.ex is undeliverable: all relevant MX records point to non-existent hosts
 userx@mxt11.test.ex is undeliverable: all relevant MX records point to non-existent hosts

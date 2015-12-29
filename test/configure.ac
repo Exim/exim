@@ -15,6 +15,7 @@ AC_PROG_CC
 
 dnl Checks for header files.
 
+AC_CHECK_HEADERS(sys/socket.h)
 AC_CHECK_HEADERS(openssl/crypto.h,[CLIENT_SSL=bin/client-ssl])
 AC_CHECK_HEADERS(gnutls/gnutls.h,[CLIENT_GNUTLS=bin/client-gnutls])
 
@@ -52,6 +53,8 @@ dnl Solaris requires additional libraries for networking functions.
 
 AC_SEARCH_LIBS([inet_addr], [nsl])
 AC_SEARCH_LIBS([connect], [socket])
+AC_SEARCH_LIBS([inet_pton], [nsl socket resolv])
+AC_SEARCH_LIBS([inet_ntop], [nsl socket resolv])
 
 dnl "Export" these variables
 

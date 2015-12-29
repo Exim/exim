@@ -40,7 +40,8 @@ check_recipient:
                       DES-CBC3-SHA : \
                       DHE_RSA_AES_256_CBC_SHA1 : \
                       DHE_RSA_3DES_EDE_CBC_SHA : \
-                      RSA_AES_256_CBC_SHA1
+                      RSA_AES_256_CBC_SHA1 : \
+		      ECDHE_RSA_AES_256_GCM_SHA384
   warn    logwrite =  ${if def:tls_in_ourcert \
 		{Our cert SN: <${certextract{subject}{$tls_in_ourcert}}>} \
 		{We did not present a cert}}

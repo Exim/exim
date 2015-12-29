@@ -41,7 +41,9 @@ check_recipient:
 		      DHE-RSA-AES256-SHA:\
 		      DHE-RSA-AES256-GCM-SHA384:\
                       DHE_RSA_AES_256_CBC_SHA1:\
-                      DHE_RSA_3DES_EDE_CBC_SHA
+                      DHE_RSA_3DES_EDE_CBC_SHA:\
+                      ECDHE-RSA-AES256-GCM-SHA384:\
+                      ECDHE-RSA-AES128-GCM-SHA256
   accept
 
 

@@ -21,6 +21,9 @@ srv=_smtp._tcp.nosmtp.test.ex    ${lookup dnsdb{srv=_smtp._tcp.nosmtp.test.ex}{$
 csa=csa1.test.ex           ${lookup dnsdb{csa=csa1.test.ex}}
 csa=csa2.test.ex           ${lookup dnsdb{csa=csa2.test.ex}}
 
+soa=test.ex                ${lookup dnsdb{soa=test.ex}{$value}{fail}}
+soa=a.test.ex              ${lookup dnsdb{>:, soa=test.ex}{$value}{fail}}
+
 # DNS lookups with multiple items
 
 ten-1:ten2                 ${lookup dnsdb{a=ten-1.test.ex:ten-2.test.ex}}
@@ -40,4 +43,22 @@ defer_lax:ten-1            ${lookup dnsdb{defer_lax,a=test.again.dns:ten-1.test.
 defer_never:ten-1          ${lookup dnsdb{defer_never,a=test.again.dns:ten-1.test.ex}}
 defer_never:defer          ${lookup dnsdb{defer_never,a=test.again.dns:test.again.dns}}
 defer_strict:ten-1         ${lookup dnsdb{defer_strict,a=test.again.dns:ten-1.test.ex}}
+
+# Retry timeout and count.  This only tests the syntax; we do not
+# have any good way of testing the function.
+
+delay1500                  ${lookup dnsdb{retrans_1s,retry_2,a=delay1500.test.ex}}
 ****
+#
+# Cacheability
+exim -d-all+lookup -be
+a=localhost.test.ex        ${lookup dnsdb{a=localhost.test.ex}{$value}fail}
+a=localhost.test.ex        ${lookup dnsdb{a=localhost.test.ex}{$value}fail}
+****
+#
+# TTL-limited noncacheability
+exim -d-all+lookup -odq user@shorthost.test.ex
+****
+#
+no_msglog_check
+#

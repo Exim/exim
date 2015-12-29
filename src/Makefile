@@ -2,7 +2,7 @@
 # appropriate links, and then creating and running the main makefile in that
 # directory.
 
-# Copyright (c) University of Cambridge, 1995 - 2014
+# Copyright (c) University of Cambridge, 1995 - 2015
 # See the file NOTICE for conditions of use and distribution.
 
 # IRIX make uses the shell that is in the SHELL variable, which often defaults
@@ -27,6 +27,14 @@ buildname=$${build:-`$(SHELL) scripts/os-type`-`$(SHELL) scripts/arch-type`}
 
 all: Local/Makefile configure
 	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS)
+
+
+# This pair for the convinience of of the Debian maintainers
+exim: Local/Makefile configure
+	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS) exim
+utils: Local/Makefile configure
+	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS) utils
+
 
 Local/Makefile:
 	@echo ""
@@ -93,6 +101,7 @@ cscope.files: FRC
 	find src Local OS exim_monitor -name "*.[cshyl]" -print \
 		    -o -name "os.h*" -print \
 		    -o -name "*akefile*" -print \
+		    -o -name config.h.defaults -print \
 		    -o -name EDITME -print >> $@
 	ls OS/* >> $@
 

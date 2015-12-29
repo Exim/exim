@@ -1,5 +1,6 @@
 # unseen without disable_logging and errors_to = ""
 need_ipv4
+munge optional_dsn_info
 #
 server -t 10 PORT_S 3
 220

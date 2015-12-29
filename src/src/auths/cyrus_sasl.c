@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This code was originally contributed by Matthew Byng-Maddick */
@@ -97,7 +97,7 @@ auth_cyrus_sasl_init(auth_instance *ablock)
 {
 auth_cyrus_sasl_options_block *ob =
   (auth_cyrus_sasl_options_block *)(ablock->options_block);
-uschar *list, *listptr, *buffer;
+const uschar *list, *listptr, *buffer;
 int rc, i;
 unsigned int len;
 uschar *rs_point, *expanded_hostname;
@@ -146,7 +146,7 @@ if( rc != SASL_OK )
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL server connection.", ablock->name);
 
-rc=sasl_listmech(conn, NULL, "", ":", "", (const char **)(&list), &len, &i);
+rc=sasl_listmech(conn, NULL, "", ":", "", (const char **)&list, &len, &i);
 if( rc != SASL_OK )
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't get Cyrus SASL mechanism list.", ablock->name);

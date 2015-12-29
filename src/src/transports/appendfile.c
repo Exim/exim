@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -186,7 +186,7 @@ appendfile_transport_options_block appendfile_transport_option_defaults = {
   NULL,           /* quota_warn_threshold */
   NULL,           /* mailbox_size_string */
   NULL,           /* mailbox_filecount_string */
-  NULL,           /* expand_maildir_use_size_file */ 
+  NULL,           /* expand_maildir_use_size_file */
   US"^(?:cur|new|\\..*)$",  /* maildir_dir_regex */
   NULL,           /* maildir_tag */
   NULL,           /* maildirfolder_create_regex */
@@ -276,7 +276,7 @@ uid = uid;
 gid = gid;
 
 if (ob->expand_maildir_use_size_file)
-	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file, 
+	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file,
 		US"`maildir_use_size_file` in transport", tblock->name);
 
 /* Loop for quota, quota_filecount, quota_warn_threshold, mailbox_size,
@@ -664,7 +664,7 @@ Returns:       pointer to the required transport, or NULL
 transport_instance *
 check_file_format(int cfd, transport_instance *tblock, address_item *addr)
 {
-uschar *format =
+const uschar *format =
   ((appendfile_transport_options_block *)(tblock->options_block))->file_format;
 uschar data[256];
 int len = read(cfd, data, sizeof(data));
@@ -2540,8 +2540,8 @@ else
       uschar *basename;
 
       (void)gettimeofday(&msg_tv, NULL);
-      basename = string_sprintf("%lu.H%luP%lu.%s", msg_tv.tv_sec,
-        msg_tv.tv_usec, getpid(), primary_hostname);
+      basename = string_sprintf(TIME_T_FMT ".H%luP%lu.%s",
+       	msg_tv.tv_sec, msg_tv.tv_usec, getpid(), primary_hostname);
 
       filename = dataname = string_sprintf("tmp/%s", basename);
       newname = string_sprintf("new/%s", basename);

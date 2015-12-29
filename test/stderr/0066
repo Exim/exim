@@ -280,9 +280,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> sender host name required, to match against *-1.test.ex
 >>> looking up host name for V4NET.0.0.1
 >>> IP address lookup yielded "ten-1.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=ten-1.test.ex address=V4NET.0.0.1
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? yes (matched "*-1.test.ex" in TESTSUITE/aux-var/0066.hostnets)

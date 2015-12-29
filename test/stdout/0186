@@ -1,6 +1,6 @@
 userx@other2.test.ex
   router = lookuphost, transport = smtp
-  host other2.test.ex [V4NET.12.3.1] 
+  host other2.test.ex [V4NET.12.3.1]
 userx@ten-5-6.test.ex
   router = domainlist, transport = smtp
-  host ten-5-6.test.ex [V4NET.0.0.5] 
+  host ten-5-6.test.ex [V4NET.0.0.5]

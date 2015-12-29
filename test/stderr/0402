@@ -568,7 +568,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: userz@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 DSN: processing router : r2
 DSN: processing successful delivery address: usery@test.ex
 DSN: Sender_address: CALLER@test.ex
@@ -576,7 +576,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: usery@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 DSN: processing router : r1
 DSN: processing successful delivery address: CALLER@test.ex
 DSN: Sender_address: CALLER@test.ex
@@ -584,7 +584,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: CALLER@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 DSN: processing router : r4
 DSN: processing successful delivery address: TESTSUITE/test-mail/junk
 DSN: Sender_address: CALLER@test.ex
@@ -592,7 +592,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: TESTSUITE/test-mail/junk
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 DSN: processing router : r5
 DSN: processing successful delivery address: TESTSUITE/test-mail/junk
 DSN: Sender_address: CALLER@test.ex
@@ -600,7 +600,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: TESTSUITE/test-mail/junk
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 DSN: processing router : r4
 DSN: processing successful delivery address: rd+CALLER@test.ex
 DSN: Sender_address: CALLER@test.ex
@@ -608,7 +608,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: rd+CALLER@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 DSN: processing router : r5
 DSN: processing successful delivery address: rd+usery@test.ex
 DSN: Sender_address: CALLER@test.ex
@@ -616,7 +616,7 @@ DSN: orcpt: NULL  flags: 0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: rd+usery@test.ex
 DSN: Remote SMTP server supports DSN: 0
-DSN: *** NOT SENDING DSN SUCCESS Message ***
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00

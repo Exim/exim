@@ -135,7 +135,7 @@ SSL info: SSLv3 write finished A
 SSL info: SSLv3 flush data
 SSL info: SSLv3 read server session ticket A
 SSL info: SSLv3 read server session ticket A
-pppp:error:14094410:SSL routines:SSL3_READ_BYTES:sslv3 alert handshake failure:s3_pkt.c:dddd:SSL alert number 40
+pppp:error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:s3_pkt.c:dddd:SSL alert number 40
 Failed to start TLS
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected

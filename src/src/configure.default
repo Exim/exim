@@ -236,6 +236,13 @@ host_lookup = *
 #rfc1413_query_timeout = 5s
 
 
+# Enable an efficiency feature.  We advertise the feature; clients
+# may request to use it.  For multi-recipient mails we then can
+# reject or accept per-user after the message is received.
+#
+prdr_enable = true
+
+
 # By default, Exim expects all envelope addresses to be fully qualified, that
 # is, they must contain both a local part and a domain. If you want to accept
 # unqualified addresses (just a local part) from certain hosts, you can specify
@@ -247,6 +254,13 @@ host_lookup = *
 # to control sender and recipient addresses, respectively. When this is done,
 # unqualified addresses are qualified using the settings of qualify_domain
 # and/or qualify_recipient (see above).
+
+
+# Unless you run a high-volume site you probably want more logging
+# detail than the default.  Adjust to suit.
+
+log_selector = +smtp_protocol_error +smtp_syntax_error \
+	+tls_certificate_verified
 
 
 # If you want Exim to support the "percent hack" for certain domains,
@@ -478,6 +492,11 @@ acl_check_rcpt:
 
 acl_check_data:
 
+  # Deny if the message contains an overlong line.  Per the standards
+  # we should never receive one such via SMTP.
+  #
+  deny    condition  = ${if > {$max_received_linelength}{998}}
+
   # Deny if the message contains a virus. Before enabling this check, you
   # must install a virus scanner and set the av_scanner option above.
   #
@@ -670,9 +689,13 @@ begin transports
 
 
 # This transport is used for delivering messages over SMTP connections.
+# Refuse to send any messsage with over-long lines, which could have
+# been receved other than via SMTP. The use of message_size_limit to
+# enforce this is a red herring.
 
 remote_smtp:
   driver = smtp
+  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
 
 
 # This transport is used for local delivery to user mailboxes in traditional

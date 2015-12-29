@@ -36,7 +36,7 @@ internal_search_find: file="NULL"
   type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns"
 database lookup required for >:defer_never,mxh=cioce.test.again.dns
 dnsdb key: cioce.test.again.dns
-Return from DNS lookup of cioce.test.again.dns (MX) faked for testing
+DNS lookup of cioce.test.again.dns (MX) using fakens
 DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
@@ -46,18 +46,24 @@ looking up host name for ip4.ip4.ip4.ip4
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "the.local.host.name"
-using host_fake_gethostbyname for the.local.host.name (IPv4)
 DNS lookup of the.local.host.name (A) using fakens
 DNS lookup of the.local.host.name (A) succeeded
-MUNGED: ::1 will be omitted in what follows
-get[host|ipnode]byname[2] looked up these IP addresses:
-  name=the.local.host.name address=ip4.ip4.ip4.ip4
+local host found for non-MX address
+the.local.host.name ip4.ip4.ip4.ip4 mx=-1 sort=xx 
 checking addresses for the.local.host.name
+Forward DNS security status: unverified
   ip4.ip4.ip4.ip4 OK
 sender_fullhost = the.local.host.name [ip4.ip4.ip4.ip4]
 sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4])
+using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
+DNS lookup of cioce.test.again.dns (A) using fakens
+DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
-cioce.test.again.dns is in dns_again_means_nonexist: returning HOST_FIND_FAILED
+cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
+get[host|ipnode]byname[2] returned 1 (HOST_NOT_FOUND)
+no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
+LOG: host_lookup_failed MAIN
+  no IP address found for host cioce.test.again.dns (during SMTP connection from the.local.host.name [ip4.ip4.ip4.ip4])
 failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "? no (end of list)
 accept: condition test failed in ACL "rcpt"

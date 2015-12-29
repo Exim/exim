@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Thanks to Petr Cech for contributing the original code for these
@@ -118,8 +118,8 @@ Returns:       OK, FAIL, or DEFER
 */
 
 static int
-perform_pgsql_search(uschar *query, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, BOOL *do_cache)
+perform_pgsql_search(const uschar *query, uschar *server, uschar **resultptr,
+  uschar **errmsg, BOOL *defer_break, uint *do_cache)
 {
 PGconn *pg_conn = NULL;
 PGresult *pg_result = NULL;
@@ -290,10 +290,10 @@ else
     /* The command was successful but did not return any data since it was
      * not SELECT but either an INSERT, UPDATE or DELETE statement. Tell the
      * high level code to not cache this query, and clean the current cache for
-     * this handle by setting *do_cache FALSE. */
+     * this handle by setting *do_cache zero. */
     result = string_copy(US PQcmdTuples(pg_result));
     offset = Ustrlen(result);
-    *do_cache = FALSE;
+    *do_cache = 0;
     DEBUG(D_lookup) debug_printf("PGSQL: command does not return any data "
       "but was successful. Rows affected: %s\n", result);
 
@@ -398,8 +398,8 @@ query is deferred with a retryable error is now in a separate function that is
 shared with other SQL lookups. */
 
 static int
-pgsql_find(void *handle, uschar *filename, uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+pgsql_find(void *handle, uschar *filename, const uschar *query, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,
   result, errmsg, do_cache, perform_pgsql_search);
@@ -413,12 +413,6 @@ return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,
 
 /* The characters that always need to be quoted (with backslash) are newline,
 tab, carriage return, backspace, backslash itself, and the quote characters.
-Percent and underscore are only special in contexts where they can be wild
-cards, and this isn't usually the case for data inserted from messages, since
-that isn't likely to be treated as a pattern of any kind. However, pgsql seems
-to allow escaping "on spec". If you use something like "where id="ab\%cd" it
-does treat the string as "ab%cd". So we can safely quote percent and
-underscore. [This is different to MySQL, where you can't do this.]
 
 The original code quoted single quotes as \' which is documented as valid in
 the O'Reilly book "Practical PostgreSQL" (first edition) as an alternative to
@@ -448,7 +442,7 @@ uschar *quoted;
 if (opt != NULL) return NULL;     /* No options recognized */
 
 while ((c = *t++) != 0)
-  if (Ustrchr("\n\t\r\b\'\"\\%_", c) != NULL) count++;
+  if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
 if (count == 0) return s;
 t = quoted = store_get(Ustrlen(s) + count + 1);
@@ -460,7 +454,7 @@ while ((c = *s++) != 0)
     *t++ = '\'';
     *t++ = '\'';
     }
-  else if (Ustrchr("\n\t\r\b\"\\%_", c) != NULL)
+  else if (Ustrchr("\n\t\r\b\"\\", c) != NULL)
     {
     *t++ = '\\';
     switch(c)

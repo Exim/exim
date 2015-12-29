@@ -44,9 +44,6 @@ storage" as quickly as Exim thinks they are. */
 
 #define NEED_SYNC_DIRECTORY
 
-/* Other OS have "const" in here */
-#define ICONV_ARG2_TYPE char **
-
 #define os_find_running_interfaces os_find_running_interfaces_linux
 
 /* Need a prototype for the Linux-specific function. The structure hasn't

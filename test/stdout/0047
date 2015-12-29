@@ -1,9 +1,9 @@
 xx@domain1
   router = domainlist, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 xx@route1.ex
   router = domainlist, transport = smtp
-  host ten-2.test.ex [V4NET.0.0.2] 
+  host ten-2.test.ex [V4NET.0.0.2]
 xx@domain3
   router = domainlist, transport = smtp
-  host ten-3.test.ex [V4NET.0.0.3] 
+  host ten-3.test.ex [V4NET.0.0.3]

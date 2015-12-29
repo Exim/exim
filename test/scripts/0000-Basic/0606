@@ -1,0 +1,19 @@
+# dns log long lookups
+# Exim test configuration 0606
+#
+munge delay_1500
+#
+exim -bh 127.0.0.1
+helo test
+mail from:<ralph@dustyshoes.tld>
+rcpt to:<should_log@delay1500.test.ex>
+quit
+****
+#
+#
+exim -bh 127.0.0.1
+helo test
+mail from:<ralph@dustyshoes.tld>
+rcpt to:<should_not_log@delay500.test.ex>
+quit
+****

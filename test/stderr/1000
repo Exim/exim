@@ -22,9 +22,6 @@ LOG: H=[2001:0ab8:037f:0020:0000:0000:0000:0001] Warning: matched hostlist
 >>> host in host_lookup? yes (matched "*")
 >>> looking up host name for V6NET:1234:0005:0006:0007:0008:0abc:000d
 >>> IP address lookup yielded "test3.ipv6.test.ex"
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=test3.ipv6.test.ex address=V6NET:1234:5:6:7:8:abc:d
 >>> checking addresses for test3.ipv6.test.ex
 >>>   V6NET:1234:5:6:7:8:abc:d OK
 >>> host in host_reject_connection? no (option unset)

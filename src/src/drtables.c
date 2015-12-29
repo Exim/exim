@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -51,6 +51,10 @@ set to NULL for those that are not compiled into the binary. */
 
 #ifdef AUTH_SPA
 #include "auths/spa.h"
+#endif
+
+#ifdef AUTH_TLS
+#include "auths/tls.h"
 #endif
 
 auth_info auths_available[] = {
@@ -151,6 +155,20 @@ auth_info auths_available[] = {
   auth_spa_init,                             /* init function */
   auth_spa_server,                           /* server function */
   auth_spa_client,                           /* client function */
+  NULL                                       /* diagnostic function */
+  },
+#endif
+
+#ifdef AUTH_TLS
+  {
+  US"tls",                                   /* lookup name */
+  auth_tls_options,
+  &auth_tls_options_count,
+  &auth_tls_option_defaults,
+  sizeof(auth_tls_options_block),
+  auth_tls_init,                             /* init function */
+  auth_tls_server,                           /* server function */
+  NULL,                                      /* client function */
   NULL                                       /* diagnostic function */
   },
 #endif
@@ -447,14 +465,14 @@ extern lookup_module_info sqlite_lookup_module_info;
 #ifdef EXPERIMENTAL_SPF
 extern lookup_module_info spf_lookup_module_info;
 #endif
-#ifdef EXPERIMENTAL_REDIS
-extern lookup_module_info redis_lookup_module_info;
-#endif
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
 extern lookup_module_info pgsql_lookup_module_info;
 #endif
 #if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
 extern lookup_module_info passwd_lookup_module_info;
+#endif
+#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
+extern lookup_module_info redis_lookup_module_info;
 #endif
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
 extern lookup_module_info oracle_lookup_module_info;
@@ -558,7 +576,7 @@ void init_lookup_list(void)
   addlookupmodule(NULL, &pgsql_lookup_module_info);
 #endif
 
-#ifdef EXPERIMENTAL_REDIS
+#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
   addlookupmodule(NULL, &redis_lookup_module_info);
 #endif
 

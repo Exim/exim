@@ -1,0 +1,25 @@
+# Exim test configuration 0608
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+acl_smtp_helo = check_helo
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_helo:
+  require verify = helo
+  accept  logwrite = helo $sender_helo_name dnssec <$sender_helo_dnssec>
+
+# End

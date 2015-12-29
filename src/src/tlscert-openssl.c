@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2014 */
+/* Copyright (c) Jeremy Harris 2014 - 2015 */
 
 /* This module provides TLS (aka SSL) support for Exim using the OpenSSL
 library. It is #included into the tls.c file when that library is used.
@@ -55,8 +55,10 @@ tls_import_cert(const uschar * buf, void ** cert)
 void * reset_point = store_get(0);
 const uschar * cp = string_unprinting(US buf);
 BIO * bp;
-X509 * x;
+X509 * x = *(X509 **)cert;
 int fail = 0;
+
+if (x) X509_free(x);
 
 bp = BIO_new_mem_buf(US cp, -1);
 if (!(x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
@@ -73,9 +75,14 @@ return fail;
 }
 
 void
-tls_free_cert(void * cert)
+tls_free_cert(void ** cert)
 {
-X509_free((X509 *)cert);
+X509 * x = *(X509 **)cert;
+if (x)
+  {
+  X509_free(x);
+  *cert = NULL;
+  }
 }
 
 
@@ -120,7 +127,7 @@ else
   {
   struct tm tm;
   struct tm * tm_p = &tm;
-  BOOL mod_tz;
+  BOOL mod_tz = TRUE;
   uschar * tz = to_tz(US"GMT0");    /* need to call strptime with baseline TZ */
 
   /* Parse OpenSSL ASN1_TIME_print output.  A shame there seems to
@@ -157,7 +164,7 @@ else
       }
     }
 
-  if (mod_tz);
+  if (mod_tz)
     restore_tz(tz);
   }
 BIO_free(bp);
@@ -234,9 +241,9 @@ BIO * bp = BIO_new(BIO_s_mem());
 if (!bp) return badalloc();
 
 if (X509_print_ex(bp, (X509 *)cert, 0,
-  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL | 
-  X509_FLAG_NO_SIGNAME | X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY | 
-  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS | 
+  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL |
+  X509_FLAG_NO_SIGNAME | X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY |
+  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS |
   /* X509_FLAG_NO_SIGDUMP is the missing one */
   X509_FLAG_NO_AUX) == 1)
   {
@@ -260,10 +267,10 @@ BIO * bp = BIO_new(BIO_s_mem());
 if (!bp) return badalloc();
 
 if (X509_print_ex(bp, (X509 *)cert, 0,
-  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL | 
+  X509_FLAG_NO_HEADER | X509_FLAG_NO_VERSION | X509_FLAG_NO_SERIAL |
   /* X509_FLAG_NO_SIGNAME is the missing one */
-  X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY | 
-  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS | 
+  X509_FLAG_NO_ISSUER | X509_FLAG_NO_VALIDITY |
+  X509_FLAG_NO_SUBJECT | X509_FLAG_NO_PUBKEY | X509_FLAG_NO_EXTENSIONS |
   X509_FLAG_NO_SIGDUMP | X509_FLAG_NO_AUX) == 1)
   {
   long len = BIO_get_mem_data(bp, &cp);
@@ -331,7 +338,7 @@ tls_cert_subject_altname(void * cert, uschar * mod)
 uschar * list = NULL;
 STACK_OF(GENERAL_NAME) * san = (STACK_OF(GENERAL_NAME) *)
   X509_get_ext_d2i((X509 *)cert, NID_subject_alt_name, NULL, NULL);
-uschar sep = '\n';
+uschar osep = '\n';
 uschar * tag = US"";
 uschar * ele;
 int match = -1;
@@ -339,16 +346,15 @@ int len;
 
 if (!san) return NULL;
 
-while (mod)
+while (mod && *mod)
   {
-  if (*mod == '>' && *++mod) sep = *mod++;
-  else if (Ustrcmp(mod, "dns")==0) { match = GEN_DNS; mod += 3; }
-  else if (Ustrcmp(mod, "uri")==0) { match = GEN_URI; mod += 3; }
-  else if (Ustrcmp(mod, "mail")==0) { match = GEN_EMAIL; mod += 4; }
-  else continue;
+  if (*mod == '>' && *++mod) osep = *mod++;
+  else if (Ustrncmp(mod,"dns",3)==0) { match = GEN_DNS; mod += 3; }
+  else if (Ustrncmp(mod,"uri",3)==0) { match = GEN_URI; mod += 3; }
+  else if (Ustrncmp(mod,"mail",4)==0) { match = GEN_EMAIL; mod += 4; }
+  else mod++;
 
-  if (*mod++ != ',')
-    break;
+  if (*mod == ',') mod++;
   }
 
 while (sk_GENERAL_NAME_num(san) > 0)
@@ -380,7 +386,7 @@ while (sk_GENERAL_NAME_num(san) > 0)
     ele = string_copyn(ele, len);
 
   if (Ustrlen(ele) == len)	/* ignore any with embedded nul */
-    list = string_append_listele(list, sep,
+    list = string_append_listele(list, osep,
 	  match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 
@@ -406,9 +412,13 @@ for (i = 0; i < adsnum; i++)
   ACCESS_DESCRIPTION * ad = sk_ACCESS_DESCRIPTION_value(ads, i);
 
   if (ad && OBJ_obj2nid(ad->method) == NID_ad_OCSP)
-    list = string_append_listele(list, sep,
-	      ASN1_STRING_data(ad->location->d.ia5));
+    {
+    uschar * ele = ASN1_STRING_data(ad->location->d.ia5);
+    int len =  ASN1_STRING_length(ad->location->d.ia5);
+    list = string_append_listele_n(list, sep, ele, len);
+    }
   }
+sk_ACCESS_DESCRIPTION_free(ads);
 return list;
 }
 
@@ -439,9 +449,13 @@ if (dps) for (i = 0; i < dpsnum; i++)
       if (  (np = sk_GENERAL_NAME_value(names, j))
 	 && np->type == GEN_URI
 	 )
-	list = string_append_listele(list, sep,
-		ASN1_STRING_data(np->d.uniformResourceIdentifier));
+	{
+	uschar * ele = ASN1_STRING_data(np->d.uniformResourceIdentifier);
+	int len =  ASN1_STRING_length(np->d.uniformResourceIdentifier);
+	list = string_append_listele_n(list, sep, ele, len);
+	}
     }
+sk_DIST_POINT_free(dps);
 return list;
 }
 
@@ -468,19 +482,19 @@ for (j = 0; j < (int)n; j++) sprintf(CS cp+2*j, "%02X", md[j]);
 return(cp);
 }
 
-uschar * 
+uschar *
 tls_cert_fprt_md5(void * cert)
 {
 return fingerprint((X509 *)cert, EVP_md5());
 }
 
-uschar * 
+uschar *
 tls_cert_fprt_sha1(void * cert)
 {
 return fingerprint((X509 *)cert, EVP_sha1());
 }
 
-uschar * 
+uschar *
 tls_cert_fprt_sha256(void * cert)
 {
 return fingerprint((X509 *)cert, EVP_sha256());

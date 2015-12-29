@@ -1,6 +1,25 @@
 # query-style lookup in domains, local_parts, senders
+need_ipv4
+munge debug_pid
 exim -d -bt test.ex@test.ex unknown@test.ex
 ****
 2
 exim -f a@b.c -bt test.ex@test.ex unknown@test.ex
 ****
+#
+#
+# lookup non/cacheability, lookup done as a list item
+exim -d-all+lookup -odq -f a@shorthost.test.ex t@test.ex
+****
+#
+#
+# lookup non/cacheability, lookup done for a dnslists= ACL condition
+exim -DSERVER=server -d-all+dnsbl -bd -oX PORT_D
+****
+exim -q
+****
+#
+killdaemon
+millisleep 500
+no_msglog_check
+#

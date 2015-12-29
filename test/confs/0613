@@ -1,0 +1,36 @@
+# Exim test configuration 0613
+# manualroute, hosts_randomize and multiple recipients
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+mua_wrapper = true
+log_selector = +received_recipients
+
+# ----- Routers -----
+
+begin routers
+
+smarthost:
+  driver = manualroute
+  hosts_randomize = true
+  route_list = * "</ ten-2.test.ex:15600 / ten-3.test.ex:15600"
+  transport = remote_smtp
+  no_more
+
+# ----- Transports -----
+
+begin transports
+
+remote_smtp:
+  driver = smtp
+
+# End

@@ -1,4 +1,4 @@
 xx@yy
   router = r1, transport = t1
   host 1.2.3.4 [1.2.3.4] 
-  host other2.test.ex [V4NET.12.3.2] 
+  host other2.test.ex [V4NET.12.3.2]

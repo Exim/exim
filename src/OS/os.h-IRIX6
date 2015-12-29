@@ -13,7 +13,4 @@
 #define F_FAVAIL        f_favail
 #define vfork fork
 
-/* Other OS have "const" in here */
-#define ICONV_ARG2_TYPE char **
-
 /* End */

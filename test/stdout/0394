@@ -22,9 +22,3 @@
 **** This is not for real!
 
 451 Temporary local problem - please try later
-
-**** SMTP testing session as if from host V4NET.255.255.255
-**** but without any ident (RFC 1413) callback.
-**** This is not for real!
-
-451 Temporary local problem - please try later

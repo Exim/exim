@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -18,10 +18,8 @@ optionlist dnslookup_router_options[] = {
       (void *)(offsetof(dnslookup_router_options_block, check_secondary_mx)) },
   { "check_srv",          opt_stringptr,
       (void *)(offsetof(dnslookup_router_options_block, check_srv)) },
-  { "dnssec_request_domains",         opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, dnssec_request_domains)) },
-  { "dnssec_require_domains",         opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, dnssec_require_domains)) },
+  { "fail_defer_domains", opt_stringptr,
+      (void *)(offsetof(dnslookup_router_options_block, fail_defer_domains)) },
   { "mx_domains",         opt_stringptr,
       (void *)(offsetof(dnslookup_router_options_block, mx_domains)) },
   { "mx_fail_domains",    opt_stringptr,
@@ -58,8 +56,7 @@ dnslookup_router_options_block dnslookup_router_option_defaults = {
   NULL,            /* mx_fail_domains */
   NULL,            /* srv_fail_domains */
   NULL,            /* check_srv */
-  NULL,            /* dnssec_request_domains */
-  NULL             /* dnssec_require_domains */
+  NULL             /* fail_defer_domains */
 };
 
 
@@ -146,10 +143,10 @@ dnslookup_router_options_block *ob =
   (dnslookup_router_options_block *)(rblock->options_block);
 uschar *srv_service = NULL;
 uschar *widen = NULL;
-uschar *pre_widen = addr->domain;
-uschar *post_widen = NULL;
-uschar *fully_qualified_name;
-uschar *listptr;
+const uschar *pre_widen = addr->domain;
+const uschar *post_widen = NULL;
+const uschar *fully_qualified_name;
+const uschar *listptr;
 uschar widen_buffer[256];
 
 addr_new = addr_new;          /* Keep picky compilers happy */
@@ -161,10 +158,10 @@ DEBUG(D_route)
 
 /* If an SRV check is required, expand the service name */
 
-if (ob->check_srv != NULL)
+if (ob->check_srv)
   {
-  srv_service = expand_string(ob->check_srv);
-  if (srv_service == NULL && !expand_string_forcedfail)
+  if (  !(srv_service = expand_string(ob->check_srv))
+     && !expand_string_forcedfail)
     {
     addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
       rblock->name, ob->check_srv, expand_string_message);
@@ -195,8 +192,8 @@ does not appear in the message header so it is also OK to widen. The
 suppression of widening for sender addresses is silent because it is the
 normal desirable behaviour. */
 
-if (ob->widen_domains != NULL &&
-    (verify != v_sender || !ob->rewrite_headers || addr->parent != NULL))
+if (  ob->widen_domains
+   && (verify != v_sender || !ob->rewrite_headers || addr->parent))
   {
   listptr = ob->widen_domains;
   widen = string_nextinlist(&listptr, &widen_sep, widen_buffer,
@@ -220,12 +217,12 @@ for (;;)
   int flags = whichrrs;
   BOOL removed = FALSE;
 
-  if (pre_widen != NULL)
+  if (pre_widen)
     {
     h.name = pre_widen;
     pre_widen = NULL;
     }
-  else if (widen != NULL)
+  else if (widen)
     {
     h.name = string_sprintf("%s.%s", addr->domain, widen);
     widen = string_nextinlist(&listptr, &widen_sep, widen_buffer,
@@ -233,7 +230,7 @@ for (;;)
     DEBUG(D_route) debug_printf("%s router widened %s to %s\n", rblock->name,
       addr->domain, h.name);
     }
-  else if (post_widen != NULL)
+  else if (post_widen)
     {
     h.name = post_widen;
     post_widen = NULL;
@@ -260,16 +257,15 @@ for (;;)
   subsequently. We use the same logic as that for widen_domains above to avoid
   requesting a header rewrite that cannot work. */
 
-  if (verify != v_sender || !ob->rewrite_headers || addr->parent != NULL)
+  if (verify != v_sender || !ob->rewrite_headers || addr->parent)
     {
     if (ob->qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
     if (ob->search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
     }
 
-  rc = host_find_bydns(&h, rblock->ignore_target_hosts, flags, srv_service,
+  rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags, srv_service,
     ob->srv_fail_domains, ob->mx_fail_domains,
-    ob->dnssec_request_domains, ob->dnssec_require_domains,
-    &fully_qualified_name, &removed);
+    &rblock->dnssec, &fully_qualified_name, &removed);
   if (removed) setflag(addr, af_local_host_removed);
 
   /* If host found with only address records, test for the domain's being in
@@ -277,9 +273,9 @@ for (;;)
   the option is historical. */
 
   if ((rc == HOST_FOUND || rc == HOST_FOUND_LOCAL) && h.mx < 0 &&
-       ob->mx_domains != NULL)
-    {
-    switch(match_isinlist(fully_qualified_name, &(ob->mx_domains), 0,
+       ob->mx_domains)
+    switch(match_isinlist(fully_qualified_name,
+          CUSS &(ob->mx_domains), 0,
           &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
       {
       case DEFER:
@@ -291,7 +287,6 @@ for (;;)
         rblock->name, fully_qualified_name);
       continue;
       }
-    }
 
   /* Deferral returns forthwith, and anything other than failure breaks the
   loop. */
@@ -328,6 +323,7 @@ for (;;)
       addr->message = US"an MX or SRV record indicated no SMTP service";
     else
       {
+      addr->basic_errno = ERRNO_UNKNOWNHOST;
       addr->message = US"all relevant MX records point to non-existent hosts";
       if (!allow_mx_to_ip && string_is_ip_address(h.name, NULL) != 0)
         {
@@ -338,6 +334,22 @@ for (;;)
         addr->message = string_sprintf("%s or (invalidly) to IP addresses",
           addr->message);
         }
+      }
+    if (ob->fail_defer_domains)
+      {
+      switch(match_isinlist(fully_qualified_name,
+	    CUSS &ob->fail_defer_domains, 0,
+	    &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
+	{
+	case DEFER:
+	  addr->message = US"lookup defer for fail_defer_domains";
+	  return DEFER;
+
+	case OK:
+	  DEBUG(D_route) debug_printf("%s router: matched fail_defer_domains\n",
+	    rblock->name);
+	  return DEFER;
+	}
       }
     return DECLINE;
     }
@@ -402,13 +414,13 @@ else if (ob->check_secondary_mx && !testflag(addr, af_local_host_removed))
 
 /* Set up the errors address, if any. */
 
-rc = rf_get_errors_address(addr, rblock, verify, &(addr->p.errors_address));
+rc = rf_get_errors_address(addr, rblock, verify, &addr->prop.errors_address);
 if (rc != OK) return rc;
 
 /* Set up the additional and removeable headers for this address. */
 
-rc = rf_get_munge_headers(addr, rblock, &(addr->p.extra_headers),
-  &(addr->p.remove_headers));
+rc = rf_get_munge_headers(addr, rblock, &addr->prop.extra_headers,
+  &addr->prop.remove_headers);
 if (rc != OK) return rc;
 
 /* Get store in which to preserve the original host item, chained on
@@ -430,3 +442,5 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
 }
 
 /* End of routers/dnslookup.c */
+/* vi: aw ai sw=2
+*/

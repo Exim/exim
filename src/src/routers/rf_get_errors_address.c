@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -38,7 +38,7 @@ rf_get_errors_address(address_item *addr, router_instance *rblock,
 {
 uschar *s;
 
-*errors_to = addr->p.errors_address;
+*errors_to = addr->prop.errors_address;
 if (rblock->errors_to == NULL) return OK;
 
 s = expand_string(rblock->errors_to);
@@ -84,8 +84,8 @@ else
   BOOL save_address_test_mode = address_test_mode;
   int save1 = 0;
   int i;
-  uschar ***p;
-  uschar *address_expansions_save[ADDRESS_EXPANSIONS_COUNT];
+  const uschar ***p;
+  const uschar *address_expansions_save[ADDRESS_EXPANSIONS_COUNT];
   address_item *snew = deliver_make_addr(s, FALSE);
 
   if (sender_address != NULL)

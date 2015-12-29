@@ -1,9 +1,9 @@
 From x@y Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <x@y>)
-	id 10HmbE-0005vi-00
+	id 10HmbF-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
 From: x@y
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-warning: this is a test warning
@@ -13,11 +13,11 @@ Message 7
 From x@y Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	(envelope-from <x@y>)
-	id 10HmbF-0005vi-00
+	id 10HmbG-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 to: group name: x@y, p@q;
 reply-to: group name: a@b, c@d;
-Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
 From: x@y
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-warning: this is a test warning
@@ -26,12 +26,12 @@ Message 10
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
-	id 10HmbG-0005vi-00
+	id 10HmbH-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 to: group name: x@y, p@q;
 reply-to: group name:;
 from: userx@test.ex
-Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-warning: this is a test warning
 

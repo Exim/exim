@@ -6,6 +6,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 queue_run_in_order
 trusted_users = CALLER
 

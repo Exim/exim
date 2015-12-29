@@ -1,0 +1,57 @@
+# Internationalised mail: sender verify callout
+# Exim test configuration 4216
+gnutls
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# sender verify callout, pass
+exim -bs -odi -DCONTROL="verify=sender/callout"
+EHLO client.bh
+MAIL FROM: <userV.වැල්_මී@test.ex> SMTPUTF8
+RCPT TO: <user.அதிமதுரம்@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+# sender+random verify callout, pass
+exim -bs -odi -DCONTROL="verify=sender/callout=random"
+EHLO client.bh
+MAIL FROM: <userW@test.ex> SMTPUTF8
+RCPT TO: <user.ഇരട്ടിമധുരം@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+#
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qqff
+****
+#
+#
+#
+#
+exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
+****
+# sender verify callout, fail
+exim -bs -odi -DCONTROL="verify=sender/callout"
+EHLO client.sfail
+MAIL FROM: <userA@test.ex> SMTPUTF8
+RCPT TO: <user.यष्टिमधु@test.ex>
+QUIT
+****
+# sender+random verify callout, fail
+exim -bs -odi -DCONTROL="verify=sender/callout=random"
+EHLO client.sfail
+MAIL FROM: <userB.જેઠીમધ@test.ex> SMTPUTF8
+RCPT TO: <user.ქართული@test.ex>
+QUIT
+****
+#
+killdaemon

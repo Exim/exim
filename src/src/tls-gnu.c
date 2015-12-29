@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Copyright (c) Phil Pennock 2012 */
@@ -47,16 +47,16 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # warning "GnuTLS library version too old; define DISABLE_OCSP in Makefile"
 # define DISABLE_OCSP
 #endif
-#if GNUTLS_VERSION_NUMBER < 0x020a00 && defined(EXPERIMENTAL_EVENT)
+#if GNUTLS_VERSION_NUMBER < 0x020a00 && !defined(DISABLE_EVENT)
 # warning "GnuTLS library version too old; tls:cert event unsupported"
-# undef EXPERIMENTAL_EVENT
+# define DISABLE_EVENT
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030306
 # define SUPPORT_CA_DIR
 #else
 # undef  SUPPORT_CA_DIR
 #endif
-#if GNUTLS_VERSION_NUMBER >= 0x030314
+#if GNUTLS_VERSION_NUMBER >= 0x030014
 # define SUPPORT_SYSDEFAULT_CABUNDLE
 #endif
 
@@ -120,8 +120,8 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
   uschar *exp_tls_ocsp_file;
-  uschar *exp_tls_verify_cert_hostnames;
-#ifdef EXPERIMENTAL_EVENT
+  const uschar *exp_tls_verify_cert_hostnames;
+#ifndef DISABLE_EVENT
   uschar *event_action;
 #endif
 
@@ -140,7 +140,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL,
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
                                             NULL,
 #endif
   NULL,
@@ -175,6 +175,10 @@ static const char * const exim_default_gnutls_priority = "NORMAL";
 /* Guard library core initialisation */
 
 static BOOL exim_gnutls_base_init_done = FALSE;
+
+#ifndef DISABLE_OCSP
+static BOOL gnutls_buggy_ocsp = FALSE;
+#endif
 
 
 /* ------------------------------------------------------------------------ */
@@ -335,7 +339,7 @@ tls_error(when, msg, state->host);
     } while (0)
 
 static int
-import_cert(const gnutls_datum * cert, gnutls_x509_crt_t * crtp)
+import_cert(const gnutls_datum_t * cert, gnutls_x509_crt_t * crtp)
 {
 int rc;
 
@@ -421,7 +425,7 @@ tlsp->sni =    state->received_sni;
 
 /* record our certificate */
   {
-  const gnutls_datum * cert = gnutls_certificate_get_ours(state->session);
+  const gnutls_datum_t * cert = gnutls_certificate_get_ours(state->session);
   gnutls_x509_crt_t crt;
 
   tlsp->ourcert = cert && import_cert(cert, &crt)==0 ? crt : NULL;
@@ -453,7 +457,7 @@ init_server_dh(void)
 {
 int fd, rc;
 unsigned int dh_bits;
-gnutls_datum m;
+gnutls_datum_t m;
 uschar filename_buf[PATH_MAX];
 uschar *filename = NULL;
 size_t sz;
@@ -831,18 +835,25 @@ if (  !host	/* server */
    && tls_ocsp_file
    )
   {
-  if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
-	&state->exp_tls_ocsp_file))
-    return DEFER;
+  if (gnutls_buggy_ocsp)
+    {
+    DEBUG(D_tls) debug_printf("GnuTLS library is buggy for OCSP; avoiding\n");
+    }
+  else
+    {
+    if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
+	  &state->exp_tls_ocsp_file))
+      return DEFER;
 
-  /* Use the full callback method for stapling just to get observability.
-  More efficient would be to read the file once only, if it never changed
-  (due to SNI). Would need restart on file update, or watch datestamp.  */
+    /* Use the full callback method for stapling just to get observability.
+    More efficient would be to read the file once only, if it never changed
+    (due to SNI). Would need restart on file update, or watch datestamp.  */
 
-  gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
-    server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
+    gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
+      server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
 
-  DEBUG(D_tls) debug_printf("Set OCSP response file %s\n", &state->exp_tls_ocsp_file);
+    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", state->exp_tls_ocsp_file);
+    }
   }
 #endif
 
@@ -1011,6 +1022,38 @@ return OK;
 *            Initialize for GnuTLS               *
 *************************************************/
 
+
+#ifndef DISABLE_OCSP
+
+static BOOL
+tls_is_buggy_ocsp(void)
+{
+const uschar * s;
+uschar maj, mid, mic;
+
+s = CUS gnutls_check_version(NULL);
+maj = atoi(CCS s);
+if (maj == 3)
+  {
+  while (*s && *s != '.') s++;
+  mid = atoi(CCS ++s);
+  if (mid <= 2)
+    return TRUE;
+  else if (mid >= 5)
+    return FALSE;
+  else
+    {
+    while (*s && *s != '.') s++;
+    mic = atoi(CCS ++s);
+    return mic <= (mid == 3 ? 16 : 3);
+    }
+  }
+return FALSE;
+}
+
+#endif
+
+
 /* Called from both server and client code. In the case of a server, errors
 before actual TLS negotiation return DEFER.
 
@@ -1072,6 +1115,11 @@ if (!exim_gnutls_base_init_done)
     /* arbitrarily chosen level; bump upto 9 for more */
     gnutls_global_set_log_level(EXIM_GNUTLS_LIBRARY_LOG_LEVEL);
     }
+#endif
+
+#ifndef DISABLE_OCSP
+  if (tls_ocsp_file && (gnutls_buggy_ocsp = tls_is_buggy_ocsp()))
+    log_write(0, LOG_MAIN, "OCSP unusable with this GnuTLS library version");
 #endif
 
   exim_gnutls_base_init_done = TRUE;
@@ -1229,7 +1277,7 @@ static int
 peer_status(exim_gnutls_state_st *state)
 {
 uschar cipherbuf[256];
-const gnutls_datum *cert_list;
+const gnutls_datum_t *cert_list;
 int old_pool, rc;
 unsigned int cert_list_size = 0;
 gnutls_protocol_t protocol;
@@ -1398,7 +1446,7 @@ else
   if (state->exp_tls_verify_cert_hostnames)
     {
     int sep = 0;
-    uschar * list = state->exp_tls_verify_cert_hostnames;
+    const uschar * list = state->exp_tls_verify_cert_hostnames;
     uschar * name;
     while (name = string_nextinlist(&list, &sep, NULL, 0))
       if (gnutls_x509_crt_check_hostname(state->tlsp->peercert, CS name))
@@ -1550,7 +1598,7 @@ return 0;
 #endif
 
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 /*
 We use this callback to get observability and detail-level control
 for an exim TLS connection (either direction), raising a tls:cert event
@@ -1563,7 +1611,7 @@ Return 0 for the handshake to continue or non-zero to terminate.
 static int
 verify_cb(gnutls_session_t session)
 {
-const gnutls_datum * cert_list;
+const gnutls_datum_t * cert_list;
 unsigned int cert_list_size = 0;
 gnutls_x509_crt_t crt;
 int rc;
@@ -1674,7 +1722,7 @@ else
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_IGNORE);
   }
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 if (event_action)
   {
   state->event_action = event_action;
@@ -1705,8 +1753,8 @@ if (!state->tlsp->on_connect)
 that the GnuTLS library doesn't. */
 
 gnutls_transport_set_ptr2(state->session,
-    (gnutls_transport_ptr)(long) fileno(smtp_in),
-    (gnutls_transport_ptr)(long) fileno(smtp_out));
+    (gnutls_transport_ptr_t)(long) fileno(smtp_in),
+    (gnutls_transport_ptr_t)(long) fileno(smtp_out));
 state->fd_in = fileno(smtp_in);
 state->fd_out = fileno(smtp_out);
 
@@ -1785,7 +1833,12 @@ tls_client_setup_hostname_checks(host_item * host, exim_gnutls_state_st * state,
 {
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
   {
-  state->exp_tls_verify_cert_hostnames = host->name;
+  state->exp_tls_verify_cert_hostnames =
+#ifdef SUPPORT_I18N
+    string_domain_utf8_to_alabel(host->name, NULL);
+#else
+    host->name;
+#endif
   DEBUG(D_tls)
     debug_printf("TLS: server cert verification includes hostname: \"%s\".\n",
 		    state->exp_tls_verify_cert_hostnames);
@@ -1854,7 +1907,7 @@ if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
   gnutls_dh_set_prime_bits(state->session, dh_min_bits);
   }
 
-/* Stick to the old behaviour for compatibility if tls_verify_certificates is 
+/* Stick to the old behaviour for compatibility if tls_verify_certificates is
 set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 
@@ -1900,7 +1953,7 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
 if (tb->event_action)
   {
   state->event_action = tb->event_action;
@@ -1909,7 +1962,7 @@ if (tb->event_action)
   }
 #endif
 
-gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr)(long) fd);
+gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr_t)(long) fd);
 state->fd_in = fd;
 state->fd_out = fd;
 

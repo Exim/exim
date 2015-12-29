@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -80,8 +80,8 @@ return 0;
 
 
 static int
-sqlite_find(void *handle, uschar *filename, uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+sqlite_find(void *handle, uschar *filename, const uschar *query, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 int ret;
 struct strbuf res = { NULL, 0, 0 };
@@ -93,7 +93,7 @@ if (ret != SQLITE_OK)
   return FAIL;
   }
 
-if (res.string == NULL) *do_cache = FALSE;
+if (res.string == NULL) *do_cache = 0;
 
 *result = res.string;
 return OK;

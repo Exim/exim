@@ -1,0 +1,81 @@
+# Internationalised mail: smtp input and forwarding
+# Exim test configuration 4211
+gnutls
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+#
+# Basic smtp input, no delivery
+client 127.0.0.1 PORT_D
+??? 220
+EHLO client
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-STARTTLS
+??? 250-SMTPUTF8
+??? 250 HELP
+MAIL FROM: <someone@some.domain> SMTPUTF8
+??? 250
+RCPT TO: <userx@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+#
+#
+# utf-8 from, Basic smtp input, no delivery
+client 127.0.0.1 PORT_D
+??? 220
+EHLO client
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-STARTTLS
+??? 250-SMTPUTF8
+??? 250 HELP
+MAIL FROM: <ليهمابتكلموشعربي؟@czech.Pročprostěnemluvíčesky.com> SMTPUTF8
+??? 250
+RCPT TO: <userx@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+#
+#
+# utf-8 from, -bs input and forwarding
+exim -bs -odi
+EHLO client.bh
+MAIL FROM: <他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com> SMTPUTF8
+RCPT TO: <usery@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+#
+#
+#
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qqff
+****
+no_msglog_check

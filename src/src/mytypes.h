@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -66,6 +66,7 @@ almost always literal strings. */
 #define US   (unsigned char *)
 #define CUS  (const unsigned char *)
 #define USS  (unsigned char **)
+#define CUSS (const unsigned char **)
 
 /* The C library string functions expect "char *" arguments. Use macros to
 avoid having to write a cast each time. We do this for string and file

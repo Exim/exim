@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Thanks to Paul Kelly for contributing the original code for these
@@ -74,7 +74,7 @@ Arguments:
   resultptr    where to store the result
   errmsg       where to point an error message
   defer_break  TRUE if no more servers are to be tried after DEFER
-  do_cache     set false if data is changed
+  do_cache     set zero if data is changed
 
 The server string is of the form "host/dbname/user/password". The host can be
 host:port. This string is in a nextinlist temporary buffer, so can be
@@ -84,8 +84,8 @@ Returns:       OK, FAIL, or DEFER
 */
 
 static int
-perform_mysql_search(uschar *query, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, BOOL *do_cache)
+perform_mysql_search(const uschar *query, uschar *server, uschar **resultptr,
+  uschar **errmsg, BOOL *defer_break, uint *do_cache)
 {
 MYSQL *mysql_handle = NULL;        /* Keep compilers happy */
 MYSQL_RES *mysql_result = NULL;
@@ -125,42 +125,50 @@ sdata[0] = server;   /* What's left at the start */
 
 /* See if we have a cached connection to the server */
 
-for (cn = mysql_connections; cn != NULL; cn = cn->next)
-  {
+for (cn = mysql_connections; cn; cn = cn->next)
   if (Ustrcmp(cn->server, server_copy) == 0)
     {
     mysql_handle = cn->handle;
     break;
     }
-  }
 
 /* If no cached connection, we must set one up. Mysql allows for a host name
 and port to be specified. It also allows the name of a Unix socket to be used.
 Unfortunately, this contains slashes, but its use is expected to be rare, so
 the rather cumbersome syntax shouldn't inconvenience too many people. We use
-this:  host:port(socket)  where all the parts are optional. */
+this:  host:port(socket)[group]  where all the parts are optional.
+The "group" parameter specifies an option group from a MySQL option file. */
 
-if (cn == NULL)
+if (!cn)
   {
   uschar *p;
   uschar *socket = NULL;
   int port = 0;
+  uschar *group = US"exim";
 
-  if ((p = Ustrchr(sdata[0], '(')) != NULL)
+  if ((p = Ustrchr(sdata[0], '[')))
     {
     *p++ = 0;
-    socket = p;
-    while (*p != 0 && *p != ')') p++;
+    group = p;
+    while (*p && *p != ']') p++;
     *p = 0;
     }
 
-  if ((p = Ustrchr(sdata[0], ':')) != NULL)
+  if ((p = Ustrchr(sdata[0], '(')))
+    {
+    *p++ = 0;
+    socket = p;
+    while (*p && *p != ')') p++;
+    *p = 0;
+    }
+
+  if ((p = Ustrchr(sdata[0], ':')))
     {
     *p++ = 0;
     port = Uatoi(p);
     }
 
-  if (Ustrchr(sdata[0], '/') != NULL)
+  if (Ustrchr(sdata[0], '/'))
     {
     *errmsg = string_sprintf("unexpected slash in MySQL server hostname: %s",
       sdata[0]);
@@ -181,6 +189,7 @@ if (cn == NULL)
 
   mysql_handle = store_get(sizeof(MYSQL));
   mysql_init(mysql_handle);
+  mysql_options(mysql_handle, MYSQL_READ_DEFAULT_GROUP, CS group);
   if (mysql_real_connect(mysql_handle,
       /*  host        user         passwd     database */
       CS sdata[0], CS sdata[2], CS sdata[3], CS sdata[1],
@@ -225,7 +234,7 @@ can be detected by calling mysql_field_count(). If its result is zero, no data
 was expected (this is all explained clearly in the MySQL manual). In this case,
 we return the number of rows affected by the command. In this event, we do NOT
 want to cache the result; also the whole cache for the handle must be cleaned
-up. Setting do_cache FALSE requests this. */
+up. Setting do_cache zero requests this. */
 
 if ((mysql_result = mysql_use_result(mysql_handle)) == NULL)
   {
@@ -233,7 +242,7 @@ if ((mysql_result = mysql_use_result(mysql_handle)) == NULL)
     {
     DEBUG(D_lookup) debug_printf("MYSQL: query was not one that returns data\n");
     result = string_sprintf("%d", mysql_affected_rows(mysql_handle));
-    *do_cache = FALSE;
+    *do_cache = 0;
     goto MYSQL_EXIT;
     }
   *errmsg = string_sprintf("MYSQL: lookup result failed: %s\n",
@@ -340,8 +349,8 @@ query is deferred with a retryable error is now in a separate function that is
 shared with other SQL lookups. */
 
 static int
-mysql_find(void *handle, uschar *filename, uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+mysql_find(void *handle, uschar *filename, const uschar *query, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 return lf_sqlperform(US"MySQL", US"mysql_servers", mysql_servers, query,
   result, errmsg, do_cache, perform_mysql_search);

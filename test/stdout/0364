@@ -7,9 +7,9 @@ solik@otherhost.sub.test.ex is undeliverable: Can't route to otherhost.sub.test.
 xxx@ten-1.test.ex
     <-- xxx@ten-1
   router = r2, transport = t1
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 xxx@testsub.sub.test.ex
     <-- xxx@testsub.test.ex
     <-- xxx@testsub
   router = r2, transport = t1
-  host testsub.sub.test.ex [V4NET.99.0.3] 
+  host testsub.sub.test.ex [V4NET.99.0.3]

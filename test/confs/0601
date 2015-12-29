@@ -4,6 +4,7 @@
 exim_path = EXIM_PATH
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
+tls_advertise_hosts =
 queue_only
 
 # ----- Main settings -----

@@ -2,7 +2,7 @@
 
 notarget:;    @echo "** You must specify a target, in the form x.y, where x is 'filter', 'spec',"
 	      @echo "** or 'test', and y is 'xml', 'fo', 'ps', 'pdf', 'html', 'txt', or 'info'."
-	      @echo "** One other possible target is 'exim.8'".
+	      @echo "** One other possible targets 'exim.8', 'spec.utf8'".
 	      exit 1
 
 
@@ -23,9 +23,17 @@ exim.8:       spec.xml x2man
 
 ########################################################################
 
-.PHONY: local_params
-local_params:
-	./GenLocalParams $@
+# .PHONY doesn't work here, because it forces a rebuild of all dependend
+# targets, always. It sets the internal timestamp of its target to
+# now().
+# But it may happen that local_params does not change
+FORCE:
+local_params: FORCE GenLocalParams
+	@set -e; \
+	trap 'rm -f $$tmp' EXIT; \
+	tmp=`mktemp`; \
+	./GenLocalParams $$tmp; \
+	cmp -s $@ $$tmp || mv $$tmp $@
 
 ############################### FILTER #################################
 
@@ -88,7 +96,7 @@ filter.txt:   filter-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
                 MyStyle.xsl
 	      /bin/rm -rf filter-txt.html
 	      xmlto -x MyStyle-txt-html.xsl html-nochunks filter-txt.xml
-	      w3m -dump filter-txt.html | ./Tidytxt >filter.txt
+	      LC_ALL=C w3m -dump filter-txt.html | ./Tidytxt >filter.txt
 	      ./SanityTestText filter.txt
 
 # I have not found a way of making docbook2texi write its output anywhere
@@ -107,8 +115,8 @@ filter.info:  filter-info.xml
 
 ################################ SPEC ##################################
 
-spec.xml:      local_params spec.xfpt
-	       xfpt spec.xfpt
+spec.xml:      spec.xfpt local_params
+	       xfpt $<
 
 spec-pr.xml:   spec.xml Pre-xml
 	       ./Pre-xml -optbreak <spec.xml >spec-pr.xml
@@ -165,12 +173,20 @@ spec.pdf: sdop-spec.pdf
 ###
 ###
 
-spec.txt:     spec-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
-                MyStyle.xsl
-	      /bin/rm -rf spec-txt.html
-	      xmlto -x MyStyle-txt-html.xsl html-nochunks spec-txt.xml
-	      w3m -dump spec-txt.html | ./Tidytxt >spec.txt
+spec-txt.html:     spec-txt.xml \
+		MyStyle-txt-html.xsl MyStyle-html.xsl MyStyle.xsl
+	      xmlto -x MyStyle-txt-html.xsl html-nochunks $<
+
+spec.utf8:	spec-txt.html Tidytxt
+		@grep -iq 'LC_CTYPE=.*utf-\?8' local_params || { \
+			echo 'your current locale does not support UTF-8' >&2; \
+			false; }
+		w3m -dump $< | ./Tidytxt -utf8 >$@
+
+spec.txt: spec-txt.html Tidytxt
+	      LC_ALL=C w3m -dump $< | ./Tidytxt >$@
 	      ./SanityTestText spec.txt
+
 
 # I have not found a way of making docbook2texi write its output anywhere
 # other than the file name that it makes up. The --to-stdout option does not

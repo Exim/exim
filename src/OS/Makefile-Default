@@ -186,14 +186,6 @@ EXIWHAT_KILL_SIGNAL=-USR1
 
 # IPV6_USE_INET_PTON=yes
 
-# Setting the next option brings in support for A6 DNS records for IPV6. These
-# were at one time expected to supplant AAAA records, but were eventually
-# rejected. The code remains in Exim, but has not been compiled or tested for
-# quite some time. Do not set this unless you know what you are doing.
-
-# SUPPORT_A6=yes
-
-
 # HOSTNAME_COMMAND contains the path to the "hostname" command, which varies
 # from OS to OS. This is used when building the Exim monitor script only. (See
 # also BASENAME_COMMAND.) If HOSTNAME_COMMAND is set to "look_for_it" then the

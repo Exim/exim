@@ -203,6 +203,7 @@ system_filter_user = 99
 tcp_nodelay = false
 timeout_frozen_after = 7d
 timezone = EDT
+tls_advertise_hosts =
 trusted_groups = 42
 trusted_users = ${readfile{DIR/aux-fixed/TESTNUM.trusted}{:}}
 unknown_login = unknownlogin

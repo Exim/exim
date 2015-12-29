@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -66,7 +66,7 @@ auth_plaintext_server(auth_instance *ablock, uschar *data)
 {
 auth_plaintext_options_block *ob =
   (auth_plaintext_options_block *)(ablock->options_block);
-uschar *prompts = ob->server_prompts;
+const uschar *prompts = ob->server_prompts;
 uschar *clear, *end, *s;
 int number = 1;
 int len, rc;
@@ -76,7 +76,7 @@ int sep = 0;
 
 if (prompts != NULL)
   {
-  prompts = expand_string(prompts);
+  prompts = expand_cstring(prompts);
   if (prompts == NULL)
     {
     auth_defer_msg = expand_string_message;
@@ -163,7 +163,7 @@ auth_plaintext_client(
 {
 auth_plaintext_options_block *ob =
   (auth_plaintext_options_block *)(ablock->options_block);
-uschar *text = ob->client_send;
+const uschar *text = ob->client_send;
 uschar *s;
 BOOL first = TRUE;
 int sep = 0;

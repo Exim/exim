@@ -79,6 +79,8 @@ In order to run this test suite, the following requirements must be met:
     and "xyz" and single letters that are used in the tests. The test suite
     expects the login to have a gecos name; I think it will now run if the
     gecos field is empty but there may be anomalies.
+    The login must not contain a dash or an equal sign. (Otherwise some tests
+    about local_from_{suffix,prefix} will fail.)
 
 (4) The directory into which you unpack the test suite must be accessible by
     the Exim user, so that code running as exim can access the files therein.
@@ -112,10 +114,13 @@ In order to run this test suite, the following requirements must be met:
     is also an IPv6 address, additional tests are run when the Exim binary
     contains IPv6 support. There are checks in the scripts for a running IPv4
     interface; when one is not found, some tests are skipped (with a warning
-    message).
+    message).  The local net may not be in 10.0/8 as that is used by the suite.
 
 (9) Exim must be built with TRUSTED_CONFIG_LIST support, so that the test
     configs can be placed into it.  A suitable file location is .../exim/test/trusted_configs
+    with content .../exim/test/test-config [fill out the ... to make full
+    paths].  This file should be owner/group matching CONFIGURE_OWNER/GROUP,
+    or root/root.  The config files in .../exim/test/confs/ should be owner/group the same.
     DISABLE_D_OPTION must not be used. If ALT_CONFIG_PREFIX is used, it
     must contain the directory of the test-suite.  WHITELIST_D_MACROS should contain:
     
@@ -208,10 +213,12 @@ THE RUNTEST SCRIPT
 ------------------
 
 If you do not supply any arguments to ./runtest, it searches for an Exim
-source tree at the same level as the test suite directory. It then looks for an
-Exim binary in a "build" directory of that source tree. If there are several
-Exim source trees, it chooses the latest version of Exim. Consider the
-following example:
+source tree at the same level as the test suite directory. A source tree
+is a source tree, if it contains a build-* directory.
+
+It then looks for an Exim binary in a "build" directory of that source
+tree. If there are several Exim source trees, it chooses the latest
+version of Exim. Consider the following example:
 
   $ ls -F /source/exim
   exim-4.60/  exim-4.62/  exim-testsuite-x.xx/
@@ -254,6 +261,17 @@ There are some options for the ./runtest script itself:
             runtest option. In that case, "diff -u" is used for comparisons.
             (If it turns out that most people prefer to use diff, I'll change
             the default.)
+
+  -FLAVOR <flavor>
+  -FLAVOUR <flavour>
+            This allows "overrides" for the test results. It's intended
+            use is to deal with distro specific differences in the test
+            output. The default flavour is "foo". If during the test
+            run differences between the current and the expected output
+            are found and no flavour file exists already, you may update
+            the "common" expected output or you may create a flavour
+            file. If  a flavour file already exists, any updates will go
+            into that flavour file!
 
   -KEEP     Normally, after a successful run, the test output files are
             deleted. This option prevents this. It is useful when running a
@@ -822,6 +840,12 @@ terminated by four asterisks. Even if no data is required for the particular
 usage, the asterisks must be given.
 
 
+  background
+
+This command takes one script line and runs it in the background,
+in parallel with following commands.  For external daemons, eg. redis-server.
+
+
   catwrite <file name> [nxm[=start-of-line-text]]*
 
 This command operates like the "write" command, which is described below,
@@ -882,6 +906,11 @@ example:
 Finally, "exim" can be preceded by "sudo", to run Exim as root. If more than
 one of these prefixes is present, they must be in the above order.
 
+If the options include "-DSERVER" but not "-DNOTDAEMON", the script waits for
+Exim to start but then continues without waiting for it to terminate. Typically
+this will be for a daemon-mode "-bd" operation.  The daemon should be later
+terminated using "killdaemon".
+
 
   exim_exim [<options>] [<arguments>]
 
@@ -897,12 +926,14 @@ input, details of which are given below. A number of options are implemented:
 
   -d       causes the server to output debugging information
 
-  -t       sets a timeout in seconds (default 5) for when the server is
+  -t <sec> sets a timeout (default 5) for when the server is
            awaiting an incoming connection
 
   -noipv4  causes the server not to set up an IPv4 socket
 
   -noipv6  causes the server not to set up an IPv6 socket
+
+  -i <sec> sets an initial pause, to delay before creating the listen sockets
 
 By default, in an IPv6 environment, both kinds of socket are set up. However,
 the test script knows which interfaces actually exist on the host, and it adds
@@ -1019,7 +1050,10 @@ are of the following kinds:
     (d) If the line starts with ">*eof", nothing is sent and the connection
           is closed.
 
-    The data that is sent starts after the initial '>' sequence.
+    The data that is sent starts after the initial '>' sequence.  Within
+    each line the sequence '\x' followed by two hex digits can be used
+    to specify an arbitrary byte value.  The sequence '\\' specifies a
+    single backslash.
 
 (2) A line that starts with "*sleep" specifies a number of seconds to wait
     before proceeding.
@@ -1033,7 +1067,10 @@ are of the following kinds:
 (5) Otherwise, the line defines the start of an input line that the client
     is expected to send. To allow for lines that start with digits, the line
     may start with '<', which is not taken as part of the input data. If the
-    input does not match, the server bombs out with an error message.
+    lines starts with '<<' then only the characters are expected; no return-
+    linefeed terminator. If the input does not match, the server bombs out
+    with an error message.  Backslash-escape sequences may be used in the
+    line content as for output lines.
 
 Here is a simple example of server use in a test script:
 
@@ -1116,8 +1153,15 @@ directory by applying the standard substitutions. The test suite also builds
 dynamic zone files for the name of the current host and its IP address(es). The
 idea is that there should not be any need to rely on an external DNS.
 
-The domain names that are handled directly by Exim, without being passed to
-fakens, are:
+The fakens program handles some names programmatically rather than using the
+fake zone files.  These are:
+
+  manyhome.test.ex  This name is used for testing hosts with ridiculously large
+                    numbers of IP addresses; 2048 IP addresses are generated
+                    and returned. Doing it this way saves having to make the
+                    interface to fakens handle more records that can fit in the
+                    data block. The addresses that are generated are in the
+                    10.250.0.0/16 network.
 
   test.again.dns    This always provokes a TRY_AGAIN response, for testing the
                     handling of temporary DNS error. If the full domain name
@@ -1126,22 +1170,11 @@ fakens, are:
   test.fail.dns     This always provokes a NO_RECOVERY response, for testing
                     DNS server failures.
 
-This special handling could now be done in the fakens program, but while the
-old test suite is still being used it has to be done in Exim itself, so for the
-moment it remains there.
-
 The use of gethostbyname() and its IPv6 friends is also subverted when Exim is
 running in the test harness. The test code handles a few special names
 directly; for all the others it uses DNS lookups, which are then handled as
 just described. Thus, the use of /etc/hosts is completely bypassed. The names
 that are specially handled are:
-
-  manyhome.test.ex  This name is used for testing hosts with ridiculously large
-                    numbers of IP addresses; 2048 IP addresses are generated
-                    and returned. Doing it this way saves having to make the
-                    interface to fakens handle more records that can fit in the
-                    data block. The addresses that are generated are in the
-                    10.250.0.0/16 network.
 
   localhost         Always returns 127.0.0.1 or ::1, for IPv4 and IPv6 lookups,
                     respectively.

@@ -1,8 +1,6 @@
 # null reverse lookup result; errors for verify items with no options
 exim -DOPT=reverse_host_lookup -bh V4NET.255.255.255
 ****
-exim -DOPT=reverse_host_lookup/defer_ok -bh V4NET.255.255.255
-****
 exim -DOPT=certificate/defer_ok -bh V4NET.255.255.255
 ****
 exim -DOPT=helo/defer_ok -bh V4NET.255.255.255

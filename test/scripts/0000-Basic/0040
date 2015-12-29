@@ -2,11 +2,14 @@
 exim -odi -f jc@rome -F 'Julius Caesar' -oMa 1.1.1.1 -oMi 2.2.2.2 -oMr latin -oMs forum.rome -oMt jc44bc userx@test.ex
 This is a test message.
 ****
+#
+# fail on bad -oMm message id
 1
 exim -odi -f jc@rome -F 'Julius Caesar' -oMm 123456-67890-11 -oMt jc44bc userx@test.x
 This is a test message.
 ****
-1
+#
+# do not fail on good -oMm message id
 exim -odi -f jc@rome -F 'Julius Caesar' -oMm 10HmaX-0005vi-00 -oMt jc44bc userx@test.x
 This is a test message.
 ****

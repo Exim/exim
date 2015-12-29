@@ -1,24 +1,50 @@
 # TLS client: verify certificate from server - fails
 exim -DSERVER=server -bd -oX PORT_D
 ****
+#
+#
+exim -z 'this will fail to verify the cert at HOSTIPV4 so fail the crypt requirement'
+****
 exim userx@test.ex
 Testing
+****
+#
+#
+exim -z 'this will fail to verify the cert at HOSTIPV4 so fail the crypt, then retry on 127.1; ok'
 ****
 exim usery@test.ex
 Testing
 ****
+#
+#
+exim -z 'this will fail to verify the cert but continue unverified though crypted'
+****
 exim userz@test.ex
 Testing
+****
+#
+#
+exim -z 'this will fail to verify the cert at HOSTIPV4 and fallback to unencrypted'
 ****
 exim userq@test.ex
 Testing
 ****
+#
+#
+exim -z 'this will fail to verify the cert name and fallback to unencrypted'
+****
 exim userr@test.ex
 Testing
+****
+#
+#
+exim -z 'this will pass the cert verify including name check'
 ****
 exim users@test.ex
 Testing
 ****
+#
+#
 exim -qf
 ****
 killdaemon

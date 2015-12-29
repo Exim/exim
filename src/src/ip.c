@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for doing things with sockets. With the advent of IPv6 this has
@@ -97,6 +97,47 @@ ip_addrinfo(const uschar *address, struct sockaddr_in6 *saddr)
 *         Bind socket to interface and port      *
 *************************************************/
 
+int
+ip_addr(void * sin_, int af, const uschar * address, int port)
+{
+union sockaddr_46 * sin = sin_;
+memset(sin, 0, sizeof(*sin));
+
+/* Setup code when using an IPv6 socket. The wildcard address is ":", to
+ensure an IPv6 socket is used. */
+
+#if HAVE_IPV6
+if (af == AF_INET6)
+  {
+  if (address[0] == ':' && address[1] == 0)
+    {
+    sin->v6.sin6_family = AF_INET6;
+    sin->v6.sin6_addr = in6addr_any;
+    }
+  else
+    ip_addrinfo(address, &sin->v6);  /* Panic-dies on error */
+  sin->v6.sin6_port = htons(port);
+  return sizeof(sin->v6);
+  }
+else
+#else     /* HAVE_IPv6 */
+af = af;  /* Avoid compiler warning */
+#endif    /* HAVE_IPV6 */
+
+/* Setup code when using IPv4 socket. The wildcard address is "". */
+
+  {
+  sin->v4.sin_family = AF_INET;
+  sin->v4.sin_port = htons(port);
+  sin->v4.sin_addr.s_addr = address[0] == 0
+    ? (S_ADDR_TYPE)INADDR_ANY
+    : (S_ADDR_TYPE)inet_addr(CS address);
+  return sizeof(sin->v4);
+  }
+}
+
+
+
 /* This function binds a socket to a local interface address and port. For a
 wildcard IPv6 bind, the address is ":".
 
@@ -112,47 +153,8 @@ Returns:         the result of bind()
 int
 ip_bind(int sock, int af, uschar *address, int port)
 {
-int s_len;
 union sockaddr_46 sin;
-memset(&sin, 0, sizeof(sin));
-
-/* Setup code when using an IPv6 socket. The wildcard address is ":", to
-ensure an IPv6 socket is used. */
-
-#if HAVE_IPV6
-if (af == AF_INET6)
-  {
-  if (address[0] == ':' && address[1] == 0)
-    {
-    sin.v6.sin6_family = AF_INET6;
-    sin.v6.sin6_addr = in6addr_any;
-    }
-  else
-    {
-    ip_addrinfo(address, &sin.v6);  /* Panic-dies on error */
-    }
-  sin.v6.sin6_port = htons(port);
-  s_len = sizeof(sin.v6);
-  }
-else
-#else     /* HAVE_IPv6 */
-af = af;  /* Avoid compiler warning */
-#endif    /* HAVE_IPV6 */
-
-/* Setup code when using IPv4 socket. The wildcard address is "". */
-
-  {
-  sin.v4.sin_family = AF_INET;
-  sin.v4.sin_port = htons(port);
-  s_len = sizeof(sin.v4);
-  if (address[0] == 0)
-    sin.v4.sin_addr.s_addr = (S_ADDR_TYPE)INADDR_ANY;
-  else
-    sin.v4.sin_addr.s_addr = (S_ADDR_TYPE)inet_addr(CS address);
-  }
-
-/* Now we can call the bind() function */
-
+int s_len = ip_addr(&sin, af, address, port);
 return bind(sock, (struct sockaddr *)&sin, s_len);
 }
 
@@ -226,24 +228,25 @@ alarm(0);
 can't think of any other way of doing this. It converts a connection refused
 into a timeout if the timeout is set to 999999. */
 
-if (running_in_test_harness)
+if (running_in_test_harness  && save_errno == ECONNREFUSED && timeout == 999999)
   {
-  if (save_errno == ECONNREFUSED && timeout == 999999)
-    {
-    rc = -1;
-    save_errno = EINTR;
-    sigalrm_seen = TRUE;
-    }
+  rc = -1;
+  save_errno = EINTR;
+  sigalrm_seen = TRUE;
   }
 
 /* Success */
 
-if (rc >= 0) return 0;
+if (rc >= 0)
+  {
+  callout_address = string_sprintf("[%s]:%d", address, port);
+  return 0;
+  }
 
 /* A failure whose error code is "Interrupted system call" is in fact
 an externally applied timeout if the signal handler has been run. */
 
-errno = (save_errno == EINTR && sigalrm_seen)? ETIMEDOUT : save_errno;
+errno = save_errno == EINTR && sigalrm_seen ? ETIMEDOUT : save_errno;
 return -1;
 }
 
@@ -310,8 +313,8 @@ else if (string_is_ip_address(hostname, NULL) != 0)
 else
   {
   shost.name = string_copy(hostname);
-  if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE, NULL,
-      FALSE) != HOST_FOUND)
+  if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE,
+      NULL, FALSE) != HOST_FOUND)
     {
     *errstr = string_sprintf("no IP address found for host %s", shost.name);
     return -1;
@@ -337,7 +340,8 @@ for (h = &shost; h != NULL; h = h->next)
       {
       if (fd != fd6) close(fd6);
       if (fd != fd4) close(fd4);
-      if (connhost) {
+      if (connhost)
+	{
 	h->port = port;
 	*connhost = *h;
 	connhost->next = NULL;
@@ -354,6 +358,63 @@ bad:
 }
 
 
+int
+ip_tcpsocket(const uschar * hostport, uschar ** errstr, int tmo)
+{
+int scan;
+uschar hostname[256];
+unsigned int portlow, porthigh;
+
+/* extract host and port part */
+scan = sscanf(CS hostport, "%255s %u-%u", hostname, &portlow, &porthigh);
+if (scan != 3)
+  {
+  if (scan != 2)
+    {
+    *errstr = string_sprintf("invalid socket '%s'", hostport);
+    return -1;
+    }
+  porthigh = portlow;
+  }
+
+return ip_connectedsocket(SOCK_STREAM, hostname, portlow, porthigh,
+			  tmo, NULL, errstr);
+}
+
+int
+ip_unixsocket(const uschar * path, uschar ** errstr)
+{
+int sock;
+struct sockaddr_un server;
+
+if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+  {
+  *errstr = US"can't open UNIX socket.";
+  return -1;
+  }
+
+server.sun_family = AF_UNIX;
+Ustrncpy(server.sun_path, path, sizeof(server.sun_path)-1);
+server.sun_path[sizeof(server.sun_path)-1] = '\0';
+if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0)
+  {
+  int err = errno;
+  (void)close(sock);
+  *errstr = string_sprintf("unable to connect to UNIX socket (%s): %s",
+		path, strerror(err));
+  return -1;
+  }
+callout_address = string_copy(path);
+return sock;
+}
+
+int
+ip_streamsocket(const uschar * spec, uschar ** errstr, int tmo)
+{
+return *spec == '/'
+  ? ip_unixsocket(spec, errstr) : ip_tcpsocket(spec, errstr, tmo);
+}
+
 /*************************************************
 *         Set keepalive on a socket              *
 *************************************************/
@@ -369,7 +430,7 @@ Returns:     nothing
 */
 
 void
-ip_keepalive(int sock, uschar *address, BOOL torf)
+ip_keepalive(int sock, const uschar *address, BOOL torf)
 {
 int fodder = 1;
 if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE,
@@ -395,23 +456,22 @@ BOOL
 fd_ready(int fd, int timeout)
 {
 fd_set select_inset;
-struct timeval tv;
 time_t start_recv = time(NULL);
+int time_left = timeout;
 int rc;
 
-if (timeout <= 0)
+if (time_left <= 0)
   {
   errno = ETIMEDOUT;
   return FALSE;
   }
 /* Wait until the socket is ready */
 
-for (;;)
+do
   {
+  struct timeval tv = { time_left, 0 };
   FD_ZERO (&select_inset);
   FD_SET (fd, &select_inset);
-  tv.tv_sec = timeout;
-  tv.tv_usec = 0;
 
   /*DEBUG(D_transport) debug_printf("waiting for data on fd\n");*/
   rc = select(fd + 1, (SELECT_ARG2_TYPE *)&select_inset, NULL, NULL, &tv);
@@ -423,17 +483,17 @@ for (;;)
   Aug 2004: Somebody set up a cron job that ran exiwhat every 2 minutes, making
   the interrupt not at all rare. Since the timeout is typically more than 2
   minutes, the effect was to block the timeout completely. To prevent this
-  happening again, we do an explicit time test. */
+  happening again, we do an explicit time test and adjust the timeout
+  accordingly */
 
   if (rc < 0 && errno == EINTR)
     {
     DEBUG(D_transport) debug_printf("EINTR while waiting for socket data\n");
-    if (time(NULL) - start_recv < timeout) continue;
-    DEBUG(D_transport) debug_printf("total wait time exceeds timeout\n");
-    }
 
-  /* Handle a timeout, and treat any other select error as a timeout, including
-  an EINTR when we have been in this loop for longer than timeout. */
+    /* Watch out, 'continue' jumps to the condition, not to the loops top */
+    time_left = timeout - (time(NULL) - start_recv);
+    if (time_left > 0) continue;
+    }
 
   if (rc <= 0)
     {
@@ -441,10 +501,10 @@ for (;;)
     return FALSE;
     }
 
-  /* If the socket is ready, break out of the loop. */
-
-  if (FD_ISSET(fd, &select_inset)) break;
+  /* Checking the FD_ISSET is not enough, if we're interrupted, the
+  select_inset may still contain the 'input'. */
   }
+while (rc < 0 || !FD_ISSET(fd, &select_inset));
 return TRUE;
 }
 
@@ -647,13 +707,9 @@ while (last > first)
     return TRUE;
     }
   else if (c > 0)
-    {
     first = middle + 1;
-    }
   else
-    {
     last = middle;
-    }
   }
 return FALSE;
 }
@@ -668,3 +724,5 @@ for (i=0; i < dscp_table_size; ++i)
 
 
 /* End of ip.c */
+/* vi: aw ai sw=2
+*/

@@ -1,5 +1,6 @@
 # Exim test configuration 0563
 
+tls_advertise_hosts =
 qualify_domain = testexim.test.ex
 localpartlist aliases = joe:sam:tom
 

@@ -1,0 +1,22 @@
+# Internationalised mail: utf8 recipient
+# Exim test configuration 4225
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# utf-8 to, -bs input and forwarding
+exim -bs -odi
+EHLO client.bh
+MAIL FROM: <userU@test.ex> SMTPUTF8
+RCPT TO: <user.γλυκύρριζα@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+#
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qqff
+****

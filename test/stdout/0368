@@ -9,6 +9,6 @@ x@mxt14.test.ex
   host ten-5-6.test.ex [V4NET.0.0.6] MX=4
 x@manualroute
   router = r1, transport = t1
-  host ten-1.test.ex [V4NET.0.0.1] 
-  host ten-1.test.ex [V4NET.0.0.1] 
-  host ten-2.test.ex [V4NET.0.0.2] 
+  host ten-1.test.ex [V4NET.0.0.1]
+  host ten-1.test.ex [V4NET.0.0.1]
+  host ten-2.test.ex [V4NET.0.0.2]

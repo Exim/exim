@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -326,12 +326,12 @@ Returns:             TRUE if all went well; otherwise an error will be
 */
 
 static BOOL
-set_up_direct_command(uschar ***argvptr, uschar *cmd, BOOL expand_arguments,
-  int expand_fail, address_item *addr, uschar *tname,
+set_up_direct_command(const uschar ***argvptr, uschar *cmd,
+  BOOL expand_arguments, int expand_fail, address_item *addr, uschar *tname,
   pipe_transport_options_block *ob)
 {
 BOOL permitted = FALSE;
-uschar **argv;
+const uschar **argv;
 uschar buffer[64];
 
 /* Set up "transport <name>" to be put in any error messages, and then
@@ -353,11 +353,11 @@ argv = *argvptr;
 if (ob->allow_commands != NULL)
   {
   int sep = 0;
-  uschar *s, *p;
+  const uschar *s;
+  uschar *p;
   uschar buffer[256];
 
-  s = expand_string(ob->allow_commands);
-  if (s == NULL)
+  if (!(s = expand_string(ob->allow_commands)))
     {
     addr->transport_return = DEFER;
     addr->message = string_sprintf("failed to expand string \"%s\" "
@@ -365,10 +365,8 @@ if (ob->allow_commands != NULL)
     return FALSE;
     }
 
-  while ((p = string_nextinlist(&s, &sep, buffer, sizeof(buffer))) != NULL)
-    {
+  while ((p = string_nextinlist(&s, &sep, buffer, sizeof(buffer))))
     if (Ustrcmp(p, argv[0]) == 0) { permitted = TRUE; break; }
-    }
   }
 
 /* If permitted is TRUE it means the command was found in the allowed list, and
@@ -407,7 +405,7 @@ if (argv[0][0] != '/')
   {
   int sep = 0;
   uschar *p;
-  uschar *listptr = ob->path;
+  const uschar *listptr = ob->path;
   uschar buffer[1024];
 
   while ((p = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))) != NULL)
@@ -453,10 +451,10 @@ Returns:             TRUE if all went well; otherwise an error will be
 */
 
 static BOOL
-set_up_shell_command(uschar ***argvptr, uschar *cmd, BOOL expand_arguments,
-  int expand_fail, address_item *addr, uschar *tname)
+set_up_shell_command(const uschar ***argvptr, uschar *cmd,
+  BOOL expand_arguments, int expand_fail, address_item *addr, uschar *tname)
 {
-uschar **argv;
+const uschar **argv;
 
 *argvptr = argv = store_get((4)*sizeof(uschar *));
 
@@ -551,9 +549,9 @@ pipe_transport_options_block *ob =
 int timeout = ob->timeout;
 BOOL written_ok = FALSE;
 BOOL expand_arguments;
-uschar **argv;
+const uschar **argv;
 uschar *envp[50];
-uschar *envlist = ob->environment;
+const uschar *envlist = ob->environment;
 uschar *cmd, *ss;
 uschar *eol = (ob->use_crlf)? US"\r\n" : US"\n";
 
@@ -669,9 +667,9 @@ else if (timezone_string != NULL && timezone_string[0] != 0)
 
 /* Add any requested items */
 
-if (envlist != NULL)
+if (envlist)
   {
-  envlist = expand_string(envlist);
+  envlist = expand_cstring(envlist);
   if (envlist == NULL)
     {
     addr->transport_return = DEFER;
@@ -729,7 +727,7 @@ reading of the output pipe. */
 uid/gid and current directory. Request that the new process be a process group
 leader, so we can kill it and all its children on a timeout. */
 
-if ((pid = child_open(argv, envp, ob->umask, &fd_in, &fd_out, TRUE)) < 0)
+if ((pid = child_open(USS argv, envp, ob->umask, &fd_in, &fd_out, TRUE)) < 0)
   {
   addr->transport_return = DEFER;
   addr->message = string_sprintf(
@@ -1073,16 +1071,14 @@ if ((rc = child_close(pid, timeout)) != 0)
 
       else
         {
-        uschar *s = ob->temp_errors;
+        const uschar *s = ob->temp_errors;
         uschar *p;
         uschar buffer[64];
         int sep = 0;
 
         addr->transport_return = FAIL;
-        while ((p = string_nextinlist(&s,&sep,buffer,sizeof(buffer))) != NULL)
-          {
+        while ((p = string_nextinlist(&s,&sep,buffer,sizeof(buffer))))
           if (rc == Uatoi(p)) { addr->transport_return = DEFER; break; }
-          }
         }
 
       /* Ensure the message contains the expanded command and arguments. This

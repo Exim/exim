@@ -1,0 +1,85 @@
+# socks5 proxy on smtp transport
+#
+munge loopback
+#
+# auth: null
+server PORT_D
+<<\x05\x01\x00
+>>\x05\x00
+<<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
+>>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
+220 Connected OK
+EHLO
+250-server id
+250
+MAIL FROM
+250
+RCPT TO
+250
+DATA
+354 hit me
+.
+250 accepted OK
+QUIT
+250 bye
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be sent
+
+via null-auth proxy
+.
+quit
+****
+#
+#
+#
+# auth: username/password
+server PORT_D
+<<\x05\x01\x02
+>>\x05\x02
+<<\x01\x04fred\x05fubar
+>>\x01\x00
+<<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
+>>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
+220 Connected OK
+EHLO
+250-server id
+250
+MAIL FROM
+250
+RCPT TO
+250
+DATA
+354 hit me
+.
+250 accepted OK
+QUIT
+250 bye
+****
+#
+#
+#
+exim -odi -bs -DOPT="auth=name name=fred pass=fubar"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be sent
+
+via name/pwd-auth proxy
+.
+quit
+****
+#
+#
+#
+

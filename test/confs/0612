@@ -1,0 +1,45 @@
+# Exim test configuration 0612
+# log_defer_output on pipe transport
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+log_selector = +received_recipients
+
+#acl_smtp_rcpt = accept
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver =	accept
+  transport =	pipe
+
+# ----- Transports -----
+
+begin transports
+
+pipe:
+    driver      = pipe
+    temp_errors = *
+    command     = perl -e "print 'Hi from pipe'; exit 5;"
+    log_defer_output = true
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,1h,10m
+
+
+# End

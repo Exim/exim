@@ -1,0 +1,20 @@
+# Exim test configuration 0614
+# hosts_connection_nolog versus sender_host lists caching
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+log_selector = +smtp_connection
+hostlist nolog = 127.0.0.1
+hosts_connection_nolog = +nolog
+queue_only
+
+# End

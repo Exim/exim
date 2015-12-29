@@ -1,0 +1,27 @@
+# -bP
+#
+# Ought to test a non-priv user, checking "hide", but
+# the testsuite cannot do that...
+#
+exim -bP spool_directory
+****
+perl -e 'print "\n";'
+****
+#
+exim -bP host_lookup_order
+****
+perl -e 'print "\n";'
+****
+#
+exim -bP +local_domains
+****
+perl -e 'print "\n";'
+****
+#
+exim -bP transport my_smtp
+****
+perl -e 'print "\n";'
+****
+#
+exim -bP config
+****

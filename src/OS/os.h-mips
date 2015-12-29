@@ -21,4 +21,7 @@ extern char *strerror(int);
 extern int   sys_nerr;
 extern char *sys_errlist[];
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

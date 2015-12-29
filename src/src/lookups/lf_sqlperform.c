@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -27,20 +27,21 @@ Arguments:
   query          the query
   result         where to pass back the result
   errmsg         where to pass back an error message
-  do_cache       to be set FALSE if data is changed
+  do_cache       to be set zero if data is changed
   func           the lookup function to call
 
 Returns:         the return from the lookup function, or DEFER
 */
 
 int
-lf_sqlperform(uschar *name, uschar *optionname, uschar *optserverlist,
-  uschar *query, uschar **result, uschar **errmsg, BOOL *do_cache,
-  int(*fn)(uschar *, uschar *, uschar **, uschar **, BOOL *, BOOL *))
+lf_sqlperform(const uschar *name, const uschar *optionname,
+  const uschar *optserverlist, const uschar *query,
+  uschar **result, uschar **errmsg, uint *do_cache,
+  int(*fn)(const uschar *, uschar *, uschar **, uschar **, BOOL *, uint *))
 {
 int sep, rc;
 uschar *server;
-uschar *serverlist;
+const uschar *serverlist;
 uschar buffer[512];
 BOOL defer_break = FALSE;
 
@@ -68,8 +69,8 @@ if (Ustrncmp(query, "servers", 7) != 0)
 else
   {
   int qsep;
-  uschar *s, *ss;
-  uschar *qserverlist;
+  const uschar *s, *ss;
+  const uschar *qserverlist;
   uschar *qserver;
   uschar qbuffer[512];
 

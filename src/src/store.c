@@ -177,7 +177,7 @@ if (size > yield_length[store_pool])
   yield_length[store_pool] = newblock->length;
   next_yield[store_pool] =
     (void *)((char *)current_block[store_pool] + ALIGNED_SIZEOF_STOREBLOCK);
-  VALGRIND_MAKE_MEM_NOACCESS(next_yield[store_pool], yield_length[store_pool]);
+  (void) VALGRIND_MAKE_MEM_NOACCESS(next_yield[store_pool], yield_length[store_pool]);
   }
 
 /* There's (now) enough room in the current block; the yield is the next
@@ -202,7 +202,7 @@ DEBUG(D_memory)
   }
 #endif  /* COMPILE_UTILITY */
 
-VALGRIND_MAKE_MEM_UNDEFINED(store_last_get[store_pool], size);
+(void) VALGRIND_MAKE_MEM_UNDEFINED(store_last_get[store_pool], size);
 /* Update next pointer and number of bytes left in the current block. */
 
 next_yield[store_pool] = (void *)((char *)next_yield[store_pool] + size);
@@ -297,7 +297,7 @@ DEBUG(D_memory)
 if (newsize % alignment != 0) newsize += alignment - (newsize % alignment);
 next_yield[store_pool] = (char *)ptr + newsize;
 yield_length[store_pool] -= newsize - rounded_oldsize;
-VALGRIND_MAKE_MEM_UNDEFINED(ptr + oldsize, inc);
+(void) VALGRIND_MAKE_MEM_UNDEFINED(ptr + oldsize, inc);
 return TRUE;
 }
 
@@ -356,7 +356,7 @@ newlength = bc + b->length - (char *)ptr;
 #ifndef COMPILE_UTILITY
 if (running_in_test_harness) memset(ptr, 0xF0, newlength);
 #endif
-VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
+(void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
 yield_length[store_pool] = newlength - (newlength % alignment);
 next_yield[store_pool] = (char *)ptr + (newlength % alignment);
 current_block[store_pool] = b;
@@ -370,7 +370,8 @@ if (yield_length[store_pool] < STOREPOOL_MIN_SIZE &&
     b->next->length == STORE_BLOCK_SIZE)
   {
   b = b->next;
-  VALGRIND_MAKE_MEM_NOACCESS((char *)b + ALIGNED_SIZEOF_STOREBLOCK, b->length - ALIGNED_SIZEOF_STOREBLOCK);
+  (void) VALGRIND_MAKE_MEM_NOACCESS((char *)b + ALIGNED_SIZEOF_STOREBLOCK,
+		b->length - ALIGNED_SIZEOF_STOREBLOCK);
   }
 
 bb = b->next;

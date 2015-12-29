@@ -7,6 +7,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -20,7 +21,8 @@ recipient_unqualified_hosts = V4NET.10.10.9
 begin acl
 
 check_message:
-  require verify = header_syntax
+  deny	!verify = header_syntax
+	logwrite = acl_verify_message: '$acl_verify_message'
   accept
 
 # End

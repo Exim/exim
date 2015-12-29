@@ -1,0 +1,4 @@
+support SOCKS
+support GnuTLS
+running IPv4
+running socks

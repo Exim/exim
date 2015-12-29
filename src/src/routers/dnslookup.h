@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Private structure for the private options. */
@@ -17,8 +17,7 @@ typedef struct {
   uschar *mx_fail_domains;
   uschar *srv_fail_domains;
   uschar *check_srv;
-  uschar *dnssec_request_domains;
-  uschar *dnssec_require_domains;
+  uschar *fail_defer_domains;
 } dnslookup_router_options_block;
 
 /* Data for reading the private options. */

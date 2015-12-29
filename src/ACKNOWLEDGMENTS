@@ -350,7 +350,7 @@ John Jetmore
 Tom Kistner               DKIM. Content scanning. SPA.
 Todd Lyons
 Nigel Metheringham        Transitioning out of Default Victim status.
-Phil Pennock              Release Coordinator. Breaks lots of things.
+Phil Pennock              Mostly idle; some security bits still.
 David Woodhouse           Dynamic modules. Security.
 
 
@@ -449,6 +449,7 @@ Jan Srzednicki            Patch improving Dovecot authenticator
 Samuel Thibault           Patch fixing IPv6 interface address detection on Hurd
 Martin Tscholak           Reported issue with TLS anonymous ciphersuites
 Stephen Usher             Patch fixing use of Oracle's LDAP libraries on Solaris
+Jasper Wallace            Patch for LibreSSL compatibility
 Holger Weiß               Patch leting ${run} return more data than OS pipe
                             buffer size
 Moritz Wilhelmy           Pointed out PCRE_PRERELEASE glitch

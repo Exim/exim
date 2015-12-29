@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -143,7 +143,8 @@ iplookup_router_entry(
 {
 uschar *query = NULL;
 uschar *reply;
-uschar *hostname, *reroute, *domain, *listptr;
+uschar *hostname, *reroute, *domain;
+const uschar *listptr;
 uschar host_buffer[256];
 host_item *host = store_get(sizeof(host_item));
 address_item *new_addr;
@@ -206,6 +207,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     host->address = host->name;
   else
     {
+/*XXX might want dnssec request/require on an iplookup router? */
     int rc = host_find_byname(host, NULL, HOST_FIND_QUALIFY_SINGLE, NULL, TRUE);
     if (rc == HOST_FIND_FAILED || rc == HOST_FIND_AGAIN) continue;
     }
@@ -376,7 +378,7 @@ new_addr = deliver_make_addr(reroute, TRUE);
 new_addr->parent = addr;
 
 copyflag(new_addr, addr, af_propagate);
-new_addr->p = addr->p;
+new_addr->prop = addr->prop;
 
 if (addr->child_count == SHRT_MAX)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
@@ -388,11 +390,11 @@ new_addr->next = *addr_new;
 /* Set up the errors address, if any, and the additional and removeable headers
 for this new address. */
 
-rc = rf_get_errors_address(addr, rblock, verify, &(new_addr->p.errors_address));
+rc = rf_get_errors_address(addr, rblock, verify, &new_addr->prop.errors_address);
 if (rc != OK) return rc;
 
-rc = rf_get_munge_headers(addr, rblock, &(new_addr->p.extra_headers),
-  &(new_addr->p.remove_headers));
+rc = rf_get_munge_headers(addr, rblock, &new_addr->prop.extra_headers,
+  &new_addr->prop.remove_headers);
 if (rc != OK) return rc;
 
 return OK;

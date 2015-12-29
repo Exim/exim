@@ -8,6 +8,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -21,12 +22,20 @@ log_selector = +received_recipients
 
 begin routers
 
+bydns:
+  driver = dnslookup
+  domains = mxt2.test.ex
+  transport = smtp
+  fail_defer_domains = *
+
 all:
   driver = manualroute
   route_list = simple  thishost.test.ex  byname \
 	     ; complex thisloop.test.ex  byname \
+	     ; nonexist nonexist.test.ex byname \
 	     ; *       127.0.0.1         byname
   self = send
+  host_find_failed = defer
   transport = smtp
 
 
@@ -50,6 +59,7 @@ begin retry
 rcpt45x.test.ex              rcpt_45x      F,10d,2m
 rcpt463.test.ex              rcpt_463      F,10d,3m
 rcpt4xx.test.ex              rcpt_4xx      F,10d,1m
+*                            lookup        F,10d,30m
 
 *@\N^\d                      *             F,5d,1m
 *@*.abcd.ex                  *             F,5d,2m

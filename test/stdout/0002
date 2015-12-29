@@ -189,6 +189,17 @@
 > mask:   0.0.0.0/0
 > Failed: missing mask value in "192.168.10.206"
 > Failed: "a.b.c.d" is not an IP address
+> ipv6denorm: 0000:0000:0000:0000:0000:0000:0000:0001
+> ipv6denorm: fe00:0000:0000:0000:0000:0000:0000:0001
+> ipv6denorm: 0000:0000:0000:0000:0000:ffff:c0a8:0001
+> ipv6denorm: fe80:0000:0000:0000:0000:0000:c0a8:0001
+> ipv6norm:   ::1
+> ipv6norm:   2a00::
+> ipv6norm:   2a00::1
+> ipv6norm:   2a00:eadf::1:0
+> ipv6norm:   2a00:eadf:0:1::
+> ipv6norm:   2a00::
+> ipv6norm:   2a00:2:3:4:5:6:7:8
 > nhash:  19 0/61
 > lc/uc:  the quick  BROWN FOX
 > length: The quick  abc
@@ -778,6 +789,11 @@ xyz
 > 
 > true
 > 
+> # Environment access
+> 
+> CALLER
+> correct
+> 
 > 
 > escape: B7·F2ò
 > 
@@ -787,6 +803,7 @@ xyz
 > yes
 > match_address:   no
 > 
+> -be Sender host name and address etc, all unset
 > -oMa  sender_host_address = 
 >       sender_host_port = 0
 > -oMaa sender_host_authenticated = 
@@ -798,6 +815,7 @@ xyz
 > -oMs  sender_host_name = 
 > -oMt  sender_ident = CALLER
 > 
+> -be Sender host name and address etc, all set except host name.
 > -oMa  sender_host_address = V4NET.0.0.1
 >       sender_host_port = 1234
 > -oMaa sender_host_authenticated = AAA
@@ -808,16 +826,20 @@ xyz
 > -oMr  received_protocol = special
 > -oMt  sender_ident = me
 > 
+> -be Sender host name explicitly set
 > -oMa  sender_host_address = V4NET.0.0.1
 >       sender_host_port = 1234
 > -oMs  sender_host_name = my.host.name
 > 
+> be Sender host name lookup fails (V4NET.11.12.13 is not reverse registered)
 > -oMs  sender_host_name = 
 >       host_lookup_failed = 1
 > 
+> -be Sender host name and protocol set by Sendmail-compatible option
 > -p  received_protocol = special
 > -p  sender_host_name = host.name
 > 
+> -be Sender host name and address etc, all set except host name
 > -oMa  sender_host_address = V4NET.0.0.1
 >       sender_host_port = 1234
 > -oMaa sender_host_authenticated = AAA

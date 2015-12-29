@@ -1,0 +1,23 @@
+# Internationalised mail: utf8_downconvert and callouts
+# Exim test configuration 4208
+#
+exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
+****
+#
+# Recipient verify callout, pass only due to downconvert
+exim -bs -odi -DINSERT="control=utf8_downconvert" -DCONTROL="verify=recipient/callout"
+EHLO client.ffail
+MAIL FROM: <CALLER@spanish.PorquénopuedensimplementehablarenEspañol.local> SMTPUTF8
+RCPT TO: <userS@test.ex>
+QUIT
+****
+
+# Recipient+random verify callout, pass only due to downconvert
+exim -bs -odi -DINSERT="control=utf8_downconvert" -DCONTROL="verify=recipient/callout=random"
+EHLO client.ffail
+MAIL FROM: <CALLER@vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.local> SMTPUTF8
+RCPT TO: <userT@test.ex>
+QUIT
+****
+#
+killdaemon

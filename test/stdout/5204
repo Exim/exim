@@ -5,10 +5,10 @@
 "DEFER cannot route this one (DEFER)"@some.host cannot be resolved at this time: cannot route this one (DEFER)
 "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
   router = q, transport = other_smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 PASS@some.host
   router = s, transport = smtp
-  host 127.0.0.1 [127.0.0.1] 
+  host 127.0.0.1 [127.0.0.1]
 "FREEZE cannot route this one (FREEZE)"@some.host cannot be resolved at this time: cannot route this one (FREEZE)
 postmaster@test.ex
     <-- "REDIRECT postmaster@test.ex"@some.host

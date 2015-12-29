@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Code for receiving a message and setting up spool files. */
@@ -87,7 +87,7 @@ if (newsender == NULL || untrusted_set_sender == NULL) return FALSE;
 qnewsender = (Ustrchr(newsender, '@') != NULL)?
   newsender : string_sprintf("%s@%s", newsender, qualify_domain_sender);
 return
-  match_address_list(qnewsender, TRUE, TRUE, &untrusted_set_sender, NULL, -1,
+  match_address_list(qnewsender, TRUE, TRUE, CUSS &untrusted_set_sender, NULL, -1,
     0, NULL) == OK;
 }
 
@@ -142,17 +142,16 @@ appearance of "syslog" in it. */
 else
   {
   int sep = ':';              /* Not variable - outside scripts use */
-  uschar *p = log_file_path;
+  const uschar *p = log_file_path;
   name = US"log";
 
   /* An empty log_file_path means "use the default". This is the same as an
   empty item in a list. */
 
   if (*p == 0) p = US":";
-  while ((path = string_nextinlist(&p, &sep, buffer, sizeof(buffer))) != NULL)
-    {
-    if (Ustrcmp(path, "syslog") != 0) break;
-    }
+  while ((path = string_nextinlist(&p, &sep, buffer, sizeof(buffer))))
+    if (Ustrcmp(path, "syslog") != 0)
+      break;
 
   if (path == NULL)  /* No log files */
     {
@@ -997,7 +996,7 @@ switch(where)
   case ACL_WHERE_DKIM:
   case ACL_WHERE_MIME:
   case ACL_WHERE_DATA:
-    if (cutthrough_fd >= 0 && (acl_removed_headers || acl_added_headers))
+    if (cutthrough.fd >= 0 && (acl_removed_headers || acl_added_headers))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Header modification in data ACLs"
 			" will not take effect on cutthrough deliveries");
@@ -1009,29 +1008,19 @@ if (acl_removed_headers != NULL)
   {
   DEBUG(D_receive|D_acl) debug_printf(">>Headers removed by %s ACL:\n", acl_name);
 
-  for (h = header_list; h != NULL; h = h->next)
+  for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
     {
-    uschar *list;
-    BOOL include_header;
-
-    if (h->type == htype_old) continue;
-
-    include_header = TRUE;
-    list = acl_removed_headers;
-
+    const uschar * list = acl_removed_headers;
     int sep = ':';         /* This is specified as a colon-separated list */
     uschar *s;
     uschar buffer[128];
-    while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
-            != NULL)
-      {
-      int len = Ustrlen(s);
-      if (header_testname(h, s, len, FALSE))
+
+    while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+      if (header_testname(h, s, Ustrlen(s), FALSE))
 	{
 	h->type = htype_old;
         DEBUG(D_receive|D_acl) debug_printf("  %s", h->text);
 	}
-      }
     }
   acl_removed_headers = NULL;
   DEBUG(D_receive|D_acl) debug_printf(">>\n");
@@ -1129,8 +1118,7 @@ add_host_info_for_log(uschar *s, int *sizeptr, int *ptrptr)
 if (sender_fullhost != NULL)
   {
   s = string_append(s, sizeptr, ptrptr, 2, US" H=", sender_fullhost);
-  if ((log_extra_selector & LX_incoming_interface) != 0 &&
-       interface_address != NULL)
+  if (LOGGING(incoming_interface) && interface_address != NULL)
     {
     uschar *ss = string_sprintf(" I=[%s]:%d", interface_address,
       interface_port);
@@ -2314,8 +2302,22 @@ if (extract_recip)
         pp = recipient = store_get(ss - s + 1);
         for (p = s; p < ss; p++) if (*p != '\n') *pp++ = *p;
         *pp = 0;
+
+#ifdef SUPPORT_I18N
+	{
+	BOOL b = allow_utf8_domains;
+	allow_utf8_domains = TRUE;
+#endif
         recipient = parse_extract_address(recipient, &errmess, &start, &end,
           &domain, FALSE);
+
+#ifdef SUPPORT_I18N
+	if (string_is_utf8(recipient))
+	  message_smtputf8 = TRUE;
+	else
+	  allow_utf8_domains = b;
+	}
+#endif
 
         /* Keep a list of all the bad addresses so we can send a single
         error message at the end. However, an empty address is not an error;
@@ -2526,7 +2528,7 @@ if (msgid_header == NULL &&
 rewriting. Must copy the count, because later ACLs and the local_scan()
 function may mess with the real recipients. */
 
-if ((log_extra_selector & LX_received_recipients) != 0)
+if (LOGGING(received_recipients))
   {
   raw_recipients = store_get(recipients_count * sizeof(uschar *));
   for (i = 0; i < recipients_count; i++)
@@ -2817,12 +2819,11 @@ if (filter_test != FTEST_NONE)
   }
 
 /* Cutthrough delivery:
-	We have to create the Received header now rather than at the end of reception,
-	so the timestamp behaviour is a change to the normal case.
-	XXX Ensure this gets documented XXX.
-	Having created it, send the headers to the destination.
-*/
-if (cutthrough_fd >= 0)
+We have to create the Received header now rather than at the end of reception,
+so the timestamp behaviour is a change to the normal case.
+XXX Ensure this gets documented XXX.
+Having created it, send the headers to the destination. */
+if (cutthrough.fd >= 0)
   {
   if (received_count > received_headers_max)
     {
@@ -3184,7 +3185,7 @@ else
         else
           {
           int sep = 0;
-          uschar *ptr = dkim_verify_signers_expanded;
+          const uschar *ptr = dkim_verify_signers_expanded;
           uschar *item = NULL;
           uschar *seen_items = NULL;
           int     seen_items_size = 0;
@@ -3194,56 +3195,61 @@ else
           rc = OK;
           while ((item = string_nextinlist(&ptr, &sep,
                                            itembuf,
-                                           sizeof(itembuf))) != NULL)
+                                           sizeof(itembuf))))
             {
             /* Prevent running ACL for an empty item */
             if (!item || (item[0] == '\0')) continue;
-            /* Only run ACL once for each domain or identity, no matter how often it
-               appears in the expanded list. */
-            if (seen_items != NULL)
+
+            /* Only run ACL once for each domain or identity,
+	    no matter how often it appears in the expanded list. */
+            if (seen_items)
               {
               uschar *seen_item = NULL;
               uschar seen_item_buf[256];
-              uschar *seen_items_list = seen_items;
-              int seen_this_item = 0;
+              const uschar *seen_items_list = seen_items;
+              BOOL seen_this_item = FALSE;
 
               while ((seen_item = string_nextinlist(&seen_items_list, &sep,
                                                     seen_item_buf,
-                                                    sizeof(seen_item_buf))) != NULL)
-                {
-                  if (Ustrcmp(seen_item,item) == 0)
-                    {
-                      seen_this_item = 1;
-                      break;
-                    }
-                }
+                                                    sizeof(seen_item_buf))))
+		if (Ustrcmp(seen_item,item) == 0)
+		  {
+		  seen_this_item = TRUE;
+		  break;
+		  }
 
-              if (seen_this_item > 0)
+              if (seen_this_item)
                 {
                 DEBUG(D_receive)
-                  debug_printf("acl_smtp_dkim: skipping signer %s, already seen\n", item);
+                  debug_printf("acl_smtp_dkim: skipping signer %s, "
+		    "already seen\n", item);
                 continue;
                 }
 
-              seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,":");
+              seen_items = string_append(seen_items, &seen_items_size,
+		&seen_items_offset, 1, ":");
               }
 
-            seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,item);
+            seen_items = string_append(seen_items, &seen_items_size,
+	      &seen_items_offset, 1, item);
             seen_items[seen_items_offset] = '\0';
 
             DEBUG(D_receive)
-              debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n", item);
+              debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n",
+		item);
 
             dkim_exim_acl_setup(item);
-            rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, &user_msg, &log_msg);
+            rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim,
+		  &user_msg, &log_msg);
 
             if (rc != OK)
-              {
-                DEBUG(D_receive)
-                  debug_printf("acl_smtp_dkim: acl_check returned %d on %s, skipping remaining items\n", rc, item);
-	        cancel_cutthrough_connection("dkim acl not ok");
-                break;
-              }
+	      {
+	      DEBUG(D_receive)
+		debug_printf("acl_smtp_dkim: acl_check returned %d on %s, "
+		  "skipping remaining items\n", rc, item);
+	      cancel_cutthrough_connection("dkim acl not ok");
+	      break;
+	      }
             }
           add_acl_headers(ACL_WHERE_DKIM, US"DKIM");
           if (rc == DISCARD)
@@ -3566,7 +3572,7 @@ else
     goto TEMPREJECT;
 
     case LOCAL_SCAN_REJECT_NOLOGHDR:
-    log_extra_selector &= ~LX_rejected_header;
+    BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
     /* Fall through */
 
     case LOCAL_SCAN_REJECT:
@@ -3575,7 +3581,7 @@ else
     break;
 
     case LOCAL_SCAN_TEMPREJECT_NOLOGHDR:
-    log_extra_selector &= ~LX_rejected_header;
+    BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
     /* Fall through */
 
     case LOCAL_SCAN_TEMPREJECT:
@@ -3740,15 +3746,15 @@ if (message_reference != NULL)
 s = add_host_info_for_log(s, &size, &sptr);
 
 #ifdef SUPPORT_TLS
-if (log_extra_selector & LX_tls_cipher && tls_in.cipher)
+if (LOGGING(tls_cipher) && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" X=", tls_in.cipher);
-if (log_extra_selector & LX_tls_certificate_verified && tls_in.cipher)
+if (LOGGING(tls_certificate_verified) && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" CV=",
     tls_in.certificate_verified? "yes":"no");
-if (log_extra_selector & LX_tls_peerdn && tls_in.peerdn)
+if (LOGGING(tls_peerdn) && tls_in.peerdn)
   s = string_append(s, &size, &sptr, 3, US" DN=\"",
     string_printing(tls_in.peerdn), US"\"");
-if (log_extra_selector & LX_tls_sni && tls_in.sni)
+if (LOGGING(tls_sni) && tls_in.sni)
   s = string_append(s, &size, &sptr, 3, US" SNI=\"",
     string_printing(tls_in.sni), US"\"");
 #endif
@@ -3759,7 +3765,7 @@ if (sender_host_authenticated)
   if (authenticated_id != NULL)
     {
     s = string_append(s, &size, &sptr, 2, US":", authenticated_id);
-    if (log_extra_selector & LX_smtp_mailauth  &&  authenticated_sender != NULL)
+    if (LOGGING(smtp_mailauth) && authenticated_sender != NULL)
       s = string_append(s, &size, &sptr, 2, US":", authenticated_sender);
     }
   }
@@ -3769,9 +3775,9 @@ if (prdr_requested)
   s = string_append(s, &size, &sptr, 1, US" PRDR");
 #endif
 
-#ifdef EXPERIMENTAL_PROXY
-if (proxy_session &&  log_extra_selector & LX_proxy)
-  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_host_address);
+#ifdef SUPPORT_PROXY
+if (proxy_session && LOGGING(proxy))
+  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_local_address);
 #endif
 
 sprintf(CS big_buffer, "%d", msg_size);
@@ -3781,7 +3787,7 @@ s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
    0 ... no BODY= used
    7 ... 7BIT
    8 ... 8BITMIME */
-if (log_extra_selector & LX_8bitmime)
+if (LOGGING(8bitmime))
   {
   sprintf(CS big_buffer, "%d", body_8bitmime);
   s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
@@ -3807,7 +3813,7 @@ if (msgid_header != NULL)
 /* If subject logging is turned on, create suitable printing-character
 text. By expanding $h_subject: we make use of the MIME decoding. */
 
-if ((log_extra_selector & LX_subject) != 0 && subject_header != NULL)
+if (LOGGING(subject) && subject_header != NULL)
   {
   int i;
   uschar *p = big_buffer;
@@ -3967,7 +3973,7 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
-if(cutthrough_fd >= 0)
+if(cutthrough.fd >= 0)
   {
   uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
 					/* Logging was done in finaldot() */
@@ -3996,8 +4002,8 @@ if(!smtp_reply)
 #endif
   {
   log_write(0, LOG_MAIN |
-    (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
-    (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
+    (LOGGING(received_recipients)? LOG_RECIPIENTS : 0) |
+    (LOGGING(received_sender)? LOG_SENDER : 0),
     "%s", s);
 
   /* Log any control actions taken by an ACL or local_scan(). */
@@ -4113,7 +4119,7 @@ if (smtp_input)
       case TMP_REJ: message_id[0] = 0;	  /* Prevent a delivery from starting */
       default:break;
       }
-    cutthrough_delivery = FALSE;
+    cutthrough.delivery = FALSE;
     }
 
   /* For batched SMTP, generate an error message on failure, and do
@@ -4131,9 +4137,9 @@ starting. */
 
 if (blackholed_by != NULL)
   {
-  uschar *detail = (local_scan_data != NULL)?
-    string_printing(local_scan_data) :
-    string_sprintf("(%s discarded recipients)", blackholed_by);
+  const uschar *detail = local_scan_data
+    ? string_printing(local_scan_data)
+    : string_sprintf("(%s discarded recipients)", blackholed_by);
   log_write(0, LOG_MAIN, "=> blackhole %s%s", detail, blackhole_log_msg);
   log_write(0, LOG_MAIN, "Completed");
   message_id[0] = 0;

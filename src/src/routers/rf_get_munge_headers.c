@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -32,11 +32,11 @@ rf_get_munge_headers(address_item *addr, router_instance *rblock,
   header_line **extra_headers, uschar **remove_headers)
 {
 /* Default is to retain existing headers */
-*extra_headers = addr->p.extra_headers;
+*extra_headers = addr->prop.extra_headers;
 
 if (rblock->extra_headers)
   {
-  uschar * list = rblock->extra_headers;
+  const uschar * list = rblock->extra_headers;
   int sep = '\n';
   uschar * s;
   int slen;
@@ -46,8 +46,9 @@ if (rblock->extra_headers)
       {
       if (!expand_string_forcedfail)
 	{
-	addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
-	  rblock->name, rblock->extra_headers, expand_string_message);
+	addr->message = string_sprintf(
+	  "%s router failed to expand add_headers item \"%s\": %s",
+	  rblock->name, s, expand_string_message);
 	return DEFER;
 	}
       }
@@ -82,23 +83,23 @@ if (rblock->extra_headers)
   }
 
 /* Default is to retain existing removes */
-*remove_headers = addr->p.remove_headers;
+*remove_headers = addr->prop.remove_headers;
 
 /* Expand items from colon-sep list separately, then build new list */
 if (rblock->remove_headers)
   {
-  uschar * list = rblock->remove_headers;
+  const uschar * list = rblock->remove_headers;
   int sep = ':';
   uschar * s;
-  uschar buffer[128];
 
-  while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+  while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     if (!(s = expand_string(s)))
       {
       if (!expand_string_forcedfail)
 	{
-	addr->message = string_sprintf("%s router failed to expand \"%s\": %s",
-	  rblock->name, rblock->remove_headers, expand_string_message);
+	addr->message = string_sprintf(
+	  "%s router failed to expand remove_headers item \"%s\": %s",
+	  rblock->name, s, expand_string_message);
 	return DEFER;
 	}
       }
@@ -109,4 +110,6 @@ if (rblock->remove_headers)
 return OK;
 }
 
+/* vi: aw ai sw=4
+*/
 /* End of rf_get_munge_headers.c */

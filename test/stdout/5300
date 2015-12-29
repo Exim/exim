@@ -1,6 +1,6 @@
 x@[V4NET.9.8.7]
   router = r1, transport = t1
-  host [V4NET.9.8.7] [V4NET.9.8.7] 
+  host [V4NET.9.8.7] [V4NET.9.8.7]
 x@[127.0.0.1]
   router = r3, transport = t1
  0m   sss 10HmaX-0005vi-00 <y@[10.9.8.7]>

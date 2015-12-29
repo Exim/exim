@@ -9,8 +9,11 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
+
+disable_ipv6 = true
 
 addresslist ok_senders = ok@ok.ok
 
@@ -98,6 +101,10 @@ acl_9_9_9:
 acl_V4NET_0_0:
   require verify = reverse_host_lookup
   accept
+acl_V4NET_99_99:
+  accept  local_parts = defer_ok
+	  verify = reverse_host_lookup/defer_ok
+  accept  verify = reverse_host_lookup
 
 acl_V4NET_11_12:
   deny    message = host in DNS list $dnslist_domain: $dnslist_text

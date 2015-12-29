@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -71,7 +71,7 @@ fit into the fixed sized buffer. Most of the time this will never be exercised,
 but people do occasionally do weird things. */
 
 static int
-internal_lsearch_find(void *handle, uschar *filename, uschar *keystring,
+internal_lsearch_find(void *handle, uschar *filename, const uschar *keystring,
   int length, uschar **result, uschar **errmsg, int type)
 {
 FILE *f = (FILE *)handle;
@@ -146,7 +146,7 @@ for (last_was_eol = TRUE;
     uschar *t = s++;
     while (*s != 0 && *s != '\"')
       {
-      if (*s == '\\') *t++ = string_interpret_escape(&s);
+      if (*s == '\\') *t++ = string_interpret_escape(CUSS &s);
         else *t++ = *s;
       s++;
       }
@@ -181,7 +181,7 @@ for (last_was_eol = TRUE;
       {
       int rc;
       int save = buffer[linekeylength];
-      uschar *list = buffer;
+      const uschar *list = buffer;
       buffer[linekeylength] = 0;
       rc = match_isinlist(keystring,
         &list,
@@ -322,8 +322,8 @@ return FAIL;
 /* See local README for interface description */
 
 static int
-lsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+lsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -339,8 +339,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-wildlsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+wildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -356,8 +356,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-nwildlsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+nwildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -374,8 +374,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-iplsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+iplsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 if ((length == 1 && keystring[0] == '*') ||

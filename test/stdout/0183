@@ -2,31 +2,31 @@ userx@test.again.dns cannot be resolved at this time: host lookup did not comple
 abcd@test.again.dns cannot be resolved at this time: host lookup did not complete
 abcd@ten-1.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 usery@test.again.dns cannot be resolved at this time: host lookup for test.again.dns did not complete (DNS timeout?)
 userz@test.again.dns cannot be resolved at this time: host lookup for test.again.dns did not complete (DNS timeout?)
 xyz@ten-1.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 userx@test.fail.dns cannot be resolved at this time: host lookup did not complete
 abcd@test.fail.dns cannot be resolved at this time: host lookup did not complete
 abcd@ten-1.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 usery@test.fail.dns cannot be resolved at this time: host lookup for test.fail.dns did not complete (DNS timeout?)
 userz@test.fail.dns cannot be resolved at this time: host lookup for test.fail.dns did not complete (DNS timeout?)
 xyz@ten-1.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 userx@nonexist.test.ex is undeliverable: Unrouteable address
 abcd@nonexist.test.ex is undeliverable: Unrouteable address
 abcd@ten-1.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 usery@nonexist.test.ex cannot be resolved at this time: lookup of host "nonexist.test.ex" failed in useryz router
 userz@nonexist.test.ex cannot be resolved at this time: lookup of host "nonexist.test.ex" failed in useryz router
 xyz@ten-1.test.ex
   router = lookuphost, transport = smtp
-  host ten-1.test.ex [V4NET.0.0.1] 
+  host ten-1.test.ex [V4NET.0.0.1]
 srv@test.again.dns cannot be resolved at this time: host lookup did not complete
 srv@test.fail.dns cannot be resolved at this time: host lookup did not complete

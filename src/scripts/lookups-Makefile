@@ -161,7 +161,7 @@ sed -n "1,/$tag_marker/p" < "$input"
 
 for name_mod in \
     CDB DBM:dbmdb DNSDB DSEARCH IBASE LSEARCH MYSQL NIS NISPLUS ORACLE \
-    PASSWD PGSQL SQLITE TESTDB WHOSON
+    PASSWD PGSQL REDIS SQLITE TESTDB WHOSON
 do
   emit_module_rule $name_mod
 done
@@ -176,14 +176,6 @@ fi
 # defined.
 
 OBJ="${OBJ} spf.o"
-
-# Because the variable is EXPERIMENTAL_REDIS and not LOOKUP_REDIS we
-# use a different function to check for EXPERIMENTAL_* features
-# requested. Don't use the SPF method with dummy functions above.
-if want_experimental REDIS
-then
-  OBJ="${OBJ} redis.o"
-fi
 
 echo "MODS = $MODS"
 echo "OBJ = $OBJ"

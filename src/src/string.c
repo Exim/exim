@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Miscellaneous string-handling functions. Some are not required for
@@ -224,13 +224,13 @@ Returns:   the value of the character escape
 */
 
 int
-string_interpret_escape(uschar **pp)
+string_interpret_escape(const uschar **pp)
 {
 #ifdef COMPILE_UTILITY
 const uschar *hex_digits= CUS"0123456789abcdef";
 #endif
 int ch;
-uschar *p = *pp;
+const uschar *p = *pp;
 ch = *(++p);
 if (isdigit(ch) && ch != '8' && ch != '9')
   {
@@ -284,12 +284,12 @@ Arguments:
 Returns:        string with non-printers encoded as printing sequences
 */
 
-uschar *
-string_printing2(uschar *s, BOOL allow_tab)
+const uschar *
+string_printing2(const uschar *s, BOOL allow_tab)
 {
 int nonprintcount = 0;
 int length = 0;
-uschar *t = s;
+const uschar *t = s;
 uschar *ss, *tt;
 
 while (*t != 0)
@@ -374,7 +374,7 @@ while (*p)
   {
   if (*p == '\\')
     {
-    *q++ = string_interpret_escape(&p);
+    *q++ = string_interpret_escape((const uschar **)&p);
     p++;
     }
   else
@@ -437,7 +437,7 @@ Returns:  copy of string in new store
 */
 
 uschar *
-string_copy_malloc(uschar *s)
+string_copy_malloc(const uschar *s)
 {
 int len = Ustrlen(s) + 1;
 uschar *ss = store_malloc(len);
@@ -457,7 +457,7 @@ Returns:  copy of string in new store, with letters lowercased
 */
 
 uschar *
-string_copylc(uschar *s)
+string_copylc(const uschar *s)
 {
 uschar *ss = store_get(Ustrlen(s) + 1);
 uschar *p = ss;
@@ -483,7 +483,7 @@ Returns:    copy of string in new store
 */
 
 uschar *
-string_copyn(uschar *s, int n)
+string_copyn(const uschar *s, int n)
 {
 uschar *ss = store_get(n + 1);
 Ustrncpy(ss, s, n);
@@ -639,9 +639,9 @@ Returns:   the new string
 */
 
 uschar *
-string_dequote(uschar **sptr)
+string_dequote(const uschar **sptr)
 {
-uschar *s = *sptr;
+const uschar *s = *sptr;
 uschar *t, *yield;
 
 /* First find the end of the string */
@@ -717,8 +717,9 @@ uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
 va_start(ap, format);
 if (!string_vformat(buffer, sizeof(buffer), format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "string_sprintf expansion was longer than " SIZE_T_FMT " (%s)",
-    sizeof(buffer), format);
+    "string_sprintf expansion was longer than " SIZE_T_FMT
+    "; format string was (%s)\nexpansion started '%.32s'",
+    sizeof(buffer), format, buffer);
 va_end(ap);
 return string_copy(buffer);
 }
@@ -868,10 +869,10 @@ Returns:     pointer to buffer, containing the next substring,
 */
 
 uschar *
-string_nextinlist(uschar **listptr, int *separator, uschar *buffer, int buflen)
+string_nextinlist(const uschar **listptr, int *separator, uschar *buffer, int buflen)
 {
-register int sep = *separator;
-register uschar *s = *listptr;
+int sep = *separator;
+const uschar *s = *listptr;
 BOOL sep_is_special;
 
 if (s == NULL) return NULL;
@@ -928,7 +929,7 @@ else
   {
   int size = 0;
   int ptr = 0;
-  uschar *ss;
+  const uschar *ss;
 
   /* We know that *s != 0 at this point. However, it might be pointing to a
   separator, which could indicate an empty string, or (if an ispunct()
@@ -1005,6 +1006,51 @@ while((sp = Ustrchr(ele, sep)))
   ele = sp+1;
   }
 new = string_cat(new, &sz, &off, ele, Ustrlen(ele));
+new[off] = '\0';
+return new;
+}
+
+
+static const uschar *
+Ustrnchr(const uschar * s, int c, unsigned * len)
+{
+unsigned siz = *len;
+while (siz)
+  {
+  if (!*s) return NULL;
+  if (*s == c)
+    {
+    *len = siz;
+    return s;
+    }
+  s++;
+  siz--;
+  }
+return NULL;
+}
+
+uschar *
+string_append_listele_n(uschar * list, uschar sep, const uschar * ele,
+  unsigned len)
+{
+uschar * new = NULL;
+int sz = 0, off = 0;
+const uschar * sp;
+
+if (list)
+  {
+  new = string_cat(new, &sz, &off, list, Ustrlen(list));
+  new = string_cat(new, &sz, &off, &sep, 1);
+  }
+
+while((sp = Ustrnchr(ele, sep, &len)))
+  {
+  new = string_cat(new, &sz, &off, ele, sp-ele+1);
+  new = string_cat(new, &sz, &off, &sep, 1);
+  ele = sp+1;
+  len--;
+  }
+new = string_cat(new, &sz, &off, ele, len);
 new[off] = '\0';
 return new;
 }
@@ -1502,14 +1548,35 @@ static uschar *
 string_get_localpart(address_item *addr, uschar *yield, int *sizeptr,
   int *ptrptr)
 {
-if (testflag(addr, af_include_affixes) && addr->prefix != NULL)
-  yield = string_cat(yield, sizeptr, ptrptr, addr->prefix,
-    Ustrlen(addr->prefix));
-yield = string_cat(yield, sizeptr, ptrptr, addr->local_part,
-  Ustrlen(addr->local_part));
-if (testflag(addr, af_include_affixes) && addr->suffix != NULL)
-  yield = string_cat(yield, sizeptr, ptrptr, addr->suffix,
-    Ustrlen(addr->suffix));
+uschar * s;
+
+s = addr->prefix;
+if (testflag(addr, af_include_affixes) && s)
+  {
+#ifdef SUPPORT_I18N
+  if (testflag(addr, af_utf8_downcvt))
+    s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+  }
+
+s = addr->local_part;
+#ifdef SUPPORT_I18N
+if (testflag(addr, af_utf8_downcvt))
+  s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+
+s = addr->suffix;
+if (testflag(addr, af_include_affixes) && s)
+  {
+#ifdef SUPPORT_I18N
+  if (testflag(addr, af_utf8_downcvt))
+    s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+  }
+
 return yield;
 }
 
@@ -1570,10 +1637,15 @@ else
   {
   if (addr->local_part != NULL)
     {
+    const uschar * s;
     yield = string_get_localpart(addr, yield, &size, &ptr);
     yield = string_cat(yield, &size, &ptr, US"@", 1);
-    yield = string_cat(yield, &size, &ptr, addr->domain,
-      Ustrlen(addr->domain) );
+    s = addr->domain;
+#ifdef SUPPORT_I18N
+    if (testflag(addr, af_utf8_downcvt))
+      s = string_localpart_utf8_to_alabel(s, NULL);
+#endif
+    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s) );
     }
   else
     {

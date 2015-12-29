@@ -19,4 +19,7 @@ typedef struct flock flock_t;
 #define HAVE_SYS_MOUNT_H
 #define SIOCGIFCONF_GIVES_ADDR
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

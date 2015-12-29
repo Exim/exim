@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Private structure for the private options and other private data. */
@@ -51,8 +51,7 @@ typedef struct {
   BOOL    gethostbyname;
   BOOL    dns_qualify_single;
   BOOL    dns_search_parents;
-  uschar *dnssec_request_domains;
-  uschar *dnssec_require_domains;
+  dnssec_domains dnssec;
   BOOL    delay_after_cutoff;
   BOOL    hosts_override;
   BOOL    hosts_randomize;
@@ -60,6 +59,9 @@ typedef struct {
   BOOL    lmtp_ignore_quota;
   uschar *expand_retry_include_ip_address;
   BOOL    retry_include_ip_address;
+#ifdef SUPPORT_SOCKS
+  uschar *socks_proxy;
+#endif
 #ifdef SUPPORT_TLS
   uschar *tls_certificate;
   uschar *tls_crl;
@@ -108,5 +110,10 @@ extern int     smtp_auth(uschar *, unsigned, address_item *, host_item *,
 		 smtp_inblock *, smtp_outblock *);
 extern BOOL    smtp_mail_auth_str(uschar *, unsigned,
 		 address_item *, smtp_transport_options_block *);
+
+#ifdef SUPPORT_SOCKS
+extern int     socks_sock_connect(host_item *, int, int, uschar *,
+	         transport_instance *, int);
+#endif
 
 /* End of transports/smtp.h */

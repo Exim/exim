@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -38,7 +38,7 @@ typedef struct macro_item {
 
 typedef struct bit_table {
   uschar *name;
-  unsigned int bit;
+  int bit;
 } bit_table;
 
 /* Block for holding a uid and gid, possibly unset, and an initgroups flag. */
@@ -59,8 +59,8 @@ typedef enum {DS_UNK=-1, DS_NO, DS_YES} dnssec_status_t;
 
 typedef struct host_item {
   struct host_item *next;
-  uschar *name;                   /* Host name */
-  uschar *address;                /* IP address in text form */
+  const uschar *name;             /* Host name */
+  const uschar *address;          /* IP address in text form */
   int     port;                   /* port value in host order (if SRV lookup) */
   int     mx;                     /* MX value if found via MX records */
   int     sort_key;               /* MX*1000 plus random "fraction" */
@@ -171,6 +171,7 @@ typedef struct transport_instance {
   uschar *remove_headers;         /* Remove these headers */
   uschar *return_path;            /* Overriding (rewriting) return path */
   uschar *debug_string;           /* Debugging output */
+  uschar *max_parallel;           /* Number of concurrent instances */
   uschar *message_size_limit;     /* Biggest message this transport handles */
   uschar *headers_rewrite;        /* Rules for rewriting headers */
   rewrite_rule *rewrite_rules;    /* Parsed rewriting rules */
@@ -188,7 +189,7 @@ typedef struct transport_instance {
   BOOL    log_fail_output;
   BOOL    log_defer_output;
   BOOL    retry_use_local_part;   /* Defaults true for local, false for remote */
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   uschar  *event_action;          /* String to expand on notable events */
 #endif
 } transport_instance;
@@ -217,6 +218,11 @@ typedef struct transport_info {
 } transport_info;
 
 
+
+typedef struct {
+  uschar *request;
+  uschar *require;
+} dnssec_domains;
 
 /* Structure for holding information about the configured routers. */
 
@@ -296,6 +302,8 @@ typedef struct router_instance {
   transport_instance *transport;  /* Transport block (when found) */
   struct router_instance *pass_router; /* Actual router for passed address */
   struct router_instance *redirect_router; /* Actual router for generated address */
+
+  dnssec_domains dnssec;
 } router_instance;
 
 
@@ -459,6 +467,11 @@ typedef struct address_item_propagated {
   #ifdef EXPERIMENTAL_SRS
   uschar *srs_sender;             /* Change return path when delivering */
   #endif
+  #ifdef SUPPORT_I18N
+  BOOL    utf8_msg:1;		  /* requires SMTPUTF8 processing */
+  BOOL	  utf8_downcvt:1;	  /* mandatory downconvert on delivery */
+  BOOL	  utf8_downcvt_maybe:1;	  /* optional downconvert on delivery */
+  #endif
 } address_item_propagated;
 
 /* Bits for the flags field below */
@@ -497,6 +510,9 @@ typedef struct address_item_propagated {
 #ifdef EXPERIMENTAL_DANE
 # define af_dane_verified      0x20000000 /* TLS cert verify done with DANE */
 #endif
+#ifdef SUPPORT_I18N
+# define af_utf8_downcvt       0x40000000 /* downconvert was done for delivery */
+#endif
 
 /* These flags must be propagated when a child is created */
 
@@ -530,7 +546,7 @@ typedef struct address_item {
   uschar *local_part;             /* points to cc or lc version */
   uschar *prefix;                 /* stripped prefix of local part */
   uschar *suffix;                 /* stripped suffix of local part */
-  uschar *domain;                 /* working domain (lower cased) */
+  const uschar *domain;           /* working domain (lower cased) */
 
   uschar *address_retry_key;      /* retry key including full address */
   uschar *domain_retry_key;       /* retry key for domain only */
@@ -546,13 +562,18 @@ typedef struct address_item {
   uschar *self_hostname;          /* after self=pass */
   uschar *shadow_message;         /* info about shadow transporting */
 
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   uschar *cipher;                 /* Cipher used for transport */
   void   *ourcert;                /* Certificate offered to peer, binary */
   void   *peercert;               /* Certificate from peer, binary */
   uschar *peerdn;                 /* DN of server's certificate */
   int    ocsp;			  /* OCSP status of peer cert */
-  #endif
+#endif
+
+#ifdef EXPERIMENTAL_DSN_INFO
+  const uschar *smtp_greeting;	  /* peer self-identification */
+  const uschar *helo_response;	  /* peer message */
+#endif
 
   uschar *authenticator;	  /* auth driver name used by transport */
   uschar *auth_id;		  /* auth "login" name used by transport */
@@ -581,7 +602,7 @@ typedef struct address_item {
                                   /* (  also  */
                                   /* ( contains verify rc in sender verify cache */
   short int transport_return;     /* result of delivery attempt */
-  address_item_propagated p;      /* fields that are propagated to children */
+  address_item_propagated prop;   /* fields that are propagated to children */
 } address_item;
 
 /* The table of header names consists of items of this type */
@@ -597,7 +618,7 @@ typedef struct {
 
 typedef struct error_block {
   struct error_block *next;
-  uschar *text1;
+  const uschar *text1;
   uschar *text2;
 } error_block;
 
@@ -642,6 +663,16 @@ typedef struct tree_node {
   uschar  name[1];                /* node name - variable length */
 } tree_node;
 
+/* Structure for holding time-limited data such as DNS returns.
+We use this rather than extending tree_node to avoid wasting
+space for most tree use (variables...) at the cost of complexity
+for the lookups cache */
+
+typedef struct expiring_data {
+  time_t expiry;		  /* if nonzero, data invalid after this time */
+  void   *ptr;			  /* pointer to data */
+} expiring_data;
+
 /* Structure for holding the handle and the cached last lookup for searches.
 This block is pointed to by the tree entry for the file. The file can get
 closed if too many are opened at once. There is a LRU chain for deciding which
@@ -661,6 +692,7 @@ uncompressed, but the data pointer is into the raw data. */
 typedef struct {
   uschar  name[DNS_MAXNAME];      /* domain name */
   int     type;                   /* record type */
+  unsigned short ttl;		  /* time-to-live, seconds */
   int     size;                   /* size of data */
   uschar *data;                   /* pointer to data */
 } dns_record;
@@ -750,9 +782,9 @@ typedef struct redirect_block {
 /* Structure for passing arguments to check_host() */
 
 typedef struct check_host_block {
-  uschar *host_name;
-  uschar *host_address;
-  uschar *host_ipv4;
+  const uschar *host_name;
+  const uschar *host_address;
+  const uschar *host_ipv4;
   BOOL   negative;
 } check_host_block;
 
@@ -768,7 +800,7 @@ typedef struct namedlist_cacheblock {
 /* Structure for holding data for an entry in a named list */
 
 typedef struct namedlist_block {
-  uschar *string;                    /* the list string */
+  const uschar *string;              /* the list string */
   namedlist_cacheblock *cache_data;  /* cached domain_data or localpart_data */
   int number;                        /* the number of the list for caching */
 } namedlist_block;
@@ -790,5 +822,8 @@ typedef struct acl_block {
   acl_condition_block *condition;
   int verb;
 } acl_block;
+
+/* smtp transport calc outbound_ip */
+typedef BOOL (*oicf) (uschar *message_id, void *data);
 
 /* End of structs.h */

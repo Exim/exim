@@ -9,6 +9,7 @@ log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 log_selector = +subject
+tls_advertise_hosts =
 
 av_scanner = aveserver : DIR/eximdir/aveserver_sock
 

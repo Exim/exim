@@ -13,4 +13,7 @@
 #define _SVID3
 #define NEED_H_ERRNO
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

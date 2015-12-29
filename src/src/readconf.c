@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading the configuration file, and for displaying
@@ -12,7 +12,9 @@ implementation of the conditional .ifdef etc. */
 #include "exim.h"
 
 static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
-
+static void save_config_line(const uschar* line);
+static void save_config_position(const uschar *file, int line);
+static void print_config(BOOL admin);
 
 #define CSTATE_STACK_SIZE 10
 
@@ -25,6 +27,15 @@ typedef struct config_file_item {
   FILE *file;
   int lineno;
 } config_file_item;
+
+/* Structure for chain of configuration lines (-bP config) */
+
+typedef struct config_line_item {
+  struct config_line_item *next;
+  uschar *line;
+} config_line_item;
+
+static config_line_item* config_lines;
 
 /* Structure of table of conditional words and their state transitions */
 
@@ -43,6 +54,8 @@ typedef struct syslog_fac_item {
   int    value;
 } syslog_fac_item;
 
+/* constants */
+static const char * const hidden = "<value not displayable>";
 
 /* Static variables */
 
@@ -228,6 +241,7 @@ static optionlist optionlist_config[] = {
   { "dns_ipv4_lookup",          opt_stringptr,   &dns_ipv4_lookup },
   { "dns_retrans",              opt_time,        &dns_retrans },
   { "dns_retry",                opt_int,         &dns_retry },
+  { "dns_trust_aa",             opt_stringptr,   &dns_trust_aa },
   { "dns_use_edns0",            opt_int,         &dns_use_edns0 },
  /* This option is now a no-op, retained for compability */
   { "drop_cr",                  opt_bool,        &drop_cr },
@@ -237,7 +251,7 @@ static optionlist optionlist_config[] = {
   { "envelope_to_remove",       opt_bool,        &envelope_to_remove },
   { "errors_copy",              opt_stringptr,   &errors_copy },
   { "errors_reply_to",          opt_stringptr,   &errors_reply_to },
-#ifdef EXPERIMENTAL_EVENT
+#ifndef DISABLE_EVENT
   { "event_action",             opt_stringptr,   &event_action },
 #endif
   { "exim_group",               opt_gid,         &exim_gid },
@@ -271,6 +285,9 @@ static optionlist optionlist_config[] = {
   { "host_lookup_order",        opt_stringptr,   &host_lookup_order },
   { "host_reject_connection",   opt_stringptr,   &host_reject_connection },
   { "hosts_connection_nolog",   opt_stringptr,   &hosts_connection_nolog },
+#ifdef SUPPORT_PROXY
+  { "hosts_proxy",              opt_stringptr,   &hosts_proxy },
+#endif
   { "hosts_treat_as_local",     opt_stringptr,   &hosts_treat_as_local },
 #ifdef LOOKUP_IBASE
   { "ibase_servers",            opt_stringptr,   &ibase_servers },
@@ -340,9 +357,6 @@ static optionlist optionlist_config[] = {
   { "print_topbitchars",        opt_bool,        &print_topbitchars },
   { "process_log_path",         opt_stringptr,   &process_log_path },
   { "prod_requires_admin",      opt_bool,        &prod_requires_admin },
-#ifdef EXPERIMENTAL_PROXY
-  { "proxy_required_hosts",     opt_stringptr,   &proxy_required_hosts },
-#endif
   { "qualify_domain",           opt_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",        opt_stringptr,   &qualify_domain_recipient },
   { "queue_domains",            opt_stringptr,   &queue_domains },
@@ -361,7 +375,7 @@ static optionlist optionlist_config[] = {
   { "recipient_unqualified_hosts", opt_stringptr, &recipient_unqualified_hosts },
   { "recipients_max",           opt_int,         &recipients_max },
   { "recipients_max_reject",    opt_bool,        &recipients_max_reject },
-#ifdef EXPERIMENTAL_REDIS
+#ifdef LOOKUP_REDIS
   { "redis_servers",            opt_stringptr,   &redis_servers },
 #endif
   { "remote_max_parallel",      opt_int,         &remote_max_parallel },
@@ -373,6 +387,7 @@ static optionlist optionlist_config[] = {
   { "rfc1413_hosts",            opt_stringptr,   &rfc1413_hosts },
   { "rfc1413_query_timeout",    opt_time,        &rfc1413_query_timeout },
   { "sender_unqualified_hosts", opt_stringptr,   &sender_unqualified_hosts },
+  { "slow_lookup_log",          opt_int,         &slow_lookup_log },
   { "smtp_accept_keepalive",    opt_bool,        &smtp_accept_keepalive },
   { "smtp_accept_max",          opt_int,         &smtp_accept_max },
   { "smtp_accept_max_nonmail",  opt_int,         &smtp_accept_max_nonmail },
@@ -398,6 +413,9 @@ static optionlist optionlist_config[] = {
   { "smtp_receive_timeout",     opt_func,        &fn_smtp_receive_timeout },
   { "smtp_reserve_hosts",       opt_stringptr,   &smtp_reserve_hosts },
   { "smtp_return_error_details",opt_bool,        &smtp_return_error_details },
+#ifdef SUPPORT_I18N
+  { "smtputf8_advertise_hosts", opt_stringptr,   &smtputf8_advertise_hosts },
+#endif
 #ifdef WITH_CONTENT_SCAN
   { "spamd_address",            opt_stringptr,   &spamd_address },
 #endif
@@ -438,12 +456,13 @@ static optionlist optionlist_config[] = {
 #endif
   { "timeout_frozen_after",     opt_time,        &timeout_frozen_after },
   { "timezone",                 opt_stringptr,   &timezone_string },
-#ifdef SUPPORT_TLS
   { "tls_advertise_hosts",      opt_stringptr,   &tls_advertise_hosts },
+#ifdef SUPPORT_TLS
   { "tls_certificate",          opt_stringptr,   &tls_certificate },
   { "tls_crl",                  opt_stringptr,   &tls_crl },
   { "tls_dh_max_bits",          opt_int,         &tls_dh_max_bits },
   { "tls_dhparam",              opt_stringptr,   &tls_dhparam },
+  { "tls_eccurve",              opt_stringptr,   &tls_eccurve },
 # ifndef DISABLE_OCSP
   { "tls_ocsp_file",            opt_stringptr,   &tls_ocsp_file },
 # endif
@@ -691,6 +710,8 @@ for (;;)
       config_filename = config_file_stack->filename;
       config_lineno = config_file_stack->lineno;
       config_file_stack = config_file_stack->next;
+      if (config_lines)
+        save_config_position(config_filename, config_lineno);
       continue;
       }
 
@@ -707,6 +728,9 @@ for (;;)
 
   config_lineno++;
   newlen = len + Ustrlen(big_buffer + len);
+
+  if (config_lines && config_lineno == 1)
+    save_config_position(config_filename, config_lineno);
 
   /* Handle pathologically long physical lines - yes, it did happen - by
   extending big_buffer at this point. The code also copes with very long
@@ -896,6 +920,8 @@ for (;;)
 
     if (include_if_exists != 0 && (Ustat(ss, &statbuf) != 0)) continue;
 
+    if (config_lines)
+      save_config_position(config_filename, config_lineno);
     save = store_get(sizeof(config_file_item));
     save->next = config_file_stack;
     config_file_stack = save;
@@ -952,6 +978,10 @@ next_section, truncate it. It will be unrecognized later, because all the known
 section names do fit. Leave space for pluralizing. */
 
 s = big_buffer + startoffset;            /* First non-space character */
+
+if (config_lines)
+  save_config_line(s);
+
 if (strncmpic(s, US"begin ", 6) == 0)
   {
   s += 6;
@@ -1085,7 +1115,7 @@ Returns:      the value, or -1 on error
 */
 
 static int
-readconf_readfixed(uschar *s, int terminator)
+readconf_readfixed(const uschar *s, int terminator)
 {
 int yield = 0;
 int value, count;
@@ -1191,7 +1221,7 @@ Returns:     doesn't return; dies
 */
 
 static void
-extra_chars_error(uschar *s, uschar *t1, uschar *t2, uschar *t3)
+extra_chars_error(const uschar *s, const uschar *t1, const uschar *t2, const uschar *t3)
 {
 uschar *comment = US"";
 if (*s == '#') comment = US" (# is comment only at line start)";
@@ -1227,7 +1257,7 @@ Returns:      the control block for the parsed rule.
 */
 
 static rewrite_rule *
-readconf_one_rewrite(uschar *p, int *existflags, BOOL isglobal)
+readconf_one_rewrite(const uschar *p, int *existflags, BOOL isglobal)
 {
 rewrite_rule *next = store_get(sizeof(rewrite_rule));
 
@@ -1333,10 +1363,10 @@ Returns:    pointer to the string
 */
 
 static uschar *
-read_string(uschar *s, uschar *name)
+read_string(const uschar *s, const uschar *name)
 {
 uschar *yield;
-uschar *ss;
+const uschar *ss;
 
 if (*s != '\"') return string_copy(s);
 
@@ -1359,8 +1389,6 @@ return yield;
 static void
 fn_smtp_receive_timeout(const uschar * name, const uschar * str)
 {
-int value;
-
 if (*str == '$')
   smtp_receive_timeout_s = string_copy(str);
 else
@@ -1597,18 +1625,16 @@ switch (type)
       }
     else if (ol->type & opt_rep_str)
       {
-      uschar sep = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
-      uschar * cp;
+      uschar sep_o = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
+      int    sep_i = -(int)sep_o;
+      const uschar * list = sptr;
+      uschar * s;
+      uschar * list_o = *str_target;
 
-      /* Strip trailing whitespace and seperators */
-      for (cp = sptr + Ustrlen(sptr) - 1;
-	  cp >= sptr && (*cp == '\n' || *cp == '\t' || *cp == ' ' || *cp == sep);
-	  cp--) *cp = '\0';
-
-      if (cp >= sptr)
-	*str_target = string_copy_malloc(
-		      *str_target ? string_sprintf("%s%c%s", *str_target, sep, sptr)
-				  : sptr);
+      while ((s = string_nextinlist(&list, &sep_i, NULL, 0)))
+	list_o = string_append_listele(list_o, sep_o, s);
+      if (list_o)
+	*str_target = string_copy_malloc(list_o);
       }
     else
       {
@@ -1651,8 +1677,7 @@ switch (type)
         flagptr = (int *)((uschar *)data_block + (long int)(ol3->value));
         }
 
-      while ((p = string_nextinlist(&sptr, &sep, big_buffer, BIG_BUFFER_SIZE))
-              != NULL)
+      while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
         {
         rewrite_rule *next = readconf_one_rewrite(p, flagptr, FALSE);
         *chain = next;
@@ -1776,8 +1801,8 @@ switch (type)
       int count = 1;
       uid_t *list;
       int ptr = 0;
-      uschar *p;
-      uschar *op = expand_string (sptr);
+      const uschar *p;
+      const uschar *op = expand_string (sptr);
 
       if (op == NULL)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
@@ -1817,8 +1842,8 @@ switch (type)
       int count = 1;
       gid_t *list;
       int ptr = 0;
-      uschar *p;
-      uschar *op = expand_string (sptr);
+      const uschar *p;
+      const uschar *op = expand_string (sptr);
 
       if (op == NULL)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
@@ -2245,7 +2270,6 @@ if (ol == NULL)
 
 if (!admin_user && (ol->type & opt_secure) != 0)
   {
-  const char * const hidden = "<value not displayable>";
   if (no_labels)
     printf("%s\n", hidden);
   else
@@ -2510,7 +2534,9 @@ causes the value of any main configuration variable to be output if the
 second argument is NULL. There are some special values:
 
   all                print all main configuration options
-  configure_file     print the name of the configuration file
+  config_file        print the name of the configuration file
+                     (configure_file will still work, for backward
+                     compatibility)
   routers            print the routers' configurations
   transports         print the transports' configuration
   authenticators     print the authenticators' configuration
@@ -2521,6 +2547,7 @@ second argument is NULL. There are some special values:
   macro_list         print a list of macro names
   +name              print a named list item
   local_scan         print the local_scan options
+  config             print the configuration as it is parsed
 
 If the second argument is not NULL, it must be one of "router", "transport",
 "authenticator" or "macro" in which case the first argument identifies the
@@ -2577,7 +2604,8 @@ if (type == NULL)
     return;
     }
 
-  if (Ustrcmp(name, "configure_file") == 0)
+  if ( Ustrcmp(name, "configure_file") == 0
+     ||Ustrcmp(name, "config_file") == 0)
     {
     printf("%s\n", CS config_main_filename);
     return;
@@ -2608,6 +2636,12 @@ if (type == NULL)
         local_scan_options_count, no_labels);
       }
     #endif
+    return;
+    }
+
+  if (Ustrcmp(name, "config") == 0)
+    {
+    print_config(admin_user);
     return;
     }
 
@@ -2894,6 +2928,18 @@ pid_t pid;
 int rc, status;
 void (*oldsignal)(int);
 
+/* If TLS will never be used, no point checking ciphers */
+
+if (  !tls_advertise_hosts
+   || !*tls_advertise_hosts
+   || Ustrcmp(tls_advertise_hosts, ":") == 0
+   )
+  return TRUE;
+else if (!tls_certificate)
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Warning: No server certificate defined; TLS connections will fail.\n"
+    " Suggested action: either install a certificate or change tls_advertise_hosts option");
+
 oldsignal = signal(SIGCHLD, SIG_DFL);
 
 fflush(NULL);
@@ -2968,7 +3014,7 @@ readconf_main(void)
 int sep = 0;
 struct stat statbuf;
 uschar *s, *filename;
-uschar *list = config_main_filelist;
+const uschar *list = config_main_filelist;
 
 /* Loop through the possible file names */
 
@@ -3039,7 +3085,7 @@ if (config_file != NULL)
   config_filename = config_main_filename = string_copy(filename);
 
   p = Ustrrchr(filename, '/');
-  config_main_directory = p ? string_copyn(filename, p - filename) 
+  config_main_directory = p ? string_copyn(filename, p - filename)
                             : string_copy(US".");
   }
 else
@@ -3140,7 +3186,7 @@ don't force the case. */
 
 if (primary_hostname == NULL)
   {
-  uschar *hostname;
+  const uschar *hostname;
   struct utsname uts;
   if (uname(&uts) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "uname() failed to yield host name");
@@ -3153,8 +3199,8 @@ if (primary_hostname == NULL)
 
     #if HAVE_IPV6
     if (!disable_ipv6 && (dns_ipv4_lookup == NULL ||
-         match_isinlist(hostname, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
-           TRUE, NULL) != OK))
+         match_isinlist(hostname, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
+	    MCL_DOMAIN, TRUE, NULL) != OK))
       af = AF_INET6;
     #else
     af = AF_INET;
@@ -3214,7 +3260,7 @@ or %M. However, it must NOT contain % followed by anything else. */
 
 if (*log_file_path != 0)
   {
-  uschar *ss, *sss;
+  const uschar *ss, *sss;
   int sep = ':';                       /* Fixed for log file path */
   s = expand_string(log_file_path);
   if (s == NULL)
@@ -3701,10 +3747,11 @@ Returns:       NULL if decoded correctly; else points to error text
 */
 
 uschar *
-readconf_retry_error(uschar *pp, uschar *p, int *basic_errno, int *more_errno)
+readconf_retry_error(const uschar *pp, const uschar *p,
+  int *basic_errno, int *more_errno)
 {
 int len;
-uschar *q = pp;
+const uschar *q = pp;
 while (q < p && *q != '_') q++;
 len = q - pp;
 
@@ -3733,7 +3780,7 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
     {
     int i;
     int xlen = p - q - 1;
-    uschar *x = q + 1;
+    const uschar *x = q + 1;
 
     static uschar *extras[] =
       { US"A", US"MX", US"connect", US"connect_A",  US"connect_MX" };
@@ -3741,24 +3788,19 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
       { 'A',   'M',    RTEF_CTOUT,  RTEF_CTOUT|'A', RTEF_CTOUT|'M' };
 
     for (i = 0; i < sizeof(extras)/sizeof(uschar *); i++)
-      {
       if (strncmpic(x, extras[i], xlen) == 0)
         {
         *more_errno = values[i];
         break;
         }
-      }
 
     if (i >= sizeof(extras)/sizeof(uschar *))
-      {
       if (strncmpic(x, US"DNS", xlen) == 0)
-        {
         log_write(0, LOG_MAIN|LOG_PANIC, "\"timeout_dns\" is no longer "
           "available in retry rules (it has never worked) - treated as "
           "\"timeout\"");
-        }
-      else return US"\"A\", \"MX\", or \"connect\" expected after \"timeout\"";
-      }
+      else
+        return US"\"A\", \"MX\", or \"connect\" expected after \"timeout\"";
     }
   }
 
@@ -3785,8 +3827,8 @@ else if (strncmpic(pp, US"mail_4", 6) == 0 ||
     return string_sprintf("%.4s_4 must be followed by xx, dx, or dd, where "
       "x is literal and d is any digit", pp);
 
-  *basic_errno = (*pp == 'm')? ERRNO_MAIL4XX :
-                 (*pp == 'r')? ERRNO_RCPT4XX : ERRNO_DATA4XX;
+  *basic_errno = *pp == 'm' ? ERRNO_MAIL4XX :
+                 *pp == 'r' ? ERRNO_RCPT4XX : ERRNO_DATA4XX;
   *more_errno = x << 8;
   }
 
@@ -3799,6 +3841,9 @@ else if (strncmpic(pp, US"lost_connection", p - pp) == 0)
 
 else if (strncmpic(pp, US"tls_required", p - pp) == 0)
   *basic_errno = ERRNO_TLSREQUIRED;
+
+else if (strncmpic(pp, US"lookup", p - pp) == 0)
+  *basic_errno = ERRNO_UNKNOWNHOST;
 
 else if (len != 1 || Ustrncmp(pp, "*", 1) != 0)
   return string_sprintf("unknown or malformed retry error \"%.*s\"", (int) (p-pp), pp);
@@ -3837,10 +3882,10 @@ Returns:    time in seconds or fixed point number * 1000
 */
 
 static int
-retry_arg(uschar **paddr, int type)
+retry_arg(const uschar **paddr, int type)
 {
-uschar *p = *paddr;
-uschar *pp;
+const uschar *p = *paddr;
+const uschar *pp;
 
 if (*p++ != ',') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "comma expected");
 
@@ -3854,10 +3899,8 @@ if (*p != 0 && !isspace(*p) && *p != ',' && *p != ';')
 *paddr = p;
 switch (type)
   {
-  case 0:
-  return readconf_readtime(pp, *p, FALSE);
-  case 1:
-  return readconf_readfixed(pp, *p);
+  case 0: return readconf_readtime(pp, *p, FALSE);
+  case 1: return readconf_readfixed(pp, *p);
   }
 return 0;    /* Keep picky compilers happy */
 }
@@ -3869,12 +3912,13 @@ readconf_retries(void)
 {
 retry_config **chain = &retries;
 retry_config *next;
-uschar *p;
+const uschar *p;
 
-while ((p = get_config_line()) != NULL)
+while ((p = get_config_line()))
   {
   retry_rule **rchain;
-  uschar *pp, *error;
+  const uschar *pp;
+  uschar *error;
 
   next = store_get(sizeof(retry_config));
   next->next = NULL;
@@ -3894,8 +3938,8 @@ while ((p = get_config_line()) != NULL)
 
   /* Test error names for things we understand. */
 
-  if ((error = readconf_retry_error(pp, p, &(next->basic_errno),
-       &(next->more_errno))) != NULL)
+  if ((error = readconf_retry_error(pp, p, &next->basic_errno,
+       &next->more_errno)))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%s", error);
 
   /* There may be an optional address list of senders to be used as another
@@ -3932,18 +3976,18 @@ while ((p = get_config_line()) != NULL)
     switch (rule->rule)
       {
       case 'F':   /* Fixed interval */
-      rule->p1 = retry_arg(&p, 0);
-      break;
+	rule->p1 = retry_arg(&p, 0);
+	break;
 
       case 'G':   /* Geometrically increasing intervals */
       case 'H':   /* Ditto, but with randomness */
-      rule->p1 = retry_arg(&p, 0);
-      rule->p2 = retry_arg(&p, 1);
-      break;
+	rule->p1 = retry_arg(&p, 0);
+	rule->p2 = retry_arg(&p, 1);
+	break;
 
       default:
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "unknown retry rule letter");
-      break;
+	log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "unknown retry rule letter");
+	break;
       }
 
     if (rule->timeout <= 0 || rule->p1 <= 0 ||
@@ -4184,6 +4228,121 @@ while(next_section[0] != 0)
   }
 
 (void)fclose(config_file);
+}
+
+/* Init the storage for the pre-parsed config lines */
+void
+readconf_save_config(const uschar *s)
+{
+  save_config_line(string_sprintf("# Exim Configuration (%s)",
+    running_in_test_harness ? US"X" : s));
+}
+
+static void
+save_config_position(const uschar *file, int line)
+{
+  save_config_line(string_sprintf("# %d \"%s\"", line, file));
+}
+
+/* Append a pre-parsed logical line to the config lines store,
+this operates on a global (static) list that holds all the pre-parsed
+config lines, we do no further processing here, output formatting and
+honouring of <hide> or macros will be done during output */
+static void
+save_config_line(const uschar* line)
+{
+static config_line_item *current;
+config_line_item *next;
+
+next = (config_line_item*) store_get(sizeof(config_line_item));
+next->line = string_copy(line);
+next->next = NULL;
+
+if (!config_lines) config_lines = next;
+else current->next = next;
+
+current = next;
+}
+
+/* List the parsed config lines, care about nice formatting and
+hide the <hide> values unless we're the admin user */
+void
+print_config(BOOL admin)
+{
+config_line_item *i;
+const int TS = 2;
+int indent = 0;
+
+for (i = config_lines; i; i = i->next)
+  {
+  uschar *current;
+  uschar *p;
+
+  /* skip over to the first non-space */
+  for (current = i->line; *current && isspace(*current); ++current)
+    ;
+
+  if (*current == '\0')
+    continue;
+
+  /* Collapse runs of spaces. We stop this if we encounter one of the
+   * following characters: "'$, as this may indicate careful formatting */
+  for (p = current; *p; ++p)
+    {
+    uschar *next;
+    if (!isspace(*p)) continue;
+    if (*p != ' ') *p = ' ';
+
+    for (next = p; isspace(*next); ++next)
+      ;
+
+    if (next - p > 1)
+      memmove(p+1, next, strlen(next)+1);
+
+    if (*next == '"' || *next == '\'' || *next == '$')
+      break;
+    }
+
+  /* # lines */
+  if (current[0] == '#')
+    puts(CCS current);
+
+  /* begin lines are left aligned */
+  else if (Ustrncmp(current, "begin", 5) == 0 && isspace(current[5]))
+    {
+    puts("");
+    puts(CCS current);
+    indent = TS;
+    }
+
+  /* router/acl/transport block names */
+  else if (current[Ustrlen(current)-1] == ':' && !Ustrchr(current, '='))
+    {
+    printf("\n%*s%s\n", TS, "", current);
+    indent = 2 * TS;
+    }
+
+  /* hidden lines (all MACROS or lines prefixed with "hide") */
+  else if (  !admin
+	  && (  isupper(*current)
+	     || Ustrncmp(current, "hide", 4) == 0 && isspace(current[4])
+	     )
+	  )
+    {
+    if ((p = Ustrchr(current, '=')))
+      {
+      *p = '\0';
+      printf("%*s%s= %s\n", indent, "", current, hidden);
+      }
+    /* e.g.: hide split_spool_directory */
+    else
+      printf("%*s\n", indent, hidden);
+    }
+
+  else
+    /* rest is public */
+    printf("%*s%s\n", indent, "", current);
+  }
 }
 
 /* vi: aw ai sw=2

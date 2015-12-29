@@ -8,6 +8,16 @@
 /* This file was originally supplied by Ian Kirk. The libradius support came
 from Alex Kiernan. */
 
+/* ugly hack to work around redefinition of ENV by radiusclient.h and
+ * db.h: define _DB_H_ so the db.h include thinks it's already included,
+ * we can get away with it like this, since this file doesn't use any db
+ * functions. */
+#ifndef _DB_H_
+# define _DB_H_ 1
+# define _DB_EXT_PROT_IN_ 1
+# define DB void
+#endif
+
 #include "../exim.h"
 
 /* This module contains functions that call the Radius authentication
@@ -36,9 +46,14 @@ using its original API. At release 0.4.0 the API changed. */
   #include <radlib.h>
 #else
   #if !defined(RADIUS_LIB_RADIUSCLIENT) && !defined(RADIUS_LIB_RADIUSCLIENTNEW)
-  #define RADIUS_LIB_RADIUSCLIENT
+  # define RADIUS_LIB_RADIUSCLIENT
   #endif
-  #include <radiusclient.h>
+
+  #ifdef RADIUS_LIB_RADIUSCLIENTNEW
+  # include <freeradius-client.h>
+  #else
+  # include <radiusclient.h>
+  #endif
 #endif
 
 
@@ -60,10 +75,10 @@ Returns:   OK if authentication succeeded
 */
 
 int
-auth_call_radius(uschar *s, uschar **errptr)
+auth_call_radius(const uschar *s, uschar **errptr)
 {
 uschar *user;
-uschar *radius_args = s;
+const uschar *radius_args = s;
 int result;
 int sep = 0;
 

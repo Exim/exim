@@ -1,7 +1,7 @@
 userx@alias-eximtesthost.test.ex
     <-- userx@alias-eximtesthost
   router = dns, transport = smtp
-  host eximtesthost.test.ex [ip4.ip4.ip4.ip4] 
+  host eximtesthost.test.ex [ip4.ip4.ip4.ip4]
 userx@alias-eximtesthost.test.ex
   router = dns, transport = smtp
-  host eximtesthost.test.ex [ip4.ip4.ip4.ip4] 
+  host eximtesthost.test.ex [ip4.ip4.ip4.ip4]

@@ -12,7 +12,7 @@ RCPT TO:<userx@domain1>
 250 Recipient OK
 DATA
 354 Send message
-Line without end
+Line-without-end
 .
 250 OK
 QUIT

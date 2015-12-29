@@ -6,7 +6,7 @@ exim -DSERVER=server -bd -oX PORT_D
 exim CALLER@test.ex
 Test message.
 ****
-millisleep 500
+sleep 2
 #
 #
 # Extended: server uses SNI to change certificate
@@ -17,3 +17,4 @@ millisleep 500
 #
 #
 killdaemon
+sleep 2

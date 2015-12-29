@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: fsecure: unable to read answer 0 (Connection timed out)
-1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: fsecure: unable to read answer 0 (Connection timed out)
+1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: fsecure TESTSUITE/eximdir/fsec_sock : unable to read answer 0 (Connection timed out)
+1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: fsecure TESTSUITE/eximdir/fsec_sock : unable to read answer 0 (Connection timed out)

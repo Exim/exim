@@ -2,8 +2,8 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Cygwin-specific code. December 2002
-   This is concatenated onto the generic src/os.c file.
+/* Cygwin-specific code. December 2002. Updated Jan 2015.
+   This is prefixed to the src/os.c file.
 
    This code was supplied by Pierre A. Humblet <Pierre.Humblet@ieee.org>
 */
@@ -18,23 +18,12 @@ int cygwin_mkdir( const char *path, mode_t mode )
   return mkdir(p, mode);
 }
 
-/* We have strsignal but cannot use #define
-   because types don't match */
-#define OS_STRSIGNAL /* src/os.c need not provide it */
-char * os_strsignal(int sig)
-{
-  return (char *) strsignal(sig);
-}
-
 #ifndef COMPILE_UTILITY /* Utilities don't need special code */
-#ifdef INCLUDE_MINIRES
-#include "../minires/minires.c"
-#include "../minires/os-interface.c"
-#endif
 
 #ifdef INCLUDE_PAM
 #include "../pam/pam.c"
 #endif
+#include <alloca.h>
 
 unsigned int cygwin_WinVersion;
 
@@ -47,23 +36,25 @@ unsigned int cygwin_WinVersion;
 #endif
 
 #include <windows.h>
+#include <ntstatus.h>
+#include <lmcons.h>
+
 #define EqualLuid(Luid1, Luid2) \
   ((Luid1.LowPart == Luid2.LowPart) && (Luid1.HighPart == Luid2.HighPart))
 #include <sys/cygwin.h>
 
 /* Special static variables */
 static BOOL cygwin_debug = FALSE;
-static int privileged = 1; /* when not privileged, setuid = noop */
+static int fakesetugid = 1; /* when not privileged, setugid = noop */
 
 #undef setuid
 int cygwin_setuid(uid_t uid )
 {
-  int res;
-  if (privileged <= 0) return 0;
-  else {
+  int res = 0;
+  if (fakesetugid == 0) { 
     res = setuid(uid);
     if (cygwin_debug)
-      fprintf(stderr, "setuid %lu %lu %d pid: %d\n",
+      fprintf(stderr, "setuid %u %u %d pid: %d\n",
               uid, getuid(),res, getpid());
   }
   return res;
@@ -72,12 +63,11 @@ int cygwin_setuid(uid_t uid )
 #undef setgid
 int cygwin_setgid(gid_t gid )
 {
-  int res;
-  if (privileged <= 0) return 0;
-  else {
+  int res = 0;
+  if (fakesetugid == 0) { 
     res = setgid(gid);
     if (cygwin_debug)
-      fprintf(stderr, "setgid %lu %lu %d pid: %d\n",
+      fprintf(stderr, "setgid %u %u %d pid: %d\n",
               gid, getgid(), res, getpid());
   }
   return res;
@@ -97,8 +87,8 @@ static void cygwin_setpriority()
    Next byte: 0
    Next byte: minor version of OS
    Low  byte: major version of OS (3 or 4 for for NT, 5 for 2000 and XP) */
-#define VERSION_IS_58M(x) (x & 0x80000000) /* 95, 98, Me   */
-#define VERSION_IS_NT(x)  ((x & 0XFF) < 5) /* NT 4 or 3.51 */
+//#define VERSION_IS_58M(x) (x & 0x80000000) /* 95, 98, Me   */
+//#define VERSION_IS_NT(x)  ((x & 0XFF) < 5) /* NT 4 or 3.51 */
 
 /*
   Routine to find if process or thread is privileged
@@ -106,7 +96,6 @@ static void cygwin_setpriority()
 
 enum {
   CREATE_BIT = 1,
-  RESTORE_BIT = 2
 };
 
 static DWORD get_privileges ()
@@ -132,15 +121,12 @@ static DWORD get_privileges ()
     for (i = 0; i < privs->PrivilegeCount; i++) {
       if (EqualLuid(privs->Privileges[i].Luid, cluid))
         ret |= CREATE_BIT;
-      else if (EqualLuid(privs->Privileges[i].Luid, rluid))
-        ret |= RESTORE_BIT;
-      else continue;
-      if (ret == (CREATE_BIT | RESTORE_BIT))
+      if (ret == (CREATE_BIT))
         break;
     }
   }
   else
-    fprintf(stderr, "has_create_token_privilege %ld\n", GetLastError());
+    fprintf(stderr, "has_create_token_privilege %u\n", GetLastError());
 
   if (hToken)
     CloseHandle(hToken);
@@ -148,17 +134,18 @@ static DWORD get_privileges ()
   return ret;
 }
 
-/* We use a special routine to initialize
-    cygwin_init is called from the OS_INIT macro in main(). */
-
-void cygwin_init(int argc, char ** argv, void * rup,
-                 void * eup, void * egp, void * cup, void * cgp)
+/* 
+  We use cygwin_premain to fake a few things 
+	and to provide some debug info 
+*/
+void cygwin_premain2(int argc, char ** argv, struct per_process * ptr)
 {
-  int i;
+  int i, res, is_daemon = 0, is_spoolwritable, is_privileged, is_eximuser;
   uid_t myuid, systemuid;
   gid_t mygid, adminsgid;
-  struct passwd * pwp;
-  char *cygenv, win32_path[MAX_PATH];
+  struct passwd * pwp = NULL;
+  struct stat buf;
+  char *cygenv;
   SID(1, SystemSid, SECURITY_LOCAL_SYSTEM_RID);
   SID(2, AdminsSid, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS);
   DWORD priv_flags;
@@ -174,77 +161,103 @@ void cygwin_init(int argc, char ** argv, void * rup,
   for (i = 1; i < argc; i++) {
     if (argv[i][0] == '-') {
       if (argv[i][1] == 'c') {
+        ssize_t size;
+        wchar_t *win32_path;
         argv[i][1] = 'n';  /* Replace -c by -n */
         cygwin_debug = TRUE;
-        fprintf(stderr, "CYGWIN = \"%s\".", cygenv);
-        cygwin_conv_to_win32_path("/", win32_path);
-        fprintf(stderr, " Root / mapped to %s.\n", win32_path);
+        fprintf(stderr, "CYGWIN = \"%s\".\n", cygenv);
+        if (((size = cygwin_conv_path(CCP_POSIX_TO_WIN_W,"/", win32_path, 0)) > 0)
+ 	 && ((win32_path = malloc(size)) != NULL)
+         && (cygwin_conv_path(CCP_POSIX_TO_WIN_W,"/", win32_path, size) == 0)) {
+	        fprintf(stderr, " Root / mapped to %ls.\n", win32_path);
+		free(win32_path);
+	}
       }
-      else if (argv[i][1] == 'b' && argv[i][2] == 'd')
+      else if (argv[i][1] == 'b' && argv[i][2] == 'd') {
+        is_daemon = 1;
         cygwin_setpriority();
     }
   }
-  if (VERSION_IS_58M(cygwin_WinVersion)) {
-    * (uid_t *) rup = myuid;  /* Pretend we are root */
-    * (uid_t *) eup = myuid;  /* ... and exim */
-    * (gid_t *) egp = mygid;
-    return;
   }
+
   /* Nt/2000/XP
-     We initially set the exim uid & gid to those of the "real exim",
+     We initially set the exim uid & gid to those of the "exim user",
        or to the root uid (SYSTEM) and exim gid (ADMINS),
      If privileged, we setuid to those.
      We always set the configure uid to the system uid.
      We always set the root uid to the real uid
-       to avoid useless execs following forks.
+       to allow exim imposed restrictions (bypassable by recompiling)
+       and to avoid exec that cause loss of privilege
      If not privileged and unable to chown,
        we set the exim uid to our uid.
-     If unprivileged, we fake all subsequent setuid. */
+     If unprivileged and /var/spool/exim is writable and not runing as listening daemon, 
+       we fake all subsequent setuid. */
+
+  /* Get the system and admins uid from their sids */
+  if ((systemuid = cygwin_internal(CW_GET_UID_FROM_SID, & SystemSid)) == -1) {
+	fprintf(stderr, "Cannot map System sid. Aborting\n");
+	exit(1);
+  }
+  if ((adminsgid = cygwin_internal(CW_GET_GID_FROM_SID, & AdminsSid)) == -1) {
+	fprintf(stderr, "Cannot map Admins sid. Aborting\n");
+	exit(1);
+  }
 
   priv_flags = get_privileges ();
-  privileged = !!(priv_flags & CREATE_BIT);
+  is_privileged = !!(priv_flags & CREATE_BIT);
 
-  /* Get the system and admins uid from their sids,
-     or use the default values from the Makefile. */
-  if ((systemuid = cygwin_internal(CW_GET_UID_FROM_SID, & SystemSid)) == -1)
-    systemuid = * (uid_t *) eup;
-  if ((adminsgid = cygwin_internal(CW_GET_GID_FROM_SID, & AdminsSid)) == -1)
-    adminsgid = * (gid_t *) egp;
+  /* Call getpwnam for account exim after getting the local exim name */
+  char exim_username[DNLEN + UNLEN + 2];
+  if (cygwin_internal(CW_CYGNAME_FROM_WINNAME, "exim", exim_username, sizeof exim_username) != 0)
+     pwp = getpwnam (exim_username);
 
-  if ((pwp = getpwnam("exim")) != NULL) {
-    * (uid_t *) eup = pwp->pw_uid;  /* Set it according to passwd */
-    * (gid_t *) egp = pwp->pw_gid;
+  /* If cannot setuid to exim or and is not the daemon (which is assumed to be
+     able to chown or to be the exim user) set the exim ugid to our ugid to avoid
+     chown failures after creating files and to be able to setuid to exim in 
+     exim.c ( "privilege not needed" ). */
+  if ((is_privileged == 0) && (!is_daemon)) {
+    exim_uid = myuid;
+    exim_gid = mygid;
+  }
+  else if (pwp != NULL) {
+    exim_uid = pwp->pw_uid;  /* Set it according to passwd */
+    exim_gid = pwp->pw_gid;
+    is_eximuser = 1;
   }
   else {
-    * (uid_t *) eup = systemuid;
-    * (gid_t *) egp = adminsgid;
+    exim_uid = systemuid;
+    exim_gid = adminsgid;
+    is_eximuser = 0;
   }
 
-  /* Set the configuration uid and gid to the system uid and admins gid.
-     Note that exim uid is also accepted as owner of exim.conf. */
-  * (uid_t *) cup = systemuid;
-  * (gid_t *) cgp = adminsgid;
+  res = stat("/var/spool/exim", &buf);
+  /* Check if writable (and can be stat) */
+  is_spoolwritable = ((res == 0) && ((buf.st_mode & S_IWOTH) != 0));
 
-  if (privileged) {             /* Can setuid */
-    if (cygwin_setgid(* (gid_t *) egp) /* Setuid to exim */
-        || cygwin_setuid(* (uid_t *) eup))
-      privileged = -1;          /* Problem... Perhaps not in 544 */
+  fakesetugid = (is_privileged == 0) && (is_daemon == 0) && (is_spoolwritable == 1);
+
+  if (is_privileged) {             /* Can setuid */
+     if (cygwin_setgid(exim_gid) /* Setuid to exim */
+         || cygwin_setuid(exim_uid)) {
+	   fprintf(stderr, "Unable to setuid/gid to exim. priv_flags: %x\n", priv_flags);
+      	   exit(0);          /* Problem... Perhaps not in 544 */
+     }
   }
 
-  /* Pretend we are root to avoid useless execs.
+  /* Set the configuration file uid and gid to the system uid and admins gid. */
+  config_uid = systemuid;
+  config_gid = adminsgid;
+
+  /* Pretend we are root to avoid useless exec
+     and avoid exim set limitations.
      We are limited by file access rights */
-  * (uid_t *) rup = getuid ();
-
-  /* If we have not setuid to exim and cannot chown,
-     set the exim uid to our uid to avoid chown failures */
-  if (privileged <= 0 && !(priv_flags & RESTORE_BIT))
-    * (uid_t *) eup = * (uid_t *) rup;
+  root_uid = getuid ();
 
   if (cygwin_debug) {
-    fprintf(stderr, "Starting uid %ld, gid %ld, ntsec %lu, privileged %d.\n",
-            myuid, mygid, cygwin_internal(CW_CHECK_NTSEC, NULL), privileged);
-    fprintf(stderr, "root_uid %ld, exim_uid %ld, exim_gid %ld, config_uid %ld, config_gid %ld.\n",
-            * (uid_t *) rup, * (uid_t *) eup, * (gid_t *) egp, * (uid_t *) cup, * (gid_t *) cgp);
+    fprintf(stderr, "Starting uid %u, gid %u, priv_flags %x, is_privileged %d, is_daemon %d, is_spoolwritable %d.\n",
+            myuid, mygid, priv_flags, is_privileged, is_daemon, is_spoolwritable);
+    fprintf(stderr, "root_uid %u, exim_uid %u, exim_gid %u, config_uid %u, config_gid %u, is_eximuser %d.\n",
+            root_uid, exim_uid, exim_gid, config_uid, config_gid, is_eximuser);
   }
   return;
 }
@@ -253,24 +266,15 @@ void cygwin_init(int argc, char ** argv, void * rup,
 #define OS_LOAD_AVERAGE /* src/os.c need not provide it */
 
 /*****************************************************************
- *
  Functions for average load measurements
 
- There are two methods, which work only on NT.
+ Uses NtQuerySystemInformation.
+ This requires definitions that are not part of
+ standard include files.
 
- The first one uses the HKEY_PERFORMANCE_DATA registry to
- get performance data. It is complex but well documented
- and works on all NT versions.
+ This is discouraged starting with WinXP.
 
- The second one uses NtQuerySystemInformation.
- Its use is discouraged starting with WinXP.
-
- Until 4.43, the Cygwin port of exim was using the first
- method.
-
-*****************************************************************/
-#define PERF_METHOD2
-
+*************************************************************/
 /* Structure to compute the load average efficiently */
 typedef struct {
   DWORD Lock;
@@ -279,11 +283,6 @@ typedef struct {
   unsigned long long LastCounter; /* Last measurement counter */
   unsigned long long PerfFreq;    /* Perf counter frequency */
   int LastLoad;                   /* Last reported load, or -1 */
-#ifdef PERF_METHOD1
-  PPERF_DATA_BLOCK PerfData;      /* Pointer to a buffer to get the data */
-  DWORD BufferSize;               /* Size of PerfData */
-  LPSTR * NamesArray;             /* Temporary (malloc) buffer for index */
-#endif
 } cygwin_perf_t;
 
 static struct {
@@ -292,317 +291,6 @@ static struct {
    cygwin_perf_t *perf;
 } cygwin_load = {NULL, 0, NULL};
 
-#ifdef PERF_METHOD1
-/*************************************************************
- METHOD 1
-
- Obtaining statistics in Windows is done at a low level by
- calling registry functions, in particular the key
- HKEY_PERFORMANCE_DATA on NT and successors.
- Something equivalent exists on Win95, see Microsoft article
- HOWTO: Access the Performance Registry Under Windows 95 (KB 174631)
- but it is not implemented here.
-
- The list of objects to be polled is specified in the string
- passed to RegQueryValueEx in ReadStat() below.
- On NT, all objects are polled even if info about only one is
- required. This is fixed in Windows 2000. See articles
- INFO: Perflib Calling Close Procedure in Windows 2000 (KB 270127)
- INFO: Performance Data Changes Between Windows NT 4.0 and Windows
- 2000 (KB 296523)
-
- It is unclear to me how the counters are primarily identified.
- Whether it's by name strings or by the offset of their strings
- as mapped in X:\Winnt\system32\perfc009.dat [or equivalently as
- reported by the registry functions in GetNameStrings( ) below].
- Microsoft documentation seems to say that both methods should
- work.
-
- In the interest of speed and language independence, the main
- code below relies on offsets. However if debug is enabled, the
- code verifies that the names of the corresponding strings are
- as expected.
-
-*****************************************************************/
-
-/* Object and counter indices and names */
-#define PROCESSOR_OBJECT_INDEX 238
-#define PROCESSOR_OBJECT_STRING "238"
-#define PROCESSOR_OBJECT_NAME "Processor"
-#define PROCESSOR_TIME_COUNTER 6
-#define PROCESSOR_TIME_NAME "% Processor Time"
-
-#define BYTEINCREMENT 800    /* Block to add to PerfData */
-
-/*****************************************************************
- *
- Macros to navigate through the performance data.
-
- *****************************************************************/
-#define FirstObject(PerfData)\
-  ((PPERF_OBJECT_TYPE)((PBYTE)PerfData + PerfData->HeaderLength))
-#define NextObject(PerfObj)\
-  ((PPERF_OBJECT_TYPE)((PBYTE)PerfObj + PerfObj->TotalByteLength))
-#define ObjectCounterBlock(PerfObj)\
-  ((PPERF_COUNTER_BLOCK)(PBYTE)PerfObj + PerfObj->DefinitionLength )
-#define FirstInstance(PerfObj )\
-  ((PPERF_INSTANCE_DEFINITION)((PBYTE)PerfObj + PerfObj->DefinitionLength))
-#define InstanceCounterBlock(PerfInst)\
-  ((PPERF_COUNTER_BLOCK) ((PBYTE)PerfInst + PerfInst->ByteLength ))
-#define NextInstance(PerfInst )\
-  ((PPERF_INSTANCE_DEFINITION)((PBYTE)InstanceCounterBlock(PerfInst) + \
-        InstanceCounterBlock(PerfInst)->ByteLength) )
-#define FirstCounter(PerfObj)\
-  ((PPERF_COUNTER_DEFINITION) ((PBYTE)PerfObj + PerfObj->HeaderLength))
-#define NextCounter(PerfCntr)\
-  ((PPERF_COUNTER_DEFINITION)((PBYTE)PerfCntr + PerfCntr->ByteLength))
-
-/*****************************************************************
- *
- Load the counter and object names from the registry
- to cygwin_load.perf->NameStrings
- and index them in cygwin_load.perf->NamesArray
-
- NameStrings seems to be taken from the file
- X:\Winnt\system32\perfc009.dat
-
- This is used only for name verification during initialization,
- if DEBUG(D_load) is TRUE.
-
-*****************************************************************/
-static BOOL GetNameStrings( )
-{
-  HKEY hKeyPerflib;      // handle to registry key
-  DWORD dwArraySize;     // size for array
-  DWORD dwNamesSize;     // size for strings
-  LPSTR lpCurrentString; // pointer for enumerating data strings
-  DWORD dwCounter;       // current counter index
-  LONG  res;
-
-  /* Get the number of Counter items into dwArraySize. */
-  if ((res = RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-                           "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Perflib",
-                           0,
-                           KEY_QUERY_VALUE, /* KEY_READ, */
-                           &hKeyPerflib))
-      != ERROR_SUCCESS) {
-    DEBUG(D_load) debug_printf("RegOpenKeyEx (1): error %ld (Windows)\n", res);
-    return FALSE;
-  }
-  dwNamesSize = sizeof(dwArraySize); /* Temporary reuse */
-  if ((res = RegQueryValueEx( hKeyPerflib,
-                              "Last Counter",
-                              NULL,
-                              NULL,
-                              (LPBYTE) &dwArraySize,
-                              &dwNamesSize ))
-      != ERROR_SUCCESS) {
-    DEBUG(D_load) debug_printf("RegQueryValueEx (1): error %ld (Windows)\n", res);
-    return FALSE;
-  }
-  RegCloseKey( hKeyPerflib );
-  /* Open the key containing the counter and object names. */
-  if ((res = RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-                           "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Perflib\\009",
-                           0,
-                           KEY_READ,
-                           &hKeyPerflib))
-      != ERROR_SUCCESS) {
-    DEBUG(D_load) debug_printf("RegOpenKeyEx (2): error %ld (Windows)\n", res);
-    return FALSE;
-  }
-  /* Get the size of the Counter value in the key
-     and then read the value in the tail of NamesArray */
-  dwNamesSize = 0;
-  lpCurrentString = NULL;
-  while (1) {
-    res = RegQueryValueEx( hKeyPerflib,
-                           "Counter",
-                           NULL,
-                           NULL,
-                           (unsigned char *) lpCurrentString,
-                           &dwNamesSize);
-    if ((res == ERROR_SUCCESS) && /* Bug (NT 4.0): SUCCESS was returned on first call */
-        (cygwin_load.perf->NamesArray != NULL)) break;
-    if ((res == ERROR_SUCCESS) || /* but cygwin_load.perf->NamesArrays == NULL */
-        (res == ERROR_MORE_DATA)) {
-      /* Allocate memory BOTH for the names array and for the counter and object names */
-      if ((cygwin_load.perf->NamesArray =
-           (LPSTR *) malloc( (dwArraySize + 1) * sizeof(LPSTR) + dwNamesSize * sizeof(CHAR)))
-          != NULL) {
-        /* Point to area for the counter and object names */
-        lpCurrentString = (LPSTR) & cygwin_load.perf->NamesArray[dwArraySize + 1];
-        continue;
-      }
-      DEBUG(D_load) debug_printf("Malloc: errno %d (%s)\n", errno, strerror(errno));
-    }
-    else { /* Serious error */
-      DEBUG(D_load) debug_printf("RegQueryValueEx (2): error %ld (Windows)\n", res);
-    }
-    return FALSE;
-  }
-  RegCloseKey( hKeyPerflib );
-  /* Index the names into an array. */
-  while (*lpCurrentString) {
-    dwCounter = atol( lpCurrentString );
-    lpCurrentString += (lstrlen(lpCurrentString)+1);
-    cygwin_load.perf->NamesArray[dwCounter] = lpCurrentString;
-    lpCurrentString += (strlen(lpCurrentString)+1);
-  }
-  return TRUE;
-}
-
-/*****************************************************************
- *
- Find the value of the Processor Time counter
-
-*****************************************************************/
-static BOOL ReadTimeCtr(PPERF_OBJECT_TYPE PerfObj,
-                        PPERF_COUNTER_DEFINITION CurCntr,
-                        PPERF_COUNTER_BLOCK PtrToCntr,
-                        unsigned long long * TimePtr){
-  int j;
-  /* Scan all counters. */
-  for( j = 0; j < PerfObj->NumCounters; j++ ) {
-    if (CurCntr->CounterNameTitleIndex == PROCESSOR_TIME_COUNTER) {
-      /* Verify it is really the proc time counter */
-      if ((CurCntr->CounterType != PERF_100NSEC_TIMER_INV) || /* Wrong type */
-          ((cygwin_load.perf->NamesArray != NULL) &&                  /* Verify name */
-           (strcmp(cygwin_load.perf->NamesArray[CurCntr->CounterNameTitleIndex],
-                   PROCESSOR_TIME_NAME)))) {
-        log_write(0, LOG_MAIN|LOG_PANIC,
-                  "Incorrect Perf counter type or name %x %s",
-                  (unsigned) CurCntr->CounterType,
-                  cygwin_load.perf->NamesArray[CurCntr->CounterNameTitleIndex]);
-        return FALSE;
-      }
-      *TimePtr += *(unsigned long long int *) ((PBYTE) PtrToCntr + CurCntr->CounterOffset);
-      return TRUE; /* return TRUE as soon as we found the counter */
-    }
-    /* Get the next counter. */
-    CurCntr = NextCounter( CurCntr );
-  }
-  return FALSE;
-}
-
-/*****************************************************************
- *
- ReadStat()
- Measures current Time100ns and IdleCount
- Return TRUE if success.
-
- *****************************************************************/
-static BOOL ReadStat(unsigned long long int *Time100nsPtr,
-                     unsigned long long int * IdleCountPtr)
-{
-  PPERF_OBJECT_TYPE PerfObj;
-  PPERF_INSTANCE_DEFINITION PerfInst;
-  PPERF_COUNTER_DEFINITION PerfCntr;
-  PPERF_COUNTER_BLOCK PtrToCntr;
-  DWORD i, k, res;
-
-  /* Get the performance data for the Processor object
-     There is no need to open a key.
-     We may need to blindly increase the buffer size.
-     BufferSize does not return info but may be changed */
-  while (1) {
-    DWORD BufferSize = cygwin_load.perf->BufferSize;
-    res = RegQueryValueEx( HKEY_PERFORMANCE_DATA,
-                           PROCESSOR_OBJECT_STRING,
-                           NULL,
-                           NULL,
-                           (LPBYTE) cygwin_load.perf->PerfData,
-                           &BufferSize );
-    if (res == ERROR_SUCCESS) break;
-    if (res == ERROR_MORE_DATA ) {
-      /* Increment if necessary to get a buffer that is big enough. */
-      cygwin_load.perf->BufferSize += BYTEINCREMENT;
-      if ((cygwin_load.perf->PerfData =
-           (PPERF_DATA_BLOCK) realloc( cygwin_load.perf->PerfData, cygwin_load.perf->BufferSize ))
-          != NULL) continue;
-      DEBUG(D_load) debug_printf("Malloc: errno %d (%s)\n", errno, strerror(errno));
-    }
-    else { /* Serious error */
-      DEBUG(D_load) debug_printf("RegQueryValueEx (3): error %ld (Windows)\n", res);
-    }
-    return FALSE;
-  }
-  /* Initialize the counters */
-  *Time100nsPtr = 0;
-  *IdleCountPtr = 0;
-  /* We should only have one object, but write general code just in case. */
-  PerfObj = FirstObject( cygwin_load.perf->PerfData );
-  for( i = 0; i < cygwin_load.perf->PerfData->NumObjectTypes; i++ ) {
-    /* We are only interested in the processor object */
-    if ( PerfObj->ObjectNameTitleIndex == PROCESSOR_OBJECT_INDEX) {
-      /* Possibly verify it is really the Processor object. */
-      if ((cygwin_load.perf->NamesArray != NULL) &&
-          (strcmp(cygwin_load.perf->NamesArray[PerfObj->ObjectNameTitleIndex],
-                  PROCESSOR_OBJECT_NAME))) {
-        log_write(0, LOG_MAIN|LOG_PANIC,
-                  "Incorrect Perf object name %s",
-                  cygwin_load.perf->NamesArray[PerfObj->ObjectNameTitleIndex]);
-        return FALSE;
-      }
-      /* Get the first counter */
-      PerfCntr = FirstCounter( PerfObj );
-      /* See if the object has instances.
-         It should, but write general code. */
-      if( PerfObj->NumInstances != PERF_NO_INSTANCES ) {
-        PerfInst = FirstInstance( PerfObj );
-        for( k = 0; k < PerfObj->NumInstances; k++ ) {
-          /* There can be several processors.
-             Accumulate both the Time100ns and the idle counter.
-             Starting with Win2000 there is an instance named "_Total".
-             Do not use it.     We only use instances with a single
-             character in the name.
-             If we examine the object names, we also look at the instance
-             names and their lengths and issue reports */
-          if ( cygwin_load.perf->NamesArray != NULL) {
-            CHAR ascii[30]; /* The name is in unicode */
-            wsprintf(ascii,"%.29lS",
-                     (char *)((PBYTE)PerfInst + PerfInst->NameOffset));
-            log_write(0, LOG_MAIN,
-                      "Perf: Found processor instance \"%s\", length %d",
-                      ascii, PerfInst->NameLength);
-            if ((PerfInst->NameLength != 4) &&
-                (strcmp(ascii, "_Total") != 0)) {
-              log_write(0, LOG_MAIN|LOG_PANIC,
-                        "Perf: WARNING: Unexpected processor instance name");
-              return FALSE;
-            }
-          }
-          if (PerfInst->NameLength == 4) {
-            *Time100nsPtr += cygwin_load.perf->PerfData->PerfTime100nSec.QuadPart;
-            PtrToCntr = InstanceCounterBlock(PerfInst);
-            if (! ReadTimeCtr(PerfObj, PerfCntr, PtrToCntr, IdleCountPtr)) {
-              return FALSE;
-            }
-          }
-          PerfInst = NextInstance( PerfInst );
-        }
-        return (*Time100nsPtr != 0); /* Something was read */
-      }
-      else { /* No instance, just the counter data */
-        *Time100nsPtr = cygwin_load.perf->PerfData->PerfTime100nSec.QuadPart;
-        PtrToCntr = ObjectCounterBlock(PerfObj);
-        return ReadTimeCtr(PerfObj, PerfCntr, PtrToCntr, IdleCountPtr);
-      }
-    }
-    PerfObj = NextObject( PerfObj );
-  }
-  return FALSE; /* Did not find the Processor object */
-}
-
-#elif defined(PERF_METHOD2)
-
-/*************************************************************
-  METHOD 2
-
-  Uses NtQuerySystemInformation.
-  This requires definitions that are not part of
-  standard include files.
-*************************************************************/
 #include <ntdef.h>
 
 typedef enum _SYSTEM_INFORMATION_CLASS
@@ -669,10 +357,9 @@ static BOOL LoadNtdll()
     return TRUE;
 
   DEBUG(D_load)
-    debug_printf("perf: load: %ld (Windows)\n", GetLastError());
+    debug_printf("perf: load: %u (Windows)\n", GetLastError());
   return FALSE;
 }
-
 /*****************************************************************
  *
  ReadStat()
@@ -694,7 +381,7 @@ static BOOL ReadStat(unsigned long long int *Time100nsPtr,
                                       (PVOID) &sbi, sizeof sbi, NULL))
       != STATUS_SUCCESS) {
     DEBUG(D_load)
-      debug_printf("Perf: NtQuerySystemInformation: %lu (Windows)\n",
+      debug_printf("Perf: NtQuerySystemInformation: %u (Windows)\n",
                    RtlNtStatusToDosError(ret));
   }
   else if (!(spt = (PSYSTEM_PROCESSOR_TIMES) alloca(sizeof(spt[0]) * sbi.NumberProcessors))) {
@@ -705,7 +392,7 @@ static BOOL ReadStat(unsigned long long int *Time100nsPtr,
                                            sizeof spt[0] * sbi.NumberProcessors, NULL))
            != STATUS_SUCCESS) {
     DEBUG(D_load)
-      debug_printf("Perf: NtQuerySystemInformation: %lu (Windows)\n",
+      debug_printf("Perf: NtQuerySystemInformation: %u (Windows)\n",
                    RtlNtStatusToDosError(ret));
   }
   else {
@@ -719,7 +406,6 @@ static BOOL ReadStat(unsigned long long int *Time100nsPtr,
   }
   return FALSE;
 }
-#endif /* PERF_METHODX */
 
 /*****************************************************************
  *
@@ -736,14 +422,6 @@ static void InitLoadAvg(cygwin_perf_t *this)
   QueryPerformanceFrequency((LARGE_INTEGER *)& this->PerfFreq);
   QueryPerformanceCounter((LARGE_INTEGER *)& this->LastCounter);
 
-#ifdef PERF_METHOD1
-  DEBUG(D_load) {
-    /* Get the name strings through the registry
-       to verify that the object and counter numbers
-       have the names we expect */
-    success = GetNameStrings();
-  }
-#endif
   /* Get initial values for Time100ns and IdleCount */
   success = success
             && ReadStat( & this->Time100ns,
@@ -754,13 +432,6 @@ static void InitLoadAvg(cygwin_perf_t *this)
     log_write(0, LOG_MAIN, "Cannot obtain Load Average");
     this->LastLoad = -1;
   }
-#ifdef PERF_METHOD1
-  /* Free the buffer created for debug name verification */
-  if (this->NamesArray != NULL) {
-    free(this->NamesArray);
-    this->NamesArray = NULL;
-  }
-#endif
 }
 
 
@@ -791,24 +462,22 @@ int os_getloadavg()
     BOOL new;
     cygwin_load.pid = newpid;
 
-#ifdef PERF_METHOD2
     if (!LoadNtdll()) {
       log_write(0, LOG_MAIN, "Cannot obtain Load Average");
       cygwin_load.perf = NULL;
       return -1;
     }
-#endif
 
     if ((new = !cygwin_load.handle)) {
       cygwin_load.handle = CreateFileMapping (INVALID_HANDLE_VALUE, &sa, PAGE_READWRITE,
                                               0, sizeof(cygwin_perf_t), NULL);
       DEBUG(D_load)
-        debug_printf("Perf: CreateFileMapping: handle %x\n", (unsigned) cygwin_load.handle);
+        debug_printf("Perf: CreateFileMapping: handle %p\n", (void *) cygwin_load.handle);
     }
     cygwin_load.perf = (cygwin_perf_t *) MapViewOfFile (cygwin_load.handle,
                                                         FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     DEBUG(D_load)
-      debug_printf("Perf: MapViewOfFile: addr %x\n", (unsigned) cygwin_load.perf);
+      debug_printf("Perf: MapViewOfFile: addr %p\n", (void *) cygwin_load.perf);
     if (new && cygwin_load.perf)
       InitLoadAvg(cygwin_load.perf);
   }

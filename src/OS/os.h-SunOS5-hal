@@ -8,4 +8,7 @@
 #define LOAD_AVG_SYMBOL       "avenrun_1min"
 #define LOAD_AVG_FIELD         value.ul
 
+/* default is non-const */
+#define ICONV_ARG2_TYPE const char **
+
 /* End */

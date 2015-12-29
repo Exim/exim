@@ -7,6 +7,9 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+log_selector = +received_recipients
 
 # ----- Main settings -----
 
@@ -27,12 +30,18 @@ ar:
 
 begin routers
 
+dns:
+  driver = dnslookup
+  domains = localhost.test.ex : localhost4.test.ex : thishost.test.ex
+  self = send
+  transport = smtp
+
 all:
   driver = manualroute
   domains = ! +local_domains
-  route_list = * 127.0.0.1
+  route_list = special.com HOSTIPV4 ; * 127.0.0.1
   self = send
-  transport = smtp
+  transport = ${if eq {special_tpt}{$local_part} {smtp2}{smtp}}
   headers_remove = X-hdr-rtr
   headers_add =    X-hdr-rtr-new: $h_X-hdr-rtr:+++
   no_more
@@ -47,6 +56,11 @@ smtp:
   interface = HOSTIPV4
   port = PORT_S
   headers_add =  ${if def:h_X-hdr-rtr {X-hdr-tpt-new: new} {}}
+
+smtp2:
+  driver = smtp
+  interface = HOSTIPV4
+  port = PORT_S
 
 
 # End

@@ -10,6 +10,7 @@ spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -22,6 +23,7 @@ trusted_users = CALLER
 
 prdr_enable = true
 
+acl_smtp_mail = mail_acl
 acl_smtp_rcpt = accept
 acl_smtp_data_prdr = prdr_acl
 acl_smtp_data = data_acl
@@ -29,6 +31,9 @@ acl_smtp_data = data_acl
 # ----- ACLs -----
 
 begin acl
+
+mail_acl:
+  accept logwrite = prdr_requested: <$prdr_requested>
 
 prdr_acl:
   defer	local_parts = usery
@@ -55,11 +60,5 @@ begin routers
 r0:
   driver = accept
   transport = t1
-
-# ----- Retry -----
-
-begin retry
-
-*                *   F,5d,5m
 
 # End

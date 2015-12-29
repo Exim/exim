@@ -1,5 +1,6 @@
 # return_path on appendfile and smtp transports
 need_ipv4
+munge optional_dsn_info
 #
 exim -odi -f abc@x.y.z userx
 Test message
