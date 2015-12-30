@@ -5,7 +5,7 @@
 # after cd'ing to the auths subdirectory. When the relevant AUTH_ macros are
 # defined, the equivalent modules herein is not included in the final binary.
 
-OBJ = auth-spa.o b64decode.o b64encode.o call_pam.o call_pwcheck.o \
+OBJ = auth-spa.o call_pam.o call_pwcheck.o \
       call_radius.o check_serv_cond.o cram_md5.o cyrus_sasl.o dovecot.o \
       get_data.o get_no64_data.o gsasl_exim.o heimdal_gssapi.o \
       md5.o plaintext.o pwcheck.o sha1.o \
@@ -22,8 +22,6 @@ auths.a:         $(OBJ)
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $*.c
 
 auth-spa.o:         $(HDRS) auth-spa.c
-b64encode.o:        $(HDRS) b64encode.c
-b64decode.o:        $(HDRS) b64decode.c
 call_pam.o:         $(HDRS) call_pam.c
 call_pwcheck.o:     $(HDRS) call_pwcheck.c pwcheck.h
 call_radius.o:      $(HDRS) call_radius.c

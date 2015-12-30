@@ -27,7 +27,6 @@
 #include "polarssl/sha1.h"
 #include "polarssl/sha2.h"
 #include "polarssl/rsa.h"
-#include "polarssl/base64.h"
 
 #define PDKIM_SIGNATURE_VERSION     "1"
 #define PDKIM_PUB_RECORD_VERSION    "DKIM1"
@@ -307,7 +306,7 @@ if (pub)
   if (pub->keytype    ) free(pub->keytype);
   if (pub->srvtype    ) free(pub->srvtype);
   if (pub->notes      ) free(pub->notes);
-  if (pub->key        ) free(pub->key);
+/*  if (pub->key        ) free(pub->key); */
   free(pub);
   }
 }
@@ -331,8 +330,8 @@ if (sig)
     free(c);
     }
 
-  if (sig->sigdata         ) free(sig->sigdata);
-  if (sig->bodyhash        ) free(sig->bodyhash);
+/*  if (sig->sigdata         ) free(sig->sigdata); */
+/*  if (sig->bodyhash        ) free(sig->bodyhash); */
   if (sig->selector        ) free(sig->selector);
   if (sig->domain          ) free(sig->domain);
   if (sig->identity        ) free(sig->identity);
@@ -558,16 +557,16 @@ pdkim_decode_base64(char *str, int *num_decoded)
 {
 int dlen = 0;
 char *res;
+int old_pool = store_pool;
 
-base64_decode(NULL, &dlen, (unsigned char *)str, strlen(str));
+/* There is a store-reset between header & body reception
+so cannot use the main pool */
 
-if (!(res = malloc(dlen+1)))
-   return NULL;
-if (base64_decode((unsigned char *)res, &dlen, (unsigned char *)str, strlen(str)) != 0)
-  {
-  free(res);
-  return NULL;
-  }
+store_pool = POOL_PERM;
+dlen = b64decode(US str, USS &res);
+store_pool = old_pool;
+
+if (dlen < 0) return NULL;
 
 if (num_decoded) *num_decoded = dlen;
 return res;
@@ -579,19 +578,13 @@ return res;
 char *
 pdkim_encode_base64(char *str, int num)
 {
-int dlen = 0;
-char *res;
+char * ret;
+int old_pool = store_pool;
 
-base64_encode(NULL, &dlen, (unsigned char *)str, num);
-
-if (!(res = malloc(dlen+1)))
-  return NULL;
-if (base64_encode((unsigned char *)res, &dlen, (unsigned char *)str, num) != 0)
-  {
-  free(res);
-  return NULL;
-  }
-return res;
+store_pool = POOL_PERM;
+ret = CS b64encode(US str, num);
+store_pool = old_pool;
+return ret;
 }
 
 
@@ -1009,10 +1002,10 @@ return PDKIM_OK;
 int
 pdkim_finish_bodyhash(pdkim_ctx *ctx)
 {
-pdkim_signature *sig = ctx->sig;
+pdkim_signature *sig;
 
 /* Traverse all signatures */
-while (sig)
+for (sig = ctx->sig; sig; sig = sig->next)
   {					/* Finish hashes */
   unsigned char bh[32]; /* SHA-256 = 32 Bytes,  SHA-1 = 20 Bytes */
 
@@ -1034,9 +1027,7 @@ while (sig)
     {
     sig->bodyhash_len = (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32;
 
-    if (!(sig->bodyhash = malloc(sig->bodyhash_len)))
-      return PDKIM_ERR_OOM;
-    memcpy(sig->bodyhash, bh, sig->bodyhash_len);
+    sig->bodyhash = string_copyn(US bh, sig->bodyhash_len);
 
     /* If bodylength limit is set, and we have received less bytes
        than the requested amount, effectively remove the limit tag. */
@@ -1066,8 +1057,6 @@ while (sig)
       sig->verify_ext_status = PDKIM_VERIFY_FAIL_BODY;
       }
     }
-
-  sig = sig->next;
   }
 
 return PDKIM_OK;
@@ -1560,8 +1549,6 @@ rc = strdup(hdr->str);
 BAIL:
 pdkim_strfree(hdr);
 if (canon_all) pdkim_strfree(canon_all);
-if (base64_bh) free(base64_bh);
-if (base64_b ) free(base64_b);
 return rc;
 }
 
@@ -1781,8 +1768,7 @@ while (sig)
       return PDKIM_ERR_RSA_PRIVKEY;
 
     sig->sigdata_len = mpi_size(&(rsa.N));
-    if (!(sig->sigdata = malloc(sig->sigdata_len)))
-      return PDKIM_ERR_OOM;
+    sig->sigdata = store_get(sig->sigdata_len);
 
     if (rsa_pkcs1_sign( &rsa, RSA_PRIVATE,
 			((sig->algo == PDKIM_ALGO_RSA_SHA1)?

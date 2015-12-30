@@ -117,7 +117,7 @@ Returns:      a pointer to the zero-terminated base 64 string, which
 uschar *
 lss_b64encode(uschar *clear, int len)
 {
-return auth_b64encode(clear, len);
+return b64encode(clear, len);
 }
 
 /*
@@ -135,7 +135,7 @@ be interpreted as text. This is not included in the count. */
 int
 lss_b64decode(uschar *code, uschar **ptr)
 {
-return auth_b64decode(code, ptr);
+return b64decode(code, ptr);
 }
 
 

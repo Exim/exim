@@ -172,7 +172,7 @@ if (*data != 0) return UNEXPECTED;
 /* Send the challenge, read the return */
 
 if ((rc = auth_get_data(&data, challenge, Ustrlen(challenge))) != OK) return rc;
-if ((len = auth_b64decode(data, &clear)) < 0) return BAD64;
+if ((len = b64decode(data, &clear)) < 0) return BAD64;
 
 /* The return consists of a user name, space-separated from the CRAM-MD5
 digest, expressed in hex. Extract the user name and put it in $auth1 and $1.
@@ -285,7 +285,7 @@ if (smtp_write_command(outblock, FALSE, "AUTH %s\r\n", ablock->public_name) < 0)
 if (smtp_read_response(inblock, (uschar *)buffer, buffsize, '3', timeout) < 0)
   return FAIL;
 
-if (auth_b64decode(buffer + 4, &challenge) < 0)
+if (b64decode(buffer + 4, &challenge) < 0)
   {
   string_format(buffer, buffsize, "bad base 64 string in challenge: %s",
     big_buffer + 4);
@@ -310,11 +310,11 @@ for (i = 0; i < 16; i++)
   }
 
 /* Send the response, in base 64, and check the result. The response is
-in big_buffer, but auth_b64encode() returns its result in working store,
+in big_buffer, but b64encode() returns its result in working store,
 so calling smtp_write_command(), which uses big_buffer, is OK. */
 
 buffer[0] = 0;
-if (smtp_write_command(outblock, FALSE, "%s\r\n", auth_b64encode(big_buffer,
+if (smtp_write_command(outblock, FALSE, "%s\r\n", b64encode(big_buffer,
   p - big_buffer)) < 0) return FAIL_SEND;
 
 return smtp_read_response(inblock, (uschar *)buffer, buffsize, '2', timeout)?

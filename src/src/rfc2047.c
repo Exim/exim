@@ -120,7 +120,7 @@ for (;; string = mimeword + 2)
   encoding = toupper((*q1ptr)[1]);
   **endptr = 0;
   if (encoding == 'B')
-    dlen = auth_b64decode(*q2ptr+1, dptrptr);
+    dlen = b64decode(*q2ptr+1, dptrptr);
   else if (encoding == 'Q')
     dlen = rfc2047_qpdecode(*q2ptr+1, dptrptr);
   **endptr = '?';   /* restore */

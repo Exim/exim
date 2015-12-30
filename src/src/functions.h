@@ -84,8 +84,6 @@ extern int     acl_eval(int, uschar *, uschar **, uschar **);
 
 extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
-extern uschar *auth_b64encode(uschar *, int);
-extern int     auth_b64decode(uschar *, uschar **);
 extern int     auth_call_pam(const uschar *, uschar **);
 extern int     auth_call_pwcheck(uschar *, uschar **);
 extern int     auth_call_radius(const uschar *, uschar **);
@@ -99,6 +97,8 @@ extern int     auth_get_no64_data(uschar **, uschar *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
+extern uschar *b64encode(uschar *, int);
+extern int     b64decode(uschar *, uschar **);
 extern void    bits_clear(unsigned int *, size_t, int *);
 extern void    bits_set(unsigned int *, size_t, int *);
 
@@ -264,7 +264,9 @@ struct mime_boundary_context;
 extern int     mime_acl_check(uschar *acl, FILE *f,
                  struct mime_boundary_context *, uschar **, uschar **);
 extern int     mime_decode(const uschar **);
+extern ssize_t mime_decode_base64(FILE *, FILE *, uschar *);
 extern int     mime_regex(const uschar **);
+extern void    mime_set_anomaly(int);
 #endif
 extern uschar *moan_check_errorcopy(uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,

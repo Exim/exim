@@ -68,7 +68,7 @@ cd ..
 # Likewise for the code for the authorization functions
 mkdir auths
 cd auths
-for f in README Makefile b64encode.c b64decode.c call_pam.c call_pwcheck.c \
+for f in README Makefile call_pam.c call_pwcheck.c \
   call_radius.c check_serv_cond.c cyrus_sasl.c cyrus_sasl.h gsasl_exim.c \
   gsasl_exim.h get_data.c get_no64_data.c heimdal_gssapi.c heimdal_gssapi.h \
   md5.c xtextencode.c xtextdecode.c cram_md5.c cram_md5.h plaintext.c plaintext.h \
@@ -82,7 +82,7 @@ cd ..
 # Likewise for the code for the PDKIM library
 mkdir pdkim
 cd pdkim
-for f in README Makefile base64.c bignum.c part-x509parse.c pdkim.c \
+for f in README Makefile bignum.c part-x509parse.c pdkim.c \
   pdkim.h pdkim-rsa.c pdkim-rsa.h rsa.c sha1.c sha2.c
 do
   ln -s ../../src/pdkim/$f $f
@@ -101,7 +101,7 @@ cd ../..
 for f in dbfunctions.h dbstuff.h exim.h functions.h globals.h local_scan.h \
   macros.h mytypes.h osfunctions.h store.h structs.h lookupapi.h \
   \
-  acl.c buildconfig.c child.c crypt16.c daemon.c dbfn.c debug.c deliver.c \
+  acl.c buildconfig.c base64.c child.c crypt16.c daemon.c dbfn.c debug.c deliver.c \
   directory.c dns.c drtables.c dummies.c enq.c exim.c exim_dbmbuild.c \
   exim_dbutil.c exim_lock.c expand.c filter.c filtertest.c globals.c \
   header.c host.c ip.c log.c lss.c match.c moan.c parse.c perl.c queue.c \

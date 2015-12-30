@@ -99,7 +99,7 @@ if (*data != 0)
     }
   else
     {
-    if ((len = auth_b64decode(data, &clear)) < 0) return BAD64;
+    if ((len = b64decode(data, &clear)) < 0) return BAD64;
     end = clear + len;
     while (clear < end && expand_nmax < EXPAND_MAXN)
       {
@@ -121,7 +121,7 @@ while ((s = string_nextinlist(&prompts, &sep, big_buffer, big_buffer_size))
   {
   if (number++ <= expand_nmax) continue;
   if ((rc = auth_get_data(&data, s, Ustrlen(s))) != OK) return rc;
-  if ((len = auth_b64decode(data, &clear)) < 0) return BAD64;
+  if ((len = b64decode(data, &clear)) < 0) return BAD64;
   end = clear + len;
 
   /* This loop must run at least once, in case the length is zero */
@@ -228,13 +228,13 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
     first = FALSE;
     if (smtp_write_command(outblock, FALSE, "AUTH %s%s%s\r\n",
          ablock->public_name, (len == 0)? "" : " ",
-         auth_b64encode(ss, len)) < 0)
+         b64encode(ss, len)) < 0)
       return FAIL_SEND;
     }
   else
     {
     if (smtp_write_command(outblock, FALSE, "%s\r\n",
-          auth_b64encode(ss, len)) < 0)
+          b64encode(ss, len)) < 0)
       return FAIL_SEND;
     }
 
@@ -265,7 +265,7 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
   /* Now that we know we'll continue, we put the received data into $auth<n>,
   if possible. First, decode it: buffer+4 skips over the SMTP status code. */
 
-  clear_len = auth_b64decode(buffer+4, &clear);
+  clear_len = b64decode(buffer+4, &clear);
 
   /* If decoding failed, the default is to terminate the authentication, and
   return FAIL, with the SMTP response still in the buffer. However, if client_
