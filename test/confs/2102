@@ -68,6 +68,7 @@ check_recipient:
 	  logwrite =  md5    fingerprint ${md5:$tls_in_peercert}
 	  logwrite =  sha1   fingerprint ${sha1:$tls_in_peercert}
 	  logwrite =  sha256 fingerprint ${sha256:$tls_in_peercert}
+	  logwrite =  der_b64 ${base64:$tls_in_peercert}
 
 
 # ----- Routers -----

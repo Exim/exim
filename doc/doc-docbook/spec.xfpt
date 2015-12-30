@@ -10038,7 +10038,12 @@ string.
 .cindex "expansion" "base64 encoding"
 .cindex "base64 encoding" "in string expansion"
 .cindex "&%base64%& expansion item"
+.cindex certificate "base64 of DER"
 This operator converts a string into one that is base64 encoded.
+
+If the string is a single variable of type certificate,
+returns the base64 encoding of the DER form of the certificate.
+
 
 .vitem &*${base64d:*&<&'string'&>&*}*&
 .cindex "expansion" "base64 decoding"

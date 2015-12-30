@@ -464,6 +464,26 @@ return list;
 /*****************************************************
 *  Certificate operator routines
 *****************************************************/
+uschar *
+tls_cert_der_b64(void * cert)
+{
+BIO * bp = BIO_new(BIO_s_mem());
+uschar * cp = NULL;
+
+if (!i2d_X509_bio(bp, (X509 *)cert))
+  log_write(0, LOG_MAIN, "TLS error in certificate export: %s",
+    ERR_error_string(ERR_get_error(), NULL));
+else
+  {
+  long len = BIO_get_mem_data(bp, &cp);
+  cp = b64encode(cp, (int)len);
+  }
+
+BIO_free(bp);
+return cp;
+}
+
+
 static uschar *
 fingerprint(X509 * cert, const EVP_MD * fdig)
 {

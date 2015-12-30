@@ -39,6 +39,7 @@ extern uschar * tls_cert_subject(void *, uschar * mod);
 extern uschar * tls_cert_subject_altname(void *, uschar * mod);
 extern uschar * tls_cert_version(void *, uschar * mod);
 
+extern uschar * tls_cert_der_b64(void * cert);
 extern uschar * tls_cert_fprt_md5(void *);
 extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);

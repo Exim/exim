@@ -6043,6 +6043,7 @@ while (*s != 0)
       case EOP_MD5:
       case EOP_SHA1:
       case EOP_SHA256:
+      case EOP_BASE64:
 	if (s[1] == '$')
 	  {
 	  const uschar * s1 = s;
@@ -6888,15 +6889,17 @@ while (*s != 0)
 
       case EOP_STR2B64:
       case EOP_BASE64:
-        {
-        uschar *encstr = b64encode(sub, Ustrlen(sub));
-        yield = string_cat(yield, &size, &ptr, encstr, Ustrlen(encstr));
-        continue;
-        }
+	{
+	uschar * s = vp && *(void **)vp->value
+	  ? tls_cert_der_b64(*(void **)vp->value)
+	  : b64encode(sub, Ustrlen(sub));
+	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	continue;
+	}
 
       case EOP_BASE64D:
         {
-        uschar *s;
+        uschar * s;
         int len = b64decode(sub, &s);
 	if (len < 0)
           {

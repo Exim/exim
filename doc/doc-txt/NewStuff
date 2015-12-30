@@ -29,7 +29,7 @@ Version 4.87
  6. New $dkim_key_length variable.
 
  7. New base64d and base64 expansion items (the existing str2b64 being a
-    synonym of the latter).
+    synonym of the latter).  Add support in base64 for certificates.
 
 
 Version 4.86
