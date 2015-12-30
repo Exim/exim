@@ -201,6 +201,8 @@ static uschar *op_table_main[] = {
   US"addresses",
   US"base62",
   US"base62d",
+  US"base64",
+  US"base64d",
   US"domain",
   US"escape",
   US"eval",
@@ -241,6 +243,8 @@ enum {
   EOP_ADDRESSES,
   EOP_BASE62,
   EOP_BASE62D,
+  EOP_BASE64,
+  EOP_BASE64D,
   EOP_DOMAIN,
   EOP_ESCAPE,
   EOP_EVAL,
@@ -6883,9 +6887,24 @@ while (*s != 0)
       /* Convert string to base64 encoding */
 
       case EOP_STR2B64:
+      case EOP_BASE64:
         {
         uschar *encstr = b64encode(sub, Ustrlen(sub));
         yield = string_cat(yield, &size, &ptr, encstr, Ustrlen(encstr));
+        continue;
+        }
+
+      case EOP_BASE64D:
+        {
+        uschar *s;
+        int len = b64decode(sub, &s);
+	if (len < 0)
+          {
+          expand_string_message = string_sprintf("string \"%s\" is not "
+            "well-formed for \"%s\" operator", sub, name);
+          goto EXPAND_FAILED;
+          }
+        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         continue;
         }
 

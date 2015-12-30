@@ -258,6 +258,10 @@ substr: ${s_1:}
 substr: ${substr_10:abc}
 str2b64:${str2b64:abcd}
 str2b64:${str2b64:The quick brown \n fox}
+base64: ${base64:abcd}
+base64: ${base64:The quick brown \n fox}
+base64d:${base64d:YWJjZA==}
+base64d:${base64d:VGhlIHF1aWNrIGJyb3duIAogZm94}
 strlen: ${strlen:}
 strlen: ${strlen:a}
 strlen: ${strlen:abcdefgh}

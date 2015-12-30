@@ -231,6 +231,11 @@
 > substr: 
 > str2b64:YWJjZA==
 > str2b64:VGhlIHF1aWNrIGJyb3duIAogZm94
+> base64: YWJjZA==
+> base64: VGhlIHF1aWNrIGJyb3duIAogZm94
+> base64d:abcd
+> base64d:The quick brown 
+ fox
 > strlen: 0
 > strlen: 1
 > strlen: 8

@@ -10033,6 +10033,20 @@ environments where Exim uses base 36 instead of base 62 for its message
 identifiers, base-36 digits. The number is converted to decimal and output as a
 string.
 
+.new
+.vitem &*${base64:*&<&'string'&>&*}*&
+.cindex "expansion" "base64 encoding"
+.cindex "base64 encoding" "in string expansion"
+.cindex "&%base64%& expansion item"
+This operator converts a string into one that is base64 encoded.
+
+.vitem &*${base64d:*&<&'string'&>&*}*&
+.cindex "expansion" "base64 decoding"
+.cindex "base64 decoding" "in string expansion"
+.cindex "&%base64d%& expansion item"
+This operator converts a base64-encoded string into the un-coded form.
+.wen
+
 
 .vitem &*${domain:*&<&'string'&>&*}*&
 .cindex "domain" "extraction"
@@ -10463,10 +10477,10 @@ the system administrator. &*Warning*&: The file size may be incorrect on 32-bit
 systems for files larger than 2GB.
 
 .vitem &*${str2b64:*&<&'string'&>&*}*&
-.cindex "expansion" "base64 encoding"
-.cindex "base64 encoding" "in string expansion"
 .cindex "&%str2b64%& expansion item"
-This operator converts a string into one that is base64 encoded.
+.new
+Now deprecated, a synonym for the &%base64%& expansion operator.
+.wen
 
 
 
