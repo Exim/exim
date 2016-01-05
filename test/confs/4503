@@ -1,0 +1,47 @@
+# Exim test configuration 4503
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+log_selector = +outgoing_port
+acl_smtp_rcpt = accept
+acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
+
+# ----- Routers
+
+begin routers
+
+server_dump:
+  driver = redirect
+  condition = ${if eq {SERVER}{server}{yes}{no}}
+  data = :blackhole:
+
+client:
+  driver = accept
+  transport = send_to_server
+
+# ----- Transports
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+
+  dkim_domain =		test.ex
+  dkim_selector =	sel
+  dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
+
+# End

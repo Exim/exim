@@ -472,7 +472,7 @@ DELAY=1500 delay1500 A HOSTIPV4
 
 ; ------- DKIM ---------
 
-; public key, base64 - matches private key in aux-fixed/dkim/dkim/private
+; public key, base64 - matches private key in aux-fixed/dkim/dkim.private
 ;  openssl genrsa -out aux-fixed/dkim/dkim.private 1024
 ;  openssl rsa -in aux-fixed/dkim/dkim.private -out /dev/stdout -pubout -outform PEM
 ;

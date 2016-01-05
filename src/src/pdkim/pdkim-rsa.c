@@ -82,17 +82,25 @@ int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
             "-----END RSA PRIVATE KEY-----" );
 
         if( s2 == NULL || s2 <= s1 )
+{
+debug_printf("rsa_parse_key: err 1\n");
             return( POLARSSL_ERR_X509_KEY_INVALID_PEM );
+}
 
         s1 += 31;
         if( *s1 == '\r' ) s1++;
         if( *s1 == '\n' ) s1++;
-            else return( POLARSSL_ERR_X509_KEY_INVALID_PEM );
+            else
+{
+debug_printf("rsa_parse_key: err 2\n");
+ return( POLARSSL_ERR_X509_KEY_INVALID_PEM );
+}
 
         enc = 0;
 
         if( memcmp( s1, "Proc-Type: 4,ENCRYPTED", 22 ) == 0 )
         {
+debug_printf("rsa_parse_key: err 3\n");
             return( POLARSSL_ERR_X509_FEATURE_UNAVAILABLE );
         }
 
@@ -104,14 +112,18 @@ int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
 
 	s1 = string_copyn(s1, s2-s1); /* need nul-terminated string */
 	if ((len = b64decode(s1, &buf)) < 0)
+{
+debug_printf("rsa_parse_key: err 4\n");
             return POLARSSL_ERR_BASE64_INVALID_CHARACTER
 		| POLARSSL_ERR_X509_KEY_INVALID_PEM;
+}
 	}
 
         buflen = len;
 
         if( enc != 0 )
         {
+debug_printf("rsa_parse_key: err 5\n");
             return( POLARSSL_ERR_X509_FEATURE_UNAVAILABLE );
         }
     }
@@ -139,6 +151,7 @@ int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
             ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) != 0 )
     {
         rsa_free( rsa );
+debug_printf("rsa_parse_key: err 6\n");
         return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
     }
 
@@ -147,12 +160,14 @@ int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
     if( ( ret = asn1_get_int( &p, end, &rsa->ver ) ) != 0 )
     {
         rsa_free( rsa );
+debug_printf("rsa_parse_key: err 7\n");
         return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
     }
 
     if( rsa->ver != 0 )
     {
         rsa_free( rsa );
+debug_printf("rsa_parse_key: err 8\n");
         return( ret | POLARSSL_ERR_X509_KEY_INVALID_VERSION );
     }
 
@@ -166,6 +181,7 @@ int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
         ( ret = asn1_get_mpi( &p, end, &rsa->QP ) ) != 0 )
     {
         rsa_free( rsa );
+debug_printf("rsa_parse_key: err 9\n");
         return( ret | POLARSSL_ERR_X509_KEY_INVALID_FORMAT );
     }
 
@@ -174,6 +190,7 @@ int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
     if( p != end )
     {
         rsa_free( rsa );
+debug_printf("rsa_parse_key: err 10\n");
         return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT |
                 POLARSSL_ERR_ASN1_LENGTH_MISMATCH );
     }
@@ -181,6 +198,7 @@ int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
     if( ( ret = rsa_check_privkey( rsa ) ) != 0 )
     {
         rsa_free( rsa );
+debug_printf("rsa_parse_key: err 11\n");
         return( ret );
     }
 

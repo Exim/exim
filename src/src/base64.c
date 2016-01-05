@@ -134,6 +134,7 @@ Arguments:
 Returns:      the number of bytes in the result,
               or -1 if the input was malformed
 
+Whitespace in the input is ignored.
 A zero is added on to the end to make it easy in cases where the result is to
 be interpreted as text. This is not included in the count. */
 
@@ -161,21 +162,29 @@ quantum this may decode to 1, 2, or 3 output bytes. */
 
 while ((x = *code++) != 0)
   {
+  if (isspace(x)) continue;
+
   if (x > 127 || (x = dec64table[x]) == 255) return -1;
-  if ((y = *code++) == 0 || (y = dec64table[y]) == 255)
+
+  while (isspace(y = *code++)) ;
+  if (y == 0 || (y = dec64table[y]) == 255)
     return -1;
 
   *result++ = (x << 2) | (y >> 4);
 
-  if ((x = *code++) == '=')
+  while (isspace(x = *code++)) ;
+  if (x == '=')
     {
-    if (*code++ != '=' || *code != 0) return -1;
+    while (isspace(x = *code++)) ;
+    if (x != '=' || *code != 0) return -1;
     }
   else
     {
     if (x > 127 || (x = dec64table[x]) == 255) return -1;
     *result++ = (y << 4) | (x >> 2);
-    if ((y = (*code++)) == '=')
+
+    while (isspace(y = *code++)) ;
+    if (y == '=')
       {
       if (*code != 0) return -1;
       }

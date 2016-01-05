@@ -1759,13 +1759,17 @@ while (sig)
   if (ctx->mode == PDKIM_MODE_SIGN)
     {
     rsa_context rsa;
+int perr;
 
     rsa_init(&rsa, RSA_PKCS_V15, 0);
 
     /* Perform private key operation */
-    if (rsa_parse_key(&rsa, (unsigned char *)sig->rsa_privkey,
-		      strlen(sig->rsa_privkey), NULL, 0) != 0)
+    if ((perr = rsa_parse_key(&rsa, (unsigned char *)sig->rsa_privkey,
+		      strlen(sig->rsa_privkey), NULL, 0)) != 0)
+{
+debug_printf("rsa_parse_key: perr 0x%x\n", perr);
       return PDKIM_ERR_RSA_PRIVKEY;
+}
 
     sig->sigdata_len = mpi_size(&(rsa.N));
     sig->sigdata = store_get(sig->sigdata_len);
