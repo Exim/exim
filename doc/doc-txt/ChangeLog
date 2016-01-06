@@ -140,6 +140,10 @@ JH/32 Move Redis support from Experimental to mainline, enabled for a build
 JH/33 Bug 1748: Permit ACL dnslists= condition in non-smtp ACLs if explicit
       keys are given for lookup.
 
+JH/34 Bug 1192: replace the embedded copy of PolarSSL RSA routines in the DKIM
+      support, by using OpenSSL or GnuTLS library ones.  This means DKIM is
+      only supported when built with TLS support.
+
 
 Exim version 4.86
 -----------------

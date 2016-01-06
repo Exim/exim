@@ -37935,8 +37935,10 @@ linked to a domain which that entity controls.  It permits reputation to
 be tracked on a per-domain basis, rather than merely upon source IP address.
 DKIM is documented in RFC 4871.
 
-Since version 4.70, DKIM support is compiled into Exim by default. It can be
-disabled by setting DISABLE_DKIM=yes in &_Local/Makefile_&.
+.new
+DKIM support is compiled into Exim by default if TLS support is present.
+.wen
+It can be disabled by setting DISABLE_DKIM=yes in &_Local/Makefile_&.
 
 Exim's DKIM implementation allows to
 .olist

@@ -563,12 +563,13 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 
   ctx = pdkim_init_sign( (char *) dkim_signing_domain,
 			 (char *) dkim_signing_selector,
-			 (char *) dkim_private_key_expanded);
+			 (char *) dkim_private_key_expanded,
+			 PDKIM_ALGO_RSA_SHA256);
   pdkim_set_optional(ctx,
 		      (char *) dkim_sign_headers_expanded,
 		      NULL,
 		      pdkim_canon,
-		      pdkim_canon, -1, PDKIM_ALGO_RSA_SHA256, 0, 0);
+		      pdkim_canon, -1, 0, 0);
 
   lseek(dkim_fd, 0, SEEK_SET);
 

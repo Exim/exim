@@ -1,7 +1,8 @@
 /*
  *  PDKIM - a RFC4871 (DKIM) implementation
  *
- *  Copyright (C) 2009 - 2015  Tom Kistner <tom@duncanthrax.net>
+ *  Copyright (C) 2009 - 2016  Tom Kistner <tom@duncanthrax.net>
+ *  Copyright (C) 2016  Jeremy Harris <jgh@exim.org>
  *
  *  http://duncanthrax.net/pdkim/
  *
@@ -21,12 +22,27 @@
  */
 
 #include "../exim.h"
-#include "pdkim.h"
-#include "pdkim-rsa.h"
 
-#include "polarssl/sha1.h"
-#include "polarssl/sha2.h"
-#include "polarssl/rsa.h"
+
+#ifndef DISABLE_DKIM	/* entire file */
+
+#ifndef SUPPORT_TLS
+# error Need SUPPORT_TLS for DKIM
+#endif
+
+
+#ifdef USE_GNUTLS
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
+# include <gnutls/abstract.h>
+# include <gnutls/crypto.h>
+#else
+# include <openssl/rsa.h>
+# include <openssl/ssl.h>
+# include <openssl/err.h>
+#endif
+
+#include "pdkim.h"
 
 #define PDKIM_SIGNATURE_VERSION     "1"
 #define PDKIM_PUB_RECORD_VERSION    "DKIM1"
@@ -89,6 +105,7 @@ typedef struct pdkim_combined_canon_entry {
   int canon_headers;
   int canon_body;
 } pdkim_combined_canon_entry;
+
 pdkim_combined_canon_entry pdkim_combined_canons[] = {
   { "simple/simple",    PDKIM_CANON_SIMPLE,   PDKIM_CANON_SIMPLE },
   { "simple/relaxed",   PDKIM_CANON_SIMPLE,   PDKIM_CANON_RELAXED },
@@ -100,7 +117,11 @@ pdkim_combined_canon_entry pdkim_combined_canons[] = {
 };
 
 
-const char *pdkim_verify_status_str(int status) {
+/* -------------------------------------------------------------------------- */
+
+const char *
+pdkim_verify_status_str(int status)
+{
   switch(status) {
     case PDKIM_VERIFY_NONE:    return "PDKIM_VERIFY_NONE";
     case PDKIM_VERIFY_INVALID: return "PDKIM_VERIFY_INVALID";
@@ -109,7 +130,10 @@ const char *pdkim_verify_status_str(int status) {
     default:                   return "PDKIM_VERIFY_UNKNOWN";
   }
 }
-const char *pdkim_verify_ext_status_str(int ext_status) {
+
+const char *
+pdkim_verify_ext_status_str(int ext_status)
+{
   switch(ext_status) {
     case PDKIM_VERIFY_FAIL_BODY: return "PDKIM_VERIFY_FAIL_BODY";
     case PDKIM_VERIFY_FAIL_MESSAGE: return "PDKIM_VERIFY_FAIL_MESSAGE";
@@ -165,10 +189,11 @@ if (lf)
 }
 
 
-/* -------------------------------------------------------------------------- */
-/* Simple string list implementation for convinience */
-pdkim_stringlist *
-pdkim_append_stringlist(pdkim_stringlist *base, char *str)
+
+/* String package: should be replaced by Exim standard ones */
+
+static pdkim_stringlist *
+pdkim_prepend_stringlist(pdkim_stringlist *base, char *str)
 {
 pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
 
@@ -186,24 +211,11 @@ else
   return new_entry;
 }
 
-pdkim_stringlist *
-pdkim_prepend_stringlist(pdkim_stringlist *base, char *str)
-{
-pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
-
-if (!new_entry) return NULL;
-memset(new_entry, 0, sizeof(pdkim_stringlist));
-if (!(new_entry->value = strdup(str))) return NULL;
-if (base)
-  new_entry->next = base;
-return new_entry;
-}
-
 
 /* -------------------------------------------------------------------------- */
 /* A small "growing string" implementation to escape malloc/realloc hell */
 
-pdkim_str *
+static pdkim_str *
 pdkim_strnew (const char *cstr)
 {
 unsigned int len = cstr ? strlen(cstr) : 0;
@@ -225,7 +237,7 @@ else
 return p;
 }
 
-char *
+static char *
 pdkim_strncat(pdkim_str *str, const char *data, int len)
 {
 if ((str->allocated - str->len) < (len+1))
@@ -244,21 +256,13 @@ str->str[str->len] = '\0';
 return str->str;
 }
 
-char *
+static char *
 pdkim_strcat(pdkim_str *str, const char *cstr)
 {
 return pdkim_strncat(str, cstr, strlen(cstr));
 }
 
-char *
-pdkim_numcat(pdkim_str *str, unsigned long num)
-{
-char minibuf[20];
-snprintf(minibuf, 20, "%lu", num);
-return pdkim_strcat(str, minibuf);
-}
-
-char *
+static char *
 pdkim_strtrim(pdkim_str *str)
 {
 char *p = str->str;
@@ -275,7 +279,7 @@ str->len = strlen(str->str);
 return str->str;
 }
 
-char *
+static char *
 pdkim_strclear(pdkim_str *str)
 {
 str->str[0] = '\0';
@@ -283,7 +287,7 @@ str->len = 0;
 return str->str;
 }
 
-void
+static void
 pdkim_strfree(pdkim_str *str)
 {
 if (!str) return;
@@ -295,7 +299,7 @@ free(str);
 
 /* -------------------------------------------------------------------------- */
 
-void
+static void
 pdkim_free_pubkey(pdkim_pubkey *pub)
 {
 if (pub)
@@ -314,7 +318,7 @@ if (pub)
 
 /* -------------------------------------------------------------------------- */
 
-void
+static void
 pdkim_free_sig(pdkim_signature *sig)
 {
 if (sig)
@@ -330,8 +334,6 @@ if (sig)
     free(c);
     }
 
-/*  if (sig->sigdata         ) free(sig->sigdata); */
-/*  if (sig->bodyhash        ) free(sig->bodyhash); */
   if (sig->selector        ) free(sig->selector);
   if (sig->domain          ) free(sig->domain);
   if (sig->identity        ) free(sig->identity);
@@ -340,8 +342,6 @@ if (sig)
   if (sig->rsa_privkey     ) free(sig->rsa_privkey);
   if (sig->sign_headers    ) free(sig->sign_headers);
   if (sig->signature_header) free(sig->signature_header);
-  if (sig->sha1_body       ) free(sig->sha1_body);
-  if (sig->sha2_body       ) free(sig->sha2_body);
 
   if (sig->pubkey) pdkim_free_pubkey(sig->pubkey);
 
@@ -379,7 +379,7 @@ if (ctx)
    "start". Returns the position of the header name in
    the list. */
 
-int
+static int
 header_name_match(const char *header,
                       char       *tick,
                       int         do_tick)
@@ -442,7 +442,7 @@ return rc;
 /* Performs "relaxed" canonicalization of a header. The returned pointer needs
    to be free()d. */
 
-char *
+static char *
 pdkim_relax_header (char *header, int crlf)
 {
 BOOL past_field_name = FALSE;
@@ -518,7 +518,7 @@ return initial_pos;
 
 /* -------------------------------------------------------------------------- */
 
-char *
+static char *
 pdkim_decode_qp(char *str)
 {
 int nchar = 0;
@@ -552,7 +552,7 @@ return n;
 
 /* -------------------------------------------------------------------------- */
 
-char *
+static char *
 pdkim_decode_base64(char *str, int *num_decoded)
 {
 int dlen = 0;
@@ -575,7 +575,7 @@ return res;
 
 /* -------------------------------------------------------------------------- */
 
-char *
+static char *
 pdkim_encode_base64(char *str, int num)
 {
 char * ret;
@@ -593,7 +593,7 @@ return ret;
 #define PDKIM_HDR_TAG   1
 #define PDKIM_HDR_VALUE 2
 
-pdkim_signature *
+static pdkim_signature *
 pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr)
 {
 pdkim_signature *sig ;
@@ -785,16 +785,14 @@ DEBUG(D_acl)
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 
-if (  !(sig->sha1_body = malloc(sizeof(sha1_context)))
-   || !(sig->sha2_body = malloc(sizeof(sha2_context)))
-   )
-  {
-  pdkim_free_sig(sig);
-  return NULL;
-  }
+#ifdef USE_GNUTLS
+gnutls_hash_init(&sig->sha_body,
+  sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
 
-sha1_starts(sig->sha1_body);
-sha2_starts(sig->sha2_body, 0);
+#else
+SHA1_Init  (&sig->sha1_body);
+SHA256_Init(&sig->sha2_body);
+#endif
 
 return sig;
 }
@@ -802,7 +800,7 @@ return sig;
 
 /* -------------------------------------------------------------------------- */
 
-pdkim_pubkey *
+static pdkim_pubkey *
 pdkim_parse_pubkey_record(pdkim_ctx *ctx, char *raw_record)
 {
 pdkim_pubkey *pub;
@@ -919,7 +917,7 @@ return NULL;
 
 /* -------------------------------------------------------------------------- */
 
-int
+static int
 pdkim_update_bodyhash(pdkim_ctx *ctx, const char *data, int len)
 {
 pdkim_signature *sig = ctx->sig;
@@ -980,10 +978,14 @@ while (sig)
 
   if (canon_len > 0)
     {
+#ifdef USE_GNUTLS
+    gnutls_hash(sig->sha_body, canon_data, canon_len);
+#else
     if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-      sha1_update(sig->sha1_body, (unsigned char *)canon_data, canon_len);
+      SHA1_Update  (&sig->sha1_body, canon_data, canon_len);
     else
-      sha2_update(sig->sha2_body, (unsigned char *)canon_data, canon_len);
+      SHA256_Update(&sig->sha2_body, canon_data, canon_len);
+#endif
 
     sig->signed_body_bytes += canon_len;
     DEBUG(D_acl) pdkim_quoteprint(canon_data, canon_len, 1);
@@ -999,7 +1001,7 @@ return PDKIM_OK;
 
 /* -------------------------------------------------------------------------- */
 
-int
+static int
 pdkim_finish_bodyhash(pdkim_ctx *ctx)
 {
 pdkim_signature *sig;
@@ -1007,12 +1009,16 @@ pdkim_signature *sig;
 /* Traverse all signatures */
 for (sig = ctx->sig; sig; sig = sig->next)
   {					/* Finish hashes */
-  unsigned char bh[32]; /* SHA-256 = 32 Bytes,  SHA-1 = 20 Bytes */
+  uschar bh[32]; /* SHA-256 = 32 Bytes,  SHA-1 = 20 Bytes */
 
+#ifdef USE_GNUTLS
+  gnutls_hash_output(sig->sha_body, bh);
+#else
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-    sha1_finish(sig->sha1_body, bh);
+    SHA1_Final  (bh, &sig->sha1_body);
   else
-    sha2_finish(sig->sha2_body, bh);
+    SHA256_Final(bh, &sig->sha2_body);
+#endif
 
   DEBUG(D_acl)
     {
@@ -1025,8 +1031,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   /* SIGNING -------------------------------------------------------------- */
   if (ctx->mode == PDKIM_MODE_SIGN)
     {
-    sig->bodyhash_len = (sig->algo == PDKIM_ALGO_RSA_SHA1)?20:32;
-
+    sig->bodyhash_len = sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20:32;
     sig->bodyhash = string_copyn(US bh, sig->bodyhash_len);
 
     /* If bodylength limit is set, and we have received less bytes
@@ -1148,7 +1153,7 @@ return PDKIM_OK;
 /* Callback from pdkim_feed below for processing complete headers */
 #define DKIM_SIGNATURE_HEADERNAME "DKIM-Signature:"
 
-int
+static int
 pdkim_header_complete(pdkim_ctx *ctx)
 {
 /* Special case: The last header can have an extra \r appended */
@@ -1318,7 +1323,7 @@ return PDKIM_OK;
  * "pad"
  *
  * no guarantees are made for output given out-of range input. like tag
- * names loinger than 78, or bogus col. Input is assumed to be free of line breaks.
+ * names longer than 78, or bogus col. Input is assumed to be free of line breaks.
  */
 
 static char *
@@ -1424,7 +1429,7 @@ return str->str;
 
 /* -------------------------------------------------------------------------- */
 
-char *
+static char *
 pdkim_create_header(pdkim_signature *sig, int final)
 {
 char *rc = NULL;
@@ -1586,15 +1591,27 @@ if (ctx->mode == PDKIM_MODE_SIGN)
 
 while (sig)
   {
-  sha1_context sha1_headers;
-  sha2_context sha2_headers;
+#ifdef USE_GNUTLS
+  gnutls_hash_hd_t sha_headers;
+  uschar * hdata = NULL;
+  int hdata_alloc = 0;
+  int hdata_size = 0;
+#else
+  SHA_CTX    sha1_headers;
+  SHA256_CTX sha2_headers;
+#endif
   char *sig_hdr;
   char headerhash[32];
 
+#ifdef USE_GNUTLS
+  gnutls_hash_init(&sha_headers,
+    sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
+#else
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-    sha1_starts(&sha1_headers);
+    SHA1_Init(&sha1_headers);
   else
-    sha2_starts(&sha2_headers, 0);
+    SHA256_Init(&sha2_headers);
+#endif
 
   DEBUG(D_acl) debug_printf(
       "PDKIM >> Hashed header data, canonicalized, in sequence >>>>>>>>>>>>>>\n");
@@ -1624,10 +1641,19 @@ while (sig)
 	return PDKIM_ERR_OOM;
 
       /* Feed header to the hash algorithm */
+#ifdef USE_GNUTLS
+      gnutls_hash(sha_headers, rh, strlen(rh));
+#else
       if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-	sha1_update(&(sha1_headers), (unsigned char *)rh, strlen(rh));
+	SHA1_Update  (&sha1_headers, rh, strlen(rh));
       else
-	sha2_update(&(sha2_headers), (unsigned char *)rh, strlen(rh));
+	SHA256_Update(&sha2_headers, rh, strlen(rh));
+#endif
+
+#ifdef USE_GNUTLS
+      /* Remember headers block for signing */
+      hdata = string_append(hdata, &hdata_alloc, &hdata_size, 1, rh);
+#endif
 
       DEBUG(D_acl) pdkim_quoteprint(rh, strlen(rh), 1);
       free(rh);
@@ -1670,10 +1696,14 @@ while (sig)
 	    return PDKIM_ERR_OOM;
 
 	  /* Feed header to the hash algorithm */
+#ifdef USE_GNUTLS
+	  gnutls_hash(sha_headers, rh, strlen(rh));
+#else
 	  if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-	    sha1_update(&sha1_headers, (unsigned char *)rh, strlen(rh));
+	    SHA1_Update  (&sha1_headers, rh, strlen(rh));
 	  else
-	    sha2_update(&sha2_headers, (unsigned char *)rh, strlen(rh));
+	    SHA256_Update(&sha2_headers, rh, strlen(rh));
+#endif
 
 	  DEBUG(D_acl) pdkim_quoteprint(rh, strlen(rh), 1);
 	  free(rh);
@@ -1730,59 +1760,117 @@ while (sig)
     }
 
   /* Finalize header hash */
+#ifdef USE_GNUTLS
+  gnutls_hash(sha_headers, sig_hdr, strlen(sig_hdr));
+  gnutls_hash_output(sha_headers, headerhash);
+#else
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
     {
-    sha1_update(&sha1_headers, (unsigned char *)sig_hdr, strlen(sig_hdr));
-    sha1_finish(&sha1_headers, (unsigned char *)headerhash);
-
-    DEBUG(D_acl)
-      {
-      debug_printf( "PDKIM [%s] hh computed: ", sig->domain);
-      pdkim_hexprint(headerhash, 20, 1);
-      }
+    SHA1_Update(&sha1_headers, sig_hdr, strlen(sig_hdr));
+    SHA1_Final(US headerhash, &sha1_headers);
     }
   else
     {
-    sha2_update(&sha2_headers, (unsigned char *)sig_hdr, strlen(sig_hdr));
-    sha2_finish(&sha2_headers, (unsigned char *)headerhash);
-
-    DEBUG(D_acl)
-      {
-      debug_printf("PDKIM [%s] hh computed: ", sig->domain);
-      pdkim_hexprint(headerhash, 32, 1);
-      }
+    SHA256_Update(&sha2_headers, sig_hdr, strlen(sig_hdr));
+    SHA256_Final(US headerhash, &sha2_headers);
     }
+#endif
+
+  DEBUG(D_acl)
+    {
+    debug_printf("PDKIM [%s] hh computed: ", sig->domain);
+    pdkim_hexprint(headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20:32, 1);
+    }
+
+#ifdef USE_GNUTLS
+  if (ctx->mode == PDKIM_MODE_SIGN)
+    hdata = string_append(hdata, &hdata_alloc, &hdata_size, 1, sig_hdr);
+#endif
 
   free(sig_hdr);
 
   /* SIGNING ---------------------------------------------------------------- */
   if (ctx->mode == PDKIM_MODE_SIGN)
     {
-    rsa_context rsa;
-int perr;
+#ifdef USE_GNUTLS
+    gnutls_x509_privkey_t rsa;
+    gnutls_datum_t k;
+    int rc;
+    size_t sigsize;
+#else
+    RSA * rsa;
+    uschar * p, * q;
+    int len;
+#endif
 
-    rsa_init(&rsa, RSA_PKCS_V15, 0);
+    /* Import private key */
+#ifdef USE_GNUTLS
 
-    /* Perform private key operation */
-    if ((perr = rsa_parse_key(&rsa, (unsigned char *)sig->rsa_privkey,
-		      strlen(sig->rsa_privkey), NULL, 0)) != 0)
-{
-debug_printf("rsa_parse_key: perr 0x%x\n", perr);
+    k.data = sig->rsa_privkey;
+    k.size = strlen(sig->rsa_privkey);
+    if (  (rc = gnutls_x509_privkey_init(&rsa)) != GNUTLS_E_SUCCESS
+       || (rc = gnutls_x509_privkey_import2(rsa, &k,
+	      GNUTLS_X509_FMT_PEM, NULL, GNUTLS_PKCS_PLAIN)) != GNUTLS_E_SUCCESS
+       )
+      {
+      DEBUG(D_acl) debug_printf("gnutls_x509_privkey_import2: %s\n",
+	gnutls_strerror(rc));
       return PDKIM_ERR_RSA_PRIVKEY;
-}
+      }
 
-    sig->sigdata_len = mpi_size(&(rsa.N));
-    sig->sigdata = store_get(sig->sigdata_len);
+#else
 
-    if (rsa_pkcs1_sign( &rsa, RSA_PRIVATE,
-			((sig->algo == PDKIM_ALGO_RSA_SHA1)?
-			   SIG_RSA_SHA1:SIG_RSA_SHA256),
-			0,
-			(unsigned char *)headerhash,
-			(unsigned char *)sig->sigdata ) != 0)
+    if (  !(p = Ustrstr(sig->rsa_privkey, "-----BEGIN RSA PRIVATE KEY-----"))
+       || !(q = Ustrstr(p+=31, "-----END RSA PRIVATE KEY-----"))
+       )
+      return PDKIM_ERR_RSA_PRIVKEY;
+    *q = '\0';
+    if (  (len = b64decode(p, &p)) < 0
+       || !(rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len))
+       )
+      /*XXX todo: get errstring from library */
+      return PDKIM_ERR_RSA_PRIVKEY;
+
+#endif
+
+
+    /* Allocate mem for signature */
+#ifdef USE_GNUTLS
+    k.data = hdata;
+    k.size = hdata_size;
+    (void) gnutls_x509_privkey_sign_data(rsa,
+      sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
+      0, &k, NULL, &sigsize);
+    sig->sigdata = store_get(sig->sigdata_len = sigsize);
+#else
+    sig->sigdata = store_get(RSA_size(rsa));
+#endif
+
+    /* Do signing */
+#ifdef USE_GNUTLS
+
+    if ((rc = gnutls_x509_privkey_sign_data(rsa,
+	  sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
+	  0, &k, sig->sigdata, &sigsize)) != GNUTLS_E_SUCCESS
+       )
+      {
+      DEBUG(D_acl) debug_printf("gnutls_x509_privkey_sign_data: %s\n",
+	gnutls_strerror(rc));
       return PDKIM_ERR_RSA_SIGNING;
+      }
+    gnutls_x509_privkey_deinit(rsa);
 
-    rsa_free(&rsa);
+#else
+
+    if (RSA_sign(sig->algo == PDKIM_ALGO_RSA_SHA1 ? NID_sha1 : NID_sha256,
+	  CUS headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32,
+	  US sig->sigdata, (unsigned int *)&sig->sigdata_len,
+	  rsa) != 1)
+      return PDKIM_ERR_RSA_SIGNING;
+    RSA_free(rsa);
+
+#endif
+
 
     DEBUG(D_acl)
       {
@@ -1797,10 +1885,21 @@ debug_printf("rsa_parse_key: perr 0x%x\n", perr);
   /* VERIFICATION ----------------------------------------------------------- */
   else
     {
-    rsa_context rsa;
+#ifdef USE_GNUTLS
+    gnutls_pubkey_t rsa;
+    gnutls_datum_t k, s;
+    int rc;
+#else
+    RSA * rsa;
+    const unsigned char * p;
+#endif
     char *dns_txt_name, *dns_txt_reply;
 
-    rsa_init(&rsa, RSA_PKCS_V15, 0);
+#ifdef USE_GNUTLS
+    gnutls_pubkey_init(&rsa);
+#endif
+
+    /* Fetch public key for signing domain, from DNS */
 
     if (!(dns_txt_name  = malloc(PDKIM_DNS_TXT_MAX_NAMELEN)))
       return PDKIM_ERR_OOM;
@@ -1853,24 +1952,62 @@ debug_printf("rsa_parse_key: perr 0x%x\n", perr);
     DEBUG(D_acl) debug_printf(
 	"PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
-    if (rsa_parse_public_key(&rsa,
-			    (unsigned char *)sig->pubkey->key,
-			     sig->pubkey->key_len) != 0)
+    /* Import public key */
+#ifdef USE_GNUTLS
+
+    k.data = sig->pubkey->key;
+    k.size = sig->pubkey->key_len;
+    if ((rc = gnutls_pubkey_import(rsa, &k, GNUTLS_X509_FMT_DER))
+       != GNUTLS_E_SUCCESS)
+
+#else
+
+    p = CUS sig->pubkey->key;
+    if (!(rsa = d2i_RSA_PUBKEY(NULL, &p, (long) sig->pubkey->key_len)))
+
+#endif
       {
+      DEBUG(D_acl)
+	{
+#ifdef USE_GNUTLS
+	debug_printf("gnutls_pubkey_import: %s\n", gnutls_strerror(rc));
+#else
+	long e;
+	ERR_load_crypto_strings();	/*XXX move to a startup routine */
+	while ((e = ERR_get_error()))
+	  debug_printf("Az: %.120s\n", ERR_error_string(e, NULL));
+#endif
+	}
+
       sig->verify_status =      PDKIM_VERIFY_INVALID;
       sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
       goto NEXT_VERIFY;
       }
 
     /* Check the signature */
-    if (rsa_pkcs1_verify(&rsa,
-		      RSA_PUBLIC,
-		      ((sig->algo == PDKIM_ALGO_RSA_SHA1)?
-			   SIG_RSA_SHA1:SIG_RSA_SHA256),
-		      0,
-		      (unsigned char *)headerhash,
-		      (unsigned char *)sig->sigdata) != 0)
+#ifdef USE_GNUTLS
+
+    k.data = headerhash;
+    k.size = sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32;
+    s.data = sig->sigdata;
+    s.size = sig->sigdata_len;
+    if ((rc = gnutls_pubkey_verify_hash2(rsa,
+		sig->algo == PDKIM_ALGO_RSA_SHA1
+		  ? GNUTLS_SIGN_RSA_SHA1 : GNUTLS_SIGN_RSA_SHA256,
+		0, &k, &s)) < 0)
+
+#else
+
+    if (RSA_verify(sig->algo == PDKIM_ALGO_RSA_SHA1 ? NID_sha1 : NID_sha256,
+	  CUS headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32,
+	  US sig->sigdata, (unsigned int)sig->sigdata_len,
+	  rsa) != 1)
+
+#endif
       {
+#ifdef USE_GNUTLS
+      debug_printf("gnutls_pubkey_verify_hash2: %s\n", gnutls_strerror(rc));
+#endif
       sig->verify_status =      PDKIM_VERIFY_FAIL;
       sig->verify_ext_status =  PDKIM_VERIFY_FAIL_MESSAGE;
       goto NEXT_VERIFY;
@@ -1893,7 +2030,9 @@ NEXT_VERIFY:
 	debug_printf("\n");
       }
 
-    rsa_free(&rsa);
+#ifdef USE_GNUTLS
+    gnutls_pubkey_deinit(rsa);
+#endif
     free(dns_txt_name);
     free(dns_txt_reply);
     }
@@ -1936,7 +2075,7 @@ return ctx;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_sign(char *domain, char *selector, char *rsa_privkey)
+pdkim_init_sign(char *domain, char *selector, char *rsa_privkey, int algo)
 {
 pdkim_ctx *ctx;
 pdkim_signature *sig;
@@ -1970,17 +2109,20 @@ ctx->sig = sig;
 ctx->sig->domain = strdup(domain);
 ctx->sig->selector = strdup(selector);
 ctx->sig->rsa_privkey = strdup(rsa_privkey);
+ctx->sig->algo = algo;
 
 if (!ctx->sig->domain || !ctx->sig->selector || !ctx->sig->rsa_privkey)
   goto BAIL;
 
-if (!(ctx->sig->sha1_body = malloc(sizeof(sha1_context))))
-  goto BAIL;
-sha1_starts(ctx->sig->sha1_body);
+#ifdef USE_GNUTLS
+gnutls_hash_init(&ctx->sig->sha_body,
+    algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
 
-if (!(ctx->sig->sha2_body = malloc(sizeof(sha2_context))))
-  goto BAIL;
-sha2_starts(ctx->sig->sha2_body, 0);
+#else
+SHA1_Init  (&ctx->sig->sha1_body);
+SHA256_Init(&ctx->sig->sha2_body);
+
+#endif
 
 return ctx;
 
@@ -1988,6 +2130,7 @@ BAIL:
   pdkim_free_ctx(ctx);
   return NULL;
 }
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -1998,11 +2141,9 @@ pdkim_set_optional(pdkim_ctx *ctx,
                        int canon_headers,
                        int canon_body,
                        long bodylength,
-                       int algo,
                        unsigned long created,
                        unsigned long expires)
 {
-
 if (identity)
   if (!(ctx->sig->identity = strdup(identity)))
     return PDKIM_ERR_OOM;
@@ -2014,7 +2155,6 @@ if (sign_headers)
 ctx->sig->canon_headers = canon_headers;
 ctx->sig->canon_body = canon_body;
 ctx->sig->bodylength = bodylength;
-ctx->sig->algo = algo;
 ctx->sig->created = created;
 ctx->sig->expires = expires;
 
@@ -2022,3 +2162,4 @@ return PDKIM_OK;
 }
 
 
+#endif	/*DISABLE_DKIM*/

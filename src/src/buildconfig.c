@@ -734,6 +734,21 @@ else if (isgroup)
     continue;
     }
 
+  /* DISABLE_DKIM is special; must be forced if no SUPPORT_TLS */
+  if (strcmp(name, "DISABLE_DKIM") == 0)
+    {
+    char *d_dkim = getenv("DISABLE_DKIM");
+    char *tls = getenv("SUPPORT_TLS");
+
+    if (d_dkim)
+      fprintf(new, "#define DISABLE_DKIM          yes\n");
+    else if (!tls)
+      fprintf(new, "#define DISABLE_DKIM          yes /* forced by lack of TLS */\n");
+    else
+      fprintf(new, "/* DISABLE_DKIM not set */\n");
+    continue;
+    }
+
   /* Otherwise, check whether a value exists in the environment. Remember if
   it is an AUTH setting or SUPPORT_CRYPTEQ. */
 
