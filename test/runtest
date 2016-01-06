@@ -1393,6 +1393,9 @@ $munges =
     { 'mail' => '/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/'
     },
 
+    'optional_dane' =>
+    { 'stdout' => '/^hosts_(require|try)_dane =/' },
+
     'sys_bindir' =>
     { 'mainlog' => 's%/(usr/)?bin/%SYSBINDIR/%' },
 

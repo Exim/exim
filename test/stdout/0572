@@ -68,11 +68,9 @@ no_hosts_override
 no_hosts_randomize
 hosts_request_ocsp = *
 hosts_require_auth = 
-hosts_require_dane = 
 hosts_require_ocsp = 
 hosts_require_tls = 
 hosts_try_auth = 
-hosts_try_dane = 
 hosts_try_prdr = *
 hosts_verify_avoid_tls = 
 interface = ip4.ip4.ip4.ip4
