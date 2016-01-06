@@ -6890,9 +6890,13 @@ while (*s != 0)
       case EOP_STR2B64:
       case EOP_BASE64:
 	{
+#ifdef SUPPORT_TLS
 	uschar * s = vp && *(void **)vp->value
 	  ? tls_cert_der_b64(*(void **)vp->value)
 	  : b64encode(sub, Ustrlen(sub));
+#else
+	uschar * s = b64encode(sub, Ustrlen(sub));
+#endif
 	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
 	continue;
 	}
