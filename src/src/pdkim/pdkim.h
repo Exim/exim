@@ -20,13 +20,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifdef USE_GNUTLS
-# include <gnutls/gnutls.h>
-# include <gnutls/crypto.h>
-#else
-# include <openssl/sha.h>
-#endif
-
 /* -------------------------------------------------------------------------- */
 /* Length of the preallocated buffer for the "answer" from the dns/txt
    callback function. This should match the maximum RDLENGTH from DNS. */
@@ -74,6 +67,10 @@
 /* Some required forward declarations, please ignore */
 typedef struct pdkim_stringlist pdkim_stringlist;
 typedef struct pdkim_str pdkim_str;
+typedef struct sha1_context sha1_context;
+typedef struct sha2_context sha2_context;
+#define HAVE_SHA1_CONTEXT
+#define HAVE_SHA2_CONTEXT
 
 /* -------------------------------------------------------------------------- */
 /* Some concessions towards Redmond */
@@ -228,14 +225,17 @@ typedef struct pdkim_signature {
   /* Properties below this point are used internally only ------------- */
 
   /* Per-signature helper variables ----------------------------------- */
-#ifdef USE_GNUTLS
+#ifdef SHA_OPENSSL
+  SHA_CTX      sha1_body;  /* SHA1 block                                */
+  SHA256_CTX   sha2_body;  /* SHA256 block                              */
+#elif defined(SHA_GNUTLS)
   gnutls_hash_hd_t sha_body; /* Either SHA1 or SHA256 block             */
-#else
-  SHA_CTX      sha1_body;    /* SHA1 block                              */
-  SHA256_CTX   sha2_body;    /* SHA256 block                            */
+#elif defined(SHA_POLARSSL)
+  sha1_context *sha1_body; /* SHA1 block                                */
+  sha2_context *sha2_body; /* SHA256 block                              */
 #endif
   unsigned long signed_body_bytes; /* How many body bytes we hashed     */
-  pdkim_stringlist *headers;       /* Raw headers included in the sig   */
+  pdkim_stringlist *headers; /* Raw headers included in the sig         */
   /* Signing specific ------------------------------------------------- */
   char *rsa_privkey;     /* Private RSA key                             */
   char *sign_headers;    /* To-be-signed header names                   */

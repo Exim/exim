@@ -82,7 +82,7 @@ cd ..
 # Likewise for the code for the PDKIM library
 mkdir pdkim
 cd pdkim
-for f in README Makefile part-x509parse.c pdkim.c \
+for f in README Makefile crypt_ver.h part-x509parse.c pdkim.c \
   pdkim.h sha1.c sha2.c
 do
   ln -s ../../src/pdkim/$f $f

@@ -30,16 +30,23 @@
 # error Need SUPPORT_TLS for DKIM
 #endif
 
+#include "crypt_ver.h"
 
-#ifdef USE_GNUTLS
-# include <gnutls/gnutls.h>
-# include <gnutls/x509.h>
-# include <gnutls/abstract.h>
-# include <gnutls/crypto.h>
-#else
+#ifdef RSA_OPENSSL
 # include <openssl/rsa.h>
 # include <openssl/ssl.h>
 # include <openssl/err.h>
+#elif defined(RSA_GNUTLS)
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
+# include <gnutls/abstract.h>
+#endif
+
+#ifdef SHA_GNUTLS
+# include <gnutls/crypto.h>
+#elif defined(SHA_POLARSSL)
+# include "polarssl/sha1.h"
+# include "polarssl/sha2.h"
 #endif
 
 #include "pdkim.h"
@@ -785,14 +792,30 @@ DEBUG(D_acl)
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 
-#ifdef USE_GNUTLS
+#ifdef SHA_OPENSSL
+
+SHA1_Init  (&sig->sha1_body);
+SHA256_Init(&sig->sha2_body);
+
+#elif defined(SHA_GNUTLS)
+
 gnutls_hash_init(&sig->sha_body,
   sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
 
-#else
-SHA1_Init  (&sig->sha1_body);
-SHA256_Init(&sig->sha2_body);
-#endif
+#elif defined(SHA_POLARSSL)
+
+if (  !(sig->sha1_body = malloc(sizeof(sha1_context)))
+   || !(sig->sha2_body = malloc(sizeof(sha2_context)))
+   )
+  {
+  pdkim_free_sig(sig);
+  return NULL;
+  }
+
+sha1_starts(sig->sha1_body);
+sha2_starts(sig->sha2_body, 0);
+
+#endif	/* SHA impl */
 
 return sig;
 }
@@ -978,13 +1001,19 @@ while (sig)
 
   if (canon_len > 0)
     {
-#ifdef USE_GNUTLS
+#ifdef SHA_GNUTLS
     gnutls_hash(sig->sha_body, canon_data, canon_len);
 #else
     if (sig->algo == PDKIM_ALGO_RSA_SHA1)
+# ifdef SHA_OPENSSL
       SHA1_Update  (&sig->sha1_body, canon_data, canon_len);
     else
       SHA256_Update(&sig->sha2_body, canon_data, canon_len);
+# elif defined(SHA_POLARSSL)
+      sha1_update(sig->sha1_body, US canon_data, canon_len);
+    else
+      sha2_update(sig->sha2_body, US canon_data, canon_len);
+# endif
 #endif
 
     sig->signed_body_bytes += canon_len;
@@ -1011,13 +1040,19 @@ for (sig = ctx->sig; sig; sig = sig->next)
   {					/* Finish hashes */
   uschar bh[32]; /* SHA-256 = 32 Bytes,  SHA-1 = 20 Bytes */
 
-#ifdef USE_GNUTLS
+#ifdef SHA_GNUTLS
   gnutls_hash_output(sig->sha_body, bh);
 #else
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
+# ifdef SHA_OPENSSL
     SHA1_Final  (bh, &sig->sha1_body);
   else
     SHA256_Final(bh, &sig->sha2_body);
+# elif defined(SHA_POLARSSL)
+    sha1_finish(sig->sha1_body, bh);
+  else
+    sha2_finish(sig->sha2_body, bh);
+# endif
 #endif
 
   DEBUG(D_acl)
@@ -1591,26 +1626,39 @@ if (ctx->mode == PDKIM_MODE_SIGN)
 
 while (sig)
   {
-#ifdef USE_GNUTLS
-  gnutls_hash_hd_t sha_headers;
-  uschar * hdata = NULL;
-  int hdata_alloc = 0;
-  int hdata_size = 0;
-#else
+#ifdef SHA_OPENSSL
   SHA_CTX    sha1_headers;
   SHA256_CTX sha2_headers;
+#elif defined(SHA_GNUTLS)
+  gnutls_hash_hd_t sha_headers;
+#elif defined(SHA_POLARSSL)
+  sha1_context sha1_headers;
+  sha2_context sha2_headers;
 #endif
+
   char *sig_hdr;
   char headerhash[32];
 
-#ifdef USE_GNUTLS
+#ifdef RSA_GNUTLS
+  uschar * hdata = NULL;
+  int hdata_alloc = 0;
+  int hdata_size = 0;
+#endif
+
+#ifdef SHA_GNUTLS
   gnutls_hash_init(&sha_headers,
     sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
 #else
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
+# ifdef SHA_OPENSSL
     SHA1_Init(&sha1_headers);
   else
     SHA256_Init(&sha2_headers);
+# elif defined(SHA_POLARSSL)
+    sha1_starts(&sha1_headers);
+  else
+    sha2_starts(&sha2_headers, 0);
+# endif
 #endif
 
   DEBUG(D_acl) debug_printf(
@@ -1641,16 +1689,22 @@ while (sig)
 	return PDKIM_ERR_OOM;
 
       /* Feed header to the hash algorithm */
-#ifdef USE_GNUTLS
+#ifdef SHA_GNUTLS
       gnutls_hash(sha_headers, rh, strlen(rh));
 #else
       if (sig->algo == PDKIM_ALGO_RSA_SHA1)
+# ifdef SHA_OPENSSL
 	SHA1_Update  (&sha1_headers, rh, strlen(rh));
       else
 	SHA256_Update(&sha2_headers, rh, strlen(rh));
+# elif defined(SHA_POLARSSL)
+	sha1_update(&sha1_headers, US rh, strlen(rh));
+      else
+	sha2_update(&sha2_headers, US rh, strlen(rh));
+# endif
 #endif
 
-#ifdef USE_GNUTLS
+#ifdef RSA_GNUTLS
       /* Remember headers block for signing */
       hdata = string_append(hdata, &hdata_alloc, &hdata_size, 1, rh);
 #endif
@@ -1696,13 +1750,19 @@ while (sig)
 	    return PDKIM_ERR_OOM;
 
 	  /* Feed header to the hash algorithm */
-#ifdef USE_GNUTLS
+#ifdef SHA_GNUTLS
 	  gnutls_hash(sha_headers, rh, strlen(rh));
 #else
 	  if (sig->algo == PDKIM_ALGO_RSA_SHA1)
+# ifdef SHA_OPENSSL
 	    SHA1_Update  (&sha1_headers, rh, strlen(rh));
 	  else
 	    SHA256_Update(&sha2_headers, rh, strlen(rh));
+# elif defined(SHA_POLARSSL)
+	    sha1_update(&sha1_headers, US rh, strlen(rh));
+	  else
+	    sha2_update(&sha2_headers, US rh, strlen(rh));
+# endif
 #endif
 
 	  DEBUG(D_acl) pdkim_quoteprint(rh, strlen(rh), 1);
@@ -1760,11 +1820,12 @@ while (sig)
     }
 
   /* Finalize header hash */
-#ifdef USE_GNUTLS
+#ifdef SHA_GNUTLS
   gnutls_hash(sha_headers, sig_hdr, strlen(sig_hdr));
   gnutls_hash_output(sha_headers, headerhash);
 #else
   if (sig->algo == PDKIM_ALGO_RSA_SHA1)
+# ifdef SHA_OPENSSL
     {
     SHA1_Update(&sha1_headers, sig_hdr, strlen(sig_hdr));
     SHA1_Final(US headerhash, &sha1_headers);
@@ -1774,6 +1835,17 @@ while (sig)
     SHA256_Update(&sha2_headers, sig_hdr, strlen(sig_hdr));
     SHA256_Final(US headerhash, &sha2_headers);
     }
+# elif defined(SHA_POLARSSL)
+    {
+    sha1_update(&sha1_headers, US sig_hdr, strlen(sig_hdr));
+    sha1_finish(&sha1_headers, US headerhash);
+    }
+  else
+    {
+    sha2_update(&sha2_headers, US sig_hdr, strlen(sig_hdr));
+    sha2_finish(&sha2_headers, US headerhash);
+    }
+# endif
 #endif
 
   DEBUG(D_acl)
@@ -1782,7 +1854,7 @@ while (sig)
     pdkim_hexprint(headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20:32, 1);
     }
 
-#ifdef USE_GNUTLS
+#ifdef RSA_GNUTLS
   if (ctx->mode == PDKIM_MODE_SIGN)
     hdata = string_append(hdata, &hdata_alloc, &hdata_size, 1, sig_hdr);
 #endif
@@ -1792,19 +1864,32 @@ while (sig)
   /* SIGNING ---------------------------------------------------------------- */
   if (ctx->mode == PDKIM_MODE_SIGN)
     {
-#ifdef USE_GNUTLS
+#ifdef RSA_OPENSSL
+    RSA * rsa;
+    uschar * p, * q;
+    int len;
+#elif defined(RSA_GNUTLS)
     gnutls_x509_privkey_t rsa;
     gnutls_datum_t k;
     int rc;
     size_t sigsize;
-#else
-    RSA * rsa;
-    uschar * p, * q;
-    int len;
 #endif
 
     /* Import private key */
-#ifdef USE_GNUTLS
+#ifdef RSA_OPENSSL
+
+    if (  !(p = Ustrstr(sig->rsa_privkey, "-----BEGIN RSA PRIVATE KEY-----"))
+       || !(q = Ustrstr(p+=31, "-----END RSA PRIVATE KEY-----"))
+       )
+      return PDKIM_ERR_RSA_PRIVKEY;
+    *q = '\0';
+    if (  (len = b64decode(p, &p)) < 0
+       || !(rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len))
+       )
+      /*XXX todo: get errstring from library */
+      return PDKIM_ERR_RSA_PRIVKEY;
+
+#elif defined(RSA_GNUTLS)
 
     k.data = sig->rsa_privkey;
     k.size = strlen(sig->rsa_privkey);
@@ -1818,36 +1903,32 @@ while (sig)
       return PDKIM_ERR_RSA_PRIVKEY;
       }
 
-#else
-
-    if (  !(p = Ustrstr(sig->rsa_privkey, "-----BEGIN RSA PRIVATE KEY-----"))
-       || !(q = Ustrstr(p+=31, "-----END RSA PRIVATE KEY-----"))
-       )
-      return PDKIM_ERR_RSA_PRIVKEY;
-    *q = '\0';
-    if (  (len = b64decode(p, &p)) < 0
-       || !(rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len))
-       )
-      /*XXX todo: get errstring from library */
-      return PDKIM_ERR_RSA_PRIVKEY;
-
 #endif
 
 
     /* Allocate mem for signature */
-#ifdef USE_GNUTLS
+#ifdef RSA_OPENSSL
+    sig->sigdata = store_get(RSA_size(rsa));
+#elif defined(RSA_GNUTLS)
     k.data = hdata;
     k.size = hdata_size;
     (void) gnutls_x509_privkey_sign_data(rsa,
       sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
       0, &k, NULL, &sigsize);
     sig->sigdata = store_get(sig->sigdata_len = sigsize);
-#else
-    sig->sigdata = store_get(RSA_size(rsa));
 #endif
 
     /* Do signing */
-#ifdef USE_GNUTLS
+#ifdef RSA_OPENSSL
+
+    if (RSA_sign(sig->algo == PDKIM_ALGO_RSA_SHA1 ? NID_sha1 : NID_sha256,
+	  CUS headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32,
+	  US sig->sigdata, (unsigned int *)&sig->sigdata_len,
+	  rsa) != 1)
+      return PDKIM_ERR_RSA_SIGNING;
+    RSA_free(rsa);
+
+#elif defined(RSA_GNUTLS)
 
     if ((rc = gnutls_x509_privkey_sign_data(rsa,
 	  sig->algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
@@ -1859,15 +1940,6 @@ while (sig)
       return PDKIM_ERR_RSA_SIGNING;
       }
     gnutls_x509_privkey_deinit(rsa);
-
-#else
-
-    if (RSA_sign(sig->algo == PDKIM_ALGO_RSA_SHA1 ? NID_sha1 : NID_sha256,
-	  CUS headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32,
-	  US sig->sigdata, (unsigned int *)&sig->sigdata_len,
-	  rsa) != 1)
-      return PDKIM_ERR_RSA_SIGNING;
-    RSA_free(rsa);
 
 #endif
 
@@ -1885,17 +1957,17 @@ while (sig)
   /* VERIFICATION ----------------------------------------------------------- */
   else
     {
-#ifdef USE_GNUTLS
+#ifdef RSA_OPENSSL
+    RSA * rsa;
+    const unsigned char * p;
+#elif defined(RSA_GNUTLS)
     gnutls_pubkey_t rsa;
     gnutls_datum_t k, s;
     int rc;
-#else
-    RSA * rsa;
-    const unsigned char * p;
 #endif
     char *dns_txt_name, *dns_txt_reply;
 
-#ifdef USE_GNUTLS
+#ifdef RSA_GNUTLS
     gnutls_pubkey_init(&rsa);
 #endif
 
@@ -1953,29 +2025,29 @@ while (sig)
 	"PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
     /* Import public key */
-#ifdef USE_GNUTLS
+#ifdef RSA_OPENSSL
+
+    p = CUS sig->pubkey->key;
+    if (!(rsa = d2i_RSA_PUBKEY(NULL, &p, (long) sig->pubkey->key_len)))
+
+#elif defined(RSA_GNUTLS)
 
     k.data = sig->pubkey->key;
     k.size = sig->pubkey->key_len;
     if ((rc = gnutls_pubkey_import(rsa, &k, GNUTLS_X509_FMT_DER))
        != GNUTLS_E_SUCCESS)
 
-#else
-
-    p = CUS sig->pubkey->key;
-    if (!(rsa = d2i_RSA_PUBKEY(NULL, &p, (long) sig->pubkey->key_len)))
-
 #endif
       {
       DEBUG(D_acl)
 	{
-#ifdef USE_GNUTLS
-	debug_printf("gnutls_pubkey_import: %s\n", gnutls_strerror(rc));
-#else
+#ifdef RSA_OPENSSL
 	long e;
 	ERR_load_crypto_strings();	/*XXX move to a startup routine */
 	while ((e = ERR_get_error()))
 	  debug_printf("Az: %.120s\n", ERR_error_string(e, NULL));
+#elif defined(RSA_GNUTLS)
+	debug_printf("gnutls_pubkey_import: %s\n", gnutls_strerror(rc));
 #endif
 	}
 
@@ -1985,7 +2057,14 @@ while (sig)
       }
 
     /* Check the signature */
-#ifdef USE_GNUTLS
+#ifdef RSA_OPENSSL
+
+    if (RSA_verify(sig->algo == PDKIM_ALGO_RSA_SHA1 ? NID_sha1 : NID_sha256,
+	  CUS headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32,
+	  US sig->sigdata, (unsigned int)sig->sigdata_len,
+	  rsa) != 1)
+
+#elif defined(RSA_GNUTLS)
 
     k.data = headerhash;
     k.size = sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32;
@@ -1996,16 +2075,9 @@ while (sig)
 		  ? GNUTLS_SIGN_RSA_SHA1 : GNUTLS_SIGN_RSA_SHA256,
 		0, &k, &s)) < 0)
 
-#else
-
-    if (RSA_verify(sig->algo == PDKIM_ALGO_RSA_SHA1 ? NID_sha1 : NID_sha256,
-	  CUS headerhash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20 : 32,
-	  US sig->sigdata, (unsigned int)sig->sigdata_len,
-	  rsa) != 1)
-
 #endif
       {
-#ifdef USE_GNUTLS
+#if defined(RSA_GNUTLS)
       debug_printf("gnutls_pubkey_verify_hash2: %s\n", gnutls_strerror(rc));
 #endif
       sig->verify_status =      PDKIM_VERIFY_FAIL;
@@ -2030,7 +2102,7 @@ NEXT_VERIFY:
 	debug_printf("\n");
       }
 
-#ifdef USE_GNUTLS
+#ifdef RSA_GNUTLS
     gnutls_pubkey_deinit(rsa);
 #endif
     free(dns_txt_name);
@@ -2114,13 +2186,22 @@ ctx->sig->algo = algo;
 if (!ctx->sig->domain || !ctx->sig->selector || !ctx->sig->rsa_privkey)
   goto BAIL;
 
-#ifdef USE_GNUTLS
+#ifdef SHA_OPENSSL
+SHA1_Init  (&ctx->sig->sha1_body);
+SHA256_Init(&ctx->sig->sha2_body);
+
+#elif defined(SHA_GNUTLS)
 gnutls_hash_init(&ctx->sig->sha_body,
     algo == PDKIM_ALGO_RSA_SHA1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
 
-#else
-SHA1_Init  (&ctx->sig->sha1_body);
-SHA256_Init(&ctx->sig->sha2_body);
+#elif defined(SHA_POLARSSL)
+if (!(ctx->sig->sha1_body = malloc(sizeof(sha1_context))))
+  goto BAIL;
+sha1_starts(ctx->sig->sha1_body);
+
+if (!(ctx->sig->sha2_body = malloc(sizeof(sha2_context))))
+  goto BAIL;
+sha2_starts(ctx->sig->sha2_body, 0);
 
 #endif
 
