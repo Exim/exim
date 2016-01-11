@@ -107,7 +107,7 @@ log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 tls_advertise_hosts =
-log_selector = +proxy +outgoing_port
+log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept
 
