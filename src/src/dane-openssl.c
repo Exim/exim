@@ -20,8 +20,8 @@
 # error "OpenSSL 1.0.0 or higher required"
 #else   /* remainder of file */
 
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-#define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+# define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
 #endif
 
 #include "danessl.h"
