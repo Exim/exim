@@ -2791,7 +2791,7 @@ switch(cond_type)
       #define XSTR(s) STR(s)
       DEBUG(D_auth) debug_printf("crypteq: using %s()\n"
         "  subject=%s\n  crypted=%s\n",
-        (which == 0)? XSTR(DEFAULT_CRYPT) : (which == 1)? "crypt" : "crypt16",
+        which == 0 ? XSTR(DEFAULT_CRYPT) : which == 1 ? "crypt" : "crypt16",
         coded, sub[1]);
       #undef STR
       #undef XSTR
@@ -2800,8 +2800,16 @@ switch(cond_type)
       salt), force failure. Otherwise we get false positives: with an empty
       string the yield of crypt() is an empty string! */
 
-      tempcond = (Ustrlen(sub[1]) < 2)? FALSE :
-        (Ustrcmp(coded, sub[1]) == 0);
+      if (coded)
+	tempcond = Ustrlen(sub[1]) < 2 ? FALSE : Ustrcmp(coded, sub[1]) == 0;
+      else if (errno == EINVAL)
+	tempcond = FALSE;
+      else
+	{
+	expand_string_message = string_sprintf("crypt error: %s\n",
+	  US strerror(errno));
+	return NULL;
+	}
       }
     break;
     #endif  /* SUPPORT_CRYPTEQ */
