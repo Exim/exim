@@ -436,6 +436,11 @@ acl_check_rcpt:
           control       = submission
           control       = dkim_disable_verify
 
+  # Insist that a HELO/EHLO was accepted.
+
+  require message	= nice hosts say HELO first
+          condition	= ${if def:sender_helo_name}
+
   # Insist that any other recipient address that we accept is either in one of
   # our local domains, or is in a domain for which we explicitly allow
   # relaying. Any other domain is rejected as being unacceptable for relaying.

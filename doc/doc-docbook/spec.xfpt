@@ -27548,6 +27548,12 @@ Note that a client may issue more than one EHLO or HELO command in an SMTP
 session, and indeed is required to issue a new EHLO or HELO after successfully
 setting up encryption following a STARTTLS command.
 
+.new
+Note also that a deny neither forces the client to go away nor means that
+mail will be refused on the connection.  Consider checking for
+&$sender_helo_name$& being defined in a MAIL or RCPT ACL to do that.
+.wen
+
 If the command is accepted by an &%accept%& verb that has a &%message%&
 modifier, the message may not contain more than one line (it will be truncated
 at the first newline and a panic logged if it does). Such a message cannot
