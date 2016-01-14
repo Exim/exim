@@ -3155,7 +3155,8 @@ Arguments:
   yieldptr       points to the output string pointer
   sizeptr        points to the output string size
   ptrptr         points to the output string pointer
-  type           "lookup" or "if" or "extract" or "run", for error message
+  type           "lookup", "if", "extract", "run", "env", "listextract" or
+                 "certextract" for error message
   resetok	 if not NULL, pointer to flag - write FALSE if unsafe to reset
 		the store.
 
@@ -5481,7 +5482,7 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"extract",                  /* condition type */
+               US"listextract",              /* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -5553,7 +5554,7 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"extract",                  /* condition type */
+               US"certextract",              /* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
