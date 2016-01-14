@@ -144,6 +144,10 @@ JH/34 Bug 1192: replace the embedded copy of PolarSSL RSA routines in the DKIM
       support, by using OpenSSL or GnuTLS library ones.  This means DKIM is
       only supported when built with TLS support.
 
+JH/35 Require SINGLE_DH_USE by default in OpenSSL (main config option
+      openssl_options), for security.  OpenSSL forces this from version 1.1.0
+      server-side so match that on older versions.
+
 
 Exim version 4.86
 -----------------

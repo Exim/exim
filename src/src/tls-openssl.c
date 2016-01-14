@@ -2751,6 +2751,9 @@ result = 0L;
 #ifdef SSL_OP_NO_SSLv2
 result |= SSL_OP_NO_SSLv2;
 #endif
+#ifdef SSL_OP_SINGLE_DH_USE
+result |= SSL_OP_SINGLE_DH_USE;
+#endif
 
 if (option_spec == NULL)
   {
