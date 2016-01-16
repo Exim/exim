@@ -3209,10 +3209,11 @@ if (*s++ != '}') goto FAILED_CURLY;
 if (yes)
   *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, sub1, Ustrlen(sub1));
 
-/* If this is called from a lookup or an extract, we want to restore $value to
-what it was at the start of the item, so that it has this value during the
-second string expansion. For the call from "if" or "run" to this function,
-save_lookup is set to lookup_value, so that this statement does nothing. */
+/* If this is called from a lookup/env or a (cert)extract, we want to restore
+$value to what it was at the start of the item, so that it has this value
+during the second string expansion. For the call from "if" or "run" to this
+function, save_lookup is set to lookup_value, so that this statement does
+nothing. */
 
 lookup_value = save_lookup;
 
@@ -3443,9 +3444,9 @@ return finalhash_hex;
 *        Join a file onto the output string      *
 *************************************************/
 
-/* This is used for readfile and after a run expansion. It joins the contents
-of a file onto the output string, globally replacing newlines with a given
-string (optionally). The file is closed at the end.
+/* This is used for readfile/readsock and after a run expansion.
+It joins the contents of a file onto the output string, globally replacing
+newlines with a given string (optionally).
 
 Arguments:
   f            the FILE
@@ -3460,21 +3461,19 @@ Returns:       new value of string pointer
 static uschar *
 cat_file(FILE *f, uschar *yield, int *sizep, int *ptrp, uschar *eol)
 {
-int eollen;
+int eollen = eol ? Ustrlen(eol) : 0;
 uschar buffer[1024];
 
-eollen = (eol == NULL)? 0 : Ustrlen(eol);
-
-while (Ufgets(buffer, sizeof(buffer), f) != NULL)
+while (Ufgets(buffer, sizeof(buffer), f))
   {
   int len = Ustrlen(buffer);
-  if (eol != NULL && buffer[len-1] == '\n') len--;
+  if (eol && buffer[len-1] == '\n') len--;
   yield = string_cat(yield, sizep, ptrp, buffer, len);
   if (buffer[len] != 0)
     yield = string_cat(yield, sizep, ptrp, eol, eollen);
   }
 
-if (yield != NULL) yield[*ptrp] = 0;
+if (yield) yield[*ptrp] = 0;
 
 return yield;
 }
@@ -4870,8 +4869,7 @@ while (*s != 0)
       const uschar **argv;
       pid_t pid;
       int fd_in, fd_out;
-      int lsize = 0;
-      int lptr = 0;
+      int lsize = 0, lptr = 0;
 
       if ((expand_forbid & RDO_RUN) != 0)
         {
@@ -4899,15 +4897,11 @@ while (*s != 0)
             NULL,                               /* no transporting address */
             US"${run} expansion",               /* for error messages */
             &expand_string_message))            /* where to put error message */
-          {
           goto EXPAND_FAILED;
-          }
 
         /* Create the child process, making it a group leader. */
 
-        pid = child_open(USS argv, NULL, 0077, &fd_in, &fd_out, TRUE);
-
-        if (pid < 0)
+        if ((pid = child_open(USS argv, NULL, 0077, &fd_in, &fd_out, TRUE)) < 0)
           {
           expand_string_message =
             string_sprintf("couldn't create child process: %s", strerror(errno));
@@ -4927,7 +4921,7 @@ while (*s != 0)
         f = fdopen(fd_out, "rb");
         sigalrm_seen = FALSE;
         alarm(60);
-        lookup_value = cat_file(f, lookup_value, &lsize, &lptr, NULL);
+        lookup_value = cat_file(f, NULL, &lsize, &lptr, NULL);
         alarm(0);
         (void)fclose(f);
 

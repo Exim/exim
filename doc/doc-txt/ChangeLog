@@ -148,6 +148,11 @@ JH/35 Require SINGLE_DH_USE by default in OpenSSL (main config option
       openssl_options), for security.  OpenSSL forces this from version 1.1.0
       server-side so match that on older versions.
 
+JH/36 Fix a longstanding bug in memory use by the ${run } expansion: A fresh
+      allocation for $value could be released as the expansion processing
+      concluded, but leaving the global pointer active for it.  Possibly
+      involved in Bug 1778.
+
 
 Exim version 4.86
 -----------------
