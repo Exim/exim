@@ -2364,7 +2364,7 @@ else
   {
   int codelen = 3;
   s = user_msg;
-  smtp_message_code(&code, &codelen, &s, NULL);
+  smtp_message_code(&code, &codelen, &s, NULL, TRUE);
   if (codelen > 4)
     {
     esc = code + 4;
@@ -2626,23 +2626,24 @@ Arguments:
   codelen       length of smtp code; if > 4 there's an ESC
   msg           message text
   log_msg       optional log message, to be adjusted with the new SMTP code
+  check_valid   if true, verify the response code
 
 Returns:        nothing
 */
 
 void
-smtp_message_code(uschar **code, int *codelen, uschar **msg, uschar **log_msg)
+smtp_message_code(uschar **code, int *codelen, uschar **msg, uschar **log_msg,
+  BOOL check_valid)
 {
 int n;
 int ovector[3];
 
-if (msg == NULL || *msg == NULL) return;
+if (!msg || !*msg) return;
 
-n = pcre_exec(regex_smtp_code, NULL, CS *msg, Ustrlen(*msg), 0,
-  PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int));
-if (n < 0) return;
+if ((n = pcre_exec(regex_smtp_code, NULL, CS *msg, Ustrlen(*msg), 0,
+  PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int))) < 0) return;
 
-if ((*msg)[0] != (*code)[0])
+if (check_valid && (*msg)[0] != (*code)[0])
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "configured error code starts with "
     "incorrect digit (expected %c) in \"%s\"", (*code)[0], *msg);
@@ -2677,18 +2678,19 @@ defaults disabled in Exim. However, discussion in connection with RFC 821bis
 (aka RFC 2821) has concluded that the response should be 252 in the disabled
 state, because there are broken clients that try VRFY before RCPT. A 5xx
 response should be given only when the address is positively known to be
-undeliverable. Sigh. Also, for ETRN, 458 is given on refusal, and for AUTH,
-503.
+undeliverable. Sigh. We return 252 if there is no VRFY ACL or it provides
+no explicit code, but if there is one we let it know best.
+Also, for ETRN, 458 is given on refusal, and for AUTH, 503.
 
 From Exim 4.63, it is possible to override the response code details by
 providing a suitable response code string at the start of the message provided
 in user_msg. The code's first digit is checked for validity.
 
 Arguments:
-  where      where the ACL was called from
-  rc         the failure code
-  user_msg   a message that can be included in an SMTP response
-  log_msg    a message for logging
+  where        where the ACL was called from
+  rc           the failure code
+  user_msg     a message that can be included in an SMTP response
+  log_msg      a message for logging
 
 Returns:     0 in most cases
              2 if the failure code was FAIL_DROP, in which case the
@@ -2721,8 +2723,9 @@ if (drop) rc = FAIL;
 
 /* Set the default SMTP code, and allow a user message to change it. */
 
-smtp_code = (rc != FAIL)? US"451" : acl_wherecodes[where];
-smtp_message_code(&smtp_code, &codelen, &user_msg, &log_msg);
+smtp_code = rc == FAIL ? acl_wherecodes[where] : US"451";
+smtp_message_code(&smtp_code, &codelen, &user_msg, &log_msg,
+  where != ACL_WHERE_VRFY);
 
 /* We used to have sender_address here; however, there was a bug that was not
 updating sender_address after a rewrite during a verify. When this bug was
@@ -3096,7 +3099,7 @@ static void
 smtp_user_msg(uschar *code, uschar *user_msg)
 {
 int len = 3;
-smtp_message_code(&code, &len, &user_msg, NULL);
+smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
 smtp_respond(code, len, TRUE, user_msg);
 }
 
@@ -3305,14 +3308,13 @@ while (done <= 0)
      )
     {
     cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = FALSE;
-    if (acl_smtp_auth)
+    if (  acl_smtp_auth
+       && (rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth,
+		  &user_msg, &log_msg)) != OK
+       )
       {
-      rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth, &user_msg, &log_msg);
-      if (rc != OK)
-        {
-        done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
-        continue;
-        }
+      done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
+      continue;
       }
 
     for (au = auths; au; au = au->next)
@@ -3371,14 +3373,13 @@ while (done <= 0)
 
     /* Check the ACL */
 
-    if (acl_smtp_auth)
+    if (  acl_smtp_auth
+       && (rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth,
+		  &user_msg, &log_msg)) != OK
+       )
       {
-      rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth, &user_msg, &log_msg);
-      if (rc != OK)
-        {
-        done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
-        break;
-        }
+      done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
+      break;
       }
 
     /* Find the name of the requested authentication mechanism. */
@@ -3550,10 +3551,9 @@ while (done <= 0)
     /* Apply an ACL check if one is defined; afterwards, recheck
     synchronization in case the client started sending in a delay. */
 
-    if (acl_smtp_helo != NULL)
-      {
-      rc = acl_check(ACL_WHERE_HELO, NULL, acl_smtp_helo, &user_msg, &log_msg);
-      if (rc != OK)
+    if (acl_smtp_helo)
+      if ((rc = acl_check(ACL_WHERE_HELO, NULL, acl_smtp_helo,
+		&user_msg, &log_msg)) != OK)
         {
         done = smtp_handle_acl_fail(ACL_WHERE_HELO, rc, user_msg, log_msg);
         sender_helo_name = NULL;
@@ -3561,7 +3561,6 @@ while (done <= 0)
         break;
         }
       else if (!check_sync()) goto SYNC_FAILURE;
-      }
 
     /* Generate an OK reply. The default string includes the ident if present,
     and also the IP address if present. Reflecting back the ident is intended
@@ -3609,7 +3608,7 @@ while (done <= 0)
       {
       char *ss;
       int codelen = 4;
-      smtp_message_code(&smtp_code, &codelen, &user_msg, NULL);
+      smtp_message_code(&smtp_code, &codelen, &user_msg, NULL, TRUE);
       s = string_sprintf("%.*s%s", codelen, smtp_code, user_msg);
       if ((ss = strpbrk(CS s, "\r\n")) != NULL)
         {
@@ -4581,51 +4580,49 @@ while (done <= 0)
 
 
     case VRFY_CMD:
-    HAD(SCH_VRFY);
-    rc = acl_check(ACL_WHERE_VRFY, NULL, acl_smtp_vrfy, &user_msg, &log_msg);
-    if (rc != OK)
-      done = smtp_handle_acl_fail(ACL_WHERE_VRFY, rc, user_msg, log_msg);
-    else
       {
-      uschar *address;
-      uschar *s = NULL;
+      uschar * address;
 
-      /* rfc821_domains = TRUE; << no longer needed */
-      address = parse_extract_address(smtp_cmd_data, &errmess, &start, &end,
-        &recipient_domain, FALSE);
-      /* rfc821_domains = FALSE; << no longer needed */
+      HAD(SCH_VRFY);
 
-      if (address == NULL)
-        s = string_sprintf("501 %s", errmess);
+      if(!(address = parse_extract_address(smtp_cmd_data, &errmess, &start, &end,
+	    &recipient_domain, FALSE)))
+	smtp_printf("501 %s\r\n", errmess);
+
+      else if ((rc = acl_check(ACL_WHERE_VRFY, address, acl_smtp_vrfy,
+		    &user_msg, &log_msg)) != OK)
+	done = smtp_handle_acl_fail(ACL_WHERE_VRFY, rc, user_msg, log_msg);
       else
-        {
-        address_item *addr = deliver_make_addr(address, FALSE);
-        switch(verify_address(addr, NULL, vopt_is_recipient | vopt_qualify, -1,
-               -1, -1, NULL, NULL, NULL))
-          {
-          case OK:
-          s = string_sprintf("250 <%s> is deliverable", address);
-          break;
+	{
+	uschar *s = NULL;
 
-          case DEFER:
-          s = (addr->user_message != NULL)?
-            string_sprintf("451 <%s> %s", address, addr->user_message) :
-            string_sprintf("451 Cannot resolve <%s> at this time", address);
-          break;
+	address_item *addr = deliver_make_addr(address, FALSE);
+	switch(verify_address(addr, NULL, vopt_is_recipient | vopt_qualify, -1,
+	       -1, -1, NULL, NULL, NULL))
+	  {
+	  case OK:
+	    s = string_sprintf("250 <%s> is deliverable", address);
+	    break;
 
-          case FAIL:
-          s = (addr->user_message != NULL)?
-            string_sprintf("550 <%s> %s", address, addr->user_message) :
-            string_sprintf("550 <%s> is not deliverable", address);
-          log_write(0, LOG_MAIN, "VRFY failed for %s %s",
-            smtp_cmd_argument, host_and_ident(TRUE));
-          break;
-          }
-        }
+	  case DEFER:
+	    s = (addr->user_message != NULL)?
+	      string_sprintf("451 <%s> %s", address, addr->user_message) :
+	      string_sprintf("451 Cannot resolve <%s> at this time", address);
+	    break;
 
-      smtp_printf("%s\r\n", s);
+	  case FAIL:
+	    s = (addr->user_message != NULL)?
+	      string_sprintf("550 <%s> %s", address, addr->user_message) :
+	      string_sprintf("550 <%s> is not deliverable", address);
+	    log_write(0, LOG_MAIN, "VRFY failed for %s %s",
+	      smtp_cmd_argument, host_and_ident(TRUE));
+	    break;
+	  }
+
+	smtp_printf("%s\r\n", s);
+	}
+      break;
       }
-    break;
 
 
     case EXPN_CMD:
@@ -4659,15 +4656,13 @@ while (done <= 0)
 
     /* Apply an ACL check if one is defined */
 
-    if (acl_smtp_starttls != NULL)
+    if (  acl_smtp_starttls
+       && (rc = acl_check(ACL_WHERE_STARTTLS, NULL, acl_smtp_starttls,
+		  &user_msg, &log_msg)) != OK
+       )
       {
-      rc = acl_check(ACL_WHERE_STARTTLS, NULL, acl_smtp_starttls, &user_msg,
-        &log_msg);
-      if (rc != OK)
-        {
-        done = smtp_handle_acl_fail(ACL_WHERE_STARTTLS, rc, user_msg, log_msg);
-        break;
-        }
+      done = smtp_handle_acl_fail(ACL_WHERE_STARTTLS, rc, user_msg, log_msg);
+      break;
       }
 
     /* RFC 2487 is not clear on when this command may be sent, though it
@@ -4910,8 +4905,8 @@ while (done <= 0)
     log_write(L_etrn, LOG_MAIN, "ETRN %s received from %s", smtp_cmd_argument,
       host_and_ident(FALSE));
 
-    rc = acl_check(ACL_WHERE_ETRN, NULL, acl_smtp_etrn, &user_msg, &log_msg);
-    if (rc != OK)
+    if ((rc = acl_check(ACL_WHERE_ETRN, NULL, acl_smtp_etrn,
+		&user_msg, &log_msg)) != OK)
       {
       done = smtp_handle_acl_fail(ACL_WHERE_ETRN, rc, user_msg, log_msg);
       break;

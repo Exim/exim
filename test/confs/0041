@@ -12,6 +12,7 @@ tls_advertise_hosts =
 
 domainlist local_domains = test.ex
 
+acl_smtp_vrfy = check_vrfy
 acl_smtp_expn = check_expn
 qualify_domain = test.ex
 no_write_rejectlog
@@ -20,6 +21,10 @@ no_write_rejectlog
 # ----- ACLs -----
 
 begin acl
+
+check_vrfy:
+  deny	 local_parts = hardfail
+         message = 599 custom reject
 
 check_expn:
   accept hosts = 2.2.2.2

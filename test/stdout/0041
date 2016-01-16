@@ -5,6 +5,7 @@
 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 252 Administrative prohibition
+599 custom reject
 550 Administrative prohibition
 221 the.local.host.name closing connection
 

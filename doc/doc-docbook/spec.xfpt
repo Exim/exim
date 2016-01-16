@@ -34046,13 +34046,20 @@ specific badly-behaved hosts that you have to live with.
 When Exim receives a VRFY or EXPN command on a TCP/IP connection, it
 runs the ACL specified by &%acl_smtp_vrfy%& or &%acl_smtp_expn%& (as
 appropriate) in order to decide whether the command should be accepted or not.
-If no ACL is defined, the command is rejected.
 
+.new
 .cindex "VRFY" "processing"
+When no ACL is defined for VRFY, or if it rejects without
+setting an explicit response code, the command is accepted
+(with a 252 SMTP response code)
+in order to support awkward clients that do a VRFY before every RCPT.
+.wen
 When VRFY is accepted, it runs exactly the same code as when Exim is
-called with the &%-bv%& option.
+called with the &%-bv%& option, and returns 250/451/550
+SMTP response codes.
 
 .cindex "EXPN" "processing"
+If no ACL for EXPN is defined, the command is rejected.
 When EXPN is accepted, a single-level expansion of the address is done.
 EXPN is treated as an &"address test"& (similar to the &%-bt%& option) rather
 than a verification (the &%-bv%& option). If an unqualified local part is given

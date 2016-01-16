@@ -1,6 +1,7 @@
 # VRFY & EXPN blocking
 exim -bh 1.1.1.1
 vrfy userx@test.ex
+vrfy hardfail@test.ex
 expn postmaster
 quit
 ****
