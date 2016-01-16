@@ -3187,7 +3187,7 @@ if (*s == '}')
     }
   else
     {
-    if (yes && lookup_value != NULL)
+    if (yes && lookup_value)
       *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value,
         Ustrlen(lookup_value));
     lookup_value = save_lookup;
@@ -4929,8 +4929,10 @@ while (*s != 0)
 
         /* Read the pipe to get the command's output into $value (which is kept
         in lookup_value). Read during execution, so that if the output exceeds
-        the OS pipe buffer limit, we don't block forever. */
+        the OS pipe buffer limit, we don't block forever. Remember to not release
+	memory just allocated for $value. */
 
+	resetok = FALSE;
         f = fdopen(fd_out, "rb");
         sigalrm_seen = FALSE;
         alarm(60);
