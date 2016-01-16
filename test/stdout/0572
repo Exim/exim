@@ -66,9 +66,7 @@ hosts_max_try_hardlimit = 50
 hosts_nopass_tls = 
 no_hosts_override
 no_hosts_randomize
-hosts_request_ocsp = *
 hosts_require_auth = 
-hosts_require_ocsp = 
 hosts_require_tls = 
 hosts_try_auth = 
 hosts_try_prdr = *
