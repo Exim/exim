@@ -38,6 +38,7 @@ bounce_return_body = false
 no_bounce_return_message
 return_size_limit = 12K
 bounce_return_size_limit = 10K
+bounce_return_line_limit = 997
 callout_domain_negative_expire = 1h
 callout_domain_positive_expire = 1d
 callout_negative_expire = 5h

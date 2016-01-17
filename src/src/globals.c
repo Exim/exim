@@ -475,6 +475,7 @@ uschar *bounce_message_file    = NULL;
 uschar *bounce_message_text    = NULL;
 uschar *bounce_recipient       = NULL;
 BOOL    bounce_return_body     = TRUE;
+int     bounce_return_linesize_limit = 998;
 BOOL    bounce_return_message  = TRUE;
 int     bounce_return_size_limit = 100*1024;
 uschar *bounce_sender_authentication = NULL;

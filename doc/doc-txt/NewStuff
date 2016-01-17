@@ -31,6 +31,10 @@ Version 4.87
  7. New base64d and base64 expansion items (the existing str2b64 being a
     synonym of the latter).  Add support in base64 for certificates.
 
+ 8. New main configuration option "bounce_return_linesize_limit" to
+    avoid oversize bodies in bounces. The dafault value matches RFC
+    limits.
+
 
 Version 4.86
 ------------

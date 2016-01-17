@@ -250,6 +250,7 @@ extern uschar *bounce_message_file;    /* Template file */
 extern uschar *bounce_message_text;    /* One-liner */
 extern uschar *bounce_recipient;       /* When writing an errmsg */
 extern BOOL    bounce_return_body;     /* Include body in returned message */
+extern int     bounce_return_linesize_limit; /* Max line length in return */
 extern BOOL    bounce_return_message;  /* Include message in bounce */
 extern int     bounce_return_size_limit; /* Max amount to return */
 extern uschar *bounce_sender_authentication; /* AUTH address for bounces */

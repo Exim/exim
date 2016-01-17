@@ -1,0 +1,37 @@
+# Exim test configuration 0573
+
+exim_path = EXIM_PATH
+hide host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+trusted_users = CALLER
+bounce_return_linesize_limit = 20
+acl_smtp_rcpt = accept
+
+
+# ----- Routers -----
+
+begin routers
+
+my_main_router:
+  driver = accept
+  domains = myhost.test.ex
+  transport = t1
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

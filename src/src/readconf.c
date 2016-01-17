@@ -194,6 +194,7 @@ static optionlist optionlist_config[] = {
   { "bounce_message_file",      opt_stringptr,   &bounce_message_file },
   { "bounce_message_text",      opt_stringptr,   &bounce_message_text },
   { "bounce_return_body",       opt_bool,        &bounce_return_body },
+  { "bounce_return_linesize_limit", opt_mkint,   &bounce_return_linesize_limit },
   { "bounce_return_message",    opt_bool,        &bounce_return_message },
   { "bounce_return_size_limit", opt_mkint,       &bounce_return_size_limit },
   { "bounce_sender_authentication",opt_stringptr,&bounce_sender_authentication },
