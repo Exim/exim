@@ -1,0 +1,53 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for not_limited@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: fred@undeliverable.org
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: not_limited@myhost.test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  fred@undeliverable.org
+    Unrouteable address
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;fred@undeliverable.org
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <not_limited@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <not_limited@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for fred@undeliverable.org; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: not_limited@myhost.test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+msg with ok lines
+00000000001111111
+01234567890123456
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
