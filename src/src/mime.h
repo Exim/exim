@@ -35,7 +35,6 @@ static mime_header mime_header_list[] = {
   { US"content-description:",       20, &mime_content_description }
 };
 
-static int mime_header_list_size = sizeof(mime_header_list)/sizeof(mime_header);
 
 
 
@@ -44,14 +43,6 @@ typedef struct mime_parameter {
   int       namelen;
   uschar ** value;
 } mime_parameter;
-
-static mime_parameter mime_parameter_list[] = {
-  { US"name=",     5, &mime_filename },
-  { US"filename=", 9, &mime_filename },
-  { US"charset=",  8, &mime_charset  },
-  { US"boundary=", 9, &mime_boundary }
-};
-
 
 /* MIME Anomaly list */
 #define MIME_ANOMALY_BROKEN_BASE64    1

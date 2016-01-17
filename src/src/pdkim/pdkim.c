@@ -1067,7 +1067,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   if (ctx->mode == PDKIM_MODE_SIGN)
     {
     sig->bodyhash_len = sig->algo == PDKIM_ALGO_RSA_SHA1 ? 20:32;
-    sig->bodyhash = string_copyn(US bh, sig->bodyhash_len);
+    sig->bodyhash = CS string_copyn(US bh, sig->bodyhash_len);
 
     /* If bodylength limit is set, and we have received less bytes
        than the requested amount, effectively remove the limit tag. */

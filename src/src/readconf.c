@@ -4298,7 +4298,7 @@ for (i = config_lines; i; i = i->next)
       ;
 
     if (next - p > 1)
-      memmove(p+1, next, strlen(next)+1);
+      memmove(p+1, next, Ustrlen(next)+1);
 
     if (*next == '"' || *next == '\'' || *next == '$')
       break;

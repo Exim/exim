@@ -12,6 +12,15 @@
 
 FILE *mime_stream = NULL;
 uschar *mime_current_boundary = NULL;
+static int mime_header_list_size = sizeof(mime_header_list)/sizeof(mime_header);
+
+static mime_parameter mime_parameter_list[] = {
+  { US"name=",     5, &mime_filename },
+  { US"filename=", 9, &mime_filename },
+  { US"charset=",  8, &mime_charset  },
+  { US"boundary=", 9, &mime_boundary }
+};
+
 
 /*************************************************
 * set MIME anomaly level + text                  *
