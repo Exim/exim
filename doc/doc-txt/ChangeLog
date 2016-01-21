@@ -156,6 +156,14 @@ JH/36 Bug 1778: longstanding bug in memory use by the ${run } expansion: A fresh
 JH/37 Bug 1769: Permit a VRFY ACL to override the default 252 response,
       and to use the domains and local_parts ACL conditions.
 
+JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
+      incorrectly not doubled on cutthrough transmission, hence seen as a
+      body-termination at the receiving system - resulting in truncated mails.
+      Commonly the sender saw a TCP-level error, and retransmitted the nessage
+      via the normal store-and-forward channel. This could result in duplicates
+      received - but deduplicating mailstores were liable to retain only the
+      initial truncated version.
+
 
 Exim version 4.86
 -----------------
