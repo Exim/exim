@@ -32,6 +32,14 @@ JH/13 Bug 1708: avoid misaligned access in cached lookup.
 
 JH/09 Bug 1700: ignore space & tab embedded in base64 during decode.
 
+JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
+      incorrectly not doubled on cutthrough transmission, hence seen as a
+      body-termination at the receiving system - resulting in truncated mails.
+      Commonly the sender saw a TCP-level error, and retransmitted the nessage
+      via the normal store-and-forward channel. This could result in duplicates
+      received - but deduplicating mailstores were liable to retain only the
+      initial truncated version.
+
 
 Exim version 4.86
 -----------------
