@@ -6,6 +6,14 @@ Exim version 4.84+fixes
 Cherry-Picked from the master development branch
 for complaints please contact hs@schlittermann.de
 -------------------------------------------------
+JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
+      incorrectly not doubled on cutthrough transmission, hence seen as a
+      body-termination at the receiving system - resulting in truncated mails.
+      Commonly the sender saw a TCP-level error, and retransmitted the nessage
+      via the normal store-and-forward channel. This could result in duplicates
+      received - but deduplicating mailstores were liable to retain only the
+      initial truncated version.
+
 
 JH/05 Fix results-pipe from transport process.  Several recipients, combined
       with certificate use, exposed issues where response data items split
