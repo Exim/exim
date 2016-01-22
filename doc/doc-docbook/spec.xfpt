@@ -38020,7 +38020,7 @@ option is put into the &%$dkim_domain%& expansion variable.
 MANDATORY:
 This sets the key selector string. You can use the &%$dkim_domain%& expansion
 variable to look up a matching selector. The result is put in the expansion
-variable &%$dkim_selector%& which should be used in the &%dkim_private_key%&
+variable &%$dkim_selector%& which may be used in the &%dkim_private_key%&
 option along with &%$dkim_domain%&.
 
 .option dkim_private_key smtp string&!! unset
