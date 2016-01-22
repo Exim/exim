@@ -34,6 +34,8 @@
 #define PDKIM_ERR_RSA_SIGNING      -102
 #define PDKIM_ERR_LONG_LINE        -103
 #define PDKIM_ERR_BUFFER_TOO_SMALL -104
+#define PDKIM_SIGN_PRIVKEY_WRAP    -105
+#define PDKIM_SIGN_PRIVKEY_B64D    -106
 
 /* -------------------------------------------------------------------------- */
 /* Main/Extended verification status */
@@ -46,7 +48,8 @@
 #define PDKIM_VERIFY_FAIL_MESSAGE               2
 #define PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE 3
 #define PDKIM_VERIFY_INVALID_BUFFER_SIZE        4
-#define PDKIM_VERIFY_INVALID_PUBKEY_PARSING     5
+#define PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD   5
+#define PDKIM_VERIFY_INVALID_PUBKEY_IMPORT      6
 
 /* -------------------------------------------------------------------------- */
 /* Some parameter values */

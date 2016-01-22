@@ -146,7 +146,8 @@ pdkim_verify_ext_status_str(int ext_status)
     case PDKIM_VERIFY_FAIL_MESSAGE: return "PDKIM_VERIFY_FAIL_MESSAGE";
     case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE: return "PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE";
     case PDKIM_VERIFY_INVALID_BUFFER_SIZE: return "PDKIM_VERIFY_INVALID_BUFFER_SIZE";
-    case PDKIM_VERIFY_INVALID_PUBKEY_PARSING: return "PDKIM_VERIFY_INVALID_PUBKEY_PARSING";
+    case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD: return "PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD";
+    case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT: return "PDKIM_VERIFY_INVALID_PUBKEY_IMPORT";
     default: return "PDKIM_VERIFY_UNKNOWN";
   }
 }
@@ -1881,13 +1882,23 @@ while (sig)
     if (  !(p = Ustrstr(sig->rsa_privkey, "-----BEGIN RSA PRIVATE KEY-----"))
        || !(q = Ustrstr(p+=31, "-----END RSA PRIVATE KEY-----"))
        )
-      return PDKIM_ERR_RSA_PRIVKEY;
+      return PDKIM_SIGN_PRIVKEY_WRAP;
     *q = '\0';
-    if (  (len = b64decode(p, &p)) < 0
-       || !(rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len))
-       )
-      /*XXX todo: get errstring from library */
+    if ((len = b64decode(p, &p)) < 0)
+      {
+      DEBUG(D_acl) debug_printf("b64decode failed\n");
+      return PDKIM_SIGN_PRIVKEY_B64D;
+      }
+    if (!(rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len)))
+      {
+      DEBUG(D_acl)
+	{
+	char ssl_errstring[256];
+	ERR_error_string(ERR_get_error(), ssl_errstring);
+	debug_printf("d2i_RSAPrivateKey: %s\n", ssl_errstring);
+	}
       return PDKIM_ERR_RSA_PRIVKEY;
+      }
 
 #elif defined(RSA_GNUTLS)
 
@@ -2013,7 +2024,7 @@ while (sig)
     if (!(sig->pubkey = pdkim_parse_pubkey_record(ctx, dns_txt_reply)))
       {
       sig->verify_status =      PDKIM_VERIFY_INVALID;
-      sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
+      sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD;
 
       DEBUG(D_acl) debug_printf(
 	  " Error while parsing public key record\n"
@@ -2052,7 +2063,7 @@ while (sig)
 	}
 
       sig->verify_status =      PDKIM_VERIFY_INVALID;
-      sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
+      sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_IMPORT;
       goto NEXT_VERIFY;
       }
 

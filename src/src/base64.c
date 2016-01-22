@@ -129,7 +129,7 @@ compact loop is messy and would probably run more slowly.
 Arguments:
   code        points to the coded string, zero-terminated
   ptr         where to put the pointer to the result, which is in
-              dynamic store, and zero-terminated
+              allocated store, and zero-terminated
 
 Returns:      the number of bytes in the result,
               or -1 if the input was malformed
@@ -163,35 +163,50 @@ quantum this may decode to 1, 2, or 3 output bytes. */
 while ((x = *code++) != 0)
   {
   if (isspace(x)) continue;
+  /* debug_printf("b64d: '%c'\n", x); */
 
   if (x > 127 || (x = dec64table[x]) == 255) return -1;
 
   while (isspace(y = *code++)) ;
+  /* debug_printf("b64d: '%c'\n", y); */
   if (y == 0 || (y = dec64table[y]) == 255)
     return -1;
 
   *result++ = (x << 2) | (y >> 4);
+  /* debug_printf("b64d:      -> %02x\n", result[-1]); */
 
   while (isspace(x = *code++)) ;
-  if (x == '=')
+  /* debug_printf("b64d: '%c'\n", x); */
+  if (x == '=')		/* endmarker, but there should be another */
     {
     while (isspace(x = *code++)) ;
-    if (x != '=' || *code != 0) return -1;
+    /* debug_printf("b64d: '%c'\n", x); */
+    if (x != '=') return -1;
+    while (isspace(y = *code++)) ;
+    if (y != 0) return -1;
+    /* debug_printf("b64d: DONE\n"); */
+    break;
     }
   else
     {
     if (x > 127 || (x = dec64table[x]) == 255) return -1;
     *result++ = (y << 4) | (x >> 2);
+    /* debug_printf("b64d:      -> %02x\n", result[-1]); */
 
     while (isspace(y = *code++)) ;
+    /* debug_printf("b64d: '%c'\n", y); */
     if (y == '=')
       {
-      if (*code != 0) return -1;
+      while (isspace(y = *code++)) ;
+      if (y != 0) return -1;
+      /* debug_printf("b64d: DONE\n"); */
+      break;
       }
     else
       {
       if (y > 127 || (y = dec64table[y]) == 255) return -1;
       *result++ = (x << 6) | y;
+      /* debug_printf("b64d:      -> %02x\n", result[-1]); */
       }
     }
   }
@@ -200,23 +215,6 @@ while ((x = *code++) != 0)
 return result - *ptr;
 }
 
-
-/*************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************
- *************************************************/
 
 /*************************************************
 *          Encode byte-string in base 64         *

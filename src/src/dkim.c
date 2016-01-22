@@ -158,7 +158,8 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 			"overlong public key record]");
 	  break;
 
-	case PDKIM_VERIFY_INVALID_PUBKEY_PARSING:
+	case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
+	case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
 	  logmsg = string_append(logmsg, &size, &ptr, 1,
 		       "syntax error in public key record]");
 	  break;
@@ -395,7 +396,8 @@ switch (what)
       {
       case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
 						return US"pubkey_unavailable";
-      case PDKIM_VERIFY_INVALID_PUBKEY_PARSING:	return US"pubkey_syntax";
+      case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:return US"pubkey_dns_syntax";
+      case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:	return US"pubkey_der_syntax";
       case PDKIM_VERIFY_FAIL_BODY:		return US"bodyhash_mismatch";
       case PDKIM_VERIFY_FAIL_MESSAGE:		return US"signature_incorrect";
       }

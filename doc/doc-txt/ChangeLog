@@ -164,6 +164,9 @@ JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
       received - but deduplicating mailstores were liable to retain only the
       initial truncated version.
 
+JH/39 Bug 1781: Fix use of private-keys having trailing '=' in the base-64.
+
+
 
 Exim version 4.86
 -----------------
