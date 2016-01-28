@@ -76,6 +76,7 @@ extern int     check_host(void *, uschar *, uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_uid(uschar **, uschar **, int, uid_t *, gid_t *,
                  int *, int *, uschar *, BOOL);
+extern BOOL    cleanup_environment(void);
 extern uschar *cutthrough_finaldot(void);
 extern BOOL    cutthrough_flush_send(void);
 extern BOOL    cutthrough_headers_send(void);
@@ -350,6 +351,7 @@ extern int     stdin_ungetc(int);
 extern uschar *string_append(uschar *, int *, int *, int, ...);
 extern uschar *string_base62(unsigned long int);
 extern uschar *string_cat(uschar *, int *, int *, const uschar *, int);
+extern int     string_compare_by_pointer(const uschar **, const uschar **);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(uschar *);
 extern uschar *string_copylc(uschar *);

@@ -137,6 +137,7 @@ extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 /* General global variables */
 
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
+extern uschar *add_environment;        /* List of environment variables to add */
 extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
@@ -470,6 +471,7 @@ extern uschar *iterate_item;           /* Item from iterate list */
 
 extern int     journal_fd;             /* Fd for journal file */
 
+extern uschar *keep_environment;       /* Whitelist for environment variables */
 extern int     keep_malformed;         /* Time to keep malformed messages */
 
 extern uschar *eldap_dn;               /* Where LDAP DNs are left */

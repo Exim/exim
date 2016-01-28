@@ -3,6 +3,7 @@
 LDAPSERVERS=
 
 exim_path = EXIM_PATH
+keep_environment = LDAPTLS_REQCERT
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
 rfc1413_query_timeout = 0s
