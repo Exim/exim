@@ -133,6 +133,11 @@ expanding: -oMt  sender_ident = $sender_ident
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+PATH in keep_environment? no (end of list)
+PWD in keep_environment? no (end of list)
+SHELL in keep_environment? no (end of list)
+TERM in keep_environment? no (end of list)
+USER in keep_environment? yes (matched "USER")
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -193,6 +198,11 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+PATH in keep_environment? no (end of list)
+PWD in keep_environment? no (end of list)
+SHELL in keep_environment? no (end of list)
+TERM in keep_environment? no (end of list)
+USER in keep_environment? yes (matched "USER")
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -360,6 +370,11 @@ LOG: 10HmbD-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 Exim version x.yz ....
 changed uid/gid: -C, -D, -be or -bf forces real uid
   uid=CALLER_UID gid=CALLER_GID pid=pppp
+PATH in keep_environment? no (end of list)
+PWD in keep_environment? no (end of list)
+SHELL in keep_environment? no (end of list)
+TERM in keep_environment? no (end of list)
+USER in keep_environment? yes (matched "USER")
 configuration file is TESTSUITE/test-config
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME

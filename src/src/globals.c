@@ -309,6 +309,7 @@ BOOL    active_local_from_check = FALSE;
 BOOL    active_local_sender_retain = FALSE;
 int     body_8bitmime = 0;
 BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
+uschar *add_environment        = NULL;
 address_item  *addr_duplicate  = NULL;
 
 address_item address_defaults = {
@@ -760,6 +761,8 @@ BOOL    is_inetd               = FALSE;
 uschar *iterate_item           = NULL;
 
 int     journal_fd             = -1;
+
+uschar *keep_environment       = NULL;
 
 int     keep_malformed         = 4*24*60*60;    /* 4 days */
 

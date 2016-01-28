@@ -623,7 +623,7 @@ bad:
     {
     extern char ** environ;
     uschar ** p;
-    for (p = USS environ; *p != NULL; p++)
+    if (environ) for (p = USS environ; *p != NULL; p++)
       if (Ustrncmp(*p, "EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK", 42) == 0)
 	{
 	DEBUG(D_tls) debug_printf("Supplying known bad OCSP response\n");
