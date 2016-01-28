@@ -5,6 +5,7 @@
 ORDER=
 
 exim_path = EXIM_PATH
+keep_environment =
 primary_hostname = myhost.test.ex
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog

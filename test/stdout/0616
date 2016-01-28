@@ -1,0 +1,19 @@
+keep_environment = ^FOO\d : BAR
+add_environment = ADDED1=added1 : ADDED2=added2
+ADDED1=added1
+ADDED2=added2
+BAR=bar
+FOO1=foo1
+FOO2=foo2
+ADDED1
+ADDED2
+BAR
+FOO1
+FOO2
+Environment visible in Perl:
+ADDED1=added1
+ADDED2=added2
+BAR=bar
+FOO1=foo1
+FOO2=foo2
+

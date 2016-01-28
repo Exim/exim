@@ -101,7 +101,7 @@ for f in dbfunctions.h dbstuff.h exim.h functions.h globals.h local_scan.h \
   exim_dbutil.c exim_lock.c expand.c filter.c filtertest.c globals.c \
   header.c host.c ip.c log.c lss.c match.c moan.c parse.c perl.c queue.c \
   rda.c readconf.c receive.c retry.c rewrite.c rfc2047.c route.c search.c \
-  setenv.c \
+  setenv.c environment.c \
   sieve.c smtp_in.c smtp_out.c spool_in.c spool_out.c std-crypto.c store.c \
   string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-gnu.c tls-openssl.c \
   tod.c transport.c tree.c verify.c version.c dkim.c dkim.h dmarc.c dmarc.h \

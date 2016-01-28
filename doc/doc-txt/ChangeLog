@@ -173,6 +173,7 @@ JH/41 Bug 1792: Fix selection of headers to sign for DKIM: bottom-up.  While
 
 JH/42 Bug 1796: Fix error logged on a malware scanner connection failure.
 
+HS/04 Add support for keep_environment and add_environment options.
 
 
 Exim version 4.86

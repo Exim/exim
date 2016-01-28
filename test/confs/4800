@@ -1,4 +1,7 @@
+# exim test configuration 4800
+exim_path = EXIM_PATH
 tls_advertise_hosts =
+keep_environment =
 
 begin routers
   dnslookup:

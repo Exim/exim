@@ -349,7 +349,7 @@ $spid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 # that are specific to certain file types, though there are also some of those
 # inline too.
 
-while(<IN>)
+LINE: while(<IN>)
   {
 RESET_AFTER_EXTRA_LINE_READ:
   # Custom munges
@@ -563,6 +563,25 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # signature algorithm names
   s/RSA-SHA1/RSA-SHA/;
+
+  # -d produces a list of environement variables as they are checked if they exist in the
+  # in the environment. Unfortunately this list isn't always in the same order. For now we
+  # just remove this list
+  #
+  if (/^\w+ in keep_environment/)
+    {
+    my @lines = $_;
+    while (<IN>)
+      {
+      if (/^\w+ in keep_environment/)
+        {
+        push @lines, $_;
+        next;
+        }
+      print MUNGED sort grep { !/^(SHLVL|_) / } @lines;
+      redo LINE;
+      }
+    }
 
 
   # ======== Caller's login, uid, gid, home, gecos ========
@@ -1686,6 +1705,8 @@ my($commandnameref) = $_[3];
 my($aux_info) = $_[4];
 my($yield) = 1;
 
+our %ENV = map { $_ => $ENV{$_} } grep { /^(?:USER|SHELL|PATH|TERM|EXIM_TEST_.*)$/ } keys %ENV;
+
 if (/^(\d+)\s*$/)                # Handle unusual return code
   {
   my($r) = $_[2];
@@ -2089,7 +2110,7 @@ if (/^client/ || /^(sudo\s+)?perl\b/)
 # not drop privilege when -C and -D options are present. To run the exim
 # command as root, we use sudo.
 
-elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+)?\s+(.*)$/)
+elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+)?\s+(.*)$/)
   {
   $args = $6;
   my($envset) = (defined $1)? $1      : "";

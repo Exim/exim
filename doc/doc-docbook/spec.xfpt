@@ -3151,6 +3151,11 @@ using one of the words &%router_list%&, &%transport_list%&, or
 settings can be obtained by using &%routers%&, &%transports%&, or
 &%authenticators%&.
 
+.cindex "environment"
+If &%environment%& is given as an argument, the set of environment
+variables is output, line by line. Using the &%-n%& flag supresses the value of the
+variables.
+
 .cindex "options" "macro &-- extracting"
 If invoked by an admin user, then &%macro%&, &%macro_list%& and &%macros%&
 are available, similarly to the drivers.  Because macros are sometimes used
@@ -3481,6 +3486,8 @@ compile-time setting. Usually, the list will consist of just a single file
 name, but it can be a colon-separated list of names. In this case, the first
 file that exists is used. Failure to open an existing file stops Exim from
 proceeding any further along the list, and an error is generated.
+
+The file names need to be absolute names.
 
 When this option is used by a caller other than root, and the list is different
 from the compiled-in list, Exim gives up its root privilege immediately, and
@@ -7739,7 +7746,7 @@ domain, host, address and local part lists.
 
 
 
-.section "Expansion of lists" "SECID75"
+.section "Expansion of lists" "SECTlistexpand"
 .cindex "expansion" "of lists"
 Each list is expanded as a single string before it is used. The result of
 expansion must be a list, possibly containing empty items, which is split up
@@ -13947,6 +13954,14 @@ received. See chapter &<<CHAPACL>>& for further details.
 This option defines the ACL that is run when an SMTP VRFY command is
 received. See chapter &<<CHAPACL>>& for further details.
 
+.new
+.option add_environment main "string list" empty
+.cindex "environment" "inherited"
+This option allows to set individual environment variables that the
+currently linked libraries and programs in child processes use. The
+default list is empty,
+.wen
+
 .option admin_groups main "string list&!!" unset
 .cindex "admin user"
 This option is expanded just once, at the start of Exim's processing. If the
@@ -15034,6 +15049,30 @@ process rather than a remote host, and is using &%-bs%& to inject the messages,
 .option ignore_fromline_local main boolean false
 See &%ignore_fromline_hosts%& above.
 
+.new
+.option keep_environment main "string list" unset
+.cindex "environment" "inherited"
+This option contains a string list of environment variables to keep.
+You have to trust these variables or you have to be sure that
+these variables do not impose any security risk. Keep in mind that
+during the startup phase Exim is running with an effective UID 0 in most
+installations. As the default value is an empty list, the default
+environment for using libraries, running embedded Perl code, or running
+external binaries is empty, and does not not even contain PATH or HOME.
+
+Actually the list is interpreted as a list of patterns
+(&<<SECTlistexpand>>&), except that it is not expanded first.
+
+WARNING: Macro substitution is still done first, so having a macro
+FOO and having FOO_HOME in your &%keep_environment%& option may have
+unexpected results. You may work around this using a regular expression
+that does not match the macro name: ^[F]OO_HOME$.
+
+Current versions of Exim issue a warning during startupif you do not mention
+&%keep_environment%& or &%add_environment%& in your runtime configuration
+file.
+.wen
+
 
 .option keep_malformed main time 4d
 This option specifies the length of time to keep messages whose spool files
@@ -16071,6 +16110,12 @@ not reject unqualified addresses in headers that contain sender addresses, but
 it qualifies them only if the message came from a host that matches
 &%sender_unqualified_hosts%&, or if the message was submitted locally (not
 using TCP/IP), and the &%-bnq%& option was not set.
+
+.option set_environment main "string list" empty
+.cindex "environment"
+This option allows to set individual environment variables that the
+currently linked libraries and programs in child processes use. The
+default list is empty,
 
 
 .option slow_lookup_log main integer 0

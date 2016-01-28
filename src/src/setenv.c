@@ -34,6 +34,9 @@ if (!name)
   return -1;
   }
 
+if (!environ)
+  return 0;
+
 for (end = name; *end != '=' && *end; ) end++;
 len = end - name;
   

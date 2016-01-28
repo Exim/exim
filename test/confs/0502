@@ -3,6 +3,7 @@
 LAST=accept message = Your message here
 
 exim_path = EXIM_PATH
+keep_environment =
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
 spool_directory = DIR/spool

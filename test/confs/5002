@@ -1,6 +1,7 @@
 # Exim test configuration 5002
 
 exim_path = EXIM_PATH
+keep_environment =
 primary_hostname = myhost.test.ex
 host_lookup_order = bydns
 spool_directory = DIR/spool

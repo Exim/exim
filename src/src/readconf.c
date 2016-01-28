@@ -178,6 +178,7 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_starttls",        opt_stringptr,   &acl_smtp_starttls },
 #endif
   { "acl_smtp_vrfy",            opt_stringptr,   &acl_smtp_vrfy },
+  { "add_environment",          opt_stringptr,   &add_environment },
   { "admin_groups",             opt_gidlist,     &admin_groups },
   { "allow_domain_literals",    opt_bool,        &allow_domain_literals },
   { "allow_mx_to_ip",           opt_bool,        &allow_mx_to_ip },
@@ -296,6 +297,7 @@ static optionlist optionlist_config[] = {
   { "ignore_bounce_errors_after", opt_time,      &ignore_bounce_errors_after },
   { "ignore_fromline_hosts",    opt_stringptr,   &ignore_fromline_hosts },
   { "ignore_fromline_local",    opt_bool,        &ignore_fromline_local },
+  { "keep_environment",         opt_stringptr,   &keep_environment },
   { "keep_malformed",           opt_time,        &keep_malformed },
 #ifdef LOOKUP_LDAP
   { "ldap_ca_cert_dir",         opt_stringptr,   &eldap_ca_cert_dir },
@@ -2549,6 +2551,7 @@ second argument is NULL. There are some special values:
   +name              print a named list item
   local_scan         print the local_scan options
   config             print the configuration as it is parsed
+  environment        print the used execution environment
 
 If the second argument is not NULL, it must be one of "router", "transport",
 "authenticator" or "macro" in which case the first argument identifies the
@@ -2695,6 +2698,25 @@ if (type == NULL)
     type = US"macro";
     name = NULL;
     names_only = TRUE;
+    }
+
+  else if (Ustrcmp(name, "environment") == 0)
+    {
+    if (environ)
+      {
+      uschar **p;
+      size_t n;
+      for (p = USS environ; *p; p++) ;
+      n = p - USS environ;
+      qsort(environ, p - USS environ, sizeof(*p), (__compar_fn_t) string_compare_by_pointer);
+
+      for (p = USS environ; *p; p++)
+        {
+        if (no_labels) *(Ustrchr(*p, '=')) = '\0';
+        puts(*p);
+        }
+      }
+    return;
     }
 
   else
@@ -3022,6 +3044,15 @@ const uschar *list = config_main_filelist;
 while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
        != NULL)
   {
+
+  /* To avoid confusion: Exim changes to / at the very beginning and
+   * and to $spool_directory later. */
+  if (filename[0] != '/')
+    {
+    fprintf(stderr, "-C %s: only absolute names are allowed\n", filename);
+    exit(EXIT_FAILURE);
+  }
+
   /* Cut out all the fancy processing unless specifically wanted */
 
   #if defined(CONFIGURE_FILE_USE_NODE) || defined(CONFIGURE_FILE_USE_EUID)
@@ -3467,6 +3498,11 @@ if (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto)
       " gnutls_require_kx, gnutls_require_mac and gnutls_require_protocols"
       " are obsolete\n");
 #endif	/*SUPPORT_TLS*/
+
+if ((!add_environment || *add_environment == '\0') && !keep_environment)
+  log_write(0, LOG_MAIN,
+      "WARNING: purging the environment.\n"
+      " Suggested action: use keep_environment and add_environment.\n");
 }
 
 
