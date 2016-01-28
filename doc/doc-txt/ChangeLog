@@ -1,6 +1,7 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+HS/04 Add support for keep_environment and add_environment options.
 Exim version 4.80.1
 -------------------
 

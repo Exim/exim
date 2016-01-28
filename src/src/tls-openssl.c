@@ -475,6 +475,7 @@ if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX
   {
   DEBUG(D_tls) debug_printf("OCSP status invalid times.\n");
   return;
+    if (environ) for (p = USS environ; *p != NULL; p++)
   }
 
 cbinfo->ocsp_response = resp;

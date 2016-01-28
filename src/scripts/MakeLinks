@@ -197,6 +197,7 @@ ln -s ../src/dns.c             dns.c
 ln -s ../src/drtables.c        drtables.c
 ln -s ../src/dummies.c         dummies.c
 ln -s ../src/enq.c             enq.c
+ln -s ../src/environment.c     environment.c
 ln -s ../src/exim.c            exim.c
 ln -s ../src/exim_dbmbuild.c   exim_dbmbuild.c
 ln -s ../src/exim_dbutil.c     exim_dbutil.c

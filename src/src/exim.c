@@ -3493,7 +3493,18 @@ init_lookup_list();
 is a failure. It leaves the configuration file open so that the subsequent
 configuration data for delivery can be read if needed. */
 
+/* To be safe: change the working directory to /. */
+if (Uchdir("/") < 0)
+  {
+    perror("exim: chdir `/': ");
+    exit(EXIT_FAILURE);
+  }
+
 readconf_main();
+
+if (cleanup_environment() == FALSE)
+  log_write(0, LOG_PANIC_DIE, "Can't cleanup environment");
+
 
 /* Handle the decoding of logging options. */
 
@@ -3562,7 +3573,7 @@ TMPDIR macro, if this macro is defined. */
 #ifdef TMPDIR
   {
   uschar **p;
-  for (p = USS environ; *p != NULL; p++)
+  if (environ) for (p = USS environ; *p != NULL; p++)
     {
     if (Ustrncmp(*p, "TMPDIR=", 7) == 0 &&
         Ustrcmp(*p+7, TMPDIR) != 0)
@@ -3602,10 +3613,10 @@ else
     uschar **new;
     uschar **newp;
     int count = 0;
-    while (*p++ != NULL) count++;
+    if (environ) while (*p++ != NULL) count++;
     if (envtz == NULL) count++;
     newp = new = malloc(sizeof(uschar *) * (count + 1));
-    for (p = USS environ; *p != NULL; p++)
+    if (environ) for (p = USS environ; *p != NULL; p++)
       {
       if (Ustrncmp(*p, "TZ=", 3) == 0) continue;
       *newp++ = *p;
@@ -4234,7 +4245,8 @@ if (list_options)
           (Ustrcmp(argv[i], "router") == 0 ||
            Ustrcmp(argv[i], "transport") == 0 ||
            Ustrcmp(argv[i], "authenticator") == 0 ||
-           Ustrcmp(argv[i], "macro") == 0))
+           Ustrcmp(argv[i], "macro") == 0 ||
+           Ustrcmp(argv[i], "environment") == 0))
         {
         readconf_print(argv[i+1], argv[i]);
         i++;
