@@ -2,6 +2,7 @@ Change log file for Exim from version 4.21
 -------------------------------------------
 
 
+HS/04 Add support for keep_environment and add_environment options.
 Exim version 4.86
 -----------------
 JH/01 Bug 1545: The smtp transport option "retry_include_ip_address" is now

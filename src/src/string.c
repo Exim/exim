@@ -1706,6 +1706,17 @@ return yield;
 #endif  /* COMPILE_UTILITY */
 
 
+#ifndef COMPILE_UTILITY
+/* qsort(3), currently used to sort the environment variables
+for -bP environment output, needs a function to compare two pointers to string
+pointers. Here it is. */
+
+int
+string_compare_by_pointer(const uschar **a, const uschar **b)
+{
+return Ustrcmp(CUS *a, CUS *b);
+}
+#endif /* COMPILE_UTILITY */
 
 
 

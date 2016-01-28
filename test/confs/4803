@@ -1,3 +1,6 @@
+# exim test configuration 4803
+exim_path = EXIM_PATH
+keep_environment =
 dns_trust_aa = *
 
 begin routers

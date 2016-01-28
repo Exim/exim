@@ -7,6 +7,7 @@ IP3=V4NET.0.0.3
 SERVER=
 
 exim_path = EXIM_PATH
+keep_environment =
 host_lookup_order = bydns
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/SERVER%slog

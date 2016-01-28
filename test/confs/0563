@@ -1,7 +1,9 @@
 # Exim test configuration 0563
 
+exim_path = EXIM_PATH
 qualify_domain = testexim.test.ex
 localpartlist aliases = joe:sam:tom
+keep_environment =
 
 begin routers
 

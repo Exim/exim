@@ -4,6 +4,7 @@ LENCHECK=
 PTBC=
 
 exim_path = EXIM_PATH
+keep_environment = USER
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
 spool_directory = DIR/spool
