@@ -9677,7 +9677,8 @@ ${readsocket{inet:[::1]:1234}{request string}}
 Only a single host name may be given, but if looking it up yields more than
 one IP address, they are each tried in turn until a connection is made. For
 both kinds of socket, Exim makes a connection, writes the request string
-(unless it is an empty string) and reads from the socket until an end-of-file
+unless it is an empty string; and no terminating NUL is ever sent)
+and reads from the socket until an end-of-file
 is read. A timeout of 5 seconds is applied. Additional, optional arguments
 extend what can be done. Firstly, you can vary the timeout. For example:
 .code
