@@ -2,6 +2,7 @@
 # udpsend
 
 exim_path = EXIM_PATH
+keep_environment =
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 queue_only

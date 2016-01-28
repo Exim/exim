@@ -313,6 +313,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
+        environment.o \
         $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
@@ -549,6 +550,7 @@ dns.o:           $(HDRS) dns.c
 enq.o:           $(HDRS) enq.c
 exim.o:          $(HDRS) exim.c
 expand.o:        $(HDRS) expand.c
+environment.o:   $(HDRS) environment.c
 filter.o:        $(HDRS) filter.c
 filtertest.o:    $(HDRS) filtertest.c
 globals.o:       $(HDRS) globals.c
