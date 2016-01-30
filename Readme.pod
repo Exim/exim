@@ -37,12 +37,12 @@ Currently this is all done using Bugzilla at L<http://bugs.exim.org/>
 
 =head2 Mailing List
 
-Development issues are normally discussed on the exim-dev Mailing list
+Development issues are normally discussed on the exim-dev mailing list
 - see L<http://www.exim.org/maillist.html>
 
 =head2 Exim Release Process
 
-Some documentation on the realse process can be found at
+Some documentation on the release process can be found at
 L<http://wiki.exim.org/EximRelease>.
 
 =head2 General Exim Information
