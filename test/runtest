@@ -86,13 +86,1395 @@ $ENV{'LC_ALL'} = 'C';
 $ENV{USER} = getpwuid($>)
   if not exists $ENV{USER};
 
+
+my $TEST_STATE = {};
+
+
 ###############################################################################
 ###############################################################################
 
-# Define a number of subroutines
+# Here beginneth the Main Program ...
 
 ###############################################################################
 ###############################################################################
+
+autoflush STDOUT 1;
+print "Exim tester $testversion\n";
+
+# extend the PATH with .../sbin
+# we map all (.../bin) to (.../sbin:.../bin)
+$ENV{PATH} = do {
+    my %seen = map { $_, 1 } split /:/, $ENV{PATH};
+    join ':' => map { m{(.*)/bin$} ? ( $seen{"$1/sbin"} ? () : ("$1/sbin"), $_ ) : ($_) }
+      split /:/, $ENV{PATH};
+};
+
+##################################################
+#      Some tests check created file modes       #
+##################################################
+
+umask 022;
+
+##################################################
+#       Check for the "less" command             #
+##################################################
+
+$more = "more" if system("which less >/dev/null 2>&1") != 0;
+
+##################################################
+#        Check for sudo access to root           #
+##################################################
+
+print "You need to have sudo access to root to run these tests. Checking ...\n";
+if ( system("sudo date >/dev/null") != 0 ) {
+    die "** Test for sudo failed: testing abandoned.\n";
+}
+else {
+    print "Test for sudo OK\n";
+}
+
+##################################################
+#      See if an Exim binary has been given      #
+##################################################
+
+# If the first character of the first argument is '/', the argument is taken
+# as the path to the binary. If the first argument does not start with a
+# '/' but exists in the file system, it's assumed to be the Exim binary.
+
+$parm_exim = ( @ARGV > 0 && ( -x $ARGV[0] or $ARGV[0] =~ m?^/? ) ) ? Cwd::abs_path( shift @ARGV ) : "";
+print "Exim binary is $parm_exim\n" if $parm_exim ne "";
+
+##################################################
+# Sort out options and which tests are to be run #
+##################################################
+
+# There are a few possible options for the test script itself; after these, any
+# options are passed on to Exim calls within the tests. Typically, this is used
+# to turn on Exim debugging while setting up a test.
+
+while ( @ARGV > 0 && $ARGV[0] =~ /^-/ ) {
+    my ($arg) = shift @ARGV;
+    if ( $optargs eq "" ) {
+        if ( $arg eq "-DEBUG" ) { $debug = 1; $cr = "\n"; next; }
+        if ( $arg eq "-DIFF" ) { $cf = "diff -u"; next; }
+        if ( $arg eq "-CONTINUE" ) {
+            $force_continue = 1;
+            $more           = "cat";
+            next;
+        }
+        if ( $arg eq "-UPDATE" )     { $force_update = 1;     next; }
+        if ( $arg eq "-NOIPV4" )     { $have_ipv4    = 0;     next; }
+        if ( $arg eq "-NOIPV6" )     { $have_ipv6    = 0;     next; }
+        if ( $arg eq "-KEEP" )       { $save_output  = 1;     next; }
+        if ( $arg =~ /^-FLAVOU?R$/ ) { $flavour      = shift; next; }
+    }
+    $optargs .= " $arg";
+}
+
+# Any subsequent arguments are a range of test numbers.
+
+if ( @ARGV > 0 ) {
+    $test_end = $test_start = $ARGV[0];
+    $test_end = $ARGV[1] if ( @ARGV > 1 );
+    $test_end = ( $test_start >= 9000 ) ? $test_special_top : $test_top
+      if $test_end eq "+";
+    die "** Test numbers out of order\n" if ( $test_end < $test_start );
+}
+
+##################################################
+#      Make the command's directory current      #
+##################################################
+
+# After doing so, we find its absolute path name.
+
+$cwd = $0;
+$cwd = '.' if ( $cwd !~ s|/[^/]+$|| );
+chdir($cwd) || die "** Failed to chdir to \"$cwd\": $!\n";
+$parm_cwd = Cwd::getcwd();
+
+##################################################
+#     Search for an Exim binary to test          #
+##################################################
+
+# If an Exim binary hasn't been provided, try to find one. We can handle the
+# case where exim-testsuite is installed alongside Exim source directories. For
+# PH's private convenience, if there's a directory just called "exim4", that
+# takes precedence; otherwise exim-snapshot takes precedence over any numbered
+# releases.
+
+if ( $parm_exim eq "" ) {
+    my ($use_srcdir) = "";
+
+    opendir DIR, ".." || die "** Failed to opendir \"..\": $!\n";
+    while ( $f = readdir(DIR) ) {
+        my ($srcdir);
+
+        # Try this directory if it is "exim4" or if it is exim-snapshot or exim-n.m
+        # possibly followed by -RCx where n.m is greater than any previously tried
+        # directory. Thus, we should choose the highest version of Exim that has
+        # been compiled.
+
+        if ( $f eq "exim4" || $f eq "exim-snapshot" || $f eq 'src' ) { $srcdir = $f; }
+        else {
+            $srcdir = $f
+              if ( $f =~ /^exim-\d+\.\d+(-RC\d+)?$/ && $f gt $use_srcdir );
+        }
+
+        # Look for a build directory with a binary in it. If we find a binary,
+        # accept this source directory.
+
+        if ($srcdir) {
+            opendir SRCDIR, "../$srcdir"
+              || die "** Failed to opendir \"$cwd/../$srcdir\": $!\n";
+            while ( $f = readdir(SRCDIR) ) {
+                if ( $f =~ /^build-/ && -e "../$srcdir/$f/exim" ) {
+                    $use_srcdir = $srcdir;
+                    $parm_exim  = "$cwd/../$srcdir/$f/exim";
+                    $parm_exim =~ s'/[^/]+/\.\./'/';
+                    last;
+                }
+            }
+            closedir(SRCDIR);
+        }
+
+        # If we have found "exim4" or "exim-snapshot", that takes precedence.
+        # Otherwise, continue to see if there's a later version.
+
+        last if $use_srcdir eq "exim4" || $use_srcdir eq "exim-snapshot";
+    }
+    closedir(DIR);
+    print "Exim binary found in $parm_exim\n" if $parm_exim ne "";
+}
+
+# If $parm_exim is still empty, ask the caller
+
+if ( $parm_exim eq "" ) {
+    print "** Did not find an Exim binary to test\n";
+    for ( $i = 0; $i < 5; $i++ ) {
+        my ($trybin);
+        print "** Enter pathname for Exim binary: ";
+        chomp( $trybin = <STDIN> );
+        if ( -e $trybin ) {
+            $parm_exim = $trybin;
+            last;
+        }
+        else {
+            print "** $trybin does not exist\n";
+        }
+    }
+    die "** Too many tries\n" if $parm_exim eq "";
+}
+
+##################################################
+#          Find what is in the binary            #
+##################################################
+
+# deal with TRUSTED_CONFIG_LIST restrictions
+unlink("$parm_cwd/test-config") if -e "$parm_cwd/test-config";
+open( IN, "$parm_cwd/confs/0000" )
+  || tests_exit( -1, "Couldn't open $parm_cwd/confs/0000: $!\n" );
+open( OUT, ">test-config" )
+  || tests_exit( -1, "Couldn't open test-config: $!\n" );
+while (<IN>) { print OUT; }
+close(IN);
+close(OUT);
+
+print("Probing with config file: $parm_cwd/test-config\n");
+open( EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " . "-bP exim_user exim_group 2>&1|" )
+  || die "** Cannot run $parm_exim: $!\n";
+while (<EXIMINFO>) {
+    $parm_eximuser            = $1 if /^exim_user = (.*)$/;
+    $parm_eximgroup           = $1 if /^exim_group = (.*)$/;
+    $parm_trusted_config_list = $1 if /^TRUSTED_CONFIG_LIST:.*?"(.*?)"$/;
+    print "$_" if /wrong owner/;
+}
+close(EXIMINFO);
+
+if ( defined $parm_eximuser ) {
+    if   ( $parm_eximuser =~ /^\d+$/ ) { $parm_exim_uid = $parm_eximuser; }
+    else                               { $parm_exim_uid = getpwnam($parm_eximuser); }
+}
+else {
+    print "Unable to extract exim_user from binary.\n";
+    print "Check if Exim refused to run; if so, consider:\n";
+    print "  TRUSTED_CONFIG_LIST ALT_CONFIG_PREFIX WHITELIST_D_MACROS\n";
+    die "Failing to get information from binary.\n";
+}
+
+if ( defined $parm_eximgroup ) {
+    if   ( $parm_eximgroup =~ /^\d+$/ ) { $parm_exim_gid = $parm_eximgroup; }
+    else                                { $parm_exim_gid = getgrnam($parm_eximgroup); }
+}
+
+# check the permissions on the TRUSTED_CONFIG_LIST
+if ( defined $parm_trusted_config_list ) {
+    die "TRUSTED_CONFIG_LIST: $parm_trusted_config_list: $!\n"
+      if not -f $parm_trusted_config_list;
+
+    die "TRUSTED_CONFIG_LIST $parm_trusted_config_list must not be world writable!\n"
+      if 02 & ( stat _ )[2];
+
+    die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list %d is group writable, but not owned by group '%s' or '%s'.\n",
+      ( stat _ )[1],
+      scalar( getgrgid 0 ), scalar( getgrgid $> )
+      if ( 020 & ( stat _ )[2] )
+      and not( ( stat _ )[5] == $> or ( stat _ )[5] == 0 );
+
+    die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list is not owned by user '%s' or '%s'.\n",
+      scalar( getpwuid 0 ), scalar( getpwuid $> )
+      if ( not( -o _ or ( stat _ )[4] == 0 ) );
+
+    open( TCL, $parm_trusted_config_list ) or die "Can't open $parm_trusted_config_list: $!\n";
+    my $test_config = getcwd() . '/test-config';
+    die "Can't find '$test_config' in TRUSTED_CONFIG_LIST $parm_trusted_config_list."
+      if not grep { /^$test_config$/ } <TCL>;
+}
+else {
+    die "Unable to check the TRUSTED_CONFIG_LIST, seems to be empty?\n";
+}
+
+open( EXIMINFO, "$parm_exim -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |" )
+  || die "** Cannot run $parm_exim: $!\n";
+
+print "-" x 78, "\n";
+
+while (<EXIMINFO>) {
+    my (@temp);
+
+    if (/^Exim version/) { print; }
+
+    elsif (/^Size of off_t: (\d+)/) {
+        print;
+        $have_largefiles = 1 if $1 > 4;
+        die "** Size of off_t > 32 which seems improbable, not running tests\n"
+          if ( $1 > 32 );
+    }
+
+    elsif (/^Support for: (.*)/) {
+        print;
+        @temp = split /(\s+)/, $1;
+        push( @temp, ' ' );
+        %parm_support = @temp;
+    }
+
+    elsif (/^Lookups \(built-in\): (.*)/) {
+        print;
+        @temp = split /(\s+)/, $1;
+        push( @temp, ' ' );
+        %parm_lookups = @temp;
+    }
+
+    elsif (/^Authenticators: (.*)/) {
+        print;
+        @temp = split /(\s+)/, $1;
+        push( @temp, ' ' );
+        %parm_authenticators = @temp;
+    }
+
+    elsif (/^Routers: (.*)/) {
+        print;
+        @temp = split /(\s+)/, $1;
+        push( @temp, ' ' );
+        %parm_routers = @temp;
+    }
+
+    # Some transports have options, e.g. appendfile/maildir. For those, ensure
+    # that the basic transport name is set, and then the name with each of the
+    # options.
+
+    elsif (/^Transports: (.*)/) {
+        print;
+        @temp = split /(\s+)/, $1;
+        my ( $i, $k );
+        push( @temp, ' ' );
+        %parm_transports = @temp;
+        foreach $k ( keys %parm_transports ) {
+            if ( $k =~ "/" ) {
+                @temp = split /\//, $k;
+                $parm_transports{"$temp[0]"} = " ";
+                for ( $i = 1; $i < @temp; $i++ ) { $parm_transports{"$temp[0]/$temp[$i]"} = " "; }
+            }
+        }
+    }
+}
+close(EXIMINFO);
+print "-" x 78, "\n";
+
+unlink("$parm_cwd/test-config");
+
+##################################################
+#    Check for SpamAssassin and ClamAV           #
+##################################################
+
+# These are crude tests. If they aren't good enough, we'll have to improve
+# them, for example by actually passing a message through spamc or clamscan.
+
+if ( defined $parm_support{'Content_Scanning'} ) {
+    my $sock = new FileHandle;
+
+    if ( system("spamc -h 2>/dev/null >/dev/null") == 0 ) {
+        print "The spamc command works:\n";
+
+        # This test for an active SpamAssassin is courtesy of John Jetmore.
+        # The tests are hard coded to localhost:783, so no point in making
+        # this test flexible like the clamav test until the test scripts are
+        # changed.  spamd doesn't have the nice PING/PONG protoccol that
+        # clamd does, but it does respond to errors in an informative manner,
+        # so use that.
+
+        my ( $sint, $sport ) = ( '127.0.0.1', 783 );
+        eval {
+            my $sin = sockaddr_in( $sport, inet_aton($sint) )
+              or die "** Failed packing $sint:$sport\n";
+            socket( $sock, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
+              or die "** Unable to open socket $sint:$sport\n";
+
+            local $SIG{ALRM} = sub { die "** Timeout while connecting to socket $sint:$sport\n"; };
+            alarm(5);
+            connect( $sock, $sin )
+              or die "** Unable to connect to socket $sint:$sport\n";
+            alarm(0);
+
+            select( ( select($sock), $| = 1 )[0] );
+            print $sock "bad command\r\n";
+
+            $SIG{ALRM} = sub { die "** Timeout while reading from socket $sint:$sport\n"; };
+            alarm(10);
+            my $res = <$sock>;
+            alarm(0);
+
+            $res =~ m|^SPAMD/|
+              or die "** Did not get SPAMD from socket $sint:$sport. " . "It said: $res\n";
+        };
+        alarm(0);
+        if ($@) {
+            print "  $@";
+            print "  Assume SpamAssassin (spamd) is not running\n";
+        }
+        else {
+            $parm_running{'SpamAssassin'} = ' ';
+            print "  SpamAssassin (spamd) seems to be running\n";
+        }
+    }
+    else {
+        print "The spamc command failed: assume SpamAssassin (spamd) is not running\n";
+    }
+
+    # For ClamAV, we need to find the clamd socket for use in the Exim
+    # configuration. Search for the clamd configuration file.
+
+    if ( system("clamscan -h 2>/dev/null >/dev/null") == 0 ) {
+        my ( $f, $clamconf, $test_prefix );
+
+        print "The clamscan command works";
+
+        $test_prefix = $ENV{EXIM_TEST_PREFIX};
+        $test_prefix = "" if !defined $test_prefix;
+
+        foreach $f (
+            "$test_prefix/etc/clamd.conf",
+            "$test_prefix/usr/local/etc/clamd.conf",
+            "$test_prefix/etc/clamav/clamd.conf", ""
+          ) {
+            if ( -e $f ) {
+                $clamconf = $f;
+                last;
+            }
+        }
+
+        # Read the ClamAV configuration file and find the socket interface.
+
+        if ( $clamconf ne "" ) {
+            my $socket_domain;
+            open( IN, "$clamconf" ) || die "\n** Unable to open $clamconf: $!\n";
+            while (<IN>) {
+                if (/^LocalSocket\s+(.*)/) {
+                    $parm_clamsocket = $1;
+                    $socket_domain   = AF_UNIX;
+                    last;
+                }
+                if (/^TCPSocket\s+(\d+)/) {
+                    if ( defined $parm_clamsocket ) {
+                        $parm_clamsocket .= " $1";
+                        $socket_domain = AF_INET;
+                        last;
+                    }
+                    else {
+                        $parm_clamsocket = " $1";
+                    }
+                }
+                elsif (/^TCPAddr\s+(\S+)/) {
+                    if ( defined $parm_clamsocket ) {
+                        $parm_clamsocket = $1 . $parm_clamsocket;
+                        $socket_domain   = AF_INET;
+                        last;
+                    }
+                    else {
+                        $parm_clamsocket = $1;
+                    }
+                }
+            }
+            close(IN);
+
+            if ( defined $socket_domain ) {
+                print ":\n  The clamd socket is $parm_clamsocket\n";
+
+                # This test for an active ClamAV is courtesy of Daniel Tiefnig.
+                eval {
+                    my $socket;
+                    if ( $socket_domain == AF_UNIX ) {
+                        $socket = sockaddr_un($parm_clamsocket) or die "** Failed packing '$parm_clamsocket'\n";
+                    }
+                    elsif ( $socket_domain == AF_INET ) {
+                        my ( $ca_host, $ca_port ) = split( /\s+/, $parm_clamsocket );
+                        my $ca_hostent = gethostbyname($ca_host) or die "** Failed to get raw address for host '$ca_host'\n";
+                        $socket = sockaddr_in( $ca_port, $ca_hostent ) or die "** Failed packing '$parm_clamsocket'\n";
+                    }
+                    else {
+                        die "** Unknown socket domain '$socket_domain' (should not happen)\n";
+                    }
+                    socket( $sock, $socket_domain, SOCK_STREAM, 0 ) or die "** Unable to open socket '$parm_clamsocket'\n";
+                    local $SIG{ALRM} = sub { die "** Timeout while connecting to socket '$parm_clamsocket'\n"; };
+                    alarm(5);
+                    connect( $sock, $socket ) or die "** Unable to connect to socket '$parm_clamsocket'\n";
+                    alarm(0);
+
+                    my $ofh = select $sock;
+                    $| = 1;
+                    select $ofh;
+                    print $sock "PING\n";
+
+                    $SIG{ALRM} = sub { die "** Timeout while reading from socket '$parm_clamsocket'\n"; };
+                    alarm(10);
+                    my $res = <$sock>;
+                    alarm(0);
+
+                    $res =~ /PONG/ or die "** Did not get PONG from socket '$parm_clamsocket'. It said: $res\n";
+                };
+                alarm(0);
+
+                if ($@) {
+                    print "  $@";
+                    print "  Assume ClamAV is not running\n";
+                }
+                else {
+                    $parm_running{'ClamAV'} = ' ';
+                    print "  ClamAV seems to be running\n";
+                }
+            }
+            else {
+                print ", but the socket for clamd could not be determined\n";
+                print "Assume ClamAV is not running\n";
+            }
+        }
+
+        else {
+            print ", but I can't find a configuration for clamd\n";
+            print "Assume ClamAV is not running\n";
+        }
+    }
+}
+
+##################################################
+#       Check for redis                          #
+##################################################
+if ( defined $parm_lookups{'redis'} ) {
+    if ( system("redis-server -v 2>/dev/null >/dev/null") == 0 ) {
+        print "The redis-server command works\n";
+        $parm_running{'redis'} = ' ';
+    }
+    else {
+        print "The redis-server command failed: assume Redis not installed\n";
+    }
+}
+
+##################################################
+#         Test for the basic requirements        #
+##################################################
+
+# This test suite assumes that Exim has been built with at least the "usual"
+# set of routers, transports, and lookups. Ensure that this is so.
+
+$missing = "";
+
+$missing .= "     Lookup: lsearch\n" if ( !defined $parm_lookups{'lsearch'} );
+
+$missing .= "     Router: accept\n"      if ( !defined $parm_routers{'accept'} );
+$missing .= "     Router: dnslookup\n"   if ( !defined $parm_routers{'dnslookup'} );
+$missing .= "     Router: manualroute\n" if ( !defined $parm_routers{'manualroute'} );
+$missing .= "     Router: redirect\n"    if ( !defined $parm_routers{'redirect'} );
+
+$missing .= "     Transport: appendfile\n" if ( !defined $parm_transports{'appendfile'} );
+$missing .= "     Transport: autoreply\n"  if ( !defined $parm_transports{'autoreply'} );
+$missing .= "     Transport: pipe\n"       if ( !defined $parm_transports{'pipe'} );
+$missing .= "     Transport: smtp\n"       if ( !defined $parm_transports{'smtp'} );
+
+if ( $missing ne "" ) {
+    print "\n";
+    print "** Many features can be included or excluded from Exim binaries.\n";
+    print "** This test suite requires that Exim is built to contain a certain\n";
+    print "** set of basic facilities. It seems that some of these are missing\n";
+    print "** from the binary that is under test, so the test cannot proceed.\n";
+    print "** The missing facilities are:\n";
+    print "$missing";
+    die "** Test script abandoned\n";
+}
+
+##################################################
+#      Check for the auxiliary programs          #
+##################################################
+
+# These are always required:
+
+for $prog (
+    "cf",     "checkaccess", "client", "client-ssl", "client-gnutls",
+    "fakens", "iefbr14",     "server"
+  ) {
+    next if ( $prog eq "client-ssl"    && !defined $parm_support{'OpenSSL'} );
+    next if ( $prog eq "client-gnutls" && !defined $parm_support{'GnuTLS'} );
+    if ( !-e "bin/$prog" ) {
+        print "\n";
+        print "** bin/$prog does not exist. Have you run ./configure and make?\n";
+        die "** Test script abandoned\n";
+    }
+}
+
+# If the "loaded" binary is missing, we cut out tests for ${dlfunc. It isn't
+# compiled on systems where we don't know how to. However, if Exim does not
+# have that functionality compiled, we needn't bother.
+
+$dlfunc_deleted = 0;
+if ( defined $parm_support{'Expand_dlfunc'} && !-e "bin/loaded" ) {
+    delete $parm_support{'Expand_dlfunc'};
+    $dlfunc_deleted = 1;
+}
+
+##################################################
+#          Find environmental details            #
+##################################################
+
+# Find the caller of this program.
+
+(
+    $parm_caller,       $pwpw, $parm_caller_uid, $parm_caller_gid, $pwquota, $pwcomm,
+    $parm_caller_gecos, $parm_caller_home
+) = getpwuid($>);
+
+$pwpw    = $pwpw;      # Kill Perl warnings
+$pwquota = $pwquota;
+$pwcomm  = $pwcomm;
+
+$parm_caller_group = getgrgid($parm_caller_gid);
+
+print "Program caller is $parm_caller ($parm_caller_uid), whose group is $parm_caller_group ($parm_caller_gid)\n";
+print "Home directory is $parm_caller_home\n";
+
+unless ( defined $parm_eximgroup ) {
+    print "Unable to derive \$parm_eximgroup.\n";
+    die "** ABANDONING.\n";
+}
+
+print "You need to be in the Exim group to run these tests. Checking ...";
+
+if ( `groups` =~ /\b\Q$parm_eximgroup\E\b/ ) {
+    print " OK\n";
+}
+else {
+    print "\nOh dear, you are not in the Exim group.\n";
+    die "** Testing abandoned.\n";
+}
+
+# Find this host's IP addresses - there may be many, of course, but we keep
+# one of each type (IPv4 and IPv6).
+
+$parm_ipv4 = "";
+$parm_ipv6 = "";
+
+$local_ipv4 = "";
+$local_ipv6 = "";
+
+open( IFCONFIG, "ifconfig -a|" ) || die "** Cannot run \"ifconfig\": $!\n";
+while ( ( $parm_ipv4 eq "" || $parm_ipv6 eq "" ) && ( $_ = <IFCONFIG> ) ) {
+    my ($ip);
+    if (   $parm_ipv4 eq ""
+        && $_ =~ /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)\s/i ) {
+        $ip = $1;
+        next if ( $ip =~ /^127\./ || $ip =~ /^10\./ );
+        $parm_ipv4 = $ip;
+    }
+
+    if (   $parm_ipv6 eq ""
+        && $_ =~ /^\s*inet6(?:\saddr)?:?\s?([abcdef\d:]+)/i ) {
+        $ip = $1;
+        next if ( $ip eq "::1" || $ip =~ /^fe80/i );
+        $parm_ipv6 = $ip;
+    }
+}
+close(IFCONFIG);
+
+# Use private IP addresses if there are no public ones.
+
+$parm_ipv4 = $local_ipv4 if ( $parm_ipv4 eq "" );
+$parm_ipv6 = $local_ipv6 if ( $parm_ipv6 eq "" );
+
+# If either type of IP address is missing, we need to set the value to
+# something other than empty, because that wrecks the substitutions. The value
+# is reflected, so use a meaningful string. Set appropriate options for the
+# "server" command. In practice, however, many tests assume 127.0.0.1 is
+# available, so things will go wrong if there is no IPv4 address. The lack
+# of IPV4 or IPv6 can be simulated by command options, which force $have_ipv4
+# and $have_ipv6 false.
+
+if ( $parm_ipv4 eq "" ) {
+    $have_ipv4 = 0;
+    $parm_ipv4 = "<no IPv4 address found>";
+    $server_opts .= " -noipv4";
+}
+elsif ( $have_ipv4 == 0 ) {
+    $parm_ipv4 = "<IPv4 testing disabled>";
+    $server_opts .= " -noipv4";
+}
+else {
+    $parm_running{"IPv4"} = " ";
+}
+
+if ( $parm_ipv6 eq "" ) {
+    $have_ipv6 = 0;
+    $parm_ipv6 = "<no IPv6 address found>";
+    $server_opts .= " -noipv6";
+    delete( $parm_support{"IPv6"} );
+}
+elsif ( $have_ipv6 == 0 ) {
+    $parm_ipv6 = "<IPv6 testing disabled>";
+    $server_opts .= " -noipv6";
+    delete( $parm_support{"IPv6"} );
+}
+elsif ( !defined $parm_support{'IPv6'} ) {
+    $have_ipv6 = 0;
+    $parm_ipv6 = "<no IPv6 support in Exim binary>";
+    $server_opts .= " -noipv6";
+}
+else {
+    $parm_running{"IPv6"} = " ";
+}
+
+print "IPv4 address is $parm_ipv4\n";
+print "IPv6 address is $parm_ipv6\n";
+
+# For munging test output, we need the reversed IP addresses.
+
+$parm_ipv4r =
+  ( $parm_ipv4 !~ /^\d/ )
+  ? ""
+  : join( ".", reverse( split /\./, $parm_ipv4 ) );
+
+$parm_ipv6r = $parm_ipv6;    # Appropriate if not in use
+if ( $parm_ipv6 =~ /^[\da-f]/ ) {
+    my (@comps) = split /:/, $parm_ipv6;
+    my (@nibbles);
+    foreach $comp (@comps) {
+        push @nibbles, sprintf( "%lx", hex($comp) >> 8 );
+        push @nibbles, sprintf( "%lx", hex($comp) & 0xff );
+    }
+    $parm_ipv6r = join( ".", reverse(@nibbles) );
+}
+
+# Find the host name, fully qualified.
+
+chomp( $temp = `hostname` );
+$parm_hostname = ( gethostbyname($temp) )[0];
+$parm_hostname = "no.host.name.found" if $parm_hostname eq "";
+print "Hostname is $parm_hostname\n";
+
+if ( $parm_hostname !~ /\./ ) {
+    print "\n*** Host name is not fully qualified: this may cause problems ***\n\n";
+}
+
+if ( $parm_hostname =~ /[[:upper:]]/ ) {
+    print "\n*** Host name has upper case characters: this may cause problems ***\n\n";
+}
+
+##################################################
+#     Create a testing version of Exim           #
+##################################################
+
+# We want to be able to run Exim with a variety of configurations. Normally,
+# the use of -C to change configuration causes Exim to give up its root
+# privilege (unless the caller is exim or root). For these tests, we do not
+# want this to happen. Also, we want Exim to know that it is running in its
+# test harness.
+
+# We achieve this by copying the binary and patching it as we go. The new
+# binary knows it is a testing copy, and it allows -C and -D without loss of
+# privilege. Clearly, this file is dangerous to have lying around on systems
+# where there are general users with login accounts. To protect against this,
+# we put the new binary in a special directory that is accessible only to the
+# caller of this script, who is known to have sudo root privilege from the test
+# that was done above. Furthermore, we ensure that the binary is deleted at the
+# end of the test. First ensure the directory exists.
+
+if ( -d "eximdir" ) { unlink "eximdir/exim"; }    # Just in case
+else {
+    mkdir( "eximdir", 0710 ) || die "** Unable to mkdir $parm_cwd/eximdir: $!\n";
+    system("sudo chgrp $parm_eximgroup eximdir");
+}
+
+# The construction of the patched binary must be done as root, so we use
+# a separate script. As well as indicating that this is a test-harness binary,
+# the version number is patched to "x.yz" so that its length is always the
+# same. Otherwise, when it appears in Received: headers, it affects the length
+# of the message, which breaks certain comparisons.
+
+die "** Unable to make patched exim: $!\n"
+  if ( system("sudo ./patchexim $parm_exim") != 0 );
+
+# From this point on, exits from the program must go via the subroutine
+# tests_exit(), so that suitable cleaning up can be done when required.
+# Arrange to catch interrupting signals, to assist with this.
+
+$SIG{'INT'}  = \&inthandler;
+$SIG{'PIPE'} = \&pipehandler;
+
+# For some tests, we need another copy of the binary that is setuid exim rather
+# than root.
+
+system( "sudo cp eximdir/exim eximdir/exim_exim;" . "sudo chown $parm_eximuser eximdir/exim_exim;" . "sudo chgrp $parm_eximgroup eximdir/exim_exim;" . "sudo chmod 06755 eximdir/exim_exim" );
+
+##################################################
+#     Make copies of utilities we might need     #
+##################################################
+
+# Certain of the tests make use of some of Exim's utilities. We do not need
+# to be root to copy these.
+
+($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
+
+$dbm_build_deleted = 0;
+if ( defined $parm_lookups{'dbm'}
+    && system("cp $parm_exim_dir/exim_dbmbuild eximdir") != 0 ) {
+    delete $parm_lookups{'dbm'};
+    $dbm_build_deleted = 1;
+}
+
+if ( system("cp $parm_exim_dir/exim_dumpdb eximdir") != 0 ) {
+    tests_exit( -1, "Failed to make a copy of exim_dumpdb: $!" );
+}
+
+if ( system("cp $parm_exim_dir/exim_lock eximdir") != 0 ) {
+    tests_exit( -1, "Failed to make a copy of exim_lock: $!" );
+}
+
+if ( system("cp $parm_exim_dir/exinext eximdir") != 0 ) {
+    tests_exit( -1, "Failed to make a copy of exinext: $!" );
+}
+
+if ( system("cp $parm_exim_dir/exigrep eximdir") != 0 ) {
+    tests_exit( -1, "Failed to make a copy of exigrep: $!" );
+}
+
+if ( system("cp $parm_exim_dir/eximstats eximdir") != 0 ) {
+    tests_exit( -1, "Failed to make a copy of eximstats: $!" );
+}
+
+##################################################
+#    Check that the Exim user can access stuff   #
+##################################################
+
+# We delay this test till here so that we can check access to the actual test
+# binary. This will be needed when Exim re-exec's itself to do deliveries.
+
+print "Exim user is $parm_eximuser ($parm_exim_uid)\n";
+print "Exim group is $parm_eximgroup ($parm_exim_gid)\n";
+
+if ( $parm_caller_uid eq $parm_exim_uid ) {
+    tests_exit( -1, "Exim user ($parm_eximuser,$parm_exim_uid) cannot be " . "the same as caller ($parm_caller,$parm_caller_uid)" );
+}
+
+print "The Exim user needs access to the test suite directory. Checking ...";
+
+if ( ( $rc = system("sudo bin/checkaccess $parm_cwd/eximdir/exim $parm_eximuser $parm_eximgroup") ) != 0 ) {
+    my ($why) = "unknown failure $rc";
+    $rc >>= 8;
+    $why = "Couldn't find user \"$parm_eximuser\""    if $rc == 1;
+    $why = "Couldn't find group \"$parm_eximgroup\""  if $rc == 2;
+    $why = "Couldn't read auxiliary group list"       if $rc == 3;
+    $why = "Couldn't get rid of auxiliary groups"     if $rc == 4;
+    $why = "Couldn't set gid"                         if $rc == 5;
+    $why = "Couldn't set uid"                         if $rc == 6;
+    $why = "Couldn't open \"$parm_cwd/eximdir/exim\"" if $rc == 7;
+    print "\n** $why\n";
+    tests_exit( -1, "$parm_eximuser cannot access the test suite directory" );
+}
+else {
+    print " OK\n";
+}
+
+##################################################
+#        Create a list of available tests        #
+##################################################
+
+# The scripts directory contains a number of subdirectories whose names are
+# of the form 0000-xxxx, 1100-xxxx, 2000-xxxx, etc. Each set of tests apart
+# from the first requires certain optional features to be included in the Exim
+# binary. These requirements are contained in a file called "REQUIRES" within
+# the directory. We scan all these tests, discarding those that cannot be run
+# because the current binary does not support the right facilities, and also
+# those that are outside the numerical range selected.
+
+print "\nTest range is $test_start to $test_end (flavour $flavour)\n";
+print "Omitting \${dlfunc expansion tests (loadable module not present)\n"
+  if $dlfunc_deleted;
+print "Omitting dbm tests (unable to copy exim_dbmbuild)\n"
+  if $dbm_build_deleted;
+
+opendir( DIR, "scripts" ) || tests_exit( -1, "Failed to opendir(\"scripts\"): $!" );
+@test_dirs = sort readdir(DIR);
+closedir(DIR);
+
+# Remove . and .. and CVS from the list.
+
+for ( $i = 0; $i < @test_dirs; $i++ ) {
+    my ($d) = $test_dirs[$i];
+    if ( $d eq "." || $d eq ".." || $d eq "CVS" ) {
+        splice @test_dirs, $i, 1;
+        $i--;
+    }
+}
+
+# Scan for relevant tests
+
+for ( $i = 0; $i < @test_dirs; $i++ ) {
+    my ($testdir)  = $test_dirs[$i];
+    my ($wantthis) = 1;
+
+    print ">>Checking $testdir\n" if $debug;
+
+    # Skip this directory if the first test is equal or greater than the first
+    # test in the next directory.
+
+    next
+      if ( $i < @test_dirs - 1 )
+      && ( $test_start >= substr( $test_dirs[ $i + 1 ], 0, 4 ) );
+
+    # No need to carry on if the end test is less than the first test in this
+    # subdirectory.
+
+    last if $test_end < substr( $testdir, 0, 4 );
+
+    # Check requirements, if any.
+
+    if ( open( REQUIRES, "scripts/$testdir/REQUIRES" ) ) {
+        while (<REQUIRES>) {
+            next if /^\s*$/;
+            s/\s+$//;
+            if (/^support (.*)$/) {
+                if ( !defined $parm_support{$1} ) { $wantthis = 0; last; }
+            }
+            elsif (/^running (.*)$/) {
+                if ( !defined $parm_running{$1} ) { $wantthis = 0; last; }
+            }
+            elsif (/^lookup (.*)$/) {
+                if ( !defined $parm_lookups{$1} ) { $wantthis = 0; last; }
+            }
+            elsif (/^authenticators? (.*)$/) {
+                if ( !defined $parm_authenticators{$1} ) { $wantthis = 0; last; }
+            }
+            elsif (/^router (.*)$/) {
+                if ( !defined $parm_routers{$1} ) { $wantthis = 0; last; }
+            }
+            elsif (/^transport (.*)$/) {
+                if ( !defined $parm_transports{$1} ) { $wantthis = 0; last; }
+            }
+            else {
+                tests_exit( -1, "Unknown line in \"scripts/$testdir/REQUIRES\": \"$_\"" );
+            }
+        }
+        close(REQUIRES);
+    }
+    else {
+        tests_exit( -1, "Failed to open \"scripts/$testdir/REQUIRES\": $!" )
+          unless $!{ENOENT};
+    }
+
+    # Loop if we do not want the tests in this subdirectory.
+
+    if ( !$wantthis ) {
+        chomp;
+        print "Omitting tests in $testdir (missing $_)\n";
+        next;
+    }
+
+    # We want the tests from this subdirectory, provided they are in the
+    # range that was selected.
+
+    opendir( SUBDIR, "scripts/$testdir" )
+      || tests_exit( -1, "Failed to opendir(\"scripts/$testdir\"): $!" );
+    @testlist = sort readdir(SUBDIR);
+    close(SUBDIR);
+
+    foreach $test (@testlist) {
+        next if $test !~ /^\d{4}(?:\.\d+)?$/;
+        next if $test < $test_start || $test > $test_end;
+        push @test_list, "$testdir/$test";
+    }
+}
+
+print ">>Test List: @test_list\n", if $debug;
+
+##################################################
+#         Munge variable auxiliary data          #
+##################################################
+
+# Some of the auxiliary data files have to refer to the current testing
+# directory and other parameter data. The generic versions of these files are
+# stored in the aux-var-src directory. At this point, we copy each of them
+# to the aux-var directory, making appropriate substitutions. There aren't very
+# many of them, so it's easiest just to do this every time. Ensure the mode
+# is standardized, as this path is used as a test for the ${stat: expansion.
+
+# A similar job has to be done for the files in the dnszones-src directory, to
+# make the fake DNS zones for testing. Most of the zone files are copied to
+# files of the same name, but db.ipv4.V4NET and db.ipv6.V6NET use the testing
+# networks that are defined by parameter.
+
+foreach $basedir ( "aux-var", "dnszones" ) {
+    system("sudo rm -rf $parm_cwd/$basedir");
+    mkdir( "$parm_cwd/$basedir", 0777 );
+    chmod( 0755, "$parm_cwd/$basedir" );
+
+    opendir( AUX, "$parm_cwd/$basedir-src" )
+      || tests_exit( -1, "Failed to opendir $parm_cwd/$basedir-src: $!" );
+    my (@filelist) = readdir(AUX);
+    close(AUX);
+
+    foreach $file (@filelist) {
+        my ($outfile) = $file;
+        next if $file =~ /^\./;
+
+        if ( $file eq "db.ip4.V4NET" ) {
+            $outfile = "db.ip4.$parm_ipv4_test_net";
+        }
+        elsif ( $file eq "db.ip6.V6NET" ) {
+            my (@nibbles) = reverse( split /\s*/, $parm_ipv6_test_net );
+            $"       = '.';
+            $outfile = "db.ip6.@nibbles";
+            $"       = ' ';
+        }
+
+        print ">>Copying $basedir-src/$file to $basedir/$outfile\n" if $debug;
+        open( IN, "$parm_cwd/$basedir-src/$file" )
+          || tests_exit( -1, "Failed to open $parm_cwd/$basedir-src/$file: $!" );
+        open( OUT, ">$parm_cwd/$basedir/$outfile" )
+          || tests_exit( -1, "Failed to open $parm_cwd/$basedir/$outfile: $!" );
+        while (<IN>) {
+            do_substitute(0);
+            print OUT;
+        }
+        close(IN);
+        close(OUT);
+    }
+}
+
+# Set a user's shell, distinguishable from /bin/sh
+
+symlink( "/bin/sh", "aux-var/sh" );
+$ENV{'SHELL'} = $parm_shell = $parm_cwd . "/aux-var/sh";
+
+##################################################
+#     Create fake DNS zones for this host        #
+##################################################
+
+# There are fixed zone files for 127.0.0.1 and ::1, but we also want to be
+# sure that there are forward and reverse registrations for this host, using
+# its real IP addresses. Dynamically created zone files achieve this.
+
+if ( $have_ipv4 || $have_ipv6 ) {
+    my ( $shortname, $domain ) = $parm_hostname =~ /^([^.]+)(.*)/;
+    open( OUT, ">$parm_cwd/dnszones/db$domain" )
+      || tests_exit( -1, "Failed to open $parm_cwd/dnszones/db$domain: $!" );
+    print OUT "; This is a dynamically constructed fake zone file.\n" . "; The following line causes fakens to return PASS_ON\n" . "; for queries that it cannot answer\n\n" . "PASS ON NOT FOUND\n\n";
+    print OUT "$shortname  A     $parm_ipv4\n" if $have_ipv4;
+    print OUT "$shortname  AAAA  $parm_ipv6\n" if $have_ipv6;
+    print OUT "\n; End\n";
+    close(OUT);
+}
+
+if ( $have_ipv4 && $parm_ipv4 ne "127.0.0.1" ) {
+    my (@components) = $parm_ipv4 =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)/;
+    open( OUT, ">$parm_cwd/dnszones/db.ip4.$components[0]" )
+      || tests_exit(
+        -1,
+        "Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!"
+      );
+    print OUT "; This is a dynamically constructed fake zone file.\n" . "; The zone is $components[0].in-addr.arpa.\n\n" . "$components[3].$components[2].$components[1]  PTR  $parm_hostname.\n\n" . "; End\n";
+    close(OUT);
+}
+
+if ( $have_ipv6 && $parm_ipv6 ne "::1" ) {
+    my ($exp_v6) = $parm_ipv6;
+    $exp_v6 =~ s/[^:]//g;
+    if ( $parm_ipv6 =~ /^([^:].+)::$/ ) {
+        $exp_v6 = $1 . ':0' x ( 9 - length($exp_v6) );
+    }
+    elsif ( $parm_ipv6 =~ /^(.+)::(.+)$/ ) {
+        $exp_v6 = $1 . ':0' x ( 8 - length($exp_v6) ) . ':' . $2;
+    }
+    elsif ( $parm_ipv6 =~ /^::(.+[^:])$/ ) {
+        $exp_v6 = '0:' x ( 9 - length($exp_v6) ) . $1;
+    }
+    else {
+        $exp_v6 = $parm_ipv6;
+    }
+    my (@components) = split /:/, $exp_v6;
+    my (@nibbles) = reverse( split /\s*/, shift @components );
+    my ($sep) = "";
+
+    $" = ".";
+    open( OUT, ">$parm_cwd/dnszones/db.ip6.@nibbles" )
+      || tests_exit(
+        -1,
+        "Failed  to open $parm_cwd/dnszones/db.ip6.@nibbles: $!"
+      );
+    print OUT "; This is a dynamically constructed fake zone file.\n" . "; The zone is @nibbles.ip6.arpa.\n\n";
+
+    @components = reverse @components;
+    foreach $c (@components) {
+        $c = "0$c" until $c =~ /^..../;
+        @nibbles = reverse( split /\s*/, $c );
+        print OUT "$sep@nibbles";
+        $sep = ".";
+    }
+
+    print OUT "  PTR  $parm_hostname.\n\n; End\n";
+    close(OUT);
+    $" = " ";
+}
+
+##################################################
+#    Create lists of mailboxes and message logs  #
+##################################################
+
+# We use these lists to check that a test has created the expected files. It
+# should be faster than looking for the file each time. For mailboxes, we have
+# to scan a complete subtree, in order to handle maildirs. For msglogs, there
+# is just a flat list of files.
+
+@oldmails = list_files_below("mail");
+opendir( DIR, "msglog" ) || tests_exit( -1, "Failed to opendir msglog: $!" );
+@oldmsglogs = readdir(DIR);
+closedir(DIR);
+
+##################################################
+#         Run the required tests                 #
+##################################################
+
+# Each test script contains a number of tests, separated by a line that
+# contains ****. We open input from the terminal so that we can read responses
+# to prompts.
+
+open( T, "/dev/tty" ) || tests_exit( -1, "Failed to open /dev/tty: $!" );
+
+print "\nPress RETURN to run the tests: ";
+$_ = $force_continue ? "c" : <T>;
+print "\n";
+
+$lasttestdir = "";
+
+foreach $test (@test_list) {
+    local ($lineno)    = 0;
+    local ($commandno) = 0;
+    local ($subtestno) = 0;
+    ( local $testno = $test ) =~ s|.*/||;
+    local ($sortlog) = 0;
+
+    my ($gnutls)      = 0;
+    my ($docheck)     = 1;
+    my ($thistestdir) = substr( $test, 0, -5 );
+
+    if ( $lasttestdir ne $thistestdir ) {
+        $gnutls = 0;
+        if ( -s "scripts/$thistestdir/REQUIRES" ) {
+            my ($indent) = "";
+            print "\n>>> The following tests require: ";
+            open( IN, "scripts/$thistestdir/REQUIRES" )
+              || tests_exit( -1, "Failed to open scripts/$thistestdir/REQUIRES: $1" );
+            while (<IN>) {
+                $gnutls = 1 if /^support GnuTLS/;
+                print $indent, $_;
+                $indent = ">>>                              ";
+            }
+            close(IN);
+        }
+    }
+    $lasttestdir = $thistestdir;
+
+    # Remove any debris in the spool directory and the test-mail directory
+    # and also the files for collecting stdout and stderr. Then put back
+    # the test-mail directory for appendfile deliveries.
+
+    system "sudo /bin/rm -rf spool test-*";
+    system "mkdir test-mail 2>/dev/null";
+
+    # A privileged Exim will normally make its own spool directory, but some of
+    # the tests run in unprivileged modes that don't always work if the spool
+    # directory isn't already there. What is more, we want anybody to be able
+    # to read it in order to find the daemon's pid.
+
+    system "mkdir spool; " . "sudo chown $parm_eximuser:$parm_eximgroup spool; " . "sudo chmod 0755 spool";
+
+    # Empty the cache that keeps track of things like message id mappings, and
+    # set up the initial sequence strings.
+
+    undef %cache;
+    $next_msgid          = "aX";
+    $next_pid            = 1234;
+    $next_port           = 1111;
+    $message_skip        = 0;
+    $msglog_skip         = 0;
+    $stderr_skip         = 0;
+    $stdout_skip         = 0;
+    $rmfiltertest        = 0;
+    $is_ipv6test         = 0;
+    $TEST_STATE->{munge} = "";
+
+    # Remove the associative arrays used to hold checked mail files and msglogs
+
+    undef %expected_mails;
+    undef %expected_msglogs;
+
+    # Open the test's script
+    open( SCRIPT, "scripts/$test" )
+      || tests_exit( -1, "Failed to open \"scripts/$test\": $!" );
+
+    # Run through the script once to set variables which should be global
+    while (<SCRIPT>) {
+        if (/^no_message_check/) { $message_skip = 1; next; }
+        if (/^no_msglog_check/)  { $msglog_skip  = 1; next; }
+        if (/^no_stderr_check/)  { $stderr_skip  = 1; next; }
+        if (/^no_stdout_check/)  { $stdout_skip  = 1; next; }
+        if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
+        if (/^sortlog/)          { $sortlog      = 1; next; }
+    }
+
+    # Reset to beginning of file for per test interpreting/processing
+    seek( SCRIPT, 0, 0 );
+
+    # The first line in the script must be a comment that is used to identify
+    # the set of tests as a whole.
+
+    $_ = <SCRIPT>;
+    $lineno++;
+    tests_exit( -1, "Missing identifying comment at start of $test" ) if ( !/^#/ );
+    printf( "%s %s", ( substr $test, 5 ), ( substr $_, 2 ) );
+
+    # Loop for each of the subtests within the script. The variable $server_pid
+    # is used to remember the pid of a "server" process, for which we do not
+    # wait until we have waited for a subsequent command.
+
+    local ($server_pid) = 0;
+    for ( $commandno = 1; !eof SCRIPT; $commandno++ ) {
+
+        # Skip further leading comments and blank lines, handle the flag setting
+        # commands, and deal with tests for IP support.
+
+        while (<SCRIPT>) {
+            $lineno++;
+
+            # Could remove these variable settings because they are already
+            # set above, but doesn't hurt to leave them here.
+            if (/^no_message_check/) { $message_skip = 1; next; }
+            if (/^no_msglog_check/)  { $msglog_skip  = 1; next; }
+            if (/^no_stderr_check/)  { $stderr_skip  = 1; next; }
+            if (/^no_stdout_check/)  { $stdout_skip  = 1; next; }
+            if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
+            if (/^sortlog/)          { $sortlog      = 1; next; }
+
+            if (/^need_largefiles/) {
+                next if $have_largefiles;
+                print ">>> Large file support is needed for test $testno, but is not available: skipping\n";
+                $docheck = 0;    # don't check output
+                undef $_;        # pretend EOF
+                last;
+            }
+
+            if (/^need_ipv4/) {
+                next if $have_ipv4;
+                print ">>> IPv4 is needed for test $testno, but is not available: skipping\n";
+                $docheck = 0;    # don't check output
+                undef $_;        # pretend EOF
+                last;
+            }
+
+            if (/^need_ipv6/) {
+                if ($have_ipv6) {
+                    $is_ipv6test = 1;
+                    next;
+                }
+                print ">>> IPv6 is needed for test $testno, but is not available: skipping\n";
+                $docheck = 0;    # don't check output
+                undef $_;        # pretend EOF
+                last;
+            }
+
+            if (/^need_move_frozen_messages/) {
+                next if defined $parm_support{"move_frozen_messages"};
+                print ">>> move frozen message support is needed for test $testno, " . "but is not\n>>> available: skipping\n";
+                $docheck = 0;    # don't check output
+                undef $_;        # pretend EOF
+                last;
+            }
+
+            last unless /^(#|\s*$)/;
+        }
+        last if !defined $_;     # Hit EOF
+
+        my ($subtest_startline) = $lineno;
+
+        # Now run the command. The function returns 0 if exim was run and waited
+        # for, 1 if any other command was run and waited for, and 2 if a command
+        # was run and not waited for (usually a daemon or server startup).
+
+        my ($commandname) = "";
+        my ($expectrc)    = 0;
+        my ( $rc, $run_extra ) = run_command( $testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE );
+        my ($cmdrc) = $?;
+
+        $0 = "[runtest $testno]";
+
+        if ($debug) {
+            print ">> rc=$rc cmdrc=$cmdrc\n";
+            if ( defined $run_extra ) {
+                foreach my $k ( keys %$run_extra ) {
+                    my $v = defined $run_extra->{$k} ? qq!"$run_extra->{$k}"! : '<undef>';
+                    print ">>   $k -> $v\n";
+                }
+            }
+        }
+        $run_extra = {} unless defined $run_extra;
+        foreach my $k ( keys %$run_extra ) {
+            if ( exists $TEST_STATE->{$k} ) {
+                my $nv = defined $run_extra->{$k} ? qq!"$run_extra->{$k}"! : 'removed';
+                print ">> override of $k; was $TEST_STATE->{$k}, now $nv\n" if $debug;
+            }
+            if ( defined $run_extra->{$k} ) {
+                $TEST_STATE->{$k} = $run_extra->{$k};
+            }
+            elsif ( exists $TEST_STATE->{$k} ) {
+                delete $TEST_STATE->{$k};
+            }
+        }
+
+        # Hit EOF after an initial return code number
+
+        tests_exit( -1, "Unexpected EOF in script" ) if ( $rc == 4 );
+
+        # Carry on with the next command if we did not wait for this one. $rc == 0
+        # if no subprocess was run; $rc == 3 if we started a process but did not
+        # wait for it.
+
+        next if ( $rc == 0 || $rc == 3 );
+
+        # We ran and waited for a command. Check for the expected result unless
+        # it died.
+
+        if ( $cmdrc != $expectrc && !$sigpipehappened ) {
+            printf("** Command $commandno (\"$commandname\", starting at line $subtest_startline)\n");
+            if ( ( $cmdrc & 0xff ) == 0 ) {
+                printf( "** Return code %d (expected %d)", $cmdrc / 256, $expectrc / 256 );
+            }
+            elsif ( ( $cmdrc & 0xff00 ) == 0 ) { printf( "** Killed by signal %d", $cmdrc & 255 ); }
+            else                               { printf( "** Status %x",           $cmdrc ); }
+
+            for ( ;; ) {
+                print "\nshow stdErr, show stdOut, Retry, Continue (without file comparison), or Quit? [Q] ";
+                $_ = $force_continue ? "c" : <T>;
+                tests_exit(1) if /^q?$/i;
+                log_failure( $log_failed_filename, $testno, "exit code unexpected" ) if ( /^c$/i && $force_continue );
+                print "... continue forced\n" if $force_continue;
+                last if /^[rc]$/i;
+                if (/^e$/i) {
+                    system("$more test-stderr");
+                }
+                elsif (/^o$/i) {
+                    system("$more test-stdout");
+                }
+            }
+
+            $retry = 1 if /^r$/i;
+            $docheck = 0;
+        }
+
+        # If the command was exim, and a listening server is running, we can now
+        # close its input, which causes us to wait for it to finish, which is why
+        # we didn't close it earlier.
+
+        if ( $rc == 2 && $server_pid != 0 ) {
+            close SERVERCMD;
+            $server_pid = 0;
+            if ( $? != 0 ) {
+                if    ( ( $? & 0xff ) == 0 )   { printf( "Server return code %d",      $? / 256 ); }
+                elsif ( ( $? & 0xff00 ) == 0 ) { printf( "Server killed by signal %d", $? & 255 ); }
+                else                           { printf( "Server status %x",           $? ); }
+
+                for ( ;; ) {
+                    print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
+                    $_ = $force_continue ? "c" : <T>;
+                    tests_exit(1) if /^q?$/i;
+                    log_failure( $log_failed_filename, $testno, "exit code unexpected" ) if ( /^c$/i && $force_continue );
+                    print "... continue forced\n" if $force_continue;
+                    last if /^[rc]$/i;
+
+                    if (/^s$/i) {
+                        open( S, "test-stdout-server" )
+                          || tests_exit( -1, "Failed to open test-stdout-server: $!" );
+                        print while <S>;
+                        close(S);
+                    }
+                }
+                $retry = 1 if /^r$/i;
+            }
+        }
+    }
+
+    close SCRIPT;
+
+    # The script has finished. Check the all the output that was generated. The
+    # function returns 0 if all is well, 1 if we should rerun the test (the files
+    # function returns 0 if all is well, 1 if we should rerun the test (the files
+    # have been updated). It does not return if the user responds Q to a prompt.
+
+    if ($retry) {
+        $retry = '0';
+        print( ( "#" x 79 ) . "\n" );
+        redo;
+    }
+
+    if ($docheck) {
+        if ( check_output( $TEST_STATE->{munge} ) != 0 ) {
+            print( ( "#" x 79 ) . "\n" );
+            redo;
+        }
+        else {
+            print("  Script completed\n");
+        }
+    }
+}
+
+##################################################
+#         Exit from the test script              #
+##################################################
+
+tests_exit( -1, "No runnable tests selected" ) if @test_list == 0;
+tests_exit(0);
+
+# End of runtest script
+# vim: set sw=2 et :
+
+exit;
+
+##################################################
+#       Do global macro substitutions            #
+##################################################
 
 ##################################################
 #              Handle signals                    #
@@ -102,9 +1484,13 @@ sub pipehandler { $sigpipehappened = 1; }
 
 sub inthandler { print "\n"; tests_exit( -1, "Caught SIGINT" ); }
 
-##################################################
-#       Do global macro substitutions            #
-##################################################
+###############################################################################
+###############################################################################
+
+# Define a number of subroutines
+
+###############################################################################
+###############################################################################
 
 # This function is applied to configurations, command lines and data lines in
 # scripts, and to lines in the files of the aux-var-src and the dnszones-src
@@ -137,8 +1523,6 @@ sub do_substitute {
 ##################################################
 #     Any state to be preserved across tests     #
 ##################################################
-
-my $TEST_STATE = {};
 
 ##################################################
 #        Subroutine to tidy up and exit          #
@@ -2113,1382 +3497,3 @@ sub run_command {
     return $yield;    # Ran command and waited
 }
 
-###############################################################################
-###############################################################################
-
-# Here beginneth the Main Program ...
-
-###############################################################################
-###############################################################################
-
-autoflush STDOUT 1;
-print "Exim tester $testversion\n";
-
-# extend the PATH with .../sbin
-# we map all (.../bin) to (.../sbin:.../bin)
-$ENV{PATH} = do {
-    my %seen = map { $_, 1 } split /:/, $ENV{PATH};
-    join ':' => map { m{(.*)/bin$} ? ( $seen{"$1/sbin"} ? () : ("$1/sbin"), $_ ) : ($_) }
-      split /:/, $ENV{PATH};
-};
-
-##################################################
-#      Some tests check created file modes       #
-##################################################
-
-umask 022;
-
-##################################################
-#       Check for the "less" command             #
-##################################################
-
-$more = "more" if system("which less >/dev/null 2>&1") != 0;
-
-##################################################
-#        Check for sudo access to root           #
-##################################################
-
-print "You need to have sudo access to root to run these tests. Checking ...\n";
-if ( system("sudo date >/dev/null") != 0 ) {
-    die "** Test for sudo failed: testing abandoned.\n";
-}
-else {
-    print "Test for sudo OK\n";
-}
-
-##################################################
-#      See if an Exim binary has been given      #
-##################################################
-
-# If the first character of the first argument is '/', the argument is taken
-# as the path to the binary. If the first argument does not start with a
-# '/' but exists in the file system, it's assumed to be the Exim binary.
-
-$parm_exim = ( @ARGV > 0 && ( -x $ARGV[0] or $ARGV[0] =~ m?^/? ) ) ? Cwd::abs_path( shift @ARGV ) : "";
-print "Exim binary is $parm_exim\n" if $parm_exim ne "";
-
-##################################################
-# Sort out options and which tests are to be run #
-##################################################
-
-# There are a few possible options for the test script itself; after these, any
-# options are passed on to Exim calls within the tests. Typically, this is used
-# to turn on Exim debugging while setting up a test.
-
-while ( @ARGV > 0 && $ARGV[0] =~ /^-/ ) {
-    my ($arg) = shift @ARGV;
-    if ( $optargs eq "" ) {
-        if ( $arg eq "-DEBUG" ) { $debug = 1; $cr = "\n"; next; }
-        if ( $arg eq "-DIFF" ) { $cf = "diff -u"; next; }
-        if ( $arg eq "-CONTINUE" ) {
-            $force_continue = 1;
-            $more           = "cat";
-            next;
-        }
-        if ( $arg eq "-UPDATE" )     { $force_update = 1;     next; }
-        if ( $arg eq "-NOIPV4" )     { $have_ipv4    = 0;     next; }
-        if ( $arg eq "-NOIPV6" )     { $have_ipv6    = 0;     next; }
-        if ( $arg eq "-KEEP" )       { $save_output  = 1;     next; }
-        if ( $arg =~ /^-FLAVOU?R$/ ) { $flavour      = shift; next; }
-    }
-    $optargs .= " $arg";
-}
-
-# Any subsequent arguments are a range of test numbers.
-
-if ( @ARGV > 0 ) {
-    $test_end = $test_start = $ARGV[0];
-    $test_end = $ARGV[1] if ( @ARGV > 1 );
-    $test_end = ( $test_start >= 9000 ) ? $test_special_top : $test_top
-      if $test_end eq "+";
-    die "** Test numbers out of order\n" if ( $test_end < $test_start );
-}
-
-##################################################
-#      Make the command's directory current      #
-##################################################
-
-# After doing so, we find its absolute path name.
-
-$cwd = $0;
-$cwd = '.' if ( $cwd !~ s|/[^/]+$|| );
-chdir($cwd) || die "** Failed to chdir to \"$cwd\": $!\n";
-$parm_cwd = Cwd::getcwd();
-
-##################################################
-#     Search for an Exim binary to test          #
-##################################################
-
-# If an Exim binary hasn't been provided, try to find one. We can handle the
-# case where exim-testsuite is installed alongside Exim source directories. For
-# PH's private convenience, if there's a directory just called "exim4", that
-# takes precedence; otherwise exim-snapshot takes precedence over any numbered
-# releases.
-
-if ( $parm_exim eq "" ) {
-    my ($use_srcdir) = "";
-
-    opendir DIR, ".." || die "** Failed to opendir \"..\": $!\n";
-    while ( $f = readdir(DIR) ) {
-        my ($srcdir);
-
-        # Try this directory if it is "exim4" or if it is exim-snapshot or exim-n.m
-        # possibly followed by -RCx where n.m is greater than any previously tried
-        # directory. Thus, we should choose the highest version of Exim that has
-        # been compiled.
-
-        if ( $f eq "exim4" || $f eq "exim-snapshot" || $f eq 'src' ) { $srcdir = $f; }
-        else {
-            $srcdir = $f
-              if ( $f =~ /^exim-\d+\.\d+(-RC\d+)?$/ && $f gt $use_srcdir );
-        }
-
-        # Look for a build directory with a binary in it. If we find a binary,
-        # accept this source directory.
-
-        if ($srcdir) {
-            opendir SRCDIR, "../$srcdir"
-              || die "** Failed to opendir \"$cwd/../$srcdir\": $!\n";
-            while ( $f = readdir(SRCDIR) ) {
-                if ( $f =~ /^build-/ && -e "../$srcdir/$f/exim" ) {
-                    $use_srcdir = $srcdir;
-                    $parm_exim  = "$cwd/../$srcdir/$f/exim";
-                    $parm_exim =~ s'/[^/]+/\.\./'/';
-                    last;
-                }
-            }
-            closedir(SRCDIR);
-        }
-
-        # If we have found "exim4" or "exim-snapshot", that takes precedence.
-        # Otherwise, continue to see if there's a later version.
-
-        last if $use_srcdir eq "exim4" || $use_srcdir eq "exim-snapshot";
-    }
-    closedir(DIR);
-    print "Exim binary found in $parm_exim\n" if $parm_exim ne "";
-}
-
-# If $parm_exim is still empty, ask the caller
-
-if ( $parm_exim eq "" ) {
-    print "** Did not find an Exim binary to test\n";
-    for ( $i = 0; $i < 5; $i++ ) {
-        my ($trybin);
-        print "** Enter pathname for Exim binary: ";
-        chomp( $trybin = <STDIN> );
-        if ( -e $trybin ) {
-            $parm_exim = $trybin;
-            last;
-        }
-        else {
-            print "** $trybin does not exist\n";
-        }
-    }
-    die "** Too many tries\n" if $parm_exim eq "";
-}
-
-##################################################
-#          Find what is in the binary            #
-##################################################
-
-# deal with TRUSTED_CONFIG_LIST restrictions
-unlink("$parm_cwd/test-config") if -e "$parm_cwd/test-config";
-open( IN, "$parm_cwd/confs/0000" )
-  || tests_exit( -1, "Couldn't open $parm_cwd/confs/0000: $!\n" );
-open( OUT, ">test-config" )
-  || tests_exit( -1, "Couldn't open test-config: $!\n" );
-while (<IN>) { print OUT; }
-close(IN);
-close(OUT);
-
-print("Probing with config file: $parm_cwd/test-config\n");
-open( EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " . "-bP exim_user exim_group 2>&1|" )
-  || die "** Cannot run $parm_exim: $!\n";
-while (<EXIMINFO>) {
-    $parm_eximuser            = $1 if /^exim_user = (.*)$/;
-    $parm_eximgroup           = $1 if /^exim_group = (.*)$/;
-    $parm_trusted_config_list = $1 if /^TRUSTED_CONFIG_LIST:.*?"(.*?)"$/;
-    print "$_" if /wrong owner/;
-}
-close(EXIMINFO);
-
-if ( defined $parm_eximuser ) {
-    if   ( $parm_eximuser =~ /^\d+$/ ) { $parm_exim_uid = $parm_eximuser; }
-    else                               { $parm_exim_uid = getpwnam($parm_eximuser); }
-}
-else {
-    print "Unable to extract exim_user from binary.\n";
-    print "Check if Exim refused to run; if so, consider:\n";
-    print "  TRUSTED_CONFIG_LIST ALT_CONFIG_PREFIX WHITELIST_D_MACROS\n";
-    die "Failing to get information from binary.\n";
-}
-
-if ( defined $parm_eximgroup ) {
-    if   ( $parm_eximgroup =~ /^\d+$/ ) { $parm_exim_gid = $parm_eximgroup; }
-    else                                { $parm_exim_gid = getgrnam($parm_eximgroup); }
-}
-
-# check the permissions on the TRUSTED_CONFIG_LIST
-if ( defined $parm_trusted_config_list ) {
-    die "TRUSTED_CONFIG_LIST: $parm_trusted_config_list: $!\n"
-      if not -f $parm_trusted_config_list;
-
-    die "TRUSTED_CONFIG_LIST $parm_trusted_config_list must not be world writable!\n"
-      if 02 & ( stat _ )[2];
-
-    die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list %d is group writable, but not owned by group '%s' or '%s'.\n",
-      ( stat _ )[1],
-      scalar( getgrgid 0 ), scalar( getgrgid $> )
-      if ( 020 & ( stat _ )[2] )
-      and not( ( stat _ )[5] == $> or ( stat _ )[5] == 0 );
-
-    die sprintf "TRUSTED_CONFIG_LIST: $parm_trusted_config_list is not owned by user '%s' or '%s'.\n",
-      scalar( getpwuid 0 ), scalar( getpwuid $> )
-      if ( not( -o _ or ( stat _ )[4] == 0 ) );
-
-    open( TCL, $parm_trusted_config_list ) or die "Can't open $parm_trusted_config_list: $!\n";
-    my $test_config = getcwd() . '/test-config';
-    die "Can't find '$test_config' in TRUSTED_CONFIG_LIST $parm_trusted_config_list."
-      if not grep { /^$test_config$/ } <TCL>;
-}
-else {
-    die "Unable to check the TRUSTED_CONFIG_LIST, seems to be empty?\n";
-}
-
-open( EXIMINFO, "$parm_exim -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |" )
-  || die "** Cannot run $parm_exim: $!\n";
-
-print "-" x 78, "\n";
-
-while (<EXIMINFO>) {
-    my (@temp);
-
-    if (/^Exim version/) { print; }
-
-    elsif (/^Size of off_t: (\d+)/) {
-        print;
-        $have_largefiles = 1 if $1 > 4;
-        die "** Size of off_t > 32 which seems improbable, not running tests\n"
-          if ( $1 > 32 );
-    }
-
-    elsif (/^Support for: (.*)/) {
-        print;
-        @temp = split /(\s+)/, $1;
-        push( @temp, ' ' );
-        %parm_support = @temp;
-    }
-
-    elsif (/^Lookups \(built-in\): (.*)/) {
-        print;
-        @temp = split /(\s+)/, $1;
-        push( @temp, ' ' );
-        %parm_lookups = @temp;
-    }
-
-    elsif (/^Authenticators: (.*)/) {
-        print;
-        @temp = split /(\s+)/, $1;
-        push( @temp, ' ' );
-        %parm_authenticators = @temp;
-    }
-
-    elsif (/^Routers: (.*)/) {
-        print;
-        @temp = split /(\s+)/, $1;
-        push( @temp, ' ' );
-        %parm_routers = @temp;
-    }
-
-    # Some transports have options, e.g. appendfile/maildir. For those, ensure
-    # that the basic transport name is set, and then the name with each of the
-    # options.
-
-    elsif (/^Transports: (.*)/) {
-        print;
-        @temp = split /(\s+)/, $1;
-        my ( $i, $k );
-        push( @temp, ' ' );
-        %parm_transports = @temp;
-        foreach $k ( keys %parm_transports ) {
-            if ( $k =~ "/" ) {
-                @temp = split /\//, $k;
-                $parm_transports{"$temp[0]"} = " ";
-                for ( $i = 1; $i < @temp; $i++ ) { $parm_transports{"$temp[0]/$temp[$i]"} = " "; }
-            }
-        }
-    }
-}
-close(EXIMINFO);
-print "-" x 78, "\n";
-
-unlink("$parm_cwd/test-config");
-
-##################################################
-#    Check for SpamAssassin and ClamAV           #
-##################################################
-
-# These are crude tests. If they aren't good enough, we'll have to improve
-# them, for example by actually passing a message through spamc or clamscan.
-
-if ( defined $parm_support{'Content_Scanning'} ) {
-    my $sock = new FileHandle;
-
-    if ( system("spamc -h 2>/dev/null >/dev/null") == 0 ) {
-        print "The spamc command works:\n";
-
-        # This test for an active SpamAssassin is courtesy of John Jetmore.
-        # The tests are hard coded to localhost:783, so no point in making
-        # this test flexible like the clamav test until the test scripts are
-        # changed.  spamd doesn't have the nice PING/PONG protoccol that
-        # clamd does, but it does respond to errors in an informative manner,
-        # so use that.
-
-        my ( $sint, $sport ) = ( '127.0.0.1', 783 );
-        eval {
-            my $sin = sockaddr_in( $sport, inet_aton($sint) )
-              or die "** Failed packing $sint:$sport\n";
-            socket( $sock, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
-              or die "** Unable to open socket $sint:$sport\n";
-
-            local $SIG{ALRM} = sub { die "** Timeout while connecting to socket $sint:$sport\n"; };
-            alarm(5);
-            connect( $sock, $sin )
-              or die "** Unable to connect to socket $sint:$sport\n";
-            alarm(0);
-
-            select( ( select($sock), $| = 1 )[0] );
-            print $sock "bad command\r\n";
-
-            $SIG{ALRM} = sub { die "** Timeout while reading from socket $sint:$sport\n"; };
-            alarm(10);
-            my $res = <$sock>;
-            alarm(0);
-
-            $res =~ m|^SPAMD/|
-              or die "** Did not get SPAMD from socket $sint:$sport. " . "It said: $res\n";
-        };
-        alarm(0);
-        if ($@) {
-            print "  $@";
-            print "  Assume SpamAssassin (spamd) is not running\n";
-        }
-        else {
-            $parm_running{'SpamAssassin'} = ' ';
-            print "  SpamAssassin (spamd) seems to be running\n";
-        }
-    }
-    else {
-        print "The spamc command failed: assume SpamAssassin (spamd) is not running\n";
-    }
-
-    # For ClamAV, we need to find the clamd socket for use in the Exim
-    # configuration. Search for the clamd configuration file.
-
-    if ( system("clamscan -h 2>/dev/null >/dev/null") == 0 ) {
-        my ( $f, $clamconf, $test_prefix );
-
-        print "The clamscan command works";
-
-        $test_prefix = $ENV{EXIM_TEST_PREFIX};
-        $test_prefix = "" if !defined $test_prefix;
-
-        foreach $f (
-            "$test_prefix/etc/clamd.conf",
-            "$test_prefix/usr/local/etc/clamd.conf",
-            "$test_prefix/etc/clamav/clamd.conf", ""
-          ) {
-            if ( -e $f ) {
-                $clamconf = $f;
-                last;
-            }
-        }
-
-        # Read the ClamAV configuration file and find the socket interface.
-
-        if ( $clamconf ne "" ) {
-            my $socket_domain;
-            open( IN, "$clamconf" ) || die "\n** Unable to open $clamconf: $!\n";
-            while (<IN>) {
-                if (/^LocalSocket\s+(.*)/) {
-                    $parm_clamsocket = $1;
-                    $socket_domain   = AF_UNIX;
-                    last;
-                }
-                if (/^TCPSocket\s+(\d+)/) {
-                    if ( defined $parm_clamsocket ) {
-                        $parm_clamsocket .= " $1";
-                        $socket_domain = AF_INET;
-                        last;
-                    }
-                    else {
-                        $parm_clamsocket = " $1";
-                    }
-                }
-                elsif (/^TCPAddr\s+(\S+)/) {
-                    if ( defined $parm_clamsocket ) {
-                        $parm_clamsocket = $1 . $parm_clamsocket;
-                        $socket_domain   = AF_INET;
-                        last;
-                    }
-                    else {
-                        $parm_clamsocket = $1;
-                    }
-                }
-            }
-            close(IN);
-
-            if ( defined $socket_domain ) {
-                print ":\n  The clamd socket is $parm_clamsocket\n";
-
-                # This test for an active ClamAV is courtesy of Daniel Tiefnig.
-                eval {
-                    my $socket;
-                    if ( $socket_domain == AF_UNIX ) {
-                        $socket = sockaddr_un($parm_clamsocket) or die "** Failed packing '$parm_clamsocket'\n";
-                    }
-                    elsif ( $socket_domain == AF_INET ) {
-                        my ( $ca_host, $ca_port ) = split( /\s+/, $parm_clamsocket );
-                        my $ca_hostent = gethostbyname($ca_host) or die "** Failed to get raw address for host '$ca_host'\n";
-                        $socket = sockaddr_in( $ca_port, $ca_hostent ) or die "** Failed packing '$parm_clamsocket'\n";
-                    }
-                    else {
-                        die "** Unknown socket domain '$socket_domain' (should not happen)\n";
-                    }
-                    socket( $sock, $socket_domain, SOCK_STREAM, 0 ) or die "** Unable to open socket '$parm_clamsocket'\n";
-                    local $SIG{ALRM} = sub { die "** Timeout while connecting to socket '$parm_clamsocket'\n"; };
-                    alarm(5);
-                    connect( $sock, $socket ) or die "** Unable to connect to socket '$parm_clamsocket'\n";
-                    alarm(0);
-
-                    my $ofh = select $sock;
-                    $| = 1;
-                    select $ofh;
-                    print $sock "PING\n";
-
-                    $SIG{ALRM} = sub { die "** Timeout while reading from socket '$parm_clamsocket'\n"; };
-                    alarm(10);
-                    my $res = <$sock>;
-                    alarm(0);
-
-                    $res =~ /PONG/ or die "** Did not get PONG from socket '$parm_clamsocket'. It said: $res\n";
-                };
-                alarm(0);
-
-                if ($@) {
-                    print "  $@";
-                    print "  Assume ClamAV is not running\n";
-                }
-                else {
-                    $parm_running{'ClamAV'} = ' ';
-                    print "  ClamAV seems to be running\n";
-                }
-            }
-            else {
-                print ", but the socket for clamd could not be determined\n";
-                print "Assume ClamAV is not running\n";
-            }
-        }
-
-        else {
-            print ", but I can't find a configuration for clamd\n";
-            print "Assume ClamAV is not running\n";
-        }
-    }
-}
-
-##################################################
-#       Check for redis                          #
-##################################################
-if ( defined $parm_lookups{'redis'} ) {
-    if ( system("redis-server -v 2>/dev/null >/dev/null") == 0 ) {
-        print "The redis-server command works\n";
-        $parm_running{'redis'} = ' ';
-    }
-    else {
-        print "The redis-server command failed: assume Redis not installed\n";
-    }
-}
-
-##################################################
-#         Test for the basic requirements        #
-##################################################
-
-# This test suite assumes that Exim has been built with at least the "usual"
-# set of routers, transports, and lookups. Ensure that this is so.
-
-$missing = "";
-
-$missing .= "     Lookup: lsearch\n" if ( !defined $parm_lookups{'lsearch'} );
-
-$missing .= "     Router: accept\n"      if ( !defined $parm_routers{'accept'} );
-$missing .= "     Router: dnslookup\n"   if ( !defined $parm_routers{'dnslookup'} );
-$missing .= "     Router: manualroute\n" if ( !defined $parm_routers{'manualroute'} );
-$missing .= "     Router: redirect\n"    if ( !defined $parm_routers{'redirect'} );
-
-$missing .= "     Transport: appendfile\n" if ( !defined $parm_transports{'appendfile'} );
-$missing .= "     Transport: autoreply\n"  if ( !defined $parm_transports{'autoreply'} );
-$missing .= "     Transport: pipe\n"       if ( !defined $parm_transports{'pipe'} );
-$missing .= "     Transport: smtp\n"       if ( !defined $parm_transports{'smtp'} );
-
-if ( $missing ne "" ) {
-    print "\n";
-    print "** Many features can be included or excluded from Exim binaries.\n";
-    print "** This test suite requires that Exim is built to contain a certain\n";
-    print "** set of basic facilities. It seems that some of these are missing\n";
-    print "** from the binary that is under test, so the test cannot proceed.\n";
-    print "** The missing facilities are:\n";
-    print "$missing";
-    die "** Test script abandoned\n";
-}
-
-##################################################
-#      Check for the auxiliary programs          #
-##################################################
-
-# These are always required:
-
-for $prog (
-    "cf",     "checkaccess", "client", "client-ssl", "client-gnutls",
-    "fakens", "iefbr14",     "server"
-  ) {
-    next if ( $prog eq "client-ssl"    && !defined $parm_support{'OpenSSL'} );
-    next if ( $prog eq "client-gnutls" && !defined $parm_support{'GnuTLS'} );
-    if ( !-e "bin/$prog" ) {
-        print "\n";
-        print "** bin/$prog does not exist. Have you run ./configure and make?\n";
-        die "** Test script abandoned\n";
-    }
-}
-
-# If the "loaded" binary is missing, we cut out tests for ${dlfunc. It isn't
-# compiled on systems where we don't know how to. However, if Exim does not
-# have that functionality compiled, we needn't bother.
-
-$dlfunc_deleted = 0;
-if ( defined $parm_support{'Expand_dlfunc'} && !-e "bin/loaded" ) {
-    delete $parm_support{'Expand_dlfunc'};
-    $dlfunc_deleted = 1;
-}
-
-##################################################
-#          Find environmental details            #
-##################################################
-
-# Find the caller of this program.
-
-(
-    $parm_caller,       $pwpw, $parm_caller_uid, $parm_caller_gid, $pwquota, $pwcomm,
-    $parm_caller_gecos, $parm_caller_home
-) = getpwuid($>);
-
-$pwpw    = $pwpw;      # Kill Perl warnings
-$pwquota = $pwquota;
-$pwcomm  = $pwcomm;
-
-$parm_caller_group = getgrgid($parm_caller_gid);
-
-print "Program caller is $parm_caller ($parm_caller_uid), whose group is $parm_caller_group ($parm_caller_gid)\n";
-print "Home directory is $parm_caller_home\n";
-
-unless ( defined $parm_eximgroup ) {
-    print "Unable to derive \$parm_eximgroup.\n";
-    die "** ABANDONING.\n";
-}
-
-print "You need to be in the Exim group to run these tests. Checking ...";
-
-if ( `groups` =~ /\b\Q$parm_eximgroup\E\b/ ) {
-    print " OK\n";
-}
-else {
-    print "\nOh dear, you are not in the Exim group.\n";
-    die "** Testing abandoned.\n";
-}
-
-# Find this host's IP addresses - there may be many, of course, but we keep
-# one of each type (IPv4 and IPv6).
-
-$parm_ipv4 = "";
-$parm_ipv6 = "";
-
-$local_ipv4 = "";
-$local_ipv6 = "";
-
-open( IFCONFIG, "ifconfig -a|" ) || die "** Cannot run \"ifconfig\": $!\n";
-while ( ( $parm_ipv4 eq "" || $parm_ipv6 eq "" ) && ( $_ = <IFCONFIG> ) ) {
-    my ($ip);
-    if (   $parm_ipv4 eq ""
-        && $_ =~ /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)\s/i ) {
-        $ip = $1;
-        next if ( $ip =~ /^127\./ || $ip =~ /^10\./ );
-        $parm_ipv4 = $ip;
-    }
-
-    if (   $parm_ipv6 eq ""
-        && $_ =~ /^\s*inet6(?:\saddr)?:?\s?([abcdef\d:]+)/i ) {
-        $ip = $1;
-        next if ( $ip eq "::1" || $ip =~ /^fe80/i );
-        $parm_ipv6 = $ip;
-    }
-}
-close(IFCONFIG);
-
-# Use private IP addresses if there are no public ones.
-
-$parm_ipv4 = $local_ipv4 if ( $parm_ipv4 eq "" );
-$parm_ipv6 = $local_ipv6 if ( $parm_ipv6 eq "" );
-
-# If either type of IP address is missing, we need to set the value to
-# something other than empty, because that wrecks the substitutions. The value
-# is reflected, so use a meaningful string. Set appropriate options for the
-# "server" command. In practice, however, many tests assume 127.0.0.1 is
-# available, so things will go wrong if there is no IPv4 address. The lack
-# of IPV4 or IPv6 can be simulated by command options, which force $have_ipv4
-# and $have_ipv6 false.
-
-if ( $parm_ipv4 eq "" ) {
-    $have_ipv4 = 0;
-    $parm_ipv4 = "<no IPv4 address found>";
-    $server_opts .= " -noipv4";
-}
-elsif ( $have_ipv4 == 0 ) {
-    $parm_ipv4 = "<IPv4 testing disabled>";
-    $server_opts .= " -noipv4";
-}
-else {
-    $parm_running{"IPv4"} = " ";
-}
-
-if ( $parm_ipv6 eq "" ) {
-    $have_ipv6 = 0;
-    $parm_ipv6 = "<no IPv6 address found>";
-    $server_opts .= " -noipv6";
-    delete( $parm_support{"IPv6"} );
-}
-elsif ( $have_ipv6 == 0 ) {
-    $parm_ipv6 = "<IPv6 testing disabled>";
-    $server_opts .= " -noipv6";
-    delete( $parm_support{"IPv6"} );
-}
-elsif ( !defined $parm_support{'IPv6'} ) {
-    $have_ipv6 = 0;
-    $parm_ipv6 = "<no IPv6 support in Exim binary>";
-    $server_opts .= " -noipv6";
-}
-else {
-    $parm_running{"IPv6"} = " ";
-}
-
-print "IPv4 address is $parm_ipv4\n";
-print "IPv6 address is $parm_ipv6\n";
-
-# For munging test output, we need the reversed IP addresses.
-
-$parm_ipv4r =
-  ( $parm_ipv4 !~ /^\d/ )
-  ? ""
-  : join( ".", reverse( split /\./, $parm_ipv4 ) );
-
-$parm_ipv6r = $parm_ipv6;    # Appropriate if not in use
-if ( $parm_ipv6 =~ /^[\da-f]/ ) {
-    my (@comps) = split /:/, $parm_ipv6;
-    my (@nibbles);
-    foreach $comp (@comps) {
-        push @nibbles, sprintf( "%lx", hex($comp) >> 8 );
-        push @nibbles, sprintf( "%lx", hex($comp) & 0xff );
-    }
-    $parm_ipv6r = join( ".", reverse(@nibbles) );
-}
-
-# Find the host name, fully qualified.
-
-chomp( $temp = `hostname` );
-$parm_hostname = ( gethostbyname($temp) )[0];
-$parm_hostname = "no.host.name.found" if $parm_hostname eq "";
-print "Hostname is $parm_hostname\n";
-
-if ( $parm_hostname !~ /\./ ) {
-    print "\n*** Host name is not fully qualified: this may cause problems ***\n\n";
-}
-
-if ( $parm_hostname =~ /[[:upper:]]/ ) {
-    print "\n*** Host name has upper case characters: this may cause problems ***\n\n";
-}
-
-##################################################
-#     Create a testing version of Exim           #
-##################################################
-
-# We want to be able to run Exim with a variety of configurations. Normally,
-# the use of -C to change configuration causes Exim to give up its root
-# privilege (unless the caller is exim or root). For these tests, we do not
-# want this to happen. Also, we want Exim to know that it is running in its
-# test harness.
-
-# We achieve this by copying the binary and patching it as we go. The new
-# binary knows it is a testing copy, and it allows -C and -D without loss of
-# privilege. Clearly, this file is dangerous to have lying around on systems
-# where there are general users with login accounts. To protect against this,
-# we put the new binary in a special directory that is accessible only to the
-# caller of this script, who is known to have sudo root privilege from the test
-# that was done above. Furthermore, we ensure that the binary is deleted at the
-# end of the test. First ensure the directory exists.
-
-if ( -d "eximdir" ) { unlink "eximdir/exim"; }    # Just in case
-else {
-    mkdir( "eximdir", 0710 ) || die "** Unable to mkdir $parm_cwd/eximdir: $!\n";
-    system("sudo chgrp $parm_eximgroup eximdir");
-}
-
-# The construction of the patched binary must be done as root, so we use
-# a separate script. As well as indicating that this is a test-harness binary,
-# the version number is patched to "x.yz" so that its length is always the
-# same. Otherwise, when it appears in Received: headers, it affects the length
-# of the message, which breaks certain comparisons.
-
-die "** Unable to make patched exim: $!\n"
-  if ( system("sudo ./patchexim $parm_exim") != 0 );
-
-# From this point on, exits from the program must go via the subroutine
-# tests_exit(), so that suitable cleaning up can be done when required.
-# Arrange to catch interrupting signals, to assist with this.
-
-$SIG{'INT'}  = \&inthandler;
-$SIG{'PIPE'} = \&pipehandler;
-
-# For some tests, we need another copy of the binary that is setuid exim rather
-# than root.
-
-system( "sudo cp eximdir/exim eximdir/exim_exim;" . "sudo chown $parm_eximuser eximdir/exim_exim;" . "sudo chgrp $parm_eximgroup eximdir/exim_exim;" . "sudo chmod 06755 eximdir/exim_exim" );
-
-##################################################
-#     Make copies of utilities we might need     #
-##################################################
-
-# Certain of the tests make use of some of Exim's utilities. We do not need
-# to be root to copy these.
-
-($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
-
-$dbm_build_deleted = 0;
-if ( defined $parm_lookups{'dbm'}
-    && system("cp $parm_exim_dir/exim_dbmbuild eximdir") != 0 ) {
-    delete $parm_lookups{'dbm'};
-    $dbm_build_deleted = 1;
-}
-
-if ( system("cp $parm_exim_dir/exim_dumpdb eximdir") != 0 ) {
-    tests_exit( -1, "Failed to make a copy of exim_dumpdb: $!" );
-}
-
-if ( system("cp $parm_exim_dir/exim_lock eximdir") != 0 ) {
-    tests_exit( -1, "Failed to make a copy of exim_lock: $!" );
-}
-
-if ( system("cp $parm_exim_dir/exinext eximdir") != 0 ) {
-    tests_exit( -1, "Failed to make a copy of exinext: $!" );
-}
-
-if ( system("cp $parm_exim_dir/exigrep eximdir") != 0 ) {
-    tests_exit( -1, "Failed to make a copy of exigrep: $!" );
-}
-
-if ( system("cp $parm_exim_dir/eximstats eximdir") != 0 ) {
-    tests_exit( -1, "Failed to make a copy of eximstats: $!" );
-}
-
-##################################################
-#    Check that the Exim user can access stuff   #
-##################################################
-
-# We delay this test till here so that we can check access to the actual test
-# binary. This will be needed when Exim re-exec's itself to do deliveries.
-
-print "Exim user is $parm_eximuser ($parm_exim_uid)\n";
-print "Exim group is $parm_eximgroup ($parm_exim_gid)\n";
-
-if ( $parm_caller_uid eq $parm_exim_uid ) {
-    tests_exit( -1, "Exim user ($parm_eximuser,$parm_exim_uid) cannot be " . "the same as caller ($parm_caller,$parm_caller_uid)" );
-}
-
-print "The Exim user needs access to the test suite directory. Checking ...";
-
-if ( ( $rc = system("sudo bin/checkaccess $parm_cwd/eximdir/exim $parm_eximuser $parm_eximgroup") ) != 0 ) {
-    my ($why) = "unknown failure $rc";
-    $rc >>= 8;
-    $why = "Couldn't find user \"$parm_eximuser\""    if $rc == 1;
-    $why = "Couldn't find group \"$parm_eximgroup\""  if $rc == 2;
-    $why = "Couldn't read auxiliary group list"       if $rc == 3;
-    $why = "Couldn't get rid of auxiliary groups"     if $rc == 4;
-    $why = "Couldn't set gid"                         if $rc == 5;
-    $why = "Couldn't set uid"                         if $rc == 6;
-    $why = "Couldn't open \"$parm_cwd/eximdir/exim\"" if $rc == 7;
-    print "\n** $why\n";
-    tests_exit( -1, "$parm_eximuser cannot access the test suite directory" );
-}
-else {
-    print " OK\n";
-}
-
-##################################################
-#        Create a list of available tests        #
-##################################################
-
-# The scripts directory contains a number of subdirectories whose names are
-# of the form 0000-xxxx, 1100-xxxx, 2000-xxxx, etc. Each set of tests apart
-# from the first requires certain optional features to be included in the Exim
-# binary. These requirements are contained in a file called "REQUIRES" within
-# the directory. We scan all these tests, discarding those that cannot be run
-# because the current binary does not support the right facilities, and also
-# those that are outside the numerical range selected.
-
-print "\nTest range is $test_start to $test_end (flavour $flavour)\n";
-print "Omitting \${dlfunc expansion tests (loadable module not present)\n"
-  if $dlfunc_deleted;
-print "Omitting dbm tests (unable to copy exim_dbmbuild)\n"
-  if $dbm_build_deleted;
-
-opendir( DIR, "scripts" ) || tests_exit( -1, "Failed to opendir(\"scripts\"): $!" );
-@test_dirs = sort readdir(DIR);
-closedir(DIR);
-
-# Remove . and .. and CVS from the list.
-
-for ( $i = 0; $i < @test_dirs; $i++ ) {
-    my ($d) = $test_dirs[$i];
-    if ( $d eq "." || $d eq ".." || $d eq "CVS" ) {
-        splice @test_dirs, $i, 1;
-        $i--;
-    }
-}
-
-# Scan for relevant tests
-
-for ( $i = 0; $i < @test_dirs; $i++ ) {
-    my ($testdir)  = $test_dirs[$i];
-    my ($wantthis) = 1;
-
-    print ">>Checking $testdir\n" if $debug;
-
-    # Skip this directory if the first test is equal or greater than the first
-    # test in the next directory.
-
-    next
-      if ( $i < @test_dirs - 1 )
-      && ( $test_start >= substr( $test_dirs[ $i + 1 ], 0, 4 ) );
-
-    # No need to carry on if the end test is less than the first test in this
-    # subdirectory.
-
-    last if $test_end < substr( $testdir, 0, 4 );
-
-    # Check requirements, if any.
-
-    if ( open( REQUIRES, "scripts/$testdir/REQUIRES" ) ) {
-        while (<REQUIRES>) {
-            next if /^\s*$/;
-            s/\s+$//;
-            if (/^support (.*)$/) {
-                if ( !defined $parm_support{$1} ) { $wantthis = 0; last; }
-            }
-            elsif (/^running (.*)$/) {
-                if ( !defined $parm_running{$1} ) { $wantthis = 0; last; }
-            }
-            elsif (/^lookup (.*)$/) {
-                if ( !defined $parm_lookups{$1} ) { $wantthis = 0; last; }
-            }
-            elsif (/^authenticators? (.*)$/) {
-                if ( !defined $parm_authenticators{$1} ) { $wantthis = 0; last; }
-            }
-            elsif (/^router (.*)$/) {
-                if ( !defined $parm_routers{$1} ) { $wantthis = 0; last; }
-            }
-            elsif (/^transport (.*)$/) {
-                if ( !defined $parm_transports{$1} ) { $wantthis = 0; last; }
-            }
-            else {
-                tests_exit( -1, "Unknown line in \"scripts/$testdir/REQUIRES\": \"$_\"" );
-            }
-        }
-        close(REQUIRES);
-    }
-    else {
-        tests_exit( -1, "Failed to open \"scripts/$testdir/REQUIRES\": $!" )
-          unless $!{ENOENT};
-    }
-
-    # Loop if we do not want the tests in this subdirectory.
-
-    if ( !$wantthis ) {
-        chomp;
-        print "Omitting tests in $testdir (missing $_)\n";
-        next;
-    }
-
-    # We want the tests from this subdirectory, provided they are in the
-    # range that was selected.
-
-    opendir( SUBDIR, "scripts/$testdir" )
-      || tests_exit( -1, "Failed to opendir(\"scripts/$testdir\"): $!" );
-    @testlist = sort readdir(SUBDIR);
-    close(SUBDIR);
-
-    foreach $test (@testlist) {
-        next if $test !~ /^\d{4}(?:\.\d+)?$/;
-        next if $test < $test_start || $test > $test_end;
-        push @test_list, "$testdir/$test";
-    }
-}
-
-print ">>Test List: @test_list\n", if $debug;
-
-##################################################
-#         Munge variable auxiliary data          #
-##################################################
-
-# Some of the auxiliary data files have to refer to the current testing
-# directory and other parameter data. The generic versions of these files are
-# stored in the aux-var-src directory. At this point, we copy each of them
-# to the aux-var directory, making appropriate substitutions. There aren't very
-# many of them, so it's easiest just to do this every time. Ensure the mode
-# is standardized, as this path is used as a test for the ${stat: expansion.
-
-# A similar job has to be done for the files in the dnszones-src directory, to
-# make the fake DNS zones for testing. Most of the zone files are copied to
-# files of the same name, but db.ipv4.V4NET and db.ipv6.V6NET use the testing
-# networks that are defined by parameter.
-
-foreach $basedir ( "aux-var", "dnszones" ) {
-    system("sudo rm -rf $parm_cwd/$basedir");
-    mkdir( "$parm_cwd/$basedir", 0777 );
-    chmod( 0755, "$parm_cwd/$basedir" );
-
-    opendir( AUX, "$parm_cwd/$basedir-src" )
-      || tests_exit( -1, "Failed to opendir $parm_cwd/$basedir-src: $!" );
-    my (@filelist) = readdir(AUX);
-    close(AUX);
-
-    foreach $file (@filelist) {
-        my ($outfile) = $file;
-        next if $file =~ /^\./;
-
-        if ( $file eq "db.ip4.V4NET" ) {
-            $outfile = "db.ip4.$parm_ipv4_test_net";
-        }
-        elsif ( $file eq "db.ip6.V6NET" ) {
-            my (@nibbles) = reverse( split /\s*/, $parm_ipv6_test_net );
-            $"       = '.';
-            $outfile = "db.ip6.@nibbles";
-            $"       = ' ';
-        }
-
-        print ">>Copying $basedir-src/$file to $basedir/$outfile\n" if $debug;
-        open( IN, "$parm_cwd/$basedir-src/$file" )
-          || tests_exit( -1, "Failed to open $parm_cwd/$basedir-src/$file: $!" );
-        open( OUT, ">$parm_cwd/$basedir/$outfile" )
-          || tests_exit( -1, "Failed to open $parm_cwd/$basedir/$outfile: $!" );
-        while (<IN>) {
-            do_substitute(0);
-            print OUT;
-        }
-        close(IN);
-        close(OUT);
-    }
-}
-
-# Set a user's shell, distinguishable from /bin/sh
-
-symlink( "/bin/sh", "aux-var/sh" );
-$ENV{'SHELL'} = $parm_shell = $parm_cwd . "/aux-var/sh";
-
-##################################################
-#     Create fake DNS zones for this host        #
-##################################################
-
-# There are fixed zone files for 127.0.0.1 and ::1, but we also want to be
-# sure that there are forward and reverse registrations for this host, using
-# its real IP addresses. Dynamically created zone files achieve this.
-
-if ( $have_ipv4 || $have_ipv6 ) {
-    my ( $shortname, $domain ) = $parm_hostname =~ /^([^.]+)(.*)/;
-    open( OUT, ">$parm_cwd/dnszones/db$domain" )
-      || tests_exit( -1, "Failed to open $parm_cwd/dnszones/db$domain: $!" );
-    print OUT "; This is a dynamically constructed fake zone file.\n" . "; The following line causes fakens to return PASS_ON\n" . "; for queries that it cannot answer\n\n" . "PASS ON NOT FOUND\n\n";
-    print OUT "$shortname  A     $parm_ipv4\n" if $have_ipv4;
-    print OUT "$shortname  AAAA  $parm_ipv6\n" if $have_ipv6;
-    print OUT "\n; End\n";
-    close(OUT);
-}
-
-if ( $have_ipv4 && $parm_ipv4 ne "127.0.0.1" ) {
-    my (@components) = $parm_ipv4 =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)/;
-    open( OUT, ">$parm_cwd/dnszones/db.ip4.$components[0]" )
-      || tests_exit(
-        -1,
-        "Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!"
-      );
-    print OUT "; This is a dynamically constructed fake zone file.\n" . "; The zone is $components[0].in-addr.arpa.\n\n" . "$components[3].$components[2].$components[1]  PTR  $parm_hostname.\n\n" . "; End\n";
-    close(OUT);
-}
-
-if ( $have_ipv6 && $parm_ipv6 ne "::1" ) {
-    my ($exp_v6) = $parm_ipv6;
-    $exp_v6 =~ s/[^:]//g;
-    if ( $parm_ipv6 =~ /^([^:].+)::$/ ) {
-        $exp_v6 = $1 . ':0' x ( 9 - length($exp_v6) );
-    }
-    elsif ( $parm_ipv6 =~ /^(.+)::(.+)$/ ) {
-        $exp_v6 = $1 . ':0' x ( 8 - length($exp_v6) ) . ':' . $2;
-    }
-    elsif ( $parm_ipv6 =~ /^::(.+[^:])$/ ) {
-        $exp_v6 = '0:' x ( 9 - length($exp_v6) ) . $1;
-    }
-    else {
-        $exp_v6 = $parm_ipv6;
-    }
-    my (@components) = split /:/, $exp_v6;
-    my (@nibbles) = reverse( split /\s*/, shift @components );
-    my ($sep) = "";
-
-    $" = ".";
-    open( OUT, ">$parm_cwd/dnszones/db.ip6.@nibbles" )
-      || tests_exit(
-        -1,
-        "Failed  to open $parm_cwd/dnszones/db.ip6.@nibbles: $!"
-      );
-    print OUT "; This is a dynamically constructed fake zone file.\n" . "; The zone is @nibbles.ip6.arpa.\n\n";
-
-    @components = reverse @components;
-    foreach $c (@components) {
-        $c = "0$c" until $c =~ /^..../;
-        @nibbles = reverse( split /\s*/, $c );
-        print OUT "$sep@nibbles";
-        $sep = ".";
-    }
-
-    print OUT "  PTR  $parm_hostname.\n\n; End\n";
-    close(OUT);
-    $" = " ";
-}
-
-##################################################
-#    Create lists of mailboxes and message logs  #
-##################################################
-
-# We use these lists to check that a test has created the expected files. It
-# should be faster than looking for the file each time. For mailboxes, we have
-# to scan a complete subtree, in order to handle maildirs. For msglogs, there
-# is just a flat list of files.
-
-@oldmails = list_files_below("mail");
-opendir( DIR, "msglog" ) || tests_exit( -1, "Failed to opendir msglog: $!" );
-@oldmsglogs = readdir(DIR);
-closedir(DIR);
-
-##################################################
-#         Run the required tests                 #
-##################################################
-
-# Each test script contains a number of tests, separated by a line that
-# contains ****. We open input from the terminal so that we can read responses
-# to prompts.
-
-open( T, "/dev/tty" ) || tests_exit( -1, "Failed to open /dev/tty: $!" );
-
-print "\nPress RETURN to run the tests: ";
-$_ = $force_continue ? "c" : <T>;
-print "\n";
-
-$lasttestdir = "";
-
-foreach $test (@test_list) {
-    local ($lineno)    = 0;
-    local ($commandno) = 0;
-    local ($subtestno) = 0;
-    ( local $testno = $test ) =~ s|.*/||;
-    local ($sortlog) = 0;
-
-    my ($gnutls)      = 0;
-    my ($docheck)     = 1;
-    my ($thistestdir) = substr( $test, 0, -5 );
-
-    if ( $lasttestdir ne $thistestdir ) {
-        $gnutls = 0;
-        if ( -s "scripts/$thistestdir/REQUIRES" ) {
-            my ($indent) = "";
-            print "\n>>> The following tests require: ";
-            open( IN, "scripts/$thistestdir/REQUIRES" )
-              || tests_exit( -1, "Failed to open scripts/$thistestdir/REQUIRES: $1" );
-            while (<IN>) {
-                $gnutls = 1 if /^support GnuTLS/;
-                print $indent, $_;
-                $indent = ">>>                              ";
-            }
-            close(IN);
-        }
-    }
-    $lasttestdir = $thistestdir;
-
-    # Remove any debris in the spool directory and the test-mail directory
-    # and also the files for collecting stdout and stderr. Then put back
-    # the test-mail directory for appendfile deliveries.
-
-    system "sudo /bin/rm -rf spool test-*";
-    system "mkdir test-mail 2>/dev/null";
-
-    # A privileged Exim will normally make its own spool directory, but some of
-    # the tests run in unprivileged modes that don't always work if the spool
-    # directory isn't already there. What is more, we want anybody to be able
-    # to read it in order to find the daemon's pid.
-
-    system "mkdir spool; " . "sudo chown $parm_eximuser:$parm_eximgroup spool; " . "sudo chmod 0755 spool";
-
-    # Empty the cache that keeps track of things like message id mappings, and
-    # set up the initial sequence strings.
-
-    undef %cache;
-    $next_msgid          = "aX";
-    $next_pid            = 1234;
-    $next_port           = 1111;
-    $message_skip        = 0;
-    $msglog_skip         = 0;
-    $stderr_skip         = 0;
-    $stdout_skip         = 0;
-    $rmfiltertest        = 0;
-    $is_ipv6test         = 0;
-    $TEST_STATE->{munge} = "";
-
-    # Remove the associative arrays used to hold checked mail files and msglogs
-
-    undef %expected_mails;
-    undef %expected_msglogs;
-
-    # Open the test's script
-    open( SCRIPT, "scripts/$test" )
-      || tests_exit( -1, "Failed to open \"scripts/$test\": $!" );
-
-    # Run through the script once to set variables which should be global
-    while (<SCRIPT>) {
-        if (/^no_message_check/) { $message_skip = 1; next; }
-        if (/^no_msglog_check/)  { $msglog_skip  = 1; next; }
-        if (/^no_stderr_check/)  { $stderr_skip  = 1; next; }
-        if (/^no_stdout_check/)  { $stdout_skip  = 1; next; }
-        if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
-        if (/^sortlog/)          { $sortlog      = 1; next; }
-    }
-
-    # Reset to beginning of file for per test interpreting/processing
-    seek( SCRIPT, 0, 0 );
-
-    # The first line in the script must be a comment that is used to identify
-    # the set of tests as a whole.
-
-    $_ = <SCRIPT>;
-    $lineno++;
-    tests_exit( -1, "Missing identifying comment at start of $test" ) if ( !/^#/ );
-    printf( "%s %s", ( substr $test, 5 ), ( substr $_, 2 ) );
-
-    # Loop for each of the subtests within the script. The variable $server_pid
-    # is used to remember the pid of a "server" process, for which we do not
-    # wait until we have waited for a subsequent command.
-
-    local ($server_pid) = 0;
-    for ( $commandno = 1; !eof SCRIPT; $commandno++ ) {
-
-        # Skip further leading comments and blank lines, handle the flag setting
-        # commands, and deal with tests for IP support.
-
-        while (<SCRIPT>) {
-            $lineno++;
-
-            # Could remove these variable settings because they are already
-            # set above, but doesn't hurt to leave them here.
-            if (/^no_message_check/) { $message_skip = 1; next; }
-            if (/^no_msglog_check/)  { $msglog_skip  = 1; next; }
-            if (/^no_stderr_check/)  { $stderr_skip  = 1; next; }
-            if (/^no_stdout_check/)  { $stdout_skip  = 1; next; }
-            if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
-            if (/^sortlog/)          { $sortlog      = 1; next; }
-
-            if (/^need_largefiles/) {
-                next if $have_largefiles;
-                print ">>> Large file support is needed for test $testno, but is not available: skipping\n";
-                $docheck = 0;    # don't check output
-                undef $_;        # pretend EOF
-                last;
-            }
-
-            if (/^need_ipv4/) {
-                next if $have_ipv4;
-                print ">>> IPv4 is needed for test $testno, but is not available: skipping\n";
-                $docheck = 0;    # don't check output
-                undef $_;        # pretend EOF
-                last;
-            }
-
-            if (/^need_ipv6/) {
-                if ($have_ipv6) {
-                    $is_ipv6test = 1;
-                    next;
-                }
-                print ">>> IPv6 is needed for test $testno, but is not available: skipping\n";
-                $docheck = 0;    # don't check output
-                undef $_;        # pretend EOF
-                last;
-            }
-
-            if (/^need_move_frozen_messages/) {
-                next if defined $parm_support{"move_frozen_messages"};
-                print ">>> move frozen message support is needed for test $testno, " . "but is not\n>>> available: skipping\n";
-                $docheck = 0;    # don't check output
-                undef $_;        # pretend EOF
-                last;
-            }
-
-            last unless /^(#|\s*$)/;
-        }
-        last if !defined $_;     # Hit EOF
-
-        my ($subtest_startline) = $lineno;
-
-        # Now run the command. The function returns 0 if exim was run and waited
-        # for, 1 if any other command was run and waited for, and 2 if a command
-        # was run and not waited for (usually a daemon or server startup).
-
-        my ($commandname) = "";
-        my ($expectrc)    = 0;
-        my ( $rc, $run_extra ) = run_command( $testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE );
-        my ($cmdrc) = $?;
-
-        $0 = "[runtest $testno]";
-
-        if ($debug) {
-            print ">> rc=$rc cmdrc=$cmdrc\n";
-            if ( defined $run_extra ) {
-                foreach my $k ( keys %$run_extra ) {
-                    my $v = defined $run_extra->{$k} ? qq!"$run_extra->{$k}"! : '<undef>';
-                    print ">>   $k -> $v\n";
-                }
-            }
-        }
-        $run_extra = {} unless defined $run_extra;
-        foreach my $k ( keys %$run_extra ) {
-            if ( exists $TEST_STATE->{$k} ) {
-                my $nv = defined $run_extra->{$k} ? qq!"$run_extra->{$k}"! : 'removed';
-                print ">> override of $k; was $TEST_STATE->{$k}, now $nv\n" if $debug;
-            }
-            if ( defined $run_extra->{$k} ) {
-                $TEST_STATE->{$k} = $run_extra->{$k};
-            }
-            elsif ( exists $TEST_STATE->{$k} ) {
-                delete $TEST_STATE->{$k};
-            }
-        }
-
-        # Hit EOF after an initial return code number
-
-        tests_exit( -1, "Unexpected EOF in script" ) if ( $rc == 4 );
-
-        # Carry on with the next command if we did not wait for this one. $rc == 0
-        # if no subprocess was run; $rc == 3 if we started a process but did not
-        # wait for it.
-
-        next if ( $rc == 0 || $rc == 3 );
-
-        # We ran and waited for a command. Check for the expected result unless
-        # it died.
-
-        if ( $cmdrc != $expectrc && !$sigpipehappened ) {
-            printf("** Command $commandno (\"$commandname\", starting at line $subtest_startline)\n");
-            if ( ( $cmdrc & 0xff ) == 0 ) {
-                printf( "** Return code %d (expected %d)", $cmdrc / 256, $expectrc / 256 );
-            }
-            elsif ( ( $cmdrc & 0xff00 ) == 0 ) { printf( "** Killed by signal %d", $cmdrc & 255 ); }
-            else                               { printf( "** Status %x",           $cmdrc ); }
-
-            for ( ;; ) {
-                print "\nshow stdErr, show stdOut, Retry, Continue (without file comparison), or Quit? [Q] ";
-                $_ = $force_continue ? "c" : <T>;
-                tests_exit(1) if /^q?$/i;
-                log_failure( $log_failed_filename, $testno, "exit code unexpected" ) if ( /^c$/i && $force_continue );
-                print "... continue forced\n" if $force_continue;
-                last if /^[rc]$/i;
-                if (/^e$/i) {
-                    system("$more test-stderr");
-                }
-                elsif (/^o$/i) {
-                    system("$more test-stdout");
-                }
-            }
-
-            $retry = 1 if /^r$/i;
-            $docheck = 0;
-        }
-
-        # If the command was exim, and a listening server is running, we can now
-        # close its input, which causes us to wait for it to finish, which is why
-        # we didn't close it earlier.
-
-        if ( $rc == 2 && $server_pid != 0 ) {
-            close SERVERCMD;
-            $server_pid = 0;
-            if ( $? != 0 ) {
-                if    ( ( $? & 0xff ) == 0 )   { printf( "Server return code %d",      $? / 256 ); }
-                elsif ( ( $? & 0xff00 ) == 0 ) { printf( "Server killed by signal %d", $? & 255 ); }
-                else                           { printf( "Server status %x",           $? ); }
-
-                for ( ;; ) {
-                    print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
-                    $_ = $force_continue ? "c" : <T>;
-                    tests_exit(1) if /^q?$/i;
-                    log_failure( $log_failed_filename, $testno, "exit code unexpected" ) if ( /^c$/i && $force_continue );
-                    print "... continue forced\n" if $force_continue;
-                    last if /^[rc]$/i;
-
-                    if (/^s$/i) {
-                        open( S, "test-stdout-server" )
-                          || tests_exit( -1, "Failed to open test-stdout-server: $!" );
-                        print while <S>;
-                        close(S);
-                    }
-                }
-                $retry = 1 if /^r$/i;
-            }
-        }
-    }
-
-    close SCRIPT;
-
-    # The script has finished. Check the all the output that was generated. The
-    # function returns 0 if all is well, 1 if we should rerun the test (the files
-    # function returns 0 if all is well, 1 if we should rerun the test (the files
-    # have been updated). It does not return if the user responds Q to a prompt.
-
-    if ($retry) {
-        $retry = '0';
-        print( ( "#" x 79 ) . "\n" );
-        redo;
-    }
-
-    if ($docheck) {
-        if ( check_output( $TEST_STATE->{munge} ) != 0 ) {
-            print( ( "#" x 79 ) . "\n" );
-            redo;
-        }
-        else {
-            print("  Script completed\n");
-        }
-    }
-}
-
-##################################################
-#         Exit from the test script              #
-##################################################
-
-tests_exit( -1, "No runnable tests selected" ) if @test_list == 0;
-tests_exit(0);
-
-# End of runtest script
-# vim: set sw=2 et :
