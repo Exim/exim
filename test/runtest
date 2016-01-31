@@ -13,7 +13,9 @@
 # Placed in the Exim CVS: 06 February 2006                                    #
 ###############################################################################
 
-#use strict;
+use strict;
+use warnings;
+
 use Errno;
 use FileHandle;
 use Socket;
@@ -24,7 +26,7 @@ use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ( 'Smart::Comments' => '##
 
 # Start by initializing some global variables
 
-$testversion = "4.80 (08-May-12)";
+my $testversion = "4.80 (08-May-12)";
 
 # This gets embedded in the D-H params filename, and the value comes
 # from asking GnuTLS for "normal", but there appears to be no way to
@@ -32,29 +34,48 @@ $testversion = "4.80 (08-May-12)";
 # We also clamp it because of NSS interop, see addition of tls_dh_max_bits.
 # This value is correct as of GnuTLS 2.12.18 as clamped by tls_dh_max_bits.
 # normal = 2432   tls_dh_max_bits = 2236
-$gnutls_dh_bits_normal = 2236;
+my $gnutls_dh_bits_normal = 2236;
 
-$cf                  = "bin/cf -exact";
-$cr                  = "\r";
-$debug               = 0;
-$force_continue      = 0;
-$force_update        = 0;
-$log_failed_filename = "failed-summary.log";
-$more                = "less -XF";
-$optargs             = "";
-$save_output         = 0;
-$server_opts         = "";
-$flavour             = 'FOO';
+my $cf                  = "bin/cf -exact";
+my $cr                  = "\r";
+my $debug               = 0;
+my $force_continue      = 0;
+my $force_update        = 0;
+my $log_failed_filename = "failed-summary.log";
+my $more                = "less -XF";
+my $optargs             = "";
+my $save_output         = 0;
+my $server_opts         = "";
+my $flavour             = 'FOO';
 
-$have_ipv4       = 1;
-$have_ipv6       = 1;
-$have_largefiles = 0;
+# dodgy globals... Essentially these might need to be targeted first to be fixed.
+# "Empty the cache that keeps track of things like message id mappings, and
+# set up the initial sequence strings."
+my $current_test        = '';     # Needed cause the foreach loop var for $test is used in tests_exit()
+my $current_test_number = '?';    # Needed cause the foreach loop var for $testno
+my %cache;                        # Used by main loop and multiple subroutines. TODO: What is this for?
+my $next_msgid   = 'aX';                # Is this just hardcoded and used globally?
+my $is_ipv6test  = 0;
+my $next_pid     = 1234;
+my $next_port    = 1111;
+my $message_skip = 0;
+my $msglog_skip  = 0;
+my $stderr_skip  = 0;
+my $stdout_skip  = 0;
+my $rmfiltertest = 0;
+my $TEST_STATE   = { 'munge' => '' };
 
-$test_start       = 1;
-$test_end         = $test_top = 8999;
-$test_special_top = 9999;
-@test_list        = ();
-@test_dirs        = ();
+my $have_ipv4       = 1;
+my $have_ipv6       = 1;
+my $have_largefiles = 0;
+
+my $test_start       = 1;
+my $test_top         = 8999;
+my $test_end         = $test_top;
+my $test_special_top = 9999;
+my @test_list        = ();
+my @test_dirs        = ();
+my $sigpipehappened;
 
 # Networks to use for DNS tests. We need to choose some networks that will
 # never be used so that there is no chance that the host on which we are
@@ -66,17 +87,17 @@ $test_special_top = 9999;
 # are defined, so it is trivially possible to change them should that ever
 # become necessary.
 
-$parm_ipv4_test_net = "224";
-$parm_ipv6_test_net = "ff00";
+my $parm_ipv4_test_net = "224";
+my $parm_ipv6_test_net = "ff00";
 
 # Port numbers are currently hard-wired
 
-$parm_port_n  = 1223;    # Nothing listening on this port
-$parm_port_s  = 1224;    # Used for the "server" command
-$parm_port_d  = 1225;    # Used for the Exim daemon
-$parm_port_d2 = 1226;    # Additional for daemon
-$parm_port_d3 = 1227;    # Additional for daemon
-$parm_port_d4 = 1228;    # Additional for daemon
+my $parm_port_n  = 1223;    # Nothing listening on this port
+my $parm_port_s  = 1224;    # Used for the "server" command
+my $parm_port_d  = 1225;    # Used for the Exim daemon
+my $parm_port_d2 = 1226;    # Additional for daemon
+my $parm_port_d3 = 1227;    # Additional for daemon
+my $parm_port_d4 = 1228;    # Additional for daemon
 
 # Manually set locale
 $ENV{'LC_ALL'} = 'C';
@@ -86,9 +107,19 @@ $ENV{'LC_ALL'} = 'C';
 $ENV{USER} = getpwuid($>)
   if not exists $ENV{USER};
 
+###############################################################################
+###############################################################################
 
-my $TEST_STATE = {};
+# Define a number of subroutines
 
+###############################################################################
+###############################################################################
+
+# Find the caller of this program.
+my ( $parm_caller, $pwpw, $parm_caller_uid, $parm_caller_gid, $pwquota, $pwcomm, $parm_caller_gecos, $parm_caller_home ) = getpwuid($>);
+
+# And group name.
+my $parm_caller_group = getgrgid($parm_caller_gid);
 
 ###############################################################################
 ###############################################################################
@@ -141,7 +172,7 @@ else {
 # as the path to the binary. If the first argument does not start with a
 # '/' but exists in the file system, it's assumed to be the Exim binary.
 
-$parm_exim = ( @ARGV > 0 && ( -x $ARGV[0] or $ARGV[0] =~ m?^/? ) ) ? Cwd::abs_path( shift @ARGV ) : "";
+my $parm_exim = ( @ARGV > 0 && ( -x $ARGV[0] or $ARGV[0] =~ m?^/? ) ) ? Cwd::abs_path( shift @ARGV ) : "";
 print "Exim binary is $parm_exim\n" if $parm_exim ne "";
 
 ##################################################
@@ -187,10 +218,10 @@ if ( @ARGV > 0 ) {
 
 # After doing so, we find its absolute path name.
 
-$cwd = $0;
+my $cwd = $0;
 $cwd = '.' if ( $cwd !~ s|/[^/]+$|| );
 chdir($cwd) || die "** Failed to chdir to \"$cwd\": $!\n";
-$parm_cwd = Cwd::getcwd();
+my $parm_cwd = Cwd::getcwd();
 
 ##################################################
 #     Search for an Exim binary to test          #
@@ -206,7 +237,7 @@ if ( $parm_exim eq "" ) {
     my ($use_srcdir) = "";
 
     opendir DIR, ".." || die "** Failed to opendir \"..\": $!\n";
-    while ( $f = readdir(DIR) ) {
+    while ( my $f = readdir(DIR) ) {
         my ($srcdir);
 
         # Try this directory if it is "exim4" or if it is exim-snapshot or exim-n.m
@@ -250,7 +281,7 @@ if ( $parm_exim eq "" ) {
 
 if ( $parm_exim eq "" ) {
     print "** Did not find an Exim binary to test\n";
-    for ( $i = 0; $i < 5; $i++ ) {
+    foreach my $i ( 0 .. 4 ) {
         my ($trybin);
         print "** Enter pathname for Exim binary: ";
         chomp( $trybin = <STDIN> );
@@ -282,6 +313,9 @@ close(OUT);
 print("Probing with config file: $parm_cwd/test-config\n");
 open( EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " . "-bP exim_user exim_group 2>&1|" )
   || die "** Cannot run $parm_exim: $!\n";
+
+my ( $parm_eximuser, $parm_eximgroup, $parm_trusted_config_list, $parm_exim_uid, $parm_exim_gid ) = ( '', '', '', '', '' );
+
 while (<EXIMINFO>) {
     $parm_eximuser            = $1 if /^exim_user = (.*)$/;
     $parm_eximgroup           = $1 if /^exim_group = (.*)$/;
@@ -337,6 +371,8 @@ open( EXIMINFO, "$parm_exim -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |" )
   || die "** Cannot run $parm_exim: $!\n";
 
 print "-" x 78, "\n";
+
+my ( %parm_support, %parm_lookups, %parm_authenticators, %parm_routers, %parm_transports, %parm_running );
 
 while (<EXIMINFO>) {
     my (@temp);
@@ -408,6 +444,8 @@ unlink("$parm_cwd/test-config");
 
 # These are crude tests. If they aren't good enough, we'll have to improve
 # them, for example by actually passing a message through spamc or clamscan.
+
+my ($parm_clamsocket);
 
 if ( defined $parm_support{'Content_Scanning'} ) {
     my $sock = new FileHandle;
@@ -595,7 +633,7 @@ if ( defined $parm_lookups{'redis'} ) {
 # This test suite assumes that Exim has been built with at least the "usual"
 # set of routers, transports, and lookups. Ensure that this is so.
 
-$missing = "";
+my $missing = '';
 
 $missing .= "     Lookup: lsearch\n" if ( !defined $parm_lookups{'lsearch'} );
 
@@ -626,10 +664,7 @@ if ( $missing ne "" ) {
 
 # These are always required:
 
-for $prog (
-    "cf",     "checkaccess", "client", "client-ssl", "client-gnutls",
-    "fakens", "iefbr14",     "server"
-  ) {
+foreach my $prog (qw/cf checkaccess client client-ssl client-gnutls fakens iefbr14 server/) {
     next if ( $prog eq "client-ssl"    && !defined $parm_support{'OpenSSL'} );
     next if ( $prog eq "client-gnutls" && !defined $parm_support{'GnuTLS'} );
     if ( !-e "bin/$prog" ) {
@@ -643,7 +678,7 @@ for $prog (
 # compiled on systems where we don't know how to. However, if Exim does not
 # have that functionality compiled, we needn't bother.
 
-$dlfunc_deleted = 0;
+my $dlfunc_deleted = 0;
 if ( defined $parm_support{'Expand_dlfunc'} && !-e "bin/loaded" ) {
     delete $parm_support{'Expand_dlfunc'};
     $dlfunc_deleted = 1;
@@ -653,18 +688,9 @@ if ( defined $parm_support{'Expand_dlfunc'} && !-e "bin/loaded" ) {
 #          Find environmental details            #
 ##################################################
 
-# Find the caller of this program.
-
-(
-    $parm_caller,       $pwpw, $parm_caller_uid, $parm_caller_gid, $pwquota, $pwcomm,
-    $parm_caller_gecos, $parm_caller_home
-) = getpwuid($>);
-
 $pwpw    = $pwpw;      # Kill Perl warnings
 $pwquota = $pwquota;
 $pwcomm  = $pwcomm;
-
-$parm_caller_group = getgrgid($parm_caller_gid);
 
 print "Program caller is $parm_caller ($parm_caller_uid), whose group is $parm_caller_group ($parm_caller_gid)\n";
 print "Home directory is $parm_caller_home\n";
@@ -687,11 +713,11 @@ else {
 # Find this host's IP addresses - there may be many, of course, but we keep
 # one of each type (IPv4 and IPv6).
 
-$parm_ipv4 = "";
-$parm_ipv6 = "";
+my $parm_ipv4 = "";
+my $parm_ipv6 = "";
 
-$local_ipv4 = "";
-$local_ipv6 = "";
+my $local_ipv4 = "";
+my $local_ipv6 = "";
 
 open( IFCONFIG, "ifconfig -a|" ) || die "** Cannot run \"ifconfig\": $!\n";
 while ( ( $parm_ipv4 eq "" || $parm_ipv6 eq "" ) && ( $_ = <IFCONFIG> ) ) {
@@ -763,16 +789,16 @@ print "IPv6 address is $parm_ipv6\n";
 
 # For munging test output, we need the reversed IP addresses.
 
-$parm_ipv4r =
+my $parm_ipv4r =
   ( $parm_ipv4 !~ /^\d/ )
   ? ""
   : join( ".", reverse( split /\./, $parm_ipv4 ) );
 
-$parm_ipv6r = $parm_ipv6;    # Appropriate if not in use
+my $parm_ipv6r = $parm_ipv6;    # Appropriate if not in use
 if ( $parm_ipv6 =~ /^[\da-f]/ ) {
     my (@comps) = split /:/, $parm_ipv6;
     my (@nibbles);
-    foreach $comp (@comps) {
+    foreach my $comp (@comps) {
         push @nibbles, sprintf( "%lx", hex($comp) >> 8 );
         push @nibbles, sprintf( "%lx", hex($comp) & 0xff );
     }
@@ -781,8 +807,10 @@ if ( $parm_ipv6 =~ /^[\da-f]/ ) {
 
 # Find the host name, fully qualified.
 
-chomp( $temp = `hostname` );
-$parm_hostname = ( gethostbyname($temp) )[0];
+my $temp = `hostname`;
+chomp $temp;
+
+my $parm_hostname = ( gethostbyname($temp) )[0];
 $parm_hostname = "no.host.name.found" if $parm_hostname eq "";
 print "Hostname is $parm_hostname\n";
 
@@ -847,9 +875,9 @@ system( "sudo cp eximdir/exim eximdir/exim_exim;" . "sudo chown $parm_eximuser e
 # Certain of the tests make use of some of Exim's utilities. We do not need
 # to be root to copy these.
 
-($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
+my ($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
-$dbm_build_deleted = 0;
+my $dbm_build_deleted = 0;
 if ( defined $parm_lookups{'dbm'}
     && system("cp $parm_exim_dir/exim_dbmbuild eximdir") != 0 ) {
     delete $parm_lookups{'dbm'};
@@ -892,7 +920,8 @@ if ( $parm_caller_uid eq $parm_exim_uid ) {
 
 print "The Exim user needs access to the test suite directory. Checking ...";
 
-if ( ( $rc = system("sudo bin/checkaccess $parm_cwd/eximdir/exim $parm_eximuser $parm_eximgroup") ) != 0 ) {
+my $rc = system("sudo bin/checkaccess $parm_cwd/eximdir/exim $parm_eximuser $parm_eximgroup");
+if ($rc) {
     my ($why) = "unknown failure $rc";
     $rc >>= 8;
     $why = "Couldn't find user \"$parm_eximuser\""    if $rc == 1;
@@ -933,7 +962,7 @@ closedir(DIR);
 
 # Remove . and .. and CVS from the list.
 
-for ( $i = 0; $i < @test_dirs; $i++ ) {
+for ( my $i = 0; $i < @test_dirs; $i++ ) {
     my ($d) = $test_dirs[$i];
     if ( $d eq "." || $d eq ".." || $d eq "CVS" ) {
         splice @test_dirs, $i, 1;
@@ -943,7 +972,7 @@ for ( $i = 0; $i < @test_dirs; $i++ ) {
 
 # Scan for relevant tests
 
-for ( $i = 0; $i < @test_dirs; $i++ ) {
+for ( my $i = 0; $i < @test_dirs; $i++ ) {
     my ($testdir)  = $test_dirs[$i];
     my ($wantthis) = 1;
 
@@ -1009,10 +1038,10 @@ for ( $i = 0; $i < @test_dirs; $i++ ) {
 
     opendir( SUBDIR, "scripts/$testdir" )
       || tests_exit( -1, "Failed to opendir(\"scripts/$testdir\"): $!" );
-    @testlist = sort readdir(SUBDIR);
+    my @testlist = sort readdir(SUBDIR);
     close(SUBDIR);
 
-    foreach $test (@testlist) {
+    foreach my $test (@testlist) {
         next if $test !~ /^\d{4}(?:\.\d+)?$/;
         next if $test < $test_start || $test > $test_end;
         push @test_list, "$testdir/$test";
@@ -1037,7 +1066,7 @@ print ">>Test List: @test_list\n", if $debug;
 # files of the same name, but db.ipv4.V4NET and db.ipv6.V6NET use the testing
 # networks that are defined by parameter.
 
-foreach $basedir ( "aux-var", "dnszones" ) {
+foreach my $basedir ( "aux-var", "dnszones" ) {
     system("sudo rm -rf $parm_cwd/$basedir");
     mkdir( "$parm_cwd/$basedir", 0777 );
     chmod( 0755, "$parm_cwd/$basedir" );
@@ -1047,7 +1076,7 @@ foreach $basedir ( "aux-var", "dnszones" ) {
     my (@filelist) = readdir(AUX);
     close(AUX);
 
-    foreach $file (@filelist) {
+    foreach my $file (@filelist) {
         my ($outfile) = $file;
         next if $file =~ /^\./;
 
@@ -1078,6 +1107,7 @@ foreach $basedir ( "aux-var", "dnszones" ) {
 # Set a user's shell, distinguishable from /bin/sh
 
 symlink( "/bin/sh", "aux-var/sh" );
+my $parm_shell;
 $ENV{'SHELL'} = $parm_shell = $parm_cwd . "/aux-var/sh";
 
 ##################################################
@@ -1102,10 +1132,7 @@ if ( $have_ipv4 || $have_ipv6 ) {
 if ( $have_ipv4 && $parm_ipv4 ne "127.0.0.1" ) {
     my (@components) = $parm_ipv4 =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)/;
     open( OUT, ">$parm_cwd/dnszones/db.ip4.$components[0]" )
-      || tests_exit(
-        -1,
-        "Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!"
-      );
+      || tests_exit( -1, "Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!" );
     print OUT "; This is a dynamically constructed fake zone file.\n" . "; The zone is $components[0].in-addr.arpa.\n\n" . "$components[3].$components[2].$components[1]  PTR  $parm_hostname.\n\n" . "; End\n";
     close(OUT);
 }
@@ -1131,14 +1158,11 @@ if ( $have_ipv6 && $parm_ipv6 ne "::1" ) {
 
     $" = ".";
     open( OUT, ">$parm_cwd/dnszones/db.ip6.@nibbles" )
-      || tests_exit(
-        -1,
-        "Failed  to open $parm_cwd/dnszones/db.ip6.@nibbles: $!"
-      );
+      || tests_exit( -1, "Failed  to open $parm_cwd/dnszones/db.ip6.@nibbles: $!" );
     print OUT "; This is a dynamically constructed fake zone file.\n" . "; The zone is @nibbles.ip6.arpa.\n\n";
 
     @components = reverse @components;
-    foreach $c (@components) {
+    foreach my $c (@components) {
         $c = "0$c" until $c =~ /^..../;
         @nibbles = reverse( split /\s*/, $c );
         print OUT "$sep@nibbles";
@@ -1159,9 +1183,9 @@ if ( $have_ipv6 && $parm_ipv6 ne "::1" ) {
 # to scan a complete subtree, in order to handle maildirs. For msglogs, there
 # is just a flat list of files.
 
-@oldmails = list_files_below("mail");
+my @oldmails = list_files_below("mail");
 opendir( DIR, "msglog" ) || tests_exit( -1, "Failed to opendir msglog: $!" );
-@oldmsglogs = readdir(DIR);
+my @oldmsglogs = readdir(DIR);
 closedir(DIR);
 
 ##################################################
@@ -1178,18 +1202,27 @@ print "\nPress RETURN to run the tests: ";
 $_ = $force_continue ? "c" : <T>;
 print "\n";
 
-$lasttestdir = "";
+my $lasttestdir = "";
 
-foreach $test (@test_list) {
-    local ($lineno)    = 0;
-    local ($commandno) = 0;
-    local ($subtestno) = 0;
-    ( local $testno = $test ) =~ s|.*/||;
-    local ($sortlog) = 0;
+# Used globally as we go?
+my $lineno;
+my %expected_mails;
+my %expected_msglogs;
 
-    my ($gnutls)      = 0;
-    my ($docheck)     = 1;
-    my ($thistestdir) = substr( $test, 0, -5 );
+foreach my $test (@test_list) {
+    $current_test = $test;    # So it can be accessed by tests_exit(); TODO: FIXME
+    my $retry = 0;
+    $lineno = 0;
+    my $commandno = 0;
+    my $subtestno = 0;
+    $test =~ m{(.+)/(.+)$} or die;
+    my $testno = $2;
+    $current_test_number = $testno;
+    my $sortlog = 0;
+
+    my $gnutls      = 0;
+    my $docheck     = 1;
+    my $thistestdir = substr( $test, 0, -5 );
 
     if ( $lasttestdir ne $thistestdir ) {
         $gnutls = 0;
@@ -1222,25 +1255,9 @@ foreach $test (@test_list) {
 
     system "mkdir spool; " . "sudo chown $parm_eximuser:$parm_eximgroup spool; " . "sudo chmod 0755 spool";
 
-    # Empty the cache that keeps track of things like message id mappings, and
-    # set up the initial sequence strings.
-
-    undef %cache;
-    $next_msgid          = "aX";
-    $next_pid            = 1234;
-    $next_port           = 1111;
-    $message_skip        = 0;
-    $msglog_skip         = 0;
-    $stderr_skip         = 0;
-    $stdout_skip         = 0;
-    $rmfiltertest        = 0;
-    $is_ipv6test         = 0;
-    $TEST_STATE->{munge} = "";
-
-    # Remove the associative arrays used to hold checked mail files and msglogs
-
-    undef %expected_mails;
-    undef %expected_msglogs;
+    # Clear the associative arrays used to hold checked mail files and msglogs
+    %expected_mails   = ();
+    %expected_msglogs = ();
 
     # Open the test's script
     open( SCRIPT, "scripts/$test" )
@@ -1271,8 +1288,8 @@ foreach $test (@test_list) {
     # is used to remember the pid of a "server" process, for which we do not
     # wait until we have waited for a subsequent command.
 
-    local ($server_pid) = 0;
-    for ( $commandno = 1; !eof SCRIPT; $commandno++ ) {
+    my $server_pid = 0;
+    for ( my $commandno = 1; !eof SCRIPT; $commandno++ ) {
 
         # Skip further leading comments and blank lines, handle the flag setting
         # commands, and deal with tests for IP support.
@@ -1291,7 +1308,7 @@ foreach $test (@test_list) {
 
             if (/^need_largefiles/) {
                 next if $have_largefiles;
-                print ">>> Large file support is needed for test $testno, but is not available: skipping\n";
+                print ">>> Large file support is needed for test $current_test_number, but is not available: skipping\n";
                 $docheck = 0;    # don't check output
                 undef $_;        # pretend EOF
                 last;
@@ -1299,7 +1316,7 @@ foreach $test (@test_list) {
 
             if (/^need_ipv4/) {
                 next if $have_ipv4;
-                print ">>> IPv4 is needed for test $testno, but is not available: skipping\n";
+                print ">>> IPv4 is needed for test $current_test_number, but is not available: skipping\n";
                 $docheck = 0;    # don't check output
                 undef $_;        # pretend EOF
                 last;
@@ -1318,7 +1335,7 @@ foreach $test (@test_list) {
 
             if (/^need_move_frozen_messages/) {
                 next if defined $parm_support{"move_frozen_messages"};
-                print ">>> move frozen message support is needed for test $testno, " . "but is not\n>>> available: skipping\n";
+                print ">>> move frozen message support is needed for test $current_test_number, " . "but is not\n>>> available: skipping\n";
                 $docheck = 0;    # don't check output
                 undef $_;        # pretend EOF
                 last;
@@ -1339,7 +1356,7 @@ foreach $test (@test_list) {
         my ( $rc, $run_extra ) = run_command( $testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE );
         my ($cmdrc) = $?;
 
-        $0 = "[runtest $testno]";
+        $0 = "[runtest $current_test_number]";
 
         if ($debug) {
             print ">> rc=$rc cmdrc=$cmdrc\n";
@@ -1420,7 +1437,7 @@ foreach $test (@test_list) {
                     print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
                     $_ = $force_continue ? "c" : <T>;
                     tests_exit(1) if /^q?$/i;
-                    log_failure( $log_failed_filename, $testno, "exit code unexpected" ) if ( /^c$/i && $force_continue );
+                    log_failure( $log_failed_filename, $current_test_number, "exit code unexpected" ) if ( /^c$/i && $force_continue );
                     print "... continue forced\n" if $force_continue;
                     last if /^[rc]$/i;
 
@@ -1444,13 +1461,12 @@ foreach $test (@test_list) {
     # have been updated). It does not return if the user responds Q to a prompt.
 
     if ($retry) {
-        $retry = '0';
         print( ( "#" x 79 ) . "\n" );
         redo;
     }
 
     if ($docheck) {
-        if ( check_output( $TEST_STATE->{munge} ) != 0 ) {
+        if ( check_output( $TEST_STATE->{munge}, $sortlog ) != 0 ) {
             print( ( "#" x 79 ) . "\n" );
             redo;
         }
@@ -1473,10 +1489,6 @@ tests_exit(0);
 exit;
 
 ##################################################
-#       Do global macro substitutions            #
-##################################################
-
-##################################################
 #              Handle signals                    #
 ##################################################
 
@@ -1484,13 +1496,9 @@ sub pipehandler { $sigpipehappened = 1; }
 
 sub inthandler { print "\n"; tests_exit( -1, "Caught SIGINT" ); }
 
-###############################################################################
-###############################################################################
-
-# Define a number of subroutines
-
-###############################################################################
-###############################################################################
+##################################################
+#       Do global macro substitutions            #
+##################################################
 
 # This function is applied to configurations, command lines and data lines in
 # scripts, and to lines in the files of the aux-var-src and the dnszones-src
@@ -1521,10 +1529,6 @@ sub do_substitute {
 }
 
 ##################################################
-#     Any state to be preserved across tests     #
-##################################################
-
-##################################################
 #        Subroutine to tidy up and exit          #
 ##################################################
 
@@ -1538,13 +1542,14 @@ sub do_substitute {
 #    $_[0] < 0 for a "die" exit; $_[1] contains a message
 
 sub tests_exit {
-    my ($rc) = $_[0];
+    my ( $rc, $error_message ) = @_;
     my ($spool);
 
     # Search for daemon pid files and kill the daemons. We kill with SIGINT rather
     # than SIGTERM to stop it outputting "Terminated" to the terminal when not in
     # the background.
 
+    my $pid;
     if ( exists $TEST_STATE->{exim_pid} ) {
         $pid = $TEST_STATE->{exim_pid};
         print "Tidyup: killing wait-mode daemon pid=$pid\n";
@@ -1576,9 +1581,9 @@ sub tests_exit {
     system("sudo /bin/rm -rf ./eximdir/*")
       if ( !$save_output );
 
-    print "\nYou were in test $test at the end there.\n\n" if defined $test;
+    print "\nYou were in test $current_test at the end there.\n\n" if $current_test;
     exit $rc if ( $rc >= 0 );
-    die "** runtest error: $_[1]\n";
+    die "** runtest error: $error_message\n";
 }
 
 ##################################################
@@ -1697,12 +1702,12 @@ sub munge {
 
     # Date pattern
 
-    $date = "\\d{2}-\\w{3}-\\d{4}\\s\\d{2}:\\d{2}:\\d{2}";
+    my $date_pattern = qr{\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2}};
 
     # Pattern for matching pids at start of stderr lines; initially something
     # that won't match.
 
-    $spid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    my $spid = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
     # Scan the file and make the changes. Near the bottom there are some changes
     # that are specific to certain file types, though there are also some of those
@@ -1737,8 +1742,7 @@ sub munge {
         #s/(Exim) \d+\.\d+[\w_-]*/$1 x.yz/i;
 
         # Replace Exim message ids by a unique series
-        s/((?:[^\W_]{6}-){2}[^\W_]{2})
-    /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
+        s/((?:[^\W_]{6}-){2}[^\W_]{2})/new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
 
         # The names of lock files appear in some error and debug messages
         s/\.lock(\.[-\w]+)+(\.[\da-f]+){2}/.lock.test.ex.dddddddd.pppppppp/;
@@ -1791,7 +1795,7 @@ sub munge {
         # This must be before the general date/date munging.
         # Time data lines, which look like this:
         # 25-Aug-2000 12:11:37  25-Aug-2000 12:11:37  26-Aug-2000 12:11:37
-        if (/^($date)\s+($date)\s+($date)(\s+\*)?\s*$/) {
+        if (/^($date_pattern)\s+($date_pattern)\s+($date_pattern)(\s+\*)?\s*$/) {
             my ( $date1, $date2, $date3, $expired ) = ( $1, $2, $3, $4 );
             $expired = "" if !defined $expired;
             my ($increment) = date_seconds($date3) - date_seconds($date2);
@@ -2477,9 +2481,9 @@ sub check_file {
 
     # we check if there is a flavour specific file, but we remember
     # the original file name as "generic"
-    $sf_generic = $sf;
-    $sf_flavour = "$sf_generic.$flavour";
-    $sf_current = -e $sf_flavour ? $sf_flavour : $sf_generic;
+    my $sf_generic = $sf;
+    my $sf_flavour = "$sf_generic.$flavour";
+    my $sf_current = -e $sf_flavour ? $sf_flavour : $sf_generic;
 
     if ( !-e $sf_current ) {
         return 0 if ( !-s $rf && ( !defined $rsf || !-s $rsf ) );
@@ -2492,12 +2496,12 @@ sub check_file {
             print "Continue, Show, or Quit? [Q] ";
             $_ = $force_continue ? "c" : <T>;
             tests_exit(1) if /^q?$/i;
-            log_failure( $log_failed_filename, $testno, $rf ) if ( /^c$/i && $force_continue );
+            log_failure( $log_failed_filename, $current_test_number, $rf ) if ( /^c$/i && $force_continue );
             return 0 if /^c$/i;
             last if (/^s$/);
         }
 
-        foreach $f ( $rf, $rsf ) {
+        foreach my $f ( $rf, $rsf ) {
             if ( defined $f && -s $f ) {
                 print "\n";
                 print "------------ $f -----------\n"
@@ -2507,10 +2511,10 @@ sub check_file {
         }
 
         print "\n";
-        for ( ;; ) {
+        while (1) {
             interact( "Continue, Update & retry, Quit? [Q] ", $force_update, $force_continue );
             tests_exit(1) if /^q?$/i;
-            log_failure( $log_failed_filename, $testno, $rsf ) if ( /^c$/i && $force_continue );
+            log_failure( $log_failed_filename, $current_test_number, $rsf ) if ( /^c$/i && $force_continue );
             return 0 if /^c$/i;
             last if (/^u$/i);
         }
@@ -2586,14 +2590,12 @@ sub check_file {
             @munged = <MUNGED>;
             close(MUNGED);
 
-            for ( $i = 0; $i < @munged; $i++ ) {
+            for ( my $i = 0; $i < @munged; $i++ ) {
                 if ( $munged[$i] =~ /^[-\d]{10}\s[:\d]{8}\s[-A-Za-z\d]{16}\s[-=*]>/ ) {
                     for ( $j = $i + 1; $j < @munged; $j++ ) {
                         last if $munged[$j] !~ /^[-\d]{10}\s[:\d]{8}\s[-A-Za-z\d]{16}\s[-=*]>/;
                     }
-                    @temp = splice( @munged, $i, $j - $i );
-                    @temp = sort(@temp);
-                    splice( @munged, $i, 0, @temp );
+                    splice( @munged, $i, 0, sort splice( @munged, $i, $j - $i ) );
                 }
             }
 
@@ -2616,7 +2618,7 @@ sub check_file {
         for ( ;; ) {
             interact( "Continue, Retry, Update current" . ( $sf_current ne $sf_flavour ? "/Save for flavour '$flavour'" : "" ) . " & retry, Quit? [Q] ", $force_update, $force_continue );
             tests_exit(1) if /^q?$/i;
-            log_failure( $log_failed_filename, $testno, $sf_current ) if ( /^c$/i && $force_continue );
+            log_failure( $log_failed_filename, $current_test_number, $sf_current ) if ( /^c$/i && $force_continue );
             return 0 if /^c$/i;
             return 1 if /^r$/i;
             last     if (/^[us]$/i);
@@ -2654,7 +2656,7 @@ sub check_file {
 # with '/' do line-skips.
 # Triggered by a scriptfile line "munge <name>"
 ##################################################
-$munges = {
+my $munges = {
     'dnssec' => { 'stderr' => '/^Reverse DNS security status: unverified\n/' },
 
     'gnutls_unexpected' => { 'mainlog' => '/\(recv\): A TLS packet with unexpected length was received./' },
@@ -2712,15 +2714,15 @@ $munges = {
 #            1 if re-run needed (files may have been updated)
 
 sub check_output {
-    my ($mungename) = $_[0];
-    my ($yield)     = 0;
-    my ($munge)     = $munges->{$mungename} if defined $mungename;
+    my ( $mungename, $sortlog ) = @_;
+    my ($yield) = 0;
+    my ($munge) = $munges->{$mungename} if defined $mungename;
 
     $yield = 1 if check_file(
         "spool/log/paniclog",
         "spool/log/serverpaniclog",
         "test-paniclog-munged",
-        "paniclog/$testno", 0,
+        "paniclog/$current_test_number", 0,
         $munge->{'paniclog'}
     );
 
@@ -2728,7 +2730,7 @@ sub check_output {
         "spool/log/rejectlog",
         "spool/log/serverrejectlog",
         "test-rejectlog-munged",
-        "rejectlog/$testno", 0,
+        "rejectlog/$current_test_number", 0,
         $munge->{'rejectlog'}
     );
 
@@ -2736,7 +2738,7 @@ sub check_output {
         "spool/log/mainlog",
         "spool/log/servermainlog",
         "test-mainlog-munged",
-        "log/$testno", $sortlog,
+        "log/$current_test_number", $sortlog,
         $munge->{'mainlog'}
     );
 
@@ -2745,7 +2747,7 @@ sub check_output {
             "test-stdout",
             "test-stdout-server",
             "test-stdout-munged",
-            "stdout/$testno", 0,
+            "stdout/$current_test_number", 0,
             $munge->{'stdout'}
         );
     }
@@ -2755,7 +2757,7 @@ sub check_output {
             "test-stderr",
             "test-stderr-server",
             "test-stderr-munged",
-            "stderr/$testno", 0,
+            "stderr/$current_test_number", 0,
             $munge->{'stderr'}
         );
     }
@@ -2768,8 +2770,8 @@ sub check_output {
         # Get a list of expected mailbox files for this script. We don't bother with
         # directories, just the files within them.
 
-        foreach $oldmail (@oldmails) {
-            next unless $oldmail =~ /^mail\/$testno\./;
+        foreach my $oldmail (@oldmails) {
+            next unless $oldmail =~ /^mail\/$current_test_number\./;
             print ">> EXPECT $oldmail\n" if $debug;
             $expected_mails{$oldmail} = 1;
         }
@@ -2777,12 +2779,12 @@ sub check_output {
         # If there are any files in test-mail, compare them. Note that "." and
         # ".." are automatically omitted by list_files_below().
 
-        @mails = list_files_below("test-mail");
+        my @mails = list_files_below("test-mail");
 
-        foreach $mail (@mails) {
+        foreach my $mail (@mails) {
             next if $mail eq "test-mail/oncelog";
 
-            $saved_mail = substr( $mail, 10 );               # Remove "test-mail/"
+            my $saved_mail = substr( $mail, 10 );            # Remove "test-mail/"
             $saved_mail =~ s/^$parm_caller(\/|$)/CALLER/;    # Convert caller name
 
             if ( $saved_mail =~ /(\d+\.[^.]+\.)/ ) {
@@ -2790,24 +2792,26 @@ sub check_output {
                 $saved_mail =~ s/(\d+\.[^.]+\.)/$msgno./gx;
             }
 
-            print ">> COMPARE $mail mail/$testno.$saved_mail\n" if $debug;
+            print ">> COMPARE $mail mail/$current_test_number.$saved_mail\n" if $debug;
             $yield = 1 if check_file(
-                $mail,                      undef, "test-mail-munged",
-                "mail/$testno.$saved_mail", 0,
+                $mail,                                   undef, "test-mail-munged",
+                "mail/$current_test_number.$saved_mail", 0,
                 $munge->{'mail'}
             );
-            delete $expected_mails{"mail/$testno.$saved_mail"};
+            delete $expected_mails{"mail/$current_test_number.$saved_mail"};
         }
 
         # Complain if not all expected mails have been found
 
-        if ( scalar( keys %expected_mails ) != 0 ) {
-            foreach $key ( keys %expected_mails ) { print "** no test file found for $key\n"; }
+        if ( scalar keys %expected_mails ) {
+            foreach my $key ( keys %expected_mails ) {
+                print "** no test file found for $key\n";
+            }
 
-            for ( ;; ) {
+            while (1) {
                 interact( "Continue, Update & retry, or Quit? [Q] ", $force_update, $force_continue );
                 tests_exit(1) if /^q?$/i;
-                log_failure( $log_failed_filename, $testno, "missing email" ) if ( /^c$/i && $force_continue );
+                log_failure( $log_failed_filename, $current_test_number, "missing email" ) if ( /^c$/i && $force_continue );
                 last if /^c$/i;
 
                 # For update, we not only have to unlink the file, but we must also
@@ -2815,7 +2819,7 @@ sub check_output {
                 # checked for when we re-run the test.
 
                 if (/^u$/i) {
-                    foreach $key ( keys %expected_mails ) {
+                    foreach my $key ( keys %expected_mails ) {
                         my ($i);
                         tests_exit( -1, "Failed to unlink $key" ) if !unlink("$key");
                         for ( $i = 0; $i < @oldmails; $i++ ) {
@@ -2837,8 +2841,8 @@ sub check_output {
 
         # Get a list of expected msglog files for this test
 
-        foreach $oldmsglog (@oldmsglogs) {
-            next unless $oldmsglog =~ /^$testno\./;
+        foreach my $oldmsglog (@oldmsglogs) {
+            next unless $oldmsglog =~ /^$current_test_number\./;
             $expected_msglogs{$oldmsglog} = 1;
         }
 
@@ -2847,29 +2851,29 @@ sub check_output {
         # time dependent.
 
         if ( opendir( DIR, "spool/msglog" ) ) {
-            @msglogs = sort readdir(DIR);
+            my @msglogs = sort readdir(DIR);
             closedir(DIR);
 
-            foreach $msglog (@msglogs) {
+            foreach my $msglog (@msglogs) {
                 next if ( $msglog eq "." || $msglog eq ".." || $msglog eq "CVS" );
-                ( $munged_msglog = $msglog ) =~ s/((?:[^\W_]{6}-){2}[^\W_]{2})
+                my ($munged_msglog) = $msglog =~ s/((?:[^\W_]{6}-){2}[^\W_]{2})
           /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
                 $yield = 1 if check_file(
                     "spool/msglog/$msglog", undef,
-                    "test-msglog-munged", "msglog/$testno.$munged_msglog", 0,
+                    "test-msglog-munged", "msglog/$current_test_number.$munged_msglog", 0,
                     $munge->{'msglog'}
                 );
-                delete $expected_msglogs{"$testno.$munged_msglog"};
+                delete $expected_msglogs{"$current_test_number.$munged_msglog"};
             }
         }
 
         # Complain if not all expected msglogs have been found
 
         if ( scalar( keys %expected_msglogs ) != 0 ) {
-            foreach $key ( keys %expected_msglogs ) {
+            foreach my $key ( keys %expected_msglogs ) {
                 print "** no test msglog found for msglog/$key\n";
-                ($msgid) = $key =~ /^\d+\.(.*)$/;
-                foreach $cachekey ( keys %cache ) {
+                my ($msgid) = $key =~ /^\d+\.(.*)$/;
+                foreach my $cachekey ( keys %cache ) {
                     if ( $cache{$cachekey} eq $msgid ) {
                         print "** original msgid $cachekey\n";
                         last;
@@ -2880,10 +2884,10 @@ sub check_output {
             for ( ;; ) {
                 interact( "Continue, Update, or Quit? [Q] ", $force_update, $force_continue );
                 tests_exit(1) if /^q?$/i;
-                log_failure( $log_failed_filename, $testno, "missing msglog" ) if ( /^c$/i && $force_continue );
+                log_failure( $log_failed_filename, $current_test_number, "missing msglog" ) if ( /^c$/i && $force_continue );
                 last if /^c$/i;
                 if (/^u$/i) {
-                    foreach $key ( keys %expected_msglogs ) {
+                    foreach my $key ( keys %expected_msglogs ) {
                         tests_exit( -1, "Failed to unlink msglog/$key" )
                           if !unlink("msglog/$key");
                     }
@@ -2907,7 +2911,7 @@ sub check_output {
 # Returns:  nothing
 
 sub run_system {
-    my ($cmd) = $_[0];
+    my ($cmd) = @_;
     if ($debug) {
         my ($prcmd) = $cmd;
         $prcmd =~ s/; /;\n>> /;
@@ -2944,15 +2948,11 @@ sub run_system {
 #            munge: name of a post-script results munger
 
 sub run_command {
-    my ($testno)         = $_[0];
-    my ($subtestref)     = $_[1];
-    my ($commandnameref) = $_[3];
-    my ($aux_info)       = $_[4];
-    my ($yield)          = 1;
+    my ( $testno, $subtestref, $r, $commandnameref, $aux_info ) = @_;
+    my ($yield) = 1;
 
     if (/^(\d+)\s*$/)    # Handle unusual return code
     {
-        my ($r) = $_[2];
         $$r = $1 << 8;
         $_  = <SCRIPT>;
         return 4 if !defined $_;    # Missing command
@@ -2960,7 +2960,7 @@ sub run_command {
     }
 
     chomp;
-    $wait_time = 0;
+    my $wait_time = 0;
 
     # Handle concatenated command lines
 
@@ -3025,7 +3025,7 @@ sub run_command {
                 return $aa cmp $bb;
             } @temp;
 
-            foreach $item (@temp) {
+            foreach my $item (@temp) {
                 $item =~ s/^\s*(.*)\n(.*)\n?\s*$/$1\n$2/m;
                 print OUT "  $item\n";
             }
@@ -3058,8 +3058,8 @@ sub run_command {
     # but it doesn't use any input.
 
     if (/^exim_lock\s+(.*)$/) {
-        $cmd = "./eximdir/exim_lock $1 >>test-stdout";
-        $server_pid = open SERVERCMD, "|$cmd"
+        my $cmd = "./eximdir/exim_lock $1 >>test-stdout";
+        my $server_pid = open SERVERCMD, "|$cmd"
           || tests_exit( -1, "Failed to run $cmd\n" );
 
         # This gives the process time to get started; otherwise the next
@@ -3106,7 +3106,7 @@ sub run_command {
     if (/^killdaemon/) {
         my $return_extra = {};
         if ( exists $aux_info->{exim_pid} ) {
-            $pid = $aux_info->{exim_pid};
+            my $pid = $aux_info->{exim_pid};
             $return_extra->{exim_pid} = undef;
             print ">> killdaemon: recovered pid $pid\n" if $debug;
             if ($pid) {
@@ -3115,7 +3115,7 @@ sub run_command {
             }
         }
         else {
-            $pid = `cat $parm_cwd/spool/exim-daemon.*`;
+            my $pid = `cat $parm_cwd/spool/exim-daemon.*`;
             if ($pid) {
                 run_system("sudo /bin/kill -INT $pid");
                 close DAEMONCMD;    # Waits for process
@@ -3184,10 +3184,10 @@ sub run_command {
     # options to disable IPv4 or IPv6 if necessary.
 
     if (/^server\s+(.*)$/) {
-        $pidfile = "$parm_cwd/aux-var/server-daemon.pid";
-        $cmd     = "./bin/server $server_opts -oP $pidfile $1 >>test-stdout-server";
+        my $pidfile = "$parm_cwd/aux-var/server-daemon.pid";
+        my $cmd     = "./bin/server $server_opts -oP $pidfile $1 >>test-stdout-server";
         print ">> $cmd\n" if ($debug);
-        $server_pid = open SERVERCMD, "|$cmd" || tests_exit( -1, "Failed to run $cmd" );
+        my $server_pid = open SERVERCMD, "|$cmd" || tests_exit( -1, "Failed to run $cmd" );
         SERVERCMD->autoflush(1);
         print ">> Server pid is $server_pid\n" if $debug;
         while (<SCRIPT>) {
@@ -3211,7 +3211,7 @@ sub run_command {
 
     if (/^(cat)?write\s+(\S+)(?:\s+(.*))?\s*$/) {
         my ($cat) = defined $1;
-        @sizes = ();
+        my @sizes;
         @sizes = split /\s+/, $3 if defined $3;
         open FILE, ">$2" || tests_exit( -1, "Failed to open \"$2\": $!" );
 
@@ -3234,8 +3234,8 @@ sub run_command {
 
             # Sized data
 
-            while ( scalar @sizes > 0 ) {
-                ( $count, $len, $leadin ) = ( shift @sizes ) =~ /(\d+)x(\d+)(?:=(.*))?/;
+            foreach my $size (@sizes) {
+                my ( $count, $len, $leadin ) = $size =~ /(\d+)x(\d+)(?:=(.*))?/;
                 $leadin = "" if !defined $leadin;
                 $leadin =~ s/_/ /g;
                 $len -= length($leadin) + 1;
@@ -3276,8 +3276,10 @@ sub run_command {
     # of running Perl for doing one-off special things. Note that all these
     # commands expect stdin data to be supplied.
 
+    my $cmd  = '';
+    my $args = '';
     if ( /^client/ || /^(sudo\s+)?perl\b/ ) {
-        s"client"./bin/client";
+        s{client}{./bin/client};
         $cmd = "$_ >>test-stdout 2>>test-stderr";
     }
 
@@ -3356,7 +3358,7 @@ sub run_command {
         # we also define -DNOTDAEMON.
 
         if ( $cmd =~ /\s-DSERVER=server\s/ && $cmd !~ /\s-DNOTDAEMON\s/ ) {
-            $pidfile = "$parm_cwd/spool/exim-daemon.pid";
+            my $pidfile = "$parm_cwd/spool/exim-daemon.pid";
             if ($debug) { printf ">> daemon: $cmd\n"; }
             run_system("sudo mkdir spool/log 2>/dev/null");
             run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
@@ -3467,7 +3469,7 @@ sub run_command {
     # -DSERVER=server add "-server" to the command, where it will adjoin the name
     # for the stderr file. See comment above about the use of -DSERVER.
 
-    $stderrsuffix = ( $cmd =~ /\s-DSERVER=server\s/ ) ? "-server" : "";
+    my $stderrsuffix = ( $cmd =~ /\s-DSERVER=server\s/ ) ? "-server" : "";
     print ">> |${cmd}${stderrsuffix}\n" if ($debug);
     open CMD, "|${cmd}${stderrsuffix}" || tests_exit( 1, "Failed to run $cmd" );
 
