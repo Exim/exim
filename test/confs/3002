@@ -1,0 +1,3 @@
+tls_advertise_hosts =
+perl_startup = sub taint_flag { ${^TAINT} ? 'ON' : 'OFF' }
+perl_taintmode = yes
