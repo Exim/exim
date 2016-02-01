@@ -19,6 +19,11 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#ifndef PDKIM_H
+#define PDKIM_H
+
+#include "blob.h"
+#include "hash.h"
 
 /* -------------------------------------------------------------------------- */
 /* Length of the preallocated buffer for the "answer" from the dns/txt
@@ -98,8 +103,7 @@ typedef struct pdkim_pubkey {
   char *srvtype;                  /* s=  */
   char *notes;                    /* n=  */
 
-  char *key;                      /* p=  */
-  int   key_len;
+  blob  key;                      /* p=  */
 
   int   testing;                  /* t=y */
   int   no_subdomaining;          /* t=s */
@@ -151,18 +155,16 @@ typedef struct pdkim_signature {
 
   /* (h=) Colon-separated list of header names that are included in the
      signature */
-  char *headernames;
+  uschar *headernames;
 
   /* (z=) */
   char *copiedheaders;
 
   /* (b=) Raw signature data, along with its length in bytes */
-  char *sigdata;
-  int   sigdata_len;
+  blob sigdata;
 
   /* (bh=) Raw body hash data, along with its length in bytes */
-  char *bodyhash;
-  int   bodyhash_len;
+  blob bodyhash;
 
   /* Folded DKIM-Signature: header. Singing only, NULL for verifying.
      Ready for insertion into the message. Note: Folded using CRLFTB,
@@ -228,15 +230,8 @@ typedef struct pdkim_signature {
   /* Properties below this point are used internally only ------------- */
 
   /* Per-signature helper variables ----------------------------------- */
-#ifdef SHA_OPENSSL
-  SHA_CTX      sha1_body;  /* SHA1 block                                */
-  SHA256_CTX   sha2_body;  /* SHA256 block                              */
-#elif defined(SHA_GNUTLS)
-  gnutls_hash_hd_t sha_body; /* Either SHA1 or SHA256 block             */
-#elif defined(SHA_POLARSSL)
-  sha1_context *sha1_body; /* SHA1 block                                */
-  sha2_context *sha2_body; /* SHA256 block                              */
-#endif
+  hctx         body_hash;
+
   unsigned long signed_body_bytes; /* How many body bytes we hashed     */
   pdkim_stringlist *headers; /* Raw headers included in the sig         */
   /* Signing specific ------------------------------------------------- */
@@ -283,6 +278,8 @@ typedef struct pdkim_ctx {
 extern "C" {
 #endif
 
+void	   pdkim_init         (void);
+
 DLLEXPORT
 pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int);
 
@@ -305,4 +302,6 @@ void       pdkim_free_ctx     (pdkim_ctx *);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

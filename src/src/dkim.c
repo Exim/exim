@@ -60,6 +60,13 @@ return PDKIM_FAIL;
 
 
 void
+dkim_exim_init(void)
+{
+pdkim_init();
+}
+
+
+void
 dkim_exim_verify_init(void)
 {
 /* Free previous context if there is one */
@@ -129,7 +136,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	      sig->canon_headers == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
 	      sig->canon_body == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
 	      sig->algo == PDKIM_ALGO_RSA_SHA256 ?  "rsa-sha256" : "rsa-sha1",
-	      sig->sigdata_len * 8
+	      sig->sigdata.len * 8
 	      ),
 
 	sig->identity ? string_sprintf("i=%s ", sig->identity) : US"",
@@ -255,7 +262,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     dkim_signing_domain = US sig->domain;
     dkim_signing_selector = US sig->selector;
-    dkim_key_length = sig->sigdata_len * 8;
+    dkim_key_length = sig->sigdata.len * 8;
     return;
     }
 }
@@ -340,7 +347,7 @@ switch (what)
 
   case DKIM_HEADERNAMES:
     return dkim_cur_sig->headernames
-      ?  US dkim_cur_sig->headernames : dkim_exim_expand_defaults(what);
+      ? dkim_cur_sig->headernames : dkim_exim_expand_defaults(what);
 
   case DKIM_IDENTITY:
     return dkim_cur_sig->identity

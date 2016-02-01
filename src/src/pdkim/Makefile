@@ -1,6 +1,6 @@
 # Make file for building the pdkim library.
 
-OBJ = pdkim.o
+OBJ = pdkim.o hash.o rsa.o
 
 pdkim.a:         $(OBJ)
 		 @$(RM_COMMAND) -f pdkim.a
@@ -12,9 +12,8 @@ pdkim.a:         $(OBJ)
 .c.o:;           @echo "$(CC) $*.c"
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -I. $*.c
 
-part-x509parse.o:   $(HDRS) crypt_ver.h part-x509parse.c
-pdkim.o:            $(HDRS) crypt_ver.h pdkim.h pdkim.c
-sha1.o:             $(HDRS) crypt_ver.h sha1.c
-sha2.o:             $(HDRS) crypt_ver.h sha2.c
+pdkim.o:            $(HDRS) crypt_ver.h hash.h blob.h pdkim.h pdkim.c
+hash.o:             $(HDRS) crypt_ver.h hash.h blob.h pdkim.h hash.c
+rsa.o:              $(HDRS) crypt_ver.h rsa.h blob.h rsa.c
 
 # End

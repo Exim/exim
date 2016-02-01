@@ -6,16 +6,18 @@ use Getopt::Long;
 my $method = "simple/simple";
 my $selector = "sel";
 my $keyfile = "aux-fixed/dkim/dkim.private";
+my $algorithm = "rsa-sha1";
 
 GetOptions(
 	"method=s" => \$method,
 	"selector=s" => \$selector,
 	"keyfile=s" => \$keyfile,
+	"algorithm=s" => \$algorithm,
 );
 
 # create a signer object
 my $dkim = Mail::DKIM::Signer->new(
-                  Algorithm => "rsa-sha1",
+                  Algorithm => $algorithm,
                   Method => $method,
                   Domain => "test.ex",
                   Selector => $selector,

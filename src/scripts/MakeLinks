@@ -82,17 +82,12 @@ cd ..
 # Likewise for the code for the PDKIM library
 mkdir pdkim
 cd pdkim
-for f in README Makefile crypt_ver.h part-x509parse.c pdkim.c \
-  pdkim.h sha1.c sha2.c
+for f in README Makefile crypt_ver.h pdkim.c \
+  pdkim.h hash.c hash.h rsa.c rsa.h blob.h
 do
   ln -s ../../src/pdkim/$f $f
 done
-mkdir polarssl
-cd polarssl
-for i in `ls ../../../src/pdkim/polarssl/` ; do
-  ln -s ../../../src/pdkim/polarssl/$i $i
-done
-cd ../..
+cd ..
 
 # The basic source files for Exim and utilities. NB local_scan.h gets linked,
 # but local_scan.c does not, because its location is taken from the build-time
