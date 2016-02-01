@@ -49,6 +49,7 @@ duplicate them here... */
 uschar *opt_perl_startup       = NULL;
 BOOL    opt_perl_at_start      = FALSE;
 BOOL    opt_perl_started       = FALSE;
+BOOL    opt_perl_taintmode     = FALSE;
 #endif
 
 #ifdef EXPAND_DLFUNC

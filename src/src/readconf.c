@@ -344,6 +344,7 @@ static optionlist optionlist_config[] = {
 #ifdef EXIM_PERL
   { "perl_at_start",            opt_bool,        &opt_perl_at_start },
   { "perl_startup",             opt_stringptr,   &opt_perl_startup },
+  { "perl_taintmode",           opt_bool,        &opt_perl_taintmode },
 #endif
 #ifdef LOOKUP_PGSQL
   { "pgsql_servers",            opt_stringptr,   &pgsql_servers },

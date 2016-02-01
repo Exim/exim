@@ -12967,6 +12967,14 @@ overriding the setting of &%perl_at_start%&.
 There is also a command line option &%-pd%& (for delay) which suppresses the
 initial startup, even if &%perl_at_start%& is set.
 
+.ilist
+.oindex "&%perl_taintmode%&"
+To provide more security executing Perl code via the embedded Perl
+interpeter, the &%perl_taintmode%& option can be set. This enables the
+taint mode of the Perl interpreter. You are encouraged to set this
+option to a true value. To avoid breaking existing installations, it
+defaults to false.
+
 
 .section "Calling Perl subroutines" "SECID86"
 When the configuration file includes a &%perl_startup%& option you can make use
@@ -13495,6 +13503,7 @@ listed in more than one group.
 .table2
 .row &%perl_at_start%&               "always start the interpreter"
 .row &%perl_startup%&                "code to obey when starting Perl"
+.row &%perl_taintmode%&		     "enable taint mode in Perl"
 .endtable
 
 
@@ -15582,13 +15591,19 @@ local parts. Exim's default configuration does this.
 
 
 .option perl_at_start main boolean false
+.cindex "Perl"
 This option is available only when Exim is built with an embedded Perl
 interpreter. See chapter &<<CHAPperl>>& for details of its use.
 
 
 .option perl_startup main string unset
+.cindex "Perl"
 This option is available only when Exim is built with an embedded Perl
 interpreter. See chapter &<<CHAPperl>>& for details of its use.
+
+.option perl_startup main boolean false
+.cindex "Perl"
+This Option enables the taint mode of the embedded Perl interpreter.
 
 
 .option pgsql_servers main "string list" unset

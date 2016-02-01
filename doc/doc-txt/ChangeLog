@@ -287,6 +287,8 @@ JH/35 Bug 1642: Fix support of $spam_ variables at delivery time.  Was
 JH/36 Bug 1659: Guard checking of input smtp commands again pseudo-command
       added for tls authenticator.
 
+HS/03 Add perl_taintmode main config option
+
 
 Exim version 4.85
 -----------------
