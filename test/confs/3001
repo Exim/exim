@@ -1,4 +1,4 @@
-# exim test configuration 0615
+# exim test configuration 3001
 exim_path = EXIM_PATH
 tls_advertise_hosts =
 spool_directory = DIR/spool

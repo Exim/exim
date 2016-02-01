@@ -13,6 +13,7 @@
 /* This Perl add-on can be distributed under the same terms as Exim itself. */
 /* See the file NOTICE for conditions of use and distribution. */
 
+#include <assert.h>
 #include "exim.h"
 
 #define EXIM_TRUE TRUE
@@ -95,10 +96,16 @@ static void  xs_init(pTHX)
 uschar *
 init_perl(uschar *startup_code)
 {
-  static int argc = 2;
-  static char *argv[3] = { "exim-perl", "/dev/null", 0 };
+  static int argc = 1;
+  static char *argv[4] = { "exim-perl" };
   SV *sv;
   STRLEN len;
+
+  if (opt_perl_taintmode) argv[argc++] = "-T";
+  argv[argc++] = "/dev/null";
+  argv[argc] = 0;
+
+  assert(sizeof(argv)/sizeof(argv[0]) > argc);
 
   if (interp_perl) return 0;
   interp_perl = perl_alloc();

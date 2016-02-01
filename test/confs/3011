@@ -1,0 +1,5 @@
+# exim test configuration 3011
+exim_path = EXIM_PATH
+tls_advertise_hosts =
+spool_directory = DIR/spool
+perl_startup = sub taint_flag { ${^TAINT} ? 'ON' : 'OFF' }

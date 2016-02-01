@@ -28,6 +28,7 @@ typedef volatile sig_atomic_t SIGNAL_BOOL;
 extern uschar *opt_perl_startup;       /* Startup code for Perl interpreter */
 extern BOOL    opt_perl_at_start;      /* Start Perl interpreter at start */
 extern BOOL    opt_perl_started;       /* Set once interpreter started */
+extern BOOL    opt_perl_taintmode;     /* Enable taint mode in Perl */
 #endif
 
 #ifdef EXPAND_DLFUNC

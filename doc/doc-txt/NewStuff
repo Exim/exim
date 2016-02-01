@@ -9,6 +9,9 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.88
 ------------
 
+ 1. The new perl_tainmode option allows to run the embedded perl
+    interpreter in taint mode.
+
 
 Version 4.87
 ------------
