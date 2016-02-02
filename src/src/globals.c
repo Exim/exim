@@ -320,7 +320,6 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
 
 BOOL    active_local_from_check = FALSE;
 BOOL    active_local_sender_retain = FALSE;
-int     body_8bitmime = 0;
 BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
 address_item  *addr_duplicate  = NULL;
 
@@ -469,12 +468,14 @@ int     bmi_deliver            = 1;
 int     bmi_run                = 0;
 uschar *bmi_verdicts           = NULL;
 #endif
+int     body_8bitmime          = 0;
 int     body_linecount         = 0;
 int     body_zerocount         = 0;
 uschar *bounce_message_file    = NULL;
 uschar *bounce_message_text    = NULL;
 uschar *bounce_recipient       = NULL;
 BOOL    bounce_return_body     = TRUE;
+int     bounce_return_linesize_limit = 998;
 BOOL    bounce_return_message  = TRUE;
 int     bounce_return_size_limit = 100*1024;
 uschar *bounce_sender_authentication = NULL;

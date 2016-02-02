@@ -521,7 +521,7 @@ else
   int err = X509_STORE_CTX_get_error(x509ctx);
   DEBUG(D_tls)
     debug_printf(" - err %d '%s'\n", err, X509_verify_cert_error_string(err));
-  if (err = X509_V_ERR_APPLICATION_VERIFICATION)
+  if (err == X509_V_ERR_APPLICATION_VERIFICATION)
     preverify_ok = 1;
   }
 return preverify_ok;
@@ -2750,6 +2750,9 @@ result = 0L;
  * from default because it increases BEAST susceptibility. */
 #ifdef SSL_OP_NO_SSLv2
 result |= SSL_OP_NO_SSLv2;
+#endif
+#ifdef SSL_OP_SINGLE_DH_USE
+result |= SSL_OP_SINGLE_DH_USE;
 #endif
 
 if (option_spec == NULL)

@@ -1760,7 +1760,6 @@ regex_whitelisted_macro =
 
 for (i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
 
-
 /* If the program is called as "mailq" treat it as equivalent to "exim -bp";
 this seems to be a generally accepted convention, since one finds symbolic
 links called "mailq" in standard OS configurations. */
@@ -4554,6 +4553,12 @@ if (list_config)
   readconf_print(US"config", NULL, FALSE);
   exim_exit(EXIT_SUCCESS);
   }
+
+
+/* Initialise subsystems as required */
+#ifndef DISABLE_DKIM
+dkim_exim_init();
+#endif
 
 
 /* Handle a request to deliver one or more messages that are already on the

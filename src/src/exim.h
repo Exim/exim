@@ -11,6 +11,9 @@ that is needed. They don't all need everything, of course, but it's far too
 messy to have each one importing its own list, and anyway, most of them need
 most of these includes. */
 
+#ifndef EXIM_H
+#define EXIM_H
+
 /* Assume most systems have statfs() unless os.h undefines this macro */
 
 #define HAVE_STATFS
@@ -596,4 +599,5 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
   #undef DISABLE_DNSSEC
 #endif
 
+#endif
 /* End of exim.h */

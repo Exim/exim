@@ -7,8 +7,21 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
->>> ACL is NULL: implicit DENY
+>>> using ACL "check_vrfy"
+>>> processing "deny"
+>>> check local_parts = hardfail
+>>> userx in "hardfail"? no (end of list)
+>>> deny: condition test failed in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": implicit DENY
 LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
+>>> using ACL "check_vrfy"
+>>> processing "deny"
+>>> check local_parts = hardfail
+>>> hardfail in "hardfail"? yes (matched "hardfail")
+>>>   message: 599 custom reject
+>>> deny: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": DENY
+LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> using ACL "check_expn"
 >>> processing "accept"
 >>> check hosts = 2.2.2.2

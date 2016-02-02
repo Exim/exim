@@ -39,6 +39,7 @@ extern uschar * tls_cert_subject(void *, uschar * mod);
 extern uschar * tls_cert_subject_altname(void *, uschar * mod);
 extern uschar * tls_cert_version(void *, uschar * mod);
 
+extern uschar * tls_cert_der_b64(void * cert);
 extern uschar * tls_cert_fprt_md5(void *);
 extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);
@@ -389,7 +390,7 @@ extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
-extern void    smtp_message_code(uschar **, int *, uschar **, uschar **);
+extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
 extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);

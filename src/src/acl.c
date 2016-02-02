@@ -482,6 +482,7 @@ static unsigned int cond_forbids[] = {
 
   (unsigned int)
   ~((1<<ACL_WHERE_RCPT)                            /* domains */
+    |(1<<ACL_WHERE_VRFY)
   #ifndef DISABLE_PRDR
     |(1<<ACL_WHERE_PRDR)
   #endif
@@ -499,6 +500,7 @@ static unsigned int cond_forbids[] = {
 
   (unsigned int)
   ~((1<<ACL_WHERE_RCPT)                             /* local_parts */
+    |(1<<ACL_WHERE_VRFY)
   #ifndef DISABLE_PRDR
     |(1<<ACL_WHERE_PRDR)
   #endif
@@ -4454,9 +4456,9 @@ ratelimiters_cmd = NULL;
 log_reject_target = LOG_MAIN|LOG_REJECT;
 
 #ifndef DISABLE_PRDR
-if (where == ACL_WHERE_RCPT || where == ACL_WHERE_PRDR)
+if (where==ACL_WHERE_RCPT || where==ACL_WHERE_VRFY || where==ACL_WHERE_PRDR)
 #else
-if (where == ACL_WHERE_RCPT)
+if (where==ACL_WHERE_RCPT || where==ACL_WHERE_VRFY)
 #endif
   {
   adb = address_defaults;

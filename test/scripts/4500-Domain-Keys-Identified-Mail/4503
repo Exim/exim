@@ -1,0 +1,12 @@
+# DKIM signing
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+exim a@test.ex
+From: nobody@example.com
+
+content
+****
+millisleep 500
+killdaemon
+no_msglog_check

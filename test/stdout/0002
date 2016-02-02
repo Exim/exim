@@ -72,7 +72,7 @@
 > listextract: 
 > listextract: 
 > listextract: fail
-> Failed: "extract" failed and "fail" requested
+> Failed: "listextract" failed and "fail" requested
 > 
 > sort: 1:2:3:4
 > sort: 4,3,2,1
@@ -231,6 +231,11 @@
 > substr: 
 > str2b64:YWJjZA==
 > str2b64:VGhlIHF1aWNrIGJyb3duIAogZm94
+> base64: YWJjZA==
+> base64: VGhlIHF1aWNrIGJyb3duIAogZm94
+> base64d:abcd
+> base64d:The quick brown 
+ fox
 > strlen: 0
 > strlen: 1
 > strlen: 8

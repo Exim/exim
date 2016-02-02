@@ -140,6 +140,33 @@ JH/32 Move Redis support from Experimental to mainline, enabled for a build
 JH/33 Bug 1748: Permit ACL dnslists= condition in non-smtp ACLs if explicit
       keys are given for lookup.
 
+JH/34 Bug 1192: replace the embedded copy of PolarSSL RSA routines in the DKIM
+      support, by using OpenSSL or GnuTLS library ones.  This means DKIM is
+      only supported when built with TLS support.  The PolarSSL SHA routines
+      are still used when the TLS library is too old for convenient support.
+
+JH/35 Require SINGLE_DH_USE by default in OpenSSL (main config option
+      openssl_options), for security.  OpenSSL forces this from version 1.1.0
+      server-side so match that on older versions.
+
+JH/36 Bug 1778: longstanding bug in memory use by the ${run } expansion: A fresh
+      allocation for $value could be released as the expansion processing
+      concluded, but leaving the global pointer active for it.
+
+JH/37 Bug 1769: Permit a VRFY ACL to override the default 252 response,
+      and to use the domains and local_parts ACL conditions.
+
+JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
+      incorrectly not doubled on cutthrough transmission, hence seen as a
+      body-termination at the receiving system - resulting in truncated mails.
+      Commonly the sender saw a TCP-level error, and retransmitted the message
+      via the normal store-and-forward channel. This could result in duplicates
+      received - but deduplicating mailstores were liable to retain only the
+      initial truncated version.
+
+JH/39 Bug 1781: Fix use of private-keys having trailing '=' in the base-64.
+
+
 
 Exim version 4.86
 -----------------

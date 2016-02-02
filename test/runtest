@@ -1393,6 +1393,15 @@ $munges =
     { 'mail' => '/^(X-(Remote-MTA-(smtp-greeting|helo-response)|Exim-Diagnostic|(body|message)-linecount):|Remote-MTA: X-ip;)/'
     },
 
+    'optional_nossl' =>
+    { 'stdout' => '/^(
+                  dkim_(canon|domain|private_key|selector|sign_headers|strict)
+                  |gnutls_require_(kx|mac|protocols)
+                  |hosts_(requ(est|ire)|try)_(dane|ocsp)
+                  |hosts_(avoid|nopass|require|verify_avoid)_tls
+                  |tls_[^ ]*
+                  )($|[ ]=)/x' },
+
     'sys_bindir' =>
     { 'mainlog' => 's%/(usr/)?bin/%SYSBINDIR/%' },
 

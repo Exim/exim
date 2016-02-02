@@ -55,6 +55,7 @@ test message.
 ****
 sleep 1
 killdaemon
+millisleep 200
 #
 #
 #

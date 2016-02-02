@@ -7401,6 +7401,9 @@ wording. */
       if (dsn_ret == dsn_ret_hdrs)
         topt |= topt_no_body;
       else
+	{
+	struct stat statbuf;
+
         /* no full body return at all? */
         if (!bounce_return_body)
           {
@@ -7409,16 +7412,18 @@ wording. */
           if (dsn_ret == dsn_ret_full)
             dsnnotifyhdr = dsnlimitmsg;
           }
+	/* line length limited... return headers only if oversize */
         /* size limited ... return headers only if limit reached */
-        else if (bounce_return_size_limit > 0)
-          {
-          struct stat statbuf;
-          if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
-            {
-              topt |= topt_no_body;
-              dsnnotifyhdr = dsnlimitmsg;
-            }
+	else if (  max_received_linelength > bounce_return_linesize_limit
+		|| (  bounce_return_size_limit > 0
+		   && fstat(deliver_datafile, &statbuf) == 0
+		   && statbuf.st_size > max
+		)  )
+	  {
+	  topt |= topt_no_body;
+	  dsnnotifyhdr = dsnlimitmsg;
           }
+	}
 
 #ifdef SUPPORT_I18N
       if (message_smtputf8)
@@ -7748,6 +7753,7 @@ else if (addr_defer != (address_item *)(+1))
         FILE *wmf = NULL;
         FILE *f = fdopen(fd, "wb");
 	uschar * bound;
+        int topt;
 
         if (warn_message_file)
           if (!(wmf = Ufopen(warn_message_file, "rb")))
@@ -7894,7 +7900,7 @@ else if (addr_defer != (address_item *)(+1))
 
         fflush(f);
         /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
-        int topt = topt_add_return_path | topt_no_body;
+        topt = topt_add_return_path | topt_no_body;
         transport_filter_argv = NULL;   /* Just in case */
         return_path = sender_address;   /* In case not previously set */
         /* Write the original email out */

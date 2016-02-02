@@ -418,6 +418,28 @@ for(index = 0;; index++)
 /*****************************************************
 *  Certificate operator routines
 *****************************************************/
+uschar *
+tls_cert_der_b64(void * cert)
+{
+size_t len = 0;
+uschar * cp = NULL;
+int fail;
+
+if (  (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
+	GNUTLS_X509_FMT_DER, cp, &len)) != GNUTLS_E_SHORT_MEMORY_BUFFER
+   || !(cp = store_get((int)len))
+   || (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
+        GNUTLS_X509_FMT_DER, cp, &len))
+   )
+  {
+  log_write(0, LOG_MAIN, "TLS error in certificate export: %s",
+    gnutls_strerror(fail));
+  return NULL;
+  }
+return b64encode(cp, (int)len);
+}
+
+
 static uschar *
 fingerprint(gnutls_x509_crt_t cert, gnutls_digest_algorithm_t algo)
 {

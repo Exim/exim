@@ -970,7 +970,7 @@ return buffer;
 
 #ifndef COMPILE_UTILITY
 /************************************************
-*	Add element to seperated list           *
+*	Add element to separated list           *
 ************************************************/
 /* This function is used to build a list, returning
 an allocated null-terminated growable string. The

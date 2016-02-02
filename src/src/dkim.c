@@ -60,6 +60,13 @@ return PDKIM_FAIL;
 
 
 void
+dkim_exim_init(void)
+{
+pdkim_init();
+}
+
+
+void
 dkim_exim_verify_init(void)
 {
 /* Free previous context if there is one */
@@ -129,7 +136,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	      sig->canon_headers == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
 	      sig->canon_body == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
 	      sig->algo == PDKIM_ALGO_RSA_SHA256 ?  "rsa-sha256" : "rsa-sha1",
-	      sig->sigdata_len * 8
+	      sig->sigdata.len * 8
 	      ),
 
 	sig->identity ? string_sprintf("i=%s ", sig->identity) : US"",
@@ -158,7 +165,8 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 			"overlong public key record]");
 	  break;
 
-	case PDKIM_VERIFY_INVALID_PUBKEY_PARSING:
+	case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
+	case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
 	  logmsg = string_append(logmsg, &size, &ptr, 1,
 		       "syntax error in public key record]");
 	  break;
@@ -254,7 +262,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     dkim_signing_domain = US sig->domain;
     dkim_signing_selector = US sig->selector;
-    dkim_key_length = sig->sigdata_len * 8;
+    dkim_key_length = sig->sigdata.len * 8;
     return;
     }
 }
@@ -339,7 +347,7 @@ switch (what)
 
   case DKIM_HEADERNAMES:
     return dkim_cur_sig->headernames
-      ?  US dkim_cur_sig->headernames : dkim_exim_expand_defaults(what);
+      ? dkim_cur_sig->headernames : dkim_exim_expand_defaults(what);
 
   case DKIM_IDENTITY:
     return dkim_cur_sig->identity
@@ -395,7 +403,8 @@ switch (what)
       {
       case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
 						return US"pubkey_unavailable";
-      case PDKIM_VERIFY_INVALID_PUBKEY_PARSING:	return US"pubkey_syntax";
+      case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:return US"pubkey_dns_syntax";
+      case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:	return US"pubkey_der_syntax";
       case PDKIM_VERIFY_FAIL_BODY:		return US"bodyhash_mismatch";
       case PDKIM_VERIFY_FAIL_MESSAGE:		return US"signature_incorrect";
       }
@@ -563,12 +572,13 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 
   ctx = pdkim_init_sign( (char *) dkim_signing_domain,
 			 (char *) dkim_signing_selector,
-			 (char *) dkim_private_key_expanded);
+			 (char *) dkim_private_key_expanded,
+			 PDKIM_ALGO_RSA_SHA256);
   pdkim_set_optional(ctx,
 		      (char *) dkim_sign_headers_expanded,
 		      NULL,
 		      pdkim_canon,
-		      pdkim_canon, -1, PDKIM_ALGO_RSA_SHA256, 0, 0);
+		      pdkim_canon, -1, 0, 0);
 
   lseek(dkim_fd, 0, SEEK_SET);
 

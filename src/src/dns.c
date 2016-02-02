@@ -305,6 +305,15 @@ else
 
 
 
+/* Increment the aptr in dnss, checking against dnsa length.
+Return: TRUE for a bad result
+*/
+static BOOL
+dnss_inc(dns_answer * dnsa, dns_scan * dnss, unsigned delta)
+{
+return (dnss->aptr += delta) >= dnsa->answer + dnsa->answerlen;
+}
+
 /*************************************************
 *       Get next DNS record from answer block    *
 *************************************************/
@@ -328,10 +337,19 @@ dns_next_rr(dns_answer *dnsa, dns_scan *dnss, int reset)
 HEADER *h = (HEADER *)dnsa->answer;
 int namelen;
 
+char * trace = NULL;
+#ifdef rr_trace
+# define TRACE DEBUG(D_dns)
+#else
+trace = trace;
+# define TRACE if (FALSE)
+#endif
+
 /* Reset the saved data when requested to, and skip to the first required RR */
 
 if (reset != RESET_NEXT)
   {
+  TRACE debug_printf("%s: reset\n", __FUNCTION__);
   dnss->rrcount = ntohs(h->qdcount);
   dnss->aptr = dnsa->answer + sizeof(HEADER);
 
@@ -339,10 +357,13 @@ if (reset != RESET_NEXT)
 
   while (dnss->rrcount-- > 0)
     {
+    TRACE trace = "Q-namelen";
     namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-      dnss->aptr, (DN_EXPAND_ARG4_TYPE) &(dnss->srr.name), DNS_MAXNAME);
-    if (namelen < 0) { dnss->rrcount = 0; return NULL; }
-    dnss->aptr += namelen + 4;    /* skip name & type & class */
+      dnss->aptr, (DN_EXPAND_ARG4_TYPE) &dnss->srr.name, DNS_MAXNAME);
+    if (namelen < 0) goto null_return;
+    /* skip name & type & class */
+    TRACE trace = "Q-skip";
+    if (dnss_inc(dnsa, dnss, namelen+4)) goto null_return;
     }
 
   /* Get the number of answer records. */
@@ -353,23 +374,37 @@ if (reset != RESET_NEXT)
   the NS records (i.e. authority section) if wanting to look at the additional
   records. */
 
-  if (reset == RESET_ADDITIONAL) dnss->rrcount += ntohs(h->nscount);
+  if (reset == RESET_ADDITIONAL)
+    {
+    TRACE debug_printf("%s: additional\n", __FUNCTION__);
+    dnss->rrcount += ntohs(h->nscount);
+    }
 
   if (reset == RESET_AUTHORITY || reset == RESET_ADDITIONAL)
     {
+    TRACE if (reset == RESET_AUTHORITY)
+      debug_printf("%s: authority\n", __FUNCTION__);
     while (dnss->rrcount-- > 0)
       {
+      TRACE trace = "A-namelen";
       namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-        dnss->aptr, (DN_EXPAND_ARG4_TYPE) &(dnss->srr.name), DNS_MAXNAME);
-      if (namelen < 0) { dnss->rrcount = 0; return NULL; }
-      dnss->aptr += namelen + 8;            /* skip name, type, class & TTL */
+        dnss->aptr, (DN_EXPAND_ARG4_TYPE) &dnss->srr.name, DNS_MAXNAME);
+      if (namelen < 0) goto null_return;
+      /* skip name, type, class & TTL */
+      TRACE trace = "A-hdr";
+      if (dnss_inc(dnsa, dnss, namelen+8)) goto null_return;
       GETSHORT(dnss->srr.size, dnss->aptr); /* size of data portion */
-      dnss->aptr += dnss->srr.size;         /* skip over it */
+      /* skip over it */
+      TRACE trace = "A-skip";
+      if (dnss_inc(dnsa, dnss, dnss->srr.size)) goto null_return;
       }
-    dnss->rrcount = (reset == RESET_AUTHORITY)
+    dnss->rrcount = reset == RESET_AUTHORITY
       ? ntohs(h->nscount) : ntohs(h->arcount);
     }
+  TRACE debug_printf("%s: %d RRs to read\n", __FUNCTION__, dnss->rrcount);
   }
+else
+  TRACE debug_printf("%s: next (%d left)\n", __FUNCTION__, dnss->rrcount);
 
 /* The variable dnss->aptr is now pointing at the next RR, and dnss->rrcount
 contains the number of RR records left. */
@@ -379,25 +414,39 @@ if (dnss->rrcount-- <= 0) return NULL;
 /* If expanding the RR domain name fails, behave as if no more records
 (something safe). */
 
+TRACE trace = "R-namelen";
 namelen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, dnss->aptr,
-  (DN_EXPAND_ARG4_TYPE) &(dnss->srr.name), DNS_MAXNAME);
-if (namelen < 0) { dnss->rrcount = 0; return NULL; }
+  (DN_EXPAND_ARG4_TYPE) &dnss->srr.name, DNS_MAXNAME);
+if (namelen < 0) goto null_return;
 
 /* Move the pointer past the name and fill in the rest of the data structure
 from the following bytes. */
 
-dnss->aptr += namelen;
-GETSHORT(dnss->srr.type, dnss->aptr); /* Record type */
-dnss->aptr += 2;                      /* Don't want class */
-GETLONG(dnss->srr.ttl, dnss->aptr);   /* TTL */
-GETSHORT(dnss->srr.size, dnss->aptr); /* Size of data portion */
-dnss->srr.data = dnss->aptr;          /* The record's data follows */
-dnss->aptr += dnss->srr.size;         /* Advance to next RR */
+TRACE trace = "R-name";
+if (dnss_inc(dnsa, dnss, namelen)) goto null_return;
+
+GETSHORT(dnss->srr.type, dnss->aptr);		/* Record type */
+TRACE trace = "R-class";
+if (dnss_inc(dnsa, dnss, 2)) goto null_return;	/* Don't want class */
+GETLONG(dnss->srr.ttl, dnss->aptr);		/* TTL */
+GETSHORT(dnss->srr.size, dnss->aptr);		/* Size of data portion */
+dnss->srr.data = dnss->aptr;			/* The record's data follows */
+
+/* Unchecked increment ok here since no further access on this iteration;
+will be checked on next at "R-name". */
+
+dnss->aptr += dnss->srr.size;			/* Advance to next RR */
 
 /* Return a pointer to the dns_record structure within the dns_answer. This is
 for convenience so that the scans can use nice-looking for loops. */
 
-return &(dnss->srr);
+return &dnss->srr;
+
+null_return:
+  TRACE debug_printf("%s: terminate (%d RRs left). Last op: %s\n",
+    __FUNCTION__, dnss->rrcount, trace);
+  dnss->rrcount = 0;
+  return NULL;
 }
 
 

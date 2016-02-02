@@ -1,823 +1,679 @@
 /*
- *  The RSA public-key cryptosystem
+ *  PDKIM - a RFC4871 (DKIM) implementation
  *
- *  Copyright (C) 2006-2010, Brainspark B.V.
+ *  Copyright (C) 2016  Exim maintainers
  *
- *  This file is part of PolarSSL (http://www.polarssl.org)
- *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
- *
- *  All rights reserved.
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-/*
- *  RSA was designed by Ron Rivest, Adi Shamir and Len Adleman.
- *
- *  http://theory.lcs.mit.edu/~rivest/rsapaper.pdf
- *  http://www.cacr.math.uwaterloo.ca/hac/about/chap8.pdf
+ *  RSA signing/verification interface
  */
 
-#include "polarssl/config.h"
+#include "../exim.h"
 
-#if defined(POLARSSL_RSA_C)
+#ifndef DISABLE_DKIM	/* entire file */
 
-#include "polarssl/rsa.h"
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
-/*
- * Initialize an RSA context
- */
-void rsa_init( rsa_context *ctx,
-               int padding,
-               int hash_id )
-{
-    memset( ctx, 0, sizeof( rsa_context ) );
-
-    ctx->padding = padding;
-    ctx->hash_id = hash_id;
-}
-
-#if defined(POLARSSL_GENPRIME)
-
-/*
- * Generate an RSA keypair
- */
-int rsa_gen_key( rsa_context *ctx,
-        int (*f_rng)(void *),
-        void *p_rng,
-        int nbits, int exponent )
-{
-    int ret;
-    mpi P1, Q1, H, G;
-
-    if( f_rng == NULL || nbits < 128 || exponent < 3 )
-        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-
-    mpi_init( &P1, &Q1, &H, &G, NULL );
-
-    /*
-     * find primes P and Q with Q < P so that:
-     * GCD( E, (P-1)*(Q-1) ) == 1
-     */
-    MPI_CHK( mpi_lset( &ctx->E, exponent ) );
-
-    do
-    {
-        MPI_CHK( mpi_gen_prime( &ctx->P, ( nbits + 1 ) >> 1, 0,
-                                f_rng, p_rng ) );
-
-        MPI_CHK( mpi_gen_prime( &ctx->Q, ( nbits + 1 ) >> 1, 0,
-                                f_rng, p_rng ) );
-
-        if( mpi_cmp_mpi( &ctx->P, &ctx->Q ) < 0 )
-            mpi_swap( &ctx->P, &ctx->Q );
-
-        if( mpi_cmp_mpi( &ctx->P, &ctx->Q ) == 0 )
-            continue;
-
-        MPI_CHK( mpi_mul_mpi( &ctx->N, &ctx->P, &ctx->Q ) );
-        if( mpi_msb( &ctx->N ) != nbits )
-            continue;
-
-        MPI_CHK( mpi_sub_int( &P1, &ctx->P, 1 ) );
-        MPI_CHK( mpi_sub_int( &Q1, &ctx->Q, 1 ) );
-        MPI_CHK( mpi_mul_mpi( &H, &P1, &Q1 ) );
-        MPI_CHK( mpi_gcd( &G, &ctx->E, &H  ) );
-    }
-    while( mpi_cmp_int( &G, 1 ) != 0 );
-
-    /*
-     * D  = E^-1 mod ((P-1)*(Q-1))
-     * DP = D mod (P - 1)
-     * DQ = D mod (Q - 1)
-     * QP = Q^-1 mod P
-     */
-    MPI_CHK( mpi_inv_mod( &ctx->D , &ctx->E, &H  ) );
-    MPI_CHK( mpi_mod_mpi( &ctx->DP, &ctx->D, &P1 ) );
-    MPI_CHK( mpi_mod_mpi( &ctx->DQ, &ctx->D, &Q1 ) );
-    MPI_CHK( mpi_inv_mod( &ctx->QP, &ctx->Q, &ctx->P ) );
-
-    ctx->len = ( mpi_msb( &ctx->N ) + 7 ) >> 3;
-
-cleanup:
-
-    mpi_free( &G, &H, &Q1, &P1, NULL );
-
-    if( ret != 0 )
-    {
-        rsa_free( ctx );
-        return( POLARSSL_ERR_RSA_KEY_GEN_FAILED | ret );
-    }
-
-    return( 0 );
-}
-
+#ifndef SUPPORT_TLS
+# error Need SUPPORT_TLS for DKIM
 #endif
 
-/*
- * Check a public RSA key
- */
-int rsa_check_pubkey( const rsa_context *ctx )
+#include "crypt_ver.h"
+#include "rsa.h"
+
+
+/******************************************************************************/
+#ifdef RSA_GNUTLS
+
+void
+exim_rsa_init(void)
 {
-    if( !ctx->N.p || !ctx->E.p )
-        return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED );
-
-    if( ( ctx->N.p[0] & 1 ) == 0 ||
-        ( ctx->E.p[0] & 1 ) == 0 )
-        return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED );
-
-    if( mpi_msb( &ctx->N ) < 128 ||
-        mpi_msb( &ctx->N ) > 4096 )
-        return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED );
-
-    if( mpi_msb( &ctx->E ) < 2 ||
-        mpi_msb( &ctx->E ) > 64 )
-        return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED );
-
-    return( 0 );
 }
 
-/*
- * Check a private RSA key
- */
-int rsa_check_privkey( const rsa_context *ctx )
+
+/* accumulate data (gnutls-only).  String to be appended must be nul-terminated. */
+blob *
+exim_rsa_data_append(blob * b, int * alloc, uschar * s)
 {
-    int ret;
-    mpi PQ, DE, P1, Q1, H, I, G, G2, L1, L2;
-
-    if( ( ret = rsa_check_pubkey( ctx ) ) != 0 )
-        return( ret );
-
-    if( !ctx->P.p || !ctx->Q.p || !ctx->D.p )
-        return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED );
-
-    mpi_init( &PQ, &DE, &P1, &Q1, &H, &I, &G, &G2, &L1, &L2, NULL );
-
-    MPI_CHK( mpi_mul_mpi( &PQ, &ctx->P, &ctx->Q ) );
-    MPI_CHK( mpi_mul_mpi( &DE, &ctx->D, &ctx->E ) );
-    MPI_CHK( mpi_sub_int( &P1, &ctx->P, 1 ) );
-    MPI_CHK( mpi_sub_int( &Q1, &ctx->Q, 1 ) );
-    MPI_CHK( mpi_mul_mpi( &H, &P1, &Q1 ) );
-    MPI_CHK( mpi_gcd( &G, &ctx->E, &H  ) );
-
-    MPI_CHK( mpi_gcd( &G2, &P1, &Q1 ) );
-    MPI_CHK( mpi_div_mpi( &L1, &L2, &H, &G2 ) );
-    MPI_CHK( mpi_mod_mpi( &I, &DE, &L1  ) );
-
-    /*
-     * Check for a valid PKCS1v2 private key
-     */
-    if( mpi_cmp_mpi( &PQ, &ctx->N ) == 0 &&
-        mpi_cmp_int( &L2, 0 ) == 0 &&
-        mpi_cmp_int( &I, 1 ) == 0 &&
-        mpi_cmp_int( &G, 1 ) == 0 )
-    {
-        mpi_free( &G, &I, &H, &Q1, &P1, &DE, &PQ, &G2, &L1, &L2, NULL );
-        return( 0 );
-    }
-
-
-cleanup:
-
-    mpi_free( &G, &I, &H, &Q1, &P1, &DE, &PQ, &G2, &L1, &L2, NULL );
-    return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED | ret );
+int len = b->len;
+b->data = string_append(b->data, alloc, &len, 1, s);
+b->len = len;
+return b;
 }
 
-/*
- * Do an RSA public key operation
- */
-int rsa_public( rsa_context *ctx,
-                const unsigned char *input,
-                unsigned char *output )
+
+
+/* import private key from PEM string in memory.
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
 {
-    int ret, olen;
-    mpi T;
+gnutls_datum_t k;
+int rc;
 
-    mpi_init( &T, NULL );
+k.data = privkey_pem;
+k.size = strlen(privkey_pem);
 
-    MPI_CHK( mpi_read_binary( &T, input, ctx->len ) );
+if (  (rc = gnutls_x509_privkey_init(&sign_ctx->rsa)) != GNUTLS_E_SUCCESS
+   /*|| (rc = gnutls_x509_privkey_import(sign_ctx->rsa, &k,
+	  GNUTLS_X509_FMT_PEM)) != GNUTLS_E_SUCCESS */
+   )
+  return gnutls_strerror(rc);
 
-    if( mpi_cmp_mpi( &T, &ctx->N ) >= 0 )
-    {
-        mpi_free( &T, NULL );
-        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-    }
+if (  /* (rc = gnutls_x509_privkey_init(&sign_ctx->rsa)) != GNUTLS_E_SUCCESS
+   ||*/ (rc = gnutls_x509_privkey_import(sign_ctx->rsa, &k,
+	  GNUTLS_X509_FMT_PEM)) != GNUTLS_E_SUCCESS
+   )
+  return gnutls_strerror(rc);
 
-    olen = ctx->len;
-    MPI_CHK( mpi_exp_mod( &T, &T, &ctx->E, &ctx->N, &ctx->RN ) );
-    MPI_CHK( mpi_write_binary( &T, output, olen ) );
-
-cleanup:
-
-    mpi_free( &T, NULL );
-
-    if( ret != 0 )
-        return( POLARSSL_ERR_RSA_PUBLIC_FAILED | ret );
-
-    return( 0 );
+return NULL;
 }
 
-/*
- * Do an RSA private key operation
- */
-int rsa_private( rsa_context *ctx,
-                 const unsigned char *input,
-                 unsigned char *output )
+
+
+/* allocate mem for signature (when signing) */
+/* sign data (gnutls_only)
+OR
+sign hash.
+
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_sign(es_ctx * sign_ctx, BOOL is_sha1, blob * data, blob * sig)
 {
-    int ret, olen;
-    mpi T, T1, T2;
+gnutls_datum_t k;
+size_t sigsize = 0;
+int rc;
+const uschar * ret = NULL;
 
-    mpi_init( &T, &T1, &T2, NULL );
+/* Allocate mem for signature */
+k.data = data->data;
+k.size = data->len;
+(void) gnutls_x509_privkey_sign_data(sign_ctx->rsa,
+  is_sha1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
+  0, &k, NULL, &sigsize);
 
-    MPI_CHK( mpi_read_binary( &T, input, ctx->len ) );
+sig->data = store_get(sigsize);
+sig->len = sigsize;
 
-    if( mpi_cmp_mpi( &T, &ctx->N ) >= 0 )
-    {
-        mpi_free( &T, NULL );
-        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-    }
+/* Do signing */
+if ((rc = gnutls_x509_privkey_sign_data(sign_ctx->rsa,
+	    is_sha1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
+	    0, &k, sig->data, &sigsize)) != GNUTLS_E_SUCCESS
+   )
+  ret = gnutls_strerror(rc);
 
-#if 0
-    MPI_CHK( mpi_exp_mod( &T, &T, &ctx->D, &ctx->N, &ctx->RN ) );
-#else
-    /*
-     * faster decryption using the CRT
-     *
-     * T1 = input ^ dP mod P
-     * T2 = input ^ dQ mod Q
-     */
-    MPI_CHK( mpi_exp_mod( &T1, &T, &ctx->DP, &ctx->P, &ctx->RP ) );
-    MPI_CHK( mpi_exp_mod( &T2, &T, &ctx->DQ, &ctx->Q, &ctx->RQ ) );
-
-    /*
-     * T = (T1 - T2) * (Q^-1 mod P) mod P
-     */
-    MPI_CHK( mpi_sub_mpi( &T, &T1, &T2 ) );
-    MPI_CHK( mpi_mul_mpi( &T1, &T, &ctx->QP ) );
-    MPI_CHK( mpi_mod_mpi( &T, &T1, &ctx->P ) );
-
-    /*
-     * output = T2 + T * Q
-     */
-    MPI_CHK( mpi_mul_mpi( &T1, &T, &ctx->Q ) );
-    MPI_CHK( mpi_add_mpi( &T, &T2, &T1 ) );
-#endif
-
-    olen = ctx->len;
-    MPI_CHK( mpi_write_binary( &T, output, olen ) );
-
-cleanup:
-
-    mpi_free( &T, &T1, &T2, NULL );
-
-    if( ret != 0 )
-        return( POLARSSL_ERR_RSA_PRIVATE_FAILED | ret );
-
-    return( 0 );
+gnutls_x509_privkey_deinit(sign_ctx->rsa);
+return ret;
 }
 
-/*
- * Add the message padding, then do an RSA operation
- */
-int rsa_pkcs1_encrypt( rsa_context *ctx,
-                       int (*f_rng)(void *),
-                       void *p_rng,
-                       int mode, int  ilen,
-                       const unsigned char *input,
-                       unsigned char *output )
+
+
+/* import public key (from DER in memory)
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_verify_init(blob * pubkey_der, ev_ctx * verify_ctx)
 {
-    int nb_pad, olen;
-    unsigned char *p = output;
+gnutls_datum_t k;
+int rc;
+const uschar * ret = NULL;
 
-    olen = ctx->len;
+gnutls_pubkey_init(&verify_ctx->rsa);
 
-    switch( ctx->padding )
-    {
-        case RSA_PKCS_V15:
+k.data = pubkey_der->data;
+k.size = pubkey_der->len;
 
-            if( ilen < 0 || olen < ilen + 11 || f_rng == NULL )
-                return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-
-            nb_pad = olen - 3 - ilen;
-
-            *p++ = 0;
-            *p++ = RSA_CRYPT;
-
-            while( nb_pad-- > 0 )
-            {
-                int rng_dl = 100;
-
-                do {
-                    *p = (unsigned char) f_rng( p_rng );
-                } while( *p == 0 && --rng_dl );
-
-                // Check if RNG failed to generate data
-                //
-                if( rng_dl == 0 )
-                    return POLARSSL_ERR_RSA_RNG_FAILED;
-
-                p++;
-            }
-            *p++ = 0;
-            memcpy( p, input, ilen );
-            break;
-
-        default:
-
-            return( POLARSSL_ERR_RSA_INVALID_PADDING );
-    }
-
-    return( ( mode == RSA_PUBLIC )
-            ? rsa_public(  ctx, output, output )
-            : rsa_private( ctx, output, output ) );
+if ((rc = gnutls_pubkey_import(verify_ctx->rsa, &k, GNUTLS_X509_FMT_DER))
+       != GNUTLS_E_SUCCESS)
+  ret = gnutls_strerror(rc);
+return ret;
 }
 
-/*
- * Do an RSA operation, then remove the message padding
- */
-int rsa_pkcs1_decrypt( rsa_context *ctx,
-                       int mode, int *olen,
-                       const unsigned char *input,
-                       unsigned char *output,
-                       int output_max_len)
+
+/* verify signature (of hash)  (given pubkey & alleged sig)
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_verify(ev_ctx * verify_ctx, BOOL is_sha1, blob * data_hash, blob * sig)
 {
-    int ret, ilen;
-    unsigned char *p;
-    unsigned char buf[1024];
+gnutls_datum_t k, s;
+int rc;
+const uschar * ret = NULL;
 
-    ilen = ctx->len;
+k.data = data_hash->data;
+k.size = data_hash->len;
+s.data = sig->data;
+s.size = sig->len;
+if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->rsa,
+	    is_sha1 ? GNUTLS_SIGN_RSA_SHA1 : GNUTLS_SIGN_RSA_SHA256,
+	    0, &k, &s)) < 0)
+  ret = gnutls_strerror(rc);
 
-    if( ilen < 16 || ilen > (int) sizeof( buf ) )
-        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-
-    ret = ( mode == RSA_PUBLIC )
-          ? rsa_public(  ctx, input, buf )
-          : rsa_private( ctx, input, buf );
-
-    if( ret != 0 )
-        return( ret );
-
-    p = buf;
-
-    switch( ctx->padding )
-    {
-        case RSA_PKCS_V15:
-
-            if( *p++ != 0 || *p++ != RSA_CRYPT )
-                return( POLARSSL_ERR_RSA_INVALID_PADDING );
-
-            while( *p != 0 )
-            {
-                if( p >= buf + ilen - 1 )
-                    return( POLARSSL_ERR_RSA_INVALID_PADDING );
-                p++;
-            }
-            p++;
-            break;
-
-        default:
-
-            return( POLARSSL_ERR_RSA_INVALID_PADDING );
-    }
-
-    if (ilen - (int)(p - buf) > output_max_len)
-    	return( POLARSSL_ERR_RSA_OUTPUT_TOO_LARGE );
-
-    *olen = ilen - (int)(p - buf);
-    memcpy( output, p, *olen );
-
-    return( 0 );
+gnutls_pubkey_deinit(verify_ctx->rsa);
+return ret;
 }
 
-/*
- * Do an RSA operation to sign the message digest
- */
-int rsa_pkcs1_sign( rsa_context *ctx,
-                    int mode,
-                    int hash_id,
-                    int hashlen,
-                    const unsigned char *hash,
-                    unsigned char *sig )
+
+
+
+#elif defined(RSA_GCRYPT)
+/******************************************************************************/
+
+
+/* Internal service routine:
+Read and move past an asn.1 header, checking class & tag,
+optionally returning the data-length */
+
+static int
+as_tag(blob * der, uschar req_cls, long req_tag, long * alen)
 {
-    int nb_pad, olen;
-    unsigned char *p = sig;
+int rc;
+uschar tag_class;
+int taglen;
+long tag, len;
 
-    olen = ctx->len;
+/* debug_printf("as_tag: %02x %02x %02x %02x\n",
+	der->data[0], der->data[1], der->data[2], der->data[3]); */
 
-    switch( ctx->padding )
-    {
-        case RSA_PKCS_V15:
+if ((rc = asn1_get_tag_der(der->data++, der->len--, &tag_class, &taglen, &tag))
+    != ASN1_SUCCESS)
+  return rc;
 
-            switch( hash_id )
-            {
-                case SIG_RSA_RAW:
-                    nb_pad = olen - 3 - hashlen;
-                    break;
+if (tag_class != req_cls || tag != req_tag) return ASN1_ELEMENT_NOT_FOUND;
 
-                case SIG_RSA_MD2:
-                case SIG_RSA_MD4:
-                case SIG_RSA_MD5:
-                    nb_pad = olen - 3 - 34;
-                    break;
+if ((len = asn1_get_length_der(der->data, der->len, &taglen)) < 0)
+  return ASN1_DER_ERROR;
+if (alen) *alen = len;
 
-                case SIG_RSA_SHA1:
-                    nb_pad = olen - 3 - 35;
-                    break;
+/* debug_printf("as_tag:  tlen %d dlen %d\n", taglen, (int)len); */
 
-                case SIG_RSA_SHA224:
-                    nb_pad = olen - 3 - 47;
-                    break;
-
-                case SIG_RSA_SHA256:
-                    nb_pad = olen - 3 - 51;
-                    break;
-
-                case SIG_RSA_SHA384:
-                    nb_pad = olen - 3 - 67;
-                    break;
-
-                case SIG_RSA_SHA512:
-                    nb_pad = olen - 3 - 83;
-                    break;
-
-
-                default:
-                    return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-            }
-
-            if( nb_pad < 8 )
-                return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-
-            *p++ = 0;
-            *p++ = RSA_SIGN;
-            memset( p, 0xFF, nb_pad );
-            p += nb_pad;
-            *p++ = 0;
-            break;
-
-        default:
-
-            return( POLARSSL_ERR_RSA_INVALID_PADDING );
-    }
-
-    switch( hash_id )
-    {
-        case SIG_RSA_RAW:
-            memcpy( p, hash, hashlen );
-            break;
-
-        case SIG_RSA_MD2:
-            memcpy( p, ASN1_HASH_MDX, 18 );
-            memcpy( p + 18, hash, 16 );
-            p[13] = 2; break;
-
-        case SIG_RSA_MD4:
-            memcpy( p, ASN1_HASH_MDX, 18 );
-            memcpy( p + 18, hash, 16 );
-            p[13] = 4; break;
-
-        case SIG_RSA_MD5:
-            memcpy( p, ASN1_HASH_MDX, 18 );
-            memcpy( p + 18, hash, 16 );
-            p[13] = 5; break;
-
-        case SIG_RSA_SHA1:
-            memcpy( p, ASN1_HASH_SHA1, 15 );
-            memcpy( p + 15, hash, 20 );
-            break;
-
-        case SIG_RSA_SHA224:
-            memcpy( p, ASN1_HASH_SHA2X, 19 );
-            memcpy( p + 19, hash, 28 );
-            p[1] += 28; p[14] = 4; p[18] += 28; break;
-
-        case SIG_RSA_SHA256:
-            memcpy( p, ASN1_HASH_SHA2X, 19 );
-            memcpy( p + 19, hash, 32 );
-            p[1] += 32; p[14] = 1; p[18] += 32; break;
-
-        case SIG_RSA_SHA384:
-            memcpy( p, ASN1_HASH_SHA2X, 19 );
-            memcpy( p + 19, hash, 48 );
-            p[1] += 48; p[14] = 2; p[18] += 48; break;
-
-        case SIG_RSA_SHA512:
-            memcpy( p, ASN1_HASH_SHA2X, 19 );
-            memcpy( p + 19, hash, 64 );
-            p[1] += 64; p[14] = 3; p[18] += 64; break;
-
-        default:
-            return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-    }
-
-    return( ( mode == RSA_PUBLIC )
-            ? rsa_public(  ctx, sig, sig )
-            : rsa_private( ctx, sig, sig ) );
+der->data += taglen;
+der->len -= taglen;
+return rc;
 }
 
-/*
- * Do an RSA operation and check the message digest
- */
-int rsa_pkcs1_verify( rsa_context *ctx,
-                      int mode,
-                      int hash_id,
-                      int hashlen,
-                      const unsigned char *hash,
-                      unsigned char *sig )
+/* Internal service routine:
+Read and move over an asn.1 integer, setting an MPI to the value
+*/
+
+static uschar *
+as_mpi(blob * der, gcry_mpi_t * mpi)
 {
-    int ret, len, siglen;
-    unsigned char *p, c;
-    unsigned char buf[1024];
+long alen;
+int rc;
+gcry_error_t gerr;
 
-    siglen = ctx->len;
+/* integer; move past the header */
+if ((rc = as_tag(der, 0, ASN1_TAG_INTEGER, &alen)) != ASN1_SUCCESS)
+  return US asn1_strerror(rc);
 
-    if( siglen < 16 || siglen > (int) sizeof( buf ) )
-        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
+/* read to an MPI */
+if ((gerr = gcry_mpi_scan(mpi, GCRYMPI_FMT_STD, der->data, alen, NULL)))
+  return US gcry_strerror(gerr);
 
-    ret = ( mode == RSA_PUBLIC )
-          ? rsa_public(  ctx, sig, buf )
-          : rsa_private( ctx, sig, buf );
-
-    if( ret != 0 )
-        return( ret );
-
-    p = buf;
-
-    switch( ctx->padding )
-    {
-        case RSA_PKCS_V15:
-
-            if( *p++ != 0 || *p++ != RSA_SIGN )
-                return( POLARSSL_ERR_RSA_INVALID_PADDING );
-
-            while( *p != 0 )
-            {
-                if( p >= buf + siglen - 1 || *p != 0xFF )
-                    return( POLARSSL_ERR_RSA_INVALID_PADDING );
-                p++;
-            }
-            p++;
-            break;
-
-        default:
-
-            return( POLARSSL_ERR_RSA_INVALID_PADDING );
-    }
-
-    len = siglen - (int)( p - buf );
-
-    if( len == 34 )
-    {
-        c = p[13];
-        p[13] = 0;
-
-        if( memcmp( p, ASN1_HASH_MDX, 18 ) != 0 )
-            return( POLARSSL_ERR_RSA_VERIFY_FAILED );
-
-        if( ( c == 2 && hash_id == SIG_RSA_MD2 ) ||
-            ( c == 4 && hash_id == SIG_RSA_MD4 ) ||
-            ( c == 5 && hash_id == SIG_RSA_MD5 ) )
-        {
-            if( memcmp( p + 18, hash, 16 ) == 0 )
-                return( 0 );
-            else
-                return( POLARSSL_ERR_RSA_VERIFY_FAILED );
-        }
-    }
-
-    if( len == 35 && hash_id == SIG_RSA_SHA1 )
-    {
-        if( memcmp( p, ASN1_HASH_SHA1, 15 ) == 0 &&
-            memcmp( p + 15, hash, 20 ) == 0 )
-            return( 0 );
-        else
-            return( POLARSSL_ERR_RSA_VERIFY_FAILED );
-    }
-    if( ( len == 19 + 28 && p[14] == 4 && hash_id == SIG_RSA_SHA224 ) ||
-        ( len == 19 + 32 && p[14] == 1 && hash_id == SIG_RSA_SHA256 ) ||
-        ( len == 19 + 48 && p[14] == 2 && hash_id == SIG_RSA_SHA384 ) ||
-        ( len == 19 + 64 && p[14] == 3 && hash_id == SIG_RSA_SHA512 ) )
-    {
-    	c = p[1] - 17;
-        p[1] = 17;
-        p[14] = 0;
-
-        if( p[18] == c &&
-                memcmp( p, ASN1_HASH_SHA2X, 18 ) == 0 &&
-                memcmp( p + 19, hash, c ) == 0 )
-            return( 0 );
-        else
-            return( POLARSSL_ERR_RSA_VERIFY_FAILED );
-    }
-
-    if( len == hashlen && hash_id == SIG_RSA_RAW )
-    {
-        if( memcmp( p, hash, hashlen ) == 0 )
-            return( 0 );
-        else
-            return( POLARSSL_ERR_RSA_VERIFY_FAILED );
-    }
-
-    return( POLARSSL_ERR_RSA_INVALID_PADDING );
+/* move over the data */
+der->data += alen; der->len -= alen;
+return NULL;
 }
 
-/*
- * Free the components of an RSA key
- */
-void rsa_free( rsa_context *ctx )
+
+
+void
+exim_rsa_init(void)
 {
-    mpi_free( &ctx->RQ, &ctx->RP, &ctx->RN,
-              &ctx->QP, &ctx->DQ, &ctx->DP,
-              &ctx->Q,  &ctx->P,  &ctx->D,
-              &ctx->E,  &ctx->N,  NULL );
+/* Version check should be the very first call because it
+makes sure that important subsystems are initialized. */
+if (!gcry_check_version (GCRYPT_VERSION))
+  {
+  fputs ("libgcrypt version mismatch\n", stderr);
+  exit (2);
+  }
+
+/* We don't want to see any warnings, e.g. because we have not yet
+parsed program options which might be used to suppress such
+warnings. */
+gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
+
+/* ... If required, other initialization goes here.  Note that the
+process might still be running with increased privileges and that
+the secure memory has not been initialized.  */
+
+/* Allocate a pool of 16k secure memory.  This make the secure memory
+available and also drops privileges where needed.  */
+gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
+
+/* It is now okay to let Libgcrypt complain when there was/is
+a problem with the secure memory. */
+gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
+
+/* ... If required, other initialization goes here.  */
+
+/* Tell Libgcrypt that initialization has completed. */
+gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+
+return;
 }
 
-#if defined(POLARSSL_SELF_TEST)
 
-#include "polarssl/sha1.h"
 
-/*
- * Example RSA-1024 keypair, for test purposes
- */
-#define KEY_LEN 128
 
-#define RSA_N   "9292758453063D803DD603D5E777D788" \
-                "8ED1D5BF35786190FA2F23EBC0848AEA" \
-                "DDA92CA6C3D80B32C4D109BE0F36D6AE" \
-                "7130B9CED7ACDF54CFC7555AC14EEBAB" \
-                "93A89813FBF3C4F8066D2D800F7C38A8" \
-                "1AE31942917403FF4946B0A83D3D3E05" \
-                "EE57C6F5F5606FB5D4BC6CD34EE0801A" \
-                "5E94BB77B07507233A0BC7BAC8F90F79"
+/* Accumulate data (gnutls-only).
+String to be appended must be nul-terminated. */
 
-#define RSA_E   "10001"
-
-#define RSA_D   "24BF6185468786FDD303083D25E64EFC" \
-                "66CA472BC44D253102F8B4A9D3BFA750" \
-                "91386C0077937FE33FA3252D28855837" \
-                "AE1B484A8A9A45F7EE8C0C634F99E8CD" \
-                "DF79C5CE07EE72C7F123142198164234" \
-                "CABB724CF78B8173B9F880FC86322407" \
-                "AF1FEDFDDE2BEB674CA15F3E81A1521E" \
-                "071513A1E85B5DFA031F21ECAE91A34D"
-
-#define RSA_P   "C36D0EB7FCD285223CFB5AABA5BDA3D8" \
-                "2C01CAD19EA484A87EA4377637E75500" \
-                "FCB2005C5C7DD6EC4AC023CDA285D796" \
-                "C3D9E75E1EFC42488BB4F1D13AC30A57"
-
-#define RSA_Q   "C000DF51A7C77AE8D7C7370C1FF55B69" \
-                "E211C2B9E5DB1ED0BF61D0D9899620F4" \
-                "910E4168387E3C30AA1E00C339A79508" \
-                "8452DD96A9A5EA5D9DCA68DA636032AF"
-
-#define RSA_DP  "C1ACF567564274FB07A0BBAD5D26E298" \
-                "3C94D22288ACD763FD8E5600ED4A702D" \
-                "F84198A5F06C2E72236AE490C93F07F8" \
-                "3CC559CD27BC2D1CA488811730BB5725"
-
-#define RSA_DQ  "4959CBF6F8FEF750AEE6977C155579C7" \
-                "D8AAEA56749EA28623272E4F7D0592AF" \
-                "7C1F1313CAC9471B5C523BFE592F517B" \
-                "407A1BD76C164B93DA2D32A383E58357"
-
-#define RSA_QP  "9AE7FBC99546432DF71896FC239EADAE" \
-                "F38D18D2B2F0E2DD275AA977E2BF4411" \
-                "F5A3B2A5D33605AEBBCCBA7FEB9F2D2F" \
-                "A74206CEC169D74BF5A8C50D6F48EA08"
-
-#define PT_LEN  24
-#define RSA_PT  "\xAA\xBB\xCC\x03\x02\x01\x00\xFF\xFF\xFF\xFF\xFF" \
-                "\x11\x22\x33\x0A\x0B\x0C\xCC\xDD\xDD\xDD\xDD\xDD"
-
-static int myrand( void *rng_state )
+blob *
+exim_rsa_data_append(blob * b, int * alloc, uschar * s)
 {
-    if( rng_state != NULL )
-        rng_state  = NULL;
-
-    return( rand() );
+return b;	/*dummy*/
 }
 
-/*
- * Checkup routine
- */
-int rsa_self_test( int verbose )
+
+
+/* import private key from PEM string in memory.
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
 {
-    int len;
-    rsa_context rsa;
-    unsigned char sha1sum[20];
-    unsigned char rsa_plaintext[PT_LEN];
-    unsigned char rsa_decrypted[PT_LEN];
-    unsigned char rsa_ciphertext[KEY_LEN];
+uschar * s1, * s2;
+blob der;
+long alen;
+int rc;
 
-    rsa_init( &rsa, RSA_PKCS_V15, 0 );
+/*
+ *  RSAPrivateKey ::= SEQUENCE
+ *      version           Version,
+ *      modulus           INTEGER,  -- n
+ *      publicExponent    INTEGER,  -- e
+ *      privateExponent   INTEGER,  -- d
+ *      prime1            INTEGER,  -- p
+ *      prime2            INTEGER,  -- q
+ *      exponent1         INTEGER,  -- d mod (p-1)
+ *      exponent2         INTEGER,  -- d mod (q-1)
+ *      coefficient       INTEGER,  -- (inverse of q) mod p
+ *      otherPrimeInfos   OtherPrimeInfos OPTIONAL
+ */
+ 
+if (  !(s1 = Ustrstr(CS privkey_pem, "-----BEGIN RSA PRIVATE KEY-----"))
+   || !(s2 = Ustrstr(CS (s1+=31),    "-----END RSA PRIVATE KEY-----" ))
+   )
+  return US"Bad PEM wrapper";
 
-    rsa.len = KEY_LEN;
-    mpi_read_string( &rsa.N , 16, RSA_N  );
-    mpi_read_string( &rsa.E , 16, RSA_E  );
-    mpi_read_string( &rsa.D , 16, RSA_D  );
-    mpi_read_string( &rsa.P , 16, RSA_P  );
-    mpi_read_string( &rsa.Q , 16, RSA_Q  );
-    mpi_read_string( &rsa.DP, 16, RSA_DP );
-    mpi_read_string( &rsa.DQ, 16, RSA_DQ );
-    mpi_read_string( &rsa.QP, 16, RSA_QP );
+*s2 = '\0';
 
-    if( verbose != 0 )
-        printf( "  RSA key validation: " );
+if ((der.len = b64decode(s1, &der.data)) < 0)
+  return US"Bad PEM-DER b64 decode";
 
-    if( rsa_check_pubkey(  &rsa ) != 0 ||
-        rsa_check_privkey( &rsa ) != 0 )
-    {
-        if( verbose != 0 )
-            printf( "failed\n" );
+/* untangle asn.1 */
 
-        return( 1 );
-    }
+/* sequence; just move past the header */
+if ((rc = as_tag(&der, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
+   != ASN1_SUCCESS) goto asn_err;
 
-    if( verbose != 0 )
-        printf( "passed\n  PKCS#1 encryption : " );
+/* integer version; move past the header, check is zero */
+if ((rc = as_tag(&der, 0, ASN1_TAG_INTEGER, &alen)) != ASN1_SUCCESS)
+  goto asn_err;
+if (alen != 1 || *der.data != 0)
+  return US"Bad version number";
+der.data++; der.len--;
 
-    memcpy( rsa_plaintext, RSA_PT, PT_LEN );
+if (  (s1 = as_mpi(&der, &sign_ctx->n))
+   || (s1 = as_mpi(&der, &sign_ctx->e))
+   || (s1 = as_mpi(&der, &sign_ctx->d))
+   || (s1 = as_mpi(&der, &sign_ctx->p))
+   || (s1 = as_mpi(&der, &sign_ctx->q))
+   || (s1 = as_mpi(&der, &sign_ctx->dp))
+   || (s1 = as_mpi(&der, &sign_ctx->dq))
+   || (s1 = as_mpi(&der, &sign_ctx->qp))
+   )
+  return s1;
 
-    if( rsa_pkcs1_encrypt( &rsa, &myrand, NULL, RSA_PUBLIC, PT_LEN,
-                           rsa_plaintext, rsa_ciphertext ) != 0 )
-    {
-        if( verbose != 0 )
-            printf( "failed\n" );
+DEBUG(D_acl) debug_printf("rsa_signing_init:\n");
+  {
+  uschar * s;
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->n);
+  debug_printf(" N : %s\n", s);
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->e);
+  debug_printf(" E : %s\n", s);
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->d);
+  debug_printf(" D : %s\n", s);
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->p);
+  debug_printf(" P : %s\n", s);
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->q);
+  debug_printf(" Q : %s\n", s);
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->dp);
+  debug_printf(" DP: %s\n", s);
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->dq);
+  debug_printf(" DQ: %s\n", s);
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->qp);
+  debug_printf(" QP: %s\n", s);
+  }
+return NULL;
 
-        return( 1 );
-    }
-
-    if( verbose != 0 )
-        printf( "passed\n  PKCS#1 decryption : " );
-
-    if( rsa_pkcs1_decrypt( &rsa, RSA_PRIVATE, &len,
-                           rsa_ciphertext, rsa_decrypted,
-			   sizeof(rsa_decrypted) ) != 0 )
-    {
-        if( verbose != 0 )
-            printf( "failed\n" );
-
-        return( 1 );
-    }
-
-    if( memcmp( rsa_decrypted, rsa_plaintext, len ) != 0 )
-    {
-        if( verbose != 0 )
-            printf( "failed\n" );
-
-        return( 1 );
-    }
-
-    if( verbose != 0 )
-        printf( "passed\n  PKCS#1 data sign  : " );
-
-    polarssl_sha1( rsa_plaintext, PT_LEN, sha1sum );
-
-    if( rsa_pkcs1_sign( &rsa, RSA_PRIVATE, SIG_RSA_SHA1, 20,
-                        sha1sum, rsa_ciphertext ) != 0 )
-    {
-        if( verbose != 0 )
-            printf( "failed\n" );
-
-        return( 1 );
-    }
-
-    if( verbose != 0 )
-        printf( "passed\n  PKCS#1 sig. verify: " );
-
-    if( rsa_pkcs1_verify( &rsa, RSA_PUBLIC, SIG_RSA_SHA1, 20,
-                          sha1sum, rsa_ciphertext ) != 0 )
-    {
-        if( verbose != 0 )
-            printf( "failed\n" );
-
-        return( 1 );
-    }
-
-    if( verbose != 0 )
-        printf( "passed\n\n" );
-
-    rsa_free( &rsa );
-
-    return( 0 );
+asn_err: return US asn1_strerror(rc);
 }
+
+
+
+/* allocate mem for signature (when signing) */
+/* sign data (gnutls_only)
+OR
+sign hash.
+
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_sign(es_ctx * sign_ctx, BOOL is_sha1, blob * data, blob * sig)
+{
+gcry_sexp_t s_hash = NULL, s_key = NULL, s_sig = NULL;
+gcry_mpi_t m_sig;
+uschar * errstr;
+gcry_error_t gerr;
+
+#define SIGSPACE 128
+sig->data = store_get(SIGSPACE);
+
+if (gcry_mpi_cmp (sign_ctx->p, sign_ctx->q) > 0)
+  {
+  gcry_mpi_swap (sign_ctx->p, sign_ctx->q);
+  gcry_mpi_invm (sign_ctx->qp, sign_ctx->p, sign_ctx->q);
+  }
+
+if (  (gerr = gcry_sexp_build (&s_key, NULL,
+		"(private-key (rsa (n%m)(e%m)(d%m)(p%m)(q%m)(u%m)))",
+		sign_ctx->n, sign_ctx->e,
+		sign_ctx->d, sign_ctx->p,
+		sign_ctx->q, sign_ctx->qp))
+   || (gerr = gcry_sexp_build (&s_hash, NULL,
+		is_sha1
+		? "(data(flags pkcs1)(hash sha1 %b))"
+		: "(data(flags pkcs1)(hash sha256 %b))",
+		(int) data->len, CS data->data))
+   ||  (gerr = gcry_pk_sign (&s_sig, s_hash, s_key))
+   )
+  return US gcry_strerror(gerr);
+
+/* gcry_sexp_dump(s_sig); */
+
+if (  !(s_sig = gcry_sexp_find_token(s_sig, "s", 0))
+   )
+  return US"no sig result";
+
+m_sig = gcry_sexp_nth_mpi(s_sig, 1, GCRYMPI_FMT_USG);
+
+DEBUG(D_acl)
+  {
+  uschar * s;
+  gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, m_sig);
+  debug_printf(" SG: %s\n", s);
+  }
+
+gerr = gcry_mpi_print(GCRYMPI_FMT_USG, sig->data, SIGSPACE, &sig->len, m_sig);
+if (gerr)
+  {
+  debug_printf("signature conversion from MPI to buffer failed\n");
+  return US gcry_strerror(gerr);
+  }
+#undef SIGSPACE
+
+return NULL;
+}
+
+
+/* import public key (from DER in memory)
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_verify_init(blob * pubkey_der, ev_ctx * verify_ctx)
+{
+/*
+in code sequence per b81207d2bfa92 rsa_parse_public_key() and asn1_get_mpi()
+*/
+uschar tag_class;
+int taglen;
+long alen;
+int rc;
+uschar * errstr;
+gcry_error_t gerr;
+uschar * stage = US"S1";
+
+/*
+sequence
+ sequence
+  OBJECT:rsaEncryption
+  NULL
+ BIT STRING:RSAPublicKey
+  sequence
+   INTEGER:Public modulus
+   INTEGER:Public exponent
+
+openssl rsa -in aux-fixed/dkim/dkim.private -pubout -outform DER | od -t x1 | head;
+openssl rsa -in aux-fixed/dkim/dkim.private -pubout | openssl asn1parse -dump;
+openssl rsa -in aux-fixed/dkim/dkim.private -pubout | openssl asn1parse -dump -offset 22;
+*/
+
+/* sequence; just move past the header */
+if ((rc = as_tag(pubkey_der, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
+   != ASN1_SUCCESS) goto asn_err;
+
+/* sequence; skip the entire thing */
+DEBUG(D_acl) stage = US"S2";
+if ((rc = as_tag(pubkey_der, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, &alen))
+   != ASN1_SUCCESS) goto asn_err;
+pubkey_der->data += alen; pubkey_der->len -= alen;
+
+
+/* bitstring: limit range to size of bitstring;
+move over header + content wrapper */
+DEBUG(D_acl) stage = US"BS";
+if ((rc = as_tag(pubkey_der, 0, ASN1_TAG_BIT_STRING, &alen)) != ASN1_SUCCESS)
+  goto asn_err;
+pubkey_der->len = alen;
+pubkey_der->data++; pubkey_der->len--;
+
+/* sequence; just move past the header */
+DEBUG(D_acl) stage = US"S3";
+if ((rc = as_tag(pubkey_der, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
+   != ASN1_SUCCESS) goto asn_err;
+
+/* read two integers */
+DEBUG(D_acl) stage = US"MPI";
+if (  (errstr = as_mpi(pubkey_der, &verify_ctx->n))
+   || (errstr = as_mpi(pubkey_der, &verify_ctx->e))
+   )
+  return errstr;
+
+DEBUG(D_acl) debug_printf("rsa_verify_init:\n");
+	{
+	uschar * s;
+	gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, verify_ctx->n);
+	debug_printf(" N : %s\n", s);
+	gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, verify_ctx->e);
+	debug_printf(" E : %s\n", s);
+	}
+
+return NULL;
+
+asn_err:
+DEBUG(D_acl) return string_sprintf("%s: %s", stage, asn1_strerror(rc));
+	     return US asn1_strerror(rc);
+}
+
+
+/* verify signature (of hash)  (given pubkey & alleged sig)
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_verify(ev_ctx * verify_ctx, BOOL is_sha1, blob * data_hash, blob * sig)
+{
+/*
+cf. libgnutls 2.8.5 _wrap_gcry_pk_verify()
+*/
+gcry_mpi_t m_sig;
+gcry_sexp_t s_sig = NULL, s_hash = NULL, s_pkey = NULL;
+gcry_error_t gerr;
+uschar * stage;
+
+if (  (stage = US"pkey sexp build",
+       gerr = gcry_sexp_build (&s_pkey, NULL, "(public-key(rsa(n%m)(e%m)))",
+		        verify_ctx->n, verify_ctx->e))
+   || (stage = US"data sexp build",
+       gerr = gcry_sexp_build (&s_hash, NULL,
+		is_sha1
+		? "(data(flags pkcs1)(hash sha1 %b))"
+		: "(data(flags pkcs1)(hash sha256 %b))",
+		(int) data_hash->len, CS data_hash->data))
+   || (stage = US"sig mpi scan",
+       gerr = gcry_mpi_scan(&m_sig, GCRYMPI_FMT_USG, sig->data, sig->len, NULL))
+   || (stage = US"sig sexp build",
+       gerr = gcry_sexp_build (&s_sig, NULL, "(sig-val(rsa(s%m)))", m_sig))
+   || (stage = US"verify",
+       gerr = gcry_pk_verify (s_sig, s_hash, s_pkey))
+   )
+  {
+  DEBUG(D_acl) debug_printf("verify: error in stage '%s'\n", stage);
+  return US gcry_strerror(gerr);
+  }
+
+if (s_sig) gcry_sexp_release (s_sig);
+if (s_hash) gcry_sexp_release (s_hash);
+if (s_pkey) gcry_sexp_release (s_pkey);
+gcry_mpi_release (m_sig);
+gcry_mpi_release (verify_ctx->n);
+gcry_mpi_release (verify_ctx->e);
+
+return NULL;
+}
+
+
+
+
+#elif defined(RSA_OPENSSL)
+/******************************************************************************/
+
+void
+exim_rsa_init(void)
+{
+}
+
+
+/* accumulate data (gnutls-only) */
+blob *
+exim_rsa_data_append(blob * b, int * alloc, uschar * s)
+{
+return b;	/*dummy*/
+}
+
+
+/* import private key from PEM string in memory.
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
+{
+uschar * p, * q;
+int len;
+
+/* Convert PEM to DER */
+if (  !(p = Ustrstr(privkey_pem, "-----BEGIN RSA PRIVATE KEY-----"))
+   || !(q = Ustrstr(p+=31,       "-----END RSA PRIVATE KEY-----"))
+   )
+  return US"Bad PEM wrapping";
+
+*q = '\0';
+if ((len = b64decode(p, &p)) < 0)
+  return US"b64decode failed";
+
+if (!(sign_ctx->rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len)))
+  {
+  char ssl_errstring[256];
+  ERR_load_crypto_strings();	/*XXX move to a startup routine */
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  return string_copy(ssl_errstring);
+  }
+
+return NULL;
+}
+
+
+
+/* allocate mem for signature (when signing) */
+/* sign data (gnutls_only)
+OR
+sign hash.
+
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_sign(es_ctx * sign_ctx, BOOL is_sha1, blob * data, blob * sig)
+{
+uint len;
+const uschar * ret = NULL;
+
+/* Allocate mem for signature */
+len = RSA_size(sign_ctx->rsa);
+sig->data = store_get(len);
+sig->len = len;
+
+/* Do signing */
+if (RSA_sign(is_sha1 ? NID_sha1 : NID_sha256,
+      CUS data->data, data->len,
+      US sig->data, &len, sign_ctx->rsa) != 1)
+  {
+  char ssl_errstring[256];
+  ERR_load_crypto_strings();	/*XXX move to a startup routine */
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ret = string_copy(ssl_errstring);
+  }
+
+RSA_free(sign_ctx->rsa);
+return ret;;
+}
+
+
+
+/* import public key (from DER in memory)
+Return: nULL for success, or an error string */
+
+const uschar *
+exim_rsa_verify_init(blob * pubkey_der, ev_ctx * verify_ctx)
+{
+const uschar * p = CUS pubkey_der->data;
+const uschar * ret = NULL;
+
+if (!(verify_ctx->rsa = d2i_RSA_PUBKEY(NULL, &p, (long) pubkey_der->len)))
+  {
+  char ssl_errstring[256];
+  ERR_load_crypto_strings();	/*XXX move to a startup routine */
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ret = string_copy(ssl_errstring);
+  }
+return ret;
+}
+
+
+
+
+/* verify signature (of hash)  (given pubkey & alleged sig)
+Return: NULL for success, or an error string */
+
+const uschar *
+exim_rsa_verify(ev_ctx * verify_ctx, BOOL is_sha1, blob * data_hash, blob * sig)
+{
+const uschar * ret = NULL;
+
+if (RSA_verify(is_sha1 ? NID_sha1 : NID_sha256,
+      CUS data_hash->data, data_hash->len,
+      US sig->data, (uint) sig->len, verify_ctx->rsa) != 1)
+  {
+  char ssl_errstring[256];
+  ERR_load_crypto_strings();	/*XXX move to a startup routine */
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ret = string_copy(ssl_errstring);
+  }
+return ret;
+}
+
 
 #endif
+/******************************************************************************/
 
-#endif
+#endif	/*DISABLE_DKIM*/
+/* End of File */

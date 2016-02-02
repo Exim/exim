@@ -525,7 +525,7 @@ static void
 smtp_user_msg(uschar *code, uschar *user_msg)
 {
 int len = 3;
-smtp_message_code(&code, &len, &user_msg, NULL);
+smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
 smtp_respond(code, len, TRUE, user_msg);
 }
 #endif
@@ -835,7 +835,15 @@ while ((ch = (receive_getc)()) != EOF)
       ch_state = 4;
       continue;
       }
-    ch_state = 1;                       /* The dot itself is removed */
+    /* The dot was removed at state 3. For a doubled dot, here, reinstate
+    it to cutthrough. The current ch, dot or not, is passed both to cutthrough
+    and to file below. */
+    if (ch == '.')
+      {
+      uschar c= ch;
+      (void) cutthrough_puts(&c, 1);
+      }
+    ch_state = 1;
     break;
 
     case 4:                             /* After [CR] LF . CR */
@@ -1279,10 +1287,12 @@ else if (rc != OK)
 #ifdef EXPERIMENTAL_DCC
   dcc_ok = 0;
 #endif
-  if (smtp_input && smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0) {
+  if (  smtp_input
+     && smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
+    {
     *smtp_yield_ptr = FALSE;    /* No more messsages after dropped connection */
     *smtp_reply_ptr = US"";     /* Indicate reply already sent */
-  }
+    }
   message_id[0] = 0;            /* Indicate no message accepted */
   return FALSE;                 /* Cause skip to end of receive function */
   }
@@ -4078,7 +4088,7 @@ if (smtp_input)
         {
         uschar *code = US"250";
         int len = 3;
-        smtp_message_code(&code, &len, &user_msg, NULL);
+        smtp_message_code(&code, &len, &user_msg, NULL, TRUE);
         smtp_respond(code, len, TRUE, user_msg);
         }
 

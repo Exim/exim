@@ -201,6 +201,8 @@ static uschar *op_table_main[] = {
   US"addresses",
   US"base62",
   US"base62d",
+  US"base64",
+  US"base64d",
   US"domain",
   US"escape",
   US"eval",
@@ -241,6 +243,8 @@ enum {
   EOP_ADDRESSES,
   EOP_BASE62,
   EOP_BASE62D,
+  EOP_BASE64,
+  EOP_BASE64D,
   EOP_DOMAIN,
   EOP_ESCAPE,
   EOP_EVAL,
@@ -1725,7 +1729,7 @@ if ((Ustrncmp(name, "acl_c", 5) == 0 || Ustrncmp(name, "acl_m", 5) == 0) &&
   {
   tree_node *node =
     tree_search((name[4] == 'c')? acl_var_c : acl_var_m, name + 4);
-  return (node == NULL)? (strict_acl_vars? NULL : US"") : node->data.ptr;
+  return node ? node->data.ptr : strict_acl_vars ? NULL : US"";
   }
 
 /* Handle $auth<n> variables. */
@@ -1760,153 +1764,148 @@ val = vp->value;
 switch (vp->type)
   {
   case vtype_filter_int:
-  if (!filter_running) return NULL;
-  /* Fall through */
-  /* VVVVVVVVVVVV */
+    if (!filter_running) return NULL;
+    /* Fall through */
+    /* VVVVVVVVVVVV */
   case vtype_int:
-  sprintf(CS var_buffer, "%d", *(int *)(val)); /* Integer */
-  return var_buffer;
+    sprintf(CS var_buffer, "%d", *(int *)(val)); /* Integer */
+    return var_buffer;
 
   case vtype_ino:
-  sprintf(CS var_buffer, "%ld", (long int)(*(ino_t *)(val))); /* Inode */
-  return var_buffer;
+    sprintf(CS var_buffer, "%ld", (long int)(*(ino_t *)(val))); /* Inode */
+    return var_buffer;
 
   case vtype_gid:
-  sprintf(CS var_buffer, "%ld", (long int)(*(gid_t *)(val))); /* gid */
-  return var_buffer;
+    sprintf(CS var_buffer, "%ld", (long int)(*(gid_t *)(val))); /* gid */
+    return var_buffer;
 
   case vtype_uid:
-  sprintf(CS var_buffer, "%ld", (long int)(*(uid_t *)(val))); /* uid */
-  return var_buffer;
+    sprintf(CS var_buffer, "%ld", (long int)(*(uid_t *)(val))); /* uid */
+    return var_buffer;
 
   case vtype_bool:
-  sprintf(CS var_buffer, "%s", *(BOOL *)(val) ? "yes" : "no"); /* bool */
-  return var_buffer;
+    sprintf(CS var_buffer, "%s", *(BOOL *)(val) ? "yes" : "no"); /* bool */
+    return var_buffer;
 
   case vtype_stringptr:                      /* Pointer to string */
-  s = *((uschar **)(val));
-  return (s == NULL)? US"" : s;
+    return (s = *((uschar **)(val))) ? s : US"";
 
   case vtype_pid:
-  sprintf(CS var_buffer, "%d", (int)getpid()); /* pid */
-  return var_buffer;
+    sprintf(CS var_buffer, "%d", (int)getpid()); /* pid */
+    return var_buffer;
 
   case vtype_load_avg:
-  sprintf(CS var_buffer, "%d", OS_GETLOADAVG()); /* load_average */
-  return var_buffer;
+    sprintf(CS var_buffer, "%d", OS_GETLOADAVG()); /* load_average */
+    return var_buffer;
 
   case vtype_host_lookup:                    /* Lookup if not done so */
-  if (sender_host_name == NULL && sender_host_address != NULL &&
-      !host_lookup_failed && host_name_lookup() == OK)
-    host_build_sender_fullhost();
-  return (sender_host_name == NULL)? US"" : sender_host_name;
+    if (sender_host_name == NULL && sender_host_address != NULL &&
+	!host_lookup_failed && host_name_lookup() == OK)
+      host_build_sender_fullhost();
+    return (sender_host_name == NULL)? US"" : sender_host_name;
 
   case vtype_localpart:                      /* Get local part from address */
-  s = *((uschar **)(val));
-  if (s == NULL) return US"";
-  domain = Ustrrchr(s, '@');
-  if (domain == NULL) return s;
-  if (domain - s > sizeof(var_buffer) - 1)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
-	" in string expansion", sizeof(var_buffer));
-  Ustrncpy(var_buffer, s, domain - s);
-  var_buffer[domain - s] = 0;
-  return var_buffer;
+    s = *((uschar **)(val));
+    if (s == NULL) return US"";
+    domain = Ustrrchr(s, '@');
+    if (domain == NULL) return s;
+    if (domain - s > sizeof(var_buffer) - 1)
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
+	  " in string expansion", sizeof(var_buffer));
+    Ustrncpy(var_buffer, s, domain - s);
+    var_buffer[domain - s] = 0;
+    return var_buffer;
 
   case vtype_domain:                         /* Get domain from address */
-  s = *((uschar **)(val));
-  if (s == NULL) return US"";
-  domain = Ustrrchr(s, '@');
-  return (domain == NULL)? US"" : domain + 1;
+    s = *((uschar **)(val));
+    if (s == NULL) return US"";
+    domain = Ustrrchr(s, '@');
+    return (domain == NULL)? US"" : domain + 1;
 
   case vtype_msgheaders:
-  return find_header(NULL, exists_only, newsize, FALSE, NULL);
+    return find_header(NULL, exists_only, newsize, FALSE, NULL);
 
   case vtype_msgheaders_raw:
-  return find_header(NULL, exists_only, newsize, TRUE, NULL);
+    return find_header(NULL, exists_only, newsize, TRUE, NULL);
 
   case vtype_msgbody:                        /* Pointer to msgbody string */
   case vtype_msgbody_end:                    /* Ditto, the end of the msg */
-  ss = (uschar **)(val);
-  if (*ss == NULL && deliver_datafile >= 0)  /* Read body when needed */
-    {
-    uschar *body;
-    off_t start_offset = SPOOL_DATA_START_OFFSET;
-    int len = message_body_visible;
-    if (len > message_size) len = message_size;
-    *ss = body = store_malloc(len+1);
-    body[0] = 0;
-    if (vp->type == vtype_msgbody_end)
+    ss = (uschar **)(val);
+    if (*ss == NULL && deliver_datafile >= 0)  /* Read body when needed */
       {
-      struct stat statbuf;
-      if (fstat(deliver_datafile, &statbuf) == 0)
+      uschar *body;
+      off_t start_offset = SPOOL_DATA_START_OFFSET;
+      int len = message_body_visible;
+      if (len > message_size) len = message_size;
+      *ss = body = store_malloc(len+1);
+      body[0] = 0;
+      if (vp->type == vtype_msgbody_end)
 	{
-	start_offset = statbuf.st_size - len;
-	if (start_offset < SPOOL_DATA_START_OFFSET)
-	  start_offset = SPOOL_DATA_START_OFFSET;
+	struct stat statbuf;
+	if (fstat(deliver_datafile, &statbuf) == 0)
+	  {
+	  start_offset = statbuf.st_size - len;
+	  if (start_offset < SPOOL_DATA_START_OFFSET)
+	    start_offset = SPOOL_DATA_START_OFFSET;
+	  }
+	}
+      lseek(deliver_datafile, start_offset, SEEK_SET);
+      len = read(deliver_datafile, body, len);
+      if (len > 0)
+	{
+	body[len] = 0;
+	if (message_body_newlines)   /* Separate loops for efficiency */
+	  while (len > 0)
+	    { if (body[--len] == 0) body[len] = ' '; }
+	else
+	  while (len > 0)
+	    { if (body[--len] == '\n' || body[len] == 0) body[len] = ' '; }
 	}
       }
-    lseek(deliver_datafile, start_offset, SEEK_SET);
-    len = read(deliver_datafile, body, len);
-    if (len > 0)
-      {
-      body[len] = 0;
-      if (message_body_newlines)   /* Separate loops for efficiency */
-	{
-	while (len > 0)
-	  { if (body[--len] == 0) body[len] = ' '; }
-	}
-      else
-	{
-	while (len > 0)
-	  { if (body[--len] == '\n' || body[len] == 0) body[len] = ' '; }
-	}
-      }
-    }
-  return (*ss == NULL)? US"" : *ss;
+    return (*ss == NULL)? US"" : *ss;
 
   case vtype_todbsdin:                       /* BSD inbox time of day */
-  return tod_stamp(tod_bsdin);
+    return tod_stamp(tod_bsdin);
 
   case vtype_tode:                           /* Unix epoch time of day */
-  return tod_stamp(tod_epoch);
+    return tod_stamp(tod_epoch);
 
   case vtype_todel:                          /* Unix epoch/usec time of day */
-  return tod_stamp(tod_epoch_l);
+    return tod_stamp(tod_epoch_l);
 
   case vtype_todf:                           /* Full time of day */
-  return tod_stamp(tod_full);
+    return tod_stamp(tod_full);
 
   case vtype_todl:                           /* Log format time of day */
-  return tod_stamp(tod_log_bare);            /* (without timezone) */
+    return tod_stamp(tod_log_bare);            /* (without timezone) */
 
   case vtype_todzone:                        /* Time zone offset only */
-  return tod_stamp(tod_zone);
+    return tod_stamp(tod_zone);
 
   case vtype_todzulu:                        /* Zulu time */
-  return tod_stamp(tod_zulu);
+    return tod_stamp(tod_zulu);
 
   case vtype_todlf:                          /* Log file datestamp tod */
-  return tod_stamp(tod_log_datestamp_daily);
+    return tod_stamp(tod_log_datestamp_daily);
 
   case vtype_reply:                          /* Get reply address */
-  s = find_header(US"reply-to:", exists_only, newsize, TRUE,
-    headers_charset);
-  if (s != NULL) while (isspace(*s)) s++;
-  if (s == NULL || *s == 0)
-    {
-    *newsize = 0;                            /* For the *s==0 case */
-    s = find_header(US"from:", exists_only, newsize, TRUE, headers_charset);
-    }
-  if (s != NULL)
-    {
-    uschar *t;
-    while (isspace(*s)) s++;
-    for (t = s; *t != 0; t++) if (*t == '\n') *t = ' ';
-    while (t > s && isspace(t[-1])) t--;
-    *t = 0;
-    }
-  return (s == NULL)? US"" : s;
+    s = find_header(US"reply-to:", exists_only, newsize, TRUE,
+      headers_charset);
+    if (s != NULL) while (isspace(*s)) s++;
+    if (s == NULL || *s == 0)
+      {
+      *newsize = 0;                            /* For the *s==0 case */
+      s = find_header(US"from:", exists_only, newsize, TRUE, headers_charset);
+      }
+    if (s != NULL)
+      {
+      uschar *t;
+      while (isspace(*s)) s++;
+      for (t = s; *t != 0; t++) if (*t == '\n') *t = ' ';
+      while (t > s && isspace(t[-1])) t--;
+      *t = 0;
+      }
+    return (s == NULL)? US"" : s;
 
   case vtype_string_func:
     {
@@ -1931,12 +1930,12 @@ switch (vp->type)
   return var_buffer;
 
   case vtype_cert:
-  return *(void **)val ? US"<cert>" : US"";
+    return *(void **)val ? US"<cert>" : US"";
 
-  #ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
   case vtype_dkim:
-  return dkim_exim_expand_query((int)(long)val);
-  #endif
+    return dkim_exim_expand_query((int)(long)val);
+#endif
 
   }
 
@@ -2787,7 +2786,7 @@ switch(cond_type)
       #define XSTR(s) STR(s)
       DEBUG(D_auth) debug_printf("crypteq: using %s()\n"
         "  subject=%s\n  crypted=%s\n",
-        (which == 0)? XSTR(DEFAULT_CRYPT) : (which == 1)? "crypt" : "crypt16",
+        which == 0 ? XSTR(DEFAULT_CRYPT) : which == 1 ? "crypt" : "crypt16",
         coded, sub[1]);
       #undef STR
       #undef XSTR
@@ -2796,8 +2795,16 @@ switch(cond_type)
       salt), force failure. Otherwise we get false positives: with an empty
       string the yield of crypt() is an empty string! */
 
-      tempcond = (Ustrlen(sub[1]) < 2)? FALSE :
-        (Ustrcmp(coded, sub[1]) == 0);
+      if (coded)
+	tempcond = Ustrlen(sub[1]) < 2 ? FALSE : Ustrcmp(coded, sub[1]) == 0;
+      else if (errno == EINVAL)
+	tempcond = FALSE;
+      else
+	{
+	expand_string_message = string_sprintf("crypt error: %s\n",
+	  US strerror(errno));
+	return NULL;
+	}
       }
     break;
     #endif  /* SUPPORT_CRYPTEQ */
@@ -3143,7 +3150,8 @@ Arguments:
   yieldptr       points to the output string pointer
   sizeptr        points to the output string size
   ptrptr         points to the output string pointer
-  type           "lookup" or "if" or "extract" or "run", for error message
+  type           "lookup", "if", "extract", "run", "env", "listextract" or
+                 "certextract" for error message
   resetok	 if not NULL, pointer to flag - write FALSE if unsafe to reset
 		the store.
 
@@ -3174,7 +3182,7 @@ if (*s == '}')
     }
   else
     {
-    if (yes && lookup_value != NULL)
+    if (yes && lookup_value)
       *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value,
         Ustrlen(lookup_value));
     lookup_value = save_lookup;
@@ -3201,10 +3209,11 @@ if (*s++ != '}') goto FAILED_CURLY;
 if (yes)
   *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, sub1, Ustrlen(sub1));
 
-/* If this is called from a lookup or an extract, we want to restore $value to
-what it was at the start of the item, so that it has this value during the
-second string expansion. For the call from "if" or "run" to this function,
-save_lookup is set to lookup_value, so that this statement does nothing. */
+/* If this is called from a lookup/env or a (cert)extract, we want to restore
+$value to what it was at the start of the item, so that it has this value
+during the second string expansion. For the call from "if" or "run" to this
+function, save_lookup is set to lookup_value, so that this statement does
+nothing. */
 
 lookup_value = save_lookup;
 
@@ -3435,9 +3444,9 @@ return finalhash_hex;
 *        Join a file onto the output string      *
 *************************************************/
 
-/* This is used for readfile and after a run expansion. It joins the contents
-of a file onto the output string, globally replacing newlines with a given
-string (optionally). The file is closed at the end.
+/* This is used for readfile/readsock and after a run expansion.
+It joins the contents of a file onto the output string, globally replacing
+newlines with a given string (optionally).
 
 Arguments:
   f            the FILE
@@ -3452,21 +3461,19 @@ Returns:       new value of string pointer
 static uschar *
 cat_file(FILE *f, uschar *yield, int *sizep, int *ptrp, uschar *eol)
 {
-int eollen;
+int eollen = eol ? Ustrlen(eol) : 0;
 uschar buffer[1024];
 
-eollen = (eol == NULL)? 0 : Ustrlen(eol);
-
-while (Ufgets(buffer, sizeof(buffer), f) != NULL)
+while (Ufgets(buffer, sizeof(buffer), f))
   {
   int len = Ustrlen(buffer);
-  if (eol != NULL && buffer[len-1] == '\n') len--;
+  if (eol && buffer[len-1] == '\n') len--;
   yield = string_cat(yield, sizep, ptrp, buffer, len);
   if (buffer[len] != 0)
     yield = string_cat(yield, sizep, ptrp, eol, eollen);
   }
 
-if (yield != NULL) yield[*ptrp] = 0;
+if (yield) yield[*ptrp] = 0;
 
 return yield;
 }
@@ -3923,16 +3930,12 @@ while (*s != 0)
 
     /* Variable */
 
-    else
+    else if (!(value = find_variable(name, FALSE, skipping, &newsize)))
       {
-      value = find_variable(name, FALSE, skipping, &newsize);
-      if (value == NULL)
-        {
-        expand_string_message =
-          string_sprintf("unknown variable name \"%s\"", name);
-          check_variable_error_message(name);
-        goto EXPAND_FAILED;
-        }
+      expand_string_message =
+	string_sprintf("unknown variable name \"%s\"", name);
+	check_variable_error_message(name);
+      goto EXPAND_FAILED;
       }
 
     /* If the data is known to be in a new buffer, newsize will be set to the
@@ -4866,8 +4869,7 @@ while (*s != 0)
       const uschar **argv;
       pid_t pid;
       int fd_in, fd_out;
-      int lsize = 0;
-      int lptr = 0;
+      int lsize = 0, lptr = 0;
 
       if ((expand_forbid & RDO_RUN) != 0)
         {
@@ -4895,15 +4897,11 @@ while (*s != 0)
             NULL,                               /* no transporting address */
             US"${run} expansion",               /* for error messages */
             &expand_string_message))            /* where to put error message */
-          {
           goto EXPAND_FAILED;
-          }
 
         /* Create the child process, making it a group leader. */
 
-        pid = child_open(USS argv, NULL, 0077, &fd_in, &fd_out, TRUE);
-
-        if (pid < 0)
+        if ((pid = child_open(USS argv, NULL, 0077, &fd_in, &fd_out, TRUE)) < 0)
           {
           expand_string_message =
             string_sprintf("couldn't create child process: %s", strerror(errno));
@@ -4916,12 +4914,14 @@ while (*s != 0)
 
         /* Read the pipe to get the command's output into $value (which is kept
         in lookup_value). Read during execution, so that if the output exceeds
-        the OS pipe buffer limit, we don't block forever. */
+        the OS pipe buffer limit, we don't block forever. Remember to not release
+	memory just allocated for $value. */
 
+	resetok = FALSE;
         f = fdopen(fd_out, "rb");
         sigalrm_seen = FALSE;
         alarm(60);
-        lookup_value = cat_file(f, lookup_value, &lsize, &lptr, NULL);
+        lookup_value = cat_file(f, NULL, &lsize, &lptr, NULL);
         alarm(0);
         (void)fclose(f);
 
@@ -5469,7 +5469,7 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"extract",                  /* condition type */
+               US"listextract",              /* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -5541,7 +5541,7 @@ while (*s != 0)
                &yield,                       /* output pointer */
                &size,                        /* output size */
                &ptr,                         /* output current point */
-               US"extract",                  /* condition type */
+               US"certextract",              /* condition type */
 	       &resetok))
         {
         case 1: goto EXPAND_FAILED;          /* when all is well, the */
@@ -6039,6 +6039,7 @@ while (*s != 0)
       case EOP_MD5:
       case EOP_SHA1:
       case EOP_SHA256:
+      case EOP_BASE64:
 	if (s[1] == '$')
 	  {
 	  const uschar * s1 = s;
@@ -6883,9 +6884,30 @@ while (*s != 0)
       /* Convert string to base64 encoding */
 
       case EOP_STR2B64:
+      case EOP_BASE64:
+	{
+#ifdef SUPPORT_TLS
+	uschar * s = vp && *(void **)vp->value
+	  ? tls_cert_der_b64(*(void **)vp->value)
+	  : b64encode(sub, Ustrlen(sub));
+#else
+	uschar * s = b64encode(sub, Ustrlen(sub));
+#endif
+	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	continue;
+	}
+
+      case EOP_BASE64D:
         {
-        uschar *encstr = b64encode(sub, Ustrlen(sub));
-        yield = string_cat(yield, &size, &ptr, encstr, Ustrlen(encstr));
+        uschar * s;
+        int len = b64decode(sub, &s);
+	if (len < 0)
+          {
+          expand_string_message = string_sprintf("string \"%s\" is not "
+            "well-formed for \"%s\" operator", sub, name);
+          goto EXPAND_FAILED;
+          }
+        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         continue;
         }
 
