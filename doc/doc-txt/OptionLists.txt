@@ -968,7 +968,7 @@ TCP_WRAPPERS_DAEMON_NAME     system*      daemon name used by tcpwrappers librar
 TIMEZONE_DEFAULT             optional     default for timezone option
 TLS_INCLUDE                  optional     path to include files for TLS
 TLS_LIBS                     optional     additional libraries for TLS
-TMPDIR                       system       value for TMPDIR environment variable
+EXIM_TMPDIR                  system       value for TMPDIR environment variable
 TRANSPORT_APPENDFILE         driver       include appendfile transport
 TRANSPORT_AUTOREPLY          driver       include autoreply transport
 TRANSPORT_LMTP               driver       include lmtp transport
