@@ -1,0 +1,12 @@
+user@mx-unsec-a-unsec.test.ex
+  router = dnslookup, transport = smtp
+  host a-unsec.test.ex [V4NET.0.0.100] MX=5
+user@mx-unsec-a-sec.test.ex
+  router = dnslookup, transport = smtp
+  host a-sec.test.ex [V4NET.0.0.100] MX=5
+user@mx-sec-a-unsec.test.ex
+  router = dnslookup, transport = smtp
+  host a-unsec.test.ex [V4NET.0.0.100] MX=5
+user@mx-sec-a-sec.test.ex
+  router = dnslookup, transport = smtp
+  host a-sec.test.ex [V4NET.0.0.100] MX=5 AD

@@ -2692,7 +2692,7 @@ switch(cond_type)
 
       if (sublen == 24)
         {
-        uschar *coded = auth_b64encode((uschar *)digest, 16);
+        uschar *coded = b64encode((uschar *)digest, 16);
         DEBUG(D_auth) debug_printf("crypteq: using MD5+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
         tempcond = (Ustrcmp(coded, sub[1]+5) == 0);
@@ -2730,7 +2730,7 @@ switch(cond_type)
 
       if (sublen == 28)
         {
-        uschar *coded = auth_b64encode((uschar *)digest, 20);
+        uschar *coded = b64encode((uschar *)digest, 20);
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
         tempcond = (Ustrcmp(coded, sub[1]+6) == 0);
@@ -6242,7 +6242,7 @@ while (*s != 0)
             }
           }
 
-        enc = auth_b64encode(sub, out - sub);
+        enc = b64encode(sub, out - sub);
         yield = string_cat(yield, &size, &ptr, enc, Ustrlen(enc));
         continue;
         }
@@ -6884,7 +6884,7 @@ while (*s != 0)
 
       case EOP_STR2B64:
         {
-        uschar *encstr = auth_b64encode(sub, Ustrlen(sub));
+        uschar *encstr = b64encode(sub, Ustrlen(sub));
         yield = string_cat(yield, &size, &ptr, encstr, Ustrlen(encstr));
         continue;
         }

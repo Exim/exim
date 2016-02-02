@@ -1,0 +1,47 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 11333 ... 
+Connection request from [127.0.0.1]
+<CHECK RSPAMC/1.3
+<Content-length: ddd
+<Queue-Id: 10HmaX-0005vi-00
+<From: <CALLER@myhost.test.ex>
+<Recipient-Number: 1
+<Rcpt: <userx@test.ex>
+<Helo: test.ex
+<User: CALLER
+<
+<From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+<X-Envelope-From: <CALLER@myhost.test.ex>
+<X-Envelope-To: userx@test.ex
+<Received: from CALLER (helo=test.ex)
+<	by myhost.test.ex with local-esmtp (Exim x.yz)
+<	(envelope-from <CALLER@myhost.test.ex>)
+<	id 10HmaX-0005vi-00
+<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+<From: MAILER_DAEMON <>
+<Content-type: text/plain
+<Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+<Sender: CALLER_NAME <CALLER@myhost.test.ex>
+<Date: Tue, 2 Mar 1999 09:44:33 +0000
+<
+<test
+>RSPAMD/1.3 0 EX_OK
+>Metric: default; True; 15.00 / 15.00 / 0.0
+>Action: reject
+>Symbol: FAKE_SYMBOL_A(15.00)
+>Symbol: FAKE_SYMBOL_B(0.00)
+>Message-ID: undef
+Expected EOF read from client
+End of script

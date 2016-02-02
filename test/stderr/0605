@@ -1,0 +1,17 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test in helo_lookup_domains? no (end of list)
+>>> processing "accept"
+>>> check hosts = test.again.dns
+>>> test.again.dns in dns_again_means_nonexist? no (option unset)
+>>> no IP address found for host test.again.dns (during SMTP connection from (test) [ip4.ip4.ip4.ip4])
+>>> test.again.dns in dns_again_means_nonexist? no (option unset)
+>>> host in "test.again.dns"? list match deferred for test.again.dns
+>>> accept: condition test deferred in inline ACL
+LOG: H=(test) [ip4.ip4.ip4.ip4] F=<ralph@dustyshoes.tld> temporarily rejected RCPT <bob@anotherone.tld>: DNS lookup of "test.again.dns" deferred

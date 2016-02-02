@@ -1,0 +1,68 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1225 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+<<\x05\x01\x00
+>>\x05\x00
+<<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
+>>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
+220 Connected OK
+EHLO
+250-server id
+250
+MAIL FROM
+250
+RCPT TO
+250
+DATA
+354 hit me
+R
+250 accepted OK
+QUIT
+250 bye
+End of script
+Listening on port 1225 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+<<\x05\x01\x02
+>>\x05\x02
+<<\x01\x04fred\x05fubar
+>>\x01\x00
+<<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
+>>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
+220 Connected OK
+EHLO
+250-server id
+250
+MAIL FROM
+250
+RCPT TO
+250
+DATA
+354 hit me
+R
+250 accepted OK
+QUIT
+250 bye
+End of script

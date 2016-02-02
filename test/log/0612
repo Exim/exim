@@ -1,0 +1,3 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for a
+1999-03-02 09:44:33 10HmaX-0005vi-00 <a@myhost.test.ex>: pipe transport output: Hi from pipe
+1999-03-02 09:44:33 10HmaX-0005vi-00 == a@myhost.test.ex R=client T=pipe defer (0): Child process of pipe transport returned 5 from command: SYSBINDIR/perl

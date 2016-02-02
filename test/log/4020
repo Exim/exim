@@ -1,0 +1,6 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1]:1224 PRX=[127.0.0.1]:1225 C="250 accepted OK"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@test.ex R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1]:1224 PRX=[127.0.0.1]:1225 C="250 accepted OK"
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

@@ -1,0 +1,6 @@
+foo@mx-sec-a-aa.test.ex
+  router = dnslookup, transport = smtp
+  host a-aa.test.ex [V4NET.0.0.100] MX=5 AD
+foo@mx-aa-a-sec.test.ex
+  router = dnslookup, transport = smtp
+  host a-sec.test.ex [V4NET.0.0.100] MX=5 AD

@@ -320,7 +320,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
         break;
 
       case 1:
-        gbufdesc_in.length = auth_b64decode(from_client, USS &gbufdesc_in.value);
+        gbufdesc_in.length = b64decode(from_client, USS &gbufdesc_in.value);
         if (gclient) {
           maj_stat = gss_release_name(&min_stat, &gclient);
           gclient = GSS_C_NO_NAME;
@@ -400,7 +400,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
         break;
 
       case 3:
-        gbufdesc_in.length = auth_b64decode(from_client, USS &gbufdesc_in.value);
+        gbufdesc_in.length = b64decode(from_client, USS &gbufdesc_in.value);
         maj_stat = gss_unwrap(&min_stat,
             gcontext,
             &gbufdesc_in,       /* data from client */

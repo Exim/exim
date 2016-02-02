@@ -228,7 +228,7 @@ if((hname == NULL) ||
 
 if(inlen)
   {
-  clen=auth_b64decode(input, &clear);
+  clen = b64decode(input, &clear);
   if(clen < 0)
     {
     return BAD64;
@@ -363,7 +363,7 @@ while(rc==SASL_CONTINUE)
     HDEBUG(D_auth) debug=string_copy(input);
     if(inlen)
       {
-      clen=auth_b64decode(input, &clear);
+      clen = b64decode(input, &clear);
       if(clen < 0)
        {
         sasl_dispose(&conn);

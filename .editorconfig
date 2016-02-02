@@ -1,0 +1,38 @@
+# Common text-editor configuration for Exim
+# http://editorconfig.org/
+#
+# This system sets attributes of the code results of editing, not of
+# how you set up the editor to do some helpful things for you.  It's
+# deliberately limited, to be non-contentious and avoid bloat.
+#
+# In this file, we'll also collect _suggestions_ for text editor configs
+# for various text editors, to better work with what passes for a common
+# style in Exim.  Use, or don't use, those as you see fit.
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{c,h}]
+indent_style = space
+indent_size = 2
+tab_width = 8
+trim_trailing_whitespace = true
+
+# Tab indentation (no size specified)
+[Makefile]
+indent_style = tab
+
+# vim
+# ===
+# try: set cinoptions=>1s,{1s
+#
+# More complete:
+# if has("autocmd")
+#   au BufNewFile,BufRead */*exim*/src/* set noai nosmartindent expandtab cindent sw=2 cinoptions=>1s,{1s
+# endif
+

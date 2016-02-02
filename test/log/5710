@@ -1,0 +1,52 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 tls:cert depth=0 <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1] TLS error on connection (certificate verification failed): certificate invalid
+1999-03-02 09:44:33 10HmaX-0005vi-00 msg:host:defer bad
+1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
+1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
+1999-03-02 09:44:33 10HmaX-0005vi-00 ver <3>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SNCN<server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <O=example.com,CN=clica Signing Cert>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:38 2012 GMT>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:34:38 2038 GMT>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <RSA-SHA256>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <3e 56 25 52 5c 4b 79 c7 93 e2 46 ea 42 35 25 27 41 9d ad 29 98 e2 f6 9b 32 bb 1c e9 6a 68 81 ba a7 82 7f 3d f8 d5 4a a6 98 af e4 78 31 bf 41 7a 3b 61 1a c8 f6 9e 77 c6 f1 ea 97 fc 2b c8 50 78 c3 15 33 23 46 63 b9 f3 04 cc 08 68 36 e3 2b cf 52 66 95 9e ef f0 38 c0 7c f4 42 b3 a6 e6 40 52 de 1b 15 1a 5d e7 76 5c 31 ec bc 60 50 03 51 6e 9f 49 bf 28 a2 e7 4d 6d ce 95 06 55 a0 81 21 49>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex\nDNS=alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 CRU <http://crl.example.com/latest.crl>
+1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session failure: delivering unencrypted to 127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
+1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 msg:delivery bad
+1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
+1999-03-02 09:44:33 10HmaX-0005vi-00 No Peer cert
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=0 <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 msg:delivery good
+1999-03-02 09:44:33 10HmaY-0005vi-00 Our cert SN: CN=server2.example.com
+1999-03-02 09:44:33 10HmaY-0005vi-00 Peer cert:
+1999-03-02 09:44:33 10HmaY-0005vi-00 ver <3>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SN  <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SN; <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SNCN<server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <O=example.com,CN=clica Signing Cert>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:38 2012 GMT>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Jan  1 12:34:38 2038 GMT>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <RSA-SHA256>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <3e 56 25 52 5c 4b 79 c7 93 e2 46 ea 42 35 25 27 41 9d ad 29 98 e2 f6 9b 32 bb 1c e9 6a 68 81 ba a7 82 7f 3d f8 d5 4a a6 98 af e4 78 31 bf 41 7a 3b 61 1a c8 f6 9e 77 c6 f1 ea 97 fc 2b c8 50 78 c3 15 33 23 46 63 b9 f3 04 cc 08 68 36 e3 2b cf 52 66 95 9e ef f0 38 c0 7c f4 42 b3 a6 e6 40 52 de 1b 15 1a 5d e7 76 5c 31 ec bc 60 50 03 51 6e 9f 49 bf 28 a2 e7 4d 6d ce 95 06 55 a0 81 21 49>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex\nDNS=alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 [127.0.0.1] depth=0 CN=server2.example.com
+1999-03-02 09:44:33 TLS error on connection from localhost [127.0.0.1] (recv): A TLS fatal alert has been received.: Certificate is bad
+1999-03-02 09:44:33 TLS error on connection from localhost [127.0.0.1] (send): The specified session has been invalidated for some reason.
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 [127.0.0.1] depth=0 CN=server2.example.com
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex

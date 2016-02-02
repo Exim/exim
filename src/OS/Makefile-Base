@@ -327,7 +327,7 @@ OBJ_EXPERIMENTAL = bmi_spam.o \
 
 OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 
-OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
+OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
         filtertest.o globals.o dkim.o \
         header.o host.o ip.o log.o lss.o match.o moan.o \
@@ -580,6 +580,7 @@ local_scan.o:    config local_scan.h ../$(LOCAL_SCAN_SOURCE)
 # Dependencies for the "ordinary" exim modules
 
 acl.o:           $(HDRS) acl.c
+base64.o:        $(HDRS) mime.h base64.c
 child.o:         $(HDRS) child.c
 crypt16.o:       $(HDRS) crypt16.c
 daemon.o:        $(HDRS) daemon.c
@@ -632,7 +633,7 @@ dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
 # Dependencies for WITH_CONTENT_SCAN modules
 
 malware.o:       $(HDRS) malware.c
-mime.o:          $(HDRS) mime.c
+mime.o:          $(HDRS) mime.h mime.c
 regex.o:         $(HDRS) regex.c
 spam.o:          $(HDRS) spam.c
 spool_mbox.o:    $(HDRS) spool_mbox.c
