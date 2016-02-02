@@ -1330,6 +1330,49 @@ return Ustrcmp(current_local_identity, message_local_identity) == 0;
 
 
 
+uschar
+ehlo_response(uschar * buf, size_t bsize, uschar checks)
+{
+#ifdef SUPPORT_TLS
+if (checks & PEER_OFFERED_TLS)
+  if (pcre_exec(regex_STARTTLS, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+    checks &= ~PEER_OFFERED_TLS;
+#endif
+
+  if (  checks & PEER_OFFERED_IGNQ
+     && pcre_exec(regex_IGNOREQUOTA, NULL, CS buf, bsize, 0,
+		  PCRE_EOPT, NULL, 0) < 0)
+    checks &= ~PEER_OFFERED_IGNQ;
+
+#ifndef DISABLE_PRDR
+  if (  checks & PEER_OFFERED_PRDR
+     && pcre_exec(regex_PRDR, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+    checks &= ~PEER_OFFERED_PRDR;
+#endif
+
+#ifdef SUPPORT_I18N
+  if (  checks & PEER_OFFERED_UTF8
+     && pcre_exec(regex_UTF8, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+    checks &= ~PEER_OFFERED_UTF8;
+#endif
+
+  if (  checks & PEER_OFFERED_DSN
+     && pcre_exec(regex_DSN, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+    checks &= ~PEER_OFFERED_DSN;
+
+  if (  checks & PEER_OFFERED_PIPE
+     && pcre_exec(regex_PIPELINING, NULL, CS buf, bsize, 0,
+		  PCRE_EOPT, NULL, 0) < 0)
+    checks &= ~PEER_OFFERED_PIPE;
+
+  if (  checks & PEER_OFFERED_SIZE
+     && pcre_exec(regex_SIZE, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+    checks &= ~PEER_OFFERED_SIZE;
+
+return checks;
+}
+
+
 /*************************************************
 *       Deliver address list to given host       *
 *************************************************/
@@ -1399,13 +1442,12 @@ BOOL completed_address = FALSE;
 BOOL esmtp = TRUE;
 BOOL pending_MAIL;
 BOOL pass_message = FALSE;
+uschar peer_offered = 0;	/*XXX should this be handed on cf. tls_offered, smtp_use_dsn ? */
 #ifndef DISABLE_PRDR
-BOOL prdr_offered = FALSE;
 BOOL prdr_active;
 #endif
 #ifdef SUPPORT_I18N
 BOOL utf8_needed = FALSE;
-BOOL utf8_offered = FALSE;
 #endif
 BOOL dsn_all_lasthop = TRUE;
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
@@ -1684,43 +1726,21 @@ goto SEND_QUIT;
     if (!good_response) goto RESPONSE_FAILED;
     }
 
-  /* Set IGNOREQUOTA if the response to LHLO specifies support and the
-  lmtp_ignore_quota option was set. */
-
-  igquotstr = (lmtp && ob->lmtp_ignore_quota &&
-    pcre_exec(regex_IGNOREQUOTA, NULL, CS buffer, Ustrlen(CS buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0)? US" IGNOREQUOTA" : US"";
+  if (esmtp || lmtp)
+    peer_offered = ehlo_response(buffer, Ustrlen(buffer),
+      PEER_OFFERED_TLS
+      | 0	/* IGNQ checked later */
+      | 0	/* PRDR checked later */
+      | 0	/* UTF8 checked later */
+      | 0	/* DSN  checked later */
+      | 0	/* PIPE checked later */
+      | 0	/* SIZE checked later */
+      );
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
 
 #ifdef SUPPORT_TLS
-  tls_offered = esmtp &&
-    pcre_exec(regex_STARTTLS, NULL, CS buffer, Ustrlen(buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0;
-#endif
-
-#ifndef DISABLE_PRDR
-  prdr_offered = esmtp
-    && pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(buffer), 0,
-		  PCRE_EOPT, NULL, 0) >= 0
-    && verify_check_given_host(&ob->hosts_try_prdr, host) == OK;
-
-  if (prdr_offered)
-    {DEBUG(D_transport) debug_printf("PRDR usable\n");}
-#endif
-
-#ifdef SUPPORT_I18N
-  if (addrlist->prop.utf8_msg)
-    {
-    utf8_needed =  !addrlist->prop.utf8_downcvt
-		&& !addrlist->prop.utf8_downcvt_maybe;
-    DEBUG(D_transport) if (!utf8_needed) debug_printf("utf8: %s downconvert\n",
-      addrlist->prop.utf8_downcvt ? "mandatory" : "optional");
-
-    utf8_offered = esmtp
-      && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
-		    PCRE_EOPT, NULL, 0) >= 0;
-    }
+  tls_offered = !!(peer_offered & PEER_OFFERED_TLS);
 #endif
   }
 
@@ -1914,54 +1934,53 @@ if (continue_hostname == NULL
 #endif
     )
   {
+  if (esmtp || lmtp)
+    peer_offered = ehlo_response(buffer, Ustrlen(buffer),
+      0 /* no TLS */
+      | (lmtp && ob->lmtp_ignore_quota ? PEER_OFFERED_IGNQ : 0)
+      | PEER_OFFERED_PRDR
+#ifdef SUPPORT_I18N
+      | (addrlist->prop.utf8_msg ? PEER_OFFERED_UTF8 : 0)
+      	/*XXX if we hand peercaps on to continued-conn processes,
+	      must not depend on this addr */
+#endif
+      | PEER_OFFERED_DSN
+      | PEER_OFFERED_PIPE
+      | (ob->size_addition >= 0 ? PEER_OFFERED_SIZE : 0)
+      );
+
   /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
   lmtp_ignore_quota option was set. */
 
-  igquotstr = (lmtp && ob->lmtp_ignore_quota &&
-    pcre_exec(regex_IGNOREQUOTA, NULL, CS buffer, Ustrlen(CS buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0)? US" IGNOREQUOTA" : US"";
+  igquotstr = peer_offered & PEER_OFFERED_IGNQ ? US" IGNOREQUOTA" : US"";
 
   /* If the response to EHLO specified support for the SIZE parameter, note
   this, provided size_addition is non-negative. */
 
-  smtp_use_size = esmtp && ob->size_addition >= 0 &&
-    pcre_exec(regex_SIZE, NULL, CS buffer, Ustrlen(CS buffer), 0,
-      PCRE_EOPT, NULL, 0) >= 0;
+  smtp_use_size = !!(peer_offered & PEER_OFFERED_SIZE);
 
   /* Note whether the server supports PIPELINING. If hosts_avoid_esmtp matched
   the current host, esmtp will be false, so PIPELINING can never be used. If
   the current host matches hosts_avoid_pipelining, don't do it. */
 
-  smtp_use_pipelining = esmtp
-    && verify_check_given_host(&ob->hosts_avoid_pipelining, host) != OK
-    && pcre_exec(regex_PIPELINING, NULL, CS buffer, Ustrlen(CS buffer), 0,
-		  PCRE_EOPT, NULL, 0) >= 0;
+  smtp_use_pipelining = peer_offered & PEER_OFFERED_PIPE
+    && verify_check_given_host(&ob->hosts_avoid_pipelining, host) != OK;
 
   DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
-    smtp_use_pipelining? "" : "not ");
+    smtp_use_pipelining ? "" : "not ");
 
 #ifndef DISABLE_PRDR
-  prdr_offered = esmtp
-    && pcre_exec(regex_PRDR, NULL, CS buffer, Ustrlen(CS buffer), 0,
-		  PCRE_EOPT, NULL, 0) >= 0
-    && verify_check_given_host(&ob->hosts_try_prdr, host) == OK;
+  if (  peer_offered & PEER_OFFERED_PRDR
+     && verify_check_given_host(&ob->hosts_try_prdr, host) != OK)
+    peer_offered &= ~PEER_OFFERED_PRDR;
 
-  if (prdr_offered)
+  if (peer_offered & PEER_OFFERED_PRDR)
     {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
-#ifdef SUPPORT_I18N
-  if (addrlist->prop.utf8_msg)
-    utf8_offered = esmtp
-      && pcre_exec(regex_UTF8, NULL, CS buffer, Ustrlen(buffer), 0,
-		    PCRE_EOPT, NULL, 0) >= 0;
-#endif
-
   /* Note if the server supports DSN */
-  smtp_use_dsn = esmtp
-    && pcre_exec(regex_DSN, NULL, CS buffer, Ustrlen(CS buffer), 0,
-		  PCRE_EOPT, NULL, 0) >= 0;
-  DEBUG(D_transport) debug_printf("use_dsn=%d\n", smtp_use_dsn);
+  smtp_use_dsn = !!(peer_offered & PEER_OFFERED_DSN);
+  DEBUG(D_transport) debug_printf("%susing DSN\n", smtp_use_dsn ? "" : "not ");
 
   /* Note if the response to EHLO specifies support for the AUTH extension.
   If it has, check that this host is one we want to authenticate to, and do
@@ -1984,8 +2003,16 @@ message-specific. */
 setting_up = FALSE;
 
 #ifdef SUPPORT_I18N
+if (addrlist->prop.utf8_msg)
+  {
+  utf8_needed =  !addrlist->prop.utf8_downcvt
+	      && !addrlist->prop.utf8_downcvt_maybe;
+  DEBUG(D_transport) if (!utf8_needed) debug_printf("utf8: %s downconvert\n",
+    addrlist->prop.utf8_downcvt ? "mandatory" : "optional");
+  }
+
 /* If this is an international message we need the host to speak SMTPUTF8 */
-if (utf8_needed && !utf8_offered)
+if (utf8_needed && !(peer_offered & PEER_OFFERED_UTF8))
   {
   errno = ERRNO_UTF8_FWD;
   goto RESPONSE_FAILED;
@@ -2051,8 +2078,7 @@ if (smtp_use_size)
 
 #ifndef DISABLE_PRDR
 prdr_active = FALSE;
-if (prdr_offered)
-  {
+if (peer_offered & PEER_OFFERED_PRDR)
   for (addr = first_addr; addr; addr = addr->next)
     if (addr->transport_return == PENDING_DEFER)
       {
@@ -2065,11 +2091,13 @@ if (prdr_offered)
 	  }
       break;
       }
-  }
 #endif
 
 #ifdef SUPPORT_I18N
-if (addrlist->prop.utf8_msg && !addrlist->prop.utf8_downcvt && utf8_offered)
+if (  addrlist->prop.utf8_msg
+   && !addrlist->prop.utf8_downcvt
+   && peer_offered & PEER_OFFERED_UTF8
+   )
   sprintf(CS p, " SMTPUTF8"), p += 9;
 #endif
 
@@ -2135,7 +2163,9 @@ pending_MAIL = TRUE;     /* The block starts with MAIL */
   for the to-addresses (done below), and also (ugly) for re-doing when building
   the delivery log line. */
 
-  if (addrlist->prop.utf8_msg && (addrlist->prop.utf8_downcvt || !utf8_offered))
+  if (  addrlist->prop.utf8_msg
+     && (addrlist->prop.utf8_downcvt || !(peer_offered & PEER_OFFERED_UTF8))
+     )
     {
     if (s = string_address_utf8_to_alabel(return_path, &errstr), errstr)
       {

@@ -1,0 +1,30 @@
+# cutthrough_delivery with MAIL SIZE=
+need_ipv4
+munge loopback
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 SIZE 65536
+MAIL FROM:<fred@myhost.test.ex> SIZE=1123
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<fred@myhost.test.ex> SIZE=99
+RCPT TO:<userx@domain.com>
+DATA
+
+.
+QUIT
+****
+# End

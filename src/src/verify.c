@@ -174,9 +174,7 @@ dbdata_callout_cache new_domain_record;
 dbdata_callout_cache_address new_address_record;
 host_item *host;
 time_t callout_start_time;
-#ifdef SUPPORT_I18N
-BOOL utf8_offered = FALSE;
-#endif
+uschar peer_offered = 0;
 
 new_domain_record.result = ccache_unknown;
 new_domain_record.postmaster_result = ccache_unknown;
@@ -542,6 +540,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     uschar inbuffer[4096];
     uschar outbuffer[1024];
     uschar responsebuffer[4096];
+    uschar * size_str;
 
     clearflag(addr, af_verify_pmfail);  /* postmaster callout flag */
     clearflag(addr, af_verify_nsfail);  /* null sender callout flag */
@@ -711,7 +710,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #ifdef SUPPORT_TLS
     if (smtps  &&  tls_out.active < 0)	/* ssl-on-connect, first pass */
       {
-      tls_offered = TRUE;
+      peer_offered &= ~PEER_OFFERED_TLS;
       ob->tls_tempfail_tryclear = FALSE;
       }
     else				/* all other cases */
@@ -730,26 +729,39 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	  goto RESPONSE_FAILED;
 	  }
 #ifdef SUPPORT_TLS
-        tls_offered = FALSE;
+	peer_offered &= ~PEER_OFFERED_TLS;
 #endif
         esmtp = FALSE;
         goto esmtp_retry;			/* fallback to HELO */
         }
 
       /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
-#ifdef SUPPORT_TLS
-      if (esmtp && !suppress_tls &&  tls_out.active < 0)
-	{
-	if (regex_STARTTLS == NULL) regex_STARTTLS =
-	  regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
 
-	tls_offered = pcre_exec(regex_STARTTLS, NULL, CS responsebuffer,
-		      Ustrlen(responsebuffer), 0, PCRE_EOPT, NULL, 0) >= 0;
-	}
-      else
-        tls_offered = FALSE;
+      peer_offered = esmtp
+	? ehlo_response(responsebuffer, sizeof(responsebuffer),
+		(!suppress_tls && tls_out.active < 0 ? PEER_OFFERED_TLS : 0)
+	      | 0	/* no IGNQ */
+	      | 0	/* no PRDR */
+#ifdef SUPPORT_I18N
+	      | (addr->prop.utf8_msg && !addr->prop.utf8_downcvt
+	        ? PEER_OFFERED_UTF8 : 0)
 #endif
+	      | 0	/* no DSN */
+	      | 0	/* no PIPE */
+
+	      /* only care about SIZE if we have size from inbound */
+	      | (message_size > 0 && ob->size_addition >= 0
+	        ? PEER_OFFERED_SIZE : 0)
+	    )
+	: 0;
       }
+
+    size_str = peer_offered & PEER_OFFERED_SIZE
+      ? string_sprintf(" SIZE=%d", message_size + ob->size_addition) : US"";
+
+#ifdef SUPPORT_TLS
+    tls_offered = !!(peer_offered & PEER_OFFERED_TLS);
+#endif
 
     /* If TLS is available on this connection attempt to
     start up a TLS session, unless the host is in hosts_avoid_tls. If successful,
@@ -760,7 +772,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     for error analysis. */
 
 #ifdef SUPPORT_TLS
-    if (  tls_offered
+    if (  peer_offered & PEER_OFFERED_TLS
        && verify_check_given_host(&ob->hosts_avoid_tls, host) != OK
        && verify_check_given_host(&ob->hosts_verify_avoid_tls, host) != OK
        )
@@ -875,8 +887,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         log_write(0, LOG_MAIN,
 	  "H=%s [%s]: a TLS session is required for this host, but %s",
           host->name, host->address,
-	  tls_offered ? "an attempt to start TLS failed"
-		      : "the server did not offer TLS support");
+	  peer_offered & PEER_OFFERED_TLS
+	  ? "an attempt to start TLS failed"
+	  : "the server did not offer TLS support");
         done= FALSE;
         goto TLS_FAILED;
         }
@@ -884,8 +897,6 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #endif /*SUPPORT_TLS*/
 
     done = TRUE; /* so far so good; have response to HELO */
-
-    /*XXX the EHLO response would be analyzed here for IGNOREQUOTA, SIZE, PIPELINING */
 
     /* For now, transport_filter by cutthrough-delivery is not supported */
     /* Need proper integration with the proper transport mechanism. */
@@ -927,17 +938,8 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #ifdef SUPPORT_I18N
     else if (  addr->prop.utf8_msg
 	    && !addr->prop.utf8_downcvt
-	    && !(  esmtp
-		&& (  regex_UTF8
-		   || ( (regex_UTF8 = regex_must_compile(
-			  US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE)),
-		      TRUE
-		   )  )
-		&& (  (utf8_offered = pcre_exec(regex_UTF8, NULL,
-			    CS responsebuffer, Ustrlen(responsebuffer),
-			    0, PCRE_EOPT, NULL, 0) >= 0)
-		   || addr->prop.utf8_downcvt_maybe
-	    )   )  )
+	    && !(peer_offered & PEER_OFFERED_UTF8)
+	    )
       {
       HDEBUG(D_acl|D_v) debug_printf("utf8 required but not offered\n");
       errno = ERRNO_UTF8_FWD;
@@ -945,7 +947,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       done = FALSE;
       }
     else if (  addr->prop.utf8_msg
-	    && (addr->prop.utf8_downcvt || !utf8_offered)
+	    && (addr->prop.utf8_downcvt || !(peer_offered & PEER_OFFERED_UTF8))
 	    && (setflag(addr, af_utf8_downcvt),
 	        from_address = string_address_utf8_to_alabel(from_address,
 				      &addr->message),
@@ -978,11 +980,11 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         (smtp_write_command(&outblock, FALSE,
 #ifdef SUPPORT_I18N
 	  addr->prop.utf8_msg && !addr->prop.utf8_downcvt
-	  ? "MAIL FROM:<%s>%s SMTPUTF8\r\n"
+	  ? "MAIL FROM:<%s>%s%s SMTPUTF8\r\n"
 	  :
 #endif
-	    "MAIL FROM:<%s>%s\r\n",
-          from_address, responsebuffer) >= 0)
+	    "MAIL FROM:<%s>%s%s\r\n",
+          from_address, responsebuffer, size_str) >= 0)
       )  &&
 
       smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),

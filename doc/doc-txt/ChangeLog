@@ -2,6 +2,13 @@ Change log file for Exim from version 4.21
 -------------------------------------------
 
 
+Exim version 4.next
+-----------------
+JH/01 Use SIZE on MAIL FROM in a cutthrough connection, if the destination
+      supports it and a size is available (ie. the sending peer gave us one).
+
+
+
 Exim version 4.87
 -----------------
 JH/01 Bug 1664: Disable OCSP for GnuTLS library versions at/before 3.3.16
@@ -286,8 +293,6 @@ JH/35 Bug 1642: Fix support of $spam_ variables at delivery time.  Was
 
 JH/36 Bug 1659: Guard checking of input smtp commands again pseudo-command
       added for tls authenticator.
-
-HS/03 Add perl_taintmode main config option
 
 
 Exim version 4.85
