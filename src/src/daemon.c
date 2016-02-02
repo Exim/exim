@@ -1705,7 +1705,6 @@ else
 /* Do any work it might be useful to amortize over our children
 (eg: compile regex) */
 
-deliver_init();
 dns_pattern_init();
 
 #ifdef WITH_CONTENT_SCAN

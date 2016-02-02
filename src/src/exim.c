@@ -4600,6 +4600,7 @@ if (list_config)
 #ifndef DISABLE_DKIM
 dkim_exim_init();
 #endif
+deliver_init();
 
 
 /* Handle a request to deliver one or more messages that are already on the
