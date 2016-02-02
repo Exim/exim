@@ -23418,6 +23418,15 @@ the message. As a result, the overall timeout for a message depends on the size
 of the message. Its value must not be zero. See also &%final_timeout%&.
 
 
+.option dkim_domain smtp string&!! unset
+.option dkim_selector smtp string&!! unset
+.option dkim_private_key smtp string&!! unset
+.option dkim_canon smtp string&!! unset
+.option dkim_strict smtp string&!! unset
+.option dkim_sign_headers smtp string&!! unset
+DKIM signing options.  For details see &<<SECDKIMSIGN>>&.
+
+
 .option delay_after_cutoff smtp boolean true
 This option controls what happens when all remote IP addresses for a given
 domain have been inaccessible for so long that they have passed their retry
@@ -38006,7 +38015,7 @@ where you accept mail from relay sources (internal hosts or authenticated
 senders).
 
 
-.section "Signing outgoing messages" "SECID513"
+.section "Signing outgoing messages" "SECDKIMSIGN"
 .cindex "DKIM" "signing"
 
 Signing is implemented by setting private options on the SMTP transport.
