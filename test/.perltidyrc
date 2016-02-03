@@ -1,0 +1,11 @@
+-l=400
+-i=4
+-dt=4
+-it=4
+-bar
+-nsfs
+-nolq
+--break-at-old-comma-breakpoints
+--format-skipping
+--format-skipping-begin='#\s*tidyoff'
+--format-skipping-end='#\s*tidyon'
