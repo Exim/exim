@@ -110,7 +110,9 @@ do   if test -r ../$f
             echo "# End of $f"
             echo ""
      fi
-done >> $mft || exit 1
+done \
+     | sed 's/^TMPDIR=/EXIM_&/' \
+     >> $mft || exit 1
 
 # handle pkg-config
 # beware portability of extended regexps with sed.

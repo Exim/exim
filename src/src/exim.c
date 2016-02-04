@@ -3899,7 +3899,10 @@ if (log_oneline)
 temporary files are created; Exim doesn't use these (apart from when delivering
 to MBX mailboxes), but called libraries such as DBM libraries may require them.
 If TMPDIR is found in the environment, reset it to the value defined in the
-EXIM_TMPDIR macro, if this macro is defined. */
+EXIM_TMPDIR macro, if this macro is defined.  For backward compatibility this
+macro may be called TMPDIR in old "Local/Makefile"s. It's converted to
+EXIM_TMPDIR by the build scripts.
+*/
 
 #ifdef EXIM_TMPDIR
   {

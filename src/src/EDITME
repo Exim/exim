@@ -1121,7 +1121,9 @@ SYSTEM_ALIASES_FILE=/etc/aliases
 # files, and thus be influenced by the value of TMPDIR. For this reason, when
 # Exim starts, it checks the environment for TMPDIR, and if it finds it is set,
 # it replaces the value with what is defined here. Commenting this setting
-# suppresses the check altogether.
+# suppresses the check altogether. Older installations call this macro
+# just TMPDIR, but this has side effects at build time. At runtime
+# TMPDIR is checked as before.
 
 EXIM_TMPDIR="/tmp"
 
