@@ -68,7 +68,6 @@ protocol = smtp
 retry_include_ip_address
 serialize_hosts = 
 size_addition = 1024
-socks_proxy = 127.0.0.1 port=1225
 
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
@@ -91,7 +90,7 @@ begin routers
     route_list = * 127.0.0.1
     self = send
     transport = my_smtp
-    debug_print = router_name <$router_name>
+    hide debug_print = router_name <$router_name>
     no_more
 
 begin transports
@@ -100,5 +99,4 @@ begin transports
     driver = smtp
     interface = ip4.ip4.ip4.ip4
     port = 1224
-    hide socks_proxy = 127.0.0.1 port=1225
     debug_print = transport_name <$transport_name>

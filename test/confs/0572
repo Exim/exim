@@ -28,7 +28,7 @@ my_main_router:
   route_list = * 127.0.0.1
   self = send
   transport = my_smtp
-  debug_print = router_name <$router_name>
+  hide debug_print = router_name <$router_name>
   no_more
 
 
@@ -40,7 +40,6 @@ my_smtp:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_S
-  hide socks_proxy = 127.0.0.1 port=PORT_D OPT
   debug_print = transport_name <$transport_name>
 
 
