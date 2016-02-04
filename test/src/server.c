@@ -200,7 +200,7 @@ int len = sizeof(accepted);
 /* Sort out the arguments */
 if (argc > 1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")))
   {
-  printf("Usage: %s [options]\n", argv[0]);
+  printf("Usage: %s [options] port|socket [connection count]\n", argv[0]);
   puts("Options"
        "\n\t-d       debug"
        "\n\t-i n     n seconds initial delay"
