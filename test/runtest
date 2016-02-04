@@ -2586,7 +2586,7 @@ else
   die "Unable to check the TRUSTED_CONFIG_LIST, seems to be empty?\n";
   }
 
-open(EXIMINFO, "$parm_exim -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
+open(EXIMINFO, "$parm_exim -d-all+transport -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
   die "** Cannot run $parm_exim: $!\n";
 
 print "-" x 78, "\n";
@@ -2595,7 +2595,7 @@ while (<EXIMINFO>)
   {
   my(@temp);
 
-  if (/^Exim version/) { print; }
+  if (/^(Exim|Library) version/) { print; }
 
   elsif (/^Size of off_t: (\d+)/)
     {
