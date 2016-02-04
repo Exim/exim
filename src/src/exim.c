@@ -3899,20 +3899,20 @@ if (log_oneline)
 temporary files are created; Exim doesn't use these (apart from when delivering
 to MBX mailboxes), but called libraries such as DBM libraries may require them.
 If TMPDIR is found in the environment, reset it to the value defined in the
-TMPDIR macro, if this macro is defined. */
+EXIM_TMPDIR macro, if this macro is defined. */
 
-#ifdef TMPDIR
+#ifdef EXIM_TMPDIR
   {
   uschar **p;
   for (p = USS environ; *p != NULL; p++)
     {
     if (Ustrncmp(*p, "TMPDIR=", 7) == 0 &&
-        Ustrcmp(*p+7, TMPDIR) != 0)
+        Ustrcmp(*p+7, EXIM_TMPDIR) != 0)
       {
-      uschar *newp = malloc(Ustrlen(TMPDIR) + 8);
-      sprintf(CS newp, "TMPDIR=%s", TMPDIR);
+      uschar *newp = malloc(Ustrlen(EXIM_TMPDIR) + 8);
+      sprintf(CS newp, "TMPDIR=%s", EXIM_TMPDIR);
       *p = newp;
-      DEBUG(D_any) debug_printf("reset TMPDIR=%s in environment\n", TMPDIR);
+      DEBUG(D_any) debug_printf("reset TMPDIR=%s in environment\n", EXIM_TMPDIR);
       }
     }
   }

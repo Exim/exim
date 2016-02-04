@@ -1123,7 +1123,7 @@ SYSTEM_ALIASES_FILE=/etc/aliases
 # it replaces the value with what is defined here. Commenting this setting
 # suppresses the check altogether.
 
-TMPDIR="/tmp"
+EXIM_TMPDIR="/tmp"
 
 
 #------------------------------------------------------------------------------

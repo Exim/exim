@@ -150,7 +150,7 @@ it's a default value. */
 
 #define TCP_WRAPPERS_DAEMON_NAME "exim"
 #define TIMEZONE_DEFAULT
-#define TMPDIR
+#define EXIM_TMPDIR
 
 #define TRANSPORT_APPENDFILE
 #define TRANSPORT_AUTOREPLY
