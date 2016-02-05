@@ -53,6 +53,7 @@ test message.
 sleep 1
 killdaemon
 no_msglog_check
+sudo rm -f DIR/spool/db/retry
 #
 #
 #
@@ -65,6 +66,7 @@ test message.
 ****
 sleep 1
 killdaemon
+sudo rm -f DIR/spool/db/retry
 #
 #
 #
