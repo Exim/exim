@@ -3215,6 +3215,11 @@ if ($parm_caller_uid eq $parm_exim_uid) {
   tests_exit(-1, "Exim user ($parm_eximuser,$parm_exim_uid) cannot be "
                 ."the same as caller ($parm_caller,$parm_caller_uid)");
 }
+if ($parm_caller_gid eq $parm_exim_gid) {
+  tests_exit(-1, "Exim group ($parm_eximgroup,$parm_exim_gid) cannot be "
+                ."the same as caller's ($parm_caller) group as it confuses "
+                ."results analysis");
+}
 
 print "The Exim user needs access to the test suite directory. Checking ...";
 

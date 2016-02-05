@@ -73,12 +73,13 @@ In order to run this test suite, the following requirements must be met:
 
       Defaults:exim-build     timestamp_timeout=480,!tty_tickets
 
-(3) The login under which you run the tests must be in the exim group so that
-    it has access to logs, spool files, etc. The login should not be one of the
-    names "userx", "usery", "userz", or a few other simple ones such as "abcd"
-    and "xyz" and single letters that are used in the tests. The test suite
-    expects the login to have a gecos name; I think it will now run if the
-    gecos field is empty but there may be anomalies.
+(3) The login under which you run the tests must have the exim group as a
+    secondary so that it has access to logs, spool files, etc.  However, it
+    should have a different primary group (eg. "users" vs. "eximgroup"). The
+    login should not be one of the names "userx", "usery", "userz", or a few
+    other simple ones such as "abcd" and "xyz" and single letters that are used
+    in the tests. The test suite expects the login to have a gecos name; I think
+    it will now run if the gecos field is empty but there may be anomalies.
     The login must not contain a dash or an equal sign. (Otherwise some tests
     about local_from_{suffix,prefix} will fail.)
 
