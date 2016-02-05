@@ -1,4 +1,4 @@
-# TLS: SNI
+# TLS: client SNI
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****

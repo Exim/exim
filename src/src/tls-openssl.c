@@ -2079,8 +2079,7 @@ if (ob->tls_sni)
     DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tls_out.sni);
     SSL_set_tlsext_host_name(client_ssl, tls_out.sni);
 #else
-    DEBUG(D_tls)
-      debug_printf("OpenSSL at build-time lacked SNI support, ignoring \"%s\"\n",
+    log_write(0, LOG_MAIN, "SNI unusable with this OpenSSL library version; ignoring \"%s\"\n",
           tls_out.sni);
 #endif
     }
