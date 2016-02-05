@@ -295,7 +295,8 @@ if (!dmarc_abort && !sender_host_authenticated)
       vs == PDKIM_VERIFY_INVALID ?
        ves == PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE ? ARES_RESULT_PERMERROR :
        ves == PDKIM_VERIFY_INVALID_BUFFER_SIZE        ? ARES_RESULT_PERMERROR :
-       ves == PDKIM_VERIFY_INVALID_PUBKEY_PARSING     ? ARES_RESULT_PERMERROR :
+       ves == PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD   ? ARES_RESULT_PERMERROR :
+       ves == PDKIM_VERIFY_INVALID_PUBKEY_IMPORT      ? ARES_RESULT_PERMERROR :
        ARES_RESULT_UNKNOWN :
       ARES_RESULT_UNKNOWN;
     dkim_history_buffer = string_sprintf("%sdkim %s %d\n", dkim_history_buffer,

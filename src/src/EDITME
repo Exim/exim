@@ -472,6 +472,12 @@ EXIM_MONITOR=eximon.bin
 # CFLAGS  += -I/usr/local/include
 # LDFLAGS += -lsrs_alt
 
+# Uncomment the following line to add DMARC checking capability, implemented
+# using libopendmarc libraries.  You must have SPF support enabled also.
+# EXPERIMENTAL_DMARC=yes
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -lopendmarc
+
 # Uncomment the following lines to add Brightmail AntiSpam support. You need
 # to have the Brightmail client SDK installed. Please check the experimental
 # documentation for implementation details. You need to edit the CFLAGS and
@@ -480,12 +486,6 @@ EXIM_MONITOR=eximon.bin
 # EXPERIMENTAL_BRIGHTMAIL=yes
 # CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
 # LDFLAGS += -lxml2_single -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
-
-# Uncomment the following line to add DMARC checking capability, implemented
-# using libopendmarc libraries.
-# EXPERIMENTAL_DMARC=yes
-# CFLAGS += -I/usr/local/include
-# LDFLAGS += -lopendmarc
 
 # Uncomment the following line to add DANE support
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
