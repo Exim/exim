@@ -42,7 +42,7 @@ test message.
 ****
 sleep 1
 killdaemon
-no_msglog_check
+sudo rm spool/db/retry
 #
 #
 #
@@ -56,6 +56,7 @@ test message.
 sleep 1
 killdaemon
 millisleep 200
+sudo rm spool/db/retry
 #
 #
 #
@@ -73,3 +74,4 @@ killdaemon
 #
 #
 #
+no_msglog_check
