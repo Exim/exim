@@ -1,4 +1,4 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 H=[127.0.0.1] temporarily rejected connection in "connect" ACL
-1999-03-02 09:44:33 H=[127.0.0.2] temporarily rejected connection in "connect" ACL
+1999-03-02 09:44:33 H=[ip4.ip4.ip4.ip4] temporarily rejected connection in "connect" ACL

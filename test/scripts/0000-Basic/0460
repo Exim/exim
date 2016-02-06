@@ -45,3 +45,4 @@ QUIT
 killdaemon
 # Wait for delivery process
 sleep 1
+sortlog

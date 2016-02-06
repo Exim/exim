@@ -227,7 +227,7 @@ server 7833
 >
 *eof
 ****
-exim -odi -bs -DOPT='<; 127.0.0.1 7833 ; 127.0.0.2 7834 pri=2 tmo=2s'
+exim -odi -bs -DOPT='<; 127.0.0.1 7833 ; HOSTIPV4 7834 pri=2 tmo=2s'
 ehlo test.ex
 mail from:<>
 rcpt to:<userx@test.ex>

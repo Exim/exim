@@ -12,5 +12,5 @@
 +++++++++++++++++++++++++++
   T:127.0.0.1:127.0.0.1:1225/127.0.0.1 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
 first failed = time last try = time2 next try = time2 + 10
-  T:127.0.0.1:127.0.0.1:1225/127.0.0.2 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
+  T:127.0.0.1:127.0.0.1:1225/ip4.ip4.ip4.ip4 0 65 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
 first failed = time last try = time2 next try = time2 + 10

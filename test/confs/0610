@@ -54,7 +54,7 @@ t2:
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_D
-  interface = 127.0.0.2
+  interface = HOSTIPV4
 
 # ----- Retry -----
 
