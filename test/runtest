@@ -1406,6 +1406,10 @@ $munges =
     'sys_bindir' =>
     { 'mainlog' => 's%/(usr/)?bin/%SYSBINDIR/%' },
 
+    'sync_check_data' =>
+    { 'mainlog'   => 's/^(.* SMTP protocol synchronization error .* next input=.{8}).*$/$1<suppressed>/',
+      'rejectlog' => 's/^(.* SMTP protocol synchronization error .* next input=.{8}).*$/$1<suppressed>/'},
+
   };
 
 
@@ -3769,7 +3773,7 @@ $0 = "[runtest $testno]";
         log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
         if ($force_continue)
           {
-          print "stderr tail:\n";
+          print "\nstderr tail:\n";
           print "===================\n";
           system("tail -20 test-stderr");
           print "===================\n";
