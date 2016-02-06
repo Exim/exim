@@ -166,6 +166,8 @@ JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
 
 JH/39 Bug 1781: Fix use of private-keys having trailing '=' in the base-64.
 
+JH/40 Fix crash in queryprogram router when compiled with EXPERIMENTAL_SRS.
+
 
 
 Exim version 4.86

@@ -223,6 +223,10 @@ rc = rf_get_munge_headers(addr, rblock, &addr_prop.extra_headers,
   &addr_prop.remove_headers);
 if (rc != OK) return rc;
 
+#ifdef EXPERIMENTAL_SRS
+addr_prop.srs_sender = NULL;
+#endif
+
 /* Get the fixed or expanded uid under which the command is to run
 (initialization ensures that one or the other is set). */
 
