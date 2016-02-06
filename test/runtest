@@ -3767,7 +3767,15 @@ $0 = "[runtest $testno]";
         $_ = $force_continue ? "c" : <T>;
         tests_exit(1) if /^q?$/i;
         log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
-        print "... continue forced\n" if $force_continue;
+        if ($force_continue)
+          {
+          print "stderr tail:\n";
+          print "===================\n";
+          system("tail -20 test-stderr");
+          print "===================\n";
+          print "... continue forced\n";
+          }
+
         last if /^[rc]$/i;
         if (/^e$/i)
           {
