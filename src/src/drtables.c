@@ -524,8 +524,6 @@ init_lookup_list(void)
   int moduleerrors = 0;
 #endif
   struct lookupmodulestr *p;
-  const pcre *regex_islookupmod = regex_must_compile(
-      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
 
   if (lookup_list_init_done)
     return;
@@ -610,6 +608,9 @@ init_lookup_list(void)
     log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   }
   else {
+    const pcre *regex_islookupmod = regex_must_compile(
+      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
+
     DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
     while ((ent = readdir(dd)) != NULL) {
       char *name = ent->d_name;
@@ -666,13 +667,12 @@ init_lookup_list(void)
         countmodules++;
       }
     }
+    store_free((void*)regex_islookupmod);
     closedir(dd);
   }
 
   DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 #endif
-
-  store_free((void*)regex_islookupmod);
 
   DEBUG(D_lookup) debug_printf("Total %d lookups\n", lookup_list_count);
 
