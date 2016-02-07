@@ -2,7 +2,23 @@
 #
 exim -bd -DSERVER=server -oX PORT_D
 ****
-exim a@test.ex
+#
+# single header signed
+exim -DOPT=From a@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# single header, oversigned
+exim -DOPT=From:From b@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# default header set
+exim -DHEADERS_MAXSIZE=y c@test.ex
 From: nobody@example.com
 
 content

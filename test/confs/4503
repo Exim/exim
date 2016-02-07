@@ -1,6 +1,7 @@
 # Exim test configuration 4503
 
 SERVER=
+OPT=
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -13,9 +14,9 @@ tls_advertise_hosts =
 
 # ----- Main settings -----
 
-log_selector = +outgoing_port
 acl_smtp_rcpt = accept
-acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
+acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
+
 
 # ----- Routers
 
@@ -43,6 +44,8 @@ send_to_server:
   dkim_domain =		test.ex
   dkim_selector =	sel
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
-  dkim_sign_headers =	From
+.ifndef HEADERS_MAXSIZE
+  dkim_sign_headers =	OPT
+.endif
 
 # End

@@ -189,7 +189,7 @@ debug_printf("\n");
 
 
 
-/* String package: should be replaced by Exim standard ones */
+/* SSS probably want to keep the "stringlist" notion */
 
 static pdkim_stringlist *
 pdkim_prepend_stringlist(pdkim_stringlist *base, char *str)
@@ -213,6 +213,8 @@ else
 
 /* -------------------------------------------------------------------------- */
 /* A small "growing string" implementation to escape malloc/realloc hell */
+/* String package: should be replaced by Exim standard ones */
+/* SSS Ustrcpy */
 
 static pdkim_str *
 pdkim_strnew (const char *cstr)
@@ -236,6 +238,9 @@ else
 return p;
 }
 
+
+/*SSS Ustrncat */
+
 static char *
 pdkim_strncat(pdkim_str *str, const char *data, int len)
 {
@@ -255,28 +260,37 @@ str->str[str->len] = '\0';
 return str->str;
 }
 
+
+/* SSS Ustrcat */
+
 static char *
 pdkim_strcat(pdkim_str *str, const char *cstr)
 {
 return pdkim_strncat(str, cstr, strlen(cstr));
 }
 
+
+
+/* Trim whitespace fore & aft */
+
 static char *
 pdkim_strtrim(pdkim_str *str)
 {
 char *p = str->str;
 char *q = str->str;
-while ( (*p != '\0') && ((*p == '\t') || (*p == ' ')) ) p++;
-while (*p != '\0') {*q = *p; q++; p++;}
+while (*p == '\t' || *p == ' ') p++;		/* skip whitespace */
+while (*p) {*q = *p; q++; p++;}			/* dump the leading whitespace */
 *q = '\0';
-while ( (q != str->str) && ( (*q == '\0') || (*q == '\t') || (*q == ' ') ) )
-  {
+while (q != str->str && ( (*q == '\0') || (*q == '\t') || (*q == ' ') ) )
+  {						/* dump trailing whitespace */
   *q = '\0';
   q--;
   }
 str->len = strlen(str->str);
 return str->str;
 }
+
+
 
 static char *
 pdkim_strclear(pdkim_str *str)
@@ -286,12 +300,27 @@ str->len = 0;
 return str->str;
 }
 
+
+
 static void
 pdkim_strfree(pdkim_str *str)
 {
 if (!str) return;
 if (str->str) free(str->str);
 free(str);
+}
+
+
+static void
+pdkim_stringlist_free(pdkim_stringlist * e)
+{
+while(e)
+  {
+  pdkim_stringlist * c = e;
+  if (e->value) free(e->value);
+  e = e->next;
+  free(c);
+  }
 }
 
 
@@ -323,15 +352,7 @@ if (sig)
   {
   pdkim_signature *next = (pdkim_signature *)sig->next;
 
-  pdkim_stringlist *e = sig->headers;
-  while(e)
-    {
-    pdkim_stringlist *c = e;
-    if (e->value) free(e->value);
-    e = e->next;
-    free(c);
-    }
-
+  pdkim_stringlist_free(sig->headers);
   if (sig->selector        ) free(sig->selector);
   if (sig->domain          ) free(sig->domain);
   if (sig->identity        ) free(sig->identity);
@@ -355,14 +376,7 @@ pdkim_free_ctx(pdkim_ctx *ctx)
 {
 if (ctx)
   {
-  pdkim_stringlist *e = ctx->headers;
-  while(e)
-    {
-    pdkim_stringlist *c = e;
-    if (e->value) free(e->value);
-    e = e->next;
-    free(c);
-    }
+  pdkim_stringlist_free(ctx->headers);
   pdkim_free_sig(ctx->sig);
   pdkim_strfree(ctx->cur_header);
   free(ctx);
@@ -372,14 +386,12 @@ if (ctx)
 
 /* -------------------------------------------------------------------------- */
 /* Matches the name of the passed raw "header" against
-   the passed colon-separated "list", starting at entry
-   "start". Returns the position of the header name in
-   the list. */
+   the passed colon-separated "tick", and invalidates
+   the entry in tick. Returns OK or fail-code */
+/*XXX might be safer done using a pdkim_stringlist for "tick" */
 
 static int
-header_name_match(const char *header,
-                      char       *tick,
-                      int         do_tick)
+header_name_match(const char * header, char * tick)
 {
 char *hname;
 char *lcopy;
@@ -413,7 +425,7 @@ while (q)
     {
     rc = PDKIM_OK;
     /* Invalidate header name instance in tick-off list */
-    if (do_tick) tick[p-lcopy] = '_';
+    tick[p-lcopy] = '_';
     goto BAIL;
     }
 
@@ -425,7 +437,7 @@ if (strcasecmp(p, hname) == 0)
   {
   rc = PDKIM_OK;
   /* Invalidate header name instance in tick-off list */
-  if (do_tick) tick[p-lcopy] = '_';
+  tick[p-lcopy] = '_';
   }
 
 BAIL:
@@ -1141,9 +1153,7 @@ if (ctx->mode == PDKIM_MODE_SIGN)
 
   for (sig = ctx->sig; sig; sig = sig->next)			/* Traverse all signatures */
     if (header_name_match(ctx->cur_header->str,
-			  sig->sign_headers?
-			    sig->sign_headers:
-			    PDKIM_DEFAULT_SIGN_HEADERS, 0) == PDKIM_OK)
+			  sig->sign_headers) == PDKIM_OK)
       {
       pdkim_stringlist *list;
 
@@ -1243,7 +1253,7 @@ for (p = 0; p<len; p++)
 	  ctx->past_headers = TRUE;
 	  ctx->seen_lf = 0;
 	  DEBUG(D_acl) debug_printf(
-	      "PDKIM >> Hashed body data, canonicalized >>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+	      "PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>\n");
 	  continue;
 	  }
 	else
@@ -1572,11 +1582,16 @@ while (sig)
 
   /* SIGNING ---------------------------------------------------------------- */
   /* When signing, walk through our header list and add them to the hash. As we
-     go, construct a list of the header's names to use for the h= parameter. */
+     go, construct a list of the header's names to use for the h= parameter.
+     Then append to that list any remaining header names for which there was no
+     header to sign. */
 
   if (ctx->mode == PDKIM_MODE_SIGN)
     {
     pdkim_stringlist *p;
+    const uschar * l;
+    uschar * s;
+    int sep = 0;
 
     for (p = sig->headers; p; p = p->next)
       {
@@ -1585,7 +1600,7 @@ while (sig)
       uschar * q = Ustrchr(p->value, ':');
 
       if (!(pdkim_strncat(headernames, p->value,
-			(q-US (p->value)) + (p->next ? 1 : 0))))
+			(q - US p->value) + (p->next ? 1 : 0))))
 	return PDKIM_ERR_OOM;
 
       rh = sig->canon_headers == PDKIM_CANON_RELAXED
@@ -1602,6 +1617,17 @@ while (sig)
 
       DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
       }
+
+    l = US sig->sign_headers;
+    while((s = string_nextinlist(&l, &sep, NULL, 0)))
+      if (*s != '_')
+	{
+	if (headernames->len > 0)
+	  if (!(pdkim_strncat(headernames, ":", 1)))
+	    return PDKIM_ERR_OOM;
+	if (!(pdkim_strncat(headernames, CS s, Ustrlen(s))))
+	  return PDKIM_ERR_OOM;
+	}
     }
 
   /* VERIFICATION ----------------------------------------------------------- */
@@ -1661,7 +1687,7 @@ while (sig)
     pdkim_strfree(headernames);
 
     /* Create signature header with b= omitted */
-    sig_hdr = pdkim_create_header(ctx->sig, FALSE);
+    sig_hdr = pdkim_create_header(sig, FALSE);
     }
 
   /* VERIFICATION ----------------------------------------------------------- */
@@ -1741,7 +1767,7 @@ while (sig)
       pdkim_hexprint(sig->sigdata.data, sig->sigdata.len);
       }
 
-    if (!(sig->signature_header = pdkim_create_header(ctx->sig, TRUE)))
+    if (!(sig->signature_header = pdkim_create_header(sig, TRUE)))
       return PDKIM_ERR_OOM;
     }
 
@@ -1944,19 +1970,21 @@ pdkim_set_optional(pdkim_ctx *ctx,
                        unsigned long created,
                        unsigned long expires)
 {
+pdkim_signature * sig = ctx->sig;
+
 if (identity)
-  if (!(ctx->sig->identity = strdup(identity)))
+  if (!(sig->identity = strdup(identity)))
     return PDKIM_ERR_OOM;
 
-if (sign_headers)
-  if (!(ctx->sig->sign_headers = strdup(sign_headers)))
-    return PDKIM_ERR_OOM;
+if (!(sig->sign_headers = strdup(sign_headers
+	? sign_headers : PDKIM_DEFAULT_SIGN_HEADERS)))
+  return PDKIM_ERR_OOM;
 
-ctx->sig->canon_headers = canon_headers;
-ctx->sig->canon_body = canon_body;
-ctx->sig->bodylength = bodylength;
-ctx->sig->created = created;
-ctx->sig->expires = expires;
+sig->canon_headers = canon_headers;
+sig->canon_body = canon_body;
+sig->bodylength = bodylength;
+sig->created = created;
+sig->expires = expires;
 
 return PDKIM_OK;
 }
