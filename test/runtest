@@ -38,6 +38,7 @@ $gnutls_dh_bits_normal = 2236;
 $cf = "bin/cf -exact";
 $cr = "\r";
 $debug = 0;
+$flavour = 'FOO';
 $force_continue = 0;
 $force_update = 0;
 $log_failed_filename = "failed-summary.log";
@@ -45,7 +46,7 @@ $more = "less -XF";
 $optargs = "";
 $save_output = 0;
 $server_opts = "";
-$flavour = 'FOO';
+$valgrind = 0;
 
 $have_ipv4 = 1;
 $have_ipv6 = 1;
@@ -2149,7 +2150,10 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+)?\s+(.*
 
   $args =~ s/(?:^|\s)-d\S*// if $optargs =~ /(?:^|\s)-d/;
 
-  $cmd = "$envset$sudo$parm_cwd/eximdir/exim$special$optargs " .
+  my $opt_valgrind = $valgrind ? "valgrind --leak-check=yes --suppressions=$parm_cwd/aux-fixed/valgrind.supp " : "";
+
+  $cmd = "$envset$sudo$opt_valgrind" .
+         "$parm_cwd/eximdir/exim$special$optargs " .
          "-DEXIM_PATH=$parm_cwd/eximdir/exim$special " .
          "-C $parm_cwd/test-config $args " .
          ">>test-stdout 2>>test-stderr";
@@ -2404,6 +2408,7 @@ while (@ARGV > 0 && $ARGV[0] =~ /^-/)
     if ($arg eq "-NOIPV4") { $have_ipv4 = 0; next; }
     if ($arg eq "-NOIPV6") { $have_ipv6 = 0; next; }
     if ($arg eq "-KEEP")   { $save_output = 1; next; }
+    if ($arg eq "-VALGRIND")   { $valgrind = 1; next; }
     if ($arg =~ /^-FLAVOU?R$/) { $flavour = shift; next; }
     }
   $optargs .= " $arg";

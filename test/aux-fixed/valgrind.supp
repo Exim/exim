@@ -1,0 +1,8 @@
+{
+  macro_whitelist
+  Memcheck:Leak
+  fun:malloc
+  fun:store_malloc_3
+  fun:macros_trusted
+  fun:main
+}

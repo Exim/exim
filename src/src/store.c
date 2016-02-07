@@ -354,7 +354,11 @@ the released memory. */
 
 newlength = bc + b->length - (char *)ptr;
 #ifndef COMPILE_UTILITY
-if (running_in_test_harness) memset(ptr, 0xF0, newlength);
+if (running_in_test_harness)
+  {
+  (void) VALGRIND_MAKE_MEM_DEFINED(ptr, newlength);
+  memset(ptr, 0xF0, newlength);
+  }
 #endif
 (void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
 yield_length[store_pool] = newlength - (newlength % alignment);
