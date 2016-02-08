@@ -23,6 +23,11 @@
 #if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 # define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
 #endif
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+# define EXIM_HAVE_ASN1_MACROS
+# define EXIM_OPAQUE_X509
+#endif
+
 
 #include "danessl.h"
 
@@ -337,7 +342,11 @@ if (id && ASN1_STRING_length(id) == 1 && *ASN1_STRING_data(id) == c)
 
 if (  (akid = AUTHORITY_KEYID_new()) != 0
    && (akid->keyid = ASN1_OCTET_STRING_new()) != 0
+#ifdef EXIM_HAVE_ASN1_MACROS
+   && ASN1_OCTET_STRING_set(akid->keyid, (void *) &c, 1)
+#else
    && M_ASN1_OCTET_STRING_set(akid->keyid, (void *) &c, 1)
+#endif
    && X509_add1_ext_i2d(cert, nid, akid, 0, X509V3_ADD_APPEND))
   ret = 1;
 if (akid)
@@ -412,7 +421,11 @@ if (cert)
   {
   if (trusted && !X509_add1_trust_object(cert, serverAuth))
     return 0;
+#ifdef EXIM_OPAQUE_X509
+  X509_up_ref(cert);
+#else
   CRYPTO_add(&cert->references, 1, CRYPTO_LOCK_X509);
+#endif
   if (!sk_X509_push(*xs, cert))
     {
     X509_free(cert);

@@ -17,6 +17,10 @@ library. It is #included into the tls.c file when that library is used.
 #include <openssl/rand.h>
 #include <openssl/x509v3.h>
 
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+# define EXIM_HAVE_ASN1_MACROS
+#endif
+
 
 /*****************************************************
 *  Export/import a certificate, binary/printable
@@ -314,9 +318,13 @@ uschar * cp3;
 
 if (!bp) return badalloc();
 
+#ifdef EXIM_HAVE_ASN1_MACROS
+ASN1_STRING_print(bp, adata);
+#else
 M_ASN1_OCTET_STRING_print(bp, adata);
-/* binary data, DER encoded */
+#endif
 
+/* binary data, DER encoded */
 /* just dump for now */
 len = BIO_get_mem_data(bp, &cp1);
 cp3 = cp2 = store_get(len*3+1);

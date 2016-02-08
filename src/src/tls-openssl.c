@@ -41,6 +41,18 @@ functions from the OpenSSL library. */
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
 # define EXIM_HAVE_OPENSSL_TLSEXT
 #endif
+#if OPENSSL_VERSION_NUMBER >= 0x00908000L
+# define EXIM_HAVE_RSA_GENKEY_EX
+#endif
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+# define EXIM_HAVE_OCSP_RESP_COUNT
+#else
+# define EXIM_HAVE_EPHEM_RSA_KEX
+# define EXIM_HAVE_RAND_PSEUDO
+#endif
+#if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
+# define EXIM_HAVE_SHA256
+#endif
 
 /*
  * X509_check_host provides sane certificate hostname checking, but was added
@@ -68,7 +80,9 @@ functions from the OpenSSL library. */
 #   define EXIM_HAVE_ECDH
 #  endif
 #  if OPENSSL_VERSION_NUMBER >= 0x10002000L
-#   define EXIM_HAVE_OPENSSL_ECDH_AUTO
+#   if OPENSSL_VERSION_NUMBER < 0x10100000L
+#    define EXIM_HAVE_OPENSSL_ECDH_AUTO
+#   endif
 #   define EXIM_HAVE_OPENSSL_EC_NIST2NID
 #  endif
 # endif
@@ -225,6 +239,7 @@ else
 
 
 
+#ifdef EXIM_HAVE_EPHEM_RSA_KEX
 /*************************************************
 *        Callback to generate RSA key            *
 *************************************************/
@@ -242,10 +257,22 @@ static RSA *
 rsa_callback(SSL *s, int export, int keylength)
 {
 RSA *rsa_key;
+#ifdef EXIM_HAVE_RSA_GENKEY_EX
+BIGNUM *bn = BN_new();
+#endif
+
 export = export;     /* Shut picky compilers up */
 DEBUG(D_tls) debug_printf("Generating %d bit RSA key...\n", keylength);
+
+#ifdef EXIM_HAVE_RSA_GENKEY_EX
+if (  !BN_set_word(bn, (unsigned long)RSA_F4)
+   || !RSA_generate_key_ex(rsa_key, keylength, bn, NULL)
+   )
+#else
 rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL);
 if (rsa_key == NULL)
+#endif
+
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
   log_write(0, LOG_MAIN|LOG_PANIC, "TLS error (RSA_generate_key): %s",
@@ -254,6 +281,7 @@ if (rsa_key == NULL)
   }
 return rsa_key;
 }
+#endif
 
 
 
@@ -1181,23 +1209,33 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 	log_write(0, LOG_MAIN, "Received TLS cert status response, itself unverifiable");
       BIO_printf(bp, "OCSP response verify failure\n");
       ERR_print_errors(bp);
-      i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
-      goto out;
+      goto failed;
       }
 
     BIO_printf(bp, "OCSP response well-formed and signed OK\n");
 
+    /*XXX So we have a good stapled OCSP status.  How do we know
+    it is for the cert of interest?  OpenSSL 1.1.0 has a routine
+    OCSP_resp_find_status() which matches on a cert id, which presumably
+    we should use. Making an id needs OCSP_cert_id_new(), which takes
+    issuerName, issuerKey, serialNumber.  Are they all in the cert?
+
+    For now, carry on blindly accepting the resp. */
+
       {
-      STACK_OF(OCSP_SINGLERESP) * sresp = bs->tbsResponseData->responses;
       OCSP_SINGLERESP * single;
 
+#ifdef EXIM_HAVE_OCSP_RESP_COUNT
+      if (OCSP_resp_count(bs) != 1)
+#else
+      STACK_OF(OCSP_SINGLERESP) * sresp = bs->tbsResponseData->responses;
       if (sk_OCSP_SINGLERESP_num(sresp) != 1)
+#endif
         {
 	tls_out.ocsp = OCSP_FAILED;
         log_write(0, LOG_MAIN, "OCSP stapling "
 	    "with multiple responses not handled");
-	i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
-        goto out;
+        goto failed;
         }
       single = OCSP_resp_get0(bs, 0);
       status = OCSP_single_get0_status(single, &reason, &rev,
@@ -1212,7 +1250,6 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
       tls_out.ocsp = OCSP_FAILED;
       DEBUG(D_tls) ERR_print_errors(bp);
       log_write(0, LOG_MAIN, "Server OSCP dates invalid");
-      i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
       }
     else
       {
@@ -1223,24 +1260,24 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 	case V_OCSP_CERTSTATUS_GOOD:
 	  tls_out.ocsp = OCSP_VFIED;
 	  i = 1;
-	  break;
+	  goto good;
 	case V_OCSP_CERTSTATUS_REVOKED:
 	  tls_out.ocsp = OCSP_FAILED;
 	  log_write(0, LOG_MAIN, "Server certificate revoked%s%s",
 	      reason != -1 ? "; reason: " : "",
 	      reason != -1 ? OCSP_crl_reason_str(reason) : "");
 	  DEBUG(D_tls) time_print(bp, "Revocation Time", rev);
-	  i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
 	  break;
 	default:
 	  tls_out.ocsp = OCSP_FAILED;
 	  log_write(0, LOG_MAIN,
 	      "Server certificate status unknown, in OCSP stapling");
-	  i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
 	  break;
 	}
       }
-  out:
+  failed:
+    i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
+  good:
     BIO_free(bp);
   }
 
@@ -1306,7 +1343,7 @@ cbinfo->event_action = NULL;
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
 
-#if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
+#ifdef EXIM_HAVE_SHA256
 /* SHA256 is becoming ever more popular. This makes sure it gets added to the
 list of available digests. */
 EVP_add_digest(EVP_sha256());
@@ -1320,10 +1357,9 @@ when OpenSSL is built without SSLv2 support.
 By disabling with openssl_options, we can let admins re-enable with the
 existing knob. */
 
-*ctxp = SSL_CTX_new((host == NULL)?
-  SSLv23_server_method() : SSLv23_client_method());
+*ctxp = SSL_CTX_new(host ? SSLv23_client_method() : SSLv23_server_method());
 
-if (*ctxp == NULL) return tls_error(US"SSL_CTX_new", host, NULL);
+if (!*ctxp) return tls_error(US"SSL_CTX_new", host, NULL);
 
 /* It turns out that we need to seed the random number generator this early in
 order to get the full complement of ciphers to work. It took me roughly a day
@@ -1429,9 +1465,10 @@ else			/* client */
 
 cbinfo->verify_cert_hostnames = NULL;
 
+#ifdef EXIM_HAVE_EPHEM_RSA_KEX
 /* Set up the RSA callback */
-
 SSL_CTX_set_tmp_rsa_callback(*ctxp, rsa_callback);
+#endif
 
 /* Finally, set the timeout, and we are done */
 
@@ -2555,8 +2592,13 @@ i = (i + 7) / 8;
 if (i < needed_len)
   needed_len = i;
 
+#ifdef EXIM_HAVE_RAND_PSEUDO
 /* We do not care if crypto-strong */
 i = RAND_pseudo_bytes(smallbuf, needed_len);
+#else
+i = RAND_bytes(smallbuf, needed_len);
+#endif
+
 if (i < 0)
   {
   DEBUG(D_all)
