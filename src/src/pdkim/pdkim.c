@@ -199,15 +199,8 @@ pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
 if (!new_entry) return NULL;
 memset(new_entry, 0, sizeof(pdkim_stringlist));
 if (!(new_entry->value = strdup(str))) return NULL;
-if (base)
-  {
-  pdkim_stringlist *last = base;
-  while (last->next != NULL) { last = last->next; }
-  last->next = new_entry;
-  return base;
-  }
-else
-  return new_entry;
+if (base) new_entry->next = base;
+return new_entry;
 }
 
 
@@ -1152,17 +1145,15 @@ if (ctx->mode == PDKIM_MODE_SIGN)
   pdkim_signature *sig;
 
   for (sig = ctx->sig; sig; sig = sig->next)			/* Traverse all signatures */
-    if (header_name_match(ctx->cur_header->str,
-			  sig->sign_headers) == PDKIM_OK)
-      {
-      pdkim_stringlist *list;
+    {
+    pdkim_stringlist *list;
 
-      /* Add header to the signed headers list (in reverse order) */
-      if (!(list = pdkim_prepend_stringlist(sig->headers,
-				    ctx->cur_header->str)))
-	return PDKIM_ERR_OOM;
-      sig->headers = list;
-      }
+    /* Add header to the signed headers list (in reverse order) */
+    if (!(list = pdkim_prepend_stringlist(sig->headers,
+				  ctx->cur_header->str)))
+      return PDKIM_ERR_OOM;
+    sig->headers = list;
+    }
   }
 
 /* VERIFICATION ----------------------------------------------------------- */
@@ -1594,35 +1585,36 @@ while (sig)
     int sep = 0;
 
     for (p = sig->headers; p; p = p->next)
-      {
-      uschar * rh;
-      /* Collect header names (Note: colon presence is guaranteed here) */
-      uschar * q = Ustrchr(p->value, ':');
+      if (header_name_match(p->value, sig->sign_headers) == PDKIM_OK)
+	{
+	uschar * rh;
+	/* Collect header names (Note: colon presence is guaranteed here) */
+	uschar * q = Ustrchr(p->value, ':');
 
-      if (!(pdkim_strncat(headernames, p->value,
-			(q - US p->value) + (p->next ? 1 : 0))))
-	return PDKIM_ERR_OOM;
+	if (!(pdkim_strncat(headernames, p->value,
+			  (q - US p->value) + (p->next ? 1 : 0))))
+	  return PDKIM_ERR_OOM;
 
-      rh = sig->canon_headers == PDKIM_CANON_RELAXED
-	? US pdkim_relax_header(p->value, 1) /* cook header for relaxed canon */
-	: string_copy(p->value);             /* just copy it for simple canon */
-      if (!rh)
-	return PDKIM_ERR_OOM;
+	rh = sig->canon_headers == PDKIM_CANON_RELAXED
+	  ? US pdkim_relax_header(p->value, 1) /* cook header for relaxed canon */
+	  : string_copy(p->value);             /* just copy it for simple canon */
+	if (!rh)
+	  return PDKIM_ERR_OOM;
 
-      /* Feed header to the hash algorithm */
-      exim_sha_update(&hhash_ctx, rh, strlen(rh));
+	/* Feed header to the hash algorithm */
+	exim_sha_update(&hhash_ctx, rh, strlen(rh));
 
-      /* Remember headers block for signing (when the library cannot do incremental)  */
-      (void) exim_rsa_data_append(&hdata, &hdata_alloc, rh);
+	/* Remember headers block for signing (when the library cannot do incremental)  */
+	(void) exim_rsa_data_append(&hdata, &hdata_alloc, rh);
 
-      DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
-      }
+	DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
+	}
 
     l = US sig->sign_headers;
     while((s = string_nextinlist(&l, &sep, NULL, 0)))
       if (*s != '_')
-	{
-	if (headernames->len > 0)
+	{			/*SSS string_append_listele() */
+	if (headernames->len > 0 && headernames->str[headernames->len-1] != ':')
 	  if (!(pdkim_strncat(headernames, ":", 1)))
 	    return PDKIM_ERR_OOM;
 	if (!(pdkim_strncat(headernames, CS s, Ustrlen(s))))
@@ -1651,6 +1643,7 @@ while (sig)
       if ((q = Ustrchr(p, ':')))
 	*q = '\0';
 
+/*XXX walk the list of headers in same order as received. */
       for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
 	if (  hdrs->tag == 0
 	   && strncasecmp(hdrs->value, CS p, Ustrlen(p)) == 0
