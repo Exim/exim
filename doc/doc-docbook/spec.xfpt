@@ -24069,7 +24069,7 @@ and certificate verification fails the TLS connection is closed.
 .option tls_verify_hosts smtp "host list&!!" unset
 .cindex "TLS" "server certificate verification"
 .cindex "certificate" "verification of server"
-This option gives a list of hosts for which. on encrypted connections,
+This option gives a list of hosts for which, on encrypted connections,
 certificate verification must succeed.
 The &%tls_verify_certificates%& option must also be set.
 If both this option and &%tls_try_verify_hosts%& are unset
