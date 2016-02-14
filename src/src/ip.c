@@ -292,9 +292,8 @@ namelen = Ustrlen(hostname);
 if (hostname[0] == '[' &&
     hostname[namelen - 1] == ']')
   {
-  uschar * host = string_copy(hostname);
-  host[namelen - 1] = 0;
-  host++;
+  uschar * host = string_copyn(hostname+1, namelen-2);
+debug_printf("%s: 1\n", __FUNCTION__);
   if (string_is_ip_address(host, NULL) == 0)
     {
     *errstr = string_sprintf("malformed IP address \"%s\"", hostname);
@@ -306,13 +305,17 @@ if (hostname[0] == '[' &&
 /* Otherwise check for an unadorned IP address */
 
 else if (string_is_ip_address(hostname, NULL) != 0)
-  shost.name = shost.address = string_copy(hostname);
+  {
+debug_printf("%s: 2\n", __FUNCTION__);
+  shost.name = shost.address = string_copyn(hostname, namelen);
+  }
 
 /* Otherwise lookup IP address(es) from the name */
 
 else
   {
-  shost.name = string_copy(hostname);
+debug_printf("%s: 3\n", __FUNCTION__);
+  shost.name = string_copyn(hostname, namelen);
   if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE,
       NULL, FALSE) != HOST_FOUND)
     {
@@ -323,11 +326,12 @@ else
 
 /* Try to connect to the server - test each IP till one works */
 
-for (h = &shost; h != NULL; h = h->next)
+for (h = &shost; h; h = h->next)
   {
-  fd = (Ustrchr(h->address, ':') != 0)
-    ? (fd6 < 0) ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
-    : (fd4 < 0) ? (fd4 = ip_socket(type, af = AF_INET )) : fd4;
+debug_printf("%s: 4 '%s'\n", __FUNCTION__, h->address);
+  fd = Ustrchr(h->address, ':') != 0
+    ? fd6 < 0 ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
+    : fd4 < 0 ? (fd4 = ip_socket(type, af = AF_INET )) : fd4;
 
   if (fd < 0)
     {

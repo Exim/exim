@@ -5101,75 +5101,79 @@ while (*s != 0)
         case 3: goto EXPAND_FAILED;
         }
 
-      if (Ustrcmp(sub[0], "md5") == 0)
-        {
-        type = HMAC_MD5;
-        use_base = &md5_base;
-        hashlen = 16;
-        hashblocklen = 64;
-        }
-      else if (Ustrcmp(sub[0], "sha1") == 0)
-        {
-        type = HMAC_SHA1;
-        use_base = &sha1_base;
-        hashlen = 20;
-        hashblocklen = 64;
-        }
-      else
-        {
-        expand_string_message =
-          string_sprintf("hmac algorithm \"%s\" is not recognised", sub[0]);
-        goto EXPAND_FAILED;
-        }
+      if (!skipping)
+	{
+	if (Ustrcmp(sub[0], "md5") == 0)
+	  {
+	  type = HMAC_MD5;
+	  use_base = &md5_base;
+	  hashlen = 16;
+	  hashblocklen = 64;
+	  }
+	else if (Ustrcmp(sub[0], "sha1") == 0)
+	  {
+	  type = HMAC_SHA1;
+	  use_base = &sha1_base;
+	  hashlen = 20;
+	  hashblocklen = 64;
+	  }
+	else
+	  {
+	  expand_string_message =
+	    string_sprintf("hmac algorithm \"%s\" is not recognised", sub[0]);
+	  goto EXPAND_FAILED;
+	  }
 
-      keyptr = sub[1];
-      keylen = Ustrlen(keyptr);
+	keyptr = sub[1];
+	keylen = Ustrlen(keyptr);
 
-      /* If the key is longer than the hash block length, then hash the key
-      first */
+	/* If the key is longer than the hash block length, then hash the key
+	first */
 
-      if (keylen > hashblocklen)
-        {
-        chash_start(type, use_base);
-        chash_end(type, use_base, keyptr, keylen, keyhash);
-        keyptr = keyhash;
-        keylen = hashlen;
-        }
+	if (keylen > hashblocklen)
+	  {
+	  chash_start(type, use_base);
+	  chash_end(type, use_base, keyptr, keylen, keyhash);
+	  keyptr = keyhash;
+	  keylen = hashlen;
+	  }
 
-      /* Now make the inner and outer key values */
+	/* Now make the inner and outer key values */
 
-      memset(innerkey, 0x36, hashblocklen);
-      memset(outerkey, 0x5c, hashblocklen);
+	memset(innerkey, 0x36, hashblocklen);
+	memset(outerkey, 0x5c, hashblocklen);
 
-      for (i = 0; i < keylen; i++)
-        {
-        innerkey[i] ^= keyptr[i];
-        outerkey[i] ^= keyptr[i];
-        }
+	for (i = 0; i < keylen; i++)
+	  {
+	  innerkey[i] ^= keyptr[i];
+	  outerkey[i] ^= keyptr[i];
+	  }
 
-      /* Now do the hashes */
+	/* Now do the hashes */
 
-      chash_start(type, use_base);
-      chash_mid(type, use_base, innerkey);
-      chash_end(type, use_base, sub[2], Ustrlen(sub[2]), innerhash);
+	chash_start(type, use_base);
+	chash_mid(type, use_base, innerkey);
+	chash_end(type, use_base, sub[2], Ustrlen(sub[2]), innerhash);
 
-      chash_start(type, use_base);
-      chash_mid(type, use_base, outerkey);
-      chash_end(type, use_base, innerhash, hashlen, finalhash);
+	chash_start(type, use_base);
+	chash_mid(type, use_base, outerkey);
+	chash_end(type, use_base, innerhash, hashlen, finalhash);
 
-      /* Encode the final hash as a hex string */
+	/* Encode the final hash as a hex string */
 
-      p = finalhash_hex;
-      for (i = 0; i < hashlen; i++)
-        {
-        *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
-        *p++ = hex_digits[finalhash[i] & 0x0f];
-        }
+	p = finalhash_hex;
+	for (i = 0; i < hashlen; i++)
+	  {
+	  *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
+	  *p++ = hex_digits[finalhash[i] & 0x0f];
+	  }
 
-      DEBUG(D_any) debug_printf("HMAC[%s](%.*s,%.*s)=%.*s\n", sub[0],
-        (int)keylen, keyptr, Ustrlen(sub[2]), sub[2], hashlen*2, finalhash_hex);
+	DEBUG(D_any) debug_printf("HMAC[%s](%.*s,%.*s)=%.*s\n",
+	  sub[0], (int)keylen, keyptr, Ustrlen(sub[2]), sub[2], hashlen*2,
+	  finalhash_hex);
 
-      yield = string_cat(yield, &size, &ptr, finalhash_hex, hashlen*2);
+	yield = string_cat(yield, &size, &ptr, finalhash_hex, hashlen*2);
+	}
       }
 
     continue;
