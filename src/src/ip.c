@@ -218,6 +218,7 @@ IPv6 support. */
 /* If no connection timeout is set, just call connect() without setting a
 timer, thereby allowing the inbuilt OS timeout to operate. */
 
+callout_address = string_sprintf("[%s]:%d", address, port);
 sigalrm_seen = FALSE;
 if (timeout > 0) alarm(timeout);
 rc = connect(sock, s_ptr, s_len);
@@ -238,10 +239,7 @@ if (running_in_test_harness  && save_errno == ECONNREFUSED && timeout == 999999)
 /* Success */
 
 if (rc >= 0)
-  {
-  callout_address = string_sprintf("[%s]:%d", address, port);
   return 0;
-  }
 
 /* A failure whose error code is "Interrupted system call" is in fact
 an externally applied timeout if the signal handler has been run. */
@@ -292,9 +290,7 @@ namelen = Ustrlen(hostname);
 if (hostname[0] == '[' &&
     hostname[namelen - 1] == ']')
   {
-  uschar * host = string_copy(hostname);
-  host[namelen - 1] = 0;
-  host++;
+  uschar * host = string_copyn(hostname+1, namelen-2);
   if (string_is_ip_address(host, NULL) == 0)
     {
     *errstr = string_sprintf("malformed IP address \"%s\"", hostname);
@@ -306,13 +302,13 @@ if (hostname[0] == '[' &&
 /* Otherwise check for an unadorned IP address */
 
 else if (string_is_ip_address(hostname, NULL) != 0)
-  shost.name = shost.address = string_copy(hostname);
+  shost.name = shost.address = string_copyn(hostname, namelen);
 
 /* Otherwise lookup IP address(es) from the name */
 
 else
   {
-  shost.name = string_copy(hostname);
+  shost.name = string_copyn(hostname, namelen);
   if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE,
       NULL, FALSE) != HOST_FOUND)
     {
@@ -325,9 +321,9 @@ else
 
 for (h = &shost; h != NULL; h = h->next)
   {
-  fd = (Ustrchr(h->address, ':') != 0)
-    ? (fd6 < 0) ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
-    : (fd4 < 0) ? (fd4 = ip_socket(type, af = AF_INET )) : fd4;
+  fd = Ustrchr(h->address, ':') != 0
+    ? fd6 < 0 ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
+    : fd4 < 0 ? (fd4 = ip_socket(type, af = AF_INET )) : fd4;
 
   if (fd < 0)
     {
@@ -393,6 +389,7 @@ if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
   return -1;
   }
 
+callout_address = string_copy(path);
 server.sun_family = AF_UNIX;
 Ustrncpy(server.sun_path, path, sizeof(server.sun_path)-1);
 server.sun_path[sizeof(server.sun_path)-1] = '\0';
@@ -404,7 +401,6 @@ if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0)
 		path, strerror(err));
   return -1;
   }
-callout_address = string_copy(path);
 return sock;
 }
 
