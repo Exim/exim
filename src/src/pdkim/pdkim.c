@@ -149,14 +149,12 @@ pdkim_verify_ext_status_str(int ext_status)
 /* -------------------------------------------------------------------------- */
 /* Print debugging functions */
 static void
-pdkim_quoteprint(const char *data, int len)
+pdkim_quoteprint(const uschar *data, int len)
 {
 int i;
-const unsigned char *p = (const unsigned char *)data;
-
 for (i = 0; i < len; i++)
   {
-  const int c = p[i];
+  const int c = data[i];
   switch (c)
     {
     case ' ' : debug_printf("{SP}"); break;
@@ -177,13 +175,10 @@ debug_printf("\n");
 }
 
 static void
-pdkim_hexprint(const char *data, int len)
+pdkim_hexprint(const uschar *data, int len)
 {
 int i;
-const unsigned char *p = (const unsigned char *)data;
-
-for (i = 0 ; i < len; i++)
-  debug_printf("%02x", p[i]);
+for (i = 0 ; i < len; i++) debug_printf("%02x", data[i]);
 debug_printf("\n");
 }
 
@@ -558,7 +553,6 @@ static void
 pdkim_decode_base64(uschar *str, blob * b)
 {
 int dlen;
-char *res;
 dlen = b64decode(str, &b->data);
 if (dlen < 0) b->data = NULL;
 b->len = dlen;
@@ -727,7 +721,7 @@ for (p = raw_hdr; ; p++)
 	  case 'l':
 	    sig->bodylength = strtol(cur_val->str, NULL, 10); break;
 	  case 'h':
-	    sig->headernames = string_copy(cur_val->str); break;
+	    sig->headernames = string_copy(US cur_val->str); break;
 	  case 'z':
 	    sig->copiedheaders = pdkim_decode_qp(cur_val->str); break;
 	  default:
@@ -774,9 +768,9 @@ DEBUG(D_acl)
   {
   debug_printf(
 	  "PDKIM >> Raw signature w/o b= tag value >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-  pdkim_quoteprint(sig->rawsig_no_b_val, strlen(sig->rawsig_no_b_val));
+  pdkim_quoteprint(US sig->rawsig_no_b_val, strlen(sig->rawsig_no_b_val));
   debug_printf(
-	  "PDKIM >> Sig size: %4d bits\n", sig->sigdata.len*8);
+	  "PDKIM >> Sig size: %4u bits\n", (unsigned) sig->sigdata.len*8);
   debug_printf(
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
@@ -911,15 +905,15 @@ pdkim_update_bodyhash(pdkim_ctx *ctx, const char *data, int len)
 {
 pdkim_signature *sig = ctx->sig;
 /* Cache relaxed version of data */
-char *relaxed_data = NULL;
-int   relaxed_len  = 0;
+uschar *relaxed_data = NULL;
+int     relaxed_len  = 0;
 
 /* Traverse all signatures, updating their hashes. */
 while (sig)
   {
   /* Defaults to simple canon (no further treatment necessary) */
-  const char *canon_data = data;
-  int         canon_len = len;
+  const uschar *canon_data = CUS data;
+  int           canon_len = len;
 
   if (sig->canon_body == PDKIM_CANON_RELAXED)
     {
@@ -967,7 +961,7 @@ while (sig)
 
   if (canon_len > 0)
     {
-    exim_sha_update(&sig->body_hash, canon_data, canon_len);
+    exim_sha_update(&sig->body_hash, CCS canon_data, canon_len);
     sig->signed_body_bytes += canon_len;
     DEBUG(D_acl) pdkim_quoteprint(canon_data, canon_len);
     }
@@ -999,7 +993,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
     debug_printf("PDKIM [%s] Body bytes hashed: %lu\n"
 		 "PDKIM [%s] bh  computed: ",
 		sig->domain, sig->signed_body_bytes, sig->domain);
-    pdkim_hexprint(CS bh.data, bh.len);
+    pdkim_hexprint(CUS bh.data, bh.len);
     }
 
   /* SIGNING -------------------------------------------------------------- */
@@ -1431,7 +1425,6 @@ if (  pdkim_headcat(&col, hdr, ";", "a=", pdkim_algos[sig->algo])
   /* list of header names can be split between items. */
     {
     char *n = CS string_copy(sig->headernames);
-    char *f = n;
     char *i = "h=";
     char *s = ";";
 
@@ -1597,12 +1590,12 @@ while (sig)
 
 	rh = sig->canon_headers == PDKIM_CANON_RELAXED
 	  ? US pdkim_relax_header(p->value, 1) /* cook header for relaxed canon */
-	  : string_copy(p->value);             /* just copy it for simple canon */
+	  : string_copy(CUS p->value);         /* just copy it for simple canon */
 	if (!rh)
 	  return PDKIM_ERR_OOM;
 
 	/* Feed header to the hash algorithm */
-	exim_sha_update(&hhash_ctx, rh, strlen(rh));
+	exim_sha_update(&hhash_ctx, CCS rh, Ustrlen(rh));
 
 	/* Remember headers block for signing (when the library cannot do incremental)  */
 	(void) exim_rsa_data_append(&hdata, &hdata_alloc, rh);
@@ -1652,12 +1645,12 @@ while (sig)
 	  {
 	  uschar * rh = sig->canon_headers == PDKIM_CANON_RELAXED
 	    ? US pdkim_relax_header(hdrs->value, 1) /* cook header for relaxed canon */
-	    : string_copy(hdrs->value);             /* just copy it for simple canon */
+	    : string_copy(CUS hdrs->value);         /* just copy it for simple canon */
 	  if (!rh)
 	    return PDKIM_ERR_OOM;
 
 	  /* Feed header to the hash algorithm */
-	  exim_sha_update(&hhash_ctx, rh, strlen(rh));
+	  exim_sha_update(&hhash_ctx, CCS rh, Ustrlen(rh));
 
 	  DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
 	  hdrs->tag = 1;
@@ -1706,7 +1699,7 @@ while (sig)
     {
     debug_printf(
 	    "PDKIM >> Signed DKIM-Signature header, canonicalized >>>>>>>>>>>>>>>>>\n");
-    pdkim_quoteprint(sig_hdr, strlen(sig_hdr));
+    pdkim_quoteprint(CUS sig_hdr, strlen(sig_hdr));
     debug_printf(
 	    "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     }
@@ -1723,7 +1716,7 @@ while (sig)
 
   /* Remember headers block for signing (when the library cannot do incremental)  */
   if (ctx->mode == PDKIM_MODE_SIGN)
-    (void) exim_rsa_data_append(&hdata, &hdata_alloc, sig_hdr);
+    (void) exim_rsa_data_append(&hdata, &hdata_alloc, US sig_hdr);
 
   free(sig_hdr);
 
@@ -1734,7 +1727,7 @@ while (sig)
     const uschar * errstr;
 
     /* Import private key */
-    if ((errstr = exim_rsa_signing_init(sig->rsa_privkey, &sctx)))
+    if ((errstr = exim_rsa_signing_init(US sig->rsa_privkey, &sctx)))
       {
       DEBUG(D_acl) debug_printf("signing_init: %s\n", errstr);
       return PDKIM_ERR_RSA_PRIVKEY;
@@ -1808,7 +1801,7 @@ while (sig)
       debug_printf(
           "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
           " Raw record: ");
-      pdkim_quoteprint(dns_txt_reply, strlen(dns_txt_reply));
+      pdkim_quoteprint(CUS dns_txt_reply, strlen(dns_txt_reply));
       }
 
     if (!(sig->pubkey = pdkim_parse_pubkey_record(ctx, dns_txt_reply)))
