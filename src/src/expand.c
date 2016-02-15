@@ -199,6 +199,8 @@ enum {
 static uschar *op_table_main[] = {
   US"address",
   US"addresses",
+  US"base32",
+  US"base32d",
   US"base62",
   US"base62d",
   US"base64",
@@ -242,6 +244,8 @@ static uschar *op_table_main[] = {
 enum {
   EOP_ADDRESS =  nelem(op_table_underscore),
   EOP_ADDRESSES,
+  EOP_BASE32,
+  EOP_BASE32D,
   EOP_BASE62,
   EOP_BASE62D,
   EOP_BASE64,
@@ -837,6 +841,9 @@ static int utf8_table2[] = { 0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01};
       } \
     }
 
+
+
+static uschar * base32_chars = US"abcdefghijklmnopqrstuvwxyz234567";
 
 /*************************************************
 *           Binary chop search on a table        *
@@ -6257,6 +6264,47 @@ while (*s != 0)
 
     switch(c)
       {
+      case EOP_BASE32:
+	{
+        uschar *t;
+        unsigned long int n = Ustrtoul(sub, &t, 10);
+	uschar * s = NULL;
+	int sz = 0, i = 0;
+
+        if (*t != 0)
+          {
+          expand_string_message = string_sprintf("argument for base32 "
+            "operator is \"%s\", which is not a decimal number", sub);
+          goto EXPAND_FAILED;
+          }
+	for ( ; n; n >>= 5)
+	  s = string_catn(s, &sz, &i, &base32_chars[n & 0x1f], 1);
+
+	while (i > 0) yield = string_catn(yield, &size, &ptr, &s[--i], 1);
+	continue;
+	}
+
+      case EOP_BASE32D:
+        {
+        uschar *tt = sub;
+        unsigned long int n = 0;
+	uschar * s;
+        while (*tt)
+          {
+          uschar * t = Ustrchr(base32_chars, *tt++);
+          if (t == NULL)
+            {
+            expand_string_message = string_sprintf("argument for base32d "
+              "operator is \"%s\", which is not a base 32 number", sub);
+            goto EXPAND_FAILED;
+            }
+          n = n * 32 + (t - base32_chars);
+          }
+        s = string_sprintf("%ld", n);
+        yield = string_cat(yield, &size, &ptr, s);
+        continue;
+        }
+
       case EOP_BASE62:
         {
         uschar *t;

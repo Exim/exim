@@ -26,6 +26,8 @@ Version 4.88
     the queue to be used for a message.  A $queue_name variable gives
     visibility.
 
+ 6. New expansion operators base32/base32d.
+
 
 Version 4.87
 ------------
