@@ -168,6 +168,20 @@
 > hex2b64:MPPJPkZDbetYunCBao7BJA==
 > hex2b64:ztcfpyNSMb7Tg/rP3EHE3cwi7PE=
 > 
+> base32: 0  <>
+> base32: 1  <b>
+> base32: 31 <7>
+> base32: 32 <ba>
+> base32: 42 <bk>
+> Failed: argument for base32 operator is "0x1", which is not a decimal number
+> 
+> base32d: 0  0
+> base32d: 1  1
+> base32d: 31 31
+> base32d: 32 32
+> base32d: 42 42
+> Failed: argument for base32d operator is "ABC", which is not a base 32 number
+> 
 > The base62 operator is actually a base36 operator in the Darwin and Cygwin
 > environments. Write cunning tests that produce the same output in both cases,
 > while doing a reasonable check.

@@ -10016,6 +10016,21 @@ Last:user@example.com
 user@example.com
 .endd
 
+.new
+.vitem &*${base32:*&<&'digits'&>&*}*&
+.cindex "&%base32%& expansion item"
+.cindex "expansion" "conversion to base 32"
+The string must consist entirely of decimal digits. The number is converted to
+base 32 and output as a (empty, for zero) string of characters.
+Only lowercase letters are used.
+
+.vitem &*${base32d:*&<&'base-32&~digits'&>&*}*&
+.cindex "&%base32d%& expansion item"
+.cindex "expansion" "conversion to base 32"
+The string must consist entirely of base-32 digits.
+The number is converted to decimal and output as a string.
+.wen
+
 .vitem &*${base62:*&<&'digits'&>&*}*&
 .cindex "&%base62%& expansion item"
 .cindex "expansion" "conversion to base 62"

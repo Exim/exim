@@ -178,6 +178,20 @@ hex2b64:${hex2b64:1a2b3c4d5e6g}
 hex2b64:${hex2b64:${md5:the quick brown fox}}
 hex2b64:${hex2b64:${sha1:the quick brown fox}}
 
+base32: 0  <${base32:0}>
+base32: 1  <${base32:1}>
+base32: 31 <${base32:31}>
+base32: 32 <${base32:32}>
+base32: 42 <${base32:42}>
+base32 error: 0x1 ${base32:0x1}
+
+base32d: 0  ${base32d:${base32:0}}
+base32d: 1  ${base32d:${base32:1}}
+base32d: 31 ${base32d:${base32:31}}
+base32d: 32 ${base32d:${base32:32}}
+base32d: 42 ${base32d:${base32:42}}
+base32d error: ABC ${base32d:ABC}
+
 The base62 operator is actually a base36 operator in the Darwin and Cygwin
 environments. Write cunning tests that produce the same output in both cases,
 while doing a reasonable check.
