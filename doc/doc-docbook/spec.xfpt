@@ -35592,7 +35592,7 @@ the following table:
 &`    `&        on &"Completed"& lines: time spent on queue
 &`R   `&        on &`<=`& lines: reference for local bounce
 &`    `&        on &`=>`&  &`**`& and &`==`& lines: router name
-&`S   `&        size of message
+&`S   `&        size of message in bytes
 &`SNI `&        server name indication from TLS client hello
 &`ST  `&        shadow transport name
 &`T   `&        on &`<=`& lines: message subject (topic)
