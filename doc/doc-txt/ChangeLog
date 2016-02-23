@@ -1,6 +1,26 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.84+fixes
+-----------------------
+Cherry-Picked from the master development branch
+for complaints please contact hs@schlittermann.de
+-------------------------------------------------
+JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
+      incorrectly not doubled on cutthrough transmission, hence seen as a
+      body-termination at the receiving system - resulting in truncated mails.
+      Commonly the sender saw a TCP-level error, and retransmitted the nessage
+      via the normal store-and-forward channel. This could result in duplicates
+      received - but deduplicating mailstores were liable to retain only the
+      initial truncated version.
+
+
+JH/05 Fix results-pipe from transport process.  Several recipients, combined
+      with certificate use, exposed issues where response data items split
+      over buffer boundaries were not parsed properly.  This eventually
+      resulted in duplicates being sent.  This issue only became common enough
+      to notice due to the introduction of conection certificate information,
+      the item size being so much larger.  Found and fixed by Wolfgang Breyha.
 
 HS/04 Add support for keep_environment and add_environment options.
 Exim version 4.84
