@@ -835,7 +835,15 @@ while ((ch = (receive_getc)()) != EOF)
       ch_state = 4;
       continue;
       }
-    ch_state = 1;                       /* The dot itself is removed */
+    /* The dot was removed at state 3. For a doubled dot, here, reinstate
+    it to cutthrough. The current ch, dot or not, is passed both to cutthrough
+    and to file below. */
+    if (ch == '.')
+      {
+      uschar c= ch;
+      (void) cutthrough_puts(&c, 1);
+      }
+    ch_state = 1;
     break;
 
     case 4:                             /* After [CR] LF . CR */

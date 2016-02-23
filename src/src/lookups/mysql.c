@@ -74,7 +74,7 @@ Arguments:
   resultptr    where to store the result
   errmsg       where to point an error message
   defer_break  TRUE if no more servers are to be tried after DEFER
-  do_cache     set false if data is changed
+  do_cache     set zero if data is changed
 
 The server string is of the form "host/dbname/user/password". The host can be
 host:port. This string is in a nextinlist temporary buffer, so can be
@@ -85,7 +85,7 @@ Returns:       OK, FAIL, or DEFER
 
 static int
 perform_mysql_search(const uschar *query, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, BOOL *do_cache)
+  uschar **errmsg, BOOL *defer_break, uint *do_cache)
 {
 MYSQL *mysql_handle = NULL;        /* Keep compilers happy */
 MYSQL_RES *mysql_result = NULL;
@@ -225,7 +225,7 @@ can be detected by calling mysql_field_count(). If its result is zero, no data
 was expected (this is all explained clearly in the MySQL manual). In this case,
 we return the number of rows affected by the command. In this event, we do NOT
 want to cache the result; also the whole cache for the handle must be cleaned
-up. Setting do_cache FALSE requests this. */
+up. Setting do_cache zero requests this. */
 
 if ((mysql_result = mysql_use_result(mysql_handle)) == NULL)
   {
@@ -233,7 +233,7 @@ if ((mysql_result = mysql_use_result(mysql_handle)) == NULL)
     {
     DEBUG(D_lookup) debug_printf("MYSQL: query was not one that returns data\n");
     result = string_sprintf("%d", mysql_affected_rows(mysql_handle));
-    *do_cache = FALSE;
+    *do_cache = 0;
     goto MYSQL_EXIT;
     }
   *errmsg = string_sprintf("MYSQL: lookup result failed: %s\n",
@@ -341,7 +341,7 @@ shared with other SQL lookups. */
 
 static int
 mysql_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 return lf_sqlperform(US"MySQL", US"mysql_servers", mysql_servers, query,
   result, errmsg, do_cache, perform_mysql_search);

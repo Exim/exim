@@ -43,7 +43,7 @@ equals sign. */
 
 static int
 nisplus_find(void *handle, uschar *filename, uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 int i;
 int ssize = 0;

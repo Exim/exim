@@ -122,12 +122,15 @@ DEFER. The arguments are:
   uschar **errmsg     where to put an error message on failure;
                       this is initially set to "", and should be left
                       as that for a standard "entry not found" error
-  BOOL *do_cache      the lookup should set this to FALSE when it changes data.
-                      This is TRUE by default. When set to FALSE the cache tree
+  uint *do_cache      the lookup should set this to 0 when it changes data.
+                      This is MAXINT by default. When set to 0 the cache tree
                       of the current search handle will be cleaned and the
                       current result will NOT be cached. Currently the mysql
                       and pgsql lookups use this when UPDATE/INSERT queries are
                       executed.
+                      If set to a nonzero number of seconds, the cached value
+                      becomes unusable after this time. Currently the dnsdb
+                      lookup uses this to support the TTL value.
 
 Even though the key is zero-terminated, the length is passed because in the
 common case it has been computed already and is often needed.

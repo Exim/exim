@@ -735,6 +735,7 @@ else (void)close(dup_accept_socket);
 /* Release any store used in this process, including the store used for holding
 the incoming host address and an expanded active_hostname. */
 
+log_close_all();
 store_reset(reset_point);
 sender_host_address = NULL;
 }

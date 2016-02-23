@@ -12,7 +12,7 @@ extern int     lf_check_file(int, uschar *, int, int, uid_t *, gid_t *,
 extern uschar *lf_quote(uschar *, uschar *, int, uschar *, int *, int *);
 extern int     lf_sqlperform(const uschar *, const uschar *, const uschar *,
 		 const uschar *, uschar **,
-                 uschar **, BOOL *, int(*)(const uschar *, uschar *, uschar **,
-                 uschar **, BOOL *, BOOL *));
+                 uschar **, uint *, int(*)(const uschar *, uschar *, uschar **,
+                 uschar **, BOOL *, uint *));
 
 /* End of lf_functions.h */

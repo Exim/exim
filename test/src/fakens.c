@@ -61,6 +61,9 @@ Any DNS record line in a zone file can be prefixed with "AA "
 if all the records found by a lookup are marked
 as such then the response will have the "AA" bit set.
 
+Any DNS record line in a zone file can be prefixed with "TTL=" and
+a number of seconds (followed by one space).
+
 */
 
 #include <ctype.h>
@@ -104,6 +107,8 @@ typedef struct tlist {
   uschar *name;
   int value;
 } tlist;
+
+#define DEFAULT_TTL 3600U
 
 /* On some (older?) operating systems, the standard ns_t_xxx definitions are
 not available, and only the older T_xxx ones exist in nameser.h. If ns_t_a is
@@ -347,6 +352,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   BOOL rr_sec = FALSE;
   BOOL rr_aa = FALSE;
   int delay = 0;
+  uint ttl = DEFAULT_TTL;
 
   p = buffer;
   while (isspace(*p)) p++;
@@ -378,6 +384,12 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     else if (Ustrncmp(p, US"DELAY=", 6) == 0)   /* delay before response */
       {
       for (p += 6; *p >= '0' && *p <= '9'; p++) delay = delay*10 + *p - '0';
+      if (isspace(*p)) p++;
+      }
+    else if (Ustrncmp(p, US"TTL=", 4) == 0)     /* TTL for record */
+      {
+      ttl = 0;
+      for (p += 4; *p >= '0' && *p <= '9'; p++) ttl = ttl*10 + *p - '0';
       if (isspace(*p)) p++;
       }
     else
@@ -459,7 +471,10 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   *pk++ = 0;
   *pk++ = 1;     /* class = IN */
 
-  pk += 4;       /* TTL field; don't care */
+  *pk++ = (ttl >>24) & 255;
+  *pk++ = (ttl >>16) & 255;
+  *pk++ = (ttl >> 8) & 255;
+  *pk++ = ttl & 255;
 
   rdlptr = pk;   /* remember rdlength field */
   pk += 2;

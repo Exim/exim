@@ -3,9 +3,11 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+tls_validate_require_cipher child ppppp ended: status=0x0
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+DSN: r0 propagating DSN
 DSN: r1 propagating DSN
 DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
@@ -19,6 +21,12 @@ Testing test.ex@test.ex
 Considering test.ex@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing test.ex@test.ex
+--------> r0 router <--------
+local_part=test.ex domain=test.ex
+checking senders
+address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
+CALLER@myhost.test.ex in "a@shorthost.test.ex"? no (end of list)
+r0 router skipped: senders mismatch
 --------> r1 router <--------
 local_part=test.ex domain=test.ex
 checking domains
@@ -62,6 +70,12 @@ Testing unknown@test.ex
 Considering unknown@test.ex
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing unknown@test.ex
+--------> r0 router <--------
+local_part=unknown domain=test.ex
+checking senders
+address match test: subject=CALLER@myhost.test.ex pattern=a@shorthost.test.ex
+CALLER@myhost.test.ex in "a@shorthost.test.ex"? no (end of list)
+r0 router skipped: senders mismatch
 --------> r1 router <--------
 local_part=unknown domain=test.ex
 checking domains
@@ -132,3 +146,84 @@ routed by r2 router
   transport: local_delivery
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+search_tidyup called
+search_tidyup called
+search_open: dnsdb "NULL"
+search_find: file="NULL"
+  key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="a=shorthost.test.ex"
+database lookup required for a=shorthost.test.ex
+dnsdb key: shorthost.test.ex
+lookup yielded: 127.0.0.1
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="a=shorthost.test.ex"
+cached data used for lookup of a=shorthost.test.ex
+lookup yielded: 127.0.0.1
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="a=shorthost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="a=shorthost.test.ex"
+cached data found but past valid time; database lookup required for a=shorthost.test.ex
+dnsdb key: shorthost.test.ex
+lookup yielded: 127.0.0.1
+LOG: MAIN
+  <= a@shorthost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+
+******** SERVER ********
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+ppppp daemon_smtp_port overridden by -oX:
+ppppp   <: 1225
+ppppp listening on all interfaces (IPv6) port 1225
+ppppp listening on all interfaces (IPv4) port 1225
+ppppp pid written to TESTSUITE/spool/exim-daemon.pid
+ppppp LOG: MAIN
+ppppp   exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+ppppp daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+ppppp Listening...
+ppppp Connection request from 127.0.0.1 port sssss
+ppppp 1 SMTP accept process running
+ppppp Listening...
+ppppp Process ppppp is handling incoming connection from [127.0.0.1]
+ppppp Process ppppp is ready for new message
+ppppp DNS list check: rbl.test.ex/V4NET.11.12.14
+ppppp new DNS lookup for 14.12.11.V4NET.rbl.test.ex
+ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
+ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
+ppppp DNS list check: rbl.test.ex/V4NET.11.12.14
+ppppp using result of previous DNS lookup
+ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
+ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
+ppppp DNS list check: rbl.test.ex/V4NET.11.12.14
+ppppp cached data found but past valid time; new DNS lookup for 14.12.11.V4NET.rbl.test.ex
+ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
+ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
+PDKIM >> Hashed body data, canonicalized >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ppppp LOG: MAIN
+ppppp   <= a@shorthost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+ppppp Process ppppp is ready for new message
+ppppp LOG: smtp_connection MAIN
+ppppp   SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+ppppp child ppppp ended: status=0x0
+ppppp   normal exit, 0
+ppppp 0 SMTP accept processes now running
+ppppp Listening...

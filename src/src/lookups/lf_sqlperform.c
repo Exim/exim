@@ -27,7 +27,7 @@ Arguments:
   query          the query
   result         where to pass back the result
   errmsg         where to pass back an error message
-  do_cache       to be set FALSE if data is changed
+  do_cache       to be set zero if data is changed
   func           the lookup function to call
 
 Returns:         the return from the lookup function, or DEFER
@@ -36,8 +36,8 @@ Returns:         the return from the lookup function, or DEFER
 int
 lf_sqlperform(const uschar *name, const uschar *optionname,
   const uschar *optserverlist, const uschar *query,
-  uschar **result, uschar **errmsg, BOOL *do_cache,
-  int(*fn)(const uschar *, uschar *, uschar **, uschar **, BOOL *, BOOL *))
+  uschar **result, uschar **errmsg, uint *do_cache,
+  int(*fn)(const uschar *, uschar *, uschar **, uschar **, BOOL *, uint *))
 {
 int sep, rc;
 uschar *server;

@@ -2,7 +2,53 @@ Change log file for Exim from version 4.21
 -------------------------------------------
 
 
-HS/04 Add support for keep_environment and add_environment options.
+Exim version 4.86.1+fixes
+-----------------------
+Cherry-Picked from the master development branch
+------------------------------------------------
+
+JH/02 Bug 728: Close logfiles after a daemon-process "exceptional" log write.
+      If not running log_selector +smtp_connection the mainlog would be held
+      open indefinitely after a "too many connections" event, including to a
+      deleted file after a log rotate. Leave the per net connection logging
+      leaving it open for efficiency as that will be quickly detected by the
+      check on the next write.
+
+HS/01 Bug 1671: Fix post transport crash.
+      Processing the wait-<transport> messages could crash the delivery
+      process if the message IDs didn't exist for some reason. When
+      using 'split_spool_directory=yes' the construction of the spool
+      file name failed already, exposing the same netto behaviour.
+
+JH/06 Bug 1395: time-limit cacheing of DNS lookups, to the TTL value.  This may
+      matter for fast-change records such as DNSBLs.
+
+JH/07 Bug 1678: Always record an interface option value, if set,  as part of a
+      retry record, even if constant.  There may be multiple transports with
+      different interface settings and the retry behaviour needs to be kept
+      distinct.
+
+JH/13 Bug 1708: avoid misaligned access in cached lookup.
+
+JH/09 Bug 1700: ignore space & tab embedded in base64 during decode.
+
+JH/38 Fix cutthrough bug with body lines having a single dot. The dot was
+      incorrectly not doubled on cutthrough transmission, hence seen as a
+      body-termination at the receiving system - resulting in truncated mails.
+      Commonly the sender saw a TCP-level error, and retransmitted the nessage
+      via the normal store-and-forward channel. This could result in duplicates
+      received - but deduplicating mailstores were liable to retain only the
+      initial truncated version.
+
+
+Exim version 4.86.1
+-------------------
+
+HS/04 SECURITY: Add support for keep_environment and add_environment 
+      options. Change the working directory to / during startup.
+      CVE-2016-1531
+
+
 Exim version 4.86
 -----------------
 JH/01 Bug 1545: The smtp transport option "retry_include_ip_address" is now
