@@ -4509,12 +4509,14 @@ case ACL_WHERE_RCPT:
 #ifndef DISABLE_PRDR
 case ACL_WHERE_PRDR:
 #endif
-  if (rc == OK  &&  cutthrough.delivery  && rcpt_count > cutthrough.nrcpt)
+  if (host_checking_callout)	/* -bhc mode */
+    cancel_cutthrough_connection("host-checking mode");
+  else if (rc == OK && cutthrough.delivery && rcpt_count > cutthrough.nrcpt)
     open_cutthrough_connection(addr);
   break;
 
 case ACL_WHERE_PREDATA:
-  if( rc == OK )
+  if (rc == OK)
     cutthrough_predata();
   else
     cancel_cutthrough_connection("predata acl not ok");

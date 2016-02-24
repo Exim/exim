@@ -1,0 +1,70 @@
+# Exim test configuration 5400
+
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+log_selector = +received_recipients
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+
+acl_smtp_rcpt = ar
+
+
+# ----- ACLs -----
+
+begin acl
+
+ar:
+  warn	control =	cutthrough_delivery
+	logwrite =	rcpt for $local_part@$domain
+  warn	condition =	${if eq {verify}{$local_part}}
+	verify =	recipient/callout=use_sender
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+dns:
+  driver = dnslookup
+  domains = localhost.test.ex : localhost4.test.ex : thishost.test.ex
+  self = send
+  transport = smtp
+
+all:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = special.com HOSTIPV4 ; * 127.0.0.1
+  self = send
+  transport = ${if eq {special_tpt}{$local_part} {smtp2}{smtp}}
+  headers_remove = X-hdr-rtr
+  headers_add =    X-hdr-rtr-new: $h_X-hdr-rtr:+++
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  interface = HOSTIPV4
+  port = PORT_S
+  headers_add =  ${if def:h_X-hdr-rtr {X-hdr-tpt-new: new} {}}
+
+smtp2:
+  driver = smtp
+  interface = HOSTIPV4
+  port = PORT_S
+
+
+# End

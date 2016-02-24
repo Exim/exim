@@ -928,7 +928,9 @@ input, details of which are given below. A number of options are implemented:
   -d       causes the server to output debugging information
 
   -t <sec> sets a timeout (default 5) for when the server is
-           awaiting an incoming connection
+           awaiting an incoming connection. If negative, the
+	   absolute value is used and a timeout results in a
+	   nonfailure exit code
 
   -noipv4  causes the server not to set up an IPv4 socket
 

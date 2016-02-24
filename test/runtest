@@ -3733,8 +3733,9 @@ foreach $test (@test_list)
 
     my($subtest_startline) = $lineno;
 
-    # Now run the command. The function returns 0 if exim was run and waited
-    # for, 1 if any other command was run and waited for, and 2 if a command
+    # Now run the command. The function returns 0 for an inline command,
+    # 1 if a non-exim command was run and waited for, 2 if an exim
+    # command was run and waited for, and 3 if a command
     # was run and not waited for (usually a daemon or server startup).
 
     my($commandname) = "";

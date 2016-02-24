@@ -65,13 +65,14 @@ typedef struct line {
 /*************************************************
 *            SIGALRM handler - crash out         *
 *************************************************/
+int tmo_noerror = 0;
 
 static void
 sigalrm_handler(int sig)
 {
 sig = sig;    /* Keep picky compilers happy */
 printf("\nServer timed out\n");
-exit(99);
+exit(tmo_noerror ? 0 : 99);
 }
 
 
@@ -215,7 +216,10 @@ if (argc > 1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")))
 while (na < argc && argv[na][0] == '-')
   {
   if (strcmp(argv[na], "-d") == 0) debug = 1;
-  else if (strcmp(argv[na], "-t") == 0) timeout = atoi(argv[++na]);
+  else if (strcmp(argv[na], "-t") == 0)
+    {
+    if (tmo_noerror = ((timeout = atoi(argv[++na])) < 0)) timeout = -timeout;
+    }
   else if (strcmp(argv[na], "-i") == 0) initial_pause = atoi(argv[++na]);
   else if (strcmp(argv[na], "-noipv4") == 0) use_ipv4 = 0;
   else if (strcmp(argv[na], "-noipv6") == 0) use_ipv6 = 0;

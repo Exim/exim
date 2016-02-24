@@ -179,6 +179,10 @@ JH/43 Tidy coding issues detected by gcc --fsanitize=undefined.  Some remain;
       either intentional arithmetic overflow during PRNG, or testing config-
       induced overflows.
 
+JH/44 Bug 1800: The combination of a -bhc commandline option and cutthrough
+      delivery resulted in actual delivery.  Cancel cutthrough before DATA
+      stage.
+
 
 
 Exim version 4.86
