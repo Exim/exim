@@ -27460,9 +27460,6 @@ a realistic ACL for checking RCPT commands. This is discussed in chapter
 .section "Testing ACLs" "SECID188"
 The &%-bh%& command line option provides a way of testing your ACL
 configuration locally by running a fake SMTP session with which you interact.
-The host &'relay-test.mail-abuse.org'& provides a service for checking your
-relaying configuration (see section &<<SECTcheralcon>>& for more details).
-
 
 
 .section "Specifying when ACLs are used" "SECID189"
@@ -30913,14 +30910,6 @@ in chapter &<<CHAPdefconfil>>&.
 You can check the relay characteristics of your configuration in the same way
 that you can test any ACL behaviour for an incoming SMTP connection, by using
 the &%-bh%& option to run a fake SMTP session with which you interact.
-
-For specifically testing for unwanted relaying, the host
-&'relay-test.mail-abuse.org'& provides a useful service. If you telnet to this
-host from the host on which Exim is running, using the normal telnet port, you
-will see a normal telnet connection message and then quite a long delay. Be
-patient. The remote host is making an SMTP connection back to your host, and
-trying a number of common probes to test for open relay vulnerability. The
-results of the tests will eventually appear on your terminal.
 .ecindex IIDacl
 
 
