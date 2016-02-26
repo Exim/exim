@@ -62,15 +62,15 @@ Returns:     nothing
 void
 sha1_mid(sha1 *base, const uschar *text)
 {
-register int i;
-unsigned int A, B, C, D, E;
-unsigned int W[80];
+int i;
+uint A, B, C, D, E;
+uint W[80];
 
 base->length += 64;
 
 for (i = 0; i < 16; i++)
   {
-  W[i] = (text[0] << 24) | (text[1] << 16) | (text[2] << 8) | text[3];
+  W[i] = ((uint)text[0] << 24) | (text[1] << 16) | (text[2] << 8) | text[3];
   text += 4;
   }
 

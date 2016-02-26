@@ -1067,7 +1067,7 @@ if (Ustrchr(address, ':') != NULL)
 /* Handle IPv4 address */
 
 (void)sscanf(CS address, "%d.%d.%d.%d", x, x+1, x+2, x+3);
-bin[v4offset] = (x[0] << 24) + (x[1] << 16) + (x[2] << 8) + x[3];
+bin[v4offset] = ((uint)x[0] << 24) + (x[1] << 16) + (x[2] << 8) + x[3];
 return v4offset+1;
 }
 
@@ -1098,7 +1098,7 @@ for (i = 0; i < count; i++)
   if (mask == 0) wordmask = 0;
   else if (mask < 32)
     {
-    wordmask = (-1) << (32 - mask);
+    wordmask = (uint)(-1) << (32 - mask);
     mask = 0;
     }
   else
@@ -1321,7 +1321,7 @@ for (i = 0; i < size; i++)
   if (mlen == 0) mask = 0;
   else if (mlen < 32)
     {
-    mask = (-1) << (32 - mlen);
+    mask = (uint)(-1) << (32 - mlen);
     mlen = 0;
     }
   else

@@ -175,6 +175,11 @@ JH/42 Bug 1796: Fix error logged on a malware scanner connection failure.
 
 HS/04 Add support for keep_environment and add_environment options.
 
+JH/43 Tidy coding issues detected by gcc --fsanitize=undefined.  Some remain;
+      either intentional arithmetic overflow during PRNG, or testing config-
+      induced overflows.
+
+
 
 Exim version 4.86
 -----------------

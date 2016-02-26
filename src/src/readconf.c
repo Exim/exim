@@ -2039,6 +2039,7 @@ switch (type)
 
   /*  Integer held in K: again, allow octal and hex formats, and suffixes K and
   M. */
+  /*XXX consider moving to int_eximarith_t (but mind the overflow test 0415) */
 
   case opt_Kint:
     {

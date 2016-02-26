@@ -1073,6 +1073,8 @@ return s;
 
 Returns:  a pointer to the character after the last digit
 */
+/*XXX consider expanding to int_eximarith_t.  But the test for
+"overbig numbers" in 0002 still needs to overflow it. */
 
 static uschar *
 read_number(int *n, uschar *s)

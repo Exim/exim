@@ -267,7 +267,6 @@ autoreply_transport_entry(
 {
 int fd, pid, rc;
 int cache_fd = -1;
-int log_fd = -1;
 int cache_size = 0;
 int add_size = 0;
 EXIM_DB *dbm_file = NULL;
@@ -522,9 +521,10 @@ if (oncelog != NULL && *oncelog != 0 && to != NULL)
 
   if (then != 0 && (once_repeat_sec <= 0 || now - then < once_repeat_sec))
     {
+    int log_fd;
     DEBUG(D_transport) debug_printf("message previously sent to %s%s\n", to,
       (once_repeat_sec > 0)? " and repeat time not reached" : "");
-    log_fd = Uopen(logfile, O_WRONLY|O_APPEND|O_CREAT, ob->mode);
+    log_fd = logfile ? Uopen(logfile, O_WRONLY|O_APPEND|O_CREAT, ob->mode) : -1;
     if (log_fd >= 0)
       {
       uschar *ptr = log_buffer;
