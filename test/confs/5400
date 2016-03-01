@@ -45,6 +45,7 @@ all:
   transport = ${if eq {special_tpt}{$local_part} {smtp2}{smtp}}
   headers_remove = X-hdr-rtr
   headers_add =    X-hdr-rtr-new: $h_X-hdr-rtr:+++
+  errors_to =	   ""
   no_more
 
 

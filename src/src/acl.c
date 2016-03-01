@@ -4489,8 +4489,8 @@ and WHERE_RCPT and not yet opened conn as result of recipient-verify,
 and rcpt acl returned accept,
 and first recipient (cancel on any subsequents)
 open one now and run it up to RCPT acceptance.
-A failed verify should cancel cutthrough request.
-
+A failed verify should cancel cutthrough request,
+and will pass the fail to the originator.
 Initial implementation:  dual-write to spool.
 Assume the rxd datastream is now being copied byte-for-byte to an open cutthrough connection.
 
@@ -4512,7 +4512,7 @@ case ACL_WHERE_PRDR:
   if (host_checking_callout)	/* -bhc mode */
     cancel_cutthrough_connection("host-checking mode");
   else if (rc == OK && cutthrough.delivery && rcpt_count > cutthrough.nrcpt)
-    open_cutthrough_connection(addr);
+    rc = open_cutthrough_connection(addr);
   break;
 
 case ACL_WHERE_PREDATA:

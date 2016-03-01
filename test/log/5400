@@ -18,15 +18,15 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for userx@domain.com
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 rcpt for no@domain.com
+1999-03-02 09:44:33 U=CALLER F=<CALLER@myhost.test.ex> rejected RCPT <no@domain.com>
 1999-03-02 09:44:33 rcpt for userx@domain.com
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for no@domain.com userx@domain.com
-1999-03-02 09:44:33 10HmbB-0005vi-00 -> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
-1999-03-02 09:44:33 10HmbB-0005vi-00 => no@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for userx@domain.com
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 rcpt for userx@domain.com
 1999-03-02 09:44:33 rcpt for no@domain.com
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for userx@domain.com no@domain.com
-1999-03-02 09:44:33 10HmbC-0005vi-00 -> no@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 U=CALLER F=<CALLER@myhost.test.ex> rejected RCPT <no@domain.com>
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for userx@domain.com
 1999-03-02 09:44:33 10HmbC-0005vi-00 => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 rcpt for userx@domain.com

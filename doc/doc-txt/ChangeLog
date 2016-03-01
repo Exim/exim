@@ -183,6 +183,9 @@ JH/44 Bug 1800: The combination of a -bhc commandline option and cutthrough
       delivery resulted in actual delivery.  Cancel cutthrough before DATA
       stage.
 
+JH/45 Fix cutthrough, when connection not opened by verify and target hard-
+      rejects a recipient: pass the reject to the originator.
+
 
 
 Exim version 4.86

@@ -1413,10 +1413,11 @@ return yield;
 /* Called after recipient-acl to get a cutthrough connection open when
    one was requested and a recipient-verify wasn't subsequently done.
 */
-void
+int
 open_cutthrough_connection( address_item * addr )
 {
 address_item addr2;
+int rc;
 
 /* Use a recipient-verify-callout to set up the cutthrough connection. */
 /* We must use a copy of the address for verification, because it might
@@ -1425,12 +1426,12 @@ get rewritten. */
 addr2 = *addr;
 HDEBUG(D_acl) debug_printf("----------- %s cutthrough setup ------------\n",
   rcpt_count > 1 ? "more" : "start");
-(void) verify_address(&addr2, NULL,
+rc= verify_address(&addr2, NULL,
 	vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache,
 	CUTTHROUGH_CMD_TIMEOUT, -1, -1,
 	NULL, NULL, NULL);
 HDEBUG(D_acl) debug_printf("----------- end cutthrough setup ------------\n");
-return;
+return rc;
 }
 
 

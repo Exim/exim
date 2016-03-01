@@ -280,7 +280,7 @@ extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
 extern void    moan_write_from(FILE *);
 extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
-extern void   open_cutthrough_connection( address_item * addr );
+extern int     open_cutthrough_connection( address_item * addr );
 
 extern uschar *parse_extract_address(uschar *, uschar **, int *, int *, int *,
                  BOOL);

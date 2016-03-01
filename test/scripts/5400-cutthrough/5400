@@ -120,8 +120,7 @@ QUIT
 #
 # cutthrough for 2 recipients in one domain
 # first one denied
-# so we get a 2nd conn with the traditional delivery
-# (for both because it's not a real verify=recipient)
+# so we get a 2nd conn with the traditional delivery for the second
 server PORT_S 2
 220 ESMTP
 EHLO
@@ -140,8 +139,6 @@ MAIL FROM:
 250 Sender OK
 RCPT TO:
 250 ok rcpt-1
-RCPT TO:
-250 ok rcpt-2
 DATA
 354 Send data
 .
@@ -168,8 +165,7 @@ QUIT
 #
 # cutthrough for 2 recipients in one domain
 # second one denied
-# so we get a 2nd conn with the traditional delivery
-# (for both because it's not a real verify=recipient)
+# so we get a 2nd conn with the traditional delivery of the 1st
 server PORT_S 2
 220 ESMTP
 EHLO
@@ -190,8 +186,6 @@ MAIL FROM:
 250 Sender OK
 RCPT TO:
 250 ok rcpt-1
-RCPT TO:
-250 ok rcpt-2
 DATA
 354 Send data
 .
