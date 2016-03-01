@@ -1713,9 +1713,9 @@ for -bP environment output, needs a function to compare two pointers to string
 pointers. Here it is. */
 
 int
-string_compare_by_pointer(const uschar **a, const uschar **b)
+string_compare_by_pointer(const void *a, const void *b)
 {
-return Ustrcmp(CUS *a, CUS *b);
+return Ustrcmp(CUSS *(const char**) a, CUSS *(const char**) b);
 }
 #endif /* COMPILE_UTILITY */
 
