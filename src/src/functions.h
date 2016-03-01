@@ -409,7 +409,7 @@ extern uschar *string_append_listele(uschar *, uschar, const uschar *);
 extern uschar *string_append_listele_n(uschar *, uschar, const uschar *, unsigned);
 extern uschar *string_base62(unsigned long int);
 extern uschar *string_cat(uschar *, int *, int *, const uschar *, int);
-extern int     string_compare_by_pointer(const uschar **, const uschar **);
+extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
 extern uschar *string_copylc(const uschar *);
