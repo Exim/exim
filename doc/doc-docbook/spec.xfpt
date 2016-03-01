@@ -28646,7 +28646,11 @@ and data is copied from one to the other.
 
 An attempt to set this option for any recipient but the first
 for a mail will be quietly ignored.
-If a recipient-verify callout connection is subsequently
+If a recipient-verify callout
+.new
+(with use_sender)
+.wen
+connection is subsequently
 requested in the same ACL it is held open and used for
 any subsequent recipients and the data,
 otherwise one is made after the initial RCPT ACL completes.

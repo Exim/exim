@@ -22,7 +22,7 @@ begin acl
 
 acl_rcpt:
     accept	control = cutthrough_delivery
-    		verify = recipient
+    		verify = recipient/callout=use_sender
 
 
 # ----- Routers -----
