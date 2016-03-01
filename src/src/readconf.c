@@ -11,6 +11,9 @@ implementation of the conditional .ifdef etc. */
 
 #include "exim.h"
 
+extern char **environ;
+
+
 #define CSTATE_STACK_SIZE 10
 
 
@@ -2646,7 +2649,7 @@ if (type == NULL)
       size_t n;
       for (p = USS environ; *p; p++) ;
       n = p - USS environ;
-      qsort(environ, p - USS environ, sizeof(*p), (__compar_fn_t) string_compare_by_pointer);
+      qsort(environ, p - USS environ, sizeof(*p), string_compare_by_pointer);
 
       for (p = USS environ; *p; p++)
         {
