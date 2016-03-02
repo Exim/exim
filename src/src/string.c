@@ -1715,7 +1715,7 @@ pointers. Here it is. */
 int
 string_compare_by_pointer(const void *a, const void *b)
 {
-return Ustrcmp(CUSS *(const char**) a, CUSS *(const char**) b);
+return Ustrcmp(* CUSS a, * CUSS b);
 }
 #endif /* COMPILE_UTILITY */
 
