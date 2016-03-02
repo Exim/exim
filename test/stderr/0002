@@ -135,6 +135,10 @@ PWD in keep_environment? no (end of list)
 SHELL in keep_environment? no (end of list)
 TERM in keep_environment? no (end of list)
 USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -198,6 +202,10 @@ PATH in keep_environment? no (end of list)
 PWD in keep_environment? no (end of list)
 SHELL in keep_environment? no (end of list)
 TERM in keep_environment? no (end of list)
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
 USER in keep_environment? yes (matched "USER")
 configuration file is TESTSUITE/test-config
 admin user
@@ -387,6 +395,10 @@ PATH in keep_environment? no (end of list)
 PWD in keep_environment? no (end of list)
 SHELL in keep_environment? no (end of list)
 TERM in keep_environment? no (end of list)
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
+USER in keep_environment? yes (matched "USER")
 USER in keep_environment? yes (matched "USER")
 configuration file is TESTSUITE/test-config
 admin user
