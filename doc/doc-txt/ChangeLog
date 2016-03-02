@@ -1,8 +1,15 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.85.2
+-------------------
+Portability release.
 
+Exim version 4.85.1
+-------------------
 HS/04 Add support for keep_environment and add_environment options.
+      Fix CVE-2016-1531.
+
 Exim version 4.85
 -----------------
 TL/01 When running the test suite, the README says that variables such as
