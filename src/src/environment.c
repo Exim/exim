@@ -9,9 +9,7 @@
 
 #include "exim.h"
 
-#ifndef environ
 extern char **environ;
-#endif
 
 /* The cleanup_environment() function is used during the startup phase
 of the Exim process, right after reading the configurations main

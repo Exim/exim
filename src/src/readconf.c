@@ -11,16 +11,12 @@ implementation of the conditional .ifdef etc. */
 
 #include "exim.h"
 
+extern char **environ;
+
 static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
 static void save_config_line(const uschar* line);
 static void save_config_position(const uschar *file, int line);
 static void print_config(BOOL admin);
-/* glibc seems to define environ as a macro, we can use this to check
-it's existence. And, if we declare environ a 2nd time, it shouldn't
-harm */
-#ifndef environ
-extern char **environ;
-#endif
 
 
 #define CSTATE_STACK_SIZE 10
