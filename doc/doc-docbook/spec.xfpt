@@ -3487,8 +3487,6 @@ name, but it can be a colon-separated list of names. In this case, the first
 file that exists is used. Failure to open an existing file stops Exim from
 proceeding any further along the list, and an error is generated.
 
-The file names need to be absolute names.
-
 When this option is used by a caller other than root, and the list is different
 from the compiled-in list, Exim gives up its root privilege immediately, and
 runs with the real and effective uid and gid set to those of the caller.

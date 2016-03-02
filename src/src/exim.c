@@ -3741,16 +3741,15 @@ if (running_in_test_harness) smtputf8_advertise_hosts = NULL;
 
 /* Read the main runtime configuration data; this gives up if there
 is a failure. It leaves the configuration file open so that the subsequent
-configuration data for delivery can be read if needed. */
+configuration data for delivery can be read if needed.
 
-/* To be safe: change the working directory to /. */
-if (Uchdir("/") < 0)
-  {
-    perror("exim: chdir `/': ");
-    exit(EXIT_FAILURE);
-  }
+NOTE: immediatly after opening the configuration file we change the working
+directory to "/"! Later we change to $spool_directory. We do it there, because
+during readconf_main() some expansion takes place already. */
 
 readconf_main();
+
+/* Now in directory "/" */
 
 if (cleanup_environment() == FALSE)
   log_write(0, LOG_PANIC_DIE, "Can't cleanup environment");

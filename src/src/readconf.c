@@ -3049,14 +3049,6 @@ while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
        != NULL)
   {
 
-  /* To avoid confusion: Exim changes to / at the very beginning and
-   * and to $spool_directory later. */
-  if (filename[0] != '/')
-    {
-    fprintf(stderr, "-C %s: only absolute names are allowed\n", filename);
-    exit(EXIT_FAILURE);
-  }
-
   /* Cut out all the fancy processing unless specifically wanted */
 
   #if defined(CONFIGURE_FILE_USE_NODE) || defined(CONFIGURE_FILE_USE_EUID)
@@ -3108,6 +3100,15 @@ while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
   error, break out (and die). */
 
   if (config_file != NULL || errno != ENOENT) break;
+  }
+
+/* Now, once we found and opened our configuration file, we change the directory
+to a safe place. Later we change to $spool_directory. */
+
+if (Uchdir("/") < 0)
+  {
+  perror("exim: chdir `/': ");
+  exit(EXIT_FAILURE);
   }
 
 /* On success, save the name for verification; config_filename is used when
