@@ -21,6 +21,7 @@ uschar ctbuffer[8192];
 /* Structure for caching DNSBL lookups */
 
 typedef struct dnsbl_cache_block {
+  time_t expiry;
   dns_address *rhs;
   uschar *text;
   int rc;
@@ -443,7 +444,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
 	  host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET:AF_INET6;
 
-	  if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
+	  if (!smtp_get_interface(tf->interface, host_af, addr, &interface,
 		  US"callout") ||
 	      !smtp_get_port(tf->port, addr, &port, US"callout"))
 	    log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
@@ -578,7 +579,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     deliver_domain = addr->domain;
     transport_name = addr->transport->name;
 
-    if (  !smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
+    if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
             US"callout")
        || !smtp_get_port(tf->port, addr, &port, US"callout")
        )
@@ -3584,21 +3585,37 @@ if (!string_format(query, sizeof(query), "%s.%s", prepend, domain))
 
 /* Look for this query in the cache. */
 
-t = tree_search(dnsbl_cache, query);
+if (  (t = tree_search(dnsbl_cache, query))
+   && (cb = t->data.ptr)->expiry > time(NULL)
+   )
+
+/* Previous lookup was cached */
+
+  {
+  HDEBUG(D_dnsbl) debug_printf("using result of previous DNS lookup\n");
+  }
 
 /* If not cached from a previous lookup, we must do a DNS lookup, and
 cache the result in permanent memory. */
 
-if (t == NULL)
+else
   {
+  uint ttl = 3600;
+
   store_pool = POOL_PERM;
 
-  /* Set up a tree entry to cache the lookup */
+  if (t)
+    {
+    HDEBUG(D_dnsbl) debug_printf("cached data found but past valid time; ");
+    }
 
-  t = store_get(sizeof(tree_node) + Ustrlen(query));
-  Ustrcpy(t->name, query);
-  t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block));
-  (void)tree_insertnode(&dnsbl_cache, t);
+  else
+    {	/* Set up a tree entry to cache the lookup */
+    t = store_get(sizeof(tree_node) + Ustrlen(query));
+    Ustrcpy(t->name, query);
+    t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block));
+    (void)tree_insertnode(&dnsbl_cache, t);
+    }
 
   /* Do the DNS loopup . */
 
@@ -3616,7 +3633,10 @@ if (t == NULL)
 
   Quite apart from one A6 RR generating multiple addresses, there are DNS
   lists that return more than one A record, so we must handle multiple
-  addresses generated in that way as well. */
+  addresses generated in that way as well.
+
+  Mark the cache entry with the "now" plus the minimum of the address TTLs,
+  or some suitably far-future time if none were found. */
 
   if (cb->rc == DNS_SUCCEED)
     {
@@ -3634,6 +3654,7 @@ if (t == NULL)
           *addrp = da;
           while (da->next != NULL) da = da->next;
           addrp = &(da->next);
+	  if (ttl > rr->ttl) ttl = rr->ttl;
           }
         }
       }
@@ -3645,15 +3666,8 @@ if (t == NULL)
     if (cb->rhs == NULL) cb->rc = DNS_NODATA;
     }
 
+  cb->expiry = time(NULL)+ttl;
   store_pool = old_pool;
-  }
-
-/* Previous lookup was cached */
-
-else
-  {
-  HDEBUG(D_dnsbl) debug_printf("using result of previous DNS lookup\n");
-  cb = t->data.ptr;
   }
 
 /* We now have the result of the DNS lookup, either newly done, or cached

@@ -7012,6 +7012,15 @@ The form if &"retry_VAL"& where VAL is an integer.
 The default count is set by the main configuration option &%dns_retry%&.
 .wen
 
+.new
+.cindex cacheing "of dns lookup"
+.cindex TTL "of dns lookup"
+.cindex DNS TTL
+Dnsdb lookup results are cached within a single process (and its children).
+The cache entry lifetime is limited to the smallest time-to-live (TTL)
+value of the set of returned DNS records.
+.wen
+
 
 .section "Pseudo dnsdb record types" "SECID66"
 .cindex "MX record" "in &(dnsdb)& lookup"
@@ -9412,7 +9421,7 @@ yields &"42"&, and
 .code
 ${listextract{-3}{<, x,42,99,& Mailer,,/bin/bash}{result: $value}}
 .endd
-yields &"result: 99"&.
+yields &"result: 42"&.
 
 If {<&'string3'&>} is omitted, an empty string is used for string3.
 If {<&'string2'&>} is also omitted, the value that was
@@ -29348,9 +29357,15 @@ deny  dnslists = blackholes.mail-abuse.org
 warn  message  = X-Warn: sending host is on dialups list
       dnslists = dialups.mail-abuse.org
 .endd
-DNS list lookups are cached by Exim for the duration of the SMTP session,
+.cindex cacheing "of dns lookup"
+.cindex DNS TTL
+DNS list lookups are cached by Exim for the duration of the SMTP session
+.new
+(but limited by the DNS return TTL value),
+.wen
 so a lookup based on the IP address is done at most once for any incoming
-connection. Exim does not share information between multiple incoming
+connection (assuming long-enough TTL).
+Exim does not share information between multiple incoming
 connections (but your local name server cache should be active).
 
 

@@ -81,7 +81,7 @@ return 0;
 
 static int
 sqlite_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 int ret;
 struct strbuf res = { NULL, 0, 0 };
@@ -93,7 +93,7 @@ if (ret != SQLITE_OK)
   return FAIL;
   }
 
-if (res.string == NULL) *do_cache = FALSE;
+if (res.string == NULL) *do_cache = 0;
 
 *result = res.string;
 return OK;

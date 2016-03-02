@@ -65,7 +65,7 @@ redis_tidy(void)
  */
 static int
 perform_redis_search(uschar *command, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, BOOL *do_cache)
+  uschar **errmsg, BOOL *defer_break, uint *do_cache)
 {
        redisContext *redis_handle = NULL;        /* Keep compilers happy */
        redisReply *redis_reply = NULL;
@@ -197,7 +197,7 @@ perform_redis_search(uschar *command, uschar *server, uschar **resultptr,
        case REDIS_REPLY_ERROR:
                *errmsg = string_sprintf("REDIS: lookup result failed: %s\n", redis_reply->str);
                *defer_break = FALSE;
-               *do_cache = FALSE;
+               *do_cache = 0;
                goto REDIS_EXIT;
                /* NOTREACHED */
 
@@ -205,7 +205,7 @@ perform_redis_search(uschar *command, uschar *server, uschar **resultptr,
        case REDIS_REPLY_NIL:
                DEBUG(D_lookup) debug_printf("REDIS: query was not one that returned any data\n");
                result = string_sprintf("");
-               *do_cache = FALSE;
+               *do_cache = 0;
                goto REDIS_EXIT;
                /* NOTREACHED */
 
@@ -304,7 +304,7 @@ perform_redis_search(uschar *command, uschar *server, uschar **resultptr,
 
 static int
 redis_find(void *handle __attribute__((unused)), uschar *filename __attribute__((unused)),
-           uschar *command, int length, uschar **result, uschar **errmsg, BOOL *do_cache)
+           uschar *command, int length, uschar **result, uschar **errmsg, uint *do_cache)
 {
        return lf_sqlperform(US"Redis", US"redis_servers", redis_servers, command,
          result, errmsg, do_cache, perform_redis_search);

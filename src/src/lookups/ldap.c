@@ -1339,7 +1339,7 @@ The handle and filename arguments are not used. */
 
 static int
 eldap_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1348,7 +1348,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_SINGLE, result, errmsg));
 
 static int
 eldapm_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1357,7 +1357,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_MULTIPLE, result, errmsg));
 
 static int
 eldapdn_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1366,7 +1366,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_DN, result, errmsg));
 
 int
 eldapauth_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, BOOL *do_cache)
+  uschar **result, uschar **errmsg, uint *do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
