@@ -266,6 +266,7 @@ DEBUG(D_tls) debug_printf("Generating %d bit RSA key...\n", keylength);
 
 #ifdef EXIM_HAVE_RSA_GENKEY_EX
 if (  !BN_set_word(bn, (unsigned long)RSA_F4)
+   || !(rsa_key = RSA_new())
    || !RSA_generate_key_ex(rsa_key, keylength, bn, NULL)
    )
 #else

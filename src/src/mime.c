@@ -12,7 +12,16 @@
 
 FILE *mime_stream = NULL;
 uschar *mime_current_boundary = NULL;
-static int mime_header_list_size = sizeof(mime_header_list)/sizeof(mime_header);
+
+static mime_header mime_header_list[] = {
+  { US"content-type:",              13, &mime_content_type },
+  { US"content-disposition:",       20, &mime_content_disposition },
+  { US"content-transfer-encoding:", 26, &mime_content_transfer_encoding },
+  { US"content-id:",                11, &mime_content_id },
+  { US"content-description:",       20, &mime_content_description }
+};
+
+static int mime_header_list_size = nelem(mime_header_list);
 
 static mime_parameter mime_parameter_list[] = {
   { US"name=",     5, &mime_filename },

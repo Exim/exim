@@ -27,16 +27,6 @@ typedef struct mime_header {
   uschar ** value;
 } mime_header;
 
-static mime_header mime_header_list[] = {
-  { US"content-type:",              13, &mime_content_type },
-  { US"content-disposition:",       20, &mime_content_disposition },
-  { US"content-transfer-encoding:", 26, &mime_content_transfer_encoding },
-  { US"content-id:",                11, &mime_content_id },
-  { US"content-description:",       20, &mime_content_description }
-};
-
-
-
 
 typedef struct mime_parameter {
   uschar *  name;

@@ -1521,7 +1521,7 @@ int len;
 uschar *s, *t;
 struct hostent *hosts;
 struct in_addr addr;
-unsigned long time_msec;
+unsigned long time_msec = 0;	/* init to quieten dumb static analysis */
 
 if (slow_lookup_log) time_msec = get_time_in_ms();
 
