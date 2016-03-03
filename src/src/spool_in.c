@@ -473,11 +473,13 @@ for (;;)
       int index, count;
       uschar name[20];   /* Need plenty of space for %d format */
       tree_node *node;
-      if (sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2)
+      if (  sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2
+	 || index >= 20
+         )
         goto SPOOL_FORMAT_ERROR;
       if (index < 10)
         (void) string_format(name, sizeof(name), "%c%d", 'c', index);
-      else if (index < 20) /* ignore out-of-range index */
+      else
         (void) string_format(name, sizeof(name), "%c%d", 'm', index - 10);
       node = acl_var_create(name);
       node->data.ptr = store_get(count + 1);

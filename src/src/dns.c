@@ -868,7 +868,7 @@ BOOL secure_so_far = TRUE;
 
 for (i = 0; i < 10; i++)
   {
-  uschar data[256];
+  uschar * data;
   dns_record *rr, cname_rr, type_rr;
   dns_scan dnss;
   int datalen, rc;
@@ -918,7 +918,7 @@ for (i = 0; i < 10; i++)
 
   /* If any data records of the correct type were found, we are done. */
 
-  if (type_rr.data != NULL)
+  if (type_rr.data)
     {
     if (!secure_so_far)	/* mark insecure if any element of CNAME chain was */
       dns_set_insecure(dnsa);
@@ -930,10 +930,14 @@ for (i = 0; i < 10; i++)
   have had a failure from dns_lookup). However code against the possibility of
   its not existing. */
 
-  if (cname_rr.data == NULL) return DNS_FAIL;
+  if (!cname_rr.data)
+    return DNS_FAIL;
+
+  data = store_get(256);
   datalen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, sizeof(data));
-  if (datalen < 0) return DNS_FAIL;
+    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256);
+  if (datalen < 0)
+    return DNS_FAIL;
   name = data;
 
   if (!dns_is_secure(dnsa))

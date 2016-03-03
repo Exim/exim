@@ -1205,7 +1205,7 @@ transport_write_message(address_item *addr, int fd, int options,
 BOOL use_crlf;
 BOOL last_filter_was_NL = TRUE;
 int rc, len, yield, fd_read, fd_write, save_errno;
-int pfd[2];
+int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
 
 transport_filter_timed_out = FALSE;

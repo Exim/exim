@@ -216,9 +216,9 @@ dcc_process(uschar **listptr)
     }
   } else {
     /* connecting to the dccifd UNIX socket */
-    bzero((char *)&serv_addr,sizeof(serv_addr));
+    bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sun_family = AF_UNIX;
-    Ustrcpy(serv_addr.sun_path, sockpath);
+    Ustrncpy(serv_addr.sun_path, sockpath, sizeof(serv_addr.sun_path));
     if ((sockfd = socket(AF_UNIX, SOCK_STREAM,0)) < 0){
       DEBUG(D_acl)
         debug_printf("DCC: Creating UNIX socket connection failed: %s\n", strerror(errno));

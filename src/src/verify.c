@@ -458,7 +458,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	     && port == cutthrough.host.port
 	     )
 	    {
-	    uschar * resp;
+	    uschar * resp = NULL;
 
 	    /* Match!  Send the RCPT TO, append the addr, set done */
 	    done =
@@ -485,7 +485,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	    else
 	      {
 	      cancel_cutthrough_connection("recipient rejected");
-	      if (errno == ETIMEDOUT)
+	      if (!resp || errno == ETIMEDOUT)
 		{
 		HDEBUG(D_verify) debug_printf("SMTP timeout\n");
 		}

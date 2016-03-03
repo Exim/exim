@@ -214,6 +214,7 @@ ugid.uid_set = ugid.gid_set = FALSE;
 /* Set up the propagated data block with the current address_data and the
 errors address and extra header stuff. */
 
+bzero(&addr_prop, sizeof(addr_prop));
 addr_prop.address_data = deliver_address_data;
 
 rc = rf_get_errors_address(addr, rblock, verify, &addr_prop.errors_address);

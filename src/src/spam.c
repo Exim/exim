@@ -139,7 +139,7 @@ long rnd, weights;
 unsigned pri;
 static BOOL srandomed = FALSE;
 
-/* seedup, if we have only 1 server */
+/* speedup, if we have only 1 server */
 if (num_servers == 1)
   return (spamds[0]->is_failed ? -1 : 0);
 

@@ -259,7 +259,7 @@ uschar buffer[256];
 ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence. */
 
-sprintf(CS buffer, "%s/db/%s.lockfile", spool_directory, name);
+sprintf(CS buffer, "%s/db/%.200s.lockfile", spool_directory, name);
 
 dbblock->lockfd = Uopen(buffer, flags, 0);
 if (dbblock->lockfd < 0)
