@@ -112,7 +112,12 @@ if (!mime_stream)				/* We are in the DATA ACL */
   }
 else
   {
-  f_pos = ftell(mime_stream);
+  if ((f_pos = ftell(mime_stream)) < 0)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	   "regex acl condition: mime_stream: %s", strerror(errno));
+    return DEFER;
+    }
   mbox_file = mime_stream;
   }
 

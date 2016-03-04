@@ -831,9 +831,6 @@ for (p = raw_record; ; p++)
     if (!cur_val)
       cur_val = pdkim_strnew(NULL);
 
-    if (c == '\r' || c == '\n')
-      goto NEXT_CHAR;
-
     if (c == ';' || c == '\0')
       {
       if (cur_tag->len > 0)
@@ -1755,6 +1752,13 @@ while (sig)
 
     if (!(sig->signature_header = pdkim_create_header(sig, TRUE)))
       return PDKIM_ERR_OOM;
+
+    /* We only ever sign with one sig, and we free'd "headernames"
+    above.  So to keep static-analysers happy, exit the loop explicitly.
+    Perhaps the code would be more clear if signing and verification
+    loops were separated? */
+
+    break;
     }
 
   /* VERIFICATION ----------------------------------------------------------- */

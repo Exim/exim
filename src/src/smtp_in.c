@@ -3323,9 +3323,9 @@ while (done <= 0)
 	smtp_cmd_data = NULL;
 
 	if (smtp_in_auth(au, &s, &ss) == OK)
-	  DEBUG(D_auth) debug_printf("tls auth succeeded\n");
+	  { DEBUG(D_auth) debug_printf("tls auth succeeded\n"); }
 	else
-	  DEBUG(D_auth) debug_printf("tls auth not succeeded\n");
+	  { DEBUG(D_auth) debug_printf("tls auth not succeeded\n"); }
 	break;
 	}
     }

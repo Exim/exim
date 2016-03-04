@@ -450,10 +450,11 @@ for (s = strings; s != NULL; s = s->next)
 
 va_start(ap, count);
 for (i = 0; i < count; i++)
-  {
   if (one_pattern_match(name, slen, has_addresses, va_arg(ap, uschar *)))
+    {
+    va_end(ap);
     return cond;
-  }
+    }
 va_end(ap);
 
 return !cond;

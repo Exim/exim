@@ -1518,6 +1518,7 @@ specified messages. If it does, the message just gets truncated, and there
 doesn't seem much we can do about that. */
 
 (void)string_vformat(buffer+15, sizeof(buffer) - 15, format, ap);
+va_end(ap);
 
 return (eno == EACCES)?
   string_sprintf("%s: %s (euid=%ld egid=%ld)", buffer, strerror(eno),

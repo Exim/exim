@@ -553,6 +553,12 @@ addr_prop.remove_headers = NULL;
 #ifdef EXPERIMENTAL_SRS
 addr_prop.srs_sender = NULL;
 #endif
+#ifdef SUPPORT_I18N
+addr_prop.utf8_msg = FALSE;	/*XXX should we not copy this from the parent? */
+addr_prop.utf8_downcvt = FALSE;
+addr_prop.utf8_downcvt_maybe = FALSE;
+#endif
+
 
 /* When verifying and testing addresses, the "logwrite" command in filters
 must be bypassed. */

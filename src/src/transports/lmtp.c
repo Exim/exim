@@ -217,6 +217,7 @@ va_list ap;
 va_start(ap, format);
 if (!string_vformat(big_buffer, big_buffer_size, CS format, ap))
   {
+  va_end(ap);
   errno = ERRNO_SMTPFORMAT;
   return FALSE;
   }
