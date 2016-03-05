@@ -1086,6 +1086,8 @@ Returns:   pointer to the start of the string, changed if copied for expansion.
            Note that a NUL is not added, though space is left for one. This is
            because string_cat() is often called multiple times to build up a
            string - there's no point adding the NUL till the end.
+
+coverity[+alloc]
 */
 
 uschar *
@@ -1132,8 +1134,14 @@ if (p + count >= *size)
 
 /* Because we always specify the exact number of characters to copy, we can
 use memcpy(), which is likely to be more efficient than strncopy() because the
-latter has to check for zero bytes. */
+latter has to check for zero bytes.
 
+The Coverity annotation deals with the lack of correlated variable tracking;
+common use is a null string and zero size and pointer, on first use for a
+string being built. The "if" above then allocates, but Coverity assume that
+the "if" might not happen and whines for a null-deref done by the memcpy(). */
+
+/* coverity[var_deref_op] */
 memcpy(string + p, s, count);
 *ptr = p + count;
 return string;
