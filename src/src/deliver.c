@@ -6953,7 +6953,7 @@ if (addr_senddsn)
       if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
         fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
       else
-        fprintf(f, "X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
+        fprintf(f, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
       }
     fputc('\n', f);
 
@@ -7339,7 +7339,7 @@ wording. */
         if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
           fprintf(f, "Original-Envelope-ID: %s\n", dsn_envid);
         else
-          fprintf(f, "X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
+          fprintf(f, "X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
         }
       fputc('\n', f);
 
@@ -7872,7 +7872,7 @@ else if (addr_defer != (address_item *)(+1))
           if (auth_xtextdecode(dsn_envid, &xdec_envid) > 0)
             fprintf(f,"Original-Envelope-ID: %s\n", dsn_envid);
           else
-            fprintf(f,"X-Original-Envelope-ID: error decoding xtext formated ENVID\n");
+            fprintf(f,"X-Original-Envelope-ID: error decoding xtext formatted ENVID\n");
           }
         fputc('\n', f);
 

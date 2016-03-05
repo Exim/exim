@@ -757,7 +757,7 @@ sub volume_rounded {
   }
   else {
     # We don't want any rounding to be done.
-    # and we don't need broken formated output which on one hand avoids numbers from
+    # and we don't need broken formatted output which on one hand avoids numbers from
     # being interpreted as string by Spreadsheed Calculators, on the other hand
     # breaks if more than 4 digits! -> flexible length instead of fixed length
     # Format the return value at the output routine! -fh
@@ -871,10 +871,10 @@ $p;
 # Eg 3h20m5s => 12005
 #######################################################################
 sub unformat_time {
-  my($formated_time) = pop @_;
+  my($formatted_time) = pop @_;
   my $time = 0;
 
-  while ($formated_time =~ s/^(\d+)([wdhms]?)//) {
+  while ($formatted_time =~ s/^(\d+)([wdhms]?)//) {
     $time +=  $1 if ($2 eq '' || $2 eq 's');
     $time +=  $1 * 60 if ($2 eq 'm');
     $time +=  $1 * 60 * 60 if ($2 eq 'h');
@@ -3360,8 +3360,8 @@ sub parse_old_eximstat_reports {
         my $previous_seconds_on_queue = 0;
         if (/^\s*(Under|Over|)\s+(\d+[smhdw])\s+(\d+)/) {
           print STDERR "Parsing $_" if $debug;
-          my($modifier,$formated_time,$count) = ($1,$2,$3);
-          my $seconds = unformat_time($formated_time);
+          my($modifier,$formatted_time,$count) = ($1,$2,$3);
+          my $seconds = unformat_time($formatted_time);
           my $time_on_queue = ($seconds + $previous_seconds_on_queue) / 2;
           $previous_seconds_on_queue = $seconds;
           $time_on_queue = $seconds * 2 if ($modifier eq 'Over');

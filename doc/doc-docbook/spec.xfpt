@@ -3153,7 +3153,7 @@ settings can be obtained by using &%routers%&, &%transports%&, or
 
 .cindex "environment"
 If &%environment%& is given as an argument, the set of environment
-variables is output, line by line. Using the &%-n%& flag supresses the value of the
+variables is output, line by line. Using the &%-n%& flag suppresses the value of the
 variables.
 
 .cindex "options" "macro &-- extracting"
