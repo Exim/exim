@@ -285,8 +285,9 @@ if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)
   {
   printf("** Failed to get %s lock for %s: %s",
-    ((flags & O_RDONLY) != 0)? "read" : "write", buffer,
-    (errno == ETIMEDOUT)? "timed out" : strerror(errno));
+    flags & O_WRONLY ? "write" : "read",
+    buffer,
+    errno == ETIMEDOUT ? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
   return NULL;
   }

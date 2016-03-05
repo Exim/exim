@@ -847,12 +847,10 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 	      {
 	      int j;
 	      for (j = 0; j < len; j++)
-	        {
 	        if (value[j] == ',')
 	          data = string_cat(data, &size, &ptr, US",,", 2);
 	        else
 	          data = string_cat(data, &size, &ptr, value+j, 1);
-	        }
 	      }
 
 

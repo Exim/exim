@@ -329,7 +329,8 @@ if (EXIMfsync(fileno(f)) < 0)
 
 /* Get the size of the file, and close it. */
 
-fstat(fd, &statbuf);
+if (fstat(fd, &statbuf) != 0)
+  return spool_write_error(where, errmsg, US"fstat", temp_name, NULL);
 if (fclose(f) != 0)
   return spool_write_error(where, errmsg, US"close", temp_name, NULL);
 

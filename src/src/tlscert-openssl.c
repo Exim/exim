@@ -123,7 +123,7 @@ int len;
 if (!bp)
   return badalloc();
 len = ASN1_TIME_print(bp, asntime);
-len = len > 0 ? (int) BIO_get_mem_data(bp, &s) : 0;
+len = len > 0 ? (int) BIO_get_mem_data(bp, CSS &s) : 0;
 
 if (mod && Ustrcmp(mod, "raw") == 0)		/* native ASN */
   s = string_copyn(s, len);
@@ -141,7 +141,7 @@ else
   /*XXX %Z might be glibc-specific?  Solaris has it, at least*/
   /*XXX should we switch to POSIX locale for this? */
   tm.tm_isdst = 0;
-  if (!strptime(CCS s, "%b %e %T %Y %Z", &tm))
+  if (!len || !strptime(CCS s, "%b %e %T %Y %Z", &tm))
     expand_string_message = US"failed time conversion";
 
   else

@@ -2353,10 +2353,9 @@ code = US"220";   /* Default status code */
 esc = US"";       /* Default extended status code */
 esclen = 0;       /* Length of esc */
 
-if (user_msg == NULL)
+if (!user_msg)
   {
-  s = expand_string(smtp_banner);
-  if (s == NULL)
+  if (!(s = expand_string(smtp_banner)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" (smtp_banner) "
       "failed: %s", smtp_banner, expand_string_message);
   }

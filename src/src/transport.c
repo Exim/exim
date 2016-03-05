@@ -655,7 +655,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
 	    errno = ERRNO_CHHEADER_FAIL;
 	    return FALSE;
 	    }
-	len = Ustrlen(s);
+	len = s ? Ustrlen(s) : 0;
 	if (strncmpic(h->text, s, len) != 0) continue;
 	ss = h->text + len;
 	while (*ss == ' ' || *ss == '\t') ss++;
@@ -933,7 +933,8 @@ if ((options & topt_no_body) == 0)
   {
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
-  lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET);
+  if (lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET) < 0)
+    return FALSE;
   while ((len = read(deliver_datafile, deliver_in_buffer,
            DELIVER_IN_BUFFER_SIZE)) > 0)
     {

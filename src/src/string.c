@@ -913,7 +913,7 @@ sep_is_special = iscntrl(sep);
 
 if (buffer != NULL)
   {
-  register int p = 0;
+  int p = 0;
   for (; *s != 0; s++)
     {
     if (*s == sep && (*(++s) != sep || sep_is_special)) break;

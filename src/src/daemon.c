@@ -930,10 +930,9 @@ if (inetd_wait_mode)
   listen_sockets = store_get(sizeof(int *));
   (void) close(3);
   if (dup2(0, 3) == -1)
-    {
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
         "failed to dup inetd socket safely away: %s", strerror(errno));
-    }
+
   listen_sockets[0] = 3;
   (void) close(0);
   (void) close(1);
@@ -957,8 +956,10 @@ if (inetd_wait_mode)
   /* As per below, when creating sockets ourselves, we handle tcp_nodelay for
   our own buffering; we assume though that inetd set the socket REUSEADDR. */
 
-  if (tcp_nodelay) setsockopt(3, IPPROTO_TCP, TCP_NODELAY,
-    (uschar *)(&on), sizeof(on));
+  if (tcp_nodelay)
+    if (setsockopt(3, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to set socket NODELAY: %s",
+	strerror(errno));
   }
 
 

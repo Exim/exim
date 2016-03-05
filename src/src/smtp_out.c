@@ -165,7 +165,9 @@ if ((sock = ip_socket(SOCK_STREAM, host_af)) < 0) return -1;
 
 /* Set TCP_NODELAY; Exim does its own buffering. */
 
-setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (uschar *)(&on), sizeof(on));
+if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
+  HDEBUG(D_transport|D_acl|D_v)
+    debug_printf("failed to set NODELAY: %s ", strerror(errno));
 
 /* Set DSCP value, if we can. For now, if we fail to set the value, we don't
 bomb out, just log it and continue in default traffic class. */

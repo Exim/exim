@@ -71,7 +71,7 @@ if (ob->server_param1)
   auth_vars[expand_nmax++] = expand_string(ob->server_param1);
 if (ob->server_param2)
   auth_vars[expand_nmax++] = expand_string(ob->server_param2);
-if (ob->server_param2)
+if (ob->server_param3)
   auth_vars[expand_nmax++] = expand_string(ob->server_param3);
 return auth_check_serv_cond(ablock);
 }

@@ -3618,9 +3618,9 @@ while ((buffer = get_config_line()) != NULL)
 
   if (isupper(*name) && *s == '=')
     {
-    if (d != NULL)
+    if (d)
       {
-      if (d->driver_name == NULL)
+      if (!d->driver_name)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
           "no driver defined for %s \"%s\"", class, d->name);
       (d->info->init)(d);
@@ -3640,9 +3640,9 @@ while ((buffer = get_config_line()) != NULL)
 
     /* Finish off initializing the previous driver. */
 
-    if (d != NULL)
+    if (d)
       {
-      if (d->driver_name == NULL)
+      if (!d->driver_name)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
           "no driver defined for %s \"%s\"", class, d->name);
       (d->info->init)(d);
@@ -3650,7 +3650,7 @@ while ((buffer = get_config_line()) != NULL)
 
     /* Check that we haven't already got a driver of this name */
 
-    for (d = *anchor; d != NULL; d = d->next)
+    for (d = *anchor; d; d = d->next)
       if (Ustrcmp(name, d->name) == 0)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
           "there are two %ss called \"%s\"", class, name);
@@ -3661,7 +3661,7 @@ while ((buffer = get_config_line()) != NULL)
     d = store_get(instance_size);
     memcpy(d, instance_default, instance_size);
     *p = d;
-    p = &(d->next);
+    p = &d->next;
     d->name = string_copy(name);
 
     /* Clear out the "set" bits in the generic options */
@@ -3679,8 +3679,8 @@ while ((buffer = get_config_line()) != NULL)
   /* Not the start of a new driver. Give an error if we have not set up a
   current driver yet. */
 
-  if (d == NULL) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-    "%s name missing", class);
+  if (!d)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%s name missing", class);
 
   /* First look to see if this is a generic option; if it is "driver",
   initialize the driver. If is it not a generic option, we can look for a
@@ -3689,7 +3689,7 @@ while ((buffer = get_config_line()) != NULL)
   if (readconf_handle_option(buffer, driver_optionlist,
         driver_optionlist_count, d, NULL))
     {
-    if (d->info == NULL && d->driver_name != NULL)
+    if (!d->info && d->driver_name)
       init_driver(d, drivers_available, size_of_info, class);
     }
 
@@ -3697,11 +3697,9 @@ while ((buffer = get_config_line()) != NULL)
   live therein. A flag with each option indicates if it is in the public
   block. */
 
-  else if (d->info != NULL)
-    {
+  else if (d->info)
     readconf_handle_option(buffer, d->info->options,
       *(d->info->options_count), d, US"option \"%s\" unknown");
-    }
 
   /* The option is not generic and the driver name has not yet been given. */
 
@@ -3711,9 +3709,9 @@ while ((buffer = get_config_line()) != NULL)
 
 /* Run the initialization function for the final driver. */
 
-if (d != NULL)
+if (d)
   {
-  if (d->driver_name == NULL)
+  if (!d->driver_name)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "no driver defined for %s \"%s\"", class, d->name);
   (d->info->init)(d);
@@ -4072,22 +4070,19 @@ readconf_driver_init(US"authenticator",
   optionlist_auths,                  /* generic options */
   optionlist_auths_size);
 
-for (au = auths; au != NULL; au = au->next)
+for (au = auths; au; au = au->next)
   {
-  if (au->public_name == NULL)
+  if (!au->public_name)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "no public name specified for "
       "the %s authenticator", au->name);
-  for (bu = au->next; bu != NULL; bu = bu->next)
-    {
+
+  for (bu = au->next; bu; bu = bu->next)
     if (strcmpic(au->public_name, bu->public_name) == 0)
-      {
       if ((au->client && bu->client) || (au->server && bu->server))
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "two %s authenticators "
           "(%s and %s) have the same public name (%s)",
-          (au->client)? US"client" : US"server", au->name, bu->name,
+          au->client ? US"client" : US"server", au->name, bu->name,
           au->public_name);
-      }
-    }
   }
 }
 

@@ -3191,9 +3191,9 @@ if (iplookup)
   /* Now do the actual lookup; note that there is no search_close() because
   of the caching arrangements. */
 
-  handle = search_open(filename, search_type, 0, NULL, NULL);
-  if (handle == NULL) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-    search_error_message);
+  if (!(handle = search_open(filename, search_type, 0, NULL, NULL)))
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
+
   result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL);
   if (valueptr != NULL) *valueptr = result;
   return (result != NULL)? OK : search_find_defer? DEFER: FAIL;

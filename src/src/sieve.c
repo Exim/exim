@@ -433,7 +433,7 @@ if (*uri && *uri!='?')
     if (uri>start)
       {
       capacity=0;
-      to.character=(uschar*)0;
+      to.character= NULL;
       to.length=0;
       to.character=string_cat(to.character,&capacity,&to.length,start,uri-start);
       to.character[to.length]='\0';
@@ -467,7 +467,7 @@ if (*uri=='?')
     if (uri>start)
       {
       capacity=0;
-      hname.character=(uschar*)0;
+      hname.character= NULL;
       hname.length=0;
       hname.character=string_cat(hname.character,&capacity,&hname.length,start,uri-start);
       hname.character[hname.length]='\0';
@@ -490,7 +490,7 @@ if (*uri=='?')
     if (uri>start)
       {
       capacity=0;
-      hvalue.character=(uschar*)0;
+      hvalue.character= NULL;
       hvalue.length=0;
       hvalue.character=string_cat(hvalue.character,&capacity,&hvalue.length,start,uri-start);
       hvalue.character[hvalue.length]='\0';

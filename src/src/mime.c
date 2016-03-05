@@ -304,7 +304,8 @@ decode_function =
 size_counter = decode_function(mime_stream, decode_file, mime_current_boundary);
 
 clearerr(mime_stream);
-fseek(mime_stream, f_pos, SEEK_SET);
+if (fseek(mime_stream, f_pos, SEEK_SET))
+  return DEFER;
 
 if (fclose(decode_file) != 0 || size_counter < 0)
   return DEFER;

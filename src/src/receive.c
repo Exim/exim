@@ -1316,7 +1316,7 @@ if (recipients_count == 1) received_for = recipients_list[0].address;
 received = expand_string(received_header_text);
 received_for = NULL;
 
-if (received == NULL)
+if (!received)
   {
   if(spool_name[0] != 0)
     Uunlink(spool_name);           /* Lose the data file */

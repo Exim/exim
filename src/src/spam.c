@@ -367,13 +367,6 @@ start = time(NULL);
     }
   }
 
-if (spamd_sock == -1)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC,
-      "programming fault, spamd_sock unexpectedly unset");
-  goto defer;
-  }
-
 (void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
 /* now we are connected to spamd on spamd_sock */
 if (sd->is_rspamd)

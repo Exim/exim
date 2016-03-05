@@ -1851,7 +1851,9 @@ switch (vp->type)
 	    start_offset = SPOOL_DATA_START_OFFSET;
 	  }
 	}
-      lseek(deliver_datafile, start_offset, SEEK_SET);
+      if (lseek(deliver_datafile, start_offset, SEEK_SET) < 0)
+	log_write(0, LOG_MAIN|LOG_PANIC_DIE, "deliver_datafile lseek: %s",
+	  strerror(errno));
       len = read(deliver_datafile, body, len);
       if (len > 0)
 	{
