@@ -1076,9 +1076,9 @@ while (*hstring == '\n') hstring++, hlen--;
 
 /* An empty string does nothing; ensure exactly one final newline. */
 if (hlen <= 0) return;
-if (hstring[--hlen] != '\n')
+if (hstring[--hlen] != '\n')		/* no newline */
   q = string_sprintf("%s\n", hstring);
-else if (hstring[hlen-1] == '\n')
+else if (hstring[hlen-1] == '\n')	/* double newline */
   {
   uschar * s = string_copy(hstring);
   while(s[--hlen] == '\n')
@@ -1101,7 +1101,7 @@ for (p = q; *p != 0; )
 
   for (;;)
     {
-    q = Ustrchr(q, '\n');
+    q = Ustrchr(q, '\n');		/* we know there was a newline */
     if (*(++q) != ' ' && *q != '\t') break;
     }
 
@@ -2376,17 +2376,13 @@ rate measurement as opposed to rate limiting. */
 
 sender_rate_limit = string_nextinlist(&arg, &sep, NULL, 0);
 if (sender_rate_limit == NULL)
-  {
-  limit = -1.0;
-  ss = NULL;	/* compiler quietening */
-  }
-else
-  {
-  limit = Ustrtod(sender_rate_limit, &ss);
-  if (tolower(*ss) == 'k') { limit *= 1024.0; ss++; }
-  else if (tolower(*ss) == 'm') { limit *= 1024.0*1024.0; ss++; }
-  else if (tolower(*ss) == 'g') { limit *= 1024.0*1024.0*1024.0; ss++; }
-  }
+  return ratelimit_error(log_msgptr, "sender rate limit not set");
+
+limit = Ustrtod(sender_rate_limit, &ss);
+if      (tolower(*ss) == 'k') { limit *= 1024.0; ss++; }
+else if (tolower(*ss) == 'm') { limit *= 1024.0*1024.0; ss++; }
+else if (tolower(*ss) == 'g') { limit *= 1024.0*1024.0*1024.0; ss++; }
+
 if (limit < 0.0 || *ss != '\0')
   return ratelimit_error(log_msgptr,
     "\"%s\" is not a positive number", sender_rate_limit);

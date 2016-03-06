@@ -415,37 +415,42 @@ struct lookupmodulestr
 
 static struct lookupmodulestr *lookupmodules = NULL;
 
-static void addlookupmodule(void *dl, struct lookup_module_info *info)
+static void
+addlookupmodule(void *dl, struct lookup_module_info *info)
 {
-  struct lookupmodulestr *p = store_malloc(sizeof(struct lookupmodulestr));
-  p->dl = dl;
-  p->info = info;
-  p->next = lookupmodules;
-  lookupmodules = p;
-  lookup_list_count += info->lookupcount;
+struct lookupmodulestr *p = store_malloc(sizeof(struct lookupmodulestr));
+
+p->dl = dl;
+p->info = info;
+p->next = lookupmodules;
+lookupmodules = p;
+lookup_list_count += info->lookupcount;
 }
 
 /* only valid after lookup_list and lookup_list_count are assigned */
-static void add_lookup_to_list(lookup_info *info)
+static void
+add_lookup_to_list(lookup_info *info)
 {
-  /* need to add the lookup to lookup_list, sorted */
-  int pos = 0;
+/* need to add the lookup to lookup_list, sorted */
+int pos = 0;
 
-  /* strategy is to go through the list until we find
-   * either an empty spot or a name that is higher.
-   * this can't fail because we have enough space. */
-  while (lookup_list[pos]
-      && (Ustrcmp(lookup_list[pos]->name, info->name) <= 0)) {
-    pos++;
+/* strategy is to go through the list until we find
+either an empty spot or a name that is higher.
+this can't fail because we have enough space. */
+
+while (lookup_list[pos] && (Ustrcmp(lookup_list[pos]->name, info->name) <= 0))
+  pos++;
+
+if (lookup_list[pos])
+  {
+  /* need to insert it, so move all the other items up
+  (last slot is still empty, of course) */
+
+  memmove(&lookup_list[pos+1],
+	  &lookup_list[pos],
+	  sizeof(lookup_info *) * (lookup_list_count-pos-1));
   }
-  if (lookup_list[pos]) {
-    /* need to insert it, so move all the other items up
-     * (last slot is still empty, of course) */
-    memmove(&lookup_list[pos+1],
-            &lookup_list[pos],
-            sizeof(lookup_info **) * (lookup_list_count-pos-1));
-  }
-  lookup_list[pos] = info;
+lookup_list[pos] = info;
 }
 
 
@@ -508,7 +513,9 @@ extern lookup_module_info testdb_lookup_module_info;
 extern lookup_module_info whoson_lookup_module_info;
 #endif
 
-void init_lookup_list(void)
+
+void
+init_lookup_list(void)
 {
 #ifdef LOOKUP_MODULE_DIR
   DIR *dd;

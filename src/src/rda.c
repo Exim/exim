@@ -911,7 +911,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     if (i > 0)
       {
-      addr->pipe_expandn = store_get((i+1) * sizeof(uschar **));
+      addr->pipe_expandn = store_get((i+1) * sizeof(uschar *));
       addr->pipe_expandn[i] = NULL;
       while (--i >= 0) addr->pipe_expandn[i] = expandn[i];
       }

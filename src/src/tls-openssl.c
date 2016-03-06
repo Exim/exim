@@ -2362,27 +2362,28 @@ while (left > 0)
   switch (error)
     {
     case SSL_ERROR_SSL:
-    ERR_error_string(ERR_get_error(), ssl_errstring);
-    log_write(0, LOG_MAIN, "TLS error (SSL_write): %s", ssl_errstring);
-    return -1;
+      ERR_error_string(ERR_get_error(), ssl_errstring);
+      log_write(0, LOG_MAIN, "TLS error (SSL_write): %s", ssl_errstring);
+      return -1;
 
     case SSL_ERROR_NONE:
-    left -= outbytes;
-    buff += outbytes;
-    break;
+      left -= outbytes;
+      buff += outbytes;
+      break;
 
     case SSL_ERROR_ZERO_RETURN:
-    log_write(0, LOG_MAIN, "SSL channel closed on write");
-    return -1;
+      log_write(0, LOG_MAIN, "SSL channel closed on write");
+      return -1;
 
     case SSL_ERROR_SYSCALL:
-    log_write(0, LOG_MAIN, "SSL_write: (from %s) syscall: %s",
-      sender_fullhost ? sender_fullhost : US"<unknown>",
-      strerror(errno));
+      log_write(0, LOG_MAIN, "SSL_write: (from %s) syscall: %s",
+	sender_fullhost ? sender_fullhost : US"<unknown>",
+	strerror(errno));
+      return -1;
 
     default:
-    log_write(0, LOG_MAIN, "SSL_write error %d", error);
-    return -1;
+      log_write(0, LOG_MAIN, "SSL_write error %d", error);
+      return -1;
     }
   }
 return len;
@@ -2819,6 +2820,7 @@ for (s=option_spec; *s != '\0'; /**/)
   keep_c = *end;
   *end = '\0';
   item_parsed = tls_openssl_one_option_parse(s, &item);
+  *end = keep_c;
   if (!item_parsed)
     {
     DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"\n", s);
@@ -2830,7 +2832,6 @@ for (s=option_spec; *s != '\0'; /**/)
     result |= item;
   else
     result &= ~item;
-  *end = keep_c;
   s = end;
   }
 

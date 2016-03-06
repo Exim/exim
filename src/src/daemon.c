@@ -927,7 +927,7 @@ if (inetd_wait_mode)
   int on = 1;
 
   listen_socket_count = 1;
-  listen_sockets = store_get(sizeof(int *));
+  listen_sockets = store_get(sizeof(int));
   (void) close(3);
   if (dup2(0, 3) == -1)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
@@ -1277,7 +1277,7 @@ if (daemon_listen && !inetd_wait_mode)
 
   for (ipa = addresses; ipa != NULL; ipa = ipa->next)
     listen_socket_count++;
-  listen_sockets = store_get(sizeof(int *) * listen_socket_count);
+  listen_sockets = store_get(sizeof(int) * listen_socket_count);
 
   } /* daemon_listen but not inetd_wait_mode */
 
@@ -1382,8 +1382,7 @@ if (daemon_listen && !inetd_wait_mode)
       wildcard = ipa->address[0] == 0;
       }
 
-    listen_sockets[sk] = ip_socket(SOCK_STREAM, af);
-    if (listen_sockets[sk] < 0)
+    if ((listen_sockets[sk] = ip_socket(SOCK_STREAM, af)) < 0)
       {
       if (check_special_case(0, addresses, ipa, FALSE))
         {

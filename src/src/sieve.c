@@ -283,7 +283,7 @@ for (pass=0; pass<=1; ++pass)
         }
       else
         *new++='\n';
-        line=0;
+        line=0;		/*XXX jgh: questionabale indent; probable BUG */
       ++start;
       }
     else

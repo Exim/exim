@@ -257,7 +257,7 @@ else
       count++;
 
   yield = store_get(sizeof(struct hostent));
-  alist = store_get((count + 1) * sizeof(char **));
+  alist = store_get((count + 1) * sizeof(char *));
   adds  = store_get(count *alen);
 
   yield->h_name = CS name;

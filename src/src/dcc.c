@@ -434,11 +434,11 @@ dcc_process(uschar **listptr)
             }
           }
           else {
-          /* We're on the first line but not on the first character,
-           * there must be something wrong. */
-            DEBUG(D_acl)
-              debug_printf("DCC: Line = %d but i = %d != 0  character is %c - This is wrong!\n", line, i, recvbuf[i]);
-              log_write(0,LOG_MAIN,"Wrong header from DCC, output is %s\n", recvbuf);
+            /* We're on the first line but not on the first character,
+             * there must be something wrong. */
+            DEBUG(D_acl) debug_printf("DCC: Line = %d but i = %d != 0"
+		"  character is %c - This is wrong!\n", line, i, recvbuf[i]);
+            log_write(0,LOG_MAIN,"Wrong header from DCC, output is %s\n", recvbuf);
           }
         }
         else if(line == 2) {
@@ -456,8 +456,8 @@ dcc_process(uschar **listptr)
             k++;
           }
           else {
-            DEBUG(D_acl)
-              debug_printf("DCC: We got more output than we can store in the X-DCC header. Truncating at 120 characters.\n");
+            DEBUG(D_acl) debug_printf("DCC: We got more output than we can store"
+		" in the X-DCC header. Truncating at 120 characters.\n");
           }
         }
         else {
