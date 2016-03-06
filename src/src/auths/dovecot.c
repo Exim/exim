@@ -240,7 +240,7 @@ uschar *auth_command;
 uschar *auth_extra_data = US"";
 uschar *p;
 int nargs, tmp;
-int crequid = 1, cont = 1, fd, ret = DEFER;
+int crequid = 1, cont = 1, fd = -1, ret = DEFER;
 BOOL found = FALSE, have_mech_line = FALSE;
 
 HDEBUG(D_auth) debug_printf("dovecot authentication\n");

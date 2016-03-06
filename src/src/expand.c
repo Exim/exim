@@ -3407,8 +3407,8 @@ if (Ustrlen(key) > 64)
   return NULL;
 
 hash_source = string_cat(NULL,&size,&offset,key_num,1);
-string_cat(hash_source,&size,&offset,daystamp,3);
-string_cat(hash_source,&size,&offset,address,Ustrlen(address));
+hash_source = string_cat(hash_source,&size,&offset,daystamp,3);
+hash_source = string_cat(hash_source,&size,&offset,address,Ustrlen(address));
 hash_source[offset] = '\0';
 
 DEBUG(D_expand) debug_printf("prvs: hash source is '%s'\n", hash_source);

@@ -4243,7 +4243,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
         addr_fallback = addr;
         }
 
-      else
+      else if (next)
 	{
 	while (next->next) next = next->next;
 	next->next = addr_defer;

@@ -2708,13 +2708,14 @@ if (type == NULL)
     {
     if (environ)
       {
-      uschar **p;
+      uschar ** p;
       for (p = USS environ; *p; p++) ;
       qsort(environ, p - USS environ, sizeof(*p), string_compare_by_pointer);
 
       for (p = USS environ; *p; p++)
         {
-        if (no_labels) *(Ustrchr(*p, '=')) = '\0';
+	uschar * q;
+        if (no_labels && (q = Ustrchr(*p, '='))) *q  = '\0';
         puts(CS *p);
         }
       }

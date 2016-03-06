@@ -500,8 +500,9 @@ offset = 0;
 while ((i = ip_recv(spamd_sock,
 		   spamd_buffer + offset,
 		   sizeof(spamd_buffer) - offset - 1,
-		   sd->timeout - time(NULL) + start)) > 0 )
+		   sd->timeout - time(NULL) + start)) > 0)
   offset += i;
+spamd_buffer[offset] = '\0';	/* guard byte */
 
 /* error handling */
 if (i <= 0 && errno != 0)
@@ -518,10 +519,12 @@ if (i <= 0 && errno != 0)
 if (sd->is_rspamd)
   {				/* rspamd variant of reply */
   int r;
-  if ((r = sscanf(CS spamd_buffer,
+  if (  (r = sscanf(CS spamd_buffer,
 	  "RSPAMD/%7s 0 EX_OK\r\nMetric: default; %7s %lf / %lf / %lf\r\n%n",
 	  spamd_version, spamd_short_result, &spamd_score, &spamd_threshold,
-	  &spamd_reject_score, &spamd_report_offset)) != 5)
+	  &spamd_reject_score, &spamd_report_offset)) != 5
+     || spamd_report_offset >= offset		/* verify within buffer */
+     )
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
 	      "%s cannot parse spamd %s, output: %d", loglabel, callout_address, r);

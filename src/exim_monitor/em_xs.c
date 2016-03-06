@@ -37,6 +37,7 @@ for (i = 0; i < num_args; i++)
   aa[i].name = va_arg(ap, String);
   aa[i].value = va_arg(ap, XtArgVal);
   }
+va_end(ap);
 XtSetValues(w, aa, num_args);
 if (num_args > 15) free(aa);
 }

@@ -373,7 +373,7 @@ if ((pid = fork()) == 0)
 
 /* Main process - set up an item for the main ticker to watch. */
 
-if (pid < 0) text_showf(text, "Failed to fork: %s\n", strerror(pid)); else
+if (pid < 0) text_showf(text, "Failed to fork: %s\n", strerror(errno)); else
   {
   pipe_item *p = (pipe_item *)store_malloc(sizeof(pipe_item));
 
