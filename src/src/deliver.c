@@ -2220,6 +2220,7 @@ for (addr2 = addr; addr2; addr2 = addr2->next)
       if (message_length > 0)
         {
         len = read(pfd[pipe_read], big_buffer, message_length);
+	big_buffer[big_buffer_size-1] = '\0';		/* guard byte */
         if (len > 0) *sptr = string_copy(big_buffer);
         }
       }
@@ -3855,7 +3856,8 @@ static void
 rmt_dlv_checked_write(int fd, char id, char subid, void * buf, int size)
 {
 uschar	writebuffer[PIPE_HEADER_SIZE + BIG_BUFFER_SIZE];
-int     header_length;
+int header_length;
+int ret;
 
 /* we assume that size can't get larger then BIG_BUFFER_SIZE which currently is set to 16k */
 /* complain to log if someone tries with buffer sizes we can't handle*/
@@ -3885,8 +3887,7 @@ if (buf && size > 0)
   memcpy(writebuffer + PIPE_HEADER_SIZE, buf, size);
 
 size += PIPE_HEADER_SIZE;
-int ret = write(fd, writebuffer, size);
-if(ret != size)
+if ((ret = write(fd, writebuffer, size)) != size)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed writing transport result to pipe: %s\n",
     ret == -1 ? strerror(errno) : "short write");
 }

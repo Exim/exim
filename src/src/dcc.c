@@ -79,50 +79,41 @@ dcc_process(uschar **listptr)
 
   /* grep 1st option */
   if ((dcc_acl_options = string_nextinlist(&list, &sep,
-                                           dcc_acl_options_buffer,
-                                           sizeof(dcc_acl_options_buffer))) != NULL)
-  {
+		   dcc_acl_options_buffer, sizeof(dcc_acl_options_buffer))))
+    {
     /* parse 1st option */
-    if ( (strcmpic(dcc_acl_options,US"false") == 0) ||
-         (Ustrcmp(dcc_acl_options,"0") == 0) ) {
-      /* explicitly no matching */
-      return FAIL;
-    };
-
-    /* special cases (match anything except empty) */
-    if ( (strcmpic(dcc_acl_options,US"true") == 0) ||
-         (Ustrcmp(dcc_acl_options,"*") == 0) ||
-         (Ustrcmp(dcc_acl_options,"1") == 0) ) {
-      dcc_acl_options = dcc_acl_options;
-    };
-  }
-  else {
-    /* empty means "don't match anything" */
-    return FAIL;
-  };
+    if (  strcmpic(dcc_acl_options, US"false") == 0
+       || Ustrcmp(dcc_acl_options, "0") == 0
+       )
+      return FAIL;	/* explicitly no matching */
+    }
+  else
+    return FAIL;	/* empty means "don't match anything" */
 
   sep = 0;
 
   /* if we scanned this message last time, just return */
-  if ( dcc_ok )
-      return dcc_rc;
+  if (dcc_ok)
+    return dcc_rc;
 
   /* open the spooled body */
   message_subdir[1] = '\0';
-  for (i = 0; i < 2; i++) {
+  for (i = 0; i < 2; i++)
+    {
     message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
     sprintf(CS mbox_path, "%s/input/%s/%s-D", spool_directory, message_subdir, message_id);
     data_file = Ufopen(mbox_path,"rb");
     if (data_file != NULL)
       break;
-  };
+    }
 
-  if (data_file == NULL) {
+  if (data_file == NULL)
+    {
     /* error while spooling */
     log_write(0, LOG_MAIN|LOG_PANIC,
            "dcc acl condition: error while opening spool file");
     return DEFER;
-  };
+    }
 
   /* Initialize the variables */
 

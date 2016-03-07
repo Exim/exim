@@ -679,15 +679,16 @@ if (len == 0) return tblock;
 
 /* Search the formats for a match */
 
-while ((s = string_nextinlist(&format,&sep,big_buffer,big_buffer_size))!= NULL)
+while ((s = string_nextinlist(&format,&sep,big_buffer,big_buffer_size)))
   {
   int slen = Ustrlen(s);
   BOOL match = len >= slen && Ustrncmp(data, s, slen) == 0;
   uschar *tp = string_nextinlist(&format, &sep, big_buffer, big_buffer_size);
-  if (match)
+
+  if (match && tp)
     {
     transport_instance *tt;
-    for (tt = transports; tt != NULL; tt = tt->next)
+    for (tt = transports; tt; tt = tt->next)
       if (Ustrcmp(tp, tt->name) == 0)
         {
         DEBUG(D_transport)

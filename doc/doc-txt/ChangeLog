@@ -186,6 +186,10 @@ JH/44 Bug 1800: The combination of a -bhc commandline option and cutthrough
 JH/45 Fix cutthrough, when connection not opened by verify and target hard-
       rejects a recipient: pass the reject to the originator.
 
+JH/46 Multiple issues raised by Coverity. Some were obvious or plausible bugs.
+      Many were false-positives and ignorable, but it's worth fixing the
+      former class.
+
 
 
 Exim version 4.86

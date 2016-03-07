@@ -655,8 +655,8 @@ if (!ugid.gid_set && pw != NULL)
 //          eximsrs_db_set(FALSE, NULL);
 */
 
-        if(ob->srs_alias != NULL ? (usedomain = expand_string(ob->srs_alias)) == NULL : 1)
-          usedomain = deliver_domain;
+        if (!(usedomain = ob->srs_alias ? expand_string(ob->srs_alias) : NULL))
+          usedomain = string_copy(deliver_domain);
 
         if((n_srs = eximsrs_forward(&res, sender_address, usedomain)) == OK)
         {

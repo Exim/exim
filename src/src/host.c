@@ -2920,6 +2920,12 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   NEXT_MX_RR: continue;
   }
 
+if (!last)	/* No rr of correct type; give up */
+  {
+  yield = HOST_FIND_FAILED;
+  goto out;
+  }
+
 /* If the list of hosts was obtained from SRV records, there are two things to
 do. First, if there is only one host, and it's name is ".", it means there is
 no SMTP service at this domain. Otherwise, we have to sort the hosts of equal
@@ -2946,7 +2952,7 @@ if (ind_type == T_SRV)
       debug_printf("  %s P=%d W=%d\n", h->name, h->mx, h->sort_key % 1000);
     }
 
-  for (pptr = &host, h = host; h != last; pptr = &(h->next), h = h->next)
+  for (pptr = &host, h = host; h != last; pptr = &h->next, h = h->next)
     {
     int sum = 0;
     host_item *hh;
@@ -3051,7 +3057,8 @@ dns_init(FALSE, FALSE,       /* Disable qualify_single and search_parents */
 
 for (h = host; h != last->next; h = h->next)
   {
-  if (h->address != NULL) continue;  /* Inserted by a multihomed host */
+  if (h->address) continue;  /* Inserted by a multihomed host */
+
   rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip,
     NULL, dnssec_request, dnssec_require);
   if (rc != HOST_FOUND)
@@ -3063,7 +3070,7 @@ for (h = host; h != last->next; h = h->next)
       h->why = hwhy_deferred;
       }
     else
-      h->why = (rc == HOST_IGNORED)? hwhy_ignored : hwhy_failed;
+      h->why = rc == HOST_IGNORED ? hwhy_ignored : hwhy_failed;
     }
   }
 

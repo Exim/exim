@@ -513,7 +513,8 @@ for (;;)
     if (Ustrncmp(p, "rozen", 5) == 0)
       {
       deliver_freeze = TRUE;
-      sscanf(CS big_buffer+7, TIME_T_FMT, &deliver_frozen_at);
+      if (sscanf(CS big_buffer+7, TIME_T_FMT, &deliver_frozen_at) != 1)
+	goto SPOOL_READ_ERROR;
       }
     break;
 
