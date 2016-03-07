@@ -16931,7 +16931,7 @@ this option selects a EC curve for use by Exim.
 Curve names of the form &'prime256v1'& are accepted.
 For even more-recent library versions, names of the form &'P-512'&
 are also accepted, plus the special value &'auto'&
-which tell the library to choose.
+which tells the library to choose.
 
 If the option is set to an empty string, no EC curves will be enabled.
 
