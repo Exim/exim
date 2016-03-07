@@ -62,7 +62,10 @@ functions from the OpenSSL library. */
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 # endif
+#endif
 
+#if !defined(LIBRESSL_VERSION_NUMBER) \
+    || LIBRESSL_VERSION_NUMBER >= 0x20010000L
 # if !defined(OPENSSL_NO_ECDH)
 #  if OPENSSL_VERSION_NUMBER >= 0x0090800fL
 #   define EXIM_HAVE_ECDH
