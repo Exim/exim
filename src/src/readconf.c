@@ -3506,7 +3506,7 @@ if (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto)
 if ((!add_environment || *add_environment == '\0') && !keep_environment)
   log_write(0, LOG_MAIN,
       "WARNING: purging the environment.\n"
-      " Suggested action: use keep_environment and add_environment.\n");
+      " Suggested action: use keep_environment and add_environment.");
 }
 
 
