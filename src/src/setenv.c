@@ -3,14 +3,14 @@
 *************************************************/
 
 /* Copyright (c) Michael Haardt 2015 */
-/* Copyright (c) Jeremy Harris 2015 */
+/* Copyright (c) Jeremy Harris 2015 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module provides (un)setenv routines for those environments
-lacking them in libraries. */
+lacking them in libraries. It is #include'd by OS/os.c-foo files. */
 
 
-static int
+int
 setenv(const char * name, const char * val, int overwrite)
 {
 uschar * s;
@@ -20,7 +20,7 @@ if (overwrite || !getenv(name))
 return 0;
 }
 
-static int
+int
 unsetenv(const char *name)
 {
 size_t len;

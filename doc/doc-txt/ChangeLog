@@ -190,6 +190,10 @@ JH/46 Multiple issues raised by Coverity. Some were obvious or plausible bugs.
       Many were false-positives and ignorable, but it's worth fixing the
       former class.
 
+JH/47 Fix build on HP-UX and older Solaris, which need (un)setenv now also
+      for the new environment-manipulation done at startup.  Move the routines
+      from being local to tls.c to being global via the os.c file.
+
 
 
 Exim version 4.86

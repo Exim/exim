@@ -84,26 +84,23 @@ return TRUE;
 *        Timezone environment flipping           *
 *************************************************/
 
-#ifdef MISSING_UNSETENV_3
-# include "setenv.c"
-#endif
-
 static uschar *
 to_tz(uschar * tz)
 {
-  uschar * old = US getenv("TZ");
-  (void) setenv("TZ", CCS tz, 1);
-  tzset(); 
-  return old;
+uschar * old = US getenv("TZ");
+(void) setenv("TZ", CCS tz, 1);
+tzset(); 
+return old;
 }
+
 static void
 restore_tz(uschar * tz)
 {
-  if (tz)
-    (void) setenv("TZ", CCS tz, 1);
-  else
-    (void) unsetenv("TZ");
-  tzset(); 
+if (tz)
+  (void) setenv("TZ", CCS tz, 1);
+else
+  (void) unsetenv("TZ");
+tzset(); 
 }
 
 /*************************************************
