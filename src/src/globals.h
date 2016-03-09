@@ -466,6 +466,7 @@ extern BOOL    ignore_fromline_local;  /* Local SMTP ignore fromline */
 extern uschar *ignore_fromline_hosts;  /* Hosts permitted to send "From " */
 extern BOOL    inetd_wait_mode;        /* Whether running in inetd wait mode */
 extern int     inetd_wait_timeout;     /* Timeout for inetd wait mode */
+extern uschar *initial_cwd;            /* The directory we where in at startup */
 extern BOOL    is_inetd;               /* True for inetd calls */
 extern uschar *iterate_item;           /* Item from iterate list */
 
