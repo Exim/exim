@@ -3960,9 +3960,9 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
     else if (expired)
       {
       setflag(addr, af_pass_message);   /* This is not a security risk */
-      addr->message = (ob->delay_after_cutoff)?
-        US"retry time not reached for any host after a long failure period" :
-        US"all hosts have been failing for a long time and were last tried "
+      addr->message = ob->delay_after_cutoff
+        ? US"retry time not reached for any host after a long failure period"
+        : US"all hosts have been failing for a long time and were last tried "
           "after this message arrived";
 
       /* If we are already using fallback hosts, or there are no fallback hosts
@@ -3974,18 +3974,23 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
       }
     else
       {
+      const uschar * s;
       if (hosts_retry == hosts_total)
-        addr->message = US"retry time not reached for any host";
+        s = US"retry time not reached for any host%s";
       else if (hosts_fail == hosts_total)
-        addr->message = US"all host address lookups failed permanently";
+        s = US"all host address lookups%s failed permanently";
       else if (hosts_defer == hosts_total)
-        addr->message = US"all host address lookups failed temporarily";
+        s = US"all host address lookups%s failed temporarily";
       else if (hosts_serial == hosts_total)
-        addr->message = US"connection limit reached for all hosts";
+        s = US"connection limit reached for all hosts%s";
       else if (hosts_fail+hosts_defer == hosts_total)
-        addr->message = US"all host address lookups failed";
-      else addr->message = US"some host address lookups failed and retry time "
-        "not reached for other hosts or connection limit reached";
+        s = US"all host address lookups%s failed";
+      else
+        s = US"some host address lookups failed and retry time "
+        "not reached for other hosts or connection limit reached%s";
+
+      addr->message = string_sprintf(s,
+	addr->domain ? string_sprintf(" for '%s'", addr->domain) : US"");
       }
     }
   }

@@ -14,7 +14,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaX-0005vi-00 == d@test.ex R=smart T=local_delivery defer (-52): Retry time not yet reached
-1999-03-02 09:44:33 10HmaX-0005vi-00 == a@unknown.ex R=default T=smtp defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmaX-0005vi-00 == a@unknown.ex R=default T=smtp defer (-53): retry time not reached for any host for 'unknown.ex'
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaX-0005vi-00 == d@test.ex R=smart T=local_delivery defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/d)
