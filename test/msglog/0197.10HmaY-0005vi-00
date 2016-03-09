@@ -1,9 +1,9 @@
 1999-03-02 09:44:33 Received from doesn't@matter U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 x@copy.domain <x@copy.domain>: makecopy transport succeeded
 1999-03-02 09:44:33 y@copy.domain <y@copy.domain>: makecopy transport succeeded
-1999-03-02 09:44:33 x@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host
-1999-03-02 09:44:33 y@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host
-1999-03-02 09:44:33 z@elsewhere R=passall T=pass_on defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 x@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host for 'copy.domain'
+1999-03-02 09:44:33 y@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host for 'copy.domain'
+1999-03-02 09:44:33 z@elsewhere R=passall T=pass_on defer (-53): retry time not reached for any host for 'elsewhere'
 1999-03-02 09:44:33 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 x@copy.domain R=passall T=pass_on defer (dd): Network Error
 1999-03-02 09:44:33 y@copy.domain R=passall T=pass_on defer (dd): Network Error

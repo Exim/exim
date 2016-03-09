@@ -8,5 +8,5 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 H=127.0.0.1 [127.0.0.1] Connection refused
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=r1 T=t1 defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@test.ex R=r1 T=t1 defer (-53): retry time not reached for any host for 'test.ex'
 1999-03-02 09:44:33 End queue run: pid=pppp

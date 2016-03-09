@@ -42,15 +42,15 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex routing defer (-51): retry time not reached
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex routing defer (-51): retry time not reached
-1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (-53): retry time not reached for any host
-1999-03-02 09:44:33 10HmbD-0005vi-00 == yyyy@connection.refused R=refused T=smtp_connect_refused defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (-53): retry time not reached for any host for 'some.domain'
+1999-03-02 09:44:33 10HmbD-0005vi-00 == yyyy@connection.refused R=refused T=smtp_connect_refused defer (-53): retry time not reached for any host for 'connection.refused'
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex routing defer (-51): retry time not reached
 1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex routing defer (-51): retry time not reached
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex routing defer (-51): retry time not reached
-1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (-53): retry time not reached for any host for 'some.domain'
 1999-03-02 09:44:33 10HmbD-0005vi-00 H=127.0.0.1 [127.0.0.1] Connection refused
 1999-03-02 09:44:33 10HmbD-0005vi-00 == yyyy@connection.refused R=refused T=smtp_connect_refused defer (dd): Connection refused
 1999-03-02 09:44:33 End queue run: pid=pppp

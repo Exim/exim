@@ -3,9 +3,9 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@copy.domain R=check_file T=pass_on defer (dd): Network Error
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == CALLER@the.local.host.name R=passall T=pass_on defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == CALLER@the.local.host.name R=passall T=pass_on defer (-53): retry time not reached for any host for 'the.local.host.name'
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= doesn't@matter U=CALLER P=local-bsmtp S=sss id=E10HmbB-0005vi-00@the.local.host.name
 1999-03-02 09:44:33 10HmbA-0005vi-00 ** y@copy.domain: Unrouteable address
-1999-03-02 09:44:33 10HmbA-0005vi-00 == x@copy.domain R=check_file T=pass_on defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmbA-0005vi-00 == x@copy.domain R=check_file T=pass_on defer (-53): retry time not reached for any host for 'copy.domain'
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbC-0005vi-00 == doesn't@matter R=passall T=pass_on defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmbC-0005vi-00 == doesn't@matter R=passall T=pass_on defer (-53): retry time not reached for any host for 'matter'
