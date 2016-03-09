@@ -5622,7 +5622,7 @@ It provides a list of domains for which the &"percent hack"& is to operate.
 This is an almost obsolete form of explicit email routing. If you do not know
 anything about it, you can safely ignore this topic.
 
-The last two settings in the main part of the default configuration are
+The next two settings in the main part of the default configuration are
 concerned with messages that have been &"frozen"& on Exim's queue. When a
 message is frozen, Exim no longer continues to try to deliver it. Freezing
 occurs when a bounce message encounters a permanent failure because the sender
@@ -5640,6 +5640,44 @@ message (whether a bounce message or not) is to be timed out (and discarded)
 after a week. In this configuration, the first setting ensures that no failing
 bounce message ever lasts a week.
 
+Exim queues it's messages in a spool directory. If you expect to have
+large queues, you may consider using this option. It splits the spool
+directory into subdirectories to avoid file system degradation from
+many files in a single directory, resulting in better performance.
+Manual manipulation of queued messages becomes more complex (though fortunately 
+not often needed).
+.code
+# split_spool_directory = true
+.endd
+
+In an ideal world everybody follows the standards. For non-ASCII
+messages RFC 2047 is a standard, allowing a maximum line length of 76
+characters. Exim adheres that standard and won't process messages which
+violate this standard. (Even ${rfc2047:...} expansions will fail.)
+In particular, the Exim maintainers have had multiple reports of
+problems from Russian administrators of issues until they disable this
+check, because of some popular, yet buggy, mail composition software.
+.code
+# check_rfc2047_length = false
+.endd
+
+If you need to be strictly RFC compliant you may wish to disable the
+8BITMIME advertisement. Use this, if you exchange mails with systems
+that are not 8-bit clean.
+.code
+# accept_8bitmime = false
+.endd
+
+Libraries you use may depend on specific environment settings.  This
+imposes a security risk (e.g. PATH). There are two lists:
+&%keep_environment%& for the variables to import as they are, and
+&%add_environment%& for variables we want to set to a fixed value.
+Note that TZ is handled separately, by the $%timezone%$ runtime
+option and by the TIMEZONE_DEFAULT buildtime option.
+.code
+# keep_environment = ^LDAP
+# add_environment = PATH=/usr/bin::/bin
+.endd
 
 
 .section "ACL configuration" "SECID54"
@@ -9115,7 +9153,7 @@ configuration, you must add &%-export-dynamic%& to EXTRALIBS.
 
 .vitem "&*${env{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}}*&"
 .cindex "expansion" "extracting value from environment"
-.cindex "environment" "value from"
+.cindex "environment" "values from"
 The key is first expanded separately, and leading and trailing white space
 removed.
 This is then searched for as a name in the environment.
@@ -9134,6 +9172,9 @@ If {<&'string2'&>} is omitted an empty string is substituted on
 search failure.
 If {<&'string1'&>} is omitted the search result is substituted on
 search success.
+
+The environment is adjusted by the &%keep_environment%& and
+&%add_environment%& main section options.
 
 
 .vitem "&*${extract{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
@@ -11659,7 +11700,8 @@ explicitly set a home directory for use by a transport; this can be overridden
 by a setting on the transport itself.
 
 When running a filter test via the &%-bf%& option, &$home$& is set to the value
-of the environment variable HOME.
+of the environment variable HOME, which is subject to the
+&%keep_environment%& and &%add_environment%& main config options.
 
 .vitem &$host$&
 .vindex "&$host$&"
@@ -13960,7 +14002,7 @@ received. See chapter &<<CHAPACL>>& for further details.
 
 .new
 .option add_environment main "string list" empty
-.cindex "environment" "inherited"
+.cindex "environment" "set values"
 This option allows to set individual environment variables that the
 currently linked libraries and programs in child processes use. The
 default list is empty,
@@ -15055,7 +15097,7 @@ See &%ignore_fromline_hosts%& above.
 
 .new
 .option keep_environment main "string list" unset
-.cindex "environment" "inherited"
+.cindex "environment" "values from"
 This option contains a string list of environment variables to keep.
 You have to trust these variables or you have to be sure that
 these variables do not impose any security risk. Keep in mind that
@@ -16794,6 +16836,7 @@ messages that are released by &%ignore_bounce_errors_after%&).
 
 .option timezone main string unset
 .cindex "timezone, setting"
+.cindex "environment" "values from"
 The value of &%timezone%& is used to set the environment variable TZ while
 running Exim (if it is different on entry). This ensures that all timestamps
 created by Exim are in the required timezone. If you want all your timestamps

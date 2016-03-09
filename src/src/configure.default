@@ -40,6 +40,7 @@
 ######################################################################
 #                    MAIN CONFIGURATION SETTINGS                     #
 ######################################################################
+#
 
 # Specify your host's canonical name here. This should normally be the fully
 # qualified "official" name of your host. If this option is not set, the
@@ -327,6 +328,18 @@ timeout_frozen_after = 7d
 # wish to disable advertising 8BITMIME.  Uncomment this option to do so.
 
 # accept_8bitmime = false
+
+
+# Exim does not make use of environment variables itself. However,
+# libraries that Exim uses (e.g. LDAP) depend on specific environment settings.
+# There are two lists: keep_environment for the variables we trust, and
+# add_environment for variables we want to set to a specific value.
+# Note that TZ is handled separateley by the timezone runtime option
+# and TIMEZONE_DEFAULT buildtime option.
+
+# keep_environment = ^LDAP
+# add_environment = PATH=/usr/bin::/bin
+
 
 
 ######################################################################
