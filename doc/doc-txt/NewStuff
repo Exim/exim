@@ -6,6 +6,8 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+ 9. New $initial_cwd expansion variable.
+
 Version 4.80
 ------------
 

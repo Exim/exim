@@ -3500,6 +3500,13 @@ if (Uchdir("/") < 0)
     exit(EXIT_FAILURE);
   }
 
+/* Store the initial cwd before we change directories */
+if ((initial_cwd = getcwd(NULL, 0)) == NULL)
+  {
+  perror("exim: can't get the current working directory");
+  exit(EXIT_FAILURE);
+  }
+
 readconf_main();
 
 if (cleanup_environment() == FALSE)
@@ -3698,8 +3705,10 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
   {
   int i;
   uschar *p = big_buffer;
-  Ustrcpy(p, "cwd=");
   (void)getcwd(CS p+4, big_buffer_size - 4);
+
+  Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
+
   while (*p) p++;
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
   while (*p) p++;

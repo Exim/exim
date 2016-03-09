@@ -11012,6 +11012,12 @@ the result, the name is not accepted, and &$host_lookup_deferred$& is set to
 .vindex "&$host_lookup_failed$&"
 See &$host_lookup_deferred$&.
 
+.vitem &$initial_cwd$&
+.vindex "&$initial_cwd$&
+This variable contains the full path name of the initial working
+directory of the current Exim process. This may differ from the current
+working directory, as Exim changes this to "/" during early startup, and
+to &$spool_directory$& later.
 
 .vitem &$inode$&
 .vindex "&$inode$&"
