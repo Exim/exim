@@ -615,6 +615,9 @@ ${extract{}{X=3}}
 ${extract{ }{X=3}}
 ${extract{ 2 }{ }{a b c}}
 
+${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}{}}}}
+${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}{failcase}{bogus_argument}}}}
+
 # Translation
 
 abcdea aaa xyz ${tr{abcdea}{aaa}{xyz}}

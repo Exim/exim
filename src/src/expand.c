@@ -5307,9 +5307,25 @@ while (*s != 0)
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
-      /* Read the arguments */
+      /* While skipping we cannot rely on the data for expansions being
+      available (eg. $item) hence cannot decide on numeric vs. keyed.
+      Just read as many arguments as there are. */
 
-      for (i = 0; i < j; i++)
+      if (skipping)
+	{
+        while (isspace(*s)) s++;
+        while (*s == '{')
+	  {
+          if (!expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok))
+	    goto EXPAND_FAILED;					/*{*/
+          if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+	  while (isspace(*s)) s++;
+	  }
+	if (*s != '}')
+	  goto EXPAND_FAILED_CURLY;
+	}
+
+      else for (i = 0; i < j; i++) /* Read the proper number of arguments */
         {
         while (isspace(*s)) s++;
         if (*s == '{') 						/*}*/
@@ -5336,27 +5352,24 @@ while (*s != 0)
             while (len > 0 && isspace(p[len-1])) len--;
             p[len] = 0;
 
-            if (!skipping)
+	    if (*p == 0)
 	      {
-	      if (*p == 0)
-		{
-		expand_string_message = US"first argument of \"extract\" must "
-		  "not be empty";
-		goto EXPAND_FAILED;
-		}
+	      expand_string_message = US"first argument of \"extract\" must "
+		"not be empty";
+	      goto EXPAND_FAILED;
+	      }
 
-	      if (*p == '-')
-		{
-		field_number = -1;
-		p++;
-		}
-	      while (*p != 0 && isdigit(*p)) x = x * 10 + *p++ - '0';
-	      if (*p == 0)
-		{
-		field_number *= x;
-		j = 3;               /* Need 3 args */
-		field_number_set = TRUE;
-		}
+	    if (*p == '-')
+	      {
+	      field_number = -1;
+	      p++;
+	      }
+	    while (*p != 0 && isdigit(*p)) x = x * 10 + *p++ - '0';
+	    if (*p == 0)
+	      {
+	      field_number *= x;
+	      j = 3;               /* Need 3 args */
+	      field_number_set = TRUE;
 	      }
             }
           }

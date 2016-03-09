@@ -194,6 +194,11 @@ JH/47 Fix build on HP-UX and older Solaris, which need (un)setenv now also
       for the new environment-manipulation done at startup.  Move the routines
       from being local to tls.c to being global via the os.c file.
 
+JH/48 Bug 1807: Fix ${extract } for the numeric/3-string case. While preparsing
+      an extract embedded as result-arg for a map, the first arg for extract
+      is unavailable so we cannot tell if this is a numbered or keyed
+      extraction.  Accept either.
+
 
 
 Exim version 4.86

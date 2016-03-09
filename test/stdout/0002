@@ -577,6 +577,9 @@
 > Failed: first argument of "extract" must not be empty
 > b
 > 
+> a:b:c
+> Failed: missing or misplaced { or } inside "map" item
+> 
 > # Translation
 > 
 > abcdea aaa xyz zbcdez
