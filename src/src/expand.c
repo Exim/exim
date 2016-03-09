@@ -512,6 +512,7 @@ static var_entry var_table[] = {
   { "host_lookup_deferred",vtype_int,         &host_lookup_deferred },
   { "host_lookup_failed",  vtype_int,         &host_lookup_failed },
   { "host_port",           vtype_int,         &deliver_host_port },
+  { "initial_cwd",         vtype_stringptr,   &initial_cwd },
   { "inode",               vtype_ino,         &deliver_inode },
   { "interface_address",   vtype_stringptr,   &interface_address },
   { "interface_port",      vtype_int,         &interface_port },
