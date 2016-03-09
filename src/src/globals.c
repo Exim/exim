@@ -797,6 +797,7 @@ BOOL    ignore_fromline_local  = FALSE;
 uschar *ignore_fromline_hosts  = NULL;
 BOOL    inetd_wait_mode        = FALSE;
 int     inetd_wait_timeout     = -1;
+uschar *initial_cwd            = NULL;
 uschar *interface_address      = NULL;
 int     interface_port         = -1;
 BOOL    is_inetd               = FALSE;

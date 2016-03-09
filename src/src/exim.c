@@ -3747,6 +3747,9 @@ NOTE: immediatly after opening the configuration file we change the working
 directory to "/"! Later we change to $spool_directory. We do it there, because
 during readconf_main() some expansion takes place already. */
 
+/* Store the initial cwd before we change directories */
+initial_cwd = getcwd(NULL, 0);
+
 readconf_main();
 
 /* Now in directory "/" */
@@ -4042,9 +4045,10 @@ if (((debug_selector & D_any) != 0 || LOGGING(arguments))
   {
   int i;
   uschar *p = big_buffer;
-  char * dummy;
   Ustrcpy(p, "cwd= (failed)");
-  dummy = /* quieten compiler */ getcwd(CS p+4, big_buffer_size - 4);
+
+  Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
+
   while (*p) p++;
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
   while (*p) p++;

@@ -35,6 +35,8 @@ Version 4.87
     avoid oversize bodies in bounces. The dafault value matches RFC
     limits.
 
+ 9. New $initial_cwd expansion variable.
+
 
 Version 4.86
 ------------

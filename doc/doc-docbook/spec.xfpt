@@ -11735,6 +11735,12 @@ See &$host_lookup_deferred$&.
 This variable is set to the remote host's TCP port whenever &$host$& is set
 for an outbound connection.
 
+.vitem &$initial_cwd$&
+.vindex "&$initial_cwd$&
+This variable contains the full path name of the initial working
+directory of the current Exim process. This may differ from the current
+working directory, as Exim changes this to "/" during early startup, and
+to &$spool_directory$& later.
 
 .vitem &$inode$&
 .vindex "&$inode$&"
