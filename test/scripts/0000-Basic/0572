@@ -26,3 +26,6 @@ perl -e 'print "\n";'
 #
 exim -bP config
 ****
+#
+exim -n -bP config
+****

@@ -16,7 +16,7 @@ extern char **environ;
 static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
 static void save_config_line(const uschar* line);
 static void save_config_position(const uschar *file, int line);
-static void print_config(BOOL admin);
+static void print_config(BOOL admin, BOOL terse);
 
 
 #define CSTATE_STACK_SIZE 10
@@ -2649,7 +2649,7 @@ if (type == NULL)
 
   if (Ustrcmp(name, "config") == 0)
     {
-    print_config(admin_user);
+    print_config(admin_user, no_labels);
     return;
     }
 
@@ -4303,10 +4303,10 @@ current = next;
 /* List the parsed config lines, care about nice formatting and
 hide the <hide> values unless we're the admin user */
 void
-print_config(BOOL admin)
+print_config(BOOL admin, BOOL terse)
 {
 config_line_item *i;
-const int TS = 2;
+const int TS = terse ? 0 : 2;
 int indent = 0;
 
 for (i = config_lines; i; i = i->next)
@@ -4346,7 +4346,7 @@ for (i = config_lines; i; i = i->next)
   /* begin lines are left aligned */
   else if (Ustrncmp(current, "begin", 5) == 0 && isspace(current[5]))
     {
-    puts("");
+    if (!terse) puts("");
     puts(CCS current);
     indent = TS;
     }
@@ -4354,7 +4354,8 @@ for (i = config_lines; i; i = i->next)
   /* router/acl/transport block names */
   else if (current[Ustrlen(current)-1] == ':' && !Ustrchr(current, '='))
     {
-    printf("\n%*s%s\n", TS, "", current);
+    if (!terse) puts("");
+    printf("%*s%s\n", TS, "", current);
     indent = 2 * TS;
     }
 

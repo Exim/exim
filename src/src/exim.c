@@ -4572,7 +4572,7 @@ if (list_options)
 if (list_config)
   {
   set_process_info("listing config");
-  readconf_print(US"config", NULL, FALSE);
+  readconf_print(US"config", NULL, flag_n);
   exim_exit(EXIT_SUCCESS);
   }
 

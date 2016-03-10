@@ -101,3 +101,31 @@ begin transports
     interface = ip4.ip4.ip4.ip4
     port = 1224
     debug_print = transport_name <$transport_name>
+# Exim Configuration (X)
+# 1 "TESTSUITE/test-config"
+OPT =
+exim_path = TESTSUITE/eximdir/exim
+keep_environment =
+hide host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = TESTSUITE/spool
+log_file_path = TESTSUITE/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+log_selector = +outgoing_port
+domainlist local_domains = test.ex : *.test.ex
+acl_smtp_rcpt = accept
+begin routers
+my_main_router:
+driver = manualroute
+route_list = * 127.0.0.1
+self = send
+transport = my_smtp
+hide debug_print = router_name <$router_name>
+no_more
+begin transports
+my_smtp:
+driver = smtp
+interface = ip4.ip4.ip4.ip4
+port = 1224
+debug_print = transport_name <$transport_name>
