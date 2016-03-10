@@ -4017,7 +4017,8 @@ for that message.
 .oindex "&%-n%&"
 This option is interpreted by Sendmail to mean &"no aliasing"&.
 For normal modes of operation, it is ignored by Exim.
-When combined with &%-bP%& it suppresses the name of an option from being output.
+When combined with &%-bP%& it makes the output more terse (suppresses
+option names, environment values and config pretty printing).
 
 .vitem &%-O%&&~<&'data'&>
 .oindex "&%-O%&"
