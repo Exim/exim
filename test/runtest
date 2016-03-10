@@ -564,7 +564,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # signature algorithm names
   s/RSA-SHA1/RSA-SHA/;
 
-  # -d produces a list of environement variables as they are checked if they exist in the
+  # -d produces a list of environment variables as they are checked if they exist
   # in the environment. Unfortunately this list isn't always in the same order. For now we
   # just remove this list
   #
