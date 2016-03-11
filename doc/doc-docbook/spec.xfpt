@@ -14674,9 +14674,10 @@ FOO and having FOO_HOME in your &%keep_environment%& option may have
 unexpected results. You may work around this using a regular expression
 that does not match the macro name: ^[F]OO_HOME$.
 
-Current versions of Exim issue a warning during startupif you do not mention
-&%keep_environment%& or &%add_environment%& in your runtime configuration
-file.
+Current versions of Exim issue a warning during startup if you do not mention
+&%keep_environment%& in your runtime configuration file and if there is
+anything in your environment. Future versions may not issue that warning
+anymore.
 .wen
 
 
