@@ -3503,10 +3503,10 @@ if (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto)
       " are obsolete\n");
 #endif	/*SUPPORT_TLS*/
 
-if ((!add_environment || *add_environment == '\0') && !keep_environment)
+if (!keep_environment && environ && *environ)
   log_write(0, LOG_MAIN,
-      "WARNING: purging the environment.\n"
-      " Suggested action: use keep_environment and add_environment.");
+      "Warning: purging the environment.\n"
+      " Suggested action: use keep_environment.");
 }
 
 
