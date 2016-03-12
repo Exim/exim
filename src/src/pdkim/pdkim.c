@@ -760,9 +760,8 @@ if (!(sig->domain      && (*(sig->domain)      != '\0') &&
 
 *q = '\0';
 /* Chomp raw header. The final newline must not be added to the signature. */
-q--;
-while (q > sig->rawsig_no_b_val  && (*q == '\r' || *q == '\n'))
-  *q = '\0'; q--;	/*XXX questionable code layout; possible bug */
+while (--q > sig->rawsig_no_b_val  && (*q == '\r' || *q == '\n'))
+  *q = '\0';
 
 DEBUG(D_acl)
   {

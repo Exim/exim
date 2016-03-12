@@ -48,7 +48,77 @@ static int    logging_mode = LOG_MODE_FILE;
 static uschar *file_path = US"";
 
 
+/* These should be kept in-step with the private delivery error
+number definitions in macros.h */
 
+static const uschar * exim_errstrings[] = {
+  US"",
+  US"unknown error",
+  US"user slash",
+  US"exist race",
+  US"not regular",
+  US"not directory",
+  US"bad ugid",
+  US"bad mode",
+  US"inode changed",
+  US"lock failed",
+  US"bad address2",
+  US"forbid pipe",
+  US"forbid file",
+  US"forbid reply",
+  US"missing pipe",
+  US"missing file",
+  US"missing reply",
+  US"bad redirect",
+  US"smtp closed",
+  US"smtp format",
+  US"spool format",
+  US"not absolute",
+  US"Exim-imposed quota",
+  US"held",
+  US"Delivery filter process failure",
+  US"Delivery add/remove header failure",
+  US"Delivery write incomplete error",
+  US"Some expansion failed",
+  US"Failed to get gid",
+  US"Failed to get uid",
+  US"Unset or non-existent transport",
+  US"MBX length mismatch",
+  US"Lookup failed routing or in smtp tpt",
+  US"Can't match format in appendfile",
+  US"Creation outside home in appendfile",
+  US"Can't check a list; lookup defer",
+  US"DNS lookup defer",
+  US"Failed to start TLS session",
+  US"Mandatory TLS session not started",
+  US"Failed to chown a file",
+  US"Failed to create a pipe",
+  US"When verifying",
+  US"When required by client",
+  US"Used internally in smtp transport",
+  US"RCPT gave 4xx error",
+  US"MAIL gave 4xx error",
+  US"DATA gave 4xx error",
+  US"Negotiation failed for proxy configured host",
+  US"Authenticator 'other' failure",
+  US"target not supporting SMTPUTF8",
+  US"",
+
+  US"Not time for routing",
+  US"Not time for local delivery",
+  US"Not time for any remote host",
+  US"Local-only delivery",
+  US"Domain in queue_domains",
+  US"Transport concurrency limit",
+};
+
+
+/************************************************/
+const uschar *
+exim_errstr(int err)
+{
+return errno < 0 ? exim_errstrings[-err] : CUS strerror(err);
+}
 
 /*************************************************
 *              Write to syslog                   *

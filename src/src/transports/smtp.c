@@ -668,17 +668,17 @@ if (addr->message)
   }
 else
   {
-  log_write(0, LOG_MAIN, "%s %s", message, strerror(addr->basic_errno));
-  deliver_msglog("%s %s %s\n", tod_stamp(tod_log), message,
-		strerror(addr->basic_errno));
+  const uschar * s = exim_errstr(addr->basic_errno);
+  log_write(0, LOG_MAIN, "%s %s", message, s);
+  deliver_msglog("%s %s %s\n", tod_stamp(tod_log), message, s);
   }
 }
 
 static void
 msglog_line(host_item * host, uschar * message)
 {
-  deliver_msglog("%s H=%s [%s] %s\n", tod_stamp(tod_log),
-    host->name, host->address, message);
+deliver_msglog("%s H=%s [%s] %s\n", tod_stamp(tod_log),
+  host->name, host->address, message);
 }
 
 

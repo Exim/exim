@@ -415,7 +415,7 @@ if (hostlist[0] == 0)
   {
   if (verify != v_none) goto ROUTED;
   addr->message = string_sprintf("error in %s router: no host(s) specified "
-    "for domain %s", rblock->name, domain);
+    "for domain %s", rblock->name, addr->domain);
   log_write(0, LOG_MAIN, "%s", addr->message);
   return DEFER;
   }

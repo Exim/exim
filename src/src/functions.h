@@ -170,6 +170,7 @@ extern BOOL    enq_start(uschar *, unsigned);
 extern uschar *event_raise(uschar *, const uschar *, uschar *);
 extern void    msg_event_raise(const uschar *, const address_item *);
 #endif
+extern const uschar * exim_errstr(int);
 extern void    exim_exit(int);
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);

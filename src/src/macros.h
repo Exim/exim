@@ -482,7 +482,8 @@ enum {
 #define LOGGING(opt) BIT_TEST(log_selector, log_selector_size, Li_##opt)
 
 /* Private error numbers for delivery failures, set negative so as not
-to conflict with system errno values. */
+to conflict with system errno values.  Take care to maintain the string
+table exim_errstrings[] in log.c */
 
 #define ERRNO_UNKNOWNERROR    (-1)
 #define ERRNO_USERSLASH       (-2)
@@ -546,6 +547,8 @@ to conflict with system errno values. */
 #define ERRNO_LOCAL_ONLY     (-54)   /* Local-only delivery */
 #define ERRNO_QUEUE_DOMAIN   (-55)   /* Domain in queue_domains */
 #define ERRNO_TRETRY         (-56)   /* Transport concurrency limit */
+
+
 
 /* Special actions to take after failure or deferment. */
 
