@@ -12982,13 +12982,16 @@ overriding the setting of &%perl_at_start%&.
 There is also a command line option &%-pd%& (for delay) which suppresses the
 initial startup, even if &%perl_at_start%& is set.
 
+.new
 .ilist
 .oindex "&%perl_taintmode%&"
+.cindex "Perl" "taintmode"
 To provide more security executing Perl code via the embedded Perl
 interpeter, the &%perl_taintmode%& option can be set. This enables the
 taint mode of the Perl interpreter. You are encouraged to set this
 option to a true value. To avoid breaking existing installations, it
 defaults to false.
+.wen
 
 
 .section "Calling Perl subroutines" "SECID86"
