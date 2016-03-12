@@ -5645,7 +5645,7 @@ Exim queues it's messages in a spool directory. If you expect to have
 large queues, you may consider using this option. It splits the spool
 directory into subdirectories to avoid file system degradation from
 many files in a single directory, resulting in better performance.
-Manual manipulation of queued messages becomes more complex (though fortunately 
+Manual manipulation of queued messages becomes more complex (though fortunately
 not often needed).
 .code
 # split_spool_directory = true
@@ -14005,8 +14005,8 @@ received. See chapter &<<CHAPACL>>& for further details.
 .option add_environment main "string list" empty
 .cindex "environment" "set values"
 This option allows to set individual environment variables that the
-currently linked libraries and programs in child processes use. The
-default list is empty,
+currently linked libraries and programs in child processes use.
+See &<<SECTpipeenv>>& for the environment of &(pipe)& transports.
 .wen
 
 .option admin_groups main "string list&!!" unset
@@ -15116,9 +15116,14 @@ unexpected results. You may work around this using a regular expression
 that does not match the macro name: ^[F]OO_HOME$.
 
 Current versions of Exim issue a warning during startup if you do not mention
-&%keep_environment%& in your runtime configuration file and if there is
-anything in your environment. Future versions may not issue that warning
+&%keep_environment%& in your runtime configuration file and if your
+current environment is not empty. Future versions may not issue that warning
 anymore.
+
+See the &%add_environment%& main config option for a way to set
+environment variables to a fixed value.  The environment for &(pipe)&
+transports is handled separately, see section &<<SECTpipeenv>>& for
+details.
 .wen
 
 
@@ -20485,7 +20490,7 @@ See &%skip_syntax_errors%& above.
 .chapter "Environment for running local transports" "CHAPenvironment" &&&
          "Environment for local transports"
 .scindex IIDenvlotra1 "local transports" "environment for"
-.scindex IIDenvlotra2 "environment for local transports"
+.scindex IIDenvlotra2 "environment" "local transports"
 .scindex IIDenvlotra3 "transport" "local; environment for"
 Local transports handle deliveries to files and pipes. (The &(autoreply)&
 transport can be thought of as similar to a pipe.) Exim always runs transports
@@ -22904,11 +22909,12 @@ with &%use_shell%&, and the whole mechanism is inherently less secure.
 
 .section "Environment variables" "SECTpipeenv"
 .cindex "&(pipe)& transport" "environment for command"
-.cindex "environment for pipe transport"
+.cindex "environment" "&(pipe)& transport"
 The environment variables listed below are set up when the command is invoked.
 This list is a compromise for maximum compatibility with other MTAs. Note that
 the &%environment%& option can be used to add additional variables to this
-environment.
+environment. The environment for the &(pipe)& transport is not subject
+to the &%add_environment%& and &%keep_environment%& main config options.
 .display
 &`DOMAIN            `&   the domain of the address
 &`HOME              `&   the home directory, if set
@@ -23003,7 +23009,7 @@ Exim, and each argument is separately expanded, as described in section
 
 .option environment pipe string&!! unset
 .cindex "&(pipe)& transport" "environment for command"
-.cindex "environment for &(pipe)& transport"
+.cindex "environment" "&(pipe)& transport"
 This option is used to add additional variables to the environment in which the
 command runs (see section &<<SECTpipeenv>>& for the default list). Its value is
 a string which is expanded, and then interpreted as a colon-separated list of
@@ -26629,7 +26635,7 @@ whereas a plaintext SMTP AUTH done inside TLS is not.
 . to require one of a set of specific certs that define a given account
 . (the verification is still required, but mostly irrelevant).
 . This would help for per-device use.
-. 
+.
 . However, for the future we really need support for checking a
 . user cert in LDAP - which probably wants a base-64 DER.
 
@@ -38433,7 +38439,7 @@ Each proxy specifier is a list
 (space-separated by default) where the initial element
 is an IP address and any subsequent elements are options.
 
-Options are a string <name>=<value>. 
+Options are a string <name>=<value>.
 The list of options is in the following table:
 .display
 &'auth   '& authentication method
