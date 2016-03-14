@@ -604,7 +604,7 @@ log.o:           $(HDRS) log.c
 lss.o:           $(HDRS) lss.c
 match.o:         $(HDRS) match.c
 moan.o:          $(HDRS) moan.c
-os.o:            $(HDRS) os.c
+os.o:            $(HDRS) $(OS_C_INCLUDES) os.c
 parse.o:         $(HDRS) parse.c
 queue.o:         $(HDRS) queue.c
 rda.o:           $(HDRS) rda.c

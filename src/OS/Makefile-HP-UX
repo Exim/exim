@@ -22,6 +22,6 @@ EXIMON_TEXTPOP=
 DBMLIB=-lndbm
 RANLIB=@true
 
-os.o: setenv.c
+OS_C_INCLUDES=setenv.c
 
 # End
