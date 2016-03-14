@@ -3705,8 +3705,7 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
   {
   int i;
   uschar *p = big_buffer;
-  (void)getcwd(CS p+4, big_buffer_size - 4);
-
+  Ustcpy(p, "cwd= (failed)");
   Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
 
   while (*p) p++;
