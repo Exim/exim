@@ -216,7 +216,7 @@ for (i = 1; i < argc; i++)
   else usage();
   }
 
-if (quiet) verbose = 0;
+if (quiet) verbose = FALSE;
 
 /* Can't use flock() if the OS doesn't provide it */
 
@@ -322,7 +322,7 @@ for (j = 0; j < lock_retries; j++)
 
   if (use_lockfile)
     {
-    int rc;
+    int rc, rc2;
     if (verbose) printf("exim_lock: creating lock file\n");
     hd = open(hitchname, O_WRONLY | O_CREAT | O_EXCL, 0440);
     if (hd < 0)
@@ -334,11 +334,12 @@ for (j = 0; j < lock_retries; j++)
 
     /* Apply hitching post algorithm. */
 
-    if ((rc = link(hitchname, lockname)) != 0) fstat(hd, &statbuf);
+    if ((rc = link(hitchname, lockname)) != 0)
+     rc2 = fstat(hd, &statbuf);
     (void)close(hd);
     unlink(hitchname);
 
-    if (rc != 0 && statbuf.st_nlink != 2)
+    if (rc != 0 && (rc2 != 0 || statbuf.st_nlink != 2))
       {
       printf("exim_lock: failed to link hitching post to lock file\n");
       hd = -1;

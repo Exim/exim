@@ -11,6 +11,7 @@ tls_advertise_hosts =
 
 # ----- Main settings -----
 
+log_selector = +subject
 domainlist local_domains = test.ex
 qualify_domain = test.ex
 
