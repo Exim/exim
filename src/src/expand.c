@@ -2058,7 +2058,7 @@ Load args from sub array to globals, and call acl_check().
 Sub array will be corrupted on return.
 
 Returns:       OK         access is granted by an ACCEPT verb
-               DISCARD    access is granted by a DISCARD verb
+               DISCARD    access is (apparently) granted by a DISCARD verb
 	       FAIL       access is denied
 	       FAIL_DROP  access is denied; drop the connection
 	       DEFER      can't tell at the moment
@@ -2373,7 +2373,7 @@ switch(cond_type)
       case 3: return NULL;
       }
 
-    *resetok = FALSE;
+    *resetok = FALSE;	/* eval_acl() might allocate; do not reclaim */
     if (yield != NULL) switch(eval_acl(sub, nelem(sub), &user_msg))
 	{
 	case OK:
@@ -2390,6 +2390,7 @@ switch(cond_type)
 
 	case DEFER:
           expand_string_forcedfail = TRUE;
+	  /*FALLTHROUGH*/
 	default:
           expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
 	  return NULL;
@@ -3652,13 +3653,20 @@ eval_op_sum(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
 int_eximarith_t x = eval_op_mult(&s, decimal, error);
-if (*error == NULL)
+if (!*error)
   {
   while (*s == '+' || *s == '-')
     {
     int op = *s++;
     int_eximarith_t y = eval_op_mult(&s, decimal, error);
-    if (*error != NULL) break;
+    if (*error) break;
+    if (  (x >=   EXIM_ARITH_MAX/2  && x >=   EXIM_ARITH_MAX/2)
+       || (x <= -(EXIM_ARITH_MAX/2) && y <= -(EXIM_ARITH_MAX/2)))
+      {			/* over-conservative check */
+      *error = op == '+'
+	? US"overflow in sum" : US"overflow in difference";
+      break;
+      }
     if (op == '+') x += y; else x -= y;
     }
   }
@@ -4049,6 +4057,7 @@ while (*s != 0)
 
 	case DEFER:
           expand_string_forcedfail = TRUE;
+	  /*FALLTHROUGH*/
 	default:
           expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
 	  goto EXPAND_FAILED;

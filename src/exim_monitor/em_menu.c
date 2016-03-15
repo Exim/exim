@@ -273,8 +273,12 @@ if (pipe(pipe_fd) != 0)
   return;
   }
 
-fcntl(pipe_fd[0], F_SETFL, O_NONBLOCK);
-fcntl(pipe_fd[1], F_SETFL, O_NONBLOCK);
+if (  fcntl(pipe_fd[0], F_SETFL, O_NONBLOCK)
+   || fcntl(pipe_fd[1], F_SETFL, O_NONBLOCK))
+  {
+  perror("set nonblocking on pipe");
+  exit(1);
+  }
 
 /* Delivering a message can take some time, and we want to show the
 output as it goes along. This requires subprocesses and is coded below. For
@@ -551,7 +555,7 @@ static void addrecipAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-Ustrcpy(actioned_message, (uschar *)client_data);
+Ustrncpy(actioned_message, client_data, 24);
 action_required = US"-Mar";
 dialog_ref_widget = menushell;
 create_dialog(US"Recipient address to add?", US"");
@@ -567,7 +571,7 @@ static void markdelAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-Ustrcpy(actioned_message, (uschar *)client_data);
+Ustrncpy(actioned_message, client_data, 24);
 action_required = US"-Mmd";
 dialog_ref_widget = menushell;
 create_dialog(US"Recipient address to mark delivered?", US"");
@@ -582,7 +586,7 @@ static void markalldelAction(Widget w, XtPointer client_data, XtPointer call_dat
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-ActOnMessage((uschar *)client_data, US"-Mmad", US"");
+ActOnMessage(US client_data, US"-Mmad", US"");
 }
 
 
@@ -597,9 +601,9 @@ queue_item *q;
 uschar *sender;
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-Ustrcpy(actioned_message, (uschar *)client_data);
+Ustrncpy(actioned_message, client_data, 24);
 q = find_queue(actioned_message, queue_noop, 0);
-sender = (q == NULL)? US"" : (q->sender[0] == 0)? US"<>" : q->sender;
+sender = !q ? US"" : q->sender[0] == 0 ? US"<>" : q->sender;
 action_required = US"-Mes";
 dialog_ref_widget = menushell;
 create_dialog(US"New sender address?", sender);

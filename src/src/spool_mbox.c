@@ -21,7 +21,7 @@ extern int malware_ok;
 extern int spam_ok;
 
 int spool_mbox_ok = 0;
-uschar spooled_message_id[17];
+uschar spooled_message_id[MESSAGE_ID_LENGTH+1];
 
 /* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size
  * normally, source_file_override is NULL */
@@ -165,7 +165,7 @@ if (!spool_mbox_ok)
   (void)fclose(mbox_file);
   mbox_file = NULL;
 
-  Ustrcpy(spooled_message_id, message_id);
+  Ustrncpy(spooled_message_id, message_id, MESSAGE_ID_LENGTH+1);
   spool_mbox_ok = 1;
   }
 

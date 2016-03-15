@@ -195,7 +195,7 @@ just in case. */
 /* Sizes for integer arithmetic.
 Go for 64bit; can be overridden in OS/Makefile-FOO
 If you make it a different number of bits, provide a definition
-for EXIM_64B_MAX and _MIN in OS/oh.h-FOO */
+for EXIM_ARITH_MAX and _MIN in OS/oh.h-FOO */
 #define int_eximarith_t int64_t
 #define PR_EXIM_ARITH "%" PRId64		/* C99 standard, printf %lld */
 #define SC_EXIM_ARITH "%" SCNi64		/* scanf incl. 0x prefix */

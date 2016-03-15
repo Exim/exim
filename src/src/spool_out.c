@@ -272,21 +272,25 @@ fprintf(f, "%d\n", recipients_count);
 for (i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
-DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
+
+  DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
+
   if (r->pno < 0 && r->errors_to == NULL && r->dsn_flags == 0)
     fprintf(f, "%s\n", r->address);
   else
     {
-    uschar *errors_to = (r->errors_to == NULL)? US"" : r->errors_to;
+    uschar * errors_to = r->errors_to ? r->errors_to : US"";
     /* for DSN SUPPORT extend exim 4 spool in a compatible way by
-       adding new values upfront and add flag 0x02 */
-    uschar *orcpt = (r->orcpt == NULL)? US"" : r->orcpt;
-    fprintf(f, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt), r->dsn_flags,
-      errors_to, Ustrlen(errors_to), r->pno);
+    adding new values upfront and add flag 0x02 */
+    uschar * orcpt = r->orcpt ? r->orcpt : US"";
+
+    fprintf(f, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt),
+      r->dsn_flags, errors_to, Ustrlen(errors_to), r->pno);
     }
 
-      DEBUG(D_deliver) debug_printf("DSN: **** SPOOL_OUT - address: |%s| errorsto: |%s| orcpt: |%s| dsn_flags: %d\n",
-         r->address, r->errors_to, r->orcpt, r->dsn_flags);
+    DEBUG(D_deliver) debug_printf("DSN: **** SPOOL_OUT - "
+      "address: |%s| errorsto: |%s| orcpt: |%s| dsn_flags: %d\n",
+      r->address, r->errors_to, r->orcpt, r->dsn_flags);
   }
 
 /* Put a blank line before the headers */
@@ -297,7 +301,8 @@ fprintf(f, "\n");
 to get the actual size of the headers. */
 
 fflush(f);
-fstat(fd, &statbuf);
+if (fstat(fd, &statbuf))
+  return spool_write_error(where, errmsg, US"fstat", temp_name, f);
 size_correction = statbuf.st_size;
 
 /* Finally, write out the message's headers. To make it easier to read them
