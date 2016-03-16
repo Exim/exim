@@ -232,6 +232,9 @@ uschar *new = NULL;
 uschar ch;
 size_t line;
 
+/* Two passes: one to count output allocation size, second
+to do the encoding */
+
 for (pass=0; pass<=1; ++pass)
   {
   line=0;
@@ -245,54 +248,47 @@ for (pass=0; pass<=1; ++pass)
   for (start=src->character,end=start+src->length; start<end; ++start)
     {
     ch=*start;
-    if (line>=73)
+    if (line>=73)	/* line length limit */
       {
       if (pass==0)
         dst->length+=2;
       else
         {
-        *new++='=';
+        *new++='=';	/* line split */
         *new++='\n';
         }
       line=0;
       }
-    if
-      (
-      (ch>=33 && ch<=60)
-      || (ch>=62 && ch<=126)
-      ||
-        (
-        (ch==9 || ch==32)
-        && start+2<end
-        && (*(start+1)!='\r' || *(start+2)!='\n')
-        )
-      )
+    if (  (ch>='!' && ch<='<')
+       || (ch>='>' && ch<='~')
+       || (  (ch=='\t' || ch==' ')
+          && start+2<end
+          && (*(start+1)!='\r' || *(start+2)!='\n')	/* CRLF */
+          )
+       )
       {
       if (pass==0)
         ++dst->length;
       else
-        *new++=*start;
+        *new++=*start;	/* copy char */
       ++line;
       }
-    else if (ch=='\r' && start+1<end && *(start+1)=='\n')
+    else if (ch=='\r' && start+1<end && *(start+1)=='\n') /* CRLF */
       {
       if (pass==0)
-        {
         ++dst->length;
-        line=0;
-        }
       else
-        *new++='\n';
-        line=0;		/*XXX jgh: questionabale indent; probable BUG */
-      ++start;
+        *new++='\n';					/* NL */
+      line=0;
+      ++start;	/* consume extra input char */
       }
     else
       {
       if (pass==0)
         dst->length+=3;
       else
-        {
-        sprintf(CS new,"=%02X",ch);
+        {		/* encoded char */
+        new += sprintf(CS new,"=%02X",ch);
         new+=3;
         }
       line+=3;

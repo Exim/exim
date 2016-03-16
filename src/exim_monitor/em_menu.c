@@ -556,6 +556,7 @@ static void addrecipAction(Widget w, XtPointer client_data, XtPointer call_data)
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
 Ustrncpy(actioned_message, client_data, 24);
+actioned_message[23] = '\0';
 action_required = US"-Mar";
 dialog_ref_widget = menushell;
 create_dialog(US"Recipient address to add?", US"");
@@ -572,6 +573,7 @@ static void markdelAction(Widget w, XtPointer client_data, XtPointer call_data)
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
 Ustrncpy(actioned_message, client_data, 24);
+actioned_message[23] = '\0';
 action_required = US"-Mmd";
 dialog_ref_widget = menushell;
 create_dialog(US"Recipient address to mark delivered?", US"");
@@ -602,6 +604,7 @@ uschar *sender;
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
 Ustrncpy(actioned_message, client_data, 24);
+actioned_message[23] = '\0';
 q = find_queue(actioned_message, queue_noop, 0);
 sender = !q ? US"" : q->sender[0] == 0 ? US"<>" : q->sender;
 action_required = US"-Mes";

@@ -165,7 +165,8 @@ if (!spool_mbox_ok)
   (void)fclose(mbox_file);
   mbox_file = NULL;
 
-  Ustrncpy(spooled_message_id, message_id, MESSAGE_ID_LENGTH+1);
+  Ustrncpy(spooled_message_id, message_id, sizeof(spooled_message_id));
+  spooled_message_id[sizeof(spooled_message_id)-1] = '\0';
   spool_mbox_ok = 1;
   }
 
