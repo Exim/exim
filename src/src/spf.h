@@ -24,7 +24,7 @@ typedef struct spf_result_id {
 
 /* prototypes */
 int spf_init(uschar *,uschar *);
-int spf_process(uschar **, uschar *, int);
+int spf_process(const uschar **, uschar *, int);
 
 #define SPF_PROCESS_NORMAL  0
 #define SPF_PROCESS_GUESS   1
