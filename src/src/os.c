@@ -833,9 +833,25 @@ os_get_dns_resolver_res(void)
 
 #endif /* OS_GET_DNS_RESOLVER_RES */
 
-
 /* ----------------------------------------------------------------------- */
 
+/***********************************************************
+*                 unsetenv()                               *
+***********************************************************/
+
+/* Most modern systems define int unsetenv(const char*),
+* some don't. */
+
+#if !defined(OS_UNSETENV)
+int
+os_unsetenv(const char *name)
+{
+  return unsetenv(name);
+}
+#endif
+
+
+/* ----------------------------------------------------------------------- */
 
 
 

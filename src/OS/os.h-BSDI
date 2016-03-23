@@ -5,6 +5,7 @@
 #define HAVE_MMAP
 #define HAVE_SYS_MOUNT_H
 #define SIOCGIFCONF_GIVES_ADDR
+#define OS_UNSETENV
 
 typedef struct flock flock_t;
 

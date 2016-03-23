@@ -32,5 +32,8 @@ extern const char   *os_strexit(int);     /* char to match os_strsignal */
 #ifndef os_strsignal
 extern const char   *os_strsignal(int);   /* char to match strsignal in some OS */
 #endif
+#ifndef os_unsetenv
+extern int           os_unsetenv(const char *);
+#endif
 
 /* End of osfunctions.h */

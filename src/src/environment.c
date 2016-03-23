@@ -51,7 +51,7 @@ else if (Ustrcmp(keep_environment, "*") != 0)
       uschar *name = string_copyn(*p, eqp - *p);
       if (OK != match_isinlist(name, CUSS &keep_environment,
           0, NULL, NULL, MCL_NOEXPAND, FALSE, NULL))
-        if (unsetenv(CS name) < 0) return FALSE;
+        if (os_unsetenv(name) < 0) return FALSE;
         else p = USS environ; /* RESTART from the beginning */
       else p++;
       store_reset(name);

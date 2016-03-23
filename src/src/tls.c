@@ -89,7 +89,7 @@ to_tz(uschar * tz)
 {
 uschar * old = US getenv("TZ");
 (void) setenv("TZ", CCS tz, 1);
-tzset(); 
+tzset();
 return old;
 }
 
@@ -99,8 +99,8 @@ restore_tz(uschar * tz)
 if (tz)
   (void) setenv("TZ", CCS tz, 1);
 else
-  (void) unsetenv("TZ");
-tzset(); 
+  (void) os_unsetenv("TZ");
+tzset();
 }
 
 /*************************************************
