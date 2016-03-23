@@ -35,5 +35,8 @@ extern const char   *os_strsignal(int);   /* char to match strsignal in some OS 
 #ifndef os_unsetenv
 extern int           os_unsetenv(const char *);
 #endif
+#ifndef os_getcwd
+extern char*         os_getcwd(char *, size_t);
+#endif
 
 /* End of osfunctions.h */

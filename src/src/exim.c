@@ -3748,7 +3748,7 @@ directory to "/"! Later we change to $spool_directory. We do it there, because
 during readconf_main() some expansion takes place already. */
 
 /* Store the initial cwd before we change directories */
-if ((initial_cwd = getcwd(NULL, 0)) == NULL)
+if ((initial_cwd = os_getcwd(NULL, 0)) == NULL)
   {
   perror("exim: can't get the current working directory");
   exit(EXIT_FAILURE);

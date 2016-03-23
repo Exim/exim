@@ -850,6 +850,38 @@ os_unsetenv(const char *name)
 }
 #endif
 
+/* ----------------------------------------------------------------------- */
+
+/***********************************************************
+*               getcwd()                                   *
+***********************************************************/
+
+/* Glibc allows getcwd(NULL, 0) to do auto-allocation. Some systems
+do auto-allocation, but need the size of the buffer, and others
+may not even do this. If the OS supports getcwd(NULL, 0) we'll use
+this, for all other systems we provide our own getcwd() */
+
+#if !defined(OS_GETCWD)
+char *
+os_getcwd(char *buffer, size_t size)
+{
+return getcwd(buffer, size);
+}
+#else
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
+char *
+os_getcwd(char *buffer, size_t size)
+{
+void *rc;
+
+if (!size) size = PATH_MAX;
+if (!buffer && !(buffer = (char*) malloc(size))) return NULL;
+if (!(buffer = getcwd(buffer, size))) return NULL;
+return realloc(buffer, strlen(buffer) + 1);
+}
+#endif
 
 /* ----------------------------------------------------------------------- */
 
