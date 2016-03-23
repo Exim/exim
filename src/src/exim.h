@@ -584,19 +584,9 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # endif
 #endif
 
-/* Ensure PATH_MAX is defined */
-
-#ifndef PATH_MAX
-  #ifdef MAXPATHLEN
-  # define PATH_MAX MAXPATHLEN
-  #else
-  # define PATH_MAX 1024
-  #endif
-#endif
-
 /* DANE w/o DNSSEC is useless */
 #if defined(EXPERIMENTAL_DANE) && defined(DISABLE_DNSSEC)
-  #undef DISABLE_DNSSEC
+# undef DISABLE_DNSSEC
 #endif
 
 #endif

@@ -456,7 +456,7 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
 	  $(CFLAGS) $(XINCLUDE) -I. ../exim_monitor/em_version.c
 	@echo "$(LNCC) -o eximon.bin"
 	$(FE)$(PURIFY) $(LNCC) -o eximon.bin em_version.o $(LFLAGS) $(XLFLAGS) \
-	$(OBJ_MONBIN) -lXaw -lXmu -lXt -lXext -lX11 $(PCRE_LIBS) \
+	  $(OBJ_MONBIN) -lXaw -lXmu -lXt -lXext -lX11 $(PCRE_LIBS) \
 	  $(LIBS) $(LIBS_EXIMON) $(EXTRALIBS) $(EXTRALIBS_EXIMON) -lc
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) eximon.bin; \
