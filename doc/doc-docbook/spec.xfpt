@@ -2788,7 +2788,7 @@ continuations. As in Exim's run time configuration, white space at the start of
 continuation lines is ignored. Each argument or data line is passed through the
 string expansion mechanism, and the result is output. Variable values from the
 configuration file (for example, &$qualify_domain$&) are available, but no
-message-specific values (such as &$sender_domain$&) are set, because no message
+message-specific values (such as &$message_exim_id$&) are set, because no message
 is being processed (but see &%-bem%& and &%-Mset%&).
 
 &*Note*&: If you use this mechanism to test lookups, and you change the data
