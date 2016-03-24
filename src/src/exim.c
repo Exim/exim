@@ -4902,6 +4902,7 @@ Otherwise, if -bem was used, read a message from stdin. */
 
 if (expansion_test)
   {
+  dns_init(0, 0);
   if (msg_action_arg > 0 && msg_action == MSG_LOAD)
     {
     uschar spoolname[256];  /* Not big_buffer; used in spool_read_header() */
