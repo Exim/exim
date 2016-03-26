@@ -1999,7 +1999,7 @@ for (i = 1; i < argc; i++)
 
     else if (*argrest == 'F')
       {
-      filter_test |= FTEST_SYSTEM;
+      filter_test |= checking = FTEST_SYSTEM;
       if (*(++argrest) != 0) { badarg = TRUE; break; }
       if (++i < argc) filter_test_sfile = argv[i]; else
         {
@@ -2019,7 +2019,7 @@ for (i = 1; i < argc; i++)
       {
       if (*(++argrest) == 0)
         {
-        filter_test |= FTEST_USER;
+        filter_test |= checking = FTEST_USER;
         if (++i < argc) filter_test_ufile = argv[i]; else
           {
           fprintf(stderr, "exim: file name expected after %s\n", argv[i-1]);
@@ -2094,6 +2094,7 @@ for (i = 1; i < argc; i++)
     else if (Ustrcmp(argrest, "malware") == 0)
       {
       if (++i >= argc) { badarg = TRUE; break; }
+      checking = TRUE;
       malware_test_file = argv[i];
       }
 
@@ -2175,6 +2176,7 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "rt") == 0)
       {
+      checking = TRUE;
       test_retry_arg = i + 1;
       goto END_ARG;
       }
@@ -2183,6 +2185,7 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "rw") == 0)
       {
+      checking = TRUE;
       test_rewrite_arg = i + 1;
       goto END_ARG;
       }
@@ -3754,7 +3757,23 @@ if ((initial_cwd = os_getcwd(NULL, 0)) == NULL)
   exit(EXIT_FAILURE);
   }
 
-readconf_main();
+/* checking:
+    -be[m] expansion test        -
+    -b[fF] filter test           new
+    -bh[c] host test             -
+    -bmalware malware_test_file  new
+    -brt   retry test            new
+    -brw   rewrite test          new
+    -bt    address test          -
+    -bv[s] address verify        -
+   list_options:
+    -bP <option> (except -bP config, which sets list_config)
+
+If any of these options is set, we suppress warnings about configuration
+issues (currently about tls_advertise_hosts and keep_environment not being
+defined) */
+
+readconf_main(checking || list_options);
 
 /* Now in directory "/" */
 
@@ -4184,7 +4203,7 @@ real, but are permitted when checking things (-be, -bv, -bt, -bh, -bf, -bF).
 Note that authority for performing certain actions on messages is tested in the
 queue_action() function. */
 
-if (!trusted_caller && !checking && filter_test == FTEST_NONE)
+if (!trusted_caller && !checking)
   {
   sender_host_name = sender_host_address = interface_address =
     sender_ident = received_protocol = NULL;
@@ -4837,8 +4856,7 @@ if ((!smtp_input && sender_address == NULL) ||
   if (sender_address == NULL             /* No sender_address set */
        ||                                /*         OR            */
        (sender_address[0] != 0 &&        /* Non-empty sender address, AND */
-       !checking &&                      /* Not running tests, AND */
-       filter_test == FTEST_NONE))       /* Not testing a filter */
+       !checking))                       /* Not running tests, including filter tests */
     {
     sender_address = originator_login;
     sender_address_forced = FALSE;

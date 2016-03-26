@@ -2947,7 +2947,7 @@ Returns:  bool for "okay"; false will cause caller to immediately exit.
 
 #ifdef SUPPORT_TLS
 static BOOL
-tls_dropprivs_validate_require_cipher(void)
+tls_dropprivs_validate_require_cipher(BOOL nowarn)
 {
 const uschar *errmsg;
 pid_t pid;
@@ -2961,7 +2961,7 @@ if (  !tls_advertise_hosts
    || Ustrcmp(tls_advertise_hosts, ":") == 0
    )
   return TRUE;
-else if (!tls_certificate)
+else if (!nowarn && !tls_certificate)
   log_write(0, LOG_MAIN|LOG_PANIC,
     "Warning: No server certificate defined; TLS connections will fail.\n"
     " Suggested action: either install a certificate or change tls_advertise_hosts option");
@@ -3035,7 +3035,7 @@ systems. Therefore they are available only when requested by compile-time
 options. */
 
 void
-readconf_main(void)
+readconf_main(BOOL nowarn)
 {
 int sep = 0;
 struct stat statbuf;
@@ -3473,7 +3473,7 @@ if ((tls_verify_hosts != NULL || tls_try_verify_hosts != NULL) &&
 
 /* This also checks that the library linkage is working and we can call
 routines in it, so call even if tls_require_ciphers is unset */
-if (!tls_dropprivs_validate_require_cipher())
+if (!tls_dropprivs_validate_require_cipher(nowarn))
   exit(1);
 
 /* Magic number: at time of writing, 1024 has been the long-standing value
@@ -3497,13 +3497,13 @@ if (openssl_options != NULL)
 # endif
   }
 
-if (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto)
+if (!nowarn && (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto))
   log_write(0, LOG_MAIN, "WARNING: main options"
       " gnutls_require_kx, gnutls_require_mac and gnutls_require_protocols"
       " are obsolete\n");
 #endif	/*SUPPORT_TLS*/
 
-if (!keep_environment && environ && *environ)
+if (!nowarn && !keep_environment && environ && *environ)
   log_write(0, LOG_MAIN,
       "Warning: purging the environment.\n"
       " Suggested action: use keep_environment.");
