@@ -1292,7 +1292,7 @@ else if (rc != OK)
   if (  smtp_input
      && smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
     {
-    *smtp_yield_ptr = FALSE;    /* No more messsages after dropped connection */
+    *smtp_yield_ptr = FALSE;    /* No more messages after dropped connection */
     *smtp_reply_ptr = US"";     /* Indicate reply already sent */
     }
   message_id[0] = 0;            /* Indicate no message accepted */
@@ -3275,7 +3275,7 @@ else
             {
             Uunlink(spool_name);
             if (smtp_handle_acl_fail(ACL_WHERE_DKIM, rc, user_msg, log_msg) != 0)
-              smtp_yield = FALSE;    /* No more messsages after dropped connection */
+              smtp_yield = FALSE;    /* No more messages after dropped connection */
             smtp_reply = US"";       /* Indicate reply already sent */
             message_id[0] = 0;       /* Indicate no message accepted */
             goto TIDYUP;             /* Skip to end of function */
@@ -3393,7 +3393,7 @@ else
 	dcc_ok = 0;
 #endif
         if (smtp_handle_acl_fail(ACL_WHERE_DATA, rc, user_msg, log_msg) != 0)
-          smtp_yield = FALSE;    /* No more messsages after dropped connection */
+          smtp_yield = FALSE;    /* No more messages after dropped connection */
         smtp_reply = US"";       /* Indicate reply already sent */
         message_id[0] = 0;       /* Indicate no message accepted */
         goto TIDYUP;             /* Skip to end of function */
@@ -3987,7 +3987,7 @@ for this message. */
 */
 if(cutthrough.fd >= 0)
   {
-  uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
+  uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the message */
 					/* Logging was done in finaldot() */
   switch(msg[0])
     {

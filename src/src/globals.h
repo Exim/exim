@@ -193,7 +193,7 @@ extern uschar *acl_smtp_starttls;      /* ACL run for STARTTLS */
 extern uschar *acl_smtp_vrfy;          /* ACL run for VRFY */
 extern BOOL    acl_temp_details;       /* TRUE to give details for 4xx error */
 extern tree_node *acl_var_c;           /* ACL connection variables */
-extern tree_node *acl_var_m;           /* ACL messsage variables */
+extern tree_node *acl_var_m;           /* ACL message variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
 extern string_item *acl_warn_logged;   /* Logged lines */
 extern uschar *acl_wherecodes[];       /* Response codes for ACL fails */

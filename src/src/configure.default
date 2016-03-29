@@ -707,8 +707,8 @@ begin transports
 
 
 # This transport is used for delivering messages over SMTP connections.
-# Refuse to send any messsage with over-long lines, which could have
-# been receved other than via SMTP. The use of message_size_limit to
+# Refuse to send any message with over-long lines, which could have
+# been received other than via SMTP. The use of message_size_limit to
 # enforce this is a red herring.
 
 remote_smtp:

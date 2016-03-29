@@ -498,7 +498,7 @@ then removing the old links. When moving messages onto the main spool, the -H
 file should be set up last, because that's the one that tells Exim there is a
 message to be delivered, so we create its new link last and remove its old link
 first. Programs that look at the alternate directories should follow the same
-rule of waiting for a -H file before doing anything. When moving messsages off
+rule of waiting for a -H file before doing anything. When moving messages off
 the mail spool, the -D file should be open and locked at the time, thus keeping
 Exim's hands off. */
 
