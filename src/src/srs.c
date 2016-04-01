@@ -25,7 +25,7 @@ uschar   *srs_db_reverse        = NULL;
 
 int eximsrs_init()
 {
-  uschar *list = srs_config;
+  const uschar *list = srs_config;
   uschar secret_buf[SRS_MAX_SECRET_LENGTH];
   uschar *secret = NULL;
   uschar sbuf[4];

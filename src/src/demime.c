@@ -15,9 +15,9 @@
 uschar demime_reason_buffer[1024];
 struct file_extension *file_extensions = NULL;
 
-int demime(uschar **listptr) {
+int demime(const uschar **listptr) {
   int sep = 0;
-  uschar *list = *listptr;
+  const uschar *list = *listptr;
   uschar *option;
   uschar option_buffer[64];
   unsigned long mbox_size;
