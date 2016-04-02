@@ -105,8 +105,10 @@ time_t test_time_t = 0;
 size_t test_size_t = 0;
 ssize_t test_ssize_t = 0;
 unsigned long test_ulong_t = 0L;
+unsigned int test_uint_t = 0;
 #endif
 long test_long_t = 0;
+int test_int_t = 0;
 FILE *base;
 FILE *new;
 int last_initial = 'A';
@@ -190,12 +192,17 @@ fprintf(new, "#define SSIZE_T_FMT  \"%%zd\"\n");
 #else
 if (sizeof(test_size_t) > sizeof (test_ulong_t))
   fprintf(new, "#define SIZE_T_FMT  \"%%llu\"\n");
-else
+else if (sizeof(test_size_t) > sizeof (test_uint_t))
   fprintf(new, "#define SIZE_T_FMT  \"%%lu\"\n");
+else
+  fprintf(new, "#define SIZE_T_FMT  \"%%u\"\n");
+
 if (sizeof(test_ssize_t) > sizeof(test_long_t))
   fprintf(new, "#define SSIZE_T_FMT  \"%%lld\"\n");
-else
+else if (sizeof(test_ssize_t) > sizeof(test_int_t))
   fprintf(new, "#define SSIZE_T_FMT  \"%%ld\"\n");
+else
+  fprintf(new, "#define SSIZE_T_FMT  \"%%d\"\n");
 #endif
 
 /* Now search the makefile for certain settings */
