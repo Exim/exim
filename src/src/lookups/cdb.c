@@ -94,7 +94,7 @@ typedef unsigned int uint32;
  * Internal function to make hash value */
 
 static uint32
-cdb_hash(uschar *buf, unsigned int len)
+cdb_hash(const uschar *buf, unsigned int len)
 {
   uint32 h;
 
@@ -298,7 +298,7 @@ cdb_find(void *handle,
   /* Keep picky compilers happy */
   do_cache = do_cache;
 
-  key_hash = cdb_hash((uschar *)keystring, key_len);
+  key_hash = cdb_hash(keystring, key_len);
 
   hash_offset_entry = CDB_HASH_ENTRY * (key_hash & CDB_HASH_MASK);
   hash_offset = cdb_unpack(cdbp->cdb_offsets + hash_offset_entry);
