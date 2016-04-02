@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004, 2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004, 2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 #include "exim.h"
 #ifdef WITH_CONTENT_SCAN	/* entire file */

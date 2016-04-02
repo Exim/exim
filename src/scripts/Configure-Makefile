@@ -4,6 +4,8 @@
 # from inside the directory. It does its own checking of when to rebuild; it
 # just got too horrendous to get it right in "make", because of the optionally
 # existing configuration files.
+#
+# Copyright (c) The Exim Maintainers 2016
 
 
 # First off, get the OS type, and check that there is a make file for it.

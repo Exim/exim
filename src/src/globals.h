@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Almost all the global variables are defined together in this one header, so

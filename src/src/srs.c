@@ -4,6 +4,7 @@
 
 /* SRS - Sender rewriting scheme support
   (C)2004 Miles Wilton <miles@mirtol.com>
+  Copyright (c) The Exim Maintainers 2016
 
   SRS Support Version: 1.0a
 

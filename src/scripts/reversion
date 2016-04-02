@@ -1,4 +1,5 @@
 #!/bin/sh
+# Copyright (c) The Exim Maintainers 2016
 
 set -e
 LC_ALL=C

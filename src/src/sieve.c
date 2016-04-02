@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Michael Haardt 2003 - 2015 */
-/* See the file NOTICE for conditions of use and distribution. */
+/* Copyright (c) Michael Haardt 2003 - 2015
+ * Copyright (c) The Exim Maintainers 2016
+ * See the file NOTICE for conditions of use and distribution.
+ */
 
 /* This code was contributed by Michael Haardt. */
 

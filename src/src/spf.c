@@ -4,7 +4,9 @@
 
 /* Experimental SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 - 2014
-   License: GPL */
+   License: GPL
+   Copyright (c) The Exim Maintainers 2016
+*/
 
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
 

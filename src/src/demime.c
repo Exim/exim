@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-???? */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-????
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 /* Code for unpacking MIME containers. Called from acl.c. */
 

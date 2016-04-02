@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* General functions concerned with transportation, and generic options for all

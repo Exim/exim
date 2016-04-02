@@ -9,6 +9,8 @@ Options:  -fcntl    use fcntl() lock
 Default is -fcntl -lockfile.
 
 Argument: the name of the lock file
+
+Copyright (c) The Exim Maintainers 2016
 */
 
 #include "os.h"

@@ -2,7 +2,7 @@
 *                 Exim Monitor                   *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code for scanning the main log,

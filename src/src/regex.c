@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 /* Code for matching regular expressions against headers and body.
  Called from acl.c. */
