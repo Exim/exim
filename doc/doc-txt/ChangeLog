@@ -2,6 +2,10 @@ Change log file for Exim from version 4.21
 -------------------------------------------
 
 
+Exim version 4.88
+-----------------
+
+
 Exim version 4.87
 -----------------
 JH/01 Bug 1664: Disable OCSP for GnuTLS library versions at/before 3.3.16
