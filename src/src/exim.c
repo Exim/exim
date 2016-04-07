@@ -2225,6 +2225,7 @@ for (i = 1; i < argc; i++)
       printf("%s\n", CS version_copyright);
       version_printed = TRUE;
       show_whats_supported(stdout);
+      log_testing_mode = TRUE;
       }
 
     /* -bw: inetd wait mode, accept a listening socket as stdin */
