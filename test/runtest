@@ -564,25 +564,6 @@ RESET_AFTER_EXTRA_LINE_READ:
   # signature algorithm names
   s/RSA-SHA1/RSA-SHA/;
 
-  # -d produces a list of environment variables as they are checked if they exist
-  # in the environment. Unfortunately this list isn't always in the same order. For now we
-  # just remove this list
-  #
-  if (/^\w+ in keep_environment/)
-    {
-    my @lines = $_;
-    while (<IN>)
-      {
-      if (/^\w+ in keep_environment/)
-        {
-        push @lines, $_;
-        next;
-        }
-      print MUNGED sort grep { !/^(SHLVL|_) / } @lines;
-      redo LINE;
-      }
-    }
-
 
   # ======== Caller's login, uid, gid, home, gecos ========
 
@@ -1023,6 +1004,23 @@ RESET_AFTER_EXTRA_LINE_READ:
       while (<IN>) { last if !/^\s/; }
       }
 
+    # remote port numbers vary
+    s/(Connection request from 127.0.0.1 port) \d{1,5}/$1 sssss/;
+
+    # Skip hosts_require_dane checks when the options
+    # are unset, because dane ain't always there.
+
+    next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
+
+    # SUPPORT_PROXY
+    next if /host in hosts_proxy\?/;
+
+    # Experimental_International
+    next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
+
+    # Environment cleaning
+    next if /\w+ in keep_environment\? (yes|no)/;
+
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
     # of the files that are obtained using readdir() varies from system to
@@ -1043,20 +1041,6 @@ RESET_AFTER_EXTRA_LINE_READ:
         print MUNGED @saved;
         @saved = ();
         }
-
-    # remote port numbers vary
-    s/(Connection request from 127.0.0.1 port) \d{1,5}/$1 sssss/;
-
-    # Skip hosts_require_dane checks when the options
-    # are unset, because dane ain't always there.
-
-    next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
-
-    # SUPPORT_PROXY
-    next if /host in hosts_proxy\?/;
-
-    # Experimental_International
-    next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
 
       # Skip some lines that Exim puts out at the start of debugging output
       # because they will be different in different binaries.
