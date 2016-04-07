@@ -1867,7 +1867,7 @@ tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
     transport_instance *tb
 #ifdef EXPERIMENTAL_DANE
-    , dne_answer * unused_tlsa_dnsa
+    , dns_answer * unused_tlsa_dnsa
 #endif
     )
 {
