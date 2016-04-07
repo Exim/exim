@@ -727,8 +727,8 @@ else if (isgroup)
     continue;
     }
 
-  /* WITH_CONTENT_SCAN is another special case: it must be set if either it or
-  WITH_OLD_DEMIME is set. */
+  /* WITH_CONTENT_SCAN is another special case: it must be set if it or
+  EXPERIMENTAL_DCC is set. */
 
   if (strcmp(name, "WITH_CONTENT_SCAN") == 0)
     {

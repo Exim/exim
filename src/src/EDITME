@@ -392,13 +392,6 @@ EXIM_MONITOR=eximon.bin
 
 # WITH_CONTENT_SCAN=yes
 
-# If you want to use the deprecated "demime" condition in the DATA ACL,
-# uncomment the line below. Doing so will also explicitly turn on the
-# WITH_CONTENT_SCAN option. If possible, use the MIME ACL instead of
-# the "demime" condition.
-
-# WITH_OLD_DEMIME=yes
-
 #------------------------------------------------------------------------------
 # If you're using ClamAV and are backporting fixes to an old version, instead
 # of staying current (which is the more usual approach) then you may need to
