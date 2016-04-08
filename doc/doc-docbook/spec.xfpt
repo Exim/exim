@@ -12139,10 +12139,10 @@ a single-component name, Exim calls &[gethostbyname()]& (or
 qualified host name. See also &$smtp_active_hostname$&.
 
 
-.vitem &$proxy_host_address$& &&&
-       &$proxy_host_port$& &&&
-       &$proxy_target_address$& &&&
-       &$proxy_target_port$& &&&
+.vitem &$proxy_external_address$& &&&
+       &$proxy_external_port$& &&&
+       &$proxy_local_address$& &&&
+       &$proxy_local_port$& &&&
        &$proxy_session$&
 These variables are only available when built with Proxy Protocol
 or Socks5 support
@@ -38207,13 +38207,13 @@ The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces
 of the proxy):
 .display
-&'proxy_host_address   '& internal IP address of the proxy
-&'proxy_host_port      '& internal TCP port of the proxy
-&'proxy_target_address '& external IP address of the proxy
-&'proxy_target_port    '& external TCP port of the proxy
+&'proxy_external_address   '& IP of host being proxied or IP of remote interface of proxy
+&'proxy_external_port      '& Port of host being proxied or Port on remote interface of proxy
+&'proxy_local_address '& IP of proxy server inbound or IP of local interface of proxy
+&'proxy_local_port    '& Port of proxy server inbound or Port on local interface of proxy
 &'proxy_session        '& boolean: SMTP connection via proxy
 .endd
-If &$proxy_session$& is set but &$proxy_host_address$& is empty
+If &$proxy_session$& is set but &$proxy_external_address$& is empty
 there was a protocol error.
 
 Since the real connections are all coming from the proxy, and the
