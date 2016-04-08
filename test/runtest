@@ -1977,6 +1977,7 @@ if (/^(ln|ls|du|mkdir|mkfifo|touch|cp|cat)\s/ ||
 # command, triggered by $server_pid being non-zero. The server sends its output
 # to a different file. The variable $server_opts, if not empty, contains
 # options to disable IPv4 or IPv6 if necessary.
+# This works because "server" swallows its stdin before waiting for a connection.
 
 if (/^server\s+(.*)$/)
   {

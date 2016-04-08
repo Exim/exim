@@ -13,7 +13,8 @@ RCPT TO:<x@test.ex>
 250 Recipient OK
 DATA
 >
-Unexpected EOF read from client
+Expected EOF read from client
+End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 ESMTP
@@ -26,8 +27,8 @@ MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<x@test.ex>
 >
 DATA
-550 Failed DATA
-Unexpected EOF read from client
+Expected EOF read from client
+End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 ESMTP
@@ -40,8 +41,8 @@ MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<x@test.ex>
 550 Can't send RCPT
 DATA
-550 Can't send DATA
-Unexpected EOF read from client
+Expected EOF read from client
+End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 ESMTP
@@ -59,8 +60,8 @@ RCPT TO:<y@test.ex>
 RCPT TO:<z@test.ex>
 250 Third RCPT OK
 DATA
-550 Failed DATA
-Unexpected EOF read from client
+Expected EOF read from client
+End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 ESMTP
@@ -91,7 +92,8 @@ RCPT TO:<x@test.ex>
 250 Recipient OK
 DATA
 >
-Unexpected EOF read from client
+Expected EOF read from client
+End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 ESMTP
@@ -102,7 +104,8 @@ MAIL FROM:<CALLER@myhost.test.ex>
 250 Sender OK
 RCPT TO:<x@test.ex>
 >
-Unexpected EOF read from client
+Expected EOF read from client
+End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 ESMTP
@@ -111,7 +114,8 @@ EHLO myhost.test.ex
 250 HELP
 MAIL FROM:<CALLER@myhost.test.ex>
 >
-Unexpected EOF read from client
+Expected EOF read from client
+End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 ESMTP
@@ -125,4 +129,5 @@ RCPT TO:<x@test.ex>
 RCPT TO:<y@test.ex>
 >
 250 Second RCPT malformed
-Unexpected EOF read from client
+Expected EOF read from client
+End of script

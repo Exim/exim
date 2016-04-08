@@ -30,6 +30,7 @@ Connecting to localhost.test.ex [127.0.0.1]:1224 ... connected
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP(close)>>
 LOG: MAIN
   => x@srv27.test.ex R=r1 T=t1 H=localhost.test.ex [127.0.0.1]:1224 C="250 OK"
 LOG: MAIN

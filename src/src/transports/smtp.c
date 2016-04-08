@@ -2958,6 +2958,7 @@ writing RSET might have failed, or there may be other addresses whose hosts are
 specified in the transports, and therefore not visible at top level, in which
 case continue_more won't get set. */
 
+HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
 (void)close(inblock.sock);
 
 #ifndef DISABLE_EVENT

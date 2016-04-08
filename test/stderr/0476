@@ -36,6 +36,7 @@ transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
   SMTP>> RSET
 H=127.0.0.1 [127.0.0.1] Remote host closed connection in response to RSET
+  SMTP(close)>>
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for userx@test.ex: result OK
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run t1 for userx@test.ex in subprocess)

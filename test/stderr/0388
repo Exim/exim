@@ -95,6 +95,7 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
   SMTP>> QUIT
+  SMTP(close)>>
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for x@y: result OK
 address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")

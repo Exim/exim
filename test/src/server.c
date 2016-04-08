@@ -572,6 +572,7 @@ for (count = 0; count < connection_count; count++)
               cr.pid, cr.uid, cr.gid);
     --------------*****************/
     }
+  fflush(stdout);
 
   if (dup_accept_socket < 0)
     {

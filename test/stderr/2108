@@ -31,6 +31,7 @@ LOG: MAIN
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK id=10HmaZ-0005vi-00
   SMTP>> QUIT
+  SMTP(close)>>
 LOG: MAIN
   => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
 LOG: MAIN
@@ -68,6 +69,7 @@ LOG: MAIN
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK id=10HmbA-0005vi-00
   SMTP>> QUIT
+  SMTP(close)>>
 LOG: MAIN
   => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
@@ -102,6 +104,7 @@ LOG: MAIN
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK id=10HmbB-0005vi-00
   SMTP>> QUIT
+  SMTP(close)>>
 LOG: MAIN
   => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:AES256-SHA:256 CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbB-0005vi-00"
 LOG: MAIN

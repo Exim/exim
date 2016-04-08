@@ -39,6 +39,7 @@ transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
 no messages waiting for 127.0.0.1
   SMTP>> QUIT
+  SMTP(close)>>
 Leaving my_smtp transport
 LOG: MAIN
   => userx@domain.com R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
