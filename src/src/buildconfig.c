@@ -825,7 +825,11 @@ else if (isgroup)
             strncpy(buffer, ss, sss-ss);
             buffer[sss-ss] = 0;  /* For empty case */
             }
-          else strcpy(buffer, ss);
+          else
+	    {
+       	    strncpy(buffer, ss, sizeof(buffer));
+	    buffer[sizeof(buffer)-1] = 0;
+	    }
           pp = buffer + (int)strlen(buffer);
           while (pp > buffer && isspace((unsigned char)pp[-1])) pp--;
           *pp = 0;
