@@ -14,6 +14,7 @@
 
 #include "pdkim/pdkim.h"
 
+int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
 pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
@@ -66,9 +67,17 @@ pdkim_init();
 }
 
 
+
 void
 dkim_exim_verify_init(void)
 {
+/* There is a store-reset between header & body reception
+so cannot use the main pool. Any allocs done by Exim
+memory-handling must use the perm pool. */
+
+dkim_verify_oldpool = store_pool;
+store_pool = POOL_PERM;
+
 /* Free previous context if there is one */
 
 if (dkim_verify_ctx)
@@ -78,15 +87,19 @@ if (dkim_verify_ctx)
 
 dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt);
 dkim_collect_input = !!dkim_verify_ctx;
+
+store_pool = dkim_verify_oldpool;
 }
 
 
 void
 dkim_exim_verify_feed(uschar * data, int len)
 {
+store_pool = POOL_PERM;
 if (  dkim_collect_input
    && pdkim_feed(dkim_verify_ctx, (char *)data, len) != PDKIM_OK)
   dkim_collect_input = FALSE;
+store_pool = dkim_verify_oldpool;
 }
 
 
@@ -97,6 +110,8 @@ pdkim_signature *sig = NULL;
 int dkim_signers_size = 0;
 int dkim_signers_ptr = 0;
 dkim_signers = NULL;
+
+store_pool = POOL_PERM;
 
 /* Delete eventual previous signature chain */
 
@@ -112,7 +127,7 @@ if (!dkim_collect_input)
 	     "DKIM: Error while running this message through validation,"
 	     " disabling signature verification.");
   dkim_disable_verify = TRUE;
-  return;
+  goto out;
   }
 
 dkim_collect_input = FALSE;
@@ -120,7 +135,7 @@ dkim_collect_input = FALSE;
 /* Finish DKIM operation and fetch link to signatures chain */
 
 if (pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures) != PDKIM_OK)
-  return;
+  goto out;
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
@@ -228,6 +243,9 @@ if (dkim_signers)
   if (Ustrlen(dkim_signers) > 0)
   dkim_signers[Ustrlen(dkim_signers) - 1] = '\0';
   }
+
+out:
+store_pool = dkim_verify_oldpool;
 }
 
 

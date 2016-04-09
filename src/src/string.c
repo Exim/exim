@@ -1078,7 +1078,7 @@ Arguments:
              characters, updated to the new offset
   s        points to characters to add
   count    count of characters to add; must not exceed the length of s, if s
-             is a C string
+             is a C string.  If -1 given, strlen(s) is used.
 
 If string is given as NULL, *size and *ptr should both be zero.
 
@@ -1094,6 +1094,8 @@ uschar *
 string_cat(uschar *string, int *size, int *ptr, const uschar *s, int count)
 {
 int p = *ptr;
+
+if (count == -1) count = Ustrlen(s);
 
 if (p + count >= *size)
   {

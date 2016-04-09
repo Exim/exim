@@ -35,7 +35,6 @@
 /* Function success / error codes */
 #define PDKIM_OK                      0
 #define PDKIM_FAIL                   -1
-#define PDKIM_ERR_OOM              -100
 #define PDKIM_ERR_RSA_PRIVKEY      -101
 #define PDKIM_ERR_RSA_SIGNING      -102
 #define PDKIM_ERR_LONG_LINE        -103
@@ -236,9 +235,9 @@ typedef struct pdkim_signature {
   unsigned long signed_body_bytes; /* How many body bytes we hashed     */
   pdkim_stringlist *headers; /* Raw headers included in the sig         */
   /* Signing specific ------------------------------------------------- */
-  char *rsa_privkey;     /* Private RSA key                             */
-  char *sign_headers;    /* To-be-signed header names                   */
-  char *rawsig_no_b_val; /* Original signature header w/o b= tag value. */
+  uschar * rsa_privkey;     /* Private RSA key                             */
+  uschar * sign_headers;    /* To-be-signed header names                   */
+  uschar * rawsig_no_b_val; /* Original signature header w/o b= tag value. */
 } pdkim_signature;
 
 
@@ -258,7 +257,9 @@ typedef struct pdkim_ctx {
   int(*dns_txt_callback)(char *, char *);
 
   /* Coder's little helpers */
-  pdkim_str *cur_header;
+  uschar    *cur_header;
+  int        cur_header_size;
+  int        cur_header_len;
   char      *linebuf;
   int        linebuf_offset;
   BOOL       seen_lf;
