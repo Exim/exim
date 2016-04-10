@@ -3975,19 +3975,19 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
       }
     else
       {
-      const uschar * s;
+      const char * s;
       if (hosts_retry == hosts_total)
-        s = US"retry time not reached for any host%s";
+        s = "retry time not reached for any host%s";
       else if (hosts_fail == hosts_total)
-        s = US"all host address lookups%s failed permanently";
+        s = "all host address lookups%s failed permanently";
       else if (hosts_defer == hosts_total)
-        s = US"all host address lookups%s failed temporarily";
+        s = "all host address lookups%s failed temporarily";
       else if (hosts_serial == hosts_total)
-        s = US"connection limit reached for all hosts%s";
+        s = "connection limit reached for all hosts%s";
       else if (hosts_fail+hosts_defer == hosts_total)
-        s = US"all host address lookups%s failed";
+        s = "all host address lookups%s failed";
       else
-        s = US"some host address lookups failed and retry time "
+        s = "some host address lookups failed and retry time "
         "not reached for other hosts or connection limit reached%s";
 
       addr->message = string_sprintf(s,

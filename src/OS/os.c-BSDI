@@ -12,8 +12,8 @@ src/os.c file. */
 #define OS_UNSETENV
 
 int
-os_unsetenv(const char *name)
+os_unsetenv(const uschar * name)
 {
-    unsetenv(name);
-    return 0;
+unsetenv(CS name);
+return 0;
 }

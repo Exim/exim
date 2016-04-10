@@ -844,9 +844,9 @@ os_get_dns_resolver_res(void)
 
 #if !defined(OS_UNSETENV)
 int
-os_unsetenv(const char *name)
+os_unsetenv(const uschar * name)
 {
-  return unsetenv(name);
+return unsetenv(CS name);
 }
 #endif
 
@@ -862,24 +862,24 @@ may not even do this. If the OS supports getcwd(NULL, 0) we'll use
 this, for all other systems we provide our own getcwd() */
 
 #if !defined(OS_GETCWD)
-char *
-os_getcwd(char *buffer, size_t size)
+uschar *
+os_getcwd(uschar * buffer, size_t size)
 {
-return getcwd(buffer, size);
+return getcwd(CS buffer, size);
 }
 #else
 #ifndef PATH_MAX
 # define PATH_MAX 4096
 #endif
-char *
-os_getcwd(char *buffer, size_t size)
+uschar *
+os_getcwd(uschar * buffer, size_t size)
 {
 void *rc;
 
 if (!size) size = PATH_MAX;
-if (!buffer && !(buffer = (char*) malloc(size))) return NULL;
-if (!(buffer = getcwd(buffer, size))) return NULL;
-return realloc(buffer, strlen(buffer) + 1);
+if (!buffer && !(buffer = US malloc(size))) return NULL;
+if (!(buffer = getcwd(CS buffer, size))) return NULL;
+return realloc(CS buffer, strlen(buffer) + 1);
 }
 #endif
 

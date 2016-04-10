@@ -99,7 +99,7 @@ restore_tz(uschar * tz)
 if (tz)
   (void) setenv("TZ", CCS tz, 1);
 else
-  (void) os_unsetenv("TZ");
+  (void) os_unsetenv(US"TZ");
 tzset();
 }
 
