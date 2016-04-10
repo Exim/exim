@@ -26901,7 +26901,8 @@ Documentation of the strings accepted may be found in the GnuTLS manual, under
 &url(http://www.gnutls.org/manual/html_node/Priority-Strings.html),
 but beware that this relates to GnuTLS 3, which may be newer than the version
 installed on your system.  If you are using GnuTLS 3,
-&url(http://www.gnutls.org/manual/gnutls.html#Listing-the-ciphersuites-in-a-priority-string, then the example code)
+then the example code
+&url(http://www.gnutls.org/manual/gnutls.html#Listing-the-ciphersuites-in-a-priority-string)
 on that site can be used to test a given string.
 
 For example:
