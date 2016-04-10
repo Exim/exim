@@ -952,7 +952,7 @@ else
   for (;;)
     {
     for (ss = s + 1; *ss != 0 && *ss != sep; ss++);
-    buffer = string_cat(buffer, &size, &ptr, s, ss-s);
+    buffer = string_catn(buffer, &size, &ptr, s, ss-s);
     s = ss;
     if (*s == 0 || *(++s) != sep || sep_is_special) break;
     }
@@ -995,17 +995,17 @@ uschar * sp;
 
 if (list)
   {
-  new = string_cat(new, &sz, &off, list, Ustrlen(list));
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_cat (new, &sz, &off, list);
+  new = string_catn(new, &sz, &off, &sep, 1);
   }
 
 while((sp = Ustrchr(ele, sep)))
   {
-  new = string_cat(new, &sz, &off, ele, sp-ele+1);
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_catn(new, &sz, &off, ele, sp-ele+1);
+  new = string_catn(new, &sz, &off, &sep, 1);
   ele = sp+1;
   }
-new = string_cat(new, &sz, &off, ele, Ustrlen(ele));
+new = string_cat(new, &sz, &off, ele);
 new[off] = '\0';
 return new;
 }
@@ -1039,18 +1039,18 @@ const uschar * sp;
 
 if (list)
   {
-  new = string_cat(new, &sz, &off, list, Ustrlen(list));
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_cat (new, &sz, &off, list);
+  new = string_catn(new, &sz, &off, &sep, 1);
   }
 
 while((sp = Ustrnchr(ele, sep, &len)))
   {
-  new = string_cat(new, &sz, &off, ele, sp-ele+1);
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_catn(new, &sz, &off, ele, sp-ele+1);
+  new = string_catn(new, &sz, &off, &sep, 1);
   ele = sp+1;
   len--;
   }
-new = string_cat(new, &sz, &off, ele, len);
+new = string_catn(new, &sz, &off, ele, len);
 new[off] = '\0';
 return new;
 }
@@ -1091,11 +1091,9 @@ Returns:   pointer to the start of the string, changed if copied for expansion.
 /* coverity[+alloc] */
 
 uschar *
-string_cat(uschar *string, int *size, int *ptr, const uschar *s, int count)
+string_catn(uschar *string, int *size, int *ptr, const uschar *s, int count)
 {
 int p = *ptr;
-
-if (count == -1) count = Ustrlen(s);
 
 if (p + count >= *size)
   {
@@ -1148,6 +1146,13 @@ memcpy(string + p, s, count);
 *ptr = p + count;
 return string;
 }
+
+
+uschar *
+string_cat(uschar *string, int *size, int *ptr, const uschar *s)
+{
+return string_catn(string, size, ptr, s, Ustrlen(s));
+}
 #endif  /* COMPILE_UTILITY */
 
 
@@ -1185,7 +1190,7 @@ va_start(ap, count);
 for (i = 0; i < count; i++)
   {
   uschar *t = va_arg(ap, uschar *);
-  string = string_cat(string, size, ptr, t, Ustrlen(t));
+  string = string_cat(string, size, ptr, t);
   }
 va_end(ap);
 
@@ -1568,7 +1573,7 @@ if (testflag(addr, af_include_affixes) && s)
   if (testflag(addr, af_utf8_downcvt))
     s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+  yield = string_cat(yield, sizeptr, ptrptr, s);
   }
 
 s = addr->local_part;
@@ -1576,7 +1581,7 @@ s = addr->local_part;
 if (testflag(addr, af_utf8_downcvt))
   s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+yield = string_cat(yield, sizeptr, ptrptr, s);
 
 s = addr->suffix;
 if (testflag(addr, af_include_affixes) && s)
@@ -1585,7 +1590,7 @@ if (testflag(addr, af_include_affixes) && s)
   if (testflag(addr, af_utf8_downcvt))
     s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
+  yield = string_cat(yield, sizeptr, ptrptr, s);
   }
 
 return yield;
@@ -1636,7 +1641,7 @@ if (testflag(addr, af_pfr) ||
        addr->transport != NULL && addr->transport->info->local))
   {
   if (testflag(addr, af_file) && addr->local_part[0] != '/')
-    yield = string_cat(yield, &size, &ptr, CUS"save ", 5);
+    yield = string_catn(yield, &size, &ptr, CUS"save ", 5);
   yield = string_get_localpart(addr, yield, &size, &ptr);
   }
 
@@ -1650,18 +1655,16 @@ else
     {
     const uschar * s;
     yield = string_get_localpart(addr, yield, &size, &ptr);
-    yield = string_cat(yield, &size, &ptr, US"@", 1);
+    yield = string_catn(yield, &size, &ptr, US"@", 1);
     s = addr->domain;
 #ifdef SUPPORT_I18N
     if (testflag(addr, af_utf8_downcvt))
       s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s) );
+    yield = string_cat(yield, &size, &ptr, s);
     }
   else
-    {
-    yield = string_cat(yield, &size, &ptr, addr->address, Ustrlen(addr->address));
-    }
+    yield = string_cat(yield, &size, &ptr, addr->address);
   yield[ptr] = 0;
 
   /* If the address we are going to print is the same as the top address,
@@ -1688,28 +1691,24 @@ if ((all_parents || testflag(addr, af_pfr)) &&
   address_item *addr2;
   for (addr2 = addr->parent; addr2 != topaddr; addr2 = addr2->parent)
     {
-    yield = string_cat(yield, &size, &ptr, s, 2);
-    yield = string_cat(yield, &size, &ptr, addr2->address, Ustrlen(addr2->address));
+    yield = string_catn(yield, &size, &ptr, s, 2);
+    yield = string_cat (yield, &size, &ptr, addr2->address);
     if (!all_parents) break;
     s = US", ";
     }
-  yield = string_cat(yield, &size, &ptr, US")", 1);
+  yield = string_catn(yield, &size, &ptr, US")", 1);
   }
 
 /* Add the top address if it is required */
 
 if (add_topaddr)
   {
-  yield = string_cat(yield, &size, &ptr, US" <", 2);
+  yield = string_catn(yield, &size, &ptr, US" <", 2);
 
-  if (addr->onetime_parent == NULL)
-    yield = string_cat(yield, &size, &ptr, topaddr->address,
-      Ustrlen(topaddr->address));
-  else
-    yield = string_cat(yield, &size, &ptr, addr->onetime_parent,
-      Ustrlen(addr->onetime_parent));
+  yield = string_cat(yield, &size, &ptr,
+    addr->onetime_parent ? addr->onetime_parent : topaddr->address);
 
-  yield = string_cat(yield, &size, &ptr, US">", 1);
+  yield = string_catn(yield, &size, &ptr, US">", 1);
   }
 
 yield[ptr] = 0;  /* string_cat() leaves space */

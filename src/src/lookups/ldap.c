@@ -734,7 +734,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
     /* Results for multiple entries values are separated by newlines. */
 
-    if (data != NULL) data = string_cat(data, &size, &ptr, US"\n", 1);
+    if (data != NULL) data = string_catn(data, &size, &ptr, US"\n", 1);
 
     /* Get the DN from the last result. */
 
@@ -762,7 +762,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
       {                                  /* condition, because of the else */
       if (new_dn != NULL)                /* below, that's for the first only */
         {
-        data = string_cat(data, &size, &ptr, new_dn, Ustrlen(new_dn));
+        data = string_cat(data, &size, &ptr, new_dn);
         data[ptr] = 0;
         attribute_found = TRUE;
         }
@@ -796,11 +796,11 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
           if (attrs_requested != 1)
             {
             if (insert_space)
-              data = string_cat(data, &size, &ptr, US" ", 1);
+              data = string_catn(data, &size, &ptr, US" ", 1);
             else
               insert_space = TRUE;
-            data = string_cat(data, &size, &ptr, attr, Ustrlen(attr));
-            data = string_cat(data, &size, &ptr, US"=\"", 2);
+            data = string_cat(data, &size, &ptr, attr);
+            data = string_catn(data, &size, &ptr, US"=\"", 2);
             }
 
           while (*values != NULL)
@@ -818,7 +818,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             attribute and append only every non first value. */
 
             if (data && valuecount > 1)
-              data = string_cat(data, &size, &ptr, US",", 1);
+              data = string_catn(data, &size, &ptr, US",", 1);
 
             /* For multiple attributes, the data is in quotes. We must escape
             internal quotes, backslashes, newlines, and must double commas. */
@@ -829,14 +829,14 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
               for (j = 0; j < len; j++)
                 {
                 if (value[j] == '\n')
-                  data = string_cat(data, &size, &ptr, US"\\n", 2);
+                  data = string_catn(data, &size, &ptr, US"\\n", 2);
                 else if (value[j] == ',')
-                  data = string_cat(data, &size, &ptr, US",,", 2);
+                  data = string_catn(data, &size, &ptr, US",,", 2);
                 else
                   {
                   if (value[j] == '\"' || value[j] == '\\')
-                    data = string_cat(data, &size, &ptr, US"\\", 1);
-                  data = string_cat(data, &size, &ptr, value+j, 1);
+                    data = string_catn(data, &size, &ptr, US"\\", 1);
+                  data = string_catn(data, &size, &ptr, value+j, 1);
                   }
                 }
               }
@@ -848,9 +848,9 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 	      int j;
 	      for (j = 0; j < len; j++)
 	        if (value[j] == ',')
-	          data = string_cat(data, &size, &ptr, US",,", 2);
+	          data = string_catn(data, &size, &ptr, US",,", 2);
 	        else
-	          data = string_cat(data, &size, &ptr, value+j, 1);
+	          data = string_catn(data, &size, &ptr, value+j, 1);
 	      }
 
 
@@ -863,7 +863,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
           /* Closing quote at the end of the data for a named attribute. */
 
           if (attrs_requested != 1)
-            data = string_cat(data, &size, &ptr, US"\"", 1);
+            data = string_catn(data, &size, &ptr, US"\"", 1);
 
           /* Free the values */
 

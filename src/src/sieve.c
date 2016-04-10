@@ -433,7 +433,7 @@ if (*uri && *uri!='?')
       capacity=0;
       to.character= NULL;
       to.length=0;
-      to.character=string_cat(to.character,&capacity,&to.length,start,uri-start);
+      to.character=string_catn(to.character, &capacity, &to.length, start, uri-start);
       to.character[to.length]='\0';
       if (uri_decode(&to)==-1)
         {
@@ -467,7 +467,7 @@ if (*uri=='?')
       capacity=0;
       hname.character= NULL;
       hname.length=0;
-      hname.character=string_cat(hname.character,&capacity,&hname.length,start,uri-start);
+      hname.character = string_catn(hname.character, &capacity, &hname.length, start, uri-start);
       hname.character[hname.length]='\0';
       if (uri_decode(&hname)==-1)
         {
@@ -490,7 +490,7 @@ if (*uri=='?')
       capacity=0;
       hvalue.character= NULL;
       hvalue.length=0;
-      hvalue.character=string_cat(hvalue.character,&capacity,&hvalue.length,start,uri-start);
+      hvalue.character=string_catn(hvalue.character,&capacity,&hvalue.length,start,uri-start);
       hvalue.character[hvalue.length]='\0';
       if (uri_decode(&hvalue)==-1)
         {
@@ -529,10 +529,10 @@ if (*uri=='?')
         {
         if (header->length==-1) header->length=0;
         capacity=header->length;
-        header->character=string_cat(header->character,&capacity,&header->length,hname.character,hname.length);
-        header->character=string_cat(header->character,&capacity,&header->length,CUS ": ",2);
-        header->character=string_cat(header->character,&capacity,&header->length,hvalue.character,hvalue.length);
-        header->character=string_cat(header->character,&capacity,&header->length,CUS "\n",1);
+        header->character=string_catn(header->character,&capacity,&header->length,hname.character,hname.length);
+        header->character=string_catn(header->character,&capacity,&header->length,CUS ": ",2);
+        header->character=string_catn(header->character,&capacity,&header->length,hvalue.character,hvalue.length);
+        header->character=string_catn(header->character,&capacity,&header->length,CUS "\n",1);
         header->character[header->length]='\0';
         }
       }
@@ -1006,24 +1006,24 @@ while (l)
     {
     case '\0':
       {
-      quoted=string_cat(quoted,&size,&ptr,CUS "\\0",2);
+      quoted=string_catn(quoted,&size,&ptr,CUS "\\0",2);
       break;
       }
     case '$':
     case '{':
     case '}':
       {
-      quoted=string_cat(quoted,&size,&ptr,CUS "\\",1);
+      quoted=string_catn(quoted,&size,&ptr,CUS "\\",1);
       }
     default:
       {
-      quoted=string_cat(quoted,&size,&ptr,h,1);
+      quoted=string_catn(quoted,&size,&ptr,h,1);
       }
     }
   ++h;
   --l;
   }
-quoted=string_cat(quoted,&size,&ptr,CUS "",1);
+quoted=string_catn(quoted,&size,&ptr,CUS "",1);
 return quoted;
 }
 
@@ -1487,7 +1487,7 @@ if (*filter->pc=='"') /* quoted string */
 
       ++filter->pc;
       /* that way, there will be at least one character allocated */
-      data->character=string_cat(data->character,&dataCapacity,&foo,CUS "",1);
+      data->character=string_catn(data->character,&dataCapacity,&foo,CUS "",1);
 #ifdef ENCODED_CHARACTER
       if (filter->require_encoded_character
           && string_decode(filter,data)==-1)
@@ -1497,7 +1497,7 @@ if (*filter->pc=='"') /* quoted string */
       }
     else if (*filter->pc=='\\' && *(filter->pc+1)) /* quoted character */
       {
-      data->character=string_cat(data->character,&dataCapacity,&data->length,filter->pc+1,1);
+      data->character=string_catn(data->character,&dataCapacity,&data->length,filter->pc+1,1);
       filter->pc+=2;
       }
     else /* regular character */
@@ -1507,11 +1507,11 @@ if (*filter->pc=='"') /* quoted string */
 #else
       if (*filter->pc=='\n')
         {
-        data->character=string_cat(data->character,&dataCapacity,&data->length,US"\r",1);
+        data->character=string_catn(data->character,&dataCapacity,&data->length,US"\r",1);
         ++filter->line;
         }
 #endif
-      data->character=string_cat(data->character,&dataCapacity,&data->length,filter->pc,1);
+      data->character=string_catn(data->character,&dataCapacity,&data->length,filter->pc,1);
       filter->pc++;
       }
     }
@@ -1553,7 +1553,7 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
     if (*filter->pc=='\n') /* end of line */
 #endif
       {
-      data->character=string_cat(data->character,&dataCapacity,&data->length,CUS "\r\n",2);
+      data->character=string_catn(data->character,&dataCapacity,&data->length,CUS "\r\n",2);
 #ifdef RFC_EOL
       filter->pc+=2;
 #else
@@ -1569,7 +1569,7 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
         int foo=data->length;
 
         /* that way, there will be at least one character allocated */
-        data->character=string_cat(data->character,&dataCapacity,&foo,CUS "",1);
+        data->character=string_catn(data->character,&dataCapacity,&foo,CUS "",1);
 #ifdef RFC_EOL
         filter->pc+=3;
 #else
@@ -1585,13 +1585,13 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
         }
       else if (*filter->pc=='.' && *(filter->pc+1)=='.') /* remove dot stuffing */
         {
-        data->character=string_cat(data->character,&dataCapacity,&data->length,CUS ".",1);
+        data->character=string_catn(data->character,&dataCapacity,&data->length,CUS ".",1);
         filter->pc+=2;
         }
       }
     else /* regular character */
       {
-      data->character=string_cat(data->character,&dataCapacity,&data->length,filter->pc,1);
+      data->character=string_catn(data->character,&dataCapacity,&data->length,filter->pc,1);
       filter->pc++;
       }
     }
@@ -3297,10 +3297,10 @@ while (*filter->pc)
         capacity=0;
         if (handle.length==-1)
           {
-          if (subject.length!=-1) key.character=string_cat(key.character,&capacity,&key.length,subject.character,subject.length);
-          if (from.length!=-1) key.character=string_cat(key.character,&capacity,&key.length,from.character,from.length);
-          key.character=string_cat(key.character,&capacity,&key.length,reason_is_mime?US"1":US"0",1);
-          key.character=string_cat(key.character,&capacity,&key.length,reason.character,reason.length);
+          if (subject.length!=-1) key.character=string_catn(key.character,&capacity,&key.length,subject.character,subject.length);
+          if (from.length!=-1) key.character=string_catn(key.character,&capacity,&key.length,from.character,from.length);
+          key.character=string_catn(key.character,&capacity,&key.length,reason_is_mime?US"1":US"0",1);
+          key.character=string_catn(key.character,&capacity,&key.length,reason.character,reason.length);
           }
         else
           key=handle;
@@ -3315,8 +3315,8 @@ while (*filter->pc)
           {
           capacity=Ustrlen(filter->vacation_directory);
           start=capacity;
-          once=string_cat(filter->vacation_directory,&capacity,&start,US"/",1);
-          once=string_cat(once,&capacity,&start,hexdigest,33);
+          once=string_catn(filter->vacation_directory,&capacity,&start,US"/",1);
+          once=string_catn(once,&capacity,&start,hexdigest,33);
           once[start] = '\0';
 
           /* process subject */
@@ -3331,7 +3331,7 @@ while (*filter->pc)
               expand_header(&subject,&str_subject);
               capacity=6;
               start=6;
-              subject.character=string_cat(US"Auto: ",&capacity,&start,subject.character,subject.length);
+              subject.character=string_catn(US"Auto: ",&capacity,&start,subject.character,subject.length);
               subject.length=start;
               }
             else
@@ -3378,13 +3378,13 @@ while (*filter->pc)
               );
             capacity = 0;
             start = 0;
-            addr->reply->headers = string_cat(NULL,&capacity,&start,reason.character,mime_body-reason.character);
+            addr->reply->headers = string_catn(NULL,&capacity,&start,reason.character,mime_body-reason.character);
             addr->reply->headers[start] = '\0';
             capacity = 0;
             start = 0;
             if (mime_body+(sizeof(nlnl)-1)<reason_end) mime_body+=(sizeof(nlnl)-1);
             else mime_body=reason_end-1;
-            addr->reply->text = string_cat(NULL,&capacity,&start,mime_body,reason_end-mime_body);
+            addr->reply->text = string_catn(NULL,&capacity,&start,mime_body,reason_end-mime_body);
             addr->reply->text[start] = '\0';
             }
           else

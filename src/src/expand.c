@@ -1669,9 +1669,8 @@ if (!enable_dollar_recipients) return NULL; else
   uschar * s = store_get(size);
   for (i = 0; i < recipients_count; i++)
     {
-    if (i != 0) s = string_cat(s, &size, &ptr, US", ", 2);
-    s = string_cat(s, &size, &ptr, recipients_list[i].address,
-      Ustrlen(recipients_list[i].address));
+    if (i != 0) s = string_catn(s, &size, &ptr, US", ", 2);
+    s = string_cat(s, &size, &ptr, recipients_list[i].address);
     }
   s[ptr] = 0;     /* string_cat() leaves room */
   return s;
@@ -2375,7 +2374,7 @@ switch(cond_type)
           lookup_value = NULL;
 	  if (user_msg)
 	    {
-            lookup_value = string_cat(NULL, &size, &ptr, user_msg, Ustrlen(user_msg));
+            lookup_value = string_cat(NULL, &size, &ptr, user_msg);
             lookup_value[ptr] = '\0';
 	    }
 	  *yield = cond == testfor;
@@ -3177,13 +3176,12 @@ if (*s == '}')
   {
   if (type[0] == 'i')
     {
-    if (yes) *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, US"true", 4);
+    if (yes) *yieldptr = string_catn(*yieldptr, sizeptr, ptrptr, US"true", 4);
     }
   else
     {
     if (yes && lookup_value)
-      *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value,
-        Ustrlen(lookup_value));
+      *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value);
     lookup_value = save_lookup;
     }
   s++;
@@ -3206,7 +3204,7 @@ if (*s++ != '}') goto FAILED_CURLY;
 /* If we want the first string, add it to the output */
 
 if (yes)
-  *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, sub1, Ustrlen(sub1));
+  *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, sub1);
 
 /* If this is called from a lookup/env or a (cert)extract, we want to restore
 $value to what it was at the start of the item, so that it has this value
@@ -3232,7 +3230,7 @@ if (*s == '{')
   /* If we want the second string, add it to the output */
 
   if (!yes)
-    *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, sub2, Ustrlen(sub2));
+    *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, sub2);
   }
 
 /* If there is no second string, but the word "fail" is present when the use of
@@ -3401,9 +3399,9 @@ if (key_num == NULL)
 if (Ustrlen(key) > 64)
   return NULL;
 
-hash_source = string_cat(NULL,&size,&offset,key_num,1);
-hash_source = string_cat(hash_source,&size,&offset,daystamp,3);
-hash_source = string_cat(hash_source,&size,&offset,address,Ustrlen(address));
+hash_source = string_catn(NULL, &size, &offset, key_num, 1);
+hash_source = string_catn(hash_source, &size, &offset, daystamp, 3);
+hash_source = string_cat(hash_source, &size, &offset, address);
 hash_source[offset] = '\0';
 
 DEBUG(D_expand) debug_printf("prvs: hash source is '%s'\n", hash_source);
@@ -3467,9 +3465,9 @@ while (Ufgets(buffer, sizeof(buffer), f))
   {
   int len = Ustrlen(buffer);
   if (eol && buffer[len-1] == '\n') len--;
-  yield = string_cat(yield, sizep, ptrp, buffer, len);
+  yield = string_catn(yield, sizep, ptrp, buffer, len);
   if (buffer[len] != 0)
-    yield = string_cat(yield, sizep, ptrp, eol, eollen);
+    yield = string_catn(yield, sizep, ptrp, eol, eollen);
   }
 
 if (yield) yield[*ptrp] = 0;
@@ -3855,7 +3853,7 @@ while (*s != 0)
       {
       const uschar * t = s + 2;
       for (s = t; *s != 0; s++) if (*s == '\\' && s[1] == 'N') break;
-      yield = string_cat(yield, &size, &ptr, t, s - t);
+      yield = string_catn(yield, &size, &ptr, t, s - t);
       if (*s != 0) s += 2;
       }
 
@@ -3864,7 +3862,7 @@ while (*s != 0)
       uschar ch[1];
       ch[0] = string_interpret_escape(&s);
       s++;
-      yield = string_cat(yield, &size, &ptr, ch, 1);
+      yield = string_catn(yield, &size, &ptr, ch, 1);
       }
 
     continue;
@@ -3879,7 +3877,7 @@ while (*s != 0)
 
   if (*s != '$' || !honour_dollar)
     {
-    yield = string_cat(yield, &size, &ptr, s++, 1);
+    yield = string_catn(yield, &size, &ptr, s++, 1);
     continue;
     }
 
@@ -3957,7 +3955,7 @@ while (*s != 0)
       size = newsize;
       ptr = len;
       }
-    else yield = string_cat(yield, &size, &ptr, value, len);
+    else yield = string_catn(yield, &size, &ptr, value, len);
 
     continue;
     }
@@ -3967,7 +3965,7 @@ while (*s != 0)
     int n;
     s = read_cnumber(&n, s);
     if (n >= 0 && n <= expand_nmax)
-      yield = string_cat(yield, &size, &ptr, expand_nstring[n],
+      yield = string_catn(yield, &size, &ptr, expand_nstring[n],
         expand_nlength[n]);
     continue;
     }
@@ -3993,7 +3991,7 @@ while (*s != 0)
       goto EXPAND_FAILED;
       }
     if (n >= 0 && n <= expand_nmax)
-      yield = string_cat(yield, &size, &ptr, expand_nstring[n],
+      yield = string_catn(yield, &size, &ptr, expand_nstring[n],
         expand_nlength[n]);
     continue;
     }
@@ -4045,7 +4043,7 @@ while (*s != 0)
 	  DEBUG(D_expand)
 	    debug_printf("acl expansion yield: %s\n", user_msg);
 	  if (user_msg)
-            yield = string_cat(yield, &size, &ptr, user_msg, Ustrlen(user_msg));
+            yield = string_cat(yield, &size, &ptr, user_msg);
 	  continue;
 
 	case DEFER:
@@ -4137,7 +4135,7 @@ while (*s != 0)
 			  sub_arg[1][0], sub_arg[2], &expand_string_message)))
 	goto EXPAND_FAILED;
       if (!skipping)
-	yield = string_cat(yield, &size, &ptr, encoded, Ustrlen(encoded));
+	yield = string_cat(yield, &size, &ptr, encoded);
       continue;
       }
 #endif
@@ -4466,14 +4464,14 @@ while (*s != 0)
       /* Now separate the domain from the local part */
       *domain++ = '\0';
 
-      yield = string_cat(yield,&size,&ptr,US"prvs=",5);
-      string_cat(yield,&size,&ptr,(sub_arg[2] != NULL) ? sub_arg[2] : US"0", 1);
-      string_cat(yield,&size,&ptr,prvs_daystamp(7),3);
-      string_cat(yield,&size,&ptr,p,6);
-      string_cat(yield,&size,&ptr,US"=",1);
-      string_cat(yield,&size,&ptr,sub_arg[0],Ustrlen(sub_arg[0]));
-      string_cat(yield,&size,&ptr,US"@",1);
-      string_cat(yield,&size,&ptr,domain,Ustrlen(domain));
+      yield = string_catn(yield, &size, &ptr, US"prvs=", 5);
+      yield = string_catn(yield, &size, &ptr, sub_arg[2] ? sub_arg[2] : US"0", 1);
+      yield = string_catn(yield, &size, &ptr, prvs_daystamp(7), 3);
+      yield = string_catn(yield, &size, &ptr, p, 6);
+      yield = string_catn(yield, &size, &ptr, US"=", 1);
+      yield = string_cat (yield, &size, &ptr, sub_arg[0]);
+      yield = string_catn(yield, &size, &ptr, US"@", 1);
+      yield = string_cat (yield, &size, &ptr, domain);
 
       continue;
       }
@@ -4527,9 +4525,9 @@ while (*s != 0)
         DEBUG(D_expand) debug_printf("prvscheck domain: %s\n", domain);
 
         /* Set up expansion variables */
-        prvscheck_address = string_cat(NULL, &mysize, &myptr, local_part, Ustrlen(local_part));
-        string_cat(prvscheck_address,&mysize,&myptr,US"@",1);
-        string_cat(prvscheck_address,&mysize,&myptr,domain,Ustrlen(domain));
+        prvscheck_address = string_cat (NULL, &mysize, &myptr, local_part);
+        prvscheck_address = string_catn(prvscheck_address, &mysize, &myptr, US"@", 1);
+        prvscheck_address = string_cat (prvscheck_address, &mysize, &myptr, domain);
         prvscheck_address[myptr] = '\0';
         prvscheck_keynum = string_copy(key_num);
 
@@ -4595,10 +4593,8 @@ while (*s != 0)
           case 3: goto EXPAND_FAILED;
           }
 
-        if (sub_arg[0] == NULL || *sub_arg[0] == '\0')
-          yield = string_cat(yield,&size,&ptr,prvscheck_address,Ustrlen(prvscheck_address));
-        else
-          yield = string_cat(yield,&size,&ptr,sub_arg[0],Ustrlen(sub_arg[0]));
+	yield = string_cat(yield, &size, &ptr,
+	  !sub_arg[0] || !*sub_arg[0] ? prvscheck_address : sub_arg[0]);
 
         /* Reset the "internal" variables afterwards, because they are in
         dynamic store that will be reclaimed if the expansion succeeded. */
@@ -4858,9 +4854,9 @@ while (*s != 0)
       SOCK_FAIL:
       if (*s != '{') goto EXPAND_FAILED;
       DEBUG(D_any) debug_printf("%s\n", expand_string_message);
-      arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE, &resetok);
-      if (arg == NULL) goto EXPAND_FAILED;
-      yield = string_cat(yield, &size, &ptr, arg, Ustrlen(arg));
+      if (!(arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE, &resetok)))
+        goto EXPAND_FAILED;
+      yield = string_cat(yield, &size, &ptr, arg);
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
       while (isspace(*s)) s++;
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
@@ -4991,7 +4987,7 @@ while (*s != 0)
         case 3: goto EXPAND_FAILED;
         }
 
-      yield = string_cat(yield, &size, &ptr, sub[0], Ustrlen(sub[0]));
+      yield = string_cat(yield, &size, &ptr, sub[0]);
       o2m = Ustrlen(sub[2]) - 1;
 
       if (o2m >= 0) for (; oldptr < ptr; oldptr++)
@@ -5068,7 +5064,7 @@ while (*s != 0)
           extract_substr(sub[2], val[0], val[1], &len);
 
       if (ret == NULL) goto EXPAND_FAILED;
-      yield = string_cat(yield, &size, &ptr, ret, len);
+      yield = string_catn(yield, &size, &ptr, ret, len);
       continue;
       }
 
@@ -5176,7 +5172,7 @@ while (*s != 0)
       DEBUG(D_any) debug_printf("HMAC[%s](%.*s,%.*s)=%.*s\n", sub[0],
         (int)keylen, keyptr, Ustrlen(sub[2]), sub[2], hashlen*2, finalhash_hex);
 
-      yield = string_cat(yield, &size, &ptr, finalhash_hex, hashlen*2);
+      yield = string_catn(yield, &size, &ptr, finalhash_hex, hashlen*2);
       }
 
     continue;
@@ -5247,7 +5243,7 @@ while (*s != 0)
             emptyopt = 0;
             continue;
             }
-          yield = string_cat(yield, &size, &ptr, subject+moffset, slen-moffset);
+          yield = string_catn(yield, &size, &ptr, subject+moffset, slen-moffset);
           break;
           }
 
@@ -5264,11 +5260,11 @@ while (*s != 0)
 
         /* Copy the characters before the match, plus the expanded insertion. */
 
-        yield = string_cat(yield, &size, &ptr, subject + moffset,
+        yield = string_catn(yield, &size, &ptr, subject + moffset,
           ovector[0] - moffset);
         insert = expand_string(sub[2]);
         if (insert == NULL) goto EXPAND_FAILED;
-        yield = string_cat(yield, &size, &ptr, insert, Ustrlen(insert));
+        yield = string_cat(yield, &size, &ptr, insert);
 
         moffset = ovector[1];
         moffsetextra = 0;
@@ -5704,7 +5700,7 @@ while (*s != 0)
         separator character, or is an empty string. */
 
         if (ptr != save_ptr && (temp[0] == *outsep || temp[0] == 0))
-          yield = string_cat(yield, &size, &ptr, US" ", 1);
+          yield = string_catn(yield, &size, &ptr, US" ", 1);
 
         /* Add the string in "temp" to the output list that we are building,
         This is done in chunks by searching for the separator character. */
@@ -5712,21 +5708,22 @@ while (*s != 0)
         for (;;)
           {
           size_t seglen = Ustrcspn(temp, outsep);
-            yield = string_cat(yield, &size, &ptr, temp, seglen + 1);
+
+	  yield = string_catn(yield, &size, &ptr, temp, seglen + 1);
 
           /* If we got to the end of the string we output one character
           too many; backup and end the loop. Otherwise arrange to double the
           separator. */
 
           if (temp[seglen] == '\0') { ptr--; break; }
-          yield = string_cat(yield, &size, &ptr, outsep, 1);
+          yield = string_catn(yield, &size, &ptr, outsep, 1);
           temp += seglen + 1;
           }
 
         /* Output a separator after the string: we will remove the redundant
         final one at the end. */
 
-        yield = string_cat(yield, &size, &ptr, outsep, 1);
+        yield = string_catn(yield, &size, &ptr, outsep, 1);
         }   /* End of iteration over the list loop */
 
       /* REDUCE has generated no output above: output the final value of
@@ -5734,8 +5731,7 @@ while (*s != 0)
 
       if (item_type == EITEM_REDUCE)
         {
-        yield = string_cat(yield, &size, &ptr, lookup_value,
-          Ustrlen(lookup_value));
+        yield = string_cat(yield, &size, &ptr, lookup_value);
         lookup_value = save_lookup_value;  /* Restore $value */
         }
 
@@ -5878,7 +5874,7 @@ while (*s != 0)
 	}
 
       if (dstlist)
-	yield = string_cat(yield, &size, &ptr, dstlist, Ustrlen(dstlist));
+	yield = string_cat(yield, &size, &ptr, dstlist);
 
       /* Restore preserved $item */
       iterate_item = save_iterate_item;
@@ -5976,7 +5972,7 @@ while (*s != 0)
       if(status == OK)
         {
         if (result == NULL) result = US"";
-        yield = string_cat(yield, &size, &ptr, result, Ustrlen(result));
+        yield = string_cat(yield, &size, &ptr, result);
         continue;
         }
       else
@@ -6106,7 +6102,7 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
         t = string_base62(n);
-        yield = string_cat(yield, &size, &ptr, t, Ustrlen(t));
+        yield = string_cat(yield, &size, &ptr, t);
         continue;
         }
 
@@ -6130,7 +6126,7 @@ while (*s != 0)
           n = n * BASE_62 + (t - base62_chars);
           }
         (void)sprintf(CS buf, "%ld", n);
-        yield = string_cat(yield, &size, &ptr, buf, Ustrlen(buf));
+        yield = string_cat(yield, &size, &ptr, buf);
         continue;
         }
 
@@ -6144,7 +6140,7 @@ while (*s != 0)
               expand_string_message);
           goto EXPAND_FAILED;
           }
-        yield = string_cat(yield, &size, &ptr, expanded, Ustrlen(expanded));
+        yield = string_cat(yield, &size, &ptr, expanded);
         continue;
         }
 
@@ -6153,7 +6149,7 @@ while (*s != 0)
         int count = 0;
         uschar *t = sub - 1;
         while (*(++t) != 0) { *t = tolower(*t); count++; }
-        yield = string_cat(yield, &size, &ptr, sub, count);
+        yield = string_catn(yield, &size, &ptr, sub, count);
         continue;
         }
 
@@ -6162,7 +6158,7 @@ while (*s != 0)
         int count = 0;
         uschar *t = sub - 1;
         while (*(++t) != 0) { *t = toupper(*t); count++; }
-        yield = string_cat(yield, &size, &ptr, sub, count);
+        yield = string_catn(yield, &size, &ptr, sub, count);
         continue;
         }
 
@@ -6171,7 +6167,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp);
 	  }
 	else
 #endif
@@ -6183,7 +6179,7 @@ while (*s != 0)
 	  md5_start(&base);
 	  md5_end(&base, sub, Ustrlen(sub), digest);
 	  for(j = 0; j < 16; j++) sprintf(st+2*j, "%02x", digest[j]);
-	  yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
+	  yield = string_cat(yield, &size, &ptr, US st);
 	  }
         continue;
 
@@ -6192,7 +6188,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha1(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp);
 	  }
 	else
 #endif
@@ -6204,7 +6200,7 @@ while (*s != 0)
 	  sha1_start(&base);
 	  sha1_end(&base, sub, Ustrlen(sub), digest);
 	  for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
-	  yield = string_cat(yield, &size, &ptr, US st, (int)strlen(st));
+	  yield = string_cat(yield, &size, &ptr, US st);
 	  }
         continue;
 
@@ -6213,7 +6209,7 @@ while (*s != 0)
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
-	  yield = string_cat(yield, &size, &ptr, cp, (int)Ustrlen(cp));
+	  yield = string_cat(yield, &size, &ptr, cp);
 	  }
 	else
 #endif
@@ -6264,7 +6260,7 @@ while (*s != 0)
           }
 
         enc = b64encode(sub, out - sub);
-        yield = string_cat(yield, &size, &ptr, enc, Ustrlen(enc));
+        yield = string_cat(yield, &size, &ptr, enc);
         continue;
         }
 
@@ -6276,10 +6272,10 @@ while (*s != 0)
         while (*(++t) != 0)
           {
           if (*t < 0x21 || 0x7E < *t)
-            yield = string_cat(yield, &size, &ptr,
+            yield = string_catn(yield, &size, &ptr,
 	      string_sprintf("\\x%02x", *t), 4);
 	  else
-	    yield = string_cat(yield, &size, &ptr, t, 1);
+	    yield = string_catn(yield, &size, &ptr, t, 1);
           }
 	continue;
 	}
@@ -6295,7 +6291,7 @@ while (*s != 0)
 
 	while (string_nextinlist(CUSS &sub, &sep, buffer, sizeof(buffer)) != NULL) cnt++;
 	cp = string_sprintf("%d", cnt);
-        yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
+        yield = string_cat(yield, &size, &ptr, cp);
         continue;
         }
 
@@ -6349,7 +6345,7 @@ while (*s != 0)
 	  {
 	  uschar * buf = US" : ";
 	  if (needsep)
-	    yield = string_cat(yield, &size, &ptr, buf, 3);
+	    yield = string_catn(yield, &size, &ptr, buf, 3);
 	  else
 	    needsep = TRUE;
 
@@ -6365,21 +6361,21 @@ while (*s != 0)
 	    tok[0] = sep; tok[1] = ':'; tok[2] = 0;
 	    while ((cp= strpbrk((const char *)item, tok)))
 	      {
-              yield = string_cat(yield, &size, &ptr, item, cp-(char *)item);
+              yield = string_catn(yield, &size, &ptr, item, cp-(char *)item);
 	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
 	        {
-                yield = string_cat(yield, &size, &ptr, US"::", 2);
+                yield = string_catn(yield, &size, &ptr, US"::", 2);
 	        item = (uschar *)cp;
 		}
 	      else		/* sep in item; should already be doubled; emit once */
 	        {
-                yield = string_cat(yield, &size, &ptr, (uschar *)tok, 1);
+                yield = string_catn(yield, &size, &ptr, (uschar *)tok, 1);
 		if (*cp == sep) cp++;
 	        item = (uschar *)cp;
 		}
 	      }
 	    }
-          yield = string_cat(yield, &size, &ptr, item, Ustrlen(item));
+          yield = string_cat(yield, &size, &ptr, item);
 	  }
         continue;
 	}
@@ -6427,7 +6423,7 @@ while (*s != 0)
 
         /* Convert to masked textual format and add to output. */
 
-        yield = string_cat(yield, &size, &ptr, buffer,
+        yield = string_catn(yield, &size, &ptr, buffer,
           host_nmtoa(count, binary, mask, buffer, '.'));
         continue;
         }
@@ -6457,7 +6453,7 @@ while (*s != 0)
 	    goto EXPAND_FAILED;
 	  }
 
-	yield = string_cat(yield, &size, &ptr, buffer,
+	yield = string_catn(yield, &size, &ptr, buffer,
 		  c == EOP_IPV6NORM
 		    ? ipv6_nmtoa(binary, buffer)
 		    : host_nmtoa(4, binary, -1, buffer, ':')
@@ -6478,12 +6474,12 @@ while (*s != 0)
           if (c != EOP_DOMAIN)
             {
             if (c == EOP_LOCAL_PART && domain != 0) end = start + domain - 1;
-            yield = string_cat(yield, &size, &ptr, sub+start, end-start);
+            yield = string_catn(yield, &size, &ptr, sub+start, end-start);
             }
           else if (domain != 0)
             {
             domain += start;
-            yield = string_cat(yield, &size, &ptr, sub+domain, end-domain);
+            yield = string_catn(yield, &size, &ptr, sub+domain, end-domain);
             }
           }
         continue;
@@ -6518,25 +6514,25 @@ while (*s != 0)
           if (address != NULL)
             {
             if (ptr != save_ptr && address[0] == *outsep)
-              yield = string_cat(yield, &size, &ptr, US" ", 1);
+              yield = string_catn(yield, &size, &ptr, US" ", 1);
 
             for (;;)
               {
               size_t seglen = Ustrcspn(address, outsep);
-              yield = string_cat(yield, &size, &ptr, address, seglen + 1);
+              yield = string_catn(yield, &size, &ptr, address, seglen + 1);
 
               /* If we got to the end of the string we output one character
               too many. */
 
               if (address[seglen] == '\0') { ptr--; break; }
-              yield = string_cat(yield, &size, &ptr, outsep, 1);
+              yield = string_catn(yield, &size, &ptr, outsep, 1);
               address += seglen + 1;
               }
 
             /* Output a separator after the string: we will remove the
             redundant final one at the end. */
 
-            yield = string_cat(yield, &size, &ptr, outsep, 1);
+            yield = string_catn(yield, &size, &ptr, outsep, 1);
             }
 
           if (saveend == '\0') break;
@@ -6583,24 +6579,24 @@ while (*s != 0)
 
         if (needs_quote)
           {
-          yield = string_cat(yield, &size, &ptr, US"\"", 1);
+          yield = string_catn(yield, &size, &ptr, US"\"", 1);
           t = sub - 1;
           while (*(++t) != 0)
             {
             if (*t == '\n')
-              yield = string_cat(yield, &size, &ptr, US"\\n", 2);
+              yield = string_catn(yield, &size, &ptr, US"\\n", 2);
             else if (*t == '\r')
-              yield = string_cat(yield, &size, &ptr, US"\\r", 2);
+              yield = string_catn(yield, &size, &ptr, US"\\r", 2);
             else
               {
               if (*t == '\\' || *t == '"')
-                yield = string_cat(yield, &size, &ptr, US"\\", 1);
-              yield = string_cat(yield, &size, &ptr, t, 1);
+                yield = string_catn(yield, &size, &ptr, US"\\", 1);
+              yield = string_catn(yield, &size, &ptr, t, 1);
               }
             }
-          yield = string_cat(yield, &size, &ptr, US"\"", 1);
+          yield = string_catn(yield, &size, &ptr, US"\"", 1);
           }
-        else yield = string_cat(yield, &size, &ptr, sub, Ustrlen(sub));
+        else yield = string_cat(yield, &size, &ptr, sub);
         continue;
         }
 
@@ -6632,7 +6628,7 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
 
-        yield = string_cat(yield, &size, &ptr, sub, Ustrlen(sub));
+        yield = string_cat(yield, &size, &ptr, sub);
         continue;
         }
 
@@ -6645,8 +6641,8 @@ while (*s != 0)
         while (*(++t) != 0)
           {
           if (!isalnum(*t))
-            yield = string_cat(yield, &size, &ptr, US"\\", 1);
-          yield = string_cat(yield, &size, &ptr, t, 1);
+            yield = string_catn(yield, &size, &ptr, US"\\", 1);
+          yield = string_catn(yield, &size, &ptr, t, 1);
           }
         continue;
         }
@@ -6659,7 +6655,7 @@ while (*s != 0)
         uschar buffer[2048];
 	const uschar *string = parse_quote_2047(sub, Ustrlen(sub), headers_charset,
           buffer, sizeof(buffer), FALSE);
-        yield = string_cat(yield, &size, &ptr, string, Ustrlen(string));
+        yield = string_cat(yield, &size, &ptr, string);
         continue;
         }
 
@@ -6676,7 +6672,7 @@ while (*s != 0)
           expand_string_message = error;
           goto EXPAND_FAILED;
           }
-        yield = string_cat(yield, &size, &ptr, decoded, len);
+        yield = string_catn(yield, &size, &ptr, decoded, len);
         continue;
         }
 
@@ -6692,7 +6688,7 @@ while (*s != 0)
           GETUTF8INC(c, sub);
           if (c > 255) c = '_';
           buff[0] = c;
-          yield = string_cat(yield, &size, &ptr, buff, 1);
+          yield = string_catn(yield, &size, &ptr, buff, 1);
           }
         continue;
         }
@@ -6727,7 +6723,7 @@ while (*s != 0)
 		  complete = -1;	/* error (RFC3629 limit) */
 		else
 		  {		/* finished; output utf-8 sequence */
-		  yield = string_cat(yield, &size, &ptr, seq_buff, seq_len);
+		  yield = string_catn(yield, &size, &ptr, seq_buff, seq_len);
 		  index = 0;
 		  }
 	      }
@@ -6736,7 +6732,7 @@ while (*s != 0)
 	    {
 	    if((c & 0x80) == 0)	/* 1-byte sequence, US-ASCII, keep it */
 	      {
-	      yield = string_cat(yield, &size, &ptr, &c, 1);
+	      yield = string_catn(yield, &size, &ptr, &c, 1);
 	      continue;
 	      }
 	    if((c & 0xe0) == 0xc0)		/* 2-byte sequence */
@@ -6769,11 +6765,11 @@ while (*s != 0)
 	  if (complete != 0)
 	    {
 	    bytes_left = index = 0;
-	    yield = string_cat(yield, &size, &ptr, UTF8_REPLACEMENT_CHAR, 1);
+	    yield = string_catn(yield, &size, &ptr, UTF8_REPLACEMENT_CHAR, 1);
 	    }
 	  if ((complete == 1) && ((c & 0x80) == 0))
 			/* ASCII character follows incomplete sequence */
-	      yield = string_cat(yield, &size, &ptr, &c, 1);
+	      yield = string_catn(yield, &size, &ptr, &c, 1);
 	  }
         continue;
         }
@@ -6790,7 +6786,7 @@ while (*s != 0)
 	    string_printing(sub), error);
 	  goto EXPAND_FAILED;
 	  }
-	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	yield = string_cat(yield, &size, &ptr, s);
         continue;
 	}
 
@@ -6805,7 +6801,7 @@ while (*s != 0)
 	    string_printing(sub), error);
 	  goto EXPAND_FAILED;
 	  }
-	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	yield = string_cat(yield, &size, &ptr, s);
         continue;
 	}
 
@@ -6820,7 +6816,7 @@ while (*s != 0)
 	    string_printing(sub), error);
 	  goto EXPAND_FAILED;
 	  }
-	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	yield = string_cat(yield, &size, &ptr, s);
 	DEBUG(D_expand) debug_printf("yield: '%s'\n", yield);
         continue;
 	}
@@ -6836,7 +6832,7 @@ while (*s != 0)
 	    string_printing(sub), error);
 	  goto EXPAND_FAILED;
 	  }
-	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	yield = string_cat(yield, &size, &ptr, s);
         continue;
 	}
 #endif	/* EXPERIMENTAL_INTERNATIONAL */
@@ -6846,7 +6842,7 @@ while (*s != 0)
       case EOP_ESCAPE:
         {
         const uschar *t = string_printing(sub);
-        yield = string_cat(yield, &size, &ptr, t, Ustrlen(t));
+        yield = string_cat(yield, &size, &ptr, t);
         continue;
         }
 
@@ -6866,7 +6862,7 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
         sprintf(CS var_buffer, PR_EXIM_ARITH, n);
-        yield = string_cat(yield, &size, &ptr, var_buffer, Ustrlen(var_buffer));
+        yield = string_cat(yield, &size, &ptr, var_buffer);
         continue;
         }
 
@@ -6882,7 +6878,7 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
         sprintf(CS var_buffer, "%d", n);
-        yield = string_cat(yield, &size, &ptr, var_buffer, Ustrlen(var_buffer));
+        yield = string_cat(yield, &size, &ptr, var_buffer);
         continue;
         }
 
@@ -6897,7 +6893,7 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
         t = readconf_printtime(n);
-        yield = string_cat(yield, &size, &ptr, t, Ustrlen(t));
+        yield = string_cat(yield, &size, &ptr, t);
         continue;
         }
 
@@ -6913,7 +6909,7 @@ while (*s != 0)
 #else
 	uschar * s = b64encode(sub, Ustrlen(sub));
 #endif
-	yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	yield = string_cat(yield, &size, &ptr, s);
 	continue;
 	}
 
@@ -6927,7 +6923,7 @@ while (*s != 0)
             "well-formed for \"%s\" operator", sub, name);
           goto EXPAND_FAILED;
           }
-        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        yield = string_cat(yield, &size, &ptr, s);
         continue;
         }
 
@@ -6937,7 +6933,7 @@ while (*s != 0)
         {
         uschar buff[24];
         (void)sprintf(CS buff, "%d", Ustrlen(sub));
-        yield = string_cat(yield, &size, &ptr, buff, Ustrlen(buff));
+        yield = string_cat(yield, &size, &ptr, buff);
         continue;
         }
 
@@ -7028,7 +7024,7 @@ while (*s != 0)
              extract_substr(sub, value1, value2, &len);
 
         if (ret == NULL) goto EXPAND_FAILED;
-        yield = string_cat(yield, &size, &ptr, ret, len);
+        yield = string_catn(yield, &size, &ptr, ret, len);
         continue;
         }
 
@@ -7083,7 +7079,7 @@ while (*s != 0)
           (long)st.st_dev, (long)st.st_nlink, (long)st.st_uid,
           (long)st.st_gid, st.st_size, (long)st.st_atime,
           (long)st.st_mtime, (long)st.st_ctime);
-        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        yield = string_cat(yield, &size, &ptr, s);
         continue;
         }
 
@@ -7098,7 +7094,7 @@ while (*s != 0)
         if (expand_string_message != NULL)
           goto EXPAND_FAILED;
         s = string_sprintf("%d", vaguely_random_number((int)max));
-        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        yield = string_cat(yield, &size, &ptr, s);
         continue;
         }
 
@@ -7117,7 +7113,7 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
         invert_address(reversed, sub);
-        yield = string_cat(yield, &size, &ptr, reversed, Ustrlen(reversed));
+        yield = string_cat(yield, &size, &ptr, reversed);
         continue;
         }
 
@@ -7162,7 +7158,7 @@ while (*s != 0)
       size = newsize;
       ptr = len;
       }
-    else yield = string_cat(yield, &size, &ptr, value, len);
+    else yield = string_catn(yield, &size, &ptr, value, len);
     continue;
     }
 

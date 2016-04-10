@@ -436,7 +436,7 @@ for (p = raw_hdr; ; p++)
   if (where == PDKIM_HDR_TAG)
     {
     if (c >= 'a' && c <= 'z')
-      cur_tag = string_cat(cur_tag, &ts, &tl, p, 1);
+      cur_tag = string_catn(cur_tag, &ts, &tl, p, 1);
 
     if (c == '=')
       {
@@ -531,7 +531,7 @@ for (p = raw_hdr; ; p++)
       where = PDKIM_HDR_LIMBO;
       }
     else
-      cur_val = string_cat(cur_val, &vs, &vl, p, 1);
+      cur_val = string_catn(cur_val, &vs, &vl, p, 1);
     }
 
 NEXT_CHAR:
@@ -601,7 +601,7 @@ for (p = raw_record; ; p++)
   if (where == PDKIM_HDR_TAG)
     {
     if (c >= 'a' && c <= 'z')
-      cur_tag = string_cat(cur_tag, &ts, &tl, p, 1);
+      cur_tag = string_catn(cur_tag, &ts, &tl, p, 1);
 
     if (c == '=')
       {
@@ -655,7 +655,7 @@ for (p = raw_record; ; p++)
       where = PDKIM_HDR_LIMBO;
       }
     else
-      cur_val = string_cat(cur_val, &vs, &vl, p, 1);
+      cur_val = string_catn(cur_val, &vs, &vl, p, 1);
     }
 
 NEXT_CHAR:
@@ -1018,7 +1018,7 @@ for (p = 0; p<len; p++)
       }
 
     if (ctx->cur_header_len < PDKIM_MAX_HEADER_LEN)
-      ctx->cur_header = string_cat(ctx->cur_header, &ctx->cur_header_size,
+      ctx->cur_header = string_catn(ctx->cur_header, &ctx->cur_header_size,
 				  &ctx->cur_header_len, &data[p], 1);
     }
   }
@@ -1032,7 +1032,7 @@ static uschar *
 pdkim_hdr_cont(uschar * str, int * size, int * ptr, int * col)
 {
 *col = 1;
-return string_cat(str, size, ptr, US"\r\n\t", 3);
+return string_catn(str, size, ptr, US"\r\n\t", 3);
 }
 
 
@@ -1072,7 +1072,7 @@ if (pad)
   l = Ustrlen(pad);
   if (*col + l > 78)
     str = pdkim_hdr_cont(str, size, ptr, col);
-  str = string_cat(str, size, ptr, pad, l);
+  str = string_catn(str, size, ptr, pad, l);
   *col += l;
   }
 
@@ -1090,7 +1090,7 @@ while (l>77)
   { /* this fragment will not fit on a single line */
   if (pad)
     {
-    str = string_cat(str, size, ptr, US" ", 1);
+    str = string_catn(str, size, ptr, US" ", 1);
     *col += 1;
     pad = NULL; /* only want this once */
     l--;
@@ -1100,7 +1100,7 @@ while (l>77)
     {
     size_t sl = Ustrlen(intro);
 
-    str = string_cat(str, size, ptr, intro, sl);
+    str = string_catn(str, size, ptr, intro, sl);
     *col += sl;
     l -= sl;
     intro = NULL; /* only want this once */
@@ -1111,7 +1111,7 @@ while (l>77)
     size_t sl = Ustrlen(payload);
     size_t chomp = *col+sl < 77 ? sl : 78-*col;
 
-    str = string_cat(str, size, ptr, payload, chomp);
+    str = string_catn(str, size, ptr, payload, chomp);
     *col += chomp;
     payload += chomp;
     l -= chomp-1;
@@ -1129,7 +1129,7 @@ if (*col + l > 78)
 
 if (pad)
   {
-  str = string_cat(str, size, ptr, US" ", 1);
+  str = string_catn(str, size, ptr, US" ", 1);
   *col += 1;
   pad = NULL;
   }
@@ -1138,7 +1138,7 @@ if (intro)
   {
   size_t sl = Ustrlen(intro);
 
-  str = string_cat(str, size, ptr, intro, sl);
+  str = string_catn(str, size, ptr, intro, sl);
   *col += sl;
   l -= sl;
   intro = NULL;
@@ -1148,7 +1148,7 @@ if (payload)
   {
   size_t sl = Ustrlen(payload);
 
-  str = string_cat(str, size, ptr, payload, sl);
+  str = string_catn(str, size, ptr, payload, sl);
   *col += sl;
   }
 
@@ -1167,15 +1167,15 @@ int col = 0;
 uschar * hdr;       int hdr_size = 0, hdr_len = 0;
 uschar * canon_all; int can_size = 0, can_len = 0;
 
-canon_all = string_cat(NULL, &can_size, &can_len,
-		      pdkim_canons[sig->canon_headers], -1);
-canon_all = string_cat(canon_all, &can_size, &can_len, US"/", 1);
-canon_all = string_cat(canon_all, &can_size, &can_len,
-		      pdkim_canons[sig->canon_body], -1);
+canon_all = string_cat (NULL, &can_size, &can_len,
+		      pdkim_canons[sig->canon_headers]);
+canon_all = string_catn(canon_all, &can_size, &can_len, US"/", 1);
+canon_all = string_cat (canon_all, &can_size, &can_len,
+		      pdkim_canons[sig->canon_body]);
 canon_all[can_len] = '\0';
 
 hdr = string_cat(NULL, &hdr_size, &hdr_len,
-		      "DKIM-Signature: v="PDKIM_SIGNATURE_VERSION, -1);
+		      "DKIM-Signature: v="PDKIM_SIGNATURE_VERSION);
 col = hdr_len;
 
 /* Required and static bits */
@@ -1321,7 +1321,7 @@ while (sig)
 	/* Collect header names (Note: colon presence is guaranteed here) */
 	uschar * q = Ustrchr(p->value, ':');
 
-	headernames = string_cat(headernames, &hs, &hl,
+	headernames = string_catn(headernames, &hs, &hl,
 			p->value, (q - US p->value) + (p->next ? 1 : 0));
 
 	rh = sig->canon_headers == PDKIM_CANON_RELAXED
@@ -1342,9 +1342,9 @@ while (sig)
       if (*s != '_')
 	{			/*SSS string_append_listele() */
 	if (hl > 0 && headernames[hl-1] != ':')
-	  headernames = string_cat(headernames, &hs, &hl, US":", 1);
+	  headernames = string_catn(headernames, &hs, &hl, US":", 1);
 
-	headernames = string_cat(headernames, &hs, &hl, s, -1);
+	headernames = string_cat(headernames, &hs, &hl, s);
 	}
     headernames[hl] = '\0';
 

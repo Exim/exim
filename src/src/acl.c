@@ -1175,13 +1175,13 @@ do
     if (cp[1] == '\0') break;
 
     /* contains embedded newline; needs doubling */
-    ret = string_cat(ret, &size, &ptr, s, cp-s+1);
-    ret = string_cat(ret, &size, &ptr, US"\n", 1);
+    ret = string_catn(ret, &size, &ptr, s, cp-s+1);
+    ret = string_catn(ret, &size, &ptr, US"\n", 1);
     s = cp+1;
     }
   /* last bit of header */
 
-  ret = string_cat(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
+  ret = string_catn(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
   }
 while((h = h->next));
 

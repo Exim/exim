@@ -597,12 +597,12 @@ if (sender_host_name == NULL)
   sender_fullhost = (sender_helo_name == NULL)? address :
     string_sprintf("(%s) %s", sender_helo_name, address);
 
-  sender_rcvhost = string_cat(NULL, &size, &ptr, address, adlen);
+  sender_rcvhost = string_catn(NULL, &size, &ptr, address, adlen);
 
   if (sender_ident != NULL || show_helo || portptr != NULL)
     {
     int firstptr;
-    sender_rcvhost = string_cat(sender_rcvhost, &size, &ptr, US" (", 2);
+    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US" (", 2);
     firstptr = ptr;
 
     if (portptr != NULL)
@@ -617,7 +617,7 @@ if (sender_host_name == NULL)
       sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2,
         (firstptr == ptr)? US"ident=" : US" ident=", sender_ident);
 
-    sender_rcvhost = string_cat(sender_rcvhost, &size, &ptr, US")", 1);
+    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US")", 1);
     }
 
   sender_rcvhost[ptr] = 0;   /* string_cat() always leaves room */

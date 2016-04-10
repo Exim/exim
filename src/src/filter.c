@@ -2281,17 +2281,16 @@ while (commands != NULL)
 
         if (recipient != NULL)
           {
-          log_addr = string_cat(log_addr, &size, &ptr,
-            (log_addr == NULL)? US">" : US",", 1);
-          log_addr = string_cat(log_addr, &size, &ptr, recipient,
-            Ustrlen(recipient));
+          log_addr = string_catn(log_addr, &size, &ptr,
+            log_addr ? US"," : US">", 1);
+          log_addr = string_cat(log_addr, &size, &ptr, recipient);
           }
 
         /* Check size */
 
         if (ptr > 256)
           {
-          log_addr = string_cat(log_addr, &size, &ptr, US", ...", 5);
+          log_addr = string_catn(log_addr, &size, &ptr, US", ...", 5);
           break;
           }
 

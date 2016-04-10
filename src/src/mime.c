@@ -465,11 +465,11 @@ while (*s && *s != ';')		/* ; terminates */
     {
     s++;			/* skip opening " */
     while (*s && *s != '"')	/* " protects ; */
-      val = string_cat(val, &size, &ptr, s++, 1);
+      val = string_catn(val, &size, &ptr, s++, 1);
     if (*s) s++;		/* skip closing " */
     }
   else
-    val = string_cat(val, &size, &ptr, s++, 1);
+    val = string_catn(val, &size, &ptr, s++, 1);
 if (val) val[ptr] = '\0';
 *sp = s;
 return val;
@@ -496,24 +496,24 @@ static uschar *
 rfc2231_to_2047(const uschar * fname, const uschar * charset, int * len)
 {
 int size = 0, ptr = 0;
-uschar * val = string_cat(NULL, &size, &ptr, US"=?", 2);
+uschar * val = string_catn(NULL, &size, &ptr, US"=?", 2);
 uschar c;
 
 if (charset)
-  val = string_cat(val, &size, &ptr, charset, Ustrlen(charset));
-val = string_cat(val, &size, &ptr, US"?Q?", 3);
+  val = string_cat(val, &size, &ptr, charset);
+val = string_catn(val, &size, &ptr, US"?Q?", 3);
 
 while ((c = *fname))
   if (c == '%' && isxdigit(fname[1]) && isxdigit(fname[2]))
     {
-    val = string_cat(val, &size, &ptr, US"=", 1);
-    val = string_cat(val, &size, &ptr, ++fname, 2);
+    val = string_catn(val, &size, &ptr, US"=", 1);
+    val = string_catn(val, &size, &ptr, ++fname, 2);
     fname += 2;
     }
   else
-    val = string_cat(val, &size, &ptr, fname++, 1);
+    val = string_catn(val, &size, &ptr, fname++, 1);
 
-val = string_cat(val, &size, &ptr, US"?=", 2);
+val = string_catn(val, &size, &ptr, US"?=", 2);
 val[*len = ptr] = '\0';
 return val;
 }

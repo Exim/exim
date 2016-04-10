@@ -327,11 +327,11 @@ row, we insert '\n' between them. */
 for (i = 0; i < num_tuples; i++)
   {
   if (result != NULL)
-    result = string_cat(result, &ssize, &offset, US"\n", 1);
+    result = string_catn(result, &ssize, &offset, US"\n", 1);
 
    if (num_fields == 1)
     {
-    result = string_cat(result, &ssize, &offset,
+    result = string_catn(result, &ssize, &offset,
       US PQgetvalue(pg_result, i, 0), PQgetlength(pg_result, i, 0));
     }
 

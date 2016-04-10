@@ -489,11 +489,11 @@ if (expand_arguments)
 
     for (ad = addr; ad != NULL; ad = ad->next)
       {
-      if (ad != addr) string_cat(s, &size, &offset, US" ", 1);
-      string_cat(s, &size, &offset, ad->address, Ustrlen(ad->address));
+      if (ad != addr) string_catn(s, &size, &offset, US" ", 1);
+      string_cat(s, &size, &offset, ad->address);
       }
 
-    string_cat(s, &size, &offset, q, Ustrlen(q));
+    string_cat(s, &size, &offset, q);
     s[offset] = 0;
     }
 
@@ -1100,36 +1100,33 @@ if ((rc = child_close(pid, timeout)) != 0)
 
       if (*ss != 0)
         {
-        addr->message = string_cat(addr->message, &size, &ptr, US" ", 1);
-        addr->message = string_cat(addr->message, &size, &ptr,
-          ss, Ustrlen(ss));
+        addr->message = string_catn(addr->message, &size, &ptr, US" ", 1);
+        addr->message = string_cat (addr->message, &size, &ptr, ss);
         }
 
       /* Now add the command and arguments */
 
-      addr->message = string_cat(addr->message, &size, &ptr,
+      addr->message = string_catn(addr->message, &size, &ptr,
         US" from command:", 14);
 
       for (i = 0; i < sizeof(argv)/sizeof(int *) && argv[i] != NULL; i++)
         {
         BOOL quote = FALSE;
-        addr->message = string_cat(addr->message, &size, &ptr, US" ", 1);
+        addr->message = string_catn(addr->message, &size, &ptr, US" ", 1);
         if (Ustrpbrk(argv[i], " \t") != NULL)
           {
           quote = TRUE;
-          addr->message = string_cat(addr->message, &size, &ptr, US"\"", 1);
+          addr->message = string_catn(addr->message, &size, &ptr, US"\"", 1);
           }
-        addr->message = string_cat(addr->message, &size, &ptr, argv[i],
-          Ustrlen(argv[i]));
+        addr->message = string_cat(addr->message, &size, &ptr, argv[i]);
         if (quote)
-          addr->message = string_cat(addr->message, &size, &ptr, US"\"", 1);
+          addr->message = string_catn(addr->message, &size, &ptr, US"\"", 1);
         }
 
       /* Add previous filter timeout message, if present. */
 
-      if (*tmsg != 0)
-        addr->message = string_cat(addr->message, &size, &ptr, tmsg,
-          Ustrlen(tmsg));
+      if (*tmsg)
+        addr->message = string_cat(addr->message, &size, &ptr, tmsg);
 
       addr->message[ptr] = 0;  /* Ensure concatenated string terminated */
       }

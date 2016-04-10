@@ -1136,23 +1136,23 @@ for (t = lpart; !needs_quote && *t != 0; t++)
 if (!needs_quote) return lpart;
 
 size = ptr = 0;
-yield = string_cat(NULL, &size, &ptr, US"\"", 1);
+yield = string_catn(NULL, &size, &ptr, US"\"", 1);
 
 for (;;)
   {
   uschar *nq = US Ustrpbrk(lpart, "\\\"");
   if (nq == NULL)
     {
-    yield = string_cat(yield, &size, &ptr, lpart, Ustrlen(lpart));
+    yield = string_cat(yield, &size, &ptr, lpart);
     break;
     }
-  yield = string_cat(yield, &size, &ptr, lpart, nq - lpart);
-  yield = string_cat(yield, &size, &ptr, US"\\", 1);
-  yield = string_cat(yield, &size, &ptr, nq, 1);
+  yield = string_catn(yield, &size, &ptr, lpart, nq - lpart);
+  yield = string_catn(yield, &size, &ptr, US"\\", 1);
+  yield = string_catn(yield, &size, &ptr, nq, 1);
   lpart = nq + 1;
   }
 
-yield = string_cat(yield, &size, &ptr, US"\"", 1);
+yield = string_catn(yield, &size, &ptr, US"\"", 1);
 yield[ptr] = 0;
 return yield;
 }
@@ -1266,7 +1266,7 @@ for (i = 0;; i++)
     while (p < ss && isspace(*p)) p++;   /* leading space after cont */
     }
 
-  yield = string_cat(yield, &size, &ptr, p, ss - p);
+  yield = string_catn(yield, &size, &ptr, p, ss - p);
 
   #ifdef USE_READLINE
   if (fn_readline != NULL) free(readline_line);

@@ -219,7 +219,7 @@ if(sdata[1])
     {
     for (argv[i] = NULL, siz = ptr = 0; (c = *s) && !isspace(c); s++)
       if (c != '\\' || *++s)		/* backslash protects next char */
-	argv[i] = string_cat(argv[i], &siz, &ptr, s, 1);
+	argv[i] = string_catn(argv[i], &siz, &ptr, s, 1);
     *(argv[i]+ptr) = '\0';
     DEBUG(D_lookup) debug_printf("REDIS: argv[%d] '%s'\n", i, argv[i]);
     while (isspace(*s)) s++;
@@ -256,12 +256,12 @@ switch (redis_reply->type)
 
   case REDIS_REPLY_INTEGER:
     ttmp = (redis_reply->integer != 0) ? US"true" : US"false";
-    result = string_cat(result, &ssize, &offset, US ttmp, Ustrlen(ttmp));
+    result = string_cat(result, &ssize, &offset, US ttmp);
     break;
 
   case REDIS_REPLY_STRING:
   case REDIS_REPLY_STATUS:
-    result = string_cat(result, &ssize, &offset,
+    result = string_catn(result, &ssize, &offset,
 			US redis_reply->str, redis_reply->len);
     break;
 
@@ -275,16 +275,16 @@ switch (redis_reply->type)
       entry = redis_reply->element[i];
 
       if (result)
-	result = string_cat(result, &ssize, &offset, US"\n", 1);
+	result = string_catn(result, &ssize, &offset, US"\n", 1);
 
       switch (entry->type)
 	{
 	case REDIS_REPLY_INTEGER:
 	  tmp = string_sprintf("%d", entry->integer);
-	  result = string_cat(result, &ssize, &offset, US tmp, Ustrlen(tmp));
+	  result = string_cat(result, &ssize, &offset, US tmp);
 	  break;
 	case REDIS_REPLY_STRING:
-	  result = string_cat(result, &ssize, &offset,
+	  result = string_catn(result, &ssize, &offset,
 			      US entry->str, entry->len);
 	  break;
 	case REDIS_REPLY_ARRAY:
@@ -293,17 +293,16 @@ switch (redis_reply->type)
 	    tentry = entry->element[j];
 
 	    if (result)
-	      result = string_cat(result, &ssize, &offset, US"\n", 1);
+	      result = string_catn(result, &ssize, &offset, US"\n", 1);
 
 	    switch (tentry->type)
 	      {
 	      case REDIS_REPLY_INTEGER:
 		ttmp = string_sprintf("%d", tentry->integer);
-		result = string_cat(result, &ssize, &offset,
-				    US ttmp, Ustrlen(ttmp));
+		result = string_cat(result, &ssize, &offset, US ttmp);
 		break;
 	      case REDIS_REPLY_STRING:
-		result = string_cat(result, &ssize, &offset,
+		result = string_catn(result, &ssize, &offset,
 				    US tentry->str, tentry->len);
 		break;
 	      case REDIS_REPLY_ARRAY:

@@ -2394,20 +2394,20 @@ do       /* At least once, in case we have an empty string */
   {
   int len;
   uschar *linebreak = Ustrchr(p, '\n');
-  ss = string_cat(ss, &size, &ptr, code, 3);
+  ss = string_catn(ss, &size, &ptr, code, 3);
   if (linebreak == NULL)
     {
     len = Ustrlen(p);
-    ss = string_cat(ss, &size, &ptr, US" ", 1);
+    ss = string_catn(ss, &size, &ptr, US" ", 1);
     }
   else
     {
     len = linebreak - p;
-    ss = string_cat(ss, &size, &ptr, US"-", 1);
+    ss = string_catn(ss, &size, &ptr, US"-", 1);
     }
-  ss = string_cat(ss, &size, &ptr, esc, esclen);
-  ss = string_cat(ss, &size, &ptr, p, len);
-  ss = string_cat(ss, &size, &ptr, US"\r\n", 2);
+  ss = string_catn(ss, &size, &ptr, esc, esclen);
+  ss = string_catn(ss, &size, &ptr, p, len);
+  ss = string_catn(ss, &size, &ptr, US"\r\n", 2);
   p += len;
   if (linebreak != NULL) p++;
   }
@@ -3592,10 +3592,9 @@ while (done <= 0)
 
       if (sender_host_address != NULL)
         {
-        s = string_cat(s, &size, &ptr, US" [", 2);
-        s = string_cat(s, &size, &ptr, sender_host_address,
-          Ustrlen(sender_host_address));
-        s = string_cat(s, &size, &ptr, US"]", 1);
+        s = string_catn(s, &size, &ptr, US" [", 2);
+        s = string_cat (s, &size, &ptr, sender_host_address);
+        s = string_catn(s, &size, &ptr, US"]", 1);
         }
       }
 
@@ -3619,7 +3618,7 @@ while (done <= 0)
       size = ptr + 1;
       }
 
-    s = string_cat(s, &size, &ptr, US"\r\n", 2);
+    s = string_catn(s, &size, &ptr, US"\r\n", 2);
 
     /* If we received EHLO, we must create a multiline response which includes
     the functions supported. */
@@ -3638,12 +3637,12 @@ while (done <= 0)
         {
         sprintf(CS big_buffer, "%.3s-SIZE %d\r\n", smtp_code,
           thismessage_size_limit);
-        s = string_cat(s, &size, &ptr, big_buffer, Ustrlen(big_buffer));
+        s = string_cat(s, &size, &ptr, big_buffer);
         }
       else
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-SIZE\r\n", 7);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-SIZE\r\n", 7);
         }
 
       /* Exim does not do protocol conversion or data conversion. It is 8-bit
@@ -3655,15 +3654,15 @@ while (done <= 0)
 
       if (accept_8bitmime)
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-8BITMIME\r\n", 11);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-8BITMIME\r\n", 11);
         }
 
       /* Advertise DSN support if configured to do so. */
       if (verify_check_host(&dsn_advertise_hosts) != FAIL)
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-DSN\r\n", 6);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-DSN\r\n", 6);
         dsn_advertised = TRUE;
         }
 
@@ -3672,8 +3671,8 @@ while (done <= 0)
 
       if (acl_smtp_etrn != NULL)
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-ETRN\r\n", 7);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-ETRN\r\n", 7);
         }
 
       /* Advertise EXPN if there's an ACL checking whether a host is
@@ -3681,8 +3680,8 @@ while (done <= 0)
 
       if (acl_smtp_expn != NULL)
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-EXPN\r\n", 7);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-EXPN\r\n", 7);
         }
 
       /* Exim is quite happy with pipelining, so let the other end know that
@@ -3691,8 +3690,8 @@ while (done <= 0)
       if (pipelining_enable &&
           verify_check_host(&pipelining_advertise_hosts) == OK)
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-PIPELINING\r\n", 13);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-PIPELINING\r\n", 13);
         sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
         pipelining_advertised = TRUE;
         }
@@ -3725,22 +3724,21 @@ while (done <= 0)
 	    int saveptr;
 	    if (first)
 	      {
-	      s = string_cat(s, &size, &ptr, smtp_code, 3);
-	      s = string_cat(s, &size, &ptr, US"-AUTH", 5);
+	      s = string_catn(s, &size, &ptr, smtp_code, 3);
+	      s = string_catn(s, &size, &ptr, US"-AUTH", 5);
 	      first = FALSE;
 	      auth_advertised = TRUE;
 	      }
 	    saveptr = ptr;
-	    s = string_cat(s, &size, &ptr, US" ", 1);
-	    s = string_cat(s, &size, &ptr, au->public_name,
-	      Ustrlen(au->public_name));
+	    s = string_catn(s, &size, &ptr, US" ", 1);
+	    s = string_cat (s, &size, &ptr, au->public_name);
 	    while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
 	    au->advertised = TRUE;
 	    }
 	  else
 	    au->advertised = FALSE;
 
-	if (!first) s = string_cat(s, &size, &ptr, US"\r\n", 2);
+	if (!first) s = string_catn(s, &size, &ptr, US"\r\n", 2);
 	}
 
       /* Advertise TLS (Transport Level Security) aka SSL (Secure Socket Layer)
@@ -3752,8 +3750,8 @@ while (done <= 0)
       if (tls_in.active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-STARTTLS\r\n", 11);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-STARTTLS\r\n", 11);
         tls_advertised = TRUE;
         }
 #endif
@@ -3762,8 +3760,8 @@ while (done <= 0)
       /* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
       if (prdr_enable)
         {
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-PRDR\r\n", 7);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-PRDR\r\n", 7);
 	}
 #endif
 
@@ -3771,16 +3769,16 @@ while (done <= 0)
       if (  accept_8bitmime
          && verify_check_host(&smtputf8_advertise_hosts) != FAIL)
 	{
-        s = string_cat(s, &size, &ptr, smtp_code, 3);
-        s = string_cat(s, &size, &ptr, US"-SMTPUTF8\r\n", 11);
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-SMTPUTF8\r\n", 11);
         smtputf8_advertised = TRUE;
 	}
 #endif
 
       /* Finish off the multiline reply with one that is always available. */
 
-      s = string_cat(s, &size, &ptr, smtp_code, 3);
-      s = string_cat(s, &size, &ptr, US" HELP\r\n", 7);
+      s = string_catn(s, &size, &ptr, smtp_code, 3);
+      s = string_catn(s, &size, &ptr, US" HELP\r\n", 7);
       }
 
     /* Terminate the string (for debug), write it, and note that HELO/EHLO

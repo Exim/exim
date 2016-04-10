@@ -353,14 +353,14 @@ has the password removed. This copy is also used for debugging output. */
         }
 
         if (result != NULL)
-            result = string_cat(result, &ssize, &offset, US "\n", 1);
+            result = string_catn(result, &ssize, &offset, US "\n", 1);
 
         /* Find the number of fields returned. If this is one, we don't add field
            names to the data. Otherwise we do. */
         if (out_sqlda->sqld == 1) {
             if (out_sqlda->sqlvar[0].sqlind == NULL || *out_sqlda->sqlvar[0].sqlind != -1)     /* NULL value yields nothing */
                 result =
-                    string_cat(result, &ssize, &offset, US buffer,
+                    string_catn(result, &ssize, &offset, US buffer,
                                fetch_field(buffer, sizeof(buffer),
                                            &out_sqlda->sqlvar[0]));
         }
@@ -374,19 +374,19 @@ has the password removed. This copy is also used for debugging output. */
                     string_cat(result, &ssize, &offset,
                                US out_sqlda->sqlvar[i].aliasname,
                                out_sqlda->sqlvar[i].aliasname_length);
-                result = string_cat(result, &ssize, &offset, US "=", 1);
+                result = string_catn(result, &ssize, &offset, US "=", 1);
 
                 /* Quote the value if it contains spaces or is empty */
 
                 if (*out_sqlda->sqlvar[i].sqlind == -1) {       /* NULL value */
                     result =
-                        string_cat(result, &ssize, &offset, US "\"\"", 2);
+                        string_catn(result, &ssize, &offset, US "\"\"", 2);
                 }
 
                 else if (buffer[0] == 0 || Ustrchr(buffer, ' ') != NULL) {
                     int j;
                     result =
-                        string_cat(result, &ssize, &offset, US "\"", 1);
+                        string_catn(result, &ssize, &offset, US "\"", 1);
                     for (j = 0; j < len; j++) {
                         if (buffer[j] == '\"' || buffer[j] == '\\')
                             result =
@@ -397,13 +397,12 @@ has the password removed. This copy is also used for debugging output. */
                                        US buffer + j, 1);
                     }
                     result =
-                        string_cat(result, &ssize, &offset, US "\"", 1);
+                        string_catn(result, &ssize, &offset, US "\"", 1);
                 } else {
                     result =
-                        string_cat(result, &ssize, &offset, US buffer,
-                                   len);
+                        string_catn(result, &ssize, &offset, US buffer, len);
                 }
-                result = string_cat(result, &ssize, &offset, US " ", 1);
+                result = string_catn(result, &ssize, &offset, US " ", 1);
             }
     }
 

@@ -266,12 +266,12 @@ while ((mysql_row_data = mysql_fetch_row(mysql_result)) != NULL)
   unsigned long *lengths = mysql_fetch_lengths(mysql_result);
 
   if (result != NULL)
-      result = string_cat(result, &ssize, &offset, US"\n", 1);
+      result = string_catn(result, &ssize, &offset, US"\n", 1);
 
   if (num_fields == 1)
     {
     if (mysql_row_data[0] != NULL)    /* NULL value yields nothing */
-      result = string_cat(result, &ssize, &offset, US mysql_row_data[0],
+      result = string_catn(result, &ssize, &offset, US mysql_row_data[0],
         lengths[0]);
     }
 

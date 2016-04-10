@@ -396,9 +396,8 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
         dns_address *da;
         for (da = dns_address_from_rr(&dnsa, rr); da; da = da->next)
           {
-          if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
-          yield = string_cat(yield, &size, &ptr, da->address,
-            Ustrlen(da->address));
+          if (ptr != 0) yield = string_catn(yield, &size, &ptr, outsep, 1);
+          yield = string_cat(yield, &size, &ptr, da->address);
           }
         continue;
         }
@@ -406,14 +405,14 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       /* Other kinds of record just have one piece of data each, but there may be
       several of them, of course. */
 
-      if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
+      if (ptr != 0) yield = string_catn(yield, &size, &ptr, outsep, 1);
 
       if (type == T_TXT || type == T_SPF)
         {
         if (outsep2 == NULL)
           {
           /* output only the first item of data */
-          yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
+          yield = string_catn(yield, &size, &ptr, (uschar *)(rr->data+1),
             (rr->data)[0]);
           }
         else
@@ -424,9 +423,9 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
             {
             uschar chunk_len = (rr->data)[data_offset++];
             if (outsep2[0] != '\0' && data_offset != 1)
-              yield = string_cat(yield, &size, &ptr, outsep2, 1);
-            yield = string_cat(yield, &size, &ptr,
-                             (uschar *)((rr->data)+data_offset), chunk_len);
+              yield = string_catn(yield, &size, &ptr, outsep2, 1);
+            yield = string_catn(yield, &size, &ptr,
+                             US ((rr->data)+data_offset), chunk_len);
             data_offset += chunk_len;
             }
           }
@@ -452,7 +451,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
              i++)
           sp += sprintf(CS sp, "%02x", (unsigned char)p[i]);
 
-        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        yield = string_cat(yield, &size, &ptr, s);
         }
       else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SOA, T_SRV */
         {
@@ -470,7 +469,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  case T_MX:
 	    GETSHORT(priority, p);
 	    sprintf(CS s, "%d%c", priority, *outsep2);
-	    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	    yield = string_cat(yield, &size, &ptr, s);
 	    break;
 
 	  case T_SRV:
@@ -479,7 +478,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	    GETSHORT(port, p);
 	    sprintf(CS s, "%d%c%d%c%d%c", priority, *outsep2,
 			      weight, *outsep2, port, *outsep2);
-	    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	    yield = string_cat(yield, &size, &ptr, s);
 	    break;
 
 	  case T_CSA:
@@ -508,7 +507,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	      }
 
 	    s[1] = ' ';
-	    yield = string_cat(yield, &size, &ptr, s, 2);
+	    yield = string_catn(yield, &size, &ptr, s, 2);
 	    break;
 
 	  default:
@@ -529,14 +528,14 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
             "domain=%s", dns_text_type(type), domain);
           break;
           }
-        else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        else yield = string_cat(yield, &size, &ptr, s);
 
 	if (type == T_SOA && outsep2 != NULL)
 	  {
 	  unsigned long serial, refresh, retry, expire, minimum;
 
 	  p += rc;
-	  yield = string_cat(yield, &size, &ptr, outsep2, 1);
+	  yield = string_catn(yield, &size, &ptr, outsep2, 1);
 
 	  rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
 	    (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
@@ -546,7 +545,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	      "domain=%s", dns_text_type(type), domain);
 	    break;
 	    }
-	  else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	  else yield = string_cat(yield, &size, &ptr, s);
 
 	  p += rc;
 	  GETLONG(serial, p); GETLONG(refresh, p);
@@ -554,7 +553,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  sprintf(CS s, "%c%lu%c%lu%c%lu%c%lu%c%lu",
 	    *outsep2, serial, *outsep2, refresh,
 	    *outsep2, retry,  *outsep2, expire,  *outsep2, minimum);
-	  yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+	  yield = string_cat(yield, &size, &ptr, s);
 	  }
         }
       }    /* Loop for list of returned records */

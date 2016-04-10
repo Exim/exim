@@ -1132,7 +1132,7 @@ if (sender_fullhost != NULL)
     {
     uschar *ss = string_sprintf(" I=[%s]:%d", interface_address,
       interface_port);
-    s = string_cat(s, sizeptr, ptrptr, ss, Ustrlen(ss));
+    s = string_cat(s, sizeptr, ptrptr, ss);
     }
   }
 if (sender_ident != NULL)
@@ -3946,7 +3946,7 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
       /* Re-use the log line workspace */
 
       sptr = 0;
-      s = string_cat(s, &size, &sptr, msg, Ustrlen(msg));
+      s = string_cat(s, &size, &sptr, msg);
       s = add_host_info_for_log(s, &size, &sptr);
       s[sptr] = 0;
       log_write(0, LOG_MAIN, "%s", s);

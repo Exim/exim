@@ -171,7 +171,7 @@ while (slen > 0)
 
     if (outptr > outbuf + sizeof(outbuf) - 3)
       {
-      yield = string_cat(yield, &size, &ptr, outbuf, outptr - outbuf);
+      yield = string_catn(yield, &size, &ptr, outbuf, outptr - outbuf);
       outptr = outbuf;
       }
 
@@ -197,7 +197,7 @@ if (base64mode)
 iconv_close(icd);
 #endif
 
-yield = string_cat(yield, &size, &ptr, outbuf, outptr - outbuf);
+yield = string_catn(yield, &size, &ptr, outbuf, outptr - outbuf);
 if (yield[ptr-1] == '.')
   ptr--;
 yield[ptr] = '\0';

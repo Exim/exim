@@ -703,7 +703,7 @@ if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
   s = LOGGING(outgoing_port)
     ? string_append(s, sizep, ptrp, 2, US"]:",
 	string_sprintf("%d", sending_port))
-    : string_cat(s, sizep, ptrp, US"]", 1);
+    : string_catn(s, sizep, ptrp, US"]", 1);
   }
 return s;
 }
@@ -914,8 +914,7 @@ if (addr->transport->info->local)
     s = string_append(s, &size, &ptr, 2, US" H=", addr->host_list->name);
   s = d_log_interface(s, &size, &ptr);
   if (addr->shadow_message)
-    s = string_cat(s, &size, &ptr, addr->shadow_message,
-      Ustrlen(addr->shadow_message));
+    s = string_cat(s, &size, &ptr, addr->shadow_message);
   }
 
 /* Remote delivery */
@@ -926,7 +925,7 @@ else
     {
     s = d_hostlog(s, &size, &ptr, addr);
     if (continue_sequence > 1)
-      s = string_cat(s, &size, &ptr, US"*", 1);
+      s = string_catn(s, &size, &ptr, US"*", 1);
 
 #ifndef DISABLE_EVENT
     deliver_host_address = addr->host_used->address;
@@ -1278,7 +1277,7 @@ else if (result == DEFER || result == PANIC)
 
     log_address = string_log_address(addr, LOGGING(all_parents), result == OK);
 
-    s = string_cat(s, &size, &ptr, log_address, Ustrlen(log_address));
+    s = string_cat(s, &size, &ptr, log_address);
 
     /* Either driver_name contains something and driver_kind contains
     " router" or " transport" (note the leading space), or driver_name is
@@ -1298,7 +1297,7 @@ else if (result == DEFER || result == PANIC)
       s = string_append(s, &size, &ptr, 2, US" ", driver_kind);
 
     sprintf(CS ss, " defer (%d)", addr->basic_errno);
-    s = string_cat(s, &size, &ptr, ss, Ustrlen(ss));
+    s = string_cat(s, &size, &ptr, ss);
 
     if (addr->basic_errno > 0)
       s = string_append(s, &size, &ptr, 2, US": ",
@@ -1396,7 +1395,7 @@ else
 
   log_address = string_log_address(addr, LOGGING(all_parents), result == OK);
 
-  s = string_cat(s, &size, &ptr, log_address, Ustrlen(log_address));
+  s = string_cat(s, &size, &ptr, log_address);
 
   if (LOGGING(sender_on_delivery))
     s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
@@ -4832,7 +4831,7 @@ if (!Ufgets(buffer, sizeof(buffer), f) || Ustrcmp(buffer, "****\n") == 0)
 para = store_get(size);
 for (;;)
   {
-  para = string_cat(para, &size, &ptr, buffer, Ustrlen(buffer));
+  para = string_cat(para, &size, &ptr, buffer);
   if (!Ufgets(buffer, sizeof(buffer), f) || Ustrcmp(buffer, "****\n") == 0)
     break;
   }

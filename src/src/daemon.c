@@ -1098,11 +1098,11 @@ if (daemon_listen && !inetd_wait_mode)
         {
         joinstr[0] = sep;
         joinstr[1] = ' ';
-        *ptr = string_cat(*ptr, sizeptr, ptrptr, US"<", 1);
+        *ptr = string_catn(*ptr, sizeptr, ptrptr, US"<", 1);
         }
 
-      *ptr = string_cat(*ptr, sizeptr, ptrptr, joinstr, 2);
-      *ptr = string_cat(*ptr, sizeptr, ptrptr, s, Ustrlen(s));
+      *ptr = string_catn(*ptr, sizeptr, ptrptr, joinstr, 2);
+      *ptr = string_cat (*ptr, sizeptr, ptrptr, s);
       }
 
     if (new_smtp_port != NULL)
