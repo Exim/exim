@@ -1991,12 +1991,17 @@ for (i = 0; i < n; i++)
   {
   if (*s != '{')
     {
-    if (i < m) return 1;
+    if (i < m)
+      {
+      expand_string_message = string_sprintf("Not enough arguments for '%s' "
+	"(min is %d)", name, m);
+      return 1;
+      }
     sub[i] = NULL;
     break;
     }
-  sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, resetok);
-  if (sub[i] == NULL) return 3;
+  if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, resetok)))
+    return 3;
   if (*s++ != '}') return 1;
   while (isspace(*s)) s++;
   }
@@ -2004,10 +2009,11 @@ if (check_end && *s++ != '}')
   {
   if (s[-1] == '{')
     {
-    expand_string_message = string_sprintf("Too many arguments for \"%s\" "
+    expand_string_message = string_sprintf("Too many arguments for '%s' "
       "(max is %d)", name, n);
     return 2;
     }
+  expand_string_message = string_sprintf("missing '}' after '%s'", name);
   return 1;
   }
 
@@ -3165,6 +3171,7 @@ process_yesno(BOOL skipping, BOOL yes, uschar *save_lookup, const uschar **sptr,
 int rc = 0;
 const uschar *s = *sptr;    /* Local value */
 uschar *sub1, *sub2;
+const uschar * errwhere;
 
 /* If there are no following strings, we substitute the contents of $value for
 lookups and for extractions in the success case. For the ${if item, the string
@@ -3190,7 +3197,11 @@ if (*s == '}')
 
 /* The first following string must be braced. */
 
-if (*s++ != '{') goto FAILED_CURLY;
+if (*s++ != '{')
+  {
+  errwhere = US"'yes' part did not start with '{'";
+  goto FAILED_CURLY;
+  }
 
 /* Expand the first substring. Forced failures are noticed only if we actually
 want this string. Set skipping in the call in the fail case (this will always
@@ -3199,7 +3210,11 @@ be the case if we were already skipping). */
 sub1 = expand_string_internal(s, TRUE, &s, !yes, TRUE, resetok);
 if (sub1 == NULL && (yes || !expand_string_forcedfail)) goto FAILED;
 expand_string_forcedfail = FALSE;
-if (*s++ != '}') goto FAILED_CURLY;
+if (*s++ != '}')
+  {
+  errwhere = US"'yes' part did not end with '}'";
+  goto FAILED_CURLY;
+  }
 
 /* If we want the first string, add it to the output */
 
@@ -3225,7 +3240,11 @@ if (*s == '{')
   sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping, TRUE, resetok);
   if (sub2 == NULL && (!yes || !expand_string_forcedfail)) goto FAILED;
   expand_string_forcedfail = FALSE;
-  if (*s++ != '}') goto FAILED_CURLY;
+  if (*s++ != '}')
+    {
+    errwhere = US"'no' part did not start with '{'";
+    goto FAILED_CURLY;
+    }
 
   /* If we want the second string, add it to the output */
 
@@ -3248,7 +3267,11 @@ else if (*s != '}')
     if (!yes && !skipping)
       {
       while (isspace(*s)) s++;
-      if (*s++ != '}') goto FAILED_CURLY;
+      if (*s++ != '}')
+        {
+	errwhere = US"did not close with '}' after forcedfail";
+	goto FAILED_CURLY;
+	}
       expand_string_message =
         string_sprintf("\"%s\" failed and \"fail\" requested", type);
       expand_string_forcedfail = TRUE;
@@ -3266,23 +3289,30 @@ else if (*s != '}')
 /* All we have to do now is to check on the final closing brace. */
 
 while (isspace(*s)) s++;
-if (*s++ == '}') goto RETURN;
+if (*s++ != '}')
+  {
+  errwhere = US"did not close with '}'";
+  goto FAILED_CURLY;
+  }
 
-/* Get here if there is a bracketing failure */
-
-FAILED_CURLY:
-rc++;
-
-/* Get here for other failures */
-
-FAILED:
-rc++;
-
-/* Update the input pointer value before returning */
 
 RETURN:
+/* Update the input pointer value before returning */
 *sptr = s;
 return rc;
+
+FAILED_CURLY:
+  /* Get here if there is a bracketing failure */
+  expand_string_message = string_sprintf(
+    "curly-bracket problem in conditional yes/no parsing: %s\n"
+    " remaining string is '%s'", errwhere, --s);
+  rc = 2;
+  goto RETURN;
+
+FAILED:
+  /* Get here for other failures */
+  rc = 1;
+  goto RETURN;
 }
 
 
@@ -3828,6 +3858,9 @@ uschar *save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
 BOOL resetok = TRUE;
 
+DEBUG(D_expand)
+  debug_printf("%s: %s\n", skipping ? "   scanning" : "considering", string);
+
 expand_string_forcedfail = FALSE;
 expand_string_message = US"";
 
@@ -4171,8 +4204,12 @@ while (*s != 0)
       if (*s == '{')					/*}*/
         {
         key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
-        if (key == NULL) goto EXPAND_FAILED;		/*{*/
-        if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+        if (!key) goto EXPAND_FAILED;			/*{{*/
+        if (*s++ != '}')
+	  {
+	  expand_string_message = US"missing '}' after lookup key";
+	  goto EXPAND_FAILED_CURLY;
+	  }
         while (isspace(*s)) s++;
         }
       else key = NULL;
@@ -4235,10 +4272,18 @@ while (*s != 0)
       queries that also require a file name (e.g. sqlite), the file name comes
       first. */
 
-      if (*s != '{') goto EXPAND_FAILED_CURLY;
+      if (*s != '{')
+        {
+	expand_string_message = US"missing '{' for lookup file-or-query arg";
+	goto EXPAND_FAILED_CURLY;
+	}
       filename = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
       if (filename == NULL) goto EXPAND_FAILED;
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+	expand_string_message = US"missing '}' closing lookup file-or-query arg";
+	goto EXPAND_FAILED_CURLY;
+	}
       while (isspace(*s)) s++;
 
       /* If this isn't a single-key+file lookup, re-arrange the variables
@@ -4246,15 +4291,13 @@ while (*s != 0)
       there is just a "key", and no file name. For the special query-style +
       file types, the query (i.e. "key") starts with a file name. */
 
-      if (key == NULL)
+      if (!key)
         {
         while (isspace(*filename)) filename++;
         key = filename;
 
         if (mac_islookup(stype, lookup_querystyle))
-          {
           filename = NULL;
-          }
         else
           {
           if (*filename != '/')
@@ -4841,10 +4884,20 @@ while (*s != 0)
         {
         if (expand_string_internal(s+1, TRUE, &s, TRUE, TRUE, &resetok) == NULL)
           goto EXPAND_FAILED;
-        if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+        if (*s++ != '}')
+	  {
+	  expand_string_message = US"missing '}' closing failstring for readsocket";
+	  goto EXPAND_FAILED_CURLY;
+	  }
         while (isspace(*s)) s++;
         }
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+
+    readsock_done:
+      if (*s++ != '}')
+        {
+	expand_string_message = US"missing '}' closing readsocket";
+	goto EXPAND_FAILED_CURLY;
+	}
       continue;
 
       /* Come here on failure to create socket, connect socket, write to the
@@ -4857,10 +4910,13 @@ while (*s != 0)
       if (!(arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE, &resetok)))
         goto EXPAND_FAILED;
       yield = string_cat(yield, &size, &ptr, arg);
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+	expand_string_message = US"missing '}' closing failstring for readsocket";
+	goto EXPAND_FAILED_CURLY;
+	}
       while (isspace(*s)) s++;
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
-      continue;
+      goto readsock_done;
       }
 
     /* Handle "run" to execute a program. */
@@ -4881,16 +4937,22 @@ while (*s != 0)
         }
 
       while (isspace(*s)) s++;
-      if (*s != '{') goto EXPAND_FAILED_CURLY;
+      if (*s != '{')
+        {
+	expand_string_message = US"missing '{' for command arg of run";
+	goto EXPAND_FAILED_CURLY;
+	}
       arg = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
       if (arg == NULL) goto EXPAND_FAILED;
       while (isspace(*s)) s++;
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+	expand_string_message = US"missing '}' closing command arg of run";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       if (skipping)   /* Just pretend it worked when we're skipping */
-        {
         runrc = 0;
-        }
       else
         {
         if (!transport_set_up_command(&argv,    /* anchor for arg list */
@@ -5316,11 +5378,18 @@ while (*s != 0)
 	  {
           if (!expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok))
 	    goto EXPAND_FAILED;					/*{*/
-          if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+          if (*s++ != '}')
+	    {
+	    expand_string_message = US"missing '{' for arg of extract";
+	    goto EXPAND_FAILED_CURLY;
+	    }
 	  while (isspace(*s)) s++;
 	  }
 	if (*s != '}')
+	  {
+	  expand_string_message = US"missing '}' closing extract";
 	  goto EXPAND_FAILED_CURLY;
+	  }
 	}
 
       else for (i = 0; i < j; i++) /* Read the proper number of arguments */
@@ -5330,7 +5399,12 @@ while (*s != 0)
           {
           sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
           if (sub[i] == NULL) goto EXPAND_FAILED;		/*{*/
-          if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+          if (*s++ != '}')
+	    {
+	    expand_string_message = string_sprintf(
+	      US"missing '}' closing arg %d of extract", i+1);
+	    goto EXPAND_FAILED_CURLY;
+	    }
 
           /* After removal of leading and trailing white space, the first
           argument must not be empty; if it consists entirely of digits
@@ -5371,7 +5445,12 @@ while (*s != 0)
 	      }
             }
           }
-        else goto EXPAND_FAILED_CURLY;
+        else
+	  {
+	  expand_string_message = string_sprintf(
+	    US"missing '{' for arg %d of extract", i+1);
+	  goto EXPAND_FAILED_CURLY;
+	  }
         }
 
       /* Extract either the numbered or the keyed substring into $value. If
@@ -5424,11 +5503,20 @@ while (*s != 0)
         {
         while (isspace(*s)) s++;
         if (*s != '{')					/*}*/
+	  {
+	  expand_string_message = string_sprintf(
+	    US"missing '{' for arg %d of listextract", i+1);
 	  goto EXPAND_FAILED_CURLY;
+	  }
 
 	sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
 	if (!sub[i])     goto EXPAND_FAILED;		/*{*/
-	if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+	if (*s++ != '}')
+	  {
+	  expand_string_message = string_sprintf(
+	    US"missing '}' closing arg %d of listextract", i+1);
+	  goto EXPAND_FAILED_CURLY;
+	  }
 
 	/* After removal of leading and trailing white space, the first
 	argument must be numeric and nonempty. */
@@ -5511,10 +5599,17 @@ while (*s != 0)
       /* Read the field argument */
       while (isspace(*s)) s++;
       if (*s != '{')					/*}*/
+	{
+	expand_string_message = US"missing '{' for field arg of certextract";
 	goto EXPAND_FAILED_CURLY;
+	}
       sub[0] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
       if (!sub[0])     goto EXPAND_FAILED;		/*{*/
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+	expand_string_message = US"missing '}' closing field arg of certextract";
+	goto EXPAND_FAILED_CURLY;
+	}
       /* strip spaces fore & aft */
       {
       int len;
@@ -5531,7 +5626,10 @@ while (*s != 0)
       /* inspect the cert argument */
       while (isspace(*s)) s++;
       if (*s != '{')					/*}*/
+	{
+	expand_string_message = US"missing '{' for cert variable arg of certextract";
 	goto EXPAND_FAILED_CURLY;
+	}
       if (*++s != '$')
         {
 	expand_string_message = US"second argument of \"certextract\" must "
@@ -5540,7 +5638,11 @@ while (*s != 0)
 	}
       sub[1] = expand_string_internal(s+1, TRUE, &s, skipping, FALSE, &resetok);
       if (!sub[1])     goto EXPAND_FAILED;		/*{*/
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+	expand_string_message = US"missing '}' closing cert variable arg of certextract";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       if (skipping)
 	lookup_value = NULL;
@@ -5584,25 +5686,48 @@ while (*s != 0)
       uschar *save_lookup_value = lookup_value;
 
       while (isspace(*s)) s++;
-      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '{')
+        {
+	expand_string_message =
+	  string_sprintf("missing '{' for first arg of %s", name);
+	goto EXPAND_FAILED_CURLY;
+	}
 
       list = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
       if (list == NULL) goto EXPAND_FAILED;
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+	expand_string_message =
+	  string_sprintf("missing '}' closing first arg of %s", name);
+	goto EXPAND_FAILED_CURLY;
+	}
 
       if (item_type == EITEM_REDUCE)
         {
 	uschar * t;
         while (isspace(*s)) s++;
-        if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+        if (*s++ != '{')
+	  {
+	  expand_string_message = US"missing '{' for second arg of reduce";
+	  goto EXPAND_FAILED_CURLY;
+	  }
         t = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
         if (!t) goto EXPAND_FAILED;
         lookup_value = t;
-        if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+        if (*s++ != '}')
+	  {
+	  expand_string_message = US"missing '}' closing second arg of reduce";
+	  goto EXPAND_FAILED_CURLY;
+	  }
         }
 
       while (isspace(*s)) s++;
-      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '{')
+        {
+	expand_string_message =
+	  string_sprintf("missing '{' for last arg of %s", name);
+	goto EXPAND_FAILED_CURLY;
+	}
 
       expr = s;
 
@@ -5757,28 +5882,52 @@ while (*s != 0)
       uschar *save_iterate_item = iterate_item;
 
       while (isspace(*s)) s++;
-      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '{')
+        {
+        expand_string_message = US"missing '{' for list arg of sort";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       srclist = expand_string_internal(s, TRUE, &s, skipping, TRUE, &resetok);
       if (!srclist) goto EXPAND_FAILED;
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+        expand_string_message = US"missing '}' closing list arg of sort";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       while (isspace(*s)) s++;
-      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '{')
+        {
+        expand_string_message = US"missing '{' for comparator arg of sort";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       cmp = expand_string_internal(s, TRUE, &s, skipping, FALSE, &resetok);
       if (!cmp) goto EXPAND_FAILED;
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+        expand_string_message = US"missing '}' closing comparator arg of sort";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       while (isspace(*s)) s++;
-      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '{')
+        {
+        expand_string_message = US"missing '{' for extractor arg of sort";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       xtract = s;
       tmp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok);
       if (!tmp) goto EXPAND_FAILED;
       xtract = string_copyn(xtract, s - xtract);
 
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+        expand_string_message = US"missing '}' closing extractor arg of sort";
+	goto EXPAND_FAILED_CURLY;
+	}
 							/*{*/
       if (*s++ != '}')
         {						/*{*/
@@ -5998,7 +6147,11 @@ while (*s != 0)
 
       key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
       if (!key) goto EXPAND_FAILED;			/*{*/
-      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+      if (*s++ != '}')
+        {
+        expand_string_message = US"missing '{' for name arg of env";
+	goto EXPAND_FAILED_CURLY;
+	}
 
       lookup_value = US getenv(CS key);
 
@@ -6062,7 +6215,12 @@ while (*s != 0)
 	  sub = expand_string_internal(s+2, TRUE, &s1, skipping,
 		  FALSE, &resetok);
 	  if (!sub)       goto EXPAND_FAILED;		/*{*/
-	  if (*s1 != '}') goto EXPAND_FAILED_CURLY;
+	  if (*s1 != '}')
+	    {
+	    expand_string_message =
+	      string_sprintf("missing '}' closing cert arg of %s", name);
+	    goto EXPAND_FAILED_CURLY;
+	    }
 	  if ((vp = find_var_ent(sub)) && vp->type == vtype_cert)
 	    {
 	    s = s1+1;
@@ -7199,9 +7357,9 @@ else if (resetok_p) *resetok_p = FALSE;
 
 DEBUG(D_expand)
   {
-  debug_printf("expanding: %.*s\n   result: %s\n", (int)(s - string), string,
+  debug_printf("  expanding: %.*s\n     result: %s\n", (int)(s - string), string,
     yield);
-  if (skipping) debug_printf("skipping: result is not used\n");
+  if (skipping) debug_printf("   skipping: result is not used\n");
   }
 return yield;
 
@@ -7210,10 +7368,12 @@ to update the pointer to the terminator, for cases of nested calls with "fail".
 */
 
 EXPAND_FAILED_CURLY:
-expand_string_message = malformed_header?
-  US"missing or misplaced { or } - could be header name not terminated by colon"
-  :
-  US"missing or misplaced { or }";
+if (malformed_header)
+  expand_string_message =
+    US"missing or misplaced { or } - could be header name not terminated by colon";
+
+else if (!expand_string_message || !*expand_string_message)
+  expand_string_message = US"missing or misplaced { or }";
 
 /* At one point, Exim reset the store to yield (if yield was not NULL), but
 that is a bad idea, because expand_string_message is in dynamic store. */

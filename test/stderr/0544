@@ -1,50 +1,110 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-expanding: ${tod_full}
-   result: Tue, 2 Mar 1999 09:44:33 +0000
+considering: ${tod_full}
+  expanding: ${tod_full}
+     result: Tue, 2 Mar 1999 09:44:33 +0000
+considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
 condition: def:sender_rcvhost
    result: false
-expanding: from $sender_rcvhost
+   scanning: from $sender_rcvhost
+	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: from $sender_rcvhost
 	
-   result: from 
+     result: from 
 	
-skipping: result is not used
+   skipping: result is not used
+considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
 condition: def:sender_ident
    result: true
-expanding: $sender_ident
-   result: CALLER
-expanding: from ${quote_local_part:$sender_ident} 
-   result: from CALLER 
+considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: $sender_ident
+     result: CALLER
+  expanding: from ${quote_local_part:$sender_ident} 
+     result: from CALLER 
 condition: def:sender_helo_name
    result: false
-expanding: (helo=$sender_helo_name)
+   scanning: (helo=$sender_helo_name)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: (helo=$sender_helo_name)
 	
-   result: (helo=)
+     result: (helo=)
 	
-skipping: result is not used
-expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   skipping: result is not used
+  expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}
-   result: from CALLER 
+     result: from CALLER 
 condition: def:received_protocol
    result: true
-expanding: with $received_protocol
-   result: with local
+considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: with $received_protocol
+     result: with local
 condition: def:sender_address
    result: true
-expanding: (envelope-from <$sender_address>)
+considering: (envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: (envelope-from <$sender_address>)
 	
-   result: (envelope-from <CALLER@test.ex>)
+     result: (envelope-from <CALLER@test.ex>)
 	
 condition: def:received_for
    result: false
-expanding: 
+   scanning: 
+	for $received_for}}
+  expanding: 
 	for $received_for
-   result: 
+     result: 
 	for 
-skipping: result is not used
-expanding: ${tod_full}
-   result: Tue, 2 Mar 1999 09:44:33 +0000
+   skipping: result is not used
+  expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+     result: Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+considering: ${tod_full}
+  expanding: ${tod_full}
+     result: Tue, 2 Mar 1999 09:44:33 +0000
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
@@ -52,33 +112,43 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-expanding: $domain
-   result: domain1.ex
+considering: $domain
+  expanding: $domain
+     result: domain1.ex
 LOG: MAIN
   == userx@domain1.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
 LOG: MAIN
   == userx@domain2.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
-expanding: $h_list-id:$h_list-post:$h_list-subscribe:
-   result: 
-expanding: 
-   result: 
-expanding: $h_precedence:
-   result: 
-expanding: (?i)bulk|list|junk
-   result: (?i)bulk|list|junk
-expanding: $h_auto-submitted:
-   result: 
-expanding: (?i)auto-generated|auto-replied
-   result: (?i)auto-generated|auto-replied
+considering: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+considering: $h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+  expanding: $h_list-id:$h_list-post:$h_list-subscribe:
+     result: 
+considering: } }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+  expanding: 
+     result: 
+considering: $h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+  expanding: $h_precedence:
+     result: 
+considering: (?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+  expanding: (?i)bulk|list|junk
+     result: (?i)bulk|list|junk
+considering: $h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+  expanding: $h_auto-submitted:
+     result: 
+considering: (?i)auto-generated|auto-replied} }} {no}{yes}}
+  expanding: (?i)auto-generated|auto-replied
+     result: (?i)auto-generated|auto-replied
 condition: or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }}
    result: false
-expanding: no
-   result: no
-skipping: result is not used
-expanding: yes
-   result: yes
-expanding: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
-   result: yes
+   scanning: no}{yes}}
+  expanding: no
+     result: no
+   skipping: result is not used
+considering: yes}}
+  expanding: yes
+     result: yes
+  expanding: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+     result: yes
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -86,24 +156,32 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
-expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
-   result: the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-expanding: $sender_helo_name
-   result: ehlo.domain
-expanding: +dlist
-   result: +dlist
-expanding: $domain
-   result: ehlo.domain
+considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+  expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+     result: the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+considering: ${if match_domain {$sender_helo_name}{+dlist}}
+considering: $sender_helo_name}{+dlist}}
+  expanding: $sender_helo_name
+     result: ehlo.domain
+considering: +dlist}}
+  expanding: +dlist
+     result: +dlist
+considering: $domain
+  expanding: $domain
+     result: ehlo.domain
 condition: match_domain {$sender_helo_name}{+dlist}
    result: true
-expanding: ${if match_domain {$sender_helo_name}{+dlist}}
-   result: true
-expanding: domain=$domain/sender_domain=$sender_address_domain
-   result: domain=/sender_domain=sender.domain
-expanding: domain=$domain/sender_domain=$sender_address_domain
-   result: domain=recipient.domain/sender_domain=sender.domain
-expanding: domain=$domain/sender_domain=$sender_address_domain
-   result: domain=recipient.domain/sender_domain=sender.domain
+  expanding: ${if match_domain {$sender_helo_name}{+dlist}}
+     result: true
+considering: domain=$domain/sender_domain=$sender_address_domain
+  expanding: domain=$domain/sender_domain=$sender_address_domain
+     result: domain=/sender_domain=sender.domain
+considering: domain=$domain/sender_domain=$sender_address_domain
+  expanding: domain=$domain/sender_domain=$sender_address_domain
+     result: domain=recipient.domain/sender_domain=sender.domain
+considering: domain=$domain/sender_domain=$sender_address_domain
+  expanding: domain=$domain/sender_domain=$sender_address_domain
+     result: domain=recipient.domain/sender_domain=sender.domain
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
