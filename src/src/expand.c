@@ -3851,8 +3851,8 @@ expand_string_internal(const uschar *string, BOOL ket_ends, const uschar **left,
 {
 int ptr = 0;
 int size = Ustrlen(string)+ 64;
-int item_type;
 uschar *yield = store_get(size);
+int item_type;
 const uschar *s = string;
 uschar *save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];

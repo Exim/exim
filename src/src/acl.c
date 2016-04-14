@@ -1159,11 +1159,11 @@ uschar *
 fn_hdrs_added(void)
 {
 uschar * ret = NULL;
+int size = 0;
+int ptr = 0;
 header_line * h = acl_added_headers;
 uschar * s;
 uschar * cp;
-int size = 0;
-int ptr = 0;
 
 if (!h) return NULL;
 

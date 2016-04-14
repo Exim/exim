@@ -1272,9 +1272,10 @@ for (i = 0;; i++)
   if (fn_readline != NULL) free(readline_line);
   #endif
 
+  /* yield can only be NULL if ss==p */
   if (ss == p || yield[ptr-1] != '\\')
     {
-    yield[ptr] = 0;
+    if (yield) yield[ptr] = 0;
     break;
     }
   yield[--ptr] = 0;

@@ -125,11 +125,11 @@ PGconn *pg_conn = NULL;
 PGresult *pg_result = NULL;
 
 int i;
+uschar *result = NULL;
 int ssize = 0;
 int offset = 0;
 int yield = DEFER;
 unsigned int num_fields, num_tuples;
-uschar *result = NULL;
 pgsql_connection *cn;
 uschar *server_copy = NULL;
 uschar *sdata[3];
