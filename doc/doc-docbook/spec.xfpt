@@ -7773,7 +7773,14 @@ domain, host, address and local part lists.
 
 .section "Expansion of lists" "SECTlistexpand"
 .cindex "expansion" "of lists"
-Each list is expanded as a single string before it is used. The result of
+Each list is expanded as a single string before it is used.
+
+.new
+&'Exception: the router headers_remove option, where list-item
+splitting is done before string-expansion.'&
+.wen
+
+The result of
 expansion must be a list, possibly containing empty items, which is split up
 into separate items for matching. By default, colon is the separator character,
 but this can be varied if necessary. See sections &<<SECTlistconstruct>>& and
