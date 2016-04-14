@@ -874,12 +874,12 @@ return getcwd((char *)buffer, size);
 unsigned char *
 os_getcwd(unsigned char * buffer, size_t size)
 {
-void *rc;
+char * b = (char *)buffer;
 
 if (!size) size = PATH_MAX;
-if (!buffer && !(buffer = US malloc(size))) return NULL;
-if (!(buffer = getcwd((char *)buffer, size))) return NULL;
-return realloc((char *)buffer, strlen(buffer) + 1);
+if (!b && !(b = malloc(size))) return NULL;
+if (!(b = getcwd(b, size))) return NULL;
+return realloc(b, strlen(b) + 1);
 }
 #endif
 
