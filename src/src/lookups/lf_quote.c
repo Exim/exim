@@ -37,7 +37,11 @@ result = string_append(result, asize, aoffset, 2, name, US"=");
 
 /* NULL is handled as an empty string */
 
-if (value == NULL) value = US"";
+if (!value)
+  {
+  value = US"";
+  vlength = 0;
+  }
 
 /* Quote the value if it is empty, contains white space, or starts with a quote
 character. */

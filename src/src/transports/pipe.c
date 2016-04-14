@@ -489,11 +489,12 @@ if (expand_arguments)
 
     for (ad = addr; ad != NULL; ad = ad->next)
       {
-      if (ad != addr) string_catn(s, &size, &offset, US" ", 1);
-      string_cat(s, &size, &offset, ad->address);
+      /*XXX string_append_listele() ? */
+      if (ad != addr) s = string_catn(s, &size, &offset, US" ", 1);
+      s = string_cat(s, &size, &offset, ad->address);
       }
 
-    string_cat(s, &size, &offset, q);
+    s = string_cat(s, &size, &offset, q);
     s[offset] = 0;
     }
 
