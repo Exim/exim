@@ -5359,7 +5359,7 @@ while (*s != 0)
     case EITEM_EXTRACT:
       {
       int i;
-      int j = 2;
+      int j;
       int field_number = 1;
       BOOL field_number_set = FALSE;
       uschar *save_lookup_value = lookup_value;
@@ -5369,12 +5369,12 @@ while (*s != 0)
 
       /* While skipping we cannot rely on the data for expansions being
       available (eg. $item) hence cannot decide on numeric vs. keyed.
-      Just read as many arguments as there are. */
+      Read a maximum of 5 arguments (inclding the yes/no) */
 
       if (skipping)
 	{
         while (isspace(*s)) s++;
-        while (*s == '{')
+        for (j = 5; j > 0 && *s == '{'; j--)
 	  {
           if (!expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok))
 	    goto EXPAND_FAILED;					/*{*/
@@ -5385,6 +5385,13 @@ while (*s != 0)
 	    }
 	  while (isspace(*s)) s++;
 	  }
+	if (  Ustrncmp(s, "fail", 4) == 0
+	   && (s[4] == '}' || s[4] == ' ' || s[4] == '\t' || !s[4])
+	   )
+	  {
+	  s += 4;
+	  while (isspace(*s)) s++;
+	  }
 	if (*s != '}')
 	  {
 	  expand_string_message = US"missing '}' closing extract";
@@ -5392,7 +5399,7 @@ while (*s != 0)
 	  }
 	}
 
-      else for (i = 0; i < j; i++) /* Read the proper number of arguments */
+      else for (i = 0, j = 2; i < j; i++) /* Read the proper number of arguments */
         {
         while (isspace(*s)) s++;
         if (*s == '{') 						/*}*/

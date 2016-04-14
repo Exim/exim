@@ -579,8 +579,8 @@
 > b
 > 
 > a:b:c
-> Failed: curly-bracket problem in conditional yes/no parsing: did not close with '}'
- remaining string is '{bogus_argument}}}}' inside "map" item
+> Failed: missing '}' closing extract inside "map" item
+> a:b:c
 > 
 > # Translation
 > 
