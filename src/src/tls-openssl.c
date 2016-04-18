@@ -1962,8 +1962,8 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   switch (DANESSL_add_tlsa(ssl, usage, selector, mdname, p, rr->size - 3))
     {
     default:
-    case 0:	/* action not taken */
       return tls_error(US"tlsa load", host, NULL);
+    case 0:	/* action not taken */
     case 1:	break;
     }
 
