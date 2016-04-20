@@ -9181,8 +9181,8 @@ The environment is adjusted by the &%keep_environment%& and
 .cindex "&%extract%&" "substrings by key"
 The key and <&'string1'&> are first expanded separately. Leading and trailing
 white space is removed from the key (but not from any of the strings). The key
-must not consist entirely of digits. The expanded <&'string1'&> must be of the
-form:
+must not be empty and must not consist entirely of digits.
+The expanded <&'string1'&> must be of the form:
 .display
 <&'key1'&> = <&'value1'&>  <&'key2'&> = <&'value2'&> ...
 .endd
@@ -12798,7 +12798,7 @@ When a message is received from a remote host over an encrypted SMTP
 connection, this variable is set to the cipher suite that was negotiated, for
 example DES-CBC3-SHA. In other circumstances, in particular, for message
 received over unencrypted connections, the variable is empty. Testing
-&$tls_cipher$& for emptiness is one way of distinguishing between encrypted and
+&$tls_in_cipher$& for emptiness is one way of distinguishing between encrypted and
 non-encrypted connections during ACL processing.
 
 The deprecated &$tls_cipher$& variable is the same as &$tls_in_cipher$& during message reception,
