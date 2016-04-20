@@ -911,7 +911,7 @@ else
   but who knows if someone has some weird FIFO which always dumps some certs, or
   other weirdness.  The thing we really want to check is that it's not a
   directory, since while OpenSSL supports that, GnuTLS does not.
-  So s/!S_ISREG/S_ISDIR/ and change some messsaging ... */
+  So s/!S_ISREG/S_ISDIR/ and change some messaging ... */
   if (S_ISDIR(statbuf.st_mode))
     {
     DEBUG(D_tls)

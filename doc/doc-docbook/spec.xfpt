@@ -3049,7 +3049,8 @@ trusted user for the sender of a message to be set in this way.
 .oindex "&%-bmalware%&"
 .cindex "testing", "malware"
 .cindex "malware scan test"
-This debugging option causes Exim to scan the given file,
+This debugging option causes Exim to scan the given file or directory
+(depending on the used scanner interface),
 using the malware scanning framework.  The option of &%av_scanner%& influences
 this option, so if &%av_scanner%&'s value is dependent upon an expansion then
 the expansion should have defaults which apply to this invocation.  ACLs are
@@ -6147,7 +6148,8 @@ errors:
 This causes any temporarily failing address to be retried every 15 minutes for
 2 hours, then at intervals starting at one hour and increasing by a factor of
 1.5 until 16 hours have passed, then every 6 hours up to 4 days. If an address
-is not delivered after 4 days of temporary failure, it is bounced.
+is not delivered after 4 days of temporary failure, it is bounced. The time is
+measured from first failure, not from the time the message was received.
 
 If the retry section is removed from the configuration, or is empty (that is,
 if no retry rules are defined), Exim will not retry deliveries. This turns
@@ -6609,7 +6611,7 @@ lookup types support only literal keys.
 .endlist ilist
 
 
-.section "Query-style lookup types" "SECID62"
+.section "Query-style lookup types" "SECTquerystylelookups"
 .cindex "lookup" "query-style types"
 .cindex "query-style lookup" "list of types"
 The supported query-style lookup types are listed below. Further details about
@@ -12146,6 +12148,7 @@ a single-component name, Exim calls &[gethostbyname()]& (or
 qualified host name. See also &$smtp_active_hostname$&.
 
 
+.new
 .vitem &$proxy_external_address$& &&&
        &$proxy_external_port$& &&&
        &$proxy_local_address$& &&&
@@ -12154,6 +12157,7 @@ qualified host name. See also &$smtp_active_hostname$&.
 These variables are only available when built with Proxy Protocol
 or Socks5 support
 For details see chapter &<<SECTproxyInbound>>&.
+.wen
 
 .vitem &$prdr_requested$&
 .cindex "PRDR" "variable for"
@@ -38211,6 +38215,7 @@ Use of a proxy is enabled by setting the &%hosts_proxy%&
 main configuration option to a hostlist; connections from these
 hosts will use Proxy Protocol.
 
+.new
 The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces
 of the proxy):
@@ -38223,6 +38228,7 @@ of the proxy):
 .endd
 If &$proxy_session$& is set but &$proxy_external_address$& is empty
 there was a protocol error.
+.wen
 
 Since the real connections are all coming from the proxy, and the
 per host connection tracking is done before Proxy Protocol is
