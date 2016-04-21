@@ -394,8 +394,10 @@ if (check_sender && message_file && trusted_caller &&
 
 /* If viable sender address, send a message */
 
+BOOL rc = FALSE;
+
 if (sender_address && sender_address[0] && !local_error_message)
-  return moan_send_message(sender_address, ident, eblock, headers,
+  rc = moan_send_message(sender_address, ident, eblock, headers,
     message_file, firstline);
 
 /* Otherwise, we can only log */
@@ -452,7 +454,7 @@ switch(ident)
   break;
   }
 
-return FALSE;
+return rc;
 }
 
 
