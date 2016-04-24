@@ -71,7 +71,7 @@ extern uschar * tls_field_from_dn(uschar *, const uschar *);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 
 # ifdef EXPERIMENTAL_DANE
-extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL, BOOL *);
+extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
 # endif
 
 #endif	/*SUPPORT_TLS*/

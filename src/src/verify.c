@@ -640,12 +640,14 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
       if (host->dnssec == DS_YES)
 	{
-	if(  (  dane_required
-	     || verify_check_given_host(&ob->hosts_try_dane, host) == OK
-	     )
-	  && (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK
+	if(  dane_required
+	  || verify_check_given_host(&ob->hosts_try_dane, host) == OK
 	  )
-	  return rc;
+	  {
+	  if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required)) != OK)
+	    return rc;
+	  dane = TRUE;
+	  }
 	}
       else if (dane_required)
 	{
@@ -792,8 +794,10 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       if (!smtps && !smtp_read_response(&inblock, buffer2, sizeof(buffer2), '2',
   			ob->command_timeout))
         {
-        if (errno != 0 || buffer2[0] == 0 ||
-        	(buffer2[0] == '4' && !ob->tls_tempfail_tryclear))
+        if (  errno != 0
+	   || buffer2[0] == 0
+	   || buffer2[0] == '4' && !ob->tls_tempfail_tryclear
+	   )
 	  {
 	  Ustrncpy(responsebuffer, buffer2, sizeof(responsebuffer));
 	  done= FALSE;
@@ -827,24 +831,10 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	    (void) event_raise(addr->transport->event_action,
 				    US"tcp:close", NULL);
 # endif
-# ifdef EXPERIMENTAL_DANE
-	    if (dane)
-	      {
-	      if (!dane_required)
-		{
-		log_write(0, LOG_MAIN, "DANE attempt failed;"
-		  " trying CA-root TLS to %s [%s] (not in hosts_require_dane)",
-		  host->name, host->address);
-		dane = FALSE;
-		goto tls_negotiate;
-		}
-	      }
-	    else
-# endif
-	      if (  ob->tls_tempfail_tryclear
-		 && !smtps
-		 && verify_check_given_host(&ob->hosts_require_tls, host) != OK
-		 )
+	    if (  ob->tls_tempfail_tryclear
+	       && !smtps
+	       && verify_check_given_host(&ob->hosts_require_tls, host) != OK
+	       )
 	      {
 	      log_write(0, LOG_MAIN, "TLS session failure:"
 		" delivering unencrypted to %s [%s] (not in hosts_require_tls)",

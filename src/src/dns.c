@@ -663,8 +663,7 @@ caching for successful lookups. */
 
 sprintf(CS node_name, "%.255s-%s-%lx", name, dns_text_type(type),
   (unsigned long) resp->options);
-previous = tree_search(tree_dns_fails, node_name);
-if (previous != NULL)
+if ((previous = tree_search(tree_dns_fails, node_name)))
   {
   DEBUG(D_dns) debug_printf("DNS lookup of %.255s-%s: using cached value %s\n",
     name, dns_text_type(type),
@@ -769,48 +768,48 @@ if (dnsa->answerlen > MAXPACKET)
 if (dnsa->answerlen < 0) switch (h_errno)
   {
   case HOST_NOT_FOUND:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
-    "returning DNS_NOMATCH\n", name, dns_text_type(type));
-  return dns_return(name, type, DNS_NOMATCH);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
+      "returning DNS_NOMATCH\n", name, dns_text_type(type));
+    return dns_return(name, type, DNS_NOMATCH);
 
   case TRY_AGAIN:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave TRY_AGAIN\n",
-    name, dns_text_type(type));
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave TRY_AGAIN\n",
+      name, dns_text_type(type));
 
-  /* Cut this out for various test programs */
+    /* Cut this out for various test programs */
 #ifndef STAND_ALONE
-  save_domain = deliver_domain;
-  deliver_domain = string_copy(name);  /* set $domain */
-  rc = match_isinlist(name, (const uschar **)&dns_again_means_nonexist, 0, NULL, NULL,
-    MCL_DOMAIN, TRUE, NULL);
-  deliver_domain = save_domain;
-  if (rc != OK)
-    {
-    DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
-    return dns_return(name, type, DNS_AGAIN);
-    }
-  DEBUG(D_dns) debug_printf("%s is in dns_again_means_nonexist: returning "
-    "DNS_NOMATCH\n", name);
-  return dns_return(name, type, DNS_NOMATCH);
+    save_domain = deliver_domain;
+    deliver_domain = string_copy(name);  /* set $domain */
+    rc = match_isinlist(name, (const uschar **)&dns_again_means_nonexist, 0, NULL, NULL,
+      MCL_DOMAIN, TRUE, NULL);
+    deliver_domain = save_domain;
+    if (rc != OK)
+      {
+      DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
+      return dns_return(name, type, DNS_AGAIN);
+      }
+    DEBUG(D_dns) debug_printf("%s is in dns_again_means_nonexist: returning "
+      "DNS_NOMATCH\n", name);
+    return dns_return(name, type, DNS_NOMATCH);
 
 #else   /* For stand-alone tests */
-  return dns_return(name, type, DNS_AGAIN);
+    return dns_return(name, type, DNS_AGAIN);
 #endif
 
   case NO_RECOVERY:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_RECOVERY\n"
-    "returning DNS_FAIL\n", name, dns_text_type(type));
-  return dns_return(name, type, DNS_FAIL);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_RECOVERY\n"
+      "returning DNS_FAIL\n", name, dns_text_type(type));
+    return dns_return(name, type, DNS_FAIL);
 
   case NO_DATA:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_DATA\n"
-    "returning DNS_NODATA\n", name, dns_text_type(type));
-  return dns_return(name, type, DNS_NODATA);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_DATA\n"
+      "returning DNS_NODATA\n", name, dns_text_type(type));
+    return dns_return(name, type, DNS_NODATA);
 
   default:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave unknown DNS error %d\n"
-    "returning DNS_FAIL\n", name, dns_text_type(type), h_errno);
-  return dns_return(name, type, DNS_FAIL);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave unknown DNS error %d\n"
+      "returning DNS_FAIL\n", name, dns_text_type(type), h_errno);
+    return dns_return(name, type, DNS_FAIL);
   }
 
 DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) succeeded\n",

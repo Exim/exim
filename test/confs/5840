@@ -52,6 +52,7 @@ client:
   dnssec_request_domains = *
   self = send
   transport = send_to_server
+  errors_to = ""
 
 server:
   driver = redirect

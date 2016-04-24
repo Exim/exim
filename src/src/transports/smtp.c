@@ -1216,8 +1216,7 @@ return FALSE;
 
 #ifdef EXPERIMENTAL_DANE
 int
-tlsa_lookup(const host_item * host, dns_answer * dnsa,
-  BOOL dane_required, BOOL * dane)
+tlsa_lookup(const host_item * host, dns_answer * dnsa, BOOL dane_required)
 {
 /* move this out to host.c given the similarity to dns_lookup() ? */
 uschar buffer[300];
@@ -1233,9 +1232,7 @@ switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
 
   default:
   case DNS_FAIL:
-    if (dane_required)
-      return FAIL;
-    break;
+    return dane_required ? FAIL : DEFER;
 
   case DNS_SUCCEED:
     if (!dns_is_secure(dnsa))
@@ -1243,10 +1240,8 @@ switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
       log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
       return DEFER;
       }
-    *dane = TRUE;
-    break;
+    return OK;
   }
-return OK;
 }
 #endif
 
@@ -1545,18 +1540,19 @@ if (continue_hostname == NULL)
 
     if (host->dnssec == DS_YES)
       {
-      if(  (  dane_required
-	   || verify_check_given_host(&ob->hosts_try_dane, host) == OK
-	   )
-	&& (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required, &dane)) != OK
-	&& dane_required	/* do not error on only dane-requested */
+      if(  dane_required
+	|| verify_check_given_host(&ob->hosts_try_dane, host) == OK
 	)
 	{
-	set_errno_nohost(addrlist, ERRNO_DNSDEFER,
-	  string_sprintf("DANE error: tlsa lookup %s",
-	    rc == DEFER ? "DEFER" : "FAIL"),
-	  rc, FALSE);
-	return rc;
+	if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required)) != OK)
+	  {
+	  set_errno_nohost(addrlist, ERRNO_DNSDEFER,
+	    string_sprintf("DANE error: tlsa lookup %s",
+	      rc == DEFER ? "DEFER" : "FAIL"),
+	    rc, FALSE);
+	  return rc;
+	  }
+	dane = TRUE;
 	}
       }
     else if (dane_required)
@@ -1564,7 +1560,7 @@ if (continue_hostname == NULL)
       set_errno_nohost(addrlist, ERRNO_DNSDEFER,
 	string_sprintf("DANE error: %s lookup not DNSSEC", host->name),
 	FAIL, FALSE);
-      return  FAIL;
+      return FAIL;
       }
 
     if (dane)
@@ -1790,8 +1786,10 @@ if (  tls_offered
   if (!smtp_read_response(&inblock, buffer2, sizeof(buffer2), '2',
       ob->command_timeout))
     {
-    if (errno != 0 || buffer2[0] == 0 ||
-         (buffer2[0] == '4' && !ob->tls_tempfail_tryclear))
+    if (  errno != 0
+       || buffer2[0] == 0
+       || (buffer2[0] == '4' && !ob->tls_tempfail_tryclear)
+       )
       {
       Ustrncpy(buffer, buffer2, sizeof(buffer));
       goto RESPONSE_FAILED;
@@ -1816,13 +1814,11 @@ if (  tls_offered
     if (rc != OK)
       {
 # ifdef EXPERIMENTAL_DANE
-      if (rc == DEFER && dane && !dane_required)
+      if (rc == DEFER && dane)
 	{
-	log_write(0, LOG_MAIN, "DANE attempt failed;"
-	  " trying CA-root TLS to %s [%s] (not in hosts_require_dane)",
+	log_write(0, LOG_MAIN,
+	  "DANE attempt failed; no TLS connection to %s [%s]",
 	  host->name, host->address);
-	dane = FALSE;
-	goto TLS_NEGOTIATE;
 	}
 # endif
 

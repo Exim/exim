@@ -10,6 +10,16 @@ JH/02 The obsolete acl condition "demime" is removed (finally, after ten
       years of being deprecated). The replacements are the ACLs
       acl_smtp_mime and acl_not_smtp_mime.
 
+JH/03 Upgrade security requirements imposed for hosts_try_dane: previously
+      a downgraded non-dane trust-anchor for the TLS connection (CA-style)
+      or even an in-clear connection were permitted.  Now, if the host lookup
+      was dnssec and dane was requested then the host is only used if the
+      TLSA lookup succeeds and is dnssec.  Further hosts (eg. lower priority
+      MXs) will be tried (for hosts_try_dane though not for hosts_require_dane)
+      if one fails this test.
+      This means that a poorly-configured remote DNS will make it incommunicado;
+      but it protects against a DNS-interception attack on it.
+
 
 Exim version 4.87
 -----------------

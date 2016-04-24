@@ -884,8 +884,11 @@ with DANE in their OCSP settings.
 
 
 For client-side DANE there are two new smtp transport options,
-hosts_try_dane and hosts_require_dane.  They do the obvious thing.
+hosts_try_dane and hosts_require_dane.
 [ should they be domain-based rather than host-based? ]
+
+Hosts_require_dane will result in failure if the target host
+is not DNSSEC-secured.
 
 DANE will only be usable if the target host has DNSSEC-secured
 MX, A and TLSA records.
@@ -893,9 +896,8 @@ MX, A and TLSA records.
 A TLSA lookup will be done if either of the above options match
 and the host-lookup succeded using dnssec.
 If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
-will be required for the host.
-
-(TODO: specify when fallback happens vs. when the host is not used)
+will be required for the host.  If it does not, the host will not
+be used; there is no fallback to non-DANE or non-TLS.
 
 If DANE is requested and useable (see above) the following transport
 options are ignored:
