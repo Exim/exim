@@ -5409,7 +5409,7 @@ while (*s != 0)
           if (*s++ != '}')
 	    {
 	    expand_string_message = string_sprintf(
-	      US"missing '}' closing arg %d of extract", i+1);
+	      "missing '}' closing arg %d of extract", i+1);
 	    goto EXPAND_FAILED_CURLY;
 	    }
 
@@ -5455,7 +5455,7 @@ while (*s != 0)
         else
 	  {
 	  expand_string_message = string_sprintf(
-	    US"missing '{' for arg %d of extract", i+1);
+	    "missing '{' for arg %d of extract", i+1);
 	  goto EXPAND_FAILED_CURLY;
 	  }
         }
@@ -5512,7 +5512,7 @@ while (*s != 0)
         if (*s != '{')					/*}*/
 	  {
 	  expand_string_message = string_sprintf(
-	    US"missing '{' for arg %d of listextract", i+1);
+	    "missing '{' for arg %d of listextract", i+1);
 	  goto EXPAND_FAILED_CURLY;
 	  }
 
@@ -5521,7 +5521,7 @@ while (*s != 0)
 	if (*s++ != '}')
 	  {
 	  expand_string_message = string_sprintf(
-	    US"missing '}' closing arg %d of listextract", i+1);
+	    "missing '}' closing arg %d of listextract", i+1);
 	  goto EXPAND_FAILED_CURLY;
 	  }
 

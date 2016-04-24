@@ -95,13 +95,13 @@ typedef struct sha2_context sha2_context;
 /* -------------------------------------------------------------------------- */
 /* Public key as (usually) fetched from DNS */
 typedef struct pdkim_pubkey {
-  char *version;                  /* v=  */
-  char *granularity;              /* g=  */
+  uschar *version;                /* v=  */
+  uschar *granularity;            /* g=  */
 
-  char *hashes;                   /* h=  */
-  char *keytype;                  /* k=  */
-  char *srvtype;                  /* s=  */
-  char *notes;                    /* n=  */
+  uschar *hashes;                 /* h=  */
+  uschar *keytype;                /* k=  */
+  uschar *srvtype;                /* s=  */
+  uschar *notes;                  /* n=  */
 
   blob  key;                      /* p=  */
 
@@ -135,13 +135,13 @@ typedef struct pdkim_signature {
   int querymethod;
 
   /* (s=) The selector string as given in the signature */
-  char *selector;
+  uschar *selector;
 
   /* (d=) The domain as given in the signature */
-  char *domain;
+  uschar *domain;
 
   /* (i=) The identity as given in the signature */
-  char *identity;
+  uschar *identity;
 
   /* (t=) Timestamp of signature creation */
   unsigned long created;
@@ -158,7 +158,7 @@ typedef struct pdkim_signature {
   uschar *headernames;
 
   /* (z=) */
-  char *copiedheaders;
+  uschar *copiedheaders;
 
   /* (b=) Raw signature data, along with its length in bytes */
   blob sigdata;
@@ -170,7 +170,7 @@ typedef struct pdkim_signature {
      Ready for insertion into the message. Note: Folded using CRLFTB,
      but final line terminator is NOT included. Note2: This buffer is
      free()d when you call pdkim_free_ctx(). */
-  char *signature_header;
+  uschar *signature_header;
 
   /* The main verification status. Verification only. One of:
 

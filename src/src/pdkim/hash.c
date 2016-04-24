@@ -51,7 +51,7 @@ else
 
 
 void
-exim_sha_update(hctx * h, const char * data, int len)
+exim_sha_update(hctx * h, const uschar * data, int len)
 {
 if (h->sha1)
   SHA1_Update  (&h->u.sha1, data, len);
@@ -86,7 +86,7 @@ gnutls_hash_init(&h->sha, sha1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
 
 
 void
-exim_sha_update(hctx * h, const char * data, int len)
+exim_sha_update(hctx * h, const uschar * data, int len)
 {
 gnutls_hash(h->sha, data, len);
 }
@@ -114,7 +114,7 @@ gcry_md_open(&h->sha, sha1 ? GCRY_MD_SHA1 : GCRY_MD_SHA256, 0);
 
 
 void
-exim_sha_update(hctx * h, const char * data, int len)
+exim_sha_update(hctx * h, const uschar * data, int len)
 {
 gcry_md_write(h->sha, data, len);
 }
@@ -146,7 +146,7 @@ else
 
 
 void
-exim_sha_update(hctx * h, const char * data, int len)
+exim_sha_update(hctx * h, const uschar * data, int len)
 {
 if (h->sha1)
   sha1_update(h->u.sha1, US data, len);

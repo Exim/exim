@@ -865,7 +865,7 @@ this, for all other systems we provide our own getcwd() */
 unsigned char *
 os_getcwd(unsigned char * buffer, size_t size)
 {
-return getcwd((char *)buffer, size);
+return (unsigned char *) getcwd((char *)buffer, size);
 }
 #else
 #ifndef PATH_MAX
