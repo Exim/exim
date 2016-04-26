@@ -1030,7 +1030,7 @@ other process is working on this message. If the file does not exist, continue
 only if the action is remove and the user is an admin user, to allow for
 tidying up broken states. */
 
-if (!spool_open_datafile(id))
+if ((deliver_datafile = spool_open_datafile(id)) < 0)
   {
   if (errno == ENOENT)
     {

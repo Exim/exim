@@ -20,6 +20,9 @@ JH/03 Upgrade security requirements imposed for hosts_try_dane: previously
       This means that a poorly-configured remote DNS will make it incommunicado;
       but it protects against a DNS-interception attack on it.
 
+JH/04 Bug 1810: make continued-use of an open smtp transport connection
+      non-noisy when a race steals the message being considered.
+
 
 Exim version 4.87
 -----------------

@@ -5226,7 +5226,7 @@ Any failures cause messages to be written to the log, except for missing files
 while queue running - another process probably completed delivery. As part of
 opening the data file, message_subdir gets set. */
 
-if (!spool_open_datafile(id))
+if ((deliver_datafile = spool_open_datafile(id)) < 0)
   return continue_closedown();  /* yields DELIVER_NOT_ATTEMPTED */
 
 /* The value of message_size at this point has been set to the data length,
@@ -8091,8 +8091,17 @@ deliver_get_sender_address (uschar * id)
 int rc;
 uschar * new_sender_address,
        * save_sender_address;
+BOOL save_qr = queue_running;
 
-if (!spool_open_datafile(id))
+/* make spool_open_datafile non-noisy on fail */
+
+queue_running = TRUE;
+
+/* Side effect: message_subdir is set for the (possibly split) spool directory */
+
+deliver_datafile = spool_open_datafile(id);
+queue_running = save_qr;
+if (deliver_datafile < 0)
   return NULL;
 
 /* Save and restore the global sender_address.  I'm not sure if we should

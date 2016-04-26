@@ -1654,15 +1654,10 @@ open_db dbblock;
 open_db *dbm_file;
 uschar buffer[256];
 
-msgq_t      *msgq = NULL;
-int         msgq_count = 0;
-int         msgq_actual = 0;
 int         i;
-BOOL        bFound = FALSE;
 uschar      spool_dir [PATH_MAX];
 uschar      spool_file [PATH_MAX];
 struct stat statbuf;
-BOOL        bContinuation = FALSE;
 
 *more = FALSE;
 
@@ -1692,8 +1687,7 @@ if (dbm_file == NULL) return FALSE;
 
 /* See if there is a record for this host; if not, there's nothing to do. */
 
-host_record = dbfn_read(dbm_file, hostname);
-if (host_record == NULL)
+if (!(host_record = dbfn_read(dbm_file, hostname)))
   {
   dbfn_close(dbm_file);
   DEBUG(D_transport) debug_printf("no messages waiting for %s\n", hostname);
@@ -1726,6 +1720,12 @@ host_length = host_record->count * MESSAGE_ID_LENGTH;
 
 while (1)
   {
+  msgq_t      *msgq;
+  int         msgq_count = 0;
+  int         msgq_actual = 0;
+  BOOL        bFound = FALSE;
+  BOOL        bContinuation = FALSE;
+
   /* create an array to read entire message queue into memory for processing  */
 
   msgq = (msgq_t*) malloc(sizeof(msgq_t) * host_record->count);
@@ -1752,8 +1752,6 @@ while (1)
 
   /* now find the next acceptable message_id */
 
-  bFound = FALSE;
-
   for (i = msgq_count - 1; i >= 0; --i) if (msgq[i].bKeep)
     {
     if (split_spool_directory)
@@ -1779,8 +1777,7 @@ while (1)
       msgq_actual++;
 
   /* reassemble the host record, based on removed message ids, from in
-   * memory queue.
-   */
+  memory queue  */
 
   if (msgq_actual <= 0)
     {
@@ -1806,8 +1803,6 @@ while (1)
 
 /* Jeremy: check for a continuation record, this code I do not know how to
 test but the code should work */
-
-  bContinuation = FALSE;
 
   while (host_length <= 0)
     {
@@ -1839,8 +1834,11 @@ test but the code should work */
     bContinuation = TRUE;
     }
 
-  if (bFound)
+  if (bFound)		/* Usual exit from main loop */
+    {
+    free (msgq);
     break;
+    }
 
   /* If host_length <= 0 we have emptied a record and not found a good message,
   and there are no continuation records. Otherwise there is a continuation
@@ -1859,20 +1857,13 @@ test but the code should work */
 
   if (!bContinuation)
     {
-    Ustrcpy (new_message_id, message_id);
+    Ustrcpy(new_message_id, message_id);
     dbfn_close(dbm_file);
     return FALSE;
     }
-  }		/* we need to process a continuation record */
 
-/* clean up in memory queue */
-if (msgq)
-  {
-  free (msgq);
-  msgq = NULL;
-  msgq_count = 0;
-  msgq_actual = 0;
-  }
+  free(msgq);
+  }		/* we need to process a continuation record */
 
 /* Control gets here when an existing message has been encountered; its
 id is in new_message_id, and host_length is the revised length of the
@@ -1881,18 +1872,7 @@ record if required, close the database, and return TRUE. */
 
 if (host_length > 0)
   {
-  uschar  msg [MESSAGE_ID_LENGTH + 1];
-  int i;
-
   host_record->count = host_length/MESSAGE_ID_LENGTH;
-
-  /* rebuild the host_record->text */
-
-  for (i = 0; i < host_record->count; ++i)
-    {
-    Ustrncpy(msg, host_record->text + (i*MESSAGE_ID_LENGTH), MESSAGE_ID_LENGTH);
-    msg[MESSAGE_ID_LENGTH] = 0;
-    }
 
   dbfn_write(dbm_file, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
   *more = TRUE;

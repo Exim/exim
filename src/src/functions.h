@@ -405,7 +405,7 @@ extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *);
 #endif
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
-extern BOOL    spool_open_datafile(uschar *);
+extern int     spool_open_datafile(uschar *);
 extern int     spool_open_temp(uschar *);
 extern int     spool_read_header(uschar *, BOOL, BOOL);
 extern int     spool_write_header(uschar *, int, uschar **);

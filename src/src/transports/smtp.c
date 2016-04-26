@@ -1306,7 +1306,6 @@ we will veto this new message.  */
 static BOOL
 smtp_are_same_identities(uschar * message_id, smtp_compare_t * s_compare)
 {
-
 uschar * message_local_identity,
        * current_local_identity,
        * new_sender_address;

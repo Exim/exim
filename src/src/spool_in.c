@@ -26,18 +26,19 @@ overwriting some other file descriptor with the value of this one), open it
 with append.
 
 Argument: the id of the message
-Returns:  TRUE if file successfully opened and locked
+Returns:  fd if file successfully opened and locked, else -1
 
-Side effect: deliver_datafile is set to the fd of the open file.
+Side effect: message_subdir is set for the (possibly split) spool directory
 */
 
-BOOL
+int
 spool_open_datafile(uschar *id)
 {
 int i;
 struct stat statbuf;
 flock_t lock_data;
 uschar spoolname[256];
+int fd;
 
 /* If split_spool_directory is set, first look for the file in the appropriate
 sub-directory of the input directory. If it is not found there, try the input
@@ -51,8 +52,8 @@ for (i = 0; i < 2; i++)
   int save_errno;
   message_subdir[0] = (split_spool_directory == (i == 0))? id[5] : 0;
   sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
-  deliver_datafile = Uopen(spoolname, O_RDWR | O_APPEND, 0);
-  if (deliver_datafile >= 0) break;
+  if ((fd = Uopen(spoolname, O_RDWR | O_APPEND, 0)) >= 0)
+    break;
   save_errno = errno;
   if (errno == ENOENT)
     {
@@ -63,7 +64,7 @@ for (i = 0; i < 2; i++)
   else log_write(0, LOG_MAIN, "Spool error for %s: %s", spoolname,
     strerror(errno));
   errno = save_errno;
-  return FALSE;
+  return -1;
   }
 
 /* File is open and message_subdir is set. Set the close-on-exec flag, and lock
@@ -74,7 +75,7 @@ an open file descriptor (at least, I think that's the Cygwin story). On real
 Unix systems it doesn't make any difference as long as Exim is consistent in
 what it locks. */
 
-(void)fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
+(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) |
   FD_CLOEXEC);
 
 lock_data.l_type = F_WRLCK;
@@ -82,27 +83,26 @@ lock_data.l_whence = SEEK_SET;
 lock_data.l_start = 0;
 lock_data.l_len = SPOOL_DATA_START_OFFSET;
 
-if (fcntl(deliver_datafile, F_SETLK, &lock_data) < 0)
+if (fcntl(fd, F_SETLK, &lock_data) < 0)
   {
   log_write(L_skip_delivery,
             LOG_MAIN,
             "Spool file is locked (another process is handling this message)");
-  (void)close(deliver_datafile);
-  deliver_datafile = -1;
+  (void)close(fd);
   errno = 0;
-  return FALSE;
+  return -1;
   }
 
 /* Get the size of the data; don't include the leading filename line
 in the count, but add one for the newline before the data. */
 
-if (fstat(deliver_datafile, &statbuf) == 0)
+if (fstat(fd, &statbuf) == 0)
   {
   message_body_size = statbuf.st_size - SPOOL_DATA_START_OFFSET;
   message_size = message_body_size + 1;
   }
 
-return TRUE;
+return fd;
 }
 #endif  /* COMPILE_UTILITY */
 

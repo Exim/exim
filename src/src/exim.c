@@ -4952,7 +4952,7 @@ if (expansion_test)
       }
     message_id = argv[msg_action_arg];
     (void)string_format(spoolname, sizeof(spoolname), "%s-H", message_id);
-    if (!spool_open_datafile(message_id))
+    if ((deliver_datafile = spool_open_datafile(message_id)) < 0)
       printf ("Failed to load message datafile %s\n", message_id);
     if (spool_read_header(spoolname, TRUE, FALSE) != spool_read_OK)
       printf ("Failed to load message %s\n", message_id);
