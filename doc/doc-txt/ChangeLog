@@ -23,6 +23,12 @@ JH/03 Upgrade security requirements imposed for hosts_try_dane: previously
 JH/04 Bug 1810: make continued-use of an open smtp transport connection
       non-noisy when a race steals the message being considered.
 
+LC/01 Prefer the use of size_t for varaibles used for sizes. Even if most strings in
+      Exim are limited to 2¹⁵−1, This acts as a suplemental protection against overflows.
+      Especially for 16 bits x86 where INT_MAX is already 2¹⁵−1 and pointers used in
+      Unix prorgrams are FAR (20 bits wide).
+      In the meantime, this doesn’t impact any cases where negative length could have
+      been used, as an error value.
 
 Exim version 4.87
 -----------------

@@ -32390,7 +32390,7 @@ match the specification, the function does nothing.
 
 
 .vitem "&*BOOL&~header_testname(header_line&~*hdr,&~uschar&~*name,&~&&&
-        int&~length,&~BOOL&~notdel)*&"
+        size_t&~length,&~BOOL&~notdel)*&"
 This function tests whether the given header has the given name. It is not just
 a string comparison, because white space is permitted between the name and the
 colon. If the &%notdel%& argument is true, a false return is forced for all
@@ -32488,7 +32488,7 @@ address.
 .cindex "RFC 2047"
 .vlist
 .vitem "&*uschar&~rfc2047_decode(uschar&~*string,&~BOOL&~lencheck,&&&
-  &~uschar&~*target,&~int&~zeroval,&~int&~*lenptr, &~&~uschar&~**error)*&"
+  &~uschar&~*target,&~int&~zeroval,&~size_t&~*lenptr, &~&~uschar&~**error)*&"
 This function decodes strings that are encoded according to RFC 2047. Typically
 these are the contents of header lines. First, each &"encoded word"& is decoded
 from the Q or B encoding into a byte-string. Then, if provided with the name of

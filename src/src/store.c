@@ -126,7 +126,7 @@ Returns:      pointer to store (panic on malloc failure)
 */
 
 void *
-store_get_3(int size, const char *filename, int linenumber)
+store_get_3(size_t size, const char *filename, int linenumber)
 {
 /* Round up the size to a multiple of the alignment. Although this looks a
 messy statement, because "alignment" is a constant expression, the compiler can
@@ -195,10 +195,10 @@ linenumber = linenumber;
 DEBUG(D_memory)
   {
   if (running_in_test_harness)
-    debug_printf("---%d Get %5d\n", store_pool, size);
+    debug_printf("---%d Get %5u\n", store_pool, (unsigned int)size);
   else
-    debug_printf("---%d Get %6p %5d %-14s %4d\n", store_pool,
-      store_last_get[store_pool], size, filename, linenumber);
+    debug_printf("---%d Get %6p %5u %-14s %4d\n", store_pool,
+      store_last_get[store_pool], (unsigned int)size, filename, linenumber);
   }
 #endif  /* COMPILE_UTILITY */
 
@@ -229,7 +229,7 @@ Returns:      pointer to store (panic on malloc failure)
 */
 
 void *
-store_get_perm_3(int size, const char *filename, int linenumber)
+store_get_perm_3(size_t size, const char *filename, int linenumber)
 {
 void *yield;
 int old_pool = store_pool;
@@ -492,7 +492,7 @@ Returns:      pointer to gotten store (panic on failure)
 */
 
 void *
-store_malloc_3(int size, const char *filename, int linenumber)
+store_malloc_3(size_t size, const char *filename, int linenumber)
 {
 void *yield;
 
@@ -500,7 +500,7 @@ if (size < 16) size = 16;
 yield = malloc((size_t)size);
 
 if (yield == NULL)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %zd bytes of memory: "
     "called from line %d of %s", size, linenumber, filename);
 
 nonpool_malloc += size;
@@ -519,12 +519,12 @@ is not filled with zeros so as to catch problems. */
 if (running_in_test_harness)
   {
   memset(yield, 0xF0, (size_t)size);
-  DEBUG(D_memory) debug_printf("--Malloc %5d %d %d\n", size, pool_malloc,
+  DEBUG(D_memory) debug_printf("--Malloc %5zd %d %d\n", size, pool_malloc,
     nonpool_malloc);
   }
 else
   {
-  DEBUG(D_memory) debug_printf("--Malloc %6p %5d %-14s %4d %d %d\n", yield,
+  DEBUG(D_memory) debug_printf("--Malloc %6p %5zd %-14s %4d %d %d\n", yield,
     size, filename, linenumber, pool_malloc, nonpool_malloc);
   }
 #endif  /* COMPILE_UTILITY */

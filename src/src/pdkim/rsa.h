@@ -70,7 +70,7 @@ typedef struct {
 
 
 extern void exim_rsa_init(void);
-extern blob * exim_rsa_data_append(blob *, int *, uschar *);
+extern blob * exim_rsa_data_append(blob *, size_t *, uschar *);
 
 extern const uschar * exim_rsa_signing_init(uschar *, es_ctx *);
 extern const uschar * exim_rsa_sign(es_ctx *, BOOL, blob *, blob *);

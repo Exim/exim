@@ -185,7 +185,7 @@ typedef struct queue_item {
   struct dest_item  *destinations;
   int  input_time;
   int  update_time;
-  int  size;
+  size_t  size;
   uschar *sender;
   uschar name[17];
   uschar seen;

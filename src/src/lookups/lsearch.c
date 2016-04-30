@@ -72,7 +72,7 @@ but people do occasionally do weird things. */
 
 static int
 internal_lsearch_find(void *handle, uschar *filename, const uschar *keystring,
-  int length, uschar **result, uschar **errmsg, int type)
+  size_t length, uschar **result, uschar **errmsg, int type)
 {
 FILE *f = (FILE *)handle;
 BOOL last_was_eol = TRUE;
@@ -101,9 +101,8 @@ for (last_was_eol = TRUE;
      Ufgets(buffer, sizeof(buffer), f) != NULL;
      last_was_eol = this_is_eol)
   {
-  int ptr, size;
-  int p = Ustrlen(buffer);
-  int linekeylength;
+  size_t ptr, size, p = Ustrlen(buffer);
+  size_t linekeylength;
   BOOL this_is_comment;
   uschar *yield;
   uschar *s = buffer;
@@ -322,7 +321,7 @@ return FAIL;
 /* See local README for interface description */
 
 static int
-lsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+lsearch_find(void *handle, uschar *filename, const uschar *keystring, size_t length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
@@ -339,7 +338,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-wildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+wildlsearch_find(void *handle, uschar *filename, const uschar *keystring, size_t length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
@@ -356,7 +355,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-nwildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+nwildlsearch_find(void *handle, uschar *filename, const uschar *keystring, size_t length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
@@ -374,7 +373,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-iplsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
+iplsearch_find(void *handle, uschar *filename, const uschar *keystring, size_t length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */

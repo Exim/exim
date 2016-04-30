@@ -143,8 +143,8 @@ if (pattern[0] == '^')
 if (pattern[0] == '*')
   {
   BOOL yield;
-  int slen = Ustrlen(s);
-  int patlen;    /* Sun compiler doesn't like non-constant initializer */
+  size_t slen = Ustrlen(s);
+  size_t patlen;    /* Sun compiler doesn't like non-constant initializer */
 
   patlen = Ustrlen(++pattern);
   if (patlen > slen) return FAIL;
@@ -1175,7 +1175,7 @@ if (pdomain != NULL)
 
   if (*pattern == '*')
     {
-    int cllen = pllen - 1;
+    size_t cllen = pllen - 1;
     if (sllen < cllen) return FAIL;
     if (cb->caseless)
       {

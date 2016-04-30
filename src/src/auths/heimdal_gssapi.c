@@ -467,7 +467,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
 
         expand_nlength[1] = gbufdesc_out.length;
         auth_vars[0] = expand_nstring[1] =
-          string_copyn(gbufdesc_out.value, gbufdesc_out.length);
+          string_copyn(gbufdesc_out.value, (size_t)gbufdesc_out.length);
 
         if (expand_nmax == 0) { /* should be: authzid was empty */
           expand_nmax = 2;

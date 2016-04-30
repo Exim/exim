@@ -97,7 +97,7 @@ compute_cram_md5(uschar *secret, uschar *challenge, uschar *digestptr)
 {
 md5 base;
 int i;
-int len = Ustrlen(secret);
+size_t len = Ustrlen(secret);
 uschar isecret[64];
 uschar osecret[64];
 uschar md5secret[16];
@@ -250,7 +250,7 @@ auth_cram_md5_client(
   smtp_outblock *outblock,               /* output connection */
   int timeout,                           /* command timeout */
   uschar *buffer,                        /* for reading response */
-  int buffsize)                          /* size of buffer */
+  size_t buffsize)                          /* size of buffer */
 {
 auth_cram_md5_options_block *ob =
   (auth_cram_md5_options_block *)(ablock->options_block);
