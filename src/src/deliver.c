@@ -1087,10 +1087,12 @@ if (addr->message)
 	|| Ustrstr(s, "redis")   != NULL
 	|| Ustrstr(s, "sqlite")  != NULL
 	|| Ustrstr(s, "ldap:")   != NULL
+	|| Ustrstr(s, "ldaps:")  != NULL
+	|| Ustrstr(s, "ldapi:")  != NULL
 	|| Ustrstr(s, "ldapdn:") != NULL
 	|| Ustrstr(s, "ldapm:")  != NULL
      )  )
-    addr->message = string_sprintf("Temporary internal error");
+    addr->message = US"Temporary internal error";
   }
 
 /* If we used a transport that has one of the "return_output" options set, and

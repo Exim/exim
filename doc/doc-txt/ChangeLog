@@ -26,6 +26,9 @@ JH/04 Bug 1810: make continued-use of an open smtp transport connection
 JH/05 If main configuration option tls_certificate is unset, generate a
       selfsigned certificate for inbound TLS connections.
 
+JH/06 Bug 165: hide more cases of password exposure - this time in expansions
+      in rewrites.
+
 
 Exim version 4.87
 -----------------
