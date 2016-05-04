@@ -615,7 +615,7 @@ Returns:      points to the extracted address, or NULL on error
 #define FAILED(s) { *errorptr = s; goto PARSE_FAILED; }
 
 uschar *
-parse_extract_address(uschar *mailbox, uschar **errorptr, int *start, int *end,
+parse_extract_address(uschar *mailbox, uschar **errorptr, size_t *start, size_t *end,
   int *domain, BOOL allow_null)
 {
 uschar *yield = store_get(Ustrlen(mailbox) + 1);
@@ -863,8 +863,8 @@ Returns:       pointer to the original string, if no quoting needed, or
 */
 
 const uschar *
-parse_quote_2047(const uschar *string, int len, uschar *charset, uschar *buffer,
-  int buffer_size, BOOL fold)
+parse_quote_2047(const uschar *string, size_t len, uschar *charset, uschar *buffer,
+  size_t buffer_size, BOOL fold)
 {
 const uschar *s = string;
 uschar *p, *t;
@@ -982,7 +982,7 @@ Returns:       the fixed RFC822 phrase
 */
 
 const uschar *
-parse_fix_phrase(const uschar *phrase, int len, uschar *buffer, int buffer_size)
+parse_fix_phrase(const uschar *phrase, size_t len, uschar *buffer, size_t buffer_size)
 {
 int ch, i;
 BOOL quoted = FALSE;
@@ -1549,9 +1549,9 @@ for (;;)
 
   else
     {
-    int start, end, domain;
+    size_t start, end;
     uschar *recipient = NULL;
-    int save = s[len];
+    int domain, save = s[len];
     s[len] = 0;
 
     /* If it starts with \ and the rest of it parses as a valid mail address
@@ -2046,7 +2046,8 @@ return str;
 #if defined STAND_ALONE
 int main(void)
 {
-int start, end, domain;
+size_t start, end;
+int domain;
 uschar buffer[1024];
 uschar outbuff[1024];
 

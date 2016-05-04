@@ -471,7 +471,7 @@ Returns:     FALSE if data missing
 static BOOL
 rda_read_string(int fd, uschar **sp)
 {
-int len;
+size_t len;
 
 if (read(fd, &len, sizeof(int)) != sizeof(int)) return FALSE;
 if (len == 0) *sp = NULL; else

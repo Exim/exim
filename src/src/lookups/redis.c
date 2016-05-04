@@ -80,8 +80,8 @@ redisReply *redis_reply = NULL;
 redisReply *entry = NULL;
 redisReply *tentry = NULL;
 redis_connection *cn;
-int ssize = 0;
-int offset = 0;
+size_t ssize = 0;
+size_t offset = 0;
 int yield = DEFER;
 int i, j;
 uschar *result = NULL;
@@ -210,7 +210,7 @@ if(sdata[1])
   uschar * argv[32];
   int i;
   const uschar * s = command;
-  int siz, ptr;
+  size_t siz, ptr;
   uschar c;
 
   while (isspace(*s)) s++;

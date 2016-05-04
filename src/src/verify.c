@@ -63,7 +63,8 @@ get_callout_cache_record(open_db *dbm_file, const uschar *key, uschar *type,
   int positive_expire, int negative_expire)
 {
 BOOL negative;
-int length, expire;
+size_t length;
+int expire;
 time_t now;
 dbdata_callout_cache *cache_record;
 
@@ -2409,8 +2410,8 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
     {
     uschar *ss = parse_find_address_end(s, FALSE);
     uschar *recipient, *errmess;
-    int terminator = *ss;
-    int start, end, domain;
+    int domain, terminator = *ss;
+    size_t start, end;
 
     /* Temporarily terminate the string at this point, and extract the
     operative address within, allowing group syntax. */
@@ -2571,8 +2572,8 @@ for (i = 0; i < recipients_count; i++)
       {
       uschar *ss = parse_find_address_end(s, FALSE);
       uschar *recipient,*errmess;
-      int terminator = *ss;
-      int start, end, domain;
+      int domain ,terminator = *ss;
+      size_t start, end;
 
       /* Temporarily terminate the string at this point, and extract the
       operative address within, allowing group syntax. */
@@ -2745,7 +2746,8 @@ for (i = 0; i < 3 && !done; i++)
 
       else
         {
-        int start, end, domain;
+        size_t start, end;
+        int domain;
         uschar *address = parse_extract_address(s, log_msgptr, &start, &end,
           &domain, FALSE);
 

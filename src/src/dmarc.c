@@ -182,7 +182,7 @@ if (!from_header || dmarc_abort)
 else
   {
     uschar * errormsg;
-    int dummy, domain;
+    size_t dummy, domain;
     uschar * p;
     uschar saveend;
 

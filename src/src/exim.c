@@ -38,7 +38,7 @@ regular expression for a long time; the other for short-term use. */
 static void *
 function_store_get(size_t size)
 {
-return store_get((int)size);
+return store_get(size);
 }
 
 static void
@@ -717,7 +717,8 @@ Returns:       nothing
 static void
 test_address(uschar *s, int flags, int *exit_value)
 {
-int start, end, domain;
+size_t start, end;
+int domain;
 uschar *parse_error = NULL;
 uschar *address = parse_extract_address(s, &parse_error, &start, &end, &domain,
   FALSE);
@@ -1123,7 +1124,7 @@ uschar *
 local_part_quote(uschar *lpart)
 {
 BOOL needs_quote = FALSE;
-int size, ptr;
+size_t size, ptr;
 uschar *yield;
 uschar *t;
 
@@ -1227,8 +1228,8 @@ static uschar *
 get_stdinput(char *(*fn_readline)(const char *), void(*fn_addhist)(const char *))
 {
 int i;
-int size = 0;
-int ptr = 0;
+size_t size = 0;
+size_t ptr = 0;
 uschar *yield = NULL;
 
 if (fn_readline == NULL) { printf("> "); fflush(stdout); }
@@ -1258,7 +1259,7 @@ for (i = 0;; i++)
 
   /* Handle the line */
 
-  ss = p + (int)Ustrlen(p);
+  ss = p + Ustrlen(p);
   while (ss > p && isspace(ss[-1])) ss--;
 
   if (i > 0)
@@ -2546,7 +2547,7 @@ for (i = 1; i < argc; i++)
 
     case 'f':
       {
-      int dummy_start, dummy_end;
+      size_t dummy_start, dummy_end;
       uschar *errmess;
       if (*argrest == 0)
         {
@@ -5432,7 +5433,8 @@ while (more)
 
     for (i = 0; i < count; i++)
       {
-      int start, end, domain;
+      size_t start, end;
+      int domain;
       uschar *errmess;
       uschar *s = list[i];
 

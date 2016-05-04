@@ -29,6 +29,14 @@ JH/05 If main configuration option tls_certificate is unset, generate a
 JH/06 Bug 165: hide more cases of password exposure - this time in expansions
       in rewrites.
 
+LC/01 Prefer the use of size_t for variables representing sizes. Even if most
+      strings in Exim are limited to 2¹⁵−1, This acts as a suplemental protection
+      against overflows.
+      Especially for 16 bits x86 where INT_MAX is already 2¹⁵−1 and pointers used in
+      Unix prorgrams are FAR (20 bits wide).
+      In the meantime, this doesn’t impact any cases where negative length could have
+      been used, as an error value.
+
 
 Exim version 4.87
 -----------------

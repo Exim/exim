@@ -824,7 +824,7 @@ reset_point = store_get(0);
 for (; f != NULL; f = f->next)
   {
   int rc, save_errno;
-  int size = 0;
+  size_t size = 0;
   BOOL env_read;
 
   store_reset(reset_point);
@@ -1252,7 +1252,8 @@ switch(action)
 
   for (; recipients_arg < argc; recipients_arg++)
     {
-    int start, end, domain;
+    size_t start, end;
+    int domain;
     uschar *errmess;
     uschar *recipient =
       parse_extract_address(argv[recipients_arg], &errmess, &start, &end,

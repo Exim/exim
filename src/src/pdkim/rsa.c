@@ -29,9 +29,9 @@ exim_rsa_init(void)
 
 /* accumulate data (gnutls-only).  String to be appended must be nul-terminated. */
 blob *
-exim_rsa_data_append(blob * b, int * alloc, uschar * s)
+exim_rsa_data_append(blob * b, size_t * alloc, uschar * s)
 {
-int len = b->len;
+size_t len= b-> len;
 b->data = string_append(b->data, alloc, &len, 1, s);
 b->len = len;
 return b;
@@ -259,7 +259,7 @@ return;
 String to be appended must be nul-terminated. */
 
 blob *
-exim_rsa_data_append(blob * b, int * alloc, uschar * s)
+exim_rsa_data_append(blob * b, size_t * alloc, uschar * s)
 {
 return b;	/*dummy*/
 }
@@ -556,7 +556,7 @@ exim_rsa_init(void)
 
 /* accumulate data (gnutls-only) */
 blob *
-exim_rsa_data_append(blob * b, int * alloc, uschar * s)
+exim_rsa_data_append(blob * b, size_t * alloc, uschar * s)
 {
 return b;	/*dummy*/
 }
@@ -604,7 +604,7 @@ Return: NULL for success, or an error string */
 const uschar *
 exim_rsa_sign(es_ctx * sign_ctx, BOOL is_sha1, blob * data, blob * sig)
 {
-uint len;
+size_t len;
 const uschar * ret = NULL;
 
 /* Allocate mem for signature */

@@ -31,7 +31,7 @@ uschar *code;
 uschar *p = (uschar *)clear;
 uschar *pp;
 int c = len;
-int count = 1;
+size_t count = 1;
 register int x;
 
 /* We have to do a prepass to find out how many specials there are,
