@@ -42,6 +42,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 /* needed to disable PKCS11 autoload unless requested */
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 # include <gnutls/pkcs11.h>
+# define SUPPORT_PARAM_TO_PK_BITS
 #endif
 #if GNUTLS_VERSION_NUMBER < 0x030103 && !defined(DISABLE_OCSP)
 # warning "GnuTLS library version too old; define DISABLE_OCSP in Makefile"
@@ -728,8 +729,12 @@ if ((rc = gnutls_x509_crt_init(&cert))) goto err;
 
 where = US"generating pkey";
 if ((rc = gnutls_x509_privkey_generate(pkey, GNUTLS_PK_RSA,
+#ifdef SUPPORT_PARAM_TO_PK_BITS
 	    gnutls_sec_param_to_pk_bits(GNUTLS_PK_RSA, GNUTLS_SEC_PARAM_LOW),
-	    0)))			/* _to_pk_bits() Since: 2.12.0 */
+#else
+	    1024,
+#endif
+	    0)))
   goto err;
 
 where = US"configuring cert";
@@ -1508,7 +1513,7 @@ else
     int sep = 0;
     const uschar * list = state->exp_tls_verify_cert_hostnames;
     uschar * name;
-    while (name = string_nextinlist(&list, &sep, NULL, 0))
+    while ((name = string_nextinlist(&list, &sep, NULL, 0)))
       if (gnutls_x509_crt_check_hostname(state->tlsp->peercert, CS name))
 	break;
     if (!name)
