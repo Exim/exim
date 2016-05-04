@@ -23,6 +23,9 @@ JH/03 Upgrade security requirements imposed for hosts_try_dane: previously
 JH/04 Bug 1810: make continued-use of an open smtp transport connection
       non-noisy when a race steals the message being considered.
 
+JH/05 If main configuration option tls_certificate is unset, generate a
+      selfsigned certificate for inbound TLS connections.
+
 
 Exim version 4.87
 -----------------

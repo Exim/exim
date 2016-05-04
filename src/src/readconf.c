@@ -2963,8 +2963,8 @@ if (  !tls_advertise_hosts
    )
   return TRUE;
 else if (!nowarn && !tls_certificate)
-  log_write(0, LOG_MAIN|LOG_PANIC,
-    "Warning: No server certificate defined; TLS connections will fail.\n"
+  log_write(0, LOG_MAIN,
+    "Warning: No server certificate defined; will use a selfsigned one.\n"
     " Suggested action: either install a certificate or change tls_advertise_hosts option");
 
 oldsignal = signal(SIGCHLD, SIG_DFL);

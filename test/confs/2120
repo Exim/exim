@@ -8,7 +8,7 @@ host_lookup_order = bydns
 log_file_path = DIR/spool/log/SERVER%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
-primary_hostname = myhost.test.ex
+primary_hostname = thishost.test.ex
 spool_directory = DIR/spool
 
 # ----- Main settings -----
@@ -38,7 +38,7 @@ begin transports
 
 t1:
   driver = smtp
-  hosts = 127.0.0.1
+  hosts = thishost.test.ex
   allow_localhost
   port = PORT_D
 

@@ -709,6 +709,70 @@ return OK;
 
 
 
+/* Create and install a selfsigned certificate, for use in server mode */
+
+static int
+tls_install_selfsign(exim_gnutls_state_st * state)
+{
+gnutls_x509_crt_t cert = NULL;
+time_t now;
+gnutls_x509_privkey_t pkey = NULL;
+const uschar * where;
+int rc;
+
+where = US"initialising pkey";
+if ((rc = gnutls_x509_privkey_init(&pkey))) goto err;
+
+where = US"initialising cert";
+if ((rc = gnutls_x509_crt_init(&cert))) goto err;
+
+where = US"generating pkey";
+if ((rc = gnutls_x509_privkey_generate(pkey, GNUTLS_PK_RSA,
+	    gnutls_sec_param_to_pk_bits(GNUTLS_PK_RSA, GNUTLS_SEC_PARAM_LOW),
+	    0)))			/* _to_pk_bits() Since: 2.12.0 */
+  goto err;
+
+where = US"configuring cert";
+now = 0;
+if (  (rc = gnutls_x509_crt_set_version(cert, 3))
+   || (rc = gnutls_x509_crt_set_serial(cert, &now, sizeof(now)))
+   || (rc = gnutls_x509_crt_set_activation_time(cert, now = time(NULL)))
+   || (rc = gnutls_x509_crt_set_expiration_time(cert, now + 60 * 60)) /* 1 hr */
+   || (rc = gnutls_x509_crt_set_key(cert, pkey))
+
+   || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
+	      GNUTLS_OID_X520_COUNTRY_NAME, 0, "UK", 2))
+   || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
+	      GNUTLS_OID_X520_ORGANIZATION_NAME, 0, "Exim Developers", 15))
+   || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
+	      GNUTLS_OID_X520_COMMON_NAME, 0,
+	      smtp_active_hostname, Ustrlen(smtp_active_hostname)))
+   )
+  goto err;
+
+where = US"signing cert";
+if ((rc = gnutls_x509_crt_sign(cert, cert, pkey))) goto err;
+
+where = US"installing selfsign cert";
+					/* Since: 2.4.0 */
+if ((rc = gnutls_certificate_set_x509_key(state->x509_cred, &cert, 1, pkey)))
+  goto err;
+
+rc = OK;
+
+out:
+  if (cert) gnutls_x509_crt_deinit(cert);
+  if (pkey) gnutls_x509_privkey_deinit(pkey);
+  return rc;
+
+err:
+  rc = tls_error(where, gnutls_strerror(rc), NULL);
+  goto out;
+}
+
+
+
+
 /*************************************************
 *       Variables re-expanded post-SNI           *
 *************************************************/
@@ -741,7 +805,6 @@ int cert_count;
 
 /* We check for tls_sni *before* expansion. */
 if (!host)	/* server */
-  {
   if (!state->received_sni)
     {
     if (state->tls_certificate &&
@@ -762,7 +825,6 @@ if (!host)	/* server */
     saved_tls_verify_certificates = state->exp_tls_verify_certificates;
     saved_tls_crl = state->exp_tls_crl;
     }
-  }
 
 rc = gnutls_certificate_allocate_credentials(&state->x509_cred);
 exim_gnutls_err_check(US"gnutls_certificate_allocate_credentials");
@@ -779,14 +841,13 @@ if (!expand_check_tlsvar(tls_certificate))
 
 /* certificate is mandatory in server, optional in client */
 
-if ((state->exp_tls_certificate == NULL) ||
-    (*state->exp_tls_certificate == '\0'))
-  {
+if (  !state->exp_tls_certificate
+   || !*state->exp_tls_certificate
+   )
   if (!host)
-    return tls_error(US"no TLS server certificate is specified", NULL, NULL);
+    return tls_install_selfsign(state);
   else
     DEBUG(D_tls) debug_printf("TLS: no client certificate specified; okay\n");
-  }
 
 if (state->tls_privatekey && !expand_check_tlsvar(tls_privatekey))
   return DEFER;
@@ -806,9 +867,9 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
       state->exp_tls_certificate, state->exp_tls_privatekey);
 
   if (state->received_sni)
-    {
-    if ((Ustrcmp(state->exp_tls_certificate, saved_tls_certificate) == 0) &&
-        (Ustrcmp(state->exp_tls_privatekey, saved_tls_privatekey) == 0))
+    if (  Ustrcmp(state->exp_tls_certificate, saved_tls_certificate) == 0
+       && Ustrcmp(state->exp_tls_privatekey,  saved_tls_privatekey)  == 0
+       )
       {
       DEBUG(D_tls) debug_printf("TLS SNI: cert and key unchanged\n");
       }
@@ -816,7 +877,6 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
       {
       DEBUG(D_tls) debug_printf("TLS SNI: have a changed cert/key pair.\n");
       }
-    }
 
   rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
       CS state->exp_tls_certificate, CS state->exp_tls_privatekey,

@@ -1,8 +1,0 @@
-1999-03-02 09:44:33 Warning: No server certificate defined; TLS connections will fail.
- Suggested action: either install a certificate or change tls_advertise_hosts option
-1999-03-02 09:44:33 Warning: No server certificate defined; TLS connections will fail.
- Suggested action: either install a certificate or change tls_advertise_hosts option
-
-******** SERVER ********
-1999-03-02 09:44:33 Warning: No server certificate defined; TLS connections will fail.
- Suggested action: either install a certificate or change tls_advertise_hosts option

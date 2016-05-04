@@ -1,16 +1,15 @@
-1999-03-02 09:44:33 Warning: No server certificate defined; TLS connections will fail.
+1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
  Suggested action: either install a certificate or change tls_advertise_hosts option
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Warning: No server certificate defined; TLS connections will fail.
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@thishost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
  Suggested action: either install a certificate or change tls_advertise_hosts option
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@myhost.test.ex R=abc T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@thishost.test.ex R=abc T=t1 H=thishost.test.ex [127.0.0.1] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=Exim Developers,CN=thishost.test.ex" C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
-1999-03-02 09:44:33 Warning: No server certificate defined; TLS connections will fail.
+1999-03-02 09:44:33 Warning: No server certificate defined; will use a selfsigned one.
  Suggested action: either install a certificate or change tls_advertise_hosts option
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (no TLS server certificate is specified)
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@thishost.test.ex H=localhost (thishost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no S=sss id=E10HmaX-0005vi-00@thishost.test.ex

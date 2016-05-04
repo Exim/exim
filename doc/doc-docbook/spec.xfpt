@@ -16843,8 +16843,8 @@ of the STARTTLS command to set up an encrypted session is advertised in
 response to EHLO only to those client hosts that match this option. See
 chapter &<<CHAPTLS>>& for details of Exim's support for TLS.
 Note that the default value requires that a certificate be supplied
-using the &%tls_certificate%& option.  If no certificate is available then
-the &%tls_advertise_hosts%& option should be set empty.
+using the &%tls_certificate%& option.  If TLS support for incoming connections
+is not required the &%tls_advertise_hosts%& option should be set empty.
 
 
 .option tls_certificate main string&!! unset
@@ -16864,6 +16864,11 @@ If the option contains &$tls_out_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
 Server Name Indication extension, then this option and others documented in
 &<<SECTtlssni>>& will be re-expanded.
+
+.new
+If this option is unset or empty a fresh self-signed certificate will be
+generated for every connection.
+.wen
 
 .option tls_crl main string&!! unset
 .cindex "TLS" "server certificate revocation list"
@@ -26958,10 +26963,17 @@ with the error
 If a STARTTLS command is issued within an existing TLS session, it is
 rejected with a 554 error code.
 
-To enable TLS operations on a server, you must set &%tls_advertise_hosts%& to
-match some hosts. You can, of course, set it to * to match all hosts.
-However, this is not all you need to do. TLS sessions to a server won't work
-without some further configuration at the server end.
+To enable TLS operations on a server, the &%tls_advertise_hosts%& option
+must be set to match some hosts. The default is * which matches all hosts.
+
+.new
+If this is all you do, TLS encryption will be enabled but not authentication -
+meaning that the peer has no assurance it is actually you he is talking to.
+You gain protection from a passive sniffer listening on the wire but not
+from someone able to intercept the communication.
+.wen
+
+Further protection requires some further configuration at the server end.
 
 It is rumoured that all existing clients that support TLS/SSL use RSA
 encryption. To make this work you need to set, in the server,

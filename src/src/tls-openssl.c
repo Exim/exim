@@ -214,7 +214,7 @@ Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(uschar * prefix, const host_item * host, uschar *  msg)
+tls_error(uschar * prefix, const host_item * host, uschar * msg)
 {
 if (!msg)
   {
@@ -273,8 +273,7 @@ if (  !BN_set_word(bn, (unsigned long)RSA_F4)
    || !RSA_generate_key_ex(rsa_key, keylength, bn, NULL)
    )
 #else
-rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL);
-if (rsa_key == NULL)
+if (!(rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL)))
 #endif
 
   {
@@ -915,6 +914,73 @@ return;
 
 
 
+/* Create and install a selfsigned certificate, for use in server mode */
+
+static int
+tls_install_selfsign(SSL_CTX * sctx)
+{
+X509 * x509 = NULL;
+EVP_PKEY * pkey;
+RSA * rsa;
+X509_NAME * name;
+uschar * where;
+
+where = US"allocating pkey";
+if (!(pkey = EVP_PKEY_new()))
+  goto err;
+
+where = US"allocating cert";
+if (!(x509 = X509_new()))
+  goto err;
+
+where = US"generating pkey";
+		/* deprecated, use RSA_generate_key_ex() */
+if (!(rsa = RSA_generate_key(1024, RSA_F4, NULL, NULL)))
+  goto err;
+
+where = US"assiging pkey";
+if (!EVP_PKEY_assign_RSA(pkey, rsa))
+  goto err;
+
+X509_set_version(x509, 2);				/* N+1 - version 3 */
+ASN1_INTEGER_set(X509_get_serialNumber(x509), 0);
+X509_gmtime_adj(X509_get_notBefore(x509), 0);
+X509_gmtime_adj(X509_get_notAfter(x509), (long)60 * 60);	/* 1 hour */
+X509_set_pubkey(x509, pkey);
+
+name = X509_get_subject_name(x509);
+X509_NAME_add_entry_by_txt(name, "C",
+			  MBSTRING_ASC, "UK", -1, -1, 0);
+X509_NAME_add_entry_by_txt(name, "O",
+			  MBSTRING_ASC, "Exim Developers", -1, -1, 0);
+X509_NAME_add_entry_by_txt(name, "CN",
+			  MBSTRING_ASC, CS smtp_active_hostname, -1, -1, 0);
+X509_set_issuer_name(x509, name);
+
+where = US"signing cert";
+if (!X509_sign(x509, pkey, EVP_md5()))
+  goto err;
+
+where = US"installing selfsign cert";
+if (!SSL_CTX_use_certificate(sctx, x509))
+  goto err;
+
+where = US"installing selfsign key";
+if (!SSL_CTX_use_PrivateKey(sctx, pkey))
+  goto err;
+
+return OK;
+
+err:
+  (void) tls_error(where, NULL, NULL);
+  if (x509) X509_free(x509);
+  if (pkey) EVP_PKEY_free(pkey);
+  return DEFER;
+}
+
+
+
+
 /*************************************************
 *        Expand key and cert file specs          *
 *************************************************/
@@ -935,41 +1001,49 @@ tls_expand_session_files(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo)
 {
 uschar *expanded;
 
-if (cbinfo->certificate == NULL)
-  return OK;
-
-if (Ustrstr(cbinfo->certificate, US"tls_sni") ||
-    Ustrstr(cbinfo->certificate, US"tls_in_sni") ||
-    Ustrstr(cbinfo->certificate, US"tls_out_sni")
-   )
-  reexpand_tls_files_for_sni = TRUE;
-
-if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded))
-  return DEFER;
-
-if (expanded != NULL)
+if (!cbinfo->certificate)
   {
-  DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
-  if (!SSL_CTX_use_certificate_chain_file(sctx, CS expanded))
-    return tls_error(string_sprintf(
-      "SSL_CTX_use_certificate_chain_file file=%s", expanded),
-        cbinfo->host, NULL);
+  if (cbinfo->host)			/* client */
+    return OK;
+  					/* server */
+  if (tls_install_selfsign(sctx) != OK)
+    return DEFER;
   }
-
-if (cbinfo->privatekey != NULL &&
-    !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded))
-  return DEFER;
-
-/* If expansion was forced to fail, key_expanded will be NULL. If the result
-of the expansion is an empty string, ignore it also, and assume the private
-key is in the same file as the certificate. */
-
-if (expanded && *expanded)
+else
   {
-  DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
-  if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
-    return tls_error(string_sprintf(
-      "SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
+  if (Ustrstr(cbinfo->certificate, US"tls_sni") ||
+      Ustrstr(cbinfo->certificate, US"tls_in_sni") ||
+      Ustrstr(cbinfo->certificate, US"tls_out_sni")
+     )
+    reexpand_tls_files_for_sni = TRUE;
+
+  if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded))
+    return DEFER;
+
+  if (expanded != NULL)
+    {
+    DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
+    if (!SSL_CTX_use_certificate_chain_file(sctx, CS expanded))
+      return tls_error(string_sprintf(
+	"SSL_CTX_use_certificate_chain_file file=%s", expanded),
+	  cbinfo->host, NULL);
+    }
+
+  if (cbinfo->privatekey != NULL &&
+      !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded))
+    return DEFER;
+
+  /* If expansion was forced to fail, key_expanded will be NULL. If the result
+  of the expansion is an empty string, ignore it also, and assume the private
+  key is in the same file as the certificate. */
+
+  if (expanded && *expanded)
+    {
+    DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
+    if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
+      return tls_error(string_sprintf(
+	"SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
+    }
   }
 
 #ifndef DISABLE_OCSP
@@ -1429,8 +1503,8 @@ if (  !init_dh(*ctxp, dhparam, host)
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
-rc = tls_expand_session_files(*ctxp, cbinfo);
-if (rc != OK) return rc;
+if ((rc = tls_expand_session_files(*ctxp, cbinfo)) != OK)
+  return rc;
 
 /* If we need to handle SNI, do so */
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
