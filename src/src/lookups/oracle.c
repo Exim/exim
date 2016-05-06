@@ -255,8 +255,8 @@ Ora_Define *def = NULL;
 void *hda = NULL;
 
 int i;
-int ssize = 0;
-int offset = 0;
+size_t ssize = 0;
+size_t offset = 0;
 int yield = DEFER;
 unsigned int num_fields = 0;
 uschar *result = NULL;
@@ -574,7 +574,7 @@ while ((c = *t++) != 0)
   if (strchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
 if (count == 0) return s;
-t = quoted = store_get((int)strlen(s) + count + 1);
+t = quoted = store_get(strlen(s) + count + 1);
 
 while ((c = *s++) != 0)
   {

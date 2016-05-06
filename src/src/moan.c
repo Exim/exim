@@ -614,7 +614,7 @@ const uschar *listptr = errors_copy;
 uschar *yield = NULL;
 uschar buffer[256];
 int sep = 0;
-int llen;
+size_t llen;
 
 if (errors_copy == NULL) return NULL;
 

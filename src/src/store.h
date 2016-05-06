@@ -42,9 +42,9 @@ tracing information for debugging. */
 
 extern BOOL    store_extend_3(void *, int, int, const char *, int);  /* The */
 extern void    store_free_3(void *, const char *, int);     /* value of the */
-extern void   *store_get_3(int, const char *, int);         /* 2nd arg is   */
-extern void   *store_get_perm_3(int, const char *, int);    /* __FILE__ in  */
-extern void   *store_malloc_3(int, const char *, int);      /* every call,  */
+extern void   *store_get_3(size_t, const char *, int);         /* 2nd arg is   */
+extern void   *store_get_perm_3(size_t, const char *, int);    /* __FILE__ in  */
+extern void   *store_malloc_3(size_t, const char *, int);      /* every call,  */
 extern void    store_release_3(void *, const char *, int);  /* so give its  */
 extern void    store_reset_3(void *, const char *, int);    /* correct type */
 

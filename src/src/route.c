@@ -328,7 +328,7 @@ uschar prebuf[64];
 
 while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf))))
   {
-  int plen = Ustrlen(prefix);
+  size_t plen = Ustrlen(prefix);
   if (prefix[0] == '*')
     {
     const uschar *p;
@@ -372,7 +372,7 @@ uschar sufbuf[64];
 
 while ((suffix = string_nextinlist(&listptr, &sep, sufbuf, sizeof(sufbuf))))
   {
-  int slen = Ustrlen(suffix);
+  size_t slen = Ustrlen(suffix);
   if (suffix[slen-1] == '*')
     {
     const uschar *p, *pend;
@@ -1529,7 +1529,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   if (r->prefix)
     {
-    int plen = route_check_prefix(addr->local_part, r->prefix);
+    size_t plen = route_check_prefix(addr->local_part, r->prefix);
     if (plen > 0)
       {
       addr->prefix = string_copyn(addr->local_part, plen);
@@ -1551,7 +1551,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
     int slen = route_check_suffix(addr->local_part, r->suffix);
     if (slen > 0)
       {
-      int lplen = Ustrlen(addr->local_part) - slen;
+      size_t lplen = Ustrlen(addr->local_part) - slen;
       addr->suffix = addr->local_part + lplen;
       addr->local_part = string_copyn(addr->local_part, lplen);
       DEBUG(D_route) debug_printf("stripped suffix %s\n", addr->suffix);

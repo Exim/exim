@@ -143,8 +143,8 @@ union sockaddr_46 interface_sockaddr;
 EXIM_SOCKLEN_T ifsize = sizeof(interface_sockaddr);
 int dup_accept_socket = -1;
 int max_for_this_host = 0;
-int wfsize = 0;
-int wfptr = 0;
+size_t wfsize = 0;
+size_t wfptr = 0;
 int save_log_selector = *log_selector;
 uschar *whofrom = NULL;
 
@@ -1065,10 +1065,10 @@ if (daemon_listen && !inetd_wait_mode)
     {
     uschar *new_smtp_port = NULL;
     uschar *new_local_interfaces = NULL;
-    int portsize = 0;
-    int portptr = 0;
-    int ifacesize = 0;
-    int ifaceptr = 0;
+    size_t portsize = 0;
+    size_t portptr = 0;
+    size_t ifacesize = 0;
+    size_t ifaceptr = 0;
 
     if (override_pid_file_path == NULL) write_pid = FALSE;
 
@@ -1078,8 +1078,8 @@ if (daemon_listen && !inetd_wait_mode)
       {
       uschar joinstr[4];
       uschar **ptr;
-      int *sizeptr;
-      int *ptrptr;
+      size_t *sizeptr;
+      size_t *ptrptr;
 
       if (Ustrpbrk(s, ".:") == NULL)
         {

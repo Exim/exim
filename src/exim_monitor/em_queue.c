@@ -763,7 +763,7 @@ while (p != NULL)
 
     for (skp = &queue_skip; ; skp = &(sk->next))
       {
-      int len_skip;
+      size_t len_skip;
 
       sk = *skp;
       while (sk != NULL && now >= sk->reveal)

@@ -647,7 +647,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
       uschar *s, *ss;
       while ((s = string_nextinlist(&list, &sep, NULL, 0)))
 	{
-	int len;
+	size_t len;
 
 	if (i == 0)
 	  if (!(s = expand_string(s)) && !expand_string_forcedfail)
