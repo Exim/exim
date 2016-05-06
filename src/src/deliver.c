@@ -1076,23 +1076,9 @@ malformed, it won't ever have gone near LDAP.) */
 if (addr->message)
   {
   const uschar * s = string_printing(addr->message);
-  if (s != addr->message)
-    addr->message = US s;
-    /* deconst cast ok as string_printing known to have alloc'n'copied */
-  if (  (  Ustrstr(s, "failed to expand") != NULL
-	|| Ustrstr(s, "expansion of ")    != NULL
-	)
-     && (  Ustrstr(s, "mysql")   != NULL
-        || Ustrstr(s, "pgsql")   != NULL
-	|| Ustrstr(s, "redis")   != NULL
-	|| Ustrstr(s, "sqlite")  != NULL
-	|| Ustrstr(s, "ldap:")   != NULL
-	|| Ustrstr(s, "ldaps:")  != NULL
-	|| Ustrstr(s, "ldapi:")  != NULL
-	|| Ustrstr(s, "ldapdn:") != NULL
-	|| Ustrstr(s, "ldapm:")  != NULL
-     )  )
-    addr->message = US"Temporary internal error";
+
+  /* deconst cast ok as string_printing known to have alloc'n'copied */
+  addr->message = expand_hide_passwords(US s);
   }
 
 /* If we used a transport that has one of the "return_output" options set, and

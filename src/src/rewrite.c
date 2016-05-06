@@ -206,22 +206,7 @@ for (rule = rewrite_rules;
     if (expand_string_forcedfail)
       { if ((rule->flags & rewrite_quit) != 0) break; else continue; }
 
-    /* Avoid potentially exposing a password */
-
-    if (  (  Ustrstr(expand_string_message, "failed to expand") != NULL
-	  || Ustrstr(expand_string_message, "expansion of ")    != NULL
-	  )
-       && (  Ustrstr(expand_string_message, "mysql")   != NULL
-	  || Ustrstr(expand_string_message, "pgsql")   != NULL
-	  || Ustrstr(expand_string_message, "redis")   != NULL
-	  || Ustrstr(expand_string_message, "sqlite")  != NULL
-	  || Ustrstr(expand_string_message, "ldap:")   != NULL
-	  || Ustrstr(expand_string_message, "ldaps:")  != NULL
-	  || Ustrstr(expand_string_message, "ldapi:")  != NULL
-	  || Ustrstr(expand_string_message, "ldapdn:") != NULL
-	  || Ustrstr(expand_string_message, "ldapm:")  != NULL
-       )  )
-      expand_string_message = US"Temporary internal error";
+    expand_string_message = expand_hide_passwords(expand_string_message);
 
     log_write(0, LOG_MAIN|LOG_PANIC, "Expansion of %s failed while rewriting: "
       "%s", rule->replacement, expand_string_message);

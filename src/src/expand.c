@@ -7631,6 +7631,29 @@ return OK;
 
 
 
+/* Avoid potentially exposing a password in a string about to be logged */
+
+uschar *
+expand_hide_passwords(uschar * s)
+{
+return (  (  Ustrstr(s, "failed to expand") != NULL
+	  || Ustrstr(s, "expansion of ")    != NULL
+	  ) 
+       && (  Ustrstr(s, "mysql")   != NULL
+	  || Ustrstr(s, "pgsql")   != NULL
+	  || Ustrstr(s, "redis")   != NULL
+	  || Ustrstr(s, "sqlite")  != NULL
+	  || Ustrstr(s, "ldap:")   != NULL
+	  || Ustrstr(s, "ldaps:")  != NULL
+	  || Ustrstr(s, "ldapi:")  != NULL
+	  || Ustrstr(s, "ldapdn:") != NULL
+	  || Ustrstr(s, "ldapm:")  != NULL
+       )  ) 
+  ? US"Temporary internal error" : s;
+}
+
+
+
 
 /*************************************************
 **************************************************

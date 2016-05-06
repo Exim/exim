@@ -1897,21 +1897,8 @@ if (unseen && r->next)
 /* Unset the address expansions, and return the final result. */
 
 ROUTE_EXIT:
-if (  yield == DEFER
-   && addr->message
-   && (  Ustrstr(addr->message, "failed to expand") != NULL
-      || Ustrstr(addr->message, "expansion of ") != NULL
-      )
-   && (  Ustrstr(addr->message, "mysql") != NULL
-      || Ustrstr(addr->message, "pgsql") != NULL
-      || Ustrstr(addr->message, "redis") != NULL
-      || Ustrstr(addr->message, "sqlite") != NULL
-      || Ustrstr(addr->message, "ldap:") != NULL
-      || Ustrstr(addr->message, "ldapdn:") != NULL
-      || Ustrstr(addr->message, "ldapm:") != NULL
-      )
-   )
-  addr->message = string_sprintf("Temporary internal error");
+if (yield == DEFER && addr->message)
+  addr->message = expand_hide_passwords(addr->message);
 
 deliver_set_expansions(NULL);
 router_name = NULL;
