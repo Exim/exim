@@ -88,6 +88,7 @@ enum { ACLC_ACL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_MIME_REGEX,
 #endif
+       ACLC_QUEUE,
        ACLC_RATELIMIT,
        ACLC_RECIPIENTS,
 #ifdef WITH_CONTENT_SCAN
@@ -108,7 +109,7 @@ enum { ACLC_ACL,
        ACLC_VERIFY };
 
 /* ACL conditions/modifiers: "delay", "control", "continue", "endpass",
-"message", "log_message", "log_reject_target", "logwrite", and "set" are
+"message", "log_message", "log_reject_target", "logwrite", "queue" and "set" are
 modifiers that look like conditions but always return TRUE. They are used for
 their side effects. */
 
@@ -152,13 +153,16 @@ static uschar *conditions[] = {
 #ifdef WITH_CONTENT_SCAN
   US"mime_regex",
 #endif
+  US"queue",
   US"ratelimit",
   US"recipients",
 #ifdef WITH_CONTENT_SCAN
   US"regex",
 #endif
   US"remove_header",
-  US"sender_domains", US"senders", US"set",
+  US"sender_domains",
+  US"senders",
+  US"set",
 #ifdef WITH_CONTENT_SCAN
   US"spam",
 #endif
@@ -298,6 +302,7 @@ static uschar cond_expand_at_top[] = {
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* mime_regex */
 #endif
+  TRUE,    /* queue */
   TRUE,    /* ratelimit */
   FALSE,   /* recipients */
 #ifdef WITH_CONTENT_SCAN
@@ -360,6 +365,7 @@ static uschar cond_modifiers[] = {
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* mime_regex */
 #endif
+  TRUE,    /* queue */
   FALSE,   /* ratelimit */
   FALSE,   /* recipients */
 #ifdef WITH_CONTENT_SCAN
@@ -507,6 +513,7 @@ static unsigned int cond_forbids[] = {
   ~(1<<ACL_WHERE_MIME),                            /* mime_regex */
   #endif
 
+  0,                                               /* queue */
   0,                                               /* ratelimit */
 
   (unsigned int)
@@ -3518,7 +3525,7 @@ for (; cb != NULL; cb = cb->next)
       rc = match_isinlist(dkim_cur_signer,
                           &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     else
-       rc = FAIL;
+      rc = FAIL;
     break;
 
     case ACLC_DKIM_STATUS:
@@ -3676,6 +3683,10 @@ for (; cb != NULL; cb = cb->next)
     rc = mime_regex(&arg);
     break;
     #endif
+
+    case ACLC_QUEUE:
+    queue_name = string_copy_malloc(arg);
+    break;
 
     case ACLC_RATELIMIT:
     rc = acl_ratelimit(arg, where, log_msgptr);

@@ -28583,6 +28583,14 @@ all the conditions are true, wherever it appears in an ACL command, whereas
 effect.
 
 
+.vitem &*queue*&&~=&~<&'text'&>
+This modifier specifies the use of a named queue for spool files
+for the message.
+This could be used, for example, for known high-volume burst sources
+of traffic, or for quarantine of messages.
+Separate queue-runner processes will be needed for named queues.
+
+
 .vitem &*remove_header*&&~=&~<&'text'&>
 This modifier specifies one or more header names in a colon-separated list
  that are to be removed from an incoming message, assuming, of course, that

@@ -13,7 +13,8 @@ Version 4.88
     interpreter in taint mode.
 
  2. Facility for named queues.  A commandline argument can specify
-    the queue name for a queue-runner.
+    the queue name for a queue-runner, and an ACL modifier can set
+    the queue to be used for a message.
 
 
 Version 4.87
