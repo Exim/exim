@@ -12,6 +12,9 @@ Version 4.88
  1. The new perl_tainmode option allows to run the embedded perl
     interpreter in taint mode.
 
+ 2. Facility for named queues.  A commandline argument can specify
+    the queue name for a queue-runner.
+
 
 Version 4.87
 ------------

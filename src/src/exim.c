@@ -2716,9 +2716,19 @@ for (i = 1; i < argc; i++)
 
     /* -MCD: set the smtp_use_dsn flag; this indicates that the host
        that exim is connected to supports the esmtp extension DSN */
+
     else if (Ustrcmp(argrest, "CD") == 0)
       {
       smtp_use_dsn = TRUE;
+      break;
+      }
+
+    /* -MCG: set the queue name, to a non-default value
+
+    else if (Ustrcmp(argrest, "CG") == 0)
+      {
+      if (++i < argc) queue_name = string_copy(argv[i]);
+      else badarg = TRUE;
       break;
       }
 
@@ -2737,9 +2747,9 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "CQ") == 0)
       {
-      if(++i < argc) passed_qr_pid = (pid_t)(Uatol(argv[i]));
+      if (++i < argc) passed_qr_pid = (pid_t)(Uatol(argv[i]));
         else badarg = TRUE;
-      if(++i < argc) passed_qr_pipe = (int)(Uatol(argv[i]));
+      if (++i < argc) passed_qr_pipe = (int)(Uatol(argv[i]));
         else badarg = TRUE;
       break;
       }
@@ -3229,8 +3239,16 @@ for (i = 1; i < argc; i++)
       argrest++;
       }
 
-    /* -q[f][f][l]: Run the queue, optionally forced, optionally local only,
-    optionally starting from a given message id. */
+    /* -q[f][f][l][G<name>]... Run the named queue */
+
+    if (*argrest == 'G')
+      {
+      queue_name = string_copy(argrest);
+      do ++argrest; while (*argrest);
+      }
+
+    /* -q[f][f][l][G<name>]: Run the queue, optionally forced, optionally local
+    only, optionally named, optionally starting from a given message id. */
 
     if (*argrest == 0 &&
         (i + 1 >= argc || argv[i+1][0] == '-' || mac_ismsgid(argv[i+1])))

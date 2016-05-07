@@ -3825,6 +3825,12 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 remote host supports the ESMTP &_DSN_& extension.
 
+.vitem &%-MCG%&
+.oindex "&%-MCG%&"
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the &%-MC%& option. It signifies that an
+alternate queue is used, named by the following option.
+
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
 This option is not intended for use by external callers. It is used internally
@@ -4456,8 +4462,17 @@ The &'l'& (the letter &"ell"&) flag specifies that only local deliveries are to
 be done. If a message requires any remote deliveries, it remains on the queue
 for later delivery.
 
-.vitem &%-q%&<&'qflags'&>&~<&'start&~id'&>&~<&'end&~id'&>
+.vitem &%-q[q][i][f[f]][l][G<name>]%&
+.oindex "&%-qG%&"
+.cindex queue named
+.cindex "named queues"
 .cindex "queue" "delivering specific messages"
+If the &'G'& flag and a name is present, the queue runner operates on the
+queue with the given name rather than the default queue.
+Because the name is the remainder of the option string, any
+periodic-run interval must be given as a separate &%-q%& option.
+
+.vitem &%-q%&<&'qflags'&>&~<&'start&~id'&>&~<&'end&~id'&>
 When scanning the queue, Exim can be made to skip over messages whose ids are
 lexically less than a given value by following the &%-q%& option with a
 starting message id. For example:
