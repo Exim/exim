@@ -148,10 +148,10 @@ call_data = call_data;
 for (i = 0; i < (spool_is_split? 2:1); i++)
   {
   message_subdir[0] = (i != 0)? ((uschar *)client_data)[5] : 0;
-  sprintf(CS buffer, "%s/msglog/%s/%s", spool_directory, message_subdir,
-    (uschar *)client_data);
-  f = fopen(CS buffer, "r");
-  if (f != NULL) break;
+  snprintf(CS buffer, sizeof(buffer), "%s/msglog/%s/%s/%s",
+    spool_directory, queue_name, message_subdir, (uschar *)client_data);
+  if ((f = fopen(CS buffer, "r")))
+    break;
   }
 
 if (f == NULL)
@@ -181,11 +181,11 @@ call_data = call_data;
 
 for (i = 0; i < (spool_is_split? 2:1); i++)
   {
-  message_subdir[0] = (i != 0)? ((uschar *)client_data)[5] : 0;
-  sprintf(CS buffer, "%s/input/%s/%s-D", spool_directory, message_subdir,
-    (uschar *)client_data);
-  f = fopen(CS buffer, "r");
-  if (f != NULL) break;
+  message_subdir[0] = i != 0 ? ((uschar *)client_data)[5] : 0;
+  snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s-D",
+    spool_directory, queue_name, message_subdir, (uschar *)client_data);
+  if ((f = fopen(CS buffer, "r")))
+    break;
   }
 
 if (f == NULL)

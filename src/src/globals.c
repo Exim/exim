@@ -1020,6 +1020,7 @@ BOOL    queue_2stage           = FALSE;
 uschar *queue_domains          = NULL;
 int     queue_interval         = -1;
 BOOL    queue_list_requires_admin = TRUE;
+uschar *queue_name             = US"";
 BOOL    queue_only             = FALSE;
 uschar *queue_only_file        = NULL;
 int     queue_only_load        = -1;

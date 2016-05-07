@@ -50,8 +50,11 @@ splitting state. */
 for (i = 0; i < 2; i++)
   {
   int save_errno;
-  message_subdir[0] = (split_spool_directory == (i == 0))? id[5] : 0;
-  sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
+  message_subdir[0] = split_spool_directory == (i == 0) ? id[5] : 0;
+  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-D",
+	    spool_directory, queue_name, message_subdir, id);
+  DEBUG(D_deliver) debug_printf("Trying spool file %s\n", spoolname);
+
   if ((fd = Uopen(spoolname, O_RDWR | O_APPEND, 0)) >= 0)
     break;
   save_errno = errno;
@@ -318,11 +321,10 @@ and unsplit directories, as for the data file above. */
 for (n = 0; n < 2; n++)
   {
   if (!subdir_set)
-    message_subdir[0] = (split_spool_directory == (n == 0))? name[5] : 0;
-  sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
-    name);
-  f = Ufopen(big_buffer, "rb");
-  if (f != NULL) break;
+    message_subdir[0] = split_spool_directory == (n == 0) ? name[5] : 0;
+  sprintf(CS big_buffer, "%s/input/%s/%s/%s",
+	  spool_directory, queue_name, message_subdir, name);
+  if ((f = Ufopen(big_buffer, "rb"))) break;
   if (n != 0 || subdir_set || errno != ENOENT) return spool_read_notopen;
   }
 

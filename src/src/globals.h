@@ -669,6 +669,7 @@ extern BOOL    queue_running;          /* TRUE for queue running process and */
 extern pid_t   queue_run_pid;          /* PID of the queue running process or 0 */
 extern int     queue_run_pipe;         /* Pipe for synchronizing */
 extern int     queue_interval;         /* Queue running interval */
+extern uschar *queue_name;             /* Name of queue, if nondefault spooling */
 extern BOOL    queue_only;             /* TRUE to disable immediate delivery */
 extern int     queue_only_load;        /* Max load before auto-queue */
 extern BOOL    queue_only_load_latch;  /* Latch queue_only_load TRUE */

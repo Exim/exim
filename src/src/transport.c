@@ -1027,8 +1027,9 @@ if (!(dkim_private_key && dkim_domain && dkim_selector))
 	    check_string, escape_string, rewrite_rules,
 	    rewrite_existflags);
 
-(void)string_format(dkim_spool_name, 256, "%s/input/%s/%s-%d-K",
-	spool_directory, message_subdir, message_id, (int)getpid());
+(void)string_format(dkim_spool_name, sizeof(dkim_spool_name),
+	"%s/input/%s/%s/%s-%d-K",
+	spool_directory, queue_name, message_subdir, message_id, (int)getpid());
 
 if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
   {
@@ -1755,10 +1756,11 @@ while (1)
   for (i = msgq_count - 1; i >= 0; --i) if (msgq[i].bKeep)
     {
     if (split_spool_directory)
-	sprintf(CS spool_file, "%s%c/%s-D",
-		      spool_dir, msgq[i].message_id[5], msgq[i].message_id);
+	snprintf(CS spool_file, sizeof(spool_file), "%s/%s/%c/%s-D",
+	      spool_dir, queue_name, msgq[i].message_id[5], msgq[i].message_id);
     else
-	sprintf(CS spool_file, "%s%s-D", spool_dir, msgq[i].message_id);
+	snprintf(CS spool_file, sizeof(spool_file), "%s/%s/%s-D",
+	      spool_dir, queue_name, msgq[i].message_id);
 
     if (Ustat(spool_file, &statbuf) != 0)
       msgq[i].bKeep = FALSE;

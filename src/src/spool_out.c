@@ -137,12 +137,13 @@ struct stat statbuf;
 uschar name[256];
 uschar temp_name[256];
 
-sprintf(CS temp_name, "%s/input/%s/hdr.%d", spool_directory, message_subdir,
-  (int)getpid());
-fd = spool_open_temp(temp_name);
-if (fd < 0) return spool_write_error(where, errmsg, US"open", NULL, NULL);
+snprintf(CS temp_name, sizeof(temp_name), "%s/input/%s/%s/hdr.%d",
+  spool_directory, queue_name, message_subdir, (int)getpid());
+
+if ((fd = spool_open_temp(temp_name)) < 0)
+  return spool_write_error(where, errmsg, US"open", NULL, NULL);
 f = fdopen(fd, "wb");
-DEBUG(D_receive|D_deliver) debug_printf("Writing spool header file\n");
+DEBUG(D_receive|D_deliver) debug_printf("Writing spool header file: %s\n", temp_name);
 
 /* We now have an open file to which the header data is to be written. Start
 with the file's leaf name, to make the file self-identifying. Continue with the
@@ -342,7 +343,9 @@ if (fclose(f) != 0)
 /* Rename the file to its correct name, thereby replacing any previous
 incarnation. */
 
-sprintf(CS name, "%s/input/%s/%s-H", spool_directory, message_subdir, id);
+snprintf(CS name, sizeof(name), "%s/input/%s/%s/%s-H",
+  spool_directory, queue_name, message_subdir, id);
+DEBUG(D_receive|D_deliver) debug_printf("Renaming spool header file: %s\n", name);
 
 if (Urename(temp_name, name) < 0)
   return spool_write_error(where, errmsg, US"rename", temp_name, NULL);
@@ -359,7 +362,8 @@ these cases. One hack on top of another... but that's life. */
 
 #ifdef NEED_SYNC_DIRECTORY
 
-sprintf(CS temp_name, "%s/input/%s/.", spool_directory, message_subdir);
+snprintf(CS temp_name, sizeof(temp_name), "%s/input/%s/%s/.",
+  spool_directory, queue_name, message_subdir);
 
 #ifndef O_DIRECTORY
 #define O_DIRECTORY 0

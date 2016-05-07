@@ -37,6 +37,7 @@ I Message-Id: <E10HmaX-0005vi-00@mail.test.ex>
 F From: CALLER_NAME <CALLER@test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+Data file name: TESTSUITE/spool/input///10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 considering: ${tod_full}
   expanding: ${tod_full}
@@ -148,7 +149,7 @@ local_scan() returned 0 NULL
 considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
-Writing spool header file
+Writing spool header file: TESTSUITE/spool/input///hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
@@ -161,6 +162,7 @@ DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |rd+CALLER@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |rd+usery@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+Renaming spool header file: TESTSUITE/spool/input///10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -186,6 +188,7 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
+Trying spool file TESTSUITE/spool/input///10HmaX-0005vi-00-D
 reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER

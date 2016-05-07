@@ -142,7 +142,8 @@ else i = subdiroffset;
 
 /* Set up prototype for the directory name. */
 
-sprintf(CS buffer, "%s/input", spool_directory);
+snprintf(CS buffer, sizeof(buffer), "%s/input/%s", spool_directory, queue_name);
+buffer[sizeof(buffer) - 3] = 0;
 subptr = Ustrlen(buffer);
 buffer[subptr+2] = 0;               /* terminator for lengthened name */
 
@@ -161,8 +162,8 @@ for (; i <= *subcount; i++)
     buffer[subptr+1] = subdirchar;
     }
 
-  dd = opendir(CS buffer);
-  if (dd == NULL) continue;
+  if (!(dd = opendir(CS buffer)))
+    continue;
 
   /* Now scan the directory. */
 
@@ -265,7 +266,8 @@ for (; i <= *subcount; i++)
     if (!split_spool_directory && count <= 2)
       {
       rmdir(CS buffer);
-      sprintf(CS big_buffer, "%s/msglog/%c", spool_directory, subdirchar);
+      sprintf(CS big_buffer, "%s/msglog/%s/%c",
+	       	spool_directory, queue_name, subdirchar);
       rmdir(CS big_buffer);
       }
     if (subdiroffset > 0) break;    /* Single sub-directory */
@@ -476,8 +478,8 @@ for (i  = (queue_run_in_order? -1 : 0);
     /* Check that the message still exists */
 
     message_subdir[0] = f->dir_uschar;
-    sprintf(CS buffer, "%s/input/%s/%s", spool_directory, message_subdir,
-      f->text);
+    snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s",
+      spool_directory, queue_name, message_subdir, f->text);
     if (Ustat(buffer, &statbuf) < 0) continue;
 
     /* There are some tests that require the reading of the header file. Ensure
@@ -842,8 +844,8 @@ for (; f != NULL; f = f->next)
     FILE *jread;
     struct stat statbuf;
 
-    sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
-      f->text);
+    sprintf(CS big_buffer, "%s/input/%s/%s/%s",
+      spool_directory, queue_name, message_subdir, f->text);
     ptr = Ustrlen(big_buffer)-1;
     big_buffer[ptr] = 'D';
 
@@ -892,8 +894,8 @@ for (; f != NULL; f = f->next)
     if (save_errno == ERRNO_SPOOLFORMAT)
       {
       struct stat statbuf;
-      sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
-        f->text);
+      sprintf(CS big_buffer, "%s/input/%s/%s/%s",
+        spool_directory, queue_name, message_subdir, f->text);
       if (Ustat(big_buffer, &statbuf) == 0)
         printf("*** spool format error: size=" OFF_T_FMT " ***",
           statbuf.st_size);
@@ -1004,12 +1006,15 @@ if (action >= MSG_SHOW_BODY)
 
   for (i = 0; i < 2; i++)
     {
-    message_subdir[0] = (split_spool_directory == (i == 0))? id[5] : 0;
-    sprintf(CS spoolname, "%s/%s/%s/%s%s", spool_directory, subdirectory,
-      message_subdir, id, suffix);
-    fd = Uopen(spoolname, O_RDONLY, 0);
-    if (fd >= 0) break;
-    if (i == 0) continue;
+    message_subdir[0] = split_spool_directory == (i == 0) ? id[5] : 0;
+    snprintf(CS spoolname, sizeof(spoolname), "%s/%s/%s/%s/%s%s",
+	      spool_directory, subdirectory, queue_name,
+	      message_subdir, id, suffix);
+    if ((fd = Uopen(spoolname, O_RDONLY, 0)) >= 0)
+      break;
+    if (i == 0)
+      continue;
+
     printf("Failed to open %s file for %s%s: %s\n", subdirectory, id, suffix,
       strerror(errno));
     if (action == MSG_SHOW_LOG && !message_logs)
@@ -1162,7 +1167,8 @@ switch(action)
   message_subdir[0] = id[5];
   for (j = 0; j < 2; message_subdir[0] = 0, j++)
     {
-    sprintf(CS spoolname, "%s/msglog/%s/%s", spool_directory, message_subdir, id);
+    snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
+      spool_directory, queue_name, message_subdir, id);
     if (Uunlink(spoolname) < 0)
       {
       if (errno != ENOENT)
@@ -1176,8 +1182,8 @@ switch(action)
 
     for (i = 0; i < 3; i++)
       {
-      sprintf(CS spoolname, "%s/input/%s/%s-%c", spool_directory, message_subdir,
-        id, "DHJ"[i]);
+      snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-%c",
+        spool_directory, queue_name, message_subdir, id, "DHJ"[i]);
       if (Uunlink(spoolname) < 0)
         {
         if (errno != ENOENT)

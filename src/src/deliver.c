@@ -285,9 +285,9 @@ int fd = Uopen(filename, O_WRONLY|O_APPEND|O_CREAT, mode);
 
 if (fd < 0 && errno == ENOENT)
   {
-  uschar temp[16];
-  sprintf(CS temp, "msglog/%s", message_subdir);
-  if (message_subdir[0] == 0) temp[6] = 0;
+  uschar * temp = string_sprintf("msglog%s%s%s%s",
+		    *queue_name ? "/" : "", queue_name,
+		    *message_subdir ? "/" : "", message_subdir);
   (void)directory_make(spool_directory, temp, MSGLOG_DIRECTORY_MODE, TRUE);
   fd = Uopen(filename, O_WRONLY|O_APPEND|O_CREAT, mode);
   }
@@ -1946,7 +1946,8 @@ if (  !shadowing
   {
   uschar *error;
   addr->return_filename =
-    string_sprintf("%s/msglog/%s/%s-%d-%d", spool_directory, message_subdir,
+    string_sprintf("%s/msglog/%s/%s/%s-%d-%d",
+      spool_directory, queue_name, message_subdir,
       message_id, getpid(), return_count++);
   addr->return_file = open_msglog_file(addr->return_filename, 0400, &error);
   if (addr->return_file < 0)
@@ -4372,11 +4373,10 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     a dup-with-new-file-pointer. */
 
     (void)close(deliver_datafile);
-    sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir,
-      message_id);
-    deliver_datafile = Uopen(spoolname, O_RDWR | O_APPEND, 0);
+    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-D",
+      spool_directory, queue_name, message_subdir, message_id);
 
-    if (deliver_datafile < 0)
+    if ((deliver_datafile = Uopen(spoolname, O_RDWR | O_APPEND, 0)) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to reopen %s for remote "
         "parallel delivery: %s", spoolname, strerror(errno));
 
@@ -5231,8 +5231,8 @@ if ((rc = spool_read_header(spoolname, TRUE, TRUE)) != spool_read_OK)
   if (errno == ERRNO_SPOOLFORMAT)
     {
     struct stat statbuf;
-    sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
-      spoolname);
+    sprintf(CS big_buffer, "%s/input/%s/%s/%s",
+      spool_directory, queue_name, message_subdir, spoolname);
     if (Ustat(big_buffer, &statbuf) == 0)
       log_write(0, LOG_MAIN, "Format error in spool file %s: "
         "size=" OFF_T_FMT, spoolname, statbuf.st_size);
@@ -5257,13 +5257,17 @@ if ((rc = spool_read_header(spoolname, TRUE, TRUE)) != spool_read_OK)
 
   if (now - received_time > keep_malformed)
     {
-    sprintf(CS spoolname, "%s/msglog/%s/%s", spool_directory, message_subdir, id);
+    snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
+      spool_directory, queue_name, message_subdir, id);
     Uunlink(spoolname);
-    sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
+    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-D",
+      spool_directory, queue_name, message_subdir, id);
     Uunlink(spoolname);
-    sprintf(CS spoolname, "%s/input/%s/%s-H", spool_directory, message_subdir, id);
+    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-H",
+      spool_directory, queue_name, message_subdir, id);
     Uunlink(spoolname);
-    sprintf(CS spoolname, "%s/input/%s/%s-J", spool_directory, message_subdir, id);
+    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
+      spool_directory, queue_name, message_subdir, id);
     Uunlink(spoolname);
     log_write(0, LOG_MAIN, "Message removed because older than %s",
       readconf_printtime(keep_malformed));
@@ -5283,9 +5287,10 @@ existence, as it will get further successful deliveries added to it in this
 run, and it will be deleted if this function gets to its end successfully.
 Otherwise it might be needed again. */
 
-sprintf(CS spoolname, "%s/input/%s/%s-J", spool_directory, message_subdir, id);
-jread = Ufopen(spoolname, "rb");
-if (jread)
+snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
+  spool_directory, queue_name, message_subdir, id);
+
+if ((jread = Ufopen(spoolname, "rb")))
   {
   while (Ufgets(big_buffer, big_buffer_size, jread))
     {
@@ -5404,10 +5409,10 @@ if (message_logs)
   uschar *error;
   int fd;
 
-  sprintf(CS spoolname, "%s/msglog/%s/%s", spool_directory, message_subdir, id);
-  fd = open_msglog_file(spoolname, SPOOL_MODE, &error);
-
-  if (fd < 0)
+  snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
+    spool_directory, queue_name, message_subdir, id);
+  
+  if ((fd = open_msglog_file(spoolname, SPOOL_MODE, &error)) < 0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't %s message log %s: %s", error,
       spoolname, strerror(errno));
@@ -6638,10 +6643,10 @@ therein are added to the non-recipients. */
 
 if (addr_local || addr_remote)
   {
-  sprintf(CS spoolname, "%s/input/%s/%s-J", spool_directory, message_subdir, id);
-  journal_fd = Uopen(spoolname, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE);
-
-  if (journal_fd < 0)
+  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
+    spool_directory, queue_name, message_subdir, id);
+  
+  if ((journal_fd = Uopen(spoolname, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) <0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't open journal file %s: %s",
       spoolname, strerror(errno));
@@ -7505,12 +7510,13 @@ if (!addr_defer)
   {
   if (message_logs)
     {
-    sprintf(CS spoolname, "%s/msglog/%s/%s", spool_directory, message_subdir,
-      id);
+    snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
+      spool_directory, queue_name, message_subdir, id);
     if (preserve_message_logs)
       {
       int rc;
-      sprintf(CS big_buffer, "%s/msglog.OLD/%s", spool_directory, id);
+      sprintf(CS big_buffer, "%s/msglog.OLD/%s/%s",
+	spool_directory, queue_name, id);
       if ((rc = Urename(spoolname, big_buffer)) < 0)
         {
         (void)directory_make(spool_directory, US"msglog.OLD",
@@ -7529,11 +7535,13 @@ if (!addr_defer)
 
   /* Remove the two message files. */
 
-  sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
+  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-D",
+    spool_directory, queue_name, message_subdir, id);
   if (Uunlink(spoolname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
       spoolname, strerror(errno));
-  sprintf(CS spoolname, "%s/input/%s/%s-H", spool_directory, message_subdir, id);
+  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-H",
+    spool_directory, queue_name, message_subdir, id);
   if (Uunlink(spoolname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
       spoolname, strerror(errno));
@@ -8003,7 +8011,8 @@ if (journal_fd >= 0) (void)close(journal_fd);
 
 if (remove_journal)
   {
-  sprintf(CS spoolname, "%s/input/%s/%s-J", spool_directory, message_subdir, id);
+  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
+    spool_directory, queue_name, message_subdir, id);
   if (Uunlink(spoolname) < 0 && errno != ENOENT)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s", spoolname,
       strerror(errno));
