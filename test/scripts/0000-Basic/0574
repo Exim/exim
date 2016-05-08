@@ -1,0 +1,36 @@
+# named queues
+# Exim test configuration 0574
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+exim  -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <normal@test.ex>
+DATA
+Subject: test
+
+foo
+.
+RSET
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <alternate@test.ex>
+DATA
+Subject: test
+
+foo
+.
+QUIT
+****
+#
+exim -qq
+****
+#
+exim -qGnosuchqueue
+****
+#
+exim -qGalternate
+****
+#
+killdaemon
+no_msglog_check

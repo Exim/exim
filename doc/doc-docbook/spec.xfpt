@@ -3825,11 +3825,13 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 remote host supports the ESMTP &_DSN_& extension.
 
+.new
 .vitem &%-MCG%&
 .oindex "&%-MCG%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that an
 alternate queue is used, named by the following option.
+.wen
 
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
@@ -4462,6 +4464,7 @@ The &'l'& (the letter &"ell"&) flag specifies that only local deliveries are to
 be done. If a message requires any remote deliveries, it remains on the queue
 for later delivery.
 
+.new
 .vitem &%-q[q][i][f[f]][l][G<name>]%&
 .oindex "&%-qG%&"
 .cindex queue named
@@ -4471,6 +4474,7 @@ If the &'G'& flag and a name is present, the queue runner operates on the
 queue with the given name rather than the default queue.
 Because the name is the remainder of the option string, any
 periodic-run interval must be given as a separate &%-q%& option.
+.wen
 
 .vitem &%-q%&<&'qflags'&>&~<&'start&~id'&>&~<&'end&~id'&>
 When scanning the queue, Exim can be made to skip over messages whose ids are
@@ -28583,12 +28587,15 @@ all the conditions are true, wherever it appears in an ACL command, whereas
 effect.
 
 
+.new
 .vitem &*queue*&&~=&~<&'text'&>
 This modifier specifies the use of a named queue for spool files
 for the message.
 This could be used, for example, for known high-volume burst sources
 of traffic, or for quarantine of messages.
 Separate queue-runner processes will be needed for named queues.
+If the text after expansion is empty, the default queue is used.
+.wen
 
 
 .vitem &*remove_header*&&~=&~<&'text'&>

@@ -391,7 +391,11 @@ if (!recurse)
     }
 
   log_detail = string_copy(big_buffer);
-  log_write(L_queue_run, LOG_MAIN, "Start queue run: %s", log_detail);
+  if (*queue_name)
+    log_write(L_queue_run, LOG_MAIN, "Start '%s' queue run: %s",
+      queue_name, log_detail);
+  else
+    log_write(L_queue_run, LOG_MAIN, "Start queue run: %s", log_detail);
   }
 
 /* If deliver_selectstring is a regex, compile it. */
@@ -700,7 +704,12 @@ if (queue_2stage)
 
 /* At top level, log the end of the run. */
 
-if (!recurse) log_write(L_queue_run, LOG_MAIN, "End queue run: %s", log_detail);
+if (!recurse)
+  if (*queue_name)
+    log_write(L_queue_run, LOG_MAIN, "End '%s' queue run: %s",
+      queue_name, log_detail);
+  else
+    log_write(L_queue_run, LOG_MAIN, "End queue run: %s", log_detail);
 }
 
 

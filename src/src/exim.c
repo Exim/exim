@@ -3243,7 +3243,7 @@ for (i = 1; i < argc; i++)
 
     if (*argrest == 'G')
       {
-      queue_name = string_copy(argrest);
+      queue_name = string_copy(argrest+1);
       do ++argrest; while (*argrest);
       }
 
@@ -4675,7 +4675,11 @@ if (queue_interval == 0 && !daemon_listen)
     (start_queue_run_id == NULL)? US"" : start_queue_run_id,
     (stop_queue_run_id == NULL)?  US"" : US" stopping at ",
     (stop_queue_run_id == NULL)?  US"" : stop_queue_run_id);
-  set_process_info("running the queue (single queue run)");
+  if (*queue_name)
+    set_process_info(CS string_sprintf(
+      "running the '%s' queue (single queue run)", queue_name));
+  else
+    set_process_info("running the queue (single queue run)");
   queue_run(start_queue_run_id, stop_queue_run_id, FALSE);
   exim_exit(EXIT_SUCCESS);
   }
