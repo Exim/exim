@@ -677,7 +677,7 @@ extern uschar *queue_only_file;        /* Queue if file exists/not-exists */
 extern BOOL    queue_only_override;    /* Allow override from command line */
 extern BOOL    queue_only_policy;      /* ACL or local_scan wants queue_only */
 extern BOOL    queue_run_in_order;     /* As opposed to random */
-extern int     queue_run_max;          /* Max queue runners */
+extern uschar *queue_run_max;          /* Max queue runners */
 extern BOOL    queue_smtp;             /* Disable all immediate STMP (-odqs)*/
 extern uschar *queue_smtp_domains;     /* Ditto, for these domains */
 

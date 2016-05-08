@@ -625,6 +625,7 @@ static var_entry var_table[] = {
   { "prvscheck_result",    vtype_stringptr,   &prvscheck_result },
   { "qualify_domain",      vtype_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",   vtype_stringptr,   &qualify_domain_recipient },
+  { "queue_name",          vtype_stringptr,   &queue_name },
   { "rcpt_count",          vtype_int,         &rcpt_count },
   { "rcpt_defer_count",    vtype_int,         &rcpt_defer_count },
   { "rcpt_fail_count",     vtype_int,         &rcpt_fail_count },

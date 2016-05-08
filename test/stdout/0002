@@ -14,6 +14,7 @@
 > qualify_domain: myhost.test.ex
 > bounce_return_size_limit: 102400
 > spool_directory: TESTSUITE/spool
+> queue_name: 
 > Failed: unknown variable in "${unknown}"
 > h_subject: (should be empty)
 > h_subject: (should be empty)

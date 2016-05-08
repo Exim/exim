@@ -13,9 +13,18 @@ tls_advertise_hosts =
 
 log_selector = +received_recipients +sender_on_delivery
 
-acl_smtp_rcpt = accept queue = ${if eq {normal}{$local_part} {} {$local_part}}
+acl_smtp_rcpt = rcpt
 queue_only
 queue_run_in_order
+
+#---------------
+
+begin acl
+
+rcpt:
+  accept
+    queue = ${if eq {normal}{$local_part} {} {$local_part}}
+    logwrite = using queue '$queue_name'
 
 #---------------
 

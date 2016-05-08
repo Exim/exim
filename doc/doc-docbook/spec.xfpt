@@ -12208,6 +12208,14 @@ The value set for the &%qualify_domain%& option in the configuration file.
 The value set for the &%qualify_recipient%& option in the configuration file,
 or if not set, the value of &$qualify_domain$&.
 
+.new
+.vitem &$queue_name$&
+.vindex &$queue_name$&
+.cindex "named queues"
+.cindex queues named
+The name of the spool queue in use; empty for the default queue.
+.wen
+
 .vitem &$rcpt_count$&
 .vindex "&$rcpt_count$&"
 When a message is being received by SMTP, this variable contains the number of
@@ -15918,7 +15926,7 @@ large list. In most situations, &%queue_run_in_order%& should not be set.
 
 
 
-.option queue_run_max main integer 5
+.option queue_run_max main integer&!! 5
 .cindex "queue runner" "maximum number of"
 This controls the maximum number of queue runner processes that an Exim daemon
 can run simultaneously. This does not mean that it starts them all at once,
@@ -15932,6 +15940,13 @@ Setting this option to zero does not suppress queue runs; rather, it disables
 the limit, allowing any number of simultaneous queue runner processes to be
 run. If you do not want queue runs to occur, omit the &%-q%&&'xx'& setting on
 the daemon's command line.
+
+.new
+.cindex queues named
+.condex "named queues"
+To set limits for different named queues use
+an expansion depending on the &$queue_name$& variable.
+.wen
 
 .option queue_smtp_domains main "domain list&!!" unset
 .cindex "queueing incoming messages"

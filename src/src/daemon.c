@@ -866,10 +866,10 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   /* If it wasn't an accepting process, see if it was a queue-runner
   process that we are tracking. */
 
-  if (queue_pid_slots != NULL)
+  if (queue_pid_slots)
     {
-    for (i = 0; i < queue_run_max; i++)
-      {
+    int max = atoi(expand_string(queue_run_max));
+    for (i = 0; i < max; i++)
       if (queue_pid_slots[i] == pid)
         {
         queue_pid_slots[i] = 0;
@@ -878,7 +878,6 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
           queue_run_count, (queue_run_count == 1)? "" : "es");
         break;
         }
-      }
     }
   }
 }
@@ -916,6 +915,7 @@ int *listen_sockets = NULL;
 int listen_socket_count = 0;
 ip_address_item *addresses = NULL;
 time_t last_connection_time = (time_t)0;
+int local_queue_run_max = atoi(expand_string(queue_run_max));
 
 /* If any debugging options are set, turn on the D_pid bit so that all
 debugging lines get the pid added. */
@@ -1572,11 +1572,11 @@ originator_login = ((pw = getpwuid(exim_uid)) != NULL)?
 /* Get somewhere to keep the list of queue-runner pids if we are keeping track
 of them (and also if we are doing queue runs). */
 
-if (queue_interval > 0 && queue_run_max > 0)
+if (queue_interval > 0 && local_queue_run_max > 0)
   {
   int i;
-  queue_pid_slots = store_get(queue_run_max * sizeof(pid_t));
-  for (i = 0; i < queue_run_max; i++) queue_pid_slots[i] = 0;
+  queue_pid_slots = store_get(local_queue_run_max * sizeof(pid_t));
+  for (i = 0; i < local_queue_run_max; i++) queue_pid_slots[i] = 0;
   }
 
 /* Set up the handler for termination of child processes. */
@@ -1791,7 +1791,7 @@ for (;;)
       re-exec is required. */
 
       if (queue_interval > 0 &&
-         (queue_run_max <= 0 || queue_run_count < queue_run_max))
+         (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
         {
         if ((pid = fork()) == 0)
           {
@@ -1879,15 +1879,13 @@ for (;;)
         else
           {
           int i;
-          for (i = 0; i < queue_run_max; ++i)
-            {
+          for (i = 0; i < local_queue_run_max; ++i)
             if (queue_pid_slots[i] <= 0)
               {
               queue_pid_slots[i] = pid;
               queue_run_count++;
               break;
               }
-            }
           DEBUG(D_any) debug_printf("%d queue-runner process%s running\n",
             queue_run_count, (queue_run_count == 1)? "" : "es");
           }

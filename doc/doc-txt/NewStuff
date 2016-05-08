@@ -12,9 +12,10 @@ Version 4.88
  1. The new perl_tainmode option allows to run the embedded perl
     interpreter in taint mode.
 
- 2. Facility for named queues.  A commandline argument can specify
+ 2. Facility for named queues:  A commandline argument can specify
     the queue name for a queue-runner, and an ACL modifier can set
-    the queue to be used for a message.
+    the queue to be used for a message.  A $queue_name variable gives
+    visibility.
 
 
 Version 4.87

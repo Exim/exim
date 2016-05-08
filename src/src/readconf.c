@@ -374,7 +374,7 @@ static optionlist optionlist_config[] = {
   { "queue_only_load_latch",    opt_bool,        &queue_only_load_latch },
   { "queue_only_override",      opt_bool,        &queue_only_override },
   { "queue_run_in_order",       opt_bool,        &queue_run_in_order },
-  { "queue_run_max",            opt_int,         &queue_run_max },
+  { "queue_run_max",            opt_stringptr,   &queue_run_max },
   { "queue_smtp_domains",       opt_stringptr,   &queue_smtp_domains },
   { "receive_timeout",          opt_time,        &receive_timeout },
   { "received_header_text",     opt_stringptr,   &received_header_text },

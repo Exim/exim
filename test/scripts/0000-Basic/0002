@@ -23,6 +23,7 @@ primary_hostname: ${primary_hostname}
 qualify_domain: $qualify_domain
 bounce_return_size_limit: ${bounce_return_size_limit}
 spool_directory: $spool_directory
+queue_name: $queue_name
 unknown: ${unknown}
 h_subject: $h_subject:(should be empty)
 h_subject:$h_subject (should be empty)
