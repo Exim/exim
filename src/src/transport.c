@@ -1929,7 +1929,12 @@ if ((pid = fork()) == 0)
 
   argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
-  /* Call with the dsn flag */
+  if (*queue_name)
+    {
+    argv[i++] = US"-MCG";
+    argv[i++] = queue_name;
+    }
+
   if (smtp_use_dsn) argv[i++] = US"-MCD";
 
   if (smtp_authenticated) argv[i++] = US"-MCA";
