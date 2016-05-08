@@ -880,6 +880,9 @@ if (LOGGING(sender_on_delivery) || msg)
       sender_address,
   US">");
 
+if (*queue_name)
+  s = string_append(s, &size, &ptr, 2, US" Q=", queue_name);
+
 #ifdef EXPERIMENTAL_SRS
 if(addr->prop.srs_sender)
   s = string_append(s, &size, &ptr, 3, US" SRS=<", addr->prop.srs_sender, US">");
@@ -1267,6 +1270,9 @@ else if (result == DEFER || result == PANIC)
 
     s = string_cat(s, &size, &ptr, log_address);
 
+    if (*queue_name)
+      s = string_append(s, &size, &ptr, 2, US" Q=", queue_name);
+
     /* Either driver_name contains something and driver_kind contains
     " router" or " transport" (note the leading space), or driver_name is
     a null string and driver_kind contains "routing" without the leading
@@ -1387,6 +1393,9 @@ else
 
   if (LOGGING(sender_on_delivery))
     s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
+
+  if (*queue_name)
+    s = string_append(s, &size, &ptr, 2, US" Q=", queue_name);
 
   /* Return path may not be set if no delivery actually happened */
 

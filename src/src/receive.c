@@ -3804,6 +3804,9 @@ if (LOGGING(8bitmime))
   s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
   }
 
+if (*queue_name)
+  s = string_append(s, &size, &sptr, 2, US" Q=", queue_name);
+
 /* If an addr-spec in a message-id contains a quoted string, it can contain
 any characters except " \ and CR and so in particular it can contain NL!
 Therefore, make sure we use a printing-characters only version for the log.
