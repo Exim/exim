@@ -3243,8 +3243,11 @@ for (i = 1; i < argc; i++)
 
     if (*argrest == 'G')
       {
-      queue_name = string_copy(argrest+1);
-      do ++argrest; while (*argrest);
+      int i;
+      for (argrest++, i = 0; argrest[i] && argrest[i] != '/'; ) i++;
+      queue_name = string_copyn(argrest, i);
+      argrest += i;
+      if (*argrest == '/') argrest++;
       }
 
     /* -q[f][f][l][G<name>]: Run the queue, optionally forced, optionally local
@@ -3260,8 +3263,8 @@ for (i = 1; i < argc; i++)
         stop_queue_run_id = argv[++i];
       }
 
-    /* -q[f][f][l]<n>: Run the queue at regular intervals, optionally forced,
-    optionally local only. */
+    /* -q[f][f][l][G<name>/]<n>: Run the queue at regular intervals, optionally
+    forced, optionally local only, optionally named. */
 
     else
       {

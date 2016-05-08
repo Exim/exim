@@ -10,3 +10,13 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 => alternate <alternate@test.ex> F=<CALLER@the.local.host.name> Q=alternate R=all T=dump
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End 'alternate' queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss Q=lowpri for lowpri@test.ex
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, -q3s, not listening for SMTP
+1999-03-02 09:44:33 Start 'lowpri' queue run: pid=pppp
+1999-03-02 09:44:33 End 'lowpri' queue run: pid=pppp
+1999-03-02 09:44:33 Start 'lowpri' queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => lowpri <lowpri@test.ex> F=<CALLER@the.local.host.name> Q=lowpri R=all T=dump
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End 'lowpri' queue run: pid=pppp

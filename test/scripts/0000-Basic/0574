@@ -1,6 +1,8 @@
 # named queues
 # Exim test configuration 0574
 #
+no_msglog_check
+#
 exim  -bs
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <normal@test.ex>
@@ -29,4 +31,22 @@ exim -qGnosuchqueue
 exim -qGalternate
 ****
 #
-no_msglog_check
+#
+#
+exim -DSERVER=server -qGlowpri/3s
+****
+sleep 1
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <lowpri@test.ex>
+DATA
+Subject: test 
+
+foo
+.
+QUIT
+****
+#
+sleep 3
+#
+killdaemon

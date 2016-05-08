@@ -4465,15 +4465,16 @@ be done. If a message requires any remote deliveries, it remains on the queue
 for later delivery.
 
 .new
-.vitem &%-q[q][i][f[f]][l][G<name>]%&
+.vitem &%-q[q][i][f[f]][l][G<name>[/<time>]]]%&
 .oindex "&%-qG%&"
 .cindex queue named
 .cindex "named queues"
 .cindex "queue" "delivering specific messages"
 If the &'G'& flag and a name is present, the queue runner operates on the
 queue with the given name rather than the default queue.
-Because the name is the remainder of the option string, any
-periodic-run interval must be given as a separate &%-q%& option.
+The name should not contain a &'/'& character.
+For a periodic queue run (see below)
+append to the name a slash and a time value.
 .wen
 
 .vitem &%-q%&<&'qflags'&>&~<&'start&~id'&>&~<&'end&~id'&>

@@ -1835,7 +1835,10 @@ for (;;)
             if (deliver_force_thaw) *p++ = 'f';
             if (queue_run_local) *p++ = 'l';
             *p = 0;
-            extra[0] = opt;
+	    if (queue_name)
+	      extra[0] = string_sprintf("%sG%s", opt, queue_name);
+	    else
+	      extra[0] = opt;
 
             /* If -R or -S were on the original command line, ensure they get
             passed on. */
