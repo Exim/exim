@@ -1,9 +1,6 @@
 # named queues
 # Exim test configuration 0574
 #
-exim -DSERVER=server -bd -oX PORT_D
-****
-#
 exim  -bs
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <normal@test.ex>
@@ -32,5 +29,4 @@ exim -qGnosuchqueue
 exim -qGalternate
 ****
 #
-killdaemon
 no_msglog_check

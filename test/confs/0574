@@ -13,8 +13,7 @@ tls_advertise_hosts =
 
 log_selector = +received_recipients +sender_on_delivery
 
-acl_smtp_rcpt = accept queue = \
-	${if or {{eq {SERVER}{server}}{eq {normal}{$local_part}}} {} {$local_part}}
+acl_smtp_rcpt = accept queue = ${if eq {normal}{$local_part} {} {$local_part}}
 queue_only
 queue_run_in_order
 
@@ -22,24 +21,17 @@ queue_run_in_order
 
 begin routers
 
-dump:
-  driver = redirect
-  condition = ${if eq {SERVER}{server}{yes}{no}}
-  data = :blackhole:
-
 all:
-  driver = manualroute
-  route_list = * 127.0.0.1
-  self = send
-  transport = out
+  driver = accept
+  transport = dump
 
 #---------------
 
 begin transports
 
-out:
-  driver = smtp
-  port = PORT_D
+dump:
+  driver = pipe
+  command = true
 
 # End
 
