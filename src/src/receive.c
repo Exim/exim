@@ -23,7 +23,7 @@ extern int dcc_ok;
 
 static FILE   *data_file = NULL;
 static int     data_fd = -1;
-static uschar  spool_name[256];
+static uschar *spool_name = US"";
 
 
 
@@ -1542,7 +1542,7 @@ yet, initialize the size and warning count, and deal with no size limit. */
 message_id[0] = 0;
 data_file = NULL;
 data_fd = -1;
-spool_name[0] = 0;
+spool_name = US"";
 message_size = 0;
 warning_count = 0;
 received_count = 1;            /* For the one we will add */
@@ -2860,21 +2860,18 @@ if (cutthrough.fd >= 0)
 
 /* Open a new spool file for the data portion of the message. We need
 to access it both via a file descriptor and a stream. Try to make the
-directory if it isn't there. Note re use of sprintf: spool_directory
-is checked on input to be < 200 characters long. */
+directory if it isn't there. */
 
-snprintf(CS spool_name, sizeof(spool_name), "%s/input/%s/%s/%s-D",
-  spool_directory, queue_name, message_subdir, message_id);
+spool_name = spool_fname(US"input", message_subdir, message_id, US"-D");
 DEBUG(D_receive) debug_printf("Data file name: %s\n", spool_name);
 
 if ((data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
   {
   if (errno == ENOENT)
     {
-    uschar * temp = string_sprintf("input%s%s%s%s",
-	    *queue_name ? "/" : "", queue_name,
-	    *message_subdir ? "/" : "", message_subdir);
-    (void)directory_make(spool_directory, temp, INPUT_DIRECTORY_MODE, TRUE);
+    (void)directory_make(spool_directory,
+		        spool_sname(US"input", message_subdir),
+			INPUT_DIRECTORY_MODE, TRUE);
     data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE);
     }
   if (data_fd < 0)
@@ -3861,17 +3858,15 @@ if (message_logs && blackholed_by == NULL)
   {
   int fd;
 
-  snprintf(CS spool_name, sizeof(spool_name), "%s/msglog/%s/%s/%s",
-    spool_directory, queue_name, message_subdir, message_id);
+  spool_name = spool_fname(US"msglog", message_subdir, message_id, US"");
   
   if (  (fd = Uopen(spool_name, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) < 0
      && errno == ENOENT
      )
     {
-    uschar * temp = string_sprintf("msglog%s%s%s%s",
-			*queue_name ? "/" : "", queue_name,
-			*message_subdir ? "/" : "", message_subdir);
-    (void)directory_make(spool_directory, temp, MSGLOG_DIRECTORY_MODE, TRUE);
+    (void)directory_make(spool_directory,
+			spool_sname(US"msglog", message_subdir),
+			MSGLOG_DIRECTORY_MODE, TRUE);
     fd = Uopen(spool_name, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE);
     }
 
@@ -3956,17 +3951,9 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
 
       /* Delete the files for this aborted message. */
 
-      snprintf(CS spool_name, sizeof(spool_name), "%s/input/%s/%s/%s-D",
-	spool_directory, queue_name, message_subdir, message_id);
-      Uunlink(spool_name);
-
-      snprintf(CS spool_name, sizeof(spool_name), "%s/input/%s/%s/%s-H",
-	spool_directory, queue_name, message_subdir, message_id);
-      Uunlink(spool_name);
-
-      snprintf(CS spool_name, sizeof(spool_name), "%s/msglog/%s/%s/%s",
-	spool_directory, queue_name, message_subdir, message_id);
-      Uunlink(spool_name);
+      Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
+      Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
+      Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 
       goto TIDYUP;
       }
@@ -4120,16 +4107,11 @@ if (smtp_input)
     switch (cutthrough_done)
       {
       case ACCEPTED: log_write(0, LOG_MAIN, "Completed");/* Delivery was done */
-      case PERM_REJ: {					/* Delete spool files */
-	      snprintf(CS spool_name, sizeof(spool_name), "%s/input/%s/%s/%s-D",
-		spool_directory, queue_name, message_subdir, message_id);
-	      Uunlink(spool_name);
-	      snprintf(CS spool_name, sizeof(spool_name), "%s/input/%s/%s/%s-H",
-		spool_directory, queue_name, message_subdir, message_id);
-	      Uunlink(spool_name);
-	      snprintf(CS spool_name, sizeof(spool_name), "%s/msglog/%s/%s/%s",
-		spool_directory, queue_name, message_subdir, message_id);
-	      Uunlink(spool_name);
+      case PERM_REJ:
+	      {						 /* Delete spool files */
+	      Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
+	      Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
+	      Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 	      }
       case TMP_REJ: message_id[0] = 0;	  /* Prevent a delivery from starting */
       default:break;

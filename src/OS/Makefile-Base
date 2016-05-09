@@ -447,7 +447,13 @@ MONBIN = em_StripChart.o $(EXIMON_TEXTPOP) em_globals.o em_init.o \
 # The complete modules list also includes some specially compiled versions of
 # code from the main Exim source tree.
 
-OBJ_MONBIN = util-spool_in.o util-store.o util-string.o tod.o tree.o $(MONBIN)
+OBJ_MONBIN = util-spool_in.o \
+	     util-store.o \
+	     util-string.o \
+	     util-queue.o \
+	     tod.o \
+	     tree.o \
+	     $(MONBIN)
 
 eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
             ../exim_monitor/em_version.c
@@ -563,6 +569,10 @@ util-store.o:    $(HDRS) store.c
 util-string.o:   $(HDRS) string.c
 	@echo "$(CC) -DCOMPILE_UTILITY string.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-string.o string.c
+
+util-queue.o:   $(HDRS) queue.c
+	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-queue.o queue.c
 
 util-os.o:       $(HDRS) os.c
 	@echo "$(CC) -DCOMPILE_UTILITY os.c"

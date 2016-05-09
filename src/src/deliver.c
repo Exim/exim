@@ -76,8 +76,6 @@ static int  return_count;
 static uschar *frozen_info = US"";
 static uschar *used_return_path = NULL;
 
-static uschar spoolname[PATH_MAX];
-
 
 
 /*************************************************
@@ -285,10 +283,9 @@ int fd = Uopen(filename, O_WRONLY|O_APPEND|O_CREAT, mode);
 
 if (fd < 0 && errno == ENOENT)
   {
-  uschar * temp = string_sprintf("msglog%s%s%s%s",
-		    *queue_name ? "/" : "", queue_name,
-		    *message_subdir ? "/" : "", message_subdir);
-  (void)directory_make(spool_directory, temp, MSGLOG_DIRECTORY_MODE, TRUE);
+  (void)directory_make(spool_directory,
+			spool_sname(US"msglog", message_subdir),
+			MSGLOG_DIRECTORY_MODE, TRUE);
   fd = Uopen(filename, O_WRONLY|O_APPEND|O_CREAT, mode);
   }
 
@@ -1953,13 +1950,13 @@ if (  !shadowing
       || tp->log_output || tp->log_fail_output || tp->log_defer_output
    )  )
   {
-  uschar *error;
+  uschar * error;
+
   addr->return_filename =
-    string_sprintf("%s/msglog/%s/%s/%s-%d-%d",
-      spool_directory, queue_name, message_subdir,
-      message_id, getpid(), return_count++);
-  addr->return_file = open_msglog_file(addr->return_filename, 0400, &error);
-  if (addr->return_file < 0)
+    spool_fname(US"msglog", message_subdir, message_id,
+      string_sprintf("-%d-%d", getpid(), return_count++));
+  
+  if ((addr->return_file = open_msglog_file(addr->return_filename, 0400, &error)) < 0)
     {
     common_error(TRUE, addr, errno, US"Unable to %s file for %s transport "
       "to return message: %s", error, tp->name, strerror(errno));
@@ -4382,12 +4379,13 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     a dup-with-new-file-pointer. */
 
     (void)close(deliver_datafile);
-    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-D",
-      spool_directory, queue_name, message_subdir, message_id);
+    {
+    uschar * fname = spool_fname(US"input", message_subdir, message_id, US"-D");
 
-    if ((deliver_datafile = Uopen(spoolname, O_RDWR | O_APPEND, 0)) < 0)
+    if ((deliver_datafile = Uopen(fname, O_RDWR | O_APPEND, 0)) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to reopen %s for remote "
-        "parallel delivery: %s", spoolname, strerror(errno));
+        "parallel delivery: %s", fname, strerror(errno));
+    }
 
     /* Set the close-on-exec flag */
 
@@ -5234,57 +5232,51 @@ store, and also the list of recipients and the tree of non-recipients and
 assorted flags. It updates message_size. If there is a reading or format error,
 give up; if the message has been around for sufficiently long, remove it. */
 
-sprintf(CS spoolname, "%s-H", id);
-if ((rc = spool_read_header(spoolname, TRUE, TRUE)) != spool_read_OK)
   {
-  if (errno == ERRNO_SPOOLFORMAT)
+  uschar * spoolname = string_sprintf("%s-H", id);
+  if ((rc = spool_read_header(spoolname, TRUE, TRUE)) != spool_read_OK)
     {
-    struct stat statbuf;
-    sprintf(CS big_buffer, "%s/input/%s/%s/%s",
-      spool_directory, queue_name, message_subdir, spoolname);
-    if (Ustat(big_buffer, &statbuf) == 0)
-      log_write(0, LOG_MAIN, "Format error in spool file %s: "
-        "size=" OFF_T_FMT, spoolname, statbuf.st_size);
-    else log_write(0, LOG_MAIN, "Format error in spool file %s", spoolname);
+    if (errno == ERRNO_SPOOLFORMAT)
+      {
+      struct stat statbuf;
+      if (Ustat(spool_fname(US"input", message_subdir, spoolname, US""),
+		&statbuf) == 0)
+	log_write(0, LOG_MAIN, "Format error in spool file %s: "
+	  "size=" OFF_T_FMT, spoolname, statbuf.st_size);
+      else
+	log_write(0, LOG_MAIN, "Format error in spool file %s", spoolname);
+      }
+    else
+      log_write(0, LOG_MAIN, "Error reading spool file %s: %s", spoolname,
+	strerror(errno));
+
+    /* If we managed to read the envelope data, received_time contains the
+    time the message was received. Otherwise, we can calculate it from the
+    message id. */
+
+    if (rc != spool_read_hdrerror)
+      {
+      received_time = 0;
+      for (i = 0; i < 6; i++)
+	received_time = received_time * BASE_62 + tab62[id[i] - '0'];
+      }
+
+    /* If we've had this malformed message too long, sling it. */
+
+    if (now - received_time > keep_malformed)
+      {
+      Uunlink(spool_fname(US"msglog", message_subdir, id, US""));
+      Uunlink(spool_fname(US"input", message_subdir, id, US"-D"));
+      Uunlink(spool_fname(US"input", message_subdir, id, US"-H"));
+      Uunlink(spool_fname(US"input", message_subdir, id, US"-J"));
+      log_write(0, LOG_MAIN, "Message removed because older than %s",
+	readconf_printtime(keep_malformed));
+      }
+
+    (void)close(deliver_datafile);
+    deliver_datafile = -1;
+    return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
     }
-  else
-    log_write(0, LOG_MAIN, "Error reading spool file %s: %s", spoolname,
-      strerror(errno));
-
-  /* If we managed to read the envelope data, received_time contains the
-  time the message was received. Otherwise, we can calculate it from the
-  message id. */
-
-  if (rc != spool_read_hdrerror)
-    {
-    received_time = 0;
-    for (i = 0; i < 6; i++)
-      received_time = received_time * BASE_62 + tab62[id[i] - '0'];
-    }
-
-  /* If we've had this malformed message too long, sling it. */
-
-  if (now - received_time > keep_malformed)
-    {
-    snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
-      spool_directory, queue_name, message_subdir, id);
-    Uunlink(spoolname);
-    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-D",
-      spool_directory, queue_name, message_subdir, id);
-    Uunlink(spoolname);
-    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-H",
-      spool_directory, queue_name, message_subdir, id);
-    Uunlink(spoolname);
-    snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
-      spool_directory, queue_name, message_subdir, id);
-    Uunlink(spoolname);
-    log_write(0, LOG_MAIN, "Message removed because older than %s",
-      readconf_printtime(keep_malformed));
-    }
-
-  (void)close(deliver_datafile);
-  deliver_datafile = -1;
-  return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
   }
 
 /* The spool header file has been read. Look to see if there is an existing
@@ -5296,38 +5288,39 @@ existence, as it will get further successful deliveries added to it in this
 run, and it will be deleted if this function gets to its end successfully.
 Otherwise it might be needed again. */
 
-snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
-  spool_directory, queue_name, message_subdir, id);
-
-if ((jread = Ufopen(spoolname, "rb")))
   {
-  while (Ufgets(big_buffer, big_buffer_size, jread))
+  uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
+
+  if ((jread = Ufopen(fname, "rb")))
     {
-    int n = Ustrlen(big_buffer);
-    big_buffer[n-1] = 0;
-    tree_add_nonrecipient(big_buffer);
-    DEBUG(D_deliver) debug_printf("Previously delivered address %s taken from "
-      "journal file\n", big_buffer);
+    while (Ufgets(big_buffer, big_buffer_size, jread))
+      {
+      int n = Ustrlen(big_buffer);
+      big_buffer[n-1] = 0;
+      tree_add_nonrecipient(big_buffer);
+      DEBUG(D_deliver) debug_printf("Previously delivered address %s taken from "
+	"journal file\n", big_buffer);
+      }
+    (void)fclose(jread);
+    /* Panic-dies on error */
+    (void)spool_write_header(message_id, SW_DELIVERING, NULL);
     }
-  (void)fclose(jread);
-  /* Panic-dies on error */
-  (void)spool_write_header(message_id, SW_DELIVERING, NULL);
-  }
-else if (errno != ENOENT)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC, "attempt to open journal for reading gave: "
-    "%s", strerror(errno));
-  return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
-  }
+  else if (errno != ENOENT)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "attempt to open journal for reading gave: "
+      "%s", strerror(errno));
+    return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
+    }
 
-/* A null recipients list indicates some kind of disaster. */
+  /* A null recipients list indicates some kind of disaster. */
 
-if (!recipients_list)
-  {
-  (void)close(deliver_datafile);
-  deliver_datafile = -1;
-  log_write(0, LOG_MAIN, "Spool error: no recipients for %s", spoolname);
-  return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
+  if (!recipients_list)
+    {
+    (void)close(deliver_datafile);
+    deliver_datafile = -1;
+    log_write(0, LOG_MAIN, "Spool error: no recipients for %s", fname);
+    return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
+    }
   }
 
 
@@ -5415,16 +5408,14 @@ done by rewriting the header spool file. */
 
 if (message_logs)
   {
-  uschar *error;
+  uschar * fname = spool_fname(US"msglog", message_subdir, id, US"");
+  uschar * error;
   int fd;
 
-  snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
-    spool_directory, queue_name, message_subdir, id);
-  
-  if ((fd = open_msglog_file(spoolname, SPOOL_MODE, &error)) < 0)
+  if ((fd = open_msglog_file(fname, SPOOL_MODE, &error)) < 0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't %s message log %s: %s", error,
-      spoolname, strerror(errno));
+      fname, strerror(errno));
     return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
     }
 
@@ -5433,7 +5424,7 @@ if (message_logs)
   if (!(message_log = fdopen(fd, "a")))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't fdopen message log %s: %s",
-      spoolname, strerror(errno));
+      fname, strerror(errno));
     return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
     }
   }
@@ -6652,13 +6643,12 @@ therein are added to the non-recipients. */
 
 if (addr_local || addr_remote)
   {
-  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
-    spool_directory, queue_name, message_subdir, id);
+  uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
   
-  if ((journal_fd = Uopen(spoolname, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) <0)
+  if ((journal_fd = Uopen(fname, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) <0)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't open journal file %s: %s",
-      spoolname, strerror(errno));
+      fname, strerror(errno));
     return DELIVER_NOT_ATTEMPTED;
     }
 
@@ -6671,12 +6661,12 @@ if (addr_local || addr_remote)
     || fchmod(journal_fd, SPOOL_MODE)
     )
     {
-    int ret = Uunlink(spoolname);
+    int ret = Uunlink(fname);
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't set perms on journal file %s: %s",
-      spoolname, strerror(errno));
+      fname, strerror(errno));
     if(ret  &&  errno != ENOENT)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
-        spoolname, strerror(errno));
+        fname, strerror(errno));
     return DELIVER_NOT_ATTEMPTED;
     }
   }
@@ -7517,43 +7507,43 @@ Then delete the message itself. */
 
 if (!addr_defer)
   {
+  uschar * fname;
+
   if (message_logs)
     {
-    snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
-      spool_directory, queue_name, message_subdir, id);
+    fname = spool_fname(US"msglog", message_subdir, id, US"");
     if (preserve_message_logs)
       {
       int rc;
-      sprintf(CS big_buffer, "%s/msglog.OLD/%s/%s",
-	spool_directory, queue_name, id);
-      if ((rc = Urename(spoolname, big_buffer)) < 0)
+      uschar * moname = spool_fname(US"msglog.OLD", US"", id, US"");
+
+      if ((rc = Urename(fname, moname)) < 0)
         {
-        (void)directory_make(spool_directory, US"msglog.OLD",
-          MSGLOG_DIRECTORY_MODE, TRUE);
-        rc = Urename(spoolname, big_buffer);
+        (void)directory_make(spool_directory,
+			      spool_sname(US"msglog.OLD", US""),
+			      MSGLOG_DIRECTORY_MODE, TRUE);
+        rc = Urename(fname, moname);
         }
       if (rc < 0)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to move %s to the "
-          "msglog.OLD directory", spoolname);
+          "msglog.OLD directory", fname);
       }
     else
-      if (Uunlink(spoolname) < 0)
+      if (Uunlink(fname) < 0)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
-		  spoolname, strerror(errno));
+		  fname, strerror(errno));
     }
 
   /* Remove the two message files. */
 
-  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-D",
-    spool_directory, queue_name, message_subdir, id);
-  if (Uunlink(spoolname) < 0)
+  fname = spool_fname(US"input", message_subdir, id, US"-D");
+  if (Uunlink(fname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
-      spoolname, strerror(errno));
-  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-H",
-    spool_directory, queue_name, message_subdir, id);
-  if (Uunlink(spoolname) < 0)
+      fname, strerror(errno));
+  fname = spool_fname(US"input", message_subdir, id, US"-H");
+  if (Uunlink(fname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
-      spoolname, strerror(errno));
+      fname, strerror(errno));
 
   /* Log the end of this message, with queue time if requested. */
 
@@ -8020,10 +8010,10 @@ if (journal_fd >= 0) (void)close(journal_fd);
 
 if (remove_journal)
   {
-  snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-J",
-    spool_directory, queue_name, message_subdir, id);
-  if (Uunlink(spoolname) < 0 && errno != ENOENT)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s", spoolname,
+  uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
+
+  if (Uunlink(fname) < 0 && errno != ENOENT)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s", fname,
       strerror(errno));
 
   /* Move the message off the spool if reqested */
@@ -8098,6 +8088,7 @@ int rc;
 uschar * new_sender_address,
        * save_sender_address;
 BOOL save_qr = queue_running;
+uschar * spoolname;
 
 /* make spool_open_datafile non-noisy on fail */
 
@@ -8116,7 +8107,7 @@ spool_read_header() may change all of them. But OTOH, when this
 deliver_get_sender_address() gets called, the current message is done
 already and nobody needs the globals anymore. (HS12, 2015-08-21) */
 
-sprintf(CS spoolname, "%s-H", id);
+spoolname = string_sprintf("%s-H", id);
 save_sender_address = sender_address;
 
 rc = spool_read_header(spoolname, TRUE, TRUE);

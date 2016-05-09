@@ -133,11 +133,12 @@ menu_is_up = FALSE;
 *          Display the message log               *
 *************************************************/
 
-static void msglogAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+msglogAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 int i;
-uschar buffer[256];
 Widget text = text_create((uschar *)client_data, text_depth);
+uschar * fname;
 FILE *f = NULL;
 
 w = w;      /* Keep picky compilers happy */
@@ -147,18 +148,18 @@ call_data = call_data;
 
 for (i = 0; i < (spool_is_split? 2:1); i++)
   {
-  message_subdir[0] = (i != 0)? ((uschar *)client_data)[5] : 0;
-  snprintf(CS buffer, sizeof(buffer), "%s/msglog/%s/%s/%s",
-    spool_directory, queue_name, message_subdir, (uschar *)client_data);
-  if ((f = fopen(CS buffer, "r")))
+  message_subdir[0] = i != 0 ? ((uschar *)client_data)[5] : 0;
+  fname = spool_fname(US"msglog", message_subdir, US client_data, US"");
+  if ((f = fopen(CS fname, "r")))
     break;
   }
 
 if (f == NULL)
-  text_showf(text, "%s: %s\n", buffer, strerror(errno));
+  text_showf(text, "%s: %s\n", fname, strerror(errno));
 else
   {
-  while (Ufgets(buffer, 256, f) != NULL) text_show(text, buffer);
+  uschar buffer[256];
+  while (Ufgets(buffer, sizeof(buffer), f) != NULL) text_show(text, buffer);
   fclose(f);
   }
 }
@@ -169,10 +170,10 @@ else
 *          Display the message body               *
 *************************************************/
 
-static void bodyAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+bodyAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 int i;
-uschar buffer[256];
 Widget text = text_create((uschar *)client_data, text_depth);
 FILE *f = NULL;
 
@@ -181,10 +182,10 @@ call_data = call_data;
 
 for (i = 0; i < (spool_is_split? 2:1); i++)
   {
+  uschar * fname;
   message_subdir[0] = i != 0 ? ((uschar *)client_data)[5] : 0;
-  snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s-D",
-    spool_directory, queue_name, message_subdir, (uschar *)client_data);
-  if ((f = fopen(CS buffer, "r")))
+  fname = spool_fname(US"input", message_subdir, US client_data, US"-D");
+  if ((f = fopen(CS fname, "r")))
     break;
   }
 
@@ -192,8 +193,10 @@ if (f == NULL)
   text_showf(text, "Failed to open file: %s\n", strerror(errno));
 else
   {
+  uschar buffer[256];
   int count = 0;
-  while (Ufgets(buffer, 256, f) != NULL)
+
+  while (Ufgets(buffer, sizeof(buffer), f) != NULL)
     {
     text_show(text, buffer);
     count += Ustrlen(buffer);

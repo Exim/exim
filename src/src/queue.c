@@ -20,6 +20,41 @@ Michael Haardt. */
 
 
 
+/* Routines with knowlege of spool layout */
+
+static void
+spool_pname_buf(uschar * buf, int len)
+{
+snprintf(CS buf, len, "%s/input/%s", spool_directory, queue_name);
+}
+
+static uschar *
+spool_dname(const uschar * purpose, uschar * subdir)
+{
+return string_sprintf("%s/%s/%s/%s",
+	spool_directory, purpose, queue_name, subdir);
+}
+
+uschar *
+spool_sname(const uschar * purpose, uschar * subdir)
+{
+return string_sprintf("%s%s%s%s%s",
+		    purpose,
+		    *queue_name ? "/" : "", queue_name,
+		    *message_subdir ? "/" : "", message_subdir);
+}
+
+uschar *
+spool_fname(const uschar * purpose, uschar * subdir, uschar * fname, uschar * suffix)
+{
+return string_sprintf("%s/%s/%s/%s/%s%s",
+	spool_directory, purpose, queue_name, subdir, fname, suffix);
+}
+
+
+
+
+#ifndef COMPILE_UTILITY
 /*************************************************
 *  Helper sort function for queue_get_spool_list *
 *************************************************/
@@ -142,7 +177,7 @@ else i = subdiroffset;
 
 /* Set up prototype for the directory name. */
 
-snprintf(CS buffer, sizeof(buffer), "%s/input/%s", spool_directory, queue_name);
+spool_pname_buf(buffer, sizeof(buffer));
 buffer[sizeof(buffer) - 3] = 0;
 subptr = Ustrlen(buffer);
 buffer[subptr+2] = 0;               /* terminator for lengthened name */
@@ -162,6 +197,7 @@ for (; i <= *subcount; i++)
     buffer[subptr+1] = subdirchar;
     }
 
+  DEBUG(D_queue_run) debug_printf("looking in %s\n", buffer);
   if (!(dd = opendir(CS buffer)))
     continue;
 
@@ -265,10 +301,11 @@ for (; i <= *subcount; i++)
     {
     if (!split_spool_directory && count <= 2)
       {
+      uschar subdir[2];
+
       rmdir(CS buffer);
-      sprintf(CS big_buffer, "%s/msglog/%s/%c",
-	       	spool_directory, queue_name, subdirchar);
-      rmdir(CS big_buffer);
+      subdir[0] = subdirchar; subdir[1] = 0;
+      rmdir(CS spool_dname(US"msglog", subdir));
       }
     if (subdiroffset > 0) break;    /* Single sub-directory */
     }
@@ -482,9 +519,8 @@ for (i  = (queue_run_in_order? -1 : 0);
     /* Check that the message still exists */
 
     message_subdir[0] = f->dir_uschar;
-    snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s",
-      spool_directory, queue_name, message_subdir, f->text);
-    if (Ustat(buffer, &statbuf) < 0) continue;
+    if (Ustat(spool_fname(US"input", message_subdir, f->text, US""), &statbuf) < 0)
+      continue;
 
     /* There are some tests that require the reading of the header file. Ensure
     the store used is scavenged afterwards so that this process doesn't keep
@@ -852,17 +888,16 @@ for (; f != NULL; f = f->next)
     int ptr;
     FILE *jread;
     struct stat statbuf;
+    uschar * fname = spool_fname(US"input", message_subdir, f->text, US"");
 
-    sprintf(CS big_buffer, "%s/input/%s/%s/%s",
-      spool_directory, queue_name, message_subdir, f->text);
-    ptr = Ustrlen(big_buffer)-1;
-    big_buffer[ptr] = 'D';
+    ptr = Ustrlen(fname)-1;
+    fname[ptr] = 'D';
 
     /* Add the data size to the header size; don't count the file name
     at the start of the data file, but add one for the notional blank line
     that precedes the data. */
 
-    if (Ustat(big_buffer, &statbuf) == 0)
+    if (Ustat(fname, &statbuf) == 0)
       size = message_size + statbuf.st_size - SPOOL_DATA_START_OFFSET + 1;
     i = (now - received_time)/60;  /* minutes on queue */
     if (i > 90)
@@ -874,8 +909,8 @@ for (; f != NULL; f = f->next)
 
     /* Collect delivered addresses from any J file */
 
-    big_buffer[ptr] = 'J';
-    jread = Ufopen(big_buffer, "rb");
+    fname[ptr] = 'J';
+    jread = Ufopen(fname, "rb");
     if (jread != NULL)
       {
       while (Ufgets(big_buffer, big_buffer_size, jread) != NULL)
@@ -903,9 +938,9 @@ for (; f != NULL; f = f->next)
     if (save_errno == ERRNO_SPOOLFORMAT)
       {
       struct stat statbuf;
-      sprintf(CS big_buffer, "%s/input/%s/%s/%s",
-        spool_directory, queue_name, message_subdir, f->text);
-      if (Ustat(big_buffer, &statbuf) == 0)
+      uschar * fname = spool_fname(US"input", message_subdir, f->text, US"");
+
+      if (Ustat(fname, &statbuf) == 0)
         printf("*** spool format error: size=" OFF_T_FMT " ***",
           statbuf.st_size);
       else printf("*** spool format error ***");
@@ -970,7 +1005,7 @@ struct passwd *pw;
 uschar *doing = NULL;
 uschar *username;
 uschar *errmsg;
-uschar spoolname[256];
+uschar spoolname[32];
 
 /* Set the global message_id variable, used when re-writing spool files. This
 also causes message ids to be added to log messages. */
@@ -1016,10 +1051,8 @@ if (action >= MSG_SHOW_BODY)
   for (i = 0; i < 2; i++)
     {
     message_subdir[0] = split_spool_directory == (i == 0) ? id[5] : 0;
-    snprintf(CS spoolname, sizeof(spoolname), "%s/%s/%s/%s/%s%s",
-	      spool_directory, subdirectory, queue_name,
-	      message_subdir, id, suffix);
-    if ((fd = Uopen(spoolname, O_RDONLY, 0)) >= 0)
+    if ((fd = Uopen(spool_fname(subdirectory, message_subdir, id, suffix),
+		    O_RDONLY, 0)) >= 0)
       break;
     if (i == 0)
       continue;
@@ -1045,7 +1078,6 @@ only if the action is remove and the user is an admin user, to allow for
 tidying up broken states. */
 
 if ((deliver_datafile = spool_open_datafile(id)) < 0)
-  {
   if (errno == ENOENT)
     {
     yield = FALSE;
@@ -1060,7 +1092,6 @@ if ((deliver_datafile = spool_open_datafile(id)) < 0)
         strerror(errno));
     return FALSE;
     }
-  }
 
 /* Read the spool header file for the message. Again, continue after an
 error only in the case of deleting by an administrator. Setting the third
@@ -1173,50 +1204,70 @@ switch(action)
   operation, just run everything twice. */
 
   case MSG_REMOVE:
-  message_subdir[0] = id[5];
-  for (j = 0; j < 2; message_subdir[0] = 0, j++)
     {
-    snprintf(CS spoolname, sizeof(spoolname), "%s/msglog/%s/%s/%s",
-      spool_directory, queue_name, message_subdir, id);
-    if (Uunlink(spoolname) < 0)
+    uschar suffix[3];
+
+    suffix[0] = '-';
+    suffix[2] = 0;
+    message_subdir[0] = id[5];
+
+    for (j = 0; j < 2; message_subdir[0] = 0, j++)
       {
-      if (errno != ENOENT)
-        {
-        yield = FALSE;
-        printf("Error while removing %s: %s\n", spoolname,
-          strerror(errno));
-        }
-      }
-    else removed = TRUE;
+      uschar * fname = spool_fname(US"msglog", message_subdir, id, US"");
 
-    for (i = 0; i < 3; i++)
+      DEBUG(D_any) debug_printf(" removing %s", fname);
+      if (Uunlink(fname) < 0)
+	{
+	if (errno != ENOENT)
+	  {
+	  yield = FALSE;
+	  printf("Error while removing %s: %s\n", fname, strerror(errno));
+	  }
+	else DEBUG(D_any) debug_printf(" (no file)\n");
+	}
+      else
+	{
+	removed = TRUE;
+	DEBUG(D_any) debug_printf(" (ok)\n");
+	}
+
+      for (i = 0; i < 3; i++)
+	{
+	uschar * fname;
+
+	suffix[1] = (US"DHJ")[i];
+	fname = spool_fname(US"input", message_subdir, id, suffix);
+
+	DEBUG(D_any) debug_printf(" removing %s", fname);
+	if (Uunlink(fname) < 0)
+	  {
+	  if (errno != ENOENT)
+	    {
+	    yield = FALSE;
+	    printf("Error while removing %s: %s\n", fname, strerror(errno));
+	    }
+	  else DEBUG(D_any) debug_printf(" (no file)\n");
+	  }
+	else
+	  {
+	  removed = TRUE;
+	  DEBUG(D_any) debug_printf(" (done)\n");
+	  }
+	}
+      }
+
+    /* In the common case, the datafile is open (and locked), so give the
+    obvious message. Otherwise be more specific. */
+
+    if (deliver_datafile >= 0) printf("has been removed\n");
+      else printf("has been removed or did not exist\n");
+    if (removed)
       {
-      snprintf(CS spoolname, sizeof(spoolname), "%s/input/%s/%s/%s-%c",
-        spool_directory, queue_name, message_subdir, id, "DHJ"[i]);
-      if (Uunlink(spoolname) < 0)
-        {
-        if (errno != ENOENT)
-          {
-          yield = FALSE;
-          printf("Error while removing %s: %s\n", spoolname,
-            strerror(errno));
-          }
-        }
-      else removed = TRUE;
+      log_write(0, LOG_MAIN, "removed by %s", username);
+      log_write(0, LOG_MAIN, "Completed");
       }
+    break;
     }
-
-  /* In the common case, the datafile is open (and locked), so give the
-  obvious message. Otherwise be more specific. */
-
-  if (deliver_datafile >= 0) printf("has been removed\n");
-    else printf("has been removed or did not exist\n");
-  if (removed)
-    {
-    log_write(0, LOG_MAIN, "removed by %s", username);
-    log_write(0, LOG_MAIN, "Completed");
-    }
-  break;
 
 
   case MSG_MARK_ALL_DELIVERED:
@@ -1394,5 +1445,7 @@ while ((ss = string_nextinlist(&s, &sep, buffer, sizeof(buffer))) != NULL)
     }
   }
 }
+
+#endif /*!COMPILE_UTILITY*/
 
 /* End of queue.c */

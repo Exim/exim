@@ -114,8 +114,7 @@ if (!spool_mbox_ok)
     for (i = 0; i < 2; i++)
       {
       message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
-      temp_string = string_sprintf("%s/input/%s/%s/%s-D",
-	    spool_directory, queue_name, message_subdir, message_id);
+      temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");
       if ((data_file = Ufopen(temp_string, "rb"))) break;
       }
     }
