@@ -12,6 +12,42 @@
 
 
 
+/* Routines with knowlege of spool layout */
+
+static void
+spool_pname_buf(uschar * buf, int len)
+{
+snprintf(CS buf, len, "%s/%s/input", spool_directory, queue_name);
+}
+
+static uschar *
+spool_dname(const uschar * purpose, uschar * subdir)
+{
+return string_sprintf("%s/%s/%s/%s",
+	spool_directory, queue_name, purpose, subdir);
+}
+
+uschar *
+spool_sname(const uschar * purpose, uschar * subdir)
+{
+return string_sprintf("%s%s%s%s%s",
+		    queue_name, *queue_name ? "/" : "",
+		    purpose,
+		    *subdir ? "/" : "", subdir);
+}
+
+uschar *
+spool_fname(const uschar * purpose, uschar * subdir, uschar * fname, uschar * suffix)
+{
+return string_sprintf("%s/%s/%s/%s/%s%s",
+	spool_directory, queue_name, purpose, subdir, fname, suffix);
+}
+
+
+
+
+#ifndef COMPILE_UTILITY
+
 /* The number of nodes to use for the bottom-up merge sort when a list of queue
 items is to be ordered. The code for this sort was contributed as a patch by
 Michael Haardt. */
@@ -20,41 +56,6 @@ Michael Haardt. */
 
 
 
-/* Routines with knowlege of spool layout */
-
-static void
-spool_pname_buf(uschar * buf, int len)
-{
-snprintf(CS buf, len, "%s/input/%s", spool_directory, queue_name);
-}
-
-static uschar *
-spool_dname(const uschar * purpose, uschar * subdir)
-{
-return string_sprintf("%s/%s/%s/%s",
-	spool_directory, purpose, queue_name, subdir);
-}
-
-uschar *
-spool_sname(const uschar * purpose, uschar * subdir)
-{
-return string_sprintf("%s%s%s%s%s",
-		    purpose,
-		    *queue_name ? "/" : "", queue_name,
-		    *message_subdir ? "/" : "", message_subdir);
-}
-
-uschar *
-spool_fname(const uschar * purpose, uschar * subdir, uschar * fname, uschar * suffix)
-{
-return string_sprintf("%s/%s/%s/%s/%s%s",
-	spool_directory, purpose, queue_name, subdir, fname, suffix);
-}
-
-
-
-
-#ifndef COMPILE_UTILITY
 /*************************************************
 *  Helper sort function for queue_get_spool_list *
 *************************************************/

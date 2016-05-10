@@ -2869,7 +2869,7 @@ if ((data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
   {
   if (errno == ENOENT)
     {
-    (void)directory_make(spool_directory,
+    (void) directory_make(spool_directory,
 		        spool_sname(US"input", message_subdir),
 			INPUT_DIRECTORY_MODE, TRUE);
     data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE);

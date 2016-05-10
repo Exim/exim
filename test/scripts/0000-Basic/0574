@@ -3,7 +3,7 @@
 #
 no_msglog_check
 #
-exim  -bs
+exim -bs
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <normal@test.ex>
 DATA

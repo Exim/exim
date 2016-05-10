@@ -25,7 +25,7 @@ I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: CALLER_NAME <CALLER@test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Data file name: TESTSUITE/spool/input///10HmaX-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -34,12 +34,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for nofile@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |nofile@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmaX-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -57,7 +57,7 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
-Trying spool file TESTSUITE/spool/input///10HmaX-0005vi-00-D
+Trying spool file TESTSUITE/spool//input//10HmaX-0005vi-00-D
 reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
@@ -212,7 +212,7 @@ I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: CALLER_NAME <CALLER@test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Data file name: TESTSUITE/spool/input///10HmaY-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -221,12 +221,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmaY-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -243,7 +243,7 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
-Trying spool file TESTSUITE/spool/input///10HmaY-0005vi-00-D
+Trying spool file TESTSUITE/spool//input//10HmaY-0005vi-00-D
 reading spool file 10HmaY-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
@@ -399,7 +399,7 @@ I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 F From: CALLER_NAME <CALLER@test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Data file name: TESTSUITE/spool/input///10HmaZ-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmaZ-0005vi-00-D
 Data file written for message 10HmaZ-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -408,12 +408,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmaZ-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -430,7 +430,7 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaZ-0005vi-00
-Trying spool file TESTSUITE/spool/input///10HmaZ-0005vi-00-D
+Trying spool file TESTSUITE/spool//input//10HmaZ-0005vi-00-D
 reading spool file 10HmaZ-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
@@ -554,12 +554,12 @@ Writing retry data for T:userx@test.ex
 dbfn_write: key=T:userx@test.ex
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmaZ-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
 Size of headers = sss
 end delivery of 10HmaZ-0005vi-00
 search_tidyup called
@@ -594,7 +594,7 @@ I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 F From: CALLER_NAME <CALLER@test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-Data file name: TESTSUITE/spool/input///10HmbA-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmbA-0005vi-00-D
 Data file written for message 10HmbA-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -603,12 +603,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmbA-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmbA-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -625,7 +625,7 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmbA-0005vi-00
-Trying spool file TESTSUITE/spool/input///10HmbA-0005vi-00-D
+Trying spool file TESTSUITE/spool//input//10HmbA-0005vi-00-D
 reading spool file 10HmbA-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
@@ -742,12 +742,12 @@ Writing retry data for T:userx@test.ex
 dbfn_write: key=T:userx@test.ex
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmbA-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmbA-0005vi-00-H
 Size of headers = sss
 end delivery of 10HmbA-0005vi-00
 search_tidyup called

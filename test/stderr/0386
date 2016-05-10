@@ -191,7 +191,7 @@ host in ignore_fromline_hosts? no (option unset)
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool/input///10HmaX-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from [V4NET.11.12.13] (ident=CALLER)
@@ -205,12 +205,12 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 >>
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmaX-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
@@ -230,7 +230,7 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
-Trying spool file TESTSUITE/spool/input///10HmaX-0005vi-00-D
+Trying spool file TESTSUITE/spool//input//10HmaX-0005vi-00-D
 reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
 sender_fullhost = [V4NET.11.12.13]
@@ -371,7 +371,7 @@ host in ignore_fromline_hosts? no (option unset)
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool/input///10HmaY-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: from [V4NET.11.12.13] (ident=CALLER)
@@ -385,12 +385,12 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 >>
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file: TESTSUITE/spool/input///hdr.pppp
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-Renaming spool header file: TESTSUITE/spool/input///10HmaY-0005vi-00-H
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
@@ -410,7 +410,7 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
-Trying spool file TESTSUITE/spool/input///10HmaY-0005vi-00-D
+Trying spool file TESTSUITE/spool//input//10HmaY-0005vi-00-D
 reading spool file 10HmaY-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
 sender_fullhost = [V4NET.11.12.13]

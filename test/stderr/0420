@@ -39,7 +39,7 @@ host in ignore_fromline_hosts? no (option unset)
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool/input///10HmaX-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 * Received: ; Tue, 2 Mar 1999 09:44:33 +0000
@@ -66,7 +66,7 @@ host in ignore_fromline_hosts? no (option unset)
 search_tidyup called
 >>Headers after rewriting and local additions:
 
-Data file name: TESTSUITE/spool/input///10HmaY-0005vi-00-D
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: some text; Tue, 2 Mar 1999 09:44:33 +0000
