@@ -1215,6 +1215,13 @@ return FALSE;
 
 
 #ifdef EXPERIMENTAL_DANE
+/* Lookup TLSA record for host/port.
+Return:  OK		success with dnssec; DANE mode
+         DEFER		Do not use this host now, may retry later
+	 FAIL_FORCED	No TLSA record; DANE not usable
+	 FAIL		Do not use this connection
+*/
+
 int
 tlsa_lookup(const host_item * host, dns_answer * dnsa, BOOL dane_required)
 {
@@ -1227,13 +1234,6 @@ const uschar * fullname = buffer;
 
 switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
   {
-  case DNS_AGAIN:
-    return DEFER; /* just defer this TLS'd conn */
-
-  default:
-  case DNS_FAIL:
-    return dane_required ? FAIL : DEFER;
-
   case DNS_SUCCEED:
     if (!dns_is_secure(dnsa))
       {
@@ -1241,6 +1241,16 @@ switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
       return DEFER;
       }
     return OK;
+
+  case DNS_AGAIN:
+    return DEFER; /* just defer this TLS'd conn */
+
+  case DNS_NOMATCH:
+    return dane_required ? FAIL : FAIL_FORCED;
+
+  default:
+  case DNS_FAIL:
+    return dane_required ? FAIL : DEFER;
   }
 }
 #endif
@@ -1542,17 +1552,16 @@ if (continue_hostname == NULL)
       if(  dane_required
 	|| verify_check_given_host(&ob->hosts_try_dane, host) == OK
 	)
-	{
-	if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required)) != OK)
+	switch (rc = tlsa_lookup(host, &tlsa_dnsa, dane_required))
 	  {
-	  set_errno_nohost(addrlist, ERRNO_DNSDEFER,
-	    string_sprintf("DANE error: tlsa lookup %s",
-	      rc == DEFER ? "DEFER" : "FAIL"),
-	    rc, FALSE);
-	  return rc;
+	  case OK:		dane = TRUE; break;
+	  case FAIL_FORCED:	break;
+	  default:		set_errno_nohost(addrlist, ERRNO_DNSDEFER,
+				  string_sprintf("DANE error: tlsa lookup %s",
+				    rc == DEFER ? "DEFER" : "FAIL"),
+				  rc, FALSE);
+				return rc;
 	  }
-	dane = TRUE;
-	}
       }
     else if (dane_required)
       {
