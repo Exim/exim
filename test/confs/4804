@@ -1,0 +1,50 @@
+# Exim test configuration 4804
+
+SERVER=
+OPT=
+
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+timezone = UTC
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector = OPT
+tls_advertise_hosts = :
+
+# ------ ACL ------
+
+begin acl
+
+# ----- Routers -----
+
+begin routers
+
+server:
+  condition = ${if eq {SERVER}{server} {yes}{no}}
+  driver = redirect
+  data = :blackhole:
+
+client:
+  driver = dnslookup
+  dnssec_request_domains = *
+  self = send
+  transport = send_to_server
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  port = PORT_D
+
+# End

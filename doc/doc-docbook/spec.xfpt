@@ -35528,6 +35528,7 @@ the following table:
 &`CV  `&        certificate verification status
 &`D   `&        duration of &"no mail in SMTP session"&
 &`DN  `&        distinguished name from peer certificate
+&`DS  `&        DNSSEC secured lookups
 &`DT  `&        on &`=>`& lines: time taken for a delivery
 &`F   `&        sender address (on delivery lines)
 &`H   `&        host name and IP address
@@ -35618,6 +35619,7 @@ selection marked by asterisks:
 &` deliver_time               `&  time taken to perform delivery
 &` delivery_size              `&  add &`S=`&&'nnn'& to => lines
 &`*dnslist_defer              `&  defers of DNS list (aka RBL) lookups
+&` dnssec                     `&  DNSSEC secured lookups
 &`*etrn                       `&  ETRN commands
 &`*host_lookup_failed         `&  as it says
 &` ident_timeout              `&  timeout for ident connection
@@ -35724,6 +35726,14 @@ the &"=>"& line, tagged with S=.
 .cindex "black list (DNS)"
 &%dnslist_defer%&: A log entry is written if an attempt to look up a host in a
 DNS black list suffers a temporary error.
+.next
+.cindex log dnssec
+.cindex dnssec logging
+&%dnssec%&: For message acceptance and (attempted) delivery log lines, when
+dns lookups gave secure results a tag of DS is added.
+For acceptance this covers the reverse and forward lookups for host name verification.
+It does not cover helo-name verification.
+For delivery this covers the SRV, MX, A and/or AAAA lookups.
 .next
 .cindex "log" "ETRN commands"
 .cindex "ETRN" "logging"

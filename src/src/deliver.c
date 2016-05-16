@@ -711,25 +711,31 @@ return s;
 
 
 static uschar *
-d_hostlog(uschar *s, int *sizep, int *ptrp, address_item *addr)
+d_hostlog(uschar * s, int * sp, int * pp, address_item * addr)
 {
-s = string_append(s, sizep, ptrp, 5, US" H=", addr->host_used->name,
-  US" [", addr->host_used->address, US"]");
+host_item * h = addr->host_used;
+
+s = string_append(s, sp, pp, 2, US" H=", h->name);
+
+if (LOGGING(dnssec) && h->dnssec == DS_YES)
+  s = string_cat(s, sp, pp, US" DS");
+
+s = string_append(s, sp, pp, 3, US" [", h->address, US"]");
+
 if (LOGGING(outgoing_port))
-  s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
-    addr->host_used->port));
+  s = string_append(s, sp, pp, 2, US":", string_sprintf("%d", h->port));
 
 #ifdef SUPPORT_SOCKS
 if (LOGGING(proxy) && proxy_local_address)
   {
-  s = string_append(s, sizep, ptrp, 3, US" PRX=[", proxy_local_address, US"]");
+  s = string_append(s, sp, pp, 3, US" PRX=[", proxy_local_address, US"]");
   if (LOGGING(outgoing_port))
-    s = string_append(s, sizep, ptrp, 2, US":", string_sprintf("%d",
+    s = string_append(s, sp, pp, 2, US":", string_sprintf("%d",
       proxy_local_port));
   }
 #endif
 
-return d_log_interface(s, sizep, ptrp);
+return d_log_interface(s, sp, pp);
 }
 
 

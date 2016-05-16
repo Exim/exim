@@ -446,15 +446,19 @@ enum {
   LOG_BIT(smtp_protocol_error),
   LOG_BIT(smtp_syntax_error),
 
-  Li_acl_warn_skipped = BITWORDSIZE,
+  Li_8bitmime = BITWORDSIZE,
+  Li_acl_warn_skipped,
   Li_arguments,
   Li_deliver_time,
   Li_delivery_size,
+  Li_dnssec,
   Li_ident_timeout,
   Li_incoming_interface,
   Li_incoming_port,
+  Li_outgoing_interface,
   Li_outgoing_port,
   Li_pid,
+  Li_proxy,
   Li_queue_time,
   Li_queue_time_overall,
   Li_received_sender,
@@ -464,6 +468,7 @@ enum {
   Li_sender_on_delivery,
   Li_sender_verify_fail,
   Li_smtp_confirmation,
+  Li_smtp_mailauth,
   Li_smtp_no_mail,
   Li_subject,
   Li_tls_certificate_verified,
@@ -471,12 +476,8 @@ enum {
   Li_tls_peerdn,
   Li_tls_sni,
   Li_unknown_in_list,
-  Li_8bitmime,
-  Li_smtp_mailauth,
-  Li_proxy,
-  Li_outgoing_interface,
 
-  log_selector_size = BITWORD(Li_outgoing_interface) + 1
+  log_selector_size = BITWORD(Li_unknown_in_list) + 1
 };
 
 #define LOGGING(opt) BIT_TEST(log_selector, log_selector_size, Li_##opt)

@@ -9,8 +9,10 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.88
 ------------
 
- 1. The new perl_tainmode option allows to run the embedded perl
+ 1. The new perl_taintmode option allows to run the embedded perl
     interpreter in taint mode.
+
+ 2. New log_selector: dnssec, adds a "DS" tag to acceptance and delivery lines.
 
 
 Version 4.87

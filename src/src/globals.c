@@ -864,6 +864,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, deliver_time),
   BIT_TABLE(L, delivery_size),
   BIT_TABLE(L, dnslist_defer),
+  BIT_TABLE(L, dnssec),
   BIT_TABLE(L, etrn),
   BIT_TABLE(L, host_lookup_failed),
   BIT_TABLE(L, ident_timeout),

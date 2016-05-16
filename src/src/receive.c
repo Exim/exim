@@ -1123,16 +1123,17 @@ Returns:      the extended string
 */
 
 static uschar *
-add_host_info_for_log(uschar *s, int *sizeptr, int *ptrptr)
+add_host_info_for_log(uschar * s, int * sizeptr, int * ptrptr)
 {
-if (sender_fullhost != NULL)
+if (sender_fullhost)
   {
+  if (LOGGING(dnssec) && sender_host_dnssec)	/*XXX sender_helo_dnssec? */
+    s = string_cat(s, sizeptr, ptrptr, US" DS");
   s = string_append(s, sizeptr, ptrptr, 2, US" H=", sender_fullhost);
   if (LOGGING(incoming_interface) && interface_address != NULL)
     {
-    uschar *ss = string_sprintf(" I=[%s]:%d", interface_address,
-      interface_port);
-    s = string_cat(s, sizeptr, ptrptr, ss);
+    s = string_cat(s, sizeptr, ptrptr,
+      string_sprintf(" I=[%s]:%d", interface_address, interface_port));
     }
   }
 if (sender_ident != NULL)

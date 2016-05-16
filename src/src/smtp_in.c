@@ -2837,14 +2837,18 @@ is closing if required and return 2.  */
 if (log_reject_target != 0)
   {
 #ifdef SUPPORT_TLS
-  uschar * s = s_tlslog(NULL, NULL, NULL);
-  if (!s) s = US"";
+  uschar * tls = s_tlslog(NULL, NULL, NULL);
+  if (!tls) tls = US"";
 #else
-  uschar * s = US"";
+  uschar * tls = US"";
 #endif
-  log_write(0, log_reject_target, "%s%s %s%srejected %s%s",
-    host_and_ident(TRUE), s,
-    sender_info, (rc == FAIL)? US"" : US"temporarily ", what, log_msg);
+  log_write(0, log_reject_target, "%s%s%s %s%srejected %s%s",
+    LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
+    host_and_ident(TRUE),
+    tls,
+    sender_info,
+    rc == FAIL ? US"" : US"temporarily ",
+    what, log_msg);
   }
 
 if (!drop) return 0;
