@@ -29,6 +29,9 @@ JH/05 If main configuration option tls_certificate is unset, generate a
 JH/06 Bug 165: hide more cases of password exposure - this time in expansions
       in rewrites and routers.
 
+JH/07 Retire gnutls_require_mac et.al.  These were nonfunctional since 4.80
+      and logged a warning sing 4.83; now they are a configuration file error.
+
 
 Exim version 4.87
 -----------------

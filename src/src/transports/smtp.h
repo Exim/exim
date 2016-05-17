@@ -67,9 +67,6 @@ typedef struct {
   uschar *tls_crl;
   uschar *tls_privatekey;
   uschar *tls_require_ciphers;
-  uschar *gnutls_require_kx;
-  uschar *gnutls_require_mac;
-  uschar *gnutls_require_proto;
   uschar *tls_sni;
   uschar *tls_verify_certificates;
   int     tls_dh_min_bits;

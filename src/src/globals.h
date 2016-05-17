@@ -108,9 +108,6 @@ extern tls_support tls_out;
 #ifdef SUPPORT_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
 extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules */
-extern uschar *gnutls_require_mac;     /* So some can be avoided */
-extern uschar *gnutls_require_kx;      /* So some can be avoided */
-extern uschar *gnutls_require_proto;   /* So some can be avoided */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
 extern uschar *tls_certificate;        /* Certificate file */

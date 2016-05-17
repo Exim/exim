@@ -72,17 +72,6 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, final_timeout) },
   { "gethostbyname",        opt_bool,
       (void *)offsetof(smtp_transport_options_block, gethostbyname) },
-#ifdef SUPPORT_TLS
-  /* These are no longer honoured, as of Exim 4.80; for now, we silently
-  ignore; 4.83 will warn, and a later-still release will remove
-  these options, so that using them becomes an error. */
-  { "gnutls_require_kx",    opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, gnutls_require_kx) },
-  { "gnutls_require_mac",   opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, gnutls_require_mac) },
-  { "gnutls_require_protocols", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, gnutls_require_proto) },
-#endif
   { "helo_data",            opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, helo_data) },
   { "hosts",                opt_stringptr,
@@ -257,9 +246,6 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* tls_crl */
   NULL,                /* tls_privatekey */
   NULL,                /* tls_require_ciphers */
-  NULL,                /* gnutls_require_kx */
-  NULL,                /* gnutls_require_mac */
-  NULL,                /* gnutls_require_proto */
   NULL,                /* tls_sni */
   US"system",          /* tls_verify_certificates */
   EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
@@ -411,15 +397,6 @@ if (ob->hosts_override && ob->hosts != NULL) tblock->overrides_hosts = TRUE;
 for them, but do not do any lookups at this time. */
 
 host_build_hostlist(&(ob->fallback_hostlist), ob->fallback_hosts, FALSE);
-
-#ifdef SUPPORT_TLS
-if (  ob->gnutls_require_kx
-   || ob->gnutls_require_mac
-   || ob->gnutls_require_proto)
-  log_write(0, LOG_MAIN, "WARNING: smtp transport options"
-    " gnutls_require_kx, gnutls_require_mac and gnutls_require_protocols"
-    " are obsolete\n");
-#endif
 }
 
 
