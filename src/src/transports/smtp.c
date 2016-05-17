@@ -3921,7 +3921,7 @@ If queue_smtp is set, or this transport was called to send a subsequent message
 down an existing TCP/IP connection, and something caused the host not to be
 found, we end up here, but can detect these cases and handle them specially. */
 
-for (addr = addrlist; addr != NULL; addr = addr->next)
+for (addr = addrlist; addr; addr = addr->next)
   {
   /* If host is not NULL, it means that we stopped processing the host list
   because of hosts_max_try or hosts_max_try_hardlimit. In the former case, this
@@ -3930,8 +3930,7 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   However, if we have hit hosts_max_try_hardlimit, we want to behave as if all
   hosts were tried. */
 
-  if (host != NULL)
-    {
+  if (host)
     if (total_hosts_tried >= ob->hosts_max_try_hardlimit)
       {
       DEBUG(D_transport)
@@ -3944,7 +3943,6 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
         debug_printf("hosts_max_try limit caused some hosts to be skipped\n");
       setflag(addr, af_retry_skipped);
       }
-    }
 
   if (queue_smtp)    /* no deliveries attempted */
     {
@@ -3953,28 +3951,28 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
     addr->message = US"SMTP delivery explicitly queued";
     }
 
-  else if (addr->transport_return == DEFER &&
-       (addr->basic_errno == ERRNO_UNKNOWNERROR || addr->basic_errno == 0) &&
-       addr->message == NULL)
+  else if (  addr->transport_return == DEFER
+	  && (addr->basic_errno == ERRNO_UNKNOWNERROR || addr->basic_errno == 0)
+	  && !addr->message
+	  )
     {
     addr->basic_errno = ERRNO_HRETRY;
-    if (continue_hostname != NULL)
-      {
+    if (continue_hostname)
       addr->message = US"no host found for existing SMTP connection";
-      }
     else if (expired)
       {
       setflag(addr, af_pass_message);   /* This is not a security risk */
-      addr->message = ob->delay_after_cutoff
-        ? US"retry time not reached for any host after a long failure period"
-        : US"all hosts have been failing for a long time and were last tried "
-          "after this message arrived";
+      addr->message = string_sprintf(
+	"all hosts%s have been failing for a long time %s",
+	addr->domain ? string_sprintf(" for '%s'", addr->domain) : US"",
+        ob->delay_after_cutoff
+	? US"(and retry time not reached)"
+	: US"and were last tried after this message arrived");
 
       /* If we are already using fallback hosts, or there are no fallback hosts
       defined, convert the result to FAIL to cause a bounce. */
 
-      if (addr->host_list == addr->fallback_hosts ||
-          addr->fallback_hosts == NULL)
+      if (addr->host_list == addr->fallback_hosts || !addr->fallback_hosts)
         addr->transport_return = FAIL;
       }
     else
