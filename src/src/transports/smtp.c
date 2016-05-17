@@ -1889,17 +1889,17 @@ if (tls_out.active >= 0)
 /* If the host is required to use a secure channel, ensure that we
 have one. */
 
-else if (
+else if (  smtps
 # ifdef EXPERIMENTAL_DANE
-	dane ||
+	|| dane
 # endif
-        verify_check_given_host(&ob->hosts_require_tls, host) == OK
+        || verify_check_given_host(&ob->hosts_require_tls, host) == OK
 	)
   {
   save_errno = ERRNO_TLSREQUIRED;
   message = string_sprintf("a TLS session is required, but %s",
-    tls_offered? "an attempt to start TLS failed" :
-                 "the server did not offer TLS support");
+    tls_offered ? "an attempt to start TLS failed"
+		: "the server did not offer TLS support");
   goto TLS_FAILED;
   }
 #endif	/*SUPPORT_TLS*/
