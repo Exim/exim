@@ -1826,10 +1826,8 @@ state->fd_out = fileno(smtp_out);
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 do
-  {
   rc = gnutls_handshake(state->session);
-  } while ((rc == GNUTLS_E_AGAIN) ||
-      (rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen));
+while (rc == GNUTLS_E_AGAIN ||  rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
