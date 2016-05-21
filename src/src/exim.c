@@ -12,6 +12,10 @@ Also a few functions that don't naturally fit elsewhere. */
 
 #include "exim.h"
 
+#ifdef __GLIBC__
+# include <gnu/libc-version.h>
+#endif
+
 #ifdef USE_GNUTLS
 # include <gnutls/gnutls.h>
 # if GNUTLS_VERSION_NUMBER < 0x030103 && !defined(DISABLE_OCSP)
@@ -1025,6 +1029,14 @@ DEBUG(D_any) do {
   fprintf(f, "Compiler: <unknown>\n");
 #endif
 
+#ifdef __GLIBC__
+  fprintf(f, "Library version: Glibc: Compile: %d.%d\n",
+	       	__GLIBC__, __GLIBC_MINOR__);
+  if (__GLIBC_PREREQ(2, 1))
+    fprintf(f, "                        Runtime: %s\n",
+	       	gnu_get_libc_version());
+#endif
+
 #ifdef SUPPORT_TLS
   tls_version_report(f);
 #endif
@@ -1040,7 +1052,7 @@ DEBUG(D_any) do {
   characters; unless it's an ancient version of PCRE in which case it
   is not defined. */
 #ifndef PCRE_PRERELEASE
-#define PCRE_PRERELEASE
+# define PCRE_PRERELEASE
 #endif
 #define QUOTE(X) #X
 #define EXPAND_AND_QUOTE(X) QUOTE(X)
