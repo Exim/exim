@@ -503,6 +503,13 @@ log_write(0, LOG_PANIC_DIE, "Cannot open %s log file \"%s\": %s: "
 }
 
 
+static void
+unlink_log(int type)
+{
+if (type == lt_debug) unlink(CS debuglog_name);
+}
+
+
 
 /*************************************************
 *     Add configuration file info to log line    *
@@ -1395,7 +1402,7 @@ int fd = -1;
 if (debug_file)
   {
   debug_printf("DEBUGGING ACTIVATED FROM WITHIN CONFIG.\n"
-      "DEBUG: Tag=\"%s\" Opts=\"%s\"\n", tag_name, opts ? opts : US"");
+      "DEBUG: Tag=\"%s\" opts=\"%s\"\n", tag_name, opts ? opts : US"");
   return;
   }
 
@@ -1423,6 +1430,18 @@ if (fd != -1)
   debug_file = fdopen(fd, "w");
 else
   log_write(0, LOG_MAIN|LOG_PANIC, "unable to open debug log");
+}
+
+
+void
+debug_logging_stop(void)
+{
+if (!debug_file || !debuglog_name[0]) return;
+
+debug_selector = 0;
+fclose(debug_file);
+debug_file = NULL;
+unlink_log(lt_debug);
 }
 
 

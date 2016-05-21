@@ -1,0 +1,34 @@
+# Exim test configuration 0574
+
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+tls_advertise_hosts =
+
+# ----- Main settings -----
+
+acl_smtp_mail = chk_mail
+acl_smtp_rcpt = chk_rcpt
+acl_smtp_data = chk_data
+
+queue_only
+
+# ----- ACL -----
+
+begin acl
+
+chk_mail:
+  accept control = debug/tag=_1
+
+chk_rcpt:
+  accept control = debug/kill
+
+chk_data:
+  accept control = debug/tag=_2/opts=+all
+
+# End

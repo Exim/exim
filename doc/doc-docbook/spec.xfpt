@@ -28712,13 +28712,18 @@ with &`-d`&, with the output going to a new logfile, by default called
 &'debuglog'&.  The filename can be adjusted with the &'tag'& option, which
 may access any variables already defined.  The logging may be adjusted with
 the &'opts'& option, which takes the same values as the &`-d`& command-line
-option.  Some examples (which depend on variables that don't exist in all
+option.
+.new
+Logging may be stopped, and the file removed, with the &'kill'& option.
+.wen
+Some examples (which depend on variables that don't exist in all
 contexts):
 .code
       control = debug
       control = debug/tag=.$sender_host_address
       control = debug/opts=+expand+acl
       control = debug/tag=.$message_exim_id/opts=+expand
+      control = debug/kill
 .endd
 
 

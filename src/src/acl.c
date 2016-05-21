@@ -2976,8 +2976,6 @@ acl_check_condition(int verb, acl_condition_block *cb, int where,
 {
 uschar *user_message = NULL;
 uschar *log_message = NULL;
-uschar *debug_tag = NULL;
-uschar *debug_opts = NULL;
 int rc = OK;
 #ifdef WITH_CONTENT_SCAN
 int sep = -'/';
@@ -3329,24 +3327,39 @@ for (; cb != NULL; cb = cb->next)
 	break;
 
 	case CONTROL_DEBUG:
-	while (*p == '/')
 	  {
-	  if (Ustrncmp(p, "/tag=", 5) == 0)
+	  uschar * debug_tag = NULL;
+	  uschar * debug_opts = NULL;
+	  BOOL kill = FALSE;
+
+	  while (*p == '/')
 	    {
-	    const uschar *pp = p + 5;
-	    while (*pp != '\0' && *pp != '/') pp++;
-	    debug_tag = string_copyn(p+5, pp-p-5);
+	    const uschar * pp = p+1;
+	    if (Ustrncmp(pp, "tag=", 4) == 0)
+	      {
+	      for (pp += 4; *pp && *pp != '/';) pp++;
+	      debug_tag = string_copyn(p+5, pp-p-5);
+	      }
+	    else if (Ustrncmp(pp, "opts=", 5) == 0)
+	      {
+	      for (pp += 5; *pp && *pp != '/';) pp++;
+	      debug_opts = string_copyn(p+6, pp-p-6);
+	      }
+	    else if (Ustrncmp(pp, "kill", 4) == 0)
+	      {
+	      for (pp += 4; *pp && *pp != '/';) pp++;
+	      kill = TRUE;
+	      }
+	    else
+	      while (*pp && *pp != '/') pp++;
 	    p = pp;
 	    }
-	  else if (Ustrncmp(p, "/opts=", 6) == 0)
-	    {
-	    const uschar *pp = p + 6;
-	    while (*pp != '\0' && *pp != '/') pp++;
-	    debug_opts = string_copyn(p+6, pp-p-6);
-	    p = pp;
-	    }
+
+	    if (kill)
+	      debug_logging_stop();
+	    else
+	      debug_logging_activate(debug_tag, debug_opts);
 	  }
-	  debug_logging_activate(debug_tag, debug_opts);
 	break;
 
 	case CONTROL_SUPPRESS_LOCAL_FIXUPS:

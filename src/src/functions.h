@@ -123,6 +123,7 @@ extern int     dcc_process(uschar **);
 #endif
 
 extern void    debug_logging_activate(uschar *, uschar *);
+extern void    debug_logging_stop(void);
 extern void    debug_print_argv(const uschar **);
 extern void    debug_print_ids(uschar *);
 extern void    debug_print_string(uschar *);
