@@ -4352,14 +4352,13 @@ while (done <= 0)
     /* Apply SMTP rewriting then extract the working address. Don't allow "<>"
     as a recipient address */
 
-    recipient = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_cmd_data;
+    recipient = rewrite_existflags & rewrite_smtp
+      ? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+	  global_rewrite_rules)
+      : smtp_cmd_data;
 
-    /* rfc821_domains = TRUE; << no longer needed */
     recipient = parse_extract_address(recipient, &errmess, &start, &end,
       &recipient_domain, FALSE);
-    /* rfc821_domains = FALSE; << no longer needed */
 
     if (recipient == NULL)
       {
@@ -4380,7 +4379,6 @@ while (done <= 0)
     we must always qualify this address, regardless. */
 
     if (recipient_domain == 0)
-      {
       if (allow_unqualified_recipient ||
           strcmpic(recipient, US"postmaster") == 0)
         {
@@ -4400,7 +4398,6 @@ while (done <= 0)
           host_lookup_msg);
         break;
         }
-      }
 
     /* Check maximum allowed */
 
@@ -4586,18 +4583,40 @@ while (done <= 0)
 
       HAD(SCH_VRFY);
 
-      if(!(address = parse_extract_address(smtp_cmd_data, &errmess, &start, &end,
-	    &recipient_domain, FALSE)))
+      if (!(address = parse_extract_address(smtp_cmd_data, &errmess,
+            &start, &end, &recipient_domain, FALSE)))
+	{
 	smtp_printf("501 %s\r\n", errmess);
+	break;
+	}
 
-      else if ((rc = acl_check(ACL_WHERE_VRFY, address, acl_smtp_vrfy,
+      if (recipient_domain == 0)
+	if (  allow_unqualified_recipient
+	   || strcmpic(address, US"postmaster") == 0)
+	  {
+	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
+	    recipient);
+	  recipient_domain = Ustrlen(recipient) + 1;
+	  address = rewrite_address_qualify(address, TRUE);
+	  }
+	else
+	  {
+	  smtp_printf("501 %s: recipient address must contain a domain\r\n",
+	    smtp_cmd_data);
+	  log_write(L_smtp_syntax_error,
+	    LOG_MAIN|LOG_REJECT, "unqualified verify rejected: <%s> %s%s",
+	    address, host_and_ident(TRUE), host_lookup_msg);
+	  break;
+	  }
+
+      if ((rc = acl_check(ACL_WHERE_VRFY, address, acl_smtp_vrfy,
 		    &user_msg, &log_msg)) != OK)
 	done = smtp_handle_acl_fail(ACL_WHERE_VRFY, rc, user_msg, log_msg);
       else
 	{
-	uschar *s = NULL;
+	uschar * s = NULL;
+	address_item * addr = deliver_make_addr(address, FALSE);
 
-	address_item *addr = deliver_make_addr(address, FALSE);
 	switch(verify_address(addr, NULL, vopt_is_recipient | vopt_qualify, -1,
 	       -1, -1, NULL, NULL, NULL))
 	  {

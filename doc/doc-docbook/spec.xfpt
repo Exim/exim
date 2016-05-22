@@ -38394,7 +38394,7 @@ form of the name.
 Log lines and Received-by: header lines will acquire a "utf8"
 prefix on the protocol element, eg. utf8esmtp.
 
-The following expansion operator can be used:
+The following expansion operators can be used:
 .code
 ${utf8_domain_to_alabel:str}
 ${utf8_domain_from_alabel:str}

@@ -32,6 +32,9 @@ JH/06 Bug 165: hide more cases of password exposure - this time in expansions
 JH/07 Retire gnutls_require_mac et.al.  These were nonfunctional since 4.80
       and logged a warning sing 4.83; now they are a configuration file error.
 
+JH/08 Bug 1836: Fix crash in VRFY handling when handed an unqualified name
+      (lacking @domain).  Apply the same qualification processing as RCPT.
+
 
 Exim version 4.87
 -----------------
