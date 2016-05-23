@@ -4947,8 +4947,10 @@ while (done <= 0)
         break;
         }
       etrn_command = US"exim -R";
-      argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, NULL, TRUE, 2, US"-R",
-        smtp_cmd_data);
+      argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, NULL, TRUE,
+        *queue_name ? 4 : 2,
+	US"-R", smtp_cmd_data,
+	US"-MCG", queue_name);
       }
 
     /* If we are host-testing, don't actually do anything. */

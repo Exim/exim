@@ -651,8 +651,8 @@ if (pid == 0)
         if (geteuid() != root_uid && !deliver_drop_privilege)
           {
           signal(SIGALRM, SIG_DFL);
-          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 2, US"-Mc",
-            message_id);
+          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE,
+	    2, US"-Mc", message_id);
           /* Control does not return here. */
           }
 
@@ -1615,12 +1615,11 @@ else if (daemon_listen)
   int i, j;
   int smtp_ports = 0;
   int smtps_ports = 0;
-  ip_address_item *ipa;
-  uschar *p = big_buffer;
-  uschar *qinfo = (queue_interval > 0)?
-    string_sprintf("-q%s", readconf_printtime(queue_interval))
-    :
-    US"no queue runs";
+  ip_address_item * ipa;
+  uschar * p = big_buffer;
+  uschar * qinfo = queue_interval > 0
+    ? string_sprintf("-q%s", readconf_printtime(queue_interval))
+    : US"no queue runs";
 
   /* Build a list of listening addresses in big_buffer, but limit it to 10
   items. The style is for backwards compatibility.
@@ -1631,30 +1630,30 @@ else if (daemon_listen)
 
   for (j = 0; j < 2; j++)
     {
-    for (i = 0, ipa = addresses; i < 10 && ipa != NULL; i++, ipa = ipa->next)
+    for (i = 0, ipa = addresses; i < 10 && ipa; i++, ipa = ipa->next)
        {
        /* First time round, look for SMTP ports; second time round, look for
        SMTPS ports. For the first one of each, insert leading text. */
 
        if (host_is_tls_on_connect_port(ipa->port) == (j > 0))
          {
-         if (j == 0)
-           {
-           if (smtp_ports++ == 0)
+	 if (j == 0)
+	   {
+	   if (smtp_ports++ == 0)
              {
              memcpy(p, "SMTP on", 8);
              p += 7;
              }
-           }
-         else
-           {
-           if (smtps_ports++ == 0)
+	   }
+	 else
+	   {
+	   if (smtps_ports++ == 0)
              {
              (void)sprintf(CS p, "%sSMTPS on",
-               (smtp_ports == 0)? "":" and for ");
-             while (*p != 0) p++;
+               smtp_ports == 0 ? "" : " and for ");
+             while (*p) p++;
              }
-           }
+	   }
 
          /* Now the information about the port (and sometimes interface) */
 
@@ -1679,7 +1678,7 @@ else if (daemon_listen)
          }
        }
 
-    if (ipa != NULL)
+    if (ipa)
       {
       memcpy(p, " ...", 5);
       p += 4;
@@ -1835,24 +1834,22 @@ for (;;)
             if (deliver_force_thaw) *p++ = 'f';
             if (queue_run_local) *p++ = 'l';
             *p = 0;
-	    if (queue_name)
-	      extra[0] = string_sprintf("%sG%s", opt, queue_name);
-	    else
-	      extra[0] = opt;
+	    extra[0] = queue_name
+	      ? string_sprintf("%sG%s", opt, queue_name) : opt;
 
             /* If -R or -S were on the original command line, ensure they get
             passed on. */
 
-            if (deliver_selectstring != NULL)
+            if (deliver_selectstring)
               {
-              extra[extracount++] = deliver_selectstring_regex? US"-Rr" : US"-R";
+              extra[extracount++] = deliver_selectstring_regex ? US"-Rr" : US"-R";
               extra[extracount++] = deliver_selectstring;
               }
 
-            if (deliver_selectstring_sender != NULL)
+            if (deliver_selectstring_sender)
               {
-              extra[extracount++] = deliver_selectstring_sender_regex?
-                US"-Sr" : US"-S";
+              extra[extracount++] = deliver_selectstring_sender_regex
+	        ? US"-Sr" : US"-S";
               extra[extracount++] = deliver_selectstring_sender;
               }
 

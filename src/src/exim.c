@@ -2723,7 +2723,7 @@ for (i = 1; i < argc; i++)
       break;
       }
 
-    /* -MCG: set the queue name, to a non-default value
+    /* -MCG: set the queue name, to a non-default value */
 
     else if (Ustrcmp(argrest, "CG") == 0)
       {
@@ -5726,8 +5726,8 @@ while (more)
 
       if (geteuid() != root_uid && !deliver_drop_privilege && !unprivileged)
         {
-        (void)child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 2, US"-Mc",
-          message_id);
+        (void)child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE,
+		2, US"-Mc", message_id);
         /* Control does not return here. */
         }
 
