@@ -4379,7 +4379,10 @@ relax this restriction (and also the same requirement for the &%-M%&, &%-R%&,
 and &%-S%& options).
 
 .cindex "queue runner" "description of operation"
-The &%-q%& option starts one queue runner process. This scans the queue of
+.new
+If other commandline options do not specify an action,
+.wen
+the &%-q%& option starts one queue runner process. This scans the queue of
 waiting messages, and runs a delivery process for each one in turn. It waits
 for each delivery process to finish before starting the next one. A delivery
 process may not actually do any deliveries if the retry times for the addresses
@@ -4475,6 +4478,15 @@ queue with the given name rather than the default queue.
 The name should not contain a &'/'& character.
 For a periodic queue run (see below)
 append to the name a slash and a time value.
+
+If other commandline options speicify an action, a &'-qG<name>'& option
+will specify a queue to operate on.
+For example:
+.code
+exim -bp -qGquarantine
+mailq -qGquarantime
+exim -qGoffpeak -Rf @special.domain.example
+.endd
 .wen
 
 .vitem &%-q%&<&'qflags'&>&~<&'start&~id'&>&~<&'end&~id'&>
