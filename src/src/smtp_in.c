@@ -1729,16 +1729,15 @@ while (done <= 0)
     /* Apply SMTP rewrite, then extract address. Don't allow "<>" as a
     recipient address */
 
-    recipient = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_cmd_data;
+    recipient = rewrite_existflags & rewrite_smtp
+      ? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+		    global_rewrite_rules)
+      : smtp_cmd_data;
 
-    /* rfc821_domains = TRUE; << no longer needed */
     recipient = parse_extract_address(recipient, &errmess, &start, &end,
       &recipient_domain, FALSE);
-    /* rfc821_domains = FALSE; << no longer needed */
 
-    if (recipient == NULL)
+    if (!recipient)
       /* The function moan_smtp_batch() does not return. */
       moan_smtp_batch(smtp_cmd_buffer, "501 %s", errmess);
 
@@ -3215,6 +3214,31 @@ return rc;
 
 
 
+
+
+static int
+qualify_recipient(uschar ** recipient, uschar * smtp_cmd_data, uschar * tag)
+{
+int rd;
+if (allow_unqualified_recipient || strcmpic(*recipient, US"postmaster") == 0)
+  {
+  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
+    *recipient);
+  rd = Ustrlen(recipient) + 1;
+  *recipient = rewrite_address_qualify(*recipient, TRUE);
+  return rd;
+  }
+smtp_printf("501 %s: recipient address must contain a domain\r\n",
+  smtp_cmd_data);
+log_write(L_smtp_syntax_error,
+  LOG_MAIN|LOG_REJECT, "unqualified %s rejected: <%s> %s%s",
+  tag, *recipient, host_and_ident(TRUE), host_lookup_msg);
+return 0;
+}
+
+
+
+
 /*************************************************
 *       Initialize for SMTP incoming message     *
 *************************************************/
@@ -4101,13 +4125,11 @@ while (done <= 0)
 		    global_rewrite_rules)
       : smtp_cmd_data;
 
-    /* rfc821_domains = TRUE; << no longer needed */
     raw_sender =
       parse_extract_address(raw_sender, &errmess, &start, &end, &sender_domain,
         TRUE);
-    /* rfc821_domains = FALSE; << no longer needed */
 
-    if (raw_sender == NULL)
+    if (!raw_sender)
       {
       done = synprot_error(L_smtp_syntax_error, 501, smtp_cmd_data, errmess);
       break;
@@ -4357,10 +4379,8 @@ while (done <= 0)
 	  global_rewrite_rules)
       : smtp_cmd_data;
 
-    recipient = parse_extract_address(recipient, &errmess, &start, &end,
-      &recipient_domain, FALSE);
-
-    if (recipient == NULL)
+    if (!(recipient = parse_extract_address(recipient, &errmess, &start, &end,
+      &recipient_domain, FALSE)))
       {
       done = synprot_error(L_smtp_syntax_error, 501, smtp_cmd_data, errmess);
       rcpt_fail_count++;
@@ -4379,23 +4399,10 @@ while (done <= 0)
     we must always qualify this address, regardless. */
 
     if (recipient_domain == 0)
-      if (allow_unqualified_recipient ||
-          strcmpic(recipient, US"postmaster") == 0)
-        {
-        DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
-          recipient);
-        recipient_domain = Ustrlen(recipient) + 1;
-        recipient = rewrite_address_qualify(recipient, TRUE);
-        }
-      else
+      if (!(recipient_domain = qualify_recipient(&recipient, smtp_cmd_data,
+				  US"recipient")))
         {
         rcpt_fail_count++;
-        smtp_printf("501 %s: recipient address must contain a domain\r\n",
-          smtp_cmd_data);
-        log_write(L_smtp_syntax_error,
-          LOG_MAIN|LOG_REJECT, "unqualified recipient rejected: "
-          "<%s> %s%s", recipient, host_and_ident(TRUE),
-          host_lookup_msg);
         break;
         }
 
@@ -4591,23 +4598,9 @@ while (done <= 0)
 	}
 
       if (recipient_domain == 0)
-	if (  allow_unqualified_recipient
-	   || strcmpic(address, US"postmaster") == 0)
-	  {
-	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
-	    recipient);
-	  recipient_domain = Ustrlen(recipient) + 1;
-	  address = rewrite_address_qualify(address, TRUE);
-	  }
-	else
-	  {
-	  smtp_printf("501 %s: recipient address must contain a domain\r\n",
-	    smtp_cmd_data);
-	  log_write(L_smtp_syntax_error,
-	    LOG_MAIN|LOG_REJECT, "unqualified verify rejected: <%s> %s%s",
-	    address, host_and_ident(TRUE), host_lookup_msg);
+	if (!(recipient_domain = qualify_recipient(&address, smtp_cmd_data,
+				    US"verify")))
 	  break;
-	  }
 
       if ((rc = acl_check(ACL_WHERE_VRFY, address, acl_smtp_vrfy,
 		    &user_msg, &log_msg)) != OK)
