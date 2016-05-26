@@ -15977,7 +15977,7 @@ the daemon's command line.
 
 .new
 .cindex queues named
-.condex "named queues"
+.cindex "named queues"
 To set limits for different named queues use
 an expansion depending on the &$queue_name$& variable.
 .wen
@@ -16997,7 +16997,7 @@ in IKE is assigned number 23.
 
 Otherwise, the option must expand to the name used by Exim for any of a number
 of DH primes specified in RFC 2409, RFC 3526 and RFC 5114.  As names, Exim uses
-"ike" followed by the number used by IKE, of "default" which corresponds to
+"ike" followed by the number used by IKE, or "default" which corresponds to
 "ike23".
 
 The available primes are:
