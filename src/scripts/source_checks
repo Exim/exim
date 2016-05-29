@@ -19,6 +19,7 @@ done <<-END
 	globals.c	header_names
 	globals.c	log_options
 	expand.c	item_table
+	std-crypto.c	dh_constants
 	transport.c	optionlist_transports
 	route.c		optionlist_routers
 	transports/appendfile.c	appendfile_transport_options

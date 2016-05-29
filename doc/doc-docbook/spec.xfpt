@@ -17034,7 +17034,15 @@ larger prime than requested.
 The value of this option is expanded and indicates the source of DH parameters
 to be used by Exim.
 
-If it is a filename starting with a &`/`&, then it names a file from which DH
+.new
+&*Note: The Exim Maintainers strongly recommend using a filename with site-generated
+local DH parameters*&, which has been supported across all versions of Exim.  The
+other specific constants available are a fallback so that even when
+"unconfigured", Exim can offer Perfect Forward Secrecy in older ciphersuites in TLS.
+.wen
+
+If &%tls_dhparam%& is a filename starting with a &`/`&,
+then it names a file from which DH
 parameters should be loaded.  If the file exists, it should hold a PEM-encoded
 PKCS#3 representation of the DH prime.  If the file does not exist, for
 OpenSSL it is an error.  For GnuTLS, Exim will attempt to create the file and
@@ -17050,23 +17058,39 @@ Exim will attempt to load a file from inside the spool directory.  If the file
 does not exist, Exim will attempt to create it.
 See section &<<SECTgnutlsparam>>& for further details.
 
+.new
 If Exim is using OpenSSL and this option is empty or unset, then Exim will load
-a default DH prime; the default is the 2048 bit prime described in section
+a default DH prime; the default is Exim-specific but lacks verifiable provenance.
+
+In older versions of Exim the default was the 2048 bit prime described in section
 2.2 of RFC 5114, "2048-bit MODP Group with 224-bit Prime Order Subgroup", which
 in IKE is assigned number 23.
 
 Otherwise, the option must expand to the name used by Exim for any of a number
-of DH primes specified in RFC 2409, RFC 3526 and RFC 5114.  As names, Exim uses
-"ike" followed by the number used by IKE, or "default" which corresponds to
-"ike23".
+of DH primes specified in RFC 2409, RFC 3526, RFC 5114, RFC 7919, or from other
+sources.  As names, Exim uses a standard specified name, else "ike" followed by
+the number used by IKE, or "default" which corresponds to
+&`exim.dev.20160529.3`&.
 
-The available primes are:
+The available standard primes are:
+&`ffdhe2048`&, &`ffdhe3072`&, &`ffdhe4096`&, &`ffdhe6144`&, &`ffdhe8192`&,
 &`ike1`&, &`ike2`&, &`ike5`&,
 &`ike14`&, &`ike15`&, &`ike16`&, &`ike17`&, &`ike18`&,
-&`ike22`&, &`ike23`& (aka &`default`&) and &`ike24`&.
+&`ike22`&, &`ike23`& and &`ike24`&.
+
+The available additional primes are:
+&`exim.dev.20160529.1`&, &`exim.dev.20160529.2`& and &`exim.dev.20160529.3`&.
 
 Some of these will be too small to be accepted by clients.
 Some may be too large to be accepted by clients.
+The open cryptographic community has suspicions about the integrity of some
+of the later IKE values, which led into RFC7919 providing new fixed constants
+(the "ffdhe" identifiers).
+
+At this point, all of the "ike" values should be considered obsolete;
+they're still in Exim to avoid breaking unusual configurations, but are
+candidates for removal the next time we have backwards-incompatible changes.
+.wen
 
 The TLS protocol does not negotiate an acceptable size for this; clients tend
 to hard-drop connections if what is offered by the server is unacceptable,

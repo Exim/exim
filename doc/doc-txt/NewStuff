@@ -49,6 +49,8 @@ Version 4.88
     returns from the target back to the initiator, rather than spooling the
     message.
 
+13. New built-in constants available for tls_dhparam and default changed.
+
 
 Version 4.87
 ------------

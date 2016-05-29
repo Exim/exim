@@ -114,6 +114,9 @@ JH/29 Fix the connection_reject log selector to apply to the connect ACL.
 
 JH/30 Bug 1897: fix callouts connection fallback from TLS to cleartext.
 
+PP/01 Changed default Diffie-Hellman parameters to be Exim-specific, created
+      by me.  Added RFC7919 DH primes as an alternative.
+
 
 Exim version 4.87
 -----------------
