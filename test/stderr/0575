@@ -1,0 +1,60 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+sender_fullhost = [V4NET.0.0.0]
+sender_rcvhost = [V4NET.0.0.0]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.0]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [V4NET.0.0.0]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<x@y>
+processing "accept"
+accept: condition test succeeded in inline ACL
+end of inline ACL: ACCEPT
+SMTP>> 250 Accepted
+DSN: orcpt: NULL  flags: 0
+SMTP<< data
+SMTP>> 354 Enter message, ending with "." on a line by itself
+search_tidyup called
+host in ignore_fromline_hosts? no (option unset)
+>>Headers received:
+
+search_tidyup called
+>>Headers after rewriting and local additions:
+
+Data file written for message 10HmaX-0005vi-00
+>>Generated Received: header line
+P Received: from [V4NET.0.0.0]
+	by mail.test.ex with smtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmaX-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+LOG: MAIN
+  <= x@y H=[V4NET.0.0.0] P=smtp S=sss
+SMTP>> 250 OK id=10HmaX-0005vi-00
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 mail.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.0] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

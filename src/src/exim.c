@@ -2059,6 +2059,7 @@ for (i = 1; i < argc; i++)
       sender_host_address = argv[i];
       host_checking = checking = log_testing_mode = TRUE;
       host_checking_callout = argrest[1] == 'c';
+      message_logs = FALSE;
       }
 
     /* -bi: This option is used by sendmail to initialize *the* alias file,

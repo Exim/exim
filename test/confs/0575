@@ -1,4 +1,4 @@
-# Exim test configuration 0420
+# Exim test configuration 0575
 
 exim_path = EXIM_PATH
 keep_environment =
@@ -14,10 +14,6 @@ tls_advertise_hosts =
 primary_hostname = mail.test.ex
 qualify_domain = test.ex
 
-queue_only
 acl_smtp_rcpt = accept
-acl_smtp_data =	accept logwrite = h: <$h_Received:>
-
-received_header_text = ${if eq{$sender_address}{x@y}{}{Received: some text}}
 
 # End

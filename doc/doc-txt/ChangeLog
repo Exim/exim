@@ -35,6 +35,8 @@ JH/07 Retire gnutls_require_mac et.al.  These were nonfunctional since 4.80
 JH/08 Bug 1836: Fix crash in VRFY handling when handed an unqualified name
       (lacking @domain).  Apply the same qualification processing as RCPT.
 
+JH/09 Bug 1804: Avoid writing msglog files when in -bh or -bhc mode.
+
 
 Exim version 4.87
 -----------------
