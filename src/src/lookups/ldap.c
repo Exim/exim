@@ -161,9 +161,9 @@ int    error_yield = DEFER;
 int    msgid;
 int    rc, ldap_rc, ldap_parse_rc;
 int    port;
-int    ptr = 0;
+size_t    ptr = 0;
 int    rescount = 0;
-int    size = 0;
+size_t    size = 0;
 BOOL   attribute_found = FALSE;
 BOOL   ldapi = FALSE;
 
@@ -806,7 +806,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
           while (*values != NULL)
             {
             uschar *value = *values;
-            int len = Ustrlen(value);
+            size_t len = Ustrlen(value);
             ++valuecount;
 
             DEBUG(D_lookup) debug_printf("LDAP value loop %s:%s\n", attr, value);
@@ -1169,7 +1169,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
   while (*url != 0 && *url != '=') url++;
   if (*url == '=')
     {
-    int namelen;
+    size_t namelen;
     uschar *value;
     namelen = ++url - name;
     value = string_dequote(&url);

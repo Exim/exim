@@ -30,8 +30,8 @@ Returns:         the result pointer (possibly updated)
 */
 
 uschar *
-lf_quote(uschar *name, uschar *value, int vlength, uschar *result, int *asize,
-  int *aoffset)
+lf_quote(uschar *name, uschar *value, size_t vlength, uschar *result, size_t *asize,
+  size_t *aoffset)
 {
 result = string_append(result, asize, aoffset, 2, name, US"=");
 

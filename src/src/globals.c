@@ -700,7 +700,7 @@ uschar *exim_path              = US BIN_DIRECTORY "/exim"
 uid_t   exim_uid               = EXIM_UID;
 BOOL    exim_uid_set           = TRUE;          /* This uid is always set */
 int     expand_forbid          = 0;
-int     expand_nlength[EXPAND_MAXN+1];
+size_t     expand_nlength[EXPAND_MAXN+1];
 int     expand_nmax            = -1;
 uschar *expand_nstring[EXPAND_MAXN+1];
 BOOL    expand_string_forcedfail = FALSE;

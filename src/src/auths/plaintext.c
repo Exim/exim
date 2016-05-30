@@ -159,7 +159,7 @@ auth_plaintext_client(
   smtp_outblock *outblock,               /* connection outblock */
   int timeout,                           /* command timeout */
   uschar *buffer,                        /* buffer for reading response */
-  int buffsize)                          /* size of buffer */
+  size_t buffsize)                          /* size of buffer */
 {
 auth_plaintext_options_block *ob =
   (auth_plaintext_options_block *)(ablock->options_block);

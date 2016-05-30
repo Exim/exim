@@ -694,7 +694,7 @@ Returns:    New value for s
 */
 
 static uschar *
-d_log_interface(uschar *s, int *sizep, int *ptrp)
+d_log_interface(uschar *s, size_t *sizep, size_t *ptrp)
 {
 if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
     && sending_ip_address)
@@ -711,7 +711,7 @@ return s;
 
 
 static uschar *
-d_hostlog(uschar * s, int * sp, int * pp, address_item * addr)
+d_hostlog(uschar * s, size_t * sp, size_t * pp, address_item * addr)
 {
 host_item * h = addr->host_used;
 
@@ -744,7 +744,7 @@ return d_log_interface(s, sp, pp);
 
 #ifdef SUPPORT_TLS
 static uschar *
-d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
+d_tlslog(uschar * s, size_t * sizep, size_t * ptrp, address_item * addr)
 {
 if (LOGGING(tls_cipher) && addr->cipher)
   s = string_append(s, sizep, ptrp, 2, US" X=", addr->cipher);
@@ -850,8 +850,8 @@ void
 delivery_log(int flags, address_item * addr, int logchar, uschar * msg)
 {
 uschar *log_address;
-int size = 256;         /* Used for a temporary, */
-int ptr = 0;            /* expanding buffer, for */
+size_t size = 256;         /* Used for a temporary, */
+size_t ptr = 0;            /* expanding buffer, for */
 uschar *s;              /* building log lines;   */
 void *reset_point;      /* released afterwards.  */
 
@@ -1041,8 +1041,8 @@ uschar *driver_kind = NULL;
 uschar *driver_name = NULL;
 uschar *log_address;
 
-int size = 256;         /* Used for a temporary, */
-int ptr = 0;            /* expanding buffer, for */
+size_t size = 256;         /* Used for a temporary, */
+size_t ptr = 0;            /* expanding buffer, for */
 uschar *s;              /* building log lines;   */
 void *reset_point;      /* released afterwards.  */
 
@@ -1778,7 +1778,7 @@ Returns:      TRUE  the header is in the string
 static BOOL
 contains_header(uschar *hdr, uschar *hstring)
 {
-int len = Ustrlen(hdr);
+size_t len = Ustrlen(hdr);
 uschar *p = hstring;
 while (*p != 0)
   {
@@ -2146,7 +2146,7 @@ if ((pid = fork()) == 0)
 
     for (i = 0, s = addr2->message; i < 2; i++, s = addr2->user_message)
       {
-      int message_length = s ? Ustrlen(s) + 1 : 0;
+      size_t message_length = s ? Ustrlen(s) + 1 : 0;
       if(  (ret = write(pfd[pipe_write], &message_length, sizeof(int))) != sizeof(int)
         || message_length > 0  && (ret = write(pfd[pipe_write], s, message_length)) != message_length
 	)
@@ -4812,8 +4812,8 @@ Returns:     NULL or an expanded string
 static uschar *
 next_emf(FILE *f, uschar *which)
 {
-int size = 256;
-int ptr = 0;
+size_t size = 256;
+size_t ptr = 0;
 uschar *para, *yield;
 uschar buffer[256];
 
@@ -4974,7 +4974,7 @@ Returns:       nothing
 static void
 print_address_error(address_item *addr, FILE *f, uschar *t)
 {
-int count = Ustrlen(t);
+size_t count = Ustrlen(t);
 uschar *s = testflag(addr, af_pass_message)? addr->message : NULL;
 
 if (!s && !(s = addr->user_message))
@@ -7346,7 +7346,6 @@ wording. */
 	    addr->address);
         if ((hu = addr->host_used) && hu->name)
 	  {
-	  const uschar * s;
 	  fprintf(f, "Remote-MTA: dns; %s\n", hu->name);
 #ifdef EXPERIMENTAL_DSN_INFO
 	  if (hu->address)

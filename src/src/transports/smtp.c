@@ -1045,7 +1045,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
       while (*p != 0)
 	{
 	int rc;
-	int len = Ustrlen(au->public_name);
+	size_t len = Ustrlen(au->public_name);
 	while (isspace(*p)) p++;
 
 	if (strncmpic(au->public_name, p, len) != 0 ||
@@ -1148,7 +1148,7 @@ Return	True on error, otherwise buffer has (possibly empty) terminated string
 */
 
 BOOL
-smtp_mail_auth_str(uschar *buffer, unsigned bufsize, address_item *addrlist,
+smtp_mail_auth_str(uschar *buffer, size_t bufsize, address_item *addrlist,
 		    smtp_transport_options_block *ob)
 {
 uschar *local_authenticated_sender = authenticated_sender;

@@ -167,9 +167,9 @@ static struct hostent *
 host_fake_gethostbyname(const uschar *name, int af, int *error_num)
 {
 #if HAVE_IPV6
-int alen = (af == AF_INET)? sizeof(struct in_addr):sizeof(struct in6_addr);
+size_t alen = (af == AF_INET)? sizeof(struct in_addr):sizeof(struct in6_addr);
 #else
-int alen = sizeof(struct in_addr);
+size_t alen = sizeof(struct in_addr);
 #endif
 
 int ipa;
@@ -589,9 +589,9 @@ else if (sender_helo_name[0] == '[' &&
 if (sender_host_name == NULL)
   {
   uschar *portptr = Ustrstr(address, "]:");
-  int size = 0;
-  int ptr = 0;
-  int adlen;    /* Sun compiler doesn't like ++ in initializers */
+  size_t size = 0;
+  size_t ptr = 0;
+  size_t adlen;    /* Sun compiler doesn't like ++ in initializers */
 
   adlen = (portptr == NULL)? Ustrlen(address) : (++portptr - address);
   sender_fullhost = (sender_helo_name == NULL)? address :
@@ -1517,7 +1517,7 @@ Returns:     OK, DEFER, FAIL
 static int
 host_name_lookup_byaddr(void)
 {
-int len;
+size_t len;
 uschar *s, *t;
 struct hostent *hosts;
 struct in_addr addr;
@@ -1706,7 +1706,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
     if (rc == DNS_SUCCEED)
       {
       uschar **aptr = NULL;
-      int ssize = 264;
+      size_t ssize = 264;
       int count = 0;
       int old_pool = store_pool;
 

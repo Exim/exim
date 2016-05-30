@@ -456,7 +456,7 @@ mime_param_val(uschar ** sp)
 {
 uschar * s = *sp;
 uschar * val = NULL;
-int size = 0, ptr = 0;
+size_t size = 0, ptr = 0;
 
 /* debug_printf("   considering paramval '%s'\n", s); */
 
@@ -495,7 +495,7 @@ return s;
 static uschar *
 rfc2231_to_2047(const uschar * fname, const uschar * charset, int * len)
 {
-int size = 0, ptr = 0;
+size_t size = 0, ptr = 0;
 uschar * val = string_catn(NULL, &size, &ptr, US"=?", 2);
 uschar c;
 
@@ -644,7 +644,7 @@ while(1)
 
 	      if (!decoding_failed)
 		{
-		int size;
+		size_t size;
 		if (!mime_filename_charset)
 		  {
 		  uschar * s = q;

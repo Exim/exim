@@ -357,11 +357,11 @@ Returns: a pointer to the retrieved record, or
 */
 
 void *
-dbfn_read_with_length(open_db *dbblock, const uschar *key, int *length)
+dbfn_read_with_length(open_db *dbblock, const uschar *key, size_t *length)
 {
 void *yield;
 EXIM_DATUM key_datum, result_datum;
-int klen = Ustrlen(key) + 1;
+size_t klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen);
 
 memcpy(key_copy, key, klen);
@@ -401,11 +401,11 @@ Returns:    the yield of the underlying dbm or db "write" function. If this
 */
 
 int
-dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
+dbfn_write(open_db *dbblock, const uschar *key, void *ptr, size_t length)
 {
 EXIM_DATUM key_datum, value_datum;
 dbdata_generic *gptr = (dbdata_generic *)ptr;
-int klen = Ustrlen(key) + 1;
+size_t klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen);
 
 memcpy(key_copy, key, klen);
@@ -437,7 +437,7 @@ Returns: the yield of the underlying dbm or db "delete" function.
 int
 dbfn_delete(open_db *dbblock, const uschar *key)
 {
-int klen = Ustrlen(key) + 1;
+size_t klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen);
 
 memcpy(key_copy, key, klen);
@@ -531,8 +531,8 @@ while (key != NULL)
   dbdata_callout_cache *callout;
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
-  int count_bad = 0;
-  int i, length;
+  int i, count_bad = 0;
+  size_t length;
   uschar *t;
   uschar name[MESSAGE_ID_LENGTH + 1];
   void *value;
@@ -738,7 +738,8 @@ for(;;)
   dbdata_callout_cache *callout;
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
-  int i, oldlength;
+  int i;
+  size_t oldlength;
   uschar *t;
   uschar field[256], value[256];
 
@@ -1318,7 +1319,7 @@ while (keychain != NULL)
   else if (dbdata_type == type_retry)
     {
     uschar *id;
-    int len = Ustrlen(key);
+    size_t len = Ustrlen(key);
 
     if (len < MESSAGE_ID_LENGTH + 1) continue;
     id = key + len - MESSAGE_ID_LENGTH - 1;

@@ -186,10 +186,10 @@ Returns:         the decoded, converted string, or NULL on error; if there are
 
 uschar *
 rfc2047_decode2(uschar *string, BOOL lencheck, uschar *target, int zeroval,
-  int *lenptr, int *sizeptr, uschar **error)
+  size_t *lenptr, size_t *sizeptr, uschar **error)
 {
-int ptr = 0;
-int size = Ustrlen(string);
+size_t ptr = 0;
+size_t size = Ustrlen(string);
 size_t dlen;
 uschar *dptr, *yield;
 uschar *mimeword, *q1, *q2, *endword;
@@ -341,7 +341,7 @@ argument. */
 
 uschar *
 rfc2047_decode(uschar *string, BOOL lencheck, uschar *target, int zeroval,
-  int *lenptr, uschar **error)
+  size_t *lenptr, uschar **error)
 {
 return rfc2047_decode2(string, lencheck, target, zeroval, lenptr, NULL, error);
 }

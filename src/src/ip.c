@@ -273,7 +273,8 @@ int
 ip_connectedsocket(int type, const uschar * hostname, int portlo, int porthi,
 	int timeout, host_item * connhost, uschar ** errstr)
 {
-int namelen, port;
+int port;
+size_t namelen;
 host_item shost;
 host_item *h;
 int af = 0, fd, fd4 = -1, fd6 = -1;

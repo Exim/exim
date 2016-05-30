@@ -117,7 +117,7 @@ typedef struct driver_info {
   optionlist *options;            /* Table of private options names */
   int    *options_count;          /* -> Number of entries in table */
   void   *options_block;          /* Points to default private block */
-  int     options_len;            /* Length of same in bytes */
+  size_t     options_len;         /* Length of same in bytes */
   void  (*init)(                  /* Initialization entry point */
     struct driver_instance *);
 } driver_info;
@@ -203,7 +203,7 @@ typedef struct transport_info {
   optionlist *options;            /* Table of private options names */
   int    *options_count;          /* -> Number of entries in table */
   void   *options_block;          /* Points to default private block */
-  int     options_len;            /* Length of same in bytes */
+  size_t     options_len;         /* Length of same in bytes */
   void (*init)(                   /* Initialization function */
     struct transport_instance *);
 /****/
@@ -315,7 +315,7 @@ typedef struct router_info {
   optionlist *options;            /* Table of private options names */
   int    *options_count;          /* -> Number of entries in table */
   void   *options_block;          /* Points to default private block */
-  int     options_len;            /* Length of same in bytes */
+  size_t     options_len;         /* Length of same in bytes */
   void (*init)(                   /* Initialization function */
     struct router_instance *);
 /****/
@@ -370,7 +370,7 @@ typedef struct auth_info {
   optionlist *options;            /* Table of private options names */
   int    *options_count;          /* -> Number of entries in table */
   void   *options_block;          /* Points to default private block */
-  int     options_len;            /* Length of same in bytes */
+  size_t     options_len;         /* Length of same in bytes */
   void (*init)(                   /* initialization function */
     struct auth_instance *);
 /****/
@@ -383,7 +383,7 @@ typedef struct auth_info {
     struct smtp_outblock *,       /* socket and output buffer */
     int,                          /* command timeout */
     uschar *,                     /* buffer for reading response */
-    int);                         /* sizeof buffer */
+    size_t);                      /* sizeof buffer */
   void (*version_report)(         /* diagnostic version reporting */
     FILE *);                      /* I/O stream to print to */
 } auth_info;

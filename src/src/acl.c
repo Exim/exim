@@ -1048,7 +1048,7 @@ static void
 setup_header(const uschar *hstring)
 {
 const uschar *p, *q;
-int hlen = Ustrlen(hstring);
+size_t hlen = Ustrlen(hstring);
 
 /* Ignore any leading newlines */
 while (*hstring == '\n') hstring++, hlen--;
@@ -1159,8 +1159,8 @@ uschar *
 fn_hdrs_added(void)
 {
 uschar * ret = NULL;
-int size = 0;
-int ptr = 0;
+size_t size = 0;
+size_t ptr = 0;
 header_line * h = acl_added_headers;
 uschar * s;
 uschar * cp;
@@ -1259,7 +1259,7 @@ if (log_message != NULL && log_message != user_message)
 
   if (logged == NULL)
     {
-    int length = Ustrlen(text) + 1;
+    size_t length = Ustrlen(text) + 1;
     log_write(0, LOG_MAIN, "%s", text);
     logged = store_malloc(sizeof(string_item) + length);
     logged->text = (uschar *)logged + sizeof(string_item);
@@ -1651,7 +1651,7 @@ typedef struct {
   int	   value;
   unsigned where_allowed;	/* bitmap */
   BOOL	   no_options;		/* Never has /option(s) following */
-  unsigned alt_opt_sep;		/* >0 Non-/ option separator (custom parser) */
+  size_t alt_opt_sep;		/* >0 Non-/ option separator (custom parser) */
   } verify_type_t;
 static verify_type_t verify_type_list[] = {
     { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	~0,	FALSE, 0 },
@@ -2340,7 +2340,7 @@ int mode = RATE_PER_WHAT;
 int old_pool, rc;
 tree_node **anchor, *t;
 open_db dbblock, *dbm;
-int dbdb_size;
+size_t dbdb_size;
 dbdata_ratelimit *dbd;
 dbdata_ratelimit_unique *dbdb;
 struct timeval tv;

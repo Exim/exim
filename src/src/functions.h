@@ -283,15 +283,15 @@ extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
 extern int     open_cutthrough_connection( address_item * addr );
 
-extern uschar *parse_extract_address(uschar *, uschar **, int *, int *, int *,
+extern uschar *parse_extract_address(uschar *, uschar **, size_t *, size_t *, int *,
                  BOOL);
 extern int     parse_forward_list(uschar *, int, address_item **, uschar **,
                  const uschar *, uschar *, error_block **);
 extern uschar *parse_find_address_end(uschar *, BOOL);
 extern uschar *parse_find_at(uschar *);
-extern const uschar *parse_fix_phrase(const uschar *, int, uschar *, int);
+extern const uschar *parse_fix_phrase(const uschar *, size_t, uschar *, size_t);
 extern uschar *parse_message_id(uschar *, uschar **, uschar **);
-extern const uschar *parse_quote_2047(const uschar *, int, uschar *, uschar *, int, BOOL);
+extern const uschar *parse_quote_2047(const uschar *, size_t, uschar *, uschar *, size_t, BOOL);
 extern uschar *parse_date_time(uschar *str, time_t *t);
 extern int     vaguely_random_number(int);
 #ifdef SUPPORT_TLS
@@ -348,7 +348,7 @@ extern header_line *rewrite_header(header_line *,
 extern uschar *rewrite_one(uschar *, int, BOOL *, BOOL, uschar *,
                  rewrite_rule *);
 extern void    rewrite_test(uschar *);
-extern uschar *rfc2047_decode2(uschar *, BOOL, uschar *, int, int *, int *,
+extern uschar *rfc2047_decode2(uschar *, BOOL, uschar *, int, size_t *, size_t *,
                  uschar **);
 extern int     route_address(address_item *, address_item **, address_item **,
                  address_item **, address_item **, int);
@@ -415,20 +415,20 @@ extern int     stdin_getc(void);
 extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
 extern int     stdin_ungetc(int);
-extern uschar *string_append(uschar *, int *, int *, int, ...);
+extern uschar *string_append(uschar *, size_t *, size_t *, int, ...);
 extern uschar *string_append_listele(uschar *, uschar, const uschar *);
-extern uschar *string_append_listele_n(uschar *, uschar, const uschar *, unsigned);
+extern uschar *string_append_listele_n(uschar *, uschar, const uschar *, size_t);
 extern uschar *string_base62(unsigned long int);
-extern uschar *string_cat(uschar *, int *, int *, const uschar *);
-extern uschar *string_catn(uschar *, int *, int *, const uschar *, int);
+extern uschar *string_cat(uschar *, size_t *, size_t *, const uschar *);
+extern uschar *string_catn(uschar *, size_t *, size_t *, const uschar *, size_t);
 extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
 extern uschar *string_copylc(const uschar *);
-extern uschar *string_copynlc(uschar *, int);
+extern uschar *string_copynlc(uschar *, size_t);
 extern uschar *string_dequote(const uschar **);
-extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4);
-extern uschar *string_format_size(int, uschar *);
+extern BOOL    string_format(uschar *, size_t, const char *, ...) ALMOST_PRINTF(3,4);
+extern uschar *string_format_size(size_t, uschar *);
 extern int     string_interpret_escape(const uschar **);
 extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N
@@ -447,9 +447,9 @@ extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_localpart_alabel_to_utf8(const uschar *, uschar **);
 extern uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
 #endif
-extern BOOL    string_vformat(uschar *, int, const char *, va_list);
+extern BOOL    string_vformat(uschar *, size_t, const char *, va_list);
 extern int     strcmpic(const uschar *, const uschar *);
-extern int     strncmpic(const uschar *, const uschar *, int);
+extern int     strncmpic(const uschar *, const uschar *, size_t);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
 extern uschar *tod_stamp(int);

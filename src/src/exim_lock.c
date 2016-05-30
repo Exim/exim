@@ -274,7 +274,7 @@ if (*filename == '~')
     exit(1);
     }
 
-  if ((int)strlen(pw->pw_dir) + (int)strlen(filename) + 1 > sizeof(buffer))
+  if (strlen(pw->pw_dir) + strlen(filename) + 1 > sizeof(buffer))
     {
     printf("exim_lock: expanded file name %s%s is too long", pw->pw_dir,
       filename);

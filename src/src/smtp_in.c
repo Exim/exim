@@ -54,7 +54,7 @@ we need room to handle large base64-encoded AUTHs for GSSAPI.
 
 typedef struct {
   const char *name;
-  int len;
+  size_t len;
   short int cmd;
   short int has_arg;
   short int is_mail_cmd;
@@ -1254,10 +1254,10 @@ Arguments:
 Returns:	Allocated string or NULL
 */
 static uschar *
-s_tlslog(uschar * s, int * sizep, int * ptrp)
+s_tlslog(uschar * s, size_t * sizep, size_t * ptrp)
 {
-  int size = sizep ? *sizep : 0;
-  int ptr = ptrp ? *ptrp : 0;
+  size_t size = sizep ? *sizep : 0;
+  size_t ptr = ptrp ? *ptrp : 0;
 
   if (LOGGING(tls_cipher) && tls_in.cipher != NULL)
     s = string_append(s, &size, &ptr, 2, US" X=", tls_in.cipher);
@@ -1296,14 +1296,14 @@ Returns:     nothing
 void
 smtp_log_no_mail(void)
 {
-int size, ptr, i;
+size_t size=0, ptr=0;
+int i;
 uschar *s, *sep;
 
 if (smtp_mailcmd_count > 0 || !LOGGING(smtp_no_mail))
   return;
 
 s = NULL;
-size = ptr = 0;
 
 if (sender_host_authenticated != NULL)
   {
@@ -1628,7 +1628,8 @@ while (done <= 0)
   {
   uschar *errmess;
   uschar *recipient = NULL;
-  int start, end, sender_domain, recipient_domain;
+  size_t start, end;
+  int sender_domain, recipient_domain;
 
   switch(smtp_read_command(FALSE))
     {
@@ -1841,8 +1842,8 @@ Returns:       FALSE if the session can not continue; something has
 BOOL
 smtp_start_session(void)
 {
-int size = 256;
-int ptr, esclen;
+size_t ptr, size = 256;
+int esclen;
 uschar *user_msg, *log_msg;
 uschar *code, *esc;
 uschar *p, *s, *ss;
@@ -1998,15 +1999,15 @@ if (!sender_host_unknown)
     {
     #if OPTSTYLE == 1
     EXIM_SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
-    struct ip_options *ipopt = store_get(optlen);
+    struct ip_options *ipopt = store_get((size_t)optlen);
     #elif OPTSTYLE == 2
     struct ip_opts ipoptblock;
     struct ip_opts *ipopt = &ipoptblock;
-    EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
+    EXIM_SOCKLEN_T optlen = sizeof((size_t)ipoptblock);
     #else
     struct ipoption ipoptblock;
     struct ipoption *ipopt = &ipoptblock;
-    EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
+    EXIM_SOCKLEN_T optlen = sizeof((size_t)ipoptblock);
     #endif
 
     /* Occasional genuine failures of getsockopt() have been seen - for
@@ -3320,8 +3321,8 @@ while (done <= 0)
   void (*oldsignal)(int);
   pid_t pid;
   int start, end, sender_domain, recipient_domain;
-  int ptr, size, rc;
-  int c;
+  size_t ptr, size;
+  int c, rc;
   auth_instance *au;
   uschar *orcpt = NULL;
   int flags;
@@ -4124,7 +4125,7 @@ while (done <= 0)
       ? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
 		    global_rewrite_rules)
       : smtp_cmd_data;
-
+      size_t start, end;
     raw_sender =
       parse_extract_address(raw_sender, &errmess, &start, &end, &sender_domain,
         TRUE);

@@ -188,7 +188,7 @@ srs_result eximsrs_db_insert(srs_t *srs, char *data, uint data_len, char *result
   if(srs_db_forward == NULL)
     return SRS_RESULT_DBERROR;
 
-  srs_db_address = string_copyn(data, data_len);
+  srs_db_address = string_copyn(data, (size_t)data_len);
   if(srs_generate_unique_id(srs, srs_db_address, buf, 64) & SRS_RESULT_FAIL)
     return SRS_RESULT_DBERROR;
 
@@ -213,7 +213,7 @@ srs_result eximsrs_db_lookup(srs_t *srs, char *data, uint data_len, char *result
   if(srs_db_reverse == NULL)
     return SRS_RESULT_DBERROR;
 
-  srs_db_key = string_copyn(data, data_len);
+  srs_db_key = string_copyn(data, (size_t)data_len);
   if((res = expand_string(srs_db_reverse)) == NULL)
     return SRS_RESULT_DBERROR;
 

@@ -134,8 +134,8 @@ dnsdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 int rc;
-int size = 256;
-int ptr = 0;
+size_t size = 256;
+size_t ptr = 0;
 int sep = 0;
 int defer_mode = PASS;
 int dnssec_mode = OK;
@@ -255,7 +255,8 @@ If the keystring contains an = this must be preceded by a valid type name. */
 type = T_TXT;
 if ((equals = Ustrchr(keystring, '=')) != NULL)
   {
-  int i, len;
+  int i;
+  size_t len;
   uschar *tend = equals;
 
   while (tend > keystring && isspace(tend[-1])) tend--;

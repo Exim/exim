@@ -1039,7 +1039,7 @@ Returns:    a pointer to the first character after the header name
 */
 
 static const uschar *
-read_header_name(uschar *name, int max, const uschar *s)
+read_header_name(uschar *name, size_t max, const uschar *s)
 {
 int prelen = Ustrchr(name, '_') - name + 1;
 int ptr = Ustrlen(name) - prelen;
@@ -1105,7 +1105,7 @@ Returns:    NULL if the subfield was not found, or
 static uschar *
 expand_getkeyed(uschar *key, const uschar *s)
 {
-int length = Ustrlen(key);
+size_t length = Ustrlen(key);
 while (isspace(*s)) s++;
 
 /* Loop to search for the key */
@@ -1328,9 +1328,9 @@ Returns:      pointer to the output string, or NULL if there is an error
 */
 
 static uschar *
-extract_substr(uschar *subject, int value1, int value2, int *len)
+extract_substr(uschar *subject, int value1, int value2, size_t *len)
 {
-int sublen = Ustrlen(subject);
+size_t sublen = Ustrlen(subject);
 
 if (value1 < 0)    /* count from right */
   {
@@ -1399,9 +1399,9 @@ Returns:      pointer to the output string, or NULL if there is an error
 */
 
 static uschar *
-compute_hash(uschar *subject, int value1, int value2, int *len)
+compute_hash(uschar *subject, int value1, int value2, size_t *len)
 {
-int sublen = Ustrlen(subject);
+size_t sublen = Ustrlen(subject);
 
 if (value2 < 0) value2 = 26;
 else if (value2 > Ustrlen(hashcodes))
@@ -1456,7 +1456,7 @@ Returns:  pointer to the output string, or NULL if there is an error.
 */
 
 static uschar *
-compute_nhash (uschar *subject, int value1, int value2, int *len)
+compute_nhash (uschar *subject, int value1, int value2, size_t *len)
 {
 uschar *s = subject;
 int i = 0;
@@ -1525,12 +1525,12 @@ Returns:        NULL if the header does not exist, else a pointer to a new
 */
 
 static uschar *
-find_header(uschar *name, BOOL exists_only, int *newsize, BOOL want_raw,
+find_header(uschar *name, BOOL exists_only, size_t *newsize, BOOL want_raw,
   uschar *charset)
 {
 BOOL found = name == NULL;
 int comma = 0;
-int len = found? 0 : Ustrlen(name);
+size_t len = found? 0 : Ustrlen(name);
 int i;
 uschar *yield = NULL;
 uschar *ptr = NULL;
@@ -1539,7 +1539,7 @@ uschar *ptr = NULL;
 
 for (i = 0; i < 2; i++)
   {
-  int size = 0;
+  size_t size = 0;
   header_line *h;
 
   for (h = header_list; size < header_insert_maxlen && h != NULL; h = h->next)
@@ -1663,8 +1663,8 @@ fn_recipients(void)
 {
 if (!enable_dollar_recipients) return NULL; else
   {
-  int size = 128;
-  int ptr = 0;
+  size_t size = 128;
+  size_t ptr = 0;
   int i;
   uschar * s = store_get(size);
   for (i = 0; i < recipients_count; i++)
@@ -1701,7 +1701,7 @@ Returns:        NULL if the variable does not exist, or
 */
 
 static uschar *
-find_variable(uschar *name, BOOL exists_only, BOOL skipping, int *newsize)
+find_variable(uschar *name, BOOL exists_only, BOOL skipping, size_t *newsize)
 {
 var_entry * vp;
 uschar *s, *domain;
@@ -2356,8 +2356,8 @@ switch(cond_type)
     uschar *sub[10];
     uschar *user_msg;
     BOOL cond = FALSE;
-    int size = 0;
-    int ptr = 0;
+    size_t size = 0;
+    size_t ptr = 0;
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
@@ -2681,7 +2681,7 @@ switch(cond_type)
     #else
     if (strncmpic(sub[1], US"{md5}", 5) == 0)
       {
-      int sublen = Ustrlen(sub[1]+5);
+      size_t sublen = Ustrlen(sub[1]+5);
       md5 base;
       uschar digest[16];
 
@@ -2720,7 +2720,7 @@ switch(cond_type)
 
     else if (strncmpic(sub[1], US"{sha1}", 6) == 0)
       {
-      int sublen = Ustrlen(sub[1]+6);
+      size_t sublen = Ustrlen(sub[1]+6);
       sha1 base;
       uschar digest[20];
 
@@ -3166,7 +3166,7 @@ Returns:         0 OK; lookup_value has been reset to save_lookup
 
 static int
 process_yesno(BOOL skipping, BOOL yes, uschar *save_lookup, const uschar **sptr,
-  uschar **yieldptr, int *sizeptr, int *ptrptr, uschar *type, BOOL *resetok)
+  uschar **yieldptr, size_t *sizeptr, size_t *ptrptr, uschar *type, BOOL *resetok)
 {
 int rc = 0;
 const uschar *s = *sptr;    /* Local value */
@@ -3414,7 +3414,8 @@ static uschar *
 prvs_hmac_sha1(uschar *address, uschar *key, uschar *key_num, uschar *daystamp)
 {
 uschar *hash_source, *p;
-int size = 0,offset = 0,i;
+size_t size = 0,offset = 0;
+int i;
 sha1 sha1_base;
 void *use_base = &sha1_base;
 uschar innerhash[20];
@@ -3486,14 +3487,14 @@ Returns:       new value of string pointer
 */
 
 static uschar *
-cat_file(FILE *f, uschar *yield, int *sizep, int *ptrp, uschar *eol)
+cat_file(FILE *f, uschar *yield, size_t *sizep, size_t *ptrp, uschar *eol)
 {
-int eollen = eol ? Ustrlen(eol) : 0;
+size_t eollen = eol ? Ustrlen(eol) : 0;
 uschar buffer[1024];
 
 while (Ufgets(buffer, sizeof(buffer), f))
   {
-  int len = Ustrlen(buffer);
+  size_t len = Ustrlen(buffer);
   if (eol && buffer[len-1] == '\n') len--;
   yield = string_catn(yield, sizep, ptrp, buffer, len);
   if (buffer[len] != 0)
@@ -3849,8 +3850,8 @@ static uschar *
 expand_string_internal(const uschar *string, BOOL ket_ends, const uschar **left,
   BOOL skipping, BOOL honour_dollar, BOOL *resetok_p)
 {
-int ptr = 0;
-int size = Ustrlen(string)+ 64;
+size_t ptr = 0;
+size_t size = Ustrlen(string)+ 64;
 uschar *yield = store_get(size);
 int item_type;
 const uschar *s = string;
@@ -3924,8 +3925,7 @@ while (*s != 0)
 
   if (isalpha((*(++s))))
     {
-    int len;
-    int newsize = 0;
+    size_t len, newsize = 0;
 
     s = read_name(name, sizeof(name), s, US"_");
 
@@ -4524,7 +4524,7 @@ while (*s != 0)
     case EITEM_PRVSCHECK:
       {
       uschar *sub_arg[3];
-      int mysize = 0, myptr = 0;
+      size_t mysize = 0, myptr = 0;
       const pcre *re;
       uschar *p;
 
@@ -4928,7 +4928,7 @@ while (*s != 0)
       const uschar **argv;
       pid_t pid;
       int fd_in, fd_out;
-      int lsize = 0, lptr = 0;
+      size_t lsize = 0, lptr = 0;
 
       if ((expand_forbid & RDO_RUN) != 0)
         {
@@ -5074,7 +5074,7 @@ while (*s != 0)
     case EITEM_SUBSTR:
       {
       int i;
-      int len;
+      size_t len;
       uschar *ret;
       int val[2] = { 0, -1 };
       uschar *sub[3];
@@ -6311,7 +6311,7 @@ while (*s != 0)
 
       case EOP_LC:
         {
-        int count = 0;
+        size_t count = 0;
         uschar *t = sub - 1;
         while (*(++t) != 0) { *t = tolower(*t); count++; }
         yield = string_catn(yield, &size, &ptr, sub, count);
@@ -6320,7 +6320,7 @@ while (*s != 0)
 
       case EOP_UC:
         {
-        int count = 0;
+        size_t count = 0;
         uschar *t = sub - 1;
         while (*(++t) != 0) { *t = toupper(*t); count++; }
         yield = string_catn(yield, &size, &ptr, sub, count);
@@ -6631,7 +6631,8 @@ while (*s != 0)
       case EOP_DOMAIN:
         {
         uschar *error;
-        int start, end, domain;
+        size_t start, end;
+        int domain;
         uschar *t = parse_extract_address(sub, &error, &start, &end, &domain,
           FALSE);
         if (t != NULL)
@@ -6654,8 +6655,8 @@ while (*s != 0)
         {
         uschar outsep[2] = { ':', '\0' };
         uschar *address, *error;
-        int save_ptr = ptr;
-        int start, end, domain;  /* Not really used */
+        int domain, save_ptr = ptr;
+        size_t start, end;
 
         while (isspace(*sub)) sub++;
         if (*sub == '>') { *outsep = *++sub; ++sub; }
@@ -6828,7 +6829,7 @@ while (*s != 0)
 
       case EOP_RFC2047D:
         {
-        int len;
+        size_t len;
         uschar *error;
         uschar *decoded = rfc2047_decode(sub, check_rfc2047_length,
           headers_charset, '?', &len, &error);
@@ -6864,8 +6865,8 @@ while (*s != 0)
 
       case EOP_UTF8CLEAN:
         {
-        int seq_len = 0, index = 0;
-        int bytes_left = 0;
+        size_t seq_len = 0;
+        int index = 0, bytes_left = 0;
 	long codepoint = -1;
         uschar seq_buff[4];			/* accumulate utf-8 here */
 
@@ -7130,7 +7131,7 @@ while (*s != 0)
         int value1 = 0;
         int value2 = -1;
         int *pn;
-        int len;
+        size_t len;
         uschar *ret;
 
         if (arg == NULL)
@@ -7300,8 +7301,8 @@ while (*s != 0)
 						/*{*/
   if (*s++ == '}')
     {
-    int len;
-    int newsize = 0;
+    size_t len;
+    size_t newsize = 0;
     if (ptr == 0)
       {
       if (resetok) store_reset(yield);
