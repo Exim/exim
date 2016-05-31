@@ -513,7 +513,12 @@ static unsigned int cond_forbids[] = {
   ~(1<<ACL_WHERE_MIME),                            /* mime_regex */
   #endif
 
-  0,                                               /* queue */
+  (1<<ACL_WHERE_NOTSMTP)|                          /* queue */
+  #ifndef DISABLE_PRDR
+    (1<<ACL_WHERE_PRDR)|
+  #endif
+    (1<<ACL_WHERE_DATA),
+
   0,                                               /* ratelimit */
 
   (unsigned int)

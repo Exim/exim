@@ -28619,6 +28619,8 @@ effect.
 .vitem &*queue*&&~=&~<&'text'&>
 This modifier specifies the use of a named queue for spool files
 for the message.
+It can only be used before the message is received (i.e. not in
+the DATA ACL).
 This could be used, for example, for known high-volume burst sources
 of traffic, or for quarantine of messages.
 Separate queue-runner processes will be needed for named queues.
