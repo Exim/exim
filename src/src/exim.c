@@ -3488,7 +3488,7 @@ if ((
     ) ||
     (
     msg_action_arg > 0 &&
-    (daemon_listen || queue_interval >= 0 || list_options ||
+    (daemon_listen || queue_interval > 0 || list_options ||
       (checking && msg_action != MSG_LOAD) ||
       bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0)
     ) ||

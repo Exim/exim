@@ -16,7 +16,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss Q=lowpri for lowpri@test.ex
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, -q3s, not listening for SMTP
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, -qGlowpri/3s, not listening for SMTP
 1999-03-02 09:44:33 Start 'lowpri' queue run: pid=pppp
 1999-03-02 09:44:33 End 'lowpri' queue run: pid=pppp
 1999-03-02 09:44:33 Start 'lowpri' queue run: pid=pppp

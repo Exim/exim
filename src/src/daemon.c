@@ -1688,17 +1688,19 @@ else if (daemon_listen)
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, %s, listening for %s",
     version_string, getpid(), qinfo, big_buffer);
-  set_process_info("daemon(%s): %s, listening for %s", version_string, qinfo, big_buffer);
+  set_process_info("daemon(%s): %s, listening for %s",
+    version_string, qinfo, big_buffer);
   }
 
 else
   {
+  uschar * s = *queue_name
+    ? string_sprintf("-qG%s/%s", queue_name, readconf_printtime(queue_interval))
+    : string_sprintf("-q%s", readconf_printtime(queue_interval));
   log_write(0, LOG_MAIN,
-    "exim %s daemon started: pid=%d, -q%s, not listening for SMTP",
-    version_string, getpid(), readconf_printtime(queue_interval));
-  set_process_info("daemon(%s): -q%s, not listening",
-    version_string,
-    readconf_printtime(queue_interval));
+    "exim %s daemon started: pid=%d, %s, not listening for SMTP",
+    version_string, getpid(), s);
+  set_process_info("daemon(%s): %s, not listening", version_string, s);
   }
 
 /* Do any work it might be useful to amortize over our children
