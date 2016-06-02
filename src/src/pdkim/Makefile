@@ -12,7 +12,7 @@ pdkim.a:         $(OBJ)
 .c.o:;           @echo "$(CC) $*.c"
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -I. $*.c
 
-pdkim.o: $(HDRS) ../sha_ver.h crypt_ver.h ../hash.h ../blob.h pdkim.h pdkim.c
-rsa.o:   $(HDRS) ../sha_ver.h crypt_ver.h rsa.h ../blob.h rsa.c
+pdkim.o: $(HDRS) crypt_ver.h pdkim.h pdkim.c
+rsa.o:   $(HDRS) crypt_ver.h rsa.h rsa.c
 
 # End

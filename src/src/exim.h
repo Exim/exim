@@ -493,6 +493,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #include "dbstuff.h"
 #include "structs.h"
 #include "globals.h"
+#include "hash.h"
 #include "functions.h"
 #include "dbfunctions.h"
 #include "osfunctions.h"

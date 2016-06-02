@@ -473,15 +473,18 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
 # in one. This list is overkill, but it doesn't really take much time to
 # rebuild Exim on a modern computer.
 
-HDRS  =	config.h \
+HDRS  =	blob.h \
+	config.h \
 	dbfunctions.h \
 	dbstuff.h \
 	exim.h \
 	functions.h \
 	globals.h \
+	hash.h \
 	local_scan.h \
 	macros.h \
 	mytypes.h \
+	sha_ver.h \
 	structs.h \
 	os.h
 PHDRS = ../config.h \
@@ -599,7 +602,7 @@ environment.o:   $(HDRS) environment.c
 filter.o:        $(HDRS) filter.c
 filtertest.o:    $(HDRS) filtertest.c
 globals.o:       $(HDRS) globals.c
-hash.o:          $(HDRS) sha_ver.h hash.h blob.h hash.c
+hash.o:          $(HDRS) hash.c
 header.o:        $(HDRS) header.c
 host.o:          $(HDRS) host.c
 ip.o:            $(HDRS) ip.c

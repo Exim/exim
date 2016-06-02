@@ -2721,11 +2721,11 @@ switch(cond_type)
     else if (strncmpic(sub[1], US"{sha1}", 6) == 0)
       {
       int sublen = Ustrlen(sub[1]+6);
-      sha1 base;
+      hctx h;
       uschar digest[20];
 
-      sha1_start(&base);
-      sha1_end(&base, (uschar *)sub[0], Ustrlen(sub[0]), digest);
+      sha1_start(&h);
+      sha1_end(&h, (uschar *)sub[0], Ustrlen(sub[0]), digest);
 
       /* If the length that we are comparing against is 28, assume the SHA1
       digest is expressed as a base64 string. If the length is 40, assume a
@@ -3338,7 +3338,7 @@ chash_start(int type, void *base)
 if (type == HMAC_MD5)
   md5_start((md5 *)base);
 else
-  sha1_start((sha1 *)base);
+  sha1_start((hctx *)base);
 }
 
 static void
@@ -3347,7 +3347,7 @@ chash_mid(int type, void *base, uschar *string)
 if (type == HMAC_MD5)
   md5_mid((md5 *)base, string);
 else
-  sha1_mid((sha1 *)base, string);
+  sha1_mid((hctx *)base, string);
 }
 
 static void
@@ -3356,7 +3356,7 @@ chash_end(int type, void *base, uschar *string, int length, uschar *digest)
 if (type == HMAC_MD5)
   md5_end((md5 *)base, string, length, digest);
 else
-  sha1_end((sha1 *)base, string, length, digest);
+  sha1_end((hctx *)base, string, length, digest);
 }
 
 
@@ -3415,8 +3415,7 @@ prvs_hmac_sha1(uschar *address, uschar *key, uschar *key_num, uschar *daystamp)
 {
 uschar *hash_source, *p;
 int size = 0,offset = 0,i;
-sha1 sha1_base;
-void *use_base = &sha1_base;
+hctx h;
 uschar innerhash[20];
 uschar finalhash[20];
 uschar innerkey[64];
@@ -3445,13 +3444,13 @@ for (i = 0; i < Ustrlen(key); i++)
   outerkey[i] ^= key[i];
   }
 
-chash_start(HMAC_SHA1, use_base);
-chash_mid(HMAC_SHA1, use_base, innerkey);
-chash_end(HMAC_SHA1, use_base, hash_source, offset, innerhash);
+chash_start(HMAC_SHA1, &h);
+chash_mid(HMAC_SHA1, &h, innerkey);
+chash_end(HMAC_SHA1, &h, hash_source, offset, innerhash);
 
-chash_start(HMAC_SHA1, use_base);
-chash_mid(HMAC_SHA1, use_base, outerkey);
-chash_end(HMAC_SHA1, use_base, innerhash, 20, finalhash);
+chash_start(HMAC_SHA1, &h);
+chash_mid(HMAC_SHA1, &h, outerkey);
+chash_end(HMAC_SHA1, &h, innerhash, 20, finalhash);
 
 p = finalhash_hex;
 for (i = 0; i < 3; i++)
@@ -5144,7 +5143,7 @@ while (*s != 0)
       {
       uschar *sub[3];
       md5 md5_base;
-      sha1 sha1_base;
+      hctx sha1_ctx;
       void *use_base;
       int type, i;
       int hashlen;      /* Number of octets for the hash algorithm's output */
@@ -5176,7 +5175,7 @@ while (*s != 0)
       else if (Ustrcmp(sub[0], "sha1") == 0)
         {
         type = HMAC_SHA1;
-        use_base = &sha1_base;
+        use_base = &sha1_ctx;
         hashlen = 20;
         hashblocklen = 64;
         }
@@ -6358,12 +6357,12 @@ while (*s != 0)
 	else
 #endif
 	  {
-	  sha1 base;
+	  hctx h;
 	  uschar digest[20];
 	  int j;
 	  char st[41];
-	  sha1_start(&base);
-	  sha1_end(&base, sub, Ustrlen(sub), digest);
+	  sha1_start(&h);
+	  sha1_end(&h, sub, Ustrlen(sub), digest);
 	  for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
 	  yield = string_cat(yield, &size, &ptr, US st);
 	  }

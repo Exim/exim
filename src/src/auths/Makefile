@@ -8,7 +8,7 @@
 OBJ = auth-spa.o call_pam.o call_pwcheck.o \
       call_radius.o check_serv_cond.o cram_md5.o cyrus_sasl.o dovecot.o \
       get_data.o get_no64_data.o gsasl_exim.o heimdal_gssapi.o \
-      md5.o plaintext.o pwcheck.o sha1.o \
+      md5.o plaintext.o pwcheck.o \
       spa.o tls.o xtextdecode.o xtextencode.o
 
 auths.a:         $(OBJ)
@@ -30,7 +30,6 @@ get_data.o:         $(HDRS) get_data.c
 get_no64_data.o:    $(HDRS) get_no64_data.c
 md5.o:              $(HDRS) md5.c
 pwcheck.o:          $(HDRS) pwcheck.c pwcheck.h
-sha1.o:             $(HDRS) sha1.c
 xtextdecode.o:      $(HDRS) xtextdecode.c
 xtextencode.o:      $(HDRS) xtextencode.c
 

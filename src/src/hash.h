@@ -30,7 +30,7 @@
 /* Hash context for the exim_sha_* routines */
 
 typedef struct {
-  int sha1;
+  BOOL is_sha1;
   int hashlen;
 
 #ifdef SHA_OPENSSL
@@ -50,6 +50,9 @@ typedef struct {
     sha1_context sha1;       /* SHA1 block                                */
     sha2_context sha2;       /* SHA256 block                              */
   } u;
+
+#elif defined(SHA_NATIVE)
+  sha1 sha1;
 #endif
 
 } hctx;

@@ -371,9 +371,9 @@ extern int     search_findtype_partial(const uschar *, int *, const uschar **, i
 extern void   *search_open(uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
 extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
-extern void    sha1_end(sha1 *, const uschar *, int, uschar *);
-extern void    sha1_mid(sha1 *, const uschar *);
-extern void    sha1_start(sha1 *);
+extern void    sha1_end(hctx *, const uschar *, int, uschar *);
+extern void    sha1_mid(hctx *, const uschar *);
+extern void    sha1_start(hctx *);
 extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
                  uschar *, address_item **, uschar **);
 extern void    sigalrm_handler(int);
