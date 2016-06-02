@@ -10490,16 +10490,19 @@ If the string is a single variable of type certificate,
 returns the SHA-1 hash fingerprint of the certificate.
 
 
-.vitem &*${sha256:*&<&'certificate'&>&*}*&
+.vitem &*${sha256:*&<&'string'&>&*}*&
 .cindex "SHA-256 hash"
 .cindex certificate fingerprint
 .cindex "expansion" "SHA-256 hashing"
 .cindex "&%sha256%& expansion item"
-The &%sha256%& operator computes the SHA-256 hash fingerprint of the
-certificate,
+.new
+The &%sha256%& operator computes the SHA-256 hash value of the string
 and returns
 it as a 64-digit hexadecimal number, in which any letters are in upper case.
-Only arguments which are a single variable of certificate type are supported.
+.wen
+
+If the string is a single variable of type certificate,
+returns the SHA-256 hash fingerprint of the certificate.
 
 
 .vitem &*${stat:*&<&'string'&>&*}*&

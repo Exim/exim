@@ -37,6 +37,9 @@ JH/08 Bug 1836: Fix crash in VRFY handling when handed an unqualified name
 
 JH/09 Bug 1804: Avoid writing msglog files when in -bh or -bhc mode.
 
+JH/10 Support ${sha256:} applied to a string (as well as the previous
+      certificate).
+
 
 Exim version 4.87
 -----------------
@@ -303,7 +306,7 @@ JH/18 Bug 1581: Router and transport options headers_add/remove can
       now have the list separator specified.
 
 JH/19 Bug 392: spamd_address, and clamd av_scanner, now support retry
-      option values. 
+      option values.
 
 JH/20 Bug 1571: Ensure that $tls_in_peerdn is set, when verification fails
       under OpenSSL.
@@ -318,7 +321,7 @@ JH/23 Bug 1572: Increase limit on SMTP confirmation message copy size
 
 JH/24 Verification callouts now attempt to use TLS by default.
 
-HS/01 DNSSEC options (dnssec_require_domains, dnssec_request_domains) 
+HS/01 DNSSEC options (dnssec_require_domains, dnssec_request_domains)
       are generic router options now. The defaults didn't change.
 
 JH/25 Bug 466: Add RFC2322 support for MIME attachment filenames.
@@ -938,7 +941,7 @@ PP/12 MAIL args handles TAB as well as SP, for better interop with
       Analysis and variant patch by Todd Lyons.
 
 NM/04 Bugzilla 1237 - fix cases where printf format usage not indicated
-      Bug report from Lars Müller <lars@samba.org> (via SUSE), 
+      Bug report from Lars Müller <lars@samba.org> (via SUSE),
       Patch from Dirk Mueller <dmueller@suse.com>
 
 PP/13 tls_peerdn now print-escaped for spool files.

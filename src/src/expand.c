@@ -2506,7 +2506,6 @@ switch(cond_type)
     checking for them individually. */
 
     if (!isalpha(name[0]) && yield != NULL)
-      {
       if (sub[i][0] == 0)
         {
         num[i] = 0;
@@ -2518,7 +2517,6 @@ switch(cond_type)
         num[i] = expanded_string_integer(sub[i], FALSE);
         if (expand_string_message != NULL) return NULL;
         }
-      }
     }
 
   /* Result not required */
@@ -2686,7 +2684,7 @@ switch(cond_type)
       uschar digest[16];
 
       md5_start(&base);
-      md5_end(&base, (uschar *)sub[0], Ustrlen(sub[0]), digest);
+      md5_end(&base, sub[0], Ustrlen(sub[0]), digest);
 
       /* If the length that we are comparing against is 24, the MD5 digest
       is expressed as a base64 string. This is the way LDAP does it. However,
@@ -2695,7 +2693,7 @@ switch(cond_type)
 
       if (sublen == 24)
         {
-        uschar *coded = b64encode((uschar *)digest, 16);
+        uschar *coded = b64encode(digest, 16);
         DEBUG(D_auth) debug_printf("crypteq: using MD5+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
         tempcond = (Ustrcmp(coded, sub[1]+5) == 0);
@@ -2725,7 +2723,7 @@ switch(cond_type)
       uschar digest[20];
 
       sha1_start(&h);
-      sha1_end(&h, (uschar *)sub[0], Ustrlen(sub[0]), digest);
+      sha1_end(&h, sub[0], Ustrlen(sub[0]), digest);
 
       /* If the length that we are comparing against is 28, assume the SHA1
       digest is expressed as a base64 string. If the length is 40, assume a
@@ -2733,7 +2731,7 @@ switch(cond_type)
 
       if (sublen == 28)
         {
-        uschar *coded = b64encode((uschar *)digest, 20);
+        uschar *coded = b64encode(digest, 20);
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
         tempcond = (Ustrcmp(coded, sub[1]+6) == 0);
@@ -6364,7 +6362,7 @@ while (*s != 0)
 	  sha1_start(&h);
 	  sha1_end(&h, sub, Ustrlen(sub), digest);
 	  for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
-	  yield = string_cat(yield, &size, &ptr, US st);
+	  yield = string_catn(yield, &size, &ptr, US st, 40);
 	  }
         continue;
 
@@ -6376,8 +6374,23 @@ while (*s != 0)
 	  yield = string_cat(yield, &size, &ptr, cp);
 	  }
 	else
+	  {
+	  hctx h;
+	  blob b;
+	  char st[3];
+
+	  exim_sha_init(&h, HASH_SHA256);
+	  exim_sha_update(&h, sub, Ustrlen(sub));
+	  exim_sha_finish(&h, &b);
+	  while (b.len-- > 0)
+	    {
+	    sprintf(st, "%02X", *b.data++);
+	    yield = string_catn(yield, &size, &ptr, US st, 2);
+	    }
+	  }
+#else
+	  expand_string_message = US"sha256 only supported with TLS";
 #endif
-	  expand_string_message = US"sha256 only supported for certificates";
         continue;
 
       /* Convert hex encoding to base64 encoding */

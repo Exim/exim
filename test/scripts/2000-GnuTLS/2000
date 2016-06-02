@@ -13,3 +13,9 @@ exim -qf
 ****
 killdaemon
 no_msglog_check
+#
+#
+exim -be
+sha256: ${sha256:}
+sha256: ${sha256:abc}
+****
