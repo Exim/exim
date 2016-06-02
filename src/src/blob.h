@@ -1,9 +1,7 @@
 /*
- *  PDKIM - a RFC4871 (DKIM) implementation
+ *  Blob - a general pointer/size item for a memory chunk
  *
  *  Copyright (C) 2016  Exim maintainers
- *
- *  RSA signing/verification interface
  */
 
 #ifndef BLOB_H	/* entire file */

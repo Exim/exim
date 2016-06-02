@@ -23,8 +23,8 @@
 #ifndef PDKIM_H
 #define PDKIM_H
 
-#include "blob.h"
-#include "hash.h"
+#include "../blob.h"
+#include "../hash.h"
 
 /* -------------------------------------------------------------------------- */
 /* Length of the preallocated buffer for the "answer" from the dns/txt

@@ -1,43 +1,34 @@
 /*
- *  PDKIM - a RFC4871 (DKIM) implementation
+ *  Exim - an Internet mail transport agent
  *
  *  Copyright (C) 2016  Exim maintainers
  *
  *  Hash interface functions
  */
 
-#include "../exim.h"
+#include "exim.h"
 
-#if !defined(DISABLE_DKIM) && !defined(PDKIM_HASH_H)	/* entire file */
-#define PDKIM_HASH_H
+#if !defined(HASH_H)	/* entire file */
+#define HASH_H
 
-#ifndef SUPPORT_TLS
-# error Need SUPPORT_TLS for DKIM
-#endif
-
-#include "crypt_ver.h"
+#include "sha_ver.h"
 #include "blob.h"
 
-#ifdef RSA_OPENSSL
-# include <openssl/rsa.h>
-# include <openssl/ssl.h>
-# include <openssl/err.h>
-#elif defined(RSA_GNUTLS)
-# include <gnutls/gnutls.h>
-# include <gnutls/x509.h>
-#endif
-
-#ifdef SHA_GNUTLS
+#ifdef SHA_OPENSSL
+# include <openssl/sha.h>
+#elif defined SHA_GNUTLS
 # include <gnutls/crypto.h>
 #elif defined(SHA_GCRYPT)
 # include <gcrypt.h>
 #elif defined(SHA_POLARSSL)
-# include "pdkim.h"
-# include "polarssl/sha1.h"
-# include "polarssl/sha2.h"
+# include "pdkim/pdkim.h"		/*XXX ugly */
+# include "pdkim/polarssl/sha1.h"
+# include "pdkim/polarssl/sha2.h"
 #endif
 
-/* Hash context */
+
+/* Hash context for the exim_sha_* routines */
+
 typedef struct {
   int sha1;
   int hashlen;
@@ -63,17 +54,10 @@ typedef struct {
 
 } hctx;
 
-#if defined(SHA_OPENSSL)
-# include "pdkim.h"
-#elif defined(SHA_GCRYPT)
-# include "pdkim.h"
-#endif
-
-
 extern void     exim_sha_init(hctx *, BOOL);
 extern void     exim_sha_update(hctx *, const uschar *a, int);
 extern void     exim_sha_finish(hctx *, blob *);
 extern int      exim_sha_hashlen(hctx *);
 
-#endif	/*DISABLE_DKIM*/
+#endif
 /* End of File */

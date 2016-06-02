@@ -331,7 +331,7 @@ OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o dkim.o \
+        filtertest.o globals.o dkim.o hash.o \
         header.o host.o ip.o log.o lss.o match.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
@@ -599,6 +599,7 @@ environment.o:   $(HDRS) environment.c
 filter.o:        $(HDRS) filter.c
 filtertest.o:    $(HDRS) filtertest.c
 globals.o:       $(HDRS) globals.c
+hash.o:          $(HDRS) sha_ver.h hash.h blob.h hash.c
 header.o:        $(HDRS) header.c
 host.o:          $(HDRS) host.c
 ip.o:            $(HDRS) ip.c

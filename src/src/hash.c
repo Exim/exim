@@ -1,21 +1,22 @@
 /*
- *  PDKIM - a RFC4871 (DKIM) implementation
+ *  Exim - an Internet mail transport agent
  *
  *  Copyright (C) 2016  Exim maintainers
  *
  *  Hash interface functions
  */
 
-#include "../exim.h"
-
-#ifndef DISABLE_DKIM	/* entire file */
+#include "exim.h"
 
 #ifndef SUPPORT_TLS
 # error Need SUPPORT_TLS for DKIM
 #endif
 
-#include "crypt_ver.h"
+#include "sha_ver.h"
+#include "hash.h"
 
+
+#ifdef notdef
 #ifdef RSA_OPENSSL
 # include <openssl/rsa.h>
 # include <openssl/ssl.h>
@@ -27,12 +28,7 @@
 #  include <gnutls/abstract.h>
 # endif
 #endif
-
-#ifdef SHA_GNUTLS
-# include <gnutls/crypto.h>
 #endif
-
-#include "hash.h"
 
 
 /******************************************************************************/
@@ -177,5 +173,4 @@ return h->sha1 ? 20 : 32;
 }
 
 
-#endif	/*DISABLE_DKIM*/
 /* End of File */

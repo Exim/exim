@@ -25,7 +25,7 @@
 #  include <libtasn1.h>
 #endif
 
-#include "blob.h"
+#include "../blob.h"
 
 
 #ifdef RSA_OPENSSL
