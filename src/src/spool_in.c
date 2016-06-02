@@ -50,7 +50,8 @@ for (i = 0; i < 2; i++)
   {
   uschar * fname;
   int save_errno;
-  message_subdir[0] = split_spool_directory == (i == 0) ? id[5] : 0;
+
+  message_subdir[0] = split_spool_directory == i == 0 ? id[5] : 0;
   fname = spool_fname(US"input", message_subdir, id, US"-D");
   DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
 
@@ -61,10 +62,13 @@ for (i = 0; i < 2; i++)
     {
     if (i == 0) continue;
     if (!queue_running)
-      log_write(0, LOG_MAIN, "Spool file %s-D not found", id);
+      log_write(0, LOG_MAIN, "Spool%s%s file %s-D not found",
+	*queue_name ? " Q=" : "",
+	*queue_name ? queue_name : "",
+	id);
     }
-  else log_write(0, LOG_MAIN, "Spool error for %s: %s", fname,
-    strerror(errno));
+  else
+    log_write(0, LOG_MAIN, "Spool error for %s: %s", fname, strerror(errno));
   errno = save_errno;
   return -1;
   }
