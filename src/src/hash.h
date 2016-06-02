@@ -30,9 +30,13 @@
 /* Hash context for the exim_sha_* routines */
 
 typedef enum hashmethod {
+  HASH_BADTYPE,
   HASH_SHA1,
   HASH_SHA256,
-  HASH_SHA3
+  HASH_SHA3_224,
+  HASH_SHA3_256,
+  HASH_SHA3_384,
+  HASH_SHA3_512,
 } hashmethod;
 
 typedef struct {

@@ -27,27 +27,6 @@ sha1;
 
 
 
-#ifndef SUPPORT_TLS
-# error Need SUPPORT_TLS for DKIM
-#endif
-
-
-
-#ifdef notdef
-#ifdef RSA_OPENSSL
-# include <openssl/rsa.h>
-# include <openssl/ssl.h>
-# include <openssl/err.h>
-#elif defined(RSA_GNUTLS)
-# include <gnutls/gnutls.h>
-# include <gnutls/x509.h>
-# ifdef RSA_VERIFY_GNUTLS
-#  include <gnutls/abstract.h>
-# endif
-#endif
-#endif
-
-
 /******************************************************************************/
 #ifdef SHA_OPENSSL
 
@@ -95,9 +74,12 @@ exim_sha_init(hctx * h, hashmethod m)
 {
 switch (h->method = m)
   {
-  case HASH_SHA1:   h->hashlen = 20; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA1); break;
-  case HASH_SHA256: h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA256); break;
-  default:	    h->hashlen = 0; break;
+  case HASH_SHA1:     h->hashlen = 20; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA1); break;
+  case HASH_SHA256:   h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA256); break;
+#ifdef EXIM_HAVE_SHA3
+  case HASH_SHA3_256: h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA3_256); break;
+#endif
+  default: h->hashlen = 0; break;
   }
 }
 

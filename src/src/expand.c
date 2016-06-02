@@ -231,6 +231,7 @@ static uschar *op_table_main[] = {
   US"s",
   US"sha1",
   US"sha256",
+  US"sha3",
   US"stat",
   US"str2b64",
   US"strlen",
@@ -273,6 +274,7 @@ enum {
   EOP_S,
   EOP_SHA1,
   EOP_SHA256,
+  EOP_SHA3,
   EOP_STAT,
   EOP_STR2B64,
   EOP_STRLEN,
@@ -6367,7 +6369,7 @@ while (*s != 0)
         continue;
 
       case EOP_SHA256:
-#ifdef SUPPORT_TLS
+#ifdef EXIM_HAVE_SHA2
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
@@ -6392,6 +6394,40 @@ while (*s != 0)
 	  expand_string_message = US"sha256 only supported with TLS";
 #endif
         continue;
+
+      case EOP_SHA3:
+#ifdef EXIM_HAVE_SHA3
+	{
+	hctx h;
+	blob b;
+	char st[3];
+	hashmethod m = !arg ? HASH_SHA3_256
+	  : Ustrcmp(arg, "224") == 0 ? HASH_SHA3_224
+	  : Ustrcmp(arg, "256") == 0 ? HASH_SHA3_256
+	  : Ustrcmp(arg, "384") == 0 ? HASH_SHA3_384
+	  : Ustrcmp(arg, "512") == 0 ? HASH_SHA3_512
+	  : HASH_BADTYPE;
+
+	if (m == HASH_BADTYPE)
+	  {
+	  expand_string_message = US"unrecognised sha3 variant";
+	  goto EXPAND_FAILED;
+	  }
+
+	exim_sha_init(&h, m);
+	exim_sha_update(&h, sub, Ustrlen(sub));
+	exim_sha_finish(&h, &b);
+	while (b.len-- > 0)
+	  {
+	  sprintf(st, "%02X", *b.data++);
+	  yield = string_catn(yield, &size, &ptr, US st, 2);
+	  }
+	}
+        continue;
+#else
+	expand_string_message = US"sha3 only supported with GnuTLS 3.5.0 +";
+	goto EXPAND_FAILED;
+#endif
 
       /* Convert hex encoding to base64 encoding */
 

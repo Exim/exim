@@ -17,6 +17,10 @@ Version 4.88
  3. Speculative debugging, via a "kill" option to the "control=debug" ACL
     modifier.
 
+ 4. New expansion item ${sha3:<string>} / ${sha3_<N>:<string>}.
+    N can be 224, 256 (default), 384, 512.
+    With GnuTLS 3.5.0 or later, only.
+
 
 Version 4.87
 ------------

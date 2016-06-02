@@ -18,6 +18,9 @@
 
 #  if GNUTLS_VERSION_NUMBER >= 0x020a00
 #   define SHA_GNUTLS
+#   if GNUTLS_VERSION_NUMBER >= 0x030500
+#    define EXIM_HAVE_SHA3
+#   endif
 #  else
 #   define SHA_GCRYPT
 #  endif
