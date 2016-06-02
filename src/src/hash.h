@@ -29,9 +29,15 @@
 
 /* Hash context for the exim_sha_* routines */
 
+typedef enum hashmethod {
+  HASH_SHA1,
+  HASH_SHA256,
+  HASH_SHA3
+} hashmethod;
+
 typedef struct {
-  BOOL is_sha1;
-  int hashlen;
+  hashmethod	method;
+  int		hashlen;
 
 #ifdef SHA_OPENSSL
   union {
@@ -57,7 +63,7 @@ typedef struct {
 
 } hctx;
 
-extern void     exim_sha_init(hctx *, BOOL);
+extern void     exim_sha_init(hctx *, hashmethod);
 extern void     exim_sha_update(hctx *, const uschar *a, int);
 extern void     exim_sha_finish(hctx *, blob *);
 extern int      exim_sha_hashlen(hctx *);

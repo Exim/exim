@@ -52,24 +52,25 @@ sha1;
 #ifdef SHA_OPENSSL
 
 void
-exim_sha_init(hctx * h, BOOL is_sha1)
+exim_sha_init(hctx * h, hashmethod m)
 {
-h->is_sha1 = is_sha1;
-h->hashlen = is_sha1 ? 20 : 32;
-if (h->is_sha1)
-  SHA1_Init  (&h->u.sha1);
-else
-  SHA256_Init(&h->u.sha2);
+switch (h->method = m)
+  {
+  case HASH_SHA1:   h->hashlen = 20; SHA1_Init  (&h->u.sha1); break;
+  case HASH_SHA256: h->hashlen = 32; SHA256_Init(&h->u.sha2); break;
+  default:	    h->hashlen = 0; break;
+  }
 }
 
 
 void
 exim_sha_update(hctx * h, const uschar * data, int len)
 {
-if (h->is_sha1)
-  SHA1_Update  (&h->u.sha1, data, len);
-else
-  SHA256_Update(&h->u.sha2, data, len);
+switch (h->method)
+  {
+  case HASH_SHA1:   SHA1_Update  (&h->u.sha1, data, len); break;
+  case HASH_SHA256: SHA256_Update(&h->u.sha2, data, len); break;
+  }
 }
 
 
@@ -77,11 +78,11 @@ void
 exim_sha_finish(hctx * h, blob * b)
 {
 b->data = store_get(b->len = h->hashlen);
-
-if (h->is_sha1)
-  SHA1_Final  (b->data, &h->u.sha1);
-else
-  SHA256_Final(b->data, &h->u.sha2);
+switch (h->method)
+  {
+  case HASH_SHA1:   SHA1_Final  (b->data, &h->u.sha1); break;
+  case HASH_SHA256: SHA256_Final(b->data, &h->u.sha2); break;
+  }
 }
 
 
@@ -90,11 +91,14 @@ else
 /******************************************************************************/
 
 void
-exim_sha_init(hctx * h, BOOL is_sha1)
+exim_sha_init(hctx * h, hashmethod m)
 {
-h->is_sha1 = is_sha1;
-h->hashlen = is_sha1 ? 20 : 32;
-gnutls_hash_init(&h->sha, is_sha1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256);
+switch (h->method = m)
+  {
+  case HASH_SHA1:   h->hashlen = 20; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA1); break;
+  case HASH_SHA256: h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA256); break;
+  default:	    h->hashlen = 0; break;
+  }
 }
 
 
@@ -118,11 +122,14 @@ gnutls_hash_output(h->sha, b->data);
 /******************************************************************************/
 
 void
-exim_sha_init(hctx * h, BOOL is_sha1)
+exim_sha_init(hctx * h, hashmethod m)
 {
-h->is_sha1 = is_sha1;
-h->hashlen = is_sha1 ? 20 : 32;
-gcry_md_open(&h->sha, is_sha1 ? GCRY_MD_SHA1 : GCRY_MD_SHA256, 0);
+switch (h->method = m)
+  {
+  case HASH_SHA1:   h->hashlen = 20; gcry_md_open(&h->sha, GCRY_MD_SHA1, 0); break;
+  case HASH_SHA256: h->hashlen = 32; gcry_md_open(&h->sha, GCRY_MD_SHA256, 0); break;
+  default:	    h->hashlen = 0; break;
+  }
 }
 
 
@@ -147,24 +154,25 @@ memcpy(b->data, gcry_md_read(h->sha, 0), h->hashlen);
 /******************************************************************************/
 
 void
-exim_sha_init(hctx * h, BOOL is_sha1)
+exim_sha_init(hctx * h, hashmethod m)
 {
-h->is_sha1 = is_sha1;
-h->hashlen = is_sha1 ? 20 : 32;
-if (h->is_sha1)
-  sha1_starts(&h->u.sha1);
-else
-  sha2_starts(&h->u.sha2, 0);
+switch (h->method = m)
+  {
+  case HASH_SHA1:   h->hashlen = 20; sha1_starts(&h->u.sha1);    break;
+  case HASH_SHA256: h->hashlen = 32; sha2_starts(&h->u.sha2, 0); break;
+  default:	    h->hashlen = 0; break;
+  }
 }
 
 
 void
 exim_sha_update(hctx * h, const uschar * data, int len)
 {
-if (h->is_sha1)
-  sha1_update(h->u.sha1, US data, len);
-else
-  sha2_update(h->u.sha2, US data, len);
+switch (h->method)
+  {
+  case HASH_SHA1:   sha1_update(h->u.sha1, US data, len); break;
+  case HASH_SHA256: sha2_update(h->u.sha2, US data, len); break;
+  }
 }
 
 
@@ -172,11 +180,11 @@ void
 exim_sha_finish(hctx * h, blob * b)
 {
 b->data = store_get(b->len = h->hashlen);
-
-if (h->is_sha1)
-  sha1_finish(h->u.sha1, b->data);
-else
-  sha2_finish(h->u.sha2, b->data);
+switch (h->method)
+  {
+  case HASH_SHA1:   sha1_finish(h->u.sha1, b->data); break;
+  case HASH_SHA256: sha2_finish(h->u.sha2, b->data); break;
+  }
 }
 
 
@@ -393,7 +401,7 @@ for (i = 0; i < 5; i++)
 
 # ifdef notdef
 void
-exim_sha_init(hctx * h, BOOL is_sha1)
+exim_sha_init(hctx * h, hashmethod m)
 {
 h->hashlen = 20;
 native_sha1_start(&h->sha1);
@@ -424,7 +432,9 @@ native_sha1_end(&h->sha1, NULL, 0, b->data);
 int
 exim_sha_hashlen(hctx * h)
 {
-return h->is_sha1 ? 20 : 32;
+return h->method == HASH_SHA1 ? 20
+     : h->method == HASH_SHA256 ? 32
+     : 0;
 }
 
 
@@ -460,7 +470,7 @@ native_sha1_end(&h->sha1, data, len, digest);
 void
 sha1_start(hctx * h)
 {
-exim_sha_init(h, TRUE);
+exim_sha_init(h, HASH_SHA1);
 }
 
 void

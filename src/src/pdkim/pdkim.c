@@ -562,7 +562,7 @@ DEBUG(D_acl)
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 
-exim_sha_init(&sig->body_hash, sig->algo == PDKIM_ALGO_RSA_SHA1);
+exim_sha_init(&sig->body_hash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
 return sig;
 }
 
@@ -1296,7 +1296,7 @@ while (sig)
   hdata.data = NULL;
   hdata.len = 0;
 
-  exim_sha_init(&hhash_ctx, is_sha1);
+  exim_sha_init(&hhash_ctx, is_sha1 ? HASH_SHA1 : HASH_SHA256);
 
   DEBUG(D_acl) debug_printf(
       "PDKIM >> Hashed header data, canonicalized, in sequence >>>>>>>>>>>>>>\n");
@@ -1608,7 +1608,7 @@ sig->selector = string_copy(US selector);
 sig->rsa_privkey = string_copy(US rsa_privkey);
 sig->algo = algo;
 
-exim_sha_init(&sig->body_hash, algo == PDKIM_ALGO_RSA_SHA1);
+exim_sha_init(&sig->body_hash, algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
 return ctx;
 }
 
