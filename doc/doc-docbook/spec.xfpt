@@ -10506,8 +10506,8 @@ returns the SHA-256 hash fingerprint of the certificate.
 
 
 .new
-.vitem &*${sha3:*&<&'string'&>&*}*&
-.vitem &*${sha3_<n>:*&<&'string'&>&*}*&
+.vitem &*${sha3:*&<&'string'&>&*}*& &&&
+       &*${sha3_<n>:*&<&'string'&>&*}*&
 .cindex "SHA3 hash"
 .cindex "expansion" "SHA3 hashing"
 .cindex "&%sha3%& expansion item"
