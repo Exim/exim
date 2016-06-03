@@ -410,7 +410,7 @@ exim_tidydb: $(OBJ_TIDYDB)
 
 exim_dbmbuild: exim_dbmbuild.o
 	@echo "$(LNCC) -o exim_dbmbuild"
-	$(FE)$(LNCC) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o \
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_dbmbuild; \
