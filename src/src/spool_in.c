@@ -63,8 +63,8 @@ for (i = 0; i < 2; i++)
     if (i == 0) continue;
     if (!queue_running)
       log_write(0, LOG_MAIN, "Spool%s%s file %s-D not found",
-	*queue_name ? " Q=" : "",
-	*queue_name ? queue_name : "",
+	*queue_name ? US" Q=" : US"",
+	*queue_name ? queue_name : US"",
 	id);
     }
   else

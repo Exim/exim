@@ -1378,7 +1378,6 @@ switch(action)
     }
 
   if (yield)
-    {
     if (spool_write_header(id, SW_MODIFYING, &errmsg) >= 0)
       printf("has been modified\n");
     else
@@ -1386,7 +1385,6 @@ switch(action)
       yield = FALSE;
       printf("- while %s: %s\n", doing, errmsg);
       }
-    }
 
   break;
   }
@@ -1394,8 +1392,11 @@ switch(action)
 /* Closing the datafile releases the lock and permits other processes
 to operate on the message (if it still exists). */
 
-(void)close(deliver_datafile);
-deliver_datafile = -1;
+if (deliver_datafile >= 0)
+  {
+  (void)close(deliver_datafile);
+  deliver_datafile = -1;
+  }
 return yield;
 }
 

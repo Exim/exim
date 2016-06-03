@@ -656,32 +656,30 @@ if (jread != NULL)
 been delivered, and removing visible names. In the nonrecipients tree,
 domains are lower cased. */
 
-if (recipients_list != NULL)
-  {
+if (recipients_list)
   for (i = 0; i < recipients_count; i++)
     {
     uschar *pp;
     uschar *r = recipients_list[i].address;
     tree_node *node = tree_search(tree_nonrecipients, r);
 
-    if (node == NULL)
+    if (!node)
       {
       uschar temp[256];
       uschar *rr = temp;
-      Ustrcpy(temp, r);
-      while (*rr != 0 && *rr != '@') rr++;
-      while (*rr != 0) { *rr = tolower(*rr); rr++; }
+      Ustrncpy(temp, r, sizeof(temp));
+      while (*rr && *rr != '@') rr++;
+      while (*rr) { *rr = tolower(*rr); rr++; }
       node = tree_search(tree_nonrecipients, temp);
       }
 
-    if ((pp = strstric(r+1, qualify_domain, FALSE)) != NULL &&
-      *(--pp) == '@') *pp = 0;
-    if (node == NULL)
+    if ((pp = strstric(r+1, qualify_domain, FALSE)) && *(--pp) == '@')
+       *pp = 0;
+    if (!node)
       (void)find_dest(p, r, dest_add, FALSE);
     else
       (void)find_dest(p, r, dest_remove, FALSE);
     }
-  }
 
 /* We also need to scan the tree of non-recipients, which might
 contain child addresses that are not in the recipients list, but
