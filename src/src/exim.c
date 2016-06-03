@@ -4683,8 +4683,7 @@ if (queue_interval == 0 && !daemon_listen)
     (stop_queue_run_id == NULL)?  US"" : US" stopping at ",
     (stop_queue_run_id == NULL)?  US"" : stop_queue_run_id);
   if (*queue_name)
-    set_process_info(CS string_sprintf(
-      "running the '%s' queue (single queue run)", queue_name));
+    set_process_info("running the '%s' queue (single queue run)", queue_name);
   else
     set_process_info("running the queue (single queue run)");
   queue_run(start_queue_run_id, stop_queue_run_id, FALSE);
