@@ -2729,9 +2729,19 @@ for (i = 1; i < argc; i++)
 
     /* -MCD: set the smtp_use_dsn flag; this indicates that the host
        that exim is connected to supports the esmtp extension DSN */
+
     else if (Ustrcmp(argrest, "CD") == 0)
       {
       smtp_use_dsn = TRUE;
+      break;
+      }
+
+    /* -MCG: set the queue name, to a non-default value */
+
+    else if (Ustrcmp(argrest, "CG") == 0)
+      {
+      if (++i < argc) queue_name = string_copy(argv[i]);
+      else badarg = TRUE;
       break;
       }
 
@@ -2750,9 +2760,9 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "CQ") == 0)
       {
-      if(++i < argc) passed_qr_pid = (pid_t)(Uatol(argv[i]));
+      if (++i < argc) passed_qr_pid = (pid_t)(Uatol(argv[i]));
         else badarg = TRUE;
-      if(++i < argc) passed_qr_pipe = (int)(Uatol(argv[i]));
+      if (++i < argc) passed_qr_pipe = (int)(Uatol(argv[i]));
         else badarg = TRUE;
       break;
       }
@@ -3227,7 +3237,7 @@ for (i = 1; i < argc; i++)
     if (*argrest == 'f')
       {
       queue_run_force = TRUE;
-      if (*(++argrest) == 'f')
+      if (*++argrest == 'f')
         {
         deliver_force_thaw = TRUE;
         argrest++;
@@ -3242,8 +3252,19 @@ for (i = 1; i < argc; i++)
       argrest++;
       }
 
-    /* -q[f][f][l]: Run the queue, optionally forced, optionally local only,
-    optionally starting from a given message id. */
+    /* -q[f][f][l][G<name>]... Work on the named queue */
+
+    if (*argrest == 'G')
+      {
+      int i;
+      for (argrest++, i = 0; argrest[i] && argrest[i] != '/'; ) i++;
+      queue_name = string_copyn(argrest, i);
+      argrest += i;
+      if (*argrest == '/') argrest++;
+      }
+
+    /* -q[f][f][l][G<name>]: Run the queue, optionally forced, optionally local
+    only, optionally named, optionally starting from a given message id. */
 
     if (*argrest == 0 &&
         (i + 1 >= argc || argv[i+1][0] == '-' || mac_ismsgid(argv[i+1])))
@@ -3255,20 +3276,14 @@ for (i = 1; i < argc; i++)
         stop_queue_run_id = argv[++i];
       }
 
-    /* -q[f][f][l]<n>: Run the queue at regular intervals, optionally forced,
-    optionally local only. */
+    /* -q[f][f][l][G<name>/]<n>: Run the queue at regular intervals, optionally
+    forced, optionally local only, optionally named. */
 
-    else
+    else if ((queue_interval = readconf_readtime(*argrest ? argrest : argv[++i],
+						0, FALSE)) <= 0)
       {
-      if (*argrest != 0)
-        queue_interval = readconf_readtime(argrest, 0, FALSE);
-      else
-        queue_interval = readconf_readtime(argv[++i], 0, FALSE);
-      if (queue_interval <= 0)
-        {
-        fprintf(stderr, "exim: bad time value %s: abandoned\n", argv[i]);
-        exit(EXIT_FAILURE);
-        }
+      fprintf(stderr, "exim: bad time value %s: abandoned\n", argv[i]);
+      exit(EXIT_FAILURE);
       }
     break;
 
@@ -3288,8 +3303,7 @@ for (i = 1; i < argc; i++)
     if (*argrest != 0)
       {
       int i;
-      for (i = 0; i < sizeof(rsopts)/sizeof(uschar *); i++)
-        {
+      for (i = 0; i < nelem(rsopts); i++)
         if (Ustrcmp(argrest, rsopts[i]) == 0)
           {
           if (i != 2) queue_run_force = TRUE;
@@ -3297,21 +3311,20 @@ for (i = 1; i < argc; i++)
           if (i == 1 || i == 4) deliver_force_thaw = TRUE;
           argrest += Ustrlen(rsopts[i]);
           }
-        }
       }
 
     /* -R: Set string to match in addresses for forced queue run to
     pick out particular messages. */
 
-    if (*argrest == 0)
+    if (*argrest)
+      deliver_selectstring = argrest;
+    else if (i+1 < argc)
+      deliver_selectstring = argv[++i];
+    else
       {
-      if (i+1 < argc) deliver_selectstring = argv[++i]; else
-        {
-        fprintf(stderr, "exim: string expected after -R\n");
-        exit(EXIT_FAILURE);
-        }
+      fprintf(stderr, "exim: string expected after -R\n");
+      exit(EXIT_FAILURE);
       }
-    else deliver_selectstring = argrest;
     break;
 
 
@@ -3332,11 +3345,10 @@ for (i = 1; i < argc; i++)
     in all cases provided there are no further characters in this
     argument. */
 
-    if (*argrest != 0)
+    if (*argrest)
       {
       int i;
-      for (i = 0; i < sizeof(rsopts)/sizeof(uschar *); i++)
-        {
+      for (i = 0; i < nelem(rsopts); i++)
         if (Ustrcmp(argrest, rsopts[i]) == 0)
           {
           if (i != 2) queue_run_force = TRUE;
@@ -3344,21 +3356,20 @@ for (i = 1; i < argc; i++)
           if (i == 1 || i == 4) deliver_force_thaw = TRUE;
           argrest += Ustrlen(rsopts[i]);
           }
-        }
       }
 
     /* -S: Set string to match in addresses for forced queue run to
     pick out particular messages. */
 
-    if (*argrest == 0)
+    if (*argrest)
+      deliver_selectstring_sender = argrest;
+    else if (i+1 < argc)
+      deliver_selectstring_sender = argv[++i];
+    else
       {
-      if (i+1 < argc) deliver_selectstring_sender = argv[++i]; else
-        {
-        fprintf(stderr, "exim: string expected after -S\n");
-        exit(EXIT_FAILURE);
-        }
+      fprintf(stderr, "exim: string expected after -S\n");
+      exit(EXIT_FAILURE);
       }
-    else deliver_selectstring_sender = argrest;
     break;
 
     /* -Tqt is an option that is exclusively for use by the testing suite.
@@ -3472,8 +3483,9 @@ for (i = 1; i < argc; i++)
 
 /* If -R or -S have been specified without -q, assume a single queue run. */
 
-if ((deliver_selectstring != NULL || deliver_selectstring_sender != NULL) &&
-  queue_interval < 0) queue_interval = 0;
+if (  (deliver_selectstring || deliver_selectstring_sender)
+   && queue_interval < 0)
+    queue_interval = 0;
 
 
 END_ARG:
@@ -3489,12 +3501,12 @@ if ((
     ) ||
     (
     msg_action_arg > 0 &&
-    (daemon_listen || queue_interval >= 0 || list_options ||
+    (daemon_listen || queue_interval > 0 || list_options ||
       (checking && msg_action != MSG_LOAD) ||
       bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0)
     ) ||
     (
-    (daemon_listen || queue_interval >= 0) &&
+    (daemon_listen || queue_interval > 0) &&
     (sender_address != NULL || list_options || list_queue || checking ||
       bi_option)
     ) ||
@@ -4670,7 +4682,11 @@ if (queue_interval == 0 && !daemon_listen)
     (start_queue_run_id == NULL)? US"" : start_queue_run_id,
     (stop_queue_run_id == NULL)?  US"" : US" stopping at ",
     (stop_queue_run_id == NULL)?  US"" : stop_queue_run_id);
-  set_process_info("running the queue (single queue run)");
+  if (*queue_name)
+    set_process_info(CS string_sprintf(
+      "running the '%s' queue (single queue run)", queue_name));
+  else
+    set_process_info("running the queue (single queue run)");
   queue_run(start_queue_run_id, stop_queue_run_id, FALSE);
   exim_exit(EXIT_SUCCESS);
   }
@@ -5714,8 +5730,8 @@ while (more)
 
       if (geteuid() != root_uid && !deliver_drop_privilege && !unprivileged)
         {
-        (void)child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 2, US"-Mc",
-          message_id);
+        (void)child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE,
+		2, US"-Mc", message_id);
         /* Control does not return here. */
         }
 

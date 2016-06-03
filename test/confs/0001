@@ -148,7 +148,7 @@ no_queue_only_override
 queue_only_file = /var/spool/exim/queue_only
 queue_only_load = 8.2
 no_queue_run_in_order
-queue_run_max = 5
+queue_run_max = ${if = {1}{1} {5}{10}}
 queue_smtp_domains = x.y.z
 receive_timeout = 0s
 received_header_text = Received: ${if def:sender_rcvhost {from ${sender_rcvhost}\n\t}{${if def:sender_ident {from ${sender_ident} }}${if def:sender_helo_name {(helo=${sender_helo_name})\n\t}}}}by ${primary_hostname} ${if def:received_protocol {with ${received_protocol}}} (Exim ${version_number} #${compile_number})\n\tid ${message_id}${if def:received_for {\n\tfor $received_for}}

@@ -6,6 +6,7 @@ admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 set_process_info: pppp listing the queue
+looking in TESTSUITE/spool//input
 reading spool file 10HmaX-0005vi-00-H
 user=spaced user uid=CALLER_UID gid=CALLER_GID sender="spaced user"@myhost.test.ex
 sender_local=1 ident=spaced user

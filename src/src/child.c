@@ -72,9 +72,9 @@ child_exec_exim(int exec_type, BOOL kill_v, int *pcount, BOOL minimal,
 {
 int first_special = -1;
 int n = 0;
-int extra = (pcount != NULL)? *pcount : 0;
+int extra = pcount ? *pcount : 0;
 uschar **argv =
-  store_get((extra + acount + MAX_CLMACROS + 16) * sizeof(char *));
+  store_get((extra + acount + MAX_CLMACROS + 18) * sizeof(char *));
 
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */
@@ -113,6 +113,11 @@ if (!minimal)
   if (synchronous_delivery) argv[n++] = US"-odi";
   if (connection_max_messages >= 0)
     argv[n++] = string_sprintf("-oB%d", connection_max_messages);
+  if (*queue_name)
+    {
+    argv[n++] = US"-MCG";
+    argv[n++] = queue_name;
+    }
   }
 
 /* Now add in any others that are in the call. Remember which they were,

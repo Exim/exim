@@ -1013,7 +1013,7 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
 int dkim_fd;
 int save_errno = 0;
 BOOL rc;
-uschar dkim_spool_name[256];
+uschar * dkim_spool_name;
 char sbuf[2048];
 int sread = 0;
 int wwritten = 0;
@@ -1027,8 +1027,8 @@ if (!(dkim_private_key && dkim_domain && dkim_selector))
 	    check_string, escape_string, rewrite_rules,
 	    rewrite_existflags);
 
-(void)string_format(dkim_spool_name, 256, "%s/input/%s/%s-%d-K",
-	spool_directory, message_subdir, message_id, (int)getpid());
+dkim_spool_name = spool_fname(US"input", message_subdir, message_id,
+		    string_sprintf("-%d-K", (int)getpid()));
 
 if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
   {
@@ -1655,8 +1655,6 @@ open_db *dbm_file;
 uschar buffer[256];
 
 int         i;
-uschar      spool_dir [PATH_MAX];
-uschar      spool_file [PATH_MAX];
 struct stat statbuf;
 
 *more = FALSE;
@@ -1714,8 +1712,6 @@ emptied, delete it and continue with any continuation records that may exist.
 but the 1 off will remain without it.  This code now allows me to SKIP over
 a message I do not want to send out on this run.  */
 
-sprintf(CS spool_dir, "%s/input/", spool_directory);
-
 host_length = host_record->count * MESSAGE_ID_LENGTH;
 
 while (1)
@@ -1754,13 +1750,13 @@ while (1)
 
   for (i = msgq_count - 1; i >= 0; --i) if (msgq[i].bKeep)
     {
-    if (split_spool_directory)
-	sprintf(CS spool_file, "%s%c/%s-D",
-		      spool_dir, msgq[i].message_id[5], msgq[i].message_id);
-    else
-	sprintf(CS spool_file, "%s%s-D", spool_dir, msgq[i].message_id);
+    uschar subdir[2];
 
-    if (Ustat(spool_file, &statbuf) != 0)
+    subdir[0] = split_spool_directory ? msgq[i].message_id[5] : 0;
+    subdir[1] = 0;
+
+    if (Ustat(spool_fname(US"input", subdir, msgq[i].message_id, US"-D"),
+	      &statbuf) != 0)
       msgq[i].bKeep = FALSE;
     else if (!oicf_func || oicf_func(msgq[i].message_id, oicf_data))
       {
@@ -1927,7 +1923,6 @@ if ((pid = fork()) == 0)
 
   argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
-  /* Call with the dsn flag */
   if (smtp_use_dsn) argv[i++] = US"-MCD";
 
   if (smtp_authenticated) argv[i++] = US"-MCA";

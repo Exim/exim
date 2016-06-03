@@ -653,6 +653,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/waiting for children of \d+/waiting for children of pppp/;
   s/waiting for (\S+) \(\d+\)/waiting for $1 (pppp)/;
 
+  # The spool header file name varies with PID
+  s%^(Writing spool header file: .*/hdr).[0-9]{1,5}%$1.pppp%;
+
   # ======== Port numbers ========
   # Incoming port numbers may vary, but not in daemon startup line.
 

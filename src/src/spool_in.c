@@ -37,7 +37,6 @@ spool_open_datafile(uschar *id)
 int i;
 struct stat statbuf;
 flock_t lock_data;
-uschar spoolname[256];
 int fd;
 
 /* If split_spool_directory is set, first look for the file in the appropriate
@@ -49,20 +48,27 @@ splitting state. */
 
 for (i = 0; i < 2; i++)
   {
+  uschar * fname;
   int save_errno;
-  message_subdir[0] = (split_spool_directory == (i == 0))? id[5] : 0;
-  sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
-  if ((fd = Uopen(spoolname, O_RDWR | O_APPEND, 0)) >= 0)
+
+  message_subdir[0] = split_spool_directory == i == 0 ? id[5] : 0;
+  fname = spool_fname(US"input", message_subdir, id, US"-D");
+  DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
+
+  if ((fd = Uopen(fname, O_RDWR | O_APPEND, 0)) >= 0)
     break;
   save_errno = errno;
   if (errno == ENOENT)
     {
     if (i == 0) continue;
     if (!queue_running)
-      log_write(0, LOG_MAIN, "Spool file %s-D not found", id);
+      log_write(0, LOG_MAIN, "Spool%s%s file %s-D not found",
+	*queue_name ? " Q=" : "",
+	*queue_name ? queue_name : "",
+	id);
     }
-  else log_write(0, LOG_MAIN, "Spool error for %s: %s", spoolname,
-    strerror(errno));
+  else
+    log_write(0, LOG_MAIN, "Spool error for %s: %s", fname, strerror(errno));
   errno = save_errno;
   return -1;
   }
@@ -318,12 +324,12 @@ and unsplit directories, as for the data file above. */
 for (n = 0; n < 2; n++)
   {
   if (!subdir_set)
-    message_subdir[0] = (split_spool_directory == (n == 0))? name[5] : 0;
-  sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
-    name);
-  f = Ufopen(big_buffer, "rb");
-  if (f != NULL) break;
-  if (n != 0 || subdir_set || errno != ENOENT) return spool_read_notopen;
+    message_subdir[0] = split_spool_directory == (n == 0) ? name[5] : 0;
+
+  if ((f = Ufopen(spool_fname(US"input", message_subdir, name, US""), "rb")))
+    break;
+  if (n != 0 || subdir_set || errno != ENOENT)
+    return spool_read_notopen;
   }
 
 errno = 0;

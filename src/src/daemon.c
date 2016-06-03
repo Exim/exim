@@ -651,8 +651,8 @@ if (pid == 0)
         if (geteuid() != root_uid && !deliver_drop_privilege)
           {
           signal(SIGALRM, SIG_DFL);
-          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 2, US"-Mc",
-            message_id);
+          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE,
+	    2, US"-Mc", message_id);
           /* Control does not return here. */
           }
 
@@ -866,10 +866,10 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   /* If it wasn't an accepting process, see if it was a queue-runner
   process that we are tracking. */
 
-  if (queue_pid_slots != NULL)
+  if (queue_pid_slots)
     {
-    for (i = 0; i < queue_run_max; i++)
-      {
+    int max = atoi(expand_string(queue_run_max));
+    for (i = 0; i < max; i++)
       if (queue_pid_slots[i] == pid)
         {
         queue_pid_slots[i] = 0;
@@ -878,7 +878,6 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
           queue_run_count, (queue_run_count == 1)? "" : "es");
         break;
         }
-      }
     }
   }
 }
@@ -916,6 +915,7 @@ int *listen_sockets = NULL;
 int listen_socket_count = 0;
 ip_address_item *addresses = NULL;
 time_t last_connection_time = (time_t)0;
+int local_queue_run_max = atoi(expand_string(queue_run_max));
 
 /* If any debugging options are set, turn on the D_pid bit so that all
 debugging lines get the pid added. */
@@ -1572,11 +1572,11 @@ originator_login = ((pw = getpwuid(exim_uid)) != NULL)?
 /* Get somewhere to keep the list of queue-runner pids if we are keeping track
 of them (and also if we are doing queue runs). */
 
-if (queue_interval > 0 && queue_run_max > 0)
+if (queue_interval > 0 && local_queue_run_max > 0)
   {
   int i;
-  queue_pid_slots = store_get(queue_run_max * sizeof(pid_t));
-  for (i = 0; i < queue_run_max; i++) queue_pid_slots[i] = 0;
+  queue_pid_slots = store_get(local_queue_run_max * sizeof(pid_t));
+  for (i = 0; i < local_queue_run_max; i++) queue_pid_slots[i] = 0;
   }
 
 /* Set up the handler for termination of child processes. */
@@ -1615,12 +1615,11 @@ else if (daemon_listen)
   int i, j;
   int smtp_ports = 0;
   int smtps_ports = 0;
-  ip_address_item *ipa;
-  uschar *p = big_buffer;
-  uschar *qinfo = (queue_interval > 0)?
-    string_sprintf("-q%s", readconf_printtime(queue_interval))
-    :
-    US"no queue runs";
+  ip_address_item * ipa;
+  uschar * p = big_buffer;
+  uschar * qinfo = queue_interval > 0
+    ? string_sprintf("-q%s", readconf_printtime(queue_interval))
+    : US"no queue runs";
 
   /* Build a list of listening addresses in big_buffer, but limit it to 10
   items. The style is for backwards compatibility.
@@ -1631,30 +1630,30 @@ else if (daemon_listen)
 
   for (j = 0; j < 2; j++)
     {
-    for (i = 0, ipa = addresses; i < 10 && ipa != NULL; i++, ipa = ipa->next)
+    for (i = 0, ipa = addresses; i < 10 && ipa; i++, ipa = ipa->next)
        {
        /* First time round, look for SMTP ports; second time round, look for
        SMTPS ports. For the first one of each, insert leading text. */
 
        if (host_is_tls_on_connect_port(ipa->port) == (j > 0))
          {
-         if (j == 0)
-           {
-           if (smtp_ports++ == 0)
+	 if (j == 0)
+	   {
+	   if (smtp_ports++ == 0)
              {
              memcpy(p, "SMTP on", 8);
              p += 7;
              }
-           }
-         else
-           {
-           if (smtps_ports++ == 0)
+	   }
+	 else
+	   {
+	   if (smtps_ports++ == 0)
              {
              (void)sprintf(CS p, "%sSMTPS on",
-               (smtp_ports == 0)? "":" and for ");
-             while (*p != 0) p++;
+               smtp_ports == 0 ? "" : " and for ");
+             while (*p) p++;
              }
-           }
+	   }
 
          /* Now the information about the port (and sometimes interface) */
 
@@ -1679,7 +1678,7 @@ else if (daemon_listen)
          }
        }
 
-    if (ipa != NULL)
+    if (ipa)
       {
       memcpy(p, " ...", 5);
       p += 4;
@@ -1689,17 +1688,19 @@ else if (daemon_listen)
   log_write(0, LOG_MAIN,
     "exim %s daemon started: pid=%d, %s, listening for %s",
     version_string, getpid(), qinfo, big_buffer);
-  set_process_info("daemon(%s): %s, listening for %s", version_string, qinfo, big_buffer);
+  set_process_info("daemon(%s): %s, listening for %s",
+    version_string, qinfo, big_buffer);
   }
 
 else
   {
+  uschar * s = *queue_name
+    ? string_sprintf("-qG%s/%s", queue_name, readconf_printtime(queue_interval))
+    : string_sprintf("-q%s", readconf_printtime(queue_interval));
   log_write(0, LOG_MAIN,
-    "exim %s daemon started: pid=%d, -q%s, not listening for SMTP",
-    version_string, getpid(), readconf_printtime(queue_interval));
-  set_process_info("daemon(%s): -q%s, not listening",
-    version_string,
-    readconf_printtime(queue_interval));
+    "exim %s daemon started: pid=%d, %s, not listening for SMTP",
+    version_string, getpid(), s);
+  set_process_info("daemon(%s): %s, not listening", version_string, s);
   }
 
 /* Do any work it might be useful to amortize over our children
@@ -1791,7 +1792,7 @@ for (;;)
       re-exec is required. */
 
       if (queue_interval > 0 &&
-         (queue_run_max <= 0 || queue_run_count < queue_run_max))
+         (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
         {
         if ((pid = fork()) == 0)
           {
@@ -1835,21 +1836,22 @@ for (;;)
             if (deliver_force_thaw) *p++ = 'f';
             if (queue_run_local) *p++ = 'l';
             *p = 0;
-            extra[0] = opt;
+	    extra[0] = queue_name
+	      ? string_sprintf("%sG%s", opt, queue_name) : opt;
 
             /* If -R or -S were on the original command line, ensure they get
             passed on. */
 
-            if (deliver_selectstring != NULL)
+            if (deliver_selectstring)
               {
-              extra[extracount++] = deliver_selectstring_regex? US"-Rr" : US"-R";
+              extra[extracount++] = deliver_selectstring_regex ? US"-Rr" : US"-R";
               extra[extracount++] = deliver_selectstring;
               }
 
-            if (deliver_selectstring_sender != NULL)
+            if (deliver_selectstring_sender)
               {
-              extra[extracount++] = deliver_selectstring_sender_regex?
-                US"-Sr" : US"-S";
+              extra[extracount++] = deliver_selectstring_sender_regex
+	        ? US"-Sr" : US"-S";
               extra[extracount++] = deliver_selectstring_sender;
               }
 
@@ -1876,15 +1878,13 @@ for (;;)
         else
           {
           int i;
-          for (i = 0; i < queue_run_max; ++i)
-            {
+          for (i = 0; i < local_queue_run_max; ++i)
             if (queue_pid_slots[i] <= 0)
               {
               queue_pid_slots[i] = pid;
               queue_run_count++;
               break;
               }
-            }
           DEBUG(D_any) debug_printf("%d queue-runner process%s running\n",
             queue_run_count, (queue_run_count == 1)? "" : "es");
           }

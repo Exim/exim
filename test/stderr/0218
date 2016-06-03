@@ -5,6 +5,7 @@ Single queue run
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qq
 queue running combined directories
+looking in TESTSUITE/spool//input
 delivering 10HmaX-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
@@ -12,6 +13,7 @@ delivering 10HmaY-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 queue running combined directories
+looking in TESTSUITE/spool//input
 delivering 10HmaX-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
@@ -65,6 +67,7 @@ Single queue run
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qq
 queue running combined directories
+looking in TESTSUITE/spool//input
 delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
@@ -72,6 +75,7 @@ delivering 10HmbA-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 queue running combined directories
+looking in TESTSUITE/spool//input
 delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 T: send_to_server  (ACL)

@@ -113,17 +113,15 @@ if (!spool_mbox_ok)
     message_subdir[1] = '\0';
     for (i = 0; i < 2; i++)
       {
-      message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
-      temp_string = string_sprintf("%s/input/%s/%s-D", spool_directory,
-	message_subdir, message_id);
-      data_file = Ufopen(temp_string, "rb");
-      if (data_file != NULL) break;
+      message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
+      temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");
+      if ((data_file = Ufopen(temp_string, "rb"))) break;
       }
     }
   else
     data_file = Ufopen(source_file_override, "rb");
 
-  if (data_file == NULL)
+  if (!data_file)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Could not open datafile for message %s",
       message_id);

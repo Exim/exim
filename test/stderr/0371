@@ -75,6 +75,7 @@ search_tidyup called
 search_tidyup called
 >>Headers after rewriting and local additions:
 
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from [V4NET.0.0.0] (helo=something)

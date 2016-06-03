@@ -202,6 +202,7 @@ T To: CALLER@myhost.test.ex
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
@@ -209,7 +210,8 @@ P Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
@@ -280,7 +282,8 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   Completed

@@ -21,6 +21,11 @@ Version 4.88
     N can be 224, 256 (default), 384, 512.
     With GnuTLS 3.5.0 or later, only.
 
+ 5. Facility for named queues:  A commandline argument can specify
+    the queue name for a queue operation, and an ACL modifier can set
+    the queue to be used for a message.  A $queue_name variable gives
+    visibility.
+
 
 Version 4.87
 ------------
