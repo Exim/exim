@@ -4722,13 +4722,17 @@ Returns:    OK
 */
 
 int
-deliver_split_address(address_item *addr)
+deliver_split_address(address_item * addr)
 {
-uschar *address = addr->address;
-uschar *domain = Ustrrchr(address, '@');
-uschar *t;
-int len = domain - address;
+uschar * address = addr->address;
+uschar * domain;
+uschar * t;
+int len;
 
+if (!(domain = Ustrrchr(address, '@')))
+  return DEFER;		/* should always have a domain, but just in case... */
+
+len = domain - address;
 addr->domain = string_copylc(domain+1);    /* Domains are always caseless */
 
 /* The implication in the RFCs (though I can't say I've seen it spelled out
@@ -4740,7 +4744,7 @@ removing quoting backslashes and any unquoted doublequotes. */
 t = addr->cc_local_part = store_get(len+1);
 while(len-- > 0)
   {
-  register int c = *address++;
+  int c = *address++;
   if (c == '\"') continue;
   if (c == '\\')
     {
