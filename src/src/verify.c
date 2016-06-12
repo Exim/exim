@@ -1894,7 +1894,7 @@ if (address[0] == 0) return OK;
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of a transport used by verification. Reset them
-at exit from this routine. */
+at exit from this routine (so no returns allowed from here on). */
 
 tls_modify_variables(&tls_out);
 
@@ -1902,6 +1902,10 @@ tls_modify_variables(&tls_out);
 while verifying a sender address (a nice bit of self-reference there). */
 
 save_sender = sender_address;
+
+/* Observability variable for router/transport use */
+
+verify_mode = is_recipient ? US"R" : US"S";
 
 /* Update the address structure with the possibly qualified and rewritten
 address. Set it up as the starting address on the chain of new addresses. */
@@ -1918,7 +1922,7 @@ If an address generates more than one child, the loop is used only when
 full_info is set, and this can only be set locally. Remote enquiries just get
 information about the top level address, not anything that it generated. */
 
-while (addr_new != NULL)
+while (addr_new)
   {
   int rc;
   address_item *addr = addr_new;
@@ -2103,10 +2107,8 @@ while (addr_new != NULL)
 #ifdef SUPPORT_TLS
 	  deliver_set_expansions(addr);
 #endif
-	  verify_mode = is_recipient ? US"R" : US"S";
           rc = do_callout(addr, host_list, &tf, callout, callout_overall,
             callout_connect, options, se_mailfrom, pm_mailfrom);
-	  verify_mode = NULL;
           }
         }
       else
@@ -2357,6 +2359,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 the -bv or -bt case). */
 
 out:
+verify_mode = NULL;
 tls_modify_variables(&tls_in);
 
 return yield;
