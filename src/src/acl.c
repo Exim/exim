@@ -2017,15 +2017,15 @@ message if giving out verification details. */
 if (verify_header_sender)
   {
   int verrno;
-  rc = verify_check_header_address(user_msgptr, log_msgptr, callout,
+
+  if ((rc = verify_check_header_address(user_msgptr, log_msgptr, callout,
     callout_overall, callout_connect, se_mailfrom, pm_mailfrom, verify_options,
-    &verrno);
-  if (rc != OK)
+    &verrno)) != OK)
     {
     *basic_errno = verrno;
     if (smtp_return_error_details)
       {
-      if (*user_msgptr == NULL && *log_msgptr != NULL)
+      if (!*user_msgptr && *log_msgptr)
         *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
       if (rc == DEFER) acl_temp_details = TRUE;
       }
@@ -2047,10 +2047,9 @@ Therefore, we always do a full sender verify when any kind of callout is
 specified. Caching elsewhere, for instance in the DNS resolver and in the
 callout handling, should ensure that this is not terribly inefficient. */
 
-else if (verify_sender_address != NULL)
+else if (verify_sender_address)
   {
-  if ((verify_options & (vopt_callout_recipsender|vopt_callout_recippmaster))
-       != 0)
+  if ((verify_options & (vopt_callout_recipsender|vopt_callout_recippmaster)))
     {
     *log_msgptr = US"use_sender or use_postmaster cannot be used for a "
       "sender verify callout";
@@ -2066,7 +2065,9 @@ else if (verify_sender_address != NULL)
     callout that was done previously). If the "routed" flag is not set, routing
     must have failed, so we use the saved return code. */
 
-    if (testflag(sender_vaddr, af_verify_routed)) rc = OK; else
+    if (testflag(sender_vaddr, af_verify_routed))
+      rc = OK;
+    else
       {
       rc = sender_vaddr->special_action;
       *basic_errno = sender_vaddr->basic_errno;
@@ -2120,22 +2121,21 @@ else if (verify_sender_address != NULL)
 
       HDEBUG(D_acl) debug_printf("----------- end verify ------------\n");
 
-      if (rc == OK)
-        {
-        if (Ustrcmp(sender_vaddr->address, verify_sender_address) != 0)
-          {
-          DEBUG(D_acl) debug_printf("sender %s verified ok as %s\n",
-            verify_sender_address, sender_vaddr->address);
-          }
-        else
-          {
-          DEBUG(D_acl) debug_printf("sender %s verified ok\n",
-            verify_sender_address);
-          }
-        }
-      else *basic_errno = sender_vaddr->basic_errno;
+      if (rc != OK)
+        *basic_errno = sender_vaddr->basic_errno;
+      else
+	DEBUG(D_acl)
+	  {
+	  if (Ustrcmp(sender_vaddr->address, verify_sender_address) != 0)
+	    debug_printf("sender %s verified ok as %s\n",
+	      verify_sender_address, sender_vaddr->address);
+	  else
+	    debug_printf("sender %s verified ok\n",
+	      verify_sender_address);
+	  }
       }
-    else rc = OK;  /* Null sender */
+    else
+      rc = OK;  /* Null sender */
 
     /* Cache the result code */
 

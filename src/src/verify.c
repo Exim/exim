@@ -1971,15 +1971,15 @@ while (addr_new)
 
   /* Just in case some router parameter refers to it. */
 
-  return_path = (addr->prop.errors_address != NULL)?
-    addr->prop.errors_address : sender_address;
+  return_path = addr->prop.errors_address
+    ? addr->prop.errors_address : sender_address;
 
   /* Split the address into domain and local part, handling the %-hack if
   necessary, and then route it. While routing a sender address, set
   $sender_address to <> because that is what it will be if we were trying to
   send a bounce to the sender. */
 
-  if (routed != NULL) *routed = FALSE;
+  if (routed) *routed = FALSE;
   if ((rc = deliver_split_address(addr)) == OK)
     {
     if (!is_recipient) sender_address = null_sender;
@@ -1996,11 +1996,11 @@ while (addr_new)
 
   if (rc == OK)
     {
-    if (routed != NULL) *routed = TRUE;
+    if (routed) *routed = TRUE;
     if (callout > 0)
       {
-      host_item *host_list = addr->host_list;
       transport_instance * tp;
+      host_item * host_list = addr->host_list;
 
       /* Make up some data for use in the case where there is no remote
       transport. */
@@ -2030,7 +2030,7 @@ while (addr_new)
         transport is configured to override the router's hosts, we must build a
         host list of the transport's hosts, and find the IP addresses */
 
-        if (tf.hosts != NULL && (host_list == NULL || tf.hosts_override))
+        if (tf.hosts && (!host_list || tf.hosts_override))
           {
           uschar *s;
           const uschar *save_deliver_domain = deliver_domain;
@@ -2044,7 +2044,7 @@ while (addr_new)
           deliver_domain = save_deliver_domain;
           deliver_localpart = save_deliver_localpart;
 
-          if (s == NULL)
+          if (!s)
             {
             log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
               "\"%s\" in %s transport for callout: %s", tf.hosts,
@@ -2066,7 +2066,7 @@ while (addr_new)
             if (tf.qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
             if (tf.search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
-            for (host = host_list; host != NULL; host = nexthost)
+            for (host = host_list; host; host = nexthost)
               {
               nexthost = host->next;
               if (tf.gethostbyname ||
@@ -2093,7 +2093,7 @@ while (addr_new)
       /* Can only do a callout if we have at least one host! If the callout
       fails, it will have set ${sender,recipient}_verify_failure. */
 
-      if (host_list != NULL)
+      if (host_list)
         {
         HDEBUG(D_verify) debug_printf("Attempting full verification using callout\n");
         if (host_checking && !host_checking_callout)
@@ -2134,24 +2134,24 @@ while (addr_new)
   if (rc == FAIL)
     {
     allok = FALSE;
-    if (f != NULL)
+    if (f)
       {
       address_item *p = addr->parent;
 
       respond_printf(f, "%s%s %s", ko_prefix,
-        full_info? addr->address : address,
-        address_test_mode? "is undeliverable" : "failed to verify");
+        full_info ? addr->address : address,
+        address_test_mode ? "is undeliverable" : "failed to verify");
       if (!expn && admin_user)
         {
         if (addr->basic_errno > 0)
           respond_printf(f, ": %s", strerror(addr->basic_errno));
-        if (addr->message != NULL)
+        if (addr->message)
           respond_printf(f, ": %s", addr->message);
         }
 
       /* Show parents iff doing full info */
 
-      if (full_info) while (p != NULL)
+      if (full_info) while (p)
         {
         respond_printf(f, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
@@ -2161,11 +2161,11 @@ while (addr_new)
     cancel_cutthrough_connection("routing hard fail");
 
     if (!full_info)
-    {
+      {
       yield = copy_error(vaddr, addr, FAIL);
       goto out;
-    }
-    else yield = FAIL;
+      }
+    yield = FAIL;
     }
 
   /* Soft failure */
@@ -2173,7 +2173,7 @@ while (addr_new)
   else if (rc == DEFER)
     {
     allok = FALSE;
-    if (f != NULL)
+    if (f)
       {
       address_item *p = addr->parent;
       respond_printf(f, "%s%s cannot be resolved at this time", ko_prefix,
@@ -2182,7 +2182,7 @@ while (addr_new)
         {
         if (addr->basic_errno > 0)
           respond_printf(f, ": %s", strerror(addr->basic_errno));
-        if (addr->message != NULL)
+        if (addr->message)
           respond_printf(f, ": %s", addr->message);
         else if (addr->basic_errno <= 0)
           respond_printf(f, ": unknown error");
@@ -2190,7 +2190,7 @@ while (addr_new)
 
       /* Show parents iff doing full info */
 
-      if (full_info) while (p != NULL)
+      if (full_info) while (p)
         {
         respond_printf(f, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
@@ -2204,7 +2204,7 @@ while (addr_new)
       yield = copy_error(vaddr, addr, DEFER);
       goto out;
       }
-    else if (yield == OK) yield = DEFER;
+    if (yield == OK) yield = DEFER;
     }
 
   /* If we are handling EXPN, we do not want to continue to route beyond
@@ -2213,20 +2213,20 @@ while (addr_new)
   else if (expn)
     {
     uschar *ok_prefix = US"250-";
-    if (addr_new == NULL)
-      {
-      if (addr_local == NULL && addr_remote == NULL)
+
+    if (!addr_new)
+      if (!addr_local && !addr_remote)
         respond_printf(f, "250 mail to <%s> is discarded\r\n", address);
       else
         respond_printf(f, "250 <%s>\r\n", address);
-      }
-    else while (addr_new != NULL)
+
+    else do
       {
       address_item *addr2 = addr_new;
       addr_new = addr2->next;
-      if (addr_new == NULL) ok_prefix = US"250 ";
+      if (!addr_new) ok_prefix = US"250 ";
       respond_printf(f, "%s<%s>\r\n", ok_prefix, addr2->address);
-      }
+      } while (addr_new);
     yield = OK;
     goto out;
     }
@@ -2248,16 +2248,19 @@ while (addr_new)
     just a single new address as a special case, and continues on to verify the
     generated address. */
 
-    if (!full_info &&                    /* Stop if short info wanted AND */
-         (((addr_new == NULL ||          /* No new address OR */
-           addr_new->next != NULL ||     /* More than one new address OR */
-           testflag(addr_new, af_pfr)))  /* New address is pfr */
-         ||                              /* OR */
-         (addr_new != NULL &&            /* At least one new address AND */
-          success_on_redirect)))         /* success_on_redirect is set */
+    if (  !full_info			/* Stop if short info wanted AND */
+       && (  (  !addr_new		/* No new address OR */
+             || addr_new->next		/* More than one new address OR */
+	     || testflag(addr_new, af_pfr)	/* New address is pfr */
+	     )
+          ||				/* OR */
+             (  addr_new		/* At least one new address AND */
+             && success_on_redirect	/* success_on_redirect is set */
+	  )  )
+       )
       {
-      if (f != NULL) fprintf(f, "%s %s\n", address,
-        address_test_mode? "is deliverable" : "verified");
+      if (f) fprintf(f, "%s %s\n",
+        address, address_test_mode ? "is deliverable" : "verified");
 
       /* If we have carried on to verify a child address, we want the value
       of $address_data to be that of the child */
@@ -2278,7 +2281,7 @@ If there are no local and no remote addresses, and there were no pipes, files,
 or autoreplies, and there were no errors or deferments, the message is to be
 discarded, usually because of the use of :blackhole: in an alias file. */
 
-if (allok && addr_local == NULL && addr_remote == NULL)
+if (allok && !addr_local && !addr_remote)
   {
   fprintf(f, "mail to %s is discarded\n", address);
   goto out;
