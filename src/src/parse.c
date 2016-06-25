@@ -1381,7 +1381,7 @@ for (;;)
   if (Ustrncmp(s, ":include:", 9) == 0)
     {
     uschar *filebuf;
-    uschar filename[256];
+    uschar filename[PATH_MAX];
     uschar *t = s+9;
     int flen = len - 9;
     int frc;

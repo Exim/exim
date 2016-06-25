@@ -367,7 +367,7 @@ link count of zero on the currently open file. */
 
 if (log_datestamping)
   {
-  uschar log_file_wanted[256];
+  uschar log_file_wanted[PATH_MAX];
   /* Do *not* use "%s" here, we need the %D datestamp in the log_file to
    *   be expanded! */
   string_format(log_file_wanted, sizeof(log_file_wanted), CS log_file);

@@ -31,6 +31,7 @@ purposes! */
 /* ANSI C includes */
 
 #include <ctype.h>
+#include <limits.h>
 #include <setjmp.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -253,7 +254,7 @@ extern BOOL    log_datestamping;    /* TRUE if logs are datestamped */
 extern int     log_depth;           /* depth of log tail window */
 extern uschar *log_display_buffer;  /* to hold display text */
 extern uschar *log_file;            /* supplied name of exim log file */
-extern uschar  log_file_open[256];  /* actual open file */
+extern uschar  log_file_open[PATH_MAX]; /* actual open file */
 extern uschar *log_font;            /* font for log display */
 extern ino_t   log_inode;           /* the inode of the log file */
 extern long int log_position;      /* position in log file */
