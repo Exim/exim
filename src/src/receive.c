@@ -1168,14 +1168,12 @@ run_mime_acl(uschar *acl, BOOL *smtp_yield_ptr, uschar **smtp_reply_ptr,
   uschar **blackholed_by_ptr)
 {
 FILE *mbox_file;
-uschar rfc822_file_path[2048];
+uschar rfc822_file_path[PATH_MAX]={0};
 unsigned long mbox_size;
 header_line *my_headerlist;
 uschar *user_msg, *log_msg;
 int mime_part_count_buffer = -1;
 int rc = OK;
-
-memset(CS rfc822_file_path,0,2048);
 
 /* check if it is a MIME message */
 my_headerlist = header_list;
@@ -1238,7 +1236,7 @@ if (Ustrlen(rfc822_file_path) > 0)
 /* check if we must check any message/rfc822 attachments */
 if (rc == OK)
   {
-  uschar temp_path[1024];
+  uschar temp_path[PATH_MAX];
   struct dirent * entry;
   DIR * tempdir;
 

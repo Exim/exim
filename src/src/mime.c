@@ -194,11 +194,11 @@ mime_get_decode_file(uschar *pname, uschar *fname)
 FILE *f = NULL;
 uschar *filename;
 
-filename = (uschar *)malloc(2048);
+filename = (uschar *)malloc(PATH_MAX);
 
 if (pname && fname)
   {
-  (void)string_format(filename, 2048, "%s/%s", pname, fname);
+  (void)string_format(filename, PATH_MAX, "%s/%s", pname, fname);
   f = modefopen(filename,"wb+",SPOOL_MODE);
   }
 else if (!pname)
@@ -212,7 +212,7 @@ else if (!fname)
   do
     {
     struct stat mystat;
-    (void)string_format(filename, 2048,
+    (void)string_format(filename, PATH_MAX,
       "%s/%s-%05u", pname, message_id, file_nr++);
     /* security break */
     if (file_nr >= 1024)
@@ -236,8 +236,8 @@ mime_decode(const uschar **listptr)
 int sep = 0;
 const uschar *list = *listptr;
 uschar *option;
-uschar option_buffer[1024];
-uschar decode_path[1024];
+uschar option_buffer[PATH_MAX];
+uschar decode_path[PATH_MAX];
 FILE *decode_file = NULL;
 long f_pos = 0;
 ssize_t size_counter = 0;
@@ -249,7 +249,7 @@ if (mime_stream == NULL)
 f_pos = ftell(mime_stream);
 
 /* build default decode path (will exist since MBOX must be spooled up) */
-(void)string_format(decode_path,1024,"%s/scan/%s",spool_directory,message_id);
+(void)string_format(decode_path,PATH_MAX,"%s/scan/%s",spool_directory,message_id);
 
 /* try to find 1st option */
 if ((option = string_nextinlist(&list, &sep,
@@ -783,7 +783,7 @@ while(1)
 	  (Ustrncmp(mime_content_type,"message/rfc822",14) == 0) )
     {
     const uschar *rfc822name = NULL;
-    uschar filename[2048];
+    uschar filename[PATH_MAX];
     int file_nr = 0;
     int result = 0;
 
@@ -791,7 +791,7 @@ while(1)
     do
       {
       struct stat mystat;
-      (void)string_format(filename, 2048,
+      (void)string_format(filename, PATH_MAX,
 	"%s/scan/%s/__rfc822_%05u", spool_directory, message_id, file_nr++);
       /* security break */
       if (file_nr >= 128)

@@ -54,18 +54,18 @@ rc = lf_check_file(-1, filename, S_IFREG, modemask, owners, owngroups,
   "dbm", errmsg);
 #else
   {
-  uschar filebuffer[256];
-  (void)sprintf(CS filebuffer, "%.250s.db", filename);
+  uschar filebuffer[PATH_MAX];
+  (void)sprintf(CS filebuffer, "%.*s.db", PATH_MAX-16, filename);
   rc = lf_check_file(-1, filebuffer, S_IFREG, modemask, owners, owngroups,
     "dbm", errmsg);
   if (rc < 0)        /* stat() failed */
     {
-    (void)sprintf(CS filebuffer, "%.250s.dir", filename);
+    (void)sprintf(CS filebuffer, "%.*s.dir", PATH_MAX-16, filename);
     rc = lf_check_file(-1, filebuffer, S_IFREG, modemask, owners, owngroups,
       "dbm", errmsg);
     if (rc == 0)     /* x.dir was OK */
       {
-      (void)sprintf(CS filebuffer, "%.250s.pag", filename);
+      (void)sprintf(CS filebuffer, "%.*s.pag", PATH_MAX-16, filename);
       rc = lf_check_file(-1, filebuffer, S_IFREG, modemask, owners, owngroups,
         "dbm", errmsg);
       }

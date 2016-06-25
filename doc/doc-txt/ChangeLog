@@ -48,6 +48,9 @@ LC/01 Prefer the use of size_t for variables representing sizes. Even if most
       In the meantime, this doesn’t impact any cases where negative length could
       have been used, as an error value.
 
+LC/02 Some values representing maximum path size were hard coded.
+      They are now replaced with the PATH_MAX macro.
+
 
 Exim version 4.87
 -----------------

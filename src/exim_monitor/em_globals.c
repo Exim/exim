@@ -59,7 +59,7 @@ BOOL    log_datestamping = FALSE;
 int     log_depth = 150;
 uschar *log_display_buffer;
 uschar *log_file = NULL;
-uschar  log_file_open[256];
+uschar  log_file_open[PATH_MAX];
 uschar *log_font = NULL;
 ino_t   log_inode;
 long int log_position;
