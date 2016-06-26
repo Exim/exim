@@ -414,7 +414,7 @@ if (rc) {
 } else {
   old_pool = store_pool;
   store_pool = POOL_PERM;
-  tls_channelbinding_b64 = b64encode(channel.data, (int)channel.size);
+  tls_channelbinding_b64 = b64encode(channel.data, (size_t)channel.size);
   store_pool = old_pool;
   DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage.\n");
 }

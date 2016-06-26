@@ -117,8 +117,8 @@ perform_ibase_search(uschar * query, uschar * server, uschar ** resultptr,
     ISC_STATUS status[20], *statusp = status;
 
     int i;
-    int ssize = 0;
-    int offset = 0;
+    size_t ssize = 0;
+    size_t offset = 0;
     int yield = DEFER;
     uschar *result = NULL;
     ibase_connection *cn;
@@ -367,7 +367,7 @@ has the password removed. This copy is also used for debugging output. */
 
         else
             for (i = 0; i < out_sqlda->sqld; i++) {
-                int len = fetch_field(buffer, sizeof(buffer),
+                size_t len = fetch_field(buffer, sizeof(buffer),
                                       &out_sqlda->sqlvar[i]);
 
                 result =

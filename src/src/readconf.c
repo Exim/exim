@@ -2833,7 +2833,7 @@ Returns:      nothing
 */
 
 static void
-read_named_list(tree_node **anchorp, int *numberp, int max, uschar *s,
+read_named_list(tree_node **anchorp, int *numberp, size_t max, uschar *s,
   uschar *tname)
 {
 BOOL forcecache = FALSE;
@@ -2851,8 +2851,8 @@ if (!isspace(*s))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "unrecognized configuration line");
 
 if (*numberp >= max)
- log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "too many named %ss (max is %d)\n",
-   tname, max);
+ log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "too many named %ss (max is %u)\n",
+   tname, (unsigned int)max);
 
 while (isspace(*s)) s++;
 ss = s;
@@ -3411,7 +3411,8 @@ and ensure it contains a domain. */
 if (errors_reply_to != NULL)
   {
   uschar *errmess;
-  int start, end, domain;
+  size_t start, end;
+  int domain;
   uschar *recipient = parse_extract_address(errors_reply_to, &errmess,
     &start, &end, &domain, FALSE);
 
@@ -3533,7 +3534,7 @@ for (dd = drivers_available; dd->driver_name[0] != 0;
   if (Ustrcmp(d->driver_name, dd->driver_name) == 0)
     {
     int i;
-    int len = dd->options_len;
+    size_t len = dd->options_len;
     d->info = dd;
     d->options_block = store_get(len);
     memcpy(d->options_block, dd->options_block, len);
@@ -3650,7 +3651,7 @@ while ((buffer = get_config_line()) != NULL)
     /* Set up a new driver instance data block on the chain, with
     its default values installed. */
 
-    d = store_get(instance_size);
+    d = store_get((size_t)instance_size);
     memcpy(d, instance_default, instance_size);
     *p = d;
     p = &d->next;
@@ -3780,7 +3781,7 @@ uschar *
 readconf_retry_error(const uschar *pp, const uschar *p,
   int *basic_errno, int *more_errno)
 {
-int len;
+size_t len;
 const uschar *q = pp;
 while (q < p && *q != '_') q++;
 len = q - pp;
@@ -3809,7 +3810,7 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
   if (q != p)
     {
     int i;
-    int xlen = p - q - 1;
+    size_t xlen = p - q - 1;
     const uschar *x = q + 1;
 
     static uschar *extras[] =

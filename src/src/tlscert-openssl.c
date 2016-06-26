@@ -104,7 +104,7 @@ return NULL;
 }
 
 static uschar *
-bio_string_copy(BIO * bp, int len)
+bio_string_copy(BIO * bp, size_t len)
 {
 uschar * cp = US"";
 len = len > 0 ? (int) BIO_get_mem_data(bp, &cp) : 0;
@@ -118,7 +118,7 @@ asn1_time_copy(const ASN1_TIME * asntime, uschar * mod)
 {
 uschar * s = NULL;
 BIO * bp = BIO_new(BIO_s_mem());
-int len;
+size_t len;
 
 if (!bp)
   return badalloc();
@@ -179,7 +179,7 @@ static uschar *
 x509_name_copy(X509_NAME * name)
 {
 BIO * bp = BIO_new(BIO_s_mem());
-int len_good;
+size_t len_good;
 
 if (!bp) return badalloc();
 
@@ -233,7 +233,7 @@ if (len < sizeof(txt))
 else
   len = 0;
 BIO_free(bp);
-return string_copynlc(txt, len);	/* lowercase */
+return string_copynlc(txt, (size_t)len);	/* lowercase */
 }
 
 uschar *
@@ -350,7 +350,7 @@ uschar osep = '\n';
 uschar * tag = US"";
 uschar * ele;
 int match = -1;
-int len;
+size_t len;
 
 if (!san) return NULL;
 
@@ -422,7 +422,7 @@ for (i = 0; i < adsnum; i++)
   if (ad && OBJ_obj2nid(ad->method) == NID_ad_OCSP)
     {
     uschar * ele = ASN1_STRING_data(ad->location->d.ia5);
-    int len =  ASN1_STRING_length(ad->location->d.ia5);
+    size_t len =  ASN1_STRING_length(ad->location->d.ia5);
     list = string_append_listele_n(list, sep, ele, len);
     }
   }
@@ -459,7 +459,7 @@ if (dps) for (i = 0; i < dpsnum; i++)
 	 )
 	{
 	uschar * ele = ASN1_STRING_data(np->d.uniformResourceIdentifier);
-	int len =  ASN1_STRING_length(np->d.uniformResourceIdentifier);
+	size_t len =  ASN1_STRING_length(np->d.uniformResourceIdentifier);
 	list = string_append_listele_n(list, sep, ele, len);
 	}
     }
@@ -484,7 +484,7 @@ if (!i2d_X509_bio(bp, (X509 *)cert))
 else
   {
   long len = BIO_get_mem_data(bp, &cp);
-  cp = b64encode(cp, (int)len);
+  cp = b64encode(cp, (size_t)len);
   }
 
 BIO_free(bp);

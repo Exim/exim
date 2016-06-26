@@ -98,7 +98,7 @@ enum RelOp { LT, LE, EQ, GE, GT, NE };
 struct String
   {
   uschar *character;
-  int length;
+  size_t length;
   };
 
 struct Notification
@@ -320,7 +320,8 @@ Returns
 
 int check_mail_address(struct Sieve *filter, const struct String *address)
 {
-int start, end, domain;
+size_t start, end;
+int domain;
 uschar *error,*ss;
 
 if (address->length>0)
@@ -414,7 +415,7 @@ static int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item
 {
 const uschar *start;
 struct String to,hname,hvalue;
-int capacity;
+size_t capacity;
 string_item *new;
 
 if (Ustrncmp(uri,"mailto:",7))
@@ -841,8 +842,8 @@ if ((filter_test != FTEST_NONE && debug_selector != 0) ||
     case COMP_ASCII_NUMERIC: debug_printf("i;ascii-numeric"); break;
     }
   debug_printf("\"):\n");
-  debug_printf("  Search = %s (%d chars)\n", needle->character,needle->length);
-  debug_printf("  Inside = %s (%d chars)\n", haystack->character,haystack->length);
+  debug_printf("  Search = %s (%u chars)\n", needle->character,(unsigned int)needle->length);
+  debug_printf("  Inside = %s (%u chars)\n", haystack->character,(unsigned int)haystack->length);
   }
 switch (mt)
   {
@@ -994,7 +995,7 @@ Returns:      quoted string
 static const uschar *quote(const struct String *header)
 {
 uschar *quoted=NULL;
-int size=0,ptr=0;
+size_t size=0,ptr=0;
 size_t l;
 const uschar *h;
 
@@ -1472,7 +1473,7 @@ Returns:      1                success
 
 static int parse_string(struct Sieve *filter, struct String *data)
 {
-int dataCapacity=0;
+size_t dataCapacity=0;
 
 data->length=0;
 data->character=(uschar*)0;
@@ -1483,7 +1484,7 @@ if (*filter->pc=='"') /* quoted string */
     {
     if (*filter->pc=='"') /* end of string */
       {
-      int foo=data->length;
+      size_t foo=data->length;
 
       ++filter->pc;
       /* that way, there will be at least one character allocated */
@@ -1566,7 +1567,7 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
       if (*filter->pc=='.' && *(filter->pc+1)=='\n') /* end of string */
 #endif
         {
-        int foo=data->length;
+        size_t foo=data->length;
 
         /* that way, there will be at least one character allocated */
         data->character=string_catn(data->character,&dataCapacity,&foo,CUS "",1);
@@ -2126,8 +2127,8 @@ if (parse_identifier(filter,CUS "address"))
       while (*header_value && !*cond)
         {
         uschar *error;
-        int start, end, domain;
-        int saveend;
+        size_t start, end;
+        int saveend, domain;
         uschar *part=NULL;
 
         end_addr = parse_find_address_end(header_value, FALSE);
@@ -3105,7 +3106,7 @@ while (*filter->pc)
                 }
               /* Allocation is larger than neccessary, but enough even for split MIME words */
               buffer_capacity=32+4*message.length;
-              buffer=store_get(buffer_capacity);
+              buffer=store_get((size_t)buffer_capacity);
               if (message.length!=-1) fprintf(f,"Subject: %s\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
               fprintf(f,"\n");
               if (body.length>0) fprintf(f,"%s\n",body.character);
@@ -3272,7 +3273,7 @@ while (*filter->pc)
     if (exec)
       {
       address_item *addr;
-      int capacity,start;
+      size_t capacity,start;
       uschar *buffer;
       int buffer_capacity;
       struct String key;
@@ -3357,7 +3358,7 @@ while (*filter->pc)
             addr->reply->from = from.character;
           /* Allocation is larger than neccessary, but enough even for split MIME words */
           buffer_capacity=32+4*subject.length;
-          buffer=store_get(buffer_capacity);
+          buffer=store_get((size_t)buffer_capacity);
 	  /* deconst cast safe as we pass in a non-const item */
           addr->reply->subject = US parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
           addr->reply->oncelog=once;
