@@ -160,8 +160,8 @@ auth_heimdal_gssapi_init(auth_instance *ablock)
             principal ? principal : "??",
             entry.vno,
             enctype_s ? enctype_s : "??");
-        free(principal);
-        free(enctype_s);
+        store_free(principal);
+        store_free(enctype_s);
         krb5_kt_free_entry(context, &entry);
       }
       krc = krb5_kt_end_seq_get(context, keytab, &cursor);

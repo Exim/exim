@@ -460,6 +460,11 @@ while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
   buffer[n] = 0;
   if (strcmp(CS buffer, "++++") == 0) break;
   next = malloc(sizeof(line) + n);
+  if(!next)
+    {
+    fprintf(stderr, "memory allocation failed\n");
+    exit(1);
+    }
   next->next = NULL;
   d = next->line;
     {

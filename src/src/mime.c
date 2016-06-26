@@ -194,7 +194,7 @@ mime_get_decode_file(uschar *pname, uschar *fname)
 FILE *f = NULL;
 uschar *filename;
 
-filename = (uschar *)malloc(PATH_MAX);
+filename = (uschar *) store_malloc(PATH_MAX);
 
 if (pname && fname)
   {

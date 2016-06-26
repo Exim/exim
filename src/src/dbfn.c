@@ -465,6 +465,11 @@ spool_directory = argv[1];
 debug_selector = D_all - D_memory;
 debug_file = stderr;
 big_buffer = malloc(big_buffer_size);
+if (!big_buffer)
+  {
+  printf("Memory allocation failed!\n");
+  return 1;
+  }
 
 for (i = 0; i < max_db; i++) dbblock[i].dbptr = NULL;
 

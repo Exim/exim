@@ -9,6 +9,7 @@
 
 #ifndef STORE_H
 #define STORE_H
+#include <stddef.h>
 
 /* Define symbols for identifying the store pools. */
 
@@ -37,6 +38,9 @@ tracing information for debugging. */
 #define store_release(addr)  store_release_3(addr, __FILE__, __LINE__)
 #define store_reset(addr)    store_reset_3(addr, __FILE__, __LINE__)
 
+#ifndef BOOL
+#include "mytypes.h"
+#endif
 
 /* The real functions */
 

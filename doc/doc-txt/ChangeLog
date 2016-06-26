@@ -51,6 +51,16 @@ LC/01 Prefer the use of size_t for variables representing sizes. Even if most
 LC/02 Some values representing maximum path size were hard coded.
       They are now replaced with the PATH_MAX macro.
 
+LC/03 As everybody knows, malloc() can fails by returning 0. The return values
+      weren’t checked everywhere.
+      Try to always replace direct calls to malloc() with store_malloc() from the
+      project standard memory management facilities even it was handled in way
+      that let the daemon running.
+      In a few case, this isn’t possible : either because store_malloc() isn’t
+      available or can’t be called or because other ressources need to freed
+      before terminating the program. In that case, still use direct calls to
+      malloc().
+
 
 Exim version 4.87
 -----------------

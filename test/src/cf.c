@@ -680,6 +680,11 @@ bufbase_one = (char *)malloc(storesize);
 buftop_one = bufbase_one + storesize;
 bufbase_two = (char *)malloc(storesize);
 buftop_two = bufbase_two + storesize;
+if (!bufbase_one || !buftop_two)
+  {
+  fprintf(stderr, "Memory allocation failed!\n");
+  exit(EXIT_FAILURE);
+  }
 
 /* Do the job */
 

@@ -1890,10 +1890,7 @@ acl_var_c = NULL;
 
 /* Allow for trailing 0 in the command and data buffers. */
 
-smtp_cmd_buffer = (uschar *)malloc(2*smtp_cmd_buffer_size + 2);
-if (smtp_cmd_buffer == NULL)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "malloc() failed for SMTP command buffer");
+smtp_cmd_buffer = (uschar *)store_malloc(2*smtp_cmd_buffer_size + 2);
 smtp_cmd_buffer[0] = 0;
 smtp_data_buffer = smtp_cmd_buffer + smtp_cmd_buffer_size + 1;
 
@@ -1915,9 +1912,7 @@ else
 /* Set up the buffer for inputting using direct read() calls, and arrange to
 call the local functions instead of the standard C ones. */
 
-smtp_inbuffer = (uschar *)malloc(in_buffer_size);
-if (smtp_inbuffer == NULL)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
+smtp_inbuffer = (uschar *)store_malloc(in_buffer_size);
 receive_getc = smtp_getc;
 receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;

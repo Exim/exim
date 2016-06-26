@@ -345,8 +345,14 @@ if ((char *)ptr < bc || (char *)ptr > bc + b->length)
     if ((char *)ptr >= bc && (char *)ptr <= bc + b->length) break;
     }
   if (b == NULL)
+#ifndef COMPILE_UTILITY
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal error: store_reset(%p) "
       "failed: pool=%d %-14s %4d", ptr, store_pool, filename, linenumber);
+#else
+    fprintf(stderr, "internal error: store_reset(%p) "
+      "failed: pool=%d %-14s %4d\n", ptr, store_pool, filename, linenumber);
+    exit(EXIT_FAILURE);
+#endif
   }
 
 /* Back up, rounding to the alignment if necessary. When testing, flatten
@@ -500,8 +506,16 @@ if (size < 16) size = 16;
 yield = malloc(size);
 
 if (yield == NULL)
+  {
+#ifndef COMPILE_UTILITY
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %zd bytes of memory: "
     "called from line %d of %s", size, linenumber, filename);
+#else
+  fprintf(stderr, "failed to malloc %zd bytes of memory: "
+    "called from line %d of %s\n", size, linenumber, filename);
+  exit(EXIT_FAILURE);
+#endif
+  }
 
 nonpool_malloc += size;
 

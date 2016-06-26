@@ -1282,7 +1282,7 @@ for (i = 0;; i++)
   yield = string_catn(yield, &size, &ptr, p, ss - p);
 
   #ifdef USE_READLINE
-  if (fn_readline != NULL) free(readline_line);
+  if (fn_readline != NULL) store_free(readline_line);
   #endif
 
   /* yield can only be NULL if ss==p */
@@ -1645,15 +1645,9 @@ setlocale(LC_ALL, "C");
 
 os_non_restarting_signal(SIGALRM, sigalrm_handler);
 
-/* Ensure we have a buffer for constructing log entries. Use malloc directly,
-because store_malloc writes a log entry on failure. */
+/* Ensure we have a buffer for constructing log entries. */
 
-log_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-if (log_buffer == NULL)
-  {
-  fprintf(stderr, "exim: failed to get store for log buffer\n");
-  exit(EXIT_FAILURE);
-  }
+log_buffer = (uschar *)store_malloc(LOG_BUFFER_SIZE);
 
 /* Initialize the default log options. */
 
@@ -3973,7 +3967,7 @@ EXIM_TMPDIR by the build scripts.
     if (Ustrncmp(*p, "TMPDIR=", 7) == 0 &&
         Ustrcmp(*p+7, EXIM_TMPDIR) != 0)
       {
-      uschar *newp = malloc(Ustrlen(EXIM_TMPDIR) + 8);
+      uschar *newp = store_malloc(Ustrlen(EXIM_TMPDIR) + 8);
       sprintf(CS newp, "TMPDIR=%s", EXIM_TMPDIR);
       *p = newp;
       DEBUG(D_any) debug_printf("reset TMPDIR=%s in environment\n", EXIM_TMPDIR);
@@ -4010,7 +4004,7 @@ else
     int count = 0;
     if (environ) while (*p++ != NULL) count++;
     if (envtz == NULL) count++;
-    newp = new = malloc(sizeof(uschar *) * (count + 1));
+    newp = new = store_malloc(sizeof(uschar *) * (count + 1));
     if (environ) for (p = USS environ; *p != NULL; p++)
       {
       if (Ustrncmp(*p, "TZ=", 3) == 0) continue;
@@ -4018,7 +4012,7 @@ else
       }
     if (timezone_string != NULL)
       {
-      *newp = malloc(Ustrlen(timezone_string) + 4);
+      *newp = store_malloc(Ustrlen(timezone_string) + 4);
       sprintf(CS *newp++, "TZ=%s", timezone_string);
       }
     *newp = NULL;

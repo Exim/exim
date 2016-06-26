@@ -182,6 +182,11 @@ va_start(ap, format);
 vsprintf(buffer, CS format, ap);
 va_end(ap);
 yield = (uschar *)malloc(Ustrlen(buffer) + 1);
+if (!yield)
+{
+fprintf(stderr, "Memory allocation failed!\n");
+exit(EXIT_FAILURE);
+}
 Ustrcpy(yield, buffer);
 return yield;
 }

@@ -746,7 +746,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
         #if defined LDAP_LIB_NETSCAPE || defined LDAP_LIB_OPENLDAP2
         ldap_memfree(dn);
         #else   /* OPENLDAP 1, UMich, Solaris */
-        free(dn);
+        store_free(dn);
         #endif
         }
       /* Save for later */
@@ -904,7 +904,7 @@ if (dn != NULL)
   #if defined LDAP_LIB_NETSCAPE || defined LDAP_LIB_OPENLDAP2
   ldap_memfree(dn);
   #else   /* OPENLDAP 1, UMich, Solaris */
-  free(dn);
+  store_free(dn);
   #endif
   }
 

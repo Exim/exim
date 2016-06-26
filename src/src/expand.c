@@ -7746,6 +7746,12 @@ debug_selector = D_v;
 debug_file = stderr;
 debug_fd = fileno(debug_file);
 big_buffer = malloc(big_buffer_size);
+if (!big_buffer)
+  {
+  printf("** error Memory allocation failed!\n");
+  exit(EXIT_FAILURE);
+  }
+
 
 for (i = 1; i < argc; i++)
   {
