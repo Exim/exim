@@ -238,7 +238,7 @@ static uschar *enc64table =
   US"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 uschar *
-b64encode(uschar *clear, int len)
+b64encode(uschar *clear, size_t len)
 {
 uschar *code = store_get(4*((len+2)/3) + 1);
 uschar *p = code;

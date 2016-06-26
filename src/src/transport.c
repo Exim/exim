@@ -647,7 +647,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
       uschar *s, *ss;
       while ((s = string_nextinlist(&list, &sep, NULL, 0)))
 	{
-	int len;
+	size_t len;
 
 	if (i == 0)
 	  if (!(s = expand_string(s)) && !expand_string_forcedfail)
@@ -1870,7 +1870,7 @@ if (host_length > 0)
   {
   host_record->count = host_length/MESSAGE_ID_LENGTH;
 
-  dbfn_write(dbm_file, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
+  dbfn_write(dbm_file, hostname, host_record, sizeof(dbdata_wait) + host_length);
   *more = TRUE;
   }
 

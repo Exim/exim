@@ -8,8 +8,8 @@ imap_utf7_encode(uschar *string, const uschar *charset, uschar sep,
 {
 static uschar encode_base64[64] =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,";
-int ptr = 0;
-int size = 0;
+size_t ptr = 0;
+size_t size = 0;
 size_t slen;
 uschar *sptr, *yield = NULL;
 int i = 0, j;	/* compiler quietening */

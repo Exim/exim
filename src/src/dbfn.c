@@ -294,11 +294,11 @@ Returns: a pointer to the retrieved record, or
 */
 
 void *
-dbfn_read_with_length(open_db *dbblock, const uschar *key, int *length)
+dbfn_read_with_length(open_db *dbblock, const uschar *key, size_t *length)
 {
 void *yield;
 EXIM_DATUM key_datum, result_datum;
-int klen = Ustrlen(key) + 1;
+size_t klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen);
 
 memcpy(key_copy, key, klen);
@@ -338,11 +338,11 @@ Returns:    the yield of the underlying dbm or db "write" function. If this
 */
 
 int
-dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
+dbfn_write(open_db *dbblock, const uschar *key, void *ptr, size_t length)
 {
 EXIM_DATUM key_datum, value_datum;
 dbdata_generic *gptr = (dbdata_generic *)ptr;
-int klen = Ustrlen(key) + 1;
+size_t klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen);
 
 memcpy(key_copy, key, klen);
@@ -376,7 +376,7 @@ Returns: the yield of the underlying dbm or db "delete" function.
 int
 dbfn_delete(open_db *dbblock, const uschar *key)
 {
-int klen = Ustrlen(key) + 1;
+size_t klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen);
 
 memcpy(key_copy, key, klen);

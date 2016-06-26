@@ -108,7 +108,7 @@ else
       server = qserver;
     else
       {
-      int len = Ustrlen(qserver);
+      size_t len = Ustrlen(qserver);
 
       sep = 0;
       serverlist = optserverlist;

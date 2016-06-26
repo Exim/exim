@@ -163,18 +163,18 @@ Returns:      pointer to the buffer
 */
 
 uschar *
-string_format_size(int size, uschar *buffer)
+string_format_size(size_t size, uschar *buffer)
 {
 if (size == 0) Ustrcpy(buffer, "     ");
-else if (size < 1024) sprintf(CS buffer, "%5d", size);
+else if (size < 1024) sprintf(CS buffer, "%5zd", size);
 else if (size < 10*1024)
   sprintf(CS buffer, "%4.1fK", (double)size / 1024.0);
 else if (size < 1024*1024)
-  sprintf(CS buffer, "%4dK", (size + 512)/1024);
+  sprintf(CS buffer, "%4zdK", (size + 512)/1024);
 else if (size < 10*1024*1024)
   sprintf(CS buffer, "%4.1fM", (double)size / (1024.0 * 1024.0));
 else
-  sprintf(CS buffer, "%4dM", (size + 512 * 1024)/(1024*1024));
+  sprintf(CS buffer, "%4zdM", (size + 512 * 1024)/(1024*1024));
 return buffer;
 }
 
@@ -354,7 +354,7 @@ uschar *
 string_unprinting(uschar *s)
 {
 uschar *p, *q, *r, *ss;
-int len, off;
+size_t len, off;
 
 p = Ustrchr(s, '\\');
 if (!p) return s;
@@ -418,7 +418,7 @@ Returns:  copy of string in new store
 uschar *
 string_copy(const uschar *s)
 {
-int len = Ustrlen(s) + 1;
+size_t len = Ustrlen(s) + 1;
 uschar *ss = store_get(len);
 memcpy(ss, s, len);
 return ss;
@@ -439,7 +439,7 @@ Returns:  copy of string in new store
 uschar *
 string_copy_malloc(const uschar *s)
 {
-int len = Ustrlen(s) + 1;
+size_t len = Ustrlen(s) + 1;
 uschar *ss = store_malloc(len);
 memcpy(ss, s, len);
 return ss;
@@ -483,7 +483,7 @@ Returns:    copy of string in new store
 */
 
 uschar *
-string_copyn(const uschar *s, int n)
+string_copyn(const uschar *s, size_t n)
 {
 uschar *ss = store_get(n + 1);
 Ustrncpy(ss, s, n);
@@ -507,7 +507,7 @@ Returns:    copy of string in new store, with letters lowercased
 */
 
 uschar *
-string_copynlc(uschar *s, int n)
+string_copynlc(uschar *s, size_t n)
 {
 uschar *ss = store_get(n + 1);
 uschar *p = ss;
@@ -740,7 +740,7 @@ Returns:    < 0, = 0, or > 0, according to the comparison
 */
 
 int
-strncmpic(const uschar *s, const uschar *t, int n)
+strncmpic(const uschar *s, const uschar *t, size_t n)
 {
 while (n--)
   {
@@ -927,8 +927,8 @@ if (buffer != NULL)
 
 else
   {
-  int size = 0;
-  int ptr = 0;
+  size_t size = 0;
+  size_t ptr = 0;
   const uschar *ss;
 
   /* We know that *s != 0 at this point. However, it might be pointing to a
@@ -990,7 +990,7 @@ uschar *
 string_append_listele(uschar * list, uschar sep, const uschar * ele)
 {
 uschar * new = NULL;
-int sz = 0, off = 0;
+size_t sz = 0, off = 0;
 uschar * sp;
 
 if (list)
@@ -1012,7 +1012,7 @@ return new;
 
 
 static const uschar *
-Ustrnchr(const uschar * s, int c, unsigned * len)
+Ustrnchr(const uschar * s, int c, size_t * len)
 {
 unsigned siz = *len;
 while (siz)
@@ -1031,10 +1031,10 @@ return NULL;
 
 uschar *
 string_append_listele_n(uschar * list, uschar sep, const uschar * ele,
-  unsigned len)
+  size_t len)
 {
 uschar * new = NULL;
-int sz = 0, off = 0;
+size_t sz = 0, off = 0;
 const uschar * sp;
 
 if (list)
@@ -1091,13 +1091,13 @@ Returns:   pointer to the start of the string, changed if copied for expansion.
 /* coverity[+alloc] */
 
 uschar *
-string_catn(uschar *string, int *size, int *ptr, const uschar *s, int count)
+string_catn(uschar *string, size_t *size, size_t *ptr, const uschar *s, size_t count)
 {
 int p = *ptr;
 
 if (p + count >= *size)
   {
-  int oldsize = *size;
+  size_t oldsize = *size;
 
   /* Mostly, string_cat() is used to build small strings of a few hundred
   characters at most. There are times, however, when the strings are very much
@@ -1149,7 +1149,7 @@ return string;
 
 
 uschar *
-string_cat(uschar *string, int *size, int *ptr, const uschar *s)
+string_cat(uschar *string, size_t *size, size_t *ptr, const uschar *s)
 {
 return string_catn(string, size, ptr, s, Ustrlen(s));
 }
@@ -1181,7 +1181,7 @@ Returns:   pointer to the start of the string, changed if copied for expansion.
 */
 
 uschar *
-string_append(uschar *string, int *size, int *ptr, int count, ...)
+string_append(uschar *string, size_t *size, size_t *ptr, int count, ...)
 {
 va_list ap;
 int i;
@@ -1227,7 +1227,7 @@ Returns:       TRUE if the result fitted in the buffer
 */
 
 BOOL
-string_format(uschar *buffer, int buflen, const char *format, ...)
+string_format(uschar *buffer, size_t buflen, const char *format, ...)
 {
 BOOL yield;
 va_list ap;
@@ -1239,7 +1239,7 @@ return yield;
 
 
 BOOL
-string_vformat(uschar *buffer, int buflen, const char *format, va_list ap)
+string_vformat(uschar *buffer, size_t buflen, const char *format, va_list ap)
 {
 /* We assume numbered ascending order, C does not guarantee that */
 enum { L_NORMAL=1, L_SHORT=2, L_LONG=3, L_LONGLONG=4, L_LONGDOUBLE=5, L_SIZE=6 };
@@ -1258,9 +1258,9 @@ string_datestamp_type = 0;     /* Datestamp not inserted */
 
 while (*fp != 0)
   {
-  int length = L_NORMAL;
+  size_t length = L_NORMAL;
   int *nptr;
-  int slen;
+  size_t slen;
   const char *null = "NULL";   /* ) These variables */
   const char *item_start, *s;  /* ) are deliberately */
   char newformat[16];          /* ) not unsigned */
@@ -1561,8 +1561,8 @@ Returns:      the new value of the buffer pointer
 */
 
 static uschar *
-string_get_localpart(address_item *addr, uschar *yield, int *sizeptr,
-  int *ptrptr)
+string_get_localpart(address_item *addr, uschar *yield, size_t *sizeptr,
+  size_t *ptrptr)
 {
 uschar * s;
 
@@ -1618,8 +1618,8 @@ Returns:        a string in dynamic store
 uschar *
 string_log_address(address_item *addr, BOOL all_parents, BOOL success)
 {
-int size = 64;
-int ptr = 0;
+size_t size = 64;
+size_t ptr = 0;
 BOOL add_topaddr = TRUE;
 uschar *yield = store_get(size);
 address_item *topaddr;

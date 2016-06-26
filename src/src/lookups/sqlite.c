@@ -55,7 +55,7 @@ int i;
 /* For second and subsequent results, insert \n */
 
 if (res->string != NULL)
-  res->string = string_catn(res->string, &res->size, &res->len, US"\n", 1);
+  res->string = string_catn(res->string, (size_t *)(&res->size), (size_t *)(&res->len), US"\n", 1);
 
 if (argc > 1)
   {
@@ -64,7 +64,7 @@ if (argc > 1)
     {
     uschar *value = US((argv[i] != NULL)? argv[i]:"<NULL>");
     res->string = lf_quote(US azColName[i], value, Ustrlen(value), res->string,
-      &res->size, &res->len);
+      (size_t *)(&res->size), (size_t *)(&res->len));
     }
   }
 

@@ -478,8 +478,7 @@ if (expand_arguments)
     {
     address_item *ad;
     uschar *q = p + 14;
-    int size = Ustrlen(cmd) + 64;
-    int offset;
+    size_t offset, size = Ustrlen(cmd) + 64;
 
     if (p[-1] == '{') { q++; p--; }
 
@@ -1061,7 +1060,8 @@ if ((rc = child_close(pid, timeout)) != 0)
     else if (!ob->ignore_status)
       {
       uschar *ss;
-      int size, ptr, i;
+      size_t size, ptr;
+      int i;
 
       /* If temp_errors is "*" all codes are temporary. Initializion checks
       that it's either "*" or a list of numbers. If not "*", scan the list of

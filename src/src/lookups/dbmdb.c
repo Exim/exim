@@ -144,7 +144,8 @@ dbmjz_find(void *handle, uschar *filename, const uschar *keystring, int length,
 {
 uschar *key_item, *key_buffer, *key_p;
 const uschar *key_elems = keystring;
-int buflen, bufleft, key_item_len, sep = 0;
+size_t buflen, bufleft;
+int key_item_len, sep = 0;
 
 /* To a first approximation, the size of the lookup key needs to be about,
 or less than, the length of the delimited list passed in + 1. */

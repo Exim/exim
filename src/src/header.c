@@ -28,7 +28,7 @@ Returns:    TRUE or FALSE
 */
 
 BOOL
-header_testname(header_line *h, const uschar *name, int len, BOOL notdel)
+header_testname(header_line *h, const uschar *name, size_t len, BOOL notdel)
 {
 uschar *tt;
 if (h->type == '*' && notdel) return FALSE;
@@ -45,7 +45,7 @@ return *tt == ':';
 
 BOOL
 header_testname_incomplete(header_line *h, const uschar *name,
-    int len, BOOL notdel)
+    size_t len, BOOL notdel)
 {
 if (h->type == '*' && notdel) return FALSE;
 if (h->text == NULL || strncmpic(h->text, name, len) != 0) return FALSE;
@@ -130,7 +130,7 @@ if (name == NULL)
 
 else
   {
-  int len = Ustrlen(name);
+  size_t len = Ustrlen(name);
 
   /* Find the first non-deleted header witht the correct name. */
 
@@ -267,7 +267,7 @@ header_remove(int occ, const uschar *name)
 {
 header_line *h;
 int hcount = 0;
-int len = Ustrlen(name);
+size_t len = Ustrlen(name);
 for (h = header_list; h != NULL; h = h->next)
   {
   if (header_testname(h, name, len, TRUE) && (occ <= 0 || ++hcount == occ))
@@ -356,7 +356,7 @@ Returns:         cond if the header exists and contains one of the strings;
 /* First we have a local subroutine to handle a single pattern */
 
 static BOOL
-one_pattern_match(uschar *name, int slen, BOOL has_addresses, uschar *pattern)
+one_pattern_match(uschar *name, size_t slen, BOOL has_addresses, uschar *pattern)
 {
 BOOL yield = FALSE;
 header_line *h;
@@ -386,8 +386,8 @@ for (h = header_list; !yield && h != NULL; h = h->next)
       {
       uschar *error, *next;
       uschar *e = parse_find_address_end(s, FALSE);
-      int terminator = *e;
-      int start, end, domain;
+      int domain, terminator = *e;
+      size_t start, end;
 
       /* Temporarily terminate the string at the address end while extracting
       the operative address within. */
@@ -441,7 +441,7 @@ header_match(uschar *name, BOOL has_addresses, BOOL cond, string_item *strings,
 va_list ap;
 string_item *s;
 int i;
-int slen = Ustrlen(name);
+size_t slen = Ustrlen(name);
 
 for (s = strings; s != NULL; s = s->next)
   {

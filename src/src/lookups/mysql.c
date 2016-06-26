@@ -93,8 +93,8 @@ MYSQL_ROW mysql_row_data;
 MYSQL_FIELD *fields;
 
 int i;
-int ssize = 0;
-int offset = 0;
+size_t ssize = 0;
+size_t offset = 0;
 int yield = DEFER;
 unsigned int num_fields;
 uschar *result = NULL;
