@@ -195,6 +195,8 @@ FILE *f = NULL;
 uschar *filename;
 
 filename = (uschar *)malloc(PATH_MAX);
+if (!filename)
+  return NULL;
 
 if (pname && fname)
   {

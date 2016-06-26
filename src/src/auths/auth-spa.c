@@ -159,6 +159,7 @@ extern int DEBUGLEVEL;
 
 #include <sys/types.h>     /* For size_t */
 #include "auth-spa.h"
+#include "../store.h"
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -1401,7 +1402,7 @@ spa_build_auth_request (SPAAuthRequest * request, char *user, char *domain)
   SIVAL (&request->flags, 0, 0x0000b207);      /* have to figure out what these mean */
   spa_string_add (request, user, u);
   spa_string_add (request, domain, domain);
-  free (u);
+  store_free (u);
 }
 
 
@@ -1483,8 +1484,8 @@ spa_build_auth_response (SPAAuthChallenge * challenge,
 
   response->flags = challenge->flags;
 
-  free (d);
-  free (u);
+  store_free (d);
+  store_free (u);
 }
 #endif
 
@@ -1537,6 +1538,6 @@ spa_build_auth_response (SPAAuthChallenge * challenge,
   spa_string_add (response, sessionKey, NULL);
   response->flags = challenge->flags;
 
-  if (d != NULL) free (d);
-  free (u);
+  if (d != NULL) store_free (d);
+  store_free (u);
 }

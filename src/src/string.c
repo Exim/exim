@@ -1847,6 +1847,11 @@ while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
     else
       {
       uschar *sss = malloc(s - ss + 1);
+      if(!sss)
+        {
+        printf("***ERROR\nMemory allocation failed!\n");
+        exit(EXIT_FAILURE);
+        }
       Ustrncpy(sss, ss, s-ss);
       args[n++] = sss;
       }
