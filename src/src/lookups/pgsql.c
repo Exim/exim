@@ -126,8 +126,8 @@ PGresult *pg_result = NULL;
 
 int i;
 uschar *result = NULL;
-int ssize = 0;
-int offset = 0;
+size_t ssize = 0;
+size_t offset = 0;
 int yield = DEFER;
 unsigned int num_fields, num_tuples;
 pgsql_connection *cn;

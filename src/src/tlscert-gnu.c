@@ -362,7 +362,7 @@ for(index = 0;; index++)
     return g_err("gai", __FUNCTION__, ret);
 
   list = string_append_listele(list, sep,
-	    string_copyn(uri.data, uri.size));
+	    string_copyn(uri.data, (size_t)uri.size));
   }
 /*NOTREACHED*/
 
@@ -427,7 +427,7 @@ int fail;
 
 if (  (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
 	GNUTLS_X509_FMT_DER, cp, &len)) != GNUTLS_E_SHORT_MEMORY_BUFFER
-   || !(cp = store_get((int)len))
+   || !(cp = store_get(len))
    || (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
         GNUTLS_X509_FMT_DER, cp, &len))
    )
@@ -436,7 +436,7 @@ if (  (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
     gnutls_strerror(fail));
   return NULL;
   }
-return b64encode(cp, (int)len);
+return b64encode(cp, len);
 }
 
 

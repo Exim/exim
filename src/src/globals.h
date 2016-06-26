@@ -440,7 +440,7 @@ extern const uschar *exim_sieve_extension_list[]; /* list of sieve extensions */
 extern uid_t   exim_uid;               /* Non-root uid for exim */
 extern BOOL    exim_uid_set;           /* TRUE if exim_uid set */
 extern int     expand_forbid;          /* RDO flags for forbidding things */
-extern int     expand_nlength[];       /* Lengths of numbered strings */
+extern size_t     expand_nlength[];       /* Lengths of numbered strings */
 extern int     expand_nmax;            /* Max numerical value */
 extern uschar *expand_nstring[];       /* Numbered strings */
 extern BOOL    expand_string_forcedfail; /* TRUE if failure was "expected" */

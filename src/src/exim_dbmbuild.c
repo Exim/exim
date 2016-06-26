@@ -151,8 +151,8 @@ uschar *bptr;
 uschar  keybuffer[256];
 uschar  temp_dbmname[512];
 uschar  real_dbmname[512];
-uschar *buffer = malloc(max_outsize);
-uschar *line = malloc(max_insize);
+uschar *buffer = store_malloc(max_outsize);
+uschar *line = store_malloc(max_insize);
 
 while (argc > 1)
   {

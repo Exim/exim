@@ -1123,7 +1123,7 @@ Returns:      the extended string
 */
 
 static uschar *
-add_host_info_for_log(uschar * s, int * sizeptr, int * ptrptr)
+add_host_info_for_log(uschar * s, size_t * sizeptr, size_t * ptrptr)
 {
 if (sender_fullhost)
   {
@@ -1168,14 +1168,12 @@ run_mime_acl(uschar *acl, BOOL *smtp_yield_ptr, uschar **smtp_reply_ptr,
   uschar **blackholed_by_ptr)
 {
 FILE *mbox_file;
-uschar rfc822_file_path[2048];
+uschar rfc822_file_path[PATH_MAX]={0};
 unsigned long mbox_size;
 header_line *my_headerlist;
 uschar *user_msg, *log_msg;
 int mime_part_count_buffer = -1;
 int rc = OK;
-
-memset(CS rfc822_file_path,0,2048);
 
 /* check if it is a MIME message */
 my_headerlist = header_list;
@@ -1238,7 +1236,7 @@ if (Ustrlen(rfc822_file_path) > 0)
 /* check if we must check any message/rfc822 attachments */
 if (rc == OK)
   {
-  uschar temp_path[1024];
+  uschar temp_path[PATH_MAX];
   struct dirent * entry;
   DIR * tempdir;
 
@@ -1445,14 +1443,14 @@ not. */
 BOOL
 receive_msg(BOOL extract_recip)
 {
-int  i;
+int  i, domain;
 int  rc = FAIL;
 int  msg_size = 0;
 int  process_info_len = Ustrlen(process_info);
 int  error_rc = (error_handling == ERRORS_SENDER)?
        errors_sender_rc : EXIT_FAILURE;
-int  header_size = 256;
-int  start, end, domain, size, sptr;
+size_t  header_size = 256;
+size_t  start, end, size, sptr;
 int  id_resolution;
 int  had_zero = 0;
 int  prevlines_length = 0;
@@ -1898,7 +1896,8 @@ for (;;)
         }
       else
         {
-        int start, end, domain;
+        size_t start, end;
+        int domain;
         uschar *errmess;
         uschar *newsender = parse_extract_address(uucp_sender, &errmess,
           &start, &end, &domain, TRUE);
@@ -2112,7 +2111,7 @@ for (h = header_list->next; h != NULL; h = h->next)
       from_header = h;
       if (!smtp_input)
         {
-        int len;
+        size_t len;
         uschar *s = Ustrchr(h->text, ':') + 1;
         while (isspace(*s)) s++;
         len = h->slen - (s - h->text) - 1;
@@ -2296,7 +2295,8 @@ if (extract_recip)
         {
         uschar *ss = parse_find_address_end(s, FALSE);
         uschar *recipient, *errmess, *p, *pp;
-        int start, end, domain;
+        size_t start, end;
+        int domain;
 
         /* Check on maximum */
 
@@ -2342,7 +2342,7 @@ if (extract_recip)
 
         if (recipient == NULL && Ustrcmp(errmess, "empty address") != 0)
           {
-          int len = Ustrlen(s);
+          size_t len = Ustrlen(s);
           error_block *b = store_get(sizeof(error_block));
           while (len > 0 && isspace(s[len-1])) len--;
           b->next = NULL;
@@ -2667,7 +2667,8 @@ if (from_header != NULL &&
      ))
   {
   BOOL make_sender = TRUE;
-  int start, end, domain;
+  size_t start, end;
+  int domain;
   uschar *errmess;
   uschar *from_address =
     parse_extract_address(Ustrchr(from_header->text, ':') + 1, &errmess,
@@ -3199,8 +3200,8 @@ else
           const uschar *ptr = dkim_verify_signers_expanded;
           uschar *item = NULL;
           uschar *seen_items = NULL;
-          int     seen_items_size = 0;
-          int     seen_items_offset = 0;
+          size_t     seen_items_size = 0;
+          size_t     seen_items_offset = 0;
           uschar itembuf[256];
           /* Default to OK when no items are present */
           rc = OK;
@@ -3515,7 +3516,7 @@ os_non_restarting_signal(SIGBUS, SIG_DFL);
 
 if (local_scan_data != NULL)
   {
-  int len = Ustrlen(local_scan_data);
+  size_t len = Ustrlen(local_scan_data);
   if (len > LOCAL_SCAN_MAX_RETURN) len = LOCAL_SCAN_MAX_RETURN;
   local_scan_data = string_copyn(local_scan_data, len);
   }
@@ -3569,8 +3570,8 @@ else
   uschar *istemp = US"";
   uschar *s = NULL;
   uschar *smtp_code;
-  int size = 0;
-  int sptr = 0;
+  size_t size = 0;
+  size_t sptr = 0;
 
   errmsg = local_scan_data;
 

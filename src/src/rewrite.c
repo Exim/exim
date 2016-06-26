@@ -116,8 +116,8 @@ for (rule = rewrite_rules;
      rule != NULL && !done;
      rule_number++, rule = rule->next)
   {
-  int start, end, pdomain;
-  int count = 0;
+  size_t start, end;
+  int pdomain, count = 0;
   uschar *save_localpart;
   const uschar *save_domain;
   uschar *error, *new, *newparsed;
@@ -482,7 +482,8 @@ while (*s != 0)
   void *loop_reset_point = store_get(0);
   BOOL changed = FALSE;
   int terminator = *ss;
-  int start, end, domain;
+  size_t start, end;
+  int domain;
 
   /* Temporarily terminate the string at this point, and extract the
   operative address within. Then put back the terminator and prepare for
@@ -663,7 +664,7 @@ while (*s != 0)
     newh = store_get(sizeof(header_line));
     newh->type = type;
     newh->slen = slen;
-    newh->text = string_copyn(newtstart, slen);
+    newh->text = string_copyn(newtstart, (size_t)slen);
     store_free(newtstart);
 
     /* Set up for scanning the rest of the header */
@@ -771,7 +772,8 @@ Returns:  nothing
 void rewrite_test(uschar *s)
 {
 uschar *recipient, *error;
-int i, start, end, domain;
+size_t start, end;
+int i, domain;
 BOOL done_smtp = FALSE;
 
 if (rewrite_existflags == 0)
@@ -826,7 +828,7 @@ for (i = 0; i < 8; i++)
     printf("<>\n");
   else if (whole || (flag & rewrite_all_headers) == 0)
     printf("%s\n", CS new);
-  else printf("%.*s%s%s\n", start, s, new, s+end);
+  else printf("%.*s%s%s\n", (int)start, s, new, s+end);
   }
 }
 

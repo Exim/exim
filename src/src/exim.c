@@ -42,7 +42,7 @@ regular expression for a long time; the other for short-term use. */
 static void *
 function_store_get(size_t size)
 {
-return store_get((int)size);
+return store_get(size);
 }
 
 static void
@@ -51,7 +51,7 @@ function_dummy_free(void *block) { block = block; }
 static void *
 function_store_malloc(size_t size)
 {
-return store_malloc((int)size);
+return store_malloc(size);
 }
 
 static void
@@ -721,7 +721,8 @@ Returns:       nothing
 static void
 test_address(uschar *s, int flags, int *exit_value)
 {
-int start, end, domain;
+size_t start, end;
+int domain;
 uschar *parse_error = NULL;
 uschar *address = parse_extract_address(s, &parse_error, &start, &end, &domain,
   FALSE);
@@ -1135,7 +1136,7 @@ uschar *
 local_part_quote(uschar *lpart)
 {
 BOOL needs_quote = FALSE;
-int size, ptr;
+size_t size, ptr;
 uschar *yield;
 uschar *t;
 
@@ -1239,8 +1240,8 @@ static uschar *
 get_stdinput(char *(*fn_readline)(const char *), void(*fn_addhist)(const char *))
 {
 int i;
-int size = 0;
-int ptr = 0;
+size_t size = 0;
+size_t ptr = 0;
 uschar *yield = NULL;
 
 if (fn_readline == NULL) { printf("> "); fflush(stdout); }
@@ -1270,7 +1271,7 @@ for (i = 0;; i++)
 
   /* Handle the line */
 
-  ss = p + (int)Ustrlen(p);
+  ss = p + Ustrlen(p);
   while (ss > p && isspace(ss[-1])) ss--;
 
   if (i > 0)
@@ -1281,7 +1282,7 @@ for (i = 0;; i++)
   yield = string_catn(yield, &size, &ptr, p, ss - p);
 
   #ifdef USE_READLINE
-  if (fn_readline != NULL) free(readline_line);
+  if (fn_readline != NULL) store_free(readline_line);
   #endif
 
   /* yield can only be NULL if ss==p */
@@ -1644,15 +1645,9 @@ setlocale(LC_ALL, "C");
 
 os_non_restarting_signal(SIGALRM, sigalrm_handler);
 
-/* Ensure we have a buffer for constructing log entries. Use malloc directly,
-because store_malloc writes a log entry on failure. */
+/* Ensure we have a buffer for constructing log entries. */
 
-log_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-if (log_buffer == NULL)
-  {
-  fprintf(stderr, "exim: failed to get store for log buffer\n");
-  exit(EXIT_FAILURE);
-  }
+log_buffer = (uschar *)store_malloc(LOG_BUFFER_SIZE);
 
 /* Initialize the default log options. */
 
@@ -2559,7 +2554,7 @@ for (i = 1; i < argc; i++)
 
     case 'f':
       {
-      int dummy_start, dummy_end;
+      size_t dummy_start, dummy_end;
       uschar *errmess;
       if (*argrest == 0)
         {
@@ -3972,7 +3967,7 @@ EXIM_TMPDIR by the build scripts.
     if (Ustrncmp(*p, "TMPDIR=", 7) == 0 &&
         Ustrcmp(*p+7, EXIM_TMPDIR) != 0)
       {
-      uschar *newp = malloc(Ustrlen(EXIM_TMPDIR) + 8);
+      uschar *newp = store_malloc(Ustrlen(EXIM_TMPDIR) + 8);
       sprintf(CS newp, "TMPDIR=%s", EXIM_TMPDIR);
       *p = newp;
       DEBUG(D_any) debug_printf("reset TMPDIR=%s in environment\n", EXIM_TMPDIR);
@@ -4009,7 +4004,7 @@ else
     int count = 0;
     if (environ) while (*p++ != NULL) count++;
     if (envtz == NULL) count++;
-    newp = new = malloc(sizeof(uschar *) * (count + 1));
+    newp = new = store_malloc(sizeof(uschar *) * (count + 1));
     if (environ) for (p = USS environ; *p != NULL; p++)
       {
       if (Ustrncmp(*p, "TZ=", 3) == 0) continue;
@@ -4017,7 +4012,7 @@ else
       }
     if (timezone_string != NULL)
       {
-      *newp = malloc(Ustrlen(timezone_string) + 4);
+      *newp = store_malloc(Ustrlen(timezone_string) + 4);
       sprintf(CS *newp++, "TZ=%s", timezone_string);
       }
     *newp = NULL;
@@ -5460,7 +5455,8 @@ while (more)
 
     for (i = 0; i < count; i++)
       {
-      int start, end, domain;
+      size_t start, end;
+      int domain;
       uschar *errmess;
       uschar *s = list[i];
 

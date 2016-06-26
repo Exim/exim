@@ -173,23 +173,23 @@ extern uschar *expand_string(uschar *);
 extern void    header_add(int, const char *, ...);
 extern void    header_add_at_position(BOOL, uschar *, BOOL, int, const char *, ...);
 extern void    header_remove(int, const uschar *);
-extern BOOL    header_testname(header_line *, const uschar *, int, BOOL);
-extern BOOL    header_testname_incomplete(header_line *, const uschar *, int, BOOL);
+extern BOOL    header_testname(header_line *, const uschar *, size_t, BOOL);
+extern BOOL    header_testname_incomplete(header_line *, const uschar *, size_t, BOOL);
 extern void    log_write(unsigned int, int, const char *format, ...) PRINTF_FUNCTION(3,4);
 extern int     lss_b64decode(uschar *, uschar **);
-extern uschar *lss_b64encode(uschar *, int);
+extern uschar *lss_b64encode(uschar *, size_t);
 extern int     lss_match_domain(uschar *, uschar *);
 extern int     lss_match_local_part(uschar *, uschar *, BOOL);
 extern int     lss_match_address(uschar *, uschar *, BOOL);
 extern int     lss_match_host(uschar *, uschar *, uschar *);
 extern void    receive_add_recipient(uschar *, int);
 extern BOOL    receive_remove_recipient(uschar *);
-extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, int *, uschar **);
+extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, size_t *, uschar **);
 extern int     smtp_fflush(void);
 extern void    smtp_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    smtp_vprintf(const char *, va_list);
 extern uschar *string_copy(const uschar *);
-extern uschar *string_copyn(const uschar *, int);
+extern uschar *string_copyn(const uschar *, size_t);
 extern uschar *string_sprintf(const char *, ...) ALMOST_PRINTF(1,2);
 
 /* End of local_scan.h */

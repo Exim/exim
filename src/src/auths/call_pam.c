@@ -100,7 +100,7 @@ for (i = 0; i < num_msg; i++)
     break;
 
     default:  /* Must be an error of some sort... */
-    free (reply);
+    store_free (reply);
     pam_conv_had_error = TRUE;
     return PAM_CONV_ERR;
     }

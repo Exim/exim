@@ -160,8 +160,8 @@ auth_heimdal_gssapi_init(auth_instance *ablock)
             principal ? principal : "??",
             entry.vno,
             enctype_s ? enctype_s : "??");
-        free(principal);
-        free(enctype_s);
+        store_free(principal);
+        store_free(enctype_s);
         krb5_kt_free_entry(context, &entry);
       }
       krc = krb5_kt_end_seq_get(context, keytab, &cursor);
@@ -467,7 +467,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
 
         expand_nlength[1] = gbufdesc_out.length;
         auth_vars[0] = expand_nstring[1] =
-          string_copyn(gbufdesc_out.value, gbufdesc_out.length);
+          string_copyn(gbufdesc_out.value, (size_t)gbufdesc_out.length);
 
         if (expand_nmax == 0) { /* should be: authzid was empty */
           expand_nmax = 2;

@@ -647,7 +647,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
       uschar *s, *ss;
       while ((s = string_nextinlist(&list, &sep, NULL, 0)))
 	{
-	int len;
+	size_t len;
 
 	if (i == 0)
 	  if (!(s = expand_string(s)) && !expand_string_forcedfail)
@@ -1725,6 +1725,13 @@ while (1)
   /* create an array to read entire message queue into memory for processing  */
 
   msgq = (msgq_t*) malloc(sizeof(msgq_t) * host_record->count);
+
+  if(!msgq) {
+    dbfn_close(dbm_file);
+    DEBUG(D_transport) debug_printf("memory allocation for message queue failed\n");
+    return FALSE;
+  }
+
   msgq_count = host_record->count;
   msgq_actual = msgq_count;
 
@@ -1832,7 +1839,7 @@ test but the code should work */
 
   if (bFound)		/* Usual exit from main loop */
     {
-    free (msgq);
+    store_free (msgq);
     break;
     }
 
@@ -1858,7 +1865,7 @@ test but the code should work */
     return FALSE;
     }
 
-  free(msgq);
+  store_free(msgq);
   }		/* we need to process a continuation record */
 
 /* Control gets here when an existing message has been encountered; its
@@ -1870,7 +1877,7 @@ if (host_length > 0)
   {
   host_record->count = host_length/MESSAGE_ID_LENGTH;
 
-  dbfn_write(dbm_file, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
+  dbfn_write(dbm_file, hostname, host_record, sizeof(dbdata_wait) + host_length);
   *more = TRUE;
   }
 

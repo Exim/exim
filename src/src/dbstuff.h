@@ -22,6 +22,7 @@ utilities as well as the main Exim binary. */
 /* ************************* tdb interface ************************ */
 
 #include <tdb.h>
+#include "store.h"
 
 /* Basic DB type */
 #define EXIM_DB TDB_CONTEXT
@@ -64,17 +65,17 @@ tdb_traverse to be called) */
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
 #define EXIM_DBCREATE_CURSOR(db, cursor) { \
-   *(cursor) = malloc(sizeof(TDB_DATA)); (*(cursor))->dptr = NULL; }
+   *(cursor) = store_malloc(sizeof(TDB_DATA)); (*(cursor))->dptr = NULL; }
 
 /* EXIM_DBSCAN - This is complicated because we have to free the last datum
 free() must not die when passed NULL */
 #define EXIM_DBSCAN(db, key, data, first, cursor)      \
        (key = (first ? tdb_firstkey(db) : tdb_nextkey(db, *(cursor))), \
-        free((cursor)->dptr), *(cursor) = key, \
+        store_free((cursor)->dptr), *(cursor) = key, \
         key.dptr != NULL)
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation. */
-#define EXIM_DBDELETE_CURSOR(cursor) free(cursor)
+#define EXIM_DBDELETE_CURSOR(cursor) store_free(cursor)
 
 /* EXIM_DBCLOSE */
 #define EXIM_DBCLOSE(db)        tdb_close(db)
@@ -390,15 +391,13 @@ typedef struct {
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
 #define EXIM_DBOPEN(name, flags, mode, dbpp) \
-     { (*(dbpp)) = (EXIM_DB *) malloc(sizeof(EXIM_DB));\
-       if (*(dbpp) != NULL) { \
-         (*(dbpp))->lkey.dptr = NULL;\
-         (*(dbpp))->gdbm = gdbm_open(CS name, 0, (((flags) & O_CREAT))?GDBM_WRCREAT:(((flags) & (O_RDWR|O_WRONLY))?GDBM_WRITER:GDBM_READER), mode, 0);\
-          if ((*(dbpp))->gdbm == NULL) {\
-              free(*(dbpp));\
+     { (*(dbpp)) = (EXIM_DB *) store_malloc(sizeof(EXIM_DB));\
+       (*(dbpp))->lkey.dptr = NULL;\
+       (*(dbpp))->gdbm = gdbm_open(CS name, 0, (((flags) & O_CREAT))?GDBM_WRCREAT:(((flags) & (O_RDWR|O_WRONLY))?GDBM_WRITER:GDBM_READER), mode, 0);\
+       if ((*(dbpp))->gdbm == NULL) {\
+              store_free(*(dbpp));\
               *(dbpp) = NULL;\
-          }\
-       }\
+        }\
      }
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
@@ -427,7 +426,7 @@ typedef struct {
 /* EXIM_DBSCAN */
 #define EXIM_DBSCAN(db, key, data, first, cursor)      \
   ( key = ((first)? gdbm_firstkey(db->gdbm) : gdbm_nextkey(db->gdbm, db->lkey)), \
-    (((db)->lkey.dptr != NULL)? (free((db)->lkey.dptr),1) : 1),\
+    (((db)->lkey.dptr != NULL)? (store_free((db)->lkey.dptr),1) : 1),\
     db->lkey = key, key.dptr != NULL)
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). Make it
@@ -437,8 +436,8 @@ refer to cursor, to keep picky compilers happy. */
 /* EXIM_DBCLOSE */
 #define EXIM_DBCLOSE(db) \
 { gdbm_close((db)->gdbm);\
-  if ((db)->lkey.dptr != NULL) free((db)->lkey.dptr);\
-  free(db); }
+  if ((db)->lkey.dptr != NULL) store_free((db)->lkey.dptr);\
+  store_free(db); }
 
 /* Datum access types - these are intended to be assignable */
 
@@ -449,7 +448,7 @@ refer to cursor, to keep picky compilers happy. */
 after reading data. */
 
 #define EXIM_DATUM_INIT(datum)
-#define EXIM_DATUM_FREE(datum) free(datum.dptr)
+#define EXIM_DATUM_FREE(datum) store_free(datum.dptr)
 
 #else  /* USE_GDBM */
 

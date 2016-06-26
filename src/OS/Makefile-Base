@@ -408,9 +408,9 @@ exim_tidydb: $(OBJ_TIDYDB)
 
 # The utility for building dbm files
 
-exim_dbmbuild: exim_dbmbuild.o
+exim_dbmbuild: util-store.o exim_dbmbuild.o
 	@echo "$(LNCC) -o exim_dbmbuild"
-	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o \
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o util-store.o \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_dbmbuild; \
@@ -421,11 +421,11 @@ exim_dbmbuild: exim_dbmbuild.o
 
 # The utility for locking a mailbox while messing around with it
 
-exim_lock: exim_lock.c os.h
+exim_lock: util-store.o exim_lock.c os.h
 	@echo "$(CC) exim_lock.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) exim_lock.c
 	@echo "$(LNCC) -o exim_lock"
-	$(FE)$(LNCC) -o exim_lock $(LFLAGS) exim_lock.o  \
+	$(FE)$(LNCC) -o exim_lock $(LFLAGS) exim_lock.o util-store.o  \
 	  $(LIBS) $(EXTRALIBS)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_lock; \

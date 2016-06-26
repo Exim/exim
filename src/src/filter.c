@@ -1507,8 +1507,8 @@ switch (c->type)
   while (*pp != 0)
     {
     uschar *error;
-    int start, end, domain;
-    int saveend;
+    size_t start, end;
+    int saveend, domain;
 
     p = parse_find_address_end(pp, FALSE);
     saveend = *p;
@@ -1758,7 +1758,8 @@ while (commands != NULL)
       s = expargs[i];
       if (s != NULL)
         {
-        int start, end, domain;
+        size_t start, end;
+        int domain;
         uschar *error;
         uschar *ss = parse_extract_address(s, &error, &start, &end, &domain,
           FALSE);
@@ -2226,8 +2227,8 @@ while (commands != NULL)
       uschar *tt;
       uschar *log_addr = NULL;
       uschar *to = commands->args[mailarg_index_to].u;
-      int size = 0;
-      int ptr = 0;
+      size_t size = 0;
+      size_t ptr = 0;
       int badflag = 0;
 
       if (to == NULL) to = expand_string(US"$reply_address");
@@ -2268,8 +2269,8 @@ while (commands != NULL)
         {
         uschar *ss = parse_find_address_end(tt, FALSE);
         uschar *recipient, *errmess;
-        int start, end, domain;
-        int temp = *ss;
+        size_t start, end;
+        int domain, temp = *ss;
 
         *ss = 0;
         recipient = parse_extract_address(tt, &errmess, &start, &end, &domain,

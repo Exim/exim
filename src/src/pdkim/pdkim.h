@@ -258,10 +258,10 @@ typedef struct pdkim_ctx {
 
   /* Coder's little helpers */
   uschar    *cur_header;
-  int        cur_header_size;
-  int        cur_header_len;
+  size_t        cur_header_size;
+  size_t        cur_header_len;
   char      *linebuf;
-  int        linebuf_offset;
+  size_t        linebuf_offset;
   BOOL       seen_lf;
   BOOL       seen_eod;
   BOOL       past_headers;

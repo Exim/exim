@@ -7,6 +7,7 @@
 
 #include "mytypes.h"
 #include "macros.h"
+#include "store.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -25,7 +26,7 @@ Ustrcpy(today, __DATE__);
 if (today[4] == ' ') i = 1;
 today[3] = today[6] = '-';
 
-version_date = (uschar *)malloc(32);
+version_date = (uschar *)store_malloc(32);
 version_date[0] = 0;
 Ustrncat(version_date, today+4+i, 3-i);
 Ustrncat(version_date, today, 4);
