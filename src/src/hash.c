@@ -787,10 +787,16 @@ for (i = 0; i < sizeof(tests)/sizeof(uschar *); i ++)
 /* 1 000 000 repetitions of "a" */
 
 ctest = malloc(1000000);
+if(!ctest)
+  {
+  printf("Memory allocation failed!\n*** No match ***\n");
+  exit(EXIT_FAILURE);
+  }
 memset(ctest, 'a', 1000000);
 
 printf("1 000 000 repetitions of 'a'\n");
 printf("Should be: %s\n", atest);
+free(ctest);
 native_sha1_start(&base);
 native_sha1_end(&base, ctest, 1000000, digest);
 for (j = 0; j < 20; j++) sprintf(s+2*j, "%02X", digest[j]);

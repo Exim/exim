@@ -186,7 +186,7 @@ call_perl_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
     return NULL;
     }
   str = US SvPV(sv, len);
-  yield = string_catn(yield, sizep, ptrp, str, (int)len);
+  yield = string_catn(yield, sizep, ptrp, str, len);
   FREETMPS;
   LEAVE;
 

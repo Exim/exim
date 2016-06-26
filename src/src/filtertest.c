@@ -108,8 +108,8 @@ wrapped round in message_body_end. */
 
 if (body_len >= message_body_visible)
   {
-  int below = s - message_body_end;
-  int above = message_body_visible - below;
+  size_t below = s - message_body_end;
+  size_t above = message_body_visible - below;
   if (above > 0)
     {
     uschar *temp = store_get(below);

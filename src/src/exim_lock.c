@@ -14,6 +14,7 @@ Copyright (c) The Exim Maintainers 2016
 */
 
 #include "os.h"
+#include "store.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -274,7 +275,7 @@ if (*filename == '~')
     exit(1);
     }
 
-  if ((int)strlen(pw->pw_dir) + (int)strlen(filename) + 1 > sizeof(buffer))
+  if (strlen(pw->pw_dir) + strlen(filename) + 1 > sizeof(buffer))
     {
     printf("exim_lock: expanded file name %s%s is too long", pw->pw_dir,
       filename);
@@ -299,9 +300,9 @@ if (use_lockfile)
   primary_hostname = s.nodename;
 
   len = (int)strlen(filename);
-  lockname = malloc(len + 8);
+  lockname = store_malloc(len + 8);
   sprintf(lockname, "%s.lock", filename);
-  hitchname = malloc(len + 32 + (int)strlen(primary_hostname));
+  hitchname = store_malloc(len + 32 + (int)strlen(primary_hostname));
 
   /* Presumably, this must match appendfile.c */
   sprintf(hitchname, "%s.%s.%08x.%08x", lockname, primary_hostname,

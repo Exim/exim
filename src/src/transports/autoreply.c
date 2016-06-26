@@ -196,8 +196,8 @@ while (*s != 0)
   {
   uschar *error, *next;
   uschar *e = parse_find_address_end(s, FALSE);
-  int terminator = *e;
-  int start, end, domain, rc;
+  int domain, rc, terminator = *e;
+  size_t start, end;
 
   /* Temporarily terminate the string at the address end while extracting
   the operative address within. */

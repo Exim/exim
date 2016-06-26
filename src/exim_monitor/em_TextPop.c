@@ -468,7 +468,7 @@ struct SearchAndReplace * search;
   text.firstPos = 0;
   text.format = FMT8BIT;
 
-  dir = (XawTextScanDirection)(int) ((caddr_t)XawToggleGetCurrent(search->left_toggle) -
+  dir = (XawTextScanDirection)(size_t) ((caddr_t)XawToggleGetCurrent(search->left_toggle) -
 				R_OFFSET);
 
   pos = XawTextSearch( tw, dir, &text);

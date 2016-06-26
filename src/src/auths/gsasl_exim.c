@@ -358,7 +358,7 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
         auth_get_no64_data((uschar **)&received, (uschar *)to_send);
 
     if (to_send) {
-      free(to_send);
+      store_free(to_send);
       to_send = NULL;
     }
 

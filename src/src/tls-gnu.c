@@ -33,6 +33,7 @@ than being dropped afterwards, but that was introduced in 2.10.0 and Debian
 compiler warnings of deprecated APIs.  If it turns out that a lot of the rest
 require current GnuTLS, then we'll drop support for the ancient libraries).
 */
+#include "store.h"
 
 #include <gnutls/gnutls.h>
 /* needed for cert checks in verification and DN extraction: */
@@ -414,7 +415,7 @@ if (rc) {
 } else {
   old_pool = store_pool;
   store_pool = POOL_PERM;
-  tls_channelbinding_b64 = b64encode(channel.data, (int)channel.size);
+  tls_channelbinding_b64 = b64encode(channel.data, (size_t)channel.size);
   store_pool = old_pool;
   DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage.\n");
 }
@@ -587,13 +588,13 @@ if (fd >= 0)
     {
     saved_errno = errno;
     fclose(fp);
-    free(m.data);
+    store_free(m.data);
     return tls_error(US"fread failed", strerror(saved_errno), NULL);
     }
   fclose(fp);
 
   rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
-  free(m.data);
+  store_free(m.data);
   exim_gnutls_err_check(US"gnutls_dh_params_import_pkcs3");
   DEBUG(D_tls) debug_printf("read D-H parameters from file \"%s\"\n", filename);
   }
@@ -673,7 +674,7 @@ if (rc < 0)
       m.data, &sz);
   if (rc != GNUTLS_E_SUCCESS)
     {
-    free(m.data);
+    store_free(m.data);
     exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3() real");
     }
   m.size = sz; /* shrink by 1, probably */
@@ -681,11 +682,11 @@ if (rc < 0)
   sz = write_to_fd_buf(fd, m.data, (size_t) m.size);
   if (sz != m.size)
     {
-    free(m.data);
+    store_free(m.data);
     return tls_error(US"TLS cache write D-H params failed",
         strerror(errno), NULL);
     }
-  free(m.data);
+  store_free(m.data);
   sz = write_to_fd_buf(fd, US"\n", 1);
   if (sz != 1)
     return tls_error(US"TLS cache write D-H params final newline failed",

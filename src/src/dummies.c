@@ -20,7 +20,7 @@ alternates. */
 /* We don't have the full Exim headers dragged in, but this function
 is used for debugging output. */
 
-extern int  string_vformat(char *, int, char *, va_list);
+extern int  string_vformat(char *, size_t, char *, va_list);
 
 
 /*************************************************
@@ -76,8 +76,8 @@ va_start(ap, format);
 if (!string_vformat(buffer, sizeof(buffer), format, ap))
   {
   char *s = "**** debug string overflowed buffer ****\n";
-  char *p = buffer + (int)strlen(buffer);
-  int maxlen = sizeof(buffer) - (int)strlen(s) - 3;
+  char *p = buffer + strlen(buffer);
+  size_t maxlen = sizeof(buffer) - strlen(s) - 3;
   if (p > buffer + maxlen) p = buffer + maxlen;
   if (p > buffer && p[-1] != '\n') *p++ = '\n';
   strcpy(p, s);

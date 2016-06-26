@@ -27,6 +27,6 @@ extern auth_plaintext_options_block auth_plaintext_option_defaults;
 extern void auth_plaintext_init(auth_instance *);
 extern int auth_plaintext_server(auth_instance *, uschar *);
 extern int auth_plaintext_client(auth_instance *, smtp_inblock *,
-                                 smtp_outblock *, int, uschar *, int);
+                                 smtp_outblock *, int, uschar *, size_t);
 
 /* End of plaintext.h */

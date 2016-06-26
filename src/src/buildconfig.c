@@ -688,6 +688,10 @@ else if (isgroup)
       while (*p != 0) if (*p++ == ':') count++;
 
       vector = malloc((count+1) * sizeof(uid_t));
+      if (!vector) {
+        printf("memory allocation falied");
+        return 1;
+      }
       vector[0] = (uid_t)count;
 
       for (i = 1, j = 0; i <= count; list++, i++)

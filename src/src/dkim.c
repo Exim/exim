@@ -47,7 +47,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
       uschar len = rr->data[rr_offset++];
       snprintf(answer + answer_offset,
 		PDKIM_DNS_TXT_MAX_RECLEN - answer_offset,
-		"%.*s", (int)len, (char *) (rr->data + rr_offset));
+		"%.*s", (size_t)len, (char *) (rr->data + rr_offset));
       rr_offset += len;
       answer_offset += len;
       if (answer_offset >= PDKIM_DNS_TXT_MAX_RECLEN)
@@ -107,8 +107,8 @@ void
 dkim_exim_verify_finish(void)
 {
 pdkim_signature *sig = NULL;
-int dkim_signers_size = 0;
-int dkim_signers_ptr = 0;
+size_t dkim_signers_size = 0;
+size_t dkim_signers_ptr = 0;
 dkim_signers = NULL;
 
 store_pool = POOL_PERM;
@@ -139,8 +139,8 @@ if (pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures) != PDKIM_OK)
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
-  int size = 0;
-  int ptr = 0;
+  size_t size = 0;
+  size_t ptr = 0;
 
   /* Log a line for each signature */
 
@@ -440,8 +440,8 @@ dkim_exim_sign(int dkim_fd, uschar * dkim_private_key,
 {
 int sep = 0;
 uschar *seen_items = NULL;
-int seen_items_size = 0;
-int seen_items_offset = 0;
+size_t seen_items_size = 0;
+size_t seen_items_offset = 0;
 uschar itembuf[256];
 uschar *dkim_canon_expanded;
 uschar *dkim_sign_headers_expanded;
@@ -449,8 +449,8 @@ uschar *dkim_private_key_expanded;
 pdkim_ctx *ctx = NULL;
 uschar *rc = NULL;
 uschar *sigbuf = NULL;
-int sigsize = 0;
-int sigptr = 0;
+size_t sigsize = 0;
+size_t sigptr = 0;
 pdkim_signature *signature;
 int pdkim_canon;
 int pdkim_rc;

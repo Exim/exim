@@ -30,7 +30,7 @@ void xs_SetValues(Widget w, Cardinal num_args, ...)
 {
 int i;
 va_list ap;
-Arg *aa = (num_args > 15)? (Arg *)malloc(num_args*sizeof(Arg)) : xs_temparg;
+Arg *aa = (num_args > 15)? (Arg *)store_malloc(num_args*sizeof(Arg)) : xs_temparg;
 va_start(ap, num_args);
 for (i = 0; i < num_args; i++)
   {
@@ -39,7 +39,7 @@ for (i = 0; i < num_args; i++)
   }
 va_end(ap);
 XtSetValues(w, aa, num_args);
-if (num_args > 15) free(aa);
+if (num_args > 15) store_free(aa);
 }
 
 /* End of em_xs.c */

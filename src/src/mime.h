@@ -25,14 +25,14 @@ struct mime_boundary_context
 
 typedef struct mime_header {
   uschar *  name;
-  int       namelen;
+  size_t       namelen;
   uschar ** value;
 } mime_header;
 
 
 typedef struct mime_parameter {
   uschar *  name;
-  int       namelen;
+  size_t       namelen;
   uschar ** value;
 } mime_parameter;
 

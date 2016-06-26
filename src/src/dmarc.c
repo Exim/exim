@@ -57,7 +57,7 @@ static dmarc_exim_p dmarc_policy_description[] = {
 static error_block *
 add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
 {
-error_block *eb = malloc(sizeof(error_block));
+error_block *eb = store_malloc(sizeof(error_block));
 if (eblock == NULL)
   eblock = eb;
 else
@@ -182,7 +182,7 @@ if (!from_header || dmarc_abort)
 else
   {
     uschar * errormsg;
-    int dummy, domain;
+    size_t dummy, domain;
     uschar * p;
     uschar saveend;
 
@@ -347,7 +347,7 @@ if (!dmarc_abort && !sender_host_authenticated)
   libdm_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx,
     dmarc_domain, DMARC_MAXHOSTNAMELEN-1);
   dmarc_used_domain = string_copy(dmarc_domain);
-  free(dmarc_domain);
+  store_free(dmarc_domain);
 
   if (libdm_status != DMARC_PARSE_OKAY)
     log_write(0, LOG_MAIN|LOG_PANIC,

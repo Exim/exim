@@ -72,7 +72,7 @@ else
 
 DEBUG(D_transport) debug_printf("write serialization record for %s val %d\n",
       key, new_record.count);
-dbfn_write(dbm_file, key, &new_record, (int)sizeof(dbdata_serialize));
+dbfn_write(dbm_file, key, &new_record, sizeof(dbdata_serialize));
 dbfn_close(dbm_file);
 return TRUE;
 }
@@ -109,7 +109,7 @@ if (--serial_record->count > 0)
   {
   DEBUG(D_transport) debug_printf("write serialization record for %s val %d\n",
       key, serial_record->count);
-  dbfn_write(dbm_file, key, serial_record, (int)sizeof(dbdata_serialize));
+  dbfn_write(dbm_file, key, serial_record, sizeof(dbdata_serialize));
   }
 else
   {

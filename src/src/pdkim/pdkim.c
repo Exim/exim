@@ -373,7 +373,7 @@ return n;
 static void
 pdkim_decode_base64(uschar *str, blob * b)
 {
-int dlen;
+ssize_t dlen;
 dlen = b64decode(str, &b->data);
 if (dlen < 0) b->data = NULL;
 b->len = dlen;
@@ -396,8 +396,8 @@ pdkim_parse_sig_header(pdkim_ctx *ctx, uschar * raw_hdr)
 {
 pdkim_signature *sig ;
 uschar *p, *q;
-uschar * cur_tag = NULL; int ts = 0, tl = 0;
-uschar * cur_val = NULL; int vs = 0, vl = 0;
+uschar * cur_tag = NULL; size_t ts = 0, tl = 0;
+uschar * cur_val = NULL; size_t vs = 0, vl = 0;
 BOOL past_hname = FALSE;
 BOOL in_b_val = FALSE;
 int where = PDKIM_HDR_LIMBO;
@@ -574,8 +574,8 @@ pdkim_parse_pubkey_record(pdkim_ctx *ctx, const uschar *raw_record)
 {
 pdkim_pubkey *pub;
 const uschar *p;
-uschar * cur_tag = NULL; int ts = 0, tl = 0;
-uschar * cur_val = NULL; int vs = 0, vl = 0;
+uschar * cur_tag = NULL; size_t ts = 0, tl = 0;
+uschar * cur_val = NULL; size_t vs = 0, vl = 0;
 int where = PDKIM_HDR_LIMBO;
 
 pub = store_get(sizeof(pdkim_pubkey));
@@ -1029,7 +1029,7 @@ return PDKIM_OK;
 
 /* Extend a grwong header with a continuation-linebreak */
 static uschar *
-pdkim_hdr_cont(uschar * str, int * size, int * ptr, int * col)
+pdkim_hdr_cont(uschar * str, size_t * size, size_t * ptr, int * col)
 {
 *col = 1;
 return string_catn(str, size, ptr, US"\r\n\t", 3);
@@ -1062,7 +1062,7 @@ return string_catn(str, size, ptr, US"\r\n\t", 3);
  */
 
 static uschar *
-pdkim_headcat(int * col, uschar * str, int * size, int * ptr,
+pdkim_headcat(int * col, uschar * str, size_t * size, size_t * ptr,
   const uschar * pad, const uschar * intro, const uschar * payload)
 {
 size_t l;
@@ -1164,8 +1164,8 @@ pdkim_create_header(pdkim_signature *sig, BOOL final)
 uschar * base64_bh;
 uschar * base64_b;
 int col = 0;
-uschar * hdr;       int hdr_size = 0, hdr_len = 0;
-uschar * canon_all; int can_size = 0, can_len = 0;
+uschar * hdr;       size_t hdr_size = 0, hdr_len = 0;
+uschar * canon_all; size_t can_size = 0, can_len = 0;
 
 canon_all = string_cat (NULL, &can_size, &can_len,
 		      pdkim_canons[sig->canon_headers]);
@@ -1266,7 +1266,7 @@ pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures)
 {
 pdkim_signature *sig = ctx->sig;
 uschar * headernames = NULL;             /* Collected signed header names */
-int hs = 0, hl = 0;
+size_t hs = 0, hl = 0;
 
 /* Check if we must still flush a (partial) header. If that is the
    case, the message has no body, and we must compute a body hash
@@ -1291,7 +1291,7 @@ while (sig)
   uschar * sig_hdr;
   blob hhash;
   blob hdata;
-  int hdata_alloc = 0;
+  size_t hdata_alloc = 0;
 
   hdata.data = NULL;
   hdata.len = 0;

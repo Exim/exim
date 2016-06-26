@@ -40,6 +40,26 @@ JH/09 Bug 1804: Avoid writing msglog files when in -bh or -bhc mode.
 JH/10 Support ${sha256:} applied to a string (as well as the previous
       certificate).
 
+LC/01 Prefer the use of size_t for variables representing sizes. Even if most
+      strings in Exim are limited to 2¹⁵, This acts as a suplemental protection
+      against overflows.
+      Especially for 16 bits x86 where INT_MAX is already 2¹⁵ and pointers used
+      in Unix programs are FAR (20 bits wide).
+      In the meantime, this doesn’t impact any cases where negative length could
+      have been used, as an error value.
+
+LC/02 Some values representing maximum path size were hard coded.
+      They are now replaced with the PATH_MAX macro.
+
+LC/03 As everybody knows, malloc() can fails by returning 0. The return values
+      weren’t checked everywhere.
+      The values are checked manually in order handle the situation in way that
+      let the program continue running. Otherwise, replace direct calls to
+      malloc() with store_malloc() from the project standard memory management
+      facilities in order to stop the program.
+      Except if it isn’t possible to call store_malloc() or that some ressources
+      cleanup need to done.
+
 
 Exim version 4.87
 -----------------

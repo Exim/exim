@@ -37,13 +37,13 @@ s = US stringprep_utf8_nfkc_normalize(CCS utf8, -1);
 if (  (rc = idna_to_ascii_8z(CCS s, CSS &s1, IDNA_ALLOW_UNASSIGNED))
    != IDNA_SUCCESS)
   {
-  free(s);
+  store_free(s);
   if (err) *err = US idna_strerror(rc);
   return NULL;
   }
-free(s);
+store_free(s);
 s = string_copy(s1);
-free(s1);
+store_free(s1);
 return s;
 }
 

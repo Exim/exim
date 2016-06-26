@@ -46,8 +46,8 @@ nisplus_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 int i;
-int ssize = 0;
-int offset = 0;
+size_t ssize = 0;
+size_t offset = 0;
 int error_error = FAIL;
 uschar *field_name = NULL;
 nis_result *nrt = NULL;
@@ -141,7 +141,7 @@ for (i = 0; i < eo->en_cols.en_cols_len; i++)
   {
   table_col *tc = ta->ta_cols.ta_cols_val + i;
   entry_col *ec = eo->en_cols.en_cols_val + i;
-  int len = ec->ec_value.ec_value_len;
+  size_t len = ec->ec_value.ec_value_len;
   uschar *value = US ec->ec_value.ec_value_val;
 
   /* The value may be NULL for a zero-length field. Turn this into an
