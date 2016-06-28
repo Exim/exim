@@ -150,8 +150,9 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	      sig->selector,
 	      sig->canon_headers == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
 	      sig->canon_body == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
-	      sig->algo == PDKIM_ALGO_RSA_SHA256 ?  "rsa-sha256" : "rsa-sha1",
-	      sig->sigdata.len * 8
+	      sig->algo == PDKIM_ALGO_RSA_SHA256 ?  "rsa-sha256" :
+                (sig->algo == PDKIM_ALGO_RSA_SHA1 ? "rsa-sha1" : "err"),
+	      (int)sig->sigdata.len > -1 ? sig->sigdata.len * 8 : 0
 	      ),
 
 	sig->identity ? string_sprintf("i=%s ", sig->identity) : US"",
@@ -185,6 +186,16 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	  logmsg = string_append(logmsg, &size, &ptr, 1,
 		       "syntax error in public key record]");
 	  break;
+
+        case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
+          logmsg = string_append(logmsg, &size, &ptr, 1,
+                       "signature tag missing or invalid]");
+          break;
+
+        case PDKIM_VERIFY_INVALID_DKIM_VERSION:
+          logmsg = string_append(logmsg, &size, &ptr, 1,
+                       "unsupported DKIM version]");
+          break;
 
 	default:
 	  logmsg = string_append(logmsg, &size, &ptr, 1,
