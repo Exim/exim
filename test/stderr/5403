@@ -65,8 +65,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=127.0.0.1 address=127.0.0.1
 >>> routed by all router
 >>> Attempting full verification using callout
->>> callout cache: no domain record found for domain.com
->>> callout cache: no address record found for verify@domain.com/<CALLER@myhost.test.ex>
+>>> callout cache: disabled by no_cache
 >>> interface=ip4.ip4.ip4.ip4 port=1224
 >>> Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
 >>>   SMTP<< 220 server ready
@@ -78,9 +77,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP<< 250 OK
 >>>   SMTP>> RCPT TO:<verify@domain.com>
 >>>   SMTP<< 250 OK
->>> wrote callout cache domain record:
->>>   result=1 postmaster=0 random=0
->>> wrote positive callout cache address record
+>>> holding verify callout open for cutthrough delivery
 >>> ----------- end verify ------------
 >>> warn: condition test succeeded in ACL "ar"
 >>> processing "accept"

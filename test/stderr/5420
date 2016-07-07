@@ -115,6 +115,7 @@ considering: :}}
   SMTP<< 250 OK
   SMTP>> RCPT TO:<userx@domain.com>
   SMTP<< 250 Accepted
+holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
@@ -328,6 +329,7 @@ considering: *}{:}}
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
   SMTP<< 250 Accepted
+holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL
@@ -541,6 +543,7 @@ considering: *}{:}}
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
   SMTP<< 250 Accepted
+holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
 processing "accept"
 accept: condition test succeeded in inline ACL

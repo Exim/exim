@@ -104,10 +104,10 @@ EXIM_DBOPEN(TESTSUITE/spool/db/callout)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
 dbfn_write: key=y
-wrote callout cache domain record:
+wrote callout cache domain record for y:
   result=1 postmaster=0 random=0
 dbfn_write: key=x@y
-wrote positive callout cache address record
+wrote positive callout cache address record for x@y
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"
@@ -254,9 +254,9 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP>> RCPT TO:<a@b>
 >>>   SMTP<< 250 OK
 >>>   SMTP>> QUIT
->>> wrote callout cache domain record:
+>>> wrote callout cache domain record for b:
 >>>   result=1 postmaster=0 random=0
->>> wrote positive callout cache address record
+>>> wrote positive callout cache address record for a@b
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in ACL "mail"
 >>> end of ACL "mail": ACCEPT

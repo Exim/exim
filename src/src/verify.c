@@ -155,10 +155,6 @@ do_callout(address_item *addr, host_item *host_list, transport_feedback *tf,
   int callout, int callout_overall, int callout_connect, int options,
   uschar *se_mailfrom, uschar *pm_mailfrom)
 {
-BOOL is_recipient = (options & vopt_is_recipient) != 0;
-BOOL callout_no_cache = (options & vopt_callout_no_cache) != 0;
-BOOL callout_random = (options & vopt_callout_random) != 0;
-
 int yield = OK;
 int old_domain_cache_result = ccache_accept;
 BOOL done = FALSE;
@@ -166,8 +162,8 @@ uschar *address_key;
 uschar *from_address;
 uschar *random_local_part = NULL;
 const uschar *save_deliver_domain = deliver_domain;
-uschar **failure_ptr = is_recipient?
-  &recipient_verify_failure : &sender_verify_failure;
+uschar **failure_ptr = options & vopt_is_recipient
+  ? &recipient_verify_failure : &sender_verify_failure;
 open_db dbblock;
 open_db *dbm_file = NULL;
 dbdata_callout_cache new_domain_record;
@@ -189,12 +185,13 @@ because that may influence the result of the callout. */
 address_key = addr->address;
 from_address = US"";
 
-if (is_recipient)
+if (options & vopt_is_recipient)
   {
   if (options & vopt_callout_recipsender)
     {
     address_key = string_sprintf("%s/<%s>", addr->address, sender_address);
     from_address = sender_address;
+    if (cutthrough.delivery) options |= vopt_callout_no_cache;
     }
   else if (options & vopt_callout_recippmaster)
     {
@@ -217,7 +214,7 @@ else
 /* Open the callout cache database, it it exists, for reading only at this
 stage, unless caching has been disabled. */
 
-if (callout_no_cache)
+if (options & vopt_callout_no_cache)
   {
   HDEBUG(D_verify) debug_printf("callout cache: disabled by no_cache\n");
   }
@@ -273,26 +270,26 @@ if (dbm_file != NULL)
     the data in the new record. If a random check is required but hasn't been
     done, skip the remaining cache processing. */
 
-    if (callout_random) switch(cache_record->random_result)
+    if (options & vopt_callout_random) switch(cache_record->random_result)
       {
       case ccache_accept:
-      HDEBUG(D_verify)
-        debug_printf("callout cache: domain accepts random addresses\n");
-      goto END_CALLOUT;     /* Default yield is OK */
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: domain accepts random addresses\n");
+	goto END_CALLOUT;     /* Default yield is OK */
 
       case ccache_reject:
-      HDEBUG(D_verify)
-        debug_printf("callout cache: domain rejects random addresses\n");
-      callout_random = FALSE;
-      new_domain_record.random_result = ccache_reject;
-      new_domain_record.random_stamp = cache_record->random_stamp;
-      break;
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: domain rejects random addresses\n");
+	options &= ~vopt_callout_random;
+	new_domain_record.random_result = ccache_reject;
+	new_domain_record.random_stamp = cache_record->random_stamp;
+	break;
 
       default:
-      HDEBUG(D_verify)
-        debug_printf("callout cache: need to check random address handling "
-          "(not cached or cache expired)\n");
-      goto END_CACHE;
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: need to check random address handling "
+	    "(not cached or cache expired)\n");
+	goto END_CACHE;
       }
 
     /* If a postmaster check is requested, but there was a previous failure,
@@ -389,7 +386,7 @@ else
   with a random local part, ensure that such a local part is available. If not,
   log the fact, but carry on without randomming. */
 
-  if (callout_random && callout_random_local_part != NULL)
+  if (options & vopt_callout_random && callout_random_local_part != NULL)
     if (!(random_local_part = expand_string(callout_random_local_part)))
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
         "callout_random_local_part: %s", expand_string_message);
@@ -1245,10 +1242,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
             big_buffer, host->name, host->address,
             string_printing(responsebuffer));
 
-        addr->user_message = is_recipient?
-          string_sprintf("Callout verification failed:\n%s", responsebuffer)
-          :
-          string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",
+        addr->user_message = options & vopt_is_recipient
+	  ? string_sprintf("Callout verification failed:\n%s", responsebuffer)
+          : string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",
             host->address, big_buffer, responsebuffer);
 
         /* Hard rejection ends the process */
@@ -1277,6 +1273,8 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
        && !lmtp
        )
       {
+      HDEBUG(D_acl|D_v) debug_printf("holding verify callout open for cutthrough delivery\n");
+
       cutthrough.fd = outblock.sock;	/* We assume no buffer in use in the outblock */
       cutthrough.nrcpt = 1;
       cutthrough.interface = interface;
@@ -1322,7 +1320,8 @@ there was an error before or with MAIL FROM:, and errno was not zero,
 implying some kind of I/O error. We don't want to write the cache in that case.
 Otherwise the value is ccache_accept, ccache_reject, or ccache_reject_mfnull. */
 
-if (!callout_no_cache && new_domain_record.result != ccache_unknown)
+if (  !(options & vopt_callout_no_cache)
+   && new_domain_record.result != ccache_unknown)
   {
   if ((dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE))
        == NULL)
@@ -1333,8 +1332,9 @@ if (!callout_no_cache && new_domain_record.result != ccache_unknown)
     {
     (void)dbfn_write(dbm_file, addr->domain, &new_domain_record,
       (int)sizeof(dbdata_callout_cache));
-    HDEBUG(D_verify) debug_printf("wrote callout cache domain record:\n"
+    HDEBUG(D_verify) debug_printf("wrote callout cache domain record for %s:\n"
       "  result=%d postmaster=%d random=%d\n",
+      addr->domain,
       new_domain_record.result,
       new_domain_record.postmaster_result,
       new_domain_record.random_result);
@@ -1346,7 +1346,8 @@ is disabled. */
 
 if (done)
   {
-  if (!callout_no_cache && new_address_record.result != ccache_unknown)
+  if (  !(options & vopt_callout_no_cache)
+     && new_address_record.result != ccache_unknown)
     {
     if (dbm_file == NULL)
       dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE);
@@ -1358,8 +1359,9 @@ if (done)
       {
       (void)dbfn_write(dbm_file, address_key, &new_address_record,
         (int)sizeof(dbdata_callout_cache_address));
-      HDEBUG(D_verify) debug_printf("wrote %s callout cache address record\n",
-        (new_address_record.result == ccache_accept)? "positive" : "negative");
+      HDEBUG(D_verify) debug_printf("wrote %s callout cache address record for %s\n",
+        new_address_record.result == ccache_accept ? "positive" : "negative",
+	address_key);
       }
     }
   }    /* done */
@@ -1371,7 +1373,7 @@ it alone if supplying details. Otherwise, give a generic response. */
 else   /* !done */
   {
   uschar *dullmsg = string_sprintf("Could not complete %s verify callout",
-    is_recipient? "recipient" : "sender");
+    options & vopt_is_recipient ? "recipient" : "sender");
   yield = DEFER;
 
   if (host_list->next != NULL || addr->message == NULL) addr->message = dullmsg;
@@ -1381,12 +1383,11 @@ else   /* !done */
       "The mail server(s) for the domain may be temporarily unreachable, or\n"
       "they may be permanently unreachable from this server. In the latter case,\n%s",
       dullmsg, addr->address,
-      is_recipient?
-        "the address will never be accepted."
-        :
-        "you need to change the address or create an MX record for its domain\n"
-        "if it is supposed to be generally accessible from the Internet.\n"
-        "Talk to your mail administrator for details.");
+      options & vopt_is_recipient
+	?  "the address will never be accepted."
+        : "you need to change the address or create an MX record for its domain\n"
+	  "if it is supposed to be generally accessible from the Internet.\n"
+	  "Talk to your mail administrator for details.");
 
   /* Force a specific error code */
 
@@ -1808,21 +1809,20 @@ verify_address(address_item *vaddr, FILE *f, int options, int callout,
 {
 BOOL allok = TRUE;
 BOOL full_info = (f == NULL)? FALSE : (debug_selector != 0);
-BOOL is_recipient = (options & vopt_is_recipient) != 0;
 BOOL expn         = (options & vopt_expn) != 0;
 BOOL success_on_redirect = (options & vopt_success_on_redirect) != 0;
 int i;
 int yield = OK;
 int verify_type = expn? v_expn :
      address_test_mode? v_none :
-          is_recipient? v_recipient : v_sender;
+          options & vopt_is_recipient? v_recipient : v_sender;
 address_item *addr_list;
 address_item *addr_new = NULL;
 address_item *addr_remote = NULL;
 address_item *addr_local = NULL;
 address_item *addr_succeed = NULL;
-uschar **failure_ptr = is_recipient?
-  &recipient_verify_failure : &sender_verify_failure;
+uschar **failure_ptr = options & vopt_is_recipient
+  ? &recipient_verify_failure : &sender_verify_failure;
 uschar *ko_prefix, *cr;
 uschar *address = vaddr->address;
 uschar *save_sender;
@@ -1855,7 +1855,7 @@ if (parse_find_at(address) == NULL)
     *failure_ptr = US"qualify";
     return FAIL;
     }
-  address = rewrite_address_qualify(address, is_recipient);
+  address = rewrite_address_qualify(address, options & vopt_is_recipient);
   }
 
 DEBUG(D_verify)
@@ -1870,7 +1870,7 @@ may have been set by domains and local part tests during an ACL. */
 if (global_rewrite_rules != NULL)
   {
   uschar *old = address;
-  address = rewrite_address(address, is_recipient, FALSE,
+  address = rewrite_address(address, options & vopt_is_recipient, FALSE,
     global_rewrite_rules, rewrite_existflags);
   if (address != old)
     {
@@ -1905,7 +1905,7 @@ save_sender = sender_address;
 
 /* Observability variable for router/transport use */
 
-verify_mode = is_recipient ? US"R" : US"S";
+verify_mode = options & vopt_is_recipient ? US"R" : US"S";
 
 /* Update the address structure with the possibly qualified and rewritten
 address. Set it up as the starting address on the chain of new addresses. */
@@ -1982,7 +1982,7 @@ while (addr_new)
   if (routed) *routed = FALSE;
   if ((rc = deliver_split_address(addr)) == OK)
     {
-    if (!is_recipient) sender_address = null_sender;
+    if (!(options & vopt_is_recipient)) sender_address = null_sender;
     rc = route_address(addr, &addr_local, &addr_remote, &addr_new,
       &addr_succeed, verify_type);
     sender_address = save_sender;     /* Put back the real sender */

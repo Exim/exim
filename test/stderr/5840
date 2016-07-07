@@ -51,9 +51,9 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP>> RCPT TO:<CALLER@dane256ee.test.ex>
 >>>   SMTP<< 250 Accepted
 >>>   SMTP>> QUIT
->>> wrote callout cache domain record:
+>>> wrote callout cache domain record for dane256ee.test.ex:
 >>>   result=1 postmaster=0 random=0
->>> wrote positive callout cache address record
+>>> wrote positive callout cache address record for CALLER@dane256ee.test.ex
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT

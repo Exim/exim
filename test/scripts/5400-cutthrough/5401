@@ -51,8 +51,6 @@ QUIT
 ****
 #
 #
-# lose the cached callout fail record
-sudo rm DIR/spool/db/callout
 #
 # cutthrough for 2 recipients in one domain
 # first one denied

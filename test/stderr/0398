@@ -143,10 +143,10 @@ EXIM_DBOPEN(TESTSUITE/spool/db/callout)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
 dbfn_write: key=remote
-wrote callout cache domain record:
+wrote callout cache domain record for remote:
   result=1 postmaster=0 random=0
 dbfn_write: key=qq@remote
-wrote negative callout cache address record
+wrote negative callout cache address record for qq@remote
 ----------- end verify ------------
 l_message: $acl_verify_message
 warn: condition test succeeded in ACL "rcpt"
