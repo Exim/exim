@@ -1,30 +1,42 @@
-# cutthrough_delivery with MAIL SIZE=
+# cutthrough_delivery and -bhc
 need_ipv4
 munge loopback
+no_msglog_check
 #
-server PORT_S
-220 ESMTP
-EHLO
-250-OK
-250 SIZE 65536
-MAIL FROM:<fred@myhost.test.ex> SIZE=1123
-250 Sender OK
-RCPT TO:
-250 Recipient OK
-DATA
-354 Send data
-.
-250 OK
-QUIT
-250 OK
+# Despite config for cutthrough should not make onward conn
+server -t -2 PORT_S
 ****
-exim -bs
+exim -bhc 1.2.3.4
 EHLO myhost.test.ex
-MAIL FROM:<fred@myhost.test.ex> SIZE=99
-RCPT TO:<userx@domain.com>
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<plain@domain.com>
 DATA
 
 .
 QUIT
 ****
+#
+# Onward conn made for r-verify but cleared before DATA
+server PORT_S
+220 server ready
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+QUIT
+220 OK
+*eof
+****
+exim -bhc 1.2.3.4
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<verify@domain.com>
+DATA
+
+.
+QUIT
+****
+#
 # End
