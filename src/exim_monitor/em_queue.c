@@ -659,19 +659,12 @@ domains are lower cased. */
 if (recipients_list)
   for (i = 0; i < recipients_count; i++)
     {
-    uschar *pp;
-    uschar *r = recipients_list[i].address;
-    tree_node *node = tree_search(tree_nonrecipients, r);
+    uschar * pp;
+    uschar * r = recipients_list[i].address;
+    tree_node * node;
 
-    if (!node)
-      {
-      uschar temp[256];
-      uschar *rr = temp;
-      Ustrncpy(temp, r, sizeof(temp));
-      while (*rr && *rr != '@') rr++;
-      while (*rr) { *rr = tolower(*rr); rr++; }
-      node = tree_search(tree_nonrecipients, temp);
-      }
+    if (!(node = tree_search(tree_nonrecipients, r)))
+      node = tree_search(tree_nonrecipients, string_copylc(r));
 
     if ((pp = strstric(r+1, qualify_domain, FALSE)) && *(--pp) == '@')
        *pp = 0;
