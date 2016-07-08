@@ -1657,10 +1657,10 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   set flag. */
 
   if (r->dsn_lasthop && !(addr->dsn_flags & rf_dsnlasthop))
-  {
+    {
     addr->dsn_flags |= rf_dsnlasthop;
     HDEBUG(D_route) debug_printf("DSN: last hop for %s\n", addr->address);
-  }
+    }
 
   HDEBUG(D_route) debug_printf("calling %s router\n", r->name);
 

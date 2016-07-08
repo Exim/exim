@@ -1266,7 +1266,8 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
        && rcpt_count == 1
        && done
        && yield == OK
-       && (options & (vopt_callout_recipsender|vopt_callout_recippmaster)) == vopt_callout_recipsender
+       &&    (options & (vopt_callout_recipsender|vopt_callout_recippmaster|vopt_success_on_redirect))
+	   == vopt_callout_recipsender
        && !random_local_part
        && !pm_mailfrom
        && cutthrough.fd < 0
@@ -2266,6 +2267,12 @@ while (addr_new)
       of $address_data to be that of the child */
 
       vaddr->prop.address_data = addr->prop.address_data;
+
+      /* If stopped because more than one new address, cannot cutthrough */
+
+      if (addr_new && addr_new->next)
+	cancel_cutthrough_connection("multiple addresses from routing");
+
       yield = OK;
       goto out;
       }

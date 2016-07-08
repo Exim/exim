@@ -40,6 +40,15 @@ JH/09 Bug 1804: Avoid writing msglog files when in -bh or -bhc mode.
 JH/10 Support ${sha256:} applied to a string (as well as the previous
       certificate).
 
+JH/11 Cutthrough: avoid using the callout hints db on a verify callout when
+      a cutthrough deliver is pending, as we always want to make a connection.
+      This also avoids re-routing the message when later placing the cutthrough
+      connection after a verify cache hit.
+      Do not update it with the verify result either.
+
+JH/12 Cutthrough: disable when verify option success_on_redirect is used, and
+      when routing results in more than one destination address.
+
 
 Exim version 4.87
 -----------------
