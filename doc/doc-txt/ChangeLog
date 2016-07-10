@@ -49,6 +49,12 @@ JH/11 Cutthrough: avoid using the callout hints db on a verify callout when
 JH/12 Cutthrough: disable when verify option success_on_redirect is used, and
       when routing results in more than one destination address.
 
+JH/13 Cutthrough: expand transport dkim_domain option when testing for dkim
+      signing (which inhibits the cutthrough capability).  Previously only
+      the presence of an option was tested; now an expansion evaluating as
+      empty is permissible (obviously it should depend only on data available
+      when the cutthrough connection is made).
+
 
 Exim version 4.87
 -----------------
