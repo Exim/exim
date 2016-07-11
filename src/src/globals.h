@@ -268,6 +268,8 @@ extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length *
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
 extern uschar *chunking_advertise_hosts;    /* RFC 3030 CHUNKING */
+extern unsigned chunking_datasize;
+extern chunking_state_t chunking_state;
 extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
 extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */
 extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */

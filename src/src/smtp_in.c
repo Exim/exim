@@ -73,6 +73,7 @@ enum {
   ETRN_CMD,                     /* This by analogy with TURN from the RFC */
   STARTTLS_CMD,                 /* Required by the STARTTLS RFC */
   TLS_AUTH_CMD,			/* auto-command at start of SSL */
+  BDAT_CMD,			/* Implied by RFC3030 "After all MAIL and..." */
 
   /* This is a dummy to identify the non-sync commands when pipelining */
 
@@ -182,6 +183,7 @@ static smtp_cmd_list cmd_list[] = {
   { "mail from:", sizeof("mail from:")-1, MAIL_CMD, TRUE,  TRUE  },
   { "rcpt to:",   sizeof("rcpt to:")-1,   RCPT_CMD, TRUE,  TRUE  },
   { "data",       sizeof("data")-1,       DATA_CMD, FALSE, TRUE  },
+  { "bdat",       sizeof("bdat")-1,       BDAT_CMD, TRUE,  TRUE  },
   { "quit",       sizeof("quit")-1,       QUIT_CMD, FALSE, TRUE  },
   { "noop",       sizeof("noop")-1,       NOOP_CMD, TRUE,  FALSE },
   { "etrn",       sizeof("etrn")-1,       ETRN_CMD, TRUE,  FALSE },
@@ -205,9 +207,9 @@ It must be kept in step with the SCH_xxx enumerations. */
 
 static uschar *smtp_names[] =
   {
-  US"NONE", US"AUTH", US"DATA", US"EHLO", US"ETRN", US"EXPN", US"HELO",
-  US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET", US"STARTTLS",
-  US"VRFY" };
+  US"NONE", US"AUTH", US"DATA", US"BDAT", US"EHLO", US"ETRN", US"EXPN",
+  US"HELO", US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET",
+  US"STARTTLS", US"VRFY" };
 
 static uschar *protocols_local[] = {
   US"local-smtp",        /* HELO */
@@ -1525,6 +1527,7 @@ authenticated_sender = NULL;
 bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
+chunking_state = CHUNKING_NOT_OFFERED;
 #ifndef DISABLE_DKIM
 dkim_signers = NULL;
 dkim_disable_verify = FALSE;
@@ -3766,16 +3769,19 @@ while (done <= 0)
 	if (!first) s = string_catn(s, &size, &ptr, US"\r\n", 2);
 	}
 
-      /* Advertise TLS (Transport Level Security) aka SSL (Secure Socket Layer)
-      if it has been included in the binary, and the host matches
-      tls_advertise_hosts. We must *not* advertise if we are already in a
-      secure connection. */
+      /* RFC 3030 CHUNKING */
 
       if (verify_check_host(&chunking_advertise_hosts) != FAIL)
         {
         s = string_catn(s, &size, &ptr, smtp_code, 3);
         s = string_catn(s, &size, &ptr, US"-CHUNKING\r\n", 11);
+	chunking_state = CHUNKING_OFFERED;
         }
+
+      /* Advertise TLS (Transport Level Security) aka SSL (Secure Socket Layer)
+      if it has been included in the binary, and the host matches
+      tls_advertise_hosts. We must *not* advertise if we are already in a
+      secure connection. */
 
 #ifdef SUPPORT_TLS
       if (tls_in.active < 0 &&
@@ -4524,8 +4530,38 @@ while (done <= 0)
     (often indicating some kind of system error), it is helpful to include it
     with the DATA rejection (an idea suggested by Tony Finch). */
 
+    case BDAT_CMD:
+    HAD(SCH_BDAT);
+      {
+      int n;
+
+      if (chunking_state != CHUNKING_OFFERED)
+	{
+	done = synprot_error(L_smtp_protocol_error, 503, NULL,
+	  US"BDAT command used when CHUNKING not advertised");
+	break;
+	}
+
+      /* grab size, endmarker */
+
+      if (sscanf(CS smtp_cmd_data, "%u %n", &chunking_datasize, &n) < 1)
+	{
+	done = synprot_error(L_smtp_protocol_error, 503, NULL,
+	  US"missing size for BDAT command");
+	break;
+	}
+      chunking_state = strcmpic(smtp_cmd_data+n, US"LAST") == 0
+	? CHUNKING_LAST : CHUNKING_ACTIVE;
+
+      DEBUG(D_any)
+        debug_printf("chunking state %d\n", (int)chunking_state);
+      goto DATA_BDAT;
+      }
+
     case DATA_CMD:
     HAD(SCH_DATA);
+
+    DATA_BDAT:		/* Common code for DATA and BDAT */
     if (!discarded && recipients_count <= 0)
       {
       if (rcpt_smtp_response_same && rcpt_smtp_response != NULL)
@@ -4540,10 +4576,13 @@ while (done <= 0)
         smtp_respond(code, 3, FALSE, rcpt_smtp_response);
         }
       if (pipelining_advertised && last_was_rcpt)
-        smtp_printf("503 Valid RCPT command must precede DATA\r\n");
+        smtp_printf("503 Valid RCPT command must precede %s\r\n",
+	  smtp_names[smtp_connection_had[smtp_ch_index-1]]);
       else
         done = synprot_error(L_smtp_protocol_error, 503, NULL,
-          US"valid RCPT command must precede DATA");
+	  smtp_connection_had[smtp_ch_index-1] == SCH_DATA
+	  ? US"valid RCPT command must precede DATA"
+	  : US"valid RCPT command must precede BDAT");
       break;
       }
 
@@ -4555,11 +4594,21 @@ while (done <= 0)
       break;
       }
 
+    /* No go-ahead output for BDAT */
+
+    if (smtp_connection_had[smtp_ch_index-1] == SCH_BDAT)
+      {
+      rc = OK;
+      break;
+      }
+
     /* If there is an ACL, re-check the synchronization afterwards, since the
     ACL may have delayed.  To handle cutthrough delivery enforce a dummy call
     to get the DATA command sent. */
 
-    if (acl_smtp_predata == NULL && cutthrough.fd < 0) rc = OK; else
+    if (acl_smtp_predata == NULL && cutthrough.fd < 0)
+      rc = OK;
+    else
       {
       uschar * acl= acl_smtp_predata ? acl_smtp_predata : US"accept";
       enable_dollar_recipients = TRUE;
@@ -4702,7 +4751,7 @@ while (done <= 0)
     if (receive_smtp_buffered())
       {
       DEBUG(D_any)
-        debug_printf("Non-empty input buffer after STARTTLS; naive attack?");
+        debug_printf("Non-empty input buffer after STARTTLS; naive attack?\n");
       if (tls_in.active < 0)
         smtp_inend = smtp_inptr = smtp_inbuffer;
       /* and if TLS is already active, tls_server_start() should fail */

@@ -770,6 +770,9 @@ Arguments:
 
 Returns:    One of the END_xxx values indicating why it stopped reading
 */
+/*XXX CHUNKING: maybe a variant routing specialised for BDAT, assuming
+string RFC compliance ie. CRLF always?  We still have to strip the CR
+but we are not dealing with variant lunacy or looking for the end-dot */
 
 static int
 read_message_data_smtp(FILE *fout)
@@ -1613,6 +1616,7 @@ next->text. */
 
 for (;;)
   {
+/*XXX CHUNKING: account for BDAT size & last, and do more chunks as needed */
   int ch = (receive_getc)();
 
   /* If we hit EOF on a SMTP connection, it's an error, since incoming
@@ -2831,6 +2835,7 @@ if (filter_test != FTEST_NONE)
   return message_ended == END_DOT;
   }
 
+/*XXX CHUNKING: need to cancel cutthrough under BDAT, for now */
 /* Cutthrough delivery:
 We have to create the Received header now rather than at the end of reception,
 so the timestamp behaviour is a change to the normal case.
@@ -2928,6 +2933,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   {
   if (smtp_input)
     {
+/*XXX CHUNKING: main data read, for message body */
     message_ended = read_message_data_smtp(data_file);
     receive_linecount++;                /* The terminating "." line */
     }

@@ -787,7 +787,8 @@ most recent SMTP commands. Must be kept in step with the list of names in
 smtp_in.c that is used for creating the smtp_no_mail logging action. SCH_NONE
 is "empty". */
 
-enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
+enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
+       SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
        SCH_HELP, SCH_MAIL, SCH_NOOP, SCH_QUIT, SCH_RCPT, SCH_RSET, SCH_STARTTLS,
        SCH_VRFY };
 

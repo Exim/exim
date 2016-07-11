@@ -492,7 +492,11 @@ int     check_log_space        = 0;
 BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 0;
 int     check_spool_space      = 0;
+
 uschar *chunking_advertise_hosts = US"*";
+unsigned chunking_datasize     = 0;
+chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
+
 uschar *client_authenticator   = NULL;
 uschar *client_authenticated_id = NULL;
 uschar *client_authenticated_sender = NULL;
