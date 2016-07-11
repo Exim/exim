@@ -59,6 +59,7 @@ LOG: smtp_connection MAIN
 >>> x.y.z in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "accept"
 LOG: this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.

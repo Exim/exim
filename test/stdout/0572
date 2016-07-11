@@ -83,6 +83,7 @@ spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 5 "TESTSUITE/test-config"
 primary_hostname = myhost.test.ex
@@ -121,6 +122,7 @@ spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 5 "TESTSUITE/test-config"
 primary_hostname = myhost.test.ex

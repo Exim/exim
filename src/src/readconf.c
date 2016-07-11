@@ -212,6 +212,7 @@ static optionlist optionlist_config[] = {
   { "check_rfc2047_length",     opt_bool,        &check_rfc2047_length },
   { "check_spool_inodes",       opt_int,         &check_spool_inodes },
   { "check_spool_space",        opt_Kint,        &check_spool_space },
+  { "chunking_advertise_hosts", opt_stringptr,	 &chunking_advertise_hosts },
   { "daemon_smtp_port",         opt_stringptr|opt_hidden, &daemon_smtp_port },
   { "daemon_smtp_ports",        opt_stringptr,   &daemon_smtp_port },
   { "daemon_startup_retries",   opt_int,         &daemon_startup_retries },

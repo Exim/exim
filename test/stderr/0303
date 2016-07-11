@@ -26,6 +26,7 @@
 >>>   V4NET.0.0.1 OK
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -69,6 +70,7 @@ sender_rcvhost = [V4NET.2.3.4]
 set_process_info: pppp handling incoming connection from ([V4NET.2.3.4]) [V4NET.2.3.4]
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
+host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello [V4NET.2.3.4] [V4NET.2.3.4]
 250-SIZE 52428800
 250-8BITMIME
@@ -142,6 +144,7 @@ sender_rcvhost = host.name.tld ([V4NET.2.3.4])
 set_process_info: pppp handling incoming connection from host.name.tld [V4NET.2.3.4]
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
+host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello host.name.tld [V4NET.2.3.4]
 250-SIZE 52428800
 250-8BITMIME

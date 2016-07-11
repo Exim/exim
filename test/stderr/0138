@@ -9,6 +9,7 @@
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
@@ -56,6 +57,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> exim.test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :

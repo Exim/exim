@@ -1520,14 +1520,6 @@ sender_verified_list = NULL;        /* No senders verified */
 memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 
-#ifndef DISABLE_PRDR
-prdr_requested = FALSE;
-#endif
-
-/* Reset the DSN flags */
-dsn_ret = 0;
-dsn_envid = NULL;
-
 authenticated_sender = NULL;
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 bmi_run = 0;
@@ -1537,6 +1529,11 @@ bmi_verdicts = NULL;
 dkim_signers = NULL;
 dkim_disable_verify = FALSE;
 dkim_collect_input = FALSE;
+#endif
+dsn_ret = 0;
+dsn_envid = NULL;
+#ifndef DISABLE_PRDR
+prdr_requested = FALSE;
 #endif
 #ifdef EXPERIMENTAL_SPF
 spf_header_comment = NULL;
@@ -3773,6 +3770,12 @@ while (done <= 0)
       if it has been included in the binary, and the host matches
       tls_advertise_hosts. We must *not* advertise if we are already in a
       secure connection. */
+
+      if (verify_check_host(&chunking_advertise_hosts) != FAIL)
+        {
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-CHUNKING\r\n", 11);
+        }
 
 #ifdef SUPPORT_TLS
       if (tls_in.active < 0 &&
