@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 Exim configuration error in line 18 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 12 of TESTSUITE/test-config:
   missing quote at end of string value for hold_domains

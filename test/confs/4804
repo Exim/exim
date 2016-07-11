@@ -3,22 +3,16 @@
 SERVER=
 OPT=
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
-primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
+.include DIR/aux-var/std_conf_prefix
+
 timezone = UTC
+primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
 
 log_selector = OPT
-tls_advertise_hosts = :
 
 # ------ ACL ------
 

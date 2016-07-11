@@ -1,3 +1,5 @@
+
+******** SERVER ********
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "ehlo abcd" H=[127.0.0.1] next input="mail fr<suppressed>
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(abcd) [127.0.0.1] next input="the mes<suppressed>
 1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="rcpt to<suppressed>

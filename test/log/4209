@@ -1,17 +1,19 @@
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= 他们为什么不说中文@test1.com U=CALLER P=local S=sss for user.他们为什么不说中文@test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= 他们为什么不说中文@test1.com H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtp S=sss id=E10HmaX-0005vi-00@the.local.host.name for user.他们为什么不说中文@test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 => user.他们为什么不说中文@test.ex F=<他们为什么不说中文@test1.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= 他们为什么不说中文@test1.com U=CALLER P=local S=sss for user.他们为什么不说中文@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => xn--user.-si1hohvdvf05c4gvj200y0o6f@test.ex <user.他们为什么不说中文@test.ex> F=<xn--ihqwcrb4cv8a8dqg056pqjye@test1.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= 他们为什么不说中文@test1.com H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtp S=sss id=E10HmaX-0005vi-00@the.local.host.name for user.他们为什么不说中文@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqff
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <user.他们为什么不说中文@test.ex> R=localuser
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qqff
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= 他们为什么不说中文@test1.com U=CALLER P=local S=sss for user.他们为什么不说中文@test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= xn--ihqwcrb4cv8a8dqg056pqjye@test1.com H=localhost (the.local.host.name) [127.0.0.1] P=esmtp S=sss id=E10HmaZ-0005vi-00@the.local.host.name for xn--user.-si1hohvdvf05c4gvj200y0o6f@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => xn--user.-si1hohvdvf05c4gvj200y0o6f@test.ex <user.他们为什么不说中文@test.ex> F=<xn--ihqwcrb4cv8a8dqg056pqjye@test1.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqff
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <xn--user.-si1hohvdvf05c4gvj200y0o6f@test.ex> R=localuser
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

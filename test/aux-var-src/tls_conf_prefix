@@ -1,0 +1,13 @@
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME

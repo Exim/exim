@@ -222,7 +222,7 @@ considering:
      result: Received: from CALLER (helo=myhost.test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaX-0005vi-00
 	for userx@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
@@ -230,9 +230,9 @@ considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
-  SMTP<< 250 OK id=10HmaX-0005vi-00
+  SMTP<< 250 OK id=10HmaY-0005vi-00
 LOG: MAIN
-  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no C="250 OK id=10HmaX-0005vi-00"
+  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no C="250 OK id=10HmaY-0005vi-00"
   SMTP>> QUIT
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
@@ -436,7 +436,7 @@ considering:
      result: Received: from CALLER (helo=myhost.test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbA-0005vi-00
+	id 10HmaZ-0005vi-00
 	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
@@ -444,9 +444,9 @@ considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
-  SMTP<< 250 OK id=10HmaZ-0005vi-00
+  SMTP<< 250 OK id=10HmbA-0005vi-00
 LOG: MAIN
-  >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
+  >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
   SMTP>> QUIT
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
@@ -650,7 +650,7 @@ considering:
      result: Received: from CALLER (helo=myhost.test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbC-0005vi-00
+	id 10HmbB-0005vi-00
 	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
@@ -658,9 +658,9 @@ considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
-  SMTP<< 250 OK id=10HmbB-0005vi-00
+  SMTP<< 250 OK id=10HmbC-0005vi-00
 LOG: MAIN
-  >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbB-0005vi-00"
+  >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
   SMTP>> QUIT
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN

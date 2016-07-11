@@ -1,3 +1,13 @@
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+
+******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
@@ -28,11 +38,3 @@
 1999-03-02 09:44:33 sha256 fingerprint 7E194665AE12FD9AF8E604427D512E846E75EC96032BF78BAD707426F01CFF17
 1999-03-02 09:44:33 der_b64 MIICiDCCAfGgAwIBAgICAMkwDQYJKoZIhvcNAQELBQAwMzEUMBIGA1UEChMLZXhhbXBsZS5jb20xGzAZBgNVBAMTEmNsaWNhIFNpZ25pbmcgQ2VydDAeFw0xMjExMDExMjM0MzhaFw0zODAxMDExMjM0MzhaMB4xHDAaBgNVBAMTE3NlcnZlcjIuZXhhbXBsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALoxxS9eRRSkEJF5CmlLToLY3886wsCOc+vuBo+2V69Q7aCC3Wa13UTZ7SVPhliw29gl48Ua7Go5E6E4+6n7SNL+VfuMtNg2zs4BIhXTfiPZ9U2YF77+Y64MFPBxK98F/RB/wjqAiWf5aigaQCSGX7Bf1bb1s3UwCi0M/wXHYj7TAgMBAAGjgb8wgbwwDgYDVR0PAQH/BAQDAgTwMCAGA1UdJQEB/wQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAyBgNVHR8EKzApMCegJaAjhiFodHRwOi8vY3JsLmV4YW1wbGUuY29tL2xhdGVzdC5jcmwwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb3NjcC9leGFtcGxlLmNvbS8wHgYDVR0RBBcwFYITc2VydmVyMi5leGFtcGxlLmNvbTANBgkqhkiG9w0BAQsFAAOBgQCZCepTW/JRRZlxxEIcQVlQLpdcxuJnYvNbZwzn7Os0K7og1S7jl4PDncao6APk6f4WAfFjb4ZZc1NytSHPLuodWToY1bUzIBMKwk9Jof2yw2mr/3ElyzRDlVmXri+6b0X5WmfMeWI7npeb6Pl6n18tTYKkGGcFwsFsC+CeuLOzNw==
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLSv1:AES256-SHA:256 CV=yes DN="/CN=server2.example.com" S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qf

@@ -72,14 +72,20 @@ size_addition = 1024
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
 OPT =
+# 5 "TESTSUITE/test-config"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/tls_conf_prefix"
 exim_path = TESTSUITE/eximdir/exim
 keep_environment =
-hide host_lookup_order = bydns
-primary_hostname = myhost.test.ex
+host_lookup_order = bydns
 spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 5 "TESTSUITE/test-config"
+primary_hostname = myhost.test.ex
 log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept
@@ -104,14 +110,20 @@ begin transports
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
 OPT =
+# 5 "TESTSUITE/test-config"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/tls_conf_prefix"
 exim_path = TESTSUITE/eximdir/exim
 keep_environment =
-hide host_lookup_order = bydns
-primary_hostname = myhost.test.ex
+host_lookup_order = bydns
 spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 5 "TESTSUITE/test-config"
+primary_hostname = myhost.test.ex
 log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept

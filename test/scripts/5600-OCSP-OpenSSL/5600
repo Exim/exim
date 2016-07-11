@@ -2,8 +2,7 @@
 #
 #
 #
-exim -z '1: Server sends good staple on request'
-****
+# '1: Server sends good staple on request'
 #
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
@@ -32,8 +31,7 @@ killdaemon
 #
 #
 #
-exim -z '2: Server does not staple an outdated response'
-****
+# '2: Server does not staple an outdated response'
 #
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
@@ -58,8 +56,7 @@ killdaemon
 #
 #
 #
-exim -z '3: Server does not staple a response for a revoked cert'
-****
+# '3: Server does not staple a response for a revoked cert'
 #
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
@@ -84,8 +81,7 @@ killdaemon
 #
 #
 #
-exim -z '4: Connection functions when server is prepared to staple but client does not request it'
-****
+# '4: Connection functions when server is prepared to staple but client does not request it'
 #
 exim -bd -oX PORT_D -DSERVER=server \
  -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp

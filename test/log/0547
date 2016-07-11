@@ -1,7 +1,9 @@
+1999-03-02 09:44:33 U=CALLER rejected EXPN x@y
+1999-03-02 09:44:33 no MAIL in SMTP connection from CALLER D=0s C=EXPN,QUIT
+
+******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 no MAIL in SMTP connection from [127.0.0.1] D=0s
 1999-03-02 09:44:33 no MAIL in SMTP connection from [127.0.0.1] D=0s C=QUIT
 1999-03-02 09:44:33 H=(x.y.z) [127.0.0.1] rejected VRFY a@b.c
 1999-03-02 09:44:33 no MAIL in SMTP connection from (x.y.z) [127.0.0.1] D=0s C=EHLO,VRFY,QUIT
-1999-03-02 09:44:33 U=CALLER rejected EXPN x@y
-1999-03-02 09:44:33 no MAIL in SMTP connection from CALLER D=0s C=EXPN,QUIT

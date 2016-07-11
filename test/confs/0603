@@ -7,17 +7,10 @@ untrusted_set_sender = *
 
 SERVER =
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
-#primary_hostname = myhost.test.ex
+.include DIR/aux-var/std_conf_prefix
+
 rfc1413_query_timeout = 0s
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/SERVER%slog
 log_selector = +sender_on_delivery
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 
