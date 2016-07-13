@@ -291,6 +291,13 @@ static int     smtp_had_eof;
 static int     smtp_had_error;
 
 
+/* forward declarations */
+int bdat_ungetc(int ch);
+static int smtp_read_command(BOOL check_sync);
+static int synprot_error(int type, int code, uschar *data, uschar *errmess);
+static void smtp_quit_handler(uschar **, uschar **);
+static void smtp_rset_handler(void);
+
 /*************************************************
 *          SMTP version of getc()                *
 *************************************************/
@@ -339,6 +346,118 @@ return *smtp_inptr++;
 
 
 
+/* Get a byte from the smtp input, in CHUNKING mode.  Handle ack of the
+previous BDAT chunk and getting new ones when we run out.  Uses the
+underlying smtp_getc or tls_getc both for that and for getting the
+(buffered) data byte.  EOD signals (an expected) no further data.
+ERR signals a protocol error, and EOF a closed input stream.
+
+Called from read_bdat_smtp() in receive.c for the message body, but also
+by the headers read loop in receive_msg(); manipulates chunking_state
+to handle the BDAT command/response.
+Placed here due to the correlation with the above smtp_getc(), which it wraps,
+and also by the need to do smtp command/response handling.
+
+Arguments:  none
+Returns:    the next character or ERR, EOD or EOF
+*/
+
+int
+bdat_getc(void)
+{
+uschar * user_msg = NULL;
+uschar * log_msg;
+
+for(;;)
+  {
+  if (chunking_data_left-- > 0)
+    return lwr_receive_getc();
+
+  receive_getc = lwr_receive_getc;
+  receive_ungetc = lwr_receive_ungetc;
+
+  /* If not the last, ack the received chunk.  The last response is delayed
+  until after the data ACL decides on it */
+  /*XXX find that "last response" and append the chunk size */
+
+  if (chunking_state == CHUNKING_LAST)
+    return EOD;
+
+  chunking_state = CHUNKING_OFFERED;
+  smtp_printf("250 %u byte chunk received\r\n", chunking_datasize);
+
+  /* Expect another BDAT cmd from input. RFC 3030 says nothing about
+  QUIT, RSET or NOOP but handling them seems obvious */
+
+next_cmd:
+  switch(smtp_read_command(TRUE))
+    {
+    default:
+      (void) synprot_error(L_smtp_protocol_error, 503, NULL,
+	US"only BDAT permissible after non-LAST BDAT");
+
+  repeat_until_rset:
+      switch(smtp_read_command(TRUE))
+	{
+	case QUIT_CMD:	smtp_quit_handler(&user_msg, &log_msg);	/*FALLTHROUGH */
+	case EOF_CMD:	return EOF;
+	case RSET_CMD:	smtp_rset_handler(); return ERR;
+	default:	if (synprot_error(L_smtp_protocol_error, 503, NULL,
+					  US"only RSET accepted now") > 0)
+			  return EOF;
+			goto repeat_until_rset;
+	}
+
+    case QUIT_CMD:
+      smtp_quit_handler(&user_msg, &log_msg);
+      /*FALLTHROUGH*/
+    case EOF_CMD:
+      return EOF;
+
+    case RSET_CMD:
+      smtp_rset_handler();
+      return ERR;
+
+    case NOOP_CMD:
+      HAD(SCH_NOOP);
+      smtp_printf("250 OK\r\n");
+      goto next_cmd;
+
+    case BDAT_CMD:
+      {
+      int n;
+
+      if (sscanf(CS smtp_cmd_data, "%u %n", &chunking_datasize, &n) < 1)
+	{
+	(void) synprot_error(L_smtp_protocol_error, 501, NULL,
+	  US"missing size for BDAT command");
+	return ERR;
+	}
+      chunking_state = strcmpic(smtp_cmd_data+n, US"LAST") == 0
+	? CHUNKING_LAST : CHUNKING_ACTIVE;
+      chunking_data_left = chunking_datasize;
+
+      if (chunking_datasize == 0)
+	if (chunking_state == CHUNKING_LAST)
+	  return EOD;
+	else
+	  {
+	  (void) synprot_error(L_smtp_protocol_error, 504, NULL,
+	    US"zero size for BDAT command");
+	  goto repeat_until_rset;
+	  }
+
+      receive_getc = bdat_getc;
+      receive_ungetc = bdat_ungetc;
+      break;	/* to top of main loop */
+      }
+    }
+  }
+}
+
+
+
+
 /*************************************************
 *          SMTP version of ungetc()              *
 *************************************************/
@@ -355,10 +474,17 @@ Returns:       the character
 int
 smtp_ungetc(int ch)
 {
-*(--smtp_inptr) = ch;
+*--smtp_inptr = ch;
 return ch;
 }
 
+
+int
+bdat_ungetc(int ch)
+{
+chunking_data_left++;
+return lwr_receive_ungetc(ch);
+}
 
 
 
@@ -1527,7 +1653,6 @@ authenticated_sender = NULL;
 bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
-chunking_state = CHUNKING_NOT_OFFERED;
 #ifndef DISABLE_DKIM
 dkim_signers = NULL;
 dkim_disable_verify = FALSE;
@@ -3239,6 +3364,43 @@ return 0;
 
 
 
+static void
+smtp_quit_handler(uschar ** user_msgp, uschar ** log_msgp)
+{
+HAD(SCH_QUIT);
+incomplete_transaction_log(US"QUIT");
+if (acl_smtp_quit != NULL)
+  {
+  int rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, user_msgp, log_msgp);
+  if (rc == ERROR)
+    log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
+      *log_msgp);
+  }
+if (*user_msgp)
+  smtp_respond(US"221", 3, TRUE, *user_msgp);
+else
+  smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+
+#ifdef SUPPORT_TLS
+tls_close(TRUE, TRUE);
+#endif
+
+log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
+  smtp_get_connection_info());
+}
+
+
+static void
+smtp_rset_handler(void)
+{
+HAD(SCH_RSET);
+incomplete_transaction_log(US"RSET");
+smtp_printf("250 Reset OK\r\n");
+cmd_list[CMD_LIST_RSET].is_mail_cmd = FALSE;
+}
+
+
+
 /*************************************************
 *       Initialize for SMTP incoming message     *
 *************************************************/
@@ -3284,6 +3446,8 @@ for the host). Note: we do NOT reset AUTH at this point. */
 
 smtp_reset(reset_point);
 message_ended = END_NOTSTARTED;
+
+chunking_state = chunking_offered ? CHUNKING_OFFERED : CHUNKING_NOT_OFFERED;
 
 cmd_list[CMD_LIST_RSET].is_mail_cmd = TRUE;
 cmd_list[CMD_LIST_HELO].is_mail_cmd = TRUE;
@@ -3775,6 +3939,7 @@ while (done <= 0)
         {
         s = string_catn(s, &size, &ptr, smtp_code, 3);
         s = string_catn(s, &size, &ptr, US"-CHUNKING\r\n", 11);
+	chunking_offered = TRUE;
 	chunking_state = CHUNKING_OFFERED;
         }
 
@@ -4546,12 +4711,18 @@ while (done <= 0)
 
       if (sscanf(CS smtp_cmd_data, "%u %n", &chunking_datasize, &n) < 1)
 	{
-	done = synprot_error(L_smtp_protocol_error, 503, NULL,
+	done = synprot_error(L_smtp_protocol_error, 501, NULL,
 	  US"missing size for BDAT command");
 	break;
 	}
       chunking_state = strcmpic(smtp_cmd_data+n, US"LAST") == 0
 	? CHUNKING_LAST : CHUNKING_ACTIVE;
+      chunking_data_left = chunking_datasize;
+
+      lwr_receive_getc = receive_getc;
+      lwr_receive_ungetc = receive_ungetc;
+      receive_getc = bdat_getc;
+      receive_ungetc = bdat_ungetc;
 
       DEBUG(D_any)
         debug_printf("chunking state %d\n", (int)chunking_state);
@@ -4594,45 +4765,45 @@ while (done <= 0)
       break;
       }
 
-    /* No go-ahead output for BDAT */
-
-    if (smtp_connection_had[smtp_ch_index-1] == SCH_BDAT)
-      {
+    if (chunking_state > CHUNKING_OFFERED)
+      {				/* No predata ACL or go-ahead output for BDAT */
       rc = OK;
-      break;
       }
-
-    /* If there is an ACL, re-check the synchronization afterwards, since the
-    ACL may have delayed.  To handle cutthrough delivery enforce a dummy call
-    to get the DATA command sent. */
-
-    if (acl_smtp_predata == NULL && cutthrough.fd < 0)
-      rc = OK;
     else
       {
-      uschar * acl= acl_smtp_predata ? acl_smtp_predata : US"accept";
-      enable_dollar_recipients = TRUE;
-      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl, &user_msg,
-        &log_msg);
-      enable_dollar_recipients = FALSE;
-      if (rc == OK && !check_sync()) goto SYNC_FAILURE;
+      /* If there is an ACL, re-check the synchronization afterwards, since the
+      ACL may have delayed.  To handle cutthrough delivery enforce a dummy call
+      to get the DATA command sent. */
+
+      if (acl_smtp_predata == NULL && cutthrough.fd < 0)
+	rc = OK;
+      else
+	{
+	uschar * acl = acl_smtp_predata ? acl_smtp_predata : US"accept";
+	enable_dollar_recipients = TRUE;
+	rc = acl_check(ACL_WHERE_PREDATA, NULL, acl, &user_msg,
+	  &log_msg);
+	enable_dollar_recipients = FALSE;
+	if (rc == OK && !check_sync())
+	  goto SYNC_FAILURE;
+
+	if (rc != OK)
+	  {	/* Either the ACL failed the address, or it was deferred. */
+	  done = smtp_handle_acl_fail(ACL_WHERE_PREDATA, rc, user_msg, log_msg);
+	  break;
+	  }
+	}
+
+      if (user_msg)
+	smtp_user_msg(US"354", user_msg);
+      else
+	smtp_printf(
+	  "354 Enter message, ending with \".\" on a line by itself\r\n");
       }
 
-    if (rc == OK)
-      {
-      uschar * code;
-      code = US"354";
-      if (user_msg == NULL)
-        smtp_printf("%s Enter message, ending with \".\" on a line by itself\r\n", code);
-      else smtp_user_msg(code, user_msg);
-      done = 3;
-      message_ended = END_NOTENDED;   /* Indicate in middle of data */
-      }
+    done = 3;
+    message_ended = END_NOTENDED;   /* Indicate in middle of data */
 
-    /* Either the ACL failed the address, or it was deferred. */
-
-    else
-      done = smtp_handle_acl_fail(ACL_WHERE_PREDATA, rc, user_msg, log_msg);
     break;
 
 
@@ -4868,37 +5039,15 @@ while (done <= 0)
     message. */
 
     case QUIT_CMD:
-    HAD(SCH_QUIT);
-    incomplete_transaction_log(US"QUIT");
-    if (acl_smtp_quit != NULL)
-      {
-      rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg, &log_msg);
-      if (rc == ERROR)
-        log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
-          log_msg);
-      }
-    if (user_msg == NULL)
-      smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
-    else
-      smtp_respond(US"221", 3, TRUE, user_msg);
-
-    #ifdef SUPPORT_TLS
-    tls_close(TRUE, TRUE);
-    #endif
-
+    smtp_quit_handler(&user_msg, &log_msg);
     done = 2;
-    log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
-      smtp_get_connection_info());
     break;
 
 
     case RSET_CMD:
-    HAD(SCH_RSET);
-    incomplete_transaction_log(US"RSET");
+    smtp_rset_handler();
     smtp_reset(reset_point);
     toomany = FALSE;
-    smtp_printf("250 Reset OK\r\n");
-    cmd_list[CMD_LIST_RSET].is_mail_cmd = FALSE;
     break;
 
 
@@ -4925,7 +5074,7 @@ while (done <= 0)
           verify_check_host(&tls_advertise_hosts) != FAIL)
         Ustrcat(buffer, " STARTTLS");
       #endif
-      Ustrcat(buffer, " HELO EHLO MAIL RCPT DATA");
+      Ustrcat(buffer, " HELO EHLO MAIL RCPT DATA BDAT");
       Ustrcat(buffer, " NOOP QUIT RSET HELP");
       if (acl_smtp_etrn != NULL) Ustrcat(buffer, " ETRN");
       if (acl_smtp_expn != NULL) Ustrcat(buffer, " EXPN");

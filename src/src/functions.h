@@ -100,6 +100,7 @@ extern int     auth_xtextdecode(uschar *, uschar **);
 
 extern uschar *b64encode(uschar *, int);
 extern int     b64decode(uschar *, uschar **);
+extern int     bdat_getc(void);
 extern void    bits_clear(unsigned int *, size_t, int *);
 extern void    bits_set(unsigned int *, size_t, int *);
 

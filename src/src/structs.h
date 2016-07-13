@@ -51,7 +51,10 @@ typedef struct ugid_block {
   BOOL    initgroups;
 } ugid_block;
 
-typedef enum {CHUNKING_NOT_OFFERED, CHUNKING_OFFERED, CHUNKING_ACTIVE, CHUNKING_LAST} chunking_state_t;
+typedef enum {	CHUNKING_NOT_OFFERED = -1,
+		CHUNKING_OFFERED,
+		CHUNKING_ACTIVE,
+		CHUNKING_LAST} chunking_state_t;
 
 /* Structure for holding information about a host for use mainly by routers,
 but also used when checking lists of hosts and when transporting. Looking up

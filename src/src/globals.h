@@ -138,6 +138,8 @@ extern uschar  *dsn_advertise_hosts;   /* host for which TLS is advertised */
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. */
 
+extern int (*lwr_receive_getc)(void);
+extern int (*lwr_receive_ungetc)(int);
 extern int (*receive_getc)(void);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);
@@ -269,6 +271,8 @@ extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
 extern uschar *chunking_advertise_hosts;    /* RFC 3030 CHUNKING */
 extern unsigned chunking_datasize;
+extern unsigned chunking_data_left;
+extern BOOL    chunking_offered;
 extern chunking_state_t chunking_state;
 extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
 extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */

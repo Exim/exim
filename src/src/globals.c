@@ -185,6 +185,8 @@ incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
 
 #ifndef STAND_ALONE
+int (*lwr_receive_getc)(void)  = stdin_getc;
+int (*lwr_receive_ungetc)(int) = stdin_ungetc;
 int (*receive_getc)(void)      = stdin_getc;
 int (*receive_ungetc)(int)     = stdin_ungetc;
 int (*receive_feof)(void)      = stdin_feof;
@@ -495,6 +497,8 @@ int     check_spool_space      = 0;
 
 uschar *chunking_advertise_hosts = US"*";
 unsigned chunking_datasize     = 0;
+unsigned chunking_data_left    = 0;
+BOOL    chunking_offered       = FALSE;
 chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
 
 uschar *client_authenticator   = NULL;

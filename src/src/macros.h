@@ -320,6 +320,13 @@ for having to swallow the rest of an SMTP message is whether the value is
 #define END_NOTENDED   3    /* Message reading not yet ended */
 #define END_SIZE       4    /* Reading ended because message too big */
 #define END_WERROR     5    /* Write error while reading the message */
+#define END_PROTOCOL   6    /* Protocol error in CHUNKING sequence */
+
+/* result codes for bdat_getc() (which can also return EOF) */
+
+#define EOD (-2)
+#define ERR (-3)
+
 
 /* Bit masks for debug and log selectors */
 
