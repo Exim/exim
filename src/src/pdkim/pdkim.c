@@ -134,6 +134,8 @@ pdkim_verify_ext_status_str(int ext_status)
     case PDKIM_VERIFY_INVALID_BUFFER_SIZE: return "PDKIM_VERIFY_INVALID_BUFFER_SIZE";
     case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD: return "PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD";
     case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT: return "PDKIM_VERIFY_INVALID_PUBKEY_IMPORT";
+    case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR: return "PDKIM_VERIFY_INVALID_SIGNATURE_ERROR";
+    case PDKIM_VERIFY_INVALID_DKIM_VERSION: return "PDKIM_VERIFY_INVALID_DKIM_VERSION";
     default: return "PDKIM_VERIFY_UNKNOWN";
   }
 }
@@ -407,6 +409,10 @@ sig = store_get(sizeof(pdkim_signature));
 memset(sig, 0, sizeof(pdkim_signature));
 sig->bodylength = -1;
 
+/* Set so invalid/missing data error display is accurate */
+sig->algo = -1;
+sig->version = 0;
+
 q = sig->rawsig_no_b_val = store_get(Ustrlen(raw_hdr)+1);
 
 for (p = raw_hdr; ; p++)
@@ -476,8 +482,8 @@ for (p = raw_hdr; ; p++)
 	  case 'v':
 	      /* We only support version 1, and that is currently the
 		 only version there is. */
-	    if (Ustrcmp(cur_val, PDKIM_SIGNATURE_VERSION) == 0)
-	      sig->version = 1;
+	    sig->version =
+	      Ustrcmp(cur_val, PDKIM_SIGNATURE_VERSION) == 0 ? 1 : -1;
 	    break;
 	  case 'a':
 	    for (i = 0; pdkim_algos[i]; i++)
@@ -541,10 +547,6 @@ NEXT_CHAR:
   if (!in_b_val)
     *q++ = c;
   }
-
-/* Make sure the most important bits are there. */
-if (!sig->version)
-  return NULL;
 
 *q = '\0';
 /* Chomp raw header. The final newline must not be added to the signature. */
@@ -1474,6 +1476,37 @@ while (sig)
     const uschar * errstr;
 
     uschar *dns_txt_name, *dns_txt_reply;
+
+    /* Make sure we have all required signature tags */
+    if (!(  sig->domain        && *sig->domain
+	 && sig->selector      && *sig->selector
+	 && sig->headernames   && *sig->headernames
+	 && sig->bodyhash.data
+	 && sig->sigdata.data
+	 && sig->algo > -1
+	 && sig->version
+       ) )
+      {
+      sig->verify_status     = PDKIM_VERIFY_INVALID;
+      sig->verify_ext_status = PDKIM_VERIFY_INVALID_SIGNATURE_ERROR;
+
+      DEBUG(D_acl) debug_printf(
+	  " Error in DKIM-Signature header: tags missing or invalid\n"
+	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+      goto NEXT_VERIFY;
+      }
+
+    /* Make sure sig uses supported DKIM version (only v1) */
+    if (sig->version != 1)
+      {
+      sig->verify_status     = PDKIM_VERIFY_INVALID;
+      sig->verify_ext_status = PDKIM_VERIFY_INVALID_DKIM_VERSION;
+
+      DEBUG(D_acl) debug_printf(
+          " Error in DKIM-Signature header: unsupported DKIM version\n"
+          "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+      goto NEXT_VERIFY;
+      }
 
     /* Fetch public key for signing domain, from DNS */
 

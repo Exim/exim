@@ -38115,7 +38115,7 @@ used.
 .section "Verifying DKIM signatures in incoming mail" "SECID514"
 .cindex "DKIM" "verification"
 
-Verification of DKIM signatures in incoming email is implemented via the
+Verification of DKIM signatures in SMTP incoming email is implemented via the
 &%acl_smtp_dkim%& ACL. By default, this ACL is called once for each
 syntactically(!) correct signature in the incoming message.
 A missing ACL definition defaults to accept.

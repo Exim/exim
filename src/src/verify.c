@@ -889,7 +889,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     /* Need proper integration with the proper transport mechanism. */
     if (cutthrough.delivery)
       {
+#ifndef DISABLE_DKIM
       uschar * s;
+#endif
       if (addr->transport->filter_command)
         {
         cutthrough.delivery = FALSE;
