@@ -62,7 +62,7 @@ Steve Haslam              First code for TLS
 Kjetil Torgrim Homme      Suggested patch for macro extensions
 John Horne                Proof-reading documentation (repeatedly)
 Pierre Humblet            Cygwin support
-Paul Kelly                MySQL interface
+Paul Kelly                MySQL interface (jointly)
                             First code for Oracle interface
 Ian Kirk                  Radius support
 Stuart Levy               Replacement for broken inet_ntoa() on IRIX
@@ -300,7 +300,8 @@ Florian Weimer            Patch for minor format string issue
 Joachim Wieland           Patches for PostgreSQL socket support and other
                             PostgreSQL functionality
                           Patch for hosts_avoid_esmtp
-Stephen Wilcox            Patch for ignore_enotdir problem
+Stephen Wilcox            MySQL interface (jointly)
+                            Patch for ignore_enotdir problem
 Alain Williams            Suggested patch for exicyclog options
                           PATCH for LDAP referrals option
 David Woodhouse           SQLite support proof of concept code
