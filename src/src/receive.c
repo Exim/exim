@@ -3747,9 +3747,10 @@ size = 256;
 sptr = 0;
 s = store_get(size);
 
-s = string_append(s, &size, &sptr, 2, US"<= ",
-  (sender_address[0] == 0)? US"<>" : sender_address);
-if (message_reference != NULL)
+s = string_append(s, &size, &sptr, 2,
+  fake_response == FAIL ? US"(= " : US"<= ",
+  sender_address[0] == 0 ? US"<>" : sender_address);
+if (message_reference)
   s = string_append(s, &size, &sptr, 2, US" R=", message_reference);
 
 s = add_host_info_for_log(s, &size, &sptr);
@@ -3759,7 +3760,7 @@ if (LOGGING(tls_cipher) && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" X=", tls_in.cipher);
 if (LOGGING(tls_certificate_verified) && tls_in.cipher)
   s = string_append(s, &size, &sptr, 2, US" CV=",
-    tls_in.certificate_verified? "yes":"no");
+    tls_in.certificate_verified ? "yes":"no");
 if (LOGGING(tls_peerdn) && tls_in.peerdn)
   s = string_append(s, &size, &sptr, 3, US" DN=\"",
     string_printing(tls_in.peerdn), US"\"");
@@ -3771,10 +3772,10 @@ if (LOGGING(tls_sni) && tls_in.sni)
 if (sender_host_authenticated)
   {
   s = string_append(s, &size, &sptr, 2, US" A=", sender_host_authenticated);
-  if (authenticated_id != NULL)
+  if (authenticated_id)
     {
     s = string_append(s, &size, &sptr, 2, US":", authenticated_id);
-    if (LOGGING(smtp_mailauth) && authenticated_sender != NULL)
+    if (LOGGING(smtp_mailauth) && authenticated_sender)
       s = string_append(s, &size, &sptr, 2, US":", authenticated_sender);
     }
   }
@@ -3810,7 +3811,7 @@ any characters except " \ and CR and so in particular it can contain NL!
 Therefore, make sure we use a printing-characters only version for the log.
 Also, allow for domain literals in the message id. */
 
-if (msgid_header != NULL)
+if (msgid_header)
   {
   uschar *old_id;
   BOOL save_allow_domain_literals = allow_domain_literals;
@@ -4069,15 +4070,15 @@ if (smtp_input)
 
   if (!smtp_batched_input)
     {
-    if (smtp_reply == NULL)
+    if (!smtp_reply)
       {
       if (fake_response != OK)
-        smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
-          fake_response_text);
+        smtp_respond(fake_response == DEFER ? US"450" : US"550",
+	  3, TRUE, fake_response_text);
 
       /* An OK response is required; use "message" text if present. */
 
-      else if (user_msg != NULL)
+      else if (user_msg)
         {
         uschar *code = US"250";
         int len = 3;
@@ -4124,7 +4125,8 @@ if (smtp_input)
   nothing on success. The function moan_smtp_batch() does not return -
   it exits from the program with a non-zero return code. */
 
-  else if (smtp_reply != NULL) moan_smtp_batch(NULL, "%s", smtp_reply);
+  else if (smtp_reply)
+    moan_smtp_batch(NULL, "%s", smtp_reply);
   }
 
 
@@ -4133,7 +4135,7 @@ file has already been unlinked, and the header file was never written to disk.
 We must now indicate that nothing was received, to prevent a delivery from
 starting. */
 
-if (blackholed_by != NULL)
+if (blackholed_by)
   {
   const uschar *detail = local_scan_data
     ? string_printing(local_scan_data)

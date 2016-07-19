@@ -35388,6 +35388,7 @@ picked out by the distinctive two-character flags that immediately follow the
 timestamp. The flags are:
 .display
 &`<=`&     message arrival
+&`(=`&     message fakereject
 &`=>`&     normal message delivery
 &`->`&     additional address in same delivery
 &`>>`&     cutthrough message delivery
