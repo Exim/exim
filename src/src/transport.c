@@ -1067,13 +1067,13 @@ if (dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
     int siglen = Ustrlen(dkim_signature);
     while(siglen > 0)
       {
-  #ifdef SUPPORT_TLS
-	wwritten = tls_out.active == out_fd
-	  ? tls_write(FALSE, dkim_signature, siglen)
-	  : write(out_fd, dkim_signature, siglen);
-  #else
-	wwritten = write(out_fd, dkim_signature, siglen);
-  #endif
+#ifdef SUPPORT_TLS
+      wwritten = tls_out.active == out_fd
+	? tls_write(FALSE, dkim_signature, siglen)
+	: write(out_fd, dkim_signature, siglen);
+#else
+      wwritten = write(out_fd, dkim_signature, siglen);
+#endif
       if (wwritten == -1)
 	{
 	/* error, bail out */
