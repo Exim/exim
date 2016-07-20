@@ -21,6 +21,7 @@ typedef struct {
   uschar *serialize_hosts;
   uschar *hosts_try_auth;
   uschar *hosts_require_auth;
+  uschar *hosts_try_chunking;
 #ifdef EXPERIMENTAL_DANE
   uschar *hosts_try_dane;
   uschar *hosts_require_dane;

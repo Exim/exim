@@ -116,6 +116,8 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
+  { "hosts_try_chunking",   opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_try_chunking) },
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
   { "hosts_try_dane",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
@@ -200,12 +202,13 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* serialize_hosts */
   NULL,                /* hosts_try_auth */
   NULL,                /* hosts_require_auth */
+  US"*",               /* hosts_try_chunking */
 #ifdef EXPERIMENTAL_DANE
   NULL,                /* hosts_try_dane */
   NULL,                /* hosts_require_dane */
 #endif
 #ifndef DISABLE_PRDR
-  US"*",                /* hosts_try_prdr */
+  US"*",               /* hosts_try_prdr */
 #endif
 #ifndef DISABLE_OCSP
   US"*",               /* hosts_request_ocsp (except under DANE; tls_client_start()) */
@@ -1325,6 +1328,10 @@ if (  checks & PEER_OFFERED_IGNQ
 		PCRE_EOPT, NULL, 0) < 0)
   checks &= ~PEER_OFFERED_IGNQ;
 
+if (  checks & PEER_OFFERED_CHUNKING
+   && pcre_exec(regex_CHUNKING, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_CHUNKING;
+
 #ifndef DISABLE_PRDR
 if (  checks & PEER_OFFERED_PRDR
    && pcre_exec(regex_PRDR, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
@@ -1913,6 +1920,7 @@ if (continue_hostname == NULL
     peer_offered = ehlo_response(buffer, Ustrlen(buffer),
       0 /* no TLS */
       | (lmtp && ob->lmtp_ignore_quota ? PEER_OFFERED_IGNQ : 0)
+      | PEER_OFFERED_CHUNKING
       | PEER_OFFERED_PRDR
 #ifdef SUPPORT_I18N
       | (addrlist->prop.utf8_msg ? PEER_OFFERED_UTF8 : 0)
@@ -1943,6 +1951,13 @@ if (continue_hostname == NULL
 
   DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
     smtp_use_pipelining ? "" : "not ");
+
+  if (  peer_offered & PEER_OFFERED_CHUNKING
+     && verify_check_given_host(&ob->hosts_try_chunking, host) != OK)
+    peer_offered &= ~PEER_OFFERED_CHUNKING;
+
+  if (peer_offered & PEER_OFFERED_CHUNKING)
+    {DEBUG(D_transport) debug_printf("CHUNKING usable\n");}
 
 #ifndef DISABLE_PRDR
   if (  peer_offered & PEER_OFFERED_PRDR

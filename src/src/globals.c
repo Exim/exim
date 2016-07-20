@@ -500,6 +500,7 @@ unsigned chunking_datasize     = 0;
 unsigned chunking_data_left    = 0;
 BOOL    chunking_offered       = FALSE;
 chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
+const pcre *regex_CHUNKING     = NULL;
 
 uschar *client_authenticator   = NULL;
 uschar *client_authenticated_id = NULL;

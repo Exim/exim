@@ -8073,6 +8073,9 @@ if (!regex_STARTTLS) regex_STARTTLS =
   regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
 #endif
 
+if (!regex_CHUNKING) regex_CHUNKING =
+  regex_must_compile(US"\\n250[\\s\\-]CHUNKING(\\s|\\n|$)", FALSE, TRUE);
+
 #ifndef DISABLE_PRDR
 if (!regex_PRDR) regex_PRDR =
   regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
