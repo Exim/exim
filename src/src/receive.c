@@ -3894,7 +3894,9 @@ if (message_logs && blackholed_by == NULL)
       if (deliver_freeze) fprintf(message_log, "%s frozen by %s\n", now,
         frozen_by);
       if (queue_only_policy) fprintf(message_log,
-        "%s no immediate delivery: queued by %s\n", now, queued_by);
+        "%s no immediate delivery: queued%s%s by %s\n", now,
+        *queue_name ? " in " : "", *queue_name ? CS queue_name : "",
+	queued_by);
       (void)fclose(message_log);
       }
     }
@@ -4014,7 +4016,9 @@ if(!smtp_reply)
 
   if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
   if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
-    "no immediate delivery: queued by %s", queued_by);
+    "no immediate delivery: queued%s%s by %s",
+    *queue_name ? " in " : "", *queue_name ? CS queue_name : "",       
+    queued_by);
   }
 receive_call_bombout = FALSE;
 
