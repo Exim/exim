@@ -998,6 +998,7 @@ uschar * dkim_spool_name;
 int sread = 0;
 int wwritten = 0;
 uschar *dkim_signature = NULL;
+int siglen;
 off_t k_file_size;
 
 /* If we can't sign, just call the original function. */
@@ -1062,28 +1063,30 @@ if (dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
       }
     }
 
-  if (dkim_signature)
+  siglen = 0;
+  }
+
+if (dkim_signature)
+  {
+  siglen = Ustrlen(dkim_signature);
+  while(siglen > 0)
     {
-    int siglen = Ustrlen(dkim_signature);
-    while(siglen > 0)
-      {
 #ifdef SUPPORT_TLS
-      wwritten = tls_out.active == out_fd
-	? tls_write(FALSE, dkim_signature, siglen)
-	: write(out_fd, dkim_signature, siglen);
+    wwritten = tls_out.active == out_fd
+      ? tls_write(FALSE, dkim_signature, siglen)
+      : write(out_fd, dkim_signature, siglen);
 #else
-      wwritten = write(out_fd, dkim_signature, siglen);
+    wwritten = write(out_fd, dkim_signature, siglen);
 #endif
-      if (wwritten == -1)
-	{
-	/* error, bail out */
-	save_errno = errno;
-	rc = FALSE;
-	goto CLEANUP;
-	}
-      siglen -= wwritten;
-      dkim_signature += wwritten;
+    if (wwritten == -1)
+      {
+      /* error, bail out */
+      save_errno = errno;
+      rc = FALSE;
+      goto CLEANUP;
       }
+    siglen -= wwritten;
+    dkim_signature += wwritten;
     }
   }
 
