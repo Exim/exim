@@ -44,17 +44,17 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, delay_after_cutoff) },
 #ifndef DISABLE_DKIM
   { "dkim_canon", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dkim_canon) },
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_canon) },
   { "dkim_domain", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dkim_domain) },
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_domain) },
   { "dkim_private_key", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dkim_private_key) },
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_private_key) },
   { "dkim_selector", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dkim_selector) },
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_selector) },
   { "dkim_sign_headers", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dkim_sign_headers) },
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_sign_headers) },
   { "dkim_strict", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dkim_strict) },
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_strict) },
 #endif
   { "dns_qualify_single",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
@@ -256,12 +256,12 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   US"*"                /* tls_verify_cert_hostnames */
 #endif
 #ifndef DISABLE_DKIM
- ,NULL,                /* dkim_canon */
-  NULL,                /* dkim_domain */
-  NULL,                /* dkim_private_key */
-  NULL,                /* dkim_selector */
-  NULL,                /* dkim_sign_headers */
-  NULL                 /* dkim_strict */
+ , {NULL,              /* dkim_canon */
+    NULL,              /* dkim_domain */
+    NULL,              /* dkim_private_key */
+    NULL,              /* dkim_selector */
+    NULL,              /* dkim_sign_headers */
+    NULL}              /* dkim_strict */
 #endif
 };
 
@@ -1315,40 +1315,40 @@ uschar
 ehlo_response(uschar * buf, size_t bsize, uschar checks)
 {
 #ifdef SUPPORT_TLS
-if (checks & PEER_OFFERED_TLS)
-  if (pcre_exec(regex_STARTTLS, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
-    checks &= ~PEER_OFFERED_TLS;
+if (  checks & PEER_OFFERED_TLS
+   && pcre_exec(regex_STARTTLS, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_TLS;
 #endif
 
-  if (  checks & PEER_OFFERED_IGNQ
-     && pcre_exec(regex_IGNOREQUOTA, NULL, CS buf, bsize, 0,
-		  PCRE_EOPT, NULL, 0) < 0)
-    checks &= ~PEER_OFFERED_IGNQ;
+if (  checks & PEER_OFFERED_IGNQ
+   && pcre_exec(regex_IGNOREQUOTA, NULL, CS buf, bsize, 0,
+		PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_IGNQ;
 
 #ifndef DISABLE_PRDR
-  if (  checks & PEER_OFFERED_PRDR
-     && pcre_exec(regex_PRDR, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
-    checks &= ~PEER_OFFERED_PRDR;
+if (  checks & PEER_OFFERED_PRDR
+   && pcre_exec(regex_PRDR, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_PRDR;
 #endif
 
 #ifdef SUPPORT_I18N
-  if (  checks & PEER_OFFERED_UTF8
-     && pcre_exec(regex_UTF8, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
-    checks &= ~PEER_OFFERED_UTF8;
+if (  checks & PEER_OFFERED_UTF8
+   && pcre_exec(regex_UTF8, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_UTF8;
 #endif
 
-  if (  checks & PEER_OFFERED_DSN
-     && pcre_exec(regex_DSN, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
-    checks &= ~PEER_OFFERED_DSN;
+if (  checks & PEER_OFFERED_DSN
+   && pcre_exec(regex_DSN, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_DSN;
 
-  if (  checks & PEER_OFFERED_PIPE
-     && pcre_exec(regex_PIPELINING, NULL, CS buf, bsize, 0,
-		  PCRE_EOPT, NULL, 0) < 0)
-    checks &= ~PEER_OFFERED_PIPE;
+if (  checks & PEER_OFFERED_PIPE
+   && pcre_exec(regex_PIPELINING, NULL, CS buf, bsize, 0,
+		PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_PIPE;
 
-  if (  checks & PEER_OFFERED_SIZE
-     && pcre_exec(regex_SIZE, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
-    checks &= ~PEER_OFFERED_SIZE;
+if (  checks & PEER_OFFERED_SIZE
+   && pcre_exec(regex_SIZE, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_SIZE;
 
 return checks;
 }
@@ -1709,13 +1709,7 @@ goto SEND_QUIT;
 
   if (esmtp || lmtp)
     peer_offered = ehlo_response(buffer, Ustrlen(buffer),
-      PEER_OFFERED_TLS
-      | 0	/* IGNQ checked later */
-      | 0	/* PRDR checked later */
-      | 0	/* UTF8 checked later */
-      | 0	/* DSN  checked later */
-      | 0	/* PIPE checked later */
-      | 0	/* SIZE checked later */
+      PEER_OFFERED_TLS	/* others checked later */
       );
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
@@ -2099,13 +2093,11 @@ if (smtp_use_dsn && !dsn_all_lasthop)
   {
   if (dsn_ret == dsn_ret_hdrs)
     {
-    Ustrcpy(p, " RET=HDRS");
-    while (*p) p++;
+    Ustrcpy(p, " RET=HDRS"); p += 9;
     }
   else if (dsn_ret == dsn_ret_full)
     {
-    Ustrcpy(p, " RET=FULL");
-    while (*p) p++;
+    Ustrcpy(p, " RET=FULL"); p += 9;
     }
   if (dsn_envid != NULL)
     {
@@ -2198,7 +2190,7 @@ the PENDING_DEFER status, because only one attempt is ever made, and we know
 that max_rcpt will be large, so all addresses will be done at once. */
 
 for (addr = first_addr;
-     address_count < max_rcpt && addr != NULL;
+     addr  &&  address_count < max_rcpt;
      addr = addr->next)
   {
   int count;
@@ -2210,14 +2202,14 @@ for (addr = first_addr;
   if (addr->transport_return != PENDING_DEFER) continue;
 
   address_count++;
-  no_flush = smtp_use_pipelining && (!mua_wrapper || addr->next != NULL);
+  no_flush = smtp_use_pipelining && (!mua_wrapper || addr->next);
 
   /* Add any DSN flags to the rcpt command and add to the sent string */
 
   p = buffer;
   *p = 0;
 
-  if (smtp_use_dsn && (addr->dsn_flags & rf_dsnlasthop) != 1)
+  if (smtp_use_dsn && !(addr->dsn_flags & rf_dsnlasthop))
     {
     if ((addr->dsn_flags & rf_dsnflags) != 0)
       {
@@ -2235,7 +2227,7 @@ for (addr = first_addr;
           }
       }
 
-    if (addr->dsn_orcpt != NULL)
+    if (addr->dsn_orcpt)
       {
       string_format(p, sizeof(buffer) - (p-buffer), " ORCPT=%s",
         addr->dsn_orcpt);
@@ -2347,7 +2339,9 @@ for handling the SMTP dot-handling protocol, flagging to apply to headers as
 well as body. Set the appropriate timeout value to be used for each chunk.
 (Haven't been able to make it work using select() for writing yet.) */
 
-if (!ok) ok = TRUE; else
+if (!ok)
+  ok = TRUE;
+else
   {
   sigalrm_seen = FALSE;
   transport_write_timeout = ob->data_timeout;
@@ -2364,12 +2358,10 @@ if (!ok) ok = TRUE; else
       (tblock->return_path_add? topt_add_return_path : 0) |
       (tblock->delivery_date_add? topt_add_delivery_date : 0) |
       (tblock->envelope_to_add? topt_add_envelope_to : 0),
-    0,            /* No size limit */
     tblock->add_headers, tblock->remove_headers,
     US".", US"..",    /* Escaping strings */
     tblock->rewrite_rules, tblock->rewrite_existflags,
-    ob->dkim_private_key, ob->dkim_domain, ob->dkim_selector,
-    ob->dkim_canon, ob->dkim_strict, ob->dkim_sign_headers
+    &ob->dkim
     );
 #else
   ok = transport_write_message(addrlist, inblock.sock,

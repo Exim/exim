@@ -826,4 +826,14 @@ typedef struct acl_block {
 /* smtp transport calc outbound_ip */
 typedef BOOL (*oicf) (uschar *message_id, void *data);
 
+/* DKIM information for transport */
+struct ob_dkim {
+  uschar *dkim_domain;
+  uschar *dkim_private_key;
+  uschar *dkim_selector;
+  uschar *dkim_canon;
+  uschar *dkim_sign_headers;
+  uschar *dkim_strict;
+} dkim;
+
 /* End of structs.h */

@@ -76,12 +76,7 @@ typedef struct {
   uschar *tls_verify_cert_hostnames;
 #endif
 #ifndef DISABLE_DKIM
-  uschar *dkim_domain;
-  uschar *dkim_private_key;
-  uschar *dkim_selector;
-  uschar *dkim_canon;
-  uschar *dkim_sign_headers;
-  uschar *dkim_strict;
+  struct ob_dkim dkim;
 #endif
 } smtp_transport_options_block;
 

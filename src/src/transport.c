@@ -369,7 +369,7 @@ write_chunk(int fd, uschar *chunk, int len, BOOL use_crlf)
 {
 uschar *start = chunk;
 uschar *end = chunk + len;
-register uschar *ptr;
+uschar *ptr;
 int mlen = DELIVER_OUT_BUFFER_SIZE - nl_escape_length - 2;
 
 /* The assumption is made that the check string will never stretch over move
@@ -408,7 +408,7 @@ possible. */
 
 for (ptr = start; ptr < end; ptr++)
   {
-  register int ch;
+  int ch;
 
   /* Flush the buffer if it has reached the threshold - we want to leave enough
   room for the next uschar, plus a possible extra CR for an LF, plus the escape
@@ -560,8 +560,7 @@ struct aci *ppp;
 /* Do nothing if we have already handled this address. If not, remember it
 so that we don't handle it again. */
 
-for (ppp = *pdlist; ppp != NULL; ppp = ppp->next)
-  { if (p == ppp->ptr) return TRUE; }
+for (ppp = *pdlist; ppp; ppp = ppp->next) if (p == ppp->ptr) return TRUE;
 
 ppp = store_get(sizeof(struct aci));
 ppp->next = *pdlist;
@@ -573,19 +572,17 @@ ppp->ptr = p;
 for (pp = p;; pp = pp->parent)
   {
   address_item *dup;
-  for (dup = addr_duplicate; dup != NULL; dup = dup->next)
-    {
-    if (dup->dupof != pp) continue;   /* Not a dup of our address */
-    if (!write_env_to(dup, pplist, pdlist, first, fd, use_crlf)) return FALSE;
-    }
-  if (pp->parent == NULL) break;
+  for (dup = addr_duplicate; dup; dup = dup->next)
+    if (dup->dupof == pp)   /* a dup of our address */
+      if (!write_env_to(dup, pplist, pdlist, first, fd, use_crlf))
+	return FALSE;
+  if (!pp->parent) break;
   }
 
 /* Check to see if we have already output the progenitor. */
 
-for (ppp = *pplist; ppp != NULL; ppp = ppp->next)
-  { if (pp == ppp->ptr) break; }
-if (ppp != NULL) return TRUE;
+for (ppp = *pplist; ppp; ppp = ppp->next) if (pp == ppp->ptr) break;
+if (ppp) return TRUE;
 
 /* Remember what we have output, and output it. */
 
@@ -632,7 +629,7 @@ match any entries therein.  It is a colon-sep list; expand the items
 separately and squash any empty ones.
 Then check addr->prop.remove_headers too, provided that addr is not NULL. */
 
-for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
+for (h = header_list; h; h = h->next) if (h->type != htype_old)
   {
   int i;
   const uschar *list = remove_headers;
@@ -714,8 +711,7 @@ if (addr)
   header_line *hprev = addr->prop.extra_headers;
   header_line *hnext;
   for (i = 0; i < 2; i++)
-    {
-    for (h = hprev, hprev = NULL; h != NULL; h = hnext)
+    for (h = hprev, hprev = NULL; h; h = hnext)
       {
       hnext = h->next;
       h->next = hprev;
@@ -727,7 +723,6 @@ if (addr)
 	  debug_printf("added header line(s):\n%s---\n", h->text);
 	}
       }
-    }
   }
 
 /* If a string containing additional headers exists it is a newline-sep
@@ -743,12 +738,7 @@ if (add_headers)
   uschar * s;
 
   while ((s = string_nextinlist(CUSS &add_headers, &sep, NULL, 0)))
-    if (!(s = expand_string(s)))
-      {
-      if (!expand_string_forcedfail)
-	{ errno = ERRNO_CHHEADER_FAIL; return FALSE; }
-      }
-    else
+    if ((s = expand_string(s)))
       {
       int len = Ustrlen(s);
       if (len > 0)
@@ -764,6 +754,8 @@ if (add_headers)
 	  }
 	}
       }
+    else if (!expand_string_forcedfail)
+      { errno = ERRNO_CHHEADER_FAIL; return FALSE; }
   }
 
 /* Separate headers from body with a blank line */
@@ -847,39 +839,41 @@ chunk_ptr = deliver_out_buffer;
 /* Set up the data for start-of-line data checking and escaping */
 
 nl_partial_match = -1;
-if (check_string != NULL && escape_string != NULL)
+if (check_string && escape_string)
   {
   nl_check = check_string;
   nl_check_length = Ustrlen(nl_check);
   nl_escape = escape_string;
   nl_escape_length = Ustrlen(nl_escape);
   }
-else nl_check_length = nl_escape_length = 0;
+else
+  nl_check_length = nl_escape_length = 0;
 
 /* Whether the escaping mechanism is applied to headers or not is controlled by
 an option (set for SMTP, not otherwise). Negate the length if not wanted till
 after the headers. */
 
-if ((options & topt_escape_headers) == 0) nl_check_length = -nl_check_length;
+if (!(options & topt_escape_headers))
+  nl_check_length = -nl_check_length;
 
 /* Write the headers if required, including any that have to be added. If there
 are header rewriting rules, apply them. */
 
-if ((options & topt_no_headers) == 0)
+if (!(options & topt_no_headers))
   {
   /* Add return-path: if requested. */
 
-  if ((options & topt_add_return_path) != 0)
+  if (options & topt_add_return_path)
     {
     uschar buffer[ADDRESS_MAXLENGTH + 20];
-    sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
+    int n = sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
       return_path);
-    if (!write_chunk(fd, buffer, Ustrlen(buffer), use_crlf)) return FALSE;
+    if (!write_chunk(fd, buffer, n, use_crlf)) return FALSE;
     }
 
   /* Add envelope-to: if requested */
 
-  if ((options & topt_add_envelope_to) != 0)
+  if (options & topt_add_envelope_to)
     {
     BOOL first = TRUE;
     address_item *p;
@@ -893,10 +887,9 @@ if ((options & topt_no_headers) == 0)
     anchors for lists of addresses already handled; they have to be defined at
     this level becuase write_env_to() calls itself recursively. */
 
-    for (p = addr; p != NULL; p = p->next)
-      {
-      if (!write_env_to(p, &plist, &dlist, &first, fd, use_crlf)) return FALSE;
-      }
+    for (p = addr; p; p = p->next)
+      if (!write_env_to(p, &plist, &dlist, &first, fd, use_crlf))
+	return FALSE;
 
     /* Add a final newline and reset the store used for tracking duplicates */
 
@@ -909,8 +902,8 @@ if ((options & topt_no_headers) == 0)
   if ((options & topt_add_delivery_date) != 0)
     {
     uschar buffer[100];
-    sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
-    if (!write_chunk(fd, buffer, Ustrlen(buffer), use_crlf)) return FALSE;
+    int n = sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
+    if (!write_chunk(fd, buffer, n, use_crlf)) return FALSE;
     }
 
   /* Then the message's headers. Don't write any that are flagged as "old";
@@ -929,7 +922,7 @@ negative in cases where it isn't to apply to the headers). Then ensure the body
 is positioned at the start of its file (following the message id), then write
 it, applying the size limit if required. */
 
-if ((options & topt_no_body) == 0)
+if (!(options & topt_no_body))
   {
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
@@ -961,7 +954,7 @@ nl_check_length = nl_escape_length = 0;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
-if ((options & topt_end_dot) != 0 && !write_chunk(fd, US".\n", 2, use_crlf))
+if (options & topt_end_dot && !write_chunk(fd, US".\n", 2, use_crlf))
   return FALSE;
 
 /* Write out any remaining data in the buffer before returning. */
@@ -986,44 +979,32 @@ return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
    signing the file, send the signed message down the original fd (or TLS fd).
 
 Arguments:
-  as for internal_transport_write_message() above, with additional arguments:
-   uschar *dkim_private_key  DKIM: The private key to use (filename or
-				    plain data)
-   uschar *dkim_domain       DKIM: The domain to use
-   uschar *dkim_selector     DKIM: The selector to use.
-   uschar *dkim_canon        DKIM: The canonalization scheme to use,
-				    "simple" or "relaxed"
-   uschar *dkim_strict       DKIM: What to do if signing fails:
-				  1/true  => throw error
-				  0/false => send anyway
-   uschar *dkim_sign_headers DKIM: List of headers that should be included
-				    in signature generation
+  as for internal_transport_write_message() above, with additional arguments
+  for DKIM.
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
 */
 
 BOOL
-dkim_transport_write_message(address_item *addr, int fd, int options,
-  int size_limit, uschar *add_headers, uschar *remove_headers,
+dkim_transport_write_message(address_item *addr, int out_fd, int options,
+  uschar *add_headers, uschar *remove_headers,
   uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
-  int rewrite_existflags, uschar *dkim_private_key, uschar *dkim_domain,
-  uschar *dkim_selector, uschar *dkim_canon, uschar *dkim_strict, uschar *dkim_sign_headers
-  )
+  int rewrite_existflags, struct ob_dkim * dkim)
 {
 int dkim_fd;
 int save_errno = 0;
 BOOL rc;
 uschar * dkim_spool_name;
-char sbuf[2048];
 int sread = 0;
 int wwritten = 0;
 uschar *dkim_signature = NULL;
+off_t k_file_size;
 
 /* If we can't sign, just call the original function. */
 
-if (!(dkim_private_key && dkim_domain && dkim_selector))
-  return transport_write_message(addr, fd, options,
-	    size_limit, add_headers, remove_headers,
+if (!(dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector))
+  return transport_write_message(addr, out_fd, options,
+	    0, add_headers, remove_headers,
 	    check_string, escape_string, rewrite_rules,
 	    rewrite_existflags);
 
@@ -1038,10 +1019,10 @@ if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
   goto CLEANUP;
   }
 
-/* Call original function to write the -K file */
+/* Call original function to write the -K file; does the CRLF expansion */
 
 rc = transport_write_message(addr, dkim_fd, options,
-  size_limit, add_headers, remove_headers,
+  0, add_headers, remove_headers,
   check_string, escape_string, rewrite_rules,
   rewrite_existflags);
 
@@ -1052,24 +1033,24 @@ if (!rc)
   goto CLEANUP;
   }
 
-if (dkim_private_key && dkim_domain && dkim_selector)
+if (dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
   {
   /* Rewind file and feed it to the goats^W DKIM lib */
   lseek(dkim_fd, 0, SEEK_SET);
   dkim_signature = dkim_exim_sign(dkim_fd,
-				  dkim_private_key,
-				  dkim_domain,
-				  dkim_selector,
-				  dkim_canon,
-				  dkim_sign_headers);
+				  dkim->dkim_private_key,
+				  dkim->dkim_domain,
+				  dkim->dkim_selector,
+				  dkim->dkim_canon,
+				  dkim->dkim_sign_headers);
   if (!dkim_signature)
     {
-    if (dkim_strict)
+    if (dkim->dkim_strict)
       {
-      uschar *dkim_strict_result = expand_string(dkim_strict);
+      uschar *dkim_strict_result = expand_string(dkim->dkim_strict);
       if (dkim_strict_result)
-	if ( (strcmpic(dkim_strict,US"1") == 0) ||
-	     (strcmpic(dkim_strict,US"true") == 0) )
+	if ( (strcmpic(dkim->dkim_strict,US"1") == 0) ||
+	     (strcmpic(dkim->dkim_strict,US"true") == 0) )
 	  {
 	  /* Set errno to something halfway meaningful */
 	  save_errno = EACCES;
@@ -1080,20 +1061,21 @@ if (dkim_private_key && dkim_domain && dkim_selector)
 	  }
       }
     }
-  else
+
+  if (dkim_signature)
     {
     int siglen = Ustrlen(dkim_signature);
     while(siglen > 0)
       {
-#ifdef SUPPORT_TLS
-      wwritten = tls_out.active == fd
-	? tls_write(FALSE, dkim_signature, siglen)
-	: write(fd, dkim_signature, siglen);
-#else
-      wwritten = write(fd, dkim_signature, siglen);
-#endif
+  #ifdef SUPPORT_TLS
+	wwritten = tls_out.active == out_fd
+	  ? tls_write(FALSE, dkim_signature, siglen)
+	  : write(out_fd, dkim_signature, siglen);
+  #else
+	wwritten = write(out_fd, dkim_signature, siglen);
+  #endif
       if (wwritten == -1)
-        {
+	{
 	/* error, bail out */
 	save_errno = errno;
 	rc = FALSE;
@@ -1110,17 +1092,18 @@ if (dkim_private_key && dkim_domain && dkim_selector)
    to the socket. However only if we don't use TLS,
    as then there's another layer of indirection
    before the data finally hits the socket. */
-if (tls_out.active != fd)
+if (tls_out.active != out_fd)
   {
-  off_t size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
   ssize_t copied = 0;
   off_t offset = 0;
+
+  k_file_size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
 
   /* Rewind file */
   lseek(dkim_fd, 0, SEEK_SET);
 
-  while(copied >= 0 && offset < size)
-    copied = sendfile(fd, dkim_fd, &offset, size - offset);
+  while(copied >= 0 && offset < k_file_size)
+    copied = sendfile(out_fd, dkim_fd, &offset, k_file_size - offset);
   if (copied < 0)
     {
     save_errno = errno;
@@ -1136,19 +1119,19 @@ else
   lseek(dkim_fd, 0, SEEK_SET);
 
   /* Send file down the original fd */
-  while((sread = read(dkim_fd, sbuf, 2048)) > 0)
+  while((sread = read(dkim_fd, deliver_out_buffer, DELIVER_OUT_BUFFER_SIZE)) >0)
     {
-    char *p = sbuf;
+    char *p = deliver_out_buffer;
     /* write the chunk */
 
     while (sread)
       {
 #ifdef SUPPORT_TLS
-      wwritten = tls_out.active == fd
+      wwritten = tls_out.active == out_fd
 	? tls_write(FALSE, US p, sread)
-	: write(fd, p, sread);
+	: write(out_fd, p, sread);
 #else
-      wwritten = write(fd, p, sread);
+      wwritten = write(out_fd, p, sread);
 #endif
       if (wwritten == -1)
 	{
@@ -1420,22 +1403,21 @@ filter was not NL, insert a NL to make the SMTP protocol work. */
 if (yield)
   {
   nl_check_length = nl_escape_length = 0;
-  if ((options & topt_end_dot) != 0 && (last_filter_was_NL?
-        !write_chunk(fd, US".\n", 2, use_crlf) :
-        !write_chunk(fd, US"\n.\n", 3, use_crlf)))
-    {
+  if (  options & topt_end_dot
+     && ( last_filter_was_NL
+        ? !write_chunk(fd, US".\n", 2, options)
+	: !write_chunk(fd, US"\n.\n", 3, options)
+     )  )
     yield = FALSE;
-    }
 
   /* Write out any remaining data in the buffer. */
 
   else
-    {
-    yield = (len = chunk_ptr - deliver_out_buffer) <= 0 ||
-      transport_write_block(fd, deliver_out_buffer, len);
-    }
+    yield = (len = chunk_ptr - deliver_out_buffer) <= 0
+	  || transport_write_block(fd, deliver_out_buffer, len);
   }
-else errno = save_errno;      /* From some earlier error */
+else
+  errno = save_errno;      /* From some earlier error */
 
 DEBUG(D_transport)
   {

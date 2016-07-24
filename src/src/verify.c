@@ -898,7 +898,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
         }
 #ifndef DISABLE_DKIM
-      else if ((s = ob->dkim_domain) && (s = expand_string(s)) && *s)
+      else if ((s = ob->dkim.dkim_domain) && (s = expand_string(s)) && *s)
         {
         cutthrough.delivery = FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
