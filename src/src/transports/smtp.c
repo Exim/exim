@@ -2358,37 +2358,48 @@ if (!ok)
   ok = TRUE;
 else
   {
+  int options = topt_use_crlf | topt_escape_headers
+    | (tblock->body_only	? topt_no_headers	: 0)
+    | (tblock->headers_only	? topt_no_body		: 0)
+    | (tblock->return_path_add	? topt_add_return_path	: 0)
+    | (tblock->delivery_date_add ?topt_add_delivery_date :0)
+    | (tblock->envelope_to_add	? topt_add_envelope_to	: 0);
+  uschar * str_spot, * str_repl;
+
+  if (peer_offered & PEER_OFFERED_CHUNKING)
+    {
+    options |= topt_use_bdat;
+    str_spot = str_repl = NULL;
+    }
+  else
+    {
+    options |= topt_end_dot;
+    str_spot = US"."; str_repl = US"..";
+    }
+
   sigalrm_seen = FALSE;
   transport_write_timeout = ob->data_timeout;
   smtp_command = US"sending data block";   /* For error messages */
   DEBUG(D_transport|D_v)
-    debug_printf("  SMTP>> writing message and terminating \".\"\n");
+    debug_printf("  SMTP>> writing message %s\n",
+      peer_offered & PEER_OFFERED_CHUNKING
+      ? "using CHUNKING" : "and terminating \".\"");
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
   ok = dkim_transport_write_message(addrlist, inblock.sock,
-    topt_use_crlf | topt_end_dot | topt_escape_headers |
-      (tblock->body_only? topt_no_headers : 0) |
-      (tblock->headers_only? topt_no_body : 0) |
-      (tblock->return_path_add? topt_add_return_path : 0) |
-      (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-      (tblock->envelope_to_add? topt_add_envelope_to : 0),
+    options,
     tblock->add_headers, tblock->remove_headers,
-    US".", US"..",    /* Escaping strings */
+    str_spot, str_repl,	/* Escaping strings */
     tblock->rewrite_rules, tblock->rewrite_existflags,
     &ob->dkim
     );
 #else
   ok = transport_write_message(addrlist, inblock.sock,
-    topt_use_crlf | topt_end_dot | topt_escape_headers |
-      (tblock->body_only? topt_no_headers : 0) |
-      (tblock->headers_only? topt_no_body : 0) |
-      (tblock->return_path_add? topt_add_return_path : 0) |
-      (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-      (tblock->envelope_to_add? topt_add_envelope_to : 0),
+    options,
     0,            /* No size limit */
     tblock->add_headers, tblock->remove_headers,
-    US".", US"..",    /* Escaping strings */
+    str_spot, str_repl,	/* Escaping strings */
     tblock->rewrite_rules, tblock->rewrite_existflags);
 #endif
 

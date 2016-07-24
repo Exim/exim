@@ -1559,9 +1559,9 @@ return cutthrough_response('3', NULL) == '3';
 }
 
 
-/* fd and use_crlf args only to match write_chunk() */
+/* fd and options args only to match write_chunk() */
 static BOOL
-cutthrough_write_chunk(int fd, uschar * s, int len, BOOL use_crlf)
+cutthrough_write_chunk(int fd, uschar * s, int len, unsigned options)
 {
 uschar * s2;
 while(s && (s2 = Ustrchr(s, '\n')))
@@ -1591,7 +1591,7 @@ HDEBUG(D_acl) debug_printf("----------- start cutthrough headers send ----------
 if (!transport_headers_send(&cutthrough.addr, cutthrough.fd,
 	cutthrough.addr.transport->add_headers,
 	cutthrough.addr.transport->remove_headers,
-	&cutthrough_write_chunk, TRUE,
+	&cutthrough_write_chunk, topt_use_crlf,
 	cutthrough.addr.transport->rewrite_rules,
 	cutthrough.addr.transport->rewrite_existflags))
   return FALSE;

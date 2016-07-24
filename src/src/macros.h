@@ -845,6 +845,7 @@ enum {
 #define topt_no_headers         0x020  /* Omit headers */
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
+#define topt_use_bdat		0x100  /* prepend chunks with RFC3030 BDAT header */
 
 /* Flags for recipient_block, used in DSN support */
 

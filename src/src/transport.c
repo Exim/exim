@@ -236,10 +236,12 @@ for (i = 0; i < 100; i++)
   else
     {
     alarm(local_timeout);
-    #ifdef SUPPORT_TLS
-    if (tls_out.active == fd) rc = tls_write(FALSE, block, len); else
-    #endif
-    rc = write(fd, block, len);
+#ifdef SUPPORT_TLS
+    if (tls_out.active == fd)
+      rc = tls_write(FALSE, block, len);
+    else
+#endif
+      rc = write(fd, block, len);
     save_errno = errno;
     local_timeout = alarm(0);
     if (sigalrm_seen)
@@ -357,7 +359,9 @@ Arguments:
   fd         file descript to write to
   chunk      pointer to data to write
   len        length of data to write
-  usr_crlf   TRUE if CR LF is wanted at the end of each line
+  flags      bitmap of topt_ flags for processing options
+    use_crlf	terminate lines with CRLF
+    use_bdat	prepend chunks with RFC3030 BDAT header
 
 In addition, the static nl_xxx variables must be set as required.
 
@@ -365,7 +369,7 @@ Returns:     TRUE on success, FALSE on failure (with errno preserved)
 */
 
 static BOOL
-write_chunk(int fd, uschar *chunk, int len, BOOL use_crlf)
+write_chunk(int fd, uschar *chunk, int len, unsigned flags)
 {
 uschar *start = chunk;
 uschar *end = chunk + len;
@@ -413,6 +417,9 @@ for (ptr = start; ptr < end; ptr++)
   /* Flush the buffer if it has reached the threshold - we want to leave enough
   room for the next uschar, plus a possible extra CR for an LF, plus the escape
   string. */
+/*XXX CHUNKING: need to prefix write_block with a BDAT cmd.  Also possibly
+reap a response from a previous BDAT first.  NEED a callback into the tpt
+for that */
 
   if (chunk_ptr - deliver_out_buffer > mlen)
     {
@@ -428,7 +435,7 @@ for (ptr = start; ptr < end; ptr++)
 
     /* Insert CR before NL if required */
 
-    if (use_crlf) *chunk_ptr++ = '\r';
+    if (flags & topt_use_crlf) *chunk_ptr++ = '\r';
     *chunk_ptr++ = '\n';
     transport_newlines++;
 
@@ -545,14 +552,14 @@ Arguments:
   pdlist    address of anchor of the list of processed addresses
   first     TRUE if this is the first address; set it FALSE afterwards
   fd        the file descriptor to write to
-  use_crlf  to be passed on to write_chunk()
+  flags     to be passed on to write_chunk()
 
 Returns:    FALSE if writing failed
 */
 
 static BOOL
 write_env_to(address_item *p, struct aci **pplist, struct aci **pdlist,
-  BOOL *first, int fd, BOOL use_crlf)
+  BOOL *first, int fd, unsigned flags)
 {
 address_item *pp;
 struct aci *ppp;
@@ -574,7 +581,7 @@ for (pp = p;; pp = pp->parent)
   address_item *dup;
   for (dup = addr_duplicate; dup; dup = dup->next)
     if (dup->dupof == pp)   /* a dup of our address */
-      if (!write_env_to(dup, pplist, pdlist, first, fd, use_crlf))
+      if (!write_env_to(dup, pplist, pdlist, first, fd, flags))
 	return FALSE;
   if (!pp->parent) break;
   }
@@ -591,9 +598,9 @@ ppp->next = *pplist;
 *pplist = ppp;
 ppp->ptr = pp;
 
-if (!(*first) && !write_chunk(fd, US",\n ", 3, use_crlf)) return FALSE;
+if (!*first && !write_chunk(fd, US",\n ", 3, flags)) return FALSE;
 *first = FALSE;
-return write_chunk(fd, pp->address, Ustrlen(pp->address), use_crlf);
+return write_chunk(fd, pp->address, Ustrlen(pp->address), flags);
 }
 
 
@@ -608,7 +615,7 @@ Arguments:
   addr                  (chain of) addresses (for extra headers), or NULL;
                           only the first address is used
   fd                    file descriptor to write the message to
-  sendfn		function for output
+  sendfn		function for output (transport or verify)
   use_crlf		turn NL into CR LF
   rewrite_rules         chain of header rewriting rules
   rewrite_existflags    flags for the rewriting rules
@@ -617,10 +624,11 @@ Returns:                TRUE on success; FALSE on failure.
 */
 BOOL
 transport_headers_send(address_item *addr, int fd, uschar *add_headers, uschar *remove_headers,
-  BOOL (*sendfn)(int fd, uschar * s, int len, BOOL use_crlf),
+  BOOL (*sendfn)(int fd, uschar * s, int len, unsigned options),
   BOOL use_crlf, rewrite_rule *rewrite_rules, int rewrite_existflags)
 {
 header_line *h;
+unsigned wck_flags = use_crlf ? topt_use_bdat : 0;
 
 /* Then the message's headers. Don't write any that are flagged as "old";
 that means they were rewritten, or are a record of envelope rewriting, or
@@ -675,7 +683,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
 
       if ((hh = rewrite_header(h, NULL, NULL, rewrite_rules, rewrite_existflags, FALSE)))
 	{
-	if (!sendfn(fd, hh->text, hh->slen, use_crlf)) return FALSE;
+	if (!sendfn(fd, hh->text, hh->slen, wck_flags)) return FALSE;
 	store_reset(reset_point);
 	continue;     /* With the next header line */
 	}
@@ -683,7 +691,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
 
     /* Either no rewriting rules, or it didn't get rewritten */
 
-    if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+    if (!sendfn(fd, h->text, h->slen, wck_flags)) return FALSE;
     }
 
   /* Header removed */
@@ -718,7 +726,7 @@ if (addr)
       hprev = h;
       if (i == 1)
 	{
-	if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+	if (!sendfn(fd, h->text, h->slen, wck_flags)) return FALSE;
 	DEBUG(D_transport)
 	  debug_printf("added header line(s):\n%s---\n", h->text);
 	}
@@ -743,8 +751,8 @@ if (add_headers)
       int len = Ustrlen(s);
       if (len > 0)
 	{
-	if (!sendfn(fd, s, len, use_crlf)) return FALSE;
-	if (s[len-1] != '\n' && !sendfn(fd, US"\n", 1, use_crlf))
+	if (!sendfn(fd, s, len, wck_flags)) return FALSE;
+	if (s[len-1] != '\n' && !sendfn(fd, US"\n", 1, wck_flags))
 	  return FALSE;
 	DEBUG(D_transport)
 	  {
@@ -760,7 +768,7 @@ if (add_headers)
 
 /* Separate headers from body with a blank line */
 
-return sendfn(fd, US"\n", 1, use_crlf);
+return sendfn(fd, US"\n", 1, wck_flags);
 }
 
 
@@ -804,6 +812,7 @@ Arguments:
     end_dot               if TRUE, send a terminating "." line at the end
     no_headers            if TRUE, omit the headers
     no_body               if TRUE, omit the body
+    use_bdat		  if TRUE, prepend written data with RFC3030 BDAT hdrs
   size_limit            if > 0, this is a limit to the size of message written;
                           it is used when returning messages to their senders,
                           and is approximate rather than exact, owing to chunk
@@ -828,9 +837,10 @@ internal_transport_write_message(address_item *addr, int fd, int options,
   int size_limit, uschar *add_headers, uschar *remove_headers, uschar *check_string,
   uschar *escape_string, rewrite_rule *rewrite_rules, int rewrite_existflags)
 {
-int written = 0;
 int len;
-BOOL use_crlf  = (options & topt_use_crlf)  != 0;
+unsigned wck_flags = (unsigned) options;
+off_t fsize;
+int size;
 
 /* Initialize pointer in output buffer. */
 
@@ -868,7 +878,7 @@ if (!(options & topt_no_headers))
     uschar buffer[ADDRESS_MAXLENGTH + 20];
     int n = sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
       return_path);
-    if (!write_chunk(fd, buffer, n, use_crlf)) return FALSE;
+    if (!write_chunk(fd, buffer, n, wck_flags)) return FALSE;
     }
 
   /* Add envelope-to: if requested */
@@ -881,29 +891,29 @@ if (!(options & topt_no_headers))
     struct aci *dlist = NULL;
     void *reset_point = store_get(0);
 
-    if (!write_chunk(fd, US"Envelope-to: ", 13, use_crlf)) return FALSE;
+    if (!write_chunk(fd, US"Envelope-to: ", 13, wck_flags)) return FALSE;
 
     /* Pick up from all the addresses. The plist and dlist variables are
     anchors for lists of addresses already handled; they have to be defined at
     this level becuase write_env_to() calls itself recursively. */
 
     for (p = addr; p; p = p->next)
-      if (!write_env_to(p, &plist, &dlist, &first, fd, use_crlf))
+      if (!write_env_to(p, &plist, &dlist, &first, fd, wck_flags))
 	return FALSE;
 
     /* Add a final newline and reset the store used for tracking duplicates */
 
-    if (!write_chunk(fd, US"\n", 1, use_crlf)) return FALSE;
+    if (!write_chunk(fd, US"\n", 1, wck_flags)) return FALSE;
     store_reset(reset_point);
     }
 
   /* Add delivery-date: if requested. */
 
-  if ((options & topt_add_delivery_date) != 0)
+  if (options & topt_add_delivery_date)
     {
     uschar buffer[100];
     int n = sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
-    if (!write_chunk(fd, buffer, n, use_crlf)) return FALSE;
+    if (!write_chunk(fd, buffer, n, wck_flags)) return FALSE;
     }
 
   /* Then the message's headers. Don't write any that are flagged as "old";
@@ -912,8 +922,48 @@ if (!(options & topt_no_headers))
   match any entries therein. Then check addr->prop.remove_headers too, provided that
   addr is not NULL. */
   if (!transport_headers_send(addr, fd, add_headers, remove_headers, &write_chunk,
-	use_crlf, rewrite_rules, rewrite_existflags))
+	wck_flags, rewrite_rules, rewrite_existflags))
     return FALSE;
+  }
+
+/* When doing RFC3030 CHUNKING output, work out how much data will be in the
+last BDAT, consisting of the current write_chunk() output buffer fill
+(optimally, all of the headers - but it does not matter if we already had to
+flush that buffer with non-last BDAT prependix) plus the amount of body data
+(as expanded for CRLF lines).  Then create and write the BDAT, and ensure
+that further use of write_chunk() will not prepend BDATs.  */
+
+if (options & topt_use_bdat)
+  {
+  if ((size = chunk_ptr - deliver_out_buffer) < 0)
+    size = 0;
+  if (!(options & topt_no_body))
+    {
+    if ((fsize = lseek(deliver_datafile, 0, SEEK_END)) < 0) return FALSE;
+    fsize -= SPOOL_DATA_START_OFFSET;
+    if (size_limit > 0  &&  fsize > size_limit)
+      fsize = size_limit;
+    size += fsize;
+    if (options & topt_use_crlf)
+      size += body_linecount;	/* account for CRLF-expansion */
+    }
+
+  /*XXX need an smtp_outblock here; can't really use the smtp
+  tpts one. so that had better have been flushed.
+  
+  WORRY: smtp cmd response sync, needs an inblock and a LOT
+  of tpt info.  NEED a callback into the tpt.
+
+#ifdef notdef
+  smtp_write_command(&outblock, FALSE, "BDAT %d LAST\r\n", size);
+  if (count < 0) return FALSE;
+  if (count > 0)
+    {
+    }
+#endif
+  */
+
+  wck_flags &= ~topt_use_bdat;
   }
 
 /* If the body is required, ensure that the data for check strings (formerly
@@ -928,20 +978,10 @@ if (!(options & topt_no_body))
   nl_partial_match = 0;
   if (lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET) < 0)
     return FALSE;
-  while ((len = read(deliver_datafile, deliver_in_buffer,
-           DELIVER_IN_BUFFER_SIZE)) > 0)
-    {
-    if (!write_chunk(fd, deliver_in_buffer, len, use_crlf)) return FALSE;
-    if (size_limit > 0)
-      {
-      written += len;
-      if (written > size_limit)
-        {
-        len = 0;    /* Pretend EOF */
-        break;
-        }
-      }
-    }
+  while (  (len = MAX(DELIVER_IN_BUFFER_SIZE, size)) > 0
+	&& (len = read(deliver_datafile, deliver_in_buffer, len)) > 0)
+    if (!write_chunk(fd, deliver_in_buffer, len, wck_flags))
+      return FALSE;
 
   /* A read error on the body will have left len == -1 and errno set. */
 
@@ -954,7 +994,7 @@ nl_check_length = nl_escape_length = 0;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
-if (options & topt_end_dot && !write_chunk(fd, US".\n", 2, use_crlf))
+if (options & topt_end_dot && !write_chunk(fd, US".\n", 2, wck_flags))
   return FALSE;
 
 /* Write out any remaining data in the buffer before returning. */
@@ -1189,7 +1229,7 @@ transport_write_message(address_item *addr, int fd, int options,
   uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
   int rewrite_existflags)
 {
-BOOL use_crlf;
+unsigned wck_flags;
 BOOL last_filter_was_NL = TRUE;
 int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
@@ -1212,7 +1252,7 @@ if (  !transport_filter_argv
 before being written to the incoming fd. First set up the special processing to
 be done during the copying. */
 
-use_crlf  = (options & topt_use_crlf) != 0;
+wck_flags = options & topt_use_crlf;
 nl_partial_match = -1;
 
 if (check_string != NULL && escape_string != NULL)
@@ -1326,7 +1366,7 @@ for (;;)
 
   if (len > 0)
     {
-    if (!write_chunk(fd, deliver_in_buffer, len, use_crlf)) goto TIDY_UP;
+    if (!write_chunk(fd, deliver_in_buffer, len, wck_flags)) goto TIDY_UP;
     last_filter_was_NL = (deliver_in_buffer[len-1] == '\n');
     }
 
@@ -1408,8 +1448,8 @@ if (yield)
   nl_check_length = nl_escape_length = 0;
   if (  options & topt_end_dot
      && ( last_filter_was_NL
-        ? !write_chunk(fd, US".\n", 2, options)
-	: !write_chunk(fd, US"\n.\n", 3, options)
+        ? !write_chunk(fd, US".\n", 2, wck_flags)
+	: !write_chunk(fd, US"\n.\n", 3, wck_flags)
      )  )
     yield = FALSE;
 

@@ -470,7 +470,7 @@ extern void    transport_update_waiting(host_item *, uschar *);
 extern BOOL    transport_write_block(int, uschar *, int);
 extern BOOL    transport_write_string(int, const char *, ...);
 extern BOOL    transport_headers_send(address_item *, int, uschar *, uschar *,
-                 BOOL (*)(int, uschar *, int, BOOL), BOOL, rewrite_rule *, int);
+                 BOOL (*)(int, uschar *, int, unsigned), BOOL, rewrite_rule *, int);
 extern BOOL    transport_write_message(address_item *, int, int, int, uschar *,
                  uschar *, uschar *, uschar *, rewrite_rule *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
