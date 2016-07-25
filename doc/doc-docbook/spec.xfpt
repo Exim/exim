@@ -31524,7 +31524,7 @@ condition defers.
 
 Unix and TCP socket specifications may be mixed in any order.
 Each element of the list is a list itself, space-separated by default
-and changeable in the usual way.
+and changeable in the usual way; take care to not double the separator.
 
 For TCP socket specifications a host name or IP (v4 or v6, but
 subject to list-separator quoting rules) address can be used,
