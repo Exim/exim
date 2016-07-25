@@ -17,8 +17,8 @@ considering: SERVER}{server}{queue}{cutthrough}}
 considering: server}{queue}{cutthrough}}
   expanding: server
      result: server
-condition: eq {SERVER}{server}
-   result: false
+  condition: eq {SERVER}{server}
+     result: false
    scanning: queue}{cutthrough}}
   expanding: queue
      result: queue
@@ -68,8 +68,8 @@ considering: $address_data}{usery}{*}{:}}
 considering: usery}{*}{:}}
   expanding: usery
      result: usery
-condition: eq {$address_data}{usery}
-   result: false
+  condition: eq {$address_data}{usery}
+     result: false
    scanning: *}{:}}
   expanding: *
      result: *
@@ -87,8 +87,8 @@ considering: $address_data}{userz}{*}{:}}
 considering: userz}{*}{:}}
   expanding: userz
      result: userz
-condition: eq {$address_data}{userz}
-   result: false
+  condition: eq {$address_data}{userz}
+     result: false
    scanning: *}{:}}
   expanding: *
      result: *
@@ -132,8 +132,8 @@ considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_rcvhost
-   result: false
+  condition: def:sender_rcvhost
+     result: false
    scanning: from $sender_rcvhost
 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
@@ -152,8 +152,8 @@ considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${i
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_ident
-   result: true
+  condition: def:sender_ident
+     result: true
 considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -170,8 +170,8 @@ considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name
      result: CALLER
   expanding: from ${quote_local_part:$sender_ident} 
      result: from CALLER 
-condition: def:sender_helo_name
-   result: true
+  condition: def:sender_helo_name
+     result: true
 considering: (helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -186,8 +186,8 @@ considering: (helo=$sender_helo_name)
 	}}
      result: from CALLER (helo=myhost.test.ex)
 	
-condition: def:received_protocol
-   result: true
+  condition: def:received_protocol
+     result: true
 considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
@@ -195,8 +195,20 @@ considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	for $received_for}}
   expanding: with $received_protocol
      result: with local-esmtp
-condition: def:sender_address
-   result: true
+  condition: def:tls_cipher
+     result: false
+   scanning: ($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: ($tls_cipher)
+	
+     result: ()
+	
+   skipping: result is not used
+  condition: def:sender_address
+     result: true
 considering: (envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -204,8 +216,8 @@ considering: (envelope-from <$sender_address>)
 	
      result: (envelope-from <CALLER@myhost.test.ex>)
 	
-condition: def:received_for
-   result: true
+  condition: def:received_for
+     result: true
 considering: 
 	for $received_for}}
   expanding: 
@@ -261,8 +273,8 @@ considering: SERVER}{server}{queue}{cutthrough}}
 considering: server}{queue}{cutthrough}}
   expanding: server
      result: server
-condition: eq {SERVER}{server}
-   result: false
+  condition: eq {SERVER}{server}
+     result: false
    scanning: queue}{cutthrough}}
   expanding: queue
      result: queue
@@ -312,8 +324,8 @@ considering: $address_data}{usery}{*}{:}}
 considering: usery}{*}{:}}
   expanding: usery
      result: usery
-condition: eq {$address_data}{usery}
-   result: true
+  condition: eq {$address_data}{usery}
+     result: true
 considering: *}{:}}
   expanding: *
      result: *
@@ -346,8 +358,8 @@ considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_rcvhost
-   result: false
+  condition: def:sender_rcvhost
+     result: false
    scanning: from $sender_rcvhost
 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
@@ -366,8 +378,8 @@ considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${i
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_ident
-   result: true
+  condition: def:sender_ident
+     result: true
 considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -384,8 +396,8 @@ considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name
      result: CALLER
   expanding: from ${quote_local_part:$sender_ident} 
      result: from CALLER 
-condition: def:sender_helo_name
-   result: true
+  condition: def:sender_helo_name
+     result: true
 considering: (helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -400,8 +412,8 @@ considering: (helo=$sender_helo_name)
 	}}
      result: from CALLER (helo=myhost.test.ex)
 	
-condition: def:received_protocol
-   result: true
+  condition: def:received_protocol
+     result: true
 considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
@@ -409,8 +421,20 @@ considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	for $received_for}}
   expanding: with $received_protocol
      result: with local-esmtp
-condition: def:sender_address
-   result: true
+  condition: def:tls_cipher
+     result: false
+   scanning: ($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: ($tls_cipher)
+	
+     result: ()
+	
+   skipping: result is not used
+  condition: def:sender_address
+     result: true
 considering: (envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -418,8 +442,8 @@ considering: (envelope-from <$sender_address>)
 	
      result: (envelope-from <CALLER@myhost.test.ex>)
 	
-condition: def:received_for
-   result: true
+  condition: def:received_for
+     result: true
 considering: 
 	for $received_for}}
   expanding: 
@@ -475,8 +499,8 @@ considering: SERVER}{server}{queue}{cutthrough}}
 considering: server}{queue}{cutthrough}}
   expanding: server
      result: server
-condition: eq {SERVER}{server}
-   result: false
+  condition: eq {SERVER}{server}
+     result: false
    scanning: queue}{cutthrough}}
   expanding: queue
      result: queue
@@ -526,8 +550,8 @@ considering: $address_data}{usery}{*}{:}}
 considering: usery}{*}{:}}
   expanding: usery
      result: usery
-condition: eq {$address_data}{usery}
-   result: true
+  condition: eq {$address_data}{usery}
+     result: true
 considering: *}{:}}
   expanding: *
      result: *
@@ -560,8 +584,8 @@ considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_rcvhost
-   result: false
+  condition: def:sender_rcvhost
+     result: false
    scanning: from $sender_rcvhost
 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
@@ -580,8 +604,8 @@ considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${i
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_ident
-   result: true
+  condition: def:sender_ident
+     result: true
 considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -598,8 +622,8 @@ considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name
      result: CALLER
   expanding: from ${quote_local_part:$sender_ident} 
      result: from CALLER 
-condition: def:sender_helo_name
-   result: true
+  condition: def:sender_helo_name
+     result: true
 considering: (helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -614,8 +638,8 @@ considering: (helo=$sender_helo_name)
 	}}
      result: from CALLER (helo=myhost.test.ex)
 	
-condition: def:received_protocol
-   result: true
+  condition: def:received_protocol
+     result: true
 considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
@@ -623,8 +647,20 @@ considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	for $received_for}}
   expanding: with $received_protocol
      result: with local-esmtp
-condition: def:sender_address
-   result: true
+  condition: def:tls_cipher
+     result: false
+   scanning: ($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: ($tls_cipher)
+	
+     result: ()
+	
+   skipping: result is not used
+  condition: def:sender_address
+     result: true
 considering: (envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -632,8 +668,8 @@ considering: (envelope-from <$sender_address>)
 	
      result: (envelope-from <CALLER@myhost.test.ex>)
 	
-condition: def:received_for
-   result: true
+  condition: def:received_for
+     result: true
 considering: 
 	for $received_for}}
   expanding: 

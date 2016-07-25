@@ -49,8 +49,8 @@ considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_rcvhost
-   result: false
+  condition: def:sender_rcvhost
+     result: false
    scanning: from $sender_rcvhost
 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
@@ -69,8 +69,8 @@ considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${i
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
-condition: def:sender_ident
-   result: true
+  condition: def:sender_ident
+     result: true
 considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -87,8 +87,8 @@ considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name
      result: CALLER
   expanding: from ${quote_local_part:$sender_ident} 
      result: from CALLER 
-condition: def:sender_helo_name
-   result: false
+  condition: def:sender_helo_name
+     result: false
    scanning: (helo=$sender_helo_name)
 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
@@ -103,8 +103,8 @@ condition: def:sender_helo_name
   expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
 	}}
      result: from CALLER 
-condition: def:received_protocol
-   result: true
+  condition: def:received_protocol
+     result: true
 considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
@@ -112,8 +112,20 @@ considering: with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
 	for $received_for}}
   expanding: with $received_protocol
      result: with local
-condition: def:sender_address
-   result: true
+  condition: def:tls_cipher
+     result: false
+   scanning: ($tls_cipher)
+	}}(Exim $version_number)
+	${if def:sender_address {(envelope-from <$sender_address>)
+	}}id $message_exim_id${if def:received_for {
+	for $received_for}}
+  expanding: ($tls_cipher)
+	
+     result: ()
+	
+   skipping: result is not used
+  condition: def:sender_address
+     result: true
 considering: (envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -121,8 +133,8 @@ considering: (envelope-from <$sender_address>)
 	
      result: (envelope-from <CALLER@test.ex>)
 	
-condition: def:received_for
-   result: false
+  condition: def:received_for
+     result: false
    scanning: 
 	for $received_for}}
   expanding: 
@@ -465,8 +477,8 @@ mailbox TESTSUITE/test-mail/junk is locked
 writing to file TESTSUITE/test-mail/junk
 considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
 
-condition: def:return_path
-   result: true
+  condition: def:return_path
+     result: true
 considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
 
   expanding: $return_path
@@ -520,8 +532,8 @@ mailbox TESTSUITE/test-mail/junk is locked
 writing to file TESTSUITE/test-mail/junk
 considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
 
-condition: def:return_path
-   result: true
+  condition: def:return_path
+     result: true
 considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
 
   expanding: $return_path

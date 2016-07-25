@@ -11,8 +11,8 @@ considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
   expanding: \N^([ab]+)(\w+)$\N
      result: ^([ab]+)(\w+)$
-condition: match{abcd}{\N^([ab]+)(\w+)$\N}
-   result: true
+  condition: match{abcd}{\N^([ab]+)(\w+)$\N}
+     result: true
 considering: $2$1}fail}
   expanding: $2$1
      result: cdab
@@ -25,8 +25,8 @@ considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
   expanding: \N^([ab]+)(\w+)$\N
      result: ^([ab]+)(\w+)$
-condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
-   result: false
+  condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
+     result: false
    scanning: $2$1}fail}
   expanding: $2$1
      result: 
@@ -41,8 +41,8 @@ considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
 considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
   expanding: 1
      result: 1
-condition: eq {1}{1}
-   result: true
+  condition: eq {1}{1}
+     result: true
 considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
   expanding: yes
      result: yes
@@ -69,8 +69,8 @@ considering: a.b.c}{yes}{no}}
      result: a.b.c
 LOG: MAIN PANIC
   no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
-condition: match_address{a.b.c}{a.b.c}
-   result: false
+  condition: match_address{a.b.c}{a.b.c}
+     result: false
    scanning: yes}{no}}
   expanding: yes
      result: yes
@@ -147,8 +147,8 @@ considering: black}{white}{$sender_host_name}{No}}
 considering: white}{$sender_host_name}{No}}
   expanding: white
      result: white
-condition: eq{black}{white}
-   result: false
+  condition: eq{black}{white}
+     result: false
    scanning: $sender_host_name}{No}}
   expanding: $sender_host_name
      result: 

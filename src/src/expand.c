@@ -4105,8 +4105,9 @@ while (*s != 0)
       if (next_s == NULL) goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
-        debug_printf("condition: %.*s\n   result: %s\n", (int)(next_s - s), s,
-          cond? "true" : "false");
+        debug_printf("  condition: %.*s\n     result: %s\n",
+	  (int)(next_s - s), s,
+          cond ? "true" : "false");
 
       s = next_s;
 
