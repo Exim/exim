@@ -6906,8 +6906,8 @@ if (addr_senddsn)
     {
     FILE *f = fdopen(fd, "wb");
     /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
-    int topt = topt_add_return_path | topt_no_body;
     uschar * bound;
+    transport_ctx tctx;
 
     DEBUG(D_deliver)
       debug_printf("sending error message to: %s\n", sender_address);
@@ -6986,7 +6986,10 @@ if (addr_senddsn)
     return_path = sender_address;   /* In case not previously set */
 
     /* Write the original email out */
-    transport_write_message(NULL, fileno(f), topt, 0, NULL, NULL, NULL, NULL, NULL, 0);
+
+    bzero(&tctx, sizeof(tctx));
+    tctx.options = topt_add_return_path | topt_no_body;
+    transport_write_message(fileno(f), &tctx, 0);
     fflush(f);
 
     fprintf(f,"\n--%s--\n", bound);
@@ -7441,8 +7444,18 @@ wording. */
       fflush(f);
       transport_filter_argv = NULL;   /* Just in case */
       return_path = sender_address;   /* In case not previously set */
-      transport_write_message(NULL, fileno(f), topt,
-        0, dsnnotifyhdr, NULL, NULL, NULL, NULL, 0);
+	{			      /* Dummy transport for headers add */
+	transport_ctx * tctx =
+	  store_get(sizeof(*tctx) + sizeof(transport_instance));
+	transport_instance * tb = (transport_instance *)(tctx+1);
+
+	bzero(tctx, sizeof(*tctx)+sizeof(*tb));
+	tctx->tblock = tb;
+	tctx->options = topt;
+	tb->add_headers = dsnnotifyhdr;
+
+	transport_write_message(fileno(f), tctx, 0);
+	}
       fflush(f);
 
       /* we never add the final text. close the file */
@@ -7758,7 +7771,9 @@ else if (addr_defer != (address_item *)(+1))
         FILE *wmf = NULL;
         FILE *f = fdopen(fd, "wb");
 	uschar * bound;
-        int topt;
+	transport_ctx tctx;
+
+	bzero(&tctx, sizeof(tctx));
 
         if (warn_message_file)
           if (!(wmf = Ufopen(warn_message_file, "rb")))
@@ -7905,11 +7920,12 @@ else if (addr_defer != (address_item *)(+1))
 
         fflush(f);
         /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
-        topt = topt_add_return_path | topt_no_body;
+        tctx.options = topt_add_return_path | topt_no_body;
         transport_filter_argv = NULL;   /* Just in case */
         return_path = sender_address;   /* In case not previously set */
+
         /* Write the original email out */
-        transport_write_message(NULL, fileno(f), topt, 0, NULL, NULL, NULL, NULL, NULL, 0);
+        transport_write_message(fileno(f), &tctx, 0);
         fflush(f);
 
         fprintf(f,"\n--%s--\n", bound);

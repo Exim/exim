@@ -1589,11 +1589,8 @@ if(cutthrough.fd < 0)
 HDEBUG(D_acl) debug_printf("----------- start cutthrough headers send -----------\n");
 
 if (!transport_headers_send(&cutthrough.addr, cutthrough.fd,
-	cutthrough.addr.transport->add_headers,
-	cutthrough.addr.transport->remove_headers,
-	&cutthrough_write_chunk, topt_use_crlf,
-	cutthrough.addr.transport->rewrite_rules,
-	cutthrough.addr.transport->rewrite_existflags))
+	cutthrough.addr.transport,
+	&cutthrough_write_chunk, topt_use_crlf))
   return FALSE;
 
 HDEBUG(D_acl) debug_printf("----------- done cutthrough headers send ------------\n");

@@ -145,9 +145,8 @@ extern uschar *deliver_get_sender_address (uschar *id);
 
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
-extern BOOL    dkim_transport_write_message(address_item *, int, int,
-                   uschar *, uschar *, uschar *, uschar *, rewrite_rule *,
-                   int, struct ob_dkim *);
+extern BOOL    dkim_transport_write_message(int, transport_ctx *,
+		  struct ob_dkim *);
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
@@ -469,10 +468,10 @@ extern BOOL    transport_set_up_command(const uschar ***, uschar *,
 extern void    transport_update_waiting(host_item *, uschar *);
 extern BOOL    transport_write_block(int, uschar *, int);
 extern BOOL    transport_write_string(int, const char *, ...);
-extern BOOL    transport_headers_send(address_item *, int, uschar *, uschar *,
-                 BOOL (*)(int, uschar *, int, unsigned), BOOL, rewrite_rule *, int);
-extern BOOL    transport_write_message(address_item *, int, int, int, uschar *,
-                 uschar *, uschar *, uschar *, rewrite_rule *, int);
+extern BOOL    transport_headers_send(address_item *, int, transport_instance *,
+                 BOOL (*)(int, uschar *, int, unsigned),
+		 BOOL);
+extern BOOL    transport_write_message(int, transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);
 extern void    tree_add_unusable(host_item *);

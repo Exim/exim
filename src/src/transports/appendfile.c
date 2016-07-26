@@ -2874,9 +2874,14 @@ at initialization time. */
 
 if (yield == OK)
   {
-  if (!transport_write_message(addr, fd, ob->options, 0, tblock->add_headers,
-      tblock->remove_headers, ob->check_string, ob->escape_string,
-      tblock->rewrite_rules, tblock->rewrite_existflags))
+  transport_ctx tctx = {
+    tblock,
+    addr,
+    ob->check_string,
+    ob->escape_string,
+    ob->options
+  };
+  if (!transport_write_message(fd, &tctx, 0))
     yield = DEFER;
   }
 

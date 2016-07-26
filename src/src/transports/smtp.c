@@ -2358,24 +2358,25 @@ if (!ok)
   ok = TRUE;
 else
   {
-  int options = topt_use_crlf | topt_escape_headers
-    | (tblock->body_only	? topt_no_headers	: 0)
-    | (tblock->headers_only	? topt_no_body		: 0)
-    | (tblock->return_path_add	? topt_add_return_path	: 0)
-    | (tblock->delivery_date_add ?topt_add_delivery_date :0)
-    | (tblock->envelope_to_add	? topt_add_envelope_to	: 0);
-  uschar * str_spot, * str_repl;
+  transport_ctx tctx = {
+    tblock,
+    addrlist,
+    US".", US"..",    /* Escaping strings */
+    topt_use_crlf | topt_escape_headers
+    | (tblock->body_only	? topt_no_headers : 0)
+    | (tblock->headers_only	? topt_no_body : 0)
+    | (tblock->return_path_add	? topt_add_return_path : 0)
+    | (tblock->delivery_date_add ? topt_add_delivery_date : 0)
+    | (tblock->envelope_to_add	? topt_add_envelope_to : 0)
+  };
 
   if (peer_offered & PEER_OFFERED_CHUNKING)
     {
-    options |= topt_use_bdat;
-    str_spot = str_repl = NULL;
+    tctx.options |= topt_use_bdat;
+    tctx.check_string = tctx.escape_string = NULL;
     }
   else
-    {
-    options |= topt_end_dot;
-    str_spot = US"."; str_repl = US"..";
-    }
+    tctx.options |= topt_end_dot;
 
   sigalrm_seen = FALSE;
   transport_write_timeout = ob->data_timeout;
@@ -2387,20 +2388,9 @@ else
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
-  ok = dkim_transport_write_message(addrlist, inblock.sock,
-    options,
-    tblock->add_headers, tblock->remove_headers,
-    str_spot, str_repl,	/* Escaping strings */
-    tblock->rewrite_rules, tblock->rewrite_existflags,
-    &ob->dkim
-    );
+  ok = dkim_transport_write_message(inblock.sock, &tctx, &ob->dkim);
 #else
-  ok = transport_write_message(addrlist, inblock.sock,
-    options,
-    0,            /* No size limit */
-    tblock->add_headers, tblock->remove_headers,
-    str_spot, str_repl,	/* Escaping strings */
-    tblock->rewrite_rules, tblock->rewrite_existflags);
+  ok = transport_write_message(inblock.sock, &tctx, 0);
 #endif
 
   /* transport_write_message() uses write() because it is called from other
