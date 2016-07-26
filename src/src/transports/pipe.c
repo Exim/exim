@@ -555,6 +555,13 @@ uschar *envp[50];
 const uschar *envlist = ob->environment;
 uschar *cmd, *ss;
 uschar *eol = (ob->use_crlf)? US"\r\n" : US"\n";
+transport_ctx tctx = {
+  tblock,
+  addr,
+  ob->check_string,
+  ob->escape_string,
+  ob->options /* set at initialization time */
+};
 
 DEBUG(D_transport) debug_printf("%s transport entered\n", tblock->name);
 
@@ -842,23 +849,19 @@ if (ob->use_bsmtp)
   if (!transport_write_string(fd_in, "MAIL FROM:<%s>%s", return_path, eol))
     goto END_WRITE;
 
-  for (a = addr; a != NULL; a = a->next)
-    {
+  for (a = addr; a; a = a->next)
     if (!transport_write_string(fd_in,
         "RCPT TO:<%s>%s",
         transport_rcpt_address(a, tblock->rcpt_include_affixes),
         eol))
       goto END_WRITE;
-    }
 
   if (!transport_write_string(fd_in, "DATA%s", eol)) goto END_WRITE;
   }
 
-/* Now the actual message - the options were set at initialization time */
+/* Now the actual message */
 
-if (!transport_write_message(addr, fd_in, ob->options, 0, tblock->add_headers,
-  tblock->remove_headers, ob->check_string, ob->escape_string,
-  tblock->rewrite_rules, tblock->rewrite_existflags))
+if (!transport_write_message(fd_in, &tctx, 0))
     goto END_WRITE;
 
 /* Now any configured suffix */

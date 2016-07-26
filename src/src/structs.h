@@ -218,6 +218,17 @@ typedef struct transport_info {
 } transport_info;
 
 
+/* Structure for information about a delivery-in-progress */
+
+typedef struct transport_context {
+  transport_instance * tblock;
+  struct address_item * addr;
+  uschar	* check_string;
+  uschar	* escape_string;
+  int		  options;		/* topt_* */
+} transport_ctx;
+
+
 
 typedef struct {
   uschar *request;

@@ -616,11 +616,12 @@ Arguments:
 Returns:                TRUE on success; FALSE on failure.
 */
 BOOL
-transport_headers_send(address_item *addr, int fd, uschar *add_headers, uschar *remove_headers,
+transport_headers_send(address_item *addr, int fd, transport_instance * tblock,
   BOOL (*sendfn)(int fd, uschar * s, int len, BOOL use_crlf),
-  BOOL use_crlf, rewrite_rule *rewrite_rules, int rewrite_existflags)
+  BOOL use_crlf)
 {
 header_line *h;
+const uschar *list;
 
 /* Then the message's headers. Don't write any that are flagged as "old";
 that means they were rewritten, or are a record of envelope rewriting, or
@@ -632,10 +633,9 @@ Then check addr->prop.remove_headers too, provided that addr is not NULL. */
 for (h = header_list; h; h = h->next) if (h->type != htype_old)
   {
   int i;
-  const uschar *list = remove_headers;
-
   BOOL include_header = TRUE;
 
+  list = tblock->remove_headers;
   for (i = 0; i < 2; i++)    /* For remove_headers && addr->prop.remove_headers */
     {
     if (list)
@@ -658,9 +658,9 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
 	while (*ss == ' ' || *ss == '\t') ss++;
 	if (*ss == ':') break;
 	}
-      if (s != NULL) { include_header = FALSE; break; }
+      if (s) { include_header = FALSE; break; }
       }
-    if (addr != NULL) list = addr->prop.remove_headers;
+    if (addr) list = addr->prop.remove_headers;
     }
 
   /* If this header is to be output, try to rewrite it if there are rewriting
@@ -668,12 +668,13 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
 
   if (include_header)
     {
-    if (rewrite_rules)
+    if (tblock->rewrite_rules)
       {
       void *reset_point = store_get(0);
       header_line *hh;
 
-      if ((hh = rewrite_header(h, NULL, NULL, rewrite_rules, rewrite_existflags, FALSE)))
+      if ((hh = rewrite_header(h, NULL, NULL, tblock->rewrite_rules,
+		  tblock->rewrite_existflags, FALSE)))
 	{
 	if (!sendfn(fd, hh->text, hh->slen, use_crlf)) return FALSE;
 	store_reset(reset_point);
@@ -732,12 +733,12 @@ up any other headers. An empty string or a forced expansion failure are
 noops. An added header string from a transport may not end with a newline;
 add one if it does not. */
 
-if (add_headers)
+if ((list = CUS tblock->add_headers))
   {
   int sep = '\n';
   uschar * s;
 
-  while ((s = string_nextinlist(CUSS &add_headers, &sep, NULL, 0)))
+  while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     if ((s = expand_string(s)))
       {
       int len = Ustrlen(s);
@@ -793,30 +794,32 @@ can include timeouts for certain transports, which are requested by setting
 transport_write_timeout non-zero.
 
 Arguments:
-  addr                  (chain of) addresses (for extra headers), or NULL;
-                          only the first address is used
   fd                    file descriptor to write the message to
-  options               bit-wise options:
-    add_return_path       if TRUE, add a "return-path" header
-    add_envelope_to       if TRUE, add a "envelope-to" header
-    add_delivery_date     if TRUE, add a "delivery-date" header
-    use_crlf              if TRUE, turn NL into CR LF
-    end_dot               if TRUE, send a terminating "." line at the end
-    no_headers            if TRUE, omit the headers
-    no_body               if TRUE, omit the body
-  size_limit            if > 0, this is a limit to the size of message written;
-                          it is used when returning messages to their senders,
-                          and is approximate rather than exact, owing to chunk
-                          buffering
-  add_headers           a string containing one or more headers to add; it is
-                          expanded, and must be in correct RFC 822 format as
-                          it is transmitted verbatim; NULL => no additions,
-                          and so does empty string or forced expansion fail
-  remove_headers        a colon-separated list of headers to remove, or NULL
-  check_string          a string to check for at the start of lines, or NULL
-  escape_string         a string to insert in front of any check string
-  rewrite_rules         chain of header rewriting rules
-  rewrite_existflags    flags for the rewriting rules
+  tctx
+    addr                (chain of) addresses (for extra headers), or NULL;
+                          only the first address is used
+    tblock          	optional transport instance block (NULL signifies NULL/0):
+      add_headers           a string containing one or more headers to add; it is
+                            expanded, and must be in correct RFC 822 format as
+                            it is transmitted verbatim; NULL => no additions,
+                            and so does empty string or forced expansion fail
+      remove_headers        a colon-separated list of headers to remove, or NULL
+      rewrite_rules         chain of header rewriting rules
+      rewrite_existflags    flags for the rewriting rules
+    options               bit-wise options:
+      add_return_path       if TRUE, add a "return-path" header
+      add_envelope_to       if TRUE, add a "envelope-to" header
+      add_delivery_date     if TRUE, add a "delivery-date" header
+      use_crlf              if TRUE, turn NL into CR LF
+      end_dot               if TRUE, send a terminating "." line at the end
+      no_headers            if TRUE, omit the headers
+      no_body               if TRUE, omit the body
+    size_limit            if > 0, this is a limit to the size of message written;
+                            it is used when returning messages to their senders,
+                            and is approximate rather than exact, owing to chunk
+                            buffering
+    check_string          a string to check for at the start of lines, or NULL
+    escape_string         a string to insert in front of any check string
 
 Returns:                TRUE on success; FALSE (with errno) on failure.
                         In addition, the global variable transport_count
@@ -824,13 +827,11 @@ Returns:                TRUE on success; FALSE (with errno) on failure.
 */
 
 static BOOL
-internal_transport_write_message(address_item *addr, int fd, int options,
-  int size_limit, uschar *add_headers, uschar *remove_headers, uschar *check_string,
-  uschar *escape_string, rewrite_rule *rewrite_rules, int rewrite_existflags)
+internal_transport_write_message(int fd, transport_ctx * tctx, int size_limit)
 {
 int written = 0;
 int len;
-BOOL use_crlf  = (options & topt_use_crlf)  != 0;
+BOOL use_crlf = (tctx->options & topt_use_crlf) != 0;
 
 /* Initialize pointer in output buffer. */
 
@@ -839,11 +840,11 @@ chunk_ptr = deliver_out_buffer;
 /* Set up the data for start-of-line data checking and escaping */
 
 nl_partial_match = -1;
-if (check_string && escape_string)
+if (tctx->check_string && tctx->escape_string)
   {
-  nl_check = check_string;
+  nl_check = tctx->check_string;
   nl_check_length = Ustrlen(nl_check);
-  nl_escape = escape_string;
+  nl_escape = tctx->escape_string;
   nl_escape_length = Ustrlen(nl_escape);
   }
 else
@@ -853,17 +854,17 @@ else
 an option (set for SMTP, not otherwise). Negate the length if not wanted till
 after the headers. */
 
-if (!(options & topt_escape_headers))
+if (!(tctx->options & topt_escape_headers))
   nl_check_length = -nl_check_length;
 
 /* Write the headers if required, including any that have to be added. If there
 are header rewriting rules, apply them. */
 
-if (!(options & topt_no_headers))
+if (!(tctx->options & topt_no_headers))
   {
   /* Add return-path: if requested. */
 
-  if (options & topt_add_return_path)
+  if (tctx->options & topt_add_return_path)
     {
     uschar buffer[ADDRESS_MAXLENGTH + 20];
     int n = sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
@@ -873,7 +874,7 @@ if (!(options & topt_no_headers))
 
   /* Add envelope-to: if requested */
 
-  if (options & topt_add_envelope_to)
+  if (tctx->options & topt_add_envelope_to)
     {
     BOOL first = TRUE;
     address_item *p;
@@ -887,7 +888,7 @@ if (!(options & topt_no_headers))
     anchors for lists of addresses already handled; they have to be defined at
     this level becuase write_env_to() calls itself recursively. */
 
-    for (p = addr; p; p = p->next)
+    for (p = tctx->addr; p; p = p->next)
       if (!write_env_to(p, &plist, &dlist, &first, fd, use_crlf))
 	return FALSE;
 
@@ -899,7 +900,7 @@ if (!(options & topt_no_headers))
 
   /* Add delivery-date: if requested. */
 
-  if ((options & topt_add_delivery_date) != 0)
+  if (tctx->options & topt_add_delivery_date)
     {
     uschar buffer[100];
     int n = sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
@@ -911,8 +912,8 @@ if (!(options & topt_no_headers))
   were removed (e.g. Bcc). If remove_headers is not null, skip any headers that
   match any entries therein. Then check addr->prop.remove_headers too, provided that
   addr is not NULL. */
-  if (!transport_headers_send(addr, fd, add_headers, remove_headers, &write_chunk,
-	use_crlf, rewrite_rules, rewrite_existflags))
+
+  if (!transport_headers_send(tctx->addr, fd, tctx->tblock, &write_chunk, use_crlf))
     return FALSE;
   }
 
@@ -922,7 +923,7 @@ negative in cases where it isn't to apply to the headers). Then ensure the body
 is positioned at the start of its file (following the message id), then write
 it, applying the size limit if required. */
 
-if (!(options & topt_no_body))
+if (!(tctx->options & topt_no_body))
   {
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
@@ -954,7 +955,7 @@ nl_check_length = nl_escape_length = 0;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
-if (options & topt_end_dot && !write_chunk(fd, US".\n", 2, use_crlf))
+if (tctx->options & topt_end_dot && !write_chunk(fd, US".\n", 2, use_crlf))
   return FALSE;
 
 /* Write out any remaining data in the buffer before returning. */
@@ -986,10 +987,8 @@ Returns:       TRUE on success; FALSE (with errno) for any failure
 */
 
 BOOL
-dkim_transport_write_message(address_item *addr, int out_fd, int options,
-  uschar *add_headers, uschar *remove_headers,
-  uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
-  int rewrite_existflags, struct ob_dkim * dkim)
+dkim_transport_write_message(int out_fd, transport_ctx * tctx,
+  struct ob_dkim * dkim)
 {
 int dkim_fd;
 int save_errno = 0;
@@ -1003,10 +1002,7 @@ off_t k_file_size;
 /* If we can't sign, just call the original function. */
 
 if (!(dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector))
-  return transport_write_message(addr, out_fd, options,
-	    0, add_headers, remove_headers,
-	    check_string, escape_string, rewrite_rules,
-	    rewrite_existflags);
+  return transport_write_message(out_fd, tctx, 0);
 
 dkim_spool_name = spool_fname(US"input", message_subdir, message_id,
 		    string_sprintf("-%d-K", (int)getpid()));
@@ -1021,10 +1017,7 @@ if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
 
 /* Call original function to write the -K file; does the CRLF expansion */
 
-rc = transport_write_message(addr, dkim_fd, options,
-  0, add_headers, remove_headers,
-  check_string, escape_string, rewrite_rules,
-  rewrite_existflags);
+rc = transport_write_message(dkim_fd, tctx, 0);
 
 /* Save error state. We must clean up before returning. */
 if (!rc)
@@ -1067,13 +1060,13 @@ if (dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
     int siglen = Ustrlen(dkim_signature);
     while(siglen > 0)
       {
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
 	wwritten = tls_out.active == out_fd
 	  ? tls_write(FALSE, dkim_signature, siglen)
 	  : write(out_fd, dkim_signature, siglen);
-  #else
+#else
 	wwritten = write(out_fd, dkim_signature, siglen);
-  #endif
+#endif
       if (wwritten == -1)
 	{
 	/* error, bail out */
@@ -1174,6 +1167,7 @@ set up a filtering process, fork another process to call the internal function
 to write to the filter, and in this process just suck from the filter and write
 down the given fd. At the end, tidy up the pipes and the processes.
 
+XXX
 Arguments:     as for internal_transport_write_message() above
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
@@ -1181,16 +1175,16 @@ Returns:       TRUE on success; FALSE (with errno) for any failure
 */
 
 BOOL
-transport_write_message(address_item *addr, int fd, int options,
-  int size_limit, uschar *add_headers, uschar *remove_headers,
-  uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
-  int rewrite_existflags)
+transport_write_message(int fd, transport_ctx * tctx, int size_limit)
 {
 BOOL use_crlf;
 BOOL last_filter_was_NL = TRUE;
 int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
+static transport_ctx dummy_tctx = { NULL, NULL, NULL, NULL, 0 };
+
+if (!tctx) tctx = &dummy_tctx;
 
 transport_filter_timed_out = FALSE;
 
@@ -1201,22 +1195,20 @@ if (  !transport_filter_argv
    || !*transport_filter_argv
    || !**transport_filter_argv
    )
-  return internal_transport_write_message(addr, fd, options, size_limit,
-    add_headers, remove_headers, check_string, escape_string,
-    rewrite_rules, rewrite_existflags);
+  return internal_transport_write_message(fd, tctx, size_limit);
 
 /* Otherwise the message must be written to a filter process and read back
 before being written to the incoming fd. First set up the special processing to
 be done during the copying. */
 
-use_crlf  = (options & topt_use_crlf) != 0;
+use_crlf  = (tctx->options & topt_use_crlf) != 0;
 nl_partial_match = -1;
 
-if (check_string != NULL && escape_string != NULL)
+if (tctx->check_string && tctx->escape_string)
   {
-  nl_check = check_string;
+  nl_check = tctx->check_string;
   nl_check_length = Ustrlen(nl_check);
-  nl_escape = escape_string;
+  nl_escape = tctx->escape_string;
   nl_escape_length = Ustrlen(nl_escape);
   }
 else nl_check_length = nl_escape_length = 0;
@@ -1254,16 +1246,17 @@ if ((write_pid = fork()) == 0)
   (void)close(fd_read);
   (void)close(pfd[pipe_read]);
   nl_check_length = nl_escape_length = 0;
-  rc = internal_transport_write_message(addr, fd_write,
-    (options & ~(topt_use_crlf | topt_end_dot)),
-    size_limit, add_headers, remove_headers, NULL, NULL,
-    rewrite_rules, rewrite_existflags);
+
+  tctx->options &= ~(topt_use_crlf | topt_end_dot);
+
+  rc = internal_transport_write_message(fd_write, tctx, size_limit);
+
   save_errno = errno;
   if (  write(pfd[pipe_write], (void *)&rc, sizeof(BOOL))
         != sizeof(BOOL)
      || write(pfd[pipe_write], (void *)&save_errno, sizeof(int))
         != sizeof(int)
-     || write(pfd[pipe_write], (void *)&(addr->more_errno), sizeof(int))
+     || write(pfd[pipe_write], (void *)&tctx->addr->more_errno, sizeof(int))
         != sizeof(int)
      )
     rc = FALSE;	/* compiler quietening */
@@ -1360,7 +1353,7 @@ if (filter_pid > 0 && (rc = child_close(filter_pid, 30)) != 0 && yield)
   {
   yield = FALSE;
   save_errno = ERRNO_FILTER_FAIL;
-  addr->more_errno = rc;
+  tctx->addr->more_errno = rc;
   DEBUG(D_transport) debug_printf("filter process returned %d\n", rc);
   }
 
@@ -1381,7 +1374,7 @@ if (write_pid > 0)
       if (!ok)
         {
         dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
-        dummy = read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
+        dummy = read(pfd[pipe_read], (void *)&(tctx->addr->more_errno), sizeof(int));
         yield = FALSE;
         }
       }
@@ -1389,7 +1382,7 @@ if (write_pid > 0)
       {
       yield = FALSE;
       save_errno = ERRNO_FILTER_FAIL;
-      addr->more_errno = rc;
+      tctx->addr->more_errno = rc;
       DEBUG(D_transport) debug_printf("writing process returned %d\n", rc);
       }
     }
@@ -1403,10 +1396,10 @@ filter was not NL, insert a NL to make the SMTP protocol work. */
 if (yield)
   {
   nl_check_length = nl_escape_length = 0;
-  if (  options & topt_end_dot
+  if (  tctx->options & topt_end_dot
      && ( last_filter_was_NL
-        ? !write_chunk(fd, US".\n", 2, options)
-	: !write_chunk(fd, US"\n.\n", 3, options)
+        ? !write_chunk(fd, US".\n", 2, tctx->options)
+	: !write_chunk(fd, US"\n.\n", 3, tctx->options)
      )  )
     yield = FALSE;
 
@@ -1423,7 +1416,7 @@ DEBUG(D_transport)
   {
   debug_printf("end of filtering transport writing: yield=%d\n", yield);
   if (!yield)
-    debug_printf("errno=%d more_errno=%d\n", errno, addr->more_errno);
+    debug_printf("errno=%d more_errno=%d\n", errno, tctx->addr->more_errno);
   }
 
 return yield;

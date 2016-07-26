@@ -1145,7 +1145,7 @@ switch(action)
   case MSG_SHOW_COPY:
   deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
   deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
-  transport_write_message(NULL, 1, 0, 0, NULL, NULL, NULL, NULL, NULL, 0);
+  transport_write_message(1, NULL, 0);
   break;
 
 

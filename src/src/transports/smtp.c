@@ -2343,6 +2343,18 @@ if (!ok)
   ok = TRUE;
 else
   {
+  transport_ctx tctx = {
+    tblock,
+    addrlist,
+    US".", US"..",    /* Escaping strings */
+    topt_use_crlf | topt_end_dot | topt_escape_headers
+    | (tblock->body_only	? topt_no_headers : 0)
+    | (tblock->headers_only	? topt_no_body : 0)
+    | (tblock->return_path_add	? topt_add_return_path : 0)
+    | (tblock->delivery_date_add ? topt_add_delivery_date : 0)
+    | (tblock->envelope_to_add	? topt_add_envelope_to : 0)
+  };
+
   sigalrm_seen = FALSE;
   transport_write_timeout = ob->data_timeout;
   smtp_command = US"sending data block";   /* For error messages */
@@ -2351,30 +2363,9 @@ else
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
-  ok = dkim_transport_write_message(addrlist, inblock.sock,
-    topt_use_crlf | topt_end_dot | topt_escape_headers |
-      (tblock->body_only? topt_no_headers : 0) |
-      (tblock->headers_only? topt_no_body : 0) |
-      (tblock->return_path_add? topt_add_return_path : 0) |
-      (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-      (tblock->envelope_to_add? topt_add_envelope_to : 0),
-    tblock->add_headers, tblock->remove_headers,
-    US".", US"..",    /* Escaping strings */
-    tblock->rewrite_rules, tblock->rewrite_existflags,
-    &ob->dkim
-    );
+  ok = dkim_transport_write_message(inblock.sock, &tctx, &ob->dkim);
 #else
-  ok = transport_write_message(addrlist, inblock.sock,
-    topt_use_crlf | topt_end_dot | topt_escape_headers |
-      (tblock->body_only? topt_no_headers : 0) |
-      (tblock->headers_only? topt_no_body : 0) |
-      (tblock->return_path_add? topt_add_return_path : 0) |
-      (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-      (tblock->envelope_to_add? topt_add_envelope_to : 0),
-    0,            /* No size limit */
-    tblock->add_headers, tblock->remove_headers,
-    US".", US"..",    /* Escaping strings */
-    tblock->rewrite_rules, tblock->rewrite_existflags);
+  ok = transport_write_message(inblock.sock, &tctx, 0);
 #endif
 
   /* transport_write_message() uses write() because it is called from other

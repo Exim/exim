@@ -609,6 +609,13 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
 if (send_data)
   {
   BOOL ok;
+  transport_ctx tctx = {
+    tblock,
+    addrlist,
+    US".",
+    US"..",
+    ob->options
+  };
 
   if (!lmtp_write_command(fd_in, "DATA\r\n")) goto WRITE_FAILED;
   if (!lmtp_read_response(out, buffer, sizeof(buffer), '3', timeout))
@@ -628,9 +635,7 @@ if (send_data)
     debug_printf("  LMTP>> writing message and terminating \".\"\n");
 
   transport_count = 0;
-  ok = transport_write_message(addrlist, fd_in, ob->options, 0,
-        tblock->add_headers, tblock->remove_headers, US".", US"..",
-        tblock->rewrite_rules, tblock->rewrite_existflags);
+  ok = transport_write_message(fd_in, &tctx, 0);
 
   /* Failure can either be some kind of I/O disaster (including timeout),
   or the failure of a transport filter or the expansion of added headers. */
