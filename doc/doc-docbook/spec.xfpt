@@ -19873,12 +19873,17 @@ list1:   :include:/opt/lists/list1
 .endd
 .next
 .cindex "address redirection" "to black hole"
-Sometimes you want to throw away mail to a particular local part. Making the
-&%data%& option expand to an empty string does not work, because that causes
-the router to decline. Instead, the alias item
+.cindex "delivery" "discard"
+.cindex "delivery" "blackhole"
 .cindex "black hole"
 .cindex "abandoning mail"
-&':blackhole:'& can be used. It does what its name implies. No delivery is
+Sometimes you want to throw away mail to a particular local part.  Making the
+&%data%& option expand to an empty string does not work, because that causes
+the router to decline. Instead, the alias item
+.code
+:blackhole:
+.endd
+can be used. It does what its name implies. No delivery is
 done, and no error message is generated. This has the same effect as specifying
 &_/dev/null_& as a destination, but it can be independently disabled.
 
@@ -38058,7 +38063,7 @@ senders).
 .section "Signing outgoing messages" "SECDKIMSIGN"
 .cindex "DKIM" "signing"
 
-Signing is implemented by setting private options on the SMTP transport.
+Signing is enabled by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
 
 .option dkim_domain smtp string&!! unset
