@@ -635,7 +635,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
   int i;
   BOOL include_header = TRUE;
 
-  list = tblock->remove_headers;
+  list = tblock ? tblock->remove_headers : NULL;
   for (i = 0; i < 2; i++)    /* For remove_headers && addr->prop.remove_headers */
     {
     if (list)
@@ -668,7 +668,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
 
   if (include_header)
     {
-    if (tblock->rewrite_rules)
+    if (tblock && tblock->rewrite_rules)
       {
       void *reset_point = store_get(0);
       header_line *hh;
@@ -733,7 +733,7 @@ up any other headers. An empty string or a forced expansion failure are
 noops. An added header string from a transport may not end with a newline;
 add one if it does not. */
 
-if ((list = CUS tblock->add_headers))
+if (tblock && (list = CUS tblock->add_headers))
   {
   int sep = '\n';
   uschar * s;
@@ -1201,7 +1201,7 @@ if (  !transport_filter_argv
 before being written to the incoming fd. First set up the special processing to
 be done during the copying. */
 
-use_crlf  = (tctx->options & topt_use_crlf) != 0;
+use_crlf = (tctx->options & topt_use_crlf) != 0;
 nl_partial_match = -1;
 
 if (tctx->check_string && tctx->escape_string)
@@ -1232,7 +1232,7 @@ filter_pid = child_open(USS transport_filter_argv, NULL, 077,
 if (filter_pid < 0) goto TIDY_UP;      /* errno set */
 
 DEBUG(D_transport)
-  debug_printf("process %d running as transport filter: write=%d read=%d\n",
+  debug_printf("process %d running as transport filter: fd_write=%d fd_read=%d\n",
     (int)filter_pid, fd_write, fd_read);
 
 /* Fork subprocess to write the message to the filter, and return the result
@@ -1247,6 +1247,7 @@ if ((write_pid = fork()) == 0)
   (void)close(pfd[pipe_read]);
   nl_check_length = nl_escape_length = 0;
 
+  tctx->check_string = tctx->escape_string = NULL;
   tctx->options &= ~(topt_use_crlf | topt_end_dot);
 
   rc = internal_transport_write_message(fd_write, tctx, size_limit);
@@ -1398,8 +1399,8 @@ if (yield)
   nl_check_length = nl_escape_length = 0;
   if (  tctx->options & topt_end_dot
      && ( last_filter_was_NL
-        ? !write_chunk(fd, US".\n", 2, tctx->options)
-	: !write_chunk(fd, US"\n.\n", 3, tctx->options)
+        ? !write_chunk(fd, US".\n", 2, use_crlf)
+	: !write_chunk(fd, US"\n.\n", 3, use_crlf)
      )  )
     yield = FALSE;
 
