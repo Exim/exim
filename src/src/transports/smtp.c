@@ -1361,6 +1361,63 @@ return checks;
 }
 
 
+
+/* Callback for emitting a BDAT data chunk header.
+Flush any buffered SMTP commands first.
+Reap SMTP command responses if not the BDAT LAST.
+
+A nonlast request that is size zero is special-cased to only flush the
+command buffer and reap all outstanding responses.
+
+Returns:	OK or ERROR
+*/
+
+static int
+smtp_chunk_cmd_callback(int fd, transport_ctx * tctx,
+  unsigned chunk_size, BOOL chunk_last)
+{
+smtp_transport_options_block * ob =
+  (smtp_transport_options_block *)(tctx->tblock->options_block);
+uschar buffer[128];
+
+if (  (tctx->cmd_count = chunk_size == 0 && !chunk_last
+
+	/* Handle flush request */
+	?  smtp_write_command(tctx->outblock, FALSE, NULL)
+
+	/* Write SMTP chunk header command */
+	: smtp_write_command(tctx->outblock, FALSE, "BDAT %u%s\r\n",
+			      chunk_size, chunk_last ? " LAST" : "")
+      )
+    < 0)
+  return ERROR;
+
+if (chunk_last)
+  return OK;
+
+/* Reap responses for this and any previous, and error out on failure */
+debug_printf("(look for %d responses)\n", tctx->cmd_count);
+
+switch(sync_responses(tctx->first_addr, tctx->tblock->rcpt_include_affixes,
+	tctx->sync_addr, tctx->host, tctx->cmd_count,
+	ob->address_retry_include_sender,
+	tctx->pending_MAIL, 0,
+	tctx->inblock,
+	ob->command_timeout,
+	buffer, sizeof(buffer)))
+  {
+  case 1:				/* 2xx (only) => OK */
+  case 3: 				/* 2xx & 5xx => OK & progress made */
+  case 2: *tctx->completed_address = TRUE; /* 5xx (only) => progress made */
+  case 0: return OK;			/* No 2xx or 5xx, but no probs */
+
+  case -1:				/* Timeout on RCPT */
+  default: return ERROR;		/* I/O error, or any MAIL/DATA error */
+  }
+}
+
+
+
 /*************************************************
 *       Deliver address list to given host       *
 *************************************************/
@@ -2107,14 +2164,11 @@ for (dsn_all_lasthop = TRUE, addr = first_addr;
 if (smtp_use_dsn && !dsn_all_lasthop)
   {
   if (dsn_ret == dsn_ret_hdrs)
-    {
-    Ustrcpy(p, " RET=HDRS"); p += 9;
-    }
+    { Ustrcpy(p, " RET=HDRS"); p += 9; }
   else if (dsn_ret == dsn_ret_full)
-    {
-    Ustrcpy(p, " RET=FULL"); p += 9;
-    }
-  if (dsn_envid != NULL)
+    { Ustrcpy(p, " RET=FULL"); p += 9; }
+
+  if (dsn_envid)
     {
     string_format(p, sizeof(buffer) - (p-buffer), " ENVID=%s", dsn_envid);
     while (*p) p++;
@@ -2320,15 +2374,19 @@ if (mua_wrapper)
 send DATA, but if it is FALSE (in the normal, non-wrapper case), we may still
 have a good recipient buffered up if we are pipelining. We don't want to waste
 time sending DATA needlessly, so we only send it if either ok is TRUE or if we
-are pipelining. The responses are all handled by sync_responses(). */
+are pipelining. The responses are all handled by sync_responses().
+If using CHUNKING, do not send a BDAT until we know how big a chunk we want
+to send is. */
 
-if (ok || (smtp_use_pipelining && !mua_wrapper))
+if (  !(peer_offered & PEER_OFFERED_CHUNKING)
+   && (ok || (smtp_use_pipelining && !mua_wrapper)))
   {
   int count = smtp_write_command(&outblock, FALSE, "DATA\r\n");
+
   if (count < 0) goto SEND_FAILED;
   switch(sync_responses(first_addr, tblock->rcpt_include_affixes, &sync_addr,
            host, count, ob->address_retry_include_sender, pending_MAIL,
-           ok? +1 : -1, &inblock, ob->command_timeout, buffer, sizeof(buffer)))
+           ok ? +1 : -1, &inblock, ob->command_timeout, buffer, sizeof(buffer)))
     {
     case 3: ok = TRUE;                   /* 2xx & 5xx => OK & progress made */
     case 2: completed_address = TRUE;    /* 5xx (only) => progress made */
@@ -2343,10 +2401,6 @@ if (ok || (smtp_use_pipelining && !mua_wrapper))
     }
   }
 
-/* Save the first address of the next batch. */
-
-first_addr = addr;
-
 /* If there were no good recipients (but otherwise there have been no
 problems), just set ok TRUE, since we have handled address-specific errors
 already. Otherwise, it's OK to send the message. Use the check/escape mechanism
@@ -2354,8 +2408,13 @@ for handling the SMTP dot-handling protocol, flagging to apply to headers as
 well as body. Set the appropriate timeout value to be used for each chunk.
 (Haven't been able to make it work using select() for writing yet.) */
 
-if (!ok)
+if (!(peer_offered & PEER_OFFERED_CHUNKING) && !ok)
+  {
+  /* Save the first address of the next batch. */
+  first_addr = addr;
+
   ok = TRUE;
+  }
 else
   {
   transport_ctx tctx = {
@@ -2367,24 +2426,41 @@ else
     | (tblock->headers_only	? topt_no_body : 0)
     | (tblock->return_path_add	? topt_add_return_path : 0)
     | (tblock->delivery_date_add ? topt_add_delivery_date : 0)
-    | (tblock->envelope_to_add	? topt_add_envelope_to : 0)
+    | (tblock->envelope_to_add	? topt_add_envelope_to : 0),
   };
+
+  /* If using CHUNKING we need a callback from the generic transport
+  support to us, for the sending of BDAT smtp commands and the reaping
+  of responses.  The callback needs a whole bunch of state so set up
+  a transport-context structure to be passed around. */
 
   if (peer_offered & PEER_OFFERED_CHUNKING)
     {
-    tctx.options |= topt_use_bdat;
     tctx.check_string = tctx.escape_string = NULL;
+    tctx.options |= topt_use_bdat;
+    tctx.chunk_cb = smtp_chunk_cmd_callback;
+    tctx.inblock = &inblock;
+    tctx.outblock = &outblock;
+    tctx.host = host;
+    tctx.first_addr = first_addr;
+    tctx.sync_addr = &sync_addr;
+    tctx.pending_MAIL = pending_MAIL;
+    tctx.completed_address = &completed_address;
     }
   else
     tctx.options |= topt_end_dot;
+
+  /* Save the first address of the next batch. */
+  first_addr = addr;
 
   sigalrm_seen = FALSE;
   transport_write_timeout = ob->data_timeout;
   smtp_command = US"sending data block";   /* For error messages */
   DEBUG(D_transport|D_v)
-    debug_printf("  SMTP>> writing message %s\n",
-      peer_offered & PEER_OFFERED_CHUNKING
-      ? "using CHUNKING" : "and terminating \".\"");
+    if (peer_offered & PEER_OFFERED_CHUNKING)
+      debug_printf("         will write message using CHUNKING\n");
+    else
+      debug_printf("  SMTP>> writing message and terminating \".\"\n");
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
@@ -2416,6 +2492,27 @@ else
   flag above. */
 
   smtp_command = US"end of data";
+
+  if (peer_offered & PEER_OFFERED_CHUNKING && tctx.cmd_count > 1)
+    {
+    /* Reap any outstanding MAIL & RCPT commands, but not a DATA-go-ahead */
+    switch(sync_responses(first_addr, tblock->rcpt_include_affixes, &sync_addr,
+	     host, tctx.cmd_count-1, ob->address_retry_include_sender,
+	     pending_MAIL, 0,
+	     &inblock, ob->command_timeout, buffer, sizeof(buffer)))
+      {
+      case 3: ok = TRUE;                   /* 2xx & 5xx => OK & progress made */
+      case 2: completed_address = TRUE;    /* 5xx (only) => progress made */
+      break;
+
+      case 1: ok = TRUE;                   /* 2xx (only) => OK, but if LMTP, */
+      if (!lmtp) completed_address = TRUE; /* can't tell about progress yet */
+      case 0: break;                       /* No 2xx or 5xx, but no probs */
+
+      case -1: goto END_OFF;               /* Timeout on RCPT */
+      default: goto RESPONSE_FAILED;       /* I/O error, or any MAIL/DATA error */
+      }
+    }
 
 #ifndef DISABLE_PRDR
   /* For PRDR we optionally get a partial-responses warning

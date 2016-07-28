@@ -1559,9 +1559,9 @@ return cutthrough_response('3', NULL) == '3';
 }
 
 
-/* fd and options args only to match write_chunk() */
+/* fd and tctx args only to match write_chunk() */
 static BOOL
-cutthrough_write_chunk(int fd, uschar * s, int len, unsigned options)
+cutthrough_write_chunk(int fd, transport_ctx * tctx, uschar * s, int len)
 {
 uschar * s2;
 while(s && (s2 = Ustrchr(s, '\n')))
@@ -1580,6 +1580,8 @@ return TRUE;
 BOOL
 cutthrough_headers_send(void)
 {
+transport_ctx tctx;
+
 if(cutthrough.fd < 0)
   return FALSE;
 
@@ -1588,9 +1590,13 @@ if(cutthrough.fd < 0)
 */
 HDEBUG(D_acl) debug_printf("----------- start cutthrough headers send -----------\n");
 
-if (!transport_headers_send(&cutthrough.addr, cutthrough.fd,
-	cutthrough.addr.transport,
-	&cutthrough_write_chunk, topt_use_crlf))
+tctx.tblock = cutthrough.addr.transport;
+tctx.addr = &cutthrough.addr;
+tctx.check_string = US".";
+tctx.escape_string = US"..";
+tctx.options = topt_use_crlf;
+
+if (!transport_headers_send(cutthrough.fd, &tctx, &cutthrough_write_chunk))
   return FALSE;
 
 HDEBUG(D_acl) debug_printf("----------- done cutthrough headers send ------------\n");

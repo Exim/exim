@@ -73,7 +73,6 @@ enum {
   ETRN_CMD,                     /* This by analogy with TURN from the RFC */
   STARTTLS_CMD,                 /* Required by the STARTTLS RFC */
   TLS_AUTH_CMD,			/* auto-command at start of SSL */
-  BDAT_CMD,			/* Implied by RFC3030 "After all MAIL and..." */
 
   /* This is a dummy to identify the non-sync commands when pipelining */
 
@@ -82,6 +81,15 @@ enum {
   /* These commands need not be synchronized when pipelining */
 
   MAIL_CMD, RCPT_CMD, RSET_CMD,
+
+  /* RFC3030 section 2: "After all MAIL and RCPT responses are collected and
+  processed the message is sent using a series of BDAT commands"
+  implies that BDAT should be synchronized.  However, we see Google, at least,
+  sending MAIL,RCPT,BDAT-LAST in a single packet, clearly not waiting for
+  processing of the RPCT response(s).  We shall do the same, and not require
+  synch for BDAT. */
+
+  BDAT_CMD,
 
   /* This is a dummy to identify the non-sync commands when not pipelining */
 

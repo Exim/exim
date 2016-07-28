@@ -694,8 +694,7 @@ if (return_message)
   transport_ctx tctx = {
     tblock,
     addr,
-    NULL,
-    NULL,
+    NULL, NULL,
     (tblock->body_only ? topt_no_headers : 0) |
     (tblock->headers_only ? topt_no_body : 0) |
     (tblock->return_path_add ? topt_add_return_path : 0) |

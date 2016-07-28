@@ -468,9 +468,8 @@ extern BOOL    transport_set_up_command(const uschar ***, uschar *,
 extern void    transport_update_waiting(host_item *, uschar *);
 extern BOOL    transport_write_block(int, uschar *, int);
 extern BOOL    transport_write_string(int, const char *, ...);
-extern BOOL    transport_headers_send(address_item *, int, transport_instance *,
-                 BOOL (*)(int, uschar *, int, unsigned),
-		 BOOL);
+extern BOOL    transport_headers_send(int, transport_ctx *,
+                 BOOL (*)(int, transport_ctx *, uschar *, int));
 extern BOOL    transport_write_message(int, transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);

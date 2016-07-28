@@ -359,9 +359,7 @@ Arguments:
   fd         file descript to write to
   chunk      pointer to data to write
   len        length of data to write
-  flags      bitmap of topt_ flags for processing options
-    use_crlf	terminate lines with CRLF
-    use_bdat	prepend chunks with RFC3030 BDAT header
+  tctx       transport context - processing to be done during output
 
 In addition, the static nl_xxx variables must be set as required.
 
@@ -369,7 +367,7 @@ Returns:     TRUE on success, FALSE on failure (with errno preserved)
 */
 
 static BOOL
-write_chunk(int fd, uschar *chunk, int len, unsigned flags)
+write_chunk(int fd, transport_ctx * tctx, uschar *chunk, int len)
 {
 uschar *start = chunk;
 uschar *end = chunk + len;
@@ -412,19 +410,23 @@ possible. */
 
 for (ptr = start; ptr < end; ptr++)
   {
-  int ch;
+  int ch, len;
 
   /* Flush the buffer if it has reached the threshold - we want to leave enough
   room for the next uschar, plus a possible extra CR for an LF, plus the escape
   string. */
-/*XXX CHUNKING: need to prefix write_block with a BDAT cmd.  Also possibly
-reap a response from a previous BDAT first.  NEED a callback into the tpt
-for that */
 
-  if (chunk_ptr - deliver_out_buffer > mlen)
+  /*XXX CHUNKING: probably want to increase DELIVER_OUT_BUFFER_SIZE */
+  if ((len = chunk_ptr - deliver_out_buffer) > mlen)
     {
-    if (!transport_write_block(fd, deliver_out_buffer,
-          chunk_ptr - deliver_out_buffer))
+    /* If CHUNKING, prefix with BDAT (size) NON-LAST.  Also, reap responses
+    from previous SMTP commands. */
+
+    if (tctx &&  tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
+      if (tctx->chunk_cb(fd, tctx, (unsigned)len, FALSE) != OK)
+	return FALSE;
+
+    if (!transport_write_block(fd, deliver_out_buffer, len))
       return FALSE;
     chunk_ptr = deliver_out_buffer;
     }
@@ -435,7 +437,7 @@ for that */
 
     /* Insert CR before NL if required */
 
-    if (flags & topt_use_crlf) *chunk_ptr++ = '\r';
+    if (tctx  &&  tctx->options & topt_use_crlf) *chunk_ptr++ = '\r';
     *chunk_ptr++ = '\n';
     transport_newlines++;
 
@@ -552,14 +554,14 @@ Arguments:
   pdlist    address of anchor of the list of processed addresses
   first     TRUE if this is the first address; set it FALSE afterwards
   fd        the file descriptor to write to
-  flags     to be passed on to write_chunk()
+  tctx      transport context - processing to be done during output
 
 Returns:    FALSE if writing failed
 */
 
 static BOOL
 write_env_to(address_item *p, struct aci **pplist, struct aci **pdlist,
-  BOOL *first, int fd, unsigned flags)
+  BOOL *first, int fd, transport_ctx * tctx)
 {
 address_item *pp;
 struct aci *ppp;
@@ -581,7 +583,7 @@ for (pp = p;; pp = pp->parent)
   address_item *dup;
   for (dup = addr_duplicate; dup; dup = dup->next)
     if (dup->dupof == pp)   /* a dup of our address */
-      if (!write_env_to(dup, pplist, pdlist, first, fd, flags))
+      if (!write_env_to(dup, pplist, pdlist, first, fd, tctx))
 	return FALSE;
   if (!pp->parent) break;
   }
@@ -598,9 +600,9 @@ ppp->next = *pplist;
 *pplist = ppp;
 ppp->ptr = pp;
 
-if (!*first && !write_chunk(fd, US",\n ", 3, flags)) return FALSE;
+if (!*first && !write_chunk(fd, tctx, US",\n ", 3)) return FALSE;
 *first = FALSE;
-return write_chunk(fd, pp->address, Ustrlen(pp->address), flags);
+return write_chunk(fd, tctx, pp->address, Ustrlen(pp->address));
 }
 
 
@@ -616,19 +618,23 @@ Arguments:
                           only the first address is used
   fd                    file descriptor to write the message to
   sendfn		function for output (transport or verify)
-  use_crlf		turn NL into CR LF
+  wck_flags
+    use_crlf		turn NL into CR LF
+    use_bdat		callback before chunk flush
   rewrite_rules         chain of header rewriting rules
   rewrite_existflags    flags for the rewriting rules
+  chunk_cb		transport callback function for data-chunk commands
 
 Returns:                TRUE on success; FALSE on failure.
 */
 BOOL
-transport_headers_send(address_item *addr, int fd, transport_instance * tblock,
-  BOOL (*sendfn)(int fd, uschar * s, int len, unsigned options),
-  BOOL use_crlf)
+transport_headers_send(int fd, transport_ctx * tctx,
+  BOOL (*sendfn)(int fd, transport_ctx * tctx, uschar * s, int len))
 {
 header_line *h;
 const uschar *list;
+transport_instance * tblock = tctx ? tctx->tblock : NULL;
+address_item * addr = tctx ? tctx->addr : NULL;
 
 /* Then the message's headers. Don't write any that are flagged as "old";
 that means they were rewritten, or are a record of envelope rewriting, or
@@ -683,7 +689,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
       if ((hh = rewrite_header(h, NULL, NULL, tblock->rewrite_rules,
 		  tblock->rewrite_existflags, FALSE)))
 	{
-	if (!sendfn(fd, hh->text, hh->slen, use_crlf)) return FALSE;
+	if (!sendfn(fd, tctx, hh->text, hh->slen)) return FALSE;
 	store_reset(reset_point);
 	continue;     /* With the next header line */
 	}
@@ -691,7 +697,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
 
     /* Either no rewriting rules, or it didn't get rewritten */
 
-    if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+    if (!sendfn(fd, tctx, h->text, h->slen)) return FALSE;
     }
 
   /* Header removed */
@@ -726,7 +732,7 @@ if (addr)
       hprev = h;
       if (i == 1)
 	{
-	if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+	if (!sendfn(fd, tctx, h->text, h->slen)) return FALSE;
 	DEBUG(D_transport)
 	  debug_printf("added header line(s):\n%s---\n", h->text);
 	}
@@ -751,8 +757,8 @@ if (tblock && (list = CUS tblock->add_headers))
       int len = Ustrlen(s);
       if (len > 0)
 	{
-	if (!sendfn(fd, s, len, use_crlf)) return FALSE;
-	if (s[len-1] != '\n' && !sendfn(fd, US"\n", 1, use_crlf))
+	if (!sendfn(fd, tctx, s, len)) return FALSE;
+	if (s[len-1] != '\n' && !sendfn(fd, tctx, US"\n", 1))
 	  return FALSE;
 	DEBUG(D_transport)
 	  {
@@ -768,7 +774,7 @@ if (tblock && (list = CUS tblock->add_headers))
 
 /* Separate headers from body with a blank line */
 
-return sendfn(fd, US"\n", 1, use_crlf);
+return sendfn(fd, tctx, US"\n", 1);
 }
 
 
@@ -837,7 +843,6 @@ static BOOL
 internal_transport_write_message(int fd, transport_ctx * tctx, int size_limit)
 {
 int len;
-unsigned wck_flags = (unsigned) tctx->options;
 off_t fsize;
 int size;
 
@@ -877,7 +882,7 @@ if (!(tctx->options & topt_no_headers))
     uschar buffer[ADDRESS_MAXLENGTH + 20];
     int n = sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
       return_path);
-    if (!write_chunk(fd, buffer, n, wck_flags)) return FALSE;
+    if (!write_chunk(fd, tctx, buffer, n)) return FALSE;
     }
 
   /* Add envelope-to: if requested */
@@ -890,19 +895,19 @@ if (!(tctx->options & topt_no_headers))
     struct aci *dlist = NULL;
     void *reset_point = store_get(0);
 
-    if (!write_chunk(fd, US"Envelope-to: ", 13, wck_flags)) return FALSE;
+    if (!write_chunk(fd, tctx, US"Envelope-to: ", 13)) return FALSE;
 
     /* Pick up from all the addresses. The plist and dlist variables are
     anchors for lists of addresses already handled; they have to be defined at
     this level becuase write_env_to() calls itself recursively. */
 
     for (p = tctx->addr; p; p = p->next)
-      if (!write_env_to(p, &plist, &dlist, &first, fd, wck_flags))
+      if (!write_env_to(p, &plist, &dlist, &first, fd, tctx))
 	return FALSE;
 
     /* Add a final newline and reset the store used for tracking duplicates */
 
-    if (!write_chunk(fd, US"\n", 1, wck_flags)) return FALSE;
+    if (!write_chunk(fd, tctx, US"\n", 1)) return FALSE;
     store_reset(reset_point);
     }
 
@@ -912,7 +917,7 @@ if (!(tctx->options & topt_no_headers))
     {
     uschar buffer[100];
     int n = sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
-    if (!write_chunk(fd, buffer, n, wck_flags)) return FALSE;
+    if (!write_chunk(fd, tctx, buffer, n)) return FALSE;
     }
 
   /* Then the message's headers. Don't write any that are flagged as "old";
@@ -921,7 +926,7 @@ if (!(tctx->options & topt_no_headers))
   match any entries therein. Then check addr->prop.remove_headers too, provided that
   addr is not NULL. */
 
-  if (!transport_headers_send(tctx->addr, fd, tctx->tblock, &write_chunk, wck_flags))
+  if (!transport_headers_send(fd, tctx, &write_chunk))
     return FALSE;
   }
 
@@ -947,22 +952,13 @@ if (tctx->options & topt_use_bdat)
       size += body_linecount;	/* account for CRLF-expansion */
     }
 
-  /*XXX need an smtp_outblock here; can't really use the smtp
-  tpts one. so that had better have been flushed.
-  
-  WORRY: smtp cmd response sync, needs an inblock and a LOT
-  of tpt info.  NEED a callback into the tpt.
+  /*XXX CHUNKING:
+  Emit a LAST datachunk command. */
 
-#ifdef notdef
-  smtp_write_command(&outblock, FALSE, "BDAT %d LAST\r\n", size);
-  if (count < 0) return FALSE;
-  if (count > 0)
-    {
-    }
-#endif
-  */
+  if (tctx->chunk_cb(fd, tctx, size, TRUE) != OK)
+    return FALSE;
 
-  wck_flags &= ~topt_use_bdat;
+  tctx->options &= ~topt_use_bdat;
   }
 
 /* If the body is required, ensure that the data for check strings (formerly
@@ -979,7 +975,7 @@ if (!(tctx->options & topt_no_body))
     return FALSE;
   while (  (len = MAX(DELIVER_IN_BUFFER_SIZE, size)) > 0
 	&& (len = read(deliver_datafile, deliver_in_buffer, len)) > 0)
-    if (!write_chunk(fd, deliver_in_buffer, len, wck_flags))
+    if (!write_chunk(fd, tctx, deliver_in_buffer, len))
       return FALSE;
 
   /* A read error on the body will have left len == -1 and errno set. */
@@ -993,7 +989,7 @@ nl_check_length = nl_escape_length = 0;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
-if (tctx->options & topt_end_dot && !write_chunk(fd, US".\n", 2, wck_flags))
+if (tctx->options & topt_end_dot && !write_chunk(fd, tctx, US".\n", 2))
   return FALSE;
 
 /* Write out any remaining data in the buffer before returning. */
@@ -1224,7 +1220,7 @@ BOOL last_filter_was_NL = TRUE;
 int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
-static transport_ctx dummy_tctx = { NULL, NULL, NULL, NULL, 0 };
+static transport_ctx dummy_tctx = {0};
 
 if (!tctx) tctx = &dummy_tctx;
 
@@ -1359,7 +1355,7 @@ for (;;)
 
   if (len > 0)
     {
-    if (!write_chunk(fd, deliver_in_buffer, len, wck_flags)) goto TIDY_UP;
+    if (!write_chunk(fd, tctx, deliver_in_buffer, len)) goto TIDY_UP;
     last_filter_was_NL = (deliver_in_buffer[len-1] == '\n');
     }
 
@@ -1441,8 +1437,8 @@ if (yield)
   nl_check_length = nl_escape_length = 0;
   if (  tctx->options & topt_end_dot
      && ( last_filter_was_NL
-        ? !write_chunk(fd, US".\n", 2, wck_flags)
-	: !write_chunk(fd, US"\n.\n", 3, wck_flags)
+        ? !write_chunk(fd, tctx, US".\n", 2)
+	: !write_chunk(fd, tctx, US"\n.\n", 3)
      )  )
     yield = FALSE;
 

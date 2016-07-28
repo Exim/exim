@@ -223,14 +223,31 @@ typedef struct transport_info {
 } transport_info;
 
 
+/* smtp transport datachunk callback */
+
+struct transport_context;
+typedef int (*tpt_chunk_cmd_cb)(int fd, struct transport_context * tctx,
+				unsigned len, BOOL last);
+
 /* Structure for information about a delivery-in-progress */
 
 typedef struct transport_context {
-  transport_instance * tblock;
-  struct address_item * addr;
-  uschar	* check_string;
-  uschar	* escape_string;
-  int		  options;		/* topt_* */
+  transport_instance	* tblock;		/* transport */
+  struct address_item	* addr;
+  uschar		* check_string;		/* string replacement */
+  uschar		* escape_string;
+  int		  	  options;		/* output processing topt_* */
+
+  /* items below only used with option topt_use_bdat */
+  tpt_chunk_cmd_cb	  chunk_cb;		/* per-datachunk callback */
+  struct smtp_inblock	* inblock;
+  struct smtp_outblock	* outblock;
+  host_item		* host;
+  struct address_item	* first_addr;
+  struct address_item	**sync_addr;
+  BOOL			  pending_MAIL;
+  BOOL			* completed_address;
+  int			  cmd_count;
 } transport_ctx;
 
 
