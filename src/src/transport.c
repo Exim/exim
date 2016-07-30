@@ -423,7 +423,7 @@ for (ptr = start; ptr < end; ptr++)
     from previous SMTP commands. */
 
     if (tctx &&  tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
-      if (tctx->chunk_cb(fd, tctx, (unsigned)len, FALSE) != OK)
+      if (tctx->chunk_cb(fd, tctx, (unsigned)len, tc_reap_prev|tc_reap_one) != OK)
 	return FALSE;
 
     if (!transport_write_block(fd, deliver_out_buffer, len))
@@ -843,8 +843,6 @@ static BOOL
 internal_transport_write_message(int fd, transport_ctx * tctx, int size_limit)
 {
 int len;
-off_t fsize;
-int size;
 
 /* Initialize pointer in output buffer. */
 
@@ -935,27 +933,51 @@ last BDAT, consisting of the current write_chunk() output buffer fill
 (optimally, all of the headers - but it does not matter if we already had to
 flush that buffer with non-last BDAT prependix) plus the amount of body data
 (as expanded for CRLF lines).  Then create and write the BDAT, and ensure
-that further use of write_chunk() will not prepend BDATs.  */
+that further use of write_chunk() will not prepend BDATs.
+The first BDAT written will also first flush any outstanding MAIL and RCPT
+commands which were buffered thans to PIPELINING.
+Commands go out (using a send()) from a different buffer to data (using a
+write()).  They might not end up in the same TCP segment, which is
+suboptimal. */
 
 if (tctx->options & topt_use_bdat)
   {
-  if ((size = chunk_ptr - deliver_out_buffer) < 0)
-    size = 0;
+  off_t fsize;
+  int hsize, size;
+
+  if ((hsize = chunk_ptr - deliver_out_buffer) < 0)
+    hsize = 0;
   if (!(tctx->options & topt_no_body))
     {
     if ((fsize = lseek(deliver_datafile, 0, SEEK_END)) < 0) return FALSE;
     fsize -= SPOOL_DATA_START_OFFSET;
     if (size_limit > 0  &&  fsize > size_limit)
       fsize = size_limit;
-    size += fsize;
+    size = hsize + fsize;
     if (tctx->options & topt_use_crlf)
       size += body_linecount;	/* account for CRLF-expansion */
     }
 
-  /*XXX CHUNKING:
-  Emit a LAST datachunk command. */
+  /* If the message is large, emit first a non-LAST chunk with just the
+  headers, and reap the command responses.  This lets us error out early
+  on RCPT rejects rather than sending megabytes of data.  Include headers
+  on the assumption they are cheap enough and some clever implementations
+  might errorcheck them too, on-the-fly, and reject that chunk. */
 
-  if (tctx->chunk_cb(fd, tctx, size, TRUE) != OK)
+  if (size > DELIVER_OUT_BUFFER_SIZE && hsize > 0)
+    {
+    if (  tctx->chunk_cb(fd, tctx, hsize, 0) != OK
+       || !transport_write_block(fd, deliver_out_buffer, hsize)
+       || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
+       )
+      return FALSE;
+    chunk_ptr = deliver_out_buffer;
+    size -= hsize;
+    }
+
+  /* Emit a LAST datachunk command. */
+
+  if (tctx->chunk_cb(fd, tctx, size, tc_chunk_last) != OK)
     return FALSE;
 
   tctx->options &= ~topt_use_bdat;
@@ -969,14 +991,19 @@ it, applying the size limit if required. */
 
 if (!(tctx->options & topt_no_body))
   {
+  int size = size_limit;
+
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
   if (lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET) < 0)
     return FALSE;
   while (  (len = MAX(DELIVER_IN_BUFFER_SIZE, size)) > 0
 	&& (len = read(deliver_datafile, deliver_in_buffer, len)) > 0)
+    {
     if (!write_chunk(fd, tctx, deliver_in_buffer, len))
       return FALSE;
+    size -= len;
+    }
 
   /* A read error on the body will have left len == -1 and errno set. */
 

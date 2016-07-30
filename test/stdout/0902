@@ -1,0 +1,140 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250 CHUNKING
+MAIL FROM:<>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+BDAT 317
+250 OK nonlast bdat
+BDAT 8380 LAST
+250 OK bdat
+QUIT
+225 OK
+Expected EOF read from client
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250 CHUNKING
+MAIL FROM:<>
+250 OK
+RCPT TO:<d@test.ex>
+250 OK
+BDAT 317
+500 oops bdat-nonlast
+QUIT
+225 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM:<>
+RCPT TO:<p@test.ex>
+BDAT 317
+250 OK mail
+250 OK rcpt
+250 OK nonlast bdat
+BDAT 8380 LAST
+250 OK bdat
+QUIT
+225 OK
+Expected EOF read from client
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM:<>
+RCPT TO:<s@test.ex>
+BDAT 317
+550 unacceptable mail-from
+550 rcpt ungood lacking mail-from
+500 bdat (nonlast) ungood lacking mail-from
+QUIT
+225 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM:<>
+RCPT TO:<t@test.ex>
+BDAT 317
+250 OK mail
+550 no such recipient
+500 oops nonlast bdat - no rcpt
+QUIT
+225 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM:<>
+RCPT TO:<t1@test.ex>
+RCPT TO:<t2@test.ex>
+BDAT 301
+250 OK mail
+550 no such recipient
+250 good recipient
+200 OK nonlast bdat
+BDAT 8380 LAST
+250 OK bdat
+QUIT
+225 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM:<>
+RCPT TO:<u@test.ex>
+BDAT 317
+250 OK mail
+250 OK rcpt
+500 oops nonlast bdat
+QUIT
+225 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO the.local.host.name
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM:<>
+RCPT TO:<v@test.ex>
+BDAT 317
+250 OK mail
+250 OK rcpt
+250 OK nonlast bdat
+BDAT 8380 LAST
+500 oops bdat
+QUIT
+225 OK
+End of script

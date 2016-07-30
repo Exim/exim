@@ -225,9 +225,13 @@ typedef struct transport_info {
 
 /* smtp transport datachunk callback */
 
+#define tc_reap_prev	BIT(0)	/* Flags: reap previous SMTP cmd responses */
+#define tc_reap_one	BIT(1)	/* reap one SMTP response */
+#define tc_chunk_last	BIT(2)	/* annotate chunk SMTP cmd as LAST */
+
 struct transport_context;
 typedef int (*tpt_chunk_cmd_cb)(int fd, struct transport_context * tctx,
-				unsigned len, BOOL last);
+				unsigned len, unsigned flags);
 
 /* Structure for information about a delivery-in-progress */
 
@@ -246,8 +250,11 @@ typedef struct transport_context {
   struct address_item	* first_addr;
   struct address_item	**sync_addr;
   BOOL			  pending_MAIL;
+  BOOL			  pending_BDAT;
+  BOOL			  good_RCPT;
   BOOL			* completed_address;
   int			  cmd_count;
+  uschar		* buffer;
 } transport_ctx;
 
 

@@ -1,4 +1,5 @@
 # Exim test configuration 0900
+SERVER=
 
 exim_path = EXIM_PATH
 keep_environment =
@@ -17,8 +18,6 @@ domainlist local_domains = @
 
 acl_smtp_rcpt = check_recipient
 acl_smtp_data = check_data
-message_id_header_domain = ${if eq{0}{0}{some.domain}}
-message_id_header_text = ${if eq{0}{0}{a@b[c]}}
 trusted_users = CALLER
 queue_only
 smtp_receive_timeout = 2s
@@ -41,6 +40,12 @@ check_data:
 # ----- Routers -----
 
 begin routers
+
+to_server:
+  driver = accept
+  condition =	${if !eq {SERVER}{server}}
+  transport =	remote_smtp
+  errors_to =	""
 
 fail_remote_domains:
   driver = redirect
@@ -68,4 +73,16 @@ local_delivery:
                  X-received-count: $received_count"
   return_path_add
 
+remote_smtp:
+  driver = smtp
+  hosts =	127.0.0.1
+  port =	PORT_S
+  allow_localhost
+  command_timeout = 2s
+  final_timeout = 2s
+
+# ----- Retry -----
+
+begin retry
+* * F,30m,5m;
 # End

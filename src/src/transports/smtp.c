@@ -282,6 +282,7 @@ static uschar *rf_names[] = { US"NEVER", US"SUCCESS", US"FAILURE", US"DELAY" };
 static uschar *smtp_command;   /* Points to last cmd for error messages */
 static uschar *mail_command;   /* Points to MAIL cmd for error messages */
 static BOOL    update_waiting; /* TRUE to update the "wait" database */
+static BOOL    pipelining_active; /* current transaction is in pipe mode */
 
 
 /*************************************************
@@ -510,13 +511,7 @@ static BOOL
 check_response(host_item *host, int *errno_value, int more_errno,
   uschar *buffer, int *yield, uschar **message, BOOL *pass_message)
 {
-uschar *pl = US"";
-
-if (smtp_use_pipelining &&
-    (Ustrcmp(smtp_command, "MAIL") == 0 ||
-     Ustrcmp(smtp_command, "RCPT") == 0 ||
-     Ustrcmp(smtp_command, "DATA") == 0))
-  pl = US"pipelined ";
+uschar * pl = pipelining_active ? US"pipelined " : US"";
 
 *yield = '4';    /* Default setting is to give a temporary error */
 
@@ -786,6 +781,7 @@ if (pending_MAIL)
   count--;
   if (!smtp_read_response(inblock, buffer, buffsize, '2', timeout))
     {
+    DEBUG(D_transport) debug_printf("bad response for MAIL\n");
     Ustrcpy(big_buffer, mail_command);  /* Fits, because it came from there! */
     if (errno == 0 && buffer[0] != 0)
       {
@@ -1363,57 +1359,95 @@ return checks;
 
 
 /* Callback for emitting a BDAT data chunk header.
-Flush any buffered SMTP commands first.
-Reap SMTP command responses if not the BDAT LAST.
 
-A nonlast request that is size zero is special-cased to only flush the
-command buffer and reap all outstanding responses.
+If given a nonzero size, first flush any buffered SMTP commands
+then emit the command.
+
+Reap previous SMTP command responses if requested.
+Reap one SMTP command response if requested.
 
 Returns:	OK or ERROR
 */
 
 static int
 smtp_chunk_cmd_callback(int fd, transport_ctx * tctx,
-  unsigned chunk_size, BOOL chunk_last)
+  unsigned chunk_size, unsigned flags)
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)(tctx->tblock->options_block);
-uschar buffer[128];
+int cmd_count = 0;
+int prev_cmd_count;
+uschar * buffer = tctx->buffer;
 
-if (  (tctx->cmd_count = chunk_size == 0 && !chunk_last
 
-	/* Handle flush request */
-	?  smtp_write_command(tctx->outblock, FALSE, NULL)
+/* Write SMTP chunk header command */
 
-	/* Write SMTP chunk header command */
-	: smtp_write_command(tctx->outblock, FALSE, "BDAT %u%s\r\n",
-			      chunk_size, chunk_last ? " LAST" : "")
-      )
-    < 0)
-  return ERROR;
+if (chunk_size > 0)
+  if((cmd_count = smtp_write_command(tctx->outblock, FALSE, "BDAT %u%s\r\n",
+			      chunk_size,
+			      flags & tc_chunk_last ? " LAST" : "")
+     ) < 0) return ERROR;
 
-if (chunk_last)
-  return OK;
+prev_cmd_count = cmd_count += tctx->cmd_count;
 
-/* Reap responses for this and any previous, and error out on failure */
-debug_printf("(look for %d responses)\n", tctx->cmd_count);
+/* Reap responses for any previous, but not one we just emitted */
 
-switch(sync_responses(tctx->first_addr, tctx->tblock->rcpt_include_affixes,
-	tctx->sync_addr, tctx->host, tctx->cmd_count,
-	ob->address_retry_include_sender,
-	tctx->pending_MAIL, 0,
-	tctx->inblock,
-	ob->command_timeout,
-	buffer, sizeof(buffer)))
+if (chunk_size > 0)
+  prev_cmd_count--;
+if (tctx->pending_BDAT)
+  prev_cmd_count--;
+
+if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
   {
-  case 1:				/* 2xx (only) => OK */
-  case 3: 				/* 2xx & 5xx => OK & progress made */
-  case 2: *tctx->completed_address = TRUE; /* 5xx (only) => progress made */
-  case 0: return OK;			/* No 2xx or 5xx, but no probs */
 
-  case -1:				/* Timeout on RCPT */
-  default: return ERROR;		/* I/O error, or any MAIL/DATA error */
+  switch(sync_responses(tctx->first_addr, tctx->tblock->rcpt_include_affixes,
+	  tctx->sync_addr, tctx->host, prev_cmd_count,
+	  ob->address_retry_include_sender,
+	  tctx->pending_MAIL, 0,
+	  tctx->inblock,
+	  ob->command_timeout,
+	  buffer, 4096))
+/*XXX buffer size! */
+    {
+    case 1:				/* 2xx (only) => OK */
+    case 3: tctx->good_RCPT = TRUE;	/* 2xx & 5xx => OK & progress made */
+    case 2: *tctx->completed_address = TRUE; /* 5xx (only) => progress made */
+    case 0: break;			/* No 2xx or 5xx, but no probs */
+
+    case -1:				/* Timeout on RCPT */
+    default: return ERROR;		/* I/O error, or any MAIL/DATA error */
+    }
+  cmd_count = 1;
+  if (!tctx->pending_BDAT)
+    pipelining_active = FALSE;
   }
+
+/* Reap response for the cmd we just emitted, or an outstanding BDAT */
+
+if (flags & tc_reap_one  ||  tctx->pending_BDAT)
+  {
+/*XXX buffer size! */
+  if (!smtp_read_response(tctx->inblock, buffer, 4096, '2',
+       ob->command_timeout))
+    {
+    if (errno == 0 && buffer[0] == '4')
+      {
+      errno = ERRNO_DATA4XX;	/*XXX does this actually get used? */
+      tctx->first_addr->more_errno |=
+	((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+      }
+    return ERROR;
+    }
+  cmd_count--;
+  tctx->pending_BDAT = FALSE;
+  pipelining_active = FALSE;
+  }
+else if (chunk_size > 0)
+  tctx->pending_BDAT = TRUE;
+
+
+tctx->cmd_count = cmd_count;
+return OK;
 }
 
 
@@ -2043,6 +2077,7 @@ if (continue_hostname == NULL
     case FAIL:		goto RESPONSE_FAILED;
     }
   }
+pipelining_active = smtp_use_pipelining;
 
 /* The setting up of the SMTP call is now complete. Any subsequent errors are
 message-specific. */
@@ -2399,6 +2434,7 @@ if (  !(peer_offered & PEER_OFFERED_CHUNKING)
     case -1: goto END_OFF;               /* Timeout on RCPT */
     default: goto RESPONSE_FAILED;       /* I/O error, or any MAIL/DATA error */
     }
+  pipelining_active = FALSE;
   }
 
 /* If there were no good recipients (but otherwise there have been no
@@ -2445,13 +2481,22 @@ else
     tctx.first_addr = first_addr;
     tctx.sync_addr = &sync_addr;
     tctx.pending_MAIL = pending_MAIL;
+    tctx.pending_BDAT = FALSE;
+    tctx.good_RCPT = ok;
     tctx.completed_address = &completed_address;
+    tctx.cmd_count = 0;
+    tctx.buffer = buffer;
     }
   else
     tctx.options |= topt_end_dot;
 
   /* Save the first address of the next batch. */
   first_addr = addr;
+
+  /* Responses from CHUNKING commands go in buffer.  Otherwise,
+  there has not been a response. */
+
+  buffer[0] = 0;
 
   sigalrm_seen = FALSE;
   transport_write_timeout = ob->data_timeout;
@@ -2477,13 +2522,11 @@ else
   transport_write_timeout = 0;   /* for subsequent transports */
 
   /* Failure can either be some kind of I/O disaster (including timeout),
-  or the failure of a transport filter or the expansion of added headers. */
+  or the failure of a transport filter or the expansion of added headers.
+  Or, when CHUNKING, it can be a protocol-detected failure. */
 
   if (!ok)
-    {
-    buffer[0] = 0;              /* There hasn't been a response */
     goto RESPONSE_FAILED;
-    }
 
   /* We used to send the terminating "." explicitly here, but because of
   buffering effects at both ends of TCP/IP connections, you don't gain
@@ -2523,16 +2566,16 @@ else
     {
     ok = smtp_read_response(&inblock, buffer, sizeof(buffer), '3',
       ob->final_timeout);
-    if (!ok && errno == 0)
-      switch(buffer[0])
-        {
-	case '2': prdr_active = FALSE;
-	          ok = TRUE;
-		  break;
-	case '4': errno = ERRNO_DATA4XX;
-                  addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
-		  break;
-        }
+    if (!ok && errno == 0) switch(buffer[0])
+      {
+      case '2': prdr_active = FALSE;
+		ok = TRUE;
+		break;
+      case '4': errno = ERRNO_DATA4XX;
+		addrlist->more_errno |=
+		  ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+		break;
+      }
     }
   else
 #endif
@@ -2569,7 +2612,9 @@ else
     int delivery_time = (int)(time(NULL) - start_delivery_time);
     int len;
     uschar *conf = NULL;
+
     send_rset = FALSE;
+    pipelining_active = FALSE;
 
     /* Set up confirmation if needed - applies only to SMTP */
 
