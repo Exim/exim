@@ -58,6 +58,9 @@ JH/13 Cutthrough: expand transport dkim_domain option when testing for dkim
 JH/14 Fix logging of errors under PIPELINING.  Previously the log line giving
       the relevant preceding SMTP command did not note the pipelining mode.
 
+JH/15 Fix counting of empty lines in $body_linecount and $message_linecount.
+      Previously they were not counted.
+
 
 Exim version 4.87
 -----------------
