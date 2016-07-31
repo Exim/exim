@@ -36,7 +36,7 @@ RCPT TO
 250 OK
 *sleep 2
 ****
-exim -odi a b c
+exim -odi e f g
 .
 ****
 # Temp error on MAIL
@@ -56,7 +56,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi a b
+exim -odi h i
 .
 ****
 # Perm error on MAIL
@@ -76,7 +76,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi a b
+exim -odi j k
 .
 ****
 # All get temp errors
@@ -96,7 +96,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi a b
+exim -odi l m
 .
 ****
 # All get perm errors
@@ -116,7 +116,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi a b
+exim -odi n o
 .
 ****
 # Mixed temp and perm
@@ -136,7 +136,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi a b
+exim -odi p q
 .
 ****
 # Perm error on DATA after good recipients
@@ -156,7 +156,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi a b
+exim -odi r s
 .
 ****
 # Temp error on DATA after good recipients
@@ -176,7 +176,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -odi a b
+exim -odi t u
 .
 ****
 # Temp error on DATA after good recipients, but in first block of a

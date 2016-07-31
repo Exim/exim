@@ -36,7 +36,7 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 250 OK
-RCPT TO:<a@test.ex>
+RCPT TO:<e@test.ex>
 250 OK
 *sleep 2
 End of script
@@ -48,9 +48,9 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 451 Temp error
-RCPT TO:<a@test.ex>
+RCPT TO:<h@test.ex>
 503 No sender given
-RCPT TO:<b@test.ex>
+RCPT TO:<i@test.ex>
 503 No sender given
 DATA
 503 No envelope
@@ -65,9 +65,9 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 550 Perm error
-RCPT TO:<a@test.ex>
+RCPT TO:<j@test.ex>
 503 No sender given
-RCPT TO:<b@test.ex>
+RCPT TO:<k@test.ex>
 503 No sender given
 DATA
 503 No envelope
@@ -82,9 +82,9 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 250 OK
-RCPT TO:<a@test.ex>
+RCPT TO:<l@test.ex>
 451 Temp error 1
-RCPT TO:<b@test.ex>
+RCPT TO:<m@test.ex>
 451 Temp error 2
 DATA
 503 No recipients
@@ -99,9 +99,9 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 250 OK
-RCPT TO:<a@test.ex>
+RCPT TO:<n@test.ex>
 551 Perm error 1
-RCPT TO:<b@test.ex>
+RCPT TO:<o@test.ex>
 551 Perm error 2
 DATA
 503 No recipients
@@ -116,9 +116,9 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 250 OK
-RCPT TO:<a@test.ex>
+RCPT TO:<p@test.ex>
 451 Temp error 1
-RCPT TO:<b@test.ex>
+RCPT TO:<q@test.ex>
 551 Perm error 2
 DATA
 503 No recipients
@@ -133,9 +133,9 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 250 OK
-RCPT TO:<a@test.ex>
+RCPT TO:<r@test.ex>
 250 OK
-RCPT TO:<b@test.ex>
+RCPT TO:<s@test.ex>
 250 OK
 DATA
 503 Sorry perm data error
@@ -150,9 +150,9 @@ EHLO myhost.test.ex
 250 PIPELINING
 MAIL FROM:<CALLER@test.ex>
 250 OK
-RCPT TO:<a@test.ex>
+RCPT TO:<t@test.ex>
 250 OK
-RCPT TO:<b@test.ex>
+RCPT TO:<u@test.ex>
 250 OK
 DATA
 403 Sorry temp data error

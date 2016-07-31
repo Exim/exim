@@ -55,6 +55,9 @@ JH/13 Cutthrough: expand transport dkim_domain option when testing for dkim
       empty is permissible (obviously it should depend only on data available
       when the cutthrough connection is made).
 
+JH/14 Fix logging of errors under PIPELINING.  Previously the log line giving
+      the relevant preceding SMTP command did not note the pipelining mode.
+
 
 Exim version 4.87
 -----------------

@@ -279,6 +279,7 @@ static uschar *rf_names[] = { US"NEVER", US"SUCCESS", US"FAILURE", US"DELAY" };
 static uschar *smtp_command;   /* Points to last cmd for error messages */
 static uschar *mail_command;   /* Points to MAIL cmd for error messages */
 static BOOL    update_waiting; /* TRUE to update the "wait" database */
+static BOOL    pipelining_active; /* current transaction is in pipe mode */
 
 
 /*************************************************
@@ -507,13 +508,7 @@ static BOOL
 check_response(host_item *host, int *errno_value, int more_errno,
   uschar *buffer, int *yield, uschar **message, BOOL *pass_message)
 {
-uschar *pl = US"";
-
-if (smtp_use_pipelining &&
-    (Ustrcmp(smtp_command, "MAIL") == 0 ||
-     Ustrcmp(smtp_command, "RCPT") == 0 ||
-     Ustrcmp(smtp_command, "DATA") == 0))
-  pl = US"pipelined ";
+uschar * pl = pipelining_active ? US"pipelined " : US"";
 
 *yield = '4';    /* Default setting is to give a temporary error */
 
@@ -1971,6 +1966,7 @@ if (continue_hostname == NULL
     case FAIL:		goto RESPONSE_FAILED;
     }
   }
+pipelining_active = smtp_use_pipelining;
 
 /* The setting up of the SMTP call is now complete. Any subsequent errors are
 message-specific. */
@@ -2326,6 +2322,7 @@ if (ok || (smtp_use_pipelining && !mua_wrapper))
     case -1: goto END_OFF;               /* Timeout on RCPT */
     default: goto RESPONSE_FAILED;       /* I/O error, or any MAIL/DATA error */
     }
+  pipelining_active = FALSE;
   }
 
 /* Save the first address of the next batch. */
@@ -2447,7 +2444,9 @@ else
     int delivery_time = (int)(time(NULL) - start_delivery_time);
     int len;
     uschar *conf = NULL;
+
     send_rset = FALSE;
+    pipelining_active = FALSE;
 
     /* Set up confirmation if needed - applies only to SMTP */
 
