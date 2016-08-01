@@ -1,6 +1,7 @@
 # Exim test configuration 0900
 SERVER=
 X=
+Y=
 OPT=
 
 exim_path = EXIM_PATH
@@ -11,7 +12,7 @@ log_file_path = DIR/spool/log/SERVER%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 chunking_advertise_hosts = *
-tls_advertise_hosts =
+tls_advertise_hosts = ${if eq {Y}{tls} {*}}
 
 
 # ----- Main settings -----
@@ -25,6 +26,8 @@ queue_only
 smtp_receive_timeout = 2s
 log_selector = +received_recipients
 
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 # ----- ACL -----
 
