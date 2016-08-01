@@ -28,7 +28,8 @@ Version 4.88
 
  6. The CHUNKING ESMTP extension from RFC 3030.  May give some slight
     performance increase and network load decrease.  Main config option
-    chucking_advertise_hosts for control.
+    chunking_advertise_hosts, and smtp transport option hosts_try_chunking
+    for control.
 
 
 Version 4.87

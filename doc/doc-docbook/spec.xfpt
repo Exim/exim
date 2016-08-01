@@ -14359,12 +14359,14 @@ For non-SMTP input and for batched SMTP input, the test is done at start-up; on
 failure a message is written to stderr and Exim exits with a non-zero code, as
 it obviously cannot send an error message of any kind.
 
+.new
 .option chunking_advertise_hosts main "host list&!!" *
 .cindex CHUNKING advertisement
 .cindex "RFC 3030" "CHUNKING"
 The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
 these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
+.wen
 
 .option daemon_smtp_ports main string &`smtp`&
 .cindex "port" "for daemon"
@@ -23879,6 +23881,16 @@ connects. If authentication fails, Exim will try to transfer the message
 unauthenticated. See also &%hosts_require_auth%&, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
+.new
+.option hosts_try_chunking smtp "host list&!!" *
+.cindex CHUNKING "enabling, in client"
+.cindex BDAT "SMTP command"
+.cindex "RFC 3030" "CHUNKING"
+This option provides a list of server to which, provided they announce
+CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
+BDAT will not be used in conjuction with a transport filter.
+.wen
+
 .option hosts_try_prdr smtp "host list&!!" *
 .cindex "PRDR" "enabling, optional in client"
 This option provides a list of servers to which, provided they announce
@@ -27749,6 +27761,7 @@ received, before the final response to the DATA command is sent. This is
 the ACL specified by &%acl_smtp_data%&, which is the second ACL that is
 associated with the DATA command.
 
+.new
 .cindex CHUNKING "BDAT command"
 .cindex BDAT "SMTP command"
 .cindex "RFC 3030" CHUNKING
@@ -27757,6 +27770,7 @@ the &%acl_smtp_predata%& ACL is not run.
 .XXX why not?  It should be possible, for the first BDAT.
 The &%acl_smtp_data%& is run after the last BDAT command and all of
 the data specified is received.
+.wen
 
 For both of these ACLs, it is not possible to reject individual recipients. An
 error response rejects the entire message. Unfortunately, it is known that some
