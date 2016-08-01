@@ -416,7 +416,6 @@ for (ptr = start; ptr < end; ptr++)
   room for the next uschar, plus a possible extra CR for an LF, plus the escape
   string. */
 
-  /*XXX CHUNKING: probably want to increase DELIVER_OUT_BUFFER_SIZE */
   if ((len = chunk_ptr - deliver_out_buffer) > mlen)
     {
     /* If CHUNKING, prefix with BDAT (size) NON-LAST.  Also, reap responses
@@ -1058,8 +1057,9 @@ uschar * dkim_spool_name;
 int sread = 0;
 int wwritten = 0;
 uschar *dkim_signature = NULL;
-int siglen;
+int siglen = 0;
 off_t k_file_size;
+int options;
 
 /* If we can't sign, just call the original function. */
 
@@ -1079,8 +1079,10 @@ if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
 
 /* Call original function to write the -K file; does the CRLF expansion */
 
+options = tctx->options;
 tctx->options &= ~topt_use_bdat;
 rc = transport_write_message(dkim_fd, tctx, 0);
+tctx->options = options;
 
 /* Save error state. We must clean up before returning. */
 if (!rc)
@@ -1089,61 +1091,60 @@ if (!rc)
   goto CLEANUP;
   }
 
-if (dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
-  {
-  /* Rewind file and feed it to the goats^W DKIM lib */
-  lseek(dkim_fd, 0, SEEK_SET);
-  dkim_signature = dkim_exim_sign(dkim_fd,
-				  dkim->dkim_private_key,
-				  dkim->dkim_domain,
-				  dkim->dkim_selector,
-				  dkim->dkim_canon,
-				  dkim->dkim_sign_headers);
-  if (!dkim_signature)
-    {
-    if (dkim->dkim_strict)
-      {
-      uschar *dkim_strict_result = expand_string(dkim->dkim_strict);
-      if (dkim_strict_result)
-	if ( (strcmpic(dkim->dkim_strict,US"1") == 0) ||
-	     (strcmpic(dkim->dkim_strict,US"true") == 0) )
-	  {
-	  /* Set errno to something halfway meaningful */
-	  save_errno = EACCES;
-	  log_write(0, LOG_MAIN, "DKIM: message could not be signed,"
-	    " and dkim_strict is set. Deferring message delivery.");
-	  rc = FALSE;
-	  goto CLEANUP;
-	  }
-      }
-    }
-
-  siglen = 0;
-  }
-
+/* Rewind file and feed it to the goats^W DKIM lib */
+lseek(dkim_fd, 0, SEEK_SET);
+dkim_signature = dkim_exim_sign(dkim_fd,
+				dkim->dkim_private_key,
+				dkim->dkim_domain,
+				dkim->dkim_selector,
+				dkim->dkim_canon,
+				dkim->dkim_sign_headers);
 if (dkim_signature)
-  {
   siglen = Ustrlen(dkim_signature);
-  while(siglen > 0)
-    {
-#ifdef SUPPORT_TLS
-    wwritten = tls_out.active == out_fd
-      ? tls_write(FALSE, dkim_signature, siglen)
-      : write(out_fd, dkim_signature, siglen);
-#else
-    wwritten = write(out_fd, dkim_signature, siglen);
-#endif
-    if (wwritten == -1)
+else if (dkim->dkim_strict)
+  {
+  uschar *dkim_strict_result = expand_string(dkim->dkim_strict);
+  if (dkim_strict_result)
+    if ( (strcmpic(dkim->dkim_strict,US"1") == 0) ||
+	 (strcmpic(dkim->dkim_strict,US"true") == 0) )
       {
-      /* error, bail out */
-      save_errno = errno;
+      /* Set errno to something halfway meaningful */
+      save_errno = EACCES;
+      log_write(0, LOG_MAIN, "DKIM: message could not be signed,"
+	" and dkim_strict is set. Deferring message delivery.");
       rc = FALSE;
       goto CLEANUP;
       }
-    siglen -= wwritten;
-    dkim_signature += wwritten;
-    }
   }
+
+#ifndef HAVE_LINUX_SENDFILE
+if (options & topt_use_bdat)
+#endif
+  k_file_size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
+
+if (options & topt_use_bdat)
+  {
+
+  /* On big messages output a precursor chunk to get any pipelined
+  MAIL & RCPT commands flushed, then reap the responses so we can
+  error out on RCPT rejects before sending megabytes. */
+
+  if (siglen + k_file_size > DELIVER_OUT_BUFFER_SIZE && siglen > 0)
+    {
+    if (  tctx->chunk_cb(out_fd, tctx, siglen, 0) != OK
+       || !transport_write_block(out_fd, dkim_signature, siglen)
+       || tctx->chunk_cb(out_fd, tctx, 0, tc_reap_prev) != OK
+       )
+      goto err;
+    siglen = 0;
+    }
+
+  if (tctx->chunk_cb(out_fd, tctx, siglen + k_file_size, tc_chunk_last) != OK)
+    goto err;
+  }
+
+if(siglen > 0 && !transport_write_block(out_fd, dkim_signature, siglen))
+  goto err;
 
 #ifdef HAVE_LINUX_SENDFILE
 /* We can use sendfile() to shove the file contents
@@ -1155,18 +1156,13 @@ if (tls_out.active != out_fd)
   ssize_t copied = 0;
   off_t offset = 0;
 
-  k_file_size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
-
   /* Rewind file */
   lseek(dkim_fd, 0, SEEK_SET);
 
   while(copied >= 0 && offset < k_file_size)
     copied = sendfile(out_fd, dkim_fd, &offset, k_file_size - offset);
   if (copied < 0)
-    {
-    save_errno = errno;
-    rc = FALSE;
-    }
+    goto err;
   }
 else
 
@@ -1192,12 +1188,7 @@ else
       wwritten = write(out_fd, p, sread);
 #endif
       if (wwritten == -1)
-	{
-	/* error, bail out */
-	save_errno = errno;
-	rc = FALSE;
-	goto CLEANUP;
-	}
+	goto err;
       p += wwritten;
       sread -= wwritten;
       }
@@ -1211,11 +1202,16 @@ else
   }
 
 CLEANUP:
-/* unlink -K file */
-(void)close(dkim_fd);
-Uunlink(dkim_spool_name);
-errno = save_errno;
-return rc;
+  /* unlink -K file */
+  (void)close(dkim_fd);
+  Uunlink(dkim_spool_name);
+  errno = save_errno;
+  return rc;
+
+err:
+  save_errno = errno;
+  rc = FALSE;
+  goto CLEANUP;
 }
 
 #endif

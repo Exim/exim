@@ -2123,6 +2123,16 @@ if (tblock->filter_command != NULL)
     yield = ERROR;
     goto SEND_QUIT;
     }
+
+  if (  transport_filter_argv
+     && *transport_filter_argv
+     && **transport_filter_argv
+     && peer_offered & PEER_OFFERED_CHUNKING
+     )
+    {
+    peer_offered &= ~PEER_OFFERED_CHUNKING;
+    DEBUG(D_transport) debug_printf("CHUNKING not usable due to transport filter\n");
+    }
   }
 
 

@@ -1,5 +1,7 @@
 # Exim test configuration 0900
 SERVER=
+X=
+OPT=
 
 exim_path = EXIM_PATH
 keep_environment =
@@ -14,13 +16,14 @@ tls_advertise_hosts =
 
 # ----- Main settings -----
 
-domainlist local_domains = @
+domainlist local_domains = @ : test.ex
 
 acl_smtp_rcpt = check_recipient
 acl_smtp_data = check_data
 trusted_users = CALLER
 queue_only
 smtp_receive_timeout = 2s
+log_selector = +received_recipients
 
 
 # ----- ACL -----
@@ -44,7 +47,7 @@ begin routers
 to_server:
   driver = accept
   condition =	${if !eq {SERVER}{server}}
-  transport =	remote_smtp
+  transport =	remote_smtp${if eq {X}{dkim} {_dkim}}
   errors_to =	""
 
 fail_remote_domains:
@@ -80,6 +83,21 @@ remote_smtp:
   allow_localhost
   command_timeout = 2s
   final_timeout = 2s
+
+remote_smtp_dkim:
+  driver = smtp
+  hosts =	127.0.0.1
+  port =	PORT_S
+  allow_localhost
+  command_timeout = 2s
+  final_timeout = 2s
+
+  dkim_domain =		test.ex
+  dkim_selector =	sel
+  dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
+.ifndef HEADERS_MAXSIZE
+  dkim_sign_headers =	OPT
+.endif
 
 # ----- Retry -----
 
