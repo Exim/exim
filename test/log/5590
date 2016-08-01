@@ -1,0 +1,7 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaX-0005vi-00 PRDR R=<bad1@test.ex> refusal
+1999-03-02 09:44:33 10HmaX-0005vi-00 PRDR R=<good@test.ex> acceptance
+1999-03-02 09:44:33 10HmaX-0005vi-00 PRDR R=<bad2@test.ex> refusal
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp PRDR K S=sss for bad1@test.ex good@test.ex bad2@test.ex

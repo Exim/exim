@@ -3,6 +3,7 @@ SERVER=
 X=
 Y=
 OPT=
+ALLOW=
 
 exim_path = EXIM_PATH
 keep_environment =
@@ -20,6 +21,7 @@ tls_advertise_hosts = ${if eq {Y}{tls} {*}}
 domainlist local_domains = @ : test.ex
 
 acl_smtp_rcpt = check_recipient
+acl_smtp_data_prdr = check_prdr
 acl_smtp_data = check_data
 trusted_users = CALLER
 queue_only
@@ -29,6 +31,8 @@ log_selector = +received_recipients
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
+ALLOW
+
 # ----- ACL -----
 
 begin acl
@@ -37,6 +41,10 @@ check_recipient:
   accept hosts = :
   accept domains = +local_domains
   deny   message = relay not permitted
+
+check_prdr:
+  accept local_parts = good
+  deny
 
 check_data:
   warn   message = X-acl-message-linecount: $message_linecount
