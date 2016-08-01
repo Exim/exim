@@ -352,6 +352,15 @@ if (smtp_inptr >= smtp_inend)
 return *smtp_inptr++;
 }
 
+#ifndef DISABLE_DKIM
+void
+smtp_get_cache(void)
+{
+int n = smtp_inend - smtp_inptr;
+if (n > 0)
+  dkim_exim_verify_feed(smtp_inptr, n);
+}
+#endif
 
 
 /* Get a byte from the smtp input, in CHUNKING mode.  Handle ack of the
@@ -386,10 +395,14 @@ for(;;)
 
   /* If not the last, ack the received chunk.  The last response is delayed
   until after the data ACL decides on it */
-  /*XXX find that "last response" and append the chunk size */
 
   if (chunking_state == CHUNKING_LAST)
+    {
+#ifndef DISABLE_DKIM
+    dkim_exim_verify_feed(".\r\n", 3);	/* for consistency with .-term MAIL */
+#endif
     return EOD;
+    }
 
   chunking_state = CHUNKING_OFFERED;
   smtp_printf("250 %u byte chunk received\r\n", chunking_datasize);
@@ -2051,6 +2064,7 @@ smtp_inbuffer = (uschar *)malloc(in_buffer_size);
 if (smtp_inbuffer == NULL)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
 receive_getc = smtp_getc;
+receive_get_cache = smtp_get_cache;
 receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
 receive_ferror = smtp_ferror;

@@ -88,6 +88,9 @@ if (dkim_verify_ctx)
 dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt);
 dkim_collect_input = !!dkim_verify_ctx;
 
+/* Start feed up with any cached data */
+receive_get_cache();
+
 store_pool = dkim_verify_oldpool;
 }
 
