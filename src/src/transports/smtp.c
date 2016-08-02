@@ -12,6 +12,8 @@
 #define PENDING_DEFER   (PENDING + DEFER)
 #define PENDING_OK      (PENDING + OK)
 
+#define DELIVER_BUFFER_SIZE 4096
+
 
 /* Options specific to the smtp transport. This transport also supports LMTP
 over TCP/IP. The options must be in alphabetic order (note that "_" comes
@@ -1406,8 +1408,7 @@ if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
 	  tctx->pending_MAIL, 0,
 	  tctx->inblock,
 	  ob->command_timeout,
-	  buffer, 4096))
-/*XXX buffer size! */
+	  buffer, DELIVER_BUFFER_SIZE))
     {
     case 1:				/* 2xx (only) => OK */
     case 3: tctx->good_RCPT = TRUE;	/* 2xx & 5xx => OK & progress made */
@@ -1426,8 +1427,7 @@ if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
 
 if (flags & tc_reap_one  ||  tctx->pending_BDAT)
   {
-/*XXX buffer size! */
-  if (!smtp_read_response(tctx->inblock, buffer, 4096, '2',
+  if (!smtp_read_response(tctx->inblock, buffer, DELIVER_BUFFER_SIZE, '2',
        ob->command_timeout))
     {
     if (errno == 0 && buffer[0] == '4')
@@ -1521,7 +1521,7 @@ BOOL completed_address = FALSE;
 BOOL esmtp = TRUE;
 BOOL pending_MAIL;
 BOOL pass_message = FALSE;
-uschar peer_offered = 0;	/*XXX should this be handed on cf. tls_offered, smtp_use_dsn ? */
+uschar peer_offered = 0;
 #ifndef DISABLE_PRDR
 BOOL prdr_active;
 #endif
@@ -1548,7 +1548,7 @@ uschar *helo_data = NULL;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 uschar *p;
-uschar buffer[4096];
+uschar buffer[DELIVER_BUFFER_SIZE];
 uschar inbuffer[4096];
 uschar outbuffer[4096];
 
@@ -1756,7 +1756,7 @@ goto SEND_QUIT;
 #ifdef SUPPORT_TLS
   if (smtps)
     {
-    tls_offered = TRUE;
+    smtp_peer_options |= PEER_OFFERED_TLS;
     suppress_tls = FALSE;
     ob->tls_tempfail_tryclear = FALSE;
     smtp_command = US"SSL-on-connect";
@@ -1805,7 +1805,10 @@ goto SEND_QUIT;
     if (!good_response) goto RESPONSE_FAILED;
     }
 
+  peer_offered = smtp_peer_options = 0;
+
   if (esmtp || lmtp)
+    {
     peer_offered = ehlo_response(buffer, Ustrlen(buffer),
       PEER_OFFERED_TLS	/* others checked later */
       );
@@ -1813,14 +1816,15 @@ goto SEND_QUIT;
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
 
 #ifdef SUPPORT_TLS
-  tls_offered = !!(peer_offered & PEER_OFFERED_TLS);
+    smtp_peer_options |= peer_offered & PEER_OFFERED_TLS;
 #endif
+    }
   }
 
 /* For continuing deliveries down the same channel, the socket is the standard
 input, and we don't need to redo EHLO here (but may need to do so for TLS - see
 below). Set up the pointer to where subsequent commands will be left, for
-error messages. Note that smtp_use_size and smtp_use_pipelining will have been
+error messages. Note that smtp_peer_options will have been
 set from the command line if they were set in the process that passed the
 connection on. */
 
@@ -1845,7 +1849,7 @@ the client not be required to use TLS. If the response is bad, copy the buffer
 for error analysis. */
 
 #ifdef SUPPORT_TLS
-if (  tls_offered
+if (  smtp_peer_options & PEER_OFFERED_TLS
    && !suppress_tls
    && verify_check_given_host(&ob->hosts_avoid_tls, host) != OK)
   {
@@ -1907,6 +1911,7 @@ if (  tls_offered
 
     /* TLS session is set up */
 
+    smtp_peer_options_wrap = smtp_peer_options;
     for (addr = addrlist; addr; addr = addr->next)
       if (addr->transport_return == PENDING_DEFER)
         {
@@ -1976,6 +1981,7 @@ if (tls_out.active >= 0)
   helo_response = string_copy(buffer);
 #endif
   if (!good_response) goto RESPONSE_FAILED;
+  smtp_peer_options = 0;
   }
 
 /* If the host is required to use a secure channel, ensure that we
@@ -1990,8 +1996,8 @@ else if (  smtps
   {
   save_errno = ERRNO_TLSREQUIRED;
   message = string_sprintf("a TLS session is required, but %s",
-    tls_offered ? "an attempt to start TLS failed"
-		: "the server did not offer TLS support");
+    smtp_peer_options & PEER_OFFERED_TLS
+    ? "an attempt to start TLS failed" : "the server did not offer TLS support");
   goto TLS_FAILED;
   }
 #endif	/*SUPPORT_TLS*/
@@ -2008,6 +2014,7 @@ if (continue_hostname == NULL
     )
   {
   if (esmtp || lmtp)
+    {
     peer_offered = ehlo_response(buffer, Ustrlen(buffer),
       0 /* no TLS */
       | (lmtp && ob->lmtp_ignore_quota ? PEER_OFFERED_IGNQ : 0)
@@ -2015,7 +2022,7 @@ if (continue_hostname == NULL
       | PEER_OFFERED_PRDR
 #ifdef SUPPORT_I18N
       | (addrlist->prop.utf8_msg ? PEER_OFFERED_UTF8 : 0)
-      	/*XXX if we hand peercaps on to continued-conn processes,
+	/*XXX if we hand peercaps on to continued-conn processes,
 	      must not depend on this addr */
 #endif
       | PEER_OFFERED_DSN
@@ -2023,61 +2030,64 @@ if (continue_hostname == NULL
       | (ob->size_addition >= 0 ? PEER_OFFERED_SIZE : 0)
       );
 
-  /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
-  lmtp_ignore_quota option was set. */
+    /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
+    lmtp_ignore_quota option was set. */
 
-  igquotstr = peer_offered & PEER_OFFERED_IGNQ ? US" IGNOREQUOTA" : US"";
+    igquotstr = peer_offered & PEER_OFFERED_IGNQ ? US" IGNOREQUOTA" : US"";
 
-  /* If the response to EHLO specified support for the SIZE parameter, note
-  this, provided size_addition is non-negative. */
+    /* If the response to EHLO specified support for the SIZE parameter, note
+    this, provided size_addition is non-negative. */
 
-  smtp_use_size = !!(peer_offered & PEER_OFFERED_SIZE);
+    smtp_peer_options |= peer_offered & PEER_OFFERED_SIZE;
 
-  /* Note whether the server supports PIPELINING. If hosts_avoid_esmtp matched
-  the current host, esmtp will be false, so PIPELINING can never be used. If
-  the current host matches hosts_avoid_pipelining, don't do it. */
+    /* Note whether the server supports PIPELINING. If hosts_avoid_esmtp matched
+    the current host, esmtp will be false, so PIPELINING can never be used. If
+    the current host matches hosts_avoid_pipelining, don't do it. */
 
-  smtp_use_pipelining = peer_offered & PEER_OFFERED_PIPE
-    && verify_check_given_host(&ob->hosts_avoid_pipelining, host) != OK;
+    if (  peer_offered & PEER_OFFERED_PIPE
+       && verify_check_given_host(&ob->hosts_avoid_pipelining, host) != OK)
+      smtp_peer_options |= PEER_OFFERED_PIPE;
 
-  DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
-    smtp_use_pipelining ? "" : "not ");
+    DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
+      smtp_peer_options & PEER_OFFERED_PIPE ? "" : "not ");
 
-  if (  peer_offered & PEER_OFFERED_CHUNKING
-     && verify_check_given_host(&ob->hosts_try_chunking, host) != OK)
-    peer_offered &= ~PEER_OFFERED_CHUNKING;
+    if (  peer_offered & PEER_OFFERED_CHUNKING
+       && verify_check_given_host(&ob->hosts_try_chunking, host) != OK)
+      peer_offered &= ~PEER_OFFERED_CHUNKING;
 
-  if (peer_offered & PEER_OFFERED_CHUNKING)
-    {DEBUG(D_transport) debug_printf("CHUNKING usable\n");}
+    if (peer_offered & PEER_OFFERED_CHUNKING)
+      {DEBUG(D_transport) debug_printf("CHUNKING usable\n");}
 
 #ifndef DISABLE_PRDR
-  if (  peer_offered & PEER_OFFERED_PRDR
-     && verify_check_given_host(&ob->hosts_try_prdr, host) != OK)
-    peer_offered &= ~PEER_OFFERED_PRDR;
+    if (  peer_offered & PEER_OFFERED_PRDR
+       && verify_check_given_host(&ob->hosts_try_prdr, host) != OK)
+      peer_offered &= ~PEER_OFFERED_PRDR;
 
-  if (peer_offered & PEER_OFFERED_PRDR)
-    {DEBUG(D_transport) debug_printf("PRDR usable\n");}
+    if (peer_offered & PEER_OFFERED_PRDR)
+      {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
-  /* Note if the server supports DSN */
-  smtp_use_dsn = !!(peer_offered & PEER_OFFERED_DSN);
-  DEBUG(D_transport) debug_printf("%susing DSN\n", smtp_use_dsn ? "" : "not ");
+    /* Note if the server supports DSN */
+    smtp_peer_options |= peer_offered & PEER_OFFERED_DSN;
+    DEBUG(D_transport) debug_printf("%susing DSN\n",
+			peer_offered & PEER_OFFERED_DSN ? "" : "not ");
 
-  /* Note if the response to EHLO specifies support for the AUTH extension.
-  If it has, check that this host is one we want to authenticate to, and do
-  the business. The host name and address must be available when the
-  authenticator's client driver is running. */
+    /* Note if the response to EHLO specifies support for the AUTH extension.
+    If it has, check that this host is one we want to authenticate to, and do
+    the business. The host name and address must be available when the
+    authenticator's client driver is running. */
 
-  switch (yield = smtp_auth(buffer, sizeof(buffer), addrlist, host,
-			    ob, esmtp, &inblock, &outblock))
-    {
-    default:		goto SEND_QUIT;
-    case OK:		break;
-    case FAIL_SEND:	goto SEND_FAILED;
-    case FAIL:		goto RESPONSE_FAILED;
+    switch (yield = smtp_auth(buffer, sizeof(buffer), addrlist, host,
+			      ob, esmtp, &inblock, &outblock))
+      {
+      default:		goto SEND_QUIT;
+      case OK:		break;
+      case FAIL_SEND:	goto SEND_FAILED;
+      case FAIL:	goto RESPONSE_FAILED;
+      }
     }
   }
-pipelining_active = smtp_use_pipelining;
+pipelining_active = !!(smtp_peer_options & PEER_OFFERED_PIPE);
 
 /* The setting up of the SMTP call is now complete. Any subsequent errors are
 message-specific. */
@@ -2162,7 +2172,7 @@ included in the count.) */
 p = buffer;
 *p = 0;
 
-if (smtp_use_size)
+if (peer_offered & PEER_OFFERED_SIZE)
   {
   sprintf(CS p, " SIZE=%d", message_size+message_linecount+ob->size_addition);
   while (*p) p++;
@@ -2206,7 +2216,7 @@ for (dsn_all_lasthop = TRUE, addr = first_addr;
 
 /* Add any DSN flags to the mail command */
 
-if (smtp_use_dsn && !dsn_all_lasthop)
+if (peer_offered & PEER_OFFERED_DSN && !dsn_all_lasthop)
   {
   if (dsn_ret == dsn_ret_hdrs)
     { Ustrcpy(p, " RET=HDRS"); p += 9; }
@@ -2264,7 +2274,7 @@ pending_MAIL = TRUE;     /* The block starts with MAIL */
     }
 #endif
 
-  rc = smtp_write_command(&outblock, smtp_use_pipelining,
+  rc = smtp_write_command(&outblock, pipelining_active,
 	  "MAIL FROM:<%s>%s\r\n", s, buffer);
   }
 
@@ -2311,21 +2321,22 @@ for (addr = first_addr;
   BOOL no_flush;
   uschar * rcpt_addr;
 
-  addr->dsn_aware = smtp_use_dsn ? dsn_support_yes : dsn_support_no;
+  addr->dsn_aware = peer_offered & PEER_OFFERED_DSN
+    ? dsn_support_yes : dsn_support_no;
 
   if (addr->transport_return != PENDING_DEFER) continue;
 
   address_count++;
-  no_flush = smtp_use_pipelining && (!mua_wrapper || addr->next);
+  no_flush = pipelining_active && (!mua_wrapper || addr->next);
 
   /* Add any DSN flags to the rcpt command and add to the sent string */
 
   p = buffer;
   *p = 0;
 
-  if (smtp_use_dsn && !(addr->dsn_flags & rf_dsnlasthop))
+  if (peer_offered & PEER_OFFERED_DSN && !(addr->dsn_flags & rf_dsnlasthop))
     {
-    if ((addr->dsn_flags & rf_dsnflags) != 0)
+    if (addr->dsn_flags & rf_dsnflags)
       {
       int i;
       BOOL first = TRUE;
@@ -2424,7 +2435,7 @@ If using CHUNKING, do not send a BDAT until we know how big a chunk we want
 to send is. */
 
 if (  !(peer_offered & PEER_OFFERED_CHUNKING)
-   && (ok || (smtp_use_pipelining && !mua_wrapper)))
+   && (ok || (pipelining_active && !mua_wrapper)))
   {
   int count = smtp_write_command(&outblock, FALSE, "DATA\r\n");
 
@@ -3031,6 +3042,7 @@ if (completed_address && ok && send_quit)
       if (tls_out.active >= 0)
         {
         tls_close(FALSE, TRUE);
+	smtp_peer_options = smtp_peer_options_wrap;
         if (smtps)
           ok = FALSE;
         else

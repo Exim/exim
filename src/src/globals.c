@@ -138,7 +138,6 @@ tls_support tls_out = {
 uschar *dsn_envid              = NULL;
 int     dsn_ret                = 0;
 const pcre  *regex_DSN         = NULL;
-BOOL    smtp_use_dsn           = FALSE;
 uschar *dsn_advertise_hosts    = NULL;
 
 #ifdef SUPPORT_TLS
@@ -158,7 +157,6 @@ uschar *tls_eccurve            = US"prime256v1";
 # ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
 # endif
-BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
@@ -1322,8 +1320,8 @@ int     smtp_rlr_base          = 0;
 double  smtp_rlr_factor        = 0.0;
 int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
-BOOL    smtp_use_pipelining    = FALSE;
-BOOL    smtp_use_size          = FALSE;
+unsigned smtp_peer_options     = 0;
+unsigned smtp_peer_options_wrap= 0;
 #ifdef SUPPORT_I18N
 uschar *smtputf8_advertise_hosts = US"*";	/* overridden under test-harness */
 #endif

@@ -119,7 +119,6 @@ extern uschar *tls_eccurve;            /* EC curve */
 # ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 # endif
-extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
@@ -132,7 +131,6 @@ extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 extern uschar  *dsn_envid;             /* DSN envid string */
 extern int      dsn_ret;               /* DSN ret type*/
 extern const pcre  *regex_DSN;         /* For recognizing DSN settings */
-extern BOOL     smtp_use_dsn;          /* Global for passed connections */
 extern uschar  *dsn_advertise_hosts;   /* host for which TLS is advertised */
 
 /* Input-reading functions for messages, so we can use special ones for
@@ -838,8 +836,8 @@ extern int     smtp_rlr_base;          /* Base interval for RCPT rate limit */
 extern double  smtp_rlr_factor;        /* Factor for RCPT rate limit */
 extern int     smtp_rlr_limit;         /* Max delay */
 extern int     smtp_rlr_threshold;     /* Threshold for RCPT rate limit */
-extern BOOL    smtp_use_pipelining;    /* Global for passed connections */
-extern BOOL    smtp_use_size;          /* Global for passed connections */
+extern unsigned smtp_peer_options;     /* Global flags for passed connections */
+extern unsigned smtp_peer_options_wrap; /* stacked version hidden by TLS */
 #ifdef SUPPORT_I18N
 extern uschar *smtputf8_advertise_hosts; /* ingress control */
 #endif

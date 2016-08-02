@@ -759,7 +759,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       ? string_sprintf(" SIZE=%d", message_size + ob->size_addition) : US"";
 
 #ifdef SUPPORT_TLS
-    tls_offered = !!(peer_offered & PEER_OFFERED_TLS);
+    smtp_peer_options |= peer_offered & PEER_OFFERED_TLS;
 #endif
 
     /* If TLS is available on this connection attempt to

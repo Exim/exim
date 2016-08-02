@@ -826,12 +826,12 @@ Arguments:
       end_dot               if TRUE, send a terminating "." line at the end
       no_headers            if TRUE, omit the headers
       no_body               if TRUE, omit the body
-    size_limit            if > 0, this is a limit to the size of message written;
+    check_string          a string to check for at the start of lines, or NULL
+    escape_string         a string to insert in front of any check string
+  size_limit              if > 0, this is a limit to the size of message written;
                             it is used when returning messages to their senders,
                             and is approximate rather than exact, owing to chunk
                             buffering
-    check_string          a string to check for at the start of lines, or NULL
-    escape_string         a string to insert in front of any check string
 
 Returns:                TRUE on success; FALSE (with errno) on failure.
                         In addition, the global variable transport_count
@@ -1228,7 +1228,6 @@ set up a filtering process, fork another process to call the internal function
 to write to the filter, and in this process just suck from the filter and write
 down the given fd. At the end, tidy up the pipes and the processes.
 
-XXX
 Arguments:     as for internal_transport_write_message() above
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
@@ -1944,7 +1943,7 @@ DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
 if ((pid = fork()) == 0)
   {
-  int i = 16;
+  int i = 17;
   const uschar **argv;
 
   /* Disconnect entirely from the parent process. If we are running in the
@@ -1960,16 +1959,15 @@ if ((pid = fork()) == 0)
 
   argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
-  if (smtp_use_dsn) argv[i++] = US"-MCD";
-
   if (smtp_authenticated) argv[i++] = US"-MCA";
 
-  #ifdef SUPPORT_TLS
-  if (tls_offered) argv[i++] = US"-MCT";
-  #endif
-
-  if (smtp_use_size) argv[i++] = US"-MCS";
-  if (smtp_use_pipelining) argv[i++] = US"-MCP";
+  if (smtp_peer_options & PEER_OFFERED_CHUNKING) argv[i++] = US"-MCK";
+  if (smtp_peer_options & PEER_OFFERED_DSN) argv[i++] = US"-MCD";
+  if (smtp_peer_options & PEER_OFFERED_PIPE) argv[i++] = US"-MCP";
+  if (smtp_peer_options & PEER_OFFERED_SIZE) argv[i++] = US"-MCS";
+#ifdef SUPPORT_TLS
+  if (smtp_peer_options & PEER_OFFERED_TLS) argv[i++] = US"-MCT";
+#endif
 
   if (queue_run_pid != (pid_t)0)
     {

@@ -27767,7 +27767,7 @@ associated with the DATA command.
 .cindex "RFC 3030" CHUNKING
 If CHUNKING was advertised and a BDAT command sequence is received,
 the &%acl_smtp_predata%& ACL is not run.
-.XXX why not?  It should be possible, for the first BDAT.
+. XXX why not?  It should be possible, for the first BDAT.
 The &%acl_smtp_data%& is run after the last BDAT command and all of
 the data specified is received.
 .wen

@@ -2,13 +2,14 @@
 exim -DSERVER=server -bd -oX PORT_D
 ****
 #
+# plain, small message (no body)
 client 127.0.0.1 PORT_D
 ??? 220
 ehlo tester
 ??? 250-
-??? 250-
-??? 250-
-??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
 ??? 250-CHUNKING
 ??? 250 HELP
 mail from:someone@some.domain
@@ -26,6 +27,9 @@ quit
 ??? 221
 ****
 #
+# plain, small message (with body)
+# nonlast 1st bdat, noop, last-bdat(0)
+# immediate followon 2nd message
 client 127.0.0.1 PORT_D
 ??? 220
 ehlo tester
@@ -118,6 +122,7 @@ quit
 ??? 221
 ****
 #
+# followon EHLO and another message
 client 127.0.0.1 PORT_D
 ??? 220
 ehlo tester
@@ -162,6 +167,26 @@ data
 ??? 503
 data
 ??? 503
+quit
+??? 221
+****
+#
+# plain, small message (no body)
+# pipelined
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-CHUNKING
+??? 250 HELP
+MAIL FROM:<someone@some.domain>\r\nRCPT TO:<CALLER@HOSTNAME>\r\nBDAT 88 LAST\r\nTo: Susan@random.com\r\nFrom: Sam@random.com\r\nSubject: This is a bodyless test message\r\n
+??? 250
+??? 250
+??? 250-
+??? 250
 quit
 ??? 221
 ****
