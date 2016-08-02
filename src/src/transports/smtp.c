@@ -2704,6 +2704,7 @@ else
 #ifndef DISABLE_PRDR
       if (prdr_active) addr->flags |= af_prdr_used;
 #endif
+      if (peer_offered & PEER_OFFERED_CHUNKING) addr->flags |= af_chunking_used;
       flag = '-';
 
 #ifndef DISABLE_PRDR

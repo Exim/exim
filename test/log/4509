@@ -1,8 +1,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for a@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] C="250- 973 byte chunk, total 973\\n250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] K C="250- 973 byte chunk, total 973\\n250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for b@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => b@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] C="250- 8509 byte chunk, total 9160\\n250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => b@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] K C="250- 8509 byte chunk, total 9160\\n250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 
 ******** SERVER ********

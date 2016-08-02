@@ -715,7 +715,7 @@ host_item * h = addr->host_used;
 s = string_append(s, sp, pp, 2, US" H=", h->name);
 
 if (LOGGING(dnssec) && h->dnssec == DS_YES)
-  s = string_cat(s, sp, pp, US" DS");
+  s = string_catn(s, sp, pp, US" DS", 3);
 
 s = string_append(s, sp, pp, 3, US" [", h->address, US"]");
 
@@ -962,8 +962,11 @@ else
 
 #ifndef DISABLE_PRDR
   if (addr->flags & af_prdr_used)
-    s = string_append(s, &size, &ptr, 1, US" PRDR");
+    s = string_catn(s, &size, &ptr, US" PRDR", 5);
 #endif
+
+  if (addr->flags & af_chunking_used)
+    s = string_catn(s, &size, &ptr, US" K", 2);
   }
 
 /* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
@@ -3289,6 +3292,10 @@ while (!done)
     break;
 #endif
 
+    case 'K':
+    addr->flags |= af_chunking_used;
+    break;
+
     case 'D':
     if (!addr) goto ADDR_MISMATCH;
     memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
@@ -4526,6 +4533,9 @@ for (delivery_count = 0; addr_remote; delivery_count++)
       if (addr->flags & af_prdr_used)
 	rmt_dlv_checked_write(fd, 'P', '0', NULL, 0);
 #endif
+
+      if (addr->flags & af_chunking_used)
+	rmt_dlv_checked_write(fd, 'K', '0', NULL, 0);
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));

@@ -546,12 +546,13 @@ typedef struct address_item_propagated {
 #ifndef DISABLE_PRDR
 # define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
 #endif
-#define af_force_command       0x10000000 /* force_command in pipe transport */
+#define af_chunking_used       0x10000000 /* delivery used SMTP CHUNKING */
+#define af_force_command       0x20000000 /* force_command in pipe transport */
 #ifdef EXPERIMENTAL_DANE
-# define af_dane_verified      0x20000000 /* TLS cert verify done with DANE */
+# define af_dane_verified      0x40000000 /* TLS cert verify done with DANE */
 #endif
 #ifdef SUPPORT_I18N
-# define af_utf8_downcvt       0x40000000 /* downconvert was done for delivery */
+# define af_utf8_downcvt       0x80000000 /* downconvert was done for delivery */
 #endif
 
 /* These flags must be propagated when a child is created */
