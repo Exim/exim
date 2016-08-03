@@ -61,6 +61,10 @@ JH/14 Fix logging of errors under PIPELINING.  Previously the log line giving
 JH/15 Fix counting of empty lines in $body_linecount and $message_linecount.
       Previously they were not counted.
 
+JH/16 DANE: treat a TLSA lookup response having all non-TLSA RRs, the same
+      as one having no matching records.  Previously we deferred the message
+      that needed the lookup.
+
 
 Exim version 4.87
 -----------------

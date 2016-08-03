@@ -1217,7 +1217,8 @@ switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
   case DNS_AGAIN:
     return DEFER; /* just defer this TLS'd conn */
 
-  case DNS_NOMATCH:
+  case DNS_NODATA:	/* no TLSA RR for this lookup */
+  case DNS_NOMATCH:	/* no records at all for this lookup */
     return dane_required ? FAIL : FAIL_FORCED;
 
   default:
