@@ -435,7 +435,6 @@ extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N
 extern BOOL    string_is_utf8(const uschar *);
 #endif
-extern uschar *string_log_address(address_item *, BOOL, BOOL);
 extern uschar *string_nextinlist(const uschar **, int *, uschar *, int);
 extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern const uschar *string_printing2(const uschar *, BOOL);
