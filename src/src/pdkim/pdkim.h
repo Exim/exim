@@ -304,6 +304,9 @@ int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **);
 DLLEXPORT
 void       pdkim_free_ctx     (pdkim_ctx *);
 
+
+const char *	pdkim_errstr(int);
+
 #ifdef __cplusplus
 }
 #endif
