@@ -65,6 +65,9 @@ JH/16 DANE: treat a TLSA lookup response having all non-TLSA RRs, the same
       as one having no matching records.  Previously we deferred the message
       that needed the lookup.
 
+JH/17 Fakereject: previously logged as a norml message arrival "<="; now
+      distinguished as "(=".
+
 
 Exim version 4.87
 -----------------
