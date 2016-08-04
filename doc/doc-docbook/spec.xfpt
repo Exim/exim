@@ -31671,6 +31671,11 @@ spam bar is 50 characters.
 A multiline text table, containing the full SpamAssassin report for the
 message. Useful for inclusion in headers or reject messages.
 This variable is only usable in a DATA-time ACL.
+.new
+Beware that SpamAssassin may return non-ASCII characters, especially
+when running in country-specific locales, which are not legal
+unencoded in headers.
+.wen
 
 .vitem &$spam_action$&
 For SpamAssassin either 'reject' or 'no action' depending on the
