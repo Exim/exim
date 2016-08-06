@@ -13816,6 +13816,7 @@ See also the &'Policy controls'& section above.
 .table2
 .row &%accept_8bitmime%&             "advertise 8BITMIME"
 .row &%auth_advertise_hosts%&        "advertise AUTH to these hosts"
+.row &%chunking_advertise_hosts%&    "advertise CHUNKING to these hosts"
 .row &%dsn_advertise_hosts%&         "advertise DSN extensions to these hosts"
 .row &%ignore_fromline_hosts%&       "allow &""From ""& from these hosts"
 .row &%ignore_fromline_local%&       "allow &""From ""& from local SMTP"
@@ -14372,6 +14373,15 @@ number of kilobytes. If a non-multiple of 1024 is specified, it is rounded up.
 For non-SMTP input and for batched SMTP input, the test is done at start-up; on
 failure a message is written to stderr and Exim exits with a non-zero code, as
 it obviously cannot send an error message of any kind.
+
+.new
+.option chunking_advertise_hosts main "host list&!!" *
+.cindex CHUNKING advertisement
+.cindex "RFC 3030" "CHUNKING"
+The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
+these hosts.
+Hosts may use the BDAT command as an alternate to DATA.
+.wen
 
 .option daemon_smtp_ports main string &`smtp`&
 .cindex "port" "for daemon"
@@ -23891,6 +23901,16 @@ connects. If authentication fails, Exim will try to transfer the message
 unauthenticated. See also &%hosts_require_auth%&, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
+.new
+.option hosts_try_chunking smtp "host list&!!" *
+.cindex CHUNKING "enabling, in client"
+.cindex BDAT "SMTP command"
+.cindex "RFC 3030" "CHUNKING"
+This option provides a list of server to which, provided they announce
+CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
+BDAT will not be used in conjuction with a transport filter.
+.wen
+
 .option hosts_try_prdr smtp "host list&!!" *
 .cindex "PRDR" "enabling, optional in client"
 This option provides a list of servers to which, provided they announce
@@ -27760,6 +27780,17 @@ tests have to appear in the ACL that is run after the message itself has been
 received, before the final response to the DATA command is sent. This is
 the ACL specified by &%acl_smtp_data%&, which is the second ACL that is
 associated with the DATA command.
+
+.new
+.cindex CHUNKING "BDAT command"
+.cindex BDAT "SMTP command"
+.cindex "RFC 3030" CHUNKING
+If CHUNKING was advertised and a BDAT command sequence is received,
+the &%acl_smtp_predata%& ACL is not run.
+. XXX why not?  It should be possible, for the first BDAT.
+The &%acl_smtp_data%& is run after the last BDAT command and all of
+the data specified is received.
+.wen
 
 For both of these ACLs, it is not possible to reject individual recipients. An
 error response rejects the entire message. Unfortunately, it is known that some
@@ -35646,10 +35677,12 @@ the following table:
 &`F   `&        sender address (on delivery lines)
 &`H   `&        host name and IP address
 &`I   `&        local interface used
+&`K   `&        CHUNKING extension used
 &`id  `&        message id for incoming message
 &`P   `&        on &`<=`& lines: protocol used
 &`    `&        on &`=>`& and &`**`& lines: return path
-&`PRX `&        on &'<='& and&`=>`& lines: proxy address
+&`PRDR`&        PRDR extension used
+&`PRX `&        on &'<='& and &`=>`& lines: proxy address
 &`Q   `&        alternate queue name
 &`QT  `&        on &`=>`& lines: time spent on queue so far
 &`    `&        on &"Completed"& lines: time spent on queue

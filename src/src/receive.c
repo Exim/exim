@@ -777,7 +777,7 @@ read_message_data_smtp(FILE *fout)
 {
 int ch_state = 0;
 int ch;
-register int linelength = 0;
+int linelength = 0;
 
 while ((ch = (receive_getc)()) != EOF)
   {
@@ -867,7 +867,7 @@ while ((ch = (receive_getc)()) != EOF)
 
   message_size++;
   linelength++;
-  if (fout != NULL)
+  if (fout)
     {
     if (fputc(ch, fout) == EOF) return END_WERROR;
     if (message_size > thismessage_size_limit) return END_SIZE;
@@ -876,7 +876,7 @@ while ((ch = (receive_getc)()) != EOF)
     (void) cutthrough_put_nl();
   else
     {
-    uschar c= ch;
+    uschar c = ch;
     (void) cutthrough_puts(&c, 1);
     }
   }
@@ -885,6 +885,63 @@ while ((ch = (receive_getc)()) != EOF)
 since a correct message is terminated by [CR] LF . [CR] LF. */
 
 return END_EOF;
+}
+
+
+
+
+/* Variant of the above read_message_data_smtp() specialised for RFC 3030
+CHUNKING.  We assume that the incoming has proper CRLF, so only have to scan
+for and strip CR.  On the downside there are more protocol reasons to stop.
+
+Arguments:
+  fout      a FILE to which to write the message; NULL if skipping
+
+Returns:    One of the END_xxx values indicating why it stopped reading
+*/
+
+static int
+read_message_bdat_smtp(FILE *fout)
+{
+int ch;
+int linelength = 0;
+
+for (;;) switch (ch = bdat_getc())
+  {
+  case EOF: return END_EOF;
+  case EOD: return END_DOT;
+  case ERR: return END_PROTOCOL;
+
+  case '\r':
+    body_linecount++;
+    if (linelength > max_received_linelength)
+      max_received_linelength = linelength;
+    linelength = -1;
+    break;
+
+  case 0:
+    body_zerocount++;
+    /*FALLTHROUGH*/
+  default:
+    message_size++;
+    linelength++;
+    if (fout)
+      {
+      if (fputc(ch, fout) == EOF) return END_WERROR;
+      if (message_size > thismessage_size_limit) return END_SIZE;
+      }
+#ifdef notyet
+    if(ch == '\n')
+      (void) cutthrough_put_nl();
+    else
+      {
+      uschar c = ch;
+      (void) cutthrough_puts(&c, 1);
+      }
+#endif
+    break;
+  }
+/*NOTREACHED*/
 }
 
 
@@ -906,6 +963,7 @@ Returns:     nothing
 void
 receive_swallow_smtp(void)
 {
+/*XXX CHUNKING: not enough.  read chunks until RSET? */
 if (message_ended >= END_NOTENDED)
   message_ended = read_message_data_smtp(NULL);
 }
@@ -2832,6 +2890,14 @@ if (filter_test != FTEST_NONE)
   return message_ended == END_DOT;
   }
 
+/*XXX CHUNKING: need to cancel cutthrough under BDAT, for now.  In future,
+think more if it could be handled.  Cannot do onward CHUNKING unless
+inbound is, but inbound chunking ought to be ok with outbound plain.
+Could we do onward CHUNKING given inbound CHUNKING?
+*/
+if (chunking_state > CHUNKING_OFFERED)
+  cancel_cutthrough_connection("chunking active");
+
 /* Cutthrough delivery:
 We have to create the Received header now rather than at the end of reception,
 so the timestamp behaviour is a change to the normal case.
@@ -2929,7 +2995,9 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   {
   if (smtp_input)
     {
-    message_ended = read_message_data_smtp(data_file);
+    message_ended = chunking_state > CHUNKING_OFFERED
+      ? read_message_bdat_smtp(data_file)
+      : read_message_data_smtp(data_file);
     receive_linecount++;                /* The terminating "." line */
     }
   else message_ended = read_message_data(data_file);
@@ -2937,51 +3005,64 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   receive_linecount += body_linecount;  /* For BSMTP errors mainly */
   message_linecount += body_linecount;
 
-  /* Handle premature termination of SMTP */
-
-  if (smtp_input && message_ended == END_EOF)
+  switch (message_ended)
     {
-    Uunlink(spool_name);                     /* Lose data file when closed */
-    cancel_cutthrough_connection("sender closed connection");
-    message_id[0] = 0;                       /* Indicate no message accepted */
-    smtp_reply = handle_lost_connection(US"");
-    smtp_yield = FALSE;
-    goto TIDYUP;                             /* Skip to end of function */
-    }
+    /* Handle premature termination of SMTP */
 
-  /* Handle message that is too big. Don't use host_or_ident() in the log
-  message; we want to see the ident value even for non-remote messages. */
+    case END_EOF:
+      if (smtp_input)
+	{
+	Uunlink(spool_name);                 /* Lose data file when closed */
+	cancel_cutthrough_connection("sender closed connection");
+	message_id[0] = 0;                   /* Indicate no message accepted */
+	smtp_reply = handle_lost_connection(US"");
+	smtp_yield = FALSE;
+	goto TIDYUP;                         /* Skip to end of function */
+	}
+      break;
 
-  if (message_ended == END_SIZE)
-    {
-    Uunlink(spool_name);                /* Lose the data file when closed */
-    cancel_cutthrough_connection("mail too big");
-    if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
+    /* Handle message that is too big. Don't use host_or_ident() in the log
+    message; we want to see the ident value even for non-remote messages. */
 
-    log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
-      "message too big: read=%d max=%d",
-      sender_address,
-      (sender_fullhost == NULL)? "" : " H=",
-      (sender_fullhost == NULL)? US"" : sender_fullhost,
-      (sender_ident == NULL)? "" : " U=",
-      (sender_ident == NULL)? US"" : sender_ident,
-      message_size,
-      thismessage_size_limit);
+    case END_SIZE:
+      Uunlink(spool_name);                /* Lose the data file when closed */
+      cancel_cutthrough_connection("mail too big");
+      if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
 
-    if (smtp_input)
-      {
-      smtp_reply = US"552 Message size exceeds maximum permitted";
-      message_id[0] = 0;               /* Indicate no message accepted */
-      goto TIDYUP;                     /* Skip to end of function */
-      }
-    else
-      {
-      fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
-      give_local_error(ERRMESS_TOOBIG,
-        string_sprintf("message too big (max=%d)", thismessage_size_limit),
-        US"message rejected: ", error_rc, data_file, header_list);
-      /* Does not return */
-      }
+      log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
+	"message too big: read=%d max=%d",
+	sender_address,
+	(sender_fullhost == NULL)? "" : " H=",
+	(sender_fullhost == NULL)? US"" : sender_fullhost,
+	(sender_ident == NULL)? "" : " U=",
+	(sender_ident == NULL)? US"" : sender_ident,
+	message_size,
+	thismessage_size_limit);
+
+      if (smtp_input)
+	{
+	smtp_reply = US"552 Message size exceeds maximum permitted";
+	message_id[0] = 0;               /* Indicate no message accepted */
+	goto TIDYUP;                     /* Skip to end of function */
+	}
+      else
+	{
+	fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+	give_local_error(ERRMESS_TOOBIG,
+	  string_sprintf("message too big (max=%d)", thismessage_size_limit),
+	  US"message rejected: ", error_rc, data_file, header_list);
+	/* Does not return */
+	}
+      break;
+
+    /* Handle bad BDAT protocol sequence */
+
+    case END_PROTOCOL:
+      Uunlink(spool_name);		/* Lose the data file when closed */
+      cancel_cutthrough_connection("sender protocol error");
+      smtp_reply = US"";		/* Response already sent */
+      message_id[0] = 0;		/* Indicate no message accepted */
+      goto TIDYUP;			/* Skip to end of function */
     }
   }
 
@@ -3164,9 +3245,8 @@ user_msg = NULL;
 enable_dollar_recipients = TRUE;
 
 if (recipients_count == 0)
-  {
-  blackholed_by = recipients_discarded? US"MAIL ACL" : US"RCPT ACL";
-  }
+  blackholed_by = recipients_discarded ? US"MAIL ACL" : US"RCPT ACL";
+
 else
   {
   /* Handle interactive SMTP messages */
@@ -3182,18 +3262,15 @@ else
       dkim_exim_verify_finish();
 
       /* Check if we must run the DKIM ACL */
-      if ((acl_smtp_dkim != NULL) &&
-          (dkim_verify_signers != NULL) &&
-          (dkim_verify_signers[0] != '\0'))
+      if (acl_smtp_dkim && dkim_verify_signers && *dkim_verify_signers)
         {
         uschar *dkim_verify_signers_expanded =
           expand_string(dkim_verify_signers);
-        if (dkim_verify_signers_expanded == NULL)
-          {
+        if (!dkim_verify_signers_expanded)
           log_write(0, LOG_MAIN|LOG_PANIC,
             "expansion of dkim_verify_signers option failed: %s",
             expand_string_message);
-          }
+
         else
           {
           int sep = 0;
@@ -3202,28 +3279,23 @@ else
           uschar *seen_items = NULL;
           int     seen_items_size = 0;
           int     seen_items_offset = 0;
-          uschar itembuf[256];
           /* Default to OK when no items are present */
           rc = OK;
-          while ((item = string_nextinlist(&ptr, &sep,
-                                           itembuf,
-                                           sizeof(itembuf))))
+          while ((item = string_nextinlist(&ptr, &sep, NULL, 0)))
             {
             /* Prevent running ACL for an empty item */
-            if (!item || (item[0] == '\0')) continue;
+            if (!item || !*item) continue;
 
             /* Only run ACL once for each domain or identity,
 	    no matter how often it appears in the expanded list. */
             if (seen_items)
               {
               uschar *seen_item = NULL;
-              uschar seen_item_buf[256];
               const uschar *seen_items_list = seen_items;
               BOOL seen_this_item = FALSE;
 
               while ((seen_item = string_nextinlist(&seen_items_list, &sep,
-                                                    seen_item_buf,
-                                                    sizeof(seen_item_buf))))
+                                                    NULL, 0)))
 		if (Ustrcmp(seen_item,item) == 0)
 		  {
 		  seen_this_item = TRUE;
@@ -3783,13 +3855,16 @@ if (sender_host_authenticated)
 
 #ifndef DISABLE_PRDR
 if (prdr_requested)
-  s = string_append(s, &size, &sptr, 1, US" PRDR");
+  s = string_catn(s, &size, &sptr, US" PRDR", 5);
 #endif
 
 #ifdef SUPPORT_PROXY
 if (proxy_session && LOGGING(proxy))
   s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_local_address);
 #endif
+
+if (chunking_state > CHUNKING_OFFERED)
+  s = string_catn(s, &size, &sptr, US" K", 2);
 
 sprintf(CS big_buffer, "%d", msg_size);
 s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
@@ -4093,8 +4168,15 @@ if (smtp_input)
 
       /* Default OK response */
 
+      else if (chunking_state > CHUNKING_OFFERED)
+	{
+        smtp_printf("250- %u byte chunk, total %d\r\n250 OK id=%s\r\n",
+	    chunking_datasize, message_size+message_linecount, message_id);
+	chunking_state = CHUNKING_OFFERED;
+	}
       else
         smtp_printf("250 OK id=%s\r\n", message_id);
+
       if (host_checking)
         fprintf(stdout,
           "\n**** SMTP testing: that is not a real message id!\n\n");

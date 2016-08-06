@@ -2717,76 +2717,63 @@ for (i = 1; i < argc; i++)
       break;
       }
 
+    else if (*argrest == 'C' && argrest[1] && !argrest[2])
+      {
+	switch(argrest[1])
+	{
     /* -MCA: set the smtp_authenticated flag; this is useful only when it
     precedes -MC (see above). The flag indicates that the host to which
     Exim is connected has accepted an AUTH sequence. */
 
-    else if (Ustrcmp(argrest, "CA") == 0)
-      {
-      smtp_authenticated = TRUE;
-      break;
-      }
+	case 'A': smtp_authenticated = TRUE; break;
 
     /* -MCD: set the smtp_use_dsn flag; this indicates that the host
        that exim is connected to supports the esmtp extension DSN */
 
-    else if (Ustrcmp(argrest, "CD") == 0)
-      {
-      smtp_use_dsn = TRUE;
-      break;
-      }
+	case 'D': smtp_peer_options |= PEER_OFFERED_DSN; break;
 
     /* -MCG: set the queue name, to a non-default value */
 
-    else if (Ustrcmp(argrest, "CG") == 0)
-      {
-      if (++i < argc) queue_name = string_copy(argv[i]);
-      else badarg = TRUE;
-      break;
-      }
+	case 'G': if (++i < argc) queue_name = string_copy(argv[i]);
+		  else badarg = TRUE;
+		  break;
+
+    /* -MCK: the peer offered CHUNKING.  Must precede -MC */
+
+	case 'K': smtp_peer_options |= PEER_OFFERED_CHUNKING; break;
 
     /* -MCP: set the smtp_use_pipelining flag; this is useful only when
     it preceded -MC (see above) */
 
-    else if (Ustrcmp(argrest, "CP") == 0)
-      {
-      smtp_use_pipelining = TRUE;
-      break;
-      }
+	case 'P': smtp_peer_options |= PEER_OFFERED_PIPE; break;
 
     /* -MCQ: pass on the pid of the queue-running process that started
     this chain of deliveries and the fd of its synchronizing pipe; this
     is useful only when it precedes -MC (see above) */
 
-    else if (Ustrcmp(argrest, "CQ") == 0)
-      {
-      if (++i < argc) passed_qr_pid = (pid_t)(Uatol(argv[i]));
-        else badarg = TRUE;
-      if (++i < argc) passed_qr_pipe = (int)(Uatol(argv[i]));
-        else badarg = TRUE;
-      break;
-      }
+	case 'Q': if (++i < argc) passed_qr_pid = (pid_t)(Uatol(argv[i]));
+		  else badarg = TRUE;
+		  if (++i < argc) passed_qr_pipe = (int)(Uatol(argv[i]));
+		  else badarg = TRUE;
+		  break;
 
     /* -MCS: set the smtp_use_size flag; this is useful only when it
     precedes -MC (see above) */
 
-    else if (Ustrcmp(argrest, "CS") == 0)
-      {
-      smtp_use_size = TRUE;
-      break;
-      }
+	case 'S': smtp_peer_options |= PEER_OFFERED_SIZE; break;
 
+#ifdef SUPPORT_TLS
     /* -MCT: set the tls_offered flag; this is useful only when it
     precedes -MC (see above). The flag indicates that the host to which
     Exim is connected has offered TLS support. */
 
-    #ifdef SUPPORT_TLS
-    else if (Ustrcmp(argrest, "CT") == 0)
-      {
-      tls_offered = TRUE;
-      break;
+	case 'T': smtp_peer_options |= PEER_OFFERED_TLS; break;
+#endif
+
+	default:  badarg = TRUE; break;
+	}
+	break;
       }
-    #endif
 
     /* -M[x]: various operations on the following list of message ids:
        -M    deliver the messages, ignoring next retry times and thawing

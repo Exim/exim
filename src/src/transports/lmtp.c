@@ -612,8 +612,7 @@ if (send_data)
   transport_ctx tctx = {
     tblock,
     addrlist,
-    US".",
-    US"..",
+    US".", US"..",
     ob->options
   };
 

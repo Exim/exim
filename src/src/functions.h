@@ -56,6 +56,7 @@ extern int     tls_feof(void);
 extern int     tls_ferror(void);
 extern void    tls_free_cert(void **);
 extern int     tls_getc(void);
+extern void    tls_get_cache(void);
 extern int     tls_import_cert(const uschar *, void **);
 extern int     tls_read(BOOL, uschar *, size_t);
 extern int     tls_server_start(const uschar *);
@@ -100,6 +101,7 @@ extern int     auth_xtextdecode(uschar *, uschar **);
 
 extern uschar *b64encode(uschar *, int);
 extern int     b64decode(uschar *, uschar **);
+extern int     bdat_getc(void);
 extern void    bits_clear(unsigned int *, size_t, int *);
 extern void    bits_set(unsigned int *, size_t, int *);
 
@@ -389,6 +391,7 @@ extern BOOL    smtp_get_interface(uschar *, int, address_item *,
                  uschar **, uschar *);
 extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(void);
+extern void    smtp_get_cache(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
@@ -466,9 +469,8 @@ extern BOOL    transport_set_up_command(const uschar ***, uschar *,
 extern void    transport_update_waiting(host_item *, uschar *);
 extern BOOL    transport_write_block(int, uschar *, int);
 extern BOOL    transport_write_string(int, const char *, ...);
-extern BOOL    transport_headers_send(address_item *, int, transport_instance *,
-                 BOOL (*)(int, uschar *, int, BOOL),
-		 BOOL);
+extern BOOL    transport_headers_send(int, transport_ctx *,
+                 BOOL (*)(int, transport_ctx *, uschar *, int));
 extern BOOL    transport_write_message(int, transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);

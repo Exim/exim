@@ -87,6 +87,7 @@ LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? yes (matched "10.0.0.1")
 >>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
 >>> processing "deny"
@@ -290,6 +291,7 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> host in "10.0.0.4"? no (end of list)
 >>> host in "10.0.0.3 : 10.0.0.4"? yes (matched "10.0.0.3")
 >>> host in auth_advertise_hosts? yes (matched "+auth_relay_hosts")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>> check hosts = 10.0.0.5
@@ -385,6 +387,7 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> host in "10.0.0.1"? no (end of list)
 >>> host in "10.0.0.4"? yes (matched "10.0.0.4")
 >>> host in auth_advertise_hosts? no (matched "!+relay_hosts")
+>>> host in chunking_advertise_hosts? no (end of list)
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -437,6 +440,7 @@ host in "10.0.0.1"? no (end of list)
 host in "10.0.0.4"? no (end of list)
 host in "10.0.0.3 : 10.0.0.4"? no (end of list)
 host in auth_advertise_hosts? yes (matched "10.0.0.5")
+host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
 250-SIZE 52428800
 250-8BITMIME

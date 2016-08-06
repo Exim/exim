@@ -119,7 +119,6 @@ extern uschar *tls_eccurve;            /* EC curve */
 # ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 # endif
-extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
@@ -132,13 +131,15 @@ extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 extern uschar  *dsn_envid;             /* DSN envid string */
 extern int      dsn_ret;               /* DSN ret type*/
 extern const pcre  *regex_DSN;         /* For recognizing DSN settings */
-extern BOOL     smtp_use_dsn;          /* Global for passed connections */
 extern uschar  *dsn_advertise_hosts;   /* host for which TLS is advertised */
 
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. */
 
+extern int (*lwr_receive_getc)(void);
+extern int (*lwr_receive_ungetc)(int);
 extern int (*receive_getc)(void);
+extern void (*receive_get_cache)(void);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);
 extern int (*receive_ferror)(void);
@@ -267,6 +268,11 @@ extern int     check_log_space;        /* Minimum for message acceptance */
 extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length */
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
+extern uschar *chunking_advertise_hosts;    /* RFC 3030 CHUNKING */
+extern unsigned chunking_datasize;
+extern unsigned chunking_data_left;
+extern BOOL    chunking_offered;
+extern chunking_state_t chunking_state;
 extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
 extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */
 extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
@@ -711,6 +717,7 @@ extern int     recipients_max_reject;  /* If TRUE, reject whole message */
 extern const pcre *regex_AUTH;         /* For recognizing AUTH settings */
 extern const pcre  *regex_check_dns_names; /* For DNS name checking */
 extern const pcre  *regex_From;        /* For recognizing "From_" lines */
+extern const pcre  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
@@ -829,8 +836,8 @@ extern int     smtp_rlr_base;          /* Base interval for RCPT rate limit */
 extern double  smtp_rlr_factor;        /* Factor for RCPT rate limit */
 extern int     smtp_rlr_limit;         /* Max delay */
 extern int     smtp_rlr_threshold;     /* Threshold for RCPT rate limit */
-extern BOOL    smtp_use_pipelining;    /* Global for passed connections */
-extern BOOL    smtp_use_size;          /* Global for passed connections */
+extern unsigned smtp_peer_options;     /* Global flags for passed connections */
+extern unsigned smtp_peer_options_wrap; /* stacked version hidden by TLS */
 #ifdef SUPPORT_I18N
 extern uschar *smtputf8_advertise_hosts; /* ingress control */
 #endif

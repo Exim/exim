@@ -11,6 +11,7 @@
 LOG: no host name found for IP address 1.2.3.4
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "ar"
 >>> processing "warn"
 >>> check control = cutthrough_delivery
@@ -39,6 +40,7 @@ LOG: 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=es
 LOG: no host name found for IP address 1.2.3.4
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "ar"
 >>> processing "warn"
 >>> check control = cutthrough_delivery

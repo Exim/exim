@@ -88,6 +88,7 @@ LOG: sender_ident=ident
 >>> end of ACL "connect": ACCEPT
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "mail"
 >>> processing "accept"
 >>> check acl = log

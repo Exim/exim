@@ -37,6 +37,7 @@ sender_rcvhost = [V4NET.0.0.0] (helo=something)
 set_process_info: pppp handling incoming connection from (something) [V4NET.0.0.0]
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
+host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
 250-SIZE 52428800
 250-8BITMIME

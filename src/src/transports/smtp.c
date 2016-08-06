@@ -12,6 +12,8 @@
 #define PENDING_DEFER   (PENDING + DEFER)
 #define PENDING_OK      (PENDING + OK)
 
+#define DELIVER_BUFFER_SIZE 4096
+
 
 /* Options specific to the smtp transport. This transport also supports LMTP
 over TCP/IP. The options must be in alphabetic order (note that "_" comes
@@ -116,6 +118,8 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
+  { "hosts_try_chunking",   opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_try_chunking) },
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
   { "hosts_try_dane",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
@@ -200,12 +204,13 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* serialize_hosts */
   NULL,                /* hosts_try_auth */
   NULL,                /* hosts_require_auth */
+  US"*",               /* hosts_try_chunking */
 #ifdef EXPERIMENTAL_DANE
   NULL,                /* hosts_try_dane */
   NULL,                /* hosts_require_dane */
 #endif
 #ifndef DISABLE_PRDR
-  US"*",                /* hosts_try_prdr */
+  US"*",               /* hosts_try_prdr */
 #endif
 #ifndef DISABLE_OCSP
   US"*",               /* hosts_request_ocsp (except under DANE; tls_client_start()) */
@@ -778,6 +783,7 @@ if (pending_MAIL)
   count--;
   if (!smtp_read_response(inblock, buffer, buffsize, '2', timeout))
     {
+    DEBUG(D_transport) debug_printf("bad response for MAIL\n");
     Ustrcpy(big_buffer, mail_command);  /* Fits, because it came from there! */
     if (errno == 0 && buffer[0] != 0)
       {
@@ -1321,6 +1327,10 @@ if (  checks & PEER_OFFERED_IGNQ
 		PCRE_EOPT, NULL, 0) < 0)
   checks &= ~PEER_OFFERED_IGNQ;
 
+if (  checks & PEER_OFFERED_CHUNKING
+   && pcre_exec(regex_CHUNKING, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
+  checks &= ~PEER_OFFERED_CHUNKING;
+
 #ifndef DISABLE_PRDR
 if (  checks & PEER_OFFERED_PRDR
    && pcre_exec(regex_PRDR, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
@@ -1348,6 +1358,99 @@ if (  checks & PEER_OFFERED_SIZE
 
 return checks;
 }
+
+
+
+/* Callback for emitting a BDAT data chunk header.
+
+If given a nonzero size, first flush any buffered SMTP commands
+then emit the command.
+
+Reap previous SMTP command responses if requested.
+Reap one SMTP command response if requested.
+
+Returns:	OK or ERROR
+*/
+
+static int
+smtp_chunk_cmd_callback(int fd, transport_ctx * tctx,
+  unsigned chunk_size, unsigned flags)
+{
+smtp_transport_options_block * ob =
+  (smtp_transport_options_block *)(tctx->tblock->options_block);
+int cmd_count = 0;
+int prev_cmd_count;
+uschar * buffer = tctx->buffer;
+
+
+/* Write SMTP chunk header command */
+
+if (chunk_size > 0)
+  if((cmd_count = smtp_write_command(tctx->outblock, FALSE, "BDAT %u%s\r\n",
+			      chunk_size,
+			      flags & tc_chunk_last ? " LAST" : "")
+     ) < 0) return ERROR;
+
+prev_cmd_count = cmd_count += tctx->cmd_count;
+
+/* Reap responses for any previous, but not one we just emitted */
+
+if (chunk_size > 0)
+  prev_cmd_count--;
+if (tctx->pending_BDAT)
+  prev_cmd_count--;
+
+if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
+  {
+
+  switch(sync_responses(tctx->first_addr, tctx->tblock->rcpt_include_affixes,
+	  tctx->sync_addr, tctx->host, prev_cmd_count,
+	  ob->address_retry_include_sender,
+	  tctx->pending_MAIL, 0,
+	  tctx->inblock,
+	  ob->command_timeout,
+	  buffer, DELIVER_BUFFER_SIZE))
+    {
+    case 1:				/* 2xx (only) => OK */
+    case 3: tctx->good_RCPT = TRUE;	/* 2xx & 5xx => OK & progress made */
+    case 2: *tctx->completed_address = TRUE; /* 5xx (only) => progress made */
+    case 0: break;			/* No 2xx or 5xx, but no probs */
+
+    case -1:				/* Timeout on RCPT */
+    default: return ERROR;		/* I/O error, or any MAIL/DATA error */
+    }
+  cmd_count = 1;
+  if (!tctx->pending_BDAT)
+    pipelining_active = FALSE;
+  }
+
+/* Reap response for the cmd we just emitted, or an outstanding BDAT */
+
+if (flags & tc_reap_one  ||  tctx->pending_BDAT)
+  {
+  if (!smtp_read_response(tctx->inblock, buffer, DELIVER_BUFFER_SIZE, '2',
+       ob->command_timeout))
+    {
+    if (errno == 0 && buffer[0] == '4')
+      {
+      errno = ERRNO_DATA4XX;	/*XXX does this actually get used? */
+      tctx->first_addr->more_errno |=
+	((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+      }
+    return ERROR;
+    }
+  cmd_count--;
+  tctx->pending_BDAT = FALSE;
+  pipelining_active = FALSE;
+  }
+else if (chunk_size > 0)
+  tctx->pending_BDAT = TRUE;
+
+
+tctx->cmd_count = cmd_count;
+return OK;
+}
+
 
 
 /*************************************************
@@ -1419,7 +1522,7 @@ BOOL completed_address = FALSE;
 BOOL esmtp = TRUE;
 BOOL pending_MAIL;
 BOOL pass_message = FALSE;
-uschar peer_offered = 0;	/*XXX should this be handed on cf. tls_offered, smtp_use_dsn ? */
+uschar peer_offered = 0;
 #ifndef DISABLE_PRDR
 BOOL prdr_active;
 #endif
@@ -1446,7 +1549,7 @@ uschar *helo_data = NULL;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 uschar *p;
-uschar buffer[4096];
+uschar buffer[DELIVER_BUFFER_SIZE];
 uschar inbuffer[4096];
 uschar outbuffer[4096];
 
@@ -1654,7 +1757,7 @@ goto SEND_QUIT;
 #ifdef SUPPORT_TLS
   if (smtps)
     {
-    tls_offered = TRUE;
+    smtp_peer_options |= PEER_OFFERED_TLS;
     suppress_tls = FALSE;
     ob->tls_tempfail_tryclear = FALSE;
     smtp_command = US"SSL-on-connect";
@@ -1703,7 +1806,10 @@ goto SEND_QUIT;
     if (!good_response) goto RESPONSE_FAILED;
     }
 
+  peer_offered = smtp_peer_options = 0;
+
   if (esmtp || lmtp)
+    {
     peer_offered = ehlo_response(buffer, Ustrlen(buffer),
       PEER_OFFERED_TLS	/* others checked later */
       );
@@ -1711,14 +1817,15 @@ goto SEND_QUIT;
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
 
 #ifdef SUPPORT_TLS
-  tls_offered = !!(peer_offered & PEER_OFFERED_TLS);
+    smtp_peer_options |= peer_offered & PEER_OFFERED_TLS;
 #endif
+    }
   }
 
 /* For continuing deliveries down the same channel, the socket is the standard
 input, and we don't need to redo EHLO here (but may need to do so for TLS - see
 below). Set up the pointer to where subsequent commands will be left, for
-error messages. Note that smtp_use_size and smtp_use_pipelining will have been
+error messages. Note that smtp_peer_options will have been
 set from the command line if they were set in the process that passed the
 connection on. */
 
@@ -1743,7 +1850,7 @@ the client not be required to use TLS. If the response is bad, copy the buffer
 for error analysis. */
 
 #ifdef SUPPORT_TLS
-if (  tls_offered
+if (  smtp_peer_options & PEER_OFFERED_TLS
    && !suppress_tls
    && verify_check_given_host(&ob->hosts_avoid_tls, host) != OK)
   {
@@ -1805,6 +1912,7 @@ if (  tls_offered
 
     /* TLS session is set up */
 
+    smtp_peer_options_wrap = smtp_peer_options;
     for (addr = addrlist; addr; addr = addr->next)
       if (addr->transport_return == PENDING_DEFER)
         {
@@ -1874,6 +1982,7 @@ if (tls_out.active >= 0)
   helo_response = string_copy(buffer);
 #endif
   if (!good_response) goto RESPONSE_FAILED;
+  smtp_peer_options = 0;
   }
 
 /* If the host is required to use a secure channel, ensure that we
@@ -1888,8 +1997,8 @@ else if (  smtps
   {
   save_errno = ERRNO_TLSREQUIRED;
   message = string_sprintf("a TLS session is required, but %s",
-    tls_offered ? "an attempt to start TLS failed"
-		: "the server did not offer TLS support");
+    smtp_peer_options & PEER_OFFERED_TLS
+    ? "an attempt to start TLS failed" : "the server did not offer TLS support");
   goto TLS_FAILED;
   }
 #endif	/*SUPPORT_TLS*/
@@ -1906,13 +2015,15 @@ if (continue_hostname == NULL
     )
   {
   if (esmtp || lmtp)
+    {
     peer_offered = ehlo_response(buffer, Ustrlen(buffer),
       0 /* no TLS */
       | (lmtp && ob->lmtp_ignore_quota ? PEER_OFFERED_IGNQ : 0)
+      | PEER_OFFERED_CHUNKING
       | PEER_OFFERED_PRDR
 #ifdef SUPPORT_I18N
       | (addrlist->prop.utf8_msg ? PEER_OFFERED_UTF8 : 0)
-      	/*XXX if we hand peercaps on to continued-conn processes,
+	/*XXX if we hand peercaps on to continued-conn processes,
 	      must not depend on this addr */
 #endif
       | PEER_OFFERED_DSN
@@ -1920,54 +2031,64 @@ if (continue_hostname == NULL
       | (ob->size_addition >= 0 ? PEER_OFFERED_SIZE : 0)
       );
 
-  /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
-  lmtp_ignore_quota option was set. */
+    /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
+    lmtp_ignore_quota option was set. */
 
-  igquotstr = peer_offered & PEER_OFFERED_IGNQ ? US" IGNOREQUOTA" : US"";
+    igquotstr = peer_offered & PEER_OFFERED_IGNQ ? US" IGNOREQUOTA" : US"";
 
-  /* If the response to EHLO specified support for the SIZE parameter, note
-  this, provided size_addition is non-negative. */
+    /* If the response to EHLO specified support for the SIZE parameter, note
+    this, provided size_addition is non-negative. */
 
-  smtp_use_size = !!(peer_offered & PEER_OFFERED_SIZE);
+    smtp_peer_options |= peer_offered & PEER_OFFERED_SIZE;
 
-  /* Note whether the server supports PIPELINING. If hosts_avoid_esmtp matched
-  the current host, esmtp will be false, so PIPELINING can never be used. If
-  the current host matches hosts_avoid_pipelining, don't do it. */
+    /* Note whether the server supports PIPELINING. If hosts_avoid_esmtp matched
+    the current host, esmtp will be false, so PIPELINING can never be used. If
+    the current host matches hosts_avoid_pipelining, don't do it. */
 
-  smtp_use_pipelining = peer_offered & PEER_OFFERED_PIPE
-    && verify_check_given_host(&ob->hosts_avoid_pipelining, host) != OK;
+    if (  peer_offered & PEER_OFFERED_PIPE
+       && verify_check_given_host(&ob->hosts_avoid_pipelining, host) != OK)
+      smtp_peer_options |= PEER_OFFERED_PIPE;
 
-  DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
-    smtp_use_pipelining ? "" : "not ");
+    DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
+      smtp_peer_options & PEER_OFFERED_PIPE ? "" : "not ");
+
+    if (  peer_offered & PEER_OFFERED_CHUNKING
+       && verify_check_given_host(&ob->hosts_try_chunking, host) != OK)
+      peer_offered &= ~PEER_OFFERED_CHUNKING;
+
+    if (peer_offered & PEER_OFFERED_CHUNKING)
+      {DEBUG(D_transport) debug_printf("CHUNKING usable\n");}
 
 #ifndef DISABLE_PRDR
-  if (  peer_offered & PEER_OFFERED_PRDR
-     && verify_check_given_host(&ob->hosts_try_prdr, host) != OK)
-    peer_offered &= ~PEER_OFFERED_PRDR;
+    if (  peer_offered & PEER_OFFERED_PRDR
+       && verify_check_given_host(&ob->hosts_try_prdr, host) != OK)
+      peer_offered &= ~PEER_OFFERED_PRDR;
 
-  if (peer_offered & PEER_OFFERED_PRDR)
-    {DEBUG(D_transport) debug_printf("PRDR usable\n");}
+    if (peer_offered & PEER_OFFERED_PRDR)
+      {DEBUG(D_transport) debug_printf("PRDR usable\n");}
 #endif
 
-  /* Note if the server supports DSN */
-  smtp_use_dsn = !!(peer_offered & PEER_OFFERED_DSN);
-  DEBUG(D_transport) debug_printf("%susing DSN\n", smtp_use_dsn ? "" : "not ");
+    /* Note if the server supports DSN */
+    smtp_peer_options |= peer_offered & PEER_OFFERED_DSN;
+    DEBUG(D_transport) debug_printf("%susing DSN\n",
+			peer_offered & PEER_OFFERED_DSN ? "" : "not ");
 
-  /* Note if the response to EHLO specifies support for the AUTH extension.
-  If it has, check that this host is one we want to authenticate to, and do
-  the business. The host name and address must be available when the
-  authenticator's client driver is running. */
+    /* Note if the response to EHLO specifies support for the AUTH extension.
+    If it has, check that this host is one we want to authenticate to, and do
+    the business. The host name and address must be available when the
+    authenticator's client driver is running. */
 
-  switch (yield = smtp_auth(buffer, sizeof(buffer), addrlist, host,
-			    ob, esmtp, &inblock, &outblock))
-    {
-    default:		goto SEND_QUIT;
-    case OK:		break;
-    case FAIL_SEND:	goto SEND_FAILED;
-    case FAIL:		goto RESPONSE_FAILED;
+    switch (yield = smtp_auth(buffer, sizeof(buffer), addrlist, host,
+			      ob, esmtp, &inblock, &outblock))
+      {
+      default:		goto SEND_QUIT;
+      case OK:		break;
+      case FAIL_SEND:	goto SEND_FAILED;
+      case FAIL:	goto RESPONSE_FAILED;
+      }
     }
   }
-pipelining_active = smtp_use_pipelining;
+pipelining_active = !!(smtp_peer_options & PEER_OFFERED_PIPE);
 
 /* The setting up of the SMTP call is now complete. Any subsequent errors are
 message-specific. */
@@ -2013,6 +2134,16 @@ if (tblock->filter_command != NULL)
     yield = ERROR;
     goto SEND_QUIT;
     }
+
+  if (  transport_filter_argv
+     && *transport_filter_argv
+     && **transport_filter_argv
+     && peer_offered & PEER_OFFERED_CHUNKING
+     )
+    {
+    peer_offered &= ~PEER_OFFERED_CHUNKING;
+    DEBUG(D_transport) debug_printf("CHUNKING not usable due to transport filter\n");
+    }
   }
 
 
@@ -2042,7 +2173,7 @@ included in the count.) */
 p = buffer;
 *p = 0;
 
-if (smtp_use_size)
+if (peer_offered & PEER_OFFERED_SIZE)
   {
   sprintf(CS p, " SIZE=%d", message_size+message_linecount+ob->size_addition);
   while (*p) p++;
@@ -2086,17 +2217,14 @@ for (dsn_all_lasthop = TRUE, addr = first_addr;
 
 /* Add any DSN flags to the mail command */
 
-if (smtp_use_dsn && !dsn_all_lasthop)
+if (peer_offered & PEER_OFFERED_DSN && !dsn_all_lasthop)
   {
   if (dsn_ret == dsn_ret_hdrs)
-    {
-    Ustrcpy(p, " RET=HDRS"); p += 9;
-    }
+    { Ustrcpy(p, " RET=HDRS"); p += 9; }
   else if (dsn_ret == dsn_ret_full)
-    {
-    Ustrcpy(p, " RET=FULL"); p += 9;
-    }
-  if (dsn_envid != NULL)
+    { Ustrcpy(p, " RET=FULL"); p += 9; }
+
+  if (dsn_envid)
     {
     string_format(p, sizeof(buffer) - (p-buffer), " ENVID=%s", dsn_envid);
     while (*p) p++;
@@ -2147,7 +2275,7 @@ pending_MAIL = TRUE;     /* The block starts with MAIL */
     }
 #endif
 
-  rc = smtp_write_command(&outblock, smtp_use_pipelining,
+  rc = smtp_write_command(&outblock, pipelining_active,
 	  "MAIL FROM:<%s>%s\r\n", s, buffer);
   }
 
@@ -2194,21 +2322,22 @@ for (addr = first_addr;
   BOOL no_flush;
   uschar * rcpt_addr;
 
-  addr->dsn_aware = smtp_use_dsn ? dsn_support_yes : dsn_support_no;
+  addr->dsn_aware = peer_offered & PEER_OFFERED_DSN
+    ? dsn_support_yes : dsn_support_no;
 
   if (addr->transport_return != PENDING_DEFER) continue;
 
   address_count++;
-  no_flush = smtp_use_pipelining && (!mua_wrapper || addr->next);
+  no_flush = pipelining_active && (!mua_wrapper || addr->next);
 
   /* Add any DSN flags to the rcpt command and add to the sent string */
 
   p = buffer;
   *p = 0;
 
-  if (smtp_use_dsn && !(addr->dsn_flags & rf_dsnlasthop))
+  if (peer_offered & PEER_OFFERED_DSN && !(addr->dsn_flags & rf_dsnlasthop))
     {
-    if ((addr->dsn_flags & rf_dsnflags) != 0)
+    if (addr->dsn_flags & rf_dsnflags)
       {
       int i;
       BOOL first = TRUE;
@@ -2302,15 +2431,19 @@ if (mua_wrapper)
 send DATA, but if it is FALSE (in the normal, non-wrapper case), we may still
 have a good recipient buffered up if we are pipelining. We don't want to waste
 time sending DATA needlessly, so we only send it if either ok is TRUE or if we
-are pipelining. The responses are all handled by sync_responses(). */
+are pipelining. The responses are all handled by sync_responses().
+If using CHUNKING, do not send a BDAT until we know how big a chunk we want
+to send is. */
 
-if (ok || (smtp_use_pipelining && !mua_wrapper))
+if (  !(peer_offered & PEER_OFFERED_CHUNKING)
+   && (ok || (pipelining_active && !mua_wrapper)))
   {
   int count = smtp_write_command(&outblock, FALSE, "DATA\r\n");
+
   if (count < 0) goto SEND_FAILED;
   switch(sync_responses(first_addr, tblock->rcpt_include_affixes, &sync_addr,
            host, count, ob->address_retry_include_sender, pending_MAIL,
-           ok? +1 : -1, &inblock, ob->command_timeout, buffer, sizeof(buffer)))
+           ok ? +1 : -1, &inblock, ob->command_timeout, buffer, sizeof(buffer)))
     {
     case 3: ok = TRUE;                   /* 2xx & 5xx => OK & progress made */
     case 2: completed_address = TRUE;    /* 5xx (only) => progress made */
@@ -2326,10 +2459,6 @@ if (ok || (smtp_use_pipelining && !mua_wrapper))
   pipelining_active = FALSE;
   }
 
-/* Save the first address of the next batch. */
-
-first_addr = addr;
-
 /* If there were no good recipients (but otherwise there have been no
 problems), just set ok TRUE, since we have handled address-specific errors
 already. Otherwise, it's OK to send the message. Use the check/escape mechanism
@@ -2337,15 +2466,20 @@ for handling the SMTP dot-handling protocol, flagging to apply to headers as
 well as body. Set the appropriate timeout value to be used for each chunk.
 (Haven't been able to make it work using select() for writing yet.) */
 
-if (!ok)
+if (!(peer_offered & PEER_OFFERED_CHUNKING) && !ok)
+  {
+  /* Save the first address of the next batch. */
+  first_addr = addr;
+
   ok = TRUE;
+  }
 else
   {
   transport_ctx tctx = {
     tblock,
     addrlist,
     US".", US"..",    /* Escaping strings */
-    topt_use_crlf | topt_end_dot | topt_escape_headers
+    topt_use_crlf | topt_escape_headers
     | (tblock->body_only	? topt_no_headers : 0)
     | (tblock->headers_only	? topt_no_body : 0)
     | (tblock->return_path_add	? topt_add_return_path : 0)
@@ -2353,11 +2487,47 @@ else
     | (tblock->envelope_to_add	? topt_add_envelope_to : 0)
   };
 
+  /* If using CHUNKING we need a callback from the generic transport
+  support to us, for the sending of BDAT smtp commands and the reaping
+  of responses.  The callback needs a whole bunch of state so set up
+  a transport-context structure to be passed around. */
+
+  if (peer_offered & PEER_OFFERED_CHUNKING)
+    {
+    tctx.check_string = tctx.escape_string = NULL;
+    tctx.options |= topt_use_bdat;
+    tctx.chunk_cb = smtp_chunk_cmd_callback;
+    tctx.inblock = &inblock;
+    tctx.outblock = &outblock;
+    tctx.host = host;
+    tctx.first_addr = first_addr;
+    tctx.sync_addr = &sync_addr;
+    tctx.pending_MAIL = pending_MAIL;
+    tctx.pending_BDAT = FALSE;
+    tctx.good_RCPT = ok;
+    tctx.completed_address = &completed_address;
+    tctx.cmd_count = 0;
+    tctx.buffer = buffer;
+    }
+  else
+    tctx.options |= topt_end_dot;
+
+  /* Save the first address of the next batch. */
+  first_addr = addr;
+
+  /* Responses from CHUNKING commands go in buffer.  Otherwise,
+  there has not been a response. */
+
+  buffer[0] = 0;
+
   sigalrm_seen = FALSE;
   transport_write_timeout = ob->data_timeout;
   smtp_command = US"sending data block";   /* For error messages */
   DEBUG(D_transport|D_v)
-    debug_printf("  SMTP>> writing message and terminating \".\"\n");
+    if (peer_offered & PEER_OFFERED_CHUNKING)
+      debug_printf("         will write message using CHUNKING\n");
+    else
+      debug_printf("  SMTP>> writing message and terminating \".\"\n");
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
@@ -2374,13 +2544,11 @@ else
   transport_write_timeout = 0;   /* for subsequent transports */
 
   /* Failure can either be some kind of I/O disaster (including timeout),
-  or the failure of a transport filter or the expansion of added headers. */
+  or the failure of a transport filter or the expansion of added headers.
+  Or, when CHUNKING, it can be a protocol-detected failure. */
 
   if (!ok)
-    {
-    buffer[0] = 0;              /* There hasn't been a response */
     goto RESPONSE_FAILED;
-    }
 
   /* We used to send the terminating "." explicitly here, but because of
   buffering effects at both ends of TCP/IP connections, you don't gain
@@ -2389,6 +2557,27 @@ else
   flag above. */
 
   smtp_command = US"end of data";
+
+  if (peer_offered & PEER_OFFERED_CHUNKING && tctx.cmd_count > 1)
+    {
+    /* Reap any outstanding MAIL & RCPT commands, but not a DATA-go-ahead */
+    switch(sync_responses(first_addr, tblock->rcpt_include_affixes, &sync_addr,
+	     host, tctx.cmd_count-1, ob->address_retry_include_sender,
+	     pending_MAIL, 0,
+	     &inblock, ob->command_timeout, buffer, sizeof(buffer)))
+      {
+      case 3: ok = TRUE;                   /* 2xx & 5xx => OK & progress made */
+      case 2: completed_address = TRUE;    /* 5xx (only) => progress made */
+      break;
+
+      case 1: ok = TRUE;                   /* 2xx (only) => OK, but if LMTP, */
+      if (!lmtp) completed_address = TRUE; /* can't tell about progress yet */
+      case 0: break;                       /* No 2xx or 5xx, but no probs */
+
+      case -1: goto END_OFF;               /* Timeout on RCPT */
+      default: goto RESPONSE_FAILED;       /* I/O error, or any MAIL/DATA error */
+      }
+    }
 
 #ifndef DISABLE_PRDR
   /* For PRDR we optionally get a partial-responses warning
@@ -2399,16 +2588,16 @@ else
     {
     ok = smtp_read_response(&inblock, buffer, sizeof(buffer), '3',
       ob->final_timeout);
-    if (!ok && errno == 0)
-      switch(buffer[0])
-        {
-	case '2': prdr_active = FALSE;
-	          ok = TRUE;
-		  break;
-	case '4': errno = ERRNO_DATA4XX;
-                  addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
-		  break;
-        }
+    if (!ok && errno == 0) switch(buffer[0])
+      {
+      case '2': prdr_active = FALSE;
+		ok = TRUE;
+		break;
+      case '4': errno = ERRNO_DATA4XX;
+		addrlist->more_errno |=
+		  ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+		break;
+      }
     }
   else
 #endif
@@ -2527,6 +2716,7 @@ else
 #ifndef DISABLE_PRDR
       if (prdr_active) addr->flags |= af_prdr_used;
 #endif
+      if (peer_offered & PEER_OFFERED_CHUNKING) addr->flags |= af_chunking_used;
       flag = '-';
 
 #ifndef DISABLE_PRDR
@@ -2853,6 +3043,7 @@ if (completed_address && ok && send_quit)
       if (tls_out.active >= 0)
         {
         tls_close(FALSE, TRUE);
+	smtp_peer_options = smtp_peer_options_wrap;
         if (smtps)
           ok = FALSE;
         else

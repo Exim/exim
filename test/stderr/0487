@@ -22,6 +22,7 @@ smtp_setup_msg entered
 SMTP<< ehlo x.y
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
+ in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello CALLER at x.y
 250-SIZE 52428800
 250-8BITMIME
@@ -38,6 +39,7 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
+PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>
 >>Headers received:
 From: unqualified
 

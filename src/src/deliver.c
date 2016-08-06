@@ -715,7 +715,7 @@ host_item * h = addr->host_used;
 s = string_append(s, sp, pp, 2, US" H=", h->name);
 
 if (LOGGING(dnssec) && h->dnssec == DS_YES)
-  s = string_cat(s, sp, pp, US" DS");
+  s = string_catn(s, sp, pp, US" DS", 3);
 
 s = string_append(s, sp, pp, 3, US" [", h->address, US"]");
 
@@ -1139,8 +1139,11 @@ else
 
 #ifndef DISABLE_PRDR
   if (addr->flags & af_prdr_used)
-    s = string_append(s, &size, &ptr, 1, US" PRDR");
+    s = string_catn(s, &size, &ptr, US" PRDR", 5);
 #endif
+
+  if (addr->flags & af_chunking_used)
+    s = string_catn(s, &size, &ptr, US" K", 2);
   }
 
 /* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
@@ -3482,6 +3485,10 @@ while (!done)
     break;
 #endif
 
+    case 'K':
+    addr->flags |= af_chunking_used;
+    break;
+
     case 'D':
     if (!addr) goto ADDR_MISMATCH;
     memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
@@ -4719,6 +4726,9 @@ for (delivery_count = 0; addr_remote; delivery_count++)
       if (addr->flags & af_prdr_used)
 	rmt_dlv_checked_write(fd, 'P', '0', NULL, 0);
 #endif
+
+      if (addr->flags & af_chunking_used)
+	rmt_dlv_checked_write(fd, 'K', '0', NULL, 0);
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));
@@ -7100,7 +7110,7 @@ if (addr_senddsn)
     FILE *f = fdopen(fd, "wb");
     /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
     uschar * bound;
-    transport_ctx tctx;
+    transport_ctx tctx = {0};
 
     DEBUG(D_deliver)
       debug_printf("sending error message to: %s\n", sender_address);
@@ -7180,7 +7190,6 @@ if (addr_senddsn)
 
     /* Write the original email out */
 
-    bzero(&tctx, sizeof(tctx));
     tctx.options = topt_add_return_path | topt_no_body;
     transport_write_message(fileno(f), &tctx, 0);
     fflush(f);
@@ -7638,16 +7647,14 @@ wording. */
       transport_filter_argv = NULL;   /* Just in case */
       return_path = sender_address;   /* In case not previously set */
 	{			      /* Dummy transport for headers add */
-	transport_ctx * tctx =
-	  store_get(sizeof(*tctx) + sizeof(transport_instance));
-	transport_instance * tb = (transport_instance *)(tctx+1);
+	transport_ctx tctx = {0};
+	transport_instance tb = {0};
 
-	bzero(tctx, sizeof(*tctx)+sizeof(*tb));
-	tctx->tblock = tb;
-	tctx->options = topt;
-	tb->add_headers = dsnnotifyhdr;
+	tctx.tblock = &tb;
+	tctx.options = topt;
+	tb.add_headers = dsnnotifyhdr;
 
-	transport_write_message(fileno(f), tctx, 0);
+	transport_write_message(fileno(f), &tctx, 0);
 	}
       fflush(f);
 
@@ -7964,9 +7971,7 @@ else if (addr_defer != (address_item *)(+1))
         FILE *wmf = NULL;
         FILE *f = fdopen(fd, "wb");
 	uschar * bound;
-	transport_ctx tctx;
-
-	bzero(&tctx, sizeof(tctx));
+	transport_ctx tctx = {0};
 
         if (warn_message_file)
           if (!(wmf = Ufopen(warn_message_file, "rb")))
@@ -8281,6 +8286,9 @@ if (!regex_AUTH) regex_AUTH =
 if (!regex_STARTTLS) regex_STARTTLS =
   regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
 #endif
+
+if (!regex_CHUNKING) regex_CHUNKING =
+  regex_must_compile(US"\\n250[\\s\\-]CHUNKING(\\s|\\n|$)", FALSE, TRUE);
 
 #ifndef DISABLE_PRDR
 if (!regex_PRDR) regex_PRDR =

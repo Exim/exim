@@ -9,6 +9,7 @@ considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
      result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
+ in chunking_advertise_hosts? no (end of list)
  in tls_advertise_hosts? yes (matched "*")
 considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
 considering: SERVER}{server}{queue}{cutthrough}}
@@ -265,6 +266,7 @@ considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
      result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
+ in chunking_advertise_hosts? no (end of list)
  in tls_advertise_hosts? yes (matched "*")
 considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
 considering: SERVER}{server}{queue}{cutthrough}}
@@ -491,6 +493,7 @@ considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
      result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
+ in chunking_advertise_hosts? no (end of list)
  in tls_advertise_hosts? yes (matched "*")
 considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
 considering: SERVER}{server}{queue}{cutthrough}}

@@ -1,0 +1,309 @@
+# CHUNKING transmission, short messages
+#
+# Start with non-pipelined cases
+#
+# Basic short message
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 323 LAST
+*data 323
+250 OK
+QUIT
+225 OK
+*eof
+****
+exim -odf a@test.ex
+Subject: foo
+
+data
+****
+#
+# Error case: server wrongly expected more data, client gets timeout for data-ack
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 good mail cmd
+RCPT TO
+250 acceptable rcpt cmd
+BDAT 323 LAST
+*data 324
+250 OK got that data
+QUIT
+225 OK quitting
+****
+exim -odf b@test.ex
+Subject: foo
+
+data
+****
+#
+# Error case: server wrongly expected less data
+# client get the data-ack, sends quit - but server
+# sees a munged quit due to the outstanding data tail
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 323 LAST
+*data 322
+250 OK
+QUIT
+225 OK
+****
+exim -odf c@test.ex
+Subject: foo
+
+data
+****
+#
+# server rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 323 LAST
+*data 323
+500 oops
+QUIT
+225 OK
+****
+exim -odf d@test.ex
+Subject: foo
+
+data
+****
+#
+# server tmp-rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 323 LAST
+*data 323
+400 not right now
+QUIT
+225 OK
+****
+exim -odf e@test.ex
+Subject: foo
+
+data
+****
+#
+#
+###################################################
+#
+# Pipelined cases
+#
+# Basic short message
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 323 LAST
+*data 323
+250 OK mail
+250 OK rcpt
+250 OK bdat
+QUIT
+225 OK
+*eof
+****
+exim -odf p@test.ex
+Subject: foo
+
+data
+****
+#
+# Error case: server wrongly expected more data, client gets timeout for data-ack
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 323 LAST
+*data 324
+250 good mail cmd
+****
+exim -odf q@test.ex
+Subject: foo
+
+data
+****
+#
+# Error case: server wrongly expected less data
+# client get the data-ack, sends quit - but server
+# sees a munged quit due to the outstanding data tail
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 323 LAST
+*data 322
+250 OK mail
+250 OK rcpt
+250 OK bdat
+QUIT
+225 OK
+****
+exim -odf r@test.ex
+Subject: foo
+
+data
+****
+#
+# server rejects MAIL cmd
+# transport coding does not handle the possible RSET-and-another transaction,
+# but always QUITs
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 323 LAST
+*data 323
+550 unacceptable mail-from
+550 rcpt ungood lacking mail-from
+500 bdat ungood lacking mail-from
+QUIT
+225 OK
+****
+exim -odf s@test.ex
+Subject: foo
+
+data
+****
+#
+# server tmp-rejects MAIL cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 324 LAST
+*data 324
+450 greylisted mail-from
+550 rcpt ungood lacking mail-from
+500 bdat ungood lacking mail-from
+QUIT
+225 OK
+****
+exim -odf s1@test.ex
+Subject: foo
+
+data
+****
+#
+# server rejects RCPT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 323 LAST
+*data 323
+250 OK mail
+550 no such recipient
+500 oops bdat
+QUIT
+225 OK
+****
+exim -odf t@test.ex
+Subject: foo
+
+data
+****
+#
+# server rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 323 LAST
+*data 323
+250 OK mail
+250 OK rcpt
+500 oops bdat
+QUIT
+225 OK
+****
+exim -odf u@test.ex
+Subject: foo
+
+data
+****
+#
+# server tmp-rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 323 LAST
+*data 323
+250 OK mail
+250 OK rcpt
+400 not right now bdat
+QUIT
+225 OK
+****
+exim -odf v@test.ex
+Subject: foo
+
+data
+****
+#
+#
+no_msglog_check

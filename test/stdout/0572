@@ -57,6 +57,7 @@ no_hosts_override
 no_hosts_randomize
 hosts_require_auth = 
 hosts_try_auth = 
+hosts_try_chunking = *
 hosts_try_prdr = *
 interface = ip4.ip4.ip4.ip4
 keepalive
@@ -83,6 +84,7 @@ spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 5 "TESTSUITE/test-config"
 primary_hostname = myhost.test.ex
@@ -121,6 +123,7 @@ spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 5 "TESTSUITE/test-config"
 primary_hostname = myhost.test.ex

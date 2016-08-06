@@ -28,6 +28,11 @@ Version 4.88
 
  6. New expansion operators base32/base32d.
 
+ 7. The CHUNKING ESMTP extension from RFC 3030.  May give some slight
+    performance increase and network load decrease.  Main config option
+    chunking_advertise_hosts, and smtp transport option hosts_try_chunking
+    for control.
+
 
 Version 4.87
 ------------

@@ -320,6 +320,13 @@ for having to swallow the rest of an SMTP message is whether the value is
 #define END_NOTENDED   3    /* Message reading not yet ended */
 #define END_SIZE       4    /* Reading ended because message too big */
 #define END_WERROR     5    /* Write error while reading the message */
+#define END_PROTOCOL   6    /* Protocol error in CHUNKING sequence */
+
+/* result codes for bdat_getc() (which can also return EOF) */
+
+#define EOD (-2)
+#define ERR (-3)
+
 
 /* Bit masks for debug and log selectors */
 
@@ -787,7 +794,8 @@ most recent SMTP commands. Must be kept in step with the list of names in
 smtp_in.c that is used for creating the smtp_no_mail logging action. SCH_NONE
 is "empty". */
 
-enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
+enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
+       SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
        SCH_HELP, SCH_MAIL, SCH_NOOP, SCH_QUIT, SCH_RCPT, SCH_RSET, SCH_STARTTLS,
        SCH_VRFY };
 
@@ -837,6 +845,7 @@ enum {
 #define topt_no_headers         0x020  /* Omit headers */
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
+#define topt_use_bdat		0x100  /* prepend chunks with RFC3030 BDAT header */
 
 /* Flags for recipient_block, used in DSN support */
 
@@ -952,6 +961,7 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define PEER_OFFERED_DSN	BIT(4)
 #define PEER_OFFERED_PIPE	BIT(5)
 #define PEER_OFFERED_SIZE	BIT(6)
+#define PEER_OFFERED_CHUNKING	BIT(7)
 
 
 /* End of macros.h */

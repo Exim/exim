@@ -51,6 +51,11 @@ typedef struct ugid_block {
   BOOL    initgroups;
 } ugid_block;
 
+typedef enum {	CHUNKING_NOT_OFFERED = -1,
+		CHUNKING_OFFERED,
+		CHUNKING_ACTIVE,
+		CHUNKING_LAST} chunking_state_t;
+
 /* Structure for holding information about a host for use mainly by routers,
 but also used when checking lists of hosts and when transporting. Looking up
 host addresses is done using this structure. */
@@ -218,14 +223,38 @@ typedef struct transport_info {
 } transport_info;
 
 
+/* smtp transport datachunk callback */
+
+#define tc_reap_prev	BIT(0)	/* Flags: reap previous SMTP cmd responses */
+#define tc_reap_one	BIT(1)	/* reap one SMTP response */
+#define tc_chunk_last	BIT(2)	/* annotate chunk SMTP cmd as LAST */
+
+struct transport_context;
+typedef int (*tpt_chunk_cmd_cb)(int fd, struct transport_context * tctx,
+				unsigned len, unsigned flags);
+
 /* Structure for information about a delivery-in-progress */
 
 typedef struct transport_context {
-  transport_instance * tblock;
-  struct address_item * addr;
-  uschar	* check_string;
-  uschar	* escape_string;
-  int		  options;		/* topt_* */
+  transport_instance	* tblock;		/* transport */
+  struct address_item	* addr;
+  uschar		* check_string;		/* string replacement */
+  uschar		* escape_string;
+  int		  	  options;		/* output processing topt_* */
+
+  /* items below only used with option topt_use_bdat */
+  tpt_chunk_cmd_cb	  chunk_cb;		/* per-datachunk callback */
+  struct smtp_inblock	* inblock;
+  struct smtp_outblock	* outblock;
+  host_item		* host;
+  struct address_item	* first_addr;
+  struct address_item	**sync_addr;
+  BOOL			  pending_MAIL;
+  BOOL			  pending_BDAT;
+  BOOL			  good_RCPT;
+  BOOL			* completed_address;
+  int			  cmd_count;
+  uschar		* buffer;
 } transport_ctx;
 
 
@@ -517,12 +546,13 @@ typedef struct address_item_propagated {
 #ifndef DISABLE_PRDR
 # define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
 #endif
-#define af_force_command       0x10000000 /* force_command in pipe transport */
+#define af_chunking_used       0x10000000 /* delivery used SMTP CHUNKING */
+#define af_force_command       0x20000000 /* force_command in pipe transport */
 #ifdef EXPERIMENTAL_DANE
-# define af_dane_verified      0x20000000 /* TLS cert verify done with DANE */
+# define af_dane_verified      0x40000000 /* TLS cert verify done with DANE */
 #endif
 #ifdef SUPPORT_I18N
-# define af_utf8_downcvt       0x40000000 /* downconvert was done for delivery */
+# define af_utf8_downcvt       0x80000000 /* downconvert was done for delivery */
 #endif
 
 /* These flags must be propagated when a child is created */

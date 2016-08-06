@@ -1,0 +1,117 @@
+# Exim test configuration 0900
+SERVER=
+X=
+Y=
+OPT=
+ALLOW=
+
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts = *
+tls_advertise_hosts = ${if eq {Y}{tls} {*}}
+
+
+# ----- Main settings -----
+
+domainlist local_domains = @ : test.ex
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data_prdr = check_prdr
+acl_smtp_data = check_data
+trusted_users = CALLER
+queue_only
+smtp_receive_timeout = 2s
+log_selector = +received_recipients
+
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+ALLOW
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  accept hosts = :
+  accept domains = +local_domains
+  deny   message = relay not permitted
+
+check_prdr:
+  accept local_parts = good
+  deny
+
+check_data:
+  warn   message = X-acl-message-linecount: $message_linecount
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+to_server:
+  driver = accept
+  condition =	${if !eq {SERVER}{server}}
+  transport =	remote_smtp${if eq {X}{dkim} {_dkim}}
+  errors_to =	""
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  data = :fail: unrouteable mail domain "$domain"
+
+localuser:
+  driver = accept
+  check_local_user
+  transport = local_delivery
+  headers_add = X-local-user: uid=$local_user_uid gid=$local_user_gid
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  headers_add = "X-body-linecount: $body_linecount\n\
+                 X-message-linecount: $message_linecount\n\
+                 X-received-count: $received_count"
+  return_path_add
+
+remote_smtp:
+  driver = smtp
+  hosts =	127.0.0.1
+  port =	PORT_S
+  allow_localhost
+  command_timeout = 2s
+  final_timeout = 2s
+
+remote_smtp_dkim:
+  driver = smtp
+  hosts =	127.0.0.1
+  port =	PORT_S
+  allow_localhost
+  command_timeout = 2s
+  final_timeout = 2s
+
+  dkim_domain =		test.ex
+  dkim_selector =	sel
+  dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
+.ifndef HEADERS_MAXSIZE
+  dkim_sign_headers =	OPT
+.endif
+
+# ----- Retry -----
+
+begin retry
+* * F,30m,5m;
+# End

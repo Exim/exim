@@ -1879,6 +1879,7 @@ and initialize appropriately. */
 state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 
 receive_getc = tls_getc;
+receive_get_cache = tls_get_cache;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
@@ -2179,6 +2180,7 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
     DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
 
     receive_getc = smtp_getc;
+    receive_get_cache = smtp_get_cache;
     receive_ungetc = smtp_ungetc;
     receive_feof = smtp_feof;
     receive_ferror = smtp_ferror;
@@ -2216,6 +2218,17 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
 
 return state->xfer_buffer[state->xfer_buffer_lwm++];
 }
+
+#ifndef DISABLE_DKIM
+void
+tls_get_cache()
+{
+exim_gnutls_state_st * state = &state_server;
+int n = state->xfer_buffer_hwm - state->xfer_buffer_lwm;
+if (n > 0)
+  dkim_exim_verify_feed(state->xfer_buffer+state->xfer_buffer_lwm, n);
+}
+#endif
 
 
 

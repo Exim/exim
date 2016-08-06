@@ -640,6 +640,38 @@ for (count = 0; count < connection_count; count++)
       sleep(sleepfor);
       }
 
+    /* If the script line starts with "*data " we expect a numeric argument,
+    and we expect to read (and discard) that many data bytes from the input. */
+
+    else if (strncmp(ss, "*data ", 6) == 0)
+      {
+      int dlen = atoi(ss+6);
+      int n;
+
+      alarm(timeout);
+
+      if (!linebuf)
+	while (dlen > 0)
+	  {
+	  n = dlen < sizeof(buffer) ? dlen : sizeof(buffer);
+	  if ((n = read(dup_accept_socket, CS buffer, n)) == 0)
+	    {
+	    printf("Unxpected EOF read from client\n");
+	    s = s->next;
+	    goto END_OFF;
+	    }
+	  dlen -= n;
+	  }
+      else
+	while (dlen-- > 0)
+	  if (fgetc(in) == EOF)
+	    {
+	    printf("Unxpected EOF read from client\n");
+	    s = s->next;
+	    goto END_OFF;
+	    }
+      }
+
     /* Otherwise the script line is the start of an input line we are expecting
     from the client, or "*eof" indicating we expect the client to close the
     connection. Read command line or data lines; the latter are indicated

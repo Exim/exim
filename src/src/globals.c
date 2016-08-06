@@ -138,7 +138,6 @@ tls_support tls_out = {
 uschar *dsn_envid              = NULL;
 int     dsn_ret                = 0;
 const pcre  *regex_DSN         = NULL;
-BOOL    smtp_use_dsn           = FALSE;
 uschar *dsn_advertise_hosts    = NULL;
 
 #ifdef SUPPORT_TLS
@@ -158,7 +157,6 @@ uschar *tls_eccurve            = US"prime256v1";
 # ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
 # endif
-BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
@@ -185,7 +183,10 @@ incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
 
 #ifndef STAND_ALONE
+int (*lwr_receive_getc)(void)  = stdin_getc;
+int (*lwr_receive_ungetc)(int) = stdin_ungetc;
 int (*receive_getc)(void)      = stdin_getc;
+void (*receive_get_cache)(void)= NULL;
 int (*receive_ungetc)(int)     = stdin_ungetc;
 int (*receive_feof)(void)      = stdin_feof;
 int (*receive_ferror)(void)    = stdin_ferror;
@@ -492,9 +493,17 @@ int     check_log_space        = 0;
 BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 0;
 int     check_spool_space      = 0;
-uschar	*client_authenticator  = NULL;
-uschar	*client_authenticated_id = NULL;
-uschar	*client_authenticated_sender = NULL;
+
+uschar *chunking_advertise_hosts = US"*";
+unsigned chunking_datasize     = 0;
+unsigned chunking_data_left    = 0;
+BOOL    chunking_offered       = FALSE;
+chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
+const pcre *regex_CHUNKING     = NULL;
+
+uschar *client_authenticator   = NULL;
+uschar *client_authenticated_id = NULL;
+uschar *client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 BOOL    config_changed         = FALSE;
@@ -1311,8 +1320,8 @@ int     smtp_rlr_base          = 0;
 double  smtp_rlr_factor        = 0.0;
 int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
-BOOL    smtp_use_pipelining    = FALSE;
-BOOL    smtp_use_size          = FALSE;
+unsigned smtp_peer_options     = 0;
+unsigned smtp_peer_options_wrap= 0;
 #ifdef SUPPORT_I18N
 uschar *smtputf8_advertise_hosts = US"*";	/* overridden under test-harness */
 #endif
