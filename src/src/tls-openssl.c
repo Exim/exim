@@ -2360,15 +2360,15 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
 return ssl_xfer_buffer[ssl_xfer_buffer_lwm++];
 }
 
-#ifndef DISABLE_DKIM
 void
 tls_get_cache()
 {
+#ifndef DISABLE_DKIM
 int n = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm;
 if (n > 0)
   dkim_exim_verify_feed(ssl_xfer_buffer+ssl_xfer_buffer_lwm, n);
-}
 #endif
+}
 
 
 

@@ -15,6 +15,11 @@ a string as a text string. This is sometimes useful for debugging output. */
 /* Number of elements of an array */
 #define nelem(arr) (sizeof(arr) / sizeof(*arr))
 
+/* Maximum of two items */
+#ifndef MAX
+# define MAX(a,b) ((a) > (b) ? (a) : (b))
+#endif
+
 
 /* When running in the test harness, the load average is fudged. */
 

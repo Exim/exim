@@ -1,6 +1,5 @@
 # Exim test configuration 0900
 SERVER=
-X=
 Y=
 OPT=
 ALLOW=
@@ -103,11 +102,13 @@ remote_smtp_dkim:
   command_timeout = 2s
   final_timeout = 2s
 
+.ifdef X
   dkim_domain =		test.ex
   dkim_selector =	sel
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
 .ifndef HEADERS_MAXSIZE
   dkim_sign_headers =	OPT
+.endif
 .endif
 
 # ----- Retry -----

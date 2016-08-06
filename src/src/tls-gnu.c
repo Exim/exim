@@ -2219,16 +2219,16 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
 return state->xfer_buffer[state->xfer_buffer_lwm++];
 }
 
-#ifndef DISABLE_DKIM
 void
 tls_get_cache()
 {
+#ifndef DISABLE_DKIM
 exim_gnutls_state_st * state = &state_server;
 int n = state->xfer_buffer_hwm - state->xfer_buffer_lwm;
 if (n > 0)
   dkim_exim_verify_feed(state->xfer_buffer+state->xfer_buffer_lwm, n);
-}
 #endif
+}
 
 
 
