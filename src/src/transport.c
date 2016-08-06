@@ -1081,7 +1081,8 @@ if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
   goto CLEANUP;
   }
 
-/* Call original function to write the -K file; does the CRLF expansion */
+/* Call original function to write the -K file; does the CRLF expansion
+(but, in the CHUNKING case, not dot-stuffing and dot-termination). */
 
 options = tctx->options;
 tctx->options &= ~topt_use_bdat;
@@ -1096,14 +1097,9 @@ if (!rc)
   }
 
 /* Rewind file and feed it to the goats^W DKIM lib */
+dkim->dot_stuffed = !!(options & topt_end_dot);
 lseek(dkim_fd, 0, SEEK_SET);
-dkim_signature = dkim_exim_sign(dkim_fd,
-				dkim->dkim_private_key,
-				dkim->dkim_domain,
-				dkim->dkim_selector,
-				dkim->dkim_canon,
-				dkim->dkim_sign_headers);
-if (dkim_signature)
+if ((dkim_signature = dkim_exim_sign(dkim_fd, dkim)))
   siglen = Ustrlen(dkim_signature);
 else if (dkim->dkim_strict)
   {

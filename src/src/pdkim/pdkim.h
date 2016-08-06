@@ -245,12 +245,14 @@ typedef struct pdkim_signature {
 
 /* -------------------------------------------------------------------------- */
 /* Context to keep state between all operations. */
-#define PDKIM_MODE_SIGN     0
-#define PDKIM_MODE_VERIFY   1
 typedef struct pdkim_ctx {
 
-  /* PDKIM_MODE_VERIFY or PDKIM_MODE_SIGN */
-  int mode;
+#define PDKIM_MODE_SIGN   BIT(0)	/* if unset, mode==verify */
+#define PDKIM_DOT_TERM	  BIT(1)	/* dot termination and unstuffing */
+#define PDKIM_SEEN_LF	  BIT(2)
+#define PDKIM_SEEN_EOD	  BIT(3)
+#define PDKIM_PAST_HDRS	  BIT(4)
+  unsigned   flags;
 
   /* One (signing) or several chained (verification) signatures */
   pdkim_signature *sig;
@@ -264,9 +266,6 @@ typedef struct pdkim_ctx {
   int        cur_header_len;
   char      *linebuf;
   int        linebuf_offset;
-  BOOL       seen_lf;
-  BOOL       seen_eod;
-  BOOL       past_headers;
   int        num_buffered_crlf;
   int        num_headers;
   pdkim_stringlist *headers; /* Raw headers for verification         */
@@ -285,10 +284,10 @@ extern "C" {
 void	   pdkim_init         (void);
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int);
+pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int, BOOL);
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *));
+pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *), BOOL);
 
 DLLEXPORT
 int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,

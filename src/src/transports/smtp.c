@@ -266,7 +266,8 @@ smtp_transport_options_block smtp_transport_option_defaults = {
     NULL,              /* dkim_private_key */
     NULL,              /* dkim_selector */
     NULL,              /* dkim_sign_headers */
-    NULL}              /* dkim_strict */
+    NULL,              /* dkim_strict */
+    FALSE}	       /* dot_stuffed */
 #endif
 };
 

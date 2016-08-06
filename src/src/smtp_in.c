@@ -399,7 +399,7 @@ for(;;)
   if (chunking_state == CHUNKING_LAST)
     {
 #ifndef DISABLE_DKIM
-    dkim_exim_verify_feed(".\r\n", 3);	/* for consistency with .-term MAIL */
+    dkim_exim_verify_feed(NULL, 0);	/* notify EOD */
 #endif
     return EOD;
     }

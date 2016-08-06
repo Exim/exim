@@ -1615,8 +1615,10 @@ message_linecount = body_linecount = body_zerocount =
   max_received_linelength = 0;
 
 #ifndef DISABLE_DKIM
-/* Call into DKIM to set up the context. */
-if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_init();
+/* Call into DKIM to set up the context.  In CHUNKING mode
+we clear the dot-stuffing flag */
+if (smtp_input && !smtp_batched_input && !dkim_disable_verify)
+  dkim_exim_verify_init(chunking_state <= CHUNKING_OFFERED);
 #endif
 
 #ifdef EXPERIMENTAL_DMARC

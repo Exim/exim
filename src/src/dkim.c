@@ -69,7 +69,7 @@ pdkim_init();
 
 
 void
-dkim_exim_verify_init(void)
+dkim_exim_verify_init(BOOL dot_stuffing)
 {
 /* There is a store-reset between header & body reception
 so cannot use the main pool. Any allocs done by Exim
@@ -85,7 +85,7 @@ if (dkim_verify_ctx)
 
 /* Create new context */
 
-dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt);
+dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt, dot_stuffing);
 dkim_collect_input = !!dkim_verify_ctx;
 
 /* Start feed up with any cached data */
@@ -102,7 +102,7 @@ int rc;
 
 store_pool = POOL_PERM;
 if (  dkim_collect_input
-   && (rc = pdkim_feed(dkim_verify_ctx, (char *)data, len)) != PDKIM_OK)
+   && (rc = pdkim_feed(dkim_verify_ctx, CS data, len)) != PDKIM_OK)
   {
   log_write(0, LOG_MAIN,
 	     "DKIM: validation error: %.100s", pdkim_errstr(rc));
@@ -460,10 +460,9 @@ switch (what)
 
 
 uschar *
-dkim_exim_sign(int dkim_fd, uschar * dkim_private_key,
-		const uschar * dkim_domain, uschar * dkim_selector,
-		uschar * dkim_canon, uschar * dkim_sign_headers)
+dkim_exim_sign(int dkim_fd, struct ob_dkim * dkim)
 {
+const uschar * dkim_domain;
 int sep = 0;
 uschar *seen_items = NULL;
 int seen_items_size = 0;
@@ -487,7 +486,7 @@ int old_pool = store_pool;
 
 store_pool = POOL_MAIN;
 
-if (!(dkim_domain = expand_cstring(dkim_domain)))
+if (!(dkim_domain = expand_cstring(dkim->dkim_domain)))
   {
   /* expansion error, do not send message. */
   log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
@@ -525,7 +524,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 
   /* Set up $dkim_selector expansion variable. */
 
-  if (!(dkim_signing_selector = expand_string(dkim_selector)))
+  if (!(dkim_signing_selector = expand_string(dkim->dkim_selector)))
     {
     log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 	       "dkim_selector: %s", expand_string_message);
@@ -534,7 +533,8 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 
   /* Get canonicalization to use */
 
-  dkim_canon_expanded = dkim_canon ? expand_string(dkim_canon) : US"relaxed";
+  dkim_canon_expanded = dkim->dkim_canon
+    ? expand_string(dkim->dkim_canon) : US"relaxed";
   if (!dkim_canon_expanded)
     {
     /* expansion error, do not send message. */
@@ -556,8 +556,8 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     }
 
   dkim_sign_headers_expanded = NULL;
-  if (dkim_sign_headers)
-    if (!(dkim_sign_headers_expanded = expand_string(dkim_sign_headers)))
+  if (dkim->dkim_sign_headers)
+    if (!(dkim_sign_headers_expanded = expand_string(dkim->dkim_sign_headers)))
       {
       log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 		 "dkim_sign_headers: %s", expand_string_message);
@@ -567,7 +567,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 
   /* Get private key to use. */
 
-  if (!(dkim_private_key_expanded = expand_string(dkim_private_key)))
+  if (!(dkim_private_key_expanded = expand_string(dkim->dkim_private_key)))
     {
     log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 	       "dkim_private_key: %s", expand_string_message);
@@ -587,8 +587,8 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     /* Looks like a filename, load the private key. */
 
     memset(big_buffer, 0, big_buffer_size);
-    privkey_fd = open(CS dkim_private_key_expanded, O_RDONLY);
-    if (privkey_fd < 0)
+
+    if ((privkey_fd = open(CS dkim_private_key_expanded, O_RDONLY)) < 0)
       {
       log_write(0, LOG_MAIN | LOG_PANIC, "unable to open "
 		 "private key file for reading: %s",
@@ -610,16 +610,17 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
   ctx = pdkim_init_sign( CS dkim_signing_domain,
 			 CS dkim_signing_selector,
 			 CS dkim_private_key_expanded,
-			 PDKIM_ALGO_RSA_SHA256);
+			 PDKIM_ALGO_RSA_SHA256,
+			 dkim->dot_stuffed);
   pdkim_set_optional(ctx,
-		      (char *) dkim_sign_headers_expanded,
+		      CS dkim_sign_headers_expanded,
 		      NULL,
 		      pdkim_canon,
 		      pdkim_canon, -1, 0, 0);
 
   lseek(dkim_fd, 0, SEEK_SET);
 
-  while ((sread = read(dkim_fd, &buf, 4096)) > 0)
+  while ((sread = read(dkim_fd, &buf, sizeof(buf))) > 0)
     if ((pdkim_rc = pdkim_feed(ctx, buf, sread)) != PDKIM_OK)
       goto pk_bad;
 

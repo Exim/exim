@@ -794,7 +794,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
     }
 
   /* SIGNING -------------------------------------------------------------- */
-  if (ctx->mode == PDKIM_MODE_SIGN)
+  if (ctx->flags & PDKIM_MODE_SIGN)
     {
     sig->bodyhash = bh;
 
@@ -830,8 +830,32 @@ for (sig = ctx->sig; sig; sig = sig->next)
 
 
 
+static int
+pdkim_body_complete(pdkim_ctx * ctx)
+{
+pdkim_signature * sig = ctx->sig;	/*XXX assumes only one sig */
+
+/* In simple body mode, if any empty lines were buffered,
+replace with one. rfc 4871 3.4.3 */
+/*XXX checking the signed-body-bytes is a gross hack; I think
+it indicates that all linebreaks should be buffered, including
+the one terminating a text line */
+
+if (  sig && sig->canon_body == PDKIM_CANON_SIMPLE
+   && sig->signed_body_bytes == 0
+   && ctx->num_buffered_crlf > 0
+   )
+  pdkim_update_bodyhash(ctx, "\r\n", 2);
+
+ctx->flags |= PDKIM_SEEN_EOD;
+ctx->linebuf_offset = 0;
+return PDKIM_OK;
+}
+
+
+
 /* -------------------------------------------------------------------------- */
-/* Callback from pdkim_feed below for processing complete body lines */
+/* Call from pdkim_feed below for processing complete body lines */
 
 static int
 pdkim_bodyline_complete(pdkim_ctx *ctx)
@@ -841,33 +865,23 @@ int   n = ctx->linebuf_offset;
 pdkim_signature *sig = ctx->sig;	/*XXX assumes only one sig */
 
 /* Ignore extra data if we've seen the end-of-data marker */
-if (ctx->seen_eod) goto BAIL;
+if (ctx->flags & PDKIM_SEEN_EOD) goto BAIL;
 
 /* We've always got one extra byte to stuff a zero ... */
 ctx->linebuf[ctx->linebuf_offset] = '\0';
 
 /* Terminate on EOD marker */
-if (memcmp(p, ".\r\n", 3) == 0)
+if (ctx->flags & PDKIM_DOT_TERM)
   {
-  /* In simple body mode, if any empty lines were buffered,
-  replace with one. rfc 4871 3.4.3 */
-  /*XXX checking the signed-body-bytes is a gross hack; I think
-  it indicates that all linebreaks should be buffered, including
-  the one terminating a text line */
-  if (  sig && sig->canon_body == PDKIM_CANON_SIMPLE
-     && sig->signed_body_bytes == 0
-     && ctx->num_buffered_crlf > 0
-     )
-    pdkim_update_bodyhash(ctx, "\r\n", 2);
+  if ( memcmp(p, ".\r\n", 3) == 0)
+    return pdkim_body_complete(ctx);
 
-  ctx->seen_eod = TRUE;
-  goto BAIL;
-  }
-/* Unstuff dots */
-if (memcmp(p, "..", 2) == 0)
-  {
-  p++;
-  n--;
+  /* Unstuff dots */
+  if (memcmp(p, "..", 2) == 0)
+    {
+    p++;
+    n--;
+    }
   }
 
 /* Empty lines need to be buffered until we find a non-empty line */
@@ -927,7 +941,7 @@ ctx->num_headers++;
 if (ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
 
 /* SIGNING -------------------------------------------------------------- */
-if (ctx->mode == PDKIM_MODE_SIGN)
+if (ctx->flags & PDKIM_MODE_SIGN)
   {
   pdkim_signature *sig;
 
@@ -940,7 +954,7 @@ if (ctx->mode == PDKIM_MODE_SIGN)
 
 /* VERIFICATION ----------------------------------------------------------- */
 /* DKIM-Signature: headers are added to the verification list */
-if (ctx->mode == PDKIM_MODE_VERIFY)
+else
   {
   if (strncasecmp(CCS ctx->cur_header,
 		  DKIM_SIGNATURE_HEADERNAME,
@@ -990,11 +1004,15 @@ pdkim_feed(pdkim_ctx *ctx, char *data, int len)
 {
 int p;
 
+/* Alternate EOD signal, used in non-dotstuffing mode */
+if (!data)
+  pdkim_body_complete(ctx);
+
 for (p = 0; p<len; p++)
   {
   uschar c = data[p];
 
-  if (ctx->past_headers)
+  if (ctx->flags & PDKIM_PAST_HDRS)
     {
     /* Processing body byte */
     ctx->linebuf[ctx->linebuf_offset++] = c;
@@ -1013,28 +1031,27 @@ for (p = 0; p<len; p++)
       {
       if (c == '\n')
         {
-	if (ctx->seen_lf)
+	if (ctx->flags & PDKIM_SEEN_LF)
 	  {
 	  int rc = pdkim_header_complete(ctx); /* Seen last header line */
 	  if (rc != PDKIM_OK) return rc;
 
-	  ctx->past_headers = TRUE;
-	  ctx->seen_lf = 0;
+	  ctx->flags = ctx->flags & ~PDKIM_SEEN_LF | PDKIM_PAST_HDRS;
 	  DEBUG(D_acl) debug_printf(
 	      "PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>\n");
 	  continue;
 	  }
 	else
-	  ctx->seen_lf = TRUE;
+	  ctx->flags |= PDKIM_SEEN_LF;
 	}
-      else if (ctx->seen_lf)
+      else if (ctx->flags & PDKIM_SEEN_LF)
         {
 	if (!(c == '\t' || c == ' '))
 	  {
 	  int rc = pdkim_header_complete(ctx); /* End of header */
 	  if (rc != PDKIM_OK) return rc;
 	  }
-	ctx->seen_lf = FALSE;
+	ctx->flags &= ~PDKIM_SEEN_LF;
 	}
       }
 
@@ -1328,7 +1345,7 @@ while (sig)
      Then append to that list any remaining header names for which there was no
      header to sign. */
 
-  if (ctx->mode == PDKIM_MODE_SIGN)
+  if (ctx->flags & PDKIM_MODE_SIGN)
     {
     pdkim_stringlist *p;
     const uschar * l;
@@ -1449,11 +1466,11 @@ while (sig)
     }
 
   /* Remember headers block for signing (when the library cannot do incremental)  */
-  if (ctx->mode == PDKIM_MODE_SIGN)
+  if (ctx->flags & PDKIM_MODE_SIGN)
     (void) exim_rsa_data_append(&hdata, &hdata_alloc, US sig_hdr);
 
   /* SIGNING ---------------------------------------------------------------- */
-  if (ctx->mode == PDKIM_MODE_SIGN)
+  if (ctx->flags & PDKIM_MODE_SIGN)
     {
     es_ctx sctx;
     const uschar * errstr;
@@ -1616,15 +1633,15 @@ return PDKIM_OK;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_verify(int(*dns_txt_callback)(char *, char *))
+pdkim_init_verify(int(*dns_txt_callback)(char *, char *), BOOL dot_stuffing)
 {
 pdkim_ctx * ctx;
 
 ctx = store_get(sizeof(pdkim_ctx));
 memset(ctx, 0, sizeof(pdkim_ctx));
 
+if (dot_stuffing) ctx->flags = PDKIM_DOT_TERM;
 ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN);
-ctx->mode = PDKIM_MODE_VERIFY;
 ctx->dns_txt_callback = dns_txt_callback;
 
 return ctx;
@@ -1634,7 +1651,8 @@ return ctx;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_sign(char *domain, char *selector, char *rsa_privkey, int algo)
+pdkim_init_sign(char *domain, char *selector, char *rsa_privkey, int algo,
+  BOOL dot_stuffed)
 {
 pdkim_ctx *ctx;
 pdkim_signature *sig;
@@ -1645,14 +1663,13 @@ if (!domain || !selector || !rsa_privkey)
 ctx = store_get(sizeof(pdkim_ctx));
 memset(ctx, 0, sizeof(pdkim_ctx));
 
+ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;
 ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN);
 
 sig = store_get(sizeof(pdkim_signature));
 memset(sig, 0, sizeof(pdkim_signature));
 
 sig->bodylength = -1;
-
-ctx->mode = PDKIM_MODE_SIGN;
 ctx->sig = sig;
 
 sig->domain = string_copy(US domain);

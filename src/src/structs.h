@@ -874,6 +874,7 @@ struct ob_dkim {
   uschar *dkim_canon;
   uschar *dkim_sign_headers;
   uschar *dkim_strict;
-} dkim;
+  BOOL    dot_stuffed;
+};
 
 /* End of structs.h */
