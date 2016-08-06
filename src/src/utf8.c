@@ -18,7 +18,7 @@ BOOL
 string_is_utf8(const uschar * s)
 {
 uschar c;
-while ((c = *s++)) if (c & 0x80) return TRUE;
+if (s) while ((c = *s++)) if (c & 0x80) return TRUE;
 return FALSE;
 }
 

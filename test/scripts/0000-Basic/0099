@@ -38,12 +38,16 @@ Test message
 ****
 dump retry
 #
-# one for a lookup-failure (in manualroute)
+# a lookup-failure (in manualroute)
 exim -odi userx@nonexist
 Test message
 ****
-# one for a lookup-failure (in dnslookup)
+# a lookup-failure (good MX, missing A) in dnslookup, deferred
 exim -odi userx@mxt2.test.ex
+Test message
+****
+# a lookup-failure (missing MX) in dnslookup, deferred
+exim -odi userx@mxnonexist.test.ex
 Test message
 ****
 dump retry

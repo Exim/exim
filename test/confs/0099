@@ -19,7 +19,7 @@ begin routers
 
 bydns:
   driver = dnslookup
-  domains = mxt2.test.ex
+  domains = mxt2.test.ex : mxnonexist.test.ex
   transport = smtp
   fail_defer_domains = *
 

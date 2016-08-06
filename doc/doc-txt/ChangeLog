@@ -68,6 +68,9 @@ JH/16 DANE: treat a TLSA lookup response having all non-TLSA RRs, the same
 JH/17 Fakereject: previously logged as a norml message arrival "<="; now
       distinguished as "(=".
 
+JH/18 Bug 1867: make the fail_defer_domains option on a dnslookup router work
+      for missing MX records.  Previously it only worked for missing A records.
+
 
 Exim version 4.87
 -----------------
