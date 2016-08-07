@@ -26,6 +26,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ip4.ip4.ip4.ip4 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
 >>>   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
 >>>          250-SIZE 52428800
 >>>          250-8BITMIME
@@ -35,11 +36,13 @@ MUNGED: ::1 will be omitted in what follows
 >>> ip4.ip4.ip4.ip4 in hosts_avoid_tls? no (option unset)
 >>> ip4.ip4.ip4.ip4 in hosts_verify_avoid_tls? no (option unset)
 >>>   SMTP>> STARTTLS
+>>> cmd buf flush 10 bytes
 >>>   SMTP<< 220 TLS go ahead
 >>> ip4.ip4.ip4.ip4 in hosts_require_ocsp? no (option unset)
 >>> ip4.ip4.ip4.ip4 in hosts_require_ocsp? no (option unset)
 >>> ip4.ip4.ip4.ip4 in hosts_request_ocsp? no (end of list)
 >>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
 >>>   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
 >>>          250-SIZE 52428800
 >>>          250-8BITMIME
@@ -47,10 +50,13 @@ MUNGED: ::1 will be omitted in what follows
 >>>          250 HELP
 >>> ip4.ip4.ip4.ip4 in hosts_require_auth? no (option unset)
 >>>   SMTP>> MAIL FROM:<>
+>>> cmd buf flush 14 bytes
 >>>   SMTP<< 250 OK
 >>>   SMTP>> RCPT TO:<CALLER@dane256ee.test.ex>
+>>> cmd buf flush 38 bytes
 >>>   SMTP<< 250 Accepted
 >>>   SMTP>> QUIT
+>>> cmd buf flush 6 bytes
 >>> wrote callout cache domain record for dane256ee.test.ex:
 >>>   result=1 postmaster=0 random=0
 >>> wrote positive callout cache address record for CALLER@dane256ee.test.ex

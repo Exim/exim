@@ -1402,6 +1402,8 @@ if (tctx->pending_BDAT)
 
 if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
   {
+  DEBUG(D_transport) debug_printf("look for %d responses"
+    " for previous pipelined cmds\n", prev_cmd_count);
 
   switch(sync_responses(tctx->first_addr, tctx->tblock->rcpt_include_affixes,
 	  tctx->sync_addr, tctx->host, prev_cmd_count,
@@ -1424,10 +1426,12 @@ if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
     pipelining_active = FALSE;
   }
 
-/* Reap response for the cmd we just emitted, or an outstanding BDAT */
+/* Reap response for an outstanding BDAT */
 
-if (flags & tc_reap_one  ||  tctx->pending_BDAT)
+if (tctx->pending_BDAT)
   {
+  DEBUG(D_transport) debug_printf("look for one response for BDAT\n");
+
   if (!smtp_read_response(tctx->inblock, buffer, DELIVER_BUFFER_SIZE, '2',
        ob->command_timeout))
     {

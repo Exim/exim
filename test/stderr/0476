@@ -19,6 +19,7 @@ set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (use
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO the.local.host.name
+cmd buf flush 18 bytes
   SMTP<< 250-server id
          250-PIPELINING
          250 OK
@@ -27,6 +28,7 @@ not using DSN
   SMTP>> MAIL FROM:<CALLER@the.local.host.name>
   SMTP>> RCPT TO:<userx@test.ex>
   SMTP>> DATA
+cmd buf flush 65 bytes
   SMTP<< 250 OK
   SMTP<< 550 NO
 Remote host closed connection in response to pipelined DATA
@@ -35,6 +37,7 @@ ok=1 send_quit=1 send_rset=1 continue_more=0 yield=0 first_address is NULL
 transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
   SMTP>> RSET
+cmd buf flush 6 bytes
 H=127.0.0.1 [127.0.0.1] Remote host closed connection in response to RSET
   SMTP(close)>>
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for userx@test.ex: result OK

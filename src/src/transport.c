@@ -418,15 +418,22 @@ for (ptr = start; ptr < end; ptr++)
 
   if ((len = chunk_ptr - deliver_out_buffer) > mlen)
     {
+    DEBUG(D_transport) debug_printf("flushing headers buffer\n");
+
     /* If CHUNKING, prefix with BDAT (size) NON-LAST.  Also, reap responses
     from previous SMTP commands. */
 
     if (tctx &&  tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
-      if (tctx->chunk_cb(fd, tctx, (unsigned)len, tc_reap_prev|tc_reap_one) != OK)
+      {
+      if (  tctx->chunk_cb(fd, tctx, (unsigned)len, 0) != OK
+	 || !transport_write_block(fd, deliver_out_buffer, len)
+	 || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
+	 )
 	return FALSE;
-
-    if (!transport_write_block(fd, deliver_out_buffer, len))
-      return FALSE;
+      }
+    else
+      if (!transport_write_block(fd, deliver_out_buffer, len))
+	return FALSE;
     chunk_ptr = deliver_out_buffer;
     }
 
@@ -922,11 +929,11 @@ if (!(tctx->options & topt_no_headers))
     return FALSE;
   }
 
-/* When doing RFC3030 CHUNKING output, work out how much data will be in the
-last BDAT, consisting of the current write_chunk() output buffer fill
+/* When doing RFC3030 CHUNKING output, work out how much data would be in a
+last-BDAT, consisting of the current write_chunk() output buffer fill
 (optimally, all of the headers - but it does not matter if we already had to
 flush that buffer with non-last BDAT prependix) plus the amount of body data
-(as expanded for CRLF lines).  Then create and write the BDAT, and ensure
+(as expanded for CRLF lines).  Then create and write BDAT(s), and ensure
 that further use of write_chunk() will not prepend BDATs.
 The first BDAT written will also first flush any outstanding MAIL and RCPT
 commands which were buffered thans to PIPELINING.
@@ -960,6 +967,8 @@ if (tctx->options & topt_use_bdat)
 
   if (size > DELIVER_OUT_BUFFER_SIZE && hsize > 0)
     {
+    DEBUG(D_transport)
+      debug_printf("sending small initial BDAT; hssize=%d\n", hsize);
     if (  tctx->chunk_cb(fd, tctx, hsize, 0) != OK
        || !transport_write_block(fd, deliver_out_buffer, hsize)
        || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK

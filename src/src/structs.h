@@ -226,8 +226,7 @@ typedef struct transport_info {
 /* smtp transport datachunk callback */
 
 #define tc_reap_prev	BIT(0)	/* Flags: reap previous SMTP cmd responses */
-#define tc_reap_one	BIT(1)	/* reap one SMTP response */
-#define tc_chunk_last	BIT(2)	/* annotate chunk SMTP cmd as LAST */
+#define tc_chunk_last	BIT(1)	/* annotate chunk SMTP cmd as LAST */
 
 struct transport_context;
 typedef int (*tpt_chunk_cmd_cb)(int fd, struct transport_context * tctx,

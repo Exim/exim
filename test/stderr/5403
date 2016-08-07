@@ -73,11 +73,14 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
 >>>   SMTP<< 250 OK
 >>> 127.0.0.1 in hosts_require_auth? no (option unset)
 >>>   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+>>> cmd buf flush 37 bytes
 >>>   SMTP<< 250 OK
 >>>   SMTP>> RCPT TO:<verify@domain.com>
+>>> cmd buf flush 29 bytes
 >>>   SMTP<< 250 OK
 >>> holding verify callout open for cutthrough delivery
 >>> ----------- end verify ------------

@@ -91,13 +91,17 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
+cmd buf flush 21 bytes
   SMTP<< 250 OK
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<>
+cmd buf flush 14 bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<x@y>
+cmd buf flush 15 bytes
   SMTP<< 250 OK
   SMTP>> QUIT
+cmd buf flush 6 bytes
 locking TESTSUITE/spool/db/callout.lockfile
 locked TESTSUITE/spool/db/callout.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/callout)
@@ -247,13 +251,17 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
 >>>   SMTP<< 250 OK
 >>> 127.0.0.1 in hosts_require_auth? no (option unset)
 >>>   SMTP>> MAIL FROM:<>
+>>> cmd buf flush 14 bytes
 >>>   SMTP<< 250 OK
 >>>   SMTP>> RCPT TO:<a@b>
+>>> cmd buf flush 15 bytes
 >>>   SMTP<< 250 OK
 >>>   SMTP>> QUIT
+>>> cmd buf flush 6 bytes
 >>> wrote callout cache domain record for b:
 >>>   result=1 postmaster=0 random=0
 >>> wrote positive callout cache address record for a@b
@@ -287,6 +295,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP<< 220 server ready
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
 >>> SMTP timeout
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "mail"

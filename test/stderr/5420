@@ -56,6 +56,7 @@ considering: $primary_hostname
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
+cmd buf flush 21 bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
          250-8BITMIME
@@ -101,11 +102,13 @@ considering: :}}
      result: :
 127.0.0.1 in hosts_verify_avoid_tls? no (end of list)
   SMTP>> STARTTLS
+cmd buf flush 10 bytes
   SMTP<< 220 TLS go ahead
 127.0.0.1 in tls_verify_hosts? no (option unset)
 127.0.0.1 in tls_try_verify_hosts? yes (matched "*")
 127.0.0.1 in tls_verify_cert_hostnames? yes (matched "*")
   SMTP>> EHLO myhost.test.ex
+cmd buf flush 21 bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
          250-8BITMIME
@@ -113,8 +116,10 @@ considering: :}}
          250 HELP
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+cmd buf flush 37 bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<userx@domain.com>
+cmd buf flush 28 bytes
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
@@ -313,6 +318,7 @@ considering: $primary_hostname
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
+cmd buf flush 21 bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
          250-8BITMIME
@@ -340,8 +346,10 @@ considering: *}{:}}
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+cmd buf flush 37 bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
+cmd buf flush 28 bytes
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
@@ -540,6 +548,7 @@ considering: $primary_hostname
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
+cmd buf flush 21 bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
          250-8BITMIME
@@ -567,8 +576,10 @@ considering: *}{:}}
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+cmd buf flush 37 bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
+cmd buf flush 28 bytes
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------

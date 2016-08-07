@@ -324,14 +324,16 @@ static BOOL
 flush_buffer(smtp_outblock *outblock)
 {
 int rc;
+int n = outblock->ptr - outblock->buffer;
 
+HDEBUG(D_transport|D_acl) debug_printf("cmd buf flush %d bytes\n", n);
 #ifdef SUPPORT_TLS
 if (tls_out.active == outblock->sock)
-  rc = tls_write(FALSE, outblock->buffer, outblock->ptr - outblock->buffer);
+  rc = tls_write(FALSE, outblock->buffer, n);
 else
 #endif
+  rc = send(outblock->sock, outblock->buffer, n, 0);
 
-rc = send(outblock->sock, outblock->buffer, outblock->ptr - outblock->buffer, 0);
 if (rc <= 0)
   {
   HDEBUG(D_transport|D_acl) debug_printf("send failed: %s\n", strerror(errno));

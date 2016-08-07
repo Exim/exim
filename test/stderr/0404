@@ -17998,6 +17998,7 @@ lock file created
 mailbox TESTSUITE/test-mail/sender is locked
 writing to file TESTSUITE/test-mail/sender
 writing data block fd=dddd size=sss timeout=0
+flushing headers buffer
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
