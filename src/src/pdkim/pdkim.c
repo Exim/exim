@@ -767,7 +767,6 @@ while (sig)
   sig = sig->next;
   }
 
-if (relaxed_data) store_reset(relaxed_data);
 return PDKIM_OK;
 }
 
