@@ -130,17 +130,17 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO mail.test.ex
-cmd buf flush 19 bytes
+cmd buf flush ddd bytes
   SMTP<< 250 OK
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<>
-cmd buf flush 14 bytes
+cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<qq@remote>
-cmd buf flush 21 bytes
+cmd buf flush ddd bytes
   SMTP<< 550 Unknown
   SMTP>> QUIT
-cmd buf flush 6 bytes
+cmd buf flush ddd bytes
 locking TESTSUITE/spool/db/callout.lockfile
 locked TESTSUITE/spool/db/callout.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/callout)

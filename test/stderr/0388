@@ -85,20 +85,20 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
-cmd buf flush 21 bytes
+cmd buf flush ddd bytes
   SMTP<< 250 OK
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
-cmd buf flush 37 bytes
+cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<x@y>
-cmd buf flush 15 bytes
+cmd buf flush ddd bytes
   SMTP<< 451 Temporary error
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
   SMTP>> QUIT
-cmd buf flush 6 bytes
+cmd buf flush ddd bytes
   SMTP(close)>>
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for x@y: result OK
 address match test: subject=*@127.0.0.1 pattern=*

@@ -867,6 +867,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # gnutls version variances
     next if /^Error in the pull function./;
+
+    # Sizes vary with test hostname
+    s/^BDAT \d+/BDAT ddd/;
     }
 
   # ======== stderr ========
@@ -1023,6 +1026,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;
+
+    # Sizes vary with test hostname
+    s/^cmd buf flush \d+ bytes$/cmd buf flush ddd bytes/;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
