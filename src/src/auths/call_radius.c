@@ -165,6 +165,7 @@ switch (result)
   case OK_RC:
   return OK;
 
+  case REJECT_RC:
   case ERROR_RC:
   return FAIL;
 

@@ -71,6 +71,8 @@ JH/17 Fakereject: previously logged as a norml message arrival "<="; now
 JH/18 Bug 1867: make the fail_defer_domains option on a dnslookup router work
       for missing MX records.  Previously it only worked for missing A records.
 
+JH/19 Buf 1850: support Radius libraries that return REJECT_RC
+
 
 Exim version 4.87
 -----------------
