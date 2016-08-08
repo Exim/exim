@@ -27,7 +27,7 @@ lock file created
 mailbox TESTSUITE/test-mail/userx is locked
 writing to file TESTSUITE/test-mail/userx
 writing data block fd=dddd size=sss timeout=0
-process pppp running as transport filter: fd_write=9 fd_read=10
+process pppp running as transport filter: fd_write=dddd fd_read=dddd
 writing data block fd=dddd size=sss timeout=0
 process pppp writing to transport filter
 copying from the filter

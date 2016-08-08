@@ -427,7 +427,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # File descriptor numbers may vary
   s/^writing data block fd=\d+/writing data block fd=dddd/;
-  s/running as transport filter: write=\d+ read=\d+/running as transport filter: write=dddd read=dddd/;
+  s/(running as transport filter:) fd_write=\d+ fd_read=\d+/$1 fd_write=dddd fd_read=dddd/;
 
 
   # ======== Dumpdb output ========
