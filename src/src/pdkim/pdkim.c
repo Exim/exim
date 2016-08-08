@@ -723,7 +723,12 @@ while (sig)
       const char *p;
       int q = 0;
 
-      relaxed_data = store_get(len+1);
+      /* We want to be able to free this else we allocate
+      for the entire message which could be many MB. Since
+      we don't know what allocations the SHA routines might
+      do, not safe to use store_get()/store_reset(). */
+
+      relaxed_data = malloc(len+1);
 
       for (p = data; *p; p++)
         {
@@ -767,6 +772,7 @@ while (sig)
   sig = sig->next;
   }
 
+if (relaxed_data) free(relaxed_data);
 return PDKIM_OK;
 }
 
