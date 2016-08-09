@@ -14,7 +14,7 @@ ehlo tester
 ??? 250 HELP
 mail from:someone@some.domain
 ??? 250
-rcpt to:CALLER@HOSTNAME
+rcpt to:CALLER@test.ex
 ??? 250
 bdat 88 last
 To: Susan@random.com
@@ -41,7 +41,7 @@ ehlo tester
 ??? 250 
 mail from:someone@some.domain
 ??? 250
-rcpt to:CALLER@HOSTNAME
+rcpt to:CALLER@test.ex
 ??? 250
 bdat 100
 To: Susan@random.com
@@ -57,7 +57,7 @@ bdat 0 last
 ??? 250
 mail from:someone@some.domain
 ??? 250
-rcpt to:CALLER@HOSTNAME
+rcpt to:CALLER@test.ex
 ??? 250
 bdat 10
 To: Susan@bdat 78 last
@@ -85,7 +85,7 @@ ehlo tester
 ??? 250 
 mail from:someone@some.domain
 ??? 250
-rcpt to:CALLER@HOSTNAME
+rcpt to:CALLER@test.ex
 ??? 250
 bdat 89 last
 To: Susan@random.com
@@ -108,7 +108,7 @@ ehlo tester
 ??? 250 
 mail from:someone@some.domain
 ??? 250
-rcpt to:CALLER@HOSTNAME
+rcpt to:CALLER@test.ex
 ??? 250
 bdat 88
 To: Susan@random.com
@@ -134,7 +134,7 @@ ehlo tester
 ??? 250 
 mail from:someone@some.domain
 ??? 250
-rcpt to:CALLER@HOSTNAME
+rcpt to:CALLER@test.ex
 ??? 250
 bdat 88
 To: Susan@random.com
@@ -155,7 +155,7 @@ EHLO tester
 ??? 250 
 mail from:someone@some.domain
 ??? 250
-rcpt to:CALLER@HOSTNAME
+rcpt to:CALLER@test.ex
 ??? 250
 bdat 88
 To: Susan@random.com
@@ -182,7 +182,7 @@ EHLO tester
 ??? 250-PIPELINING
 ??? 250-CHUNKING
 ??? 250 HELP
-MAIL FROM:<someone@some.domain>\r\nRCPT TO:<CALLER@HOSTNAME>\r\nBDAT 88 LAST\r\nTo: Susan@random.com\r\nFrom: Sam@random.com\r\nSubject: This is a bodyless test message\r\n
+MAIL FROM:<someone@some.domain>\r\nRCPT TO:<CALLER@test.ex>\r\nBDAT 88 LAST\r\nTo: Susan@random.com\r\nFrom: Sam@random.com\r\nSubject: This is a bodyless test message\r\n
 ??? 250
 ??? 250
 ??? 250-

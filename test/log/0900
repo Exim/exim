@@ -1,10 +1,10 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@the.local.host.name
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@the.local.host.name
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@the.local.host.name
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 SMTP data timeout (message abandoned) on connection from (tester) [127.0.0.1] F=<someone@some.domain>
 1999-03-02 09:44:33 SMTP connection from (tester) [127.0.0.1] lost while reading message data
 1999-03-02 09:44:33 SMTP connection from (tester) [127.0.0.1] lost while reading message data
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@the.local.host.name
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= someone@some.domain H=(tester) [127.0.0.1] P=esmtp K S=sss for CALLER@test.ex

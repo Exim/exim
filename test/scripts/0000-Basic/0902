@@ -12,8 +12,8 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 317
-*data 317
+BDAT 337
+*data 337
 250 OK nonlast bdat
 BDAT 8380 LAST
 *data 8380
@@ -128,8 +128,8 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 317
-*data 317
+BDAT 337
+*data 337
 500 oops bdat-nonlast
 QUIT
 225 OK
@@ -243,10 +243,10 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 317
+BDAT 337
 250 OK mail
 250 OK rcpt
-*data 317
+*data 337
 250 OK nonlast bdat
 BDAT 8380 LAST
 *data 8380
@@ -362,8 +362,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 317
-*data 317
+BDAT 337
+*data 337
 550 unacceptable mail-from
 550 rcpt ungood lacking mail-from
 500 bdat (nonlast) ungood lacking mail-from
@@ -474,8 +474,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 317
-*data 317
+BDAT 337
+*data 337
 250 OK mail
 550 no such recipient
 500 oops nonlast bdat - no rcpt
@@ -587,8 +587,8 @@ EHLO
 MAIL FROM
 RCPT TO
 RCPT TO
-BDAT 301
-*data 301
+BDAT 321
+*data 321
 250 OK mail
 550 no such recipient
 250 good recipient
@@ -703,8 +703,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 317
-*data 317
+BDAT 337
+*data 337
 250 OK mail
 250 OK rcpt
 500 oops nonlast bdat
@@ -815,8 +815,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 317
-*data 317
+BDAT 337
+*data 337
 250 OK mail
 250 OK rcpt
 250 OK nonlast bdat
@@ -935,8 +935,8 @@ BDAT 8191
 250 OK rcpt
 *data 8191
 250 OK nonlast bdat
-BDAT 829 LAST
-*data 829
+BDAT 849 LAST
+*data 849
 250 OK bdat
 QUIT
 225 OK

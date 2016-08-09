@@ -25,7 +25,7 @@ EHLO rhu.barb
 ??? 250 HELP
 MAIL FROM:<someone@some.domain>
 ??? 250
-RCPT TO:<CALLER@HOSTNAME>
+RCPT TO:<CALLER@test.ex>
 ??? 250
 BDAT 88 LAST
 To: Susan@random.com
@@ -59,7 +59,7 @@ EHLO rhu.barb
 ??? 250-CHUNKING
 ??? 250 HELP
 MAIL FROM:<someone@some.domain>
-RCPT TO:<CALLER@HOSTNAME>
+RCPT TO:<CALLER@test.ex>
 BDAT 88 LAST
 To: Susan@random.com
 From: Sam@random.com

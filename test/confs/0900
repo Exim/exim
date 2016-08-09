@@ -17,6 +17,7 @@ tls_advertise_hosts = ${if eq {Y}{tls} {*}}
 
 # ----- Main settings -----
 
+primary_hostname = testhost.test.ex
 domainlist local_domains = @ : test.ex
 
 acl_smtp_rcpt = check_recipient

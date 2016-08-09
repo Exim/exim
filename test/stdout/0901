@@ -3,14 +3,14 @@
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250 CHUNKING
 MAIL FROM:<>
 250 OK
 RCPT TO:<a@test.ex>
 250 OK
-BDAT ddd LAST
+BDAT 343 LAST
 250 OK
 QUIT
 225 OK
@@ -19,26 +19,26 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250 CHUNKING
 MAIL FROM:<>
 250 good mail cmd
 RCPT TO:<b@test.ex>
 250 acceptable rcpt cmd
-BDAT ddd LAST
+BDAT 343 LAST
 Unxpected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250 CHUNKING
 MAIL FROM:<>
 250 OK
 RCPT TO:<c@test.ex>
 250 OK
-BDAT ddd LAST
+BDAT 343 LAST
 250 OK
 
 Comparison failed - bailing out
@@ -46,14 +46,14 @@ Expected: QUIT
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250 CHUNKING
 MAIL FROM:<>
 250 OK
 RCPT TO:<d@test.ex>
 250 OK
-BDAT ddd LAST
+BDAT 343 LAST
 500 oops
 QUIT
 225 OK
@@ -61,14 +61,14 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250 CHUNKING
 MAIL FROM:<>
 250 OK
 RCPT TO:<e@test.ex>
 250 OK
-BDAT ddd LAST
+BDAT 343 LAST
 400 not right now
 QUIT
 225 OK
@@ -76,13 +76,13 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<p@test.ex>
-BDAT ddd LAST
+BDAT 343 LAST
 250 OK mail
 250 OK rcpt
 250 OK bdat
@@ -93,24 +93,24 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<q@test.ex>
-BDAT ddd LAST
+BDAT 343 LAST
 Unxpected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<r@test.ex>
-BDAT ddd LAST
+BDAT 343 LAST
 250 OK mail
 250 OK rcpt
 250 OK bdat
@@ -120,13 +120,13 @@ Expected: QUIT
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<s@test.ex>
-BDAT ddd LAST
+BDAT 343 LAST
 550 unacceptable mail-from
 550 rcpt ungood lacking mail-from
 500 bdat ungood lacking mail-from
@@ -136,13 +136,13 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<s1@test.ex>
-BDAT ddd LAST
+BDAT 344 LAST
 450 greylisted mail-from
 550 rcpt ungood lacking mail-from
 500 bdat ungood lacking mail-from
@@ -152,13 +152,13 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<t@test.ex>
-BDAT ddd LAST
+BDAT 343 LAST
 250 OK mail
 550 no such recipient
 500 oops bdat
@@ -168,13 +168,13 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<u@test.ex>
-BDAT ddd LAST
+BDAT 343 LAST
 250 OK mail
 250 OK rcpt
 500 oops bdat
@@ -184,13 +184,13 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
-EHLO the.local.host.name
+EHLO testhost.test.ex
 250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
 RCPT TO:<v@test.ex>
-BDAT ddd LAST
+BDAT 343 LAST
 250 OK mail
 250 OK rcpt
 400 not right now bdat

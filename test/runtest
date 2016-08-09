@@ -867,9 +867,6 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # gnutls version variances
     next if /^Error in the pull function./;
-
-    # Sizes vary with test hostname
-    s/^BDAT \d+/BDAT ddd/;
     }
 
   # ======== stderr ========
