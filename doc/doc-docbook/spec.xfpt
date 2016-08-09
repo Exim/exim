@@ -2627,6 +2627,8 @@ users to set envelope senders.
 
 .cindex "&'From:'& header line"
 .cindex "&'Sender:'& header line"
+.cindex "header lines" "From:"
+.cindex "header lines" "Sender:"
 For a trusted user, there is never any check on the contents of the &'From:'&
 header line, and a &'Sender:'& line is never added. Furthermore, any existing
 &'Sender:'& line in incoming local (non-TCP/IP) messages is not removed.
@@ -33292,6 +33294,7 @@ incoming SMTP message from a source that is not permitted to send them.
 
 .section "Resent- header lines" "SECID220"
 .cindex "&%Resent-%& header lines"
+.cindex "header lines" "Resent-"
 RFC 2822 makes provision for sets of header lines starting with the string
 &`Resent-`& to be added to a message when it is resent by the original
 recipient to somebody else. These headers are &'Resent-Date:'&,
@@ -33348,6 +33351,7 @@ existing &'Bcc:'& is not removed.
 
 .section "The Date: header line" "SECID223"
 .cindex "&'Date:'& header line"
+.cindex "header lines" "Date:"
 If a locally-generated or submission-mode message has no &'Date:'& header line,
 Exim adds one, using the current date and time, unless the
 &%suppress_local_fixups%& control has been specified.
@@ -33365,6 +33369,7 @@ messages.
 
 .section "The Envelope-to: header line" "SECID225"
 .cindex "&'Envelope-to:'& header line"
+.cindex "header lines" "Envelope-to:"
 .oindex "&%envelope_to_remove%&"
 &'Envelope-to:'& header lines are not part of the standard RFC 2822 header set.
 Exim can be configured to add them to the final delivery of messages. (See the
@@ -33376,6 +33381,7 @@ messages.
 
 .section "The From: header line" "SECTthefrohea"
 .cindex "&'From:'& header line"
+.cindex "header lines" "From:"
 .cindex "Sendmail compatibility" "&""From""& line"
 .cindex "message" "submission"
 .cindex "submission mode"
@@ -33419,6 +33425,7 @@ name as described in section &<<SECTconstr>>&.
 
 .section "The Message-ID: header line" "SECID226"
 .cindex "&'Message-ID:'& header line"
+.cindex "header lines" "Message-ID:"
 .cindex "message" "submission"
 .oindex "&%message_id_header_text%&"
 If a locally-generated or submission-mode incoming message does not contain a
@@ -33434,6 +33441,7 @@ in this header line by setting the &%message_id_header_text%& and/or
 
 .section "The Received: header line" "SECID227"
 .cindex "&'Received:'& header line"
+.cindex "header lines" "Received:"
 A &'Received:'& header line is added at the start of every message. The
 contents are defined by the &%received_header_text%& configuration option, and
 Exim automatically adds a semicolon and a timestamp to the configured string.
@@ -33450,6 +33458,7 @@ changed to the time of acceptance, which is (apart from a small delay while the
 
 .section "The References: header line" "SECID228"
 .cindex "&'References:'& header line"
+.cindex "header lines" "References:"
 Messages created by the &(autoreply)& transport include a &'References:'&
 header line. This is constructed according to the rules that are described in
 section 3.64 of RFC 2822 (which states that replies should contain such a
@@ -33464,6 +33473,7 @@ incoming message. If there are more than 12, the first one and then the final
 
 .section "The Return-path: header line" "SECID229"
 .cindex "&'Return-path:'& header line"
+.cindex "header lines" "Return-path:"
 .oindex "&%return_path_remove%&"
 &'Return-path:'& header lines are defined as something an MTA may insert when
 it does the final delivery of messages. (See the generic &%return_path_add%&
@@ -33476,6 +33486,7 @@ default), Exim removes &'Return-path:'& header lines from incoming messages.
 .section "The Sender: header line" "SECTthesenhea"
 .cindex "&'Sender:'& header line"
 .cindex "message" "submission"
+.cindex "header lines" "Sender:"
 For a locally-originated message from an untrusted user, Exim may remove an
 existing &'Sender:'& header line, and it may add a new one. You can modify
 these actions by setting the &%local_sender_retain%& option true, the
