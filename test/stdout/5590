@@ -1,0 +1,50 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 testhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO tester
+??? 250-
+<<< 250-testhost.test.ex Hello tester [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-CHUNKING
+<<< 250-CHUNKING
+??? 250-PRDR
+<<< 250-PRDR
+??? 250 
+<<< 250 HELP
+>>> MAIL FROM:<someone@some.domain> PRDR
+??? 250
+<<< 250 OK, PRDR Requested
+>>> RCPT TO:<bad1@test.ex>
+??? 250
+<<< 250 Accepted
+>>> RCPT TO:<good@test.ex>
+??? 250
+<<< 250 Accepted
+>>> RCPT TO:<bad2@test.ex>
+??? 250
+<<< 250 Accepted
+>>> BDAT 100 last
+>>> To: Susan@random.com
+>>> From: Sam@random.com
+>>> Subject: This is a bodyfull test message
+>>> 
+>>> 1234567890
+??? 353
+<<< 353 PRDR content analysis beginning
+??? 550
+<<< 550 PRDR R=<bad1@test.ex> refusal
+??? 250
+<<< 250 PRDR R=<good@test.ex> acceptance
+??? 550
+<<< 550 PRDR R=<bad2@test.ex> refusal
+??? 250
+<<< 250 id=10HmaX-0005vi-00 message accepted for some recipients
+>>> QUIT
+??? 221
+<<< 221 testhost.test.ex closing connection
+End of script
