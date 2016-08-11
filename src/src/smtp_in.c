@@ -3057,12 +3057,11 @@ smtp_exit_function_called = TRUE;
 
 /* Call the not-QUIT ACL, if there is one, unless no reason is given. */
 
-if (acl_smtp_notquit != NULL && reason != NULL)
+if (acl_smtp_notquit && reason)
   {
   smtp_notquit_reason = reason;
-  rc = acl_check(ACL_WHERE_NOTQUIT, NULL, acl_smtp_notquit, &user_msg,
-    &log_msg);
-  if (rc == ERROR)
+  if ((rc = acl_check(ACL_WHERE_NOTQUIT, NULL, acl_smtp_notquit, &user_msg,
+		      &log_msg)) == ERROR)
     log_write(0, LOG_MAIN|LOG_PANIC, "ACL for not-QUIT returned ERROR: %s",
       log_msg);
   }
@@ -3072,9 +3071,11 @@ responses are all internal, they should always fit in the buffer, but code a
 warning, just in case. Note that string_vformat() still leaves a complete
 string, even if it is incomplete. */
 
-if (code != NULL && defaultrespond != NULL)
+if (code && defaultrespond)
   {
-  if (user_msg == NULL)
+  if (user_msg)
+    smtp_respond(code, 3, TRUE, user_msg);
+  else
     {
     uschar buffer[128];
     va_list ap;
@@ -3084,8 +3085,6 @@ if (code != NULL && defaultrespond != NULL)
     smtp_printf("%s %s\r\n", code, buffer);
     va_end(ap);
     }
-  else
-    smtp_respond(code, 3, TRUE, user_msg);
   mac_smtp_fflush();
   }
 }

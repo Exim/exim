@@ -986,6 +986,7 @@ handle_lost_connection(uschar *s)
 {
 log_write(L_lost_incoming_connection | L_smtp_connection, LOG_MAIN,
   "%s lost while reading message data%s", smtp_get_connection_info(), s);
+smtp_notquit_exit(US"connection-lost", NULL, NULL);
 return US"421 Lost incoming connection";
 }
 
@@ -4019,14 +4020,14 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
     int c = (receive_getc)();
     if (c != EOF) (receive_ungetc)(c); else
       {
-      uschar *msg = US"SMTP connection lost after final dot";
+      smtp_notquit_exit(US"connection-lost", NULL, NULL);
       smtp_reply = US"";    /* No attempt to send a response */
       smtp_yield = FALSE;   /* Nothing more on this connection */
 
       /* Re-use the log line workspace */
 
       sptr = 0;
-      s = string_cat(s, &size, &sptr, msg);
+      s = string_cat(s, &size, &sptr, US"SMTP connection lost after final dot");
       s = add_host_info_for_log(s, &size, &sptr);
       s[sptr] = 0;
       log_write(0, LOG_MAIN, "%s", s);

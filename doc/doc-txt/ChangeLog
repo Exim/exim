@@ -71,7 +71,10 @@ JH/17 Fakereject: previously logged as a norml message arrival "<="; now
 JH/18 Bug 1867: make the fail_defer_domains option on a dnslookup router work
       for missing MX records.  Previously it only worked for missing A records.
 
-JH/19 Buf 1850: support Radius libraries that return REJECT_RC
+JH/19 Bug 1850: support Radius libraries that return REJECT_RC.
+
+JH/20 Bug 1872: Ensure that acl_smtp_notquit is run when the connection drops
+      after the data-go-ahead and data-ack.  Patch from Jason Betts.
 
 
 Exim version 4.87
