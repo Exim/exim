@@ -3495,7 +3495,6 @@ Returns:       new value of string pointer
 static uschar *
 cat_file(FILE *f, uschar *yield, int *sizep, int *ptrp, uschar *eol)
 {
-int eollen = eol ? Ustrlen(eol) : 0;
 uschar buffer[1024];
 
 while (Ufgets(buffer, sizeof(buffer), f))
@@ -3503,8 +3502,8 @@ while (Ufgets(buffer, sizeof(buffer), f))
   int len = Ustrlen(buffer);
   if (eol && buffer[len-1] == '\n') len--;
   yield = string_catn(yield, sizep, ptrp, buffer, len);
-  if (buffer[len] != 0)
-    yield = string_catn(yield, sizep, ptrp, eol, eollen);
+  if (eol && buffer[len])
+    yield = string_cat(yield, sizep, ptrp, eol);
   }
 
 if (yield) yield[*ptrp] = 0;
@@ -5002,9 +5001,9 @@ while (*s != 0)
         return code for serious disasters. Simple non-zero returns are passed on.
         */
 
-        if (sigalrm_seen == TRUE || (runrc = child_close(pid, 30)) < 0)
+        if (sigalrm_seen || (runrc = child_close(pid, 30)) < 0)
           {
-          if (sigalrm_seen == TRUE || runrc == -256)
+          if (sigalrm_seen || runrc == -256)
             {
             expand_string_message = string_sprintf("command timed out");
             killpg(pid, SIGKILL);       /* Kill the whole process group */
@@ -7408,8 +7407,7 @@ while (*s != 0)
       yield = NULL;
       size = 0;
       }
-    value = find_variable(name, FALSE, skipping, &newsize);
-    if (value == NULL)
+    if (!(value = find_variable(name, FALSE, skipping, &newsize)))
       {
       expand_string_message =
         string_sprintf("unknown variable in \"${%s}\"", name);
@@ -7417,13 +7415,14 @@ while (*s != 0)
       goto EXPAND_FAILED;
       }
     len = Ustrlen(value);
-    if (yield == NULL && newsize != 0)
+    if (!yield && newsize)
       {
       yield = value;
       size = newsize;
       ptr = len;
       }
-    else yield = string_catn(yield, &size, &ptr, value, len);
+    else
+      yield = string_catn(yield, &size, &ptr, value, len);
     continue;
     }
 
