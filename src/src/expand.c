@@ -3189,16 +3189,17 @@ items. */
 while (isspace(*s)) s++;
 if (*s == '}')
   {
-  if (type[0] == 'i')
-    {
-    if (yes) *yieldptr = string_catn(*yieldptr, sizeptr, ptrptr, US"true", 4);
-    }
-  else
-    {
-    if (yes && lookup_value)
-      *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value);
-    lookup_value = save_lookup;
-    }
+  if (!skipping)
+    if (type[0] == 'i')
+      {
+      if (yes) *yieldptr = string_catn(*yieldptr, sizeptr, ptrptr, US"true", 4);
+      }
+    else
+      {
+      if (yes && lookup_value)
+	*yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value);
+      lookup_value = save_lookup;
+      }
   s++;
   goto RETURN;
   }
@@ -4959,7 +4960,10 @@ while (*s != 0)
 	}
 
       if (skipping)   /* Just pretend it worked when we're skipping */
+	{
         runrc = 0;
+	lookup_value = NULL;
+	}
       else
         {
         if (!transport_set_up_command(&argv,    /* anchor for arg list */
