@@ -932,10 +932,10 @@ for (;;)
     save->filename = config_filename;
     save->lineno = config_lineno;
 
-    config_file = Ufopen(ss, "rb");
-    if (config_file == NULL)
+    if (!(config_file = Ufopen(ss, "rb")))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to open included "
         "configuration file %s", ss);
+
     config_filename = string_copy(ss);
     config_lineno = 0;
     continue;

@@ -165,15 +165,14 @@ if (!spool_mbox_ok)
   }
 
 /* get the size of the mbox message and open [message_id].eml file for reading*/
-if (Ustat(mbox_path, &statbuf) != 0 ||
-    (yield = Ufopen(mbox_path,"rb")) == NULL)
-  {
+
+if (  !(yield = Ufopen(mbox_path,"rb"))
+   || fstat(fileno(yield), &statbuf) != 0
+   )
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
     "scan file %s", mbox_path));
-  goto OUT;
-  }
-
-*mbox_file_size = statbuf.st_size;
+else
+  *mbox_file_size = statbuf.st_size;
 
 OUT:
 if (data_file) (void)fclose(data_file);

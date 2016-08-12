@@ -1601,7 +1601,7 @@ else
   force the af_ignore_error flag. This will cause the address to be discarded
   later (with a log entry). */
 
-  if (sender_address[0] == 0 && message_age >= ignore_bounce_errors_after)
+  if (!*sender_address && message_age >= ignore_bounce_errors_after)
     setflag(addr, af_ignore_error);
 
   /* Freeze the message if requested, or if this is a bounce message (or other
@@ -5578,10 +5578,8 @@ if (deliver_freeze)
   ignore timer is exceeded. The message will be discarded if this delivery
   fails. */
 
-  else if (sender_address[0] == 0 && message_age >= ignore_bounce_errors_after)
-    {
+  else if (!*sender_address && message_age >= ignore_bounce_errors_after)
     log_write(0, LOG_MAIN, "Unfrozen by errmsg timer");
-    }
 
   /* If this is a bounce message, or there's no auto thaw, or we haven't
   reached the auto thaw time yet, and this delivery is not forced by an admin

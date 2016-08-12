@@ -1014,7 +1014,7 @@ int p;
 if (!data)
   pdkim_body_complete(ctx);
 
-for (p = 0; p<len; p++)
+else for (p = 0; p<len; p++)
   {
   uschar c = data[p];
 
@@ -1309,8 +1309,6 @@ DLLEXPORT int
 pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures)
 {
 pdkim_signature *sig = ctx->sig;
-uschar * headernames = NULL;             /* Collected signed header names */
-int hs = 0, hl = 0;
 
 /* Check if we must still flush a (partial) header. If that is the
    case, the message has no body, and we must compute a body hash
@@ -1353,6 +1351,8 @@ while (sig)
 
   if (ctx->flags & PDKIM_MODE_SIGN)
     {
+    uschar * headernames = NULL;	/* Collected signed header names */
+    int hs = 0, hl = 0;
     pdkim_stringlist *p;
     const uschar * l;
     uschar * s;
@@ -1394,7 +1394,6 @@ while (sig)
 
     /* Copy headernames to signature struct */
     sig->headernames = headernames;
-    headernames = NULL, hs = hl = 0;
 
     /* Create signature header with b= omitted */
     sig_hdr = pdkim_create_header(sig, FALSE);
@@ -1405,44 +1404,49 @@ while (sig)
      add the headers to the hash in that order. */
   else
     {
-    uschar * b = string_copy(sig->headernames);
-    uschar * p = b;
+    uschar * p = sig->headernames;
     uschar * q;
     pdkim_stringlist * hdrs;
 
-    /* clear tags */
-    for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
-      hdrs->tag = 0;
-
-    while(1)
+    if (p)
       {
-      if ((q = Ustrchr(p, ':')))
-	*q = '\0';
-
-/*XXX walk the list of headers in same order as received. */
+      /* clear tags */
       for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
-	if (  hdrs->tag == 0
-	   && strncasecmp(hdrs->value, CS p, Ustrlen(p)) == 0
-	   && (hdrs->value)[Ustrlen(p)] == ':'
-	   )
-	  {
-	  uschar * rh = sig->canon_headers == PDKIM_CANON_RELAXED
-	    ? pdkim_relax_header(hdrs->value, 1) /* cook header for relaxed canon */
-	    : string_copy(CUS hdrs->value);      /* just copy it for simple canon */
+	hdrs->tag = 0;
 
-	  /* Feed header to the hash algorithm */
-	  exim_sha_update(&hhash_ctx, CUS rh, Ustrlen(rh));
+      p = string_copy(p);
+      while(1)
+	{
+	if ((q = Ustrchr(p, ':')))
+	  *q = '\0';
 
-	  DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
-	  hdrs->tag = 1;
-	  break;
-	  }
+  /*XXX walk the list of headers in same order as received. */
+	for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
+	  if (  hdrs->tag == 0
+	     && strncasecmp(hdrs->value, CS p, Ustrlen(p)) == 0
+	     && (hdrs->value)[Ustrlen(p)] == ':'
+	     )
+	    {
+	    /* cook header for relaxed canon, or just copy it for simple  */
 
-      if (!q) break;
-      p = q+1;
+	    uschar * rh = sig->canon_headers == PDKIM_CANON_RELAXED
+	      ? pdkim_relax_header(hdrs->value, 1)
+	      : string_copy(CUS hdrs->value);
+
+	    /* Feed header to the hash algorithm */
+	    exim_sha_update(&hhash_ctx, CUS rh, Ustrlen(rh));
+
+	    DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
+	    hdrs->tag = 1;
+	    break;
+	    }
+
+	if (!q) break;
+	p = q+1;
+	}
+
+      sig_hdr = string_copy(sig->rawsig_no_b_val);
       }
-
-    sig_hdr = string_copy(sig->rawsig_no_b_val);
     }
 
   DEBUG(D_acl) debug_printf(

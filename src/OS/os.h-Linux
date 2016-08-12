@@ -65,5 +65,9 @@ then change the 0 to 1 in the next block. */
 # define LLONG_MAX LONG_LONG_MAX
 #endif
 
+#if _POSIX_C_SOURCE >= 200809L || _ATFILE_SOUCE
+# define EXIM_HAVE_OPENAT
+#endif
+
 
 /* End */
