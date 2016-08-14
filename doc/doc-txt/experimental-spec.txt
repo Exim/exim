@@ -967,6 +967,50 @@ Rationale:
 Note that non-RFC-documented field names and data types are used.
 
 
+LMDB Lookup support
+-------------------
+LMDB is an ultra-fast, ultra-compact, crash-proof key-value embedded data store.
+It is modeled loosely on the BerkeleyDB API. You shoul read about the feature
+set as well as operation modes at https://symas.com/products/lightning-memory-mapped-database/
+
+LMDB single key lookup support is provided by linking to the LMDB C library.
+The current implementation does not support writing to the LMDB database.
+
+Visit https://github.com/LMDB/lmdb to download the library or find it in your
+operating systems package repository.
+
+If building from source, this description assumes that headers will be in
+/usr/local/include, and that the libraries are in /usr/local/lib.
+
+1. In order to build exim with LMDB lookup support add or uncomment
+
+EXPERIMENTAL_LMDB=yes
+
+to your Local/Makefile. (Re-)build/install exim. exim -d should show
+Experimental_LMDB in the line "Support for:".
+
+EXPERIMENTAL_LMDB=yes
+LDFLAGS += -llmdb
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -L/usr/local/lib
+
+The first line sets the feature to include the correct code, and
+the second line says to link the LMDB libraries into the
+exim binary.  The commented out lines should be uncommented if you
+built LMDB from source and installed in the default location.
+Adjust the paths if you installed them elsewhere, but you do not
+need to uncomment them if an rpm (or you) installed them in the
+package controlled locations (/usr/include and /usr/lib).
+
+2. Create your LMDB files, you can use the mdb_load utility which is
+part of the LMDB distribution our your favourite language bindings.
+
+3. Add the single key lookups to your exim.conf file, example lookups
+are below.
+
+${lookup{$sender_address_domain}lmdb{/var/lib/baruwa/data/db/relaydomains.mdb}{$value}}
+${lookup{$sender_address_domain}lmdb{/var/lib/baruwa/data/db/relaydomains.mdb}{$value}fail}
+${lookup{$sender_address_domain}lmdb{/var/lib/baruwa/data/db/relaydomains.mdb}}
 
 
 --------------------------------------------------------------

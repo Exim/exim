@@ -33,6 +33,8 @@ Version 4.88
     chunking_advertise_hosts, and smtp transport option hosts_try_chunking
     for control.
 
+ 8. LMDB lookup support, as Experimental. Patch supplied by Andrew Colin Kissa.
+
 
 Version 4.87
 ------------

@@ -488,6 +488,13 @@ EXIM_MONITOR=eximon.bin
 # Uncomment the following to include extra information in fail DSN message (bounces)
 # EXPERIMENTAL_DSN_INFO=yes
 
+# Uncomment the following to add LMDB lookup support
+# You need to have LMDB installed on your system (https://github.com/LMDB/lmdb)
+# Depending on where it is installed you may have to edit the CFLAGS and LDFLAGS lines.
+# EXPERIMENTAL_LMDB=yes
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -llmdb
+
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################

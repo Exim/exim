@@ -842,6 +842,9 @@ fprintf(f, "Support for:");
 #ifdef SUPPORT_SOCKS
   fprintf(f, " SOCKS");
 #endif
+#ifdef EXPERIMENTAL_LMDB
+  fprintf(f, " Experimental_LMDB");
+#endif
 #ifdef EXPERIMENTAL_SPF
   fprintf(f, " Experimental_SPF");
 #endif
@@ -886,6 +889,9 @@ fprintf(f, "Lookups (built-in):");
 #endif
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
   fprintf(f, " ldap ldapdn ldapm");
+#endif
+#ifdef EXPERIMENTAL_LMDB
+  fprintf(f, " lmdb");
 #endif
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
   fprintf(f, " mysql");

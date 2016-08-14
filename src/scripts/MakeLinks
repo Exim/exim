@@ -31,7 +31,7 @@ mkdir lookups
 cd lookups
 # Makefile is generated
 for f in README cdb.c dbmdb.c dnsdb.c dsearch.c ibase.c ldap.h ldap.c \
-  lsearch.c mysql.c redis.c nis.c nisplus.c oracle.c passwd.c \
+  lmdb.c lsearch.c mysql.c redis.c nis.c nisplus.c oracle.c passwd.c \
   pgsql.c spf.c sqlite.c testdb.c whoson.c \
   lf_functions.h lf_check_file.c lf_quote.c lf_sqlperform.c
 do
