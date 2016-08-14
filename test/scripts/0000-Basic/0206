@@ -1,12 +1,26 @@
 # timeout_frozen_after with ignore_bounce_errors_after
+exim -z 'fire in 2-rcpt message'
+****
 sudo exim -odi -f unknown@test.ex nonexist@test.ex freeze@test.ex
 ****
+exim -z 'pause 1'
+****
 sleep 1
+exim -z 'freeze 1st spooled msg'
+****
 sudo exim -Mf $msg1
+****
+exim -z 'run queue'
 ****
 exim -qf
 ****
+exim -z 'pause 3'
+****
 sleep 3
+exim -z 'run queue'
+****
 exim -q
+****
+exim -z 'finished'
 ****
 no_msglog_check
