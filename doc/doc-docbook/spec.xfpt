@@ -10158,6 +10158,15 @@ escape sequences starting with a backslash. Whether characters with the most
 significant bit set (so-called &"8-bit characters"&) count as printing or not
 is controlled by the &%print_topbitchars%& option.
 
+.new
+.vitem &*${escape8bit:*&<&'string'&>&*}*&
+.cindex "expansion" "escaping 8-bit characters"
+.cindex "&%escape8bit%& expansion item"
+If the string contains and characters with the most significant bit set,
+they are converted to escape sequences starting with a backslash.
+Backslashes and DEL characters are also converted.
+.wen
+
 
 .vitem &*${eval:*&<&'string'&>&*}*&&~and&~&*${eval10:*&<&'string'&>&*}*&
 .cindex "expansion" "expression evaluation"

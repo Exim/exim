@@ -207,6 +207,7 @@ static uschar *op_table_main[] = {
   US"base64d",
   US"domain",
   US"escape",
+  US"escape8bit",
   US"eval",
   US"eval10",
   US"expand",
@@ -252,6 +253,7 @@ enum {
   EOP_BASE64D,
   EOP_DOMAIN,
   EOP_ESCAPE,
+  EOP_ESCAPE8BIT,
   EOP_EVAL,
   EOP_EVAL10,
   EOP_EXPAND,
@@ -7109,10 +7111,22 @@ while (*s != 0)
 
       case EOP_ESCAPE:
         {
-        const uschar *t = string_printing(sub);
+        const uschar * t = string_printing(sub);
         yield = string_cat(yield, &size, &ptr, t);
         continue;
         }
+
+      case EOP_ESCAPE8BIT:
+	{
+	const uschar * s = sub;
+	uschar c;
+
+	for (s = sub; c = *s; s++)
+	  yield = c < 127 && c != '\\'
+	    ? string_catn(yield, &size, &ptr, s, 1)
+	    : string_catn(yield, &size, &ptr, string_sprintf("\\%03o", c), 4);
+	continue;
+	}
 
       /* Handle numeric expression evaluation */
 

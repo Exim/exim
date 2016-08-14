@@ -35,6 +35,8 @@ Version 4.88
 
  8. LMDB lookup support, as Experimental. Patch supplied by Andrew Colin Kissa.
 
+ 9. Expansion operator escape8bit, like escape but not touching newline etc..
+
 
 Version 4.87
 ------------

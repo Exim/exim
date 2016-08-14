@@ -132,7 +132,9 @@ addresses: ${addresses:Exim Person <local-part@dom.ain> (that's me), \
            xyz@abc, nullgroupname:;, group: p@q, r@s; }
 addresses: ${addresses:local-part@dom.ain <local-part@dom.ain>}
 
-escape: ${escape:B7·F2ò}
+escape:     ${escape:B7·F2ò}
+excape8bit: ${escape8bit:undisturbed text\ttab\nnewline\ttab\\backslash \176tilde\177DEL\200\x81.}
+
 eval:   ${eval:1+1}
 eval:   ${eval:1+2*3}
 eval:   ${eval:(1+2)*3}

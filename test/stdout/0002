@@ -122,7 +122,10 @@
 > addresses: local-part@dom.ain:xyz@abc:p@q:r@s
 > addresses: 
 > 
-> escape: B7\267F2\362
+> escape:     B7\267F2\362
+> excape8bit: undisturbed text	tab
+newline	tab\134backslash ~tilde\177DEL\200\201.
+> 
 > eval:   2
 > eval:   7
 > eval:   9
