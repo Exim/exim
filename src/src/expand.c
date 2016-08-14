@@ -3050,6 +3050,8 @@ switch(cond_type)
        "value \"%s\"", t);
       return NULL;
       }
+    DEBUG(D_expand) debug_printf("%s: condition evaluated to %s\n", ourname,
+        boolvalue? "true":"false");
     if (yield != NULL) *yield = (boolvalue == testfor);
     return s;
     }
