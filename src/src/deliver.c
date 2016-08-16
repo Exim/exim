@@ -446,6 +446,10 @@ while (one && two)
     two = end_two;
     }
 
+  /* if the names matched but ports do not, mismatch */
+  else if (one->port != two->port)
+    return FALSE;
+
   /* Hosts matched */
 
   one = one->next;

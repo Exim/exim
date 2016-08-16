@@ -79,6 +79,10 @@ JH/20 Bug 1872: Ensure that acl_smtp_notquit is run when the connection drops
 JH/21 Bug 1846: Send DMARC forensic reports for reject and quaratine results,
       even for a "none" policy.  Patch from Tony Meyer.
 
+JH/22 Fix continued use of a connection for further deliveries. If a port was
+      specified by a router, it must also match for the delivery to be
+      compatible.
+
 
 Exim version 4.87
 -----------------
