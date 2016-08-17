@@ -139,14 +139,11 @@ readconf_driver_init(US"transport",
 /* Now scan the configured transports and check inconsistencies. A shadow
 transport is permitted only for local transports. */
 
-for (t = transports; t != NULL; t = t->next)
+for (t = transports; t; t = t->next)
   {
-  if (!t->info->local)
-    {
-    if (t->shadow != NULL)
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-        "shadow transport not allowed on non-local transport %s", t->name);
-    }
+  if (!t->info->local && t->shadow)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+      "shadow transport not allowed on non-local transport %s", t->name);
 
   if (t->body_only && t->headers_only)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,

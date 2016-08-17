@@ -83,7 +83,7 @@ DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   kilos@recurse.test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -119,7 +119,7 @@ rewrite_one_header: type=F:
   From: CALLER_NAME <CALLER@test.ex>
 re-routed to kilos@recurse.test.ex.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -158,7 +158,7 @@ routed by r3 router
   envelope to: kilos@recurse.test.ex.test.ex
   transport: <none>
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -206,7 +206,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> kilos@recurse.test.ex.test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available

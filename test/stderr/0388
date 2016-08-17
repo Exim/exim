@@ -8,7 +8,7 @@ DSN: r1 propagating DSN
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
@@ -75,7 +75,7 @@ changed uid/gid: remote delivery to x@y with transport=smtp
 set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -106,7 +106,7 @@ address match test: subject=*@127.0.0.1 pattern=*
 *@127.0.0.1 in "*"? yes (matched "*")
 checking status of V4NET.0.0.0
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -134,9 +134,9 @@ Processing retry items
 Succeeded addresses:
 Failed addresses:
 Deferred addresses:
-x@y
+ x@y
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
@@ -164,6 +164,7 @@ dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded
+closed hints database and lockfile
 end of retry processing
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb95ced -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
 Exim version x.yz ....
@@ -232,7 +233,7 @@ DSN: r1 propagating DSN
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
@@ -245,6 +246,7 @@ dbfn_read: key=R:CALLER@myhost.test.ex:<>
 no domain retry record
 no address retry record
 CALLER@myhost.test.ex: queued for routing
+closed hints database and lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
 --------> r0 router <--------
@@ -275,7 +277,7 @@ changed uid/gid: post-delivery tidying
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
 Processing retry items
 Succeeded addresses:
-CALLER@myhost.test.ex: no retry items
+ CALLER@myhost.test.ex: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing

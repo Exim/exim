@@ -71,7 +71,7 @@ DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
@@ -134,7 +134,7 @@ routed by r1 router
   envelope to: userx@test.ex
   transport: <none>
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -153,7 +153,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> TESTSUITE/test-mail/junk <--------
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available

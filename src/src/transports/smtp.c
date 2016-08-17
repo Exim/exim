@@ -2322,6 +2322,7 @@ that max_rcpt will be large, so all addresses will be done at once. */
 for (addr = first_addr;
      addr  &&  address_count < max_rcpt;
      addr = addr->next)
+    if (addr->transport_return == PENDING_DEFER)
   {
   int count;
   BOOL no_flush;
@@ -2329,8 +2330,6 @@ for (addr = first_addr;
 
   addr->dsn_aware = peer_offered & PEER_OFFERED_DSN
     ? dsn_support_yes : dsn_support_no;
-
-  if (addr->transport_return != PENDING_DEFER) continue;
 
   address_count++;
   no_flush = pipelining_active && (!mua_wrapper || addr->next);
@@ -3066,9 +3065,7 @@ propagate it from the initial
 */
       if (ok && transport_pass_socket(tblock->name, host->name, host->address,
             new_message_id, inblock.sock))
-        {
         send_quit = FALSE;
-        }
       }
 
     /* If RSET failed and there are addresses left, they get deferred. */
@@ -3205,10 +3202,10 @@ prepare_addresses(address_item *addrlist, host_item *host)
 {
 address_item *first_addr = NULL;
 address_item *addr;
-for (addr = addrlist; addr != NULL; addr = addr->next)
+for (addr = addrlist; addr; addr = addr->next)
   if (addr->transport_return == DEFER)
     {
-    if (first_addr == NULL) first_addr = addr;
+    if (!first_addr) first_addr = addr;
     addr->transport_return = PENDING_DEFER;
     addr->basic_errno = 0;
     addr->more_errno = (host->mx >= 0)? 'M' : 'A';
@@ -3256,7 +3253,6 @@ int hosts_total = 0;
 int total_hosts_tried = 0;
 address_item *addr;
 BOOL expired = TRUE;
-BOOL continuing = continue_hostname != NULL;
 uschar *expanded_hosts = NULL;
 uschar *pistring;
 uschar *tid = string_sprintf("%s transport", tblock->name);
@@ -3268,9 +3264,15 @@ host_item *host = NULL;
 DEBUG(D_transport)
   {
   debug_printf("%s transport entered\n", tblock->name);
-  for (addr = addrlist; addr != NULL; addr = addr->next)
+  for (addr = addrlist; addr; addr = addr->next)
     debug_printf("  %s\n", addr->address);
-  if (continuing) debug_printf("already connected to %s [%s]\n",
+  if (hostlist)
+    {
+    debug_printf("hostlist:\n");
+    for (host = hostlist; host; host = host->next)
+      debug_printf("  %s:%d\n", host->name, host->port);
+    }
+  if (continue_hostname) debug_printf("already connected to %s [%s]\n",
       continue_hostname, continue_host_address);
   }
 
@@ -3286,9 +3288,9 @@ same one in order to be passed to a single transport - or if the transport has
 a host list with hosts_override set, use the host list supplied with the
 transport. It is an error for this not to exist. */
 
-if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
+if (!hostlist || (ob->hosts_override && ob->hosts))
   {
-  if (ob->hosts == NULL)
+  if (!ob->hosts)
     {
     addrlist->message = string_sprintf("%s transport called with no hosts set",
       tblock->name);
@@ -3307,7 +3309,7 @@ if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
   as the hosts string will never be used again, it doesn't matter that we
   replace all the : characters with zeros. */
 
-  if (ob->hostlist == NULL)
+  if (!ob->hostlist)
     {
     uschar *s = ob->hosts;
 
@@ -3317,7 +3319,7 @@ if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
         {
         addrlist->message = string_sprintf("failed to expand list of hosts "
           "\"%s\" in %s transport: %s", s, tblock->name, expand_string_message);
-        addrlist->transport_return = search_find_defer? DEFER : PANIC;
+        addrlist->transport_return = search_find_defer ? DEFER : PANIC;
         return FALSE;     /* Only top address has status */
         }
       DEBUG(D_transport) debug_printf("expanded list of hosts \"%s\" to "
@@ -3330,7 +3332,7 @@ if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
     host_build_hostlist(&hostlist, s, ob->hosts_randomize);
 
     /* Check that the expansion yielded something useful. */
-    if (hostlist == NULL)
+    if (!hostlist)
       {
       addrlist->message =
         string_sprintf("%s transport has empty hosts setting", tblock->name);
@@ -3356,17 +3358,17 @@ must sort it into a random order if it did not come from MX records and has not
 already been randomized (but don't bother if continuing down an existing
 connection). */
 
-else if (ob->hosts_randomize && hostlist->mx == MX_NONE && !continuing)
+else if (ob->hosts_randomize && hostlist->mx == MX_NONE && !continue_hostname)
   {
   host_item *newlist = NULL;
-  while (hostlist != NULL)
+  while (hostlist)
     {
     host_item *h = hostlist;
     hostlist = hostlist->next;
 
     h->sort_key = random_number(100);
 
-    if (newlist == NULL)
+    if (!newlist)
       {
       h->next = NULL;
       newlist = h;
@@ -3379,7 +3381,7 @@ else if (ob->hosts_randomize && hostlist->mx == MX_NONE && !continuing)
     else
       {
       host_item *hh = newlist;
-      while (hh->next != NULL)
+      while (hh->next)
         {
         if (h->sort_key < hh->next->sort_key) break;
         hh = hh->next;
@@ -3441,23 +3443,22 @@ the current message. To cope with this, we have to go round the loop a second
 time. After that, set the status and error data for any addresses that haven't
 had it set already. */
 
-for (cutoff_retry = 0; expired &&
-     cutoff_retry < ((ob->delay_after_cutoff)? 1 : 2);
+for (cutoff_retry = 0;
+     expired && cutoff_retry < (ob->delay_after_cutoff ? 1 : 2);
      cutoff_retry++)
   {
   host_item *nexthost = NULL;
   int unexpired_hosts_tried = 0;
 
   for (host = hostlist;
-       host != NULL &&
-         unexpired_hosts_tried < ob->hosts_max_try &&
-         total_hosts_tried < ob->hosts_max_try_hardlimit;
+          host
+       && unexpired_hosts_tried < ob->hosts_max_try
+       && total_hosts_tried < ob->hosts_max_try_hardlimit;
        host = nexthost)
     {
     int rc;
     int host_af;
     uschar *rs;
-    BOOL serialized = FALSE;
     BOOL host_is_expired = FALSE;
     BOOL message_defer = FALSE;
     BOOL some_deferred = FALSE;
@@ -3487,7 +3488,7 @@ for (cutoff_retry = 0; expired &&
     Note that we mustn't skip unusable hosts if the address is not unset; they
     may be needed as expired hosts on the 2nd time round the cutoff loop. */
 
-    if (host->address == NULL)
+    if (!host->address)
       {
       int new_port, flags;
       host_item *hh;
@@ -3546,7 +3547,7 @@ for (cutoff_retry = 0; expired &&
           "HOST_FIND_AGAIN" : "HOST_FIND_FAILED", host->name);
         host->status = hstatus_unusable;
 
-        for (addr = addrlist; addr != NULL; addr = addr->next)
+        for (addr = addrlist; addr; addr = addr->next)
           {
           if (addr->transport_return != DEFER) continue;
           addr->basic_errno = ERRNO_UNKNOWNHOST;
@@ -3562,7 +3563,7 @@ for (cutoff_retry = 0; expired &&
 
       if (rc == HOST_FOUND_LOCAL && !ob->allow_localhost)
         {
-        for (addr = addrlist; addr != NULL; addr = addr->next)
+        for (addr = addrlist; addr; addr = addr->next)
           {
           addr->basic_errno = 0;
           addr->message = string_sprintf("%s transport found host %s to be "
@@ -3578,8 +3579,10 @@ for (cutoff_retry = 0; expired &&
     result of the lookup. Set expired FALSE, to save the outer loop executing
     twice. */
 
-    if (continuing && (Ustrcmp(continue_hostname, host->name) != 0 ||
-                       Ustrcmp(continue_host_address, host->address) != 0))
+    if (  continue_hostname
+       && (  Ustrcmp(continue_hostname, host->name) != 0
+          || Ustrcmp(continue_host_address, host->address) != 0
+       )  )
       {
       expired = FALSE;
       continue;      /* With next host */
@@ -3603,11 +3606,9 @@ for (cutoff_retry = 0; expired &&
           &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK))
       {
       expired = FALSE;
-      for (addr = addrlist; addr != NULL; addr = addr->next)
-        {
-        if (addr->transport_return != DEFER) continue;
-        addr->message = US"domain matches queue_smtp_domains, or -odqs set";
-        }
+      for (addr = addrlist; addr; addr = addr->next)
+        if (addr->transport_return == DEFER)
+	  addr->message = US"domain matches queue_smtp_domains, or -odqs set";
       continue;      /* With next host */
       }
 
@@ -3630,8 +3631,8 @@ for (cutoff_retry = 0; expired &&
     the standard SMTP port. A host may have its own port setting that overrides
     the default. */
 
-    pistring = string_sprintf(":%d", (host->port == PORT_NONE)?
-      port : host->port);
+    pistring = string_sprintf(":%d", host->port == PORT_NONE
+      ? port : host->port);
     if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
 
     /* Select IPv4 or IPv6, and choose an outgoing interface. If the interface
@@ -3640,7 +3641,7 @@ for (cutoff_retry = 0; expired &&
     because connections to the same host from a different interface should be
     treated separately. */
 
-    host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET : AF_INET6;
+    host_af = Ustrchr(host->address, ':') == NULL ? AF_INET : AF_INET6;
     if ((rs = ob->interface) && *rs)
       {
       if (!smtp_get_interface(rs, host_af, addrlist, &interface, tid))
@@ -3681,24 +3682,24 @@ for (cutoff_retry = 0; expired &&
       switch (host->status)
         {
         case hstatus_unusable:
-        expired = FALSE;
-        setflag(addrlist, af_retry_skipped);
-        /* Fall through */
+	  expired = FALSE;
+	  setflag(addrlist, af_retry_skipped);
+	  /* Fall through */
 
         case hstatus_unusable_expired:
-        switch (host->why)
-          {
-          case hwhy_retry: hosts_retry++; break;
-          case hwhy_failed:  hosts_fail++; break;
-          case hwhy_deferred: hosts_defer++; break;
-          }
+	  switch (host->why)
+	    {
+	    case hwhy_retry: hosts_retry++; break;
+	    case hwhy_failed:  hosts_fail++; break;
+	    case hwhy_deferred: hosts_defer++; break;
+	    }
 
-        /* If there was a retry message key, implying that previously there
-        was a message-specific defer, we don't want to update the list of
-        messages waiting for these hosts. */
+	  /* If there was a retry message key, implying that previously there
+	  was a message-specific defer, we don't want to update the list of
+	  messages waiting for these hosts. */
 
-        if (retry_message_key != NULL) update_waiting = FALSE;
-        continue;   /* With the next host or IP address */
+	  if (retry_message_key) update_waiting = FALSE;
+	  continue;   /* With the next host or IP address */
         }
       }
 
@@ -3707,12 +3708,11 @@ for (cutoff_retry = 0; expired &&
 
     else
       {
-      if (host->address == NULL ||
-          host->status != hstatus_unusable_expired ||
-          host->last_try > received_time)
+      if (  !host->address
+         || host->status != hstatus_unusable_expired
+	 || host->last_try > received_time)
         continue;
-      DEBUG(D_transport)
-        debug_printf("trying expired host %s [%s]%s\n",
+      DEBUG(D_transport) debug_printf("trying expired host %s [%s]%s\n",
           host->name, host->address, pistring);
       host_is_expired = TRUE;
       }
@@ -3729,8 +3729,8 @@ for (cutoff_retry = 0; expired &&
     and remember this for later deletion. Do not do any of this if we are
     sending the message down a pre-existing connection. */
 
-    if (!continuing &&
-        verify_check_given_host(&ob->serialize_hosts, host) == OK)
+    if (  !continue_hostname
+       && verify_check_given_host(&ob->serialize_hosts, host) == OK)
       {
       serialize_key = string_sprintf("host-serialize-%s", host->name);
       if (!enq_start(serialize_key, 1))
@@ -3741,7 +3741,6 @@ for (cutoff_retry = 0; expired &&
         hosts_serial++;
         continue;
         }
-      serialized = TRUE;
       }
 
     /* OK, we have an IP address that is not waiting for its retry time to
@@ -3755,11 +3754,11 @@ for (cutoff_retry = 0; expired &&
 
     DEBUG(D_transport) debug_printf("delivering %s to %s [%s] (%s%s)\n",
       message_id, host->name, host->address, addrlist->address,
-      (addrlist->next == NULL)? "" : ", ...");
+      addrlist->next ? ", ..." : "");
 
     set_process_info("delivering %s to %s [%s] (%s%s)",
       message_id, host->name, host->address, addrlist->address,
-      (addrlist->next == NULL)? "" : ", ...");
+      addrlist->next ? ", ..." : "");
 
     /* This is not for real; don't do the delivery. If there are
     any remaining hosts, list them. */
@@ -3768,7 +3767,7 @@ for (cutoff_retry = 0; expired &&
       {
       host_item *host2;
       set_errno_nohost(addrlist, 0, NULL, OK, FALSE);
-      for (addr = addrlist; addr != NULL; addr = addr->next)
+      for (addr = addrlist; addr; addr = addr->next)
         {
         addr->host_used = host;
         addr->special_action = '*';
@@ -3778,9 +3777,9 @@ for (cutoff_retry = 0; expired &&
         {
         debug_printf("*** delivery by %s transport bypassed by -N option\n"
                      "*** host and remaining hosts:\n", tblock->name);
-        for (host2 = host; host2 != NULL; host2 = host2->next)
+        for (host2 = host; host2; host2 = host2->next)
           debug_printf("    %s [%s]\n", host2->name,
-            (host2->address == NULL)? US"unset" : host2->address);
+            host2->address ? host2->address : US"unset");
         }
       rc = OK;
       }
@@ -3850,8 +3849,8 @@ for (cutoff_retry = 0; expired &&
       failures, where the log has already been written. If all hosts defer a
       general message is written at the end. */
 
-      if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL &&
-                         first_addr->basic_errno != ERRNO_TLSFAILURE)
+      if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL
+		      && first_addr->basic_errno != ERRNO_TLSFAILURE)
         write_logs(first_addr, host);
 
 #ifndef DISABLE_EVENT
@@ -3892,16 +3891,18 @@ for (cutoff_retry = 0; expired &&
 
     /* Delivery attempt finished */
 
-    rs = (rc == OK)? US"OK" : (rc == DEFER)? US"DEFER" : (rc == ERROR)?
-      US"ERROR" : US"?";
+    rs = rc == OK ? US"OK"
+       : rc == DEFER ? US"DEFER"
+       : rc == ERROR ? US"ERROR"
+       : US"?";
 
     set_process_info("delivering %s: just tried %s [%s] for %s%s: result %s",
       message_id, host->name, host->address, addrlist->address,
-      (addrlist->next == NULL)? "" : " (& others)", rs);
+      addrlist->next ? " (& others)" : "", rs);
 
     /* Release serialization if set up */
 
-    if (serialized) enq_end(serialize_key);
+    if (serialize_key) enq_end(serialize_key);
 
     /* If the result is DEFER, or if a host retry record is known to exist, we
     need to add an item to the retry chain for updating the retry database
@@ -3911,10 +3912,10 @@ for (cutoff_retry = 0; expired &&
     the unusable tree at the outer level, so even if different address blocks
     contain the same address, it still won't get tried again.) */
 
-    if (rc == DEFER || retry_host_key != NULL)
+    if (rc == DEFER || retry_host_key)
       {
-      int delete_flag = (rc != DEFER)? rf_delete : 0;
-      if (retry_host_key == NULL)
+      int delete_flag = rc != DEFER ? rf_delete : 0;
+      if (!retry_host_key)
         {
 	BOOL incl_ip;
 	if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
@@ -3922,9 +3923,9 @@ for (cutoff_retry = 0; expired &&
 		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
 	  incl_ip = TRUE;	/* error; use most-specific retry record */
 
-        retry_host_key = incl_ip ?
-          string_sprintf("T:%S:%s%s", host->name, host->address, pistring) :
-          string_sprintf("T:%S%s", host->name, pistring);
+        retry_host_key = incl_ip
+	  ? string_sprintf("T:%S:%s%s", host->name, host->address, pistring)
+	  : string_sprintf("T:%S%s", host->name, pistring);
         }
 
       /* If a delivery of another message over an existing SMTP connection
@@ -3937,7 +3938,7 @@ for (cutoff_retry = 0; expired &&
       host is genuinely down, another non-continued message delivery will
       notice it soon enough. */
 
-      if (delete_flag != 0 || !continuing)
+      if (delete_flag != 0 || !continue_hostname)
         retry_add_item(first_addr, retry_host_key, rf_host | delete_flag);
 
       /* We may have tried an expired host, if its retry time has come; ensure
@@ -3945,8 +3946,8 @@ for (cutoff_retry = 0; expired &&
 
       if (rc == DEFER)
         {
-        host->status = (host_is_expired)?
-          hstatus_unusable_expired : hstatus_unusable;
+        host->status = host_is_expired
+	  ? hstatus_unusable_expired : hstatus_unusable;
         host->why = hwhy_deferred;
         }
       }
@@ -3959,10 +3960,10 @@ for (cutoff_retry = 0; expired &&
     reasonable. Also, stop the message from being remembered as waiting
     for specific hosts. */
 
-    if (message_defer || retry_message_key != NULL)
+    if (message_defer || retry_message_key)
       {
-      int delete_flag = message_defer? 0 : rf_delete;
-      if (retry_message_key == NULL)
+      int delete_flag = message_defer ? 0 : rf_delete;
+      if (!retry_message_key)
         {
 	BOOL incl_ip;
 	if (exp_bool(addrlist, US"transport", tblock->name, D_transport,
@@ -3970,10 +3971,10 @@ for (cutoff_retry = 0; expired &&
 		  ob->expand_retry_include_ip_address, &incl_ip) != OK)
 	  incl_ip = TRUE;	/* error; use most-specific retry record */
 
-        retry_message_key = incl_ip ?
-          string_sprintf("T:%S:%s%s:%s", host->name, host->address, pistring,
-            message_id) :
-          string_sprintf("T:%S%s:%s", host->name, pistring, message_id);
+        retry_message_key = incl_ip
+	  ? string_sprintf("T:%S:%s%s:%s", host->name, host->address, pistring,
+	      message_id)
+	  : string_sprintf("T:%S%s:%s", host->name, pistring, message_id);
         }
       retry_add_item(addrlist, retry_message_key,
         rf_message | rf_host | delete_flag);
@@ -4007,7 +4008,7 @@ for (cutoff_retry = 0; expired &&
     case when we were trying to deliver down an existing channel and failed.
     Don't try any other hosts in this case. */
 
-    if (continuing) break;
+    if (continue_hostname) break;
 
     /* If the whole delivery, or some individual addresses, were deferred and
     there are more hosts that could be tried, do not count this host towards
@@ -4017,16 +4018,16 @@ for (cutoff_retry = 0; expired &&
     important because if we don't try all hosts, the address will never time
     out. NOTE: this does not apply to hosts_max_try_hardlimit. */
 
-    if ((rc == DEFER || some_deferred) && nexthost != NULL)
+    if ((rc == DEFER || some_deferred) && nexthost)
       {
       BOOL timedout;
       retry_config *retry = retry_find_config(host->name, NULL, 0, 0);
 
-      if (retry != NULL && retry->rules != NULL)
+      if (retry && retry->rules)
         {
         retry_rule *last_rule;
         for (last_rule = retry->rules;
-             last_rule->next != NULL;
+             last_rule->next;
              last_rule = last_rule->next);
         timedout = time(NULL) - received_time > last_rule->timeout;
         }
@@ -4060,7 +4061,7 @@ specific failures. Force the delivery status for all addresses to FAIL. */
 
 if (mua_wrapper)
   {
-  for (addr = addrlist; addr != NULL; addr = addr->next)
+  for (addr = addrlist; addr; addr = addr->next)
     addr->transport_return = FAIL;
   goto END_TRANSPORT;
   }
