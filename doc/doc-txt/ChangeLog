@@ -83,6 +83,11 @@ JH/22 Fix continued use of a connection for further deliveries. If a port was
       specified by a router, it must also match for the delivery to be
       compatible.
 
+JH/23 Bug 1874: fix continued use of a connection for further deliveries.
+      When one of the recipients of a message was unsuitable for the connection
+      (has no matching addresses), we lost track of needing to mark it
+      deferred.  As a result mail would be lost.
+
 
 Exim version 4.87
 -----------------

@@ -4425,6 +4425,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
       ok = FALSE;
       for (h = addr->host_list; h; h = h->next)
         if (Ustrcmp(h->name, continue_hostname) == 0)
+/*XXX should also check port here */
           { ok = TRUE; break; }
       }
 
@@ -4448,9 +4449,13 @@ for (delivery_count = 0; addr_remote; delivery_count++)
         addr_fallback = addr;
         }
 
-      else if (next)
+      else
 	{
-	while (next->next) next = next->next;
+	for (next = addr; ; next = next->next)
+	  {
+	  DEBUG(D_deliver) debug_printf(" %s to def list\n", next->address);
+          if (!next->next) break;
+	  }
 	next->next = addr_defer;
 	addr_defer = addr;
 	}
