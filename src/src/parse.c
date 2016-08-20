@@ -1460,15 +1460,16 @@ for (;;)
 	temp = *p;
 	*p = '\0';
 
-	if ((fd2 = openat(fd, q, O_RDONLY|O_NOFOLLOW)) < 0)
+	fd2 = openat(fd, q, O_RDONLY|O_NOFOLLOW);
+	close(fd);
+	*p = temp;
+	if (fd2 < 0)
 	  {
           *error = string_sprintf("failed to open %s (component of included "
             "file); could be symbolic link", filename);
 	  return FF_ERROR;
 	  }
-	close(fd);
 	fd = fd2;
-	*p = temp;
 	}
       f = fdopen(fd, "rb");
       }

@@ -1330,7 +1330,7 @@ while (sig)
   {
   BOOL is_sha1 = sig->algo == PDKIM_ALGO_RSA_SHA1;
   hctx hhash_ctx;
-  uschar * sig_hdr;
+  uschar * sig_hdr = US"";
   blob hhash;
   blob hdata;
   int hdata_alloc = 0;
