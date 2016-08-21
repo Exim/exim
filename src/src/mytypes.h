@@ -14,15 +14,15 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 #define MYTYPES_H
 
 #ifndef FALSE
-#define FALSE         0
+# define FALSE         0
 #endif
 
 #ifndef TRUE
-#define TRUE          1
+# define TRUE          1
 #endif
 
 #ifndef TRUE_UNSET
-#define TRUE_UNSET    2
+# define TRUE_UNSET    2
 #endif
 
 
@@ -30,17 +30,17 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 the arguments of printf-like functions. This is done by a macro. */
 
 #if defined(__GNUC__) || defined(__clang__)
-#define PRINTF_FUNCTION(A,B)  __attribute__((format(printf,A,B)))
-#define ARG_UNUSED  __attribute__((__unused__))
+# define PRINTF_FUNCTION(A,B)  __attribute__((format(printf,A,B)))
+# define ARG_UNUSED  __attribute__((__unused__))
 #else
-#define PRINTF_FUNCTION(A,B)
-#define ARG_UNUSED  /**/
+# define PRINTF_FUNCTION(A,B)
+# define ARG_UNUSED  /**/
 #endif
 
 #ifdef WANT_DEEPER_PRINTF_CHECKS
-#define ALMOST_PRINTF(A, B) PRINTF_FUNCTION(A, B)
+# define ALMOST_PRINTF(A, B) PRINTF_FUNCTION(A, B)
 #else
-#define ALMOST_PRINTF(A, B)
+# define ALMOST_PRINTF(A, B)
 #endif
 
 

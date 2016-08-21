@@ -68,7 +68,7 @@ int main (int argc, char ** argv)
 
        spa_build_auth_request (&request, username, domain);
 
-       spa_bits_to_base64 (msgbuf, (unsigned char*)&request,
+       spa_bits_to_base64 (msgbuf, US &request,
                spa_request_length(&request));
 
        printf ("SPA Login request for username=%s:\n   %s\n",
@@ -91,7 +91,7 @@ int main (int argc, char ** argv)
        }
 
        spa_build_auth_response (&challenge, &response, username, password);
-       spa_bits_to_base64 (msgbuf, (unsigned char*)&response,
+       spa_bits_to_base64 (msgbuf, US &response,
                spa_request_length(&response));
 
        printf ("SPA Response to challenge:\n   %s\n for " \
@@ -153,87 +153,73 @@ int main (int argc, char ** argv)
    up with a different answer to the one above)
 */
 
-#define DEBUG(a,b) ;
+#define DEBUG_X(a,b) ;
 
 extern int DEBUGLEVEL;
 
-#include <sys/types.h>     /* For size_t */
+#include "../exim.h"
 #include "auth-spa.h"
 #include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
 
-#ifndef _AIX
-typedef unsigned char uchar;
-#endif
-
-
-typedef int BOOL;
-#define False 0
-#define True  1
 
 #ifndef _BYTEORDER_H
-#define _BYTEORDER_H
+# define _BYTEORDER_H
 
-#define RW_PCVAL(read,inbuf,outbuf,len) \
+# define RW_PCVAL(read,inbuf,outbuf,len) \
        { if (read) { PCVAL (inbuf,0,outbuf,len); } \
        else      { PSCVAL(inbuf,0,outbuf,len); } }
 
-#define RW_PIVAL(read,big_endian,inbuf,outbuf,len) \
+# define RW_PIVAL(read,big_endian,inbuf,outbuf,len) \
        { if (read) { if (big_endian) { RPIVAL(inbuf,0,outbuf,len); } else { PIVAL(inbuf,0,outbuf,len); } } \
        else      { if (big_endian) { RPSIVAL(inbuf,0,outbuf,len); } else { PSIVAL(inbuf,0,outbuf,len); } } }
 
-#define RW_PSVAL(read,big_endian,inbuf,outbuf,len) \
+# define RW_PSVAL(read,big_endian,inbuf,outbuf,len) \
        { if (read) { if (big_endian) { RPSVAL(inbuf,0,outbuf,len); } else { PSVAL(inbuf,0,outbuf,len); } } \
        else      { if (big_endian) { RPSSVAL(inbuf,0,outbuf,len); } else { PSSVAL(inbuf,0,outbuf,len); } } }
 
-#define RW_CVAL(read, inbuf, outbuf, offset) \
+# define RW_CVAL(read, inbuf, outbuf, offset) \
        { if (read) { (outbuf) = CVAL (inbuf,offset); } \
        else      { SCVAL(inbuf,offset,outbuf); } }
 
-#define RW_IVAL(read, big_endian, inbuf, outbuf, offset) \
+# define RW_IVAL(read, big_endian, inbuf, outbuf, offset) \
        { if (read) { (outbuf) = ((big_endian) ? RIVAL(inbuf,offset) : IVAL (inbuf,offset)); } \
        else      { if (big_endian) { RSIVAL(inbuf,offset,outbuf); } else { SIVAL(inbuf,offset,outbuf); } } }
 
-#define RW_SVAL(read, big_endian, inbuf, outbuf, offset) \
+# define RW_SVAL(read, big_endian, inbuf, outbuf, offset) \
        { if (read) { (outbuf) = ((big_endian) ? RSVAL(inbuf,offset) : SVAL (inbuf,offset)); } \
        else      { if (big_endian) { RSSVAL(inbuf,offset,outbuf); } else { SSVAL(inbuf,offset,outbuf); } } }
 
-#undef CAREFUL_ALIGNMENT
+# undef CAREFUL_ALIGNMENT
 
 /* we know that the 386 can handle misalignment and has the "right"
    byteorder */
-#ifdef __i386__
-#define CAREFUL_ALIGNMENT 0
-#endif
+# ifdef __i386__
+#  define CAREFUL_ALIGNMENT 0
+# endif
 
-#ifndef CAREFUL_ALIGNMENT
-#define CAREFUL_ALIGNMENT 1
-#endif
+# ifndef CAREFUL_ALIGNMENT
+#  define CAREFUL_ALIGNMENT 1
+# endif
 
-#define CVAL(buf,pos) (((unsigned char *)(buf))[pos])
-#define PVAL(buf,pos) ((unsigned)CVAL(buf,pos))
-#define SCVAL(buf,pos,val) (CVAL(buf,pos) = (val))
+# define CVAL(buf,pos) ((US (buf))[pos])
+# define PVAL(buf,pos) ((unsigned)CVAL(buf,pos))
+# define SCVAL(buf,pos,val) (CVAL(buf,pos) = (val))
 
 
-#if CAREFUL_ALIGNMENT
+# if CAREFUL_ALIGNMENT
 
-#define SVAL(buf,pos) (PVAL(buf,pos)|PVAL(buf,(pos)+1)<<8)
-#define IVAL(buf,pos) (SVAL(buf,pos)|SVAL(buf,(pos)+2)<<16)
-#define SSVALX(buf,pos,val) (CVAL(buf,pos)=(val)&0xFF,CVAL(buf,pos+1)=(val)>>8)
-#define SIVALX(buf,pos,val) (SSVALX(buf,pos,val&0xFFFF),SSVALX(buf,pos+2,val>>16))
-#define SVALS(buf,pos) ((int16x)SVAL(buf,pos))
-#define IVALS(buf,pos) ((int32x)IVAL(buf,pos))
-#define SSVAL(buf,pos,val) SSVALX((buf),(pos),((uint16x)(val)))
-#define SIVAL(buf,pos,val) SIVALX((buf),(pos),((uint32x)(val)))
-#define SSVALS(buf,pos,val) SSVALX((buf),(pos),((int16x)(val)))
-#define SIVALS(buf,pos,val) SIVALX((buf),(pos),((int32x)(val)))
+#  define SVAL(buf,pos) (PVAL(buf,pos)|PVAL(buf,(pos)+1)<<8)
+#  define IVAL(buf,pos) (SVAL(buf,pos)|SVAL(buf,(pos)+2)<<16)
+#  define SSVALX(buf,pos,val) (CVAL(buf,pos)=(val)&0xFF,CVAL(buf,pos+1)=(val)>>8)
+#  define SIVALX(buf,pos,val) (SSVALX(buf,pos,val&0xFFFF),SSVALX(buf,pos+2,val>>16))
+#  define SVALS(buf,pos) ((int16x)SVAL(buf,pos))
+#  define IVALS(buf,pos) ((int32x)IVAL(buf,pos))
+#  define SSVAL(buf,pos,val) SSVALX((buf),(pos),((uint16x)(val)))
+#  define SIVAL(buf,pos,val) SIVALX((buf),(pos),((uint32x)(val)))
+#  define SSVALS(buf,pos,val) SSVALX((buf),(pos),((int16x)(val)))
+#  define SIVALS(buf,pos,val) SIVALX((buf),(pos),((int32x)(val)))
 
-#else /* CAREFUL_ALIGNMENT */
+# else /* CAREFUL_ALIGNMENT */
 
 /* this handles things for architectures like the 386 that can handle
    alignment errors */
@@ -243,116 +229,116 @@ typedef int BOOL;
 */
 
 /* get single value from an SMB buffer */
-#define SVAL(buf,pos) (*(uint16x *)((char *)(buf) + (pos)))
-#define IVAL(buf,pos) (*(uint32x *)((char *)(buf) + (pos)))
-#define SVALS(buf,pos) (*(int16x *)((char *)(buf) + (pos)))
-#define IVALS(buf,pos) (*(int32x *)((char *)(buf) + (pos)))
+#  define SVAL(buf,pos) (*(uint16x *)((char *)(buf) + (pos)))
+#  define IVAL(buf,pos) (*(uint32x *)((char *)(buf) + (pos)))
+#  define SVALS(buf,pos) (*(int16x *)((char *)(buf) + (pos)))
+#  define IVALS(buf,pos) (*(int32x *)((char *)(buf) + (pos)))
 
 /* store single value in an SMB buffer */
-#define SSVAL(buf,pos,val) SVAL(buf,pos)=((uint16x)(val))
-#define SIVAL(buf,pos,val) IVAL(buf,pos)=((uint32x)(val))
-#define SSVALS(buf,pos,val) SVALS(buf,pos)=((int16x)(val))
-#define SIVALS(buf,pos,val) IVALS(buf,pos)=((int32x)(val))
+#  define SSVAL(buf,pos,val) SVAL(buf,pos)=((uint16x)(val))
+#  define SIVAL(buf,pos,val) IVAL(buf,pos)=((uint32x)(val))
+#  define SSVALS(buf,pos,val) SVALS(buf,pos)=((int16x)(val))
+#  define SIVALS(buf,pos,val) IVALS(buf,pos)=((int32x)(val))
 
-#endif /* CAREFUL_ALIGNMENT */
+# endif /* CAREFUL_ALIGNMENT */
 
 /* macros for reading / writing arrays */
 
-#define SMBMACRO(macro,buf,pos,val,len,size) \
+# define SMBMACRO(macro,buf,pos,val,len,size) \
 { int l; for (l = 0; l < (len); l++) (val)[l] = macro((buf), (pos) + (size)*l); }
 
-#define SSMBMACRO(macro,buf,pos,val,len,size) \
+# define SSMBMACRO(macro,buf,pos,val,len,size) \
 { int l; for (l = 0; l < (len); l++) macro((buf), (pos) + (size)*l, (val)[l]); }
 
 /* reads multiple data from an SMB buffer */
-#define PCVAL(buf,pos,val,len) SMBMACRO(CVAL,buf,pos,val,len,1)
-#define PSVAL(buf,pos,val,len) SMBMACRO(SVAL,buf,pos,val,len,2)
-#define PIVAL(buf,pos,val,len) SMBMACRO(IVAL,buf,pos,val,len,4)
-#define PCVALS(buf,pos,val,len) SMBMACRO(CVALS,buf,pos,val,len,1)
-#define PSVALS(buf,pos,val,len) SMBMACRO(SVALS,buf,pos,val,len,2)
-#define PIVALS(buf,pos,val,len) SMBMACRO(IVALS,buf,pos,val,len,4)
+# define PCVAL(buf,pos,val,len) SMBMACRO(CVAL,buf,pos,val,len,1)
+# define PSVAL(buf,pos,val,len) SMBMACRO(SVAL,buf,pos,val,len,2)
+# define PIVAL(buf,pos,val,len) SMBMACRO(IVAL,buf,pos,val,len,4)
+# define PCVALS(buf,pos,val,len) SMBMACRO(CVALS,buf,pos,val,len,1)
+# define PSVALS(buf,pos,val,len) SMBMACRO(SVALS,buf,pos,val,len,2)
+# define PIVALS(buf,pos,val,len) SMBMACRO(IVALS,buf,pos,val,len,4)
 
 /* stores multiple data in an SMB buffer */
-#define PSCVAL(buf,pos,val,len) SSMBMACRO(SCVAL,buf,pos,val,len,1)
-#define PSSVAL(buf,pos,val,len) SSMBMACRO(SSVAL,buf,pos,val,len,2)
-#define PSIVAL(buf,pos,val,len) SSMBMACRO(SIVAL,buf,pos,val,len,4)
-#define PSCVALS(buf,pos,val,len) SSMBMACRO(SCVALS,buf,pos,val,len,1)
-#define PSSVALS(buf,pos,val,len) SSMBMACRO(SSVALS,buf,pos,val,len,2)
-#define PSIVALS(buf,pos,val,len) SSMBMACRO(SIVALS,buf,pos,val,len,4)
+# define PSCVAL(buf,pos,val,len) SSMBMACRO(SCVAL,buf,pos,val,len,1)
+# define PSSVAL(buf,pos,val,len) SSMBMACRO(SSVAL,buf,pos,val,len,2)
+# define PSIVAL(buf,pos,val,len) SSMBMACRO(SIVAL,buf,pos,val,len,4)
+# define PSCVALS(buf,pos,val,len) SSMBMACRO(SCVALS,buf,pos,val,len,1)
+# define PSSVALS(buf,pos,val,len) SSMBMACRO(SSVALS,buf,pos,val,len,2)
+# define PSIVALS(buf,pos,val,len) SSMBMACRO(SIVALS,buf,pos,val,len,4)
 
 
 /* now the reverse routines - these are used in nmb packets (mostly) */
-#define SREV(x) ((((x)&0xFF)<<8) | (((x)>>8)&0xFF))
-#define IREV(x) ((SREV(x)<<16) | (SREV((x)>>16)))
+# define SREV(x) ((((x)&0xFF)<<8) | (((x)>>8)&0xFF))
+# define IREV(x) ((SREV(x)<<16) | (SREV((x)>>16)))
 
-#define RSVAL(buf,pos) SREV(SVAL(buf,pos))
-#define RSVALS(buf,pos) SREV(SVALS(buf,pos))
-#define RIVAL(buf,pos) IREV(IVAL(buf,pos))
-#define RIVALS(buf,pos) IREV(IVALS(buf,pos))
-#define RSSVAL(buf,pos,val) SSVAL(buf,pos,SREV(val))
-#define RSSVALS(buf,pos,val) SSVALS(buf,pos,SREV(val))
-#define RSIVAL(buf,pos,val) SIVAL(buf,pos,IREV(val))
-#define RSIVALS(buf,pos,val) SIVALS(buf,pos,IREV(val))
+# define RSVAL(buf,pos) SREV(SVAL(buf,pos))
+# define RSVALS(buf,pos) SREV(SVALS(buf,pos))
+# define RIVAL(buf,pos) IREV(IVAL(buf,pos))
+# define RIVALS(buf,pos) IREV(IVALS(buf,pos))
+# define RSSVAL(buf,pos,val) SSVAL(buf,pos,SREV(val))
+# define RSSVALS(buf,pos,val) SSVALS(buf,pos,SREV(val))
+# define RSIVAL(buf,pos,val) SIVAL(buf,pos,IREV(val))
+# define RSIVALS(buf,pos,val) SIVALS(buf,pos,IREV(val))
 
 /* reads multiple data from an SMB buffer (big-endian) */
-#define RPSVAL(buf,pos,val,len) SMBMACRO(RSVAL,buf,pos,val,len,2)
-#define RPIVAL(buf,pos,val,len) SMBMACRO(RIVAL,buf,pos,val,len,4)
-#define RPSVALS(buf,pos,val,len) SMBMACRO(RSVALS,buf,pos,val,len,2)
-#define RPIVALS(buf,pos,val,len) SMBMACRO(RIVALS,buf,pos,val,len,4)
+# define RPSVAL(buf,pos,val,len) SMBMACRO(RSVAL,buf,pos,val,len,2)
+# define RPIVAL(buf,pos,val,len) SMBMACRO(RIVAL,buf,pos,val,len,4)
+# define RPSVALS(buf,pos,val,len) SMBMACRO(RSVALS,buf,pos,val,len,2)
+# define RPIVALS(buf,pos,val,len) SMBMACRO(RIVALS,buf,pos,val,len,4)
 
 /* stores multiple data in an SMB buffer (big-endian) */
-#define RPSSVAL(buf,pos,val,len) SSMBMACRO(RSSVAL,buf,pos,val,len,2)
-#define RPSIVAL(buf,pos,val,len) SSMBMACRO(RSIVAL,buf,pos,val,len,4)
-#define RPSSVALS(buf,pos,val,len) SSMBMACRO(RSSVALS,buf,pos,val,len,2)
-#define RPSIVALS(buf,pos,val,len) SSMBMACRO(RSIVALS,buf,pos,val,len,4)
+# define RPSSVAL(buf,pos,val,len) SSMBMACRO(RSSVAL,buf,pos,val,len,2)
+# define RPSIVAL(buf,pos,val,len) SSMBMACRO(RSIVAL,buf,pos,val,len,4)
+# define RPSSVALS(buf,pos,val,len) SSMBMACRO(RSSVALS,buf,pos,val,len,2)
+# define RPSIVALS(buf,pos,val,len) SSMBMACRO(RSIVALS,buf,pos,val,len,4)
 
-#define DBG_RW_PCVAL(charmode,string,depth,base,read,inbuf,outbuf,len) \
+# define DBG_RW_PCVAL(charmode,string,depth,base,read,inbuf,outbuf,len) \
        { RW_PCVAL(read,inbuf,outbuf,len) \
-       DEBUG(5,("%s%04x %s: ", \
+       DEBUG_X(5,("%s%04x %s: ", \
              tab_depth(depth), base,string)); \
-    if (charmode) print_asc(5, (unsigned char*)(outbuf), (len)); else \
-       { int idx; for (idx = 0; idx < len; idx++) { DEBUG(5,("%02x ", (outbuf)[idx])); } } \
-       DEBUG(5,("\n")); }
+    if (charmode) print_asc(5, US (outbuf), (len)); else \
+       { int idx; for (idx = 0; idx < len; idx++) { DEBUG_X(5,("%02x ", (outbuf)[idx])); } } \
+       DEBUG_X(5,("\n")); }
 
-#define DBG_RW_PSVAL(charmode,string,depth,base,read,big_endian,inbuf,outbuf,len) \
+# define DBG_RW_PSVAL(charmode,string,depth,base,read,big_endian,inbuf,outbuf,len) \
        { RW_PSVAL(read,big_endian,inbuf,outbuf,len) \
-       DEBUG(5,("%s%04x %s: ", \
+       DEBUG_X(5,("%s%04x %s: ", \
              tab_depth(depth), base,string)); \
-    if (charmode) print_asc(5, (unsigned char*)(outbuf), 2*(len)); else \
-       { int idx; for (idx = 0; idx < len; idx++) { DEBUG(5,("%04x ", (outbuf)[idx])); } } \
-       DEBUG(5,("\n")); }
+    if (charmode) print_asc(5, US (outbuf), 2*(len)); else \
+       { int idx; for (idx = 0; idx < len; idx++) { DEBUG_X(5,("%04x ", (outbuf)[idx])); } } \
+       DEBUG_X(5,("\n")); }
 
-#define DBG_RW_PIVAL(charmode,string,depth,base,read,big_endian,inbuf,outbuf,len) \
+# define DBG_RW_PIVAL(charmode,string,depth,base,read,big_endian,inbuf,outbuf,len) \
        { RW_PIVAL(read,big_endian,inbuf,outbuf,len) \
-       DEBUG(5,("%s%04x %s: ", \
+       DEBUG_X(5,("%s%04x %s: ", \
              tab_depth(depth), base,string)); \
-    if (charmode) print_asc(5, (unsigned char*)(outbuf), 4*(len)); else \
-       { int idx; for (idx = 0; idx < len; idx++) { DEBUG(5,("%08x ", (outbuf)[idx])); } } \
-       DEBUG(5,("\n")); }
+    if (charmode) print_asc(5, US (outbuf), 4*(len)); else \
+       { int idx; for (idx = 0; idx < len; idx++) { DEBUG_X(5,("%08x ", (outbuf)[idx])); } } \
+       DEBUG_X(5,("\n")); }
 
-#define DBG_RW_CVAL(string,depth,base,read,inbuf,outbuf) \
+# define DBG_RW_CVAL(string,depth,base,read,inbuf,outbuf) \
        { RW_CVAL(read,inbuf,outbuf,0) \
-       DEBUG(5,("%s%04x %s: %02x\n", \
+       DEBUG_X(5,("%s%04x %s: %02x\n", \
              tab_depth(depth), base, string, outbuf)); }
 
-#define DBG_RW_SVAL(string,depth,base,read,big_endian,inbuf,outbuf) \
+# define DBG_RW_SVAL(string,depth,base,read,big_endian,inbuf,outbuf) \
        { RW_SVAL(read,big_endian,inbuf,outbuf,0) \
-       DEBUG(5,("%s%04x %s: %04x\n", \
+       DEBUG_X(5,("%s%04x %s: %04x\n", \
              tab_depth(depth), base, string, outbuf)); }
 
-#define DBG_RW_IVAL(string,depth,base,read,big_endian,inbuf,outbuf) \
+# define DBG_RW_IVAL(string,depth,base,read,big_endian,inbuf,outbuf) \
        { RW_IVAL(read,big_endian,inbuf,outbuf,0) \
-       DEBUG(5,("%s%04x %s: %08x\n", \
+       DEBUG_X(5,("%s%04x %s: %08x\n", \
              tab_depth(depth), base, string, outbuf)); }
 
 #endif /* _BYTEORDER_H */
 
-void E_P16 (unsigned char *p14, unsigned char *p16);
-void E_P24 (unsigned char *p21, unsigned char *c8, unsigned char *p24);
-void D_P16 (unsigned char *p14, unsigned char *in, unsigned char *out);
-void SMBOWFencrypt (uchar passwd[16], uchar * c8, uchar p24[24]);
+void E_P16 (uschar *p14, uschar *p16);
+void E_P24 (uschar *p21, uschar *c8, uschar *p24);
+void D_P16 (uschar *p14, uschar *in, uschar *out);
+void SMBOWFencrypt (uschar passwd[16], uschar * c8, uschar p24[24]);
 
-void mdfour (unsigned char *out, unsigned char *in, int n);
+void mdfour (uschar *out, uschar *in, int n);
 
 
 /*
@@ -385,7 +371,7 @@ static const char base64val[] = {
 #define DECODE64(c)  (isascii(c) ? base64val[c] : BAD)
 
 void
-spa_bits_to_base64 (unsigned char *out, const unsigned char *in, int inlen)
+spa_bits_to_base64 (uschar *out, const uschar *in, int inlen)
 /* raw bytes in quasi-big-endian order to base 64 string (NUL-terminated) */
 {
   for (; inlen >= 3; inlen -= 3)
@@ -398,7 +384,7 @@ spa_bits_to_base64 (unsigned char *out, const unsigned char *in, int inlen)
     }
   if (inlen > 0)
     {
-      unsigned char fragment;
+      uschar fragment;
 
       *out++ = base64digits[in[0] >> 2];
       fragment = (in[0] << 4) & 0x30;
@@ -419,7 +405,7 @@ spa_base64_to_bits (char *out, int outlength, const char *in)
 /* base 64 to raw bytes in quasi-big-endian order, returning count of bytes */
 {
   int len = 0;
-  register unsigned char digit1, digit2, digit3, digit4;
+  register uschar digit1, digit2, digit3, digit4;
 
   if (in[0] == '+' && in[1] == ' ')
     in += 2;
@@ -467,9 +453,7 @@ spa_base64_to_bits (char *out, int outlength, const char *in)
 }
 
 
-#define uchar unsigned char
-
-static uchar perm1[56] = { 57, 49, 41, 33, 25, 17, 9,
+static uschar perm1[56] = { 57, 49, 41, 33, 25, 17, 9,
   1, 58, 50, 42, 34, 26, 18,
   10, 2, 59, 51, 43, 35, 27,
   19, 11, 3, 60, 52, 44, 36,
@@ -479,7 +463,7 @@ static uchar perm1[56] = { 57, 49, 41, 33, 25, 17, 9,
   21, 13, 5, 28, 20, 12, 4
 };
 
-static uchar perm2[48] = { 14, 17, 11, 24, 1, 5,
+static uschar perm2[48] = { 14, 17, 11, 24, 1, 5,
   3, 28, 15, 6, 21, 10,
   23, 19, 12, 4, 26, 8,
   16, 7, 27, 20, 13, 2,
@@ -489,7 +473,7 @@ static uchar perm2[48] = { 14, 17, 11, 24, 1, 5,
   46, 42, 50, 36, 29, 32
 };
 
-static uchar perm3[64] = { 58, 50, 42, 34, 26, 18, 10, 2,
+static uschar perm3[64] = { 58, 50, 42, 34, 26, 18, 10, 2,
   60, 52, 44, 36, 28, 20, 12, 4,
   62, 54, 46, 38, 30, 22, 14, 6,
   64, 56, 48, 40, 32, 24, 16, 8,
@@ -499,7 +483,7 @@ static uchar perm3[64] = { 58, 50, 42, 34, 26, 18, 10, 2,
   63, 55, 47, 39, 31, 23, 15, 7
 };
 
-static uchar perm4[48] = { 32, 1, 2, 3, 4, 5,
+static uschar perm4[48] = { 32, 1, 2, 3, 4, 5,
   4, 5, 6, 7, 8, 9,
   8, 9, 10, 11, 12, 13,
   12, 13, 14, 15, 16, 17,
@@ -509,7 +493,7 @@ static uchar perm4[48] = { 32, 1, 2, 3, 4, 5,
   28, 29, 30, 31, 32, 1
 };
 
-static uchar perm5[32] = { 16, 7, 20, 21,
+static uschar perm5[32] = { 16, 7, 20, 21,
   29, 12, 28, 17,
   1, 15, 23, 26,
   5, 18, 31, 10,
@@ -520,7 +504,7 @@ static uchar perm5[32] = { 16, 7, 20, 21,
 };
 
 
-static uchar perm6[64] = { 40, 8, 48, 16, 56, 24, 64, 32,
+static uschar perm6[64] = { 40, 8, 48, 16, 56, 24, 64, 32,
   39, 7, 47, 15, 55, 23, 63, 31,
   38, 6, 46, 14, 54, 22, 62, 30,
   37, 5, 45, 13, 53, 21, 61, 29,
@@ -531,9 +515,9 @@ static uchar perm6[64] = { 40, 8, 48, 16, 56, 24, 64, 32,
 };
 
 
-static uchar sc[16] = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
+static uschar sc[16] = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
 
-static uchar sbox[8][4][16] = {
+static uschar sbox[8][4][16] = {
   {{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
    {0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
    {4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0},
@@ -576,7 +560,7 @@ static uchar sbox[8][4][16] = {
 };
 
 static void
-permute (char *out, char *in, uchar * p, int n)
+permute (char *out, char *in, uschar * p, int n)
 {
   int i;
   for (i = 0; i < n; i++)
@@ -696,7 +680,7 @@ dohash (char *out, char *in, char *key, int forw)
 }
 
 static void
-str_to_key (unsigned char *str, unsigned char *key)
+str_to_key (uschar *str, uschar *key)
 {
   int i;
 
@@ -716,13 +700,13 @@ str_to_key (unsigned char *str, unsigned char *key)
 
 
 static void
-smbhash (unsigned char *out, unsigned char *in, unsigned char *key, int forw)
+smbhash (uschar *out, uschar *in, uschar *key, int forw)
 {
   int i;
   char outb[64];
   char inb[64];
   char keyb[64];
-  unsigned char key2[8];
+  uschar key2[8];
 
   str_to_key (key, key2);
 
@@ -748,15 +732,15 @@ smbhash (unsigned char *out, unsigned char *in, unsigned char *key, int forw)
 }
 
 void
-E_P16 (unsigned char *p14, unsigned char *p16)
+E_P16 (uschar *p14, uschar *p16)
 {
-  unsigned char sp8[8] = { 0x4b, 0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25 };
+  uschar sp8[8] = { 0x4b, 0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25 };
   smbhash (p16, sp8, p14, 1);
   smbhash (p16 + 8, sp8, p14 + 7, 1);
 }
 
 void
-E_P24 (unsigned char *p21, unsigned char *c8, unsigned char *p24)
+E_P24 (uschar *p21, uschar *c8, uschar *p24)
 {
   smbhash (p24, c8, p21, 1);
   smbhash (p24 + 8, c8, p21 + 7, 1);
@@ -764,7 +748,7 @@ E_P24 (unsigned char *p21, unsigned char *c8, unsigned char *p24)
 }
 
 void
-D_P16 (unsigned char *p14, unsigned char *in, unsigned char *out)
+D_P16 (uschar *p14, uschar *in, uschar *out)
 {
   smbhash (out, in, p14, 0);
   smbhash (out + 8, in + 8, p14 + 7, 0);
@@ -814,7 +798,7 @@ safe_strcpy (char *dest, const char *src, size_t maxlength)
 
   if (!dest)
     {
-      DEBUG (0, ("ERROR: NULL dest in safe_strcpy\n"));
+      DEBUG_X (0, ("ERROR: NULL dest in safe_strcpy\n"));
       return NULL;
     }
 
@@ -828,7 +812,7 @@ safe_strcpy (char *dest, const char *src, size_t maxlength)
 
   if (len > maxlength)
     {
-      DEBUG (0, ("ERROR: string overflow by %d in safe_strcpy [%.50s]\n",
+      DEBUG_X (0, ("ERROR: string overflow by %d in safe_strcpy [%.50s]\n",
                 (int) (len - maxlength), src));
       len = maxlength;
     }
@@ -850,7 +834,7 @@ strupper (char *s)
          s += skip;
        else
          {
-           if (islower ((unsigned char)(*s)))
+           if (islower ((uschar)(*s)))
              *s = toupper (*s);
            s++;
          }
@@ -866,9 +850,9 @@ strupper (char *s)
  */
 
 void
-spa_smb_encrypt (uchar * passwd, uchar * c8, uchar * p24)
+spa_smb_encrypt (uschar * passwd, uschar * c8, uschar * p24)
 {
-  uchar p14[15], p21[21];
+  uschar p14[15], p21[21];
 
   memset (p21, '\0', 21);
   memset (p14, '\0', 14);
@@ -880,7 +864,7 @@ spa_smb_encrypt (uchar * passwd, uchar * c8, uchar * p24)
   SMBOWFencrypt (p21, c8, p24);
 
 #ifdef DEBUG_PASSWORD
-  DEBUG (100, ("spa_smb_encrypt: lm#, challenge, response\n"));
+  DEBUG_X (100, ("spa_smb_encrypt: lm#, challenge, response\n"));
   dump_data (100, (char *) p21, 16);
   dump_data (100, (char *) c8, 8);
   dump_data (100, (char *) p24, 24);
@@ -905,7 +889,7 @@ _my_wcslen (int16x * str)
  */
 
 static int
-_my_mbstowcs (int16x * dst, uchar * src, int len)
+_my_mbstowcs (int16x * dst, uschar * src, int len)
 {
   int i;
   int16x val;
@@ -927,7 +911,7 @@ _my_mbstowcs (int16x * dst, uchar * src, int len)
  */
 
 void
-E_md4hash (uchar * passwd, uchar * p16)
+E_md4hash (uschar * passwd, uschar * p16)
 {
   int len;
   int16x wpwd[129];
@@ -942,12 +926,12 @@ E_md4hash (uchar * passwd, uchar * p16)
   /* Calculate length in bytes */
   len = _my_wcslen (wpwd) * sizeof (int16x);
 
-  mdfour (p16, (unsigned char *) wpwd, len);
+  mdfour (p16, US wpwd, len);
 }
 
 /* Does both the NT and LM owfs of a user's password */
 void
-nt_lm_owf_gen (char *pwd, uchar nt_p16[16], uchar p16[16])
+nt_lm_owf_gen (char *pwd, uschar nt_p16[16], uschar p16[16])
 {
   char passwd[130];
 
@@ -956,10 +940,10 @@ nt_lm_owf_gen (char *pwd, uchar nt_p16[16], uchar p16[16])
 
   /* Calculate the MD4 hash (NT compatible) of the password */
   memset (nt_p16, '\0', 16);
-  E_md4hash ((uchar *) passwd, nt_p16);
+  E_md4hash (US passwd, nt_p16);
 
 #ifdef DEBUG_PASSWORD
-  DEBUG (100, ("nt_lm_owf_gen: pwd, nt#\n"));
+  DEBUG_X (100, ("nt_lm_owf_gen: pwd, nt#\n"));
   dump_data (120, passwd, strlen (passwd));
   dump_data (100, (char *) nt_p16, 16);
 #endif
@@ -971,10 +955,10 @@ nt_lm_owf_gen (char *pwd, uchar nt_p16[16], uchar p16[16])
   /* Calculate the SMB (lanman) hash functions of the password */
 
   memset (p16, '\0', 16);
-  E_P16 ((uchar *) passwd, (uchar *) p16);
+  E_P16 (US passwd, US p16);
 
 #ifdef DEBUG_PASSWORD
-  DEBUG (100, ("nt_lm_owf_gen: pwd, lm#\n"));
+  DEBUG_X (100, ("nt_lm_owf_gen: pwd, lm#\n"));
   dump_data (120, passwd, strlen (passwd));
   dump_data (100, (char *) p16, 16);
 #endif
@@ -984,9 +968,9 @@ nt_lm_owf_gen (char *pwd, uchar nt_p16[16], uchar p16[16])
 
 /* Does the des encryption from the NT or LM MD4 hash. */
 void
-SMBOWFencrypt (uchar passwd[16], uchar * c8, uchar p24[24])
+SMBOWFencrypt (uschar passwd[16], uschar * c8, uschar p24[24])
 {
-  uchar p21[21];
+  uschar p21[21];
 
   memset (p21, '\0', 21);
 
@@ -996,9 +980,9 @@ SMBOWFencrypt (uchar passwd[16], uchar * c8, uchar p24[24])
 
 /* Does the des encryption from the FIRST 8 BYTES of the NT or LM MD4 hash. */
 void
-NTLMSSPOWFencrypt (uchar passwd[8], uchar * ntlmchalresp, uchar p24[24])
+NTLMSSPOWFencrypt (uschar passwd[8], uschar * ntlmchalresp, uschar p24[24])
 {
-  uchar p21[21];
+  uschar p21[21];
 
   memset (p21, '\0', 21);
   memcpy (p21, passwd, 8);
@@ -1006,7 +990,7 @@ NTLMSSPOWFencrypt (uchar passwd[8], uchar * ntlmchalresp, uchar p24[24])
 
   E_P24 (p21, ntlmchalresp, p24);
 #ifdef DEBUG_PASSWORD
-  DEBUG (100, ("NTLMSSPOWFencrypt: p21, c8, p24\n"));
+  DEBUG_X (100, ("NTLMSSPOWFencrypt: p21, c8, p24\n"));
   dump_data (100, (char *) p21, 21);
   dump_data (100, (char *) ntlmchalresp, 8);
   dump_data (100, (char *) p24, 24);
@@ -1017,9 +1001,9 @@ NTLMSSPOWFencrypt (uchar passwd[8], uchar * ntlmchalresp, uchar p24[24])
 /* Does the NT MD4 hash then des encryption. */
 
 void
-spa_smb_nt_encrypt (uchar * passwd, uchar * c8, uchar * p24)
+spa_smb_nt_encrypt (uschar * passwd, uschar * c8, uschar * p24)
 {
-  uchar p21[21];
+  uschar p21[21];
 
   memset (p21, '\0', 21);
 
@@ -1027,7 +1011,7 @@ spa_smb_nt_encrypt (uchar * passwd, uchar * c8, uchar * p24)
   SMBOWFencrypt (p21, c8, p24);
 
 #ifdef DEBUG_PASSWORD
-  DEBUG (100, ("spa_smb_nt_encrypt: nt#, challenge, response\n"));
+  DEBUG_X (100, ("spa_smb_nt_encrypt: nt#, challenge, response\n"));
   dump_data (100, (char *) p21, 16);
   dump_data (100, (char *) c8, 8);
   dump_data (100, (char *) p24, 24);
@@ -1147,7 +1131,7 @@ spa_mdfour64 (uint32x * M)
 }
 
 static void
-copy64 (uint32x * M, unsigned char *in)
+copy64 (uint32x * M, uschar *in)
 {
   int i;
 
@@ -1157,7 +1141,7 @@ copy64 (uint32x * M, unsigned char *in)
 }
 
 static void
-copy4 (unsigned char *out, uint32x x)
+copy4 (uschar *out, uint32x x)
 {
   out[0] = x & 0xFF;
   out[1] = (x >> 8) & 0xFF;
@@ -1167,9 +1151,9 @@ copy4 (unsigned char *out, uint32x x)
 
 /* produce a md4 message digest from data of length n bytes */
 void
-mdfour (unsigned char *out, unsigned char *in, int n)
+mdfour (uschar *out, uschar *in, int n)
 {
-  unsigned char buf[128];
+  uschar buf[128];
   uint32x M[16];
   uint32x b = n * 8;
   int i;
@@ -1257,13 +1241,13 @@ else \
 char *p = string; \
 int len = 0; \
 if (p) len = strlen(p); \
-spa_bytes_add(ptr, header, ((unsigned char*)p), len); \
+spa_bytes_add(ptr, header, (US p), len); \
 }
 
 #define spa_unicode_add_string(ptr, header, string) \
 { \
 char *p = string; \
-unsigned char *b = NULL; \
+uschar *b = NULL; \
 int len = 0; \
 if (p) \
   { \
@@ -1279,11 +1263,11 @@ unicodeToString(((char*)structPtr) + IVAL(&structPtr->header.offset,0) , SVAL(&s
 #define GetString(structPtr, header) \
 toString((((char *)structPtr) + IVAL(&structPtr->header.offset,0)), SVAL(&structPtr->header.len,0))
 #define DumpBuffer(fp, structPtr, header) \
-dumpRaw(fp,((unsigned char*)structPtr)+IVAL(&structPtr->header.offset,0),SVAL(&structPtr->header.len,0))
+dumpRaw(fp,(US structPtr)+IVAL(&structPtr->header.offset,0),SVAL(&structPtr->header.len,0))
 
 
 static void
-dumpRaw (FILE * fp, unsigned char *buf, size_t len)
+dumpRaw (FILE * fp, uschar *buf, size_t len)
 {
   int i;
 
@@ -1311,10 +1295,10 @@ unicodeToString (char *p, size_t len)
   return buf;
 }
 
-static unsigned char *
+static uschar *
 strToUnicode (char *p)
 {
-  static unsigned char buf[1024];
+  static uschar buf[1024];
   size_t l = strlen (p);
   int i = 0;
 
@@ -1329,10 +1313,10 @@ strToUnicode (char *p)
   return buf;
 }
 
-static unsigned char *
+static uschar *
 toString (char *p, size_t len)
 {
-  static unsigned char buf[1024];
+  static uschar buf[1024];
 
   assert (len + 1 < sizeof buf);
 
@@ -1432,7 +1416,7 @@ spa_build_auth_challenge (SPAAuthRequest * request, SPAAuthChallenge * challenge
   /* generate eight pseudo random bytes (method ripped from host.c) */
 
   for(i=0;i<8;i++) {
-    chalstr[i] = (unsigned char)(random_seed >> 16) % 256;
+    chalstr[i] = (uschar)(random_seed >> 16) % 256;
     random_seed = (1103515245 - (chalstr[i])) * random_seed + 12345;
   };
 
@@ -1467,8 +1451,8 @@ spa_build_auth_response (SPAAuthChallenge * challenge,
       *p = '\0';
     }
 
-  spa_smb_encrypt ((uchar *)password, challenge->challengeData, lmRespData);
-  spa_smb_nt_encrypt ((uchar *)password, challenge->challengeData, ntRespData);
+  spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
+  spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);
 
   response->bufIndex = 0;
   memcpy (response->ident, "NTLMSSP\0\0\0", 8);
@@ -1514,8 +1498,8 @@ spa_build_auth_response (SPAAuthChallenge * challenge,
     (const char *)GetUnicodeString(challenge, uDomain) :
     (const char *)GetString(challenge, uDomain));
 
-  spa_smb_encrypt ((uchar *)password, challenge->challengeData, lmRespData);
-  spa_smb_nt_encrypt ((uchar *)password, challenge->challengeData, ntRespData);
+  spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
+  spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);
 
   response->bufIndex = 0;
   memcpy (response->ident, "NTLMSSP\0\0\0", 8);
