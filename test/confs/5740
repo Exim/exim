@@ -39,7 +39,7 @@ tls_privatekey = ${if eq {SERVER}{server}\
 {DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key}\
 fail}
 
-tls_ocsp_file = OCSP
+tls_ocsp_file = RETURN
 
 
 # ------ ACL ------

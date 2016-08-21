@@ -1,6 +1,6 @@
 # Exim test configuration 0900
 SERVER=
-Y=
+SRV=
 LIST=
 ALLOW=
 
@@ -12,7 +12,7 @@ log_file_path = DIR/spool/log/SERVER%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 chunking_advertise_hosts = *
-tls_advertise_hosts = ${if eq {Y}{tls} {*}}
+tls_advertise_hosts = ${if eq {SRV}{tls} {*}}
 
 
 # ----- Main settings -----

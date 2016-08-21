@@ -1,6 +1,6 @@
 # Exim test configuration 0551
 
-LS=+pid
+LOG_SELECTOR=+pid
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -8,7 +8,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-log_selector = LS
+log_selector = LOG_SELECTOR
 
 # ----- Routers -----
 

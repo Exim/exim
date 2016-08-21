@@ -1,5 +1,5 @@
 # TLS server, CHUNKING reception
-exim -DSERVER=server -DY=tls -bd -oX PORT_D
+exim -DSERVER=server -DSRV=tls -bd -oX PORT_D
 ****
 #
 # non-piplined

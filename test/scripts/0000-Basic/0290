@@ -1,11 +1,11 @@
 # .include and macro tests
 exim -bP local_interfaces message_size_limit recipients_max remote_sort_domains receive_timeout
 ****
-exim -DRT= -bP receive_timeout
+exim -DOPT= -bP receive_timeout
 ****
-exim -DRT -bP receive_timeout
+exim -DOPT -bP receive_timeout
 ****
-exim '-D RT = receive_timeout = 4s ' -bP receive_timeout
+exim '-D OPT = receive_timeout = 4s ' -bP receive_timeout
 ****
 1
 exim -DINC='.include non/absolute' -bP receive_timeout

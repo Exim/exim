@@ -37,6 +37,10 @@ Version 4.88
 
  9. Expansion operator escape8bit, like escape but not touching newline etc..
 
+10. Feature macros, generated from compile options.  All start with "_HAVE_"
+    and go on with some roughly recognisable name.  Use the "-bP macros"
+    command-line option to see what is present.
+
 
 Version 4.87
 ------------

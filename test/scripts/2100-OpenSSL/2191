@@ -1,1 +1,8 @@
-../2000-GnuTLS/2091
+# TLS client, CHUNKING transmission
+exim -DSERVER=server -DSRV=tls -bd -oX PORT_S
+****
+exim -odf CALLER@test.ex
+Test message. Contains FF: ÿ
+****
+killdaemon
+no_msglog_check

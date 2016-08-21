@@ -3,7 +3,7 @@
 FOOBAR=
 FOO=inc1
 BAR=.include "DIR/aux-fixed/TESTNUM.inc2"
-RT = receive_timeout = 1s
+OPT = receive_timeout = 1s
 INC=
 
 C1=#
@@ -18,7 +18,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 FOOBAR  .include DIR/aux-fixed/TESTNUM.FOO
-RT
+OPT
 INC
 
 remote_sort_domains = a:b:c

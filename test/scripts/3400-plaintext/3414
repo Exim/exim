@@ -1,5 +1,5 @@
 # control of AUTH= on MAIL by ACL
-exim -DS=# -bs
+exim -DOPT=# -bs
 ehlo xxxx
 mail from:<a@b> auth=c@d
 quit
@@ -15,7 +15,7 @@ mail from:<a@b> auth=c@d
 quit
 ****
 # No acl_smtp_mailauth, but authenticated
-exim -DS=# -bs
+exim -DOPT=# -bs
 ehlo xxxx
 auth plain abcd
 mail from:<a@b> auth=c@d

@@ -1,6 +1,6 @@
 # TLS client, CHUNKING transmission
 gnutls
-exim -DSERVER=server -DY=tls -bd -oX PORT_S
+exim -DSERVER=server -DSRV=tls -bd -oX PORT_S
 ****
 exim -odf CALLER@test.ex
 Test message. Contains FF: ÿ

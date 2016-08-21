@@ -27,7 +27,7 @@ tls_verify_hosts = HOSTIPV4
 tls_try_verify_hosts = *
 tls_verify_certificates = DIR/aux-fixed/cert2
 tls_crl = CRL
-tls_ocsp_file = OCSP
+tls_ocsp_file = RETURN
 
 
 # ------ ACL ------
