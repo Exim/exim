@@ -4,7 +4,7 @@ exim -bd -DSERVER=server -oX PORT_S
 ****
 #
 # single header signed, short message
-exim -DX=dkim -DOPT=From -odf a@test.ex
+exim -DOPT=dkim -DLIST=From -odf a@test.ex
 From: nobody@example.com
 From: second@example.com
 
@@ -12,7 +12,7 @@ content
 ****
 #
 # single header signed, long message
-exim -DX=dkim -DOPT=From -odf b@test.ex
+exim -DOPT=dkim -DLIST=From -odf b@test.ex
 From: nobody@example.com
 From: second@example.com
 

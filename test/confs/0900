@@ -1,7 +1,7 @@
 # Exim test configuration 0900
 SERVER=
 Y=
-OPT=
+LIST=
 ALLOW=
 
 exim_path = EXIM_PATH
@@ -58,7 +58,7 @@ begin routers
 to_server:
   driver = accept
   condition =	${if !eq {SERVER}{server}}
-  transport =	remote_smtp${if eq {X}{dkim} {_dkim}}
+  transport =	remote_smtp${if eq {OPT}{dkim} {_dkim}}
   errors_to =	""
 
 fail_remote_domains:
@@ -103,12 +103,12 @@ remote_smtp_dkim:
   command_timeout = 2s
   final_timeout = 2s
 
-.ifdef X
+.ifdef OPT
   dkim_domain =		test.ex
   dkim_selector =	sel
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
 .ifndef HEADERS_MAXSIZE
-  dkim_sign_headers =	OPT
+  dkim_sign_headers =	LIST
 .endif
 .endif
 
