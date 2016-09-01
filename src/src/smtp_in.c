@@ -476,6 +476,20 @@ next_cmd:
   }
 }
 
+static void
+bdat_flush_data(void)
+{
+while (chunking_data_left-- > 0)
+  if (lwr_receive_getc() < 0)
+    break;
+
+receive_getc = lwr_receive_getc;
+receive_ungetc = lwr_receive_ungetc;
+
+if (chunking_state != CHUNKING_LAST)
+  chunking_state = CHUNKING_OFFERED;
+}
+
 
 
 
@@ -4775,6 +4789,9 @@ while (done <= 0)
 	  smtp_connection_had[smtp_ch_index-1] == SCH_DATA
 	  ? US"valid RCPT command must precede DATA"
 	  : US"valid RCPT command must precede BDAT");
+
+      if (chunking_state > CHUNKING_OFFERED)
+	bdat_flush_data();
       break;
       }
 

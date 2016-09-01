@@ -191,5 +191,29 @@ quit
 ??? 221
 ****
 #
+# plain, longer message (xple chunks), RCPT rejected
+# pipelined
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-CHUNKING
+??? 250 HELP
+MAIL FROM:<someone@some.domain>\r\nRCPT TO:<dummy@reject.ex>\r\nBDAT 86\r\nTo: Susan@random.com\r\nFrom: Sal@random.com\r\nSubject: This is a bodyless test message\r\nBDAT 6 LAST\r\nZZ\r\n
+??? 250
+??? 550
+??? 503-
+??? 503-
+??? 503
+??? 503-
+??? 503-
+??? 503
+quit
+??? 221
+****
+#
 killdaemon
 no_msglog_check
