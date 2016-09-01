@@ -41,6 +41,8 @@ Version 4.88
     and go on with some roughly recognisable name.  Use the "-bP macros"
     command-line option to see what is present.
 
+11. Integer values for options can take a "G" multiplier.
+
 
 Version 4.87
 ------------

@@ -530,7 +530,7 @@ appendfile:
   lockfile_timeout = 30m
   mailbox_size = 1000
   mailbox_filecount = 9999
-  message_size_limit = 1M
+  message_size_limit = 1G
   mode = 0600
   mode_fail_narrower
   no_notify_comsat

@@ -1985,7 +1985,7 @@ switch (type)
   inttype = US"octal ";
 
   /*  Integer: a simple(ish) case; allow octal and hex formats, and
-  suffixes K and M. The different types affect output, not input. */
+  suffixes K, M and G. The different types affect output, not input. */
 
   case opt_mkint:
   case opt_int:
@@ -2001,7 +2001,6 @@ switch (type)
         inttype, name);
 
     if (errno != ERANGE)
-      {
       if (tolower(*endptr) == 'k')
         {
         if (lvalue > INT_MAX/1024 || lvalue < INT_MIN/1024) errno = ERANGE;
@@ -2015,7 +2014,13 @@ switch (type)
         else lvalue *= 1024*1024;
         endptr++;
         }
-      }
+      else if (tolower(*endptr) == 'g')
+        {
+        if (lvalue > INT_MAX/(1024*1024*1024) || lvalue < INT_MIN/(1024*1024*1024))
+          errno = ERANGE;
+        else lvalue *= 1024*1024*1024;
+        endptr++;
+        }
 
     if (errno == ERANGE || lvalue > INT_MAX || lvalue < INT_MIN)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
@@ -2034,8 +2039,8 @@ switch (type)
     *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
   break;
 
-  /*  Integer held in K: again, allow octal and hex formats, and suffixes K and
-  M. */
+  /*  Integer held in K: again, allow octal and hex formats, and suffixes K, M
+  and G. */
   /*XXX consider moving to int_eximarith_t (but mind the overflow test 0415) */
 
   case opt_Kint:
@@ -2049,22 +2054,26 @@ switch (type)
         inttype, name);
 
     if (errno != ERANGE)
-      {
-      if (tolower(*endptr) == 'm')
+      if (tolower(*endptr) == 'g')
         {
-        if (value > INT_MAX/1024 || value < INT_MIN/1024) errno = ERANGE;
-          else value *= 1024;
+        if (value > INT_MAX/(1024*1024) || value < INT_MIN/(1024*1024))
+	  errno = ERANGE;
+	else
+	  value *= 1024*1024;
+        endptr++;
+        }
+      else if (tolower(*endptr) == 'm')
+        {
+        if (value > INT_MAX/1024 || value < INT_MIN/1024)
+	  errno = ERANGE;
+	else
+	  value *= 1024;
         endptr++;
         }
       else if (tolower(*endptr) == 'k')
-        {
         endptr++;
-        }
       else
-        {
         value = (value + 512)/1024;
-        }
-      }
 
     if (errno == ERANGE) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "absolute value of integer \"%s\" is too large (overflow)", s);

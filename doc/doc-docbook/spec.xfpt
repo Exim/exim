@@ -5136,7 +5136,11 @@ with the characters &"0x"&, in which case the remainder is interpreted as a
 hexadecimal number.
 
 If an integer value is followed by the letter K, it is multiplied by 1024; if
-it is followed by the letter M, it is multiplied by 1024x1024. When the values
+it is followed by the letter M, it is multiplied by 1024x1024;
+.new
+if by the letter G, 1024x1024x1024.
+.wen
+When the values
 of integer option settings are output, values which are an exact multiple of
 1024 or 1024x1024 are sometimes, but not always, printed using the letters K
 and M. The printing style is independent of the actual input format that was
