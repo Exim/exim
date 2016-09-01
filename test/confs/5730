@@ -3,7 +3,7 @@
 
 SERVER =
 
-.include DIR/aux-var/std_conf_prefix
+.include DIR/aux-var/tls_conf_prefix
 
 primary_hostname = server1.example.com
 
@@ -30,7 +30,7 @@ tls_privatekey = ${if eq {SERVER}{server}\
 fail}
 
 # from cmdline define
-tls_ocsp_file = OCSP
+tls_ocsp_file = OPT
 
 
 # ------ ACL ------
