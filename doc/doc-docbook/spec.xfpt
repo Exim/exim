@@ -38105,14 +38105,14 @@ DKIM is documented in RFC 4871.
 DKIM support is compiled into Exim by default if TLS support is present.
 It can be disabled by setting DISABLE_DKIM=yes in &_Local/Makefile_&.
 
-Exim's DKIM implementation allows to
+Exim's DKIM implementation allows for
 .olist
-Sign outgoing messages: This function is implemented in the SMTP transport.
+Signing outgoing messages: This function is implemented in the SMTP transport.
 It can co-exist with all other Exim features
 (including transport filters)
 except cutthrough delivery.
 .next
-Verify signatures in incoming messages: This is implemented by an additional
+Verifying signatures in incoming messages: This is implemented by an additional
 ACL (acl_smtp_dkim), which can be called several times per message, with
 different signature contexts.
 .endlist
@@ -38251,6 +38251,7 @@ available (from most to least important):
 The signer that is being evaluated in this ACL run. This can be a domain or
 an identity. This is one of the list items from the expanded main option
 &%dkim_verify_signers%& (see above).
+
 .vitem &%$dkim_verify_status%&
 A string describing the general status of the signature. One of
 .ilist
@@ -38265,6 +38266,7 @@ available in &%$dkim_verify_reason%&.
 .next
 &%pass%&: The signature passed verification. It is valid.
 .endlist
+
 .vitem &%$dkim_verify_reason%&
 A string giving a little bit more detail when &%$dkim_verify_status%& is either
 "fail" or "invalid". One of
@@ -38284,51 +38286,73 @@ could not be verified. This may mean that headers were modified,
 re-written or otherwise changed in a way which is incompatible with
 DKIM verification. It may of course also mean that the signature is forged.
 .endlist
+
 .vitem &%$dkim_domain%&
 The signing domain. IMPORTANT: This variable is only populated if there is
 an actual signature in the message for the current domain or identity (as
 reflected by &%$dkim_cur_signer%&).
+
 .vitem &%$dkim_identity%&
 The signing identity, if present. IMPORTANT: This variable is only populated
 if there is an actual signature in the message for the current domain or
 identity (as reflected by &%$dkim_cur_signer%&).
+
 .vitem &%$dkim_selector%&
 The key record selector string.
+
 .vitem &%$dkim_algo%&
 The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
+
 .vitem &%$dkim_canon_body%&
 The body canonicalization method. One of 'relaxed' or 'simple'.
+
 .vitem &%dkim_canon_headers%&
 The header canonicalization method. One of 'relaxed' or 'simple'.
+
 .vitem &%$dkim_copiedheaders%&
 A transcript of headers and their values which are included in the signature
 (copied from the 'z=' tag of the signature).
+.new
+Note that RFC6376 requires that verification fail if the From: header is
+not included in the signature.  Exim does not enforce this; sites wishing
+strict enforcement should code the check explicitly.
+.wen
+
 .vitem &%$dkim_bodylength%&
 The number of signed body bytes. If zero ("0"), the body is unsigned. If no
 limit was set by the signer, "9999999999999" is returned. This makes sure
 that this variable always expands to an integer value.
+
 .vitem &%$dkim_created%&
 UNIX timestamp reflecting the date and time when the signature was created.
 When this was not specified by the signer, "0" is returned.
+
 .vitem &%$dkim_expires%&
 UNIX timestamp reflecting the date and time when the signer wants the
 signature to be treated as "expired". When this was not specified by the
 signer, "9999999999999" is returned. This makes it possible to do useful
 integer size comparisons against this value.
+
 .vitem &%$dkim_headernames%&
 A colon-separated list of names of headers included in the signature.
+
 .vitem &%$dkim_key_testing%&
 "1" if the key record has the "testing" flag set, "0" if not.
+
 .vitem &%$dkim_key_nosubdomains%&
 "1" if the key record forbids subdomaining, "0" otherwise.
+
 .vitem &%$dkim_key_srvtype%&
 Service type (tag s=) from the key record. Defaults to "*" if not specified
 in the key record.
+
 .vitem &%$dkim_key_granularity%&
 Key granularity (tag g=) from the key record. Defaults to "*" if not specified
 in the key record.
+
 .vitem &%$dkim_key_notes%&
 Notes from the key record (tag n=).
+
 .vitem &%$dkim_key_length%&
 Number of bits in the key.
 .endlist
