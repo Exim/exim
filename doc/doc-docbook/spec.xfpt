@@ -28128,7 +28128,7 @@ provides a means of specifying an &"and"& conjunction between conditions. For
 example:
 .code
 deny  dnslists = list1.example
-dnslists = list2.example
+      dnslists = list2.example
 .endd
 If there are no conditions, the verb is always obeyed. Exim stops evaluating
 the conditions and modifiers when it reaches a condition that fails. What
@@ -28150,8 +28150,8 @@ after &%endpass%&, the ACL returns &"deny"&. Consider this statement, used to
 check a RCPT command:
 .code
 accept domains = +local_domains
-endpass
-verify = recipient
+       endpass
+       verify = recipient
 .endd
 If the recipient domain does not match the &%domains%& condition, control
 passes to the next statement. If it does match, the recipient is verified, and
