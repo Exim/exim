@@ -2961,8 +2961,9 @@ if (lognl != NULL) *lognl = 0;
 always a 5xx one - see comments at the start of this function. If the original
 rc was FAIL_DROP we drop the connection and yield 2. */
 
-if (rc == FAIL) smtp_respond(smtp_code, codelen, TRUE, (user_msg == NULL)?
-  US"Administrative prohibition" : user_msg);
+if (rc == FAIL)
+  smtp_respond(smtp_code, codelen, TRUE,
+    user_msg ? user_msg : US"Administrative prohibition");
 
 /* Send temporary failure response to the command. Don't give any details,
 unless acl_temp_details is set. This is TRUE for a callout defer, a "defer"
@@ -2973,21 +2974,19 @@ interactions between temp_details and return_error_details. One day it should
 be re-implemented in a tidier fashion. */
 
 else
-  {
-  if (acl_temp_details && user_msg != NULL)
+  if (acl_temp_details && user_msg)
     {
-    if (smtp_return_error_details &&
-        sender_verified_failed != NULL &&
-        sender_verified_failed->message != NULL)
-      {
+    if (  smtp_return_error_details
+       && sender_verified_failed
+       && sender_verified_failed->message
+       )
       smtp_respond(smtp_code, codelen, FALSE, sender_verified_failed->message);
-      }
+
     smtp_respond(smtp_code, codelen, TRUE, user_msg);
     }
   else
     smtp_respond(smtp_code, codelen, TRUE,
       US"Temporary local problem - please try later");
-  }
 
 /* Log the incident to the logs that are specified by log_reject_target
 (default main, reject). This can be empty to suppress logging of rejections. If

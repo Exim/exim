@@ -13003,8 +13003,7 @@ or external command, as described above. It is also used during a
 
 .vitem &$verify_mode$&
 .vindex "&$verify_mode$&"
-While a router or transport is being run in verify mode
-or for cutthrough delivery,
+While a router or transport is being run in verify mode or for cutthrough delivery,
 contains "S" for sender-verification or "R" for recipient-verification.
 Otherwise, empty.
 
@@ -28802,7 +28801,7 @@ Notice that we put back the lower cased version afterwards, assuming that
 is what is wanted for subsequent tests.
 
 
-.vitem &*control&~=&~cutthrough_delivery*&
+.vitem &*control&~=&~cutthrough_delivery/*&<&'options'&>
 .cindex "&ACL;" "cutthrough routing"
 .cindex "cutthrough" "requesting"
 This option requests delivery be attempted while the item is being received.
@@ -28842,10 +28841,19 @@ It is not supported for messages received with the SMTP PRDR option in use.
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
-If there is a temporary error the item is queued for later delivery in the
-usual fashion. If the item is successfully delivered in cutthrough mode
+If the item is successfully delivered in cutthrough mode
 the delivery log lines are tagged with ">>" rather than "=>" and appear
 before the acceptance "<=" line.
+
+.new
+If there is a temporary error the item is queued for later delivery in the
+usual fashion.
+This behaviour can be adjusted by appending the option &*defer=*&<&'value'&>
+to the control; the default value is &"spool"& and the alternate value
+&"pass"& copies an SMTP defer response from the target back to the initiator
+and does not queue the message.
+Note that this is independent of any receipient verify conditions in the ACL.
+.wen
 
 Delivery in this mode avoids the generation of a bounce mail to a
 (possibly faked)

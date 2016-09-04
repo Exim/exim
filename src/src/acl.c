@@ -744,7 +744,7 @@ static control_def controls_list[] = {
   { US"fakereject",              CONTROL_FAKEREJECT,            TRUE },
   { US"submission",              CONTROL_SUBMISSION,            TRUE },
   { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE },
-  { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY,   FALSE },
+  { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY,   TRUE },
 #ifdef SUPPORT_I18N
   { US"utf8_downconvert",        CONTROL_UTF8_DOWNCONVERT,      TRUE }
 #endif
@@ -3398,7 +3398,23 @@ for (; cb != NULL; cb = cb->next)
 	    *log_msgptr = US"fakereject";
 	  else
 	    {
-	    if (rcpt_count == 1) cutthrough.delivery = TRUE;
+	    if (rcpt_count == 1)
+	      {
+	      cutthrough.delivery = TRUE;
+	      while (*p == '/')
+		{
+		const uschar * pp = p+1;
+		if (Ustrncmp(pp, "defer=", 6) == 0)
+		  {
+		  pp += 6;
+		  if (Ustrncmp(pp, "pass", 4) == 0) cutthrough.defer_pass = TRUE;
+		  /* else if (Ustrncmp(pp, "spool") == 0) ;	default */
+		  }
+		else
+		  while (*pp && *pp != '/') pp++;
+		p = pp;
+		}
+	      }
 	    break;
 	    }
 	  *log_msgptr = string_sprintf("\"control=%s\" on %s item",
@@ -4502,32 +4518,50 @@ If temp-reject, close the conn (and keep the spooled copy).
 If conn-failure, no action (and keep the spooled copy).
 */
 switch (where)
-{
-case ACL_WHERE_RCPT:
+  {
+  case ACL_WHERE_RCPT:
 #ifndef DISABLE_PRDR
-case ACL_WHERE_PRDR:
+  case ACL_WHERE_PRDR:
 #endif
-  if (host_checking_callout)	/* -bhc mode */
-    cancel_cutthrough_connection("host-checking mode");
-  else if (rc == OK && cutthrough.delivery && rcpt_count > cutthrough.nrcpt)
-    rc = open_cutthrough_connection(addr);
-  break;
+    if (host_checking_callout)	/* -bhc mode */
+      cancel_cutthrough_connection("host-checking mode");
 
-case ACL_WHERE_PREDATA:
-  if (rc == OK)
-    cutthrough_predata();
-  else
-    cancel_cutthrough_connection("predata acl not ok");
-  break;
+    else if (  rc == OK
+	    && cutthrough.delivery
+	    && rcpt_count > cutthrough.nrcpt
+	    && (rc = open_cutthrough_connection(addr)) == DEFER
+	    )
+      if (cutthrough.defer_pass)
+	{
+	uschar * s = addr->message;
+	/* Horrid kludge to recover target's SMTP message */
+	while (*s) s++;
+	do --s; while (!isdigit(*s));
+	if (*--s && isdigit(*s) && *--s && isdigit(*s)) *user_msgptr = s;
+	acl_temp_details = TRUE;
+	}
+	else
+	{
+	HDEBUG(D_acl) debug_printf("cutthrough defer; will spool\n");
+	rc = OK;
+	}
+    break;
 
-case ACL_WHERE_QUIT:
-case ACL_WHERE_NOTQUIT:
-  cancel_cutthrough_connection("quit or notquit");
-  break;
+  case ACL_WHERE_PREDATA:
+    if (rc == OK)
+      cutthrough_predata();
+    else
+      cancel_cutthrough_connection("predata acl not ok");
+    break;
 
-default:
-  break;
-}
+  case ACL_WHERE_QUIT:
+  case ACL_WHERE_NOTQUIT:
+    cancel_cutthrough_connection("quit or notquit");
+    break;
+
+  default:
+    break;
+  }
 
 deliver_domain = deliver_localpart = deliver_address_data =
   sender_address_data = NULL;

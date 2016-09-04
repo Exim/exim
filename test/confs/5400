@@ -1,10 +1,17 @@
 # Exim test configuration 5400
 
+# any options on the cutthrough_delivery contol
+CONTROL=
+
+# optional verify-callout
+OPT=
+
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
 
 log_selector = +received_recipients
+queue_only
 
 # ----- Main settings -----
 
@@ -18,7 +25,9 @@ acl_smtp_rcpt = ar
 begin acl
 
 ar:
-	accept control = cutthrough_delivery
+  accept
+	control = cutthrough_deliveryCONTROL
+	OPT
 	logwrite = rcpt for $local_part@$domain
 
 # ----- Routers -----

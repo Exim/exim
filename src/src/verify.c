@@ -226,7 +226,7 @@ else if ((dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE)) == NULL)
 /* If a cache database is available see if we can avoid the need to do an
 actual callout by making use of previously-obtained data. */
 
-if (dbm_file != NULL)
+if (dbm_file)
   {
   dbdata_callout_cache_address *cache_address_record;
   dbdata_callout_cache *cache_record = get_callout_cache_record(dbm_file,
@@ -237,7 +237,7 @@ if (dbm_file != NULL)
   /* If an unexpired cache record was found for this domain, see if the callout
   process can be short-circuited. */
 
-  if (cache_record != NULL)
+  if (cache_record)
     {
     /* In most cases, if an early command (up to and including MAIL FROM:<>)
     was rejected, there is no point carrying on. The callout fails. However, if
@@ -297,7 +297,7 @@ if (dbm_file != NULL)
     but has not been done before, we are going to have to do a callout, so skip
     remaining cache processing. */
 
-    if (pm_mailfrom != NULL)
+    if (pm_mailfrom)
       {
       if (cache_record->postmaster_result == ccache_reject)
         {
@@ -343,7 +343,7 @@ if (dbm_file != NULL)
       callout_cache_positive_expire,
       callout_cache_negative_expire);
 
-  if (cache_address_record != NULL)
+  if (cache_address_record)
     {
     if (cache_address_record->result == ccache_accept)
       {
@@ -404,7 +404,7 @@ else
   and cause the client to time out. So in this case we forgo the PIPELINING
   optimization. */
 
-  if (smtp_out != NULL && !disable_callout_flush) mac_smtp_fflush();
+  if (smtp_out && !disable_callout_flush) mac_smtp_fflush();
 
 /* cutthrough-multi: if a nonfirst rcpt has the same routing as the first,
 and we are holding a cutthrough conn open, we can just append the rcpt to
@@ -516,7 +516,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
   /* Now make connections to the hosts and do real callouts. The list of hosts
   is passed in as an argument. */
 
-  for (host = host_list; host != NULL && !done; host = host->next)
+  for (host = host_list; host && !done; host = host->next)
     {
     smtp_inblock inblock;
     smtp_outblock outblock;
@@ -544,7 +544,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     /* Skip this host if we don't have an IP address for it. */
 
-    if (host->address == NULL)
+    if (!host->address)
       {
       DEBUG(D_verify) debug_printf("no IP address for host name %s: skipping\n",
         host->name);
@@ -561,7 +561,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     /* Set IPv4 or IPv6 */
 
-    host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET:AF_INET6;
+    host_af = Ustrchr(host->address, ':') == NULL ? AF_INET : AF_INET6;
 
     /* Expand and interpret the interface and port strings. The latter will not
     be used if there is a host-specific port (e.g. from a manualroute router).
@@ -659,10 +659,10 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     /* Expand the helo_data string to find the host name to use. */
 
-    if (tf->helo_data != NULL)
+    if (tf->helo_data)
       {
-      uschar *s = expand_string(tf->helo_data);
-      if (s == NULL)
+      uschar * s = expand_string(tf->helo_data);
+      if (!s)
         log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: failed to expand transport's "
           "helo_data value for callout: %s", addr->address,
           expand_string_message);
@@ -1299,8 +1299,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       {
       /* Ensure no cutthrough on multiple address verifies */
       if (options & vopt_callout_recipsender)
-        cancel_cutthrough_connection("multiple verify calls");
-      if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
+        cancel_cutthrough_connection("not usable for cutthrough");
+      if (send_quit)
+	(void) smtp_write_command(&outblock, FALSE, "QUIT\r\n");
 
 #ifdef SUPPORT_TLS
       tls_close(FALSE, TRUE);
@@ -1353,9 +1354,9 @@ if (done)
   if (  !(options & vopt_callout_no_cache)
      && new_address_record.result != ccache_unknown)
     {
-    if (dbm_file == NULL)
+    if (!dbm_file)
       dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE);
-    if (dbm_file == NULL)
+    if (!dbm_file)
       {
       HDEBUG(D_verify) debug_printf("no callout cache available\n");
       }
@@ -1376,22 +1377,24 @@ it alone if supplying details. Otherwise, give a generic response. */
 
 else   /* !done */
   {
-  uschar *dullmsg = string_sprintf("Could not complete %s verify callout",
+  uschar * dullmsg = string_sprintf("Could not complete %s verify callout",
     options & vopt_is_recipient ? "recipient" : "sender");
   yield = DEFER;
 
-  if (host_list->next != NULL || addr->message == NULL) addr->message = dullmsg;
+  if (host_list->next || !addr->message)
+    addr->message = dullmsg;
 
-  addr->user_message = (!smtp_return_error_details)? dullmsg :
-    string_sprintf("%s for <%s>.\n"
+  addr->user_message = smtp_return_error_details
+    ? string_sprintf("%s for <%s>.\n"
       "The mail server(s) for the domain may be temporarily unreachable, or\n"
       "they may be permanently unreachable from this server. In the latter case,\n%s",
       dullmsg, addr->address,
       options & vopt_is_recipient
-	?  "the address will never be accepted."
+	? "the address will never be accepted."
         : "you need to change the address or create an MX record for its domain\n"
 	  "if it is supposed to be generally accessible from the Internet.\n"
-	  "Talk to your mail administrator for details.");
+	  "Talk to your mail administrator for details.")
+    : dullmsg;
 
   /* Force a specific error code */
 
@@ -1401,7 +1404,7 @@ else   /* !done */
 /* Come here from within the cache-reading code on fast-track exit. */
 
 END_CALLOUT:
-if (dbm_file != NULL) dbfn_close(dbm_file);
+if (dbm_file) dbfn_close(dbm_file);
 return yield;
 }
 
@@ -1423,10 +1426,12 @@ get rewritten. */
 addr2 = *addr;
 HDEBUG(D_acl) debug_printf("----------- %s cutthrough setup ------------\n",
   rcpt_count > 1 ? "more" : "start");
-rc= verify_address(&addr2, NULL,
+rc = verify_address(&addr2, NULL,
 	vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache,
 	CUTTHROUGH_CMD_TIMEOUT, -1, -1,
 	NULL, NULL, NULL);
+addr->message = addr2.message;
+addr->user_message = addr2.user_message;
 HDEBUG(D_acl) debug_printf("----------- end cutthrough setup ------------\n");
 return rc;
 }

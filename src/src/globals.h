@@ -301,7 +301,8 @@ extern uschar *continue_transport;     /* Transport for continued delivery */
 extern uschar *csa_status;             /* Client SMTP Authorization result */
 
 typedef struct {
-  BOOL         delivery;               /* When to attempt */
+  unsigned     delivery:1;             /* When to attempt */
+  unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spoolling */
   int          fd;                     /* Open connection */
   int          nrcpt;                  /* Count of addresses */
   uschar *     interface;              /* (address of) */

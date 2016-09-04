@@ -532,6 +532,7 @@ uschar *continue_transport     = NULL;
 uschar *csa_status             = NULL;
 cut_t   cutthrough = {
   FALSE,				/* delivery: when to attempt */
+  FALSE,				/* on defer: spool locally */
   -1,					/* fd: open connection */
   0,					/* nrcpt: number of addresses */
 };

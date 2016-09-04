@@ -1,0 +1,228 @@
+# cutthrough_delivery tmp-rejects
+need_ipv4
+munge loopback
+#
+# basic operation.  Should deliver in cutthrough mode.
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<usera@domain.com>
+DATA
+
+.
+QUIT
+****
+######################################################
+# RCPT-time
+#
+# temp-reject (at RCPT), default.  Should spool msg.
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 not right now
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userb@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+# temp-reject (at RCPT), option "spool".  Should spool msg (again).
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 not right now
+QUIT
+250 OK
+****
+exim -DCONTROL=/defer=spool -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userc@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+# temp-reject (at RCPT), option "pass".  Should tmp-rej source, at RCPT.
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 not right now
+QUIT
+250 OK
+****
+exim -DCONTROL=/defer=pass -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userd@domain.com>
+QUIT
+****
+#########################################################
+# DATA-time
+#
+#
+# temp-reject (at DATA-dot), default.  Should spool msg.
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 good rcpt
+DATA
+354 Send data
+.
+459 content reject
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<usere@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+# temp-reject (at DATA-dot), option "spool".  Should spool msg (again).
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 good rcpt
+DATA
+354 Send data
+.
+459 content reject
+QUIT
+250 OK
+****
+exim -DCONTROL=/defer=spool -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userf@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+# temp-reject (at DATA-dot), option "pass".  Should tmp-rej source, at DATA.
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 good rcpt
+DATA
+354 Send data
+.
+459 content reject
+QUIT
+250 OK
+****
+exim -DCONTROL=/defer=pass -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userg@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#########################################################
+#, Now using a conn opened by a recipient verify
+#
+# basic operation.  Should deliver in cutthrough mode.
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -DOPT=verify=recipient/callout=use_sender -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userh@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+# temp-reject (at RCPT), default.  Should tmp-rej, due to the r-verify
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 not right now
+QUIT
+250 OK
+****
+exim -DOPT=verify=recipient/callout=use_sender -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<useri@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+no_msglog_check

@@ -4052,7 +4052,8 @@ for this message. */
    Send dot onward.  If accepted, wipe the spooled files, log as delivered and accept
    the sender's dot (below).
    If rejected: copy response to sender, wipe the spooled files, log approriately.
-   If temp-reject: accept to sender, keep the spooled files.
+   If temp-reject: normally accept to sender, keep the spooled file - unless defer=pass
+   in which case pass temp-reject back to initiator and dump the files.
 
    Having the normal spool files lets us do data-filtering, and store/forward on temp-reject.
 
@@ -4068,13 +4069,17 @@ if(cutthrough.fd >= 0)
       cutthrough_done = ACCEPTED;
       break;					/* message_id needed for SMTP accept below */
 
+    case '4':	/* Temp-reject. Keep spoolfiles and accept, unless defer-pass mode.
+      		... for which, pass back the exact error */
+      if (cutthrough.defer_pass) smtp_reply = string_copy_malloc(msg);
+      /*FALLTRHOUGH*/
+
     default:	/* Unknown response, or error.  Treat as temp-reject.         */
-    case '4':	/* Temp-reject. Keep spoolfiles and accept. */
       cutthrough_done = TMP_REJ;		/* Avoid the usual immediate delivery attempt */
       break;					/* message_id needed for SMTP accept below */
 
     case '5':	/* Perm-reject.  Do the same to the source.  Dump any spoolfiles */
-      smtp_reply= msg;		/* Pass on the exact error */
+      smtp_reply = string_copy_malloc(msg);		/* Pass on the exact error */
       cutthrough_done = PERM_REJ;
       break;
     }
@@ -4188,27 +4193,37 @@ if (smtp_input)
     /* smtp_reply is set non-empty */
 
     else if (smtp_reply[0] != 0)
-      {
       if (fake_response != OK && (smtp_reply[0] == '2'))
         smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
           fake_response_text);
       else
         smtp_printf("%.1024s\r\n", smtp_reply);
-      }
 
     switch (cutthrough_done)
       {
-      case ACCEPTED: log_write(0, LOG_MAIN, "Completed");/* Delivery was done */
+      case ACCEPTED:
+	log_write(0, LOG_MAIN, "Completed");/* Delivery was done */
       case PERM_REJ:
-	      {						 /* Delete spool files */
-	      Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
-	      Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
-	      Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
-	      }
-      case TMP_REJ: message_id[0] = 0;	  /* Prevent a delivery from starting */
-      default:break;
+							 /* Delete spool files */
+	Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
+	Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
+	Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
+	message_id[0] = 0;	  /* Prevent a delivery from starting */
+	break;
+
+      case TMP_REJ:
+	if (cutthrough.defer_pass)
+	  {
+	  Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
+	  Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
+	  Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
+	  }
+	message_id[0] = 0;	  /* Prevent a delivery from starting */
+      default:
+	break;
       }
     cutthrough.delivery = FALSE;
+    cutthrough.defer_pass = FALSE;
     }
 
   /* For batched SMTP, generate an error message on failure, and do

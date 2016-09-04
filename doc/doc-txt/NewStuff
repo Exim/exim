@@ -43,6 +43,10 @@ Version 4.88
 
 11. Integer values for options can take a "G" multiplier.
 
+12. defer=pass option for the ACL control cutthrough_delivery, to reflect 4xx
+    returns from the target back to the initiator, rather than spooling the
+    message.
+
 
 Version 4.87
 ------------
