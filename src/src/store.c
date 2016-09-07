@@ -497,9 +497,8 @@ store_malloc_3(int size, const char *filename, int linenumber)
 void *yield;
 
 if (size < 16) size = 16;
-yield = malloc((size_t)size);
 
-if (yield == NULL)
+if (!(yield = malloc((size_t)size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
     "called from line %d of %s", size, linenumber, filename);
 

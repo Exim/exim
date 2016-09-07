@@ -76,8 +76,7 @@ merge_queue_lists(queue_filename *a, queue_filename *b)
 queue_filename *first = NULL;
 queue_filename **append = &first;
 
-while (a != NULL && b != NULL)
-  {
+while (a && b)
   if (Ustrcmp(a->text, b->text) < 0)
     {
     *append = a;
@@ -90,9 +89,8 @@ while (a != NULL && b != NULL)
     append= &b->next;
     b = b->next;
     }
-  }
 
-*append=((a != NULL)? a : b);
+*append = a ? a : b;
 return first;
 }
 
@@ -161,8 +159,11 @@ according to the bits of the flags variable. Get a collection of bits from the
 current time. Use the bottom 16 and just keep re-using them if necessary. When
 not randomizing, initialize the sublists for the bottom-up merge sort. */
 
-if (randomize) resetflags = time(NULL) & 0xFFFF;
-  else for (i = 0; i < LOG2_MAXNODES; i++) root[i] = NULL;
+if (randomize)
+  resetflags = time(NULL) & 0xFFFF;
+else
+   for (i = 0; i < LOG2_MAXNODES; i++)
+     root[i] = NULL;
 
 /* If processing the full queue, or just the top-level, start at the base
 directory, and initialize the first subdirectory name (as none). Otherwise,
@@ -174,7 +175,8 @@ if (subdiroffset <= 0)
   subdirs[0] = 0;
   *subcount = 0;
   }
-else i = subdiroffset;
+else
+  i = subdiroffset;
 
 /* Set up prototype for the directory name. */
 
@@ -204,7 +206,7 @@ for (; i <= *subcount; i++)
 
   /* Now scan the directory. */
 
-  while ((ent = readdir(dd)) != NULL)
+  while ((ent = readdir(dd)))
     {
     uschar *name = US ent->d_name;
     int len = Ustrlen(name);
@@ -240,15 +242,15 @@ for (; i <= *subcount; i++)
       to store the number with each item. */
 
       if (randomize)
-        {
-        if (yield == NULL)
+        if (!yield)
           {
           next->next = NULL;
           yield = last = next;
           }
         else
           {
-          if (flags == 0) flags = resetflags;
+          if (flags == 0)
+	    flags = resetflags;
           if ((flags & 1) == 0)
             {
             next->next = yield;
@@ -262,7 +264,6 @@ for (; i <= *subcount; i++)
             }
           flags = flags >> 1;
           }
-        }
 
       /* Otherwise do a bottom-up merge sort based on the name. */
 
@@ -271,8 +272,7 @@ for (; i <= *subcount; i++)
         int j;
         next->next = NULL;
         for (j = 0; j < LOG2_MAXNODES; j++)
-          {
-          if (root[j] != NULL)
+          if (root[j])
             {
             next = merge_queue_lists(next, root[j]);
             root[j] = (j == LOG2_MAXNODES - 1)? next : NULL;
@@ -282,7 +282,6 @@ for (; i <= *subcount; i++)
             root[j] = next;
             break;
             }
-          }
         }
       }
     }
@@ -314,10 +313,8 @@ for (; i <= *subcount; i++)
   /* If we have just scanned the base directory, and subdiroffset is 0,
   we do not want to continue scanning the sub-directories. */
 
-  else
-    {
-    if (subdiroffset == 0) break;
-    }
+  else if (subdiroffset == 0)
+    break;
   }    /* Loop for multiple subdirectories */
 
 /* When using a bottom-up merge sort, do the final merging of the sublists.
@@ -478,7 +475,7 @@ for (i  = (queue_run_in_order? -1 : 0);
     }
 
   for (f = queue_get_spool_list(i, subdirs, &subcount, !queue_run_in_order);
-       f != NULL;
+       f;
        f = f->next)
     {
     pid_t pid;
@@ -491,9 +488,7 @@ for (i  = (queue_run_in_order? -1 : 0);
     check that the load average is low enough to permit deliveries. */
 
     if (!queue_run_force && deliver_queue_load_max >= 0)
-      {
-      load_average = os_getloadavg();
-      if (load_average > deliver_queue_load_max)
+      if ((load_average = os_getloadavg()) > deliver_queue_load_max)
         {
         log_write(L_queue_run, LOG_MAIN, "Abandon queue run: %s (load %.2f, max %.2f)",
           log_detail,
@@ -503,18 +498,15 @@ for (i  = (queue_run_in_order? -1 : 0);
         break;
         }
       else
-        {
         DEBUG(D_load) debug_printf("load average = %.2f max = %.2f\n",
           (double)load_average/1000.0,
           (double)deliver_queue_load_max/1000.0);
-        }
-      }
 
     /* Skip this message unless it's within the ID limits */
 
-    if (stop_id != NULL && Ustrncmp(f->text, stop_id, MESSAGE_ID_LENGTH) > 0)
+    if (stop_id && Ustrncmp(f->text, stop_id, MESSAGE_ID_LENGTH) > 0)
       continue;
-    if (start_id != NULL && Ustrncmp(f->text, start_id, MESSAGE_ID_LENGTH) < 0)
+    if (start_id && Ustrncmp(f->text, start_id, MESSAGE_ID_LENGTH) < 0)
       continue;
 
     /* Check that the message still exists */
@@ -529,7 +521,7 @@ for (i  = (queue_run_in_order? -1 : 0);
     delivering, but it's cheaper than forking a delivery process for each
     message when many are not going to be delivered. */
 
-    if (deliver_selectstring != NULL || deliver_selectstring_sender != NULL ||
+    if (deliver_selectstring || deliver_selectstring_sender ||
         queue_run_first_delivery)
       {
       BOOL wanted = TRUE;
@@ -562,19 +554,20 @@ for (i  = (queue_run_in_order? -1 : 0);
         wanted = FALSE;
         }
 
-      /* Check for a matching address if deliver_selectstring[_sender} is set.
+      /* Check for a matching address if deliver_selectstring[_sender] is set.
       If so, we do a fully delivery - don't want to omit other addresses since
       their routing might trigger re-writing etc. */
 
       /* Sender matching */
 
-      else if (deliver_selectstring_sender != NULL &&
-              !(deliver_selectstring_sender_regex?
-                (pcre_exec(selectstring_regex_sender, NULL, CS sender_address,
-                  Ustrlen(sender_address), 0, PCRE_EOPT, NULL, 0) >= 0)
-                :
-                (strstric(sender_address, deliver_selectstring_sender, FALSE)
-                  != NULL)))
+      else if (  deliver_selectstring_sender
+	      && !(deliver_selectstring_sender_regex
+		  ? (pcre_exec(selectstring_regex_sender, NULL,
+		      CS sender_address, Ustrlen(sender_address), 0, PCRE_EOPT,
+		      NULL, 0) >= 0)
+		  : (strstric(sender_address, deliver_selectstring_sender, FALSE)
+		      != NULL)
+	      )   )
         {
         DEBUG(D_queue_run) debug_printf("%s: sender address did not match %s\n",
           f->text, deliver_selectstring_sender);
@@ -583,19 +576,19 @@ for (i  = (queue_run_in_order? -1 : 0);
 
       /* Recipient matching */
 
-      else if (deliver_selectstring != NULL)
+      else if (deliver_selectstring)
         {
         int i;
         for (i = 0; i < recipients_count; i++)
           {
           uschar *address = recipients_list[i].address;
-          if ((deliver_selectstring_regex?
-               (pcre_exec(selectstring_regex, NULL, CS address,
-                 Ustrlen(address), 0, PCRE_EOPT, NULL, 0) >= 0)
-               :
-               (strstric(address, deliver_selectstring, FALSE) != NULL))
-              &&
-              tree_search(tree_nonrecipients, address) == NULL)
+          if (  (deliver_selectstring_regex
+		? (pcre_exec(selectstring_regex, NULL, CS address,
+		     Ustrlen(address), 0, PCRE_EOPT, NULL, 0) >= 0)
+                : (strstric(address, deliver_selectstring, FALSE) != NULL)
+		)
+             && tree_search(tree_nonrecipients, address) == NULL
+	     )
             break;
           }
 
@@ -624,10 +617,8 @@ for (i  = (queue_run_in_order? -1 : 0);
     pretty cheap. */
 
     if (pipe(pfd) < 0)
-      {
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to create pipe in queue "
         "runner process %d: %s", queue_run_pid, strerror(errno));
-      }
     queue_run_pipe = pfd[pipe_write];  /* To ensure it gets passed on. */
 
     /* Make sure it isn't stdin. This seems unlikely, but just to be on the
@@ -681,11 +672,9 @@ for (i  = (queue_run_in_order? -1 : 0);
     /* If the process crashed, tell somebody */
 
     else if ((status & 0x00ff) != 0)
-      {
       log_write(0, LOG_MAIN|LOG_PANIC,
         "queue run: process %d crashed with signal %d while delivering %s",
         (int)pid, status & 0x00ff, f->text);
-      }
 
     /* Before continuing, wait till the pipe gets closed at the far end. This
     tells us that any children created by the delivery to re-use any SMTP

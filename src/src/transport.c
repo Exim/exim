@@ -1758,7 +1758,7 @@ while (1)
 
   /* create an array to read entire message queue into memory for processing  */
 
-  msgq = (msgq_t*) malloc(sizeof(msgq_t) * host_record->count);
+  msgq = store_malloc(sizeof(msgq_t) * host_record->count);
   msgq_count = host_record->count;
   msgq_actual = msgq_count;
 
@@ -1866,7 +1866,7 @@ test but the code should work */
 
   if (bFound)		/* Usual exit from main loop */
     {
-    free (msgq);
+    store_free (msgq);
     break;
     }
 
@@ -1892,7 +1892,7 @@ test but the code should work */
     return FALSE;
     }
 
-  free(msgq);
+  store_free(msgq);
   }		/* we need to process a continuation record */
 
 /* Control gets here when an existing message has been encountered; its

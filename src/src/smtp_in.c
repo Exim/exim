@@ -2049,10 +2049,10 @@ acl_var_c = NULL;
 
 /* Allow for trailing 0 in the command and data buffers. */
 
-smtp_cmd_buffer = (uschar *)malloc(2*smtp_cmd_buffer_size + 2);
-if (smtp_cmd_buffer == NULL)
+if (!(smtp_cmd_buffer = US malloc(2*smtp_cmd_buffer_size + 2)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "malloc() failed for SMTP command buffer");
+
 smtp_cmd_buffer[0] = 0;
 smtp_data_buffer = smtp_cmd_buffer + smtp_cmd_buffer_size + 1;
 
@@ -2061,7 +2061,7 @@ command line by a trusted caller. */
 
 if (smtp_batched_input)
   {
-  if (received_protocol == NULL) received_protocol = US"local-bsmtp";
+  if (!received_protocol) received_protocol = US"local-bsmtp";
   }
 
 /* For non-batched SMTP input, the protocol setting is forced here. It will be
@@ -2074,9 +2074,9 @@ else
 /* Set up the buffer for inputting using direct read() calls, and arrange to
 call the local functions instead of the standard C ones. */
 
-smtp_inbuffer = (uschar *)malloc(in_buffer_size);
-if (smtp_inbuffer == NULL)
+if (!(smtp_inbuffer = (uschar *)malloc(in_buffer_size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
+
 receive_getc = smtp_getc;
 receive_get_cache = smtp_get_cache;
 receive_ungetc = smtp_ungetc;

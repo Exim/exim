@@ -728,7 +728,7 @@ while (sig)
       we don't know what allocations the SHA routines might
       do, not safe to use store_get()/store_reset(). */
 
-      relaxed_data = malloc(len+1);
+      relaxed_data = store_malloc(len+1);
 
       for (p = data; *p; p++)
         {
@@ -772,7 +772,7 @@ while (sig)
   sig = sig->next;
   }
 
-if (relaxed_data) free(relaxed_data);
+if (relaxed_data) store_free(relaxed_data);
 return PDKIM_OK;
 }
 

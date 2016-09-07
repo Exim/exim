@@ -57,7 +57,7 @@ static dmarc_exim_p dmarc_policy_description[] = {
 static error_block *
 add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
 {
-error_block *eb = malloc(sizeof(error_block));
+error_block *eb = store_malloc(sizeof(error_block));
 if (eblock == NULL)
   eblock = eb;
 else

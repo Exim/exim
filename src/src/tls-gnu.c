@@ -566,8 +566,7 @@ if (fd >= 0)
     (void)close(fd);
     return tls_error(US"TLS cache not a file", NULL, NULL);
     }
-  fp = fdopen(fd, "rb");
-  if (!fp)
+  if (!(fp = fdopen(fd, "rb")))
     {
     saved_errno = errno;
     (void)close(fd);
@@ -576,14 +575,12 @@ if (fd >= 0)
     }
 
   m.size = statbuf.st_size;
-  m.data = malloc(m.size);
-  if (m.data == NULL)
+  if (!(m.data = malloc(m.size)))
     {
     fclose(fp);
     return tls_error(US"malloc failed", strerror(errno), NULL);
     }
-  sz = fread(m.data, m.size, 1, fp);
-  if (!sz)
+  if (!(sz = fread(m.data, m.size, 1, fp)))
     {
     saved_errno = errno;
     fclose(fp);
@@ -665,9 +662,9 @@ if (rc < 0)
   if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
     exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3(NULL) sizing");
   m.size = sz;
-  m.data = malloc(m.size);
-  if (m.data == NULL)
+  if (!(m.data = malloc(m.size)))
     return tls_error(US"memory allocation failed", strerror(errno), NULL);
+
   /* this will return a size 1 less than the allocation size above */
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
       m.data, &sz);

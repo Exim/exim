@@ -490,12 +490,9 @@ log. If possible, save a copy of the original line that was being logged. If we
 are recursing (can't open the panic log either), the pointer will already be
 set. */
 
-if (panic_save_buffer == NULL)
-  {
-  panic_save_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-  if (panic_save_buffer != NULL)
+if (!panic_save_buffer)
+  if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
     memcpy(panic_save_buffer, log_buffer, LOG_BUFFER_SIZE);
-  }
 
 log_write(0, LOG_PANIC_DIE, "Cannot open %s log file \"%s\": %s: "
   "euid=%d egid=%d", log_names[type], buffer, strerror(errno), euid, getegid());
@@ -575,12 +572,9 @@ log_write_failed(uschar *name, int length, int rc)
 {
 int save_errno = errno;
 
-if (panic_save_buffer == NULL)
-  {
-  panic_save_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-  if (panic_save_buffer != NULL)
+if (!panic_save_buffer)
+  if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
     memcpy(panic_save_buffer, log_buffer, LOG_BUFFER_SIZE);
-  }
 
 log_write(0, LOG_PANIC_DIE, "failed to write to %s: length=%d result=%d "
   "errno=%d (%s)", name, length, rc, save_errno,
@@ -736,15 +730,12 @@ if (panic_recurseflag)
 /* Ensure we have a buffer (see comment above); this should never be obeyed
 when running Exim proper, only when running utilities. */
 
-if (log_buffer == NULL)
-  {
-  log_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-  if (log_buffer == NULL)
+if (!log_buffer)
+  if (!(log_buffer = US malloc(LOG_BUFFER_SIZE)))
     {
     fprintf(stderr, "exim: failed to get store for log buffer\n");
     exim_exit(EXIT_FAILURE);
     }
-  }
 
 /* If we haven't already done so, inspect the setting of log_file_path to
 determine whether to log to files and/or to syslog. Bits in logging_mode

@@ -1653,8 +1653,7 @@ os_non_restarting_signal(SIGALRM, sigalrm_handler);
 /* Ensure we have a buffer for constructing log entries. Use malloc directly,
 because store_malloc writes a log entry on failure. */
 
-log_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-if (log_buffer == NULL)
+if (!(log_buffer = US malloc(LOG_BUFFER_SIZE)))
   {
   fprintf(stderr, "exim: failed to get store for log buffer\n");
   exit(EXIT_FAILURE);
@@ -3938,7 +3937,6 @@ if (Ustrlen(syslog_processname) > 32)
     "syslog_processname is longer than 32 chars: aborting");
 
 if (log_oneline)
-  {
   if (admin_user)
     {
     log_write(0, LOG_MAIN, "%s", log_oneline);
@@ -3946,7 +3944,6 @@ if (log_oneline)
     }
   else
     return EXIT_FAILURE;
-  }
 
 /* In some operating systems, the environment variable TMPDIR controls where
 temporary files are created; Exim doesn't use these (apart from when delivering
@@ -3960,17 +3957,14 @@ EXIM_TMPDIR by the build scripts.
 #ifdef EXIM_TMPDIR
   {
   uschar **p;
-  if (environ) for (p = USS environ; *p != NULL; p++)
-    {
-    if (Ustrncmp(*p, "TMPDIR=", 7) == 0 &&
-        Ustrcmp(*p+7, EXIM_TMPDIR) != 0)
+  if (environ) for (p = USS environ; *p; p++)
+    if (Ustrncmp(*p, "TMPDIR=", 7) == 0 && Ustrcmp(*p+7, EXIM_TMPDIR) != 0)
       {
-      uschar *newp = malloc(Ustrlen(EXIM_TMPDIR) + 8);
+      uschar * newp = store_malloc(Ustrlen(EXIM_TMPDIR) + 8);
       sprintf(CS newp, "TMPDIR=%s", EXIM_TMPDIR);
       *p = newp;
       DEBUG(D_any) debug_printf("reset TMPDIR=%s in environment\n", EXIM_TMPDIR);
       }
-    }
   }
 #endif
 
@@ -3984,33 +3978,25 @@ about this earlier - but hopefully nothing will normally be logged earlier than
 this. We have to make a new environment if TZ is wrong, but don't bother if
 timestamps_utc is set, because then all times are in UTC anyway. */
 
-if (timezone_string != NULL && strcmpic(timezone_string, US"UTC") == 0)
-  {
+if (timezone_string && strcmpic(timezone_string, US"UTC") == 0)
   timestamps_utc = TRUE;
-  }
 else
   {
   uschar *envtz = US getenv("TZ");
-  if ((envtz == NULL && timezone_string != NULL) ||
-      (envtz != NULL &&
-        (timezone_string == NULL ||
-         Ustrcmp(timezone_string, envtz) != 0)))
+  if (envtz ? !timezone_string || Ustrcmp(timezone_string, envtz) != 0 : timezone_string)
     {
     uschar **p = USS environ;
     uschar **new;
     uschar **newp;
     int count = 0;
-    if (environ) while (*p++ != NULL) count++;
-    if (envtz == NULL) count++;
-    newp = new = malloc(sizeof(uschar *) * (count + 1));
-    if (environ) for (p = USS environ; *p != NULL; p++)
+    if (environ) while (*p++) count++;
+    if (!envtz) count++;
+    newp = new = store_malloc(sizeof(uschar *) * (count + 1));
+    if (environ) for (p = USS environ; *p; p++)
+      if (Ustrncmp(*p, "TZ=", 3) != 0) *newp++ = *p;
+    if (timezone_string)
       {
-      if (Ustrncmp(*p, "TZ=", 3) == 0) continue;
-      *newp++ = *p;
-      }
-    if (timezone_string != NULL)
-      {
-      *newp = malloc(Ustrlen(timezone_string) + 4);
+      *newp = store_malloc(Ustrlen(timezone_string) + 4);
       sprintf(CS *newp++, "TZ=%s", timezone_string);
       }
     *newp = NULL;

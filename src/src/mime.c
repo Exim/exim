@@ -192,13 +192,11 @@ static FILE *
 mime_get_decode_file(uschar *pname, uschar *fname)
 {
 FILE *f = NULL;
-uschar *filename;
-
-filename = (uschar *)malloc(2048);
+uschar *filename = NULL;
 
 if (pname && fname)
   {
-  (void)string_format(filename, 2048, "%s/%s", pname, fname);
+  filename = string_sprintf("%s/%s", pname, fname);
   f = modefopen(filename,"wb+",SPOOL_MODE);
   }
 else if (!pname)
@@ -212,8 +210,7 @@ else if (!fname)
   do
     {
     struct stat mystat;
-    (void)string_format(filename, 2048,
-      "%s/%s-%05u", pname, message_id, file_nr++);
+    filename = string_sprintf("%s/%s-%05u", pname, message_id, file_nr++);
     /* security break */
     if (file_nr >= 1024)
       break;
@@ -224,6 +221,7 @@ else if (!fname)
   }
 
 /* set expansion variable */
+/*XXX ? not set if !pname ? */
 mime_decoded_filename = filename;
 
 return f;
