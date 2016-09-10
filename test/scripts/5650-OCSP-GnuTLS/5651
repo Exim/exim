@@ -47,6 +47,7 @@ no_msglog_check
 #
 #
 # Client fails on revoked stapled info
+sudo rm DIR/spool/db/retry
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
  -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
 ****
@@ -60,6 +61,7 @@ killdaemon
 #
 #
 # Client fails on expired stapled info
+sudo rm DIR/spool/db/retry
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
  -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
 ****
