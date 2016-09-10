@@ -1525,6 +1525,7 @@ struct lflags {
   BOOL send_quit:1;
   BOOL setting_up:1;
   BOOL esmtp:1;
+  BOOL esmtp_sent:1;
   BOOL pending_MAIL:1;
 #ifndef DISABLE_PRDR
   BOOL prdr_active:1;
@@ -1572,6 +1573,7 @@ lflags.send_rset = TRUE;
 lflags.send_quit = TRUE;
 lflags.setting_up = TRUE;
 lflags.esmtp = TRUE;
+lflags.esmtp_sent = FALSE;
 lflags.pending_MAIL;
 #ifndef DISABLE_PRDR
 lflags.prdr_active;
@@ -1800,6 +1802,7 @@ goto SEND_QUIT;
     if (smtp_write_command(&outblock, FALSE, "%s %s\r\n",
          lflags.lmtp ? "LHLO" : "EHLO", helo_data) < 0)
       goto SEND_FAILED;
+    lflags.esmtp_sent = TRUE;
     if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
            ob->command_timeout))
       {
@@ -1823,15 +1826,37 @@ goto SEND_QUIT;
   if (!lflags.esmtp)
     {
     BOOL good_response;
+    int n = sizeof(buffer);
+    uschar * rsp = buffer;
+
+    if (lflags.esmtp_sent && (n = Ustrlen(buffer)) < sizeof(buffer)/2)
+      { rsp = buffer + n + 1; n = sizeof(buffer) - n; }
 
     if (smtp_write_command(&outblock, FALSE, "HELO %s\r\n", helo_data) < 0)
       goto SEND_FAILED;
-    good_response = smtp_read_response(&inblock, buffer, sizeof(buffer),
+    good_response = smtp_read_response(&inblock, rsp, n,
       '2', ob->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
-    helo_response = string_copy(buffer);
+    helo_response = string_copy(rsp);
 #endif
-    if (!good_response) goto RESPONSE_FAILED;
+    if (!good_response)
+      {
+      /* Handle special logging for a closed connection after HELO
+      when had previously sent EHLO */
+
+      if (rsp != buffer && rsp[0] == 0 && (errno == 0 || errno == ECONNRESET))
+	{
+	message = NULL;
+	lflags.send_quit = FALSE;
+	save_errno = ERRNO_SMTPCLOSED;
+	message = string_sprintf("Remote host closed connection "
+	      "in response to %s (EHLO response was: %s)",
+	      smtp_command, buffer);
+	goto FAILED;
+	}
+      Ustrncpy(buffer, rsp, sizeof(buffer)/2);
+      goto RESPONSE_FAILED;
+      }
     }
 
   peer_offered = smtp_peer_options = 0;

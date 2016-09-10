@@ -88,6 +88,8 @@ JH/23 Bug 1874: fix continued use of a connection for further deliveries.
       (has no matching addresses), we lost track of needing to mark it
       deferred.  As a result mail would be lost.
 
+JH/24 Bug 1832: Log EHLO response on getting conn-close response for HELO.
+
 
 Exim version 4.87
 -----------------
