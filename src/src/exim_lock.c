@@ -38,7 +38,7 @@ in sys/file.h. */
 #endif
 
 
-typedef int BOOL;
+typedef unsigned BOOL;
 #define FALSE 0
 #define TRUE  1
 

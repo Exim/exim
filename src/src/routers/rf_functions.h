@@ -14,7 +14,7 @@ extern void rf_add_generated(router_instance *, address_item **,
 extern void rf_change_domain(address_item *, const uschar *, BOOL, address_item **);
 extern uschar *rf_expand_data(address_item *, uschar *, int *);
 extern int  rf_get_errors_address(address_item *, router_instance *,
-              BOOL, uschar **);
+              int, uschar **);
 extern int  rf_get_munge_headers(address_item *, router_instance *,
               header_line **, uschar **);
 extern BOOL rf_get_transport(uschar *, transport_instance **,  address_item *,

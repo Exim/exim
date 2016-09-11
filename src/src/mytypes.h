@@ -49,7 +49,7 @@ the standard header files, so we use "uschar". Solaris has u_char in
 sys/types.h. This is just a typing convenience, of course. */
 
 typedef unsigned char uschar;
-typedef int BOOL;
+typedef unsigned BOOL;
 /* We also have SIGNAL_BOOL, which requires signal.h be included, so is defined
 elsewhere */
 

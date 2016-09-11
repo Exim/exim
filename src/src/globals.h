@@ -426,7 +426,7 @@ extern BOOL    drop_cr;                /* For broken local MUAs */
 extern uschar *dsn_from;               /* From: string for DSNs */
 
 extern BOOL    enable_dollar_recipients; /* Make $recipients available */
-extern int     envelope_to_remove;     /* Remove envelope_to_headers */
+extern BOOL    envelope_to_remove;     /* Remove envelope_to_headers */
 extern int     errno_quota;            /* Quota errno in this OS */
 extern int     error_handling;         /* Error handling style */
 extern uschar *errors_copy;            /* For taking copies of errors */
@@ -714,7 +714,7 @@ extern uschar *recipient_verify_failure; /* What went wrong */
 extern BOOL    recipients_discarded;   /* By an ACL */
 extern int     recipients_list_max;    /* Maximum number fitting in list */
 extern int     recipients_max;         /* Max permitted */
-extern int     recipients_max_reject;  /* If TRUE, reject whole message */
+extern BOOL    recipients_max_reject;  /* If TRUE, reject whole message */
 extern const pcre *regex_AUTH;         /* For recognizing AUTH settings */
 extern const pcre  *regex_check_dns_names; /* For DNS name checking */
 extern const pcre  *regex_From;        /* For recognizing "From_" lines */

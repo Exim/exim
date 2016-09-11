@@ -206,7 +206,7 @@ extern void    host_build_hostlist(host_item **, const uschar *, BOOL);
 extern ip_address_item *host_build_ifacelist(const uschar *, uschar *);
 extern void    host_build_log_info(void);
 extern void    host_build_sender_fullhost(void);
-extern BOOL    host_find_byname(host_item *, const uschar *, int,
+extern int     host_find_byname(host_item *, const uschar *, int,
 				const uschar **, BOOL);
 extern int     host_find_bydns(host_item *, const uschar *, int, uschar *, uschar *,
                  uschar *, const dnssec_domains *, const uschar **, BOOL *);

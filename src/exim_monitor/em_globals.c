@@ -195,7 +195,7 @@ int     received_time          = 0;
 int     recipients_count       = 0;
 recipient_item *recipients_list = NULL;
 int     recipients_list_max    = 0;
-int     running_in_test_harness=FALSE;
+BOOL    running_in_test_harness=FALSE;
 
 uschar *sender_address         = NULL;
 uschar *sender_fullhost        = NULL;
