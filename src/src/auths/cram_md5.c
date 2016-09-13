@@ -263,7 +263,7 @@ uschar digest[16];
 /* If expansion of either the secret or the user name failed, return CANCELLED
 or ERROR, as approriate. */
 
-if (secret == NULL || name == NULL)
+if (!secret || !name)
   {
   if (expand_string_forcedfail)
     {
@@ -272,7 +272,7 @@ if (secret == NULL || name == NULL)
     }
   string_format(buffer, buffsize, "expansion of \"%s\" failed in "
     "%s authenticator: %s",
-    (secret == NULL)? ob->client_secret : ob->client_name,
+    !secret ? ob->client_secret : ob->client_name,
     ablock->name, expand_string_message);
   return ERROR;
   }
@@ -282,7 +282,7 @@ in base 64. */
 
 if (smtp_write_command(outblock, FALSE, "AUTH %s\r\n", ablock->public_name) < 0)
   return FAIL_SEND;
-if (smtp_read_response(inblock, (uschar *)buffer, buffsize, '3', timeout) < 0)
+if (!smtp_read_response(inblock, buffer, buffsize, '3', timeout))
   return FAIL;
 
 if (b64decode(buffer + 4, &challenge) < 0)
@@ -299,8 +299,7 @@ compute_cram_md5(secret, challenge, digest);
 /* Create the response from the user name plus the CRAM-MD5 digest */
 
 string_format(big_buffer, big_buffer_size - 36, "%s", name);
-p = big_buffer;
-while (*p != 0) p++;
+for (p = big_buffer; *p; ) p++;
 *p++ = ' ';
 
 for (i = 0; i < 16; i++)
@@ -317,8 +316,8 @@ buffer[0] = 0;
 if (smtp_write_command(outblock, FALSE, "%s\r\n", b64encode(big_buffer,
   p - big_buffer)) < 0) return FAIL_SEND;
 
-return smtp_read_response(inblock, (uschar *)buffer, buffsize, '2', timeout)?
-  OK : FAIL;
+return smtp_read_response(inblock, (uschar *)buffer, buffsize, '2', timeout)
+  ? OK : FAIL;
 }
 #endif  /* STAND_ALONE */
 
