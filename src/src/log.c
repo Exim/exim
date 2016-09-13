@@ -117,7 +117,7 @@ static const uschar * exim_errstrings[] = {
 const uschar *
 exim_errstr(int err)
 {
-return errno < 0 ? exim_errstrings[-err] : CUS strerror(err);
+return err < 0 ? exim_errstrings[-err] : CUS strerror(err);
 }
 
 /*************************************************

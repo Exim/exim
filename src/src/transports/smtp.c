@@ -631,11 +631,11 @@ Returns:   nothing
 static void
 write_logs(address_item *addr, host_item *host)
 {
-uschar * message = string_sprintf("H=%s [%s]", host->name, host->address);
+uschar * message = LOGGING(outgoing_port)
+  ? string_sprintf("H=%s [%s]:%d", host->name, host->address,
+		    host->port == PORT_NONE ? 25 : host->port)
+  : string_sprintf("H=%s [%s]", host->name, host->address);
 
-if (LOGGING(outgoing_port))
-  message = string_sprintf("%s:%d", message,
-	      host->port == PORT_NONE ? 25 : host->port);
 if (addr->message)
   {
   message = string_sprintf("%s: %s", message, addr->message);
