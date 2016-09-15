@@ -6268,7 +6268,11 @@ Chapter &<<CHAPplaintext>>& covers both.
 Exim supports the use of regular expressions in many of its options. It
 uses the PCRE regular expression library; this provides regular expression
 matching that is compatible with Perl 5. The syntax and semantics of
-regular expressions is discussed in many Perl reference books, and also in
+regular expressions is discussed in
+.new
+online Perl manpages, in
+.wen
+many Perl reference books, and also in
 Jeffrey Friedl's &'Mastering Regular Expressions'&, which is published by
 O'Reilly (see &url(http://www.oreilly.com/catalog/regex2/)).
 
