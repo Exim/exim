@@ -519,14 +519,14 @@ for (;;)
         string_item *aa;
         uschar *saveptr = ptr;
         ptr = nextword(ptr, buffer, sizeof(buffer), TRUE);
-        if (*error_pointer != NULL) break;
+        if (*error_pointer) break;
         if (Ustrcmp(buffer, "alias") != 0)
           {
           ptr = saveptr;
           break;
           }
         ptr = nextitem(ptr, buffer, sizeof(buffer), TRUE);
-        if (*error_pointer != NULL) break;
+        if (*error_pointer) break;
         aa = store_get(sizeof(string_item));
         aa->text = string_copy(buffer);
         aa->next = c->left.a;
@@ -540,7 +540,7 @@ for (;;)
     else if (Ustrcmp(buffer, "foranyaddress") == 0)
       {
       ptr = nextitem(ptr, buffer, sizeof(buffer), TRUE);
-      if (*error_pointer != NULL) break;
+      if (*error_pointer) break;
       if (*ptr != '(')
         {
         *error_pointer = string_sprintf("\"(\" expected after \"foranyaddress\" "
@@ -552,17 +552,12 @@ for (;;)
       c->left.u = string_copy(buffer);
 
       ptr = read_condition(nextsigchar(ptr+1, TRUE), &(c->right.c), FALSE);
-      if (*error_pointer != NULL) break;
+      if (*error_pointer) break;
       if (*ptr != ')')
         {
         *error_pointer = string_sprintf("expected \")\" in line %d of "
           "filter file", line_number);
         break;
-        }
-      if (!testfor)
-        {
-        c->testfor = !c->testfor;
-        testfor = TRUE;
         }
       ptr = nextsigchar(ptr+1, TRUE);
       }
@@ -577,7 +572,7 @@ for (;;)
 
       c->left.u = string_copy(buffer);
       ptr = nextword(ptr, buffer, sizeof(buffer), TRUE);
-      if (*error_pointer != NULL) break;
+      if (*error_pointer) break;
 
       /* Handle "does|is [not]", preserving the pointer after "is" in
       case it isn't that, but the form "is <string>". */
@@ -588,13 +583,13 @@ for (;;)
         if (buffer[0] == 'I') { c->type = cond_IS; isptr = ptr; }
 
         ptr = nextword(ptr, buffer, sizeof(buffer), TRUE);
-        if (*error_pointer != NULL) break;
+        if (*error_pointer) break;
         if (strcmpic(buffer, US"not") == 0)
           {
           c->testfor = !c->testfor;
-          if (isptr != NULL) isptr = ptr;
+          if (isptr) isptr = ptr;
           ptr = nextword(ptr, buffer, sizeof(buffer), TRUE);
-          if (*error_pointer != NULL) break;
+          if (*error_pointer) break;
           }
         }
 
@@ -612,22 +607,19 @@ for (;;)
 
       if (i >= cond_word_count)
         {
-        if (isptr != NULL)
-          {
-          ptr = isptr;
-          }
-        else
+        if (!isptr)
           {
           *error_pointer = string_sprintf("unrecognized condition word \"%s\" "
             "near line %d of filter file", buffer, line_number);
           break;
           }
+        ptr = isptr;
         }
 
       /* Get the RH argument. */
 
       ptr = nextitem(ptr, buffer, sizeof(buffer), TRUE);
-      if (*error_pointer != NULL) break;
+      if (*error_pointer) break;
       c->right.u = string_copy(buffer);
       }
     }
@@ -664,7 +656,7 @@ for (;;)
     {
     uschar *saveptr = ptr;
     ptr = nextword(ptr, buffer, sizeof(buffer), FALSE);
-    if (*error_pointer != NULL) break;
+    if (*error_pointer) break;
 
     /* "Then" terminates a toplevel condition; otherwise a closing bracket
     has been omitted. Put a string terminator at the start of "then" so
@@ -673,7 +665,7 @@ for (;;)
     if (Ustrcmp(buffer, "then") == 0)
       {
       if (toplevel) *saveptr = 0;
-        else *error_pointer = string_sprintf("missing \")\" at end of "
+      else *error_pointer = string_sprintf("missing \")\" at end of "
           "condition near line %d of filter file", line_number);
       break;
       }
@@ -707,21 +699,21 @@ for (;;)
       condition_block *orc = store_get(sizeof(condition_block));
       condition_block *or_parent = NULL;
 
-      if (current_parent != NULL)
+      if (current_parent)
         {
-        while (current_parent->parent != NULL &&
+        while (current_parent->parent &&
                current_parent->parent->type == cond_and)
           current_parent = current_parent->parent;
 
         /* If the parent has a parent, it must be an "or" parent. */
 
-        if (current_parent->parent != NULL)
+        if (current_parent->parent)
           or_parent = current_parent->parent;
         }
 
       orc->parent = or_parent;
-      if (or_parent == NULL) *cond = orc; else
-        or_parent->right.c = orc;
+      if (!or_parent) *cond = orc;
+      else or_parent->right.c = orc;
       orc->type = cond_or;
       orc->testfor = TRUE;
       orc->left.c = (current_parent == NULL)? c : current_parent;

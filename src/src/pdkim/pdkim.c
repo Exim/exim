@@ -1423,7 +1423,7 @@ while (sig)
   /*XXX walk the list of headers in same order as received. */
 	for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
 	  if (  hdrs->tag == 0
-	     && strncasecmp(hdrs->value, CS p, Ustrlen(p)) == 0
+	     && strncasecmp(CCS hdrs->value, CCS p, Ustrlen(p)) == 0
 	     && (hdrs->value)[Ustrlen(p)] == ':'
 	     )
 	    {

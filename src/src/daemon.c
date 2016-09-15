@@ -868,7 +868,7 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
 
   if (queue_pid_slots)
     {
-    int max = atoi(expand_string(queue_run_max));
+    int max = atoi(CS expand_string(queue_run_max));
     for (i = 0; i < max; i++)
       if (queue_pid_slots[i] == pid)
         {
@@ -915,7 +915,7 @@ int *listen_sockets = NULL;
 int listen_socket_count = 0;
 ip_address_item *addresses = NULL;
 time_t last_connection_time = (time_t)0;
-int local_queue_run_max = atoi(expand_string(queue_run_max));
+int local_queue_run_max = atoi(CS expand_string(queue_run_max));
 
 /* If any debugging options are set, turn on the D_pid bit so that all
 debugging lines get the pid added. */

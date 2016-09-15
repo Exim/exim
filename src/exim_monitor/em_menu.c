@@ -137,24 +137,24 @@ static void
 msglogAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 int i;
-Widget text = text_create((uschar *)client_data, text_depth);
-uschar * fname;
-FILE *f = NULL;
+Widget text = text_create(US client_data, text_depth);
+uschar * fname = NULL;
+FILE * f = NULL;
 
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
 
 /* End up with the split version, so message looks right when non-exist */
 
-for (i = 0; i < (spool_is_split? 2:1); i++)
+for (i = 0; i < (spool_is_split ? 2:1); i++)
   {
-  message_subdir[0] = i != 0 ? ((uschar *)client_data)[5] : 0;
+  message_subdir[0] = i != 0 ? (US client_data)[5] : 0;
   fname = spool_fname(US"msglog", message_subdir, US client_data, US"");
   if ((f = fopen(CS fname, "r")))
     break;
   }
 
-if (f == NULL)
+if (!f)
   text_showf(text, "%s: %s\n", fname, strerror(errno));
 else
   {

@@ -51,7 +51,7 @@ for (i = 0; i < 2; i++)
   uschar * fname;
   int save_errno;
 
-  message_subdir[0] = split_spool_directory == i == 0 ? id[5] : 0;
+  message_subdir[0] = split_spool_directory == i ? '\0' : id[5];
   fname = spool_fname(US"input", message_subdir, id, US"-D");
   DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
 
@@ -476,21 +476,21 @@ for (;;)
 
     else if (Ustrncmp(p, "cl ", 3) == 0)
       {
-      int index, count;
-      uschar name[20];   /* Need plenty of space for %d format */
-      tree_node *node;
-      if (  sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2
+      unsigned index, count;
+      uschar name[20];   /* Need plenty of space for %u format */
+      tree_node * node;
+      if (  sscanf(CS big_buffer + 5, "%u %u", &index, &count) != 2
 	 || index >= 20
          )
         goto SPOOL_FORMAT_ERROR;
       if (index < 10)
-        (void) string_format(name, sizeof(name), "%c%d", 'c', index);
+        (void) string_format(name, sizeof(name), "%c%u", 'c', index);
       else
-        (void) string_format(name, sizeof(name), "%c%d", 'm', index - 10);
+        (void) string_format(name, sizeof(name), "%c%u", 'm', index - 10);
       node = acl_var_create(name);
       node->data.ptr = store_get(count + 1);
       if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
-      ((uschar*)node->data.ptr)[count] = 0;
+      (US node->data.ptr)[count] = '\0';
       }
     break;
 

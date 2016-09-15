@@ -1574,7 +1574,6 @@ lflags.send_quit = TRUE;
 lflags.setting_up = TRUE;
 lflags.esmtp = TRUE;
 lflags.esmtp_sent = FALSE;
-lflags.pending_MAIL;
 #ifndef DISABLE_PRDR
 lflags.prdr_active;
 #endif

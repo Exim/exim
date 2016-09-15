@@ -1704,12 +1704,13 @@ Returns:      1                success
               -1               no string list found
 */
 
-static int parse_stringlist(struct Sieve *filter, struct String **data)
+static int
+parse_stringlist(struct Sieve *filter, struct String **data)
 {
 const uschar *orig=filter->pc;
-int dataCapacity=0;
-int dataLength=0;
-struct String *d=(struct String*)0;
+int dataCapacity = 0;
+int dataLength = 0;
+struct String *d = NULL;
 int m;
 
 if (*filter->pc=='[') /* string list */
@@ -1718,20 +1719,18 @@ if (*filter->pc=='[') /* string list */
   for (;;)
     {
     if (parse_white(filter)==-1) goto error;
-    if ((dataLength+1)>=dataCapacity) /* increase buffer */
+    if (dataLength+1 >= dataCapacity) /* increase buffer */
       {
       struct String *new;
       int newCapacity;          /* Don't amalgamate with next line; some compilers grumble */
-      newCapacity=dataCapacity?(dataCapacity*=2):(dataCapacity=4);
-      if ((new=(struct String*)store_get(sizeof(struct String)*newCapacity))==(struct String*)0)
-        {
-        filter->errmsg=CUstrerror(errno);
-        goto error;
-        }
+
+      dataCapacity = dataCapacity ? dataCapacity * 2 : 4;
+      new = store_get(sizeof(struct String) * dataCapacity);
+
       if (d) memcpy(new,d,sizeof(struct String)*dataLength);
-      d=new;
-      dataCapacity=newCapacity;
+      d = new;
       }
+
     m=parse_string(filter,&d[dataLength]);
     if (m==0)
       {

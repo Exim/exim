@@ -950,11 +950,11 @@ X509_set_pubkey(x509, pkey);
 
 name = X509_get_subject_name(x509);
 X509_NAME_add_entry_by_txt(name, "C",
-			  MBSTRING_ASC, "UK", -1, -1, 0);
+			  MBSTRING_ASC, CUS "UK", -1, -1, 0);
 X509_NAME_add_entry_by_txt(name, "O",
-			  MBSTRING_ASC, "Exim Developers", -1, -1, 0);
+			  MBSTRING_ASC, CUS "Exim Developers", -1, -1, 0);
 X509_NAME_add_entry_by_txt(name, "CN",
-			  MBSTRING_ASC, CS smtp_active_hostname, -1, -1, 0);
+			  MBSTRING_ASC, CUS smtp_active_hostname, -1, -1, 0);
 X509_set_issuer_name(x509, name);
 
 where = US"signing cert";

@@ -3983,7 +3983,10 @@ if (timezone_string && strcmpic(timezone_string, US"UTC") == 0)
 else
   {
   uschar *envtz = US getenv("TZ");
-  if (envtz ? !timezone_string || Ustrcmp(timezone_string, envtz) != 0 : timezone_string)
+  if (envtz
+      ? !timezone_string || Ustrcmp(timezone_string, envtz) != 0
+      : timezone_string != NULL
+     )
     {
     uschar **p = USS environ;
     uschar **new;

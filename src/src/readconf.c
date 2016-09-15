@@ -3022,220 +3022,220 @@ macros are stored, but this will do for now. Some names are awkward
 due to conflicts with other common macros. */
 
 #ifdef SUPPORT_CRYPTEQ
-  read_macro_assignment("_HAVE_CRYPTEQ=y");
+  read_macro_assignment(US"_HAVE_CRYPTEQ=y");
 #endif
 #if HAVE_ICONV
-  read_macro_assignment("_HAVE_ICONV=y");
+  read_macro_assignment(US"_HAVE_ICONV=y");
 #endif
 #if HAVE_IPV6
-  read_macro_assignment("_HAVE_IPV6=y");
+  read_macro_assignment(US"_HAVE_IPV6=y");
 #endif
 #ifdef HAVE_SETCLASSRESOURCES
-  read_macro_assignment("_HAVE_SETCLASSRESOURCES=y");
+  read_macro_assignment(US"_HAVE_SETCLASSRESOURCES=y");
 #endif
 #ifdef SUPPORT_PAM
-  read_macro_assignment("_HAVE_PAM=y");
+  read_macro_assignment(US"_HAVE_PAM=y");
 #endif
 #ifdef EXIM_PERL
-  read_macro_assignment("_HAVE_PERL=y");
+  read_macro_assignment(US"_HAVE_PERL=y");
 #endif
 #ifdef EXPAND_DLFUNC
-  read_macro_assignment("_HAVE_DLFUNC=y");
+  read_macro_assignment(US"_HAVE_DLFUNC=y");
 #endif
 #ifdef USE_TCP_WRAPPERS
-  read_macro_assignment("_HAVE_TCPWRAPPERS=y");
+  read_macro_assignment(US"_HAVE_TCPWRAPPERS=y");
 #endif
 #ifdef SUPPORT_TLS
-  read_macro_assignment("_HAVE_TLS=y");
+  read_macro_assignment(US"_HAVE_TLS=y");
 # ifdef USE_GNUTLS
-  read_macro_assignment("_HAVE_GNUTLS=y");
+  read_macro_assignment(US"_HAVE_GNUTLS=y");
 # else
-  read_macro_assignment("_HAVE_OPENSSL=y");
+  read_macro_assignment(US"_HAVE_OPENSSL=y");
 # endif
 #endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
-  read_macro_assignment("_HAVE_TRANSLATE_IP_ADDRESS=y");
+  read_macro_assignment(US"_HAVE_TRANSLATE_IP_ADDRESS=y");
 #endif
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-  read_macro_assignment("_HAVE_MOVE_FROZEN_MESSAGES=y");
+  read_macro_assignment(US"_HAVE_MOVE_FROZEN_MESSAGES=y");
 #endif
 #ifdef WITH_CONTENT_SCAN
-  read_macro_assignment("_HAVE_CONTENT_SCANNING=y");
+  read_macro_assignment(US"_HAVE_CONTENT_SCANNING=y");
 #endif
 #ifndef DISABLE_DKIM
-  read_macro_assignment("_HAVE_DKIM=y");
+  read_macro_assignment(US"_HAVE_DKIM=y");
 #endif
 #ifndef DISABLE_DNSSEC
-  read_macro_assignment("_HAVE_DNSSEC=y");
+  read_macro_assignment(US"_HAVE_DNSSEC=y");
 #endif
 #ifndef DISABLE_EVENT
-  read_macro_assignment("_HAVE_Event=y");
+  read_macro_assignment(US"_HAVE_Event=y");
 #endif
 #ifdef SUPPORT_I18N
-  read_macro_assignment("_HAVE_I18N=y");
+  read_macro_assignment(US"_HAVE_I18N=y");
 #endif
 #ifndef DISABLE_OCSP
-  read_macro_assignment("_HAVE_OCSP=y");
+  read_macro_assignment(US"_HAVE_OCSP=y");
 #endif
 #ifndef DISABLE_PRDR
-  read_macro_assignment("_HAVE_PRDR=y");
+  read_macro_assignment(US"_HAVE_PRDR=y");
 #endif
 #ifdef SUPPORT_PROXY
-  read_macro_assignment("_HAVE_PROXY=y");
+  read_macro_assignment(US"_HAVE_PROXY=y");
 #endif
 #ifdef SUPPORT_SOCKS
-  read_macro_assignment("_HAVE_SOCKS=y");
+  read_macro_assignment(US"_HAVE_SOCKS=y");
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  read_macro_assignment("_HAVE_LMDB=y");
+  read_macro_assignment(US"_HAVE_LMDB=y");
 #endif
 #ifdef EXPERIMENTAL_SPF
-  read_macro_assignment("_HAVE_SPF=y");
+  read_macro_assignment(US"_HAVE_SPF=y");
 #endif
 #ifdef EXPERIMENTAL_SRS
-  read_macro_assignment("_HAVE_SRS=y");
+  read_macro_assignment(US"_HAVE_SRS=y");
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  read_macro_assignment("_HAVE_BRIGHTMAIL=y");
+  read_macro_assignment(US"_HAVE_BRIGHTMAIL=y");
 #endif
 #ifdef EXPERIMENTAL_DANE
-  read_macro_assignment("_HAVE_DANE=y");
+  read_macro_assignment(US"_HAVE_DANE=y");
 #endif
 #ifdef EXPERIMENTAL_DCC
-  read_macro_assignment("_HAVE_DCC=y");
+  read_macro_assignment(US"_HAVE_DCC=y");
 #endif
 #ifdef EXPERIMENTAL_DMARC
-  read_macro_assignment("_HAVE_DMARC=y");
+  read_macro_assignment(US"_HAVE_DMARC=y");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
-  read_macro_assignment("_HAVE_DSN_INFO=y");
+  read_macro_assignment(US"_HAVE_DSN_INFO=y");
 #endif
 
 #ifdef LOOKUP_LSEARCH
-  read_macro_assignment("_HAVE_LKUP_LSEARCH=y");
+  read_macro_assignment(US"_HAVE_LKUP_LSEARCH=y");
 #endif
 #ifdef LOOKUP_CDB
-  read_macro_assignment("_HAVE_LKUP_CDB=y");
+  read_macro_assignment(US"_HAVE_LKUP_CDB=y");
 #endif
 #ifdef LOOKUP_DBM
-  read_macro_assignment("_HAVE_LKUP_DBM=y");
+  read_macro_assignment(US"_HAVE_LKUP_DBM=y");
 #endif
 #ifdef LOOKUP_DNSDB
-  read_macro_assignment("_HAVE_LKUP_DNSDB=y");
+  read_macro_assignment(US"_HAVE_LKUP_DNSDB=y");
 #endif
 #ifdef LOOKUP_DSEARCH
-  read_macro_assignment("_HAVE_LKUP_DSEARCH=y");
+  read_macro_assignment(US"_HAVE_LKUP_DSEARCH=y");
 #endif
 #ifdef LOOKUP_IBASE
-  read_macro_assignment("_HAVE_LKUP_IBASE=y");
+  read_macro_assignment(US"_HAVE_LKUP_IBASE=y");
 #endif
 #ifdef LOOKUP_LDAP
-  read_macro_assignment("_HAVE_LKUP_LDAP=y");
+  read_macro_assignment(US"_HAVE_LKUP_LDAP=y");
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  read_macro_assignment("_HAVE_LKUP_LMDB=y");
+  read_macro_assignment(US"_HAVE_LKUP_LMDB=y");
 #endif
 #ifdef LOOKUP_MYSQL
-  read_macro_assignment("_HAVE_LKUP_MYSQL=y");
+  read_macro_assignment(US"_HAVE_LKUP_MYSQL=y");
 #endif
 #ifdef LOOKUP_NIS
-  read_macro_assignment("_HAVE_LKUP_NIS=y");
+  read_macro_assignment(US"_HAVE_LKUP_NIS=y");
 #endif
 #ifdef LOOKUP_NISPLUS
-  read_macro_assignment("_HAVE_LKUP_NISPLUS=y");
+  read_macro_assignment(US"_HAVE_LKUP_NISPLUS=y");
 #endif
 #ifdef LOOKUP_ORACLE
-  read_macro_assignment("_HAVE_LKUP_ORACLE=y");
+  read_macro_assignment(US"_HAVE_LKUP_ORACLE=y");
 #endif
 #ifdef LOOKUP_PASSWD
-  read_macro_assignment("_HAVE_LKUP_PASSWD=y");
+  read_macro_assignment(US"_HAVE_LKUP_PASSWD=y");
 #endif
 #ifdef LOOKUP_PGSQL
-  read_macro_assignment("_HAVE_LKUP_PGSQL=y");
+  read_macro_assignment(US"_HAVE_LKUP_PGSQL=y");
 #endif
 #ifdef LOOKUP_REDIS
-  read_macro_assignment("_HAVE_LKUP_REDIS=y");
+  read_macro_assignment(US"_HAVE_LKUP_REDIS=y");
 #endif
 #ifdef LOOKUP_SQLITE
-  read_macro_assignment("_HAVE_LKUP_SQLITE=y");
+  read_macro_assignment(US"_HAVE_LKUP_SQLITE=y");
 #endif
 #ifdef LOOKUP_TESTDB
-  read_macro_assignment("_HAVE_LKUP_TESTDB=y");
+  read_macro_assignment(US"_HAVE_LKUP_TESTDB=y");
 #endif
 #ifdef LOOKUP_WHOSON
-  read_macro_assignment("_HAVE_LKUP_WHOSON=y");
+  read_macro_assignment(US"_HAVE_LKUP_WHOSON=y");
 #endif
 
 #ifdef AUTH_CRAM_MD5
-  read_macro_assignment("_HAVE_AUTH_CRAM_MD5=y");
+  read_macro_assignment(US"_HAVE_AUTH_CRAM_MD5=y");
 #endif
 #ifdef AUTH_CYRUS_SASL
-  read_macro_assignment("_HAVE_AUTH_CYRUS_SASL=y");
+  read_macro_assignment(US"_HAVE_AUTH_CYRUS_SASL=y");
 #endif
 #ifdef AUTH_DOVECOT
-  read_macro_assignment("_HAVE_AUTH_DOVECOT=y");
+  read_macro_assignment(US"_HAVE_AUTH_DOVECOT=y");
 #endif
 #ifdef AUTH_GSASL
-  read_macro_assignment("_HAVE_AUTH_GSASL=y");
+  read_macro_assignment(US"_HAVE_AUTH_GSASL=y");
 #endif
 #ifdef AUTH_HEIMDAL_GSSAPI
-  read_macro_assignment("_HAVE_AUTH_HEIMDAL_GSSAPI=y");
+  read_macro_assignment(US"_HAVE_AUTH_HEIMDAL_GSSAPI=y");
 #endif
 #ifdef AUTH_PLAINTEXT
-  read_macro_assignment("_HAVE_AUTH_PLAINTEXT=y");
+  read_macro_assignment(US"_HAVE_AUTH_PLAINTEXT=y");
 #endif
 #ifdef AUTH_SPA
-  read_macro_assignment("_HAVE_AUTH_SPA=y");
+  read_macro_assignment(US"_HAVE_AUTH_SPA=y");
 #endif
 #ifdef AUTH_TLS
-  read_macro_assignment("_HAVE_AUTH_TLS=y");
+  read_macro_assignment(US"_HAVE_AUTH_TLS=y");
 #endif
 
 #ifdef ROUTER_ACCEPT
-  read_macro_assignment("_HAVE_RTR_ACCEPT=y");
+  read_macro_assignment(US"_HAVE_RTR_ACCEPT=y");
 #endif
 #ifdef ROUTER_DNSLOOKUP
-  read_macro_assignment("_HAVE_RTR_DNSLOOKUP=y");
+  read_macro_assignment(US"_HAVE_RTR_DNSLOOKUP=y");
 #endif
 #ifdef ROUTER_IPLITERAL
-  read_macro_assignment("_HAVE_RTR_IPLITERAL=y");
+  read_macro_assignment(US"_HAVE_RTR_IPLITERAL=y");
 #endif
 #ifdef ROUTER_IPLOOKUP
-  read_macro_assignment("_HAVE_RTR_IPLOOKUP=y");
+  read_macro_assignment(US"_HAVE_RTR_IPLOOKUP=y");
 #endif
 #ifdef ROUTER_MANUALROUTE
-  read_macro_assignment("_HAVE_RTR_MANUALROUTE=y");
+  read_macro_assignment(US"_HAVE_RTR_MANUALROUTE=y");
 #endif
 #ifdef ROUTER_QUERYPROGRAM
-  read_macro_assignment("_HAVE_RTR_QUERYPROGRAM=y");
+  read_macro_assignment(US"_HAVE_RTR_QUERYPROGRAM=y");
 #endif
 #ifdef ROUTER_REDIRECT
-  read_macro_assignment("_HAVE_RTR_REDRCT=y");
+  read_macro_assignment(US"_HAVE_RTR_REDRCT=y");
 #endif
 
 #ifdef TRANSPORT_APPENDFILE
-  read_macro_assignment("_HAVE_TPT_APPENDFILE=y");
+  read_macro_assignment(US"_HAVE_TPT_APPENDFILE=y");
 # ifdef SUPPORT_MAILDIR
-  read_macro_assignment("_HAVE_TPT_APPEND_MAILDR=y");
+  read_macro_assignment(US"_HAVE_TPT_APPEND_MAILDR=y");
 # endif
 # ifdef SUPPORT_MAILSTORE
-  read_macro_assignment("_HAVE_TPT_APPEND_MAILSTORE=y");
+  read_macro_assignment(US"_HAVE_TPT_APPEND_MAILSTORE=y");
 # endif
 # ifdef SUPPORT_MBX
-  read_macro_assignment("_HAVE_TPT_APPEND_MBX=y");
+  read_macro_assignment(US"_HAVE_TPT_APPEND_MBX=y");
 # endif
 #endif
 #ifdef TRANSPORT_AUTOREPLY
-  read_macro_assignment("_HAVE_TPT_AUTOREPLY=y");
+  read_macro_assignment(US"_HAVE_TPT_AUTOREPLY=y");
 #endif
 #ifdef TRANSPORT_LMTP
-  read_macro_assignment("_HAVE_TPT_LMTP=y");
+  read_macro_assignment(US"_HAVE_TPT_LMTP=y");
 #endif
 #ifdef TRANSPORT_PIPE
-  read_macro_assignment("_HAVE_TPT_PIPE=y");
+  read_macro_assignment(US"_HAVE_TPT_PIPE=y");
 #endif
 #ifdef TRANSPORT_SMTP
-  read_macro_assignment("_HAVE_TPT_SMTP=y");
+  read_macro_assignment(US"_HAVE_TPT_SMTP=y");
 #endif
 }
 

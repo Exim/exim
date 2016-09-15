@@ -148,7 +148,12 @@ if (!mime_stream)
 else
   {
   clearerr(mime_stream);
-  fseek(mime_stream, f_pos, SEEK_SET);
+  if (fseek(mime_stream, f_pos, SEEK_SET) == -1)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	   "regex acl condition: mime_stream: %s", strerror(errno));
+    clearerr(mime_stream);
+    }
   }
 
 return ret;

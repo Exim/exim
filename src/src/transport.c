@@ -941,7 +941,7 @@ suboptimal. */
 if (tctx->options & topt_use_bdat)
   {
   off_t fsize;
-  int hsize, size;
+  int hsize, size = 0;
 
   if ((hsize = chunk_ptr - deliver_out_buffer) < 0)
     hsize = 0;
@@ -1172,17 +1172,17 @@ else
   /* Send file down the original fd */
   while((sread = read(dkim_fd, deliver_out_buffer, DELIVER_OUT_BUFFER_SIZE)) >0)
     {
-    char *p = deliver_out_buffer;
+    uschar * p = deliver_out_buffer;
     /* write the chunk */
 
     while (sread)
       {
 #ifdef SUPPORT_TLS
       wwritten = tls_out.active == out_fd
-	? tls_write(FALSE, US p, sread)
-	: write(out_fd, p, sread);
+	? tls_write(FALSE, p, sread)
+	: write(out_fd, CS p, sread);
 #else
-      wwritten = write(out_fd, p, sread);
+      wwritten = write(out_fd, CS p, sread);
 #endif
       if (wwritten == -1)
 	goto err;
@@ -1235,7 +1235,6 @@ Returns:       TRUE on success; FALSE (with errno) for any failure
 BOOL
 transport_write_message(int fd, transport_ctx * tctx, int size_limit)
 {
-unsigned wck_flags;
 BOOL last_filter_was_NL = TRUE;
 int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
@@ -1259,7 +1258,6 @@ if (  !transport_filter_argv
 before being written to the incoming fd. First set up the special processing to
 be done during the copying. */
 
-wck_flags = tctx->options & topt_use_crlf;
 nl_partial_match = -1;
 
 if (tctx->check_string && tctx->escape_string)
@@ -1425,14 +1423,19 @@ if (write_pid > 0)
   {
   rc = child_close(write_pid, 30);
   if (yield)
-    {
     if (rc == 0)
       {
       BOOL ok;
-      int dummy = read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
-      if (!ok)
+      if (read(pfd[pipe_read], (void *)&ok, sizeof(BOOL)) != sizeof(BOOL))
+	{
+	DEBUG(D_transport)
+	  debug_printf("pipe read from writing process: %s\n", strerror(errno));
+	save_errno = ERRNO_FILTER_FAIL;
+        yield = FALSE;
+	}
+      else if (!ok)
         {
-        dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
+	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&(tctx->addr->more_errno), sizeof(int));
         yield = FALSE;
         }
@@ -1444,7 +1447,6 @@ if (write_pid > 0)
       tctx->addr->more_errno = rc;
       DEBUG(D_transport) debug_printf("writing process returned %d\n", rc);
       }
-    }
   }
 (void)close(pfd[pipe_read]);
 

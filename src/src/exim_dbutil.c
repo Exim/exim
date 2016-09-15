@@ -802,13 +802,13 @@ for(;;)
         if (record == NULL) printf("not found\n"); else
           {
           time_t tt;
-          int length = 0;     /* Stops compiler warning */
+          /*int length = 0;      Stops compiler warning */
 
           switch(dbdata_type)
             {
             case type_retry:
             retry = (dbdata_retry *)record;
-            length = sizeof(dbdata_retry) + Ustrlen(retry->text);
+            /* length = sizeof(dbdata_retry) + Ustrlen(retry->text); */
 
             switch(fieldno)
               {
@@ -858,7 +858,7 @@ for(;;)
 
             case type_callout:
             callout = (dbdata_callout_cache *)record;
-            length = sizeof(dbdata_callout_cache);
+            /* length = sizeof(dbdata_callout_cache); */
             switch(fieldno)
               {
               case 0:

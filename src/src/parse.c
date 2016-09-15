@@ -1444,7 +1444,7 @@ for (;;)
       with a flag that fails symlinks. */
 
       {
-      int fd = open(directory, O_RDONLY);
+      int fd = open(CS directory, O_RDONLY);
       if (fd < 0)
 	{
 	*error = string_sprintf("failed to open directory %s", directory);
@@ -1460,7 +1460,7 @@ for (;;)
 	temp = *p;
 	*p = '\0';
 
-	fd2 = openat(fd, q, O_RDONLY|O_NOFOLLOW);
+	fd2 = openat(fd, CS q, O_RDONLY|O_NOFOLLOW);
 	close(fd);
 	*p = temp;
 	if (fd2 < 0)

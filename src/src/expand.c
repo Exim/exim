@@ -7123,7 +7123,7 @@ while (*s != 0)
 	const uschar * s = sub;
 	uschar c;
 
-	for (s = sub; c = *s; s++)
+	for (s = sub; (c = *s); s++)
 	  yield = c < 127 && c != '\\'
 	    ? string_catn(yield, &size, &ptr, s, 1)
 	    : string_catn(yield, &size, &ptr, string_sprintf("\\%03o", c), 4);

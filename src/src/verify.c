@@ -808,7 +808,6 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	int oldtimeout = ob->command_timeout;
 	int rc;
 
-	tls_negotiate:
 	ob->command_timeout = callout;
         rc = tls_client_start(inblock.sock, host, addr, addr->transport
 # ifdef EXPERIMENTAL_DANE
