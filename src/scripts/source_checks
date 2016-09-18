@@ -27,6 +27,7 @@ done <<-END
 	transports/pipe.c	pipe_transport_options
 	transports/smtp.c	smtp_transport_options
 	expand.c	var_table
+	acl.c		conditions
 	acl.c		controls_list
 END
 
@@ -46,6 +47,5 @@ done <<-END
 	expand.c	op_table_main
 	expand.c	cond_table
 	acl.c		verbs
-	acl.c		conditions
 END
 
