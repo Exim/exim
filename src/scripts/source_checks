@@ -27,6 +27,7 @@ done <<-END
 	transports/pipe.c	pipe_transport_options
 	transports/smtp.c	smtp_transport_options
 	expand.c	var_table
+	acl.c		controls_list
 END
 
 # Tables with just string items

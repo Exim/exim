@@ -488,8 +488,7 @@ static optionlist optionlist_config[] = {
   { "write_rejectlog",          opt_bool,        &write_rejectlog }
 };
 
-static int optionlist_config_size =
-  sizeof(optionlist_config)/sizeof(optionlist);
+static int optionlist_config_size = nelem(optionlist_config);
 
 
 
@@ -517,7 +516,7 @@ transport_instance *t;
 for (i = 0; i < optionlist_config_size; i++)
   if (p == optionlist_config[i].value) return US optionlist_config[i].name;
 
-for (r = routers; r != NULL; r = r->next)
+for (r = routers; r; r = r->next)
   {
   router_info *ri = r->info;
   for (i = 0; i < *ri->options_count; i++)
@@ -528,7 +527,7 @@ for (r = routers; r != NULL; r = r->next)
     }
   }
 
-for (t = transports; t != NULL; t = t->next)
+for (t = transports; t; t = t->next)
   {
   transport_info *ti = t->info;
   for (i = 0; i < *ti->options_count; i++)
@@ -1163,9 +1162,10 @@ while (last > first)
   {
   int middle = (first + last)/2;
   int c = Ustrcmp(name, ol[middle].name);
+
   if (c == 0) return ol + middle;
-    else if (c > 0) first = middle + 1;
-      else last = middle;
+  else if (c > 0) first = middle + 1;
+  else last = middle;
   }
 return NULL;
 }
@@ -1509,9 +1509,7 @@ if (Ustrncmp(name, "not_", 4) == 0)
 /* Search the list for the given name. A non-existent name, or an option that
 is set twice, is a disaster. */
 
-ol = find_option(name + offset, oltop, last);
-
-if (ol == NULL)
+if (!(ol = find_option(name + offset, oltop, last)))
   {
   if (unknown_txt == NULL) return FALSE;
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, CS unknown_txt, name);
@@ -2618,8 +2616,8 @@ if (type == NULL)
     return;
     }
 
-  if ( Ustrcmp(name, "configure_file") == 0
-     ||Ustrcmp(name, "config_file") == 0)
+  if (  Ustrcmp(name, "configure_file") == 0
+     || Ustrcmp(name, "config_file") == 0)
     {
     printf("%s\n", CS config_main_filename);
     return;

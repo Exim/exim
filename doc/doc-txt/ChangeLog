@@ -90,6 +90,9 @@ JH/23 Bug 1874: fix continued use of a connection for further deliveries.
 
 JH/24 Bug 1832: Log EHLO response on getting conn-close response for HELO.
 
+JH/25 Decoding ACL controls is now done using a binary search; the sourcecode
+      takes up less space and should be simpler to maintain.
+
 
 Exim version 4.87
 -----------------

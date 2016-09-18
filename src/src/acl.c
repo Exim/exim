@@ -174,90 +174,6 @@ static uschar *conditions[] = {
   US"verify" };
 
 
-/* Return values from decode_control(); keep in step with the table of names
-that follows! */
-
-enum {
-  CONTROL_AUTH_UNADVERTISED,
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  CONTROL_BMI_RUN,
-#endif
-  CONTROL_DEBUG,
-#ifndef DISABLE_DKIM
-  CONTROL_DKIM_VERIFY,
-#endif
-#ifdef EXPERIMENTAL_DMARC
-  CONTROL_DMARC_VERIFY,
-  CONTROL_DMARC_FORENSIC,
-#endif
-  CONTROL_DSCP,
-  CONTROL_ERROR,
-  CONTROL_CASEFUL_LOCAL_PART,
-  CONTROL_CASELOWER_LOCAL_PART,
-  CONTROL_CUTTHROUGH_DELIVERY,
-  CONTROL_ENFORCE_SYNC,
-  CONTROL_NO_ENFORCE_SYNC,
-  CONTROL_FREEZE,
-  CONTROL_QUEUE_ONLY,
-  CONTROL_SUBMISSION,
-  CONTROL_SUPPRESS_LOCAL_FIXUPS,
-#ifdef WITH_CONTENT_SCAN
-  CONTROL_NO_MBOX_UNSPOOL,
-#endif
-  CONTROL_FAKEDEFER,
-  CONTROL_FAKEREJECT,
-#ifdef SUPPORT_I18N
-  CONTROL_UTF8_DOWNCONVERT,
-#endif
-  CONTROL_NO_MULTILINE,
-  CONTROL_NO_PIPELINING,
-  CONTROL_NO_DELAY_FLUSH,
-  CONTROL_NO_CALLOUT_FLUSH
-};
-
-/* ACL control names; keep in step with the table above! This list is used for
-turning ids into names. The actual list of recognized names is in the variable
-control_def controls_list[] below. The fact that there are two lists is a mess
-and should be tidied up. */
-
-static uschar *controls[] = {
-  US"allow_auth_unadvertised",
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  US"bmi_run",
-#endif
-  US"debug",
-#ifndef DISABLE_DKIM
-  US"dkim_disable_verify",
-#endif
-#ifdef EXPERIMENTAL_DMARC
-  US"dmarc_disable_verify",
-  US"dmarc_enable_forensic",
-#endif
-  US"dscp",
-  US"error",
-  US"caseful_local_part",
-  US"caselower_local_part",
-  US"cutthrough_delivery",
-  US"enforce_sync",
-  US"no_enforce_sync",
-  US"freeze",
-  US"queue_only",
-  US"submission",
-  US"suppress_local_fixups",
-#ifdef WITH_CONTENT_SCAN
-  US"no_mbox_unspool",
-#endif
-  US"fakedefer",
-  US"fakereject",
-#ifdef SUPPORT_I18N
-  US"utf8_downconvert",
-#endif
-  US"no_multiline_responses",
-  US"no_pipelining",
-  US"no_delay_flush",
-  US"no_callout_flush"
-};
-
 /* Flags to indicate for which conditions/modifiers a string expansion is done
 at the outer level. In the other cases, expansion already occurs in the
 checking functions. */
@@ -593,162 +509,175 @@ static unsigned int cond_forbids[] = {
 };
 
 
-/* Bit map vector of which controls are not allowed at certain times. For
-each control, there's a bitmap of dis-allowed times. For some, it is easier to
-specify the negation of a small number of allowed times. */
+/* Return values from decode_control(); used as index so keep in step
+with the controls_list table that follows! */
 
-static unsigned int control_forbids[] = {
-  (unsigned int)
-  ~((1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)),   /* allow_auth_unadvertised */
-
+enum {
+  CONTROL_AUTH_UNADVERTISED,
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  0,                                               /* bmi_run */
+  CONTROL_BMI_RUN,
 #endif
-
-  0,                                               /* debug */
-
+  CONTROL_CASEFUL_LOCAL_PART,
+  CONTROL_CASELOWER_LOCAL_PART,
+  CONTROL_CUTTHROUGH_DELIVERY,
+  CONTROL_DEBUG,
 #ifndef DISABLE_DKIM
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_disable_verify */
-# ifndef DISABLE_PRDR
-    (1<<ACL_WHERE_PRDR)|
-# endif
-    (1<<ACL_WHERE_NOTSMTP_START),
+  CONTROL_DKIM_VERIFY,
 #endif
-
 #ifdef EXPERIMENTAL_DMARC
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_disable_verify */
-    (1<<ACL_WHERE_NOTSMTP_START),
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dmarc_enable_forensic */
-    (1<<ACL_WHERE_NOTSMTP_START),
+  CONTROL_DMARC_VERIFY,
+  CONTROL_DMARC_FORENSIC,
 #endif
+  CONTROL_DSCP,
+  CONTROL_ENFORCE_SYNC,
+  CONTROL_ERROR,		/* pseudo-value for decode errors */
+  CONTROL_FAKEDEFER,
+  CONTROL_FAKEREJECT,
+  CONTROL_FREEZE,
 
-  (1<<ACL_WHERE_NOTSMTP)|
-    (1<<ACL_WHERE_NOTSMTP_START)|
-    (1<<ACL_WHERE_NOTQUIT),                        /* dscp */
-
-  0,                                               /* error */
-
-  (unsigned int)
-  ~(1<<ACL_WHERE_RCPT),                            /* caseful_local_part */
-
-  (unsigned int)
-  ~(1<<ACL_WHERE_RCPT),                            /* caselower_local_part */
-
-  (unsigned int)
-  0,						   /* cutthrough_delivery */
-
-  (1<<ACL_WHERE_NOTSMTP)|                          /* enforce_sync */
-    (1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_NOTSMTP)|                          /* no_enforce_sync */
-    (1<<ACL_WHERE_NOTSMTP_START),
-
-  (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* freeze */
-    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME)),
-
-  (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* queue_only */
-    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME)),
-
-  (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* submission */
-    (1<<ACL_WHERE_PREDATA)),
-
-  (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* suppress_local_fixups */
-    (1<<ACL_WHERE_PREDATA)|
-    (1<<ACL_WHERE_NOTSMTP_START)),
-
+  CONTROL_NO_CALLOUT_FLUSH,
+  CONTROL_NO_DELAY_FLUSH,
+  CONTROL_NO_ENFORCE_SYNC,
 #ifdef WITH_CONTENT_SCAN
-  (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* no_mbox_unspool */
-    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-    (1<<ACL_WHERE_MIME)),
+  CONTROL_NO_MBOX_UNSPOOL,
 #endif
+  CONTROL_NO_MULTILINE,
+  CONTROL_NO_PIPELINING,
 
-  (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakedefer */
-    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-#ifndef DISABLE_PRDR
-    (1<<ACL_WHERE_PRDR)|
-#endif
-    (1<<ACL_WHERE_MIME)),
-
-  (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
-    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-#ifndef DISABLE_PRDR
-    (1<<ACL_WHERE_PRDR)|
-#endif
-    (1<<ACL_WHERE_MIME)),
-
+  CONTROL_QUEUE_ONLY,
+  CONTROL_SUBMISSION,
+  CONTROL_SUPPRESS_LOCAL_FIXUPS,
 #ifdef SUPPORT_I18N
-  0,                                               /* utf8_downconvert */
+  CONTROL_UTF8_DOWNCONVERT,
 #endif
-
-  (1<<ACL_WHERE_NOTSMTP)|                          /* no_multiline */
-    (1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_NOTSMTP)|                          /* no_pipelining */
-    (1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_NOTSMTP)|                          /* no_delay_flush */
-    (1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_NOTSMTP)|                          /* no_callout_flush */
-    (1<<ACL_WHERE_NOTSMTP_START)
 };
 
-/* Structure listing various control arguments, with their characteristics. */
+
+
+/* Structure listing various control arguments, with their characteristics.
+For each control, there's a bitmap of dis-allowed times. For some, it is easier
+to specify the negation of a small number of allowed times. */
 
 typedef struct control_def {
-  uschar *name;
-  int    value;                  /* CONTROL_xxx value */
-  BOOL   has_option;             /* Has /option(s) following */
+  uschar	*name;
+  BOOL		has_option;     /* Has /option(s) following */
+  unsigned	forbids;	/* bitmap of dis-allowed times */
 } control_def;
 
 static control_def controls_list[] = {
-  { US"allow_auth_unadvertised", CONTROL_AUTH_UNADVERTISED,     FALSE },
+  { US"allow_auth_unadvertised", FALSE,
+    (unsigned)
+    ~((1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO))
+  },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  { US"bmi_run",                 CONTROL_BMI_RUN,               FALSE },
+  { US"bmi_run",                 FALSE, 0 },
 #endif
-  { US"debug",                   CONTROL_DEBUG,                 TRUE },
+  { US"caseful_local_part",      FALSE, (unsigned) ~(1<<ACL_WHERE_RCPT) },
+  { US"caselower_local_part",    FALSE, (unsigned) ~(1<<ACL_WHERE_RCPT) },
+  { US"cutthrough_delivery",     TRUE, 0 },
+  { US"debug",                   TRUE, 0 },
+
 #ifndef DISABLE_DKIM
-  { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY,           FALSE },
+  { US"dkim_disable_verify",     FALSE,
+    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|
+# ifndef DISABLE_PRDR
+      (1<<ACL_WHERE_PRDR)|
+# endif
+      (1<<ACL_WHERE_NOTSMTP_START)
+  },
 #endif
+
 #ifdef EXPERIMENTAL_DMARC
-  { US"dmarc_disable_verify",    CONTROL_DMARC_VERIFY,          FALSE },
-  { US"dmarc_enable_forensic",   CONTROL_DMARC_FORENSIC,        FALSE },
+  { US"dmarc_disable_verify",    FALSE,
+    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+  },
+  { US"dmarc_enable_forensic",   FALSE,
+    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+  },
 #endif
-  { US"dscp",                    CONTROL_DSCP,                  TRUE },
-  { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART,    FALSE },
-  { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART,  FALSE },
-  { US"enforce_sync",            CONTROL_ENFORCE_SYNC,          FALSE },
-  { US"freeze",                  CONTROL_FREEZE,                TRUE },
-  { US"no_callout_flush",        CONTROL_NO_CALLOUT_FLUSH,      FALSE },
-  { US"no_delay_flush",          CONTROL_NO_DELAY_FLUSH,        FALSE },
-  { US"no_enforce_sync",         CONTROL_NO_ENFORCE_SYNC,       FALSE },
-  { US"no_multiline_responses",  CONTROL_NO_MULTILINE,          FALSE },
-  { US"no_pipelining",           CONTROL_NO_PIPELINING,         FALSE },
-  { US"queue_only",              CONTROL_QUEUE_ONLY,            FALSE },
+
+  { US"dscp",                    TRUE,
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)|(1<<ACL_WHERE_NOTQUIT)
+  },
+  { US"enforce_sync",            FALSE,
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+  },
+
+  /* Pseudo-value for decode errors */
+  { US"error",                   FALSE, 0 },
+
+  { US"fakedefer",               TRUE,
+    (unsigned)
+    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+#ifndef DISABLE_PRDR
+      (1<<ACL_WHERE_PRDR)|
+#endif
+      (1<<ACL_WHERE_MIME))
+  },
+  { US"fakereject",              TRUE,
+    (unsigned)
+    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+#ifndef DISABLE_PRDR
+      (1<<ACL_WHERE_PRDR)|
+#endif
+      (1<<ACL_WHERE_MIME))
+  },
+  { US"freeze",                  TRUE,
+    (unsigned)
+    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+      // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
+      (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
+  },
+
+  { US"no_callout_flush",        FALSE,
+    (1<<ACL_WHERE_NOTSMTP)| (1<<ACL_WHERE_NOTSMTP_START)
+  },
+  { US"no_delay_flush",          FALSE,
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+  },
+  
+  { US"no_enforce_sync",         FALSE,
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+  },
 #ifdef WITH_CONTENT_SCAN
-  { US"no_mbox_unspool",         CONTROL_NO_MBOX_UNSPOOL,       FALSE },
+  { US"no_mbox_unspool",         FALSE,
+    (unsigned)
+    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+      // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
+      (1<<ACL_WHERE_MIME))
+  },
 #endif
-  { US"fakedefer",               CONTROL_FAKEDEFER,             TRUE },
-  { US"fakereject",              CONTROL_FAKEREJECT,            TRUE },
-  { US"submission",              CONTROL_SUBMISSION,            TRUE },
-  { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE },
-  { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY,   TRUE },
+  { US"no_multiline_responses",  FALSE,
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+  },
+  { US"no_pipelining",           FALSE,
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+  },
+
+  { US"queue_only",              FALSE,
+    (unsigned)
+    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+      // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
+      (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
+  },
+  { US"submission",              TRUE,
+    (unsigned)
+    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA))
+  },
+  { US"suppress_local_fixups",   FALSE,
+    (unsigned)
+    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
+      (1<<ACL_WHERE_NOTSMTP_START))
+  },
 #ifdef SUPPORT_I18N
-  { US"utf8_downconvert",        CONTROL_UTF8_DOWNCONVERT,      TRUE }
+  { US"utf8_downconvert",        TRUE, 0 }
 #endif
-  };
+};
 
 /* Support data structures for Client SMTP Authorization. acl_verify_csa()
 caches its result in a tree to avoid repeated DNS queries. The result is an
@@ -812,6 +741,38 @@ static uschar *ratelimit_option_string[] = {
 
 static int acl_check_wargs(int, address_item *, const uschar *, int, uschar **,
     uschar **);
+
+
+/*************************************************
+*            Find control in list                *
+*************************************************/
+
+/* The lists are always in order, so binary chop can be used.
+
+Arguments:
+  name      the control name to search for
+  ol        the first entry in the control list
+  last      one more than the offset of the last entry in the control list
+
+Returns:    index of a control entry, or -1 if not found
+*/
+
+static int
+find_control(const uschar * name, control_def * ol, int last)
+{
+int first = 0;
+while (last > first)
+  {
+  int middle = (first + last)/2;
+  uschar * s =  ol[middle].name;
+  int c = Ustrncmp(name, s, Ustrlen(s));
+  if (c == 0) return middle;
+  else if (c > 0) first = middle + 1;
+  else last = middle;
+  }
+return -1;
+}
+
 
 
 /*************************************************
@@ -2256,26 +2217,20 @@ Returns:      CONTROL_xxx value
 static int
 decode_control(const uschar *arg, const uschar **pptr, int where, uschar **log_msgptr)
 {
-int len;
-control_def *d;
+int idx, len;
+control_def * d;
 
-for (d = controls_list;
-     d < controls_list + sizeof(controls_list)/sizeof(control_def);
-     d++)
-  {
-  len = Ustrlen(d->name);
-  if (Ustrncmp(d->name, arg, len) == 0) break;
-  }
-
-if (d >= controls_list + sizeof(controls_list)/sizeof(control_def) ||
-   (arg[len] != 0 && (!d->has_option || arg[len] != '/')))
+if (  (idx = find_control(arg, controls_list, nelem(controls_list))) < 0
+   || (  arg[len = Ustrlen((d = controls_list+idx)->name)] != 0
+      && (!d->has_option || arg[len] != '/')
+   )  )
   {
   *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
   return CONTROL_ERROR;
   }
 
 *pptr = arg + len;
-return d->value;
+return idx;
 }
 
 
@@ -3140,10 +3095,10 @@ for (; cb != NULL; cb = cb->next)
 
       /* Check if this control makes sense at this time */
 
-      if ((control_forbids[control_type] & (1 << where)) != 0)
+      if (controls_list[control_type].forbids & (1 << where))
 	{
 	*log_msgptr = string_sprintf("cannot use \"control=%s\" in %s ACL",
-	  controls[control_type], acl_wherenames[where]);
+	  controls_list[control_type].name, acl_wherenames[where]);
 	return ERROR;
 	}
 
