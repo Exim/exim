@@ -25,7 +25,7 @@ host_find_bydns yield = HOST_FOUND_LOCAL (3); returned hosts:
   eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
 mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
 mxt1.test.ex in "+anymx"? yes (matched "+anymx")
-checking "condition"
+checking "condition" "${if match_domain{$domain}{+anymx}{yes}}"...
 DNS lookup of mxt1.test.ex (MX) using fakens
 DNS lookup of mxt1.test.ex (MX) succeeded
 DNS lookup of eximtesthost.test.ex (A) using fakens

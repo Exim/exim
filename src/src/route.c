@@ -979,7 +979,7 @@ if ((rc = check_files(r->require_files, perror)) != OK)
 
 if (r->condition)
   {
-  DEBUG(D_route) debug_printf("checking \"condition\"\n");
+  DEBUG(D_route) debug_printf("checking \"condition\" \"%.80s\"...\n", r->condition);
   if (!expand_check_condition(r->condition, r->name, US"router"))
     {
     if (search_find_defer)

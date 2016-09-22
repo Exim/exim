@@ -35,7 +35,7 @@ defer router skipped: local_parts mismatch
 --------> aaaa_2nd_time router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{no}{yes}}"...
 aaaa_2nd_time router skipped: condition failure
 --------> aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
@@ -212,7 +212,7 @@ defer router skipped: local_parts mismatch
 --------> aaaa_2nd_time router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{no}{yes}}"...
 calling aaaa_2nd_time router
 rda_interpret (string): aaaa@$domain
 expanded: aaaa@myhost.test.ex

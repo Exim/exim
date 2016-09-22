@@ -1462,7 +1462,6 @@ int intbase = 0;
 uschar *inttype = US"";
 uschar *sptr;
 uschar *s = buffer;
-uschar *saved_condition, *strtemp;
 uschar **str_target;
 uschar name[64];
 uschar name2[64];
@@ -1597,19 +1596,18 @@ switch (type)
     control block and flags word. */
 
     case opt_stringptr:
-    if (data_block == NULL)
-      str_target = (uschar **)(ol->value);
-    else
-      str_target = (uschar **)((uschar *)data_block + (long int)(ol->value));
+    str_target = data_block ? USS (US data_block + (long int)(ol->value))
+			    : USS (ol->value);
     if (ol->type & opt_rep_con)
       {
+      uschar * saved_condition;
       /* We already have a condition, we're conducting a crude hack to let
       multiple condition rules be chained together, despite storing them in
       text form. */
-      saved_condition = *str_target;
-      strtemp = string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
-          saved_condition, sptr);
-      *str_target = string_copy_malloc(strtemp);
+      *str_target = string_copy_malloc( (saved_condition = *str_target)
+	? string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
+	    saved_condition, sptr)
+	: sptr);
       /* TODO(pdp): there is a memory leak here and just below
       when we set 3 or more conditions; I still don't
       understand the store mechanism enough to know
@@ -1645,10 +1643,10 @@ switch (type)
     break;
 
     case opt_rewrite:
-    if (data_block == NULL)
-      *((uschar **)(ol->value)) = sptr;
+    if (data_block)
+      *USS (US data_block + (long int)(ol->value)) = sptr;
     else
-      *((uschar **)((uschar *)data_block + (long int)(ol->value))) = sptr;
+      *USS (ol->value) = sptr;
     freesptr = FALSE;
     if (type == opt_rewrite)
       {
