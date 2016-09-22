@@ -94,6 +94,11 @@ JH/25 Decoding ACL controls is now done using a binary search; the sourcecode
       takes up less space and should be simpler to maintain.  Merge the ACL
       condition decode tables also, with similar effect.
 
+JH/26 Fix problem with one_time used on a redirect router which returned the
+      parent address unchanged.  A retry would see the parent address marked as
+      delivered, so not attempt the (identical) child.  As a result mail would
+      be lost.
+
 
 Exim version 4.87
 -----------------

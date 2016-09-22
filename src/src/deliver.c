@@ -7867,10 +7867,12 @@ else if (addr_defer != (address_item *)(+1))
         }
 
       /* Didn't find the address already in the list, and did find the
-      ultimate parent's address in the list. After adding the recipient,
+      ultimate parent's address in the list, and they really are different
+      (i.e. not from an identity-redirect). After adding the recipient,
       update the errors address in the recipients list. */
 
-      if (i >= recipients_count && t < recipients_count)
+      if (  i >= recipients_count && t < recipients_count
+         && Ustrcmp(otaddr->address, otaddr->parent->address) != 0)
         {
         DEBUG(D_deliver) debug_printf("one_time: adding %s in place of %s\n",
           otaddr->address, otaddr->parent->address);
@@ -7885,19 +7887,14 @@ else if (addr_defer != (address_item *)(+1))
     this deferred address or, if there is none, the sender address, is on the
     list of recipients for a warning message. */
 
-    if (sender_address[0] != 0)
-      if (addr->prop.errors_address)
-        {
-        if (Ustrstr(recipients, addr->prop.errors_address) == NULL)
-          recipients = string_sprintf("%s%s%s", recipients,
-            (recipients[0] == 0)? "" : ",", addr->prop.errors_address);
-        }
-      else
-        {
-        if (Ustrstr(recipients, sender_address) == NULL)
-          recipients = string_sprintf("%s%s%s", recipients,
-            (recipients[0] == 0)? "" : ",", sender_address);
-        }
+    if (sender_address[0])
+      {
+      uschar * s = addr->prop.errors_address;
+      if (!s) s = sender_address;
+      if (Ustrstr(recipients, s) == NULL)
+	recipients = string_sprintf("%s%s%s", recipients,
+	  recipients[0] ? "," : "", s);
+      }
     }
 
   /* Send a warning message if the conditions are right. If the condition check
