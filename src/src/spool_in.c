@@ -25,6 +25,8 @@ fact it won't be written to. Just in case there's a major disaster (e.g.
 overwriting some other file descriptor with the value of this one), open it
 with append.
 
+As called by deliver_message() (at least) we are operating as root.
+
 Argument: the id of the message
 Returns:  fd if file successfully opened and locked, else -1
 
@@ -55,7 +57,11 @@ for (i = 0; i < 2; i++)
   fname = spool_fname(US"input", message_subdir, id, US"-D");
   DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
 
-  if ((fd = Uopen(fname, O_RDWR | O_APPEND, 0)) >= 0)
+  if ((fd = Uopen(fname,
+#ifdef O_CLOEXEC
+		      O_CLOEXEC |
+#endif
+		      O_RDWR | O_APPEND, 0)) >= 0)
     break;
   save_errno = errno;
   if (errno == ENOENT)
@@ -81,8 +87,9 @@ an open file descriptor (at least, I think that's the Cygwin story). On real
 Unix systems it doesn't make any difference as long as Exim is consistent in
 what it locks. */
 
-(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) |
-  FD_CLOEXEC);
+#ifndef O_CLOEXEC
+(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+#endif
 
 lock_data.l_type = F_WRLCK;
 lock_data.l_whence = SEEK_SET;
@@ -214,6 +221,8 @@ earlier version of Exim that omitted to fsync() the files - this is thought to
 have been the cause of that incident, but in any case, this code must be robust
 against such an event, and if such a file is encountered, it must be treated as
 malformed.
+
+As called from deliver_message() (at least) we are running as root.
 
 Arguments:
   name          name of the header file, including the -H

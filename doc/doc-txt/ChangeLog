@@ -99,6 +99,11 @@ JH/26 Fix problem with one_time used on a redirect router which returned the
       delivered, so not attempt the (identical) child.  As a result mail would
       be lost.
 
+JH/27 Fix a possible security hole, wherein a process operating with the Exim
+      UID can gain a root shell.  Credit to http://www.halfdog.net/ for
+      discovery and writeup.  Ubuntu bug 1580454; no bug raised against Exim
+      itself :(
+
 
 Exim version 4.87
 -----------------

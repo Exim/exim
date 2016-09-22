@@ -252,7 +252,11 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 int
 log_create(uschar *name)
 {
-int fd = Uopen(name, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
+int fd = Uopen(name,
+#ifdef O_CLOEXEC
+	O_CLOEXEC |
+#endif
+	O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
 
 /* If creation failed, attempt to build a log directory in case that is the
 problem. */
@@ -266,7 +270,11 @@ if (fd < 0 && errno == ENOENT)
   DEBUG(D_any) debug_printf("%s log directory %s\n",
     created? "created" : "failed to create", name);
   *lastslash = '/';
-  if (created) fd = Uopen(name, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
+  if (created) fd = Uopen(name,
+#ifdef O_CLOEXEC
+			O_CLOEXEC |
+#endif
+		       	O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
   }
 
 return fd;
@@ -316,7 +324,11 @@ if (pid == 0)
 /* If we created a subprocess, wait for it. If it succeeded, try the open. */
 
 while (pid > 0 && waitpid(pid, &status, 0) != pid);
-if (status == 0) fd = Uopen(name, O_APPEND|O_WRONLY, LOG_MODE);
+if (status == 0) fd = Uopen(name,
+#ifdef O_CLOEXEC
+			O_CLOEXEC |
+#endif
+		       	O_APPEND|O_WRONLY, LOG_MODE);
 
 /* If we failed to create a subprocess, we are in a bad way. We return
 with fd still < 0, and errno set, letting the caller handle the error. */
@@ -438,11 +450,17 @@ if (!ok)
 /* We now have the file name. Try to open an existing file. After a successful
 open, arrange for automatic closure on exec(), and then return. */
 
-*fd = Uopen(buffer, O_APPEND|O_WRONLY, LOG_MODE);
+*fd = Uopen(buffer,
+#ifdef O_CLOEXEC
+		O_CLOEXEC |
+#endif
+	       	O_APPEND|O_WRONLY, LOG_MODE);
 
 if (*fd >= 0)
   {
+#ifndef O_CLOEXEC
   (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
+#endif
   return;
   }
 
@@ -469,7 +487,9 @@ else if (euid == root_uid) *fd = log_create_as_exim(buffer);
 
 if (*fd >= 0)
   {
+#ifndef O_CLOEXEC
   (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
+#endif
   return;
   }
 

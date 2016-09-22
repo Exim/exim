@@ -268,6 +268,8 @@ msglog directory that are used to catch output from pipes. Try to create the
 directory if it does not exist. From release 4.21, normal message logs should
 be created when the message is received.
 
+Called from deliver_message(), can be operating as root.
+
 Argument:
   filename  the file name
   mode      the mode required
@@ -279,37 +281,49 @@ Returns:    a file descriptor, or -1 (with errno set)
 static int
 open_msglog_file(uschar *filename, int mode, uschar **error)
 {
-int fd = Uopen(filename, O_WRONLY|O_APPEND|O_CREAT, mode);
+int fd, i;
 
-if (fd < 0 && errno == ENOENT)
+for (i = 2; i > 0; i--)
   {
+  fd = Uopen(filename,
+#ifdef O_CLOEXEC
+    O_CLOEXEC |
+#endif
+#ifdef O_NOFOLLOW
+    O_NOFOLLOW |
+#endif
+		O_WRONLY|O_APPEND|O_CREAT, mode);
+  if (fd >= 0)
+    {
+    /* Set the close-on-exec flag and change the owner to the exim uid/gid (this
+    function is called as root). Double check the mode, because the group setting
+    doesn't always get set automatically. */
+
+#ifndef O_CLOEXEC
+    (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+#endif
+    if (fchown(fd, exim_uid, exim_gid) < 0)
+      {
+      *error = US"chown";
+      return -1;
+      }
+    if (fchmod(fd, mode) < 0)
+      {
+      *error = US"chmod";
+      return -1;
+      }
+    return fd;
+    }
+  if (errno != ENOENT)
+    break;
+
   (void)directory_make(spool_directory,
 			spool_sname(US"msglog", message_subdir),
 			MSGLOG_DIRECTORY_MODE, TRUE);
-  fd = Uopen(filename, O_WRONLY|O_APPEND|O_CREAT, mode);
   }
 
-/* Set the close-on-exec flag and change the owner to the exim uid/gid (this
-function is called as root). Double check the mode, because the group setting
-doesn't always get set automatically. */
-
-if (fd >= 0)
-  {
-  (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
-  if (fchown(fd, exim_uid, exim_gid) < 0)
-    {
-    *error = US"chown";
-    return -1;
-    }
-  if (fchmod(fd, mode) < 0)
-    {
-    *error = US"chmod";
-    return -1;
-    }
-  }
-else *error = US"create";
-
-return fd;
+*error = US"create";
+return -1;
 }
 
 
@@ -4597,15 +4611,20 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     {
     uschar * fname = spool_fname(US"input", message_subdir, message_id, US"-D");
 
-    if ((deliver_datafile = Uopen(fname, O_RDWR | O_APPEND, 0)) < 0)
+    if ((deliver_datafile = Uopen(fname,
+#ifdef O_CLOEXEC
+					O_CLOEXEC |
+#endif
+					O_RDWR | O_APPEND, 0)) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to reopen %s for remote "
         "parallel delivery: %s", fname, strerror(errno));
     }
 
     /* Set the close-on-exec flag */
-
+#ifndef O_CLOEXEC
     (void)fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
       FD_CLOEXEC);
+#endif
 
     /* Set the uid/gid of this process; bombs out on failure. */
 
@@ -5348,6 +5367,8 @@ A delivery operation has a process all to itself; we never deliver more than
 one message in the same process. Therefore we needn't worry too much about
 store leakage.
 
+Liable to be called as root.
+
 Arguments:
   id          the id of the message to be delivered
   forced      TRUE if delivery was forced by an administrator; this overrides
@@ -5372,7 +5393,6 @@ int final_yield = DELIVER_ATTEMPTED_NORMAL;
 time_t now = time(NULL);
 address_item *addr_last = NULL;
 uschar *filter_message = NULL;
-FILE *jread;
 int process_recipients = RECIP_ACCEPT;
 open_db dbblock;
 open_db *dbm_file;
@@ -5512,8 +5532,19 @@ Otherwise it might be needed again. */
 
   {
   uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
+  FILE * jread;
 
-  if ((jread = Ufopen(fname, "rb")))
+  if (  (journal_fd = Uopen(fname, O_RDWR|O_APPEND
+#ifdef O_CLOEXEC
+				    | O_CLOEXEC
+#endif
+#ifdef O_NOFOLLOW
+				    | O_NOFOLLOW
+#endif
+	, SPOOL_MODE)) >= 0
+     && lseek(journal_fd, 0, SEEK_SET) == 0
+     && (jread = fdopen(journal_fd, "rb"))
+     )
     {
     while (Ufgets(big_buffer, big_buffer_size, jread))
       {
@@ -5523,7 +5554,8 @@ Otherwise it might be needed again. */
       DEBUG(D_deliver) debug_printf("Previously delivered address %s taken from "
 	"journal file\n", big_buffer);
       }
-    (void)fclose(jread);
+    rewind(jread);
+    journal_fd = fileno(jread);
     /* Panic-dies on error */
     (void)spool_write_header(message_id, SW_DELIVERING, NULL);
     }
@@ -5911,22 +5943,18 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
           tpname = tmp;
           }
         else
-          {
           p->message = string_sprintf("system_filter_%s_transport is unset",
             type);
-          }
 
         if (tpname)
           {
           transport_instance *tp;
           for (tp = transports; tp; tp = tp->next)
-            {
             if (Ustrcmp(tp->name, tpname) == 0)
               {
               p->transport = tp;
               break;
               }
-            }
           if (!tp)
             p->message = string_sprintf("failed to find \"%s\" transport "
               "for system filter delivery", tpname);
@@ -6839,10 +6867,8 @@ there is only address to be delivered - if it succeeds the spool write need not
 happen. */
 
 if (  header_rewritten
-   && (  (  addr_local
-         && (addr_local->next || addr_remote)
-	 )
-      || (addr_remote && addr_remote->next)
+   && (  addr_local && (addr_local->next || addr_remote)
+      || addr_remote && addr_remote->next
    )  )
   {
   /* Panic-dies on error */
@@ -6851,10 +6877,10 @@ if (  header_rewritten
   }
 
 
-/* If there are any deliveries to be done, open the journal file. This is used
-to record successful deliveries as soon as possible after each delivery is
-known to be complete. A file opened with O_APPEND is used so that several
-processes can run simultaneously.
+/* If there are any deliveries to be and we do not already have the journal
+file, create it. This is used to record successful deliveries as soon as
+possible after each delivery is known to be complete. A file opened with
+O_APPEND is used so that several processes can run simultaneously.
 
 The journal is just insurance against crashes. When the spool file is
 ultimately updated at the end of processing, the journal is deleted. If a
@@ -6863,32 +6889,46 @@ therein are added to the non-recipients. */
 
 if (addr_local || addr_remote)
   {
-  uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
-  
-  if ((journal_fd = Uopen(fname, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) <0)
+  if (journal_fd < 0)
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't open journal file %s: %s",
-      fname, strerror(errno));
-    return DELIVER_NOT_ATTEMPTED;
-    }
+    uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
+    
+    if ((journal_fd = Uopen(fname,
+#ifdef O_CLOEXEC
+			O_CLOEXEC |
+#endif
+			O_WRONLY|O_APPEND|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't open journal file %s: %s",
+	fname, strerror(errno));
+      return DELIVER_NOT_ATTEMPTED;
+      }
 
-  /* Set the close-on-exec flag, make the file owned by Exim, and ensure
-  that the mode is correct - the group setting doesn't always seem to get
-  set automatically. */
+    /* Set the close-on-exec flag, make the file owned by Exim, and ensure
+    that the mode is correct - the group setting doesn't always seem to get
+    set automatically. */
 
-  if(  fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC)
-    || fchown(journal_fd, exim_uid, exim_gid)
-    || fchmod(journal_fd, SPOOL_MODE)
-    )
-    {
-    int ret = Uunlink(fname);
-    log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't set perms on journal file %s: %s",
-      fname, strerror(errno));
-    if(ret  &&  errno != ENOENT)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
-        fname, strerror(errno));
-    return DELIVER_NOT_ATTEMPTED;
+    if(  fchown(journal_fd, exim_uid, exim_gid)
+      || fchmod(journal_fd, SPOOL_MODE)
+#ifndef O_CLOEXEC
+      || fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC)
+#endif
+      )
+      {
+      int ret = Uunlink(fname);
+      log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't set perms on journal file %s: %s",
+	fname, strerror(errno));
+      if(ret  &&  errno != ENOENT)
+	log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+	  fname, strerror(errno));
+      return DELIVER_NOT_ATTEMPTED;
+      }
     }
+  }
+else if (journal_fd >= 0)
+  {
+  close(journal_fd);
+  journal_fd = -1;
   }
 
 

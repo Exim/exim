@@ -1281,10 +1281,13 @@ save_errno = 0;
 yield = FALSE;
 write_pid = (pid_t)(-1);
 
-(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
-filter_pid = child_open(USS transport_filter_argv, NULL, 077,
- &fd_write, &fd_read, FALSE);
-(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) & ~FD_CLOEXEC);
+  {
+  int bits = fcntl(fd, F_GETFD);
+  (void)fcntl(fd, F_SETFD, bits | FD_CLOEXEC);
+  filter_pid = child_open(USS transport_filter_argv, NULL, 077,
+   &fd_write, &fd_read, FALSE);
+  (void)fcntl(fd, F_SETFD, bits & ~FD_CLOEXEC);
+  }
 if (filter_pid < 0) goto TIDY_UP;      /* errno set */
 
 DEBUG(D_transport)

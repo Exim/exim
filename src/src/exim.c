@@ -174,10 +174,8 @@ Returns:   nothing
 void
 set_process_info(const char *format, ...)
 {
-int len;
+int len = sprintf(CS process_info, "%5d ", (int)getpid());
 va_list ap;
-sprintf(CS process_info, "%5d ", (int)getpid());
-len = Ustrlen(process_info);
 va_start(ap, format);
 if (!string_vformat(process_info + len, PROCESS_INFO_SIZE - len - 2, format, ap))
   Ustrcpy(process_info + len, "**** string overflowed buffer ****");
