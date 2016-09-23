@@ -38379,12 +38379,17 @@ for a match against the domain or identity that the ACL is currently verifying
 verb to a group of domains or identities. For example:
 
 .code
-# Warn when Mail purportedly from GMail has no signature at all
-warn log_message = GMail sender without DKIM signature
+# Warn when Mail purportedly from GMail has no gmail signature
+warn log_message = GMail sender without gmail.com DKIM signature
      sender_domains = gmail.com
      dkim_signers = gmail.com
      dkim_status = none
 .endd
+
+.new
+Note that the above does not check for a total lack of DKIM signing;
+for that check for empty &$h_DKIM-Signature:$& in the data ACL.
+.wen
 
 .vitem &%dkim_status%&
 ACL condition that checks a colon-separated list of possible DKIM verification
