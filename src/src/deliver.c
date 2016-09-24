@@ -5555,7 +5555,11 @@ Otherwise it might be needed again. */
 	"journal file\n", big_buffer);
       }
     rewind(jread);
-    journal_fd = fileno(jread);
+    if ((journal_fd = dup(fileno(jread))) < 0)
+      journal_fd = fileno(jread);
+    else
+      (void) fclose(jread);	/* Try to not leak the FILE resource */
+
     /* Panic-dies on error */
     (void)spool_write_header(message_id, SW_DELIVERING, NULL);
     }
