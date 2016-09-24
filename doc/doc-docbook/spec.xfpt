@@ -35718,7 +35718,7 @@ the following table:
 &`P   `&        on &`<=`& lines: protocol used
 &`    `&        on &`=>`& and &`**`& lines: return path
 &`PRDR`&        PRDR extension used
-&`PRX `&        on &'<='& and &`=>`& lines: proxy address
+&`PRX `&        on &`<=`& and &`=>`& lines: proxy address
 &`Q   `&        alternate queue name
 &`QT  `&        on &`=>`& lines: time spent on queue so far
 &`    `&        on &"Completed"& lines: time spent on queue
