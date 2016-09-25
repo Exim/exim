@@ -313,9 +313,14 @@ extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
                  driver_info *, int, void *, int, optionlist *, int);
+extern void    readconf_features(void);
+extern void    readconf_options(void);
 extern uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
-extern void    readconf_print(uschar *, uschar *, BOOL no_labels);
+extern void    readconf_options_from_list(optionlist *, unsigned, uschar *);
+extern void    readconf_options_routers(void);
+extern void    readconf_options_transports(void);
+extern void    readconf_print(uschar *, uschar *, BOOL);
 extern uschar *readconf_printtime(int);
 extern uschar *readconf_readname(uschar *, int, uschar *);
 extern int     readconf_readtime(const uschar *, int, BOOL);

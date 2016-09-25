@@ -35,7 +35,7 @@ optionlist optionlist_auths[] = {
                  (void *)(offsetof(auth_instance, set_id)) }
 };
 
-int     optionlist_auths_size = sizeof(optionlist_auths)/sizeof(optionlist);
+int     optionlist_auths_size = nelem(optionlist_auths);
 
 /* An empty host aliases list. */
 

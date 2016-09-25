@@ -17,6 +17,7 @@ static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
 static void save_config_line(const uschar* line);
 static void save_config_position(const uschar *file, int line);
 static void print_config(BOOL admin, BOOL terse);
+static void readconf_options_auths(void);
 
 
 #define CSTATE_STACK_SIZE 10
@@ -513,7 +514,7 @@ int i;
 router_instance *r;
 transport_instance *t;
 
-for (i = 0; i < optionlist_config_size; i++)
+for (i = 0; i < nelem(optionlist_config); i++)
   if (p == optionlist_config[i].value) return US optionlist_config[i].name;
 
 for (r = routers; r; r = r->next)
@@ -2624,11 +2625,11 @@ if (type == NULL)
   if (Ustrcmp(name, "all") == 0)
     {
     for (ol = optionlist_config;
-         ol < optionlist_config + optionlist_config_size; ol++)
+         ol < optionlist_config + nelem(optionlist_config); ol++)
       {
       if ((ol->type & opt_hidden) == 0)
         print_ol(ol, US ol->name, NULL,
-            optionlist_config, optionlist_config_size,
+            optionlist_config, nelem(optionlist_config),
             no_labels);
       }
     return;
@@ -2726,8 +2727,8 @@ if (type == NULL)
 
   else
     {
-    print_ol(find_option(name, optionlist_config, optionlist_config_size),
-      name, NULL, optionlist_config, optionlist_config_size, no_labels);
+    print_ol(find_option(name, optionlist_config, nelem(optionlist_config)),
+      name, NULL, optionlist_config, nelem(optionlist_config), no_labels);
     return;
     }
   }
@@ -3010,7 +3011,7 @@ return status == 0;
 
 /*************************************************/
 /* Create compile-time feature macros */
-static void
+void
 readconf_features(void)
 {
 /* Probably we could work out a static initialiser for wherever
@@ -3236,6 +3237,28 @@ due to conflicts with other common macros. */
 }
 
 
+void
+readconf_options_from_list(optionlist * opts, unsigned nopt, uschar * group)
+{
+int i;
+const uschar * s;
+
+/* Walk the array backwards to get substring-conflict names */
+for (i = nopt-1; i >= 0; i--) if (*(s = opts[i].name) && *s != '*')
+  read_macro_assignment(string_sprintf("_OPT_%T_%T=y", group, s));
+}
+
+
+void
+readconf_options(void)
+{
+readconf_options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN");
+readconf_options_routers();
+readconf_options_transports();
+readconf_options_auths();
+}
+
+
 /*************************************************
 *         Read main configuration options        *
 *************************************************/
@@ -3271,9 +3294,6 @@ int sep = 0;
 struct stat statbuf;
 uschar *s, *filename;
 const uschar *list = config_main_filelist;
-
-/* First create compile-time feature macros */
-readconf_features();
 
 /* Loop through the possible file names */
 
@@ -4280,6 +4300,18 @@ while ((p = get_config_line()))
 *         Initialize authenticators              *
 *************************************************/
 
+static void
+readconf_options_auths(void)
+{
+struct auth_info * ai;
+
+readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AU");
+
+for (ai = auths_available; ai->driver_name[0]; ai++)
+  readconf_options_from_list(ai->options, (unsigned)*ai->options_count, ai->driver_name);
+}
+
+
 /* Read the authenticators section of the configuration file.
 
 Arguments:   none
@@ -4290,6 +4322,7 @@ static void
 auths_init(void)
 {
 auth_instance *au, *bu;
+
 readconf_driver_init(US"authenticator",
   (driver_instance **)(&auths),      /* chain anchor */
   (driver_info *)auths_available,    /* available drivers */

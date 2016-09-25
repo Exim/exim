@@ -143,6 +143,16 @@ optionlist optionlist_routers[] = {
 int optionlist_routers_size = sizeof(optionlist_routers)/sizeof(optionlist);
 
 
+void
+readconf_options_routers(void)
+{
+struct router_info * ri;
+
+readconf_options_from_list(optionlist_routers, nelem(optionlist_routers), US"RT");
+
+for (ri = routers_available; ri->driver_name[0]; ri++)
+  readconf_options_from_list(ri->options, (unsigned)*ri->options_count, ri->driver_name);
+}
 
 /*************************************************
 *          Set router pointer from name          *

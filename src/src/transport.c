@@ -108,9 +108,19 @@ optionlist optionlist_transports[] = {
                  (void *)offsetof(transport_instance, uid) }
 };
 
-int optionlist_transports_size =
-  sizeof(optionlist_transports)/sizeof(optionlist);
+int optionlist_transports_size = nelem(optionlist_transports);
 
+
+void
+readconf_options_transports(void)
+{
+struct transport_info * ti;
+
+readconf_options_from_list(optionlist_transports, nelem(optionlist_transports), US"TP");
+
+for (ti = transports_available; ti->driver_name[0]; ti++)
+  readconf_options_from_list(ti->options, (unsigned)*ti->options_count, ti->driver_name);
+} 
 
 /*************************************************
 *             Initialize transport list           *

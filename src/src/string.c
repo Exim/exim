@@ -1212,10 +1212,10 @@ on whether the variable length list of data arguments are given explicitly or
 as a va_list item.
 
 The formats are the usual printf() ones, with some omissions (never used) and
-two additions for strings: %S forces lower case, and %#s or %#S prints nothing
-for a NULL string. Without the # "NULL" is printed (useful in debugging). There
-is also the addition of %D and %M, which insert the date in the form used for
-datestamped log files.
+three additions for strings: %S forces lower case, %T forces upper case, and
+%#s or %#S prints nothing for a NULL string. Without thr # "NULL" is printed
+(useful in debugging). There is also the addition of %D and %M, which insert
+the date in the form used for datestamped log files.
 
 Arguments:
   buffer       a buffer in which to put the formatted string
@@ -1428,6 +1428,7 @@ while (*fp != 0)
 
     case 's':
     case 'S':                   /* Forces *lower* case */
+    case 'T':                   /* Forces *upper* case */
     s = va_arg(ap, char *);
 
     if (s == NULL) s = null;
@@ -1475,6 +1476,8 @@ while (*fp != 0)
     sprintf(CS p, "%*.*s", width, precision, s);
     if (fp[-1] == 'S')
       while (*p) { *p = tolower(*p); p++; }
+    else if (fp[-1] == 'T')
+      while (*p) { *p = toupper(*p); p++; }
     else
       while (*p) p++;
     if (!yield) goto END_FORMAT;
