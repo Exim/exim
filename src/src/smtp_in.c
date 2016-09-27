@@ -325,6 +325,7 @@ smtp_getc(void)
 if (smtp_inptr >= smtp_inend)
   {
   int rc, save_errno;
+  if (!smtp_out) return EOF;
   fflush(smtp_out);
   if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
   rc = read(fileno(smtp_in), smtp_inbuffer, in_buffer_size);
@@ -1343,26 +1344,23 @@ if (smtp_in == NULL || smtp_batched_input) return;
 receive_swallow_smtp();
 smtp_printf("421 %s\r\n", message);
 
-for (;;)
+for (;;) switch(smtp_read_command(FALSE))
   {
-  switch(smtp_read_command(FALSE))
-    {
-    case EOF_CMD:
-    return;
+  case EOF_CMD:
+  return;
 
-    case QUIT_CMD:
-    smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
-    mac_smtp_fflush();
-    return;
+  case QUIT_CMD:
+  smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+  mac_smtp_fflush();
+  return;
 
-    case RSET_CMD:
-    smtp_printf("250 Reset OK\r\n");
-    break;
+  case RSET_CMD:
+  smtp_printf("250 Reset OK\r\n");
+  break;
 
-    default:
-    smtp_printf("421 %s\r\n", message);
-    break;
-    }
+  default:
+  smtp_printf("421 %s\r\n", message);
+  break;
   }
 }
 
@@ -3403,7 +3401,7 @@ smtp_quit_handler(uschar ** user_msgp, uschar ** log_msgp)
 {
 HAD(SCH_QUIT);
 incomplete_transaction_log(US"QUIT");
-if (acl_smtp_quit != NULL)
+if (acl_smtp_quit)
   {
   int rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, user_msgp, log_msgp);
   if (rc == ERROR)
@@ -5026,45 +5024,39 @@ while (done <= 0)
     set, but we must still reject all incoming commands. */
 
     DEBUG(D_tls) debug_printf("TLS failed to start\n");
-    while (done <= 0)
+    while (done <= 0) switch(smtp_read_command(FALSE))
       {
-      switch(smtp_read_command(FALSE))
-        {
-        case EOF_CMD:
-        log_write(L_smtp_connection, LOG_MAIN, "%s closed by EOF",
-          smtp_get_connection_info());
-        smtp_notquit_exit(US"tls-failed", NULL, NULL);
-        done = 2;
-        break;
+      case EOF_CMD:
+	log_write(L_smtp_connection, LOG_MAIN, "%s closed by EOF",
+	  smtp_get_connection_info());
+	smtp_notquit_exit(US"tls-failed", NULL, NULL);
+	done = 2;
+	break;
 
-        /* It is perhaps arguable as to which exit ACL should be called here,
-        but as it is probably a situation that almost never arises, it
-        probably doesn't matter. We choose to call the real QUIT ACL, which in
-        some sense is perhaps "right". */
+      /* It is perhaps arguable as to which exit ACL should be called here,
+      but as it is probably a situation that almost never arises, it
+      probably doesn't matter. We choose to call the real QUIT ACL, which in
+      some sense is perhaps "right". */
 
-        case QUIT_CMD:
-        user_msg = NULL;
-        if (acl_smtp_quit != NULL)
-          {
-          rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg,
-            &log_msg);
-          if (rc == ERROR)
-            log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
-              log_msg);
-          }
-        if (user_msg == NULL)
-          smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
-        else
-          smtp_respond(US"221", 3, TRUE, user_msg);
-        log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
-          smtp_get_connection_info());
-        done = 2;
-        break;
+      case QUIT_CMD:
+	user_msg = NULL;
+	if (  acl_smtp_quit
+	   && ((rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg,
+			      &log_msg)) == ERROR))
+	    log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
+	      log_msg);
+	if (user_msg)
+	  smtp_respond(US"221", 3, TRUE, user_msg);
+	else
+	  smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+	log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
+	  smtp_get_connection_info());
+	done = 2;
+	break;
 
-        default:
-        smtp_printf("554 Security failure\r\n");
-        break;
-        }
+      default:
+	smtp_printf("554 Security failure\r\n");
+	break;
       }
     tls_close(TRUE, TRUE);
     break;

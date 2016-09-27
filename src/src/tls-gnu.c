@@ -1829,16 +1829,22 @@ alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
   {
-  tls_error(US"gnutls_handshake",
-      sigalrm_seen ? "timed out" : gnutls_strerror(rc), NULL);
   /* It seems that, except in the case of a timeout, we have to close the
   connection right here; otherwise if the other end is running OpenSSL it hangs
   until the server times out. */
 
-  if (!sigalrm_seen)
+  if (sigalrm_seen)
+    tls_error(US"gnutls_handshake", "timed out", NULL);
+  else
     {
+    tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL);
+    gnutls_alert_send_appropriate(state->session, rc);
+    millisleep(500);
+    shutdown(fileno(smtp_out), SHUT_WR);
+    for (rc = 1024; fgetc(smtp_in) != EOF && rc > 0; ) rc--;	/* drain skt */
     (void)fclose(smtp_out);
     (void)fclose(smtp_in);
+    smtp_out = smtp_in = NULL;
     }
 
   return FAIL;
@@ -1863,8 +1869,7 @@ if (  state->verify_requirement != VERIFY_NONE
 
 /* Figure out peer DN, and if authenticated, etc. */
 
-rc = peer_status(state);
-if (rc != OK) return rc;
+if ((rc = peer_status(state)) != OK) return rc;
 
 /* Sets various Exim expansion variables; always safe within server */
 
@@ -2040,8 +2045,13 @@ do
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
-  return tls_error(US"gnutls_handshake",
-      sigalrm_seen ? "timed out" : gnutls_strerror(rc), state->host);
+  if (sigalrm_seen)
+    {
+    gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_USER_CANCELED);
+    return tls_error(US"gnutls_handshake", "timed out", state->host);
+    }
+  else
+    return tls_error(US"gnutls_handshake", gnutls_strerror(rc), state->host);
 
 DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
@@ -2118,7 +2128,7 @@ if (!state->tlsp || state->tlsp->active < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
-  DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS\n");
+  DEBUG(D_tls) debug_printf("tls_close() from '%s': shutting down TLS\n");
   gnutls_bye(state->session, GNUTLS_SHUT_WR);
   }
 
@@ -2168,11 +2178,19 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
     ssl_xfer_buffer_size);
   alarm(0);
 
-  /* A zero-byte return appears to mean that the TLS session has been
+  /* Timeouts do not get this far; see command_timeout_handler().
+     A zero-byte return appears to mean that the TLS session has been
      closed down, not that the socket itself has been closed down. Revert to
      non-TLS handling. */
 
-  if (inbytes == 0)
+  if (sigalrm_seen)
+    {
+    DEBUG(D_tls) debug_printf("Got tls read timeout\n");
+    state->xfer_error = 1;
+    return EOF;
+    }
+
+  else if (inbytes == 0)
     {
     DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
 

@@ -59,7 +59,7 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250 HELP
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP>> RCPT TO:<usery@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -70,7 +70,7 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP(close)>>
 LOG: MAIN
-  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
+  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -59,3 +59,4 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
 search_tidyup called
+SMTP>>(close on process exit)

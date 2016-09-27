@@ -3162,6 +3162,12 @@ specified in the transports, and therefore not visible at top level, in which
 case continue_more won't get set. */
 
 HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
+if (lflags.send_quit)
+  {
+  shutdown(outblock.sock, SHUT_WR);
+  for (rc = 16; read(inblock.sock, inbuffer, sizeof(inbuffer)) > 0 && rc > 0;)
+    rc--;				/* drain socket */
+  }
 (void)close(inblock.sock);
 
 #ifndef DISABLE_EVENT

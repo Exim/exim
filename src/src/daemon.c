@@ -523,9 +523,17 @@ if (pid == 0)
       }
     else
       {
+      int i;
+      uschar * buf[128];
       mac_smtp_fflush();
+      /* drain socket, for clean TCP FINs */
+      for(i = 16; read(fileno(smtp_in), buf, sizeof(buf)) > 0 && i > 0; ) i--;
       search_tidyup();
       smtp_log_no_mail();                 /* Log no mail if configured */
+
+      /*XXX should we pause briefly, hoping that the client will be the
+      active TCP closer hence get the TCP_WAIT endpoint? */
+      DEBUG(D_receive) debug_printf("SMTP>>(close on process exit)\n");
       _exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
       }
 

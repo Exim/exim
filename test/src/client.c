@@ -1117,6 +1117,8 @@ int rc;
   }
 
 printf("End of script\n");
+shutdown(sock, SHUT_WR);
+while ((rc = read(sock, inbuffer, sizeof(inbuffer))) > 0) ;
 close(sock);
 
 exit(0);
