@@ -132,6 +132,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<a@b>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
@@ -226,6 +228,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<a@b>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
@@ -295,6 +299,8 @@ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   userx

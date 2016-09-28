@@ -49,6 +49,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 using ACL "mail"
 processing "accept"
 check verify = sender/callout=1s,maxwait=1s
@@ -151,6 +153,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 using ACL "mail"
 processing "accept"
 check verify = sender/callout=1s,maxwait=1s

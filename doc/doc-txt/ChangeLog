@@ -104,6 +104,10 @@ JH/27 Fix a possible security hole, wherein a process operating with the Exim
       discovery and writeup.  Ubuntu bug 1580454; no bug raised against Exim
       itself :(
 
+JH/28 Enable {spool,log} filesystem space and inode checks as default.
+      Main config options check_{log,spool}_{inodes,space} are now
+      100 inodes, 10MB unless set otherwise in the configuration.
+
 
 Exim version 4.87
 -----------------

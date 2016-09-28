@@ -3,6 +3,8 @@ configuration file is TESTSUITE/test-config
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 Sender: CALLER@test.ex
 >>Headers received:
 To: x@y.z
@@ -37,6 +39,8 @@ configuration file is TESTSUITE/test-config
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@test.ex
 >>Headers received:
 To: x@y.z

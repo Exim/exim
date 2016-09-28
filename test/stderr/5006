@@ -11,6 +11,8 @@ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@test.ex>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 Sender: CALLER@test.ex
 Recipients:
   userx@test.ex

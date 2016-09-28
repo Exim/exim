@@ -44,6 +44,8 @@ SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
 250-PIPELINING
 250 HELP
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 using ACL "mail"
 processing "accept"
 check set acl_c0 = $acl_c0; mail
@@ -121,6 +123,8 @@ LOG: MAIN
   VRFY failed for x@y H=(something) [V4NET.0.0.0]
 SMTP>> 550 <x@y> Unrouteable address
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 using ACL "mail"
 processing "accept"
 check set acl_c0 = $acl_c0; mail

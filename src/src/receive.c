@@ -124,6 +124,7 @@ receive_statvfs(BOOL isspool, int *inodeptr)
 {
 #ifdef HAVE_STATFS
 struct STATVFS statbuf;
+struct stat dummy;
 uschar *path;
 uschar *name;
 uschar buffer[1024];
@@ -180,12 +181,18 @@ else
 memset(&statbuf, 0, sizeof(statbuf));
 
 if (STATVFS(CS path, &statbuf) != 0)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC, "cannot accept message: failed to stat "
-    "%s directory %s: %s", name, spool_directory, strerror(errno));
-  smtp_closedown(US"spool or log directory problem");
-  exim_exit(EXIT_FAILURE);
-  }
+  if (stat(CS path, &dummy) == -1 && errno == ENOENT)
+    {				/* Can happen on first run after installation */
+    *inodeptr = -1;
+    return -1;
+    }
+  else
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "cannot accept message: failed to stat "
+      "%s directory %s: %s", name, path, strerror(errno));
+    smtp_closedown(US"spool or log directory problem");
+    exim_exit(EXIT_FAILURE);
+    }
 
 *inodeptr = (statbuf.F_FILES > 0)? statbuf.F_FAVAIL : -1;
 
@@ -193,9 +200,9 @@ if (STATVFS(CS path, &statbuf) != 0)
 
 return (int)(((double)statbuf.F_BAVAIL * (double)statbuf.F_FRSIZE)/1024.0);
 
+#else
 /* Unable to find partition sizes in this environment. */
 
-#else
 *inodeptr = -1;
 return -1;
 #endif

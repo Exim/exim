@@ -14324,11 +14324,15 @@ $primary_hostname-$tod_epoch-testing
 See section &<<CALLaddparcall>>& for details of how this value is used.
 
 
-.option check_log_inodes main integer 0
+.new
+.option check_log_inodes main integer 100
+.wen
 See &%check_spool_space%& below.
 
 
-.option check_log_space main integer 0
+.new
+.option check_log_space main integer 10M
+.wen
 See &%check_spool_space%& below.
 
 .oindex "&%check_rfc2047_length%&"
@@ -14343,11 +14347,15 @@ of the RFC, generates overlong encoded words. If &%check_rfc2047_length%& is
 set false, Exim recognizes encoded words of any length.
 
 
-.option check_spool_inodes main integer 0
+.new
+.option check_spool_inodes main integer 100
+.wen
 See &%check_spool_space%& below.
 
 
-.option check_spool_space main integer 0
+.new
+.option check_spool_space main integer 10M
+.wen
 .cindex "checking disk space"
 .cindex "disk space, checking"
 .cindex "spool directory" "checking space"
@@ -14358,7 +14366,7 @@ message is accepted.
 .vindex "&$log_space$&"
 .vindex "&$spool_inodes$&"
 .vindex "&$spool_space$&"
-When any of these options are set, they apply to all incoming messages. If you
+When any of these options are nonzero, they apply to all incoming messages. If you
 want to apply different checks to different kinds of message, you can do so by
 testing the variables &$log_inodes$&, &$log_space$&, &$spool_inodes$&, and
 &$spool_space$& in an ACL with appropriate additional conditions.
@@ -14367,7 +14375,7 @@ testing the variables &$log_inodes$&, &$log_space$&, &$spool_inodes$&, and
 &%check_spool_space%& and &%check_spool_inodes%& check the spool partition if
 either value is greater than zero, for example:
 .code
-check_spool_space = 10M
+check_spool_space = 100M
 check_spool_inodes = 100
 .endd
 The spool partition is the one that contains the directory defined by
@@ -14386,11 +14394,19 @@ SIZE parameter on the MAIL command, its value is added to the
 &%check_spool_space%& is zero, unless &%no_smtp_check_spool_space%& is set.
 
 The values for &%check_spool_space%& and &%check_log_space%& are held as a
-number of kilobytes. If a non-multiple of 1024 is specified, it is rounded up.
+number of kilobytes (though specified in bytes).
+If a non-multiple of 1024 is specified, it is rounded up.
 
 For non-SMTP input and for batched SMTP input, the test is done at start-up; on
 failure a message is written to stderr and Exim exits with a non-zero code, as
 it obviously cannot send an error message of any kind.
+
+.new
+There is a slight performance penalty for these checks.
+Versions of Exim preceding 4.88 had these disabled by default;
+high-rate intallations confident they will never run out of resources
+may wish to deliberately disable them.
+.wen
 
 .new
 .option chunking_advertise_hosts main "host list&!!" *

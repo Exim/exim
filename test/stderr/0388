@@ -180,6 +180,8 @@ DSN: r1 propagating DSN
 originator: uid=EXIM_UID gid=EXIM_GID login=EXIMUSER name=
 sender address = 
 set_process_info: pppp accepting a local non-SMTP message from <>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: 
 search_tidyup called
 >>Headers received:

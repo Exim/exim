@@ -4,6 +4,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name="Phil Q. Hazel"
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X
@@ -36,6 +38,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=John "Jack" Smith
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X
@@ -67,6 +71,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=John "Jack" "Q." Smith
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X
@@ -98,6 +104,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name="John (Jack) Q. Smith"
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X
@@ -129,6 +137,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=John ("Jack") "Q." Smith
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X
@@ -160,6 +170,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name="John (\"Jack\") Q. Smith"
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X
@@ -191,6 +203,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name="Phil \"Q Hazel"
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X
@@ -222,6 +236,8 @@ trusted user
 admin user
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name="Phil \"Q" "X." Hazel
 sender address = CALLER@myhost.test.ex
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   X

@@ -488,11 +488,11 @@ int     callout_cache_positive_expire = 24*60*60;
 int     callout_cache_negative_expire = 2*60*60;
 uschar *callout_random_local_part = US"$primary_hostname-$tod_epoch-testing";
 uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W](?>[a-z0-9/_-]*[^\\W])?)+(\\.?)$";
-int     check_log_inodes       = 0;
-int     check_log_space        = 0;
+int     check_log_inodes       = 100;
+int     check_log_space        = 10*1024;	/* 10K Kbyte == 10MB */
 BOOL    check_rfc2047_length   = TRUE;
-int     check_spool_inodes     = 0;
-int     check_spool_space      = 0;
+int     check_spool_inodes     = 100;
+int     check_spool_space      = 10*1024;	/* 10K Kbyte == 10MB */
 
 uschar *chunking_advertise_hosts = US"*";
 unsigned chunking_datasize     = 0;

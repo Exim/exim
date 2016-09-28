@@ -77,6 +77,8 @@ SMTP>> 250-myhost.test.ex Hello [V4NET.2.3.4] [V4NET.2.3.4]
 250-PIPELINING
 250 HELP
 SMTP<< mail from:<>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
 processing "accept"
@@ -151,6 +153,8 @@ SMTP>> 250-myhost.test.ex Hello host.name.tld [V4NET.2.3.4]
 250-PIPELINING
 250 HELP
 SMTP<< mail from:<>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = -1K inodes = -1 check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
 processing "accept"
