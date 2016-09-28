@@ -119,7 +119,10 @@ struct transport_info * ti;
 readconf_options_from_list(optionlist_transports, nelem(optionlist_transports), US"TP");
 
 for (ti = transports_available; ti->driver_name[0]; ti++)
+  {
+  read_macro_assignment(string_sprintf("_DRVR_TPT_%T=y", ti->driver_name));
   readconf_options_from_list(ti->options, (unsigned)*ti->options_count, ti->driver_name);
+  }
 } 
 
 /*************************************************

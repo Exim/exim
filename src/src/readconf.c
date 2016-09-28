@@ -566,7 +566,7 @@ Arguments:
 Returns:       nothing
 */
 
-static void
+void
 read_macro_assignment(uschar *s)
 {
 uschar name[64];
@@ -3163,55 +3163,7 @@ due to conflicts with other common macros. */
   read_macro_assignment(US"_HAVE_LKUP_WHOSON=y");
 #endif
 
-#ifdef AUTH_CRAM_MD5
-  read_macro_assignment(US"_HAVE_AUTH_CRAM_MD5=y");
-#endif
-#ifdef AUTH_CYRUS_SASL
-  read_macro_assignment(US"_HAVE_AUTH_CYRUS_SASL=y");
-#endif
-#ifdef AUTH_DOVECOT
-  read_macro_assignment(US"_HAVE_AUTH_DOVECOT=y");
-#endif
-#ifdef AUTH_GSASL
-  read_macro_assignment(US"_HAVE_AUTH_GSASL=y");
-#endif
-#ifdef AUTH_HEIMDAL_GSSAPI
-  read_macro_assignment(US"_HAVE_AUTH_HEIMDAL_GSSAPI=y");
-#endif
-#ifdef AUTH_PLAINTEXT
-  read_macro_assignment(US"_HAVE_AUTH_PLAINTEXT=y");
-#endif
-#ifdef AUTH_SPA
-  read_macro_assignment(US"_HAVE_AUTH_SPA=y");
-#endif
-#ifdef AUTH_TLS
-  read_macro_assignment(US"_HAVE_AUTH_TLS=y");
-#endif
-
-#ifdef ROUTER_ACCEPT
-  read_macro_assignment(US"_HAVE_RTR_ACCEPT=y");
-#endif
-#ifdef ROUTER_DNSLOOKUP
-  read_macro_assignment(US"_HAVE_RTR_DNSLOOKUP=y");
-#endif
-#ifdef ROUTER_IPLITERAL
-  read_macro_assignment(US"_HAVE_RTR_IPLITERAL=y");
-#endif
-#ifdef ROUTER_IPLOOKUP
-  read_macro_assignment(US"_HAVE_RTR_IPLOOKUP=y");
-#endif
-#ifdef ROUTER_MANUALROUTE
-  read_macro_assignment(US"_HAVE_RTR_MANUALROUTE=y");
-#endif
-#ifdef ROUTER_QUERYPROGRAM
-  read_macro_assignment(US"_HAVE_RTR_QUERYPROGRAM=y");
-#endif
-#ifdef ROUTER_REDIRECT
-  read_macro_assignment(US"_HAVE_RTR_REDRCT=y");
-#endif
-
 #ifdef TRANSPORT_APPENDFILE
-  read_macro_assignment(US"_HAVE_TPT_APPENDFILE=y");
 # ifdef SUPPORT_MAILDIR
   read_macro_assignment(US"_HAVE_TPT_APPEND_MAILDR=y");
 # endif
@@ -3221,18 +3173,6 @@ due to conflicts with other common macros. */
 # ifdef SUPPORT_MBX
   read_macro_assignment(US"_HAVE_TPT_APPEND_MBX=y");
 # endif
-#endif
-#ifdef TRANSPORT_AUTOREPLY
-  read_macro_assignment(US"_HAVE_TPT_AUTOREPLY=y");
-#endif
-#ifdef TRANSPORT_LMTP
-  read_macro_assignment(US"_HAVE_TPT_LMTP=y");
-#endif
-#ifdef TRANSPORT_PIPE
-  read_macro_assignment(US"_HAVE_TPT_PIPE=y");
-#endif
-#ifdef TRANSPORT_SMTP
-  read_macro_assignment(US"_HAVE_TPT_SMTP=y");
 #endif
 }
 
@@ -4308,7 +4248,10 @@ struct auth_info * ai;
 readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AU");
 
 for (ai = auths_available; ai->driver_name[0]; ai++)
+  {
+  read_macro_assignment(string_sprintf("_DRVR_AUTH_%T=y", ai->driver_name));
   readconf_options_from_list(ai->options, (unsigned)*ai->options_count, ai->driver_name);
+  }
 }
 
 

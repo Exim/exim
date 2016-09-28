@@ -327,6 +327,7 @@ extern int     readconf_readtime(const uschar *, int, BOOL);
 extern void    readconf_rest(void);
 extern uschar *readconf_retry_error(const uschar *, const uschar *, int *, int *);
 extern void    readconf_save_config(const uschar *);
+extern void    read_macro_assignment(uschar *);
 extern void    read_message_body(BOOL);
 extern void    receive_bomb_out(uschar *, uschar *);
 extern BOOL    receive_check_fs(int);
