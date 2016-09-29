@@ -1510,6 +1510,7 @@ BOOL list_config = FALSE;
 BOOL local_queue_only;
 BOOL more = TRUE;
 BOOL one_msg_action = FALSE;
+BOOL opt_D_used = FALSE;
 BOOL queue_only_set = FALSE;
 BOOL receiving_message = TRUE;
 BOOL sender_ident_set = FALSE;
@@ -2416,6 +2417,7 @@ for (i = 1; i < argc; i++)
       uschar name[24];
       uschar *s = argrest;
 
+      opt_D_used = TRUE;
       while (isspace(*s)) s++;
 
       if (*s < 'A' || *s > 'Z')
@@ -4031,16 +4033,15 @@ Exim user", but it hasn't, because either the -D option set macros, or the
       root for -C or -D, the caller must either be root or be invoking a
       trusted configuration file (when deliver_drop_privilege is false). */
 
-if (removed_privilege && (!trusted_config || macros != NULL) &&
-    real_uid == exim_uid)
-  {
+if (  removed_privilege
+   && (!trusted_config || opt_D_used)
+   && real_uid == exim_uid)
   if (deliver_drop_privilege)
     really_exim = TRUE; /* let logging work normally */
   else
     log_write(0, LOG_MAIN|LOG_PANIC,
       "exim user lost privilege for using %s option",
       trusted_config? "-D" : "-C");
-  }
 
 /* Start up Perl interpreter if Perl support is configured and there is a
 perl_startup option, and the configuration or the command line specifies
