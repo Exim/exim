@@ -2504,7 +2504,7 @@ if (*fdp < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
-  DEBUG(D_tls) debug_printf("tls_close() from '%s': shutting down SSL\n");
+  DEBUG(D_tls) debug_printf("tls_close(): shutting down SSL\n");
   SSL_shutdown(*sslp);
   }
 
