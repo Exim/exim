@@ -1,14 +1,10 @@
 # Exim test configuration 0322
 
-LS=
-
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
-
-log_selector = LS
 
 # ----- Routers -----
 
