@@ -3066,7 +3066,7 @@ due to conflicts with other common macros. */
   read_macro_assignment(US"_HAVE_DNSSEC=y");
 #endif
 #ifndef DISABLE_EVENT
-  read_macro_assignment(US"_HAVE_Event=y");
+  read_macro_assignment(US"_HAVE_EVENT=y");
 #endif
 #ifdef SUPPORT_I18N
   read_macro_assignment(US"_HAVE_I18N=y");
