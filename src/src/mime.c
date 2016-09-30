@@ -188,19 +188,17 @@ return size;
 }
 
 
+/*
+ * Return open filehandle for combo of path and file.
+ * Side-effect: set mime_decoded_filename, to copy in allocated mem
+ */
 static FILE *
 mime_get_decode_file(uschar *pname, uschar *fname)
 {
-FILE *f = NULL;
-uschar *filename = NULL;
-
 if (pname && fname)
-  {
-  filename = string_sprintf("%s/%s", pname, fname);
-  f = modefopen(filename,"wb+",SPOOL_MODE);
-  }
+  mime_decoded_filename = string_sprintf("%s/%s", pname, fname);
 else if (!pname)
-  f = modefopen(fname,"wb+",SPOOL_MODE);
+  mime_decoded_filename = string_copy(fname);
 else if (!fname)
   {
   int file_nr = 0;
@@ -210,21 +208,15 @@ else if (!fname)
   do
     {
     struct stat mystat;
-    filename = string_sprintf("%s/%s-%05u", pname, message_id, file_nr++);
+    mime_decoded_filename = string_sprintf("%s/%s-%05u", pname, message_id, file_nr++);
     /* security break */
     if (file_nr >= 1024)
       break;
-    result = stat(CS filename, &mystat);
+    result = stat(CS mime_decoded_filename, &mystat);
     } while(result != -1);
-
-  f = modefopen(filename, "wb+", SPOOL_MODE);
   }
 
-/* set expansion variable */
-/*XXX ? not set if !pname ? */
-mime_decoded_filename = filename;
-
-return f;
+return modefopen(mime_decoded_filename, "wb+", SPOOL_MODE);
 }
 
 
@@ -809,7 +801,7 @@ while(1)
     if (!mime_decoded_filename)		/* decoding failed */
       {
       log_write(0, LOG_MAIN,
-	   "mime_regex acl condition warning - could not decode RFC822 MIME part to file.");
+	   "MIME acl condition warning - could not decode RFC822 MIME part to file.");
       rc = DEFER;
       goto out;
       }
