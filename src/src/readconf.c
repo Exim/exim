@@ -604,7 +604,7 @@ Arguments:
 Returns:       nothing
 */
 
-void
+static void
 read_macro_assignment(uschar *s)
 {
 uschar name[64];

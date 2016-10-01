@@ -1574,9 +1574,6 @@ lflags.send_quit = TRUE;
 lflags.setting_up = TRUE;
 lflags.esmtp = TRUE;
 lflags.esmtp_sent = FALSE;
-#ifndef DISABLE_PRDR
-lflags.prdr_active;
-#endif
 #ifdef SUPPORT_I18N
 lflags.utf8_needed = FALSE;
 #endif

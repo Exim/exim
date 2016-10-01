@@ -233,10 +233,8 @@ long f_pos = 0;
 ssize_t size_counter = 0;
 ssize_t (*decode_function)(FILE*, FILE*, uschar*);
 
-if (mime_stream == NULL)
+if (!mime_stream || (f_pos = ftell(mime_stream)) < 0)
   return FAIL;
-
-f_pos = ftell(mime_stream);
 
 /* build default decode path (will exist since MBOX must be spooled up) */
 (void)string_format(decode_path,1024,"%s/scan/%s",spool_directory,message_id);
@@ -247,7 +245,7 @@ if ((option = string_nextinlist(&list, &sep,
 				sizeof(option_buffer))) != NULL)
   {
   /* parse 1st option */
-  if ( (Ustrcmp(option,"false") == 0) || (Ustrcmp(option,"0") == 0) )
+  if ((Ustrcmp(option,"false") == 0) || (Ustrcmp(option,"0") == 0))
     /* explicitly no decoding */
     return FAIL;
 
