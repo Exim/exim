@@ -663,6 +663,14 @@ while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
 }
 
 
+void
+mainlog_close(void)
+{
+if (mainlogfd < 0) return;
+(void)close(mainlogfd);
+mainlogfd = -1;
+mainlog_inode = 0;
+}
 
 /*************************************************
 *            Write message to log file           *
@@ -1004,14 +1012,8 @@ if (  flags & LOG_MAIN
     happening. */
 
     if (mainlogfd >= 0)
-      {
       if (Ustat(mainlog_name, &statbuf) < 0 || statbuf.st_ino != mainlog_inode)
-        {
-        (void)close(mainlogfd);
-        mainlogfd = -1;
-        mainlog_inode = 0;
-        }
-      }
+	mainlog_close();
 
     /* If the log is closed, open it. Then write the line. */
 

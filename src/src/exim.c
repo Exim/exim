@@ -5531,13 +5531,27 @@ while (more)
     ignored; rejecting here would just add complication, and it can just as
     well be done later. Allow $recipients to be visible in the ACL. */
 
-    if (acl_not_smtp_start != NULL)
+    if (acl_not_smtp_start)
       {
       uschar *user_msg, *log_msg;
       enable_dollar_recipients = TRUE;
       (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
         &user_msg, &log_msg);
       enable_dollar_recipients = FALSE;
+      }
+
+    /* Pause for a while waiting for input.  If none received in that time,
+    close the logfile, if we had one open; then if we wait for a long-running
+    datasource (months, in one use-case) log rotation will not leave us holding
+    the file copy. */
+
+    if (!receive_timeout)
+      {
+      struct timeval t = { 30*60, 0 };	/* 30 minutess */
+      fd_set r;
+
+      FD_ZERO(&r); FD_SET(0, &r);
+      if (select(1, &r, NULL, NULL, &t) == 0) mainlog_close();
       }
 
     /* Read the data for the message. If filter_test is not FTEST_NONE, this
