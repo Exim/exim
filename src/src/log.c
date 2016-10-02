@@ -971,14 +971,14 @@ been opened, but we don't want to keep on writing to it for too long after it
 has been renamed. Therefore, do a stat() and see if the inode has changed, and
 if so, re-open. */
 
-if ((flags & LOG_MAIN) != 0 &&
-    (selector == 0 || (selector & log_selector[0]) != 0))
+if (  flags & LOG_MAIN
+   && (!selector ||  selector & log_selector[0]))
   {
-  if ((logging_mode & LOG_MODE_SYSLOG) != 0 &&
-      (syslog_duplication || (flags & (LOG_REJECT|LOG_PANIC)) == 0))
+  if (  logging_mode & LOG_MODE_SYSLOG
+     && (syslog_duplication || !(flags & (LOG_REJECT|LOG_PANIC))))
     write_syslog(LOG_INFO, log_buffer);
 
-  if ((logging_mode & LOG_MODE_FILE) != 0)
+  if (logging_mode & LOG_MODE_FILE)
     {
     struct stat statbuf;
 

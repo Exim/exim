@@ -1020,7 +1020,7 @@ Lines in client scripts are of two kinds:
 Here is a simple example:
 
   client 127.0.0.1 PORT_D
-  ??? 250
+  ??? 220
   EHLO xxx
   ??? 250-
   ??? 250

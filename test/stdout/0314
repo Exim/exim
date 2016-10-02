@@ -1,13 +1,12 @@
-
-**** SMTP testing session as if from host V4NET.0.0.1
-**** but without any ident (RFC 1413) callback.
-**** This is not for real!
-
-554 SMTP service not available
-
-**** SMTP testing session as if from host V4NET.0.0.2
-**** but without any ident (RFC 1413) callback.
-**** This is not for real!
-
-220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-421 the.local.host.name lost input connection
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 554
+<<< 554 SMTP service not available
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 554
+<<< 554 SMTP service not available
+End of script

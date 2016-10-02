@@ -2473,7 +2473,6 @@ if (smtp_batched_input) return TRUE;
 proxy_session = FALSE;
 proxy_session_failed = FALSE;
 if (check_proxy_protocol_host())
-  {
   if (setup_proxy_protocol_host() == FALSE)
     {
     proxy_session_failed = TRUE;
@@ -2486,20 +2485,18 @@ if (check_proxy_protocol_host())
     (void)host_name_lookup();
     host_build_sender_fullhost();
     }
-  }
 #endif
 
 /* Run the ACL if it exists */
 
 user_msg = NULL;
-if (acl_smtp_connect != NULL)
+if (acl_smtp_connect)
   {
   int rc;
-  rc = acl_check(ACL_WHERE_CONNECT, NULL, acl_smtp_connect, &user_msg,
-    &log_msg);
-  if (rc != OK)
+  if ((rc = acl_check(ACL_WHERE_CONNECT, NULL, acl_smtp_connect, &user_msg,
+		      &log_msg)) != OK)
     {
-    (void)smtp_handle_acl_fail(ACL_WHERE_CONNECT, rc, user_msg, log_msg);
+    (void) smtp_handle_acl_fail(ACL_WHERE_CONNECT, rc, user_msg, log_msg);
     return FALSE;
     }
   }
@@ -2865,16 +2862,16 @@ uschar *lognl;
 uschar *sender_info = US"";
 uschar *what =
 #ifdef WITH_CONTENT_SCAN
-  (where == ACL_WHERE_MIME)? US"during MIME ACL checks" :
+  where == ACL_WHERE_MIME ? US"during MIME ACL checks" :
 #endif
-  (where == ACL_WHERE_PREDATA)? US"DATA" :
-  (where == ACL_WHERE_DATA)? US"after DATA" :
+  where == ACL_WHERE_PREDATA ? US"DATA" :
+  where == ACL_WHERE_DATA ? US"after DATA" :
 #ifndef DISABLE_PRDR
-  (where == ACL_WHERE_PRDR)? US"after DATA PRDR" :
+  where == ACL_WHERE_PRDR ? US"after DATA PRDR" :
 #endif
-  (smtp_cmd_data == NULL)?
-    string_sprintf("%s in \"connect\" ACL", acl_wherenames[where]) :
-    string_sprintf("%s %s", acl_wherenames[where], smtp_cmd_data);
+  smtp_cmd_data ?
+    string_sprintf("%s %s", acl_wherenames[where], smtp_cmd_data) :
+    string_sprintf("%s in \"connect\" ACL", acl_wherenames[where]);
 
 if (drop) rc = FAIL;
 
@@ -2951,9 +2948,8 @@ if (sender_verified_failed != NULL &&
 
 /* Sort out text for logging */
 
-log_msg = (log_msg == NULL)? US"" : string_sprintf(": %s", log_msg);
-lognl = Ustrchr(log_msg, '\n');
-if (lognl != NULL) *lognl = 0;
+log_msg = log_msg ? string_sprintf(": %s", log_msg) : US"";
+if ((lognl = Ustrchr(log_msg, '\n'))) *lognl = 0;
 
 /* Send permanent failure response to the command, but the code used isn't
 always a 5xx one - see comments at the start of this function. If the original
@@ -2999,7 +2995,8 @@ if (log_reject_target != 0)
 #else
   uschar * tls = US"";
 #endif
-  log_write(0, log_reject_target, "%s%s%s %s%srejected %s%s",
+  log_write(where == ACL_WHERE_CONNECT ? L_connection_reject : 0,
+    log_reject_target, "%s%s%s %s%srejected %s%s",
     LOGGING(dnssec) && sender_host_dnssec ? US" DS" : US"",
     host_and_ident(TRUE),
     tls,

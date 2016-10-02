@@ -227,7 +227,7 @@ host in "<
 deny: condition test succeeded in ACL "connect1"
 end of ACL "connect1": DENY
 SMTP>> 550 Administrative prohibition
-LOG: MAIN REJECT
+LOG: connection_reject MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -271,7 +271,7 @@ host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? no (end of list)
 deny: condition test failed in ACL "connect2"
 end of ACL "connect2": implicit DENY
 SMTP>> 550 Administrative prohibition
-LOG: MAIN REJECT
+LOG: connection_reject MAIN REJECT
   H=[V4NET.0.0.2] rejected connection in "connect" ACL
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

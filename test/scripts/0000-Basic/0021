@@ -24,6 +24,8 @@ Test message 5.
 ****
 exim -bs -oMa 10.9.8.7
 ****
+exim -DLOG_SELECTOR=-connection_reject -bs -oMa 10.9.8.7
+****
 exim -d-all+acl+lists -bs -oMa 10.9.8.8
 mail from:<bad@test1>
 mail from:<ok@test1>

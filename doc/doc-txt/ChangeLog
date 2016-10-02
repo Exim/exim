@@ -108,6 +108,10 @@ JH/28 Enable {spool,log} filesystem space and inode checks as default.
       Main config options check_{log,spool}_{inodes,space} are now
       100 inodes, 10MB unless set otherwise in the configuration.
 
+JH/29 Fix the connection_reject log selector to apply to the connect ACL.
+      Previously it only applied to the main-section connection policy
+      options.
+
 
 Exim version 4.87
 -----------------

@@ -1,10 +1,13 @@
 # Exim test configuration 0314
 
+LOG_SELECTOR=
+
 .include DIR/aux-var/std_conf_prefix
 
 
 # ----- Main settings -----
 
-host_reject_connection = V4NET.0.0.1
+log_selector = LOG_SELECTOR
+host_reject_connection = 127.0.0.1
 
 # End
