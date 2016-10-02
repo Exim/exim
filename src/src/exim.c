@@ -1419,8 +1419,9 @@ for (p = whitelisted, i = 0; (p != end) && (i < white_count); ++p)
   }
 whites[i] = NULL;
 
-/* The list of macros should be very short.  Accept the N*M complexity. */
-for (m = macros; m != NULL; m = m->next)
+/* The list of commandline macros should be very short.
+Accept the N*M complexity. */
+for (m = macros; m; m = m->next) if (m->command_line)
   {
   found = FALSE;
   for (w = whites; *w; ++w)
@@ -2412,7 +2413,6 @@ for (i = 1; i < argc; i++)
     #else
       {
       int ptr = 0;
-      macro_item *mlast = NULL;
       macro_item *m;
       uschar name[24];
       uschar *s = argrest;
@@ -2441,22 +2441,14 @@ for (i = 1; i < argc; i++)
         while (isspace(*s)) s++;
         }
 
-      for (m = macros; m != NULL; m = m->next)
-        {
+      for (m = macros; m; m = m->next)
         if (Ustrcmp(m->name, name) == 0)
           {
           fprintf(stderr, "exim: duplicated -D in command line\n");
           exit(EXIT_FAILURE);
           }
-        mlast = m;
-        }
 
-      m = store_get(sizeof(macro_item) + Ustrlen(name));
-      m->next = NULL;
-      m->command_line = TRUE;
-      if (mlast == NULL) macros = m; else mlast->next = m;
-      Ustrcpy(m->name, name);
-      m->replacement = string_copy(s);
+      m = macro_create(name, s, TRUE);
 
       if (clmacro_count >= MAX_CLMACROS)
         {

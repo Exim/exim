@@ -554,6 +554,27 @@ return US"";
 *       Deal with an assignment to a macro       *
 *************************************************/
 
+/* We have a new definition. The macro_item structure includes a final vector
+called "name" which is one byte long. Thus, adding "namelen" gives us enough
+room to store the "name" string. */
+
+macro_item *
+macro_create(const uschar * name, const uschar * val, BOOL command_line)
+{
+unsigned namelen = Ustrlen(name);
+macro_item * m = store_get(sizeof(macro_item) + namelen);
+
+if (!macros) macros = m; else mlast->next = m;
+mlast = m;
+m->next = NULL;
+m->command_line = command_line;
+m->namelen = namelen;
+m->replacement = string_copy(val);
+Ustrcpy(m->name, name);
+return m;
+}
+
+
 /* This function is called when a line that starts with an upper case letter is
 encountered. The argument "line" should contain a complete logical line, and
 start with the first letter of the macro name. The macro name and the
@@ -573,7 +594,6 @@ uschar name[64];
 int namelen = 0;
 BOOL redef = FALSE;
 macro_item *m;
-macro_item *mlast = NULL;
 
 while (isalnum(*s) || *s == '_')
   {
@@ -599,13 +619,13 @@ while (isspace(*s)) s++;
 just skip this definition. It's an error to attempt to redefine a macro without
 redef set to TRUE, or to redefine a macro when it hasn't been defined earlier.
 It is also an error to define a macro whose name begins with the name of a
-previously defined macro. Note: it is documented that the other way round
-works. */
+previously defined macro.  This is the requirement that make using a tree
+for macros hard; we must check all macros for the substring.  Perhaps a
+sorted list, and a bsearch, would work?
+Note: it is documented that the other way round works. */
 
-for (m = macros; m != NULL; m = m->next)
+for (m = macros; m; m = m->next)
   {
-  int len = Ustrlen(m->name);
-
   if (Ustrcmp(m->name, name) == 0)
     {
     if (!m->command_line && !redef)
@@ -614,7 +634,7 @@ for (m = macros; m != NULL; m = m->next)
     break;
     }
 
-  if (len < namelen && Ustrstr(name, m->name) != NULL)
+  if (m->namelen < namelen && Ustrstr(name, m->name) != NULL)
     log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
       "a macro because previously defined macro \"%s\" is a substring",
       name, m->name);
@@ -622,45 +642,29 @@ for (m = macros; m != NULL; m = m->next)
   /* We cannot have this test, because it is documented that a substring
   macro is permitted (there is even an example).
   *
-  * if (len > namelen && Ustrstr(m->name, name) != NULL)
+  * if (m->namelen > namelen && Ustrstr(m->name, name) != NULL)
   *   log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
   *     "a macro because it is a substring of previously defined macro \"%s\"",
   *     name, m->name);
   */
-
-  mlast = m;
   }
 
 /* Check for an overriding command-line definition. */
 
-if (m != NULL && m->command_line) return;
+if (m && m->command_line) return;
 
 /* Redefinition must refer to an existing macro. */
 
 if (redef)
-  {
-  if (m == NULL)
+  if (m)
+    m->replacement = string_copy(s);
+  else
     log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "can't redefine an undefined macro "
       "\"%s\"", name);
-  }
 
-/* We have a new definition. The macro_item structure includes a final vector
-called "name" which is one byte long. Thus, adding "namelen" gives us enough
-room to store the "name" string. */
-
+/* We have a new definition. */
 else
-  {
-  m = store_get(sizeof(macro_item) + namelen);
-  if (macros == NULL) macros = m; else mlast->next = m;
-  Ustrncpy(m->name, name, namelen);
-  m->name[namelen] = 0;
-  m->next = NULL;
-  m->command_line = FALSE;
-  }
-
-/* Set the value of the new or redefined macro */
-
-m->replacement = string_copy(s);
+  (void) macro_create(name, s, FALSE);
 }
 
 
@@ -788,12 +792,11 @@ for (;;)
     while ((p = Ustrstr(t, m->name)) != NULL)
       {
       int moveby;
-      int namelen = Ustrlen(m->name);
       int replen = Ustrlen(m->replacement);
 
       /* Expand the buffer if necessary */
 
-      while (newlen - namelen + replen + 1 > big_buffer_size)
+      while (newlen - m->namelen + replen + 1 > big_buffer_size)
         {
         int newsize = big_buffer_size + BIG_BUFFER_SIZE;
         uschar *newbuffer = store_malloc(newsize);
@@ -811,9 +814,8 @@ for (;;)
       copying in the replacement text. Don't rescan the replacement for this
       same macro. */
 
-      pp = p + namelen;
-      moveby = replen - namelen;
-      if (moveby != 0)
+      pp = p + m->namelen;
+      if ((moveby = replen - m->namelen) != 0)
         {
         memmove(p + replen, pp, (big_buffer + newlen) - pp + 1);
         newlen += moveby;
@@ -2767,19 +2769,17 @@ else if (Ustrcmp(type, "macro") == 0)
     fprintf(stderr, "exim: permission denied\n");
     exit(EXIT_FAILURE);
     }
-  for (m = macros; m != NULL; m = m->next)
-    {
-    if (name == NULL || Ustrcmp(name, m->name) == 0)
+  for (m = macros; m; m = m->next)
+    if (!name || Ustrcmp(name, m->name) == 0)
       {
       if (names_only)
         printf("%s\n", CS m->name);
       else
         printf("%s=%s\n", CS m->name, CS m->replacement);
-      if (name != NULL)
+      if (name)
         return;
       }
-    }
-  if (name != NULL)
+  if (name)
     printf("%s %s not found\n", type, name);
   return;
   }
@@ -3019,159 +3019,159 @@ macros are stored, but this will do for now. Some names are awkward
 due to conflicts with other common macros. */
 
 #ifdef SUPPORT_CRYPTEQ
-  read_macro_assignment(US"_HAVE_CRYPTEQ=y");
+  macro_create(US"_HAVE_CRYPTEQ", US"y", FALSE);
 #endif
 #if HAVE_ICONV
-  read_macro_assignment(US"_HAVE_ICONV=y");
+  macro_create(US"_HAVE_ICONV", US"y", FALSE);
 #endif
 #if HAVE_IPV6
-  read_macro_assignment(US"_HAVE_IPV6=y");
+  macro_create(US"_HAVE_IPV6", US"y", FALSE);
 #endif
 #ifdef HAVE_SETCLASSRESOURCES
-  read_macro_assignment(US"_HAVE_SETCLASSRESOURCES=y");
+  macro_create(US"_HAVE_SETCLASSRESOURCES", US"y", FALSE);
 #endif
 #ifdef SUPPORT_PAM
-  read_macro_assignment(US"_HAVE_PAM=y");
+  macro_create(US"_HAVE_PAM", US"y", FALSE);
 #endif
 #ifdef EXIM_PERL
-  read_macro_assignment(US"_HAVE_PERL=y");
+  macro_create(US"_HAVE_PERL", US"y", FALSE);
 #endif
 #ifdef EXPAND_DLFUNC
-  read_macro_assignment(US"_HAVE_DLFUNC=y");
+  macro_create(US"_HAVE_DLFUNC", US"y", FALSE);
 #endif
 #ifdef USE_TCP_WRAPPERS
-  read_macro_assignment(US"_HAVE_TCPWRAPPERS=y");
+  macro_create(US"_HAVE_TCPWRAPPERS", US"y", FALSE);
 #endif
 #ifdef SUPPORT_TLS
-  read_macro_assignment(US"_HAVE_TLS=y");
+  macro_create(US"_HAVE_TLS", US"y", FALSE);
 # ifdef USE_GNUTLS
-  read_macro_assignment(US"_HAVE_GNUTLS=y");
+  macro_create(US"_HAVE_GNUTLS", US"y", FALSE);
 # else
-  read_macro_assignment(US"_HAVE_OPENSSL=y");
+  macro_create(US"_HAVE_OPENSSL", US"y", FALSE);
 # endif
 #endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
-  read_macro_assignment(US"_HAVE_TRANSLATE_IP_ADDRESS=y");
+  macro_create(US"_HAVE_TRANSLATE_IP_ADDRESS", US"y", FALSE);
 #endif
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-  read_macro_assignment(US"_HAVE_MOVE_FROZEN_MESSAGES=y");
+  macro_create(US"_HAVE_MOVE_FROZEN_MESSAGES", US"y", FALSE);
 #endif
 #ifdef WITH_CONTENT_SCAN
-  read_macro_assignment(US"_HAVE_CONTENT_SCANNING=y");
+  macro_create(US"_HAVE_CONTENT_SCANNING", US"y", FALSE);
 #endif
 #ifndef DISABLE_DKIM
-  read_macro_assignment(US"_HAVE_DKIM=y");
+  macro_create(US"_HAVE_DKIM", US"y", FALSE);
 #endif
 #ifndef DISABLE_DNSSEC
-  read_macro_assignment(US"_HAVE_DNSSEC=y");
+  macro_create(US"_HAVE_DNSSEC", US"y", FALSE);
 #endif
 #ifndef DISABLE_EVENT
-  read_macro_assignment(US"_HAVE_EVENT=y");
+  macro_create(US"_HAVE_EVENT", US"y", FALSE);
 #endif
 #ifdef SUPPORT_I18N
-  read_macro_assignment(US"_HAVE_I18N=y");
+  macro_create(US"_HAVE_I18N", US"y", FALSE);
 #endif
 #ifndef DISABLE_OCSP
-  read_macro_assignment(US"_HAVE_OCSP=y");
+  macro_create(US"_HAVE_OCSP", US"y", FALSE);
 #endif
 #ifndef DISABLE_PRDR
-  read_macro_assignment(US"_HAVE_PRDR=y");
+  macro_create(US"_HAVE_PRDR", US"y", FALSE);
 #endif
 #ifdef SUPPORT_PROXY
-  read_macro_assignment(US"_HAVE_PROXY=y");
+  macro_create(US"_HAVE_PROXY", US"y", FALSE);
 #endif
 #ifdef SUPPORT_SOCKS
-  read_macro_assignment(US"_HAVE_SOCKS=y");
+  macro_create(US"_HAVE_SOCKS", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  read_macro_assignment(US"_HAVE_LMDB=y");
+  macro_create(US"_HAVE_LMDB", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_SPF
-  read_macro_assignment(US"_HAVE_SPF=y");
+  macro_create(US"_HAVE_SPF", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_SRS
-  read_macro_assignment(US"_HAVE_SRS=y");
+  macro_create(US"_HAVE_SRS", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  read_macro_assignment(US"_HAVE_BRIGHTMAIL=y");
+  macro_create(US"_HAVE_BRIGHTMAIL", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_DANE
-  read_macro_assignment(US"_HAVE_DANE=y");
+  macro_create(US"_HAVE_DANE", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_DCC
-  read_macro_assignment(US"_HAVE_DCC=y");
+  macro_create(US"_HAVE_DCC", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_DMARC
-  read_macro_assignment(US"_HAVE_DMARC=y");
+  macro_create(US"_HAVE_DMARC", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
-  read_macro_assignment(US"_HAVE_DSN_INFO=y");
+  macro_create(US"_HAVE_DSN_INFO", US"y", FALSE);
 #endif
 
 #ifdef LOOKUP_LSEARCH
-  read_macro_assignment(US"_HAVE_LKUP_LSEARCH=y");
+  macro_create(US"_HAVE_LKUP_LSEARCH", US"y", FALSE);
 #endif
 #ifdef LOOKUP_CDB
-  read_macro_assignment(US"_HAVE_LKUP_CDB=y");
+  macro_create(US"_HAVE_LKUP_CDB", US"y", FALSE);
 #endif
 #ifdef LOOKUP_DBM
-  read_macro_assignment(US"_HAVE_LKUP_DBM=y");
+  macro_create(US"_HAVE_LKUP_DBM", US"y", FALSE);
 #endif
 #ifdef LOOKUP_DNSDB
-  read_macro_assignment(US"_HAVE_LKUP_DNSDB=y");
+  macro_create(US"_HAVE_LKUP_DNSDB", US"y", FALSE);
 #endif
 #ifdef LOOKUP_DSEARCH
-  read_macro_assignment(US"_HAVE_LKUP_DSEARCH=y");
+  macro_create(US"_HAVE_LKUP_DSEARCH", US"y", FALSE);
 #endif
 #ifdef LOOKUP_IBASE
-  read_macro_assignment(US"_HAVE_LKUP_IBASE=y");
+  macro_create(US"_HAVE_LKUP_IBASE", US"y", FALSE);
 #endif
 #ifdef LOOKUP_LDAP
-  read_macro_assignment(US"_HAVE_LKUP_LDAP=y");
+  macro_create(US"_HAVE_LKUP_LDAP", US"y", FALSE);
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  read_macro_assignment(US"_HAVE_LKUP_LMDB=y");
+  macro_create(US"_HAVE_LKUP_LMDB", US"y", FALSE);
 #endif
 #ifdef LOOKUP_MYSQL
-  read_macro_assignment(US"_HAVE_LKUP_MYSQL=y");
+  macro_create(US"_HAVE_LKUP_MYSQL", US"y", FALSE);
 #endif
 #ifdef LOOKUP_NIS
-  read_macro_assignment(US"_HAVE_LKUP_NIS=y");
+  macro_create(US"_HAVE_LKUP_NIS", US"y", FALSE);
 #endif
 #ifdef LOOKUP_NISPLUS
-  read_macro_assignment(US"_HAVE_LKUP_NISPLUS=y");
+  macro_create(US"_HAVE_LKUP_NISPLUS", US"y", FALSE);
 #endif
 #ifdef LOOKUP_ORACLE
-  read_macro_assignment(US"_HAVE_LKUP_ORACLE=y");
+  macro_create(US"_HAVE_LKUP_ORACLE", US"y", FALSE);
 #endif
 #ifdef LOOKUP_PASSWD
-  read_macro_assignment(US"_HAVE_LKUP_PASSWD=y");
+  macro_create(US"_HAVE_LKUP_PASSWD", US"y", FALSE);
 #endif
 #ifdef LOOKUP_PGSQL
-  read_macro_assignment(US"_HAVE_LKUP_PGSQL=y");
+  macro_create(US"_HAVE_LKUP_PGSQL", US"y", FALSE);
 #endif
 #ifdef LOOKUP_REDIS
-  read_macro_assignment(US"_HAVE_LKUP_REDIS=y");
+  macro_create(US"_HAVE_LKUP_REDIS", US"y", FALSE);
 #endif
 #ifdef LOOKUP_SQLITE
-  read_macro_assignment(US"_HAVE_LKUP_SQLITE=y");
+  macro_create(US"_HAVE_LKUP_SQLITE", US"y", FALSE);
 #endif
 #ifdef LOOKUP_TESTDB
-  read_macro_assignment(US"_HAVE_LKUP_TESTDB=y");
+  macro_create(US"_HAVE_LKUP_TESTDB", US"y", FALSE);
 #endif
 #ifdef LOOKUP_WHOSON
-  read_macro_assignment(US"_HAVE_LKUP_WHOSON=y");
+  macro_create(US"_HAVE_LKUP_WHOSON", US"y", FALSE);
 #endif
 
 #ifdef TRANSPORT_APPENDFILE
 # ifdef SUPPORT_MAILDIR
-  read_macro_assignment(US"_HAVE_TPT_APPEND_MAILDR=y");
+  macro_create(US"_HAVE_TPT_APPEND_MAILDR", US"y", FALSE);
 # endif
 # ifdef SUPPORT_MAILSTORE
-  read_macro_assignment(US"_HAVE_TPT_APPEND_MAILSTORE=y");
+  macro_create(US"_HAVE_TPT_APPEND_MAILSTORE", US"y", FALSE);
 # endif
 # ifdef SUPPORT_MBX
-  read_macro_assignment(US"_HAVE_TPT_APPEND_MBX=y");
+  macro_create(US"_HAVE_TPT_APPEND_MBX", US"y", FALSE);
 # endif
 #endif
 }
@@ -3185,7 +3185,7 @@ const uschar * s;
 
 /* Walk the array backwards to get substring-conflict names */
 for (i = nopt-1; i >= 0; i--) if (*(s = opts[i].name) && *s != '*')
-  read_macro_assignment(string_sprintf("_OPT_%T_%T=y", group, s));
+  macro_create(string_sprintf("_OPT_%T_%T", group, s), US"y", FALSE);
 }
 
 
@@ -4249,7 +4249,7 @@ readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AU");
 
 for (ai = auths_available; ai->driver_name[0]; ai++)
   {
-  read_macro_assignment(string_sprintf("_DRVR_AUTH_%T=y", ai->driver_name));
+  macro_create(string_sprintf("_DRVR_AUTH_%T", ai->driver_name), US"y", FALSE);
   readconf_options_from_list(ai->options, (unsigned)*ai->options_count, ai->driver_name);
   }
 }

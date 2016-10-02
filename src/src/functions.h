@@ -245,6 +245,7 @@ extern int     log_create(uschar *);
 extern int     log_create_as_exim(uschar *);
 extern void    log_close_all(void);
 
+extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
 #ifdef WITH_CONTENT_SCAN
 extern int     malware(const uschar *, int);
 extern int     malware_in_file(uschar *);

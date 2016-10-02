@@ -120,7 +120,7 @@ readconf_options_from_list(optionlist_transports, nelem(optionlist_transports), 
 
 for (ti = transports_available; ti->driver_name[0]; ti++)
   {
-  read_macro_assignment(string_sprintf("_DRVR_TPT_%T=y", ti->driver_name));
+  macro_create(string_sprintf("_DRVR_TPT_%T", ti->driver_name), US"y", FALSE);
   readconf_options_from_list(ti->options, (unsigned)*ti->options_count, ti->driver_name);
   }
 } 
