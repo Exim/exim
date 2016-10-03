@@ -16,8 +16,8 @@ RCPT TO
 250 OK
 RCPT TO
 250 OK
-BDAT 328 LAST
-*data 328
+BDAT 285 LAST
+*data 285
 353 prdr responses coming up
 250 first rcpt was good
 250 second rcpt was good
@@ -25,8 +25,15 @@ BDAT 328 LAST
 QUIT
 250 OK
 ****
-exim -odi -f sender_gets_replaced usery userz
+sudo exim -odi -bS
+EHLO
+MAIL FROM:<sender@dom>
+RCPT TO:<usery>
+RCPT TO:<userz>
+DATA
 Some message text.
+.
+QUIT
 ****
 #
 #

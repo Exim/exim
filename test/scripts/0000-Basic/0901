@@ -12,17 +12,23 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 250 OK
 QUIT
 225 OK
 *eof
 ****
-exim -odf a@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<a@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # Error case: server wrongly expected more data, client gets timeout for data-ack
@@ -35,16 +41,22 @@ MAIL FROM
 250 good mail cmd
 RCPT TO
 250 acceptable rcpt cmd
-BDAT 346 LAST
-*data 347
+BDAT 329 LAST
+*data 330
 250 OK got that data
 QUIT
 225 OK quitting
 ****
-exim -odf b@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<b@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # Error case: server wrongly expected less data
@@ -59,16 +71,22 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 346 LAST
-*data 345
+BDAT 329 LAST
+*data 328
 250 OK
 QUIT
 225 OK
 ****
-exim -odf c@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<c@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # server rejects BDAT cmd
@@ -81,16 +99,22 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 500 oops
 QUIT
 225 OK
 ****
-exim -odf d@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<d@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # server tmp-rejects BDAT cmd
@@ -103,16 +127,22 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 400 not right now
 QUIT
 225 OK
 ****
-exim -odf e@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<e@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 #
@@ -129,8 +159,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 250 OK mail
 250 OK rcpt
 250 OK bdat
@@ -138,10 +168,16 @@ QUIT
 225 OK
 *eof
 ****
-exim -odf p@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<p@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # Error case: server wrongly expected more data, client gets timeout for data-ack
@@ -153,14 +189,20 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 346 LAST
-*data 347
+BDAT 329 LAST
+*data 330
 250 good mail cmd
 ****
-exim -odf q@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<q@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # Error case: server wrongly expected less data
@@ -174,18 +216,24 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 346 LAST
-*data 345
+BDAT 329 LAST
+*data 328
 250 OK mail
 250 OK rcpt
 250 OK bdat
 QUIT
 225 OK
 ****
-exim -odf r@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<r@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # server rejects MAIL cmd
@@ -199,18 +247,24 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 550 unacceptable mail-from
 550 rcpt ungood lacking mail-from
 500 bdat ungood lacking mail-from
 QUIT
 225 OK
 ****
-exim -odf s@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<s@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # server tmp-rejects MAIL cmd
@@ -222,18 +276,24 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 347 LAST
-*data 347
+BDAT 330 LAST
+*data 330
 450 greylisted mail-from
 550 rcpt ungood lacking mail-from
 500 bdat ungood lacking mail-from
 QUIT
 225 OK
 ****
-exim -odf s1@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<s1@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # server rejects RCPT cmd
@@ -245,18 +305,24 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 250 OK mail
 550 no such recipient
 500 oops bdat
 QUIT
 225 OK
 ****
-exim -odf t@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<t@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # server rejects BDAT cmd
@@ -268,18 +334,24 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 250 OK mail
 250 OK rcpt
 500 oops bdat
 QUIT
 225 OK
 ****
-exim -odf u@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<u@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 # server tmp-rejects BDAT cmd
@@ -291,18 +363,24 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 346 LAST
-*data 346
+BDAT 329 LAST
+*data 329
 250 OK mail
 250 OK rcpt
 400 not right now bdat
 QUIT
 225 OK
 ****
-exim -odf v@test.ex
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<v@test.ex>
+DATA
 Subject: foo
 
 data
+.
+QUIT
 ****
 #
 #
