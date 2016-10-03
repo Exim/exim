@@ -12,8 +12,8 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 250 OK
 QUIT
 225 OK
@@ -35,8 +35,8 @@ MAIL FROM
 250 good mail cmd
 RCPT TO
 250 acceptable rcpt cmd
-BDAT 343 LAST
-*data 344
+BDAT 346 LAST
+*data 347
 250 OK got that data
 QUIT
 225 OK quitting
@@ -59,8 +59,8 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 343 LAST
-*data 342
+BDAT 346 LAST
+*data 345
 250 OK
 QUIT
 225 OK
@@ -81,8 +81,8 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 500 oops
 QUIT
 225 OK
@@ -103,8 +103,8 @@ MAIL FROM
 250 OK
 RCPT TO
 250 OK
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 400 not right now
 QUIT
 225 OK
@@ -129,8 +129,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 250 OK mail
 250 OK rcpt
 250 OK bdat
@@ -153,8 +153,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 343 LAST
-*data 344
+BDAT 346 LAST
+*data 347
 250 good mail cmd
 ****
 exim -odf q@test.ex
@@ -174,8 +174,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 343 LAST
-*data 342
+BDAT 346 LAST
+*data 345
 250 OK mail
 250 OK rcpt
 250 OK bdat
@@ -199,8 +199,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 550 unacceptable mail-from
 550 rcpt ungood lacking mail-from
 500 bdat ungood lacking mail-from
@@ -222,8 +222,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 344 LAST
-*data 344
+BDAT 347 LAST
+*data 347
 450 greylisted mail-from
 550 rcpt ungood lacking mail-from
 500 bdat ungood lacking mail-from
@@ -245,8 +245,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 250 OK mail
 550 no such recipient
 500 oops bdat
@@ -268,8 +268,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 250 OK mail
 250 OK rcpt
 500 oops bdat
@@ -291,8 +291,8 @@ EHLO
 250 CHUNKING
 MAIL FROM
 RCPT TO
-BDAT 343 LAST
-*data 343
+BDAT 346 LAST
+*data 346
 250 OK mail
 250 OK rcpt
 400 not right now bdat

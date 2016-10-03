@@ -16,8 +16,8 @@ RCPT TO
 250 OK
 RCPT TO
 250 OK
-BDAT 337 LAST
-*data 337
+BDAT 328 LAST
+*data 328
 353 prdr responses coming up
 250 first rcpt was good
 250 second rcpt was good

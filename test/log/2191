@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@testhost.test.ex U=CALLER P=local S=sss for CALLER@test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
 1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: "/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no K C="250- 360 byte chunk, total 360\\n250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no K C="250- 363 byte chunk, total 363\\n250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 
 ******** SERVER ********

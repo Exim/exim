@@ -94,6 +94,7 @@ remote_smtp:
   allow_localhost
   command_timeout = 2s
   final_timeout = 2s
+  headers_rewrite = *@* CALLER_NAME@$domain fs
 
 remote_smtp_dkim:
   driver = smtp
@@ -102,6 +103,7 @@ remote_smtp_dkim:
   allow_localhost
   command_timeout = 2s
   final_timeout = 2s
+  headers_rewrite = *@* CALLER_NAME@$domain fs
 
 .ifdef OPT
   dkim_domain =		test.ex
