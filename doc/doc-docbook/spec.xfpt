@@ -14438,6 +14438,7 @@ See &%daemon_startup_retries%&.
 .option delay_warning main "time list" 24h
 .cindex "warning of delay"
 .cindex "delay warning, specifying"
+.cindex "queue" "delay warning"
 When a message is delayed, Exim sends a warning message to the sender at
 intervals specified by this option. The data is a colon-separated list of times
 after which to send warning messages. If the value of the option is an empty
