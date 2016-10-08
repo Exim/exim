@@ -252,6 +252,7 @@ considering: ${tod_full}
 LOG: MAIN
   >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no C="250 OK id=10HmaY-0005vi-00"
   SMTP>> QUIT
+  SMTP(close)>>
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
@@ -482,6 +483,7 @@ considering: ${tod_full}
 LOG: MAIN
   >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
   SMTP>> QUIT
+  SMTP(close)>>
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
@@ -712,6 +714,7 @@ considering: ${tod_full}
 LOG: MAIN
   >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
   SMTP>> QUIT
+  SMTP(close)>>
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss

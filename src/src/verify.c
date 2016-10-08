@@ -617,6 +617,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 		  addr->transport);
     if (inblock.sock < 0)
       {
+      HDEBUG(D_verify) debug_printf("connect: %s\n", strerror(errno));
       addr->message = string_sprintf("could not connect to %s [%s]: %s",
           host->name, host->address, strerror(errno));
       transport_name = NULL;
@@ -820,24 +821,22 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	connection, if the options permit it for this host. */
         if (rc != OK)
           {
-	  if (rc == DEFER)
-	    {
-	    (void)close(inblock.sock);
+	  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
+	  (void)close(inblock.sock);
 # ifndef DISABLE_EVENT
-	    (void) event_raise(addr->transport->event_action,
-				    US"tcp:close", NULL);
+	  (void) event_raise(addr->transport->event_action,
+				  US"tcp:close", NULL);
 # endif
-	    if (  ob->tls_tempfail_tryclear
-	       && !smtps
-	       && verify_check_given_host(&ob->hosts_require_tls, host) != OK
-	       )
-	      {
-	      log_write(0, LOG_MAIN, "TLS session failure:"
-		" delivering unencrypted to %s [%s] (not in hosts_require_tls)",
-		host->name, host->address);
-	      suppress_tls = TRUE;
-	      goto tls_retry_connection;
-	      }
+	  if (  ob->tls_tempfail_tryclear
+	     && !smtps
+	     && verify_check_given_host(&ob->hosts_require_tls, host) != OK
+	     )
+	    {
+	    log_write(0, LOG_MAIN, "TLS session failure:"
+	      " callout unencrypted to %s [%s] (not in hosts_require_tls)",
+	      host->name, host->address);
+	    suppress_tls = TRUE;
+	    goto tls_retry_connection;
 	    }
 
 	  /*save_errno = ERRNO_TLSFAILURE;*/
@@ -1093,6 +1092,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #ifdef SUPPORT_TLS
 	    tls_close(FALSE, TRUE);
 #endif
+	    HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
 	    (void)close(inblock.sock);
 #ifndef DISABLE_EVENT
 	    (void) event_raise(addr->transport->event_action,
@@ -1305,6 +1305,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #ifdef SUPPORT_TLS
       tls_close(FALSE, TRUE);
 #endif
+      HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
       (void)close(inblock.sock);
 #ifndef DISABLE_EVENT
       (void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
@@ -1626,6 +1627,7 @@ if(cutthrough.fd >= 0)
   #ifdef SUPPORT_TLS
   tls_close(FALSE, TRUE);
   #endif
+  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
   (void)close(cutthrough.fd);
   cutthrough.fd = -1;
   HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown (%s) ------------\n", why);

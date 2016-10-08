@@ -105,6 +105,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> QUIT
 cmd buf flush ddd bytes
+  SMTP(close)>>
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/callout)
@@ -269,6 +270,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP<< 250 OK
 >>>   SMTP>> QUIT
 >>> cmd buf flush 6 bytes
+>>>   SMTP(close)>>
 >>> wrote callout cache domain record for b:
 >>>   result=1 postmaster=0 random=0
 >>> wrote positive callout cache address record for a@b
@@ -304,6 +306,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP>> EHLO myhost.test.ex
 >>> cmd buf flush 21 bytes
 >>> SMTP timeout
+>>>   SMTP(close)>>
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "mail"
 LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout

@@ -1,0 +1,34 @@
+# TLS client: recipient callout - TLS fail, retry in clear
+need_ipv4
+#
+server PORT_S 2
+220 Server ready
+EHLO
+250-wotcher mate
+250-STARTTLS
+250 OK
+STARTTLS
+250
+.
+220 Server ready
+EHLO
+250-wotcher mate
+250-STARTTLS
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -odq -bs
+ehlo xxxx
+mail from: s1@test.ex
+rcpt to: r1@test.ex
+data
+.
+quit
+****
+no_stdout_check
+no_msglog_check

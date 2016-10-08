@@ -1948,12 +1948,9 @@ if (  smtp_peer_options & PEER_OFFERED_TLS
     if (rc != OK)
       {
 # ifdef EXPERIMENTAL_DANE
-      if (rc == DEFER && lflags.dane)
-	{
-	log_write(0, LOG_MAIN,
+      if (lflags.dane) log_write(0, LOG_MAIN,
 	  "DANE attempt failed; no TLS connection to %s [%s]",
 	  host->name, host->address);
-	}
 # endif
 
       save_errno = ERRNO_TLSFAILURE;

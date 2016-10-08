@@ -112,6 +112,8 @@ JH/29 Fix the connection_reject log selector to apply to the connect ACL.
       Previously it only applied to the main-section connection policy
       options.
 
+JH/30 Bug 1897: fix callouts connection fallback from TLS to cleartext.
+
 
 Exim version 4.87
 -----------------
