@@ -5033,6 +5033,27 @@ address lists. In Exim 4 these are handled better by named lists &-- see
 section &<<SECTnamedlists>>&.
 
 
+.new
+.section "Builtin macros" "SECTbuiltinmacros"
+Exim defines some macros depending on facilities available, which may
+differ due to build-time definitions and from one release to another.
+All of these macros start with an underscore.
+They can be used to conditionally include parts of a configuration
+(see below).
+
+The following classes of macros are defined:
+.display
+&` _HAVE_                     `&  build-time defines
+&` _DRVR_AUTH_                `&  authehticator drivers
+&` _DRVR_RTR_                 `&  router drivers
+&` _DRVR_TPT_                 `&  transport drivers
+&` _OPT_                      `&  configuration option support
+.endd
+
+Use an &"exim -bP macros"& command to get the list of macros.
+.wen
+
+
 .section "Conditional skips in the configuration file" "SECID46"
 .cindex "configuration file" "conditional skips"
 .cindex "&`.ifdef`&"
