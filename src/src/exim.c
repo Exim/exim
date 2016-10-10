@@ -1688,8 +1688,6 @@ big_buffer = store_malloc(big_buffer_size);
 descriptive text. */
 
 set_process_info("initializing");
-readconf_features();
-readconf_options();
 os_restarting_signal(SIGUSR1, usr1_handler);
 
 /* SIGHUP is used to get the daemon to reconfigure. It gets set as appropriate
@@ -2448,7 +2446,7 @@ for (i = 1; i < argc; i++)
           exit(EXIT_FAILURE);
           }
 
-      m = macro_create(name, s, TRUE);
+      m = macro_create(name, s, TRUE, FALSE);
 
       if (clmacro_count >= MAX_CLMACROS)
         {

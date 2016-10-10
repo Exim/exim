@@ -152,7 +152,7 @@ readconf_options_from_list(optionlist_routers, nelem(optionlist_routers), US"RT"
 
 for (ri = routers_available; ri->driver_name[0]; ri++)
   {
-  macro_create(string_sprintf("_DRVR_RTR_%T", ri->driver_name), US"y", FALSE);
+  macro_create(string_sprintf("_DRVR_RTR_%T", ri->driver_name), US"y", FALSE, TRUE);
   readconf_options_from_list(ri->options, (unsigned)*ri->options_count, ri->driver_name);
   }
 }

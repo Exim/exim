@@ -245,7 +245,7 @@ extern int     log_create(uschar *);
 extern int     log_create_as_exim(uschar *);
 extern void    log_close_all(void);
 
-extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
+extern macro_item * macro_create(const uschar *, const uschar *, BOOL, BOOL);
 extern void    mainlog_close(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     malware(const uschar *, int);
@@ -315,8 +315,6 @@ extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
                  driver_info *, int, void *, int, optionlist *, int);
-extern void    readconf_features(void);
-extern void    readconf_options(void);
 extern uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, uschar *);

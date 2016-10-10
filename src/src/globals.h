@@ -555,6 +555,7 @@ extern uschar *lookup_value;           /* Value looked up from file */
 
 extern macro_item *macros;             /* Configuration macros */
 extern macro_item *mlast;              /* Last item in macro list */
+extern BOOL    macros_builtin_created; /* Flag for lazy-create */
 extern uschar *mailstore_basename;     /* For mailstore deliveries */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *malware_name;           /* Name of virus or malware ("W32/Klez-H") */

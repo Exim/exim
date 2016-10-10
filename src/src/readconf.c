@@ -556,17 +556,34 @@ return US"";
 
 /* We have a new definition. The macro_item structure includes a final vector
 called "name" which is one byte long. Thus, adding "namelen" gives us enough
-room to store the "name" string. */
+room to store the "name" string.
+If a builtin macro we place at head of list, else tail.  This lets us lazy-create
+builtins. */
 
 macro_item *
-macro_create(const uschar * name, const uschar * val, BOOL command_line)
+macro_create(const uschar * name, const uschar * val,
+  BOOL command_line, BOOL builtin)
 {
 unsigned namelen = Ustrlen(name);
 macro_item * m = store_get(sizeof(macro_item) + namelen);
 
-if (!macros) macros = m; else mlast->next = m;
-mlast = m;
-m->next = NULL;
+if (!macros)
+  {
+  macros = m;
+  mlast = m;
+  m->next = NULL;
+  }
+else if (builtin)
+  {
+  m->next = macros;
+  macros = m;
+  }
+else
+  {
+  mlast->next = m;
+  mlast = m;
+  m->next = NULL;
+  }
 m->command_line = command_line;
 m->namelen = namelen;
 m->replacement = string_copy(val);
@@ -664,11 +681,209 @@ if (redef)
 
 /* We have a new definition. */
 else
-  (void) macro_create(name, s, FALSE);
+  (void) macro_create(name, s, FALSE, FALSE);
 }
 
 
 
+
+
+/*************************************************/
+/* Create compile-time feature macros */
+static void
+readconf_features(void)
+{
+/* Probably we could work out a static initialiser for wherever
+macros are stored, but this will do for now. Some names are awkward
+due to conflicts with other common macros. */
+
+#ifdef SUPPORT_CRYPTEQ
+  macro_create(US"_HAVE_CRYPTEQ", US"y", FALSE, TRUE);
+#endif
+#if HAVE_ICONV
+  macro_create(US"_HAVE_ICONV", US"y", FALSE, TRUE);
+#endif
+#if HAVE_IPV6
+  macro_create(US"_HAVE_IPV6", US"y", FALSE, TRUE);
+#endif
+#ifdef HAVE_SETCLASSRESOURCES
+  macro_create(US"_HAVE_SETCLASSRESOURCES", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_PAM
+  macro_create(US"_HAVE_PAM", US"y", FALSE, TRUE);
+#endif
+#ifdef EXIM_PERL
+  macro_create(US"_HAVE_PERL", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPAND_DLFUNC
+  macro_create(US"_HAVE_DLFUNC", US"y", FALSE, TRUE);
+#endif
+#ifdef USE_TCP_WRAPPERS
+  macro_create(US"_HAVE_TCPWRAPPERS", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_TLS
+  macro_create(US"_HAVE_TLS", US"y", FALSE, TRUE);
+# ifdef USE_GNUTLS
+  macro_create(US"_HAVE_GNUTLS", US"y", FALSE, TRUE);
+# else
+  macro_create(US"_HAVE_OPENSSL", US"y", FALSE, TRUE);
+# endif
+#endif
+#ifdef SUPPORT_TRANSLATE_IP_ADDRESS
+  macro_create(US"_HAVE_TRANSLATE_IP_ADDRESS", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
+  macro_create(US"_HAVE_MOVE_FROZEN_MESSAGES", US"y", FALSE, TRUE);
+#endif
+#ifdef WITH_CONTENT_SCAN
+  macro_create(US"_HAVE_CONTENT_SCANNING", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_DKIM
+  macro_create(US"_HAVE_DKIM", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_DNSSEC
+  macro_create(US"_HAVE_DNSSEC", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_EVENT
+  macro_create(US"_HAVE_EVENT", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_I18N
+  macro_create(US"_HAVE_I18N", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_OCSP
+  macro_create(US"_HAVE_OCSP", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_PRDR
+  macro_create(US"_HAVE_PRDR", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_PROXY
+  macro_create(US"_HAVE_PROXY", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_SOCKS
+  macro_create(US"_HAVE_SOCKS", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_LMDB
+  macro_create(US"_HAVE_LMDB", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_SPF
+  macro_create(US"_HAVE_SPF", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_SRS
+  macro_create(US"_HAVE_SRS", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  macro_create(US"_HAVE_BRIGHTMAIL", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DANE
+  macro_create(US"_HAVE_DANE", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DCC
+  macro_create(US"_HAVE_DCC", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  macro_create(US"_HAVE_DMARC", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DSN_INFO
+  macro_create(US"_HAVE_DSN_INFO", US"y", FALSE, TRUE);
+#endif
+
+#ifdef LOOKUP_LSEARCH
+  macro_create(US"_HAVE_LKUP_LSEARCH", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_CDB
+  macro_create(US"_HAVE_LKUP_CDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_DBM
+  macro_create(US"_HAVE_LKUP_DBM", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_DNSDB
+  macro_create(US"_HAVE_LKUP_DNSDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_DSEARCH
+  macro_create(US"_HAVE_LKUP_DSEARCH", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_IBASE
+  macro_create(US"_HAVE_LKUP_IBASE", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_LDAP
+  macro_create(US"_HAVE_LKUP_LDAP", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_LMDB
+  macro_create(US"_HAVE_LKUP_LMDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_MYSQL
+  macro_create(US"_HAVE_LKUP_MYSQL", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_NIS
+  macro_create(US"_HAVE_LKUP_NIS", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_NISPLUS
+  macro_create(US"_HAVE_LKUP_NISPLUS", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_ORACLE
+  macro_create(US"_HAVE_LKUP_ORACLE", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_PASSWD
+  macro_create(US"_HAVE_LKUP_PASSWD", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_PGSQL
+  macro_create(US"_HAVE_LKUP_PGSQL", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_REDIS
+  macro_create(US"_HAVE_LKUP_REDIS", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_SQLITE
+  macro_create(US"_HAVE_LKUP_SQLITE", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_TESTDB
+  macro_create(US"_HAVE_LKUP_TESTDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_WHOSON
+  macro_create(US"_HAVE_LKUP_WHOSON", US"y", FALSE, TRUE);
+#endif
+
+#ifdef TRANSPORT_APPENDFILE
+# ifdef SUPPORT_MAILDIR
+  macro_create(US"_HAVE_TPT_APPEND_MAILDR", US"y", FALSE, TRUE);
+# endif
+# ifdef SUPPORT_MAILSTORE
+  macro_create(US"_HAVE_TPT_APPEND_MAILSTORE", US"y", FALSE, TRUE);
+# endif
+# ifdef SUPPORT_MBX
+  macro_create(US"_HAVE_TPT_APPEND_MBX", US"y", FALSE, TRUE);
+# endif
+#endif
+}
+
+
+void
+readconf_options_from_list(optionlist * opts, unsigned nopt, uschar * group)
+{
+int i;
+const uschar * s;
+
+/* Walk the array backwards to get substring-conflict names */
+for (i = nopt-1; i >= 0; i--) if (*(s = opts[i].name) && *s != '*')
+  macro_create(string_sprintf("_OPT_%T_%T", group, s), US"y", FALSE, TRUE);
+}
+
+
+static void
+readconf_options(void)
+{
+readconf_options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN");
+readconf_options_routers();
+readconf_options_transports();
+readconf_options_auths();
+}
+
+static void
+macros_create_builtin(void)
+{
+readconf_features();
+readconf_options();
+macros_builtin_created = TRUE;
+}
 
 
 /*************************************************
@@ -778,6 +993,22 @@ for (;;)
     while (isalnum(*s) || *s == '_') s++;
     while (isspace(*s)) s++;
     if (*s != '=') s = ss;          /* Not a macro definition */
+    }
+
+  /* If the builtin macros are not yet defined, and the line contains an
+  underscrore followed by an one of the three possible chars used by
+  builtins, create them. */
+
+  if (!macros_builtin_created)
+    {
+    const uschar * t, * p;
+    uschar c;
+    for (t = s; (p = CUstrchr(t, '_')); t = p+1)
+      if (c = p[1], c == 'O' || c == 'D' || c == 'H')
+	{
+	macros_create_builtin();
+	break;
+	}
     }
 
   /* For each defined macro, scan the line (from after XXX= if present),
@@ -2769,6 +3000,7 @@ else if (Ustrcmp(type, "macro") == 0)
     fprintf(stderr, "exim: permission denied\n");
     exit(EXIT_FAILURE);
     }
+  if (!macros_builtin_created) macros_create_builtin();
   for (m = macros; m; m = m->next)
     if (!name || Ustrcmp(name, m->name) == 0)
       {
@@ -3009,196 +3241,6 @@ return status == 0;
 
 
 
-/*************************************************/
-/* Create compile-time feature macros */
-void
-readconf_features(void)
-{
-/* Probably we could work out a static initialiser for wherever
-macros are stored, but this will do for now. Some names are awkward
-due to conflicts with other common macros. */
-
-#ifdef SUPPORT_CRYPTEQ
-  macro_create(US"_HAVE_CRYPTEQ", US"y", FALSE);
-#endif
-#if HAVE_ICONV
-  macro_create(US"_HAVE_ICONV", US"y", FALSE);
-#endif
-#if HAVE_IPV6
-  macro_create(US"_HAVE_IPV6", US"y", FALSE);
-#endif
-#ifdef HAVE_SETCLASSRESOURCES
-  macro_create(US"_HAVE_SETCLASSRESOURCES", US"y", FALSE);
-#endif
-#ifdef SUPPORT_PAM
-  macro_create(US"_HAVE_PAM", US"y", FALSE);
-#endif
-#ifdef EXIM_PERL
-  macro_create(US"_HAVE_PERL", US"y", FALSE);
-#endif
-#ifdef EXPAND_DLFUNC
-  macro_create(US"_HAVE_DLFUNC", US"y", FALSE);
-#endif
-#ifdef USE_TCP_WRAPPERS
-  macro_create(US"_HAVE_TCPWRAPPERS", US"y", FALSE);
-#endif
-#ifdef SUPPORT_TLS
-  macro_create(US"_HAVE_TLS", US"y", FALSE);
-# ifdef USE_GNUTLS
-  macro_create(US"_HAVE_GNUTLS", US"y", FALSE);
-# else
-  macro_create(US"_HAVE_OPENSSL", US"y", FALSE);
-# endif
-#endif
-#ifdef SUPPORT_TRANSLATE_IP_ADDRESS
-  macro_create(US"_HAVE_TRANSLATE_IP_ADDRESS", US"y", FALSE);
-#endif
-#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-  macro_create(US"_HAVE_MOVE_FROZEN_MESSAGES", US"y", FALSE);
-#endif
-#ifdef WITH_CONTENT_SCAN
-  macro_create(US"_HAVE_CONTENT_SCANNING", US"y", FALSE);
-#endif
-#ifndef DISABLE_DKIM
-  macro_create(US"_HAVE_DKIM", US"y", FALSE);
-#endif
-#ifndef DISABLE_DNSSEC
-  macro_create(US"_HAVE_DNSSEC", US"y", FALSE);
-#endif
-#ifndef DISABLE_EVENT
-  macro_create(US"_HAVE_EVENT", US"y", FALSE);
-#endif
-#ifdef SUPPORT_I18N
-  macro_create(US"_HAVE_I18N", US"y", FALSE);
-#endif
-#ifndef DISABLE_OCSP
-  macro_create(US"_HAVE_OCSP", US"y", FALSE);
-#endif
-#ifndef DISABLE_PRDR
-  macro_create(US"_HAVE_PRDR", US"y", FALSE);
-#endif
-#ifdef SUPPORT_PROXY
-  macro_create(US"_HAVE_PROXY", US"y", FALSE);
-#endif
-#ifdef SUPPORT_SOCKS
-  macro_create(US"_HAVE_SOCKS", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_LMDB
-  macro_create(US"_HAVE_LMDB", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_SPF
-  macro_create(US"_HAVE_SPF", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_SRS
-  macro_create(US"_HAVE_SRS", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  macro_create(US"_HAVE_BRIGHTMAIL", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_DANE
-  macro_create(US"_HAVE_DANE", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_DCC
-  macro_create(US"_HAVE_DCC", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_DMARC
-  macro_create(US"_HAVE_DMARC", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_DSN_INFO
-  macro_create(US"_HAVE_DSN_INFO", US"y", FALSE);
-#endif
-
-#ifdef LOOKUP_LSEARCH
-  macro_create(US"_HAVE_LKUP_LSEARCH", US"y", FALSE);
-#endif
-#ifdef LOOKUP_CDB
-  macro_create(US"_HAVE_LKUP_CDB", US"y", FALSE);
-#endif
-#ifdef LOOKUP_DBM
-  macro_create(US"_HAVE_LKUP_DBM", US"y", FALSE);
-#endif
-#ifdef LOOKUP_DNSDB
-  macro_create(US"_HAVE_LKUP_DNSDB", US"y", FALSE);
-#endif
-#ifdef LOOKUP_DSEARCH
-  macro_create(US"_HAVE_LKUP_DSEARCH", US"y", FALSE);
-#endif
-#ifdef LOOKUP_IBASE
-  macro_create(US"_HAVE_LKUP_IBASE", US"y", FALSE);
-#endif
-#ifdef LOOKUP_LDAP
-  macro_create(US"_HAVE_LKUP_LDAP", US"y", FALSE);
-#endif
-#ifdef EXPERIMENTAL_LMDB
-  macro_create(US"_HAVE_LKUP_LMDB", US"y", FALSE);
-#endif
-#ifdef LOOKUP_MYSQL
-  macro_create(US"_HAVE_LKUP_MYSQL", US"y", FALSE);
-#endif
-#ifdef LOOKUP_NIS
-  macro_create(US"_HAVE_LKUP_NIS", US"y", FALSE);
-#endif
-#ifdef LOOKUP_NISPLUS
-  macro_create(US"_HAVE_LKUP_NISPLUS", US"y", FALSE);
-#endif
-#ifdef LOOKUP_ORACLE
-  macro_create(US"_HAVE_LKUP_ORACLE", US"y", FALSE);
-#endif
-#ifdef LOOKUP_PASSWD
-  macro_create(US"_HAVE_LKUP_PASSWD", US"y", FALSE);
-#endif
-#ifdef LOOKUP_PGSQL
-  macro_create(US"_HAVE_LKUP_PGSQL", US"y", FALSE);
-#endif
-#ifdef LOOKUP_REDIS
-  macro_create(US"_HAVE_LKUP_REDIS", US"y", FALSE);
-#endif
-#ifdef LOOKUP_SQLITE
-  macro_create(US"_HAVE_LKUP_SQLITE", US"y", FALSE);
-#endif
-#ifdef LOOKUP_TESTDB
-  macro_create(US"_HAVE_LKUP_TESTDB", US"y", FALSE);
-#endif
-#ifdef LOOKUP_WHOSON
-  macro_create(US"_HAVE_LKUP_WHOSON", US"y", FALSE);
-#endif
-
-#ifdef TRANSPORT_APPENDFILE
-# ifdef SUPPORT_MAILDIR
-  macro_create(US"_HAVE_TPT_APPEND_MAILDR", US"y", FALSE);
-# endif
-# ifdef SUPPORT_MAILSTORE
-  macro_create(US"_HAVE_TPT_APPEND_MAILSTORE", US"y", FALSE);
-# endif
-# ifdef SUPPORT_MBX
-  macro_create(US"_HAVE_TPT_APPEND_MBX", US"y", FALSE);
-# endif
-#endif
-}
-
-
-void
-readconf_options_from_list(optionlist * opts, unsigned nopt, uschar * group)
-{
-int i;
-const uschar * s;
-
-/* Walk the array backwards to get substring-conflict names */
-for (i = nopt-1; i >= 0; i--) if (*(s = opts[i].name) && *s != '*')
-  macro_create(string_sprintf("_OPT_%T_%T", group, s), US"y", FALSE);
-}
-
-
-void
-readconf_options(void)
-{
-readconf_options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN");
-readconf_options_routers();
-readconf_options_transports();
-readconf_options_auths();
-}
-
-
 /*************************************************
 *         Read main configuration options        *
 *************************************************/
@@ -3237,8 +3279,7 @@ const uschar *list = config_main_filelist;
 
 /* Loop through the possible file names */
 
-while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
-       != NULL)
+while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
   {
 
   /* Cut out all the fancy processing unless specifically wanted */
@@ -4249,7 +4290,7 @@ readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AU");
 
 for (ai = auths_available; ai->driver_name[0]; ai++)
   {
-  macro_create(string_sprintf("_DRVR_AUTH_%T", ai->driver_name), US"y", FALSE);
+  macro_create(string_sprintf("_DRVR_AUTH_%T", ai->driver_name), US"y", FALSE, TRUE);
   readconf_options_from_list(ai->options, (unsigned)*ai->options_count, ai->driver_name);
   }
 }

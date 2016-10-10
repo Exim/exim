@@ -6,6 +6,9 @@ SERVER=
 
 primary_hostname = myhost.test.ex
 
+.ifdef _HAVE_TLS
+# that was purely to trigger the lazy-create of builtin macros
+.endif
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept

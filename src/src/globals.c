@@ -926,6 +926,7 @@ uschar *lookup_value           = NULL;
 
 macro_item  *macros            = NULL;
 macro_item  *mlast             = NULL;
+BOOL    macros_builtin_created = FALSE;
 uschar *mailstore_basename     = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *malware_name           = NULL;  /* Virus Name */
