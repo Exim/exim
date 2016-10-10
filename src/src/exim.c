@@ -1347,12 +1347,12 @@ exit(EXIT_FAILURE);
 /* Typically, Exim will drop privileges if macros are supplied.  In some
 cases, we want to not do so.
 
-Arguments:    none (macros is a global)
+Arguments:    opt_D_used - true if the commandline had a "-D" option
 Returns:      true if trusted, false otherwise
 */
 
 static BOOL
-macros_trusted(void)
+macros_trusted(BOOL opt_D_used)
 {
 #ifdef WHITELIST_D_MACROS
 macro_item *m;
@@ -1362,7 +1362,7 @@ size_t len;
 BOOL prev_char_item, found;
 #endif
 
-if (macros == NULL)
+if (!opt_D_used)
   return TRUE;
 #ifndef WHITELIST_D_MACROS
 return FALSE;
@@ -3679,7 +3679,7 @@ configuration file changes and macro definitions haven't happened. */
 
 if ((                                            /* EITHER */
     (!trusted_config ||                          /* Config changed, or */
-     !macros_trusted()) &&                       /*  impermissible macros and */
+     !macros_trusted(opt_D_used)) &&		 /*  impermissible macros and */
     real_uid != root_uid &&                      /* Not root, and */
     !running_in_test_harness                     /* Not fudged */
     ) ||                                         /*   OR   */

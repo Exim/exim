@@ -784,7 +784,7 @@ for (;;)
   replacing all occurrences of the macro. */
 
   macro_found = FALSE;
-  for (m = macros; m != NULL; m = m->next)
+  for (m = macros; m; m = m->next)
     {
     uschar *p, *pp;
     uschar *t = s;
