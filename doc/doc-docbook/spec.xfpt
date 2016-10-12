@@ -27537,8 +27537,13 @@ during TLS session handshake, to permit alternative values to be chosen:
 
 Great care should be taken to deal with matters of case, various injection
 attacks in the string (&`../`& or SQL), and ensuring that a valid filename
-can always be referenced; it is important to remember that &$tls_sni$& is
+can always be referenced; it is important to remember that &$tls_in_sni$& is
 arbitrary unverified data provided prior to authentication.
+.new
+Further, the initial cerificate is loaded before SNI is arrived, so
+an expansion for &%tls_certificate%& must have a default which is used
+when &$tls_in_sni$& is empty.
+.wen
 
 The Exim developers are proceeding cautiously and so far no other TLS options
 are re-expanded.
