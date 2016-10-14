@@ -1969,7 +1969,7 @@ if (/^sleep\s+(.*)$/)
 # Various Unix management commands are recognized
 
 if (/^(ln|ls|du|mkdir|mkfifo|touch|cp|cat)\s/ ||
-    /^sudo\s(rmdir|rm|chown|chmod)\s/)
+    /^sudo\s(rmdir|rm|mv|chown|chmod)\s/)
   {
   run_system("$_ >>test-stdout 2>>test-stderr");
   return 1;

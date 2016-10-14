@@ -46,7 +46,20 @@ foo
 .
 QUIT
 ****
-#
 sleep 3
-#
 killdaemon
+#
+# third-party queue transfer
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <alternate@test.ex>
+DATA
+Subject: test
+
+foo
+.
+QUIT
+****
+# 
+sudo mv DIR/spool/alternate/input/* DIR/spool/input/
+exim -q
