@@ -1065,6 +1065,7 @@ RESET_AFTER_EXTRA_LINE_READ:
                 /^log selectors =/ ||
                 /^cwd=/ ||
                 /^Fixed never_users:/ ||
+		/^Configure owner:/ ||
                 /^Size of off_t:/
                 );
 
@@ -2564,6 +2565,8 @@ while(<EXIMINFO>)
   $parm_eximuser = $1 if /^exim_user = (.*)$/;
   $parm_eximgroup = $1 if /^exim_group = (.*)$/;
   $parm_trusted_config_list = $1 if /^TRUSTED_CONFIG_LIST:.*?"(.*?)"$/;
+  ($parm_configure_owner, $parm_configure_group) = ($1, $2)
+	if /^Configure owner:\s*(\d+):(\d+)/;
   print "$_" if /wrong owner/;
   }
 close(EXIMINFO);
@@ -2614,6 +2617,14 @@ else
   {
   die "Unable to check the TRUSTED_CONFIG_LIST, seems to be empty?\n";
   }
+
+die "CONFIGURE_OWNER ($parm_configure_owner) does not match the user invoking $0 ($>)\n"
+	if $parm_configure_owner != $>;
+
+die "CONFIGURE_GROUP ($parm_configure_group) does not match the group invoking $0 ($))\n"
+	if 0020 & (stat "$parm_cwd/test-config")[2]
+	and $parm_configure_group != $);
+
 
 open(EXIMINFO, "$parm_exim -d-all+transport -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
   die "** Cannot run $parm_exim: $!\n";
