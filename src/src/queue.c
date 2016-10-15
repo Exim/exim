@@ -21,7 +21,7 @@ spool_pname_buf(uschar * buf, int len)
 snprintf(CS buf, len, "%s/%s/input", spool_directory, queue_name);
 }
 
-static uschar *
+uschar *
 spool_dname(const uschar * purpose, uschar * subdir)
 {
 return string_sprintf("%s/%s/%s/%s",

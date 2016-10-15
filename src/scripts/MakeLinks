@@ -59,8 +59,8 @@ cd ..
 mkdir transports
 cd transports
 for f in README Makefile appendfile.h appendfile.c autoreply.h \
-  autoreply.c lmtp.h lmtp.c pipe.h pipe.c smtp.h smtp.c smtp_socks.c \
-  tf_maildir.c tf_maildir.h
+  autoreply.c lmtp.h lmtp.c pipe.h pipe.c queuefile.c queuefile.h \
+  smtp.h smtp.c smtp_socks.c tf_maildir.c tf_maildir.h
 do
   ln -s ../../src/transports/$f $f
 done

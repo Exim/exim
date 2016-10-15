@@ -843,6 +843,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_LMDB
   fprintf(f, " Experimental_LMDB");
 #endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  fprintf(f, " Experimental_QUEUEFILE");
+#endif
 #ifdef EXPERIMENTAL_SPF
   fprintf(f, " Experimental_SPF");
 #endif
@@ -995,6 +998,9 @@ fprintf(f, "Transports:");
 #endif
 #ifdef TRANSPORT_PIPE
   fprintf(f, " pipe");
+#endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  fprintf(f, " queuefile");
 #endif
 #ifdef TRANSPORT_SMTP
   fprintf(f, " smtp");

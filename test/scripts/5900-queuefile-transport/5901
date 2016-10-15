@@ -1,0 +1,4 @@
+# queuefile transport test relative directory
+exim -odi userx
+****
+no_msglog_check

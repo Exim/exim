@@ -415,6 +415,7 @@ extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *);
 #endif
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
+extern uschar *spool_dname(const uschar *, uschar *);
 extern uschar *spool_fname(const uschar *, uschar *, uschar *, uschar *);
 extern uschar *spool_sname(const uschar *, uschar *);
 extern int     spool_open_datafile(uschar *);

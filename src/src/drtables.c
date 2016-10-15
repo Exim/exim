@@ -228,6 +228,10 @@ exim binary. */
 #include "transports/pipe.h"
 #endif
 
+#ifdef EXPERIMENTAL_QUEUEFILE
+#include "transports/queuefile.h"
+#endif
+
 #ifdef TRANSPORT_SMTP
 #include "transports/smtp.h"
 #endif
@@ -384,6 +388,20 @@ transport_info transports_available[] = {
   sizeof(pipe_transport_options_block),        /* size of private block */
   pipe_transport_init,                         /* init entry point */
   pipe_transport_entry,                        /* main entry point */
+  NULL,                                        /* no tidyup entry */
+  NULL,                                        /* no closedown entry */
+  TRUE                                         /* local flag */
+  },
+#endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  {
+  US"queuefile",                               /* driver name */
+  queuefile_transport_options,                 /* local options table */
+  &queuefile_transport_options_count,          /* number of entries */
+  &queuefile_transport_option_defaults,        /* private options defaults */
+  sizeof(queuefile_transport_options_block),   /* size of private block */
+  queuefile_transport_init,                    /* init entry point */
+  queuefile_transport_entry,                   /* main entry point */
   NULL,                                        /* no tidyup entry */
   NULL,                                        /* no closedown entry */
   TRUE                                         /* local flag */

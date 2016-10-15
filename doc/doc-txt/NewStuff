@@ -51,6 +51,9 @@ Version 4.88
 
 13. New built-in constants available for tls_dhparam and default changed.
 
+14. If built with EXPERIMENTAL_QUEUEFILE, a queuefile transport, for writing
+    out copies of the message spool files for use by 3rd-party scanners.
+
 
 Version 4.87
 ------------

@@ -1,0 +1,22 @@
+# queuefile transport test delivery
+sudo chown EXIMUSER:EXIMGROUP DIR/aux-fixed/5902/outbound
+exim -odi normal
+****
+sleep 5
+#
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <user1@test.ex>
+DATA
+Subject: test
+
+foo
+.
+QUIT
+****
+sleep 5
+# 
+ls DIR/aux-fixed/5902/outbound
+sudo mv DIR/aux-fixed/5902/outbound/1* DIR/spool/input/
+exim -q
+no_msglog_check
