@@ -39,9 +39,9 @@ queuefile_transport_options_block queuefile_transport_option_defaults = {
 void queuefile_transport_init(transport_instance *tblock)
 {
 queuefile_transport_options_block *ob =
-  (queuefile_transport_options_block *)(tblock->options_block);
+  (queuefile_transport_options_block *) tblock->options_block;
 
-if (ob->dirname == NULL)
+if (!ob->dirname)
   log_write(0, LOG_PANIC_DIE | LOG_CONFIG,
     "directory must be set for the %s transport", tblock->name);
 }
@@ -55,7 +55,8 @@ Arguments:
 Returns:       TRUE if all went well, FALSE otherwise
 */
 
-static BOOL copy_spool_file (FILE *to_fd, FILE *from_fd)
+static BOOL
+copy_spool_file (FILE *to_fd, FILE *from_fd)
 {
 int i, j;
 uschar buffer[16384];
@@ -63,15 +64,9 @@ uschar buffer[16384];
 rewind(from_fd);
 
 do
-  {
-    j = fread(buffer, 1, sizeof(buffer), from_fd);
-    if (j > 0)
-      {
-      i = fwrite(buffer, j, 1, to_fd);
-      if (i != 1)
-        return FALSE;
-      }
-  }
+  if ((j = fread(buffer, 1, sizeof(buffer), from_fd)) > 0)
+    if ((i = fwrite(buffer, j, 1, to_fd)) != 1)
+      return FALSE;
 while (j > 0);
 return TRUE;
 }
@@ -80,120 +75,100 @@ return TRUE;
 and data files to the destination directory
 
 Arguments:
-  tname         uschar the transport name
+  tb		the transport block
   addr          address_item being processed
   sdfd          int Source directory fd
   ddfd          int Destination directory fd
-  suffix        uschar file suffix
-  dirname       uschar Destination directory
   link_file     BOOL use linkat instead of data copy
-  is_data_file  BOOL the file is a data file not a header file
-  dst_file      FILE to write to
-  src_file      FILE to read from
+  srcfd		fd for data file, or -1 for header file
 
 Returns:       TRUE if all went well, FALSE otherwise
 */
 
-static BOOL copy_spool_files(uschar *tname, address_item *addr,
-  int sdfd, int ddfd, uschar *suffix, uschar *dirname, BOOL link_file,
-  BOOL is_data_file, FILE *dst_file, FILE *src_file)
+static BOOL
+copy_spool_files(transport_instance * tb, address_item * addr,
+  int sdfd, int ddfd, BOOL link_file, int srcfd)
 {
-int dstfd, srcfd;
-/*
-uschar message_subdir[2];
-message_subdir[1] = '\0';
-message_subdir[0] = split_spool_directory? message_id[5] : 0;
-*/
-uschar *filename = string_sprintf("%s-%s", message_id, suffix);
-/*
-uschar *srcpath = string_sprintf("%s/%s/%s/%s-%s", spool_directory,
-    US"input", message_subdir, message_id, suffix);
-*/
-uschar *srcpath = spool_fname(US"input", message_subdir, message_id, suffix);
-uschar *dstpath = string_sprintf("%s/%s-%s", dirname, message_id, suffix);
+BOOL is_hdr_file = srcfd < 0;
+uschar * suffix = srcfd < 0 ? US"H" : US"D";
+int dstfd;
+FILE * dst_file, * src_file;
+uschar * filename = string_sprintf("%s-%s", message_id, suffix);
+uschar * srcpath = spool_fname(US"input", message_subdir, message_id, suffix);
+uschar * dstpath = string_sprintf("%s/%s-%s",
+  ((queuefile_transport_options_block *) tb->options_block)->dirname,
+  message_id, suffix);
 
 if (link_file)
   {
-  /* use linkat */
-  DEBUG(D_transport)
-    debug_printf("%s transport, linking %s => %s\n", tname,
-      srcpath, dstpath);
-  if (linkat(sdfd, CCS filename, ddfd, CCS filename, 0) < 0)
-    return FALSE;
-  return TRUE;
+  DEBUG(D_transport) debug_printf("%s transport, linking %s => %s\n",
+    tb->name, srcpath, dstpath);
+
+  return linkat(sdfd, CCS filename, ddfd, CCS filename, 0) >= 0;
   }
-else
+
+/* use data copy */
+
+DEBUG(D_transport) debug_printf("%s transport, copying %s => %s\n",
+  tb->name, srcpath, dstpath);
+
+if ((dstfd =
+  openat(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
   {
-  /* use data copy */
-  DEBUG(D_transport)
-    debug_printf("%s transport, copying %s => %s\n", tname,
-      srcpath, dstpath);
-  if ((dstfd =
-    openat(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
+  addr->transport_return = DEFER;
+  addr->basic_errno = errno;
+  addr->message = string_sprintf("%s transport opening file: %s "
+    "failed with error: %s", tb->name, dstpath, strerror(errno));
+  return FALSE;
+  }
+
+fchmod(dstfd, SPOOL_MODE);
+
+if (!(dst_file = fdopen(dstfd, "wb")))
+  {
+  addr->transport_return = DEFER;
+  addr->basic_errno = errno;
+  addr->message = string_sprintf("%s transport opening file fd: %s "
+    "failed with error: %s", tb->name, dstpath, strerror(errno));
+  (void) close(dstfd);
+  return FALSE;
+  }
+
+if (is_hdr_file)
+  if ((srcfd = openat(sdfd, CCS filename, O_RDONLY)) < 0)
     {
-    addr->transport_return = DEFER;
     addr->basic_errno = errno;
     addr->message = string_sprintf("%s transport opening file: %s "
-      "failed with error: %s", tname, dstpath, strerror(errno));
-    return FALSE;
+      "failed with error: %s", tb->name, srcpath, strerror(errno));
+    goto bad;
     }
 
-  fchmod(dstfd, SPOOL_MODE);
+if (!(src_file = fdopen(srcfd, "rb")))
+  {
+  addr->basic_errno = errno;
+  addr->message = string_sprintf("%s transport opening file fd: "
+    "%s failed with error: %s", tb->name, srcpath, strerror(errno));
+  if (is_hdr_file) (void) close(srcfd);
+  goto bad;
+  }
 
-  if ((dst_file = fdopen(dstfd, "wb")) < 0)
-    {
-    addr->transport_return = DEFER;
-    addr->basic_errno = errno;
-    addr->message = string_sprintf("%s transport opening file fd: %s "
-      "failed with error: %s", tname, dstpath, strerror(errno));
-    (void)close(dstfd);
-    return FALSE;
-    }
+if (!copy_spool_file(dst_file, src_file))
+  {
+  addr->message = string_sprintf("%s transport creating file: "
+    "%s failed with error: %s", tb->name, dstpath, strerror(errno));
+  if (is_hdr_file) (void) fclose(src_file);
+  goto bad;
+  }
 
-  if (is_data_file)
-    srcfd = deliver_datafile;
-  else
-    {
-    if ((srcfd = openat(sdfd, CCS filename, O_RDONLY)) < 0)
-      {
-      addr->transport_return = DEFER;
-      addr->basic_errno = errno;
-      addr->message = string_sprintf("%s transport opening file: %s "
-        "failed with error: %s", tname, srcpath, strerror(errno));
-      return FALSE;
-      }
-    }
-
-  if ((src_file = fdopen(srcfd, "rb")) < 0)
-    {
-    addr->transport_return = DEFER;
-    addr->basic_errno = errno;
-    addr->message = string_sprintf("%s transport opening file fd: "
-      "%s failed with error: %s", tname, srcpath, strerror(errno));
-    if (!is_data_file) (void)close(srcfd);
-    return FALSE;
-    }
-
-  if (!copy_spool_file(dst_file, src_file))
-    {
-    addr->transport_return = DEFER;
-    addr->message = string_sprintf("%s transport creating file: "
-      "%s failed with error: %s", tname, dstpath, strerror(errno));
-    return FALSE;
-    }
-
-  if (!is_data_file)
-    {
-    (void)fclose(src_file);
-    src_file = NULL;
-    }
-
-  (void)fclose(dst_file);
-  dst_file = NULL;
-
-  } /* end data copy */
+if (is_hdr_file) (void) fclose(src_file);
+(void) fclose(dst_file);
 
 return TRUE;
+
+bad:
+  addr->transport_return = DEFER;
+  (void) fclose(dst_file);
+  return FALSE;
 }
 
 /*************************************************
@@ -203,31 +178,25 @@ return TRUE;
 /* This transport always returns FALSE, indicating that the status in
 the first address is the status for all addresses in a batch. */
 
-BOOL queuefile_transport_entry(transport_instance *tblock,
-  address_item *addr)
+BOOL
+queuefile_transport_entry(transport_instance * tblock, address_item * addr)
 {
-BOOL link_file;
-BOOL is_data_file;
-uschar *sourcedir;
-struct stat dstatbuf;
-struct stat sstatbuf;
-FILE *dst_file = NULL;
-FILE *src_file = NULL;
-/* uschar message_subdir[2]; */
-int ddfd, sdfd, dfd_oflags;
-queuefile_transport_options_block *ob =
-  (queuefile_transport_options_block *)(tblock->options_block);
+queuefile_transport_options_block * ob =
+  (queuefile_transport_options_block *) tblock->options_block;
+BOOL can_link;
+uschar * sourcedir = spool_dname(US"input", message_subdir);
+uschar * s;
+struct stat dstatbuf, sstatbuf;
+int ddfd = -1, sdfd = -1;
 
 DEBUG(D_transport)
   debug_printf("%s transport entered\n", tblock->name);
 
-# ifndef O_DIRECTORY
-#  define O_DIRECTORY 0
-# endif
-
-dfd_oflags = O_RDONLY|O_DIRECTORY;
-#ifdef O_NOFOLLOW
-dfd_oflags |= O_NOFOLLOW;
+#ifndef O_DIRECTORY
+# define O_DIRECTORY 0
+#endif
+#ifndef O_NOFOLLOW
+# define O_NOFOLLOW 0
 #endif
 
 if (ob->dirname[0] != '/')
@@ -238,50 +207,34 @@ if (ob->dirname[0] != '/')
   return FALSE;
   }
 
-if ((ddfd = Uopen(ob->dirname, dfd_oflags, 0)) < 0)
+/* Open the source and destination directories and check if they are
+on the same filesystem, so we can hard-link files rather than copying. */
+
+if (  (s = ob->dirname,
+       (ddfd = Uopen(s, O_RDONLY | O_DIRECTORY | O_NOFOLLOW, 0)) < 0)
+   || (s = sourcedir,
+       (sdfd = Uopen(sourcedir, O_RDONLY | O_DIRECTORY | O_NOFOLLOW, 0)) < 0)
+   )
   {
   addr->transport_return = PANIC;
   addr->basic_errno = errno;
   addr->message = string_sprintf("%s transport accessing directory: %s "
-    "failed with error: %s", tblock->name, ob->dirname, strerror(errno));
+    "failed with error: %s", tblock->name, s, strerror(errno));
+  if (ddfd >= 0) (void) close(ddfd);
   return FALSE;
   }
 
-
-if ((fstat(ddfd, &dstatbuf)) < 0)
+if (  (s = ob->dirname, fstat(ddfd, &dstatbuf) < 0)
+   || (s = sourcedir,   fstat(sdfd, &sstatbuf) < 0)
+   )
   {
   addr->transport_return = PANIC;
   addr->basic_errno = errno;
   addr->message = string_sprintf("%s transport fstat on directory fd: "
-    "%s failed with error: %s", tblock->name, ob->dirname, strerror(errno));
+    "%s failed with error: %s", tblock->name, s, strerror(errno));
   goto RETURN;
   }
-
-sourcedir = spool_dname(US"input", message_subdir);
-/*
-message_subdir[1] = '\0';
-message_subdir[0] = split_spool_directory? message_id[5] : 0;
-sourcedir = string_sprintf("%s/%s/%s", spool_directory,
-  US"input", message_subdir);
-*/
-
-if ((sdfd = Uopen(sourcedir, dfd_oflags, 0)) < 0)
-  {
-  addr->transport_return = PANIC;
-  addr->basic_errno = errno;
-  addr->message = string_sprintf("%s transport accessing directory: %s "
-    "failed with error: %s", tblock->name, sourcedir, strerror(errno));
-  goto RETURN;
-  }
-
-if ((fstat(sdfd, &sstatbuf)) < 0)
-  {
-  addr->transport_return = PANIC;
-  addr->basic_errno = errno;
-  addr->message = string_sprintf("%s transport fstat on directory fd: "
-    "%s failed with error: %s", tblock->name, sourcedir, strerror(errno));
-  goto RETURN;
-  }
+can_link = (dstatbuf.st_dev == sstatbuf.st_dev);
 
 if (dont_deliver)
   {
@@ -292,25 +245,18 @@ if (dont_deliver)
   goto RETURN;
   }
 
-/* process the header file */
+/* Link or copy the header and data spool files */
+
 DEBUG(D_transport)
   debug_printf("%s transport, copying header file\n", tblock->name);
 
-is_data_file = FALSE;
-link_file = (dstatbuf.st_dev == sstatbuf.st_dev);
-
-if ((copy_spool_files(tblock->name, addr, sdfd, ddfd, US"H", ob->dirname,
-  link_file, is_data_file, dst_file, src_file)) == FALSE)
+if (!copy_spool_files(tblock, addr, sdfd, ddfd, can_link, -1))
   goto RETURN;
 
-/* process the data file */
 DEBUG(D_transport)
   debug_printf("%s transport, copying data file\n", tblock->name);
 
-is_data_file = TRUE;
-
-if ((copy_spool_files(tblock->name, addr, sdfd, ddfd, US"D", ob->dirname,
-  link_file, is_data_file, dst_file, src_file)) == FALSE)
+if (!copy_spool_files(tblock, addr, sdfd, ddfd, can_link, deliver_datafile))
   {
   DEBUG(D_transport)
     debug_printf("%s transport, copying data file failed, "
@@ -319,19 +265,14 @@ if ((copy_spool_files(tblock->name, addr, sdfd, ddfd, US"D", ob->dirname,
   goto RETURN;
   }
 
-(void)close(ddfd);
-(void)close(sdfd);
-
 DEBUG(D_transport)
   debug_printf("%s transport succeeded\n", tblock->name);
 
 addr->transport_return = OK;
 
 RETURN:
-if (dst_file) (void)fclose(dst_file);
-if (src_file && !is_data_file) (void)fclose(src_file);
-if (ddfd) (void)close(ddfd);
-if (sdfd) (void)close(sdfd);
+if (ddfd >= 0) (void) close(ddfd);
+if (sdfd >= 0) (void) close(sdfd);
 
 /* A return of FALSE means that if there was an error, a common error was
 put in the first address of a batch. */
