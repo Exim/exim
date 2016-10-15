@@ -1,35 +1,26 @@
 # Exim test configuration 5902
 
+OPT=
+
 .include DIR/aux-var/std_conf_prefix
 
 
 # ----- Main settings -----
 
 qualify_domain = test.ex
-acl_smtp_rcpt = rcpt
-
-# ----- ACLs -----
-
-begin acl
-
-rcpt:
- accept
- queue = ${if eq {normal}{$local_part} {} {$local_part}}
- logwrite = using queue '$queue_name'
 
 # ----- Routers -----
 
 begin routers
 
+scan:
+   driver = accept
+   condition = ${if eq {OPT}{scan} {y}}
+   transport = scan
+
 local:
    driver = accept
    transport = local_delivery
-   condition = ${if eq {}{$queue_name} {1}{0}}
-
-scan:
-   driver = accept
-   transport = scan
-
 
 # ----- Transports -----
 
@@ -37,18 +28,11 @@ begin transports
 
 scan:
   driver = queuefile
-  directory = DIR/aux-fixed/5902/outbound
+  directory = DIR/scanner
 
 local_delivery:
   driver = appendfile
   file = DIR/test-mail/$local_part
   user = CALLER
-
-# ----- Retry -----
-
-begin retry
-
-* * F,10m,2d
-
 
 # End

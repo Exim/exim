@@ -1,22 +1,23 @@
 # queuefile transport test delivery
-sudo chown EXIMUSER:EXIMGROUP DIR/aux-fixed/5902/outbound
-exim -odi normal
-****
-sleep 5
 #
-exim -bs
-MAIL FROM:<CALLER@myhost.test.ex>
-RCPT TO: <user1@test.ex>
-DATA
-Subject: test
-
-foo
-.
-QUIT
+# make a scanner dir for the transport to write into
+mkdir -p DIR/scanner
+sudo chown EXIMUSER:EXIMGROUP DIR/scanner
+#
+# this message should be placed by the queuefile transport in the scanner directory
+exim -DOPT=scan user1
 ****
-sleep 5
+sleep 1
 # 
-ls DIR/aux-fixed/5902/outbound
-sudo mv DIR/aux-fixed/5902/outbound/1* DIR/spool/input/
+# check it is there
+ls DIR/scanner
+#
+# then re-inject "after scanning" to the default queue and see it gets found
+# it should get an appendfile delivery becase it is from the default queue
+sudo mv DIR/scanner/* DIR/spool/input/
 exim -q
+****
+#
+# tidy up
+sudo rm -fr DIR/scanner
 no_msglog_check
