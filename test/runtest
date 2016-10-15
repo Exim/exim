@@ -762,6 +762,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/Delivered\s+\d+/Delivered              nnn/;
 
 
+  # ======== Values in spool space failure message ========
+  s/space=\d+ inodes=[+-]?\d+/space=xxxxx inodes=xxxxx/;
+
+
   # ======== Filter sizes ========
   # The sizes of filter files may vary because of the substitution of local
   # filenames, logins, etc.
