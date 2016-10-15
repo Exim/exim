@@ -14,7 +14,7 @@
 ###############################################################################
 
 #use strict;
-use 5.010;
+#use 5.010;
 use Errno;
 use FileHandle;
 use Socket;
@@ -3049,8 +3049,8 @@ close(IFCONFIG);
 
 # Use private IP addresses if there are no public ones.
 
-$parm_ipv4 //= '172.10.10.1';
-$parm_ipv6 //= 'fd0a:c2ea:abfa::1';
+$parm_ipv4 = '172.10.10.1' if not defined $parm_ipv4;
+$parm_ipv6 = 'fd0a:c2ea:abfa::1' if not defined $parm_ipv6;
 
 # If either type of IP address is missing, we need to set the value to
 # something other than empty, because that wrecks the substitutions. The value
@@ -3124,8 +3124,9 @@ if ($parm_ipv6 =~ /^[\da-f]/)
 # Find the host name, fully qualified.
 
 chomp($temp = `hostname`);
-$parm_hostname = (gethostbyname($temp))[0] // $temp;
-$parm_hostname = "no.host.name.found" if $parm_hostname eq "";
+die "'hostname' didn't return anything\n" unless defined $temp and length $temp;
+$parm_hostname = (gethostbyname($temp))[0];
+$parm_hostname = "no.host.name.found" unless defined $parm_hostname and length $parm_hostname;
 print "Hostname is $parm_hostname\n";
 
 if ($parm_hostname !~ /\./)
