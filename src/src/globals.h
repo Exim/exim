@@ -282,16 +282,12 @@ extern int     connection_max_messages;/* Max down one SMTP connection */
 extern BOOL    config_changed;         /* True if -C used */
 extern FILE   *config_file;            /* Configuration file */
 extern uschar *config_filename;        /* Configuration file name */
-#ifdef CONFIGURE_GROUP
 extern gid_t   config_gid;             /* Additional group owner */
-#endif
 extern int     config_lineno;          /* Line number */
 extern uschar *config_main_filelist;   /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */
 extern uschar *config_main_directory;  /* Directory where the main config file was found */
-#ifdef CONFIGURE_OWNER
 extern uid_t   config_uid;             /* Additional owner */
-#endif
 extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern BOOL    continue_more;          /* Flag more addresses waiting */

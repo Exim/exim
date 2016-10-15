@@ -1016,6 +1016,8 @@ if (fixed_never_users[0] > 0)
   fprintf(f, "%d\n", (unsigned int)fixed_never_users[i]);
   }
 
+fprintf(f, "Configure owner: %d:%d\n", config_uid, config_gid);
+
 fprintf(f, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
 
 /* Everything else is details which are only worth reporting when debugging.

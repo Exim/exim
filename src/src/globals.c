@@ -512,6 +512,8 @@ uschar *config_filename        = NULL;
 int     config_lineno          = 0;
 #ifdef CONFIGURE_GROUP
 gid_t   config_gid             = CONFIGURE_GROUP;
+#else
+gid_t   config_gid             = 0;
 #endif
 uschar *config_main_filelist   = US CONFIGURE_FILE
                          "\0<-----------Space to patch configure_filename->";
@@ -520,6 +522,8 @@ uschar *config_main_directory  = NULL;
 
 #ifdef CONFIGURE_OWNER
 uid_t   config_uid             = CONFIGURE_OWNER;
+#else
+uid_t   config_uid             = 0;
 #endif
 
 int     connection_max_messages= -1;
