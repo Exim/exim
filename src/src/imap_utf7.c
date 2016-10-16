@@ -165,7 +165,6 @@ while (slen > 0)
     else
       {
       *error = string_sprintf("imapfolder: illegal character '%c'", s[1]);
-      if (yield) store_reset(yield);
       return NULL;
       }
 

@@ -490,6 +490,7 @@ for (;;)
       tree_node * node;
       if (  sscanf(CS big_buffer + 5, "%u %u", &index, &count) != 2
 	 || index >= 20
+	 || count > 16384	/* arbitrary limit on variable size */
          )
         goto SPOOL_FORMAT_ERROR;
       if (index < 10)
@@ -498,6 +499,8 @@ for (;;)
         (void) string_format(name, sizeof(name), "%c%u", 'm', index - 10);
       node = acl_var_create(name);
       node->data.ptr = store_get(count + 1);
+      /* We sanity-checked the count, so disable the Coverity error */
+      /* coverity[tainted_data] */
       if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
       (US node->data.ptr)[count] = '\0';
       }

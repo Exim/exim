@@ -1141,7 +1141,7 @@ common use is a null string and zero size and pointer, on first use for a
 string being built. The "if" above then allocates, but Coverity assume that
 the "if" might not happen and whines for a null-deref done by the memcpy(). */
 
-/* coverity[deref_parm_field_in_call] */
+/* coverity[deref_parm_field_in_call] : FALSE */
 memcpy(string + p, s, count);
 *ptr = p + count;
 return string;

@@ -761,10 +761,10 @@ Arguments: fd     - File descriptor for input
 Returns:   none
 */
 static void
-restore_socket_timeout(int fd, int get_ok, struct timeval tvtmp, socklen_t vslen)
+restore_socket_timeout(int fd, int get_ok, struct timeval * tvtmp, socklen_t vslen)
 {
 if (get_ok == 0)
-  setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tvtmp, vslen);
+  (void) setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS tvtmp, vslen);
 }
 
 /*************************************************
@@ -805,7 +805,7 @@ so exit with an error if do not find the exact required pieces. This
 includes an incorrect number of spaces separating args.
 
 Arguments: none
-Returns:   int
+Returns:   Boolean success
 */
 
 static BOOL
@@ -849,27 +849,23 @@ char tmpip6[INET6_ADDRSTRLEN];
 struct sockaddr_in6 tmpaddr6;
 
 int get_ok = 0;
-int size, ret, fd;
+int size, ret;
+int fd = fileno(smtp_in);
 const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar *iptype;  /* To display debug info */
 struct timeval tv;
-socklen_t vslen = 0;
 struct timeval tvtmp;
-
-vslen = sizeof(struct timeval);
-
-fd = fileno(smtp_in);
+socklen_t vslen = sizeof(struct timeval);
 
 /* Save current socket timeout values */
-get_ok = getsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tvtmp,
-                    &vslen);
+get_ok = getsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tvtmp, &vslen);
 
 /* Proxy Protocol host must send header within a short time
 (default 3 seconds) or it's considered invalid */
 tv.tv_sec  = PROXY_NEGOTIATION_TIMEOUT_SEC;
 tv.tv_usec = PROXY_NEGOTIATION_TIMEOUT_USEC;
-setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,
-           sizeof(struct timeval));
+if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tv, sizeof(tv)) < 0)
+  return FALSE;
 
 do
   {
@@ -880,10 +876,7 @@ do
   while (ret == -1 && errno == EINTR);
 
 if (ret == -1)
-  {
-  restore_socket_timeout(fd, get_ok, tvtmp, vslen);
-  return (errno == EAGAIN) ? 0 : ERRNO_PROXYFAIL;
-  }
+  goto proxyfail;
 
 if (ret >= 16 &&
     memcmp(&hdr.v2, v2sig, 12) == 0)
@@ -923,7 +916,7 @@ if (ret >= 16 &&
           if (!string_is_ip_address(US tmpip,NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
-            return ERRNO_PROXYFAIL;
+            goto proxyfail;
             }
           proxy_local_address = sender_host_address;
           sender_host_address = string_copy(US tmpip);
@@ -936,7 +929,7 @@ if (ret >= 16 &&
           if (!string_is_ip_address(US tmpip,NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
-            return ERRNO_PROXYFAIL;
+            goto proxyfail;
             }
           proxy_external_address = string_copy(US tmpip);
           tmpport              = ntohs(hdr.v2.addr.ip4.dst_port);
@@ -949,7 +942,7 @@ if (ret >= 16 &&
           if (!string_is_ip_address(US tmpip6,NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
-            return ERRNO_PROXYFAIL;
+            goto proxyfail;
             }
           proxy_local_address = sender_host_address;
           sender_host_address = string_copy(US tmpip6);
@@ -962,7 +955,7 @@ if (ret >= 16 &&
           if (!string_is_ip_address(US tmpip6,NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
-            return ERRNO_PROXYFAIL;
+            goto proxyfail;
             }
           proxy_external_address = string_copy(US tmpip6);
           tmpport              = ntohs(hdr.v2.addr.ip6.dst_port);
@@ -1103,13 +1096,13 @@ else
   }
 
 proxyfail:
-restore_socket_timeout(fd, get_ok, tvtmp, vslen);
+restore_socket_timeout(fd, get_ok, &tvtmp, vslen);
 /* Don't flush any potential buffer contents. Any input should cause a
    synchronization failure */
 return FALSE;
 
 done:
-restore_socket_timeout(fd, get_ok, tvtmp, vslen);
+restore_socket_timeout(fd, get_ok, &tvtmp, vslen);
 DEBUG(D_receive)
   debug_printf("Valid %s sender from Proxy Protocol header\n", iptype);
 return proxy_session;
@@ -2473,7 +2466,7 @@ if (smtp_batched_input) return TRUE;
 proxy_session = FALSE;
 proxy_session_failed = FALSE;
 if (check_proxy_protocol_host())
-  if (setup_proxy_protocol_host() == FALSE)
+  if (!setup_proxy_protocol_host())
     {
     proxy_session_failed = TRUE;
     DEBUG(D_receive)

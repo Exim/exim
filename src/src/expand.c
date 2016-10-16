@@ -4112,7 +4112,7 @@ while (*s != 0)
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
       while (isspace(*s)) s++;
-      next_s = eval_condition(s, &resetok, skipping? NULL : &cond);
+      next_s = eval_condition(s, &resetok, skipping ? NULL : &cond);
       if (next_s == NULL) goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
@@ -4176,11 +4176,13 @@ while (*s != 0)
 	goto EXPAND_FAILED;
 	}
 
-      if (!(encoded = imap_utf7_encode(sub_arg[0], headers_charset,
-			  sub_arg[1][0], sub_arg[2], &expand_string_message)))
-	goto EXPAND_FAILED;
       if (!skipping)
+	{
+	if (!(encoded = imap_utf7_encode(sub_arg[0], headers_charset,
+			    sub_arg[1][0], sub_arg[2], &expand_string_message)))
+	  goto EXPAND_FAILED;
 	yield = string_cat(yield, &size, &ptr, encoded);
+	}
       continue;
       }
 #endif
@@ -4658,7 +4660,6 @@ while (*s != 0)
         prvscheck_keynum = NULL;
         }
       else
-        {
         /* Does not look like a prvs encoded address, return the empty string.
            We need to make sure all subs are expanded first, so as to skip over
            the entire item. */
@@ -4669,7 +4670,6 @@ while (*s != 0)
           case 2:
           case 3: goto EXPAND_FAILED;
           }
-        }
 
       continue;
       }
