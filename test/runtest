@@ -2566,6 +2566,17 @@ open(EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " .
   die "** Cannot run $parm_exim: $!\n";
 while(<EXIMINFO>)
   {
+  if (my ($version) = /^Exim version (\S+)/) {
+    my $git = `git describe --dirty=-XX --match 'exim-4*'`;
+    if (defined $git and $? == 0) {
+      chomp $git;
+      $version =~ s/^\d+\K\./_/;
+      $git =~ s/^exim-//i;
+      $git =~ s/.*-\Kg([[:xdigit:]]+(?:-XX)?)/$1/;
+      print "\n*** Version mismatch (Exim: $version vs. GIT: $git). ***\n\n"
+        if not $version eq $git;
+    }
+  }
   $parm_eximuser = $1 if /^exim_user = (.*)$/;
   $parm_eximgroup = $1 if /^exim_group = (.*)$/;
   $parm_trusted_config_list = $1 if /^TRUSTED_CONFIG_LIST:.*?"(.*?)"$/;
