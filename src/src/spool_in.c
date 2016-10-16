@@ -672,10 +672,12 @@ DEBUG(D_deliver)
 #endif  /* COMPILE_UTILITY */
 
 /* After reading the tree, the next line has not yet been read into the
-buffer. It contains the count of recipients which follow on separate lines. */
+buffer. It contains the count of recipients which follow on separate lines.
+Apply an arbitrary sanity check.*/
 
 if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
-if (sscanf(CS big_buffer, "%d", &rcount) != 1) goto SPOOL_FORMAT_ERROR;
+if (sscanf(CS big_buffer, "%d", &rcount) != 1 || rcount > 16384)
+  goto SPOOL_FORMAT_ERROR;
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_deliver) debug_printf("recipients_count=%d\n", rcount);
@@ -683,6 +685,10 @@ DEBUG(D_deliver) debug_printf("recipients_count=%d\n", rcount);
 
 recipients_list_max = rcount;
 recipients_list = store_get(rcount * sizeof(recipient_item));
+
+/* We sanitised the count and know we have enough memory, so disable
+the Coverity error on recipients_count */
+/* coverity[tainted_data] */
 
 for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   {

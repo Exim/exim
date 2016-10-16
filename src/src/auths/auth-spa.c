@@ -1262,6 +1262,9 @@ spa_bytes_add(ptr, header, b, len*2); \
 unicodeToString(((char*)structPtr) + IVAL(&structPtr->header.offset,0) , SVAL(&structPtr->header.len,0)/2)
 #define GetString(structPtr, header) \
 toString((((char *)structPtr) + IVAL(&structPtr->header.offset,0)), SVAL(&structPtr->header.len,0))
+
+#ifdef notdef
+
 #define DumpBuffer(fp, structPtr, header) \
 dumpRaw(fp,(US structPtr)+IVAL(&structPtr->header.offset,0),SVAL(&structPtr->header.len,0))
 
@@ -1276,6 +1279,8 @@ dumpRaw (FILE * fp, uschar *buf, size_t len)
 
   fprintf (fp, "\n");
 }
+
+#endif
 
 char *
 unicodeToString (char *p, size_t len)
@@ -1325,6 +1330,8 @@ toString (char *p, size_t len)
   return buf;
 }
 
+#ifdef notdef
+
 void
 dumpSmbNtlmAuthRequest (FILE * fp, SPAAuthRequest * request)
 {
@@ -1365,6 +1372,7 @@ dumpSmbNtlmAuthResponse (FILE * fp, SPAAuthResponse * response)
   DumpBuffer (fp, response, sessionKey);
   fprintf (fp, "      Flags = %08x\n", IVAL (&response->flags, 0));
 }
+#endif
 
 void
 spa_build_auth_request (SPAAuthRequest * request, char *user, char *domain)

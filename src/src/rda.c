@@ -474,11 +474,12 @@ rda_read_string(int fd, uschar **sp)
 int len;
 
 if (read(fd, &len, sizeof(int)) != sizeof(int)) return FALSE;
-if (len == 0) *sp = NULL; else
-  {
-  *sp = store_get(len);
-  if (read(fd, *sp, len) != len) return FALSE;
-  }
+if (len == 0)
+  *sp = NULL;
+else
+  /* We know we have enough memory so disable the error on "len" */
+  /* coverity[tainted_data] */
+  if (read(fd, *sp = store_get(len), len) != len) return FALSE;
 return TRUE;
 }
 

@@ -2402,8 +2402,7 @@ will remain. Afterwards, close the reading end. */
 
 for (addr2 = addr; addr2; addr2 = addr2->next)
   {
-  len = read(pfd[pipe_read], &status, sizeof(int));
-  if (len > 0)
+  if ((len = read(pfd[pipe_read], &status, sizeof(int))) > 0)
     {
     int i;
     uschar **sptr;
@@ -2420,10 +2419,24 @@ for (addr2 = addr; addr2; addr2 = addr2->next)
 
     if (testflag(addr2, af_file))
       {
-      int local_part_length;
-      len = read(pfd[pipe_read], &local_part_length, sizeof(int));
-      len = read(pfd[pipe_read], big_buffer, local_part_length);
-      big_buffer[local_part_length] = 0;
+      int llen;
+      if (  read(pfd[pipe_read], &llen, sizeof(int)) != sizeof(int)
+	 || llen > 64*4	/* limit from rfc 5821, times I18N factor */
+         )
+	{
+	log_write(0, LOG_MAIN|LOG_PANIC, "bad local_part length read"
+	  " from delivery subprocess");
+	break;
+	}
+      /* sanity-checked llen so disable the Coverity error */
+      /* coverity[tainted_data] */
+      if (read(pfd[pipe_read], big_buffer, llen) != llen)
+	{
+	log_write(0, LOG_MAIN|LOG_PANIC, "bad local_part read"
+	  " from delivery subprocess");
+	break;
+	}
+      big_buffer[llen] = 0;
       addr2->local_part = string_copy(big_buffer);
       }
 

@@ -478,9 +478,11 @@ if (yield == 0 || yield == 1)
 else
   {
   printf("dbmbuild abandoned\n");
-  #if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
+#if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
+  /* We created it, so safe to delete despite the name coming from outside */
+  /* coverity[tainted_data] */
   Uunlink(temp_dbmname);
-  #else
+#else
   if (is_db)
     {
     sprintf(CS real_dbmname, "%s.db", temp_dbmname);
@@ -493,7 +495,7 @@ else
     sprintf(CS real_dbmname, "%s.pag", temp_dbmname);
     Uunlink(real_dbmname);
     }
-  #endif /* USE_DB || USE_TDB */
+#endif /* USE_DB || USE_TDB */
   }
 
 return yield;

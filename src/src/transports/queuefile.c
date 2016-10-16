@@ -116,29 +116,29 @@ if (link_file)
   op = US"linking";
   s = dstpath;
   }
+else					/* use data copy */
+  {
+  DEBUG(D_transport) debug_printf("%s transport, copying %s => %s\n",
+    tb->name, srcpath, dstpath);
 
-/* use data copy */
+  if (  (s = dstpath,
+	 (dstfd = openat(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE))
+	 < 0
+	)
+     ||    is_hdr_file
+	&& (s = srcpath, (srcfd = openat(sdfd, CCS filename, O_RDONLY)) < 0)
+     )
+    op = US"opening";
 
-DEBUG(D_transport) debug_printf("%s transport, copying %s => %s\n",
-  tb->name, srcpath, dstpath);
-
-if (  (s = dstpath,
-       (dstfd = openat(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE))
-       < 0
-      )
-   ||    is_hdr_file
-      && (s = srcpath, (srcfd = openat(sdfd, CCS filename, O_RDONLY)) < 0)
-   )
-  op = US"opening";
-
-else
-  if (s = dstpath, fchmod(dstfd, SPOOL_MODE) != 0)
-    op = US"setting perms on";
   else
-    if (!copy_spool_file(dstfd, srcfd))
-      op = US"creating";
+    if (s = dstpath, fchmod(dstfd, SPOOL_MODE) != 0)
+      op = US"setting perms on";
     else
-      return TRUE;
+      if (!copy_spool_file(dstfd, srcfd))
+	op = US"creating";
+      else
+	return TRUE;
+  }
 
 addr->basic_errno = errno;
 addr->message = string_sprintf("%s transport %s file: %s failed with error: %s",
