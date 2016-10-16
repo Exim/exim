@@ -49,24 +49,29 @@ if (!ob->dirname)
 /* This function will copy from a file to another
 
 Arguments:
-  to_fd        FILE to write to (the destination queue file)
-  from_fd      FILE to read from (the spool queue file)
+  dst        fd to write to (the destination queue file)
+  src        fd to read from (the spool queue file)
 
-Returns:       TRUE if all went well, FALSE otherwise
+Returns:       TRUE if all went well, FALSE otherwise with errno set
 */
 
 static BOOL
-copy_spool_file (FILE *to_fd, FILE *from_fd)
+copy_spool_file(int dst, int src)
 {
 int i, j;
 uschar buffer[16384];
+uschar * s;
 
-rewind(from_fd);
+if (lseek(src, 0, SEEK_SET) != 0)
+  return FALSE;
 
 do
-  if ((j = fread(buffer, 1, sizeof(buffer), from_fd)) > 0)
-    if ((i = fwrite(buffer, j, 1, to_fd)) != 1)
-      return FALSE;
+  if ((j = read(src, buffer, sizeof(buffer))) > 0)
+    for (s = buffer; (i = write(dst, s, j)) != j; s += i, j -= i)
+      if (i < 0)
+	return FALSE;
+  else if (j < 0)
+    return FALSE;
 while (j > 0);
 return TRUE;
 }
@@ -90,21 +95,26 @@ copy_spool_files(transport_instance * tb, address_item * addr,
   int sdfd, int ddfd, BOOL link_file, int srcfd)
 {
 BOOL is_hdr_file = srcfd < 0;
-uschar * suffix = srcfd < 0 ? US"H" : US"D";
+const uschar * suffix = srcfd < 0 ? US"H" : US"D";
 int dstfd;
-FILE * dst_file, * src_file;
-uschar * filename = string_sprintf("%s-%s", message_id, suffix);
-uschar * srcpath = spool_fname(US"input", message_subdir, message_id, suffix);
-uschar * dstpath = string_sprintf("%s/%s-%s",
+const uschar * filename = string_sprintf("%s-%s", message_id, suffix);
+const uschar * srcpath = spool_fname(US"input", message_subdir, message_id, suffix);
+const uschar * dstpath = string_sprintf("%s/%s-%s",
   ((queuefile_transport_options_block *) tb->options_block)->dirname,
   message_id, suffix);
+const uschar * s;
+const uschar * op;
 
 if (link_file)
   {
   DEBUG(D_transport) debug_printf("%s transport, linking %s => %s\n",
     tb->name, srcpath, dstpath);
 
-  return linkat(sdfd, CCS filename, ddfd, CCS filename, 0) >= 0;
+  if (linkat(sdfd, CCS filename, ddfd, CCS filename, 0) >= 0)
+    return TRUE;
+
+  op = US"linking";
+  s = dstpath;
   }
 
 /* use data copy */
@@ -112,63 +122,29 @@ if (link_file)
 DEBUG(D_transport) debug_printf("%s transport, copying %s => %s\n",
   tb->name, srcpath, dstpath);
 
-if ((dstfd =
-  openat(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
-  {
-  addr->transport_return = DEFER;
-  addr->basic_errno = errno;
-  addr->message = string_sprintf("%s transport opening file: %s "
-    "failed with error: %s", tb->name, dstpath, strerror(errno));
-  return FALSE;
-  }
+if (  (s = dstpath,
+       (dstfd = openat(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE))
+       < 0
+      )
+   ||    is_hdr_file
+      && (s = srcpath, (srcfd = openat(sdfd, CCS filename, O_RDONLY)) < 0)
+   )
+  op = US"opening";
 
-fchmod(dstfd, SPOOL_MODE);
+else
+  if (s = dstpath, fchmod(dstfd, SPOOL_MODE) != 0)
+    op = US"setting perms on";
+  else
+    if (!copy_spool_file(dstfd, srcfd))
+      op = US"creating";
+    else
+      return TRUE;
 
-if (!(dst_file = fdopen(dstfd, "wb")))
-  {
-  addr->transport_return = DEFER;
-  addr->basic_errno = errno;
-  addr->message = string_sprintf("%s transport opening file fd: %s "
-    "failed with error: %s", tb->name, dstpath, strerror(errno));
-  (void) close(dstfd);
-  return FALSE;
-  }
-
-if (is_hdr_file)
-  if ((srcfd = openat(sdfd, CCS filename, O_RDONLY)) < 0)
-    {
-    addr->basic_errno = errno;
-    addr->message = string_sprintf("%s transport opening file: %s "
-      "failed with error: %s", tb->name, srcpath, strerror(errno));
-    goto bad;
-    }
-
-if (!(src_file = fdopen(srcfd, "rb")))
-  {
-  addr->basic_errno = errno;
-  addr->message = string_sprintf("%s transport opening file fd: "
-    "%s failed with error: %s", tb->name, srcpath, strerror(errno));
-  if (is_hdr_file) (void) close(srcfd);
-  goto bad;
-  }
-
-if (!copy_spool_file(dst_file, src_file))
-  {
-  addr->message = string_sprintf("%s transport creating file: "
-    "%s failed with error: %s", tb->name, dstpath, strerror(errno));
-  if (is_hdr_file) (void) fclose(src_file);
-  goto bad;
-  }
-
-if (is_hdr_file) (void) fclose(src_file);
-(void) fclose(dst_file);
-
-return TRUE;
-
-bad:
-  addr->transport_return = DEFER;
-  (void) fclose(dst_file);
-  return FALSE;
+addr->basic_errno = errno;
+addr->message = string_sprintf("%s transport %s file: %s failed with error: %s",
+  tb->name, op, s, strerror(errno));
+addr->transport_return = DEFER;
+return FALSE;
 }
 
 /*************************************************
