@@ -756,7 +756,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	: 0;
       }
 
-    size_str = peer_offered & PEER_OFFERED_SIZE
+    size_str = options & vopt_is_recipient && peer_offered & PEER_OFFERED_SIZE
       ? string_sprintf(" SIZE=%d", message_size + ob->size_addition) : US"";
 
 #ifdef SUPPORT_TLS

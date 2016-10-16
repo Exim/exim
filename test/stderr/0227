@@ -210,6 +210,22 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250- wotcher
+         250-SIZE
+         250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@localhost1>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+  SMTP(close)>>
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+LOG: smtp_connection MAIN
+  SMTP connection from root
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
   SMTP>> LHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>

@@ -26,6 +26,8 @@ check_recipient:
          !verify   = recipient/callout=no_cache
   deny    hosts    = V4NET.0.0.5
          !verify   = sender/callout=no_cache/check_postmaster
+  deny    hosts    = V4NET.0.0.6
+         !verify   = sender/callout=no_cache
   require verify   = sender
   accept  domains  = +local_domains
   deny    message  = relay not permitted
