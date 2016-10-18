@@ -3039,9 +3039,8 @@ else
 # Find this host's IP addresses - there may be many, of course, but we keep
 # one of each type (IPv4 and IPv6).
 
-open(IFCONFIG, 'ip address|')           # show *all*, addresses w/o label
-    or open(IFCONFIG, 'ifconfig -a|')   # probably skips addresses w/o label
-    or die "** Cannot run 'ifconfig' or 'ip address': $!\n";
+open(IFCONFIG, '-|', (grep { -x "$_/ip" } split /:/, $ENV{PATH}) ? 'ip address' : 'ifconfig -a')
+  or die "** Cannot run 'ip address' or 'ifconfig -a'\n";
 while (not ($parm_ipv4 and $parm_ipv6) and defined($_ = <IFCONFIG>))
   {
   if (not $parm_ipv4 and /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)(?:\/\d+)\s/i)
