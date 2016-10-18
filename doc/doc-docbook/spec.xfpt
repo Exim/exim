@@ -10134,6 +10134,15 @@ Only lowercase letters are used.
 .cindex "expansion" "conversion to base 32"
 The string must consist entirely of base-32 digits.
 The number is converted to decimal and output as a string.
+
+.vitem &*${base32hex:*&<&'digits'&>&*}*&
+.cindex "&%base32hex%& expansion item"
+This is the same as &%base32%& but using the "Extended Hex Alphabet".
+See RFC 4648 for details.
+
+.vitem &*${base32hexd:*&<&'base-32-hex&~digits'&>&*}*&
+.cindex "&%base32hexd%& expansion item"
+This is the same as &%base32d%& but decoding from the "Extended Hex Alphabet".
 .wen
 
 .vitem &*${base62:*&<&'digits'&>&*}*&
@@ -10170,6 +10179,22 @@ returns the base64 encoding of the DER form of the certificate.
 .cindex "base64 decoding" "in string expansion"
 .cindex "&%base64d%& expansion item"
 This operator converts a base64-encoded string into the un-coded form.
+
+
+.new
+.vitem &*${base64url:*&<&'string'&>&*}*&
+.cindex "&%base64url%& expansion item"
+This is the same as &%base64%& but using the "URL and Filename Safe Alphabet".
+This replaces two characters in the encoded alphabet, including the solidus
+used as a directory separator on Unix, thus the result of this encoding can
+be safely used as a filename.
+See RFC 4648 for details.
+
+.vitem &*${base64urld:*&<&'string'&>&*}*&
+.cindex "&%base64urld%& expansion item"
+This is the same as &%base64d%& but decoding from the
+"URL and Filename Safe Alphabet".
+.wen
 
 
 .vitem &*${domain:*&<&'string'&>&*}*&

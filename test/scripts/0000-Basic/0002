@@ -195,6 +195,20 @@ base32d: 32 ${base32d:${base32:32}}
 base32d: 42 ${base32d:${base32:42}}
 base32d error: ABC ${base32d:ABC}
 
+base32hex: 0  <${base32hex:0}>
+base32hex: 1  <${base32hex:1}>
+base32hex: 31 <${base32hex:31}>
+base32hex: 32 <${base32hex:32}>
+base32hex: 42 <${base32hex:42}>
+base32hex error: 0x1 ${base32hex:0x1}
+
+base32hexd: 0  ${base32hexd:${base32hex:0}}
+base32hexd: 1  ${base32hexd:${base32hex:1}}
+base32hexd: 31 ${base32hexd:${base32hex:31}}
+base32hexd: 32 ${base32hexd:${base32hex:32}}
+base32hexd: 42 ${base32hexd:${base32hex:42}}
+base32hexd error: WXY ${base32hexd:WXY}
+
 The base62 operator is actually a base36 operator in the Darwin and Cygwin
 environments. Write cunning tests that produce the same output in both cases,
 while doing a reasonable check.
@@ -279,6 +293,14 @@ base64: ${base64:abcd}
 base64: ${base64:The quick brown \n fox}
 base64d:${base64d:YWJjZA==}
 base64d:${base64d:VGhlIHF1aWNrIGJyb3duIAogZm94}
+base64:     ${base64:==>}
+base64:     ${base64:==?}
+base64url:  ${base64url:==>}
+base64url:  ${base64url:==?}
+base64d:    ${base64d:PT0+}
+base64d:    ${base64d:PT0/}
+base64urld: ${base64urld:PT0-}
+base64urld: ${base64urld:PT0_}
 strlen: ${strlen:}
 strlen: ${strlen:a}
 strlen: ${strlen:abcdefgh}

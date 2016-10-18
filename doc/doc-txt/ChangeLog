@@ -120,6 +120,9 @@ PP/01 Changed default Diffie-Hellman parameters to be Exim-specific, created
 PP/02 Unbreak build via pkg-config with new hash support when crypto headers
       are not in the system include path.
 
+PP/03 Add base64url and base64urld expansion operators, to use the URL and
+      Filename Safe Alphabet encodings.  Also base32hex/base32hexd.
+
 
 Exim version 4.87
 -----------------

@@ -26,7 +26,8 @@ Version 4.88
     the queue to be used for a message.  A $queue_name variable gives
     visibility.
 
- 6. New expansion operators base32/base32d.
+ 6. New expansion operators base32/base32d, base32hex/base32hexd and
+    base64url/base64urld.
 
  7. The CHUNKING ESMTP extension from RFC 3030.  May give some slight
     performance increase and network load decrease.  Main config option

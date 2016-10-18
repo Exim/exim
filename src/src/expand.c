@@ -201,10 +201,14 @@ static uschar *op_table_main[] = {
   US"addresses",
   US"base32",
   US"base32d",
+  US"base32hex",
+  US"base32hexd",
   US"base62",
   US"base62d",
   US"base64",
   US"base64d",
+  US"base64url",
+  US"base64urld",
   US"domain",
   US"escape",
   US"escape8bit",
@@ -247,10 +251,14 @@ enum {
   EOP_ADDRESSES,
   EOP_BASE32,
   EOP_BASE32D,
+  EOP_BASE32HEX,
+  EOP_BASE32HEXD,
   EOP_BASE62,
   EOP_BASE62D,
   EOP_BASE64,
   EOP_BASE64D,
+  EOP_BASE64URL,
+  EOP_BASE64URLD,
   EOP_DOMAIN,
   EOP_ESCAPE,
   EOP_ESCAPE8BIT,
@@ -845,7 +853,8 @@ static int utf8_table2[] = { 0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01};
 
 
 
-static uschar * base32_chars = US"abcdefghijklmnopqrstuvwxyz234567";
+static const uschar * const base32_chars    = US"abcdefghijklmnopqrstuvwxyz234567";
+static const uschar * const base32hex_chars = US"0123456789ABCDEFGHIJKLMNOPQRSTUV";
 
 /*************************************************
 *           Binary chop search on a table        *
@@ -6233,6 +6242,7 @@ while (*s != 0)
       case EOP_SHA1:
       case EOP_SHA256:
       case EOP_BASE64:
+      case EOP_BASE64URL:
 	if (s[1] == '$')
 	  {
 	  const uschar * s1 = s;
@@ -6274,40 +6284,48 @@ while (*s != 0)
     switch(c)
       {
       case EOP_BASE32:
+      case EOP_BASE32HEX:
 	{
         uschar *t;
+        const uschar *alphabet = (c == EOP_BASE32) ? base32_chars : base32hex_chars;
         unsigned long int n = Ustrtoul(sub, &t, 10);
 	uschar * s = NULL;
 	int sz = 0, i = 0;
 
         if (*t != 0)
           {
-          expand_string_message = string_sprintf("argument for base32 "
-            "operator is \"%s\", which is not a decimal number", sub);
+          expand_string_message = string_sprintf("argument for base32%s "
+            "operator is \"%s\", which is not a decimal number",
+            (c == EOP_BASE32 ? "" : "hex"),
+            sub);
           goto EXPAND_FAILED;
           }
 	for ( ; n; n >>= 5)
-	  s = string_catn(s, &sz, &i, &base32_chars[n & 0x1f], 1);
+	  s = string_catn(s, &sz, &i, &alphabet[n & 0x1f], 1);
 
 	while (i > 0) yield = string_catn(yield, &size, &ptr, &s[--i], 1);
 	continue;
 	}
 
       case EOP_BASE32D:
+      case EOP_BASE32HEXD:
         {
         uschar *tt = sub;
         unsigned long int n = 0;
-	uschar * s;
+        uschar * s;
+        const uschar *alphabet = (c == EOP_BASE32D) ? base32_chars : base32hex_chars;
         while (*tt)
           {
-          uschar * t = Ustrchr(base32_chars, *tt++);
+          uschar * t = Ustrchr(alphabet, *tt++);
           if (t == NULL)
             {
-            expand_string_message = string_sprintf("argument for base32d "
-              "operator is \"%s\", which is not a base 32 number", sub);
+            expand_string_message = string_sprintf("argument for base32%sd "
+              "operator is \"%s\", which is not a base 32 number",
+              (c == EOP_BASE32D ? "" : "hex"),
+              sub);
             goto EXPAND_FAILED;
             }
-          n = n * 32 + (t - base32_chars);
+          n = n * 32 + (t - alphabet);
           }
         s = string_sprintf("%ld", n);
         yield = string_cat(yield, &size, &ptr, s);
@@ -7185,23 +7203,46 @@ while (*s != 0)
 
       case EOP_STR2B64:
       case EOP_BASE64:
-	{
+      case EOP_BASE64URL:
+        {
+        uschar * t;
 #ifdef SUPPORT_TLS
-	uschar * s = vp && *(void **)vp->value
-	  ? tls_cert_der_b64(*(void **)vp->value)
-	  : b64encode(sub, Ustrlen(sub));
+        uschar * s = vp && *(void **)vp->value
+          ? tls_cert_der_b64(*(void **)vp->value)
+          : b64encode(sub, Ustrlen(sub));
 #else
-	uschar * s = b64encode(sub, Ustrlen(sub));
+        uschar * s = b64encode(sub, Ustrlen(sub));
 #endif
-	yield = string_cat(yield, &size, &ptr, s);
-	continue;
-	}
+        if (c == EOP_BASE64URL) {
+          for (t = s; *t != '\0'; ++t) {
+            if (*t == '+') {
+              *t = '-';
+            } else if (*t == '/') {
+              *t = '_';
+            }
+          }
+        }
+        yield = string_cat(yield, &size, &ptr, s);
+        continue;
+        }
 
       case EOP_BASE64D:
+      case EOP_BASE64URLD:
         {
-        uschar * s;
-        int len = b64decode(sub, &s);
-	if (len < 0)
+        uschar * s, * t;
+        t = sub;
+        if (c == EOP_BASE64URLD) {
+          t = string_copy(sub);
+          for (s = t; *s != '\0'; ++s) {
+            if (*s == '-') {
+              *s = '+';
+            } else if (*s == '_') {
+              *s = '/';
+            }
+          }
+        }
+        int len = b64decode(t, &s);
+        if (len < 0)
           {
           expand_string_message = string_sprintf("string \"%s\" is not "
             "well-formed for \"%s\" operator", sub, name);
