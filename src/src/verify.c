@@ -41,6 +41,8 @@ static tree_node *dnsbl_cache = NULL;
 
 static uschar cutthrough_response(char, uschar **);
 
+static int     off = 0;       /* for use by setsockopt */
+
 
 /*************************************************
 *          Retrieve a callout cache record       *
@@ -683,6 +685,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     if (!smtps || (smtps && tls_out.active >= 0))
 #endif
       {
+#ifdef TCP_QUICKACK
+      (void) setsockopt(inblock.sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
       if (!(done= smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout)))
         goto RESPONSE_FAILED;
 

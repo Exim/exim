@@ -286,6 +286,7 @@ static uschar *smtp_command;   /* Points to last cmd for error messages */
 static uschar *mail_command;   /* Points to MAIL cmd for error messages */
 static BOOL    update_waiting; /* TRUE to update the "wait" database */
 static BOOL    pipelining_active; /* current transaction is in pipe mode */
+static int     off = 0;       /* for use by setsockopt */
 
 
 /*************************************************
@@ -1705,7 +1706,12 @@ if (continue_hostname == NULL)
 
   if (!lflags.smtps)
     {
-    BOOL good_response = smtp_read_response(&inblock, buffer, sizeof(buffer),
+    BOOL good_response;
+
+#ifdef TCP_QUICKACK
+    (void) setsockopt(inblock.sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
+    good_response = smtp_read_response(&inblock, buffer, sizeof(buffer),
       '2', ob->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
     smtp_greeting = string_copy(buffer);
@@ -1732,7 +1738,7 @@ if (continue_hostname == NULL)
     /* Now check if the helo_data expansion went well, and sign off cleanly if
     it didn't. */
 
-    if (helo_data == NULL)
+    if (!helo_data)
       {
       uschar *message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);

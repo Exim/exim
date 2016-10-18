@@ -143,6 +143,8 @@ static BOOL pipelining_advertised;
 static BOOL rcpt_smtp_response_same;
 static BOOL rcpt_in_progress;
 static int  nonmail_command_count;
+static int  off = 0;
+static int  on = 1;
 static BOOL smtp_exit_function_called = 0;
 #ifdef SUPPORT_I18N
 static BOOL smtputf8_advertised;
@@ -3544,6 +3546,12 @@ while (done <= 0)
     }
 #endif
 
+#ifdef TCP_QUICKACK
+  if (smtp_in)		/* Avoid pure-ACKs while in cmd pingpong phase */
+    (void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
+	    US &off, sizeof(off));
+#endif
+
   switch(smtp_read_command(TRUE))
     {
     /* The AUTH command is not permitted to occur inside a transaction, and may
@@ -4826,6 +4834,11 @@ while (done <= 0)
 	  "354 Enter message, ending with \".\" on a line by itself\r\n");
       }
 
+#ifdef TCP_QUICKACK
+    if (smtp_in)	/* all ACKs needed to ramp window up for bulk data */
+      (void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
+	      US &on, sizeof(on));
+#endif
     done = 3;
     message_ended = END_NOTENDED;   /* Indicate in middle of data */
 
