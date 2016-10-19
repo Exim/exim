@@ -3043,7 +3043,7 @@ open(IFCONFIG, '-|', (grep { -x "$_/ip" } split /:/, $ENV{PATH}) ? 'ip address' 
   or die "** Cannot run 'ip address' or 'ifconfig -a'\n";
 while (not ($parm_ipv4 and $parm_ipv6) and defined($_ = <IFCONFIG>))
   {
-  if (not $parm_ipv4 and /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)(?:\/\d+)\s/i)
+  if (not $parm_ipv4 and /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)(?:\/\d+)?\s/i)
     {
     next if $1 =~ /^(?:127|10)\./;
     $parm_ipv4 = $1;
@@ -3058,9 +3058,6 @@ while (not ($parm_ipv4 and $parm_ipv6) and defined($_ = <IFCONFIG>))
 close(IFCONFIG);
 
 # Use private IP addresses if there are no public ones.
-
-$parm_ipv4 = '172.10.10.1' if not defined $parm_ipv4;
-$parm_ipv6 = 'fd0a:c2ea:abfa::1' if not defined $parm_ipv6;
 
 # If either type of IP address is missing, we need to set the value to
 # something other than empty, because that wrecks the substitutions. The value
