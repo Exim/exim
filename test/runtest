@@ -2167,8 +2167,7 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
     # Done backwards just in case there are more than 9
 
-    my($i);
-    for ($i = @msglist; $i > 0; $i--) { $args =~ s/\$msg$i/$msglist[$i-1]/g; }
+    for (my $i = @msglist; $i > 0; $i--) { $args =~ s/\$msg$i/$msglist[$i-1]/g; }
     if ( $args =~ /\$msg\d/ )
       {
       tests_exit(-1, "Not enough messages in spool, for test $testno line $lineno\n")
@@ -2360,9 +2359,9 @@ print "Exim tester $testversion\n";
 # we map all (.../bin) to (.../sbin:.../bin)
 $ENV{PATH} = do {
   my %seen = map { $_, 1 } split /:/, $ENV{PATH};
-  join ':' => map { m{(.*)/bin$} 
-                ? ( $seen{"$1/sbin"} ? () : ("$1/sbin"), $_) 
-                : ($_) } 
+  join ':' => map { m{(.*)/bin$}
+                ? ( $seen{"$1/sbin"} ? () : ("$1/sbin"), $_)
+                : ($_) }
       split /:/, $ENV{PATH};
 };
 
