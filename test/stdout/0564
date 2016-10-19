@@ -1,4 +1,4 @@
-Connecting to 127.0.0.1 port 1225 ... connected
+Connecting to 127.0.0.1 port <dynamic port> ... connected
 ??? 220
 <<< 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 >>> ehlo abcd

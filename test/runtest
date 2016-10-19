@@ -17,6 +17,7 @@
 #use 5.010;
 use Errno;
 use FileHandle;
+use IO::Socket::INET;
 use Socket;
 use Time::Local;
 use Cwd;
@@ -81,6 +82,7 @@ $parm_port_d = 1225;         # Used for the Exim daemon
 $parm_port_d2 = 1226;        # Additional for daemon
 $parm_port_d3 = 1227;        # Additional for daemon
 $parm_port_d4 = 1228;        # Additional for daemon
+my $dynamic_socket;          # allocated later for PORT_DYNAMIC
 
 # Manually set locale
 $ENV{LC_ALL} = 'C';
@@ -142,6 +144,7 @@ s?\bPORT_S\b?$parm_port_s?g;
 s?\bTESTNUM\b?$_[0]?g;
 s?(\b|_)V4NET([\._])?$1$parm_ipv4_test_net$2?g;
 s?\bV6NET:?$parm_ipv6_test_net:?g;
+s?\bPORT_DYNAMIC\b?$dynamic_socket->sockport()?eg;
 }
 
 
@@ -675,6 +678,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # Port in host address in spool file output from -Mvh
   s/^-host_address (.*)\.\d+/-host_address $1.9999/;
+
+  if ($dynamic_socket and $dynamic_socket->opened and my $port = $dynamic_socket->sockport) {
+    s/^Connecting to 127\.0\.0\.1 port \K$port/<dynamic port>/;
+  }
 
 
   # ======== Local IP addresses ========
@@ -2226,31 +2233,24 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
     }
   elsif ($cmd =~ /\s-DSERVER=wait:(\d+)\s/)
     {
+
+    # The port and the $dynamic_socket was already allocated while parsing the
+    # script file, where -DSERVER=wait:PORT_DYNAMIC was encountered.
+
     my $listen_port = $1;
-    my $waitmode_sock = new FileHandle;
     if ($debug) { printf ">> wait-mode daemon: $cmd\n"; }
     run_system("sudo mkdir spool/log 2>/dev/null");
     run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
 
-    my ($s_ip,$s_port) = ('127.0.0.1', $listen_port);
-    my $sin = sockaddr_in($s_port, inet_aton($s_ip))
-        or die "** Failed packing $s_ip:$s_port\n";
-    socket($waitmode_sock, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
-        or die "** Unable to open socket $s_ip:$s_port: $!\n";
-    setsockopt($waitmode_sock, SOL_SOCKET, SO_REUSEADDR, 1)
-        or die "** Unable to setsockopt(SO_REUSEADDR): $!\n";
-    bind($waitmode_sock, $sin)
-        or die "** Unable to bind socket ($s_port): $!\n";
-    listen($waitmode_sock, 5);
     my $pid = fork();
     if (not defined $pid) { die "** fork failed: $!\n" }
     if (not $pid) {
       close(STDIN);
-      open(STDIN, "<&", $waitmode_sock) or die "** dup sock to stdin failed: $!\n";
-      close($waitmode_sock);
+      open(STDIN, '<&', $dynamic_socket) or die "** dup sock to stdin failed: $!\n";
+      close($dynamic_socket);
       print "[$$]>> ${cmd}-server\n" if ($debug);
       exec "exec ${cmd}-server";
-      exit(1);
+      die "Can't exec ${cmd}-server: $!\n";
     }
     while (<SCRIPT>) { $lineno++; last if /^\*{4}\s*$/; }   # Ignore any input
     select(undef, undef, undef, 0.3);             # Let the daemon get going
@@ -3596,6 +3596,8 @@ foreach $test (@test_list)
   my($docheck) = 1;
   my($thistestdir) = substr($test, 0, -5);
 
+  $dynamic_socket->close() if $dynamic_socket;
+
   if ($lasttestdir ne $thistestdir)
     {
     $gnutls = 0;
@@ -3664,6 +3666,16 @@ foreach $test (@test_list)
     if (/^no_stdout_check/)  { $stdout_skip = 1; next; }
     if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
     if (/^sortlog/)          { $sortlog = 1; next; }
+    if (/\bPORT_DYNAMIC\b/)  {
+      for (my $port = 1024; $port < 65000; $port++) {
+        $dynamic_socket = IO::Socket::INET->new(
+          LocalHost => '127.0.0.1',
+          LocalPort => $port,
+          Listen => 10,
+          ReuseAddr => 1,
+        ) and last;
+      }
+      }
     }
   # Reset to beginning of file for per test interpreting/processing
   seek(SCRIPT, 0, 0);
