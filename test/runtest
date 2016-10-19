@@ -3922,4 +3922,3 @@ tests_exit(-1, "No runnable tests selected") if @test_list == 0;
 tests_exit(0);
 
 # End of runtest script
-# vim: set sw=2 et :
