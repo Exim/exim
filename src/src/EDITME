@@ -746,6 +746,10 @@ HEADERS_CHARSET="ISO-8859-1"
 # USE_GNUTLS_PC=gnutls
 # TLS_LIBS=-lgnutls -ltasn1 -lgcrypt
 
+# If using GnuTLS older than 2.10 and using pkg-config then note that Exim's
+# build process will require libgcrypt-config to exist in your $PATH.  A
+# version that old is likely to become unsupported by Exim in 2017.
+
 # The security fix we provide with the gnutls_allow_auto_pkcs11 option
 # (4.82 PP/09) introduces a compatibility regression.  The symbol is
 # not available if GnuTLS is build without p11-kit (--without-p11-kit

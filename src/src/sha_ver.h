@@ -9,6 +9,13 @@
 
 #include "exim.h"
 
+/* Please be aware that pulling in extra headers which are not in the system
+ * includes may require careful juggling of CFLAGS in
+ * scripts/Configure-Makefile -- that logic should be kept in sync with this.
+ * In particular, building with just something like USE_OPENSSL_PC=openssl
+ * and not massaging CFLAGS in Local/Makefile is fully supported.
+ */
+
 #ifdef SUPPORT_TLS
 
 # define EXIM_HAVE_SHA2

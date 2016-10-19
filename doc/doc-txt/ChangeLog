@@ -117,6 +117,9 @@ JH/30 Bug 1897: fix callouts connection fallback from TLS to cleartext.
 PP/01 Changed default Diffie-Hellman parameters to be Exim-specific, created
       by me.  Added RFC7919 DH primes as an alternative.
 
+PP/02 Unbreak build via pkg-config with new hash support when crypto headers
+      are not in the system include path.
+
 
 Exim version 4.87
 -----------------
