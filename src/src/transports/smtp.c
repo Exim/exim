@@ -1586,6 +1586,7 @@ lflags.dane_required = verify_check_given_host(&ob->hosts_require_dane, host) ==
 
 *message_defer = FALSE;
 smtp_command = US"initial connection";
+buffer[0] = '\0';
 if (max_rcpt == 0) max_rcpt = 999999;
 
 /* Set up the buffer for reading SMTP response packets. */
@@ -2171,10 +2172,10 @@ set it up. This cannot be done until the identify of the host is known. */
 if (tblock->filter_command != NULL)
   {
   BOOL rc;
-  uschar buffer[64];
-  sprintf(CS buffer, "%.50s transport", tblock->name);
+  uschar fbuf[64];
+  sprintf(CS fbuf, "%.50s transport", tblock->name);
   rc = transport_set_up_command(&transport_filter_argv, tblock->filter_command,
-    TRUE, DEFER, addrlist, buffer, NULL);
+    TRUE, DEFER, addrlist, fbuf, NULL);
   transport_filter_timeout = tblock->filter_timeout;
 
   /* On failure, copy the error to all addresses, abandon the SMTP call, and

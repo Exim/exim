@@ -2334,6 +2334,11 @@ switch (type)
   if (value < 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
     "integer \"%s\" is too large (overflow)", s);
 
+  /* We get a coverity error here for using count, as it derived
+  from the tainted buffer pointed to by s, as parsed by sscanf().
+  By the definition of sscanf we must be aceessing between start
+  and end of s (assuming it is nul-terminated...) so ignore the error.  */
+  /* coverity[tainted_data] */
   if (s[count] == '.')
     {
     int d = 100;
