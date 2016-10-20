@@ -1443,6 +1443,9 @@ $munges =
     { 'stdout' => 's/^\d\d:\d\d:\d\d\s+\d+ //;
                   s/Process \d+ is ready for new message/Process pppp is ready for new message/'
     },
+
+    'timeout_errno' =>		# actual errno differs Solaris vs. Linux
+    { 'mainlog' => 's/(host deferral .* errno) <\d+> /$1 <EEE> /' },
   };
 
 
