@@ -1,4 +1,6 @@
-#! /usr/bin/perl -w
+#! /usr/bin/env perl
+# We use env, because in some environments of our build farm
+# the Perl 5.010 interpreter is only reachable via $PATH
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -14,7 +16,9 @@
 ###############################################################################
 
 #use strict;
-#use 5.010;
+use 5.010;
+use warnings;
+
 use Errno;
 use FileHandle;
 use IO::Socket::INET;
