@@ -26,6 +26,7 @@ typedef struct {
   uschar *hosts_try_dane;
   uschar *hosts_require_dane;
 #endif
+  uschar *hosts_try_fastopen;
 #ifndef DISABLE_PRDR
   uschar *hosts_try_prdr;
 #endif

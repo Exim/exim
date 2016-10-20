@@ -175,12 +175,14 @@ Arguments:
   address     the remote address, in text form
   port        the remote port
   timeout     a timeout (zero for indefinite timeout)
+  fastopen    TRUE iff TCP_FASTOPEN can be used
 
 Returns:      0 on success; -1 on failure, with errno set
 */
 
 int
-ip_connect(int sock, int af, const uschar *address, int port, int timeout)
+ip_connect(int sock, int af, const uschar *address, int port, int timeout,
+  BOOL fastopen)
 {
 struct sockaddr_in s_in4;
 struct sockaddr *s_ptr;
@@ -221,7 +223,31 @@ timer, thereby allowing the inbuilt OS timeout to operate. */
 callout_address = string_sprintf("[%s]:%d", address, port);
 sigalrm_seen = FALSE;
 if (timeout > 0) alarm(timeout);
-rc = connect(sock, s_ptr, s_len);
+
+#ifdef TCP_FASTOPEN
+/* TCP Fast Open, if the system has a cookie from a previous call to
+this peer, can send data in the SYN packet.  The peer can send data
+before it gets our ACK of its SYN,ACK - the latter is useful for
+the SMTP banner.  Is there any usage where the former might be?
+We might extend the ip_connect() args for data if so.  For now,
+connect in FASTOPEN mode but with zero data.
+*/
+
+if (fastopen)
+  {
+  if (  (rc = sendto(sock, NULL, 0, MSG_FASTOPEN, s_ptr, s_len)) < 0
+     && errno == EOPNOTSUPP
+     )
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	      "Tried TCP Fast Open but apparently not enabled by sysctl");
+    rc = connect(sock, s_ptr, s_len);
+    }
+  }
+else
+#endif
+  rc = connect(sock, s_ptr, s_len);
+
 save_errno = errno;
 alarm(0);
 
@@ -319,7 +345,7 @@ else
 
 /* Try to connect to the server - test each IP till one works */
 
-for (h = &shost; h != NULL; h = h->next)
+for (h = &shost; h; h = h->next)
   {
   fd = Ustrchr(h->address, ':') != 0
     ? fd6 < 0 ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
@@ -332,7 +358,7 @@ for (h = &shost; h != NULL; h = h->next)
     }
 
   for(port = portlo; port <= porthi; port++)
-    if (ip_connect(fd, af, h->address, port, timeout) == 0)
+    if (ip_connect(fd, af, h->address, port, timeout, type == SOCK_STREAM) == 0)
       {
       if (fd != fd6) close(fd6);
       if (fd != fd4) close(fd4);

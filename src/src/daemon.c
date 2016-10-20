@@ -932,8 +932,6 @@ DEBUG(D_any|D_v) debug_selector |= D_pid;
 
 if (inetd_wait_mode)
   {
-  int on = 1;
-
   listen_socket_count = 1;
   listen_sockets = store_get(sizeof(int));
   (void) close(3);
@@ -1364,7 +1362,6 @@ the listening sockets if required. */
 if (daemon_listen && !inetd_wait_mode)
   {
   int sk;
-  int on = 1;
   ip_address_item *ipa;
 
   /* For each IP address, create a socket, bind it to the appropriate port, and
@@ -1466,13 +1463,18 @@ if (daemon_listen && !inetd_wait_mode)
       }
 
     DEBUG(D_any)
-      {
       if (wildcard)
         debug_printf("listening on all interfaces (IPv%c) port %d\n",
-          (af == AF_INET6)? '6' : '4', ipa->port);
+          af == AF_INET6 ? '6' : '4', ipa->port);
       else
         debug_printf("listening on %s port %d\n", ipa->address, ipa->port);
-      }
+
+#ifdef TCP_FASTOPEN
+    if (setsockopt(listen_sockets[sk], SOL_TCP, TCP_FASTOPEN, &smtp_connect_backlog,
+		    sizeof(smtp_connect_backlog)))
+      log_write(0, LOG_MAIN|LOG_PANIC, "failed to set socket FASTOPEN: %s",
+	strerror(errno));
+#endif
 
     /* Start listening on the bound socket, establishing the maximum backlog of
     connections that is allowed. On success, continue to the next address. */
@@ -1487,8 +1489,8 @@ if (daemon_listen && !inetd_wait_mode)
 
     if (!check_special_case(errno, addresses, ipa, TRUE))
       log_write(0, LOG_PANIC_DIE, "listen() failed on interface %s: %s",
-        wildcard? ((af == AF_INET6)? US"(any IPv6)" : US"(any IPv4)") :
-        ipa->address,
+        wildcard
+	? af == AF_INET6 ? US"(any IPv6)" : US"(any IPv4)" : ipa->address,
         strerror(errno));
 
     DEBUG(D_any) debug_printf("wildcard IPv4 listen() failed after IPv6 "

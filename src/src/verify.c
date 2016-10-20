@@ -41,7 +41,6 @@ static tree_node *dnsbl_cache = NULL;
 
 static uschar cutthrough_response(char, uschar **);
 
-static int     off = 0;       /* for use by setsockopt */
 
 
 /*************************************************
@@ -2909,9 +2908,8 @@ DEBUG(D_ident) debug_printf("doing ident callback\n");
 to the incoming interface address. If the sender host address is an IPv6
 address, the incoming interface address will also be IPv6. */
 
-host_af = (Ustrchr(sender_host_address, ':') == NULL)? AF_INET : AF_INET6;
-sock = ip_socket(SOCK_STREAM, host_af);
-if (sock < 0) return;
+host_af = Ustrchr(sender_host_address, ':') == NULL ? AF_INET : AF_INET6;
+if ((sock = ip_socket(SOCK_STREAM, host_af)) < 0) return;
 
 if (ip_bind(sock, host_af, interface_address, 0) < 0)
   {
@@ -2920,19 +2918,15 @@ if (ip_bind(sock, host_af, interface_address, 0) < 0)
   goto END_OFF;
   }
 
-if (ip_connect(sock, host_af, sender_host_address, port, rfc1413_query_timeout)
-     < 0)
+if (ip_connect(sock, host_af, sender_host_address, port,
+		rfc1413_query_timeout, TRUE) < 0)
   {
   if (errno == ETIMEDOUT && LOGGING(ident_timeout))
-    {
     log_write(0, LOG_MAIN, "ident connection to %s timed out",
       sender_host_address);
-    }
   else
-    {
     DEBUG(D_ident) debug_printf("ident connection to %s failed: %s\n",
       sender_host_address, strerror(errno));
-    }
   goto END_OFF;
   }
 

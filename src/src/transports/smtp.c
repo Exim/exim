@@ -124,6 +124,8 @@ optionlist smtp_transport_options[] = {
   { "hosts_try_dane",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
 #endif
+  { "hosts_try_fastopen",   opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_try_fastopen) },
 #ifndef DISABLE_PRDR
   { "hosts_try_prdr",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_prdr) },
@@ -209,6 +211,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_try_dane */
   NULL,                /* hosts_require_dane */
 #endif
+  NULL,                /* hosts_try_fastopen */
 #ifndef DISABLE_PRDR
   US"*",               /* hosts_try_prdr */
 #endif
@@ -286,7 +289,6 @@ static uschar *smtp_command;   /* Points to last cmd for error messages */
 static uschar *mail_command;   /* Points to MAIL cmd for error messages */
 static BOOL    update_waiting; /* TRUE to update the "wait" database */
 static BOOL    pipelining_active; /* current transaction is in pipe mode */
-static int     off = 0;       /* for use by setsockopt */
 
 
 /*************************************************

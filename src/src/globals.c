@@ -990,6 +990,9 @@ BOOL    no_mbox_unspool        = FALSE;
 #endif
 BOOL    no_multiline_responses = FALSE;
 
+const int on                   = 1;	/* for setsockopt */
+const int off                  = 0;
+
 uid_t   original_euid;
 gid_t   originator_gid;
 uschar *originator_login       = NULL;

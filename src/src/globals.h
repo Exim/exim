@@ -611,6 +611,9 @@ extern BOOL    no_mbox_unspool;        /* don't unlink files in /scan directory 
 #endif
 extern BOOL    no_multiline_responses; /* For broken clients */
 
+extern const int on;                   /* For setsockopt */
+extern const int off;
+
 extern optionlist optionlist_auths[];      /* These option lists are made */
 extern int     optionlist_auths_size;      /* global so that readconf can */
 extern optionlist optionlist_routers[];    /* see them for printing out   */

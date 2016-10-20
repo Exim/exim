@@ -41,10 +41,9 @@ const uschar * expint;
 uschar *iface;
 int sep = 0;
 
-if (istring == NULL) return TRUE;
+if (!istring) return TRUE;
 
-expint = expand_string(istring);
-if (expint == NULL)
+if (!(expint = expand_string(istring)))
   {
   if (expand_string_forcedfail) return TRUE;
   addr->transport_return = PANIC;
@@ -57,7 +56,7 @@ while (isspace(*expint)) expint++;
 if (*expint == 0) return TRUE;
 
 while ((iface = string_nextinlist(&expint, &sep, big_buffer,
-          big_buffer_size)) != NULL)
+          big_buffer_size)))
   {
   if (string_is_ip_address(iface, NULL) == 0)
     {
@@ -72,7 +71,7 @@ while ((iface = string_nextinlist(&expint, &sep, big_buffer,
     break;
   }
 
-if (iface != NULL) *interface = string_copy(iface);
+if (iface) *interface = string_copy(iface);
 return TRUE;
 }
 
@@ -152,8 +151,8 @@ int dscp_value;
 int dscp_level;
 int dscp_option;
 int sock;
-int on = 1;
 int save_errno = 0;
+BOOL fastopen = FALSE;
 
 #ifndef DISABLE_EVENT
 deliver_host_address = host->address;
@@ -186,6 +185,10 @@ if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
     (void) setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value));
   }
 
+#ifdef TCP_FASTOPEN
+if (verify_check_given_host (&ob->hosts_try_fastopen, host) == OK) fastopen = TRUE;
+#endif
+
 /* Bind to a specific interface if requested. Caller must ensure the interface
 is the same type (IPv4 or IPv6) as the outgoing address. */
 
@@ -200,7 +203,7 @@ if (interface && ip_bind(sock, host_af, interface, 0) < 0)
 /* Connect to the remote host, and add keepalive to the socket before returning
 it, if requested. */
 
-else if (ip_connect(sock, host_af, host->address, port, timeout) < 0)
+else if (ip_connect(sock, host_af, host->address, port, timeout, fastopen) < 0)
   save_errno = errno;
 
 /* Either bind() or connect() failed */

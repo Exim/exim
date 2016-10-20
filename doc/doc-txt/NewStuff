@@ -54,6 +54,15 @@ Version 4.88
 14. If built with EXPERIMENTAL_QUEUEFILE, a queuefile transport, for writing
     out copies of the message spool files for use by 3rd-party scanners.
 
+15. A new option on the smtp transport, hosts_try_fastopen.  If the system
+    supports it (on Linux it must be enabled in the kernel by the sysadmin)
+    try to use RFC 7413 "TCP Fast Open".  No data is sent on the SYN segment
+    but it permits a peer that also supports the facility to send its SMTP
+    banner immediately after the SYN,ACK segment rather then waiting for
+    another ACK - so saving up to one roundtrip time.  Because it requires
+    previous communication with the peer (we save a cookie from it) this
+    will only become active on frequently-contected destinations.
+
 
 Version 4.87
 ------------

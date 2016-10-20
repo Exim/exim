@@ -226,7 +226,7 @@ extern uschar *imap_utf7_encode(uschar *, const uschar *,
 extern void    invert_address(uschar *, uschar *);
 extern int     ip_addr(void *, int, const uschar *, int);
 extern int     ip_bind(int, int, uschar *, int);
-extern int     ip_connect(int, int, const uschar *, int, int);
+extern int     ip_connect(int, int, const uschar *, int, int, BOOL);
 extern int     ip_connectedsocket(int, const uschar *, int, int,
                  int, host_item *, uschar **);
 extern int     ip_get_address_family(int);

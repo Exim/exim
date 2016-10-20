@@ -81,7 +81,8 @@ returned from EXIM_DBOPEN
 no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (x@y)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... 127.0.0.1 in hosts_try_fastopen? no (option unset)
+connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
@@ -112,7 +113,8 @@ returned from EXIM_DBOPEN
 no retry data available
 V4NET.0.0.0 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0] (x@y)
-Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... failed: Network Error
+Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... V4NET.0.0.0 in hosts_try_fastopen? no (option unset)
+failed: Network Error
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0] for x@y: result DEFER

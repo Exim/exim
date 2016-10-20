@@ -23986,9 +23986,28 @@ unauthenticated. See also &%hosts_require_auth%&, and chapter
 .cindex CHUNKING "enabling, in client"
 .cindex BDAT "SMTP command"
 .cindex "RFC 3030" "CHUNKING"
-This option provides a list of server to which, provided they announce
+This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
 BDAT will not be used in conjuction with a transport filter.
+.wen
+
+.new
+.option hosts_try_fastopen smtp "host list!!" unset
+.option "fast open, TCP" "enabling, in client"
+.option "TCP Fast Open" "enabling, in client"
+.option "RFC 7413" "TCP Fast Open"
+This option provides a list of servers to which, provided
+the facility is supported by this system, Exim will attempt to
+perform a TCP Fast Open.
+No data is sent on the SYN segment but, if the remote server also
+supports the facility, it can send its SMTP banner immediately after
+the SYN,ACK segment.  This can save up to one round-trip time.
+
+The facility is only active for previously-contacted servers,
+as the initiator must present a cookie in the SYN segment.
+
+On (at least some) current Linux distributions the facility must be enabled
+in the kernel by the sysadmin before the support is usable.
 .wen
 
 .option hosts_try_prdr smtp "host list&!!" *
