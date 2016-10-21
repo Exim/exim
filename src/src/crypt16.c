@@ -44,31 +44,33 @@ static void dummy(int x) { dummy(x-1); }
 #include <crypt.h>
 #endif
 
-char *crypt16(char *key, char *salt)
+char *
+crypt16(char *key, char *salt)
 {
-       static char res[25];
-       static char s2[3];
-       char *p;
+static char res[25];	/* Not threadsafe; like crypt() */
+static char s2[3];
+char *p;
 
-       /* Clear the string of any previous data */
-       memset (res, 0, sizeof (res));
+/* Clear the string of any previous data */
+memset (res, 0, sizeof (res));
 
-       /* crypt the first part */
-       p = crypt (key, salt);
-       strncpy (res, p, 13);
+/* crypt the first part */
+if (!(p = crypt (key, salt))) return NULL;
+strncpy (res, p, 13);
 
-       if (strlen (key) > 8)
-       {
-               /* crypt the rest
-                * the first two characters of the first block (not counting
-                * the salt) make up the new salt */
-               strncpy (s2, &(res[2]), 2);
-               p = crypt (&(key[8]), s2);
-               strncpy (&(res[13]), &(p[2]), 11);
-               memset (s2, 0, sizeof (s2));
-       }
+if (strlen (key) > 8)
+  {
+  /* crypt the rest
+   * the first two characters of the first block (not counting
+   * the salt) make up the new salt */
 
-       return (res);
+  strncpy (s2, res+2, 2);
+  p = crypt (key+8, s2);
+  strncpy (res+13, p+2, 11);
+  memset (s2, 0, sizeof(s2));
+  }
+
+return (res);
 }
 #endif
 
