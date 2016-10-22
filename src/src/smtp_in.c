@@ -1376,8 +1376,8 @@ Returns:     a string describing the connection
 uschar *
 smtp_get_connection_info(void)
 {
-uschar *hostname = (sender_fullhost == NULL)?
-  sender_host_address : sender_fullhost;
+const uschar * hostname = sender_fullhost
+  ? sender_fullhost : sender_host_address;
 
 if (host_checking)
   return string_sprintf("SMTP connection from %s", hostname);

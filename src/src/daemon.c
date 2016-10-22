@@ -161,23 +161,20 @@ DEBUG(D_any) debug_printf("Connection request from %s port %d\n",
 input stream. These operations fail only the exceptional circumstances. Note
 that never_error() won't use smtp_out if it is NULL. */
 
-smtp_out = fdopen(accept_socket, "wb");
-if (smtp_out == NULL)
+if (!(smtp_out = fdopen(accept_socket, "wb")))
   {
   never_error(US"daemon: fdopen() for smtp_out failed", US"", errno);
   goto ERROR_RETURN;
   }
 
-dup_accept_socket = dup(accept_socket);
-if (dup_accept_socket < 0)
+if ((dup_accept_socket = dup(accept_socket)) < 0)
   {
   never_error(US"daemon: couldn't dup socket descriptor",
     US"Connection setup failed", errno);
   goto ERROR_RETURN;
   }
 
-smtp_in = fdopen(dup_accept_socket, "rb");
-if (smtp_in == NULL)
+if (!(smtp_in = fdopen(dup_accept_socket, "rb")))
   {
   never_error(US"daemon: fdopen() for smtp_in failed",
     US"Connection setup failed", errno);
@@ -293,7 +290,6 @@ if ((max_for_this_host > 0) &&
   int other_host_count = 0;    /* keep a count of non matches to optimise */
 
   for (i = 0; i < smtp_accept_max; ++i)
-    {
     if (smtp_slots[i].host_address != NULL)
       {
       if (Ustrcmp(sender_host_address, smtp_slots[i].host_address) == 0)
@@ -309,7 +305,6 @@ if ((max_for_this_host > 0) &&
          ((smtp_accept_count - other_host_count) < max_for_this_host))
        break;
       }
-    }
 
   if (host_accept_count >= max_for_this_host)
     {
@@ -534,7 +529,7 @@ if (pid == 0)
       /*XXX should we pause briefly, hoping that the client will be the
       active TCP closer hence get the TCP_WAIT endpoint? */
       DEBUG(D_receive) debug_printf("SMTP>>(close on process exit)\n");
-      _exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
+      _exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
       }
 
     /* Show the recipients when debugging */
@@ -590,15 +585,13 @@ if (pid == 0)
     very long-lived connections from scanning appliances where this is not the
     best strategy. In such cases, queue_only_load_latch should be set false. */
 
-    local_queue_only = session_local_queue_only;
-    if (!local_queue_only && queue_only_load >= 0)
+    if (  !(local_queue_only = session_local_queue_only)
+       && queue_only_load >= 0
+       && (local_queue_only = (load_average = OS_GETLOADAVG()) > queue_only_load)
+       )
       {
-      local_queue_only = (load_average = OS_GETLOADAVG()) > queue_only_load;
-      if (local_queue_only)
-        {
-        queue_only_reason = 3;
-        if (queue_only_load_latch) session_local_queue_only = TRUE;
-        }
+      queue_only_reason = 3;
+      if (queue_only_load_latch) session_local_queue_only = TRUE;
       }
 
     /* Log the queueing here, when it will get a message id attached, but
@@ -606,23 +599,20 @@ if (pid == 0)
 
     if (local_queue_only) switch(queue_only_reason)
       {
-      case 1:
-      log_write(L_delay_delivery,
+      case 1: log_write(L_delay_delivery,
                 LOG_MAIN, "no immediate delivery: too many connections "
                 "(%d, max %d)", smtp_accept_count, smtp_accept_queue);
-      break;
+	      break;
 
-      case 2:
-      log_write(L_delay_delivery,
+      case 2: log_write(L_delay_delivery,
                 LOG_MAIN, "no immediate delivery: more than %d messages "
                 "received in one connection", smtp_accept_queue_per_connection);
-      break;
+	      break;
 
-      case 3:
-      log_write(L_delay_delivery,
+      case 3: log_write(L_delay_delivery,
                 LOG_MAIN, "no immediate delivery: load average %.2f",
                 (double)load_average/1000.0);
-      break;
+	      break;
       }
 
     /* If a delivery attempt is required, spin off a new process to handle it.
@@ -676,10 +666,8 @@ if (pid == 0)
         DEBUG(D_any) debug_printf("forked delivery process %d\n", (int)dpid);
         }
       else
-        {
         log_write(0, LOG_MAIN|LOG_PANIC, "daemon: delivery process fork "
           "failed: %s", strerror(errno));
-        }
       }
     }
   }
@@ -690,14 +678,11 @@ failed. Otherwise, keep count of the number of accepting processes and
 remember the pid for ticking off when the child completes. */
 
 if (pid < 0)
-  {
   never_error(US"daemon: accept process fork failed", US"Fork failed", errno);
-  }
 else
   {
   int i;
   for (i = 0; i < smtp_accept_max; ++i)
-    {
     if (smtp_slots[i].pid <= 0)
       {
       smtp_slots[i].pid = pid;
@@ -706,7 +691,6 @@ else
       smtp_accept_count++;
       break;
       }
-    }
   DEBUG(D_any) debug_printf("%d SMTP accept process%s running\n",
     smtp_accept_count, (smtp_accept_count == 1)? "" : "es");
   }
@@ -723,7 +707,7 @@ manifest itself as a broken pipe, so drop that one too. If the streams don't
 exist, something went wrong while setting things up. Make sure the socket
 descriptors are closed, in order to drop the connection. */
 
-if (smtp_out != NULL)
+if (smtp_out)
   {
   if (fclose(smtp_out) != 0 && errno != ECONNRESET && errno != EPIPE)
     log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fclose(smtp_out) failed: %s",
@@ -732,7 +716,7 @@ if (smtp_out != NULL)
   }
 else (void)close(accept_socket);
 
-if (smtp_in != NULL)
+if (smtp_in)
   {
   if (fclose(smtp_in) != 0 && errno != ECONNRESET && errno != EPIPE)
     log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fclose(smtp_in) failed: %s",

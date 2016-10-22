@@ -493,8 +493,7 @@ else if (Ustrcmp(exp_tls_dhparam, "none") == 0)
   }
 else if (exp_tls_dhparam[0] != '/')
   {
-  m.data = US std_dh_prime_named(exp_tls_dhparam);
-  if (m.data == NULL)
+  if (!(m.data = US std_dh_prime_named(exp_tls_dhparam)))
     return tls_error(US"No standard prime named", CS exp_tls_dhparam, NULL);
   m.size = Ustrlen(m.data);
   }
@@ -548,8 +547,7 @@ if (use_file_in_spool)
 /* Open the cache file for reading and if successful, read it and set up the
 parameters. */
 
-fd = Uopen(filename, O_RDONLY, 0);
-if (fd >= 0)
+if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
   {
   struct stat statbuf;
   FILE *fp;
@@ -624,8 +622,7 @@ if (rc < 0)
         CS filename, NULL);
 
   temp_fn = string_copy(US "%s.XXXXXXX");
-  fd = mkstemp(CS temp_fn); /* modifies temp_fn */
-  if (fd < 0)
+  if ((fd = mkstemp(CS temp_fn)) < 0)	/* modifies temp_fn */
     return tls_error(US"Unable to open temp file", strerror(errno), NULL);
   (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
 
@@ -675,23 +672,19 @@ if (rc < 0)
     }
   m.size = sz; /* shrink by 1, probably */
 
-  sz = write_to_fd_buf(fd, m.data, (size_t) m.size);
-  if (sz != m.size)
+  if ((sz = write_to_fd_buf(fd, m.data, (size_t) m.size)) != m.size)
     {
     free(m.data);
     return tls_error(US"TLS cache write D-H params failed",
         strerror(errno), NULL);
     }
   free(m.data);
-  sz = write_to_fd_buf(fd, US"\n", 1);
-  if (sz != 1)
+  if ((sz = write_to_fd_buf(fd, US"\n", 1)) != 1)
     return tls_error(US"TLS cache write D-H params final newline failed",
         strerror(errno), NULL);
 
-  rc = close(fd);
-  if (rc)
-    return tls_error(US"TLS cache write close() failed",
-        strerror(errno), NULL);
+  if ((rc = close(fd)))
+    return tls_error(US"TLS cache write close() failed", strerror(errno), NULL);
 
   if (Urename(temp_fn, filename) < 0)
     return tls_error(string_sprintf("failed to rename \"%s\" as \"%s\"",
@@ -1838,9 +1831,9 @@ if (rc != GNUTLS_E_SUCCESS)
   else
     {
     tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL);
-    gnutls_alert_send_appropriate(state->session, rc);
+    (void) gnutls_alert_send_appropriate(state->session, rc);
     millisleep(500);
-    shutdown(fileno(smtp_out), SHUT_WR);
+    shutdown(state->fd_in, SHUT_WR);
     for (rc = 1024; fgetc(smtp_in) != EOF && rc > 0; ) rc--;	/* drain skt */
     (void)fclose(smtp_out);
     (void)fclose(smtp_in);

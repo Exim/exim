@@ -2696,17 +2696,17 @@ uschar * errstr;
 hostname = string_nextinlist(&arg, &sep, NULL, 0);
 portstr = string_nextinlist(&arg, &sep, NULL, 0);
 
-if (hostname == NULL)
+if (!hostname)
   {
   *log_msgptr = US"missing destination host in \"udpsend\" modifier";
   return ERROR;
   }
-if (portstr == NULL)
+if (!portstr)
   {
   *log_msgptr = US"missing destination port in \"udpsend\" modifier";
   return ERROR;
   }
-if (arg == NULL)
+if (!arg)
   {
   *log_msgptr = US"missing datagram payload in \"udpsend\" modifier";
   return ERROR;

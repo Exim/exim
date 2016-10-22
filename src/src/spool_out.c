@@ -17,7 +17,7 @@
 *************************************************/
 
 /* This function is called immediately after errors in writing the spool, with
-errno still set. It creates and error message, depending on the circumstances.
+errno still set. It creates an error message, depending on the circumstances.
 If errmsg is NULL, it logs the message and panic-dies. Otherwise errmsg is set
 to point to the message, and -1 is returned. This function makes the code of
 spool_write_header() a bit neater.
@@ -36,22 +36,21 @@ static int
 spool_write_error(int where, uschar **errmsg, uschar *s, uschar *temp_name,
   FILE *f)
 {
-uschar *msg = (where == SW_RECEIVING)?
-  string_sprintf("spool file %s error while receiving from %s: %s", s,
-    (sender_fullhost != NULL)? sender_fullhost : sender_ident,
-    strerror(errno))
-  :
-  string_sprintf("spool file %s error while %s: %s", s,
-    (where == SW_DELIVERING)? "delivering" : "modifying",
-    strerror(errno));
+uschar *msg = where == SW_RECEIVING
+  ? string_sprintf("spool file %s error while receiving from %s: %s", s,
+      sender_fullhost ? sender_fullhost : sender_ident,
+      strerror(errno))
+  : string_sprintf("spool file %s error while %s: %s", s,
+      where == SW_DELIVERING ? "delivering" : "modifying",
+      strerror(errno));
 
-if (temp_name != NULL) Uunlink(temp_name);
-if (f != NULL) (void)fclose(f);
+if (temp_name) Uunlink(temp_name);
+if (f) (void)fclose(f);
 
-if (errmsg == NULL)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", msg);
-else
+if (errmsg)
   *errmsg = msg;
+else
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", msg);
 
 return -1;
 }
