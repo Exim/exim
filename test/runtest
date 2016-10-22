@@ -2602,6 +2602,7 @@ else
   print "Unable to extract exim_user from binary.\n";
   print "Check if Exim refused to run; if so, consider:\n";
   print "  TRUSTED_CONFIG_LIST ALT_CONFIG_PREFIX WHITELIST_D_MACROS\n";
+  print "If debug permission denied, are you in the exim group?\n";
   die "Failing to get information from binary.\n";
   }
 
