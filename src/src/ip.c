@@ -224,7 +224,7 @@ callout_address = string_sprintf("[%s]:%d", address, port);
 sigalrm_seen = FALSE;
 if (timeout > 0) alarm(timeout);
 
-#ifdef TCP_FASTOPEN
+#if defined(TCP_FASTOPEN) && defined(MSG_FASTOPEN)
 /* TCP Fast Open, if the system has a cookie from a previous call to
 this peer, can send data in the SYN packet.  The peer can send data
 before it gets our ACK of its SYN,ACK - the latter is useful for
