@@ -18,7 +18,7 @@
 >>> callout cache: no domain record found for dane256ee.test.ex
 >>> callout cache: no address record found for CALLER@dane256ee.test.ex
 >>> interface=NULL port=1225
->>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:1225 ... ip4.ip4.ip4.ip4 >>> connected
+>>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:1225 ... >>> connected
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=thishost.test.ex address=127.0.0.1

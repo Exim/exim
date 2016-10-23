@@ -1046,11 +1046,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
-    if (/^((>>> )?Connecting to .* )in hosts_try_fastopen\? no \(option unset\)$/)
+    if (s/\S+ in hosts_try_fastopen\? no \(option unset\)\n$//)
       {
-      my $p = $1;
-      $_ = <IN>;
-      s/^/$p/;
+      $_ .= <IN>
       }
 
     # When Exim is checking the size of directories for maildir, it uses
