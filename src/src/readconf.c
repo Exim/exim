@@ -762,6 +762,9 @@ due to conflicts with other common macros. */
 #ifdef SUPPORT_SOCKS
   macro_create(US"_HAVE_SOCKS", US"y", FALSE, TRUE);
 #endif
+#ifdef TCP_FASTOPEN
+  macro_create(US"_HAVE_TCP_FASTOPEN", US"y", FALSE, TRUE);
+#endif
 #ifdef EXPERIMENTAL_LMDB
   macro_create(US"_HAVE_LMDB", US"y", FALSE, TRUE);
 #endif

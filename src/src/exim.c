@@ -840,6 +840,9 @@ fprintf(f, "Support for:");
 #ifdef SUPPORT_SOCKS
   fprintf(f, " SOCKS");
 #endif
+#ifdef TCP_FASTOPEN
+  fprintf(f, " TCP_Fast_Open");
+#endif
 #ifdef EXPERIMENTAL_LMDB
   fprintf(f, " Experimental_LMDB");
 #endif
