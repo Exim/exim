@@ -1045,6 +1045,14 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Spool filesystem free space changes on different systems.
     s/^((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
+    # Not all platforms support TCP Fast Open, and the compile omits the check
+    if (/^((>>> )?Connecting to .* )in hosts_try_fastopen\? no \(option unset\)$/)
+      {
+      my $p = $1;
+      $_ = <IN>;
+      s/^/$p/;
+      }
+
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
     # of the files that are obtained using readdir() varies from system to

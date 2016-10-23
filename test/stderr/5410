@@ -49,8 +49,7 @@ considering: $local_part
   expanding: $local_part
      result: userx
 domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen? no (option unset)
-connected
+Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... 127.0.0.1 connected
 considering: $primary_hostname
   expanding: $primary_hostname
      result: myhost.test.ex
@@ -314,8 +313,7 @@ considering: $local_part
   expanding: $local_part
      result: usery
 domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen? no (option unset)
-connected
+Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... 127.0.0.1 connected
 considering: $primary_hostname
   expanding: $primary_hostname
      result: myhost.test.ex
@@ -546,8 +544,7 @@ considering: $local_part
   expanding: $local_part
      result: usery
 domain.com in "*"? yes (matched "*")
-Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... 127.0.0.1 in hosts_try_fastopen? no (option unset)
-connected
+Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... 127.0.0.1 connected
 considering: $primary_hostname
   expanding: $primary_hostname
      result: myhost.test.ex
