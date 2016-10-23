@@ -240,7 +240,7 @@ if (fastopen)
      )
     {
     DEBUG(D_transport)
-      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl");
+      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
     rc = connect(sock, s_ptr, s_len);
     }
   }

@@ -1460,7 +1460,7 @@ if (daemon_listen && !inetd_wait_mode)
 #ifdef TCP_FASTOPEN
     if (setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
 		    &smtp_connect_backlog, sizeof(smtp_connect_backlog)))
-      DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s", strerror(errno));
+      DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s\n", strerror(errno));
 #endif
 
     /* Start listening on the bound socket, establishing the maximum backlog of

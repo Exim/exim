@@ -4653,20 +4653,22 @@ while (done <= 0)
     there may be a delay in this, re-check for a synchronization error
     afterwards, unless pipelining was advertised. */
 
-    if (recipients_discarded) rc = DISCARD; else
-      {
-      rc = acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg,
-        &log_msg);
-      if (rc == OK && !pipelining_advertised && !check_sync())
+    if (recipients_discarded)
+      rc = DISCARD;
+    else
+      if (  (rc = acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg,
+		    &log_msg)) == OK
+	 && !pipelining_advertised && !check_sync())
         goto SYNC_FAILURE;
-      }
 
     /* The ACL was happy */
 
     if (rc == OK)
       {
-      if (user_msg == NULL) smtp_printf("250 Accepted\r\n");
-        else smtp_user_msg(US"250", user_msg);
+      if (user_msg)
+        smtp_user_msg(US"250", user_msg);
+      else
+        smtp_printf("250 Accepted\r\n");
       receive_add_recipient(recipient, -1);
 
       /* Set the dsn flags in the recipients_list */
@@ -4682,8 +4684,10 @@ while (done <= 0)
 
     else if (rc == DISCARD)
       {
-      if (user_msg == NULL) smtp_printf("250 Accepted\r\n");
-        else smtp_user_msg(US"250", user_msg);
+      if (user_msg)
+        smtp_user_msg(US"250", user_msg);
+      else
+        smtp_printf("250 Accepted\r\n");
       rcpt_fail_count++;
       discarded = TRUE;
       log_write(0, LOG_MAIN|LOG_REJECT, "%s F=<%s> RCPT %s: "
@@ -4797,9 +4801,7 @@ while (done <= 0)
       }
 
     if (chunking_state > CHUNKING_OFFERED)
-      {				/* No predata ACL or go-ahead output for BDAT */
-      rc = OK;
-      }
+      rc = OK;			/* No predata ACL or go-ahead output for BDAT */
     else
       {
       /* If there is an ACL, re-check the synchronization afterwards, since the

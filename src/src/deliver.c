@@ -2360,7 +2360,7 @@ if ((pid = fork()) == 0)
 	     )
 	 )
       )
-      log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s\n",
+      log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s",
 	ret == -1 ? strerror(errno) : "short write");
 
     /* Now any messages */
@@ -2371,7 +2371,7 @@ if ((pid = fork()) == 0)
       if(  (ret = write(pfd[pipe_write], &message_length, sizeof(int))) != sizeof(int)
         || message_length > 0  && (ret = write(pfd[pipe_write], s, message_length)) != message_length
 	)
-        log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s\n",
+        log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s",
 	  ret == -1 ? strerror(errno) : "short write");
       }
     }
