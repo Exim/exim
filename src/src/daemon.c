@@ -385,10 +385,10 @@ if (pid == 0)
   likely what it depends on.) */
 
   smtp_active_hostname = primary_hostname;
-  if (raw_active_hostname != NULL)
+  if (raw_active_hostname)
     {
-    uschar *nah = expand_string(raw_active_hostname);
-    if (nah == NULL)
+    uschar * nah = expand_string(raw_active_hostname);
+    if (!nah)
       {
       if (!expand_string_forcedfail)
         {
@@ -402,7 +402,7 @@ if (pid == 0)
         _exit(EXIT_FAILURE);
         }
       }
-    else if (nah[0] != 0) smtp_active_hostname = nah;
+    else if (*nah) smtp_active_hostname = nah;
     }
 
   /* Initialize the queueing flags */
@@ -518,11 +518,15 @@ if (pid == 0)
       }
     else
       {
-      int i;
-      uschar * buf[128];
-      mac_smtp_fflush();
-      /* drain socket, for clean TCP FINs */
-      for(i = 16; read(fileno(smtp_in), buf, sizeof(buf)) > 0 && i > 0; ) i--;
+      if (smtp_out)
+	{
+	int i;
+	uschar buf[128];
+
+	mac_smtp_fflush();
+	/* drain socket, for clean TCP FINs */
+	for(i = 16; read(fileno(smtp_in), buf, sizeof(buf)) > 0 && i > 0; ) i--;
+	}
       search_tidyup();
       smtp_log_no_mail();                 /* Log no mail if configured */
 

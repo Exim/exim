@@ -120,6 +120,12 @@ PP/01 Changed default Diffie-Hellman parameters to be Exim-specific, created
 PP/02 Unbreak build via pkg-config with new hash support when crypto headers
       are not in the system include path.
 
+JH/31 Fix longstanding bug with aborted TLS server connection handling.  Under
+      GnuTLS, when a sennsion startup failed (eg because the client disconnected)
+      Exim did stdio operations after fclose.  This was exposed by a recent
+      change which nulled out the file handle after the fclose.
+      
+
 
 Exim version 4.87
 -----------------

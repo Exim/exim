@@ -1827,13 +1827,17 @@ if (rc != GNUTLS_E_SUCCESS)
   until the server times out. */
 
   if (sigalrm_seen)
+    {
     tls_error(US"gnutls_handshake", "timed out", NULL);
+    gnutls_db_remove_session(state->session);
+    }
   else
     {
     tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL);
     (void) gnutls_alert_send_appropriate(state->session, rc);
+    gnutls_deinit(state->session);
     millisleep(500);
-    shutdown(state->fd_in, SHUT_WR);
+    shutdown(state->fd_out, SHUT_WR);
     for (rc = 1024; fgetc(smtp_in) != EOF && rc > 0; ) rc--;	/* drain skt */
     (void)fclose(smtp_out);
     (void)fclose(smtp_in);
