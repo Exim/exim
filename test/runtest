@@ -3145,8 +3145,15 @@ if ($parm_ipv6 =~ /^[\da-f]/)
 
 chomp($temp = `hostname`);
 die "'hostname' didn't return anything\n" unless defined $temp and length $temp;
-$parm_hostname = (gethostbyname($temp))[0];
-$parm_hostname = "no.host.name.found" unless defined $parm_hostname and length $parm_hostname;
+if ($temp =~ /\./)
+  {
+  $parm_hostname = $temp;
+  }
+else
+  {
+  $parm_hostname = (gethostbyname($temp))[0];
+  $parm_hostname = "no.host.name.found" unless defined $parm_hostname and length $parm_hostname;
+  }
 print "Hostname is $parm_hostname\n";
 
 if ($parm_hostname !~ /\./)
