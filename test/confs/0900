@@ -28,8 +28,10 @@ queue_only
 smtp_receive_timeout = 2s
 log_selector = +received_recipients
 
+.ifdef _OPT_MAIN_TLS_CERTIFICATE
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+.endif
 
 ALLOW
 
