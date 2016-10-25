@@ -239,8 +239,8 @@ if (fastopen)
      && errno == EOPNOTSUPP
      )
     {
-    log_write(0, LOG_MAIN|LOG_PANIC,
-	      "Tried TCP Fast Open but apparently not enabled by sysctl");
+    DEBUG(D_transport)
+      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl");
     rc = connect(sock, s_ptr, s_len);
     }
   }
