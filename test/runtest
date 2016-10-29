@@ -1049,7 +1049,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     if (s/( \{with \$received_protocol)}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)
       {
       $_ .= <IN>;
-      s/\t(\}\}\{Exim)/$1/;
+      s/\s+(?=\}\}\{Exim)//;
       }
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
@@ -1059,7 +1059,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/ \.\.\. >>> / ... /;
       }
 
-    next if /^setsockopt FASTOPEN: Protocol not available$/;
+    next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
