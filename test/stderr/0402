@@ -46,8 +46,7 @@ considering: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
 considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
-	}}(Exim $version_number)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -55,8 +54,7 @@ considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
      result: false
    scanning: from $sender_rcvhost
 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
-	}}(Exim $version_number)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -66,22 +64,19 @@ considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 	
    skipping: result is not used
 considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
-	}}(Exim $version_number)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
   condition: def:sender_ident
      result: true
 considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
-	}}(Exim $version_number)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
 considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
-	}}(Exim $version_number)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -92,8 +87,7 @@ considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name
   condition: def:sender_helo_name
      result: false
    scanning: (helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
-	}}(Exim $version_number)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}
@@ -146,8 +140,7 @@ considering: (envelope-from <$sender_address>)
    skipping: result is not used
   expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} ${if def:tls_cipher {($tls_cipher)
-	}}(Exim $version_number)
+	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol	}}(Exim $version_number)
 	${if def:sender_address {(envelope-from <$sender_address>)
 	}}id $message_exim_id${if def:received_for {
 	for $received_for}}

@@ -1045,11 +1045,21 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Spool filesystem free space changes on different systems.
     s/^((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
+    # Non-TLS builds have different expansions for received_header_text
+    if (s/( \{with \$received_protocol)}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)
+      {
+      $_ .= <IN>;
+      s/\t(\}\}\{Exim)/$1/;
+      }
+
     # Not all platforms support TCP Fast Open, and the compile omits the check
     if (s/\S+ in hosts_try_fastopen\? no \(option unset\)\n$//)
       {
-      $_ .= <IN>
+      $_ .= <IN>;
+      s/ \.\.\. >>> / ... /;
       }
+
+    next if /^setsockopt FASTOPEN: Protocol not available$/;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
