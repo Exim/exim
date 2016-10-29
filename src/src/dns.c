@@ -450,16 +450,17 @@ null_return:
 }
 
 
-/* Extract the AUTHORITY information from the answer. If the
-answer isn't authoritive (AA not set), we do not extract anything.
+/* Extract the AUTHORITY information from the answer. If the answer isn't
+authoritive (AA not set), we do not extract anything.
 
-The AUTHORITIVE section contains NS records if
-the name in question was found, it contains a SOA record
-otherwise. (This is just from experience and some tests, is there
-some spec?)
+The AUTHORITIVE section contains NS records if the name in question was found,
+it contains a SOA record otherwise. (This is just from experience and some
+tests, is there some spec?)
 
-We've cycle through the AUTHORITY section, since it may contain
-other records (e.g. NSEC3) too.  */
+Scan the whole AUTHORITY section, since it may contain other records
+(e.g. NSEC3) too.
+
+Return: name for the authority, in an allocated string, or NULL if none found */
 
 static const uschar *
 dns_extract_auth_name(const dns_answer * dnsa)	/* FIXME: const dns_answer */
@@ -468,11 +469,11 @@ dns_scan dnss;
 dns_record * rr;
 const HEADER * h = (const HEADER *) dnsa->answer;
 
-if (!h->nscount || !h->aa) return NULL;
-for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
-     rr;
-     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-  if (rr->type == (h->ancount ? T_NS : T_SOA)) return rr->name;
+if (h->nscount && h->aa)
+  for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
+       rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+    if (rr->type == (h->ancount ? T_NS : T_SOA))
+      return string_copy(rr->name);
 return NULL;
 }
 
@@ -534,7 +535,7 @@ dns_set_insecure(dns_answer * dnsa)
 {
 #ifndef DISABLE_DNSSEC
 HEADER * h = (HEADER *)dnsa->answer;
-h->ad = 0;
+h->aa = h->ad = 0;
 #endif
 }
 
@@ -885,8 +886,7 @@ for (i = 0; i < 10; i++)
 
   cname_rr.data = type_rr.data = NULL;
   for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
-       rr;
-       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+       rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (rr->type == type)
       {
       if (type_rr.data == NULL) type_rr = *rr;
@@ -1090,8 +1090,7 @@ switch (type)
 	    dnsa->answerlen = MAXPACKET;
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
-	   rr;
-	   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
 	  )
 	if (rr->type != T_SOA) continue;
 	else if (strcmpic(rr->name, US"") == 0 ||
@@ -1126,8 +1125,7 @@ switch (type)
       might make stricter assertions than its parent domain. */
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
-	   rr;
-	   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_SRV)
+	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_SRV)
 	{
 	const uschar * p = rr->data;
 
