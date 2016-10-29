@@ -731,11 +731,11 @@ typedef struct search_cache {
 uncompressed, but the data pointer is into the raw data. */
 
 typedef struct {
-  uschar  name[DNS_MAXNAME];      /* domain name */
-  int     type;                   /* record type */
-  unsigned short ttl;		  /* time-to-live, seconds */
-  int     size;                   /* size of data */
-  uschar *data;                   /* pointer to data */
+  uschar        name[DNS_MAXNAME];      /* domain name */
+  int           type;                   /* record type */
+  unsigned short ttl;		        /* time-to-live, seconds */
+  int           size;                   /* size of data */
+  const uschar *data;                   /* pointer to data */
 } dns_record;
 
 /* Structure for holding the result of a DNS query. */
@@ -749,9 +749,9 @@ typedef struct {
 block. */
 
 typedef struct {
-  int     rrcount;                /* count of RRs in the answer */
-  uschar *aptr;                   /* pointer in the answer while scanning */
-  dns_record srr;                 /* data from current record in scan */
+  int            rrcount;         /* count of RRs in the answer */
+  const uschar *aptr;             /* pointer in the answer while scanning */
+  dns_record     srr;             /* data from current record in scan */
 } dns_scan;
 
 /* Structure for holding a chain of IP addresses that are extracted from

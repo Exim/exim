@@ -1283,7 +1283,6 @@ acl_verify_csa(const uschar *domain)
 {
 tree_node *t;
 const uschar *found;
-uschar *p;
 int priority, weight, port;
 dns_answer dnsa;
 dns_scan dnss;
@@ -1361,14 +1360,13 @@ switch (dns_special_lookup(&dnsa, domain, T_CSA, &found))
 /* Scan the reply for well-formed CSA SRV records. */
 
 for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-     rr != NULL;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+     rr;
+     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == T_SRV)
   {
-  if (rr->type != T_SRV) continue;
+  const uschar * p = rr->data;
 
   /* Extract the numerical SRV fields (p is incremented) */
 
-  p = rr->data;
   GETSHORT(priority, p);
   GETSHORT(weight, p);
   GETSHORT(port, p);
@@ -1387,12 +1385,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   SRV records of their own. */
 
   if (Ustrcmp(found, domain) != 0)
-    {
-    if (port & 1)
-      return t->data.val = CSA_FAIL_EXPLICIT;
-    else
-      return t->data.val = CSA_UNKNOWN;
-    }
+    return t->data.val = port & 1 ? CSA_FAIL_EXPLICIT : CSA_UNKNOWN;
 
   /* This CSA SRV record refers directly to our domain, so we check the value
   in the weight field to work out the domain's authorization. 0 and 1 are

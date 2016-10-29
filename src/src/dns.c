@@ -309,7 +309,7 @@ else
 Return: TRUE for a bad result
 */
 static BOOL
-dnss_inc(dns_answer * dnsa, dns_scan * dnss, unsigned delta)
+dnss_inc_aptr(const dns_answer * dnsa, dns_scan * dnss, unsigned delta)
 {
 return (dnss->aptr += delta) >= dnsa->answer + dnsa->answerlen;
 }
@@ -332,9 +332,9 @@ Returns:    next dns record, or NULL when no more
 */
 
 dns_record *
-dns_next_rr(dns_answer *dnsa, dns_scan *dnss, int reset)
+dns_next_rr(const dns_answer *dnsa, dns_scan *dnss, int reset)
 {
-HEADER *h = (HEADER *)dnsa->answer;
+const HEADER * h = (const HEADER *)dnsa->answer;
 int namelen;
 
 char * trace = NULL;
@@ -363,7 +363,7 @@ if (reset != RESET_NEXT)
     if (namelen < 0) goto null_return;
     /* skip name & type & class */
     TRACE trace = "Q-skip";
-    if (dnss_inc(dnsa, dnss, namelen+4)) goto null_return;
+    if (dnss_inc_aptr(dnsa, dnss, namelen+4)) goto null_return;
     }
 
   /* Get the number of answer records. */
@@ -392,11 +392,11 @@ if (reset != RESET_NEXT)
       if (namelen < 0) goto null_return;
       /* skip name, type, class & TTL */
       TRACE trace = "A-hdr";
-      if (dnss_inc(dnsa, dnss, namelen+8)) goto null_return;
+      if (dnss_inc_aptr(dnsa, dnss, namelen+8)) goto null_return;
       GETSHORT(dnss->srr.size, dnss->aptr); /* size of data portion */
       /* skip over it */
       TRACE trace = "A-skip";
-      if (dnss_inc(dnsa, dnss, dnss->srr.size)) goto null_return;
+      if (dnss_inc_aptr(dnsa, dnss, dnss->srr.size)) goto null_return;
       }
     dnss->rrcount = reset == RESET_AUTHORITY
       ? ntohs(h->nscount) : ntohs(h->arcount);
@@ -423,11 +423,11 @@ if (namelen < 0) goto null_return;
 from the following bytes. */
 
 TRACE trace = "R-name";
-if (dnss_inc(dnsa, dnss, namelen)) goto null_return;
+if (dnss_inc_aptr(dnsa, dnss, namelen)) goto null_return;
 
 GETSHORT(dnss->srr.type, dnss->aptr);		/* Record type */
 TRACE trace = "R-class";
-if (dnss_inc(dnsa, dnss, 2)) goto null_return;	/* Don't want class */
+if (dnss_inc_aptr(dnsa, dnss, 2)) goto null_return;	/* Don't want class */
 GETLONG(dnss->srr.ttl, dnss->aptr);		/* TTL */
 GETSHORT(dnss->srr.size, dnss->aptr);		/* Size of data portion */
 dnss->srr.data = dnss->aptr;			/* The record's data follows */
@@ -466,12 +466,12 @@ dns_extract_auth_name(const dns_answer * dnsa)	/* FIXME: const dns_answer */
 {
 dns_scan dnss;
 dns_record * rr;
-HEADER * h = (HEADER *) dnsa->answer;
+const HEADER * h = (const HEADER *) dnsa->answer;
 
 if (!h->nscount || !h->aa) return NULL;
-for (rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_AUTHORITY);
+for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
      rr;
-     rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_NEXT))
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
   if (rr->type == (h->ancount ? T_NS : T_SOA)) return rr->name;
 return NULL;
 }
@@ -499,7 +499,7 @@ DEBUG(D_dns)
   debug_printf("DNSSEC support disabled at build-time; dns_is_secure() false\n");
 return FALSE;
 #else
-HEADER * h = (HEADER *) dnsa->answer;
+const HEADER * h = (const HEADER *) dnsa->answer;
 const uschar * auth_name;
 const uschar * trusted;
 
@@ -550,7 +550,7 @@ dns_is_aa(const dns_answer *dnsa)
 #ifdef DISABLE_DNSSEC
 return FALSE;
 #else
-return ((HEADER*)dnsa->answer)->aa;
+return ((const HEADER*)dnsa->answer)->aa;
 #endif
 }
 
@@ -874,7 +874,8 @@ for (i = 0; i < 10; i++)
 
   /* DNS lookup failures get passed straight back. */
 
-  if ((rc = dns_basic_lookup(dnsa, name, type)) != DNS_SUCCEED) return rc;
+  if ((rc = dns_basic_lookup(dnsa, name, type)) != DNS_SUCCEED)
+    return rc;
 
   /* We should have either records of the required type, or a CNAME record,
   or both. We need to know whether both exist for getting the fully qualified
@@ -886,22 +887,21 @@ for (i = 0; i < 10; i++)
   for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
        rr;
        rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-    {
     if (rr->type == type)
       {
       if (type_rr.data == NULL) type_rr = *rr;
       if (cname_rr.data != NULL) break;
       }
-    else if (rr->type == T_CNAME) cname_rr = *rr;
-    }
+    else if (rr->type == T_CNAME)
+      cname_rr = *rr;
 
   /* For the first time round this loop, if a CNAME was found, take the fully
   qualified name from it; otherwise from the first data record, if present. */
 
-  if (i == 0 && fully_qualified_name != NULL)
+  if (i == 0 && fully_qualified_name)
     {
-    uschar * rr_name = cname_rr.data ? cname_rr.name
-      : type_rr.data ? type_rr.name : NULL;
+    uschar * rr_name = cname_rr.data
+      ? cname_rr.name : type_rr.data ? type_rr.name : NULL;
     if (  rr_name
        && Ustrcmp(rr_name, *fully_qualified_name) != 0
        && rr_name[0] != '*'
@@ -933,9 +933,8 @@ for (i = 0; i < 10; i++)
     return DNS_FAIL;
 
   data = store_get(256);
-  datalen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256);
-  if (datalen < 0)
+  if ((datalen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
+    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256)) < 0)
     return DNS_FAIL;
   name = data;
 
@@ -1083,7 +1082,7 @@ switch (type)
       success and packet length return values.) For added safety we only reset
       the packet length if the packet header looks plausible. */
 
-      HEADER *h = (HEADER *)dnsa->answer;
+      const HEADER * h = (const HEADER *)dnsa->answer;
       if (h->qr == 1 && h->opcode == QUERY && h->tc == 0
 	  && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
 	  && ntohs(h->qdcount) == 1 && ntohs(h->ancount) == 0
@@ -1128,12 +1127,11 @@ switch (type)
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
 	   rr;
-	   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+	   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_SRV)
 	{
-	if (rr->type != T_SRV) continue;
+	const uschar * p = rr->data;
 
 	/* Extract the numerical SRV fields (p is incremented) */
-	p = rr->data;
 	GETSHORT(priority, p);
 	GETSHORT(weight, p);	weight = weight; /* compiler quietening */
 	GETSHORT(port, p);

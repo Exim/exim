@@ -2777,17 +2777,15 @@ host which is not the primary hostname. */
 last = NULL;    /* Indicates that not even the first item is filled yet */
 
 for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-     rr != NULL;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+     rr;
+     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
   {
   int precedence;
   int weight = 0;        /* For SRV records */
   int port = PORT_NONE;
-  uschar *s;             /* MUST be unsigned for GETSHORT */
+  const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
   uschar data[256];
 
-  if (rr->type != ind_type) continue;
-  s = rr->data;
   GETSHORT(precedence, s);      /* Pointer s is advanced */
 
   /* For MX records, we use a random "weight" which causes multiple records of
