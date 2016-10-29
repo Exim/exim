@@ -1046,11 +1046,19 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^((?:spool|log) directory space =) -?\d+K (inodes =)\s*-?\d+/$1 nnnnnK $2 nnnnn/;
 
     # Non-TLS builds have different expansions for received_header_text
-    if (s/( \{with \$received_protocol)}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)
+    if (s/(with \$received_protocol)\}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)
       {
       $_ .= <IN>;
-      s/\s+(?=\}\}\{Exim)//;
+      s/\s+\}\}(?=\(Exim )/\}\} /;
       }
+    if (/^  condition: def:tls_cipher$/)
+      {
+      <IN>; <IN>; <IN>; <IN>; <IN>; <IN>;
+      <IN>; <IN>; <IN>; <IN>; <IN>; next;
+      }
+
+    # Not all platforms build with DKIM enabled
+    next if /^PDKIM >> Body data for hash, canonicalized/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
     if (s/\S+ in hosts_try_fastopen\? no \(option unset\)\n$//)

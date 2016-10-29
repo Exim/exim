@@ -41,7 +41,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>
 >>Headers received:
 From: unqualified
 
