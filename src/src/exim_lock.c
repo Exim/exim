@@ -357,8 +357,7 @@ for (j = 0; j < lock_retries; j++)
 
   /* Open the file for writing. */
 
-  fd = open(filename, O_RDWR + O_APPEND);
-  if (fd < 0)
+  if ((fd = open(filename, O_RDWR + O_APPEND)) < 0)
     {
     printf("exim_lock: failed to open %s for writing: %s\n", filename,
       strerror(errno));
@@ -377,7 +376,6 @@ for (j = 0; j < lock_retries; j++)
   a timeout changes it to blocking. */
 
   if (!use_mbx && (use_fcntl || use_flock))
-    {
     if (apply_lock(fd, F_WRLCK, use_fcntl, lock_fcntl_timeout, use_flock,
         lock_flock_timeout) >= 0)
       {
@@ -388,8 +386,8 @@ for (j = 0; j < lock_retries; j++)
         }
       break;
       }
-    else goto RETRY;   /* Message already output */
-    }
+    else
+      goto RETRY;   /* Message already output */
 
   /* Lock using MBX rules. This is complicated and is documented with the
   source of the c-client library that goes with Pine and IMAP. What has to
@@ -586,12 +584,25 @@ else
 if (restore_times)
   {
   struct stat strestore;
+#ifdef EXIM_HAVE_OPENAT
+  int fd = open(filename, O_RDWR); /* use fd for both get & restore */
+  struct timespec tt[2];
+
+  fstat(fd, &strestore);
+  i = system(command);
+  tt[0] = strestore.st_atim;
+  tt[1] = strestore.st_mtim;
+  futimens(fd, tt);
+  close(fd);
+#else
   struct utimbuf ut;
+
   stat(filename, &strestore);
   i = system(command);
   ut.actime = strestore.st_atime;
   ut.modtime = strestore.st_mtime;
   utime(filename, &ut);
+#endif
   }
 else i = system(command);
 

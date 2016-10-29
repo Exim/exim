@@ -413,7 +413,8 @@ Returns
 static int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item **recipient, struct String *header, struct String *subject, struct String *body)
 {
 const uschar *start;
-struct String to,hname,hvalue;
+struct String to, hname;
+struct String hvalue = {NULL, 0};
 int capacity;
 string_item *new;
 
@@ -422,6 +423,7 @@ if (Ustrncmp(uri,"mailto:",7))
   filter->errmsg=US "Unknown URI scheme";
   return 0;
   }
+
 uri+=7;
 if (*uri && *uri!='?')
   for (;;)
