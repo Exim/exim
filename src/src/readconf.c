@@ -567,6 +567,7 @@ macro_create(const uschar * name, const uschar * val,
 unsigned namelen = Ustrlen(name);
 macro_item * m = store_get(sizeof(macro_item) + namelen);
 
+/* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val) */
 if (!macros)
   {
   macros = m;
@@ -865,8 +866,14 @@ readconf_options_from_list(optionlist * opts, unsigned nopt, uschar * group)
 int i;
 const uschar * s;
 
-/* Walk the array backwards to get substring-conflict names */
-for (i = nopt-1; i >= 0; i--) if (*(s = opts[i].name) && *s != '*')
+/* The 'previously-defined-substring' rule for macros in config file
+lines is done so for these builtin macros: we know that the table
+we source from is in strict alpha order, hence the builtins portion
+of the macros list is in reverse-alpha (we prepend them) - so longer
+macros that have substrings are always discovered first during
+expansion. */
+
+for (i = 0; i < nopt; i++)  if (*(s = opts[i].name) && *s != '*')
   macro_create(string_sprintf("_OPT_%T_%T", group, s), US"y", FALSE, TRUE);
 }
 
@@ -1009,6 +1016,7 @@ for (;;)
     for (t = s; (p = CUstrchr(t, '_')); t = p+1)
       if (c = p[1], c == 'O' || c == 'D' || c == 'H')
 	{
+/* fprintf(stderr, "%s: builtins create triggered by '%s'\n", __FUNCTION__, s); */
 	macros_create_builtin();
 	break;
 	}
@@ -1028,6 +1036,7 @@ for (;;)
       int moveby;
       int replen = Ustrlen(m->replacement);
 
+/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, t) */
       /* Expand the buffer if necessary */
 
       while (newlen - m->namelen + replen + 1 > big_buffer_size)
