@@ -3614,7 +3614,12 @@ closedir(DIR);
 # contains ****. We open input from the terminal so that we can read responses
 # to prompts.
 
-open(T, "/dev/tty") || tests_exit(-1, "Failed to open /dev/tty: $!");
+if (not $force_continue) {
+  # runtest needs to interact if we're not in continue
+  # mode. It does so by communicate to /dev/tty
+  open(T, "/dev/tty") or tests_exit(-1, "Failed to open /dev/tty: $!");
+}
+
 
 print "\nPress RETURN to run the tests: ";
 $_ = $force_continue ? "c" : <T>;
