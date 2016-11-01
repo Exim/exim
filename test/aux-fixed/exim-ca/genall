@@ -4,6 +4,8 @@
 set -e
 set -x
 
+clica --help >/dev/null 2>&1
+
 echo Ensure time is set to 2012/11/01 12:34
 echo use -  date -u 110112342012
 echo hit return when ready
@@ -13,7 +15,7 @@ do
     idir="example.$tld"
     rm -fr "$idir"
     clica -D "$idir" -p password -B 1024 -I -N example.$tld -F \
-	-C http://crl.example.$tld/latest.crl -O http://oscp/example.$tld/
+	-C http://crl.example.$tld/latest.crl -O http://oscp.example.$tld/
 
     clica -D example.$tld -p password -s 101 -S server1.example.$tld \
 	-8 alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex
@@ -42,8 +44,19 @@ do
     pk12util -o $CADIR/OCSP.p12 -n 'OCSP Signer' -d $CADIR -K password -W password
     openssl pkcs12 -in $CADIR/OCSP.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/OCSP.key
 
+    # also need variation from Signer
+    pk12util -o $CADIR/Signer.p12 -n 'Signing Cert' -d $CADIR -K password -W password
+    openssl pkcs12 -in $CADIR/Signer.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/Signer.key
 
     # create some index files for the ocsp responder to work with
+# tab-sep
+# 0: Revoked/Expired/Valid letter
+# 1: Expiry date (ASN1_UTCTIME)
+# 2: Revocation date
+# 3: Serial no. (unique)
+# 4: file
+# 5: DN, index
+
     cat >$CADIR/index.valid.txt <<EOF
 V	130110200751Z		65	unknown	CN=server1.example.$tld
 V	130110200751Z		66	unknown	CN=revoked1.example.$tld
@@ -62,14 +75,25 @@ R	130110200751Z	100201142709Z,superseded	cb	unknown	CN=expired2.example.$tld
 EOF
 
     # Now create all the ocsp requests and responses
-    OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -noverify"
     for server in server1 revoked1 expired1 server2 revoked2 expired2
     do
 	SPFX=example.$tld/$server.example.$tld/$server.example.$tld
-	openssl ocsp -issuer $CADIR/Signer.pem -cert $SPFX.pem -reqout $SPFX.ocsp.req
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 3652 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.good.resp
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 30   -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.dated.resp
-	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -ndays 3652 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.revoked.resp
+	openssl ocsp -issuer $CADIR/Signer.pem -cert $SPFX.pem -no_nonce -sha256 -reqout $SPFX.ocsp.req
+
+	OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -noverify"
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.good.resp
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 30   -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.dated.resp
+	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.revoked.resp
+
+	OGENCOMMON="-rsigner $CADIR/Signer.pem -rkey $CADIR/Signer.key -CA $CADIR/Signer.pem -noverify"
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signer.good.resp
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 30   -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signer.dated.resp
+	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signer.revoked.resp
+
+	OGENCOMMON="-rsigner $CADIR/Signer.pem -rkey $CADIR/Signer.key -CA $CADIR/Signer.pem -resp_no_certs -noverify"
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signernocert.good.resp
+	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 30   -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signernocert.dated.resp
+	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signernocert.revoked.resp
     done
 done
 
