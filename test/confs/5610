@@ -1,0 +1,73 @@
+# Exim test configuration 5600
+# OCSP stapling, server
+
+CRL=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = server1.example.com
+
+# ----- Main settings -----
+
+acl_smtp_connect = check_connect
+acl_smtp_mail = check_mail
+acl_smtp_rcpt = check_recipient
+
+log_selector = +tls_peerdn
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
+tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+
+tls_verify_hosts = HOSTIPV4
+tls_try_verify_hosts = *
+tls_verify_certificates = DIR/aux-fixed/cert2
+tls_crl = CRL
+tls_ocsp_file = RETURN
+
+
+# ------ ACL ------
+
+begin acl
+
+check_connect:
+  accept   logwrite = acl_conn: ocsp in status: $tls_in_ocsp \
+    (${listextract {${eval:$tls_in_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
+
+check_mail:
+  accept   logwrite = acl_mail: ocsp in status: $tls_in_ocsp \
+    (${listextract {${eval:$tls_in_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
+
+check_recipient:
+  deny     message = certificate not verified: peerdn=$tls_peerdn
+         ! verify = certificate
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+abc:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  user = CALLER
+
+# End

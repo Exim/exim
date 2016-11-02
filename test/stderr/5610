@@ -1,0 +1,78 @@
+
+******** SERVER ********
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+daemon_smtp_port overridden by -oX:
+  <: 1225
+listening on all interfaces (IPv6) port 1225
+listening on all interfaces (IPv4) port 1225
+pid written to TESTSUITE/spool/exim-daemon.pid
+LOG: MAIN
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Listening...
+Connection request from ip4.ip4.ip4.ip4 port 51808
+1 SMTP accept process running
+Listening...
+11402 Process 11402 is handling incoming connection from [ip4.ip4.ip4.ip4]
+LOG: MAIN
+  acl_conn: ocsp in status: 0 (notreq)
+Process 11402 is ready for new message
+setting SSL CTX options: 0x1100000
+Diffie-Hellman initialized from default with 2048-bit prime
+ECDH: curve 'prime256v1'
+ECDH: enabled 'prime256v1' curve
+tls_certificate file TESTSUITE/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
+tls_privatekey file TESTSUITE/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+tls_ocsp_file TESTSUITE/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+Initialized TLS
+Added 1 certificate authorities.
+Calling SSL_accept
+SSL info: before/accept initialization
+SSL info: before/accept initialization
+Received TLS status request (OCSP stapling); have response
+SSL info: SSLv3 read client hello A
+SSL info: SSLv3 write server hello A
+SSL info: SSLv3 write certificate A
+SSL info: unknown state
+SSL info: SSLv3 write key exchange A
+SSL info: SSLv3 write certificate request A
+SSL info: SSLv3 flush data
+SSL authenticated verify ok: depth=0 SN=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
+SSL info: SSLv3 read client certificate A
+SSL info: SSLv3 read client key exchange A
+SSL info: SSLv3 read certificate verify A
+SSL info: SSLv3 read finished A
+SSL info: SSLv3 write session ticket A
+SSL info: SSLv3 write change cipher spec A
+SSL info: SSLv3 write finished A
+SSL info: SSLv3 flush data
+SSL info: SSL negotiation finished successfully
+SSL info: SSL negotiation finished successfully
+SSL_accept was successful
+Cipher: TLSv1:AES256-SHA:256
+Shared ciphers: AES256-SHA:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:AES256-SHA:ECDHE-ECDSA-AES256-SHA:AES256-SHA:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:AES256-SHA:AES256-SHA256:AES256-SHA:CAMELLIA256-SHA:AES256-SHA:AES128-SHA256:AES128-SHA:CAMELLIA128-SHA:DHE-DSS-AES256-SHA:AES256-SHA:AES256-SHA:DHE-DSS-AES256-SHA256:AES256-SHA:DHE-DSS-AES256-SHA:DHE-RSA-CAMELLIA256-SHA:DHE-DSS-CAMELLIA256-SHA:DHE-DSS-AES256-SHA:AES256-SHA:DHE-RSA-AES128-SHA256:DHE-DSS-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA:DHE-RSA-CAMELLIA128-SHA:DHE-DSS-CAMELLIA128-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:EDH-DSS-DES-CBC3-SHA
+TLS active
+Calling SSL_read(0x970690, 0x981230, 4096)
+LOG: MAIN
+  acl_mail: ocsp in status: 4 (verified)
+tls_do_write(0x83cc40, 8)
+SSL_write(SSL, 0x83cc40, 8)
+outbytes=8 error=0
+Calling SSL_read(0x970690, 0x981230, 4096)
+tls_do_write(0x83cc40, 14)
+SSL_write(SSL, 0x83cc40, 14)
+outbytes=14 error=0
+Calling SSL_read(0x970690, 0x981230, 4096)
+tls_do_write(0x83cc40, 44)
+SSL_write(SSL, 0x83cc40, 44)
+outbytes=44 error=0
+tls_close(): shutting down SSL
+SSL info: SSL negotiation finished successfully
+LOG: smtp_connection MAIN
+  SMTP connection from [ip4.ip4.ip4.ip4] closed by QUIT
+11398 child 11402 ended: status=0x0
+11398   normal exit, 0
+11398 0 SMTP accept processes now running
+11398 Listening...
