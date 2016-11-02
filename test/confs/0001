@@ -198,7 +198,7 @@ no_syslog_timestamp
 system_filter = /home/exim/test/filter
 system_filter_directory_transport =
 system_filter_file_transport =
-system_filter_group = mail
+system_filter_group = MAILGROUP
 system_filter_pipe_transport =
 system_filter_reply_transport =
 system_filter_user = 99
@@ -236,7 +236,7 @@ manualroute:
   no_fail_verify_recipient
   no_fail_verify_sender
   fallback_hosts = localhost
-  group = mail
+  group = MAILGROUP
   headers_add =
   headers_remove =
   host_find_failed = freeze
@@ -370,7 +370,7 @@ forward:
   forbid_filter_run
   no_forbid_include
   no_forbid_pipe
-  group = mail
+  group = MAILGROUP
   headers_add =
   headers_remove =
   hide_child_in_errmsg
@@ -386,7 +386,7 @@ forward:
   more
   no_one_time
   owners = root
-  owngroups = mail
+  owngroups = MAILGROUP
   pipe_transport = dummy
   no_qualify_preserve_domain
   redirect_router = aliasfile2
@@ -420,7 +420,7 @@ localuser:
   no_fail_verify_recipient
   no_fail_verify_sender
   fallback_hosts =
-  group = mail
+  group = MAILGROUP
   headers_add = X-added: by localuser
   headers_remove =
   no_initgroups
@@ -460,7 +460,7 @@ smartuser:
   file_transport = dummy
   forbid_file
   forbid_pipe
-  group = mail
+  group = MAILGROUP
   headers_add =
   headers_remove =
   hide_child_in_errmsg
@@ -519,7 +519,7 @@ appendfile:
   file = /home/$local_part/inbox
   file_format = "From : appendfile"
   no_file_must_exist
-  group = mail
+  group = MAILGROUP
   headers_add = X-original-domain: $original_domain\nX-original-localp: $original_local_part
   headers_remove =
   headers_rewrite = a@b c@d

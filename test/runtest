@@ -26,6 +26,11 @@ use Socket;
 use Time::Local;
 use Cwd;
 use File::Basename;
+use FindBin qw'$Bin';
+
+use lib "$Bin/lib";
+use Exim::Runtest;
+
 use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ('Smart::Comments' => '####');
 
 
@@ -88,6 +93,10 @@ $parm_port_d3 = 1227;        # Additional for daemon
 $parm_port_d4 = 1228;        # Additional for daemon
 my $dynamic_socket;          # allocated later for PORT_DYNAMIC
 
+# Find a suiteable group name for test (currently only 0001
+# uses a group name. A numeric group id would do
+my $parm_mailgroup = Exim::Runtest::mailgroup('mail');
+
 # Manually set locale
 $ENV{LC_ALL} = 'C';
 
@@ -149,6 +158,7 @@ s?\bTESTNUM\b?$_[0]?g;
 s?(\b|_)V4NET([\._])?$1$parm_ipv4_test_net$2?g;
 s?\bV6NET:?$parm_ipv6_test_net:?g;
 s?\bPORT_DYNAMIC\b?$dynamic_socket->sockport()?eg;
+s?\bMAILGROUP\b?$parm_mailgroup?g;
 }
 
 
