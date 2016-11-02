@@ -199,6 +199,33 @@ setup_verify(BIO *bp, char *CAfile, char *CApath)
 
 
 #ifndef DISABLE_OCSP
+static STACK_OF(X509) *
+cert_stack_from_store(X509_STORE * store)
+{
+STACK_OF(X509_OBJECT) * roots= store->objs;
+STACK_OF(X509) * sk = sk_X509_new_null();
+int i;
+
+for(i = sk_X509_OBJECT_num(roots) - 1; i >= 0; i--)
+  {
+  X509_OBJECT * tmp_obj= sk_X509_OBJECT_value(roots, i);
+  if(tmp_obj->type == X509_LU_X509)
+    {
+    X509 * x = tmp_obj->data.x509;
+    sk_X509_push(sk, x);
+    }
+  }
+return sk;
+}
+
+static void
+cert_stack_free(STACK_OF(X509) * sk)
+{
+while (sk_X509_num(sk) > 0) (void) sk_X509_pop(sk);
+sk_X509_free(sk);
+}
+
+
 static int
 tls_client_stapling_cb(SSL *s, void *arg)
 {
@@ -208,6 +235,7 @@ OCSP_RESPONSE *rsp;
 OCSP_BASICRESP *bs;
 char *CAfile = NULL;
 X509_STORE *store = NULL;
+STACK_OF(X509) * sk;
 int ret = 1;
 
 len = SSL_get_tlsext_status_ocsp_resp(s, &p);
@@ -229,6 +257,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
   return 0;
   }
 
+
 CAfile = ocsp_stapling;
 if(!(store = setup_verify(arg, CAfile, NULL)))
   {
@@ -236,8 +265,14 @@ if(!(store = setup_verify(arg, CAfile, NULL)))
   return 0;
   }
 
-/* No file of alternate certs, no options */
-if(OCSP_basic_verify(bs, NULL, store, 0) <= 0)
+sk = cert_stack_from_store(store);
+
+/* OCSP_basic_verify takes a "store" arg, but does not
+use it for the chain verification, which is all we do
+when OCSP_NOVERIFY is set.  The content from the wire
+(in "bs") and a cert-stack "sk" are all that is used. */
+
+if(OCSP_basic_verify(bs, sk, NULL, OCSP_NOVERIFY) <= 0)
   {
   BIO_printf(arg, "Response Verify Failure\n");
   ERR_print_errors(arg);
@@ -246,6 +281,7 @@ if(OCSP_basic_verify(bs, NULL, store, 0) <= 0)
 else
   BIO_printf(arg, "Response verify OK\n");
 
+cert_stack_free(sk);
 X509_STORE_free(store);
 return ret;
 }

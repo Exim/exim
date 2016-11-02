@@ -15,7 +15,7 @@ killdaemon
 #
 # Client works when we don't request OCSP stapling
 exim -bd -oX PORT_D -DSERVER=server \
- -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.good.resp
 ****
 exim nostaple@test.ex
 test message.
@@ -48,7 +48,7 @@ sudo rm spool/db/retry
 #
 # Client fails on revoked stapled info
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
- -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.revoked.resp
 ****
 exim CALLER@test.ex
 test message.
@@ -63,7 +63,7 @@ sudo rm spool/db/retry
 #
 # Client fails on expired stapled info
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
- -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.dated.resp
 ****
 exim CALLER@test.ex
 test message.

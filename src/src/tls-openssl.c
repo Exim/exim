@@ -159,6 +159,7 @@ typedef struct tls_ext_ctx_cb {
     } server;
     struct {
       X509_STORE    *verify_store;	/* non-null if status requested */
+      STACK_OF(X509) *verify_stack;
       BOOL	    verify_required;
     } client;
   } u_ocsp;
@@ -426,6 +427,7 @@ else if (depth != 0)
     if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
                              cert))
       ERR_clear_error();
+    sk_X509_push(client_static_cbinfo->u_ocsp.client.verify_stack, cert);
     }
 #endif
 #ifndef DISABLE_EVENT
@@ -780,6 +782,34 @@ return !rv;
 *       Load OCSP information into state         *
 *************************************************/
 
+static STACK_OF(X509) *
+cert_stack_from_store(X509_STORE * store)
+{
+STACK_OF(X509_OBJECT) * roots= store->objs;
+STACK_OF(X509) * sk = sk_X509_new_null();
+int i;
+
+for(i = sk_X509_OBJECT_num(roots) - 1; i >= 0; i--)
+  {
+  X509_OBJECT * tmp_obj= sk_X509_OBJECT_value(roots, i);
+  if(tmp_obj->type == X509_LU_X509)
+    {
+    X509 * x = tmp_obj->data.x509;
+    sk_X509_push(sk, x);
+    }
+  }
+return sk;
+}
+
+static void
+cert_stack_free(STACK_OF(X509) * sk)
+{
+while (sk_X509_num(sk) > 0) (void) sk_X509_pop(sk);
+sk_X509_free(sk);
+}
+
+
+
 /* Called to load the server OCSP response from the given file into memory, once
 caller has determined this is needed.  Checks validity.  Debugs a message
 if invalid.
@@ -796,12 +826,13 @@ Arguments:
 static void
 ocsp_load_response(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo, const uschar *expanded)
 {
-BIO *bio;
-OCSP_RESPONSE *resp;
-OCSP_BASICRESP *basic_response;
-OCSP_SINGLERESP *single_response;
-ASN1_GENERALIZEDTIME *rev, *thisupd, *nextupd;
-X509_STORE *store;
+BIO * bio;
+OCSP_RESPONSE * resp;
+OCSP_BASICRESP * basic_response;
+OCSP_SINGLERESP * single_response;
+ASN1_GENERALIZEDTIME * rev, * thisupd, * nextupd;
+X509_STORE * store;
+STACK_OF(X509) * sk;
 unsigned long verify_flags;
 int status, reason, i;
 
@@ -812,8 +843,7 @@ if (cbinfo->u_ocsp.server.response)
   cbinfo->u_ocsp.server.response = NULL;
   }
 
-bio = BIO_new_file(CS cbinfo->u_ocsp.server.file_expanded, "rb");
-if (!bio)
+if (!(bio = BIO_new_file(CS cbinfo->u_ocsp.server.file_expanded, "rb")))
   {
   DEBUG(D_tls) debug_printf("Failed to open OCSP response file \"%s\"\n",
       cbinfo->u_ocsp.server.file_expanded);
@@ -828,16 +858,14 @@ if (!resp)
   return;
   }
 
-status = OCSP_response_status(resp);
-if (status != OCSP_RESPONSE_STATUS_SUCCESSFUL)
+if ((status = OCSP_response_status(resp)) != OCSP_RESPONSE_STATUS_SUCCESSFUL)
   {
   DEBUG(D_tls) debug_printf("OCSP response not valid: %s (%d)\n",
       OCSP_response_status_str(status), status);
   goto bad;
   }
 
-basic_response = OCSP_response_get1_basic(resp);
-if (!basic_response)
+if (!(basic_response = OCSP_response_get1_basic(resp)))
   {
   DEBUG(D_tls)
     debug_printf("OCSP response parse error: unable to extract basic response.\n");
@@ -845,21 +873,38 @@ if (!basic_response)
   }
 
 store = SSL_CTX_get_cert_store(sctx);
+sk = cert_stack_from_store(store);
 verify_flags = OCSP_NOVERIFY; /* check sigs, but not purpose */
 
 /* May need to expose ability to adjust those flags?
 OCSP_NOSIGS OCSP_NOVERIFY OCSP_NOCHAIN OCSP_NOCHECKS OCSP_NOEXPLICIT
 OCSP_TRUSTOTHER OCSP_NOINTERN */
 
-i = OCSP_basic_verify(basic_response, NULL, store, verify_flags);
-if (i <= 0)
+/* This does a full verify on the OCSP proof before we load it for serviing
+up; possibly overkill - just date-checks might be nice enough.
+
+OCSP_basic_verify takes a "store" arg, but does not
+use it for the chain verification, which is all we do
+when OCSP_NOVERIFY is set.  The content from the wire
+"basic_response" and a cert-stack "sk" are all that is used.
+
+Seperately we might try to replace using OCSP_basic_verify() - which seems to not
+be a public interface into the OpenSSL library (there's no manual entry) - 
+But what with?  We also use OCSP_basic_verify in the client stapling callback.
+And there we NEED it; we miust verify that status... unless the
+library does it for us anyway?  */
+
+if ((i = OCSP_basic_verify(basic_response, sk, NULL, verify_flags)) < 0)
   {
-  DEBUG(D_tls) {
+  DEBUG(D_tls)
+    {
     ERR_error_string(ERR_get_error(), ssl_errstring);
     debug_printf("OCSP response verify failure: %s\n", US ssl_errstring);
     }
+  cert_stack_free(sk);
   goto bad;
   }
+cert_stack_free(sk);
 
 /* Here's the simplifying assumption: there's only one response, for the
 one certificate we use, and nothing for anything else in a chain.  If this
@@ -868,8 +913,8 @@ proves false, we need to extract a cert id from our issued cert
 right cert in the stack and then calls OCSP_single_get0_status()).
 
 I'm hoping to avoid reworking a bunch more of how we handle state here. */
-single_response = OCSP_resp_get0(basic_response, 0);
-if (!single_response)
+
+if (!(single_response = OCSP_resp_get0(basic_response, 0)))
   {
   DEBUG(D_tls)
     debug_printf("Unable to get first response from OCSP basic response.\n");
@@ -1279,7 +1324,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
     /* Use the chain that verified the server cert to verify the stapled info */
     /* DEBUG(D_tls) x509_store_dump_cert_s_names(cbinfo->u_ocsp.client.verify_store); */
 
-    if ((i = OCSP_basic_verify(bs, NULL,
+    if ((i = OCSP_basic_verify(bs, cbinfo->u_ocsp.client.verify_stack,
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       tls_out.ocsp = OCSP_FAILED;
@@ -1409,7 +1454,10 @@ if ((cbinfo->is_server = host==NULL))
   cbinfo->u_ocsp.server.response = NULL;
   }
 else
+  {
   cbinfo->u_ocsp.client.verify_store = NULL;
+  cbinfo->u_ocsp.client.verify_stack = NULL;
+  }
 #endif
 cbinfo->dhparam = dhparam;
 cbinfo->server_cipher_list = NULL;
@@ -1533,6 +1581,11 @@ else			/* client */
     if (!(cbinfo->u_ocsp.client.verify_store = X509_STORE_new()))
       {
       DEBUG(D_tls) debug_printf("failed to create store for stapling verify\n");
+      return FAIL;
+      }
+    if (!(cbinfo->u_ocsp.client.verify_stack = sk_X509_new_null()))
+      {
+      DEBUG(D_tls) debug_printf("failed to create stack for stapling verify\n");
       return FAIL;
       }
     SSL_CTX_set_tlsext_status_cb(*ctxp, tls_client_stapling_cb);

@@ -125,6 +125,10 @@ JH/31 Fix longstanding bug with aborted TLS server connection handling.  Under
       Exim did stdio operations after fclose.  This was exposed by a recent
       change which nulled out the file handle after the fclose.
 
+JH/32 Bug 1909: Fix OCSP proof verification for cases where the proof is
+      signed directly by the cert-signing cert, rather than an intermediate
+      OCSP-signing cert.  This is the model used by LetsEncrypt.
+
 
 Exim version 4.87
 -----------------
