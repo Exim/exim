@@ -20,6 +20,7 @@ subtest 'dynamic_socket' => sub {
     ok my $socket = Exim::Runtest::dynamic_socket() => 'got a socket';
     diag "got socket on port @{[$socket->sockport]}";
     isa_ok $socket => 'IO::Socket::INET';
+    cmp_ok $socket->sockport(), '>=', 1024 => 'port is >= 1024';
     $socket->close;
 };
 
