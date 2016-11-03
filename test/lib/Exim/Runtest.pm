@@ -1,8 +1,15 @@
 package Exim::Runtest;
+use 5.010;
 use strict;
 use warnings;
 use IO::Socket::INET;
 use Carp;
+
+use parent 'Exporter';
+our @EXPORT_OK = qw(mailgroup dynamic_socket);
+our %EXPORT_TAGS = (
+    all => \@EXPORT_OK,
+);
 
 use List::Util qw'shuffle';
 
