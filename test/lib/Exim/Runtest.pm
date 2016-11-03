@@ -23,7 +23,7 @@ for the F<runtest> script. No functions are exported yet.
 =cut
 
 sub mailgroup {
-    my $group = shift;
+    my $group = shift // croak "Need a default group name.";
 
     croak "Need a group *name*, not a numeric group id."
         if $group =~ /^\d+$/;
