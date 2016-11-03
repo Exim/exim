@@ -6,10 +6,22 @@ use Carp;
 
 use List::Util qw'shuffle';
 
+=head1 NAME
 
-# find a group name, preferrable 'mail', but
-# use some other random name if 'mail' isn't a valid group
-# name
+Exim::Runtest - helper functions for the runtest script
+
+=head1 SYNOPSIS
+
+ use Exim::Runtest;
+ my $foo = Exim::Runtest::foo('foo');
+
+=head1 DESCRIPTION
+
+The B<Exim::Runtest> module provides some simple functions
+for the F<runtest> script. No functions are exported yet.
+
+=cut
+
 sub mailgroup {
     my $group = shift;
 
@@ -39,3 +51,23 @@ sub dynamic_socket {
 }
 
 1;
+
+__END__
+
+=head1 FUNCTIONS
+
+=over
+
+=item B<mailgroup>(I<$default>)
+
+Check if the mailgroup I<$default> exists. Return the checked
+group name or some other random but existing group.
+
+=item B<dynamic_socket>()
+
+Return a dynamically allocated listener socket in the range
+between 1024 and 65534;
+
+=back
+
+=cut
