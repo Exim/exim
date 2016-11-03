@@ -17,6 +17,7 @@
 
 #use strict;
 use 5.010;
+use feature 'state';	# included in 5.010
 use warnings;
 
 use Errno;
@@ -2444,7 +2445,7 @@ else
 # as the path to the binary. If the first argument does not start with a
 # '/' but exists in the file system, it's assumed to be the Exim binary.
 
-$parm_exim = (@ARGV > 0 && (-x $ARGV[0] or $ARGV[0] =~ m?^/?))? Cwd::abs_path(shift @ARGV) : "";
+($parm_exim, @ARGV) = Exim::Runtest::exim_binary(@ARGV);
 print "Exim binary is $parm_exim\n" if $parm_exim ne "";
 
 
@@ -2511,55 +2512,6 @@ $parm_cwd = Cwd::getcwd();
 # takes precedence; otherwise exim-snapshot takes precedence over any numbered
 # releases.
 
-if ($parm_exim eq "")
-  {
-  my($use_srcdir) = "";
-
-  opendir DIR, ".." || die "** Failed to opendir \"..\": $!\n";
-  while ($f = readdir(DIR))
-    {
-    my($srcdir);
-
-    # Try this directory if it is "exim4" or if it is exim-snapshot or exim-n.m
-    # possibly followed by -RCx where n.m is greater than any previously tried
-    # directory. Thus, we should choose the highest version of Exim that has
-    # been compiled.
-
-    if ($f eq "exim4" || $f eq "exim-snapshot" || $f eq 'src')
-      { $srcdir = $f; }
-    else
-      { $srcdir = $f
-        if ($f =~ /^exim-\d+\.\d+(-RC\d+)?$/ && $f gt $use_srcdir); }
-
-    # Look for a build directory with a binary in it. If we find a binary,
-    # accept this source directory.
-
-    if ($srcdir)
-      {
-      opendir SRCDIR, "../$srcdir" ||
-        die "** Failed to opendir \"$cwd/../$srcdir\": $!\n";
-      while ($f = readdir(SRCDIR))
-        {
-        if ($f =~ /^build-/ && -e "../$srcdir/$f/exim")
-          {
-          $use_srcdir = $srcdir;
-          $parm_exim = "$cwd/../$srcdir/$f/exim";
-          $parm_exim =~ s'/[^/]+/\.\./'/';
-          last;
-          }
-        }
-      closedir(SRCDIR);
-      }
-
-    # If we have found "exim4" or "exim-snapshot", that takes precedence.
-    # Otherwise, continue to see if there's a later version.
-
-    last if $use_srcdir eq "exim4" || $use_srcdir eq "exim-snapshot";
-    }
-  closedir(DIR);
-  print "Exim binary found in $parm_exim\n" if $parm_exim ne "";
-  }
-
 # If $parm_exim is still empty, ask the caller
 
 if ($parm_exim eq "")
@@ -2612,7 +2564,13 @@ while(<EXIMINFO>)
       $version =~ s/^\d+\K\./_/;
       $git =~ s/^exim-//i;
       $git =~ s/.*-\Kg([[:xdigit:]]+(?:-XX)?)/$1/;
-      print "\n*** Version mismatch (Exim: $version vs. GIT: $git). ***\n\n"
+      print <<___
+
+*** Version mismatch
+*** Exim binary: $version
+*** Git        : $git
+
+___
         if not $version eq $git;
     }
   }

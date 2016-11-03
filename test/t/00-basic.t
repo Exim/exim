@@ -5,7 +5,7 @@ use Test::Exception;
 use lib 'lib';
 use_ok 'Exim::Runtest', qw(:all) or BAIL_OUT 'Can not load the module';
 
-can_ok 'Exim::Runtest', qw(mailgroup dynamic_socket);
+can_ok 'Exim::Runtest', qw(mailgroup dynamic_socket exim_binary);
 pod_coverage_ok 'Exim::Runtest' => 'docs complete';
 
 subtest 'mailgroup' => sub {
@@ -31,5 +31,12 @@ subtest 'dynamic_socket' => sub {
     $socket->close;
 };
 
+subtest 'exim_binary' => sub {
+    my @argv1 = qw(/bin/sh a b);
+    my @argv2 = qw(t/samples/foo a b);
+    chomp(my $cwd = `pwd`); # don't use Cwd, as we use Cwd in the tested module already
+    is_deeply [exim_binary(@argv1)], \@argv1 => 'got the binary as abs path from argv';
+    is_deeply [exim_binary(@argv2)], ["$cwd/t/samples/foo", @argv2[1,$#argv2]] => 'got the binary as rel path from argv';
+};
 
 done_testing;
