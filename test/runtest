@@ -21,7 +21,6 @@ use warnings;
 
 use Errno;
 use FileHandle;
-use IO::Socket::INET;
 use Socket;
 use Time::Local;
 use Cwd;
@@ -3719,16 +3718,7 @@ foreach $test (@test_list)
     if (/^no_stdout_check/)  { $stdout_skip = 1; next; }
     if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
     if (/^sortlog/)          { $sortlog = 1; next; }
-    if (/\bPORT_DYNAMIC\b/)  {
-      for (my $port = 1024; $port < 65000; $port++) {
-        $dynamic_socket = IO::Socket::INET->new(
-          LocalHost => '127.0.0.1',
-          LocalPort => $port,
-          Listen => 10,
-          ReuseAddr => 1,
-        ) and last;
-      }
-      }
+    if (/\bPORT_DYNAMIC\b/)  { $dynamic_socket = Exim::Runtest::dynamic_socket(); next; }
     }
   # Reset to beginning of file for per test interpreting/processing
   seek(SCRIPT, 0, 0);

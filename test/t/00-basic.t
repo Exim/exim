@@ -2,7 +2,7 @@ use Test::More;
 use lib 'lib';
 use_ok 'Exim::Runtest' or BAIL_OUT 'Can not load the module';
 
-can_ok 'Exim::Runtest', qw(mailgroup);
+can_ok 'Exim::Runtest', qw(mailgroup dynamic_socket);
 
 subtest 'mailgroup' => sub {
     my $group = getgrgid $(;
@@ -16,6 +16,12 @@ subtest 'mailgroup' => sub {
     ok getgrnam($group) => 'got an existing group';
 };
 
+subtest 'dynamic_socket' => sub {
+    ok my $socket = Exim::Runtest::dynamic_socket() => 'got a socket';
+    diag "got socket on port @{[$socket->sockport]}";
+    isa_ok $socket => 'IO::Socket::INET';
+    $socket->close;
+};
 
 
 done_testing;
