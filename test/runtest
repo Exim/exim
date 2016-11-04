@@ -1153,11 +1153,22 @@ return $yield;
 #            [2] if there is a C in the prompt and $force_continue is true
 # Returns:   returns the answer
 
-sub interact{
-print $_[0];
-if ($_[1]) { $_ = "u"; print "... update forced\n"; }
-  elsif ($_[2]) { $_ = "c"; print "... continue forced\n"; }
-  else { $_ = <T>; }
+sub interact {
+  my ($prompt, $have_u, $have_c) = @_;
+
+  print $prompt;
+
+  if ($have_u) {
+    print "... update forced\n";
+    return 'u';
+  }
+
+  if ($have_c) {
+    print "... continue forced\n";
+    return 'c';
+  }
+
+  return lc <T>;
 }
 
 
@@ -1177,13 +1188,13 @@ if ($_[1]) { $_ = "u"; print "... update forced\n"; }
 
 
 sub log_failure {
-  my $logfile = shift();
-  my $testno  = shift();
-  my $detail  = shift() || '';
-  if ( open(my $fh, ">>", $logfile) ) {
-    print $fh "Test $testno $detail failed\n";
-    close $fh;
-  }
+  my ($logfile, $testno, $detail) = @_;
+
+  open(my $fh, '>>', $logfile) or return;
+
+  print $fh "Test $testno "
+        . (defined $detail ? "$detail " : '')
+        . "failed\n";
 }
 
 
@@ -1230,10 +1241,9 @@ if (! -e $sf_current)
 
   for (;;)
     {
-    print "Continue, Show, or Quit? [Q] ";
-    $_ = $force_continue ? "c" : <T>;
-    tests_exit(1) if /^q?$/i;
-    log_failure($log_failed_filename, $testno, $rf) if (/^c$/i && $force_continue);
+    $_ = interact('Continue, Show, or Quit? [Q] ', undef, $force_continue);
+    tests_exit(1) if /^q?$/;
+    log_failure($log_failed_filename, $testno, $rf) if (/^c$/ && $force_continue);
     return 0 if /^c$/i;
     last if (/^s$/);
     }
@@ -1252,9 +1262,9 @@ if (! -e $sf_current)
   print "\n";
   for (;;)
     {
-    interact("Continue, Update & retry, Quit? [Q] ", $force_update, $force_continue);
-    tests_exit(1) if /^q?$/i;
-    log_failure($log_failed_filename, $testno, $rsf) if (/^c$/i && $force_continue);
+    $_ = interact('Continue, Update & retry, Quit? [Q] ', $force_update, $force_continue);
+    tests_exit(1) if /^q?$/;
+    log_failure($log_failed_filename, $testno, $rsf) if (/^c$/ && $force_continue);
     return 0 if /^c$/i;
     last if (/^u$/i);
     }
@@ -1372,10 +1382,10 @@ if (-e $sf_current)
   print "\n";
   for (;;)
     {
-    interact("Continue, Retry, Update current"
-	. ($sf_current ne $sf_flavour  ? "/Save for flavour '$flavour'" : "")
-	. " & retry, Quit? [Q] ", $force_update, $force_continue);
-    tests_exit(1) if /^q?$/i;
+    $_ = interact('Continue, Retry, Update current'
+	. ($sf_current ne $sf_flavour  ? "/Save for flavour '$flavour'" : '')
+	. ' & retry, Quit? [Q] ', $force_update, $force_continue);
+    tests_exit(1) if /^q?$/;
     log_failure($log_failed_filename, $testno, $sf_current) if (/^c$/i && $force_continue);
     return 0 if /^c$/i;
     return 1 if /^r$/i;
@@ -1592,16 +1602,16 @@ if (! $message_skip)
 
     for (;;)
       {
-      interact("Continue, Update & retry, or Quit? [Q] ", $force_update, $force_continue);
-      tests_exit(1) if /^q?$/i;
-      log_failure($log_failed_filename, $testno, "missing email") if (/^c$/i && $force_continue);
-      last if /^c$/i;
+      $_ = interact('Continue, Update & retry, or Quit? [Q] ', $force_update, $force_continue);
+      tests_exit(1) if /^q?$/;
+      log_failure($log_failed_filename, $testno, "missing email") if (/^c$/ && $force_continue);
+      last if /^c$/;
 
       # For update, we not only have to unlink the file, but we must also
       # remove it from the @oldmails vector, as otherwise it will still be
       # checked for when we re-run the test.
 
-      if (/^u$/i)
+      if (/^u$/)
         {
         foreach $key (keys %expected_mails)
           {
@@ -1676,11 +1686,11 @@ if (! $msglog_skip)
 
     for (;;)
       {
-      interact("Continue, Update, or Quit? [Q] ", $force_update, $force_continue);
-      tests_exit(1) if /^q?$/i;
-      log_failure($log_failed_filename, $testno, "missing msglog") if (/^c$/i && $force_continue);
-      last if /^c$/i;
-      if (/^u$/i)
+      $_ = interact('Continue, Update, or Quit? [Q] ', $force_update, $force_continue);
+      tests_exit(1) if /^q?$/;
+      log_failure($log_failed_filename, $testno, "missing msglog") if (/^c$/ && $force_continue);
+      last if /^c$/;
+      if (/^u$/)
         {
         foreach $key (keys %expected_msglogs)
           {
@@ -2579,7 +2589,7 @@ ___
   $parm_trusted_config_list = $1 if /^TRUSTED_CONFIG_LIST:.*?"(.*?)"$/;
   ($parm_configure_owner, $parm_configure_group) = ($1, $2)
 	if /^Configure owner:\s*(\d+):(\d+)/;
-  print "$_" if /wrong owner/;
+  print if /wrong owner/;
   }
 close(EXIMINFO);
 
