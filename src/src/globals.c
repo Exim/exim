@@ -1384,6 +1384,7 @@ BOOL    suppress_local_fixups_default = FALSE;
 BOOL    synchronous_delivery   = FALSE;
 BOOL    syslog_duplication     = TRUE;
 int     syslog_facility        = LOG_MAIL;
+BOOL    syslog_pid             = TRUE;
 uschar *syslog_processname     = US"exim";
 BOOL    syslog_timestamp       = TRUE;
 uschar *system_filter          = NULL;

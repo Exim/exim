@@ -193,6 +193,7 @@ no_strip_excess_angle_brackets
 no_strip_trailing_dot
 no_syslog_duplication
 syslog_facility = uucp
+no_syslog_pid
 syslog_processname = mta-exim
 no_syslog_timestamp
 system_filter = /home/exim/test/filter

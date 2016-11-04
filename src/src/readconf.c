@@ -445,6 +445,7 @@ static optionlist optionlist_config[] = {
   { "strip_trailing_dot",       opt_bool,        &strip_trailing_dot },
   { "syslog_duplication",       opt_bool,        &syslog_duplication },
   { "syslog_facility",          opt_stringptr,   &syslog_facility_str },
+  { "syslog_pid",               opt_bool,        &syslog_pid },
   { "syslog_processname",       opt_stringptr,   &syslog_processname },
   { "syslog_timestamp",         opt_bool,        &syslog_timestamp },
   { "system_filter",            opt_stringptr,   &system_filter },

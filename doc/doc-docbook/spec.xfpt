@@ -13593,6 +13593,7 @@ listed in more than one group.
 .row &%slow_lookup_log%&             "control logging of slow DNS lookups"
 .row &%syslog_duplication%&          "controls duplicate log lines on syslog"
 .row &%syslog_facility%&             "set syslog &""facility""& field"
+.row &%syslog_pid%&                  "pid in syslog lines"
 .row &%syslog_processname%&          "set syslog &""ident""& field"
 .row &%syslog_timestamp%&            "timestamp syslog lines"
 .row &%write_rejectlog%&             "control use of message log"
@@ -16854,6 +16855,15 @@ syslog. The value must be one of the strings &"mail"&, &"user"&, &"news"&,
 &"uucp"&, &"daemon"&, or &"local&'x'&"& where &'x'& is a digit between 0 and 7.
 If this option is unset, &"mail"& is used. See chapter &<<CHAPlog>>& for
 details of Exim's logging.
+
+
+.option syslog_pid main boolean true
+.cindex "syslog" "pid"
+If &%syslog_pid%& is set false, the PID on Exim's log lines are
+omitted when these lines are sent to syslog. (Syslog normally prefixes
+the log lines with the PID of the logging process automatically.) You need
+to enable the &`+pid`& log selector item, if you want Exim to write it's PID
+into the logs.) See chapter &<<CHAPlog>>& for details of Exim's logging.
 
 
 

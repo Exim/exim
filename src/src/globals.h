@@ -890,6 +890,7 @@ extern BOOL    suppress_local_fixups_default; /* former is reset to this; overri
 extern BOOL    synchronous_delivery;   /* TRUE if -odi is set */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */
+extern BOOL    syslog_pid;             /* TRUE if PID on syslogs */
 extern uschar *syslog_processname;     /* 'ident' param to openlog() */
 extern BOOL    syslog_timestamp;       /* TRUE if time on syslogs */
 extern uschar *system_filter;          /* Name of system filter file */

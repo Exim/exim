@@ -47,6 +47,8 @@ static BOOL   path_inspected = FALSE;
 static int    logging_mode = LOG_MODE_FILE;
 static uschar *file_path = US"";
 
+static size_t pid_position[2];
+
 
 /* These should be kept in-step with the private delivery error
 number definitions in macros.h */
@@ -132,7 +134,7 @@ can get here if there is a failure to open the panic log.)
 
 Arguments:
   priority       syslog priority
-  s              the string to be written
+  s              the string to be written, the string may be modified!
 
 Returns:         nothing
 */
@@ -146,6 +148,8 @@ int linecount = 0;
 if (running_in_test_harness) return;
 
 if (!syslog_timestamp) s += log_timezone? 26 : 20;
+if (!syslog_pid && LOGGING(pid))
+    memmove(s + pid_position[0], s + pid_position[1], pid_position[1] - pid_position[0]);
 
 len = Ustrlen(s);
 
@@ -905,7 +909,9 @@ while(*ptr) ptr++;
 if (LOGGING(pid))
   {
   sprintf(CS ptr, "[%d] ", (int)getpid());
+  if (!syslog_pid) pid_position[0] = ptr - log_buffer; // remember begin …
   while (*ptr) ptr++;
+  if (!syslog_pid) pid_position[1] = ptr - log_buffer; // … and end+1 of the PID
   }
 
 if (really_exim && message_id[0] != 0)
