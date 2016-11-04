@@ -7,7 +7,9 @@ use IO::Socket::INET;
 use Cwd;
 use Carp;
 
-use parent 'Exporter';
+use Exporter;
+our @ISA = qw(Exporter);
+
 our @EXPORT_OK = qw(mailgroup dynamic_socket exim_binary flavour flavours);
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
