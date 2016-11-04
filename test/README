@@ -268,11 +268,15 @@ There are some options for the ./runtest script itself:
   -FLAVOUR <flavour>
             This allows "overrides" for the test results. It's intended
             use is to deal with distro specific differences in the test
-            output. The default flavour is "foo". If during the test
-            run differences between the current and the expected output
-            are found and no flavour file exists already, you may update
-            the "common" expected output or you may create a flavour
-            file. If  a flavour file already exists, any updates will go
+            output. The default flavour is "FOO" if autodetection fails.
+            (Autodection is possible for known flavours only. Known
+            flavours are computed after file name extensions in stdout/*
+            and stderr/*.)
+
+            If during the test run differences between the current and
+            the expected output are found and no flavour file exists already,
+            you may update the "common" expected output or you may create a
+            flavour file. If  a flavour file already exists, any updates will go
             into that flavour file!
 
   -KEEP     Normally, after a successful run, the test output files are

@@ -5,7 +5,7 @@ use Test::Exception;
 use lib 'lib';
 use_ok 'Exim::Runtest', qw(:all) or BAIL_OUT 'Can not load the module';
 
-can_ok 'Exim::Runtest', qw(mailgroup dynamic_socket exim_binary);
+can_ok 'Exim::Runtest', qw(mailgroup dynamic_socket exim_binary flavour flavours);
 pod_coverage_ok 'Exim::Runtest' => 'docs complete';
 
 subtest 'mailgroup' => sub {
@@ -37,6 +37,13 @@ subtest 'exim_binary' => sub {
     chomp(my $cwd = `pwd`); # don't use Cwd, as we use Cwd in the tested module already
     is_deeply [exim_binary(@argv1)], \@argv1 => 'got the binary as abs path from argv';
     is_deeply [exim_binary(@argv2)], ["$cwd/t/samples/foo", @argv2[1,$#argv2]] => 'got the binary as rel path from argv';
+};
+
+subtest 'flavour' => sub {
+    is flavour('t/samples/etc.debian8-os-release'), 'debian8' => 'got flavour debian8 from os-release';
+    is flavour('t/samples/etc.debian8-debian-version'), 'debian8' => 'got flavour debian8 from debian_version';
+    is flavour('t/samples/etc.fedora24'), 'fedora24' => 'got flavour fedora24 from os-release';
+    is_deeply [flavours()], ['debian8'] => 'got available flavours';
 };
 
 done_testing;

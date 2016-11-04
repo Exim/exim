@@ -49,7 +49,10 @@ $gnutls_dh_bits_normal = 2236;
 $cf = "bin/cf -exact";
 $cr = "\r";
 $debug = 0;
-$flavour = 'FOO';
+$flavour = do {
+  my $f = Exim::Runtest::flavour();
+  (grep { $f eq $_ } Exim::Runtest::flavours()) ? $f : 'FOO';
+};
 $force_continue = 0;
 $force_update = 0;
 $log_failed_filename = "failed-summary.log";

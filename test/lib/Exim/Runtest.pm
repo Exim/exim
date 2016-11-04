@@ -2,12 +2,13 @@ package Exim::Runtest;
 use 5.010;
 use strict;
 use warnings;
+use File::Basename;
 use IO::Socket::INET;
 use Cwd;
 use Carp;
 
 use parent 'Exporter';
-our @EXPORT_OK = qw(mailgroup dynamic_socket exim_binary);
+our @EXPORT_OK = qw(mailgroup dynamic_socket exim_binary flavour flavours);
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );
@@ -104,6 +105,36 @@ sub exim_binary {
     return $binaries[0], @_;
 }
 
+sub flavour {
+    my $etc = '/etc';
+
+    if (@_) {
+        croak "do not pass a directory, it's for testing only"
+            unless $ENV{HARNESS_ACTIVE};
+        $etc = shift;
+    }
+
+    if (open(my $f, '<', "$etc/os-release")) {
+        local $_ = join '', <$f>;
+        my ($id) = /^ID="?(.*?)"?\s*$/m;
+        my ($version) = /^VERSION_ID="?(.*?)"?\s*$/m;
+        return "$id$version";
+    }
+
+    if (open(my $f, '<', "$etc/debian_version")) {
+        chomp(local $_ = <$f>);
+        $_ = int $_;
+        return "debian$_";
+    }
+
+    undef;
+}
+
+sub flavours {
+    my %h = map { /\.(\S+)$/, 1 }
+            glob('stdout/*.*'), glob('stderr/*.*');
+    return sort keys %h;
+}
 
 1;
 
@@ -130,6 +161,16 @@ and remove it from I<@argv>, if it is an executable binary.
 Otherwise search the binary (while honouring C<EXIM_BUILD_SUFFIX>,
 C<../scripts/os-type> and C<../os-arch>) and return the
 the path to the binary and the unmodified I<@argv>.
+
+=item B<flavour>()
+
+Find a hint for the current flavour (Linux distro). It does so by checking
+typical files in the F</etc> directory.
+
+=item B<flavours>()
+
+Return a list of available flavours. It does so by scanning F<stdout/> and
+F<stderr/> for I<flavour> files (extensions after the numerical prefix.
 
 =back
 
