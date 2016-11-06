@@ -909,9 +909,9 @@ while(*ptr) ptr++;
 if (LOGGING(pid))
   {
   sprintf(CS ptr, "[%d] ", (int)getpid());
-  if (!syslog_pid) pid_position[0] = ptr - log_buffer; // remember begin …
+  if (!syslog_pid) pid_position[0] = ptr - log_buffer;	/* remember begin … */
   while (*ptr) ptr++;
-  if (!syslog_pid) pid_position[1] = ptr - log_buffer; // … and end+1 of the PID
+  if (!syslog_pid) pid_position[1] = ptr - log_buffer;	/*  … and end+1 of the PID */
   }
 
 if (really_exim && message_id[0] != 0)

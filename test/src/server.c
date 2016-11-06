@@ -28,7 +28,7 @@ on all interfaces, unless the option -noipv6 is given. */
 #include <netinet/ip.h>
 
 #ifdef HAVE_NETINET_IP_VAR_H
-#include <netinet/ip_var.h>
+# include <netinet/ip_var.h>
 #endif
 
 #include <netdb.h>
@@ -60,6 +60,10 @@ typedef struct line {
   unsigned len;
   char line[1];
 } line;
+
+typedef unsigned BOOL;
+#define FALSE 0
+#define TRUE  1
 
 
 /*************************************************
@@ -496,11 +500,10 @@ s = script;
 
 for (count = 0; count < connection_count; count++)
   {
-
   struct {
     int left;
-    int in_use;
-  } content_length = { .left = 0, .in_use = 0 };
+    BOOL in_use;
+  } content_length = { 0, FALSE };
 
   alarm(timeout);
   if (port <= 0)
@@ -527,8 +530,7 @@ for (count = 0; count < connection_count; count++)
       if (listen_socket[i] > max_socket) max_socket = listen_socket[i];
       }
 
-    lcount = select(max_socket + 1, &select_listen, NULL, NULL, NULL);
-    if (lcount < 0)
+    if ((lcount = select(max_socket + 1, &select_listen, NULL, NULL, NULL)) < 0)
       {
       printf("Select failed\n");
       fflush(stdout);
@@ -537,7 +539,6 @@ for (count = 0; count < connection_count; count++)
 
     accept_socket = -1;
     for (i = 0; i < skn; i++)
-      {
       if (listen_socket[i] > 0 && FD_ISSET(listen_socket[i], &select_listen))
         {
         accept_socket = accept(listen_socket[i],
@@ -545,7 +546,6 @@ for (count = 0; count < connection_count; count++)
         FD_CLR(listen_socket[i], &select_listen);
         break;
         }
-      }
     }
   alarm(0);
 
@@ -597,7 +597,7 @@ for (count = 0; count < connection_count; count++)
   doesn't work for other tests (e.g. ident tests) so we have explicit '<' and
   '>' flags for input and output as well as the defaults. */
 
-  for (; s != NULL; s = s->next)
+  for (; s; s = s->next)
     {
     char *ss = s->line;
 
@@ -735,9 +735,7 @@ for (count = 0; count < connection_count; count++)
 	  n = (read(dup_accept_socket, &c, 1) == 1 && c == '.');
 	  if (content_length.in_use) content_length.left--;
 	  while (c != '\n' && read(dup_accept_socket, &c, 1) == 1)
-            {
             if (content_length.in_use) content_length.left--;
-            }
 	  } while (!n);
 	else if (memcmp(ss, buffer, n) != 0)
 	  {
@@ -760,7 +758,7 @@ for (count = 0; count < connection_count; count++)
 	    goto END_OFF;
 	    }
 	  alarm(0);
-	  n = (int)strlen(CS buffer);
+	  n = strlen(CS buffer);
 	  if (content_length.in_use) content_length.left -= (n - offset);
 	  while (n > 0 && isspace(buffer[n-1])) n--;
 	  buffer[n] = 0;
@@ -776,7 +774,7 @@ for (count = 0; count < connection_count; count++)
 	  }
 	}
 
-	if (sscanf(buffer, "<Content-length: %d", &content_length.left)) content_length.in_use = 1;
+	if (sscanf(buffer, "<Content-length: %d", &content_length.left)) content_length.in_use = TRUE;
 	if (content_length.in_use && content_length.left <= 0) shutdown(dup_accept_socket, SHUT_RD);
       }
     }
@@ -788,7 +786,7 @@ for (count = 0; count < connection_count; count++)
 
 if (s == NULL) printf("End of script\n");
 
-if (sockname != NULL) unlink(sockname);
+if (sockname) unlink(sockname);
 exit(0);
 }
 
