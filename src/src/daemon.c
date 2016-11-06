@@ -520,12 +520,13 @@ if (pid == 0)
       {
       if (smtp_out)
 	{
-	int i;
+	int i, fd = fileno(smtp_in);
 	uschar buf[128];
 
 	mac_smtp_fflush();
 	/* drain socket, for clean TCP FINs */
-	for(i = 16; read(fileno(smtp_in), buf, sizeof(buf)) > 0 && i > 0; ) i--;
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == 0)
+	  for(i = 16; read(fd, buf, sizeof(buf)) > 0 && i > 0; ) i--;
 	}
       search_tidyup();
       smtp_log_no_mail();                 /* Log no mail if configured */

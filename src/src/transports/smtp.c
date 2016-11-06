@@ -3168,8 +3168,9 @@ HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
 if (lflags.send_quit)
   {
   shutdown(outblock.sock, SHUT_WR);
-  for (rc = 16; read(inblock.sock, inbuffer, sizeof(inbuffer)) > 0 && rc > 0;)
-    rc--;				/* drain socket */
+  if (fcntl(inblock.sock, F_SETFL, O_NONBLOCK) == 0)
+    for (rc = 16; read(inblock.sock, inbuffer, sizeof(inbuffer)) > 0 && rc > 0;)
+      rc--;				/* drain socket */
   }
 (void)close(inblock.sock);
 

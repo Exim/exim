@@ -397,7 +397,6 @@ else
       sin4.sin_addr.s_addr = (S_ADDR_TYPE)INADDR_ANY;
       sin4.sin_port = htons(port);
       if (bind(listen_socket[i], (struct sockaddr *)&sin4, sizeof(sin4)) < 0)
-        {
         if (listen_socket[v6n] < 0 || errno != EADDRINUSE)
           {
           printf("IPv4 socket bind() failed: %s\n", strerror(errno));
@@ -408,7 +407,6 @@ else
           close(listen_socket[i]);
           listen_socket[i] = -1;
           }
-        }
       }
     }
   }

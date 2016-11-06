@@ -129,6 +129,8 @@ JH/32 Bug 1909: Fix OCSP proof verification for cases where the proof is
       signed directly by the cert-signing cert, rather than an intermediate
       OCSP-signing cert.  This is the model used by LetsEncrypt.
 
+JH/33 Bug 1914: Ensure socket is nonblocking before draining after SMTP QUIT.
+
 
 Exim version 4.87
 -----------------

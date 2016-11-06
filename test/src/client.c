@@ -24,6 +24,7 @@ ripped from the openssl ocsp and s_client utilities. */
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
 
 #include <netdb.h>
 #include <arpa/inet.h>
@@ -897,9 +898,13 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
 
   /* Expect incoming */
 
-  if (strncmp(CS outbuffer, "??? ", 4) == 0)
+  if (  strncmp(CS outbuffer, "???", 3) == 0
+     && (outbuffer[3] == ' ' || outbuffer[3] == '*')
+     )
     {
     unsigned char *lineptr;
+    unsigned exp_eof = outbuffer[3] == '*';
+
     printf("%s\n", outbuffer);
 
     if (*inptr == 0)   /* Refill input buffer */
@@ -921,15 +926,27 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
         }
 
       if (rc < 0)
-        {
+	{
         printf("Read error %s\n", strerror(errno));
-        exit(81)  ;
-        }
+        exit(81);
+	}
       else if (rc == 0)
+	if (exp_eof)
+	  {
+          printf("Expected EOF read\n");
+	  continue;
+	  }
+	else
+	  {
+	  printf("Enexpected EOF read\n");
+	  close(sock);
+	  exit(80);
+	  }
+      else if (exp_eof)
         {
-        printf("Unexpected EOF read\n");
+        printf("Expected EOF not read\n");
         close(sock);
-        exit(80);
+        exit(74);
         }
       else
         {
