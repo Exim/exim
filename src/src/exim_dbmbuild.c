@@ -480,7 +480,7 @@ else
   printf("dbmbuild abandoned\n");
 #if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
   /* We created it, so safe to delete despite the name coming from outside */
-  /* coverity[tainted_data] */
+  /* coverity[tainted_string] */
   Uunlink(temp_dbmname);
 #else
   if (is_db)

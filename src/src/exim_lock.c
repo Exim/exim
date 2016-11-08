@@ -588,12 +588,24 @@ if (restore_times)
   int fd = open(filename, O_RDWR); /* use fd for both get & restore */
   struct timespec tt[2];
 
-  fstat(fd, &strestore);
+  if (fd < 0)
+    {
+    printf("open '%s': %s\n", filename, strerror(errno));
+    yield = 1;
+    goto CLEAN_UP;
+    }
+  if (fstat(fd, &strestore) != 0)
+    {
+    printf("fstat '%s': %s\n", filename, strerror(errno));
+    yield = 1;
+    close(fd);
+    goto CLEAN_UP;
+    }
   i = system(command);
   tt[0] = strestore.st_atim;
   tt[1] = strestore.st_mtim;
-  futimens(fd, tt);
-  close(fd);
+  (void) futimens(fd, tt);
+  (void) close(fd);
 #else
   struct utimbuf ut;
 
