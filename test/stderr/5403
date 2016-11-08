@@ -76,8 +76,8 @@ MUNGED: ::1 will be omitted in what follows
 >>> cmd buf flush 21 bytes
 >>>   SMTP<< 250 OK
 >>> 127.0.0.1 in hosts_require_auth? no (option unset)
->>>   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
->>> cmd buf flush 37 bytes
+>>>   SMTP>> MAIL FROM:<sender@myhost.test.ex>
+>>> cmd buf flush 35 bytes
 >>>   SMTP<< 250 OK
 >>>   SMTP>> RCPT TO:<verify@domain.com>
 >>> cmd buf flush 29 bytes
@@ -91,4 +91,4 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP>> QUIT
 >>>   SMTP(close)>>
 >>> ----------- cutthrough shutdown (host-checking mode) ------------
-LOG: 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=esmtp S=sss for verify@domain.com
+LOG: 10HmaY-0005vi-00 <= sender@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=esmtp S=sss for verify@domain.com

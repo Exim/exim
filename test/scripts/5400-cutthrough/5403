@@ -31,7 +31,7 @@ QUIT
 ****
 exim -bhc 1.2.3.4
 EHLO myhost.test.ex
-MAIL FROM:<CALLER@myhost.test.ex>
+MAIL FROM:<sender@myhost.test.ex>
 RCPT TO:<verify@domain.com>
 DATA
 

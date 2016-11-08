@@ -45,7 +45,7 @@ Connection request from [ip4.ip4.ip4.ip4]
 220 server ready
 EHLO myhost.test.ex
 250 OK
-MAIL FROM:<CALLER@myhost.test.ex>
+MAIL FROM:<sender@myhost.test.ex>
 250 OK
 RCPT TO:<verify@domain.com>
 250 OK
