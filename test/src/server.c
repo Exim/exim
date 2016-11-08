@@ -52,6 +52,7 @@ on all interfaces, unless the option -noipv6 is given. */
 
 #ifndef CS
 # define CS (char *)
+# define CCS (const char *)
 #endif
 
 
@@ -726,7 +727,7 @@ for (count = 0; count < connection_count; count++)
 	alarm(0);
 	n += offset;
 
-	printit(buffer, n);
+	printit(CS buffer, n);
 
 	if (data) do
 	  {
@@ -772,8 +773,10 @@ for (count = 0; count < connection_count; count++)
 	  }
 	}
 
-	if (sscanf(buffer, "<Content-length: %d", &content_length.left)) content_length.in_use = TRUE;
-	if (content_length.in_use && content_length.left <= 0) shutdown(dup_accept_socket, SHUT_RD);
+	if (sscanf(CCS buffer, "<Content-length: %d", &content_length.left))
+       	  content_length.in_use = TRUE;
+	if (content_length.in_use && content_length.left <= 0)
+	  shutdown(dup_accept_socket, SHUT_RD);
       }
     }
 

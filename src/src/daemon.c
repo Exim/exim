@@ -290,7 +290,7 @@ if ((max_for_this_host > 0) &&
   int other_host_count = 0;    /* keep a count of non matches to optimise */
 
   for (i = 0; i < smtp_accept_max; ++i)
-    if (smtp_slots[i].host_address != NULL)
+    if (smtp_slots[i].host_address)
       {
       if (Ustrcmp(sender_host_address, smtp_slots[i].host_address) == 0)
        host_accept_count++;
@@ -842,13 +842,12 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   /* If it's a listening daemon for which we are keeping track of individual
   subprocesses, deal with an accepting process that has terminated. */
 
-  if (smtp_slots != NULL)
+  if (smtp_slots)
     {
     for (i = 0; i < smtp_accept_max; i++)
-      {
       if (smtp_slots[i].pid == pid)
         {
-        if (smtp_slots[i].host_address != NULL)
+        if (smtp_slots[i].host_address)
           store_free(smtp_slots[i].host_address);
         smtp_slots[i] = empty_smtp_slot;
         if (--smtp_accept_count < 0) smtp_accept_count = 0;
@@ -856,7 +855,6 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
           smtp_accept_count, (smtp_accept_count == 1)? "" : "es");
         break;
         }
-      }
     if (i < smtp_accept_max) continue;  /* Found an accepting process */
     }
 

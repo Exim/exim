@@ -806,22 +806,21 @@ if (read(fd, filtertype, sizeof(int)) != sizeof(int) ||
 
 /* Read the contents of any syntax error blocks if we have a pointer */
 
-if (eblockp != NULL)
+if (eblockp)
   {
-  uschar *s;
   error_block *e;
-  error_block **p = eblockp;
-  for (;;)
+  error_block **p;
+  for (p = eblockp; ; p = &e->next)
     {
+    uschar *s;
     if (!rda_read_string(fd, &s)) goto DISASTER;
-    if (s == NULL) break;
+    if (!s) break;
     e = store_get(sizeof(error_block));
     e->next = NULL;
     e->text1 = s;
     if (!rda_read_string(fd, &s)) goto DISASTER;
     e->text2 = s;
     *p = e;
-    p = &(e->next);
     }
   }
 
@@ -841,8 +840,7 @@ if (system_filtering)
     while (hn < n)
       {
       hn++;
-      h = h->next;
-      if (h == NULL) goto DISASTER_NO_HEADER;
+      if (!(h = h->next)) goto DISASTER_NO_HEADER;
       }
     h->type = htype_old;
     }
@@ -852,7 +850,7 @@ if (system_filtering)
     uschar *s;
     int type;
     if (!rda_read_string(fd, &s)) goto DISASTER;
-    if (s == NULL) break;
+    if (!s) break;
     if (read(fd, &type, sizeof(type)) != sizeof(type)) goto DISASTER;
     header_add(type, "%s", s);
     }

@@ -461,7 +461,7 @@ else
 	if (rc < 0)
 	  {
 	  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error",
-		tlsp == &tls_out ? deliver_host_address : sender_host_address);
+		deliver_host_address);
 	  name = NULL;
 	  }
 	break;
