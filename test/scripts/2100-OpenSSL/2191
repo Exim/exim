@@ -1,7 +1,7 @@
 # TLS client, CHUNKING transmission
 exim -DSERVER=server -DSRV=tls -bd -oX PORT_S
 ****
-exim -odf CALLER@test.ex
+exim -oMt this-user -f this-user -odf other-user@test.ex
 Test message. Contains FF: ÿ
 ****
 killdaemon
