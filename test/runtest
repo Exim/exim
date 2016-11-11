@@ -46,7 +46,7 @@ $testversion = "4.80 (08-May-12)";
 # normal = 2432   tls_dh_max_bits = 2236
 $gnutls_dh_bits_normal = 2236;
 
-$cf = 'bin/cf -exact';
+$cf = "bin/cf -exact";
 $cr = "\r";
 $debug = 0;
 $flavour = do {
@@ -1722,9 +1722,14 @@ return $yield;
 # Returns:  nothing
 
 sub run_system {
-  my $cmd = shift;
-  print '>> ' . $cmd =~ s/; /;\n>>/r . "\n" if $debug;
-  system $cmd;
+my($cmd) = $_[0];
+if ($debug)
+  {
+  my($prcmd) = $cmd;
+  $prcmd =~ s/; /;\n>> /;
+  print ">> $prcmd\n";
+  }
+system("$cmd");
 }
 
 
@@ -2251,7 +2256,7 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
     {
     $pidfile = "$parm_cwd/spool/exim-daemon.pid";
     if ($debug) { printf ">> daemon: $cmd\n"; }
-    run_system('sudo mkdir spool/log 2>/dev/null');
+    run_system("sudo mkdir spool/log 2>/dev/null");
     run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
 
     # Before running the command, convert the -bd option into -bdf so that an
@@ -2287,7 +2292,7 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
     my $listen_port = $1;
     if ($debug) { printf ">> wait-mode daemon: $cmd\n"; }
-    run_system('sudo mkdir spool/log 2>/dev/null');
+    run_system("sudo mkdir spool/log 2>/dev/null");
     run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
 
     my $pid = fork();
@@ -3180,9 +3185,13 @@ if ($parm_hostname =~ /[[:upper:]]/)
 # that was done above. Furthermore, we ensure that the binary is deleted at the
 # end of the test. First ensure the directory exists.
 
-unlink 'eximdir/exim';  # Just in case
--d 'eximdir' or mkdir('eximdir', 0710) or die "** Unable to mkdir $parm_cwd/eximdir: $!\n";
-system("sudo chgrp $parm_eximgroup eximdir");
+if (-d "eximdir")
+  { unlink "eximdir/exim"; }     # Just in case
+else
+  {
+  mkdir("eximdir", 0710) || die "** Unable to mkdir $parm_cwd/eximdir: $!\n";
+  system("sudo chgrp $parm_eximgroup eximdir");
+  }
 
 # The construction of the patched binary must be done as root, so we use
 # a separate script. As well as indicating that this is a test-harness binary,
@@ -3197,16 +3206,16 @@ die "** Unable to make patched exim: $!\n"
 # tests_exit(), so that suitable cleaning up can be done when required.
 # Arrange to catch interrupting signals, to assist with this.
 
-$SIG{INT} = \&inthandler;
-$SIG{PIPE} = \&pipehandler;
+$SIG{'INT'} = \&inthandler;
+$SIG{'PIPE'} = \&pipehandler;
 
 # For some tests, we need another copy of the binary that is setuid exim rather
 # than root.
 
-system('sudo cp eximdir/exim eximdir/exim_exim;' .
+system("sudo cp eximdir/exim eximdir/exim_exim;" .
        "sudo chown $parm_eximuser eximdir/exim_exim;" .
        "sudo chgrp $parm_eximgroup eximdir/exim_exim;" .
-       'sudo chmod 06755 eximdir/exim_exim');
+       "sudo chmod 06755 eximdir/exim_exim");
 
 
 ##################################################
