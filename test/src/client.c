@@ -166,58 +166,24 @@ sigalrm_seen = 1;
 /****************************************************************************/
 
 #ifdef HAVE_OPENSSL
+# ifndef DISABLE_OCSP
 
-X509_STORE *
-setup_verify(BIO *bp, char *CAfile, char *CApath)
-{
-        X509_STORE *store;
-        X509_LOOKUP *lookup;
-        if(!(store = X509_STORE_new())) goto end;
-        lookup=X509_STORE_add_lookup(store,X509_LOOKUP_file());
-        if (lookup == NULL) goto end;
-        if (CAfile) {
-                if(!X509_LOOKUP_load_file(lookup,CAfile,X509_FILETYPE_PEM)) {
-                        BIO_printf(bp, "Error loading file %s\n", CAfile);
-                        goto end;
-                }
-        } else X509_LOOKUP_load_file(lookup,NULL,X509_FILETYPE_DEFAULT);
-
-        lookup=X509_STORE_add_lookup(store,X509_LOOKUP_hash_dir());
-        if (lookup == NULL) goto end;
-        if (CApath) {
-                if(!X509_LOOKUP_add_dir(lookup,CApath,X509_FILETYPE_PEM)) {
-                        BIO_printf(bp, "Error loading directory %s\n", CApath);
-                        goto end;
-                }
-        } else X509_LOOKUP_add_dir(lookup,NULL,X509_FILETYPE_DEFAULT);
-
-        ERR_clear_error();
-        return store;
-        end:
-        X509_STORE_free(store);
-        return NULL;
-}
-
-
-#ifndef DISABLE_OCSP
 static STACK_OF(X509) *
-cert_stack_from_store(X509_STORE * store)
+chain_from_pem_file(const uschar * file)
 {
-STACK_OF(X509_OBJECT) * roots= store->objs;
-STACK_OF(X509) * sk = sk_X509_new_null();
-int i;
+BIO * bp;
+X509 * x;
+STACK_OF(X509) * sk;
 
-for(i = sk_X509_OBJECT_num(roots) - 1; i >= 0; i--)
-  {
-  X509_OBJECT * tmp_obj= sk_X509_OBJECT_value(roots, i);
-  if(tmp_obj->type == X509_LU_X509)
-    {
-    X509 * x = tmp_obj->data.x509;
-    sk_X509_push(sk, x);
-    }
-  }
+if (!(sk = sk_X509_new_null())) return NULL;
+if (!(bp = BIO_new_file(CS file, "r"))) return NULL;
+while ((x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
+  sk_X509_push(sk, x);
+BIO_free(bp);
 return sk;
 }
+
+
 
 static void
 cert_stack_free(STACK_OF(X509) * sk)
@@ -234,8 +200,6 @@ const unsigned char *p;
 int len;
 OCSP_RESPONSE *rsp;
 OCSP_BASICRESP *bs;
-char *CAfile = NULL;
-X509_STORE *store = NULL;
 STACK_OF(X509) * sk;
 int ret = 1;
 
@@ -259,14 +223,11 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
   }
 
 
-CAfile = ocsp_stapling;
-if(!(store = setup_verify(arg, CAfile, NULL)))
+if (!(sk = chain_from_pem_file(ocsp_stapling)))
   {
   BIO_printf(arg, "error in cert setup\n");
   return 0;
   }
-
-sk = cert_stack_from_store(store);
 
 /* OCSP_basic_verify takes a "store" arg, but does not
 use it for the chain verification, which is all we do
@@ -283,10 +244,9 @@ else
   BIO_printf(arg, "Response verify OK\n");
 
 cert_stack_free(sk);
-X509_STORE_free(store);
 return ret;
 }
-#endif
+# endif	/*DISABLE_OCSP*/
 
 
 /*************************************************
