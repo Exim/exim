@@ -119,7 +119,7 @@ sub flavour {
     if (open(my $f, '<', "$etc/os-release")) {
         local $_ = join '', <$f>;
         my ($id) = /^ID="?(.*?)"?\s*$/m;
-        my ($version) = /^VERSION_ID="?(.*?)"?\s*$/m;
+        my $version = /^VERSION_ID="?(.*?)"?\s*$/m ? $1 : '';
         return "$id$version";
     }
 

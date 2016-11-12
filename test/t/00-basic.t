@@ -40,9 +40,10 @@ subtest 'exim_binary' => sub {
 };
 
 subtest 'flavour' => sub {
-    is flavour('t/samples/etc.debian8-os-release'), 'debian8' => 'got flavour debian8 from os-release';
-    is flavour('t/samples/etc.debian8-debian-version'), 'debian8' => 'got flavour debian8 from debian_version';
-    is flavour('t/samples/etc.fedora24'), 'fedora24' => 'got flavour fedora24 from os-release';
+    is flavour('t/samples/debian8+os-release/etc'), 'debian8' => 'got flavour debian8 from os-release';
+    is flavour('t/samples/debian8+debian-version/etc'), 'debian8' => 'got flavour debian8 from debian_version';
+    is flavour('t/samples/debian.sid/etc'), 'debian' => 'got flavour debian from debian sid w/o VERSION_ID';
+    is flavour('t/samples/fedora24/etc'), 'fedora24' => 'got flavour fedora24 from os-release';
     is_deeply [flavours()], ['debian8'] => 'got available flavours';
 };
 
