@@ -553,6 +553,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\bAES256-GCM-SHA384\b/AES256-SHA/g;
   s/\bDHE-RSA-AES256-SHA\b/AES256-SHA/g;
 
+  # LibreSSL
+  # TLSv1:ECDHE-RSA-CHACHA20-POLY1305:256
+  s/\bECDHE-RSA-CHACHA20-POLY1305\b/AES256-SHA/g;
+
   # GnuTLS have seen:
   #   TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256
   #   TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128
@@ -1281,6 +1285,8 @@ if (! -e $sf_current)
 
 open(MUNGED, '>', $mf) || tests_exit(-1, "Failed to open $mf: $!");
 my($truncated) = munge($rf, $extra) if -e $rf;
+
+# Append the raw server log, if it is non-empty
 if (defined $rsf && -e $rsf)
   {
   print MUNGED "\n******** SERVER ********\n";
@@ -1880,7 +1886,14 @@ if (/^dump\s+(\S+)/)
   }
 
 
-# The "echo" command is a way of writing comments to the screen.
+# verbose comments start with ###
+if (/^###\s/) {
+  for my $file (qw(test-stdout test-stderr test-stderr-server test-stdout-server)) {
+    open my $fh, '>>', $file or die "Can't open >>$file: $!\n";
+    say {$fh} $_;
+  }
+  return 0;
+}
 
 # The "echo" command is a way of writing comments to the screen.
 if (/^echo\s+(.*)$/)
@@ -3766,7 +3779,7 @@ foreach $test (@test_list)
         last;
         }
 
-      last unless /^(#|\s*$)/;
+      last unless /^(?:#(?!##\s)|\s*$)/;
       }
     last if !defined $_;  # Hit EOF
 
