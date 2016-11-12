@@ -28,6 +28,17 @@
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_ASN1_MACROS
 # define EXIM_OPAQUE_X509
+#else
+# define X509_STORE_CTX_get_verify(ctx)		(ctx)->verify
+# define X509_STORE_CTX_get_verify_cb(ctx)	(ctx)->verify_cb
+# define X509_STORE_CTX_get0_cert(ctx)		(ctx)->cert
+# define X509_STORE_CTX_get0_chain(ctx)		(ctx)->chain
+# define X509_STORE_CTX_get0_untrusted(ctx)	(ctx)->untrusted
+
+# define X509_STORE_CTX_set_verify(ctx, verify_chain)	(ctx)->verify = (verify_chain)
+# define X509_STORE_CTX_set0_verified_chain(ctx, sk)	(ctx)->chain = (sk)
+# define X509_STORE_CTX_set_error_depth(ctx, val)	(ctx)->error_depth = (val)
+# define X509_STORE_CTX_set_current_cert(ctx, cert)	(ctx)->current_cert = (cert)
 #endif
 
 
@@ -592,7 +603,7 @@ int i;
 int depth = 0;
 EVP_PKEY *takey;
 X509 *ca;
-STACK_OF(X509) *in = ctx->untrusted;        /* XXX: Accessor? */
+STACK_OF(X509) *in = X509_STORE_CTX_get0_untrusted(ctx);
 
 if (!grow_chain(dane, UNTRUSTED, 0))
   return -1;
@@ -703,11 +714,14 @@ if (matched > 0)
   dane->mdpth = 0;
   dane->match = cert;
   X509_up_ref(cert);
-  if(!ctx->chain)
+  if(!X509_STORE_CTX_get0_chain(ctx))
     {
-    if (  (ctx->chain = sk_X509_new_null()) != 0
-       && sk_X509_push(ctx->chain, cert))
+    STACK_OF(X509) * sk = sk_X509_new_null();
+    if (sk && sk_X509_push(sk, cert))
+      {
+      X509_STORE_CTX_set0_verified_chain(ctx, sk);
       X509_up_ref(cert);
+      }
     else
       {
       DANEerr(DANESSL_F_CHECK_END_ENTITY, ERR_R_MALLOC_FAILURE);
@@ -885,21 +899,19 @@ return matched;
 static int
 verify_chain(X509_STORE_CTX *ctx)
 {
-dane_selector_list issuer_rrs;
-dane_selector_list leaf_rrs;
-int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
+int (*cb)(int, X509_STORE_CTX *) = X509_STORE_CTX_get_verify_cb(ctx);
+X509 *cert = X509_STORE_CTX_get0_cert(ctx);
+int chain_length = sk_X509_num(X509_STORE_CTX_get0_chain(ctx));
 int ssl_idx = SSL_get_ex_data_X509_STORE_CTX_idx();
 SSL *ssl = X509_STORE_CTX_get_ex_data(ctx, ssl_idx);
 ssl_dane *dane = SSL_get_ex_data(ssl, dane_idx);
-X509 *cert = ctx->cert;             /* XXX: accessor? */
+dane_selector_list issuer_rrs = dane->selectors[DANESSL_USAGE_PKIX_TA];
+dane_selector_list leaf_rrs = dane->selectors[DANESSL_USAGE_PKIX_EE];
 int matched = 0;
-int chain_length = sk_X509_num(ctx->chain);
 
 DEBUG(D_tls) debug_printf("Dane verify_chain\n");
 
-issuer_rrs = dane->selectors[DANESSL_USAGE_PKIX_TA];
-leaf_rrs = dane->selectors[DANESSL_USAGE_PKIX_EE];
-ctx->verify = dane->verify;
+X509_STORE_CTX_set_verify(ctx, dane->verify);
 
 if ((matched = name_check(dane, cert)) < 0)
   {
@@ -909,8 +921,8 @@ if ((matched = name_check(dane, cert)) < 0)
 
 if (!matched)
   {
-  ctx->error_depth = 0;
-  ctx->current_cert = cert;
+  X509_STORE_CTX_set_error_depth(ctx, 0);
+  X509_STORE_CTX_set_current_cert(ctx, cert);
   X509_STORE_CTX_set_error(ctx, X509_V_ERR_HOSTNAME_MISMATCH);
   if (!cb(0, ctx))
     return 0;
@@ -926,7 +938,7 @@ matched = 0;
  */
 if (dane->roots && sk_X509_num(dane->roots))
   {
-  X509 *top = sk_X509_value(ctx->chain, dane->depth);
+  X509 *top = sk_X509_value(X509_STORE_CTX_get0_chain(ctx), dane->depth);
 
   dane->mdpth = dane->depth;
   dane->match = top;
@@ -935,15 +947,15 @@ if (dane->roots && sk_X509_num(dane->roots))
 #ifndef NO_CALLBACK_WORKAROUND
   if (X509_check_issued(top, top) != X509_V_OK)
     {
-    ctx->error_depth = dane->depth;
-    ctx->current_cert = top;
+    X509_STORE_CTX_set_error_depth(ctx, dane->depth);
+    X509_STORE_CTX_set_current_cert(ctx, top);
     if (!cb(1, ctx))
       return 0;
     }
 #endif
   /* Pop synthetic trust-anchor ancestors off the chain! */
   while (--chain_length > dane->depth)
-      X509_free(sk_X509_pop(ctx->chain));
+      X509_free(sk_X509_pop(X509_STORE_CTX_get0_chain(ctx)));
   }
 else
   {
@@ -961,7 +973,7 @@ else
   if (!matched && issuer_rrs)
     for (n = chain_length-1; !matched && n >= 0; --n)
       {
-      xn = sk_X509_value(ctx->chain, n);
+      xn = sk_X509_value(X509_STORE_CTX_get0_chain(ctx), n);
       if (n > 0 || X509_check_issued(xn, xn) == X509_V_OK)
 	matched = match(issuer_rrs, xn, n);
       }
@@ -970,8 +982,8 @@ else
 
   if (!matched)
     {
-    ctx->current_cert = cert;
-    ctx->error_depth = 0;
+    X509_STORE_CTX_set_error_depth(ctx, 0);
+    X509_STORE_CTX_set_current_cert(ctx, cert);
     X509_STORE_CTX_set_error(ctx, X509_V_ERR_CERT_UNTRUSTED);
     if (!cb(0, ctx))
       return 0;
@@ -984,7 +996,7 @@ else
     }
   }
 
-return ctx->verify(ctx);
+return (X509_STORE_CTX_get_verify(ctx))(ctx);
 }
 
 static void
@@ -1020,9 +1032,9 @@ verify_cert(X509_STORE_CTX *ctx, void *unused_ctx)
 static int ssl_idx = -1;
 SSL *ssl;
 ssl_dane *dane;
-int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
+int (*cb)(int, X509_STORE_CTX *) = X509_STORE_CTX_get_verify_cb(ctx);
+X509 *cert = X509_STORE_CTX_get0_cert(ctx);
 int matched;
-X509 *cert = ctx->cert;             /* XXX: accessor? */
 
 DEBUG(D_tls) debug_printf("Dane verify_cert\n");
 
@@ -1045,8 +1057,8 @@ if (dane->selectors[DANESSL_USAGE_DANE_EE])
   {
   if ((matched = check_end_entity(ctx, dane, cert)) > 0)
     {
-    ctx->error_depth = 0;
-    ctx->current_cert = cert;
+    X509_STORE_CTX_set_error_depth(ctx, 0);
+    X509_STORE_CTX_set_current_cert(ctx, cert);
     return cb(1, ctx);
     }
   if (matched < 0)
@@ -1071,7 +1083,7 @@ if (dane->selectors[DANESSL_USAGE_DANE_EE])
        */
       X509_STORE_CTX_trusted_stack(ctx, dane->roots);
       X509_STORE_CTX_set_chain(ctx, dane->chain);
-      OPENSSL_assert(ctx->untrusted == dane->chain);
+      OPENSSL_assert(X509_STORE_CTX_get0_untrusted(ctx) == dane->chain);
       }
     }
 
@@ -1080,8 +1092,8 @@ if (dane->selectors[DANESSL_USAGE_DANE_EE])
    * X509_verify_cert() builds the full chain and calls our verify_chain()
    * wrapper.
    */
-  dane->verify = ctx->verify;
-  ctx->verify = verify_chain;
+  dane->verify = X509_STORE_CTX_get_verify(ctx);
+  X509_STORE_CTX_set_verify(ctx, verify_chain);
 
   if (X509_verify_cert(ctx))
     return 1;

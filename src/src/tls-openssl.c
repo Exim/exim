@@ -862,6 +862,7 @@ was a file (not a directory, or "system").  It is unfortunate we
 cannot used the connection context store, as that would neatly
 handle the "system" case too, but there seems to be no library
 function for getting a stack from a store.
+[ In OpenSSL 1.1 - ?  X509_STORE_CTX_get0_chain(ctx) ? ]
 We do not free the stack since it could be needed a second time for
 SNI handling.
 
