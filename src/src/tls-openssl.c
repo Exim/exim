@@ -151,6 +151,7 @@ typedef struct tls_ext_ctx_cb {
   uschar *privatekey;
 #ifndef DISABLE_OCSP
   BOOL is_server;
+  STACK_OF(X509) *verify_stack;		/* chain for verifying the proof */
   union {
     struct {
       uschar        *file;
@@ -159,7 +160,6 @@ typedef struct tls_ext_ctx_cb {
     } server;
     struct {
       X509_STORE    *verify_store;	/* non-null if status requested */
-      STACK_OF(X509) *verify_stack;
       BOOL	    verify_required;
     } client;
   } u_ocsp;
@@ -427,7 +427,7 @@ else if (depth != 0)
     if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
                              cert))
       ERR_clear_error();
-    sk_X509_push(client_static_cbinfo->u_ocsp.client.verify_stack, cert);
+    sk_X509_push(client_static_cbinfo->verify_stack, cert);
     }
 #endif
 #ifndef DISABLE_EVENT
@@ -781,35 +781,6 @@ return !rv;
 /*************************************************
 *       Load OCSP information into state         *
 *************************************************/
-
-static STACK_OF(X509) *
-cert_stack_from_store(X509_STORE * store)
-{
-STACK_OF(X509_OBJECT) * roots= store->objs;
-STACK_OF(X509) * sk = sk_X509_new_null();
-int i;
-
-for(i = sk_X509_OBJECT_num(roots) - 1; i >= 0; i--)
-  {
-  X509_OBJECT * tmp_obj= sk_X509_OBJECT_value(roots, i);
-  if(tmp_obj->type == X509_LU_X509)
-    {
-    X509 * x = tmp_obj->data.x509;
-    sk_X509_push(sk, x);
-    }
-  }
-return sk;
-}
-
-static void
-cert_stack_free(STACK_OF(X509) * sk)
-{
-while (sk_X509_num(sk) > 0) (void) sk_X509_pop(sk);
-sk_X509_free(sk);
-}
-
-
-
 /* Called to load the server OCSP response from the given file into memory, once
 caller has determined this is needed.  Checks validity.  Debugs a message
 if invalid.
@@ -831,7 +802,6 @@ OCSP_RESPONSE * resp;
 OCSP_BASICRESP * basic_response;
 OCSP_SINGLERESP * single_response;
 ASN1_GENERALIZEDTIME * rev, * thisupd, * nextupd;
-X509_STORE * store;
 STACK_OF(X509) * sk;
 unsigned long verify_flags;
 int status, reason, i;
@@ -872,8 +842,7 @@ if (!(basic_response = OCSP_response_get1_basic(resp)))
   goto bad;
   }
 
-store = SSL_CTX_get_cert_store(sctx);
-sk = cert_stack_from_store(store);
+sk = cbinfo->verify_stack;
 verify_flags = OCSP_NOVERIFY; /* check sigs, but not purpose */
 
 /* May need to expose ability to adjust those flags?
@@ -888,6 +857,14 @@ use it for the chain verification, which is all we do
 when OCSP_NOVERIFY is set.  The content from the wire
 "basic_response" and a cert-stack "sk" are all that is used.
 
+We have a stack, loaded in setup_certs() if tls_verify_certificates
+was a file (not a directory, or "system").  It is unfortunate we
+cannot used the connection context store, as that would neatly
+handle the "system" case too, but there seems to be no library
+function for getting a stack from a store.
+We do not free the stack since it could be needed a second time for
+SNI handling.
+
 Seperately we might try to replace using OCSP_basic_verify() - which seems to not
 be a public interface into the OpenSSL library (there's no manual entry) - 
 But what with?  We also use OCSP_basic_verify in the client stapling callback.
@@ -901,10 +878,8 @@ if ((i = OCSP_basic_verify(basic_response, sk, NULL, verify_flags)) < 0)
     ERR_error_string(ERR_get_error(), ssl_errstring);
     debug_printf("OCSP response verify failure: %s\n", US ssl_errstring);
     }
-  cert_stack_free(sk);
   goto bad;
   }
-cert_stack_free(sk);
 
 /* Here's the simplifying assumption: there's only one response, for the
 one certificate we use, and nothing for anything else in a chain.  If this
@@ -1106,9 +1081,7 @@ if (cbinfo->is_server && cbinfo->u_ocsp.server.file)
       DEBUG(D_tls) debug_printf(" - value unchanged, using existing values\n");
       }
     else
-      {
       ocsp_load_response(sctx, cbinfo, expanded);
-      }
     }
   }
 #endif
@@ -1195,8 +1168,9 @@ if (cbinfo->u_ocsp.server.file)
   }
 #endif
 
-rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE, verify_callback_server);
-if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+if ((rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE,
+		      verify_callback_server)) != OK)
+  return SSL_TLSEXT_ERR_NOACK;
 
 /* do this after setup_certs, because this can require the certs for verifying
 OCSP information. */
@@ -1324,7 +1298,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
     /* Use the chain that verified the server cert to verify the stapled info */
     /* DEBUG(D_tls) x509_store_dump_cert_s_names(cbinfo->u_ocsp.client.verify_store); */
 
-    if ((i = OCSP_basic_verify(bs, cbinfo->u_ocsp.client.verify_stack,
+    if ((i = OCSP_basic_verify(bs, cbinfo->verify_stack,
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       tls_out.ocsp = OCSP_FAILED;
@@ -1447,6 +1421,7 @@ cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
 #ifndef DISABLE_OCSP
+cbinfo->verify_stack = NULL;
 if ((cbinfo->is_server = host==NULL))
   {
   cbinfo->u_ocsp.server.file = ocsp_file;
@@ -1454,10 +1429,7 @@ if ((cbinfo->is_server = host==NULL))
   cbinfo->u_ocsp.server.response = NULL;
   }
 else
-  {
   cbinfo->u_ocsp.client.verify_store = NULL;
-  cbinfo->u_ocsp.client.verify_stack = NULL;
-  }
 #endif
 cbinfo->dhparam = dhparam;
 cbinfo->server_cipher_list = NULL;
@@ -1554,8 +1526,17 @@ if (  !init_dh(*ctxp, dhparam, host)
 if ((rc = tls_expand_session_files(*ctxp, cbinfo)) != OK)
   return rc;
 
-/* If we need to handle SNI, do so */
+/* If we need to handle SNI or OCSP, do so */
+
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
+# ifndef DISABLE_OCSP
+  if (!(cbinfo->verify_stack = sk_X509_new_null()))
+    {
+    DEBUG(D_tls) debug_printf("failed to create stack for stapling verify\n");
+    return FAIL;
+    }
+# endif
+
 if (host == NULL)		/* server */
   {
 # ifndef DISABLE_OCSP
@@ -1581,11 +1562,6 @@ else			/* client */
     if (!(cbinfo->u_ocsp.client.verify_store = X509_STORE_new()))
       {
       DEBUG(D_tls) debug_printf("failed to create store for stapling verify\n");
-      return FAIL;
-      }
-    if (!(cbinfo->u_ocsp.client.verify_stack = sk_X509_new_null()))
-      {
-      DEBUG(D_tls) debug_printf("failed to create stack for stapling verify\n");
       return FAIL;
       }
     SSL_CTX_set_tlsext_status_cb(*ctxp, tls_client_stapling_cb);
@@ -1677,6 +1653,23 @@ else
 *        Set up for verifying certificates       *
 *************************************************/
 
+/* Load certs from file, return TRUE on success */
+
+static BOOL
+chain_from_pem_file(const uschar * file, STACK_OF(X509) * verify_stack)
+{
+BIO * bp;
+X509 * x;
+
+if (!(bp = BIO_new_file(CS file, "r"))) return FALSE;
+while ((x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
+  sk_X509_push(verify_stack, x);
+BIO_free(bp);
+return TRUE;
+}
+
+
+
 /* Called by both client and server startup
 
 Arguments:
@@ -1724,12 +1717,29 @@ if (expcerts && *expcerts)
       if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
 	{ file = NULL; dir = expcerts; }
       else
-	{ file = expcerts; dir = NULL; }
+	{
+	file = expcerts; dir = NULL;
+#ifndef DISABLE_OCSP
+	/* In the server if we will be offering an OCSP proof, load chain from
+	file for verifying the OCSP proof at load time. */
+
+	if (  !host
+	   && statbuf.st_size > 0
+	   && server_static_cbinfo->u_ocsp.server.file
+	   && !chain_from_pem_file(file, server_static_cbinfo->verify_stack)
+	   )
+	  {
+	  log_write(0, LOG_MAIN|LOG_PANIC,
+	    "failed to load cert hain from %s", file);
+	  return DEFER;
+	  }
+#endif
+	}
 
       /* If a certificate file is empty, the next function fails with an
       unhelpful error message. If we skip it, we get the correct behaviour (no
       certificates are recognized, but the error message is still misleading (it
-      says no certificate was supplied.) But this is better. */
+      says no certificate was supplied).  But this is better. */
 
       if (  (!file || statbuf.st_size > 0)
          && !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
@@ -1876,9 +1886,9 @@ were historically separated by underscores. So that I can use either form in my
 tests, and also for general convenience, we turn underscores into hyphens here.
 */
 
-if (expciphers != NULL)
+if (expciphers)
   {
-  uschar *s = expciphers;
+  uschar * s = expciphers;
   while (*s != 0) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(server_ctx, CS expciphers))
@@ -1912,7 +1922,7 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 
 /* Prepare for new connection */
 
-if ((server_ssl = SSL_new(server_ctx)) == NULL) return tls_error(US"SSL_new", NULL, NULL);
+if (!(server_ssl = SSL_new(server_ctx))) return tls_error(US"SSL_new", NULL, NULL);
 
 /* Warning: we used to SSL_clear(ssl) here, it was removed.
  *
@@ -2066,7 +2076,7 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
     ) if (rr->type == T_TLSA)
   {
-  uschar * p = rr->data;
+  const uschar * p = rr->data;
   uint8_t usage, selector, mtype;
   const char * mdname;
 
