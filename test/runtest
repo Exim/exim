@@ -1279,7 +1279,7 @@ if (! -e $sf_current)
 # was a request to create a saved file. First, create the munged file from any
 # data that does exist.
 
-open(MUNGED, ">$mf") || tests_exit(-1, "Failed to open $mf: $!");
+open(MUNGED, '>', $mf) || tests_exit(-1, "Failed to open $mf: $!");
 my($truncated) = munge($rf, $extra) if -e $rf;
 if (defined $rsf && -e $rsf)
   {
@@ -1310,7 +1310,7 @@ if (-e $sf_current)
     {
     my(@munged, @saved, $i, $j, $k);
 
-    open(MUNGED, "$mf") || tests_exit(-1, "Failed to open $mf: $!");
+    open(MUNGED, $mf) || tests_exit(-1, "Failed to open $mf: $!");
     @munged = <MUNGED>;
     close(MUNGED);
     open(SAVED, $sf_current) || tests_exit(-1, "Failed to open $sf_current: $!");
@@ -1335,7 +1335,7 @@ if (-e $sf_current)
         }
       }
 
-    open(MUNGED, ">$mf") || tests_exit(-1, "Failed to open $mf: $!");
+    open(MUNGED, '>', $mf) || tests_exit(-1, "Failed to open $mf: $!");
     for ($i = 0; $i < @munged; $i++)
       { print MUNGED $munged[$i]; }
     close(MUNGED);
@@ -1347,7 +1347,7 @@ if (-e $sf_current)
     {
     my(@munged, $i, $j);
 
-    open(MUNGED, "$mf") || tests_exit(-1, "Failed to open $mf: $!");
+    open(MUNGED, $mf) || tests_exit(-1, "Failed to open $mf: $!");
     @munged = <MUNGED>;
     close(MUNGED);
 
@@ -1882,6 +1882,7 @@ if (/^dump\s+(\S+)/)
 
 # The "echo" command is a way of writing comments to the screen.
 
+# The "echo" command is a way of writing comments to the screen.
 if (/^echo\s+(.*)$/)
   {
   print "$1\n";
@@ -3757,7 +3758,7 @@ foreach $test (@test_list)
 
       if (/^need_move_frozen_messages/)
         {
-        next if defined $parm_support{"move_frozen_messages"};
+        next if defined $parm_support{move_frozen_messages};
         print ">>> move frozen message support is needed for test $testno, " .
           "but is not\n>>> available: skipping\n";
         $docheck = 0;      # don't check output
@@ -3781,7 +3782,7 @@ foreach $test (@test_list)
     my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE);
     my($cmdrc) = $?;
 
-$0 = "[runtest $testno]";
+    $0 = "[runtest $testno]";
 
     if ($debug) {
       print ">> rc=$rc cmdrc=$cmdrc\n";
