@@ -48,6 +48,6 @@ send_to_server:
   tls_certificate = DIR/aux-fixed/cert2
   tls_privatekey = DIR/aux-fixed/cert2
   tls_require_ciphers = IDEA-CBC-MD5 \
-    ${if eq{$host_address}{127.0.0.1}{:DES-CBC3-SHA:RSA_ARCFOUR_SHA}}
+    ${if eq{$host_address}{127.0.0.1}{:AES256-SHA:RSA_ARCFOUR_SHA}}
 
 # End
