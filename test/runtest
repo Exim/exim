@@ -26,9 +26,9 @@ use Socket;
 use Time::Local;
 use Cwd;
 use File::Basename;
-use FindBin qw'$Bin';
+use FindBin qw'$RealBin';
 
-use lib "$Bin/lib";
+use lib "$RealBin/lib";
 use Exim::Runtest;
 
 use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ('Smart::Comments' => '####');
@@ -36,7 +36,7 @@ use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ('Smart::Comments' => '###
 
 # Start by initializing some global variables
 
-$testversion = "4.80 (08-May-12)";
+chomp(my $testversion = `git describe --always --dirty 2>&1` || '<unknown>');
 
 # This gets embedded in the D-H params filename, and the value comes
 # from asking GnuTLS for "normal", but there appears to be no way to
@@ -44,33 +44,33 @@ $testversion = "4.80 (08-May-12)";
 # We also clamp it because of NSS interop, see addition of tls_dh_max_bits.
 # This value is correct as of GnuTLS 2.12.18 as clamped by tls_dh_max_bits.
 # normal = 2432   tls_dh_max_bits = 2236
-$gnutls_dh_bits_normal = 2236;
+my $gnutls_dh_bits_normal = 2236;
 
-$cf = "bin/cf -exact";
-$cr = "\r";
-$debug = 0;
-$flavour = do {
+my $cf = 'bin/cf -exact';
+my $cr = "\r";
+my $debug = 0;
+my $flavour = do {
   my $f = Exim::Runtest::flavour();
   (grep { $f eq $_ } Exim::Runtest::flavours()) ? $f : 'FOO';
 };
-$force_continue = 0;
-$force_update = 0;
-$log_failed_filename = "failed-summary.log";
-$more = "less -XF";
-$optargs = "";
-$save_output = 0;
-$server_opts = "";
-$valgrind = 0;
+my $force_continue = 0;
+my $force_update = 0;
+my $log_failed_filename = 'failed-summary.log';
+my $more = 'less -XF';
+my $optargs = '';
+my $save_output = 0;
+my $server_opts = '';
+my $valgrind = 0;
 
-$have_ipv4 = 1;
-$have_ipv6 = 1;
-$have_largefiles = 0;
+my $have_ipv4 = 1;
+my $have_ipv6 = 1;
+my $have_largefiles = 0;
 
-$test_start = 1;
-$test_end = $test_top = 8999;
-$test_special_top = 9999;
-@test_list = ();
-@test_dirs = ();
+my $test_start = 1;
+my $test_end = $test_top = 8999;
+my $test_special_top = 9999;
+my @test_list = ();
+my @test_dirs = ();
 
 
 # Networks to use for DNS tests. We need to choose some networks that will
@@ -83,17 +83,17 @@ $test_special_top = 9999;
 # are defined, so it is trivially possible to change them should that ever
 # become necessary.
 
-$parm_ipv4_test_net = "224";
-$parm_ipv6_test_net = "ff00";
+my $parm_ipv4_test_net = 224;
+my $parm_ipv6_test_net = 'ff00';
 
 # Port numbers are currently hard-wired
 
-$parm_port_n = 1223;         # Nothing listening on this port
-$parm_port_s = 1224;         # Used for the "server" command
-$parm_port_d = 1225;         # Used for the Exim daemon
-$parm_port_d2 = 1226;        # Additional for daemon
-$parm_port_d3 = 1227;        # Additional for daemon
-$parm_port_d4 = 1228;        # Additional for daemon
+my $parm_port_n = 1223;         # Nothing listening on this port
+my $parm_port_s = 1224;         # Used for the "server" command
+my $parm_port_d = 1225;         # Used for the Exim daemon
+my $parm_port_d2 = 1226;        # Additional for daemon
+my $parm_port_d3 = 1227;        # Additional for daemon
+my $parm_port_d4 = 1228;        # Additional for daemon
 my $dynamic_socket;          # allocated later for PORT_DYNAMIC
 
 # Find a suiteable group name for test (currently only 0001
@@ -103,10 +103,8 @@ my $parm_mailgroup = Exim::Runtest::mailgroup('mail');
 # Manually set locale
 $ENV{LC_ALL} = 'C';
 
-# In some environments USER does not exists, but we
-# need it for some test(s)
-$ENV{USER} = getpwuid($>)
-  if not exists $ENV{USER};
+# In some environments USER does not exist, but we need it for some test(s)
+$ENV{USER} = getpwuid($>) if not exists $ENV{USER};
 
 my ($parm_configure_owner, $parm_configure_group);
 my ($parm_ipv4, $parm_ipv6);
@@ -461,7 +459,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   if (/^($date)\s+($date)\s+($date)(\s+\*)?\s*$/)
     {
     my($date1,$date2,$date3,$expired) = ($1,$2,$3,$4);
-    $expired = "" if !defined $expired;
+    $expired = '' if !defined $expired;
     my($increment) = date_seconds($date3) - date_seconds($date2);
 
     # We used to use globally unique replacement values, but timing
@@ -1529,19 +1527,19 @@ $yield = 1 if check_file("spool/log/paniclog",
                        "spool/log/serverpaniclog",
                        "test-paniclog-munged",
                        "paniclog/$testno", 0,
-		       $munge->{'paniclog'});
+		       $munge->{paniclog});
 
 $yield = 1 if check_file("spool/log/rejectlog",
                        "spool/log/serverrejectlog",
                        "test-rejectlog-munged",
                        "rejectlog/$testno", 0,
-		       $munge->{'rejectlog'});
+		       $munge->{rejectlog});
 
 $yield = 1 if check_file("spool/log/mainlog",
                        "spool/log/servermainlog",
                        "test-mainlog-munged",
                        "log/$testno", $sortlog,
-		       $munge->{'mainlog'});
+		       $munge->{mainlog});
 
 if (!$stdout_skip)
   {
@@ -1549,7 +1547,7 @@ if (!$stdout_skip)
                        "test-stdout-server",
                        "test-stdout-munged",
                        "stdout/$testno", 0,
-		       $munge->{'stdout'});
+		       $munge->{stdout});
   }
 
 if (!$stderr_skip)
@@ -1558,7 +1556,7 @@ if (!$stderr_skip)
                        "test-stderr-server",
                        "test-stderr-munged",
                        "stderr/$testno", 0,
-		       $munge->{'stderr'});
+		       $munge->{stderr});
   }
 
 # Compare any delivered messages, unless this test is skipped.
@@ -1598,7 +1596,7 @@ if (! $message_skip)
     print ">> COMPARE $mail mail/$testno.$saved_mail\n" if $debug;
     $yield = 1 if check_file($mail, undef, "test-mail-munged",
       "mail/$testno.$saved_mail", 0,
-      $munge->{'mail'});
+      $munge->{mail});
     delete $expected_mails{"mail/$testno.$saved_mail"};
     }
 
@@ -1670,7 +1668,7 @@ if (! $msglog_skip)
           /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
       $yield = 1 if check_file("spool/msglog/$msglog", undef,
         "test-msglog-munged", "msglog/$testno.$munged_msglog", 0,
-        $munge->{'msglog'});
+        $munge->{msglog});
       delete $expected_msglogs{"$testno.$munged_msglog"};
       }
     }
@@ -2132,7 +2130,7 @@ if (/^(cat)?write\s+(\S+)(?:\s+(.*))?\s*$/)
     while (scalar @sizes > 0)
       {
       ($count,$len,$leadin) = (shift @sizes) =~ /(\d+)x(\d+)(?:=(.*))?/;
-      $leadin = "" if !defined $leadin;
+      $leadin = '' if !defined $leadin;
       $leadin =~ s/_/ /g;
       $len -= length($leadin) + 1;
       while ($count-- > 0)
@@ -2191,9 +2189,9 @@ if (/^client/ || /^(sudo\s+)?perl\b/)
 elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+)?\s+(.*)$/)
   {
   $args = $6;
-  my($envset) = (defined $1)? $1      : "";
-  my($sudo)   = (defined $3)? "sudo " . (defined $4 ? "-u $4 ":"")  : "";
-  my($special)= (defined $5)? $5      : "";
+  my($envset) = (defined $1)? $1      : '';
+  my($sudo)   = (defined $3)? "sudo " . (defined $4 ? "-u $4 ":'')  : '';
+  my($special)= (defined $5)? $5      : '';
   $wait_time  = (defined $2)? $2      : 0;
 
   # Return 2 rather than 1 afterwards
@@ -2248,7 +2246,7 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
   $args =~ s/(?:^|\s)-d\S*// if $optargs =~ /(?:^|\s)-d/;
 
-  my $opt_valgrind = $valgrind ? "valgrind --leak-check=yes --suppressions=$parm_cwd/aux-fixed/valgrind.supp " : "";
+  my $opt_valgrind = $valgrind ? "valgrind --leak-check=yes --suppressions=$parm_cwd/aux-fixed/valgrind.supp " : '';
 
   $cmd = "$envset$sudo$opt_valgrind" .
          "$parm_cwd/eximdir/exim$special$optargs " .
@@ -2376,7 +2374,7 @@ else { tests_exit(-1, "Command unrecognized in line $lineno: $_"); }
 # -DSERVER=server add "-server" to the command, where it will adjoin the name
 # for the stderr file. See comment above about the use of -DSERVER.
 
-$stderrsuffix = ($cmd =~ /\s-DSERVER=server\s/)? "-server" : "";
+$stderrsuffix = ($cmd =~ /\s-DSERVER=server\s/)? "-server" : '';
 print ">> |${cmd}${stderrsuffix}\n" if ($debug);
 open CMD, "|${cmd}${stderrsuffix}" || tests_exit(1, "Failed to run $cmd");
 
@@ -2473,7 +2471,7 @@ else
 # '/' but exists in the file system, it's assumed to be the Exim binary.
 
 ($parm_exim, @ARGV) = Exim::Runtest::exim_binary(@ARGV);
-print "Exim binary is $parm_exim\n" if $parm_exim ne "";
+print "Exim binary is $parm_exim\n" if $parm_exim ne '';
 
 
 
@@ -2488,7 +2486,7 @@ print "Exim binary is $parm_exim\n" if $parm_exim ne "";
 while (@ARGV > 0 && $ARGV[0] =~ /^-/)
   {
   my($arg) = shift @ARGV;
-  if ($optargs eq "")
+  if ($optargs eq '')
     {
     if ($arg eq "-DEBUG")  { $debug = 1; $cr = "\n"; next; }
     if ($arg eq "-DIFF")   { $cf = "diff -u"; next; }
@@ -2541,7 +2539,7 @@ $parm_cwd = Cwd::getcwd();
 
 # If $parm_exim is still empty, ask the caller
 
-if ($parm_exim eq "")
+if ($parm_exim eq '')
   {
   print "** Did not find an Exim binary to test\n";
   for ($i = 0; $i < 5; $i++)
@@ -2559,7 +2557,7 @@ if ($parm_exim eq "")
       print "** $trybin does not exist\n";
       }
     }
-  die "** Too many tries\n" if $parm_exim eq "";
+  die "** Too many tries\n" if $parm_exim eq '';
   }
 
 
@@ -2733,7 +2731,7 @@ while (<EXIMINFO>)
       if ($k =~ "/")
         {
         @temp = split /\//, $k;
-        $parm_transports{"$temp[0]"} = " ";
+        $parm_transports{$temp[0]} = " ";
         for ($i = 1; $i < @temp; $i++)
           { $parm_transports{"$temp[0]/$temp[$i]"} = " "; }
         }
@@ -2752,7 +2750,7 @@ unlink("$parm_cwd/test-config");
 # These are crude tests. If they aren't good enough, we'll have to improve
 # them, for example by actually passing a message through spamc or clamscan.
 
-if (defined $parm_support{'Content_Scanning'})
+if (defined $parm_support{Content_Scanning})
   {
   my $sock = new FileHandle;
 
@@ -2803,7 +2801,7 @@ if (defined $parm_support{'Content_Scanning'})
       }
     else
       {
-      $parm_running{'SpamAssassin'} = ' ';
+      $parm_running{SpamAssassin} = ' ';
       print "  SpamAssassin (spamd) seems to be running\n";
       }
     }
@@ -2822,11 +2820,11 @@ if (defined $parm_support{'Content_Scanning'})
     print "The clamscan command works";
 
     $test_prefix = $ENV{EXIM_TEST_PREFIX};
-    $test_prefix = "" if !defined $test_prefix;
+    $test_prefix = '' if !defined $test_prefix;
 
     foreach $f ("$test_prefix/etc/clamd.conf",
                 "$test_prefix/usr/local/etc/clamd.conf",
-                "$test_prefix/etc/clamav/clamd.conf", "")
+                "$test_prefix/etc/clamav/clamd.conf", '')
       {
       if (-e $f)
         {
@@ -2837,7 +2835,7 @@ if (defined $parm_support{'Content_Scanning'})
 
     # Read the ClamAV configuration file and find the socket interface.
 
-    if ($clamconf ne "")
+    if ($clamconf ne '')
       {
       my $socket_domain;
       open(IN, "$clamconf") || die "\n** Unable to open $clamconf: $!\n";
@@ -2924,7 +2922,7 @@ if (defined $parm_support{'Content_Scanning'})
           }
         else
           {
-          $parm_running{'ClamAV'} = ' ';
+          $parm_running{ClamAV} = ' ';
           print "  ClamAV seems to be running\n";
           }
         }
@@ -2947,12 +2945,12 @@ if (defined $parm_support{'Content_Scanning'})
 ##################################################
 #       Check for redis                          #
 ##################################################
-if (defined $parm_lookups{'redis'})
+if (defined $parm_lookups{redis})
   {
   if (system("redis-server -v 2>/dev/null >/dev/null") == 0)
     {
     print "The redis-server command works\n";
-    $parm_running{'redis'} = ' ';
+    $parm_running{redis} = ' ';
     }
   else
     {
@@ -2967,21 +2965,21 @@ if (defined $parm_lookups{'redis'})
 # This test suite assumes that Exim has been built with at least the "usual"
 # set of routers, transports, and lookups. Ensure that this is so.
 
-$missing = "";
+$missing = '';
 
-$missing .= "     Lookup: lsearch\n" if (!defined $parm_lookups{'lsearch'});
+$missing .= "     Lookup: lsearch\n" if (!defined $parm_lookups{lsearch});
 
-$missing .= "     Router: accept\n" if (!defined $parm_routers{'accept'});
-$missing .= "     Router: dnslookup\n" if (!defined $parm_routers{'dnslookup'});
-$missing .= "     Router: manualroute\n" if (!defined $parm_routers{'manualroute'});
-$missing .= "     Router: redirect\n" if (!defined $parm_routers{'redirect'});
+$missing .= "     Router: accept\n" if (!defined $parm_routers{accept});
+$missing .= "     Router: dnslookup\n" if (!defined $parm_routers{dnslookup});
+$missing .= "     Router: manualroute\n" if (!defined $parm_routers{manualroute});
+$missing .= "     Router: redirect\n" if (!defined $parm_routers{redirect});
 
-$missing .= "     Transport: appendfile\n" if (!defined $parm_transports{'appendfile'});
-$missing .= "     Transport: autoreply\n" if (!defined $parm_transports{'autoreply'});
-$missing .= "     Transport: pipe\n" if (!defined $parm_transports{'pipe'});
-$missing .= "     Transport: smtp\n" if (!defined $parm_transports{'smtp'});
+$missing .= "     Transport: appendfile\n" if (!defined $parm_transports{appendfile});
+$missing .= "     Transport: autoreply\n" if (!defined $parm_transports{autoreply});
+$missing .= "     Transport: pipe\n" if (!defined $parm_transports{pipe});
+$missing .= "     Transport: smtp\n" if (!defined $parm_transports{smtp});
 
-if ($missing ne "")
+if ($missing ne '')
   {
   print "\n";
   print "** Many features can be included or excluded from Exim binaries.\n";
@@ -3003,8 +3001,8 @@ if ($missing ne "")
 for $prog ("cf", "checkaccess", "client", "client-ssl", "client-gnutls",
            "fakens", "iefbr14", "server")
   {
-  next if ($prog eq "client-ssl" && !defined $parm_support{'OpenSSL'});
-  next if ($prog eq "client-gnutls" && !defined $parm_support{'GnuTLS'});
+  next if ($prog eq "client-ssl" && !defined $parm_support{OpenSSL});
+  next if ($prog eq "client-gnutls" && !defined $parm_support{GnuTLS});
   if (!-e "bin/$prog")
     {
     print "\n";
@@ -3018,9 +3016,9 @@ for $prog ("cf", "checkaccess", "client", "client-ssl", "client-gnutls",
 # have that functionality compiled, we needn't bother.
 
 $dlfunc_deleted = 0;
-if (defined $parm_support{'Expand_dlfunc'} && !-e "bin/loaded")
+if (defined $parm_support{Expand_dlfunc} && !-e 'bin/loaded')
   {
-  delete $parm_support{'Expand_dlfunc'};
+  delete $parm_support{Expand_dlfunc};
   $dlfunc_deleted = 1;
   }
 
@@ -3105,7 +3103,7 @@ elsif ($have_ipv4 == 0)
   }
 else
   {
-  $parm_running{"IPv4"} = " ";
+  $parm_running{IPv4} = " ";
   }
 
 if (not $parm_ipv6)
@@ -3113,15 +3111,15 @@ if (not $parm_ipv6)
   $have_ipv6 = 0;
   $parm_ipv6 = "<no IPv6 address found>";
   $server_opts .= " -noipv6";
-  delete($parm_support{"IPv6"});
+  delete($parm_support{IPv6});
   }
 elsif ($have_ipv6 == 0)
   {
   $parm_ipv6 = "<IPv6 testing disabled>";
   $server_opts .= " -noipv6";
-  delete($parm_support{"IPv6"});
+  delete($parm_support{IPv6});
   }
-elsif (!defined $parm_support{'IPv6'})
+elsif (!defined $parm_support{IPv6})
   {
   $have_ipv6 = 0;
   $parm_ipv6 = "<no IPv6 support in Exim binary>";
@@ -3129,7 +3127,7 @@ elsif (!defined $parm_support{'IPv6'})
   }
 else
   {
-  $parm_running{"IPv6"} = " ";
+  $parm_running{IPv6} = " ";
   }
 
 print "IPv4 address is $parm_ipv4\n";
@@ -3137,7 +3135,7 @@ print "IPv6 address is $parm_ipv6\n";
 
 # For munging test output, we need the reversed IP addresses.
 
-$parm_ipv4r = ($parm_ipv4 !~ /^\d/)? "" :
+$parm_ipv4r = ($parm_ipv4 !~ /^\d/)? '' :
   join(".", reverse(split /\./, $parm_ipv4));
 
 $parm_ipv6r = $parm_ipv6;             # Appropriate if not in use
@@ -3220,8 +3218,8 @@ die "** Unable to make patched exim: $!\n"
 # tests_exit(), so that suitable cleaning up can be done when required.
 # Arrange to catch interrupting signals, to assist with this.
 
-$SIG{'INT'} = \&inthandler;
-$SIG{'PIPE'} = \&pipehandler;
+$SIG{INT} = \&inthandler;
+$SIG{PIPE} = \&pipehandler;
 
 # For some tests, we need another copy of the binary that is setuid exim rather
 # than root.
@@ -3242,10 +3240,10 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
 ($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
 $dbm_build_deleted = 0;
-if (defined $parm_lookups{'dbm'} &&
+if (defined $parm_lookups{dbm} &&
     system("cp $parm_exim_dir/exim_dbmbuild eximdir") != 0)
   {
-  delete $parm_lookups{'dbm'};
+  delete $parm_lookups{dbm};
   $dbm_build_deleted = 1;
   }
 
@@ -3505,8 +3503,8 @@ foreach $basedir ("aux-var", "dnszones")
 
 # Set a user's shell, distinguishable from /bin/sh
 
-symlink("/bin/sh","aux-var/sh");
-$ENV{'SHELL'} = $parm_shell = $parm_cwd . "/aux-var/sh";
+symlink('/bin/sh' => 'aux-var/sh');
+$ENV{SHELL} = $parm_shell = "$parm_cwd/aux-var/sh";
 
 ##################################################
 #     Create fake DNS zones for this host        #
@@ -3559,7 +3557,7 @@ if ($have_ipv6 && $parm_ipv6 ne "::1")
   }
   my(@components) = split /:/, $exp_v6;
   my(@nibbles) = reverse (split /\s*/, shift @components);
-  my($sep) =  "";
+  my($sep) =  '';
 
   $" = ".";
   open(OUT, ">$parm_cwd/dnszones/db.ip6.@nibbles") ||
@@ -3619,7 +3617,7 @@ print "\nPress RETURN to run the tests: ";
 $_ = $force_continue ? "c" : <T>;
 print "\n";
 
-$lasttestdir = "";
+$lasttestdir = '';
 
 foreach $test (@test_list)
   {
@@ -3640,7 +3638,7 @@ foreach $test (@test_list)
     $gnutls = 0;
     if (-s "scripts/$thistestdir/REQUIRES")
       {
-      my($indent) = "";
+      my($indent) = '';
       print "\n>>> The following tests require: ";
       open(IN, "scripts/$thistestdir/REQUIRES") ||
         tests_exit(-1, "Failed to open scripts/$thistestdir/REQUIRES: $1");
@@ -3684,7 +3682,7 @@ foreach $test (@test_list)
   $stdout_skip = 0;
   $rmfiltertest = 0;
   $is_ipv6test = 0;
-  $TEST_STATE->{munge} = "";
+  $TEST_STATE->{munge} = '';
 
   # Remove the associative arrays used to hold checked mail files and msglogs
 
@@ -3790,7 +3788,7 @@ foreach $test (@test_list)
     # command was run and waited for, and 3 if a command
     # was run and not waited for (usually a daemon or server startup).
 
-    my($commandname) = "";
+    my($commandname) = '';
     my($expectrc) = 0;
     my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE);
     my($cmdrc) = $?;
