@@ -8,6 +8,9 @@ OPT= 127.0.0.1 7833
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
+# we need to set the sender
+trusted_users = CALLER
+
 spamd_address = OPT
 
 # ----- Main settings -----
