@@ -144,6 +144,7 @@ cmd buf flush ddd bytes
   SMTP<< 550 Unknown
   SMTP>> QUIT
 cmd buf flush ddd bytes
+  SMTP<< 250 OK
   SMTP(close)>>
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile

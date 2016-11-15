@@ -536,7 +536,7 @@ Arguments:
   buffer    where to put the response
   size      the size of the buffer
   okdigit   the expected first digit of the response
-  timeout   the timeout to use
+  timeout   the timeout to use, in seconds
 
 Returns:    TRUE if a valid, non-error response was received; else FALSE
 */

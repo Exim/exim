@@ -39,7 +39,7 @@ static tree_node *dnsbl_cache = NULL;
 #define MT_NOT 1
 #define MT_ALL 2
 
-static uschar cutthrough_response(char, uschar **);
+static uschar cutthrough_response(char, uschar **, int);
 
 
 
@@ -462,7 +462,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 		transport_rcpt_address(addr,
 		  (addr->transport == NULL)? FALSE :
 		   addr->transport->rcpt_include_affixes)) >= 0 &&
-	      cutthrough_response('2', &resp) == '2';
+	      cutthrough_response('2', &resp, CUTTHROUGH_DATA_TIMEOUT) == '2';
 
 	    /* This would go horribly wrong if a callout fail was ignored by ACL.
 	    We punt by abandoning cutthrough on a reject, like the
@@ -1304,7 +1304,13 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       if (options & vopt_callout_recipsender)
         cancel_cutthrough_connection("not usable for cutthrough");
       if (send_quit)
+	{
 	(void) smtp_write_command(&outblock, FALSE, "QUIT\r\n");
+
+	/* Wait a short time for response, and discard it */
+	smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
+	  '2', 1);
+	}
 
 #ifdef SUPPORT_TLS
       tls_close(FALSE, TRUE);
@@ -1523,7 +1529,7 @@ return cutthrough_puts(US"\r\n", 2);
 
 /* Get and check response from cutthrough target */
 static uschar
-cutthrough_response(char expect, uschar ** copy)
+cutthrough_response(char expect, uschar ** copy, int timeout)
 {
 smtp_inblock inblock;
 uschar inbuffer[4096];
@@ -1535,7 +1541,7 @@ inblock.ptr = inbuffer;
 inblock.ptrend = inbuffer;
 inblock.sock = cutthrough.fd;
 /* this relies on (inblock.sock == tls_out.active) */
-if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, CUTTHROUGH_DATA_TIMEOUT))
+if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, timeout))
   cancel_cutthrough_connection("target timeout on read");
 
 if(copy != NULL)
@@ -1564,7 +1570,7 @@ cutthrough_puts(US"DATA\r\n", 6);
 cutthrough_flush_send();
 
 /* Assume nothing buffered.  If it was it gets ignored. */
-return cutthrough_response('3', NULL) == '3';
+return cutthrough_response('3', NULL, CUTTHROUGH_DATA_TIMEOUT) == '3';
 }
 
 
@@ -1626,7 +1632,9 @@ if(cutthrough.fd >= 0)
   HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> QUIT\n");
   _cutthrough_puts(US"QUIT\r\n", 6);	/* avoid recursion */
   _cutthrough_flush_send();
-  /* No wait for response */
+
+  /* Wait a short time for response, and discard it */
+  cutthrough_response('2', NULL, 1);
 
   #ifdef SUPPORT_TLS
   tls_close(FALSE, TRUE);
@@ -1668,7 +1676,7 @@ if(  !cutthrough_puts(US".", 1)
   )
   return cutthrough.addr.message;
 
-res = cutthrough_response('2', &cutthrough.addr.message);
+res = cutthrough_response('2', &cutthrough.addr.message, CUTTHROUGH_DATA_TIMEOUT);
 for (addr = &cutthrough.addr; addr; addr = addr->next)
   {
   addr->message = cutthrough.addr.message;

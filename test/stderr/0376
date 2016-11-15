@@ -21,6 +21,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<ok@localhost>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for localhost:
   result=1 postmaster=0 random=0
@@ -92,6 +93,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<bad@localhost>
   SMTP<< 550 REJECTED
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for localhost:
   result=1 postmaster=0 random=0
@@ -145,6 +147,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> MAIL FROM:<>
   SMTP<< 550 REJECT MAIL FROM
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for localhost:
   result=3 postmaster=0 random=0
@@ -205,6 +208,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@otherhost>
   SMTP<< 550 NOT OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost:
   result=1 postmaster=2 random=0
@@ -266,6 +270,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@otherhost2>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost2:
   result=1 postmaster=1 random=0
@@ -314,6 +319,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost3:
   result=1 postmaster=0 random=1
@@ -359,6 +365,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost4>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost4:
   result=1 postmaster=0 random=1
@@ -417,6 +424,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@otherhost41>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost41:
   result=1 postmaster=1 random=2
@@ -473,6 +481,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@otherhost21>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost21:
   result=1 postmaster=1 random=0
@@ -504,6 +513,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<ok2@otherhost21>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost21:
   result=1 postmaster=1 random=0
@@ -540,6 +550,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<ok@otherhost31>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost31:
   result=1 postmaster=0 random=2
@@ -571,6 +582,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<okok@otherhost31>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost31:
   result=1 postmaster=0 random=2
@@ -607,6 +619,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<okokok@otherhost31>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost31:
   result=1 postmaster=0 random=2
@@ -676,6 +689,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@otherhost52>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost52:
   result=1 postmaster=1 random=0
@@ -707,6 +721,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<abcd@x.y.z>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for x.y.z:
   result=1 postmaster=0 random=0
@@ -779,6 +794,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost9:
   result=1 postmaster=1 random=0
@@ -822,6 +838,7 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@test.ex>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for test.ex:
   result=1 postmaster=1 random=2

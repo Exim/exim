@@ -233,6 +233,7 @@ considering: ${tod_full}
 LOG: MAIN
   >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no C="250 OK id=10HmaY-0005vi-00"
   SMTP>> QUIT
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
@@ -444,6 +445,7 @@ considering: ${tod_full}
 LOG: MAIN
   >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
   SMTP>> QUIT
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
@@ -655,6 +657,7 @@ considering: ${tod_full}
 LOG: MAIN
   >> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
   SMTP>> QUIT
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 ----------- cutthrough shutdown (delivered) ------------
 LOG: MAIN
