@@ -3386,7 +3386,8 @@ for ($i = 0; $i < @test_dirs; $i++)
 
 # Scan for relevant tests
 
-tests_exit(-1, "Failed to unlink $log_summary_filename") if !unlink($log_summary_filename);
+tests_exit(-1, "Failed to unlink $log_summary_filename")
+  if (-e $log_summary_filename && !unlink($log_summary_filename));
 for ($i = 0; $i < @test_dirs; $i++)
   {
   my($testdir) = $test_dirs[$i];
