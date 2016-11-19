@@ -56,6 +56,7 @@ my $flavour = do {
 my $force_continue = 0;
 my $force_update = 0;
 my $log_failed_filename = 'failed-summary.log';
+my $log_summary_filename = 'run-summary.log';
 my $more = 'less -XF';
 my $optargs = '';
 my $save_output = 0;
@@ -1204,6 +1205,15 @@ sub log_failure {
         . "failed\n";
 }
 
+# Computer-readable summary results logfile
+
+sub log_test {
+  my ($logfile, $testno, $resultchar) = @_;
+
+  open(my $fh, '>>', $logfile) or return;
+  print $fh "$testno $resultchar\n";
+}
+
 
 
 ##################################################
@@ -1221,8 +1231,9 @@ sub log_failure {
 #             [4] TRUE if this is a log file whose deliveries must be sorted
 #             [5] optionally, a custom munge command
 #
-# Returns:    0 comparison succeeded or differences to be ignored
-#             1 comparison failed; files may have been updated (=> re-compare)
+# Returns:    0 comparison succeeded
+#             1 comparison failed; differences to be ignored
+#             2 comparison failed; files may have been updated (=> re-compare)
 #
 # Does not return if the user replies "Q" to a prompt.
 
@@ -1250,8 +1261,11 @@ if (! -e $sf_current)
     {
     $_ = interact('Continue, Show, or Quit? [Q] ', undef, $force_continue);
     tests_exit(1) if /^q?$/;
-    log_failure($log_failed_filename, $testno, $rf) if (/^c$/ && $force_continue);
-    return 0 if /^c$/i;
+    if (/^c$/ && $force_continue) {
+      log_failure($log_failed_filename, $testno, $rf);
+      log_test($log_summary_filename, $testno, 'F') if ($force_continue);
+    }
+    return 1 if /^c$/i;
     last if (/^s$/);
     }
 
@@ -1271,8 +1285,11 @@ if (! -e $sf_current)
     {
     $_ = interact('Continue, Update & retry, Quit? [Q] ', $force_update, $force_continue);
     tests_exit(1) if /^q?$/;
-    log_failure($log_failed_filename, $testno, $rsf) if (/^c$/ && $force_continue);
-    return 0 if /^c$/i;
+    if (/^c$/ && $force_continue) {
+      log_failure($log_failed_filename, $testno, $rf);
+      log_test($log_summary_filename, $testno, 'F')
+    }
+    return 1 if /^c$/i;
     last if (/^u$/i);
     }
   }
@@ -1395,9 +1412,12 @@ if (-e $sf_current)
 	. ($sf_current ne $sf_flavour  ? "/Save for flavour '$flavour'" : '')
 	. ' & retry, Quit? [Q] ', $force_update, $force_continue);
     tests_exit(1) if /^q?$/;
-    log_failure($log_failed_filename, $testno, $sf_current) if (/^c$/i && $force_continue);
-    return 0 if /^c$/i;
-    return 1 if /^r$/i;
+    if (/^c$/ && $force_continue) {
+      log_failure($log_failed_filename, $testno, $sf_current);
+      log_test($log_summary_filename, $testno, 'F')
+    }
+    return 1 if /^c$/i;
+    return 2 if /^r$/i;
     last if (/^[us]$/i);
     }
   }
@@ -1406,23 +1426,23 @@ if (-e $sf_current)
 
 if (-s $mf)
   {
-	my $sf = /^u/i ? $sf_current : $sf_flavour;
-		tests_exit(-1, "Failed to cp $mf $sf") if system("cp '$mf' '$sf'") != 0;
+    my $sf = /^u/i ? $sf_current : $sf_flavour;
+    tests_exit(-1, "Failed to cp $mf $sf") if system("cp '$mf' '$sf'") != 0;
   }
 else
   {
-	# if we deal with a flavour file, we can't delete it, because next time the generic
-	# file would be used again
-	if ($sf_current eq $sf_flavour) {
-		open(FOO, ">$sf_current");
-		close(FOO);
-	}
-	else {
-		tests_exit(-1, "Failed to unlink $sf_current") if !unlink($sf_current);
-	}
+    # if we deal with a flavour file, we can't delete it, because next time the generic
+    # file would be used again
+    if ($sf_current eq $sf_flavour) {
+      open(FOO, ">$sf_current");
+      close(FOO);
+    }
+    else {
+      tests_exit(-1, "Failed to unlink $sf_current") if !unlink($sf_current);
+    }
   }
 
-return 1;
+return 2;
 }
 
 
@@ -1502,6 +1522,12 @@ $munges =
   };
 
 
+sub max {
+  my ($a, $b) = @_;
+  return $a if ($a > $b);
+  return $b;
+}
+
 ##################################################
 #    Subroutine to check the output of a test    #
 ##################################################
@@ -1518,47 +1544,48 @@ $munges =
 #
 # Arguments: Optionally, name of a single custom munge to run.
 # Returns:   0 if the output compared equal
-#            1 if re-run needed (files may have been updated)
+#            1 if comparison failed; differences to be ignored
+#            2 if re-run needed (files may have been updated)
 
 sub check_output{
 my($mungename) = $_[0];
 my($yield) = 0;
 my($munge) = $munges->{$mungename} if defined $mungename;
 
-$yield = 1 if check_file("spool/log/paniclog",
+$yield = max($yield,  check_file("spool/log/paniclog",
                        "spool/log/serverpaniclog",
                        "test-paniclog-munged",
                        "paniclog/$testno", 0,
-		       $munge->{paniclog});
+		       $munge->{paniclog}));
 
-$yield = 1 if check_file("spool/log/rejectlog",
+$yield = max($yield,  check_file("spool/log/rejectlog",
                        "spool/log/serverrejectlog",
                        "test-rejectlog-munged",
                        "rejectlog/$testno", 0,
-		       $munge->{rejectlog});
+		       $munge->{rejectlog}));
 
-$yield = 1 if check_file("spool/log/mainlog",
+$yield = max($yield,  check_file("spool/log/mainlog",
                        "spool/log/servermainlog",
                        "test-mainlog-munged",
                        "log/$testno", $sortlog,
-		       $munge->{mainlog});
+		       $munge->{mainlog}));
 
 if (!$stdout_skip)
   {
-  $yield = 1 if check_file("test-stdout",
+  $yield = max($yield,  check_file("test-stdout",
                        "test-stdout-server",
                        "test-stdout-munged",
                        "stdout/$testno", 0,
-		       $munge->{stdout});
+		       $munge->{stdout}));
   }
 
 if (!$stderr_skip)
   {
-  $yield = 1 if check_file("test-stderr",
+  $yield = max($yield,  check_file("test-stderr",
                        "test-stderr-server",
                        "test-stderr-munged",
                        "stderr/$testno", 0,
-		       $munge->{stderr});
+		       $munge->{stderr}));
   }
 
 # Compare any delivered messages, unless this test is skipped.
@@ -1596,9 +1623,9 @@ if (! $message_skip)
       }
 
     print ">> COMPARE $mail mail/$testno.$saved_mail\n" if $debug;
-    $yield = 1 if check_file($mail, undef, "test-mail-munged",
+    $yield = max($yield,  check_file($mail, undef, "test-mail-munged",
       "mail/$testno.$saved_mail", 0,
-      $munge->{mail});
+      $munge->{mail}));
     delete $expected_mails{"mail/$testno.$saved_mail"};
     }
 
@@ -1613,7 +1640,10 @@ if (! $message_skip)
       {
       $_ = interact('Continue, Update & retry, or Quit? [Q] ', $force_update, $force_continue);
       tests_exit(1) if /^q?$/;
-      log_failure($log_failed_filename, $testno, "missing email") if (/^c$/ && $force_continue);
+      if (/^c$/ && $force_continue) {
+	log_failure($log_failed_filename, $testno, "missing email");
+	log_test($log_summary_filename, $testno, 'F')
+      }
       last if /^c$/;
 
       # For update, we not only have to unlink the file, but we must also
@@ -1668,9 +1698,9 @@ if (! $msglog_skip)
       ($munged_msglog = $msglog) =~
         s/((?:[^\W_]{6}-){2}[^\W_]{2})
           /new_value($1, "10Hm%s-0005vi-00", \$next_msgid)/egx;
-      $yield = 1 if check_file("spool/msglog/$msglog", undef,
+      $yield = max($yield,  check_file("spool/msglog/$msglog", undef,
         "test-msglog-munged", "msglog/$testno.$munged_msglog", 0,
-        $munge->{msglog});
+        $munge->{msglog}));
       delete $expected_msglogs{"$testno.$munged_msglog"};
       }
     }
@@ -1697,7 +1727,10 @@ if (! $msglog_skip)
       {
       $_ = interact('Continue, Update, or Quit? [Q] ', $force_update, $force_continue);
       tests_exit(1) if /^q?$/;
-      log_failure($log_failed_filename, $testno, "missing msglog") if (/^c$/ && $force_continue);
+      if (/^c$/ && $force_continue) {
+	log_failure($log_failed_filename, $testno, "missing msglog");
+	log_test($log_summary_filename, $testno, 'F')
+      }
       last if /^c$/;
       if (/^u$/)
         {
@@ -3353,6 +3386,7 @@ for ($i = 0; $i < @test_dirs; $i++)
 
 # Scan for relevant tests
 
+tests_exit(-1, "Failed to unlink $log_summary_filename") if !unlink($log_summary_filename);
 for ($i = 0; $i < @test_dirs; $i++)
   {
   my($testdir) = $test_dirs[$i];
@@ -3422,7 +3456,6 @@ for ($i = 0; $i < @test_dirs; $i++)
     {
     chomp;
     print "Omitting tests in $testdir (missing $_)\n";
-    next;
     }
 
   # We want the tests from this subdirectory, provided they are in the
@@ -3435,9 +3468,15 @@ for ($i = 0; $i < @test_dirs; $i++)
 
   foreach $test (@testlist)
     {
-    next if $test !~ /^\d{4}(?:\.\d+)?$/;
-    next if $test < $test_start || $test > $test_end;
-    push @test_list, "$testdir/$test";
+    next if ($test !~ /^\d{4}(?:\.\d+)?$/);
+    if (!$wantthis || $test < $test_start || $test > $test_end)
+      {
+      log_test($log_summary_filename, $test, '.');
+      }
+    else
+      {
+      push @test_list, "$testdir/$test";
+      }
     }
   }
 
@@ -3849,7 +3888,10 @@ foreach $test (@test_list)
         print "\nshow stdErr, show stdOut, Retry, Continue (without file comparison), or Quit? [Q] ";
         $_ = $force_continue ? "c" : <T>;
         tests_exit(1) if /^q?$/i;
-        log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
+	if (/^c$/ && $force_continue) {
+	  log_failure($log_failed_filename, $testno, "exit code unexpected");
+	  log_test($log_summary_filename, $testno, 'F')
+	}
         if ($force_continue)
           {
           print "\nstderr tail:\n";
@@ -3896,7 +3938,10 @@ foreach $test (@test_list)
           print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
           $_ = $force_continue ? "c" : <T>;
           tests_exit(1) if /^q?$/i;
-          log_failure($log_failed_filename, $testno, "exit code unexpected") if (/^c$/i && $force_continue);
+	  if (/^c$/ && $force_continue) {
+	    log_failure($log_failed_filename, $testno, "exit code unexpected");
+	    log_test($log_summary_filename, $testno, 'F')
+	  }
           print "... continue forced\n" if $force_continue;
           last if /^[rc]$/i;
 
@@ -3916,8 +3961,9 @@ foreach $test (@test_list)
   close SCRIPT;
 
   # The script has finished. Check the all the output that was generated. The
-  # function returns 0 if all is well, 1 if we should rerun the test (the files
-  # have been updated). It does not return if the user responds Q to a prompt.
+  # function returns 0 for a perfect pass, 1 if imperfect but ok, 2 if we should
+  # rerun the test (the files # have been updated).
+  # It does not return if the user responds Q to a prompt.
 
   if ($retry)
     {
@@ -3928,14 +3974,16 @@ foreach $test (@test_list)
 
   if ($docheck)
     {
-    if (check_output($TEST_STATE->{munge}) != 0)
+    my $rc = check_output($TEST_STATE->{munge});
+    log_test($log_summary_filename, $testno, 'P') if ($rc == 0);
+    if ($rc < 2)
       {
-      print (("#" x 79) . "\n");
-      redo;
+      print ("  Script completed\n");
       }
     else
       {
-      print ("  Script completed\n");
+      print (("#" x 79) . "\n");
+      redo;
       }
     }
   }
