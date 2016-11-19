@@ -1080,6 +1080,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       {
       $_ .= <IN>;
       s/ \.\.\. >>> / ... /;
+      s/Network is unreachable/Network Error/;
       }
 
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
@@ -1497,9 +1498,6 @@ $munges =
 
     'timeout_errno' =>		# actual errno differs Solaris vs. Linux
     { 'mainlog' => 's/(host deferral .* errno) <\d+> /$1 <EEE> /' },
-
-    'net_unreach' =>		# platforms not supporting TCP Fast Open difference
-    { 'stderr' => 's/failed: Network Error/failed: Network is unreachanble/' },
   };
 
 

@@ -1,6 +1,5 @@
 # Recipient errors and hosts_max_try
 need_ipv4
-munge net_unreach
 #
 exim -odq x@y
 ****

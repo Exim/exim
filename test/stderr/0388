@@ -112,7 +112,7 @@ returned from EXIM_DBOPEN
 no retry data available
 V4NET.0.0.0 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0] (x@y)
-Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... failed: Network is unreachable
+Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... failed: Network Error
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0] for x@y: result DEFER
