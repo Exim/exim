@@ -1080,6 +1080,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       {
       $_ .= <IN>;
       s/ \.\.\. >>> / ... /;
+      s/Address family not supported by protocol family/Network Error/;
       s/Network is unreachable/Network Error/;
       }
 
