@@ -1497,6 +1497,9 @@ $munges =
 
     'timeout_errno' =>		# actual errno differs Solaris vs. Linux
     { 'mainlog' => 's/(host deferral .* errno) <\d+> /$1 <EEE> /' },
+
+    'net_unreach' =>		# platforms not supporting TCP Fast Open difference
+    { 'stderr' => 's/failed: Network Error/failed: Network is unreachanble/' },
   };
 
 
@@ -3914,7 +3917,6 @@ foreach $test (@test_list)
   close SCRIPT;
 
   # The script has finished. Check the all the output that was generated. The
-  # function returns 0 if all is well, 1 if we should rerun the test (the files
   # function returns 0 if all is well, 1 if we should rerun the test (the files
   # have been updated). It does not return if the user responds Q to a prompt.
 
