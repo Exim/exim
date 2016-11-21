@@ -12,6 +12,8 @@ LOADED=@LOADED@
 LOADED_OPT=@LOADED_OPT@
 LIBS=@LIBS@
 
+VPATH = @srcdir@
+
 ##############################################################################
 
 # List of targets
@@ -40,62 +42,62 @@ makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
 # bin/showids         output current uid, gid, euid, egid
 
 bin/cf:         src/cf.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/cf src/cf.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/cf $<
 		@echo ">>> bin/cf command build"
 		@echo " "
 
 bin/client:     src/client.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client src/client.c $(LIBS)
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client $< $(LIBS)
 		@echo ">>> bin/client command built"
 		@echo " "
 
 bin/client-gnutls: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls src/client.c -lgnutls -lgcrypt $(LIBS)
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls $< -lgnutls -lgcrypt $(LIBS)
 		@echo ">>> bin/client-gnutls command built"
 		@echo " "
 
 bin/client-ssl: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl src/client.c -lssl -lcrypto $(LIBS)
+		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl $< -lssl -lcrypto $(LIBS)
 		@echo ">>> bin/client-ssl command built"
 		@echo " "
 
 bin/checkaccess:src/checkaccess.c Makefile
-		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess src/checkaccess.c
+		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess $<
 		@echo ">>> bin/checkaccess command built"
 		@echo " "
 
 bin/fakens:     src/fakens.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens src/fakens.c $(LIBS)
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens $< $(LIBS)
 		@echo ">>> bin/fakens command built"
 		@echo " "
 
 bin/fd:         src/fd.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fd src/fd.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fd $<
 		@echo ">>> bin/fd command built"
 		@echo " "
 
 bin/iefbr14:    src/iefbr14.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/iefbr14 src/iefbr14.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/iefbr14 $<
 		@echo ">>> bin/iefbr14 command built"
 		@echo " "
 
 bin/loaded:     src/loaded.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) $(LOADED_OPT) -o bin/loaded src/loaded.c
+		$(CC) $(CFLAGS) $(LDFLAGS) $(LOADED_OPT) -o bin/loaded $<
 		@echo ">>> bin/loaded command built"
 		@echo " "
 
 bin/mtpscript:  src/mtpscript.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript src/mtpscript.c
+		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript $<
 		@echo ">>> bin/mtpscript command built"
 		@echo " "
 
 bin/server:     src/server.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server src/server.c $(LIBS)
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server $< $(LIBS)
 		@echo ">>> bin/server command built"
 		@echo " "
 
 bin/showids:    src/showids.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids src/showids.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids $<
 		@echo ">>> bin/showids command built"
 		@echo " "
                 
