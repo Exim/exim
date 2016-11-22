@@ -100,13 +100,14 @@ typedef struct pdkim_pubkey {
   uschar *version;                /* v=  */
   uschar *granularity;            /* g=  */
 
+#ifdef notdef
   uschar *hashes;                 /* h=  */
   uschar *keytype;                /* k=  */
+#endif
   uschar *srvtype;                /* s=  */
   uschar *notes;                  /* n=  */
 
   blob  key;                      /* p=  */
-
   int   testing;                  /* t=y */
   int   no_subdomaining;          /* t=s */
 } pdkim_pubkey;
