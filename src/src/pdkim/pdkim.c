@@ -603,90 +603,87 @@ pub = store_get(sizeof(pdkim_pubkey));
 memset(pub, 0, sizeof(pdkim_pubkey));
 
 for (p = raw_record; ; p++)
-  {
-  char c = *p;
-
-  /* Ignore FWS */
-  if (c == '\r' || c == '\n')
-    goto NEXT_CHAR;
-
-  if (where == PDKIM_HDR_LIMBO)
     {
-    /* In limbo, just wait for a tag-char to appear */
-    if (!(c >= 'a' && c <= 'z'))
-      goto NEXT_CHAR;
+    uschar c = *p;
 
-    where = PDKIM_HDR_TAG;
-    }
-
-  if (where == PDKIM_HDR_TAG)
-    {
-    if (c >= 'a' && c <= 'z')
-      cur_tag = string_catn(cur_tag, &ts, &tl, p, 1);
-
-    if (c == '=')
+    /* Ignore FWS */
+    if (c != '\r' && c != '\n') switch (where)
       {
-      cur_tag[tl] = '\0';
-      where = PDKIM_HDR_VALUE;
-      goto NEXT_CHAR;
-      }
-    }
+      case PDKIM_HDR_LIMBO:		/* In limbo, just wait for a tag-char to appear */
+	if (!(c >= 'a' && c <= 'z'))
+	  break;
+	where = PDKIM_HDR_TAG;
+	/*FALLTHROUGH*/
 
-  if (where == PDKIM_HDR_VALUE)
-    {
-    if (c == ';' || c == '\0')
-      {
-      if (tl && vl)
-        {
-	cur_val[vl] = '\0';
-	pdkim_strtrim(cur_val);
-	DEBUG(D_acl) debug_printf(" %s=%s\n", cur_tag, cur_val);
+      case PDKIM_HDR_TAG:
+	if (c >= 'a' && c <= 'z')
+	  cur_tag = string_catn(cur_tag, &ts, &tl, p, 1);
 
-	switch (cur_tag[0])
+	if (c == '=')
 	  {
-	  case 'v':
-	    /* This tag isn't evaluated because:
-	       - We only support version DKIM1.
-	       - Which is the default for this value (set below)
-	       - Other versions are currently not specified.      */
-	    break;
-	  case 'h':
-	  case 'k':
-	    pub->hashes = string_copy(cur_val); break;
-	  case 'g':
-	    pub->granularity = string_copy(cur_val); break;
-	  case 'n':
-	    pub->notes = pdkim_decode_qp(cur_val); break;
-	  case 'p':
-	    pdkim_decode_base64(US cur_val, &pub->key);
-            break;
-	  case 's':
-	    pub->srvtype = string_copy(cur_val); break;
-	  case 't':
-	    if (Ustrchr(cur_val, 'y') != NULL) pub->testing = 1;
-	    if (Ustrchr(cur_val, 's') != NULL) pub->no_subdomaining = 1;
-	    break;
-	  default:
-	    DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
-	    break;
+	  cur_tag[tl] = '\0';
+	  where = PDKIM_HDR_VALUE;
 	  }
-	}
-      tl = 0;
-      vl = 0;
-      where = PDKIM_HDR_LIMBO;
-      }
-    else
-      cur_val = string_catn(cur_val, &vs, &vl, p, 1);
-    }
+	break;
 
-NEXT_CHAR:
-  if (c == '\0') break;
-  }
+      case PDKIM_HDR_VALUE:
+	if (c == ';' || c == '\0')
+	  {
+	  if (tl && vl)
+	    {
+	    cur_val[vl] = '\0';
+	    pdkim_strtrim(cur_val);
+	    DEBUG(D_acl) debug_printf(" %s=%s\n", cur_tag, cur_val);
+
+	    switch (cur_tag[0])
+	      {
+	      case 'v':
+		pub->version = string_copy(cur_val); break;
+	      case 'h':
+	      case 'k':
+/* This field appears to never be used. Also, unclear why
+a 'k' (key-type_ would go in this field name.  There is a field
+"keytype", also never used.
+		pub->hashes = string_copy(cur_val);
+*/
+		break;
+	      case 'g':
+		pub->granularity = string_copy(cur_val); break;
+	      case 'n':
+		pub->notes = pdkim_decode_qp(cur_val); break;
+	      case 'p':
+		pdkim_decode_base64(US cur_val, &pub->key); break;
+	      case 's':
+		pub->srvtype = string_copy(cur_val); break;
+	      case 't':
+		if (Ustrchr(cur_val, 'y') != NULL) pub->testing = 1;
+		if (Ustrchr(cur_val, 's') != NULL) pub->no_subdomaining = 1;
+		break;
+	      default:
+		DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
+		break;
+	      }
+	    }
+	  tl = 0;
+	  vl = 0;
+	  where = PDKIM_HDR_LIMBO;
+	  }
+	else
+	  cur_val = string_catn(cur_val, &vs, &vl, p, 1);
+	break;
+      }
+
+    if (c == '\0') break;
+    }
 
 /* Set fallback defaults */
 if (!pub->version    ) pub->version     = string_copy(PDKIM_PUB_RECORD_VERSION);
+else if (Ustrcmp(pub->version, PDKIM_PUB_RECORD_VERSION) != 0) return NULL;
+
 if (!pub->granularity) pub->granularity = string_copy(US"*");
+/*
 if (!pub->keytype    ) pub->keytype     = string_copy(US"rsa");
+*/
 if (!pub->srvtype    ) pub->srvtype     = string_copy(US"*");
 
 /* p= is required */
@@ -794,7 +791,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   DEBUG(D_acl)
     {
     debug_printf("PDKIM [%s] Body bytes hashed: %lu\n"
-		 "PDKIM [%s] bh  computed: ",
+		 "PDKIM [%s] Body hash computed: ",
 		sig->domain, sig->signed_body_bytes, sig->domain);
     pdkim_hexprint(CUS bh.data, bh.len);
     }
@@ -822,7 +819,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
       {
       DEBUG(D_acl)
         {
-	debug_printf("PDKIM [%s] bh signature: ", sig->domain);
+	debug_printf("PDKIM [%s] Body hash signature from headers: ", sig->domain);
 	pdkim_hexprint(sig->bodyhash.data,
 			 exim_sha_hashlen(&sig->body_hash));
 	debug_printf("PDKIM [%s] Body hash did NOT verify\n", sig->domain);
@@ -1341,7 +1338,7 @@ while (sig)
   exim_sha_init(&hhash_ctx, is_sha1 ? HASH_SHA1 : HASH_SHA256);
 
   DEBUG(D_acl) debug_printf(
-      "PDKIM >> Hashed header data, canonicalized, in sequence >>>>>>>>>>>>>>\n");
+      "PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>>>\n");
 
   /* SIGNING ---------------------------------------------------------------- */
   /* When signing, walk through our header list and add them to the hash. As we
@@ -1471,7 +1468,7 @@ while (sig)
 
   DEBUG(D_acl)
     {
-    debug_printf("PDKIM [%s] hh computed: ", sig->domain);
+    debug_printf("PDKIM [%s] Header hash computed: ", sig->domain);
     pdkim_hexprint(hhash.data, hhash.len);
     }
 
@@ -1520,6 +1517,7 @@ while (sig)
     {
     ev_ctx vctx;
     const uschar * errstr;
+    pdkim_pubkey * p;
 
     uschar *dns_txt_name, *dns_txt_reply;
 
@@ -1578,16 +1576,25 @@ while (sig)
       pdkim_quoteprint(CUS dns_txt_reply, Ustrlen(dns_txt_reply));
       }
 
-    if (!(sig->pubkey = pdkim_parse_pubkey_record(ctx, CUS dns_txt_reply)))
+    if (  !(p = pdkim_parse_pubkey_record(ctx, CUS dns_txt_reply))
+       || (Ustrcmp(p->srvtype, "*") != 0 && Ustrcmp(p->srvtype, "email") != 0)
+       )
       {
       sig->verify_status =      PDKIM_VERIFY_INVALID;
       sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD;
 
-      DEBUG(D_acl) debug_printf(
-	  " Error while parsing public key record\n"
+      DEBUG(D_acl)
+	{
+	if (p)
+	  debug_printf(" Invalid public key service type '%s'\n", p->srvtype);
+	else
+	  debug_printf(" Error while parsing public key record\n");
+	debug_printf(
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+	}
       goto NEXT_VERIFY;
       }
+    sig->pubkey = p;
 
     DEBUG(D_acl) debug_printf(
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
