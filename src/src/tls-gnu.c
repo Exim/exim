@@ -1836,6 +1836,7 @@ if (rc != GNUTLS_E_SUCCESS)
     tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL);
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
+    gnutls_certificate_free_credentials(state->x509_cred);
     millisleep(500);
     shutdown(state->fd_out, SHUT_WR);
     for (rc = 1024; fgetc(smtp_in) != EOF && rc > 0; ) rc--;	/* drain skt */
@@ -2130,6 +2131,8 @@ if (shutdown)
   }
 
 gnutls_deinit(state->session);
+gnutls_certificate_free_credentials(state->x509_cred);
+
 
 state->tlsp->active = -1;
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
@@ -2199,6 +2202,8 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
     receive_smtp_buffered = smtp_buffered;
 
     gnutls_deinit(state->session);
+    gnutls_certificate_free_credentials(state->x509_cred);
+
     state->session = NULL;
     state->tlsp->active = -1;
     state->tlsp->bits = 0;
