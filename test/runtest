@@ -2612,9 +2612,12 @@ close(IN);
 close(OUT);
 
 print("Probing with config file: $parm_cwd/test-config\n");
+
 my $eximinfo = "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd -bP exim_user exim_group";
 chomp(my @eximinfo = `$eximinfo 2>&1`);
-die "$0: got $? from $eximinfo\n" if $?;
+die "$0: Can't run $eximinfo\n" if $? == -1;
+
+warn 'Got ' . $?>>8 . " from $eximinfo\n" if $?;
 foreach (@eximinfo)
   {
   if (my ($version) = /^Exim version (\S+)/) {
