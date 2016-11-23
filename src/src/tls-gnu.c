@@ -1729,6 +1729,7 @@ if (rc != GNUTLS_E_SUCCESS)
 
   if (!sigalrm_seen)
     {
+    gnutls_certificate_free_credentials(state->x509_cred);
     (void)fclose(smtp_out);
     (void)fclose(smtp_in);
     }
@@ -2014,6 +2015,8 @@ if (shutdown)
   }
 
 gnutls_deinit(state->session);
+gnutls_certificate_free_credentials(state->x509_cred);
+
 
 state->tlsp->active = -1;
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
@@ -2074,6 +2077,8 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
     receive_smtp_buffered = smtp_buffered;
 
     gnutls_deinit(state->session);
+    gnutls_certificate_free_credentials(state->x509_cred);
+
     state->session = NULL;
     state->tlsp->active = -1;
     state->tlsp->bits = 0;
