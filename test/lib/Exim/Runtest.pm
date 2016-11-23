@@ -64,8 +64,10 @@ sub dynamic_socket {
 sub exim_binary {
 
     # two simple cases, absolute path or relative path and executable
-    return @_ if $_[0] =~ /^\//;
-    return Cwd::abs_path(shift), @_ if -x $_[0];
+    if (@_) {
+        return @_ if $_[0] =~ /^\//;
+        return Cwd::abs_path(shift), @_ if -x $_[0];
+    }
 
     # so we're still here, if the simple approach didn't help.
 
