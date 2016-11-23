@@ -2125,7 +2125,7 @@ if (!state->tlsp || state->tlsp->active < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
-  DEBUG(D_tls) debug_printf("tls_close() from '%s': shutting down TLS\n");
+  DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS\n");
   gnutls_bye(state->session, GNUTLS_SHUT_WR);
   }
 
