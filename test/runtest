@@ -2612,10 +2612,10 @@ close(IN);
 close(OUT);
 
 print("Probing with config file: $parm_cwd/test-config\n");
-open(EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " .
-               "-bP exim_user exim_group 2>&1|") ||
-  die "** Cannot run $parm_exim: $!\n";
-while(<EXIMINFO>)
+my $eximinfo = "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd -bP exim_user exim_group";
+chomp(my @eximinfo = `$eximinfo 2>&1`);
+die "$0: got $? from $eximinfo\n" if $?;
+foreach (@eximinfo)
   {
   if (my ($version) = /^Exim version (\S+)/) {
     my $git = `git describe --dirty=-XX --match 'exim-4*'`;
@@ -2641,21 +2641,21 @@ ___
 	if /^Configure owner:\s*(\d+):(\d+)/;
   print if /wrong owner/;
   }
-close(EXIMINFO);
 
-if (defined $parm_eximuser)
-  {
-  if ($parm_eximuser =~ /^\d+$/) { $parm_exim_uid = $parm_eximuser; }
-    else { $parm_exim_uid = getpwnam($parm_eximuser); }
-  }
-else
-  {
-  print "Unable to extract exim_user from binary.\n";
-  print "Check if Exim refused to run; if so, consider:\n";
-  print "  TRUSTED_CONFIG_LIST ALT_CONFIG_PREFIX WHITELIST_D_MACROS\n";
-  print "If debug permission denied, are you in the exim group?\n";
-  die "Failing to get information from binary.\n";
-  }
+if (not defined $parm_eximuser) {
+  die <<XXX, map { "|$_\n" } @eximinfo;
+Unable to extract exim_user from binary.
+Check if Exim refused to run; if so, consider:
+  TRUSTED_CONFIG_LIST ALT_CONFIG_PREFIX WHITELIST_D_MACROS
+If debug permission denied, are you in the exim group?
+Failing to get information from binary.
+Output from $eximinfo:
+XXX
+
+}
+
+if ($parm_eximuser =~ /^\d+$/) { $parm_exim_uid = $parm_eximuser; }
+else { $parm_exim_uid = getpwnam($parm_eximuser); }
 
 if (defined $parm_eximgroup)
   {
