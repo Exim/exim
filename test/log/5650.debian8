@@ -1,0 +1,23 @@
+1999-03-02 09:44:33 1: Server sends good staple on request
+1999-03-02 09:44:33 2: Server does not staple an outdated response
+1999-03-02 09:44:33 3: Server does not staple a response for a revoked cert
+1999-03-02 09:44:33 4: Connection functions when server is prepared to staple but client does not request it
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)
+1999-03-02 09:44:33 OCSP unusable with this GnuTLS library version
+1999-03-02 09:44:33 acl_mail: ocsp in status: 0 (notreq)
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)
+1999-03-02 09:44:33 OCSP unusable with this GnuTLS library version
+1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (recv): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (send): The specified session has been invalidated for some reason.
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)
+1999-03-02 09:44:33 OCSP unusable with this GnuTLS library version
+1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (recv): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (send): The specified session has been invalidated for some reason.
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)
+1999-03-02 09:44:33 OCSP unusable with this GnuTLS library version
