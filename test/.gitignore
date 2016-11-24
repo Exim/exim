@@ -10,3 +10,4 @@ Makefile
 spool/
 test-*
 failed-summary.log
+run-summary.log
