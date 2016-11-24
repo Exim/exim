@@ -50,7 +50,7 @@ my $cf = 'bin/cf -exact';
 my $cr = "\r";
 my $debug = 0;
 my $flavour = do {
-  my $f = Exim::Runtest::flavour();
+  my $f = Exim::Runtest::flavour() // '';
   (grep { $f eq $_ } Exim::Runtest::flavours()) ? $f : 'FOO';
 };
 my $force_continue = 0;
