@@ -131,6 +131,9 @@ JH/32 Bug 1909: Fix OCSP proof verification for cases where the proof is
 
 JH/33 Bug 1914: Ensure socket is nonblocking before draining after SMTP QUIT.
 
+HS/01 Fix leak in verify callout under GnuTLS, about 3MB per recipient on
+      an incoming connection.
+
 
 Exim version 4.87
 -----------------
