@@ -1,7 +1,9 @@
 #!PERL_COMMAND
 
-# This variable should be set by the building process to Exim's spool directory.
-my $spool = 'SPOOL_DIRECTORY';
+# This variables should be set by the building process
+my $spool = 'SPOOL_DIRECTORY';	# may be overridden later
+my $exim  = 'BIN_DIRECTORY/exim';
+
 # Need to set this dynamically during build, but it's not used right now anyway.
 my $charset = 'ISO-8859-1';
 
@@ -111,7 +113,9 @@ $G::and             = $G::and;             # shut up -w
 $G::msg_ids         = {};                  # short circuit when crit is only MID
 $G::caseless        = $G::caseful ? 0 : 1; # nocase by default, case if both
 @G::recipients_crit = ();                  # holds per-recip criteria
-$spool              = $G::spool if ($G::spool);
+$spool              = defined $G::spool ? $G::spool
+		      : do { chomp($_ = `$exim -n -bP spool_directory`);
+		        $_ // $spool };
 my $input_dir       = $G::input_dir || ($G::finput ? "Finput" : "input");
 my $count_only      = 1 if ($G::mailq_bpc  || $G::qgrep_c);
 my $unsorted        = 1 if ($G::mailq_bpr  || $G::mailq_bpra ||
@@ -1427,7 +1431,8 @@ Same as '$shown_message_size eq <string>' (exiqgrep)
 
 =item --spool <path>
 
-Set the path to the exim spool to use.  This value will have the argument to --input or 'input' appended, or be ignored if --input is a full path.
+Set the path to the exim spool to use.  This value will have the argument to --input or 'input' appended, or be ignored if --input is a full path. If not specified, exipick uses the value from C<exim -bP spool_directory>, and if this fails, the  F<SPOOL_DIRECTORY>
+from build time (F<Local/Makefile>) is used.
 
 =item --show-rules
 

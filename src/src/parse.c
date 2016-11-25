@@ -1425,7 +1425,7 @@ for (;;)
 
     /* Check file name if required */
 
-    if (directory != NULL)
+    if (directory)
       {
       int len = Ustrlen(directory);
       uschar *p = filename + len;
@@ -1437,16 +1437,53 @@ for (;;)
         return FF_ERROR;
         }
 
+#ifdef EXIM_HAVE_OPENAT
+      /* It is necessary to check that every component inside the directory
+      is NOT a symbolic link, in order to keep the file inside the directory.
+      This is mighty tedious. We open the directory and openat every component,
+      with a flag that fails symlinks. */
+
+      {
+      int fd = open(CS directory, O_RDONLY);
+      if (fd < 0)
+	{
+	*error = string_sprintf("failed to open directory %s", directory);
+	return FF_ERROR;
+	}
+      while (*p)
+	{
+	uschar temp;
+	int fd2;
+	uschar * q = p;
+
+	while (*++p && *p != '/') ;
+	temp = *p;
+	*p = '\0';
+
+	fd2 = openat(fd, CS q, O_RDONLY|O_NOFOLLOW);
+	close(fd);
+	*p = temp;
+	if (fd2 < 0)
+	  {
+          *error = string_sprintf("failed to open %s (component of included "
+            "file); could be symbolic link", filename);
+	  return FF_ERROR;
+	  }
+	fd = fd2;
+	}
+      f = fdopen(fd, "rb");
+      }
+#else
       /* It is necessary to check that every component inside the directory
       is NOT a symbolic link, in order to keep the file inside the directory.
       This is mighty tedious. It is also not totally foolproof in that it
       leaves the possibility of a race attack, but I don't know how to do
       any better. */
 
-      while (*p != 0)
+      while (*p)
         {
         int temp;
-        while (*(++p) != 0 && *p != '/');
+        while (*++p && *p != '/');
         temp = *p;
         *p = 0;
         if (Ulstat(filename, &statbuf) != 0)
@@ -1466,11 +1503,16 @@ for (;;)
           return FF_ERROR;
           }
         }
+#endif
       }
 
-    /* Open and stat the file */
+#ifdef EXIM_HAVE_OPENAT
+    else
+#endif
+      /* Open and stat the file */
+      f = Ufopen(filename, "rb");
 
-    if ((f = Ufopen(filename, "rb")) == NULL)
+    if (!f)
       {
       *error = string_open_failed(errno, "included file %s", filename);
       return FF_INCLUDEFAIL;
@@ -1486,7 +1528,7 @@ for (;;)
 
     /* If directory was checked, double check that we opened a regular file */
 
-    if (directory != NULL && (statbuf.st_mode & S_IFMT) != S_IFREG)
+    if (directory && (statbuf.st_mode & S_IFMT) != S_IFREG)
       {
       *error = string_sprintf("included file %s is not a regular file in "
         "the %s directory", filename, directory);
@@ -1518,10 +1560,9 @@ for (;;)
       error, incoming_domain, directory, syntax_errors);
     if (frc != FF_DELIVERED && frc != FF_NOTDELIVERED) return frc;
 
-    if (addr != NULL)
+    if (addr)
       {
-      last = addr;
-      while (last->next != NULL) { count++; last = last->next; }
+      for (last = addr; last->next; last = last->next) count++;
       last->next = *anchor;
       *anchor = addr;
       count++;

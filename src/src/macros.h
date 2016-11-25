@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -14,6 +14,11 @@ a string as a text string. This is sometimes useful for debugging output. */
 
 /* Number of elements of an array */
 #define nelem(arr) (sizeof(arr) / sizeof(*arr))
+
+/* Maximum of two items */
+#ifndef MAX
+# define MAX(a,b) ((a) > (b) ? (a) : (b))
+#endif
 
 
 /* When running in the test harness, the load average is fudged. */
@@ -320,6 +325,13 @@ for having to swallow the rest of an SMTP message is whether the value is
 #define END_NOTENDED   3    /* Message reading not yet ended */
 #define END_SIZE       4    /* Reading ended because message too big */
 #define END_WERROR     5    /* Write error while reading the message */
+#define END_PROTOCOL   6    /* Protocol error in CHUNKING sequence */
+
+/* result codes for bdat_getc() (which can also return EOF) */
+
+#define EOD (-2)
+#define ERR (-3)
+
 
 /* Bit masks for debug and log selectors */
 
@@ -446,15 +458,19 @@ enum {
   LOG_BIT(smtp_protocol_error),
   LOG_BIT(smtp_syntax_error),
 
-  Li_acl_warn_skipped = BITWORDSIZE,
+  Li_8bitmime = BITWORDSIZE,
+  Li_acl_warn_skipped,
   Li_arguments,
   Li_deliver_time,
   Li_delivery_size,
+  Li_dnssec,
   Li_ident_timeout,
   Li_incoming_interface,
   Li_incoming_port,
+  Li_outgoing_interface,
   Li_outgoing_port,
   Li_pid,
+  Li_proxy,
   Li_queue_time,
   Li_queue_time_overall,
   Li_received_sender,
@@ -464,6 +480,7 @@ enum {
   Li_sender_on_delivery,
   Li_sender_verify_fail,
   Li_smtp_confirmation,
+  Li_smtp_mailauth,
   Li_smtp_no_mail,
   Li_subject,
   Li_tls_certificate_verified,
@@ -471,18 +488,15 @@ enum {
   Li_tls_peerdn,
   Li_tls_sni,
   Li_unknown_in_list,
-  Li_8bitmime,
-  Li_smtp_mailauth,
-  Li_proxy,
-  Li_outgoing_interface,
 
-  log_selector_size = BITWORD(Li_outgoing_interface) + 1
+  log_selector_size = BITWORD(Li_unknown_in_list) + 1
 };
 
 #define LOGGING(opt) BIT_TEST(log_selector, log_selector_size, Li_##opt)
 
 /* Private error numbers for delivery failures, set negative so as not
-to conflict with system errno values. */
+to conflict with system errno values.  Take care to maintain the string
+table exim_errstrings[] in log.c */
 
 #define ERRNO_UNKNOWNERROR    (-1)
 #define ERRNO_USERSLASH       (-2)
@@ -546,6 +560,8 @@ to conflict with system errno values. */
 #define ERRNO_LOCAL_ONLY     (-54)   /* Local-only delivery */
 #define ERRNO_QUEUE_DOMAIN   (-55)   /* Domain in queue_domains */
 #define ERRNO_TRETRY         (-56)   /* Transport concurrency limit */
+
+
 
 /* Special actions to take after failure or deferment. */
 
@@ -783,7 +799,8 @@ most recent SMTP commands. Must be kept in step with the list of names in
 smtp_in.c that is used for creating the smtp_no_mail logging action. SCH_NONE
 is "empty". */
 
-enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
+enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
+       SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
        SCH_HELP, SCH_MAIL, SCH_NOOP, SCH_QUIT, SCH_RCPT, SCH_RSET, SCH_STARTTLS,
        SCH_VRFY };
 
@@ -833,6 +850,7 @@ enum {
 #define topt_no_headers         0x020  /* Omit headers */
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
+#define topt_use_bdat		0x100  /* prepend chunks with RFC3030 BDAT header */
 
 /* Flags for recipient_block, used in DSN support */
 
@@ -948,6 +966,7 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define PEER_OFFERED_DSN	BIT(4)
 #define PEER_OFFERED_PIPE	BIT(5)
 #define PEER_OFFERED_SIZE	BIT(6)
+#define PEER_OFFERED_CHUNKING	BIT(7)
 
 
 /* End of macros.h */

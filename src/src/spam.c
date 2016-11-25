@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 /* Code for calling spamassassin's spamd. Called from acl.c. */
 
@@ -139,7 +141,7 @@ long rnd, weights;
 unsigned pri;
 static BOOL srandomed = FALSE;
 
-/* seedup, if we have only 1 server */
+/* speedup, if we have only 1 server */
 if (num_servers == 1)
   return (spamds[0]->is_failed ? -1 : 0);
 
@@ -367,13 +369,6 @@ start = time(NULL);
     }
   }
 
-if (spamd_sock == -1)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC,
-      "programming fault, spamd_sock unexpectedly unset");
-  goto defer;
-  }
-
 (void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
 /* now we are connected to spamd on spamd_sock */
 if (sd->is_rspamd)
@@ -499,7 +494,8 @@ if (ferror(mbox_file))
 (void)fclose(mbox_file);
 
 /* we're done sending, close socket for writing */
-shutdown(spamd_sock,SHUT_WR);
+if (!sd->is_rspamd)
+  shutdown(spamd_sock,SHUT_WR);
 
 /* read spamd response using what's left of the timeout.  */
 memset(spamd_buffer, 0, sizeof(spamd_buffer));
@@ -507,8 +503,9 @@ offset = 0;
 while ((i = ip_recv(spamd_sock,
 		   spamd_buffer + offset,
 		   sizeof(spamd_buffer) - offset - 1,
-		   sd->timeout - time(NULL) + start)) > 0 )
+		   sd->timeout - time(NULL) + start)) > 0)
   offset += i;
+spamd_buffer[offset] = '\0';	/* guard byte */
 
 /* error handling */
 if (i <= 0 && errno != 0)
@@ -525,10 +522,12 @@ if (i <= 0 && errno != 0)
 if (sd->is_rspamd)
   {				/* rspamd variant of reply */
   int r;
-  if ((r = sscanf(CS spamd_buffer,
+  if (  (r = sscanf(CS spamd_buffer,
 	  "RSPAMD/%7s 0 EX_OK\r\nMetric: default; %7s %lf / %lf / %lf\r\n%n",
 	  spamd_version, spamd_short_result, &spamd_score, &spamd_threshold,
-	  &spamd_reject_score, &spamd_report_offset)) != 5)
+	  &spamd_reject_score, &spamd_report_offset)) != 5
+     || spamd_report_offset >= offset		/* verify within buffer */
+     )
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
 	      "%s cannot parse spamd %s, output: %d", loglabel, callout_address, r);

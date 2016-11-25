@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -105,8 +105,10 @@ time_t test_time_t = 0;
 size_t test_size_t = 0;
 ssize_t test_ssize_t = 0;
 unsigned long test_ulong_t = 0L;
+unsigned int test_uint_t = 0;
 #endif
 long test_long_t = 0;
+int test_int_t = 0;
 FILE *base;
 FILE *new;
 int last_initial = 'A';
@@ -190,12 +192,17 @@ fprintf(new, "#define SSIZE_T_FMT  \"%%zd\"\n");
 #else
 if (sizeof(test_size_t) > sizeof (test_ulong_t))
   fprintf(new, "#define SIZE_T_FMT  \"%%llu\"\n");
-else
+else if (sizeof(test_size_t) > sizeof (test_uint_t))
   fprintf(new, "#define SIZE_T_FMT  \"%%lu\"\n");
+else
+  fprintf(new, "#define SIZE_T_FMT  \"%%u\"\n");
+
 if (sizeof(test_ssize_t) > sizeof(test_long_t))
   fprintf(new, "#define SSIZE_T_FMT  \"%%lld\"\n");
-else
+else if (sizeof(test_ssize_t) > sizeof(test_int_t))
   fprintf(new, "#define SSIZE_T_FMT  \"%%ld\"\n");
+else
+  fprintf(new, "#define SSIZE_T_FMT  \"%%d\"\n");
 #endif
 
 /* Now search the makefile for certain settings */
@@ -720,17 +727,16 @@ else if (isgroup)
     continue;
     }
 
-  /* WITH_CONTENT_SCAN is another special case: it must be set if either it or
-  WITH_OLD_DEMIME is set. */
+  /* WITH_CONTENT_SCAN is another special case: it must be set if it or
+  EXPERIMENTAL_DCC is set. */
 
   if (strcmp(name, "WITH_CONTENT_SCAN") == 0)
     {
     char *wcs = getenv("WITH_CONTENT_SCAN");
-    char *wod = getenv("WITH_OLD_DEMIME");
     char *dcc = getenv("EXPERIMENTAL_DCC");
-    if (wcs != NULL || wod != NULL || dcc != NULL)
-      fprintf(new, "#define WITH_CONTENT_SCAN     yes\n");
-    else fprintf(new, "/* WITH_CONTENT_SCAN not set */\n");
+    fprintf(new, wcs || dcc
+      ? "#define WITH_CONTENT_SCAN     yes\n"
+      : "/* WITH_CONTENT_SCAN not set */\n");
     continue;
     }
 
@@ -819,7 +825,11 @@ else if (isgroup)
             strncpy(buffer, ss, sss-ss);
             buffer[sss-ss] = 0;  /* For empty case */
             }
-          else strcpy(buffer, ss);
+          else
+	    {
+       	    strncpy(buffer, ss, sizeof(buffer));
+	    buffer[sizeof(buffer)-1] = 0;
+	    }
           pp = buffer + (int)strlen(buffer);
           while (pp > buffer && isspace((unsigned char)pp[-1])) pp--;
           *pp = 0;

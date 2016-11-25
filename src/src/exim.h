@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -493,6 +493,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #include "dbstuff.h"
 #include "structs.h"
 #include "globals.h"
+#include "hash.h"
 #include "functions.h"
 #include "dbfunctions.h"
 #include "osfunctions.h"
@@ -584,19 +585,9 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # endif
 #endif
 
-/* Ensure PATH_MAX is defined */
-
-#ifndef PATH_MAX
-  #ifdef MAXPATHLEN
-  # define PATH_MAX MAXPATHLEN
-  #else
-  # define PATH_MAX 1024
-  #endif
-#endif
-
 /* DANE w/o DNSSEC is useless */
 #if defined(EXPERIMENTAL_DANE) && defined(DISABLE_DNSSEC)
-  #undef DISABLE_DNSSEC
+# undef DISABLE_DNSSEC
 #endif
 
 #endif

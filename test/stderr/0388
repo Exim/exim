@@ -8,7 +8,7 @@ DSN: r1 propagating DSN
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
@@ -75,7 +75,7 @@ changed uid/gid: remote delivery to x@y with transport=smtp
 set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -85,23 +85,28 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
+cmd buf flush ddd bytes
   SMTP<< 250 OK
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<x@y>
+cmd buf flush ddd bytes
   SMTP<< 451 Temporary error
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
   SMTP>> QUIT
+cmd buf flush ddd bytes
+  SMTP(close)>>
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for x@y: result OK
 address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")
 *@127.0.0.1 in "*"? yes (matched "*")
 checking status of V4NET.0.0.0
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -129,9 +134,9 @@ Processing retry items
 Succeeded addresses:
 Failed addresses:
 Deferred addresses:
-x@y
+ x@y
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
@@ -159,6 +164,7 @@ dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded
+closed hints database and lockfile
 end of retry processing
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb95ced -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
 Exim version x.yz ....
@@ -174,6 +180,8 @@ DSN: r1 propagating DSN
 originator: uid=EXIM_UID gid=EXIM_GID login=EXIMUSER name=
 sender address = 
 set_process_info: pppp accepting a local non-SMTP message from <>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: 
 search_tidyup called
 >>Headers received:
@@ -201,6 +209,7 @@ T To: CALLER@myhost.test.ex
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
@@ -208,7 +217,8 @@ P Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
@@ -225,7 +235,7 @@ DSN: r1 propagating DSN
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
@@ -238,6 +248,7 @@ dbfn_read: key=R:CALLER@myhost.test.ex:<>
 no domain retry record
 no address retry record
 CALLER@myhost.test.ex: queued for routing
+closed hints database and lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
 --------> r0 router <--------
@@ -268,7 +279,7 @@ changed uid/gid: post-delivery tidying
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
 Processing retry items
 Succeeded addresses:
-CALLER@myhost.test.ex: no retry items
+ CALLER@myhost.test.ex: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing
@@ -279,7 +290,8 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   Completed

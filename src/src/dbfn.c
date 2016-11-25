@@ -141,14 +141,14 @@ if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "Failed to get %s lock for %s: %s",
-    read_only? "read" : "write", buffer,
-    (errno == ETIMEDOUT)? "timed out" : strerror(errno));
+    read_only ? "read" : "write", buffer,
+    errno == ETIMEDOUT ? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
   errno = 0;       /* Indicates locking failure */
   return NULL;
   }
 
-DEBUG(D_hints_lookup) debug_printf("locked %s\n", buffer);
+DEBUG(D_hints_lookup) debug_printf("locked  %s\n", buffer);
 
 /* At this point we have an opened and locked separate lock file, that is,
 exclusive access to the database, so we can go ahead and open it. If we are
@@ -164,7 +164,7 @@ DEBUG(D_hints_lookup) debug_printf("EXIM_DBOPEN(%s)\n", buffer);
 EXIM_DBOPEN(buffer, flags, EXIMDB_MODE, &(dbblock->dbptr));
 DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN\n");
 
-if (dbblock->dbptr == NULL && errno == ENOENT && flags == O_RDWR)
+if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
   {
   DEBUG(D_hints_lookup)
     debug_printf("%s appears not to exist: trying to create\n", buffer);
@@ -199,8 +199,7 @@ if (created && geteuid() == root_uid)
   *lastname = 0;
   dd = opendir(CS buffer);
 
-  while ((ent = readdir(dd)) != NULL)
-    {
+  while ((ent = readdir(dd)))
     if (Ustrncmp(ent->d_name, name, namelen) == 0)
       {
       struct stat statbuf;
@@ -212,7 +211,6 @@ if (created && geteuid() == root_uid)
           DEBUG(D_hints_lookup) debug_printf("failed setting %s to owned by exim\n", buffer);
         }
       }
-    }
 
   closedir(dd);
   }
@@ -220,10 +218,9 @@ if (created && geteuid() == root_uid)
 /* If the open has failed, return NULL, leaving errno set. If lof is TRUE,
 log the event - also for debugging - but not if the file just doesn't exist. */
 
-if (dbblock->dbptr == NULL)
+if (!dbblock->dbptr)
   {
   if (save_errno != ENOENT)
-    {
     if (lof)
       log_write(0, LOG_MAIN, "%s", string_open_failed(save_errno, "DB file %s",
         buffer));
@@ -231,7 +228,6 @@ if (dbblock->dbptr == NULL)
       DEBUG(D_hints_lookup)
         debug_printf("%s", CS string_open_failed(save_errno, "DB file %s\n",
           buffer));
-    }
   (void)close(dbblock->lockfd);
   errno = save_errno;
   return NULL;
@@ -239,8 +235,10 @@ if (dbblock->dbptr == NULL)
 
 DEBUG(D_hints_lookup)
   debug_printf("opened hints database %s: flags=%s\n", buffer,
-    (flags == O_RDONLY)? "O_RDONLY" : (flags == O_RDWR)? "O_RDWR" :
-    (flags == (O_RDWR|O_CREAT))? "O_RDWR|O_CREAT" : "??");
+    flags == O_RDONLY ? "O_RDONLY"
+    : flags == O_RDWR ? "O_RDWR"
+    : flags == (O_RDWR|O_CREAT) ? "O_RDWR|O_CREAT"
+    : "??");
 
 /* Pass back the block containing the opened database handle and the open fd
 for the lock. */
@@ -267,6 +265,7 @@ dbfn_close(open_db *dbblock)
 {
 EXIM_DBCLOSE(dbblock->dbptr);
 (void)close(dbblock->lockfd);
+DEBUG(D_hints_lookup) debug_printf("closed hints database and lockfile\n");
 }
 
 

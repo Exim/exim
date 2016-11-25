@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -259,7 +259,7 @@ uschar buffer[256];
 ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence. */
 
-sprintf(CS buffer, "%s/db/%s.lockfile", spool_directory, name);
+sprintf(CS buffer, "%s/db/%.200s.lockfile", spool_directory, name);
 
 dbblock->lockfd = Uopen(buffer, flags, 0);
 if (dbblock->lockfd < 0)
@@ -285,8 +285,9 @@ if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)
   {
   printf("** Failed to get %s lock for %s: %s",
-    ((flags & O_RDONLY) != 0)? "read" : "write", buffer,
-    (errno == ETIMEDOUT)? "timed out" : strerror(errno));
+    flags & O_WRONLY ? "write" : "read",
+    buffer,
+    errno == ETIMEDOUT ? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
   return NULL;
   }
@@ -801,13 +802,13 @@ for(;;)
         if (record == NULL) printf("not found\n"); else
           {
           time_t tt;
-          int length = 0;     /* Stops compiler warning */
+          /*int length = 0;      Stops compiler warning */
 
           switch(dbdata_type)
             {
             case type_retry:
             retry = (dbdata_retry *)record;
-            length = sizeof(dbdata_retry) + Ustrlen(retry->text);
+            /* length = sizeof(dbdata_retry) + Ustrlen(retry->text); */
 
             switch(fieldno)
               {
@@ -857,7 +858,7 @@ for(;;)
 
             case type_callout:
             callout = (dbdata_callout_cache *)record;
-            length = sizeof(dbdata_callout_cache);
+            /* length = sizeof(dbdata_callout_cache); */
             switch(fieldno)
               {
               case 0:

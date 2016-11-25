@@ -205,6 +205,9 @@ for (rule = rewrite_rules;
     {
     if (expand_string_forcedfail)
       { if ((rule->flags & rewrite_quit) != 0) break; else continue; }
+
+    expand_string_message = expand_hide_passwords(expand_string_message);
+
     log_write(0, LOG_MAIN|LOG_PANIC, "Expansion of %s failed while rewriting: "
       "%s", rule->replacement, expand_string_message);
     break;

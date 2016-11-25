@@ -263,7 +263,8 @@ else
 
 sender_address = NULL;
 
-sprintf(CS buffer, "%s/input/%s/%s-D", spool_directory, message_subdir, name);
+snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s-D",
+  spool_directory, queue_name, message_subdir, name);
 if (Ustat(buffer, &statdata) == 0)
   q->size = message_size + statdata.st_size - SPOOL_DATA_START_OFFSET + 1;
 
@@ -271,7 +272,6 @@ if (Ustat(buffer, &statdata) == 0)
 been delivered, and removing visible names. */
 
 if (recipients_list != NULL)
-  {
   for (i = 0; i < recipients_count; i++)
     {
     uschar *r = recipients_list[i].address;
@@ -282,7 +282,6 @@ if (recipients_list != NULL)
       (void)find_dest(q, r, dest_add, FALSE);
       }
     }
-  }
 
 /* Recover the dynamic store used by spool_read_header(). */
 
@@ -617,11 +616,13 @@ uschar buffer[1024];
 
 message_subdir[0] = p->dir_char;
 
-sprintf(CS buffer, "%s/input/%s/%s-J", spool_directory, message_subdir, p->name);
-jread = fopen(CS buffer, "r");
-if (jread == NULL)
+snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s-J",
+  spool_directory, queue_name, message_subdir, p->name);
+
+if (!(jread = fopen(CS buffer, "r")))
   {
-  sprintf(CS buffer, "%s/input/%s/%s-H", spool_directory, message_subdir, p->name);
+  snprintf(CS buffer, sizeof(buffer), "%s/input/%s/%s/%s-H",
+    spool_directory, queue_name, message_subdir, p->name);
   if (Ustat(buffer, &statdata) < 0 || p->update_time == statdata.st_mtime)
     return;
   }
@@ -655,32 +656,23 @@ if (jread != NULL)
 been delivered, and removing visible names. In the nonrecipients tree,
 domains are lower cased. */
 
-if (recipients_list != NULL)
-  {
+if (recipients_list)
   for (i = 0; i < recipients_count; i++)
     {
-    uschar *pp;
-    uschar *r = recipients_list[i].address;
-    tree_node *node = tree_search(tree_nonrecipients, r);
+    uschar * pp;
+    uschar * r = recipients_list[i].address;
+    tree_node * node;
 
-    if (node == NULL)
-      {
-      uschar temp[256];
-      uschar *rr = temp;
-      Ustrcpy(temp, r);
-      while (*rr != 0 && *rr != '@') rr++;
-      while (*rr != 0) { *rr = tolower(*rr); rr++; }
-      node = tree_search(tree_nonrecipients, temp);
-      }
+    if (!(node = tree_search(tree_nonrecipients, r)))
+      node = tree_search(tree_nonrecipients, string_copylc(r));
 
-    if ((pp = strstric(r+1, qualify_domain, FALSE)) != NULL &&
-      *(--pp) == '@') *pp = 0;
-    if (node == NULL)
+    if ((pp = strstric(r+1, qualify_domain, FALSE)) && *(--pp) == '@')
+       *pp = 0;
+    if (!node)
       (void)find_dest(p, r, dest_add, FALSE);
     else
       (void)find_dest(p, r, dest_remove, FALSE);
     }
-  }
 
 /* We also need to scan the tree of non-recipients, which might
 contain child addresses that are not in the recipients list, but

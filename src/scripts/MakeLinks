@@ -2,6 +2,8 @@
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
+#
+# Copyright (c) The Exim Maintainers 2016
 
 test ! -d ../src && \
   echo "*** $0 should be run in a system-specific subdirectory." && \
@@ -29,7 +31,7 @@ mkdir lookups
 cd lookups
 # Makefile is generated
 for f in README cdb.c dbmdb.c dnsdb.c dsearch.c ibase.c ldap.h ldap.c \
-  lsearch.c mysql.c redis.c nis.c nisplus.c oracle.c passwd.c \
+  lmdb.c lsearch.c mysql.c redis.c nis.c nisplus.c oracle.c passwd.c \
   pgsql.c spf.c sqlite.c testdb.c whoson.c \
   lf_functions.h lf_check_file.c lf_quote.c lf_sqlperform.c
 do
@@ -57,8 +59,8 @@ cd ..
 mkdir transports
 cd transports
 for f in README Makefile appendfile.h appendfile.c autoreply.h \
-  autoreply.c lmtp.h lmtp.c pipe.h pipe.c smtp.h smtp.c smtp_socks.c \
-  tf_maildir.c tf_maildir.h
+  autoreply.c lmtp.h lmtp.c pipe.h pipe.c queuefile.c queuefile.h \
+  smtp.h smtp.c smtp_socks.c tf_maildir.c tf_maildir.h
 do
   ln -s ../../src/transports/$f $f
 done
@@ -93,15 +95,16 @@ cd ..
 # but local_scan.c does not, because its location is taken from the build-time
 # configuration. Likewise for the os.c file, which gets build dynamically.
 
-for f in dbfunctions.h dbstuff.h exim.h functions.h globals.h local_scan.h \
-  macros.h mytypes.h osfunctions.h store.h structs.h lookupapi.h \
+for f in blob.h dbfunctions.h dbstuff.h exim.h functions.h globals.h \
+  hash.h local_scan.h \
+  macros.h mytypes.h osfunctions.h store.h structs.h lookupapi.h sha_ver.h \
   \
   acl.c buildconfig.c base64.c child.c crypt16.c daemon.c dbfn.c debug.c deliver.c \
   directory.c dns.c drtables.c dummies.c enq.c exim.c exim_dbmbuild.c \
   exim_dbutil.c exim_lock.c expand.c filter.c filtertest.c globals.c \
-  header.c host.c ip.c log.c lss.c match.c moan.c parse.c perl.c queue.c \
+  hash.c header.c host.c ip.c log.c lss.c match.c moan.c parse.c perl.c queue.c \
   rda.c readconf.c receive.c retry.c rewrite.c rfc2047.c route.c search.c \
-  setenv.c \
+  setenv.c environment.c \
   sieve.c smtp_in.c smtp_out.c spool_in.c spool_out.c std-crypto.c store.c \
   string.c tls.c tlscert-gnu.c tlscert-openssl.c tls-gnu.c tls-openssl.c \
   tod.c transport.c tree.c verify.c version.c dkim.c dkim.h dmarc.c dmarc.h \
@@ -112,12 +115,6 @@ done
 
 # WITH_CONTENT_SCAN
 for f in  spam.c spam.h spool_mbox.c regex.c mime.c mime.h malware.c
-do
-  ln -s ../src/$f $f
-done
-
-# WITH_OLD_DEMIME
-for f in  demime.c demime.h
 do
   ln -s ../src/$f $f
 done

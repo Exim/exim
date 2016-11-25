@@ -2,11 +2,11 @@
 #
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
-# TLSA (3 1 1)
+### TLSA (3 1 1)
 exim -odq CALLER@dane256ee.test.ex
 Testing
 ****
-# TLSA (3 1 2)
+### TLSA (3 1 2)
 exim -odq CALLER@mxdane512ee.test.ex
 Testing
 ****
@@ -14,17 +14,17 @@ exim -qf
 ****
 #
 #
-# Recipient callout
+### Recipient callout
 exim -DOPT=callout -bhc 127.0.0.1
 MAIL FROM: <CALLER@myhost.test.ex>
-RCPT TO: <CALLER@dane256ee.test.ex>
+RCPT TO: <rcptuser@dane256ee.test.ex>
 ****
 killdaemon
 #
 #
 exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
 ****
-# TLSA (2 0 1)
+### TLSA (2 0 1)
 exim -odq CALLER@mxdane256ta.test.ex
 Testing
 ****
@@ -32,7 +32,7 @@ exim -qf
 ****
 killdaemon
 #
-# A server with a nonverifying cert and no TLSA
+### A server with a nonverifying cert and no TLSA
 # Check we get a non-CV but TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=no -bd -oX PORT_D
 ****
@@ -43,7 +43,7 @@ exim -qf
 ****
 killdaemon
 #
-# A server with a verifying cert and no TLSA
+### A server with a verifying cert and no TLSA
 # Check we get a CV and TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
@@ -57,15 +57,15 @@ killdaemon
 #
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
-# A server with two MXs for which both TLSA lookups return defer
+### A server with two MXs for which both TLSA lookups return defer
 exim -odq CALLER@mxdanelazy.test.ex
 Testing
 ****
-# A server lacking a TLSA, required
+### A server lacking a TLSA, required
 exim -odq CALLER@dane.no.1.test.ex
 Testing
 ****
-# A server lacking a TLSA, requested only
+### A server lacking a TLSA, requested only
 exim -odq CALLER@dane.no.2.test.ex
 Testing
 ****

@@ -1,15 +1,10 @@
 # Exim test configuration 4002
 # Content-scan: aveserver interface
 
-exim_path = EXIM_PATH
-host_lookup_order = bydns
-primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
+.include DIR/aux-var/std_conf_prefix
+
 log_selector = +subject
-tls_advertise_hosts =
+primary_hostname = myhost.test.ex
 
 av_scanner = aveserver : DIR/eximdir/aveserver_sock
 

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -450,10 +450,11 @@ for (s = strings; s != NULL; s = s->next)
 
 va_start(ap, count);
 for (i = 0; i < count; i++)
-  {
   if (one_pattern_match(name, slen, has_addresses, va_arg(ap, uschar *)))
+    {
+    va_end(ap);
     return cond;
-  }
+    }
 va_end(ap);
 
 return !cond;

@@ -1,0 +1,42 @@
+# cutthrough_delivery and -bhc
+need_ipv4
+munge loopback
+no_msglog_check
+#
+# Despite config for cutthrough should not make onward conn
+server -t -2 PORT_S
+****
+exim -bhc 1.2.3.4
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<plain@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+# Onward conn made for r-verify but cleared before DATA
+server PORT_S
+220 server ready
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+QUIT
+220 OK
+*eof
+****
+exim -bhc 1.2.3.4
+EHLO myhost.test.ex
+MAIL FROM:<sender@myhost.test.ex>
+RCPT TO:<verify@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+# End

@@ -258,6 +258,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> rhubarb in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "rcpt"
 >>> processing "require"
 >>>   message: helo not verified

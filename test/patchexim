@@ -1,4 +1,7 @@
-#! /usr/bin/perl -w
+#! /usr/bin/env perl
+
+use strict;
+use warnings;
 
 ###############################################################################
 # This is an auxiliary script that is part of the Exim test suite. It must be #
@@ -10,8 +13,8 @@
 # be copied. The script must be run in the correct current directory.         #
 ###############################################################################
 
-open(IN, "$ARGV[0]") || die "** Failed to open $ARGV[0]: $!\n";
-open(OUT, ">eximdir/exim") || die "** Failed to open eximdir/exim: $!\n";
+open(IN, $ARGV[0]) || die "** Failed to open $ARGV[0]: $!\n";
+open(OUT, '>eximdir/exim') || die "** Failed to open eximdir/exim: $!\n";
 
 while(<IN>)
   {
@@ -23,6 +26,6 @@ while(<IN>)
 close(IN);
 close(OUT);
 
-chmod 04755, "eximdir/exim";
+chmod 04755, 'eximdir/exim';
 
 # End of patchexim script

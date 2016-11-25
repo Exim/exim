@@ -1,0 +1,28 @@
+# Exim test configuration 0574
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_mail = chk_mail
+acl_smtp_rcpt = chk_rcpt
+acl_smtp_data = chk_data
+
+queue_only
+
+# ----- ACL -----
+
+begin acl
+
+chk_mail:
+  accept control = debug/tag=_1
+
+chk_rcpt:
+  accept control = debug/kill
+
+chk_data:
+  accept control = debug/tag=_2/opts=+all
+
+# End

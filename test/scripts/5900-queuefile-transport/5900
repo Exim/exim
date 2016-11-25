@@ -1,0 +1,4 @@
+# queuefile transport test non existant directory
+exim -odi userx
+****
+no_msglog_check

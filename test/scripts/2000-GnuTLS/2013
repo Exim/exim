@@ -5,7 +5,7 @@ exim -DSERVER=server -bd -oX PORT_D
 exim userx@test.ex
 Test message 1
 ****
-exim userx@test.ex
+exim usery@test.ex
 Test message 2
 ****
 exim -qqf -d-all+acl

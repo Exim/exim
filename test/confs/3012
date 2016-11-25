@@ -1,0 +1,7 @@
+# exim test configuration 3012
+exim_path = EXIM_PATH
+keep_environment = ^FOO\d : BAR
+add_environment = ADDED1=added1 : ADDED2=added2
+tls_advertise_hosts =
+perl_startup = sub taint_flag { ${^TAINT} ? 'ON' : 'OFF' }
+perl_taintmode = yes

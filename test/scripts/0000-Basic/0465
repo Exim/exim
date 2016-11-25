@@ -7,7 +7,7 @@ quit
 1
 exim -f abc@somewhere. xxx
 ****
-exim -DSTD=strip_trailing_dot -d -bs
+exim -DOPT=strip_trailing_dot -d -bs
 mail from:<>
 rcpt to:<abc@domain.>
 data
@@ -15,7 +15,7 @@ To: abc@domain.
 .
 quit
 ****
-exim -DSTD=strip_trailing_dot -f abc@somewhere. xxx@yyy.
+exim -DOPT=strip_trailing_dot -f abc@somewhere. xxx@yyy.
 ****
 exim -d -bs
 mail from:<>

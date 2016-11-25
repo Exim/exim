@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for writing log files. The code for maintaining datestamped
@@ -47,8 +47,80 @@ static BOOL   path_inspected = FALSE;
 static int    logging_mode = LOG_MODE_FILE;
 static uschar *file_path = US"";
 
+static size_t pid_position[2];
 
 
+/* These should be kept in-step with the private delivery error
+number definitions in macros.h */
+
+static const uschar * exim_errstrings[] = {
+  US"",
+  US"unknown error",
+  US"user slash",
+  US"exist race",
+  US"not regular",
+  US"not directory",
+  US"bad ugid",
+  US"bad mode",
+  US"inode changed",
+  US"lock failed",
+  US"bad address2",
+  US"forbid pipe",
+  US"forbid file",
+  US"forbid reply",
+  US"missing pipe",
+  US"missing file",
+  US"missing reply",
+  US"bad redirect",
+  US"smtp closed",
+  US"smtp format",
+  US"spool format",
+  US"not absolute",
+  US"Exim-imposed quota",
+  US"held",
+  US"Delivery filter process failure",
+  US"Delivery add/remove header failure",
+  US"Delivery write incomplete error",
+  US"Some expansion failed",
+  US"Failed to get gid",
+  US"Failed to get uid",
+  US"Unset or non-existent transport",
+  US"MBX length mismatch",
+  US"Lookup failed routing or in smtp tpt",
+  US"Can't match format in appendfile",
+  US"Creation outside home in appendfile",
+  US"Can't check a list; lookup defer",
+  US"DNS lookup defer",
+  US"Failed to start TLS session",
+  US"Mandatory TLS session not started",
+  US"Failed to chown a file",
+  US"Failed to create a pipe",
+  US"When verifying",
+  US"When required by client",
+  US"Used internally in smtp transport",
+  US"RCPT gave 4xx error",
+  US"MAIL gave 4xx error",
+  US"DATA gave 4xx error",
+  US"Negotiation failed for proxy configured host",
+  US"Authenticator 'other' failure",
+  US"target not supporting SMTPUTF8",
+  US"",
+
+  US"Not time for routing",
+  US"Not time for local delivery",
+  US"Not time for any remote host",
+  US"Local-only delivery",
+  US"Domain in queue_domains",
+  US"Transport concurrency limit",
+};
+
+
+/************************************************/
+const uschar *
+exim_errstr(int err)
+{
+return err < 0 ? exim_errstrings[-err] : CUS strerror(err);
+}
 
 /*************************************************
 *              Write to syslog                   *
@@ -62,7 +134,7 @@ can get here if there is a failure to open the panic log.)
 
 Arguments:
   priority       syslog priority
-  s              the string to be written
+  s              the string to be written, the string may be modified!
 
 Returns:         nothing
 */
@@ -76,6 +148,8 @@ int linecount = 0;
 if (running_in_test_harness) return;
 
 if (!syslog_timestamp) s += log_timezone? 26 : 20;
+if (!syslog_pid && LOGGING(pid))
+    memmove(s + pid_position[0], s + pid_position[1], pid_position[1] - pid_position[0]);
 
 len = Ustrlen(s);
 
@@ -182,7 +256,11 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 int
 log_create(uschar *name)
 {
-int fd = Uopen(name, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
+int fd = Uopen(name,
+#ifdef O_CLOEXEC
+	O_CLOEXEC |
+#endif
+	O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
 
 /* If creation failed, attempt to build a log directory in case that is the
 problem. */
@@ -196,7 +274,11 @@ if (fd < 0 && errno == ENOENT)
   DEBUG(D_any) debug_printf("%s log directory %s\n",
     created? "created" : "failed to create", name);
   *lastslash = '/';
-  if (created) fd = Uopen(name, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
+  if (created) fd = Uopen(name,
+#ifdef O_CLOEXEC
+			O_CLOEXEC |
+#endif
+		       	O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
   }
 
 return fd;
@@ -246,7 +328,11 @@ if (pid == 0)
 /* If we created a subprocess, wait for it. If it succeeded, try the open. */
 
 while (pid > 0 && waitpid(pid, &status, 0) != pid);
-if (status == 0) fd = Uopen(name, O_APPEND|O_WRONLY, LOG_MODE);
+if (status == 0) fd = Uopen(name,
+#ifdef O_CLOEXEC
+			O_CLOEXEC |
+#endif
+		       	O_APPEND|O_WRONLY, LOG_MODE);
 
 /* If we failed to create a subprocess, we are in a bad way. We return
 with fd still < 0, and errno set, letting the caller handle the error. */
@@ -368,11 +454,17 @@ if (!ok)
 /* We now have the file name. Try to open an existing file. After a successful
 open, arrange for automatic closure on exec(), and then return. */
 
-*fd = Uopen(buffer, O_APPEND|O_WRONLY, LOG_MODE);
+*fd = Uopen(buffer,
+#ifdef O_CLOEXEC
+		O_CLOEXEC |
+#endif
+	       	O_APPEND|O_WRONLY, LOG_MODE);
 
 if (*fd >= 0)
   {
+#ifndef O_CLOEXEC
   (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
+#endif
   return;
   }
 
@@ -399,7 +491,9 @@ else if (euid == root_uid) *fd = log_create_as_exim(buffer);
 
 if (*fd >= 0)
   {
+#ifndef O_CLOEXEC
   (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
+#endif
   return;
   }
 
@@ -420,16 +514,20 @@ log. If possible, save a copy of the original line that was being logged. If we
 are recursing (can't open the panic log either), the pointer will already be
 set. */
 
-if (panic_save_buffer == NULL)
-  {
-  panic_save_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-  if (panic_save_buffer != NULL)
+if (!panic_save_buffer)
+  if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
     memcpy(panic_save_buffer, log_buffer, LOG_BUFFER_SIZE);
-  }
 
 log_write(0, LOG_PANIC_DIE, "Cannot open %s log file \"%s\": %s: "
   "euid=%d egid=%d", log_names[type], buffer, strerror(errno), euid, getegid());
 /* Never returns */
+}
+
+
+static void
+unlink_log(int type)
+{
+if (type == lt_debug) unlink(CS debuglog_name);
 }
 
 
@@ -498,12 +596,9 @@ log_write_failed(uschar *name, int length, int rc)
 {
 int save_errno = errno;
 
-if (panic_save_buffer == NULL)
-  {
-  panic_save_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-  if (panic_save_buffer != NULL)
+if (!panic_save_buffer)
+  if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
     memcpy(panic_save_buffer, log_buffer, LOG_BUFFER_SIZE);
-  }
 
 log_write(0, LOG_PANIC_DIE, "failed to write to %s: length=%d result=%d "
   "errno=%d (%s)", name, length, rc, save_errno,
@@ -572,6 +667,14 @@ while ((t = string_nextinlist(&tt, &sep, log_buffer, LOG_BUFFER_SIZE)))
 }
 
 
+void
+mainlog_close(void)
+{
+if (mainlogfd < 0) return;
+(void)close(mainlogfd);
+mainlogfd = -1;
+mainlog_inode = 0;
+}
 
 /*************************************************
 *            Write message to log file           *
@@ -659,15 +762,12 @@ if (panic_recurseflag)
 /* Ensure we have a buffer (see comment above); this should never be obeyed
 when running Exim proper, only when running utilities. */
 
-if (log_buffer == NULL)
-  {
-  log_buffer = (uschar *)malloc(LOG_BUFFER_SIZE);
-  if (log_buffer == NULL)
+if (!log_buffer)
+  if (!(log_buffer = US malloc(LOG_BUFFER_SIZE)))
     {
     fprintf(stderr, "exim: failed to get store for log buffer\n");
     exim_exit(EXIT_FAILURE);
     }
-  }
 
 /* If we haven't already done so, inspect the setting of log_file_path to
 determine whether to log to files and/or to syslog. Bits in logging_mode
@@ -809,7 +909,9 @@ while(*ptr) ptr++;
 if (LOGGING(pid))
   {
   sprintf(CS ptr, "[%d] ", (int)getpid());
+  if (!syslog_pid) pid_position[0] = ptr - log_buffer;	/* remember begin … */
   while (*ptr) ptr++;
+  if (!syslog_pid) pid_position[1] = ptr - log_buffer;	/*  … and end+1 of the PID */
   }
 
 if (really_exim && message_id[0] != 0)
@@ -883,14 +985,14 @@ been opened, but we don't want to keep on writing to it for too long after it
 has been renamed. Therefore, do a stat() and see if the inode has changed, and
 if so, re-open. */
 
-if ((flags & LOG_MAIN) != 0 &&
-    (selector == 0 || (selector & log_selector[0]) != 0))
+if (  flags & LOG_MAIN
+   && (!selector ||  selector & log_selector[0]))
   {
-  if ((logging_mode & LOG_MODE_SYSLOG) != 0 &&
-      (syslog_duplication || (flags & (LOG_REJECT|LOG_PANIC)) == 0))
+  if (  logging_mode & LOG_MODE_SYSLOG
+     && (syslog_duplication || !(flags & (LOG_REJECT|LOG_PANIC))))
     write_syslog(LOG_INFO, log_buffer);
 
-  if ((logging_mode & LOG_MODE_FILE) != 0)
+  if (logging_mode & LOG_MODE_FILE)
     {
     struct stat statbuf;
 
@@ -916,14 +1018,8 @@ if ((flags & LOG_MAIN) != 0 &&
     happening. */
 
     if (mainlogfd >= 0)
-      {
       if (Ustat(mainlog_name, &statbuf) < 0 || statbuf.st_ino != mainlog_inode)
-        {
-        (void)close(mainlogfd);
-        mainlogfd = -1;
-        mainlog_inode = 0;
-        }
-      }
+	mainlog_close();
 
     /* If the log is closed, open it. Then write the line. */
 
@@ -1325,7 +1421,7 @@ int fd = -1;
 if (debug_file)
   {
   debug_printf("DEBUGGING ACTIVATED FROM WITHIN CONFIG.\n"
-      "DEBUG: Tag=\"%s\" Opts=\"%s\"\n", tag_name, opts ? opts : US"");
+      "DEBUG: Tag=\"%s\" opts=\"%s\"\n", tag_name, opts ? opts : US"");
   return;
   }
 
@@ -1353,6 +1449,18 @@ if (fd != -1)
   debug_file = fdopen(fd, "w");
 else
   log_write(0, LOG_MAIN|LOG_PANIC, "unable to open debug log");
+}
+
+
+void
+debug_logging_stop(void)
+{
+if (!debug_file || !debuglog_name[0]) return;
+
+debug_selector = 0;
+fclose(debug_file);
+debug_file = NULL;
+unlink_log(lt_debug);
 }
 
 

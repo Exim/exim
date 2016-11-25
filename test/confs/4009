@@ -3,15 +3,13 @@
 
 OPT= 127.0.0.1 7833
 
-exim_path = EXIM_PATH
-host_lookup_order = bydns
-primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
+.include DIR/aux-var/std_conf_prefix
+
 log_selector = +subject
+primary_hostname = myhost.test.ex
+
+# we need to set the sender
+trusted_users = CALLER
 
 spamd_address = OPT
 

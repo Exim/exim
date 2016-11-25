@@ -55,7 +55,7 @@ int i;
 /* For second and subsequent results, insert \n */
 
 if (res->string != NULL)
-  res->string = string_cat(res->string, &res->size, &res->len, US"\n", 1);
+  res->string = string_catn(res->string, &res->size, &res->len, US"\n", 1);
 
 if (argc > 1)
   {

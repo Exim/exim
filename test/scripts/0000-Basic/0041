@@ -2,6 +2,8 @@
 exim -bh 1.1.1.1
 vrfy userx@test.ex
 vrfy hardfail@test.ex
+vrfy unqual
+vrfy
 expn postmaster
 quit
 ****

@@ -28,3 +28,7 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@test.ex> F=<> R=all T=local_delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 Test: reject ehlo, then close (late, giving time for HELO)
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 H=localhost4.test.ex [127.0.0.1]: Remote host closed connection in response to HELO the.local.host.name (EHLO response was: 550 You are banned)
+1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@domain1 R=others T=smtp defer (-18) H=localhost4.test.ex [127.0.0.1]: Remote host closed connection in response to HELO the.local.host.name (EHLO response was: 550 You are banned)

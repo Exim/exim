@@ -6,22 +6,22 @@ munge scanfile_size
 #
 server 11333
 <CHECK RSPAMC/1.3
-<Content-length: 
-<Queue-Id: 
-<From: 
+<Content-length:
+<Queue-Id:
+<From:
 <Recipient-Number: 1
-<Rcpt: 
+<Rcpt:
 <Helo:
 <User:
 <
-<From 
+<From
 <X-Envelope-From
 <X-Envelope-To
-<Received: 
-<	by 
+<Received:
+<	by
 <	(envelope
-<	id 
-<	for 
+<	id
+<	for
 <From:
 <Content-type: text/plain
 <Message-Id:

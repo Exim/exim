@@ -1,21 +1,23 @@
 # Exim test configuration 3414
 
 ACL=
-S=
+OPT=
 
 exim_path = EXIM_PATH
+keep_environment =
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+chunking_advertise_hosts =
 tls_advertise_hosts =
 
 # ----- Main settings -----
 
 acl_smtp_mail = mail
-S acl_smtp_mailauth=ACL
+OPT acl_smtp_mailauth=ACL
 
 
 # ----- ACLs -----

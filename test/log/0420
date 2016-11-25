@@ -1,0 +1,7 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaX-0005vi-00 h: <>
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= x@y H=(client.test.ex) [127.0.0.1] P=smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 h: <some text; Tue, 2 Mar 1999 09:44:33 +0000>
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= a@b H=(client.test.ex) [127.0.0.1] P=smtp S=sss

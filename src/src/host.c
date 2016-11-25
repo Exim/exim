@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for finding hosts, either by gethostbyname(), gethostbyaddr(), or
@@ -257,7 +257,7 @@ else
       count++;
 
   yield = store_get(sizeof(struct hostent));
-  alist = store_get((count + 1) * sizeof(char **));
+  alist = store_get((count + 1) * sizeof(char *));
   adds  = store_get(count *alen);
 
   yield->h_name = CS name;
@@ -597,12 +597,12 @@ if (sender_host_name == NULL)
   sender_fullhost = (sender_helo_name == NULL)? address :
     string_sprintf("(%s) %s", sender_helo_name, address);
 
-  sender_rcvhost = string_cat(NULL, &size, &ptr, address, adlen);
+  sender_rcvhost = string_catn(NULL, &size, &ptr, address, adlen);
 
   if (sender_ident != NULL || show_helo || portptr != NULL)
     {
     int firstptr;
-    sender_rcvhost = string_cat(sender_rcvhost, &size, &ptr, US" (", 2);
+    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US" (", 2);
     firstptr = ptr;
 
     if (portptr != NULL)
@@ -617,7 +617,7 @@ if (sender_host_name == NULL)
       sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2,
         (firstptr == ptr)? US"ident=" : US" ident=", sender_ident);
 
-    sender_rcvhost = string_cat(sender_rcvhost, &size, &ptr, US")", 1);
+    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US")", 1);
     }
 
   sender_rcvhost[ptr] = 0;   /* string_cat() always leaves room */
@@ -1067,7 +1067,7 @@ if (Ustrchr(address, ':') != NULL)
 /* Handle IPv4 address */
 
 (void)sscanf(CS address, "%d.%d.%d.%d", x, x+1, x+2, x+3);
-bin[v4offset] = (x[0] << 24) + (x[1] << 16) + (x[2] << 8) + x[3];
+bin[v4offset] = ((uint)x[0] << 24) + (x[1] << 16) + (x[2] << 8) + x[3];
 return v4offset+1;
 }
 
@@ -1098,7 +1098,7 @@ for (i = 0; i < count; i++)
   if (mask == 0) wordmask = 0;
   else if (mask < 32)
     {
-    wordmask = (-1) << (32 - mask);
+    wordmask = (uint)(-1) << (32 - mask);
     mask = 0;
     }
   else
@@ -1321,7 +1321,7 @@ for (i = 0; i < size; i++)
   if (mlen == 0) mask = 0;
   else if (mlen < 32)
     {
-    mask = (-1) << (32 - mlen);
+    mask = (uint)(-1) << (32 - mlen);
     mlen = 0;
     }
   else
@@ -1521,7 +1521,7 @@ int len;
 uschar *s, *t;
 struct hostent *hosts;
 struct in_addr addr;
-unsigned long time_msec;
+unsigned long time_msec = 0;	/* init to quieten dumb static analysis */
 
 if (slow_lookup_log) time_msec = get_time_in_ms();
 
@@ -2777,17 +2777,15 @@ host which is not the primary hostname. */
 last = NULL;    /* Indicates that not even the first item is filled yet */
 
 for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-     rr != NULL;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+     rr;
+     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
   {
   int precedence;
   int weight = 0;        /* For SRV records */
   int port = PORT_NONE;
-  uschar *s;             /* MUST be unsigned for GETSHORT */
+  const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
   uschar data[256];
 
-  if (rr->type != ind_type) continue;
-  s = rr->data;
   GETSHORT(precedence, s);      /* Pointer s is advanced */
 
   /* For MX records, we use a random "weight" which causes multiple records of
@@ -2920,6 +2918,12 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   NEXT_MX_RR: continue;
   }
 
+if (!last)	/* No rr of correct type; give up */
+  {
+  yield = HOST_FIND_FAILED;
+  goto out;
+  }
+
 /* If the list of hosts was obtained from SRV records, there are two things to
 do. First, if there is only one host, and it's name is ".", it means there is
 no SMTP service at this domain. Otherwise, we have to sort the hosts of equal
@@ -2946,7 +2950,7 @@ if (ind_type == T_SRV)
       debug_printf("  %s P=%d W=%d\n", h->name, h->mx, h->sort_key % 1000);
     }
 
-  for (pptr = &host, h = host; h != last; pptr = &(h->next), h = h->next)
+  for (pptr = &host, h = host; h != last; pptr = &h->next, h = h->next)
     {
     int sum = 0;
     host_item *hh;
@@ -3051,7 +3055,8 @@ dns_init(FALSE, FALSE,       /* Disable qualify_single and search_parents */
 
 for (h = host; h != last->next; h = h->next)
   {
-  if (h->address != NULL) continue;  /* Inserted by a multihomed host */
+  if (h->address) continue;  /* Inserted by a multihomed host */
+
   rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip,
     NULL, dnssec_request, dnssec_require);
   if (rc != HOST_FOUND)
@@ -3063,7 +3068,7 @@ for (h = host; h != last->next; h = h->next)
       h->why = hwhy_deferred;
       }
     else
-      h->why = (rc == HOST_IGNORED)? hwhy_ignored : hwhy_failed;
+      h->why = rc == HOST_IGNORED ? hwhy_ignored : hwhy_failed;
     }
   }
 

@@ -1,5 +1,5 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello CALLER at test.ex
+250-myhost.test.ex Hello fromuser at test.ex
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
@@ -10,7 +10,7 @@
 250 OK id=10HmaX-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello CALLER at test.ex
+250-myhost.test.ex Hello fromuser at test.ex
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
@@ -21,7 +21,7 @@
 250 OK id=10HmaY-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello CALLER at test.ex
+250-myhost.test.ex Hello fromuser at test.ex
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
@@ -32,7 +32,7 @@
 250 OK id=10HmaZ-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello CALLER at test.ex
+250-myhost.test.ex Hello fromuser at test.ex
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
@@ -51,16 +51,16 @@ Connection request from [127.0.0.1]
 <Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <CALLER@myhost.test.ex>
+<X-Envelope-From: <fromuser@myhost.test.ex>
 <X-Envelope-To: userx@test.ex
-<Received: from CALLER (helo=test.ex)
+<Received: from fromuser (helo=test.ex)
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <CALLER@myhost.test.ex>)
+<	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmaX-0005vi-00
 <	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
-<From: CALLER_NAME <CALLER@myhost.test.ex>
+<From: fromuser@myhost.test.ex
 <Date: Tue, 2 Mar 1999 09:44:33 +0000
 <
 <test
@@ -95,16 +95,16 @@ Connection request from [127.0.0.1]
 <Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <CALLER@myhost.test.ex>
+<X-Envelope-From: <fromuser@myhost.test.ex>
 <X-Envelope-To: userx@test.ex
-<Received: from CALLER (helo=test.ex)
+<Received: from fromuser (helo=test.ex)
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <CALLER@myhost.test.ex>)
+<	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmaY-0005vi-00
 <	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
-<From: CALLER_NAME <CALLER@myhost.test.ex>
+<From: fromuser@myhost.test.ex
 <Date: Tue, 2 Mar 1999 09:44:33 +0000
 <
 <test
@@ -140,16 +140,16 @@ Connection request from [127.0.0.1]
 <Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <CALLER@myhost.test.ex>
+<X-Envelope-From: <fromuser@myhost.test.ex>
 <X-Envelope-To: userx@test.ex
-<Received: from CALLER (helo=test.ex)
+<Received: from fromuser (helo=test.ex)
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <CALLER@myhost.test.ex>)
+<	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmaZ-0005vi-00
 <	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
-<From: CALLER_NAME <CALLER@myhost.test.ex>
+<From: fromuser@myhost.test.ex
 <Date: Tue, 2 Mar 1999 09:44:33 +0000
 <
 <test
@@ -184,16 +184,16 @@ Connection request from [127.0.0.1]
 <Content-length: ddd
 <
 <From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <CALLER@myhost.test.ex>
+<X-Envelope-From: <fromuser@myhost.test.ex>
 <X-Envelope-To: userx@test.ex
-<Received: from CALLER (helo=test.ex)
+<Received: from fromuser (helo=test.ex)
 <	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <CALLER@myhost.test.ex>)
+<	(envelope-from <fromuser@myhost.test.ex>)
 <	id 10HmbA-0005vi-00
 <	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 <Content-type: text/plain
 <Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
-<From: CALLER_NAME <CALLER@myhost.test.ex>
+<From: fromuser@myhost.test.ex
 <Date: Tue, 2 Mar 1999 09:44:33 +0000
 <
 <test

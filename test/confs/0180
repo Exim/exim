@@ -1,15 +1,11 @@
 # Exim test configuration 0180
 
-CSS=check_spool_space=100000000K
+# Require immense amount of disk space, expecting to fail.  Can unfortunately work on big filesystems.
+CSS=check_spool_space=400G
 
-exim_path = EXIM_PATH
-host_lookup_order = bydns
+.include DIR/aux-var/std_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Almost all the global variables are defined together in this one header, so
@@ -108,9 +108,6 @@ extern tls_support tls_out;
 #ifdef SUPPORT_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
 extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules */
-extern uschar *gnutls_require_mac;     /* So some can be avoided */
-extern uschar *gnutls_require_kx;      /* So some can be avoided */
-extern uschar *gnutls_require_proto;   /* So some can be avoided */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
 extern uschar *tls_certificate;        /* Certificate file */
@@ -122,7 +119,6 @@ extern uschar *tls_eccurve;            /* EC curve */
 # ifndef DISABLE_OCSP
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 # endif
-extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
@@ -135,13 +131,15 @@ extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 extern uschar  *dsn_envid;             /* DSN envid string */
 extern int      dsn_ret;               /* DSN ret type*/
 extern const pcre  *regex_DSN;         /* For recognizing DSN settings */
-extern BOOL     smtp_use_dsn;          /* Global for passed connections */
 extern uschar  *dsn_advertise_hosts;   /* host for which TLS is advertised */
 
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. */
 
+extern int (*lwr_receive_getc)(void);
+extern int (*lwr_receive_ungetc)(int);
 extern int (*receive_getc)(void);
+extern void (*receive_get_cache)(void);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);
 extern int (*receive_ferror)(void);
@@ -157,6 +155,7 @@ extern const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 /* General global variables */
 
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
+extern uschar *add_environment;        /* List of environment variables to add */
 extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
 extern uschar *acl_arg[9];             /* Argument to ACL call */
@@ -193,7 +192,7 @@ extern uschar *acl_smtp_starttls;      /* ACL run for STARTTLS */
 extern uschar *acl_smtp_vrfy;          /* ACL run for VRFY */
 extern BOOL    acl_temp_details;       /* TRUE to give details for 4xx error */
 extern tree_node *acl_var_c;           /* ACL connection variables */
-extern tree_node *acl_var_m;           /* ACL messsage variables */
+extern tree_node *acl_var_m;           /* ACL message variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
 extern string_item *acl_warn_logged;   /* Logged lines */
 extern uschar *acl_wherecodes[];       /* Response codes for ACL fails */
@@ -269,6 +268,11 @@ extern int     check_log_space;        /* Minimum for message acceptance */
 extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length */
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
+extern uschar *chunking_advertise_hosts;    /* RFC 3030 CHUNKING */
+extern unsigned chunking_datasize;
+extern unsigned chunking_data_left;
+extern BOOL    chunking_offered;
+extern chunking_state_t chunking_state;
 extern uschar *client_authenticator;        /* Authenticator name used for smtp delivery */
 extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH */
 extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
@@ -278,16 +282,12 @@ extern int     connection_max_messages;/* Max down one SMTP connection */
 extern BOOL    config_changed;         /* True if -C used */
 extern FILE   *config_file;            /* Configuration file */
 extern uschar *config_filename;        /* Configuration file name */
-#ifdef CONFIGURE_GROUP
 extern gid_t   config_gid;             /* Additional group owner */
-#endif
 extern int     config_lineno;          /* Line number */
 extern uschar *config_main_filelist;   /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */
 extern uschar *config_main_directory;  /* Directory where the main config file was found */
-#ifdef CONFIGURE_OWNER
 extern uid_t   config_uid;             /* Additional owner */
-#endif
 extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern BOOL    continue_more;          /* Flag more addresses waiting */
@@ -297,7 +297,8 @@ extern uschar *continue_transport;     /* Transport for continued delivery */
 extern uschar *csa_status;             /* Client SMTP Authorization result */
 
 typedef struct {
-  BOOL         delivery;               /* When to attempt */
+  unsigned     delivery:1;             /* When to attempt */
+  unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spoolling */
   int          fd;                     /* Open connection */
   int          nrcpt;                  /* Count of addresses */
   uschar *     interface;              /* (address of) */
@@ -362,11 +363,6 @@ extern uschar *deliver_selectstring;   /* For selecting by recipient */
 extern BOOL    deliver_selectstring_regex; /* String is regex */
 extern uschar *deliver_selectstring_sender; /* For selecting by sender */
 extern BOOL    deliver_selectstring_sender_regex; /* String is regex */
-#ifdef WITH_OLD_DEMIME
-extern int     demime_errorlevel;      /* Severity of MIME error */
-extern int     demime_ok;              /* Nonzero if message has been demimed */
-extern uschar *demime_reason;          /* Reason for broken MIME container */
-#endif
 extern BOOL    disable_callout_flush;  /* Don't flush before callouts */
 extern BOOL    disable_delay_flush;    /* Don't flush before "delay" in ACL */
 #ifdef ENABLE_DISABLE_FSYNC
@@ -426,7 +422,7 @@ extern BOOL    drop_cr;                /* For broken local MUAs */
 extern uschar *dsn_from;               /* From: string for DSNs */
 
 extern BOOL    enable_dollar_recipients; /* Make $recipients available */
-extern int     envelope_to_remove;     /* Remove envelope_to_headers */
+extern BOOL    envelope_to_remove;     /* Remove envelope_to_headers */
 extern int     errno_quota;            /* Quota errno in this OS */
 extern int     error_handling;         /* Error handling style */
 extern uschar *errors_copy;            /* For taking copies of errors */
@@ -465,9 +461,6 @@ extern uschar *filter_test_ufile;      /* User filter test file */
 extern uschar *filter_thisaddress;     /* For address looping */
 extern int     finduser_retries;       /* Retry count for getpwnam() */
 extern uid_t   fixed_never_users[];    /* Can't be overridden */
-#ifdef WITH_OLD_DEMIME
-extern uschar *found_extension;        /* demime acl condition: file extension found */
-#endif
 extern uschar *freeze_tell;            /* Message on (some) freezings */
 extern uschar *freeze_tell_config;     /* The configured setting */
 extern uschar *fudged_queue_times;     /* For use in test harness */
@@ -512,11 +505,13 @@ extern BOOL    ignore_fromline_local;  /* Local SMTP ignore fromline */
 extern uschar *ignore_fromline_hosts;  /* Hosts permitted to send "From " */
 extern BOOL    inetd_wait_mode;        /* Whether running in inetd wait mode */
 extern int     inetd_wait_timeout;     /* Timeout for inetd wait mode */
+extern uschar *initial_cwd;            /* The directory we where in at startup */
 extern BOOL    is_inetd;               /* True for inetd calls */
 extern uschar *iterate_item;           /* Item from iterate list */
 
 extern int     journal_fd;             /* Fd for journal file */
 
+extern uschar *keep_environment;       /* Whitelist for environment variables */
 extern int     keep_malformed;         /* Time to keep malformed messages */
 
 extern uschar *eldap_dn;               /* Where LDAP DNs are left */
@@ -555,6 +550,8 @@ extern int     lookup_open_max;        /* Max lookup files to cache */
 extern uschar *lookup_value;           /* Value looked up from file */
 
 extern macro_item *macros;             /* Configuration macros */
+extern macro_item *mlast;              /* Last item in macro list */
+extern BOOL    macros_builtin_created; /* Flag for lazy-create */
 extern uschar *mailstore_basename;     /* For mailstore deliveries */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *malware_name;           /* Name of virus or malware ("W32/Klez-H") */
@@ -613,6 +610,9 @@ extern uid_t  *never_users;            /* List of uids never to be used */
 extern BOOL    no_mbox_unspool;        /* don't unlink files in /scan directory */
 #endif
 extern BOOL    no_multiline_responses; /* For broken clients */
+
+extern const int on;                   /* For setsockopt */
+extern const int off;
 
 extern optionlist optionlist_auths[];      /* These option lists are made */
 extern int     optionlist_auths_size;      /* global so that readconf can */
@@ -674,6 +674,7 @@ extern BOOL    queue_running;          /* TRUE for queue running process and */
 extern pid_t   queue_run_pid;          /* PID of the queue running process or 0 */
 extern int     queue_run_pipe;         /* Pipe for synchronizing */
 extern int     queue_interval;         /* Queue running interval */
+extern uschar *queue_name;             /* Name of queue, if nondefault spooling */
 extern BOOL    queue_only;             /* TRUE to disable immediate delivery */
 extern int     queue_only_load;        /* Max load before auto-queue */
 extern BOOL    queue_only_load_latch;  /* Latch queue_only_load TRUE */
@@ -681,7 +682,7 @@ extern uschar *queue_only_file;        /* Queue if file exists/not-exists */
 extern BOOL    queue_only_override;    /* Allow override from command line */
 extern BOOL    queue_only_policy;      /* ACL or local_scan wants queue_only */
 extern BOOL    queue_run_in_order;     /* As opposed to random */
-extern int     queue_run_max;          /* Max queue runners */
+extern uschar *queue_run_max;          /* Max queue runners */
 extern BOOL    queue_smtp;             /* Disable all immediate STMP (-odqs)*/
 extern uschar *queue_smtp_domains;     /* Ditto, for these domains */
 
@@ -714,10 +715,11 @@ extern uschar *recipient_verify_failure; /* What went wrong */
 extern BOOL    recipients_discarded;   /* By an ACL */
 extern int     recipients_list_max;    /* Maximum number fitting in list */
 extern int     recipients_max;         /* Max permitted */
-extern int     recipients_max_reject;  /* If TRUE, reject whole message */
+extern BOOL    recipients_max_reject;  /* If TRUE, reject whole message */
 extern const pcre *regex_AUTH;         /* For recognizing AUTH settings */
 extern const pcre  *regex_check_dns_names; /* For DNS name checking */
 extern const pcre  *regex_From;        /* For recognizing "From_" lines */
+extern const pcre  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
@@ -836,8 +838,8 @@ extern int     smtp_rlr_base;          /* Base interval for RCPT rate limit */
 extern double  smtp_rlr_factor;        /* Factor for RCPT rate limit */
 extern int     smtp_rlr_limit;         /* Max delay */
 extern int     smtp_rlr_threshold;     /* Threshold for RCPT rate limit */
-extern BOOL    smtp_use_pipelining;    /* Global for passed connections */
-extern BOOL    smtp_use_size;          /* Global for passed connections */
+extern unsigned smtp_peer_options;     /* Global flags for passed connections */
+extern unsigned smtp_peer_options_wrap; /* stacked version hidden by TLS */
 #ifdef SUPPORT_I18N
 extern uschar *smtputf8_advertise_hosts; /* ingress control */
 #endif
@@ -888,6 +890,7 @@ extern BOOL    suppress_local_fixups_default; /* former is reset to this; overri
 extern BOOL    synchronous_delivery;   /* TRUE if -odi is set */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */
+extern BOOL    syslog_pid;             /* TRUE if PID on syslogs */
 extern uschar *syslog_processname;     /* 'ident' param to openlog() */
 extern BOOL    syslog_timestamp;       /* TRUE if time on syslogs */
 extern uschar *system_filter;          /* Name of system filter file */

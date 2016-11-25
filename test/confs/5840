@@ -3,13 +3,9 @@
 
 SERVER=
 
-exim_path = EXIM_PATH
-host_lookup_order = bydns
+.include DIR/aux-var/tls_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/SERVER%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
@@ -51,6 +47,7 @@ client:
   dnssec_request_domains = *
   self = send
   transport = send_to_server
+  errors_to = ""
 
 server:
   driver = redirect

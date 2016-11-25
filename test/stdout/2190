@@ -1,0 +1,138 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 testhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO rhu.barb
+??? 250-
+<<< 250-testhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-CHUNKING
+<<< 250-CHUNKING
+??? 250-STARTTLS
+<<< 250-STARTTLS
+??? 250 HELP
+<<< 250 HELP
+>>> STARTTLS
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+SSL info: before/connect initialization
+SSL info: before/connect initialization
+SSL info: SSLv3 read server hello A
+SSL info: SSLv3 read server certificate A
+SSL info: SSLv3 read server done A
+SSL info: SSLv3 write client key exchange A
+SSL info: SSLv3 write change cipher spec A
+SSL info: SSLv3 write finished A
+SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
+SSL info: SSLv3 read finished A
+SSL info: SSL negotiation finished successfully
+SSL info: SSL negotiation finished successfully
+SSL connection using AES256-SHA
+Succeeded in starting TLS
+>>> EHLO rhu.barb
+??? 250-
+<<< 250-testhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-CHUNKING
+<<< 250-CHUNKING
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<someone@some.domain>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<CALLER@test.ex>
+??? 250
+<<< 250 Accepted
+>>> BDAT 88 LAST
+>>> To: Susan@random.com
+>>> From: Sam@random.com
+>>> Subject: This is a bodyless test message
+>>> 
+??? 250-
+<<< 250- 88 byte chunk, total 88
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 testhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 testhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO rhu.barb
+??? 250-
+<<< 250-testhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-CHUNKING
+<<< 250-CHUNKING
+??? 250-STARTTLS
+<<< 250-STARTTLS
+??? 250 HELP
+<<< 250 HELP
+>>> STARTTLS
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+SSL info: before/connect initialization
+SSL info: before/connect initialization
+SSL info: SSLv3 read server hello A
+SSL info: SSLv3 read server certificate A
+SSL info: SSLv3 read server done A
+SSL info: SSLv3 write client key exchange A
+SSL info: SSLv3 write change cipher spec A
+SSL info: SSLv3 write finished A
+SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
+SSL info: SSLv3 read finished A
+SSL info: SSL negotiation finished successfully
+SSL info: SSL negotiation finished successfully
+SSL connection using AES256-SHA
+Succeeded in starting TLS
+>>> EHLO rhu.barb
+??? 250-
+<<< 250-testhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-8BITMIME
+<<< 250-8BITMIME
+??? 250-PIPELINING
+<<< 250-PIPELINING
+??? 250-CHUNKING
+<<< 250-CHUNKING
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<someone@some.domain>
+>>> RCPT TO:<CALLER@test.ex>
+>>> BDAT 88 LAST
+>>> To: Susan@random.com
+>>> From: Sam@random.com
+>>> Subject: This is a bodyless test message
+>>> 
+??? 250
+<<< 250 OK
+??? 250
+<<< 250 Accepted
+??? 250-
+<<< 250- 88 byte chunk, total 88
+??? 250
+<<< 250 OK id=10HmaY-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 testhost.test.ex closing connection
+End of script

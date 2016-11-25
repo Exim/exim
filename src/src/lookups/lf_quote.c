@@ -37,7 +37,11 @@ result = string_append(result, asize, aoffset, 2, name, US"=");
 
 /* NULL is handled as an empty string */
 
-if (value == NULL) value = US"";
+if (!value)
+  {
+  value = US"";
+  vlength = 0;
+  }
 
 /* Quote the value if it is empty, contains white space, or starts with a quote
 character. */
@@ -45,21 +49,19 @@ character. */
 if (value[0] == 0 || Ustrpbrk(value, " \t\n\r") != NULL || value[0] == '\"')
   {
   int j;
-  result = string_cat(result, asize, aoffset, US"\"", 1);
+  result = string_catn(result, asize, aoffset, US"\"", 1);
   for (j = 0; j < vlength; j++)
     {
     if (value[j] == '\"' || value[j] == '\\')
-      result = string_cat(result, asize, aoffset, US"\\", 1);
-    result = string_cat(result, asize, aoffset, US value+j, 1);
+      result = string_catn(result, asize, aoffset, US"\\", 1);
+    result = string_catn(result, asize, aoffset, US value+j, 1);
     }
-  result = string_cat(result, asize, aoffset, US"\"", 1);
+  result = string_catn(result, asize, aoffset, US"\"", 1);
   }
 else
-  {
-  result = string_cat(result, asize, aoffset, US value, vlength);
-  }
+  result = string_catn(result, asize, aoffset, US value, vlength);
 
-return string_cat(result, asize, aoffset, US" ", 1);
+return string_catn(result, asize, aoffset, US" ", 1);
 }
 
 /* End of lf_quote.c */

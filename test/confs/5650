@@ -3,13 +3,9 @@
 
 CRL=
 
-exim_path = EXIM_PATH
-host_lookup_order = bydns
+.include DIR/aux-var/tls_conf_prefix
+
 primary_hostname = server1.example.com
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
@@ -27,7 +23,7 @@ tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
 tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
 tls_crl = CRL
-tls_ocsp_file = OCSP
+tls_ocsp_file = OPT
 
 #tls_verify_hosts = HOSTIPV4
 #tls_try_verify_hosts = *

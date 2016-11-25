@@ -5,6 +5,7 @@
 # mess up the creation of the spool directory etc.
 
 exim_path = EXIM_PATH
+keep_environment =
 host_lookup_order = bydns
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/%slog
@@ -147,7 +148,7 @@ no_queue_only_override
 queue_only_file = /var/spool/exim/queue_only
 queue_only_load = 8.2
 no_queue_run_in_order
-queue_run_max = 5
+queue_run_max = ${if = {1}{1} {5}{10}}
 queue_smtp_domains = x.y.z
 receive_timeout = 0s
 received_header_text = Received: ${if def:sender_rcvhost {from ${sender_rcvhost}\n\t}{${if def:sender_ident {from ${sender_ident} }}${if def:sender_helo_name {(helo=${sender_helo_name})\n\t}}}}by ${primary_hostname} ${if def:received_protocol {with ${received_protocol}}} (Exim ${version_number} #${compile_number})\n\tid ${message_id}${if def:received_for {\n\tfor $received_for}}
@@ -192,12 +193,13 @@ no_strip_excess_angle_brackets
 no_strip_trailing_dot
 no_syslog_duplication
 syslog_facility = uucp
+no_syslog_pid
 syslog_processname = mta-exim
 no_syslog_timestamp
 system_filter = /home/exim/test/filter
 system_filter_directory_transport =
 system_filter_file_transport =
-system_filter_group = mail
+system_filter_group = MAILGROUP
 system_filter_pipe_transport =
 system_filter_reply_transport =
 system_filter_user = 99
@@ -235,7 +237,7 @@ manualroute:
   no_fail_verify_recipient
   no_fail_verify_sender
   fallback_hosts = localhost
-  group = mail
+  group = MAILGROUP
   headers_add =
   headers_remove =
   host_find_failed = freeze
@@ -369,7 +371,7 @@ forward:
   forbid_filter_run
   no_forbid_include
   no_forbid_pipe
-  group = mail
+  group = MAILGROUP
   headers_add =
   headers_remove =
   hide_child_in_errmsg
@@ -385,7 +387,7 @@ forward:
   more
   no_one_time
   owners = root
-  owngroups = mail
+  owngroups = MAILGROUP
   pipe_transport = dummy
   no_qualify_preserve_domain
   redirect_router = aliasfile2
@@ -419,7 +421,7 @@ localuser:
   no_fail_verify_recipient
   no_fail_verify_sender
   fallback_hosts =
-  group = mail
+  group = MAILGROUP
   headers_add = X-added: by localuser
   headers_remove =
   no_initgroups
@@ -459,7 +461,7 @@ smartuser:
   file_transport = dummy
   forbid_file
   forbid_pipe
-  group = mail
+  group = MAILGROUP
   headers_add =
   headers_remove =
   hide_child_in_errmsg
@@ -518,7 +520,7 @@ appendfile:
   file = /home/$local_part/inbox
   file_format = "From : appendfile"
   no_file_must_exist
-  group = mail
+  group = MAILGROUP
   headers_add = X-original-domain: $original_domain\nX-original-localp: $original_local_part
   headers_remove =
   headers_rewrite = a@b c@d
@@ -529,7 +531,7 @@ appendfile:
   lockfile_timeout = 30m
   mailbox_size = 1000
   mailbox_filecount = 9999
-  message_size_limit = 1M
+  message_size_limit = 1G
   mode = 0600
   mode_fail_narrower
   no_notify_comsat

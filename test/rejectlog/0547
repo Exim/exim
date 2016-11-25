@@ -1,2 +1,4 @@
-1999-03-02 09:44:33 H=(x.y.z) [127.0.0.1] rejected VRFY a@b.c
 1999-03-02 09:44:33 U=CALLER rejected EXPN x@y
+
+******** SERVER ********
+1999-03-02 09:44:33 H=(x.y.z) [127.0.0.1] rejected VRFY a@b.c

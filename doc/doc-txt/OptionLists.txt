@@ -300,6 +300,7 @@ hosts_require_ocsp                   host list       unset         smtp         
 hosts_require_tls                    host list       unset         smtp              3.20
 hosts_treat_as_local                 domain list     unset         main              1.95
 hosts_try_auth                       host list       unset         smtp              4.00
+hosts_try_fastopen                   host list       unset         smtp              4.88
 hosts_try_prdr                       host list       unset         smtp              4.82 if experimental_prdr
 ibase_servers                        string          unset         main              4.23
 ignore_bounce_errors_after           time            0s            main              4.00
@@ -968,7 +969,7 @@ TCP_WRAPPERS_DAEMON_NAME     system*      daemon name used by tcpwrappers librar
 TIMEZONE_DEFAULT             optional     default for timezone option
 TLS_INCLUDE                  optional     path to include files for TLS
 TLS_LIBS                     optional     additional libraries for TLS
-TMPDIR                       system       value for TMPDIR environment variable
+EXIM_TMPDIR                  system       value for TMPDIR environment variable
 TRANSPORT_APPENDFILE         driver       include appendfile transport
 TRANSPORT_AUTOREPLY          driver       include autoreply transport
 TRANSPORT_LMTP               driver       include lmtp transport

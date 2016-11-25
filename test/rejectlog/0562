@@ -1,3 +1,5 @@
+
+******** SERVER ********
 1999-03-02 09:44:33 SMTP call from [127.0.0.1] dropped: too many unrecognized commands (last was "unknown")
 1999-03-02 09:44:33 H=[127.0.0.1] rejected VRFY foo@bar
 1999-03-02 09:44:33 SMTP call from [127.0.0.1] dropped: too many nonmail commands (last was "vrfy")

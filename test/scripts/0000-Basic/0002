@@ -23,6 +23,7 @@ primary_hostname: ${primary_hostname}
 qualify_domain: $qualify_domain
 bounce_return_size_limit: ${bounce_return_size_limit}
 spool_directory: $spool_directory
+queue_name: $queue_name
 unknown: ${unknown}
 h_subject: $h_subject:(should be empty)
 h_subject:$h_subject (should be empty)
@@ -131,7 +132,9 @@ addresses: ${addresses:Exim Person <local-part@dom.ain> (that's me), \
            xyz@abc, nullgroupname:;, group: p@q, r@s; }
 addresses: ${addresses:local-part@dom.ain <local-part@dom.ain>}
 
-escape: ${escape:B7·F2ò}
+escape:     ${escape:B7·F2ò}
+excape8bit: ${escape8bit:undisturbed text\ttab\nnewline\ttab\\backslash \176tilde\177DEL\200\x81.}
+
 eval:   ${eval:1+1}
 eval:   ${eval:1+2*3}
 eval:   ${eval:(1+2)*3}
@@ -628,6 +631,10 @@ ${extract{a-b}{X = "one two" a-b "three four" 5=99}}
 ${extract{}{X=3}}
 ${extract{ }{X=3}}
 ${extract{ 2 }{ }{a b c}}
+
+${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}{}}}}
+${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}{failcase}{bogus_argument}}}}
+${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}fail}}}
 
 # Translation
 

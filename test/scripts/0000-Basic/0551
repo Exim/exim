@@ -6,7 +6,7 @@ Message 1
 exim -odi userx@test.ex userz@test.ex
 Message 2
 ****
-exim -DLS= -odi userx@test.ex
+exim -DLOG_SELECTOR= -odi userx@test.ex
 Message 3
 ****
 exigrep userx

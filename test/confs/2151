@@ -1,0 +1,43 @@
+# Exim test configuration 2151
+
+.include DIR/aux-var/tls_conf_prefix
+
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = acl_rcpt
+callout_random_local_part = $primary_hostname--testing
+trusted_users = CALLER
+
+tls_advertise_hosts = 127.0.0.1 : HOSTIPV4
+
+tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
+tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+
+# ----- ACL -----
+
+begin acl
+
+acl_rcpt:
+  accept   verify  = recipient/callout=1s,use_sender
+
+# ----- Routers -----
+
+begin routers
+
+callout:
+  driver = manualroute
+  transport = smtp
+  route_data = 127.0.0.1
+  self = send
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+# End

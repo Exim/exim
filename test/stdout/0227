@@ -79,6 +79,15 @@
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello root at me [V4NET.0.0.6]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
 550-Callout verification failed:
 550 550 Recipient not liked
@@ -232,6 +241,20 @@ MAIL FROM:<>
 250 OK
 RCPT TO:<postmaster@localhost1>
 550 Don't like postmaster
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250- wotcher
+250-SIZE
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<ok@localhost1>
+250 OK
 QUIT
 250 OK
 End of script

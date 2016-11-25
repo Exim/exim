@@ -81,7 +81,7 @@ r2 router declined for solik@otherhost.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.test.ex
 checking domains
-checking "condition"
+checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
 processing address_data
 calling r3 router
 rda_interpret (string): $local_part@$original_domain.sub.test.ex
@@ -107,7 +107,7 @@ r2 router declined for solik@otherhost.sub.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.sub.test.ex
 checking domains
-checking "condition"
+checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
 r3 router skipped: condition failure
 --------> r4 router <--------
 local_part=solik domain=otherhost.sub.test.ex
@@ -184,7 +184,7 @@ r2 router declined for xxx@testsub.test.ex
 --------> r3 router <--------
 local_part=xxx domain=testsub.test.ex
 checking domains
-checking "condition"
+checking "condition" "${if eq{$address_data}{}{no}{yes}}"...
 processing address_data
 calling r3 router
 rda_interpret (string): $local_part@$original_domain.sub.test.ex

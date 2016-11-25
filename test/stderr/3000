@@ -2,34 +2,45 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-expanding: foo
-   result: foo
-expanding: arg1
-   result: arg1
+considering: ${perl{foo}{arg1}}
+considering: foo}{arg1}}
+  expanding: foo
+     result: foo
+considering: arg1}}
+  expanding: arg1
+     result: arg1
 Starting Perl interpreter
-expanding: ${perl{foo}{arg1}}
-   result: Subroutine foo called with args: arg1
-expanding: foo_undef
-   result: foo_undef
+  expanding: ${perl{foo}{arg1}}
+     result: Subroutine foo called with args: arg1
+considering: ${perl{foo_undef}}
+considering: foo_undef}}
+  expanding: foo_undef
+     result: foo_undef
 failed to expand: ${perl{foo_undef}}
    error message: Perl subroutine "foo_undef" returned undef to force failure
 failure was forced
-expanding: debug_write
-   result: debug_write
-expanding: debug from Perl\n
-   result: debug from Perl
+considering: ${perl{debug_write}{debug from Perl\n}}
+considering: debug_write}{debug from Perl\n}}
+  expanding: debug_write
+     result: debug_write
+considering: debug from Perl\n}}
+  expanding: debug from Perl\n
+     result: debug from Perl
 
 debug from Perl
-expanding: ${perl{debug_write}{debug from Perl\n}}
-   result: Wrote debug
-expanding: log_write
-   result: log_write
-expanding: log from Perl
-   result: log from Perl
+  expanding: ${perl{debug_write}{debug from Perl\n}}
+     result: Wrote debug
+considering: ${perl{log_write}{log from Perl}}
+considering: log_write}{log from Perl}}
+  expanding: log_write
+     result: log_write
+considering: log from Perl}}
+  expanding: log from Perl
+     result: log from Perl
 LOG: MAIN
   log from Perl
-expanding: ${perl{log_write}{log from Perl}}
-   result: Wrote log
+  expanding: ${perl{log_write}{log from Perl}}
+     result: Wrote log
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
@@ -48,6 +59,7 @@ LOG: smtp_connection MAIN
 >>> x.y.z in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "accept"
 LOG: this is a warning at TESTSUITE/aux-fixed/3000.pl line 25.

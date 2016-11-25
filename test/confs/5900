@@ -1,0 +1,35 @@
+# Exim test configuration 5900
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+scan:
+   driver = accept
+   transport = scan
+
+
+# ----- Transports -----
+
+begin transports
+
+scan:
+  driver = queuefile
+  directory = DIR/test-mail/subdir
+
+# ----- Retry -----
+
+begin retry
+
+* * F,10m,2d
+
+
+# End

@@ -94,7 +94,7 @@ typedef unsigned int uint32;
  * Internal function to make hash value */
 
 static uint32
-cdb_hash(uschar *buf, unsigned int len)
+cdb_hash(const uschar *buf, unsigned int len)
 {
   uint32 h;
 
@@ -281,135 +281,171 @@ cdb_find(void *handle,
         uschar **errmsg,
         uint *do_cache)
 {
-  struct cdb_state * cdbp = handle;
-  uint32 item_key_len,
-    item_dat_len,
-    key_hash,
-    item_hash,
-    item_posn,
-    cur_offset,
-    end_offset,
-    hash_offset_entry,
-    hash_offset,
-    hash_offlen,
-    hash_slotnm;
-  int loop;
+struct cdb_state * cdbp = handle;
+uint32 item_key_len,
+item_dat_len,
+key_hash,
+item_hash,
+item_posn,
+cur_offset,
+end_offset,
+hash_offset_entry,
+hash_offset,
+hash_offlen,
+hash_slotnm;
+int loop;
 
-  /* Keep picky compilers happy */
-  do_cache = do_cache;
+/* Keep picky compilers happy */
+do_cache = do_cache;
 
-  key_hash = cdb_hash((uschar *)keystring, key_len);
+key_hash = cdb_hash(keystring, key_len);
 
-  hash_offset_entry = CDB_HASH_ENTRY * (key_hash & CDB_HASH_MASK);
-  hash_offset = cdb_unpack(cdbp->cdb_offsets + hash_offset_entry);
-  hash_offlen = cdb_unpack(cdbp->cdb_offsets + hash_offset_entry + 4);
+hash_offset_entry = CDB_HASH_ENTRY * (key_hash & CDB_HASH_MASK);
+hash_offset = cdb_unpack(cdbp->cdb_offsets + hash_offset_entry);
+hash_offlen = cdb_unpack(cdbp->cdb_offsets + hash_offset_entry + 4);
 
-  /* If the offset length is zero this key cannot be in the file */
-  if (hash_offlen == 0) {
-    return FAIL;
+/* If the offset length is zero this key cannot be in the file */
+
+if (hash_offlen == 0)
+  return FAIL;
+
+hash_slotnm = (key_hash >> 8) % hash_offlen;
+
+/* check to ensure that the file is not corrupt
+ * if the hash_offset + (hash_offlen * CDB_HASH_ENTRY) is longer
+ * than the file, then we have problems.... */
+
+if ((hash_offset + (hash_offlen * CDB_HASH_ENTRY)) > cdbp->filelen)
+  {
+  *errmsg = string_sprintf("cdb: corrupt cdb file %s (too short)",
+		      filename);
+  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  return DEFER;
   }
-  hash_slotnm = (key_hash >> 8) % hash_offlen;
 
-  /* check to ensure that the file is not corrupt
-   * if the hash_offset + (hash_offlen * CDB_HASH_ENTRY) is longer
-   * than the file, then we have problems.... */
-  if ((hash_offset + (hash_offlen * CDB_HASH_ENTRY)) > cdbp->filelen) {
-    *errmsg = string_sprintf("cdb: corrupt cdb file %s (too short)",
-                            filename);
-    DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
-    return DEFER;
-  }
+cur_offset = hash_offset + (hash_slotnm * CDB_HASH_ENTRY);
+end_offset = hash_offset + (hash_offlen * CDB_HASH_ENTRY);
 
-  cur_offset = hash_offset + (hash_slotnm * CDB_HASH_ENTRY);
-  end_offset = hash_offset + (hash_offlen * CDB_HASH_ENTRY);
-  /* if we are allowed to we use mmap here.... */
+/* if we are allowed to we use mmap here.... */
+
 #ifdef HAVE_MMAP
-  /* make sure the mmap was OK */
-  if (cdbp->cdb_map != NULL) {
-    uschar * cur_pos = cur_offset + cdbp->cdb_map;
-    uschar * end_pos = end_offset + cdbp->cdb_map;
-    for (loop = 0; (loop < hash_offlen); ++loop) {
-      item_hash = cdb_unpack(cur_pos);
-      cur_pos += 4;
-      item_posn = cdb_unpack(cur_pos);
-      cur_pos += 4;
-      /* if the position is zero then we have a definite miss */
-      if (item_posn == 0)
-       return FAIL;
+/* make sure the mmap was OK */
+if (cdbp->cdb_map != NULL)
+  {
+  uschar * cur_pos = cur_offset + cdbp->cdb_map;
+  uschar * end_pos = end_offset + cdbp->cdb_map;
 
-      if (item_hash == key_hash) {
-       /* matching hash value */
-       uschar * item_ptr = cdbp->cdb_map + item_posn;
-       item_key_len = cdb_unpack(item_ptr);
-       item_ptr += 4;
-       item_dat_len = cdb_unpack(item_ptr);
-       item_ptr += 4;
-       /* check key length matches */
-       if (item_key_len == key_len) {
-         /* finally check if key matches */
-         if (Ustrncmp(keystring, item_ptr, key_len) == 0) {
-           /* we have a match....
-            * make item_ptr point to data */
-           item_ptr += item_key_len;
-           /* ... and the returned result */
-           *result = store_get(item_dat_len + 1);
-           memcpy(*result, item_ptr, item_dat_len);
-           (*result)[item_dat_len] = 0;
-           return OK;
-         }
-       }
-      }
-      /* handle warp round of table */
-      if (cur_pos == end_pos)
-       cur_pos = cdbp->cdb_map + hash_offset;
-    }
-    /* looks like we failed... */
-    return FAIL;
-  }
-#endif /* HAVE_MMAP */
-  for (loop = 0; (loop < hash_offlen); ++loop) {
-    uschar packbuf[8];
-    if (lseek(cdbp->fileno, (off_t) cur_offset,SEEK_SET) == -1) return DEFER;
-    if (cdb_bread(cdbp->fileno, packbuf,8) == -1) return DEFER;
-    item_hash = cdb_unpack(packbuf);
-    item_posn = cdb_unpack(packbuf + 4);
+  for (loop = 0; (loop < hash_offlen); ++loop)
+    {
+    item_hash = cdb_unpack(cur_pos);
+    cur_pos += 4;
+    item_posn = cdb_unpack(cur_pos);
+    cur_pos += 4;
+
     /* if the position is zero then we have a definite miss */
+
     if (item_posn == 0)
       return FAIL;
 
-    if (item_hash == key_hash) {
-      /* matching hash value */
-      if (lseek(cdbp->fileno, (off_t) item_posn, SEEK_SET) == -1) return DEFER;
-      if (cdb_bread(cdbp->fileno, packbuf, 8) == -1) return DEFER;
-      item_key_len = cdb_unpack(packbuf);
+    if (item_hash == key_hash)
+      {					/* matching hash value */
+      uschar * item_ptr = cdbp->cdb_map + item_posn;
+
+      item_key_len = cdb_unpack(item_ptr);
+      item_ptr += 4;
+      item_dat_len = cdb_unpack(item_ptr);
+      item_ptr += 4;
+
       /* check key length matches */
-      if (item_key_len == key_len) {
-       /* finally check if key matches */
-       uschar * item_key = store_get(key_len);
-       if (cdb_bread(cdbp->fileno, item_key, key_len) == -1) return DEFER;
-       if (Ustrncmp(keystring, item_key, key_len) == 0) {
-         /* Reclaim some store */
-         store_reset(item_key);
-         /* matches - get data length */
-         item_dat_len = cdb_unpack(packbuf + 4);
-         /* then we build a new result string */
-         *result = store_get(item_dat_len + 1);
-         if (cdb_bread(cdbp->fileno, *result, item_dat_len) == -1)
-           return DEFER;
-         (*result)[item_dat_len] = 0;
-         return OK;
-       }
+
+      if (item_key_len == key_len)
+	{
+	 /* finally check if key matches */
+	 if (Ustrncmp(keystring, item_ptr, key_len) == 0)
+	   {
+	   /* we have a match....  * make item_ptr point to data */
+
+	   item_ptr += item_key_len;
+
+	   /* ... and the returned result */
+
+	   *result = store_get(item_dat_len + 1);
+	   memcpy(*result, item_ptr, item_dat_len);
+	   (*result)[item_dat_len] = 0;
+	   return OK;
+	   }
+	}
+      }
+    /* handle warp round of table */
+    if (cur_pos == end_pos)
+    cur_pos = cdbp->cdb_map + hash_offset;
+    }
+  /* looks like we failed... */
+  return FAIL;
+  }
+
+#endif /* HAVE_MMAP */
+
+for (loop = 0; (loop < hash_offlen); ++loop)
+  {
+  uschar packbuf[8];
+
+  if (lseek(cdbp->fileno, (off_t) cur_offset,SEEK_SET) == -1) return DEFER;
+  if (cdb_bread(cdbp->fileno, packbuf,8) == -1) return DEFER;
+
+  item_hash = cdb_unpack(packbuf);
+  item_posn = cdb_unpack(packbuf + 4);
+
+  /* if the position is zero then we have a definite miss */
+
+  if (item_posn == 0)
+    return FAIL;
+
+  if (item_hash == key_hash)
+    {						/* matching hash value */
+    if (lseek(cdbp->fileno, (off_t) item_posn, SEEK_SET) == -1) return DEFER;
+    if (cdb_bread(cdbp->fileno, packbuf, 8) == -1) return DEFER;
+
+    item_key_len = cdb_unpack(packbuf);
+
+    /* check key length matches */
+
+    if (item_key_len == key_len)
+      {					/* finally check if key matches */
+      uschar * item_key = store_get(key_len);
+
+      if (cdb_bread(cdbp->fileno, item_key, key_len) == -1) return DEFER;
+      if (Ustrncmp(keystring, item_key, key_len) == 0) {
+
        /* Reclaim some store */
        store_reset(item_key);
+
+       /* matches - get data length */
+       item_dat_len = cdb_unpack(packbuf + 4);
+
+       /* then we build a new result string.  We know we have enough
+       memory so disable Coverity errors about the tainted item_dat_ken */
+
+       *result = store_get(item_dat_len + 1);
+       /* coverity[tainted_data] */
+       if (cdb_bread(cdbp->fileno, *result, item_dat_len) == -1)
+	 return DEFER;
+
+       /* coverity[tainted_data] */
+       (*result)[item_dat_len] = 0;
+       return OK;
+      }
+      /* Reclaim some store */
+      store_reset(item_key);
       }
     }
-    cur_offset += 8;
+  cur_offset += 8;
 
-    /* handle warp round of table */
-    if (cur_offset == end_offset)
-      cur_offset = hash_offset;
+  /* handle warp round of table */
+  if (cur_offset == end_offset)
+  cur_offset = hash_offset;
   }
-  return FAIL;
+return FAIL;
 }
 
 

@@ -67,7 +67,7 @@ quit
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-sudo exim -DRT -bs -oMa V4NET.9.8.7.1225
+sudo exim -DOPT -bs -oMa V4NET.9.8.7.1225
 mail from:<x@y.x>
 rcpt to:<x@test.ex>
 data
@@ -75,7 +75,7 @@ this is a message
 .
 quit
 ****
-exim -DRT -odi -qf
+exim -DOPT -odi -qf
 ****
 #
 #

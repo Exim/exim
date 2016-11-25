@@ -1,5 +1,6 @@
 # SMTP synchronization checks, with and without PIPELINING
 need_ipv4
+munge sync_check_data
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****

@@ -586,7 +586,7 @@ if (!(sign_ctx->rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len)))
   char ssl_errstring[256];
   ERR_load_crypto_strings();	/*XXX move to a startup routine */
   ERR_error_string(ERR_get_error(), ssl_errstring);
-  return string_copy(ssl_errstring);
+  return string_copy(US ssl_errstring);
   }
 
 return NULL;
@@ -620,7 +620,7 @@ if (RSA_sign(is_sha1 ? NID_sha1 : NID_sha256,
   char ssl_errstring[256];
   ERR_load_crypto_strings();	/*XXX move to a startup routine */
   ERR_error_string(ERR_get_error(), ssl_errstring);
-  ret = string_copy(ssl_errstring);
+  ret = string_copy(US ssl_errstring);
   }
 
 RSA_free(sign_ctx->rsa);
@@ -643,7 +643,7 @@ if (!(verify_ctx->rsa = d2i_RSA_PUBKEY(NULL, &p, (long) pubkey_der->len)))
   char ssl_errstring[256];
   ERR_load_crypto_strings();	/*XXX move to a startup routine */
   ERR_error_string(ERR_get_error(), ssl_errstring);
-  ret = string_copy(ssl_errstring);
+  ret = string_copy(CUS ssl_errstring);
   }
 return ret;
 }
@@ -666,7 +666,7 @@ if (RSA_verify(is_sha1 ? NID_sha1 : NID_sha256,
   char ssl_errstring[256];
   ERR_load_crypto_strings();	/*XXX move to a startup routine */
   ERR_error_string(ERR_get_error(), ssl_errstring);
-  ret = string_copy(ssl_errstring);
+  ret = string_copy(US ssl_errstring);
   }
 return ret;
 }

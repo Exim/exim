@@ -7,16 +7,10 @@ untrusted_set_sender = *
 
 SERVER =
 
-exim_path = EXIM_PATH
-host_lookup_order = bydns
-#primary_hostname = myhost.test.ex
+.include DIR/aux-var/std_conf_prefix
+
 rfc1413_query_timeout = 0s
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/SERVER%slog
 log_selector = +sender_on_delivery
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -49,7 +43,8 @@ send_to_server:
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_D
-  interface = ${if eq {$sender_address_domain}{dustybelt.tld} {127.0.0.1}{127.0.0.2}}
+  # assumes that HOSTIPV4 can send to 127.0.0.1
+  interface = ${if eq {$sender_address_domain}{dustybelt.tld} {127.0.0.1}{HOSTIPV4}}
 
 # ----- Retry -----
 

@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 /* Code for setting up a MBOX style spool file inside a /scan/<msgid>
 sub directory of exim's spool directory. */
@@ -11,17 +13,11 @@ sub directory of exim's spool directory. */
 #include "exim.h"
 #ifdef WITH_CONTENT_SCAN
 
-/* externals, we must reset them on unspooling */
-#ifdef WITH_OLD_DEMIME
-extern int demime_ok;
-extern struct file_extension *file_extensions;
-#endif
-
 extern int malware_ok;
 extern int spam_ok;
 
 int spool_mbox_ok = 0;
-uschar spooled_message_id[17];
+uschar spooled_message_id[MESSAGE_ID_LENGTH+1];
 
 /* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size
  * normally, source_file_override is NULL */
@@ -117,17 +113,15 @@ if (!spool_mbox_ok)
     message_subdir[1] = '\0';
     for (i = 0; i < 2; i++)
       {
-      message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
-      temp_string = string_sprintf("%s/input/%s/%s-D", spool_directory,
-	message_subdir, message_id);
-      data_file = Ufopen(temp_string, "rb");
-      if (data_file != NULL) break;
+      message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
+      temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");
+      if ((data_file = Ufopen(temp_string, "rb"))) break;
       }
     }
   else
     data_file = Ufopen(source_file_override, "rb");
 
-  if (data_file == NULL)
+  if (!data_file)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Could not open datafile for message %s",
       message_id);
@@ -165,20 +159,20 @@ if (!spool_mbox_ok)
   (void)fclose(mbox_file);
   mbox_file = NULL;
 
-  Ustrcpy(spooled_message_id, message_id);
+  Ustrncpy(spooled_message_id, message_id, sizeof(spooled_message_id));
+  spooled_message_id[sizeof(spooled_message_id)-1] = '\0';
   spool_mbox_ok = 1;
   }
 
 /* get the size of the mbox message and open [message_id].eml file for reading*/
-if (Ustat(mbox_path, &statbuf) != 0 ||
-    (yield = Ufopen(mbox_path,"rb")) == NULL)
-  {
+
+if (  !(yield = Ufopen(mbox_path,"rb"))
+   || fstat(fileno(yield), &statbuf) != 0
+   )
   log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
     "scan file %s", mbox_path));
-  goto OUT;
-  }
-
-*mbox_file_size = statbuf.st_size;
+else
+  *mbox_file_size = statbuf.st_size;
 
 OUT:
 if (data_file) (void)fclose(data_file);
@@ -190,20 +184,11 @@ return yield;
 
 
 
-/* remove mbox spool file, demimed files and temp directory */
 
+/* remove mbox spool file and temp directory */
 void
 unspool_mbox(void)
 {
-
-/* reset all exiscan state variables */
-#ifdef WITH_OLD_DEMIME
-demime_ok = 0;
-demime_errorlevel = 0;
-demime_reason = NULL;
-file_extensions = NULL;
-#endif
-
 spam_ok = 0;
 malware_ok = 0;
 
@@ -211,7 +196,6 @@ if (spool_mbox_ok && !no_mbox_unspool)
   {
   uschar *mbox_path;
   uschar *file_path;
-  int n;
   struct dirent *entry;
   DIR *tempdir;
 
@@ -229,11 +213,12 @@ if (spool_mbox_ok && !no_mbox_unspool)
   while((entry = readdir(tempdir)) != NULL)
     {
     uschar *name = US entry->d_name;
+    int dummy;
     if (Ustrcmp(name, US".") == 0 || Ustrcmp(name, US"..") == 0) continue;
 
     file_path = string_sprintf("%s/%s", mbox_path, name);
     debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
-    n = unlink(CS file_path);
+    dummy = unlink(CS file_path);
     }
 
   closedir(tempdir);

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for doing things with sockets. With the advent of IPv6 this has
@@ -175,12 +175,14 @@ Arguments:
   address     the remote address, in text form
   port        the remote port
   timeout     a timeout (zero for indefinite timeout)
+  fastopen    TRUE iff TCP_FASTOPEN can be used
 
 Returns:      0 on success; -1 on failure, with errno set
 */
 
 int
-ip_connect(int sock, int af, const uschar *address, int port, int timeout)
+ip_connect(int sock, int af, const uschar *address, int port, int timeout,
+  BOOL fastopen)
 {
 struct sockaddr_in s_in4;
 struct sockaddr *s_ptr;
@@ -218,9 +220,34 @@ IPv6 support. */
 /* If no connection timeout is set, just call connect() without setting a
 timer, thereby allowing the inbuilt OS timeout to operate. */
 
+callout_address = string_sprintf("[%s]:%d", address, port);
 sigalrm_seen = FALSE;
 if (timeout > 0) alarm(timeout);
-rc = connect(sock, s_ptr, s_len);
+
+#if defined(TCP_FASTOPEN) && defined(MSG_FASTOPEN)
+/* TCP Fast Open, if the system has a cookie from a previous call to
+this peer, can send data in the SYN packet.  The peer can send data
+before it gets our ACK of its SYN,ACK - the latter is useful for
+the SMTP banner.  Is there any usage where the former might be?
+We might extend the ip_connect() args for data if so.  For now,
+connect in FASTOPEN mode but with zero data.
+*/
+
+if (fastopen)
+  {
+  if (  (rc = sendto(sock, NULL, 0, MSG_FASTOPEN, s_ptr, s_len)) < 0
+     && errno == EOPNOTSUPP
+     )
+    {
+    DEBUG(D_transport)
+      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
+    rc = connect(sock, s_ptr, s_len);
+    }
+  }
+else
+#endif
+  rc = connect(sock, s_ptr, s_len);
+
 save_errno = errno;
 alarm(0);
 
@@ -238,10 +265,7 @@ if (running_in_test_harness  && save_errno == ECONNREFUSED && timeout == 999999)
 /* Success */
 
 if (rc >= 0)
-  {
-  callout_address = string_sprintf("[%s]:%d", address, port);
   return 0;
-  }
 
 /* A failure whose error code is "Interrupted system call" is in fact
 an externally applied timeout if the signal handler has been run. */
@@ -293,7 +317,6 @@ if (hostname[0] == '[' &&
     hostname[namelen - 1] == ']')
   {
   uschar * host = string_copyn(hostname+1, namelen-2);
-debug_printf("%s: 1\n", __FUNCTION__);
   if (string_is_ip_address(host, NULL) == 0)
     {
     *errstr = string_sprintf("malformed IP address \"%s\"", hostname);
@@ -305,16 +328,12 @@ debug_printf("%s: 1\n", __FUNCTION__);
 /* Otherwise check for an unadorned IP address */
 
 else if (string_is_ip_address(hostname, NULL) != 0)
-  {
-debug_printf("%s: 2\n", __FUNCTION__);
   shost.name = shost.address = string_copyn(hostname, namelen);
-  }
 
 /* Otherwise lookup IP address(es) from the name */
 
 else
   {
-debug_printf("%s: 3\n", __FUNCTION__);
   shost.name = string_copyn(hostname, namelen);
   if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE,
       NULL, FALSE) != HOST_FOUND)
@@ -328,7 +347,6 @@ debug_printf("%s: 3\n", __FUNCTION__);
 
 for (h = &shost; h; h = h->next)
   {
-debug_printf("%s: 4 '%s'\n", __FUNCTION__, h->address);
   fd = Ustrchr(h->address, ':') != 0
     ? fd6 < 0 ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
     : fd4 < 0 ? (fd4 = ip_socket(type, af = AF_INET )) : fd4;
@@ -340,7 +358,7 @@ debug_printf("%s: 4 '%s'\n", __FUNCTION__, h->address);
     }
 
   for(port = portlo; port <= porthi; port++)
-    if (ip_connect(fd, af, h->address, port, timeout) == 0)
+    if (ip_connect(fd, af, h->address, port, timeout, type == SOCK_STREAM) == 0)
       {
       if (fd != fd6) close(fd6);
       if (fd != fd4) close(fd4);
@@ -397,6 +415,7 @@ if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
   return -1;
   }
 
+callout_address = string_copy(path);
 server.sun_family = AF_UNIX;
 Ustrncpy(server.sun_path, path, sizeof(server.sun_path)-1);
 server.sun_path[sizeof(server.sun_path)-1] = '\0';
@@ -408,7 +427,6 @@ if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0)
 		path, strerror(err));
   return -1;
   }
-callout_address = string_copy(path);
 return sock;
 }
 

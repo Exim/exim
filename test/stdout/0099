@@ -41,8 +41,10 @@ first failed = time last try = time2 next try = time2 + 900
   T:thisloop.test.ex:999 dd 65 Connection refused
 first failed = time last try = time2 next try = time2 + 900
 +++++++++++++++++++++++++++
-  R:mxt2.test.ex -32 0 all relevant MX records point to non-existent hosts
-first failed = time last try = time2 next try = time2 + 1800
+  R:mxnonexist.test.ex -1 0 missing MX, or all MXs point to missing A records, and defer requested
+first failed = time last try = time2 next try = time2 + 900
+  R:mxt2.test.ex -1 0 missing MX, or all MXs point to missing A records, and defer requested
+first failed = time last try = time2 next try = time2 + 900
   R:nonexist -32 0 lookup of host "nonexist.test.ex" failed in all router
 first failed = time last try = time2 next try = time2 + 1800
   T:thishost.test.ex:127.0.0.1:999 dd 65 Connection refused

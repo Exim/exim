@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
- * Copyright (c) 2006-2014 The Exim Maintainers
+ * Copyright (c) 2006-2016 The Exim Maintainers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -228,244 +228,270 @@ return s;
 *              Server entry point                *
 *************************************************/
 
-int auth_dovecot_server(auth_instance *ablock, uschar *data)
+int
+auth_dovecot_server(auth_instance * ablock, uschar * data)
 {
-       auth_dovecot_options_block *ob =
-               (auth_dovecot_options_block *)(ablock->options_block);
-       struct sockaddr_un sa;
-       uschar buffer[DOVECOT_AUTH_MAXLINELEN];
-       uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
-       uschar *auth_command;
-       uschar *auth_extra_data = US"";
-       uschar *p;
-       int nargs, tmp;
-       int crequid = 1, cont = 1, fd, ret = DEFER;
-       BOOL found = FALSE, have_mech_line = FALSE;
+auth_dovecot_options_block *ob =
+       (auth_dovecot_options_block *) ablock->options_block;
+struct sockaddr_un sa;
+uschar buffer[DOVECOT_AUTH_MAXLINELEN];
+uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
+uschar *auth_command;
+uschar *auth_extra_data = US"";
+uschar *p;
+int nargs, tmp;
+int crequid = 1, cont = 1, fd = -1, ret = DEFER;
+BOOL found = FALSE, have_mech_line = FALSE;
 
-       HDEBUG(D_auth) debug_printf("dovecot authentication\n");
+HDEBUG(D_auth) debug_printf("dovecot authentication\n");
 
-       memset(&sa, 0, sizeof(sa));
-       sa.sun_family = AF_UNIX;
+if (!data)
+  {
+  ret = FAIL;
+  goto out;
+  }
 
-       /* This was the original code here: it is nonsense because strncpy()
-       does not return an integer. I have converted this to use the function
-       that formats and checks length. PH */
+memset(&sa, 0, sizeof(sa));
+sa.sun_family = AF_UNIX;
 
-       /*
-       if (strncpy(sa.sun_path, ob->server_socket, sizeof(sa.sun_path)) < 0) {
-       */
+/* This was the original code here: it is nonsense because strncpy()
+does not return an integer. I have converted this to use the function
+that formats and checks length. PH */
 
-       if (!string_format(US sa.sun_path, sizeof(sa.sun_path), "%s",
-                          ob->server_socket)) {
-               auth_defer_msg = US"authentication socket path too long";
-               return DEFER;
-       }
+/*
+if (strncpy(sa.sun_path, ob->server_socket, sizeof(sa.sun_path)) < 0) {
+}
+*/
 
-       auth_defer_msg = US"authentication socket connection error";
+if (!string_format(US sa.sun_path, sizeof(sa.sun_path), "%s",
+		  ob->server_socket))
+  {
+  auth_defer_msg = US"authentication socket path too long";
+  return DEFER;
+  }
 
-       fd = socket(PF_UNIX, SOCK_STREAM, 0);
-       if (fd < 0)
-               return DEFER;
+auth_defer_msg = US"authentication socket connection error";
 
-       if (connect(fd, (struct sockaddr *) &sa, sizeof(sa)) < 0)
-               goto out;
+if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0)
+  return DEFER;
 
-       auth_defer_msg = US"authentication socket protocol error";
+if (connect(fd, (struct sockaddr *) &sa, sizeof(sa)) < 0)
+  goto out;
 
-       socket_buffer_left = 0;  /* Global, used to read more than a line but return by line */
-       while (cont) {
-               if (dc_gets(buffer, sizeof(buffer), fd) == NULL)
-                       OUT("authentication socket read error or premature eof");
-               p = buffer + Ustrlen(buffer) - 1;
-               if (*p != '\n') {
-                       OUT("authentication socket protocol line too long");
-               }
-               *p = '\0';
-               HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
-               nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
-               /* HDEBUG(D_auth) debug_strcut(args, nargs, sizeof(args) / sizeof(args[0])); */
+auth_defer_msg = US"authentication socket protocol error";
 
-               /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands that
-                  Exim will need. Original code also failed if Dovecot server sent unknown
-                  command. E.g. COOKIE in version 1.1 of the protocol would cause troubles. */
-               /* pdp: note that CUID is a per-connection identifier sent by the server,
-                  which increments at server discretion.
-                  By contrast, the "id" field of the protocol is a connection-specific request
-                  identifier, which needs to be unique per request from the client and is not
-                  connected to the CUID value, so we ignore CUID from server.  It's purely for
-                  diagnostics. */
-               if (Ustrcmp(args[0], US"VERSION") == 0) {
-                       CHECK_COMMAND("VERSION", 2, 2);
-                       if (Uatoi(args[1]) != VERSION_MAJOR)
-                               OUT("authentication socket protocol version mismatch");
-               } else if (Ustrcmp(args[0], US"MECH") == 0) {
-                       CHECK_COMMAND("MECH", 1, INT_MAX);
-                       have_mech_line = TRUE;
-                       if (strcmpic(US args[1], ablock->public_name) == 0)
-                               found = TRUE;
-               } else if (Ustrcmp(args[0], US"SPID") == 0) {
-                       /* Unfortunately the auth protocol handshake wasn't designed well
-                          to differentiate between auth-client/userdb/master. auth-userdb
-                          and auth-master send VERSION + SPID lines only and nothing
-                          afterwards, while auth-client sends VERSION + MECH + SPID +
-                          CUID + more. The simplest way that we can determine if we've
-                          connected to the correct socket is to see if MECH line exists or
-                          not (alternatively we'd have to have a small timeout after SPID
-                          to see if CUID is sent or not). */
-                       if (!have_mech_line)
-                               OUT("authentication socket type mismatch (connected to auth-master instead of auth-client)");
-               } else if (Ustrcmp(args[0], US"DONE") == 0) {
-                       CHECK_COMMAND("DONE", 0, 0);
-                       cont = 0;
-               }
-       }
+socket_buffer_left = 0;  /* Global, used to read more than a line but return by line */
+while (cont)
+  {
+  if (dc_gets(buffer, sizeof(buffer), fd) == NULL)
+    OUT("authentication socket read error or premature eof");
+  p = buffer + Ustrlen(buffer) - 1;
+  if (*p != '\n')
+    OUT("authentication socket protocol line too long");
 
-       if (!found) {
-               auth_defer_msg = string_sprintf("Dovecot did not advertise mechanism \"%s\" to us", ablock->public_name);
-               goto out;
-       }
+  *p = '\0';
+  HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
 
-       /* Added by PH: data must not contain tab (as it is
-       b64 it shouldn't, but check for safety). */
+  nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
 
-       if (Ustrchr(data, '\t') != NULL) {
-               ret = FAIL;
-               goto out;
-       }
+  /* HDEBUG(D_auth) debug_strcut(args, nargs, sizeof(args) / sizeof(args[0])); */
 
-       /* Added by PH: extra fields when TLS is in use or if the TCP/IP
-       connection is local. */
+  /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands that
+    Exim will need. Original code also failed if Dovecot server sent unknown
+    command. E.g. COOKIE in version 1.1 of the protocol would cause troubles. */
+  /* pdp: note that CUID is a per-connection identifier sent by the server,
+    which increments at server discretion.
+    By contrast, the "id" field of the protocol is a connection-specific request
+    identifier, which needs to be unique per request from the client and is not
+    connected to the CUID value, so we ignore CUID from server.  It's purely for
+    diagnostics. */
 
-       if (tls_in.cipher != NULL)
-               auth_extra_data = string_sprintf("secured\t%s%s",
-                   tls_in.certificate_verified? "valid-client-cert" : "",
-                   tls_in.certificate_verified? "\t" : "");
-       else if (interface_address != NULL &&
-                Ustrcmp(sender_host_address, interface_address) == 0)
-               auth_extra_data = US"secured\t";
+  if (Ustrcmp(args[0], US"VERSION") == 0)
+    {
+    CHECK_COMMAND("VERSION", 2, 2);
+    if (Uatoi(args[1]) != VERSION_MAJOR)
+      OUT("authentication socket protocol version mismatch");
+    }
+  else if (Ustrcmp(args[0], US"MECH") == 0)
+    {
+    CHECK_COMMAND("MECH", 1, INT_MAX);
+    have_mech_line = TRUE;
+    if (strcmpic(US args[1], ablock->public_name) == 0)
+      found = TRUE;
+    }
+  else if (Ustrcmp(args[0], US"SPID") == 0)
+    {
+    /* Unfortunately the auth protocol handshake wasn't designed well
+    to differentiate between auth-client/userdb/master. auth-userdb
+    and auth-master send VERSION + SPID lines only and nothing
+    afterwards, while auth-client sends VERSION + MECH + SPID +
+    CUID + more. The simplest way that we can determine if we've
+    connected to the correct socket is to see if MECH line exists or
+    not (alternatively we'd have to have a small timeout after SPID
+    to see if CUID is sent or not). */
+
+    if (!have_mech_line)
+      OUT("authentication socket type mismatch"
+	" (connected to auth-master instead of auth-client)");
+    }
+  else if (Ustrcmp(args[0], US"DONE") == 0)
+    {
+    CHECK_COMMAND("DONE", 0, 0);
+    cont = 0;
+    }
+  }
+
+if (!found)
+  {
+  auth_defer_msg = string_sprintf(
+    "Dovecot did not advertise mechanism \"%s\" to us", ablock->public_name);
+  goto out;
+  }
+
+/* Added by PH: data must not contain tab (as it is
+b64 it shouldn't, but check for safety). */
+
+if (Ustrchr(data, '\t') != NULL)
+  {
+  ret = FAIL;
+  goto out;
+  }
+
+/* Added by PH: extra fields when TLS is in use or if the TCP/IP
+connection is local. */
+
+if (tls_in.cipher != NULL)
+  auth_extra_data = string_sprintf("secured\t%s%s",
+     tls_in.certificate_verified? "valid-client-cert" : "",
+     tls_in.certificate_verified? "\t" : "");
+
+else if (  interface_address != NULL
+        && Ustrcmp(sender_host_address, interface_address) == 0)
+  auth_extra_data = US"secured\t";
 
 
 /****************************************************************************
-   The code below was the original code here. It didn't work. A reading of the
-   file auth-protocol.txt.gz that came with Dovecot 1.0_beta8 indicated that
-   this was not right. Maybe something changed. I changed it to move the
-   service indication into the AUTH command, and it seems to be better. PH
+The code below was the original code here. It didn't work. A reading of the
+file auth-protocol.txt.gz that came with Dovecot 1.0_beta8 indicated that
+this was not right. Maybe something changed. I changed it to move the
+service indication into the AUTH command, and it seems to be better. PH
 
-       fprintf(f, "VERSION\t%d\t%d\r\nSERVICE\tSMTP\r\nCPID\t%d\r\n"
-               "AUTH\t%d\t%s\trip=%s\tlip=%s\tresp=%s\r\n",
-               VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
-               ablock->public_name, sender_host_address, interface_address,
-               data ? (char *) data : "");
+fprintf(f, "VERSION\t%d\t%d\r\nSERVICE\tSMTP\r\nCPID\t%d\r\n"
+       "AUTH\t%d\t%s\trip=%s\tlip=%s\tresp=%s\r\n",
+       VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
+       ablock->public_name, sender_host_address, interface_address,
+       data ? (char *) data : "");
 
-   Subsequently, the command was modified to add "secured" and "valid-client-
-   cert" when relevant.
+Subsequently, the command was modified to add "secured" and "valid-client-
+cert" when relevant.
 ****************************************************************************/
 
-       auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
-               "AUTH\t%d\t%s\tservice=smtp\t%srip=%s\tlip=%s\tnologin\tresp=%s\n",
-               VERSION_MAJOR, VERSION_MINOR, getpid(), crequid,
-               ablock->public_name, auth_extra_data, sender_host_address,
-               interface_address, data ? (char *) data : "");
+auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
+       "AUTH\t%d\t%s\tservice=smtp\t%srip=%s\tlip=%s\tnologin\tresp=%s\n",
+       VERSION_MAJOR, VERSION_MINOR, getpid(), crequid,
+       ablock->public_name, auth_extra_data, sender_host_address,
+       interface_address, data);
 
-       if (write(fd, auth_command, Ustrlen(auth_command)) < 0)
-              HDEBUG(D_auth) debug_printf("error sending auth_command: %s\n",
-                strerror(errno));
+if (write(fd, auth_command, Ustrlen(auth_command)) < 0)
+  HDEBUG(D_auth) debug_printf("error sending auth_command: %s\n",
+    strerror(errno));
 
-       HDEBUG(D_auth) debug_printf("sent: %s", auth_command);
+HDEBUG(D_auth) debug_printf("sent: %s", auth_command);
 
-       while (1) {
-               uschar *temp;
-               uschar *auth_id_pre = NULL;
-               int i;
+while (1)
+  {
+  uschar *temp;
+  uschar *auth_id_pre = NULL;
+  int i;
 
-               if (dc_gets(buffer, sizeof(buffer), fd) == NULL) {
-                       auth_defer_msg = US"authentication socket read error or premature eof";
-                       goto out;
-               }
+  if (dc_gets(buffer, sizeof(buffer), fd) == NULL)
+    {
+    auth_defer_msg = US"authentication socket read error or premature eof";
+    goto out;
+    }
 
-               buffer[Ustrlen(buffer) - 1] = 0;
-               HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
-               nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
+  buffer[Ustrlen(buffer) - 1] = 0;
+  HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
+  nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
 
-               if (Uatoi(args[1]) != crequid)
-                       OUT("authentication socket connection id mismatch");
+  if (Uatoi(args[1]) != crequid)
+    OUT("authentication socket connection id mismatch");
 
-               switch (toupper(*args[0])) {
-               case 'C':
-                       CHECK_COMMAND("CONT", 1, 2);
+  switch (toupper(*args[0]))
+    {
+    case 'C':
+      CHECK_COMMAND("CONT", 1, 2);
 
-                       tmp = auth_get_no64_data(&data, US args[2]);
-                       if (tmp != OK) {
-                               ret = tmp;
-                               goto out;
-                       }
+      if ((tmp = auth_get_no64_data(&data, US args[2])) != OK)
+	{
+	ret = tmp;
+	goto out;
+	}
 
-                       /* Added by PH: data must not contain tab (as it is
-                       b64 it shouldn't, but check for safety). */
+      /* Added by PH: data must not contain tab (as it is
+      b64 it shouldn't, but check for safety). */
 
-                       if (Ustrchr(data, '\t') != NULL) {
-                               ret = FAIL;
-                               goto out;
-                       }
+      if (Ustrchr(data, '\t') != NULL)
+        {
+	ret = FAIL;
+	goto out;
+	}
 
-                       temp = string_sprintf("CONT\t%d\t%s\n", crequid, data);
-                       if (write(fd, temp, Ustrlen(temp)) < 0)
-                               OUT("authentication socket write error");
-                       break;
+      temp = string_sprintf("CONT\t%d\t%s\n", crequid, data);
+      if (write(fd, temp, Ustrlen(temp)) < 0)
+	OUT("authentication socket write error");
+      break;
 
-               case 'F':
-                       CHECK_COMMAND("FAIL", 1, -1);
+    case 'F':
+      CHECK_COMMAND("FAIL", 1, -1);
 
-                       for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
-                       {
-                               if ( Ustrncmp(args[i], US"user=", 5) == 0 )
-                               {
-                                       auth_id_pre = args[i]+5;
-                                       expand_nstring[1] = auth_vars[0] =
-                                               string_copy(auth_id_pre); /* PH */
-                                       expand_nlength[1] = Ustrlen(auth_id_pre);
-                                       expand_nmax = 1;
-                               }
-                       }
+      for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
+	{
+	if ( Ustrncmp(args[i], US"user=", 5) == 0 )
+	  {
+	  auth_id_pre = args[i]+5;
+	  expand_nstring[1] = auth_vars[0] = string_copy(auth_id_pre); /* PH */
+	  expand_nlength[1] = Ustrlen(auth_id_pre);
+	  expand_nmax = 1;
+	  }
+	}
 
-                       ret = FAIL;
-                       goto out;
+      ret = FAIL;
+      goto out;
 
-               case 'O':
-                       CHECK_COMMAND("OK", 2, -1);
+    case 'O':
+      CHECK_COMMAND("OK", 2, -1);
 
-                       /*
-                        * Search for the "user=$USER" string in the args array
-                        * and return the proper value.
-                        */
-                       for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
-                       {
-                               if ( Ustrncmp(args[i], US"user=", 5) == 0 )
-                               {
-                                       auth_id_pre = args[i]+5;
-                                       expand_nstring[1] = auth_vars[0] =
-                                               string_copy(auth_id_pre); /* PH */
-                                       expand_nlength[1] = Ustrlen(auth_id_pre);
-                                       expand_nmax = 1;
-                               }
-                       }
+      /* Search for the "user=$USER" string in the args array
+      and return the proper value.  */
 
-                       if (auth_id_pre == NULL)
-                               OUT("authentication socket protocol error, username missing");
+      for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
+	{
+	if ( Ustrncmp(args[i], US"user=", 5) == 0 )
+	  {
+	  auth_id_pre = args[i]+5;
+	  expand_nstring[1] = auth_vars[0] = string_copy(auth_id_pre); /* PH */
+	  expand_nlength[1] = Ustrlen(auth_id_pre);
+	  expand_nmax = 1;
+	  }
+	}
 
-                       ret = OK;
-                       /* fallthrough */
+      if (auth_id_pre == NULL)
+        OUT("authentication socket protocol error, username missing");
 
-               default:
-                       goto out;
-               }
-       }
+      ret = OK;
+      /* fallthrough */
+
+    default:
+      goto out;
+    }
+  }
 
 out:
-       /* close the socket used by dovecot */
-       if (fd >= 0)
-              close(fd);
+/* close the socket used by dovecot */
+if (fd >= 0)
+  close(fd);
 
-       /* Expand server_condition as an authorization check */
-       return (ret == OK)? auth_check_serv_cond(ablock) : ret;
+/* Expand server_condition as an authorization check */
+return ret == OK ? auth_check_serv_cond(ablock) : ret;
 }

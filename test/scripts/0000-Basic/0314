@@ -1,5 +1,17 @@
 # host_reject_connection
-exim -bh V4NET.0.0.1
+need_ipv4
+exim -DSERVER=server -bd -oX PORT_D
 ****
-exim -bh V4NET.0.0.2
+client 127.0.0.1 PORT_D
+??? 554
 ****
+client HOSTIPV4 PORT_D
+??? 220
+****
+killdaemon
+exim -DSERVER=server -DLOG_SELECTOR=-connection_reject -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 554
+****
+killdaemon

@@ -1,0 +1,115 @@
+# OCSP stapling, server, LE variation
+#
+#
+#
+# '1: Server sends good staple on request'
+#
+exim -bd -oX PORT_D -DSERVER=server \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.good.resp
+****
+client-ssl \
+ -ocsp aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem \
+ HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+quit
+??? 221
+****
+killdaemon
+#
+#
+#
+# '2: Server does not staple an outdated response'
+#
+exim -bd -oX PORT_D -DSERVER=server \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.dated.resp
+****
+# XXX test sequence might not be quite right; this is for a server refusal
+# and we're expecting a client refusal.
+client-ssl -ocsp aux-fixed/exim-ca/expired1.example.com/CA.pem HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+****
+killdaemon
+#
+#
+#
+#
+#
+# '3: Server does not staple a response for a revoked cert'
+#
+exim -bd -oX PORT_D -DSERVER=server \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.revoked.resp
+****
+client-ssl \
+ -ocsp aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem \
+ HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+****
+killdaemon
+#
+#
+#
+#
+#
+# '4: Connection functions when server is prepared to staple but client does not request it'
+#
+exim -bd -oX PORT_D -DSERVER=server \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.good.resp
+****
+#
+client-ssl \
+ HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+ehlo rhu.barb.tls
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+quit
+****
+killdaemon
+#
+#
+#
+#
+#

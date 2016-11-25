@@ -19,4 +19,6 @@ XINCLUDE=-I$(X11)/include
 XLFLAGS=-L$(X11)/lib -R$(X11)/lib
 X11LIB=$(X11)/lib
 
+OS_C_INCLUDES=setenv.c
+
 # End

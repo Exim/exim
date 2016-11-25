@@ -29,6 +29,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<1@b>
 read ACL from file TESTSUITE/aux-fixed/0386.acl1
@@ -76,6 +78,8 @@ LOG: MAIN REJECT
 SMTP<< rset
 SMTP>> 250 Reset OK
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<1@b>
 using ACL "TESTSUITE/aux-fixed/0386.acl1"
@@ -158,6 +162,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<2@b>
 read ACL from file TESTSUITE/aux-fixed/0386.acl2
@@ -191,6 +197,7 @@ host in ignore_fromline_hosts? no (option unset)
 search_tidyup called
 >>Headers after rewriting and local additions:
 
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from [V4NET.11.12.13] (ident=CALLER)
@@ -204,11 +211,12 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 >>
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
@@ -228,6 +236,7 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
+Trying spool file TESTSUITE/spool//input//10HmaX-0005vi-00-D
 reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
 sender_fullhost = [V4NET.11.12.13]
@@ -243,7 +252,7 @@ DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   2@b 
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
@@ -280,7 +289,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> 2@b <--------
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -318,7 +327,7 @@ changed uid/gid: post-delivery tidying
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 Processing retry items
 Succeeded addresses:
-2@b: no retry items
+ 2@b: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing
@@ -340,6 +349,8 @@ smtp_setup_msg entered
 SMTP<< rset
 SMTP>> 250 Reset OK
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<2@b>
 using ACL "TESTSUITE/aux-fixed/0386.acl2"
@@ -368,6 +379,7 @@ host in ignore_fromline_hosts? no (option unset)
 search_tidyup called
 >>Headers after rewriting and local additions:
 
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: from [V4NET.11.12.13] (ident=CALLER)
@@ -381,11 +393,12 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
 >>
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
@@ -405,6 +418,7 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
+Trying spool file TESTSUITE/spool//input//10HmaY-0005vi-00-D
 reading spool file 10HmaY-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
 sender_fullhost = [V4NET.11.12.13]
@@ -420,7 +434,7 @@ DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   2@b 
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -456,7 +470,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> 2@b <--------
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -494,7 +508,7 @@ changed uid/gid: post-delivery tidying
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
 Processing retry items
 Succeeded addresses:
-2@b: no retry items
+ 2@b: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing

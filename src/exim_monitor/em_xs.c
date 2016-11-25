@@ -2,7 +2,7 @@
 *               Exim Monitor                     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 1995 - 2007 */
+/* Copyright (c) University of Cambridge, 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file contains a number of subroutines that are in effect
@@ -37,6 +37,7 @@ for (i = 0; i < num_args; i++)
   aa[i].name = va_arg(ap, String);
   aa[i].value = va_arg(ap, XtArgVal);
   }
+va_end(ap);
 XtSetValues(w, aa, num_args);
 if (num_args > 15) free(aa);
 }

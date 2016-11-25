@@ -30,6 +30,8 @@ sender_rcvhost = [1.2.3.4]
 set_process_info: pppp handling incoming connection from ([1.2.3.4]) [1.2.3.4]
 SMTP>> 250 the.local.host.name Hello [1.2.3.4] [1.2.3.4]
 SMTP<< mail from:<a@b>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "rcpt"

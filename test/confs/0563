@@ -1,8 +1,10 @@
 # Exim test configuration 0563
 
+exim_path = EXIM_PATH
 tls_advertise_hosts =
 qualify_domain = testexim.test.ex
 localpartlist aliases = joe:sam:tom
+keep_environment =
 
 begin routers
 

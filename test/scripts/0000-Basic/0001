@@ -26,5 +26,6 @@ exim -bP accept_8bitmime \
          tcp_nodelay \
          trusted_users \ 
          unknown_login \
-         warn_message_file
+         warn_message_file \
+         syslog_pid
 ****

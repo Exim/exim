@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for sending messages to sender or to mailmaster. */
@@ -279,14 +279,12 @@ if (bounce_return_message)
 
   if (bounce_return_body && message_file)
     {
-    int ch;
-    enum {midline, beginline, haddot} state = beginline;
     BOOL enddot = dot_ends && message_file == stdin;
     uschar * buf = store_get(bounce_return_linesize_limit+2);
 
     if (firstline) fprintf(f, "%s", CS firstline);
 
-    while (fgets(buf, bounce_return_linesize_limit+2, message_file))
+    while (fgets(CS buf, bounce_return_linesize_limit+2, message_file))
       {
       int len;
 
@@ -306,11 +304,11 @@ if (bounce_return_message)
       if (size_limit > 0 && len > size_limit - written)
 	{
 	buf[size_limit - written] = '\0';
-	fputs(buf, f);
+	fputs(CS buf, f);
 	break;
 	}
 
-      fputs(buf, f);
+      fputs(CS buf, f);
       }
     }
 #ifdef EXPERIMENTAL_DMARC

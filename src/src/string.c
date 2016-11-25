@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Miscellaneous string-handling functions. Some are not required for
@@ -913,7 +913,7 @@ sep_is_special = iscntrl(sep);
 
 if (buffer != NULL)
   {
-  register int p = 0;
+  int p = 0;
   for (; *s != 0; s++)
     {
     if (*s == sep && (*(++s) != sep || sep_is_special)) break;
@@ -952,7 +952,7 @@ else
   for (;;)
     {
     for (ss = s + 1; *ss != 0 && *ss != sep; ss++);
-    buffer = string_cat(buffer, &size, &ptr, s, ss-s);
+    buffer = string_catn(buffer, &size, &ptr, s, ss-s);
     s = ss;
     if (*s == 0 || *(++s) != sep || sep_is_special) break;
     }
@@ -995,17 +995,17 @@ uschar * sp;
 
 if (list)
   {
-  new = string_cat(new, &sz, &off, list, Ustrlen(list));
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_cat (new, &sz, &off, list);
+  new = string_catn(new, &sz, &off, &sep, 1);
   }
 
 while((sp = Ustrchr(ele, sep)))
   {
-  new = string_cat(new, &sz, &off, ele, sp-ele+1);
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_catn(new, &sz, &off, ele, sp-ele+1);
+  new = string_catn(new, &sz, &off, &sep, 1);
   ele = sp+1;
   }
-new = string_cat(new, &sz, &off, ele, Ustrlen(ele));
+new = string_cat(new, &sz, &off, ele);
 new[off] = '\0';
 return new;
 }
@@ -1039,18 +1039,18 @@ const uschar * sp;
 
 if (list)
   {
-  new = string_cat(new, &sz, &off, list, Ustrlen(list));
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_cat (new, &sz, &off, list);
+  new = string_catn(new, &sz, &off, &sep, 1);
   }
 
 while((sp = Ustrnchr(ele, sep, &len)))
   {
-  new = string_cat(new, &sz, &off, ele, sp-ele+1);
-  new = string_cat(new, &sz, &off, &sep, 1);
+  new = string_catn(new, &sz, &off, ele, sp-ele+1);
+  new = string_catn(new, &sz, &off, &sep, 1);
   ele = sp+1;
   len--;
   }
-new = string_cat(new, &sz, &off, ele, len);
+new = string_catn(new, &sz, &off, ele, len);
 new[off] = '\0';
 return new;
 }
@@ -1078,7 +1078,7 @@ Arguments:
              characters, updated to the new offset
   s        points to characters to add
   count    count of characters to add; must not exceed the length of s, if s
-             is a C string
+             is a C string.  If -1 given, strlen(s) is used.
 
 If string is given as NULL, *size and *ptr should both be zero.
 
@@ -1086,10 +1086,12 @@ Returns:   pointer to the start of the string, changed if copied for expansion.
            Note that a NUL is not added, though space is left for one. This is
            because string_cat() is often called multiple times to build up a
            string - there's no point adding the NUL till the end.
+
 */
+/* coverity[+alloc] */
 
 uschar *
-string_cat(uschar *string, int *size, int *ptr, const uschar *s, int count)
+string_catn(uschar *string, int *size, int *ptr, const uschar *s, int count)
 {
 int p = *ptr;
 
@@ -1132,11 +1134,24 @@ if (p + count >= *size)
 
 /* Because we always specify the exact number of characters to copy, we can
 use memcpy(), which is likely to be more efficient than strncopy() because the
-latter has to check for zero bytes. */
+latter has to check for zero bytes.
 
+The Coverity annotation deals with the lack of correlated variable tracking;
+common use is a null string and zero size and pointer, on first use for a
+string being built. The "if" above then allocates, but Coverity assume that
+the "if" might not happen and whines for a null-deref done by the memcpy(). */
+
+/* coverity[deref_parm_field_in_call] : FALSE */
 memcpy(string + p, s, count);
 *ptr = p + count;
 return string;
+}
+
+
+uschar *
+string_cat(uschar *string, int *size, int *ptr, const uschar *s)
+{
+return string_catn(string, size, ptr, s, Ustrlen(s));
 }
 #endif  /* COMPILE_UTILITY */
 
@@ -1175,7 +1190,7 @@ va_start(ap, count);
 for (i = 0; i < count; i++)
   {
   uschar *t = va_arg(ap, uschar *);
-  string = string_cat(string, size, ptr, t, Ustrlen(t));
+  string = string_cat(string, size, ptr, t);
   }
 va_end(ap);
 
@@ -1197,10 +1212,10 @@ on whether the variable length list of data arguments are given explicitly or
 as a va_list item.
 
 The formats are the usual printf() ones, with some omissions (never used) and
-two additions for strings: %S forces lower case, and %#s or %#S prints nothing
-for a NULL string. Without the # "NULL" is printed (useful in debugging). There
-is also the addition of %D and %M, which insert the date in the form used for
-datestamped log files.
+three additions for strings: %S forces lower case, %T forces upper case, and
+%#s or %#S prints nothing for a NULL string. Without thr # "NULL" is printed
+(useful in debugging). There is also the addition of %D and %M, which insert
+the date in the form used for datestamped log files.
 
 Arguments:
   buffer       a buffer in which to put the formatted string
@@ -1413,6 +1428,7 @@ while (*fp != 0)
 
     case 's':
     case 'S':                   /* Forces *lower* case */
+    case 'T':                   /* Forces *upper* case */
     s = va_arg(ap, char *);
 
     if (s == NULL) s = null;
@@ -1460,6 +1476,8 @@ while (*fp != 0)
     sprintf(CS p, "%*.*s", width, precision, s);
     if (fp[-1] == 'S')
       while (*p) { *p = tolower(*p); p++; }
+    else if (fp[-1] == 'T')
+      while (*p) { *p = toupper(*p); p++; }
     else
       while (*p) p++;
     if (!yield) goto END_FORMAT;
@@ -1518,6 +1536,7 @@ specified messages. If it does, the message just gets truncated, and there
 doesn't seem much we can do about that. */
 
 (void)string_vformat(buffer+15, sizeof(buffer) - 15, format, ap);
+va_end(ap);
 
 return (eno == EACCES)?
   string_sprintf("%s: %s (euid=%ld egid=%ld)", buffer, strerror(eno),
@@ -1528,185 +1547,19 @@ return (eno == EACCES)?
 
 
 
+
+
 #ifndef COMPILE_UTILITY
-/*************************************************
-*        Generate local prt for logging          *
-*************************************************/
+/* qsort(3), currently used to sort the environment variables
+for -bP environment output, needs a function to compare two pointers to string
+pointers. Here it is. */
 
-/* This function is a subroutine for use in string_log_address() below.
-
-Arguments:
-  addr        the address being logged
-  yield       the current dynamic buffer pointer
-  sizeptr     points to current size
-  ptrptr      points to current insert pointer
-
-Returns:      the new value of the buffer pointer
-*/
-
-static uschar *
-string_get_localpart(address_item *addr, uschar *yield, int *sizeptr,
-  int *ptrptr)
+int
+string_compare_by_pointer(const void *a, const void *b)
 {
-uschar * s;
-
-s = addr->prefix;
-if (testflag(addr, af_include_affixes) && s)
-  {
-#ifdef SUPPORT_I18N
-  if (testflag(addr, af_utf8_downcvt))
-    s = string_localpart_utf8_to_alabel(s, NULL);
-#endif
-  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
-  }
-
-s = addr->local_part;
-#ifdef SUPPORT_I18N
-if (testflag(addr, af_utf8_downcvt))
-  s = string_localpart_utf8_to_alabel(s, NULL);
-#endif
-yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
-
-s = addr->suffix;
-if (testflag(addr, af_include_affixes) && s)
-  {
-#ifdef SUPPORT_I18N
-  if (testflag(addr, af_utf8_downcvt))
-    s = string_localpart_utf8_to_alabel(s, NULL);
-#endif
-  yield = string_cat(yield, sizeptr, ptrptr, s, Ustrlen(s));
-  }
-
-return yield;
+return Ustrcmp(* CUSS a, * CUSS b);
 }
-
-
-/*************************************************
-*          Generate log address list             *
-*************************************************/
-
-/* This function generates a list consisting of an address and its parents, for
-use in logging lines. For saved onetime aliased addresses, the onetime parent
-field is used. If the address was delivered by a transport with rcpt_include_
-affixes set, the af_include_affixes bit will be set in the address. In that
-case, we include the affixes here too.
-
-Arguments:
-  addr          bottom (ultimate) address
-  all_parents   if TRUE, include all parents
-  success       TRUE for successful delivery
-
-Returns:        a string in dynamic store
-*/
-
-uschar *
-string_log_address(address_item *addr, BOOL all_parents, BOOL success)
-{
-int size = 64;
-int ptr = 0;
-BOOL add_topaddr = TRUE;
-uschar *yield = store_get(size);
-address_item *topaddr;
-
-/* Find the ultimate parent */
-
-for (topaddr = addr; topaddr->parent != NULL; topaddr = topaddr->parent);
-
-/* We start with just the local part for pipe, file, and reply deliveries, and
-for successful local deliveries from routers that have the log_as_local flag
-set. File deliveries from filters can be specified as non-absolute paths in
-cases where the transport is goin to complete the path. If there is an error
-before this happens (expansion failure) the local part will not be updated, and
-so won't necessarily look like a path. Add extra text for this case. */
-
-if (testflag(addr, af_pfr) ||
-      (success &&
-       addr->router != NULL && addr->router->log_as_local &&
-       addr->transport != NULL && addr->transport->info->local))
-  {
-  if (testflag(addr, af_file) && addr->local_part[0] != '/')
-    yield = string_cat(yield, &size, &ptr, CUS"save ", 5);
-  yield = string_get_localpart(addr, yield, &size, &ptr);
-  }
-
-/* Other deliveries start with the full address. It we have split it into local
-part and domain, use those fields. Some early failures can happen before the
-splitting is done; in those cases use the original field. */
-
-else
-  {
-  if (addr->local_part != NULL)
-    {
-    const uschar * s;
-    yield = string_get_localpart(addr, yield, &size, &ptr);
-    yield = string_cat(yield, &size, &ptr, US"@", 1);
-    s = addr->domain;
-#ifdef SUPPORT_I18N
-    if (testflag(addr, af_utf8_downcvt))
-      s = string_localpart_utf8_to_alabel(s, NULL);
-#endif
-    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s) );
-    }
-  else
-    {
-    yield = string_cat(yield, &size, &ptr, addr->address, Ustrlen(addr->address));
-    }
-  yield[ptr] = 0;
-
-  /* If the address we are going to print is the same as the top address,
-  and all parents are not being included, don't add on the top address. First
-  of all, do a caseless comparison; if this succeeds, do a caseful comparison
-  on the local parts. */
-
-  if (strcmpic(yield, topaddr->address) == 0 &&
-      Ustrncmp(yield, topaddr->address, Ustrchr(yield, '@') - yield) == 0 &&
-      addr->onetime_parent == NULL &&
-      (!all_parents || addr->parent == NULL || addr->parent == topaddr))
-    add_topaddr = FALSE;
-  }
-
-/* If all parents are requested, or this is a local pipe/file/reply, and
-there is at least one intermediate parent, show it in brackets, and continue
-with all of them if all are wanted. */
-
-if ((all_parents || testflag(addr, af_pfr)) &&
-    addr->parent != NULL &&
-    addr->parent != topaddr)
-  {
-  uschar *s = US" (";
-  address_item *addr2;
-  for (addr2 = addr->parent; addr2 != topaddr; addr2 = addr2->parent)
-    {
-    yield = string_cat(yield, &size, &ptr, s, 2);
-    yield = string_cat(yield, &size, &ptr, addr2->address, Ustrlen(addr2->address));
-    if (!all_parents) break;
-    s = US", ";
-    }
-  yield = string_cat(yield, &size, &ptr, US")", 1);
-  }
-
-/* Add the top address if it is required */
-
-if (add_topaddr)
-  {
-  yield = string_cat(yield, &size, &ptr, US" <", 2);
-
-  if (addr->onetime_parent == NULL)
-    yield = string_cat(yield, &size, &ptr, topaddr->address,
-      Ustrlen(topaddr->address));
-  else
-    yield = string_cat(yield, &size, &ptr, addr->onetime_parent,
-      Ustrlen(addr->onetime_parent));
-
-  yield = string_cat(yield, &size, &ptr, US">", 1);
-  }
-
-yield[ptr] = 0;  /* string_cat() leaves space */
-return yield;
-}
-#endif  /* COMPILE_UTILITY */
-
-
+#endif /* COMPILE_UTILITY */
 
 
 

@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 /* Code for matching regular expressions against headers and body.
  Called from acl.c. */
@@ -112,7 +114,12 @@ if (!mime_stream)				/* We are in the DATA ACL */
   }
 else
   {
-  f_pos = ftell(mime_stream);
+  if ((f_pos = ftell(mime_stream)) < 0)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	   "regex acl condition: mime_stream: %s", strerror(errno));
+    return DEFER;
+    }
   mbox_file = mime_stream;
   }
 
@@ -141,7 +148,12 @@ if (!mime_stream)
 else
   {
   clearerr(mime_stream);
-  fseek(mime_stream, f_pos, SEEK_SET);
+  if (fseek(mime_stream, f_pos, SEEK_SET) == -1)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+	   "regex acl condition: mime_stream: %s", strerror(errno));
+    clearerr(mime_stream);
+    }
   }
 
 return ret;

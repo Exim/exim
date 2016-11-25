@@ -1,7 +1,9 @@
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "ehlo abcd" H=[127.0.0.1] next input="mail from:<userx@test.ex>\r\n"
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(abcd) [127.0.0.1] next input="the message\r\nsecond line\r\n"
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="rcpt to:<userx@test.ex>\r\n"
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [ip4.ip4.ip4.ip4] next input="rcpt to:<userx@test.ex>\r\n"
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "junk1" H=[ip4.ip4.ip4.ip4] next input="junk2\r\n"
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "rset" H=(abcd) [ip4.ip4.ip4.ip4] next input="quit\r\n"
+
+******** SERVER ********
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "ehlo abcd" H=[127.0.0.1] next input="mail fr<suppressed>
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(abcd) [127.0.0.1] next input="the mes<suppressed>
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [127.0.0.1] next input="rcpt to<suppressed>
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "mail from:<userx@test.ex>" H=(abcd) [ip4.ip4.ip4.ip4] next input="rcpt to<suppressed>
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "junk1" H=[ip4.ip4.ip4.ip4] next input="junk2\r<suppressed>
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "rset" H=(abcd) [ip4.ip4.ip4.ip4] next input="quit\r\<suppressed>
 1999-03-02 09:44:33 SMTP protocol synchronization error (input sent without waiting for greeting): rejected connection from H=[127.0.0.1] input="helo abcd\r\n"

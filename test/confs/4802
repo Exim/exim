@@ -1,3 +1,6 @@
+# exim test configuration 4802
+exim_path = EXIM_PATH
+keep_environment =
 tls_advertise_hosts =
 
 begin routers

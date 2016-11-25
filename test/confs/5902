@@ -1,0 +1,38 @@
+# Exim test configuration 5902
+
+OPT=
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+scan:
+   driver = accept
+   condition = ${if eq {OPT}{scan} {y}}
+   transport = scan
+
+local:
+   driver = accept
+   transport = local_delivery
+
+# ----- Transports -----
+
+begin transports
+
+scan:
+  driver = queuefile
+  directory = DIR/scanner
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

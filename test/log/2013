@@ -3,7 +3,7 @@
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qqf
 
@@ -16,6 +16,6 @@
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=server T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 => usery <usery@test.ex> R=server T=local_delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf

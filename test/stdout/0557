@@ -1,4 +1,4 @@
-userx@test.ex cannot be resolved at this time: error in r1 router: no host(s) specified for domain *
+userx@test.ex cannot be resolved at this time: error in r1 router: no host(s) specified for domain test.ex
 userx@test.ex cannot be resolved at this time: lookup failed for all hosts in r1 router: host_find_failed=ignore host_all_ignored=defer
 userx@test.ex cannot be resolved at this time: lookup failed for all hosts in r1 router: host_find_failed=ignore host_all_ignored=defer
 userx@test.ex

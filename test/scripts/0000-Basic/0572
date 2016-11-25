@@ -3,7 +3,7 @@
 # Ought to test a non-priv user, checking "hide", but
 # the testsuite cannot do that...
 #
-munge optional_nossl
+munge optional_config
 exim -bP spool_directory
 ****
 perl -e 'print "\n";'
@@ -25,4 +25,7 @@ perl -e 'print "\n";'
 ****
 #
 exim -bP config
+****
+#
+exim -n -bP config
 ****

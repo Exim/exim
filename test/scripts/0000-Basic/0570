@@ -61,6 +61,7 @@ exim -DOPTION='multi_domain=${if eqi {$address_data}{domA.ex} {no}{yes}}' -q
 #
 killdaemon
 no_msglog_check
+sortlog
 #
 #
 ##

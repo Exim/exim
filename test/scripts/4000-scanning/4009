@@ -12,14 +12,14 @@ server 7833
 <User:
 <Content-length:
 <
-<From 
+<From
 <X-Envelope-From
 <X-Envelope-To
-<Received: 
-<	by 
+<Received:
+<	by
 <	(envelope
-<	id 
-<	for 
+<	id
+<	for
 <Content-type: text/plain
 <Message-Id:
 <From:
@@ -35,7 +35,7 @@ server 7833
 >similar future email.  If you have any questions, see
 >@@CONTACT_ADDRESS@@ for details.
 >
->Content preview:  test [...] 
+>Content preview:  test [...]
 >
 >Content analysis details:   (4.5 points, 5.0 required)
 >
@@ -50,9 +50,9 @@ server 7833
 >
 *eof
 ****
-exim -odi -bs
+exim -odi -oMt fromuser -bs
 ehlo test.ex
-mail from:<>
+mail from:<fromuser@myhost.test.ex>
 rcpt to:<userx@test.ex>
 data
 Content-type: text/plain
@@ -72,14 +72,14 @@ server 7833
 <User:
 <Content-length:
 <
-<From 
+<From
 <X-Envelope-From
 <X-Envelope-To
-<Received: 
-<	by 
+<Received:
+<	by
 <	(envelope
-<	id 
-<	for 
+<	id
+<	for
 <Content-type: text/plain
 <Message-Id:
 <From:
@@ -95,7 +95,7 @@ server 7833
 >similar future email.  If you have any questions, see
 >@@CONTACT_ADDRESS@@ for details.
 >
->Content preview:  test [...] 
+>Content preview:  test [...]
 >
 >Content analysis details:   (4.5 points, 5.0 required)
 >
@@ -110,9 +110,9 @@ server 7833
 >
 *eof
 ****
-exim -odi -bs -DOPT='127.0.0.1 7833 retry=10s'
+exim -odi -oMt fromuser -bs -DOPT='127.0.0.1 7833 retry=10s'
 ehlo test.ex
-mail from:<>
+mail from:<fromuser@myhost.test.ex>
 rcpt to:<userx@test.ex>
 data
 Content-type: text/plain
@@ -130,14 +130,14 @@ server -i 2 7833
 <User:
 <Content-length:
 <
-<From 
+<From
 <X-Envelope-From
 <X-Envelope-To
-<Received: 
-<	by 
+<Received:
+<	by
 <	(envelope
-<	id 
-<	for 
+<	id
+<	for
 <Content-type: text/plain
 <Message-Id:
 <From:
@@ -153,7 +153,7 @@ server -i 2 7833
 >similar future email.  If you have any questions, see
 >@@CONTACT_ADDRESS@@ for details.
 >
->Content preview:  test [...] 
+>Content preview:  test [...]
 >
 >Content analysis details:   (4.5 points, 5.0 required)
 >
@@ -168,9 +168,9 @@ server -i 2 7833
 >
 *eof
 ****
-exim -odi -bs -DOPT='127.0.0.1 7833 retry=4s'
+exim -odi -oMt fromuser -bs -DOPT='127.0.0.1 7833 retry=4s'
 ehlo test.ex
-mail from:<>
+mail from:<fromuser@myhost.test.ex>
 rcpt to:<userx@test.ex>
 data
 Content-type: text/plain
@@ -189,14 +189,14 @@ server 7833
 <User:
 <Content-length:
 <
-<From 
+<From
 <X-Envelope-From
 <X-Envelope-To
-<Received: 
-<	by 
+<Received:
+<	by
 <	(envelope
-<	id 
-<	for 
+<	id
+<	for
 <Content-type: text/plain
 <Message-Id:
 <From:
@@ -212,7 +212,7 @@ server 7833
 >similar future email.  If you have any questions, see
 >@@CONTACT_ADDRESS@@ for details.
 >
->Content preview:  test [...] 
+>Content preview:  test [...]
 >
 >Content analysis details:   (4.5 points, 5.0 required)
 >
@@ -227,9 +227,9 @@ server 7833
 >
 *eof
 ****
-exim -odi -bs -DOPT='<; 127.0.0.1 7833 ; 127.0.0.2 7834 pri=2 tmo=2s'
+exim -odi -oMt fromuser -bs -DOPT='<; 127.0.0.1 7833 ; HOSTIPV4 7834 pri=2 tmo=2s'
 ehlo test.ex
-mail from:<>
+mail from:<fromuser@myhost.test.ex>
 rcpt to:<userx@test.ex>
 data
 Content-type: text/plain

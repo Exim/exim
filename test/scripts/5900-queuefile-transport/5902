@@ -1,0 +1,23 @@
+# queuefile transport test delivery
+#
+# make a scanner dir for the transport to write into
+mkdir -p DIR/scanner
+sudo chown EXIMUSER:EXIMGROUP DIR/scanner
+#
+# this message should be placed by the queuefile transport in the scanner directory
+exim -DOPT=scan user1
+****
+sleep 1
+# 
+# check it is there
+ls DIR/scanner
+#
+# then re-inject "after scanning" to the default queue and see it gets found
+# it should get an appendfile delivery becase it is from the default queue
+sudo mv DIR/scanner/* DIR/spool/input/
+exim -q
+****
+#
+# tidy up
+sudo rm -fr DIR/scanner
+no_msglog_check

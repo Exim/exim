@@ -305,6 +305,22 @@ for (;;)
 
   if (rc != HOST_FIND_FAILED) break;
 
+  if (ob->fail_defer_domains)
+    switch(match_isinlist(fully_qualified_name,
+	  CUSS &ob->fail_defer_domains, 0,
+	  &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
+      {
+      case DEFER:
+	addr->message = US"lookup defer for fail_defer_domains option";
+	return DEFER;
+
+      case OK:
+	DEBUG(D_route) debug_printf("%s router: matched fail_defer_domains\n",
+	  rblock->name);
+	addr->message = US"missing MX, or all MXs point to missing A records,"
+	  " and defer requested";
+	return DEFER;
+      }
   /* Check to see if the failure is the result of MX records pointing to
   non-existent domains, and if so, set an appropriate error message; the case
   of an MX or SRV record pointing to "." is another special case that we can
@@ -334,22 +350,6 @@ for (;;)
         addr->message = string_sprintf("%s or (invalidly) to IP addresses",
           addr->message);
         }
-      }
-    if (ob->fail_defer_domains)
-      {
-      switch(match_isinlist(fully_qualified_name,
-	    CUSS &ob->fail_defer_domains, 0,
-	    &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
-	{
-	case DEFER:
-	  addr->message = US"lookup defer for fail_defer_domains";
-	  return DEFER;
-
-	case OK:
-	  DEBUG(D_route) debug_printf("%s router: matched fail_defer_domains\n",
-	    rblock->name);
-	  return DEFER;
-	}
       }
     return DECLINE;
     }

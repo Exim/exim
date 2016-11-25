@@ -1,6 +1,8 @@
 /*
  *  Author: Viktor Dukhovni
  *  License: THIS CODE IS IN THE PUBLIC DOMAIN.
+ *
+ * Copyright (c) The Exim Maintainers 2014 - 2016
  */
 #include <stdio.h>
 #include <string.h>
@@ -18,11 +20,35 @@
 
 #if OPENSSL_VERSION_NUMBER < 0x1000000fL
 # error "OpenSSL 1.0.0 or higher required"
-#else   /* remainder of file */
+#endif
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 # define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
 #endif
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+# define EXIM_HAVE_ASN1_MACROS
+# define EXIM_OPAQUE_X509
+#else
+# define X509_STORE_CTX_get_verify(ctx)		(ctx)->verify
+# define X509_STORE_CTX_get_verify_cb(ctx)	(ctx)->verify_cb
+# define X509_STORE_CTX_get0_cert(ctx)		(ctx)->cert
+# define X509_STORE_CTX_get0_chain(ctx)		(ctx)->chain
+# define X509_STORE_CTX_get0_untrusted(ctx)	(ctx)->untrusted
+
+# define X509_STORE_CTX_set_verify(ctx, verify_chain)	(ctx)->verify = (verify_chain)
+# define X509_STORE_CTX_set0_verified_chain(ctx, sk)	(ctx)->chain = (sk)
+# define X509_STORE_CTX_set_error_depth(ctx, val)	(ctx)->error_depth = (val)
+# define X509_STORE_CTX_set_current_cert(ctx, cert)	(ctx)->current_cert = (cert)
+
+# define ASN1_STRING_get0_data	ASN1_STRING_data
+# define X509_getm_notBefore	X509_get_notBefore
+# define X509_getm_notAfter	X509_get_notAfter
+
+# define CRYPTO_ONCE_STATIC_INIT 0
+# define CRYPTO_THREAD_run_once	 run_once
+typedef int CRYPTO_ONCE;
+#endif
+
 
 #include "danessl.h"
 
@@ -39,6 +65,7 @@
 #define DANESSL_F_SET_TRUST_ANCHOR	110
 #define DANESSL_F_VERIFY_CERT		111
 #define DANESSL_F_WRAP_CERT		112
+#define DANESSL_F_DANESSL_VERIFY_CHAIN	113
 
 #define DANESSL_R_BAD_CERT		100
 #define DANESSL_R_BAD_CERT_PKEY		101
@@ -275,13 +302,14 @@ return matched;
 static int
 push_ext(X509 *cert, X509_EXTENSION *ext)
 {
-    if (ext) {
-	if (X509_add_ext(cert, ext, -1))
-	    return 1;
-	X509_EXTENSION_free(ext);
-    }
-    DANEerr(DANESSL_F_PUSH_EXT, ERR_R_MALLOC_FAILURE);
-    return 0;
+if (ext)
+  {
+  if (X509_add_ext(cert, ext, -1))
+      return 1;
+  X509_EXTENSION_free(ext);
+  }
+DANEerr(DANESSL_F_PUSH_EXT, ERR_R_MALLOC_FAILURE);
+return 0;
 }
 
 static int
@@ -320,7 +348,7 @@ static int
 add_akid(X509 *cert, AUTHORITY_KEYID *akid)
 {
 int nid = NID_authority_key_identifier;
-ASN1_STRING *id;
+ASN1_OCTET_STRING *id;
 unsigned char c = 0;
 int ret = 0;
 
@@ -331,13 +359,17 @@ int ret = 0;
  * exempt from any potential (off by default for now in OpenSSL)
  * self-signature checks!
  */
-id =  (akid && akid->keyid) ? akid->keyid : 0;
-if (id && ASN1_STRING_length(id) == 1 && *ASN1_STRING_data(id) == c)
+id =  akid && akid->keyid ? akid->keyid : 0;
+if (id && ASN1_STRING_length(id) == 1 && *ASN1_STRING_get0_data(id) == c)
   c = 1;
 
 if (  (akid = AUTHORITY_KEYID_new()) != 0
    && (akid->keyid = ASN1_OCTET_STRING_new()) != 0
+#ifdef EXIM_HAVE_ASN1_MACROS
+   && ASN1_OCTET_STRING_set(akid->keyid, (void *) &c, 1)
+#else
    && M_ASN1_OCTET_STRING_set(akid->keyid, (void *) &c, 1)
+#endif
    && X509_add1_ext_i2d(cert, nid, akid, 0, X509V3_ADD_APPEND))
   ret = 1;
 if (akid)
@@ -412,7 +444,11 @@ if (cert)
   {
   if (trusted && !X509_add1_trust_object(cert, serverAuth))
     return 0;
+#ifdef EXIM_OPAQUE_X509
+  X509_up_ref(cert);
+#else
   CRYPTO_add(&cert->references, 1, CRYPTO_LOCK_X509);
+#endif
   if (!sk_X509_push(*xs, cert))
     {
     X509_free(cert);
@@ -462,10 +498,10 @@ akid = X509_get_ext_d2i(subject, NID_authority_key_identifier, 0, 0);
  */
 if (  !X509_set_version(cert, 2)
    || !set_serial(cert, akid, subject)
-   || !X509_set_subject_name(cert, name)
    || !set_issuer_name(cert, akid)
-   || !X509_gmtime_adj(X509_get_notBefore(cert), -30 * 86400L)
-   || !X509_gmtime_adj(X509_get_notAfter(cert), 30 * 86400L)
+   || !X509_gmtime_adj(X509_getm_notBefore(cert), -30 * 86400L)
+   || !X509_gmtime_adj(X509_getm_notAfter(cert), 30 * 86400L)
+   || !X509_set_subject_name(cert, name)
    || !X509_set_pubkey(cert, newkey)
    || !add_ext(0, cert, NID_basic_constraints, "CA:TRUE")
    || (!top && !add_akid(cert, akid))
@@ -577,7 +613,7 @@ int i;
 int depth = 0;
 EVP_PKEY *takey;
 X509 *ca;
-STACK_OF(X509) *in = ctx->untrusted;        /* XXX: Accessor? */
+STACK_OF(X509) *in = X509_STORE_CTX_get0_untrusted(ctx);
 
 if (!grow_chain(dane, UNTRUSTED, 0))
   return -1;
@@ -688,13 +724,17 @@ if (matched > 0)
   dane->mdpth = 0;
   dane->match = cert;
   X509_up_ref(cert);
-  if(!ctx->chain)
+  if(!X509_STORE_CTX_get0_chain(ctx))
     {
-    if (  (ctx->chain = sk_X509_new_null()) != 0
-       && sk_X509_push(ctx->chain, cert))
+    STACK_OF(X509) * sk = sk_X509_new_null();
+    if (sk && sk_X509_push(sk, cert))
+      {
       X509_up_ref(cert);
+      X509_STORE_CTX_set0_verified_chain(ctx, sk);
+      }
     else
       {
+      if (sk) sk_X509_free(sk);
       DANEerr(DANESSL_F_CHECK_END_ENTITY, ERR_R_MALLOC_FAILURE);
       return -1;
       }
@@ -751,10 +791,10 @@ for (hosts = dane->hosts; hosts; hosts = hosts->next)
 return 0;
 }
 
-static char *
-check_name(char *name, int len)
+static const char *
+check_name(const char *name, int len)
 {
-char *cp = name + len;
+const char *cp = name + len;
 
 while (len > 0 && !*--cp)
   --len;                          /* Ignore trailing NULs */
@@ -775,14 +815,14 @@ if (cp - name != len)               /* Guard against internal NULs */
 return name;
 }
 
-static char *
+static const char *
 parse_dns_name(const GENERAL_NAME *gn)
 {
 if (gn->type != GEN_DNS)
   return 0;
 if (ASN1_STRING_type(gn->d.ia5) != V_ASN1_IA5STRING)
   return 0;
-return check_name((char *) ASN1_STRING_data(gn->d.ia5),
+return check_name((const char *) ASN1_STRING_get0_data(gn->d.ia5),
 		  ASN1_STRING_length(gn->d.ia5));
 }
 
@@ -870,21 +910,21 @@ return matched;
 static int
 verify_chain(X509_STORE_CTX *ctx)
 {
-dane_selector_list issuer_rrs;
-dane_selector_list leaf_rrs;
-int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
+int (*cb)(int, X509_STORE_CTX *) = X509_STORE_CTX_get_verify_cb(ctx);
+X509 *cert = X509_STORE_CTX_get0_cert(ctx);
+STACK_OF(X509) * chain = X509_STORE_CTX_get0_chain(ctx);
+int chain_length = sk_X509_num(chain);
 int ssl_idx = SSL_get_ex_data_X509_STORE_CTX_idx();
 SSL *ssl = X509_STORE_CTX_get_ex_data(ctx, ssl_idx);
 ssl_dane *dane = SSL_get_ex_data(ssl, dane_idx);
-X509 *cert = ctx->cert;             /* XXX: accessor? */
+dane_selector_list issuer_rrs = dane->selectors[DANESSL_USAGE_PKIX_TA];
+dane_selector_list leaf_rrs = dane->selectors[DANESSL_USAGE_PKIX_EE];
 int matched = 0;
-int chain_length = sk_X509_num(ctx->chain);
 
 DEBUG(D_tls) debug_printf("Dane verify_chain\n");
 
-issuer_rrs = dane->selectors[DANESSL_USAGE_PKIX_TA];
-leaf_rrs = dane->selectors[DANESSL_USAGE_PKIX_EE];
-ctx->verify = dane->verify;
+/* Restore OpenSSL's internal_verify() as the signature check function */
+X509_STORE_CTX_set_verify(ctx, dane->verify);
 
 if ((matched = name_check(dane, cert)) < 0)
   {
@@ -894,8 +934,8 @@ if ((matched = name_check(dane, cert)) < 0)
 
 if (!matched)
   {
-  ctx->error_depth = 0;
-  ctx->current_cert = cert;
+  X509_STORE_CTX_set_error_depth(ctx, 0);
+  X509_STORE_CTX_set_current_cert(ctx, cert);
   X509_STORE_CTX_set_error(ctx, X509_V_ERR_HOSTNAME_MISMATCH);
   if (!cb(0, ctx))
     return 0;
@@ -907,28 +947,28 @@ matched = 0;
  * matched a usage 2 trust anchor.
  *
  * XXX: internal_verify() doesn't callback with top certs that are not
- * self-issued.  This should be fixed in a future OpenSSL.
+ * self-issued.  This is fixed in OpenSSL 1.1.0.
  */
 if (dane->roots && sk_X509_num(dane->roots))
   {
-  X509 *top = sk_X509_value(ctx->chain, dane->depth);
+  X509 *top = sk_X509_value(chain, dane->depth);
 
   dane->mdpth = dane->depth;
   dane->match = top;
   X509_up_ref(top);
 
-#ifndef NO_CALLBACK_WORKAROUND
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   if (X509_check_issued(top, top) != X509_V_OK)
     {
-    ctx->error_depth = dane->depth;
-    ctx->current_cert = top;
+    X509_STORE_CTX_set_error_depth(ctx, dane->depth);
+    X509_STORE_CTX_set_current_cert(ctx, top);
     if (!cb(1, ctx))
       return 0;
     }
 #endif
   /* Pop synthetic trust-anchor ancestors off the chain! */
   while (--chain_length > dane->depth)
-      X509_free(sk_X509_pop(ctx->chain));
+      X509_free(sk_X509_pop(chain));
   }
 else
   {
@@ -946,7 +986,7 @@ else
   if (!matched && issuer_rrs)
     for (n = chain_length-1; !matched && n >= 0; --n)
       {
-      xn = sk_X509_value(ctx->chain, n);
+      xn = sk_X509_value(chain, n);
       if (n > 0 || X509_check_issued(xn, xn) == X509_V_OK)
 	matched = match(issuer_rrs, xn, n);
       }
@@ -955,8 +995,8 @@ else
 
   if (!matched)
     {
-    ctx->current_cert = cert;
-    ctx->error_depth = 0;
+    X509_STORE_CTX_set_error_depth(ctx, 0);
+    X509_STORE_CTX_set_current_cert(ctx, cert);
     X509_STORE_CTX_set_error(ctx, X509_V_ERR_CERT_UNTRUSTED);
     if (!cb(0, ctx))
       return 0;
@@ -969,7 +1009,8 @@ else
     }
   }
 
-return ctx->verify(ctx);
+/* Tail recurse into OpenSSL's internal_verify */
+return dane->verify(ctx);
 }
 
 static void
@@ -1005,9 +1046,9 @@ verify_cert(X509_STORE_CTX *ctx, void *unused_ctx)
 static int ssl_idx = -1;
 SSL *ssl;
 ssl_dane *dane;
-int (*cb)(int, X509_STORE_CTX *) = ctx->verify_cb;
+int (*cb)(int, X509_STORE_CTX *) = X509_STORE_CTX_get_verify_cb(ctx);
+X509 *cert = X509_STORE_CTX_get0_cert(ctx);
 int matched;
-X509 *cert = ctx->cert;             /* XXX: accessor? */
 
 DEBUG(D_tls) debug_printf("Dane verify_cert\n");
 
@@ -1030,8 +1071,8 @@ if (dane->selectors[DANESSL_USAGE_DANE_EE])
   {
   if ((matched = check_end_entity(ctx, dane, cert)) > 0)
     {
-    ctx->error_depth = 0;
-    ctx->current_cert = cert;
+    X509_STORE_CTX_set_error_depth(ctx, 0);
+    X509_STORE_CTX_set_current_cert(ctx, cert);
     return cb(1, ctx);
     }
   if (matched < 0)
@@ -1056,7 +1097,7 @@ if (dane->selectors[DANESSL_USAGE_DANE_EE])
        */
       X509_STORE_CTX_trusted_stack(ctx, dane->roots);
       X509_STORE_CTX_set_chain(ctx, dane->chain);
-      OPENSSL_assert(ctx->untrusted == dane->chain);
+      OPENSSL_assert(dane->chain == X509_STORE_CTX_get0_untrusted(ctx));
       }
     }
 
@@ -1065,8 +1106,8 @@ if (dane->selectors[DANESSL_USAGE_DANE_EE])
    * X509_verify_cert() builds the full chain and calls our verify_chain()
    * wrapper.
    */
-  dane->verify = ctx->verify;
-  ctx->verify = verify_chain;
+  dane->verify = X509_STORE_CTX_get_verify(ctx);
+  X509_STORE_CTX_set_verify(ctx, verify_chain);
 
   if (X509_verify_cert(ctx))
     return 1;
@@ -1127,9 +1168,15 @@ for (head = (dane_list) list; head; head = next)
 }
 
 static void
+ossl_free(void * p)
+{
+OPENSSL_free(p);
+}
+
+static void
 dane_mtype_free(void *p)
 {
-list_free(((dane_mtype) p)->data, CRYPTO_free);
+list_free(((dane_mtype) p)->data, ossl_free);
 OPENSSL_free(p);
 }
 
@@ -1170,7 +1217,7 @@ if (dane_idx < 0 || !(dane = SSL_get_ex_data(ssl, dane_idx)))
 
 dane_reset(dane);
 if (dane->hosts)
-  list_free(dane->hosts, CRYPTO_free);
+  list_free(dane->hosts, ossl_free);
 for (u = 0; u <= DANESSL_USAGE_LAST; ++u)
   if (dane->selectors[u])
     list_free(dane->selectors[u], dane_selector_free);
@@ -1191,7 +1238,7 @@ while (*src)
   dane_host_list elem = (dane_host_list) OPENSSL_malloc(sizeof(*elem));
   if (elem == 0)
     {
-    list_free(head, CRYPTO_free);
+    list_free(head, ossl_free);
     return 0;
     }
   elem->value = OPENSSL_strdup(*src++);
@@ -1232,28 +1279,36 @@ DANESSL_verify_chain(SSL *ssl, STACK_OF(X509) *chain)
 {
 int ret;
 X509 *cert;
-X509_STORE_CTX store_ctx;
+X509_STORE_CTX * store_ctx;
 SSL_CTX *ssl_ctx = SSL_get_SSL_CTX(ssl);
 X509_STORE *store = SSL_CTX_get_cert_store(ssl_ctx);
 int store_ctx_idx = SSL_get_ex_data_X509_STORE_CTX_idx();
 
 cert = sk_X509_value(chain, 0);
-if (!X509_STORE_CTX_init(&store_ctx, store, cert, chain))
+if (!(store_ctx = X509_STORE_CTX_new()))
+  {
+  DANEerr(DANESSL_F_DANESSL_VERIFY_CHAIN, ERR_R_MALLOC_FAILURE);
   return 0;
-X509_STORE_CTX_set_ex_data(&store_ctx, store_ctx_idx, ssl);
+  }
+if (!X509_STORE_CTX_init(store_ctx, store, cert, chain))
+  {
+  X509_STORE_CTX_free(store_ctx);
+  return 0;
+  }
+X509_STORE_CTX_set_ex_data(store_ctx, store_ctx_idx, ssl);
 
-X509_STORE_CTX_set_default(&store_ctx,
+X509_STORE_CTX_set_default(store_ctx,
             SSL_is_server(ssl) ? "ssl_client" : "ssl_server");
-X509_VERIFY_PARAM_set1(X509_STORE_CTX_get0_param(&store_ctx),
+X509_VERIFY_PARAM_set1(X509_STORE_CTX_get0_param(store_ctx),
             SSL_get0_param(ssl));
 
 if (SSL_get_verify_callback(ssl))
-  X509_STORE_CTX_set_verify_cb(&store_ctx, SSL_get_verify_callback(ssl));
+  X509_STORE_CTX_set_verify_cb(store_ctx, SSL_get_verify_callback(ssl));
 
-ret = verify_cert(&store_ctx, NULL);
+ret = verify_cert(store_ctx, NULL);
 
-SSL_set_verify_result(ssl, X509_STORE_CTX_get_error(&store_ctx));
-X509_STORE_CTX_cleanup(&store_ctx);
+SSL_set_verify_result(ssl, X509_STORE_CTX_get_error(store_ctx));
+X509_STORE_CTX_cleanup(store_ctx);
 
 return (ret);
 }
@@ -1422,7 +1477,7 @@ if (!m)
   {
   if ((m = (dane_mtype_list) list_alloc(sizeof(*m->value))) == 0)
     {
-    list_free(d, CRYPTO_free);
+    list_free(d, ossl_free);
     xkfreeret(0);
     }
   m->value->data = 0;
@@ -1563,31 +1618,6 @@ DANEerr(DANESSL_F_CTX_INIT, DANESSL_R_LIBRARY_INIT);
 return -1;
 }
 
-static int
-init_once(volatile int *value, int (*init)(void), void (*postinit)(void))
-{
-int wlock = 0;
-
-CRYPTO_r_lock(CRYPTO_LOCK_SSL_CTX);
-if (*value < 0)
-  {
-  CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
-  CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
-  wlock = 1;
-  if (*value < 0)
-    {
-    *value = init();
-    if (postinit)
-      postinit();
-    }
-  }
-if (wlock)
-    CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
-else
-    CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
-return *value;
-}
-
 static void
 dane_init(void)
 {
@@ -1595,10 +1625,15 @@ dane_init(void)
  * Store library id in zeroth function slot, used to locate the library
  * name.  This must be done before we load the error strings.
  */
+err_lib_dane = ERR_get_next_error_library();
+
 #ifndef OPENSSL_NO_ERR
-dane_str_functs[0].error |= ERR_PACK(err_lib_dane, 0, 0);
-ERR_load_strings(err_lib_dane, dane_str_functs);
-ERR_load_strings(err_lib_dane, dane_str_reasons);
+if (err_lib_dane > 0)
+  {
+  dane_str_functs[0].error |= ERR_PACK(err_lib_dane, 0, 0);
+  ERR_load_strings(err_lib_dane, dane_str_functs);
+  ERR_load_strings(err_lib_dane, dane_str_reasons);
+  }
 #endif
 
 /*
@@ -1623,6 +1658,32 @@ dane_idx = SSL_get_ex_new_index(0, 0, 0, 0, 0);
 }
 
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+static void
+run_once(volatile int * once, void (*init)(void))
+{
+int wlock = 0;
+
+CRYPTO_r_lock(CRYPTO_LOCK_SSL_CTX);
+if (!*once)
+  {
+  CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
+  CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
+  wlock = 1;
+  if (!*once)
+    {
+    *once = 1;
+    init();
+    }
+  }
+if (wlock)
+  CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
+else
+  CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
+}
+#endif
+
+
 
 /*
 
@@ -1639,9 +1700,10 @@ Return
 int
 DANESSL_library_init(void)
 {
+static CRYPTO_ONCE once = CRYPTO_ONCE_STATIC_INIT;
+
 DEBUG(D_tls) debug_printf("Dane lib-init\n");
-if (err_lib_dane < 0)
-  init_once(&err_lib_dane, ERR_get_next_error_library, dane_init);
+(void) CRYPTO_THREAD_run_once(&once, dane_init);
 
 #if defined(LN_sha256)
 /* No DANE without SHA256 support */
@@ -1653,6 +1715,5 @@ return 0;
 }
 
 
-#endif /* OPENSSL_VERSION_NUMBER */
 /* vi: aw ai sw=2
 */

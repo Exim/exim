@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -228,6 +228,10 @@ exim binary. */
 #include "transports/pipe.h"
 #endif
 
+#ifdef EXPERIMENTAL_QUEUEFILE
+#include "transports/queuefile.h"
+#endif
+
 #ifdef TRANSPORT_SMTP
 #include "transports/smtp.h"
 #endif
@@ -389,6 +393,20 @@ transport_info transports_available[] = {
   TRUE                                         /* local flag */
   },
 #endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  {
+  US"queuefile",                               /* driver name */
+  queuefile_transport_options,                 /* local options table */
+  &queuefile_transport_options_count,          /* number of entries */
+  &queuefile_transport_option_defaults,        /* private options defaults */
+  sizeof(queuefile_transport_options_block),   /* size of private block */
+  queuefile_transport_init,                    /* init entry point */
+  queuefile_transport_entry,                   /* main entry point */
+  NULL,                                        /* no tidyup entry */
+  NULL,                                        /* no closedown entry */
+  TRUE                                         /* local flag */
+  },
+#endif
 #ifdef TRANSPORT_SMTP
   {
   US"smtp",                                    /* driver name */
@@ -415,37 +433,42 @@ struct lookupmodulestr
 
 static struct lookupmodulestr *lookupmodules = NULL;
 
-static void addlookupmodule(void *dl, struct lookup_module_info *info)
+static void
+addlookupmodule(void *dl, struct lookup_module_info *info)
 {
-  struct lookupmodulestr *p = store_malloc(sizeof(struct lookupmodulestr));
-  p->dl = dl;
-  p->info = info;
-  p->next = lookupmodules;
-  lookupmodules = p;
-  lookup_list_count += info->lookupcount;
+struct lookupmodulestr *p = store_malloc(sizeof(struct lookupmodulestr));
+
+p->dl = dl;
+p->info = info;
+p->next = lookupmodules;
+lookupmodules = p;
+lookup_list_count += info->lookupcount;
 }
 
 /* only valid after lookup_list and lookup_list_count are assigned */
-static void add_lookup_to_list(lookup_info *info)
+static void
+add_lookup_to_list(lookup_info *info)
 {
-  /* need to add the lookup to lookup_list, sorted */
-  int pos = 0;
+/* need to add the lookup to lookup_list, sorted */
+int pos = 0;
 
-  /* strategy is to go through the list until we find
-   * either an empty spot or a name that is higher.
-   * this can't fail because we have enough space. */
-  while (lookup_list[pos]
-      && (Ustrcmp(lookup_list[pos]->name, info->name) <= 0)) {
-    pos++;
+/* strategy is to go through the list until we find
+either an empty spot or a name that is higher.
+this can't fail because we have enough space. */
+
+while (lookup_list[pos] && (Ustrcmp(lookup_list[pos]->name, info->name) <= 0))
+  pos++;
+
+if (lookup_list[pos])
+  {
+  /* need to insert it, so move all the other items up
+  (last slot is still empty, of course) */
+
+  memmove(&lookup_list[pos+1],
+	  &lookup_list[pos],
+	  sizeof(lookup_info *) * (lookup_list_count-pos-1));
   }
-  if (lookup_list[pos]) {
-    /* need to insert it, so move all the other items up
-     * (last slot is still empty, of course) */
-    memmove(&lookup_list[pos+1],
-            &lookup_list[pos],
-            sizeof(lookup_info **) * (lookup_list_count-pos-1));
-  }
-  lookup_list[pos] = info;
+lookup_list[pos] = info;
 }
 
 
@@ -453,62 +476,67 @@ static void add_lookup_to_list(lookup_info *info)
  * which give parse errors on an extern in function scope.  Each entry needs
  * to also be invoked in init_lookup_list() below  */
 
-#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-extern lookup_module_info whoson_lookup_module_info;
-#endif
-#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-extern lookup_module_info testdb_lookup_module_info;
-#endif
-#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-extern lookup_module_info sqlite_lookup_module_info;
-#endif
-#ifdef EXPERIMENTAL_SPF
-extern lookup_module_info spf_lookup_module_info;
-#endif
-#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-extern lookup_module_info pgsql_lookup_module_info;
-#endif
-#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-extern lookup_module_info passwd_lookup_module_info;
-#endif
-#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-extern lookup_module_info redis_lookup_module_info;
-#endif
-#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-extern lookup_module_info oracle_lookup_module_info;
-#endif
-#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-extern lookup_module_info nisplus_lookup_module_info;
-#endif
-#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-extern lookup_module_info nis_lookup_module_info;
-#endif
-#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-extern lookup_module_info mysql_lookup_module_info;
-#endif
-#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-extern lookup_module_info lsearch_lookup_module_info;
-#endif
-#ifdef LOOKUP_LDAP
-extern lookup_module_info ldap_lookup_module_info;
-#endif
-#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-extern lookup_module_info ibase_lookup_module_info;
-#endif
-#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-extern lookup_module_info dsearch_lookup_module_info;
-#endif
-#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-extern lookup_module_info dnsdb_lookup_module_info;
+#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
+extern lookup_module_info cdb_lookup_module_info;
 #endif
 #if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
 extern lookup_module_info dbmdb_lookup_module_info;
 #endif
-#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-extern lookup_module_info cdb_lookup_module_info;
+#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
+extern lookup_module_info dnsdb_lookup_module_info;
+#endif
+#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
+extern lookup_module_info dsearch_lookup_module_info;
+#endif
+#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
+extern lookup_module_info ibase_lookup_module_info;
+#endif
+#if defined(LOOKUP_LDAP)
+extern lookup_module_info ldap_lookup_module_info;
+#endif
+#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
+extern lookup_module_info lsearch_lookup_module_info;
+#endif
+#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
+extern lookup_module_info mysql_lookup_module_info;
+#endif
+#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
+extern lookup_module_info nis_lookup_module_info;
+#endif
+#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
+extern lookup_module_info nisplus_lookup_module_info;
+#endif
+#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
+extern lookup_module_info oracle_lookup_module_info;
+#endif
+#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
+extern lookup_module_info passwd_lookup_module_info;
+#endif
+#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
+extern lookup_module_info pgsql_lookup_module_info;
+#endif
+#if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
+extern lookup_module_info redis_lookup_module_info;
+#endif
+#if defined(EXPERIMENTAL_LMDB)
+extern lookup_module_info lmdb_lookup_module_info;
+#endif
+#if defined(EXPERIMENTAL_SPF)
+extern lookup_module_info spf_lookup_module_info;
+#endif
+#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
+extern lookup_module_info sqlite_lookup_module_info;
+#endif
+#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
+extern lookup_module_info testdb_lookup_module_info;
+#endif
+#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
+extern lookup_module_info whoson_lookup_module_info;
 #endif
 
-void init_lookup_list(void)
+
+void
+init_lookup_list(void)
 {
 #ifdef LOOKUP_MODULE_DIR
   DIR *dd;
@@ -576,6 +604,10 @@ void init_lookup_list(void)
 
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
   addlookupmodule(NULL, &redis_lookup_module_info);
+#endif
+
+#ifdef EXPERIMENTAL_LMDB
+  addlookupmodule(NULL, &lmdb_lookup_module_info);
 #endif
 
 #ifdef EXPERIMENTAL_SPF

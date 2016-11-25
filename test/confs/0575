@@ -1,0 +1,13 @@
+# Exim test configuration 0575
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+acl_smtp_rcpt = accept
+
+# End

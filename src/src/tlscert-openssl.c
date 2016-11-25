@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2014 - 2015 */
+/* Copyright (c) Jeremy Harris 2014 - 2016 */
 
 /* This module provides TLS (aka SSL) support for Exim using the OpenSSL
 library. It is #included into the tls.c file when that library is used.
@@ -16,6 +16,10 @@ library. It is #included into the tls.c file when that library is used.
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/x509v3.h>
+
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+# define EXIM_HAVE_ASN1_MACROS
+#endif
 
 
 /*****************************************************
@@ -119,7 +123,7 @@ int len;
 if (!bp)
   return badalloc();
 len = ASN1_TIME_print(bp, asntime);
-len = len > 0 ? (int) BIO_get_mem_data(bp, &s) : 0;
+len = len > 0 ? (int) BIO_get_mem_data(bp, CSS &s) : 0;
 
 if (mod && Ustrcmp(mod, "raw") == 0)		/* native ASN */
   s = string_copyn(s, len);
@@ -137,7 +141,7 @@ else
   /*XXX %Z might be glibc-specific?  Solaris has it, at least*/
   /*XXX should we switch to POSIX locale for this? */
   tm.tm_isdst = 0;
-  if (!strptime(CCS s, "%b %e %T %Y %Z", &tm))
+  if (!len || !strptime(CCS s, "%b %e %T %Y %Z", &tm))
     expand_string_message = US"failed time conversion";
 
   else
@@ -314,9 +318,13 @@ uschar * cp3;
 
 if (!bp) return badalloc();
 
+#ifdef EXIM_HAVE_ASN1_MACROS
+ASN1_STRING_print(bp, adata);
+#else
 M_ASN1_OCTET_STRING_print(bp, adata);
-/* binary data, DER encoded */
+#endif
 
+/* binary data, DER encoded */
 /* just dump for now */
 len = BIO_get_mem_data(bp, &cp1);
 cp3 = cp2 = store_get(len*3+1);

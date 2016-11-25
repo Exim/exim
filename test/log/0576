@@ -1,0 +1,31 @@
+1999-03-02 09:44:33 using queue ''
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss for normal@test.ex
+1999-03-02 09:44:33 using queue 'alternate'
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss Q=alternate for alternate@test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmaX-0005vi-00 => normal <normal@test.ex> F=<CALLER@the.local.host.name> R=all T=dump
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qq
+1999-03-02 09:44:33 Start 'nosuchqueue' queue run: pid=pppp
+1999-03-02 09:44:33 End 'nosuchqueue' queue run: pid=pppp
+1999-03-02 09:44:33 Start 'alternate' queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 => alternate <alternate@test.ex> F=<CALLER@the.local.host.name> Q=alternate R=all T=dump
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End 'alternate' queue run: pid=pppp
+1999-03-02 09:44:33 using queue 'lowpri'
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss Q=lowpri for lowpri@test.ex
+1999-03-02 09:44:33 using queue 'alternate'
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss Q=alternate for alternate@test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbA-0005vi-00 => alternate <alternate@test.ex> F=<CALLER@the.local.host.name> R=all T=dump
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, -qGlowpri/3s, not listening for SMTP
+1999-03-02 09:44:33 Start 'lowpri' queue run: pid=pppp
+1999-03-02 09:44:33 End 'lowpri' queue run: pid=pppp
+1999-03-02 09:44:33 Start 'lowpri' queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => lowpri <lowpri@test.ex> F=<CALLER@the.local.host.name> Q=lowpri R=all T=dump
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End 'lowpri' queue run: pid=pppp

@@ -1,1 +1,3 @@
-1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(en.force) [127.0.0.1] next input="the message\r\n"
+
+******** SERVER ********
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was advertised): rejected "data" H=(en.force) [127.0.0.1] next input="the mes<suppressed>

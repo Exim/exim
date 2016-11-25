@@ -1,4 +1,9 @@
 #!/bin/sh
+# Copyright (c) The Exim Maintainers 2016
+
+set -e
+LC_ALL=C
+export LC_ALL
 
 # Update Exim's version header file.
 
@@ -37,8 +42,13 @@ then
 	# Modify the output of git describe into separate parts for
 	# the name "exim" and the release and variant versions.
 	# Put a dot in the version number and remove a spurious g.
-	set $(git describe --dirty=-XX --match 'exim-4*' |
-		sed 's|-| |;s|_|.|;s|[-_]| _|;s|-g|-|')
+	if [ "$2" ]
+	then
+	    description=$(git describe "$2")
+	else
+	    description=$(git describe --dirty=-XX --match 'exim-4*')
+	fi
+	set $(echo "$description" | sed 's|-| |;s|_|.|;s|[-_]| _|;s|-g|-|')
 	# Only update if we need to
 	if [ "$2 $3" != "$EXIM_RELEASE_VERSION $EXIM_VARIANT_VERSION" ]
 	then

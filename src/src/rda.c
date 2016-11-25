@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code for extracting addresses from a forwarding list
@@ -474,11 +474,12 @@ rda_read_string(int fd, uschar **sp)
 int len;
 
 if (read(fd, &len, sizeof(int)) != sizeof(int)) return FALSE;
-if (len == 0) *sp = NULL; else
-  {
-  *sp = store_get(len);
-  if (read(fd, *sp, len) != len) return FALSE;
-  }
+if (len == 0)
+  *sp = NULL;
+else
+  /* We know we have enough memory so disable the error on "len" */
+  /* coverity[tainted_data] */
+  if (read(fd, *sp = store_get(len), len) != len) return FALSE;
 return TRUE;
 }
 
@@ -911,7 +912,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     if (i > 0)
       {
-      addr->pipe_expandn = store_get((i+1) * sizeof(uschar **));
+      addr->pipe_expandn = store_get((i+1) * sizeof(uschar *));
       addr->pipe_expandn[i] = NULL;
       while (--i >= 0) addr->pipe_expandn[i] = expandn[i];
       }

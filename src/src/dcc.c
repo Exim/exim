@@ -6,6 +6,8 @@
  * Vienna University Computer Center
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
+ *
+ * Copyright (c) The Exim Maintainers 2015 - 2016
  */
 
 /* This patch is based on code from Tom Kistners exiscan (ACL integration) and
@@ -70,7 +72,6 @@ dcc_process(uschar **listptr)
   uschar sendbuf[4096];
   uschar recvbuf[4096];
   uschar dcc_return_text[1024];
-  uschar mbox_path[1024];
   uschar message_subdir[2];
   struct header_line *dcchdr;
   uschar *dcc_acl_options;
@@ -79,50 +80,42 @@ dcc_process(uschar **listptr)
 
   /* grep 1st option */
   if ((dcc_acl_options = string_nextinlist(&list, &sep,
-                                           dcc_acl_options_buffer,
-                                           sizeof(dcc_acl_options_buffer))) != NULL)
-  {
+		   dcc_acl_options_buffer, sizeof(dcc_acl_options_buffer))))
+    {
     /* parse 1st option */
-    if ( (strcmpic(dcc_acl_options,US"false") == 0) ||
-         (Ustrcmp(dcc_acl_options,"0") == 0) ) {
-      /* explicitly no matching */
-      return FAIL;
-    };
-
-    /* special cases (match anything except empty) */
-    if ( (strcmpic(dcc_acl_options,US"true") == 0) ||
-         (Ustrcmp(dcc_acl_options,"*") == 0) ||
-         (Ustrcmp(dcc_acl_options,"1") == 0) ) {
-      dcc_acl_options = dcc_acl_options;
-    };
-  }
-  else {
-    /* empty means "don't match anything" */
-    return FAIL;
-  };
+    if (  strcmpic(dcc_acl_options, US"false") == 0
+       || Ustrcmp(dcc_acl_options, "0") == 0
+       )
+      return FAIL;	/* explicitly no matching */
+    }
+  else
+    return FAIL;	/* empty means "don't match anything" */
 
   sep = 0;
 
   /* if we scanned this message last time, just return */
-  if ( dcc_ok )
-      return dcc_rc;
+  if (dcc_ok)
+    return dcc_rc;
 
   /* open the spooled body */
   message_subdir[1] = '\0';
-  for (i = 0; i < 2; i++) {
-    message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
-    sprintf(CS mbox_path, "%s/input/%s/%s-D", spool_directory, message_subdir, message_id);
-    data_file = Ufopen(mbox_path,"rb");
-    if (data_file != NULL)
-      break;
-  };
+  for (i = 0; i < 2; i++)
+    {
+    message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
 
-  if (data_file == NULL) {
+    if ((data_file = Ufopen(
+	    spool_fname(US"input", message_subdir, message_id, US"-D"),
+	    "rb")))
+      break;
+    }
+
+  if (!data_file)
+    {
     /* error while spooling */
     log_write(0, LOG_MAIN|LOG_PANIC,
            "dcc acl condition: error while opening spool file");
     return DEFER;
-  };
+    }
 
   /* Initialize the variables */
 
@@ -216,9 +209,9 @@ dcc_process(uschar **listptr)
     }
   } else {
     /* connecting to the dccifd UNIX socket */
-    bzero((char *)&serv_addr,sizeof(serv_addr));
+    bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sun_family = AF_UNIX;
-    Ustrcpy(serv_addr.sun_path, sockpath);
+    Ustrncpy(serv_addr.sun_path, sockpath, sizeof(serv_addr.sun_path));
     if ((sockfd = socket(AF_UNIX, SOCK_STREAM,0)) < 0){
       DEBUG(D_acl)
         debug_printf("DCC: Creating UNIX socket connection failed: %s\n", strerror(errno));
@@ -434,11 +427,11 @@ dcc_process(uschar **listptr)
             }
           }
           else {
-          /* We're on the first line but not on the first character,
-           * there must be something wrong. */
-            DEBUG(D_acl)
-              debug_printf("DCC: Line = %d but i = %d != 0  character is %c - This is wrong!\n", line, i, recvbuf[i]);
-              log_write(0,LOG_MAIN,"Wrong header from DCC, output is %s\n", recvbuf);
+            /* We're on the first line but not on the first character,
+             * there must be something wrong. */
+            DEBUG(D_acl) debug_printf("DCC: Line = %d but i = %d != 0"
+		"  character is %c - This is wrong!\n", line, i, recvbuf[i]);
+            log_write(0,LOG_MAIN,"Wrong header from DCC, output is %s\n", recvbuf);
           }
         }
         else if(line == 2) {
@@ -456,8 +449,8 @@ dcc_process(uschar **listptr)
             k++;
           }
           else {
-            DEBUG(D_acl)
-              debug_printf("DCC: We got more output than we can store in the X-DCC header. Truncating at 120 characters.\n");
+            DEBUG(D_acl) debug_printf("DCC: We got more output than we can store"
+		" in the X-DCC header. Truncating at 120 characters.\n");
           }
         }
         else {

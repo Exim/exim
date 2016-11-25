@@ -23,7 +23,7 @@ Succeeded in starting TLS
 ??? 214-
 <<< 214-Commands supported:
 ??? 214
-<<< 214 AUTH HELO EHLO MAIL RCPT DATA NOOP QUIT RSET HELP
+<<< 214 AUTH HELO EHLO MAIL RCPT DATA BDAT NOOP QUIT RSET HELP
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection

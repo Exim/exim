@@ -1,0 +1,77 @@
+# OCSP stapling, client, LE variation
+#
+#
+# Client works when we request but don't require OCSP stapling and none comes
+exim -bd -oX PORT_D -DSERVER=server -DRETURN=/dev/null
+****
+exim norequire@test.ex
+test message.
+****
+sleep 1
+killdaemon
+#
+#
+#
+#
+# Client works when we don't request OCSP stapling
+exim -bd -oX PORT_D -DSERVER=server \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.good.resp
+****
+exim nostaple@test.ex
+test message.
+****
+millisleep 500
+#
+#
+#
+#
+# Client accepts good stapled info
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+#
+#
+#
+# Client fails on lack of required stapled info
+exim -bd -oX PORT_D -DSERVER=server -DRETURN=/dev/null
+****
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+sudo rm spool/db/retry
+#
+#
+#
+# Client fails on revoked stapled info
+EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.revoked.resp
+****
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+millisleep 200
+sudo rm spool/db/retry
+#
+#
+#
+#
+# Client fails on expired stapled info
+EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
+ -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.signernocert.dated.resp
+****
+exim CALLER@test.ex
+test message.
+****
+sleep 1
+killdaemon
+#
+#
+#
+#
+no_msglog_check

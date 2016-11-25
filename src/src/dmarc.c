@@ -57,7 +57,7 @@ static dmarc_exim_p dmarc_policy_description[] = {
 static error_block *
 add_to_eblock(error_block *eblock, uschar *t1, uschar *t2)
 {
-error_block *eb = malloc(sizeof(error_block));
+error_block *eb = store_malloc(sizeof(error_block));
 if (eblock == NULL)
   eblock = eb;
 else
@@ -149,6 +149,63 @@ int dmarc_store_data(header_line *hdr) {
   return OK;
 }
 
+
+static void
+dmarc_send_forensic_report(u_char **ruf)
+{
+int   c;
+uschar *recipient, *save_sender;
+BOOL  send_status = FALSE;
+error_block *eblock = NULL;
+FILE *message_file = NULL;
+
+/* Earlier ACL does not have *required* control=dmarc_enable_forensic */
+if (!dmarc_enable_forensic)
+  return;
+
+if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
+   || dmarc_policy == DMARC_POLICY_QUARANTINE && action == DMARC_RESULT_QUARANTINE
+   || dmarc_policy == DMARC_POLICY_NONE       && action == DMARC_RESULT_REJECT
+   || dmarc_policy == DMARC_POLICY_NONE       && action == DMARC_RESULT_QUARANTINE
+   )
+  if (ruf)
+    {
+    eblock = add_to_eblock(eblock, US"Sender Domain", dmarc_used_domain);
+    eblock = add_to_eblock(eblock, US"Sender IP Address", sender_host_address);
+    eblock = add_to_eblock(eblock, US"Received Date", tod_stamp(tod_full));
+    eblock = add_to_eblock(eblock, US"SPF Alignment",
+			   (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?US"yes":US"no");
+    eblock = add_to_eblock(eblock, US"DKIM Alignment",
+			   (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?US"yes":US"no");
+    eblock = add_to_eblock(eblock, US"DMARC Results", dmarc_status_text);
+    /* Set a sane default envelope sender */
+    dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
+	       dsn_from ? dsn_from :
+	       string_sprintf("do-not-reply@%s",primary_hostname);
+    for (c = 0; ruf[c]; c++)
+      {
+      recipient = string_copylc(ruf[c]);
+      if (Ustrncmp(recipient, "mailto:",7))
+	continue;
+      /* Move to first character past the colon */
+      recipient += 7;
+      DEBUG(D_receive)
+	debug_printf("DMARC forensic report to %s%s\n", recipient,
+	     (host_checking || running_in_test_harness) ? " (not really)" : "");
+      if (host_checking || running_in_test_harness)
+	continue;
+
+      save_sender = sender_address;
+      sender_address = recipient;
+      send_status = moan_to_sender(ERRMESS_DMARC_FORENSIC, eblock,
+				   header_list, message_file, FALSE);
+      sender_address = save_sender;
+      if (!send_status)
+	log_write(0, LOG_MAIN|LOG_PANIC,
+	  "failure to send DMARC forensic report to %s", recipient);
+      }
+    }
+}
 
 /* dmarc_process adds the envelope sender address to the existing
    context (if any), retrieves the result, sets up expansion
@@ -295,7 +352,8 @@ if (!dmarc_abort && !sender_host_authenticated)
       vs == PDKIM_VERIFY_INVALID ?
        ves == PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE ? ARES_RESULT_PERMERROR :
        ves == PDKIM_VERIFY_INVALID_BUFFER_SIZE        ? ARES_RESULT_PERMERROR :
-       ves == PDKIM_VERIFY_INVALID_PUBKEY_PARSING     ? ARES_RESULT_PERMERROR :
+       ves == PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD   ? ARES_RESULT_PERMERROR :
+       ves == PDKIM_VERIFY_INVALID_PUBKEY_IMPORT      ? ARES_RESULT_PERMERROR :
        ARES_RESULT_UNKNOWN :
       ARES_RESULT_UNKNOWN;
     dkim_history_buffer = string_sprintf("%sdkim %s %d\n", dkim_history_buffer,
@@ -515,60 +573,6 @@ else
   (void)close(history_file_fd);
   }
 return DMARC_HIST_OK;
-}
-
-void
-dmarc_send_forensic_report(u_char **ruf)
-{
-int   c;
-uschar *recipient, *save_sender;
-BOOL  send_status = FALSE;
-error_block *eblock = NULL;
-FILE *message_file = NULL;
-
-/* Earlier ACL does not have *required* control=dmarc_enable_forensic */
-if (!dmarc_enable_forensic)
-  return;
-
-if ((dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT) ||
-    (dmarc_policy == DMARC_POLICY_QUARANTINE && action == DMARC_RESULT_QUARANTINE) )
-  if (ruf)
-    {
-    eblock = add_to_eblock(eblock, US"Sender Domain", dmarc_used_domain);
-    eblock = add_to_eblock(eblock, US"Sender IP Address", sender_host_address);
-    eblock = add_to_eblock(eblock, US"Received Date", tod_stamp(tod_full));
-    eblock = add_to_eblock(eblock, US"SPF Alignment",
-			   (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?US"yes":US"no");
-    eblock = add_to_eblock(eblock, US"DKIM Alignment",
-			   (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?US"yes":US"no");
-    eblock = add_to_eblock(eblock, US"DMARC Results", dmarc_status_text);
-    /* Set a sane default envelope sender */
-    dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
-	       dsn_from ? dsn_from :
-	       string_sprintf("do-not-reply@%s",primary_hostname);
-    for (c = 0; ruf[c]; c++)
-      {
-      recipient = string_copylc(ruf[c]);
-      if (Ustrncmp(recipient, "mailto:",7))
-	continue;
-      /* Move to first character past the colon */
-      recipient += 7;
-      DEBUG(D_receive)
-	debug_printf("DMARC forensic report to %s%s\n", recipient,
-	     (host_checking || running_in_test_harness) ? " (not really)" : "");
-      if (host_checking || running_in_test_harness)
-	continue;
-
-      save_sender = sender_address;
-      sender_address = recipient;
-      send_status = moan_to_sender(ERRMESS_DMARC_FORENSIC, eblock,
-				   header_list, message_file, FALSE);
-      sender_address = save_sender;
-      if (!send_status)
-	log_write(0, LOG_MAIN|LOG_PANIC,
-	  "failure to send DMARC forensic report to %s", recipient);
-      }
-    }
 }
 
 uschar *

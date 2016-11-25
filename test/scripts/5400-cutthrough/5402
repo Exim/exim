@@ -1,13 +1,33 @@
-# cutthrough_delivery with MAIL SIZE=
+# cutthrough_delivery vs. recipient-verify cache entry
 need_ipv4
-munge loopback
+#
+# Set up callout cache
 #
 server PORT_S
 220 ESMTP
 EHLO
-250-OK
-250 SIZE 65536
-MAIL FROM:<fred@myhost.test.ex> SIZE=1123
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+QUIT
+250 OK
+****
+exim -bs -odf
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<dest@domain.com>
+QUIT
+****
+#
+# Send message with cutthrough
+#
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
 250 Sender OK
 RCPT TO:
 250 Recipient OK
@@ -18,13 +38,12 @@ DATA
 QUIT
 250 OK
 ****
-exim -bs
+exim -DOPT=CUTTHROUGH -bs -odf
 EHLO myhost.test.ex
-MAIL FROM:<fred@myhost.test.ex> SIZE=99
-RCPT TO:<userx@domain.com>
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<dest@domain.com>
 DATA
 
 .
 QUIT
 ****
-# End

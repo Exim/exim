@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 Exim configuration error in line 15 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 10 of TESTSUITE/test-config:
   extra characters follow string value for relay_hosts

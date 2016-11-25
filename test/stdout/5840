@@ -1,3 +1,6 @@
+### TLSA (3 1 1)
+### TLSA (3 1 2)
+### Recipient callout
 
 **** SMTP testing session as if from host 127.0.0.1
 **** but without any ident (RFC 1413) callback.
@@ -7,3 +10,20 @@
 250 OK
 250 Accepted
 421 myhost.test.ex lost input connection
+### TLSA (2 0 1)
+### A server with a nonverifying cert and no TLSA
+### A server with a verifying cert and no TLSA
+### A server with two MXs for which both TLSA lookups return defer
+### A server lacking a TLSA, required
+### A server lacking a TLSA, requested only
+
+******** SERVER ********
+### TLSA (3 1 1)
+### TLSA (3 1 2)
+### Recipient callout
+### TLSA (2 0 1)
+### A server with a nonverifying cert and no TLSA
+### A server with a verifying cert and no TLSA
+### A server with two MXs for which both TLSA lookups return defer
+### A server lacking a TLSA, required
+### A server lacking a TLSA, requested only

@@ -21,10 +21,12 @@ typedef struct {
   uschar *serialize_hosts;
   uschar *hosts_try_auth;
   uschar *hosts_require_auth;
+  uschar *hosts_try_chunking;
 #ifdef EXPERIMENTAL_DANE
   uschar *hosts_try_dane;
   uschar *hosts_require_dane;
 #endif
+  uschar *hosts_try_fastopen;
 #ifndef DISABLE_PRDR
   uschar *hosts_try_prdr;
 #endif
@@ -67,9 +69,6 @@ typedef struct {
   uschar *tls_crl;
   uschar *tls_privatekey;
   uschar *tls_require_ciphers;
-  uschar *gnutls_require_kx;
-  uschar *gnutls_require_mac;
-  uschar *gnutls_require_proto;
   uschar *tls_sni;
   uschar *tls_verify_certificates;
   int     tls_dh_min_bits;
@@ -79,12 +78,7 @@ typedef struct {
   uschar *tls_verify_cert_hostnames;
 #endif
 #ifndef DISABLE_DKIM
-  uschar *dkim_domain;
-  uschar *dkim_private_key;
-  uschar *dkim_selector;
-  uschar *dkim_canon;
-  uschar *dkim_sign_headers;
-  uschar *dkim_strict;
+  struct ob_dkim dkim;
 #endif
 } smtp_transport_options_block;
 

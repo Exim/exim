@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= sender@dom U=root P=local-bsmtp S=sss for usery@testhost.test.ex userz@testhost.test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@testhost.test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] PRDR K C="250 first rcpt was good"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> userz@testhost.test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] PRDR K C="250 second rcpt was good"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004, 2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004, 2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 #ifdef WITH_CONTENT_SCAN
 
@@ -26,16 +28,6 @@ typedef struct mime_header {
   int       namelen;
   uschar ** value;
 } mime_header;
-
-static mime_header mime_header_list[] = {
-  { US"content-type:",              13, &mime_content_type },
-  { US"content-disposition:",       20, &mime_content_disposition },
-  { US"content-transfer-encoding:", 26, &mime_content_transfer_encoding },
-  { US"content-id:",                11, &mime_content_id },
-  { US"content-description:",       20, &mime_content_description }
-};
-
-
 
 
 typedef struct mime_parameter {

@@ -2316,7 +2316,7 @@ A0310: If a DNS lookup returns no MXs, Exim looks for an address record, in
 
 
 Q0311: When a DNS lookup for MX records fails to complete, why doesn't Exim
-       send the messsage to the host defined by the A record?
+       send the message to the host defined by the A record?
 
 A0311: The RFCs are quite clear on this. Only if it is known that there are no
        MX records is an MTA allowed to make use of the A record. When an MX

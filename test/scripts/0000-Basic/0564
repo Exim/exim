@@ -1,9 +1,9 @@
 # testing -bw inetd wait mode
 need_ipv4
 #
-exim -DSERVER=wait:PORT_D -bw
+exim -DSERVER=wait:PORT_DYNAMIC -bw
 ****
-client 127.0.0.1 PORT_D
+client 127.0.0.1 PORT_DYNAMIC
 ??? 220
 ehlo abcd
 ??? 250-

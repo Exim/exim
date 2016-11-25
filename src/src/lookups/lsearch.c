@@ -258,7 +258,7 @@ for (last_was_eol = TRUE;
   ptr = 0;
   yield = store_get(size);
   if (*s != 0)
-    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+    yield = string_cat(yield, &size, &ptr, s);
 
   /* Now handle continuations */
 
@@ -294,7 +294,7 @@ for (last_was_eol = TRUE;
 
     /* Join a physical or logical line continuation onto the result string. */
 
-    yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+    yield = string_cat(yield, &size, &ptr, s);
     }
 
   yield[ptr] = 0;

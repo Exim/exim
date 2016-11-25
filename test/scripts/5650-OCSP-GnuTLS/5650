@@ -6,7 +6,7 @@ exim -z '1: Server sends good staple on request'
 ****
 #
 exim -bd -oX PORT_D -DSERVER=server \
- -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+ -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
 client-gnutls \
  -ocsp aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem \
@@ -36,7 +36,7 @@ exim -z '2: Server does not staple an outdated response'
 ****
 #
 exim -bd -oX PORT_D -DSERVER=server \
- -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
+ -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
 ****
 # XXX test sequence might not be quite right; this is for a server refusal
 # and we're expecting a client refusal.
@@ -62,7 +62,7 @@ exim -z '3: Server does not staple a response for a revoked cert'
 ****
 #
 exim -bd -oX PORT_D -DSERVER=server \
- -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
+ -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
 ****
 client-gnutls \
  -ocsp aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem \
@@ -88,7 +88,7 @@ exim -z '4: Connection functions when server is prepared to staple but client do
 ****
 #
 exim -bd -oX PORT_D -DSERVER=server \
- -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+ -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
 #
 client-gnutls \

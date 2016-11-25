@@ -57,6 +57,8 @@ no_hosts_override
 no_hosts_randomize
 hosts_require_auth = 
 hosts_try_auth = 
+hosts_try_chunking = *
+hosts_try_fastopen = 
 hosts_try_prdr = *
 interface = ip4.ip4.ip4.ip4
 keepalive
@@ -68,18 +70,25 @@ protocol = smtp
 retry_include_ip_address
 serialize_hosts = 
 size_addition = 1024
-socks_proxy = 127.0.0.1 port=1225
 
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
 OPT =
+# 5 "TESTSUITE/test-config"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/tls_conf_prefix"
 exim_path = TESTSUITE/eximdir/exim
-hide host_lookup_order = bydns
-primary_hostname = myhost.test.ex
+keep_environment =
+host_lookup_order = bydns
 spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 5 "TESTSUITE/test-config"
+primary_hostname = myhost.test.ex
 log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept
@@ -91,7 +100,7 @@ begin routers
     route_list = * 127.0.0.1
     self = send
     transport = my_smtp
-    debug_print = router_name <$router_name>
+    hide debug_print = router_name <$router_name>
     no_more
 
 begin transports
@@ -100,5 +109,39 @@ begin transports
     driver = smtp
     interface = ip4.ip4.ip4.ip4
     port = 1224
-    hide socks_proxy = 127.0.0.1 port=1225
     debug_print = transport_name <$transport_name>
+# Exim Configuration (X)
+# 1 "TESTSUITE/test-config"
+OPT =
+# 5 "TESTSUITE/test-config"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/tls_conf_prefix"
+exim_path = TESTSUITE/eximdir/exim
+keep_environment =
+host_lookup_order = bydns
+spool_directory = TESTSUITE/spool
+log_file_path = TESTSUITE/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 5 "TESTSUITE/test-config"
+primary_hostname = myhost.test.ex
+log_selector = +outgoing_port
+domainlist local_domains = test.ex : *.test.ex
+acl_smtp_rcpt = accept
+begin routers
+my_main_router:
+driver = manualroute
+route_list = * 127.0.0.1
+self = send
+transport = my_smtp
+hide debug_print = router_name <$router_name>
+no_more
+begin transports
+my_smtp:
+driver = smtp
+interface = ip4.ip4.ip4.ip4
+port = 1224
+debug_print = transport_name <$transport_name>

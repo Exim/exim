@@ -2,12 +2,12 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 1995 - 2015 */
+/* Copyright (c) University of Cambridge, 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 void    dkim_exim_init(void);
-uschar *dkim_exim_sign(int, uschar *, const uschar *, uschar *, uschar *, uschar *);
-void    dkim_exim_verify_init(void);
+uschar *dkim_exim_sign(int, struct ob_dkim *);
+void    dkim_exim_verify_init(BOOL);
 void    dkim_exim_verify_feed(uschar *, int);
 void    dkim_exim_verify_finish(void);
 void    dkim_exim_acl_setup(uschar *);

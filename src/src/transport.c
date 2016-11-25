@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* General functions concerned with transportation, and generic options for all
@@ -108,9 +108,22 @@ optionlist optionlist_transports[] = {
                  (void *)offsetof(transport_instance, uid) }
 };
 
-int optionlist_transports_size =
-  sizeof(optionlist_transports)/sizeof(optionlist);
+int optionlist_transports_size = nelem(optionlist_transports);
 
+
+void
+readconf_options_transports(void)
+{
+struct transport_info * ti;
+
+readconf_options_from_list(optionlist_transports, nelem(optionlist_transports), US"TP");
+
+for (ti = transports_available; ti->driver_name[0]; ti++)
+  {
+  macro_create(string_sprintf("_DRVR_TPT_%T", ti->driver_name), US"y", FALSE, TRUE);
+  readconf_options_from_list(ti->options, (unsigned)*ti->options_count, ti->driver_name);
+  }
+} 
 
 /*************************************************
 *             Initialize transport list           *
@@ -139,14 +152,11 @@ readconf_driver_init(US"transport",
 /* Now scan the configured transports and check inconsistencies. A shadow
 transport is permitted only for local transports. */
 
-for (t = transports; t != NULL; t = t->next)
+for (t = transports; t; t = t->next)
   {
-  if (!t->info->local)
-    {
-    if (t->shadow != NULL)
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-        "shadow transport not allowed on non-local transport %s", t->name);
-    }
+  if (!t->info->local && t->shadow)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+      "shadow transport not allowed on non-local transport %s", t->name);
 
   if (t->body_only && t->headers_only)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
@@ -236,10 +246,12 @@ for (i = 0; i < 100; i++)
   else
     {
     alarm(local_timeout);
-    #ifdef SUPPORT_TLS
-    if (tls_out.active == fd) rc = tls_write(FALSE, block, len); else
-    #endif
-    rc = write(fd, block, len);
+#ifdef SUPPORT_TLS
+    if (tls_out.active == fd)
+      rc = tls_write(FALSE, block, len);
+    else
+#endif
+      rc = write(fd, block, len);
     save_errno = errno;
     local_timeout = alarm(0);
     if (sigalrm_seen)
@@ -357,7 +369,7 @@ Arguments:
   fd         file descript to write to
   chunk      pointer to data to write
   len        length of data to write
-  usr_crlf   TRUE if CR LF is wanted at the end of each line
+  tctx       transport context - processing to be done during output
 
 In addition, the static nl_xxx variables must be set as required.
 
@@ -365,11 +377,11 @@ Returns:     TRUE on success, FALSE on failure (with errno preserved)
 */
 
 static BOOL
-write_chunk(int fd, uschar *chunk, int len, BOOL use_crlf)
+write_chunk(int fd, transport_ctx * tctx, uschar *chunk, int len)
 {
 uschar *start = chunk;
 uschar *end = chunk + len;
-register uschar *ptr;
+uschar *ptr;
 int mlen = DELIVER_OUT_BUFFER_SIZE - nl_escape_length - 2;
 
 /* The assumption is made that the check string will never stretch over move
@@ -408,17 +420,30 @@ possible. */
 
 for (ptr = start; ptr < end; ptr++)
   {
-  register int ch;
+  int ch, len;
 
   /* Flush the buffer if it has reached the threshold - we want to leave enough
   room for the next uschar, plus a possible extra CR for an LF, plus the escape
   string. */
 
-  if (chunk_ptr - deliver_out_buffer > mlen)
+  if ((len = chunk_ptr - deliver_out_buffer) > mlen)
     {
-    if (!transport_write_block(fd, deliver_out_buffer,
-          chunk_ptr - deliver_out_buffer))
-      return FALSE;
+    DEBUG(D_transport) debug_printf("flushing headers buffer\n");
+
+    /* If CHUNKING, prefix with BDAT (size) NON-LAST.  Also, reap responses
+    from previous SMTP commands. */
+
+    if (tctx &&  tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
+      {
+      if (  tctx->chunk_cb(fd, tctx, (unsigned)len, 0) != OK
+	 || !transport_write_block(fd, deliver_out_buffer, len)
+	 || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
+	 )
+	return FALSE;
+      }
+    else
+      if (!transport_write_block(fd, deliver_out_buffer, len))
+	return FALSE;
     chunk_ptr = deliver_out_buffer;
     }
 
@@ -428,7 +453,7 @@ for (ptr = start; ptr < end; ptr++)
 
     /* Insert CR before NL if required */
 
-    if (use_crlf) *chunk_ptr++ = '\r';
+    if (tctx  &&  tctx->options & topt_use_crlf) *chunk_ptr++ = '\r';
     *chunk_ptr++ = '\n';
     transport_newlines++;
 
@@ -545,14 +570,14 @@ Arguments:
   pdlist    address of anchor of the list of processed addresses
   first     TRUE if this is the first address; set it FALSE afterwards
   fd        the file descriptor to write to
-  use_crlf  to be passed on to write_chunk()
+  tctx      transport context - processing to be done during output
 
 Returns:    FALSE if writing failed
 */
 
 static BOOL
 write_env_to(address_item *p, struct aci **pplist, struct aci **pdlist,
-  BOOL *first, int fd, BOOL use_crlf)
+  BOOL *first, int fd, transport_ctx * tctx)
 {
 address_item *pp;
 struct aci *ppp;
@@ -560,8 +585,7 @@ struct aci *ppp;
 /* Do nothing if we have already handled this address. If not, remember it
 so that we don't handle it again. */
 
-for (ppp = *pdlist; ppp != NULL; ppp = ppp->next)
-  { if (p == ppp->ptr) return TRUE; }
+for (ppp = *pdlist; ppp; ppp = ppp->next) if (p == ppp->ptr) return TRUE;
 
 ppp = store_get(sizeof(struct aci));
 ppp->next = *pdlist;
@@ -573,19 +597,17 @@ ppp->ptr = p;
 for (pp = p;; pp = pp->parent)
   {
   address_item *dup;
-  for (dup = addr_duplicate; dup != NULL; dup = dup->next)
-    {
-    if (dup->dupof != pp) continue;   /* Not a dup of our address */
-    if (!write_env_to(dup, pplist, pdlist, first, fd, use_crlf)) return FALSE;
-    }
-  if (pp->parent == NULL) break;
+  for (dup = addr_duplicate; dup; dup = dup->next)
+    if (dup->dupof == pp)   /* a dup of our address */
+      if (!write_env_to(dup, pplist, pdlist, first, fd, tctx))
+	return FALSE;
+  if (!pp->parent) break;
   }
 
 /* Check to see if we have already output the progenitor. */
 
-for (ppp = *pplist; ppp != NULL; ppp = ppp->next)
-  { if (pp == ppp->ptr) break; }
-if (ppp != NULL) return TRUE;
+for (ppp = *pplist; ppp; ppp = ppp->next) if (pp == ppp->ptr) break;
+if (ppp) return TRUE;
 
 /* Remember what we have output, and output it. */
 
@@ -594,9 +616,9 @@ ppp->next = *pplist;
 *pplist = ppp;
 ppp->ptr = pp;
 
-if (!(*first) && !write_chunk(fd, US",\n ", 3, use_crlf)) return FALSE;
+if (!*first && !write_chunk(fd, tctx, US",\n ", 3)) return FALSE;
 *first = FALSE;
-return write_chunk(fd, pp->address, Ustrlen(pp->address), use_crlf);
+return write_chunk(fd, tctx, pp->address, Ustrlen(pp->address));
 }
 
 
@@ -611,19 +633,19 @@ Arguments:
   addr                  (chain of) addresses (for extra headers), or NULL;
                           only the first address is used
   fd                    file descriptor to write the message to
-  sendfn		function for output
-  use_crlf		turn NL into CR LF
-  rewrite_rules         chain of header rewriting rules
-  rewrite_existflags    flags for the rewriting rules
+  tctx                  transport context
+  sendfn		function for output (transport or verify)
 
 Returns:                TRUE on success; FALSE on failure.
 */
 BOOL
-transport_headers_send(address_item *addr, int fd, uschar *add_headers, uschar *remove_headers,
-  BOOL (*sendfn)(int fd, uschar * s, int len, BOOL use_crlf),
-  BOOL use_crlf, rewrite_rule *rewrite_rules, int rewrite_existflags)
+transport_headers_send(int fd, transport_ctx * tctx,
+  BOOL (*sendfn)(int fd, transport_ctx * tctx, uschar * s, int len))
 {
 header_line *h;
+const uschar *list;
+transport_instance * tblock = tctx ? tctx->tblock : NULL;
+address_item * addr = tctx ? tctx->addr : NULL;
 
 /* Then the message's headers. Don't write any that are flagged as "old";
 that means they were rewritten, or are a record of envelope rewriting, or
@@ -632,13 +654,12 @@ match any entries therein.  It is a colon-sep list; expand the items
 separately and squash any empty ones.
 Then check addr->prop.remove_headers too, provided that addr is not NULL. */
 
-for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
+for (h = header_list; h; h = h->next) if (h->type != htype_old)
   {
   int i;
-  const uschar *list = remove_headers;
-
   BOOL include_header = TRUE;
 
+  list = tblock ? tblock->remove_headers : NULL;
   for (i = 0; i < 2; i++)    /* For remove_headers && addr->prop.remove_headers */
     {
     if (list)
@@ -655,15 +676,15 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
 	    errno = ERRNO_CHHEADER_FAIL;
 	    return FALSE;
 	    }
-	len = Ustrlen(s);
+	len = s ? Ustrlen(s) : 0;
 	if (strncmpic(h->text, s, len) != 0) continue;
 	ss = h->text + len;
 	while (*ss == ' ' || *ss == '\t') ss++;
 	if (*ss == ':') break;
 	}
-      if (s != NULL) { include_header = FALSE; break; }
+      if (s) { include_header = FALSE; break; }
       }
-    if (addr != NULL) list = addr->prop.remove_headers;
+    if (addr) list = addr->prop.remove_headers;
     }
 
   /* If this header is to be output, try to rewrite it if there are rewriting
@@ -671,14 +692,15 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
 
   if (include_header)
     {
-    if (rewrite_rules)
+    if (tblock && tblock->rewrite_rules)
       {
       void *reset_point = store_get(0);
       header_line *hh;
 
-      if ((hh = rewrite_header(h, NULL, NULL, rewrite_rules, rewrite_existflags, FALSE)))
+      if ((hh = rewrite_header(h, NULL, NULL, tblock->rewrite_rules,
+		  tblock->rewrite_existflags, FALSE)))
 	{
-	if (!sendfn(fd, hh->text, hh->slen, use_crlf)) return FALSE;
+	if (!sendfn(fd, tctx, hh->text, hh->slen)) return FALSE;
 	store_reset(reset_point);
 	continue;     /* With the next header line */
 	}
@@ -686,7 +708,7 @@ for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
 
     /* Either no rewriting rules, or it didn't get rewritten */
 
-    if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+    if (!sendfn(fd, tctx, h->text, h->slen)) return FALSE;
     }
 
   /* Header removed */
@@ -714,20 +736,18 @@ if (addr)
   header_line *hprev = addr->prop.extra_headers;
   header_line *hnext;
   for (i = 0; i < 2; i++)
-    {
-    for (h = hprev, hprev = NULL; h != NULL; h = hnext)
+    for (h = hprev, hprev = NULL; h; h = hnext)
       {
       hnext = h->next;
       h->next = hprev;
       hprev = h;
       if (i == 1)
 	{
-	if (!sendfn(fd, h->text, h->slen, use_crlf)) return FALSE;
+	if (!sendfn(fd, tctx, h->text, h->slen)) return FALSE;
 	DEBUG(D_transport)
 	  debug_printf("added header line(s):\n%s---\n", h->text);
 	}
       }
-    }
   }
 
 /* If a string containing additional headers exists it is a newline-sep
@@ -737,24 +757,19 @@ up any other headers. An empty string or a forced expansion failure are
 noops. An added header string from a transport may not end with a newline;
 add one if it does not. */
 
-if (add_headers)
+if (tblock && (list = CUS tblock->add_headers))
   {
   int sep = '\n';
   uschar * s;
 
-  while ((s = string_nextinlist(CUSS &add_headers, &sep, NULL, 0)))
-    if (!(s = expand_string(s)))
-      {
-      if (!expand_string_forcedfail)
-	{ errno = ERRNO_CHHEADER_FAIL; return FALSE; }
-      }
-    else
+  while ((s = string_nextinlist(&list, &sep, NULL, 0)))
+    if ((s = expand_string(s)))
       {
       int len = Ustrlen(s);
       if (len > 0)
 	{
-	if (!sendfn(fd, s, len, use_crlf)) return FALSE;
-	if (s[len-1] != '\n' && !sendfn(fd, US"\n", 1, use_crlf))
+	if (!sendfn(fd, tctx, s, len)) return FALSE;
+	if (s[len-1] != '\n' && !sendfn(fd, tctx, US"\n", 1))
 	  return FALSE;
 	DEBUG(D_transport)
 	  {
@@ -764,11 +779,13 @@ if (add_headers)
 	  }
 	}
       }
+    else if (!expand_string_forcedfail)
+      { errno = ERRNO_CHHEADER_FAIL; return FALSE; }
   }
 
 /* Separate headers from body with a blank line */
 
-return sendfn(fd, US"\n", 1, use_crlf);
+return sendfn(fd, tctx, US"\n", 1);
 }
 
 
@@ -801,30 +818,32 @@ can include timeouts for certain transports, which are requested by setting
 transport_write_timeout non-zero.
 
 Arguments:
-  addr                  (chain of) addresses (for extra headers), or NULL;
-                          only the first address is used
   fd                    file descriptor to write the message to
-  options               bit-wise options:
-    add_return_path       if TRUE, add a "return-path" header
-    add_envelope_to       if TRUE, add a "envelope-to" header
-    add_delivery_date     if TRUE, add a "delivery-date" header
-    use_crlf              if TRUE, turn NL into CR LF
-    end_dot               if TRUE, send a terminating "." line at the end
-    no_headers            if TRUE, omit the headers
-    no_body               if TRUE, omit the body
-  size_limit            if > 0, this is a limit to the size of message written;
-                          it is used when returning messages to their senders,
-                          and is approximate rather than exact, owing to chunk
-                          buffering
-  add_headers           a string containing one or more headers to add; it is
-                          expanded, and must be in correct RFC 822 format as
-                          it is transmitted verbatim; NULL => no additions,
-                          and so does empty string or forced expansion fail
-  remove_headers        a colon-separated list of headers to remove, or NULL
-  check_string          a string to check for at the start of lines, or NULL
-  escape_string         a string to insert in front of any check string
-  rewrite_rules         chain of header rewriting rules
-  rewrite_existflags    flags for the rewriting rules
+  tctx
+    addr                (chain of) addresses (for extra headers), or NULL;
+                          only the first address is used
+    tblock          	optional transport instance block (NULL signifies NULL/0):
+      add_headers           a string containing one or more headers to add; it is
+                            expanded, and must be in correct RFC 822 format as
+                            it is transmitted verbatim; NULL => no additions,
+                            and so does empty string or forced expansion fail
+      remove_headers        a colon-separated list of headers to remove, or NULL
+      rewrite_rules         chain of header rewriting rules
+      rewrite_existflags    flags for the rewriting rules
+    options               bit-wise options:
+      add_return_path       if TRUE, add a "return-path" header
+      add_envelope_to       if TRUE, add a "envelope-to" header
+      add_delivery_date     if TRUE, add a "delivery-date" header
+      use_crlf              if TRUE, turn NL into CR LF
+      end_dot               if TRUE, send a terminating "." line at the end
+      no_headers            if TRUE, omit the headers
+      no_body               if TRUE, omit the body
+    check_string          a string to check for at the start of lines, or NULL
+    escape_string         a string to insert in front of any check string
+  size_limit              if > 0, this is a limit to the size of message written;
+                            it is used when returning messages to their senders,
+                            and is approximate rather than exact, owing to chunk
+                            buffering
 
 Returns:                TRUE on success; FALSE (with errno) on failure.
                         In addition, the global variable transport_count
@@ -832,13 +851,9 @@ Returns:                TRUE on success; FALSE (with errno) on failure.
 */
 
 static BOOL
-internal_transport_write_message(address_item *addr, int fd, int options,
-  int size_limit, uschar *add_headers, uschar *remove_headers, uschar *check_string,
-  uschar *escape_string, rewrite_rule *rewrite_rules, int rewrite_existflags)
+internal_transport_write_message(int fd, transport_ctx * tctx, int size_limit)
 {
-int written = 0;
 int len;
-BOOL use_crlf  = (options & topt_use_crlf)  != 0;
 
 /* Initialize pointer in output buffer. */
 
@@ -847,39 +862,41 @@ chunk_ptr = deliver_out_buffer;
 /* Set up the data for start-of-line data checking and escaping */
 
 nl_partial_match = -1;
-if (check_string != NULL && escape_string != NULL)
+if (tctx->check_string && tctx->escape_string)
   {
-  nl_check = check_string;
+  nl_check = tctx->check_string;
   nl_check_length = Ustrlen(nl_check);
-  nl_escape = escape_string;
+  nl_escape = tctx->escape_string;
   nl_escape_length = Ustrlen(nl_escape);
   }
-else nl_check_length = nl_escape_length = 0;
+else
+  nl_check_length = nl_escape_length = 0;
 
 /* Whether the escaping mechanism is applied to headers or not is controlled by
 an option (set for SMTP, not otherwise). Negate the length if not wanted till
 after the headers. */
 
-if ((options & topt_escape_headers) == 0) nl_check_length = -nl_check_length;
+if (!(tctx->options & topt_escape_headers))
+  nl_check_length = -nl_check_length;
 
 /* Write the headers if required, including any that have to be added. If there
 are header rewriting rules, apply them. */
 
-if ((options & topt_no_headers) == 0)
+if (!(tctx->options & topt_no_headers))
   {
   /* Add return-path: if requested. */
 
-  if ((options & topt_add_return_path) != 0)
+  if (tctx->options & topt_add_return_path)
     {
     uschar buffer[ADDRESS_MAXLENGTH + 20];
-    sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
+    int n = sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
       return_path);
-    if (!write_chunk(fd, buffer, Ustrlen(buffer), use_crlf)) return FALSE;
+    if (!write_chunk(fd, tctx, buffer, n)) return FALSE;
     }
 
   /* Add envelope-to: if requested */
 
-  if ((options & topt_add_envelope_to) != 0)
+  if (tctx->options & topt_add_envelope_to)
     {
     BOOL first = TRUE;
     address_item *p;
@@ -887,30 +904,29 @@ if ((options & topt_no_headers) == 0)
     struct aci *dlist = NULL;
     void *reset_point = store_get(0);
 
-    if (!write_chunk(fd, US"Envelope-to: ", 13, use_crlf)) return FALSE;
+    if (!write_chunk(fd, tctx, US"Envelope-to: ", 13)) return FALSE;
 
     /* Pick up from all the addresses. The plist and dlist variables are
     anchors for lists of addresses already handled; they have to be defined at
     this level becuase write_env_to() calls itself recursively. */
 
-    for (p = addr; p != NULL; p = p->next)
-      {
-      if (!write_env_to(p, &plist, &dlist, &first, fd, use_crlf)) return FALSE;
-      }
+    for (p = tctx->addr; p; p = p->next)
+      if (!write_env_to(p, &plist, &dlist, &first, fd, tctx))
+	return FALSE;
 
     /* Add a final newline and reset the store used for tracking duplicates */
 
-    if (!write_chunk(fd, US"\n", 1, use_crlf)) return FALSE;
+    if (!write_chunk(fd, tctx, US"\n", 1)) return FALSE;
     store_reset(reset_point);
     }
 
   /* Add delivery-date: if requested. */
 
-  if ((options & topt_add_delivery_date) != 0)
+  if (tctx->options & topt_add_delivery_date)
     {
     uschar buffer[100];
-    sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
-    if (!write_chunk(fd, buffer, Ustrlen(buffer), use_crlf)) return FALSE;
+    int n = sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
+    if (!write_chunk(fd, tctx, buffer, n)) return FALSE;
     }
 
   /* Then the message's headers. Don't write any that are flagged as "old";
@@ -918,9 +934,66 @@ if ((options & topt_no_headers) == 0)
   were removed (e.g. Bcc). If remove_headers is not null, skip any headers that
   match any entries therein. Then check addr->prop.remove_headers too, provided that
   addr is not NULL. */
-  if (!transport_headers_send(addr, fd, add_headers, remove_headers, &write_chunk,
-	use_crlf, rewrite_rules, rewrite_existflags))
+
+  if (!transport_headers_send(fd, tctx, &write_chunk))
     return FALSE;
+  }
+
+/* When doing RFC3030 CHUNKING output, work out how much data would be in a
+last-BDAT, consisting of the current write_chunk() output buffer fill
+(optimally, all of the headers - but it does not matter if we already had to
+flush that buffer with non-last BDAT prependix) plus the amount of body data
+(as expanded for CRLF lines).  Then create and write BDAT(s), and ensure
+that further use of write_chunk() will not prepend BDATs.
+The first BDAT written will also first flush any outstanding MAIL and RCPT
+commands which were buffered thans to PIPELINING.
+Commands go out (using a send()) from a different buffer to data (using a
+write()).  They might not end up in the same TCP segment, which is
+suboptimal. */
+
+if (tctx->options & topt_use_bdat)
+  {
+  off_t fsize;
+  int hsize, size = 0;
+
+  if ((hsize = chunk_ptr - deliver_out_buffer) < 0)
+    hsize = 0;
+  if (!(tctx->options & topt_no_body))
+    {
+    if ((fsize = lseek(deliver_datafile, 0, SEEK_END)) < 0) return FALSE;
+    fsize -= SPOOL_DATA_START_OFFSET;
+    if (size_limit > 0  &&  fsize > size_limit)
+      fsize = size_limit;
+    size = hsize + fsize;
+    if (tctx->options & topt_use_crlf)
+      size += body_linecount;	/* account for CRLF-expansion */
+    }
+
+  /* If the message is large, emit first a non-LAST chunk with just the
+  headers, and reap the command responses.  This lets us error out early
+  on RCPT rejects rather than sending megabytes of data.  Include headers
+  on the assumption they are cheap enough and some clever implementations
+  might errorcheck them too, on-the-fly, and reject that chunk. */
+
+  if (size > DELIVER_OUT_BUFFER_SIZE && hsize > 0)
+    {
+    DEBUG(D_transport)
+      debug_printf("sending small initial BDAT; hssize=%d\n", hsize);
+    if (  tctx->chunk_cb(fd, tctx, hsize, 0) != OK
+       || !transport_write_block(fd, deliver_out_buffer, hsize)
+       || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
+       )
+      return FALSE;
+    chunk_ptr = deliver_out_buffer;
+    size -= hsize;
+    }
+
+  /* Emit a LAST datachunk command. */
+
+  if (tctx->chunk_cb(fd, tctx, size, tc_chunk_last) != OK)
+    return FALSE;
+
+  tctx->options &= ~topt_use_bdat;
   }
 
 /* If the body is required, ensure that the data for check strings (formerly
@@ -929,24 +1002,20 @@ negative in cases where it isn't to apply to the headers). Then ensure the body
 is positioned at the start of its file (following the message id), then write
 it, applying the size limit if required. */
 
-if ((options & topt_no_body) == 0)
+if (!(tctx->options & topt_no_body))
   {
+  int size = size_limit;
+
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
-  lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET);
-  while ((len = read(deliver_datafile, deliver_in_buffer,
-           DELIVER_IN_BUFFER_SIZE)) > 0)
+  if (lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET) < 0)
+    return FALSE;
+  while (  (len = MAX(DELIVER_IN_BUFFER_SIZE, size)) > 0
+	&& (len = read(deliver_datafile, deliver_in_buffer, len)) > 0)
     {
-    if (!write_chunk(fd, deliver_in_buffer, len, use_crlf)) return FALSE;
-    if (size_limit > 0)
-      {
-      written += len;
-      if (written > size_limit)
-        {
-        len = 0;    /* Pretend EOF */
-        break;
-        }
-      }
+    if (!write_chunk(fd, tctx, deliver_in_buffer, len))
+      return FALSE;
+    size -= len;
     }
 
   /* A read error on the body will have left len == -1 and errno set. */
@@ -960,7 +1029,7 @@ nl_check_length = nl_escape_length = 0;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
-if ((options & topt_end_dot) != 0 && !write_chunk(fd, US".\n", 2, use_crlf))
+if (tctx->options & topt_end_dot && !write_chunk(fd, tctx, US".\n", 2))
   return FALSE;
 
 /* Write out any remaining data in the buffer before returning. */
@@ -985,49 +1054,34 @@ return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
    signing the file, send the signed message down the original fd (or TLS fd).
 
 Arguments:
-  as for internal_transport_write_message() above, with additional arguments:
-   uschar *dkim_private_key  DKIM: The private key to use (filename or
-				    plain data)
-   uschar *dkim_domain       DKIM: The domain to use
-   uschar *dkim_selector     DKIM: The selector to use.
-   uschar *dkim_canon        DKIM: The canonalization scheme to use,
-				    "simple" or "relaxed"
-   uschar *dkim_strict       DKIM: What to do if signing fails:
-				  1/true  => throw error
-				  0/false => send anyway
-   uschar *dkim_sign_headers DKIM: List of headers that should be included
-				    in signature generation
+  as for internal_transport_write_message() above, with additional arguments
+  for DKIM.
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
 */
 
 BOOL
-dkim_transport_write_message(address_item *addr, int fd, int options,
-  int size_limit, uschar *add_headers, uschar *remove_headers,
-  uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
-  int rewrite_existflags, uschar *dkim_private_key, uschar *dkim_domain,
-  uschar *dkim_selector, uschar *dkim_canon, uschar *dkim_strict, uschar *dkim_sign_headers
-  )
+dkim_transport_write_message(int out_fd, transport_ctx * tctx,
+  struct ob_dkim * dkim)
 {
 int dkim_fd;
 int save_errno = 0;
 BOOL rc;
-uschar dkim_spool_name[256];
-char sbuf[2048];
+uschar * dkim_spool_name;
 int sread = 0;
 int wwritten = 0;
 uschar *dkim_signature = NULL;
+int siglen = 0;
+off_t k_file_size;
+int options;
 
 /* If we can't sign, just call the original function. */
 
-if (!(dkim_private_key && dkim_domain && dkim_selector))
-  return transport_write_message(addr, fd, options,
-	    size_limit, add_headers, remove_headers,
-	    check_string, escape_string, rewrite_rules,
-	    rewrite_existflags);
+if (!(dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector))
+  return transport_write_message(out_fd, tctx, 0);
 
-(void)string_format(dkim_spool_name, 256, "%s/input/%s/%s-%d-K",
-	spool_directory, message_subdir, message_id, (int)getpid());
+dkim_spool_name = spool_fname(US"input", message_subdir, message_id,
+		    string_sprintf("-%d-K", (int)getpid()));
 
 if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
   {
@@ -1037,12 +1091,13 @@ if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
   goto CLEANUP;
   }
 
-/* Call original function to write the -K file */
+/* Call original function to write the -K file; does the CRLF expansion
+(but, in the CHUNKING case, not dot-stuffing and dot-termination). */
 
-rc = transport_write_message(addr, dkim_fd, options,
-  size_limit, add_headers, remove_headers,
-  check_string, escape_string, rewrite_rules,
-  rewrite_existflags);
+options = tctx->options;
+tctx->options &= ~topt_use_bdat;
+rc = transport_write_message(dkim_fd, tctx, 0);
+tctx->options = options;
 
 /* Save error state. We must clean up before returning. */
 if (!rc)
@@ -1051,80 +1106,73 @@ if (!rc)
   goto CLEANUP;
   }
 
-if (dkim_private_key && dkim_domain && dkim_selector)
+/* Rewind file and feed it to the goats^W DKIM lib */
+dkim->dot_stuffed = !!(options & topt_end_dot);
+lseek(dkim_fd, 0, SEEK_SET);
+if ((dkim_signature = dkim_exim_sign(dkim_fd, dkim)))
+  siglen = Ustrlen(dkim_signature);
+else if (dkim->dkim_strict)
   {
-  /* Rewind file and feed it to the goats^W DKIM lib */
-  lseek(dkim_fd, 0, SEEK_SET);
-  dkim_signature = dkim_exim_sign(dkim_fd,
-				  dkim_private_key,
-				  dkim_domain,
-				  dkim_selector,
-				  dkim_canon,
-				  dkim_sign_headers);
-  if (!dkim_signature)
-    {
-    if (dkim_strict)
+  uschar *dkim_strict_result = expand_string(dkim->dkim_strict);
+  if (dkim_strict_result)
+    if ( (strcmpic(dkim->dkim_strict,US"1") == 0) ||
+	 (strcmpic(dkim->dkim_strict,US"true") == 0) )
       {
-      uschar *dkim_strict_result = expand_string(dkim_strict);
-      if (dkim_strict_result)
-	if ( (strcmpic(dkim_strict,US"1") == 0) ||
-	     (strcmpic(dkim_strict,US"true") == 0) )
-	  {
-	  /* Set errno to something halfway meaningful */
-	  save_errno = EACCES;
-	  log_write(0, LOG_MAIN, "DKIM: message could not be signed,"
-	    " and dkim_strict is set. Deferring message delivery.");
-	  rc = FALSE;
-	  goto CLEANUP;
-	  }
+      /* Set errno to something halfway meaningful */
+      save_errno = EACCES;
+      log_write(0, LOG_MAIN, "DKIM: message could not be signed,"
+	" and dkim_strict is set. Deferring message delivery.");
+      rc = FALSE;
+      goto CLEANUP;
       }
-    }
-  else
-    {
-    int siglen = Ustrlen(dkim_signature);
-    while(siglen > 0)
-      {
-#ifdef SUPPORT_TLS
-      wwritten = tls_out.active == fd
-	? tls_write(FALSE, dkim_signature, siglen)
-	: write(fd, dkim_signature, siglen);
-#else
-      wwritten = write(fd, dkim_signature, siglen);
-#endif
-      if (wwritten == -1)
-        {
-	/* error, bail out */
-	save_errno = errno;
-	rc = FALSE;
-	goto CLEANUP;
-	}
-      siglen -= wwritten;
-      dkim_signature += wwritten;
-      }
-    }
   }
+
+#ifndef HAVE_LINUX_SENDFILE
+if (options & topt_use_bdat)
+#endif
+  k_file_size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
+
+if (options & topt_use_bdat)
+  {
+
+  /* On big messages output a precursor chunk to get any pipelined
+  MAIL & RCPT commands flushed, then reap the responses so we can
+  error out on RCPT rejects before sending megabytes. */
+
+  if (siglen + k_file_size > DELIVER_OUT_BUFFER_SIZE && siglen > 0)
+    {
+    if (  tctx->chunk_cb(out_fd, tctx, siglen, 0) != OK
+       || !transport_write_block(out_fd, dkim_signature, siglen)
+       || tctx->chunk_cb(out_fd, tctx, 0, tc_reap_prev) != OK
+       )
+      goto err;
+    siglen = 0;
+    }
+
+  if (tctx->chunk_cb(out_fd, tctx, siglen + k_file_size, tc_chunk_last) != OK)
+    goto err;
+  }
+
+if(siglen > 0 && !transport_write_block(out_fd, dkim_signature, siglen))
+  goto err;
 
 #ifdef HAVE_LINUX_SENDFILE
 /* We can use sendfile() to shove the file contents
    to the socket. However only if we don't use TLS,
    as then there's another layer of indirection
    before the data finally hits the socket. */
-if (tls_out.active != fd)
+if (tls_out.active != out_fd)
   {
-  off_t size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
   ssize_t copied = 0;
   off_t offset = 0;
 
   /* Rewind file */
   lseek(dkim_fd, 0, SEEK_SET);
 
-  while(copied >= 0 && offset < size)
-    copied = sendfile(fd, dkim_fd, &offset, size - offset);
+  while(copied >= 0 && offset < k_file_size)
+    copied = sendfile(out_fd, dkim_fd, &offset, k_file_size - offset);
   if (copied < 0)
-    {
-    save_errno = errno;
-    rc = FALSE;
-    }
+    goto err;
   }
 else
 
@@ -1135,27 +1183,22 @@ else
   lseek(dkim_fd, 0, SEEK_SET);
 
   /* Send file down the original fd */
-  while((sread = read(dkim_fd, sbuf, 2048)) > 0)
+  while((sread = read(dkim_fd, deliver_out_buffer, DELIVER_OUT_BUFFER_SIZE)) >0)
     {
-    char *p = sbuf;
+    uschar * p = deliver_out_buffer;
     /* write the chunk */
 
     while (sread)
       {
 #ifdef SUPPORT_TLS
-      wwritten = tls_out.active == fd
-	? tls_write(FALSE, US p, sread)
-	: write(fd, p, sread);
+      wwritten = tls_out.active == out_fd
+	? tls_write(FALSE, p, sread)
+	: write(out_fd, CS p, sread);
 #else
-      wwritten = write(fd, p, sread);
+      wwritten = write(out_fd, CS p, sread);
 #endif
       if (wwritten == -1)
-	{
-	/* error, bail out */
-	save_errno = errno;
-	rc = FALSE;
-	goto CLEANUP;
-	}
+	goto err;
       p += wwritten;
       sread -= wwritten;
       }
@@ -1169,11 +1212,16 @@ else
   }
 
 CLEANUP:
-/* unlink -K file */
-(void)close(dkim_fd);
-Uunlink(dkim_spool_name);
-errno = save_errno;
-return rc;
+  /* unlink -K file */
+  (void)close(dkim_fd);
+  Uunlink(dkim_spool_name);
+  errno = save_errno;
+  return rc;
+
+err:
+  save_errno = errno;
+  rc = FALSE;
+  goto CLEANUP;
 }
 
 #endif
@@ -1190,6 +1238,7 @@ set up a filtering process, fork another process to call the internal function
 to write to the filter, and in this process just suck from the filter and write
 down the given fd. At the end, tidy up the pipes and the processes.
 
+XXX
 Arguments:     as for internal_transport_write_message() above
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
@@ -1197,16 +1246,15 @@ Returns:       TRUE on success; FALSE (with errno) for any failure
 */
 
 BOOL
-transport_write_message(address_item *addr, int fd, int options,
-  int size_limit, uschar *add_headers, uschar *remove_headers,
-  uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
-  int rewrite_existflags)
+transport_write_message(int fd, transport_ctx * tctx, int size_limit)
 {
-BOOL use_crlf;
 BOOL last_filter_was_NL = TRUE;
 int rc, len, yield, fd_read, fd_write, save_errno;
-int pfd[2];
+int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
+static transport_ctx dummy_tctx = {0};
+
+if (!tctx) tctx = &dummy_tctx;
 
 transport_filter_timed_out = FALSE;
 
@@ -1217,22 +1265,19 @@ if (  !transport_filter_argv
    || !*transport_filter_argv
    || !**transport_filter_argv
    )
-  return internal_transport_write_message(addr, fd, options, size_limit,
-    add_headers, remove_headers, check_string, escape_string,
-    rewrite_rules, rewrite_existflags);
+  return internal_transport_write_message(fd, tctx, size_limit);
 
 /* Otherwise the message must be written to a filter process and read back
 before being written to the incoming fd. First set up the special processing to
 be done during the copying. */
 
-use_crlf  = (options & topt_use_crlf) != 0;
 nl_partial_match = -1;
 
-if (check_string != NULL && escape_string != NULL)
+if (tctx->check_string && tctx->escape_string)
   {
-  nl_check = check_string;
+  nl_check = tctx->check_string;
   nl_check_length = Ustrlen(nl_check);
-  nl_escape = escape_string;
+  nl_escape = tctx->escape_string;
   nl_escape_length = Ustrlen(nl_escape);
   }
 else nl_check_length = nl_escape_length = 0;
@@ -1249,14 +1294,17 @@ save_errno = 0;
 yield = FALSE;
 write_pid = (pid_t)(-1);
 
-(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
-filter_pid = child_open(USS transport_filter_argv, NULL, 077,
- &fd_write, &fd_read, FALSE);
-(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) & ~FD_CLOEXEC);
+  {
+  int bits = fcntl(fd, F_GETFD);
+  (void)fcntl(fd, F_SETFD, bits | FD_CLOEXEC);
+  filter_pid = child_open(USS transport_filter_argv, NULL, 077,
+   &fd_write, &fd_read, FALSE);
+  (void)fcntl(fd, F_SETFD, bits & ~FD_CLOEXEC);
+  }
 if (filter_pid < 0) goto TIDY_UP;      /* errno set */
 
 DEBUG(D_transport)
-  debug_printf("process %d running as transport filter: write=%d read=%d\n",
+  debug_printf("process %d running as transport filter: fd_write=%d fd_read=%d\n",
     (int)filter_pid, fd_write, fd_read);
 
 /* Fork subprocess to write the message to the filter, and return the result
@@ -1270,16 +1318,18 @@ if ((write_pid = fork()) == 0)
   (void)close(fd_read);
   (void)close(pfd[pipe_read]);
   nl_check_length = nl_escape_length = 0;
-  rc = internal_transport_write_message(addr, fd_write,
-    (options & ~(topt_use_crlf | topt_end_dot)),
-    size_limit, add_headers, remove_headers, NULL, NULL,
-    rewrite_rules, rewrite_existflags);
+
+  tctx->check_string = tctx->escape_string = NULL;
+  tctx->options &= ~(topt_use_crlf | topt_end_dot | topt_use_bdat);
+
+  rc = internal_transport_write_message(fd_write, tctx, size_limit);
+
   save_errno = errno;
   if (  write(pfd[pipe_write], (void *)&rc, sizeof(BOOL))
         != sizeof(BOOL)
      || write(pfd[pipe_write], (void *)&save_errno, sizeof(int))
         != sizeof(int)
-     || write(pfd[pipe_write], (void *)&(addr->more_errno), sizeof(int))
+     || write(pfd[pipe_write], (void *)&tctx->addr->more_errno, sizeof(int))
         != sizeof(int)
      )
     rc = FALSE;	/* compiler quietening */
@@ -1339,7 +1389,7 @@ for (;;)
 
   if (len > 0)
     {
-    if (!write_chunk(fd, deliver_in_buffer, len, use_crlf)) goto TIDY_UP;
+    if (!write_chunk(fd, tctx, deliver_in_buffer, len)) goto TIDY_UP;
     last_filter_was_NL = (deliver_in_buffer[len-1] == '\n');
     }
 
@@ -1376,7 +1426,7 @@ if (filter_pid > 0 && (rc = child_close(filter_pid, 30)) != 0 && yield)
   {
   yield = FALSE;
   save_errno = ERRNO_FILTER_FAIL;
-  addr->more_errno = rc;
+  tctx->addr->more_errno = rc;
   DEBUG(D_transport) debug_printf("filter process returned %d\n", rc);
   }
 
@@ -1389,15 +1439,20 @@ if (write_pid > 0)
   {
   rc = child_close(write_pid, 30);
   if (yield)
-    {
     if (rc == 0)
       {
       BOOL ok;
-      int dummy = read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
-      if (!ok)
+      if (read(pfd[pipe_read], (void *)&ok, sizeof(BOOL)) != sizeof(BOOL))
+	{
+	DEBUG(D_transport)
+	  debug_printf("pipe read from writing process: %s\n", strerror(errno));
+	save_errno = ERRNO_FILTER_FAIL;
+        yield = FALSE;
+	}
+      else if (!ok)
         {
-        dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
-        dummy = read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
+	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
+        dummy = read(pfd[pipe_read], (void *)&(tctx->addr->more_errno), sizeof(int));
         yield = FALSE;
         }
       }
@@ -1405,10 +1460,9 @@ if (write_pid > 0)
       {
       yield = FALSE;
       save_errno = ERRNO_FILTER_FAIL;
-      addr->more_errno = rc;
+      tctx->addr->more_errno = rc;
       DEBUG(D_transport) debug_printf("writing process returned %d\n", rc);
       }
-    }
   }
 (void)close(pfd[pipe_read]);
 
@@ -1419,28 +1473,27 @@ filter was not NL, insert a NL to make the SMTP protocol work. */
 if (yield)
   {
   nl_check_length = nl_escape_length = 0;
-  if ((options & topt_end_dot) != 0 && (last_filter_was_NL?
-        !write_chunk(fd, US".\n", 2, use_crlf) :
-        !write_chunk(fd, US"\n.\n", 3, use_crlf)))
-    {
+  if (  tctx->options & topt_end_dot
+     && ( last_filter_was_NL
+        ? !write_chunk(fd, tctx, US".\n", 2)
+	: !write_chunk(fd, tctx, US"\n.\n", 3)
+     )  )
     yield = FALSE;
-    }
 
   /* Write out any remaining data in the buffer. */
 
   else
-    {
-    yield = (len = chunk_ptr - deliver_out_buffer) <= 0 ||
-      transport_write_block(fd, deliver_out_buffer, len);
-    }
+    yield = (len = chunk_ptr - deliver_out_buffer) <= 0
+	  || transport_write_block(fd, deliver_out_buffer, len);
   }
-else errno = save_errno;      /* From some earlier error */
+else
+  errno = save_errno;      /* From some earlier error */
 
 DEBUG(D_transport)
   {
   debug_printf("end of filtering transport writing: yield=%d\n", yield);
   if (!yield)
-    debug_printf("errno=%d more_errno=%d\n", errno, addr->more_errno);
+    debug_printf("errno=%d more_errno=%d\n", errno, tctx->addr->more_errno);
   }
 
 return yield;
@@ -1653,15 +1706,8 @@ open_db dbblock;
 open_db *dbm_file;
 uschar buffer[256];
 
-msgq_t      *msgq = NULL;
-int         msgq_count = 0;
-int         msgq_actual = 0;
 int         i;
-BOOL        bFound = FALSE;
-uschar      spool_dir [PATH_MAX];
-uschar      spool_file [PATH_MAX];
 struct stat statbuf;
-BOOL        bContinuation = FALSE;
 
 *more = FALSE;
 
@@ -1691,8 +1737,7 @@ if (dbm_file == NULL) return FALSE;
 
 /* See if there is a record for this host; if not, there's nothing to do. */
 
-host_record = dbfn_read(dbm_file, hostname);
-if (host_record == NULL)
+if (!(host_record = dbfn_read(dbm_file, hostname)))
   {
   dbfn_close(dbm_file);
   DEBUG(D_transport) debug_printf("no messages waiting for %s\n", hostname);
@@ -1719,15 +1764,19 @@ emptied, delete it and continue with any continuation records that may exist.
 but the 1 off will remain without it.  This code now allows me to SKIP over
 a message I do not want to send out on this run.  */
 
-sprintf(CS spool_dir, "%s/input/", spool_directory);
-
 host_length = host_record->count * MESSAGE_ID_LENGTH;
 
 while (1)
   {
+  msgq_t      *msgq;
+  int         msgq_count = 0;
+  int         msgq_actual = 0;
+  BOOL        bFound = FALSE;
+  BOOL        bContinuation = FALSE;
+
   /* create an array to read entire message queue into memory for processing  */
 
-  msgq = (msgq_t*) malloc(sizeof(msgq_t) * host_record->count);
+  msgq = store_malloc(sizeof(msgq_t) * host_record->count);
   msgq_count = host_record->count;
   msgq_actual = msgq_count;
 
@@ -1751,17 +1800,15 @@ while (1)
 
   /* now find the next acceptable message_id */
 
-  bFound = FALSE;
-
   for (i = msgq_count - 1; i >= 0; --i) if (msgq[i].bKeep)
     {
-    if (split_spool_directory)
-	sprintf(CS spool_file, "%s%c/%s-D",
-		      spool_dir, msgq[i].message_id[5], msgq[i].message_id);
-    else
-	sprintf(CS spool_file, "%s%s-D", spool_dir, msgq[i].message_id);
+    uschar subdir[2];
 
-    if (Ustat(spool_file, &statbuf) != 0)
+    subdir[0] = split_spool_directory ? msgq[i].message_id[5] : 0;
+    subdir[1] = 0;
+
+    if (Ustat(spool_fname(US"input", subdir, msgq[i].message_id, US"-D"),
+	      &statbuf) != 0)
       msgq[i].bKeep = FALSE;
     else if (!oicf_func || oicf_func(msgq[i].message_id, oicf_data))
       {
@@ -1778,8 +1825,7 @@ while (1)
       msgq_actual++;
 
   /* reassemble the host record, based on removed message ids, from in
-   * memory queue.
-   */
+  memory queue  */
 
   if (msgq_actual <= 0)
     {
@@ -1805,8 +1851,6 @@ while (1)
 
 /* Jeremy: check for a continuation record, this code I do not know how to
 test but the code should work */
-
-  bContinuation = FALSE;
 
   while (host_length <= 0)
     {
@@ -1838,8 +1882,11 @@ test but the code should work */
     bContinuation = TRUE;
     }
 
-  if (bFound)
+  if (bFound)		/* Usual exit from main loop */
+    {
+    store_free (msgq);
     break;
+    }
 
   /* If host_length <= 0 we have emptied a record and not found a good message,
   and there are no continuation records. Otherwise there is a continuation
@@ -1858,20 +1905,13 @@ test but the code should work */
 
   if (!bContinuation)
     {
-    Ustrcpy (new_message_id, message_id);
+    Ustrcpy(new_message_id, message_id);
     dbfn_close(dbm_file);
     return FALSE;
     }
-  }		/* we need to process a continuation record */
 
-/* clean up in memory queue */
-if (msgq)
-  {
-  free (msgq);
-  msgq = NULL;
-  msgq_count = 0;
-  msgq_actual = 0;
-  }
+  store_free(msgq);
+  }		/* we need to process a continuation record */
 
 /* Control gets here when an existing message has been encountered; its
 id is in new_message_id, and host_length is the revised length of the
@@ -1880,18 +1920,7 @@ record if required, close the database, and return TRUE. */
 
 if (host_length > 0)
   {
-  uschar  msg [MESSAGE_ID_LENGTH + 1];
-  int i;
-
   host_record->count = host_length/MESSAGE_ID_LENGTH;
-
-  /* rebuild the host_record->text */
-
-  for (i = 0; i < host_record->count; ++i)
-    {
-    Ustrncpy(msg, host_record->text + (i*MESSAGE_ID_LENGTH), MESSAGE_ID_LENGTH);
-    msg[MESSAGE_ID_LENGTH] = 0;
-    }
 
   dbfn_write(dbm_file, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
   *more = TRUE;
@@ -1930,7 +1959,7 @@ DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
 if ((pid = fork()) == 0)
   {
-  int i = 16;
+  int i = 17;
   const uschar **argv;
 
   /* Disconnect entirely from the parent process. If we are running in the
@@ -1946,17 +1975,15 @@ if ((pid = fork()) == 0)
 
   argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
-  /* Call with the dsn flag */
-  if (smtp_use_dsn) argv[i++] = US"-MCD";
-
   if (smtp_authenticated) argv[i++] = US"-MCA";
 
-  #ifdef SUPPORT_TLS
-  if (tls_offered) argv[i++] = US"-MCT";
-  #endif
-
-  if (smtp_use_size) argv[i++] = US"-MCS";
-  if (smtp_use_pipelining) argv[i++] = US"-MCP";
+  if (smtp_peer_options & PEER_OFFERED_CHUNKING) argv[i++] = US"-MCK";
+  if (smtp_peer_options & PEER_OFFERED_DSN) argv[i++] = US"-MCD";
+  if (smtp_peer_options & PEER_OFFERED_PIPE) argv[i++] = US"-MCP";
+  if (smtp_peer_options & PEER_OFFERED_SIZE) argv[i++] = US"-MCS";
+#ifdef SUPPORT_TLS
+  if (smtp_peer_options & PEER_OFFERED_TLS) argv[i++] = US"-MCT";
+#endif
 
   if (queue_run_pid != (pid_t)0)
     {

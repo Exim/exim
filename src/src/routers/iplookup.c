@@ -191,7 +191,7 @@ being a host list. */
 
 listptr = ob->hosts;
 while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
-       sizeof(host_buffer))) != NULL)
+       sizeof(host_buffer))))
   {
   host_item *h;
 
@@ -214,19 +214,20 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
 
   /* Loop for possible multiple IP addresses for the given name. */
 
-  for (h = host; h != NULL; h = h->next)
+  for (h = host; h; h = h->next)
     {
     int host_af, query_socket;
 
     /* Skip any hosts for which we have no address */
 
-    if (h->address == NULL) continue;
+    if (!h->address) continue;
 
     /* Create a socket, for UDP or TCP, as configured. IPv6 addresses are
     detected by checking for a colon in the address. */
 
     host_af = (Ustrchr(h->address, ':') != NULL)? AF_INET6 : AF_INET;
-    query_socket = ip_socket((ob->protocol == ip_udp)? SOCK_DGRAM:SOCK_STREAM,
+
+    query_socket = ip_socket(ob->protocol == ip_udp ? SOCK_DGRAM:SOCK_STREAM,
       host_af);
     if (query_socket < 0)
       {
@@ -240,7 +241,8 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     here only for TCP calls; for a UDP socket, "connect" always works (the
     router will timeout later on the read call). */
 
-    if (ip_connect(query_socket, host_af, h->address,ob->port, ob->timeout) < 0)
+    if (ip_connect(query_socket, host_af, h->address,ob->port, ob->timeout,
+			ob->protocol != ip_udp) < 0)
       {
       close(query_socket);
       DEBUG(D_route)
@@ -282,7 +284,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
   /* If h == NULL we have tried all the IP addresses and failed on all of them,
   so we must continue to try more host names. Otherwise we have succeeded. */
 
-  if (h != NULL) break;
+  if (h) break;
   }
 
 

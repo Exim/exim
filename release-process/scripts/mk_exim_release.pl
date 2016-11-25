@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# Copyright (c) The Exim Maintainers 2016
 
 use strict;
 use warnings;
@@ -22,16 +23,15 @@ sub get_and_check_version {
     my $context = shift;
 
     # make sure this looks like a real release version
-    # which should (currently) be 4.xx or 4.xx_RCx
-    unless ( $release =~ /^(4\.\d\d(?:_RC\d+)?)$/ ) {
+    # which should (currently) be 4.xx[.y] or 4.xx[.y]_RCx
+    unless ( $release =~ /^(?<release>(?<major>4\.\d\d)(?:\.(?<minor>\d+))?(?:_RC\d+)?)$/ ) {
         croak "The given version number does not look right - $release";
     }
-    my $full_release  = $1;              # untainted here...
-    my $trunc_release = $full_release;
-    $trunc_release =~ s/^(4\.\d\d)(?:_RC\d+)?$/$1/;
+    $context->{release}  = $+{release};
+    $context->{major} = $+{major};
+    $context->{minor} = $+{minor};
 
-    $context->{release}  = $full_release;
-    $context->{trelease} = $trunc_release;
+    ($context->{trelease} = $+{release}) =~ s/_RC\d+//;
 }
 
 # ------------------------------------------------------------------
@@ -87,7 +87,6 @@ sub export_git_tree {
     my $archive_file = sprintf( '%s/%s-%s.tar', $context->{tmp}, $context->{pkgname}, $context->{release} );
     $context->{tmp_archive_file} = $archive_file;
     my @cmd = ( 'git', 'archive', '--format=tar', "--output=$archive_file", $context->{tag} );
-
     # run git command
     print( "Running: ", join( ' ', @cmd ), "\n" ) if ($verbose);
     system(@cmd) == 0 || croak "Export failed";
@@ -124,13 +123,37 @@ sub make_version_script {
         return;
     }
 
-    my @cmd = ("../scripts/reversion", "release");
+    # Currently (25. Feb. 2016) the mk_exim_release.pl up to now can't
+    # deal with security releases.!? So we need a current
+    # mk_exim_release.pl. But if we use a current (master), the
+    # reversion script returns wrong version info (it's running inside
+    # the Git tree and uses git --describe, which always returns the
+    # current version of master.) I do not want to change the old
+    # reversion scripts (in 4.86.1, 4.85.1).
+    #
+    # Thus we've to provide the version.sh, based on the info we have
+    # about the release. If reversion finds this, it doesn't try to find
+    # it's own way to get a valid version number from the git.
+    open(my $v, '>', 'version.sh') or die "Can't open '>version.sh' $!\n";
+    print {$v} <<__;
+# initial version automatically generated from $0
+EXIM_RELEASE_VERSION=$context->{major}
+EXIM_VARIANT_VERSION=@{[$context->{minor}?'_'.$context->{minor}:'']}
+EXIM_COMPILE_NUMBER=0
+__
+    close($v);
+    unlink 'version.h';
+    return;
+
+    # Later, if we get the reversion script fixed, we can call it again.
+    # For now (25. Feb. 2016) we'll leave it unused.
+    my @cmd = ("../scripts/reversion", "release", $context->{tag});
     print( "Running: ", join( ' ', @cmd ), "\n" ) if ($verbose);
     system(@cmd) == 0 || croak "reversion failed";
 
     unlink "version.h";
 
-    -f "version.sh" or die "failed to create version.h";
+    -f "version.sh" or die "failed to create version.sh";
 }
 
 # ------------------------------------------------------------------
@@ -288,7 +311,7 @@ sub build_package_directories {
     my $context = shift;
 
     build_main_package_directory($context);
-    build_pspdfinfo_directory($context);
+    build_pspdfinfo_directory($context) if $context->{build_docs};
 }
 
 # ------------------------------------------------------------------
@@ -370,6 +393,7 @@ sub create_tar_files {
                 bzip2   => 1,
                 lzip    => 0,
         },
+        build_docs   => 1,
     };
     my $delete;
     my $cleanup = 1;
@@ -388,6 +412,7 @@ sub create_tar_files {
             'man!'          => \$man,
             'delete!'       => \$delete,
             'cleanup!'      => \$cleanup,
+            'build-docs!'   => \$context->{build_docs},
         )
       )
     {
@@ -404,7 +429,7 @@ sub create_tar_files {
     chdir( $context->{directory} ) || die;
     unpack_tree($context);
     make_version_script($context);
-    build_documentation($context);
+    build_documentation($context) if $context->{build_docs};
     build_package_directories($context);
     create_tar_files($context);
     do_cleanup($context) if ($cleanup);
@@ -423,7 +448,7 @@ mk_exim_release.pl - Build an exim release
 mk_exim_release.pl [options] version
 
  Options:
-   --debug             force debug mode (SQL Trace)
+   --debug             force debug mode
    --verbose           force verbose mode
    --help              display this help and exits
    --man               displays man page
@@ -432,6 +457,7 @@ mk_exim_release.pl [options] version
    --directory=dir     dir to package
    --no-lzip           do not create .tar.lz files
    --delete            Delete packaging directory at start
+   --noweb             skip the website generation
 
 =head1 OPTIONS
 
@@ -439,8 +465,7 @@ mk_exim_release.pl [options] version
 
 =item B<--debug>
 
-Forces debug mode cause all SQL statements generated by L<DBIx::Class>
-to be output.
+Forces debug mode.
 
 =item B<--tar>
 
@@ -478,7 +503,7 @@ Builds an exim release.
 Starting in a populated git repo that has already been tagged for
 release, build docs, build packages etc.
 
-Parameter is the version number to build as - ie 4.72 4.72RC1 etc
+Parameter is the version number to build as - ie 4.72 4.72RC1, 4.86.1, etc
 
 =head1 AUTHOR
 

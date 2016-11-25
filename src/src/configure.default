@@ -40,6 +40,7 @@
 ######################################################################
 #                    MAIN CONFIGURATION SETTINGS                     #
 ######################################################################
+#
 
 # Specify your host's canonical name here. This should normally be the fully
 # qualified "official" name of your host. If this option is not set, the
@@ -329,6 +330,18 @@ timeout_frozen_after = 7d
 # accept_8bitmime = false
 
 
+# Exim does not make use of environment variables itself. However,
+# libraries that Exim uses (e.g. LDAP) depend on specific environment settings.
+# There are two lists: keep_environment for the variables we trust, and
+# add_environment for variables we want to set to a specific value.
+# Note that TZ is handled separateley by the timezone runtime option
+# and TIMEZONE_DEFAULT buildtime option.
+
+# keep_environment = ^LDAP
+# add_environment = PATH=/usr/bin::/bin
+
+
+
 ######################################################################
 #                       ACL CONFIGURATION                            #
 #         Specifies access control lists for incoming SMTP mail      #
@@ -500,7 +513,9 @@ acl_check_data:
   # Deny if the message contains an overlong line.  Per the standards
   # we should never receive one such via SMTP.
   #
-  deny    condition  = ${if > {$max_received_linelength}{998}}
+  deny    message    = maximum allowed line length is 998 octets, \
+                       got $max_received_linelength
+          condition  = ${if > {$max_received_linelength}{998}}
 
   # Deny if the message contains a virus. Before enabling this check, you
   # must install a virus scanner and set the av_scanner option above.
@@ -694,8 +709,8 @@ begin transports
 
 
 # This transport is used for delivering messages over SMTP connections.
-# Refuse to send any messsage with over-long lines, which could have
-# been receved other than via SMTP. The use of message_size_limit to
+# Refuse to send any message with over-long lines, which could have
+# been received other than via SMTP. The use of message_size_limit to
 # enforce this is a red herring.
 
 remote_smtp:

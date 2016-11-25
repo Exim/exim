@@ -16,7 +16,7 @@ DATA
 QUIT
 250 OK
 ****
-exim -d-all+acl+transport -bs
+exim -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO:<userx@domain.com>
@@ -25,3 +25,86 @@ DATA
 .
 QUIT
 ****
+#
+#
+#
+# cutthrough for denied recipient
+# deny should be reflected to originator
+# as this was a real rcpt-verify
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 No mate
+QUIT
+250 OK
+*eof
+****
+exim -bs -odf
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<no@domain.com>
+QUIT
+****
+#
+#
+#
+# cutthrough for 2 recipients in one domain
+# first one denied
+# so we get a 3rd conn with the traditional delivery
+# (for just the second because it was a real verify=recipient)
+server PORT_S 3
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Not that one
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 ok rcpt-1
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 ok rcpt-1
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+****
+#
+# Foregound delivery needed else the following subtest reception logging happens before this ones
+# delivery process logs and terminates; the interlock is only on the parent exim terminating.
+exim -bs -odf
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<no@domain.com>
+RCPT TO:<userx@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+#

@@ -125,11 +125,11 @@ PGconn *pg_conn = NULL;
 PGresult *pg_result = NULL;
 
 int i;
+uschar *result = NULL;
 int ssize = 0;
 int offset = 0;
 int yield = DEFER;
 unsigned int num_fields, num_tuples;
-uschar *result = NULL;
 pgsql_connection *cn;
 uschar *server_copy = NULL;
 uschar *sdata[3];
@@ -327,11 +327,11 @@ row, we insert '\n' between them. */
 for (i = 0; i < num_tuples; i++)
   {
   if (result != NULL)
-    result = string_cat(result, &ssize, &offset, US"\n", 1);
+    result = string_catn(result, &ssize, &offset, US"\n", 1);
 
    if (num_fields == 1)
     {
-    result = string_cat(result, &ssize, &offset,
+    result = string_catn(result, &ssize, &offset,
       US PQgetvalue(pg_result, i, 0), PQgetlength(pg_result, i, 0));
     }
 

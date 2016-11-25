@@ -14,6 +14,7 @@
 > qualify_domain: myhost.test.ex
 > bounce_return_size_limit: 102400
 > spool_directory: TESTSUITE/spool
+> queue_name: 
 > Failed: unknown variable in "${unknown}"
 > h_subject: (should be empty)
 > h_subject: (should be empty)
@@ -95,8 +96,8 @@
 > 
 > # Operators
 > 
-> Failed: missing or misplaced { or }
-> Failed: missing or misplaced { or }
+> Failed: Not enough arguments for 'acl' (min is 1)
+> Failed: Not enough arguments for 'acl' (min is 1)
 > Failed: error from acl "a_nosuch"
 > acl: (0) [] []
 > acl: (1) [person@dom.ain] []
@@ -121,7 +122,10 @@
 > addresses: local-part@dom.ain:xyz@abc:p@q:r@s
 > addresses: 
 > 
-> escape: B7\267F2\362
+> escape:     B7\267F2\362
+> excape8bit: undisturbed text	tab
+newline	tab\134backslash ~tilde\177DEL\200\201.
+> 
 > eval:   2
 > eval:   7
 > eval:   9
@@ -283,9 +287,9 @@
 > 
 > # Error forms
 > 
-> Failed: missing or misplaced { or }
+> Failed: Not enough arguments for 'hash' (min is 2)
 > Failed: "nonnumber" is not a number (in "hash" expansion)
-> Failed: Too many arguments for "hash" (max is 3)
+> Failed: Too many arguments for 'hash' (max is 3)
 > Failed: "-2" is not a positive number (in "substr" expansion)
 > 
 > # Skipped operators
@@ -357,7 +361,8 @@
 > Failed: unknown variable "post" after "def:"
 > def:h_f n
 > def:h_f n
-> Failed: missing or misplaced { or }
+> Failed: curly-bracket problem in conditional yes/no parsing: 'yes' part did not start with '{'
+ remaining string is ':{y}{n}}'
 > 
 > exists: y
 > exists: n
@@ -591,6 +596,10 @@
 > Failed: first argument of "extract" must not be empty
 > b
 > 
+> a:b:c
+> Failed: missing '}' closing extract inside "map" item
+> a:b:c
+> 
 > # Translation
 > 
 > abcdea aaa xyz zbcdez
@@ -675,7 +684,7 @@
 > 
 > # File insertion
 > 
-> Failed: missing or misplaced { or }
+> Failed: Not enough arguments for 'readfile' (min is 1)
 > abcde
 12345
 
@@ -761,7 +770,8 @@ xyz
 > Failed: unknown condition "xya" inside "and{...}" condition
 > Failed: condition name expected, but found "${lookup{x}lsear" inside "and{...}" condition
 > Failed: missing } at end of string - could be header name not terminated by colon
-> Failed: missing or misplaced { or }
+> Failed: curly-bracket problem in conditional yes/no parsing: did not close with '}'
+ remaining string is ''
 > Failed: missing or misplaced { or } - could be header name not terminated by colon
 > Failed: each subcondition inside an "or{...}" condition must be in its own {}
 > Failed: missing } at end of condition inside "or" group

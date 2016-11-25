@@ -9,6 +9,8 @@ LOG: smtp_connection MAIN
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<one@z>
 SMTP>> 250 Accepted
@@ -38,6 +40,7 @@ I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: x@y
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
@@ -45,7 +48,8 @@ P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
@@ -54,6 +58,8 @@ SMTP>> 250 OK id=10HmaX-0005vi-00
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
 rate limit MAIL: delay 1 sec
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<two@z>
 SMTP>> 250 Accepted
@@ -67,6 +73,7 @@ I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: x@y
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
@@ -75,7 +82,8 @@ P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	for two@z; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
@@ -83,6 +91,8 @@ SMTP>> 250 OK id=10HmaY-0005vi-00
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
 rate limit MAIL: delay 2 sec
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -108,6 +118,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<one@z>
 processing "deny"
@@ -154,6 +166,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<one@z>
 processing "deny"
@@ -193,6 +207,8 @@ LOG: smtp_connection MAIN
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<reject@z>
 SMTP>> 550 Administrative prohibition
@@ -222,6 +238,8 @@ SMTP<< rset
 SMTP>> 250 Reset OK
 SMTP<< mail from:<x@y>
 rate limit MAIL: delay 1 sec
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<reject@z>
 SMTP>> 550 Administrative prohibition
@@ -231,6 +249,8 @@ SMTP<< rset
 SMTP>> 250 Reset OK
 SMTP<< mail from:<x@y>
 rate limit MAIL: delay 2 sec
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

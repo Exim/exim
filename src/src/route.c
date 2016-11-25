@@ -143,6 +143,19 @@ optionlist optionlist_routers[] = {
 int optionlist_routers_size = sizeof(optionlist_routers)/sizeof(optionlist);
 
 
+void
+readconf_options_routers(void)
+{
+struct router_info * ri;
+
+readconf_options_from_list(optionlist_routers, nelem(optionlist_routers), US"RT");
+
+for (ri = routers_available; ri->driver_name[0]; ri++)
+  {
+  macro_create(string_sprintf("_DRVR_RTR_%T", ri->driver_name), US"y", FALSE, TRUE);
+  readconf_options_from_list(ri->options, (unsigned)*ri->options_count, ri->driver_name);
+  }
+}
 
 /*************************************************
 *          Set router pointer from name          *
@@ -979,7 +992,7 @@ if ((rc = check_files(r->require_files, perror)) != OK)
 
 if (r->condition)
   {
-  DEBUG(D_route) debug_printf("checking \"condition\"\n");
+  DEBUG(D_route) debug_printf("checking \"condition\" \"%.80s\"...\n", r->condition);
   if (!expand_check_condition(r->condition, r->name, US"router"))
     {
     if (search_find_defer)
@@ -1657,10 +1670,10 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   set flag. */
 
   if (r->dsn_lasthop && !(addr->dsn_flags & rf_dsnlasthop))
-  {
+    {
     addr->dsn_flags |= rf_dsnlasthop;
     HDEBUG(D_route) debug_printf("DSN: last hop for %s\n", addr->address);
-  }
+    }
 
   HDEBUG(D_route) debug_printf("calling %s router\n", r->name);
 
@@ -1897,21 +1910,8 @@ if (unseen && r->next)
 /* Unset the address expansions, and return the final result. */
 
 ROUTE_EXIT:
-if (  yield == DEFER
-   && addr->message
-   && (  Ustrstr(addr->message, "failed to expand") != NULL
-      || Ustrstr(addr->message, "expansion of ") != NULL
-      )
-   && (  Ustrstr(addr->message, "mysql") != NULL
-      || Ustrstr(addr->message, "pgsql") != NULL
-      || Ustrstr(addr->message, "redis") != NULL
-      || Ustrstr(addr->message, "sqlite") != NULL
-      || Ustrstr(addr->message, "ldap:") != NULL
-      || Ustrstr(addr->message, "ldapdn:") != NULL
-      || Ustrstr(addr->message, "ldapm:") != NULL
-      )
-   )
-  addr->message = string_sprintf("Temporary internal error");
+if (yield == DEFER && addr->message)
+  addr->message = expand_hide_passwords(addr->message);
 
 deliver_set_expansions(NULL);
 router_name = NULL;

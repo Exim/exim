@@ -41,6 +41,7 @@ Translated back into C, March 1990! */
 #define version            8
 #define defaultstore  100000     /* default recovery buffer size */
 #define minstore         500     /* minimum recovery buffer size */
+#define SHOWMAX		  20	 /* maximum number of diff lines to display */
 
 /* ----- misc defines ----- */
 
@@ -258,11 +259,11 @@ else if (t1 < 0 && t2 < 0)
   if (echo)
     {
     rule('-', 10);
-    if (-t1-s1 < 21) write_lines(rootline_one, tline_one);
-      else fprintf(f_out, "... <more than 20 lines> ...\n");
+    if (-t1-s1 < SHOWMAX+1) write_lines(rootline_one, tline_one);
+      else fprintf(f_out, "... <more than %d lines> ...\n", SHOWMAX);
     rule('-', 10);
-    if (-t2-s2 < 21) write_lines(rootline_two, tline_two);
-      else fprintf(f_out, "... <more than 20 lines> ...\n");
+    if (-t2-s2 < SHOWMAX+1) write_lines(rootline_two, tline_two);
+      else fprintf(f_out, "... <more than %d lines> ...\n", SHOWMAX);
     }
   }
 

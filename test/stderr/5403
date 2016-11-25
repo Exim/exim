@@ -1,0 +1,95 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> myhost.test.ex in helo_lookup_domains? yes (matched "@")
+>>> looking up host name for 1.2.3.4
+LOG: no host name found for IP address 1.2.3.4
+>>> host in dsn_advertise_hosts? no (option unset)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
+>>> using ACL "ar"
+>>> processing "warn"
+>>> check control = cutthrough_delivery
+>>> check logwrite = rcpt for $local_part@$domain
+>>>                = rcpt for plain@domain.com
+LOG: rcpt for plain@domain.com
+>>> warn: condition test succeeded in ACL "ar"
+>>> processing "warn"
+>>> check condition = ${if eq {verify}{$local_part}}
+>>>                 = 
+>>> warn: condition test failed in ACL "ar"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "ar"
+>>> end of ACL "ar": ACCEPT
+LOG: 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=esmtp S=sss for plain@domain.com
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> myhost.test.ex in helo_lookup_domains? yes (matched "@")
+>>> looking up host name for 1.2.3.4
+LOG: no host name found for IP address 1.2.3.4
+>>> host in dsn_advertise_hosts? no (option unset)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
+>>> using ACL "ar"
+>>> processing "warn"
+>>> check control = cutthrough_delivery
+>>> check logwrite = rcpt for $local_part@$domain
+>>>                = rcpt for verify@domain.com
+LOG: rcpt for verify@domain.com
+>>> warn: condition test succeeded in ACL "ar"
+>>> processing "warn"
+>>> check condition = ${if eq {verify}{$local_part}}
+>>>                 = true
+>>> check verify = recipient/callout=use_sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing verify@domain.com
+>>> domain.com in "localhost.test.ex : localhost4.test.ex : thishost.test.ex"? no (end of list)
+>>> domain.com in "test.ex : *.test.ex"? no (end of list)
+>>> domain.com in "! +local_domains"? yes (end of list)
+>>> calling all router
+>>> domain.com in "special.com"? no (end of list)
+>>> domain.com in "*"? yes (matched "*")
+>>> local host found for non-MX address
+>>> fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=127.0.0.1 address=127.0.0.1
+>>> routed by all router
+>>> Attempting full verification using callout
+>>> callout cache: disabled by no_cache
+>>> interface=ip4.ip4.ip4.ip4 port=1224
+>>> Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
+>>>   SMTP<< 220 server ready
+>>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
+>>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
+>>>   SMTP<< 250 OK
+>>> 127.0.0.1 in hosts_require_auth? no (option unset)
+>>>   SMTP>> MAIL FROM:<sender@myhost.test.ex>
+>>> cmd buf flush 35 bytes
+>>>   SMTP<< 250 OK
+>>>   SMTP>> RCPT TO:<verify@domain.com>
+>>> cmd buf flush 29 bytes
+>>>   SMTP<< 250 OK
+>>> holding verify callout open for cutthrough delivery
+>>> ----------- end verify ------------
+>>> warn: condition test succeeded in ACL "ar"
+>>> processing "accept"
+>>> accept: condition test succeeded in ACL "ar"
+>>> end of ACL "ar": ACCEPT
+>>>   SMTP>> QUIT
+>>>   SMTP<< 220 OK
+>>>   SMTP(close)>>
+>>> ----------- cutthrough shutdown (host-checking mode) ------------
+LOG: 10HmaY-0005vi-00 <= sender@myhost.test.ex H=(myhost.test.ex) [1.2.3.4] P=esmtp S=sss for verify@domain.com

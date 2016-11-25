@@ -1,0 +1,44 @@
+# Exim test configuration 4804
+
+SERVER=
+OPT=
+
+.include DIR/aux-var/std_conf_prefix
+
+timezone = UTC
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector = OPT
+
+# ------ ACL ------
+
+begin acl
+
+# ----- Routers -----
+
+begin routers
+
+server:
+  condition = ${if eq {SERVER}{server} {yes}{no}}
+  driver = redirect
+  data = :blackhole:
+
+client:
+  driver = dnslookup
+  dnssec_request_domains = *
+  self = send
+  transport = send_to_server
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  port = PORT_D
+
+# End

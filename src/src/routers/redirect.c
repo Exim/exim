@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -325,7 +325,7 @@ add_generated(router_instance *rblock, address_item **addr_new,
 redirect_router_options_block *ob =
   (redirect_router_options_block *)(rblock->options_block);
 
-while (generated != NULL)
+while (generated)
   {
   address_item *parent;
   address_item *next = generated;
@@ -347,7 +347,7 @@ while (generated != NULL)
 
   if (ob->one_time && !queue_2stage)
     {
-    for (parent = addr; parent->parent != NULL; parent = parent->parent);
+    for (parent = addr; parent->parent; parent = parent->parent) ;
     next->onetime_parent = parent->address;
     }
 
@@ -358,21 +358,16 @@ while (generated != NULL)
   unless the ancestor was routed by a case-sensitive router. */
 
   if (ob->check_ancestor)
-    {
-    for (parent = addr; parent != NULL; parent = parent->parent)
-      {
-      if (((parent->router != NULL && parent->router->caseful_local_part)?
-           Ustrcmp(next->address, parent->address)
-           :
-           strcmpic(next->address, parent->address)
+    for (parent = addr; parent; parent = parent->parent)
+      if ((parent->router && parent->router->caseful_local_part
+	   ? Ustrcmp(next->address, parent->address)
+           : strcmpic(next->address, parent->address)
           ) == 0)
         {
         DEBUG(D_route) debug_printf("generated parent replaced by child\n");
         next->address = string_copy(addr->address);
         break;
         }
-      }
-    }
 
   /* A user filter may, under some circumstances, set up an errors address.
   If so, we must take care to re-instate it when we copy in the propagated
@@ -553,6 +548,12 @@ addr_prop.remove_headers = NULL;
 #ifdef EXPERIMENTAL_SRS
 addr_prop.srs_sender = NULL;
 #endif
+#ifdef SUPPORT_I18N
+addr_prop.utf8_msg = FALSE;	/*XXX should we not copy this from the parent? */
+addr_prop.utf8_downcvt = FALSE;
+addr_prop.utf8_downcvt_maybe = FALSE;
+#endif
+
 
 /* When verifying and testing addresses, the "logwrite" command in filters
 must be bypassed. */
@@ -649,8 +650,8 @@ if (!ugid.gid_set && pw != NULL)
 //          eximsrs_db_set(FALSE, NULL);
 */
 
-        if(ob->srs_alias != NULL ? (usedomain = expand_string(ob->srs_alias)) == NULL : 1)
-          usedomain = deliver_domain;
+        if (!(usedomain = ob->srs_alias ? expand_string(ob->srs_alias) : NULL))
+          usedomain = string_copy(deliver_domain);
 
         if((n_srs = eximsrs_forward(&res, sender_address, usedomain)) == OK)
         {
