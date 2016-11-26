@@ -2429,17 +2429,14 @@ for (addr = first_addr;
   rcpt_addr = transport_rcpt_address(addr, tblock->rcpt_include_affixes);
 
 #ifdef SUPPORT_I18N
-  {
-  uschar * dummy_errstr;
   if (  testflag(addrlist, af_utf8_downcvt)
-     && (rcpt_addr = string_address_utf8_to_alabel(rcpt_addr, &dummy_errstr),
-	 dummy_errstr
-     )  )
+     && !(rcpt_addr = string_address_utf8_to_alabel(rcpt_addr, NULL))
+     )
     {
+    /*XXX could we use a per-address errstr here? Not fail the whole send? */
     errno = ERRNO_EXPANDFAIL;
     goto SEND_FAILED;
     }
-  }
 #endif
 
   count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s%s\r\n",

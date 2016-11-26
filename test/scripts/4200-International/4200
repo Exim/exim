@@ -33,10 +33,10 @@ original:   bogus.\xD9\x84.com
 conversion: ${utf8_domain_to_alabel:bogus.\xD9\x84.com}
 golden:     bogus.xn--ghb.com
 
-original:   arabic.\xD9\x84\xD9\x8A\xD9\x87\xD9\x85\xD8\xA7\xD8\xA8\xD8\xAA\xD9\x83\xD9\x84\xD9\x85\xD9\x88\xD8\xB4\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x8A\xD8\x9F.com
+original:   arabic.\xD9\x84\xD9\x8A\xD9\x87\xD9\x85\xD8\xA7\xD8\xA8\xD8\xAA\xD9\x83\xD9\x84\xD9\x85\xD9\x88\xD8\xB4\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x8A.com
 conversion: ${utf8_domain_to_alabel:arabic.\xD9\x84\xD9\x8A\xD9\x87\xD9\x85\xD8\xA7\xD8\xA8\xD8\xAA\xD9\x83\xD9\x84\
-\xD9\x85\xD9\x88\xD8\xB4\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x8A\xD8\x9F.com}
-golden:     arabic.xn--egbpdaj6bu4bxfgehfvwxn.com
+\xD9\x85\xD9\x88\xD8\xB4\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x8A.com}
+golden:     arabic.xn--mgbcah9ar9a4efegftvvn.com
 
 original    simpl.chinese.\xE4\xBB\x96\xE4\xBB\xAC\xE4\xB8\xBA\xE4\xBB\x80\xE4\xB9\x88\xE4\xB8\x8D\xE8\xAF\xB4\xE4\xB8\xAD\xE6\x96\x87.com
 conversion: ${utf8_domain_to_alabel:simpl.chinese.\xE4\xBB\x96\xE4\xBB\xAC\xE4\xB8\xBA\xE4\xBB\x80\
@@ -49,9 +49,7 @@ conversion: ${utf8_domain_to_alabel:trad.chinese.\xE4\xBB\x96\xE5\x80\x91\xE7\x8
 golden:     trad.chinese.xn--ihqwctvzc91f659drss3x8bo0yb.com
 
 original    czech.\x50\x72\x6F\xC4\x8D\x70\x72\x6F\x73\x74\xC4\x9B\x6E\x65\x6D\x6C\x75\x76\xC3\xAD\xC4\x8D\x65\x73\x6B\x79.com
-conversion: ${utf8_domain_to_alabel:czech.\x50\x72\x6F\xC4\x8D\x70\x72\x6F\x73\x74\xC4\x9B\x6E\x65\
-\x6D\x6C\x75\x76\xC3\xAD\xC4\x8D\x65\x73\x6B\x79.com}
-golden:     czech.xn--Proprostnemluvesky-uyb24dma41a.com
+conversion: ${utf8_domain_to_alabel:czech.Pro\xC4\x8Dprost\xC4\x9Bnemluv\xC3\xAD\xC4\x8Desky.com}
 
 original    hebrew.\xD7\x9C\xD7\x9E\xD7\x94\xD7\x94\xD7\x9D\xD7\xA4\xD7\xA9\xD7\x95\xD7\x98\xD7\x9C\xD7\x90\xD7\x9E\xD7\x93\xD7\x91\xD7\xA8\xD7\x99\xD7\x9D\xD7\xA2\xD7\x91\xD7\xA8\xD7\x99\xD7\xAA.com
 conversion: ${utf8_domain_to_alabel:hebrew.\xD7\x9C\xD7\x9E\xD7\x94\xD7\x94\xD7\x9D\xD7\xA4\xD7\xA9\
@@ -107,10 +105,10 @@ golden:     xn--strae-oqa.de
 a-label domain to utf-8:
 
 conversion: ${utf8_domain_from_alabel:arab.xn--ghb.com}
-conversion: ${utf8_domain_from_alabel:arab.xn--egbpdaj6bu4bxfgehfvwxn.com}
+conversion: ${utf8_domain_from_alabel:arab.xn--mgbcah9ar9a4efegftvvn.com}
 conversion: ${utf8_domain_from_alabel:simpl.chinese.xn--ihqwcrb4cv8a8dqg056pqjye.com}
 conversion: ${utf8_domain_from_alabel:trad.chinese.xn--ihqwctvzc91f659drss3x8bo0yb.com}
-conversion: ${utf8_domain_from_alabel:czech.xn--Proprostnemluvesky-uyb24dma41a.com}
+conversion: ${utf8_domain_from_alabel:czech.xn--proprostnemluvesky-uyb24dma41a.com}
 conversion: ${utf8_domain_from_alabel:hebrew.xn--4dbcagdahymbxekheh6e0a7fei0b.com}
 conversion: ${utf8_domain_from_alabel:hindi.xn--i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd.com}
 conversion: ${utf8_domain_from_alabel:japanese.xn--n8jok5ay5dzabd5bym9f0cm5685rrjetr6pdxa.com}

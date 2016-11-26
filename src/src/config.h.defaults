@@ -135,6 +135,7 @@ it's a default value. */
 
 #define SUPPORT_CRYPTEQ
 #define SUPPORT_I18N
+#define SUPPORT_I18N_2008
 #define SUPPORT_MAILDIR
 #define SUPPORT_MAILSTORE
 #define SUPPORT_MBX

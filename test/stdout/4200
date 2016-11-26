@@ -27,9 +27,9 @@
 > conversion: bogus.xn--ghb.com
 > golden:     bogus.xn--ghb.com
 > 
-> original:   arabic.ليهمابتكلموشعربي؟.com
-> conversion: arabic.xn--egbpdaj6bu4bxfgehfvwxn.com
-> golden:     arabic.xn--egbpdaj6bu4bxfgehfvwxn.com
+> original:   arabic.ليهمابتكلموشعربي.com
+> conversion: arabic.xn--mgbcah9ar9a4efegftvvn.com
+> golden:     arabic.xn--mgbcah9ar9a4efegftvvn.com
 > 
 > original    simpl.chinese.他们为什么不说中文.com
 > conversion: simpl.chinese.xn--ihqwcrb4cv8a8dqg056pqjye.com
@@ -41,7 +41,6 @@
 > 
 > original    czech.Pročprostěnemluvíčesky.com
 > conversion: czech.xn--proprostnemluvesky-uyb24dma41a.com
-> golden:     czech.xn--Proprostnemluvesky-uyb24dma41a.com
 > 
 > original    hebrew.למההםפשוטלאמדבריםעברית.com
 > conversion: hebrew.xn--4dbcagdahymbxekheh6e0a7fei0b.com
@@ -80,10 +79,10 @@
 > a-label domain to utf-8:
 > 
 > conversion: arab.ل.com
-> conversion: arab.ليهمابتكلموشعربي؟.com
+> conversion: arab.ليهمابتكلموشعربي.com
 > conversion: simpl.chinese.他们为什么不说中文.com
 > conversion: trad.chinese.他們爲什麽不說中文.com
-> conversion: czech.Pročprostěnemluvíčesky.com
+> conversion: czech.pročprostěnemluvíčesky.com
 > conversion: hebrew.למההםפשוטלאמדבריםעברית.com
 > conversion: hindi.यहलोगहिन्दीक्योंनहींबोलसकतेहैं.com
 > conversion: japanese.なぜみんな日本語を話してくれないのか.com

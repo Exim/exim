@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2015 */
+/* Copyright (c) Jeremy Harris 2015, 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -10,9 +10,19 @@
 
 #ifdef SUPPORT_I18N
 
-#include <idna.h>
+#ifdef SUPPORT_I18N_2008
+# include <idn2.h>
+#else
+# include <idna.h>
+#endif
+
 #include <punycode.h>
 #include <stringprep.h>
+
+static uschar *
+string_localpart_alabel_to_utf8_(const uschar * alabel, uschar ** err);
+
+/**************************************************/
 
 BOOL
 string_is_utf8(const uschar * s)
@@ -22,17 +32,44 @@ if (s) while ((c = *s++)) if (c & 0x80) return TRUE;
 return FALSE;
 }
 
+static BOOL
+string_is_alabel(const uschar * s)
+{
+return s[0] == 'x' && s[1] == 'n' && s[2] == '-' && s[3] == '-';
+}
+
 /**************************************************/
-/* Domain conversions */
-/* the *err string pointer should be null before the call */
+/* Domain conversions.
+The *err string pointer should be null before the call
+
+Return NULL for error, with optional errstr pointer filled in
+*/
 
 uschar *
 string_domain_utf8_to_alabel(const uschar * utf8, uschar ** err)
 {
-uschar * s1;
-uschar * s;
+uschar * s1, * s;
 int rc;
 
+#ifdef SUPPORT_I18N_2008
+/* Only lowercase is accepted by the library call.  A pity since we lose
+any mixed-case annotation.  This does not really matter for a domain. */
+  {
+  uschar c;
+  for (s1 = s = US utf8; (c = *s1); s1++) if (!(c & 0x80) && isupper(c))
+    {
+    s = string_copy(utf8);
+    for (s1 = s + (s1 - utf8); (c = *s1); s1++) if (!(c & 0x80) && isupper(c))
+      *s1 = tolower(c);
+    break;
+    }
+  }
+if ((rc = idn2_lookup_u8(CCS s, &s1, IDN2_NFC_INPUT)) != IDN2_OK)
+  {
+  if (err) *err = US idn2_strerror(rc);
+  return NULL;
+  }
+#else
 s = US stringprep_utf8_nfkc_normalize(CCS utf8, -1);
 if (  (rc = idna_to_ascii_8z(CCS s, CSS &s1, IDNA_ALLOW_UNASSIGNED))
    != IDNA_SUCCESS)
@@ -42,6 +79,7 @@ if (  (rc = idna_to_ascii_8z(CCS s, CSS &s1, IDNA_ALLOW_UNASSIGNED))
   return NULL;
   }
 free(s);
+#endif
 s = string_copy(s1);
 free(s1);
 return s;
@@ -52,8 +90,23 @@ return s;
 uschar *
 string_domain_alabel_to_utf8(const uschar * alabel, uschar ** err)
 {
-uschar * s1;
-uschar * s;
+#ifdef SUPPORT_I18N_2008
+const uschar * label;
+int sep = '.';
+uschar * s = NULL;
+
+while (label = string_nextinlist(&alabel, &sep, NULL, 0))
+  if (  string_is_alabel(label)
+     && !(label = string_localpart_alabel_to_utf8_(label, err))
+     )
+    return NULL;
+  else
+    s = string_append_listele(s, '.', label);
+return s;
+
+#else
+
+uschar * s1, * s;
 int rc;
 
 if (  (rc = idna_to_unicode_8z8z(CCS alabel, CSS &s1, IDNA_USE_STD3_ASCII_RULES))
@@ -65,6 +118,7 @@ if (  (rc = idna_to_unicode_8z8z(CCS alabel, CSS &s1, IDNA_USE_STD3_ASCII_RULES)
 s = string_copy(s1);
 free(s1);
 return s;
+#endif
 }
 
 /**************************************************/
@@ -103,25 +157,20 @@ return res;
 }
 
 
-uschar *
-string_localpart_alabel_to_utf8(const uschar * alabel, uschar ** err)
+static uschar *
+string_localpart_alabel_to_utf8_(const uschar * alabel, uschar ** err)
 {
-size_t p_len = Ustrlen(alabel);
+size_t p_len;
 punycode_uint * p;
-uschar * s;
-uschar * res;
 int rc;
+uschar * s, * res;
 
-if (alabel[0] != 'x' || alabel[1] != 'n' || alabel[2] != '-' || alabel[3] != '-')
-  {
-  if (err) *err = US"bad alabel prefix";
-  return NULL;
-  }
-
-p_len -= 4;
+DEBUG(D_expand) debug_printf("l_a2u: '%s'\n", alabel);
+alabel += 4;
+p_len = Ustrlen(alabel);
 p = (punycode_uint *) store_get((p_len+1) * sizeof(*p));
 
-if ((rc = punycode_decode(p_len, CCS alabel+4, &p_len, p, NULL)) != PUNYCODE_SUCCESS)
+if ((rc = punycode_decode(p_len, CCS alabel, &p_len, p, NULL)) != PUNYCODE_SUCCESS)
   {
   if (err) *err = US punycode_strerror(rc);
   return NULL;
@@ -134,9 +183,23 @@ return res;
 }
 
 
+uschar *
+string_localpart_alabel_to_utf8(const uschar * alabel, uschar ** err)
+{
+if (string_is_alabel(alabel))
+  return string_localpart_alabel_to_utf8_(alabel, err);
+
+if (err) *err = US"bad alabel prefix";
+return NULL;
+}
+
+
 /**************************************************/
-/* whole address conversion */
-/* the *err string pointer should be null before the call */
+/* Whole address conversion.
+The *err string pointer should be null before the call.
+
+Return NULL on oeeror, with (optional) errstring pointer filled in
+*/
 
 uschar *
 string_address_utf8_to_alabel(const uschar * utf8, uschar ** err)
@@ -153,8 +216,8 @@ for (s = utf8; *s; s++)
   if (*s == '@')
     {
     l = string_copyn(utf8, s - utf8);
-    if (  (l = string_localpart_utf8_to_alabel(l, err), err && *err)
-       || (d = string_domain_utf8_to_alabel(++s, err),  err && *err)
+    if (  !(l = string_localpart_utf8_to_alabel(l, err))
+       || !(d = string_domain_utf8_to_alabel(++s, err))
        )
       return NULL;
     l = string_sprintf("%s@%s", l, d);
@@ -182,10 +245,21 @@ Returns:     nothing
 void
 utf8_version_report(FILE *f)
 {
+#ifdef SUPPORT_I18N_2008
+fprintf(f, "Library version: IDN2: Compile: %s\n"
+           "                       Runtime: %s\n",
+	IDN2_VERSION,
+	idn2_check_version(NULL));
+fprintf(f, "Library version: Stringprep: Compile: %s\n"
+           "                             Runtime: %s\n",
+	STRINGPREP_VERSION,
+	stringprep_check_version(NULL));
+#else
 fprintf(f, "Library version: IDN: Compile: %s\n"
            "                      Runtime: %s\n",
 	STRINGPREP_VERSION,
 	stringprep_check_version(NULL));
+#endif
 }
 
 #endif	/* whole file */
