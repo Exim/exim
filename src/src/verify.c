@@ -940,11 +940,10 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       }
     else if (  addr->prop.utf8_msg
 	    && (addr->prop.utf8_downcvt || !(peer_offered & PEER_OFFERED_UTF8))
-	    && (setflag(addr, af_utf8_downcvt),
-	        from_address = string_address_utf8_to_alabel(from_address,
-				      &addr->message),
-		addr->message
-	    )  )
+	    && !(setflag(addr, af_utf8_downcvt),
+	         from_address = string_address_utf8_to_alabel(from_address,
+				      &addr->message)
+	    )   )
       {
       errno = ERRNO_EXPANDFAIL;
       setflag(addr, af_verify_nsfail);
@@ -1121,16 +1120,14 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
 #ifdef SUPPORT_I18N
 	/*XXX should the conversion be moved into transport_rcpt_address() ? */
-	uschar * dummy_errstr = NULL;
 	if (  testflag(addr, af_utf8_downcvt)
-	   && (rcpt = string_address_utf8_to_alabel(rcpt, &dummy_errstr),
-	       dummy_errstr
-	   )  )
-	{
-	errno = ERRNO_EXPANDFAIL;
-	*failure_ptr = US"recipient";
-	done = FALSE;
-	}
+	   && !(rcpt = string_address_utf8_to_alabel(rcpt, NULL))
+	   )
+	  {
+	  errno = ERRNO_EXPANDFAIL;
+	  *failure_ptr = US"recipient";
+	  done = FALSE;
+	  }
 	else
 #endif
 

@@ -937,11 +937,15 @@ ZCAT_COMMAND=/usr/bin/zcat
 #
 # Uncomment the following to include Internationalisation features.  This is the
 # SMTPUTF8 ESMTP extension, and associated facilities for handling UTF8 domain
-# and localparts, per RFCs 5890, 6530 and 6533.
+# and localparts, per RFC 3490 (IDNA2003).
 # You need to have the IDN library installed.
+# If you want IDNA2008 mappings per RFCs 5890, 6530 and 6533, you additionally
+# need libidn2 and SUPPORT_I18N_2008.
 
 # SUPPORT_I18N=yes
 # LDFLAGS += -lidn
+# SUPPORT_I18N_2008=yes
+# LDFLAGS += -lidn -lidn2
 
 
 #------------------------------------------------------------------------------
