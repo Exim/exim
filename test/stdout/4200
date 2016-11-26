@@ -1,72 +1,101 @@
 > 
 > utf-8 localpart to a-label:
 > 
-> xn--ghb
-> xn--ghb
+> original:   ل
+> conversion: xn--ghb
+> golden:     xn--ghb
 > 
-> xn--egbpdaj6bu4bxfgehfvwxn
-> xn--egbpdaj6bu4bxfgehfvwxn
+> original:   ليهمابتكلموشعربي؟
+> conversion: xn--egbpdaj6bu4bxfgehfvwxn
+> golden:     xn--egbpdaj6bu4bxfgehfvwxn
 > 
 > a-label localpart to utf-8:
 > 
-> ل
-> ليهمابتكلموشعربي؟
+> original:   xn--ghb
+> conversion: ل
+> golden:     ل
+> 
+> original:   xn--egbpdaj6bu4bxfgehfvwxn
+> conversion: ليهمابتكلموشعربي؟
+> golden:     ليهمابتكلموشعربي؟
+> 
+> ============
 > 
 > utf-8 domain to a-label:
 > 
-> bogus.xn--ghb.com
-> bogus.xn--ghb.com
+> original:   bogus.ل.com
+> conversion: bogus.xn--ghb.com
+> golden:     bogus.xn--ghb.com
 > 
-> arabic.xn--egbpdaj6bu4bxfgehfvwxn.com
-> arabic.xn--egbpdaj6bu4bxfgehfvwxn.com
+> original:   arabic.ليهمابتكلموشعربي؟.com
+> conversion: arabic.xn--egbpdaj6bu4bxfgehfvwxn.com
+> golden:     arabic.xn--egbpdaj6bu4bxfgehfvwxn.com
 > 
-> simpl.chinese.xn--ihqwcrb4cv8a8dqg056pqjye.com
-> simpl.chinese.xn--ihqwcrb4cv8a8dqg056pqjye.com
+> original    simpl.chinese.他们为什么不说中文.com
+> conversion: simpl.chinese.xn--ihqwcrb4cv8a8dqg056pqjye.com
+> golden:     simpl.chinese.xn--ihqwcrb4cv8a8dqg056pqjye.com
 > 
-> trad.chinese.xn--ihqwctvzc91f659drss3x8bo0yb.com
-> trad.chinese.xn--ihqwctvzc91f659drss3x8bo0yb.com
+> original    trad.chinese.他們爲什麽不說中文.com
+> conversion: trad.chinese.xn--ihqwctvzc91f659drss3x8bo0yb.com
+> golden:     trad.chinese.xn--ihqwctvzc91f659drss3x8bo0yb.com
 > 
-> czech.xn--proprostnemluvesky-uyb24dma41a.com
-> czech.xn--Proprostnemluvesky-uyb24dma41a.com
+> original    czech.Pročprostěnemluvíčesky.com
+> conversion: czech.xn--proprostnemluvesky-uyb24dma41a.com
+> golden:     czech.xn--Proprostnemluvesky-uyb24dma41a.com
 > 
-> hebrew.xn--4dbcagdahymbxekheh6e0a7fei0b.com
-> hebrew.xn--4dbcagdahymbxekheh6e0a7fei0b.com
+> original    hebrew.למההםפשוטלאמדבריםעברית.com
+> conversion: hebrew.xn--4dbcagdahymbxekheh6e0a7fei0b.com
+> golden:     hebrew.xn--4dbcagdahymbxekheh6e0a7fei0b.com
 > 
-> hindi.xn--i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd.com
-> hindi.xn--i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd.com
+> original    hindi.यहलोगहिन्दीक्योंनहींबोलसकतेहैं.com
+> conversion: hindi.xn--i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd.com
+> golden:     hindi.xn--i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd.com
 > 
-> japanese.xn--n8jok5ay5dzabd5bym9f0cm5685rrjetr6pdxa.com
-> japanese.xn--n8jok5ay5dzabd5bym9f0cm5685rrjetr6pdxa.com
+> original    japanese.なぜみんな日本語を話してくれないのか.com
+> conversion: japanese.xn--n8jok5ay5dzabd5bym9f0cm5685rrjetr6pdxa.com
+> golden:     japanese.xn--n8jok5ay5dzabd5bym9f0cm5685rrjetr6pdxa.com
 > 
 > # the a-label for the phrase in korean is too long for a domain label (63 byte limit)
+> # so this is a localpart conversion
+> original    세계의모든사람들이한국어를이해한다면얼마나좋을까
 > korean: xn--989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5xbh15a0dt30a5jpsd879ccm6fea98c
-> korean: xn--989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5xbh15a0dt30a5jpsd879ccm6fea98c
+> golden:     korean: xn--989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5xbh15a0dt30a5jpsd879ccm6fea98c
 > 
-> russian.xn--b1abfaaepdrnnbgefbadotcwatmq2g4l.com
-> russian.xn--b1abfaaepdrnnbgefbaDotcwatmq2g4l.com
+> original    russian.почемужеонинеговорятпорусски.com
+> conversion: russian.xn--b1abfaaepdrnnbgefbadotcwatmq2g4l.com
+> golden:     russian.xn--b1abfaaepdrnnbgefbaDotcwatmq2g4l.com
 > 
-> spanish.xn--porqunopuedensimplementehablarenespaol-fmd56a.com
-> spanish.xn--PorqunopuedensimplementehablarenEspaol-fmd56a.com
+> original    spanish.PorquénopuedensimplementehablarenEspañol.com
+> conversion: spanish.xn--porqunopuedensimplementehablarenespaol-fmd56a.com
+> golden:     spanish.xn--PorqunopuedensimplementehablarenEspaol-fmd56a.com
 > 
-> vietnamese.xn--tisaohkhngthchnitingvit-kjcr8268qyxafd2f1b9g.com
-> vietnamese.xn--TisaohkhngthchnitingVit-kjcr8268qyxafd2f1b9g.com
+> original    vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.com
+> conversion: vietnamese.xn--tisaohkhngthchnitingvit-kjcr8268qyxafd2f1b9g.com
+> golden:     vietnamese.xn--TisaohkhngthchnitingVit-kjcr8268qyxafd2f1b9g.com
+> 
+> original    straße.de
+> conversion  strasse.de
+> golden:     xn--strae-oqa.de
 > 
 > a-label domain to utf-8:
 > 
-> arab.ل.com
-> arab.ليهمابتكلموشعربي؟.com
-> simpl.chinese.他们为什么不说中文.com
-> trad.chinese.他們爲什麽不說中文.com
-> czech.Pročprostěnemluvíčesky.com
-> hebrew.למההםפשוטלאמדבריםעברית.com
-> hindi.यहलोगहिन्दीक्योंनहींबोलसकतेहैं.com
-> japanese.なぜみんな日本語を話してくれないのか.com
+> conversion: arab.ل.com
+> conversion: arab.ليهمابتكلموشعربي؟.com
+> conversion: simpl.chinese.他们为什么不说中文.com
+> conversion: trad.chinese.他們爲什麽不說中文.com
+> conversion: czech.Pročprostěnemluvíčesky.com
+> conversion: hebrew.למההםפשוטלאמדבריםעברית.com
+> conversion: hindi.यहलोगहिन्दीक्योंनहींबोलसकतेहैं.com
+> conversion: japanese.なぜみんな日本語を話してくれないのか.com
 > korean: 세계의모든사람들이한국어를이해한다면얼마나좋을까
-> russian.почемужеонинеговорятпорусски.com
-> spanish.PorquénopuedensimplementehablarenEspañol.com
-> vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.com
+> conversion: russian.почемужеонинеговорятпорусски.com
+> conversion: spanish.PorquénopuedensimplementehablarenEspañol.com
+> conversion: vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.com
+> conversion: german.xn--strae-oqa.de
 > 
 > ===========
+> 
+> imapfolder conversions:
 > 
 > Foo.Bar
 > Foo.Bar
