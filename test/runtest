@@ -899,6 +899,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # gnutls version variances
     next if /^Error in the pull function./;
+
+    # optional IDN2 variant conversions.  Accept either IDN1 or IDN2
+    s/conversion  strasse.de/conversion  xn--strae-oqa.de/;
+    s/conversion: german.xn--strae-oqa.de/conversion: german.straße.de/;
     }
 
   # ======== stderr ========

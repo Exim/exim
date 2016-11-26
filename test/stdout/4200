@@ -41,6 +41,7 @@
 > 
 > original    czech.Pročprostěnemluvíčesky.com
 > conversion: czech.xn--proprostnemluvesky-uyb24dma41a.com
+> golden:     czech.xn--Proprostnemluvesky-uyb24dma41a.com
 > 
 > original    hebrew.למההםפשוטלאמדבריםעברית.com
 > conversion: hebrew.xn--4dbcagdahymbxekheh6e0a7fei0b.com
@@ -73,7 +74,7 @@
 > golden:     vietnamese.xn--TisaohkhngthchnitingVit-kjcr8268qyxafd2f1b9g.com
 > 
 > original    straße.de
-> conversion  strasse.de
+> conversion  xn--strae-oqa.de
 > golden:     xn--strae-oqa.de
 > 
 > a-label domain to utf-8:
@@ -90,7 +91,7 @@
 > conversion: russian.почемужеонинеговорятпорусски.com
 > conversion: spanish.PorquénopuedensimplementehablarenEspañol.com
 > conversion: vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.com
-> conversion: german.xn--strae-oqa.de
+> conversion: german.straße.de
 > 
 > ===========
 > 
