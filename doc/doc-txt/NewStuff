@@ -63,6 +63,8 @@ Version 4.88
     previous communication with the peer (we save a cookie from it) this
     will only become active on frequently-contacted destinations.
 
+16. A new syslog_pid option to suppress PID duplication in syslog lines.
+
 
 Version 4.87
 ------------

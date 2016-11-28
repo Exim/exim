@@ -5044,7 +5044,7 @@ They can be used to conditionally include parts of a configuration
 The following classes of macros are defined:
 .display
 &` _HAVE_                     `&  build-time defines
-&` _DRVR_AUTH_                `&  authehticator drivers
+&` _DRVR_AUTH_                `&  authenticator drivers
 &` _DRVR_RTR_                 `&  router drivers
 &` _DRVR_TPT_                 `&  transport drivers
 &` _OPT_                      `&  configuration option support

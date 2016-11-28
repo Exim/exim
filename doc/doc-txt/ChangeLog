@@ -1,5 +1,8 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
+This document describes *changes* to previous versions, that might
+affect Exim's operation, with an unchanged configuration file.  For new
+options, and new features, see the NewStuff file next to this ChangeLog.
 
 Exim version 4.88
 -----------------
@@ -133,6 +136,9 @@ JH/33 Bug 1914: Ensure socket is nonblocking before draining after SMTP QUIT.
 
 HS/01 Fix leak in verify callout under GnuTLS, about 3MB per recipient on
       an incoming connection.
+
+HS/02 Bug 1802: Do not half-close the connection after sending a request
+      to rspamd.
 
 
 Exim version 4.87
