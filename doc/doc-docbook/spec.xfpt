@@ -31668,6 +31668,15 @@ configuration as follows (example):
 .code
 spamd_address = 192.168.99.45 387
 .endd
+The SpamAssassin protocol relies on a TCP half-close from the client.
+If your SpamAssassin client side is running a Linux system with an
+iptables firewall, consider setting
+&%net.netfilter.nf_conntrack_tcp_timeout_close_wait%& to at least the
+timeout, Exim uses when waiting for a response from the SpamAssassin
+server (currently defaulting to 120s).  With a lower value the Linux
+connection tracking may consider your half-closed connection as dead too
+soon.
+
 
 To use Rspamd (which by default listens on all local addresses
 on TCP port 11333)
