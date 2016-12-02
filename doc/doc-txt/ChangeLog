@@ -140,6 +140,8 @@ HS/01 Fix leak in verify callout under GnuTLS, about 3MB per recipient on
 HS/02 Bug 1802: Do not half-close the connection after sending a request
       to rspamd.
 
+HS/03 Use "auto" as the default EC curve parameter. For OpenSSL < 1.0.2
+      fallback to "prime256v1".
 
 Exim version 4.87
 -----------------

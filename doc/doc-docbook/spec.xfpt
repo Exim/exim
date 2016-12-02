@@ -17139,17 +17139,19 @@ prior to the 4.80 release, as Debian used to patch Exim to raise the minimum
 acceptable bound from 1024 to 2048.
 
 
-.option tls_eccurve main string&!! prime256v1
+.option tls_eccurve main string&!! &`auto`&
 .cindex TLS "EC cryptography"
-If built with a recent-enough version of OpenSSL,
-this option selects a EC curve for use by Exim.
+This option selects a EC curve for use by Exim.
 
-Curve names of the form &'prime256v1'& are accepted.
-For even more-recent library versions, names of the form &'P-512'&
-are also accepted, plus the special value &'auto'&
-which tells the library to choose.
+After expansion it must contain a valid EC curve parameter, such as
+&`prime256v1`&, &`secp384r1`&, or &`P-512`&. Consult your OpenSSL manual
+for valid selections.
 
-If the option is set to an empty string, no EC curves will be enabled.
+For OpenSSL versions before (and not including) 1.0.2, the string
+&`auto`& selects &`prime256v1`&. For more recent OpenSSL versions
+&`auto`& tells the library to choose.
+
+If the option expands to an empty string, no EC curves will be enabled.
 
 
 .option tls_ocsp_file main string&!! unset
