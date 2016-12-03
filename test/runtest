@@ -883,6 +883,9 @@ RESET_AFTER_EXTRA_LINE_READ:
         }
       }
 
+    # remote IPv6 addrs vary
+    s/^(Connection request from) \[.*:.*:.*\]$/$1 \[ipv6\]/;
+
     # openssl version variances
   # Error lines on stdout from SSL contain process id values and file names.
   # They also contain a source file name and line number, which may vary from
