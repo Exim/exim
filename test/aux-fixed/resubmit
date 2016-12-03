@@ -1,4 +1,4 @@
-#! /usr/bin/perl -w
+#! /usr/bin/env perl
 
 # A test script that reads a message and resubmits it to Exim (having 
 # notionally checked it - but there's no checking here).
