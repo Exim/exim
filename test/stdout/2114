@@ -18,7 +18,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-pppp:error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:s3_pkt.c:dddd:SSL alert number 40
+pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:[...]:SSL alert number 40
 Failed to start TLS
 End of script
 Connecting to 127.0.0.1 port 1225 ... connected
@@ -146,7 +146,7 @@ Key file = aux-fixed/cert1
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-pppp:error:14094418:SSL routines:ssl3_read_bytes:tlsv1 alert unknown ca:s3_pkt.c:dddd:SSL alert number 48
+pppp:error:dddddddd:SSL routines:ssl3_read_bytes:tlsv1 alert unknown ca:[...]:SSL alert number 48
 Failed to start TLS
 End of script
 Connecting to 127.0.0.1 port 1225 ... connected
@@ -207,7 +207,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-pppp:error:14094414:SSL routines:ssl3_read_bytes:sslv3 alert certificate revoked:s3_pkt.c:dddd:SSL alert number 44
+pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert certificate revoked:[...]:SSL alert number 44
 Failed to start TLS
 End of script
 Connecting to 127.0.0.1 port 1225 ... connected

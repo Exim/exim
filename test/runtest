@@ -420,12 +420,6 @@ RESET_AFTER_EXTRA_LINE_READ:
   s?prvs=([^/]+)/[\da-f]{10}@?prvs=$1/xxxxxxxxxx@?g;    # Old form
   s?prvs=[\da-f]{10}=([^@]+)@?prvs=xxxxxxxxxx=$1@?g;    # New form
 
-  # Error lines on stdout from SSL contain process id values and file names.
-  # They also contain a source file name and line number, which may vary from
-  # release to release.
-  s/^\d+:error:/pppp:error:/;
-  s/:(?:\/[^\s:]+\/)?([^\/\s]+\.c):\d+:/:$1:dddd:/;
-
   # There are differences in error messages between OpenSSL versions
   s/SSL_CTX_set_cipher_list/SSL_connect/;
 
@@ -890,9 +884,14 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # openssl version variances
+  # Error lines on stdout from SSL contain process id values and file names.
+  # They also contain a source file name and line number, which may vary from
+  # release to release.
+
     next if /^SSL info:/;
     next if /SSL verify error: depth=0 error=certificate not trusted/;
     s/SSL3_READ_BYTES/ssl3_read_bytes/i;
+    s/^\d+:error:\d+(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
 
     # gnutls version variances
     next if /^Error in the pull function./;
