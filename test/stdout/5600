@@ -20,23 +20,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
 Response verify OK
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
@@ -71,23 +55,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
 no response received
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 End of script
@@ -113,23 +81,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
 no response received
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 End of script
@@ -155,22 +107,6 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> ehlo rhu.barb.tls

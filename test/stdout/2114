@@ -18,19 +18,6 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read server session ticket A
 pppp:error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:s3_pkt.c:dddd:SSL alert number 40
 Failed to start TLS
 End of script
@@ -54,21 +41,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> helo rhu.barb
@@ -106,22 +78,6 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
@@ -156,22 +112,6 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
@@ -206,20 +146,6 @@ Key file = aux-fixed/cert1
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read server session ticket A
 pppp:error:14094418:SSL routines:ssl3_read_bytes:tlsv1 alert unknown ca:s3_pkt.c:dddd:SSL alert number 48
 Failed to start TLS
 End of script
@@ -245,22 +171,6 @@ Key file = aux-fixed/cert1
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
@@ -297,20 +207,6 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read server session ticket A
 pppp:error:14094414:SSL routines:ssl3_read_bytes:sslv3 alert certificate revoked:s3_pkt.c:dddd:SSL alert number 44
 Failed to start TLS
 End of script
@@ -336,22 +232,6 @@ Key file = aux-fixed/cert1
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
