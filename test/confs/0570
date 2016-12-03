@@ -36,5 +36,6 @@ smtp:
   driver = smtp
   port = PORT_D
   OPTION
+  max_parallel = 1
 
 # End
