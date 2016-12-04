@@ -23290,12 +23290,12 @@ message_suffix =
 &`\n`& to &`\r\n`& in &%message_suffix%&.
 
 
-.option path pipe string "see below"
-This option specifies the string that is set up in the PATH environment
-variable of the subprocess. The default is:
-.code
-/bin:/usr/bin
-.endd
+.option path pipe string&!! "bin:/usr/bin"
+.new
+This option is expanded and
+.wen
+specifies the string that is set up in the PATH environment
+variable of the subprocess.
 If the &%command%& option does not yield an absolute path name, the command is
 sought in the PATH directories, in the usual way. &*Warning*&: This does not
 apply to a command specified as a transport filter.

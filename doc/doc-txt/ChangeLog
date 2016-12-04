@@ -6,6 +6,8 @@ Exim version 4.next
 JH/01 Bug 1922: Support IDNA2008.  This has slightly different conversion rules
       than -2003 did; needs libidn2 in addition to linidn.
 
+JH/02 The path option on a pipe transport is now expanded before use
+
 
 Exim version 4.88
 -----------------
