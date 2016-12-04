@@ -28,6 +28,7 @@ pipe:
     temp_errors = *
     command     = perl -e "print 'Hi from pipe'; exit 5;"
     log_defer_output = true
+    path	= ${env{PATH}}
 
 # ----- Retry -----
 
