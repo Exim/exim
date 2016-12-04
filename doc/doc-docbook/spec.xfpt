@@ -5043,11 +5043,17 @@ They can be used to conditionally include parts of a configuration
 
 The following classes of macros are defined:
 .display
-&` _HAVE_                     `&  build-time defines
-&` _DRVR_AUTH_                `&  authenticator drivers
-&` _DRVR_RTR_                 `&  router drivers
-&` _DRVR_TPT_                 `&  transport drivers
-&` _OPT_                      `&  configuration option support
+&` _HAVE_*                    `&  build-time defines
+&` _DRIVER_ROUTER_*           `&  router drivers
+&` _DRIVER_TRANSPORT_*        `&  transport drivers
+&` _DRIVER_AUTHENTICATOR_*    `&  authenticator drivers
+&` _OPT_MAIN_*                `&  main config options
+&` _OPT_ROUTERS_*             `&  generic router options
+&` _OPT_TRANSPORTS_*          `&  generic transport options
+&` _OPT_AUTHENTICATORS_*      `&  generic authenticator options
+&` _OPT_ROUTER_*_*            `&  private router options
+&` _OPT_TRANSPORT_*_*         `&  private transport options
+&` _OPT_AUTHENTICATOR_*_*     `&  private authenticator options
 .endd
 
 Use an &"exim -bP macros"& command to get the list of macros.

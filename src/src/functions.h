@@ -317,7 +317,7 @@ extern void    readconf_driver_init(uschar *, driver_instance **,
                  driver_info *, int, void *, int, optionlist *, int);
 extern uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
-extern void    readconf_options_from_list(optionlist *, unsigned, uschar *);
+extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
 extern void    readconf_options_routers(void);
 extern void    readconf_options_transports(void);
 extern void    readconf_print(uschar *, uschar *, BOOL);
