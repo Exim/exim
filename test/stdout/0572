@@ -78,8 +78,8 @@ OPT =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/tls_conf_prefix"
+keep_environment = PATH
 exim_path = TESTSUITE/eximdir/exim
-keep_environment =
 host_lookup_order = bydns
 spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
@@ -117,8 +117,8 @@ OPT =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/tls_conf_prefix"
+keep_environment = PATH
 exim_path = TESTSUITE/eximdir/exim
-keep_environment =
 host_lookup_order = bydns
 spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog

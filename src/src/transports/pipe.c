@@ -332,16 +332,14 @@ set_up_direct_command(const uschar ***argvptr, uschar *cmd,
 {
 BOOL permitted = FALSE;
 const uschar **argv;
-uschar buffer[64];
 
 /* Set up "transport <name>" to be put in any error messages, and then
 call the common function for creating an argument list and expanding
 the items if necessary. If it fails, this function fails (error information
 is in the addresses). */
 
-sprintf(CS buffer, "%.50s transport", tname);
 if (!transport_set_up_command(argvptr, cmd, expand_arguments, expand_fail,
-      addr, buffer, NULL))
+      addr, string_sprintf("%.50s transport", tname), NULL))
   return FALSE;
 
 /* Point to the set-up arguments. */
@@ -350,12 +348,11 @@ argv = *argvptr;
 
 /* If allow_commands is set, see if the command is in the permitted list. */
 
-if (ob->allow_commands != NULL)
+if (ob->allow_commands)
   {
   int sep = 0;
   const uschar *s;
   uschar *p;
-  uschar buffer[256];
 
   if (!(s = expand_string(ob->allow_commands)))
     {
@@ -365,7 +362,7 @@ if (ob->allow_commands != NULL)
     return FALSE;
     }
 
-  while ((p = string_nextinlist(&s, &sep, buffer, sizeof(buffer))))
+  while ((p = string_nextinlist(&s, &sep, NULL, 0)))
     if (Ustrcmp(p, argv[0]) == 0) { permitted = TRUE; break; }
   }
 
@@ -389,7 +386,7 @@ if (!permitted)
       }
     }
 
-  else if (ob->allow_commands != NULL)
+  else if (ob->allow_commands)
     {
     addr->transport_return = FAIL;
     addr->message = string_sprintf("\"%s\" command not permitted by %s "
@@ -405,10 +402,9 @@ if (argv[0][0] != '/')
   {
   int sep = 0;
   uschar *p;
-  const uschar *listptr = ob->path;
-  uschar buffer[1024];
+  const uschar *listptr = expand_string(ob->path);
 
-  while ((p = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))) != NULL)
+  while ((p = string_nextinlist(&listptr, &sep, NULL, 0)))
     {
     struct stat statbuf;
     sprintf(CS big_buffer, "%.256s/%.256s", p, argv[0]);
@@ -418,7 +414,7 @@ if (argv[0][0] != '/')
       break;
       }
     }
-  if (p == NULL)
+  if (!p)
     {
     addr->transport_return = FAIL;
     addr->message = string_sprintf("\"%s\" command not found for %s transport",
@@ -618,7 +614,7 @@ if (cmd == NULL || *cmd == '\0')
 and numerical the variables in existence. These are passed in
 addr->pipe_expandn for use here. */
 
-if (expand_arguments && addr->pipe_expandn != NULL)
+if (expand_arguments && addr->pipe_expandn)
   {
   uschar **ss = addr->pipe_expandn;
   expand_nmax = -1;
@@ -658,7 +654,7 @@ envp[envcount++] = string_sprintf("LOCAL_PART_SUFFIX=%#s",
 envp[envcount++] = string_sprintf("DOMAIN=%s", deliver_domain);
 envp[envcount++] = string_sprintf("HOME=%#s", deliver_home);
 envp[envcount++] = string_sprintf("MESSAGE_ID=%s", message_id);
-envp[envcount++] = string_sprintf("PATH=%s", ob->path);
+envp[envcount++] = string_sprintf("PATH=%s", expand_string(ob->path));
 envp[envcount++] = string_sprintf("RECIPIENT=%#s%#s%#s@%#s",
   deliver_localpart_prefix, deliver_localpart, deliver_localpart_suffix,
   deliver_domain);
@@ -866,10 +862,10 @@ if (!transport_write_message(fd_in, &tctx, 0))
 
 /* Now any configured suffix */
 
-if (ob->message_suffix != NULL)
+if (ob->message_suffix)
   {
   uschar *suffix = expand_string(ob->message_suffix);
-  if (suffix == NULL)
+  if (!suffix)
     {
     addr->transport_return = search_find_defer? DEFER : PANIC;
     addr->message = string_sprintf("Expansion of \"%s\" (suffix for %s "
@@ -1077,11 +1073,10 @@ if ((rc = child_close(pid, timeout)) != 0)
         {
         const uschar *s = ob->temp_errors;
         uschar *p;
-        uschar buffer[64];
         int sep = 0;
 
         addr->transport_return = FAIL;
-        while ((p = string_nextinlist(&s,&sep,buffer,sizeof(buffer))))
+        while ((p = string_nextinlist(&s,&sep,NULL,0)))
           if (rc == Uatoi(p)) { addr->transport_return = DEFER; break; }
         }
 

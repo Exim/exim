@@ -63,7 +63,7 @@ pipe:
   message_prefix =
   return_output
   user = CALLER
-  path = /bin:/usr/bin:/usr/local/bin
+  path = ${env{PATH}}
 
 
 # ----- Retry -----
