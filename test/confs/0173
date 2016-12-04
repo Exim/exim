@@ -36,6 +36,7 @@ pipe:
   driver = pipe
   return_output
   user = CALLER
+  path = /bin:/usr/bin:/usr/local/bin
 
 
 # ----- Retry -----
