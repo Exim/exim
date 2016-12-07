@@ -12,43 +12,43 @@
 
 ******** SERVER ********
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 QUERY-1
 >LF>ANSWER-1
 >*eof
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 QUERY-2
 >>ANSWER-2
 >*eof
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 QUERY-3
 >LF>ANSWER-3
 >*eof
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 QUERY-4
 >LF>ANSWER-4
 >*eof
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 >>ANSWER-5
 >*eof
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 *sleep 1
 >*eof
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 >*eof
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 QUERY-8
 *sleep 2
 Expected EOF read from client
 Listening on port 1224 ... 
-Connection request from [::1]
+Connection request from [ipv6]
 QUERY-9
 *sleep 2
 Expected EOF read from client
