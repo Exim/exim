@@ -508,7 +508,7 @@ int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 BOOL    config_changed         = FALSE;
 FILE   *config_file            = NULL;
-uschar *config_filename        = NULL;
+const uschar *config_filename  = NULL;
 int     config_lineno          = 0;
 #ifdef CONFIGURE_GROUP
 gid_t   config_gid             = CONFIGURE_GROUP;
