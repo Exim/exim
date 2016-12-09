@@ -1,0 +1,2 @@
+# Test different variants of .includes
+exim -bP config
