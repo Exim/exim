@@ -281,7 +281,7 @@ extern uschar *clmacros[];             /* Copy of them, for re-exec */
 extern int     connection_max_messages;/* Max down one SMTP connection */
 extern BOOL    config_changed;         /* True if -C used */
 extern FILE   *config_file;            /* Configuration file */
-extern uschar *config_filename;        /* Configuration file name */
+extern const uschar *config_filename;  /* Configuration file name */
 extern gid_t   config_gid;             /* Additional group owner */
 extern int     config_lineno;          /* Line number */
 extern uschar *config_main_filelist;   /* List of possible config files */

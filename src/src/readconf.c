@@ -27,7 +27,7 @@ static void readconf_options_auths(void);
 
 typedef struct config_file_item {
   struct config_file_item *next;
-  uschar *filename;
+  const uschar *filename;
   FILE *file;
   int lineno;
 } config_file_item;
