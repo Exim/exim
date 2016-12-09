@@ -4945,6 +4945,11 @@ Include processing happens after macro processing (see below). Its effect is to
 process the lines of the included file as if they occurred inline where the
 inclusion appears.
 
+Relative names are allowed with &`.include`&, and are resolved
+relative to the directory of the including file. For security reasons
+this is not allowed with &`.include_if_exists`&. To avoid confusion, it
+is strongly recommended to use absolute names only.
+
 
 
 .section "Macros in the configuration file" "SECTmacrodefs"

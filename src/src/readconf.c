@@ -22,12 +22,15 @@ static void readconf_options_auths(void);
 
 #define CSTATE_STACK_SIZE 10
 
+const uschar *config_directory = NULL;
+
 
 /* Structure for chain (stack) of .included files */
 
 typedef struct config_file_item {
   struct config_file_item *next;
   const uschar *filename;
+  const uschar *directory;
   FILE *file;
   int lineno;
 } config_file_item;
@@ -941,6 +944,7 @@ for (;;)
       (void)fclose(config_file);
       config_file = config_file_stack->file;
       config_filename = config_file_stack->filename;
+      config_directory = config_file_stack->directory;
       config_lineno = config_file_stack->lineno;
       config_file_stack = config_file_stack->next;
       if (config_lines)
@@ -1163,9 +1167,18 @@ for (;;)
       }
     *t = 0;
 
+    /* We allow relative file names. For security reasons currently
+    relative names not allowed with .include_if_exists. For .include_if_exists
+    we need to check the permissions/ownership of the containing folder */
     if (*ss != '/')
-      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, ".include specifies a non-"
-        "absolute path \"%s\"", ss);
+      if (include_if_exists) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, ".include specifies a non-"
+          "absolute path \"%s\"", ss);
+      else
+        {
+        int offset = 0;
+        int size = 0;
+        ss = string_append(NULL, &size, &offset, 3, config_directory, "/", ss);
+        }
 
     if (include_if_exists != 0 && (Ustat(ss, &statbuf) != 0)) continue;
 
@@ -1176,6 +1189,7 @@ for (;;)
     config_file_stack = save;
     save->file = config_file;
     save->filename = config_filename;
+    save->directory = config_directory;
     save->lineno = config_lineno;
 
     if (!(config_file = Ufopen(ss, "rb")))
@@ -1183,6 +1197,7 @@ for (;;)
         "configuration file %s", ss);
 
     config_filename = string_copy(ss);
+    config_directory = string_copyn(ss, (const uschar*) strrchr(ss, '/') - ss);
     config_lineno = 0;
     continue;
     }
@@ -3353,15 +3368,6 @@ while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
   if (config_file != NULL || errno != ENOENT) break;
   }
 
-/* Now, once we found and opened our configuration file, we change the directory
-to a safe place. Later we change to $spool_directory. */
-
-if (Uchdir("/") < 0)
-  {
-  perror("exim: chdir `/': ");
-  exit(EXIT_FAILURE);
-  }
-
 /* On success, save the name for verification; config_filename is used when
 logging configuration errors (it changes for .included files) whereas
 config_main_filename is the name shown by -bP. Failure to open a configuration
@@ -3369,12 +3375,41 @@ file is a serious disaster. */
 
 if (config_file != NULL)
   {
-  uschar *p;
+  uschar *slash = Ustrrchr(filename, '/');
   config_filename = config_main_filename = string_copy(filename);
 
-  p = Ustrrchr(filename, '/');
-  config_main_directory = p ? string_copyn(filename, p - filename)
-                            : string_copy(US".");
+  /* the config_main_directory we need for the $config_dir expansion.
+  And config_dir is the directory of the current configuration, used for
+  relative .includes. We do need to know it's name, as we change our working
+  directory later. */
+
+  if (filename[0] == '/')
+    config_main_directory = slash > filename ? string_copyn(filename, slash - filename) : US"/";
+  else
+    {
+      /* relative configuration file name: working dir + / + basename(filename) */
+
+      char buf[PATH_MAX];
+      int offset = 0;
+      int size = 0;
+      const uschar *p = Ustrrchr(filename, '/');
+
+      if (getcwd(buf, PATH_MAX) == NULL)
+        {
+        perror("exim: getcwd");
+        exit(EXIT_FAILURE);
+        }
+      config_main_directory = string_cat(NULL, &size, &offset, buf);
+
+      /* If the dir does not end with a "/", append one */
+      if (config_main_directory[offset-1] != '/')
+        string_cat(config_main_directory, &size, &offset, US"/");
+
+      /* If the config file contains a "/", extract the directory part */
+      if (p)
+        string_catn(config_main_directory, &size, &offset, filename, p - filename);
+    }
+  config_directory = config_main_directory;
   }
 else
   {
@@ -3384,6 +3419,15 @@ else
   else
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", string_open_failed(errno,
       "configuration file %s", filename));
+  }
+
+/* Now, once we found and opened our configuration file, we change the directory
+to a safe place. Later we change to $spool_directory. */
+
+if (Uchdir("/") < 0)
+  {
+  perror("exim: chdir `/': ");
+  exit(EXIT_FAILURE);
   }
 
 /* Check the status of the file we have opened, if we have retained root
