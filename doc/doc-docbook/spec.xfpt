@@ -38790,7 +38790,7 @@ must be representable in UTF-16.
 .cindex events
 
 The events mechanism in Exim can be used to intercept processing at a number
-of points.  It was originally invented to giave a way to do customised logging
+of points.  It was originally invented to give a way to do customised logging
 actions (for example, to a database) but can also be used to modify some
 processing actions.
 
@@ -38860,7 +38860,7 @@ with the event type:
 The :defer events populate one extra variable: &$event_defer_errno$&.
 
 For complex operations an ACL expansion can be used in &%event_action%&
-however due to the multiple contextx that Exim operates in during
+however due to the multiple contexts that Exim operates in during
 the course of its processing:
 .ilist
 variables set in transport events will not be visible outside that
