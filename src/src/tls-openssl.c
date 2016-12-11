@@ -472,9 +472,9 @@ else
 #endif
       {
       log_write(0, LOG_MAIN,
-		"[%s] SSL verify error: certificate name mismatch: \"%s\"",
-		tlsp == &tls_out ? deliver_host_address : sender_host_address,
-		dn);
+		"[%s] SSL verify error: certificate name mismatch: "
+		"DN=\"%s\" H=\"%s\"",
+		deliver_host_address, dn, verify_cert_hostnames);
       *calledp = TRUE;
       if (!*optionalp)
 	{
