@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -691,6 +691,16 @@ if (return_message)
     US"------ This is a copy of the body of the message, without the headers.\n"
     :
     US"------ This is a copy of the message, including all the headers.\n";
+  transport_ctx tctx = {
+    tblock,
+    addr,
+    NULL, NULL,
+    (tblock->body_only ? topt_no_headers : 0) |
+    (tblock->headers_only ? topt_no_body : 0) |
+    (tblock->return_path_add ? topt_add_return_path : 0) |
+    (tblock->delivery_date_add ? topt_add_delivery_date : 0) |
+    (tblock->envelope_to_add ? topt_add_envelope_to : 0)
+  };
 
   if (bounce_return_size_limit > 0 && !tblock->headers_only)
     {
@@ -710,14 +720,7 @@ if (return_message)
 
   fflush(f);
   transport_count = 0;
-  transport_write_message(addr, fileno(f),
-    (tblock->body_only? topt_no_headers : 0) |
-    (tblock->headers_only? topt_no_body : 0) |
-    (tblock->return_path_add? topt_add_return_path : 0) |
-    (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-    (tblock->envelope_to_add? topt_add_envelope_to : 0),
-    bounce_return_size_limit, tblock->add_headers, tblock->remove_headers,
-    NULL, NULL, tblock->rewrite_rules, tblock->rewrite_existflags);
+  transport_write_message(fileno(f), &tctx, bounce_return_size_limit);
   }
 
 /* End the message and wait for the child process to end; no timeout. */

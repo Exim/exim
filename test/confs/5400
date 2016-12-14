@@ -1,16 +1,17 @@
 # Exim test configuration 5400
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
+# any options on the cutthrough_delivery contol
+CONTROL=
+
+# optional verify-callout
+OPT=
+
+.include DIR/aux-var/std_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 log_selector = +received_recipients
+queue_only
 
 # ----- Main settings -----
 
@@ -24,7 +25,9 @@ acl_smtp_rcpt = ar
 begin acl
 
 ar:
-	accept control = cutthrough_delivery
+  accept
+	control = cutthrough_deliveryCONTROL
+	OPT
 	logwrite = rcpt for $local_part@$domain
 
 # ----- Routers -----

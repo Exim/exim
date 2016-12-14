@@ -16,12 +16,15 @@ root = true
 [*]
 end_of_line = lf
 insert_final_newline = true
-
-[*.{c,h}]
-indent_style = space
-indent_size = 2
-tab_width = 8
 trim_trailing_whitespace = true
+indent_style = space
+tab_width = 8
+
+[*.{c,h}{,-*}]
+indent_size = 2
+
+[runtest]
+indent_size = 2
 
 # Tab indentation (no size specified)
 [Makefile]

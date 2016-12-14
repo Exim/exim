@@ -1,0 +1,65 @@
+# named queues
+# Exim test configuration 0576
+#
+no_msglog_check
+#
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <normal@test.ex>
+DATA
+Subject: test
+
+foo
+.
+RSET
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <alternate@test.ex>
+DATA
+Subject: test
+
+foo
+.
+QUIT
+****
+#
+exim -qq
+****
+#
+exim -qGnosuchqueue
+****
+#
+exim -qGalternate
+****
+#
+#
+#
+exim -DSERVER=server -qGlowpri/3s
+****
+sleep 1
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <lowpri@test.ex>
+DATA
+Subject: test 
+
+foo
+.
+QUIT
+****
+sleep 3
+killdaemon
+#
+# third-party queue transfer
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <alternate@test.ex>
+DATA
+Subject: test
+
+foo
+.
+QUIT
+****
+# 
+sudo mv DIR/spool/alternate/input/* DIR/spool/input/
+exim -q

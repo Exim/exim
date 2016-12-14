@@ -32,17 +32,17 @@ LOG: MAIN
   == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
 Processing retry items
 Succeeded addresses:
-x@test.ex: no retry items
+ x@test.ex: no retry items
 Failed addresses:
 Deferred addresses:
-TESTSUITE/test-mail/rmbox
+ TESTSUITE/test-mail/rmbox
 locking TESTSUITE/spool/db/retry.lockfile
 retry for T:TESTSUITE/test-mail/rmbox:x@test.ex = *@test.ex -22 0
 failing_interval=ttt message_age=ttt
 Writing retry data for T:TESTSUITE/test-mail/rmbox:x@test.ex
   first failed=dddd last try=dddd next try=+900 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
-x@test.ex: no retry items
+ x@test.ex: no retry items
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -76,11 +76,11 @@ LOG: retry_defer MAIN
   == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-52): Retry time not yet reached
 Processing retry items
 Succeeded addresses:
-x@test.ex: no retry items
+ x@test.ex: no retry items
 Failed addresses:
 Deferred addresses:
-TESTSUITE/test-mail/rmbox: no retry items
-x@test.ex: no retry items
+ TESTSUITE/test-mail/rmbox: no retry items
+ x@test.ex: no retry items
 end of retry processing
 LOG: queue_run MAIN
   End queue run: pid=pppp

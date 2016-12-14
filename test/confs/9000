@@ -2,15 +2,10 @@
 
 LDAPSERVERS=
 
-exim_path = EXIM_PATH
+.include DIR/aux-var/std_conf_prefix
+
 keep_environment = LDAPTLS_REQCERT
-host_lookup_order = bydns
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 

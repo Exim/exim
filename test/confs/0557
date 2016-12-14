@@ -1,19 +1,13 @@
 # Exim test configuration 0557
 
-X=
-Y=
+FAKE=
+OPT=
 HOSTS=
 HAI=
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
+.include DIR/aux-var/std_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -25,8 +19,8 @@ begin routers
 r1:
   driver = manualroute
   route_list = * HOSTS
-X host_find_failed = ignore
-Y host_all_ignored = HAI
+FAKE host_find_failed = ignore
+OPT  host_all_ignored = HAI
   no_more
   self = send
   transport = t1

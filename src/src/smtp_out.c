@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* A number of functions for driving outgoing SMTP calls. */
@@ -41,10 +41,9 @@ const uschar * expint;
 uschar *iface;
 int sep = 0;
 
-if (istring == NULL) return TRUE;
+if (!istring) return TRUE;
 
-expint = expand_string(istring);
-if (expint == NULL)
+if (!(expint = expand_string(istring)))
   {
   if (expand_string_forcedfail) return TRUE;
   addr->transport_return = PANIC;
@@ -57,7 +56,7 @@ while (isspace(*expint)) expint++;
 if (*expint == 0) return TRUE;
 
 while ((iface = string_nextinlist(&expint, &sep, big_buffer,
-          big_buffer_size)) != NULL)
+          big_buffer_size)))
   {
   if (string_is_ip_address(iface, NULL) == 0)
     {
@@ -72,7 +71,7 @@ while ((iface = string_nextinlist(&expint, &sep, big_buffer,
     break;
   }
 
-if (iface != NULL) *interface = string_copy(iface);
+if (iface) *interface = string_copy(iface);
 return TRUE;
 }
 
@@ -152,8 +151,8 @@ int dscp_value;
 int dscp_level;
 int dscp_option;
 int sock;
-int on = 1;
 int save_errno = 0;
+BOOL fastopen = FALSE;
 
 #ifndef DISABLE_EVENT
 deliver_host_address = host->address;
@@ -186,6 +185,10 @@ if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
     (void) setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value));
   }
 
+#ifdef TCP_FASTOPEN
+if (verify_check_given_host (&ob->hosts_try_fastopen, host) == OK) fastopen = TRUE;
+#endif
+
 /* Bind to a specific interface if requested. Caller must ensure the interface
 is the same type (IPv4 or IPv6) as the outgoing address. */
 
@@ -200,7 +203,7 @@ if (interface && ip_bind(sock, host_af, interface, 0) < 0)
 /* Connect to the remote host, and add keepalive to the socket before returning
 it, if requested. */
 
-else if (ip_connect(sock, host_af, host->address, port, timeout) < 0)
+else if (ip_connect(sock, host_af, host->address, port, timeout, fastopen) < 0)
   save_errno = errno;
 
 /* Either bind() or connect() failed */
@@ -324,14 +327,16 @@ static BOOL
 flush_buffer(smtp_outblock *outblock)
 {
 int rc;
+int n = outblock->ptr - outblock->buffer;
 
+HDEBUG(D_transport|D_acl) debug_printf("cmd buf flush %d bytes\n", n);
 #ifdef SUPPORT_TLS
 if (tls_out.active == outblock->sock)
-  rc = tls_write(FALSE, outblock->buffer, outblock->ptr - outblock->buffer);
+  rc = tls_write(FALSE, outblock->buffer, n);
 else
 #endif
+  rc = send(outblock->sock, outblock->buffer, n, 0);
 
-rc = send(outblock->sock, outblock->buffer, outblock->ptr - outblock->buffer, 0);
 if (rc <= 0)
   {
   HDEBUG(D_transport|D_acl) debug_printf("send failed: %s\n", strerror(errno));
@@ -357,6 +362,7 @@ Arguments:
   noflush    if TRUE, save the command in the output buffer, for pipelining
   format     a format, starting with one of
              of HELO, MAIL FROM, RCPT TO, DATA, ".", or QUIT.
+	     If NULL, flush pipeline buffer only.
   ...        data for the format
 
 Returns:     0 if command added to pipelining buffer, with nothing transmitted
@@ -371,48 +377,51 @@ int count;
 int rc = 0;
 va_list ap;
 
-va_start(ap, format);
-if (!string_vformat(big_buffer, big_buffer_size, CS format, ap))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
-    "SMTP");
-va_end(ap);
-count = Ustrlen(big_buffer);
-
-if (count > outblock->buffersize)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
-    "SMTP");
-
-if (count > outblock->buffersize - (outblock->ptr - outblock->buffer))
+if (format)
   {
-  rc = outblock->cmd_count;                 /* flush resets */
-  if (!flush_buffer(outblock)) return -1;
-  }
+  va_start(ap, format);
+  if (!string_vformat(big_buffer, big_buffer_size, CS format, ap))
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
+      "SMTP");
+  va_end(ap);
+  count = Ustrlen(big_buffer);
 
-Ustrncpy(CS outblock->ptr, big_buffer, count);
-outblock->ptr += count;
-outblock->cmd_count++;
-count -= 2;
-big_buffer[count] = 0;     /* remove \r\n for error message */
+  if (count > outblock->buffersize)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
+      "SMTP");
 
-/* We want to hide the actual data sent in AUTH transactions from reflections
-and logs. While authenticating, a flag is set in the outblock to enable this.
-The AUTH command itself gets any data flattened. Other lines are flattened
-completely. */
-
-if (outblock->authenticating)
-  {
-  uschar *p = big_buffer;
-  if (Ustrncmp(big_buffer, "AUTH ", 5) == 0)
+  if (count > outblock->buffersize - (outblock->ptr - outblock->buffer))
     {
-    p += 5;
-    while (isspace(*p)) p++;
-    while (!isspace(*p)) p++;
-    while (isspace(*p)) p++;
+    rc = outblock->cmd_count;                 /* flush resets */
+    if (!flush_buffer(outblock)) return -1;
     }
-  while (*p != 0) *p++ = '*';
-  }
 
-HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> %s\n", big_buffer);
+  Ustrncpy(CS outblock->ptr, big_buffer, count);
+  outblock->ptr += count;
+  outblock->cmd_count++;
+  count -= 2;
+  big_buffer[count] = 0;     /* remove \r\n for error message */
+
+  /* We want to hide the actual data sent in AUTH transactions from reflections
+  and logs. While authenticating, a flag is set in the outblock to enable this.
+  The AUTH command itself gets any data flattened. Other lines are flattened
+  completely. */
+
+  if (outblock->authenticating)
+    {
+    uschar *p = big_buffer;
+    if (Ustrncmp(big_buffer, "AUTH ", 5) == 0)
+      {
+      p += 5;
+      while (isspace(*p)) p++;
+      while (!isspace(*p)) p++;
+      while (isspace(*p)) p++;
+      }
+    while (*p != 0) *p++ = '*';
+    }
+
+  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> %s\n", big_buffer);
+  }
 
 if (!noflush)
   {
@@ -527,7 +536,7 @@ Arguments:
   buffer    where to put the response
   size      the size of the buffer
   okdigit   the expected first digit of the response
-  timeout   the timeout to use
+  timeout   the timeout to use, in seconds
 
 Returns:    TRUE if a valid, non-error response was received; else FALSE
 */

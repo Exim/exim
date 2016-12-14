@@ -1,13 +1,17 @@
+
+******** SERVER ********
 1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
 1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userz@domC.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domC.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domD.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domE.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domF.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domG.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domH.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domK.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domL.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domM.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domN.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domP.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domP.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userz@domQ.ex>: discarded by RCPT ACL

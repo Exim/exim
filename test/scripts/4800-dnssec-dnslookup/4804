@@ -1,0 +1,11 @@
+# dnssec log_selector (client)
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -DOPT= -odf nologging@l-sec.test.ex
+****
+exim -DOPT=+dnssec -odf withlogging@l-sec.test.ex
+****
+exim -DOPT=+dnssec -odf withlogging@thishost.test.ex
+****
+killdaemon
+no_msglog_check

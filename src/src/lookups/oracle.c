@@ -400,12 +400,12 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
   ofetch(cda);
   if(cda->rc == NO_DATA_FOUND) break;
 
-  if (result != NULL) result = string_cat(result, &ssize, &offset, "\n", 1);
+  if (result) result = string_catn(result, &ssize, &offset, "\n", 1);
 
   /* Single field - just add on the data */
 
   if (num_fields == 1)
-    result = string_cat(result, &ssize, &offset, def[0].buf, def[0].col_retlen);
+    result = string_catn(result, &ssize, &offset, def[0].buf, def[0].col_retlen);
 
   /* Multiple fields - precede by file name, removing {lead,trail}ing WS */
 
@@ -417,8 +417,8 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
     while (*s != 0 && isspace(*s)) s++;
     slen = Ustrlen(s);
     while (slen > 0 && isspace(s[slen-1])) slen--;
-    result = string_cat(result, &ssize, &offset, s, slen);
-    result = string_cat(result, &ssize, &offset, US"=", 1);
+    result = string_catn(result, &ssize, &offset, s, slen);
+    result = string_catn(result, &ssize, &offset, US"=", 1);
 
     /* int and float type wont ever need escaping. Otherwise, quote the value
     if it contains spaces or is empty. */
@@ -427,30 +427,30 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
        (def[i].buf[0] == 0 || strchr(def[i].buf, ' ') != NULL))
       {
       int j;
-      result = string_cat(result, &ssize, &offset, "\"", 1);
+      result = string_catn(result, &ssize, &offset, "\"", 1);
       for (j = 0; j < def[i].col_retlen; j++)
         {
         if (def[i].buf[j] == '\"' || def[i].buf[j] == '\\')
-          result = string_cat(result, &ssize, &offset, "\\", 1);
-        result = string_cat(result, &ssize, &offset, def[i].buf+j, 1);
+          result = string_catn(result, &ssize, &offset, "\\", 1);
+        result = string_catn(result, &ssize, &offset, def[i].buf+j, 1);
         }
-      result = string_cat(result, &ssize, &offset, "\"", 1);
+      result = string_catn(result, &ssize, &offset, "\"", 1);
       }
 
     else switch(desc[i].dbtype)
       {
       case INT_TYPE:
       sprintf(CS tmp, "%d", def[i].int_buf);
-      result = string_cat(result, &ssize, &offset, tmp, Ustrlen(tmp));
+      result = string_cat(result, &ssize, &offset, tmp);
       break;
 
       case FLOAT_TYPE:
       sprintf(CS tmp, "%f", def[i].flt_buf);
-      result = string_cat(result, &ssize, &offset, tmp, Ustrlen(tmp));
+      result = string_cat(result, &ssize, &offset, tmp);
       break;
 
       case STRING_TYPE:
-      result = string_cat(result, &ssize, &offset, def[i].buf,
+      result = string_catn(result, &ssize, &offset, def[i].buf,
         def[i].col_retlen);
       break;
 
@@ -461,7 +461,7 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
       goto ORACLE_EXIT;
       }
 
-    result = string_cat(result, &ssize, &offset, " ", 1);
+    result = string_catn(result, &ssize, &offset, " ", 1);
     }
   }
 

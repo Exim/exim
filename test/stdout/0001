@@ -20,3 +20,4 @@ no_tcp_nodelay
 trusted_users = 1234:5678
 unknown_login = unknownlogin
 warn_message_file = /home/exim/test/warnmsg_file
+no_syslog_pid

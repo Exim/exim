@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* All the global variables are defined together in this one module, so
@@ -35,7 +35,7 @@ optionlist optionlist_auths[] = {
                  (void *)(offsetof(auth_instance, set_id)) }
 };
 
-int     optionlist_auths_size = sizeof(optionlist_auths)/sizeof(optionlist);
+int     optionlist_auths_size = nelem(optionlist_auths);
 
 /* An empty host aliases list. */
 
@@ -49,6 +49,7 @@ duplicate them here... */
 uschar *opt_perl_startup       = NULL;
 BOOL    opt_perl_at_start      = FALSE;
 BOOL    opt_perl_started       = FALSE;
+BOOL    opt_perl_taintmode     = FALSE;
 #endif
 
 #ifdef EXPAND_DLFUNC
@@ -137,15 +138,11 @@ tls_support tls_out = {
 uschar *dsn_envid              = NULL;
 int     dsn_ret                = 0;
 const pcre  *regex_DSN         = NULL;
-BOOL    smtp_use_dsn           = FALSE;
 uschar *dsn_advertise_hosts    = NULL;
 
 #ifdef SUPPORT_TLS
 BOOL    gnutls_compat_mode     = FALSE;
 BOOL    gnutls_allow_auto_pkcs11 = FALSE;
-uschar *gnutls_require_mac     = NULL;
-uschar *gnutls_require_kx      = NULL;
-uschar *gnutls_require_proto   = NULL;
 uschar *openssl_options        = NULL;
 const pcre *regex_STARTTLS     = NULL;
 uschar *tls_advertise_hosts    = US"*";
@@ -156,11 +153,10 @@ that's the interop problem which has been observed: GnuTLS suggesting a higher
 bit-count as "NORMAL" (2432) and Thunderbird dropping connection. */
 int     tls_dh_max_bits        = 2236;
 uschar *tls_dhparam            = NULL;
-uschar *tls_eccurve            = US"prime256v1";
+uschar *tls_eccurve            = US"auto";
 # ifndef DISABLE_OCSP
 uschar *tls_ocsp_file          = NULL;
 # endif
-BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
@@ -187,7 +183,10 @@ incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
 
 #ifndef STAND_ALONE
+int (*lwr_receive_getc)(void)  = stdin_getc;
+int (*lwr_receive_ungetc)(int) = stdin_ungetc;
 int (*receive_getc)(void)      = stdin_getc;
+void (*receive_get_cache)(void)= NULL;
 int (*receive_ungetc)(int)     = stdin_ungetc;
 int (*receive_feof)(void)      = stdin_feof;
 int (*receive_ferror)(void)    = stdin_ferror;
@@ -489,14 +488,22 @@ int     callout_cache_positive_expire = 24*60*60;
 int     callout_cache_negative_expire = 2*60*60;
 uschar *callout_random_local_part = US"$primary_hostname-$tod_epoch-testing";
 uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W](?>[a-z0-9/_-]*[^\\W])?)+(\\.?)$";
-int     check_log_inodes       = 0;
-int     check_log_space        = 0;
+int     check_log_inodes       = 100;
+int     check_log_space        = 10*1024;	/* 10K Kbyte == 10MB */
 BOOL    check_rfc2047_length   = TRUE;
-int     check_spool_inodes     = 0;
-int     check_spool_space      = 0;
-uschar	*client_authenticator  = NULL;
-uschar	*client_authenticated_id = NULL;
-uschar	*client_authenticated_sender = NULL;
+int     check_spool_inodes     = 100;
+int     check_spool_space      = 10*1024;	/* 10K Kbyte == 10MB */
+
+uschar *chunking_advertise_hosts = US"*";
+unsigned chunking_datasize     = 0;
+unsigned chunking_data_left    = 0;
+BOOL    chunking_offered       = FALSE;
+chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
+const pcre *regex_CHUNKING     = NULL;
+
+uschar *client_authenticator   = NULL;
+uschar *client_authenticated_id = NULL;
+uschar *client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
 BOOL    config_changed         = FALSE;
@@ -505,6 +512,8 @@ uschar *config_filename        = NULL;
 int     config_lineno          = 0;
 #ifdef CONFIGURE_GROUP
 gid_t   config_gid             = CONFIGURE_GROUP;
+#else
+gid_t   config_gid             = 0;
 #endif
 uschar *config_main_filelist   = US CONFIGURE_FILE
                          "\0<-----------Space to patch configure_filename->";
@@ -513,6 +522,8 @@ uschar *config_main_directory  = NULL;
 
 #ifdef CONFIGURE_OWNER
 uid_t   config_uid             = CONFIGURE_OWNER;
+#else
+uid_t   config_uid             = 0;
 #endif
 
 int     connection_max_messages= -1;
@@ -525,6 +536,7 @@ uschar *continue_transport     = NULL;
 uschar *csa_status             = NULL;
 cut_t   cutthrough = {
   FALSE,				/* delivery: when to attempt */
+  FALSE,				/* on defer: spool locally */
   -1,					/* fd: open connection */
   0,					/* nrcpt: number of addresses */
 };
@@ -625,11 +637,6 @@ uschar *deliver_selectstring   = NULL;
 BOOL    deliver_selectstring_regex = FALSE;
 uschar *deliver_selectstring_sender = NULL;
 BOOL    deliver_selectstring_sender_regex = FALSE;
-#ifdef WITH_OLD_DEMIME
-int     demime_errorlevel      = 0;
-int     demime_ok              = 0;
-uschar *demime_reason          = NULL;
-#endif
 BOOL    disable_callout_flush  = FALSE;
 BOOL    disable_delay_flush    = FALSE;
 #ifdef ENABLE_DISABLE_FSYNC
@@ -728,9 +735,6 @@ uschar *filter_test_sfile      = NULL;
 uschar *filter_test_ufile      = NULL;
 uschar *filter_thisaddress     = NULL;
 int     finduser_retries       = 0;
-#ifdef WITH_OLD_DEMIME
-uschar *found_extension        = NULL;
-#endif
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };
 uschar *freeze_tell            = NULL;
 uschar *freeze_tell_config     = NULL;
@@ -871,6 +875,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, deliver_time),
   BIT_TABLE(L, delivery_size),
   BIT_TABLE(L, dnslist_defer),
+  BIT_TABLE(L, dnssec),
   BIT_TABLE(L, etrn),
   BIT_TABLE(L, host_lookup_failed),
   BIT_TABLE(L, ident_timeout),
@@ -924,6 +929,8 @@ int     lookup_open_max        = 25;
 uschar *lookup_value           = NULL;
 
 macro_item  *macros            = NULL;
+macro_item  *mlast             = NULL;
+BOOL    macros_builtin_created = FALSE;
 uschar *mailstore_basename     = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *malware_name           = NULL;  /* Virus Name */
@@ -983,6 +990,9 @@ BOOL    no_mbox_unspool        = FALSE;
 #endif
 BOOL    no_multiline_responses = FALSE;
 
+const int on                   = 1;	/* for setsockopt */
+const int off                  = 0;
+
 uid_t   original_euid;
 gid_t   originator_gid;
 uschar *originator_login       = NULL;
@@ -1027,6 +1037,7 @@ BOOL    queue_2stage           = FALSE;
 uschar *queue_domains          = NULL;
 int     queue_interval         = -1;
 BOOL    queue_list_requires_admin = TRUE;
+uschar *queue_name             = US"";
 BOOL    queue_only             = FALSE;
 uschar *queue_only_file        = NULL;
 int     queue_only_load        = -1;
@@ -1037,7 +1048,7 @@ BOOL    queue_run_first_delivery = FALSE;
 BOOL    queue_run_force        = FALSE;
 BOOL    queue_run_in_order     = FALSE;
 BOOL    queue_run_local        = FALSE;
-int     queue_run_max          = 5;
+uschar *queue_run_max          = US"5";
 pid_t   queue_run_pid          = (pid_t)0;
 int     queue_run_pipe         = -1;
 BOOL    queue_running          = FALSE;
@@ -1319,8 +1330,8 @@ int     smtp_rlr_base          = 0;
 double  smtp_rlr_factor        = 0.0;
 int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
-BOOL    smtp_use_pipelining    = FALSE;
-BOOL    smtp_use_size          = FALSE;
+unsigned smtp_peer_options     = 0;
+unsigned smtp_peer_options_wrap= 0;
 #ifdef SUPPORT_I18N
 uschar *smtputf8_advertise_hosts = US"*";	/* overridden under test-harness */
 #endif
@@ -1373,6 +1384,7 @@ BOOL    suppress_local_fixups_default = FALSE;
 BOOL    synchronous_delivery   = FALSE;
 BOOL    syslog_duplication     = TRUE;
 int     syslog_facility        = LOG_MAIL;
+BOOL    syslog_pid             = TRUE;
 uschar *syslog_processname     = US"exim";
 BOOL    syslog_timestamp       = TRUE;
 uschar *system_filter          = NULL;
@@ -1506,8 +1518,8 @@ uschar *uucp_from_sender       = US"$1";
 
 uschar *verify_mode	       = NULL;
 uschar *version_copyright      =
- US"Copyright (c) University of Cambridge, 1995 - 2015\n"
-   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2015";
+ US"Copyright (c) University of Cambridge, 1995 - 2016\n"
+   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2016";
 uschar *version_date           = US"?";
 uschar *version_cnumber        = US"????";
 uschar *version_string         = US"?";

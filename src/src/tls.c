@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module provides TLS (aka SSL) support for Exim. The code for OpenSSL is
@@ -89,7 +89,7 @@ to_tz(uschar * tz)
 {
 uschar * old = US getenv("TZ");
 (void) setenv("TZ", CCS tz, 1);
-tzset(); 
+tzset();
 return old;
 }
 
@@ -99,8 +99,8 @@ restore_tz(uschar * tz)
 if (tz)
   (void) setenv("TZ", CCS tz, 1);
 else
-  (void) unsetenv("TZ");
-tzset(); 
+  (void) os_unsetenv(US"TZ");
+tzset();
 }
 
 /*************************************************

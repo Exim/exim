@@ -1,13 +1,7 @@
 # Exim test configuration 0012
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
+.include DIR/aux-var/std_conf_prefix
+
 
 # ----- Main settings -----
 

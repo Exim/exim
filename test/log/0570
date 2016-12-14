@@ -1,84 +1,106 @@
-**NOTE: The delivery lines in this file have been sorted.
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> usery@domb.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx@domc.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 -> usery@domd.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 == usery@domf.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@dome.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 => usery@domf.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbD-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbE-0005vi-00 => userx@domg.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbF-0005vi-00"
+1999-03-02 09:44:33 10HmbE-0005vi-00 -> usery@domh.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbF-0005vi-00"
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbG-0005vi-00 == usery@doml.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbG-0005vi-00 => userx@domk.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbH-0005vi-00"
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbG-0005vi-00 => usery@doml.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbI-0005vi-00"
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbJ-0005vi-00 == usery@domn.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => userx@domm.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbK-0005vi-00"
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => usery@domn.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbL-0005vi-00"
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbM-0005vi-00 == userz@domq.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbM-0005vi-00 => userx@domp.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbN-0005vi-00"
+1999-03-02 09:44:33 10HmbM-0005vi-00 -> usery@domp.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbN-0005vi-00"
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbM-0005vi-00 => userz@domq.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbO-0005vi-00"
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
 1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@primary.test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> usery@domb.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domC.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domD.ex>: discarded by RCPT ACL
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaZ-0005vi-00@primary.test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 -> usery@domb.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domE.ex>: discarded by RCPT ACL
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbB-0005vi-00@primary.test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domF.ex>: discarded by RCPT ACL
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbB-0005vi-00@primary.test.ex
 1999-03-02 09:44:33 10HmbD-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
-1999-03-02 09:44:33 10HmbB-0005vi-00 => usery@domb.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbD-0005vi-00"
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domG.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domH.ex>: discarded by RCPT ACL
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbE-0005vi-00@primary.test.ex
 1999-03-02 09:44:33 10HmbF-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbE-0005vi-00@primary.test.ex
-1999-03-02 09:44:33 10HmbG-0005vi-00 => blackhole (RCPT ACL discarded recipients)
-1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbE-0005vi-00 => userx@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbF-0005vi-00"
-1999-03-02 09:44:33 10HmbE-0005vi-00 => usery@domb.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbG-0005vi-00"
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbH-0005vi-00@primary.test.ex
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domK.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbG-0005vi-00@primary.test.ex
+1999-03-02 09:44:33 10HmbH-0005vi-00 => blackhole (RCPT ACL discarded recipients)
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domL.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbG-0005vi-00@primary.test.ex
 1999-03-02 09:44:33 10HmbI-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domB.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbH-0005vi-00@primary.test.ex
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => blackhole (RCPT ACL discarded recipients)
-1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbH-0005vi-00 => userx@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbI-0005vi-00"
-1999-03-02 09:44:33 10HmbH-0005vi-00 => usery@domb.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbJ-0005vi-00"
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domA.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbK-0005vi-00@primary.test.ex
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domM.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbJ-0005vi-00@primary.test.ex
+1999-03-02 09:44:33 10HmbK-0005vi-00 => blackhole (RCPT ACL discarded recipients)
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domN.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbJ-0005vi-00@primary.test.ex
 1999-03-02 09:44:33 10HmbL-0005vi-00 => blackhole (RCPT ACL discarded recipients)
 1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
-1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userz@domC.ex>: discarded by RCPT ACL
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbK-0005vi-00@primary.test.ex
-1999-03-02 09:44:33 10HmbM-0005vi-00 => blackhole (RCPT ACL discarded recipients)
-1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbK-0005vi-00 -> usery@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbL-0005vi-00"
-1999-03-02 09:44:33 10HmbK-0005vi-00 => userx@doma.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbL-0005vi-00"
-1999-03-02 09:44:33 10HmbK-0005vi-00 => userz@domc.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbM-0005vi-00"
-1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userx@domP.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <usery@domP.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbM-0005vi-00@primary.test.ex
+1999-03-02 09:44:33 10HmbN-0005vi-00 => blackhole (RCPT ACL discarded recipients)
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 H=localhost (primary.test.ex) [127.0.0.1] F=<CALLER@test.ex> RCPT <userz@domQ.ex>: discarded by RCPT ACL
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@test.ex H=localhost (primary.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmbM-0005vi-00@primary.test.ex
+1999-03-02 09:44:33 10HmbO-0005vi-00 => blackhole (RCPT ACL discarded recipients)
+1999-03-02 09:44:33 10HmbO-0005vi-00 Completed

@@ -13,6 +13,8 @@ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@test.ex>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@test.ex
 Recipients:
   userx@test.ex
@@ -27,6 +29,7 @@ I Message-Id: <E10HmaX-0005vi-00@mail.test.ex>
 F From: CALLER_NAME <CALLER@test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by mail.test.ex with local (Exim x.yz)
@@ -35,11 +38,12 @@ P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
 DSN: Flags :0
 DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
@@ -59,6 +63,7 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
+Trying spool file TESTSUITE/spool//input//10HmaX-0005vi-00-D
 reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
@@ -72,7 +77,7 @@ DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
@@ -110,7 +115,7 @@ routed by r1 router
   envelope to: userx@test.ex
   transport: <none>
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -129,7 +134,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> TESTSUITE/test-mail <--------
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
+locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 no retry data available
@@ -168,9 +173,9 @@ changed uid/gid: post-delivery tidying
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 Processing retry items
 Succeeded addresses:
-TESTSUITE/test-mail: no retry items
-userx@test.ex: no retry items
-userx@test.ex: no retry items
+ TESTSUITE/test-mail: no retry items
+ userx@test.ex: no retry items
+ userx@test.ex: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing

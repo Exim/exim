@@ -1,6 +1,147 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
+This document describes *changes* to previous versions, that might
+affect Exim's operation, with an unchanged configuration file.  For new
+options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.88
+-----------------
+JH/01 Use SIZE on MAIL FROM in a cutthrough connection, if the destination
+      supports it and a size is available (ie. the sending peer gave us one).
+
+JH/02 The obsolete acl condition "demime" is removed (finally, after ten
+      years of being deprecated). The replacements are the ACLs
+      acl_smtp_mime and acl_not_smtp_mime.
+
+JH/03 Upgrade security requirements imposed for hosts_try_dane: previously
+      a downgraded non-dane trust-anchor for the TLS connection (CA-style)
+      or even an in-clear connection were permitted.  Now, if the host lookup
+      was dnssec and dane was requested then the host is only used if the
+      TLSA lookup succeeds and is dnssec.  Further hosts (eg. lower priority
+      MXs) will be tried (for hosts_try_dane though not for hosts_require_dane)
+      if one fails this test.
+      This means that a poorly-configured remote DNS will make it incommunicado;
+      but it protects against a DNS-interception attack on it.
+
+JH/04 Bug 1810: make continued-use of an open smtp transport connection
+      non-noisy when a race steals the message being considered.
+
+JH/05 If main configuration option tls_certificate is unset, generate a
+      self-signed certificate for inbound TLS connections.
+
+JH/06 Bug 165: hide more cases of password exposure - this time in expansions
+      in rewrites and routers.
+
+JH/07 Retire gnutls_require_mac et.al.  These were nonfunctional since 4.80
+      and logged a warning sing 4.83; now they are a configuration file error.
+
+JH/08 Bug 1836: Fix crash in VRFY handling when handed an unqualified name
+      (lacking @domain).  Apply the same qualification processing as RCPT.
+
+JH/09 Bug 1804: Avoid writing msglog files when in -bh or -bhc mode.
+
+JH/10 Support ${sha256:} applied to a string (as well as the previous
+      certificate).
+
+JH/11 Cutthrough: avoid using the callout hints db on a verify callout when
+      a cutthrough deliver is pending, as we always want to make a connection.
+      This also avoids re-routing the message when later placing the cutthrough
+      connection after a verify cache hit.
+      Do not update it with the verify result either.
+
+JH/12 Cutthrough: disable when verify option success_on_redirect is used, and
+      when routing results in more than one destination address.
+
+JH/13 Cutthrough: expand transport dkim_domain option when testing for dkim
+      signing (which inhibits the cutthrough capability).  Previously only
+      the presence of an option was tested; now an expansion evaluating as
+      empty is permissible (obviously it should depend only on data available
+      when the cutthrough connection is made).
+
+JH/14 Fix logging of errors under PIPELINING.  Previously the log line giving
+      the relevant preceding SMTP command did not note the pipelining mode.
+
+JH/15 Fix counting of empty lines in $body_linecount and $message_linecount.
+      Previously they were not counted.
+
+JH/16 DANE: treat a TLSA lookup response having all non-TLSA RRs, the same
+      as one having no matching records.  Previously we deferred the message
+      that needed the lookup.
+
+JH/17 Fakereject: previously logged as a norml message arrival "<="; now
+      distinguished as "(=".
+
+JH/18 Bug 1867: make the fail_defer_domains option on a dnslookup router work
+      for missing MX records.  Previously it only worked for missing A records.
+
+JH/19 Bug 1850: support Radius libraries that return REJECT_RC.
+
+JH/20 Bug 1872: Ensure that acl_smtp_notquit is run when the connection drops
+      after the data-go-ahead and data-ack.  Patch from Jason Betts.
+
+JH/21 Bug 1846: Send DMARC forensic reports for reject and quaratine results,
+      even for a "none" policy.  Patch from Tony Meyer.
+
+JH/22 Fix continued use of a connection for further deliveries. If a port was
+      specified by a router, it must also match for the delivery to be
+      compatible.
+
+JH/23 Bug 1874: fix continued use of a connection for further deliveries.
+      When one of the recipients of a message was unsuitable for the connection
+      (has no matching addresses), we lost track of needing to mark it
+      deferred.  As a result mail would be lost.
+
+JH/24 Bug 1832: Log EHLO response on getting conn-close response for HELO.
+
+JH/25 Decoding ACL controls is now done using a binary search; the source code
+      takes up less space and should be simpler to maintain.  Merge the ACL
+      condition decode tables also, with similar effect.
+
+JH/26 Fix problem with one_time used on a redirect router which returned the
+      parent address unchanged.  A retry would see the parent address marked as
+      delivered, so not attempt the (identical) child.  As a result mail would
+      be lost.
+
+JH/27 Fix a possible security hole, wherein a process operating with the Exim
+      UID can gain a root shell.  Credit to http://www.halfdog.net/ for
+      discovery and writeup.  Ubuntu bug 1580454; no bug raised against Exim
+      itself :(
+
+JH/28 Enable {spool,log} filesystem space and inode checks as default.
+      Main config options check_{log,spool}_{inodes,space} are now
+      100 inodes, 10MB unless set otherwise in the configuration.
+
+JH/29 Fix the connection_reject log selector to apply to the connect ACL.
+      Previously it only applied to the main-section connection policy
+      options.
+
+JH/30 Bug 1897: fix callouts connection fallback from TLS to cleartext.
+
+PP/01 Changed default Diffie-Hellman parameters to be Exim-specific, created
+      by me.  Added RFC7919 DH primes as an alternative.
+
+PP/02 Unbreak build via pkg-config with new hash support when crypto headers
+      are not in the system include path.
+
+JH/31 Fix longstanding bug with aborted TLS server connection handling.  Under
+      GnuTLS, when a session startup failed (eg because the client disconnected)
+      Exim did stdio operations after fclose.  This was exposed by a recent
+      change which nulled out the file handle after the fclose.
+
+JH/32 Bug 1909: Fix OCSP proof verification for cases where the proof is
+      signed directly by the cert-signing cert, rather than an intermediate
+      OCSP-signing cert.  This is the model used by LetsEncrypt.
+
+JH/33 Bug 1914: Ensure socket is nonblocking before draining after SMTP QUIT.
+
+HS/01 Fix leak in verify callout under GnuTLS, about 3MB per recipient on
+      an incoming connection.
+
+HS/02 Bug 1802: Do not half-close the connection after sending a request
+      to rspamd.
+
+HS/03 Use "auto" as the default EC curve parameter. For OpenSSL < 1.0.2
+      fallback to "prime256v1".
 
 Exim version 4.87
 -----------------
@@ -267,7 +408,7 @@ JH/18 Bug 1581: Router and transport options headers_add/remove can
       now have the list separator specified.
 
 JH/19 Bug 392: spamd_address, and clamd av_scanner, now support retry
-      option values. 
+      option values.
 
 JH/20 Bug 1571: Ensure that $tls_in_peerdn is set, when verification fails
       under OpenSSL.
@@ -282,7 +423,7 @@ JH/23 Bug 1572: Increase limit on SMTP confirmation message copy size
 
 JH/24 Verification callouts now attempt to use TLS by default.
 
-HS/01 DNSSEC options (dnssec_require_domains, dnssec_request_domains) 
+HS/01 DNSSEC options (dnssec_require_domains, dnssec_request_domains)
       are generic router options now. The defaults didn't change.
 
 JH/25 Bug 466: Add RFC2322 support for MIME attachment filenames.
@@ -319,6 +460,8 @@ JH/35 Bug 1642: Fix support of $spam_ variables at delivery time.  Was
 
 JH/36 Bug 1659: Guard checking of input smtp commands again pseudo-command
       added for tls authenticator.
+
+HS/03 Add perl_taintmode main config option
 
 
 Exim version 4.85
@@ -900,7 +1043,7 @@ PP/12 MAIL args handles TAB as well as SP, for better interop with
       Analysis and variant patch by Todd Lyons.
 
 NM/04 Bugzilla 1237 - fix cases where printf format usage not indicated
-      Bug report from Lars Müller <lars@samba.org> (via SUSE), 
+      Bug report from Lars Müller <lars@samba.org> (via SUSE),
       Patch from Dirk Mueller <dmueller@suse.com>
 
 PP/13 tls_peerdn now print-escaped for spool files.

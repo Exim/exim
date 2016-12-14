@@ -59,3 +59,19 @@ QUIT
 exim -odi userx@domain1 usery@domain2
 Test message 2
 ****
+#
+exim -z "Test: reject ehlo, then close (late, giving time for HELO)"
+****
+sudo rm DIR/spool/db/retry
+server PORT_S
+220 Connected OK
+EHLO
+550 You are banned
+HELO
+****
+exim -odi userx@domain1
+Test message 4
+****
+#
+#
+no_msglog_check

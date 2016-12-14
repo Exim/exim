@@ -80,7 +80,6 @@ LOOKUP_PASSWD=yes
 LDAP_LIB_TYPE=OPENLDAP2
 LOOKUP_LIBS=-lldap -llber
 
-# WITH_OLD_DEMIME=yes
 WITH_CONTENT_SCAN=yes
 
 # It is important to define these variables but the values are always overridden

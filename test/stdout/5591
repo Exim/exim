@@ -1,0 +1,24 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO testhost.test.ex
+250-hiya matey
+250-PRDR
+250-CHUNKING
+250 OK
+MAIL FROM:<> PRDR
+250 OK
+RCPT TO:<usery@testhost.test.ex>
+250 OK
+RCPT TO:<userz@testhost.test.ex>
+250 OK
+BDAT 285 LAST
+353 prdr responses coming up
+250 first rcpt was good
+250 second rcpt was good
+250 OK, overall
+QUIT
+250 OK
+End of script

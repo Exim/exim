@@ -1,20 +1,16 @@
 # Exim test configuration 0420
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
+.include DIR/aux-var/std_conf_prefix
+
 
 # ----- Main settings -----
 
 primary_hostname = mail.test.ex
 qualify_domain = test.ex
 
+queue_only
 acl_smtp_rcpt = accept
+acl_smtp_data =	accept logwrite = h: <$h_Received:>
 
 received_header_text = ${if eq{$sender_address}{x@y}{}{Received: some text}}
 

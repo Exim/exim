@@ -1,0 +1,2 @@
+This is the testsuite to test the testsuite. The tests should be run by
+calling `prove` or `prove -v`.

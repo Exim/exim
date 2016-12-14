@@ -1,4 +1,4 @@
-# TLS server: no certificate defined, client sends in clear
+# TLS server: no certificate defined, autogen selfsign used
 gnutls
 exim -DSERVER=server -bd -oX PORT_D
 ****

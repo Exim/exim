@@ -4,6 +4,8 @@
 # concatentates the configuration settings from Local/Makefile and other,
 # optional, Local/* files at the front of this file, to create Makefile in the
 # build directory.
+#
+# Copyright (c) The Exim Maintainers 2016
 
 SHELL      = $(MAKE_SHELL)
 SCRIPTS    = ../scripts
@@ -277,6 +279,7 @@ exipick: Makefile ../src/exipick.src
 	@rm -f exipick
 	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
+	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  ../src/exipick.src > exipick-t
 	@mv exipick-t exipick
 	@chmod a+x exipick
@@ -312,7 +315,6 @@ convert4r4: Makefile ../src/convert4r4.src
 # are thrown away by the linker.
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
-OBJ_WITH_OLD_DEMIME = demime.o
 OBJ_EXPERIMENTAL = bmi_spam.o \
 				dane.o \
 				dcc.o \
@@ -329,7 +331,7 @@ OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o dkim.o \
+        filtertest.o globals.o dkim.o hash.o \
         header.o host.o ip.o log.o lss.o match.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
@@ -338,7 +340,7 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         environment.o \
         $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
-        $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
+        $(OBJ_EXPERIMENTAL)
 
 exim:   buildlookups buildauths pdkim/pdkim.a \
         buildrouters buildtransports \
@@ -408,7 +410,7 @@ exim_tidydb: $(OBJ_TIDYDB)
 
 exim_dbmbuild: exim_dbmbuild.o
 	@echo "$(LNCC) -o exim_dbmbuild"
-	$(FE)$(LNCC) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o \
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_dbmbuild; \
@@ -446,7 +448,13 @@ MONBIN = em_StripChart.o $(EXIMON_TEXTPOP) em_globals.o em_init.o \
 # The complete modules list also includes some specially compiled versions of
 # code from the main Exim source tree.
 
-OBJ_MONBIN = util-spool_in.o util-store.o util-string.o tod.o tree.o $(MONBIN)
+OBJ_MONBIN = util-spool_in.o \
+	     util-store.o \
+	     util-string.o \
+	     util-queue.o \
+	     tod.o \
+	     tree.o \
+	     $(MONBIN)
 
 eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
             ../exim_monitor/em_version.c
@@ -455,7 +463,7 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
 	  $(CFLAGS) $(XINCLUDE) -I. ../exim_monitor/em_version.c
 	@echo "$(LNCC) -o eximon.bin"
 	$(FE)$(PURIFY) $(LNCC) -o eximon.bin em_version.o $(LFLAGS) $(XLFLAGS) \
-	$(OBJ_MONBIN) -lXaw -lXmu -lXt -lXext -lX11 $(PCRE_LIBS) \
+	  $(OBJ_MONBIN) -lXaw -lXmu -lXt -lXext -lX11 $(PCRE_LIBS) \
 	  $(LIBS) $(LIBS_EXIMON) $(EXTRALIBS) $(EXTRALIBS_EXIMON) -lc
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) eximon.bin; \
@@ -471,15 +479,18 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
 # in one. This list is overkill, but it doesn't really take much time to
 # rebuild Exim on a modern computer.
 
-HDRS  =	config.h \
+HDRS  =	blob.h \
+	config.h \
 	dbfunctions.h \
 	dbstuff.h \
 	exim.h \
 	functions.h \
 	globals.h \
+	hash.h \
 	local_scan.h \
 	macros.h \
 	mytypes.h \
+	sha_ver.h \
 	structs.h \
 	os.h
 PHDRS = ../config.h \
@@ -563,6 +574,10 @@ util-string.o:   $(HDRS) string.c
 	@echo "$(CC) -DCOMPILE_UTILITY string.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-string.o string.c
 
+util-queue.o:   $(HDRS) queue.c
+	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-queue.o queue.c
+
 util-os.o:       $(HDRS) os.c
 	@echo "$(CC) -DCOMPILE_UTILITY os.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) \
@@ -597,6 +612,7 @@ environment.o:   $(HDRS) environment.c
 filter.o:        $(HDRS) filter.c
 filtertest.o:    $(HDRS) filtertest.c
 globals.o:       $(HDRS) globals.c
+hash.o:          $(HDRS) hash.c
 header.o:        $(HDRS) header.c
 host.o:          $(HDRS) host.c
 ip.o:            $(HDRS) ip.c
@@ -604,7 +620,7 @@ log.o:           $(HDRS) log.c
 lss.o:           $(HDRS) lss.c
 match.o:         $(HDRS) match.c
 moan.o:          $(HDRS) moan.c
-os.o:            $(HDRS) os.c
+os.o:            $(HDRS) $(OS_C_INCLUDES) os.c
 parse.o:         $(HDRS) parse.c
 queue.o:         $(HDRS) queue.c
 rda.o:           $(HDRS) rda.c
@@ -639,11 +655,6 @@ mime.o:          $(HDRS) mime.h mime.c
 regex.o:         $(HDRS) regex.c
 spam.o:          $(HDRS) spam.c
 spool_mbox.o:    $(HDRS) spool_mbox.c
-
-
-# Dependencies for WITH_OLD_DEMIME modules
-
-demime.o:       $(HDRS) demime.c
 
 
 # Dependencies for EXPERIMENTAL_* modules

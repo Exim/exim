@@ -218,7 +218,7 @@ while (mimeword != NULL)
   #endif
 
   if (mimeword != string)
-    yield = string_cat(yield, &size, &ptr, string, mimeword - string);
+    yield = string_catn(yield, &size, &ptr, string, mimeword - string);
 
   /* Do a charset translation if required. This is supported only on hosts
   that have the iconv() function. Translation errors set error, but carry on,
@@ -305,7 +305,7 @@ while (mimeword != NULL)
 
     /* Add the new string onto the result */
 
-    yield = string_cat(yield, &size, &ptr, tptr, tlen);
+    yield = string_catn(yield, &size, &ptr, tptr, tlen);
     }
 
   #if HAVE_ICONV
@@ -328,7 +328,7 @@ while (mimeword != NULL)
 /* Copy the remaining characters of the string, zero-terminate it, and return
 the length as well if requested. */
 
-yield = string_cat(yield, &size, &ptr, string, Ustrlen(string));
+yield = string_cat(yield, &size, &ptr, string);
 yield[ptr] = 0;
 if (lenptr != NULL) *lenptr = ptr;
 if (sizeptr != NULL) *sizeptr = size;

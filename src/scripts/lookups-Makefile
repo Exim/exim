@@ -177,6 +177,11 @@ fi
 
 OBJ="${OBJ} spf.o"
 
+if want_experimental LMDB
+then
+  OBJ="${OBJ} lmdb.o"
+fi
+
 echo "MODS = $MODS"
 echo "OBJ = $OBJ"
 

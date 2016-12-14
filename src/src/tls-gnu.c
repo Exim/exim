@@ -42,6 +42,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 /* needed to disable PKCS11 autoload unless requested */
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 # include <gnutls/pkcs11.h>
+# define SUPPORT_PARAM_TO_PK_BITS
 #endif
 #if GNUTLS_VERSION_NUMBER < 0x030103 && !defined(DISABLE_OCSP)
 # warning "GnuTLS library version too old; define DISABLE_OCSP in Makefile"
@@ -492,8 +493,7 @@ else if (Ustrcmp(exp_tls_dhparam, "none") == 0)
   }
 else if (exp_tls_dhparam[0] != '/')
   {
-  m.data = US std_dh_prime_named(exp_tls_dhparam);
-  if (m.data == NULL)
+  if (!(m.data = US std_dh_prime_named(exp_tls_dhparam)))
     return tls_error(US"No standard prime named", CS exp_tls_dhparam, NULL);
   m.size = Ustrlen(m.data);
   }
@@ -547,8 +547,7 @@ if (use_file_in_spool)
 /* Open the cache file for reading and if successful, read it and set up the
 parameters. */
 
-fd = Uopen(filename, O_RDONLY, 0);
-if (fd >= 0)
+if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
   {
   struct stat statbuf;
   FILE *fp;
@@ -565,8 +564,7 @@ if (fd >= 0)
     (void)close(fd);
     return tls_error(US"TLS cache not a file", NULL, NULL);
     }
-  fp = fdopen(fd, "rb");
-  if (!fp)
+  if (!(fp = fdopen(fd, "rb")))
     {
     saved_errno = errno;
     (void)close(fd);
@@ -575,14 +573,12 @@ if (fd >= 0)
     }
 
   m.size = statbuf.st_size;
-  m.data = malloc(m.size);
-  if (m.data == NULL)
+  if (!(m.data = malloc(m.size)))
     {
     fclose(fp);
     return tls_error(US"malloc failed", strerror(errno), NULL);
     }
-  sz = fread(m.data, m.size, 1, fp);
-  if (!sz)
+  if (!(sz = fread(m.data, m.size, 1, fp)))
     {
     saved_errno = errno;
     fclose(fp);
@@ -626,8 +622,7 @@ if (rc < 0)
         CS filename, NULL);
 
   temp_fn = string_copy(US "%s.XXXXXXX");
-  fd = mkstemp(CS temp_fn); /* modifies temp_fn */
-  if (fd < 0)
+  if ((fd = mkstemp(CS temp_fn)) < 0)	/* modifies temp_fn */
     return tls_error(US"Unable to open temp file", strerror(errno), NULL);
   (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
 
@@ -664,9 +659,9 @@ if (rc < 0)
   if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
     exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3(NULL) sizing");
   m.size = sz;
-  m.data = malloc(m.size);
-  if (m.data == NULL)
+  if (!(m.data = malloc(m.size)))
     return tls_error(US"memory allocation failed", strerror(errno), NULL);
+
   /* this will return a size 1 less than the allocation size above */
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
       m.data, &sz);
@@ -677,23 +672,19 @@ if (rc < 0)
     }
   m.size = sz; /* shrink by 1, probably */
 
-  sz = write_to_fd_buf(fd, m.data, (size_t) m.size);
-  if (sz != m.size)
+  if ((sz = write_to_fd_buf(fd, m.data, (size_t) m.size)) != m.size)
     {
     free(m.data);
     return tls_error(US"TLS cache write D-H params failed",
         strerror(errno), NULL);
     }
   free(m.data);
-  sz = write_to_fd_buf(fd, US"\n", 1);
-  if (sz != 1)
+  if ((sz = write_to_fd_buf(fd, US"\n", 1)) != 1)
     return tls_error(US"TLS cache write D-H params final newline failed",
         strerror(errno), NULL);
 
-  rc = close(fd);
-  if (rc)
-    return tls_error(US"TLS cache write close() failed",
-        strerror(errno), NULL);
+  if ((rc = close(fd)))
+    return tls_error(US"TLS cache write close() failed", strerror(errno), NULL);
 
   if (Urename(temp_fn, filename) < 0)
     return tls_error(string_sprintf("failed to rename \"%s\" as \"%s\"",
@@ -704,6 +695,74 @@ if (rc < 0)
 
 DEBUG(D_tls) debug_printf("initialized server D-H parameters\n");
 return OK;
+}
+
+
+
+
+/* Create and install a selfsigned certificate, for use in server mode */
+
+static int
+tls_install_selfsign(exim_gnutls_state_st * state)
+{
+gnutls_x509_crt_t cert = NULL;
+time_t now;
+gnutls_x509_privkey_t pkey = NULL;
+const uschar * where;
+int rc;
+
+where = US"initialising pkey";
+if ((rc = gnutls_x509_privkey_init(&pkey))) goto err;
+
+where = US"initialising cert";
+if ((rc = gnutls_x509_crt_init(&cert))) goto err;
+
+where = US"generating pkey";
+if ((rc = gnutls_x509_privkey_generate(pkey, GNUTLS_PK_RSA,
+#ifdef SUPPORT_PARAM_TO_PK_BITS
+	    gnutls_sec_param_to_pk_bits(GNUTLS_PK_RSA, GNUTLS_SEC_PARAM_LOW),
+#else
+	    1024,
+#endif
+	    0)))
+  goto err;
+
+where = US"configuring cert";
+now = 0;
+if (  (rc = gnutls_x509_crt_set_version(cert, 3))
+   || (rc = gnutls_x509_crt_set_serial(cert, &now, sizeof(now)))
+   || (rc = gnutls_x509_crt_set_activation_time(cert, now = time(NULL)))
+   || (rc = gnutls_x509_crt_set_expiration_time(cert, now + 60 * 60)) /* 1 hr */
+   || (rc = gnutls_x509_crt_set_key(cert, pkey))
+
+   || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
+	      GNUTLS_OID_X520_COUNTRY_NAME, 0, "UK", 2))
+   || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
+	      GNUTLS_OID_X520_ORGANIZATION_NAME, 0, "Exim Developers", 15))
+   || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
+	      GNUTLS_OID_X520_COMMON_NAME, 0,
+	      smtp_active_hostname, Ustrlen(smtp_active_hostname)))
+   )
+  goto err;
+
+where = US"signing cert";
+if ((rc = gnutls_x509_crt_sign(cert, cert, pkey))) goto err;
+
+where = US"installing selfsign cert";
+					/* Since: 2.4.0 */
+if ((rc = gnutls_certificate_set_x509_key(state->x509_cred, &cert, 1, pkey)))
+  goto err;
+
+rc = OK;
+
+out:
+  if (cert) gnutls_x509_crt_deinit(cert);
+  if (pkey) gnutls_x509_privkey_deinit(pkey);
+  return rc;
+
+err:
+  rc = tls_error(where, gnutls_strerror(rc), NULL);
+  goto out;
 }
 
 
@@ -741,7 +800,6 @@ int cert_count;
 
 /* We check for tls_sni *before* expansion. */
 if (!host)	/* server */
-  {
   if (!state->received_sni)
     {
     if (state->tls_certificate &&
@@ -762,7 +820,6 @@ if (!host)	/* server */
     saved_tls_verify_certificates = state->exp_tls_verify_certificates;
     saved_tls_crl = state->exp_tls_crl;
     }
-  }
 
 rc = gnutls_certificate_allocate_credentials(&state->x509_cred);
 exim_gnutls_err_check(US"gnutls_certificate_allocate_credentials");
@@ -779,14 +836,13 @@ if (!expand_check_tlsvar(tls_certificate))
 
 /* certificate is mandatory in server, optional in client */
 
-if ((state->exp_tls_certificate == NULL) ||
-    (*state->exp_tls_certificate == '\0'))
-  {
+if (  !state->exp_tls_certificate
+   || !*state->exp_tls_certificate
+   )
   if (!host)
-    return tls_error(US"no TLS server certificate is specified", NULL, NULL);
+    return tls_install_selfsign(state);
   else
     DEBUG(D_tls) debug_printf("TLS: no client certificate specified; okay\n");
-  }
 
 if (state->tls_privatekey && !expand_check_tlsvar(tls_privatekey))
   return DEFER;
@@ -806,9 +862,9 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
       state->exp_tls_certificate, state->exp_tls_privatekey);
 
   if (state->received_sni)
-    {
-    if ((Ustrcmp(state->exp_tls_certificate, saved_tls_certificate) == 0) &&
-        (Ustrcmp(state->exp_tls_privatekey, saved_tls_privatekey) == 0))
+    if (  Ustrcmp(state->exp_tls_certificate, saved_tls_certificate) == 0
+       && Ustrcmp(state->exp_tls_privatekey,  saved_tls_privatekey)  == 0
+       )
       {
       DEBUG(D_tls) debug_printf("TLS SNI: cert and key unchanged\n");
       }
@@ -816,7 +872,6 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
       {
       DEBUG(D_tls) debug_printf("TLS SNI: have a changed cert/key pair.\n");
       }
-    }
 
   rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
       CS state->exp_tls_certificate, CS state->exp_tls_privatekey,
@@ -911,7 +966,7 @@ else
   but who knows if someone has some weird FIFO which always dumps some certs, or
   other weirdness.  The thing we really want to check is that it's not a
   directory, since while OpenSSL supports that, GnuTLS does not.
-  So s/!S_ISREG/S_ISDIR/ and change some messsaging ... */
+  So s/!S_ISREG/S_ISDIR/ and change some messaging ... */
   if (S_ISDIR(statbuf.st_mode))
     {
     DEBUG(D_tls)
@@ -1448,7 +1503,7 @@ else
     int sep = 0;
     const uschar * list = state->exp_tls_verify_cert_hostnames;
     uschar * name;
-    while (name = string_nextinlist(&list, &sep, NULL, 0))
+    while ((name = string_nextinlist(&list, &sep, NULL, 0)))
       if (gnutls_x509_crt_check_hostname(state->tlsp->peercert, CS name))
 	break;
     if (!name)
@@ -1761,24 +1816,33 @@ state->fd_out = fileno(smtp_out);
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 do
-  {
   rc = gnutls_handshake(state->session);
-  } while ((rc == GNUTLS_E_AGAIN) ||
-      (rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen));
+while (rc == GNUTLS_E_AGAIN ||  rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
   {
-  tls_error(US"gnutls_handshake",
-      sigalrm_seen ? "timed out" : gnutls_strerror(rc), NULL);
   /* It seems that, except in the case of a timeout, we have to close the
   connection right here; otherwise if the other end is running OpenSSL it hangs
   until the server times out. */
 
-  if (!sigalrm_seen)
+  if (sigalrm_seen)
     {
+    tls_error(US"gnutls_handshake", "timed out", NULL);
+    gnutls_db_remove_session(state->session);
+    }
+  else
+    {
+    tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL);
+    (void) gnutls_alert_send_appropriate(state->session, rc);
+    gnutls_deinit(state->session);
+    gnutls_certificate_free_credentials(state->x509_cred);
+    millisleep(500);
+    shutdown(state->fd_out, SHUT_WR);
+    for (rc = 1024; fgetc(smtp_in) != EOF && rc > 0; ) rc--;	/* drain skt */
     (void)fclose(smtp_out);
     (void)fclose(smtp_in);
+    smtp_out = smtp_in = NULL;
     }
 
   return FAIL;
@@ -1803,8 +1867,7 @@ if (  state->verify_requirement != VERIFY_NONE
 
 /* Figure out peer DN, and if authenticated, etc. */
 
-rc = peer_status(state);
-if (rc != OK) return rc;
+if ((rc = peer_status(state)) != OK) return rc;
 
 /* Sets various Exim expansion variables; always safe within server */
 
@@ -1816,6 +1879,7 @@ and initialize appropriately. */
 state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 
 receive_getc = tls_getc;
+receive_get_cache = tls_get_cache;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
@@ -1867,7 +1931,7 @@ tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
     transport_instance *tb
 #ifdef EXPERIMENTAL_DANE
-    , dne_answer * unused_tlsa_dnsa
+    , dns_answer * unused_tlsa_dnsa
 #endif
     )
 {
@@ -1979,8 +2043,13 @@ do
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
-  return tls_error(US"gnutls_handshake",
-      sigalrm_seen ? "timed out" : gnutls_strerror(rc), state->host);
+  if (sigalrm_seen)
+    {
+    gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_USER_CANCELED);
+    return tls_error(US"gnutls_handshake", "timed out", state->host);
+    }
+  else
+    return tls_error(US"gnutls_handshake", gnutls_strerror(rc), state->host);
 
 DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
@@ -2062,6 +2131,8 @@ if (shutdown)
   }
 
 gnutls_deinit(state->session);
+gnutls_certificate_free_credentials(state->x509_cred);
+
 
 state->tlsp->active = -1;
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
@@ -2107,21 +2178,32 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
     ssl_xfer_buffer_size);
   alarm(0);
 
-  /* A zero-byte return appears to mean that the TLS session has been
+  /* Timeouts do not get this far; see command_timeout_handler().
+     A zero-byte return appears to mean that the TLS session has been
      closed down, not that the socket itself has been closed down. Revert to
      non-TLS handling. */
 
-  if (inbytes == 0)
+  if (sigalrm_seen)
+    {
+    DEBUG(D_tls) debug_printf("Got tls read timeout\n");
+    state->xfer_error = 1;
+    return EOF;
+    }
+
+  else if (inbytes == 0)
     {
     DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
 
     receive_getc = smtp_getc;
+    receive_get_cache = smtp_get_cache;
     receive_ungetc = smtp_ungetc;
     receive_feof = smtp_feof;
     receive_ferror = smtp_ferror;
     receive_smtp_buffered = smtp_buffered;
 
     gnutls_deinit(state->session);
+    gnutls_certificate_free_credentials(state->x509_cred);
+
     state->session = NULL;
     state->tlsp->active = -1;
     state->tlsp->bits = 0;
@@ -2152,6 +2234,17 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
 /* Something in the buffer; return next uschar */
 
 return state->xfer_buffer[state->xfer_buffer_lwm++];
+}
+
+void
+tls_get_cache()
+{
+#ifndef DISABLE_DKIM
+exim_gnutls_state_st * state = &state_server;
+int n = state->xfer_buffer_hwm - state->xfer_buffer_lwm;
+if (n > 0)
+  dkim_exim_verify_feed(state->xfer_buffer+state->xfer_buffer_lwm, n);
+#endif
 }
 
 

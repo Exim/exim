@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# Copyright (c) The Exim Maintainers 2016
 
 use strict;
 use warnings;

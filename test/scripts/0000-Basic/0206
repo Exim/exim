@@ -1,12 +1,16 @@
 # timeout_frozen_after with ignore_bounce_errors_after
 sudo exim -odi -f unknown@test.ex nonexist@test.ex freeze@test.ex
 ****
-sleep 1
+# that gave us a frozen bounce, and a deferred message (with one undelivered addr)
 sudo exim -Mf $msg1
 ****
+# now 2 frozen, one of which is a bounce
+# check that ignore_bounce_errors_after finishes off the frozen bounce (only)
+millisleep 2500
 exim -qf
 ****
 sleep 3
+# check that timeout_frozen_after finishes off the (remaining) frozen
 exim -q
 ****
 no_msglog_check

@@ -7,9 +7,9 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= doesn't@matter U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => x@copy.domain R=checkcopy T=makecopy
 1999-03-02 09:44:33 10HmaY-0005vi-00 -> y@copy.domain R=checkcopy T=makecopy
-1999-03-02 09:44:33 10HmaY-0005vi-00 == x@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host
-1999-03-02 09:44:33 10HmaY-0005vi-00 == y@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host
-1999-03-02 09:44:33 10HmaY-0005vi-00 == z@elsewhere R=passall T=pass_on defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmaY-0005vi-00 == x@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host for 'copy.domain'
+1999-03-02 09:44:33 10HmaY-0005vi-00 == y@copy.domain R=passall T=pass_on defer (-53): retry time not reached for any host for 'copy.domain'
+1999-03-02 09:44:33 10HmaY-0005vi-00 == z@elsewhere R=passall T=pass_on defer (-53): retry time not reached for any host for 'elsewhere'
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=V4NET.0.0.1 [V4NET.0.0.1] Network Error
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@copy.domain R=passall T=pass_on defer (dd): Network Error

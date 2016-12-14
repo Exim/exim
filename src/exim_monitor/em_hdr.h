@@ -92,6 +92,7 @@ the benefit of structs.h. One of these days I should tidy up this interface so
 that this kind of kludge isn't needed. */
 
 #define MAXPACKET 1024
+typedef void hctx;
 
 #include "config.h"
 #include "mytypes.h"

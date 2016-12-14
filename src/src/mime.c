@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004, 2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004, 2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 #include "exim.h"
 #ifdef WITH_CONTENT_SCAN	/* entire file */
@@ -186,21 +188,17 @@ return size;
 }
 
 
+/*
+ * Return open filehandle for combo of path and file.
+ * Side-effect: set mime_decoded_filename, to copy in allocated mem
+ */
 static FILE *
 mime_get_decode_file(uschar *pname, uschar *fname)
 {
-FILE *f = NULL;
-uschar *filename;
-
-filename = (uschar *)malloc(2048);
-
 if (pname && fname)
-  {
-  (void)string_format(filename, 2048, "%s/%s", pname, fname);
-  f = modefopen(filename,"wb+",SPOOL_MODE);
-  }
+  mime_decoded_filename = string_sprintf("%s/%s", pname, fname);
 else if (!pname)
-  f = modefopen(fname,"wb+",SPOOL_MODE);
+  mime_decoded_filename = string_copy(fname);
 else if (!fname)
   {
   int file_nr = 0;
@@ -210,21 +208,15 @@ else if (!fname)
   do
     {
     struct stat mystat;
-    (void)string_format(filename, 2048,
-      "%s/%s-%05u", pname, message_id, file_nr++);
+    mime_decoded_filename = string_sprintf("%s/%s-%05u", pname, message_id, file_nr++);
     /* security break */
     if (file_nr >= 1024)
       break;
-    result = stat(CS filename, &mystat);
+    result = stat(CS mime_decoded_filename, &mystat);
     } while(result != -1);
-
-  f = modefopen(filename, "wb+", SPOOL_MODE);
   }
 
-/* set expansion variable */
-mime_decoded_filename = filename;
-
-return f;
+return modefopen(mime_decoded_filename, "wb+", SPOOL_MODE);
 }
 
 
@@ -241,10 +233,8 @@ long f_pos = 0;
 ssize_t size_counter = 0;
 ssize_t (*decode_function)(FILE*, FILE*, uschar*);
 
-if (mime_stream == NULL)
+if (!mime_stream || (f_pos = ftell(mime_stream)) < 0)
   return FAIL;
-
-f_pos = ftell(mime_stream);
 
 /* build default decode path (will exist since MBOX must be spooled up) */
 (void)string_format(decode_path,1024,"%s/scan/%s",spool_directory,message_id);
@@ -255,7 +245,7 @@ if ((option = string_nextinlist(&list, &sep,
 				sizeof(option_buffer))) != NULL)
   {
   /* parse 1st option */
-  if ( (Ustrcmp(option,"false") == 0) || (Ustrcmp(option,"0") == 0) )
+  if ((Ustrcmp(option,"false") == 0) || (Ustrcmp(option,"0") == 0))
     /* explicitly no decoding */
     return FAIL;
 
@@ -463,11 +453,11 @@ while (*s && *s != ';')		/* ; terminates */
     {
     s++;			/* skip opening " */
     while (*s && *s != '"')	/* " protects ; */
-      val = string_cat(val, &size, &ptr, s++, 1);
+      val = string_catn(val, &size, &ptr, s++, 1);
     if (*s) s++;		/* skip closing " */
     }
   else
-    val = string_cat(val, &size, &ptr, s++, 1);
+    val = string_catn(val, &size, &ptr, s++, 1);
 if (val) val[ptr] = '\0';
 *sp = s;
 return val;
@@ -494,24 +484,24 @@ static uschar *
 rfc2231_to_2047(const uschar * fname, const uschar * charset, int * len)
 {
 int size = 0, ptr = 0;
-uschar * val = string_cat(NULL, &size, &ptr, US"=?", 2);
+uschar * val = string_catn(NULL, &size, &ptr, US"=?", 2);
 uschar c;
 
 if (charset)
-  val = string_cat(val, &size, &ptr, charset, Ustrlen(charset));
-val = string_cat(val, &size, &ptr, US"?Q?", 3);
+  val = string_cat(val, &size, &ptr, charset);
+val = string_catn(val, &size, &ptr, US"?Q?", 3);
 
 while ((c = *fname))
   if (c == '%' && isxdigit(fname[1]) && isxdigit(fname[2]))
     {
-    val = string_cat(val, &size, &ptr, US"=", 1);
-    val = string_cat(val, &size, &ptr, ++fname, 2);
+    val = string_catn(val, &size, &ptr, US"=", 1);
+    val = string_catn(val, &size, &ptr, ++fname, 2);
     fname += 2;
     }
   else
-    val = string_cat(val, &size, &ptr, fname++, 1);
+    val = string_catn(val, &size, &ptr, fname++, 1);
 
-val = string_cat(val, &size, &ptr, US"?=", 2);
+val = string_catn(val, &size, &ptr, US"?=", 2);
 val[*len = ptr] = '\0';
 return val;
 }
@@ -809,7 +799,7 @@ while(1)
     if (!mime_decoded_filename)		/* decoding failed */
       {
       log_write(0, LOG_MAIN,
-	   "mime_regex acl condition warning - could not decode RFC822 MIME part to file.");
+	   "MIME acl condition warning - could not decode RFC822 MIME part to file.");
       rc = DEFER;
       goto out;
       }

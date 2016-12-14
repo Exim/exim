@@ -58,12 +58,13 @@ a little game in order to ensure that the double value is correctly
 passed back via the value pointer without the compiler doing an
 unwanted cast. */
 
-static void stripchartAction(Widget w, XtPointer client_data, XtPointer value)
+static void
+stripchartAction(Widget w, XtPointer client_data, XtPointer value)
 {
-double *ptr = (double *)value;
+double * ptr = (double *)value;
 static int thresholds[] =
   {10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 0};
-int num = (int)client_data;
+int num = (long)client_data;
 int oldmax = 0;
 int newmax = 0;
 int newvalue = 0;
@@ -213,7 +214,8 @@ and for the second if it is a partition size display; its update time is
 initially set to 1 second so that it gives an immediate display of the queue.
 The first time its callback function is obeyed, the update time gets reset. */
 
-void create_stripchart(Widget parent, uschar *title)
+void
+create_stripchart(Widget parent, uschar *title)
 {
 Widget chart;
 
@@ -249,7 +251,7 @@ xs_SetValues(chart, 11,
   XtNfromVert,  label);
 
 XtAddCallback(chart, "getValue", stripchartAction,
-  (XtPointer)stripchart_count);
+  (XtPointer)(long)stripchart_count);
 
 stripchart_last_total[stripchart_count] = 0;
 stripchart_max[stripchart_count] = 10;

@@ -94,6 +94,7 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
+A TLS fatal alert has been received.
 Failed to start TLS
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected

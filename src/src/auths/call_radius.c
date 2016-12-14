@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file was originally supplied by Ian Kirk. The libradius support came
@@ -165,6 +165,7 @@ switch (result)
   case OK_RC:
   return OK;
 
+  case REJECT_RC:
   case ERROR_RC:
   return FAIL;
 

@@ -37,12 +37,15 @@ sender_rcvhost = [V4NET.0.0.0] (helo=something)
 set_process_info: pppp handling incoming connection from (something) [V4NET.0.0.0]
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
+host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
 250 HELP
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
 processing "accept"
 check set acl_c0 = $acl_c0; mail
@@ -75,6 +78,7 @@ search_tidyup called
 search_tidyup called
 >>Headers after rewriting and local additions:
 
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from [V4NET.0.0.0] (helo=something)
@@ -119,6 +123,8 @@ LOG: MAIN
   VRFY failed for x@y H=(something) [V4NET.0.0.0]
 SMTP>> 550 <x@y> Unrouteable address
 SMTP<< mail from:<x@y>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
 processing "accept"
 check set acl_c0 = $acl_c0; mail

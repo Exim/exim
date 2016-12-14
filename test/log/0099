@@ -2,7 +2,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1] Connection refused
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@simple R=all T=smtp defer (dd): Connection refused
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@simple R=all T=smtp defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@simple R=all T=smtp defer (-53): retry time not reached for any host for 'simple'
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=thishost.test.ex [127.0.0.1] Connection refused
@@ -16,7 +16,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 H=thishost.test.ex [127.0.0.1] Connection refused
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userz@simple R=all T=smtp defer (dd): Connection refused
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for with@complex
-1999-03-02 09:44:33 10HmbA-0005vi-00 == with@complex R=all T=smtp defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmbA-0005vi-00 == with@complex R=all T=smtp defer (-53): retry time not reached for any host for 'complex'
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for without@complex
 1999-03-02 09:44:33 10HmbB-0005vi-00 H=thisloop.test.ex [ip4.ip4.ip4.ip4] Connection refused
 1999-03-02 09:44:33 10HmbB-0005vi-00 H=thisloop.test.ex [127.0.0.1] Connection refused
@@ -25,4 +25,6 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 no IP address found for host nonexist.test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 == userx@nonexist R=all defer (-32): lookup of host "nonexist.test.ex" failed in all router
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for userx@mxt2.test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 == userx@mxt2.test.ex R=bydns defer (-32): all relevant MX records point to non-existent hosts
+1999-03-02 09:44:33 10HmbD-0005vi-00 == userx@mxt2.test.ex R=bydns defer (-1): missing MX, or all MXs point to missing A records, and defer requested
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss for userx@mxnonexist.test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 == userx@mxnonexist.test.ex R=bydns defer (-1): missing MX, or all MXs point to missing A records, and defer requested

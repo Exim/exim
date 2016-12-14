@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for writing spool files, and moving them about. */
@@ -17,7 +17,7 @@
 *************************************************/
 
 /* This function is called immediately after errors in writing the spool, with
-errno still set. It creates and error message, depending on the circumstances.
+errno still set. It creates an error message, depending on the circumstances.
 If errmsg is NULL, it logs the message and panic-dies. Otherwise errmsg is set
 to point to the message, and -1 is returned. This function makes the code of
 spool_write_header() a bit neater.
@@ -36,22 +36,21 @@ static int
 spool_write_error(int where, uschar **errmsg, uschar *s, uschar *temp_name,
   FILE *f)
 {
-uschar *msg = (where == SW_RECEIVING)?
-  string_sprintf("spool file %s error while receiving from %s: %s", s,
-    (sender_fullhost != NULL)? sender_fullhost : sender_ident,
-    strerror(errno))
-  :
-  string_sprintf("spool file %s error while %s: %s", s,
-    (where == SW_DELIVERING)? "delivering" : "modifying",
-    strerror(errno));
+uschar *msg = where == SW_RECEIVING
+  ? string_sprintf("spool file %s error while receiving from %s: %s", s,
+      sender_fullhost ? sender_fullhost : sender_ident,
+      strerror(errno))
+  : string_sprintf("spool file %s error while %s: %s", s,
+      where == SW_DELIVERING ? "delivering" : "modifying",
+      strerror(errno));
 
-if (temp_name != NULL) Uunlink(temp_name);
-if (f != NULL) (void)fclose(f);
+if (temp_name) Uunlink(temp_name);
+if (f) (void)fclose(f);
 
-if (errmsg == NULL)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", msg);
-else
+if (errmsg)
   *errmsg = msg;
+else
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", msg);
 
 return -1;
 }
@@ -134,15 +133,16 @@ int size_correction;
 FILE *f;
 header_line *h;
 struct stat statbuf;
-uschar name[256];
-uschar temp_name[256];
+uschar * tname;
+uschar * fname;
 
-sprintf(CS temp_name, "%s/input/%s/hdr.%d", spool_directory, message_subdir,
-  (int)getpid());
-fd = spool_open_temp(temp_name);
-if (fd < 0) return spool_write_error(where, errmsg, US"open", NULL, NULL);
+tname = spool_fname(US"input", message_subdir,
+		    string_sprintf("hdr.%d", (int)getpid()), US"");
+
+if ((fd = spool_open_temp(tname)) < 0)
+  return spool_write_error(where, errmsg, US"open", NULL, NULL);
 f = fdopen(fd, "wb");
-DEBUG(D_receive|D_deliver) debug_printf("Writing spool header file\n");
+DEBUG(D_receive|D_deliver) debug_printf("Writing spool header file: %s\n", tname);
 
 /* We now have an open file to which the header data is to be written. Start
 with the file's leaf name, to make the file self-identifying. Continue with the
@@ -272,21 +272,25 @@ fprintf(f, "%d\n", recipients_count);
 for (i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
-DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
+
+  DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
+
   if (r->pno < 0 && r->errors_to == NULL && r->dsn_flags == 0)
     fprintf(f, "%s\n", r->address);
   else
     {
-    uschar *errors_to = (r->errors_to == NULL)? US"" : r->errors_to;
+    uschar * errors_to = r->errors_to ? r->errors_to : US"";
     /* for DSN SUPPORT extend exim 4 spool in a compatible way by
-       adding new values upfront and add flag 0x02 */
-    uschar *orcpt = (r->orcpt == NULL)? US"" : r->orcpt;
-    fprintf(f, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt), r->dsn_flags,
-      errors_to, Ustrlen(errors_to), r->pno);
+    adding new values upfront and add flag 0x02 */
+    uschar * orcpt = r->orcpt ? r->orcpt : US"";
+
+    fprintf(f, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt),
+      r->dsn_flags, errors_to, Ustrlen(errors_to), r->pno);
     }
 
-      DEBUG(D_deliver) debug_printf("DSN: **** SPOOL_OUT - address: |%s| errorsto: |%s| orcpt: |%s| dsn_flags: %d\n",
-         r->address, r->errors_to, r->orcpt, r->dsn_flags);
+    DEBUG(D_deliver) debug_printf("DSN: **** SPOOL_OUT - "
+      "address: |%s| errorsto: |%s| orcpt: |%s| dsn_flags: %d\n",
+      r->address, r->errors_to, r->orcpt, r->dsn_flags);
   }
 
 /* Put a blank line before the headers */
@@ -297,7 +301,8 @@ fprintf(f, "\n");
 to get the actual size of the headers. */
 
 fflush(f);
-fstat(fd, &statbuf);
+if (fstat(fd, &statbuf))
+  return spool_write_error(where, errmsg, US"fstat", tname, f);
 size_correction = statbuf.st_size;
 
 /* Finally, write out the message's headers. To make it easier to read them
@@ -318,29 +323,30 @@ for (h = header_list; h != NULL; h = h->next)
 /* Flush and check for any errors while writing */
 
 if (fflush(f) != 0 || ferror(f))
-  return spool_write_error(where, errmsg, US"write", temp_name, f);
+  return spool_write_error(where, errmsg, US"write", tname, f);
 
 /* Force the file's contents to be written to disk. Note that fflush()
 just pushes it out of C, and fclose() doesn't guarantee to do the write
 either. That's just the way Unix works... */
 
 if (EXIMfsync(fileno(f)) < 0)
-  return spool_write_error(where, errmsg, US"sync", temp_name, f);
+  return spool_write_error(where, errmsg, US"sync", tname, f);
 
 /* Get the size of the file, and close it. */
 
 if (fstat(fd, &statbuf) != 0)
-  return spool_write_error(where, errmsg, US"fstat", temp_name, NULL);
+  return spool_write_error(where, errmsg, US"fstat", tname, NULL);
 if (fclose(f) != 0)
-  return spool_write_error(where, errmsg, US"close", temp_name, NULL);
+  return spool_write_error(where, errmsg, US"close", tname, NULL);
 
 /* Rename the file to its correct name, thereby replacing any previous
 incarnation. */
 
-sprintf(CS name, "%s/input/%s/%s-H", spool_directory, message_subdir, id);
+fname = spool_fname(US"input", message_subdir, id, US"-H");
+DEBUG(D_receive|D_deliver) debug_printf("Renaming spool header file: %s\n", fname);
 
-if (Urename(temp_name, name) < 0)
-  return spool_write_error(where, errmsg, US"rename", temp_name, NULL);
+if (Urename(tname, fname) < 0)
+  return spool_write_error(where, errmsg, US"rename", tname, NULL);
 
 /* Linux (and maybe other OS?) does not automatically sync a directory after
 an operation like rename. We therefore have to do it forcibly ourselves in
@@ -354,20 +360,20 @@ these cases. One hack on top of another... but that's life. */
 
 #ifdef NEED_SYNC_DIRECTORY
 
-sprintf(CS temp_name, "%s/input/%s/.", spool_directory, message_subdir);
+tname = spool_fname(US"input", message_subdir, US".", US"");
 
-#ifndef O_DIRECTORY
-#define O_DIRECTORY 0
-#endif
+# ifndef O_DIRECTORY
+#  define O_DIRECTORY 0
+# endif
 
-if ((fd = Uopen(temp_name, O_RDONLY|O_DIRECTORY, 0)) < 0)
-  return spool_write_error(where, errmsg, US"directory open", name, NULL);
+if ((fd = Uopen(tname, O_RDONLY|O_DIRECTORY, 0)) < 0)
+  return spool_write_error(where, errmsg, US"directory open", fname, NULL);
 
 if (EXIMfsync(fd) < 0 && errno != EINVAL)
-  return spool_write_error(where, errmsg, US"directory sync", name, NULL);
+  return spool_write_error(where, errmsg, US"directory sync", fname, NULL);
 
 if (close(fd) < 0)
-  return spool_write_error(where, errmsg, US"directory close", name, NULL);
+  return spool_write_error(where, errmsg, US"directory close", fname, NULL);
 
 #endif  /* NEED_SYNC_DIRECTORY */
 
@@ -408,13 +414,12 @@ static BOOL
 make_link(uschar *dir, uschar *subdir, uschar *id, uschar *suffix, uschar *from,
   uschar *to, BOOL noentok)
 {
-uschar f[256], t[256];
-sprintf(CS f, "%s/%s%s/%s/%s%s", spool_directory, from, dir, subdir, id, suffix);
-sprintf(CS t, "%s/%s%s/%s/%s%s", spool_directory, to, dir, subdir, id, suffix);
-if (Ulink(f, t) < 0 && (!noentok || errno != ENOENT))
+uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
+uschar * tname = spool_fname(string_sprintf("%s%s", to,   dir), subdir, id, suffix);
+if (Ulink(fname, tname) < 0 && (!noentok || errno != ENOENT))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "link(\"%s\", \"%s\") failed while moving "
-    "message: %s", f, t, strerror(errno));
+    "message: %s", fname, tname, strerror(errno));
   return FALSE;
   }
 return TRUE;
@@ -446,12 +451,11 @@ static BOOL
 break_link(uschar *dir, uschar *subdir, uschar *id, uschar *suffix, uschar *from,
   BOOL noentok)
 {
-uschar f[256];
-sprintf(CS f, "%s/%s%s/%s/%s%s", spool_directory, from, dir, subdir, id, suffix);
-if (Uunlink(f) < 0 && (!noentok || errno != ENOENT))
+uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
+if (Uunlink(fname) < 0 && (!noentok || errno != ENOENT))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "unlink(\"%s\") failed while moving "
-    "message: %s", f, strerror(errno));
+    "message: %s", fname, strerror(errno));
   return FALSE;
   }
 return TRUE;
@@ -483,17 +487,19 @@ spool_move_message(uschar *id, uschar *subdir, uschar *from, uschar *to)
 {
 /* Create any output directories that do not exist. */
 
-sprintf(CS big_buffer, "%sinput/%s", to, subdir);
-(void)directory_make(spool_directory, big_buffer, INPUT_DIRECTORY_MODE, TRUE);
-sprintf(CS big_buffer, "%smsglog/%s", to, subdir);
-(void)directory_make(spool_directory, big_buffer, INPUT_DIRECTORY_MODE, TRUE);
+(void) directory_make(spool_directory,
+  spool_sname(string_sprintf("%sinput", to), subdir),
+  INPUT_DIRECTORY_MODE, TRUE);
+(void) directory_make(spool_directory,
+  spool_sname(string_sprintf("%smsglog", to), subdir),
+  INPUT_DIRECTORY_MODE, TRUE);
 
 /* Move the message by first creating new hard links for all the files, and
 then removing the old links. When moving messages onto the main spool, the -H
 file should be set up last, because that's the one that tells Exim there is a
 message to be delivered, so we create its new link last and remove its old link
 first. Programs that look at the alternate directories should follow the same
-rule of waiting for a -H file before doing anything. When moving messsages off
+rule of waiting for a -H file before doing anything. When moving messages off
 the mail spool, the -D file should be open and locked at the time, thus keeping
 Exim's hands off. */
 

@@ -884,8 +884,11 @@ with DANE in their OCSP settings.
 
 
 For client-side DANE there are two new smtp transport options,
-hosts_try_dane and hosts_require_dane.  They do the obvious thing.
+hosts_try_dane and hosts_require_dane.
 [ should they be domain-based rather than host-based? ]
+
+Hosts_require_dane will result in failure if the target host
+is not DNSSEC-secured.
 
 DANE will only be usable if the target host has DNSSEC-secured
 MX, A and TLSA records.
@@ -893,9 +896,8 @@ MX, A and TLSA records.
 A TLSA lookup will be done if either of the above options match
 and the host-lookup succeded using dnssec.
 If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
-will be required for the host.
-
-(TODO: specify when fallback happens vs. when the host is not used)
+will be required for the host.  If it does not, the host will not
+be used; there is no fallback to non-DANE or non-TLS.
 
 If DANE is requested and useable (see above) the following transport
 options are ignored:
@@ -965,6 +967,107 @@ Rationale:
 Note that non-RFC-documented field names and data types are used.
 
 
+LMDB Lookup support
+-------------------
+LMDB is an ultra-fast, ultra-compact, crash-proof key-value embedded data store.
+It is modeled loosely on the BerkeleyDB API. You shoul read about the feature
+set as well as operation modes at https://symas.com/products/lightning-memory-mapped-database/
+
+LMDB single key lookup support is provided by linking to the LMDB C library.
+The current implementation does not support writing to the LMDB database.
+
+Visit https://github.com/LMDB/lmdb to download the library or find it in your
+operating systems package repository.
+
+If building from source, this description assumes that headers will be in
+/usr/local/include, and that the libraries are in /usr/local/lib.
+
+1. In order to build exim with LMDB lookup support add or uncomment
+
+EXPERIMENTAL_LMDB=yes
+
+to your Local/Makefile. (Re-)build/install exim. exim -d should show
+Experimental_LMDB in the line "Support for:".
+
+EXPERIMENTAL_LMDB=yes
+LDFLAGS += -llmdb
+# CFLAGS += -I/usr/local/include
+# LDFLAGS += -L/usr/local/lib
+
+The first line sets the feature to include the correct code, and
+the second line says to link the LMDB libraries into the
+exim binary.  The commented out lines should be uncommented if you
+built LMDB from source and installed in the default location.
+Adjust the paths if you installed them elsewhere, but you do not
+need to uncomment them if an rpm (or you) installed them in the
+package controlled locations (/usr/include and /usr/lib).
+
+2. Create your LMDB files, you can use the mdb_load utility which is
+part of the LMDB distribution our your favourite language bindings.
+
+3. Add the single key lookups to your exim.conf file, example lookups
+are below.
+
+${lookup{$sender_address_domain}lmdb{/var/lib/baruwa/data/db/relaydomains.mdb}{$value}}
+${lookup{$sender_address_domain}lmdb{/var/lib/baruwa/data/db/relaydomains.mdb}{$value}fail}
+${lookup{$sender_address_domain}lmdb{/var/lib/baruwa/data/db/relaydomains.mdb}}
+
+
+Queuefile transport
+-------------------
+Queuefile is a pseudo transport which does not perform final delivery.
+It simply copies the exim spool files out of the spool directory into
+an external directory retaining the exim spool format.
+
+The spool files can then be processed by external processes and then
+requeued into exim spool directories for final delivery.
+
+The motivation/inspiration for the transport is to allow external
+processes to access email queued by exim and have access to all the
+information which would not be available if the messages were delivered
+to the process in the standard email formats.
+
+The mailscanner package is one of the processes that can take advantage
+of this transport to filter email.
+
+The transport can be used in the same way as the other existing transports,
+i.e by configuring a router to route mail to a transport configured with
+the queuefile driver.
+
+The transport only takes one option:
+
+* directory - This is used to specify the directory messages should be
+copied to
+
+The generic transport options (body_only, current_directory, disable_logging,
+debug_print, delivery_date_add, envelope_to_add, event_action, group,
+headers_add, headers_only, headers_remove, headers_rewrite, home_directory,
+initgroups, max_parallel, message_size_limit, rcpt_include_affixes,
+retry_use_local_part, return_path, return_path_add, shadow_condition,
+shadow_transport, transport_filter, transport_filter_timeout, user) are
+ignored.
+
+Sample configuration:
+
+(Router)
+
+scan:
+   driver = accept
+   transport = scan
+
+(Transport)
+
+scan:
+  driver = queuefile
+  directory = /var/spool/baruwa-scanner/input
+
+
+In order to build exim with Queuefile transport support add or uncomment
+
+EXPERIMENTAL_QUEUEFILE=yes
+
+to your Local/Makefile. (Re-)build/install exim. exim -d should show
+Experimental_QUEUEFILE in the line "Support for:".
 
 
 --------------------------------------------------------------

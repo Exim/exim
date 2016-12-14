@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 Exim configuration error in line 44 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 38 of TESTSUITE/test-config:
   failed to open included configuration file /non/existent

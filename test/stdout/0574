@@ -1,0 +1,62 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test.ex
+??? 250-
+<<< 250-myhost.test.ex Hello test.ex [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-PIPELINING
+??? 250 
+<<< 250 HELP
+>>> MAIL FROM:<tester@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<dest@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+accept: condition test succeeded in ACL "chk_data"
+end of ACL "chk_data": ACCEPT
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+considering: ${tod_full}
+  expanding: ${tod_full}
+     result: Tue, 2 Mar 1999 09:44:33 +0000
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |dest@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
+Size of headers = sss
+LOG: MAIN
+  <= tester@test.ex H=(test.ex) [127.0.0.1] P=esmtp S=sss
+SMTP>> 250 OK id=10HmaX-0005vi-00
+search_tidyup called
+Sender: tester@test.ex
+Recipients:
+  dest@test.ex
+Process pppp is ready for new message
+smtp_setup_msg entered
+SMTP<< QUIT
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
+search_tidyup called
+SMTP>>(close on process exit)

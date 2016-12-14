@@ -10,6 +10,7 @@
 >>> matched host address
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> [1.2.3.4] in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "[1.2.3.4]"

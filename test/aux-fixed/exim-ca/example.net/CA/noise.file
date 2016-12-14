@@ -1,201 +1,188 @@
 processor	: 0
 vendor_id	: GenuineIntel
 cpu family	: 6
-model		: 58
-model name	: Intel(R) Core(TM) i7-3520M CPU @ 2.90GHz
-stepping	: 9
-microcode	: 0x1b
-cpu MHz		: 3399.910
+model		: 13
+model name	: QEMU Virtual CPU version 1.5.3
+stepping	: 3
+microcode	: 0x1
+cpu MHz		: 1994.999
 cache size	: 4096 KB
 physical id	: 0
-siblings	: 4
+siblings	: 1
 core id		: 0
-cpu cores	: 2
+cpu cores	: 1
 apicid		: 0
 initial apicid	: 0
 fpu		: yes
 fpu_exception	: yes
-cpuid level	: 13
+cpuid level	: 4
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms xsaveopt
-bugs		:
-bogomips	: 5786.61
+flags		: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pse36 clflush mmx fxsr sse sse2 syscall nx lm rep_good nopl pni cx16 hypervisor lahf_lm
+bogomips	: 3989.99
 clflush size	: 64
 cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
+address sizes	: 38 bits physical, 48 bits virtual
 power management:
 
 processor	: 1
 vendor_id	: GenuineIntel
 cpu family	: 6
-model		: 58
-model name	: Intel(R) Core(TM) i7-3520M CPU @ 2.90GHz
-stepping	: 9
-microcode	: 0x1b
-cpu MHz		: 3399.910
+model		: 13
+model name	: QEMU Virtual CPU version 1.5.3
+stepping	: 3
+microcode	: 0x1
+cpu MHz		: 1994.999
 cache size	: 4096 KB
-physical id	: 0
-siblings	: 4
+physical id	: 1
+siblings	: 1
 core id		: 0
-cpu cores	: 2
+cpu cores	: 1
 apicid		: 1
 initial apicid	: 1
 fpu		: yes
 fpu_exception	: yes
-cpuid level	: 13
+cpuid level	: 4
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms xsaveopt
-bugs		:
-bogomips	: 5786.61
+flags		: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pse36 clflush mmx fxsr sse sse2 syscall nx lm rep_good nopl pni cx16 hypervisor lahf_lm
+bogomips	: 3989.99
 clflush size	: 64
 cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
+address sizes	: 38 bits physical, 48 bits virtual
 power management:
 
 processor	: 2
 vendor_id	: GenuineIntel
 cpu family	: 6
-model		: 58
-model name	: Intel(R) Core(TM) i7-3520M CPU @ 2.90GHz
-stepping	: 9
-microcode	: 0x1b
-cpu MHz		: 3195.664
+model		: 13
+model name	: QEMU Virtual CPU version 1.5.3
+stepping	: 3
+microcode	: 0x1
+cpu MHz		: 1994.999
 cache size	: 4096 KB
-physical id	: 0
-siblings	: 4
-core id		: 1
-cpu cores	: 2
+physical id	: 2
+siblings	: 1
+core id		: 0
+cpu cores	: 1
 apicid		: 2
 initial apicid	: 2
 fpu		: yes
 fpu_exception	: yes
-cpuid level	: 13
+cpuid level	: 4
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms xsaveopt
-bugs		:
-bogomips	: 5786.61
+flags		: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pse36 clflush mmx fxsr sse sse2 syscall nx lm rep_good nopl pni cx16 hypervisor lahf_lm
+bogomips	: 3989.99
 clflush size	: 64
 cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
+address sizes	: 38 bits physical, 48 bits virtual
 power management:
 
 processor	: 3
 vendor_id	: GenuineIntel
 cpu family	: 6
-model		: 58
-model name	: Intel(R) Core(TM) i7-3520M CPU @ 2.90GHz
-stepping	: 9
-microcode	: 0x1b
-cpu MHz		: 3399.910
+model		: 13
+model name	: QEMU Virtual CPU version 1.5.3
+stepping	: 3
+microcode	: 0x1
+cpu MHz		: 1994.999
 cache size	: 4096 KB
-physical id	: 0
-siblings	: 4
-core id		: 1
-cpu cores	: 2
+physical id	: 3
+siblings	: 1
+core id		: 0
+cpu cores	: 1
 apicid		: 3
 initial apicid	: 3
 fpu		: yes
 fpu_exception	: yes
-cpuid level	: 13
+cpuid level	: 4
 wp		: yes
-flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase smep erms xsaveopt
-bugs		:
-bogomips	: 5786.61
+flags		: fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pse36 clflush mmx fxsr sse sse2 syscall nx lm rep_good nopl pni cx16 hypervisor lahf_lm
+bogomips	: 3989.99
 clflush size	: 64
 cache_alignment	: 64
-address sizes	: 36 bits physical, 48 bits virtual
+address sizes	: 38 bits physical, 48 bits virtual
 power management:
 
            CPU0       CPU1       CPU2       CPU3       
-  0:         68          0          0          0   IO-APIC   2-edge      timer
-  1:        689       7853        658        778   IO-APIC   1-edge      i8042
-  8:          0          0          1          0   IO-APIC   8-edge      rtc0
-  9:       1160        695        344        261   IO-APIC   9-fasteoi   acpi
- 12:     314976    1327914     163447     143732   IO-APIC  12-edge      i8042
- 16:        332        194        163        132   IO-APIC  16-fasteoi   ehci_hcd:usb3, mmc0
- 18:          0          0          0          0   IO-APIC  18-fasteoi   i801_smbus
- 23:         17         31          0          0   IO-APIC  23-fasteoi   ehci_hcd:usb4
- 24:      44762       5748     786804       3298   PCI-MSI 512000-edge      0000:00:1f.2
- 25:          0          0          0          0   PCI-MSI 327680-edge      xhci_hcd
- 26:          3          6          1          1   PCI-MSI 409600-edge      enp0s25
- 27:        852        591         64         42   PCI-MSI 32768-edge      i915
- 28:          8          6          3          6   PCI-MSI 360448-edge      mei_me
- 29:         62         82          0          6   PCI-MSI 442368-edge      snd_hda_intel
- 30:     779603       1591         37         80   PCI-MSI 1572864-edge      iwlwifi
-NMI:         94         87         91         87   Non-maskable interrupts
-LOC:    2717165    2177070    2758401    2241707   Local timer interrupts
+  0:        135          0          0          0   IO-APIC-edge      timer
+  1:          1          2          3          2   IO-APIC-edge      i8042
+  6:          0          1          1          1   IO-APIC-edge      floppy
+  8:          0          0          0          0   IO-APIC-edge      rtc0
+  9:          0          0          0          0   IO-APIC-fasteoi   acpi
+ 10:        496        482        486        468   IO-APIC-fasteoi   virtio4
+ 11:         10        147         30         27   IO-APIC-fasteoi   uhci_hcd:usb1, qxl
+ 12:          0         41         47         38   IO-APIC-edge      i8042
+ 14:          0          0          0          0   IO-APIC-edge      ata_piix
+ 15:         24         20     182208         20   IO-APIC-edge      ata_piix
+ 24:          0          0          0          0   PCI-MSI-edge      virtio0-config
+ 25:          0          0          0          0   PCI-MSI-edge      virtio2-config
+ 26:          0          3          1          4   PCI-MSI-edge      virtio2-virtqueues
+ 27:    3075309         25         27         24   PCI-MSI-edge      virtio0-input.0
+ 28:          0          0          1          0   PCI-MSI-edge      virtio0-output.0
+ 29:          0          0          0          0   PCI-MSI-edge      virtio1-config
+ 30:          8         10          6     263048   PCI-MSI-edge      virtio1-input.0
+ 31:          0          1          1          0   PCI-MSI-edge      virtio1-output.0
+ 32:          0          0          0          0   PCI-MSI-edge      virtio3-config
+ 33:       2251       1443       1443      76460   PCI-MSI-edge      virtio3-req.0
+NMI:          0          0          0          0   Non-maskable interrupts
+LOC:    2930727    2337740    2362650    2473899   Local timer interrupts
 SPU:          0          0          0          0   Spurious interrupts
-PMI:         94         87         91         87   Performance monitoring interrupts
-IWI:          0         38          3          4   IRQ work interrupts
+PMI:          0          0          0          0   Performance monitoring interrupts
+IWI:     172169      63376      48335      57101   IRQ work interrupts
 RTR:          0          0          0          0   APIC ICR read retries
-RES:     181926     181930     174985     218174   Rescheduling interrupts
-CAL:     155928      95381     153320      90535   Function call interrupts
-TLB:      19955      22444      21487      20786   TLB shootdowns
+RES:     803394     677845     571916     698750   Rescheduling interrupts
+CAL:      22684      11471      17545       1233   Function call interrupts
+TLB:      82385      78148      78910      80389   TLB shootdowns
 TRM:          0          0          0          0   Thermal event interrupts
 THR:          0          0          0          0   Threshold APIC interrupts
-DFR:          0          0          0          0   Deferred Error APIC interrupts
 MCE:          0          0          0          0   Machine check exceptions
-MCP:         29         29         29         29   Machine check polls
-HYP:          0          0          0          0   Hypervisor callback interrupts
+MCP:        624        624        624        624   Machine check polls
 ERR:          0
 MIS:          0
-PIN:          0          0          0          0   Posted-interrupt notification event
-PIW:          0          0          0          0   Posted-interrupt wakeup event
-MemTotal:       16127228 kB
-MemFree:        11172348 kB
-MemAvailable:   11360848 kB
-Buffers:           16824 kB
-Cached:           258036 kB
-SwapCached:      1969000 kB
-Active:          2299052 kB
-Inactive:        2277200 kB
-Active(anon):    2261212 kB
-Inactive(anon):  2129652 kB
-Active(file):      37840 kB
-Inactive(file):   147548 kB
-Unevictable:       22232 kB
-Mlocked:           22232 kB
-SwapTotal:       7286780 kB
-SwapFree:         619792 kB
-Dirty:              5712 kB
+MemTotal:        1785008 kB
+MemFree:          255196 kB
+MemAvailable:    1299360 kB
+Buffers:               0 kB
+Cached:           490764 kB
+SwapCached:          252 kB
+Active:           329040 kB
+Inactive:         222876 kB
+Active(anon):      28888 kB
+Inactive(anon):    73412 kB
+Active(file):     300152 kB
+Inactive(file):   149464 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:       3354620 kB
+SwapFree:        3353308 kB
+Dirty:              2224 kB
 Writeback:             0 kB
-AnonPages:       2355600 kB
-Mapped:           161840 kB
-Shmem:             79820 kB
-Slab:             122648 kB
-SReclaimable:      63112 kB
-SUnreclaim:        59536 kB
-KernelStack:       12384 kB
-PageTables:        60456 kB
+AnonPages:         60940 kB
+Mapped:            18716 kB
+Shmem:             41148 kB
+Slab:             898272 kB
+SReclaimable:     847964 kB
+SUnreclaim:        50308 kB
+KernelStack:        2656 kB
+PageTables:         5240 kB
 NFS_Unstable:          0 kB
 Bounce:                0 kB
 WritebackTmp:          0 kB
-CommitLimit:    15350392 kB
-Committed_AS:   22203576 kB
+CommitLimit:     4247124 kB
+Committed_AS:     383304 kB
 VmallocTotal:   34359738367 kB
-VmallocUsed:      457088 kB
-VmallocChunk:   34358947836 kB
+VmallocUsed:      149692 kB
+VmallocChunk:   34359524352 kB
 HardwareCorrupted:     0 kB
-AnonHugePages:   1890304 kB
+AnonHugePages:      6144 kB
 HugePages_Total:       0
 HugePages_Free:        0
 HugePages_Rsvd:        0
 HugePages_Surp:        0
 Hugepagesize:       2048 kB
-DirectMap4k:      144572 kB
-DirectMap2M:    16322560 kB
+DirectMap4k:       67576 kB
+DirectMap2M:     4126720 kB
 Inter-|   Receive                                                |  Transmit
  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
-virbr1-nic:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
- vnet0:  128666     393    0    0    0     0          0         0   317193    3976    0    0    0     0       0          0
- vnet5:   43924     524    0    0    0     0          0         0   221686    3859    0    0    0     0       0          0
-enp0s25: 31338290   49183    0    0    0     0          0      1035 10708826   44319    0    0    0     0       0          0
-virbr0-nic:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
- vnet2:   69293     283    0    0    0     0          0         0   364210    3770    0    0    0     0       0          0
- vnet4:   59178     194    0    0    0     0          0         0   238387    3594    0    0    0     0       0          0
-virbr0: 5345737    5274    0    0    0     0          0         0  1408922    5318    0    0    0     0       0          0
- vnet1: 5034219    3505    0    0    0     0          0         0  1151113    7193    0    0    0     0       0          0
-    lo:   20864     210    0    0    0     0          0         0    20864     210    0    0    0     0       0          0
-virbr1:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-wlp3s0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
- vnet3:   84293     375    0    0    0     0          0         0   279557    3664    0    0    0     0       0          0
+  eth0: 218836605 3199144    0 95485    0     0          0         0  7359507   57561    0    0    0     0       0          0
+  eth1: 29582512  268313    0 93507    0     0          0         0 30026986   67532    0    0    0     0       0          0
+    lo:    1056      11    0    0    0     0          0         0     1056      11    0    0    0     0       0          0

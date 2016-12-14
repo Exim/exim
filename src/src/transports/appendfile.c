@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -619,19 +619,18 @@ if (host_find_byname(&host, NULL, 0, NULL, FALSE) == HOST_FIND_FAILED)
 host.address = US"127.0.0.1";
 
 
-for (h = &host; h != NULL; h = h->next)
+for (h = &host; h; h = h->next)
   {
   int sock, rc;
-  int host_af = (Ustrchr(h->address, ':') != NULL)? AF_INET6 : AF_INET;
+  int host_af = Ustrchr(h->address, ':') != NULL ? AF_INET6 : AF_INET;
 
   DEBUG(D_transport) debug_printf("calling comsat on %s\n", h->address);
 
-  sock = ip_socket(SOCK_DGRAM, host_af);
-  if (sock < 0) continue;
+  if ((sock = ip_socket(SOCK_DGRAM, host_af)) < 0) continue;
 
   /* Connect never fails for a UDP socket, so don't set a timeout. */
 
-  (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0);
+  (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0, FALSE);
   rc = send(sock, buffer, Ustrlen(buffer) + 1, 0);
   (void)close(sock);
 
@@ -2874,9 +2873,14 @@ at initialization time. */
 
 if (yield == OK)
   {
-  if (!transport_write_message(addr, fd, ob->options, 0, tblock->add_headers,
-      tblock->remove_headers, ob->check_string, ob->escape_string,
-      tblock->rewrite_rules, tblock->rewrite_existflags))
+  transport_ctx tctx = {
+    tblock,
+    addr,
+    ob->check_string,
+    ob->escape_string,
+    ob->options
+  };
+  if (!transport_write_message(fd, &tctx, 0))
     yield = DEFER;
   }
 

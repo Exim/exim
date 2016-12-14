@@ -28,10 +28,11 @@ struct router_info;
 /* Structure for remembering macros for the configuration file */
 
 typedef struct macro_item {
-  struct  macro_item *next;
-  BOOL    command_line;
-  uschar *replacement;
-  uschar  name[1];
+  struct   macro_item *next;
+  BOOL     command_line;
+  unsigned namelen;
+  uschar * replacement;
+  uschar   name[1];
 } macro_item;
 
 /* Structure for bit tables for debugging and logging */
@@ -50,6 +51,11 @@ typedef struct ugid_block {
   BOOL    gid_set;
   BOOL    initgroups;
 } ugid_block;
+
+typedef enum {	CHUNKING_NOT_OFFERED = -1,
+		CHUNKING_OFFERED,
+		CHUNKING_ACTIVE,
+		CHUNKING_LAST} chunking_state_t;
 
 /* Structure for holding information about a host for use mainly by routers,
 but also used when checking lists of hosts and when transporting. Looking up
@@ -216,6 +222,40 @@ typedef struct transport_info {
     struct transport_instance *);
   BOOL    local;                  /* TRUE for local transports */
 } transport_info;
+
+
+/* smtp transport datachunk callback */
+
+#define tc_reap_prev	BIT(0)	/* Flags: reap previous SMTP cmd responses */
+#define tc_chunk_last	BIT(1)	/* annotate chunk SMTP cmd as LAST */
+
+struct transport_context;
+typedef int (*tpt_chunk_cmd_cb)(int fd, struct transport_context * tctx,
+				unsigned len, unsigned flags);
+
+/* Structure for information about a delivery-in-progress */
+
+typedef struct transport_context {
+  transport_instance	* tblock;		/* transport */
+  struct address_item	* addr;
+  uschar		* check_string;		/* string replacement */
+  uschar		* escape_string;
+  int		  	  options;		/* output processing topt_* */
+
+  /* items below only used with option topt_use_bdat */
+  tpt_chunk_cmd_cb	  chunk_cb;		/* per-datachunk callback */
+  struct smtp_inblock	* inblock;
+  struct smtp_outblock	* outblock;
+  host_item		* host;
+  struct address_item	* first_addr;
+  struct address_item	**sync_addr;
+  BOOL			  pending_MAIL;
+  BOOL			  pending_BDAT;
+  BOOL			  good_RCPT;
+  BOOL			* completed_address;
+  int			  cmd_count;
+  uschar		* buffer;
+} transport_ctx;
 
 
 
@@ -506,12 +546,13 @@ typedef struct address_item_propagated {
 #ifndef DISABLE_PRDR
 # define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
 #endif
-#define af_force_command       0x10000000 /* force_command in pipe transport */
+#define af_chunking_used       0x10000000 /* delivery used SMTP CHUNKING */
+#define af_force_command       0x20000000 /* force_command in pipe transport */
 #ifdef EXPERIMENTAL_DANE
-# define af_dane_verified      0x20000000 /* TLS cert verify done with DANE */
+# define af_dane_verified      0x40000000 /* TLS cert verify done with DANE */
 #endif
 #ifdef SUPPORT_I18N
-# define af_utf8_downcvt       0x40000000 /* downconvert was done for delivery */
+# define af_utf8_downcvt       0x80000000 /* downconvert was done for delivery */
 #endif
 
 /* These flags must be propagated when a child is created */
@@ -690,11 +731,11 @@ typedef struct search_cache {
 uncompressed, but the data pointer is into the raw data. */
 
 typedef struct {
-  uschar  name[DNS_MAXNAME];      /* domain name */
-  int     type;                   /* record type */
-  unsigned short ttl;		  /* time-to-live, seconds */
-  int     size;                   /* size of data */
-  uschar *data;                   /* pointer to data */
+  uschar        name[DNS_MAXNAME];      /* domain name */
+  int           type;                   /* record type */
+  unsigned short ttl;		        /* time-to-live, seconds */
+  int           size;                   /* size of data */
+  const uschar *data;                   /* pointer to data */
 } dns_record;
 
 /* Structure for holding the result of a DNS query. */
@@ -708,9 +749,9 @@ typedef struct {
 block. */
 
 typedef struct {
-  int     rrcount;                /* count of RRs in the answer */
-  uschar *aptr;                   /* pointer in the answer while scanning */
-  dns_record srr;                 /* data from current record in scan */
+  int            rrcount;         /* count of RRs in the answer */
+  const uschar *aptr;             /* pointer in the answer while scanning */
+  dns_record     srr;             /* data from current record in scan */
 } dns_scan;
 
 /* Structure for holding a chain of IP addresses that are extracted from
@@ -825,5 +866,16 @@ typedef struct acl_block {
 
 /* smtp transport calc outbound_ip */
 typedef BOOL (*oicf) (uschar *message_id, void *data);
+
+/* DKIM information for transport */
+struct ob_dkim {
+  uschar *dkim_domain;
+  uschar *dkim_private_key;
+  uschar *dkim_selector;
+  uschar *dkim_canon;
+  uschar *dkim_sign_headers;
+  uschar *dkim_strict;
+  BOOL    dot_stuffed;
+};
 
 /* End of structs.h */

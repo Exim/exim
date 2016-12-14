@@ -4,7 +4,9 @@
 
 /* Experimental SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 - 2014
-   License: GPL */
+   License: GPL
+   Copyright (c) The Exim Maintainers 2016
+*/
 
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
 
@@ -74,9 +76,9 @@ int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
    context (if any), retrieves the result, sets up expansion
    strings and evaluates the condition outcome. */
 
-int spf_process(uschar **listptr, uschar *spf_envelope_sender, int action) {
+int spf_process(const uschar **listptr, uschar *spf_envelope_sender, int action) {
   int sep = 0;
-  uschar *list = *listptr;
+  const uschar *list = *listptr;
   uschar *spf_result_id;
   uschar spf_result_id_buffer[128];
   int rc = SPF_RESULT_PERMERROR;

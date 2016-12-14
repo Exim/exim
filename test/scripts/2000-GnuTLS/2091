@@ -1,0 +1,9 @@
+# TLS client, CHUNKING transmission
+gnutls
+exim -DSERVER=server -DSRV=tls -bd -oX PORT_S
+****
+exim -oMt this-user -f this-user -odf other-user@test.ex
+Test message. Contains FF: ÿ
+****
+killdaemon
+no_msglog_check

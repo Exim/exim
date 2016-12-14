@@ -2,7 +2,7 @@
 *                  Exim Monitor                  *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -669,8 +669,14 @@ if (log_file[0] != 0)
     {
     fseek(LOG, 0, SEEK_END);
     log_position = ftell(LOG);
-    fstat(fileno(LOG), &statdata);
-    log_inode = statdata.st_ino;
+    if (fstat(fileno(LOG), &statdata))
+      {
+      perror("log file fstat");
+      fclose(LOG);
+      LOG=NULL;
+      }
+    else
+      log_inode = statdata.st_ino;
     }
   }
 else

@@ -156,27 +156,26 @@ for (i = 0; i < eo->en_cols.en_cols_len; i++)
 
   if (field_name == NULL)
     {
-    yield = string_cat(yield, &ssize, &offset,US  tc->tc_name,
-      Ustrlen(tc->tc_name));
-    yield = string_cat(yield, &ssize, &offset, US"=", 1);
+    yield = string_cat(yield, &ssize, &offset,US  tc->tc_name);
+    yield = string_catn(yield, &ssize, &offset, US"=", 1);
 
     /* Quote the value if it contains spaces or is empty */
 
     if (value[0] == 0 || Ustrchr(value, ' ') != NULL)
       {
       int j;
-      yield = string_cat(yield, &ssize, &offset, US"\"", 1);
+      yield = string_catn(yield, &ssize, &offset, US"\"", 1);
       for (j = 0; j < len; j++)
         {
         if (value[j] == '\"' || value[j] == '\\')
-          yield = string_cat(yield, &ssize, &offset, US"\\", 1);
-        yield = string_cat(yield, &ssize, &offset, value+j, 1);
+          yield = string_catn(yield, &ssize, &offset, US"\\", 1);
+        yield = string_catn(yield, &ssize, &offset, value+j, 1);
         }
-      yield = string_cat(yield, &ssize, &offset, US"\"", 1);
+      yield = string_catn(yield, &ssize, &offset, US"\"", 1);
       }
-    else yield = string_cat(yield, &ssize, &offset, value, len);
+    else yield = string_catn(yield, &ssize, &offset, value, len);
 
-    yield = string_cat(yield, &ssize, &offset, US" ", 1);
+    yield = string_catn(yield, &ssize, &offset, US" ", 1);
     }
 
   /* When the specified field is found, grab its data and finish */

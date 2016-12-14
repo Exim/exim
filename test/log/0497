@@ -27,7 +27,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 == userx@x.y R=r1 T=t1 defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
+1999-03-02 09:44:33 10HmbF-0005vi-00 == userx@x.y R=r1 T=t1 defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@myhost.test.ex>: 452 temporary error
 1999-03-02 09:44:33 10HmbF-0005vi-00 ** userx@x.y: retry timeout exceeded
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> R=10HmbF-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0
@@ -55,8 +55,8 @@
 1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbN-0005vi-00 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to RCPT TO:<userx@x.y>
-1999-03-02 09:44:33 10HmbN-0005vi-00 == userx@x.y R=r1 T=t1 defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to RCPT TO:<userx@x.y>
+1999-03-02 09:44:33 10HmbN-0005vi-00 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<userx@x.y>
+1999-03-02 09:44:33 10HmbN-0005vi-00 == userx@x.y R=r1 T=t1 defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<userx@x.y>
 1999-03-02 09:44:33 10HmbN-0005vi-00 ** userx@x.y: retry timeout exceeded
 1999-03-02 09:44:33 10HmbO-0005vi-00 <= <> R=10HmbN-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbO-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=r0

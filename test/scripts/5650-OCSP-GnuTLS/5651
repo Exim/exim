@@ -2,7 +2,7 @@
 #
 #
 # Client works when we request but don't require OCSP stapling and none comes
-exim -bd -oX PORT_D -DSERVER=server -DOCSP=""
+exim -bd -oX PORT_D -DSERVER=server -DOPT=""
 ****
 exim norequire@test.ex
 test message.
@@ -15,7 +15,7 @@ killdaemon
 #
 # Client works when we don't request OCSP stapling
 exim -bd -oX PORT_D -DSERVER=server \
- -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
+ -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
 exim nostaple@test.ex
 test message.
@@ -35,7 +35,7 @@ killdaemon
 #
 #
 # Client fails on lack of required stapled info
-exim -bd -oX PORT_D -DSERVER=server -DOCSP=""
+exim -bd -oX PORT_D -DSERVER=server -DOPT=""
 ****
 exim CALLER@test.ex
 test message.
@@ -47,8 +47,9 @@ no_msglog_check
 #
 #
 # Client fails on revoked stapled info
+sudo rm DIR/spool/db/retry
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
- -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
+ -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp
 ****
 exim CALLER@test.ex
 test message.
@@ -60,8 +61,9 @@ killdaemon
 #
 #
 # Client fails on expired stapled info
+sudo rm DIR/spool/db/retry
 EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server \
- -DOCSP=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
+ -DOPT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
 ****
 exim CALLER@test.ex
 test message.

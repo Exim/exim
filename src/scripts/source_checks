@@ -19,6 +19,7 @@ done <<-END
 	globals.c	header_names
 	globals.c	log_options
 	expand.c	item_table
+	std-crypto.c	dh_constants
 	transport.c	optionlist_transports
 	route.c		optionlist_routers
 	transports/appendfile.c	appendfile_transport_options
@@ -27,6 +28,8 @@ done <<-END
 	transports/pipe.c	pipe_transport_options
 	transports/smtp.c	smtp_transport_options
 	expand.c	var_table
+	acl.c		conditions
+	acl.c		controls_list
 END
 
 # Tables with just string items
@@ -45,6 +48,5 @@ done <<-END
 	expand.c	op_table_main
 	expand.c	cond_table
 	acl.c		verbs
-	acl.c		conditions
 END
 

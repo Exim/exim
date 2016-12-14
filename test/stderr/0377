@@ -63,7 +63,7 @@ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{no}{yes}}"...
 cccc_2nd_time router skipped: condition failure
 --------> cccc_redirect router <--------
 local_part=cccc domain=myhost.test.ex
@@ -101,7 +101,7 @@ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{yes}{no}}"...
 calling bbbb router
 rda_interpret (string): bbbb@$domain, defer_bbbb@$domain
 expanded: bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex
@@ -127,7 +127,7 @@ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{yes}{no}}"...
 calling unseen_aaaa router
 rda_interpret (string): defer_aaaa@$domain
 expanded: defer_aaaa@myhost.test.ex
@@ -207,7 +207,7 @@ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{no}{yes}}"...
 cccc_2nd_time router skipped: condition failure
 --------> cccc_redirect router <--------
 cccc_redirect router skipped: previously routed cccc@myhost.test.ex
@@ -376,7 +376,7 @@ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{no}{yes}}"...
 calling cccc_2nd_time router
 rda_interpret (string): $local_part@$domain
 expanded: cccc@myhost.test.ex
@@ -406,7 +406,7 @@ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{yes}{no}}"...
 bbbb router skipped: condition failure
 --------> bbbb_0 router <--------
 local_part=bbbb domain=myhost.test.ex
@@ -431,7 +431,7 @@ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{yes}{no}}"...
 unseen_aaaa router skipped: condition failure
 --------> seen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
@@ -627,7 +627,7 @@ bbbb_0 router skipped: local_parts mismatch
 --------> cccc_2nd_time router <--------
 local_part=cccc domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{no}{yes}}"...
 calling cccc_2nd_time router
 rda_interpret (string): $local_part@$domain
 expanded: cccc@myhost.test.ex
@@ -657,7 +657,7 @@ seen_aaaa router skipped: local_parts mismatch
 --------> bbbb router <--------
 local_part=bbbb domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{yes}{no}}"...
 bbbb router skipped: condition failure
 --------> bbbb_0 router <--------
 local_part=bbbb domain=myhost.test.ex
@@ -682,7 +682,7 @@ defer router skipped: local_parts mismatch
 --------> unseen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
-checking "condition"
+checking "condition" "${if first_delivery{yes}{no}}"...
 unseen_aaaa router skipped: condition failure
 --------> seen_aaaa router <--------
 local_part=aaaa domain=myhost.test.ex

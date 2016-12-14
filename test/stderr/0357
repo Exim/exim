@@ -33,7 +33,7 @@ Processing retry items
 Succeeded addresses:
 Failed addresses:
 Deferred addresses:
-userx@test.ex
+ userx@test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
@@ -84,7 +84,7 @@ Processing retry items
 Succeeded addresses:
 Failed addresses:
 Deferred addresses:
-userx@test.ex
+ userx@test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 deleted retry information for R:userx@test.ex
 deleted retry information for R:test.ex
@@ -138,7 +138,7 @@ Processing retry items
 Succeeded addresses:
 Failed addresses:
 Deferred addresses:
-userx@test.ex
+ userx@test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 deleted retry information for R:userx@test.ex
 deleted retry information for R:test.ex
@@ -176,7 +176,7 @@ Processing retry items
 Succeeded addresses:
 Failed addresses:
 Deferred addresses:
-userx@test.ex: no retry items
+ userx@test.ex: no retry items
 end of retry processing
 LOG: queue_run MAIN
   End queue run: pid=pppp

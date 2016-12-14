@@ -513,7 +513,9 @@ acl_check_data:
   # Deny if the message contains an overlong line.  Per the standards
   # we should never receive one such via SMTP.
   #
-  deny    condition  = ${if > {$max_received_linelength}{998}}
+  deny    message    = maximum allowed line length is 998 octets, \
+                       got $max_received_linelength
+          condition  = ${if > {$max_received_linelength}{998}}
 
   # Deny if the message contains a virus. Before enabling this check, you
   # must install a virus scanner and set the av_scanner option above.
@@ -707,8 +709,8 @@ begin transports
 
 
 # This transport is used for delivering messages over SMTP connections.
-# Refuse to send any messsage with over-long lines, which could have
-# been receved other than via SMTP. The use of message_size_limit to
+# Refuse to send any message with over-long lines, which could have
+# been received other than via SMTP. The use of message_size_limit to
 # enforce this is a red herring.
 
 remote_smtp:

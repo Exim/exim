@@ -9,6 +9,8 @@
 /* HP-UX-specific code. This is concatenated onto the generic
 src/os.c file. */
 
-#include "setenv.c"
+#ifndef COMPILE_UTILITY
+# include "setenv.c"
+#endif
 
 /* End of os.c-SunHP-UX */

@@ -44,14 +44,15 @@ else if (Ustrcmp(keep_environment, "*") != 0)
     /* It's considered broken if we do not find the '=', according to
     Florian Weimer. For now we ignore such strings. unsetenv() would complain,
     getenv() would complain. */
-    uschar *eqp = Ustrchr(*p, '=');
+    uschar * eqp = Ustrchr(*p, '=');
 
     if (eqp)
       {
-      uschar *name = string_copyn(*p, eqp - *p);
+      uschar * name = string_copyn(*p, eqp - *p);
+
       if (OK != match_isinlist(name, CUSS &keep_environment,
           0, NULL, NULL, MCL_NOEXPAND, FALSE, NULL))
-        if (unsetenv(CS name) < 0) return FALSE;
+        if (os_unsetenv(name) < 0) return FALSE;
         else p = USS environ; /* RESTART from the beginning */
       else p++;
       store_reset(name);
@@ -60,11 +61,11 @@ else if (Ustrcmp(keep_environment, "*") != 0)
   }
 if (add_environment)
   {
-    uschar *p;
+    uschar * p;
     int sep = 0;
-    const uschar* envlist = add_environment;
-    while ((p = string_nextinlist(&envlist, &sep, NULL, 0)))
-        putenv(CS p);
+    const uschar * envlist = add_environment;
+
+    while ((p = string_nextinlist(&envlist, &sep, NULL, 0))) putenv(CS p);
   }
 
   return TRUE;

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2014 - 2015 */
+/* Copyright (c) Jeremy Harris 2014 - 2016 */
 
 /* This module provides TLS (aka SSL) support for Exim using the OpenSSL
 library. It is #included into the tls.c file when that library is used.

@@ -3,15 +3,9 @@
 
 SERVER =
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
-primary_hostname = server1.example.com
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/SERVER%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
+.include DIR/aux-var/tls_conf_prefix
 
+primary_hostname = server1.example.com
 
 # ----- Main settings -----
 
@@ -35,7 +29,7 @@ tls_privatekey = ${if eq {SERVER}{server}\
 fail}
 
 # from cmdline define
-tls_ocsp_file = OCSP
+tls_ocsp_file = OPT
 
 
 # ------ ACL ------

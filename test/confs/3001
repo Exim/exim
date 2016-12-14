@@ -1,0 +1,7 @@
+# exim test configuration 3001
+exim_path = EXIM_PATH
+tls_advertise_hosts =
+spool_directory = DIR/spool
+perl_startup = $| = 1; \
+	print "Environment visible in Perl:\n"; \
+	print map { "$_=$ENV{$_}\n" } sort keys %ENV;

@@ -121,11 +121,12 @@ In order to run this test suite, the following requirements must be met:
     configs can be placed into it.  A suitable file location is .../exim/test/trusted_configs
     with content .../exim/test/test-config [fill out the ... to make full
     paths].  This file should be owner/group matching CONFIGURE_OWNER/GROUP,
-    or root/root.  The config files in .../exim/test/confs/ should be owner/group the same.
-    DISABLE_D_OPTION must not be used. If ALT_CONFIG_PREFIX is used, it
+    or root/root, and it has to be accessible for the login, under which
+    you run the tests.  The config files in .../exim/test/confs/ should be
+    owner/group the same.  DISABLE_D_OPTION must not be used. If ALT_CONFIG_PREFIX is used, it
     must contain the directory of the test-suite.  WHITELIST_D_MACROS should contain:
-    
-     DIR:EXIM_PATH:AA:ACL:ACLRCPT:ACL_MAIL:ACL_PREDATA:ACL_RCPT:AFFIX:ALLOW:ARG1:ARG2:AUTHF:AUTHS:AUTH_ID_DOMAIN:BAD:BANNER:BB:BR:BRB:CERT:COM:COMMAND_USER:CONNECTCOND:CONTROL:CREQCIP:CREQMAC:CRL:CSS:D6:DATA:DCF:DDF:DEFAULTDWC:DELAY:DETAILS:DRATELIMIT:DYNAMIC_OPTION:ELI:ERROR_DETAILS:ERT:FAKE:FALLBACK:FILTER:FILTER_PREPEND_HOME:FORBID:FORBID_SMTP_CODE:FUSER:HAI:HAP:HARDLIMIT:HEADER_LINE_MAXSIZE:HEADER_MAXSIZE:HELO_MSG:HL:HOSTS:HOSTS_AVOID_TLS:HOSTS_MAX_TRY:HVH:IFACE:IGNORE_QUOTA:INC:INSERT:IP1:IP2:LAST:LDAPSERVERS:LENCHECK:LIMIT:LIST:LOG_SELECTOR:LS:MAXNM:MESSAGE_LOGS:MSIZE:NOTDAEMON:ONCE:ONLY:OPT:OPTION:ORDER:PAH:PEX:PORT:PTBC:QDG:QOLL:QUOTA:QUOTA_FILECOUNT:QWM:RCPT_MSG:REMEMBER:REQUIRE:RETRY:RETRY1:RETRY2:RETURN:RETURN_ERROR_DETAILS:REWRITE:ROUTE_DATA:RRATELIMIT:RT:S:SELECTOR:SELF:SERVER:SERVERS:SREQCIP:SREQMAC:SRV:STD:STRICT:SUB:SUBMISSION_OPTIONS:TIMEOUTDEFER:TIMES:TRUSTED:TRYCLEAR:UL:USE_SENDER:UTF8:VALUE:WMF:X:Y
+
+     DIR:EXIM_PATH:AA:ACL:ACLRCPT:ACL_MAIL:ACL_PREDATA:ACL_RCPT:AFFIX:ALLOW:ARG1:ARG2:AUTHF:AUTHS:AUTH_ID_DOMAIN:BAD:BANNER:BB:BR:BRB:CERT:COM:COMMAND_USER:CONNECTCOND:CONTROL:CREQCIP:CREQMAC:CRL:CSS:D6:DATA:DCF:DDF:DEFAULTDWC:DELAY:DETAILS:DRATELIMIT:DYNAMIC_OPTION:ELI:ERROR_DETAILS:ERT:FAKE:FALLBACK:FILTER:FILTER_PREPEND_HOME:FORBID:FORBID_SMTP_CODE:FUSER:HAI:HAP:HARDLIMIT:HEADER_LINE_MAXSIZE:HEADER_MAXSIZE:HELO_MSG:HL:HOSTS:HOSTS_AVOID_TLS:HOSTS_MAX_TRY:HVH:IFACE:IGNORE_QUOTA:INC:INSERT:IP1:IP2:LAST:LDAPSERVERS:LENCHECK:LIMIT:LIST:LOG_SELECTOR:MAXNM:MESSAGE_LOGS:MSIZE:NOTDAEMON:ONCE:ONLY:OPT:OPTION:ORDER:PAH:PEX:PORT:PTBC:QDG:QOLL:QUOTA:QUOTA_FILECOUNT:QWM:RCPT_MSG:REMEMBER:REQUIRE:RETRY:RETRY1:RETRY2:RETURN:RETURN_ERROR_DETAILS:REWRITE:ROUTE_DATA:RRATELIMIT:SELECTOR:SELF:SERVER:SERVERS:SREQCIP:SREQMAC:SRV:STRICT:SUB:SUBMISSION_OPTIONS:TIMEOUTDEFER:TIMES:TRUSTED:TRYCLEAR:UL:USE_SENDER:UTF8:VALUE:WMF
 
 (10) Exim must *not* be built with USE_READLINE, as the test-suite's automation
      assumes the simpler I/O model.
@@ -267,11 +268,15 @@ There are some options for the ./runtest script itself:
   -FLAVOUR <flavour>
             This allows "overrides" for the test results. It's intended
             use is to deal with distro specific differences in the test
-            output. The default flavour is "foo". If during the test
-            run differences between the current and the expected output
-            are found and no flavour file exists already, you may update
-            the "common" expected output or you may create a flavour
-            file. If  a flavour file already exists, any updates will go
+            output. The default flavour is "FOO" if autodetection fails.
+            (Autodection is possible for known flavours only. Known
+            flavours are computed after file name extensions in stdout/*
+            and stderr/*.)
+
+            If during the test run differences between the current and
+            the expected output are found and no flavour file exists already,
+            you may update the "common" expected output or you may create a
+            flavour file. If  a flavour file already exists, any updates will go
             into that flavour file!
 
   -KEEP     Normally, after a successful run, the test output files are
@@ -550,6 +555,7 @@ here:
   PORT_D         is replaced by a port number for normal daemon use
   PORT_N         is replaced by a port number that should never respond
   PORT_S         is replaced by a port number for normal bin/server use
+  PORT_DYNAMIC   is replaced by a port number allocated dynamically
   TESTNUM        is replaced by the current test number
   V4NET          is replaced by an IPv4 network number for testing
   V6NET          is replaced by an IPv6 network number for testing
@@ -559,6 +565,10 @@ V4NET is hardwired to 224 and V6NET to ff00. These networks are used for DNS
 testing purposes, and for testing Exim with -bh. The only requirement is that
 they are networks that can never be used for an IP address of a real host. I've
 chosen two multicast networks for the moment.
+
+PORT_DYNAMIC is allocated by hunting for a free port (starting at port
+1024) a listener can bind to. This is done by runtest, for simulating
+inetd operations.
 
 If the host has no IPv6 address, "<no IPv6 address found>" is substituted but
 that does not matter because no IPv6 tests will be run. A similar substitution
@@ -1020,7 +1030,7 @@ Lines in client scripts are of two kinds:
 Here is a simple example:
 
   client 127.0.0.1 PORT_D
-  ??? 250
+  ??? 220
   EHLO xxx
   ??? 250-
   ??? 250

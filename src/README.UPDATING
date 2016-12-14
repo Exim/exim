@@ -26,6 +26,17 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.88
+-----------------
+
+ * The "demime" ACL condition, deprecated for the past 10 years, has
+   now been removed.
+
+ * Old GnuTLS configuration options "gnutls_require_kx", "gnutls_require_mac",
+   and "gnutls_require_protocols" have now been removed.  (Inoperative from
+   4.80, per below; logging warnings since 4.83, again per below).
+
+
 Exim version 4.83
 -----------------
 

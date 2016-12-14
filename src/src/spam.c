@@ -2,8 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015 */
-/* License: GPL */
+/* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015
+ * License: GPL
+ * Copyright (c) The Exim Maintainers 2016
+ */
 
 /* Code for calling spamassassin's spamd. Called from acl.c. */
 
@@ -492,7 +494,8 @@ if (ferror(mbox_file))
 (void)fclose(mbox_file);
 
 /* we're done sending, close socket for writing */
-shutdown(spamd_sock,SHUT_WR);
+if (!sd->is_rspamd)
+  shutdown(spamd_sock,SHUT_WR);
 
 /* read spamd response using what's left of the timeout.  */
 memset(spamd_buffer, 0, sizeof(spamd_buffer));

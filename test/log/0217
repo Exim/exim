@@ -8,49 +8,49 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 CALLER@test.ex: error ignored
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == a@test.ex R=client T=send_to_server defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after RCPT TO:<b@test.ex>
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == b@test.ex R=client T=send_to_server defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after RCPT TO:<b@test.ex>
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == c@test.ex R=client T=send_to_server defer (dd): Connection timed out: SMTP timeout after RCPT TO:<b@test.ex>
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == e@test.ex R=client T=send_to_server defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after RCPT TO:<f@test.ex>
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == f@test.ex R=client T=send_to_server defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after RCPT TO:<f@test.ex>
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == g@test.ex R=client T=send_to_server defer (dd): Connection timed out: SMTP timeout after RCPT TO:<f@test.ex>
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 == a@test.ex R=client T=send_to_server defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex>: 451 Temp error
-1999-03-02 09:44:33 10HmbA-0005vi-00 == b@test.ex R=client T=send_to_server defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex>: 451 Temp error
+1999-03-02 09:44:33 10HmbA-0005vi-00 == h@test.ex R=client T=send_to_server defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 451 Temp error
+1999-03-02 09:44:33 10HmbA-0005vi-00 == i@test.ex R=client T=send_to_server defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 451 Temp error
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbB-0005vi-00 ** a@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex>: 550 Perm error
-1999-03-02 09:44:33 10HmbB-0005vi-00 ** b@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex>: 550 Perm error
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** j@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 550 Perm error
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** k@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 550 Perm error
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbC-0005vi-00 ** CALLER@test.ex R=bounce: just discard
 1999-03-02 09:44:33 10HmbC-0005vi-00 CALLER@test.ex: error ignored
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbD-0005vi-00 == a@test.ex R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<a@test.ex>: 451 Temp error 1
-1999-03-02 09:44:33 10HmbD-0005vi-00 == b@test.ex R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 451 Temp error 2
+1999-03-02 09:44:33 10HmbD-0005vi-00 == l@test.ex R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<l@test.ex>: 451 Temp error 1
+1999-03-02 09:44:33 10HmbD-0005vi-00 == m@test.ex R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<m@test.ex>: 451 Temp error 2
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbE-0005vi-00 ** a@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<a@test.ex>: 551 Perm error 1
-1999-03-02 09:44:33 10HmbE-0005vi-00 ** b@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 551 Perm error 2
+1999-03-02 09:44:33 10HmbE-0005vi-00 ** n@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<n@test.ex>: 551 Perm error 1
+1999-03-02 09:44:33 10HmbE-0005vi-00 ** o@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<o@test.ex>: 551 Perm error 2
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbF-0005vi-00 ** CALLER@test.ex R=bounce: just discard
 1999-03-02 09:44:33 10HmbF-0005vi-00 CALLER@test.ex: error ignored
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbG-0005vi-00 == a@test.ex R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<a@test.ex>: 451 Temp error 1
-1999-03-02 09:44:33 10HmbG-0005vi-00 ** b@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 551 Perm error 2
+1999-03-02 09:44:33 10HmbG-0005vi-00 == p@test.ex R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<p@test.ex>: 451 Temp error 1
+1999-03-02 09:44:33 10HmbG-0005vi-00 ** q@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<q@test.ex>: 551 Perm error 2
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> R=10HmbG-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbH-0005vi-00 ** CALLER@test.ex R=bounce: just discard
 1999-03-02 09:44:33 10HmbH-0005vi-00 CALLER@test.ex: error ignored
 1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbI-0005vi-00 ** a@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 503 Sorry perm data error
-1999-03-02 09:44:33 10HmbI-0005vi-00 ** b@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 503 Sorry perm data error
+1999-03-02 09:44:33 10HmbI-0005vi-00 ** r@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 503 Sorry perm data error
+1999-03-02 09:44:33 10HmbI-0005vi-00 ** s@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 503 Sorry perm data error
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> R=10HmbI-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbJ-0005vi-00 ** CALLER@test.ex R=bounce: just discard
 1999-03-02 09:44:33 10HmbJ-0005vi-00 CALLER@test.ex: error ignored
 1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbK-0005vi-00 == a@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
-1999-03-02 09:44:33 10HmbK-0005vi-00 == b@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
+1999-03-02 09:44:33 10HmbK-0005vi-00 == t@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
+1999-03-02 09:44:33 10HmbK-0005vi-00 == u@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
 1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbL-0005vi-00 == yes@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
 1999-03-02 09:44:33 10HmbL-0005vi-00 ** n00@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<n00@test.ex>: 550 NO
@@ -258,12 +258,12 @@
 1999-03-02 09:44:33 10HmbM-0005vi-00 CALLER@test.ex: error ignored
 1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbN-0005vi-00 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to RCPT TO:<c@test.ex>
-1999-03-02 09:44:33 10HmbN-0005vi-00 == a@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to RCPT TO:<c@test.ex>
+1999-03-02 09:44:33 10HmbN-0005vi-00 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<c@test.ex>
+1999-03-02 09:44:33 10HmbN-0005vi-00 == a@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<c@test.ex>
 1999-03-02 09:44:33 10HmbN-0005vi-00 ** b@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 550 NO
-1999-03-02 09:44:33 10HmbN-0005vi-00 == c@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to RCPT TO:<c@test.ex>
-1999-03-02 09:44:33 10HmbN-0005vi-00 == d@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to RCPT TO:<c@test.ex>
-1999-03-02 09:44:33 10HmbN-0005vi-00 == e@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to RCPT TO:<c@test.ex>
+1999-03-02 09:44:33 10HmbN-0005vi-00 == c@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<c@test.ex>
+1999-03-02 09:44:33 10HmbN-0005vi-00 == d@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<c@test.ex>
+1999-03-02 09:44:33 10HmbN-0005vi-00 == e@test.ex R=client T=send_to_server defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to pipelined RCPT TO:<c@test.ex>
 1999-03-02 09:44:33 10HmbO-0005vi-00 <= <> R=10HmbN-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbO-0005vi-00 ** CALLER@test.ex R=bounce: just discard
 1999-03-02 09:44:33 10HmbO-0005vi-00 CALLER@test.ex: error ignored

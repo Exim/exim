@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 Exim configuration error in line 28 of TESTSUITE/test-config:
+1999-03-02 09:44:33 Exim configuration error in line 22 of TESTSUITE/test-config:
   .include specifies a non-absolute path "non/absolute"

@@ -1,6 +1,0 @@
-# exim test configuration 0615
-exim_path = EXIM_PATH
-tls_advertise_hosts =
-perl_startup = $| = 1; \
-	print "Environment visible in Perl:\n"; \
-	print map { "$_=$ENV{$_}\n" } sort keys %ENV;

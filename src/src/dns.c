@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for interfacing with the DNS. */
@@ -309,7 +309,7 @@ else
 Return: TRUE for a bad result
 */
 static BOOL
-dnss_inc(dns_answer * dnsa, dns_scan * dnss, unsigned delta)
+dnss_inc_aptr(const dns_answer * dnsa, dns_scan * dnss, unsigned delta)
 {
 return (dnss->aptr += delta) >= dnsa->answer + dnsa->answerlen;
 }
@@ -332,9 +332,9 @@ Returns:    next dns record, or NULL when no more
 */
 
 dns_record *
-dns_next_rr(dns_answer *dnsa, dns_scan *dnss, int reset)
+dns_next_rr(const dns_answer *dnsa, dns_scan *dnss, int reset)
 {
-HEADER *h = (HEADER *)dnsa->answer;
+const HEADER * h = (const HEADER *)dnsa->answer;
 int namelen;
 
 char * trace = NULL;
@@ -363,7 +363,7 @@ if (reset != RESET_NEXT)
     if (namelen < 0) goto null_return;
     /* skip name & type & class */
     TRACE trace = "Q-skip";
-    if (dnss_inc(dnsa, dnss, namelen+4)) goto null_return;
+    if (dnss_inc_aptr(dnsa, dnss, namelen+4)) goto null_return;
     }
 
   /* Get the number of answer records. */
@@ -392,11 +392,11 @@ if (reset != RESET_NEXT)
       if (namelen < 0) goto null_return;
       /* skip name, type, class & TTL */
       TRACE trace = "A-hdr";
-      if (dnss_inc(dnsa, dnss, namelen+8)) goto null_return;
+      if (dnss_inc_aptr(dnsa, dnss, namelen+8)) goto null_return;
       GETSHORT(dnss->srr.size, dnss->aptr); /* size of data portion */
       /* skip over it */
       TRACE trace = "A-skip";
-      if (dnss_inc(dnsa, dnss, dnss->srr.size)) goto null_return;
+      if (dnss_inc_aptr(dnsa, dnss, dnss->srr.size)) goto null_return;
       }
     dnss->rrcount = reset == RESET_AUTHORITY
       ? ntohs(h->nscount) : ntohs(h->arcount);
@@ -423,11 +423,11 @@ if (namelen < 0) goto null_return;
 from the following bytes. */
 
 TRACE trace = "R-name";
-if (dnss_inc(dnsa, dnss, namelen)) goto null_return;
+if (dnss_inc_aptr(dnsa, dnss, namelen)) goto null_return;
 
 GETSHORT(dnss->srr.type, dnss->aptr);		/* Record type */
 TRACE trace = "R-class";
-if (dnss_inc(dnsa, dnss, 2)) goto null_return;	/* Don't want class */
+if (dnss_inc_aptr(dnsa, dnss, 2)) goto null_return;	/* Don't want class */
 GETLONG(dnss->srr.ttl, dnss->aptr);		/* TTL */
 GETSHORT(dnss->srr.size, dnss->aptr);		/* Size of data portion */
 dnss->srr.data = dnss->aptr;			/* The record's data follows */
@@ -450,29 +450,30 @@ null_return:
 }
 
 
-/* Extract the AUTHORITY information from the answer. If the
-answer isn't authoritive (AA not set), we do not extract anything.
+/* Extract the AUTHORITY information from the answer. If the answer isn't
+authoritive (AA not set), we do not extract anything.
 
-The AUTHORITIVE section contains NS records if
-the name in question was found, it contains a SOA record
-otherwise. (This is just from experience and some tests, is there
-some spec?)
+The AUTHORITIVE section contains NS records if the name in question was found,
+it contains a SOA record otherwise. (This is just from experience and some
+tests, is there some spec?)
 
-We've cycle through the AUTHORITY section, since it may contain
-other records (e.g. NSEC3) too.  */
+Scan the whole AUTHORITY section, since it may contain other records
+(e.g. NSEC3) too.
+
+Return: name for the authority, in an allocated string, or NULL if none found */
 
 static const uschar *
 dns_extract_auth_name(const dns_answer * dnsa)	/* FIXME: const dns_answer */
 {
 dns_scan dnss;
 dns_record * rr;
-HEADER * h = (HEADER *) dnsa->answer;
+const HEADER * h = (const HEADER *) dnsa->answer;
 
-if (!h->nscount || !h->aa) return NULL;
-for (rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_AUTHORITY);
-     rr;
-     rr = dns_next_rr((dns_answer*) dnsa, &dnss, RESET_NEXT))
-  if (rr->type == (h->ancount ? T_NS : T_SOA)) return rr->name;
+if (h->nscount && h->aa)
+  for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
+       rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+    if (rr->type == (h->ancount ? T_NS : T_SOA))
+      return string_copy(rr->name);
 return NULL;
 }
 
@@ -499,7 +500,7 @@ DEBUG(D_dns)
   debug_printf("DNSSEC support disabled at build-time; dns_is_secure() false\n");
 return FALSE;
 #else
-HEADER * h = (HEADER *) dnsa->answer;
+const HEADER * h = (const HEADER *) dnsa->answer;
 const uschar * auth_name;
 const uschar * trusted;
 
@@ -534,7 +535,7 @@ dns_set_insecure(dns_answer * dnsa)
 {
 #ifndef DISABLE_DNSSEC
 HEADER * h = (HEADER *)dnsa->answer;
-h->ad = 0;
+h->aa = h->ad = 0;
 #endif
 }
 
@@ -550,7 +551,7 @@ dns_is_aa(const dns_answer *dnsa)
 #ifdef DISABLE_DNSSEC
 return FALSE;
 #else
-return ((HEADER*)dnsa->answer)->aa;
+return ((const HEADER*)dnsa->answer)->aa;
 #endif
 }
 
@@ -663,8 +664,7 @@ caching for successful lookups. */
 
 sprintf(CS node_name, "%.255s-%s-%lx", name, dns_text_type(type),
   (unsigned long) resp->options);
-previous = tree_search(tree_dns_fails, node_name);
-if (previous != NULL)
+if ((previous = tree_search(tree_dns_fails, node_name)))
   {
   DEBUG(D_dns) debug_printf("DNS lookup of %.255s-%s: using cached value %s\n",
     name, dns_text_type(type),
@@ -769,48 +769,48 @@ if (dnsa->answerlen > MAXPACKET)
 if (dnsa->answerlen < 0) switch (h_errno)
   {
   case HOST_NOT_FOUND:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
-    "returning DNS_NOMATCH\n", name, dns_text_type(type));
-  return dns_return(name, type, DNS_NOMATCH);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
+      "returning DNS_NOMATCH\n", name, dns_text_type(type));
+    return dns_return(name, type, DNS_NOMATCH);
 
   case TRY_AGAIN:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave TRY_AGAIN\n",
-    name, dns_text_type(type));
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave TRY_AGAIN\n",
+      name, dns_text_type(type));
 
-  /* Cut this out for various test programs */
+    /* Cut this out for various test programs */
 #ifndef STAND_ALONE
-  save_domain = deliver_domain;
-  deliver_domain = string_copy(name);  /* set $domain */
-  rc = match_isinlist(name, (const uschar **)&dns_again_means_nonexist, 0, NULL, NULL,
-    MCL_DOMAIN, TRUE, NULL);
-  deliver_domain = save_domain;
-  if (rc != OK)
-    {
-    DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
-    return dns_return(name, type, DNS_AGAIN);
-    }
-  DEBUG(D_dns) debug_printf("%s is in dns_again_means_nonexist: returning "
-    "DNS_NOMATCH\n", name);
-  return dns_return(name, type, DNS_NOMATCH);
+    save_domain = deliver_domain;
+    deliver_domain = string_copy(name);  /* set $domain */
+    rc = match_isinlist(name, (const uschar **)&dns_again_means_nonexist, 0, NULL, NULL,
+      MCL_DOMAIN, TRUE, NULL);
+    deliver_domain = save_domain;
+    if (rc != OK)
+      {
+      DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
+      return dns_return(name, type, DNS_AGAIN);
+      }
+    DEBUG(D_dns) debug_printf("%s is in dns_again_means_nonexist: returning "
+      "DNS_NOMATCH\n", name);
+    return dns_return(name, type, DNS_NOMATCH);
 
 #else   /* For stand-alone tests */
-  return dns_return(name, type, DNS_AGAIN);
+    return dns_return(name, type, DNS_AGAIN);
 #endif
 
   case NO_RECOVERY:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_RECOVERY\n"
-    "returning DNS_FAIL\n", name, dns_text_type(type));
-  return dns_return(name, type, DNS_FAIL);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_RECOVERY\n"
+      "returning DNS_FAIL\n", name, dns_text_type(type));
+    return dns_return(name, type, DNS_FAIL);
 
   case NO_DATA:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_DATA\n"
-    "returning DNS_NODATA\n", name, dns_text_type(type));
-  return dns_return(name, type, DNS_NODATA);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_DATA\n"
+      "returning DNS_NODATA\n", name, dns_text_type(type));
+    return dns_return(name, type, DNS_NODATA);
 
   default:
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave unknown DNS error %d\n"
-    "returning DNS_FAIL\n", name, dns_text_type(type), h_errno);
-  return dns_return(name, type, DNS_FAIL);
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave unknown DNS error %d\n"
+      "returning DNS_FAIL\n", name, dns_text_type(type), h_errno);
+    return dns_return(name, type, DNS_FAIL);
   }
 
 DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) succeeded\n",
@@ -875,7 +875,8 @@ for (i = 0; i < 10; i++)
 
   /* DNS lookup failures get passed straight back. */
 
-  if ((rc = dns_basic_lookup(dnsa, name, type)) != DNS_SUCCEED) return rc;
+  if ((rc = dns_basic_lookup(dnsa, name, type)) != DNS_SUCCEED)
+    return rc;
 
   /* We should have either records of the required type, or a CNAME record,
   or both. We need to know whether both exist for getting the fully qualified
@@ -885,24 +886,22 @@ for (i = 0; i < 10; i++)
 
   cname_rr.data = type_rr.data = NULL;
   for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
-       rr;
-       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-    {
+       rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (rr->type == type)
       {
       if (type_rr.data == NULL) type_rr = *rr;
       if (cname_rr.data != NULL) break;
       }
-    else if (rr->type == T_CNAME) cname_rr = *rr;
-    }
+    else if (rr->type == T_CNAME)
+      cname_rr = *rr;
 
   /* For the first time round this loop, if a CNAME was found, take the fully
   qualified name from it; otherwise from the first data record, if present. */
 
-  if (i == 0 && fully_qualified_name != NULL)
+  if (i == 0 && fully_qualified_name)
     {
-    uschar * rr_name = cname_rr.data ? cname_rr.name
-      : type_rr.data ? type_rr.name : NULL;
+    uschar * rr_name = cname_rr.data
+      ? cname_rr.name : type_rr.data ? type_rr.name : NULL;
     if (  rr_name
        && Ustrcmp(rr_name, *fully_qualified_name) != 0
        && rr_name[0] != '*'
@@ -934,9 +933,8 @@ for (i = 0; i < 10; i++)
     return DNS_FAIL;
 
   data = store_get(256);
-  datalen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256);
-  if (datalen < 0)
+  if ((datalen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
+    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256)) < 0)
     return DNS_FAIL;
   name = data;
 
@@ -1084,7 +1082,7 @@ switch (type)
       success and packet length return values.) For added safety we only reset
       the packet length if the packet header looks plausible. */
 
-      HEADER *h = (HEADER *)dnsa->answer;
+      const HEADER * h = (const HEADER *)dnsa->answer;
       if (h->qr == 1 && h->opcode == QUERY && h->tc == 0
 	  && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
 	  && ntohs(h->qdcount) == 1 && ntohs(h->ancount) == 0
@@ -1092,8 +1090,7 @@ switch (type)
 	    dnsa->answerlen = MAXPACKET;
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
-	   rr;
-	   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
 	  )
 	if (rr->type != T_SOA) continue;
 	else if (strcmpic(rr->name, US"") == 0 ||
@@ -1128,13 +1125,11 @@ switch (type)
       might make stricter assertions than its parent domain. */
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
-	   rr;
-	   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_SRV)
 	{
-	if (rr->type != T_SRV) continue;
+	const uschar * p = rr->data;
 
 	/* Extract the numerical SRV fields (p is incremented) */
-	p = rr->data;
 	GETSHORT(priority, p);
 	GETSHORT(weight, p);	weight = weight; /* compiler quietening */
 	GETSHORT(port, p);

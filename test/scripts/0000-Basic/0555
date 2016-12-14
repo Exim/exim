@@ -1,4 +1,4 @@
-# Long lines for fakedefer/fakereject
+# Long response lines for fakedefer/fakereject
 exim -bs
 mail from:<>
 rcpt to:<userx@test.ex>

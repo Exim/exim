@@ -1,42 +1,49 @@
-# cutthrough_delivery and -bhc
+# cutthrough_delivery vs. recipient-verify cache entry
 need_ipv4
-munge loopback
-no_msglog_check
 #
-# Despite config for cutthrough should not make onward conn
-server -t -2 PORT_S
-****
-exim -bhc 1.2.3.4
-EHLO myhost.test.ex
-MAIL FROM:<CALLER@myhost.test.ex>
-RCPT TO:<plain@domain.com>
-DATA
-
-.
-QUIT
-****
+# Set up callout cache
 #
-# Onward conn made for r-verify but cleared before DATA
 server PORT_S
-220 server ready
+220 ESMTP
 EHLO
 250 OK
-MAIL
-250 OK
-RCPT
-250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
 QUIT
-220 OK
-*eof
+250 OK
 ****
-exim -bhc 1.2.3.4
+exim -bs -odf
 EHLO myhost.test.ex
 MAIL FROM:<CALLER@myhost.test.ex>
-RCPT TO:<verify@domain.com>
+RCPT TO:<dest@domain.com>
+QUIT
+****
+#
+# Send message with cutthrough
+#
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -DOPT=CUTTHROUGH -bs -odf
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<dest@domain.com>
 DATA
 
 .
 QUIT
 ****
-#
-# End

@@ -2,6 +2,7 @@
 # (EXPERIMENTAL_EVENT)
 #
 need_ipv4
+munge timeout_errno
 #
 exim -odq userx@domain1
 A deliverable message

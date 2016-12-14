@@ -9,7 +9,7 @@
 /* Solaris-specific code. This is concatenated onto the generic
 src/os.c file. */
 
-#ifdef MISSING_UNSETENV_3
+#if defined(MISSING_UNSETENV_3) && !defined(COMPILE_UTILITY)
 # include "setenv.c"
 #endif
 

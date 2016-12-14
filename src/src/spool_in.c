@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading spool files. When compiling for a utility (eximon),
@@ -25,19 +25,21 @@ fact it won't be written to. Just in case there's a major disaster (e.g.
 overwriting some other file descriptor with the value of this one), open it
 with append.
 
-Argument: the id of the message
-Returns:  TRUE if file successfully opened and locked
+As called by deliver_message() (at least) we are operating as root.
 
-Side effect: deliver_datafile is set to the fd of the open file.
+Argument: the id of the message
+Returns:  fd if file successfully opened and locked, else -1
+
+Side effect: message_subdir is set for the (possibly split) spool directory
 */
 
-BOOL
+int
 spool_open_datafile(uschar *id)
 {
 int i;
 struct stat statbuf;
 flock_t lock_data;
-uschar spoolname[256];
+int fd;
 
 /* If split_spool_directory is set, first look for the file in the appropriate
 sub-directory of the input directory. If it is not found there, try the input
@@ -48,22 +50,33 @@ splitting state. */
 
 for (i = 0; i < 2; i++)
   {
+  uschar * fname;
   int save_errno;
-  message_subdir[0] = (split_spool_directory == (i == 0))? id[5] : 0;
-  sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
-  deliver_datafile = Uopen(spoolname, O_RDWR | O_APPEND, 0);
-  if (deliver_datafile >= 0) break;
+
+  message_subdir[0] = split_spool_directory == i ? '\0' : id[5];
+  fname = spool_fname(US"input", message_subdir, id, US"-D");
+  DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
+
+  if ((fd = Uopen(fname,
+#ifdef O_CLOEXEC
+		      O_CLOEXEC |
+#endif
+		      O_RDWR | O_APPEND, 0)) >= 0)
+    break;
   save_errno = errno;
   if (errno == ENOENT)
     {
     if (i == 0) continue;
     if (!queue_running)
-      log_write(0, LOG_MAIN, "Spool file %s-D not found", id);
+      log_write(0, LOG_MAIN, "Spool%s%s file %s-D not found",
+	*queue_name ? US" Q=" : US"",
+	*queue_name ? queue_name : US"",
+	id);
     }
-  else log_write(0, LOG_MAIN, "Spool error for %s: %s", spoolname,
-    strerror(errno));
+  else
+    log_write(0, LOG_MAIN, "Spool error for %s: %s", fname, strerror(errno));
   errno = save_errno;
-  return FALSE;
+  return -1;
   }
 
 /* File is open and message_subdir is set. Set the close-on-exec flag, and lock
@@ -74,35 +87,35 @@ an open file descriptor (at least, I think that's the Cygwin story). On real
 Unix systems it doesn't make any difference as long as Exim is consistent in
 what it locks. */
 
-(void)fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
-  FD_CLOEXEC);
+#ifndef O_CLOEXEC
+(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+#endif
 
 lock_data.l_type = F_WRLCK;
 lock_data.l_whence = SEEK_SET;
 lock_data.l_start = 0;
 lock_data.l_len = SPOOL_DATA_START_OFFSET;
 
-if (fcntl(deliver_datafile, F_SETLK, &lock_data) < 0)
+if (fcntl(fd, F_SETLK, &lock_data) < 0)
   {
   log_write(L_skip_delivery,
             LOG_MAIN,
             "Spool file is locked (another process is handling this message)");
-  (void)close(deliver_datafile);
-  deliver_datafile = -1;
+  (void)close(fd);
   errno = 0;
-  return FALSE;
+  return -1;
   }
 
 /* Get the size of the data; don't include the leading filename line
 in the count, but add one for the newline before the data. */
 
-if (fstat(deliver_datafile, &statbuf) == 0)
+if (fstat(fd, &statbuf) == 0)
   {
   message_body_size = statbuf.st_size - SPOOL_DATA_START_OFFSET;
   message_size = message_body_size + 1;
   }
 
-return TRUE;
+return fd;
 }
 #endif  /* COMPILE_UTILITY */
 
@@ -208,6 +221,8 @@ earlier version of Exim that omitted to fsync() the files - this is thought to
 have been the cause of that incident, but in any case, this code must be robust
 against such an event, and if such a file is encountered, it must be treated as
 malformed.
+
+As called from deliver_message() (at least) we are running as root.
 
 Arguments:
   name          name of the header file, including the -H
@@ -318,12 +333,12 @@ and unsplit directories, as for the data file above. */
 for (n = 0; n < 2; n++)
   {
   if (!subdir_set)
-    message_subdir[0] = (split_spool_directory == (n == 0))? name[5] : 0;
-  sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
-    name);
-  f = Ufopen(big_buffer, "rb");
-  if (f != NULL) break;
-  if (n != 0 || subdir_set || errno != ENOENT) return spool_read_notopen;
+    message_subdir[0] = split_spool_directory == (n == 0) ? name[5] : 0;
+
+  if ((f = Ufopen(spool_fname(US"input", message_subdir, name, US""), "rb")))
+    break;
+  if (n != 0 || subdir_set || errno != ENOENT)
+    return spool_read_notopen;
   }
 
 errno = 0;
@@ -470,21 +485,24 @@ for (;;)
 
     else if (Ustrncmp(p, "cl ", 3) == 0)
       {
-      int index, count;
-      uschar name[20];   /* Need plenty of space for %d format */
-      tree_node *node;
-      if (  sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2
+      unsigned index, count;
+      uschar name[20];   /* Need plenty of space for %u format */
+      tree_node * node;
+      if (  sscanf(CS big_buffer + 5, "%u %u", &index, &count) != 2
 	 || index >= 20
+	 || count > 16384	/* arbitrary limit on variable size */
          )
         goto SPOOL_FORMAT_ERROR;
       if (index < 10)
-        (void) string_format(name, sizeof(name), "%c%d", 'c', index);
+        (void) string_format(name, sizeof(name), "%c%u", 'c', index);
       else
-        (void) string_format(name, sizeof(name), "%c%d", 'm', index - 10);
+        (void) string_format(name, sizeof(name), "%c%u", 'm', index - 10);
       node = acl_var_create(name);
       node->data.ptr = store_get(count + 1);
+      /* We sanity-checked the count, so disable the Coverity error */
+      /* coverity[tainted_data] */
       if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
-      ((uschar*)node->data.ptr)[count] = 0;
+      (US node->data.ptr)[count] = '\0';
       }
     break;
 
@@ -654,10 +672,12 @@ DEBUG(D_deliver)
 #endif  /* COMPILE_UTILITY */
 
 /* After reading the tree, the next line has not yet been read into the
-buffer. It contains the count of recipients which follow on separate lines. */
+buffer. It contains the count of recipients which follow on separate lines.
+Apply an arbitrary sanity check.*/
 
 if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
-if (sscanf(CS big_buffer, "%d", &rcount) != 1) goto SPOOL_FORMAT_ERROR;
+if (sscanf(CS big_buffer, "%d", &rcount) != 1 || rcount > 16384)
+  goto SPOOL_FORMAT_ERROR;
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_deliver) debug_printf("recipients_count=%d\n", rcount);
@@ -665,6 +685,10 @@ DEBUG(D_deliver) debug_printf("recipients_count=%d\n", rcount);
 
 recipients_list_max = rcount;
 recipients_list = store_get(rcount * sizeof(recipient_item));
+
+/* We sanitised the count and know we have enough memory, so disable
+the Coverity error on recipients_count */
+/* coverity[tainted_data] */
 
 for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   {

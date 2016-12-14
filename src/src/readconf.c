@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading the configuration file, and for displaying
@@ -17,6 +17,7 @@ static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
 static void save_config_line(const uschar* line);
 static void save_config_position(const uschar *file, int line);
 static void print_config(BOOL admin, BOOL terse);
+static void readconf_options_auths(void);
 
 
 #define CSTATE_STACK_SIZE 10
@@ -212,6 +213,7 @@ static optionlist optionlist_config[] = {
   { "check_rfc2047_length",     opt_bool,        &check_rfc2047_length },
   { "check_spool_inodes",       opt_int,         &check_spool_inodes },
   { "check_spool_space",        opt_Kint,        &check_spool_space },
+  { "chunking_advertise_hosts", opt_stringptr,	 &chunking_advertise_hosts },
   { "daemon_smtp_port",         opt_stringptr|opt_hidden, &daemon_smtp_port },
   { "daemon_smtp_ports",        opt_stringptr,   &daemon_smtp_port },
   { "daemon_startup_retries",   opt_int,         &daemon_startup_retries },
@@ -271,11 +273,6 @@ static optionlist optionlist_config[] = {
 #ifdef SUPPORT_TLS
   { "gnutls_allow_auto_pkcs11", opt_bool,        &gnutls_allow_auto_pkcs11 },
   { "gnutls_compat_mode",       opt_bool,        &gnutls_compat_mode },
-  /* These three gnutls_require_* options stopped working in Exim 4.80 */
-  /* From 4.83 we log a warning; a future relase will remove them */
-  { "gnutls_require_kx",        opt_stringptr,   &gnutls_require_kx },
-  { "gnutls_require_mac",       opt_stringptr,   &gnutls_require_mac },
-  { "gnutls_require_protocols", opt_stringptr,   &gnutls_require_proto },
 #endif
   { "header_line_maxsize",      opt_int,         &header_line_maxsize },
   { "header_maxsize",           opt_int,         &header_maxsize },
@@ -349,6 +346,7 @@ static optionlist optionlist_config[] = {
 #ifdef EXIM_PERL
   { "perl_at_start",            opt_bool,        &opt_perl_at_start },
   { "perl_startup",             opt_stringptr,   &opt_perl_startup },
+  { "perl_taintmode",           opt_bool,        &opt_perl_taintmode },
 #endif
 #ifdef LOOKUP_PGSQL
   { "pgsql_servers",            opt_stringptr,   &pgsql_servers },
@@ -373,7 +371,7 @@ static optionlist optionlist_config[] = {
   { "queue_only_load_latch",    opt_bool,        &queue_only_load_latch },
   { "queue_only_override",      opt_bool,        &queue_only_override },
   { "queue_run_in_order",       opt_bool,        &queue_run_in_order },
-  { "queue_run_max",            opt_int,         &queue_run_max },
+  { "queue_run_max",            opt_stringptr,   &queue_run_max },
   { "queue_smtp_domains",       opt_stringptr,   &queue_smtp_domains },
   { "receive_timeout",          opt_time,        &receive_timeout },
   { "received_header_text",     opt_stringptr,   &received_header_text },
@@ -447,6 +445,7 @@ static optionlist optionlist_config[] = {
   { "strip_trailing_dot",       opt_bool,        &strip_trailing_dot },
   { "syslog_duplication",       opt_bool,        &syslog_duplication },
   { "syslog_facility",          opt_stringptr,   &syslog_facility_str },
+  { "syslog_pid",               opt_bool,        &syslog_pid },
   { "syslog_processname",       opt_stringptr,   &syslog_processname },
   { "syslog_timestamp",         opt_bool,        &syslog_timestamp },
   { "system_filter",            opt_stringptr,   &system_filter },
@@ -491,8 +490,7 @@ static optionlist optionlist_config[] = {
   { "write_rejectlog",          opt_bool,        &write_rejectlog }
 };
 
-static int optionlist_config_size =
-  sizeof(optionlist_config)/sizeof(optionlist);
+static int optionlist_config_size = nelem(optionlist_config);
 
 
 
@@ -517,10 +515,10 @@ int i;
 router_instance *r;
 transport_instance *t;
 
-for (i = 0; i < optionlist_config_size; i++)
+for (i = 0; i < nelem(optionlist_config); i++)
   if (p == optionlist_config[i].value) return US optionlist_config[i].name;
 
-for (r = routers; r != NULL; r = r->next)
+for (r = routers; r; r = r->next)
   {
   router_info *ri = r->info;
   for (i = 0; i < *ri->options_count; i++)
@@ -531,7 +529,7 @@ for (r = routers; r != NULL; r = r->next)
     }
   }
 
-for (t = transports; t != NULL; t = t->next)
+for (t = transports; t; t = t->next)
   {
   transport_info *ti = t->info;
   for (i = 0; i < *ti->options_count; i++)
@@ -557,6 +555,45 @@ return US"";
 *       Deal with an assignment to a macro       *
 *************************************************/
 
+/* We have a new definition. The macro_item structure includes a final vector
+called "name" which is one byte long. Thus, adding "namelen" gives us enough
+room to store the "name" string.
+If a builtin macro we place at head of list, else tail.  This lets us lazy-create
+builtins. */
+
+macro_item *
+macro_create(const uschar * name, const uschar * val,
+  BOOL command_line, BOOL builtin)
+{
+unsigned namelen = Ustrlen(name);
+macro_item * m = store_get(sizeof(macro_item) + namelen);
+
+/* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val) */
+if (!macros)
+  {
+  macros = m;
+  mlast = m;
+  m->next = NULL;
+  }
+else if (builtin)
+  {
+  m->next = macros;
+  macros = m;
+  }
+else
+  {
+  mlast->next = m;
+  mlast = m;
+  m->next = NULL;
+  }
+m->command_line = command_line;
+m->namelen = namelen;
+m->replacement = string_copy(val);
+Ustrcpy(m->name, name);
+return m;
+}
+
+
 /* This function is called when a line that starts with an upper case letter is
 encountered. The argument "line" should contain a complete logical line, and
 start with the first letter of the macro name. The macro name and the
@@ -576,7 +613,6 @@ uschar name[64];
 int namelen = 0;
 BOOL redef = FALSE;
 macro_item *m;
-macro_item *mlast = NULL;
 
 while (isalnum(*s) || *s == '_')
   {
@@ -602,13 +638,13 @@ while (isspace(*s)) s++;
 just skip this definition. It's an error to attempt to redefine a macro without
 redef set to TRUE, or to redefine a macro when it hasn't been defined earlier.
 It is also an error to define a macro whose name begins with the name of a
-previously defined macro. Note: it is documented that the other way round
-works. */
+previously defined macro.  This is the requirement that make using a tree
+for macros hard; we must check all macros for the substring.  Perhaps a
+sorted list, and a bsearch, would work?
+Note: it is documented that the other way round works. */
 
-for (m = macros; m != NULL; m = m->next)
+for (m = macros; m; m = m->next)
   {
-  int len = Ustrlen(m->name);
-
   if (Ustrcmp(m->name, name) == 0)
     {
     if (!m->command_line && !redef)
@@ -617,7 +653,7 @@ for (m = macros; m != NULL; m = m->next)
     break;
     }
 
-  if (len < namelen && Ustrstr(name, m->name) != NULL)
+  if (m->namelen < namelen && Ustrstr(name, m->name) != NULL)
     log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
       "a macro because previously defined macro \"%s\" is a substring",
       name, m->name);
@@ -625,49 +661,243 @@ for (m = macros; m != NULL; m = m->next)
   /* We cannot have this test, because it is documented that a substring
   macro is permitted (there is even an example).
   *
-  * if (len > namelen && Ustrstr(m->name, name) != NULL)
+  * if (m->namelen > namelen && Ustrstr(m->name, name) != NULL)
   *   log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
   *     "a macro because it is a substring of previously defined macro \"%s\"",
   *     name, m->name);
   */
-
-  mlast = m;
   }
 
 /* Check for an overriding command-line definition. */
 
-if (m != NULL && m->command_line) return;
+if (m && m->command_line) return;
 
 /* Redefinition must refer to an existing macro. */
 
 if (redef)
-  {
-  if (m == NULL)
+  if (m)
+    m->replacement = string_copy(s);
+  else
     log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "can't redefine an undefined macro "
       "\"%s\"", name);
-  }
 
-/* We have a new definition. The macro_item structure includes a final vector
-called "name" which is one byte long. Thus, adding "namelen" gives us enough
-room to store the "name" string. */
-
+/* We have a new definition. */
 else
-  {
-  m = store_get(sizeof(macro_item) + namelen);
-  if (macros == NULL) macros = m; else mlast->next = m;
-  Ustrncpy(m->name, name, namelen);
-  m->name[namelen] = 0;
-  m->next = NULL;
-  m->command_line = FALSE;
-  }
-
-/* Set the value of the new or redefined macro */
-
-m->replacement = string_copy(s);
+  (void) macro_create(name, s, FALSE, FALSE);
 }
 
 
 
+
+
+/*************************************************/
+/* Create compile-time feature macros */
+static void
+readconf_features(void)
+{
+/* Probably we could work out a static initialiser for wherever
+macros are stored, but this will do for now. Some names are awkward
+due to conflicts with other common macros. */
+
+#ifdef SUPPORT_CRYPTEQ
+  macro_create(US"_HAVE_CRYPTEQ", US"y", FALSE, TRUE);
+#endif
+#if HAVE_ICONV
+  macro_create(US"_HAVE_ICONV", US"y", FALSE, TRUE);
+#endif
+#if HAVE_IPV6
+  macro_create(US"_HAVE_IPV6", US"y", FALSE, TRUE);
+#endif
+#ifdef HAVE_SETCLASSRESOURCES
+  macro_create(US"_HAVE_SETCLASSRESOURCES", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_PAM
+  macro_create(US"_HAVE_PAM", US"y", FALSE, TRUE);
+#endif
+#ifdef EXIM_PERL
+  macro_create(US"_HAVE_PERL", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPAND_DLFUNC
+  macro_create(US"_HAVE_DLFUNC", US"y", FALSE, TRUE);
+#endif
+#ifdef USE_TCP_WRAPPERS
+  macro_create(US"_HAVE_TCPWRAPPERS", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_TLS
+  macro_create(US"_HAVE_TLS", US"y", FALSE, TRUE);
+# ifdef USE_GNUTLS
+  macro_create(US"_HAVE_GNUTLS", US"y", FALSE, TRUE);
+# else
+  macro_create(US"_HAVE_OPENSSL", US"y", FALSE, TRUE);
+# endif
+#endif
+#ifdef SUPPORT_TRANSLATE_IP_ADDRESS
+  macro_create(US"_HAVE_TRANSLATE_IP_ADDRESS", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
+  macro_create(US"_HAVE_MOVE_FROZEN_MESSAGES", US"y", FALSE, TRUE);
+#endif
+#ifdef WITH_CONTENT_SCAN
+  macro_create(US"_HAVE_CONTENT_SCANNING", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_DKIM
+  macro_create(US"_HAVE_DKIM", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_DNSSEC
+  macro_create(US"_HAVE_DNSSEC", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_EVENT
+  macro_create(US"_HAVE_EVENT", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_I18N
+  macro_create(US"_HAVE_I18N", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_OCSP
+  macro_create(US"_HAVE_OCSP", US"y", FALSE, TRUE);
+#endif
+#ifndef DISABLE_PRDR
+  macro_create(US"_HAVE_PRDR", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_PROXY
+  macro_create(US"_HAVE_PROXY", US"y", FALSE, TRUE);
+#endif
+#ifdef SUPPORT_SOCKS
+  macro_create(US"_HAVE_SOCKS", US"y", FALSE, TRUE);
+#endif
+#ifdef TCP_FASTOPEN
+  macro_create(US"_HAVE_TCP_FASTOPEN", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_LMDB
+  macro_create(US"_HAVE_LMDB", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_SPF
+  macro_create(US"_HAVE_SPF", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_SRS
+  macro_create(US"_HAVE_SRS", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  macro_create(US"_HAVE_BRIGHTMAIL", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DANE
+  macro_create(US"_HAVE_DANE", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DCC
+  macro_create(US"_HAVE_DCC", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DMARC
+  macro_create(US"_HAVE_DMARC", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_DSN_INFO
+  macro_create(US"_HAVE_DSN_INFO", US"y", FALSE, TRUE);
+#endif
+
+#ifdef LOOKUP_LSEARCH
+  macro_create(US"_HAVE_LOOKUP_LSEARCH", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_CDB
+  macro_create(US"_HAVE_LOOKUP_CDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_DBM
+  macro_create(US"_HAVE_LOOKUP_DBM", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_DNSDB
+  macro_create(US"_HAVE_LOOKUP_DNSDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_DSEARCH
+  macro_create(US"_HAVE_LOOKUP_DSEARCH", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_IBASE
+  macro_create(US"_HAVE_LOOKUP_IBASE", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_LDAP
+  macro_create(US"_HAVE_LOOKUP_LDAP", US"y", FALSE, TRUE);
+#endif
+#ifdef EXPERIMENTAL_LMDB
+  macro_create(US"_HAVE_LOOKUP_LMDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_MYSQL
+  macro_create(US"_HAVE_LOOKUP_MYSQL", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_NIS
+  macro_create(US"_HAVE_LOOKUP_NIS", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_NISPLUS
+  macro_create(US"_HAVE_LOOKUP_NISPLUS", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_ORACLE
+  macro_create(US"_HAVE_LOOKUP_ORACLE", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_PASSWD
+  macro_create(US"_HAVE_LOOKUP_PASSWD", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_PGSQL
+  macro_create(US"_HAVE_LOOKUP_PGSQL", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_REDIS
+  macro_create(US"_HAVE_LOOKUP_REDIS", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_SQLITE
+  macro_create(US"_HAVE_LOOKUP_SQLITE", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_TESTDB
+  macro_create(US"_HAVE_LOOKUP_TESTDB", US"y", FALSE, TRUE);
+#endif
+#ifdef LOOKUP_WHOSON
+  macro_create(US"_HAVE_LOOKUP_WHOSON", US"y", FALSE, TRUE);
+#endif
+
+#ifdef TRANSPORT_APPENDFILE
+# ifdef SUPPORT_MAILDIR
+  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILDR", US"y", FALSE, TRUE);
+# endif
+# ifdef SUPPORT_MAILSTORE
+  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILSTORE", US"y", FALSE, TRUE);
+# endif
+# ifdef SUPPORT_MBX
+  macro_create(US"_HAVE_TRANSPORT_APPEND_MBX", US"y", FALSE, TRUE);
+# endif
+#endif
+}
+
+
+void
+readconf_options_from_list(optionlist * opts, unsigned nopt, const uschar * section, uschar * group)
+{
+int i;
+const uschar * s;
+
+/* The 'previously-defined-substring' rule for macros in config file
+lines is done so for these builtin macros: we know that the table
+we source from is in strict alpha order, hence the builtins portion
+of the macros list is in reverse-alpha (we prepend them) - so longer
+macros that have substrings are always discovered first during
+expansion. */
+
+for (i = 0; i < nopt; i++)  if (*(s = opts[i].name) && *s != '*')
+  if (group)
+    macro_create(string_sprintf("_OPT_%T_%T_%T", section, group, s), US"y", FALSE, TRUE);
+  else
+    macro_create(string_sprintf("_OPT_%T_%T", section, s), US"y", FALSE, TRUE);
+}
+
+
+static void
+readconf_options(void)
+{
+readconf_options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN", NULL);
+readconf_options_routers();
+readconf_options_transports();
+readconf_options_auths();
+}
+
+static void
+macros_create_builtin(void)
+{
+readconf_features();
+readconf_options();
+macros_builtin_created = TRUE;
+}
 
 
 /*************************************************
@@ -779,11 +1009,28 @@ for (;;)
     if (*s != '=') s = ss;          /* Not a macro definition */
     }
 
+  /* If the builtin macros are not yet defined, and the line contains an
+  underscrore followed by an one of the three possible chars used by
+  builtins, create them. */
+
+  if (!macros_builtin_created)
+    {
+    const uschar * t, * p;
+    uschar c;
+    for (t = s; (p = CUstrchr(t, '_')); t = p+1)
+      if (c = p[1], c == 'O' || c == 'D' || c == 'H')
+	{
+/* fprintf(stderr, "%s: builtins create triggered by '%s'\n", __FUNCTION__, s); */
+	macros_create_builtin();
+	break;
+	}
+    }
+
   /* For each defined macro, scan the line (from after XXX= if present),
   replacing all occurrences of the macro. */
 
   macro_found = FALSE;
-  for (m = macros; m != NULL; m = m->next)
+  for (m = macros; m; m = m->next)
     {
     uschar *p, *pp;
     uschar *t = s;
@@ -791,12 +1038,12 @@ for (;;)
     while ((p = Ustrstr(t, m->name)) != NULL)
       {
       int moveby;
-      int namelen = Ustrlen(m->name);
       int replen = Ustrlen(m->replacement);
 
+/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, t) */
       /* Expand the buffer if necessary */
 
-      while (newlen - namelen + replen + 1 > big_buffer_size)
+      while (newlen - m->namelen + replen + 1 > big_buffer_size)
         {
         int newsize = big_buffer_size + BIG_BUFFER_SIZE;
         uschar *newbuffer = store_malloc(newsize);
@@ -814,9 +1061,8 @@ for (;;)
       copying in the replacement text. Don't rescan the replacement for this
       same macro. */
 
-      pp = p + namelen;
-      moveby = replen - namelen;
-      if (moveby != 0)
+      pp = p + m->namelen;
+      if ((moveby = replen - m->namelen) != 0)
         {
         memmove(p + replen, pp, (big_buffer + newlen) - pp + 1);
         newlen += moveby;
@@ -935,10 +1181,10 @@ for (;;)
     save->filename = config_filename;
     save->lineno = config_lineno;
 
-    config_file = Ufopen(ss, "rb");
-    if (config_file == NULL)
+    if (!(config_file = Ufopen(ss, "rb")))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to open included "
         "configuration file %s", ss);
+
     config_filename = string_copy(ss);
     config_lineno = 0;
     continue;
@@ -1166,9 +1412,10 @@ while (last > first)
   {
   int middle = (first + last)/2;
   int c = Ustrcmp(name, ol[middle].name);
+
   if (c == 0) return ol + middle;
-    else if (c > 0) first = middle + 1;
-      else last = middle;
+  else if (c > 0) first = middle + 1;
+  else last = middle;
   }
 return NULL;
 }
@@ -1465,7 +1712,6 @@ int intbase = 0;
 uschar *inttype = US"";
 uschar *sptr;
 uschar *s = buffer;
-uschar *saved_condition, *strtemp;
 uschar **str_target;
 uschar name[64];
 uschar name2[64];
@@ -1512,9 +1758,7 @@ if (Ustrncmp(name, "not_", 4) == 0)
 /* Search the list for the given name. A non-existent name, or an option that
 is set twice, is a disaster. */
 
-ol = find_option(name + offset, oltop, last);
-
-if (ol == NULL)
+if (!(ol = find_option(name + offset, oltop, last)))
   {
   if (unknown_txt == NULL) return FALSE;
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, CS unknown_txt, name);
@@ -1602,19 +1846,18 @@ switch (type)
     control block and flags word. */
 
     case opt_stringptr:
-    if (data_block == NULL)
-      str_target = (uschar **)(ol->value);
-    else
-      str_target = (uschar **)((uschar *)data_block + (long int)(ol->value));
+    str_target = data_block ? USS (US data_block + (long int)(ol->value))
+			    : USS (ol->value);
     if (ol->type & opt_rep_con)
       {
+      uschar * saved_condition;
       /* We already have a condition, we're conducting a crude hack to let
       multiple condition rules be chained together, despite storing them in
       text form. */
-      saved_condition = *str_target;
-      strtemp = string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
-          saved_condition, sptr);
-      *str_target = string_copy_malloc(strtemp);
+      *str_target = string_copy_malloc( (saved_condition = *str_target)
+	? string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
+	    saved_condition, sptr)
+	: sptr);
       /* TODO(pdp): there is a memory leak here and just below
       when we set 3 or more conditions; I still don't
       understand the store mechanism enough to know
@@ -1650,10 +1893,10 @@ switch (type)
     break;
 
     case opt_rewrite:
-    if (data_block == NULL)
-      *((uschar **)(ol->value)) = sptr;
+    if (data_block)
+      *USS (US data_block + (long int)(ol->value)) = sptr;
     else
-      *((uschar **)((uschar *)data_block + (long int)(ol->value))) = sptr;
+      *USS (ol->value) = sptr;
     freesptr = FALSE;
     if (type == opt_rewrite)
       {
@@ -1988,7 +2231,7 @@ switch (type)
   inttype = US"octal ";
 
   /*  Integer: a simple(ish) case; allow octal and hex formats, and
-  suffixes K and M. The different types affect output, not input. */
+  suffixes K, M and G. The different types affect output, not input. */
 
   case opt_mkint:
   case opt_int:
@@ -2004,7 +2247,6 @@ switch (type)
         inttype, name);
 
     if (errno != ERANGE)
-      {
       if (tolower(*endptr) == 'k')
         {
         if (lvalue > INT_MAX/1024 || lvalue < INT_MIN/1024) errno = ERANGE;
@@ -2018,7 +2260,13 @@ switch (type)
         else lvalue *= 1024*1024;
         endptr++;
         }
-      }
+      else if (tolower(*endptr) == 'g')
+        {
+        if (lvalue > INT_MAX/(1024*1024*1024) || lvalue < INT_MIN/(1024*1024*1024))
+          errno = ERANGE;
+        else lvalue *= 1024*1024*1024;
+        endptr++;
+        }
 
     if (errno == ERANGE || lvalue > INT_MAX || lvalue < INT_MIN)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
@@ -2037,8 +2285,8 @@ switch (type)
     *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
   break;
 
-  /*  Integer held in K: again, allow octal and hex formats, and suffixes K and
-  M. */
+  /*  Integer held in K: again, allow octal and hex formats, and suffixes K, M
+  and G. */
   /*XXX consider moving to int_eximarith_t (but mind the overflow test 0415) */
 
   case opt_Kint:
@@ -2052,22 +2300,26 @@ switch (type)
         inttype, name);
 
     if (errno != ERANGE)
-      {
-      if (tolower(*endptr) == 'm')
+      if (tolower(*endptr) == 'g')
         {
-        if (value > INT_MAX/1024 || value < INT_MIN/1024) errno = ERANGE;
-          else value *= 1024;
+        if (value > INT_MAX/(1024*1024) || value < INT_MIN/(1024*1024))
+	  errno = ERANGE;
+	else
+	  value *= 1024*1024;
+        endptr++;
+        }
+      else if (tolower(*endptr) == 'm')
+        {
+        if (value > INT_MAX/1024 || value < INT_MIN/1024)
+	  errno = ERANGE;
+	else
+	  value *= 1024;
         endptr++;
         }
       else if (tolower(*endptr) == 'k')
-        {
         endptr++;
-        }
       else
-        {
         value = (value + 512)/1024;
-        }
-      }
 
     if (errno == ERANGE) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "absolute value of integer \"%s\" is too large (overflow)", s);
@@ -2098,6 +2350,11 @@ switch (type)
   if (value < 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
     "integer \"%s\" is too large (overflow)", s);
 
+  /* We get a coverity error here for using count, as it derived
+  from the tainted buffer pointed to by s, as parsed by sscanf().
+  By the definition of sscanf we must be aceessing between start
+  and end of s (assuming it is nul-terminated...) so ignore the error.  */
+  /* coverity[tainted_data] */
   if (s[count] == '.')
     {
     int d = 100;
@@ -2612,8 +2869,8 @@ if (type == NULL)
     return;
     }
 
-  if ( Ustrcmp(name, "configure_file") == 0
-     ||Ustrcmp(name, "config_file") == 0)
+  if (  Ustrcmp(name, "configure_file") == 0
+     || Ustrcmp(name, "config_file") == 0)
     {
     printf("%s\n", CS config_main_filename);
     return;
@@ -2622,11 +2879,11 @@ if (type == NULL)
   if (Ustrcmp(name, "all") == 0)
     {
     for (ol = optionlist_config;
-         ol < optionlist_config + optionlist_config_size; ol++)
+         ol < optionlist_config + nelem(optionlist_config); ol++)
       {
       if ((ol->type & opt_hidden) == 0)
         print_ol(ol, US ol->name, NULL,
-            optionlist_config, optionlist_config_size,
+            optionlist_config, nelem(optionlist_config),
             no_labels);
       }
     return;
@@ -2724,8 +2981,8 @@ if (type == NULL)
 
   else
     {
-    print_ol(find_option(name, optionlist_config, optionlist_config_size),
-      name, NULL, optionlist_config, optionlist_config_size, no_labels);
+    print_ol(find_option(name, optionlist_config, nelem(optionlist_config)),
+      name, NULL, optionlist_config, nelem(optionlist_config), no_labels);
     return;
     }
   }
@@ -2764,19 +3021,18 @@ else if (Ustrcmp(type, "macro") == 0)
     fprintf(stderr, "exim: permission denied\n");
     exit(EXIT_FAILURE);
     }
-  for (m = macros; m != NULL; m = m->next)
-    {
-    if (name == NULL || Ustrcmp(name, m->name) == 0)
+  if (!macros_builtin_created) macros_create_builtin();
+  for (m = macros; m; m = m->next)
+    if (!name || Ustrcmp(name, m->name) == 0)
       {
       if (names_only)
         printf("%s\n", CS m->name);
       else
         printf("%s=%s\n", CS m->name, CS m->replacement);
-      if (name != NULL)
+      if (name)
         return;
       }
-    }
-  if (name != NULL)
+  if (name)
     printf("%s %s not found\n", type, name);
   return;
   }
@@ -2947,7 +3203,7 @@ Returns:  bool for "okay"; false will cause caller to immediately exit.
 
 #ifdef SUPPORT_TLS
 static BOOL
-tls_dropprivs_validate_require_cipher(void)
+tls_dropprivs_validate_require_cipher(BOOL nowarn)
 {
 const uschar *errmsg;
 pid_t pid;
@@ -2961,9 +3217,9 @@ if (  !tls_advertise_hosts
    || Ustrcmp(tls_advertise_hosts, ":") == 0
    )
   return TRUE;
-else if (!tls_certificate)
-  log_write(0, LOG_MAIN|LOG_PANIC,
-    "Warning: No server certificate defined; TLS connections will fail.\n"
+else if (!nowarn && !tls_certificate)
+  log_write(0, LOG_MAIN,
+    "Warning: No server certificate defined; will use a selfsigned one.\n"
     " Suggested action: either install a certificate or change tls_advertise_hosts option");
 
 oldsignal = signal(SIGCHLD, SIG_DFL);
@@ -3035,7 +3291,7 @@ systems. Therefore they are available only when requested by compile-time
 options. */
 
 void
-readconf_main(void)
+readconf_main(BOOL nowarn)
 {
 int sep = 0;
 struct stat statbuf;
@@ -3044,8 +3300,7 @@ const uschar *list = config_main_filelist;
 
 /* Loop through the possible file names */
 
-while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
-       != NULL)
+while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
   {
 
   /* Cut out all the fancy processing unless specifically wanted */
@@ -3473,7 +3728,7 @@ if ((tls_verify_hosts != NULL || tls_try_verify_hosts != NULL) &&
 
 /* This also checks that the library linkage is working and we can call
 routines in it, so call even if tls_require_ciphers is unset */
-if (!tls_dropprivs_validate_require_cipher())
+if (!tls_dropprivs_validate_require_cipher(nowarn))
   exit(1);
 
 /* Magic number: at time of writing, 1024 has been the long-standing value
@@ -3496,17 +3751,12 @@ if (openssl_options != NULL)
       "openssl_options parse error: %s", openssl_options);
 # endif
   }
-
-if (gnutls_require_kx || gnutls_require_mac || gnutls_require_proto)
-  log_write(0, LOG_MAIN, "WARNING: main options"
-      " gnutls_require_kx, gnutls_require_mac and gnutls_require_protocols"
-      " are obsolete\n");
 #endif	/*SUPPORT_TLS*/
 
-if ((!add_environment || *add_environment == '\0') && !keep_environment)
+if (!nowarn && !keep_environment && environ && *environ)
   log_write(0, LOG_MAIN,
-      "WARNING: purging the environment.\n"
-      " Suggested action: use keep_environment and add_environment.");
+      "Warning: purging the environment.\n"
+      " Suggested action: use keep_environment.");
 }
 
 
@@ -4052,6 +4302,21 @@ while ((p = get_config_line()))
 *         Initialize authenticators              *
 *************************************************/
 
+static void
+readconf_options_auths(void)
+{
+struct auth_info * ai;
+
+readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", NULL);
+
+for (ai = auths_available; ai->driver_name[0]; ai++)
+  {
+  macro_create(string_sprintf("_DRIVER_AUTHENTICATOR_%T", ai->driver_name), US"y", FALSE, TRUE);
+  readconf_options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
+  }
+}
+
+
 /* Read the authenticators section of the configuration file.
 
 Arguments:   none
@@ -4062,6 +4327,7 @@ static void
 auths_init(void)
 {
 auth_instance *au, *bu;
+
 readconf_driver_init(US"authenticator",
   (driver_instance **)(&auths),      /* chain anchor */
   (driver_info *)auths_available,    /* available drivers */

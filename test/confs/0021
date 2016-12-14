@@ -2,16 +2,11 @@
 
 SERVER=
 BR=
+LOG_SELECTOR=
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
+.include DIR/aux-var/std_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/SERVER%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -27,6 +22,7 @@ acl_smtp_mail = mail
 acl_smtp_rcpt = rcpt
 
 BR
+log_selector = LOG_SELECTOR
 
 qualify_domain = test.ex
 trusted_users = CALLER

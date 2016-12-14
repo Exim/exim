@@ -10,9 +10,9 @@
 > Failed: syntax error in Exim::expand_string argument: unknown variable name "notexists" at TESTSUITE/aux-fixed/3000.pl line 9.
 
 > 
-> Failed: missing or misplaced { or }
+> Failed: Not enough arguments for 'perl' (min is 1)
 > Subroutine foo called with args: 1 2 3 4 5 6 7 8
-> Failed: Too many arguments for "perl" (max is 9)
+> Failed: Too many arguments for 'perl' (max is 9)
 > 
 > 42
 > 30

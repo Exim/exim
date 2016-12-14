@@ -1,14 +1,8 @@
 # Exim test configuration 0227
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
+.include DIR/aux-var/std_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -32,6 +26,8 @@ check_recipient:
          !verify   = recipient/callout=no_cache
   deny    hosts    = V4NET.0.0.5
          !verify   = sender/callout=no_cache/check_postmaster
+  deny    hosts    = V4NET.0.0.6
+         !verify   = sender/callout=no_cache
   require verify   = sender
   accept  domains  = +local_domains
   deny    message  = relay not permitted

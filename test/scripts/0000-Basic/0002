@@ -23,6 +23,7 @@ primary_hostname: ${primary_hostname}
 qualify_domain: $qualify_domain
 bounce_return_size_limit: ${bounce_return_size_limit}
 spool_directory: $spool_directory
+queue_name: $queue_name
 unknown: ${unknown}
 h_subject: $h_subject:(should be empty)
 h_subject:$h_subject (should be empty)
@@ -131,7 +132,9 @@ addresses: ${addresses:Exim Person <local-part@dom.ain> (that's me), \
            xyz@abc, nullgroupname:;, group: p@q, r@s; }
 addresses: ${addresses:local-part@dom.ain <local-part@dom.ain>}
 
-escape: ${escape:B7·F2ò}
+escape:     ${escape:B7·F2ò}
+excape8bit: ${escape8bit:undisturbed text\ttab\nnewline\ttab\\backslash \176tilde\177DEL\200\x81.}
+
 eval:   ${eval:1+1}
 eval:   ${eval:1+2*3}
 eval:   ${eval:(1+2)*3}
@@ -177,6 +180,20 @@ hex2b64:${hex2b64:1a2b3c4d5e6}
 hex2b64:${hex2b64:1a2b3c4d5e6g}
 hex2b64:${hex2b64:${md5:the quick brown fox}}
 hex2b64:${hex2b64:${sha1:the quick brown fox}}
+
+base32: 0  <${base32:0}>
+base32: 1  <${base32:1}>
+base32: 31 <${base32:31}>
+base32: 32 <${base32:32}>
+base32: 42 <${base32:42}>
+base32 error: 0x1 ${base32:0x1}
+
+base32d: 0  ${base32d:${base32:0}}
+base32d: 1  ${base32d:${base32:1}}
+base32d: 31 ${base32d:${base32:31}}
+base32d: 32 ${base32d:${base32:32}}
+base32d: 42 ${base32d:${base32:42}}
+base32d error: ABC ${base32d:ABC}
 
 The base62 operator is actually a base36 operator in the Darwin and Cygwin
 environments. Write cunning tests that produce the same output in both cases,
@@ -617,6 +634,7 @@ ${extract{ 2 }{ }{a b c}}
 
 ${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}{}}}}
 ${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}{failcase}{bogus_argument}}}}
+${map{a,1:b,2:c,3}{${extract{1}{,}{$item}{$value}fail}}}
 
 # Translation
 

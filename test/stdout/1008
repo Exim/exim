@@ -31,7 +31,7 @@ QUIT
 250 OK
 Expected EOF read from client
 Listening on port 1224 ... 
-Connection request from [::]
+Connection request from [ipv6]
 220 Server ready
 EHLO the.local.host.name
 250-server id

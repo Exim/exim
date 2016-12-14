@@ -1,7 +1,7 @@
 Delivery failed: Connection refused
 Delivery failed: H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@x.y>: 550 NOTOK
-Delivery failed: H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 550 BAD MAIL
-Delivery failed: H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 450 TEMPORARY MAIL FAIL
+Delivery failed: H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@myhost.test.ex>: 550 BAD MAIL
+Delivery failed: H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@myhost.test.ex>: 450 TEMPORARY MAIL FAIL
 routing file@x.y yielded a local delivery
 routing fail@x.y yielded a failed delivery: forcible fail message
 routing defer@x.y yielded a deferred delivery: forcible defer message

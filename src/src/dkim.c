@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 1995 - 2015 */
+/* Copyright (c) University of Cambridge, 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Code for DKIM support. Other DKIM relevant code is in
@@ -14,6 +14,7 @@
 
 #include "pdkim/pdkim.h"
 
+int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
 pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
@@ -27,7 +28,7 @@ dns_record *rr;
 
 lookup_dnssec_authenticated = NULL;
 if (dns_lookup(&dnsa, US name, T_TXT, NULL) != DNS_SUCCEED)
-  return PDKIM_FAIL;
+  return PDKIM_FAIL;	/*XXX better error detail?  logging? */
 
 /* Search for TXT record */
 
@@ -50,12 +51,12 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
       rr_offset += len;
       answer_offset += len;
       if (answer_offset >= PDKIM_DNS_TXT_MAX_RECLEN)
-	return PDKIM_FAIL;
+	return PDKIM_FAIL;	/*XXX better error detail?  logging? */
       }
     return PDKIM_OK;
     }
 
-return PDKIM_FAIL;
+return PDKIM_FAIL;	/*XXX better error detail?  logging? */
 }
 
 
@@ -66,9 +67,17 @@ pdkim_init();
 }
 
 
+
 void
-dkim_exim_verify_init(void)
+dkim_exim_verify_init(BOOL dot_stuffing)
 {
+/* There is a store-reset between header & body reception
+so cannot use the main pool. Any allocs done by Exim
+memory-handling must use the perm pool. */
+
+dkim_verify_oldpool = store_pool;
+store_pool = POOL_PERM;
+
 /* Free previous context if there is one */
 
 if (dkim_verify_ctx)
@@ -76,17 +85,30 @@ if (dkim_verify_ctx)
 
 /* Create new context */
 
-dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt);
+dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt, dot_stuffing);
 dkim_collect_input = !!dkim_verify_ctx;
+
+/* Start feed up with any cached data */
+receive_get_cache();
+
+store_pool = dkim_verify_oldpool;
 }
 
 
 void
 dkim_exim_verify_feed(uschar * data, int len)
 {
+int rc;
+
+store_pool = POOL_PERM;
 if (  dkim_collect_input
-   && pdkim_feed(dkim_verify_ctx, (char *)data, len) != PDKIM_OK)
+   && (rc = pdkim_feed(dkim_verify_ctx, CS data, len)) != PDKIM_OK)
+  {
+  log_write(0, LOG_MAIN,
+	     "DKIM: validation error: %.100s", pdkim_errstr(rc));
   dkim_collect_input = FALSE;
+  }
+store_pool = dkim_verify_oldpool;
 }
 
 
@@ -97,6 +119,9 @@ pdkim_signature *sig = NULL;
 int dkim_signers_size = 0;
 int dkim_signers_ptr = 0;
 dkim_signers = NULL;
+int rc;
+
+store_pool = POOL_PERM;
 
 /* Delete eventual previous signature chain */
 
@@ -112,15 +137,19 @@ if (!dkim_collect_input)
 	     "DKIM: Error while running this message through validation,"
 	     " disabling signature verification.");
   dkim_disable_verify = TRUE;
-  return;
+  goto out;
   }
 
 dkim_collect_input = FALSE;
 
 /* Finish DKIM operation and fetch link to signatures chain */
 
-if (pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures) != PDKIM_OK)
-  return;
+if ((rc = pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures)) != PDKIM_OK)
+  {
+  log_write(0, LOG_MAIN,
+	     "DKIM: validation error: %.100s", pdkim_errstr(rc));
+  goto out;
+  }
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
@@ -133,10 +162,12 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	string_sprintf("d=%s s=%s c=%s/%s a=%s b=%d ",
 	      sig->domain,
 	      sig->selector,
-	      sig->canon_headers == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
-	      sig->canon_body == PDKIM_CANON_SIMPLE ?  "simple" : "relaxed",
-	      sig->algo == PDKIM_ALGO_RSA_SHA256 ?  "rsa-sha256" : "rsa-sha1",
-	      sig->sigdata.len * 8
+	      sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+	      sig->canon_body == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+	      sig->algo == PDKIM_ALGO_RSA_SHA256
+	      ? "rsa-sha256"
+	      : sig->algo == PDKIM_ALGO_RSA_SHA1 ? "rsa-sha1" : "err",
+	      (int)sig->sigdata.len > -1 ? sig->sigdata.len * 8 : 0
 	      ),
 
 	sig->identity ? string_sprintf("i=%s ", sig->identity) : US"",
@@ -170,6 +201,16 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	  logmsg = string_append(logmsg, &size, &ptr, 1,
 		       "syntax error in public key record]");
 	  break;
+
+        case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
+          logmsg = string_append(logmsg, &size, &ptr, 1,
+                       "signature tag missing or invalid]");
+          break;
+
+        case PDKIM_VERIFY_INVALID_DKIM_VERSION:
+          logmsg = string_append(logmsg, &size, &ptr, 1,
+                       "unsupported DKIM version]");
+          break;
 
 	default:
 	  logmsg = string_append(logmsg, &size, &ptr, 1,
@@ -228,6 +269,9 @@ if (dkim_signers)
   if (Ustrlen(dkim_signers) > 0)
   dkim_signers[Ustrlen(dkim_signers) - 1] = '\0';
   }
+
+out:
+store_pool = dkim_verify_oldpool;
 }
 
 
@@ -416,10 +460,9 @@ switch (what)
 
 
 uschar *
-dkim_exim_sign(int dkim_fd, uschar * dkim_private_key,
-		const uschar * dkim_domain, uschar * dkim_selector,
-		uschar * dkim_canon, uschar * dkim_sign_headers)
+dkim_exim_sign(int dkim_fd, struct ob_dkim * dkim)
 {
+const uschar * dkim_domain;
 int sep = 0;
 uschar *seen_items = NULL;
 int seen_items_size = 0;
@@ -443,13 +486,12 @@ int old_pool = store_pool;
 
 store_pool = POOL_MAIN;
 
-if (!(dkim_domain = expand_cstring(dkim_domain)))
+if (!(dkim_domain = expand_cstring(dkim->dkim_domain)))
   {
   /* expansion error, do not send message. */
   log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 	     "dkim_domain: %s", expand_string_message);
-  rc = NULL;
-  goto CLEANUP;
+  goto bad;
   }
 
 /* Set $dkim_domain expansion variable to each unique domain in list. */
@@ -482,24 +524,23 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 
   /* Set up $dkim_selector expansion variable. */
 
-  if (!(dkim_signing_selector = expand_string(dkim_selector)))
+  if (!(dkim_signing_selector = expand_string(dkim->dkim_selector)))
     {
     log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 	       "dkim_selector: %s", expand_string_message);
-    rc = NULL;
-    goto CLEANUP;
+    goto bad;
     }
 
   /* Get canonicalization to use */
 
-  dkim_canon_expanded = dkim_canon ? expand_string(dkim_canon) : US"relaxed";
+  dkim_canon_expanded = dkim->dkim_canon
+    ? expand_string(dkim->dkim_canon) : US"relaxed";
   if (!dkim_canon_expanded)
     {
     /* expansion error, do not send message. */
     log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 	       "dkim_canon: %s", expand_string_message);
-    rc = NULL;
-    goto CLEANUP;
+    goto bad;
     }
 
   if (Ustrcmp(dkim_canon_expanded, "relaxed") == 0)
@@ -515,24 +556,22 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     }
 
   dkim_sign_headers_expanded = NULL;
-  if (dkim_sign_headers)
-    if (!(dkim_sign_headers_expanded = expand_string(dkim_sign_headers)))
+  if (dkim->dkim_sign_headers)
+    if (!(dkim_sign_headers_expanded = expand_string(dkim->dkim_sign_headers)))
       {
       log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 		 "dkim_sign_headers: %s", expand_string_message);
-      rc = NULL;
-      goto CLEANUP;
+      goto bad;
       }
     			/* else pass NULL, which means default header list */
 
   /* Get private key to use. */
 
-  if (!(dkim_private_key_expanded = expand_string(dkim_private_key)))
+  if (!(dkim_private_key_expanded = expand_string(dkim->dkim_private_key)))
     {
     log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
 	       "dkim_private_key: %s", expand_string_message);
-    rc = NULL;
-    goto CLEANUP;
+    goto bad;
     }
 
   if (  Ustrlen(dkim_private_key_expanded) == 0
@@ -548,62 +587,53 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     /* Looks like a filename, load the private key. */
 
     memset(big_buffer, 0, big_buffer_size);
-    privkey_fd = open(CS dkim_private_key_expanded, O_RDONLY);
-    if (privkey_fd < 0)
+
+    if ((privkey_fd = open(CS dkim_private_key_expanded, O_RDONLY)) < 0)
       {
       log_write(0, LOG_MAIN | LOG_PANIC, "unable to open "
 		 "private key file for reading: %s",
 		 dkim_private_key_expanded);
-      rc = NULL;
-      goto CLEANUP;
+      goto bad;
       }
 
     if (read(privkey_fd, big_buffer, big_buffer_size - 2) < 0)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "unable to read private key file: %s",
 		 dkim_private_key_expanded);
-      rc = NULL;
-      goto CLEANUP;
+      goto bad;
       }
 
     (void) close(privkey_fd);
     dkim_private_key_expanded = big_buffer;
     }
 
-  ctx = pdkim_init_sign( (char *) dkim_signing_domain,
-			 (char *) dkim_signing_selector,
-			 (char *) dkim_private_key_expanded,
-			 PDKIM_ALGO_RSA_SHA256);
+  ctx = pdkim_init_sign( CS dkim_signing_domain,
+			 CS dkim_signing_selector,
+			 CS dkim_private_key_expanded,
+			 PDKIM_ALGO_RSA_SHA256,
+			 dkim->dot_stuffed);
   pdkim_set_optional(ctx,
-		      (char *) dkim_sign_headers_expanded,
+		      CS dkim_sign_headers_expanded,
 		      NULL,
 		      pdkim_canon,
 		      pdkim_canon, -1, 0, 0);
 
   lseek(dkim_fd, 0, SEEK_SET);
 
-  while ((sread = read(dkim_fd, &buf, 4096)) > 0)
-    if (pdkim_feed(ctx, buf, sread) != PDKIM_OK)
-      {
-      rc = NULL;
-      goto CLEANUP;
-      }
+  while ((sread = read(dkim_fd, &buf, sizeof(buf))) > 0)
+    if ((pdkim_rc = pdkim_feed(ctx, buf, sread)) != PDKIM_OK)
+      goto pk_bad;
 
   /* Handle failed read above. */
   if (sread == -1)
     {
     debug_printf("DKIM: Error reading -K file.\n");
     save_errno = errno;
-    rc = NULL;
-    goto CLEANUP;
+    goto bad;
     }
 
   if ((pdkim_rc = pdkim_feed_finish(ctx, &signature)) != PDKIM_OK)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "DKIM: signing failed (RC %d)", pdkim_rc);
-    rc = NULL;
-    goto CLEANUP;
-    }
+    goto pk_bad;
 
   sigbuf = string_append(sigbuf, &sigsize, &sigptr, 2,
 			  US signature->signature_header, US"\r\n");
@@ -621,11 +651,18 @@ else
   rc = US"";
 
 CLEANUP:
-if (ctx)
-  pdkim_free_ctx(ctx);
-store_pool = old_pool;
-errno = save_errno;
-return rc;
+  if (ctx)
+    pdkim_free_ctx(ctx);
+  store_pool = old_pool;
+  errno = save_errno;
+  return rc;
+
+pk_bad:
+  log_write(0, LOG_MAIN|LOG_PANIC,
+	       	"DKIM: signing failed: %.100s", pdkim_errstr(pdkim_rc));
+bad:
+  rc = NULL;
+  goto CLEANUP;
 }
 
 #endif

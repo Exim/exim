@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Exim gets and frees all its store through these functions. In the original
@@ -497,9 +497,8 @@ store_malloc_3(int size, const char *filename, int linenumber)
 void *yield;
 
 if (size < 16) size = 16;
-yield = malloc((size_t)size);
 
-if (yield == NULL)
+if (!(yield = malloc((size_t)size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
     "called from line %d of %s", size, linenumber, filename);
 

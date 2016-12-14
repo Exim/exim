@@ -36,3 +36,10 @@ HELO the.local.host.name
 QUIT
 250 OK
 End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Connected OK
+EHLO the.local.host.name
+550 You are banned
+HELO the.local.host.name
+End of script

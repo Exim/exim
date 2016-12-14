@@ -9,6 +9,7 @@
 >>> test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/strict
@@ -47,6 +48,7 @@ LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/strict
@@ -84,6 +86,7 @@ LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_conn/strict
@@ -122,6 +125,7 @@ LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_conn/strict
@@ -159,6 +163,7 @@ LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_rcpt
@@ -225,6 +230,7 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> test.ex in helo_lookup_domains? no (end of list)
 >>> host in dsn_advertise_hosts? no (option unset)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt2"
 >>> processing "warn"
 >>> check ratelimit = 1/1m/per_rcpt/noupdate

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for finding hosts, either by gethostbyname(), gethostbyaddr(), or
@@ -597,12 +597,12 @@ if (sender_host_name == NULL)
   sender_fullhost = (sender_helo_name == NULL)? address :
     string_sprintf("(%s) %s", sender_helo_name, address);
 
-  sender_rcvhost = string_cat(NULL, &size, &ptr, address, adlen);
+  sender_rcvhost = string_catn(NULL, &size, &ptr, address, adlen);
 
   if (sender_ident != NULL || show_helo || portptr != NULL)
     {
     int firstptr;
-    sender_rcvhost = string_cat(sender_rcvhost, &size, &ptr, US" (", 2);
+    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US" (", 2);
     firstptr = ptr;
 
     if (portptr != NULL)
@@ -617,7 +617,7 @@ if (sender_host_name == NULL)
       sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2,
         (firstptr == ptr)? US"ident=" : US" ident=", sender_ident);
 
-    sender_rcvhost = string_cat(sender_rcvhost, &size, &ptr, US")", 1);
+    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US")", 1);
     }
 
   sender_rcvhost[ptr] = 0;   /* string_cat() always leaves room */
@@ -2777,17 +2777,15 @@ host which is not the primary hostname. */
 last = NULL;    /* Indicates that not even the first item is filled yet */
 
 for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-     rr != NULL;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+     rr;
+     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
   {
   int precedence;
   int weight = 0;        /* For SRV records */
   int port = PORT_NONE;
-  uschar *s;             /* MUST be unsigned for GETSHORT */
+  const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
   uschar data[256];
 
-  if (rr->type != ind_type) continue;
-  s = rr->data;
   GETSHORT(precedence, s);      /* Pointer s is advanced */
 
   /* For MX records, we use a random "weight" which causes multiple records of

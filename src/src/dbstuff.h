@@ -64,7 +64,7 @@ tdb_traverse to be called) */
 
 /* EXIM_DBCREATE_CURSOR - initialize for scanning operation */
 #define EXIM_DBCREATE_CURSOR(db, cursor) { \
-   *(cursor) = malloc(sizeof(TDB_DATA)); (*(cursor))->dptr = NULL; }
+   *(cursor) = store_malloc(sizeof(TDB_DATA)); (*(cursor))->dptr = NULL; }
 
 /* EXIM_DBSCAN - This is complicated because we have to free the last datum
 free() must not die when passed NULL */

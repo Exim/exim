@@ -1,0 +1,67 @@
+# Exim test configuration 2052
+# as per 2000 but with TCP Fast Open
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector =  +tls_peerdn
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+# needed to force generation
+tls_dhparam = historic
+
+# Set certificate only if server
+
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+tls_verify_hosts = *
+tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  retry_use_local_part
+  transport = send_to_server
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  hosts_try_fastopen = *
+  tls_certificate = DIR/aux-fixed/cert2
+  tls_privatekey = DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_try_verify_hosts =
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

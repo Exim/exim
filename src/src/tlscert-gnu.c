@@ -142,12 +142,12 @@ uschar * cp = NULL;
 int ret;
 size_t siz = 0;
 
-if ((ret = gnutls_x509_crt_get_issuer_dn(cert, cp, &siz))
+if ((ret = gnutls_x509_crt_get_issuer_dn(cert, CS cp, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gi0", __FUNCTION__, ret);
 
 cp = store_get(siz);
-if ((ret = gnutls_x509_crt_get_issuer_dn(cert, cp, &siz)) < 0)
+if ((ret = gnutls_x509_crt_get_issuer_dn(cert, CS cp, &siz)) < 0)
   return g_err("gi1", __FUNCTION__, ret);
 
 return mod ? tls_field_from_dn(cp, mod) : cp;
@@ -183,7 +183,7 @@ if ((ret = gnutls_x509_crt_get_serial((gnutls_x509_crt_t)cert,
   return g_err("gs0", __FUNCTION__, ret);
 
 for(dp = txt, sp = bin; sz; dp += 2, sp++, sz--)
-  sprintf(dp, "%.2x", *sp);
+  sprintf(CS dp, "%.2x", *sp);
 for(sp = txt; sp[0]=='0' && sp[1]; ) sp++;	/* leading zeroes */
 return string_copy(sp);
 }
@@ -197,16 +197,16 @@ uschar * cp3;
 size_t len = 0;
 int ret;
 
-if ((ret = gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, cp1, &len))
+if ((ret = gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, CS cp1, &len))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gs0", __FUNCTION__, ret);
 
 cp1 = store_get(len*4+1);
-if (gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, cp1, &len) != 0)
+if (gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, CS cp1, &len) != 0)
   return g_err("gs1", __FUNCTION__, ret);
 
 for(cp3 = cp2 = cp1+len; cp1 < cp2; cp3 += 3, cp1++)
-  sprintf(cp3, "%.2x ", *cp1);
+  sprintf(CS cp3, "%.2x ", *cp1);
 cp3[-1]= '\0';
 
 return cp2;
@@ -217,7 +217,7 @@ tls_cert_signature_algorithm(void * cert, uschar * mod)
 {
 gnutls_sign_algorithm_t algo =
   gnutls_x509_crt_get_signature_algorithm((gnutls_x509_crt_t)cert);
-return algo < 0 ? NULL : string_copy(gnutls_sign_get_name(algo));
+return algo < 0 ? NULL : string_copy(US gnutls_sign_get_name(algo));
 }
 
 uschar *
@@ -227,12 +227,12 @@ uschar * cp = NULL;
 int ret;
 size_t siz = 0;
 
-if ((ret = gnutls_x509_crt_get_dn(cert, cp, &siz))
+if ((ret = gnutls_x509_crt_get_dn(cert, CS cp, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("gs0", __FUNCTION__, ret);
 
 cp = store_get(siz);
-if ((ret = gnutls_x509_crt_get_dn(cert, cp, &siz)) < 0)
+if ((ret = gnutls_x509_crt_get_dn(cert, CS cp, &siz)) < 0)
   return g_err("gs1", __FUNCTION__, ret);
 
 return mod ? tls_field_from_dn(cp, mod) : cp;
@@ -255,14 +255,14 @@ unsigned int crit;
 int ret;
 
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
-  oid, idx, cp1, &siz, &crit);
+  oid, idx, CS cp1, &siz, &crit);
 if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("ge0", __FUNCTION__, ret);
 
 cp1 = store_get(siz*4 + 1);
 
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
-  oid, idx, cp1, &siz, &crit);
+  oid, idx, CS cp1, &siz, &crit);
 if (ret < 0)
   return g_err("ge1", __FUNCTION__, ret);
 
@@ -270,7 +270,7 @@ if (ret < 0)
 
 /* just dump for now */
 for(cp3 = cp2 = cp1+siz; cp1 < cp2; cp3 += 3, cp1++)
-  sprintf(cp3, "%.2x ", *cp1);
+  sprintf(CS cp3, "%.2x ", *cp1);
 cp3[-1]= '\0';
 
 return cp2;
@@ -458,7 +458,7 @@ if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
   return g_err("gf1", __FUNCTION__, ret);
 
 for (cp3 = cp2 = cp+siz; cp < cp2; cp++, cp3+=2)
-  sprintf(cp3, "%02X",*cp);
+  sprintf(CS cp3, "%02X",*cp);
 return cp2;
 }
 

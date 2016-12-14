@@ -3,28 +3,22 @@
 FOOBAR=
 FOO=inc1
 BAR=.include "DIR/aux-fixed/TESTNUM.inc2"
-RT = receive_timeout = 1s
+OPT = receive_timeout = 1s
 INC=
 
 C1=#
 C2=#
 C1C2 this should be a comment
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
-primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
+.include DIR/aux-var/std_conf_prefix
+
 trusted_users = CALLER
+primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
 FOOBAR  .include DIR/aux-fixed/TESTNUM.FOO
-RT
+OPT
 INC
 
 remote_sort_domains = a:b:c

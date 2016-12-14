@@ -29,6 +29,7 @@ I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 F From: ok@test4
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 H=[10.9.8.7] U=CALLER rejected connection in "connect" ACL
+1999-03-02 09:44:33 H=[10.9.8.7] U=CALLER rejected connection in "connect" ACL
 1999-03-02 09:44:33 H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
 1999-03-02 09:44:33 mail accepted "mail from:<ok@test1>" "<ok@test1>"
 1999-03-02 09:44:33 H=[10.9.8.9] U=CALLER rejected connection in "connect" ACL: forcibly dropped

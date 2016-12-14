@@ -2,14 +2,9 @@
 
 SERVER=
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
+.include DIR/aux-var/tls_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/SERVER%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
@@ -23,7 +18,7 @@ queue_run_in_order
 tls_advertise_hosts = *
 
 tls_require_ciphers = ${if eq{$sender_host_address}{HOSTIPV4}\
-                      {AES}{!AES:3DES}}
+                      {AES256}{AES128}}
 
 # Set certificate only if server
 
@@ -51,7 +46,7 @@ send_to_server:
   allow_localhost
   hosts = HOSTIPV4 : 127.0.0.1
   hosts_require_tls = HOSTIPV4
-  tls_require_ciphers = DES-CBC3-SHA
+  tls_require_ciphers = AES128-SHA
   port = PORT_D
   tls_try_verify_hosts = :
 

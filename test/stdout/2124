@@ -20,21 +20,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server certificate request A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client certificate A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write certificate verify A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read server session ticket A
-pppp:error:14094418:SSL routines:ssl3_read_bytes:tlsv1 alert unknown ca:s3_pkt.c:dddd:SSL alert number 48
+pppp:error:dddddddd:SSL routines:ssl3_read_bytes:tlsv1 alert unknown ca:[...]:SSL alert number 48
 Failed to start TLS
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected

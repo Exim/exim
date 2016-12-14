@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -228,6 +228,10 @@ exim binary. */
 #include "transports/pipe.h"
 #endif
 
+#ifdef EXPERIMENTAL_QUEUEFILE
+#include "transports/queuefile.h"
+#endif
+
 #ifdef TRANSPORT_SMTP
 #include "transports/smtp.h"
 #endif
@@ -389,6 +393,20 @@ transport_info transports_available[] = {
   TRUE                                         /* local flag */
   },
 #endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  {
+  US"queuefile",                               /* driver name */
+  queuefile_transport_options,                 /* local options table */
+  &queuefile_transport_options_count,          /* number of entries */
+  &queuefile_transport_option_defaults,        /* private options defaults */
+  sizeof(queuefile_transport_options_block),   /* size of private block */
+  queuefile_transport_init,                    /* init entry point */
+  queuefile_transport_entry,                   /* main entry point */
+  NULL,                                        /* no tidyup entry */
+  NULL,                                        /* no closedown entry */
+  TRUE                                         /* local flag */
+  },
+#endif
 #ifdef TRANSPORT_SMTP
   {
   US"smtp",                                    /* driver name */
@@ -500,6 +518,9 @@ extern lookup_module_info pgsql_lookup_module_info;
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
 extern lookup_module_info redis_lookup_module_info;
 #endif
+#if defined(EXPERIMENTAL_LMDB)
+extern lookup_module_info lmdb_lookup_module_info;
+#endif
 #if defined(EXPERIMENTAL_SPF)
 extern lookup_module_info spf_lookup_module_info;
 #endif
@@ -524,8 +545,6 @@ init_lookup_list(void)
   int moduleerrors = 0;
 #endif
   struct lookupmodulestr *p;
-  const pcre *regex_islookupmod = regex_must_compile(
-      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
 
   if (lookup_list_init_done)
     return;
@@ -587,6 +606,10 @@ init_lookup_list(void)
   addlookupmodule(NULL, &redis_lookup_module_info);
 #endif
 
+#ifdef EXPERIMENTAL_LMDB
+  addlookupmodule(NULL, &lmdb_lookup_module_info);
+#endif
+
 #ifdef EXPERIMENTAL_SPF
   addlookupmodule(NULL, &spf_lookup_module_info);
 #endif
@@ -610,6 +633,9 @@ init_lookup_list(void)
     log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   }
   else {
+    const pcre *regex_islookupmod = regex_must_compile(
+      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
+
     DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
     while ((ent = readdir(dd)) != NULL) {
       char *name = ent->d_name;
@@ -666,13 +692,12 @@ init_lookup_list(void)
         countmodules++;
       }
     }
+    store_free((void*)regex_islookupmod);
     closedir(dd);
   }
 
   DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 #endif
-
-  store_free((void*)regex_islookupmod);
 
   DEBUG(D_lookup) debug_printf("Total %d lookups\n", lookup_list_count);
 

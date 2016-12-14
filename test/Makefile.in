@@ -12,6 +12,8 @@ LOADED=@LOADED@
 LOADED_OPT=@LOADED_OPT@
 LIBS=@LIBS@
 
+SRC = @srcdir@/src
+
 ##############################################################################
 
 # List of targets
@@ -26,7 +28,7 @@ makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
 
 # Compile and link the programs:
 #
-# bin/cf              a "compare" program 
+# bin/cf              a "compare" program
 # bin/checkaccess     tests whether the exim uid/gid can access the files
 # bin/client          an SMTP script-driven client, without TLS support
 # bin/client-gnutls   ditto, with GnuTLS support
@@ -39,66 +41,66 @@ makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
 # bin/server          an SMTP (socket) script-driven server (no TLS support)
 # bin/showids         output current uid, gid, euid, egid
 
-bin/cf:         src/cf.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/cf src/cf.c
+bin/cf:         $(SRC)/cf.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/cf $(SRC)/cf.c
 		@echo ">>> bin/cf command build"
 		@echo " "
 
-bin/client:     src/client.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client src/client.c $(LIBS)
+bin/client:     $(SRC)/client.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client $(SRC)/client.c $(LIBS)
 		@echo ">>> bin/client command built"
 		@echo " "
 
-bin/client-gnutls: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls src/client.c -lgnutls -lgcrypt $(LIBS)
+bin/client-gnutls: $(SRC)/client.c Makefile
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls $(SRC)/client.c -lgnutls -lgcrypt $(LIBS)
 		@echo ">>> bin/client-gnutls command built"
 		@echo " "
 
-bin/client-ssl: src/client.c Makefile
-		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl src/client.c -lssl -lcrypto $(LIBS)
+bin/client-ssl: $(SRC)/client.c Makefile
+		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl $(SRC)/client.c -lssl -lcrypto $(LIBS)
 		@echo ">>> bin/client-ssl command built"
 		@echo " "
 
-bin/checkaccess:src/checkaccess.c Makefile
-		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess src/checkaccess.c
+bin/checkaccess:$(SRC)/checkaccess.c Makefile
+		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess $(SRC)/checkaccess.c
 		@echo ">>> bin/checkaccess command built"
 		@echo " "
 
-bin/fakens:     src/fakens.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens src/fakens.c $(LIBS)
+bin/fakens:     $(SRC)/fakens.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens $(SRC)/fakens.c $(LIBS)
 		@echo ">>> bin/fakens command built"
 		@echo " "
 
-bin/fd:         src/fd.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fd src/fd.c
+bin/fd:         $(SRC)/fd.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fd $(SRC)/fd.c
 		@echo ">>> bin/fd command built"
 		@echo " "
 
-bin/iefbr14:    src/iefbr14.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/iefbr14 src/iefbr14.c
+bin/iefbr14:    $(SRC)/iefbr14.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/iefbr14 $(SRC)/iefbr14.c
 		@echo ">>> bin/iefbr14 command built"
 		@echo " "
 
-bin/loaded:     src/loaded.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) $(LOADED_OPT) -o bin/loaded src/loaded.c
+bin/loaded:     $(SRC)/loaded.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) $(LOADED_OPT) -o bin/loaded $(SRC)/loaded.c
 		@echo ">>> bin/loaded command built"
 		@echo " "
 
-bin/mtpscript:  src/mtpscript.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript src/mtpscript.c
+bin/mtpscript:  $(SRC)/mtpscript.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript $(SRC)/mtpscript.c
 		@echo ">>> bin/mtpscript command built"
 		@echo " "
 
-bin/server:     src/server.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server src/server.c $(LIBS)
+bin/server:     $(SRC)/server.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server $(SRC)/server.c $(LIBS)
 		@echo ">>> bin/server command built"
 		@echo " "
 
-bin/showids:    src/showids.c Makefile
-		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids src/showids.c
+bin/showids:    $(SRC)/showids.c Makefile
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids $(SRC)/showids.c
 		@echo ">>> bin/showids command built"
 		@echo " "
-                
-clean:;         rm -rf bin/* 
+
+clean:;         rm -rf bin/*
 
 # End

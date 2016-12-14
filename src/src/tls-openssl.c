@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Portions Copyright (c) The OpenSSL Project 1999 */
@@ -74,15 +74,15 @@ functions from the OpenSSL library. */
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 # endif
+#endif
 
+#if !defined(LIBRESSL_VERSION_NUMBER) \
+    || LIBRESSL_VERSION_NUMBER >= 0x20010000L
 # if !defined(OPENSSL_NO_ECDH)
 #  if OPENSSL_VERSION_NUMBER >= 0x0090800fL
 #   define EXIM_HAVE_ECDH
 #  endif
 #  if OPENSSL_VERSION_NUMBER >= 0x10002000L
-#   if OPENSSL_VERSION_NUMBER < 0x10100000L
-#    define EXIM_HAVE_OPENSSL_ECDH_AUTO
-#   endif
 #   define EXIM_HAVE_OPENSSL_EC_NIST2NID
 #  endif
 # endif
@@ -148,6 +148,7 @@ typedef struct tls_ext_ctx_cb {
   uschar *privatekey;
 #ifndef DISABLE_OCSP
   BOOL is_server;
+  STACK_OF(X509) *verify_stack;		/* chain for verifying the proof */
   union {
     struct {
       uschar        *file;
@@ -211,7 +212,7 @@ Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(uschar * prefix, const host_item * host, uschar *  msg)
+tls_error(uschar * prefix, const host_item * host, uschar * msg)
 {
 if (!msg)
   {
@@ -270,8 +271,7 @@ if (  !BN_set_word(bn, (unsigned long)RSA_F4)
    || !RSA_generate_key_ex(rsa_key, keylength, bn, NULL)
    )
 #else
-rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL);
-if (rsa_key == NULL)
+if (!(rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL)))
 #endif
 
   {
@@ -424,6 +424,7 @@ else if (depth != 0)
     if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
                              cert))
       ERR_clear_error();
+    sk_X509_push(client_static_cbinfo->verify_stack, cert);
     }
 #endif
 #ifndef DISABLE_EVENT
@@ -725,16 +726,32 @@ if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve))
 if (!exp_curve || !*exp_curve)
   return TRUE;
 
-#  ifdef EXIM_HAVE_OPENSSL_ECDH_AUTO
-/* check if new enough library to support auto ECDH temp key parameter selection */
+/* "auto" needs to be handled carefully.
+ * OpenSSL <  1.0.2: we do not select anything, but fallback to primve256v1
+ * OpenSSL <  1.1.0: we have to call SSL_CTX_set_ecdh_auto
+ *                   (openss/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
+ * OpenSSL >= 1.1.0: we do not set anything, the libray does autoselection
+ *                   https://github.com/openssl/openssl/commit/fe6ef2472db933f01b59cad82aa925736935984b
+ */
 if (Ustrcmp(exp_curve, "auto") == 0)
   {
+#if OPENSSL_VERSION_NUMBER < 0x10002000L
   DEBUG(D_tls) debug_printf(
-    "ECDH temp key parameter settings: OpenSSL 1.2+ autoselection\n");
+    "ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
+  exp_curve = "prime256v1";
+#else
+# if defined SSL_CTRL_SET_ECDH_AUTO
+  DEBUG(D_tls) debug_printf(
+    "ECDH OpenSSL 1.0.2+ temp key parameter settings: autoselection\n");
   SSL_CTX_set_ecdh_auto(sctx, 1);
   return TRUE;
+# else
+  DEBUG(D_tls) debug_printf(
+    "ECDH OpenSSL 1.1.0+ temp key parameter settings: default selection\n");
+  return TRUE;
+# endif
+#endif
   }
-#  endif
 
 DEBUG(D_tls) debug_printf("ECDH: curve '%s'\n", exp_curve);
 if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
@@ -777,7 +794,6 @@ return !rv;
 /*************************************************
 *       Load OCSP information into state         *
 *************************************************/
-
 /* Called to load the server OCSP response from the given file into memory, once
 caller has determined this is needed.  Checks validity.  Debugs a message
 if invalid.
@@ -794,12 +810,12 @@ Arguments:
 static void
 ocsp_load_response(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo, const uschar *expanded)
 {
-BIO *bio;
-OCSP_RESPONSE *resp;
-OCSP_BASICRESP *basic_response;
-OCSP_SINGLERESP *single_response;
-ASN1_GENERALIZEDTIME *rev, *thisupd, *nextupd;
-X509_STORE *store;
+BIO * bio;
+OCSP_RESPONSE * resp;
+OCSP_BASICRESP * basic_response;
+OCSP_SINGLERESP * single_response;
+ASN1_GENERALIZEDTIME * rev, * thisupd, * nextupd;
+STACK_OF(X509) * sk;
 unsigned long verify_flags;
 int status, reason, i;
 
@@ -810,8 +826,7 @@ if (cbinfo->u_ocsp.server.response)
   cbinfo->u_ocsp.server.response = NULL;
   }
 
-bio = BIO_new_file(CS cbinfo->u_ocsp.server.file_expanded, "rb");
-if (!bio)
+if (!(bio = BIO_new_file(CS cbinfo->u_ocsp.server.file_expanded, "rb")))
   {
   DEBUG(D_tls) debug_printf("Failed to open OCSP response file \"%s\"\n",
       cbinfo->u_ocsp.server.file_expanded);
@@ -826,33 +841,54 @@ if (!resp)
   return;
   }
 
-status = OCSP_response_status(resp);
-if (status != OCSP_RESPONSE_STATUS_SUCCESSFUL)
+if ((status = OCSP_response_status(resp)) != OCSP_RESPONSE_STATUS_SUCCESSFUL)
   {
   DEBUG(D_tls) debug_printf("OCSP response not valid: %s (%d)\n",
       OCSP_response_status_str(status), status);
   goto bad;
   }
 
-basic_response = OCSP_response_get1_basic(resp);
-if (!basic_response)
+if (!(basic_response = OCSP_response_get1_basic(resp)))
   {
   DEBUG(D_tls)
     debug_printf("OCSP response parse error: unable to extract basic response.\n");
   goto bad;
   }
 
-store = SSL_CTX_get_cert_store(sctx);
+sk = cbinfo->verify_stack;
 verify_flags = OCSP_NOVERIFY; /* check sigs, but not purpose */
 
 /* May need to expose ability to adjust those flags?
 OCSP_NOSIGS OCSP_NOVERIFY OCSP_NOCHAIN OCSP_NOCHECKS OCSP_NOEXPLICIT
 OCSP_TRUSTOTHER OCSP_NOINTERN */
 
-i = OCSP_basic_verify(basic_response, NULL, store, verify_flags);
-if (i <= 0)
+/* This does a full verify on the OCSP proof before we load it for serviing
+up; possibly overkill - just date-checks might be nice enough.
+
+OCSP_basic_verify takes a "store" arg, but does not
+use it for the chain verification, which is all we do
+when OCSP_NOVERIFY is set.  The content from the wire
+"basic_response" and a cert-stack "sk" are all that is used.
+
+We have a stack, loaded in setup_certs() if tls_verify_certificates
+was a file (not a directory, or "system").  It is unfortunate we
+cannot used the connection context store, as that would neatly
+handle the "system" case too, but there seems to be no library
+function for getting a stack from a store.
+[ In OpenSSL 1.1 - ?  X509_STORE_CTX_get0_chain(ctx) ? ]
+We do not free the stack since it could be needed a second time for
+SNI handling.
+
+Seperately we might try to replace using OCSP_basic_verify() - which seems to not
+be a public interface into the OpenSSL library (there's no manual entry) - 
+But what with?  We also use OCSP_basic_verify in the client stapling callback.
+And there we NEED it; we miust verify that status... unless the
+library does it for us anyway?  */
+
+if ((i = OCSP_basic_verify(basic_response, sk, NULL, verify_flags)) < 0)
   {
-  DEBUG(D_tls) {
+  DEBUG(D_tls)
+    {
     ERR_error_string(ERR_get_error(), ssl_errstring);
     debug_printf("OCSP response verify failure: %s\n", US ssl_errstring);
     }
@@ -866,8 +902,8 @@ proves false, we need to extract a cert id from our issued cert
 right cert in the stack and then calls OCSP_single_get0_status()).
 
 I'm hoping to avoid reworking a bunch more of how we handle state here. */
-single_response = OCSP_resp_get0(basic_response, 0);
-if (!single_response)
+
+if (!(single_response = OCSP_resp_get0(basic_response, 0)))
   {
   DEBUG(D_tls)
     debug_printf("Unable to get first response from OCSP basic response.\n");
@@ -912,6 +948,73 @@ return;
 
 
 
+/* Create and install a selfsigned certificate, for use in server mode */
+
+static int
+tls_install_selfsign(SSL_CTX * sctx)
+{
+X509 * x509 = NULL;
+EVP_PKEY * pkey;
+RSA * rsa;
+X509_NAME * name;
+uschar * where;
+
+where = US"allocating pkey";
+if (!(pkey = EVP_PKEY_new()))
+  goto err;
+
+where = US"allocating cert";
+if (!(x509 = X509_new()))
+  goto err;
+
+where = US"generating pkey";
+		/* deprecated, use RSA_generate_key_ex() */
+if (!(rsa = RSA_generate_key(1024, RSA_F4, NULL, NULL)))
+  goto err;
+
+where = US"assiging pkey";
+if (!EVP_PKEY_assign_RSA(pkey, rsa))
+  goto err;
+
+X509_set_version(x509, 2);				/* N+1 - version 3 */
+ASN1_INTEGER_set(X509_get_serialNumber(x509), 0);
+X509_gmtime_adj(X509_get_notBefore(x509), 0);
+X509_gmtime_adj(X509_get_notAfter(x509), (long)60 * 60);	/* 1 hour */
+X509_set_pubkey(x509, pkey);
+
+name = X509_get_subject_name(x509);
+X509_NAME_add_entry_by_txt(name, "C",
+			  MBSTRING_ASC, CUS "UK", -1, -1, 0);
+X509_NAME_add_entry_by_txt(name, "O",
+			  MBSTRING_ASC, CUS "Exim Developers", -1, -1, 0);
+X509_NAME_add_entry_by_txt(name, "CN",
+			  MBSTRING_ASC, CUS smtp_active_hostname, -1, -1, 0);
+X509_set_issuer_name(x509, name);
+
+where = US"signing cert";
+if (!X509_sign(x509, pkey, EVP_md5()))
+  goto err;
+
+where = US"installing selfsign cert";
+if (!SSL_CTX_use_certificate(sctx, x509))
+  goto err;
+
+where = US"installing selfsign key";
+if (!SSL_CTX_use_PrivateKey(sctx, pkey))
+  goto err;
+
+return OK;
+
+err:
+  (void) tls_error(where, NULL, NULL);
+  if (x509) X509_free(x509);
+  if (pkey) EVP_PKEY_free(pkey);
+  return DEFER;
+}
+
+
+
+
 /*************************************************
 *        Expand key and cert file specs          *
 *************************************************/
@@ -932,41 +1035,49 @@ tls_expand_session_files(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo)
 {
 uschar *expanded;
 
-if (cbinfo->certificate == NULL)
-  return OK;
-
-if (Ustrstr(cbinfo->certificate, US"tls_sni") ||
-    Ustrstr(cbinfo->certificate, US"tls_in_sni") ||
-    Ustrstr(cbinfo->certificate, US"tls_out_sni")
-   )
-  reexpand_tls_files_for_sni = TRUE;
-
-if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded))
-  return DEFER;
-
-if (expanded != NULL)
+if (!cbinfo->certificate)
   {
-  DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
-  if (!SSL_CTX_use_certificate_chain_file(sctx, CS expanded))
-    return tls_error(string_sprintf(
-      "SSL_CTX_use_certificate_chain_file file=%s", expanded),
-        cbinfo->host, NULL);
+  if (cbinfo->host)			/* client */
+    return OK;
+  					/* server */
+  if (tls_install_selfsign(sctx) != OK)
+    return DEFER;
   }
-
-if (cbinfo->privatekey != NULL &&
-    !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded))
-  return DEFER;
-
-/* If expansion was forced to fail, key_expanded will be NULL. If the result
-of the expansion is an empty string, ignore it also, and assume the private
-key is in the same file as the certificate. */
-
-if (expanded && *expanded)
+else
   {
-  DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
-  if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
-    return tls_error(string_sprintf(
-      "SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
+  if (Ustrstr(cbinfo->certificate, US"tls_sni") ||
+      Ustrstr(cbinfo->certificate, US"tls_in_sni") ||
+      Ustrstr(cbinfo->certificate, US"tls_out_sni")
+     )
+    reexpand_tls_files_for_sni = TRUE;
+
+  if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded))
+    return DEFER;
+
+  if (expanded != NULL)
+    {
+    DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
+    if (!SSL_CTX_use_certificate_chain_file(sctx, CS expanded))
+      return tls_error(string_sprintf(
+	"SSL_CTX_use_certificate_chain_file file=%s", expanded),
+	  cbinfo->host, NULL);
+    }
+
+  if (cbinfo->privatekey != NULL &&
+      !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded))
+    return DEFER;
+
+  /* If expansion was forced to fail, key_expanded will be NULL. If the result
+  of the expansion is an empty string, ignore it also, and assume the private
+  key is in the same file as the certificate. */
+
+  if (expanded && *expanded)
+    {
+    DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
+    if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
+      return tls_error(string_sprintf(
+	"SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
+    }
   }
 
 #ifndef DISABLE_OCSP
@@ -984,9 +1095,7 @@ if (cbinfo->is_server && cbinfo->u_ocsp.server.file)
       DEBUG(D_tls) debug_printf(" - value unchanged, using existing values\n");
       }
     else
-      {
       ocsp_load_response(sctx, cbinfo, expanded);
-      }
     }
   }
 #endif
@@ -1073,8 +1182,9 @@ if (cbinfo->u_ocsp.server.file)
   }
 #endif
 
-rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE, verify_callback_server);
-if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+if ((rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE,
+		      verify_callback_server)) != OK)
+  return SSL_TLSEXT_ERR_NOACK;
 
 /* do this after setup_certs, because this can require the certs for verifying
 OCSP information. */
@@ -1202,7 +1312,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
     /* Use the chain that verified the server cert to verify the stapled info */
     /* DEBUG(D_tls) x509_store_dump_cert_s_names(cbinfo->u_ocsp.client.verify_store); */
 
-    if ((i = OCSP_basic_verify(bs, NULL,
+    if ((i = OCSP_basic_verify(bs, cbinfo->verify_stack,
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       tls_out.ocsp = OCSP_FAILED;
@@ -1325,6 +1435,7 @@ cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
 #ifndef DISABLE_OCSP
+cbinfo->verify_stack = NULL;
 if ((cbinfo->is_server = host==NULL))
   {
   cbinfo->u_ocsp.server.file = ocsp_file;
@@ -1426,11 +1537,20 @@ if (  !init_dh(*ctxp, dhparam, host)
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
-rc = tls_expand_session_files(*ctxp, cbinfo);
-if (rc != OK) return rc;
+if ((rc = tls_expand_session_files(*ctxp, cbinfo)) != OK)
+  return rc;
 
-/* If we need to handle SNI, do so */
+/* If we need to handle SNI or OCSP, do so */
+
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
+# ifndef DISABLE_OCSP
+  if (!(cbinfo->verify_stack = sk_X509_new_null()))
+    {
+    DEBUG(D_tls) debug_printf("failed to create stack for stapling verify\n");
+    return FAIL;
+    }
+# endif
+
 if (host == NULL)		/* server */
   {
 # ifndef DISABLE_OCSP
@@ -1547,6 +1667,23 @@ else
 *        Set up for verifying certificates       *
 *************************************************/
 
+/* Load certs from file, return TRUE on success */
+
+static BOOL
+chain_from_pem_file(const uschar * file, STACK_OF(X509) * verify_stack)
+{
+BIO * bp;
+X509 * x;
+
+if (!(bp = BIO_new_file(CS file, "r"))) return FALSE;
+while ((x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
+  sk_X509_push(verify_stack, x);
+BIO_free(bp);
+return TRUE;
+}
+
+
+
 /* Called by both client and server startup
 
 Arguments:
@@ -1594,12 +1731,29 @@ if (expcerts && *expcerts)
       if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
 	{ file = NULL; dir = expcerts; }
       else
-	{ file = expcerts; dir = NULL; }
+	{
+	file = expcerts; dir = NULL;
+#ifndef DISABLE_OCSP
+	/* In the server if we will be offering an OCSP proof, load chain from
+	file for verifying the OCSP proof at load time. */
+
+	if (  !host
+	   && statbuf.st_size > 0
+	   && server_static_cbinfo->u_ocsp.server.file
+	   && !chain_from_pem_file(file, server_static_cbinfo->verify_stack)
+	   )
+	  {
+	  log_write(0, LOG_MAIN|LOG_PANIC,
+	    "failed to load cert hain from %s", file);
+	  return DEFER;
+	  }
+#endif
+	}
 
       /* If a certificate file is empty, the next function fails with an
       unhelpful error message. If we skip it, we get the correct behaviour (no
       certificates are recognized, but the error message is still misleading (it
-      says no certificate was supplied.) But this is better. */
+      says no certificate was supplied).  But this is better. */
 
       if (  (!file || statbuf.st_size > 0)
          && !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
@@ -1746,9 +1900,9 @@ were historically separated by underscores. So that I can use either form in my
 tests, and also for general convenience, we turn underscores into hyphens here.
 */
 
-if (expciphers != NULL)
+if (expciphers)
   {
-  uschar *s = expciphers;
+  uschar * s = expciphers;
   while (*s != 0) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(server_ctx, CS expciphers))
@@ -1782,7 +1936,7 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 
 /* Prepare for new connection */
 
-if ((server_ssl = SSL_new(server_ctx)) == NULL) return tls_error(US"SSL_new", NULL, NULL);
+if (!(server_ssl = SSL_new(server_ctx))) return tls_error(US"SSL_new", NULL, NULL);
 
 /* Warning: we used to SSL_clear(ssl) here, it was removed.
  *
@@ -1866,6 +2020,7 @@ ssl_xfer_buffer_lwm = ssl_xfer_buffer_hwm = 0;
 ssl_xfer_eof = ssl_xfer_error = 0;
 
 receive_getc = tls_getc;
+receive_get_cache = tls_get_cache;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
@@ -1935,7 +2090,7 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
     ) if (rr->type == T_TLSA)
   {
-  uschar * p = rr->data;
+  const uschar * p = rr->data;
   uint8_t usage, selector, mtype;
   const char * mdname;
 
@@ -1959,8 +2114,8 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   switch (DANESSL_add_tlsa(ssl, usage, selector, mdname, p, rr->size - 3))
     {
     default:
-    case 0:	/* action not taken */
       return tls_error(US"tlsa load", host, NULL);
+    case 0:	/* action not taken */
     case 1:	break;
     }
 
@@ -2236,6 +2391,7 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
 
     receive_getc = smtp_getc;
+    receive_get_cache = smtp_get_cache;
     receive_ungetc = smtp_ungetc;
     receive_feof = smtp_feof;
     receive_ferror = smtp_ferror;
@@ -2279,6 +2435,16 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
 /* Something in the buffer; return next uschar */
 
 return ssl_xfer_buffer[ssl_xfer_buffer_lwm++];
+}
+
+void
+tls_get_cache()
+{
+#ifndef DISABLE_DKIM
+int n = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm;
+if (n > 0)
+  dkim_exim_verify_feed(ssl_xfer_buffer+ssl_xfer_buffer_lwm, n);
+#endif
 }
 
 

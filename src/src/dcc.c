@@ -6,6 +6,8 @@
  * Vienna University Computer Center
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
+ *
+ * Copyright (c) The Exim Maintainers 2015 - 2016
  */
 
 /* This patch is based on code from Tom Kistners exiscan (ACL integration) and
@@ -70,7 +72,6 @@ dcc_process(uschar **listptr)
   uschar sendbuf[4096];
   uschar recvbuf[4096];
   uschar dcc_return_text[1024];
-  uschar mbox_path[1024];
   uschar message_subdir[2];
   struct header_line *dcchdr;
   uschar *dcc_acl_options;
@@ -100,14 +101,15 @@ dcc_process(uschar **listptr)
   message_subdir[1] = '\0';
   for (i = 0; i < 2; i++)
     {
-    message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
-    sprintf(CS mbox_path, "%s/input/%s/%s-D", spool_directory, message_subdir, message_id);
-    data_file = Ufopen(mbox_path,"rb");
-    if (data_file != NULL)
+    message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
+
+    if ((data_file = Ufopen(
+	    spool_fname(US"input", message_subdir, message_id, US"-D"),
+	    "rb")))
       break;
     }
 
-  if (data_file == NULL)
+  if (!data_file)
     {
     /* error while spooling */
     log_write(0, LOG_MAIN|LOG_PANIC,

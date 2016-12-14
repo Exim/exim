@@ -2,7 +2,7 @@
 *               Exim Monitor                     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 1995 - 2007 */
+/* Copyright (c) University of Cambridge, 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file contains a number of subroutines that are in effect

@@ -6,11 +6,12 @@ SERVER =
 exim_path = EXIM_PATH
 keep_environment = ^EXIM_TESTHARNESS_DISABLE_[O]CSPVALIDITYCHECK$
 host_lookup_order = bydns
-primary_hostname = server1.example.com
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/SERVER%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+primary_hostname = server1.example.com
 
 
 # ----- Main settings -----
@@ -38,7 +39,7 @@ tls_privatekey = ${if eq {SERVER}{server}\
 {DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key}\
 fail}
 
-tls_ocsp_file = OCSP
+tls_ocsp_file = RETURN
 
 
 # ------ ACL ------

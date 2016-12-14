@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -56,6 +56,7 @@ extern int     tls_feof(void);
 extern int     tls_ferror(void);
 extern void    tls_free_cert(void **);
 extern int     tls_getc(void);
+extern void    tls_get_cache(void);
 extern int     tls_import_cert(const uschar *, void **);
 extern int     tls_read(BOOL, uschar *, size_t);
 extern int     tls_server_start(const uschar *);
@@ -71,7 +72,7 @@ extern uschar * tls_field_from_dn(uschar *, const uschar *);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 
 # ifdef EXPERIMENTAL_DANE
-extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL, BOOL *);
+extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
 # endif
 
 #endif	/*SUPPORT_TLS*/
@@ -100,6 +101,7 @@ extern int     auth_xtextdecode(uschar *, uschar **);
 
 extern uschar *b64encode(uschar *, int);
 extern int     b64decode(uschar *, uschar **);
+extern int     bdat_getc(void);
 extern void    bits_clear(unsigned int *, size_t, int *);
 extern void    bits_set(unsigned int *, size_t, int *);
 
@@ -123,6 +125,7 @@ extern int     dcc_process(uschar **);
 #endif
 
 extern void    debug_logging_activate(uschar *, uschar *);
+extern void    debug_logging_stop(void);
 extern void    debug_print_argv(const uschar **);
 extern void    debug_print_ids(uschar *);
 extern void    debug_print_string(uschar *);
@@ -141,14 +144,10 @@ extern void    deliver_succeeded(address_item *);
 
 extern uschar *deliver_get_sender_address (uschar *id);
 
-#ifdef WITH_OLD_DEMIME
-extern int     demime(uschar **);
-#endif
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
-extern BOOL    dkim_transport_write_message(address_item *, int, int,
-                   int, uschar *, uschar *, uschar *, uschar *, rewrite_rule *,
-                   int, uschar *, uschar *, uschar *, uschar *, uschar *, uschar *);
+extern BOOL    dkim_transport_write_message(int, transport_ctx *,
+		  struct ob_dkim *);
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
@@ -159,7 +158,7 @@ extern BOOL    dns_is_secure(const dns_answer *);
 extern int     dns_lookup(dns_answer *, const uschar *, int, const uschar **);
 extern void    dns_pattern_init(void);
 extern int     dns_special_lookup(dns_answer *, const uschar *, int, const uschar **);
-extern dns_record *dns_next_rr(dns_answer *, dns_scan *, int);
+extern dns_record *dns_next_rr(const dns_answer *, dns_scan *, int);
 extern uschar *dns_text_type(int);
 extern void    dscp_list_to_stream(FILE *);
 extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
@@ -170,6 +169,8 @@ extern BOOL    enq_start(uschar *, unsigned);
 extern uschar *event_raise(uschar *, const uschar *, uschar *);
 extern void    msg_event_raise(const uschar *, const address_item *);
 #endif
+extern uschar  ehlo_response(uschar *, size_t, uschar);
+extern const uschar * exim_errstr(int);
 extern void    exim_exit(int);
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
@@ -181,6 +182,7 @@ extern int     exp_bool(address_item *addr,
 extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
 extern uschar *expand_string(uschar *);	/* public, cannot make const */
 extern const uschar *expand_cstring(const uschar *); /* ... so use this one */
+extern uschar *expand_hide_passwords(uschar * );
 extern uschar *expand_string_copy(const uschar *);
 extern int_eximarith_t expand_string_integer(uschar *, BOOL);
 extern void    modify_variable(uschar *, void *);
@@ -204,7 +206,7 @@ extern void    host_build_hostlist(host_item **, const uschar *, BOOL);
 extern ip_address_item *host_build_ifacelist(const uschar *, uschar *);
 extern void    host_build_log_info(void);
 extern void    host_build_sender_fullhost(void);
-extern BOOL    host_find_byname(host_item *, const uschar *, int,
+extern int     host_find_byname(host_item *, const uschar *, int,
 				const uschar **, BOOL);
 extern int     host_find_bydns(host_item *, const uschar *, int, uschar *, uschar *,
                  uschar *, const dnssec_domains *, const uschar **, BOOL *);
@@ -224,7 +226,7 @@ extern uschar *imap_utf7_encode(uschar *, const uschar *,
 extern void    invert_address(uschar *, uschar *);
 extern int     ip_addr(void *, int, const uschar *, int);
 extern int     ip_bind(int, int, uschar *, int);
-extern int     ip_connect(int, int, const uschar *, int, int);
+extern int     ip_connect(int, int, const uschar *, int, int, BOOL);
 extern int     ip_connectedsocket(int, const uschar *, int, int,
                  int, host_item *, uschar **);
 extern int     ip_get_address_family(int);
@@ -243,6 +245,8 @@ extern int     log_create(uschar *);
 extern int     log_create_as_exim(uschar *);
 extern void    log_close_all(void);
 
+extern macro_item * macro_create(const uschar *, const uschar *, BOOL, BOOL);
+extern void    mainlog_close(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     malware(const uschar *, int);
 extern int     malware_in_file(uschar *);
@@ -312,8 +316,11 @@ extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
                  driver_info *, int, void *, int, optionlist *, int);
 extern uschar *readconf_find_option(void *);
-extern void    readconf_main(void);
-extern void    readconf_print(uschar *, uschar *, BOOL no_labels);
+extern void    readconf_main(BOOL);
+extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
+extern void    readconf_options_routers(void);
+extern void    readconf_options_transports(void);
+extern void    readconf_print(uschar *, uschar *, BOOL);
 extern uschar *readconf_printtime(int);
 extern uschar *readconf_readname(uschar *, int, uschar *);
 extern int     readconf_readtime(const uschar *, int, BOOL);
@@ -370,9 +377,9 @@ extern int     search_findtype_partial(const uschar *, int *, const uschar **, i
 extern void   *search_open(uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
 extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
-extern void    sha1_end(sha1 *, const uschar *, int, uschar *);
-extern void    sha1_mid(sha1 *, const uschar *);
-extern void    sha1_start(sha1 *);
+extern void    sha1_end(hctx *, const uschar *, int, uschar *);
+extern void    sha1_mid(hctx *, const uschar *);
+extern void    sha1_start(hctx *);
 extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
                  uschar *, address_item **, uschar **);
 extern void    sigalrm_handler(int);
@@ -389,6 +396,7 @@ extern BOOL    smtp_get_interface(uschar *, int, address_item *,
                  uschar **, uschar *);
 extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(void);
+extern void    smtp_get_cache(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
@@ -406,7 +414,10 @@ extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *);
 #endif
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
-extern BOOL    spool_open_datafile(uschar *);
+extern uschar *spool_dname(const uschar *, uschar *);
+extern uschar *spool_fname(const uschar *, const uschar *, const uschar *, const uschar *);
+extern uschar *spool_sname(const uschar *, uschar *);
+extern int     spool_open_datafile(uschar *);
 extern int     spool_open_temp(uschar *);
 extern int     spool_read_header(uschar *, BOOL, BOOL);
 extern int     spool_write_header(uschar *, int, uschar **);
@@ -418,7 +429,8 @@ extern uschar *string_append(uschar *, int *, int *, int, ...);
 extern uschar *string_append_listele(uschar *, uschar, const uschar *);
 extern uschar *string_append_listele_n(uschar *, uschar, const uschar *, unsigned);
 extern uschar *string_base62(unsigned long int);
-extern uschar *string_cat(uschar *, int *, int *, const uschar *, int);
+extern uschar *string_cat(uschar *, int *, int *, const uschar *);
+extern uschar *string_catn(uschar *, int *, int *, const uschar *, int);
 extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
@@ -432,7 +444,6 @@ extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N
 extern BOOL    string_is_utf8(const uschar *);
 #endif
-extern uschar *string_log_address(address_item *, BOOL, BOOL);
 extern uschar *string_nextinlist(const uschar **, int *, uschar *, int);
 extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern const uschar *string_printing2(const uschar *, BOOL);
@@ -464,10 +475,9 @@ extern BOOL    transport_set_up_command(const uschar ***, uschar *,
 extern void    transport_update_waiting(host_item *, uschar *);
 extern BOOL    transport_write_block(int, uschar *, int);
 extern BOOL    transport_write_string(int, const char *, ...);
-extern BOOL    transport_headers_send(address_item *, int, uschar *, uschar *,
-                 BOOL (*)(int, uschar *, int, BOOL), BOOL, rewrite_rule *, int);
-extern BOOL    transport_write_message(address_item *, int, int, int, uschar *,
-                 uschar *, uschar *, uschar *, rewrite_rule *, int);
+extern BOOL    transport_headers_send(int, transport_ctx *,
+                 BOOL (*)(int, transport_ctx *, uschar *, int));
+extern BOOL    transport_write_message(int, transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);
 extern void    tree_add_unusable(host_item *);

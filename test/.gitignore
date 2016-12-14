@@ -1,7 +1,6 @@
 autom4te.cache/
 aux-var/
 bin/
-configure
 config.log
 config.status
 dnszones/
@@ -10,3 +9,4 @@ Makefile
 spool/
 test-*
 failed-summary.log
+run-summary.log

@@ -13,8 +13,7 @@ RCPT TO:
 250 Recipient OK
 DATA
 >
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex
 ****
@@ -29,9 +28,7 @@ MAIL FROM:
 RCPT TO:
 >
 DATA
-550 Failed DATA
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex
 ****
@@ -46,9 +43,7 @@ MAIL FROM:
 RCPT TO:
 550 Can't send RCPT
 DATA
-550 Can't send DATA
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex
 ****
@@ -68,9 +63,7 @@ RCPT TO:
 RCPT TO:
 250 Third RCPT OK
 DATA
-550 Failed DATA
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex y@test.ex z@test.ex
 ****
@@ -109,8 +102,7 @@ RCPT TO:
 250 Recipient OK
 DATA
 >
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex
 ****
@@ -123,10 +115,7 @@ MAIL FROM:
 250 Sender OK
 RCPT TO:
 >
-DATA
-550 Failed DATA
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex
 ****
@@ -137,12 +126,7 @@ EHLO
 250 HELP
 MAIL FROM:
 >
-RCPT TO:
-550 Can't send RCPT
-DATA
-550 Can't send DATA
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex
 ****
@@ -158,12 +142,7 @@ RCPT TO:
 RCPT TO:
 >
 250 Second RCPT malformed
-RCPT TO:
-250 Third RCPT OK
-DATA
-550 Failed DATA
-QUIT
-250 OK
+*eof
 ****
 exim -odi x@test.ex y@test.ex z@test.ex
 ****

@@ -9,6 +9,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<ok@localhost>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
@@ -26,6 +28,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<bad@localhost>
   SMTP<< 550 Unknown user
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: response to "RCPT TO:<bad@localhost>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown user
 LOG: MAIN REJECT
@@ -43,6 +47,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<uncheckable@localhost1>
   SMTP<< 450 Temporary error
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify defer for <uncheckable@localhost1>: response to "RCPT TO:<uncheckable@localhost1>" from 127.0.0.1 [127.0.0.1] was: 450 Temporary error
 LOG: MAIN REJECT
@@ -58,6 +64,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> MAIL FROM:<>
   SMTP<< 550 Error for <>
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify fail for <uncheckable2@localhost1>: response to "MAIL FROM:<>" from 127.0.0.1 [127.0.0.1] was: 550 Error for <>
 LOG: MAIN REJECT
@@ -74,6 +82,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 550-Multiline error for <>
          550 Here's the second line
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify fail for <uncheckable@localhost1>: response to "MAIL FROM:<>" from 127.0.0.1 [127.0.0.1] was: 550-Multiline error for <>\n550 Here's the second line
 LOG: MAIN REJECT
@@ -91,6 +101,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<z@remote.domain>
   SMTP<< 550 Recipient not liked
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: response to "RCPT TO:<z@remote.domain>" from 127.0.0.1 [127.0.0.1] was: 550 Recipient not liked
 LOG: smtp_connection MAIN
@@ -107,6 +119,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 550-Recipient not liked on two lines
          550 Here's the second
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: response to "RCPT TO:<z@remote.domain>" from 127.0.0.1 [127.0.0.1] was: 550-Recipient not liked on two lines\n550 Here's the second
 LOG: smtp_connection MAIN
@@ -130,6 +144,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<abcd@x.y.z>
   SMTP<< 550 Not liked
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
 LOG: smtp_connection MAIN
@@ -145,6 +161,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<abcd@x.y.z>
   SMTP<< 550 Not liked
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
 LOG: smtp_connection MAIN
@@ -167,6 +185,8 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@localhost1>
   SMTP<< 250 OK
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: relay not permitted
 LOG: smtp_connection MAIN
@@ -189,10 +209,29 @@ Cutthrough cancelled by presence of postmaster verify
   SMTP>> RCPT TO:<postmaster@localhost1>
   SMTP<< 550 Don't like postmaster
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.5] U=root sender verify fail for <ok@localhost1>: response to "RCPT TO:<postmaster@localhost1>" from 127.0.0.1 [127.0.0.1] was: 550 Don't like postmaster
 LOG: MAIN REJECT
   H=[V4NET.0.0.5] U=root F=<ok@localhost1> rejected RCPT <z@remote.domain>: Sender verify failed
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+LOG: smtp_connection MAIN
+  SMTP connection from root
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250- wotcher
+         250-SIZE
+         250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@localhost1>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 LOG: smtp_connection MAIN
@@ -206,6 +245,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> RCPT TO:<z@remote.lmtp>
   SMTP<< 550 Recipient not liked
   SMTP>> QUIT
+  SMTP<< 250 OK
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.lmtp>: response to "RCPT TO:<z@remote.lmtp>" from 127.0.0.1 [127.0.0.1] was: 550 Recipient not liked
 LOG: smtp_connection MAIN
@@ -214,6 +255,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> QUIT
+  SMTP(close)>>
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root sender verify defer for <bad@localhost1>: response to "initial connection" from 127.0.0.1 [127.0.0.1] was: connection dropped
 LOG: MAIN REJECT

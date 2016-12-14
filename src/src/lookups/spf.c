@@ -13,6 +13,7 @@
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
  *
+ * Copyright (c) The Exim Maintainers 2016
  */
 
 #include "../exim.h"
@@ -51,7 +52,7 @@ spf_close(void *handle)
 }
 
 static int
-spf_find(void *handle, uschar *filename, uschar *keystring, int key_len,
+spf_find(void *handle, uschar *filename, const uschar *keystring, int key_len,
              uschar **result, uschar **errmsg, uint *do_cache)
 {
   SPF_server_t *spf_server = handle;

@@ -1,0 +1,219 @@
+# CHUNKING reception
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# plain, small message (no body)
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-CHUNKING
+??? 250 HELP
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88 last
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
+
+??? 250-
+??? 250
+quit
+??? 221
+****
+#
+# plain, small message (with body)
+# nonlast 1st bdat, noop, last-bdat(0)
+# immediate followon 2nd message
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 100
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyfull test message
+
+1234567890
+??? 250
+noop
+??? 250
+bdat 0 last
+??? 250-
+??? 250
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 10
+To: Susan@bdat 78 last
+??? 250
+random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
+
+??? 250-
+??? 250
+quit
+??? 221
+****
+#
+# not enough data in chunk
+#
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 89 last
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
+
+??? 421
+****
+#
+# protocol failure cases
+#
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
+
+??? 250
+bdat 0
+??? 504
+quit
+??? 221
+****
+#
+# followon EHLO and another message
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
+
+??? 250
+data
+??? 503
+RSET
+??? 250
+EHLO tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
+
+??? 250
+data
+??? 503
+data
+??? 503
+quit
+??? 221
+****
+#
+# plain, small message (no body)
+# pipelined
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-CHUNKING
+??? 250 HELP
+MAIL FROM:<someone@some.domain>\r\nRCPT TO:<CALLER@test.ex>\r\nBDAT 88 LAST\r\nTo: Susan@random.com\r\nFrom: Sam@random.com\r\nSubject: This is a bodyless test message\r\n
+??? 250
+??? 250
+??? 250-
+??? 250
+quit
+??? 221
+****
+#
+# plain, longer message (xple chunks), RCPT rejected
+# pipelined
+client 127.0.0.1 PORT_D
+??? 220
+EHLO tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-CHUNKING
+??? 250 HELP
+MAIL FROM:<someone@some.domain>\r\nRCPT TO:<dummy@reject.ex>\r\nBDAT 86\r\nTo: Susan@random.com\r\nFrom: Sal@random.com\r\nSubject: This is a bodyless test message\r\nBDAT 6 LAST\r\nZZ\r\n
+??? 250
+??? 550
+??? 503-
+??? 503-
+??? 503
+??? 503-
+??? 503-
+??? 503
+quit
+??? 221
+****
+#
+killdaemon
+no_msglog_check

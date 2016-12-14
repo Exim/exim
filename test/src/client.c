@@ -24,6 +24,7 @@ ripped from the openssl ocsp and s_client utilities. */
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
 
 #include <netdb.h>
 #include <arpa/inet.h>
@@ -165,40 +166,33 @@ sigalrm_seen = 1;
 /****************************************************************************/
 
 #ifdef HAVE_OPENSSL
+# ifndef DISABLE_OCSP
 
-X509_STORE *
-setup_verify(BIO *bp, char *CAfile, char *CApath)
+static STACK_OF(X509) *
+chain_from_pem_file(const uschar * file)
 {
-        X509_STORE *store;
-        X509_LOOKUP *lookup;
-        if(!(store = X509_STORE_new())) goto end;
-        lookup=X509_STORE_add_lookup(store,X509_LOOKUP_file());
-        if (lookup == NULL) goto end;
-        if (CAfile) {
-                if(!X509_LOOKUP_load_file(lookup,CAfile,X509_FILETYPE_PEM)) {
-                        BIO_printf(bp, "Error loading file %s\n", CAfile);
-                        goto end;
-                }
-        } else X509_LOOKUP_load_file(lookup,NULL,X509_FILETYPE_DEFAULT);
+BIO * bp;
+X509 * x;
+STACK_OF(X509) * sk;
 
-        lookup=X509_STORE_add_lookup(store,X509_LOOKUP_hash_dir());
-        if (lookup == NULL) goto end;
-        if (CApath) {
-                if(!X509_LOOKUP_add_dir(lookup,CApath,X509_FILETYPE_PEM)) {
-                        BIO_printf(bp, "Error loading directory %s\n", CApath);
-                        goto end;
-                }
-        } else X509_LOOKUP_add_dir(lookup,NULL,X509_FILETYPE_DEFAULT);
-
-        ERR_clear_error();
-        return store;
-        end:
-        X509_STORE_free(store);
-        return NULL;
+if (!(sk = sk_X509_new_null())) return NULL;
+if (!(bp = BIO_new_file(CS file, "r"))) return NULL;
+while ((x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
+  sk_X509_push(sk, x);
+BIO_free(bp);
+return sk;
 }
 
 
-#ifndef DISABLE_OCSP
+
+static void
+cert_stack_free(STACK_OF(X509) * sk)
+{
+while (sk_X509_num(sk) > 0) (void) sk_X509_pop(sk);
+sk_X509_free(sk);
+}
+
+
 static int
 tls_client_stapling_cb(SSL *s, void *arg)
 {
@@ -206,8 +200,7 @@ const unsigned char *p;
 int len;
 OCSP_RESPONSE *rsp;
 OCSP_BASICRESP *bs;
-char *CAfile = NULL;
-X509_STORE *store = NULL;
+STACK_OF(X509) * sk;
 int ret = 1;
 
 len = SSL_get_tlsext_status_ocsp_resp(s, &p);
@@ -229,15 +222,19 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
   return 0;
   }
 
-CAfile = ocsp_stapling;
-if(!(store = setup_verify(arg, CAfile, NULL)))
+
+if (!(sk = chain_from_pem_file(ocsp_stapling)))
   {
   BIO_printf(arg, "error in cert setup\n");
   return 0;
   }
 
-/* No file of alternate certs, no options */
-if(OCSP_basic_verify(bs, NULL, store, 0) <= 0)
+/* OCSP_basic_verify takes a "store" arg, but does not
+use it for the chain verification, which is all we do
+when OCSP_NOVERIFY is set.  The content from the wire
+(in "bs") and a cert-stack "sk" are all that is used. */
+
+if(OCSP_basic_verify(bs, sk, NULL, OCSP_NOVERIFY) <= 0)
   {
   BIO_printf(arg, "Response Verify Failure\n");
   ERR_print_errors(arg);
@@ -246,10 +243,10 @@ if(OCSP_basic_verify(bs, NULL, store, 0) <= 0)
 else
   BIO_printf(arg, "Response verify OK\n");
 
-X509_STORE_free(store);
+cert_stack_free(sk);
 return ret;
 }
-#endif
+# endif	/*DISABLE_OCSP*/
 
 
 /*************************************************
@@ -861,9 +858,13 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
 
   /* Expect incoming */
 
-  if (strncmp(CS outbuffer, "??? ", 4) == 0)
+  if (  strncmp(CS outbuffer, "???", 3) == 0
+     && (outbuffer[3] == ' ' || outbuffer[3] == '*')
+     )
     {
     unsigned char *lineptr;
+    unsigned exp_eof = outbuffer[3] == '*';
+
     printf("%s\n", outbuffer);
 
     if (*inptr == 0)   /* Refill input buffer */
@@ -885,15 +886,27 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
         }
 
       if (rc < 0)
-        {
+	{
         printf("Read error %s\n", strerror(errno));
-        exit(81)  ;
-        }
+        exit(81);
+	}
       else if (rc == 0)
+	if (exp_eof)
+	  {
+          printf("Expected EOF read\n");
+	  continue;
+	  }
+	else
+	  {
+	  printf("Enexpected EOF read\n");
+	  close(sock);
+	  exit(80);
+	  }
+      else if (exp_eof)
         {
-        printf("Unexpected EOF read\n");
+        printf("Expected EOF not read\n");
         close(sock);
-        exit(80);
+        exit(74);
         }
       else
         {
@@ -1117,6 +1130,8 @@ int rc;
   }
 
 printf("End of script\n");
+shutdown(sock, SHUT_WR);
+while ((rc = read(sock, inbuffer, sizeof(inbuffer))) > 0) ;
 close(sock);
 
 exit(0);

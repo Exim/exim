@@ -1,16 +1,13 @@
 # Exim test configuration 0314
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
+LOG_SELECTOR=
+
+.include DIR/aux-var/std_conf_prefix
+
 
 # ----- Main settings -----
 
-host_reject_connection = V4NET.0.0.1
+log_selector = LOG_SELECTOR
+host_reject_connection = 127.0.0.1
 
 # End

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #ifdef STAND_ALONE
@@ -833,9 +833,57 @@ os_get_dns_resolver_res(void)
 
 #endif /* OS_GET_DNS_RESOLVER_RES */
 
+/* ----------------------------------------------------------------------- */
+
+/***********************************************************
+*                 unsetenv()                               *
+***********************************************************/
+
+/* Most modern systems define int unsetenv(const char*),
+* some don't. */
+
+#if !defined(OS_UNSETENV)
+int
+os_unsetenv(const unsigned char * name)
+{
+return unsetenv((char *)name);
+}
+#endif
 
 /* ----------------------------------------------------------------------- */
 
+/***********************************************************
+*               getcwd()                                   *
+***********************************************************/
+
+/* Glibc allows getcwd(NULL, 0) to do auto-allocation. Some systems
+do auto-allocation, but need the size of the buffer, and others
+may not even do this. If the OS supports getcwd(NULL, 0) we'll use
+this, for all other systems we provide our own getcwd() */
+
+#if !defined(OS_GETCWD)
+unsigned char *
+os_getcwd(unsigned char * buffer, size_t size)
+{
+return (unsigned char *) getcwd((char *)buffer, size);
+}
+#else
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
+unsigned char *
+os_getcwd(unsigned char * buffer, size_t size)
+{
+char * b = (char *)buffer;
+
+if (!size) size = PATH_MAX;
+if (!b && !(b = malloc(size))) return NULL;
+if (!(b = getcwd(b, size))) return NULL;
+return realloc(b, strlen(b) + 1);
+}
+#endif
+
+/* ----------------------------------------------------------------------- */
 
 
 

@@ -2,15 +2,9 @@
 
 SERVER=
 
-exim_path = EXIM_PATH
-keep_environment =
-host_lookup_order = bydns
+.include DIR/aux-var/std_conf_prefix
+
 primary_hostname = myhost.test.ex
-spool_directory = DIR/spool
-log_file_path = DIR/spool/log/SERVER%slog
-gecos_pattern = ""
-gecos_name = CALLER_NAME
-tls_advertise_hosts =
 
 # ----- Main settings -----
 
@@ -38,7 +32,7 @@ check_recipient:
 
 begin routers
 
-.ifdef RT
+.ifdef OPT
 to_server:
   driver = manualroute
   transport = remote

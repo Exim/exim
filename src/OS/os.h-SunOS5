@@ -37,4 +37,10 @@ it seems. */
 #endif
 
 
+/* SunOS5 doesn't accept getcwd(NULL, 0) to auto-allocate
+a buffer */
+
+#define OS_GETCWD
+
+
 /* End */

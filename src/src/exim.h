@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -493,6 +493,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #include "dbstuff.h"
 #include "structs.h"
 #include "globals.h"
+#include "hash.h"
 #include "functions.h"
 #include "dbfunctions.h"
 #include "osfunctions.h"
@@ -550,10 +551,16 @@ union sockaddr_46 {
 };
 
 /* If SUPPORT_TLS is not defined, ensure that USE_GNUTLS is also not defined
-so that if USE_GNUTLS *is* set, we can assume SUPPORT_TLS is also set. */
+so that if USE_GNUTLS *is* set, we can assume SUPPORT_TLS is also set.
+Likewise, OSCP, AUTH_TLS and CERTNAMES cannot be supported. */
 
 #ifndef SUPPORT_TLS
 # undef USE_GNUTLS
+# ifndef DISABLE_OCSP
+#  define DISABLE_OCSP
+# endif
+# undef EXPERIMENTAL_CERTNAMES
+# undef AUTH_TLS
 #endif
 
 /* If SPOOL_DIRECTORY, LOG_FILE_PATH or PID_FILE_PATH have not been defined,
@@ -584,19 +591,9 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # endif
 #endif
 
-/* Ensure PATH_MAX is defined */
-
-#ifndef PATH_MAX
-  #ifdef MAXPATHLEN
-  # define PATH_MAX MAXPATHLEN
-  #else
-  # define PATH_MAX 1024
-  #endif
-#endif
-
 /* DANE w/o DNSSEC is useless */
 #if defined(EXPERIMENTAL_DANE) && defined(DISABLE_DNSSEC)
-  #undef DISABLE_DNSSEC
+# undef DISABLE_DNSSEC
 #endif
 
 #endif

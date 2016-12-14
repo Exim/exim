@@ -6,6 +6,66 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.88
+------------
+
+ 1. The new perl_taintmode option allows to run the embedded perl
+    interpreter in taint mode.
+
+ 2. New log_selector: dnssec, adds a "DS" tag to acceptance and delivery lines.
+
+ 3. Speculative debugging, via a "kill" option to the "control=debug" ACL
+    modifier.
+
+ 4. New expansion item ${sha3:<string>} / ${sha3_<N>:<string>}.
+    N can be 224, 256 (default), 384, 512.
+    With GnuTLS 3.5.0 or later, only.
+
+ 5. Facility for named queues:  A command-line argument can specify
+    the queue name for a queue operation, and an ACL modifier can set
+    the queue to be used for a message.  A $queue_name variable gives
+    visibility.
+
+ 6. New expansion operators base32/base32d.
+
+ 7. The CHUNKING ESMTP extension from RFC 3030.  May give some slight
+    performance increase and network load decrease.  Main config option
+    chunking_advertise_hosts, and smtp transport option hosts_try_chunking
+    for control.
+
+ 8. LMDB lookup support, as Experimental. Patch supplied by Andrew Colin Kissa.
+
+ 9. Expansion operator escape8bit, like escape but not touching newline etc..
+
+10. Feature macros, generated from compile options.  All start with "_HAVE_"
+    and go on with some roughly recognisable name.  Driver macros, for
+    router, transport and authentication drivers; names starting with "_DRIVER_".
+    Option macros, for each configuration-file option; all start with "_OPT_".
+    Use the "-bP macros" command-line option to see what is present.
+
+11. Integer values for options can take a "G" multiplier.
+
+12. defer=pass option for the ACL control cutthrough_delivery, to reflect 4xx
+    returns from the target back to the initiator, rather than spooling the
+    message.
+
+13. New built-in constants available for tls_dhparam and default changed.
+
+14. If built with EXPERIMENTAL_QUEUEFILE, a queuefile transport, for writing
+    out copies of the message spool files for use by 3rd-party scanners.
+
+15. A new option on the smtp transport, hosts_try_fastopen.  If the system
+    supports it (on Linux it must be enabled in the kernel by the sysadmin)
+    try to use RFC 7413 "TCP Fast Open".  No data is sent on the SYN segment
+    but it permits a peer that also supports the facility to send its SMTP
+    banner immediately after the SYN,ACK segment rather then waiting for
+    another ACK - so saving up to one roundtrip time.  Because it requires
+    previous communication with the peer (we save a cookie from it) this
+    will only become active on frequently-contacted destinations.
+
+16. A new syslog_pid option to suppress PID duplication in syslog lines.
+
+
 Version 4.87
 ------------
 
@@ -32,7 +92,7 @@ Version 4.87
     synonym of the latter).  Add support in base64 for certificates.
 
  8. New main configuration option "bounce_return_linesize_limit" to
-    avoid oversize bodies in bounces. The dafault value matches RFC
+    avoid oversize bodies in bounces. The default value matches RFC
     limits.
 
  9. New $initial_cwd expansion variable.
@@ -52,7 +112,7 @@ Version 4.86
 
  5. Assorted options on malware= and spam= scanners.
 
- 6. A commandline option to write a comment into the logfile.
+ 6. A command-line option to write a comment into the logfile.
 
  7. If built with EXPERIMENTAL_SOCKS feature enabled, the smtp transport can
     be configured to make connections via socks5 proxies.
@@ -80,7 +140,7 @@ Version 4.85
 ------------
 
  1. If built with EXPERIMENTAL_DANE feature enabled, Exim will follow the
-    DANE smtp draft to assess a secure chain of trust of the certificate
+    DANE SMTP draft to assess a secure chain of trust of the certificate
     used to establish the TLS connection based on a TLSA record in the
     domain of the sender.
 
@@ -269,14 +329,14 @@ Version 4.82
     "aaaa" and "a" lookups is done and the full set of results returned.
 
 14. New expansion variable $headers_added with content from ACL add_header
-    modifier (but not yet added to messsage).
+    modifier (but not yet added to message).
 
 15. New 8bitmime status logging option for received messages.  Log field "M8S".
 
 16. New authenticated_sender logging option, adding to log field "A".
 
 17. New expansion variables $router_name and $transport_name.  Useful
-    particularly for debug_print as -bt commandline option does not
+    particularly for debug_print as -bt command-line option does not
     require privilege whereas -d does.
 
 18. If built with EXPERIMENTAL_PRDR, per-recipient data responses per a
