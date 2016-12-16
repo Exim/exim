@@ -574,6 +574,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 			 (char *) dkim_signing_selector,
 			 (char *) dkim_private_key_expanded,
 			 PDKIM_ALGO_RSA_SHA256);
+  dkim_private_key_expanded[0] = '\0';
   pdkim_set_optional(ctx,
 		      (char *) dkim_sign_headers_expanded,
 		      NULL,
