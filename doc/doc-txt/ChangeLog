@@ -1,6 +1,13 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.86.3
+-------------------
+
+JH/01 SECURITY: Use proper copy of DATA command in error message.
+      Could leak key material.  Remotely exploitable.  CVE-2016-9963.
+      Cherry-picked from 4.87.1 by HS
+
 Exim version 4.86.2
 -------------------
 Portability relase of 4.86.1
