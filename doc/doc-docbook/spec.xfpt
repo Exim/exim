@@ -26812,7 +26812,7 @@ tls:
 .endd
 This accepts a client certificate that is verifiable against any
 of your configured trust-anchors
-which usually means the full set of public CAs)
+(which usually means the full set of public CAs)
 and which has a SAN with a good account name.
 Note that the client cert is on the wire in-clear, including the SAN,
 whereas a plaintext SMTP AUTH done inside TLS is not.
