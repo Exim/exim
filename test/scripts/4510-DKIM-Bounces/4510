@@ -1,0 +1,15 @@
+# DKIM signing and bounces
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# single header signed
+# one rcpt accept, one reject - should get a DSN
+exim -odf baduser@test.ex okuser@test.ex
+From: nobody@example.com
+From: second@example.com
+
+content
+****
+millisleep 500
+killdaemon

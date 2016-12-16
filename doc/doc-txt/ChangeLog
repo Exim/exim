@@ -143,6 +143,10 @@ HS/02 Bug 1802: Do not half-close the connection after sending a request
 HS/03 Use "auto" as the default EC curve parameter. For OpenSSL < 1.0.2
       fallback to "prime256v1".
 
+JH/34 SECURITY: Use proper copy of DATA command in error message.
+      Could leak key material.  Remotely explaoitable.  CVE-2016-9963.
+
+
 Exim version 4.87
 -----------------
 JH/01 Bug 1664: Disable OCSP for GnuTLS library versions at/before 3.3.16

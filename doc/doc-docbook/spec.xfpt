@@ -38273,6 +38273,7 @@ These options take (expandable) strings as arguments.
 MANDATORY:
 The domain you want to sign with. The result of this expanded
 option is put into the &%$dkim_domain%& expansion variable.
+If it is empty after expansion, DKIM signing is not done.
 
 .option dkim_selector smtp string&!! unset
 MANDATORY:
