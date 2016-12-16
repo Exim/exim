@@ -282,6 +282,7 @@ static uschar *rf_names[] = { "NEVER", "SUCCESS", "FAILURE", "DELAY" };
 static uschar *smtp_command;   /* Points to last cmd for error messages */
 static uschar *mail_command;   /* Points to MAIL cmd for error messages */
 static BOOL    update_waiting; /* TRUE to update the "wait" database */
+static uschar *data_command = US"";	/* Points to DATA cmd for error messages */
 
 
 /*************************************************
@@ -1951,6 +1952,7 @@ if (ok || (smtp_use_pipelining && !mua_wrapper))
     case -1: goto END_OFF;               /* Timeout on RCPT */
     default: goto RESPONSE_FAILED;       /* I/O error, or any MAIL/DATA error */
     }
+  data_command = string_copy(big_buffer);  /* Save for later error message */
   }
 
 /* Save the first address of the next batch. */
@@ -2136,7 +2138,7 @@ if (!ok) ok = TRUE; else
 #else
 	    "LMTP error after %s: %s",
 #endif
-            big_buffer, string_printing(buffer));
+            data_command, string_printing(buffer));
           setflag(addr, af_pass_message);   /* Allow message to go to user */
           if (buffer[0] == '5')
             addr->transport_return = FAIL;
