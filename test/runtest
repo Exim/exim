@@ -321,6 +321,7 @@ open(IN, "$file") || tests_exit(-1, "Failed to open $file: $!");
 my($is_log) = $file =~ /log/;
 my($is_stdout) = $file =~ /stdout/;
 my($is_stderr) = $file =~ /stderr/;
+my($is_mail) = $file =~ /mail/;
 
 # Date pattern
 
@@ -978,6 +979,21 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     next;
+    }
+
+  # ======== log ========
+
+  elsif ($is_log)
+    {
+    # Berkeley DB version differences
+    next if / Berkeley DB error: /;
+    }
+
+  elsif ($is_mail)
+    {
+    # Experimental_DSN info in bounces
+    next if /^Remote-MTA: /;
+    next if /^X-Exim-Diagnostic: /;
     }
 
   # ======== All files other than stderr ========

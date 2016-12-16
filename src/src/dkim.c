@@ -514,6 +514,7 @@ uschar *dkim_exim_sign(int dkim_fd,
                           (char *)dkim_signing_selector,
                           (char *)dkim_private_key_expanded
                          );
+    dkim_private_key_expanded[0] = '\0';
 
     pdkim_set_debug_stream(ctx,debug_file);
 
