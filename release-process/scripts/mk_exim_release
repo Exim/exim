@@ -378,9 +378,11 @@ sub create_tar_files {
 }
 
 # ------------------------------------------------------------------
-{
-    my $man;
-    my $help;
+MAIN: {
+
+    $0 =~ m|^(?:\./)?release-process/scripts/|
+    or die "$0: please call this script from the root of the Exim project sources\n";
+
     my $context = {
         pkgname     => 'exim',
         orig_dir    => File::Spec->curdir(),
@@ -400,28 +402,21 @@ sub create_tar_files {
     my $cleanup = 1;
     ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
 
-    unless (
-        GetOptions(
-            'directory=s'   => \$context->{directory},
-            'webgen_base=s' => \$context->{webgen_base},
-            'tar=s'         => \$context->{tar_cmd},
-            'make=s'        => \$context->{make_cmd},
-            'lzip!'         => \$context->{compressors}{lzip},
-            'verbose!'      => \$verbose,
-            'debug!'        => \$debug,
-            'help|?'        => \$help,
-            'man!'          => \$man,
-            'delete!'       => \$delete,
-            'cleanup!'      => \$cleanup,
-            'build-docs!'   => \$context->{build_docs},
-            'web!'          => \$context->{web},
-        )
-      )
-    {
-        pod2usage( -exitval => 1, -verbose => 0 );
-    }
-    pod2usage(0) if $help;
-    pod2usage( -verbose => 2 ) if $man;
+    GetOptions(
+        'directory=s'   => \$context->{directory},
+        'webgen_base=s' => \$context->{webgen_base},
+        'tar=s'         => \$context->{tar_cmd},
+        'make=s'        => \$context->{make_cmd},
+        'lzip!'         => \$context->{compressors}{lzip},
+        'verbose!'      => \$verbose,
+        'debug!'        => \$debug,
+        'help|?'        => sub { pod2usage(-verbose => 1, -exit => 0) },
+        'man!'          => sub { pod2usage(-verbose => 2, -exit => 0, -noperldoc => system('perldoc -V >/dev/null 2>&1')) },
+        'delete!'       => \$delete,
+        'cleanup!'      => \$cleanup,
+        'build-docs!'   => \$context->{build_docs},
+        'web!'          => \$context->{web},
+    ) and @ARGV == 1 or pod2usage;
 
     get_and_check_version( shift, $context );
     fix_paths_tar($context);
@@ -447,73 +442,82 @@ mk_exim_release - Build an exim release
 
 =head1 SYNOPSIS
 
-mk_exim_release [options] version
+ mk_exim_release [options] version
 
- Options:
-   --debug             force debug mode
-   --verbose           force verbose mode
-   --help              display this help and exits
-   --man               displays man page
-   --tar=cmd           command to use for tar
-   --make=cmd          command to use for make
-   --directory=dir     dir to package
-   --no-lzip           do not create .tar.lz files
-   --delete            Delete packaging directory at start
-   --no-web            skip the website generation
+=head1 DESCRIPTION
+
+B<mk_exim_release> builds an exim release.
+
+Starting in a populated git repo that has already been tagged for
+release it builds docs, packages etc.  Parameter is the version number
+to build as - ie 4.72 4.72RC1, 4.86.1, etc
+
+After creating the release files, they should be signed. There is another
+helper for creating the signatures:
+F<release-process/scripts/sign_exim_packages>.
+
+Call B<mk_exim_release> about like this:
+
+    release-process/scripts/mk_exim_release 4.99
+
 
 =head1 OPTIONS
 
 =over 4
 
-=item B<--debug>
+=item B<--[no]debug>
 
-Forces debug mode.
+Forces debug mode. (default: no debug info)
 
-=item B<--tar>
+=item B<--[no]delete>
 
-Use to override the path to the tar command; without this, will search for
-gtar, and if not found use tar.  Need GNU tar for lzip, unless --no-lzip is
-used.
+Delete a pre-existing package directory at start. (default: don't delete)
 
-=item B<--make>
+=item B<--directory> I<dir>
 
-Use to override the path/name of the make command.
-Useful sometimes to force gmake.
+Change the name of the package directory (default: F<< exim-packaging-<version> >>)
 
-=item B<--lzip>
+=item B<--[no]help>
 
-Build the lzip tarballs.
+Display short help and exit cleanly. (default: don't do that)
+
+=item B<--[no]lzip>
+
+Control the creation of B<lzip> tarballs. (default: do not use lzip)
+
+=item B<--make> I<cmd>
+
+Force the use of a specific C<make> command. This may be necessary if C<make> is not
+C<gmake> (default: C<make>)
+
+=item B<--[no]man>
+
+Display man page and exit cleanly. (default: don't do that)
+
+=item B<--tar> I<cmd>
+
+Use to override the path to the C<tar> command.  Need GNU tar in case
+I<lzip> is selected. (default: C<gtar>, if not found, use C<tar>)
+
+=item B<--[no]web>
+
+Control the creation of the website. For creation of the website, the F<../exim-website>
+directory must exist. (default: create the website)
 
 =item B<--verbose>
 
-Force verbose mode
-
-=item B<--help>
-
-Display help and exits
-
-=item B<--man>
-
-Display man page
+Force verbose mode. (default: no verbosity)
 
 =back
 
-=head1 DESCRIPTION
-
-Builds an exim release.
-
-Starting in a populated git repo that has already been tagged for
-release, build docs, build packages etc.
-
-Parameter is the version number to build as - ie 4.72 4.72RC1, 4.86.1, etc
-
 =head1 AUTHOR
 
-Nigel Metheringham <Nigel.Metheringham@dev.intechnology.co.uk>
+Nigel Metheringham <Nigel.Metheringham@dev.intechnology.co.uk>,
+some changes by Heiko Schlittermann <hs@schlittermann.de>
 
 =head1 COPYRIGHT
 
-Copyright 2010 Exim Maintainers. All rights reserved.
+Copyright 2010-2016 Exim Maintainers. All rights reserved.
 
 =cut
 # vim: set sw=4 et :
