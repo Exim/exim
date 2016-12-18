@@ -220,7 +220,7 @@ sub build_documentation {
       || croak "Doc build failed";
 
     copy_docbook_files($context);
-    build_html_documentation($context);
+    build_html_documentation($context) if $context->{web};
 }
 
 # ------------------------------------------------------------------
@@ -394,6 +394,7 @@ sub create_tar_files {
                 lzip    => 0,
         },
         build_docs   => 1,
+        web          => 1,
     };
     my $delete;
     my $cleanup = 1;
@@ -413,6 +414,7 @@ sub create_tar_files {
             'delete!'       => \$delete,
             'cleanup!'      => \$cleanup,
             'build-docs!'   => \$context->{build_docs},
+            'web!'          => \$context->{web},
         )
       )
     {
@@ -457,7 +459,7 @@ mk_exim_release.pl [options] version
    --directory=dir     dir to package
    --no-lzip           do not create .tar.lz files
    --delete            Delete packaging directory at start
-   --noweb             skip the website generation
+   --no-web            skip the website generation
 
 =head1 OPTIONS
 
