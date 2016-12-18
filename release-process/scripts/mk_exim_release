@@ -443,11 +443,11 @@ __END__
 
 =head1 NAME
 
-mk_exim_release.pl - Build an exim release
+mk_exim_release - Build an exim release
 
 =head1 SYNOPSIS
 
-mk_exim_release.pl [options] version
+mk_exim_release [options] version
 
  Options:
    --debug             force debug mode
