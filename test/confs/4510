@@ -24,7 +24,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
-acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
+acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: h=$dkim_headernames
 acl_smtp_data_prdr = accept local_parts = okuser
 
 prdr_enable
@@ -61,6 +61,7 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
+  hosts_try_prdr = *
   port = PORT_D
 
   dkim_domain =		${if def:sender_address_local_part {test.ex}}
