@@ -38,7 +38,7 @@ exim -qf
 exim -z "Test: reject connect"
 ****
 server PORT_S
-550 Go away
+550 Go away (A)
 QUIT
 250 OK
 ****
@@ -50,9 +50,9 @@ exim -z "Test: reject helo"
 server PORT_S
 220 Connected OK
 EHLO
-550 Go away
+550 Go away (B)
 HELO
-550 Go away
+550 Go away (C)
 QUIT
 250 OK
 ****

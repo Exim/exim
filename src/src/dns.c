@@ -349,8 +349,8 @@ trace = trace;
 
 if (reset != RESET_NEXT)
   {
-  TRACE debug_printf("%s: reset\n", __FUNCTION__);
   dnss->rrcount = ntohs(h->qdcount);
+  TRACE debug_printf("%s: reset (Q rrcount %d)\n", __FUNCTION__, dnss->rrcount);
   dnss->aptr = dnsa->answer + sizeof(HEADER);
 
   /* Skip over questions; failure to expand the name just gives up */
@@ -369,6 +369,7 @@ if (reset != RESET_NEXT)
   /* Get the number of answer records. */
 
   dnss->rrcount = ntohs(h->ancount);
+  TRACE debug_printf("%s: reset (A rrcount %d)\n", __FUNCTION__, dnss->rrcount);
 
   /* Skip over answers if we want to look at the authority section. Also skip
   the NS records (i.e. authority section) if wanting to look at the additional
@@ -378,6 +379,7 @@ if (reset != RESET_NEXT)
     {
     TRACE debug_printf("%s: additional\n", __FUNCTION__);
     dnss->rrcount += ntohs(h->nscount);
+    TRACE debug_printf("%s: reset (NS rrcount %d)\n", __FUNCTION__, dnss->rrcount);
     }
 
   if (reset == RESET_AUTHORITY || reset == RESET_ADDITIONAL)
@@ -400,6 +402,8 @@ if (reset != RESET_NEXT)
       }
     dnss->rrcount = reset == RESET_AUTHORITY
       ? ntohs(h->nscount) : ntohs(h->arcount);
+    TRACE debug_printf("%s: reset (%s rrcount %d)\n", __FUNCTION__,
+      reset == RESET_AUTHORITY ? "NS" : "AR", dnss->rrcount);
     }
   TRACE debug_printf("%s: %d RRs to read\n", __FUNCTION__, dnss->rrcount);
   }
@@ -443,8 +447,8 @@ for convenience so that the scans can use nice-looking for loops. */
 return &dnss->srr;
 
 null_return:
-  TRACE debug_printf("%s: terminate (%d RRs left). Last op: %s\n",
-    __FUNCTION__, dnss->rrcount, trace);
+  TRACE debug_printf("%s: terminate (%d RRs left). Last op: %s; errno %d %s\n",
+    __FUNCTION__, dnss->rrcount, trace, errno, strerror(errno));
   dnss->rrcount = 0;
   return NULL;
 }
@@ -727,7 +731,7 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
     }
 
   if (pcre_exec(regex_check_dns_names, NULL, CCS checkname, Ustrlen(checkname),
-      0, PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int)) < 0)
+      0, PCRE_EOPT, ovector, nelem(ovector)) < 0)
     {
     DEBUG(D_dns)
       debug_printf("DNS name syntax check failed: %s (%s)\n", name,
@@ -756,14 +760,14 @@ if ((type == T_A || type == T_AAAA) && string_is_ip_address(name, NULL) != 0)
 domains, and interfaces to a fake nameserver for certain special zones. */
 
 dnsa->answerlen = running_in_test_harness
-  ? fakens_search(name, type, dnsa->answer, MAXPACKET)
-  : res_search(CCS name, C_IN, type, dnsa->answer, MAXPACKET);
+  ? fakens_search(name, type, dnsa->answer, sizeof(dnsa->answer))
+  : res_search(CCS name, C_IN, type, dnsa->answer, sizeof(dnsa->answer));
 
-if (dnsa->answerlen > MAXPACKET)
+if (dnsa->answerlen > (int) sizeof(dnsa->answer))
   {
   DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) resulted in overlong packet (size %d), truncating to %d.\n",
-    name, dns_text_type(type), dnsa->answerlen, MAXPACKET);
-  dnsa->answerlen = MAXPACKET;
+    name, dns_text_type(type), dnsa->answerlen, sizeof(dnsa->answer));
+  dnsa->answerlen = sizeof(dnsa->answer);
   }
 
 if (dnsa->answerlen < 0) switch (h_errno)

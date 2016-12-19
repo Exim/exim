@@ -22,7 +22,7 @@ Connection request from [127.0.0.1]
 End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
-550 Go away
+550 Go away (A)
 QUIT
 250 OK
 End of script
@@ -30,9 +30,9 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Connected OK
 EHLO the.local.host.name
-550 Go away
+550 Go away (B)
 HELO the.local.host.name
-550 Go away
+550 Go away (C)
 QUIT
 250 OK
 End of script
