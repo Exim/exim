@@ -14793,7 +14793,7 @@ not used.
 .option event_action main string&!! unset
 .cindex events
 This option declares a string to be expanded for Exim's events mechanism.
-For details see &<<CHAPevents>>&.
+For details see chapter &<<CHAPevents>>&.
 
 
 .option exim_group main string "compile-time configured"
@@ -15144,7 +15144,7 @@ If the &%smtp_connection%& log selector is not set, this option has no effect.
 .option hosts_proxy main "host list&!!" unset
 .cindex proxy "proxy protocol"
 This option enables use of Proxy Protocol proxies for incoming
-connections.  For details see &<<SECTproxyInbound>>&.
+connections.  For details see section &<<SECTproxyInbound>>&.
 
 
 .option hosts_treat_as_local main "domain list&!!" unset
@@ -20918,7 +20918,7 @@ resent to other recipients.
 .option event_action transports string&!! unset
 .cindex events
 This option declares a string to be expanded for Exim's events mechanism.
-For details see &<<CHAPevents>>&.
+For details see chapter &<<CHAPevents>>&.
 
 
 .option group transports string&!! "Exim group"
@@ -23680,7 +23680,7 @@ of the message. Its value must not be zero. See also &%final_timeout%&.
 .option dkim_canon smtp string&!! unset
 .option dkim_strict smtp string&!! unset
 .option dkim_sign_headers smtp string&!! unset
-DKIM signing options.  For details see &<<SECDKIMSIGN>>&.
+DKIM signing options.  For details see section &<<SECDKIMSIGN>>&.
 
 
 .option delay_after_cutoff smtp boolean true
@@ -24190,7 +24190,7 @@ the use of the SIZE option altogether.
 .option socks_proxy smtp string&!! unset
 .cindex proxy SOCKS
 This option enables use of SOCKS proxies for connections made by the
-transport.  For details see &<<SECTproxySOCKS>>&.
+transport.  For details see section &<<SECTproxySOCKS>>&.
 
 
 .option tls_certificate smtp string&!! unset
@@ -29179,7 +29179,7 @@ that are being submitted at the same time using &%-bs%& or &%-bS%&.
 .vitem &*control&~=&~utf8_downconvert*&
 This control enables conversion of UTF-8 in message addresses
 to a-label form.
-For details see &<<SECTi18nMTA>>&.
+For details see section &<<SECTi18nMTA>>&.
 .endlist vlist
 
 
