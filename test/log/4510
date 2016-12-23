@@ -1,20 +1,13 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 ** baduser@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: PRDR error after DATA: 550 PRDR R=<baduser@test.ex> refusal
-1999-03-02 09:44:33 10HmaX-0005vi-00 => okuser@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] PRDR C="250 PRDR R=<okuser@test.ex> acceptance"
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER@myhost.test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => baduser@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> okuser@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmbA-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 b=1024 [verification succeeded]
-1999-03-02 09:44:33 10HmbA-0005vi-00 signer: test.ex bits: 1024 h=From
-1999-03-02 09:44:33 10HmbA-0005vi-00 PRDR R=<baduser@test.ex> refusal
-1999-03-02 09:44:33 10HmbA-0005vi-00 PRDR R=<okuser@test.ex> acceptance
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp PRDR S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <okuser@test.ex> R=server_dump
-1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaY-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=server_store T=store
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 [verification succeeded]
+1999-03-02 09:44:33 10HmaY-0005vi-00 signer: test.ex bits: h=From:From
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <okuser@test.ex> R=server_dump
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <baduser@test.ex> R=server_dump
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

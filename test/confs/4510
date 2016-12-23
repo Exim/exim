@@ -4,7 +4,6 @@ SERVER=
 OPT=
 
 exim_path = EXIM_PATH
-keep_environment =
 host_lookup_order = bydns
 spool_directory = DIR/spool
 
@@ -24,10 +23,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
-acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
-acl_smtp_data_prdr = accept local_parts = okuser
-
-prdr_enable
+acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: h=$dkim_headernames
 
 # ----- Routers
 
