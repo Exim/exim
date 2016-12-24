@@ -96,6 +96,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250 OK
+not using PIPELINING
+not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<>
 cmd buf flush ddd bytes
@@ -307,9 +309,9 @@ MUNGED: ::1 will be omitted in what follows
 >>> 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
 >>>   SMTP>> EHLO myhost.test.ex
 >>> cmd buf flush 21 bytes
->>> SMTP timeout
 >>>   SMTP(close)>>
+>>> SMTP timeout
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "mail"
-LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout
+LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] SMTP timeout after EHLO myhost.test.ex
 LOG: H=[1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout

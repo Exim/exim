@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify defer for <ok@localhost>: could not connect to 127.0.0.1 [127.0.0.1]: Connection refused
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify defer for <ok@localhost>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] could not connect: Connection refused
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<ok@localhost> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: response to "RCPT TO:<bad@localhost>" from 127.0.0.1 [127.0.0.1] was: 550 REJECTED
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed

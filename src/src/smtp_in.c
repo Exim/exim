@@ -2917,7 +2917,7 @@ we have not sent a response about it yet, do so now, as a preliminary line for
 failures, but not defers. However, always log it for defer, and log it for fail
 unless the sender_verify_fail log selector has been turned off. */
 
-if (sender_verified_failed != NULL &&
+if (sender_verified_failed &&
     !testflag(sender_verified_failed, af_sverify_told))
   {
   BOOL save_rcpt_in_progress = rcpt_in_progress;
@@ -2933,7 +2933,7 @@ if (sender_verified_failed != NULL &&
       (sender_verified_failed->message == NULL)? US"" :
       string_sprintf(": %s", sender_verified_failed->message));
 
-  if (rc == FAIL && sender_verified_failed->user_message != NULL)
+  if (rc == FAIL && sender_verified_failed->user_message)
     smtp_respond(smtp_code, codelen, FALSE, string_sprintf(
         testflag(sender_verified_failed, af_verify_pmfail)?
           "Postmaster verification failed while checking <%s>\n%s\n"

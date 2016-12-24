@@ -114,8 +114,11 @@ cmd buf flush ddd bytes
          250-8BITMIME
          250-PIPELINING
          250 HELP
+127.0.0.1 in hosts_avoid_pipelining? no (option unset)
+using PIPELINING
+not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<userx@domain.com>
@@ -326,8 +329,11 @@ considering: *}{:}}
   expanding: ${if eq {$address_data}{usery}{*}{:}}
      result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
+127.0.0.1 in hosts_avoid_pipelining? no (option unset)
+using PIPELINING
+not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
@@ -538,8 +544,11 @@ considering: *}{:}}
   expanding: ${if eq {$address_data}{usery}{*}{:}}
      result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
+127.0.0.1 in hosts_avoid_pipelining? no (option unset)
+using PIPELINING
+not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>

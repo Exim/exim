@@ -5,6 +5,13 @@
 /* Copyright (c) University of Cambridge 1995 - 2015 */
 /* See the file NOTICE for conditions of use and distribution. */
 
+#define DELIVER_BUFFER_SIZE 4096
+
+#define PENDING          256
+#define PENDING_DEFER   (PENDING + DEFER)
+#define PENDING_OK      (PENDING + OK)
+
+
 /* Private structure for the private options and other private data. */
 
 typedef struct {
@@ -81,6 +88,58 @@ typedef struct {
   struct ob_dkim dkim;
 #endif
 } smtp_transport_options_block;
+
+/* smtp connect context */
+typedef struct {
+  address_item *	addrlist;
+  host_item *		host;
+  int			host_af;
+  int			port;
+  uschar *		interface;
+
+  BOOL lmtp:1;
+  BOOL smtps:1;
+  BOOL ok:1;
+  BOOL send_rset:1;
+  BOOL send_quit:1;
+  BOOL setting_up:1;
+  BOOL esmtp:1;
+  BOOL esmtp_sent:1;
+  BOOL pending_MAIL:1;
+#ifndef DISABLE_PRDR
+  BOOL prdr_active:1;
+#endif
+#ifdef SUPPORT_I18N
+  BOOL utf8_needed:1;
+#endif
+  BOOL dsn_all_lasthop:1;
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+  BOOL dane:1;
+  BOOL dane_required:1;
+#endif
+
+  int		max_rcpt;
+
+  uschar	peer_offered;
+  uschar *	igquotstr;
+  uschar *	helo_data;
+#ifdef EXPERIMENTAL_DSN_INFO
+  uschar *	smtp_greeting;
+  uschar *	helo_response;
+#endif
+
+  smtp_inblock  inblock;
+  smtp_outblock outblock;
+  uschar	buffer[DELIVER_BUFFER_SIZE];
+  uschar	inbuffer[4096];
+  uschar	outbuffer[4096];
+
+  transport_instance *			tblock;
+  smtp_transport_options_block *	ob;
+} smtp_context;
+
+extern int smtp_setup_conn(smtp_context *, BOOL, BOOL);
+
 
 /* Data for reading the private options. */
 

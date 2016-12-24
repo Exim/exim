@@ -8,12 +8,6 @@
 #include "../exim.h"
 #include "smtp.h"
 
-#define PENDING          256
-#define PENDING_DEFER   (PENDING + DEFER)
-#define PENDING_OK      (PENDING + OK)
-
-#define DELIVER_BUFFER_SIZE 4096
-
 
 /* Options specific to the smtp transport. This transport also supports LMTP
 over TCP/IP. The options must be in alphabetic order (note that "_" comes
@@ -327,7 +321,7 @@ gid = gid;
 
 /* Pass back options if required. This interface is getting very messy. */
 
-if (tf != NULL)
+if (tf)
   {
   tf->interface = ob->interface;
   tf->port = ob->port;
@@ -346,11 +340,8 @@ host lists, provided that the local host wasn't present in the original host
 list. */
 
 if (!testflag(addrlist, af_local_host_removed))
-  {
-  for (; addrlist != NULL; addrlist = addrlist->next)
-    if (addrlist->fallback_hosts == NULL)
-      addrlist->fallback_hosts = ob->fallback_hostlist;
-  }
+  for (; addrlist; addrlist = addrlist->next)
+    if (!addrlist->fallback_hosts) addrlist->fallback_hosts = ob->fallback_hostlist;
 
 return OK;
 }
@@ -458,7 +449,7 @@ for (addr = addrlist; addr; addr = addr->next)
     {
     addr->basic_errno = errno_value;
     addr->more_errno |= orvalue;
-    if (msg != NULL)
+    if (msg)
       {
       addr->message = msg;
       if (pass_message) setflag(addr, af_pass_message);
@@ -610,7 +601,7 @@ if (*errno_value == 0 || *errno_value == ECONNRESET)
   {
   *errno_value = ERRNO_SMTPCLOSED;
   *message = US string_sprintf("Remote host closed connection "
-    "in response to %s%s",  pl, smtp_command);
+    "in response to %s%s", pl, smtp_command);
   }
 else *message = US string_sprintf("%s [%s]", host->name, host->address);
 
@@ -1471,61 +1462,9 @@ return OK;
 *       Make connection for given message        *
 *************************************************/
 
-typedef struct {
-  address_item *	addrlist;
-  host_item *		host;
-  int			host_af;
-  int			port;
-  uschar *		interface;
-
-  BOOL lmtp:1;
-  BOOL smtps:1;
-  BOOL ok:1;
-  BOOL send_rset:1;
-  BOOL send_quit:1;
-  BOOL setting_up:1;
-  BOOL esmtp:1;
-  BOOL esmtp_sent:1;
-  BOOL pending_MAIL:1;
-#ifndef DISABLE_PRDR
-  BOOL prdr_active:1;
-#endif
-#ifdef SUPPORT_I18N
-  BOOL utf8_needed:1;
-#endif
-  BOOL dsn_all_lasthop:1;
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
-  BOOL dane:1;
-  BOOL dane_required:1;
-#endif
-
-  int		max_rcpt;
-
-  uschar	peer_offered;
-  uschar *	igquotstr;
-  uschar *	helo_data;
-#ifdef EXPERIMENTAL_DSN_INFO
-  uschar *	smtp_greeting;
-  uschar *	helo_response;
-#endif
-
-  smtp_inblock  inblock;
-  smtp_outblock outblock;
-  uschar	buffer[DELIVER_BUFFER_SIZE];
-  uschar	inbuffer[4096];
-  uschar	outbuffer[4096];
-
-  transport_instance *			tblock;
-  smtp_transport_options_block *	ob;
-} smtp_context;
-
 /*
 Arguments:
   ctx		  connection context
-  message_defer   return set TRUE if yield is OK, but all addresses were deferred
-                    because of a non-recipient, non-host failure, that is, a
-                    4xx response to MAIL FROM, DATA, or ".". This is a defer
-                    that is specific to the message.
   suppress_tls    if TRUE, don't attempt a TLS connection - this is set for
                     a second attempt after TLS initialization fails
   verify	  TRUE if connection is for a verify callout, FALSE for
@@ -1541,8 +1480,7 @@ Returns:          OK    - the connection was made and the delivery attempted;
 			  to expand
 */
 int
-smtp_setup_conn(smtp_context * sx, BOOL * message_defer, BOOL suppress_tls,
-	BOOL verify)
+smtp_setup_conn(smtp_context * sx, BOOL suppress_tls, BOOL verify)
 {
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
 dns_answer tlsa_dnsa;
@@ -1554,7 +1492,7 @@ int save_errno;
 int yield = OK;
 int rc;
 
-sx->ob = (smtp_transport_options_block *)(sx->tblock->options_block);
+sx->ob = (smtp_transport_options_block *) sx->tblock->options_block;
 
 sx->lmtp = strcmpic(sx->ob->protocol, US"lmtp") == 0;
 sx->smtps = strcmpic(sx->ob->protocol, US"smtps") == 0;
@@ -1574,15 +1512,14 @@ sx->dane_required = verify_check_given_host(&sx->ob->hosts_require_dane, sx->hos
 #endif
 
 if ((sx->max_rcpt = sx->tblock->max_addresses) == 0) sx->max_rcpt = 999999;
-sx->helo_data = NULL;
 sx->peer_offered = 0;
 sx->igquotstr = US"";
+if (!sx->helo_data) sx->helo_data = sx->ob->helo_data;
 #ifdef EXPERIMENTAL_DSN_INFO
 sx->smtp_greeting = NULL;
 sx->helo_response = NULL;
 #endif
 
-*message_defer = FALSE;
 smtp_command = US"initial connection";
 sx->buffer[0] = '\0';
 
@@ -1615,7 +1552,8 @@ tls_out.ocsp = OCSP_NOT_REQ;
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of the transport.  Don't bother resetting
-afterward as we're in a subprocess. */
+afterward (when being used by a transport) as we're in a subprocess.
+For verify, unflipped once the callout is dealt with */
 
 tls_modify_variables(&tls_out);
 
@@ -1634,6 +1572,9 @@ specially so they can be identified for retries. */
 
 if (continue_hostname == NULL)
   {
+  if (verify)
+    HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", sx->interface, sx->port);
+
   /* This puts port into host->port */
   sx->inblock.sock = sx->outblock.sock =
     smtp_connect(sx->host, sx->host_af, sx->port, sx->interface,
@@ -1641,8 +1582,19 @@ if (continue_hostname == NULL)
 
   if (sx->inblock.sock < 0)
     {
-    set_errno_nohost(sx->addrlist, errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
-      NULL, DEFER, FALSE);
+    uschar * msg = NULL;
+    int save_errno = errno;
+    if (verify)
+      {
+      msg = strerror(errno);
+      HDEBUG(D_verify) debug_printf("connect: %s\n", msg);
+      }
+    set_errno_nohost(sx->addrlist,
+      save_errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : save_errno,
+      verify ? string_sprintf("could not connect: %s", msg)
+	     : NULL,
+      DEFER, FALSE);
+    sx->send_quit = FALSE;
     return DEFER;
     }
 
@@ -1684,18 +1636,26 @@ if (continue_hostname == NULL)
   sense if helo_data contains ${lookup dnsdb ...} stuff). The expansion is
   delayed till here so that $sending_interface and $sending_port are set. */
 
-  sx->helo_data = expand_string(sx->ob->helo_data);
+  if (sx->helo_data)
+    if (!(sx->helo_data = expand_string(sx->helo_data)))
+      if (verify)
+	log_write(0, LOG_MAIN|LOG_PANIC,
+	  "<%s>: failed to expand transport's helo_data value for callout: %s",
+	  sx->addrlist->address, expand_string_message);
+
 #ifdef SUPPORT_I18N
   if (sx->helo_data)
     {
-    uschar * errstr = NULL;
-    if ((sx->helo_data = string_domain_utf8_to_alabel(sx->helo_data, &errstr)), errstr)
-      {
-      errstr = string_sprintf("failed to expand helo_data: %s", errstr);
-      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE);
-      yield = DEFER;
-      goto SEND_QUIT;
-      }
+    expand_string_message = NULL;
+    if ((sx->helo_data = string_domain_utf8_to_alabel(sx->helo_data,
+					      &expand_string_message)),
+	expand_string_message)
+      if (verify)
+	log_write(0, LOG_MAIN|LOG_PANIC,
+	  "<%s>: failed to expand transport's helo_data value for callout: %s",
+	  sx->addrlist->address, expand_string_message);
+      else
+	sx->helo_data = NULL;
     }
 #endif
 
@@ -1892,6 +1852,7 @@ else
   sx->inblock.sock = sx->outblock.sock = fileno(stdin);
   smtp_command = big_buffer;
   sx->host->port = sx->port;    /* Record the port that was used */
+  sx->helo_data = NULL;		/* ensure we re-expand ob->helo_data */
   }
 
 /* If TLS is available on this connection, whether continued or not, attempt to
@@ -1905,7 +1866,10 @@ for error analysis. */
 #ifdef SUPPORT_TLS
 if (  smtp_peer_options & PEER_OFFERED_TLS
    && !suppress_tls
-   && verify_check_given_host(&sx->ob->hosts_avoid_tls, sx->host) != OK)
+   && verify_check_given_host(&sx->ob->hosts_avoid_tls, sx->host) != OK
+   && (  !verify
+      || verify_check_given_host(&sx->ob->hosts_verify_avoid_tls, sx->host) != OK
+   )  )
   {
   uschar buffer2[4096];
   if (smtp_write_command(&sx->outblock, FALSE, "STARTTLS\r\n") < 0)
@@ -2226,8 +2190,6 @@ SEND_QUIT:
 if (sx->send_quit)
   (void)smtp_write_command(&sx->outblock, FALSE, "QUIT\r\n");
 
-/*END_OFF:*/
-
 #ifdef SUPPORT_TLS
 tls_close(FALSE, TRUE);
 #endif
@@ -2249,8 +2211,10 @@ if (sx->send_quit)
   if (fcntl(sx->inblock.sock, F_SETFL, O_NONBLOCK) == 0)
     for (rc = 16; read(sx->inblock.sock, sx->inbuffer, sizeof(sx->inbuffer)) > 0 && rc > 0;)
       rc--;				/* drain socket */
+  sx->send_quit = FALSE;
   }
 (void)close(sx->inblock.sock);
+sx->inblock.sock = sx->outblock.sock = -1;
 
 #ifndef DISABLE_EVENT
 (void) event_raise(sx->tblock->event_action, US"tcp:close", NULL);
@@ -2468,18 +2432,20 @@ uschar *p;
 smtp_context sx;
 
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
+*message_defer = FALSE;
 
 sx.addrlist = addrlist;
 sx.host = host;
 sx.host_af = host_af,
 sx.port = port;
 sx.interface = interface;
+sx.helo_data = NULL;
 sx.tblock = tblock;
 
 /* Get the channel set up ready for a message (MAIL FROM being the next
 SMTP command to send */
 
-if ((rc = smtp_setup_conn(&sx, message_defer, suppress_tls, FALSE)) != OK)
+if ((rc = smtp_setup_conn(&sx, suppress_tls, FALSE)) != OK)
   return rc;
 
 /* If there is a filter command specified for this transport, we can now
@@ -3386,7 +3352,7 @@ void
 smtp_transport_closedown(transport_instance *tblock)
 {
 smtp_transport_options_block *ob =
-  (smtp_transport_options_block *)(tblock->options_block);
+  (smtp_transport_options_block *)tblock->options_block;
 smtp_inblock inblock;
 smtp_outblock outblock;
 uschar buffer[256];

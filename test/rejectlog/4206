@@ -1,6 +1,6 @@
-1999-03-02 09:44:33 U=CALLER sender verify fail for <userA@test.ex>: response to "EHLO the.local.host.name" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
+1999-03-02 09:44:33 U=CALLER sender verify fail for <userA@test.ex>: response to "EHLO" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
 1999-03-02 09:44:33 U=CALLER F=<userA@test.ex> rejected RCPT <user.यष्टिमधु@test.ex>: Sender verify failed
-1999-03-02 09:44:33 U=CALLER sender verify fail for <userB.જેઠીમધ@test.ex>: response to "EHLO the.local.host.name" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
+1999-03-02 09:44:33 U=CALLER sender verify fail for <userB.જેઠીમધ@test.ex>: response to "EHLO" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
 1999-03-02 09:44:33 U=CALLER F=<userB.જેઠીમધ@test.ex> rejected RCPT <user.ქართული@test.ex>: Sender verify failed
 
 ******** SERVER ********

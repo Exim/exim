@@ -171,7 +171,6 @@ dbdata_callout_cache new_domain_record;
 dbdata_callout_cache_address new_address_record;
 host_item *host;
 time_t callout_start_time;
-uschar peer_offered = 0;
 
 new_domain_record.result = ccache_unknown;
 new_domain_record.postmaster_result = ccache_unknown;
@@ -508,7 +507,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 		}
 	      }
 	    }
-	  break;
+	  break;	/* host_list */
 	  }
     if (!done)
       cancel_cutthrough_connection("incompatible connection");
@@ -519,26 +518,11 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
   for (host = host_list; host && !done; host = host->next)
     {
-    smtp_inblock inblock;
-    smtp_outblock outblock;
     int host_af;
     int port = 25;
-    BOOL send_quit = TRUE;
-    uschar *active_hostname = smtp_active_hostname;
-    BOOL lmtp;
-    BOOL smtps;
-    BOOL esmtp;
-    BOOL suppress_tls = FALSE;
     uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
-    BOOL dane = FALSE;
-    BOOL dane_required;
-    dns_answer tlsa_dnsa;
-#endif
-    uschar inbuffer[4096];
-    uschar outbuffer[1024];
+    smtp_context sx;
     uschar responsebuffer[4096];
-    uschar * size_str;
 
     clearflag(addr, af_verify_pmfail);  /* postmaster callout flag */
     clearflag(addr, af_verify_nsfail);  /* null sender callout flag */
@@ -583,403 +567,92 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
         addr->message);
 
-    /* Set HELO string according to the protocol */
-    lmtp= Ustrcmp(tf->protocol, "lmtp") == 0;
-    smtps= Ustrcmp(tf->protocol, "smtps") == 0;
+    sx.addrlist = addr;
+    sx.host = host;
+    sx.host_af = host_af,
+    sx.port = port;
+    sx.interface = interface;
+    sx.helo_data = tf->helo_data;
+    sx.tblock = addr->transport;
 
+tls_retry_connection:
+    /* Set the address state so that errors are recorded in it */
 
-    HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", interface, port);
+    addr->transport_return = PENDING_DEFER;
+    ob->connect_timeout = callout_connect;
+    ob->command_timeout = callout;
 
-    /* Set up the buffer for reading SMTP response packets. */
+    /* Get the channel set up ready for a message (MAIL FROM being the next
+    SMTP command to send.  If we tried TLS but it failed, try again without
+    if permitted */
 
-    inblock.buffer = inbuffer;
-    inblock.buffersize = sizeof(inbuffer);
-    inblock.ptr = inbuffer;
-    inblock.ptrend = inbuffer;
-
-    /* Set up the buffer for holding SMTP commands while pipelining */
-
-    outblock.buffer = outbuffer;
-    outblock.buffersize = sizeof(outbuffer);
-    outblock.ptr = outbuffer;
-    outblock.cmd_count = 0;
-    outblock.authenticating = FALSE;
-
-    /* Connect to the host; on failure, just loop for the next one, but we
-    set the error for the last one. Use the callout_connect timeout. */
-
-    tls_retry_connection:
-
-    /* Reset the parameters of a TLS session */
-    tls_out.cipher = tls_out.peerdn = tls_out.peercert = NULL;
-
-    inblock.sock = outblock.sock =
-      smtp_connect(host, host_af, port, interface, callout_connect,
-		  addr->transport);
-    if (inblock.sock < 0)
+    if (  (yield = smtp_setup_conn(&sx, FALSE, TRUE)) == DEFER
+       && addr->basic_errno == ERRNO_TLSFAILURE
+       && ob->tls_tempfail_tryclear
+       && verify_check_given_host(&ob->hosts_require_tls, host) != OK
+       )
       {
-      HDEBUG(D_verify) debug_printf("connect: %s\n", strerror(errno));
-      addr->message = string_sprintf("could not connect to %s [%s]: %s",
-          host->name, host->address, strerror(errno));
+      log_write(0, LOG_MAIN, "TLS session failure:"
+	" callout unencrypted to %s [%s] (not in hosts_require_tls)",
+	host->name, host->address);
+      yield = smtp_setup_conn(&sx, TRUE, TRUE);
+      }
+    if (yield != OK)
+      {
+      if (addr->message) addr->message = string_sprintf("%s [%s] %s",
+				      host->name, host->address, addr->message);
+      errno = addr->basic_errno;
       transport_name = NULL;
       deliver_host = deliver_host_address = NULL;
       deliver_domain = save_deliver_domain;
-      continue;
-      }
 
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
-      {
-      int rc;
+      /* Failure to accept HELO is cached; this blocks the whole domain for all
+      senders. I/O errors and defer responses are not cached. */
 
-      tls_out.dane_verified = FALSE;
-      tls_out.tlsa_usage = 0;
-
-      dane_required =
-	verify_check_given_host(&ob->hosts_require_dane, host) == OK;
-
-      if (host->dnssec == DS_YES)
+      if (yield == FAIL && (errno == 0 || errno == ERRNO_SMTPCLOSED))
 	{
-	if(  dane_required
-	  || verify_check_given_host(&ob->hosts_try_dane, host) == OK
-	  )
-	  {
-	  if ((rc = tlsa_lookup(host, &tlsa_dnsa, dane_required)) != OK)
-	    return rc;
-	  dane = TRUE;
-	  }
+	setflag(addr, af_verify_nsfail);
+	new_domain_record.result = ccache_reject;
+	done = TRUE;
 	}
-      else if (dane_required)
-	{
-	log_write(0, LOG_MAIN, "DANE error: %s lookup not DNSSEC", host->name);
-	return FAIL;
-	}
-
-      if (dane)
-	ob->tls_tempfail_tryclear = FALSE;
-      }
-#endif  /*DANE*/
-
-    /* Expand the helo_data string to find the host name to use. */
-
-    if (tf->helo_data)
-      {
-      uschar * s = expand_string(tf->helo_data);
-      if (!s)
-        log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: failed to expand transport's "
-          "helo_data value for callout: %s", addr->address,
-          expand_string_message);
-      else active_hostname = s;
-      }
-
-    /* Wait for initial response, and send HELO. The smtp_write_command()
-    function leaves its command in big_buffer. This is used in error responses.
-    Initialize it in case the connection is rejected. */
-
-    Ustrcpy(big_buffer, "initial connection");
-
-    /* Unless ssl-on-connect, wait for the initial greeting */
-    smtps_redo_greeting:
-
-#ifdef SUPPORT_TLS
-    if (!smtps || (smtps && tls_out.active >= 0))
-#endif
-      {
-#ifdef TCP_QUICKACK
-      (void) setsockopt(inblock.sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
-#endif
-      if (!(done= smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout)))
-        goto RESPONSE_FAILED;
-
-#ifndef DISABLE_EVENT
-      lookup_dnssec_authenticated = host->dnssec==DS_YES ? US"yes"
-	: host->dnssec==DS_NO ? US"no" : NULL;
-      if (event_raise(addr->transport->event_action,
-			    US"smtp:connect", responsebuffer))
-	{
-	lookup_dnssec_authenticated = NULL;
-	/* Logging?  Debug? */
-	goto RESPONSE_FAILED;
-	}
-      lookup_dnssec_authenticated = NULL;
-#endif
-      }
-
-    /* Not worth checking greeting line for ESMTP support */
-    if (!(esmtp = verify_check_given_host(&ob->hosts_avoid_esmtp, host) != OK))
-      DEBUG(D_transport)
-        debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
-
-    tls_redo_helo:
-
-#ifdef SUPPORT_TLS
-    if (smtps  &&  tls_out.active < 0)	/* ssl-on-connect, first pass */
-      {
-      peer_offered &= ~PEER_OFFERED_TLS;
-      ob->tls_tempfail_tryclear = FALSE;
-      }
-    else				/* all other cases */
-#endif
-
-      { esmtp_retry:
-
-      if (!(done= smtp_write_command(&outblock, FALSE, "%s %s\r\n",
-        !esmtp? "HELO" : lmtp? "LHLO" : "EHLO", active_hostname) >= 0))
-        goto SEND_FAILED;
-      if (!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout))
-        {
-	if (errno != 0 || responsebuffer[0] == 0 || lmtp || !esmtp || tls_out.active >= 0)
-	  {
-	  done= FALSE;
-	  goto RESPONSE_FAILED;
-	  }
-#ifdef SUPPORT_TLS
-	peer_offered &= ~PEER_OFFERED_TLS;
-#endif
-        esmtp = FALSE;
-        goto esmtp_retry;			/* fallback to HELO */
-        }
-
-      /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
-
-      peer_offered = esmtp
-	? ehlo_response(responsebuffer, sizeof(responsebuffer),
-		(!suppress_tls && tls_out.active < 0 ? PEER_OFFERED_TLS : 0)
-	      | 0	/* no IGNQ */
-	      | 0	/* no PRDR */
-#ifdef SUPPORT_I18N
-	      | (addr->prop.utf8_msg && !addr->prop.utf8_downcvt
-	        ? PEER_OFFERED_UTF8 : 0)
-#endif
-	      | 0	/* no DSN */
-	      | 0	/* no PIPE */
-
-	      /* only care about SIZE if we have size from inbound */
-	      | (message_size > 0 && ob->size_addition >= 0
-	        ? PEER_OFFERED_SIZE : 0)
-	    )
-	: 0;
-      }
-
-    size_str = options & vopt_is_recipient && peer_offered & PEER_OFFERED_SIZE
-      ? string_sprintf(" SIZE=%d", message_size + ob->size_addition) : US"";
-
-#ifdef SUPPORT_TLS
-    smtp_peer_options |= peer_offered & PEER_OFFERED_TLS;
-#endif
-
-    /* If TLS is available on this connection attempt to
-    start up a TLS session, unless the host is in hosts_avoid_tls. If successful,
-    send another EHLO - the server may give a different answer in secure mode. We
-    use a separate buffer for reading the response to STARTTLS so that if it is
-    negative, the original EHLO data is available for subsequent analysis, should
-    the client not be required to use TLS. If the response is bad, copy the buffer
-    for error analysis. */
-
-#ifdef SUPPORT_TLS
-    if (  peer_offered & PEER_OFFERED_TLS
-       && verify_check_given_host(&ob->hosts_avoid_tls, host) != OK
-       && verify_check_given_host(&ob->hosts_verify_avoid_tls, host) != OK
-       )
-      {
-      uschar buffer2[4096];
-      if (  !smtps
-         && !(done= smtp_write_command(&outblock, FALSE, "STARTTLS\r\n") >= 0))
-        goto SEND_FAILED;
-
-      /* If there is an I/O error, transmission of this message is deferred. If
-      there is a temporary rejection of STARRTLS and tls_tempfail_tryclear is
-      false, we also defer. However, if there is a temporary rejection of STARTTLS
-      and tls_tempfail_tryclear is true, or if there is an outright rejection of
-      STARTTLS, we carry on. This means we will try to send the message in clear,
-      unless the host is in hosts_require_tls (tested below). */
-
-      if (!smtps && !smtp_read_response(&inblock, buffer2, sizeof(buffer2), '2',
-  			ob->command_timeout))
-        {
-        if (  errno != 0
-	   || buffer2[0] == 0
-	   || buffer2[0] == '4' && !ob->tls_tempfail_tryclear
-	   )
-	  {
-	  Ustrncpy(responsebuffer, buffer2, sizeof(responsebuffer));
-	  done= FALSE;
-	  goto RESPONSE_FAILED;
-	  }
-        }
-
-       /* STARTTLS accepted or ssl-on-connect: try to negotiate a TLS session. */
       else
-        {
-	int oldtimeout = ob->command_timeout;
-	int rc;
-
-	ob->command_timeout = callout;
-        rc = tls_client_start(inblock.sock, host, addr, addr->transport
-# ifdef EXPERIMENTAL_DANE
-			    , dane ? &tlsa_dnsa : NULL
-# endif
-			    );
-	ob->command_timeout = oldtimeout;
-
-        /* TLS negotiation failed; give an error.  Try in clear on a new
-	connection, if the options permit it for this host. */
-        if (rc != OK)
-          {
-	  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
-	  (void)close(inblock.sock);
-# ifndef DISABLE_EVENT
-	  (void) event_raise(addr->transport->event_action,
-				  US"tcp:close", NULL);
-# endif
-	  if (  ob->tls_tempfail_tryclear
-	     && !smtps
-	     && verify_check_given_host(&ob->hosts_require_tls, host) != OK
-	     )
-	    {
-	    log_write(0, LOG_MAIN, "TLS session failure:"
-	      " callout unencrypted to %s [%s] (not in hosts_require_tls)",
-	      host->name, host->address);
-	    suppress_tls = TRUE;
-	    goto tls_retry_connection;
-	    }
-
-	  /*save_errno = ERRNO_TLSFAILURE;*/
-	  /*message = US"failure while setting up TLS session";*/
-	  send_quit = FALSE;
-	  done= FALSE;
-	  goto TLS_FAILED;
-	  }
-
-        /* TLS session is set up.  Copy info for logging. */
-        addr->cipher = tls_out.cipher;
-        addr->peerdn = tls_out.peerdn;
-
-        /* For SMTPS we need to wait for the initial OK response, then do HELO. */
-        if (smtps)
-	  goto smtps_redo_greeting;
-
-        /* For STARTTLS we need to redo EHLO */
-        goto tls_redo_helo;
-        }
+	done = FALSE;
+      goto no_conn;
       }
 
-    /* If the host is required to use a secure channel, ensure that we have one. */
-    if (tls_out.active < 0)
-      if (
-# ifdef EXPERIMENTAL_DANE
-	 dane ||
-# endif
-         verify_check_given_host(&ob->hosts_require_tls, host) == OK
-	 )
-        {
-        /*save_errno = ERRNO_TLSREQUIRED;*/
-        log_write(0, LOG_MAIN,
-	  "H=%s [%s]: a TLS session is required for this host, but %s",
-          host->name, host->address,
-	  peer_offered & PEER_OFFERED_TLS
-	  ? "an attempt to start TLS failed"
-	  : "the server did not offer TLS support");
-        done= FALSE;
-        goto TLS_FAILED;
-        }
+    /* If we needed to authenticate, smtp_setup_conn() did that.  Copy
+    the AUTH info for logging */
 
-#endif /*SUPPORT_TLS*/
-
-    done = TRUE; /* so far so good; have response to HELO */
-
-    /* For now, transport_filter by cutthrough-delivery is not supported */
-    /* Need proper integration with the proper transport mechanism. */
-    if (cutthrough.delivery)
-      {
-#ifndef DISABLE_DKIM
-      uschar * s;
-#endif
-      if (addr->transport->filter_command)
-        {
-        cutthrough.delivery = FALSE;
-        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
-        }
-#ifndef DISABLE_DKIM
-      else if ((s = ob->dkim.dkim_domain) && (s = expand_string(s)) && *s)
-        {
-        cutthrough.delivery = FALSE;
-        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
-        }
-#endif
-      }
-
-    SEND_FAILED:
-    RESPONSE_FAILED:
-    TLS_FAILED:
-    ;
-    /* Clear down of the TLS, SMTP and TCP layers on error is handled below.  */
-
-    /* Failure to accept HELO is cached; this blocks the whole domain for all
-    senders. I/O errors and defer responses are not cached. */
-
-    if (!done)
-      {
-      *failure_ptr = US"mail";     /* At or before MAIL */
-      if (errno == 0 && responsebuffer[0] == '5')
-        {
-        setflag(addr, af_verify_nsfail);
-        new_domain_record.result = ccache_reject;
-        }
-      }
-
-#ifdef SUPPORT_I18N
-    else if (  addr->prop.utf8_msg
-	    && !addr->prop.utf8_downcvt
-	    && !(peer_offered & PEER_OFFERED_UTF8)
-	    )
-      {
-      HDEBUG(D_acl|D_v) debug_printf("utf8 required but not offered\n");
-      errno = ERRNO_UTF8_FWD;
-      setflag(addr, af_verify_nsfail);
-      done = FALSE;
-      }
-    else if (  addr->prop.utf8_msg
-	    && (addr->prop.utf8_downcvt || !(peer_offered & PEER_OFFERED_UTF8))
-	    && !(setflag(addr, af_utf8_downcvt),
-	         from_address = string_address_utf8_to_alabel(from_address,
-				      &addr->message)
-	    )   )
-      {
-      errno = ERRNO_EXPANDFAIL;
-      setflag(addr, af_verify_nsfail);
-      done = FALSE;
-      }
-#endif
-
-    /* If we haven't authenticated, but are required to, give up. */
-    /* Try to AUTH */
-
-    else done = smtp_auth(responsebuffer, sizeof(responsebuffer),
-	addr, host, ob, esmtp, &inblock, &outblock) == OK  &&
-
-      		/* Copy AUTH info for logging */
-      ( (addr->authenticator = client_authenticator),
-        (addr->auth_id = client_authenticated_id),
+    addr->authenticator = client_authenticator;
+    addr->auth_id = client_authenticated_id;
 
     /* Build a mail-AUTH string (re-using responsebuffer for convenience */
-        !smtp_mail_auth_str(responsebuffer, sizeof(responsebuffer), addr, ob)
-      )  &&
 
-      ( (addr->auth_sndr = client_authenticated_sender),
+    done =
+	 !smtp_mail_auth_str(responsebuffer, sizeof(responsebuffer), addr, ob)
+      && (
+	  (addr->auth_sndr = client_authenticated_sender),
 
     /* Send the MAIL command */
-        (smtp_write_command(&outblock, FALSE,
-#ifdef SUPPORT_I18N
-	  addr->prop.utf8_msg && !addr->prop.utf8_downcvt
-	  ? "MAIL FROM:<%s>%s%s SMTPUTF8\r\n"
-	  :
-#endif
-	    "MAIL FROM:<%s>%s%s\r\n",
-          from_address, responsebuffer, size_str) >= 0)
-      )  &&
 
-      smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
-        '2', callout);
+	  (smtp_write_command(&sx.outblock, FALSE,
+#ifdef SUPPORT_I18N
+	    addr->prop.utf8_msg && !addr->prop.utf8_downcvt
+	    ? "MAIL FROM:<%s>%s%s SMTPUTF8\r\n"
+	    :
+#endif
+	      "MAIL FROM:<%s>%s%s\r\n",
+	    from_address,
+	    responsebuffer,
+	    options & vopt_is_recipient && sx.peer_offered & PEER_OFFERED_SIZE
+	    ? string_sprintf(" SIZE=%d", message_size + ob->size_addition)
+	    : US""
+
+	    ) >= 0)
+	 )
+
+      && smtp_read_response(&sx.inblock, responsebuffer, sizeof(responsebuffer),
+	  '2', callout);
 
     deliver_host = deliver_host_address = NULL;
     deliver_domain = save_deliver_domain;
@@ -1040,10 +713,10 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         {
         uschar randombuffer[1024];
         BOOL random_ok =
-          smtp_write_command(&outblock, FALSE,
+          smtp_write_command(&sx.outblock, FALSE,
             "RCPT TO:<%.1000s@%.1000s>\r\n", random_local_part,
             rcpt_domain) >= 0 &&
-          smtp_read_response(&inblock, randombuffer,
+          smtp_read_response(&sx.inblock, randombuffer,
             sizeof(randombuffer), '2', callout);
 
         /* Remember when we last did a random test */
@@ -1072,11 +745,11 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
             new_domain_record.random_result = ccache_reject;
 
           done =
-            smtp_write_command(&outblock, FALSE, "RSET\r\n") >= 0 &&
-            smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
+            smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0 &&
+            smtp_read_response(&sx.inblock, responsebuffer, sizeof(responsebuffer),
               '2', callout) &&
 
-            smtp_write_command(&outblock, FALSE,
+            smtp_write_command(&sx.outblock, FALSE,
 #ifdef SUPPORT_I18N
 	      addr->prop.utf8_msg && !addr->prop.utf8_downcvt
 	      ? "MAIL FROM:<%s> SMTPUTF8\r\n"
@@ -1084,7 +757,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #endif
 	        "MAIL FROM:<%s>\r\n",
               from_address) >= 0 &&
-            smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
+            smtp_read_response(&sx.inblock, responsebuffer, sizeof(responsebuffer),
               '2', callout);
 
 	  if (!done)
@@ -1096,7 +769,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 	    tls_close(FALSE, TRUE);
 #endif
 	    HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
-	    (void)close(inblock.sock);
+	    (void)close(sx.inblock.sock);
 #ifndef DISABLE_EVENT
 	    (void) event_raise(addr->transport->event_action,
 			      US"tcp:close", NULL);
@@ -1132,9 +805,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 #endif
 
         done =
-          smtp_write_command(&outblock, FALSE, "RCPT TO:<%.1000s>\r\n",
+          smtp_write_command(&sx.outblock, FALSE, "RCPT TO:<%.1000s>\r\n",
             rcpt) >= 0 &&
-          smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
+          smtp_read_response(&sx.inblock, responsebuffer, sizeof(responsebuffer),
             '2', callout);
 
         if (done)
@@ -1148,7 +821,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
         /* Do postmaster check if requested; if a full check is required, we
         check for RCPT TO:<postmaster> (no domain) in accordance with RFC 821. */
 
-        if (done && pm_mailfrom != NULL)
+        if (done && pm_mailfrom)
           {
           /* Could possibly shift before main verify, just above, and be ok
 	  for cutthrough.  But no way to handle a subsequent rcpt, so just
@@ -1157,21 +830,21 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
   	HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of postmaster verify\n");
 
           done =
-            smtp_write_command(&outblock, FALSE, "RSET\r\n") >= 0 &&
-            smtp_read_response(&inblock, responsebuffer,
+            smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0 &&
+            smtp_read_response(&sx.inblock, responsebuffer,
               sizeof(responsebuffer), '2', callout) &&
 
-            smtp_write_command(&outblock, FALSE,
+            smtp_write_command(&sx.outblock, FALSE,
               "MAIL FROM:<%s>\r\n", pm_mailfrom) >= 0 &&
-            smtp_read_response(&inblock, responsebuffer,
+            smtp_read_response(&sx.inblock, responsebuffer,
               sizeof(responsebuffer), '2', callout) &&
 
             /* First try using the current domain */
 
             ((
-            smtp_write_command(&outblock, FALSE,
+            smtp_write_command(&sx.outblock, FALSE,
               "RCPT TO:<postmaster@%.1000s>\r\n", rcpt_domain) >= 0 &&
-            smtp_read_response(&inblock, responsebuffer,
+            smtp_read_response(&sx.inblock, responsebuffer,
               sizeof(responsebuffer), '2', callout)
             )
 
@@ -1182,9 +855,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
             (
             (options & vopt_callout_fullpm) != 0 &&
-            smtp_write_command(&outblock, FALSE,
+            smtp_write_command(&sx.outblock, FALSE,
               "RCPT TO:<postmaster>\r\n") >= 0 &&
-            smtp_read_response(&inblock, responsebuffer,
+            smtp_read_response(&sx.inblock, responsebuffer,
               sizeof(responsebuffer), '2', callout)
             ));
 
@@ -1214,50 +887,55 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     don't give the IP address because this may be an internal host whose identity
     is not to be widely broadcast. */
 
-    if (!done)
+no_conn:
+    if (!done) switch(errno)
       {
-      if (errno == ETIMEDOUT)
-        {
-        HDEBUG(D_verify) debug_printf("SMTP timeout\n");
-        send_quit = FALSE;
-        }
+      case ETIMEDOUT:
+	HDEBUG(D_verify) debug_printf("SMTP timeout\n");
+	sx.send_quit = FALSE;
+	break;
+
 #ifdef SUPPORT_I18N
-      else if (errno == ERRNO_UTF8_FWD)
+      case ERRNO_UTF8_FWD:
 	{
 	extern int acl_where;	/* src/acl.c */
 	errno = 0;
 	addr->message = string_sprintf(
-	    "response to \"%s\" from %s [%s] did not include SMTPUTF8",
-            big_buffer, host->name, host->address);
-        addr->user_message = acl_where == ACL_WHERE_RCPT
-	  ? US"533 mailbox name not allowed"
+	    "response to \"EHLO\" from %s [%s] did not include SMTPUTF8",
+	    host->name, host->address);
+	addr->user_message = acl_where == ACL_WHERE_RCPT
+	  ? US"533 no support for internationalised mailbox name"
 	  : US"550 mailbox unavailable";
 	yield = FAIL;
 	done = TRUE;
 	}
+	break;
 #endif
-      else if (errno == 0)
-        {
-        if (*responsebuffer == 0) Ustrcpy(responsebuffer, US"connection dropped");
+      case ECONNREFUSED:
+	sx.send_quit = FALSE;
+	break;
 
-        addr->message =
-          string_sprintf("response to \"%s\" from %s [%s] was: %s",
-            big_buffer, host->name, host->address,
-            string_printing(responsebuffer));
+      case 0:
+	if (*responsebuffer == 0) Ustrcpy(responsebuffer, US"connection dropped");
 
-        addr->user_message = options & vopt_is_recipient
+	addr->message =
+	  string_sprintf("response to \"%s\" from %s [%s] was: %s",
+	    big_buffer, host->name, host->address,
+	    string_printing(responsebuffer));
+
+	addr->user_message = options & vopt_is_recipient
 	  ? string_sprintf("Callout verification failed:\n%s", responsebuffer)
-          : string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",
-            host->address, big_buffer, responsebuffer);
+	  : string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",
+	    host->address, big_buffer, responsebuffer);
 
-        /* Hard rejection ends the process */
+	/* Hard rejection ends the process */
 
-        if (responsebuffer[0] == '5')   /* Address rejected */
-          {
-          yield = FAIL;
-          done = TRUE;
-          }
-        }
+	if (responsebuffer[0] == '5')   /* Address rejected */
+	  {
+	  yield = FAIL;
+	  done = TRUE;
+	  }
+	break;
       }
 
     /* End the SMTP conversation and close the connection. */
@@ -1274,12 +952,12 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
        && !random_local_part
        && !pm_mailfrom
        && cutthrough.fd < 0
-       && !lmtp
+       && !sx.lmtp
        )
       {
       HDEBUG(D_acl|D_v) debug_printf("holding verify callout open for cutthrough delivery\n");
 
-      cutthrough.fd = outblock.sock;	/* We assume no buffer in use in the outblock */
+      cutthrough.fd = sx.outblock.sock;	/* We assume no buffer in use in the outblock */
       cutthrough.nrcpt = 1;
       cutthrough.interface = interface;
       cutthrough.host = *host;
@@ -1300,23 +978,27 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
       /* Ensure no cutthrough on multiple address verifies */
       if (options & vopt_callout_recipsender)
         cancel_cutthrough_connection("not usable for cutthrough");
-      if (send_quit)
+      if (sx.send_quit)
 	{
-	(void) smtp_write_command(&outblock, FALSE, "QUIT\r\n");
+	(void) smtp_write_command(&sx.outblock, FALSE, "QUIT\r\n");
 
 	/* Wait a short time for response, and discard it */
-	smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
+	smtp_read_response(&sx.inblock, responsebuffer, sizeof(responsebuffer),
 	  '2', 1);
 	}
 
+      if (sx.inblock.sock >= 0)
+	{
 #ifdef SUPPORT_TLS
-      tls_close(FALSE, TRUE);
+	tls_close(FALSE, TRUE);
 #endif
-      HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
-      (void)close(inblock.sock);
+	HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
+	(void)close(sx.inblock.sock);
+	sx.inblock.sock = sx.outblock.sock = -1;
 #ifndef DISABLE_EVENT
-      (void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
+	(void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
 #endif
+	}
       }
 
     }    /* Loop through all hosts, while !done */
@@ -1388,8 +1070,8 @@ else   /* !done */
     options & vopt_is_recipient ? "recipient" : "sender");
   yield = DEFER;
 
-  if (host_list->next || !addr->message)
-    addr->message = dullmsg;
+  addr->message = host_list->next || !addr->message
+    ? dullmsg : string_sprintf("%s: %s", dullmsg, addr->message);
 
   addr->user_message = smtp_return_error_details
     ? string_sprintf("%s for <%s>.\n"
@@ -1412,6 +1094,7 @@ else   /* !done */
 
 END_CALLOUT:
 if (dbm_file) dbfn_close(dbm_file);
+tls_modify_variables(&tls_in);
 return yield;
 }
 
