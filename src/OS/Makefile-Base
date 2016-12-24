@@ -645,7 +645,7 @@ tls.o:           $(HDRS) tls.c \
 tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
-verify.o:        $(HDRS) verify.c
+verify.o:        $(HDRS) transports/smtp.h verify.c
 dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
 
 # Dependencies for WITH_CONTENT_SCAN modules

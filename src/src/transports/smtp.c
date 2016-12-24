@@ -2262,6 +2262,143 @@ return yield;
 }
 
 
+
+
+/* Create the string of options that will be appended to the MAIL FROM:
+in the connection context buffer */
+
+static int
+build_mailcmd_options(smtp_context * sx, address_item * addrlist)
+{
+uschar * p = sx->buffer;
+address_item * addr;
+int address_count;
+
+*p = 0;
+
+/* If we know the receiving MTA supports the SIZE qualification,
+send it, adding something to the message size to allow for imprecision
+and things that get added en route. Exim keeps the number of lines
+in a message, so we can give an accurate value for the original message, but we
+need some additional to handle added headers. (Double "." characters don't get
+included in the count.) */
+
+if (sx->peer_offered & PEER_OFFERED_SIZE)
+  {
+  sprintf(CS p, " SIZE=%d", message_size+message_linecount+sx->ob->size_addition);
+  while (*p) p++;
+  }
+
+#ifndef DISABLE_PRDR
+/* If it supports Per-Recipient Data Reponses, and we have omre than one recipient,
+request that */
+
+sx->prdr_active = FALSE;
+if (sx->peer_offered & PEER_OFFERED_PRDR)
+  for (addr = addrlist; addr; addr = addr->next)
+    if (addr->transport_return == PENDING_DEFER)
+      {
+      for (addr = addr->next; addr; addr = addr->next)
+        if (addr->transport_return == PENDING_DEFER)
+	  {			/* at least two recipients to send */
+	  sx->prdr_active = TRUE;
+	  sprintf(CS p, " PRDR"); p += 5;
+	  break;
+	  }
+      break;
+      }
+#endif
+
+#ifdef SUPPORT_I18N
+/* If it supports internationalised messages, and this meesage need that,
+request it */
+
+if (  sx->peer_offered & PEER_OFFERED_UTF8
+   && addrlist->prop.utf8_msg
+   && !addrlist->prop.utf8_downcvt
+   )
+  Ustrcpy(p, " SMTPUTF8"), p += 9;
+#endif
+
+/* check if all addresses have DSN-lasthop flag; do not send RET and ENVID if so */
+for (sx->dsn_all_lasthop = TRUE, addr = addrlist, address_count = 0;
+     addr && address_count < sx->max_rcpt;
+     addr = addr->next) if (addr->transport_return == PENDING_DEFER)
+  {
+  address_count++;
+  if (!(addr->dsn_flags & rf_dsnlasthop))
+    {
+    sx->dsn_all_lasthop = FALSE;
+    break;
+    }
+  }
+
+/* Add any DSN flags to the mail command */
+
+if (sx->peer_offered & PEER_OFFERED_DSN && !sx->dsn_all_lasthop)
+  {
+  if (dsn_ret == dsn_ret_hdrs)
+    { Ustrcpy(p, " RET=HDRS"); p += 9; }
+  else if (dsn_ret == dsn_ret_full)
+    { Ustrcpy(p, " RET=FULL"); p += 9; }
+
+  if (dsn_envid)
+    {
+    string_format(p, sizeof(sx->buffer) - (p-sx->buffer), " ENVID=%s", dsn_envid);
+    while (*p) p++;
+    }
+  }
+
+/* If an authenticated_sender override has been specified for this transport
+instance, expand it. If the expansion is forced to fail, and there was already
+an authenticated_sender for this message, the original value will be used.
+Other expansion failures are serious. An empty result is ignored, but there is
+otherwise no check - this feature is expected to be used with LMTP and other
+cases where non-standard addresses (e.g. without domains) might be required. */
+
+if (smtp_mail_auth_str(p, sizeof(sx->buffer) - (p-sx->buffer), addrlist, sx->ob))
+  return ERROR;
+
+return OK;
+}
+
+
+static void
+build_rcptcmd_options(smtp_context * sx, const address_item * addr)
+{
+uschar * p = sx->buffer;
+*p = 0;
+
+/* Add any DSN flags to the rcpt command */
+
+if (sx->peer_offered & PEER_OFFERED_DSN && !(addr->dsn_flags & rf_dsnlasthop))
+  {
+  if (addr->dsn_flags & rf_dsnflags)
+    {
+    int i;
+    BOOL first = TRUE;
+
+    Ustrcpy(p, " NOTIFY=");
+    while (*p) p++;
+    for (i = 0; i < nelem(rf_list); i++) if (addr->dsn_flags & rf_list[i])
+      {
+      if (!first) *p++ = ',';
+      first = FALSE;
+      Ustrcpy(p, rf_names[i]);
+      while (*p) p++;
+      }
+    }
+
+  if (addr->dsn_orcpt)
+    {
+    string_format(p, sizeof(sx->buffer) - (p-sx->buffer), " ORCPT=%s",
+      addr->dsn_orcpt);
+    while (*p) p++;
+    }
+  }
+}
+
+
 /*************************************************
 *       Deliver address list to given host       *
 *************************************************/
@@ -2339,6 +2476,9 @@ sx.port = port;
 sx.interface = interface;
 sx.tblock = tblock;
 
+/* Get the channel set up ready for a message (MAIL FROM being the next
+SMTP command to send */
+
 if ((rc = smtp_setup_conn(&sx, message_defer, suppress_tls, FALSE)) != OK)
   return rc;
 
@@ -2392,84 +2532,9 @@ sx.send_rset = TRUE;
 completed_address = FALSE;
 
 
-/* Initiate a message transfer. If we know the receiving MTA supports the SIZE
-qualification, send it, adding something to the message size to allow for
-imprecision and things that get added en route. Exim keeps the number of lines
-in a message, so we can give an accurate value for the original message, but we
-need some additional to handle added headers. (Double "." characters don't get
-included in the count.) */
+/* Initiate a message transfer. */
 
-p = sx.buffer;
-*p = 0;
-
-if (sx.peer_offered & PEER_OFFERED_SIZE)
-  {
-  sprintf(CS p, " SIZE=%d", message_size+message_linecount+sx.ob->size_addition);
-  while (*p) p++;
-  }
-
-#ifndef DISABLE_PRDR
-sx.prdr_active = FALSE;
-if (sx.peer_offered & PEER_OFFERED_PRDR)
-  for (addr = first_addr; addr; addr = addr->next)
-    if (addr->transport_return == PENDING_DEFER)
-      {
-      for (addr = addr->next; addr; addr = addr->next)
-        if (addr->transport_return == PENDING_DEFER)
-	  {			/* at least two recipients to send */
-	  sx.prdr_active = TRUE;
-	  sprintf(CS p, " PRDR"); p += 5;
-	  break;
-	  }
-      break;
-      }
-#endif
-
-#ifdef SUPPORT_I18N
-if (  addrlist->prop.utf8_msg
-   && !addrlist->prop.utf8_downcvt
-   && sx.peer_offered & PEER_OFFERED_UTF8
-   )
-  sprintf(CS p, " SMTPUTF8"), p += 9;
-#endif
-
-/* check if all addresses have lasthop flag; do not send RET and ENVID if so */
-for (sx.dsn_all_lasthop = TRUE, addr = first_addr, address_count = 0;
-     addr && address_count < sx.max_rcpt;
-     addr = addr->next) if (addr->transport_return == PENDING_DEFER)
-  {
-  address_count++;
-  if (!(addr->dsn_flags & rf_dsnlasthop))
-    {
-    sx.dsn_all_lasthop = FALSE;
-    break;
-    }
-  }
-
-/* Add any DSN flags to the mail command */
-
-if (sx.peer_offered & PEER_OFFERED_DSN && !sx.dsn_all_lasthop)
-  {
-  if (dsn_ret == dsn_ret_hdrs)
-    { Ustrcpy(p, " RET=HDRS"); p += 9; }
-  else if (dsn_ret == dsn_ret_full)
-    { Ustrcpy(p, " RET=FULL"); p += 9; }
-
-  if (dsn_envid)
-    {
-    string_format(p, sizeof(sx.buffer) - (p-sx.buffer), " ENVID=%s", dsn_envid);
-    while (*p) p++;
-    }
-  }
-
-/* If an authenticated_sender override has been specified for this transport
-instance, expand it. If the expansion is forced to fail, and there was already
-an authenticated_sender for this message, the original value will be used.
-Other expansion failures are serious. An empty result is ignored, but there is
-otherwise no check - this feature is expected to be used with LMTP and other
-cases where non-standard addresses (e.g. without domains) might be required. */
-
-if (smtp_mail_auth_str(p, sizeof(sx.buffer) - (p-sx.buffer), addrlist, sx.ob))
+if (build_mailcmd_options(&sx, first_addr) != OK)
   {
   yield = ERROR;
   goto SEND_QUIT;
@@ -2559,36 +2624,7 @@ for (addr = first_addr, address_count = 0;
   address_count++;
   no_flush = pipelining_active && (!mua_wrapper || addr->next);
 
-  /* Add any DSN flags to the rcpt command and add to the sent string */
-
-  p = sx.buffer;
-  *p = 0;
-
-  if (sx.peer_offered & PEER_OFFERED_DSN && !(addr->dsn_flags & rf_dsnlasthop))
-    {
-    if (addr->dsn_flags & rf_dsnflags)
-      {
-      int i;
-      BOOL first = TRUE;
-      Ustrcpy(p, " NOTIFY=");
-      while (*p) p++;
-      for (i = 0; i < 4; i++)
-        if ((addr->dsn_flags & rf_list[i]) != 0)
-          {
-          if (!first) *p++ = ',';
-          first = FALSE;
-          Ustrcpy(p, rf_names[i]);
-          while (*p) p++;
-          }
-      }
-
-    if (addr->dsn_orcpt)
-      {
-      string_format(p, sizeof(sx.buffer) - (p-sx.buffer), " ORCPT=%s",
-        addr->dsn_orcpt);
-      while (*p) p++;
-      }
-    }
+  build_rcptcmd_options(&sx, addr);
 
   /* Now send the RCPT command, and process outstanding responses when
   necessary. After a timeout on RCPT, we just end the function, leaving the
@@ -2634,6 +2670,9 @@ for (addr = first_addr, address_count = 0;
     sx.pending_MAIL = FALSE;            /* Dealt with MAIL */
     }
   }      /* Loop for next address */
+
+/*XXX potential break point for verify-callouts here.  The MAIL and
+RCPT handling is relevant there */
 
 /* If we are an MUA wrapper, abort if any RCPTs were rejected, either
 permanently or temporarily. We should have flushed and synced after the last
@@ -2991,20 +3030,20 @@ else
 	/* Update the journal, or setup retry. */
         for (addr = addrlist; addr != first_addr; addr = addr->next)
 	  if (addr->transport_return == OK)
-	  {
-          if (testflag(addr, af_homonym))
-            sprintf(CS sx.buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
-          else
-            sprintf(CS sx.buffer, "%.500s\n", addr->unique);
+	    {
+	    if (testflag(addr, af_homonym))
+	      sprintf(CS sx.buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
+	    else
+	      sprintf(CS sx.buffer, "%.500s\n", addr->unique);
 
-          DEBUG(D_deliver) debug_printf("journalling(PRDR) %s\n", sx.buffer);
-          len = Ustrlen(CS sx.buffer);
-          if (write(journal_fd, sx.buffer, len) != len)
-            log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
-              "%s: %s", sx.buffer, strerror(errno));
-	  }
-	else if (addr->transport_return == DEFER)
-          retry_add_item(addr, addr->address_retry_key, -2);
+	    DEBUG(D_deliver) debug_printf("journalling(PRDR) %s\n", sx.buffer);
+	    len = Ustrlen(CS sx.buffer);
+	    if (write(journal_fd, sx.buffer, len) != len)
+	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
+		"%s: %s", sx.buffer, strerror(errno));
+	    }
+	  else if (addr->transport_return == DEFER)
+	    retry_add_item(addr, addr->address_retry_key, -2);
 	}
 #endif
 
@@ -3049,32 +3088,12 @@ if (!sx.ok)
     goto FAILED;
     }
 
-  /* This label is jumped to directly when a TLS negotiation has failed,
-  or was not done for a host for which it is required. Values will be set
-  in message and save_errno, and setting_up will always be true. Treat as
-  a temporary error. */
-
-#ifdef SUPPORT_TLS
-  TLS_FAILED:
-  code = '4';
-#endif
-
-  /* If the failure happened while setting up the call, see if the failure was
-  a 5xx response (this will either be on connection, or following HELO - a 5xx
-  after EHLO causes it to try HELO). If so, fail all addresses, as this host is
-  never going to accept them. For other errors during setting up (timeouts or
-  whatever), defer all addresses, and yield DEFER, so that the host is not
-  tried again for a while. */
-
   FAILED:
-  sx.ok = FALSE;                /* For when reached by GOTO */
-  set_message = message;
+    {
+    BOOL message_error;
 
-  if (sx.setting_up)
-    if (code == '5')
-      set_rc = FAIL;
-    else
-      yield = set_rc = DEFER;
+    sx.ok = FALSE;                /* For when reached by GOTO */
+    set_message = message;
 
   /* We want to handle timeouts after MAIL or "." and loss of connection after
   "." specially. They can indicate a problem with the sender address or with
@@ -3082,17 +3101,8 @@ if (!sx.ok)
   cases are treated in the same way as a 4xx response. This next bit of code
   does the classification. */
 
-  else
-    {
-    BOOL message_error;
-
     switch(save_errno)
       {
-#ifdef SUPPORT_I18N
-      case ERRNO_UTF8_FWD:
-        code = '5';
-      /*FALLTHROUGH*/
-#endif
       case 0:
       case ERRNO_MAIL4XX:
       case ERRNO_DATA4XX:
