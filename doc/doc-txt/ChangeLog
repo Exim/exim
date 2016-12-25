@@ -4,6 +4,10 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.89
+-----------------
+
+
 Exim version 4.88
 -----------------
 JH/01 Use SIZE on MAIL FROM in a cutthrough connection, if the destination
