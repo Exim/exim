@@ -4474,7 +4474,7 @@ The name should not contain a &'/'& character.
 For a periodic queue run (see below)
 append to the name a slash and a time value.
 
-If other commandline options speicify an action, a &'-qG<name>'& option
+If other commandline options specify an action, a &'-qG<name>'& option
 will specify a queue to operate on.
 For example:
 .code
@@ -23260,7 +23260,7 @@ message_suffix =
 &`\n`& to &`\r\n`& in &%message_suffix%&.
 
 
-.option path pipe string&!! "bin:/usr/bin"
+.option path pipe string&!! "/bin:/usr/bin"
 .new
 This option is expanded and
 .wen
