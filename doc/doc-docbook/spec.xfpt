@@ -9417,12 +9417,19 @@ message, and any that are added by an ACL statement or by a system
 filter. Header lines that are added to a particular copy of a message by a
 router or transport are not accessible.
 
-For incoming SMTP messages, no header lines are visible in ACLs that are obeyed
-before the DATA ACL, because the header structure is not set up until the
-message is received. Header lines that are added in a RCPT ACL (for example)
+For incoming SMTP messages, no header lines are visible in
+.new
+ACLs that are obeyed before the data phase completes,
+.wen
+because the header structure is not set up until the message is received.
+They are visible in DKIM, PRDR and DATA ACLs.
+Header lines that are added in a RCPT ACL (for example)
 are saved until the message's incoming header lines are available, at which
-point they are added. When a DATA ACL is running, however, header lines added
-by earlier ACLs are visible.
+point they are added.
+.new
+When any of the above ACLs ar
+.wen
+running, however, header lines added by earlier ACLs are visible.
 
 Upper case and lower case letters are synonymous in header names. If the
 following character is white space, the terminating colon may be omitted, but
