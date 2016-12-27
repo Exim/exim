@@ -1178,6 +1178,7 @@ for (;;)
         int offset = 0;
         int size = 0;
         ss = string_append(NULL, &size, &offset, 3, config_directory, "/", ss);
+        ss[offset] = '\0';  /* string_append() does not zero terminate the string! */
         }
 
     if (include_if_exists != 0 && (Ustat(ss, &statbuf) != 0)) continue;
