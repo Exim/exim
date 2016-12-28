@@ -8,5 +8,5 @@ exim -DOPT -bP receive_timeout
 exim '-D OPT = receive_timeout = 4s ' -bP receive_timeout
 ****
 1
-exim -DINC='.include non/absolute' -bP receive_timeout
+exim -DINC='.include_if_exists non/absolute' -bP receive_timeout
 ****
