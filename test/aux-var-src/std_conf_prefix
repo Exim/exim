@@ -1,2 +1,3 @@
 .include DIR/aux-var/tls_conf_prefix
 tls_advertise_hosts =
+keep_environment = PATH
