@@ -1,3 +1,4 @@
+keep_environment = PATH
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 spool_directory = DIR/spool
