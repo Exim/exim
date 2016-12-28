@@ -23,7 +23,8 @@ QUIT
 250 OK
 ****
 exim -odi userx@test.ex usery@test.ex
-This is a test message.
+
+1:This is a test message.
 ****
 # This one has a retry time, so will be deferred.
 #
@@ -44,7 +45,8 @@ QUIT
 250 OK
 ****
 exim -odi userx@retry.test.ex
-This is a test message.
+
+2: This is a test message.
 ****
 sleep 1
 # Should by now have exceeded retry time.
@@ -81,6 +83,7 @@ QUIT
 250 OK
 ****
 exim -odi userx@test.ex
-This is a test message.
+
+3: This is a test message.
 ****
 no_msglog_check

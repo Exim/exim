@@ -37,6 +37,7 @@ Reporting-MTA: dns; myhost.test.ex
 Action: failed
 Final-Recipient: rfc822;baduser@test.ex
 Status: 5.0.0
+Remote-MTA: dns; ip4.ip4.ip4.ip4
 Diagnostic-Code: smtp; 550 PRDR R=<baduser@test.ex> refusal
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

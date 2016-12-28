@@ -1,4 +1,5 @@
 # DKIM signing and bounces
+munge optional_dsn_info
 #
 exim -bd -DSERVER=server -oX PORT_D
 ****

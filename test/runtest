@@ -1145,13 +1145,6 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if / Berkeley DB error: /;
     }
 
-  elsif ($is_mail)
-    {
-    # Experimental_DSN info in bounces
-    next if /^Remote-MTA: /;
-    next if /^X-Exim-Diagnostic: /;
-    }
-
   # ======== All files other than stderr ========
 
   print MUNGED;
