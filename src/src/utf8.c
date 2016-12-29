@@ -52,6 +52,10 @@ uschar * s1, * s;
 int rc;
 
 #ifdef SUPPORT_I18N_2008
+/* Avoid lowercasing plain-ascii domains */
+if (!string_is_utf8(utf8))
+  return string_copy(utf8);
+
 /* Only lowercase is accepted by the library call.  A pity since we lose
 any mixed-case annotation.  This does not really matter for a domain. */
   {
