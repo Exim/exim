@@ -551,10 +551,16 @@ union sockaddr_46 {
 };
 
 /* If SUPPORT_TLS is not defined, ensure that USE_GNUTLS is also not defined
-so that if USE_GNUTLS *is* set, we can assume SUPPORT_TLS is also set. */
+so that if USE_GNUTLS *is* set, we can assume SUPPORT_TLS is also set.
+Likewise, OSCP, AUTH_TLS and CERTNAMES cannot be supported. */
 
 #ifndef SUPPORT_TLS
 # undef USE_GNUTLS
+# ifndef DISABLE_OCSP
+#  define DISABLE_OCSP
+# endif
+# undef EXPERIMENTAL_CERTNAMES
+# undef AUTH_TLS
 #endif
 
 /* If SPOOL_DIRECTORY, LOG_FILE_PATH or PID_FILE_PATH have not been defined,

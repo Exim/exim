@@ -1,12 +1,15 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
+This document describes *changes* to previous versions, that might
+affect Exim's operation, with an unchanged configuration file.  For new
+options, and new features, see the NewStuff file next to this ChangeLog.
 
-Exim version 4.next
+Exim version 4.89
 -------------------
 JH/01 Bug 1922: Support IDNA2008.  This has slightly different conversion rules
       than -2003 did; needs libidn2 in addition to linidn.
 
-JH/02 The path option on a pipe transport is now expanded before use
+JH/02 The path option on a pipe transport is now expanded before use.
 
 
 Exim version 4.88
@@ -138,6 +141,18 @@ JH/32 Bug 1909: Fix OCSP proof verification for cases where the proof is
       OCSP-signing cert.  This is the model used by LetsEncrypt.
 
 JH/33 Bug 1914: Ensure socket is nonblocking before draining after SMTP QUIT.
+
+HS/01 Fix leak in verify callout under GnuTLS, about 3MB per recipient on
+      an incoming connection.
+
+HS/02 Bug 1802: Do not half-close the connection after sending a request
+      to rspamd.
+
+HS/03 Use "auto" as the default EC curve parameter. For OpenSSL < 1.0.2
+      fallback to "prime256v1".
+
+JH/34 SECURITY: Use proper copy of DATA command in error message.
+      Could leak key material.  Remotely explaoitable.  CVE-2016-9963.
 
 
 Exim version 4.87

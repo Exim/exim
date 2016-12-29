@@ -358,6 +358,7 @@ open(IN, "$file") || tests_exit(-1, "Failed to open $file: $!");
 my($is_log) = $file =~ /log/;
 my($is_stdout) = $file =~ /stdout/;
 my($is_stderr) = $file =~ /stderr/;
+my($is_mail) = $file =~ /mail/;
 
 # Date pattern
 
@@ -419,12 +420,6 @@ RESET_AFTER_EXTRA_LINE_READ:
   # PRVS values
   s?prvs=([^/]+)/[\da-f]{10}@?prvs=$1/xxxxxxxxxx@?g;    # Old form
   s?prvs=[\da-f]{10}=([^@]+)@?prvs=xxxxxxxxxx=$1@?g;    # New form
-
-  # Error lines on stdout from SSL contain process id values and file names.
-  # They also contain a source file name and line number, which may vary from
-  # release to release.
-  s/^\d+:error:/pppp:error:/;
-  s/:(?:\/[^\s:]+\/)?([^\/\s]+\.c):\d+:/:$1:dddd:/;
 
   # There are differences in error messages between OpenSSL versions
   s/SSL_CTX_set_cipher_list/SSL_connect/;
@@ -889,15 +884,25 @@ RESET_AFTER_EXTRA_LINE_READ:
         }
       }
 
+    # remote IPv6 addrs vary
+    s/^(Connection request from) \[.*:.*:.*\]$/$1 \[ipv6\]/;
+
     # openssl version variances
-    next if /^SSL info: unknown state/;
-    next if /^SSL info: SSLv2\/v3 write client hello A/;
-    next if /^SSL info: SSLv3 read server key exchange A/;
+  # Error lines on stdout from SSL contain process id values and file names.
+  # They also contain a source file name and line number, which may vary from
+  # release to release.
+
+    next if /^SSL info:/;
     next if /SSL verify error: depth=0 error=certificate not trusted/;
     s/SSL3_READ_BYTES/ssl3_read_bytes/i;
+    s/^\d+:error:\d+(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
 
     # gnutls version variances
     next if /^Error in the pull function./;
+
+    # optional IDN2 variant conversions.  Accept either IDN1 or IDN2
+    s/conversion  strasse.de/conversion  xn--strae-oqa.de/;
+    s/conversion: german.xn--strae-oqa.de/conversion: german.straße.de/;
     }
 
   # ======== stderr ========
@@ -1138,6 +1143,13 @@ RESET_AFTER_EXTRA_LINE_READ:
     {
     # Berkeley DB version differences
     next if / Berkeley DB error: /;
+    }
+
+  elsif ($is_mail)
+    {
+    # Experimental_DSN info in bounces
+    next if /^Remote-MTA: /;
+    next if /^X-Exim-Diagnostic: /;
     }
 
   # ======== All files other than stderr ========

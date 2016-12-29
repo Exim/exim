@@ -18,19 +18,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> quit
@@ -39,19 +26,6 @@ Succeeded in starting TLS
 End of script
 Connecting to 127.0.0.1 port 1226 ... connected
 Attempting to start TLS
-SSL info: before/connect initialization
-SSL info: before/connect initialization
-SSL info: SSLv3 read server hello A
-SSL info: SSLv3 read server certificate A
-SSL info: SSLv3 read server done A
-SSL info: SSLv3 write client key exchange A
-SSL info: SSLv3 write change cipher spec A
-SSL info: SSLv3 write finished A
-SSL info: SSLv3 flush data
-SSL info: SSLv3 read server session ticket A
-SSL info: SSLv3 read finished A
-SSL info: SSL negotiation finished successfully
-SSL info: SSL negotiation finished successfully
 SSL connection using AES256-SHA
 Succeeded in starting TLS
 ??? 220

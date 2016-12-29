@@ -3512,7 +3512,7 @@ while (done <= 0)
   uschar *orcpt = NULL;
   int flags;
 
-#if defined(SUPPORT_TLS) && defined(AUTH_TLS)
+#ifdef AUTH_TLS
   /* Check once per STARTTLS or SSL-on-connect for a TLS AUTH */
   if (  tls_in.active >= 0
      && tls_in.peercert
@@ -3928,7 +3928,7 @@ while (done <= 0)
       them in either case in the AUTH command. */
 
       if (  auths
-#if defined(SUPPORT_TLS) && defined(AUTH_TLS)
+#ifdef AUTH_TLS
 	 && !sender_host_authenticated
 #endif
          && verify_check_host(&auth_advertise_hosts) == OK

@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.87"
+.set previousversion "4.88"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -371,13 +371,11 @@ contributors.
 .section "Exim documentation" "SECID1"
 . Keep this example change bar when updating the documentation!
 
-.new
 .cindex "documentation"
 This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of the document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
-.wen
 
 This document is very much a reference manual; it is not a tutorial. The reader
 is expected to have some familiarity with the SMTP mail transfer protocol and
@@ -3827,13 +3825,11 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 remote host supports the ESMTP &_DSN_& extension.
 
-.new
 .vitem &%-MCG%&
 .oindex "&%-MCG%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that an
 alternate queue is used, named by the following option.
-.wen
 
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
@@ -4381,9 +4377,7 @@ relax this restriction (and also the same requirement for the &%-M%&, &%-R%&,
 and &%-S%& options).
 
 .cindex "queue runner" "description of operation"
-.new
 If other commandline options do not specify an action,
-.wen
 the &%-q%& option starts one queue runner process. This scans the queue of
 waiting messages, and runs a delivery process for each one in turn. It waits
 for each delivery process to finish before starting the next one. A delivery
@@ -4469,7 +4463,6 @@ The &'l'& (the letter &"ell"&) flag specifies that only local deliveries are to
 be done. If a message requires any remote deliveries, it remains on the queue
 for later delivery.
 
-.new
 .vitem &%-q[q][i][f[f]][l][G<name>[/<time>]]]%&
 .oindex "&%-qG%&"
 .cindex queue named
@@ -4489,7 +4482,6 @@ exim -bp -qGquarantine
 mailq -qGquarantime
 exim -qGoffpeak -Rf @special.domain.example
 .endd
-.wen
 
 .vitem &%-q%&<&'qflags'&>&~<&'start&~id'&>&~<&'end&~id'&>
 When scanning the queue, Exim can be made to skip over messages whose ids are
@@ -5038,7 +5030,6 @@ address lists. In Exim 4 these are handled better by named lists &-- see
 section &<<SECTnamedlists>>&.
 
 
-.new
 .section "Builtin macros" "SECTbuiltinmacros"
 Exim defines some macros depending on facilities available, which may
 differ due to build-time definitions and from one release to another.
@@ -5048,15 +5039,20 @@ They can be used to conditionally include parts of a configuration
 
 The following classes of macros are defined:
 .display
-&` _HAVE_                     `&  build-time defines
-&` _DRVR_AUTH_                `&  authehticator drivers
-&` _DRVR_RTR_                 `&  router drivers
-&` _DRVR_TPT_                 `&  transport drivers
-&` _OPT_                      `&  configuration option support
+&` _HAVE_*                    `&  build-time defines
+&` _DRIVER_ROUTER_*           `&  router drivers
+&` _DRIVER_TRANSPORT_*        `&  transport drivers
+&` _DRIVER_AUTHENTICATOR_*    `&  authenticator drivers
+&` _OPT_MAIN_*                `&  main config options
+&` _OPT_ROUTERS_*             `&  generic router options
+&` _OPT_TRANSPORTS_*          `&  generic transport options
+&` _OPT_AUTHENTICATORS_*      `&  generic authenticator options
+&` _OPT_ROUTER_*_*            `&  private router options
+&` _OPT_TRANSPORT_*_*         `&  private transport options
+&` _OPT_AUTHENTICATOR_*_*     `&  private authenticator options
 .endd
 
 Use an &"exim -bP macros"& command to get the list of macros.
-.wen
 
 
 .section "Conditional skips in the configuration file" "SECID46"
@@ -5163,9 +5159,7 @@ hexadecimal number.
 
 If an integer value is followed by the letter K, it is multiplied by 1024; if
 it is followed by the letter M, it is multiplied by 1024x1024;
-.new
 if by the letter G, 1024x1024x1024.
-.wen
 When the values
 of integer option settings are output, values which are an exact multiple of
 1024 or 1024x1024 are sometimes, but not always, printed using the letters K
@@ -6295,9 +6289,7 @@ Exim supports the use of regular expressions in many of its options. It
 uses the PCRE regular expression library; this provides regular expression
 matching that is compatible with Perl 5. The syntax and semantics of
 regular expressions is discussed in
-.new
 online Perl manpages, in
-.wen
 many Perl reference books, and also in
 Jeffrey Friedl's &'Mastering Regular Expressions'&, which is published by
 O'Reilly (see &url(http://www.oreilly.com/catalog/regex2/)).
@@ -7845,10 +7837,8 @@ domain, host, address and local part lists.
 .cindex "expansion" "of lists"
 Each list is expanded as a single string before it is used.
 
-.new
 &'Exception: the router headers_remove option, where list-item
 splitting is done before string-expansion.'&
-.wen
 
 The result of
 expansion must be a list, possibly containing empty items, which is split up
@@ -9432,12 +9422,19 @@ message, and any that are added by an ACL statement or by a system
 filter. Header lines that are added to a particular copy of a message by a
 router or transport are not accessible.
 
-For incoming SMTP messages, no header lines are visible in ACLs that are obeyed
-before the DATA ACL, because the header structure is not set up until the
-message is received. Header lines that are added in a RCPT ACL (for example)
+For incoming SMTP messages, no header lines are visible in
+.new
+ACLs that are obeyed before the data phase completes,
+.wen
+because the header structure is not set up until the message is received.
+They are visible in DKIM, PRDR and DATA ACLs.
+Header lines that are added in a RCPT ACL (for example)
 are saved until the message's incoming header lines are available, at which
-point they are added. When a DATA ACL is running, however, header lines added
-by earlier ACLs are visible.
+point they are added.
+.new
+When any of the above ACLs ar
+.wen
+running, however, header lines added by earlier ACLs are visible.
 
 Upper case and lower case letters are synonymous in header names. If the
 following character is white space, the terminating colon may be omitted, but
@@ -10126,7 +10123,6 @@ Last:user@example.com
 user@example.com
 .endd
 
-.new
 .vitem &*${base32:*&<&'digits'&>&*}*&
 .cindex "&%base32%& expansion item"
 .cindex "expansion" "conversion to base 32"
@@ -10139,7 +10135,6 @@ Only lowercase letters are used.
 .cindex "expansion" "conversion to base 32"
 The string must consist entirely of base-32 digits.
 The number is converted to decimal and output as a string.
-.wen
 
 .vitem &*${base62:*&<&'digits'&>&*}*&
 .cindex "&%base62%& expansion item"
@@ -10192,14 +10187,12 @@ escape sequences starting with a backslash. Whether characters with the most
 significant bit set (so-called &"8-bit characters"&) count as printing or not
 is controlled by the &%print_topbitchars%& option.
 
-.new
 .vitem &*${escape8bit:*&<&'string'&>&*}*&
 .cindex "expansion" "escaping 8-bit characters"
 .cindex "&%escape8bit%& expansion item"
 If the string contains and characters with the most significant bit set,
 they are converted to escape sequences starting with a backslash.
 Backslashes and DEL characters are also converted.
-.wen
 
 
 .vitem &*${eval:*&<&'string'&>&*}*&&~and&~&*${eval10:*&<&'string'&>&*}*&
@@ -10587,17 +10580,14 @@ returns the SHA-1 hash fingerprint of the certificate.
 .cindex certificate fingerprint
 .cindex "expansion" "SHA-256 hashing"
 .cindex "&%sha256%& expansion item"
-.new
 The &%sha256%& operator computes the SHA-256 hash value of the string
 and returns
 it as a 64-digit hexadecimal number, in which any letters are in upper case.
-.wen
 
 If the string is a single variable of type certificate,
 returns the SHA-256 hash fingerprint of the certificate.
 
 
-.new
 .vitem &*${sha3:*&<&'string'&>&*}*& &&&
        &*${sha3_<n>:*&<&'string'&>&*}*&
 .cindex "SHA3 hash"
@@ -10613,7 +10603,6 @@ with 256 being the default.
 
 The &%sha3%& expansion item is only supported if Exim has been
 compiled with GnuTLS 3.5.0 or later.
-.wen
 
 
 .vitem &*${stat:*&<&'string'&>&*}*&
@@ -12262,7 +12251,6 @@ a single-component name, Exim calls &[gethostbyname()]& (or
 qualified host name. See also &$smtp_active_hostname$&.
 
 
-.new
 .vitem &$proxy_external_address$& &&&
        &$proxy_external_port$& &&&
        &$proxy_local_address$& &&&
@@ -12271,7 +12259,6 @@ qualified host name. See also &$smtp_active_hostname$&.
 These variables are only available when built with Proxy Protocol
 or Socks5 support
 For details see chapter &<<SECTproxyInbound>>&.
-.wen
 
 .vitem &$prdr_requested$&
 .cindex "PRDR" "variable for"
@@ -12302,13 +12289,11 @@ The value set for the &%qualify_domain%& option in the configuration file.
 The value set for the &%qualify_recipient%& option in the configuration file,
 or if not set, the value of &$qualify_domain$&.
 
-.new
 .vitem &$queue_name$&
 .vindex &$queue_name$&
 .cindex "named queues"
 .cindex queues named
 The name of the spool queue in use; empty for the default queue.
-.wen
 
 .vitem &$rcpt_count$&
 .vindex "&$rcpt_count$&"
@@ -13109,7 +13094,6 @@ overriding the setting of &%perl_at_start%&.
 There is also a command line option &%-pd%& (for delay) which suppresses the
 initial startup, even if &%perl_at_start%& is set.
 
-.new
 .ilist
 .oindex "&%perl_taintmode%&"
 .cindex "Perl" "taintmode"
@@ -13118,7 +13102,6 @@ interpeter, the &%perl_taintmode%& option can be set. This enables the
 taint mode of the Perl interpreter. You are encouraged to set this
 option to a true value. To avoid breaking existing installations, it
 defaults to false.
-.wen
 
 
 .section "Calling Perl subroutines" "SECID86"
@@ -14351,15 +14334,11 @@ $primary_hostname-$tod_epoch-testing
 See section &<<CALLaddparcall>>& for details of how this value is used.
 
 
-.new
 .option check_log_inodes main integer 100
-.wen
 See &%check_spool_space%& below.
 
 
-.new
 .option check_log_space main integer 10M
-.wen
 See &%check_spool_space%& below.
 
 .oindex "&%check_rfc2047_length%&"
@@ -14374,15 +14353,11 @@ of the RFC, generates overlong encoded words. If &%check_rfc2047_length%& is
 set false, Exim recognizes encoded words of any length.
 
 
-.new
 .option check_spool_inodes main integer 100
-.wen
 See &%check_spool_space%& below.
 
 
-.new
 .option check_spool_space main integer 10M
-.wen
 .cindex "checking disk space"
 .cindex "disk space, checking"
 .cindex "spool directory" "checking space"
@@ -14428,21 +14403,17 @@ For non-SMTP input and for batched SMTP input, the test is done at start-up; on
 failure a message is written to stderr and Exim exits with a non-zero code, as
 it obviously cannot send an error message of any kind.
 
-.new
 There is a slight performance penalty for these checks.
 Versions of Exim preceding 4.88 had these disabled by default;
 high-rate intallations confident they will never run out of resources
 may wish to deliberately disable them.
-.wen
 
-.new
 .option chunking_advertise_hosts main "host list&!!" *
 .cindex CHUNKING advertisement
 .cindex "RFC 3030" "CHUNKING"
 The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
 these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
-.wen
 
 .option daemon_smtp_ports main string &`smtp`&
 .cindex "port" "for daemon"
@@ -16062,12 +16033,10 @@ the limit, allowing any number of simultaneous queue runner processes to be
 run. If you do not want queue runs to occur, omit the &%-q%&&'xx'& setting on
 the daemon's command line.
 
-.new
 .cindex queues named
 .cindex "named queues"
 To set limits for different named queues use
 an expansion depending on the &$queue_name$& variable.
-.wen
 
 .option queue_smtp_domains main "domain list&!!" unset
 .cindex "queueing incoming messages"
@@ -17030,10 +16999,8 @@ if the OpenSSL build supports TLS extensions and the TLS client sends the
 Server Name Indication extension, then this option and others documented in
 &<<SECTtlssni>>& will be re-expanded.
 
-.new
 If this option is unset or empty a fresh self-signed certificate will be
 generated for every connection.
-.wen
 
 .option tls_crl main string&!! unset
 .cindex "TLS" "server certificate revocation list"
@@ -17070,12 +17037,10 @@ larger prime than requested.
 The value of this option is expanded and indicates the source of DH parameters
 to be used by Exim.
 
-.new
 &*Note: The Exim Maintainers strongly recommend using a filename with site-generated
 local DH parameters*&, which has been supported across all versions of Exim.  The
 other specific constants available are a fallback so that even when
 "unconfigured", Exim can offer Perfect Forward Secrecy in older ciphersuites in TLS.
-.wen
 
 If &%tls_dhparam%& is a filename starting with a &`/`&,
 then it names a file from which DH
@@ -17094,7 +17059,6 @@ Exim will attempt to load a file from inside the spool directory.  If the file
 does not exist, Exim will attempt to create it.
 See section &<<SECTgnutlsparam>>& for further details.
 
-.new
 If Exim is using OpenSSL and this option is empty or unset, then Exim will load
 a default DH prime; the default is Exim-specific but lacks verifiable provenance.
 
@@ -17126,7 +17090,6 @@ of the later IKE values, which led into RFC7919 providing new fixed constants
 At this point, all of the "ike" values should be considered obsolete;
 they're still in Exim to avoid breaking unusual configurations, but are
 candidates for removal the next time we have backwards-incompatible changes.
-.wen
 
 The TLS protocol does not negotiate an acceptable size for this; clients tend
 to hard-drop connections if what is offered by the server is unacceptable,
@@ -17144,17 +17107,19 @@ prior to the 4.80 release, as Debian used to patch Exim to raise the minimum
 acceptable bound from 1024 to 2048.
 
 
-.option tls_eccurve main string&!! prime256v1
+.option tls_eccurve main string&!! &`auto`&
 .cindex TLS "EC cryptography"
-If built with a recent-enough version of OpenSSL,
-this option selects a EC curve for use by Exim.
+This option selects a EC curve for use by Exim.
 
-Curve names of the form &'prime256v1'& are accepted.
-For even more-recent library versions, names of the form &'P-512'&
-are also accepted, plus the special value &'auto'&
-which tells the library to choose.
+After expansion it must contain a valid EC curve parameter, such as
+&`prime256v1`&, &`secp384r1`&, or &`P-512`&. Consult your OpenSSL manual
+for valid selections.
 
-If the option is set to an empty string, no EC curves will be enabled.
+For OpenSSL versions before (and not including) 1.0.2, the string
+&`auto`& selects &`prime256v1`&. For more recent OpenSSL versions
+&`auto`& tells the library to choose.
+
+If the option expands to an empty string, no EC curves will be enabled.
 
 
 .option tls_ocsp_file main string&!! unset
@@ -23996,7 +23961,6 @@ connects. If authentication fails, Exim will try to transfer the message
 unauthenticated. See also &%hosts_require_auth%&, and chapter
 &<<CHAPSMTPAUTH>>& for details of authentication.
 
-.new
 .option hosts_try_chunking smtp "host list&!!" *
 .cindex CHUNKING "enabling, in client"
 .cindex BDAT "SMTP command"
@@ -24004,9 +23968,7 @@ unauthenticated. See also &%hosts_require_auth%&, and chapter
 This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
 BDAT will not be used in conjuction with a transport filter.
-.wen
 
-.new
 .option hosts_try_fastopen smtp "host list!!" unset
 .option "fast open, TCP" "enabling, in client"
 .option "TCP Fast Open" "enabling, in client"
@@ -24023,7 +23985,6 @@ as the initiator must present a cookie in the SYN segment.
 
 On (at least some) current Linux distributions the facility must be enabled
 in the kernel by the sysadmin before the support is usable.
-.wen
 
 .option hosts_try_prdr smtp "host list&!!" *
 .cindex "PRDR" "enabling, optional in client"
@@ -26809,7 +26770,7 @@ tls:
 .endd
 This accepts a client certificate that is verifiable against any
 of your configured trust-anchors
-which usually means the full set of public CAs)
+(which usually means the full set of public CAs)
 and which has a SAN with a good account name.
 Note that the client cert is on the wire in-clear, including the SAN,
 whereas a plaintext SMTP AUTH done inside TLS is not.
@@ -27189,12 +27150,10 @@ rejected with a 554 error code.
 To enable TLS operations on a server, the &%tls_advertise_hosts%& option
 must be set to match some hosts. The default is * which matches all hosts.
 
-.new
 If this is all you do, TLS encryption will be enabled but not authentication -
 meaning that the peer has no assurance it is actually you he is talking to.
 You gain protection from a passive sniffer listening on the wire but not
 from someone able to intercept the communication.
-.wen
 
 Further protection requires some further configuration at the server end.
 
@@ -27573,11 +27532,9 @@ Great care should be taken to deal with matters of case, various injection
 attacks in the string (&`../`& or SQL), and ensuring that a valid filename
 can always be referenced; it is important to remember that &$tls_in_sni$& is
 arbitrary unverified data provided prior to authentication.
-.new
 Further, the initial cerificate is loaded before SNI is arrived, so
 an expansion for &%tls_certificate%& must have a default which is used
 when &$tls_in_sni$& is empty.
-.wen
 
 The Exim developers are proceeding cautiously and so far no other TLS options
 are re-expanded.
@@ -27900,7 +27857,6 @@ received, before the final response to the DATA command is sent. This is
 the ACL specified by &%acl_smtp_data%&, which is the second ACL that is
 associated with the DATA command.
 
-.new
 .cindex CHUNKING "BDAT command"
 .cindex BDAT "SMTP command"
 .cindex "RFC 3030" CHUNKING
@@ -27909,7 +27865,6 @@ the &%acl_smtp_predata%& ACL is not run.
 . XXX why not?  It should be possible, for the first BDAT.
 The &%acl_smtp_data%& is run after the last BDAT command and all of
 the data specified is received.
-.wen
 
 For both of these ACLs, it is not possible to reject individual recipients. An
 error response rejects the entire message. Unfortunately, it is known that some
@@ -28807,7 +28762,6 @@ all the conditions are true, wherever it appears in an ACL command, whereas
 effect.
 
 
-.new
 .vitem &*queue*&&~=&~<&'text'&>
 This modifier specifies the use of a named queue for spool files
 for the message.
@@ -28817,7 +28771,6 @@ This could be used, for example, for known high-volume burst sources
 of traffic, or for quarantine of messages.
 Separate queue-runner processes will be needed for named queues.
 If the text after expansion is empty, the default queue is used.
-.wen
 
 
 .vitem &*remove_header*&&~=&~<&'text'&>
@@ -28950,7 +28903,6 @@ If the item is successfully delivered in cutthrough mode
 the delivery log lines are tagged with ">>" rather than "=>" and appear
 before the acceptance "<=" line.
 
-.new
 If there is a temporary error the item is queued for later delivery in the
 usual fashion.
 This behaviour can be adjusted by appending the option &*defer=*&<&'value'&>
@@ -28958,7 +28910,6 @@ to the control; the default value is &"spool"& and the alternate value
 &"pass"& copies an SMTP defer response from the target back to the initiator
 and does not queue the message.
 Note that this is independent of any receipient verify conditions in the ACL.
-.wen
 
 Delivery in this mode avoids the generation of a bounce mail to a
 (possibly faked)
@@ -28974,9 +28925,7 @@ with &`-d`&, with the output going to a new logfile, by default called
 may access any variables already defined.  The logging may be adjusted with
 the &'opts'& option, which takes the same values as the &`-d`& command-line
 option.
-.new
 Logging may be stopped, and the file removed, with the &'kill'& option.
-.wen
 Some examples (which depend on variables that don't exist in all
 contexts):
 .code
@@ -31673,6 +31622,15 @@ configuration as follows (example):
 .code
 spamd_address = 192.168.99.45 387
 .endd
+The SpamAssassin protocol relies on a TCP half-close from the client.
+If your SpamAssassin client side is running a Linux system with an
+iptables firewall, consider setting
+&%net.netfilter.nf_conntrack_tcp_timeout_close_wait%& to at least the
+timeout, Exim uses when waiting for a response from the SpamAssassin
+server (currently defaulting to 120s).  With a lower value the Linux
+connection tracking may consider your half-closed connection as dead too
+soon.
+
 
 To use Rspamd (which by default listens on all local addresses
 on TCP port 11333)
@@ -31830,11 +31788,9 @@ spam bar is 50 characters.
 A multiline text table, containing the full SpamAssassin report for the
 message. Useful for inclusion in headers or reject messages.
 This variable is only usable in a DATA-time ACL.
-.new
 Beware that SpamAssassin may return non-ASCII characters, especially
 when running in country-specific locales, which are not legal
 unencoded in headers.
-.wen
 
 .vitem &$spam_action$&
 For SpamAssassin either 'reject' or 'no action' depending on the
@@ -38261,6 +38217,7 @@ These options take (expandable) strings as arguments.
 MANDATORY:
 The domain you want to sign with. The result of this expanded
 option is put into the &%$dkim_domain%& expansion variable.
+If it is empty after expansion, DKIM signing is not done.
 
 .option dkim_selector smtp string&!! unset
 MANDATORY:
@@ -38425,11 +38382,9 @@ The header canonicalization method. One of 'relaxed' or 'simple'.
 .vitem &%$dkim_copiedheaders%&
 A transcript of headers and their values which are included in the signature
 (copied from the 'z=' tag of the signature).
-.new
 Note that RFC6376 requires that verification fail if the From: header is
 not included in the signature.  Exim does not enforce this; sites wishing
 strict enforcement should code the check explicitly.
-.wen
 
 .vitem &%$dkim_bodylength%&
 The number of signed body bytes. If zero ("0"), the body is unsigned. If no
@@ -38487,10 +38442,8 @@ warn log_message = GMail sender without gmail.com DKIM signature
      dkim_status = none
 .endd
 
-.new
 Note that the above does not check for a total lack of DKIM signing;
 for that check for empty &$h_DKIM-Signature:$& in the data ACL.
-.wen
 
 .vitem &%dkim_status%&
 ACL condition that checks a colon-separated list of possible DKIM verification
@@ -38550,7 +38503,6 @@ Use of a proxy is enabled by setting the &%hosts_proxy%&
 main configuration option to a hostlist; connections from these
 hosts will use Proxy Protocol.
 
-.new
 The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces
 of the proxy):
@@ -38563,7 +38515,6 @@ of the proxy):
 .endd
 If &$proxy_session$& is set but &$proxy_external_address$& is empty
 there was a protocol error.
-.wen
 
 Since the real connections are all coming from the proxy, and the
 per host connection tracking is done before Proxy Protocol is
@@ -38784,7 +38735,7 @@ must be representable in UTF-16.
 .cindex events
 
 The events mechanism in Exim can be used to intercept processing at a number
-of points.  It was originally invented to giave a way to do customised logging
+of points.  It was originally invented to give a way to do customised logging
 actions (for example, to a database) but can also be used to modify some
 processing actions.
 
@@ -38854,7 +38805,7 @@ with the event type:
 The :defer events populate one extra variable: &$event_defer_errno$&.
 
 For complex operations an ACL expansion can be used in &%event_action%&
-however due to the multiple contextx that Exim operates in during
+however due to the multiple contexts that Exim operates in during
 the course of its processing:
 .ilist
 variables set in transport events will not be visible outside that

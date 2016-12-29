@@ -103,6 +103,7 @@ sub exim_binary {
             my $os = `$_/scripts/os-type`;
             my $arch = `$_/scripts/arch-type`;
             chomp($os, $arch);
+            ($ENV{build} ? "$_/build-$ENV{build}" : ()),
             "$_/build-$os-$arch" . ($ENV{EXIM_BUILD_SUFFIX} ? ".$ENV{EXIM_BUILD_SUFFIX}" : '');
         } @candidates;
 

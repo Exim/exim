@@ -148,12 +148,12 @@ readconf_options_routers(void)
 {
 struct router_info * ri;
 
-readconf_options_from_list(optionlist_routers, nelem(optionlist_routers), US"RT");
+readconf_options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
 
 for (ri = routers_available; ri->driver_name[0]; ri++)
   {
-  macro_create(string_sprintf("_DRVR_RTR_%T", ri->driver_name), US"y", FALSE, TRUE);
-  readconf_options_from_list(ri->options, (unsigned)*ri->options_count, ri->driver_name);
+  macro_create(string_sprintf("_DRIVER_ROUTER_%T", ri->driver_name), US"y", FALSE, TRUE);
+  readconf_options_from_list(ri->options, (unsigned)*ri->options_count, US"ROUTER", ri->driver_name);
   }
 }
 

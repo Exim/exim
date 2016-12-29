@@ -796,76 +796,76 @@ due to conflicts with other common macros. */
 #endif
 
 #ifdef LOOKUP_LSEARCH
-  macro_create(US"_HAVE_LKUP_LSEARCH", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_LSEARCH", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_CDB
-  macro_create(US"_HAVE_LKUP_CDB", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_CDB", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_DBM
-  macro_create(US"_HAVE_LKUP_DBM", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_DBM", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_DNSDB
-  macro_create(US"_HAVE_LKUP_DNSDB", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_DNSDB", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_DSEARCH
-  macro_create(US"_HAVE_LKUP_DSEARCH", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_DSEARCH", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_IBASE
-  macro_create(US"_HAVE_LKUP_IBASE", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_IBASE", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_LDAP
-  macro_create(US"_HAVE_LKUP_LDAP", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_LDAP", US"y", FALSE, TRUE);
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  macro_create(US"_HAVE_LKUP_LMDB", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_LMDB", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_MYSQL
-  macro_create(US"_HAVE_LKUP_MYSQL", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_MYSQL", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_NIS
-  macro_create(US"_HAVE_LKUP_NIS", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_NIS", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_NISPLUS
-  macro_create(US"_HAVE_LKUP_NISPLUS", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_NISPLUS", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_ORACLE
-  macro_create(US"_HAVE_LKUP_ORACLE", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_ORACLE", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_PASSWD
-  macro_create(US"_HAVE_LKUP_PASSWD", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_PASSWD", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_PGSQL
-  macro_create(US"_HAVE_LKUP_PGSQL", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_PGSQL", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_REDIS
-  macro_create(US"_HAVE_LKUP_REDIS", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_REDIS", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_SQLITE
-  macro_create(US"_HAVE_LKUP_SQLITE", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_SQLITE", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_TESTDB
-  macro_create(US"_HAVE_LKUP_TESTDB", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_TESTDB", US"y", FALSE, TRUE);
 #endif
 #ifdef LOOKUP_WHOSON
-  macro_create(US"_HAVE_LKUP_WHOSON", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_LOOKUP_WHOSON", US"y", FALSE, TRUE);
 #endif
 
 #ifdef TRANSPORT_APPENDFILE
 # ifdef SUPPORT_MAILDIR
-  macro_create(US"_HAVE_TPT_APPEND_MAILDR", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILDR", US"y", FALSE, TRUE);
 # endif
 # ifdef SUPPORT_MAILSTORE
-  macro_create(US"_HAVE_TPT_APPEND_MAILSTORE", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILSTORE", US"y", FALSE, TRUE);
 # endif
 # ifdef SUPPORT_MBX
-  macro_create(US"_HAVE_TPT_APPEND_MBX", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_TRANSPORT_APPEND_MBX", US"y", FALSE, TRUE);
 # endif
 #endif
 }
 
 
 void
-readconf_options_from_list(optionlist * opts, unsigned nopt, uschar * group)
+readconf_options_from_list(optionlist * opts, unsigned nopt, const uschar * section, uschar * group)
 {
 int i;
 const uschar * s;
@@ -878,14 +878,17 @@ macros that have substrings are always discovered first during
 expansion. */
 
 for (i = 0; i < nopt; i++)  if (*(s = opts[i].name) && *s != '*')
-  macro_create(string_sprintf("_OPT_%T_%T", group, s), US"y", FALSE, TRUE);
+  if (group)
+    macro_create(string_sprintf("_OPT_%T_%T_%T", section, group, s), US"y", FALSE, TRUE);
+  else
+    macro_create(string_sprintf("_OPT_%T_%T", section, s), US"y", FALSE, TRUE);
 }
 
 
 static void
 readconf_options(void)
 {
-readconf_options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN");
+readconf_options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN", NULL);
 readconf_options_routers();
 readconf_options_transports();
 readconf_options_auths();
@@ -4349,12 +4352,12 @@ readconf_options_auths(void)
 {
 struct auth_info * ai;
 
-readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AU");
+readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", NULL);
 
 for (ai = auths_available; ai->driver_name[0]; ai++)
   {
-  macro_create(string_sprintf("_DRVR_AUTH_%T", ai->driver_name), US"y", FALSE, TRUE);
-  readconf_options_from_list(ai->options, (unsigned)*ai->options_count, ai->driver_name);
+  macro_create(string_sprintf("_DRIVER_AUTHENTICATOR_%T", ai->driver_name), US"y", FALSE, TRUE);
+  readconf_options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
   }
 }
 

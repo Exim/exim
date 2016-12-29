@@ -285,10 +285,11 @@ static uschar *rf_names[] = { US"NEVER", US"SUCCESS", US"FAILURE", US"DELAY" };
 
 /* Local statics */
 
-static uschar *smtp_command;   /* Points to last cmd for error messages */
-static uschar *mail_command;   /* Points to MAIL cmd for error messages */
-static BOOL    update_waiting; /* TRUE to update the "wait" database */
-static BOOL    pipelining_active; /* current transaction is in pipe mode */
+static uschar *smtp_command;		/* Points to last cmd for error messages */
+static uschar *mail_command;		/* Points to MAIL cmd for error messages */
+static uschar *data_command = US"";	/* Points to DATA cmd for error messages */
+static BOOL    update_waiting;		/* TRUE to update the "wait" database */
+static BOOL    pipelining_active;	/* current transaction is in pipe mode */
 
 
 /*************************************************
@@ -1390,10 +1391,14 @@ uschar * buffer = tctx->buffer;
 /* Write SMTP chunk header command */
 
 if (chunk_size > 0)
+  {
   if((cmd_count = smtp_write_command(tctx->outblock, FALSE, "BDAT %u%s\r\n",
 			      chunk_size,
 			      flags & tc_chunk_last ? " LAST" : "")
      ) < 0) return ERROR;
+  if (flags & tc_chunk_last)
+    data_command = string_copy(big_buffer);  /* Save for later error message */
+  }
 
 prev_cmd_count = cmd_count += tctx->cmd_count;
 
@@ -2509,6 +2514,7 @@ if (  !(peer_offered & PEER_OFFERED_CHUNKING)
     default: goto RESPONSE_FAILED;       /* I/O error, or any MAIL/DATA error */
     }
   pipelining_active = FALSE;
+  data_command = string_copy(big_buffer);  /* Save for later error message */
   }
 
 /* If there were no good recipients (but otherwise there have been no
@@ -2732,7 +2738,7 @@ else
 #else
 	    "LMTP error after %s: %s",
 #endif
-            big_buffer, string_printing(buffer));
+            data_command, string_printing(buffer));
           setflag(addr, af_pass_message);   /* Allow message to go to user */
           if (buffer[0] == '5')
             addr->transport_return = FAIL;

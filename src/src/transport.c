@@ -116,14 +116,14 @@ readconf_options_transports(void)
 {
 struct transport_info * ti;
 
-readconf_options_from_list(optionlist_transports, nelem(optionlist_transports), US"TP");
+readconf_options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
 
 for (ti = transports_available; ti->driver_name[0]; ti++)
   {
-  macro_create(string_sprintf("_DRVR_TPT_%T", ti->driver_name), US"y", FALSE, TRUE);
-  readconf_options_from_list(ti->options, (unsigned)*ti->options_count, ti->driver_name);
+  macro_create(string_sprintf("_DRIVER_TRANSPORT_%T", ti->driver_name), US"y", FALSE, TRUE);
+  readconf_options_from_list(ti->options, (unsigned)*ti->options_count, US"TRANSPORT", ti->driver_name);
   }
-} 
+}
 
 /*************************************************
 *             Initialize transport list           *

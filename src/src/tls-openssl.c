@@ -83,9 +83,6 @@ functions from the OpenSSL library. */
 #   define EXIM_HAVE_ECDH
 #  endif
 #  if OPENSSL_VERSION_NUMBER >= 0x10002000L
-#   if OPENSSL_VERSION_NUMBER < 0x10100000L
-#    define EXIM_HAVE_OPENSSL_ECDH_AUTO
-#   endif
 #   define EXIM_HAVE_OPENSSL_EC_NIST2NID
 #  endif
 # endif
@@ -729,16 +726,32 @@ if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve))
 if (!exp_curve || !*exp_curve)
   return TRUE;
 
-#  ifdef EXIM_HAVE_OPENSSL_ECDH_AUTO
-/* check if new enough library to support auto ECDH temp key parameter selection */
+/* "auto" needs to be handled carefully.
+ * OpenSSL <  1.0.2: we do not select anything, but fallback to primve256v1
+ * OpenSSL <  1.1.0: we have to call SSL_CTX_set_ecdh_auto
+ *                   (openss/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
+ * OpenSSL >= 1.1.0: we do not set anything, the libray does autoselection
+ *                   https://github.com/openssl/openssl/commit/fe6ef2472db933f01b59cad82aa925736935984b
+ */
 if (Ustrcmp(exp_curve, "auto") == 0)
   {
+#if OPENSSL_VERSION_NUMBER < 0x10002000L
   DEBUG(D_tls) debug_printf(
-    "ECDH temp key parameter settings: OpenSSL 1.2+ autoselection\n");
+    "ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
+  exp_curve = "prime256v1";
+#else
+# if defined SSL_CTRL_SET_ECDH_AUTO
+  DEBUG(D_tls) debug_printf(
+    "ECDH OpenSSL 1.0.2+ temp key parameter settings: autoselection\n");
   SSL_CTX_set_ecdh_auto(sctx, 1);
   return TRUE;
+# else
+  DEBUG(D_tls) debug_printf(
+    "ECDH OpenSSL 1.1.0+ temp key parameter settings: default selection\n");
+  return TRUE;
+# endif
+#endif
   }
-#  endif
 
 DEBUG(D_tls) debug_printf("ECDH: curve '%s'\n", exp_curve);
 if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
