@@ -4918,8 +4918,12 @@ using this syntax:
 .endd
 on a line by itself. Double quotes round the file name are optional. If you use
 the first form, a configuration error occurs if the file does not exist; the
-second form does nothing for non-existent files. In all cases, an absolute file
+second form does nothing for non-existent files.
+.new
+The first form allows a relative name. It is resolved relative to
+the directory of the including file. For the second form an absolute file
 name is required.
+.wen
 
 Includes may be nested to any depth, but remember that Exim reads its
 configuration file often, so it is a good idea to keep them to a minimum.
@@ -4936,11 +4940,6 @@ hosts_lookup = a.b.c \
 Include processing happens after macro processing (see below). Its effect is to
 process the lines of the included file as if they occurred inline where the
 inclusion appears.
-
-Relative names are allowed with &`.include`&, and are resolved
-relative to the directory of the including file. For security reasons
-this is not allowed with &`.include_if_exists`&. To avoid confusion, it
-is strongly recommended to use absolute names only.
 
 
 
