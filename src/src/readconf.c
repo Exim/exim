@@ -3377,18 +3377,19 @@ logging configuration errors (it changes for .included files) whereas
 config_main_filename is the name shown by -bP. Failure to open a configuration
 file is a serious disaster. */
 
-if (config_file != NULL)
+if (config_file)
   {
-  uschar *slash = Ustrrchr(filename, '/');
+  uschar *last_slash = Ustrrchr(filename, '/');
   config_filename = config_main_filename = string_copy(filename);
 
-  /* the config_main_directory we need for the $config_dir expansion.
+  /* The config_main_directory we need for the $config_dir expansion.
+  config_main_filename we need for $config_file expansion.
   And config_dir is the directory of the current configuration, used for
   relative .includes. We do need to know it's name, as we change our working
   directory later. */
 
   if (filename[0] == '/')
-    config_main_directory = slash > filename ? string_copyn(filename, slash - filename) : US"/";
+    config_main_directory = last_slash == filename ? US"/" : string_copyn(filename, last_slash - filename);
   else
     {
       /* relative configuration file name: working dir + / + basename(filename) */
@@ -3396,7 +3397,6 @@ if (config_file != NULL)
       char buf[PATH_MAX];
       int offset = 0;
       int size = 0;
-      const uschar *p = Ustrrchr(filename, '/');
 
       if (getcwd(buf, PATH_MAX) == NULL)
         {
@@ -3407,11 +3407,13 @@ if (config_file != NULL)
 
       /* If the dir does not end with a "/", append one */
       if (config_main_directory[offset-1] != '/')
-        string_cat(config_main_directory, &size, &offset, US"/");
+        config_main_directory = string_catn(config_main_directory, &size, &offset, US"/", 1);
 
       /* If the config file contains a "/", extract the directory part */
-      if (p)
-        string_catn(config_main_directory, &size, &offset, filename, p - filename);
+      if (last_slash)
+        config_main_directory = string_catn(config_main_directory, &size, &offset, filename, last_slash - filename);
+
+      config_main_directory[offset] = '\0';
     }
   config_directory = config_main_directory;
   }
