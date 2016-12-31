@@ -1081,6 +1081,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms build with DKIM enabled
     next if /^PDKIM >> Body data for hash, canonicalized/;
 
+    #  Parts of DKIM-specific debug output depend on the time/date
+    next if /^date:\w+,{SP}/;
+    next if /^PDKIM \[[^[]+\] (Header hash|b) computed:/;
+
     # Not all platforms support TCP Fast Open, and the compile omits the check
     if (s/\S+ in hosts_try_fastopen\? no \(option unset\)\n$//)
       {

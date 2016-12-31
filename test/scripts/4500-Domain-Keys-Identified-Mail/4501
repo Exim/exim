@@ -1,4 +1,4 @@
-# DKIM simple canonicalisation, with spaces
+# DKIM verify, simple canonicalisation, with spaces
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****

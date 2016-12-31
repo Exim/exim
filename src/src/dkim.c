@@ -607,11 +607,13 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     dkim_private_key_expanded = big_buffer;
     }
 
-  ctx = pdkim_init_sign( CS dkim_signing_domain,
-			 CS dkim_signing_selector,
-			 CS dkim_private_key_expanded,
-			 PDKIM_ALGO_RSA_SHA256,
-			 dkim->dot_stuffed);
+  ctx = pdkim_init_sign(CS dkim_signing_domain,
+			CS dkim_signing_selector,
+			CS dkim_private_key_expanded,
+			PDKIM_ALGO_RSA_SHA256,
+			dkim->dot_stuffed,
+			&dkim_exim_query_dns_txt
+			);
   dkim_private_key_expanded[0] = '\0';
   pdkim_set_optional(ctx,
 		      CS dkim_sign_headers_expanded,

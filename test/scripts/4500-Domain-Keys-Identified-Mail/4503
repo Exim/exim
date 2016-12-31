@@ -24,6 +24,14 @@ From: nobody@example.com
 
 content
 ****
+#
+# check that on signing we warn in debug mode about verify problems
+exim -d-all+acl -DHEADERS_MAXSIZE=y -DSELECTOR=sel_bad -odf d@test.ex
+From: nobody@example.com
+
+content
+****
+#
 millisleep 500
 killdaemon
 no_msglog_check

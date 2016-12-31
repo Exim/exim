@@ -37,7 +37,11 @@ send_to_server:
   port = PORT_D
 
   dkim_domain =		test.ex
+.ifdef SELECTOR
+  dkim_selector =	SELECTOR
+.else
   dkim_selector =	sel
+.endif
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
 .ifndef HEADERS_MAXSIZE
   dkim_sign_headers =	OPT

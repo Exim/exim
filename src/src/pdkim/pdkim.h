@@ -285,7 +285,8 @@ extern "C" {
 void	   pdkim_init         (void);
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int, BOOL);
+pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int,
+			      BOOL, int(*)(char *, char *));
 
 DLLEXPORT
 pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *), BOOL);

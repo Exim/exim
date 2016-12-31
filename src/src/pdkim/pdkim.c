@@ -1302,6 +1302,74 @@ return hdr;
 
 /* -------------------------------------------------------------------------- */
 
+static pdkim_pubkey *
+pdkim_key_from_dns(pdkim_ctx * ctx, pdkim_signature * sig, ev_ctx * vctx)
+{
+uschar * dns_txt_name, * dns_txt_reply;
+pdkim_pubkey * p;
+const uschar * errstr;
+
+/* Fetch public key for signing domain, from DNS */
+
+dns_txt_name = string_sprintf("%s._domainkey.%s.", sig->selector, sig->domain);
+
+dns_txt_reply = store_get(PDKIM_DNS_TXT_MAX_RECLEN);
+memset(dns_txt_reply, 0, PDKIM_DNS_TXT_MAX_RECLEN);
+
+if (  ctx->dns_txt_callback(CS dns_txt_name, CS dns_txt_reply) != PDKIM_OK 
+   || dns_txt_reply[0] == '\0'
+   )
+  {
+  sig->verify_status =      PDKIM_VERIFY_INVALID;
+  sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE;
+  return NULL;
+  }
+
+DEBUG(D_acl)
+  {
+  debug_printf(
+    "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
+    " Raw record: ");
+  pdkim_quoteprint(CUS dns_txt_reply, Ustrlen(dns_txt_reply));
+  }
+
+if (  !(p = pdkim_parse_pubkey_record(ctx, CUS dns_txt_reply))
+   || (Ustrcmp(p->srvtype, "*") != 0 && Ustrcmp(p->srvtype, "email") != 0)
+   )
+  {
+  sig->verify_status =      PDKIM_VERIFY_INVALID;
+  sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD;
+
+  DEBUG(D_acl)
+    {
+    if (p)
+      debug_printf(" Invalid public key service type '%s'\n", p->srvtype);
+    else
+      debug_printf(" Error while parsing public key record\n");
+    debug_printf(
+      "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+    }
+  return NULL;
+  }
+
+DEBUG(D_acl) debug_printf(
+      "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+
+/* Import public key */
+if ((errstr = exim_rsa_verify_init(&p->key, vctx)))
+  {
+  DEBUG(D_acl) debug_printf("verify_init: %s\n", errstr);
+  sig->verify_status =      PDKIM_VERIFY_INVALID;
+  sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_IMPORT;
+  return NULL;
+  }
+
+return p;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
 DLLEXPORT int
 pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures)
 {
@@ -1519,8 +1587,6 @@ while (sig)
     const uschar * errstr;
     pdkim_pubkey * p;
 
-    uschar *dns_txt_name, *dns_txt_reply;
-
     /* Make sure we have all required signature tags */
     if (!(  sig->domain        && *sig->domain
 	 && sig->selector      && *sig->selector
@@ -1552,61 +1618,8 @@ while (sig)
       goto NEXT_VERIFY;
       }
 
-    /* Fetch public key for signing domain, from DNS */
-
-    dns_txt_name = string_sprintf("%s._domainkey.%s.",
-				 sig->selector, sig->domain);
-
-    dns_txt_reply = store_get(PDKIM_DNS_TXT_MAX_RECLEN);
-    memset(dns_txt_reply, 0, PDKIM_DNS_TXT_MAX_RECLEN);
-
-    if (  ctx->dns_txt_callback(CS dns_txt_name, CS dns_txt_reply) != PDKIM_OK 
-       || dns_txt_reply[0] == '\0')
-      {
-      sig->verify_status =      PDKIM_VERIFY_INVALID;
-      sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE;
+    if (!(sig->pubkey = pdkim_key_from_dns(ctx, sig, &vctx)))
       goto NEXT_VERIFY;
-      }
-
-    DEBUG(D_acl)
-      {
-      debug_printf(
-          "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
-          " Raw record: ");
-      pdkim_quoteprint(CUS dns_txt_reply, Ustrlen(dns_txt_reply));
-      }
-
-    if (  !(p = pdkim_parse_pubkey_record(ctx, CUS dns_txt_reply))
-       || (Ustrcmp(p->srvtype, "*") != 0 && Ustrcmp(p->srvtype, "email") != 0)
-       )
-      {
-      sig->verify_status =      PDKIM_VERIFY_INVALID;
-      sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD;
-
-      DEBUG(D_acl)
-	{
-	if (p)
-	  debug_printf(" Invalid public key service type '%s'\n", p->srvtype);
-	else
-	  debug_printf(" Error while parsing public key record\n");
-	debug_printf(
-	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-	}
-      goto NEXT_VERIFY;
-      }
-    sig->pubkey = p;
-
-    DEBUG(D_acl) debug_printf(
-	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-
-    /* Import public key */
-    if ((errstr = exim_rsa_verify_init(&sig->pubkey->key, &vctx)))
-      {
-      DEBUG(D_acl) debug_printf("verify_init: %s\n", errstr);
-      sig->verify_status =      PDKIM_VERIFY_INVALID;
-      sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_IMPORT;
-      goto NEXT_VERIFY;
-      }
 
     /* Check the signature */
     if ((errstr = exim_rsa_verify(&vctx, is_sha1, &hhash, &sig->sigdata)))
@@ -1668,22 +1681,24 @@ return ctx;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_sign(char *domain, char *selector, char *rsa_privkey, int algo,
-  BOOL dot_stuffed)
+pdkim_init_sign(char * domain, char * selector, char * rsa_privkey, int algo,
+  BOOL dot_stuffed, int(*dns_txt_callback)(char *, char *))
 {
-pdkim_ctx *ctx;
-pdkim_signature *sig;
+pdkim_ctx * ctx;
+pdkim_signature * sig;
 
 if (!domain || !selector || !rsa_privkey)
   return NULL;
 
-ctx = store_get(sizeof(pdkim_ctx));
+ctx = store_get(sizeof(pdkim_ctx) + PDKIM_MAX_BODY_LINE_LEN + sizeof(pdkim_signature));
 memset(ctx, 0, sizeof(pdkim_ctx));
 
 ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;
-ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN);
+ctx->linebuf = CS (ctx+1);
 
-sig = store_get(sizeof(pdkim_signature));
+DEBUG(D_acl) ctx->dns_txt_callback = dns_txt_callback;
+
+sig = (pdkim_signature *)(ctx->linebuf + PDKIM_MAX_BODY_LINE_LEN);
 memset(sig, 0, sizeof(pdkim_signature));
 
 sig->bodylength = -1;
@@ -1695,6 +1710,18 @@ sig->rsa_privkey = string_copy(US rsa_privkey);
 sig->algo = algo;
 
 exim_sha_init(&sig->body_hash, algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
+
+DEBUG(D_acl)
+  {
+  pdkim_signature s = *sig;
+  ev_ctx vctx;
+
+  debug_printf("PDKIM (checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+  if (!pdkim_key_from_dns(ctx, &s, &vctx))
+    debug_printf("WARNING: bad dkim key in dns\n");
+  debug_printf("PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+  }
+
 return ctx;
 }
 
