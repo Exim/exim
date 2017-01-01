@@ -23972,9 +23972,9 @@ CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
 BDAT will not be used in conjuction with a transport filter.
 
 .option hosts_try_fastopen smtp "host list!!" unset
-.option "fast open, TCP" "enabling, in client"
-.option "TCP Fast Open" "enabling, in client"
-.option "RFC 7413" "TCP Fast Open"
+.cindex "fast open, TCP" "enabling, in client"
+.cindex "TCP Fast Open" "enabling, in client"
+.cindex "RFC 7413" "TCP Fast Open"
 This option provides a list of servers to which, provided
 the facility is supported by this system, Exim will attempt to
 perform a TCP Fast Open.
