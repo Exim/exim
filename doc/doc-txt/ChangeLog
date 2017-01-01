@@ -4,16 +4,22 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+
 Exim version 4.89
 -------------------
+
 JH/01 Bug 1922: Support IDNA2008.  This has slightly different conversion rules
       than -2003 did; needs libidn2 in addition to linidn.
 
 JH/02 The path option on a pipe transport is now expanded before use.
 
+PP/01 GitHub PR 50: Do not call ldap_start_tls_s on ldapi:// connections.
+      Patch provided by "Björn", documentation fix added too.
+
 
 Exim version 4.88
 -----------------
+
 JH/01 Use SIZE on MAIL FROM in a cutthrough connection, if the destination
       supports it and a size is available (ie. the sending peer gave us one).
 
@@ -152,11 +158,12 @@ HS/03 Use "auto" as the default EC curve parameter. For OpenSSL < 1.0.2
       fallback to "prime256v1".
 
 JH/34 SECURITY: Use proper copy of DATA command in error message.
-      Could leak key material.  Remotely explaoitable.  CVE-2016-9963.
+      Could leak key material.  Remotely exploitable.  CVE-2016-9963.
 
 
 Exim version 4.87
 -----------------
+
 JH/01 Bug 1664: Disable OCSP for GnuTLS library versions at/before 3.3.16
       and 3.4.4 - once the server is enabled to respond to an OCSP request
       it does even when not requested, resulting in a stapling non-aware
@@ -353,9 +360,9 @@ JH/48 Bug 1807: Fix ${extract } for the numeric/3-string case. While preparsing
       extraction.  Accept either.
 
 
-
 Exim version 4.86
 -----------------
+
 JH/01 Bug 1545: The smtp transport option "retry_include_ip_address" is now
       expanded.
 
@@ -478,6 +485,7 @@ HS/03 Add perl_taintmode main config option
 
 Exim version 4.85
 -----------------
+
 TL/01 When running the test suite, the README says that variables such as
       no_msglog_check are global and can be placed anywhere in a specific
       test's script, however it was observed that placement needed to be near

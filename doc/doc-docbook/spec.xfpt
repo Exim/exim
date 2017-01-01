@@ -15293,6 +15293,9 @@ connecting on a regular LDAP port.  This is the LDAP equivalent of SMTP's
 of SSL-on-connect.
 In the event of failure to negotiate TLS, the action taken is controlled
 by &%ldap_require_cert%&.
+.new
+This option is ignored for &`ldapi`& connections.
+.wen
 
 
 .option ldap_version main integer unset

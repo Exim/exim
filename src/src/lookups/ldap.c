@@ -580,7 +580,7 @@ if (!lcp->bound ||
   {
   DEBUG(D_lookup) debug_printf("%sbinding with user=%s password=%s\n",
     (lcp->bound)? "re-" : "", user, password);
-  if (eldap_start_tls && !lcp->is_start_tls_called)
+  if (eldap_start_tls && !lcp->is_start_tls_called && !ldapi)
     {
 #if defined(LDAP_OPT_X_TLS) && !defined(LDAP_LIB_SOLARIS)
     /* The Oracle LDAP libraries (LDAP_LIB_TYPE=SOLARIS) don't support this.
