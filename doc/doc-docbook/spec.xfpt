@@ -38489,9 +38489,9 @@ To include this support, include &"SUPPORT_PROXY=yes"&
 in Local/Makefile.
 
 It was built on specifications from:
-http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt
+(&url(http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt)).
 That URL was revised in May 2014 to version 2 spec:
-http://git.1wt.eu/web?p=haproxy.git;a=commitdiff;h=afb768340c9d7e50d8e
+(&url(http://git.1wt.eu/web?p=haproxy.git;a=commitdiff;h=afb768340c9d7e50d8e)).
 
 The purpose of this facility is so that an application load balancer,
 such as HAProxy, can sit in front of several Exim servers

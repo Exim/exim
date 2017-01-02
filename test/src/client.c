@@ -476,6 +476,44 @@ return session;
 
 
 /****************************************************************************/
+/* Turn "\n" and "\r" into the relevant characters. This is a hack. */
+
+static int
+unescape_buf(unsigned char * buf, int len)
+{
+unsigned char * s;
+unsigned char c, t;
+unsigned shift;
+
+for (s = buf; s < buf+len; s++) if (*s == '\\')
+  {
+  switch (s[1])
+    {
+    default:	c = s[1]; shift = 1; break;
+    case 'n':	c = '\n'; shift = 1; break;
+    case 'r':	c = '\r'; shift = 1; break;
+    case 'x':
+		t = s[2];
+    		if (t >= 'A' && t <= 'F') t -= 'A'-'9'-1;
+		else if (t >= 'a' && t <= 'f') t -= 'a'-'9'-1;
+		t -= '0';
+		c = (t<<4) & 0xf0;
+		t = s[3];
+    		if (t >= 'A' && t <= 'F') t -= 'A'-'9'-1;
+		else if (t >= 'a' && t <= 'f') t -= 'a'-'9'-1;
+		t -= '0';
+		c |= t & 0xf;
+		shift = 3;
+		break;
+    }
+  *s = c;
+  memmove(s+1, s+shift+1, len-shift);
+  len -= shift;
+  }
+return len;
+}
+
+
 /****************************************************************************/
 
 
@@ -501,7 +539,8 @@ Usage: client\n"
           [<key file>]\n\
 \n";
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 struct sockaddr *s_ptr;
 struct sockaddr_in s_in4;
@@ -852,6 +891,7 @@ if (tls_on_connect)
 while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
   {
   int n = (int)strlen(CS outbuffer);
+  int crlf = 1;
 
   /* Strip trailing newline */
   if (outbuffer[n-1] == '\n') outbuffer[--n] = 0;
@@ -866,6 +906,7 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
     unsigned exp_eof = outbuffer[3] == '*';
 
     printf("%s\n", outbuffer);
+    n = unescape_buf(outbuffer, n);
 
     if (*inptr == 0)   /* Refill input buffer */
       {
@@ -924,7 +965,7 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
       }
 
     printf("<<< %s\n", lineptr);
-    if (strncmp(CS lineptr, CS outbuffer + 4, (int)strlen(CS outbuffer) - 4) != 0)
+    if (strncmp(CS lineptr, CS outbuffer + 4, n - 4) != 0)
       {
       printf("\n******** Input mismatch ********\n");
       exit(79);
@@ -1024,12 +1065,19 @@ int rc;
 
   else
     {
-    unsigned char *escape;
+    unsigned char * out = outbuffer;
+
+    if (strncmp(CS outbuffer, ">>> ", 4) == 0)
+      {
+      crlf = 0;
+      out += 4;
+      n -= 4;
+      }
 
     if (*inptr != 0)
       {
       printf("Unconsumed input: %s", inptr);
-      printf("   About to send: %s\n", outbuffer);
+      printf("   About to send: %s\n", out);
       exit(78);
       }
 
@@ -1037,8 +1085,8 @@ int rc;
 
     /* Shutdown TLS */
 
-    if (strcmp(CS outbuffer, "stoptls") == 0 ||
-        strcmp(CS outbuffer, "STOPTLS") == 0)
+    if (strcmp(CS out, "stoptls") == 0 ||
+        strcmp(CS out, "STOPTLS") == 0)
       {
       if (!tls_active)
         {
@@ -1065,38 +1113,28 @@ int rc;
 
     /* Remember that we sent STARTTLS */
 
-    sent_starttls = (strcmp(CS outbuffer, "starttls") == 0 ||
-                     strcmp(CS outbuffer, "STARTTLS") == 0);
+    sent_starttls = (strcmp(CS out, "starttls") == 0 ||
+                     strcmp(CS out, "STARTTLS") == 0);
 
     /* Fudge: if the command is "starttls_wait", we send the starttls bit,
     but we haven't set the flag, so that there is no negotiation. This is for
     testing the server's timeout. */
 
-    if (strcmp(CS outbuffer, "starttls_wait") == 0)
+    if (strcmp(CS out, "starttls_wait") == 0)
       {
-      outbuffer[8] = 0;
+      out[8] = 0;
       n = 8;
       }
     #endif
 
-    printf(">>> %s\n", outbuffer);
-    strcpy(CS outbuffer + n, "\r\n");
-
-    /* Turn "\n" and "\r" into the relevant characters. This is a hack. */
-
-    while ((escape = US strstr(CS outbuffer, "\\r")) != NULL)
+    printf(">>> %s\n", out);
+    if (crlf)
       {
-      *escape = '\r';
-      memmove(escape + 1, escape + 2,  (n + 2) - (escape - outbuffer) - 2);
-      n--;
+      strcpy(CS out + n, "\r\n");
+      n += 2;
       }
 
-    while ((escape = US strstr(CS outbuffer, "\\n")) != NULL)
-      {
-      *escape = '\n';
-      memmove(escape + 1, escape + 2,  (n + 2) - (escape - outbuffer) - 2);
-      n--;
-      }
+    n = unescape_buf(out, n);
 
     /* OK, do it */
 
@@ -1104,11 +1142,10 @@ int rc;
     if (tls_active)
       {
       #ifdef HAVE_OPENSSL
-        rc = SSL_write (ssl, outbuffer, n + 2);
+        rc = SSL_write (ssl, out, n);
       #endif
       #ifdef HAVE_GNUTLS
-        rc = gnutls_record_send(tls_session, CS outbuffer, n + 2);
-        if (rc < 0)
+        if ((rc = gnutls_record_send(tls_session, CS out, n)) < 0)
           {
           printf("GnuTLS write error: %s\n", gnutls_strerror(rc));
           exit(76);
@@ -1116,9 +1153,7 @@ int rc;
       #endif
       }
     else
-      {
-      rc = write(sock, outbuffer, n + 2);
-      }
+      rc = write(sock, out, n);
     alarm(0);
 
     if (rc < 0)

@@ -1,0 +1,23 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 proxy session: no
+1999-03-02 09:44:33 local          [127.0.0.1]:1111
+1999-03-02 09:44:33 proxy internal []:0
+1999-03-02 09:44:33 proxy external []:0
+1999-03-02 09:44:33 remote         [127.0.0.1]:1112
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.1]:1112 P=smtp S=sss
+1999-03-02 09:44:33 no host name found for IP address 127.0.0.2
+1999-03-02 09:44:33 proxy session: yes
+1999-03-02 09:44:33 local          [ip4.ip4.ip4.ip4]:1111
+1999-03-02 09:44:33 proxy internal [ip4.ip4.ip4.ip4]:1113
+1999-03-02 09:44:33 proxy external [127.42.42.42]:1114
+1999-03-02 09:44:33 remote         [127.0.0.2]:1115
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= c@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+1999-03-02 09:44:33 no host name found for IP address 192.168.0.15
+1999-03-02 09:44:33 proxy session: yes
+1999-03-02 09:44:33 local          [ip4.ip4.ip4.ip4]:1111
+1999-03-02 09:44:33 proxy internal [ip4.ip4.ip4.ip4]:1116
+1999-03-02 09:44:33 proxy external [192.168.0.48]:1117
+1999-03-02 09:44:33 remote         [192.168.0.15]:1118
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= e@test.ex H=(clientname) [192.168.0.15]:1118 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss

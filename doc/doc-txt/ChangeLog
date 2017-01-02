@@ -16,6 +16,9 @@ JH/02 The path option on a pipe transport is now expanded before use.
 PP/01 GitHub PR 50: Do not call ldap_start_tls_s on ldapi:// connections.
       Patch provided by "Björn", documentation fix added too.
 
+JH/03 Bug 2003: fix Proxy Protocol v2 handling: the address size field was
+      missing a wire-to-host endian conversion.
+
 
 Exim version 4.88
 -----------------

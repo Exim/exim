@@ -1,0 +1,77 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO clientname
+??? 250
+<<< 250 myhost.test.ex Hello clientname [IP_LOOPBACK_ADDR]
+>>> MAIL FROM:<a@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<b@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+>>> PROXY TCP4 127.0.0.2 127.42.42.42 64000 25
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO clientname
+??? 250
+<<< 250 myhost.test.ex Hello clientname [127.0.0.2]
+>>> MAIL FROM:<c@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<d@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+>>> \x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x21\x11\x00\x0c\xc0\xa8\x00\x0f\xc0\xa8\x00\05\xc2\x95\x04\01
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO clientname
+??? 250
+<<< 250 myhost.test.ex Hello clientname [192.168.0.15]
+>>> MAIL FROM:<e@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<f@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaZ-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

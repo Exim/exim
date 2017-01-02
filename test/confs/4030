@@ -1,0 +1,36 @@
+# Exim test configuration 4030
+# Proxy Protocol
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+hosts_proxy = HOSTIPV4
+queue_only
+
+# ----- Main settings -----
+
+log_selector = +proxy +incoming_port
+
+acl_smtp_rcpt = r_acl
+
+
+begin acl
+
+r_acl:
+  accept
+	logwrite = proxy session: $proxy_session
+	logwrite = local          [$received_ip_address]:$received_port
+	logwrite = proxy internal [$proxy_local_address]:$proxy_local_port
+	logwrite = proxy external [$proxy_external_address]:$proxy_external_port
+	logwrite = remote         [$sender_host_address]:$sender_host_port
+
+
+# ----- Routers -----
+
+begin routers
+
+dump:
+  driver = redirect
+  data = :blackhole:
+
+# End

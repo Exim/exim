@@ -878,17 +878,15 @@ do
 if (ret == -1)
   goto proxyfail;
 
-if (ret >= 16 &&
-    memcmp(&hdr.v2, v2sig, 12) == 0)
+if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
   {
-  uint8_t ver, cmd;
+  uint8_t ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
+  uint8_t cmd = (hdr.v2.ver_cmd & 0x0f);
 
   /* May 2014: haproxy combined the version and command into one byte to
      allow two full bytes for the length field in order to proxy SSL
      connections.  SSL Proxy is not supported in this version of Exim, but
      must still seperate values here. */
-  ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
-  cmd = (hdr.v2.ver_cmd & 0x0f);
 
   if (ver != 0x02)
     {
@@ -897,7 +895,7 @@ if (ret >= 16 &&
     }
   DEBUG(D_receive) debug_printf("Detected PROXYv2 header\n");
   /* The v2 header will always be 16 bytes per the spec. */
-  size = 16 + hdr.v2.len;
+  size = 16 + ntohs(hdr.v2.len);
   if (ret < size)
     {
     DEBUG(D_receive) debug_printf("Truncated or too large PROXYv2 header (%d/%d)\n",
@@ -912,8 +910,8 @@ if (ret >= 16 &&
         case 0x11:  /* TCPv4 address type */
           iptype = US"IPv4";
           tmpaddr.sin_addr.s_addr = hdr.v2.addr.ip4.src_addr;
-          inet_ntop(AF_INET, &(tmpaddr.sin_addr), (char *)&tmpip, sizeof(tmpip));
-          if (!string_is_ip_address(US tmpip,NULL))
+          inet_ntop(AF_INET, &tmpaddr.sin_addr, CS &tmpip, sizeof(tmpip));
+          if (!string_is_ip_address(US tmpip, NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
             goto proxyfail;
@@ -925,8 +923,8 @@ if (ret >= 16 &&
           sender_host_port    = tmpport;
           /* Save dest ip/port */
           tmpaddr.sin_addr.s_addr = hdr.v2.addr.ip4.dst_addr;
-          inet_ntop(AF_INET, &(tmpaddr.sin_addr), (char *)&tmpip, sizeof(tmpip));
-          if (!string_is_ip_address(US tmpip,NULL))
+          inet_ntop(AF_INET, &tmpaddr.sin_addr, CS &tmpip, sizeof(tmpip));
+          if (!string_is_ip_address(US tmpip, NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
             goto proxyfail;
@@ -938,8 +936,8 @@ if (ret >= 16 &&
         case 0x21:  /* TCPv6 address type */
           iptype = US"IPv6";
           memmove(tmpaddr6.sin6_addr.s6_addr, hdr.v2.addr.ip6.src_addr, 16);
-          inet_ntop(AF_INET6, &(tmpaddr6.sin6_addr), (char *)&tmpip6, sizeof(tmpip6));
-          if (!string_is_ip_address(US tmpip6,NULL))
+          inet_ntop(AF_INET6, &tmpaddr6.sin6_addr, CS &tmpip6, sizeof(tmpip6));
+          if (!string_is_ip_address(US tmpip6, NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s source IP\n", iptype);
             goto proxyfail;
@@ -951,8 +949,8 @@ if (ret >= 16 &&
           sender_host_port    = tmpport;
           /* Save dest ip/port */
           memmove(tmpaddr6.sin6_addr.s6_addr, hdr.v2.addr.ip6.dst_addr, 16);
-          inet_ntop(AF_INET6, &(tmpaddr6.sin6_addr), (char *)&tmpip6, sizeof(tmpip6));
-          if (!string_is_ip_address(US tmpip6,NULL))
+          inet_ntop(AF_INET6, &tmpaddr6.sin6_addr, CS &tmpip6, sizeof(tmpip6));
+          if (!string_is_ip_address(US tmpip6, NULL))
             {
             DEBUG(D_receive) debug_printf("Invalid %s dest port\n", iptype);
             goto proxyfail;
@@ -978,8 +976,7 @@ if (ret >= 16 &&
       goto proxyfail;
     }
   }
-else if (ret >= 8 &&
-         memcmp(hdr.v1.line, "PROXY", 5) == 0)
+else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   {
   uschar *p = string_copy(hdr.v1.line);
   uschar *end = memchr(p, '\r', ret - 1);
@@ -1032,7 +1029,7 @@ else if (ret >= 8 &&
     goto proxyfail;
     }
   *sp = '\0';
-  if(!string_is_ip_address(p,NULL))
+  if(!string_is_ip_address(p, NULL))
     {
     DEBUG(D_receive)
       debug_printf("Proxied src arg is not an %s address\n", iptype);
@@ -1048,7 +1045,7 @@ else if (ret >= 8 &&
     goto proxyfail;
     }
   *sp = '\0';
-  if(!string_is_ip_address(p,NULL))
+  if(!string_is_ip_address(p, NULL))
     {
     DEBUG(D_receive)
       debug_printf("Proxy dest arg is not an %s address\n", iptype);
@@ -1062,7 +1059,7 @@ else if (ret >= 8 &&
     goto proxyfail;
     }
   *sp = '\0';
-  tmp_port = strtol(CCS p,&endc,10);
+  tmp_port = strtol(CCS p, &endc, 10);
   if (*endc || tmp_port == 0)
     {
     DEBUG(D_receive)
@@ -1077,7 +1074,7 @@ else if (ret >= 8 &&
     DEBUG(D_receive) debug_printf("Did not find proxy dest port\n");
     goto proxyfail;
     }
-  tmp_port = strtol(CCS p,&endc,10);
+  tmp_port = strtol(CCS p, &endc, 10);
   if (*endc || tmp_port == 0)
     {
     DEBUG(D_receive)
