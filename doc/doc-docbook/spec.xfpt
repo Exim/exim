@@ -434,6 +434,7 @@ directory are:
 .row &_filter.txt_&          "specification of the filter language"
 .row &_Exim3.upgrade_&       "upgrade notes from release 2 to release 3"
 .row &_Exim4.upgrade_&       "upgrade notes from release 3 to release 4"
+.row &_openssl.txt_&         "installing a current OpenSSL release"
 .endtable
 
 The main specification and the specification of the filtering language are also

@@ -26,6 +26,16 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.89
+-----------------
+
+ * OpenSSL: oldest supported release series is now 1.0.2, which is the oldest
+   supported by the OpenSSL project.  If you can build Exim with an older
+   release series, congratulations.  If you can't, then upgrade.
+   The file doc/openssl.txt contains instructions for installing a current
+   OpenSSL outside the system library paths and building Exim to use it.
+
+
 Exim version 4.88
 -----------------
 

@@ -1,0 +1,108 @@
+OpenSSL
+=======
+
+The OpenSSL Project documents their supported releases at
+<https://www.openssl.org/policies/releasestrat.html>.  The Exim
+Maintainers are unwilling to try to support Exim built with a
+version of a critical security library which is unmaintained.
+
+Thus as versions of OpenSSL become unsupported by OpenSSL, they become
+unsupported by Exim.  Exim might build with older releases of OpenSSL,
+but that's risky behaviour.
+
+If your operating system vendor continues to ship an older version of
+OpenSSL and is diligently backporting security fixes, and they support
+Exim, then they will be backporting fixes to their packages of Exim too.
+If you wish to stick purely to packages of OpenSSL, then stick to
+packages of Exim too.
+
+If someone maintains "backports", that is worth exploring too.
+
+Note that a number of OSes use Exim with GnuTLS, not OpenSSL.
+
+Otherwise, assuming that your operating system has old OpenSSL, and you
+wish to use current Exim with OpenSSL, then you need to build and
+install your own, without interfering with the system libraries.
+Fortunately, this is easy.
+
+So this only applies if you build Exim yourself.
+
+
+Build
+-----
+
+Extract the current source of OpenSSL.  Change into that directory.
+
+This assumes that `/opt/openssl` is not in use.  If it is, pick
+something else.  `/opt/exim/openssl` perhaps.
+
+    ./config --prefix=/opt/openssl --openssldir=/etc/ssl
+    enable-ssl-trace
+    make
+    make install
+
+You now have an installed OpenSSL under /opt/openssl which will not be
+used by any system programs.
+
+When you copy `src/EDITME` to `Local/Makefile` to make your build edits,
+choose the pkg-config approach in that file, but also tell Exim to add
+the relevant directory into the rpath stamped into the binary:
+
+    SUPPORT_TLS=yes
+    USE_OPENSSL_PC=openssl
+    EXTRALIBS_EXIM=-ldl -Wl,-rpath,/opt/openssl/lib
+
+The -ldl is needed by OpenSSL 1.1+ on Linux and is not needed on most
+other platforms.
+
+Then tell pkg-config how to find the configuration files for your new
+OpenSSL install, and build Exim:
+
+    export PKG_CONFIG_PATH=/opt/openssl/lib/pkgconfig
+    make
+    sudo make install
+
+
+Confirming
+----------
+
+Run:
+
+    exim -d-all+expand --version
+
+and look for the `Library version: OpenSSL:` lines.
+
+To look at the libraries _probably_ found by the linker, use:
+
+    ldd $(which exim)		# most platforms
+    otool -L $(which exim)	# MacOS
+
+although that does not correclty handle restrictions imposed upon
+executables which are setuid.
+
+If the `chrpath` package is installed, then:
+
+    chrpath -l $(which exim)
+
+will show the DT_RPATH stamped into the binary.
+
+
+Very Advanced
+-------------
+
+You can not use $ORIGIN for portably packing OpenSSL in with Exim with
+normal Exim builds, because Exim is installed setuid which causes the
+runtime linker to ignore $ORIGIN in DT_RPATH.
+
+_If_ following the steps for a non-setuid Exim, _then_ you can use:
+
+    EXTRALIBS_EXIM=-ldl '-Wl,-rpath,$$ORIGIN/../lib'
+
+The doubled `$$` is needed for the make(1) layer and the quotes needed
+for the shell invoked by make(1) for calling the linker.
+
+Note that this is sufficiently far outside normal that the build-system
+doesn't support it by default; you'll want to drop a symlink to the lib
+directory into the Exim release top-level directory, so that lib exists
+as a sibling to the build-$platform directory.
+
