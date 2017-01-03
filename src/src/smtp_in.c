@@ -82,18 +82,22 @@ enum {
 
   MAIL_CMD, RCPT_CMD, RSET_CMD,
 
+  /* This is a dummy to identify the non-sync commands when not pipelining */
+
+  NON_SYNC_CMD_NON_PIPELINING,
+
   /* RFC3030 section 2: "After all MAIL and RCPT responses are collected and
   processed the message is sent using a series of BDAT commands"
   implies that BDAT should be synchronized.  However, we see Google, at least,
   sending MAIL,RCPT,BDAT-LAST in a single packet, clearly not waiting for
-  processing of the RPCT response(s).  We shall do the same, and not require
-  synch for BDAT. */
+  processing of the RCPT response(s).  We shall do the same, and not require
+  synch for BDAT.  Worse, as the chunk may (very likely will) follow the
+  command-header in the same packet we cannot do the usual "is there any
+  follow-on data after the commmand line" even for non-pipeline mode.
+  So we'll need an explicit check after reading the expected chunk amount
+  when non-pipe, before sennding the ACK. */
 
   BDAT_CMD,
-
-  /* This is a dummy to identify the non-sync commands when not pipelining */
-
-  NON_SYNC_CMD_NON_PIPELINING,
 
   /* I have been unable to find a statement about the use of pipelining
   with AUTH, so to be on the safe side it is here, though I kind of feel
@@ -307,6 +311,97 @@ static void smtp_quit_handler(uschar **, uschar **);
 static void smtp_rset_handler(void);
 
 /*************************************************
+*          Recheck synchronization               *
+*************************************************/
+
+/* Synchronization checks can never be perfect because a packet may be on its
+way but not arrived when the check is done. Such checks can in any case only be
+done when TLS is not in use. Normally, the checks happen when commands are
+read: Exim ensures that there is no more input in the input buffer. In normal
+cases, the response to the command will be fast, and there is no further check.
+
+However, for some commands an ACL is run, and that can include delays. In those
+cases, it is useful to do another check on the input just before sending the
+response. This also applies at the start of a connection. This function does
+that check by means of the select() function, as long as the facility is not
+disabled or inappropriate. A failure of select() is ignored.
+
+When there is unwanted input, we read it so that it appears in the log of the
+error.
+
+Arguments: none
+Returns:   TRUE if all is well; FALSE if there is input pending
+*/
+
+static BOOL
+check_sync(void)
+{
+int fd, rc;
+fd_set fds;
+struct timeval tzero;
+
+if (!smtp_enforce_sync || sender_host_address == NULL ||
+    sender_host_notsocket || tls_in.active >= 0)
+  return TRUE;
+
+fd = fileno(smtp_in);
+FD_ZERO(&fds);
+FD_SET(fd, &fds);
+tzero.tv_sec = 0;
+tzero.tv_usec = 0;
+rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
+
+if (rc <= 0) return TRUE;     /* Not ready to read */
+rc = smtp_getc();
+if (rc < 0) return TRUE;      /* End of file or error */
+
+smtp_ungetc(rc);
+rc = smtp_inend - smtp_inptr;
+if (rc > 150) rc = 150;
+smtp_inptr[rc] = 0;
+return FALSE;
+}
+
+
+
+/*************************************************
+*          Log incomplete transactions           *
+*************************************************/
+
+/* This function is called after a transaction has been aborted by RSET, QUIT,
+connection drops or other errors. It logs the envelope information received
+so far in order to preserve address verification attempts.
+
+Argument:   string to indicate what aborted the transaction
+Returns:    nothing
+*/
+
+static void
+incomplete_transaction_log(uschar *what)
+{
+if (sender_address == NULL ||                 /* No transaction in progress */
+    !LOGGING(smtp_incomplete_transaction))
+  return;
+
+/* Build list of recipients for logging */
+
+if (recipients_count > 0)
+  {
+  int i;
+  raw_recipients = store_get(recipients_count * sizeof(uschar *));
+  for (i = 0; i < recipients_count; i++)
+    raw_recipients[i] = recipients_list[i].address;
+  raw_recipients_count = recipients_count;
+  }
+
+log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
+  "%s incomplete transaction (%s)", host_and_ident(TRUE), what);
+}
+
+
+
+
+/*************************************************
 *          SMTP version of getc()                *
 *************************************************/
 
@@ -393,6 +488,22 @@ for(;;)
 
   receive_getc = lwr_receive_getc;
   receive_ungetc = lwr_receive_ungetc;
+
+  /* Unless PIPELINING was offered, there should be no next command
+  until after we ack that chunk */
+
+  if (!pipelining_advertised && !check_sync())
+    {
+    incomplete_transaction_log(US"sync failure");
+    log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
+      "(next input sent too soon: pipelining was not advertised): "
+      "rejected \"%s\" %s next input=\"%s\"",
+      smtp_cmd_buffer, host_and_ident(TRUE),
+      string_printing(smtp_inptr));
+      (void) synprot_error(L_smtp_protocol_error, 554, NULL,
+	US"SMTP synchronization error");
+    goto repeat_until_rset;
+    }
 
   /* If not the last, ack the received chunk.  The last response is delayed
   until after the data ACL decides on it */
@@ -1252,60 +1363,6 @@ if (smtp_inptr < smtp_inend &&                     /* Outstanding input */
   return BADSYN_CMD;
 
 return OTHER_CMD;
-}
-
-
-
-/*************************************************
-*          Recheck synchronization               *
-*************************************************/
-
-/* Synchronization checks can never be perfect because a packet may be on its
-way but not arrived when the check is done. Such checks can in any case only be
-done when TLS is not in use. Normally, the checks happen when commands are
-read: Exim ensures that there is no more input in the input buffer. In normal
-cases, the response to the command will be fast, and there is no further check.
-
-However, for some commands an ACL is run, and that can include delays. In those
-cases, it is useful to do another check on the input just before sending the
-response. This also applies at the start of a connection. This function does
-that check by means of the select() function, as long as the facility is not
-disabled or inappropriate. A failure of select() is ignored.
-
-When there is unwanted input, we read it so that it appears in the log of the
-error.
-
-Arguments: none
-Returns:   TRUE if all is well; FALSE if there is input pending
-*/
-
-static BOOL
-check_sync(void)
-{
-int fd, rc;
-fd_set fds;
-struct timeval tzero;
-
-if (!smtp_enforce_sync || sender_host_address == NULL ||
-    sender_host_notsocket || tls_in.active >= 0)
-  return TRUE;
-
-fd = fileno(smtp_in);
-FD_ZERO(&fds);
-FD_SET(fd, &fds);
-tzero.tv_sec = 0;
-tzero.tv_usec = 0;
-rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
-
-if (rc <= 0) return TRUE;     /* Not ready to read */
-rc = smtp_getc();
-if (rc < 0) return TRUE;      /* End of file or error */
-
-smtp_ungetc(rc);
-rc = smtp_inend - smtp_inptr;
-if (rc > 150) rc = 150;
-smtp_inptr[rc] = 0;
-return FALSE;
 }
 
 
@@ -2629,43 +2686,6 @@ if (code > 0)
   }
 
 return yield;
-}
-
-
-
-
-/*************************************************
-*          Log incomplete transactions           *
-*************************************************/
-
-/* This function is called after a transaction has been aborted by RSET, QUIT,
-connection drops or other errors. It logs the envelope information received
-so far in order to preserve address verification attempts.
-
-Argument:   string to indicate what aborted the transaction
-Returns:    nothing
-*/
-
-static void
-incomplete_transaction_log(uschar *what)
-{
-if (sender_address == NULL ||                 /* No transaction in progress */
-    !LOGGING(smtp_incomplete_transaction))
-  return;
-
-/* Build list of recipients for logging */
-
-if (recipients_count > 0)
-  {
-  int i;
-  raw_recipients = store_get(recipients_count * sizeof(uschar *));
-  for (i = 0; i < recipients_count; i++)
-    raw_recipients[i] = recipients_list[i].address;
-  raw_recipients_count = recipients_count;
-  }
-
-log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
-  "%s incomplete transaction (%s)", host_and_ident(TRUE), what);
 }
 
 

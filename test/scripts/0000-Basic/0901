@@ -1,387 +1,214 @@
-# CHUNKING transmission, short messages
-#
-# Start with non-pipelined cases
-#
-# Basic short message
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250 CHUNKING
-MAIL FROM
-250 OK
-RCPT TO
-250 OK
-BDAT 329 LAST
-*data 329
-250 OK
-QUIT
-225 OK
-*eof
+# CHUNKING reception, no pipelining
+exim -DSERVER=server -bd -oX PORT_D
 ****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<a@test.ex>
-DATA
-Subject: foo
+#
+# plain, small message (no body)
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-CHUNKING
+??? 250 HELP
+mail from:someone1@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88 last
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
-data
-.
-QUIT
+??? 250-
+??? 250
+quit
+??? 221
 ****
 #
-# Error case: server wrongly expected more data, client gets timeout for data-ack
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250 CHUNKING
-MAIL FROM
-250 good mail cmd
-RCPT TO
-250 acceptable rcpt cmd
-BDAT 329 LAST
-*data 330
-250 OK got that data
-QUIT
-225 OK quitting
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<b@test.ex>
-DATA
-Subject: foo
+# plain, small message (with body)
+# nonlast 1st bdat, noop, last-bdat(0)
+# immediate followon 2nd message
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone2@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 100
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyfull test message
 
-data
-.
-QUIT
-****
-#
-# Error case: server wrongly expected less data
-# client get the data-ack, sends quit - but server
-# sees a munged quit due to the outstanding data tail
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250 CHUNKING
-MAIL FROM
-250 OK
-RCPT TO
-250 OK
-BDAT 329 LAST
-*data 328
-250 OK
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<c@test.ex>
-DATA
-Subject: foo
+1234567890
+??? 250
+noop
+??? 250
+bdat 0 last
+??? 250-
+??? 250
+mail from:someone3@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 10
+To: Susan@bdat 78 last
+??? 250
+random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
-data
-.
-QUIT
+??? 250-
+??? 250
+quit
+??? 221
 ****
 #
-# server rejects BDAT cmd
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250 CHUNKING
-MAIL FROM
-250 OK
-RCPT TO
-250 OK
-BDAT 329 LAST
-*data 329
-500 oops
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<d@test.ex>
-DATA
-Subject: foo
+# not enough data in chunk
+#
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone4@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 89 last
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
-data
-.
-QUIT
+??? 421
 ****
 #
-# server tmp-rejects BDAT cmd
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250 CHUNKING
-MAIL FROM
-250 OK
-RCPT TO
-250 OK
-BDAT 329 LAST
-*data 329
-400 not right now
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<e@test.ex>
-DATA
-Subject: foo
+# protocol failure cases
+#
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone5@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
-data
-.
-QUIT
+??? 250
+bdat 0
+??? 504
+quit
+??? 221
 ****
 #
-#
-###################################################
-#
-# Pipelined cases
-#
-# Basic short message
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 329 LAST
-*data 329
-250 OK mail
-250 OK rcpt
-250 OK bdat
-QUIT
-225 OK
-*eof
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<p@test.ex>
-DATA
-Subject: foo
+# followon EHLO and another message
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone6@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
+??? 250
 data
-.
-QUIT
-****
-#
-# Error case: server wrongly expected more data, client gets timeout for data-ack
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 329 LAST
-*data 330
-250 good mail cmd
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<q@test.ex>
-DATA
-Subject: foo
+??? 503
+RSET
+??? 250
+EHLO tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone7@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
+??? 250
 data
-.
-QUIT
+??? 503
+data
+??? 503
+quit
+??? 221
 ****
 #
-# Error case: server wrongly expected less data
-# client get the data-ack, sends quit - but server
-# sees a munged quit due to the outstanding data tail
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 329 LAST
-*data 328
-250 OK mail
-250 OK rcpt
-250 OK bdat
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<r@test.ex>
-DATA
-Subject: foo
+# plain, small message (no body), chunk data with bdat line
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-CHUNKING
+??? 250 HELP
+mail from:someone8@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 88 last\r\nTo: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
-data
-.
-QUIT
+??? 250-
+??? 250
+quit
+??? 221
 ****
 #
-# server rejects MAIL cmd
-# transport coding does not handle the possible RSET-and-another transaction,
-# but always QUITs
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 329 LAST
-*data 329
-550 unacceptable mail-from
-550 rcpt ungood lacking mail-from
-500 bdat ungood lacking mail-from
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<s@test.ex>
-DATA
-Subject: foo
+# plain, small message (no body), 2 chunks, pipeline sync error for 2nd
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-CHUNKING
+??? 250 HELP
+mail from:someone9@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 1\r\nTbdat 87 last
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
 
-data
-.
-QUIT
-****
-#
-# server tmp-rejects MAIL cmd
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 330 LAST
-*data 330
-450 greylisted mail-from
-550 rcpt ungood lacking mail-from
-500 bdat ungood lacking mail-from
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<s1@test.ex>
-DATA
-Subject: foo
-
-data
-.
-QUIT
-****
-#
-# server rejects RCPT cmd
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 329 LAST
-*data 329
-250 OK mail
-550 no such recipient
-500 oops bdat
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<t@test.ex>
-DATA
-Subject: foo
-
-data
-.
-QUIT
-****
-#
-# server rejects BDAT cmd
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 329 LAST
-*data 329
-250 OK mail
-250 OK rcpt
-500 oops bdat
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<u@test.ex>
-DATA
-Subject: foo
-
-data
-.
-QUIT
-****
-#
-# server tmp-rejects BDAT cmd
-server PORT_S
-220 Greetings
-EHLO
-250-Hello there
-250-PIPELINING
-250 CHUNKING
-MAIL FROM
-RCPT TO
-BDAT 329 LAST
-*data 329
-250 OK mail
-250 OK rcpt
-400 not right now bdat
-QUIT
-225 OK
-****
-sudo exim -odf -bS
-EHLO test
-MAIL FROM:<sender@source.dom>
-RCPT TO:<v@test.ex>
-DATA
-Subject: foo
-
-data
-.
-QUIT
+??? 554 SMTP synchronization error
 ****
 #
 #
+killdaemon
 no_msglog_check

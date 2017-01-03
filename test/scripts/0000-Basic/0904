@@ -1,0 +1,387 @@
+# CHUNKING transmission, short messages
+#
+# Start with non-pipelined cases
+#
+# Basic short message
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 329 LAST
+*data 329
+250 OK
+QUIT
+225 OK
+*eof
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<a@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# Error case: server wrongly expected more data, client gets timeout for data-ack
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 good mail cmd
+RCPT TO
+250 acceptable rcpt cmd
+BDAT 329 LAST
+*data 330
+250 OK got that data
+QUIT
+225 OK quitting
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<b@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# Error case: server wrongly expected less data
+# client get the data-ack, sends quit - but server
+# sees a munged quit due to the outstanding data tail
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 329 LAST
+*data 328
+250 OK
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<c@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# server rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 329 LAST
+*data 329
+500 oops
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<d@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# server tmp-rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+BDAT 329 LAST
+*data 329
+400 not right now
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<e@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+#
+###################################################
+#
+# Pipelined cases
+#
+# Basic short message
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 329 LAST
+*data 329
+250 OK mail
+250 OK rcpt
+250 OK bdat
+QUIT
+225 OK
+*eof
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<p@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# Error case: server wrongly expected more data, client gets timeout for data-ack
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 329 LAST
+*data 330
+250 good mail cmd
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<q@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# Error case: server wrongly expected less data
+# client get the data-ack, sends quit - but server
+# sees a munged quit due to the outstanding data tail
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 329 LAST
+*data 328
+250 OK mail
+250 OK rcpt
+250 OK bdat
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<r@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# server rejects MAIL cmd
+# transport coding does not handle the possible RSET-and-another transaction,
+# but always QUITs
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 329 LAST
+*data 329
+550 unacceptable mail-from
+550 rcpt ungood lacking mail-from
+500 bdat ungood lacking mail-from
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<s@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# server tmp-rejects MAIL cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 330 LAST
+*data 330
+450 greylisted mail-from
+550 rcpt ungood lacking mail-from
+500 bdat ungood lacking mail-from
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<s1@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# server rejects RCPT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 329 LAST
+*data 329
+250 OK mail
+550 no such recipient
+500 oops bdat
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<t@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# server rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 329 LAST
+*data 329
+250 OK mail
+250 OK rcpt
+500 oops bdat
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<u@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+# server tmp-rejects BDAT cmd
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM
+RCPT TO
+BDAT 329 LAST
+*data 329
+250 OK mail
+250 OK rcpt
+400 not right now bdat
+QUIT
+225 OK
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<v@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+#
+no_msglog_check

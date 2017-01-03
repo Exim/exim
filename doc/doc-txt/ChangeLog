@@ -19,6 +19,11 @@ PP/01 GitHub PR 50: Do not call ldap_start_tls_s on ldapi:// connections.
 JH/03 Bug 2003: fix Proxy Protocol v2 handling: the address size field was
       missing a wire-to-host endian conversion.
 
+JH/04 Bug 2004: fix CHUNKING in non-PIPELINEING mode.  Chunk data following
+      close after a BDAT command line could be taken as a following command,
+      giving a synch failure.  Fix by only checking for synch immediately
+      before acknowledging the chunk.
+
 
 Exim version 4.88
 -----------------

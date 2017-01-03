@@ -1,0 +1,8 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 SMTP protocol synchronization error (next input sent too soon: pipelining was not advertised): rejected "bdat 1" H=(tester) [127.0.0.1] next input="bdat 87 last\r\n"
+Envelope-from: <someone9@some.domain>
+Envelope-to: <CALLER@test.ex>
+1999-03-02 09:44:33 SMTP call from (tester) [127.0.0.1] dropped: too many syntax or protocol errors (last command was "From: Sam@random.com")
+Envelope-from: <someone9@some.domain>
+Envelope-to: <CALLER@test.ex>
