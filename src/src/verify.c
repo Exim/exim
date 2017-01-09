@@ -119,6 +119,243 @@ return cache_record;
 
 
 
+/* Check the callout cache.
+Options * pm_mailfrom may be modified by cache partial results.
+
+Return: TRUE if result found
+*/
+
+static BOOL
+cached_callout_lookup(address_item * addr, uschar * address_key,
+  uschar * from_address, int * opt_ptr, uschar ** pm_ptr,
+  int * yield, uschar ** failure_ptr,
+  dbdata_callout_cache * new_domain_record, int * old_domain_res)
+{
+int options = *opt_ptr;
+open_db dbblock;
+open_db *dbm_file = NULL;
+
+/* Open the callout cache database, it it exists, for reading only at this
+stage, unless caching has been disabled. */
+
+if (options & vopt_callout_no_cache)
+  {
+  HDEBUG(D_verify) debug_printf("callout cache: disabled by no_cache\n");
+  }
+else if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE)))
+  {
+  HDEBUG(D_verify) debug_printf("callout cache: not available\n");
+  }
+else
+  {
+  /* If a cache database is available see if we can avoid the need to do an
+  actual callout by making use of previously-obtained data. */
+
+  dbdata_callout_cache_address * cache_address_record;
+  dbdata_callout_cache * cache_record = get_callout_cache_record(dbm_file,
+      addr->domain, US"domain",
+      callout_cache_domain_positive_expire, callout_cache_domain_negative_expire);
+
+  /* If an unexpired cache record was found for this domain, see if the callout
+  process can be short-circuited. */
+
+  if (cache_record)
+    {
+    /* In most cases, if an early command (up to and including MAIL FROM:<>)
+    was rejected, there is no point carrying on. The callout fails. However, if
+    we are doing a recipient verification with use_sender or use_postmaster
+    set, a previous failure of MAIL FROM:<> doesn't count, because this time we
+    will be using a non-empty sender. We have to remember this situation so as
+    not to disturb the cached domain value if this whole verification succeeds
+    (we don't want it turning into "accept"). */
+
+    *old_domain_res = cache_record->result;
+
+    if (  cache_record->result == ccache_reject
+       || *from_address == 0 && cache_record->result == ccache_reject_mfnull)
+      {
+      setflag(addr, af_verify_nsfail);
+      HDEBUG(D_verify)
+	debug_printf("callout cache: domain gave initial rejection, or "
+	  "does not accept HELO or MAIL FROM:<>\n");
+      setflag(addr, af_verify_nsfail);
+      addr->user_message = US"(result of an earlier callout reused).";
+      *yield = FAIL;
+      *failure_ptr = US"mail";
+      dbfn_close(dbm_file);
+      return TRUE;
+      }
+
+    /* If a previous check on a "random" local part was accepted, we assume
+    that the server does not do any checking on local parts. There is therefore
+    no point in doing the callout, because it will always be successful. If a
+    random check previously failed, arrange not to do it again, but preserve
+    the data in the new record. If a random check is required but hasn't been
+    done, skip the remaining cache processing. */
+
+    if (options & vopt_callout_random) switch(cache_record->random_result)
+      {
+      case ccache_accept:
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: domain accepts random addresses\n");
+	dbfn_close(dbm_file);
+	return TRUE;     /* Default yield is OK */
+
+      case ccache_reject:
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: domain rejects random addresses\n");
+	*opt_ptr = options & ~vopt_callout_random;
+	new_domain_record->random_result = ccache_reject;
+	new_domain_record->random_stamp = cache_record->random_stamp;
+	break;
+
+      default:
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: need to check random address handling "
+	    "(not cached or cache expired)\n");
+	dbfn_close(dbm_file);
+	return FALSE;
+      }
+
+    /* If a postmaster check is requested, but there was a previous failure,
+    there is again no point in carrying on. If a postmaster check is required,
+    but has not been done before, we are going to have to do a callout, so skip
+    remaining cache processing. */
+
+    if (*pm_ptr)
+      {
+      if (cache_record->postmaster_result == ccache_reject)
+	{
+	setflag(addr, af_verify_pmfail);
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: domain does not accept "
+	    "RCPT TO:<postmaster@domain>\n");
+	*yield = FAIL;
+	*failure_ptr = US"postmaster";
+	setflag(addr, af_verify_pmfail);
+	addr->user_message = US"(result of earlier verification reused).";
+	dbfn_close(dbm_file);
+	return TRUE;
+	}
+      if (cache_record->postmaster_result == ccache_unknown)
+	{
+	HDEBUG(D_verify)
+	  debug_printf("callout cache: need to check RCPT "
+	    "TO:<postmaster@domain> (not cached or cache expired)\n");
+	dbfn_close(dbm_file);
+	return FALSE;
+	}
+
+      /* If cache says OK, set pm_mailfrom NULL to prevent a redundant
+      postmaster check if the address itself has to be checked. Also ensure
+      that the value in the cache record is preserved (with its old timestamp).
+      */
+
+      HDEBUG(D_verify) debug_printf("callout cache: domain accepts RCPT "
+	"TO:<postmaster@domain>\n");
+      *pm_ptr = NULL;
+      new_domain_record->postmaster_result = ccache_accept;
+      new_domain_record->postmaster_stamp = cache_record->postmaster_stamp;
+      }
+    }
+
+  /* We can't give a result based on information about the domain. See if there
+  is an unexpired cache record for this specific address (combined with the
+  sender address if we are doing a recipient callout with a non-empty sender).
+  */
+
+  if (!(cache_address_record = (dbdata_callout_cache_address *)
+    get_callout_cache_record(dbm_file, address_key, US"address",
+      callout_cache_positive_expire, callout_cache_negative_expire)))
+    {
+    dbfn_close(dbm_file);
+    return FALSE;
+    }
+
+  if (cache_address_record->result == ccache_accept)
+    {
+    HDEBUG(D_verify)
+      debug_printf("callout cache: address record is positive\n");
+    }
+  else
+    {
+    HDEBUG(D_verify)
+      debug_printf("callout cache: address record is negative\n");
+    addr->user_message = US"Previous (cached) callout verification failure";
+    *failure_ptr = US"recipient";
+    *yield = FAIL;
+    }
+
+  /* Close the cache database while we actually do the callout for real. */
+
+  dbfn_close(dbm_file);
+  return TRUE;
+  }
+return FALSE;
+}
+
+
+/* Write results to callout cache
+*/
+static void
+cache_callout_write(dbdata_callout_cache * dom_rec, const uschar * domain,
+  int done, dbdata_callout_cache_address * addr_rec, uschar * address_key)
+{
+open_db dbblock;
+open_db *dbm_file = NULL;
+
+/* If we get here with done == TRUE, a successful callout happened, and yield
+will be set OK or FAIL according to the response to the RCPT command.
+Otherwise, we looped through the hosts but couldn't complete the business.
+However, there may be domain-specific information to cache in both cases.
+
+The value of the result field in the new_domain record is ccache_unknown if
+there was an error before or with MAIL FROM:, and errno was not zero,
+implying some kind of I/O error. We don't want to write the cache in that case.
+Otherwise the value is ccache_accept, ccache_reject, or ccache_reject_mfnull. */
+
+if (dom_rec->result != ccache_unknown)
+  if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE)))
+    {
+    HDEBUG(D_verify) debug_printf("callout cache: not available\n");
+    }
+  else
+    {
+    (void)dbfn_write(dbm_file, domain, dom_rec,
+      (int)sizeof(dbdata_callout_cache));
+    HDEBUG(D_verify) debug_printf("wrote callout cache domain record for %s:\n"
+      "  result=%d postmaster=%d random=%d\n",
+      domain,
+      dom_rec->result,
+      dom_rec->postmaster_result,
+      dom_rec->random_result);
+    }
+
+/* If a definite result was obtained for the callout, cache it unless caching
+is disabled. */
+
+if (done  &&  addr_rec->result != ccache_unknown)
+  {
+  if (!dbm_file)
+    dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE);
+  if (!dbm_file)
+    {
+    HDEBUG(D_verify) debug_printf("no callout cache available\n");
+    }
+  else
+    {
+    (void)dbfn_write(dbm_file, address_key, addr_rec,
+      (int)sizeof(dbdata_callout_cache_address));
+    HDEBUG(D_verify) debug_printf("wrote %s callout cache address record for %s\n",
+      addr_rec->result == ccache_accept ? "positive" : "negative",
+      address_key);
+    }
+  }
+
+if (dbm_file) dbfn_close(dbm_file);
+}
+
+
 /*************************************************
 *      Do callout verification for an address    *
 *************************************************/
@@ -165,8 +402,6 @@ uschar *random_local_part = NULL;
 const uschar *save_deliver_domain = deliver_domain;
 uschar **failure_ptr = options & vopt_is_recipient
   ? &recipient_verify_failure : &sender_verify_failure;
-open_db dbblock;
-open_db *dbm_file = NULL;
 dbdata_callout_cache new_domain_record;
 dbdata_callout_cache_address new_address_record;
 host_item *host;
@@ -182,191 +417,39 @@ memset(&new_address_record, 0, sizeof(new_address_record));
 include the sender address if we are using the real sender in the callout,
 because that may influence the result of the callout. */
 
-address_key = addr->address;
-from_address = US"";
-
 if (options & vopt_is_recipient)
-  {
   if (options & vopt_callout_recipsender)
     {
-    address_key = string_sprintf("%s/<%s>", addr->address, sender_address);
     from_address = sender_address;
+    address_key = string_sprintf("%s/<%s>", addr->address, sender_address);
     if (cutthrough.delivery) options |= vopt_callout_no_cache;
     }
   else if (options & vopt_callout_recippmaster)
     {
+    from_address = string_sprintf("postmaster@%s", qualify_domain_sender);
     address_key = string_sprintf("%s/<postmaster@%s>", addr->address,
       qualify_domain_sender);
-    from_address = string_sprintf("postmaster@%s", qualify_domain_sender);
     }
-  }
+  else
+    {
+    from_address = US"";
+    address_key = addr->address;
+    }
 
 /* For a sender callout, we must adjust the key if the mailfrom address is not
 empty. */
 
 else
   {
-  from_address = (se_mailfrom == NULL)? US"" : se_mailfrom;
-  if (from_address[0] != 0)
-    address_key = string_sprintf("%s/<%s>", addr->address, from_address);
+  from_address = se_mailfrom ? se_mailfrom : US"";
+  address_key = *from_address
+    ? string_sprintf("%s/<%s>", addr->address, from_address) : addr->address;
   }
 
-/* Open the callout cache database, it it exists, for reading only at this
-stage, unless caching has been disabled. */
-
-if (options & vopt_callout_no_cache)
-  {
-  HDEBUG(D_verify) debug_printf("callout cache: disabled by no_cache\n");
-  }
-else if ((dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE)) == NULL)
-  {
-  HDEBUG(D_verify) debug_printf("callout cache: not available\n");
-  }
-
-/* If a cache database is available see if we can avoid the need to do an
-actual callout by making use of previously-obtained data. */
-
-if (dbm_file)
-  {
-  dbdata_callout_cache_address *cache_address_record;
-  dbdata_callout_cache *cache_record = get_callout_cache_record(dbm_file,
-    addr->domain, US"domain",
-    callout_cache_domain_positive_expire,
-    callout_cache_domain_negative_expire);
-
-  /* If an unexpired cache record was found for this domain, see if the callout
-  process can be short-circuited. */
-
-  if (cache_record)
-    {
-    /* In most cases, if an early command (up to and including MAIL FROM:<>)
-    was rejected, there is no point carrying on. The callout fails. However, if
-    we are doing a recipient verification with use_sender or use_postmaster
-    set, a previous failure of MAIL FROM:<> doesn't count, because this time we
-    will be using a non-empty sender. We have to remember this situation so as
-    not to disturb the cached domain value if this whole verification succeeds
-    (we don't want it turning into "accept"). */
-
-    old_domain_cache_result = cache_record->result;
-
-    if (cache_record->result == ccache_reject ||
-         (*from_address == 0 && cache_record->result == ccache_reject_mfnull))
-      {
-      setflag(addr, af_verify_nsfail);
-      HDEBUG(D_verify)
-        debug_printf("callout cache: domain gave initial rejection, or "
-          "does not accept HELO or MAIL FROM:<>\n");
-      setflag(addr, af_verify_nsfail);
-      addr->user_message = US"(result of an earlier callout reused).";
-      yield = FAIL;
-      *failure_ptr = US"mail";
-      goto END_CALLOUT;
-      }
-
-    /* If a previous check on a "random" local part was accepted, we assume
-    that the server does not do any checking on local parts. There is therefore
-    no point in doing the callout, because it will always be successful. If a
-    random check previously failed, arrange not to do it again, but preserve
-    the data in the new record. If a random check is required but hasn't been
-    done, skip the remaining cache processing. */
-
-    if (options & vopt_callout_random) switch(cache_record->random_result)
-      {
-      case ccache_accept:
-	HDEBUG(D_verify)
-	  debug_printf("callout cache: domain accepts random addresses\n");
-	goto END_CALLOUT;     /* Default yield is OK */
-
-      case ccache_reject:
-	HDEBUG(D_verify)
-	  debug_printf("callout cache: domain rejects random addresses\n");
-	options &= ~vopt_callout_random;
-	new_domain_record.random_result = ccache_reject;
-	new_domain_record.random_stamp = cache_record->random_stamp;
-	break;
-
-      default:
-	HDEBUG(D_verify)
-	  debug_printf("callout cache: need to check random address handling "
-	    "(not cached or cache expired)\n");
-	goto END_CACHE;
-      }
-
-    /* If a postmaster check is requested, but there was a previous failure,
-    there is again no point in carrying on. If a postmaster check is required,
-    but has not been done before, we are going to have to do a callout, so skip
-    remaining cache processing. */
-
-    if (pm_mailfrom)
-      {
-      if (cache_record->postmaster_result == ccache_reject)
-        {
-        setflag(addr, af_verify_pmfail);
-        HDEBUG(D_verify)
-          debug_printf("callout cache: domain does not accept "
-            "RCPT TO:<postmaster@domain>\n");
-        yield = FAIL;
-        *failure_ptr = US"postmaster";
-        setflag(addr, af_verify_pmfail);
-        addr->user_message = US"(result of earlier verification reused).";
-        goto END_CALLOUT;
-        }
-      if (cache_record->postmaster_result == ccache_unknown)
-        {
-        HDEBUG(D_verify)
-          debug_printf("callout cache: need to check RCPT "
-            "TO:<postmaster@domain> (not cached or cache expired)\n");
-        goto END_CACHE;
-        }
-
-      /* If cache says OK, set pm_mailfrom NULL to prevent a redundant
-      postmaster check if the address itself has to be checked. Also ensure
-      that the value in the cache record is preserved (with its old timestamp).
-      */
-
-      HDEBUG(D_verify) debug_printf("callout cache: domain accepts RCPT "
-        "TO:<postmaster@domain>\n");
-      pm_mailfrom = NULL;
-      new_domain_record.postmaster_result = ccache_accept;
-      new_domain_record.postmaster_stamp = cache_record->postmaster_stamp;
-      }
-    }
-
-  /* We can't give a result based on information about the domain. See if there
-  is an unexpired cache record for this specific address (combined with the
-  sender address if we are doing a recipient callout with a non-empty sender).
-  */
-
-  cache_address_record = (dbdata_callout_cache_address *)
-    get_callout_cache_record(dbm_file,
-      address_key, US"address",
-      callout_cache_positive_expire,
-      callout_cache_negative_expire);
-
-  if (cache_address_record)
-    {
-    if (cache_address_record->result == ccache_accept)
-      {
-      HDEBUG(D_verify)
-        debug_printf("callout cache: address record is positive\n");
-      }
-    else
-      {
-      HDEBUG(D_verify)
-        debug_printf("callout cache: address record is negative\n");
-      addr->user_message = US"Previous (cached) callout verification failure";
-      *failure_ptr = US"recipient";
-      yield = FAIL;
-      }
-    goto END_CALLOUT;
-    }
-
-  /* Close the cache database while we actually do the callout for real. */
-
-  END_CACHE:
-  dbfn_close(dbm_file);
-  dbm_file = NULL;
-  }
+if (cached_callout_lookup(addr, address_key, from_address,
+      &options, &pm_mailfrom, &yield, failure_ptr,
+      &new_domain_record, &old_domain_cache_result))
+  goto END_CALLOUT;
 
 if (!addr->transport)
   {
@@ -386,7 +469,7 @@ else
   with a random local part, ensure that such a local part is available. If not,
   log the fact, but carry on without randomising. */
 
-  if (options & vopt_callout_random && callout_random_local_part != NULL)
+  if (options & vopt_callout_random  &&  callout_random_local_part)
     if (!(random_local_part = expand_string(callout_random_local_part)))
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
         "callout_random_local_part: %s", expand_string_message);
@@ -703,9 +786,8 @@ tls_retry_connection:
 	}
 #endif
 
-      new_domain_record.result =
-        (old_domain_cache_result == ccache_reject_mfnull)?
-          ccache_reject_mfnull: ccache_accept;
+      new_domain_record.result = old_domain_cache_result == ccache_reject_mfnull
+	? ccache_reject_mfnull : ccache_accept;
 
       /* Do the random local part check first */
 
@@ -1007,64 +1089,17 @@ no_conn:
 /* If we get here with done == TRUE, a successful callout happened, and yield
 will be set OK or FAIL according to the response to the RCPT command.
 Otherwise, we looped through the hosts but couldn't complete the business.
-However, there may be domain-specific information to cache in both cases.
+However, there may be domain-specific information to cache in both cases. */
 
-The value of the result field in the new_domain record is ccache_unknown if
-there was an error before or with MAIL FROM:, and errno was not zero,
-implying some kind of I/O error. We don't want to write the cache in that case.
-Otherwise the value is ccache_accept, ccache_reject, or ccache_reject_mfnull. */
-
-if (  !(options & vopt_callout_no_cache)
-   && new_domain_record.result != ccache_unknown)
-  {
-  if ((dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE))
-       == NULL)
-    {
-    HDEBUG(D_verify) debug_printf("callout cache: not available\n");
-    }
-  else
-    {
-    (void)dbfn_write(dbm_file, addr->domain, &new_domain_record,
-      (int)sizeof(dbdata_callout_cache));
-    HDEBUG(D_verify) debug_printf("wrote callout cache domain record for %s:\n"
-      "  result=%d postmaster=%d random=%d\n",
-      addr->domain,
-      new_domain_record.result,
-      new_domain_record.postmaster_result,
-      new_domain_record.random_result);
-    }
-  }
-
-/* If a definite result was obtained for the callout, cache it unless caching
-is disabled. */
-
-if (done)
-  {
-  if (  !(options & vopt_callout_no_cache)
-     && new_address_record.result != ccache_unknown)
-    {
-    if (!dbm_file)
-      dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE);
-    if (!dbm_file)
-      {
-      HDEBUG(D_verify) debug_printf("no callout cache available\n");
-      }
-    else
-      {
-      (void)dbfn_write(dbm_file, address_key, &new_address_record,
-        (int)sizeof(dbdata_callout_cache_address));
-      HDEBUG(D_verify) debug_printf("wrote %s callout cache address record for %s\n",
-        new_address_record.result == ccache_accept ? "positive" : "negative",
-	address_key);
-      }
-    }
-  }    /* done */
+if (!(options & vopt_callout_no_cache))
+  cache_callout_write(&new_domain_record, addr->domain,
+    done, &new_address_record, address_key);
 
 /* Failure to connect to any host, or any response other than 2xx or 5xx is a
 temporary error. If there was only one host, and a response was received, leave
 it alone if supplying details. Otherwise, give a generic response. */
 
-else   /* !done */
+if (!done)
   {
   uschar * dullmsg = string_sprintf("Could not complete %s verify callout",
     options & vopt_is_recipient ? "recipient" : "sender");
@@ -1093,7 +1128,6 @@ else   /* !done */
 /* Come here from within the cache-reading code on fast-track exit. */
 
 END_CALLOUT:
-if (dbm_file) dbfn_close(dbm_file);
 tls_modify_variables(&tls_in);
 return yield;
 }
