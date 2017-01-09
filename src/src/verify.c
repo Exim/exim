@@ -356,6 +356,115 @@ if (dbm_file) dbfn_close(dbm_file);
 }
 
 
+/* Cutthrough-multi.  If the existing cached cutthrough connection matches
+the one we would make for a subsequent recipient, use it.  Send the RCPT TO
+and check the result, nonpipelined as it may be wanted immediately for
+recipient-verification.
+
+It seems simpler to deal with this case separately from the main callout loop.
+We will need to remember it has sent, or not, so that rcpt-acl tail code
+can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
+
+Return: TRUE for a definitive result for the recipient
+*/
+static int
+cutthrough_multi(address_item * addr, host_item * host_list,
+  transport_feedback * tf, int * yield)
+{
+BOOL done = FALSE;
+host_item * host;
+
+if (addr->transport == cutthrough.addr.transport)
+  for (host = host_list; host; host = host->next)
+    if (Ustrcmp(host->address, cutthrough.host.address) == 0)
+      {
+      int host_af;
+      uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
+      int port = 25;
+
+      deliver_host = host->name;
+      deliver_host_address = host->address;
+      deliver_host_port = host->port;
+      deliver_domain = addr->domain;
+      transport_name = addr->transport->name;
+
+      host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET:AF_INET6;
+
+      if (!smtp_get_interface(tf->interface, host_af, addr, &interface,
+	      US"callout") ||
+	  !smtp_get_port(tf->port, addr, &port, US"callout"))
+	log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
+	  addr->message);
+
+      if (  (  interface == cutthrough.interface
+	    || (  interface
+	       && cutthrough.interface
+	       && Ustrcmp(interface, cutthrough.interface) == 0
+	    )  )
+	 && port == cutthrough.host.port
+	 )
+	{
+	uschar * resp = NULL;
+
+	/* Match!  Send the RCPT TO, set done from the response */
+	done =
+	  smtp_write_command(&ctblock, FALSE, "RCPT TO:<%.1000s>\r\n",
+	    transport_rcpt_address(addr,
+	       addr->transport->rcpt_include_affixes)) >= 0 &&
+	  cutthrough_response('2', &resp, CUTTHROUGH_DATA_TIMEOUT) == '2';
+
+	/* This would go horribly wrong if a callout fail was ignored by ACL.
+	We punt by abandoning cutthrough on a reject, like the
+	first-rcpt does. */
+
+	if (done)
+	  {
+	  address_item * na = store_get(sizeof(address_item));
+	  *na = cutthrough.addr;
+	  cutthrough.addr = *addr;
+	  cutthrough.addr.host_used = &cutthrough.host;
+	  cutthrough.addr.next = na;
+
+	  cutthrough.nrcpt++;
+	  }
+	else
+	  {
+	  cancel_cutthrough_connection("recipient rejected");
+	  if (!resp || errno == ETIMEDOUT)
+	    {
+	    HDEBUG(D_verify) debug_printf("SMTP timeout\n");
+	    }
+	  else if (errno == 0)
+	    {
+	    if (*resp == 0)
+	      Ustrcpy(resp, US"connection dropped");
+
+	    addr->message =
+	      string_sprintf("response to \"%s\" from %s [%s] was: %s",
+		big_buffer, host->name, host->address,
+		string_printing(resp));
+
+	    addr->user_message =
+	      string_sprintf("Callout verification failed:\n%s", resp);
+
+	    /* Hard rejection ends the process */
+
+	    if (resp[0] == '5')   /* Address rejected */
+	      {
+	      *yield = FAIL;
+	      done = TRUE;
+	      }
+	    }
+	  }
+	}
+      break;	/* host_list */
+      }
+if (!done)
+  cancel_cutthrough_connection("incompatible connection");
+return done;
+}
+
+
 /*************************************************
 *      Do callout verification for an address    *
 *************************************************/
@@ -404,7 +513,6 @@ uschar **failure_ptr = options & vopt_is_recipient
   ? &recipient_verify_failure : &sender_verify_failure;
 dbdata_callout_cache new_domain_record;
 dbdata_callout_cache_address new_address_record;
-host_item *host;
 time_t callout_start_time;
 
 new_domain_record.result = ccache_unknown;
@@ -462,6 +570,7 @@ else
   {
   smtp_transport_options_block *ob =
     (smtp_transport_options_block *)addr->transport->options_block;
+  host_item * host;
 
   /* The information wasn't available in the cache, so we have to do a real
   callout and save the result in the cache for next time, unless no_cache is set,
@@ -489,14 +598,13 @@ else
 
   if (smtp_out && !disable_callout_flush) mac_smtp_fflush();
 
+  clearflag(addr, af_verify_pmfail);  /* postmaster callout flag */
+  clearflag(addr, af_verify_nsfail);  /* null sender callout flag */
+
 /* cutthrough-multi: if a nonfirst rcpt has the same routing as the first,
 and we are holding a cutthrough conn open, we can just append the rcpt to
 that conn for verification purposes (and later delivery also).  Simplest
-coding means skipping this whole loop and doing the append separately.
-
-We will need to remember it has been appended so that rcpt-acl tail code
-can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
-*/
+coding means skipping this whole loop and doing the append separately.  */
 
   /* Can we re-use an open cutthrough connection? */
   if (  cutthrough.fd >= 0
@@ -505,99 +613,10 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
      && !random_local_part
      && !pm_mailfrom
      )
-    {
-    if (addr->transport == cutthrough.addr.transport)
-      for (host = host_list; host; host = host->next)
-	if (Ustrcmp(host->address, cutthrough.host.address) == 0)
-	  {
-	  int host_af;
-	  uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
-	  int port = 25;
+    done = cutthrough_multi(addr, host_list, tf, &yield);
 
-	  deliver_host = host->name;
-	  deliver_host_address = host->address;
-	  deliver_host_port = host->port;
-	  deliver_domain = addr->domain;
-	  transport_name = addr->transport->name;
-
-	  host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET:AF_INET6;
-
-	  if (!smtp_get_interface(tf->interface, host_af, addr, &interface,
-		  US"callout") ||
-	      !smtp_get_port(tf->port, addr, &port, US"callout"))
-	    log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
-	      addr->message);
-
-	  if (  (  interface == cutthrough.interface
-	        || (  interface
-	           && cutthrough.interface
-		   && Ustrcmp(interface, cutthrough.interface) == 0
-		)  )
-	     && port == cutthrough.host.port
-	     )
-	    {
-	    uschar * resp = NULL;
-
-	    /* Match!  Send the RCPT TO, append the addr, set done */
-	    done =
-	      smtp_write_command(&ctblock, FALSE, "RCPT TO:<%.1000s>\r\n",
-		transport_rcpt_address(addr,
-		  (addr->transport == NULL)? FALSE :
-		   addr->transport->rcpt_include_affixes)) >= 0 &&
-	      cutthrough_response('2', &resp, CUTTHROUGH_DATA_TIMEOUT) == '2';
-
-	    /* This would go horribly wrong if a callout fail was ignored by ACL.
-	    We punt by abandoning cutthrough on a reject, like the
-	    first-rcpt does. */
-
-	    if (done)
-	      {
-	      address_item * na = store_get(sizeof(address_item));
-	      *na = cutthrough.addr;
-	      cutthrough.addr = *addr;
-	      cutthrough.addr.host_used = &cutthrough.host;
-	      cutthrough.addr.next = na;
-
-	      cutthrough.nrcpt++;
-	      }
-	    else
-	      {
-	      cancel_cutthrough_connection("recipient rejected");
-	      if (!resp || errno == ETIMEDOUT)
-		{
-		HDEBUG(D_verify) debug_printf("SMTP timeout\n");
-		}
-	      else if (errno == 0)
-		{
-		if (*resp == 0)
-		  Ustrcpy(resp, US"connection dropped");
-
-		addr->message =
-		  string_sprintf("response to \"%s\" from %s [%s] was: %s",
-		    big_buffer, host->name, host->address,
-		    string_printing(resp));
-
-		addr->user_message =
-		  string_sprintf("Callout verification failed:\n%s", resp);
-
-		/* Hard rejection ends the process */
-
-		if (resp[0] == '5')   /* Address rejected */
-		  {
-		  yield = FAIL;
-		  done = TRUE;
-		  }
-		}
-	      }
-	    }
-	  break;	/* host_list */
-	  }
-    if (!done)
-      cancel_cutthrough_connection("incompatible connection");
-    }
-
-  /* Now make connections to the hosts and do real callouts. The list of hosts
-  is passed in as an argument. */
+  /* If we did not use a cached connection, make connections to the hosts
+  and do real callouts. The list of hosts is passed in as an argument. */
 
   for (host = host_list; host && !done; host = host->next)
     {
@@ -606,11 +625,6 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
     smtp_context sx;
     uschar responsebuffer[4096];
-
-    clearflag(addr, af_verify_pmfail);  /* postmaster callout flag */
-    clearflag(addr, af_verify_nsfail);  /* null sender callout flag */
-
-    /* Skip this host if we don't have an IP address for it. */
 
     if (!host->address)
       {
@@ -712,12 +726,15 @@ tls_retry_connection:
     /* Build a mail-AUTH string (re-using responsebuffer for convenience */
 
     done =
-	 !smtp_mail_auth_str(responsebuffer, sizeof(responsebuffer), addr, ob)
-      && (
-	  (addr->auth_sndr = client_authenticated_sender),
+      !smtp_mail_auth_str(responsebuffer, sizeof(responsebuffer), addr, ob);
 
-    /* Send the MAIL command */
+    if (done)
+      {
+      addr->auth_sndr = client_authenticated_sender;
 
+      /* Send the MAIL command */
+
+      done =
 	  (smtp_write_command(&sx.outblock, FALSE,
 #ifdef SUPPORT_I18N
 	    addr->prop.utf8_msg && !addr->prop.utf8_downcvt
@@ -730,12 +747,11 @@ tls_retry_connection:
 	    options & vopt_is_recipient && sx.peer_offered & PEER_OFFERED_SIZE
 	    ? string_sprintf(" SIZE=%d", message_size + ob->size_addition)
 	    : US""
-
 	    ) >= 0)
-	 )
 
-      && smtp_read_response(&sx.inblock, responsebuffer, sizeof(responsebuffer),
-	  '2', callout);
+	&& smtp_read_response(&sx.inblock, responsebuffer, sizeof(responsebuffer),
+	    '2', callout);
+      }
 
     deliver_host = deliver_host_address = NULL;
     deliver_domain = save_deliver_domain;
@@ -791,7 +807,7 @@ tls_retry_connection:
 
       /* Do the random local part check first */
 
-      if (random_local_part != NULL)
+      if (random_local_part)
         {
         uschar randombuffer[1024];
         BOOL random_ok =
