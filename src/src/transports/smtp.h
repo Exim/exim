@@ -91,6 +91,7 @@ typedef struct {
 
 /* smtp connect context */
 typedef struct {
+  uschar *		from_addr;
   address_item *	addrlist;
   host_item *		host;
   int			host_af;
@@ -117,6 +118,7 @@ typedef struct {
   BOOL dane:1;
   BOOL dane_required:1;
 #endif
+  BOOL completed_addr;	/* pointer to this used by BDAT callback */
 
   int		max_rcpt;
 
@@ -127,6 +129,10 @@ typedef struct {
   uschar *	smtp_greeting;
   uschar *	helo_response;
 #endif
+
+  address_item *	first_addr;
+  address_item *	next_addr;
+  address_item *	sync_addr;
 
   smtp_inblock  inblock;
   smtp_outblock outblock;
