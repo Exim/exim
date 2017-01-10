@@ -313,5 +313,5 @@ MUNGED: ::1 will be omitted in what follows
 >>> SMTP timeout
 >>> ----------- end verify ------------
 >>> accept: condition test deferred in ACL "mail"
-LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] SMTP timeout after EHLO myhost.test.ex
+LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after EHLO myhost.test.ex
 LOG: H=[1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout

@@ -163,7 +163,7 @@ closed hints database and lockfile
 l_message: $acl_verify_message
 warn: condition test succeeded in ACL "rcpt"
 LOG: MAIN
-  U=CALLER Warning: Sender verify failed: response to "RCPT TO:<qq@remote>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown
+  U=CALLER Warning: Sender verify failed: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<qq@remote>: 550 Unknown
 processing "accept"
 check senders = qq@remote
 address match test: subject=qq@remote pattern=qq@remote

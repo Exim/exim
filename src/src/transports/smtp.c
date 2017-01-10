@@ -510,82 +510,62 @@ check_response(host_item *host, int *errno_value, int more_errno,
   uschar *buffer, int *yield, uschar **message, BOOL *pass_message)
 {
 uschar * pl = pipelining_active ? US"pipelined " : US"";
+const uschar * s;
 
 *yield = '4';    /* Default setting is to give a temporary error */
 
-/* Handle response timeout */
-
-if (*errno_value == ETIMEDOUT)
+switch(*errno_value)
   {
-  *message = US string_sprintf("SMTP timeout after %s%s",
-      pl, smtp_command);
-  if (transport_count > 0)
-    *message = US string_sprintf("%s (%d bytes written)", *message,
-      transport_count);
-  return FALSE;
-  }
+  case ETIMEDOUT:		/* Handle response timeout */
+    *message = US string_sprintf("SMTP timeout after %s%s",
+	pl, smtp_command);
+    if (transport_count > 0)
+      *message = US string_sprintf("%s (%d bytes written)", *message,
+	transport_count);
+    return FALSE;
 
-/* Handle malformed SMTP response */
+  case ERRNO_SMTPFORMAT:	/* Handle malformed SMTP response */
+    s = string_printing(buffer);
+    while (isspace(*s)) s++;
+    *message = *s == 0
+      ? string_sprintf("Malformed SMTP reply (an empty line) "
+	  "in response to %s%s", pl, smtp_command)
+      : string_sprintf("Malformed SMTP reply in response to %s%s: %s",
+	  pl, smtp_command, s);
+    return FALSE;
 
-if (*errno_value == ERRNO_SMTPFORMAT)
-  {
-  const uschar *malfresp = string_printing(buffer);
-  while (isspace(*malfresp)) malfresp++;
-  *message = *malfresp == 0
-    ? string_sprintf("Malformed SMTP reply (an empty line) "
-	"in response to %s%s", pl, smtp_command)
-    : string_sprintf("Malformed SMTP reply in response to %s%s: %s",
-	pl, smtp_command, malfresp);
-  return FALSE;
-  }
+  case ERRNO_FILTER_FAIL:	/* Handle a failed filter process error;
+			  can't send QUIT as we mustn't end the DATA. */
+    *message = string_sprintf("transport filter process failed (%d)%s",
+      more_errno,
+      more_errno == EX_EXECFAILED ? ": unable to execute command" : "");
+    return FALSE;
 
-/* Handle a failed filter process error; can't send QUIT as we mustn't
-end the DATA. */
+  case ERRNO_CHHEADER_FAIL:	/* Handle a failed add_headers expansion;
+			    can't send QUIT as we mustn't end the DATA. */
+    *message =
+      string_sprintf("failed to expand headers_add or headers_remove: %s",
+	expand_string_message);
+    return FALSE;
 
-if (*errno_value == ERRNO_FILTER_FAIL)
-  {
-  *message = US string_sprintf("transport filter process failed (%d)%s",
-    more_errno,
-    (more_errno == EX_EXECFAILED)? ": unable to execute command" : "");
-  return FALSE;
-  }
-
-/* Handle a failed add_headers expansion; can't send QUIT as we mustn't
-end the DATA. */
-
-if (*errno_value == ERRNO_CHHEADER_FAIL)
-  {
-  *message =
-    US string_sprintf("failed to expand headers_add or headers_remove: %s",
-      expand_string_message);
-  return FALSE;
-  }
-
-/* Handle failure to write a complete data block */
-
-if (*errno_value == ERRNO_WRITEINCOMPLETE)
-  {
-  *message = US string_sprintf("failed to write a data block");
-  return FALSE;
-  }
+  case ERRNO_WRITEINCOMPLETE:	/* failure to write a complete data block */
+    *message = string_sprintf("failed to write a data block");
+    return FALSE;
 
 #ifdef SUPPORT_I18N
-/* Handle lack of advertised SMTPUTF8, for international message */
-if (*errno_value == ERRNO_UTF8_FWD)
-  {
-  *message = US"utf8 support required but not offered for forwarding";
-  DEBUG(D_deliver|D_transport) debug_printf("%s\n", *message);
-  return TRUE;
-  }
+  case ERRNO_UTF8_FWD: /* no advertised SMTPUTF8, for international message */
+    *message = US"utf8 support required but not offered for forwarding";
+    DEBUG(D_deliver|D_transport) debug_printf("%s\n", *message);
+    return TRUE;
 #endif
+  }
 
 /* Handle error responses from the remote mailer. */
 
 if (buffer[0] != 0)
   {
-  const uschar *s = string_printing(buffer);
-  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
-    "%s", pl, smtp_command, s);
+  *message = string_sprintf("SMTP error from remote mail server after %s%s: "
+    "%s", pl, smtp_command, s = string_printing(buffer));
   *pass_message = TRUE;
   *yield = buffer[0];
   return TRUE;
@@ -754,6 +734,8 @@ static int
 sync_responses(smtp_context * sx, int count, int pending_DATA)
 {
 address_item *addr = sx->sync_addr;
+smtp_transport_options_block *ob =
+  (smtp_transport_options_block *)sx->tblock->options_block;
 int yield = 0;
 
 /* Handle the response for a MAIL command. On error, reinstate the original
@@ -763,7 +745,8 @@ responses before returning, except after I/O errors and timeouts. */
 if (sx->pending_MAIL)
   {
   count--;
-  if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '2', ((smtp_transport_options_block *)sx->tblock->options_block)->command_timeout))
+  if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+			  '2', ob->command_timeout))
     {
     DEBUG(D_transport) debug_printf("bad response for MAIL\n");
     Ustrcpy(big_buffer, mail_command);  /* Fits, because it came from there! */
@@ -779,7 +762,7 @@ if (sx->pending_MAIL)
       while (count-- > 0)
         {
         if (!smtp_read_response(&sx->inblock, flushbuffer, sizeof(flushbuffer),
-                   '2', ((smtp_transport_options_block *)sx->tblock->options_block)->command_timeout)
+                   '2', ob->command_timeout)
             && (errno != 0 || flushbuffer[0] == 0))
           break;
         }
@@ -810,7 +793,8 @@ while (count-- > 0)
   /* The address was accepted */
   addr->host_used = sx->host;
 
-  if (smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '2', ((smtp_transport_options_block *)sx->tblock->options_block)->command_timeout))
+  if (smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+			  '2', ob->command_timeout))
     {
     yield |= 1;
     addr->transport_return = PENDING_OK;
@@ -833,7 +817,7 @@ while (count-- > 0)
   else if (errno == ETIMEDOUT)
     {
     uschar *message = string_sprintf("SMTP timeout after RCPT TO:<%s>",
-			  transport_rcpt_address(addr, sx->tblock->rcpt_include_affixes));
+		transport_rcpt_address(addr, sx->tblock->rcpt_include_affixes));
     set_errno_nohost(sx->first_addr, ETIMEDOUT, message, DEFER, FALSE);
     retry_add_item(addr, addr->address_retry_key, 0);
     update_waiting = FALSE;
@@ -861,7 +845,8 @@ while (count-- > 0)
 	"%s", transport_rcpt_address(addr, sx->tblock->rcpt_include_affixes),
 	string_printing(sx->buffer));
     setflag(addr, af_pass_message);
-    msglog_line(sx->host, addr->message);
+    if (!sx->verify)
+      msglog_line(sx->host, addr->message);
 
     /* The response was 5xx */
 
@@ -879,38 +864,40 @@ while (count-- > 0)
       addr->basic_errno = ERRNO_RCPT4XX;
       addr->more_errno |= ((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
 
+      if (!sx->verify)
+	{
 #ifndef DISABLE_EVENT
-      event_defer_errno = addr->more_errno;
-      msg_event_raise(US"msg:rcpt:host:defer", addr);
+	event_defer_errno = addr->more_errno;
+	msg_event_raise(US"msg:rcpt:host:defer", addr);
 #endif
 
-      /* Log temporary errors if there are more hosts to be tried.
-      If not, log this last one in the == line. */
+	/* Log temporary errors if there are more hosts to be tried.
+	If not, log this last one in the == line. */
 
-      if (sx->host->next)
-	log_write(0, LOG_MAIN, "H=%s [%s]: %s", sx->host->name, sx->host->address, addr->message);
+	if (sx->host->next)
+	  log_write(0, LOG_MAIN, "H=%s [%s]: %s",
+	    sx->host->name, sx->host->address, addr->message);
 
 #ifndef DISABLE_EVENT
-      else
-	msg_event_raise(US"msg:rcpt:defer", addr);
+	else
+	  msg_event_raise(US"msg:rcpt:defer", addr);
 #endif
 
-      /* Do not put this message on the list of those waiting for specific
-      hosts, as otherwise it is likely to be tried too often. */
+	/* Do not put this message on the list of those waiting for specific
+	hosts, as otherwise it is likely to be tried too often. */
 
-      update_waiting = FALSE;
+	update_waiting = FALSE;
 
-      /* Add a retry item for the address so that it doesn't get tried again
-      too soon. If address_retry_include_sender is true, add the sender address
-      to the retry key. */
+	/* Add a retry item for the address so that it doesn't get tried again
+	too soon. If address_retry_include_sender is true, add the sender address
+	to the retry key. */
 
-      if (((smtp_transport_options_block *)sx->tblock->options_block)->address_retry_include_sender)
-        {
-        uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
-          sender_address);
-        retry_add_item(addr, altkey, 0);
-        }
-      else retry_add_item(addr, addr->address_retry_key, 0);
+	retry_add_item(addr,
+	  ob->address_retry_include_sender
+	    ? string_sprintf("%s:<%s>", addr->address_retry_key, sender_address)
+	    : addr->address_retry_key,
+	  0);
+	}
       }
     }
   }       /* Loop for next RCPT response */
@@ -918,13 +905,14 @@ while (count-- > 0)
 /* Update where to start at for the next block of responses, unless we
 have already handled all the addresses. */
 
-if (addr != NULL) sx->sync_addr = addr->next;
+if (addr) sx->sync_addr = addr->next;
 
 /* Handle a response to DATA. If we have not had any good recipients, either
 previously or in this block, the response is ignored. */
 
 if (pending_DATA != 0 &&
-    !smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '3', ((smtp_transport_options_block *)sx->tblock->options_block)->command_timeout))
+    !smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+			'3', ob->command_timeout))
   {
   int code;
   uschar *msg;
@@ -1296,9 +1284,11 @@ return Ustrcmp(current_local_identity, message_local_identity) == 0;
 
 
 
-uschar
-ehlo_response(uschar * buf, size_t bsize, uschar checks)
+static uschar
+ehlo_response(uschar * buf, uschar checks)
 {
+size_t bsize = Ustrlen(buf);
+
 #ifdef SUPPORT_TLS
 if (  checks & PEER_OFFERED_TLS
    && pcre_exec(regex_STARTTLS, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
@@ -1361,17 +1351,15 @@ smtp_chunk_cmd_callback(int fd, transport_ctx * tctx,
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)(tctx->tblock->options_block);
+smtp_context * sx = tctx->smtp_context;
 int cmd_count = 0;
 int prev_cmd_count;
-uschar * buffer = tctx->buffer;
-smtp_context sx;
-
 
 /* Write SMTP chunk header command */
 
 if (chunk_size > 0)
   {
-  if((cmd_count = smtp_write_command(tctx->outblock, FALSE, "BDAT %u%s\r\n",
+  if((cmd_count = smtp_write_command(&sx->outblock, FALSE, "BDAT %u%s\r\n",
 			      chunk_size,
 			      flags & tc_chunk_last ? " LAST" : "")
      ) < 0) return ERROR;
@@ -1379,69 +1367,61 @@ if (chunk_size > 0)
     data_command = string_copy(big_buffer);  /* Save for later error message */
   }
 
-prev_cmd_count = cmd_count += tctx->cmd_count;
+prev_cmd_count = cmd_count += sx->cmd_count;
 
 /* Reap responses for any previous, but not one we just emitted */
 
 if (chunk_size > 0)
   prev_cmd_count--;
-if (tctx->pending_BDAT)
+if (sx->pending_BDAT)
   prev_cmd_count--;
 
 if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
   {
-  sx.first_addr = tctx->first_addr;
-  sx.tblock = tctx->tblock;
-  sx.sync_addr = *tctx->sync_addr;
-  sx.host = tctx->host;
-  sx.pending_MAIL = tctx->pending_MAIL;
-  sx.inblock = *tctx->inblock;
-
   DEBUG(D_transport) debug_printf("look for %d responses"
     " for previous pipelined cmds\n", prev_cmd_count);
 
-  switch(sync_responses(&sx, prev_cmd_count, 0))
+  switch(sync_responses(sx, prev_cmd_count, 0))
     {
     case 1:				/* 2xx (only) => OK */
-    case 3: tctx->good_RCPT = TRUE;	/* 2xx & 5xx => OK & progress made */
-    case 2: *tctx->completed_address = TRUE; /* 5xx (only) => progress made */
+    case 3: sx->good_RCPT = TRUE;	/* 2xx & 5xx => OK & progress made */
+    case 2: sx->completed_addr = TRUE;	/* 5xx (only) => progress made */
     case 0: break;			/* No 2xx or 5xx, but no probs */
 
     case -1:				/* Timeout on RCPT */
     default: return ERROR;		/* I/O error, or any MAIL/DATA error */
     }
-  *tctx->sync_addr = sx.sync_addr;
   cmd_count = 1;
-  if (!tctx->pending_BDAT)
+  if (!sx->pending_BDAT)
     pipelining_active = FALSE;
   }
 
 /* Reap response for an outstanding BDAT */
 
-if (tctx->pending_BDAT)
+if (sx->pending_BDAT)
   {
   DEBUG(D_transport) debug_printf("look for one response for BDAT\n");
 
-  if (!smtp_read_response(tctx->inblock, sx.buffer, sizeof(sx.buffer), '2',
+  if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '2',
        ob->command_timeout))
     {
-    if (errno == 0 && sx.buffer[0] == '4')
+    if (errno == 0 && sx->buffer[0] == '4')
       {
       errno = ERRNO_DATA4XX;	/*XXX does this actually get used? */
-      tctx->first_addr->more_errno |=
-	((sx.buffer[1] - '0')*10 + sx.buffer[2] - '0') << 8;
+      sx->first_addr->more_errno |=
+	((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
       }
     return ERROR;
     }
   cmd_count--;
-  tctx->pending_BDAT = FALSE;
+  sx->pending_BDAT = FALSE;
   pipelining_active = FALSE;
   }
 else if (chunk_size > 0)
-  tctx->pending_BDAT = TRUE;
+  sx->pending_BDAT = TRUE;
 
 
-tctx->cmd_count = cmd_count;
+sx->cmd_count = cmd_count;
 return OK;
 }
 
@@ -1456,8 +1436,6 @@ Arguments:
   ctx		  connection context
   suppress_tls    if TRUE, don't attempt a TLS connection - this is set for
                     a second attempt after TLS initialization fails
-  verify	  TRUE if connection is for a verify callout, FALSE for
-		  a delivery attempt
 
 Returns:          OK    - the connection was made and the delivery attempted;
                           fd is set in the conn context, tls_out set up.
@@ -1469,7 +1447,7 @@ Returns:          OK    - the connection was made and the delivery attempted;
 			  to expand
 */
 int
-smtp_setup_conn(smtp_context * sx, BOOL suppress_tls, BOOL verify)
+smtp_setup_conn(smtp_context * sx, BOOL suppress_tls)
 {
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
 dns_answer tlsa_dnsa;
@@ -1561,7 +1539,7 @@ specially so they can be identified for retries. */
 
 if (continue_hostname == NULL)
   {
-  if (verify)
+  if (sx->verify)
     HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", sx->interface, sx->port);
 
   /* This puts port into host->port */
@@ -1573,14 +1551,14 @@ if (continue_hostname == NULL)
     {
     uschar * msg = NULL;
     int save_errno = errno;
-    if (verify)
+    if (sx->verify)
       {
       msg = strerror(errno);
       HDEBUG(D_verify) debug_printf("connect: %s\n", msg);
       }
     set_errno_nohost(sx->addrlist,
       save_errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : save_errno,
-      verify ? string_sprintf("could not connect: %s", msg)
+      sx->verify ? string_sprintf("could not connect: %s", msg)
 	     : NULL,
       DEFER, FALSE);
     sx->send_quit = FALSE;
@@ -1627,7 +1605,7 @@ if (continue_hostname == NULL)
 
   if (sx->helo_data)
     if (!(sx->helo_data = expand_string(sx->helo_data)))
-      if (verify)
+      if (sx->verify)
 	log_write(0, LOG_MAIN|LOG_PANIC,
 	  "<%s>: failed to expand transport's helo_data value for callout: %s",
 	  sx->addrlist->address, expand_string_message);
@@ -1639,7 +1617,7 @@ if (continue_hostname == NULL)
     if ((sx->helo_data = string_domain_utf8_to_alabel(sx->helo_data,
 					      &expand_string_message)),
 	expand_string_message)
-      if (verify)
+      if (sx->verify)
 	log_write(0, LOG_MAIN|LOG_PANIC,
 	  "<%s>: failed to expand transport's helo_data value for callout: %s",
 	  sx->addrlist->address, expand_string_message);
@@ -1812,7 +1790,7 @@ goto SEND_QUIT;
 
   if (sx->esmtp || sx->lmtp)
     {
-    sx->peer_offered = ehlo_response(sx->buffer, Ustrlen(sx->buffer),
+    sx->peer_offered = ehlo_response(sx->buffer,
       PEER_OFFERED_TLS	/* others checked later */
       );
 
@@ -1856,7 +1834,7 @@ for error analysis. */
 if (  smtp_peer_options & PEER_OFFERED_TLS
    && !suppress_tls
    && verify_check_given_host(&sx->ob->hosts_avoid_tls, sx->host) != OK
-   && (  !verify
+   && (  !sx->verify
       || verify_check_given_host(&sx->ob->hosts_verify_avoid_tls, sx->host) != OK
    )  )
   {
@@ -2016,7 +1994,7 @@ if (continue_hostname == NULL
   {
   if (sx->esmtp || sx->lmtp)
     {
-    sx->peer_offered = ehlo_response(sx->buffer, Ustrlen(sx->buffer),
+    sx->peer_offered = ehlo_response(sx->buffer,
 	0 /* no TLS */
 	| (sx->lmtp && sx->ob->lmtp_ignore_quota ? PEER_OFFERED_IGNQ : 0)
 	| PEER_OFFERED_CHUNKING
@@ -2355,11 +2333,12 @@ if (sx->peer_offered & PEER_OFFERED_DSN && !(addr->dsn_flags & rf_dsnlasthop))
 
 /*
 Return:
- 0	good
- -1	MAIL response error, any read i/o error
- -2	non-MAIL response timeout
- -3	internal error; channel still usable
- -4	transmit failed
+ 0	good, rcpt results in addr->transport_return (PENDING_OK, DEFER, FAIL)
+ -1	MAIL response error
+ -2	any non-MAIL read i/o error
+ -3	non-MAIL response timeout
+ -4	internal error; channel still usable
+ -5	transmit failed
  */
 
 int
@@ -2372,7 +2351,7 @@ int rc;
 if (build_mailcmd_options(sx, sx->first_addr) != OK)
   {
   *yield = ERROR;
-  return -3;
+  return -4;
   }
 
 /* From here until we send the DATA command, we can make use of PIPELINING
@@ -2400,7 +2379,7 @@ sx->pending_MAIL = TRUE;     /* The block starts with MAIL */
       {
       set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE);
       *yield = ERROR;
-      return -3;
+      return -4;
       }
     setflag(sx->addrlist, af_utf8_downcvt);
     }
@@ -2415,7 +2394,7 @@ mail_command = string_copy(big_buffer);  /* Save for later error message */
 switch(rc)
   {
   case -1:                /* Transmission error */
-    return -4;
+    return -5;
 
   case +1:                /* Cmd was sent */
     if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '2',
@@ -2430,6 +2409,8 @@ switch(rc)
       }
     sx->pending_MAIL = FALSE;
     break;
+
+  /* otherwise zero: command queued for pipeline */
   }
 
 /* Pass over all the relevant recipient addresses for this host, which are the
@@ -2443,7 +2424,9 @@ In the MUA wrapper situation, we want to flush the PIPELINING buffer for the
 last address because we want to abort if any recipients have any kind of
 problem, temporary or permanent. We know that all recipient addresses will have
 the PENDING_DEFER status, because only one attempt is ever made, and we know
-that max_rcpt will be large, so all addresses will be done at once. */
+that max_rcpt will be large, so all addresses will be done at once.
+
+For verify we flush the pipeline after any (the only) rcpt address. */
 
 for (addr = sx->first_addr, address_count = 0;
      addr  &&  address_count < sx->max_rcpt;
@@ -2457,7 +2440,7 @@ for (addr = sx->first_addr, address_count = 0;
     ? dsn_support_yes : dsn_support_no;
 
   address_count++;
-  no_flush = pipelining_active && (!mua_wrapper || addr->next);
+  no_flush = pipelining_active && !sx->verify && (!mua_wrapper || addr->next);
 
   build_rcptcmd_options(sx, addr);
 
@@ -2475,21 +2458,21 @@ for (addr = sx->first_addr, address_count = 0;
     {
     /*XXX could we use a per-address errstr here? Not fail the whole send? */
     errno = ERRNO_EXPANDFAIL;
-    return -4;		/*XXX too harsh? */
+    return -5;		/*XXX too harsh? */
     }
 #endif
 
   count = smtp_write_command(&sx->outblock, no_flush, "RCPT TO:<%s>%s%s\r\n",
     rcpt_addr, sx->igquotstr, sx->buffer);
 
-  if (count < 0) return -4;
+  if (count < 0) return -5;
   if (count > 0)
     {
     switch(sync_responses(sx, count, 0))
       {
       case 3: sx->ok = TRUE;			/* 2xx & 5xx => OK & progress made */
       case 2: sx->completed_addr = TRUE;	/* 5xx (only) => progress made */
-      break;
+	      break;
 
       case 1: sx->ok = TRUE;			/* 2xx (only) => OK, but if LMTP, */
 	      if (!sx->lmtp)			/*  can't tell about progress yet */
@@ -2497,8 +2480,9 @@ for (addr = sx->first_addr, address_count = 0;
       case 0:					/* No 2xx or 5xx, but no probs */
 	      break;
 
-      case -1: return -2;			/* Timeout on RCPT */
-      default: return -1;			/* I/O error, or any MAIL error */
+      case -1: return -3;			/* Timeout on RCPT */
+      case -2: return -2;			/* non-MAIL read i/o error */
+      default: return -1;			/* any MAIL error */
       }
     sx->pending_MAIL = FALSE;            /* Dealt with MAIL */
     }
@@ -2581,17 +2565,18 @@ sx.port = port;
 sx.interface = interface;
 sx.helo_data = NULL;
 sx.tblock = tblock;
+sx.verify = FALSE;
 
 /* Get the channel set up ready for a message (MAIL FROM being the next
 SMTP command to send */
 
-if ((rc = smtp_setup_conn(&sx, suppress_tls, FALSE)) != OK)
+if ((rc = smtp_setup_conn(&sx, suppress_tls)) != OK)
   return rc;
 
 /* If there is a filter command specified for this transport, we can now
 set it up. This cannot be done until the identify of the host is known. */
 
-if (tblock->filter_command != NULL)
+if (tblock->filter_command)
   {
   BOOL rc;
   uschar fbuf[64];
@@ -2643,11 +2628,11 @@ sx.completed_addr = FALSE;
 
 switch(smtp_write_mail_and_rcpt_cmds(&sx, &yield))
   {
-  case 0:	break;
-  case -1:	goto RESPONSE_FAILED;
-  case -2:	goto END_OFF;
-  case -3:	goto SEND_QUIT;
-  default:	goto SEND_FAILED;
+  case 0:		break;
+  case -1: case -2:	goto RESPONSE_FAILED;
+  case -3:		goto END_OFF;
+  case -4:		goto SEND_QUIT;
+  default:		goto SEND_FAILED;
   }
 
 /* If we are an MUA wrapper, abort if any RCPTs were rejected, either
@@ -2737,17 +2722,10 @@ else
     tctx.check_string = tctx.escape_string = NULL;
     tctx.options |= topt_use_bdat;
     tctx.chunk_cb = smtp_chunk_cmd_callback;
-    tctx.inblock = &sx.inblock;
-    tctx.outblock = &sx.outblock;
-    tctx.host = host;
-    tctx.first_addr = sx.first_addr;
-    tctx.sync_addr = &sx.sync_addr;
-    tctx.pending_MAIL = sx.pending_MAIL;
-    tctx.pending_BDAT = FALSE;
-    tctx.good_RCPT = sx.ok;
-    tctx.completed_address = &sx.completed_addr;
-    tctx.cmd_count = 0;
-    tctx.buffer = sx.buffer;
+    sx.pending_BDAT = FALSE;
+    sx.good_RCPT = sx.ok;
+    sx.cmd_count = 0;
+    tctx.smtp_context = &sx;
     }
   else
     tctx.options |= topt_end_dot;
@@ -2798,10 +2776,10 @@ else
 
   smtp_command = US"end of data";
 
-  if (sx.peer_offered & PEER_OFFERED_CHUNKING && tctx.cmd_count > 1)
+  if (sx.peer_offered & PEER_OFFERED_CHUNKING && sx.cmd_count > 1)
     {
     /* Reap any outstanding MAIL & RCPT commands, but not a DATA-go-ahead */
-    switch(sync_responses(&sx, tctx.cmd_count-1, 0))
+    switch(sync_responses(&sx, sx.cmd_count-1, 0))
       {
       case 3: sx.ok = TRUE;            /* 2xx & 5xx => OK & progress made */
       case 2: sx.completed_addr = TRUE;    /* 5xx (only) => progress made */

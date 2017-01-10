@@ -4,9 +4,9 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= userW@test.ex U=CALLER P=utf8local-esmtp S=sss for user.ഇരട്ടിമധുരം@test.ex
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => user.ഇരട്ടിമധുരം@test.ex F=<userW@test.ex> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 U=CALLER sender verify fail for <userA@test.ex>: response to "EHLO" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
+1999-03-02 09:44:33 U=CALLER sender verify fail for <userA@test.ex>: 127.0.0.1 [127.0.0.1] : response to "EHLO" did not include SMTPUTF8
 1999-03-02 09:44:33 U=CALLER F=<userA@test.ex> rejected RCPT <user.यष्टिमधु@test.ex>: Sender verify failed
-1999-03-02 09:44:33 U=CALLER sender verify fail for <userB.જેઠીમધ@test.ex>: response to "EHLO" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
+1999-03-02 09:44:33 U=CALLER sender verify fail for <userB.જેઠીમધ@test.ex>: 127.0.0.1 [127.0.0.1] : response to "EHLO" did not include SMTPUTF8
 1999-03-02 09:44:33 U=CALLER F=<userB.જેઠીમધ@test.ex> rejected RCPT <user.ქართული@test.ex>: Sender verify failed
 
 ******** SERVER ********

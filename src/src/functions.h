@@ -169,7 +169,6 @@ extern BOOL    enq_start(uschar *, unsigned);
 extern uschar *event_raise(uschar *, const uschar *, uschar *);
 extern void    msg_event_raise(const uschar *, const address_item *);
 #endif
-extern uschar  ehlo_response(uschar *, size_t, uschar);
 extern const uschar * exim_errstr(int);
 extern void    exim_exit(int);
 extern void    exim_nullstd(void);

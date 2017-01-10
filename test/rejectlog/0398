@@ -1,2 +1,2 @@
-1999-03-02 09:44:33 U=CALLER sender verify fail for <z@remote>: response to "RCPT TO:<z@remote>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown
+1999-03-02 09:44:33 U=CALLER sender verify fail for <z@remote>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote>: 550 Unknown
 1999-03-02 09:44:33 U=CALLER F=<z@remote> rejected RCPT <deny@local>: Sender verify failed

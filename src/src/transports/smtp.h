@@ -98,15 +98,13 @@ typedef struct {
   int			port;
   uschar *		interface;
 
+  BOOL verify:1;
   BOOL lmtp:1;
   BOOL smtps:1;
   BOOL ok:1;
-  BOOL send_rset:1;
-  BOOL send_quit:1;
   BOOL setting_up:1;
   BOOL esmtp:1;
   BOOL esmtp_sent:1;
-  BOOL pending_MAIL:1;
 #ifndef DISABLE_PRDR
   BOOL prdr_active:1;
 #endif
@@ -118,9 +116,15 @@ typedef struct {
   BOOL dane:1;
   BOOL dane_required:1;
 #endif
-  BOOL completed_addr;	/* pointer to this used by BDAT callback */
+  BOOL pending_MAIL:1;
+  BOOL pending_BDAT:1;
+  BOOL good_RCPT:1;
+  BOOL completed_addr:1;
+  BOOL send_rset:1;
+  BOOL send_quit:1;
 
   int		max_rcpt;
+  int		cmd_count;
 
   uschar	peer_offered;
   uschar *	igquotstr;
@@ -144,7 +148,8 @@ typedef struct {
   smtp_transport_options_block *	ob;
 } smtp_context;
 
-extern int smtp_setup_conn(smtp_context *, BOOL, BOOL);
+extern int smtp_setup_conn(smtp_context *, BOOL);
+extern int smtp_write_mail_and_rcpt_cmds(smtp_context *, int *);
 
 
 /* Data for reading the private options. */

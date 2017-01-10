@@ -119,10 +119,9 @@ using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-cmd buf flush ddd bytes
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<userx@domain.com>
 cmd buf flush ddd bytes
+  SMTP<< 250 OK
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
@@ -334,10 +333,9 @@ using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-cmd buf flush ddd bytes
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
+  SMTP<< 250 OK
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
@@ -549,10 +547,9 @@ using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-cmd buf flush ddd bytes
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
+  SMTP<< 250 OK
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------

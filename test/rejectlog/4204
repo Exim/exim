@@ -1,5 +1,5 @@
-1999-03-02 09:44:33 U=CALLER F=<CALLER@spanish.PorquénopuedensimplementehablarenEspañol.local> rejected RCPT <userS@test.ex>: response to "EHLO" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
-1999-03-02 09:44:33 U=CALLER F=<CALLER@vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.local> rejected RCPT <userT@test.ex>: response to "EHLO" from 127.0.0.1 [127.0.0.1] did not include SMTPUTF8
+1999-03-02 09:44:33 U=CALLER F=<CALLER@spanish.PorquénopuedensimplementehablarenEspañol.local> rejected RCPT <userS@test.ex>: 127.0.0.1 [127.0.0.1] : response to "EHLO" did not include SMTPUTF8
+1999-03-02 09:44:33 U=CALLER F=<CALLER@vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.local> rejected RCPT <userT@test.ex>: 127.0.0.1 [127.0.0.1] : response to "EHLO" did not include SMTPUTF8
 
 ******** SERVER ********
 1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] F=<> rejected RCPT <the.local.host.name-dddddddd-testing@test.ex>: relay not permitted
