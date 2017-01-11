@@ -14018,6 +14018,7 @@ acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
 .option acl_smtp_dkim main string&!! unset
 .cindex DKIM "ACL for"
 This option defines the ACL that is run for each DKIM signature
+(by default, or as specified in the dkim_verify_signers option)
 of a received message.
 See chapter &<<CHAPdkim>>& for further details.
 
