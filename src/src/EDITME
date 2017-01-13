@@ -629,10 +629,14 @@ FIXED_NEVER_USERS=root
 # AUTH_GSASL_PC=libgsasl
 # AUTH_HEIMDAL_GSSAPI=yes
 # AUTH_HEIMDAL_GSSAPI_PC=heimdal-gssapi
+# AUTH_HEIMDAL_GSSAPI_PC=heimdal-gssapi heimdal-krb5
 # AUTH_PLAINTEXT=yes
 # AUTH_SPA=yes
 # AUTH_TLS=yes
 
+# Heimdal through 1.5 required pkg-config 'heimdal-gssapi'; Heimdal 7.1
+# requires multiple pkg-config files to work with Exim, so the second example
+# above is needed.
 
 #------------------------------------------------------------------------------
 # If you specified AUTH_CYRUS_SASL above, you should ensure that you have the
