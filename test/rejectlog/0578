@@ -1,0 +1,20 @@
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify defer for <ok@localhost>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : could not connect: Connection refused
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<ok@localhost> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<bad@localhost>: 550 REJECTED rcpt
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <ok@localhost>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 REJECT mail from
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<ok@localhost> rejected RCPT <z@test.ex>: (mail): Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <ok@localhost>
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<ok@localhost> rejected RCPT <z@test.ex>: (mail): Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root sender verify fail for <ok@otherhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@otherhost>: 550 NOT OK rcpt postmaster
+1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root F=<ok@otherhost> rejected RCPT <z@test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root sender verify fail for <ok@otherhost>
+1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root F=<ok@otherhost> rejected RCPT <z@test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root sender verify defer for <ok@otherhost3>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : response to "RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>" was: 250 OK accepting that random recipient
+1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<ok@otherhost3> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
+1999-03-02 09:44:33 H=[V4NET.0.0.4] U=root sender verify defer for <ok@otherhost4>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : response to "RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost4>" was: 250 OK
+1999-03-02 09:44:33 H=[V4NET.0.0.4] U=root F=<ok@otherhost4> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
+1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root sender verify defer for <okok@otherhost51>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost51>
+1999-03-02 09:44:33 H=[V4NET.0.0.5] U=root F=<okok@otherhost51> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout

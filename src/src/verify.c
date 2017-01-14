@@ -761,6 +761,23 @@ tls_retry_connection:
       addr->address = string_sprintf("%s@%.1000s",
 				    random_local_part, rcpt_domain);
       done = FALSE;
+
+      /* If accepted, we aren't going to do any further tests below.
+      Otherwise, cache a real negative response, and get back to the right
+      state to send RCPT. Unless there's some problem such as a dropped
+      connection, we expect to succeed, because the commands succeeded above.
+      However, some servers drop the connection after responding to an
+      invalid recipient, so on (any) error we drop and remake the connection.
+      XXX We don't care about that for postmaster_full.  Should we?
+
+      XXX could we add another flag to the context, and have the common
+      code emit the RSET too?  Even pipelined after the RCPT...
+      Then the main-verify call could use it if there's to be a subsequent
+      postmaster-verify.
+      The sync_responses() would need to be taught about it and we'd
+      need another return code filtering out to here.
+      */
+
       if (smtp_write_mail_and_rcpt_cmds(&sx, &yield) == 0)
 	switch(addr->transport_return)
 	  {
@@ -771,7 +788,8 @@ tls_retry_connection:
 	    new_domain_record.random_result = ccache_reject;
 
 	    /* Between each check, issue RSET, because some servers accept only
-	    one recipient after MAIL FROM:<>. */
+	    one recipient after MAIL FROM:<>.
+	    XXX We don't care about that for postmaster_full.  Should we? */
 
 	    if ((done =
 	      smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0 &&
@@ -795,22 +813,7 @@ tls_retry_connection:
 	    goto tls_retry_connection;
 	  }
 
-      /* If accepted, we aren't going to do any further tests below.
-      Otherwise, cache a real negative response, and get back to the right
-      state to send RCPT. Unless there's some problem such as a dropped
-      connection, we expect to succeed, because the commands succeeded above.
-      However, some servers drop the connection after responding to  an
-      invalid recipient, so on (any) error we drop and remake the connection.
-
-      XXX could we add another flag to the context, and have the common
-      code emit the RSET too?  Even pipelined after the RCPT...
-      Then the main-verify call could use it if there's to be a subsequent
-      postmaster-verify.
-      The sync_responses() would need to be taught about it and we'd
-      need another return code filtering out to here.
-
-      Remember when we last did a random test
-      */
+      /* Remember when we last did a random test */
 
       new_domain_record.random_stamp = time(NULL);
 

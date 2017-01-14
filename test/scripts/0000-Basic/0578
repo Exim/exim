@@ -1,0 +1,483 @@
+# callout verification pipelining
+need_ipv4
+#
+# basic sender verify
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+RCPT TO
+250 OK mail sender
+250 OK recipient
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<ok@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<ok@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Wait for the record to time out and try again
+sleep 2
+# Should want to connect, but fail
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<ok@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test unsuccessful caching
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK sender
+550 REJECTED rcpt
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<bad@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<bad@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of rejection of MAIL FROM:<>
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+550 REJECT mail from
+530 BAD SEQUENCE no sender accepted for rcpt
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<ok@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<ok@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of rejection of postmaster
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+RCPT TO
+250 OK sender
+250 OK rcpt
+RSET
+250 OK reset
+MAIL FROM:<>
+RCPT TO:<postmaster@otherhost>
+250 OK sender
+550 NOT OK rcpt postmaster
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<ok@otherhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<ok@otherhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of accepting of postmaster
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+RSET
+250 OK
+MAIL FROM
+RCPT TO:<postmaster@otherhost2>
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<ok@otherhost2>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<ok@otherhost2>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of accepting a random address
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO:<myhost.test.ex-
+250 OK
+250 OK accepting that random recipient
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<ok@otherhost3>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<otherok@otherhost3>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of accepting a random address and postmaster
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO:<myhost.test.ex-
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+MAIL FROM:<ok@otherhost4>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+MAIL FROM:<ok@otherhost4>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of rejecting a random address and postmaster
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+RCPT TO:<myhost.test.ex-
+250 OK
+550 NOT OK
+RSET
+250 OK
+MAIL FROM:<>
+RCPT TO:<ok@otherhost41>
+250 OK
+250 OK
+RSET
+250 OK
+MAIL FROM:<>
+RCPT TO:<postmaster@otherhost41>
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+MAIL FROM:<ok@otherhost41>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.4
+MAIL FROM:<ok@otherhost41>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of accepting of postmaster when another
+# address has to be tested
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+RSET
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<ok@otherhost21>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<ok2@otherhost21>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test caching of rejecting a random address
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+550 NOT OK
+RSET
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<ok@otherhost31>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO:<okok@otherhost31>
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<okok@otherhost31>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Wait a bit for the record to expire and then try again
+sleep 2
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+RCPT TO:<myhost.test.ex-
+250 OK
+550 NOT OK
+RSET
+250 OK
+MAIL FROM:<>
+RCPT TO:<okokok@otherhost31>
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -DPEX=1s -d-all+verify -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<okokok@otherhost31>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Timeout on the RCPT for random
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+*sleep 2
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.5
+MAIL FROM:<okok@otherhost51>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Postmaster_sender set non-empty
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+RSET
+250 OK
+MAIL FROM:<pmsend@a.domain>
+RCPT TO:<postmaster@otherhost52>
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.6
+MAIL FROM:<okokok@otherhost52>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Header_sender sender set non-empty
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM:<somesender@a.domain>
+RCPT TO:<abcd@x.y.z>
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -odq -v -bs -oMa V4NET.0.0.7
+MAIL FROM:<ok7@otherhost53>
+RCPT TO:<z@test.ex>
+DATA
+Reply-To: abcd@x.y.z
+.
+QUIT
+****
+# Timeout on RCPT for header_sender (defer_ok test)
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+*sleep 2
+****
+sudo exim -d-all+verify -odq -v -bs -oMa V4NET.0.0.8
+MAIL FROM:<ok7@otherhost53>
+RCPT TO:<z@test.ex>
+DATA
+Reply-To: abcd@x.y.z
+.
+QUIT
+****
+# Test full postmaster check
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+RSET
+250 OK
+MAIL FROM
+RCPT TO:<postmaster@otherhost9>
+250 OK
+550 NOT OK
+RCPT TO:<postmaster>
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.9
+MAIL FROM:<ok@otherhost9>
+RCPT TO:<z@test.ex>
+QUIT
+****
+# Test postmaster_mailfrom with random
+server PORT_S
+220 Server ready
+EHLO
+250-Yeah mate
+250-PIPELINING
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+550 RANDOM IS BAD
+RSET
+250 OK
+MAIL FROM
+RCPT TO
+250 OK
+250 OK
+RSET
+250 OK
+MAIL FROM:<pmsend@b.domain>
+RCPT TO:<postmaster@test.ex>
+250 OK
+250 OK
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.10
+MAIL FROM:<ok@otherhost10>
+RCPT TO:<z@test.ex>
+QUIT
+****
+no_msglog_check
