@@ -1863,11 +1863,12 @@ if (  smtp_peer_options & PEER_OFFERED_TLS
   TLS_NEGOTIATE:
     {
     address_item * addr;
-    int rc = tls_client_start(sx->inblock.sock, sx->host, sx->addrlist, sx->tblock
+    uschar * errstr;
+    int rc = tls_client_start(sx->inblock.sock, sx->host, sx->addrlist, sx->tblock,
 # ifdef EXPERIMENTAL_DANE
-			     , sx->dane ? &tlsa_dnsa : NULL
+			     sx->dane ? &tlsa_dnsa : NULL,
 # endif
-			     );
+			     &errstr);
 
     /* TLS negotiation failed; give an error. From outside, this function may
     be called again to try in clear on a new connection, if the options permit
@@ -1877,12 +1878,12 @@ if (  smtp_peer_options & PEER_OFFERED_TLS
       {
 # ifdef EXPERIMENTAL_DANE
       if (sx->dane) log_write(0, LOG_MAIN,
-	  "DANE attempt failed; no TLS connection to %s [%s]",
-	  sx->host->name, sx->host->address);
+	  "DANE attempt failed; TLS connection to %s [%s]: %s",
+	  sx->host->name, sx->host->address, errstr);
 # endif
 
       errno = ERRNO_TLSFAILURE;
-      message = US"failure while setting up TLS session";
+      message = string_sprintf("TLS session: %s", errstr);
       sx->send_quit = FALSE;
       goto TLS_FAILED;
       }
@@ -4053,8 +4054,9 @@ for (cutoff_retry = 0;
 	 && verify_check_given_host(&ob->hosts_require_tls, host) != OK
 	 )
         {
-        log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
-          "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
+        log_write(0, LOG_MAIN,
+	  "%s: delivering unencrypted to H=%s [%s] (not in hosts_require_tls)",
+	  first_addr->message, host->name, host->address);
         first_addr = prepare_addresses(addrlist, host);
         rc = smtp_deliver(addrlist, thost, host_af, port, interface, tblock,
           &message_defer, TRUE);

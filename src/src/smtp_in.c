@@ -2218,6 +2218,19 @@ return done - 2;  /* Convert yield values */
 
 
 
+static BOOL
+smtp_log_tls_fail(uschar * errstr)
+{
+uschar * conn_info = smtp_get_connection_info();
+
+if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
+/* I'd like to get separated H= here, but too hard for now */
+
+log_write(0, LOG_MAIN, "TLS error on %s %s", conn_info, errstr);
+return FALSE;
+}
+
+
 /*************************************************
 *          Start an SMTP session                 *
 *************************************************/
@@ -2706,8 +2719,8 @@ if (check_proxy_protocol_host())
   smtps port for use with older style SSL MTAs. */
 
 #ifdef SUPPORT_TLS
-  if (tls_in.on_connect && tls_server_start(tls_require_ciphers) != OK)
-    return FALSE;
+  if (tls_in.on_connect && tls_server_start(tls_require_ciphers, &user_msg) != OK)
+    return smtp_log_tls_fail(user_msg);
 #endif
 
 /* Run the connect ACL if it exists */
@@ -5181,7 +5194,8 @@ while (done <= 0)
     We must allow for an extra EHLO command and an extra AUTH command after
     STARTTLS that don't add to the nonmail command count. */
 
-    if ((rc = tls_server_start(tls_require_ciphers)) == OK)
+    s = NULL;
+    if ((rc = tls_server_start(tls_require_ciphers, &s)) == OK)
       {
       if (!tls_remember_esmtp)
         helo_seen = esmtp = auth_advertised = pipelining_advertised = FALSE;
@@ -5210,11 +5224,13 @@ while (done <= 0)
       DEBUG(D_tls) debug_printf("TLS active\n");
       break;     /* Successful STARTTLS */
       }
+    else
+      (void) smtp_log_tls_fail(s);
 
     /* Some local configuration problem was discovered before actually trying
     to do a TLS handshake; give a temporary error. */
 
-    else if (rc == DEFER)
+    if (rc == DEFER)
       {
       smtp_printf("454 TLS currently unavailable\r\n");
       break;

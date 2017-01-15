@@ -64,17 +64,18 @@ Returns:    TRUE if OK; result may still be NULL after forced failure
 */
 
 static BOOL
-expand_check(const uschar *s, const uschar *name, uschar **result)
+expand_check(const uschar *s, const uschar *name, uschar **result, uschar ** errstr)
 {
-if (s == NULL) *result = NULL; else
+if (!s)
+  *result = NULL;
+else if (  !(*result = expand_string(US s)) /* need to clean up const more */
+	&& !expand_string_forcedfail
+	)
   {
-  *result = expand_string(US s); /* need to clean up const some more */
-  if (*result == NULL && !expand_string_forcedfail)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "expansion of %s failed: %s", name,
-      expand_string_message);
-    return FALSE;
-    }
+  *errstr = US"Internal error";
+  log_write(0, LOG_MAIN|LOG_PANIC, "expansion of %s failed: %s", name,
+    expand_string_message);
+  return FALSE;
   }
 return TRUE;
 }

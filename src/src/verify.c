@@ -690,9 +690,9 @@ tls_retry_connection:
        && verify_check_given_host(&ob->hosts_require_tls, host) != OK
        )
       {
-      log_write(0, LOG_MAIN, "TLS session failure:"
-	" callout unencrypted to %s [%s] (not in hosts_require_tls)",
-	host->name, host->address);
+      log_write(0, LOG_MAIN,
+	"%s: callout unencrypted to %s [%s] (not in hosts_require_tls)",
+	addr->message, host->name, host->address);
       addr->transport_return = PENDING_DEFER;
       yield = smtp_setup_conn(&sx, TRUE);
       }
@@ -730,8 +730,7 @@ tls_retry_connection:
     sx.send_rset = TRUE;
     sx.completed_addr = FALSE;
 
-    new_domain_record.result =
-      old_domain_cache_result == ccache_reject_mfnull
+    new_domain_record.result = old_domain_cache_result == ccache_reject_mfnull
       ? ccache_reject_mfnull : ccache_accept;
 
     /* Do the random local part check first. Temporarily replace the recipient

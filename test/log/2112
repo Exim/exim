@@ -12,13 +12,11 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for users@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] TLS error on connection (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=client_x T=send_to_server_failcert defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: failure while setting up TLS session
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=client_x T=send_to_server_failcert defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@test.ex: retry timeout exceeded
 1999-03-02 09:44:33 10HmaX-0005vi-00 userx@test.ex: error ignored
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmaY-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] TLS error on connection (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaY-0005vi-00 => usery@test.ex R=client_y T=send_to_server_retry H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbD-0005vi-00"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
@@ -26,8 +24,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => userz@test.ex R=client_z T=send_to_server_crypt H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:AES256-SHA:256 CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbA-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
-1999-03-02 09:44:33 10HmbA-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] TLS error on connection (SSL_connect): error: <<detail omitted>>
-1999-03-02 09:44:33 10HmbA-0005vi-00 TLS session failure: delivering unencrypted to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] (not in hosts_require_tls)
+1999-03-02 09:44:33 10HmbA-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbA-0005vi-00 => userq@test.ex R=client_q T=send_to_server_req_fail H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbF-0005vi-00"
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 no IP address found for host server1.example.net
@@ -41,13 +38,10 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:AES256-SHA:256 CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaY-0005vi-00@myhost.test.ex for usery@test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:AES256-SHA:256 CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for userz@test.ex
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbA-0005vi-00@myhost.test.ex for userq@test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:AES256-SHA:256 CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbB-0005vi-00@myhost.test.ex for userr@test.ex
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:AES256-SHA:256 CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbC-0005vi-00@myhost.test.ex for users@test.ex

@@ -206,9 +206,12 @@ before, for now. */
 #endif
 
 #define exim_gnutls_err_check(Label) do { \
-  if (rc != GNUTLS_E_SUCCESS) { return tls_error((Label), gnutls_strerror(rc), host); } } while (0)
+  if (rc != GNUTLS_E_SUCCESS) \
+    return tls_error((Label), gnutls_strerror(rc), host, errstr); \
+  } while (0)
 
-#define expand_check_tlsvar(Varname) expand_check(state->Varname, US #Varname, &state->exp_##Varname)
+#define expand_check_tlsvar(Varname, errstr) \
+  expand_check(state->Varname, US #Varname, &state->exp_##Varname, errstr)
 
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 # define HAVE_GNUTLS_SESSION_CHANNEL_BINDING
@@ -264,29 +267,18 @@ Argument:
             usually obtained from gnutls_strerror()
   host      NULL if setting up a server;
             the connected host if setting up a client
+  errstr    pointer to returned error string
 
 Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(const uschar *prefix, const char *msg, const host_item *host)
+tls_error(const uschar *prefix, const char *msg, const host_item *host,
+  uschar ** errstr)
 {
-if (host)
-  {
-  log_write(0, LOG_MAIN, "H=%s [%s] TLS error on connection (%s)%s%s",
-      host->name, host->address, prefix, msg ? ": " : "", msg ? msg : "");
-  return FAIL;
-  }
-else
-  {
-  uschar *conn_info = smtp_get_connection_info();
-  if (Ustrncmp(conn_info, US"SMTP ", 5) == 0)
-    conn_info += 5;
-  /* I'd like to get separated H= here, but too hard for now */
-  log_write(0, LOG_MAIN, "TLS error on %s (%s)%s%s",
-      conn_info, prefix, msg ? ": " : "", msg ? msg : "");
-  return DEFER;
-  }
+if (errstr)
+  *errstr = string_sprintf("(%s)%s%s", prefix, msg ? ": " : "", msg ? msg : "");
+return host ? FAIL : DEFER;
 }
 
 
@@ -310,7 +302,8 @@ Returns:   nothing
 static void
 record_io_error(exim_gnutls_state_st *state, int rc, uschar *when, uschar *text)
 {
-const char *msg;
+const char * msg;
+uschar * errstr;
 
 if (rc == GNUTLS_E_FATAL_ALERT_RECEIVED)
   msg = CS string_sprintf("%s: %s", US gnutls_strerror(rc),
@@ -318,7 +311,18 @@ if (rc == GNUTLS_E_FATAL_ALERT_RECEIVED)
 else
   msg = gnutls_strerror(rc);
 
-tls_error(when, msg, state->host);
+(void) tls_error(when, msg, state->host, &errstr);
+
+if (state->host)
+  log_write(0, LOG_MAIN, "H=%s [%s] TLS error on connection %s",
+    state->host->name, state->host->address, errstr);
+else
+  {
+  uschar * conn_info = smtp_get_connection_info();
+  if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
+  /* I'd like to get separated H= here, but too hard for now */
+  log_write(0, LOG_MAIN, "TLS error on %s %s", conn_info, errstr);
+  }
 }
 
 
@@ -454,7 +458,7 @@ Returns:     OK/DEFER/FAIL
 */
 
 static int
-init_server_dh(void)
+init_server_dh(uschar ** errstr)
 {
 int fd, rc;
 unsigned int dh_bits;
@@ -475,7 +479,7 @@ exim_gnutls_err_check(US"gnutls_dh_params_init");
 m.data = NULL;
 m.size = 0;
 
-if (!expand_check(tls_dhparam, US"tls_dhparam", &exp_tls_dhparam))
+if (!expand_check(tls_dhparam, US"tls_dhparam", &exp_tls_dhparam, errstr))
   return DEFER;
 
 if (!exp_tls_dhparam)
@@ -494,7 +498,7 @@ else if (Ustrcmp(exp_tls_dhparam, "none") == 0)
 else if (exp_tls_dhparam[0] != '/')
   {
   if (!(m.data = US std_dh_prime_named(exp_tls_dhparam)))
-    return tls_error(US"No standard prime named", CS exp_tls_dhparam, NULL);
+    return tls_error(US"No standard prime named", CS exp_tls_dhparam, NULL, errstr);
   m.size = Ustrlen(m.data);
   }
 else
@@ -516,7 +520,7 @@ if (m.data)
 different filename and ensure we have sufficient bits. */
 dh_bits = gnutls_sec_param_to_pk_bits(GNUTLS_PK_DH, GNUTLS_SEC_PARAM_NORMAL);
 if (!dh_bits)
-  return tls_error(US"gnutls_sec_param_to_pk_bits() failed", NULL, NULL);
+  return tls_error(US"gnutls_sec_param_to_pk_bits() failed", NULL, NULL, errstr);
 DEBUG(D_tls)
   debug_printf("GnuTLS tells us that for D-H PK, NORMAL is %d bits.\n",
       dh_bits);
@@ -540,7 +544,7 @@ if (use_file_in_spool)
   {
   if (!string_format(filename_buf, sizeof(filename_buf),
         "%s/gnutls-params-%d", spool_directory, dh_bits))
-    return tls_error(US"overlong filename", NULL, NULL);
+    return tls_error(US"overlong filename", NULL, NULL, errstr);
   filename = filename_buf;
   }
 
@@ -557,33 +561,33 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
     {
     saved_errno = errno;
     (void)close(fd);
-    return tls_error(US"TLS cache stat failed", strerror(saved_errno), NULL);
+    return tls_error(US"TLS cache stat failed", strerror(saved_errno), NULL, errstr);
     }
   if (!S_ISREG(statbuf.st_mode))
     {
     (void)close(fd);
-    return tls_error(US"TLS cache not a file", NULL, NULL);
+    return tls_error(US"TLS cache not a file", NULL, NULL, errstr);
     }
   if (!(fp = fdopen(fd, "rb")))
     {
     saved_errno = errno;
     (void)close(fd);
     return tls_error(US"fdopen(TLS cache stat fd) failed",
-        strerror(saved_errno), NULL);
+        strerror(saved_errno), NULL, errstr);
     }
 
   m.size = statbuf.st_size;
   if (!(m.data = malloc(m.size)))
     {
     fclose(fp);
-    return tls_error(US"malloc failed", strerror(errno), NULL);
+    return tls_error(US"malloc failed", strerror(errno), NULL, errstr);
     }
   if (!(sz = fread(m.data, m.size, 1, fp)))
     {
     saved_errno = errno;
     fclose(fp);
     free(m.data);
-    return tls_error(US"fread failed", strerror(saved_errno), NULL);
+    return tls_error(US"fread failed", strerror(saved_errno), NULL, errstr);
     }
   fclose(fp);
 
@@ -604,7 +608,7 @@ else if (errno == ENOENT)
   }
 else
   return tls_error(string_open_failed(errno, "\"%s\" for reading", filename),
-      NULL, NULL);
+      NULL, NULL, errstr);
 
 /* If ret < 0, either the cache file does not exist, or the data it contains
 is not useful. One particular case of this is when upgrading from an older
@@ -619,11 +623,11 @@ if (rc < 0)
 
   if ((PATH_MAX - Ustrlen(filename)) < 10)
     return tls_error(US"Filename too long to generate replacement",
-        CS filename, NULL);
+        CS filename, NULL, errstr);
 
   temp_fn = string_copy(US "%s.XXXXXXX");
   if ((fd = mkstemp(CS temp_fn)) < 0)	/* modifies temp_fn */
-    return tls_error(US"Unable to open temp file", strerror(errno), NULL);
+    return tls_error(US"Unable to open temp file", strerror(errno), NULL, errstr);
   (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
 
   /* GnuTLS overshoots!
@@ -660,7 +664,7 @@ if (rc < 0)
     exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3(NULL) sizing");
   m.size = sz;
   if (!(m.data = malloc(m.size)))
-    return tls_error(US"memory allocation failed", strerror(errno), NULL);
+    return tls_error(US"memory allocation failed", strerror(errno), NULL, errstr);
 
   /* this will return a size 1 less than the allocation size above */
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
@@ -676,19 +680,19 @@ if (rc < 0)
     {
     free(m.data);
     return tls_error(US"TLS cache write D-H params failed",
-        strerror(errno), NULL);
+        strerror(errno), NULL, errstr);
     }
   free(m.data);
   if ((sz = write_to_fd_buf(fd, US"\n", 1)) != 1)
     return tls_error(US"TLS cache write D-H params final newline failed",
-        strerror(errno), NULL);
+        strerror(errno), NULL, errstr);
 
   if ((rc = close(fd)))
-    return tls_error(US"TLS cache write close() failed", strerror(errno), NULL);
+    return tls_error(US"TLS cache write close() failed", strerror(errno), NULL, errstr);
 
   if (Urename(temp_fn, filename) < 0)
     return tls_error(string_sprintf("failed to rename \"%s\" as \"%s\"",
-          temp_fn, filename), strerror(errno), NULL);
+          temp_fn, filename), strerror(errno), NULL, errstr);
 
   DEBUG(D_tls) debug_printf("wrote D-H parameters to file \"%s\"\n", filename);
   }
@@ -703,7 +707,7 @@ return OK;
 /* Create and install a selfsigned certificate, for use in server mode */
 
 static int
-tls_install_selfsign(exim_gnutls_state_st * state)
+tls_install_selfsign(exim_gnutls_state_st * state, uschar ** errstr)
 {
 gnutls_x509_crt_t cert = NULL;
 time_t now;
@@ -761,7 +765,7 @@ out:
   return rc;
 
 err:
-  rc = tls_error(where, gnutls_strerror(rc), NULL);
+  rc = tls_error(where, gnutls_strerror(rc), NULL, errstr);
   goto out;
 }
 
@@ -782,12 +786,13 @@ which we are responsible for setting on the first pass through.
 
 Arguments:
   state           exim_gnutls_state_st *
+  errstr	  error string pointer
 
 Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_expand_session_files(exim_gnutls_state_st *state)
+tls_expand_session_files(exim_gnutls_state_st *state, uschar ** errstr)
 {
 struct stat statbuf;
 int rc;
@@ -831,7 +836,7 @@ false if expansion failed, unless expansion was forced to fail. */
 /* check if we at least have a certificate, before doing expensive
 D-H generation. */
 
-if (!expand_check_tlsvar(tls_certificate))
+if (!expand_check_tlsvar(tls_certificate, errstr))
   return DEFER;
 
 /* certificate is mandatory in server, optional in client */
@@ -840,11 +845,11 @@ if (  !state->exp_tls_certificate
    || !*state->exp_tls_certificate
    )
   if (!host)
-    return tls_install_selfsign(state);
+    return tls_install_selfsign(state, errstr);
   else
     DEBUG(D_tls) debug_printf("TLS: no client certificate specified; okay\n");
 
-if (state->tls_privatekey && !expand_check_tlsvar(tls_privatekey))
+if (state->tls_privatekey && !expand_check_tlsvar(tls_privatekey, errstr))
   return DEFER;
 
 /* tls_privatekey is optional, defaulting to same file as certificate */
@@ -897,7 +902,7 @@ if (  !host	/* server */
   else
     {
     if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
-	  &state->exp_tls_ocsp_file))
+	  &state->exp_tls_ocsp_file, errstr))
       return DEFER;
 
     /* Use the full callback method for stapling just to get observability.
@@ -921,14 +926,14 @@ behaviour. */
 
 if (state->tls_verify_certificates && *state->tls_verify_certificates)
   {
-  if (!expand_check_tlsvar(tls_verify_certificates))
+  if (!expand_check_tlsvar(tls_verify_certificates, errstr))
     return DEFER;
 #ifndef SUPPORT_SYSDEFAULT_CABUNDLE
   if (Ustrcmp(state->exp_tls_verify_certificates, "system") == 0)
     state->exp_tls_verify_certificates = NULL;
 #endif
   if (state->tls_crl && *state->tls_crl)
-    if (!expand_check_tlsvar(tls_crl))
+    if (!expand_check_tlsvar(tls_crl, errstr))
       return DEFER;
 
   if (!(state->exp_tls_verify_certificates &&
@@ -1041,12 +1046,13 @@ out to this.
 
 Arguments:
   state           exim_gnutls_state_st *
+  errstr	  error string pointer
 
 Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_set_remaining_x509(exim_gnutls_state_st *state)
+tls_set_remaining_x509(exim_gnutls_state_st *state, uschar ** errstr)
 {
 int rc;
 const host_item *host = state->host;  /* macro should be reconsidered? */
@@ -1059,7 +1065,7 @@ if (!state->host)
   {
   if (!dh_server_params)
     {
-    rc = init_server_dh();
+    rc = init_server_dh(errstr);
     if (rc != OK) return rc;
     }
   gnutls_certificate_set_dh_params(state->x509_cred, dh_server_params);
@@ -1121,6 +1127,7 @@ Arguments:
   crl             CRL file
   require_ciphers tls_require_ciphers setting
   caller_state    returned state-info structure
+  errstr	  error string pointer
 
 Returns:          OK/DEFER/FAIL
 */
@@ -1134,7 +1141,8 @@ tls_init(
     const uschar *cas,
     const uschar *crl,
     const uschar *require_ciphers,
-    exim_gnutls_state_st **caller_state)
+    exim_gnutls_state_st **caller_state,
+    uschar ** errstr)
 {
 exim_gnutls_state_st *state;
 int rc;
@@ -1212,19 +1220,17 @@ that's tls_certificate, tls_privatekey, tls_verify_certificates, tls_crl */
 
 DEBUG(D_tls)
   debug_printf("Expanding various TLS configuration options for session credentials.\n");
-rc = tls_expand_session_files(state);
-if (rc != OK) return rc;
+if ((rc = tls_expand_session_files(state, errstr)) != OK) return rc;
 
 /* These are all other parts of the x509_cred handling, since SNI in GnuTLS
 requires a new structure afterwards. */
 
-rc = tls_set_remaining_x509(state);
-if (rc != OK) return rc;
+if ((rc = tls_set_remaining_x509(state, errstr)) != OK) return rc;
 
 /* set SNI in client, only */
 if (host)
   {
-  if (!expand_check(sni, US"tls_out_sni", &state->tlsp->sni))
+  if (!expand_check(sni, US"tls_out_sni", &state->tlsp->sni, errstr))
     return DEFER;
   if (state->tlsp->sni && *state->tlsp->sni)
     {
@@ -1250,7 +1256,7 @@ want_default_priorities = TRUE;
 
 if (state->tls_require_ciphers && *state->tls_require_ciphers)
   {
-  if (!expand_check_tlsvar(tls_require_ciphers))
+  if (!expand_check_tlsvar(tls_require_ciphers, errstr))
     return DEFER;
   if (state->exp_tls_require_ciphers && *state->exp_tls_require_ciphers)
     {
@@ -1324,12 +1330,13 @@ don't apply.
 
 Arguments:
   state           exim_gnutls_state_st *
+  errstr	  pointer to error string
 
 Returns:          OK/DEFER/FAIL
 */
 
 static int
-peer_status(exim_gnutls_state_st *state)
+peer_status(exim_gnutls_state_st *state, uschar ** errstr)
 {
 uschar cipherbuf[256];
 const gnutls_datum_t *cert_list;
@@ -1383,7 +1390,7 @@ if (cert_list == NULL || cert_list_size == 0)
       cert_list, cert_list_size);
   if (state->verify_requirement >= VERIFY_REQUIRED)
     return tls_error(US"certificate verification failed",
-        "no certificate received from peer", state->host);
+        "no certificate received from peer", state->host, errstr);
   return OK;
   }
 
@@ -1395,7 +1402,7 @@ if (ct != GNUTLS_CRT_X509)
     debug_printf("TLS: peer cert not X.509 but instead \"%s\"\n", ctn);
   if (state->verify_requirement >= VERIFY_REQUIRED)
     return tls_error(US"certificate verification not possible, unhandled type",
-        ctn, state->host);
+        ctn, state->host, errstr);
   return OK;
   }
 
@@ -1406,7 +1413,7 @@ if (ct != GNUTLS_CRT_X509)
       DEBUG(D_tls) debug_printf("TLS: peer cert problem: %s: %s\n", \
 	(Label), gnutls_strerror(rc)); \
       if (state->verify_requirement >= VERIFY_REQUIRED) \
-	return tls_error((Label), gnutls_strerror(rc), state->host); \
+	return tls_error((Label), gnutls_strerror(rc), state->host, errstr); \
       return OK; \
       } \
     } while (0)
@@ -1447,7 +1454,7 @@ the peer information, but that's too new for some OSes.
 
 Arguments:
   state           exim_gnutls_state_st *
-  error           where to put an error message
+  errstr          where to put an error message
 
 Returns:
   FALSE     if the session should be rejected
@@ -1455,17 +1462,17 @@ Returns:
 */
 
 static BOOL
-verify_certificate(exim_gnutls_state_st *state, const char **error)
+verify_certificate(exim_gnutls_state_st *state, uschar ** errstr)
 {
 int rc;
 unsigned int verify;
 
-*error = NULL;
+*errstr = NULL;
 
-if ((rc = peer_status(state)) != OK)
+if ((rc = peer_status(state, errstr)) != OK)
   {
   verify = GNUTLS_CERT_INVALID;
-  *error = "certificate not supplied";
+  *errstr = US"certificate not supplied";
   }
 else
   rc = gnutls_certificate_verify_peers2(state->session, &verify);
@@ -1478,13 +1485,13 @@ if (rc < 0 ||
    )
   {
   state->peer_cert_verified = FALSE;
-  if (!*error)
-    *error = verify & GNUTLS_CERT_REVOKED
-      ? "certificate revoked" : "certificate invalid";
+  if (!*errstr)
+    *errstr = verify & GNUTLS_CERT_REVOKED
+      ? US"certificate revoked" : US"certificate invalid";
 
   DEBUG(D_tls)
     debug_printf("TLS certificate verification failed (%s): peerdn=\"%s\"\n",
-        *error, state->peerdn ? state->peerdn : US"<unset>");
+        *errstr, state->peerdn ? state->peerdn : US"<unset>");
 
   if (state->verify_requirement >= VERIFY_REQUIRED)
     {
@@ -1579,6 +1586,7 @@ size_t data_len = MAX_HOST_LEN;
 exim_gnutls_state_st *state = &state_server;
 unsigned int sni_type;
 int rc, old_pool;
+uschar * dummy_errstr;
 
 rc = gnutls_server_name_get(session, sni_name, &data_len, &sni_type, 0);
 if (rc != GNUTLS_E_SUCCESS)
@@ -1589,7 +1597,7 @@ if (rc != GNUTLS_E_SUCCESS)
     else
       debug_printf("TLS failure: gnutls_server_name_get(): %s [%d]\n",
         gnutls_strerror(rc), rc);
-  };
+    }
   return 0;
   }
 
@@ -1614,15 +1622,14 @@ DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", sni_name,
 if (!state->trigger_sni_changes)
   return 0;
 
-rc = tls_expand_session_files(state);
-if (rc != OK)
+if ((rc = tls_expand_session_files(state, &dummy_errstr)) != OK)
   {
   /* If the setup of certs/etc failed before handshake, TLS would not have
   been offered.  The best we can do now is abort. */
   return GNUTLS_E_APPLICATION_ERROR_MIN;
   }
 
-rc = tls_set_remaining_x509(state);
+rc = tls_set_remaining_x509(state, &dummy_errstr);
 if (rc != OK) return GNUTLS_E_APPLICATION_ERROR_MIN;
 
 return 0;
@@ -1720,6 +1727,7 @@ a TLS session.
 
 Arguments:
   require_ciphers  list of allowed ciphers or NULL
+  errstr	   pointer to error string
 
 Returns:           OK on success
                    DEFER for errors before the start of the negotiation
@@ -1728,16 +1736,15 @@ Returns:           OK on success
 */
 
 int
-tls_server_start(const uschar *require_ciphers)
+tls_server_start(const uschar * require_ciphers, uschar ** errstr)
 {
 int rc;
-const char *error;
-exim_gnutls_state_st *state = NULL;
+exim_gnutls_state_st * state = NULL;
 
 /* Check for previous activation */
 if (tls_in.active >= 0)
   {
-  tls_error(US"STARTTLS received after TLS started", "", NULL);
+  tls_error(US"STARTTLS received after TLS started", "", NULL, errstr);
   smtp_printf("554 Already in TLS\r\n");
   return FAIL;
   }
@@ -1747,10 +1754,9 @@ and sent an SMTP response. */
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
 
-rc = tls_init(NULL, tls_certificate, tls_privatekey,
+if ((rc = tls_init(NULL, tls_certificate, tls_privatekey,
     NULL, tls_verify_certificates, tls_crl,
-    require_ciphers, &state);
-if (rc != OK) return rc;
+    require_ciphers, &state, errstr)) != OK) return rc;
 
 /* If this is a host for which certificate verification is mandatory or
 optional, set up appropriately. */
@@ -1828,12 +1834,12 @@ if (rc != GNUTLS_E_SUCCESS)
 
   if (sigalrm_seen)
     {
-    tls_error(US"gnutls_handshake", "timed out", NULL);
+    tls_error(US"gnutls_handshake", "timed out", NULL, errstr);
     gnutls_db_remove_session(state->session);
     }
   else
     {
-    tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL);
+    tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL, errstr);
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
     gnutls_certificate_free_credentials(state->x509_cred);
@@ -1853,21 +1859,21 @@ DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 /* Verify after the fact */
 
 if (  state->verify_requirement != VERIFY_NONE
-   && !verify_certificate(state, &error))
+   && !verify_certificate(state, errstr))
   {
   if (state->verify_requirement != VERIFY_OPTIONAL)
     {
-    tls_error(US"certificate verification failed", error, NULL);
+    (void) tls_error(US"certificate verification failed", *errstr, NULL, errstr);
     return FAIL;
     }
   DEBUG(D_tls)
     debug_printf("TLS: continuing on only because verification was optional, after: %s\n",
-	error);
+	*errstr);
   }
 
 /* Figure out peer DN, and if authenticated, etc. */
 
-if ((rc = peer_status(state)) != OK) return rc;
+if ((rc = peer_status(state, NULL)) != OK) return rc;
 
 /* Sets various Exim expansion variables; always safe within server */
 
@@ -1922,6 +1928,8 @@ Arguments:
   addr              the first address (not used)
   tb                transport (always smtp)
 
+  errstr	    error string pointer
+
 Returns:            OK/DEFER/FAIL (because using common functions),
                     but for a client, DEFER and FAIL have the same meaning
 */
@@ -1929,16 +1937,15 @@ Returns:            OK/DEFER/FAIL (because using common functions),
 int
 tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
-    transport_instance *tb
+    transport_instance * tb,
 #ifdef EXPERIMENTAL_DANE
-    , dns_answer * unused_tlsa_dnsa
+    dns_answer * tlsa_dnsa ARG_UNUSED,
 #endif
-    )
+    uschar ** errstr)
 {
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)tb->options_block;
 int rc;
-const char *error;
 exim_gnutls_state_st *state = NULL;
 #ifndef DISABLE_OCSP
 BOOL require_ocsp =
@@ -1951,7 +1958,7 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
 
 if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
     ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
-    ob->tls_require_ciphers, &state)) != OK)
+    ob->tls_require_ciphers, &state, errstr)) != OK)
   return rc;
 
   {
@@ -2012,7 +2019,7 @@ if (request_ocsp)
   if ((rc = gnutls_ocsp_status_request_enable_client(state->session,
 		    NULL, 0, NULL)) != OK)
     return tls_error(US"cert-status-req",
-		    gnutls_strerror(rc), state->host);
+		    gnutls_strerror(rc), state->host, errstr);
   tls_out.ocsp = OCSP_NOT_RESP;
   }
 #endif
@@ -2046,18 +2053,18 @@ if (rc != GNUTLS_E_SUCCESS)
   if (sigalrm_seen)
     {
     gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_USER_CANCELED);
-    return tls_error(US"gnutls_handshake", "timed out", state->host);
+    return tls_error(US"gnutls_handshake", "timed out", state->host, errstr);
     }
   else
-    return tls_error(US"gnutls_handshake", gnutls_strerror(rc), state->host);
+    return tls_error(US"gnutls_handshake", gnutls_strerror(rc), state->host, errstr);
 
 DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify late */
 
 if (state->verify_requirement != VERIFY_NONE &&
-    !verify_certificate(state, &error))
-  return tls_error(US"certificate verification failed", error, state->host);
+    !verify_certificate(state, errstr))
+  return tls_error(US"certificate verification failed", *errstr, state->host, errstr);
 
 #ifndef DISABLE_OCSP
 if (require_ocsp)
@@ -2077,13 +2084,13 @@ if (require_ocsp)
       gnutls_free(printed.data);
       }
     else
-      (void) tls_error(US"ocsp decode", gnutls_strerror(rc), state->host);
+      (void) tls_error(US"ocsp decode", gnutls_strerror(rc), state->host, errstr);
     }
 
   if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)
     {
     tls_out.ocsp = OCSP_FAILED;
-    return tls_error(US"certificate status check failed", NULL, state->host);
+    return tls_error(US"certificate status check failed", NULL, state->host, errstr);
     }
   DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
   tls_out.ocsp = OCSP_VFIED;
@@ -2092,7 +2099,7 @@ if (require_ocsp)
 
 /* Figure out peer DN, and if authenticated, etc. */
 
-if ((rc = peer_status(state)) != OK)
+if ((rc = peer_status(state, errstr)) != OK)
   return rc;
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */
@@ -2437,6 +2444,7 @@ int rc;
 uschar *expciphers = NULL;
 gnutls_priority_t priority_cache;
 const char *errpos;
+uschar * dummy_errstr;
 
 #define validate_check_rc(Label) do { \
   if (rc != GNUTLS_E_SUCCESS) { if (exim_gnutls_base_init_done) gnutls_global_deinit(); \
@@ -2461,7 +2469,8 @@ exim_gnutls_base_init_done = TRUE;
 if (!(tls_require_ciphers && *tls_require_ciphers))
   return_deinit(NULL);
 
-if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers))
+if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers,
+		  &dummy_errstr))
   return_deinit(US"failed to expand tls_require_ciphers");
 
 if (!(expciphers && *expciphers))

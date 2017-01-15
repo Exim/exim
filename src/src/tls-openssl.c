@@ -180,7 +180,7 @@ tls_ext_ctx_cb *server_static_cbinfo = NULL;
 
 static int
 setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional,
-    int (*cert_vfy_cb)(int, X509_STORE_CTX *) );
+    int (*cert_vfy_cb)(int, X509_STORE_CTX *), uschar ** errstr );
 
 /* Callbacks */
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
@@ -207,35 +207,22 @@ Argument:
   host      NULL if setting up a server;
             the connected host if setting up a client
   msg       error message or NULL if we should ask OpenSSL
+  errstr    pointer to output error message
 
 Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(uschar * prefix, const host_item * host, uschar * msg)
+tls_error(uschar * prefix, const host_item * host, uschar * msg, uschar ** errstr)
 {
 if (!msg)
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
-  msg = (uschar *)ssl_errstring;
+  msg = US ssl_errstring;
   }
 
-if (host)
-  {
-  log_write(0, LOG_MAIN, "H=%s [%s] TLS error on connection (%s): %s",
-    host->name, host->address, prefix, msg);
-  return FAIL;
-  }
-else
-  {
-  uschar *conn_info = smtp_get_connection_info();
-  if (Ustrncmp(conn_info, US"SMTP ", 5) == 0)
-    conn_info += 5;
-  /* I'd like to get separated H= here, but too hard for now */
-  log_write(0, LOG_MAIN, "TLS error on %s (%s): %s",
-    conn_info, prefix, msg);
-  return DEFER;
-  }
+if (errstr) *errstr = string_sprintf("(%s): %s", prefix, msg);
+return host ? FAIL : DEFER;
 }
 
 
@@ -596,19 +583,20 @@ Arguments:
   sctx      The current SSL CTX (inbound or outbound)
   dhparam   DH parameter file or fixed parameter identity string
   host      connected host, if client; NULL if server
+  errstr    error string pointer
 
 Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_dh(SSL_CTX *sctx, uschar *dhparam, const host_item *host)
+init_dh(SSL_CTX *sctx, uschar *dhparam, const host_item *host, uschar ** errstr)
 {
 BIO *bio;
 DH *dh;
 uschar *dhexpanded;
 const char *pem;
 
-if (!expand_check(dhparam, US"tls_dhparam", &dhexpanded))
+if (!expand_check(dhparam, US"tls_dhparam", &dhexpanded, errstr))
   return FALSE;
 
 if (!dhexpanded || !*dhexpanded)
@@ -618,7 +606,7 @@ else if (dhexpanded[0] == '/')
   if (!(bio = BIO_new_file(CS dhexpanded, "r")))
     {
     tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
-          host, US strerror(errno));
+          host, US strerror(errno), errstr);
     return FALSE;
     }
   }
@@ -633,7 +621,7 @@ else
   if (!(pem = std_dh_prime_named(dhexpanded)))
     {
     tls_error(string_sprintf("Unknown standard DH prime \"%s\"", dhexpanded),
-        host, US strerror(errno));
+        host, US strerror(errno), errstr);
     return FALSE;
     }
   bio = BIO_new_mem_buf(CS pem, -1);
@@ -643,7 +631,7 @@ if (!(dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)))
   {
   BIO_free(bio);
   tls_error(string_sprintf("Could not read tls_dhparams \"%s\"", dhexpanded),
-      host, NULL);
+      host, NULL, errstr);
   return FALSE;
   }
 
@@ -696,12 +684,13 @@ Patches welcome.
 Arguments:
   sctx      The current SSL CTX (inbound or outbound)
   host      connected host, if client; NULL if server
+  errstr    error string pointer
 
 Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_ecdh(SSL_CTX * sctx, host_item * host)
+init_ecdh(SSL_CTX * sctx, host_item * host, uschar ** errstr)
 {
 #ifdef OPENSSL_NO_ECDH
 return TRUE;
@@ -721,7 +710,7 @@ DEBUG(D_tls)
 return TRUE;
 # else
 
-if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve))
+if (!expand_check(tls_eccurve, US"tls_eccurve", &exp_curve, errstr))
   return FALSE;
 if (!exp_curve || !*exp_curve)
   return TRUE;
@@ -760,15 +749,14 @@ if (  (nid = OBJ_sn2nid       (CCS exp_curve)) == NID_undef
 #   endif
    )
   {
-  tls_error(string_sprintf("Unknown curve name tls_eccurve '%s'",
-      exp_curve),
-    host, NULL);
+  tls_error(string_sprintf("Unknown curve name tls_eccurve '%s'", exp_curve),
+    host, NULL, errstr);
   return FALSE;
   }
 
 if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
   {
-  tls_error(US"Unable to create ec curve", host, NULL);
+  tls_error(US"Unable to create ec curve", host, NULL, errstr);
   return FALSE;
   }
 
@@ -776,7 +764,7 @@ if (!(ecdh = EC_KEY_new_by_curve_name(nid)))
 not to the stability of the interface. */
 
 if ((rv = SSL_CTX_set_tmp_ecdh(sctx, ecdh) == 0))
-  tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), host, NULL);
+  tls_error(string_sprintf("Error enabling '%s' curve", exp_curve), host, NULL, errstr);
 else
   DEBUG(D_tls) debug_printf("ECDH: enabled '%s' curve\n", exp_curve);
 
@@ -951,7 +939,7 @@ return;
 /* Create and install a selfsigned certificate, for use in server mode */
 
 static int
-tls_install_selfsign(SSL_CTX * sctx)
+tls_install_selfsign(SSL_CTX * sctx, uschar ** errstr)
 {
 X509 * x509 = NULL;
 EVP_PKEY * pkey;
@@ -1006,7 +994,7 @@ if (!SSL_CTX_use_PrivateKey(sctx, pkey))
 return OK;
 
 err:
-  (void) tls_error(where, NULL, NULL);
+  (void) tls_error(where, NULL, NULL, errstr);
   if (x509) X509_free(x509);
   if (pkey) EVP_PKEY_free(pkey);
   return DEFER;
@@ -1026,12 +1014,14 @@ the certificate string.
 Arguments:
   sctx            the SSL_CTX* to update
   cbinfo          various parts of session state
+  errstr	  error string pointer
 
 Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_expand_session_files(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo)
+tls_expand_session_files(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo,
+  uschar ** errstr)
 {
 uschar *expanded;
 
@@ -1040,7 +1030,7 @@ if (!cbinfo->certificate)
   if (cbinfo->host)			/* client */
     return OK;
   					/* server */
-  if (tls_install_selfsign(sctx) != OK)
+  if (tls_install_selfsign(sctx, errstr) != OK)
     return DEFER;
   }
 else
@@ -1051,7 +1041,7 @@ else
      )
     reexpand_tls_files_for_sni = TRUE;
 
-  if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded))
+  if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded, errstr))
     return DEFER;
 
   if (expanded != NULL)
@@ -1060,11 +1050,11 @@ else
     if (!SSL_CTX_use_certificate_chain_file(sctx, CS expanded))
       return tls_error(string_sprintf(
 	"SSL_CTX_use_certificate_chain_file file=%s", expanded),
-	  cbinfo->host, NULL);
+	  cbinfo->host, NULL, errstr);
     }
 
   if (cbinfo->privatekey != NULL &&
-      !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded))
+      !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded, errstr))
     return DEFER;
 
   /* If expansion was forced to fail, key_expanded will be NULL. If the result
@@ -1076,14 +1066,14 @@ else
     DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
     if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
       return tls_error(string_sprintf(
-	"SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
+	"SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL, errstr);
     }
   }
 
 #ifndef DISABLE_OCSP
 if (cbinfo->is_server && cbinfo->u_ocsp.server.file)
   {
-  if (!expand_check(cbinfo->u_ocsp.server.file, US"tls_ocsp_file", &expanded))
+  if (!expand_check(cbinfo->u_ocsp.server.file, US"tls_ocsp_file", &expanded, errstr))
     return DEFER;
 
   if (expanded && *expanded)
@@ -1131,6 +1121,7 @@ const char *servername = SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
 tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
 int rc;
 int old_pool = store_pool;
+uschar * dummy_errstr;
 
 if (!servername)
   return SSL_TLSEXT_ERR_OK;
@@ -1167,8 +1158,8 @@ SSL_CTX_set_timeout(server_sni, SSL_CTX_get_timeout(server_ctx));
 SSL_CTX_set_tlsext_servername_callback(server_sni, tls_servername_cb);
 SSL_CTX_set_tlsext_servername_arg(server_sni, cbinfo);
 
-if (  !init_dh(server_sni, cbinfo->dhparam, NULL)
-   || !init_ecdh(server_sni, NULL)
+if (  !init_dh(server_sni, cbinfo->dhparam, NULL, &dummy_errstr)
+   || !init_ecdh(server_sni, NULL, &dummy_errstr)
    )
   return SSL_TLSEXT_ERR_NOACK;
 
@@ -1183,12 +1174,12 @@ if (cbinfo->u_ocsp.server.file)
 #endif
 
 if ((rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE,
-		      verify_callback_server)) != OK)
+		      verify_callback_server, &dummy_errstr)) != OK)
   return SSL_TLSEXT_ERR_NOACK;
 
 /* do this after setup_certs, because this can require the certs for verifying
 OCSP information. */
-if ((rc = tls_expand_session_files(server_sni, cbinfo)) != OK)
+if ((rc = tls_expand_session_files(server_sni, cbinfo, &dummy_errstr)) != OK)
   return SSL_TLSEXT_ERR_NOACK;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
@@ -1414,6 +1405,7 @@ Arguments:
   ocsp_file       file of stapling info (server); flag for require ocsp (client)
   addr            address if client; NULL if server (for some randomness)
   cbp             place to put allocated callback context
+  errstr	  error string pointer
 
 Returns:          OK/DEFER/FAIL
 */
@@ -1424,7 +1416,7 @@ tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
 #ifndef DISABLE_OCSP
   uschar *ocsp_file,
 #endif
-  address_item *addr, tls_ext_ctx_cb ** cbp)
+  address_item *addr, tls_ext_ctx_cb ** cbp, uschar ** errstr)
 {
 long init_options;
 int rc;
@@ -1471,7 +1463,7 @@ existing knob. */
 
 *ctxp = SSL_CTX_new(host ? SSLv23_client_method() : SSLv23_server_method());
 
-if (!*ctxp) return tls_error(US"SSL_CTX_new", host, NULL);
+if (!*ctxp) return tls_error(US"SSL_CTX_new", host, NULL, errstr);
 
 /* It turns out that we need to seed the random number generator this early in
 order to get the full complement of ciphers to work. It took me roughly a day
@@ -1493,7 +1485,7 @@ if (!RAND_status())
 
   if (!RAND_status())
     return tls_error(US"RAND_status", host,
-      US"unable to seed random number generator");
+      US"unable to seed random number generator", errstr);
   }
 
 /* Set up the information callback, which outputs if debugging is at a suitable
@@ -1515,14 +1507,14 @@ availability of the option value macros from OpenSSL.  */
 
 okay = tls_openssl_options_parse(openssl_options, &init_options);
 if (!okay)
-  return tls_error(US"openssl_options parsing failed", host, NULL);
+  return tls_error(US"openssl_options parsing failed", host, NULL, errstr);
 
 if (init_options)
   {
   DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
   if (!(SSL_CTX_set_options(*ctxp, init_options)))
     return tls_error(string_sprintf(
-          "SSL_CTX_set_option(%#lx)", init_options), host, NULL);
+          "SSL_CTX_set_option(%#lx)", init_options), host, NULL, errstr);
   }
 else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
@@ -1530,14 +1522,14 @@ else
 /* Initialize with DH parameters if supplied */
 /* Initialize ECDH temp key parameter selection */
 
-if (  !init_dh(*ctxp, dhparam, host)
-   || !init_ecdh(*ctxp, host)
+if (  !init_dh(*ctxp, dhparam, host, errstr)
+   || !init_ecdh(*ctxp, host, errstr)
    )
   return DEFER;
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
-if ((rc = tls_expand_session_files(*ctxp, cbinfo)) != OK)
+if ((rc = tls_expand_session_files(*ctxp, cbinfo, errstr)) != OK)
   return rc;
 
 /* If we need to handle SNI or OCSP, do so */
@@ -1694,17 +1686,18 @@ Arguments:
   optional      TRUE if called from a server for a host in tls_try_verify_hosts;
                 otherwise passed as FALSE
   cert_vfy_cb	Callback function for certificate verification
+  errstr	error string pointer
 
 Returns:        OK/DEFER/FAIL
 */
 
 static int
 setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional,
-    int (*cert_vfy_cb)(int, X509_STORE_CTX *) )
+    int (*cert_vfy_cb)(int, X509_STORE_CTX *), uschar ** errstr)
 {
 uschar *expcerts, *expcrl;
 
-if (!expand_check(certs, US"tls_verify_certificates", &expcerts))
+if (!expand_check(certs, US"tls_verify_certificates", &expcerts, errstr))
   return DEFER;
 
 if (expcerts && *expcerts)
@@ -1713,7 +1706,7 @@ if (expcerts && *expcerts)
   CA bundle. Then add the ones specified in the config, if any. */
 
   if (!SSL_CTX_set_default_verify_paths(sctx))
-    return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
+    return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL, errstr);
 
   if (Ustrcmp(expcerts, "system") != 0)
     {
@@ -1757,7 +1750,7 @@ if (expcerts && *expcerts)
 
       if (  (!file || statbuf.st_size > 0)
          && !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
-	return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
+	return tls_error(US"SSL_CTX_load_verify_locations", host, NULL, errstr);
 
       /* Load the list of CAs for which we will accept certs, for sending
       to the client.  This is only for the one-file tls_verify_certificates
@@ -1795,7 +1788,7 @@ if (expcerts && *expcerts)
   OpenSSL will then handle the verify against CA certs and CRLs by
   itself in the verify callback." */
 
-  if (!expand_check(crl, US"tls_crl", &expcrl)) return DEFER;
+  if (!expand_check(crl, US"tls_crl", &expcrl, errstr)) return DEFER;
   if (expcrl && *expcrl)
     {
     struct stat statbufcrl;
@@ -1823,7 +1816,7 @@ if (expcerts && *expcerts)
         DEBUG(D_tls) debug_printf("SSL CRL value is a file %s\n", file);
         }
       if (X509_STORE_load_locations(cvstore, CS file, CS dir) == 0)
-        return tls_error(US"X509_STORE_load_locations", host, NULL);
+        return tls_error(US"X509_STORE_load_locations", host, NULL, errstr);
 
       /* setting the flags to check against the complete crl chain */
 
@@ -1856,6 +1849,7 @@ a TLS session.
 
 Arguments:
   require_ciphers   allowed ciphers
+  errstr	    pointer to error message
 
 Returns:            OK on success
                     DEFER for errors before the start of the negotiation
@@ -1864,11 +1858,11 @@ Returns:            OK on success
 */
 
 int
-tls_server_start(const uschar *require_ciphers)
+tls_server_start(const uschar * require_ciphers, uschar ** errstr)
 {
 int rc;
-uschar *expciphers;
-tls_ext_ctx_cb *cbinfo;
+uschar * expciphers;
+tls_ext_ctx_cb * cbinfo;
 static uschar peerdn[256];
 static uschar cipherbuf[256];
 
@@ -1876,7 +1870,7 @@ static uschar cipherbuf[256];
 
 if (tls_in.active >= 0)
   {
-  tls_error(US"STARTTLS received after TLS started", NULL, US"");
+  tls_error(US"STARTTLS received after TLS started", NULL, US"", errstr);
   smtp_printf("554 Already in TLS\r\n");
   return FAIL;
   }
@@ -1888,11 +1882,11 @@ rc = tls_init(&server_ctx, NULL, tls_dhparam, tls_certificate, tls_privatekey,
 #ifndef DISABLE_OCSP
     tls_ocsp_file,
 #endif
-    NULL, &server_static_cbinfo);
+    NULL, &server_static_cbinfo, errstr);
 if (rc != OK) return rc;
 cbinfo = server_static_cbinfo;
 
-if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
+if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers, errstr))
   return FAIL;
 
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
@@ -1906,7 +1900,7 @@ if (expciphers)
   while (*s != 0) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(server_ctx, CS expciphers))
-    return tls_error(US"SSL_CTX_set_cipher_list", NULL, NULL);
+    return tls_error(US"SSL_CTX_set_cipher_list", NULL, NULL, errstr);
   cbinfo->server_cipher_list = expciphers;
   }
 
@@ -1922,21 +1916,22 @@ server_verify_callback_called = FALSE;
 if (verify_check_host(&tls_verify_hosts) == OK)
   {
   rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL,
-  			FALSE, verify_callback_server);
+  			FALSE, verify_callback_server, errstr);
   if (rc != OK) return rc;
   server_verify_optional = FALSE;
   }
 else if (verify_check_host(&tls_try_verify_hosts) == OK)
   {
   rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL,
-  			TRUE, verify_callback_server);
+  			TRUE, verify_callback_server, errstr);
   if (rc != OK) return rc;
   server_verify_optional = TRUE;
   }
 
 /* Prepare for new connection */
 
-if (!(server_ssl = SSL_new(server_ctx))) return tls_error(US"SSL_new", NULL, NULL);
+if (!(server_ssl = SSL_new(server_ctx)))
+  return tls_error(US"SSL_new", NULL, NULL, errstr);
 
 /* Warning: we used to SSL_clear(ssl) here, it was removed.
  *
@@ -1980,10 +1975,7 @@ alarm(0);
 
 if (rc <= 0)
   {
-  tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL);
-  if (ERR_get_error() == 0)
-    log_write(0, LOG_MAIN,
-        "TLS client disconnected cleanly (rejected our certificate?)");
+  (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
   return FAIL;
   }
 
@@ -2035,8 +2027,8 @@ return OK;
 
 static int
 tls_client_basic_ctx_init(SSL_CTX * ctx,
-    host_item * host, smtp_transport_options_block * ob, tls_ext_ctx_cb * cbinfo
-			  )
+    host_item * host, smtp_transport_options_block * ob, tls_ext_ctx_cb * cbinfo,
+    uschar ** errstr)
 {
 int rc;
 /* stick to the old behaviour for compatibility if tls_verify_certificates is
@@ -2055,7 +2047,8 @@ else
   return OK;
 
 if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
-      ob->tls_crl, host, client_verify_optional, verify_callback_client)) != OK)
+      ob->tls_crl, host, client_verify_optional, verify_callback_client,
+      errstr)) != OK)
   return rc;
 
 if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
@@ -2075,7 +2068,7 @@ return OK;
 
 #ifdef EXPERIMENTAL_DANE
 static int
-dane_tlsa_load(SSL * ssl, host_item * host, dns_answer * dnsa)
+dane_tlsa_load(SSL * ssl, host_item * host, dns_answer * dnsa, uschar ** errstr)
 {
 dns_record * rr;
 dns_scan dnss;
@@ -2083,7 +2076,7 @@ const char * hostnames[2] = { CS host->name, NULL };
 int found = 0;
 
 if (DANESSL_init(ssl, NULL, hostnames) != 1)
-  return tls_error(US"hostnames load", host, NULL);
+  return tls_error(US"hostnames load", host, NULL, errstr);
 
 for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr;
@@ -2114,7 +2107,7 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   switch (DANESSL_add_tlsa(ssl, usage, selector, mdname, p, rr->size - 3))
     {
     default:
-      return tls_error(US"tlsa load", host, NULL);
+      return tls_error(US"tlsa load", host, NULL, errstr);
     case 0:	/* action not taken */
     case 1:	break;
     }
@@ -2144,6 +2137,7 @@ Argument:
   addr             the first address
   tb               transport (always smtp)
   tlsa_dnsa        tlsa lookup, if DANE, else null
+  errstr	   error string pointer
 
 Returns:           OK on success
                    FAIL otherwise - note that tls_error() will not give DEFER
@@ -2152,11 +2146,11 @@ Returns:           OK on success
 
 int
 tls_client_start(int fd, host_item *host, address_item *addr,
-  transport_instance *tb
+  transport_instance * tb,
 #ifdef EXPERIMENTAL_DANE
-  , dns_answer * tlsa_dnsa
+  dns_answer * tlsa_dnsa,
 #endif
-  )
+  uschar ** errstr)
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
@@ -2207,27 +2201,27 @@ rc = tls_init(&client_ctx, host, NULL,
 #ifndef DISABLE_OCSP
     (void *)(long)request_ocsp,
 #endif
-    addr, &client_static_cbinfo);
+    addr, &client_static_cbinfo, errstr);
 if (rc != OK) return rc;
 
 tls_out.certificate_verified = FALSE;
 client_verify_callback_called = FALSE;
 
 if (!expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
-    &expciphers))
+    &expciphers, errstr))
   return FAIL;
 
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
 are separated by underscores. So that I can use either form in my tests, and
 also for general convenience, we turn underscores into hyphens here. */
 
-if (expciphers != NULL)
+if (expciphers)
   {
   uschar *s = expciphers;
-  while (*s != 0) { if (*s == '_') *s = '-'; s++; }
+  while (*s) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(client_ctx, CS expciphers))
-    return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
+    return tls_error(US"SSL_CTX_set_cipher_list", host, NULL, errstr);
   }
 
 #ifdef EXPERIMENTAL_DANE
@@ -2238,29 +2232,29 @@ if (tlsa_dnsa)
     verify_callback_client_dane);
 
   if (!DANESSL_library_init())
-    return tls_error(US"library init", host, NULL);
+    return tls_error(US"library init", host, NULL, errstr);
   if (DANESSL_CTX_init(client_ctx) <= 0)
-    return tls_error(US"context init", host, NULL);
+    return tls_error(US"context init", host, NULL, errstr);
   }
 else
 
 #endif
 
-  if ((rc = tls_client_basic_ctx_init(client_ctx, host, ob, client_static_cbinfo))
-      != OK)
+  if ((rc = tls_client_basic_ctx_init(client_ctx, host, ob,
+      client_static_cbinfo, errstr)) != OK)
     return rc;
 
 if ((client_ssl = SSL_new(client_ctx)) == NULL)
-  return tls_error(US"SSL_new", host, NULL);
+  return tls_error(US"SSL_new", host, NULL, errstr);
 SSL_set_session_id_context(client_ssl, sid_ctx, Ustrlen(sid_ctx));
 SSL_set_fd(client_ssl, fd);
 SSL_set_connect_state(client_ssl);
 
 if (ob->tls_sni)
   {
-  if (!expand_check(ob->tls_sni, US"tls_sni", &tls_out.sni))
+  if (!expand_check(ob->tls_sni, US"tls_sni", &tls_out.sni, errstr))
     return FAIL;
-  if (tls_out.sni == NULL)
+  if (!tls_out.sni)
     {
     DEBUG(D_tls) debug_printf("Setting TLS SNI forced to fail, not sending\n");
     }
@@ -2280,7 +2274,7 @@ if (ob->tls_sni)
 
 #ifdef EXPERIMENTAL_DANE
 if (tlsa_dnsa)
-  if ((rc = dane_tlsa_load(client_ssl, host, tlsa_dnsa)) != OK)
+  if ((rc = dane_tlsa_load(client_ssl, host, tlsa_dnsa, errstr)) != OK)
     return rc;
 #endif
 
@@ -2330,7 +2324,8 @@ if (tlsa_dnsa)
 #endif
 
 if (rc <= 0)
-  return tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL);
+  return tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL,
+    errstr);
 
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 
@@ -2625,7 +2620,8 @@ EVP_add_digest(EVP_sha256());
 if (!(tls_require_ciphers && *tls_require_ciphers))
   return NULL;
 
-if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers))
+if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers,
+		  &err))
   return US"failed to expand tls_require_ciphers";
 
 if (!(expciphers && *expciphers))
@@ -2650,7 +2646,8 @@ DEBUG(D_tls)
 if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
-  err = string_sprintf("SSL_CTX_set_cipher_list(%s) failed", expciphers);
+  err = string_sprintf("SSL_CTX_set_cipher_list(%s) failed: %s",
+		      expciphers, ssl_errstring);
   }
 
 SSL_CTX_free(ctx);

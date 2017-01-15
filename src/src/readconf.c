@@ -3251,12 +3251,9 @@ if (pid == 0)
     exim_setugid(exim_uid, exim_gid, FALSE,
         US"calling tls_validate_require_cipher");
 
-  errmsg = tls_validate_require_cipher();
-  if (errmsg)
-    {
+  if ((errmsg = tls_validate_require_cipher()))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
         "tls_require_ciphers invalid: %s", errmsg);
-    }
   fflush(NULL);
   _exit(0);
   }

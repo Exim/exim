@@ -2,7 +2,6 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.com/CN=clica CA
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1] TLS error on connection (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaX-0005vi-00 msg:host:defer bad
 1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
 1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
@@ -18,7 +17,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no OCU)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no CRU)
-1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session failure: delivering unencrypted to 127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
+1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 msg:delivery bad
 1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
@@ -49,7 +48,6 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 [127.0.0.1] depth=2 CN=clica CA,O=example.com
 1999-03-02 09:44:33 [127.0.0.1] depth=1 CN=clica Signing Cert,O=example.com

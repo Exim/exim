@@ -16,7 +16,6 @@
 1999-03-02 09:44:33 Peer did not present a cert
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLSv1:AES256-SHA:256 CV=no S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer cert:
 1999-03-02 09:44:33 ver 2

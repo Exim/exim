@@ -89,6 +89,11 @@ JH/16 Drop variables when they go out of scope.  Memory management drops a whole
       bug: a transport crash, where a dangling pointer for $sending_ip_address
       originally assigned in a verify callout, is re-used.
 
+JH/17 Rework error string handling in TLS interface so that the caller in
+      more cases is responsible for logging.  This permits library-sourced
+      string to be attached to addresses during delivery, and collapses
+      pairs of long lines into single ones.
+
 
 Exim version 4.88
 -----------------

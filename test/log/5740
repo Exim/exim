@@ -16,19 +16,16 @@
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbF-0005vi-00 Received TLS status callback, null content
-1999-03-02 09:44:33 10HmbF-0005vi-00 H=127.0.0.1 [127.0.0.1] TLS error on connection (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbF-0005vi-00 client ocsp status: 1 (notresp)
-1999-03-02 09:44:33 10HmbF-0005vi-00 == failrequire@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: failure while setting up TLS session
+1999-03-02 09:44:33 10HmbF-0005vi-00 == failrequire@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbG-0005vi-00 Server certificate revoked; reason: superseded
-1999-03-02 09:44:33 10HmbG-0005vi-00 H=127.0.0.1 [127.0.0.1] TLS error on connection (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbG-0005vi-00 client ocsp status: 3 (failed)
-1999-03-02 09:44:33 10HmbG-0005vi-00 == failrevoked@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: failure while setting up TLS session
+1999-03-02 09:44:33 10HmbG-0005vi-00 == failrevoked@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbH-0005vi-00 Server OSCP dates invalid
-1999-03-02 09:44:33 10HmbH-0005vi-00 H=127.0.0.1 [127.0.0.1] TLS error on connection (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbH-0005vi-00 client ocsp status: 3 (failed)
-1999-03-02 09:44:33 10HmbH-0005vi-00 == failexpired@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: failure while setting up TLS session
+1999-03-02 09:44:33 10HmbH-0005vi-00 == failexpired@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
@@ -51,10 +48,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 TLS error on connection from (helo.data.changed) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
-1999-03-02 09:44:33 TLS client disconnected cleanly (rejected our certificate?)

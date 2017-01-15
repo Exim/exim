@@ -2,7 +2,6 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 tls:cert depth=0 <CN=server1.example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1] TLS error on connection (certificate verification failed): certificate invalid
 1999-03-02 09:44:33 10HmaX-0005vi-00 msg:host:defer bad
 1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
 1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
@@ -17,7 +16,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <67 ef 2d 43 8e 43 50 f5 3f 41 ee 42 cf f4 b4 31 3d d8 88 b5 f7 24 1f 26 83 32 6a 6c ff 8a 36 b7 be cb 28 48 68 9c a9 3c 6e 2f 2d a5 f4 fc d2 09 9b 1d 04 00 26 7d a5 f9 39 13 06 dd 9d 69 78 f8 7b f5 3c 82 9d 8f b9 4f 1a b6 f0 0b 7f 20 82 6e 80 4e 38 09 d1 43 23 22 dd 37 5d 80 6d 5a aa 23 33 e4 79 c9 0d 8d cc b8 ed 5f 6b 01 56 2c 49 89 9b ca 5e d5 b3 b0 93 7e d5 5e f0 98 7d 5f 07 4b>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex\nDNS=server1.example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 CRU <http://crl.example.com/latest.crl>
-1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session failure: delivering unencrypted to 127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
+1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session: (certificate verification failed): certificate invalid: delivering unencrypted to H=127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
 1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 msg:delivery bad
 1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented

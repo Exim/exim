@@ -800,7 +800,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   # numbers, or handle specific bad conditions in different ways, leading to
   # different wording in the error messages, so we cannot compare them.
 
-  s/(TLS error on connection (?:from .* )?\(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
+#XXX This loses any trailing "deliving unencypted to" which is unfortunate
+#    but I can't work out how to deal with that.
+  s/(TLS session: \(SSL_\w+\): error:)(.*)(?!: delivering)/$1 <<detail omitted>>/;
+  s/(TLS error on connection from .* \(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
   next if /SSL verify error: depth=0 error=certificate not trusted/;
 
   # ======== Maildir things ========

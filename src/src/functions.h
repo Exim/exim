@@ -45,11 +45,11 @@ extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);
 
 extern int     tls_client_start(int, host_item *, address_item *,
-		 transport_instance *
+		 transport_instance *,
 # ifdef EXPERIMENTAL_DANE
-		, dns_answer *
+		dns_answer *,
 # endif
-				);
+		uschar **);
 extern void    tls_close(BOOL, BOOL);
 extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
@@ -59,7 +59,7 @@ extern int     tls_getc(unsigned);
 extern void    tls_get_cache(void);
 extern int     tls_import_cert(const uschar *, void **);
 extern int     tls_read(BOOL, uschar *, size_t);
-extern int     tls_server_start(const uschar *);
+extern int     tls_server_start(const uschar *, uschar **);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
 extern int     tls_write(BOOL, const uschar *, size_t);
