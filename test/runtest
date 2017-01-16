@@ -1798,14 +1798,14 @@ system("$cmd");
 #            reference to the subtest number, holding previous value
 #            reference to the expected return code value
 #            reference to where to put the command name (for messages)
-#            auxilliary information returned from a previous run
+#            auxiliary information returned from a previous run
 #
 # Returns:   0 the commmand was executed inline, no subprocess was run
 #            1 a non-exim command was run and waited for
 #            2 an exim command was run and waited for
 #            3 a command was run and not waited for (daemon, server, exim_lock)
 #            4 EOF was encountered after an initial return code line
-# Optionally also a second parameter, a hash-ref, with auxilliary information:
+# Optionally also a second parameter, a hash-ref, with auxiliary information:
 #            exim_pid: pid of a run process
 #            munge: name of a post-script results munger
 

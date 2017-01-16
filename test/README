@@ -1135,7 +1135,7 @@ indicating that they are specific to that one test. A few fixed files (for
 example, some TLS certificates) are used by more than one test, and so their
 names are not of this form.
 
-There are also some auxilary DNS zone files, which are described in the next
+There are also some auxiliary DNS zone files, which are described in the next
 section.
 
 
