@@ -579,7 +579,7 @@ TL/07 Bug 1547: Omit RFCs from release. Draft and RFCs have licenses which
 
 JH/15 Updates and fixes to the EXPERIMENTAL_DSN feature.
 
-JH/16 Fix string representation of time values on 64bit time_t anchitectures.
+JH/16 Fix string representation of time values on 64bit time_t architectures.
       Bug 1561.
 
 JH/17 Fix a null-indirection in certextract expansions when a nondefault
