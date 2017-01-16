@@ -277,7 +277,7 @@ JH/21 Bug 1720: Add support for priority groups and weighted-random proxy
       "pri" and "weight".  Note that the previous implicit priority given by the
       list order is no longer honoured.
 
-JH/22 Bugs 963, 1721: Fix some corner cases in message body canonicalisation
+JH/22 Bugs 963, 1721: Fix some corner cases in message body canonicalization
       for DKIM processing.
 
 JH/23 Move SOCKS5 support from Experimental to mainline, enabled for a build
