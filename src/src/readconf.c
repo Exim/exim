@@ -2368,7 +2368,7 @@ switch (type)
 
   /* We get a coverity error here for using count, as it derived
   from the tainted buffer pointed to by s, as parsed by sscanf().
-  By the definition of sscanf we must be aceessing between start
+  By the definition of sscanf we must be accessing between start
   and end of s (assuming it is nul-terminated...) so ignore the error.  */
   /* coverity[tainted_data] */
   if (s[count] == '.')
