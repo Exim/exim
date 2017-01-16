@@ -2526,7 +2526,7 @@ return yield;
 *      Check header names for 8-bit characters   *
 *************************************************/
 
-/* This function checks for invalid charcters in header names. See
+/* This function checks for invalid characters in header names. See
 RFC 5322, 2.2. and RFC 6532, 3.
 
 Arguments:

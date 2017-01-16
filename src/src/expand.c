@@ -46,7 +46,7 @@ the first 8 characters of the password using a 20-round version of crypt
 (standard crypt does 25 rounds).  It then crypts the next 8 characters,
 or an empty block if the password is less than 9 characters, using a
 20-round version of crypt and the same salt as was used for the first
-block.  Charaters after the first 16 are ignored.  It always generates
+block.  Characters after the first 16 are ignored.  It always generates
 a 16-byte hash, which is expressed together with the salt as a string
 of 24 base 64 digits.  Here are some links to peruse:
 
