@@ -3045,7 +3045,7 @@ the ACL that obeyed "drop" has already supplied the custom message, and NULL is
 passed to this function.
 
 In case things go wrong while processing this function, causing an error that
-may re-enter this funtion, there is a recursion check.
+may re-enter this function, there is a recursion check.
 
 Arguments:
   reason          What $smtp_notquit_reason will be set to in the ACL;
