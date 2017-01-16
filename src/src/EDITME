@@ -597,7 +597,7 @@ FIXED_NEVER_USERS=root
 # That shim can set macros before .include'ing your main configuration file.
 #
 # As a strictly transient measure to ease migration to 4.73, the
-# WHITELIST_D_MACROS value definies a colon-separated list of macro-names
+# WHITELIST_D_MACROS value defines a colon-separated list of macro-names
 # which are permitted to be overridden from the command-line which will be
 # honoured by the Exim user.  So these are macros that can persist to delivery
 # time.
