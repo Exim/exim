@@ -3184,7 +3184,7 @@ PH/09 Applied a patch from the Sieve maintainer which:
       and most important:
 
       o  fixes a bug in processing the envelope test (when testing
-         multiple envelope elements, the last element determinted the
+         multiple envelope elements, the last element determined the
          result)
 
 PH/10 Exim was violating RFC 3834 ("Recommendations for Automatic Responses to
