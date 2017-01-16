@@ -1104,7 +1104,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   size = end + 2 - hdr.v1.line; /* Skip header + CRLF */
   DEBUG(D_receive) debug_printf("Detected PROXYv1 header\n");
   /* Step through the string looking for the required fields. Ensure
-     strict adherance to required formatting, exit for any error. */
+     strict adherence to required formatting, exit for any error. */
   p += 5;
   if (!isspace(*(p++)))
     {
