@@ -972,7 +972,7 @@ where = US"generating pkey";
 if (!(rsa = RSA_generate_key(1024, RSA_F4, NULL, NULL)))
   goto err;
 
-where = US"assiging pkey";
+where = US"assigning pkey";
 if (!EVP_PKEY_assign_RSA(pkey, rsa))
   goto err;
 
