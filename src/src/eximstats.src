@@ -162,7 +162,7 @@
 #             Bernard Massot.
 #
 # 2003-06-03  V1.28 John Newman
-#             Added in the ability to skip over the parsing and evaulation of
+#             Added in the ability to skip over the parsing and evaluation of
 #             specific transports as passed to eximstats via the new "-nt/.../"
 #             command line argument.  This new switch allows the viewing of
 #             not more accurate statistics but more applicable statistics when
