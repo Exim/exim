@@ -21007,7 +21007,7 @@ The control does not apply to shadow transports.
 
 .cindex "hints database" "transport concurrency control"
 Exim implements this control by means of a hints database in which a record is
-incremented whenever a transport process is beaing created. The record
+incremented whenever a transport process is being created. The record
 is decremented and possibly removed when the process terminates.
 Obviously there is scope for
 records to get left lying around if there is a system or program crash. To
