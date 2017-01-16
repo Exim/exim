@@ -23971,7 +23971,7 @@ unauthenticated. See also &%hosts_require_auth%&, and chapter
 .cindex "RFC 3030" "CHUNKING"
 This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
-BDAT will not be used in conjuction with a transport filter.
+BDAT will not be used in conjunction with a transport filter.
 
 .option hosts_try_fastopen smtp "host list!!" unset
 .cindex "fast open, TCP" "enabling, in client"
