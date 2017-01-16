@@ -7,7 +7,7 @@
 
 /* Functions for doing things with sockets. With the advent of IPv6 this has
 got messier, so that it's worth pulling out the code into separate functions
-that other parts of Exim can call, expecially as there are now several
+that other parts of Exim can call, especially as there are now several
 different places in the code where sockets are used. */
 
 
