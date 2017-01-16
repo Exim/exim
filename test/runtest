@@ -1805,7 +1805,7 @@ system("$cmd");
 #            2 an exim command was run and waited for
 #            3 a command was run and not waited for (daemon, server, exim_lock)
 #            4 EOF was encountered after an initial return code line
-# Optionally alse a second parameter, a hash-ref, with auxilliary information:
+# Optionally also a second parameter, a hash-ref, with auxilliary information:
 #            exim_pid: pid of a run process
 #            munge: name of a post-script results munger
 
