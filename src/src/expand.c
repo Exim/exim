@@ -1589,7 +1589,7 @@ for (i = 0; i < 2; i++)
 
         size += ilen + comma + 1;  /* +1 for the newline */
 
-        /* Second pass - concatentate the data, up to a maximum. Note that
+        /* Second pass - concatenate the data, up to a maximum. Note that
         the loop stops when size hits the limit. */
 
         if (i != 0)

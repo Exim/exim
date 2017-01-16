@@ -1,7 +1,7 @@
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
 # scripts/Configure-Makefile from within the build directory. This
-# concatentates the configuration settings from Local/Makefile and other,
+# concatenates the configuration settings from Local/Makefile and other,
 # optional, Local/* files at the front of this file, to create Makefile in the
 # build directory.
 #
