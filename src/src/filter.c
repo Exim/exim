@@ -1370,7 +1370,7 @@ return yield;
 *              Read a list of commands           *
 *************************************************/
 
-/* If condional is TRUE, the list must be terminated
+/* If conditional is TRUE, the list must be terminated
 by the words "else" or "endif".
 
 Arguments:
