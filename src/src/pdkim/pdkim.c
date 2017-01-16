@@ -1631,7 +1631,7 @@ while (sig)
       }
 
 
-    /* We have a winner! (if bodydhash was correct earlier) */
+    /* We have a winner! (if bodyhash was correct earlier) */
     if (sig->verify_status == PDKIM_VERIFY_NONE)
       sig->verify_status = PDKIM_VERIFY_PASS;
 
