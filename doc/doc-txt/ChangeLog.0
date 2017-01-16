@@ -1245,7 +1245,7 @@ Exim version 4.11
     observed that getipnodebyname() gives HOST_NOT_FOUND for names for which a
     DNS lookup gives TRY_AGAIN. See also change 125 below.
 
-90. Minor rewording of ACL error for attemted header check after RCPT.
+90. Minor rewording of ACL error for attempted header check after RCPT.
 
 91. When USE_GDBM was set, exim_dbmbuild wasn't working properly (still assumed
     NDBM compatibilify interface); similarly in dbmdb lookups when ownership
