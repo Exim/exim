@@ -596,7 +596,7 @@ Exim version 4.14
 
 72. Fixed three bugs in ${readsocket:
       (i) If the operation failed, and a failure string was given, "}}" was
-          erroroneously added to it.
+          erroneously added to it.
      (ii) If the operation succeeded, but a failure string was present, "}" was
           added to the expanded data.
     (iii) The alarm for the timeout was set with signal() instead of with
