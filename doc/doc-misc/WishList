@@ -2052,7 +2052,7 @@ This should be very simple to implement and will allow to make
 some experiments and implement custom extensions, i.e. one to
 known if remote client will redirect on 551 or not. Also the acl
 for unknown smpt command could be used for other purposes, like
-to dectect and react to some kiddies that send things like
+to detect and react to some kiddies that send things like
 http://... on the smtp port.
 ------------------------------------------------------------------------------
 --- HWM 355 ------------------------------------------------------------------
