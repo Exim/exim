@@ -1096,7 +1096,7 @@ PP/15 LDAP: Check for errors of TLS initialisation, to give correct
       diagnostics.
       Report and patch from Dmitry Banschikov.
 
-PP/16 Removed "dont_insert_empty_fragments" fron "openssl_options".
+PP/16 Removed "dont_insert_empty_fragments" from "openssl_options".
       Removed SSL_clear() after SSL_new() which led to protocol negotiation
       failures.  We appear to now support TLS1.1+ with Exim.
 
