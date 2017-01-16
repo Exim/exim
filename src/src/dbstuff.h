@@ -582,7 +582,7 @@ done.
 Originally, there was only one structure, used for both types. However, it got
 expanded for domain records, so it got split. To make it possible for Exim to
 handle the old type of record, we retain the old definition. The different
-kinds of record can be distinguised by their different lengths. */
+kinds of record can be distinguished by their different lengths. */
 
 typedef struct {
   time_t time_stamp;

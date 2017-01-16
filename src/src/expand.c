@@ -3813,7 +3813,7 @@ them here in detail any more.
 We use an internal routine recursively to handle embedded substrings. The
 external function follows. The yield is NULL if the expansion failed, and there
 are two cases: if something collapsed syntactically, or if "fail" was given
-as the action on a lookup failure. These can be distinguised by looking at the
+as the action on a lookup failure. These can be distinguished by looking at the
 variable expand_string_forcedfail, which is TRUE in the latter case.
 
 The skipping flag is set true when expanding a substring that isn't actually
