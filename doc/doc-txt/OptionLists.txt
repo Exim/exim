@@ -54,7 +54,7 @@ acl_not_smtp_mime                    string*         unset         main         
 acl_smtp_auth                        string*         unset         main              4.00
 acl_smtp_connect                     string*         unset         main              4.11
 acl_smtp_data                        string*         unset         main              4.00
-acl_smtp_data_prdr                   string*         unset         main              4.82 with expreimental_prdr
+acl_smtp_data_prdr                   string*         unset         main              4.82 with experimental_prdr
 acl_smtp_dkim                        string*         unset         main              4.70 unless disable_dkim
 acl_smtp_etrn                        string*         unset         main              4.00
 acl_smtp_expn                        string*         unset         main              4.00

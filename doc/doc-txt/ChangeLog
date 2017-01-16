@@ -541,7 +541,7 @@ JH/06 Bug 1533: Fix truncation of items in headers_remove lists.  A fixed
 JH/07 Add support for directories of certificates when compiled with a GnuTLS
       version 3.3.6 or later.
 
-JH/08 Rename the TPDA expermimental facility to Event Actions.  The #ifdef
+JH/08 Rename the TPDA experimental facility to Event Actions.  The #ifdef
       is EXPERIMENTAL_EVENT, the main-configuration and transport options
       both become "event_action", the variables become $event_name, $event_data
       and $event_defer_errno.  There is a new variable $verify_mode, usable in
