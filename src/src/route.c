@@ -765,7 +765,7 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
     rc = -1;
     }
 
-  /* Handle error returns from stat() or route_check_access(). The EACESS error
+  /* Handle error returns from stat() or route_check_access(). The EACCES error
   is handled specially. At present, we can force it to be treated as
   non-existence. Write the code so that it will be easy to add forcing for
   existence if required later. */
