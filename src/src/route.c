@@ -714,7 +714,7 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
     pid = fork();
 
     /* If fork() fails, reinstate the original error and behave as if
-    this block of code were not present. This is the same behavious as happens
+    this block of code were not present. This is the same behaviour as happens
     when Exim is not running as root at this point. */
 
     if (pid < 0)
