@@ -47,7 +47,7 @@ SOFTWARE.
  * used by all more than one of these dialogs.
  *
  * The following functions are the only non-static ones defined
- * in this module.  They are located at the begining of the
+ * in this module.  They are located at the beginning of the
  * section that contains this dialog box that uses them.
  *
  * void _XawTextInsertFileAction(w, event, params, num_params);
