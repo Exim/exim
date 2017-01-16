@@ -802,7 +802,7 @@ The smtp transport
 . The authenticate_hosts option has been renamed as hosts_try_auth. A new
   option called hosts_require_auth has been added; if authentication fails for
   one of these hosts, Exim does _not_ try to send unauthenticated. It defers
-  instead. The deferal error is detectable in the retry rules, so this can be
+  instead. The deferral error is detectable in the retry rules, so this can be
   turned into a hard failure if required.
 
 
