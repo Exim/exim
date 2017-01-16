@@ -268,7 +268,7 @@ Exim version 4.20
     use in the forthcoming Sieve addition to Exim.
 
 56. The behaviour of -t in the presence of Resent- headers has been changed,
-    for compability with Sendmail and other MTAs. Previously, Exim gave an
+    for compatibility with Sendmail and other MTAs. Previously, Exim gave an
     error, because it is not clear from RFC 2822 how this might be handled. It
     turns out that MUAs don't seem to follow what RFC 2822 says, and any MUA
     that uses -t with Resent- ensures that there is only one set of Resent-

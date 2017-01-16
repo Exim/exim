@@ -1431,7 +1431,7 @@ NM/05 Fix to spam.c to accommodate older gcc versions which dislike
       variable declaration deep within a block.  Bug and patch from
       Dennis Davis.
 
-PP/15 lookups-Makefile IRIX compatibilty coercion.
+PP/15 lookups-Makefile IRIX compatibility coercion.
 
 PP/16 Make DISABLE_DKIM build knob functional.
 
