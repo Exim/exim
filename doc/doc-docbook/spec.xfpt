@@ -9105,7 +9105,7 @@ If the ACL returns defer the result is a forced-fail.  Otherwise the expansion f
 
 .vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
        {*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
-.cindex "expansion" "extracting cerificate fields"
+.cindex "expansion" "extracting certificate fields"
 .cindex "&%certextract%&" "certificate fields"
 .cindex "certificate" "extracting fields"
 The <&'certificate'&> must be a variable of type certificate.
@@ -27536,7 +27536,7 @@ Great care should be taken to deal with matters of case, various injection
 attacks in the string (&`../`& or SQL), and ensuring that a valid filename
 can always be referenced; it is important to remember that &$tls_in_sni$& is
 arbitrary unverified data provided prior to authentication.
-Further, the initial cerificate is loaded before SNI is arrived, so
+Further, the initial certificate is loaded before SNI is arrived, so
 an expansion for &%tls_certificate%& must have a default which is used
 when &$tls_in_sni$& is empty.
 
