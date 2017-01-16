@@ -97,7 +97,7 @@ configuration line for PostgreSQL via Unix domain sockets looks like this:
 hide pgsql_servers = (/tmp/.s.PGSQL.5432)/db/user/password[:<nextserver>]
 
 We enclose the path name in parentheses so that its slashes aren't visually
-confused with the delimeters for the other pgsql_server settings.
+confused with the delimiters for the other pgsql_server settings.
 
 For TCP/IP connections, the server is a host name and optional port (with a
 colon separator).
