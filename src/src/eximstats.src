@@ -2729,7 +2729,7 @@ sub print_grandtotals {
       if ($messages > 0) {
         @content = ($total_aref->[0], '', $messages, '');
 
-        #Count the number of distict IPs for the Hosts column.
+        #Count the number of distinct IPs for the Hosts column.
         push(@content,scalar(keys %{$total_aref->[1]})) if $do_sender{Host};
 
         #These rows do not have entries for the following columns (if specified)
