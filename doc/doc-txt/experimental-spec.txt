@@ -42,7 +42,7 @@ These four steps are explained in more details below.
 1) Adding support for BMI at compile time
 
   To compile with BMI support,  you need to link Exim  against
-  the   Brighmail  client   SDK,  consisting   of  a   library
+  the  Brightmail  client   SDK,  consisting   of  a   library
   (libbmiclient_single.so)  and  a  header  file  (bmi_api.h).
   You'll also need to explicitly set a flag in the Makefile to
   include BMI support in the Exim binary. Both can be achieved
