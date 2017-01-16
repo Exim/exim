@@ -554,7 +554,7 @@ if (sender_helo_name == NULL) show_helo = FALSE;
 /* If HELO/EHLO was followed by an IP literal, it's messy because of two
 features of IPv6. Firstly, there's the "IPv6:" prefix (Exim is liberal and
 doesn't require this, for historical reasons). Secondly, IPv6 addresses may not
-be given in canonical form, so we have to canonicize them before comparing. As
+be given in canonical form, so we have to canonicalize them before comparing. As
 it happens, the code works for both IPv4 and IPv6. */
 
 else if (sender_helo_name[0] == '[' &&

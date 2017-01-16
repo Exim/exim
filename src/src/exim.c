@@ -5087,7 +5087,7 @@ if (host_checking)
       verify_get_ident(1413);
     }
 
-  /* In case the given address is a non-canonical IPv6 address, canonicize
+  /* In case the given address is a non-canonical IPv6 address, canonicalize
   it. The code works for both IPv4 and IPv6, as it happens. */
 
   size = host_aton(sender_host_address, x);

@@ -465,7 +465,7 @@ JH/27 Bug 286: Support SOA lookup in dnsdb lookups.
 
 JH/28 Bug 1588: Do not use the A lookup following an AAAA for setting the FQDN.
       Normally benign, it bites when the pair was led to by a CNAME;
-      modern usage is to not canoicalize the domain to a CNAME target
+      modern usage is to not canonicalize the domain to a CNAME target
       (and we were inconsistent anyway for A-only vs AAAA+A).
 
 JH/29 Bug 1632: Removed the word "rejected" from line logged for ACL discards.
@@ -5757,7 +5757,7 @@ Exim version 4.30
     systems (e.g. Solaris), it also passes back the IP address string as the
     "host name". However, on others (e.g. Linux), it passes back an empty
     string. Exim wasn't checking for this, and was changing the host name to an
-    empty string, assuming it had been canonicized.
+    empty string, assuming it had been canonicalized.
 
  5. Although rare, it is permitted to have more than one PTR record for a given
     IP address. I thought that gethostbyaddr() or getipnodebyaddr() always gave

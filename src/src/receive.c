@@ -3823,7 +3823,7 @@ string as required. Since we commonly want to add two items at a time, use a
 macro to simplify the coding. We log the arrival of a new message while the
 file is still locked, just in case the machine is *really* fast, and delivers
 it first! Include any message id that is in the message - since the syntax of a
-message id is actually an addr-spec, we can use the parse routine to canonicize
+message id is actually an addr-spec, we can use the parse routine to canonicalize
 it. */
 
 size = 256;
