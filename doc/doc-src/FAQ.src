@@ -2117,7 +2117,7 @@ A0301: They mean exactly what they say. Exim expected to route an address to a
        with MX records pointing to \"localhost"\ (or other names with A records
        that specify 127.0.0.1), which causes this behaviour. You can use the
        \ignore_target_hosts\ option to get Exim to ignore these records. The
-       default contiguration does this. For more discussion, see Q0319. For
+       default configuration does this. For more discussion, see Q0319. For
        other cases:
 
        (1) If the domain is meant to be handled as a local domain, there
