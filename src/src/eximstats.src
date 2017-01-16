@@ -73,7 +73,7 @@
 # 2001-10-21  Removed -domain flag and added -bydomain, -byhost, and -byemail.
 #             We now generate our main parsing subroutine as an eval statement
 #             which improves performance dramatically when not all the results
-#             are required. We also cache the last timestamp to time convertion.
+#             are required. We also cache the last timestamp to time conversion.
 #
 #             NOTE: 'Top 50 destinations by (message count|volume)' lines are
 #             now 'Top N (host|email|domain) destinations by (message count|volume)'
@@ -598,9 +598,9 @@ $WEEK   =  7 * $DAY;
 use vars qw($total_received_data  $total_received_data_gigs  $total_received_count);
 use vars qw($total_delivered_data $total_delivered_data_gigs $total_delivered_messages $total_delivered_addresses);
 use vars qw(%timestamp2time);                   #Hash of timestamp => time.
-use vars qw($last_timestamp $last_time);        #The last time convertion done.
-use vars qw($last_date $date_seconds);          #The last date convertion done.
-use vars qw($last_offset $offset_seconds);      #The last time offset convertion done.
+use vars qw($last_timestamp $last_time);        #The last time conversion done.
+use vars qw($last_date $date_seconds);          #The last date conversion done.
+use vars qw($last_offset $offset_seconds);      #The last time offset conversion done.
 use vars qw($localtime_offset);
 use vars qw($i);                                #General loop counter.
 use vars qw($debug);                            #Debug mode?
