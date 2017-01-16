@@ -81,7 +81,7 @@ GetOptions(
   'show-tests'  => \$G::show_tests  # display tests as applied to each message
 ) || exit(1);
 
-# if both freeze and thaw specified, only thaw as it is less desctructive
+# if both freeze and thaw specified, only thaw as it is less destructive
 $G::freeze = undef               if ($G::freeze && $G::thaw);
 freeze_start()                   if ($G::freeze);
 thaw_start()                     if ($G::thaw);
