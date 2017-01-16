@@ -365,7 +365,7 @@ return 0;
 /* Exim uses a time + a pid to generate a unique identifier in two places: its
 message IDs, and in file names for maildir deliveries. Because some OS now
 re-use pids within the same second, sub-second times are now being used.
-However, for absolute certaintly, we must ensure the clock has ticked before
+However, for absolute certainty, we must ensure the clock has ticked before
 allowing the relevant process to complete. At the time of implementation of
 this code (February 2003), the speed of processors is such that the clock will
 invariably have ticked already by the time a process has done its job. This
