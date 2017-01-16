@@ -944,7 +944,7 @@ for (topaddr = addr; topaddr->parent; topaddr = topaddr->parent) ;
 /* We start with just the local part for pipe, file, and reply deliveries, and
 for successful local deliveries from routers that have the log_as_local flag
 set. File deliveries from filters can be specified as non-absolute paths in
-cases where the transport is goin to complete the path. If there is an error
+cases where the transport is going to complete the path. If there is an error
 before this happens (expansion failure) the local part will not be updated, and
 so won't necessarily look like a path. Add extra text for this case. */
 
