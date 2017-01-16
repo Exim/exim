@@ -352,7 +352,7 @@ and the first word of the log selector. */
 #define BIT_TEST(s,z,n) (((s)[BITWORD(n)] &   BITMASK(n)) != 0)
 
 /* Used in globals.c for initializing bit_table structures. T will be either
-D or L correspondong to the debug and log selector bits declared below. */
+D or L corresponding to the debug and log selector bits declared below. */
 
 #define BIT_TABLE(T,name) { US #name, T##i_##name }
 
