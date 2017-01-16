@@ -414,7 +414,7 @@ if (wrote == -1)
   }
 
 /* now send the file */
-/* spamd sometimes accepts conections but doesn't read data off
+/* spamd sometimes accepts connections but doesn't read data off
  * the connection.  We make the file descriptor non-blocking so
  * that the write will only write sufficient data without blocking
  * and we poll the desciptor to make sure that we can write without

@@ -531,7 +531,7 @@ JH/05 Fix results-pipe from transport process.  Several recipients, combined
       with certificate use, exposed issues where response data items split
       over buffer boundaries were not parsed properly.  This eventually
       resulted in duplicates being sent.  This issue only became common enough
-      to notice due to the introduction of conection certificate information,
+      to notice due to the introduction of connection certificate information,
       the item size being so much larger.  Found and fixed by Wolfgang Breyha.
 
 JH/06 Bug 1533: Fix truncation of items in headers_remove lists.  A fixed
