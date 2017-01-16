@@ -1323,7 +1323,7 @@ String Expansion
 
 . There's a new expansion feature for running commands:
 
-    ${run{comand args}{yes}{no}}
+    ${run{command args}{yes}{no}}
 
   Like all the other conditional items, the {yes} and {no} strings are
   optional. Omitting both is equivalent to {$value}. The standard output of the

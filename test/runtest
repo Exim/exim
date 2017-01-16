@@ -1800,7 +1800,7 @@ system("$cmd");
 #            reference to where to put the command name (for messages)
 #            auxiliary information returned from a previous run
 #
-# Returns:   0 the commmand was executed inline, no subprocess was run
+# Returns:   0 the command was executed inline, no subprocess was run
 #            1 a non-exim command was run and waited for
 #            2 an exim command was run and waited for
 #            3 a command was run and not waited for (daemon, server, exim_lock)

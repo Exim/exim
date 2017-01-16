@@ -2240,7 +2240,7 @@ while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
   else if (strcmpic(ss, US"per_byte") == 0)
     {
     /* If we have not yet received the message data and there was no SIZE
-    declaration on the MAIL comand, then it's safe to just use a value of
+    declaration on the MAIL command, then it's safe to just use a value of
     zero and let the recorded rate decay as if nothing happened. */
     RATE_SET(mode, PER_MAIL);
     if (where > ACL_WHERE_NOTSMTP) badacl = TRUE;

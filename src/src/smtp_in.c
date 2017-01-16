@@ -93,7 +93,7 @@ enum {
   processing of the RCPT response(s).  We shall do the same, and not require
   synch for BDAT.  Worse, as the chunk may (very likely will) follow the
   command-header in the same packet we cannot do the usual "is there any
-  follow-on data after the commmand line" even for non-pipeline mode.
+  follow-on data after the command line" even for non-pipeline mode.
   So we'll need an explicit check after reading the expected chunk amount
   when non-pipe, before sennding the ACK. */
 
