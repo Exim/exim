@@ -6,7 +6,7 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Many thanks to Stuart Lynne for contributing the original code for this
-driver. Further contibutions from Michael Haardt, Brian Candler, Barry
+driver. Further contributions from Michael Haardt, Brian Candler, Barry
 Pederson, Peter Savitch and Christian Kellner. Particular thanks to Brian for
 researching how to handle the different kinds of error. */
 
