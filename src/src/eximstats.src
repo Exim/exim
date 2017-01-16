@@ -3772,7 +3772,7 @@ sub html2txt {
 # until we've got all of the argument.
 #
 # This isn't perfect as all white space gets reduced to one space,
-# but it's as good as we can get! If it's esential that spacing
+# but it's as good as we can get! If it's essential that spacing
 # be preserved precisely, then you get that by not using shell
 # variables.
 #######################################################################
