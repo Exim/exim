@@ -3284,7 +3284,7 @@ for (; cb != NULL; cb = cb->next)
       uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the dcc backend. */
       rc = dcc_process(&ss);
-      /* Modify return code based upon the existance of options. */
+      /* Modify return code based upon the existence of options. */
       while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           rc = FAIL;   /* FAIL so that the message is passed to the next ACL */
@@ -3590,7 +3590,7 @@ for (; cb != NULL; cb = cb->next)
       uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the spam backend. */
       rc = spam(CUSS &ss);
-      /* Modify return code based upon the existance of options. */
+      /* Modify return code based upon the existence of options. */
       while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
             != NULL) {
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
