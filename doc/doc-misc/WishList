@@ -815,7 +815,7 @@ logs the IP of the sending host in the => line?" Also requested was amount of
 data transmitted for a non-delivery attempt.
 ------------------------------------------------------------------------------
 
-(69)  03-Jul-02 T  Log selector to log whoson checs
+(69)  03-Jul-02 T  Log selector to log whoson checks
 Matt Bernstein
 
 "I'd quite like a log_selector option which could spot you'd done a whoson
