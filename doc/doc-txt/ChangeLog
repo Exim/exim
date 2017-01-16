@@ -924,7 +924,7 @@ JH/14 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
       advertises the facility.  If the client requests PRDR a new
       acl_data_smtp_prdr ACL is called once for each recipient, after
       the body content is received and before the acl_smtp_data ACL.
-      The client is controlled by bolth of: a hosts_try_prdr option
+      The client is controlled by both of: a hosts_try_prdr option
       on the smtp transport, and the server advertisement.
       Default client logging of deliveries and rejections involving
       PRDR are flagged with the string "PRDR".
