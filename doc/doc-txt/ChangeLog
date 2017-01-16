@@ -3558,7 +3558,7 @@ TK/03 Merged latest SRS patch from Miles Wilton.
 PH/05 There's a shambles in IRIX6 - it defines EX_OK in unistd.h which conflicts
       with the definition in sysexits.h (which is #included earlier).
       Fortunately, Exim does not actually use EX_OK. The code used to try to
-      preserve the sysexits.h value, by assumimg that macro definitions were
+      preserve the sysexits.h value, by assuming that macro definitions were
       scanned for macro replacements. I have been disabused of this notion,
       so now the code just undefines EX_OK before #including unistd.h.
 
