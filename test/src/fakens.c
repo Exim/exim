@@ -382,7 +382,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       rr_sec = TRUE;
       p += 7;
       }
-    else if (Ustrncmp(p, US"AA ", 3) == 0)      /* tagged as authoritive */
+    else if (Ustrncmp(p, US"AA ", 3) == 0)      /* tagged as authoritative */
       {
       rr_aa = TRUE;
       p += 3;
@@ -773,8 +773,8 @@ if (yield == NO_RECOVERY) goto END_OFF;
 header->ancount = htons(count);
 
 /* If the AA bit should be set (as indicated by the AA prefix in the zone file),
-we are expected to return some records in the authortive section. Bind9: If
-there is data in the answer section, the authoritive section contains the NS
+we are expected to return some records in the authoritative section. Bind9: If
+there is data in the answer section, the authoritative section contains the NS
 records, otherwise it contains the SOA record.  Currently we mimic this
 behaviour for the first case (there is some answer record).
 */
