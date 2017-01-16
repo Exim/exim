@@ -261,7 +261,7 @@ int i;
 uschar digest[16];
 
 /* If expansion of either the secret or the user name failed, return CANCELLED
-or ERROR, as approriate. */
+or ERROR, as appropriate. */
 
 if (!secret || !name)
   {

@@ -4058,7 +4058,7 @@ for this message. */
 
    Send dot onward.  If accepted, wipe the spooled files, log as delivered and accept
    the sender's dot (below).
-   If rejected: copy response to sender, wipe the spooled files, log approriately.
+   If rejected: copy response to sender, wipe the spooled files, log appropriately.
    If temp-reject: normally accept to sender, keep the spooled file - unless defer=pass
    in which case pass temp-reject back to initiator and dump the files.
 
