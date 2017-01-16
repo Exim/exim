@@ -1557,7 +1557,7 @@ log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
 
 /* Check the format of a HELO line. The data for HELO/EHLO is supposed to be
 the domain name of the sending host, or an ip literal in square brackets. The
-arrgument is placed in sender_helo_name, which is in malloc store, because it
+argument is placed in sender_helo_name, which is in malloc store, because it
 must persist over multiple incoming messages. If helo_accept_junk is set, this
 host is permitted to send any old junk (needed for some broken hosts).
 Otherwise, helo_allow_chars can be used for rogue characters in general

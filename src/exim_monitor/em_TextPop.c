@@ -223,7 +223,7 @@ XtPointer call_data;
  * The parameter list contains one or two entries that may be the following.
  *
  * First Entry:   The first entry is the direction to search by default.
- *                This arguement must be specified and may have a value of
+ *                This argument must be specified and may have a value of
  *                "left" or "right".
  *
  * Second Entry:  This entry is optional and contains the value of the default
@@ -628,7 +628,7 @@ XEvent *event;
  *
  * NOTE:
  *
- * The function argument is passed the following arguements.
+ * The function argument is passed the following arguments.
  *
  * form - the from widget that is the dialog.
  * ptr - the initial string for the dialog's text widget.
