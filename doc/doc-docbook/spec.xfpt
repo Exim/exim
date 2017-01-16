@@ -38739,7 +38739,7 @@ must be representable in UTF-16.
 .cindex events
 
 The events mechanism in Exim can be used to intercept processing at a number
-of points.  It was originally invented to give a way to do customised logging
+of points.  It was originally invented to give a way to do customized logging
 actions (for example, to a database) but can also be used to modify some
 processing actions.
 
