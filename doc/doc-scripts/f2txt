@@ -55,7 +55,7 @@ return $s;
 
 # We want to read the file paragraph by paragraph; Perl only does this if the
 # separating lines are truly blank. Having been caught by lines containing
-# whitespace before, do a detrailing pass first.
+# whitespace before, do a de-trailing pass first.
 
 open(IN, "$ARGV[0]") || die "can't open $ARGV[0] (preliminary)\n";
 open(OUT, ">$ARGV[0]-$$") || die "can't open $ARGV[0]-$$\n";
