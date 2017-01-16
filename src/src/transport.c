@@ -2272,7 +2272,7 @@ if (expand_arguments)
        */
       if (address_pipe_argcount > 1)
         memmove(
-          /* current position + additonal args */
+          /* current position + additional args */
           argv + i + address_pipe_argcount,
           /* current position + 1 (for the (uschar *)0 at the end) */
           argv + i + 1,
