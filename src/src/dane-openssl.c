@@ -83,7 +83,7 @@ typedef int CRYPTO_ONCE;
 
 #ifndef OPENSSL_NO_ERR
 #define	DANESSL_F_PLACEHOLDER		0		/* FIRST! Value TBD */
-static ERR_STRING_DATA dane_str_functs[] = {
+static ERR_STRING_DATA dane_str_funcs[] = {
     {DANESSL_F_PLACEHOLDER,		"DANE library"},	/* FIRST!!! */
     {DANESSL_F_ADD_SKID,		"add_skid"},
     {DANESSL_F_ADD_TLSA,		"DANESSL_add_tlsa"},
@@ -1630,8 +1630,8 @@ err_lib_dane = ERR_get_next_error_library();
 #ifndef OPENSSL_NO_ERR
 if (err_lib_dane > 0)
   {
-  dane_str_functs[0].error |= ERR_PACK(err_lib_dane, 0, 0);
-  ERR_load_strings(err_lib_dane, dane_str_functs);
+  dane_str_funcs[0].error |= ERR_PACK(err_lib_dane, 0, 0);
+  ERR_load_strings(err_lib_dane, dane_str_funcs);
   ERR_load_strings(err_lib_dane, dane_str_reasons);
   }
 #endif
