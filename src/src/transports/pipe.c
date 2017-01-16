@@ -1024,7 +1024,7 @@ if ((rc = child_close(pid, timeout)) != 0)
   the command that was given is a non-existent path). By default this is
   treated as just another failure, but if freeze_exec_fail is set, the reaction
   is to freeze the message rather than bounce the address. Exim used to signal
-  this failure with EX_UNAVAILABLE, which is definined in many systems as
+  this failure with EX_UNAVAILABLE, which is defined in many systems as
 
       #define EX_UNAVAILABLE  69
 
