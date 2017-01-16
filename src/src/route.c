@@ -1483,7 +1483,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   by  this router, even if it was different to the current address.
 
   Just in case someone does put it into a loop (possible with redirection
-  continally adding to an address, for example), put a long stop counter on
+  continually adding to an address, for example), put a long stop counter on
   the number of parents. */
 
   for (parent = addr->parent; parent; parent = parent->parent)
