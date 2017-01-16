@@ -6335,7 +6335,7 @@ Exim version 4.21
 16. Check for letters, digits, hyphens, and dots in the names of dnslist
     domains, and warn by logging if others are found.
 
-17. At least on BSD, alignment is not guarenteed for the array of ifreq's
+17. At least on BSD, alignment is not guaranteed for the array of ifreq's
     returned from GIFCONF when Exim is trying to find the list of interfaces on
     a host. The code in os.c has been modified to copy each ifreq to an aligned
     structure in all cases.

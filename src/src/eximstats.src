@@ -1650,7 +1650,7 @@ sub top_n_sort {
 
     # Create a dummy hash entry for the key if required.
     # Note that setting the dummy_hash value sets it for both href2 &
-    # href3. Also note that currently we are guarenteed to have a real
+    # href3. Also note that currently we are guaranteed to have a real
     # value for href3 if a real value for href2 exists so don't need to
     # test for it as well.
     $dummy_hash{$key} = 0 unless exists $href2->{$key};
