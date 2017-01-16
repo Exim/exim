@@ -1856,7 +1856,7 @@ PH/02 When an IPv6 address is converted to a string for single-key lookup
       colons if the lookup type is iplsearch. This is not incompatible, because
       previously such lookups could never work.
 
-      The situation is now rather anomolous, since one *can* have colons in
+      The situation is now rather anomalous, since one *can* have colons in
       ordinary lsearch keys. However, making the change in all cases is
       incompatible and would probably break a number of configurations.
 
