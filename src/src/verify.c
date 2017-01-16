@@ -3107,7 +3107,7 @@ if (*ss == '@')
   }
 
 /* If the pattern is an IP address, optionally followed by a bitmask count, do
-a (possibly masked) comparision with the current IP address. */
+a (possibly masked) comparison with the current IP address. */
 
 if (string_is_ip_address(ss, &maskoffset) != 0)
   return (host_is_in_net(cb->host_address, ss, maskoffset)? OK : FAIL);
