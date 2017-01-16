@@ -38,7 +38,7 @@ address can appear in the tables drtables.c. */
 int auth_cram_md5_options_count =
   sizeof(auth_cram_md5_options)/sizeof(optionlist);
 
-/* Default private options block for the contidion authentication method. */
+/* Default private options block for the condition authentication method. */
 
 auth_cram_md5_options_block auth_cram_md5_option_defaults = {
   NULL,             /* server_secret */
