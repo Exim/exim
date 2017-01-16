@@ -474,7 +474,7 @@ eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
 
 
 # Compile step for most of the exim modules. HDRS is a list of headers
-# which cause everthing to be rebuilt. PHDRS is the same, for the use
+# which cause everything to be rebuilt. PHDRS is the same, for the use
 # of routers, transports, and authenticators. I can't find a way of doing this
 # in one. This list is overkill, but it doesn't really take much time to
 # rebuild Exim on a modern computer.

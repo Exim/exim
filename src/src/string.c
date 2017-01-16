@@ -306,7 +306,7 @@ expanded string. */
 
 ss = store_get(length + nonprintcount * 3 + 1);
 
-/* Copy everying, escaping non printers. */
+/* Copy everything, escaping non printers. */
 
 t = s;
 tt = ss;
