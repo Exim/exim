@@ -7110,7 +7110,7 @@ Retries for the dnsdb lookup can be controlled by a retry modifier.
 The form if &"retry_VAL"& where VAL is an integer.
 The default count is set by the main configuration option &%dns_retry%&.
 
-.cindex cacheing "of dns lookup"
+.cindex caching "of dns lookup"
 .cindex TTL "of dns lookup"
 .cindex DNS TTL
 Dnsdb lookup results are cached within a single process (and its children).
@@ -29809,7 +29809,7 @@ deny  dnslists = blackholes.mail-abuse.org
 warn  message  = X-Warn: sending host is on dialups list
       dnslists = dialups.mail-abuse.org
 .endd
-.cindex cacheing "of dns lookup"
+.cindex caching "of dns lookup"
 .cindex DNS TTL
 DNS list lookups are cached by Exim for the duration of the SMTP session
 (but limited by the DNS return TTL value),

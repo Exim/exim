@@ -214,7 +214,7 @@ JH/05 Downgrade message for a TLS-certificate-based authentication fail from
 HS/02 Add the Exim version string to the process info.  This way exiwhat
       gives some more detail about the running daemon.
 
-JH/06 Bug 1395: time-limit cacheing of DNS lookups, to the TTL value.  This may
+JH/06 Bug 1395: time-limit caching of DNS lookups, to the TTL value.  This may
       matter for fast-change records such as DNSBLs.
 
 JH/07 Bug 1678: Always record an interface option value, if set,  as part of a

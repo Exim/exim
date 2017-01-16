@@ -142,7 +142,7 @@
 #             in HTML output. Also added code to convert them back with -merge.
 #             Fixed timestamp offsets to convert to seconds rather than minutes.
 #             Updated -merge to work with output files using timezones.
-#             Added cacheing to speed up the calculation of timezone offsets.
+#             Added caching to speed up the calculation of timezone offsets.
 #
 # 2003-02-07  V1.25 Steve Campbell
 #             Optimised the usage of mktime() in the seconds subroutine.
@@ -928,7 +928,7 @@ sub seconds {
   }
   my $time = $date_seconds + ($5 * 3600) + ($6 * 60) + $7;
 
-  # SC. Use cacheing. Also note we want seconds not minutes.
+  # SC. Use caching. Also note we want seconds not minutes.
   #my($this_offset) = ($10 * 60 + $11) * ($9 . "1") if defined $8;
   if (defined $8 && ($8 ne $last_offset)) {
     $last_offset = $8;
