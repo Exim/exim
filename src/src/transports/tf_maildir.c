@@ -356,7 +356,7 @@ Or, at least, it is supposed to!
 
 Arguments:
   path             the path to the maildir directory; this is already backed-up
-                     to the parent if the delivery diretory is a maildirfolder
+                     to the parent if the delivery directory is a maildirfolder
   ob               the appendfile options block
   regex            a compiled regex for getting a file's size from its name
   dir_regex        a compiled regex for selecting maildir directories
