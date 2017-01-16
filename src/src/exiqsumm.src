@@ -27,7 +27,7 @@
 #   typo. Fix provided by Chris Liddiard.
 # November 2006 by Jori Hamalainen
 #   Added feature to separate frozen and bounced messages from queue
-#   Adedd feature to list queue per source - destination pair
+#   Added feature to list queue per source - destination pair
 #   Changed regexps to compile once to very minor speed optimization
 #   Short circuit for empty lines
 #
