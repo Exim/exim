@@ -550,7 +550,7 @@ Then set something like
 mout-xforward.gmx.net           82.165.159.12
 mout.gmx.net                    212.227.15.16
 
-Use a reasonable IP. eg. one the sending cluster acutally uses.
+Use a reasonable IP. eg. one the sending cluster actually uses.
 
 DMARC Support
 --------------------------------------------------------------
