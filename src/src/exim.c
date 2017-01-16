@@ -1900,7 +1900,7 @@ for (i = 1; i < argc; i++)
     break;
     }
 
-  /* An option consistion of -- terminates the options */
+  /* An option consisting of -- terminates the options */
 
   if (Ustrcmp(arg, "--") == 0)
     {
