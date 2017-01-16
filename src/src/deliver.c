@@ -7347,7 +7347,7 @@ while (addr_failed)
   /* Otherwise, handle the sending of a message. Find the error address for
   the first address, then send a message that includes all failed addresses
   that have the same error address. Note the bounce_recipient is a global so
-  that it can be accesssed by $bounce_recipient while creating a customized
+  that it can be accessed by $bounce_recipient while creating a customized
   error message. */
 
   else
