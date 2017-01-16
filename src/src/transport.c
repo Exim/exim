@@ -908,7 +908,7 @@ if (!(tctx->options & topt_no_headers))
 
     /* Pick up from all the addresses. The plist and dlist variables are
     anchors for lists of addresses already handled; they have to be defined at
-    this level becuase write_env_to() calls itself recursively. */
+    this level because write_env_to() calls itself recursively. */
 
     for (p = tctx->addr; p; p = p->next)
       if (!write_env_to(p, &plist, &dlist, &first, fd, tctx))
