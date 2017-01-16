@@ -5336,7 +5336,7 @@ February 2003: That's *still* not the end of the story. There are now versions
 of Linux (where SIG_IGN does work) that are picky. If, having set SIG_IGN, a
 process then calls waitpid(), a grumble is written to the system log, because
 this is logically inconsistent. In other words, it doesn't like the paranoia.
-As a consequenc of this, the waitpid() below is now excluded if we are sure
+As a consequence of this, the waitpid() below is now excluded if we are sure
 that SIG_IGN works. */
 
 if (!synchronous_delivery)
