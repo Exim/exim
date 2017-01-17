@@ -5556,7 +5556,7 @@ while (more)
 
     if (!receive_timeout)
       {
-      struct timeval t = { 30*60, 0 };	/* 30 minutess */
+      struct timeval t = { 30*60, 0 };	/* 30 minutes */
       fd_set r;
 
       FD_ZERO(&r); FD_SET(0, &r);
