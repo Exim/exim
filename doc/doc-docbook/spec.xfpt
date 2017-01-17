@@ -13098,7 +13098,7 @@ initial startup, even if &%perl_at_start%& is set.
 .oindex "&%perl_taintmode%&"
 .cindex "Perl" "taintmode"
 To provide more security executing Perl code via the embedded Perl
-interpeter, the &%perl_taintmode%& option can be set. This enables the
+interpreter, the &%perl_taintmode%& option can be set. This enables the
 taint mode of the Perl interpreter. You are encouraged to set this
 option to a true value. To avoid breaking existing installations, it
 defaults to false.
