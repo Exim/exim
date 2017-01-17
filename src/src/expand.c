@@ -5386,7 +5386,7 @@ while (*s != 0)
 
       /* While skipping we cannot rely on the data for expansions being
       available (eg. $item) hence cannot decide on numeric vs. keyed.
-      Read a maximum of 5 arguments (inclding the yes/no) */
+      Read a maximum of 5 arguments (including the yes/no) */
 
       if (skipping)
 	{
