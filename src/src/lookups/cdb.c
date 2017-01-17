@@ -131,7 +131,7 @@ cdb_bread(int fd,
 
 /*
  * cdb_bread()
- * Internal function to parse 4 byte number (endian independant) */
+ * Internal function to parse 4 byte number (endian independent) */
 
 static uint32
 cdb_unpack(uschar *buf)
