@@ -3617,7 +3617,7 @@ A0603: Q0601 contains background information on this. If you are using, say, an
 
 
 Q0604: I want to use MMDF-style mailboxes. How can I get Exim to append the
-       ctrl-A characters that separate indvidual emails?
+       ctrl-A characters that separate individual emails?
 
 A0604: Set the \message_suffix\ option in the \%appendfile%\ transport. In fact,
        for MMDF mailboxes you need a prefix as well as a suffix to get it
