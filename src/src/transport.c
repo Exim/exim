@@ -978,7 +978,7 @@ if (tctx->options & topt_use_bdat)
   if (size > DELIVER_OUT_BUFFER_SIZE && hsize > 0)
     {
     DEBUG(D_transport)
-      debug_printf("sending small initial BDAT; hssize=%d\n", hsize);
+      debug_printf("sending small initial BDAT; hsize=%d\n", hsize);
     if (  tctx->chunk_cb(fd, tctx, hsize, 0) != OK
        || !transport_write_block(fd, deliver_out_buffer, hsize)
        || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
