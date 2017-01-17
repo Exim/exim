@@ -1062,7 +1062,7 @@ if ((rc = child_close(pid, timeout)) != 0)
       uschar *ss;
       int size, ptr, i;
 
-      /* If temp_errors is "*" all codes are temporary. Initializion checks
+      /* If temp_errors is "*" all codes are temporary. Initialization checks
       that it's either "*" or a list of numbers. If not "*", scan the list of
       temporary failure codes; if any match, the result is DEFER. */
 
