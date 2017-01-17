@@ -882,7 +882,7 @@ SNI handling.
 Seperately we might try to replace using OCSP_basic_verify() - which seems to not
 be a public interface into the OpenSSL library (there's no manual entry) - 
 But what with?  We also use OCSP_basic_verify in the client stapling callback.
-And there we NEED it; we miust verify that status... unless the
+And there we NEED it; we must verify that status... unless the
 library does it for us anyway?  */
 
 if ((i = OCSP_basic_verify(basic_response, sk, NULL, verify_flags)) < 0)
