@@ -232,16 +232,16 @@ $b
 # Now do the job. First remove the files that have "fallen off the bottom".
 # Look for both the compressed and uncompressed forms.
 
-if [ $keep -lt 10 ]; then keept=0$keep; else keept=$keep; fi;
+if [ $keep -lt 10 ]; then kept=0$keep; else kept=$keep; fi;
 
-if [ -f $mainlog.$keept ]; then $rm $mainlog.$keept; fi;
-if [ -f $mainlog.$keept.$suffix ]; then $rm $mainlog.$keept.$suffix; fi;
+if [ -f $mainlog.$kept ]; then $rm $mainlog.$kept; fi;
+if [ -f $mainlog.$kept.$suffix ]; then $rm $mainlog.$kept.$suffix; fi;
 
-if [ -f $rejectlog.$keept ]; then $rm $rejectlog.$keept; fi;
-if [ -f $rejectlog.$keept.$suffix ]; then $rm $rejectlog.$keept.$suffix; fi;
+if [ -f $rejectlog.$kept ]; then $rm $rejectlog.$kept; fi;
+if [ -f $rejectlog.$kept.$suffix ]; then $rm $rejectlog.$kept.$suffix; fi;
 
-if [ -f $paniclog.$keept ]; then $rm $paniclog.$keept; fi;
-if [ -f $paniclog.$keept.$suffix ]; then $rm $paniclog.$keept.$suffix; fi;
+if [ -f $paniclog.$kept ]; then $rm $paniclog.$kept; fi;
+if [ -f $paniclog.$kept.$suffix ]; then $rm $paniclog.$kept.$suffix; fi;
 
 # Now rename all the previous old files by increasing their numbers by 1.
 # When the number is less than 10, insert a leading zero.
