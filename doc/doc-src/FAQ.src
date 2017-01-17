@@ -912,7 +912,7 @@ A0047: \-bz-\ is a Sendmail option requesting it to create a `configuration free
 
 ==>      /usr/lib/sendmail -bz
 
-       in some start-up script (e.g. \(/etc/init.d/mail)\) immedately before
+       in some start-up script (e.g. \(/etc/init.d/mail)\) immediately before
 
 ==>      /usr/lib/sendmail -bd -q15m
 
