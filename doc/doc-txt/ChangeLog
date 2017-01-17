@@ -6482,7 +6482,7 @@ Exim version 4.21
 
 47. Change 50 for 4.20 was a heap of junk. I don't know what I was thinking
     when I implemented it. It didn't allow for the fact that some option values
-    may legitimatetly be negative (e.g. size_addition), and it didn't even do
+    may legitimately be negative (e.g. size_addition), and it didn't even do
     the right test for positive values.
 
 48. Domain names in DNS records are case-independent. Exim always looks them up
