@@ -593,7 +593,7 @@ TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static
       return.
 
 JH/01 Bug 1513: Fix parsing of quoted parameter values in MIME headers.
-      This was a regression intruduced in 4.83 by another bugfix.
+      This was a regression introduced in 4.83 by another bugfix.
 
 JH/02 Fix broken compilation when EXPERIMENTAL_DSN is enabled.
 
