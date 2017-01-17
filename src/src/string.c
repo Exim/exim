@@ -981,7 +981,7 @@ Arguments:
   list	points to the start of the list that is being built, or NULL
 	if this is a new list that has no contents yet
   sep	list seperator character
-  ele	new lement to be appended to the list
+  ele	new element to be appended to the list
 
 Returns:  pointer to the start of the list, changed if copied for expansion.
 */
