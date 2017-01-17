@@ -3660,7 +3660,7 @@ Q0606: I'm using tmail to do local deliveries, but when I turned on the
        \use_crlf\ option on the \%pipe%\ transport (tmail prefers \"@\r@\n"\
        terminations) message bodies started to vanish.
 
-A0606: You need to unset the \mesage_prefix\ option, or change it so that its
+A0606: You need to unset the \message_prefix\ option, or change it so that its
        default \"@\n"\ terminator becomes \"@\r@\n"\. For example, the
        transport could be:
 

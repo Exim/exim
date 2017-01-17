@@ -968,7 +968,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     }
     next if /^tls_validate_require_cipher child \d+ ended: status=0x0/;
 
-    # We invoke Exim with -D, so we hit this new messag as of Exim 4.73:
+    # We invoke Exim with -D, so we hit this new message as of Exim 4.73:
     next if /^macros_trusted overridden to true by whitelisting/;
 
     # We have to omit the localhost ::1 address so that all is well in

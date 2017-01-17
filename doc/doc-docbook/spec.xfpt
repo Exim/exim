@@ -38798,7 +38798,7 @@ can be used to affect that action (more on this below).
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
 .display
-&`msg:delivery         `& smtp confirmation mssage
+&`msg:delivery         `& smtp confirmation message
 &`msg:rcpt:host:defer  `& error string
 &`msg:rcpt:defer       `& error string
 &`msg:host:defer       `& error string
