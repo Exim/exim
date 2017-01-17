@@ -25865,6 +25865,19 @@ turned into a permanent error if you wish. In the second case, Exim tries to
 deliver the message unauthenticated.
 .endlist
 
+.new
+Note that the hostlist test for whether to do authentication can be
+confused if name-IP lookups change between the time the peer is decided
+on and the transport running.  For example, with a manualroute
+router given a host name, and DNS "round-robin" use by that name: if
+the local resolver cache times out between the router and the transport
+running, the transport may get an IP for the name for its authentication
+check which does not match the connection peer IP.
+No authentication will then be done, despite the names being identical.
+
+For such cases use a separate transport which alwats authenticates.
+.wen
+
 .cindex "AUTH" "on MAIL command"
 When Exim has authenticated itself to a remote server, it adds the AUTH
 parameter to the MAIL commands it sends, if it has an authenticated sender for
