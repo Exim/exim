@@ -1816,7 +1816,7 @@ for (;;)
   next->text[ptr++] = ch;    /* Add to buffer */
   message_size++;            /* Total message size so far */
 
-  /* Handle failure due to a humungously long header section. The >= allows
+  /* Handle failure due to a humongously long header section. The >= allows
   for the terminating \n. Add what we have so far onto the headers list so
   that it gets reflected in any error message, and back up the just-read
   character. */

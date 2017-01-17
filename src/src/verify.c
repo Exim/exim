@@ -2489,7 +2489,7 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
       header with very many addresses it is sometimes hard to spot
       which one is at fault. However, limit the amount of address to
       quote - cases have been seen where, for example, a missing double
-      quote in a humungous To: header creates an "address" that is longer
+      quote in a humongous To: header creates an "address" that is longer
       than string_sprintf can handle. */
 
       len = t - s;

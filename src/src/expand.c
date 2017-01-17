@@ -3990,7 +3990,7 @@ while (*s != 0)
     size of that buffer. If this is the first thing in an expansion string,
     yield will be NULL; just point it at the new store instead of copying. Many
     expansion strings contain just one reference, so this is a useful
-    optimization, especially for humungous headers. */
+    optimization, especially for humongous headers. */
 
     len = Ustrlen(value);
     if (yield == NULL && newsize != 0)
@@ -7414,7 +7414,7 @@ while (*s != 0)
   the pre-allocated buffer. If the result data is known to be in a new buffer,
   newsize will be set to the size of that buffer, and we can just point at that
   store instead of copying. Many expansion strings contain just one reference,
-  so this is a useful optimization, especially for humungous headers
+  so this is a useful optimization, especially for humongous headers
   ($message_headers). */
 						/*{*/
   if (*s++ == '}')

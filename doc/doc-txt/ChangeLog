@@ -5419,7 +5419,7 @@ Exim version 4.31
     the fallback hosts.
 
 22. Increased buffer sizes in the callout code from 1024 to 4096 to match the
-    equivalent code in the SMTP transport. Some hosts send humungous responses
+    equivalent code in the SMTP transport. Some hosts send humongous responses
     to HELO/EHLO, more than 1024 it seems.
 
 23. Refactoring: code in filter.c used (void *) for "any old type" but this
