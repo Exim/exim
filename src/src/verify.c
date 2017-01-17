@@ -3622,7 +3622,7 @@ else
     (void)tree_insertnode(&dnsbl_cache, t);
     }
 
-  /* Do the DNS loopup . */
+  /* Do the DNS lookup . */
 
   HDEBUG(D_dnsbl) debug_printf("new DNS lookup for %s\n", query);
   cb->rc = dns_basic_lookup(&dnsa, query, T_A);
