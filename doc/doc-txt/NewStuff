@@ -366,7 +366,7 @@ Version 4.82
     provided to the authentication method which failed.  It is available
     for use in subsequent ACL processing (typically quit or notquit ACLs).
 
-23. New ACL modifer "udpsend" can construct a UDP packet to send to a given
+23. New ACL modifier "udpsend" can construct a UDP packet to send to a given
     UDP host and port.
 
 24. New ${hexquote:..string..} expansion operator converts non-printable

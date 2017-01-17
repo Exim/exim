@@ -952,7 +952,7 @@ PP/20 Added force_command boolean option to pipe transport.
 JH/15 AUTH support on callouts (and hence cutthrough-deliveries).
       Bugzilla 321, 823.
 
-TF/04 Added udpsend ACL modifer and hexquote expansion operator
+TF/04 Added udpsend ACL modifier and hexquote expansion operator
 
 PP/21 Fix eximon continuous updating with timestamped log-files.
       Broken in a format-string cleanup in 4.80, missed when I repaired the
