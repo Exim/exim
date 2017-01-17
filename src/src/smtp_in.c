@@ -897,7 +897,8 @@ if (get_ok == 0)
 *       Check if host is required proxy host     *
 *************************************************/
 /* The function determines if inbound host will be a regular smtp host
-or if it is configured that it must use Proxy Protocol.
+or if it is configured that it must use Proxy Protocol.  A local
+connection cannot.
 
 Arguments: none
 Returns:   bool
@@ -907,12 +908,10 @@ static BOOL
 check_proxy_protocol_host()
 {
 int rc;
-/* Cannot configure local connection as a proxy inbound */
-if (sender_host_address == NULL) return proxy_session;
 
-rc = verify_check_this_host(CUSS &hosts_proxy, NULL, NULL,
-                           sender_host_address, NULL);
-if (rc == OK)
+if (  sender_host_address
+   && (rc = verify_check_this_host(CUSS &hosts_proxy, NULL, NULL,
+                           sender_host_address, NULL)) == OK)
   {
   DEBUG(D_receive)
     debug_printf("Detected proxy protocol configured host\n");
@@ -934,7 +933,7 @@ Arguments: none
 Returns:   Boolean success
 */
 
-static BOOL
+static void
 setup_proxy_protocol_host()
 {
 union {
@@ -982,6 +981,7 @@ uschar *iptype;  /* To display debug info */
 struct timeval tv;
 struct timeval tvtmp;
 socklen_t vslen = sizeof(struct timeval);
+BOOL yield = FALSE;
 
 /* Save current socket timeout values */
 get_ok = getsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tvtmp, &vslen);
@@ -991,7 +991,7 @@ get_ok = getsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tvtmp, &vslen);
 tv.tv_sec  = PROXY_NEGOTIATION_TIMEOUT_SEC;
 tv.tv_usec = PROXY_NEGOTIATION_TIMEOUT_USEC;
 if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tv, sizeof(tv)) < 0)
-  return FALSE;
+  goto bad;
 
 do
   {
@@ -1209,7 +1209,6 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
     }
   proxy_external_port = tmp_port;
   /* Already checked for /r /n above. Good V1 header received. */
-  goto done;
   }
 else
   {
@@ -1218,17 +1217,32 @@ else
   goto proxyfail;
   }
 
-proxyfail:
-restore_socket_timeout(fd, get_ok, &tvtmp, vslen);
-/* Don't flush any potential buffer contents. Any input should cause a
-   synchronization failure */
-return FALSE;
-
 done:
-restore_socket_timeout(fd, get_ok, &tvtmp, vslen);
-DEBUG(D_receive)
-  debug_printf("Valid %s sender from Proxy Protocol header\n", iptype);
-return proxy_session;
+  DEBUG(D_receive)
+    debug_printf("Valid %s sender from Proxy Protocol header\n", iptype);
+  yield = proxy_session;
+
+/* Don't flush any potential buffer contents. Any input on proxyfail
+should cause a synchronization failure */
+
+proxyfail:
+  restore_socket_timeout(fd, get_ok, &tvtmp, vslen);
+
+bad:
+  if (yield)
+    {
+    sender_host_name = NULL;
+    (void) host_name_lookup();
+    host_build_sender_fullhost();
+    }
+  else
+    {
+    proxy_session_failed = TRUE;
+    DEBUG(D_receive)
+      debug_printf("Failure to extract proxied host, only QUIT allowed\n");
+    }
+
+return;
 }
 #endif
 
@@ -1306,14 +1320,11 @@ if required. */
 
 for (p = cmd_list; p < cmd_list_end; p++)
   {
-  #ifdef SUPPORT_PROXY
+#ifdef SUPPORT_PROXY
   /* Only allow QUIT command if Proxy Protocol parsing failed */
-  if (proxy_session && proxy_session_failed)
-    {
-    if (p->cmd != QUIT_CMD)
-      continue;
-    }
-  #endif
+  if (proxy_session && proxy_session_failed && p->cmd != QUIT_CMD)
+    continue;
+#endif
   if (  p->len
      && strncmpic(smtp_cmd_buffer, US p->name, p->len) == 0
      && (  smtp_cmd_buffer[p->len-1] == ':'    /* "mail from:" or "rcpt to:" */
@@ -2404,14 +2415,6 @@ if (!sender_host_unknown)
 	"bad value for smtp_receive_timeout: '%s'", exp ? exp : US"");
     }
 
-  /* Start up TLS if tls_on_connect is set. This is for supporting the legacy
-  smtps port for use with older style SSL MTAs. */
-
-  #ifdef SUPPORT_TLS
-  if (tls_in.on_connect && tls_server_start(tls_require_ciphers) != OK)
-    return FALSE;
-  #endif
-
   /* Test for explicit connection rejection */
 
   if (verify_check_host(&host_reject_connection) == OK)
@@ -2431,19 +2434,17 @@ if (!sender_host_unknown)
   value of errno is 0 or ENOENT (which happens if /etc/hosts.{allow,deny} does
   not exist). */
 
-  #ifdef USE_TCP_WRAPPERS
+#ifdef USE_TCP_WRAPPERS
   errno = 0;
-  tcp_wrappers_name = expand_string(tcp_wrappers_daemon_name);
-  if (tcp_wrappers_name == NULL)
-    {
+  if (!(tcp_wrappers_name = expand_string(tcp_wrappers_daemon_name)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
       "(tcp_wrappers_name) failed: %s", string_printing(tcp_wrappers_name),
         expand_string_message);
-    }
+
   if (!hosts_ctl(tcp_wrappers_name,
-         (sender_host_name == NULL)? STRING_UNKNOWN : CS sender_host_name,
-         (sender_host_address == NULL)? STRING_UNKNOWN : CS sender_host_address,
-         (sender_ident == NULL)? STRING_UNKNOWN : CS sender_ident))
+         sender_host_name ? CS sender_host_name : STRING_UNKNOWN,
+         sender_host_address ? CS sender_host_address : STRING_UNKNOWN,
+         sender_ident ? CS sender_ident : STRING_UNKNOWN))
     {
     if (errno == 0 || errno == ENOENT)
       {
@@ -2465,7 +2466,7 @@ if (!sender_host_unknown)
       }
     return FALSE;
     }
-  #endif
+#endif
 
   /* Check for reserved slots. The value of smtp_accept_count has already been
   incremented to include this process. */
@@ -2536,27 +2537,25 @@ if (!sender_host_unknown)
 
 if (smtp_batched_input) return TRUE;
 
-#ifdef SUPPORT_PROXY
 /* If valid Proxy Protocol source is connecting, set up session.
  * Failure will not allow any SMTP function other than QUIT. */
+
+#ifdef SUPPORT_PROXY
 proxy_session = FALSE;
 proxy_session_failed = FALSE;
 if (check_proxy_protocol_host())
-  if (!setup_proxy_protocol_host())
-    {
-    proxy_session_failed = TRUE;
-    DEBUG(D_receive)
-      debug_printf("Failure to extract proxied host, only QUIT allowed\n");
-    }
-  else
-    {
-    sender_host_name = NULL;
-    (void)host_name_lookup();
-    host_build_sender_fullhost();
-    }
+  setup_proxy_protocol_host();
 #endif
 
-/* Run the ACL if it exists */
+  /* Start up TLS if tls_on_connect is set. This is for supporting the legacy
+  smtps port for use with older style SSL MTAs. */
+
+#ifdef SUPPORT_TLS
+  if (tls_in.on_connect && tls_server_start(tls_require_ciphers) != OK)
+    return FALSE;
+#endif
+
+/* Run the connect ACL if it exists */
 
 user_msg = NULL;
 if (acl_smtp_connect)
