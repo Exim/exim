@@ -620,7 +620,7 @@ Joachim Wieland
 
 Is this really worth it? A per-transport value is also suggested - that would
 mean remembering the value with each failed address and taking a minimum or
-a maximimum (which?).
+a maximum (which?).
 ------------------------------------------------------------------------------
 
 (24)  21-Feb-02 ?  A way of testing TLS using -bh
