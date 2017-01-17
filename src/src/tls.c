@@ -8,7 +8,7 @@
 /* This module provides TLS (aka SSL) support for Exim. The code for OpenSSL is
 based on a patch that was originally contributed by Steve Haslam. It was
 adapted from stunnel, a GPL program by Michal Trojnara. The code for GNU TLS is
-based on a patch contributed by Nikos Mavroyanopoulos. Because these packages
+based on a patch contributed by Nikos Mavrogiannopoulos. Because these packages
 are so very different, the functions for each are kept in separate files. The
 relevant file is #included as required, after any any common functions.
 

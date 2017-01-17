@@ -13,7 +13,7 @@ tls.c when USE_GNUTLS has been set.
 
 The code herein is a revamp of GnuTLS integration using the current APIs; the
 original tls-gnu.c was based on a patch which was contributed by Nikos
-Mavroyanopoulos.  The revamp is partially a rewrite, partially cut&paste as
+Mavrogiannopoulos.  The revamp is partially a rewrite, partially cut&paste as
 appropriate.
 
 APIs current as of GnuTLS 2.12.18; note that the GnuTLS manual is for GnuTLS 3,
