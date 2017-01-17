@@ -12,7 +12,7 @@
 
 
 
-/* Routines with knowlege of spool layout */
+/* Routines with knowledge of spool layout */
 
 #ifndef COMPILE_UTILITY
 static void
