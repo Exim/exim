@@ -725,7 +725,7 @@ while (<>)
       # "-". If we triple it in the menu it gets displayed OK, but building
       # software complains about non-existent cross references etc.
 
-      # I have gone for the horrid kludge of turning it into "-<hyhen>"
+      # I have gone for the horrid kludge of turning it into "-<hyphen>"
       # in the menus and nodes.
 
       # Exim 4 has added --help, which has the same problem.
