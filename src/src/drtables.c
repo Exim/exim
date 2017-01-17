@@ -21,7 +21,7 @@ int lookup_list_count = 0;
 
 static int lookup_list_init_done = 0;
 
-/* Table of information about all possible authentication mechamisms. All
+/* Table of information about all possible authentication mechanisms. All
 entries are always present if any mechanism is declared, but the functions are
 set to NULL for those that are not compiled into the binary. */
 
