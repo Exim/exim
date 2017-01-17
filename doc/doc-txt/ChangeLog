@@ -5603,7 +5603,7 @@ Exim version 4.31
 58. When a "warn" ACL statement has a log_message modifier, the message is
     remembered, and not repeated. This is to avoid a lot of repetition when a
     message has many recipients that cause the same warning to be written.
-    Howewer, Exim was preserving the list of already written lines for an
+    However, Exim was preserving the list of already written lines for an
     entire SMTP session, which doesn't seem right. The memory is now reset if a
     new message is started.
 
@@ -5809,7 +5809,7 @@ Exim version 4.30
 
 13. The install script calls Exim with "-C /dev/null" in order to find the
     version number. If ALT_CONFIG_PREFIX was set, this caused an error message
-    to be output. Howeve, since Exim outputs its version number before the
+    to be output. However, since Exim outputs its version number before the
     error, it didn't break the script. It just looked ugly. I fixed this by
     always allowing "-C /dev/null" if the caller is root.
 
