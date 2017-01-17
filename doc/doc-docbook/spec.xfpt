@@ -14406,7 +14406,7 @@ it obviously cannot send an error message of any kind.
 
 There is a slight performance penalty for these checks.
 Versions of Exim preceding 4.88 had these disabled by default;
-high-rate intallations confident they will never run out of resources
+high-rate installations confident they will never run out of resources
 may wish to deliberately disable them.
 
 .option chunking_advertise_hosts main "host list&!!" *
