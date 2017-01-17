@@ -694,7 +694,7 @@ if ((previous = tree_search(tree_dns_fails, node_name)))
   }
 #endif
 
-/* If configured, check the hygene of the name passed to lookup. Otherwise,
+/* If configured, check the hygiene of the name passed to lookup. Otherwise,
 although DNS lookups may give REFUSED at the lower level, some resolvers
 turn this into TRY_AGAIN, which is silly. Give a NOMATCH return, since such
 domains cannot be in the DNS. The check is now done by a regular expression;
