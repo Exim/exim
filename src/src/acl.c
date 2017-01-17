@@ -2606,7 +2606,7 @@ else
   size of the event per the period size, ignoring the lack of events outside
   the current period and regardless of where the event falls in the period. So,
   if the interval was so long that the calculated rate is unhelpfully small, we
-  re-intialize the rate. In the absence of higher-rate bursts, the condition
+  re-initialize the rate. In the absence of higher-rate bursts, the condition
   below is true if the interval is greater than the period. */
 
   if (dbd->rate < count) dbd->rate = count;
