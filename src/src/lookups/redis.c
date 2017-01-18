@@ -344,7 +344,7 @@ as it is cached. */
 
 if (redis_reply) freeReplyObject(redis_reply);
 
-/* Non-NULL result indicates a sucessful result */
+/* Non-NULL result indicates a successful result */
 
 if (result)
   {

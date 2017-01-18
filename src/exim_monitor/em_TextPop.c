@@ -127,7 +127,7 @@ static char search_text_trans[] =
  *
  * Note:
  *
- * If the search was sucessful and the argument popdown is passed to
+ * If the search was successful and the argument popdown is passed to
  * this action routine then the widget will automatically popdown the
  * search widget.
  */
@@ -449,7 +449,7 @@ char * ptr;
 /*	Function Name: DoSearch
  *	Description: Performs a search.
  *	Arguments: search - the search structure.
- *	Returns: TRUE if sucessful.
+ *	Returns: TRUE if successful.
  */
 
 /* ARGSUSED */

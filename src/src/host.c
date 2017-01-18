@@ -1646,7 +1646,7 @@ Returns:      OK on success, the answer being placed in the global variable
               FAIL if no host name can be found
               DEFER if a temporary error was encountered
 
-The variable host_lookup_msg is set to an empty string on sucess, or to a
+The variable host_lookup_msg is set to an empty string on success, or to a
 reason for the failure otherwise, in a form suitable for tagging onto an error
 message, and also host_lookup_failed is set TRUE if the lookup failed. If there
 was a defer, host_lookup_deferred is set TRUE.

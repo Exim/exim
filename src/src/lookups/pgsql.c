@@ -371,7 +371,7 @@ it is cached. */
 
 if (pg_result != NULL) PQclear(pg_result);
 
-/* Non-NULL result indicates a sucessful result */
+/* Non-NULL result indicates a successful result */
 
 if (result != NULL)
   {

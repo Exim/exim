@@ -322,7 +322,7 @@ it is cached. */
 
 if (mysql_result != NULL) mysql_free_result(mysql_result);
 
-/* Non-NULL result indicates a sucessful result */
+/* Non-NULL result indicates a successful result */
 
 if (result != NULL)
   {
