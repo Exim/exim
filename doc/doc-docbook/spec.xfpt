@@ -36046,7 +36046,7 @@ off the &%outgoing_interface%& option.
 .next
 .cindex "log" "outgoing remote port"
 .cindex "port" "logging outgoint remote"
-.cindex "TCP/IP" "logging ougtoing remote port"
+.cindex "TCP/IP" "logging outgoing remote port"
 &%outgoing_port%&: The remote port number is added to delivery log lines (those
 containing => tags) following the IP address.
 The local port is also added if &%incoming_interface%& and
