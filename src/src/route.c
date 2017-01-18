@@ -966,7 +966,7 @@ if (r->router_home_directory)
   }
 
 /* Skip if the sender condition is not met. We leave this one till after the
-local user check so that $home is set - enabling the possiblity of letting
+local user check so that $home is set - enabling the possibility of letting
 individual recipients specify lists of acceptable/unacceptable senders. */
 
 if ((rc = route_check_dls(r->name, US"senders", r->senders, NULL,
