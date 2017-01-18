@@ -334,7 +334,7 @@ timeout_frozen_after = 7d
 # libraries that Exim uses (e.g. LDAP) depend on specific environment settings.
 # There are two lists: keep_environment for the variables we trust, and
 # add_environment for variables we want to set to a specific value.
-# Note that TZ is handled separateley by the timezone runtime option
+# Note that TZ is handled separately by the timezone runtime option
 # and TIMEZONE_DEFAULT buildtime option.
 
 # keep_environment = ^LDAP
