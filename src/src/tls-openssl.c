@@ -729,7 +729,7 @@ if (!exp_curve || !*exp_curve)
 /* "auto" needs to be handled carefully.
  * OpenSSL <  1.0.2: we do not select anything, but fallback to primve256v1
  * OpenSSL <  1.1.0: we have to call SSL_CTX_set_ecdh_auto
- *                   (openss/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
+ *                   (openssl/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
  * OpenSSL >= 1.1.0: we do not set anything, the libray does autoselection
  *                   https://github.com/openssl/openssl/commit/fe6ef2472db933f01b59cad82aa925736935984b
  */
