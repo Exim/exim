@@ -3738,7 +3738,7 @@ if (bmi_run == 1)
   }
 #endif
 
-/* Update the timstamp in our Received: header to account for any time taken by
+/* Update the timestamp in our Received: header to account for any time taken by
 an ACL or by local_scan(). The new time is the time that all reception
 processing is complete. */
 
