@@ -4569,7 +4569,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     }
 
   /* Now fork a subprocess to do the remote delivery, but before doing so,
-  ensure that any cached resourses are released so as not to interfere with
+  ensure that any cached resources are released so as not to interfere with
   what happens in the subprocess. */
 
   search_tidyup();
