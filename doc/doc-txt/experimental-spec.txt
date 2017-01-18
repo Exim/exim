@@ -970,7 +970,7 @@ Note that non-RFC-documented field names and data types are used.
 LMDB Lookup support
 -------------------
 LMDB is an ultra-fast, ultra-compact, crash-proof key-value embedded data store.
-It is modeled loosely on the BerkeleyDB API. You shoul read about the feature
+It is modeled loosely on the BerkeleyDB API. You should read about the feature
 set as well as operation modes at https://symas.com/products/lightning-memory-mapped-database/
 
 LMDB single key lookup support is provided by linking to the LMDB C library.

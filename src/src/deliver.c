@@ -3542,7 +3542,7 @@ while (!done)
       {
 #ifdef SUPPORT_SOCKS
       case '2':	/* proxy information; must arrive before A0 and applies to that addr XXX oops*/
-	proxy_session = TRUE;	/*XXX shouod this be cleared somewhere? */
+	proxy_session = TRUE;	/*XXX should this be cleared somewhere? */
 	if (*ptr == 0)
 	  ptr++;
 	else
