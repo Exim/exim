@@ -132,7 +132,7 @@ else
   {
   int len = Ustrlen(name);
 
-  /* Find the first non-deleted header witht the correct name. */
+  /* Find the first non-deleted header with the correct name. */
 
   for (hptr = &header_list; (h = *hptr) != NULL; hptr = &(h->next))
     {
