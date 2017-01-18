@@ -8301,7 +8301,7 @@ if (remove_journal)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s", fname,
       strerror(errno));
 
-  /* Move the message off the spool if reqested */
+  /* Move the message off the spool if requested */
 
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
   if (deliver_freeze && move_frozen_messages)

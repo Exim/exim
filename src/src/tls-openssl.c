@@ -1764,7 +1764,7 @@ if (expcerts && *expcerts)
       variant.
       If a list isn't loaded into the server, but
       some verify locations are set, the server end appears to make
-      a wildcard reqest for client certs.
+      a wildcard request for client certs.
       Meanwhile, the client library as default behaviour *ignores* the list
       we send over the wire - see man SSL_CTX_set_client_cert_cb.
       Because of this, and that the dir variant is likely only used for
