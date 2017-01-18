@@ -761,7 +761,7 @@ sub _decode_2047 {
               $i += 2;
             }
           }
-          elsif ($ow[$i] =~ /\s/) { # whitspace is illegal
+          elsif ($ow[$i] =~ /\s/) { # whitespace is illegal
             $e = 1;
             last;
           }

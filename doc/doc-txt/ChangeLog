@@ -2502,7 +2502,7 @@ SC/08 Eximstats V1.50
 
 JJ/03 exipick.20061117.2, made header handling as similar to exim as possible
       (added [br]h_ prefixes, implemented RFC2047 decoding.  Fixed
-      whitesspace changes from 4.64-PH/27
+      whitespace changes from 4.64-PH/27
 
 JJ/04 exipick.20061117.2, fixed format and added $message_headers_raw to
       match 4.64-PH/13
