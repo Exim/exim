@@ -12210,7 +12210,7 @@ normally the gid of the Exim user.
 .cindex "uid (user id)" "of originating user"
 .cindex "sender" "uid"
 .vindex "&$caller_uid$&"
-.vindex "&$originaltor_uid$&"
+.vindex "&$originator_uid$&"
 The value of &$caller_uid$& that was set when the message was received. For
 messages received via the command line, this is the uid of the sending user.
 For messages received by SMTP over TCP/IP, this is normally the uid of the Exim
