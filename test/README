@@ -685,7 +685,7 @@ just one command:
 
 The expected return code in this case is 1, and the data lines are passed to
 Exim on its standard input. Both the command line and the data lines have the
-standard substitions applied to them. Thus, HOSTNAME in the example above will
+standard substitutions applied to them. Thus, HOSTNAME in the example above will
 be replaced by the local host's name. Long commands can be continued over
 several lines by using \ as a continuation character. This does *not* apply to
 data lines.

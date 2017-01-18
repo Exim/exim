@@ -1789,7 +1789,7 @@ system("$cmd");
 # The <SCRIPT> file is open for us to read an optional return code line,
 # followed by the command line and any following data lines for stdin. The
 # command line can be continued by the use of \. Data lines are not continued
-# in this way. In all lines, the following substutions are made:
+# in this way. In all lines, the following substitutions are made:
 #
 # DIR    => the current directory
 # CALLER => the caller of this script
