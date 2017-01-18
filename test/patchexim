@@ -19,7 +19,7 @@ open(OUT, '>eximdir/exim') || die "** Failed to open eximdir/exim: $!\n";
 while(<IN>)
   {
   s/>>>running<<</<<<testing>>>/;
-  s/(\d+\.\d+(?:[_.]\d+)?([_-]RC\d+|[_-]dev)?(?:[0-9a-fA-F-]*)(?:-XX)?\0<<eximversion>>)/"x.yz\0" . ("*" x (length($1) - 5))/e;
+  s/(\d+\.\d+(?:[_.]\d+)?([_-]RC\d+|[_-]dev)?(?:[0-9a-fA-F-]*)(?:[-_]XX)?\0<<eximversion>>)/"x.yz\0" . ("*" x (length($1) - 5))/e;
   print OUT;
   }
 
