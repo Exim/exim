@@ -81,7 +81,7 @@ locks held by that process when it terminates.
 exclusive (provided there are no other shared users of the lock) and
 to downgrade an exclusive lock to shared.  It is important that at no
 time is the lock ever removed; a process upgrading to exclusive must
-not relenquish its shared lock.
+not relinquish its shared lock.
 
      Most commonly, the resources being locked are files.  Shared
 locks are particularly important with files; multiple simultaneous
