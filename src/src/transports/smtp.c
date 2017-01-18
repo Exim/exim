@@ -1570,7 +1570,7 @@ uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 uschar *p;
 uschar buffer[DELIVER_BUFFER_SIZE];
 uschar inbuffer[4096];
-uschar outbuffer[4096];
+uschar outbufer[4096];
 
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 
@@ -1605,9 +1605,9 @@ inblock.ptrend = inbuffer;
 
 /* Set up the buffer for holding SMTP commands while pipelining */
 
-outblock.buffer = outbuffer;
-outblock.buffersize = sizeof(outbuffer);
-outblock.ptr = outbuffer;
+outblock.buffer = outbufer;
+outblock.buffersize = sizeof(outbufer);
+outblock.ptr = outbufer;
 outblock.cmd_count = 0;
 outblock.authenticating = FALSE;
 
@@ -3215,7 +3215,7 @@ smtp_inblock inblock;
 smtp_outblock outblock;
 uschar buffer[256];
 uschar inbuffer[4096];
-uschar outbuffer[16];
+uschar outbufer[16];
 
 inblock.sock = fileno(stdin);
 inblock.buffer = inbuffer;
@@ -3224,9 +3224,9 @@ inblock.ptr = inbuffer;
 inblock.ptrend = inbuffer;
 
 outblock.sock = inblock.sock;
-outblock.buffersize = sizeof(outbuffer);
-outblock.buffer = outbuffer;
-outblock.ptr = outbuffer;
+outblock.buffersize = sizeof(outbufer);
+outblock.buffer = outbufer;
+outblock.ptr = outbufer;
 outblock.cmd_count = 0;
 outblock.authenticating = FALSE;
 

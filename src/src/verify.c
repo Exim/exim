@@ -536,7 +536,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
     dns_answer tlsa_dnsa;
 #endif
     uschar inbuffer[4096];
-    uschar outbuffer[1024];
+    uschar outbufer[1024];
     uschar responsebuffer[4096];
     uschar * size_str;
 
@@ -599,9 +599,9 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     /* Set up the buffer for holding SMTP commands while pipelining */
 
-    outblock.buffer = outbuffer;
-    outblock.buffersize = sizeof(outbuffer);
-    outblock.ptr = outbuffer;
+    outblock.buffer = outbufer;
+    outblock.buffersize = sizeof(outbufer);
+    outblock.ptr = outbufer;
     outblock.cmd_count = 0;
     outblock.authenticating = FALSE;
 
