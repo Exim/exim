@@ -2017,7 +2017,7 @@ Exim version 4.03
     SMTP connection, a pipe file descriptor was accidentally left open. This
     meant that if there was a long chain of such processes, the number of open
     file descriptors increased by one for each process, and if there were
-    sufficent, the limit of open descriptors could be reached, causing various
+    sufficient, the limit of open descriptors could be reached, causing various
     problems.
 
  8. When an address was being checked with -bt and the routing involved an
