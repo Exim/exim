@@ -1361,7 +1361,7 @@ PP/09 Fix another SIGFPE (x86) in ${eval:...} expansion, this time related to
 Exim version 4.75
 -----------------
 
-NM/01 Workround for PCRE version dependency in version reporting
+NM/01 Workaround for PCRE version dependency in version reporting
       Bugzilla 1073
 
 TF/01 Update valgrind.h and memcheck.h to copies from valgrind-3.6.0.
