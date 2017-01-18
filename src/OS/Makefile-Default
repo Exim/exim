@@ -286,7 +286,7 @@ LOCAL_SCAN_SOURCE=src/local_scan.c
 
 #############################################################################
 # The following definitions are relevant only when compiling the Exim monitor
-# program, which requires an X11 display. See the varible EXIM_MONITOR in
+# program, which requires an X11 display. See the variable EXIM_MONITOR in
 # src/EDITME for how to suppress this compilation.
 
 # X11 contains the location of the X11 libraries and include files.

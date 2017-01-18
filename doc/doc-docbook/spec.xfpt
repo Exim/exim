@@ -12828,7 +12828,7 @@ If TLS has not been negotiated, the value will be 0.
 
 .vitem &$tls_in_ourcert$&
 .vindex "&$tls_in_ourcert$&"
-.cindex certificate veriables
+.cindex certificate variables
 This variable refers to the certificate presented to the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
