@@ -213,7 +213,7 @@ while (<IN>)
     # We want to chop excessively long entries on either side. We can't set
     # a fixed length because of the HTML control data. Call a function to
     # add the given length to allow for HTML stuff. This is crude, but it
-    # does roughtly the right thing.
+    # does roughly the right thing.
 
     my($leftlen) = &setlen(70, $pretext);
     my($rightlen) = &setlen(70, $posttext);

@@ -19,7 +19,7 @@ typedef struct smtp_slot {
 } smtp_slot;
 
 /* An empty slot for initializing (Standard C does not allow constructor
-expressions in assigments except as initializers in declarations). */
+expressions in assignments except as initializers in declarations). */
 
 static smtp_slot empty_smtp_slot = { 0, NULL };
 
@@ -1117,7 +1117,7 @@ if (daemon_listen && !inetd_wait_mode)
     }
 
   /* Create a list of default SMTP ports, to be used if local_interfaces
-  contains entries without explict ports. First count the number of ports, then
+  contains entries without explicit ports. First count the number of ports, then
   build a translated list in a vector. */
 
   list = daemon_smtp_port;

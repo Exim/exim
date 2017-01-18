@@ -944,7 +944,7 @@ for (topaddr = addr; topaddr->parent; topaddr = topaddr->parent) ;
 /* We start with just the local part for pipe, file, and reply deliveries, and
 for successful local deliveries from routers that have the log_as_local flag
 set. File deliveries from filters can be specified as non-absolute paths in
-cases where the transport is goin to complete the path. If there is an error
+cases where the transport is going to complete the path. If there is an error
 before this happens (expansion failure) the local part will not be updated, and
 so won't necessarily look like a path. Add extra text for this case. */
 
@@ -3542,7 +3542,7 @@ while (!done)
       {
 #ifdef SUPPORT_SOCKS
       case '2':	/* proxy information; must arrive before A0 and applies to that addr XXX oops*/
-	proxy_session = TRUE;	/*XXX shouod this be cleared somewhere? */
+	proxy_session = TRUE;	/*XXX should this be cleared somewhere? */
 	if (*ptr == 0)
 	  ptr++;
 	else
@@ -4569,7 +4569,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     }
 
   /* Now fork a subprocess to do the remote delivery, but before doing so,
-  ensure that any cached resourses are released so as not to interfere with
+  ensure that any cached resources are released so as not to interfere with
   what happens in the subprocess. */
 
   search_tidyup();
@@ -7347,7 +7347,7 @@ while (addr_failed)
   /* Otherwise, handle the sending of a message. Find the error address for
   the first address, then send a message that includes all failed addresses
   that have the same error address. Note the bounce_recipient is a global so
-  that it can be accesssed by $bounce_recipient while creating a customized
+  that it can be accessed by $bounce_recipient while creating a customized
   error message. */
 
   else
@@ -8301,7 +8301,7 @@ if (remove_journal)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s", fname,
       strerror(errno));
 
-  /* Move the message off the spool if reqested */
+  /* Move the message off the spool if requested */
 
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
   if (deliver_freeze && move_frozen_messages)

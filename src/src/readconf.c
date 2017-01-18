@@ -253,7 +253,7 @@ static optionlist optionlist_config[] = {
   { "dns_retry",                opt_int,         &dns_retry },
   { "dns_trust_aa",             opt_stringptr,   &dns_trust_aa },
   { "dns_use_edns0",            opt_int,         &dns_use_edns0 },
- /* This option is now a no-op, retained for compability */
+ /* This option is now a no-op, retained for compatibility */
   { "drop_cr",                  opt_bool,        &drop_cr },
 /*********************************************************/
   { "dsn_advertise_hosts",      opt_stringptr,   &dsn_advertise_hosts },
@@ -2368,7 +2368,7 @@ switch (type)
 
   /* We get a coverity error here for using count, as it derived
   from the tainted buffer pointed to by s, as parsed by sscanf().
-  By the definition of sscanf we must be aceessing between start
+  By the definition of sscanf we must be accessing between start
   and end of s (assuming it is nul-terminated...) so ignore the error.  */
   /* coverity[tainted_data] */
   if (s[count] == '.')

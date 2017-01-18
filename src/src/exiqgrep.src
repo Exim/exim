@@ -87,7 +87,7 @@ EOF
 }
 
 sub collect() {
-	open(QUEUE,"$exim $eargs |") or die("Error openning pipe: $!\n");
+	open(QUEUE,"$exim $eargs |") or die("Error opening pipe: $!\n");
 	while(<QUEUE>) {
 		chomp();
 		my $line = $_;

@@ -174,7 +174,7 @@ sub detect_compressor_capable
     {
     if ($filename =~ /\.(?:$ext)$/)
       {
-      # Just die if compressor not found; if this occurrs in the middle of
+      # Just die if compressor not found; if this occurs in the middle of
       # two valid files with a lot of matches, error could easily be missed.
       die("Didn't find $ext decompressor for $filename\n")
         if ($compressors->{$ext}->{bin} eq '');

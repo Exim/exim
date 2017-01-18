@@ -385,7 +385,7 @@ else
   callout and save the result in the cache for next time, unless no_cache is set,
   or unless we have a previously cached negative random result. If we are to test
   with a random local part, ensure that such a local part is available. If not,
-  log the fact, but carry on without randomming. */
+  log the fact, but carry on without randomising. */
 
   if (options & vopt_callout_random && callout_random_local_part != NULL)
     if (!(random_local_part = expand_string(callout_random_local_part)))
@@ -1262,7 +1262,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     /* End the SMTP conversation and close the connection. */
 
-    /* Cutthrough - on a successfull connect and recipient-verify with
+    /* Cutthrough - on a successful connect and recipient-verify with
     use-sender and we are 1st rcpt and have no cutthrough conn so far
     here is where we want to leave the conn open */
     if (  cutthrough.delivery
@@ -2526,7 +2526,7 @@ return yield;
 *      Check header names for 8-bit characters   *
 *************************************************/
 
-/* This function checks for invalid charcters in header names. See
+/* This function checks for invalid characters in header names. See
 RFC 5322, 2.2. and RFC 6532, 3.
 
 Arguments:
@@ -3107,7 +3107,7 @@ if (*ss == '@')
   }
 
 /* If the pattern is an IP address, optionally followed by a bitmask count, do
-a (possibly masked) comparision with the current IP address. */
+a (possibly masked) comparison with the current IP address. */
 
 if (string_is_ip_address(ss, &maskoffset) != 0)
   return (host_is_in_net(cb->host_address, ss, maskoffset)? OK : FAIL);
@@ -3622,7 +3622,7 @@ else
     (void)tree_insertnode(&dnsbl_cache, t);
     }
 
-  /* Do the DNS loopup . */
+  /* Do the DNS lookup . */
 
   HDEBUG(D_dnsbl) debug_printf("new DNS lookup for %s\n", query);
   cb->rc = dns_basic_lookup(&dnsa, query, T_A);

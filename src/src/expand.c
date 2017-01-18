@@ -46,7 +46,7 @@ the first 8 characters of the password using a 20-round version of crypt
 (standard crypt does 25 rounds).  It then crypts the next 8 characters,
 or an empty block if the password is less than 9 characters, using a
 20-round version of crypt and the same salt as was used for the first
-block.  Charaters after the first 16 are ignored.  It always generates
+block.  Characters after the first 16 are ignored.  It always generates
 a 16-byte hash, which is expressed together with the salt as a string
 of 24 base 64 digits.  Here are some links to peruse:
 
@@ -1589,7 +1589,7 @@ for (i = 0; i < 2; i++)
 
         size += ilen + comma + 1;  /* +1 for the newline */
 
-        /* Second pass - concatentate the data, up to a maximum. Note that
+        /* Second pass - concatenate the data, up to a maximum. Note that
         the loop stops when size hits the limit. */
 
         if (i != 0)
@@ -3635,7 +3635,7 @@ if (*error == NULL)
     /* SIGFPE both on div/mod by zero and on INT_MIN / -1, which would give
      * a value of INT_MAX+1. Note that INT_MIN * -1 gives INT_MIN for me, which
      * is a bug somewhere in [gcc 4.2.1, FreeBSD, amd64].  In fact, -N*-M where
-     * -N*M is INT_MIN will yielf INT_MIN.
+     * -N*M is INT_MIN will yield INT_MIN.
      * Since we don't support floating point, this is somewhat simpler.
      * Ideally, we'd return an error, but since we overflow for all other
      * arithmetic, consistency suggests otherwise, but what's the correct value
@@ -3813,7 +3813,7 @@ them here in detail any more.
 We use an internal routine recursively to handle embedded substrings. The
 external function follows. The yield is NULL if the expansion failed, and there
 are two cases: if something collapsed syntactically, or if "fail" was given
-as the action on a lookup failure. These can be distinguised by looking at the
+as the action on a lookup failure. These can be distinguished by looking at the
 variable expand_string_forcedfail, which is TRUE in the latter case.
 
 The skipping flag is set true when expanding a substring that isn't actually
@@ -5386,7 +5386,7 @@ while (*s != 0)
 
       /* While skipping we cannot rely on the data for expansions being
       available (eg. $item) hence cannot decide on numeric vs. keyed.
-      Read a maximum of 5 arguments (inclding the yes/no) */
+      Read a maximum of 5 arguments (including the yes/no) */
 
       if (skipping)
 	{

@@ -81,7 +81,7 @@ GetOptions(
   'show-tests'  => \$G::show_tests  # display tests as applied to each message
 ) || exit(1);
 
-# if both freeze and thaw specified, only thaw as it is less desctructive
+# if both freeze and thaw specified, only thaw as it is less destructive
 $G::freeze = undef               if ($G::freeze && $G::thaw);
 freeze_start()                   if ($G::freeze);
 thaw_start()                     if ($G::thaw);
@@ -761,7 +761,7 @@ sub _decode_2047 {
               $i += 2;
             }
           }
-          elsif ($ow[$i] =~ /\s/) { # whitspace is illegal
+          elsif ($ow[$i] =~ /\s/) { # whitespace is illegal
             $e = 1;
             last;
           }
@@ -1391,7 +1391,7 @@ Display only the message IDs (exiqgrep)
 
 =item --input-dir <inputname>
 
-Set the name of the directory under the spool directory.  By defaut this is "input".  If this starts with '/', the value of --spool is ignored.  See also --finput.
+Set the name of the directory under the spool directory.  By default this is "input".  If this starts with '/', the value of --spool is ignored.  See also --finput.
 
 =item -l
 

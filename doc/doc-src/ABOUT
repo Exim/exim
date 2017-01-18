@@ -4,7 +4,7 @@ Exim repository: doc/doc-src
 This directory contains documentation files that are processed in some way in
 order to make the documentation files that form part of Exim distributions. A
 non-standard document processor (SGCAL) was used up to and including release
-4.50 of Exim to process the sources for the manual and filter docuement.
+4.50 of Exim to process the sources for the manual and filter document.
 Subsequent documentation releases operate using DocBook input, so these files
 are now historical relics. The FAQ source is still (June 2005) current, but may
 be superseded in due course.

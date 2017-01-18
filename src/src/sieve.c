@@ -3104,7 +3104,7 @@ while (*filter->pc)
                 message.character=US"Notification";
                 message.length=Ustrlen(message.character);
                 }
-              /* Allocation is larger than neccessary, but enough even for split MIME words */
+              /* Allocation is larger than necessary, but enough even for split MIME words */
               buffer_capacity=32+4*message.length;
               buffer=store_get(buffer_capacity);
               if (message.length!=-1) fprintf(f,"Subject: %s\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
@@ -3356,7 +3356,7 @@ while (*filter->pc)
             addr->reply->from = expand_string(US"$local_part@$domain");
           else
             addr->reply->from = from.character;
-          /* Allocation is larger than neccessary, but enough even for split MIME words */
+          /* Allocation is larger than necessary, but enough even for split MIME words */
           buffer_capacity=32+4*subject.length;
           buffer=store_get(buffer_capacity);
 	  /* deconst cast safe as we pass in a non-const item */

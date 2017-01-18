@@ -35,7 +35,7 @@ all: Local/Makefile configure
 	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS)
 
 
-# This pair for the convinience of of the Debian maintainers
+# This pair for the convenience of of the Debian maintainers
 exim: Local/Makefile configure
 	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS) exim
 utils: Local/Makefile configure

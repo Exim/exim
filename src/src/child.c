@@ -222,7 +222,7 @@ pid = fork();
 
 /* Child process: make the reading end of the pipe into the standard input and
 close the writing end. If debugging, pass debug_fd as stderr. Then re-exec
-Exim with appropriat options. In the test harness, use -odi unless queue_only
+Exim with appropriate options. In the test harness, use -odi unless queue_only
 is set, so that the bounce is fully delivered before returning. Failure is
 signalled with EX_EXECFAILED (specified by CEE_EXEC_EXIT), but this shouldn't
 occur. */

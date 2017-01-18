@@ -23,7 +23,7 @@ The yield of a router is one of:
 
   DISCARD         the address was discarded (:blackhole: or "seen finish")
 
-  FAIL            the address was not routed; do not pass to any subseqent
+  FAIL            the address was not routed; do not pass to any subsequent
                   routers, i.e. cause routing to fail.
 
   DEFER           retry this address later.

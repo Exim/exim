@@ -61,7 +61,7 @@ address can appear in the tables drtables.c. */
 int auth_spa_options_count =
   sizeof(auth_spa_options)/sizeof(optionlist);
 
-/* Default private options block for the contidion authentication method. */
+/* Default private options block for the condition authentication method. */
 
 auth_spa_options_block auth_spa_option_defaults = {
   NULL,              /* spa_password */

@@ -115,7 +115,7 @@ always been set up specifically, as described in the manual.
 
 5. The way in which Exim scans its queue when split_spool_directory is set has
 changed, but this shouldn't make any noticeable difference. See doc/NewStuff
-for defails.
+for details.
 
 
 Upgrading from release 3.03

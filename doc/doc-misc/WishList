@@ -171,8 +171,8 @@ So the admin can pass back a reason.
 mark david mcCreary
 
 "I use the syntax_errors_to feature to email a copy of the error message.
-It would be helpful to have the X-Failed-Receipients header in there,
-identifying which addreses(s) are the problem, so that I don't have to
+It would be helpful to have the X-Failed-Recipients header in there,
+identifying which address(es) are the problem, so that I don't have to
 parse the body of the email message to figure out which addresses."
 ------------------------------------------------------------------------------
 
@@ -620,7 +620,7 @@ Joachim Wieland
 
 Is this really worth it? A per-transport value is also suggested - that would
 mean remembering the value with each failed address and taking a minimum or
-a maximimum (which?).
+a maximum (which?).
 ------------------------------------------------------------------------------
 
 (24)  21-Feb-02 ?  A way of testing TLS using -bh
@@ -815,7 +815,7 @@ logs the IP of the sending host in the => line?" Also requested was amount of
 data transmitted for a non-delivery attempt.
 ------------------------------------------------------------------------------
 
-(69)  03-Jul-02 T  Log selector to log whoson checs
+(69)  03-Jul-02 T  Log selector to log whoson checks
 Matt Bernstein
 
 "I'd quite like a log_selector option which could spot you'd done a whoson
@@ -989,7 +989,7 @@ a list defer.
 Peter A. Savitch
 
 OpenLDAP 2.1 is going to be more popular (2.1.9 is available with many
-bug fixes). TLS-enabled LDAP is an interesting and usefull thing.
+bug fixes). TLS-enabled LDAP is an interesting and useful thing.
 I can try to implement some things and send the patches, like with
 ldapi.
 
@@ -1302,7 +1302,7 @@ option, for use with multiple Exim daemons.
 See also 333.
 ------------------------------------------------------------------------------
 
-(214) 05-Nov-03 S  Put the wild part of local part prefix/suffx in variables
+(214) 05-Nov-03 S  Put the wild part of local part prefix/suffix in variables
 
 Unfortunately, this isn't quite as trivial as it seems.
 ------------------------------------------------------------------------------
@@ -1608,7 +1608,7 @@ how useful this would actually be in practice.
 
 (292) 13-Aug-04 M Overall timeout for message reception
 
-A client could in priciple keep an SMTP connection open for a very long time by
+A client could in principle keep an SMTP connection open for a very long time by
 trickling in data very slowly. Also, after message_size_limit is exceeded, Exim
 continues to swallow the data (though it does not write it to disk) until the
 end is reached. Again, the connection could be held open for a very long time.
@@ -2051,8 +2051,8 @@ This is what was suggested:
 This should be very simple to implement and will allow to make
 some experiments and implement custom extensions, i.e. one to
 known if remote client will redirect on 551 or not. Also the acl
-for unknown smpt command could be used for other purposes, like
-to dectect and react to some kiddies that send things like
+for unknown smtp command could be used for other purposes, like
+to detect and react to some kiddies that send things like
 http://... on the smtp port.
 ------------------------------------------------------------------------------
 --- HWM 355 ------------------------------------------------------------------

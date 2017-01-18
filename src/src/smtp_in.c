@@ -93,9 +93,9 @@ enum {
   processing of the RCPT response(s).  We shall do the same, and not require
   synch for BDAT.  Worse, as the chunk may (very likely will) follow the
   command-header in the same packet we cannot do the usual "is there any
-  follow-on data after the commmand line" even for non-pipeline mode.
+  follow-on data after the command line" even for non-pipeline mode.
   So we'll need an explicit check after reading the expected chunk amount
-  when non-pipe, before sennding the ACK. */
+  when non-pipe, before sending the ACK. */
 
   BDAT_CMD,
 
@@ -408,7 +408,7 @@ log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
 /* This gets the next byte from the SMTP input buffer. If the buffer is empty,
 it flushes the output, and refills the buffer, with a timeout. The signal
 handler is set appropriately by the calling function. This function is not used
-after a connection has negotated itself into an TLS/SSL state.
+after a connection has negotiated itself into an TLS/SSL state.
 
 Arguments:  none
 Returns:    the next character or EOF
@@ -997,7 +997,7 @@ if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
   /* May 2014: haproxy combined the version and command into one byte to
      allow two full bytes for the length field in order to proxy SSL
      connections.  SSL Proxy is not supported in this version of Exim, but
-     must still seperate values here. */
+     must still separate values here. */
 
   if (ver != 0x02)
     {
@@ -1104,7 +1104,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   size = end + 2 - hdr.v1.line; /* Skip header + CRLF */
   DEBUG(D_receive) debug_printf("Detected PROXYv1 header\n");
   /* Step through the string looking for the required fields. Ensure
-     strict adherance to required formatting, exit for any error. */
+     strict adherence to required formatting, exit for any error. */
   p += 5;
   if (!isspace(*(p++)))
     {
@@ -1557,7 +1557,7 @@ log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
 
 /* Check the format of a HELO line. The data for HELO/EHLO is supposed to be
 the domain name of the sending host, or an ip literal in square brackets. The
-arrgument is placed in sender_helo_name, which is in malloc store, because it
+argument is placed in sender_helo_name, which is in malloc store, because it
 must persist over multiple incoming messages. If helo_accept_junk is set, this
 host is permitted to send any old junk (needed for some broken hosts).
 Otherwise, helo_allow_chars can be used for rogue characters in general
@@ -3045,7 +3045,7 @@ the ACL that obeyed "drop" has already supplied the custom message, and NULL is
 passed to this function.
 
 In case things go wrong while processing this function, causing an error that
-may re-enter this funtion, there is a recursion check.
+may re-enter this function, there is a recursion check.
 
 Arguments:
   reason          What $smtp_notquit_reason will be set to in the ACL;
@@ -4958,7 +4958,7 @@ while (done <= 0)
 
     /* RFC 2487 is not clear on when this command may be sent, though it
     does state that all information previously obtained from the client
-    must be discarded if a TLS session is started. It seems reasonble to
+    must be discarded if a TLS session is started. It seems reasonable to
     do an implied RSET when STARTTLS is received. */
 
     incomplete_transaction_log(US"STARTTLS");
@@ -4983,7 +4983,7 @@ while (done <= 0)
       /* and if TLS is already active, tls_server_start() should fail */
       }
 
-    /* There is nothing we value in the input buffer and if TLS is succesfully
+    /* There is nothing we value in the input buffer and if TLS is successfully
     negotiated, we won't use this buffer again; if TLS fails, we'll just read
     fresh content into it.  The buffer contains arbitrary content from an
     untrusted remote source; eg: NOOP <shellcode>\r\nSTARTTLS\r\n

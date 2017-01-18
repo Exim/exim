@@ -98,7 +98,7 @@ enclosed in <> characters, so a header such as
 
   From: @a,@b:c@d
 
-is syntactally invalid. Exim does not enforce this restriction.
+is syntactically invalid. Exim does not enforce this restriction.
 
 
 1.6 Local parts [3.4.1]
@@ -243,7 +243,7 @@ MTA for the same message.
 [Multihomed host addresses should not be randomized.]
 
 Exim does randomize a list of several addresses for a single host, because
-caching in resolvers will defeat the round-robinning that many namerservers
+caching in resolvers will defeat the round-robinning that many nameservers
 use. (Note: this is not the same as randomizing equal-valued MX records. That
 is required by the RFC.)
 

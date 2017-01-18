@@ -508,7 +508,7 @@ Arguments:
   more_errno     from the top address for use with ERRNO_FILTER_FAIL
   buffer         the SMTP response buffer
   yield          where to put a one-digit SMTP response code
-  message        where to put an errror message
+  message        where to put an error message
   pass_message   set TRUE if message is an SMTP response
 
 Returns:         TRUE if an SMTP "QUIT" command should be sent, else FALSE
@@ -1893,7 +1893,7 @@ set from the command line if they were set in the process that passed the
 connection on. */
 
 /*XXX continue case needs to propagate DSN_INFO, prob. in deliver.c
-as the contine goes via transport_pass_socket() and doublefork and exec.
+as the continue goes via transport_pass_socket() and doublefork and exec.
 It does not wait.  Unclear how we keep separate host's responses
 separate - we could match up by host ip+port as a bodge. */
 
@@ -3109,7 +3109,7 @@ if (completed_address && lflags.ok && lflags.send_quit)
         }
 #endif
 
-      /* If the socket is successfully passed, we musn't send QUIT (or
+      /* If the socket is successfully passed, we mustn't send QUIT (or
       indeed anything!) from here. */
 
 /*XXX DSN_INFO: assume likely to do new HELO; but for greet we'll want to

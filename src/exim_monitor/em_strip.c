@@ -21,7 +21,7 @@ static int     size_first_time = 1;          /* and another */
 static int     stripchart_count = 0;         /* count stripcharts created */
 static int    *stripchart_delay;             /* vector of delay counts */
 static Widget *stripchart_label;             /* vector of label widgets */
-static int    *stripchart_last_total;        /* vector of prevous values */
+static int    *stripchart_last_total;        /* vector of previous values */
 static int    *stripchart_max;               /* vector of maxima */
 static int    *stripchart_middelay;          /* vector of */
 static int    *stripchart_midmax;            /* vector of */

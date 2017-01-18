@@ -968,7 +968,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     }
     next if /^tls_validate_require_cipher child \d+ ended: status=0x0/;
 
-    # We invoke Exim with -D, so we hit this new messag as of Exim 4.73:
+    # We invoke Exim with -D, so we hit this new message as of Exim 4.73:
     next if /^macros_trusted overridden to true by whitelisting/;
 
     # We have to omit the localhost ::1 address so that all is well in
@@ -1789,7 +1789,7 @@ system("$cmd");
 # The <SCRIPT> file is open for us to read an optional return code line,
 # followed by the command line and any following data lines for stdin. The
 # command line can be continued by the use of \. Data lines are not continued
-# in this way. In all lines, the following substutions are made:
+# in this way. In all lines, the following substitutions are made:
 #
 # DIR    => the current directory
 # CALLER => the caller of this script
@@ -1798,14 +1798,14 @@ system("$cmd");
 #            reference to the subtest number, holding previous value
 #            reference to the expected return code value
 #            reference to where to put the command name (for messages)
-#            auxilliary information returned from a previous run
+#            auxiliary information returned from a previous run
 #
-# Returns:   0 the commmand was executed inline, no subprocess was run
+# Returns:   0 the command was executed inline, no subprocess was run
 #            1 a non-exim command was run and waited for
 #            2 an exim command was run and waited for
 #            3 a command was run and not waited for (daemon, server, exim_lock)
 #            4 EOF was encountered after an initial return code line
-# Optionally alse a second parameter, a hash-ref, with auxilliary information:
+# Optionally also a second parameter, a hash-ref, with auxiliary information:
 #            exim_pid: pid of a run process
 #            munge: name of a post-script results munger
 
@@ -2808,7 +2808,7 @@ if (defined $parm_support{Content_Scanning})
     # This test for an active SpamAssassin is courtesy of John Jetmore.
     # The tests are hard coded to localhost:783, so no point in making
     # this test flexible like the clamav test until the test scripts are
-    # changed.  spamd doesn't have the nice PING/PONG protoccol that
+    # changed.  spamd doesn't have the nice PING/PONG protocol that
     # clamd does, but it does respond to errors in an informative manner,
     # so use that.
 

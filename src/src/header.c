@@ -119,7 +119,7 @@ if (name == NULL)
     hptr = &header_list;
 
     /* header_list->text can be NULL if we get here between when the new
-    received header is allocated and when it is acutally filled in. We want
+    received header is allocated and when it is actually filled in. We want
     that header to be first, so skip it for now. */
 
     if (header_list->text == NULL)
@@ -132,7 +132,7 @@ else
   {
   int len = Ustrlen(name);
 
-  /* Find the first non-deleted header witht the correct name. */
+  /* Find the first non-deleted header with the correct name. */
 
   for (hptr = &header_list; (h = *hptr) != NULL; hptr = &(h->next))
     {

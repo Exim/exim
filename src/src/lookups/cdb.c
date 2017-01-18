@@ -43,7 +43,7 @@
  * cdb.[ch] it does *not* link against an external cdb library.
  *
  *
- * There are 2 varients included within this code.  One uses MMAP and
+ * There are 2 variants included within this code.  One uses MMAP and
  * should give better performance especially for multiple lookups on a
  * modern machine.  The other is the default implementation which is
  * used in the case where the MMAP fails or if MMAP was not compiled
@@ -131,7 +131,7 @@ cdb_bread(int fd,
 
 /*
  * cdb_bread()
- * Internal function to parse 4 byte number (endian independant) */
+ * Internal function to parse 4 byte number (endian independent) */
 
 static uint32
 cdb_unpack(uschar *buf)

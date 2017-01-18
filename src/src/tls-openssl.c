@@ -727,9 +727,9 @@ if (!exp_curve || !*exp_curve)
   return TRUE;
 
 /* "auto" needs to be handled carefully.
- * OpenSSL <  1.0.2: we do not select anything, but fallback to primve256v1
+ * OpenSSL <  1.0.2: we do not select anything, but fallback to prime256v1
  * OpenSSL <  1.1.0: we have to call SSL_CTX_set_ecdh_auto
- *                   (openss/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
+ *                   (openssl/ssl.h defines SSL_CTRL_SET_ECDH_AUTO)
  * OpenSSL >= 1.1.0: we do not set anything, the libray does autoselection
  *                   https://github.com/openssl/openssl/commit/fe6ef2472db933f01b59cad82aa925736935984b
  */
@@ -862,7 +862,7 @@ verify_flags = OCSP_NOVERIFY; /* check sigs, but not purpose */
 OCSP_NOSIGS OCSP_NOVERIFY OCSP_NOCHAIN OCSP_NOCHECKS OCSP_NOEXPLICIT
 OCSP_TRUSTOTHER OCSP_NOINTERN */
 
-/* This does a full verify on the OCSP proof before we load it for serviing
+/* This does a full verify on the OCSP proof before we load it for serving
 up; possibly overkill - just date-checks might be nice enough.
 
 OCSP_basic_verify takes a "store" arg, but does not
@@ -879,10 +879,10 @@ function for getting a stack from a store.
 We do not free the stack since it could be needed a second time for
 SNI handling.
 
-Seperately we might try to replace using OCSP_basic_verify() - which seems to not
+Separately we might try to replace using OCSP_basic_verify() - which seems to not
 be a public interface into the OpenSSL library (there's no manual entry) - 
 But what with?  We also use OCSP_basic_verify in the client stapling callback.
-And there we NEED it; we miust verify that status... unless the
+And there we NEED it; we must verify that status... unless the
 library does it for us anyway?  */
 
 if ((i = OCSP_basic_verify(basic_response, sk, NULL, verify_flags)) < 0)
@@ -972,7 +972,7 @@ where = US"generating pkey";
 if (!(rsa = RSA_generate_key(1024, RSA_F4, NULL, NULL)))
   goto err;
 
-where = US"assiging pkey";
+where = US"assigning pkey";
 if (!EVP_PKEY_assign_RSA(pkey, rsa))
   goto err;
 
@@ -1764,7 +1764,7 @@ if (expcerts && *expcerts)
       variant.
       If a list isn't loaded into the server, but
       some verify locations are set, the server end appears to make
-      a wildcard reqest for client certs.
+      a wildcard request for client certs.
       Meanwhile, the client library as default behaviour *ignores* the list
       we send over the wire - see man SSL_CTX_set_client_cert_cb.
       Because of this, and that the dir variant is likely only used for
@@ -1859,7 +1859,7 @@ Arguments:
 
 Returns:            OK on success
                     DEFER for errors before the start of the negotiation
-                    FAIL for errors during the negotation; the server can't
+                    FAIL for errors during the negotiation; the server can't
                       continue running.
 */
 

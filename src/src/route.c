@@ -714,7 +714,7 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
     pid = fork();
 
     /* If fork() fails, reinstate the original error and behave as if
-    this block of code were not present. This is the same behavious as happens
+    this block of code were not present. This is the same behaviour as happens
     when Exim is not running as root at this point. */
 
     if (pid < 0)
@@ -765,7 +765,7 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
     rc = -1;
     }
 
-  /* Handle error returns from stat() or route_check_access(). The EACESS error
+  /* Handle error returns from stat() or route_check_access(). The EACCES error
   is handled specially. At present, we can force it to be treated as
   non-existence. Write the code so that it will be easy to add forcing for
   existence if required later. */
@@ -966,7 +966,7 @@ if (r->router_home_directory)
   }
 
 /* Skip if the sender condition is not met. We leave this one till after the
-local user check so that $home is set - enabling the possiblity of letting
+local user check so that $home is set - enabling the possibility of letting
 individual recipients specify lists of acceptable/unacceptable senders. */
 
 if ((rc = route_check_dls(r->name, US"senders", r->senders, NULL,
@@ -1177,7 +1177,7 @@ NIS or NFS whatever cause an incorrect refusal. It's a pity that getgrnam()
 doesn't have some kind of indication as to why it has failed.
 
 Arguments:
-  s           the group namd or textual form of the numerical gid
+  s           the group name or textual form of the numerical gid
   return_gid  return the gid via this address
 
 Returns:      TRUE if the group was found; FALSE otherwise
@@ -1483,7 +1483,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   by  this router, even if it was different to the current address.
 
   Just in case someone does put it into a loop (possible with redirection
-  continally adding to an address, for example), put a long stop counter on
+  continually adding to an address, for example), put a long stop counter on
   the number of parents. */
 
   for (parent = addr->parent; parent; parent = parent->parent)

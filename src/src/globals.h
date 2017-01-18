@@ -298,7 +298,7 @@ extern uschar *csa_status;             /* Client SMTP Authorization result */
 
 typedef struct {
   unsigned     delivery:1;             /* When to attempt */
-  unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spoolling */
+  unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spooling */
   int          fd;                     /* Open connection */
   int          nrcpt;                  /* Count of addresses */
   uschar *     interface;              /* (address of) */
@@ -683,7 +683,7 @@ extern BOOL    queue_only_override;    /* Allow override from command line */
 extern BOOL    queue_only_policy;      /* ACL or local_scan wants queue_only */
 extern BOOL    queue_run_in_order;     /* As opposed to random */
 extern uschar *queue_run_max;          /* Max queue runners */
-extern BOOL    queue_smtp;             /* Disable all immediate STMP (-odqs)*/
+extern BOOL    queue_smtp;             /* Disable all immediate SMTP (-odqs)*/
 extern uschar *queue_smtp_domains;     /* Ditto, for these domains */
 
 extern unsigned int random_seed;       /* Seed for random numbers */
@@ -789,7 +789,7 @@ extern uschar *sending_ip_address;     /* Address of outgoing (SMTP) interface *
 extern int     sending_port;           /* Port of outgoing interface */
 extern SIGNAL_BOOL sigalrm_seen;       /* Flag for sigalrm_handler */
 extern uschar **sighup_argv;           /* Args for re-execing after SIGHUP */
-extern int     slow_lookup_log;        /* Log DNS lookups taking loger than N millisecs */
+extern int     slow_lookup_log;        /* Log DNS lookups taking longer than N millisecs */
 extern int     smtp_accept_count;      /* Count of connections */
 extern BOOL    smtp_accept_keepalive;  /* Set keepalive on incoming */
 extern int     smtp_accept_max;        /* Max SMTP connections */

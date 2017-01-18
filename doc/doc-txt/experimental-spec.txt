@@ -6,7 +6,7 @@ about experimental  features, all  of which  are unstable and
 liable to incompatible change.
 
 
-Brightmail AntiSpam (BMI) suppport
+Brightmail AntiSpam (BMI) support
 --------------------------------------------------------------
 
 Brightmail  AntiSpam  is  a  commercial  package.  Please  see
@@ -42,7 +42,7 @@ These four steps are explained in more details below.
 1) Adding support for BMI at compile time
 
   To compile with BMI support,  you need to link Exim  against
-  the   Brighmail  client   SDK,  consisting   of  a   library
+  the  Brightmail  client   SDK,  consisting   of  a   library
   (libbmiclient_single.so)  and  a  header  file  (bmi_api.h).
   You'll also need to explicitly set a flag in the Makefile to
   include BMI support in the Exim binary. Both can be achieved
@@ -550,7 +550,7 @@ Then set something like
 mout-xforward.gmx.net           82.165.159.12
 mout.gmx.net                    212.227.15.16
 
-Use a reasonable IP. eg. one the sending cluster acutally uses.
+Use a reasonable IP. eg. one the sending cluster actually uses.
 
 DMARC Support
 --------------------------------------------------------------
@@ -894,7 +894,7 @@ DANE will only be usable if the target host has DNSSEC-secured
 MX, A and TLSA records.
 
 A TLSA lookup will be done if either of the above options match
-and the host-lookup succeded using dnssec.
+and the host-lookup succeeded using dnssec.
 If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
 will be required for the host.  If it does not, the host will not
 be used; there is no fallback to non-DANE or non-TLS.
@@ -960,7 +960,7 @@ The reporting MTA detailed diagnostic.
 Example:
   X-Exim-Diagnostic: X-str; SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
 Rationale:
-  This string somtimes give extra information over the
+  This string sometimes give extra information over the
   existing (already available) Diagnostic-Code field.
 
 
@@ -970,7 +970,7 @@ Note that non-RFC-documented field names and data types are used.
 LMDB Lookup support
 -------------------
 LMDB is an ultra-fast, ultra-compact, crash-proof key-value embedded data store.
-It is modeled loosely on the BerkeleyDB API. You shoul read about the feature
+It is modeled loosely on the BerkeleyDB API. You should read about the feature
 set as well as operation modes at https://symas.com/products/lightning-memory-mapped-database/
 
 LMDB single key lookup support is provided by linking to the LMDB C library.

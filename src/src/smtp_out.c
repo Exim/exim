@@ -550,7 +550,7 @@ int count;
 
 errno = 0;  /* Ensure errno starts out zero */
 
-/* This is a loop to read and concatentate the lines that make up a multi-line
+/* This is a loop to read and concatenate the lines that make up a multi-line
 response. */
 
 for (;;)

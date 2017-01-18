@@ -529,7 +529,7 @@ if (dane->depth < 0)
 
 /*
  * If the TA certificate is self-issued, or need not be, use it directly.
- * Otherwise, synthesize requisuite ancestors.
+ * Otherwise, synthesize requisite ancestors.
  */
 if (  !wrap_to_root
    || X509_check_issued(tacert, tacert) == X509_V_OK)

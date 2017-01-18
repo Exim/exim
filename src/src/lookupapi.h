@@ -34,7 +34,7 @@ typedef struct lookup_info {
     int,                          /* length of key or query */
     uschar **,                    /* for returning answer */
     uschar **,                    /* for error message */
-    uint *);                      /* cache TTL, sconds */
+    uint *);                      /* cache TTL, seconds */
   void (*close)(                  /* close function */
     void *);                      /* handle */
   void (*tidy)(void);             /* tidy function */

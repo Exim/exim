@@ -202,7 +202,7 @@ return NULL;
 /* Whole address conversion.
 The *err string pointer should be null before the call.
 
-Return NULL on oeeror, with (optional) errstring pointer filled in
+Return NULL on error, with (optional) errstring pointer filled in
 */
 
 uschar *

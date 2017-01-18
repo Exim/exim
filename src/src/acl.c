@@ -1201,7 +1201,7 @@ an odd configuration - why didn't the SRV record have a weight of 1 instead?)
 Arguments:
   dnsa       the DNS answer block
   dnss       a DNS scan block for us to use
-  reset      option specifing what portion to scan, as described above
+  reset      option specifying what portion to scan, as described above
   target     the target hostname to use for matching RR names
 
 Returns:     CSA_OK             successfully authorized
@@ -2240,7 +2240,7 @@ while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
   else if (strcmpic(ss, US"per_byte") == 0)
     {
     /* If we have not yet received the message data and there was no SIZE
-    declaration on the MAIL comand, then it's safe to just use a value of
+    declaration on the MAIL command, then it's safe to just use a value of
     zero and let the recorded rate decay as if nothing happened. */
     RATE_SET(mode, PER_MAIL);
     if (where > ACL_WHERE_NOTSMTP) badacl = TRUE;
@@ -2606,7 +2606,7 @@ else
   size of the event per the period size, ignoring the lack of events outside
   the current period and regardless of where the event falls in the period. So,
   if the interval was so long that the calculated rate is unhelpfully small, we
-  re-intialize the rate. In the absence of higher-rate bursts, the condition
+  re-initialize the rate. In the absence of higher-rate bursts, the condition
   below is true if the interval is greater than the period. */
 
   if (dbd->rate < count) dbd->rate = count;
@@ -3279,12 +3279,12 @@ for (; cb != NULL; cb = cb->next)
     #ifdef EXPERIMENTAL_DCC
     case ACLC_DCC:
       {
-      /* Seperate the regular expression and any optional parameters. */
+      /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
       uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the dcc backend. */
       rc = dcc_process(&ss);
-      /* Modify return code based upon the existance of options. */
+      /* Modify return code based upon the existence of options. */
       while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           rc = FAIL;   /* FAIL so that the message is passed to the next ACL */
@@ -3585,12 +3585,12 @@ for (; cb != NULL; cb = cb->next)
     #ifdef WITH_CONTENT_SCAN
     case ACLC_SPAM:
       {
-      /* Seperate the regular expression and any optional parameters. */
+      /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
       uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the spam backend. */
       rc = spam(CUSS &ss);
-      /* Modify return code based upon the existance of options. */
+      /* Modify return code based upon the existence of options. */
       while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
             != NULL) {
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
@@ -4147,7 +4147,7 @@ HDEBUG(D_acl) debug_printf("end of %s: implicit DENY\n", acl_name);
 return FAIL;
 
 badquit:
-  *log_msgptr = string_sprintf("QUIT or not-QUIT teplevel ACL may not fail "
+  *log_msgptr = string_sprintf("QUIT or not-QUIT toplevel ACL may not fail "
     "('%s' verb used incorrectly)", verbs[acl->verb]);
   return ERROR;
 }

@@ -624,7 +624,7 @@ return write_chunk(fd, tctx, pp->address, Ustrlen(pp->address));
 
 
 
-/* Add/remove/rewwrite headers, and send them plus the empty-line sparator.
+/* Add/remove/rewrite headers, and send them plus the empty-line separator.
 
 Globals:
   header_list
@@ -908,7 +908,7 @@ if (!(tctx->options & topt_no_headers))
 
     /* Pick up from all the addresses. The plist and dlist variables are
     anchors for lists of addresses already handled; they have to be defined at
-    this level becuase write_env_to() calls itself recursively. */
+    this level because write_env_to() calls itself recursively. */
 
     for (p = tctx->addr; p; p = p->next)
       if (!write_env_to(p, &plist, &dlist, &first, fd, tctx))
@@ -978,7 +978,7 @@ if (tctx->options & topt_use_bdat)
   if (size > DELIVER_OUT_BUFFER_SIZE && hsize > 0)
     {
     DEBUG(D_transport)
-      debug_printf("sending small initial BDAT; hssize=%d\n", hsize);
+      debug_printf("sending small initial BDAT; hsize=%d\n", hsize);
     if (  tctx->chunk_cb(fd, tctx, hsize, 0) != OK
        || !transport_write_block(fd, deliver_out_buffer, hsize)
        || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
@@ -2272,7 +2272,7 @@ if (expand_arguments)
        */
       if (address_pipe_argcount > 1)
         memmove(
-          /* current position + additonal args */
+          /* current position + additional args */
           argv + i + address_pipe_argcount,
           /* current position + 1 (for the (uschar *)0 at the end) */
           argv + i + 1,

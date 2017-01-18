@@ -297,7 +297,7 @@ dcc_process(uschar **listptr)
     }
   }
 
-  /* a blank line seperates header from body */
+  /* a blank line separates header from body */
   Ustrncat(sendbuf, "\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
   flushbuffer(sockfd, sendbuf);
   DEBUG(D_acl)

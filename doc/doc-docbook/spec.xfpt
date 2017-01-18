@@ -4480,7 +4480,7 @@ will specify a queue to operate on.
 For example:
 .code
 exim -bp -qGquarantine
-mailq -qGquarantime
+mailq -qGquarantine
 exim -qGoffpeak -Rf @special.domain.example
 .endd
 
@@ -7110,7 +7110,7 @@ Retries for the dnsdb lookup can be controlled by a retry modifier.
 The form if &"retry_VAL"& where VAL is an integer.
 The default count is set by the main configuration option &%dns_retry%&.
 
-.cindex cacheing "of dns lookup"
+.cindex caching "of dns lookup"
 .cindex TTL "of dns lookup"
 .cindex DNS TTL
 Dnsdb lookup results are cached within a single process (and its children).
@@ -9105,7 +9105,7 @@ If the ACL returns defer the result is a forced-fail.  Otherwise the expansion f
 
 .vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
        {*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
-.cindex "expansion" "extracting cerificate fields"
+.cindex "expansion" "extracting certificate fields"
 .cindex "&%certextract%&" "certificate fields"
 .cindex "certificate" "extracting fields"
 The <&'certificate'&> must be a variable of type certificate.
@@ -12210,7 +12210,7 @@ normally the gid of the Exim user.
 .cindex "uid (user id)" "of originating user"
 .cindex "sender" "uid"
 .vindex "&$caller_uid$&"
-.vindex "&$originaltor_uid$&"
+.vindex "&$originator_uid$&"
 The value of &$caller_uid$& that was set when the message was received. For
 messages received via the command line, this is the uid of the sending user.
 For messages received by SMTP over TCP/IP, this is normally the uid of the Exim
@@ -12828,7 +12828,7 @@ If TLS has not been negotiated, the value will be 0.
 
 .vitem &$tls_in_ourcert$&
 .vindex "&$tls_in_ourcert$&"
-.cindex certificate veriables
+.cindex certificate variables
 This variable refers to the certificate presented to the peer of an
 inbound connection when the message was received.
 It is only useful as the argument of a
@@ -13098,7 +13098,7 @@ initial startup, even if &%perl_at_start%& is set.
 .oindex "&%perl_taintmode%&"
 .cindex "Perl" "taintmode"
 To provide more security executing Perl code via the embedded Perl
-interpeter, the &%perl_taintmode%& option can be set. This enables the
+interpreter, the &%perl_taintmode%& option can be set. This enables the
 taint mode of the Perl interpreter. You are encouraged to set this
 option to a true value. To avoid breaking existing installations, it
 defaults to false.
@@ -14406,7 +14406,7 @@ it obviously cannot send an error message of any kind.
 
 There is a slight performance penalty for these checks.
 Versions of Exim preceding 4.88 had these disabled by default;
-high-rate intallations confident they will never run out of resources
+high-rate installations confident they will never run out of resources
 may wish to deliberately disable them.
 
 .option chunking_advertise_hosts main "host list&!!" *
@@ -16714,7 +16714,7 @@ example, instead of &"Administrative prohibition"&, it might give:
 .option smtputf8_advertise_hosts main "host list&!!" *
 .cindex "SMTPUTF8" "advertising"
 When Exim is built with support for internationalised mail names,
-the availability therof is advertised in
+the availability thereof is advertised in
 response to EHLO only to those client hosts that match this option. See
 chapter &<<CHAPi18n>>& for details of Exim's support for internationalisation.
 
@@ -21007,7 +21007,7 @@ The control does not apply to shadow transports.
 
 .cindex "hints database" "transport concurrency control"
 Exim implements this control by means of a hints database in which a record is
-incremented whenever a transport process is beaing created. The record
+incremented whenever a transport process is being created. The record
 is decremented and possibly removed when the process terminates.
 Obviously there is scope for
 records to get left lying around if there is a system or program crash. To
@@ -23971,7 +23971,7 @@ unauthenticated. See also &%hosts_require_auth%&, and chapter
 .cindex "RFC 3030" "CHUNKING"
 This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
-BDAT will not be used in conjuction with a transport filter.
+BDAT will not be used in conjunction with a transport filter.
 
 .option hosts_try_fastopen smtp "host list!!" unset
 .cindex "fast open, TCP" "enabling, in client"
@@ -27536,7 +27536,7 @@ Great care should be taken to deal with matters of case, various injection
 attacks in the string (&`../`& or SQL), and ensuring that a valid filename
 can always be referenced; it is important to remember that &$tls_in_sni$& is
 arbitrary unverified data provided prior to authentication.
-Further, the initial cerificate is loaded before SNI is arrived, so
+Further, the initial certificate is loaded before SNI is arrived, so
 an expansion for &%tls_certificate%& must have a default which is used
 when &$tls_in_sni$& is empty.
 
@@ -28913,7 +28913,7 @@ This behaviour can be adjusted by appending the option &*defer=*&<&'value'&>
 to the control; the default value is &"spool"& and the alternate value
 &"pass"& copies an SMTP defer response from the target back to the initiator
 and does not queue the message.
-Note that this is independent of any receipient verify conditions in the ACL.
+Note that this is independent of any recipient verify conditions in the ACL.
 
 Delivery in this mode avoids the generation of a bounce mail to a
 (possibly faked)
@@ -29809,7 +29809,7 @@ deny  dnslists = blackholes.mail-abuse.org
 warn  message  = X-Warn: sending host is on dialups list
       dnslists = dialups.mail-abuse.org
 .endd
-.cindex cacheing "of dns lookup"
+.cindex caching "of dns lookup"
 .cindex DNS TTL
 DNS list lookups are cached by Exim for the duration of the SMTP session
 (but limited by the DNS return TTL value),
@@ -29922,7 +29922,7 @@ multiple DNS records. The inner dnsdb lookup produces a list of MX hosts
 and the outer dnsdb lookup finds the IP addresses for these hosts. The result
 of expanding the condition might be something like this:
 .code
-dnslists = sbl.spahmaus.org/<|192.168.2.3|192.168.5.6|...
+dnslists = sbl.spamhaus.org/<|192.168.2.3|192.168.5.6|...
 .endd
 Thus, this example checks whether or not the IP addresses of the sender
 domain's mail servers are on the Spamhaus black list.
@@ -36046,7 +36046,7 @@ off the &%outgoing_interface%& option.
 .next
 .cindex "log" "outgoing remote port"
 .cindex "port" "logging outgoint remote"
-.cindex "TCP/IP" "logging ougtoing remote port"
+.cindex "TCP/IP" "logging outgoing remote port"
 &%outgoing_port%&: The remote port number is added to delivery log lines (those
 containing => tags) following the IP address.
 The local port is also added if &%incoming_interface%& and
@@ -38798,7 +38798,7 @@ can be used to affect that action (more on this below).
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
 .display
-&`msg:delivery         `& smtp confirmation mssage
+&`msg:delivery         `& smtp confirmation message
 &`msg:rcpt:host:defer  `& error string
 &`msg:rcpt:defer       `& error string
 &`msg:host:defer       `& error string

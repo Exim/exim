@@ -12,7 +12,7 @@
 
 
 
-/* Routines with knowlege of spool layout */
+/* Routines with knowledge of spool layout */
 
 #ifndef COMPILE_UTILITY
 static void
@@ -455,7 +455,7 @@ any messages therein), and then repeats for any subdirectories that were found.
 When the first argument of queue_get_spool_list() is 0, it scans the top
 directory, fills in subdirs, and sets subcount. The order of the directories is
 then randomized after the first time through, before they are scanned in
-subsqeuent iterations.
+subsequent iterations.
 
 When the first argument of queue_get_spool_list() is -1 (for queue_run_in_
 order), it scans all directories and makes a single message list. */

@@ -187,7 +187,7 @@ The start of the last potential comment position is remembered to
 make it possible to ignore comments at the end of compound items.
 
 Argument: current character pointer
-Regurns:  new character pointer
+Returns:  new character pointer
 */
 
 static uschar *

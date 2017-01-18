@@ -558,7 +558,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
         }
       }    /* Loop for list of returned records */
 
-           /* Loop for set of A-lookupu types */
+           /* Loop for set of A-lookup types */
     } while (type == T_ADDRESSES && searchtype != T_A);
 
   }        /* Loop for list of domains */

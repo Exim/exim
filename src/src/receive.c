@@ -3738,7 +3738,7 @@ if (bmi_run == 1)
   }
 #endif
 
-/* Update the timstamp in our Received: header to account for any time taken by
+/* Update the timestamp in our Received: header to account for any time taken by
 an ACL or by local_scan(). The new time is the time that all reception
 processing is complete. */
 
@@ -3823,7 +3823,7 @@ string as required. Since we commonly want to add two items at a time, use a
 macro to simplify the coding. We log the arrival of a new message while the
 file is still locked, just in case the machine is *really* fast, and delivers
 it first! Include any message id that is in the message - since the syntax of a
-message id is actually an addr-spec, we can use the parse routine to canonicize
+message id is actually an addr-spec, we can use the parse routine to canonicalize
 it. */
 
 size = 256;
@@ -4058,7 +4058,7 @@ for this message. */
 
    Send dot onward.  If accepted, wipe the spooled files, log as delivered and accept
    the sender's dot (below).
-   If rejected: copy response to sender, wipe the spooled files, log approriately.
+   If rejected: copy response to sender, wipe the spooled files, log appropriately.
    If temp-reject: normally accept to sender, keep the spooled file - unless defer=pass
    in which case pass temp-reject back to initiator and dump the files.
 

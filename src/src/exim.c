@@ -365,7 +365,7 @@ return 0;
 /* Exim uses a time + a pid to generate a unique identifier in two places: its
 message IDs, and in file names for maildir deliveries. Because some OS now
 re-use pids within the same second, sub-second times are now being used.
-However, for absolute certaintly, we must ensure the clock has ticked before
+However, for absolute certainty, we must ensure the clock has ticked before
 allowing the relevant process to complete. At the time of implementation of
 this code (February 2003), the speed of processors is such that the clock will
 invariably have ticked already by the time a process has done its job. This
@@ -1331,7 +1331,7 @@ static void
 exim_usage(uschar *progname)
 {
 
-/* Handle specific program invocation varients */
+/* Handle specific program invocation variants */
 if (Ustrcmp(progname, US"-mailq") == 0)
   {
   fprintf(stderr,
@@ -1900,7 +1900,7 @@ for (i = 1; i < argc; i++)
     break;
     }
 
-  /* An option consistion of -- terminates the options */
+  /* An option consisting of -- terminates the options */
 
   if (Ustrcmp(arg, "--") == 0)
     {
@@ -5087,7 +5087,7 @@ if (host_checking)
       verify_get_ident(1413);
     }
 
-  /* In case the given address is a non-canonical IPv6 address, canonicize
+  /* In case the given address is a non-canonical IPv6 address, canonicalize
   it. The code works for both IPv4 and IPv6, as it happens. */
 
   size = host_aton(sender_host_address, x);
@@ -5336,7 +5336,7 @@ February 2003: That's *still* not the end of the story. There are now versions
 of Linux (where SIG_IGN does work) that are picky. If, having set SIG_IGN, a
 process then calls waitpid(), a grumble is written to the system log, because
 this is logically inconsistent. In other words, it doesn't like the paranoia.
-As a consequenc of this, the waitpid() below is now excluded if we are sure
+As a consequence of this, the waitpid() below is now excluded if we are sure
 that SIG_IGN works. */
 
 if (!synchronous_delivery)
@@ -5556,7 +5556,7 @@ while (more)
 
     if (!receive_timeout)
       {
-      struct timeval t = { 30*60, 0 };	/* 30 minutess */
+      struct timeval t = { 30*60, 0 };	/* 30 minutes */
       fd_set r;
 
       FD_ZERO(&r); FD_SET(0, &r);

@@ -41,7 +41,7 @@ HOWTO.maildirquota
 
    Furthermore, this quota mechanism is not 100% effective. It is
    possible to have a situation where someone may go over quota. This
-   quota implementation uses a deliverate trade-off. It is necessary to
+   quota implementation uses a deliberate trade-off. It is necessary to
    use some form of locking in order to have a complete bulletproof quota
    enforcement, but maildirs mail stores were explicitly designed to
    avoid any kind of locking. This quota approach does not use locking,

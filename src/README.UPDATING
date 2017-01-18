@@ -551,7 +551,7 @@ Version 4.23
 3. Version 4.23 saves the contents of the ACL variables with the message, so
    that they can be used later. If one of these variables contains a newline,
    there will be a newline character in the spool that will not be interpreted
-   correctely by a previous version of Exim. (Exim ignores keyed spool file
+   correctly by a previous version of Exim. (Exim ignores keyed spool file
    items that it doesn't understand - precisely for this kind of problem - but
    it expects them all to be on one line.)
 
