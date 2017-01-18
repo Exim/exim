@@ -3128,7 +3128,7 @@ if (yield != OK)
   fcntl() call (BSDI & FreeBSD do not). */
 
   if (!isdirectory && ftruncate(fd, saved_size))
-    DEBUG(D_transport) debug_printf("Error restting file size\n");
+    DEBUG(D_transport) debug_printf("Error resetting file size\n");
   }
 
 /* Handle successful writing - we want the modification time to be now for
