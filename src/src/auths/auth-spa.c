@@ -1406,7 +1406,7 @@ spa_build_auth_challenge (SPAAuthRequest * request, SPAAuthChallenge * challenge
   int p = (int)getpid();
   int random_seed = (int)time(NULL) ^ ((p << 16) | p);
 
-  request = request;  /* Added by PH to stop compilers whinging */
+  request = request;  /* Added by PH to stop compilers whining */
 
   /* Ensure challenge data is cleared, in case it isn't all used. This
   patch added by PH on suggestion of Russell King */
