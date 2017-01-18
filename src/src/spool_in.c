@@ -232,7 +232,7 @@ Arguments:
 Returns:        spool_read_OK        success
                 spool_read_notopen   open failed
                 spool_read_enverror  error in the envelope portion
-                spool_read_hdrdrror  error in the header portion
+                spool_read_hdrerror  error in the header portion
 */
 
 int

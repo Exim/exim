@@ -5693,7 +5693,7 @@ Exim version 4.31
     the list was checked. (An example that provoked this was putting <; in the
     middle of a list instead of at the start.) If this happened during a DATA
     ACL check, a -D file could be left lying around. This kind of configuration
-    error no longer causes Exim to die; instead it causes a defer errror. The
+    error no longer causes Exim to die; instead it causes a defer error. The
     incident is still logged to the main and panic logs.
 
 74. Buglet left over from Exim 3 conversion. The message "too many messages

@@ -508,7 +508,7 @@ Arguments:
   more_errno     from the top address for use with ERRNO_FILTER_FAIL
   buffer         the SMTP response buffer
   yield          where to put a one-digit SMTP response code
-  message        where to put an errror message
+  message        where to put an error message
   pass_message   set TRUE if message is an SMTP response
 
 Returns:         TRUE if an SMTP "QUIT" command should be sent, else FALSE
