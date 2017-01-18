@@ -1302,7 +1302,7 @@ option, for use with multiple Exim daemons.
 See also 333.
 ------------------------------------------------------------------------------
 
-(214) 05-Nov-03 S  Put the wild part of local part prefix/suffx in variables
+(214) 05-Nov-03 S  Put the wild part of local part prefix/suffix in variables
 
 Unfortunately, this isn't quite as trivial as it seems.
 ------------------------------------------------------------------------------
