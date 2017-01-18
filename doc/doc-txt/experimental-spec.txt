@@ -894,7 +894,7 @@ DANE will only be usable if the target host has DNSSEC-secured
 MX, A and TLSA records.
 
 A TLSA lookup will be done if either of the above options match
-and the host-lookup succeded using dnssec.
+and the host-lookup succeeded using dnssec.
 If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
 will be required for the host.  If it does not, the host will not
 be used; there is no fallback to non-DANE or non-TLS.
