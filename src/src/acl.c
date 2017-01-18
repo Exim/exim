@@ -1201,7 +1201,7 @@ an odd configuration - why didn't the SRV record have a weight of 1 instead?)
 Arguments:
   dnsa       the DNS answer block
   dnss       a DNS scan block for us to use
-  reset      option specifing what portion to scan, as described above
+  reset      option specifying what portion to scan, as described above
   target     the target hostname to use for matching RR names
 
 Returns:     CSA_OK             successfully authorized

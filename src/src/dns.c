@@ -326,7 +326,7 @@ The result is in static storage which must be copied if it is to be preserved.
 Arguments:
   dnsa      pointer to dns answer block
   dnss      pointer to dns scan block
-  reset     option specifing what portion to scan, as described above
+  reset     option specifying what portion to scan, as described above
 
 Returns:    next dns record, or NULL when no more
 */
