@@ -862,7 +862,7 @@ verify_flags = OCSP_NOVERIFY; /* check sigs, but not purpose */
 OCSP_NOSIGS OCSP_NOVERIFY OCSP_NOCHAIN OCSP_NOCHECKS OCSP_NOEXPLICIT
 OCSP_TRUSTOTHER OCSP_NOINTERN */
 
-/* This does a full verify on the OCSP proof before we load it for serviing
+/* This does a full verify on the OCSP proof before we load it for serving
 up; possibly overkill - just date-checks might be nice enough.
 
 OCSP_basic_verify takes a "store" arg, but does not
