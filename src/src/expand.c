@@ -3635,7 +3635,7 @@ if (*error == NULL)
     /* SIGFPE both on div/mod by zero and on INT_MIN / -1, which would give
      * a value of INT_MAX+1. Note that INT_MIN * -1 gives INT_MIN for me, which
      * is a bug somewhere in [gcc 4.2.1, FreeBSD, amd64].  In fact, -N*-M where
-     * -N*M is INT_MIN will yielf INT_MIN.
+     * -N*M is INT_MIN will yield INT_MIN.
      * Since we don't support floating point, this is somewhat simpler.
      * Ideally, we'd return an error, but since we overflow for all other
      * arithmetic, consistency suggests otherwise, but what's the correct value
