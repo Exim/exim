@@ -98,7 +98,7 @@ enclosed in <> characters, so a header such as
 
   From: @a,@b:c@d
 
-is syntactally invalid. Exim does not enforce this restriction.
+is syntactically invalid. Exim does not enforce this restriction.
 
 
 1.6 Local parts [3.4.1]
