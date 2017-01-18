@@ -171,7 +171,7 @@ So the admin can pass back a reason.
 mark david mcCreary
 
 "I use the syntax_errors_to feature to email a copy of the error message.
-It would be helpful to have the X-Failed-Receipients header in there,
+It would be helpful to have the X-Failed-Recipients header in there,
 identifying which address(es) are the problem, so that I don't have to
 parse the body of the email message to figure out which addresses."
 ------------------------------------------------------------------------------

@@ -28913,7 +28913,7 @@ This behaviour can be adjusted by appending the option &*defer=*&<&'value'&>
 to the control; the default value is &"spool"& and the alternate value
 &"pass"& copies an SMTP defer response from the target back to the initiator
 and does not queue the message.
-Note that this is independent of any receipient verify conditions in the ACL.
+Note that this is independent of any recipient verify conditions in the ACL.
 
 Delivery in this mode avoids the generation of a bounce mail to a
 (possibly faked)
