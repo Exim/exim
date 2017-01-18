@@ -268,7 +268,7 @@ Version 4.82
     ignored.
 
  7. New cutthrough routing feature.  Requested by a "control = cutthrough_delivery"
-    ACL modifier; works for single-recipient mails which are recieved on and
+    ACL modifier; works for single-recipient mails which are received on and
     deliverable via SMTP.  Using the connection made for a recipient verify,
     if requested before the verify, or a new one made for the purpose while
     the inbound connection is still active.  The bulk of the mail item is copied
@@ -281,7 +281,7 @@ Version 4.82
     The downside is that delays are under the control of the ultimate destination
     system not your own.
 
-    The Recieved-by: header on items delivered by cutthrough is generated
+    The Received-by: header on items delivered by cutthrough is generated
     early in reception rather than at the end; this will affect any timestamp
     included.  The log line showing delivery is recorded before that showing
     reception; it uses a new ">>" tag instead of "=>".
