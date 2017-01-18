@@ -1,5 +1,5 @@
 Change log file for Exim from version 4.21
--------------------------------------------
+------------------------------------------
 This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
@@ -23,6 +23,10 @@ JH/04 Bug 2004: fix CHUNKING in non-PIPELINEING mode.  Chunk data following
       close after a BDAT command line could be taken as a following command,
       giving a synch failure.  Fix by only checking for synch immediately
       before acknowledging the chunk.
+
+PP/02 GitHub PR 52: many spelling fixes, which include fixing parsing of
+      no_require_dnssec option and creation of _HAVE_TRANSPORT_APPEND_MAILDIR
+      macro.  Patches provided by Josh Soref.
 
 
 Exim version 4.88

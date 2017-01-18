@@ -852,7 +852,7 @@ due to conflicts with other common macros. */
 
 #ifdef TRANSPORT_APPENDFILE
 # ifdef SUPPORT_MAILDIR
-  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILDR", US"y", FALSE, TRUE);
+  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILDIR", US"y", FALSE, TRUE);
 # endif
 # ifdef SUPPORT_MAILSTORE
   macro_create(US"_HAVE_TRANSPORT_APPEND_MAILSTORE", US"y", FALSE, TRUE);
