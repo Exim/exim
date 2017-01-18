@@ -5099,7 +5099,7 @@ A0905: You can only do this in a round about way, using filter commands like
 
 ==>      headers add "New-Subject: SPAM: $h_subject:"
          headers remove subject
-         neaders add "Subject: $h_new-subject:"
+         headers add "Subject: $h_new-subject:"
          headers remove new-subject
 
        This trick works only in system filters, where the commands are obeyed
