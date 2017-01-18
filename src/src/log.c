@@ -704,7 +704,7 @@ If it is not, don't try to write to the log because permission will probably be
 denied.
 
 Avoid actually writing to the logs when exim is called with -bv or -bt to
-test an address, but take other actions, such as panicing.
+test an address, but take other actions, such as panicking.
 
 In Exim proper, the buffer for building the message is got at start-up, so that
 nothing gets done if it can't be got. However, some functions that are also
