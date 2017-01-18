@@ -624,7 +624,7 @@ return write_chunk(fd, tctx, pp->address, Ustrlen(pp->address));
 
 
 
-/* Add/remove/rewrite headers, and send them plus the empty-line sparator.
+/* Add/remove/rewrite headers, and send them plus the empty-line separator.
 
 Globals:
   header_list

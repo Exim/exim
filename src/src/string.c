@@ -974,13 +974,13 @@ return buffer;
 ************************************************/
 /* This function is used to build a list, returning
 an allocated null-terminated growable string. The
-given element has any embedded seperator characters
+given element has any embedded separator characters
 doubled.
 
 Arguments:
   list	points to the start of the list that is being built, or NULL
 	if this is a new list that has no contents yet
-  sep	list seperator character
+  sep	list separator character
   ele	new element to be appended to the list
 
 Returns:  pointer to the start of the list, changed if copied for expansion.
