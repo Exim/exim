@@ -554,7 +554,7 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
       break;
 
     default:
-      HDEBUG(D_auth) debug_printf("Unrecognised callback: %d\n", prop);
+      HDEBUG(D_auth) debug_printf("Unrecognized callback: %d\n", prop);
       cbrc = GSASL_NO_CALLBACK;
   }
 

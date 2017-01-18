@@ -3046,7 +3046,7 @@ switch(cond_type)
       boolvalue = TRUE;
     else
       {
-      expand_string_message = string_sprintf("unrecognised boolean "
+      expand_string_message = string_sprintf("unrecognized boolean "
        "value \"%s\"", t);
       return NULL;
       }
@@ -6469,7 +6469,7 @@ while (*s != 0)
 
 	if (m == HASH_BADTYPE)
 	  {
-	  expand_string_message = US"unrecognised sha3 variant";
+	  expand_string_message = US"unrecognized sha3 variant";
 	  goto EXPAND_FAILED;
 	  }
 

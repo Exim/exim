@@ -15655,7 +15655,7 @@ names lose the leading &"SSL_OP_"& and are lower-cased.
 Note that adjusting the options can have severe impact upon the security of
 SSL as used by Exim.  It is possible to disable safety checks and shoot
 yourself in the foot in various unpleasant ways.  This option should not be
-adjusted lightly.  An unrecognised item will be detected at startup, by
+adjusted lightly.  An unrecognized item will be detected at startup, by
 invoking Exim with the &%-bV%& flag.
 
 The option affects Exim operating both as a server and as a client.

@@ -388,7 +388,7 @@ while (sk_GENERAL_NAME_num(san) > 0)
       len = ASN1_STRING_length(namePart->d.rfc822Name);
       break;
     default:
-      continue;	/* ignore unrecognised types */
+      continue;	/* ignore unrecognized types */
     }
   if (ele[len])	/* not nul-terminated */
     ele = string_copyn(ele, len);

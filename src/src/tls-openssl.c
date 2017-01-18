@@ -2989,7 +2989,7 @@ for (s=option_spec; *s != '\0'; /**/)
   *end = keep_c;
   if (!item_parsed)
     {
-    DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"\n", s);
+    DEBUG(D_tls) debug_printf("openssl option setting unrecognized: \"%s\"\n", s);
     return FALSE;
     }
   DEBUG(D_tls) debug_printf("openssl option, %s from %lx: %lx (%s)\n",

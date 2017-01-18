@@ -107,7 +107,7 @@ switch(method)
   {
   default:
     log_write(0, LOG_MAIN|LOG_PANIC,
-      "Unrecognised socks auth method %d", method);
+      "Unrecognized socks auth method %d", method);
     return FAIL;
   case AUTH_NONE:
     return OK;

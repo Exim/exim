@@ -3019,7 +3019,7 @@ for (; cb != NULL; cb = cb->next)
 	    }
 	  else
 	    {
-	    *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
+	    *log_msgptr = string_sprintf("unrecognized DSCP value in \"control=%s\"", arg);
 	    return ERROR;
 	    }
 	  }
