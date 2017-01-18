@@ -464,7 +464,7 @@ Exim version 4.14
     was also null (empty passwords are permitted), there was an infinite loop.
     An empty user name is not now passed to PAM; authentication is forcibly
     failed instead. Also, if the end of the list of strings is reached, an
-    empty string is passed back just once; a subequent call for data provokes
+    empty string is passed back just once; a subsequent call for data provokes
     an error response.
 
 39. If a reverse DNS lookup yields an empty string, treat it as if the lookup
