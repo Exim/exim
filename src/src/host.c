@@ -3243,7 +3243,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else if (Ustrcmp(buffer, "request_dnssec")    == 0) request_dnssec = TRUE;
   else if (Ustrcmp(buffer, "no_request_dnssec") == 0) request_dnssec = FALSE;
   else if (Ustrcmp(buffer, "require_dnssec")    == 0) require_dnssec = TRUE;
-  else if (Ustrcmp(buffer, "no_reqiret_dnssec") == 0) require_dnssec = FALSE;
+  else if (Ustrcmp(buffer, "no_require_dnssec") == 0) require_dnssec = FALSE;
   else if (Ustrcmp(buffer, "test_harness") == 0)
     running_in_test_harness = !running_in_test_harness;
   else if (Ustrcmp(buffer, "ipv6") == 0) disable_ipv6 = !disable_ipv6;
