@@ -1177,7 +1177,7 @@ NIS or NFS whatever cause an incorrect refusal. It's a pity that getgrnam()
 doesn't have some kind of indication as to why it has failed.
 
 Arguments:
-  s           the group namd or textual form of the numerical gid
+  s           the group name or textual form of the numerical gid
   return_gid  return the gid via this address
 
 Returns:      TRUE if the group was found; FALSE otherwise
