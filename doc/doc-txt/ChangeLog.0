@@ -587,7 +587,7 @@ Exim version 4.14
 
 69. The "more" and "unseen" generic router options can now be expanded strings.
 
-70. The "once_repeat" option in the autoreply tranport is now an expanded
+70. The "once_repeat" option in the autoreply transport is now an expanded
     string.
 
 71. If maildir_format is set on an appendfile transport that is referenced from
