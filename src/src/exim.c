@@ -4436,7 +4436,7 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
 /* We used to set up here to skip reading the ACL section, on
  (msg_action_arg > 0 || (queue_interval == 0 && !daemon_listen)
 Now, since the intro of the ${acl } expansion, ACL definitions may be
-needed in transports so we lost the optimisation. */
+needed in transports so we lost the optimization. */
 
 readconf_rest();
 

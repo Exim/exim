@@ -3844,7 +3844,7 @@ Arguments:
   left           if not NULL, a pointer to the first character after the
                  expansion is placed here (typically used with ket_ends)
   skipping       TRUE for recursive calls when the value isn't actually going
-                 to be used (to allow for optimisation)
+                 to be used (to allow for optimization)
   honour_dollar  TRUE if $ is to be expanded,
                  FALSE if it's just another character
   resetok_p	 if not NULL, pointer to flag - write FALSE if unsafe to reset

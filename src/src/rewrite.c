@@ -394,7 +394,7 @@ Arguments:
                    set TRUE only for calls from the reception functions
   rewrite_rules  points to chain of rewrite rules
   existflags     bits indicating which headers there are rewrites for
-                 (just an optimisation)
+                 (just an optimization)
 
 Returns:         possibly rewritten address
 */

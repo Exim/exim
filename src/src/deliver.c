@@ -6701,7 +6701,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
     /* If the router has same_domain_copy_routing set, we are permitted to copy
     the routing for any other addresses with the same domain. This is an
-    optimisation to save repeated DNS lookups for "standard" remote domain
+    optimization to save repeated DNS lookups for "standard" remote domain
     routing. The option is settable only on routers that generate host lists.
     We play it very safe, and do the optimization only if the address is routed
     to a remote transport, there are no header changes, and the domain was not
