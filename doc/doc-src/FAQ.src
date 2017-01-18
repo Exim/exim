@@ -3452,7 +3452,7 @@ A0510: \^elspy^\ is a layer of glue code that enables you to write Python code
        to scan email messages at SMTP time. \^elspy^\ also includes a small
        Python library with common mail-scanning tools, including an interface
        to SpamAssassin and a simple but effective virus detector. You can
-       optain \^elspy^\ from \?http://elspy.sourceforge.net/?\.
+       obtain \^elspy^\ from \?http://elspy.sourceforge.net/?\.
 
 
 Q0511: Whenever my system filter uses a \mail\ command to send a message, I get
