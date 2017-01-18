@@ -5038,7 +5038,7 @@ A0806: The value of \$domain$\ is the actual domain that appears in the address.
        but it is important to some people - especially if by some unfortunate
        accident the lowercased word is something indecent.
 
-       You can trivally force lower casing by means of the \"${lc:"\ operator.
+       You can trivially force lower casing by means of the \"${lc:"\ operator.
        Instead of \"$domain"\ write \"${lc:$domain}"\.
 
 
