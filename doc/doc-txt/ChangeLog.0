@@ -33,7 +33,7 @@ Exim version 4.20
         "standard" one afterwards.
 
     (d) The setting of the SIGTERM handler while reading SMTP commands was done
-        somwhat untidily. I have re-arranged the code.
+        somewhat untidily. I have re-arranged the code.
 
  4. If the building process was interrupted during the MakeLinks script, a
     subsequent run of 'make' gave misleading errors. I've made it a bit more
