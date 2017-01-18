@@ -1262,7 +1262,7 @@ can do it there for the non-rcpt-verify case.  For this we keep an addresscount.
 
     /* End the SMTP conversation and close the connection. */
 
-    /* Cutthrough - on a successfull connect and recipient-verify with
+    /* Cutthrough - on a successful connect and recipient-verify with
     use-sender and we are 1st rcpt and have no cutthrough conn so far
     here is where we want to leave the conn open */
     if (  cutthrough.delivery
