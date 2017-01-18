@@ -3578,7 +3578,7 @@ PH/07 Added "fullpostmaster" verify option, which does a check to <postmaster>
 SC/01 Eximstats: added -xls and the ability to specify output files
      (patch written by Frank Heydlauf).
 
-SC/02 Eximstats: use FileHandles for outputing results.
+SC/02 Eximstats: use FileHandles for outputting results.
 
 SC/03 Eximstats: allow any combination of xls, txt, and html output.
 

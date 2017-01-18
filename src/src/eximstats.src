@@ -200,7 +200,7 @@
 #             Added -xls and the ability to specify output files.
 #
 # 2005-04-29  V1.38 Steve Campbell
-#             Use FileHandles for outputing results.
+#             Use FileHandles for outputting results.
 #             Allow any combination of xls, txt, and html output.
 #             Fixed display of large numbers with -nvr option
 #             Fixed merging of reports with empty tables.
