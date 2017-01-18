@@ -4480,7 +4480,7 @@ will specify a queue to operate on.
 For example:
 .code
 exim -bp -qGquarantine
-mailq -qGquarantime
+mailq -qGquarantine
 exim -qGoffpeak -Rf @special.domain.example
 .endd
 
