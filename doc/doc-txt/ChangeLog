@@ -1226,7 +1226,7 @@ TF/04 Improved ratelimit ACL condition.
       has clearer semantics. The /leaky, /strict, and /readonly update modes
       are mutually exclusive. The update mode is no longer included in the
       database key; it just determines when the database is updated. (This
-      means that when you upgrde Exim will forget old rate measurements.)
+      means that when you upgrade Exim will forget old rate measurements.)
 
       Exim now checks that the per_* options are used with an update mode that
       makes sense for the current ACL. For example, when Exim is processing a
