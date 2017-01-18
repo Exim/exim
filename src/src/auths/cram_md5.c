@@ -73,7 +73,7 @@ if (ob->client_secret != NULL)
 
 
 /*************************************************
-*      Peform the CRAM-MD5 algorithm             *
+*      Perform the CRAM-MD5 algorithm            *
 *************************************************/
 
 /* The CRAM-MD5 algorithm is described in RFC 2195. It computes
