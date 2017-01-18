@@ -3279,7 +3279,7 @@ for (; cb != NULL; cb = cb->next)
     #ifdef EXPERIMENTAL_DCC
     case ACLC_DCC:
       {
-      /* Seperate the regular expression and any optional parameters. */
+      /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
       uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the dcc backend. */
@@ -3585,7 +3585,7 @@ for (; cb != NULL; cb = cb->next)
     #ifdef WITH_CONTENT_SCAN
     case ACLC_SPAM:
       {
-      /* Seperate the regular expression and any optional parameters. */
+      /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
       uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
       /* Run the spam backend. */

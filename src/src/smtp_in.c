@@ -997,7 +997,7 @@ if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
   /* May 2014: haproxy combined the version and command into one byte to
      allow two full bytes for the length field in order to proxy SSL
      connections.  SSL Proxy is not supported in this version of Exim, but
-     must still seperate values here. */
+     must still separate values here. */
 
   if (ver != 0x02)
     {

@@ -879,7 +879,7 @@ function for getting a stack from a store.
 We do not free the stack since it could be needed a second time for
 SNI handling.
 
-Seperately we might try to replace using OCSP_basic_verify() - which seems to not
+Separately we might try to replace using OCSP_basic_verify() - which seems to not
 be a public interface into the OpenSSL library (there's no manual entry) - 
 But what with?  We also use OCSP_basic_verify in the client stapling callback.
 And there we NEED it; we must verify that status... unless the

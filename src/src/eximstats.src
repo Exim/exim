@@ -3676,7 +3676,7 @@ sub update_relayed {
 #
 #  add_to_totals(\%totals,\@keys,$values);
 #
-# Given a line of space seperated values, add them into the provided hash using @keys
+# Given a line of space separated values, add them into the provided hash using @keys
 # as the hash keys.
 #
 # If the value contains a '%', then the value is set rather than added. Otherwise, we
@@ -3706,7 +3706,7 @@ sub add_to_totals {
 #
 #  line_to_hash(\%hash,\@keys,$line);
 #
-# Given a line of space seperated values, set them into the provided hash
+# Given a line of space separated values, set them into the provided hash
 # using @keys as the hash keys.
 #######################################################################
 sub line_to_hash {
@@ -3814,7 +3814,7 @@ sub set_worksheet_line {
 #######################################################################
 # @rcpt_times = parse_time_list($string);
 #
-# Parse a comma seperated list of time values in seconds given by
+# Parse a comma separated list of time values in seconds given by
 # the user and fill an array.
 #
 # Return a default list if $string is undefined.

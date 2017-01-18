@@ -576,7 +576,7 @@ if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
   {
   if (ob->force_command)
     {
-    /* Enables expansion of $address_pipe into seperate arguments */
+    /* Enables expansion of $address_pipe into separate arguments */
     setflag(addr, af_force_command);
     cmd = ob->cmd;
     expand_arguments = TRUE;
