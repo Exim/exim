@@ -171,7 +171,7 @@ Cardinal * num_params;
   PopdownSearch(w, (XtPointer) tw->text.search, NULL);
 }
 
-/*	Function Name: PopdownSeach
+/*	Function Name: PopdownSearch
  *	Description: Pops down the search widget and resets it.
  *	Arguments: w - *** NOT USED ***.
  *                 closure - a pointer to the search structure.
@@ -448,7 +448,7 @@ char * ptr;
 
 /*	Function Name: DoSearch
  *	Description: Performs a search.
- *	Arguments: search - the serach structure.
+ *	Arguments: search - the search structure.
  *	Returns: TRUE if sucessful.
  */
 
