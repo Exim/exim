@@ -459,7 +459,7 @@ JH/25 Bug 466: Add RFC2322 support for MIME attachment filenames.
 HS/02 Bug 1575: exigrep falls back to autodetection of compressed
       files if ZCAT_COMMAND is not executable.
 
-JH/26 Bug 1539: Add timout/retry options on dnsdb lookups.
+JH/26 Bug 1539: Add timeout/retry options on dnsdb lookups.
 
 JH/27 Bug 286: Support SOA lookup in dnsdb lookups.
 
