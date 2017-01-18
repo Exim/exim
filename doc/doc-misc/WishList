@@ -989,7 +989,7 @@ a list defer.
 Peter A. Savitch
 
 OpenLDAP 2.1 is going to be more popular (2.1.9 is available with many
-bug fixes). TLS-enabled LDAP is an interesting and usefull thing.
+bug fixes). TLS-enabled LDAP is an interesting and useful thing.
 I can try to implement some things and send the patches, like with
 ldapi.
 
