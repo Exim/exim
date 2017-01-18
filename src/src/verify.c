@@ -385,7 +385,7 @@ else
   callout and save the result in the cache for next time, unless no_cache is set,
   or unless we have a previously cached negative random result. If we are to test
   with a random local part, ensure that such a local part is available. If not,
-  log the fact, but carry on without randomming. */
+  log the fact, but carry on without randomising. */
 
   if (options & vopt_callout_random && callout_random_local_part != NULL)
     if (!(random_local_part = expand_string(callout_random_local_part)))
