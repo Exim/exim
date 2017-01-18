@@ -1608,7 +1608,7 @@ how useful this would actually be in practice.
 
 (292) 13-Aug-04 M Overall timeout for message reception
 
-A client could in priciple keep an SMTP connection open for a very long time by
+A client could in principle keep an SMTP connection open for a very long time by
 trickling in data very slowly. Also, after message_size_limit is exceeded, Exim
 continues to swallow the data (though it does not write it to disk) until the
 end is reached. Again, the connection could be held open for a very long time.
