@@ -1331,7 +1331,7 @@ static void
 exim_usage(uschar *progname)
 {
 
-/* Handle specific program invocation varients */
+/* Handle specific program invocation variants */
 if (Ustrcmp(progname, US"-mailq") == 0)
   {
   fprintf(stderr,
