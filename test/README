@@ -416,7 +416,7 @@ after doing any further comparisons that may be necessary.
 
 Other circumstances give rise to other prompts. If a test generates output for
 which there is no saved data, the prompt (after a message stating which file is
-unexpectely not empty) is:
+unexpectedly not empty) is:
 
   Continue, Show, or Quit? [Q]
 
