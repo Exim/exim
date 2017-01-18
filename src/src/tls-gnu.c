@@ -1723,7 +1723,7 @@ Arguments:
 
 Returns:           OK on success
                    DEFER for errors before the start of the negotiation
-                   FAIL for errors during the negotation; the server can't
+                   FAIL for errors during the negotiation; the server can't
                      continue running.
 */
 
