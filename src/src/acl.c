@@ -4147,7 +4147,7 @@ HDEBUG(D_acl) debug_printf("end of %s: implicit DENY\n", acl_name);
 return FAIL;
 
 badquit:
-  *log_msgptr = string_sprintf("QUIT or not-QUIT teplevel ACL may not fail "
+  *log_msgptr = string_sprintf("QUIT or not-QUIT toplevel ACL may not fail "
     "('%s' verb used incorrectly)", verbs[acl->verb]);
   return ERROR;
 }
