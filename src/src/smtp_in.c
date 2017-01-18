@@ -4983,7 +4983,7 @@ while (done <= 0)
       /* and if TLS is already active, tls_server_start() should fail */
       }
 
-    /* There is nothing we value in the input buffer and if TLS is succesfully
+    /* There is nothing we value in the input buffer and if TLS is successfully
     negotiated, we won't use this buffer again; if TLS fails, we'll just read
     fresh content into it.  The buffer contains arbitrary content from an
     untrusted remote source; eg: NOOP <shellcode>\r\nSTARTTLS\r\n
