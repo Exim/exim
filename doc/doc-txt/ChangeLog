@@ -1311,7 +1311,7 @@ PP/11 match_* no longer expand right-hand-side by default.
       New compile-time build option, EXPAND_LISTMATCH_RHS.
       New expansion conditions, "inlist", "inlisti".
 
-PP/12 fix uninitialised greeting string from PP/03 (smtps client support).
+PP/12 fix uninitialized greeting string from PP/03 (smtps client support).
 
 PP/13 shell and compiler warnings fixes for RC1-RC4 changes.
 
