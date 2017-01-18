@@ -778,7 +778,7 @@ found, the entire script is skipped, and a comment is output.
   need_largefiles
 
 This command must be at the head of a script. If the Exim binary does not
-suppport large files (off_t is <= 4), the entire script is skipped, and a
+support large files (off_t is <= 4), the entire script is skipped, and a
 comment is output.
 
 

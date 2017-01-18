@@ -6,7 +6,7 @@ about experimental  features, all  of which  are unstable and
 liable to incompatible change.
 
 
-Brightmail AntiSpam (BMI) suppport
+Brightmail AntiSpam (BMI) support
 --------------------------------------------------------------
 
 Brightmail  AntiSpam  is  a  commercial  package.  Please  see
