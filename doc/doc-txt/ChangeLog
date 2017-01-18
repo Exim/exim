@@ -6369,7 +6369,7 @@ Exim version 4.21
 24. Ignore Sendmail's -Ooption=value command line item.
 
 25. When execve() failed while trying to run a command in a pipe transport,
-    Exim was returning EX_UNAVAILBLE (69) from the subprocess. However, this
+    Exim was returning EX_UNAVAILABLE (69) from the subprocess. However, this
     could be confused with a return value of 69 from the command itself. This
     has been changed to 127, the value the shell returns if it is asked to run
     a non-existent command. The wording for the related log line suggests a
