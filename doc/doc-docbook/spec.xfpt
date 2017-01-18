@@ -29922,7 +29922,7 @@ multiple DNS records. The inner dnsdb lookup produces a list of MX hosts
 and the outer dnsdb lookup finds the IP addresses for these hosts. The result
 of expanding the condition might be something like this:
 .code
-dnslists = sbl.spahmaus.org/<|192.168.2.3|192.168.5.6|...
+dnslists = sbl.spamhaus.org/<|192.168.2.3|192.168.5.6|...
 .endd
 Thus, this example checks whether or not the IP addresses of the sender
 domain's mail servers are on the Spamhaus black list.
