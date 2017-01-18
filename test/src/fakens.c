@@ -25,7 +25,7 @@ The arguments to the program are:
   the DNS record type that is being sought
 
 The output from the program is written to stdout. It is supposed to be in
-exactly the same format as a traditional namserver response (see RFC 1035) so
+exactly the same format as a traditional nameserver response (see RFC 1035) so
 that Exim can process it as normal. At present, no compression is used.
 Error messages are written to stderr.
 

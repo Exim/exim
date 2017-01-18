@@ -33,7 +33,7 @@ makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
 # bin/client          an SMTP script-driven client, without TLS support
 # bin/client-gnutls   ditto, with GnuTLS support
 # bin/client-ssl      ditto, with OpenSSL support
-# bin/fakens          a fake namserver
+# bin/fakens          a fake nameserver
 # bin/fd              output details of open file descriptors
 # bin/iefbr14         a program that does nothing and returns 0
 # bin/loaded          a dynamically loaded test module
