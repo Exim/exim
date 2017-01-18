@@ -16714,7 +16714,7 @@ example, instead of &"Administrative prohibition"&, it might give:
 .option smtputf8_advertise_hosts main "host list&!!" *
 .cindex "SMTPUTF8" "advertising"
 When Exim is built with support for internationalised mail names,
-the availability therof is advertised in
+the availability thereof is advertised in
 response to EHLO only to those client hosts that match this option. See
 chapter &<<CHAPi18n>>& for details of Exim's support for internationalisation.
 
