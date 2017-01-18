@@ -157,7 +157,7 @@ This dbm library can be called by Exim in one of two ways: via the ndbm
 compatibility interface, or via its own native interface. There are two
 advantages to doing the latter: (1) you don't run the risk of Exim's seeing the
 "wrong" version of the ndbm.h header, as described above, and (2) the
-performace is better. It is therefore recommended that you set USE_DB=yes in an
+performance is better. It is therefore recommended that you set USE_DB=yes in an
 appropriate Local/Makefile-xxx file. (If you are compiling for just one OS, it
 can go in Local/Makefile itself.)
 
