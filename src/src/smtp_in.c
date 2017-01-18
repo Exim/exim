@@ -408,7 +408,7 @@ log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
 /* This gets the next byte from the SMTP input buffer. If the buffer is empty,
 it flushes the output, and refills the buffer, with a timeout. The signal
 handler is set appropriately by the calling function. This function is not used
-after a connection has negotated itself into an TLS/SSL state.
+after a connection has negotiated itself into an TLS/SSL state.
 
 Arguments:  none
 Returns:    the next character or EOF

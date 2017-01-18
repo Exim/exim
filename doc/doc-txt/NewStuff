@@ -213,7 +213,7 @@ Version 4.83
 12. OCSP stapling is now supported by default.
 
 13. If built with the EXPERIMENTAL_DSN feature enabled, Exim will output
-    Delivery Status Notification messages in MIME format, and negociate
+    Delivery Status Notification messages in MIME format, and negotiate
     DSN features per RFC 3461.
 
 
@@ -274,7 +274,7 @@ Version 4.82
     the inbound connection is still active.  The bulk of the mail item is copied
     direct from the inbound socket to the outbound (as well as the spool file).
     When the source notifies the end of data, the data acceptance by the destination
-    is negociated before the acceptance is sent to the source.  If the destination
+    is negotiated before the acceptance is sent to the source.  If the destination
     does not accept the mail item, for example due to content-scanning, the item
     is not accepted from the source and therefore there is no need to generate
     a bounce mail.  This is of benefit when providing a secondary-MX service.
