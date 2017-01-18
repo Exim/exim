@@ -262,7 +262,7 @@ JH/19 Two additional event types: msg:rcpt:defer and msg:rcpt:host:defer. Both
       in transport context, after the attempt, and per-recipient. The latter type
       is per host attempted.  The event data is the error message, and the errno
       information encodes the lookup type (A vs. MX) used for the (first) host,
-      and the trailing two digits of the smtp 4xx reponse.
+      and the trailing two digits of the smtp 4xx response.
 
 GF/01 Bug 1715: Fix for race condition in exicyclog, where exim could attempt
       to write to mainlog (or rejectlog, paniclog) in the window between file
@@ -2026,7 +2026,7 @@ PH/19 Change 4.64/PH/36 introduced a bug: when address_retry_include_sender
 PH/20 Added hosts_avoid_pipelining to the smtp transport.
 
 PH/21 Long custom messages for fakedefer and fakereject are now split up
-      into multiline reponses in the same way that messages for "deny" and
+      into multiline responses in the same way that messages for "deny" and
       other ACL rejections are.
 
 PH/22 Applied Jori Hamalainen's speed-up changes and typo fixes to exigrep,

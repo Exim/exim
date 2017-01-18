@@ -701,7 +701,7 @@ Exim version 4.12
  4. Change 4.11/30 below overlooked the case when an address gets a 4xx
     response from a server. Because this isn't a host problem, the host does
     not get delayed, and it gets tried every time the address is OK'd for
-    routing, with the same reponse. However, if hosts_max_try is set, because
+    routing, with the same response. However, if hosts_max_try is set, because
     not all the hosts were tried, the address does not time out. I've changed
     things so that if there is a 4xx response to a RCPT command, the host in
     question does not count towards hosts_max_try if the message is older than
