@@ -232,112 +232,108 @@ $b
 # Now do the job. First remove the files that have "fallen off the bottom".
 # Look for both the compressed and uncompressed forms.
 
-if [ $keep -lt 10 ]; then rotation=0$keep; else rotation=$keep; fi;
+pad() {
+  if [ $1 -lt 10 ]; then
+    echo 0$1
+  else
+    echo $1
+  fi
+}
+deletefile() {
+  [ -f "$1" ] && rm "$1";
+}
+deleteorsuffix() {
+  deletefile "$1"
+  deletefile "$1.$suffix"
+}
+deletelog() {
+  deleteorsuffix "$1.$rotation"
+}
 
-if [ -f $mainlog.$rotation ]; then $rm $mainlog.$rotation; fi;
-if [ -f $mainlog.$rotation.$suffix ]; then $rm $mainlog.$rotation.$suffix; fi;
+rotation=`pad $keep`
 
-if [ -f $rejectlog.$rotation ]; then $rm $rejectlog.$rotation; fi;
-if [ -f $rejectlog.$rotation.$suffix ]; then $rm $rejectlog.$rotation.$suffix; fi;
-
-if [ -f $paniclog.$rotation ]; then $rm $paniclog.$rotation; fi;
-if [ -f $paniclog.$rotation.$suffix ]; then $rm $paniclog.$rotation.$suffix; fi;
+deletelog $mainlog
+deletelog $rejectlog
+deletelog $paniclog
 
 # Now rename all the previous old files by increasing their numbers by 1.
 # When the number is less than 10, insert a leading zero.
 
+twopad() {
+  if [ $keep -gt 99 ]; then
+    if   [ $1 -lt 10 ]; then echo 00$1
+    elif [ $old -lt 100 ]; then echo 0$1
+    fi
+  else
+    echo `pad $1`
+  fi
+}
+
+rotatefile() {
+  # input:
+  #  $1->current-file
+  #  $2->aged-file
+  # action: rotate $1 to $2 honoring $suffix if present for $1
+  if [ -f $1 ]; then
+    $mv $1 $2
+  elif [ -f $1.$suffix ]; then
+    $mv $1.$suffix $2.$suffix
+  fi
+}
+rotatelog() {
+  rotate $1.$aging $1.rotation
+}
+
 count=$keep
-if [ $count -lt 10 ]; then countt=0$count; else countt=$count; fi
+rotation=`pad $count`
 
 while [ $count -gt 1 ]; do
   old=`expr -- $count - 1`
-  if [ $keep -gt 99 ]; then
-    if   [ $old -lt 10 ]; then oldt=00$old
-    elif [ $old -lt 100 ]; then oldt=0$old
-    else oldt=$old
-    fi
-  else
-    if [ $old -lt 10 ]; then oldt=0$old; else oldt=$old; fi;
-  fi
-  if [ -f $mainlog.$oldt ]; then
-    $mv $mainlog.$oldt $mainlog.$countt
-  elif [ -f $mainlog.$oldt.$suffix ]; then
-    $mv $mainlog.$oldt.$suffix $mainlog.$countt.$suffix
-  fi
-  if [ -f $rejectlog.$oldt ]; then
-    $mv $rejectlog.$oldt $rejectlog.$countt
-  elif [ -f $rejectlog.$oldt.$suffix ]; then
-    $mv $rejectlog.$oldt.$suffix $rejectlog.$countt.$suffix
-  fi
-  if [ -f $paniclog.$oldt ]; then
-    $mv $paniclog.$oldt $paniclog.$countt
-  elif [ -f $paniclog.$oldt.$suffix ]; then
-    $mv $paniclog.$oldt.$suffix $paniclog.$countt.$suffix
-  fi
+  aging=`twopad $old`
+  rotatelog $mainlog
+  rotatelog $rejectlog
+  rotatelog $paniclog
   count=$old
-  countt=$oldt
+  rotation=$aging
 done
 
 # Now rename the current files as 01 or 001 if keeping more than 99
 
-if [ $keep -gt 99 ]; then first=001; else first=01; fi
+first=`twopad 1`
 
 # Grab our pid ro avoid race in file creation
 ourpid=$$
 
-if [ -f $mainlog ]; then
-  $mv $mainlog $mainlog.$first
-  $chown $user:$group $mainlog.$first
-  $touch $mainlog.$ourpid
-  $chown $user:$group $mainlog.$ourpid
-  $chmod 640 $mainlog.$ourpid
-  $mv $mainlog.$ourpid $mainlog
-fi
+agelog() {
+  if [ -f $1 ]; then
+    $mv $1 $1.$first
+    $chown $user:$group $1.$first
+    $touch $1.$ourpid
+    $chown $user:$group $1.$ourpid
+    $chmod 640 $1.$ourpid
+    $mv $1.$ourpid $1
+  fi
+}
 
-if [ -f $rejectlog ]; then
-  $mv $rejectlog $rejectlog.$first
-  $chown $user:$group $rejectlog.$first
-  $touch $rejectlog.$ourpid
-  $chown $user:$group $rejectlog.$ourpid
-  $chmod 640 $rejectlog.$ourpid
-  $mv $rejectlog.$ourpid $rejectlog
-fi
-
-if [ -f $paniclog ]; then
-  $mv $paniclog $paniclog.$first
-  $chown $user:$group $paniclog.$first
-  $touch $paniclog.$ourpid
-  $chown $user:$group $paniclog.$ourpid
-  $chmod 640 $paniclog.$ourpid
-  $mv $paniclog.$ourpid $paniclog
-fi
+agelog $mainlog
+agelog $rejectlog
+agelog $paniclog
 
 # Now scan the (0)02 and later files, compressing where necessary, and
 # ensuring that their owners and groups are correct.
 
+compresslog() {
+  [ -f $1.$rotation ] && $compress $mainlog.$1
+  [ -f $1.$rotation.$suffix ] && $chown $user:$group $1.$rotation.$suffix
+}
+
 count=2;
 
 while [ $count -le $keep ]; do
-  if [ $keep -gt 99 ]; then
-    if   [ $count -lt 10 ]; then countt=00$count
-    elif [ $count -lt 100 ]; then countt=0$count
-    else countt=$count
-    fi
-  else
-    if [ $count -lt 10 ]; then countt=0$count; else countt=$count; fi
-  fi
-  if [ -f $mainlog.$countt ]; then $compress $mainlog.$countt; fi
-  if [ -f $mainlog.$countt.$suffix ]; then
-    $chown $user:$group $mainlog.$countt.$suffix
-  fi
-  if [ -f $rejectlog.$countt ]; then $compress $rejectlog.$countt; fi
-  if [ -f $rejectlog.$countt.$suffix ]; then
-    $chown $user:$group $rejectlog.$countt.$suffix
-  fi
-  if [ -f $paniclog.$countt ]; then $compress $paniclog.$countt; fi
-  if [ -f $paniclog.$countt.$suffix ]; then
-    $chown $user:$group $paniclog.$countt.$suffix
-  fi
+  rotation=`twopad $count`
+  compresslog $mainlog
+  compresslog $rejectlog
+  compresslog $paniclog
 
   count=`expr -- $count + 1`
 done
