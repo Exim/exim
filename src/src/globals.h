@@ -298,7 +298,7 @@ extern uschar *csa_status;             /* Client SMTP Authorization result */
 
 typedef struct {
   unsigned     delivery:1;             /* When to attempt */
-  unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spoolling */
+  unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spooling */
   int          fd;                     /* Open connection */
   int          nrcpt;                  /* Count of addresses */
   uschar *     interface;              /* (address of) */
