@@ -4958,7 +4958,7 @@ while (done <= 0)
 
     /* RFC 2487 is not clear on when this command may be sent, though it
     does state that all information previously obtained from the client
-    must be discarded if a TLS session is started. It seems reasonble to
+    must be discarded if a TLS session is started. It seems reasonable to
     do an implied RSET when STARTTLS is received. */
 
     incomplete_transaction_log(US"STARTTLS");
