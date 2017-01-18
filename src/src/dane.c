@@ -35,7 +35,7 @@ static void dummy(int x) { dummy(x-1); }
 
 /* DNSSEC support is also required */
 # ifndef RES_USE_DNSSEC
-#  error DANE support requires that the DNS reolver library supports DNSSEC
+#  error DANE support requires that the DNS resolver library supports DNSSEC
 # endif
 
 # ifdef USE_GNUTLS
