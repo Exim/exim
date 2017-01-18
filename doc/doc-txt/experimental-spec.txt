@@ -960,7 +960,7 @@ The reporting MTA detailed diagnostic.
 Example:
   X-Exim-Diagnostic: X-str; SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
 Rationale:
-  This string somtimes give extra information over the
+  This string sometimes give extra information over the
   existing (already available) Diagnostic-Code field.
 
 
