@@ -614,7 +614,7 @@ use vars qw(%ham_count_by_ip %spam_count_by_ip);
 use vars qw(%rejected_count_by_ip %rejected_count_by_reason);
 use vars qw(%temporarily_rejected_count_by_ip %temporarily_rejected_count_by_reason);
 
-#For use in Speadsheed::WriteExcel
+#For use in Spreadsheet::WriteExcel
 use vars qw($workbook $ws_global $ws_relayed $ws_errors);
 use vars qw($row $col $row_hist $col_hist);
 use vars qw($run_hist);
@@ -758,7 +758,7 @@ sub volume_rounded {
   else {
     # We don't want any rounding to be done.
     # and we don't need broken formatted output which on one hand avoids numbers from
-    # being interpreted as string by Spreadsheed Calculators, on the other hand
+    # being interpreted as string by Spreadsheet Calculators, on the other hand
     # breaks if more than 4 digits! -> flexible length instead of fixed length
     # Format the return value at the output routine! -fh
     #$rounded = sprintf("%d", ($g * $gig) + $x);
