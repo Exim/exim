@@ -6249,7 +6249,7 @@ Exim version 4.22
 
  7. Compiler warning on Linux for the second argument of iconv(), which doesn't
     seem to have the "const" qualifier which it has on other OS. I've
-    parameterised it.
+    parameterized it.
 
  8. Change 4.21/2 was too strict. It is only if there are two authenticators
     *of the same type* (client or server) with the same public name that an
