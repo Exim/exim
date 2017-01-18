@@ -661,7 +661,7 @@ for (count = 0; count < connection_count; count++)
 	  n = dlen < sizeof(buffer) ? dlen : sizeof(buffer);
 	  if ((n = read(dup_accept_socket, CS buffer, n)) == 0)
 	    {
-	    printf("Unxpected EOF read from client\n");
+	    printf("Unexpected EOF read from client\n");
 	    s = s->next;
 	    goto END_OFF;
 	    }
@@ -671,7 +671,7 @@ for (count = 0; count < connection_count; count++)
 	while (dlen-- > 0)
 	  if (fgetc(in) == EOF)
 	    {
-	    printf("Unxpected EOF read from client\n");
+	    printf("Unexpected EOF read from client\n");
 	    s = s->next;
 	    goto END_OFF;
 	    }

@@ -213,7 +213,7 @@ Version 4.83
 12. OCSP stapling is now supported by default.
 
 13. If built with the EXPERIMENTAL_DSN feature enabled, Exim will output
-    Delivery Status Notification messages in MIME format, and negociate
+    Delivery Status Notification messages in MIME format, and negotiate
     DSN features per RFC 3461.
 
 
@@ -268,20 +268,20 @@ Version 4.82
     ignored.
 
  7. New cutthrough routing feature.  Requested by a "control = cutthrough_delivery"
-    ACL modifier; works for single-recipient mails which are recieved on and
+    ACL modifier; works for single-recipient mails which are received on and
     deliverable via SMTP.  Using the connection made for a recipient verify,
     if requested before the verify, or a new one made for the purpose while
     the inbound connection is still active.  The bulk of the mail item is copied
     direct from the inbound socket to the outbound (as well as the spool file).
     When the source notifies the end of data, the data acceptance by the destination
-    is negociated before the acceptance is sent to the source.  If the destination
+    is negotiated before the acceptance is sent to the source.  If the destination
     does not accept the mail item, for example due to content-scanning, the item
     is not accepted from the source and therefore there is no need to generate
     a bounce mail.  This is of benefit when providing a secondary-MX service.
     The downside is that delays are under the control of the ultimate destination
     system not your own.
 
-    The Recieved-by: header on items delivered by cutthrough is generated
+    The Received-by: header on items delivered by cutthrough is generated
     early in reception rather than at the end; this will affect any timestamp
     included.  The log line showing delivery is recorded before that showing
     reception; it uses a new ">>" tag instead of "=>".
@@ -366,7 +366,7 @@ Version 4.82
     provided to the authentication method which failed.  It is available
     for use in subsequent ACL processing (typically quit or notquit ACLs).
 
-23. New ACL modifer "udpsend" can construct a UDP packet to send to a given
+23. New ACL modifier "udpsend" can construct a UDP packet to send to a given
     UDP host and port.
 
 24. New ${hexquote:..string..} expansion operator converts non-printable

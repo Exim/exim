@@ -490,7 +490,7 @@ oclose(cda);
 
 ORACLE_EXIT_NO_VALS:
 
-/* Non-NULL result indicates a sucessful result */
+/* Non-NULL result indicates a successful result */
 
 if (result != NULL)
   {

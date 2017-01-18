@@ -7,7 +7,7 @@ use Getopt::Long;
 
 # For now we can't rely on a perl >= 5.14 on
 # the build sites, thus we throw away all unicode
-# awarness and do the matching byte by byte
+# awareness and do the matching byte by byte
 binmode STDIN;
 binmode STDOUT;
 

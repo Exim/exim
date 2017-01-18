@@ -757,7 +757,7 @@ else if (partial >= 0)
   }
 
 /* If nothing has been matched, but the option to look for "*@" is set, try
-replacing everthing to the left of @ by *. After a match, the wild part
+replacing everything to the left of @ by *. After a match, the wild part
 is set to the string to the left of the @. */
 
 if (yield == NULL && (starflags & SEARCH_STARAT) != 0)

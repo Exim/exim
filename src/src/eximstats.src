@@ -73,7 +73,7 @@
 # 2001-10-21  Removed -domain flag and added -bydomain, -byhost, and -byemail.
 #             We now generate our main parsing subroutine as an eval statement
 #             which improves performance dramatically when not all the results
-#             are required. We also cache the last timestamp to time convertion.
+#             are required. We also cache the last timestamp to time conversion.
 #
 #             NOTE: 'Top 50 destinations by (message count|volume)' lines are
 #             now 'Top N (host|email|domain) destinations by (message count|volume)'
@@ -142,7 +142,7 @@
 #             in HTML output. Also added code to convert them back with -merge.
 #             Fixed timestamp offsets to convert to seconds rather than minutes.
 #             Updated -merge to work with output files using timezones.
-#             Added cacheing to speed up the calculation of timezone offsets.
+#             Added caching to speed up the calculation of timezone offsets.
 #
 # 2003-02-07  V1.25 Steve Campbell
 #             Optimised the usage of mktime() in the seconds subroutine.
@@ -162,7 +162,7 @@
 #             Bernard Massot.
 #
 # 2003-06-03  V1.28 John Newman
-#             Added in the ability to skip over the parsing and evaulation of
+#             Added in the ability to skip over the parsing and evaluation of
 #             specific transports as passed to eximstats via the new "-nt/.../"
 #             command line argument.  This new switch allows the viewing of
 #             not more accurate statistics but more applicable statistics when
@@ -200,7 +200,7 @@
 #             Added -xls and the ability to specify output files.
 #
 # 2005-04-29  V1.38 Steve Campbell
-#             Use FileHandles for outputing results.
+#             Use FileHandles for outputting results.
 #             Allow any combination of xls, txt, and html output.
 #             Fixed display of large numbers with -nvr option
 #             Fixed merging of reports with empty tables.
@@ -598,9 +598,9 @@ $WEEK   =  7 * $DAY;
 use vars qw($total_received_data  $total_received_data_gigs  $total_received_count);
 use vars qw($total_delivered_data $total_delivered_data_gigs $total_delivered_messages $total_delivered_addresses);
 use vars qw(%timestamp2time);                   #Hash of timestamp => time.
-use vars qw($last_timestamp $last_time);        #The last time convertion done.
-use vars qw($last_date $date_seconds);          #The last date convertion done.
-use vars qw($last_offset $offset_seconds);      #The last time offset convertion done.
+use vars qw($last_timestamp $last_time);        #The last time conversion done.
+use vars qw($last_date $date_seconds);          #The last date conversion done.
+use vars qw($last_offset $offset_seconds);      #The last time offset conversion done.
 use vars qw($localtime_offset);
 use vars qw($i);                                #General loop counter.
 use vars qw($debug);                            #Debug mode?
@@ -614,7 +614,7 @@ use vars qw(%ham_count_by_ip %spam_count_by_ip);
 use vars qw(%rejected_count_by_ip %rejected_count_by_reason);
 use vars qw(%temporarily_rejected_count_by_ip %temporarily_rejected_count_by_reason);
 
-#For use in Speadsheed::WriteExcel
+#For use in Spreadsheet::WriteExcel
 use vars qw($workbook $ws_global $ws_relayed $ws_errors);
 use vars qw($row $col $row_hist $col_hist);
 use vars qw($run_hist);
@@ -758,7 +758,7 @@ sub volume_rounded {
   else {
     # We don't want any rounding to be done.
     # and we don't need broken formatted output which on one hand avoids numbers from
-    # being interpreted as string by Spreadsheed Calculators, on the other hand
+    # being interpreted as string by Spreadsheet Calculators, on the other hand
     # breaks if more than 4 digits! -> flexible length instead of fixed length
     # Format the return value at the output routine! -fh
     #$rounded = sprintf("%d", ($g * $gig) + $x);
@@ -928,7 +928,7 @@ sub seconds {
   }
   my $time = $date_seconds + ($5 * 3600) + ($6 * 60) + $7;
 
-  # SC. Use cacheing. Also note we want seconds not minutes.
+  # SC. Use caching. Also note we want seconds not minutes.
   #my($this_offset) = ($10 * 60 + $11) * ($9 . "1") if defined $8;
   if (defined $8 && ($8 ne $last_offset)) {
     $last_offset = $8;
@@ -1650,7 +1650,7 @@ sub top_n_sort {
 
     # Create a dummy hash entry for the key if required.
     # Note that setting the dummy_hash value sets it for both href2 &
-    # href3. Also note that currently we are guarenteed to have a real
+    # href3. Also note that currently we are guaranteed to have a real
     # value for href3 if a real value for href2 exists so don't need to
     # test for it as well.
     $dummy_hash{$key} = 0 unless exists $href2->{$key};
@@ -2729,7 +2729,7 @@ sub print_grandtotals {
       if ($messages > 0) {
         @content = ($total_aref->[0], '', $messages, '');
 
-        #Count the number of distict IPs for the Hosts column.
+        #Count the number of distinct IPs for the Hosts column.
         push(@content,scalar(keys %{$total_aref->[1]})) if $do_sender{Host};
 
         #These rows do not have entries for the following columns (if specified)
@@ -3676,7 +3676,7 @@ sub update_relayed {
 #
 #  add_to_totals(\%totals,\@keys,$values);
 #
-# Given a line of space seperated values, add them into the provided hash using @keys
+# Given a line of space separated values, add them into the provided hash using @keys
 # as the hash keys.
 #
 # If the value contains a '%', then the value is set rather than added. Otherwise, we
@@ -3706,7 +3706,7 @@ sub add_to_totals {
 #
 #  line_to_hash(\%hash,\@keys,$line);
 #
-# Given a line of space seperated values, set them into the provided hash
+# Given a line of space separated values, set them into the provided hash
 # using @keys as the hash keys.
 #######################################################################
 sub line_to_hash {
@@ -3772,7 +3772,7 @@ sub html2txt {
 # until we've got all of the argument.
 #
 # This isn't perfect as all white space gets reduced to one space,
-# but it's as good as we can get! If it's esential that spacing
+# but it's as good as we can get! If it's essential that spacing
 # be preserved precisely, then you get that by not using shell
 # variables.
 #######################################################################
@@ -3814,7 +3814,7 @@ sub set_worksheet_line {
 #######################################################################
 # @rcpt_times = parse_time_list($string);
 #
-# Parse a comma seperated list of time values in seconds given by
+# Parse a comma separated list of time values in seconds given by
 # the user and fill an array.
 #
 # Return a default list if $string is undefined.

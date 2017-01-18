@@ -129,7 +129,7 @@ dkim_signatures = NULL;
 
 /* If we have arrived here with dkim_collect_input == FALSE, it
 means there was a processing error somewhere along the way.
-Log the incident and disable futher verification. */
+Log the incident and disable further verification. */
 
 if (!dkim_collect_input)
   {

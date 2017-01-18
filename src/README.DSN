@@ -113,7 +113,7 @@ ChangeLog
 
                 *) dsn_process switch removed
                   *) every router "processes" DSN by default
-                  *) there is no possibilty to "gag" DSN anymore since this violates RFC
+                  *) there is no possibility to "gag" DSN anymore since this violates RFC
                 *) dsn_lasthop switch added for routers
                   *) if dsn_lasthop is set by a router it is handled as relaying to a
                      non DSN aware relay. success mails are sent if Exim successfully 

@@ -23,7 +23,7 @@ exim.8:       spec.xml x2man
 
 ########################################################################
 
-# .PHONY doesn't work here, because it forces a rebuild of all dependend
+# .PHONY doesn't work here, because it forces a rebuild of all dependent
 # targets, always. It sets the internal timestamp of its target to
 # now().
 # But it may happen that local_params does not change

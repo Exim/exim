@@ -190,7 +190,7 @@ void cygwin_premain2(int argc, char ** argv, struct per_process * ptr)
        and to avoid exec that cause loss of privilege
      If not privileged and unable to chown,
        we set the exim uid to our uid.
-     If unprivileged and /var/spool/exim is writable and not runing as listening daemon, 
+     If unprivileged and /var/spool/exim is writable and not running as listening daemon, 
        we fake all subsequent setuid. */
 
   /* Get the system and admins uid from their sids */

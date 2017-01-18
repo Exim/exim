@@ -38,7 +38,7 @@ address can appear in the tables drtables.c. */
 int auth_cram_md5_options_count =
   sizeof(auth_cram_md5_options)/sizeof(optionlist);
 
-/* Default private options block for the contidion authentication method. */
+/* Default private options block for the condition authentication method. */
 
 auth_cram_md5_options_block auth_cram_md5_option_defaults = {
   NULL,             /* server_secret */
@@ -73,7 +73,7 @@ if (ob->client_secret != NULL)
 
 
 /*************************************************
-*      Peform the CRAM-MD5 algorithm             *
+*      Perform the CRAM-MD5 algorithm            *
 *************************************************/
 
 /* The CRAM-MD5 algorithm is described in RFC 2195. It computes
@@ -261,7 +261,7 @@ int i;
 uschar digest[16];
 
 /* If expansion of either the secret or the user name failed, return CANCELLED
-or ERROR, as approriate. */
+or ERROR, as appropriate. */
 
 if (!secret || !name)
   {

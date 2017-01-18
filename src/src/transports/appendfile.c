@@ -1146,7 +1146,7 @@ directory name) is given, that is, when appending to a single file:
 
      Open with O_WRONLY + O_EXCL + O_CREAT with configured mode, unless we know
      this is via a symbolic link (only possible if allow_symlinks is set), in
-     which case don't use O_EXCL, as it dosn't work.
+     which case don't use O_EXCL, as it doesn't work.
 
      If open fails because the file already exists, go to (6f). To avoid
      looping for ever in a situation where the file is continuously being
@@ -3128,7 +3128,7 @@ if (yield != OK)
   fcntl() call (BSDI & FreeBSD do not). */
 
   if (!isdirectory && ftruncate(fd, saved_size))
-    DEBUG(D_transport) debug_printf("Error restting file size\n");
+    DEBUG(D_transport) debug_printf("Error resetting file size\n");
   }
 
 /* Handle successful writing - we want the modification time to be now for

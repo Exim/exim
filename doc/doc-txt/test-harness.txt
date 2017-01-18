@@ -103,7 +103,7 @@ An attempt to look up a PTR record for 99.99.99.99 or an IP address for a host
 whose name ends with .test.again.dns always yields a "try again" error.
 
 A fake function is called instead of gethostbyname(). It recognizes the name
-"manyhome.test.ex" and generates a humungous number of IP addresses. It also
+"manyhome.test.ex" and generates a humongous number of IP addresses. It also
 recognizes an unqualified "localhost" and forces it to the appropriate loopback
 address (IPv4 or IPv6, as required). IP addresses are treated as literals. For
 other names, it does a DNS lookup (which of course actually calls the fake

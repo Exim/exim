@@ -326,7 +326,7 @@ The result is in static storage which must be copied if it is to be preserved.
 Arguments:
   dnsa      pointer to dns answer block
   dnss      pointer to dns scan block
-  reset     option specifing what portion to scan, as described above
+  reset     option specifying what portion to scan, as described above
 
 Returns:    next dns record, or NULL when no more
 */
@@ -451,9 +451,9 @@ null_return:
 
 
 /* Extract the AUTHORITY information from the answer. If the answer isn't
-authoritive (AA not set), we do not extract anything.
+authoritative (AA not set), we do not extract anything.
 
-The AUTHORITIVE section contains NS records if the name in question was found,
+The AUTHORITATIVE section contains NS records if the name in question was found,
 it contains a SOA record otherwise. (This is just from experience and some
 tests, is there some spec?)
 
@@ -486,7 +486,7 @@ return NULL;
 
 /* We do not perform DNSSEC work ourselves; if the administrator has installed
 a verifying resolver which sets AD as appropriate, though, we'll use that.
-(AD = Authentic Data, AA = Authoritive Answer)
+(AD = Authentic Data, AA = Authoritative Answer)
 
 Argument:   pointer to dns answer block
 Returns:    bool indicating presence of AD bit
@@ -506,7 +506,7 @@ const uschar * trusted;
 
 if (h->ad) return TRUE;
 
-/* If the resolver we ask is authoritive for the domain in question, it
+/* If the resolver we ask is authoritative for the domain in question, it
 * may not set the AD but the AA bit. If we explicitly trust
 * the resolver for that domain (via a domainlist in dns_trust_aa),
 * we return TRUE to indicate a secure answer.
@@ -542,7 +542,7 @@ h->aa = h->ad = 0;
 /************************************************
  *	Check whether the AA bit is set		*
  *	We need this to warn if we requested AD *
- *	from an authoritive server		*
+ *	from an authoritative server		*
  ************************************************/
 
 BOOL
@@ -626,7 +626,7 @@ return rc;
 
 /* Call the resolver to look up the given domain name, using the given type,
 and check the result. The error code TRY_AGAIN is documented as meaning "non-
-Authoritive Host not found, or SERVERFAIL". Sometimes there are badly set
+Authoritative Host not found, or SERVERFAIL". Sometimes there are badly set
 up nameservers that produce this error continually, so there is the option of
 providing a list of domains for which this is treated as a non-existent
 host.
@@ -694,7 +694,7 @@ if ((previous = tree_search(tree_dns_fails, node_name)))
   }
 #endif
 
-/* If configured, check the hygene of the name passed to lookup. Otherwise,
+/* If configured, check the hygiene of the name passed to lookup. Otherwise,
 although DNS lookups may give REFUSED at the lower level, some resolvers
 turn this into TRY_AGAIN, which is silly. Give a NOMATCH return, since such
 domains cannot be in the DNS. The check is now done by a regular expression;

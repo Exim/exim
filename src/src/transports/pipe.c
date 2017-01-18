@@ -576,7 +576,7 @@ if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
   {
   if (ob->force_command)
     {
-    /* Enables expansion of $address_pipe into seperate arguments */
+    /* Enables expansion of $address_pipe into separate arguments */
     setflag(addr, af_force_command);
     cmd = ob->cmd;
     expand_arguments = TRUE;
@@ -1024,7 +1024,7 @@ if ((rc = child_close(pid, timeout)) != 0)
   the command that was given is a non-existent path). By default this is
   treated as just another failure, but if freeze_exec_fail is set, the reaction
   is to freeze the message rather than bounce the address. Exim used to signal
-  this failure with EX_UNAVAILABLE, which is definined in many systems as
+  this failure with EX_UNAVAILABLE, which is defined in many systems as
 
       #define EX_UNAVAILABLE  69
 
@@ -1062,7 +1062,7 @@ if ((rc = child_close(pid, timeout)) != 0)
       uschar *ss;
       int size, ptr, i;
 
-      /* If temp_errors is "*" all codes are temporary. Initializion checks
+      /* If temp_errors is "*" all codes are temporary. Initialization checks
       that it's either "*" or a list of numbers. If not "*", scan the list of
       temporary failure codes; if any match, the result is DEFER. */
 

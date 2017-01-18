@@ -43,7 +43,7 @@ writeable memory between such processes.
 
      A means of communicating this is by use of a file with a mutually
 agreed upon name.  A binary semaphore can be passed by means of the
-existance or non-existance of that file, provided that there is an
+existence or non-existence of that file, provided that there is an
 atomic means to create a file if and only if that file does not exist.
 In C terms:
 
@@ -81,7 +81,7 @@ locks held by that process when it terminates.
 exclusive (provided there are no other shared users of the lock) and
 to downgrade an exclusive lock to shared.  It is important that at no
 time is the lock ever removed; a process upgrading to exclusive must
-not relenquish its shared lock.
+not relinquish its shared lock.
 
      Most commonly, the resources being locked are files.  Shared
 locks are particularly important with files; multiple simultaneous

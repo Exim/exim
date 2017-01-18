@@ -26,7 +26,7 @@ LIBS_EXIM +=../Local/exim_res.o
 
 
 ##################################################
-# The following is normaly set in local/Makefile.
+# The following is normally set in local/Makefile.
 # Makefile.cygwin provides defaults with which the
 # precompiled version is built
 ##################################################

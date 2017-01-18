@@ -275,7 +275,7 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
     /* Some auth mechanisms can ensure that both sides are talking withing the
     same security context; for TLS, this means that even if a bad certificate
     has been accepted, they remain MitM-proof because both sides must be within
-    the same negotiated session; if someone is terminating one sesson and
+    the same negotiated session; if someone is terminating one session and
     proxying data on within a second, authentication will fail.
 
     We might not have this available, depending upon TLS implementation,
@@ -554,7 +554,7 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
       break;
 
     default:
-      HDEBUG(D_auth) debug_printf("Unrecognised callback: %d\n", prop);
+      HDEBUG(D_auth) debug_printf("Unrecognized callback: %d\n", prop);
       cbrc = GSASL_NO_CALLBACK;
   }
 

@@ -187,7 +187,7 @@ The start of the last potential comment position is remembered to
 make it possible to ignore comments at the end of compound items.
 
 Argument: current character pointer
-Regurns:  new character pointer
+Returns:  new character pointer
 */
 
 static uschar *
@@ -2089,7 +2089,7 @@ int main(void)
 {
 int start, end, domain;
 uschar buffer[1024];
-uschar outbuff[1024];
+uschar outbuf[1024];
 
 big_buffer = store_malloc(big_buffer_size);
 
@@ -2102,8 +2102,8 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
   {
   buffer[Ustrlen(buffer)-1] = 0;
   if (buffer[0] == 0) break;
-  printf("%s\n", CS parse_fix_phrase(buffer, Ustrlen(buffer), outbuff,
-    sizeof(outbuff)));
+  printf("%s\n", CS parse_fix_phrase(buffer, Ustrlen(buffer), outbuf,
+    sizeof(outbuf)));
   }
 
 printf("Testing parse_extract_address without group syntax and without UTF-8\n");

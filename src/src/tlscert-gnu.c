@@ -330,7 +330,7 @@ for(index = 0;; index++)
     case GNUTLS_SAN_DNSNAME:    tag = US"DNS";  break;
     case GNUTLS_SAN_URI:        tag = US"URI";  break;
     case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
-    default: continue;        /* ignore unrecognised types */
+    default: continue;        /* ignore unrecognized types */
     }
   list = string_append_listele(list, sep,
           match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);

@@ -426,7 +426,7 @@ always leaves enough room for a terminating zero. */
     if (stmth != NULL)
         isc_dsql_free_statement(status, &stmth, DSQL_drop);
 
-/* Non-NULL result indicates a sucessful result */
+/* Non-NULL result indicates a successful result */
 
     if (result != NULL) {
         *resultptr = result;

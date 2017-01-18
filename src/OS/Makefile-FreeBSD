@@ -11,7 +11,7 @@ HAVE_SA_LEN=YES
 # crypt() is in a separate library
 LIBS=-lcrypt -lm -lutil
 
-# Dynamicly loaded modules need to be built with -fPIC
+# Dynamically loaded modules need to be built with -fPIC
 CFLAGS_DYNAMIC=-shared -rdynamic -fPIC
 
 # FreeBSD always ships with Berkeley DB

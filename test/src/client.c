@@ -566,7 +566,7 @@ SSL_CTX* ctx;
 SSL*     ssl;
 #endif
 
-unsigned char outbuffer[10240];
+unsigned char outbufer[10240];
 unsigned char inbuffer[10240];
 unsigned char *inptr = inbuffer;
 
@@ -888,25 +888,25 @@ if (tls_on_connect)
   }
 #endif
 
-while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
+while (fgets(CS outbufer, sizeof(outbufer), stdin) != NULL)
   {
-  int n = (int)strlen(CS outbuffer);
+  int n = (int)strlen(CS outbufer);
   int crlf = 1;
 
   /* Strip trailing newline */
-  if (outbuffer[n-1] == '\n') outbuffer[--n] = 0;
+  if (outbufer[n-1] == '\n') outbufer[--n] = 0;
 
   /* Expect incoming */
 
-  if (  strncmp(CS outbuffer, "???", 3) == 0
-     && (outbuffer[3] == ' ' || outbuffer[3] == '*')
+  if (  strncmp(CS outbufer, "???", 3) == 0
+     && (outbufer[3] == ' ' || outbufer[3] == '*')
      )
     {
     unsigned char *lineptr;
-    unsigned exp_eof = outbuffer[3] == '*';
+    unsigned exp_eof = outbufer[3] == '*';
 
-    printf("%s\n", outbuffer);
-    n = unescape_buf(outbuffer, n);
+    printf("%s\n", outbufer);
+    n = unescape_buf(outbufer, n);
 
     if (*inptr == 0)   /* Refill input buffer */
       {
@@ -965,7 +965,7 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
       }
 
     printf("<<< %s\n", lineptr);
-    if (strncmp(CS lineptr, CS outbuffer + 4, n - 4) != 0)
+    if (strncmp(CS lineptr, CS outbufer + 4, n - 4) != 0)
       {
       printf("\n******** Input mismatch ********\n");
       exit(79);
@@ -1055,19 +1055,19 @@ int rc;
 
   /* Wait for a bit before proceeding */
 
-  else if (strncmp(CS outbuffer, "+++ ", 4) == 0)
+  else if (strncmp(CS outbufer, "+++ ", 4) == 0)
     {
-    printf("%s\n", outbuffer);
-    sleep(atoi(CS outbuffer + 4));
+    printf("%s\n", outbufer);
+    sleep(atoi(CS outbufer + 4));
     }
 
   /* Send outgoing, but barf if unconsumed incoming */
 
   else
     {
-    unsigned char * out = outbuffer;
+    unsigned char * out = outbufer;
 
-    if (strncmp(CS outbuffer, ">>> ", 4) == 0)
+    if (strncmp(CS outbufer, ">>> ", 4) == 0)
       {
       crlf = 0;
       out += 4;

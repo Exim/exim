@@ -378,7 +378,7 @@ if (close(fd) < 0)
 #endif  /* NEED_SYNC_DIRECTORY */
 
 /* Return the number of characters in the headers, which is the file size, less
-the prelimary stuff, less the additional count fields on the headers. */
+the preliminary stuff, less the additional count fields on the headers. */
 
 DEBUG(D_receive) debug_printf("Size of headers = %d\n",
   (int)(statbuf.st_size - size_correction));

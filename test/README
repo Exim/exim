@@ -269,7 +269,7 @@ There are some options for the ./runtest script itself:
             This allows "overrides" for the test results. It's intended
             use is to deal with distro specific differences in the test
             output. The default flavour is "FOO" if autodetection fails.
-            (Autodection is possible for known flavours only. Known
+            (Autodetection is possible for known flavours only. Known
             flavours are computed after file name extensions in stdout/*
             and stderr/*.)
 
@@ -416,7 +416,7 @@ after doing any further comparisons that may be necessary.
 
 Other circumstances give rise to other prompts. If a test generates output for
 which there is no saved data, the prompt (after a message stating which file is
-unexpectely not empty) is:
+unexpectedly not empty) is:
 
   Continue, Show, or Quit? [Q]
 
@@ -685,7 +685,7 @@ just one command:
 
 The expected return code in this case is 1, and the data lines are passed to
 Exim on its standard input. Both the command line and the data lines have the
-standard substitions applied to them. Thus, HOSTNAME in the example above will
+standard substitutions applied to them. Thus, HOSTNAME in the example above will
 be replaced by the local host's name. Long commands can be continued over
 several lines by using \ as a continuation character. This does *not* apply to
 data lines.
@@ -778,7 +778,7 @@ found, the entire script is skipped, and a comment is output.
   need_largefiles
 
 This command must be at the head of a script. If the Exim binary does not
-suppport large files (off_t is <= 4), the entire script is skipped, and a
+support large files (off_t is <= 4), the entire script is skipped, and a
 comment is output.
 
 
@@ -884,7 +884,7 @@ When OpenSSL is available on the host, an alternative version of the client
 program is compiled, one that supports TLS using OpenSSL. The additional
 arguments specify a certificate and key file when required for the connection.
 There are two additional options: -tls-on-connect, that causes the client to
-initiate TLS negociation immediately on connection; -ocsp that causes the TLS
+initiate TLS negotiation immediately on connection; -ocsp that causes the TLS
 negotiation to include a certificate-status request.  The latter takes a
 filename argument, the CA info for verifying the stapled response.
 
@@ -1135,7 +1135,7 @@ indicating that they are specific to that one test. A few fixed files (for
 example, some TLS certificates) are used by more than one test, and so their
 names are not of this form.
 
-There are also some auxilary DNS zone files, which are described in the next
+There are also some auxiliary DNS zone files, which are described in the next
 section.
 
 

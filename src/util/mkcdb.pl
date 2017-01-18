@@ -9,7 +9,7 @@
 # Little Perl script to convert flat file into CDB file. Two advantages over
 # cdbmake-12 awk script that is distributed with CDB:
 #  1) Handles 'dpc22:dpc22@hermes' as well as 'dpc22 dpc22@hermes'
-#  2) Perl works with arbitary length strings: awk chokes at 1,024 chars
+#  2) Perl works with arbitrary length strings: awk chokes at 1,024 chars
 #
 # Cambridge: hermes/src/admin/mkcdb,v 1.9 2005/02/15 18:14:12 fanf2 Exp
 

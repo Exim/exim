@@ -33,7 +33,7 @@ Exim version 4.20
         "standard" one afterwards.
 
     (d) The setting of the SIGTERM handler while reading SMTP commands was done
-        somwhat untidily. I have re-arranged the code.
+        somewhat untidily. I have re-arranged the code.
 
  4. If the building process was interrupted during the MakeLinks script, a
     subsequent run of 'make' gave misleading errors. I've made it a bit more
@@ -268,7 +268,7 @@ Exim version 4.20
     use in the forthcoming Sieve addition to Exim.
 
 56. The behaviour of -t in the presence of Resent- headers has been changed,
-    for compability with Sendmail and other MTAs. Previously, Exim gave an
+    for compatibility with Sendmail and other MTAs. Previously, Exim gave an
     error, because it is not clear from RFC 2822 how this might be handled. It
     turns out that MUAs don't seem to follow what RFC 2822 says, and any MUA
     that uses -t with Resent- ensures that there is only one set of Resent-
@@ -464,7 +464,7 @@ Exim version 4.14
     was also null (empty passwords are permitted), there was an infinite loop.
     An empty user name is not now passed to PAM; authentication is forcibly
     failed instead. Also, if the end of the list of strings is reached, an
-    empty string is passed back just once; a subequent call for data provokes
+    empty string is passed back just once; a subsequent call for data provokes
     an error response.
 
 39. If a reverse DNS lookup yields an empty string, treat it as if the lookup
@@ -587,7 +587,7 @@ Exim version 4.14
 
 69. The "more" and "unseen" generic router options can now be expanded strings.
 
-70. The "once_repeat" option in the autoreply tranport is now an expanded
+70. The "once_repeat" option in the autoreply transport is now an expanded
     string.
 
 71. If maildir_format is set on an appendfile transport that is referenced from
@@ -596,7 +596,7 @@ Exim version 4.14
 
 72. Fixed three bugs in ${readsocket:
       (i) If the operation failed, and a failure string was given, "}}" was
-          erroroneously added to it.
+          erroneously added to it.
      (ii) If the operation succeeded, but a failure string was present, "}" was
           added to the expanded data.
     (iii) The alarm for the timeout was set with signal() instead of with
@@ -701,7 +701,7 @@ Exim version 4.12
  4. Change 4.11/30 below overlooked the case when an address gets a 4xx
     response from a server. Because this isn't a host problem, the host does
     not get delayed, and it gets tried every time the address is OK'd for
-    routing, with the same reponse. However, if hosts_max_try is set, because
+    routing, with the same response. However, if hosts_max_try is set, because
     not all the hosts were tried, the address does not time out. I've changed
     things so that if there is a 4xx response to a RCPT command, the host in
     question does not count towards hosts_max_try if the message is older than
@@ -1245,10 +1245,10 @@ Exim version 4.11
     observed that getipnodebyname() gives HOST_NOT_FOUND for names for which a
     DNS lookup gives TRY_AGAIN. See also change 125 below.
 
-90. Minor rewording of ACL error for attemted header check after RCPT.
+90. Minor rewording of ACL error for attempted header check after RCPT.
 
 91. When USE_GDBM was set, exim_dbmbuild wasn't working properly (still assumed
-    NDBM compatibilify interface); similarly in dbmdb lookups when ownership
+    NDBM compatible interface); similarly in dbmdb lookups when ownership
     was being tested.
 
 92. If a Reply-To: header contained newlines and was used to generate
@@ -2017,7 +2017,7 @@ Exim version 4.03
     SMTP connection, a pipe file descriptor was accidentally left open. This
     meant that if there was a long chain of such processes, the number of open
     file descriptors increased by one for each process, and if there were
-    sufficent, the limit of open descriptors could be reached, causing various
+    sufficient, the limit of open descriptors could be reached, causing various
     problems.
 
  8. When an address was being checked with -bt and the routing involved an

@@ -9,7 +9,7 @@ Exim version 4.89
 -------------------
 
 JH/01 Bug 1922: Support IDNA2008.  This has slightly different conversion rules
-      than -2003 did; needs libidn2 in addition to linidn.
+      than -2003 did; needs libidn2 in addition to libidn.
 
 JH/02 The path option on a pipe transport is now expanded before use.
 
@@ -90,7 +90,7 @@ JH/16 DANE: treat a TLSA lookup response having all non-TLSA RRs, the same
       as one having no matching records.  Previously we deferred the message
       that needed the lookup.
 
-JH/17 Fakereject: previously logged as a norml message arrival "<="; now
+JH/17 Fakereject: previously logged as a normal message arrival "<="; now
       distinguished as "(=".
 
 JH/18 Bug 1867: make the fail_defer_domains option on a dnslookup router work
@@ -101,7 +101,7 @@ JH/19 Bug 1850: support Radius libraries that return REJECT_RC.
 JH/20 Bug 1872: Ensure that acl_smtp_notquit is run when the connection drops
       after the data-go-ahead and data-ack.  Patch from Jason Betts.
 
-JH/21 Bug 1846: Send DMARC forensic reports for reject and quaratine results,
+JH/21 Bug 1846: Send DMARC forensic reports for reject and quarantine results,
       even for a "none" policy.  Patch from Tony Meyer.
 
 JH/22 Fix continued use of a connection for further deliveries. If a port was
@@ -214,7 +214,7 @@ JH/05 Downgrade message for a TLS-certificate-based authentication fail from
 HS/02 Add the Exim version string to the process info.  This way exiwhat
       gives some more detail about the running daemon.
 
-JH/06 Bug 1395: time-limit cacheing of DNS lookups, to the TTL value.  This may
+JH/06 Bug 1395: time-limit caching of DNS lookups, to the TTL value.  This may
       matter for fast-change records such as DNSBLs.
 
 JH/07 Bug 1678: Always record an interface option value, if set,  as part of a
@@ -248,7 +248,7 @@ JH/17 Bug 1713: Fix non-PDKIM_DEBUG build.  Patch from Jasen Betts.
 
 JH/18 Bug 1709: When built with TLS support, the tls_advertise_hosts option now
       defaults to "*" (all hosts).  The variable is now available when not built
-      with TLS, default unset, mainly to enable keeping the testuite sane.
+      with TLS, default unset, mainly to enable keeping the testsuite sane.
       If a server certificate is not supplied (via tls_certificate) an error is
       logged, and clients will find TLS connections fail on startup.  Presumably
       they will retry in-clear.
@@ -262,7 +262,7 @@ JH/19 Two additional event types: msg:rcpt:defer and msg:rcpt:host:defer. Both
       in transport context, after the attempt, and per-recipient. The latter type
       is per host attempted.  The event data is the error message, and the errno
       information encodes the lookup type (A vs. MX) used for the (first) host,
-      and the trailing two digits of the smtp 4xx reponse.
+      and the trailing two digits of the smtp 4xx response.
 
 GF/01 Bug 1715: Fix for race condition in exicyclog, where exim could attempt
       to write to mainlog (or rejectlog, paniclog) in the window between file
@@ -277,7 +277,7 @@ JH/21 Bug 1720: Add support for priority groups and weighted-random proxy
       "pri" and "weight".  Note that the previous implicit priority given by the
       list order is no longer honoured.
 
-JH/22 Bugs 963, 1721: Fix some corner cases in message body canonicalisation
+JH/22 Bugs 963, 1721: Fix some corner cases in message body canonicalization
       for DKIM processing.
 
 JH/23 Move SOCKS5 support from Experimental to mainline, enabled for a build
@@ -459,13 +459,13 @@ JH/25 Bug 466: Add RFC2322 support for MIME attachment filenames.
 HS/02 Bug 1575: exigrep falls back to autodetection of compressed
       files if ZCAT_COMMAND is not executable.
 
-JH/26 Bug 1539: Add timout/retry options on dnsdb lookups.
+JH/26 Bug 1539: Add timeout/retry options on dnsdb lookups.
 
 JH/27 Bug 286: Support SOA lookup in dnsdb lookups.
 
 JH/28 Bug 1588: Do not use the A lookup following an AAAA for setting the FQDN.
       Normally benign, it bites when the pair was led to by a CNAME;
-      modern usage is to not canoicalize the domain to a CNAME target
+      modern usage is to not canonicalize the domain to a CNAME target
       (and we were inconsistent anyway for A-only vs AAAA+A).
 
 JH/29 Bug 1632: Removed the word "rejected" from line logged for ACL discards.
@@ -531,7 +531,7 @@ JH/05 Fix results-pipe from transport process.  Several recipients, combined
       with certificate use, exposed issues where response data items split
       over buffer boundaries were not parsed properly.  This eventually
       resulted in duplicates being sent.  This issue only became common enough
-      to notice due to the introduction of conection certificate information,
+      to notice due to the introduction of connection certificate information,
       the item size being so much larger.  Found and fixed by Wolfgang Breyha.
 
 JH/06 Bug 1533: Fix truncation of items in headers_remove lists.  A fixed
@@ -541,7 +541,7 @@ JH/06 Bug 1533: Fix truncation of items in headers_remove lists.  A fixed
 JH/07 Add support for directories of certificates when compiled with a GnuTLS
       version 3.3.6 or later.
 
-JH/08 Rename the TPDA expermimental facility to Event Actions.  The #ifdef
+JH/08 Rename the TPDA experimental facility to Event Actions.  The #ifdef
       is EXPERIMENTAL_EVENT, the main-configuration and transport options
       both become "event_action", the variables become $event_name, $event_data
       and $event_defer_errno.  There is a new variable $verify_mode, usable in
@@ -579,7 +579,7 @@ TL/07 Bug 1547: Omit RFCs from release. Draft and RFCs have licenses which
 
 JH/15 Updates and fixes to the EXPERIMENTAL_DSN feature.
 
-JH/16 Fix string representation of time values on 64bit time_t anchitectures.
+JH/16 Fix string representation of time values on 64bit time_t architectures.
       Bug 1561.
 
 JH/17 Fix a null-indirection in certextract expansions when a nondefault
@@ -593,7 +593,7 @@ TL/01 Bugzilla 1506: Re-add a 'return NULL' to silence complaints from static
       return.
 
 JH/01 Bug 1513: Fix parsing of quoted parameter values in MIME headers.
-      This was a regression intruduced in 4.83 by another bugfix.
+      This was a regression introduced in 4.83 by another bugfix.
 
 JH/02 Fix broken compilation when EXPERIMENTAL_DSN is enabled.
 
@@ -904,7 +904,7 @@ GF/01 DCC debug and logging tidyup
 
 TF/03 Avoid unnecessary rebuilds of lookup-related code.
 
-PP/14 Fix OCSP reinitialisation in SNI handling for Exim/TLS as server.
+PP/14 Fix OCSP reinitialization in SNI handling for Exim/TLS as server.
       Bug spotted by Jeremy Harris; was flawed since initial commit.
       Would have resulted in OCSP responses post-SNI triggering an Exim
       NULL dereference and crash.
@@ -924,7 +924,7 @@ JH/14 SMTP PRDR (http://www.eric-a-hall.com/specs/draft-hall-prdr-00.txt).
       advertises the facility.  If the client requests PRDR a new
       acl_data_smtp_prdr ACL is called once for each recipient, after
       the body content is received and before the acl_smtp_data ACL.
-      The client is controlled by bolth of: a hosts_try_prdr option
+      The client is controlled by both of: a hosts_try_prdr option
       on the smtp transport, and the server advertisement.
       Default client logging of deliveries and rejections involving
       PRDR are flagged with the string "PRDR".
@@ -952,7 +952,7 @@ PP/20 Added force_command boolean option to pipe transport.
 JH/15 AUTH support on callouts (and hence cutthrough-deliveries).
       Bugzilla 321, 823.
 
-TF/04 Added udpsend ACL modifer and hexquote expansion operator
+TF/04 Added udpsend ACL modifier and hexquote expansion operator
 
 PP/21 Fix eximon continuous updating with timestamped log-files.
       Broken in a format-string cleanup in 4.80, missed when I repaired the
@@ -1096,7 +1096,7 @@ PP/15 LDAP: Check for errors of TLS initialisation, to give correct
       diagnostics.
       Report and patch from Dmitry Banschikov.
 
-PP/16 Removed "dont_insert_empty_fragments" fron "openssl_options".
+PP/16 Removed "dont_insert_empty_fragments" from "openssl_options".
       Removed SSL_clear() after SSL_new() which led to protocol negotiation
       failures.  We appear to now support TLS1.1+ with Exim.
 
@@ -1226,7 +1226,7 @@ TF/04 Improved ratelimit ACL condition.
       has clearer semantics. The /leaky, /strict, and /readonly update modes
       are mutually exclusive. The update mode is no longer included in the
       database key; it just determines when the database is updated. (This
-      means that when you upgrde Exim will forget old rate measurements.)
+      means that when you upgrade Exim will forget old rate measurements.)
 
       Exim now checks that the per_* options are used with an update mode that
       makes sense for the current ACL. For example, when Exim is processing a
@@ -1311,7 +1311,7 @@ PP/11 match_* no longer expand right-hand-side by default.
       New compile-time build option, EXPAND_LISTMATCH_RHS.
       New expansion conditions, "inlist", "inlisti".
 
-PP/12 fix uninitialised greeting string from PP/03 (smtps client support).
+PP/12 fix uninitialized greeting string from PP/03 (smtps client support).
 
 PP/13 shell and compiler warnings fixes for RC1-RC4 changes.
 
@@ -1361,7 +1361,7 @@ PP/09 Fix another SIGFPE (x86) in ${eval:...} expansion, this time related to
 Exim version 4.75
 -----------------
 
-NM/01 Workround for PCRE version dependency in version reporting
+NM/01 Workaround for PCRE version dependency in version reporting
       Bugzilla 1073
 
 TF/01 Update valgrind.h and memcheck.h to copies from valgrind-3.6.0.
@@ -1431,7 +1431,7 @@ NM/05 Fix to spam.c to accommodate older gcc versions which dislike
       variable declaration deep within a block.  Bug and patch from
       Dennis Davis.
 
-PP/15 lookups-Makefile IRIX compatibilty coercion.
+PP/15 lookups-Makefile IRIX compatibility coercion.
 
 PP/16 Make DISABLE_DKIM build knob functional.
 
@@ -1856,7 +1856,7 @@ PH/02 When an IPv6 address is converted to a string for single-key lookup
       colons if the lookup type is iplsearch. This is not incompatible, because
       previously such lookups could never work.
 
-      The situation is now rather anomolous, since one *can* have colons in
+      The situation is now rather anomalous, since one *can* have colons in
       ordinary lsearch keys. However, making the change in all cases is
       incompatible and would probably break a number of configurations.
 
@@ -2026,7 +2026,7 @@ PH/19 Change 4.64/PH/36 introduced a bug: when address_retry_include_sender
 PH/20 Added hosts_avoid_pipelining to the smtp transport.
 
 PH/21 Long custom messages for fakedefer and fakereject are now split up
-      into multiline reponses in the same way that messages for "deny" and
+      into multiline responses in the same way that messages for "deny" and
       other ACL rejections are.
 
 PH/22 Applied Jori Hamalainen's speed-up changes and typo fixes to exigrep,
@@ -2433,7 +2433,7 @@ PH/36 After a 4xx response to a RCPT error, that address was delayed (in queue
       runs only) independently of the message's sender address. This meant
       that, if the 4xx error was in fact related to the sender, a different
       message to the same recipient with a different sender could confuse
-      things. In particualar, this can happen when sending to a greylisting
+      things. In particular, this can happen when sending to a greylisting
       server, but other circumstances could also provoke similar problems.
       I have changed the default so that the retry time for these errors is now
       based a combination of the sender and recipient addresses. This change
@@ -2502,7 +2502,7 @@ SC/08 Eximstats V1.50
 
 JJ/03 exipick.20061117.2, made header handling as similar to exim as possible
       (added [br]h_ prefixes, implemented RFC2047 decoding.  Fixed
-      whitesspace changes from 4.64-PH/27
+      whitespace changes from 4.64-PH/27
 
 JJ/04 exipick.20061117.2, fixed format and added $message_headers_raw to
       match 4.64-PH/13
@@ -2824,7 +2824,7 @@ PH/14 When a uid/gid is specified for the queryprogram router, it cannot be
 
       (a) Failures to set uid/gid, the current directory, or a process leader
           in a subprocess such as that created by queryprogram now generate
-          suitable debugging ouput when -d is set.
+          suitable debugging output when -d is set.
 
       (b) The queryprogram router detects when it is not running as root,
           outputs suitable debugging information if -d is set, and then runs
@@ -3184,7 +3184,7 @@ PH/09 Applied a patch from the Sieve maintainer which:
       and most important:
 
       o  fixes a bug in processing the envelope test (when testing
-         multiple envelope elements, the last element determinted the
+         multiple envelope elements, the last element determined the
          result)
 
 PH/10 Exim was violating RFC 3834 ("Recommendations for Automatic Responses to
@@ -3193,7 +3193,7 @@ PH/10 Exim was violating RFC 3834 ("Recommendations for Automatic Responses to
         Auto-submitted: auto-generated
 
       in the messages that it generates (bounce messages and others, such as
-      warnings). In the case of bounce messages for non-SMTP mesages, there was
+      warnings). In the case of bounce messages for non-SMTP messages, there was
       also a typo: it was using "Auto_submitted" (underscore instead of
       hyphen). Since every message generated by Exim is necessarily in response
       to another message, thes have all been changed to:
@@ -3558,7 +3558,7 @@ TK/03 Merged latest SRS patch from Miles Wilton.
 PH/05 There's a shambles in IRIX6 - it defines EX_OK in unistd.h which conflicts
       with the definition in sysexits.h (which is #included earlier).
       Fortunately, Exim does not actually use EX_OK. The code used to try to
-      preserve the sysexits.h value, by assumimg that macro definitions were
+      preserve the sysexits.h value, by assuming that macro definitions were
       scanned for macro replacements. I have been disabused of this notion,
       so now the code just undefines EX_OK before #including unistd.h.
 
@@ -3578,7 +3578,7 @@ PH/07 Added "fullpostmaster" verify option, which does a check to <postmaster>
 SC/01 Eximstats: added -xls and the ability to specify output files
      (patch written by Frank Heydlauf).
 
-SC/02 Eximstats: use FileHandles for outputing results.
+SC/02 Eximstats: use FileHandles for outputting results.
 
 SC/03 Eximstats: allow any combination of xls, txt, and html output.
 
@@ -5419,7 +5419,7 @@ Exim version 4.31
     the fallback hosts.
 
 22. Increased buffer sizes in the callout code from 1024 to 4096 to match the
-    equivalent code in the SMTP transport. Some hosts send humungous responses
+    equivalent code in the SMTP transport. Some hosts send humongous responses
     to HELO/EHLO, more than 1024 it seems.
 
 23. Refactoring: code in filter.c used (void *) for "any old type" but this
@@ -5603,7 +5603,7 @@ Exim version 4.31
 58. When a "warn" ACL statement has a log_message modifier, the message is
     remembered, and not repeated. This is to avoid a lot of repetition when a
     message has many recipients that cause the same warning to be written.
-    Howewer, Exim was preserving the list of already written lines for an
+    However, Exim was preserving the list of already written lines for an
     entire SMTP session, which doesn't seem right. The memory is now reset if a
     new message is started.
 
@@ -5693,7 +5693,7 @@ Exim version 4.31
     the list was checked. (An example that provoked this was putting <; in the
     middle of a list instead of at the start.) If this happened during a DATA
     ACL check, a -D file could be left lying around. This kind of configuration
-    error no longer causes Exim to die; instead it causes a defer errror. The
+    error no longer causes Exim to die; instead it causes a defer error. The
     incident is still logged to the main and panic logs.
 
 74. Buglet left over from Exim 3 conversion. The message "too many messages
@@ -5757,7 +5757,7 @@ Exim version 4.30
     systems (e.g. Solaris), it also passes back the IP address string as the
     "host name". However, on others (e.g. Linux), it passes back an empty
     string. Exim wasn't checking for this, and was changing the host name to an
-    empty string, assuming it had been canonicized.
+    empty string, assuming it had been canonicalized.
 
  5. Although rare, it is permitted to have more than one PTR record for a given
     IP address. I thought that gethostbyaddr() or getipnodebyaddr() always gave
@@ -5809,7 +5809,7 @@ Exim version 4.30
 
 13. The install script calls Exim with "-C /dev/null" in order to find the
     version number. If ALT_CONFIG_PREFIX was set, this caused an error message
-    to be output. Howeve, since Exim outputs its version number before the
+    to be output. However, since Exim outputs its version number before the
     error, it didn't break the script. It just looked ugly. I fixed this by
     always allowing "-C /dev/null" if the caller is root.
 
@@ -5890,7 +5890,7 @@ Exim version 4.30
 
 34. Testing for a connection timeout using "timeout_connect" in the retry rules
     did not work. The code looks as if it has *never* worked, though it appears
-    to have been documented since at least releast 1.62. I have made it work.
+    to have been documented since at least release 1.62. I have made it work.
 
 35. The "timeout_DNS" error in retry rules, also documented since at least
     1.62, also never worked. As it isn't clear exactly what this means, and
@@ -6249,7 +6249,7 @@ Exim version 4.22
 
  7. Compiler warning on Linux for the second argument of iconv(), which doesn't
     seem to have the "const" qualifier which it has on other OS. I've
-    parameterised it.
+    parameterized it.
 
  8. Change 4.21/2 was too strict. It is only if there are two authenticators
     *of the same type* (client or server) with the same public name that an
@@ -6335,7 +6335,7 @@ Exim version 4.21
 16. Check for letters, digits, hyphens, and dots in the names of dnslist
     domains, and warn by logging if others are found.
 
-17. At least on BSD, alignment is not guarenteed for the array of ifreq's
+17. At least on BSD, alignment is not guaranteed for the array of ifreq's
     returned from GIFCONF when Exim is trying to find the list of interfaces on
     a host. The code in os.c has been modified to copy each ifreq to an aligned
     structure in all cases.
@@ -6369,7 +6369,7 @@ Exim version 4.21
 24. Ignore Sendmail's -Ooption=value command line item.
 
 25. When execve() failed while trying to run a command in a pipe transport,
-    Exim was returning EX_UNAVAILBLE (69) from the subprocess. However, this
+    Exim was returning EX_UNAVAILABLE (69) from the subprocess. However, this
     could be confused with a return value of 69 from the command itself. This
     has been changed to 127, the value the shell returns if it is asked to run
     a non-existent command. The wording for the related log line suggests a
@@ -6482,7 +6482,7 @@ Exim version 4.21
 
 47. Change 50 for 4.20 was a heap of junk. I don't know what I was thinking
     when I implemented it. It didn't allow for the fact that some option values
-    may legitimatetly be negative (e.g. size_addition), and it didn't even do
+    may legitimately be negative (e.g. size_addition), and it didn't even do
     the right test for positive values.
 
 48. Domain names in DNS records are case-independent. Exim always looks them up

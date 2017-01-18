@@ -701,7 +701,7 @@ uschar *errors_reply_to        = NULL;
 int     errors_sender_rc       = EXIT_FAILURE;
 #ifndef DISABLE_EVENT
 uschar *event_action             = NULL;	/* expansion for delivery events */
-uschar *event_data               = NULL;	/* auxilary data variable for event */
+uschar *event_data               = NULL;	/* auxiliary data variable for event */
 int     event_defer_errno        = 0;
 const uschar *event_name         = NULL;	/* event name variable */
 #endif

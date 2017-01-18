@@ -221,7 +221,7 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
     }
 
   /* The first string is attached to the AUTH command; others are sent
-  unembelished. */
+  unembellished. */
 
   if (first)
     {

@@ -41,7 +41,7 @@ HOWTO.maildirquota
 
    Furthermore, this quota mechanism is not 100% effective. It is
    possible to have a situation where someone may go over quota. This
-   quota implementation uses a deliverate trade-off. It is necessary to
+   quota implementation uses a deliberate trade-off. It is necessary to
    use some form of locking in order to have a complete bulletproof quota
    enforcement, but maildirs mail stores were explicitly designed to
    avoid any kind of locking. This quota approach does not use locking,
@@ -330,7 +330,7 @@ Calculating the quota for a Maildir++
        quota recalculation ended up removing maildirsize due to a race
        condition, so the caller may or may not get a file descriptor
        together with the Maildir++ size.
-    4. If the numbers we got indicated that the Maidlir++ is over quota,
+    4. If the numbers we got indicated that the Maildir++ is over quota,
        some additional logic is in order: if we did not recalculate
        maildirsize, if the numbers in maildirsize indicated that we are
        over quota, then if maildirsize was more than one line long, or if

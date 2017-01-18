@@ -508,7 +508,7 @@ Arguments:
   more_errno     from the top address for use with ERRNO_FILTER_FAIL
   buffer         the SMTP response buffer
   yield          where to put a one-digit SMTP response code
-  message        where to put an errror message
+  message        where to put an error message
   pass_message   set TRUE if message is an SMTP response
 
 Returns:         TRUE if an SMTP "QUIT" command should be sent, else FALSE
@@ -1570,7 +1570,7 @@ uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 uschar *p;
 uschar buffer[DELIVER_BUFFER_SIZE];
 uschar inbuffer[4096];
-uschar outbuffer[4096];
+uschar outbufer[4096];
 
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 
@@ -1605,9 +1605,9 @@ inblock.ptrend = inbuffer;
 
 /* Set up the buffer for holding SMTP commands while pipelining */
 
-outblock.buffer = outbuffer;
-outblock.buffersize = sizeof(outbuffer);
-outblock.ptr = outbuffer;
+outblock.buffer = outbufer;
+outblock.buffersize = sizeof(outbufer);
+outblock.ptr = outbufer;
 outblock.cmd_count = 0;
 outblock.authenticating = FALSE;
 
@@ -1893,7 +1893,7 @@ set from the command line if they were set in the process that passed the
 connection on. */
 
 /*XXX continue case needs to propagate DSN_INFO, prob. in deliver.c
-as the contine goes via transport_pass_socket() and doublefork and exec.
+as the continue goes via transport_pass_socket() and doublefork and exec.
 It does not wait.  Unclear how we keep separate host's responses
 separate - we could match up by host ip+port as a bodge. */
 
@@ -3109,7 +3109,7 @@ if (completed_address && lflags.ok && lflags.send_quit)
         }
 #endif
 
-      /* If the socket is successfully passed, we musn't send QUIT (or
+      /* If the socket is successfully passed, we mustn't send QUIT (or
       indeed anything!) from here. */
 
 /*XXX DSN_INFO: assume likely to do new HELO; but for greet we'll want to
@@ -3215,7 +3215,7 @@ smtp_inblock inblock;
 smtp_outblock outblock;
 uschar buffer[256];
 uschar inbuffer[4096];
-uschar outbuffer[16];
+uschar outbufer[16];
 
 inblock.sock = fileno(stdin);
 inblock.buffer = inbuffer;
@@ -3224,9 +3224,9 @@ inblock.ptr = inbuffer;
 inblock.ptrend = inbuffer;
 
 outblock.sock = inblock.sock;
-outblock.buffersize = sizeof(outbuffer);
-outblock.buffer = outbuffer;
-outblock.ptr = outbuffer;
+outblock.buffersize = sizeof(outbufer);
+outblock.buffer = outbufer;
+outblock.ptr = outbufer;
 outblock.cmd_count = 0;
 outblock.authenticating = FALSE;
 

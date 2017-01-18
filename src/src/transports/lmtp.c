@@ -106,7 +106,7 @@ Arguments:
   more_errno   from the top address for use with ERRNO_FILTER_FAIL
   buffer       the LMTP response buffer
   yield        where to put a one-digit LMTP response code
-  message      where to put an errror message
+  message      where to put an error message
 
 Returns:       TRUE if a "QUIT" command should be sent, else FALSE
 */

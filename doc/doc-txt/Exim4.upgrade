@@ -802,7 +802,7 @@ The smtp transport
 . The authenticate_hosts option has been renamed as hosts_try_auth. A new
   option called hosts_require_auth has been added; if authentication fails for
   one of these hosts, Exim does _not_ try to send unauthenticated. It defers
-  instead. The deferal error is detectable in the retry rules, so this can be
+  instead. The deferral error is detectable in the retry rules, so this can be
   turned into a hard failure if required.
 
 
@@ -1206,7 +1206,7 @@ and the bounce.
 
 The logging options that have been abolished are: log_all_parents,
 log_arguments, log_incoming_port, log_interface, log_ip_options,
-log_level, log_queue_run_level, log_received_sender, log_received_rceipients,
+log_level, log_queue_run_level, log_received_sender, log_received_recipients,
 log_rewrites, log_sender_on_delivery, log_smtp_confirmation,
 log_smtp_connections, log_smtp_syntax_errors, log_subject, tls_log_cipher,
 tls_log_peerdn.
@@ -1323,7 +1323,7 @@ String Expansion
 
 . There's a new expansion feature for running commands:
 
-    ${run{comand args}{yes}{no}}
+    ${run{command args}{yes}{no}}
 
   Like all the other conditional items, the {yes} and {no} strings are
   optional. Omitting both is equivalent to {$value}. The standard output of the

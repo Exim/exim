@@ -912,7 +912,7 @@ A0047: \-bz-\ is a Sendmail option requesting it to create a `configuration free
 
 ==>      /usr/lib/sendmail -bz
 
-       in some start-up script (e.g. \(/etc/init.d/mail)\) immedately before
+       in some start-up script (e.g. \(/etc/init.d/mail)\) immediately before
 
 ==>      /usr/lib/sendmail -bd -q15m
 
@@ -2117,7 +2117,7 @@ A0301: They mean exactly what they say. Exim expected to route an address to a
        with MX records pointing to \"localhost"\ (or other names with A records
        that specify 127.0.0.1), which causes this behaviour. You can use the
        \ignore_target_hosts\ option to get Exim to ignore these records. The
-       default contiguration does this. For more discussion, see Q0319. For
+       default configuration does this. For more discussion, see Q0319. For
        other cases:
 
        (1) If the domain is meant to be handled as a local domain, there
@@ -3452,7 +3452,7 @@ A0510: \^elspy^\ is a layer of glue code that enables you to write Python code
        to scan email messages at SMTP time. \^elspy^\ also includes a small
        Python library with common mail-scanning tools, including an interface
        to SpamAssassin and a simple but effective virus detector. You can
-       optain \^elspy^\ from \?http://elspy.sourceforge.net/?\.
+       obtain \^elspy^\ from \?http://elspy.sourceforge.net/?\.
 
 
 Q0511: Whenever my system filter uses a \mail\ command to send a message, I get
@@ -3543,7 +3543,7 @@ A0601: Whenever Exim does a local delivery, it runs a process under a specific
 ==>      majordomo: |/local/mail/majordomo ...
 
        then Exim has to be told what uid/gid to use for the delivery. This can
-       be done either on the routerr that handles the address, or on the
+       be done either on the router that handles the address, or on the
        transport that actually does the delivery. If a pipe is going to run a
        setuid program, then it doesn't matter what uid Exim starts it out with,
        and so the most straightforward thing is to put
@@ -3617,7 +3617,7 @@ A0603: Q0601 contains background information on this. If you are using, say, an
 
 
 Q0604: I want to use MMDF-style mailboxes. How can I get Exim to append the
-       ctrl-A characters that separate indvidual emails?
+       ctrl-A characters that separate individual emails?
 
 A0604: Set the \message_suffix\ option in the \%appendfile%\ transport. In fact,
        for MMDF mailboxes you need a prefix as well as a suffix to get it
@@ -3660,7 +3660,7 @@ Q0606: I'm using tmail to do local deliveries, but when I turned on the
        \use_crlf\ option on the \%pipe%\ transport (tmail prefers \"@\r@\n"\
        terminations) message bodies started to vanish.
 
-A0606: You need to unset the \mesage_prefix\ option, or change it so that its
+A0606: You need to unset the \message_prefix\ option, or change it so that its
        default \"@\n"\ terminator becomes \"@\r@\n"\. For example, the
        transport could be:
 
@@ -5038,7 +5038,7 @@ A0806: The value of \$domain$\ is the actual domain that appears in the address.
        but it is important to some people - especially if by some unfortunate
        accident the lowercased word is something indecent.
 
-       You can trivally force lower casing by means of the \"${lc:"\ operator.
+       You can trivially force lower casing by means of the \"${lc:"\ operator.
        Instead of \"$domain"\ write \"${lc:$domain}"\.
 
 
@@ -5099,7 +5099,7 @@ A0905: You can only do this in a round about way, using filter commands like
 
 ==>      headers add "New-Subject: SPAM: $h_subject:"
          headers remove subject
-         neaders add "Subject: $h_new-subject:"
+         headers add "Subject: $h_new-subject:"
          headers remove new-subject
 
        This trick works only in system filters, where the commands are obeyed
