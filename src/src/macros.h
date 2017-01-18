@@ -846,7 +846,7 @@ enum {
 #define topt_add_delivery_date  0x002
 #define topt_add_envelope_to    0x004
 #define topt_use_crlf           0x008  /* Terminate lines with CRLF */
-#define topt_end_dot            0x010  /* Send terminting dot line */
+#define topt_end_dot            0x010  /* Send terminating dot line */
 #define topt_no_headers         0x020  /* Omit headers */
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
