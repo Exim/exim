@@ -5890,7 +5890,7 @@ Exim version 4.30
 
 34. Testing for a connection timeout using "timeout_connect" in the retry rules
     did not work. The code looks as if it has *never* worked, though it appears
-    to have been documented since at least releast 1.62. I have made it work.
+    to have been documented since at least release 1.62. I have made it work.
 
 35. The "timeout_DNS" error in retry rules, also documented since at least
     1.62, also never worked. As it isn't clear exactly what this means, and
