@@ -30,7 +30,7 @@ static uschar tree_printline[tree_printlinesize];
 
 Arguments:
   p          tree node
-  pos        amount of indenting & vertical bars to pring
+  pos        amount of indenting & vertical bars to print
   barswitch  if TRUE print | at the pos value
 
 Returns:     nothing
