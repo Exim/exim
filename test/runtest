@@ -2808,7 +2808,7 @@ if (defined $parm_support{Content_Scanning})
     # This test for an active SpamAssassin is courtesy of John Jetmore.
     # The tests are hard coded to localhost:783, so no point in making
     # this test flexible like the clamav test until the test scripts are
-    # changed.  spamd doesn't have the nice PING/PONG protoccol that
+    # changed.  spamd doesn't have the nice PING/PONG protocol that
     # clamd does, but it does respond to errors in an informative manner,
     # so use that.
 
