@@ -740,7 +740,7 @@ return nextsigchar(ptr, TRUE);
 
 
 /*************************************************
-*             Ouput the current indent           *
+*             Output the current indent           *
 *************************************************/
 
 static void

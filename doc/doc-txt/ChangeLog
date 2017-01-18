@@ -2824,7 +2824,7 @@ PH/14 When a uid/gid is specified for the queryprogram router, it cannot be
 
       (a) Failures to set uid/gid, the current directory, or a process leader
           in a subprocess such as that created by queryprogram now generate
-          suitable debugging ouput when -d is set.
+          suitable debugging output when -d is set.
 
       (b) The queryprogram router detects when it is not running as root,
           outputs suitable debugging information if -d is set, and then runs
