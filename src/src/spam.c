@@ -419,7 +419,7 @@ if (wrote == -1)
  * that the write will only write sufficient data without blocking
  * and we poll the descriptor to make sure that we can write without
  * blocking.  Short writes are gracefully handled and if the whole
- * trasaction takes too long it is aborted.
+ * transaction takes too long it is aborted.
  * Note: poll() is not supported in OSX 10.2 and is reported to be
  *       broken in more recent versions (up to 10.4).
  */
