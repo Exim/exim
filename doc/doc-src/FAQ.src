@@ -3543,7 +3543,7 @@ A0601: Whenever Exim does a local delivery, it runs a process under a specific
 ==>      majordomo: |/local/mail/majordomo ...
 
        then Exim has to be told what uid/gid to use for the delivery. This can
-       be done either on the routerr that handles the address, or on the
+       be done either on the router that handles the address, or on the
        transport that actually does the delivery. If a pipe is going to run a
        setuid program, then it doesn't matter what uid Exim starts it out with,
        and so the most straightforward thing is to put
