@@ -3109,7 +3109,7 @@ if (completed_address && lflags.ok && lflags.send_quit)
         }
 #endif
 
-      /* If the socket is successfully passed, we musn't send QUIT (or
+      /* If the socket is successfully passed, we mustn't send QUIT (or
       indeed anything!) from here. */
 
 /*XXX DSN_INFO: assume likely to do new HELO; but for greet we'll want to
