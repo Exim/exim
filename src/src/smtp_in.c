@@ -4617,7 +4617,7 @@ while (done <= 0)
     friends now makes it absolutely clear that it means *mailbox*. Consequently
     we must always qualify this address, regardless. */
 
-    if (recipient_domain == 0)
+    if (!recipient_domain)
       if (!(recipient_domain = qualify_recipient(&recipient, smtp_cmd_data,
 				  US"recipient")))
         {
@@ -4875,7 +4875,7 @@ while (done <= 0)
 	break;
 	}
 
-      if (recipient_domain == 0)
+      if (!recipient_domain)
 	if (!(recipient_domain = qualify_recipient(&address, smtp_cmd_data,
 				    US"verify")))
 	  break;

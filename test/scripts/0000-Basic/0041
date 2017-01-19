@@ -2,9 +2,14 @@
 exim -bh 1.1.1.1
 vrfy userx@test.ex
 vrfy hardfail@test.ex
+vrfy ok_with_dom@test.ex
 vrfy unqual
 vrfy
 expn postmaster
+quit
+****
+exim -bh 3.3.3.3
+vrfy acceptable
 quit
 ****
 exim -bh 2.2.2.2

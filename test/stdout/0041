@@ -6,9 +6,18 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 252 Administrative prohibition
 599 custom reject
+250 <ok_with_dom@test.ex> is deliverable
 501 unqual: recipient address must contain a domain
 501 empty address
 550 Administrative prohibition
+221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host 3.3.3.3
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 <acceptable@test.ex> is deliverable
 221 the.local.host.name closing connection
 
 **** SMTP testing session as if from host 2.2.2.2

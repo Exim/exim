@@ -11,6 +11,7 @@ acl_smtp_vrfy = check_vrfy
 acl_smtp_expn = check_expn
 qualify_domain = test.ex
 no_write_rejectlog
+recipient_unqualified_hosts = 3.3.3.3
 
 
 # ----- ACLs -----
@@ -20,6 +21,9 @@ begin acl
 check_vrfy:
   deny	 local_parts = hardfail
          message = 599 custom reject
+  accept local_parts = acceptable
+  accept local_parts = ok_with_dom
+	 domains = test.ex
 
 check_expn:
   accept hosts = 2.2.2.2
@@ -36,7 +40,7 @@ system_aliases:
 
 localuser:
   driver = accept
-  local_parts = userx
+  local_parts = userx : ok_with_dom : acceptable
   transport = local_delivery
 
 

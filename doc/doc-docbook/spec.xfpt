@@ -28093,6 +28093,11 @@ run. A &"discard"& return from the DATA or the non-SMTP ACL discards all the
 remaining recipients. The &"discard"& return is not permitted for the
 &%acl_smtp_predata%& ACL.
 
+.new
+If the ACL for VRFY returns &"accept"&, a recipient verify (without callout)
+is done on the address and the result determines the SMTP response.
+.wen
+
 
 .cindex "&[local_scan()]& function" "when all recipients discarded"
 The &[local_scan()]& function is always run, even if there are no remaining

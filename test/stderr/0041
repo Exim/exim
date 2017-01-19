@@ -2,7 +2,7 @@
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
@@ -12,6 +12,14 @@
 >>> check local_parts = hardfail
 >>> userx in "hardfail"? no (end of list)
 >>> deny: condition test failed in ACL "check_vrfy"
+>>> processing "accept"
+>>> check local_parts = acceptable
+>>> userx in "acceptable"? no (end of list)
+>>> accept: condition test failed in ACL "check_vrfy"
+>>> processing "accept"
+>>> check local_parts = ok_with_dom
+>>> userx in "ok_with_dom"? no (end of list)
+>>> accept: condition test failed in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": implicit DENY
 LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
 >>> using ACL "check_vrfy"
@@ -22,6 +30,29 @@ LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
 >>> deny: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": DENY
 LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
+>>> using ACL "check_vrfy"
+>>> processing "deny"
+>>> check local_parts = hardfail
+>>> ok_with_dom in "hardfail"? no (end of list)
+>>> deny: condition test failed in ACL "check_vrfy"
+>>> processing "accept"
+>>> check local_parts = acceptable
+>>> ok_with_dom in "acceptable"? no (end of list)
+>>> accept: condition test failed in ACL "check_vrfy"
+>>> processing "accept"
+>>> check local_parts = ok_with_dom
+>>> ok_with_dom in "ok_with_dom"? yes (matched "ok_with_dom")
+>>> check domains = test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing ok_with_dom@test.ex
+>>> calling system_aliases router
+>>> system_aliases router declined for ok_with_dom@test.ex
+>>> ok_with_dom in "userx : ok_with_dom : acceptable"? yes (matched "ok_with_dom")
+>>> calling localuser router
+>>> routed by localuser router
 >>> using ACL "check_expn"
 >>> processing "accept"
 >>> check hosts = 2.2.2.2
@@ -33,7 +64,33 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
 >>> host in sender_unqualified_hosts? no (option unset)
->>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? yes (matched "3.3.3.3")
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "deny"
+>>> check local_parts = hardfail
+>>> acceptable in "hardfail"? no (end of list)
+>>> deny: condition test failed in ACL "check_vrfy"
+>>> processing "accept"
+>>> check local_parts = acceptable
+>>> acceptable in "acceptable"? yes (matched "acceptable")
+>>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing acceptable@test.ex
+>>> calling system_aliases router
+>>> system_aliases router declined for acceptable@test.ex
+>>> acceptable in "userx : ok_with_dom : acceptable"? yes (matched "acceptable")
+>>> calling localuser router
+>>> routed by localuser router
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (end of list)
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
