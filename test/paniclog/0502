@@ -1,1 +1,1 @@
-1999-03-02 09:44:33 ACL for QUIT returned ERROR: QUIT or not-QUIT teplevel ACL may not fail ('deny' verb used incorrectly)
+1999-03-02 09:44:33 ACL for QUIT returned ERROR: QUIT or not-QUIT toplevel ACL may not fail ('deny' verb used incorrectly)
