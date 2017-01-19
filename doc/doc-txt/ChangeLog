@@ -28,12 +28,22 @@ PP/02 GitHub PR 52: many spelling fixes, which include fixing parsing of
       no_require_dnssec option and creation of _HAVE_TRANSPORT_APPEND_MAILDIR
       macro.  Patches provided by Josh Soref.
 
-JH/05 Bug 2017: Fix DKIM verification in -bh test mode.  The data feed into
+JH/05 Have the EHLO response advertise VRFY, if there is a vrfy ACL defined.
+      Previously we did not; the RFC seems ambiguous and VRFY is not listed
+      by IANA as a service extension.  However, John Klensin suggests that we
+      should.
+
+JH/06 Bug 2017: Fix DKIM verification in -bh test mode.  The data feed into
       the dkim code may be unix-mode line endings rather than smtp wire-format
       CRLF, so prepend a CR to any bare LF.
 
-JH/06 Rationalise the coding for callout smtp conversations and transport ones.
+JH/07 Rationalise the coding for callout smtp conversations and transport ones.
       As a side-benfit, callouts can now use PIPELINING hence fewer round-trips.
+
+JH/08 Bug 2016: Fix DKIM verification vs. CHUNKING.  Any BDAT commands after
+      the first were themselves being wrongly included in the feed into dkim
+      processing; with most chunk sizes in use this resulted in an incorrect
+      body hash calculated value.
 
 
 Exim version 4.88

@@ -74,9 +74,10 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250
 <<< 250 Accepted
 >>> bdat 10
->>> To: Susan@bdat 78 last
+>>> To: Susan@
 ??? 250
 <<< 250 10 byte chunk received
+>>> bdat 78 last
 >>> random.com
 >>> From: Sam@random.com
 >>> Subject: This is a bodyless test message
@@ -85,6 +86,65 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 250- 78 byte chunk, total 88
 ??? 250
 <<< 250 OK id=10HmaZ-0005vi-00
+>>> quit
+??? 221
+<<< 221 testhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 testhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo tester
+??? 250-
+<<< 250-testhost.test.ex Hello tester [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-CHUNKING
+??? 250 
+<<< 250 HELP
+>>> mail from:someone2A@some.domain
+??? 250
+<<< 250 OK
+>>> rcpt to:CALLER@test.ex
+??? 250
+<<< 250 Accepted
+>>> bdat 100
+>>> To: Susan@random.com
+>>> From: Sam@random.com
+>>> Subject: This is a bodyfull test message
+>>> 
+>>> 1234567890
+??? 250
+<<< 250 100 byte chunk received
+>>> noop
+??? 250
+<<< 250 OK
+>>> bdat 0 last
+??? 250-
+<<< 250- 0 byte chunk, total 100
+??? 250
+<<< 250 OK id=10HmbA-0005vi-00
+>>> mail from:someone3A@some.domain
+??? 250
+<<< 250 OK
+>>> rcpt to:CALLER@test.ex
+??? 250
+<<< 250 Accepted
+>>> bdat 10
+>>> To: Susan@
+??? 250
+<<< 250 10 byte chunk received
+>>> bdat 78 last
+>>> random.com
+>>> From: Sam@random.com
+>>> Subject: This is a bodyless test message
+>>> 
+??? 250-
+<<< 250- 78 byte chunk, total 88
+??? 250
+<<< 250 OK id=10HmbB-0005vi-00
 >>> quit
 ??? 221
 <<< 221 testhost.test.ex closing connection
@@ -245,7 +305,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250- 88 byte chunk, total 88
 ??? 250
-<<< 250 OK id=10HmbB-0005vi-00
+<<< 250 OK id=10HmbD-0005vi-00
 >>> quit
 ??? 221
 <<< 221 testhost.test.ex closing connection

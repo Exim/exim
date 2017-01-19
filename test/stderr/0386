@@ -191,6 +191,13 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: Message{SP}1{CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
+PDKIM >> raw hdr: rset{CR}{LF}
+PDKIM >> raw hdr: mail{SP}from:<x@y>{CR}{LF}
+PDKIM >> raw hdr: rcpt{SP}to:<2@b>{CR}{LF}
+PDKIM >> raw hdr: data{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -372,6 +379,9 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: Message{SP}2{CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -389,6 +399,7 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
   X-Warning: This is a test blacklisting message
 >>
+PDKIM >> raw hdr: quit{CR}{LF}
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file: TESTSUITE/spool//input//hdr.pppp

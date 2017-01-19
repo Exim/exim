@@ -178,9 +178,13 @@ LOG: PANIC
   rcpt accepted
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: Some{SP}message{CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: added header line
 >>
+PDKIM >> raw hdr: quit{CR}{LF}
 LOG: MAIN
   <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
 Exim version x.yz ....

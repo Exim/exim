@@ -44,11 +44,11 @@ The maximum size of a Kerberos ticket under Windows 2003 is 12000 bytes, and
 we need room to handle large base64-encoded AUTHs for GSSAPI.
 */
 
-#define smtp_cmd_buffer_size  16384
+#define SMTP_CMD_BUFFER_SIZE  16384
 
 /* Size of buffer for reading SMTP incoming packets */
 
-#define in_buffer_size  8192
+#define IN_BUFFER_SIZE  8192
 
 /* Structure for SMTP command list */
 
@@ -305,7 +305,7 @@ static int     smtp_had_error;
 
 /* forward declarations */
 int bdat_ungetc(int ch);
-static int smtp_read_command(BOOL check_sync);
+static int smtp_read_command(BOOL check_sync, unsigned buffer_lim);
 static int synprot_error(int type, int code, uschar *data, uschar *errmess);
 static void smtp_quit_handler(uschar **, uschar **);
 static void smtp_rset_handler(void);
@@ -352,7 +352,7 @@ tzero.tv_usec = 0;
 rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
 
 if (rc <= 0) return TRUE;     /* Not ready to read */
-rc = smtp_getc();
+rc = smtp_getc(GETC_BUFFER_UNLIMITED);
 if (rc < 0) return TRUE;      /* End of file or error */
 
 smtp_ungetc(rc);
@@ -410,12 +410,12 @@ it flushes the output, and refills the buffer, with a timeout. The signal
 handler is set appropriately by the calling function. This function is not used
 after a connection has negotiated itself into an TLS/SSL state.
 
-Arguments:  none
+Arguments:  lim		Maximum amount to read/buffer
 Returns:    the next character or EOF
 */
 
 int
-smtp_getc(void)
+smtp_getc(unsigned lim)
 {
 if (smtp_inptr >= smtp_inend)
   {
@@ -423,7 +423,10 @@ if (smtp_inptr >= smtp_inend)
   if (!smtp_out) return EOF;
   fflush(smtp_out);
   if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-  rc = read(fileno(smtp_in), smtp_inbuffer, in_buffer_size);
+
+  /* Limit amount read, so non-message data is not fed to DKIM */
+
+  rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE, lim));
   save_errno = errno;
   alarm(0);
   if (rc <= 0)
@@ -471,23 +474,26 @@ to handle the BDAT command/response.
 Placed here due to the correlation with the above smtp_getc(), which it wraps,
 and also by the need to do smtp command/response handling.
 
-Arguments:  none
+Arguments:  lim		(ignored)
 Returns:    the next character or ERR, EOD or EOF
 */
 
 int
-bdat_getc(void)
+bdat_getc(unsigned lim)
 {
 uschar * user_msg = NULL;
 uschar * log_msg;
 
 for(;;)
   {
-  if (chunking_data_left-- > 0)
-    return lwr_receive_getc();
+  if (chunking_data_left > 0)
+    return lwr_receive_getc(chunking_data_left--);
 
   receive_getc = lwr_receive_getc;
   receive_ungetc = lwr_receive_ungetc;
+#ifndef DISABLE_DKIM
+  dkim_collect_input = FALSE;
+#endif
 
   /* Unless PIPELINING was offered, there should be no next command
   until after we ack that chunk */
@@ -516,21 +522,22 @@ for(;;)
     return EOD;
     }
 
-  chunking_state = CHUNKING_OFFERED;
   smtp_printf("250 %u byte chunk received\r\n", chunking_datasize);
+  chunking_state = CHUNKING_OFFERED;
+  DEBUG(D_receive) debug_printf("chunking state %d\n", (int)chunking_state);
 
   /* Expect another BDAT cmd from input. RFC 3030 says nothing about
   QUIT, RSET or NOOP but handling them seems obvious */
 
 next_cmd:
-  switch(smtp_read_command(TRUE))
+  switch(smtp_read_command(TRUE, 1))
     {
     default:
       (void) synprot_error(L_smtp_protocol_error, 503, NULL,
 	US"only BDAT permissible after non-LAST BDAT");
 
   repeat_until_rset:
-      switch(smtp_read_command(TRUE))
+      switch(smtp_read_command(TRUE, 1))
 	{
 	case QUIT_CMD:	smtp_quit_handler(&user_msg, &log_msg);	/*FALLTHROUGH */
 	case EOF_CMD:	return EOF;
@@ -569,6 +576,8 @@ next_cmd:
       chunking_state = strcmpic(smtp_cmd_data+n, US"LAST") == 0
 	? CHUNKING_LAST : CHUNKING_ACTIVE;
       chunking_data_left = chunking_datasize;
+      DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
+				    (int)chunking_state, chunking_data_left);
 
       if (chunking_datasize == 0)
 	if (chunking_state == CHUNKING_LAST)
@@ -582,6 +591,9 @@ next_cmd:
 
       receive_getc = bdat_getc;
       receive_ungetc = bdat_ungetc;
+#ifndef DISABLE_DKIM
+      dkim_collect_input = TRUE;
+#endif
       break;	/* to top of main loop */
       }
     }
@@ -591,15 +603,18 @@ next_cmd:
 static void
 bdat_flush_data(void)
 {
-while (chunking_data_left-- > 0)
-  if (lwr_receive_getc() < 0)
+while (chunking_data_left > 0)
+  if (lwr_receive_getc(chunking_data_left--) < 0)
     break;
 
 receive_getc = lwr_receive_getc;
 receive_ungetc = lwr_receive_ungetc;
 
 if (chunking_state != CHUNKING_LAST)
+  {
   chunking_state = CHUNKING_OFFERED;
+  DEBUG(D_receive) debug_printf("chunking state %d\n", (int)chunking_state);
+  }
 }
 
 
@@ -1234,13 +1249,14 @@ signal handler that closes down the session on a timeout. Control does not
 return when it runs.
 
 Arguments:
-  check_sync   if TRUE, check synchronization rules if global option is TRUE
+  check_sync	if TRUE, check synchronization rules if global option is TRUE
+  buffer_lim	maximum to buffer in lower layer
 
 Returns:       a code identifying the command (enumerated above)
 */
 
 static int
-smtp_read_command(BOOL check_sync)
+smtp_read_command(BOOL check_sync, unsigned buffer_lim)
 {
 int c;
 int ptr = 0;
@@ -1249,9 +1265,9 @@ BOOL hadnull = FALSE;
 
 os_non_restarting_signal(SIGALRM, command_timeout_handler);
 
-while ((c = (receive_getc)()) != '\n' && c != EOF)
+while ((c = (receive_getc)(buffer_lim)) != '\n' && c != EOF)
   {
-  if (ptr >= smtp_cmd_buffer_size)
+  if (ptr >= SMTP_CMD_BUFFER_SIZE)
     {
     os_non_restarting_signal(SIGALRM, sigalrm_handler);
     return OTHER_CMD;
@@ -1391,7 +1407,7 @@ if (smtp_in == NULL || smtp_batched_input) return;
 receive_swallow_smtp();
 smtp_printf("421 %s\r\n", message);
 
-for (;;) switch(smtp_read_command(FALSE))
+for (;;) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
   {
   case EOF_CMD:
   return;
@@ -1835,7 +1851,7 @@ while (done <= 0)
   uschar *recipient = NULL;
   int start, end, sender_domain, recipient_domain;
 
-  switch(smtp_read_command(FALSE))
+  switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
     {
     /* The HELO/EHLO commands set sender_address_helo if they have
     valid data; otherwise they are ignored, except that they do
@@ -2094,12 +2110,12 @@ acl_var_c = NULL;
 
 /* Allow for trailing 0 in the command and data buffers. */
 
-if (!(smtp_cmd_buffer = US malloc(2*smtp_cmd_buffer_size + 2)))
+if (!(smtp_cmd_buffer = US malloc(2*SMTP_CMD_BUFFER_SIZE + 2)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "malloc() failed for SMTP command buffer");
 
 smtp_cmd_buffer[0] = 0;
-smtp_data_buffer = smtp_cmd_buffer + smtp_cmd_buffer_size + 1;
+smtp_data_buffer = smtp_cmd_buffer + SMTP_CMD_BUFFER_SIZE + 1;
 
 /* For batched input, the protocol setting can be overridden from the
 command line by a trusted caller. */
@@ -2119,7 +2135,7 @@ else
 /* Set up the buffer for inputting using direct read() calls, and arrange to
 call the local functions instead of the standard C ones. */
 
-if (!(smtp_inbuffer = (uschar *)malloc(in_buffer_size)))
+if (!(smtp_inbuffer = (uschar *)malloc(IN_BUFFER_SIZE)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
 
 receive_getc = smtp_getc;
@@ -3567,7 +3583,7 @@ while (done <= 0)
 	    US &off, sizeof(off));
 #endif
 
-  switch(smtp_read_command(TRUE))
+  switch(smtp_read_command(TRUE, GETC_BUFFER_UNLIMITED))
     {
     /* The AUTH command is not permitted to occur inside a transaction, and may
     occur successfully only once per connection. Actually, that isn't quite
@@ -4768,14 +4784,14 @@ while (done <= 0)
       chunking_state = strcmpic(smtp_cmd_data+n, US"LAST") == 0
 	? CHUNKING_LAST : CHUNKING_ACTIVE;
       chunking_data_left = chunking_datasize;
+      DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
+				    (int)chunking_state, chunking_data_left);
 
       lwr_receive_getc = receive_getc;
       lwr_receive_ungetc = receive_ungetc;
       receive_getc = bdat_getc;
       receive_ungetc = bdat_ungetc;
 
-      DEBUG(D_any)
-        debug_printf("chunking state %d\n", (int)chunking_state);
       goto DATA_BDAT;
       }
 
@@ -4991,7 +5007,7 @@ while (done <= 0)
     It seems safest to just wipe away the content rather than leave it as a
     target to jump to. */
 
-    memset(smtp_inbuffer, 0, in_buffer_size);
+    memset(smtp_inbuffer, 0, IN_BUFFER_SIZE);
 
     /* Attempt to start up a TLS session, and if successful, discard all
     knowledge that was obtained previously. At least, that's what the RFC says,
@@ -5045,7 +5061,7 @@ while (done <= 0)
     set, but we must still reject all incoming commands. */
 
     DEBUG(D_tls) debug_printf("TLS failed to start\n");
-    while (done <= 0) switch(smtp_read_command(FALSE))
+    while (done <= 0) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
       {
       case EOF_CMD:
 	log_write(L_smtp_connection, LOG_MAIN, "%s closed by EOF",
@@ -5333,8 +5349,8 @@ while (done <= 0)
 
     case BADSYN_CMD:
     SYNC_FAILURE:
-    if (smtp_inend >= smtp_inbuffer + in_buffer_size)
-      smtp_inend = smtp_inbuffer + in_buffer_size - 1;
+    if (smtp_inend >= smtp_inbuffer + IN_BUFFER_SIZE)
+      smtp_inend = smtp_inbuffer + IN_BUFFER_SIZE - 1;
     c = smtp_inend - smtp_inptr;
     if (c > 150) c = 150;
     smtp_inptr[c] = 0;
