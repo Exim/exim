@@ -3903,19 +3903,20 @@ while (done <= 0)
         dsn_advertised = TRUE;
         }
 
-      /* Advertise ETRN if there's an ACL checking whether a host is
-      permitted to issue it; a check is made when any host actually tries. */
+      /* Advertise ETRN/VRFY/EXPN if there's are ACL checking whether a host is
+      permitted to issue them; a check is made when any host actually tries. */
 
-      if (acl_smtp_etrn != NULL)
+      if (acl_smtp_etrn)
         {
         s = string_catn(s, &size, &ptr, smtp_code, 3);
         s = string_catn(s, &size, &ptr, US"-ETRN\r\n", 7);
         }
-
-      /* Advertise EXPN if there's an ACL checking whether a host is
-      permitted to issue it; a check is made when any host actually tries. */
-
-      if (acl_smtp_expn != NULL)
+      if (acl_smtp_vrfy)
+        {
+        s = string_catn(s, &size, &ptr, smtp_code, 3);
+        s = string_catn(s, &size, &ptr, US"-VRFY\r\n", 7);
+        }
+      if (acl_smtp_expn)
         {
         s = string_catn(s, &size, &ptr, smtp_code, 3);
         s = string_catn(s, &size, &ptr, US"-EXPN\r\n", 7);

@@ -25875,7 +25875,7 @@ running, the transport may get an IP for the name for its authentication
 check which does not match the connection peer IP.
 No authentication will then be done, despite the names being identical.
 
-For such cases use a separate transport which alwats authenticates.
+For such cases use a separate transport which always authenticates.
 .wen
 
 .cindex "AUTH" "on MAIL command"

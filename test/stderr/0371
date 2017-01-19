@@ -41,6 +41,7 @@ host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-mail.test.ex Hello something [V4NET.0.0.0]
 250-SIZE 52428800
 250-8BITMIME
+250-VRFY
 250-PIPELINING
 250 HELP
 SMTP<< mail from:<x@y>
