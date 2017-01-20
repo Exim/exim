@@ -36,8 +36,7 @@ Extract the current source of OpenSSL.  Change into that directory.
 This assumes that `/opt/openssl` is not in use.  If it is, pick
 something else.  `/opt/exim/openssl` perhaps.
 
-    ./config --prefix=/opt/openssl --openssldir=/etc/ssl
-    enable-ssl-trace
+    ./config --prefix=/opt/openssl --openssldir=/etc/ssl enable-ssl-trace
     make
     make install
 
