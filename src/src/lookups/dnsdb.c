@@ -261,17 +261,15 @@ if ((equals = Ustrchr(keystring, '=')) != NULL)
   while (tend > keystring && isspace(tend[-1])) tend--;
   len = tend - keystring;
 
-  for (i = 0; i < sizeof(type_names)/sizeof(uschar *); i++)
-    {
+  for (i = 0; i < nelem(type_names); i++)
     if (len == Ustrlen(type_names[i]) &&
         strncmpic(keystring, US type_names[i], len) == 0)
       {
       type = type_values[i];
       break;
       }
-    }
 
-  if (i >= sizeof(type_names)/sizeof(uschar *))
+  if (i >= nelem(type_names))
     {
     *errmsg = US"unsupported DNS record type";
     return DEFER;

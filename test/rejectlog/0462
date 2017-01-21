@@ -1,5 +1,5 @@
-1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <Ok@localhost>: response to "RCPT TO:<postmaster@localhost>" from 127.0.0.1 [127.0.0.1] was: 550 NO
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <Ok@localhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@localhost>: 550 NO
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<Ok@localhost> rejected RCPT <checkpm@test.ex>: Sender verify failed
-1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root sender verify fail for <NOTok@elsewhere>: response to "RCPT TO:<NOTok@elsewhere>" from 127.0.0.1 [127.0.0.1] was: 550 NO
+1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root sender verify fail for <NOTok@elsewhere>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<NOTok@elsewhere>: 550 NO
 1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root F=<NOTok@elsewhere> rejected RCPT <nocheckpm@test.ex>: Sender verify failed
 1999-03-02 09:44:33 H=[V4NET.0.0.2] U=root F=<NOTok2@elsewhere> rejected RCPT <nocheckpm@test.ex>: Sender verify failed

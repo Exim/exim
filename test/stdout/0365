@@ -40,7 +40,7 @@
 550-Rejected after DATA: could not verify "From:" header address
 550 bad@domain: Unrouteable address
 250 OK
-451-could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
+451-Could not complete sender verify callout: V4NET.0.0.0 [V4NET.0.0.0] : could not connect: Network Error
 451-Could not complete sender verify callout for <callout@x>.
 451-The mail server(s) for the domain may be temporarily unreachable, or
 451-they may be permanently unreachable from this server. In the latter case,

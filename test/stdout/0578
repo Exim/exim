@@ -15,7 +15,7 @@
 550-Verification failed for <bad@localhost>
 550-Called:   127.0.0.1
 550-Sent:     RCPT TO:<bad@localhost>
-550-Response: 550 REJECTED
+550-Response: 550 REJECTED rcpt
 550 Sender verify failed
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -29,7 +29,7 @@
 550-Callback setup failed while verifying <ok@localhost>
 550-Called:   127.0.0.1
 550-Sent:     MAIL FROM:<>
-550-Response: 550 REJECT MAIL FROM
+550-Response: 550 REJECT mail from
 550-The initial connection, or a HELO or MAIL FROM:<> command was
 550-rejected. Refusing MAIL FROM:<> does not help fight spam, disregards
 550-RFC requirements, and stops you from receiving standard bounce
@@ -53,7 +53,7 @@
 550-Postmaster verification failed while checking <ok@otherhost>
 550-Called:   127.0.0.1
 550-Sent:     RCPT TO:<postmaster@otherhost>
-550-Response: 550 NOT OK
+550-Response: 550 NOT OK rcpt postmaster
 550-Several RFCs state that you are required to have a postmaster
 550-mailbox for each mail domain. This host does not accept mail
 550-from domains whose servers reject the postmaster address.
@@ -154,11 +154,13 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@localhost>
-250 OK
+250 OK mail sender
+250 OK recipient
 QUIT
 250 OK
 End of script
@@ -166,11 +168,13 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<bad@localhost>
-550 REJECTED
+250 OK sender
+550 REJECTED rcpt
 QUIT
 250 OK
 End of script
@@ -178,9 +182,13 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-550 REJECT MAIL FROM
+RCPT TO:<ok@localhost>
+550 REJECT mail from
+530 BAD SEQUENCE no sender accepted for rcpt
 QUIT
 250 OK
 End of script
@@ -188,17 +196,19 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@otherhost>
-250 OK
+250 OK sender
+250 OK rcpt
 RSET
-250 OK
+250 OK reset
 MAIL FROM:<>
-250 OK
 RCPT TO:<postmaster@otherhost>
-550 NOT OK
+250 OK sender
+550 NOT OK rcpt postmaster
 QUIT
 250 OK
 End of script
@@ -206,17 +216,19 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@otherhost2>
 250 OK
+250 OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<postmaster@otherhost2>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -224,11 +236,13 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>
 250 OK
+250 OK accepting that random recipient
 QUIT
 250 OK
 End of script
@@ -236,11 +250,13 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost4>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -248,23 +264,25 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost41>
+250 OK
 550 NOT OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@otherhost41>
 250 OK
+250 OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<postmaster@otherhost41>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -272,17 +290,19 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@otherhost21>
 250 OK
+250 OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<postmaster@otherhost21>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -290,11 +310,13 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok2@otherhost21>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -302,17 +324,19 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost31>
+250 OK
 550 NOT OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@otherhost31>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -320,11 +344,13 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<okok@otherhost31>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -332,16 +358,18 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost31>
+250 OK
 550 NOT OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<okokok@otherhost31>
+250 OK
 250 OK
 QUIT
 250 OK
@@ -350,27 +378,31 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost51>
+250 OK
 *sleep 2
 End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<okokok@otherhost52>
+250 OK
 250 OK
 RSET
 250 OK
 MAIL FROM:<pmsend@a.domain>
-250 OK
 RCPT TO:<postmaster@otherhost52>
 250 OK
+250 OK
 QUIT
 250 OK
 End of script
@@ -378,10 +410,12 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<somesender@a.domain>
-250 OK
 RCPT TO:<abcd@x.y.z>
+250 OK
 250 OK
 QUIT
 250 OK
@@ -390,26 +424,30 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<abcd@x.y.z>
+250 OK
 *sleep 2
 End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@otherhost9>
+250 OK
 250 OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<postmaster@otherhost9>
+250 OK
 550 NOT OK
 RCPT TO:<postmaster>
 250 OK
@@ -420,22 +458,24 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 220 Server ready
 EHLO myhost.test.ex
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<postmaster@myhost.test.ex>
-250 OK
 RCPT TO:<myhost.test.ex-dddddddd-testing@test.ex>
+250 OK
 550 RANDOM IS BAD
 RSET
 250 OK
 MAIL FROM:<postmaster@myhost.test.ex>
-250 OK
 RCPT TO:<z@test.ex>
+250 OK
 250 OK
 RSET
 250 OK
 MAIL FROM:<pmsend@b.domain>
-250 OK
 RCPT TO:<postmaster@test.ex>
+250 OK
 250 OK
 QUIT
 250 OK

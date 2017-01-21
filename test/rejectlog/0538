@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 U=CALLER sender verify fail for <userx@broken.example>: response to "MAIL FROM:<>" from 127.0.0.1 [127.0.0.1] was: 550 I'm misconfigured
+1999-03-02 09:44:33 U=CALLER sender verify fail for <userx@broken.example>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 I'm misconfigured
 1999-03-02 09:44:33 U=CALLER rejected MAIL <userx@broken.example>: Sender verify failed
 1999-03-02 09:44:33 U=CALLER sender verify fail for <userx@broken.example>
 1999-03-02 09:44:33 U=CALLER rejected MAIL <userx@broken.example>: Sender verify failed

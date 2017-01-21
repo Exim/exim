@@ -1,14 +1,17 @@
-# callout verification (with caching)
+# callout verification pipelining
 need_ipv4
 #
+# basic sender verify
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
-MAIL FROM
-250 OK
+MAIL FROM:<>
 RCPT TO
-250 OK
+250 OK mail sender
+250 OK recipient
 QUIT
 250 OK
 ****
@@ -34,11 +37,13 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
-550 REJECTED
+250 OK sender
+550 REJECTED rcpt
 QUIT
 250 OK
 ****
@@ -56,9 +61,13 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-550 REJECT MAIL FROM
+RCPT TO
+550 REJECT mail from
+530 BAD SEQUENCE no sender accepted for rcpt
 QUIT
 250 OK
 ****
@@ -76,17 +85,19 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
-MAIL FROM
-250 OK
+MAIL FROM:<>
 RCPT TO
-250 OK
+250 OK sender
+250 OK rcpt
 RSET
-250 OK
-MAIL FROM
-250 OK
-RCPT TO
-550 NOT OK
+250 OK reset
+MAIL FROM:<>
+RCPT TO:<postmaster@otherhost>
+250 OK sender
+550 NOT OK rcpt postmaster
 QUIT
 250 OK
 ****
@@ -104,16 +115,18 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 RSET
 250 OK
 MAIL FROM
+RCPT TO:<postmaster@otherhost2>
 250 OK
-RCPT TO
 250 OK
 QUIT
 250 OK
@@ -132,11 +145,13 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO:<myhost.test.ex-
 250 OK
+250 OK accepting that random recipient
 QUIT
 250 OK
 ****
@@ -154,10 +169,12 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO:<myhost.test.ex-
+250 OK
 250 OK
 QUIT
 250 OK
@@ -176,22 +193,24 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<myhost.test.ex-
+250 OK
 550 NOT OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<ok@otherhost41>
+250 OK
 250 OK
 RSET
 250 OK
 MAIL FROM:<>
-250 OK
 RCPT TO:<postmaster@otherhost41>
+250 OK
 250 OK
 QUIT
 250 OK
@@ -211,16 +230,18 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 RSET
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 QUIT
 250 OK
@@ -233,10 +254,12 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 QUIT
 250 OK
@@ -250,16 +273,18 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 550 NOT OK
 RSET
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 QUIT
 250 OK
@@ -272,10 +297,12 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
+RCPT TO:<okok@otherhost31>
 250 OK
-RCPT TO
 250 OK
 QUIT
 250 OK
@@ -290,16 +317,18 @@ sleep 2
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
-MAIL FROM
+MAIL FROM:<>
+RCPT TO:<myhost.test.ex-
 250 OK
-RCPT TO
 550 NOT OK
 RSET
 250 OK
-MAIL FROM
+MAIL FROM:<>
+RCPT TO:<okokok@otherhost31>
 250 OK
-RCPT TO
 250 OK
 QUIT
 250 OK
@@ -313,10 +342,12 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 *sleep 2
 ****
 sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.5
@@ -328,16 +359,18 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 RSET
 250 OK
-MAIL FROM
+MAIL FROM:<pmsend@a.domain>
+RCPT TO:<postmaster@otherhost52>
 250 OK
-RCPT TO
 250 OK
 QUIT
 250 OK
@@ -351,10 +384,12 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
-MAIL FROM
+MAIL FROM:<somesender@a.domain>
+RCPT TO:<abcd@x.y.z>
 250 OK
-RCPT TO
 250 OK
 QUIT
 250 OK
@@ -371,10 +406,12 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 *sleep 2
 ****
 sudo exim -d-all+verify -odq -v -bs -oMa V4NET.0.0.8
@@ -389,18 +426,20 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 RSET
 250 OK
 MAIL FROM
+RCPT TO:<postmaster@otherhost9>
 250 OK
-RCPT TO
 550 NOT OK
-RCPT TO
+RCPT TO:<postmaster>
 250 OK
 QUIT
 250 OK
@@ -414,22 +453,24 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
+250-Yeah mate
+250-PIPELINING
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 550 RANDOM IS BAD
 RSET
 250 OK
 MAIL FROM
-250 OK
 RCPT TO
+250 OK
 250 OK
 RSET
 250 OK
-MAIL FROM
+MAIL FROM:<pmsend@b.domain>
+RCPT TO:<postmaster@test.ex>
 250 OK
-RCPT TO
 250 OK
 QUIT
 250 OK

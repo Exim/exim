@@ -1,18 +1,18 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<> rejected after DATA: '>' missing at end of address: failing address in "From:" header is: <bad@syntax
 1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
-1999-03-02 09:44:33 U=CALLER sender verify defer for <callout@x>: could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
+1999-03-02 09:44:33 U=CALLER sender verify defer for <callout@x>: Could not complete sender verify callout: V4NET.0.0.0 [V4NET.0.0.0] : could not connect: Network Error
 1999-03-02 09:44:33 U=CALLER F=<callout@x> temporarily rejected RCPT <x@y>: Could not complete sender verify callout
 1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<nosyntax@x> rejected after DATA
 1999-03-02 09:44:33 10HmbA-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
-1999-03-02 09:44:33 U=CALLER F=<recipcallout@y> temporarily rejected RCPT <callout@y>: could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
+1999-03-02 09:44:33 U=CALLER F=<recipcallout@y> temporarily rejected RCPT <callout@y>: Could not complete recipient verify callout: V4NET.0.0.0 [V4NET.0.0.0] : could not connect: Network Error
 1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <cantverify.fail@y>: failure message
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <cantverify.defer@y>: defer message
 1999-03-02 09:44:33 10HmbB-0005vi-00 U=CALLER F=<> rejected after DATA: '>' missing at end of address: failing address in "From:" header is: <bad@syntax
 1999-03-02 09:44:33 10HmbC-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
-1999-03-02 09:44:33 U=CALLER sender verify defer for <callout@x>: could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
+1999-03-02 09:44:33 U=CALLER sender verify defer for <callout@x>: Could not complete sender verify callout: V4NET.0.0.0 [V4NET.0.0.0] : could not connect: Network Error
 1999-03-02 09:44:33 U=CALLER F=<callout@x> temporarily rejected RCPT <x@y>: Could not complete sender verify callout
 1999-03-02 09:44:33 10HmbD-0005vi-00 U=CALLER F=<nosyntax@x> rejected after DATA
 1999-03-02 09:44:33 10HmbE-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
-1999-03-02 09:44:33 U=CALLER F=<recipcallout@y> temporarily rejected RCPT <callout@y>: could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
+1999-03-02 09:44:33 U=CALLER F=<recipcallout@y> temporarily rejected RCPT <callout@y>: Could not complete recipient verify callout: V4NET.0.0.0 [V4NET.0.0.0] : could not connect: Network Error
 1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <cantverify.fail@y>: failure message
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <cantverify.defer@y>: defer message

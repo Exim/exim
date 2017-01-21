@@ -92,6 +92,7 @@
 250 Accepted
 221 the.local.host.name closing connection
 +++++++++++++++++++++++++++
+07-Mar-2000 12:21:52 other.ex callout=accept postmaster=unknown random=unknown
 07-Mar-2000 12:21:52 r1@test.ex callout=accept
 07-Mar-2000 12:21:52 r1@test.ex/<postmaster@the.local.host.name> callout=accept
 07-Mar-2000 12:21:52 r1@test.ex/<s1@test.ex> callout=accept
@@ -110,6 +111,7 @@
 250 Accepted
 221 the.local.host.name closing connection
 +++++++++++++++++++++++++++
+07-Mar-2000 12:21:52 other.ex callout=accept postmaster=unknown random=unknown
 07-Mar-2000 12:21:52 r12@three.test.ex callout=accept
 07-Mar-2000 12:21:52 r1@test.ex callout=accept
 07-Mar-2000 12:21:52 r1@test.ex/<postmaster@the.local.host.name> callout=accept
@@ -251,7 +253,7 @@ EHLO the.local.host.name
 250 OK
 MAIL FROM:<>
 250 OK
-RCPT TO:<r12@three.test.ex>
+RCPT TO:<the.local.host.name--testing@three.test.ex>
 250 OK
 QUIT
 250 OK

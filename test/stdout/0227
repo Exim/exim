@@ -251,7 +251,7 @@ EHLO myhost.test.ex
 250- wotcher
 250-SIZE
 250 OK
-MAIL FROM:<>
+MAIL FROM:<> SIZE=ssss
 250 OK
 RCPT TO:<ok@localhost1>
 250 OK

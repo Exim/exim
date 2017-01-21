@@ -1,6 +1,6 @@
-1999-03-02 09:44:33 U=CALLER sender verify defer for <r1@domain1>: response to "RCPT TO:<r1@domain1>" from 127.0.0.1 [127.0.0.1] was: 450 Temporary error
+1999-03-02 09:44:33 U=CALLER sender verify defer for <r1@domain1>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<r1@domain1>: 450 Temporary error
 1999-03-02 09:44:33 U=CALLER temporarily rejected MAIL <r1@domain1>: Could not complete sender verify callout
-1999-03-02 09:44:33 U=CALLER sender verify defer for <r2@domain2>: response to "RCPT TO:<r2@domain2>" from ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] was: 450 Temporary error
+1999-03-02 09:44:33 U=CALLER sender verify defer for <r2@domain2>: Could not complete sender verify callout: ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] : SMTP error from remote mail server after RCPT TO:<r2@domain2>: 450 Temporary error
 1999-03-02 09:44:33 U=CALLER temporarily rejected MAIL <r2@domain2>: Could not complete sender verify callout
-1999-03-02 09:44:33 U=CALLER sender verify defer for <r3@domain3>: response to "RCPT TO:<r3@domain3>" from 127.0.0.1 [127.0.0.1] was: 450 Temporary error
+1999-03-02 09:44:33 U=CALLER sender verify defer for <r3@domain3>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<r3@domain3>: 450 Temporary error
 1999-03-02 09:44:33 U=CALLER temporarily rejected MAIL <r3@domain3>: Could not complete sender verify callout

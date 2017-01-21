@@ -1,10 +1,10 @@
-1999-03-02 09:44:33 U=CALLER F=<s3@other.ex> rejected RCPT r3@other.ex: response to "MAIL FROM:<s3@other.ex>" from 127.0.0.1 [127.0.0.1] was: 550 NOTOK
-1999-03-02 09:44:33 U=CALLER F=<s4@other.ex> temporarily rejected RCPT r4@other.ex: could not connect to 127.0.0.1 [127.0.0.1]: Connection refused
-1999-03-02 09:44:33 U=CALLER F=<x9@test.ex> rejected RCPT <r9@test.ex>: response to "RCPT TO:<r9@test.ex>" from 127.0.0.1 [127.0.0.1] was: 550 NO
+1999-03-02 09:44:33 U=CALLER F=<s3@other.ex> rejected RCPT r3@other.ex: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<s3@other.ex>" was: 550 NOTOK
+1999-03-02 09:44:33 U=CALLER F=<s4@other.ex> temporarily rejected RCPT r4@other.ex: Could not complete recipient verify callout: 127.0.0.1 [127.0.0.1] : could not connect: Connection refused
+1999-03-02 09:44:33 U=CALLER F=<x9@test.ex> rejected RCPT <r9@test.ex>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<r9@test.ex>: 550 NO
 1999-03-02 09:44:33 U=CALLER F=<x9@test.ex> rejected RCPT <r9@test.ex>: Previous (cached) callout verification failure
-1999-03-02 09:44:33 U=CALLER sender verify fail for <x9@test.ex>: response to "RCPT TO:<x9@test.ex>" from 127.0.0.1 [127.0.0.1] was: 550 NO
+1999-03-02 09:44:33 U=CALLER sender verify fail for <x9@test.ex>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<x9@test.ex>: 550 NO
 1999-03-02 09:44:33 U=CALLER F=<x9@test.ex> rejected RCPT <r9@test.ex>: Sender verify failed
 1999-03-02 09:44:33 U=CALLER sender verify fail for <x9@test.ex>
 1999-03-02 09:44:33 U=CALLER F=<x9@test.ex> rejected RCPT <r9@test.ex>: Sender verify failed
-1999-03-02 09:44:33 U=CALLER F=<x11@two.test.ex> temporarily rejected RCPT r11@two.test.ex: Could not complete recipient verify callout
-1999-03-02 09:44:33 U=CALLER F=<x11@two.test.ex> temporarily rejected RCPT r11@two.test.ex: Could not complete recipient verify callout
+1999-03-02 09:44:33 U=CALLER F=<x11@two.test.ex> temporarily rejected RCPT r11@two.test.ex: Could not complete recipient verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after RCPT TO:<r11@two.test.ex>
+1999-03-02 09:44:33 U=CALLER F=<x11@two.test.ex> temporarily rejected RCPT r11@two.test.ex: Could not complete recipient verify callout: 127.0.0.1 [127.0.0.1] : SMTP timeout after initial connection

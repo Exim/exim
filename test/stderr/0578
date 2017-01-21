@@ -15,11 +15,13 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@localhost>
-  SMTP<< 250 OK
+  SMTP<< 250 OK mail sender
+  SMTP<< 250 OK recipient
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
@@ -87,11 +89,13 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<bad@localhost>
-  SMTP<< 550 REJECTED
+  SMTP<< 250 OK sender
+  SMTP<< 550 REJECTED rcpt
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
@@ -99,7 +103,7 @@ wrote callout cache domain record for localhost:
   result=1 postmaster=0 random=0
 wrote negative callout cache address record for bad@localhost
 LOG: MAIN REJECT
-  H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<bad@localhost>: 550 REJECTED
+  H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<bad@localhost>: 550 REJECTED rcpt
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed
 LOG: smtp_connection MAIN
@@ -143,16 +147,20 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 550 REJECT MAIL FROM
+  SMTP>> RCPT TO:<ok@localhost>
+  SMTP<< 550 REJECT mail from
+  SMTP<< 530 BAD SEQUENCE no sender accepted for rcpt
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for localhost:
   result=3 postmaster=0 random=0
 LOG: MAIN REJECT
-  H=[V4NET.0.0.1] U=root sender verify fail for <ok@localhost>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 REJECT MAIL FROM
+  H=[V4NET.0.0.1] U=root sender verify fail for <ok@localhost>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 REJECT mail from
 LOG: MAIN REJECT
   H=[V4NET.0.0.1] U=root F=<ok@localhost> rejected RCPT <z@test.ex>: (mail): Sender verify failed
 LOG: smtp_connection MAIN
@@ -195,18 +203,20 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@otherhost>
-  SMTP<< 250 OK
+  SMTP<< 250 OK sender
+  SMTP<< 250 OK rcpt
 Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
-  SMTP<< 250 OK
+  SMTP<< 250 OK reset
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<postmaster@otherhost>
-  SMTP<< 550 NOT OK
+  SMTP<< 250 OK sender
+  SMTP<< 550 NOT OK rcpt postmaster
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
@@ -214,7 +224,7 @@ wrote callout cache domain record for otherhost:
   result=1 postmaster=2 random=0
 wrote positive callout cache address record for ok@otherhost
 LOG: MAIN REJECT
-  H=[V4NET.0.0.2] U=root sender verify fail for <ok@otherhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@otherhost>: 550 NOT OK
+  H=[V4NET.0.0.2] U=root sender verify fail for <ok@otherhost>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<postmaster@otherhost>: 550 NOT OK rcpt postmaster
 LOG: MAIN REJECT
   H=[V4NET.0.0.2] U=root F=<ok@otherhost> rejected RCPT <z@test.ex>: Sender verify failed
 LOG: smtp_connection MAIN
@@ -257,17 +267,19 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@otherhost2>
+  SMTP<< 250 OK
   SMTP<< 250 OK
 Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<postmaster@otherhost2>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -313,18 +325,20 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>
   SMTP<< 250 OK
+  SMTP<< 250 OK accepting that random recipient
   SMTP>> QUIT
   SMTP<< 250 OK
   SMTP(close)>>
 wrote callout cache domain record for otherhost3:
   result=1 postmaster=0 random=1
 LOG: MAIN REJECT
-  H=[V4NET.0.0.3] U=root sender verify defer for <ok@otherhost3>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : response to "RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>" was: 250 OK
+  H=[V4NET.0.0.3] U=root sender verify defer for <ok@otherhost3>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : response to "RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>" was: 250 OK accepting that random recipient
 LOG: MAIN REJECT
   H=[V4NET.0.0.3] U=root F=<ok@otherhost3> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 LOG: smtp_connection MAIN
@@ -363,10 +377,12 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost4>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -413,23 +429,25 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost41>
+  SMTP<< 250 OK
   SMTP<< 550 NOT OK
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@otherhost41>
+  SMTP<< 250 OK
   SMTP<< 250 OK
 Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<postmaster@otherhost41>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -476,17 +494,19 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@otherhost21>
+  SMTP<< 250 OK
   SMTP<< 250 OK
 Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<postmaster@otherhost21>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -515,10 +535,12 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok2@otherhost21>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -546,16 +568,18 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost31>
+  SMTP<< 250 OK
   SMTP<< 550 NOT OK
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@otherhost31>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -584,10 +608,12 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<okok@otherhost31>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -615,16 +641,18 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost31>
+  SMTP<< 250 OK
   SMTP<< 550 NOT OK
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<okokok@otherhost31>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -652,10 +680,12 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost51>
+  SMTP<< 250 OK
 SMTP timeout
   SMTP(close)>>
 wrote callout cache domain record for otherhost51:
@@ -684,17 +714,19 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<okokok@otherhost52>
+  SMTP<< 250 OK
   SMTP<< 250 OK
 Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<pmsend@a.domain>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<postmaster@otherhost52>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -723,10 +755,12 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<somesender@a.domain>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<abcd@x.y.z>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK
@@ -757,10 +791,12 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<abcd@x.y.z>
+  SMTP<< 250 OK
 SMTP timeout
   SMTP(close)>>
 wrote callout cache domain record for x.y.z:
@@ -787,17 +823,19 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@otherhost9>
+  SMTP<< 250 OK
   SMTP<< 250 OK
 Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<postmaster@otherhost9>
+  SMTP<< 250 OK
   SMTP<< 550 NOT OK
   SMTP>> RCPT TO:<postmaster>
   SMTP<< 250 OK
@@ -827,23 +865,25 @@ interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
   SMTP>> EHLO myhost.test.ex
-  SMTP<< 250 OK
+  SMTP<< 250-Yeah mate
+         250-PIPELINING
+         250 OK
   SMTP>> MAIL FROM:<postmaster@myhost.test.ex>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@test.ex>
+  SMTP<< 250 OK
   SMTP<< 550 RANDOM IS BAD
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<postmaster@myhost.test.ex>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<z@test.ex>
+  SMTP<< 250 OK
   SMTP<< 250 OK
 Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<pmsend@b.domain>
-  SMTP<< 250 OK
   SMTP>> RCPT TO:<postmaster@test.ex>
+  SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP>> QUIT
   SMTP<< 250 OK

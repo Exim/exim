@@ -1082,7 +1082,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^PDKIM >> Body data for hash, canonicalized/;
 
     #  Parts of DKIM-specific debug output depend on the time/date
-    next if /^date:\w+,{SP}/;
+    next if /^date:\w+,\{SP\}/;
     next if /^PDKIM \[[^[]+\] (Header hash|b) computed:/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
@@ -3940,7 +3940,8 @@ foreach $test (@test_list)
       if ($? != 0)
         {
         if (($? & 0xff) == 0)
-          { printf("Server return code %d", $?/256); }
+          { printf("Server return code %d for test %d starting line %d", $?/256,
+	       	$testno, $subtest_startline); }
         elsif (($? & 0xff00) == 0)
           { printf("Server killed by signal %d", $? & 255); }
         else
