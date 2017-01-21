@@ -4,6 +4,7 @@ exim -d -bh V4NET.0.0.0
 mail from:<x@y>
 rcpt to:<x@y>
 data
+
 Message.
 .
 quit

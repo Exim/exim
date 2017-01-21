@@ -28,6 +28,9 @@ PP/02 GitHub PR 52: many spelling fixes, which include fixing parsing of
       no_require_dnssec option and creation of _HAVE_TRANSPORT_APPEND_MAILDIR
       macro.  Patches provided by Josh Soref.
 
+JH/05 Bug 2017: Fix DKIM verification in -bh test mode.  The data feed into
+      the dkim code may be unix-mode line endings rather than smtp wire-format
+      CRLF, so prepend a CR to any bare LF.
 
 Exim version 4.88
 -----------------

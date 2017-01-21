@@ -46,6 +46,7 @@ exim -d-all+acl+lists -odi -bs -oMa 10.9.8.8
 mail from:<ok@test3>
 rcpt to:<x@y>
 data
+
 Some message
 .
 quit

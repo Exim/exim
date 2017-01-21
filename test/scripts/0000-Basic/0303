@@ -16,6 +16,7 @@ EHLO [V4NET.2.3.4]
 mail from:<>
 rcpt to:<x@y>
 data
+
 .
 quit
 ****
@@ -24,6 +25,7 @@ EHLO [V4NET.2.3.4]
 mail from:<>
 rcpt to:<x@y>
 data
+
 .
 quit
 ****

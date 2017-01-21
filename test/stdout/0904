@@ -27,7 +27,7 @@ MAIL FROM:<>
 RCPT TO:<b@test.ex>
 250 acceptable rcpt cmd
 BDAT 329 LAST
-Unxpected EOF read from client
+Unexpected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings
@@ -100,7 +100,7 @@ EHLO testhost.test.ex
 MAIL FROM:<>
 RCPT TO:<q@test.ex>
 BDAT 329 LAST
-Unxpected EOF read from client
+Unexpected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Greetings

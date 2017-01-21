@@ -4,6 +4,7 @@ ehlo something
 mail from:<x@y>
 rcpt to:<x@y>
 data
+
 .
 vrfy x@y
 mail from:<x@y>

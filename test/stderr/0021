@@ -178,7 +178,6 @@ LOG: PANIC
   rcpt accepted
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
-host in ignore_fromline_hosts? no (option unset)
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: added header line
 >>

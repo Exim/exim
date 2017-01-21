@@ -41,7 +41,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-host in ignore_fromline_hosts? no (option unset)
 >>Headers received:
 
 search_tidyup called
@@ -113,7 +112,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-host in ignore_fromline_hosts? no (option unset)
 >>Headers received:
 
 search_tidyup called
@@ -183,7 +181,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-host in ignore_fromline_hosts? no (option unset)
 >>Headers received:
 
 search_tidyup called

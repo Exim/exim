@@ -876,7 +876,7 @@ ctx->linebuf[ctx->linebuf_offset] = '\0';
 /* Terminate on EOD marker */
 if (ctx->flags & PDKIM_DOT_TERM)
   {
-  if ( memcmp(p, ".\r\n", 3) == 0)
+  if (memcmp(p, ".\r\n", 3) == 0)
     return pdkim_body_complete(ctx);
 
   /* Unstuff dots */
@@ -1017,45 +1017,60 @@ else for (p = 0; p<len; p++)
 
   if (ctx->flags & PDKIM_PAST_HDRS)
     {
+    if (c == '\n' && !(ctx->flags & PDKIM_SEEN_CR))	/* emulate the CR */
+      {
+      ctx->linebuf[ctx->linebuf_offset++] = '\r';
+      if (ctx->linebuf_offset == PDKIM_MAX_BODY_LINE_LEN-1)
+	return PDKIM_ERR_LONG_LINE;
+      }
+
     /* Processing body byte */
     ctx->linebuf[ctx->linebuf_offset++] = c;
-    if (c == '\n')
+    if (c == '\r')
+      ctx->flags |= PDKIM_SEEN_CR;
+    else if (c == '\n')
       {
-      int rc = pdkim_bodyline_complete(ctx); /* End of line */
-      if (rc != PDKIM_OK) return rc;
+      int rc;
+      ctx->flags &= ~PDKIM_SEEN_CR;
+      if ((rc = pdkim_bodyline_complete(ctx)) != PDKIM_OK)
+	return rc;
       }
-    if (ctx->linebuf_offset == (PDKIM_MAX_BODY_LINE_LEN-1))
+
+    if (ctx->linebuf_offset == PDKIM_MAX_BODY_LINE_LEN-1)
       return PDKIM_ERR_LONG_LINE;
     }
   else
     {
     /* Processing header byte */
-    if (c != '\r')
+    if (c == '\r')
+      ctx->flags |= PDKIM_SEEN_CR;
+    else if (c == '\n')
       {
-      if (c == '\n')
-        {
-	if (ctx->flags & PDKIM_SEEN_LF)
-	  {
-	  int rc = pdkim_header_complete(ctx); /* Seen last header line */
-	  if (rc != PDKIM_OK) return rc;
+      if (!(ctx->flags & PDKIM_SEEN_CR))		/* emulate the CR */
+	ctx->cur_header = string_catn(ctx->cur_header, &ctx->cur_header_size,
+				&ctx->cur_header_len, CUS "\r", 1);
 
-	  ctx->flags = ctx->flags & ~PDKIM_SEEN_LF | PDKIM_PAST_HDRS;
-	  DEBUG(D_acl) debug_printf(
-	      "PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>\n");
-	  continue;
-	  }
-	else
-	  ctx->flags |= PDKIM_SEEN_LF;
+      if (ctx->flags & PDKIM_SEEN_LF)
+	{
+	int rc = pdkim_header_complete(ctx); /* Seen last header line */
+	if (rc != PDKIM_OK) return rc;
+
+	ctx->flags = ctx->flags & ~(PDKIM_SEEN_LF|PDKIM_SEEN_CR) | PDKIM_PAST_HDRS;
+	DEBUG(D_acl) debug_printf(
+	    "PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>\n");
+	continue;
 	}
-      else if (ctx->flags & PDKIM_SEEN_LF)
-        {
-	if (!(c == '\t' || c == ' '))
-	  {
-	  int rc = pdkim_header_complete(ctx); /* End of header */
-	  if (rc != PDKIM_OK) return rc;
-	  }
-	ctx->flags &= ~PDKIM_SEEN_LF;
+      else
+	ctx->flags = ctx->flags & ~PDKIM_SEEN_CR | PDKIM_SEEN_LF;
+      }
+    else if (ctx->flags & PDKIM_SEEN_LF)
+      {
+      if (!(c == '\t' || c == ' '))
+	{
+	int rc = pdkim_header_complete(ctx); /* End of header */
+	if (rc != PDKIM_OK) return rc;
 	}
+      ctx->flags &= ~PDKIM_SEEN_LF;
       }
 
     if (ctx->cur_header_len < PDKIM_MAX_HEADER_LEN)

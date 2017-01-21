@@ -140,6 +140,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> data
 ??? 354
 <<< 354 Enter message, ending with "." on a line by itself
+>>> 
 >>> Testing
 >>> .
 ??? 250
@@ -153,6 +154,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> data
 ??? 354
 <<< 354 Enter message, ending with "." on a line by itself
+>>> 
 >>> Testing 2
 >>> .
 ??? 250
@@ -169,6 +171,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> data
 ??? 354
 <<< 354 Enter message, ending with "." on a line by itself
+>>> 
 >>> Testing 3
 >>> .
 ??? 250
@@ -182,6 +185,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> data
 ??? 354
 <<< 354 Enter message, ending with "." on a line by itself
+>>> 
 >>> Testing 4
 >>> .
 ??? 250

@@ -11,12 +11,14 @@ exim -d -odi -bs -oMa V4NET.11.12.13 userx
 mail from:<x@y>
 rcpt to:<2@b>
 data
+
 Message 1
 .
 rset
 mail from:<x@y>
 rcpt to:<2@b>
 data
+
 Message 2
 .
 quit

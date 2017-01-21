@@ -3,6 +3,7 @@ exim -d -bh V4NET.9.8.7
 mail from:<x@y>
 rcpt to:<warn_empty@test.ex>
 data
+
 Testing
 .
 quit
@@ -11,6 +12,7 @@ exim -d -bh V4NET.9.8.7
 mail from:<x@y>
 rcpt to:<warn_log@test.ex>
 data
+
 Testing
 .
 quit
@@ -19,6 +21,7 @@ exim -d -bh V4NET.9.8.7
 mail from:<x@y>
 rcpt to:<warn_user@test.ex>
 data
+
 Testing
 .
 quit
@@ -55,22 +58,26 @@ mail from:<x@y>
 rcpt to:<accept@y>
 rcpt to:<freeze@y>
 data
+
 Testing
 .
 mail from:<x@y>
 rcpt to:<accept@y>
 data
+
 Testing 2
 .
 mail from:<x@y>
 rcpt to:<queue_only@y>
 rcpt to:<accept@y>
 data
+
 Testing 3
 .
 mail from:<x@y>
 rcpt to:<accept@y>
 data
+
 Testing 4
 .
 quit
@@ -101,6 +108,7 @@ rcpt to:<freeze@y>
 ??? 250
 data
 ??? 354
+
 Testing
 .
 ??? 250
@@ -110,6 +118,7 @@ rcpt to:<accept@y>
 ??? 250
 data
 ??? 354
+
 Testing 2
 .
 ??? 250
@@ -121,6 +130,7 @@ rcpt to:<accept@y>
 ??? 250
 data
 ??? 354
+
 Testing 3
 .
 ??? 250
@@ -130,6 +140,7 @@ rcpt to:<accept@y>
 ??? 250
 data
 ??? 354
+
 Testing 4
 .
 ??? 250

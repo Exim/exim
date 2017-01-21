@@ -250,9 +250,10 @@ typedef struct pdkim_ctx {
 
 #define PDKIM_MODE_SIGN   BIT(0)	/* if unset, mode==verify */
 #define PDKIM_DOT_TERM	  BIT(1)	/* dot termination and unstuffing */
-#define PDKIM_SEEN_LF	  BIT(2)
-#define PDKIM_SEEN_EOD	  BIT(3)
+#define PDKIM_SEEN_CR	  BIT(2)
+#define PDKIM_SEEN_LF	  BIT(3)
 #define PDKIM_PAST_HDRS	  BIT(4)
+#define PDKIM_SEEN_EOD	  BIT(5)
   unsigned   flags;
 
   /* One (signing) or several chained (verification) signatures */
