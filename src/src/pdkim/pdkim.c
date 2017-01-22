@@ -959,6 +959,11 @@ if (ctx->flags & PDKIM_MODE_SIGN)
 /* DKIM-Signature: headers are added to the verification list */
 else
   {
+  DEBUG(D_acl)
+    {
+    debug_printf("PDKIM >> raw hdr: ");
+    pdkim_quoteprint(CUS ctx->cur_header, Ustrlen(ctx->cur_header));
+    }
   if (strncasecmp(CCS ctx->cur_header,
 		  DKIM_SIGNATURE_HEADERNAME,
 		  Ustrlen(DKIM_SIGNATURE_HEADERNAME)) == 0)

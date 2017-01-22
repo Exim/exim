@@ -968,5 +968,9 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define PEER_OFFERED_SIZE	BIT(6)
 #define PEER_OFFERED_CHUNKING	BIT(7)
 
+/* Argument for *_getc */
+
+#define GETC_BUFFER_UNLIMITED	UINT_MAX
+
 
 /* End of macros.h */

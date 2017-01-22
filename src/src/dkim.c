@@ -18,6 +18,7 @@ int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
 pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
+static BOOL dkim_collect_error = FALSE;
 
 static int
 dkim_exim_query_dns_txt(char *name, char *answer)
@@ -87,6 +88,7 @@ if (dkim_verify_ctx)
 
 dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt, dot_stuffing);
 dkim_collect_input = !!dkim_verify_ctx;
+dkim_collect_error = FALSE;
 
 /* Start feed up with any cached data */
 receive_get_cache();
@@ -106,6 +108,7 @@ if (  dkim_collect_input
   {
   log_write(0, LOG_MAIN,
 	     "DKIM: validation error: %.100s", pdkim_errstr(rc));
+  dkim_collect_error = TRUE;
   dkim_collect_input = FALSE;
   }
 store_pool = dkim_verify_oldpool;
@@ -127,11 +130,7 @@ store_pool = POOL_PERM;
 
 dkim_signatures = NULL;
 
-/* If we have arrived here with dkim_collect_input == FALSE, it
-means there was a processing error somewhere along the way.
-Log the incident and disable further verification. */
-
-if (!dkim_collect_input)
+if (dkim_collect_error)
   {
   log_write(0, LOG_MAIN,
 	     "DKIM: Error while running this message through validation,"

@@ -58,8 +58,54 @@ mail from:someone3@some.domain
 rcpt to:CALLER@test.ex
 ??? 250
 bdat 10
-To: Susan@bdat 78 last
+>>> To: Susan@
 ??? 250
+bdat 78 last
+random.com
+From: Sam@random.com
+Subject: This is a bodyless test message
+
+??? 250-
+??? 250
+quit
+??? 221
+****
+#
+# plain, small message (with body)
+# nonlast 1st bdat, noop, last-bdat(0) INCORRECTLY PIPELINED
+# immediate followon 2nd message
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+mail from:someone2A@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 100
+To: Susan@random.com
+From: Sam@random.com
+Subject: This is a bodyfull test message
+
+1234567890
+??? 250
+noop
+??? 250
+bdat 0 last
+??? 250-
+??? 250
+mail from:someone3A@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 10
+>>> To: Susan@
+??? 250
+bdat 78 last
 random.com
 From: Sam@random.com
 Subject: This is a bodyless test message

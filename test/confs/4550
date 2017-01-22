@@ -1,0 +1,57 @@
+# Exim test configuration 4550
+
+SERVER=
+OPT=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
+acl_smtp_data_prdr = accept local_parts = okuser
+
+prdr_enable
+
+# ----- Routers
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  transport = send_to_server
+
+server_dump:
+  driver = redirect
+  senders = ! :
+  data = :blackhole:
+
+server_store:
+  driver = accept
+  transport = store
+
+# ----- Transports
+
+begin transports
+
+store:
+  driver = appendfile
+  file = DIR/test-mail/store
+  return_path_add
+  user = CALLER
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+
+  dkim_domain =		${if def:sender_address_local_part {test.ex}}
+  dkim_selector =	sel
+  dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
+  dkim_sign_headers =	From
+
+# End

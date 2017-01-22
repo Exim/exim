@@ -131,6 +131,8 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -227,6 +229,7 @@ considering:
 	for userx@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+PDKIM >> raw hdr: QUIT{CR}{LF}
 considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -345,6 +348,8 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -441,6 +446,7 @@ considering:
 	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+PDKIM >> raw hdr: QUIT{CR}{LF}
 considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -559,6 +565,8 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -655,6 +663,7 @@ considering:
 	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+PDKIM >> raw hdr: QUIT{CR}{LF}
 considering: ${tod_full}
   expanding: ${tod_full}
      result: Tue, 2 Mar 1999 09:44:33 +0000

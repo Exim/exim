@@ -2158,12 +2158,12 @@ Only used by the server-side TLS.
 
 This feeds DKIM and should be used for all message-body reads.
 
-Arguments:  none
+Arguments:  lim		Maximum amount to read/bufffer
 Returns:    the next character or EOF
 */
 
 int
-tls_getc(void)
+tls_getc(unsigned lim)
 {
 exim_gnutls_state_st *state = &state_server;
 if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
@@ -2175,7 +2175,7 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
 
   if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
   inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
-    ssl_xfer_buffer_size);
+    MIN(ssl_xfer_buffer_size, lim));
   alarm(0);
 
   /* Timeouts do not get this far; see command_timeout_handler().
@@ -2213,7 +2213,7 @@ if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
     state->tlsp->peercert = NULL;
     state->tlsp->peerdn = NULL;
 
-    return smtp_getc();
+    return smtp_getc(lim);
     }
 
   /* Handle genuine errors */

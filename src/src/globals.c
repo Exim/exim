@@ -183,9 +183,9 @@ incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
 
 #ifndef STAND_ALONE
-int (*lwr_receive_getc)(void)  = stdin_getc;
+int (*lwr_receive_getc)(unsigned) = stdin_getc;
 int (*lwr_receive_ungetc)(int) = stdin_ungetc;
-int (*receive_getc)(void)      = stdin_getc;
+int (*receive_getc)(unsigned)  = stdin_getc;
 void (*receive_get_cache)(void)= NULL;
 int (*receive_ungetc)(int)     = stdin_ungetc;
 int (*receive_feof)(void)      = stdin_feof;

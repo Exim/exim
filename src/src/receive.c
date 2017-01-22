@@ -37,7 +37,7 @@ the file. (When SMTP input is occurring, different functions are used by
 changing the pointer variables.) */
 
 int
-stdin_getc(void)
+stdin_getc(unsigned lim)
 {
 return getc(stdin);
 }
@@ -626,7 +626,7 @@ if (!dot_ends)
   {
   register int last_ch = '\n';
 
-  for (; (ch = (receive_getc)()) != EOF; last_ch = ch)
+  for (; (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF; last_ch = ch)
     {
     if (ch == 0) body_zerocount++;
     if (last_ch == '\r' && ch != '\n')
@@ -668,7 +668,7 @@ if (!dot_ends)
 
 ch_state = 1;
 
-while ((ch = (receive_getc)()) != EOF)
+while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -786,7 +786,7 @@ int ch_state = 0;
 int ch;
 int linelength = 0;
 
-while ((ch = (receive_getc)()) != EOF)
+while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -913,7 +913,7 @@ read_message_bdat_smtp(FILE *fout)
 int ch;
 int linelength = 0;
 
-for (;;) switch (ch = bdat_getc())
+for (;;) switch (ch = bdat_getc(GETC_BUFFER_UNLIMITED))
   {
   case EOF: return END_EOF;
   case EOD: return END_DOT;
@@ -1682,7 +1682,7 @@ next->text. */
 
 for (;;)
   {
-  int ch = (receive_getc)();
+  int ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
 
   /* If we hit EOF on a SMTP connection, it's an error, since incoming
   SMTP must have a correct "." terminator. */
@@ -1761,10 +1761,10 @@ for (;;)
 
   if (ptr == 0 && ch == '.' && (smtp_input || dot_ends))
     {
-    ch = (receive_getc)();
+    ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (ch == '\r')
       {
-      ch = (receive_getc)();
+      ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
       if (ch != '\n')
         {
         receive_ungetc(ch);
@@ -1795,7 +1795,7 @@ for (;;)
 
   if (ch == '\r')
     {
-    ch = (receive_getc)();
+    ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (ch == '\n')
       {
       if (first_line_ended_crlf == TRUE_UNSET) first_line_ended_crlf = TRUE;
@@ -1890,7 +1890,7 @@ for (;;)
 
   if (ch != EOF)
     {
-    int nextch = (receive_getc)();
+    int nextch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (nextch == ' ' || nextch == '\t')
       {
       next->text[ptr++] = nextch;
@@ -4024,7 +4024,7 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
 
   if (select(fileno(smtp_in) + 1, &select_check, NULL, NULL, &tv) != 0)
     {
-    int c = (receive_getc)();
+    int c = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (c != EOF) (receive_ungetc)(c); else
       {
       smtp_notquit_exit(US"connection-lost", NULL, NULL);

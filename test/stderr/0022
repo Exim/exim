@@ -41,6 +41,9 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: Testing{CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -54,6 +57,7 @@ P Received: from [V4NET.9.8.7]
 	(envelope-from <x@y>)
 	id 10HmbF-0005vi-00
 	for warn_empty@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+PDKIM >> raw hdr: quit{CR}{LF}
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN
@@ -112,6 +116,9 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: Testing{CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -125,6 +132,7 @@ P Received: from [V4NET.9.8.7]
 	(envelope-from <x@y>)
 	id 10HmbG-0005vi-00
 	for warn_log@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+PDKIM >> raw hdr: quit{CR}{LF}
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN
@@ -181,6 +189,9 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
+PDKIM >> raw hdr: {CR}{LF}
+PDKIM >> raw hdr: Testing{CR}{LF}
+PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -197,6 +208,7 @@ P Received: from [V4NET.9.8.7]
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: warn user message
 >>
+PDKIM >> raw hdr: quit{CR}{LF}
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN

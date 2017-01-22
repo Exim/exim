@@ -2360,14 +2360,14 @@ return OK;
 /* This gets the next byte from the TLS input buffer. If the buffer is empty,
 it refills the buffer via the SSL reading function.
 
-Arguments:  none
+Arguments:  lim		Maximum amount to read/buffer
 Returns:    the next character or EOF
 
 Only used by the server-side TLS.
 */
 
 int
-tls_getc(void)
+tls_getc(unsigned lim)
 {
 if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
   {
@@ -2378,7 +2378,8 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     ssl_xfer_buffer, ssl_xfer_buffer_size);
 
   if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-  inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer, ssl_xfer_buffer_size);
+  inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
+		    MIN(ssl_xfer_buffer_size, lim));
   error = SSL_get_error(server_ssl, inbytes);
   alarm(0);
 
@@ -2405,7 +2406,7 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     tls_in.peerdn = NULL;
     tls_in.sni = NULL;
 
-    return smtp_getc();
+    return smtp_getc(lim);
     }
 
   /* Handle genuine errors */
