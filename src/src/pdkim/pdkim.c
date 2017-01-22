@@ -991,9 +991,8 @@ else
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     }
 
-  /* every other header is stored for signature verification */
-  else
-    ctx->headers = pdkim_prepend_stringlist(ctx->headers, ctx->cur_header);
+  /* all headers are stored for signature verification */
+  ctx->headers = pdkim_prepend_stringlist(ctx->headers, ctx->cur_header);
   }
 
 BAIL:

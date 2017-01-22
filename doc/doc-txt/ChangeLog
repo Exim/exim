@@ -45,6 +45,10 @@ JH/08 Bug 2016: Fix DKIM verification vs. CHUNKING.  Any BDAT commands after
       processing; with most chunk sizes in use this resulted in an incorrect
       body hash calculated value.
 
+JH/09 Bug 2014: permit inclusion of a DKIM-Signature header in a received
+      DKIM signature block, for verification.  Although advised against by
+      standards it is specifically not ruled illegal.
+
 
 Exim version 4.88
 -----------------
