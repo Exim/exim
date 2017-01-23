@@ -12607,6 +12607,13 @@ validating resolver (e.g. unbound, or bind with suitable configuration).
 If you have changed &%host_lookup_order%& so that &`bydns`& is not the first
 mechanism in the list, then this variable will be false.
 
+.new
+This requires that your system resolver library support EDNS0 (and that
+DNSSEC flags exist in the system headers).  If the resolver silently drops
+all EDNS0 options, then this will have no effect.  OpenBSD's asr resolver
+is known to currently ignore EDNS0, documented in CAVEATS of asr_run(3).
+.wen
+
 
 .vitem &$sender_host_name$&
 .vindex "&$sender_host_name$&"
@@ -14665,12 +14672,19 @@ record in the authoritative section is used instead.
 .option dns_use_edns0 main integer -1
 .cindex "DNS" "resolver options"
 .cindex "DNS" "EDNS0"
+.cindex "DNS" "OpenBSD
 If this option is set to a non-negative number then Exim will initialise the
 DNS resolver library to either use or not use EDNS0 extensions, overriding
 the system default. A value of 0 coerces EDNS0 off, a value of 1 coerces EDNS0
 on.
 
 If the resolver library does not support EDNS0 then this option has no effect.
+
+.new
+OpenBSD's asr resolver routines are known to ignore the EDNS0 option; this
+means that DNSSEC will not work with Exim on that platform either, unless Exim
+is linked against an alternative DNS client library.
+.wen
 
 
 .option drop_cr main boolean false
