@@ -526,8 +526,8 @@ verify_callback_client_dane(int preverify_ok, X509_STORE_CTX * x509ctx)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 uschar dn[256];
-#ifndef DISABLE_EVENT
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
+#ifndef DISABLE_EVENT
 BOOL dummy_called, optional = FALSE;
 #endif
 
