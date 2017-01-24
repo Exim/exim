@@ -2,7 +2,7 @@
 #
 # If all works you'll not see any difference.  To enable in the
 # kernel, 'sudo sh -c "echo 3 > /proc/sys/net/ipv4/tcp_fastopen"'.
-# A packet capture on the loopback interface will show the TFU
+# A packet capture on the loopback interface will show the TFO
 # option on the SYN, but the fast-output SMTP banner will not
 # be seen unless you also deliberately emulate a long path:
 # 'sudo tc qdisc add dev lo root netem delay 100ms'
