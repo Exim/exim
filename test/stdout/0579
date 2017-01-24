@@ -1,0 +1,33 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO test
+??? 250-
+<<< 250-myhost.test.ex Hello test [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-PIPELINING
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<"name with spaces"@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
