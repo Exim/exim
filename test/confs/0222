@@ -39,6 +39,7 @@ autoreply:
   driver = autoreply
   once = DIR/test-once
   once_file_size = 30
+  once_repeat = 4s
   text = "Auto reply message"
   to = $sender_address
   user = CALLER

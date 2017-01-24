@@ -11,5 +11,6 @@ exim -odi -f foo3 userx
 ****
 exim -odi -f foo3 userx
 ****
+sleep 5
 exim -odi -f foo1 userx
 ****
