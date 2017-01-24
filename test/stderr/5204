@@ -273,30 +273,30 @@ host in chunking_advertise_hosts? no (end of list)
 processing "accept"
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-routing "FAIL cannot route this one=(FAIL)"@some.host
+routing "FAIL cannot route this one (FAIL)"@some.host
 --------> b router <--------
-local_part=fail cannot route this one=(fail) domain=some.host
+local_part=fail cannot route this one (fail) domain=some.host
 checking senders
 y in ""? no (end of list)
 x@y in ":"? no (end of list)
 b router skipped: senders mismatch
 --------> q router <--------
-local_part=FAIL cannot route this one=(FAIL) domain=some.host
+local_part=FAIL cannot route this one (FAIL) domain=some.host
 checking domains
 some.host in "test.ex"? no (end of list)
 some.host in "! +local_domains"? yes (end of list)
 calling q router
-q router called for "FAIL cannot route this one=(FAIL)"@some.host: domain = some.host
+q router called for "FAIL cannot route this one (FAIL)"@some.host: domain = some.host
 requires uid=CALLER_UID gid=CALLER_GID current_directory=/
 not running as root: cannot change uid/gid
 subprocess will run with uid=EXIM_UID gid=EXIM_GID
-command wrote: FAIL cannot route this one=(FAIL)
+command wrote: FAIL cannot route this one (FAIL)
 q router forced address failure
 ----------- end verify ------------
 accept: condition test failed in inline ACL
 end of inline ACL: implicit DENY
 LOG: MAIN REJECT
-  H=(some.name) [V4NET.2.3.4] F=<x@y> rejected RCPT <"FAIL cannot route this one=(FAIL)"@some.host>: cannot route this one=(FAIL)
+  H=(some.name) [V4NET.2.3.4] F=<x@y> rejected RCPT <"FAIL cannot route this one (FAIL)"@some.host>: cannot route this one (FAIL)
 LOG: smtp_connection MAIN
   SMTP connection from (some.name) [V4NET.2.3.4] closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

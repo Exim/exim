@@ -25,5 +25,5 @@ postmaster@test.ex
 250-PIPELINING
 250 HELP
 250 OK
-550 cannot route this one=(FAIL)
+550 cannot route this one (FAIL)
 221 myhost.test.ex closing connection
