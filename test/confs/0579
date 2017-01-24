@@ -1,0 +1,31 @@
+# Exim test configuration 0579
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+log_selector = +received_recipients
+
+acl_smtp_rcpt = accept logwrite=cmd '$smtp_command'
+
+# ------ ACLs ------
+
+begin acl
+
+# ------ Routers ------
+
+begin routers
+
+r1:
+  driver = redirect
+  data = :blackhole:
+
+
+# ------ Transports ------
+
+begin transports
+
+# End

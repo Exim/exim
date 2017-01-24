@@ -1674,7 +1674,13 @@ uschar *n;
 uschar *v = smtp_cmd_data + Ustrlen(smtp_cmd_data) - 1;
 while (isspace(*v)) v--;
 v[1] = 0;
-while (v > smtp_cmd_data && *v != '=' && !isspace(*v)) v--;
+while (v > smtp_cmd_data && *v != '=' && !isspace(*v))
+  {
+  /* Take care to not stop at a space embedded in a quoted local-part */
+
+  if (*v == '"') do v--; while (*v != '"' && v > smtp_cmd_data+1);
+  v--;
+  }
 
 n = v;
 if (*v == '=')

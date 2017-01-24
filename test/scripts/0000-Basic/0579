@@ -1,0 +1,28 @@
+# local-part with space, esmtp reception
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 HELP
+MAIL FROM:<>
+??? 250
+RCPT TO:<"name with spaces"@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+killdaemon
