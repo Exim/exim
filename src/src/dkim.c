@@ -278,6 +278,7 @@ void
 dkim_exim_acl_setup(uschar * id)
 {
 pdkim_signature * sig;
+pdkim_signature *candidate_sig = NULL;
 uschar * cmp_val;
 
 dkim_cur_sig = NULL;
@@ -294,20 +295,28 @@ for (sig = dkim_signatures; sig; sig = sig->next)
      )
     {
     dkim_cur_sig = sig;
-
-    /* The "dkim_domain" and "dkim_selector" expansion variables have
-       related globals, since they are used in the signing code too.
-       Instead of inventing separate names for verification, we set
-       them here. This is easy since a domain and selector is guaranteed
-       to be in a signature. The other dkim_* expansion items are
-       dynamically fetched from dkim_cur_sig at expansion time (see
-       function below). */
-
-    dkim_signing_domain = US sig->domain;
-    dkim_signing_selector = US sig->selector;
-    dkim_key_length = sig->sigdata.len * 8;
-    return;
+    if (!candidate_sig) candidate_sig = sig;
+    if (sig->verify_status == PDKIM_VERIFY_PASS)
+      {
+      candidate_sig = sig;
+      break;
+      }
     }
+
+    if (candidate_sig)
+      {
+      /* The "dkim_domain" and "dkim_selector" expansion variables have
+         related globals, since they are used in the signing code too.
+         Instead of inventing separate names for verification, we set
+         them here. This is easy since a domain and selector is guaranteed
+         to be in a signature. The other dkim_* expansion items are
+         dynamically fetched from dkim_cur_sig at expansion time (see
+         function below). */
+
+      dkim_signing_domain = US candidate_sig->domain;
+      dkim_signing_selector = US candidate_sig->selector;
+      dkim_key_length = candidate_sig->sigdata.len * 8;
+      }
 }
 
 
