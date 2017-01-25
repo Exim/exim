@@ -49,16 +49,18 @@ check_recipient:
 	  logwrite =  SN  <${certextract {subject}	{$tls_in_peercert}}>
           logwrite =  IN  <${certextract {issuer}	{$tls_in_peercert}}>
           logwrite =  IN/O <${certextract {issuer,O}	{$tls_in_peercert}}>
-          logwrite =  NB  <${certextract {notbefore}	{$tls_in_peercert}}>
+          logwrite =  NB/r <${certextract {notbefore,raw}	{$tls_in_peercert}}>
+          logwrite =  NB   <${certextract {notbefore}	{$tls_in_peercert}}>
           logwrite =  NB/i <${certextract {notbefore,int}{$tls_in_peercert}}>
-          logwrite =  NA  <${certextract {notafter}	{$tls_in_peercert}}>
+          logwrite =  NA/i <${certextract {notafter,int}	{$tls_in_peercert}}>
+          logwrite =  NA   <${certextract {notafter}	{$tls_in_peercert}}>
           logwrite =  SA  <${certextract {sig_algorithm}{$tls_in_peercert}}>
           logwrite =  SG  <${certextract {signature}	{$tls_in_peercert}}>
 	  logwrite =       ${certextract {subj_altname} {$tls_in_peercert} {SAN <$value>}{(no SAN)}}
 #	  logwrite =       ${certextract {ocsp_uri}	{$tls_in_peercert} {OCU <$value>}{(no OCU)}}
 	  logwrite =       ${certextract {crl_uri}	{$tls_in_peercert} {CRU <$value>}{(no CRU)}}
 	  logwrite =  md5    fingerprint ${md5:$tls_in_peercert}
-	  logwrite =  sha1 fingerprint ${sha1:$tls_in_peercert}
+	  logwrite =  sha1   fingerprint ${sha1:$tls_in_peercert}
 	  logwrite =  sha256 fingerprint ${sha256:$tls_in_peercert}
 	  logwrite =  der_b64 ${base64:$tls_in_peercert}
 

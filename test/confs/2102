@@ -55,7 +55,8 @@ check_recipient:
           logwrite =  NB/r <${certextract {notbefore,raw}	{$tls_in_peercert}}>
           logwrite =  NB   <${certextract {notbefore}	{$tls_in_peercert}}>
           logwrite =  NB/i <${certextract {notbefore,int}{$tls_in_peercert}}>
-          logwrite =  NA  <${certextract {notafter}	{$tls_in_peercert}}>
+          logwrite =  NA/i <${certextract {notafter,int}	{$tls_in_peercert}}>
+          logwrite =  NA   <${certextract {notafter}	{$tls_in_peercert}}>
           logwrite =  SA  <${certextract {sig_algorithm}{$tls_in_peercert}}>
           logwrite =  SG  <${certextract {signature}	{$tls_in_peercert}}>
 	  logwrite =       ${certextract {subj_altname} {$tls_in_peercert} {SAN <$value>}{(no SAN)}}
