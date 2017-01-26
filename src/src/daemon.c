@@ -1423,6 +1423,9 @@ if (daemon_listen && !inetd_wait_mode)
     necessary for (some release of) USAGI Linux; other IP stacks fail at the
     listen() stage instead. */
 
+#ifdef TCP_FASTOPEN
+    tcp_fastopen_ok = TRUE;
+#endif
     for(;;)
       {
       uschar *msg, *addr;
@@ -1459,7 +1462,10 @@ if (daemon_listen && !inetd_wait_mode)
 #ifdef TCP_FASTOPEN
     if (setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
 		    &smtp_connect_backlog, sizeof(smtp_connect_backlog)))
+      {
       DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s\n", strerror(errno));
+      tcp_fastopen_ok = FALSE;
+      }
 #endif
 
     /* Start listening on the bound socket, establishing the maximum backlog of

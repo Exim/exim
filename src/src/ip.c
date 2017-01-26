@@ -303,6 +303,7 @@ int namelen, port;
 host_item shost;
 host_item *h;
 int af = 0, fd, fd4 = -1, fd6 = -1;
+BOOL fastopen = tcp_fastopen_ok && type == SOCK_STREAM;
 
 shost.next = NULL;
 shost.address = NULL;
@@ -358,7 +359,7 @@ for (h = &shost; h; h = h->next)
     }
 
   for(port = portlo; port <= porthi; port++)
-    if (ip_connect(fd, af, h->address, port, timeout, type == SOCK_STREAM) == 0)
+    if (ip_connect(fd, af, h->address, port, timeout, fastopen) == 0)
       {
       if (fd != fd6) close(fd6);
       if (fd != fd4) close(fd4);

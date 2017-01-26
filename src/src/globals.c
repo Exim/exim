@@ -1400,6 +1400,7 @@ uid_t   system_filter_uid      = (uid_t)-1;
 BOOL    system_filter_uid_set  = FALSE;
 BOOL    system_filtering       = FALSE;
 
+BOOL    tcp_fastopen_ok        = FALSE;
 BOOL    tcp_nodelay            = TRUE;
 #ifdef USE_TCP_WRAPPERS
 uschar *tcp_wrappers_daemon_name = US TCP_WRAPPERS_DAEMON_NAME;

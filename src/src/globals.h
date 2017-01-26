@@ -906,6 +906,7 @@ extern uid_t   system_filter_uid;      /* Uid for running system filter */
 extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern BOOL    system_filtering;       /* TRUE when running system filter */
 
+extern BOOL    tcp_fastopen_ok;	       /* appears to be supported by kernel */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
 #ifdef USE_TCP_WRAPPERS
 extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
