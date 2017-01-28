@@ -2838,18 +2838,15 @@ for (; cb != NULL; cb = cb->next)
   of them, but not for all, because expansion happens down in some lower level
   checking functions in some cases. */
 
-  if (conditions[cb->type].expand_at_top)
+  if (!conditions[cb->type].expand_at_top)
+    arg = cb->arg;
+  else if (!(arg = expand_string(cb->arg)))
     {
-    arg = expand_string(cb->arg);
-    if (arg == NULL)
-      {
-      if (expand_string_forcedfail) continue;
-      *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
-        cb->arg, expand_string_message);
-      return search_find_defer? DEFER : ERROR;
-      }
+    if (expand_string_forcedfail) continue;
+    *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
+      cb->arg, expand_string_message);
+    return search_find_defer ? DEFER : ERROR;
     }
-  else arg = cb->arg;
 
   /* Show condition, and expanded condition if it's different */
 

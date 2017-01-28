@@ -54,3 +54,8 @@ ten-2.test.ex
 > a=localhost.test.ex        127.0.0.1
 > a=localhost.test.ex        127.0.0.1
 > 
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello CALLER at test
+250 OK
+451 Temporary local problem - please try later
+221 myhost.test.ex closing connection

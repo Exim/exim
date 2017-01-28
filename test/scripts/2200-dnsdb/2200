@@ -60,5 +60,13 @@ a=localhost.test.ex        ${lookup dnsdb{a=localhost.test.ex}{$value}fail}
 exim -d-all+lookup -odq user@shorthost.test.ex
 ****
 #
+# ACL defer_strict
+exim -bs
+HELO test
+MAIL FROM:<>
+RCPT TO:<defer_strict@test.again.dns>
+QUIT
+****
+#
 no_msglog_check
 #
