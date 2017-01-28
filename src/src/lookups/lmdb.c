@@ -41,7 +41,7 @@ if ((ret = mdb_env_create(&db_env)))
 
 if ((ret = mdb_env_open(db_env, CS filename, MDB_NOSUBDIR|MDB_RDONLY, 0660)))
   {
-  errstr = US"open environment";
+  errstr = string_sprintf("open environment with %s", filename);
   goto bad;
   }
 
