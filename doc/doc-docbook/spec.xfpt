@@ -16885,6 +16885,9 @@ generates any deliveries to files or pipes, or any new mail messages, the
 appropriate &%system_filter_..._transport%& option(s) must be set, to define
 which transports are to be used. Details of this facility are given in chapter
 &<<CHAPsystemfilter>>&.
+.new
+A forced expansion failure results in no filter operation.
+.wen
 
 
 .option system_filter_directory_transport main string&!! unset
