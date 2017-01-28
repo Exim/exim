@@ -1,4 +1,4 @@
-# DKIM signing, with CHUNKING
+# DKIM signing, with CHUNKING, smtp/tcp
 #
 exim -bd -DSERVER=server -oX PORT_S
 ****

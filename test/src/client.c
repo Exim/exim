@@ -939,7 +939,7 @@ while (fgets(CS outbuffer, sizeof(outbuffer), stdin) != NULL)
 	  }
 	else
 	  {
-	  printf("Enexpected EOF read\n");
+	  printf("Unexpected EOF read\n");
 	  close(sock);
 	  exit(80);
 	  }
