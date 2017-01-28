@@ -1,6 +1,6 @@
 # DKIM verify, errors
 #
-exim -d-all+acl -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
 ****
 #
 # This should fail verify (missing header hash in sig header)

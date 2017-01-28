@@ -192,7 +192,8 @@ static void
 pdkim_hexprint(const uschar *data, int len)
 {
 int i;
-for (i = 0 ; i < len; i++) debug_printf("%02x", data[i]);
+if (data) for (i = 0 ; i < len; i++) debug_printf("%02x", data[i]);
+else debug_printf("<NULL>");
 debug_printf("\n");
 }
 
@@ -803,11 +804,11 @@ for (sig = ctx->sig; sig; sig = sig->next)
       sig->bodylength = -1;
     }
 
-  /* VERIFICATION --------------------------------------------------------- */
   else
-    {
-    /* Compare bodyhash */
-    if (memcmp(bh.data, sig->bodyhash.data, bh.len) == 0)
+  /* VERIFICATION --------------------------------------------------------- */
+  /* Be careful that the header sig included a bodyash */
+
+    if (sig->bodyhash.data && memcmp(bh.data, sig->bodyhash.data, bh.len) == 0)
       {
       DEBUG(D_acl) debug_printf("PDKIM [%s] Body hash verified OK\n", sig->domain);
       }
@@ -962,27 +963,24 @@ else
 		  DKIM_SIGNATURE_HEADERNAME,
 		  Ustrlen(DKIM_SIGNATURE_HEADERNAME)) == 0)
     {
-    pdkim_signature *new_sig;
+    pdkim_signature * new_sig, * last_sig;
 
-    /* Create and chain new signature block */
+    /* Create and chain new signature block.  We could error-check for all
+    required tags here, but prefer to create the internal sig and expicitly
+    fail verification of it later. */
+
     DEBUG(D_acl) debug_printf(
 	"PDKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
-    if ((new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header)))
-      {
-      pdkim_signature *last_sig = ctx->sig;
-      if (!last_sig)
-	ctx->sig = new_sig;
-      else
-        {
-	while (last_sig->next) last_sig = last_sig->next;
-	last_sig->next = new_sig;
-	}
-      }
+    new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header);
+
+    if (!(last_sig = ctx->sig))
+      ctx->sig = new_sig;
     else
-      DEBUG(D_acl) debug_printf(
-	  "Error while parsing signature header\n"
-	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+      {
+      while (last_sig->next) last_sig = last_sig->next;
+      last_sig->next = new_sig;
+      }
     }
 
   /* all headers are stored for signature verification */
@@ -1003,7 +1001,7 @@ return PDKIM_OK;
 DLLEXPORT int
 pdkim_feed(pdkim_ctx *ctx, char *data, int len)
 {
-int p;
+int p, rc;
 
 /* Alternate EOD signal, used in non-dotstuffing mode */
 if (!data)
@@ -1028,7 +1026,6 @@ else for (p = 0; p<len; p++)
       ctx->flags |= PDKIM_SEEN_CR;
     else if (c == '\n')
       {
-      int rc;
       ctx->flags &= ~PDKIM_SEEN_CR;
       if ((rc = pdkim_bodyline_complete(ctx)) != PDKIM_OK)
 	return rc;
@@ -1048,14 +1045,14 @@ else for (p = 0; p<len; p++)
 	ctx->cur_header = string_catn(ctx->cur_header, &ctx->cur_header_size,
 				&ctx->cur_header_len, CUS "\r", 1);
 
-      if (ctx->flags & PDKIM_SEEN_LF)
+      if (ctx->flags & PDKIM_SEEN_LF)		/* Seen last header line */
 	{
-	int rc = pdkim_header_complete(ctx); /* Seen last header line */
-	if (rc != PDKIM_OK) return rc;
+	if ((rc = pdkim_header_complete(ctx)) != PDKIM_OK)
+	  return rc;
 
 	ctx->flags = ctx->flags & ~(PDKIM_SEEN_LF|PDKIM_SEEN_CR) | PDKIM_PAST_HDRS;
 	DEBUG(D_acl) debug_printf(
-	    "PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>\n");
+	    "PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 	continue;
 	}
       else
@@ -1063,11 +1060,9 @@ else for (p = 0; p<len; p++)
       }
     else if (ctx->flags & PDKIM_SEEN_LF)
       {
-      if (!(c == '\t' || c == ' '))
-	{
-	int rc = pdkim_header_complete(ctx); /* End of header */
-	if (rc != PDKIM_OK) return rc;
-	}
+      if (!(c == '\t' || c == ' '))			/* End of header */
+	if ((rc = pdkim_header_complete(ctx)) != PDKIM_OK)
+	  return rc;
       ctx->flags &= ~PDKIM_SEEN_LF;
       }
 
