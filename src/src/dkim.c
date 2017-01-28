@@ -166,7 +166,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	      sig->algo == PDKIM_ALGO_RSA_SHA256
 	      ? "rsa-sha256"
 	      : sig->algo == PDKIM_ALGO_RSA_SHA1 ? "rsa-sha1" : "err",
-	      (int)sig->sigdata.len > -1 ? sig->sigdata.len * 8 : 0
+	      (int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0
 	      ),
 
 	sig->identity ? string_sprintf("i=%s ", sig->identity) : US"",
@@ -305,7 +305,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     dkim_signing_domain = US sig->domain;
     dkim_signing_selector = US sig->selector;
-    dkim_key_length = sig->sigdata.len * 8;
+    dkim_key_length = sig->sighash.len * 8;
     return;
     }
 }

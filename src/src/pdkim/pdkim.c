@@ -493,10 +493,8 @@ for (p = raw_hdr; ; p++)
 	switch (*cur_tag)
 	  {
 	  case 'b':
-	    if (cur_tag[1] == 'h')
-	      pdkim_decode_base64(cur_val, &sig->bodyhash);
-	    else
-	      pdkim_decode_base64(cur_val, &sig->sigdata);
+	    pdkim_decode_base64(cur_val,
+			    cur_tag[1] == 'h' ? &sig->bodyhash : &sig->sighash);
 	    break;
 	  case 'v':
 	      /* We only support version 1, and that is currently the
@@ -578,12 +576,13 @@ DEBUG(D_acl)
 	  "PDKIM >> Raw signature w/o b= tag value >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
   pdkim_quoteprint(US sig->rawsig_no_b_val, Ustrlen(sig->rawsig_no_b_val));
   debug_printf(
-	  "PDKIM >> Sig size: %4u bits\n", (unsigned) sig->sigdata.len*8);
+	  "PDKIM >> Sig size: %4u bits\n", (unsigned) sig->sighash.len*8);
   debug_printf(
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 
-exim_sha_init(&sig->body_hash, sig->algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
+exim_sha_init(&sig->body_hash_ctx,
+	       sig->algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
 return sig;
 }
 
@@ -697,15 +696,14 @@ return NULL;
 /* -------------------------------------------------------------------------- */
 
 static int
-pdkim_update_bodyhash(pdkim_ctx *ctx, const char *data, int len)
+pdkim_update_bodyhash(pdkim_ctx * ctx, const char * data, int len)
 {
-pdkim_signature *sig = ctx->sig;
-/* Cache relaxed version of data */
-uschar *relaxed_data = NULL;
-int     relaxed_len  = 0;
+pdkim_signature * sig;
+uschar * relaxed_data = NULL;	/* Cache relaxed version of data */
+int relaxed_len = 0;
 
 /* Traverse all signatures, updating their hashes. */
-while (sig)
+for (sig = ctx->sig; sig; sig = sig->next)
   {
   /* Defaults to simple canon (no further treatment necessary) */
   const uschar *canon_data = CUS data;
@@ -761,12 +759,10 @@ while (sig)
 
   if (canon_len > 0)
     {
-    exim_sha_update(&sig->body_hash, CUS canon_data, canon_len);
+    exim_sha_update(&sig->body_hash_ctx, CUS canon_data, canon_len);
     sig->signed_body_bytes += canon_len;
     DEBUG(D_acl) pdkim_quoteprint(canon_data, canon_len);
     }
-
-  sig = sig->next;
   }
 
 if (relaxed_data) store_free(relaxed_data);
@@ -786,7 +782,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   {					/* Finish hashes */
   blob bh;
 
-  exim_sha_finish(&sig->body_hash, &bh);
+  exim_sha_finish(&sig->body_hash_ctx, &bh);
 
   DEBUG(D_acl)
     {
@@ -820,14 +816,12 @@ for (sig = ctx->sig; sig; sig = sig->next)
       DEBUG(D_acl)
         {
 	debug_printf("PDKIM [%s] Body hash signature from headers: ", sig->domain);
-	pdkim_hexprint(sig->bodyhash.data,
-			 exim_sha_hashlen(&sig->body_hash));
+	pdkim_hexprint(sig->bodyhash.data, sig->bodyhash.len);
 	debug_printf("PDKIM [%s] Body hash did NOT verify\n", sig->domain);
 	}
       sig->verify_status     = PDKIM_VERIFY_FAIL;
       sig->verify_ext_status = PDKIM_VERIFY_FAIL_BODY;
       }
-    }
   }
 }
 
@@ -1308,7 +1302,7 @@ if (sig->bodylength >= 0)
   }
 
 /* Preliminary or final version? */
-base64_b = final ? pdkim_encode_base64(&sig->sigdata) : US"";
+base64_b = final ? pdkim_encode_base64(&sig->sighash) : US"";
 hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"b=", base64_b);
 
 /* add trailing semicolon: I'm not sure if this is actually needed */
@@ -1584,7 +1578,7 @@ while (sig)
     hdata = hhash;
 #endif
 
-    if ((errstr = exim_rsa_sign(&sctx, is_sha1, &hdata, &sig->sigdata)))
+    if ((errstr = exim_rsa_sign(&sctx, is_sha1, &hdata, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("signing: %s\n", errstr);
       return PDKIM_ERR_RSA_SIGNING;
@@ -1593,7 +1587,7 @@ while (sig)
     DEBUG(D_acl)
       {
       debug_printf( "PDKIM [%s] b computed: ", sig->domain);
-      pdkim_hexprint(sig->sigdata.data, sig->sigdata.len);
+      pdkim_hexprint(sig->sighash.data, sig->sighash.len);
       }
 
     sig->signature_header = pdkim_create_header(sig, TRUE);
@@ -1611,7 +1605,7 @@ while (sig)
 	 && sig->selector      && *sig->selector
 	 && sig->headernames   && *sig->headernames
 	 && sig->bodyhash.data
-	 && sig->sigdata.data
+	 && sig->sighash.data
 	 && sig->algo > -1
 	 && sig->version
        ) )
@@ -1641,7 +1635,7 @@ while (sig)
       goto NEXT_VERIFY;
 
     /* Check the signature */
-    if ((errstr = exim_rsa_verify(&vctx, is_sha1, &hhash, &sig->sigdata)))
+    if ((errstr = exim_rsa_verify(&vctx, is_sha1, &hhash, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("headers verify: %s\n", errstr);
       sig->verify_status =      PDKIM_VERIFY_FAIL;
@@ -1728,8 +1722,8 @@ sig->selector = string_copy(US selector);
 sig->rsa_privkey = string_copy(US rsa_privkey);
 sig->algo = algo;
 
-exim_sha_init(&sig->body_hash, algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
-
+exim_sha_init(&sig->body_hash_ctx,
+	       algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
 DEBUG(D_acl)
   {
   pdkim_signature s = *sig;
@@ -1740,7 +1734,6 @@ DEBUG(D_acl)
     debug_printf("WARNING: bad dkim key in dns\n");
   debug_printf("PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
-
 return ctx;
 }
 

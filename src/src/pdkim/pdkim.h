@@ -164,7 +164,7 @@ typedef struct pdkim_signature {
   uschar *copiedheaders;
 
   /* (b=) Raw signature data, along with its length in bytes */
-  blob sigdata;
+  blob sighash;
 
   /* (bh=) Raw body hash data, along with its length in bytes */
   blob bodyhash;
@@ -233,7 +233,7 @@ typedef struct pdkim_signature {
   /* Properties below this point are used internally only ------------- */
 
   /* Per-signature helper variables ----------------------------------- */
-  hctx         body_hash;
+  hctx         body_hash_ctx;
 
   unsigned long signed_body_bytes; /* How many body bytes we hashed     */
   pdkim_stringlist *headers; /* Raw headers included in the sig         */
