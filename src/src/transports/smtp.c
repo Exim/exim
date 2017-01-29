@@ -1858,6 +1858,7 @@ if (  smtp_peer_options & PEER_OFFERED_TLS
        )
       {
       Ustrncpy(sx->buffer, buffer2, sizeof(sx->buffer));
+      sx->buffer[sizeof(sx->buffer)-1] = '\0';
       goto RESPONSE_FAILED;
       }
     }
@@ -3189,7 +3190,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
       if (! (sx.ok = smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0))
         {
         msg = US string_sprintf("send() to %s [%s] failed: %s", host->name,
-          host->address, strerror(save_errno));
+          host->address, strerror(errno));
         sx.send_quit = FALSE;
         }
       else if (! (sx.ok = smtp_read_response(&sx.inblock, sx.buffer,

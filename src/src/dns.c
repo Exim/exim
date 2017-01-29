@@ -765,8 +765,9 @@ dnsa->answerlen = running_in_test_harness
 
 if (dnsa->answerlen > (int) sizeof(dnsa->answer))
   {
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) resulted in overlong packet (size %d), truncating to %d.\n",
-    name, dns_text_type(type), dnsa->answerlen, sizeof(dnsa->answer));
+  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) resulted in overlong packet"
+    " (size %d), truncating to %u.\n",
+    name, dns_text_type(type), dnsa->answerlen, (unsigned int) sizeof(dnsa->answer));
   dnsa->answerlen = sizeof(dnsa->answer);
   }
 

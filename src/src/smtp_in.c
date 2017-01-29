@@ -977,7 +977,7 @@ int get_ok = 0;
 int size, ret;
 int fd = fileno(smtp_in);
 const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
-uschar *iptype;  /* To display debug info */
+uschar * iptype;  /* To display debug info */
 struct timeval tv;
 struct timeval tvtmp;
 socklen_t vslen = sizeof(struct timeval);
@@ -1095,6 +1095,7 @@ if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
       break;
     case 0x00: /* LOCAL command */
       /* Keep local connection address for LOCAL */
+      iptype = US"local";
       break;
     default:
       DEBUG(D_receive)
