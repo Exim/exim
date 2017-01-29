@@ -25,7 +25,7 @@
 #if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 # define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
 #endif
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)
 # define EXIM_HAVE_ASN1_MACROS
 # define EXIM_OPAQUE_X509
 #else
@@ -1658,7 +1658,7 @@ dane_idx = SSL_get_ex_new_index(0, 0, 0, 0, 0);
 }
 
 
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 static void
 run_once(volatile int * once, void (*init)(void))
 {
