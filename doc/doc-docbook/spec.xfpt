@@ -29785,6 +29785,15 @@ to avoid doing it more than once per message.
 .cindex "&%verify%& ACL condition"
 This is a variation of the previous option, in which a modified address is
 verified as a sender.
+
+.new
+Note that '/' is legal in local-parts; if the address may have such
+(eg. is generated from the received message)
+they must be protected from the options parsing by doubling:
+.code
+verify = sender=${sg{${address:$h_sender:}}{/}{//}}
+.endd
+.wen
 .endlist
 
 
