@@ -49,6 +49,26 @@ JH/09 Bug 2014: permit inclusion of a DKIM-Signature header in a received
       DKIM signature block, for verification.  Although advised against by
       standards it is specifically not ruled illegal.
 
+JH/10 Bug 2025: Fix reception of (quoted) local-parts with embedded spaces.
+
+JH/11 Bug 2029: Fix crash in DKIM verification when a message signature block is
+      missing a body hash (the bh= tag).
+
+JH/12 Bug 2018: Re-order Proxy Protocol startup versus TLS-on-connect startup.
+      It seems that HAProxy sends the Proxy Protocol information in clear and
+      only then does a TLS startup, so do the same.
+
+JH/13 Bug 2027: Avoid attempting to use TCP Fast Open for non-transport client
+      TCP connections (such as for Spamd) unless the daemon successfully set
+      Fast Open mode on its listening sockets.  This fixes breakage seen on
+      too-old kernels or those not configured for Fast Open, at the cost of
+      requiring both directions being enabled for TFO, and TFO never being used
+      by non-daemon-related Exim processes.
+
+JH/14 Bug 2000: Reject messages recieved with CHUNKING but with malformed line
+      endings, at least on the first header line.  Try to canonify any that get
+      past that check, despite the cost.
+
 
 Exim version 4.88
 -----------------
