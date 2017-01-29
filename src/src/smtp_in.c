@@ -600,7 +600,7 @@ next_cmd:
   }
 }
 
-static void
+void
 bdat_flush_data(void)
 {
 while (chunking_data_left > 0)

@@ -28934,7 +28934,11 @@ message body.
 Cutthrough delivery is not supported via transport-filters or when DKIM signing
 of outgoing messages is done, because it sends data to the ultimate destination
 before the entire message has been received from the source.
-It is not supported for messages received with the SMTP PRDR option in use.
+It is not supported for messages received with the SMTP PRDR
+.new
+or CHUNKING
+.wen
+options in use.
 
 Should the ultimate destination system positively accept or reject the mail,
 a corresponding indication is given to the source system and nothing is queued.
@@ -37919,9 +37923,8 @@ lock will be lost at the instant of rename.
 .next
 .vindex "&$body_linecount$&"
 If you change the number of lines in the file, the value of
-&$body_linecount$&, which is stored in the -H file, will be incorrect. At
-present, this value is not used by Exim, but there is no guarantee that this
-will always be the case.
+&$body_linecount$&, which is stored in the -H file, will be incorrect and can
+cause incomplete transmission of messages or undeliverable messages.
 .next
 If the message is in MIME format, you must take care not to break it.
 .next

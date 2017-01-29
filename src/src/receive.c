@@ -898,8 +898,11 @@ return END_EOF;
 
 
 /* Variant of the above read_message_data_smtp() specialised for RFC 3030
-CHUNKING.  We assume that the incoming has proper CRLF, so only have to scan
-for and strip CR.  On the downside there are more protocol reasons to stop.
+CHUNKING. Accept input lines separated by either CRLF or CR or LF and write
+LF-delimited spoolfile.  Until we have wireformat spoolfiles, we need the
+body_linecount accounting for proper re-expansion for the wire, so use
+a cut-down version of the state-machine above; we don't need to do leading-dot
+detection and unstuffing.
 
 Arguments:
   fout      a FILE to which to write the message; NULL if skipping
@@ -910,43 +913,73 @@ Returns:    One of the END_xxx values indicating why it stopped reading
 static int
 read_message_bdat_smtp(FILE *fout)
 {
-int ch;
-int linelength = 0;
+int ch_state = 0, linelength = 0, ch;
 
-for (;;) switch (ch = bdat_getc(GETC_BUFFER_UNLIMITED))
+for(;;)
   {
-  case EOF: return END_EOF;
-  case EOD: return END_DOT;
-  case ERR: return END_PROTOCOL;
+  switch ((ch = (bdat_getc)(GETC_BUFFER_UNLIMITED)))
+    {
+    case EOF:	return END_EOF;
+    case EOD:	return END_DOT;		/* normal exit */
+    case ERR:	return END_PROTOCOL;
+    case '\0':  body_zerocount++; break;
+    }
+  switch (ch_state)
+    {
+    case 0:                             /* After LF or CRLF */
+      ch_state = 1;
+      /* fall through to handle as normal uschar. */
 
-  case '\r':
-    body_linecount++;
-    if (linelength > max_received_linelength)
-      max_received_linelength = linelength;
-    linelength = -1;
-    break;
+    case 1:                             /* Mid-line state */
+      if (ch == '\n')
+	{
+	ch_state = 0;
+	body_linecount++;
+	if (linelength > max_received_linelength)
+	  max_received_linelength = linelength;
+	linelength = -1;
+	}
+      else if (ch == '\r')
+	{
+	ch_state = 2;
+	continue;			/* don't write CR */
+	}
+      break;
 
-  case 0:
-    body_zerocount++;
-    /*FALLTHROUGH*/
-  default:
-    message_size++;
-    linelength++;
-    if (fout)
-      {
-      if (fputc(ch, fout) == EOF) return END_WERROR;
-      if (message_size > thismessage_size_limit) return END_SIZE;
-      }
-#ifdef notyet
-    if(ch == '\n')
-      (void) cutthrough_put_nl();
-    else
-      {
-      uschar c = ch;
-      (void) cutthrough_puts(&c, 1);
-      }
-#endif
-    break;
+    case 2:                             /* After (unwritten) CR */
+      body_linecount++;
+      if (linelength > max_received_linelength)
+	max_received_linelength = linelength;
+      linelength = -1;
+      if (ch == '\n')
+	ch_state = 0;
+      else
+	{
+	message_size++;
+	if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
+	(void) cutthrough_put_nl();
+	if (ch == '\r') continue;	/* don't write CR */
+	ch_state = 1;
+	}
+      break;
+    }
+
+  /* Add the character to the spool file, unless skipping */
+
+  message_size++;
+  linelength++;
+  if (fout)
+    {
+    if (fputc(ch, fout) == EOF) return END_WERROR;
+    if (message_size > thismessage_size_limit) return END_SIZE;
+    }
+  if(ch == '\n')
+    (void) cutthrough_put_nl();
+  else
+    {
+    uschar c = ch;
+    (void) cutthrough_puts(&c, 1);
+    }
   }
 /*NOTREACHED*/
 }
@@ -2084,6 +2117,21 @@ for (;;)
       }
     }
 
+  /* Reject CHUNKING messages that do not CRLF their first header line */
+
+  if (!first_line_ended_crlf && chunking_state > CHUNKING_OFFERED)
+    {
+    log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
+      "Non-CRLF-terminated header, under CHUNKING: message abandoned",
+      sender_address,
+      sender_fullhost ? " H=" : "", sender_fullhost ? sender_fullhost : US"",
+      sender_ident ? " U=" : "",    sender_ident ? sender_ident : US"");
+    smtp_printf("552 Message header not CRLF terminated\r\n");
+    bdat_flush_data();
+    smtp_reply = US"";
+    goto TIDYUP;                             /* Skip to end of function */
+    }
+
   /* The line has been handled. If we have hit EOF, break out of the loop,
   indicating no pending data line. */
 
@@ -2108,7 +2156,7 @@ normal case). */
 DEBUG(D_receive)
   {
   debug_printf(">>Headers received:\n");
-  for (h = header_list->next; h != NULL; h = h->next)
+  for (h = header_list->next; h; h = h->next)
     debug_printf("%s", h->text);
   debug_printf("\n");
   }
@@ -2135,7 +2183,7 @@ if (filter_test != FTEST_NONE && header_list->next == NULL)
 /* Scan the headers to identify them. Some are merely marked for later
 processing; some are dealt with here. */
 
-for (h = header_list->next; h != NULL; h = h->next)
+for (h = header_list->next; h; h = h->next)
   {
   BOOL is_resent = strncmpic(h->text, US"resent-", 7) == 0;
   if (is_resent) contains_resent_headers = TRUE;
@@ -2351,7 +2399,7 @@ if (extract_recip)
 
   /* Now scan the headers */
 
-  for (h = header_list->next; h != NULL; h = h->next)
+  for (h = header_list->next; h; h = h->next)
     {
     if ((h->type == htype_to || h->type == htype_cc || h->type == htype_bcc) &&
         (!contains_resent_headers || strncmpic(h->text, US"resent-", 7) == 0))
@@ -2845,11 +2893,11 @@ We start at the second header, skipping our own Received:. This rewriting is
 documented as happening *after* recipient addresses are taken from the headers
 by the -t command line option. An added Sender: gets rewritten here. */
 
-for (h = header_list->next; h != NULL; h = h->next)
+for (h = header_list->next; h; h = h->next)
   {
   header_line *newh = rewrite_header(h, NULL, NULL, global_rewrite_rules,
     rewrite_existflags, TRUE);
-  if (newh != NULL) h = newh;
+  if (newh) h = newh;
   }
 
 

@@ -215,5 +215,31 @@ quit
 ??? 221
 ****
 #
+# plain, small message (no body)
+# header line with bad line-ending
+client 127.0.0.1 PORT_D
+??? 220
+ehlo tester
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-CHUNKING
+??? 250 HELP
+mail from:someone@some.domain
+??? 250
+rcpt to:CALLER@test.ex
+??? 250
+bdat 87 last
+>>> To: Susan@random.com\n
+From: Sam@random.com
+Subject: This is a Bodyless test message
+
+??? 552
+quit
+??? 221
+****
+#
+#
 killdaemon
 no_msglog_check
