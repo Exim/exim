@@ -1515,7 +1515,7 @@ $munges =
                   )($|[ ]=)/x' },
 
     'sys_bindir' =>
-    { 'mainlog' => 's%/(usr/)?bin/%SYSBINDIR/%' },
+    { 'mainlog' => 's%/(usr/(local/)?)?bin/%SYSBINDIR/%' },
 
     'sync_check_data' =>
     { 'mainlog'   => 's/^(.* SMTP protocol synchronization error .* next input=.{8}).*$/$1<suppressed>/',
