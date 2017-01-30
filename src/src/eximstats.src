@@ -1,4 +1,4 @@
-#!PERL_COMMAND -w
+#!PERL_COMMAND
 
 # Copyright (c) 2001-2016 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -547,6 +547,7 @@ Merging of xls files is not (yet) possible. Be free to implement :)
 
 =cut
 
+use warnings;
 use integer;
 use strict;
 use IO::File;

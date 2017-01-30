@@ -1,4 +1,4 @@
-#! PERL_COMMAND -w
+#! PERL_COMMAND
 
 # Mail Queue Summary
 # Christoph Lameter, 21 May 1997
@@ -40,6 +40,8 @@
 #   -s enables source destination separation
 
 # Slightly modified sub from eximstats
+
+use warnings;
 
 sub print_volume_rounded {
 my($x) = pop @_;

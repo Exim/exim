@@ -1,4 +1,4 @@
-#! PERL_COMMAND -w
+#! PERL_COMMAND
 
 # This is a Perl script that reads an Exim run-time configuration file for
 # Exim 3. It makes what changes it can for Exim 4, and also output commentary
@@ -6,6 +6,7 @@
 
 # It is assumed that the input is a valid Exim 3 configuration file.
 
+use warnings;
 
 # These are lists of main options which are abolished in Exim 4.
 # The first contains options that are used to construct new options.

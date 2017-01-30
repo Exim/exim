@@ -1,4 +1,4 @@
-#! PERL_COMMAND -w
+#! PERL_COMMAND
 
 # This is a Perl script to demonstrate the possibilities of on-the-fly
 # delivery filtering in Exim. It is presented with a message on its standard
@@ -11,6 +11,7 @@
 # Philip Hazel, May 1997
 #############################################################################
 
+use warnings;
 
 # If the filter is called with any arguments, insert them into the message
 # as X-Arg headers, just to verify what they are.

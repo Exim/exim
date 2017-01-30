@@ -1,4 +1,4 @@
-#! PERL_COMMAND -w
+#! PERL_COMMAND
 
 # This is a Perl script that reads an Exim run-time configuration file and
 # checks for settings that were valid prior to release 3.00 but which were
@@ -7,6 +7,7 @@
 
 # It is assumed that the input is a valid Exim configuration file.
 
+use warnings;
 
 ##################################################
 #             Analyse one line                   #

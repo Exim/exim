@@ -1,5 +1,6 @@
-#! PERL_COMMAND -w
+#! PERL_COMMAND
 
+use warnings;
 use strict;
 
 # Copyright (c) 2007-2015 University of Cambridge.
