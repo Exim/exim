@@ -1117,8 +1117,9 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
     goto proxyfail;
     }
   *end = '\0'; /* Terminate the string */
-  size = end + 2 - hdr.v1.line; /* Skip header + CRLF */
+  size = end + 2 - p; /* Skip header + CRLF */
   DEBUG(D_receive) debug_printf("Detected PROXYv1 header\n");
+  DEBUG(D_receive) debug_printf("Bytes read not within PROXY header: %ld\n", ret - size);
   /* Step through the string looking for the required fields. Ensure
      strict adherence to required formatting, exit for any error. */
   p += 5;
