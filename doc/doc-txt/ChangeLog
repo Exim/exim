@@ -69,6 +69,10 @@ JH/14 Bug 2000: Reject messages recieved with CHUNKING but with malformed line
       endings, at least on the first header line.  Try to canonify any that get
       past that check, despite the cost.
 
+JH/15 Angle-bracket nesting (an error inserted by broken sendmails) levels are
+      now limited to an arbitrary five deep, while parsing addresses with the
+      strip_excess_angle_brackets option enabled.
+
 
 Exim version 4.88
 -----------------

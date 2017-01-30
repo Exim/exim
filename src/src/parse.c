@@ -661,7 +661,7 @@ if (*s != '@' && *s != '<')
   while (*s != '<' && (!parse_allow_group || *s != ':'))
     {
     s = read_local_part(s, t, errorptr, FALSE);
-    if (*errorptr != NULL)
+    if (*errorptr)
       {
       *errorptr = string_sprintf("%s (expected word or \"<\")", *errorptr);
       goto PARSE_FAILED;
@@ -686,8 +686,8 @@ processing it. Note that this is "if" rather than "else if" because it's also
 used after reading a preceding phrase.
 
 There are a lot of broken sendmails out there that put additional pairs of <>
-round <route-addr>s. If strip_excess_angle_brackets is set, allow any number of
-them, as long as they match. */
+round <route-addr>s.  If strip_excess_angle_brackets is set, allow a limited
+number of them, as long as they match. */
 
 if (*s == '<')
   {
@@ -696,8 +696,11 @@ if (*s == '<')
   int bracket_count = 1;
 
   s++;
-  if (strip_excess_angle_brackets)
-    while (*s == '<') { bracket_count++; s++; }
+  if (strip_excess_angle_brackets) while (*s == '<')
+   {
+   if(bracket_count++ > 5) FAILED(US"angle-brackets nested too deep");
+   s++;
+   }
 
   t = yield;
   startptr = s;
@@ -711,7 +714,7 @@ if (*s == '<')
   if (*s == '@')
     {
     s = read_route(s, t, errorptr);
-    if (*errorptr != NULL) goto PARSE_FAILED;
+    if (*errorptr) goto PARSE_FAILED;
     *t = 0;                  /* Ensure route is ignored - probably overkill */
     source_routed = TRUE;
     }
@@ -729,7 +732,7 @@ if (*s == '<')
   else
     {
     s = read_addr_spec(s, t, '>', errorptr, &domainptr);
-    if (*errorptr != NULL) goto PARSE_FAILED;
+    if (*errorptr) goto PARSE_FAILED;
     *domain = domainptr - yield;
     if (source_routed && *domain == 0)
       FAILED(US"domain missing in source-routed address");
@@ -739,9 +742,10 @@ if (*s == '<')
   if (*errorptr != NULL) goto PARSE_FAILED;
   while (bracket_count-- > 0) if (*s++ != '>')
     {
-    *errorptr = (s[-1] == 0)? US"'>' missing at end of address" :
-      string_sprintf("malformed address: %.32s may not follow %.*s",
-        s-1, s - (uschar *)mailbox - 1, mailbox);
+    *errorptr = s[-1] == 0
+      ? US"'>' missing at end of address"
+      : string_sprintf("malformed address: %.32s may not follow %.*s",
+	  s-1, s - (uschar *)mailbox - 1, mailbox);
     goto PARSE_FAILED;
     }
 
