@@ -11,11 +11,11 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SNCN<server1.example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <O=example.com,CN=clica Signing Cert>
-1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:04 2012 GMT>
-1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:34:04 2038 GMT>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:01 2012 GMT>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Dec  1 12:34:01 2037 GMT>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <RSA-SHA256>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <21 91 c3 1f 28 45 dd 2c ac d6 38 44 e7 b0 bb de 5a dc 45 1c 46 f1 76 a8 0d bf aa 4f f4 03 5e 1e fb b7 10 16 4d 4e 51 f1 8f b9 e4 38 10 69 02 c1 6b 27 2d 7c 15 f0 b7 0b 4c 51 ab 21 43 36 3e 4e 3a 68 7d 61 15 37 c3 2a b8 3e 34 85 4e 1c 54 55 95 7a 0b 80 70 38 77 d0 bd 4e c4 ca ab af 14 ea a3 24 43 13 eb 27 97 82 11 a2 15 29 3c 15 f2 f8 e9 8d d7 ad 20 b5 77 d7 01 8f 84 95 c1 e8 25 db>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=alternatename.server1.example.com\nDNS=alternatename2.server1.example.com\nDNS=server1.example.com\nDNS=*.test.ex>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <67 ef 2d 43 8e 43 50 f5 3f 41 ee 42 cf f4 b4 31 3d d8 88 b5 f7 24 1f 26 83 32 6a 6c ff 8a 36 b7 be cb 28 48 68 9c a9 3c 6e 2f 2d a5 f4 fc d2 09 9b 1d 04 00 26 7d a5 f9 39 13 06 dd 9d 69 78 f8 7b f5 3c 82 9d 8f b9 4f 1a b6 f0 0b 7f 20 82 6e 80 4e 38 09 d1 43 23 22 dd 37 5d 80 6d 5a aa 23 33 e4 79 c9 0d 8d cc b8 ed 5f 6b 01 56 2c 49 89 9b ca 5e d5 b3 b0 93 7e d5 5e f0 98 7d 5f 07 4b>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex\nDNS=server1.example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session failure: delivering unencrypted to 127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
 1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
@@ -33,11 +33,11 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 SN; <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SNCN<server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <O=example.com,CN=clica Signing Cert>
-1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:04 2012 GMT>
-1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Jan  1 12:34:04 2038 GMT>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:01 2012 GMT>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Dec  1 12:34:01 2037 GMT>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <RSA-SHA256>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <21 91 c3 1f 28 45 dd 2c ac d6 38 44 e7 b0 bb de 5a dc 45 1c 46 f1 76 a8 0d bf aa 4f f4 03 5e 1e fb b7 10 16 4d 4e 51 f1 8f b9 e4 38 10 69 02 c1 6b 27 2d 7c 15 f0 b7 0b 4c 51 ab 21 43 36 3e 4e 3a 68 7d 61 15 37 c3 2a b8 3e 34 85 4e 1c 54 55 95 7a 0b 80 70 38 77 d0 bd 4e c4 ca ab af 14 ea a3 24 43 13 eb 27 97 82 11 a2 15 29 3c 15 f2 f8 e9 8d d7 ad 20 b5 77 d7 01 8f 84 95 c1 e8 25 db>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=alternatename.server1.example.com\nDNS=alternatename2.server1.example.com\nDNS=server1.example.com\nDNS=*.test.ex>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <67 ef 2d 43 8e 43 50 f5 3f 41 ee 42 cf f4 b4 31 3d d8 88 b5 f7 24 1f 26 83 32 6a 6c ff 8a 36 b7 be cb 28 48 68 9c a9 3c 6e 2f 2d a5 f4 fc d2 09 9b 1d 04 00 26 7d a5 f9 39 13 06 dd 9d 69 78 f8 7b f5 3c 82 9d 8f b9 4f 1a b6 f0 0b 7f 20 82 6e 80 4e 38 09 d1 43 23 22 dd 37 5d 80 6d 5a aa 23 33 e4 79 c9 0d 8d cc b8 ed 5f 6b 01 56 2c 49 89 9b ca 5e d5 b3 b0 93 7e d5 5e f0 98 7d 5f 07 4b>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex\nDNS=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf

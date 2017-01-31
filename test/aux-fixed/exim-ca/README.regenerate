@@ -1,0 +1,3 @@
+WARNING for Exim Testsuite:
+
+If you change these certificates you will also need to update the TLSA records in dnszone-src/db.test.ex

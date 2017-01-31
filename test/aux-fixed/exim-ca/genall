@@ -17,12 +17,13 @@ do
     clica -D "$idir" -p password -B 1024 -I -N example.$tld -F \
 	-C http://crl.example.$tld/latest.crl -O http://oscp.example.$tld/
 
-    clica -D example.$tld -p password -s 101 -S server1.example.$tld \
+    # -m <months>
+    clica -D example.$tld -p password -s 101 -S server1.example.$tld -m 301 \
 	-8 alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex
-    clica -D example.$tld -p password -s 102 -S revoked1.example.$tld
+    clica -D example.$tld -p password -s 102 -S revoked1.example.$tld -m 301
     clica -D example.$tld -p password -s 103 -S expired1.example.$tld -m 1
-    clica -D example.$tld -p password -s 201 -S server2.example.$tld
-    clica -D example.$tld -p password -s 202 -S revoked2.example.$tld
+    clica -D example.$tld -p password -s 201 -S  server2.example.$tld -m 301
+    clica -D example.$tld -p password -s 202 -S revoked2.example.$tld -m 301
     clica -D example.$tld -p password -s 203 -S expired2.example.$tld -m 1
 
 
