@@ -583,7 +583,8 @@ if (*errno_value == 0 || *errno_value == ECONNRESET)
   *message = US string_sprintf("Remote host closed connection "
     "in response to %s%s", pl, smtp_command);
   }
-else *message = US string_sprintf("%s [%s]", host->name, host->address);
+else
+  *message = US string_sprintf("%s [%s]", host->name, host->address);
 
 return FALSE;
 }
@@ -1774,12 +1775,8 @@ goto SEND_QUIT;
 
       if (rsp != sx->buffer && rsp[0] == 0 && (errno == 0 || errno == ECONNRESET))
 	{
-	sx->send_quit = FALSE;
-	save_errno = ERRNO_SMTPCLOSED;
-	message = string_sprintf("Remote host closed connection "
-	      "in response to %s (EHLO response was: %s)",
-	      smtp_command, sx->buffer);
-	goto FAILED;
+	errno = ERRNO_SMTPCLOSED;
+	goto EHLOHELO_FAILED;
 	}
       Ustrncpy(sx->buffer, rsp, sizeof(sx->buffer)/2);
       goto RESPONSE_FAILED;
@@ -1887,7 +1884,7 @@ if (  smtp_peer_options & PEER_OFFERED_TLS
 	  sx->host->name, sx->host->address);
 # endif
 
-      save_errno = ERRNO_TLSFAILURE;
+      errno = ERRNO_TLSFAILURE;
       message = US"failure while setting up TLS session";
       sx->send_quit = FALSE;
       goto TLS_FAILED;
@@ -1974,7 +1971,7 @@ else if (  sx->smtps
 	|| verify_check_given_host(&sx->ob->hosts_require_tls, sx->host) == OK
 	)
   {
-  save_errno = ERRNO_TLSREQUIRED;
+  errno = ERRNO_TLSREQUIRED;
   message = string_sprintf("a TLS session is required, but %s",
     smtp_peer_options & PEER_OFFERED_TLS
     ? "an attempt to start TLS failed" : "the server did not offer TLS support");
@@ -2097,35 +2094,36 @@ return OK;
 
   {
   int code;
-  uschar * set_message;
 
   RESPONSE_FAILED:
-    {
-    save_errno = errno;
     message = NULL;
-    sx->send_quit = check_response(sx->host, &save_errno, sx->addrlist->more_errno,
+    sx->send_quit = check_response(sx->host, &errno, sx->addrlist->more_errno,
       sx->buffer, &code, &message, &pass_message);
     goto FAILED;
-    }
 
   SEND_FAILED:
-    {
-    save_errno = errno;
     code = '4';
     message = US string_sprintf("send() to %s [%s] failed: %s",
       sx->host->name, sx->host->address, strerror(save_errno));
     sx->send_quit = FALSE;
     goto FAILED;
-    }
 
   /* This label is jumped to directly when a TLS negotiation has failed,
   or was not done for a host for which it is required. Values will be set
   in message and save_errno, and setting_up will always be true. Treat as
   a temporary error. */
 
+  EHLOHELO_FAILED:
+    code = '4';
+    message = string_sprintf("Remote host closed connection in response to %s"
+      " (EHLO response was: %s)", smtp_command, sx->buffer);
+    sx->send_quit = FALSE;
+    goto FAILED;
+
 #ifdef SUPPORT_TLS
   TLS_FAILED:
-  code = '4';
+    code = '4';
+    goto FAILED;
 #endif
 
   /* The failure happened while setting up the call; see if the failure was
@@ -2135,9 +2133,9 @@ return OK;
   whatever), defer all addresses, and yield DEFER, so that the host is not
   tried again for a while. */
 
-  FAILED:
+FAILED:
+  save_errno = errno;
   sx->ok = FALSE;                /* For when reached by GOTO */
-  set_message = message;
 
   yield = code == '5'
 #ifdef SUPPORT_I18N
@@ -2145,7 +2143,7 @@ return OK;
 #endif
     ? FAIL : DEFER;
 
-  set_errno(sx->addrlist, save_errno, set_message, yield, pass_message, sx->host
+  set_errno(sx->addrlist, save_errno, message, yield, pass_message, sx->host
 #ifdef EXPERIMENTAL_DSN_INFO
 	    , sx->smtp_greeting, sx->helo_response
 #endif
