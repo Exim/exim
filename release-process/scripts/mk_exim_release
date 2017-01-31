@@ -235,6 +235,7 @@ sub move_text_docs_into_pkg {
 
     # move generated documents from docbook stuff
     foreach my $file (qw/exim.8 spec.txt filter.txt/) {
+        die "Empty file \"$file\"\n" if -z File::Spec->catfile( $old_docdir, $file );
         move( File::Spec->catfile( $old_docdir, $file ), File::Spec->catfile( $new_docdir, $file ) );
     }
 
