@@ -10,6 +10,8 @@ dir=${1:?start directory}
 
 : ${EXIM_KEY:=nigel@exim.org}
 
+umask 022
+
 find "$dir" \
     -type f -name '*.tar.*' \
     -exec gpg  --local-user ${EXIM_KEY} --detach-sig --armor {} \;
