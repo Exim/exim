@@ -1454,9 +1454,7 @@ smtp_setup_conn(smtp_context * sx, BOOL suppress_tls)
 dns_answer tlsa_dnsa;
 #endif
 BOOL pass_message = FALSE;
-
 uschar * message = NULL;
-int save_errno;
 int yield = OK;
 int rc;
 
@@ -1551,14 +1549,13 @@ if (continue_hostname == NULL)
   if (sx->inblock.sock < 0)
     {
     uschar * msg = NULL;
-    int save_errno = errno;
     if (sx->verify)
       {
       msg = strerror(errno);
       HDEBUG(D_verify) debug_printf("connect: %s\n", msg);
       }
     set_errno_nohost(sx->addrlist,
-      save_errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : save_errno,
+      errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
       sx->verify ? string_sprintf("could not connect: %s", msg)
 	     : NULL,
       DEFER, FALSE);
@@ -2104,13 +2101,13 @@ return OK;
   SEND_FAILED:
     code = '4';
     message = US string_sprintf("send() to %s [%s] failed: %s",
-      sx->host->name, sx->host->address, strerror(save_errno));
+      sx->host->name, sx->host->address, strerror(errno));
     sx->send_quit = FALSE;
     goto FAILED;
 
   /* This label is jumped to directly when a TLS negotiation has failed,
   or was not done for a host for which it is required. Values will be set
-  in message and save_errno, and setting_up will always be true. Treat as
+  in message and errno, and setting_up will always be true. Treat as
   a temporary error. */
 
   EHLOHELO_FAILED:
@@ -2134,7 +2131,6 @@ return OK;
   tried again for a while. */
 
 FAILED:
-  save_errno = errno;
   sx->ok = FALSE;                /* For when reached by GOTO */
 
   yield = code == '5'
@@ -2143,7 +2139,7 @@ FAILED:
 #endif
     ? FAIL : DEFER;
 
-  set_errno(sx->addrlist, save_errno, message, yield, pass_message, sx->host
+  set_errno(sx->addrlist, errno, message, yield, pass_message, sx->host
 #ifdef EXPERIMENTAL_DSN_INFO
 	    , sx->smtp_greeting, sx->helo_response
 #endif

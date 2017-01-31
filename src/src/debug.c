@@ -143,7 +143,8 @@ If debug_pid is nonzero, print the pid at the start of each line. This is for
 tidier output when running parallel remote deliveries with debugging turned on.
 Must do the whole thing with a single printf and flush, as otherwise output may
 get interleaved. Since some calls to debug_printf() don't end with newline,
-we save up the text until we do get the newline. */
+we save up the text until we do get the newline.
+Take care to not disturb errno. */
 
 void
 debug_printf(const char *format, ...)
@@ -157,7 +158,9 @@ va_end(ap);
 void
 debug_vprintf(const char *format, va_list ap)
 {
-if (debug_file == NULL) return;
+int save_errno = errno;
+
+if (!debug_file) return;
 
 /* Various things can be inserted at the start of a line. Don't use the
 tod_stamp() function for the timestamp, because that will overwrite the
@@ -235,6 +238,7 @@ if (debug_ptr[-1] == '\n')
   debug_ptr = debug_buffer;
   debug_prefix_length = 0;
   }
+errno = save_errno;
 }
 
 /* End of debug.c */
