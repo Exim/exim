@@ -418,6 +418,7 @@ MAIN: {
         'web!'          => \$context->{web},
     ) and @ARGV == 1 or pod2usage;
 
+    umask(022);
     get_and_check_version( shift, $context );
     fix_paths_tar($context);
     $context->{tag} = build_tag($context);
