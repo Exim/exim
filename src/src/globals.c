@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* All the global variables are defined together in this one module, so
@@ -1519,8 +1519,8 @@ uschar *uucp_from_sender       = US"$1";
 
 uschar *verify_mode	       = NULL;
 uschar *version_copyright      =
- US"Copyright (c) University of Cambridge, 1995 - 2016\n"
-   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2016";
+ US"Copyright (c) University of Cambridge, 1995 - 2017\n"
+   "(c) The Exim Maintainers and contributors in ACKNOWLEDGMENTS file, 2007 - 2017";
 uschar *version_date           = US"?";
 uschar *version_cnumber        = US"????";
 uschar *version_string         = US"?";
