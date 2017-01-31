@@ -33,6 +33,7 @@ not using DSN
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 550 NO
+  SMTP(closed)<<
 Remote host closed connection in response to pipelined DATA
 error for DATA ignored: pipelining is in use and there were no good recipients
 ok=1 send_quit=1 send_rset=1 continue_more=0 yield=0 first_address is NULL
@@ -40,6 +41,7 @@ transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
   SMTP>> RSET
 cmd buf flush ddd bytes
+  SMTP(closed)<<
 H=127.0.0.1 [127.0.0.1] Remote host closed connection in response to RSET
   SMTP(close)>>
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for userx@test.ex: result OK

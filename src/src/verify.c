@@ -778,6 +778,9 @@ tls_retry_connection:
       need another return code filtering out to here.
       */
 
+      /* Remember when we last did a random test */
+      new_domain_record.random_stamp = time(NULL);
+
       if (smtp_write_mail_and_rcpt_cmds(&sx, &yield) == 0)
 	switch(addr->transport_return)
 	  {
@@ -810,12 +813,14 @@ tls_retry_connection:
 	    (void) event_raise(addr->transport->event_action,
 			      US"tcp:close", NULL);
 #endif
+	    addr->address = main_address;
+	    addr->transport_return = PENDING_DEFER;
+	    sx.first_addr = sx.sync_addr = addr;
+	    sx.ok = FALSE;
+	    sx.send_rset = TRUE;
+	    sx.completed_addr = FALSE;
 	    goto tls_retry_connection;
 	  }
-
-      /* Remember when we last did a random test */
-
-      new_domain_record.random_stamp = time(NULL);
 
       /* Re-setup for main verify, or for the error message when failing */
       addr->address = main_address;
