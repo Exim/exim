@@ -922,6 +922,52 @@ return proxy_session;
 
 
 /*************************************************
+*    Read data until newline or end of buffer    *
+*************************************************/
+/* While SMTP is server-speaks-first, TLS is client-speaks-first, so we can't
+read an entire buffer and assume there will be nothing past a proxy protocol
+header.  Our approach normally is to use stdio, but again that relies upon
+"STARTTLS\r\n" and a server response before the client starts TLS handshake, or
+reading _nothing_ before client TLS handshake.  So we don't want to use the
+usual buffering reads which may read enough to block TLS starting.
+
+So unfortunately we're down to "read one byte at a time, with a syscall each,
+and expect a little overhead", for all proxy-opened connections which are v1,
+just to handle the TLS-on-connect case.  Since SSL functions wrap the
+underlying fd, we can't assume that we can feed them any already-read content.
+
+We need to know where to read to, the max capacity, and we'll read until we
+get a CR and one more character.  Let the caller scream if it's CR+!LF.
+
+Return the amount read.
+*/
+
+static int
+swallow_until_crlf(int fd, void *vto, int capacity)
+{
+  uschar *to = (uschar *)vto;
+  int have = 0;
+  int ret;
+  int last = 0;
+
+  while (capacity > 0) {
+    do { ret = recv(fd, to, 1, 0); } while (ret == -1 && errno == EINTR);
+    if (ret == -1)
+      return -1;
+    have++;
+    if (last)
+      return have;
+    if (*to == '\r')
+      last = 1;
+    capacity--;
+    to++;
+  }
+  // reached end without having room for a final newline, abort
+  errno = EOVERFLOW;
+  return -1;
+}
+
+/*************************************************
 *         Setup host for proxy protocol          *
 *************************************************/
 /* The function configures the connection based on a header from the
@@ -976,6 +1022,7 @@ struct sockaddr_in6 tmpaddr6;
 int get_ok = 0;
 int size, ret;
 int fd = fileno(smtp_in);
+#define PROXY_INITIAL_READ 12
 const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar * iptype;  /* To display debug info */
 struct timeval tv;
@@ -997,7 +1044,10 @@ do
   {
   /* The inbound host was declared to be a Proxy Protocol host, so
      don't do a PEEK into the data, actually slurp it up. */
-  ret = recv(fd, &hdr, sizeof(hdr), 0);
+  /* We assume that the zie of a v2sig is less than the size of a complete
+     PROXYv1 line, so that we will _have_ to read more data; "PROXY TCPn\r\n"
+     is 12, so an IP address pushes it over, so we're good. */
+  ret = recv(fd, &hdr, PROXY_INITIAL_READ, 0);
   }
   while (ret == -1 && errno == EINTR);
 
@@ -1006,8 +1056,19 @@ if (ret == -1)
 
 if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
   {
-  uint8_t ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
-  uint8_t cmd = (hdr.v2.ver_cmd & 0x0f);
+  uint8_t ver, cmd;
+  int ret2nd;
+
+  /* It's now safe to read the rest. */
+  do {
+    ret2nd = recv(fd, (uschar*)&hdr + ret, sizeof(hdr)-ret, 0);
+  } while (ret2nd == -1 && errno == EINTR);
+  if (ret2nd == -1)
+    goto proxyfail;
+  ret += ret2nd;
+
+  ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
+  cmd = (hdr.v2.ver_cmd & 0x0f);
 
   /* May 2014: haproxy combined the version and command into one byte to
      allow two full bytes for the length field in order to proxy SSL
@@ -1105,11 +1166,21 @@ if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
   }
 else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   {
-  uschar *p = string_copy(hdr.v1.line);
-  uschar *end = memchr(p, '\r', ret - 1);
+  uschar *p;
+  uschar *end;
   uschar *sp;     /* Utility variables follow */
   int     tmp_port;
+  int     r2;
   char   *endc;
+
+  /* get the rest of the line */
+  r2 = swallow_until_crlf(fd, (uschar*)&hdr + ret, sizeof(hdr)-ret);
+  if (r2 == -1)
+    goto proxyfail;
+  ret += r2;
+
+  p = string_copy(hdr.v1.line);
+  end = memchr(p, '\r', ret - 1);
 
   if (!end || end[1] != '\n')
     {
@@ -1119,7 +1190,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   *end = '\0'; /* Terminate the string */
   size = end + 2 - p; /* Skip header + CRLF */
   DEBUG(D_receive) debug_printf("Detected PROXYv1 header\n");
-  DEBUG(D_receive) debug_printf("Bytes read not within PROXY header: %ld\n", ret - size);
+  DEBUG(D_receive) debug_printf("Bytes read not within PROXY header: %d\n", ret - size);
   /* Step through the string looking for the required fields. Ensure
      strict adherence to required formatting, exit for any error. */
   p += 5;
@@ -1216,6 +1287,7 @@ else
   {
   /* Wrong protocol */
   DEBUG(D_receive) debug_printf("Invalid proxy protocol version negotiation\n");
+  (void) swallow_until_crlf(fd, (uschar*)&hdr + ret, sizeof(hdr)-ret);
   goto proxyfail;
   }
 
