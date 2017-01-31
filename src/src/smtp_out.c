@@ -498,8 +498,12 @@ for (;;)
 
   /* Need to read a new input packet. */
 
-  rc = ip_recv(sock, inblock->buffer, inblock->buffersize, timeout);
-  if (rc <= 0) break;
+  if((rc = ip_recv(sock, inblock->buffer, inblock->buffersize, timeout)) <= 0)
+    {
+    if (!errno)
+      DEBUG(D_deliver|D_transport|D_acl) debug_printf("  SMTP(closed)<<\n");
+    break;
+    }
 
   /* Another block of data has been successfully read. Set up the pointers
   and let the loop continue. */
