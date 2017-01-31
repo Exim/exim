@@ -73,6 +73,10 @@ JH/15 Angle-bracket nesting (an error inserted by broken sendmails) levels are
       now limited to an arbitrary five deep, while parsing addresses with the
       strip_excess_angle_brackets option enabled.
 
+PP/03 Bug 2018: For Proxy Protocol and TLS-on-connect, do not over-read and
+      instead leave the unprompted TLS handshake in socket buffer for the
+      TLS library to consume.
+
 
 Exim version 4.88
 -----------------
