@@ -18,6 +18,6 @@
 1999-03-02 09:44:33 proxy session: yes
 1999-03-02 09:44:33 local          [ip4.ip4.ip4.ip4]:1111
 1999-03-02 09:44:33 proxy internal [ip4.ip4.ip4.ip4]:1116
-1999-03-02 09:44:33 proxy external [192.168.0.48]:1117
+1999-03-02 09:44:33 proxy external [192.168.0.5]:1117
 1999-03-02 09:44:33 remote         [192.168.0.15]:1118
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= e@test.ex H=(clientname) [192.168.0.15]:1118 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
