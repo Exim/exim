@@ -943,14 +943,31 @@ Return the amount read.
 */
 
 static int
-swallow_until_crlf(int fd, void *vto, int capacity)
+swallow_until_crlf(int fd, uschar *base, int already, int capacity)
 {
-  uschar *to = (uschar *)vto;
+  uschar *to = base + already;
+  uschar *cr;
   int have = 0;
   int ret;
   int last = 0;
 
-  while (capacity > 0) {
+  /* For "PROXY UNKNOWN\r\n" we, at time of writing, expect to have read
+  up through the \r; for the _normal_ case, we haven't yet seen the \r. */
+  cr = memchr(base, '\r', already);
+  if (cr != NULL)
+    {
+    if ((cr - base) < already - 1)
+      {
+      /* \r and presumed \n already within what we have; probably not
+      actually proxy protocol, but abort cleanly. */
+      return 0;
+      }
+    /* \r is last character read, just need one more. */
+    last = 1;
+    }
+
+  while (capacity > 0)
+    {
     do { ret = recv(fd, to, 1, 0); } while (ret == -1 && errno == EINTR);
     if (ret == -1)
       return -1;
@@ -961,7 +978,7 @@ swallow_until_crlf(int fd, void *vto, int capacity)
       last = 1;
     capacity--;
     to++;
-  }
+    }
   // reached end without having room for a final newline, abort
   errno = EOVERFLOW;
   return -1;
@@ -1019,10 +1036,39 @@ struct sockaddr_in tmpaddr;
 char tmpip6[INET6_ADDRSTRLEN];
 struct sockaddr_in6 tmpaddr6;
 
+/* We can't read "all data until end" because while SMTP is
+server-speaks-first, the TLS handshake is client-speaks-first, so for
+TLS-on-connect ports the proxy protocol header will usually be immediately
+followed by a TLS handshake, and with N TLS libraries, we can't reliably
+reinject data for reading by those.  So instead we first read "enough to be
+safely read within the header, and figure out how much more to read".
+For v1 we will later read to the end-of-line, for v2 we will read based upon
+the stated length.
+
+The v2 sig is 12 octets, and another 4 gets us the length, so we know how much
+data is needed total.  For v1, where the line looks like:
+PROXY TCPn L3src L3dest SrcPort DestPort \r\n
+
+However, for v1 there's also `PROXY UNKNOWN\r\n` which is only 15 octets.
+We seem to support that.  So, if we read 14 octets then we can tell if we're
+v2 or v1.  If we're v1, we can continue reading as normal.
+
+If we're v2, we can't slurp up the entire header.  We need the length in the
+15th & 16th octets, then to read everything after that.
+
+So to safely handle v1 and v2, with client-sent-first supported correctly,
+we have to do a minimum of 3 read calls, not 1.  Eww.
+*/
+
+#define PROXY_INITIAL_READ 14
+#define PROXY_V2_HEADER_SIZE 16
+#if PROXY_INITIAL_READ > PROXY_V2_HEADER_SIZE
+# error Code bug in sizes of data to read for proxy usage
+#endif
+
 int get_ok = 0;
 int size, ret;
 int fd = fileno(smtp_in);
-#define PROXY_INITIAL_READ 12
 const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar * iptype;  /* To display debug info */
 struct timeval tv;
@@ -1043,10 +1089,9 @@ if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tv, sizeof(tv)) < 0)
 do
   {
   /* The inbound host was declared to be a Proxy Protocol host, so
-     don't do a PEEK into the data, actually slurp it up. */
-  /* We assume that the zie of a v2sig is less than the size of a complete
-     PROXYv1 line, so that we will _have_ to read more data; "PROXY TCPn\r\n"
-     is 12, so an IP address pushes it over, so we're good. */
+     don't do a PEEK into the data, actually slurp up enough to be
+     "safe". Can't take it all because TLS-on-connect clients follow
+     immediately with TLS handshake. */
   ret = recv(fd, &hdr, PROXY_INITIAL_READ, 0);
   }
   while (ret == -1 && errno == EINTR);
@@ -1054,21 +1099,22 @@ do
 if (ret == -1)
   goto proxyfail;
 
-if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
+/* For v2, handle reading the length, and then the rest. */
+if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
   {
-  uint8_t ver, cmd;
-  int ret2nd;
+  int retmore;
+  uint8_t ver;
 
-  /* It's now safe to read the rest. */
-  do {
-    ret2nd = recv(fd, (uschar*)&hdr + ret, sizeof(hdr)-ret, 0);
-  } while (ret2nd == -1 && errno == EINTR);
-  if (ret2nd == -1)
+  /* First get the length fields. */
+  do
+    {
+    retmore = recv(fd, (uschar*)&hdr + ret, PROXY_V2_HEADER_SIZE - PROXY_INITIAL_READ, 0);
+    } while (retmore == -1 && errno == EINTR);
+  if (retmore == -1)
     goto proxyfail;
-  ret += ret2nd;
+  ret += retmore;
 
   ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
-  cmd = (hdr.v2.ver_cmd & 0x0f);
 
   /* May 2014: haproxy combined the version and command into one byte to
      allow two full bytes for the length field in order to proxy SSL
@@ -1080,15 +1126,43 @@ if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
     DEBUG(D_receive) debug_printf("Invalid Proxy Protocol version: %d\n", ver);
     goto proxyfail;
     }
-  DEBUG(D_receive) debug_printf("Detected PROXYv2 header\n");
+
   /* The v2 header will always be 16 bytes per the spec. */
   size = 16 + ntohs(hdr.v2.len);
-  if (ret < size)
+  DEBUG(D_receive) debug_printf("Detected PROXYv2 header, size %d (limit %d)\n",
+      size, (int)sizeof(hdr));
+
+  /* We should now have 16 octets (PROXY_V2_HEADER_SIZE), and we know the total
+  amount that we need.  Double-check that the size is not unreasonable, then
+  get the rest. */
+  if (size > sizeof(hdr))
     {
-    DEBUG(D_receive) debug_printf("Truncated or too large PROXYv2 header (%d/%d)\n",
-                                  ret, size);
+    DEBUG(D_receive) debug_printf("PROXYv2 header size unreasonably large; security attack?\n");
     goto proxyfail;
     }
+
+  do
+    {
+    do
+      {
+      retmore = recv(fd, (uschar*)&hdr + ret, size-ret, 0);
+      } while (retmore == -1 && errno == EINTR);
+    if (retmore == -1)
+      goto proxyfail;
+    ret += retmore;
+    DEBUG(D_receive) debug_printf("PROXYv2: have %d/%d required octets\n", ret, size);
+    } while (ret < size);
+
+  } /* end scope for getting rest of data for v2 */
+
+/* At this point: if PROXYv2, we've read the exact size required for all data;
+if PROXYv1 then we've read "less than required for any valid line" and should
+read the rest". */
+
+if (ret >= 16 && memcmp(&hdr.v2, v2sig, 12) == 0)
+  {
+  uint8_t cmd = (hdr.v2.ver_cmd & 0x0f);
+
   switch (cmd)
     {
     case 0x01: /* PROXY command */
@@ -1174,7 +1248,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   char   *endc;
 
   /* get the rest of the line */
-  r2 = swallow_until_crlf(fd, (uschar*)&hdr + ret, sizeof(hdr)-ret);
+  r2 = swallow_until_crlf(fd, (uschar*)&hdr, ret, sizeof(hdr)-ret);
   if (r2 == -1)
     goto proxyfail;
   ret += r2;
@@ -1182,7 +1256,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   p = string_copy(hdr.v1.line);
   end = memchr(p, '\r', ret - 1);
 
-  if (!end || end[1] != '\n')
+  if (!end || (end == (uschar*)&hdr + ret) || end[1] != '\n')
     {
     DEBUG(D_receive) debug_printf("Partial or invalid PROXY header\n");
     goto proxyfail;
@@ -1287,7 +1361,7 @@ else
   {
   /* Wrong protocol */
   DEBUG(D_receive) debug_printf("Invalid proxy protocol version negotiation\n");
-  (void) swallow_until_crlf(fd, (uschar*)&hdr + ret, sizeof(hdr)-ret);
+  (void) swallow_until_crlf(fd, (uschar*)&hdr, ret, sizeof(hdr)-ret);
   goto proxyfail;
   }
 

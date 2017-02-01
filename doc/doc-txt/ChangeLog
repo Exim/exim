@@ -77,6 +77,8 @@ PP/03 Bug 2018: For Proxy Protocol and TLS-on-connect, do not over-read and
       instead leave the unprompted TLS handshake in socket buffer for the
       TLS library to consume.
 
+PP/04 Bug 2018: Also handle Proxy Protocol v2 safely.
+
 
 Exim version 4.88
 -----------------
