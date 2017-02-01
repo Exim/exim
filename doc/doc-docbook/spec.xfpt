@@ -12257,7 +12257,7 @@ qualified host name. See also &$smtp_active_hostname$&.
        &$proxy_local_port$& &&&
        &$proxy_session$&
 These variables are only available when built with Proxy Protocol
-or Socks5 support
+or SOCKS5 support.
 For details see chapter &<<SECTproxyInbound>>&.
 
 .vitem &$prdr_requested$&
@@ -36063,7 +36063,7 @@ The latter can be disabled by turning off the &%outgoing_interface%& option.
 &%proxy%&: The internal (closest to the system running Exim) IP address
 of the proxy, tagged by PRX=, on the &"<="& line for a message accepted
 on a proxied connection
-or the &"=>"& line for a message delivered on a proxied connection..
+or the &"=>"& line for a message delivered on a proxied connection.
 See &<<SECTproxyInbound>>& for more information.
 .next
 .cindex "log" "incoming remote port"
@@ -38553,6 +38553,13 @@ recorded in an ACL (example is below).
 Use of a proxy is enabled by setting the &%hosts_proxy%&
 main configuration option to a hostlist; connections from these
 hosts will use Proxy Protocol.
+Exim supports both version 1 and version 2 of the Proxy Protocol and
+automatically determines which version is in use.
+
+The Proxy Protocol header is the first data received on a TCP connection
+and is inserted before any TLS-on-connect handshake from the client; Exim
+negotiates TLS between Exim-as-server and the remote client, not between
+Exim and the proxy server.
 
 The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces
