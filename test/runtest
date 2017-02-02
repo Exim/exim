@@ -2266,22 +2266,20 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
   if ($args =~ /\$msg/)
     {
-    my($listcmd) = "$parm_cwd/eximdir/exim -bp " .
-                   "-DEXIM_PATH=$parm_cwd/eximdir/exim " .
-                   "-C $parm_cwd/test-config |";
-    print ">> Getting queue list from:\n>>    $listcmd\n" if ($debug);
-    open (QLIST, $listcmd) || tests_exit(-1, "Couldn't run \"exim -bp\": $!\n");
-    my(@msglist) = ();
-    while (<QLIST>) { push (@msglist, $1) if /^\s*\d+[smhdw]\s+\S+\s+(\S+)/; }
-    close(QLIST);
+    my @listcmd  = ("$parm_cwd/eximdir/exim", '-bp',
+                   "-DEXIM_PATH=$parm_cwd/eximdir/exim",
+                   -C => "$parm_cwd/test-config");
+    print ">> Getting queue list from:\n>>    @listcmd\n" if $debug;
     # We need the message ids sorted in ascending order.
     # Message id is: <timestamp>-<pid>-<fractional-time>. On some systems (*BSD) the
     # PIDs are randomized, so sorting just the whole PID doesn't work.
     # We do the Schartz' transformation here (sort on
     # <timestamp><fractional-time>). Thanks to Kirill Miazine
-    @msglist = map { $_->[0] }
-               sort { $a->[1] cmp $b->[1] }
-               map { [$_, join '', (split '-', $_)[0,2]] } @msglist;
+    my @msglist =
+      map { $_->[1] }                                   # extract the values
+      sort { $a->[0] cmp $b->[0] }                      # sort by key
+      map { [join('.' => (split /-/, $_)[0,2]) => $_] } # key (timestamp.fractional-time) => value(message_id)
+      map { /^\s*\d+[smhdw]\s+\S+\s+(\S+)/ } `@listcmd` or tests_exit(-1, "No output from `exim -bp` (@listcmd)\n");
 
     # Done backwards just in case there are more than 9
 
