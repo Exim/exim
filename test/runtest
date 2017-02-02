@@ -2274,6 +2274,14 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
     my(@msglist) = ();
     while (<QLIST>) { push (@msglist, $1) if /^\s*\d+[smhdw]\s+\S+\s+(\S+)/; }
     close(QLIST);
+    # We need the message ids sorted in ascending order.
+    # Message id is: <timestamp>-<pid>-<fractional-time>. On some systems (*BSD) the
+    # PIDs are randomized, so sorting just the whole PID doesn't work.
+    # We do the Schartz' transformation here (sort on
+    # <timestamp><fractional-time>). Thanks to Kirill Miazine
+    @msglist = map { $_->[0] }
+               sort { $a->[1] cmp $b->[1] }
+               map { [$_, join '', (split '-', $_)[0,2]] } @msglist;
 
     # Done backwards just in case there are more than 9
 
