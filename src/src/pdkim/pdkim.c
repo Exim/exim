@@ -582,8 +582,12 @@ DEBUG(D_acl)
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 
-exim_sha_init(&sig->body_hash_ctx,
-	       sig->algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
+if (!exim_sha_init(&sig->body_hash_ctx,
+	       sig->algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256))
+  {
+  DEBUG(D_acl) debug_printf("PDKIM: hash init internal error\n");
+  return NULL;
+  }
 return sig;
 }
 
@@ -1411,7 +1415,11 @@ while (sig)
   hdata.data = NULL;
   hdata.len = 0;
 
-  exim_sha_init(&hhash_ctx, is_sha1 ? HASH_SHA1 : HASH_SHA256);
+  if (!exim_sha_init(&hhash_ctx, is_sha1 ? HASH_SHA1 : HASH_SHA256))
+    {
+    DEBUG(D_acl) debug_printf("PDKIM: hask setup internal error\n");
+    break;
+    }
 
   DEBUG(D_acl) debug_printf(
       "PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>>>\n");
@@ -1717,8 +1725,13 @@ sig->selector = string_copy(US selector);
 sig->rsa_privkey = string_copy(US rsa_privkey);
 sig->algo = algo;
 
-exim_sha_init(&sig->body_hash_ctx,
-	       algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256);
+if (!exim_sha_init(&sig->body_hash_ctx,
+	       algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256))
+  {
+  DEBUG(D_acl) debug_printf("PDKIM: hash setup internal error\n");
+  return NULL;
+  }
+
 DEBUG(D_acl)
   {
   pdkim_signature s = *sig;

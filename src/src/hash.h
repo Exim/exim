@@ -67,7 +67,7 @@ typedef struct {
 
 } hctx;
 
-extern void     exim_sha_init(hctx *, hashmethod);
+extern BOOL     exim_sha_init(hctx *, hashmethod);
 extern void     exim_sha_update(hctx *, const uschar *a, int);
 extern void     exim_sha_finish(hctx *, blob *);
 extern int      exim_sha_hashlen(hctx *);

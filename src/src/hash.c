@@ -30,15 +30,16 @@ sha1;
 /******************************************************************************/
 #ifdef SHA_OPENSSL
 
-void
+BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
 switch (h->method = m)
   {
   case HASH_SHA1:   h->hashlen = 20; SHA1_Init  (&h->u.sha1); break;
   case HASH_SHA256: h->hashlen = 32; SHA256_Init(&h->u.sha2); break;
-  default:	    h->hashlen = 0; break;
+  default:	    h->hashlen = 0; return FALSE;
   }
+return TRUE;
 }
 
 
@@ -69,7 +70,7 @@ switch (h->method)
 #elif defined(SHA_GNUTLS)
 /******************************************************************************/
 
-void
+BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
 switch (h->method = m)
@@ -79,8 +80,9 @@ switch (h->method = m)
 #ifdef EXIM_HAVE_SHA3
   case HASH_SHA3_256: h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA3_256); break;
 #endif
-  default: h->hashlen = 0; break;
+  default: h->hashlen = 0; return FALSE;
   }
+return TRUE;
 }
 
 
@@ -103,15 +105,16 @@ gnutls_hash_output(h->sha, b->data);
 #elif defined(SHA_GCRYPT)
 /******************************************************************************/
 
-void
+BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
 switch (h->method = m)
   {
   case HASH_SHA1:   h->hashlen = 20; gcry_md_open(&h->sha, GCRY_MD_SHA1, 0); break;
   case HASH_SHA256: h->hashlen = 32; gcry_md_open(&h->sha, GCRY_MD_SHA256, 0); break;
-  default:	    h->hashlen = 0; break;
+  default:	    h->hashlen = 0; return FALSE;
   }
+return TRUE;
 }
 
 
@@ -135,15 +138,16 @@ memcpy(b->data, gcry_md_read(h->sha, 0), h->hashlen);
 #elif defined(SHA_POLARSSL)
 /******************************************************************************/
 
-void
+BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
 switch (h->method = m)
   {
   case HASH_SHA1:   h->hashlen = 20; sha1_starts(&h->u.sha1);    break;
   case HASH_SHA256: h->hashlen = 32; sha2_starts(&h->u.sha2, 0); break;
-  default:	    h->hashlen = 0; break;
+  default:	    h->hashlen = 0; return FALSE;
   }
+return TRUE;
 }
 
 
@@ -382,11 +386,12 @@ for (i = 0; i < 5; i++)
 
 
 # ifdef notdef
-void
+BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
 h->hashlen = 20;
 native_sha1_start(&h->sha1);
+return TRUE;
 }
 
 
@@ -452,7 +457,7 @@ native_sha1_end(&h->sha1, data, len, digest);
 void
 sha1_start(hctx * h)
 {
-exim_sha_init(h, HASH_SHA1);
+(void) exim_sha_init(h, HASH_SHA1);
 }
 
 void

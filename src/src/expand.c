@@ -6440,7 +6440,11 @@ while (*s != 0)
 	  blob b;
 	  char st[3];
 
-	  exim_sha_init(&h, HASH_SHA256);
+	  if (!exim_sha_init(&h, HASH_SHA256))
+	    {
+	    expand_string_message = US"unrecognised sha256 variant";
+	    goto EXPAND_FAILED;
+	    }
 	  exim_sha_update(&h, sub, Ustrlen(sub));
 	  exim_sha_finish(&h, &b);
 	  while (b.len-- > 0)
@@ -6467,13 +6471,12 @@ while (*s != 0)
 	  : Ustrcmp(arg, "512") == 0 ? HASH_SHA3_512
 	  : HASH_BADTYPE;
 
-	if (m == HASH_BADTYPE)
+	if (m == HASH_BADTYPE || !exim_sha_init(&h, m))
 	  {
 	  expand_string_message = US"unrecognised sha3 variant";
 	  goto EXPAND_FAILED;
 	  }
 
-	exim_sha_init(&h, m);
 	exim_sha_update(&h, sub, Ustrlen(sub));
 	exim_sha_finish(&h, &b);
 	while (b.len-- > 0)
