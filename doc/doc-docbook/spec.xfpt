@@ -38680,6 +38680,12 @@ Exim has support for Internationalised mail names.
 To include this it must be built with SUPPORT_I18N and the libidn library.
 Standards supported are RFCs 2060, 5890, 6530 and 6533.
 
+.new
+If Exim is built with SUPPORT_I18N_2008 (in addition to SUPPORT_I18N, not
+instead of it) then IDNA2008 is supported; this adds an extra library
+requirement, upon libidn2.
+.wen
+
 .section "MTA operations" SECTi18nMTA
 .cindex SMTPUTF8 "ESMTP option"
 The main configuration option &%smtputf8_advertise_hosts%& specifies
