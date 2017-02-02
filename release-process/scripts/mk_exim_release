@@ -375,6 +375,10 @@ sub create_tar_files {
             print "Creating: ${pkgs}/${dirname}.tar.lz\n" if ($verbose || $debug);
             system("$tar cf  ${pkgs}/${dirname}.tar.lz  --lzip  -C ${pkgdirs} ${dirname}")
         }
+        if ($context->{compressors}{xz}) {
+            print "Creating: ${pkgs}/${dirname}.tar.xz\n" if ($verbose || $debug);
+            system("$tar cf  ${pkgs}/${dirname}.tar.xz  --xz    -C ${pkgdirs} ${dirname}")
+        }
     }
 }
 
@@ -394,6 +398,7 @@ MAIN: {
         compressors => {
                 gzip    => 1,
                 bzip2   => 1,
+                xz      => 1,
                 lzip    => 0,
         },
         build_docs   => 1,
@@ -402,6 +407,13 @@ MAIN: {
     my $delete;
     my $cleanup = 1;
     ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
+    # We are creating files for mass distribution, so work harder to make smaller files.
+    $ENV{'GZIP'} = '-9';
+    $ENV{'BZIP2'} = '-9';
+    # xz documents minimum file sizes for levels higher than -6 to be useful and each
+    # requires more RAM on the decompressing system.  Exim tarball currently 24MiB so
+    # using -8.
+    $ENV{'XZ_DEFAULTS'} = '-8';
 
     GetOptions(
         'directory=s'   => \$context->{directory},
