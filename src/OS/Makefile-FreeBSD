@@ -6,6 +6,10 @@ CHOWN_COMMAND=/usr/sbin/chown
 STRIP_COMMAND=/usr/bin/strip
 CHMOD_COMMAND=/bin/chmod
 
+# FreeBSD Ports no longer insert compatibility symlinks into /usr/bin for
+# scripting languages which traditionally have had them.
+PERL_COMMAND=/usr/local/bin/perl
+
 HAVE_SA_LEN=YES
 
 # crypt() is in a separate library
