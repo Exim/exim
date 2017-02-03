@@ -1,17 +1,53 @@
-#!/bin/sh
+#!/bin/sh -eu
+
+# gpg signs all *.tar.* files under the release directory.
+# Invoke from that dir, or let the script try to figure it out for you.
+
+# Key used is from env var EXIM_KEY; if git config finds user.signingkey, then
+# that is the default.  You can set this per-repo with:
+#    git config --local user.signingkey SOME_IDENTIFIER
 #
-# gpg signs all *.tar.* files under a given directory
-# key used set from env var EXIM_KEY, script defaults that to Nigel's.
+# If not set in git config then you _MUST_ set the env var.
+
 # woe betide the poor sod who does not use a gpg agent, so has
 # to enter their password for every file...
-#
 
-dir=${1:?start directory}
+if repo_signing_key="$(git config user.signingkey)"; then
+	: "${EXIM_KEY:=$repo_signing_key}"
+else
+	: "${EXIM_KEY:?Need a PGP key uid to sign with}"
+fi
 
-: ${EXIM_KEY:=nigel@exim.org}
-
+: "${GPG_COMMAND:=gpg}"
 umask 022
 
-find "$dir" \
-    -type f -name '*.tar.*' \
-    -exec gpg  --local-user ${EXIM_KEY} --detach-sig --armor {} \;
+cd_to() { echo "Working in: $1"; cd "$1"; }
+
+okay=false
+if [ -d ../../release-process ] && [ "${PWD##*/}" = "pkgs" ]; then
+	okay=true # we are in right dir
+elif [ -d release-process ]; then
+	b="$(find . -maxdepth 1 -name 'exim-packaging-*' | sort | tail -n 1)"
+	if [ ".$b" != "." ]; then
+		cd_to "$b/pkgs"
+		okay=true
+	fi
+fi
+if ! $okay; then
+	if [ -d "${1:?need a directory to look in}" ]; then
+		cd_to "$1"
+		shift
+	else
+		printf "%s: %s\n" >&2 "$(basename "$0")" "where should I be looking"
+		exit 1
+	fi
+fi
+
+# Assumes no whitespace (strictly, $IFS) in filenames, which we're okay with
+set $(find . -name '*.asc' -prune -o -type f -print | cut -c 3- | sort)
+
+for FILE
+do
+	echo "Signing: $FILE"
+	${GPG_COMMAND} --local-user "${EXIM_KEY}" --detach-sig --armor "$FILE"
+done
