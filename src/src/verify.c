@@ -682,7 +682,9 @@ tls_retry_connection:
     SMTP command to send.  If we tried TLS but it failed, try again without
     if permitted */
 
-    if (  (yield = smtp_setup_conn(&sx, FALSE)) == DEFER
+    yield = smtp_setup_conn(&sx, FALSE);
+#ifdef SUPPORT_TLS
+    if (  yield == DEFER
        && addr->basic_errno == ERRNO_TLSFAILURE
        && ob->tls_tempfail_tryclear
        && verify_check_given_host(&ob->hosts_require_tls, host) != OK
@@ -694,6 +696,7 @@ tls_retry_connection:
       addr->transport_return = PENDING_DEFER;
       yield = smtp_setup_conn(&sx, TRUE);
       }
+#endif
     if (yield != OK)
       {
       errno = addr->basic_errno;
