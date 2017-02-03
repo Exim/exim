@@ -361,25 +361,25 @@ sub create_tar_files {
         }
     }
 
+    # See also environment variables set in main, tuning compression levels
+    my @COMPRESSIONS = (
+        # compressors-dict-key, file-extension, flags-as-string
+        [ "gzip", "gz", "--gzip" ],
+        [ "bzip2", "bz2", "--bzip2" ],
+        [ "lzip", "lz", "--lzip" ],
+        [ "xz", "xz", "--xz" ],
+    );
+
     foreach my $dir ( glob( File::Spec->catdir( $pkgdirs, ( 'exim*-' . $context->{release} ) ) ) ) {
         my $dirname = ( File::Spec->splitdir($dir) )[-1];
-        if ($context->{compressors}{gzip}) {
-            print "Creating: ${pkgs}/${dirname}.tar.gz\n" if ($verbose || $debug);
-            system("$tar cf  ${pkgs}/${dirname}.tar.gz  --gzip  -C ${pkgdirs} ${dirname}")
-        }
-        if ($context->{compressors}{bzip2}) {
-            print "Creating: ${pkgs}/${dirname}.tar.bz2\n" if ($verbose || $debug);
-            system("$tar cf  ${pkgs}/${dirname}.tar.bz2 --bzip2 -C ${pkgdirs} ${dirname}")
-        }
-        if ($context->{compressors}{lzip}) {
-            print "Creating: ${pkgs}/${dirname}.tar.lz\n" if ($verbose || $debug);
-            system("$tar cf  ${pkgs}/${dirname}.tar.lz  --lzip  -C ${pkgdirs} ${dirname}")
-        }
-        if ($context->{compressors}{xz}) {
-            print "Creating: ${pkgs}/${dirname}.tar.xz\n" if ($verbose || $debug);
-            system("$tar cf  ${pkgs}/${dirname}.tar.xz  --xz    -C ${pkgdirs} ${dirname}")
+        foreach my $comp (@COMPRESSIONS) {
+            my ($compkey, $extension, $flags) = @{$comp};
+            next unless $context->{compressors}{$compkey};
+            print "Creating: ${pkgs}/${dirname}.tar.${extension}\n" if ($verbose || $debug);
+            system("$tar cf  ${pkgs}/${dirname}.tar.${extension} ${flags} --numeric-owner -C ${pkgdirs} ${dirname}");
         }
     }
+
 }
 
 # ------------------------------------------------------------------
