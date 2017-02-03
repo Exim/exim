@@ -1,0 +1,28 @@
+#!/bin/sh -eu
+
+okay=false
+if [ -d ../../release-process ] && [ "${PWD##*/}" = "pkgs" ]; then
+	okay=true # we are in right dir
+elif [ -d release-process ]; then
+	b="$(find . -maxdepth 1 -name 'exim-packaging-*' | sort | tail -n 1)"
+	if [ ".$b" != "." ]; then
+		cd "$b/pkgs"
+		okay=true
+	fi
+fi
+if ! $okay; then
+	if [ -d "${1:?need a directory to look in}" ]; then
+		cd "$1"
+		shift
+	else
+		printf "%s: %s\n" >&2 "$(basename "$0")" "where should I be looking"
+		exit 1
+	fi
+fi
+
+set $(find "${1:-.}" -name '*.asc' -prune -o -type f -print | cut -c 3- | sort)
+
+# stat(1) formats are non-portable BSD vs GNU
+perl -le 'print "SIZE($_)= @{[-s $_]}" foreach @ARGV' "$@"
+echo
+openssl dgst -sha256 "$@"
