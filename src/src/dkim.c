@@ -118,16 +118,16 @@ store_pool = dkim_verify_oldpool;
 void
 dkim_exim_verify_finish(void)
 {
-pdkim_signature *sig = NULL;
+pdkim_signature * sig = NULL;
 int dkim_signers_size = 0;
 int dkim_signers_ptr = 0;
-dkim_signers = NULL;
 int rc;
 
 store_pool = POOL_PERM;
 
 /* Delete eventual previous signature chain */
 
+dkim_signers = NULL;
 dkim_signatures = NULL;
 
 if (dkim_collect_error)
@@ -152,37 +152,39 @@ if ((rc = pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures)) != PDKIM_OK)
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
-  int size = 0;
-  int ptr = 0;
+  int size = 0, ptr = 0;
+  uschar * logmsg = NULL, * s;
 
   /* Log a line for each signature */
 
-  uschar *logmsg = string_append(NULL, &size, &ptr, 5,
-	string_sprintf("d=%s s=%s c=%s/%s a=%s b=%d ",
-	      sig->domain,
-	      sig->selector,
-	      sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-	      sig->canon_body == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-	      sig->algo == PDKIM_ALGO_RSA_SHA256
-	      ? "rsa-sha256"
-	      : sig->algo == PDKIM_ALGO_RSA_SHA1 ? "rsa-sha1" : "err",
-	      (int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0
-	      ),
-
-	sig->identity ? string_sprintf("i=%s ", sig->identity) : US"",
-	sig->created > 0 ? string_sprintf("t=%lu ", sig->created) : US"",
-	sig->expires > 0 ? string_sprintf("x=%lu ", sig->expires) : US"",
-	sig->bodylength > -1 ? string_sprintf("l=%lu ", sig->bodylength) : US""
-	);
+  if (!(s = sig->domain)) s = US"<UNSET>";
+  logmsg = string_append(logmsg, &size, &ptr, 2, "d=", s);
+  if (!(s = sig->selector)) s = US"<UNSET>";
+  logmsg = string_append(logmsg, &size, &ptr, 2, " s=", s);
+  logmsg = string_append(logmsg, &size, &ptr, 7, 
+	" c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+	"/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+	" a=", sig->algo == PDKIM_ALGO_RSA_SHA256
+		? "rsa-sha256"
+		: sig->algo == PDKIM_ALGO_RSA_SHA1 ? "rsa-sha1" : "err",
+	string_sprintf(" b=%d",
+			(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
+  if ((s= sig->identity)) string_append(logmsg, &size, &ptr, 2, " i=", s);
+  if (sig->created > 0) string_append(logmsg, &size, &ptr, 1,
+				      string_sprintf(" t=%lu", sig->created));
+  if (sig->expires > 0) string_append(logmsg, &size, &ptr, 1,
+				      string_sprintf(" x=%lu", sig->expires));
+  if (sig->bodylength > -1) string_append(logmsg, &size, &ptr, 1,
+				      string_sprintf(" l=%lu", sig->bodylength));
 
   switch (sig->verify_status)
     {
     case PDKIM_VERIFY_NONE:
-      logmsg = string_append(logmsg, &size, &ptr, 1, "[not verified]");
+      logmsg = string_append(logmsg, &size, &ptr, 1, " [not verified]");
       break;
 
     case PDKIM_VERIFY_INVALID:
-      logmsg = string_append(logmsg, &size, &ptr, 1, "[invalid - ");
+      logmsg = string_append(logmsg, &size, &ptr, 1, " [invalid - ");
       switch (sig->verify_ext_status)
 	{
 	case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
@@ -219,7 +221,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     case PDKIM_VERIFY_FAIL:
       logmsg =
-	string_append(logmsg, &size, &ptr, 1, "[verification failed - ");
+	string_append(logmsg, &size, &ptr, 1, " [verification failed - ");
       switch (sig->verify_ext_status)
 	{
 	case PDKIM_VERIFY_FAIL_BODY:
@@ -239,7 +241,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     case PDKIM_VERIFY_PASS:
       logmsg =
-	string_append(logmsg, &size, &ptr, 1, "[verification succeeded]");
+	string_append(logmsg, &size, &ptr, 1, " [verification succeeded]");
       break;
     }
 
@@ -248,25 +250,13 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
   /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
 
-  dkim_signers = string_append(dkim_signers,
-				&dkim_signers_size,
-				&dkim_signers_ptr, 2, sig->domain, ":");
+  if (sig->domain)
+    dkim_signers = string_append_listele(dkim_signers, ':', sig->domain);
 
   if (sig->identity)
-    dkim_signers = string_append(dkim_signers,
-				  &dkim_signers_size,
-				  &dkim_signers_ptr, 2, sig->identity, ":");
+    dkim_signers = string_append_listele(dkim_signers, ':', sig->identity);
 
   /* Process next signature */
-  }
-
-/* NULL-terminate and chop the last colon from the domain list */
-
-if (dkim_signers)
-  {
-  dkim_signers[dkim_signers_ptr] = '\0';
-  if (Ustrlen(dkim_signers) > 0)
-  dkim_signers[Ustrlen(dkim_signers) - 1] = '\0';
   }
 
 out:
