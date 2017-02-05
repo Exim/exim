@@ -112,7 +112,7 @@ switch(method)
   case AUTH_NONE:
     return OK;
   case AUTH_NAME:
-    HDEBUG(D_transport|D_acl|D_v) debug_printf("  socks auth NAME '%s' '%s'\n",
+    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  socks auth NAME '%s' '%s'\n",
       sob->auth_name, sob->auth_pwd);
     i = Ustrlen(sob->auth_name);
     j = Ustrlen(sob->auth_pwd);
@@ -122,7 +122,7 @@ switch(method)
     HDEBUG(D_transport|D_acl|D_v)
       {
       int i;
-      debug_printf("  SOCKS>>");
+      debug_printf_indent("  SOCKS>>");
       for (i = 0; i<len; i++) debug_printf(" %02x", s[i]);
       debug_printf("\n");
       }
@@ -132,10 +132,10 @@ switch(method)
        )
       return FAIL;
     HDEBUG(D_transport|D_acl|D_v)
-      debug_printf("  SOCKS<< %02x %02x\n", s[0], s[1]);
+      debug_printf_indent("  SOCKS<< %02x %02x\n", s[0], s[1]);
     if (s[0] == AUTH_NAME_VER && s[1] == 0)
       {
-      HDEBUG(D_transport|D_acl|D_v) debug_printf("  socks auth OK\n");
+      HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  socks auth OK\n");
       return OK;
       }
 
@@ -278,7 +278,7 @@ for(;;)
 
   if ((idx = socks_get_proxy(proxies, nproxies)) < 0)
     {
-    HDEBUG(D_transport|D_acl|D_v) debug_printf("  no proxies left\n");
+    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  no proxies left\n");
     errno = EBUSY;
     return -1;
     }
@@ -304,7 +304,7 @@ for(;;)
 /* Send method-selection */
 
 state = US"method select";
-HDEBUG(D_transport|D_acl|D_v) debug_printf("  SOCKS>> 05 01 %02x\n", sob->auth_type);
+HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SOCKS>> 05 01 %02x\n", sob->auth_type);
 buf[0] = 5; buf[1] = 1; buf[2] = sob->auth_type;
 if (send(fd, buf, 3, 0) < 0)
   goto snd_err;
@@ -316,7 +316,7 @@ if (  !fd_ready(fd, tmo-time(NULL))
    )
   goto rcv_err;
 HDEBUG(D_transport|D_acl|D_v)
-  debug_printf("  SOCKS<< %02x %02x\n", buf[0], buf[1]);
+  debug_printf_indent("  SOCKS<< %02x %02x\n", buf[0], buf[1]);
 if (  buf[0] != 5
    || socks_auth(fd, buf[1], sob, tmo) != OK
    )
@@ -351,7 +351,7 @@ state = US"connect";
 HDEBUG(D_transport|D_acl|D_v)
   {
   int i;
-  debug_printf("  SOCKS>>");
+  debug_printf_indent("  SOCKS>>");
   for (i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
   debug_printf("\n");
   }
@@ -368,7 +368,7 @@ if (  !fd_ready(fd, tmo-time(NULL))
 HDEBUG(D_transport|D_acl|D_v)
   {
   int i;
-  debug_printf("  SOCKS>>");
+  debug_printf_indent("  SOCKS>>");
   for (i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
   debug_printf("\n");
   }
@@ -383,12 +383,12 @@ proxy_external_port = ntohs(*((uint16_t *)(buf + (buf[3] == 4 ? 20 : 8))));
 proxy_session = TRUE;
 
 HDEBUG(D_transport|D_acl|D_v)
-  debug_printf("  proxy farside: [%s]:%d\n", proxy_external_address, proxy_external_port);
+  debug_printf_indent("  proxy farside: [%s]:%d\n", proxy_external_address, proxy_external_port);
 
 return fd;
 
 snd_err:
-  HDEBUG(D_transport|D_acl|D_v) debug_printf("  proxy snd_err %s: %s\n", state, strerror(errno));
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  proxy snd_err %s: %s\n", state, strerror(errno));
   return -1;
 
 proxy_err:
@@ -396,12 +396,12 @@ proxy_err:
   struct socks_err * se =
     buf[1] > nelem(socks_errs) ? NULL : socks_errs + buf[1];
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("  proxy %s: %s\n", state, se ? se->reason : US"unknown error code received");
+    debug_printf_indent("  proxy %s: %s\n", state, se ? se->reason : US"unknown error code received");
   errno = se ? se->errcode : EPROTO;
   }
 
 rcv_err:
-  HDEBUG(D_transport|D_acl|D_v) debug_printf("  proxy rcv_err %s: %s\n", state, strerror(errno));
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  proxy rcv_err %s: %s\n", state, strerror(errno));
   if (!errno) errno = EPROTO;
   else if (errno == ENOENT) errno = ECONNABORTED;
   return -1;

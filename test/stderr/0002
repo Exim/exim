@@ -1,164 +1,164 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-considering: primary_hostname: $primary_hostname
-  expanding: primary_hostname: $primary_hostname
-     result: primary_hostname: myhost.test.ex
-considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  expanding: abcd
-     result: abcd
-considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
-  expanding: \N^([ab]+)(\w+)$\N
-     result: ^([ab]+)(\w+)$
-  condition: match{abcd}{\N^([ab]+)(\w+)$\N}
-     result: true
-considering: $2$1}fail}
-  expanding: $2$1
-     result: cdab
-  expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-     result: match:  cdab
-considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-  expanding: wxyz
-     result: wxyz
-considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
-  expanding: \N^([ab]+)(\w+)$\N
-     result: ^([ab]+)(\w+)$
-  condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
-     result: false
-   scanning: $2$1}fail}
-  expanding: $2$1
-     result: 
-   skipping: result is not used
-failed to expand: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
-   error message: "if" failed and "fail" requested
-failure was forced
-considering: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  expanding: 1
-     result: 1
-considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-  expanding: 1
-     result: 1
-  condition: eq {1}{1}
-     result: true
-considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
-  expanding: yes
-     result: yes
-   scanning: ${lookup{xx}lsearch{/non/exist}}}}
-   scanning: xx}lsearch{/non/exist}}}}
-  expanding: xx
-     result: xx
-   skipping: result is not used
-   scanning: /non/exist}}}}
-  expanding: /non/exist
-     result: /non/exist
-   skipping: result is not used
-  expanding: ${lookup{xx}lsearch{/non/exist}}
-     result: 
-   skipping: result is not used
-  expanding: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
-     result: yes
-considering: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
-considering: a.b.c}{a.b.c}{yes}{no}}
-  expanding: a.b.c
-     result: a.b.c
-considering: a.b.c}{yes}{no}}
-  expanding: a.b.c
-     result: a.b.c
+ /considering: primary_hostname: $primary_hostname
+ |__expanding: primary_hostname: $primary_hostname
+ \_____result: primary_hostname: myhost.test.ex
+ /considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  /considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |__expanding: abcd
+  \_____result: abcd
+  /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |__expanding: \N^([ab]+)(\w+)$\N
+  \_____result: ^([ab]+)(\w+)$
+ |__condition: match{abcd}{\N^([ab]+)(\w+)$\N}
+ |_____result: true
+  /considering: $2$1}fail}
+  |__expanding: $2$1
+  \_____result: cdab
+ |__expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ \_____result: match:  cdab
+ /considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  /considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |__expanding: wxyz
+  \_____result: wxyz
+  /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |__expanding: \N^([ab]+)(\w+)$\N
+  \_____result: ^([ab]+)(\w+)$
+ |__condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
+ |_____result: false
+  /   scanning: $2$1}fail}
+  |__expanding: $2$1
+  |_____result: 
+  \___skipping: result is not used
+ |failed to expand: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ |___error message: "if" failed and "fail" requested
+ \failure was forced
+ /considering: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  /considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |__expanding: 1
+  \_____result: 1
+  /considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |__expanding: 1
+  \_____result: 1
+ |__condition: eq {1}{1}
+ |_____result: true
+  /considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |__expanding: yes
+  \_____result: yes
+  /   scanning: ${lookup{xx}lsearch{/non/exist}}}}
+   /   scanning: xx}lsearch{/non/exist}}}}
+   |__expanding: xx
+   |_____result: xx
+   \___skipping: result is not used
+   /   scanning: /non/exist}}}}
+   |__expanding: /non/exist
+   |_____result: /non/exist
+   \___skipping: result is not used
+  |__expanding: ${lookup{xx}lsearch{/non/exist}}
+  |_____result: 
+  \___skipping: result is not used
+ |__expanding: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+ \_____result: yes
+ /considering: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+  /considering: a.b.c}{a.b.c}{yes}{no}}
+  |__expanding: a.b.c
+  \_____result: a.b.c
+  /considering: a.b.c}{yes}{no}}
+  |__expanding: a.b.c
+  \_____result: a.b.c
 LOG: MAIN PANIC
   no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
-  condition: match_address{a.b.c}{a.b.c}
-     result: false
-   scanning: yes}{no}}
-  expanding: yes
-     result: yes
-   skipping: result is not used
-considering: no}}
-  expanding: no
-     result: no
-  expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
-     result: match_address:   no
+ |__condition: match_address{a.b.c}{a.b.c}
+ |_____result: false
+  /   scanning: yes}{no}}
+  |__expanding: yes
+  |_____result: yes
+  \___skipping: result is not used
+  /considering: no}}
+  |__expanding: no
+  \_____result: no
+ |__expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+ \_____result: match_address:   no
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-considering: -oMa  sender_host_address = $sender_host_address
-  expanding: -oMa  sender_host_address = $sender_host_address
-     result: -oMa  sender_host_address = V4NET.0.0.1
-considering:       sender_host_port = $sender_host_port
-  expanding:       sender_host_port = $sender_host_port
-     result:       sender_host_port = 1234
-considering: -oMaa sender_host_authenticated = $sender_host_authenticated
-  expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
-     result: -oMaa sender_host_authenticated = AAA
-considering: -oMai authenticated_id = $authenticated_id
-  expanding: -oMai authenticated_id = $authenticated_id
-     result: -oMai authenticated_id = philip
-considering: -oMas authenticated_sender = $authenticated_sender
-  expanding: -oMas authenticated_sender = $authenticated_sender
-     result: -oMas authenticated_sender = xx@yy.zz
-considering: -oMi  interface_address = $interface_address
-  expanding: -oMi  interface_address = $interface_address
-     result: -oMi  interface_address = 1.1.1.1
-considering:       interface_port = $interface_port
-  expanding:       interface_port = $interface_port
-     result:       interface_port = 99
-considering: -oMr  received_protocol = $received_protocol
-  expanding: -oMr  received_protocol = $received_protocol
-     result: -oMr  received_protocol = special
-considering: -oMt  sender_ident = $sender_ident
-  expanding: -oMt  sender_ident = $sender_ident
-     result: -oMt  sender_ident = me
+ /considering: -oMa  sender_host_address = $sender_host_address
+ |__expanding: -oMa  sender_host_address = $sender_host_address
+ \_____result: -oMa  sender_host_address = V4NET.0.0.1
+ /considering:       sender_host_port = $sender_host_port
+ |__expanding:       sender_host_port = $sender_host_port
+ \_____result:       sender_host_port = 1234
+ /considering: -oMaa sender_host_authenticated = $sender_host_authenticated
+ |__expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
+ \_____result: -oMaa sender_host_authenticated = AAA
+ /considering: -oMai authenticated_id = $authenticated_id
+ |__expanding: -oMai authenticated_id = $authenticated_id
+ \_____result: -oMai authenticated_id = philip
+ /considering: -oMas authenticated_sender = $authenticated_sender
+ |__expanding: -oMas authenticated_sender = $authenticated_sender
+ \_____result: -oMas authenticated_sender = xx@yy.zz
+ /considering: -oMi  interface_address = $interface_address
+ |__expanding: -oMi  interface_address = $interface_address
+ \_____result: -oMi  interface_address = 1.1.1.1
+ /considering:       interface_port = $interface_port
+ |__expanding:       interface_port = $interface_port
+ \_____result:       interface_port = 99
+ /considering: -oMr  received_protocol = $received_protocol
+ |__expanding: -oMr  received_protocol = $received_protocol
+ \_____result: -oMr  received_protocol = special
+ /considering: -oMt  sender_ident = $sender_ident
+ |__expanding: -oMt  sender_ident = $sender_ident
+ \_____result: -oMt  sender_ident = me
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-considering: -oMa  sender_host_address = $sender_host_address
-  expanding: -oMa  sender_host_address = $sender_host_address
-     result: -oMa  sender_host_address = V4NET.0.0.1
-considering:       sender_host_port = $sender_host_port
-  expanding:       sender_host_port = $sender_host_port
-     result:       sender_host_port = 1234
-considering: -oMaa sender_host_authenticated = $sender_host_authenticated
-  expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
-     result: -oMaa sender_host_authenticated = AAA
-considering: -oMai authenticated_id = $authenticated_id
-  expanding: -oMai authenticated_id = $authenticated_id
-     result: -oMai authenticated_id = philip
-considering: -oMas authenticated_sender = $authenticated_sender
-  expanding: -oMas authenticated_sender = $authenticated_sender
-     result: -oMas authenticated_sender = xx@yy.zz
-considering: -oMi  interface_address = $interface_address
-  expanding: -oMi  interface_address = $interface_address
-     result: -oMi  interface_address = 1.1.1.1
-considering:       interface_port = $interface_port
-  expanding:       interface_port = $interface_port
-     result:       interface_port = 99
-considering: -oMr  received_protocol = $received_protocol
-  expanding: -oMr  received_protocol = $received_protocol
-     result: -oMr  received_protocol = special
-considering: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
-considering: black}{white}{$sender_host_name}{No}}
-  expanding: black
-     result: black
-considering: white}{$sender_host_name}{No}}
-  expanding: white
-     result: white
-  condition: eq{black}{white}
-     result: false
-   scanning: $sender_host_name}{No}}
-  expanding: $sender_host_name
-     result: 
-   skipping: result is not used
-considering: No}}
-  expanding: No
-     result: No
-  expanding: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
-     result: ----> No lookup yet: No
-considering: -oMs  sender_host_name = $sender_host_name
+ /considering: -oMa  sender_host_address = $sender_host_address
+ |__expanding: -oMa  sender_host_address = $sender_host_address
+ \_____result: -oMa  sender_host_address = V4NET.0.0.1
+ /considering:       sender_host_port = $sender_host_port
+ |__expanding:       sender_host_port = $sender_host_port
+ \_____result:       sender_host_port = 1234
+ /considering: -oMaa sender_host_authenticated = $sender_host_authenticated
+ |__expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
+ \_____result: -oMaa sender_host_authenticated = AAA
+ /considering: -oMai authenticated_id = $authenticated_id
+ |__expanding: -oMai authenticated_id = $authenticated_id
+ \_____result: -oMai authenticated_id = philip
+ /considering: -oMas authenticated_sender = $authenticated_sender
+ |__expanding: -oMas authenticated_sender = $authenticated_sender
+ \_____result: -oMas authenticated_sender = xx@yy.zz
+ /considering: -oMi  interface_address = $interface_address
+ |__expanding: -oMi  interface_address = $interface_address
+ \_____result: -oMi  interface_address = 1.1.1.1
+ /considering:       interface_port = $interface_port
+ |__expanding:       interface_port = $interface_port
+ \_____result:       interface_port = 99
+ /considering: -oMr  received_protocol = $received_protocol
+ |__expanding: -oMr  received_protocol = $received_protocol
+ \_____result: -oMr  received_protocol = special
+ /considering: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
+  /considering: black}{white}{$sender_host_name}{No}}
+  |__expanding: black
+  \_____result: black
+  /considering: white}{$sender_host_name}{No}}
+  |__expanding: white
+  \_____result: white
+ |__condition: eq{black}{white}
+ |_____result: false
+  /   scanning: $sender_host_name}{No}}
+  |__expanding: $sender_host_name
+  |_____result: 
+  \___skipping: result is not used
+  /considering: No}}
+  |__expanding: No
+  \_____result: No
+ |__expanding: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
+ \_____result: ----> No lookup yet: No
+ /considering: -oMs  sender_host_name = $sender_host_name
 looking up host name for V4NET.0.0.1
 IP address lookup yielded "ten-1.test.ex"
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
@@ -166,11 +166,11 @@ checking addresses for ten-1.test.ex
   V4NET.0.0.1 OK
 sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
 sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
-  expanding: -oMs  sender_host_name = $sender_host_name
-     result: -oMs  sender_host_name = ten-1.test.ex
-considering: -oMt  sender_ident = $sender_ident
-  expanding: -oMt  sender_ident = $sender_ident
-     result: -oMt  sender_ident = me
+ |__expanding: -oMs  sender_host_name = $sender_host_name
+ \_____result: -oMs  sender_host_name = ten-1.test.ex
+ /considering: -oMt  sender_ident = $sender_ident
+ |__expanding: -oMt  sender_ident = $sender_ident
+ \_____result: -oMt  sender_ident = me
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective

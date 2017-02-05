@@ -451,12 +451,12 @@ LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> host in "5.6.12.1"? yes (matched "5.6.12.1")
 >>>   message: failed nested acl
 >>> check acl = acl_5_6_12A
->>> using ACL "acl_5_6_12A"
->>> processing "accept"
->>> check domains = ok
+ >>> using ACL "acl_5_6_12A"
+ >>> processing "accept"
+ >>> check domains = ok
 >>> ok in "ok"? yes (matched "ok")
->>> accept: condition test succeeded in ACL "acl_5_6_12A"
->>> end of ACL "acl_5_6_12A": ACCEPT
+ >>> accept: condition test succeeded in ACL "acl_5_6_12A"
+ >>> end of ACL "acl_5_6_12A": ACCEPT
 >>> accept: condition test succeeded in ACL "acl_5_6_12"
 >>> end of ACL "acl_5_6_12": ACCEPT
 >>> using ACL "acl_5_6_12"
@@ -465,12 +465,12 @@ LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> host in "5.6.12.1"? yes (matched "5.6.12.1")
 >>>   message: failed nested acl
 >>> check acl = acl_5_6_12A
->>> using ACL "acl_5_6_12A"
->>> processing "accept"
->>> check domains = ok
+ >>> using ACL "acl_5_6_12A"
+ >>> processing "accept"
+ >>> check domains = ok
 >>> y in "ok"? no (end of list)
->>> accept: condition test failed in ACL "acl_5_6_12A"
->>> end of ACL "acl_5_6_12A": implicit DENY
+ >>> accept: condition test failed in ACL "acl_5_6_12A"
+ >>> end of ACL "acl_5_6_12A": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_12"
 >>> accept: endpass encountered - denying access
 LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
@@ -509,86 +509,86 @@ LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> using ACL "acl_8_8_8"
 >>> processing "accept"
 >>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> using ACL "acl_8_8_8"
->>> processing "accept"
->>> check acl = acl_8_8_8
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
->>> accept: condition test error in ACL "acl_8_8_8"
+ >>> using ACL "acl_8_8_8"
+ >>> processing "accept"
+ >>> check acl = acl_8_8_8
+  >>> using ACL "acl_8_8_8"
+  >>> processing "accept"
+  >>> check acl = acl_8_8_8
+   >>> using ACL "acl_8_8_8"
+   >>> processing "accept"
+   >>> check acl = acl_8_8_8
+   .>>> using ACL "acl_8_8_8"
+   .>>> processing "accept"
+   .>>> check acl = acl_8_8_8
+   . >>> using ACL "acl_8_8_8"
+   . >>> processing "accept"
+   . >>> check acl = acl_8_8_8
+   .  >>> using ACL "acl_8_8_8"
+   .  >>> processing "accept"
+   .  >>> check acl = acl_8_8_8
+   .   >>> using ACL "acl_8_8_8"
+   .   >>> processing "accept"
+   .   >>> check acl = acl_8_8_8
+   .   .>>> using ACL "acl_8_8_8"
+   .   .>>> processing "accept"
+   .   .>>> check acl = acl_8_8_8
+   .   . >>> using ACL "acl_8_8_8"
+   .   . >>> processing "accept"
+   .   . >>> check acl = acl_8_8_8
+   .   .  >>> using ACL "acl_8_8_8"
+   .   .  >>> processing "accept"
+   .   .  >>> check acl = acl_8_8_8
+   .   .   >>> using ACL "acl_8_8_8"
+   .   .   >>> processing "accept"
+   .   .   >>> check acl = acl_8_8_8
+   .   .   .>>> using ACL "acl_8_8_8"
+   .   .   .>>> processing "accept"
+   .   .   .>>> check acl = acl_8_8_8
+   .   .   . >>> using ACL "acl_8_8_8"
+   .   .   . >>> processing "accept"
+   .   .   . >>> check acl = acl_8_8_8
+   .   .   .  >>> using ACL "acl_8_8_8"
+   .   .   .  >>> processing "accept"
+   .   .   .  >>> check acl = acl_8_8_8
+   .   .   .   >>> using ACL "acl_8_8_8"
+   .   .   .   >>> processing "accept"
+   .   .   .   >>> check acl = acl_8_8_8
+   .   .   .   .>>> using ACL "acl_8_8_8"
+   .   .   .   .>>> processing "accept"
+   .   .   .   .>>> check acl = acl_8_8_8
+   .   .   .   . >>> using ACL "acl_8_8_8"
+   .   .   .   . >>> processing "accept"
+   .   .   .   . >>> check acl = acl_8_8_8
+   .   .   .   .  >>> using ACL "acl_8_8_8"
+   .   .   .   .  >>> processing "accept"
+   .   .   .   .  >>> check acl = acl_8_8_8
+   .   .   .   .   >>> using ACL "acl_8_8_8"
+   .   .   .   .   >>> processing "accept"
+   .   .   .   .   >>> check acl = acl_8_8_8
+   .   .   .   .   .>>> using ACL "acl_8_8_8"
+   .   .   .   .   .>>> processing "accept"
+   .   .   .   .   .>>> check acl = acl_8_8_8
+   .   .   .   .   .>>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   .   .   >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   .   .  >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   .   . >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   .   .>>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   .   >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   .  >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   . >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   .>>> accept: condition test error in ACL "acl_8_8_8"
+   .   .   >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .  >>> accept: condition test error in ACL "acl_8_8_8"
+   .   . >>> accept: condition test error in ACL "acl_8_8_8"
+   .   .>>> accept: condition test error in ACL "acl_8_8_8"
+   .   >>> accept: condition test error in ACL "acl_8_8_8"
+   .  >>> accept: condition test error in ACL "acl_8_8_8"
+   . >>> accept: condition test error in ACL "acl_8_8_8"
+   .>>> accept: condition test error in ACL "acl_8_8_8"
+   >>> accept: condition test error in ACL "acl_8_8_8"
+  >>> accept: condition test error in ACL "acl_8_8_8"
+ >>> accept: condition test error in ACL "acl_8_8_8"
 >>> accept: condition test error in ACL "acl_8_8_8"
 LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: possible loop
 >>> host in hosts_connection_nolog? no (option unset)
@@ -602,41 +602,41 @@ LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: p
 >>> using ACL "acl_5_6_13"
 >>> processing "accept"
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
->>> read ACL from file TESTSUITE/aux-fixed/0023.acl1
->>> processing "accept"
->>> check domains = y
+ >>> read ACL from file TESTSUITE/aux-fixed/0023.acl1
+ >>> processing "accept"
+ >>> check domains = y
 >>> y in "y"? yes (matched "y")
->>> check local_parts = x
+ >>> check local_parts = x
 >>> x in "x"? yes (matched "x")
->>> accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl1"
->>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": ACCEPT
+ >>> accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl1"
+ >>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": ACCEPT
 >>> accept: condition test succeeded in ACL "acl_5_6_13"
 >>> end of ACL "acl_5_6_13": ACCEPT
 >>> using ACL "acl_5_6_13"
 >>> processing "accept"
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
->>> using ACL "TESTSUITE/aux-fixed/0023.acl1"
->>> processing "accept"
->>> check domains = y
+ >>> using ACL "TESTSUITE/aux-fixed/0023.acl1"
+ >>> processing "accept"
+ >>> check domains = y
 >>> y in "y"? yes (matched "y")
->>> check local_parts = x
+ >>> check local_parts = x
 >>> x1 in "x"? no (end of list)
->>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
->>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
+ >>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
+ >>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_13"
 >>> end of ACL "acl_5_6_13": implicit DENY
 LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>> using ACL "acl_5_6_13"
 >>> processing "accept"
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
->>> using ACL "TESTSUITE/aux-fixed/0023.acl1"
->>> processing "accept"
->>> check domains = y
+ >>> using ACL "TESTSUITE/aux-fixed/0023.acl1"
+ >>> processing "accept"
+ >>> check domains = y
 >>> y in "y"? yes (matched "y")
->>> check local_parts = x
+ >>> check local_parts = x
 >>> x2 in "x"? no (end of list)
->>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
->>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
+ >>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
+ >>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
 >>> accept: condition test failed in ACL "acl_5_6_13"
 >>> end of ACL "acl_5_6_13": implicit DENY
 LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
@@ -1335,25 +1335,25 @@ LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferr
 >>> using ACL "acl_60_60_60"
 >>> processing "accept"
 >>> check !acl = TESTSUITE/aux-fixed/0023.acl2
->>> read ACL from file TESTSUITE/aux-fixed/0023.acl2
->>> processing "accept"
->>> check domains = b
+ >>> read ACL from file TESTSUITE/aux-fixed/0023.acl2
+ >>> processing "accept"
+ >>> check domains = b
 >>> y in "b"? no (end of list)
->>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl2"
->>> end of ACL "TESTSUITE/aux-fixed/0023.acl2": implicit DENY
+ >>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl2"
+ >>> end of ACL "TESTSUITE/aux-fixed/0023.acl2": implicit DENY
 >>> accept: condition test succeeded in ACL "acl_60_60_60"
 >>> end of ACL "acl_60_60_60": ACCEPT
 >>> using ACL "acl_60_60_60"
 >>> processing "accept"
 >>> check !acl = TESTSUITE/aux-fixed/0023.acl2
->>> using ACL "TESTSUITE/aux-fixed/0023.acl2"
->>> processing "accept"
->>> check domains = b
+ >>> using ACL "TESTSUITE/aux-fixed/0023.acl2"
+ >>> processing "accept"
+ >>> check domains = b
 >>> b in "b"? yes (matched "b")
->>> check local_parts = a
+ >>> check local_parts = a
 >>> a in "a"? yes (matched "a")
->>> accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl2"
->>> end of ACL "TESTSUITE/aux-fixed/0023.acl2": ACCEPT
+ >>> accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl2"
+ >>> end of ACL "TESTSUITE/aux-fixed/0023.acl2": ACCEPT
 >>> accept: condition test failed in ACL "acl_60_60_60"
 >>> end of ACL "acl_60_60_60": implicit DENY
 LOG: H=[60.60.60.60] F=<x@y> rejected RCPT <a@b>

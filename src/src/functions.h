@@ -95,6 +95,7 @@ extern int     auth_call_saslauthd(const uschar *, const uschar *,
 extern int     auth_check_serv_cond(auth_instance *);
 extern int     auth_check_some_cond(auth_instance *, uschar *, uschar *, int);
 
+
 extern int     auth_get_data(uschar **, uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
 extern uschar *auth_xtextencode(uschar *, int);
@@ -131,6 +132,7 @@ extern void    debug_logging_activate(uschar *, uschar *);
 extern void    debug_logging_stop(void);
 extern void    debug_print_argv(const uschar **);
 extern void    debug_print_ids(uschar *);
+extern void    debug_printf_indent(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    debug_print_string(uschar *);
 extern void    debug_print_tree(tree_node *);
 extern void    debug_vprintf(const char *, va_list);

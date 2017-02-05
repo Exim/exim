@@ -2099,7 +2099,7 @@ while (i < nsub)
   }
 
 DEBUG(D_expand)
-  debug_printf("expanding: acl: %s  arg: %s%s\n",
+  debug_printf_indent("expanding: acl: %s  arg: %s%s\n",
     sub[0],
     acl_narg>0 ? acl_arg[0] : US"<none>",
     acl_narg>1 ? " +more"   : "");
@@ -2523,7 +2523,7 @@ switch(cond_type)
         {
         num[i] = 0;
         DEBUG(D_expand)
-          debug_printf("empty string cast to zero for numerical comparison\n");
+          debug_printf_indent("empty string cast to zero for numerical comparison\n");
         }
       else
         {
@@ -2832,7 +2832,7 @@ switch(cond_type)
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
-      DEBUG(D_expand) debug_printf("condition: %s\n", name);
+      DEBUG(D_expand) debug_printf_indent("condition: %s\n", name);
 
       tempcond = FALSE;
       compare = cond_type == ECOND_INLISTI
@@ -2920,7 +2920,7 @@ switch(cond_type)
     int sep = 0;
     uschar *save_iterate_item = iterate_item;
 
-    DEBUG(D_expand) debug_printf("condition: %s\n", name);
+    DEBUG(D_expand) debug_printf_indent("condition: %s\n", name);
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
@@ -2959,7 +2959,7 @@ switch(cond_type)
     list = sub[0];
     while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
       {
-      DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, iterate_item);
+      DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, iterate_item);
       if (!eval_condition(sub[1], resetok, &tempcond))
         {
         expand_string_message = string_sprintf("%s inside \"%s\" condition",
@@ -2967,7 +2967,7 @@ switch(cond_type)
         iterate_item = save_iterate_item;
         return NULL;
         }
-      DEBUG(D_expand) debug_printf("%s: condition evaluated to %s\n", name,
+      DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", name,
         tempcond? "true":"false");
 
       if (yield != NULL) *yield = (tempcond == testfor);
@@ -3024,7 +3024,7 @@ switch(cond_type)
         }
       }
     DEBUG(D_expand)
-      debug_printf("considering %s: %s\n", ourname, len ? t : US"<empty>");
+      debug_printf_indent("considering %s: %s\n", ourname, len ? t : US"<empty>");
     /* logic for the lax case from expand_check_condition(), which also does
     expands, and the logic is both short and stable enough that there should
     be no maintenance burden from replicating it. */
@@ -3051,7 +3051,7 @@ switch(cond_type)
        "value \"%s\"", t);
       return NULL;
       }
-    DEBUG(D_expand) debug_printf("%s: condition evaluated to %s\n", ourname,
+    DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", ourname,
         boolvalue? "true":"false");
     if (yield != NULL) *yield = (boolvalue == testfor);
     return s;
@@ -3447,7 +3447,7 @@ hash_source = string_catn(hash_source, &size, &offset, daystamp, 3);
 hash_source = string_cat(hash_source, &size, &offset, address);
 hash_source[offset] = '\0';
 
-DEBUG(D_expand) debug_printf("prvs: hash source is '%s'\n", hash_source);
+DEBUG(D_expand) debug_printf_indent("prvs: hash source is '%s'\n", hash_source);
 
 memset(innerkey, 0x36, 64);
 memset(outerkey, 0x5c, 64);
@@ -3870,8 +3870,9 @@ uschar *save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
 BOOL resetok = TRUE;
 
+expand_level++;
 DEBUG(D_expand)
-  debug_printf("%s: %s\n", skipping ? "   scanning" : "considering", string);
+  debug_printf_indent("/%s: %s\n", skipping ? "   scanning" : "considering", string);
 
 expand_string_forcedfail = FALSE;
 expand_string_message = US"";
@@ -4086,7 +4087,7 @@ while (*s != 0)
 	case OK:
 	case FAIL:
 	  DEBUG(D_expand)
-	    debug_printf("acl expansion yield: %s\n", user_msg);
+	    debug_printf_indent("acl expansion yield: %s\n", user_msg);
 	  if (user_msg)
             yield = string_cat(yield, &size, &ptr, user_msg);
 	  continue;
@@ -4117,9 +4118,10 @@ while (*s != 0)
       if (next_s == NULL) goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
-        debug_printf("  condition: %.*s\n     result: %s\n",
-	  (int)(next_s - s), s,
-          cond ? "true" : "false");
+	{
+        debug_printf_indent("|__condition: %.*s\n", (int)(next_s - s), s);
+        debug_printf_indent("|_____result: %s\n", cond ? "true" : "false");
+	}
 
       s = next_s;
 
@@ -4576,11 +4578,11 @@ while (*s != 0)
         uschar *hash = string_copyn(expand_nstring[3],expand_nlength[3]);
         uschar *domain = string_copyn(expand_nstring[5],expand_nlength[5]);
 
-        DEBUG(D_expand) debug_printf("prvscheck localpart: %s\n", local_part);
-        DEBUG(D_expand) debug_printf("prvscheck key number: %s\n", key_num);
-        DEBUG(D_expand) debug_printf("prvscheck daystamp: %s\n", daystamp);
-        DEBUG(D_expand) debug_printf("prvscheck hash: %s\n", hash);
-        DEBUG(D_expand) debug_printf("prvscheck domain: %s\n", domain);
+        DEBUG(D_expand) debug_printf_indent("prvscheck localpart: %s\n", local_part);
+        DEBUG(D_expand) debug_printf_indent("prvscheck key number: %s\n", key_num);
+        DEBUG(D_expand) debug_printf_indent("prvscheck daystamp: %s\n", daystamp);
+        DEBUG(D_expand) debug_printf_indent("prvscheck hash: %s\n", hash);
+        DEBUG(D_expand) debug_printf_indent("prvscheck domain: %s\n", domain);
 
         /* Set up expansion variables */
         prvscheck_address = string_cat (NULL, &mysize, &myptr, local_part);
@@ -4608,8 +4610,8 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
 
-        DEBUG(D_expand) debug_printf("prvscheck: received hash is %s\n", hash);
-        DEBUG(D_expand) debug_printf("prvscheck:      own hash is %s\n", p);
+        DEBUG(D_expand) debug_printf_indent("prvscheck: received hash is %s\n", hash);
+        DEBUG(D_expand) debug_printf_indent("prvscheck:      own hash is %s\n", p);
 
         if (Ustrcmp(p,hash) == 0)
           {
@@ -4627,18 +4629,18 @@ while (*s != 0)
           if (iexpire >= inow)
             {
             prvscheck_result = US"1";
-            DEBUG(D_expand) debug_printf("prvscheck: success, $pvrs_result set to 1\n");
+            DEBUG(D_expand) debug_printf_indent("prvscheck: success, $pvrs_result set to 1\n");
             }
             else
             {
             prvscheck_result = NULL;
-            DEBUG(D_expand) debug_printf("prvscheck: signature expired, $pvrs_result unset\n");
+            DEBUG(D_expand) debug_printf_indent("prvscheck: signature expired, $pvrs_result unset\n");
             }
           }
         else
           {
           prvscheck_result = NULL;
-          DEBUG(D_expand) debug_printf("prvscheck: hash failure, $pvrs_result unset\n");
+          DEBUG(D_expand) debug_printf_indent("prvscheck: hash failure, $pvrs_result unset\n");
           }
 
         /* Now expand the final argument. We leave this till now so that
@@ -4841,7 +4843,7 @@ while (*s != 0)
             }
           }
 
-        DEBUG(D_expand) debug_printf("connected to socket %s\n", sub_arg[0]);
+        DEBUG(D_expand) debug_printf_indent("connected to socket %s\n", sub_arg[0]);
 
 	/* Allow sequencing of test actions */
 	if (running_in_test_harness) millisleep(100);
@@ -4851,7 +4853,7 @@ while (*s != 0)
         if (sub_arg[1][0] != 0)
           {
           int len = Ustrlen(sub_arg[1]);
-          DEBUG(D_expand) debug_printf("writing \"%s\" to socket\n",
+          DEBUG(D_expand) debug_printf_indent("writing \"%s\" to socket\n",
             sub_arg[1]);
           if (write(fd, sub_arg[1], len) != len)
             {
@@ -5803,7 +5805,7 @@ while (*s != 0)
         {
         *outsep = (uschar)sep;      /* Separator as a string */
 
-        DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, iterate_item);
+        DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, iterate_item);
 
         if (item_type == EITEM_FILTER)
           {
@@ -5816,7 +5818,7 @@ while (*s != 0)
               expand_string_message, name);
             goto EXPAND_FAILED;
             }
-          DEBUG(D_expand) debug_printf("%s: condition is %s\n", name,
+          DEBUG(D_expand) debug_printf_indent("%s: condition is %s\n", name,
             condresult? "true":"false");
           if (condresult)
             temp = iterate_item;    /* TRUE => include this item */
@@ -5971,7 +5973,7 @@ while (*s != 0)
 	uschar * newkeylist = NULL;
 	uschar * srcfield;
 
-        DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, srcitem);
+        DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, srcitem);
 
 	/* extract field for comparisons */
 	iterate_item = srcitem;
@@ -6000,7 +6002,7 @@ while (*s != 0)
 	  /* build and run condition string */
 	  expr = string_sprintf("%s{%s}{%s}", cmp, srcfield, dstfield);
 
-	  DEBUG(D_expand) debug_printf("%s: cond = \"%s\"\n", name, expr);
+	  DEBUG(D_expand) debug_printf_indent("%s: cond = \"%s\"\n", name, expr);
 	  if (!eval_condition(expr, &resetok, &before))
 	    {
 	    expand_string_message = string_sprintf("comparison in sort: %s",
@@ -6045,8 +6047,8 @@ while (*s != 0)
 	dstlist = newlist;
 	dstkeylist = newkeylist;
 
-        DEBUG(D_expand) debug_printf("%s: dstlist = \"%s\"\n", name, dstlist);
-        DEBUG(D_expand) debug_printf("%s: dstkeylist = \"%s\"\n", name, dstkeylist);
+        DEBUG(D_expand) debug_printf_indent("%s: dstlist = \"%s\"\n", name, dstlist);
+        DEBUG(D_expand) debug_printf_indent("%s: dstkeylist = \"%s\"\n", name, dstkeylist);
 	}
 
       if (dstlist)
@@ -7095,7 +7097,7 @@ while (*s != 0)
 	  goto EXPAND_FAILED;
 	  }
 	yield = string_cat(yield, &size, &ptr, s);
-	DEBUG(D_expand) debug_printf("yield: '%s'\n", yield);
+	DEBUG(D_expand) debug_printf_indent("yield: '%s'\n", yield);
         continue;
 	}
 
@@ -7489,10 +7491,11 @@ else if (resetok_p) *resetok_p = FALSE;
 
 DEBUG(D_expand)
   {
-  debug_printf("  expanding: %.*s\n     result: %s\n", (int)(s - string), string,
-    yield);
-  if (skipping) debug_printf("   skipping: result is not used\n");
+  debug_printf_indent("|__expanding: %.*s\n", (int)(s - string), string);
+  debug_printf_indent("%s_____result: %s\n", skipping ? "|" : "\\", yield);
+  if (skipping) debug_printf_indent("\\___skipping: result is not used\n");
   }
+expand_level--;
 return yield;
 
 /* This is the failure exit: easiest to program with a goto. We still need
@@ -7514,11 +7517,13 @@ EXPAND_FAILED:
 if (left != NULL) *left = s;
 DEBUG(D_expand)
   {
-  debug_printf("failed to expand: %s\n", string);
-  debug_printf("   error message: %s\n", expand_string_message);
-  if (expand_string_forcedfail) debug_printf("failure was forced\n");
+  debug_printf_indent("|failed to expand: %s\n", string);
+  debug_printf_indent("%s___error message: %s\n",
+    expand_string_forcedfail ? "|" : "\\", expand_string_message);
+  if (expand_string_forcedfail) debug_printf_indent("\\failure was forced\n");
   }
 if (resetok_p) *resetok_p = resetok;
+expand_level--;
 return NULL;
 }
 
@@ -7645,7 +7650,7 @@ if (isspace(*s))
   if (*s == '\0')
     {
       DEBUG(D_expand)
-       debug_printf("treating blank string as number 0\n");
+       debug_printf_indent("treating blank string as number 0\n");
       return 0;
     }
   }

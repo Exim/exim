@@ -804,12 +804,12 @@ tls_retry_connection:
 	      break;
 
 	    HDEBUG(D_acl|D_v)
-	      debug_printf("problem after random/rset/mfrom; reopen conn\n");
+	      debug_printf_indent("problem after random/rset/mfrom; reopen conn\n");
 	    random_local_part = NULL;
 #ifdef SUPPORT_TLS
 	    tls_close(FALSE, TRUE);
 #endif
-	    HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
+	    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 	    (void)close(sx.inblock.sock);
 	    sx.inblock.sock = sx.outblock.sock = -1;
 #ifndef DISABLE_EVENT
@@ -889,7 +889,7 @@ tls_retry_connection:
       for cutthrough.  But no way to handle a subsequent rcpt, so just
       refuse any */
       cancel_cutthrough_connection("postmaster verify");
-      HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of postmaster verify\n");
+      HDEBUG(D_acl|D_v) debug_printf_indent("Cutthrough cancelled by presence of postmaster verify\n");
 
       done = smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0
           && smtp_read_response(&sx.inblock, sx.buffer,
@@ -1017,7 +1017,7 @@ no_conn:
        && !sx.lmtp
        )
       {
-      HDEBUG(D_acl|D_v) debug_printf("holding verify callout open for cutthrough delivery\n");
+      HDEBUG(D_acl|D_v) debug_printf_indent("holding verify callout open for cutthrough delivery\n");
 
       cutthrough.fd = sx.outblock.sock;	/* We assume no buffer in use in the outblock */
       cutthrough.nrcpt = 1;
@@ -1054,7 +1054,7 @@ no_conn:
 #ifdef SUPPORT_TLS
 	tls_close(FALSE, TRUE);
 #endif
-	HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
+	HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 	(void)close(sx.inblock.sock);
 	sx.inblock.sock = sx.outblock.sock = -1;
 #ifndef DISABLE_EVENT
@@ -1131,7 +1131,7 @@ int rc;
 get rewritten. */
 
 addr2 = *addr;
-HDEBUG(D_acl) debug_printf("----------- %s cutthrough setup ------------\n",
+HDEBUG(D_acl) debug_printf_indent("----------- %s cutthrough setup ------------\n",
   rcpt_count > 1 ? "more" : "start");
 rc = verify_address(&addr2, NULL,
 	vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache,
@@ -1139,7 +1139,7 @@ rc = verify_address(&addr2, NULL,
 	NULL, NULL, NULL);
 addr->message = addr2.message;
 addr->user_message = addr2.user_message;
-HDEBUG(D_acl) debug_printf("----------- end cutthrough setup ------------\n");
+HDEBUG(D_acl) debug_printf_indent("----------- end cutthrough setup ------------\n");
 return rc;
 }
 
@@ -1164,7 +1164,7 @@ if(
   return TRUE;
 }
 
-HDEBUG(D_transport|D_acl) debug_printf("cutthrough_send failed: %s\n", strerror(errno));
+HDEBUG(D_transport|D_acl) debug_printf_indent("cutthrough_send failed: %s\n", strerror(errno));
 return FALSE;
 }
 
@@ -1262,7 +1262,7 @@ cutthrough_predata(void)
 if(cutthrough.fd < 0)
   return FALSE;
 
-HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> DATA\n");
+HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> DATA\n");
 cutthrough_puts(US"DATA\r\n", 6);
 cutthrough_flush_send();
 
@@ -1300,7 +1300,7 @@ if(cutthrough.fd < 0)
 /* We share a routine with the mainline transport to handle header add/remove/rewrites,
    but having a separate buffered-output function (for now)
 */
-HDEBUG(D_acl) debug_printf("----------- start cutthrough headers send -----------\n");
+HDEBUG(D_acl) debug_printf_indent("----------- start cutthrough headers send -----------\n");
 
 tctx.tblock = cutthrough.addr.transport;
 tctx.addr = &cutthrough.addr;
@@ -1311,7 +1311,7 @@ tctx.options = topt_use_crlf;
 if (!transport_headers_send(cutthrough.fd, &tctx, &cutthrough_write_chunk))
   return FALSE;
 
-HDEBUG(D_acl) debug_printf("----------- done cutthrough headers send ------------\n");
+HDEBUG(D_acl) debug_printf_indent("----------- done cutthrough headers send ------------\n");
 return TRUE;
 }
 
@@ -1326,7 +1326,7 @@ if(cutthrough.fd >= 0)
      conn before the final dot.
   */
   ctblock.ptr = ctbuffer;
-  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> QUIT\n");
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> QUIT\n");
   _cutthrough_puts(US"QUIT\r\n", 6);	/* avoid recursion */
   _cutthrough_flush_send();
 
@@ -1336,10 +1336,10 @@ if(cutthrough.fd >= 0)
   #ifdef SUPPORT_TLS
   tls_close(FALSE, TRUE);
   #endif
-  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP(close)>>\n");
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
   (void)close(cutthrough.fd);
   cutthrough.fd = -1;
-  HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown (%s) ------------\n", why);
+  HDEBUG(D_acl) debug_printf_indent("----------- cutthrough shutdown (%s) ------------\n", why);
   }
 ctblock.ptr = ctbuffer;
 }
@@ -1364,7 +1364,7 @@ cutthrough_finaldot(void)
 {
 uschar res;
 address_item * addr;
-HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> .\n");
+HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> .\n");
 
 /* Assume data finshed with new-line */
 if(  !cutthrough_puts(US".", 1)

@@ -166,7 +166,7 @@ if ((sock = ip_socket(SOCK_STREAM, host_af)) < 0) return -1;
 
 if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, US &on, sizeof(on)))
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("failed to set NODELAY: %s ", strerror(errno));
+    debug_printf_indent("failed to set NODELAY: %s ", strerror(errno));
 
 /* Set DSCP value, if we can. For now, if we fail to set the value, we don't
 bomb out, just log it and continue in default traffic class. */
@@ -174,10 +174,10 @@ bomb out, just log it and continue in default traffic class. */
 if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
   {
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("DSCP \"%s\"=%x ", dscp, dscp_value);
+    debug_printf_indent("DSCP \"%s\"=%x ", dscp, dscp_value);
   if (setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value)) < 0)
     HDEBUG(D_transport|D_acl|D_v)
-      debug_printf("failed to set DSCP: %s ", strerror(errno));
+      debug_printf_indent("failed to set DSCP: %s ", strerror(errno));
   /* If the kernel supports IPv4 and IPv6 on an IPv6 socket, we need to set the
   option for both; ignore failures here */
   if (host_af == AF_INET6 &&
@@ -196,7 +196,7 @@ if (interface && ip_bind(sock, host_af, interface, 0) < 0)
   {
   save_errno = errno;
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("unable to bind outgoing SMTP call to %s: %s", interface,
+    debug_printf_indent("unable to bind outgoing SMTP call to %s: %s", interface,
     strerror(errno));
   }
 
@@ -212,7 +212,7 @@ if (save_errno != 0)
   {
   HDEBUG(D_transport|D_acl|D_v)
     {
-    debug_printf("failed: %s", CUstrerror(save_errno));
+    debug_printf_indent("failed: %s", CUstrerror(save_errno));
     if (save_errno == ETIMEDOUT)
       debug_printf(" (timeout=%s)", readconf_printtime(timeout));
     debug_printf("\n");
@@ -228,7 +228,7 @@ else
   {
   union sockaddr_46 interface_sock;
   EXIM_SOCKLEN_T size = sizeof(interface_sock);
-  HDEBUG(D_transport|D_acl|D_v) debug_printf("connected\n");
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("connected\n");
   if (getsockname(sock, (struct sockaddr *)(&interface_sock), &size) == 0)
     sending_ip_address = host_ntoa(-1, &interface_sock, NULL, &sending_port);
   else
@@ -280,7 +280,7 @@ smtp_transport_options_block * ob =
 if (host->port != PORT_NONE)
   {
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("Transport port=%d replaced by host-specific port=%d\n", port,
+    debug_printf_indent("Transport port=%d replaced by host-specific port=%d\n", port,
       host->port);
   port = host->port;
   }
@@ -295,7 +295,7 @@ HDEBUG(D_transport|D_acl|D_v)
 #ifdef SUPPORT_SOCKS
   if (ob->socks_proxy) s = string_sprintf("%svia proxy ", s);
 #endif
-  debug_printf("Connecting to %s %s%s... ", host->name, callout_address, s);
+  debug_printf_indent("Connecting to %s %s%s... ", host->name, callout_address, s);
   }
 
 /* Create and connect the socket */
@@ -329,7 +329,7 @@ flush_buffer(smtp_outblock *outblock)
 int rc;
 int n = outblock->ptr - outblock->buffer;
 
-HDEBUG(D_transport|D_acl) debug_printf("cmd buf flush %d bytes\n", n);
+HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes\n", n);
 #ifdef SUPPORT_TLS
 if (tls_out.active == outblock->sock)
   rc = tls_write(FALSE, outblock->buffer, n);
@@ -339,7 +339,7 @@ else
 
 if (rc <= 0)
   {
-  HDEBUG(D_transport|D_acl) debug_printf("send failed: %s\n", strerror(errno));
+  HDEBUG(D_transport|D_acl) debug_printf_indent("send failed: %s\n", strerror(errno));
   return FALSE;
   }
 
@@ -420,7 +420,7 @@ if (format)
     while (*p != 0) *p++ = '*';
     }
 
-  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> %s\n", big_buffer);
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> %s\n", big_buffer);
   }
 
 if (!noflush)
@@ -501,7 +501,7 @@ for (;;)
   if((rc = ip_recv(sock, inblock->buffer, inblock->buffersize, timeout)) <= 0)
     {
     if (!errno)
-      DEBUG(D_deliver|D_transport|D_acl) debug_printf("  SMTP(closed)<<\n");
+      DEBUG(D_deliver|D_transport|D_acl) debug_printf_indent("  SMTP(closed)<<\n");
     break;
     }
 
@@ -510,7 +510,7 @@ for (;;)
 
   ptrend = inblock->ptrend = inblock->buffer + rc;
   ptr = inblock->buffer;
-  DEBUG(D_transport|D_acl) debug_printf("read response data: size=%d\n", rc);
+  DEBUG(D_transport|D_acl) debug_printf_indent("read response data: size=%d\n", rc);
   }
 
 /* Get here if there has been some kind of recv() error; errno is set, but we
@@ -563,7 +563,7 @@ for (;;)
     return FALSE;
 
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("  %s %s\n", (ptr == buffer)? "SMTP<<" : "      ", ptr);
+    debug_printf_indent("  %s %s\n", (ptr == buffer)? "SMTP<<" : "      ", ptr);
 
   /* Check the format of the response: it must start with three digits; if
   these are followed by a space or end of line, the response is complete. If

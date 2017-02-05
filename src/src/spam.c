@@ -251,7 +251,7 @@ if (*spamd_address == '$')
 else
   spamd_address_work = spamd_address;
 
-DEBUG(D_acl) debug_printf("spamd: addrlist '%s'\n", spamd_address_work);
+DEBUG(D_acl) debug_printf_indent("spamd: addrlist '%s'\n", spamd_address_work);
 
 /* check if previous spamd_address was expanded and has changed. dump cached results if so */
 if (  spam_ok
@@ -295,7 +295,7 @@ start = time(NULL);
     unsigned args;
     uschar * s;
 
-    DEBUG(D_acl) debug_printf("spamd: addr entry '%s'\n", address);
+    DEBUG(D_acl) debug_printf_indent("spamd: addr entry '%s'\n", address);
     sd = (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
     for (sublist = address, args = 0, spamd_param_init(sd);
@@ -303,7 +303,7 @@ start = time(NULL);
 	 args++
 	 )
       {
-	DEBUG(D_acl) debug_printf("spamd:  addr parm '%s'\n", s);
+	DEBUG(D_acl) debug_printf_indent("spamd:  addr parm '%s'\n", s);
 	switch (args)
 	{
 	case 0:   sd->hostspec = s;
@@ -342,7 +342,7 @@ start = time(NULL);
     {
     uschar * errstr;
 
-    DEBUG(D_acl) debug_printf("spamd: trying server %s\n", sd->hostspec);
+    DEBUG(D_acl) debug_printf_indent("spamd: trying server %s\n", sd->hostspec);
 
     for (;;)
       {
@@ -350,7 +350,7 @@ start = time(NULL);
          || sd->retry <= 0
 	 )
 	break;
-      DEBUG(D_acl) debug_printf("spamd: server %s: retry conn\n", sd->hostspec);
+      DEBUG(D_acl) debug_printf_indent("spamd: server %s: retry conn\n", sd->hostspec);
       while (sd->retry > 0) sd->retry = sleep(sd->retry);
       }
     if (spamd_sock >= 0)

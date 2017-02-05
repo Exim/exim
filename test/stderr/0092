@@ -50,33 +50,33 @@ LOG: smtp_connection MAIN
   SMTP connection from [V4NET.0.0.1]
 host in host_lookup? no (option unset)
 set_process_info: pppp handling incoming connection from [V4NET.0.0.1]
-considering: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
-considering: V4NET.0.0.1} {$sender_host_address} {2} {30}}s
-  expanding: V4NET.0.0.1
-     result: V4NET.0.0.1
-considering: $sender_host_address} {2} {30}}s
-  expanding: $sender_host_address
-     result: V4NET.0.0.1
-  condition: eq {V4NET.0.0.1} {$sender_host_address}
-     result: true
-considering: 2} {30}}s
-  expanding: 2
-     result: 2
-   scanning: 30}}s
-  expanding: 30
-     result: 30
-   skipping: result is not used
-  expanding: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
-     result: 2s
+ /considering: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
+  /considering: V4NET.0.0.1} {$sender_host_address} {2} {30}}s
+  |__expanding: V4NET.0.0.1
+  \_____result: V4NET.0.0.1
+  /considering: $sender_host_address} {2} {30}}s
+  |__expanding: $sender_host_address
+  \_____result: V4NET.0.0.1
+ |__condition: eq {V4NET.0.0.1} {$sender_host_address}
+ |_____result: true
+  /considering: 2} {30}}s
+  |__expanding: 2
+  \_____result: 2
+  /   scanning: 30}}s
+  |__expanding: 30
+  |_____result: 30
+  \___skipping: result is not used
+ |__expanding: ${if eq {V4NET.0.0.1} {$sender_host_address} {2} {30}}s
+ \_____result: 2s
 host in host_reject_connection? no (option unset)
 host in sender_unqualified_hosts? no (option unset)
 host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
-considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
-  expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
-     result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ /considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ |__expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ \_____result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:userx@test.ex

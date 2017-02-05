@@ -170,7 +170,7 @@ uschar tag_class;
 int taglen;
 long tag, len;
 
-/* debug_printf("as_tag: %02x %02x %02x %02x\n",
+/* acl_debug_printf("as_tag: %02x %02x %02x %02x\n",
 	der->data[0], der->data[1], der->data[2], der->data[3]); */
 
 if ((rc = asn1_get_tag_der(der->data++, der->len--, &tag_class, &taglen, &tag))
@@ -183,7 +183,7 @@ if ((len = asn1_get_length_der(der->data, der->len, &taglen)) < 0)
   return ASN1_DER_ERROR;
 if (alen) *alen = len;
 
-/* debug_printf("as_tag:  tlen %d dlen %d\n", taglen, (int)len); */
+/* acl_debug_printf("as_tag:  tlen %d dlen %d\n", taglen, (int)len); */
 
 der->data += taglen;
 der->len -= taglen;
@@ -325,25 +325,25 @@ if (  (s1 = as_mpi(&der, &sign_ctx->n))
    )
   return s1;
 
-DEBUG(D_acl) debug_printf("rsa_signing_init:\n");
+DEBUG(D_acl) acl_debug_printf("rsa_signing_init:\n");
   {
   uschar * s;
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->n);
-  debug_printf(" N : %s\n", s);
+  acl_debug_printf(" N : %s\n", s);
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->e);
-  debug_printf(" E : %s\n", s);
+  acl_debug_printf(" E : %s\n", s);
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->d);
-  debug_printf(" D : %s\n", s);
+  acl_debug_printf(" D : %s\n", s);
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->p);
-  debug_printf(" P : %s\n", s);
+  acl_debug_printf(" P : %s\n", s);
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->q);
-  debug_printf(" Q : %s\n", s);
+  acl_debug_printf(" Q : %s\n", s);
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->dp);
-  debug_printf(" DP: %s\n", s);
+  acl_debug_printf(" DP: %s\n", s);
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->dq);
-  debug_printf(" DQ: %s\n", s);
+  acl_debug_printf(" DQ: %s\n", s);
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->qp);
-  debug_printf(" QP: %s\n", s);
+  acl_debug_printf(" QP: %s\n", s);
   }
 return NULL;
 
@@ -402,13 +402,13 @@ DEBUG(D_acl)
   {
   uschar * s;
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, m_sig);
-  debug_printf(" SG: %s\n", s);
+  acl_debug_printf(" SG: %s\n", s);
   }
 
 gerr = gcry_mpi_print(GCRYMPI_FMT_USG, sig->data, SIGSPACE, &sig->len, m_sig);
 if (gerr)
   {
-  debug_printf("signature conversion from MPI to buffer failed\n");
+  acl_debug_printf("signature conversion from MPI to buffer failed\n");
   return US gcry_strerror(gerr);
   }
 #undef SIGSPACE
@@ -480,13 +480,13 @@ if (  (errstr = as_mpi(pubkey_der, &verify_ctx->n))
    )
   return errstr;
 
-DEBUG(D_acl) debug_printf("rsa_verify_init:\n");
+DEBUG(D_acl) acl_debug_printf("rsa_verify_init:\n");
 	{
 	uschar * s;
 	gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, verify_ctx->n);
-	debug_printf(" N : %s\n", s);
+	acl_debug_printf(" N : %s\n", s);
 	gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, verify_ctx->e);
-	debug_printf(" E : %s\n", s);
+	acl_debug_printf(" E : %s\n", s);
 	}
 
 return NULL;
@@ -528,7 +528,7 @@ if (  (stage = US"pkey sexp build",
        gerr = gcry_pk_verify (s_sig, s_hash, s_pkey))
    )
   {
-  DEBUG(D_acl) debug_printf("verify: error in stage '%s'\n", stage);
+  DEBUG(D_acl) acl_debug_printf("verify: error in stage '%s'\n", stage);
   return US gcry_strerror(gerr);
   }
 

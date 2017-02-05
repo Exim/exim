@@ -1116,7 +1116,7 @@ switch(where)
 
 if (acl_removed_headers != NULL)
   {
-  DEBUG(D_receive|D_acl) debug_printf(">>Headers removed by %s ACL:\n", acl_name);
+  DEBUG(D_receive|D_acl) debug_printf_indent(">>Headers removed by %s ACL:\n", acl_name);
 
   for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
     {
@@ -1129,15 +1129,15 @@ if (acl_removed_headers != NULL)
       if (header_testname(h, s, Ustrlen(s), FALSE))
 	{
 	h->type = htype_old;
-        DEBUG(D_receive|D_acl) debug_printf("  %s", h->text);
+        DEBUG(D_receive|D_acl) debug_printf_indent("  %s", h->text);
 	}
     }
   acl_removed_headers = NULL;
-  DEBUG(D_receive|D_acl) debug_printf(">>\n");
+  DEBUG(D_receive|D_acl) debug_printf_indent(">>\n");
   }
 
 if (acl_added_headers == NULL) return;
-DEBUG(D_receive|D_acl) debug_printf(">>Headers added by %s ACL:\n", acl_name);
+DEBUG(D_receive|D_acl) debug_printf_indent(">>Headers added by %s ACL:\n", acl_name);
 
 for (h = acl_added_headers; h != NULL; h = next)
   {
@@ -1148,7 +1148,7 @@ for (h = acl_added_headers; h != NULL; h = next)
     case htype_add_top:
     h->next = header_list;
     header_list = h;
-    DEBUG(D_receive|D_acl) debug_printf("  (at top)");
+    DEBUG(D_receive|D_acl) debug_printf_indent("  (at top)");
     break;
 
     case htype_add_rec:
@@ -1163,7 +1163,7 @@ for (h = acl_added_headers; h != NULL; h = next)
       }
     h->next = last_received->next;
     last_received->next = h;
-    DEBUG(D_receive|D_acl) debug_printf("  (after Received:)");
+    DEBUG(D_receive|D_acl) debug_printf_indent("  (after Received:)");
     break;
 
     case htype_add_rfc:
@@ -1178,7 +1178,7 @@ for (h = acl_added_headers; h != NULL; h = next)
        of all headers. Our current header must follow it. */
     h->next = last_received->next;
     last_received->next = h;
-    DEBUG(D_receive|D_acl) debug_printf("  (before any non-Received: or Resent-*: header)");
+    DEBUG(D_receive|D_acl) debug_printf_indent("  (before any non-Received: or Resent-*: header)");
     break;
 
     default:
@@ -1198,11 +1198,11 @@ for (h = acl_added_headers; h != NULL; h = next)
   h->type = header_checkname(h, FALSE);
   if (h->type >= 'a') h->type = htype_other;
 
-  DEBUG(D_receive|D_acl) debug_printf("  %s", header_last->text);
+  DEBUG(D_receive|D_acl) debug_printf_indent("  %s", header_last->text);
   }
 
 acl_added_headers = NULL;
-DEBUG(D_receive|D_acl) debug_printf(">>\n");
+DEBUG(D_receive|D_acl) debug_printf_indent(">>\n");
 }
 
 
@@ -1354,7 +1354,7 @@ if (rc == OK)
       {
       (void) string_format(rfc822_file_path, sizeof(rfc822_file_path),
 	"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
-      debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n",
+      DEBUG(D_receive) debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n",
 	rfc822_file_path);
       break;
       }

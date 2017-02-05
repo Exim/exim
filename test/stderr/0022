@@ -361,11 +361,11 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> using ACL "nested_drop"
 >>> processing "accept"
 >>> check acl = drop
->>> using ACL "drop"
->>> processing "drop"
->>>   message: forcibly dropped
->>> drop: condition test succeeded in ACL "drop"
->>> end of ACL "drop": DROP
+ >>> using ACL "drop"
+ >>> processing "drop"
+ >>>   message: forcibly dropped
+ >>> drop: condition test succeeded in ACL "drop"
+ >>> end of ACL "drop": DROP
 >>> accept: condition test yielded "drop" in ACL "nested_drop"
 >>> accept: endpass encountered - denying access
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <nested_drop@y>: forcibly dropped
@@ -382,11 +382,11 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> using ACL "nested_drop_require"
 >>> processing "require"
 >>> check acl = drop
->>> using ACL "drop"
->>> processing "drop"
->>>   message: forcibly dropped
->>> drop: condition test succeeded in ACL "drop"
->>> end of ACL "drop": DROP
+ >>> using ACL "drop"
+ >>> processing "drop"
+ >>>   message: forcibly dropped
+ >>> drop: condition test succeeded in ACL "drop"
+ >>> end of ACL "drop": DROP
 >>> require: condition test yielded "drop" in ACL "nested_drop_require"
 >>> end of ACL "nested_drop_require": not OK
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <nested_drop_require@y>: forcibly dropped

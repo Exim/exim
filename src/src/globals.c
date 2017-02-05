@@ -228,6 +228,8 @@ uschar *acl_arg[9]             = {NULL, NULL, NULL, NULL, NULL,
                                   NULL, NULL, NULL, NULL};
 int     acl_narg               = 0;
 
+int     acl_level	       = 0;
+
 uschar *acl_not_smtp           = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *acl_not_smtp_mime      = NULL;
@@ -713,6 +715,7 @@ uschar *exim_path              = US BIN_DIRECTORY "/exim"
                         "\0<---------------Space to patch exim_path->";
 uid_t   exim_uid               = EXIM_UID;
 BOOL    exim_uid_set           = TRUE;          /* This uid is always set */
+int     expand_level	       = 0;		/* Nesting depth, indent for debug */
 int     expand_forbid          = 0;
 int     expand_nlength[EXPAND_MAXN+1];
 int     expand_nmax            = -1;

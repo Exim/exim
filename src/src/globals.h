@@ -160,6 +160,7 @@ extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
 extern uschar *acl_arg[9];             /* Argument to ACL call */
 extern int     acl_narg;               /* Number of arguments to ACL call */
+extern int     acl_level;	       /* Nesting depth and debug indent */
 extern uschar *acl_not_smtp;           /* ACL run for non-SMTP messages */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *acl_not_smtp_mime;      /* For MIME parts of ditto */
@@ -442,6 +443,7 @@ extern uschar *exim_path;              /* Path to exec exim */
 extern const uschar *exim_sieve_extension_list[]; /* list of sieve extensions */
 extern uid_t   exim_uid;               /* Non-root uid for exim */
 extern BOOL    exim_uid_set;           /* TRUE if exim_uid set */
+extern int     expand_level;	       /* Nesting depth; indent for debug */
 extern int     expand_forbid;          /* RDO flags for forbidding things */
 extern int     expand_nlength[];       /* Lengths of numbered strings */
 extern int     expand_nmax;            /* Max numerical value */

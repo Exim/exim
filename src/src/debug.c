@@ -137,7 +137,7 @@ debug_printf("%s uid=%ld gid=%ld euid=%ld egid=%ld\n", s,
 *************************************************/
 
 /* There are two entries, one for use when being called directly from a
-function with a variable argument list.
+function with a variable argument list, one for prepending an indent.
 
 If debug_pid is nonzero, print the pid at the start of each line. This is for
 tidier output when running parallel remote deliveries with debugging turned on.
@@ -145,6 +145,28 @@ Must do the whole thing with a single printf and flush, as otherwise output may
 get interleaved. Since some calls to debug_printf() don't end with newline,
 we save up the text until we do get the newline.
 Take care to not disturb errno. */
+
+
+/* Debug printf indented by ACL nest depth */
+void
+debug_printf_indent(const char * format, ...)
+{
+va_list ap;
+unsigned depth = acl_level + expand_level, i;
+
+if (!debug_file) return;
+if (depth > 0)
+  {
+  for (i = depth >> 2; i > 0; i--)
+    fprintf(debug_file, "   .");
+  fprintf(debug_file, "%*s", depth & 3, "");
+  }
+
+va_start(ap, format);
+debug_vprintf(format, ap);
+va_end(ap);
+}
+
 
 void
 debug_printf(const char *format, ...)
