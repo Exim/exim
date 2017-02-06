@@ -464,11 +464,13 @@ SRS (Sender Rewriting Scheme) Support
 
 Exiscan  currently  includes SRS  support  via Miles  Wilton's
 libsrs_alt library. The current version of the supported
-library is 0.5.
+library is 0.5, there are reports of 1.0 working.
 
 In order to  use SRS, you  must get a  copy of libsrs_alt from
 
-http://srs.mirtol.com/
+https://opsec.eu/src/srs/
+
+(not the original source, which has disappeared.)
 
 Unpack the tarball, then refer to MTAs/README.EXIM
 to proceed. You need to set
@@ -476,6 +478,7 @@ to proceed. You need to set
 EXPERIMENTAL_SRS=yes
 
 in your Local/Makefile.
+
 
 
 DCC Support
