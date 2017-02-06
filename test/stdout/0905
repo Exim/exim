@@ -146,6 +146,22 @@ EHLO testhost.test.ex
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
+RCPT TO:<u@test.ex>
+BDAT 295
+250 OK mail
+250 OK rcpt
+400 oops nonlast bdat
+QUIT
+225 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO testhost.test.ex
+250-Hello there
+250-PIPELINING
+250 CHUNKING
+MAIL FROM:<>
 RCPT TO:<p@test.ex>
 BDAT 8191
 250 OK mail

@@ -1409,7 +1409,7 @@ if (sx->pending_BDAT)
     if (errno == 0 && sx->buffer[0] == '4')
       {
       errno = ERRNO_DATA4XX;	/*XXX does this actually get used? */
-      sx->first_addr->more_errno |=
+      sx->addrlist->more_errno |=
 	((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
       }
     return ERROR;
