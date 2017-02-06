@@ -6745,12 +6745,11 @@ while (*s != 0)
       case EOP_LOCAL_PART:
       case EOP_DOMAIN:
         {
-        uschar *error;
+        uschar * error;
         int start, end, domain;
-        uschar *t = parse_extract_address(sub, &error, &start, &end, &domain,
+        uschar * t = parse_extract_address(sub, &error, &start, &end, &domain,
           FALSE);
-        if (t != NULL)
-          {
+        if (t)
           if (c != EOP_DOMAIN)
             {
             if (c == EOP_LOCAL_PART && domain != 0) end = start + domain - 1;
@@ -6761,7 +6760,6 @@ while (*s != 0)
             domain += start;
             yield = string_catn(yield, &size, &ptr, sub+domain, end-domain);
             }
-          }
         continue;
         }
 

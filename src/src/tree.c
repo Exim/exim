@@ -330,11 +330,11 @@ Returns:    pointer to node, or NULL if not found
 tree_node *
 tree_search(tree_node *p, const uschar *name)
 {
-while (p != NULL)
+while (p)
   {
   int c = Ustrcmp(name, p->name);
   if (c == 0) return p;
-  p = (c < 0)? p->left : p->right;
+  p = c < 0 ? p->left : p->right;
   }
 return NULL;
 }
@@ -355,10 +355,10 @@ Arguments:
 void
 tree_walk(tree_node *p, void (*f)(uschar*, uschar*, void*), void *ctx)
 {
-if (p == NULL) return;
+if (!p) return;
 f(p->name, p->data.ptr, ctx);
-if (p->left != NULL) tree_walk(p->left, f, ctx);
-if (p->right != NULL) tree_walk(p->right, f, ctx);
+tree_walk(p->left, f, ctx);
+tree_walk(p->right, f, ctx);
 }
 
 

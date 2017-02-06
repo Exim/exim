@@ -4351,7 +4351,7 @@ switch (where)
 	if (*--s && isdigit(*s) && *--s && isdigit(*s)) *user_msgptr = s;
 	acl_temp_details = TRUE;
 	}
-	else
+      else
 	{
 	HDEBUG(D_acl) debug_printf_indent("cutthrough defer; will spool\n");
 	rc = OK;
@@ -4425,12 +4425,10 @@ Returns   the pointer to variable's tree node
 */
 
 tree_node *
-acl_var_create(uschar *name)
+acl_var_create(uschar * name)
 {
-tree_node *node, **root;
-root = (name[0] == 'c')? &acl_var_c : &acl_var_m;
-node = tree_search(*root, name);
-if (node == NULL)
+tree_node * node, ** root = name[0] == 'c' ? &acl_var_c : &acl_var_m;
+if (!(node = tree_search(*root, name)))
   {
   node = store_get(sizeof(tree_node) + Ustrlen(name));
   Ustrcpy(node->name, name);

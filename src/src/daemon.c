@@ -542,9 +542,9 @@ if (pid == 0)
     DEBUG(D_receive)
       {
       int i;
-      if (sender_address != NULL)
+      if (sender_address)
         debug_printf("Sender: %s\n", sender_address);
-      if (recipients_list != NULL)
+      if (recipients_list)
         {
         debug_printf("Recipients:\n");
         for (i = 0; i < recipients_count; i++)

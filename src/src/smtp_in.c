@@ -949,43 +949,45 @@ Return the amount read.
 static int
 swallow_until_crlf(int fd, uschar *base, int already, int capacity)
 {
-  uschar *to = base + already;
-  uschar *cr;
-  int have = 0;
-  int ret;
-  int last = 0;
+uschar *to = base + already;
+uschar *cr;
+int have = 0;
+int ret;
+int last = 0;
 
-  /* For "PROXY UNKNOWN\r\n" we, at time of writing, expect to have read
-  up through the \r; for the _normal_ case, we haven't yet seen the \r. */
-  cr = memchr(base, '\r', already);
-  if (cr != NULL)
+/* For "PROXY UNKNOWN\r\n" we, at time of writing, expect to have read
+up through the \r; for the _normal_ case, we haven't yet seen the \r. */
+
+cr = memchr(base, '\r', already);
+if (cr != NULL)
+  {
+  if ((cr - base) < already - 1)
     {
-    if ((cr - base) < already - 1)
-      {
-      /* \r and presumed \n already within what we have; probably not
-      actually proxy protocol, but abort cleanly. */
-      return 0;
-      }
-    /* \r is last character read, just need one more. */
+    /* \r and presumed \n already within what we have; probably not
+    actually proxy protocol, but abort cleanly. */
+    return 0;
+    }
+  /* \r is last character read, just need one more. */
+  last = 1;
+  }
+
+while (capacity > 0)
+  {
+  do { ret = recv(fd, to, 1, 0); } while (ret == -1 && errno == EINTR);
+  if (ret == -1)
+    return -1;
+  have++;
+  if (last)
+    return have;
+  if (*to == '\r')
     last = 1;
-    }
+  capacity--;
+  to++;
+  }
 
-  while (capacity > 0)
-    {
-    do { ret = recv(fd, to, 1, 0); } while (ret == -1 && errno == EINTR);
-    if (ret == -1)
-      return -1;
-    have++;
-    if (last)
-      return have;
-    if (*to == '\r')
-      last = 1;
-    capacity--;
-    to++;
-    }
-  // reached end without having room for a final newline, abort
-  errno = EOVERFLOW;
-  return -1;
+/* reached end without having room for a final newline, abort */
+errno = EOVERFLOW;
+return -1;
 }
 
 /*************************************************
@@ -1093,9 +1095,9 @@ if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tv, sizeof(tv)) < 0)
 do
   {
   /* The inbound host was declared to be a Proxy Protocol host, so
-     don't do a PEEK into the data, actually slurp up enough to be
-     "safe". Can't take it all because TLS-on-connect clients follow
-     immediately with TLS handshake. */
+  don't do a PEEK into the data, actually slurp up enough to be
+  "safe". Can't take it all because TLS-on-connect clients follow
+  immediately with TLS handshake. */
   ret = recv(fd, &hdr, PROXY_INITIAL_READ, 0);
   }
   while (ret == -1 && errno == EINTR);
@@ -1121,9 +1123,9 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
   ver = (hdr.v2.ver_cmd & 0xf0) >> 4;
 
   /* May 2014: haproxy combined the version and command into one byte to
-     allow two full bytes for the length field in order to proxy SSL
-     connections.  SSL Proxy is not supported in this version of Exim, but
-     must still separate values here. */
+  allow two full bytes for the length field in order to proxy SSL
+  connections.  SSL Proxy is not supported in this version of Exim, but
+  must still separate values here. */
 
   if (ver != 0x02)
     {
@@ -1270,7 +1272,7 @@ else if (ret >= 8 && memcmp(hdr.v1.line, "PROXY", 5) == 0)
   DEBUG(D_receive) debug_printf("Detected PROXYv1 header\n");
   DEBUG(D_receive) debug_printf("Bytes read not within PROXY header: %d\n", ret - size);
   /* Step through the string looking for the required fields. Ensure
-     strict adherence to required formatting, exit for any error. */
+  strict adherence to required formatting, exit for any error. */
   p += 5;
   if (!isspace(*(p++)))
     {

@@ -416,7 +416,7 @@ return b64encode(b->data, b->len);
 static pdkim_signature *
 pdkim_parse_sig_header(pdkim_ctx *ctx, uschar * raw_hdr)
 {
-pdkim_signature *sig ;
+pdkim_signature * sig;
 uschar *p, *q;
 uschar * cur_tag = NULL; int ts = 0, tl = 0;
 uschar * cur_val = NULL; int vs = 0, vl = 0;
@@ -931,28 +931,25 @@ return PDKIM_OK;
 #define DKIM_SIGNATURE_HEADERNAME "DKIM-Signature:"
 
 static int
-pdkim_header_complete(pdkim_ctx *ctx)
+pdkim_header_complete(pdkim_ctx * ctx)
 {
+pdkim_signature * sig, * last_sig;
+
 /* Special case: The last header can have an extra \r appended */
 if ( (ctx->cur_header_len > 1) &&
      (ctx->cur_header[(ctx->cur_header_len)-1] == '\r') )
   --ctx->cur_header_len;
 ctx->cur_header[ctx->cur_header_len] = '\0';
 
-ctx->num_headers++;
-if (ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
+if (++ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
 
 /* SIGNING -------------------------------------------------------------- */
 if (ctx->flags & PDKIM_MODE_SIGN)
-  {
-  pdkim_signature *sig;
-
   for (sig = ctx->sig; sig; sig = sig->next)			/* Traverse all signatures */
 
     /* Add header to the signed headers list (in reverse order) */
     sig->headers = pdkim_prepend_stringlist(sig->headers,
 				  ctx->cur_header);
-  }
 
 /* VERIFICATION ----------------------------------------------------------- */
 /* DKIM-Signature: headers are added to the verification list */
@@ -962,15 +959,13 @@ else
   DEBUG(D_acl)
     {
     debug_printf("PDKIM >> raw hdr: ");
-    pdkim_quoteprint(CUS ctx->cur_header, Ustrlen(ctx->cur_header));
+    pdkim_quoteprint(CUS ctx->cur_header, ctx->cur_header_len);
     }
 #endif
   if (strncasecmp(CCS ctx->cur_header,
 		  DKIM_SIGNATURE_HEADERNAME,
 		  Ustrlen(DKIM_SIGNATURE_HEADERNAME)) == 0)
     {
-    pdkim_signature * new_sig, * last_sig;
-
     /* Create and chain new signature block.  We could error-check for all
     required tags here, but prefer to create the internal sig and expicitly
     fail verification of it later. */
@@ -978,14 +973,14 @@ else
     DEBUG(D_acl) debug_printf(
 	"PDKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
-    new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header);
+    sig = pdkim_parse_sig_header(ctx, ctx->cur_header);
 
     if (!(last_sig = ctx->sig))
-      ctx->sig = new_sig;
+      ctx->sig = sig;
     else
       {
       while (last_sig->next) last_sig = last_sig->next;
-      last_sig->next = new_sig;
+      last_sig->next = sig;
       }
     }
 
@@ -994,8 +989,7 @@ else
   }
 
 BAIL:
-*ctx->cur_header = '\0';
-ctx->cur_header_len = 0;	/* leave buffer for reuse */
+ctx->cur_header[ctx->cur_header_len = 0] = '\0';	/* leave buffer for reuse */
 return PDKIM_OK;
 }
 

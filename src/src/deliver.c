@@ -3238,7 +3238,7 @@ uschar *endptr = big_buffer;
 uschar *ptr = endptr;
 uschar *msg = p->msg;
 BOOL done = p->done;
-BOOL unfinished = TRUE;
+BOOL finished = FALSE;
 /* minimum size to read is header size including id, subid and length */
 int required = PIPE_HEADER_SIZE;
 
@@ -3271,7 +3271,7 @@ while (!done)
   There will be only one read if we get all the available data (i.e. don't
   fill the buffer completely). */
 
-  if (remaining < required && unfinished)
+  if (remaining < required && !finished)
     {
     int len;
     int available = big_buffer_size - remaining;
@@ -3301,11 +3301,11 @@ while (!done)
     /* If the length is zero (eof or no-more-data), just process what we
     already have. Note that if the process is still running and we have
     read all the data in the pipe (but less that "available") then we
-    won't read any more, as "unfinished" will get set FALSE. */
+    won't read any more, as "finished" will get set. */
 
     endptr += len;
     remaining += len;
-    unfinished = len == available;
+    finished = len != available;
     }
 
   /* If we are at the end of the available data, exit the loop. */
@@ -3326,8 +3326,8 @@ while (!done)
     }
 
   DEBUG(D_deliver)
-    debug_printf("header read  id:%c,subid:%c,size:%s,required:%d,remaining:%d,unfinished:%d\n",
-                    id, subid, header+2, required, remaining, unfinished);
+    debug_printf("header read  id:%c,subid:%c,size:%s,required:%d,remaining:%d,finished:%d\n",
+                    id, subid, header+2, required, remaining, finished);
 
   /* is there room for the dataset we want to read ? */
   if (required > big_buffer_size - PIPE_HEADER_SIZE)
@@ -3339,22 +3339,22 @@ while (!done)
     break;
     }
 
-  /* we wrote all datasets with atomic write() calls
-     remaining < required only happens if big_buffer was too small
-     to get all available data from pipe. unfinished has to be true
-     as well. */
+  /* We wrote all datasets with atomic write() calls.  Remaining < required only
+  happens if big_buffer was too small to get all available data from pipe;
+  finished has to be false as well. */
+
   if (remaining < required)
     {
-    if (unfinished)
+    if (!finished)
       continue;
     msg = string_sprintf("failed to read pipe from transport process "
-      "%d for transport %s: required size=%d > remaining size=%d and unfinished=false",
+      "%d for transport %s: required size=%d > remaining size=%d and finished=true",
       pid, addr->transport->driver_name, required, remaining);
     done = TRUE;
     break;
     }
 
-  /* step behind the header */
+  /* Step past the header */
   ptr += PIPE_HEADER_SIZE;
 
   /* Handle each possible type of item, assuming the complete item is
