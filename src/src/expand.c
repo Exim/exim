@@ -1966,6 +1966,7 @@ return;          /* Unknown variable name, fail silently */
 
 
 
+
 /*************************************************
 *           Read and expand substrings           *
 *************************************************/
@@ -7774,6 +7775,55 @@ return (  (  Ustrstr(s, "failed to expand") != NULL
   ? US"Temporary internal error" : s;
 }
 
+
+
+/*************************************************
+* Error-checking for testsuite                   *
+*************************************************/
+typedef struct {
+  const char *	filename;
+  int		linenumber;
+  uschar * 	region_start;
+  uschar *	region_end;
+  const uschar *var_name;
+} err_ctx;
+
+static void
+assert_variable_notin(uschar * var_name, uschar * var_data, void * ctx)
+{
+err_ctx * e = ctx;
+if (var_data >= e->region_start  &&  var_data < e->region_end)
+  e->var_name = CUS var_name;
+}
+
+void
+assert_no_variables(void * ptr, int len, const char * filename, int linenumber)
+{
+err_ctx e = {filename, linenumber, ptr, US ptr + len, NULL };
+int i;
+var_entry * v;
+
+/* check acl_ variables */
+tree_walk(acl_var_c, assert_variable_notin, &e);
+tree_walk(acl_var_m, assert_variable_notin, &e);
+
+/* check auth<n> variables */
+for (i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
+  assert_variable_notin(US"auth<n>", auth_vars[i], &e);
+
+/* check regex<n> variables */
+for (i = 0; i < REGEX_VARS; i++) if (regex_vars[i])
+  assert_variable_notin(US"regex<n>", regex_vars[i], &e);
+
+/* check known-name variables */
+for (v = var_table; v < var_table + var_table_size; v++)
+  if (v->type == vtype_stringptr)
+    assert_variable_notin(US v->name, *(USS v->value), &e);
+
+if (e.var_name)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "live variable '%s' destroyed by reset_store"
+    " at %s:%d\n", e.var_name, e.filename, e.linenumber);
+}
 
 
 

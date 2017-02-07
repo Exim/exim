@@ -325,9 +325,9 @@ Returns:      nothing
 void
 store_reset_3(void *ptr, const char *filename, int linenumber)
 {
-storeblock *bb;
-storeblock *b = current_block[store_pool];
-char *bc = (char *)b + ALIGNED_SIZEOF_STOREBLOCK;
+storeblock * bb;
+storeblock * b = current_block[store_pool];
+char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
 int newlength;
 
 /* Last store operation was not a get */
@@ -337,14 +337,14 @@ store_last_get[store_pool] = NULL;
 /* See if the place is in the current block - as it often will be. Otherwise,
 search for the block in which it lies. */
 
-if ((char *)ptr < bc || (char *)ptr > bc + b->length)
+if (CS ptr < bc || CS ptr > bc + b->length)
   {
-  for (b = chainbase[store_pool]; b != NULL; b = b->next)
+  for (b = chainbase[store_pool]; b; b = b->next)
     {
-    bc = (char *)b + ALIGNED_SIZEOF_STOREBLOCK;
-    if ((char *)ptr >= bc && (char *)ptr <= bc + b->length) break;
+    bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
+    if (CS ptr >= bc && CS ptr <= bc + b->length) break;
     }
-  if (b == NULL)
+  if (!b)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal error: store_reset(%p) "
       "failed: pool=%d %-14s %4d", ptr, store_pool, filename, linenumber);
   }
@@ -352,17 +352,18 @@ if ((char *)ptr < bc || (char *)ptr > bc + b->length)
 /* Back up, rounding to the alignment if necessary. When testing, flatten
 the released memory. */
 
-newlength = bc + b->length - (char *)ptr;
+newlength = bc + b->length - CS ptr;
 #ifndef COMPILE_UTILITY
 if (running_in_test_harness)
   {
+  assert_no_variables(ptr, newlength, filename, linenumber);
   (void) VALGRIND_MAKE_MEM_DEFINED(ptr, newlength);
   memset(ptr, 0xF0, newlength);
   }
 #endif
 (void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
 yield_length[store_pool] = newlength - (newlength % alignment);
-next_yield[store_pool] = (char *)ptr + (newlength % alignment);
+next_yield[store_pool] = CS ptr + (newlength % alignment);
 current_block[store_pool] = b;
 
 /* Free any subsequent block. Do NOT free the first successor, if our
@@ -370,20 +371,29 @@ current block has less than 256 bytes left. This should prevent us from
 flapping memory. However, keep this block only when it has the default size. */
 
 if (yield_length[store_pool] < STOREPOOL_MIN_SIZE &&
-    b->next != NULL &&
+    b->next &&
     b->next->length == STORE_BLOCK_SIZE)
   {
   b = b->next;
-  (void) VALGRIND_MAKE_MEM_NOACCESS((char *)b + ALIGNED_SIZEOF_STOREBLOCK,
+#ifndef COMPILE_UTILITY
+  if (running_in_test_harness)
+    assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
+			filename, linenumber);
+#endif
+  (void) VALGRIND_MAKE_MEM_NOACCESS(CS b + ALIGNED_SIZEOF_STOREBLOCK,
 		b->length - ALIGNED_SIZEOF_STOREBLOCK);
   }
 
 bb = b->next;
 b->next = NULL;
 
-while (bb != NULL)
+while ((b = bb))
   {
-  b = bb;
+#ifndef COMPILE_UTILITY
+  if (running_in_test_harness)
+    assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
+			filename, linenumber);
+#endif
   bb = bb->next;
   pool_malloc -= b->length + ALIGNED_SIZEOF_STOREBLOCK;
   store_free_3(b, filename, linenumber);
