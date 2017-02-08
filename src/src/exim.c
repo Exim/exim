@@ -5791,7 +5791,9 @@ moreloop:
   deliver_domain_orig = NULL;
   deliver_host = deliver_host_address = NULL;
   dnslist_domain = dnslist_matched = NULL;
+#ifdef WITH_CONTENT_SCAN
   malware_name = NULL;
+#endif
   callout_address = NULL;
   sending_ip_address = NULL;
   acl_var_m = NULL;
