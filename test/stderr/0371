@@ -74,10 +74,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-PDKIM >> raw hdr: {CR}{LF}
-PDKIM >> raw hdr: .{CR}{LF}
-PDKIM >> raw hdr: vrfy{SP}x@y{CR}{LF}
-PDKIM >> raw hdr: mail{SP}from:<x@y>{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -91,7 +87,6 @@ P Received: from [V4NET.0.0.0] (helo=something)
 	(envelope-from <x@y>)
 	id 10HmaX-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM >> raw hdr: quit{CR}{LF}
 using ACL "data"
 processing "accept"
 check set acl_m0 = $acl_m0; data

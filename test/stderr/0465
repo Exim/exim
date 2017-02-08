@@ -62,8 +62,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-PDKIM >> raw hdr: To:{SP}abc@domain.{CR}{LF}
-PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 To: abc@domain.
 
@@ -81,7 +79,6 @@ Data file written for message 10HmaY-0005vi-00
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for abc@domain; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM >> raw hdr: quit{CR}{LF}
 using ACL "check_data"
 processing "accept"
 check verify = header_syntax
@@ -138,8 +135,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-PDKIM >> raw hdr: To:{SP}abc@xyz.{CR}{LF}
-PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 To: abc@xyz.
 
@@ -157,7 +152,6 @@ Data file written for message 10HmaX-0005vi-00
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for abc@xyz; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM >> raw hdr: quit{CR}{LF}
 using ACL "check_data"
 processing "accept"
 check verify = header_syntax

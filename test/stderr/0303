@@ -89,8 +89,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-PDKIM >> raw hdr: {CR}{LF}
-PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -103,7 +101,6 @@ P Received: from [V4NET.2.3.4]
 	by myhost.test.ex with esmtp (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM >> raw hdr: quit{CR}{LF}
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN
@@ -168,8 +165,6 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
-PDKIM >> raw hdr: {CR}{LF}
-PDKIM >> raw hdr: .{CR}{LF}
 >>Headers received:
 
 search_tidyup called
@@ -182,7 +177,6 @@ P Received: from host.name.tld ([V4NET.2.3.4])
 	by myhost.test.ex with esmtp (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM >> raw hdr: quit{CR}{LF}
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN
