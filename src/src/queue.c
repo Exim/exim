@@ -606,6 +606,9 @@ for (i  = (queue_run_in_order? -1 : 0);
 
       /* Recover store used when reading the header */
 
+      received_protocol = NULL;
+      sender_address = sender_ident = NULL;
+      authenticated_id = authenticated_sender = NULL;
       store_reset(reset_point2);
       if (!wanted) continue;      /* With next message */
       }
@@ -857,19 +860,16 @@ if (option >= 8) option -= 8;
 /* Now scan the chain and print information, resetting store used
 each time. */
 
-reset_point = store_get(0);
-
-for (; f != NULL; f = f->next)
+for (reset_point = store_get(0); f; f = f->next)
   {
   int rc, save_errno;
   int size = 0;
   BOOL env_read;
 
-  store_reset(reset_point);
   message_size = 0;
   message_subdir[0] = f->dir_uschar;
   rc = spool_read_header(f->text, FALSE, count <= 0);
-  if (rc == spool_read_notopen && errno == ENOENT && count <= 0) continue;
+  if (rc == spool_read_notopen && errno == ENOENT && count <= 0) goto next;
   save_errno = errno;
 
   env_read = (rc == spool_read_OK || rc == spool_read_hdrerror);
@@ -901,8 +901,7 @@ for (; f != NULL; f = f->next)
     /* Collect delivered addresses from any J file */
 
     fname[ptr] = 'J';
-    jread = Ufopen(fname, "rb");
-    if (jread != NULL)
+    if ((jread = Ufopen(fname, "rb")))
       {
       while (Ufgets(big_buffer, big_buffer_size, jread) != NULL)
         {
@@ -917,7 +916,7 @@ for (; f != NULL; f = f->next)
   fprintf(stdout, "%s ", string_format_size(size, big_buffer));
   for (i = 0; i < 16; i++) fputc(f->text[i], stdout);
 
-  if (env_read && sender_address != NULL)
+  if (env_read && sender_address)
     {
     printf(" <%s>", sender_address);
     if (sender_set_untrusted) printf(" (%s)", originator_login);
@@ -940,7 +939,7 @@ for (; f != NULL; f = f->next)
     if (rc != spool_read_hdrerror)
       {
       printf("\n\n");
-      continue;
+      goto next;
       }
     }
 
@@ -948,7 +947,7 @@ for (; f != NULL; f = f->next)
 
   printf("\n");
 
-  if (recipients_list != NULL)
+  if (recipients_list)
     {
     for (i = 0; i < recipients_count; i++)
       {
@@ -957,12 +956,22 @@ for (; f != NULL; f = f->next)
       if (!delivered || option != 1)
         printf("        %s %s\n", (delivered != NULL)? "D":" ",
           recipients_list[i].address);
-      if (delivered != NULL) delivered->data.val = TRUE;
+      if (delivered) delivered->data.val = TRUE;
       }
-    if (option == 2 && tree_nonrecipients != NULL)
+    if (option == 2 && tree_nonrecipients)
       queue_list_extras(tree_nonrecipients);
     printf("\n");
     }
+
+next:
+  received_protocol = NULL;
+  sender_fullhost = sender_helo_name =
+  sender_rcvhost = sender_host_address = sender_address = sender_ident = NULL;
+  sender_host_authenticated = authenticated_sender = authenticated_id = NULL;
+  interface_address = NULL;
+  acl_var_m = NULL;
+
+  store_reset(reset_point);
   }
 }
 

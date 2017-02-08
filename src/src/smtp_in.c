@@ -1878,7 +1878,6 @@ Returns:    nothing
 static void
 smtp_reset(void *reset_point)
 {
-store_reset(reset_point);
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
@@ -1901,7 +1900,12 @@ submission_mode = FALSE;                             /* Can be set by ACL */
 suppress_local_fixups = suppress_local_fixups_default; /* Can be set by ACL */
 active_local_from_check = local_from_check;          /* Can be set by ACL */
 active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
-sender_address = NULL;
+sending_ip_address = NULL;
+return_path = sender_address = NULL;
+sender_data = NULL;				     /* Can be set by ACL */
+deliver_localpart_orig = NULL;
+deliver_domain_orig = NULL;
+callout_address = NULL;
 submission_name = NULL;                              /* Can be set by ACL */
 raw_sender = NULL;                  /* After SMTP rewrite, before qualifying */
 sender_address_unrewritten = NULL;  /* Set only after verify rewrite */
@@ -1914,6 +1918,7 @@ authenticated_sender = NULL;
 bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
+dnslist_domain = dnslist_matched = NULL;
 #ifndef DISABLE_DKIM
 dkim_signers = NULL;
 dkim_disable_verify = FALSE;
@@ -1921,6 +1926,7 @@ dkim_collect_input = FALSE;
 #endif
 dsn_ret = 0;
 dsn_envid = NULL;
+deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */
 #ifndef DISABLE_PRDR
 prdr_requested = FALSE;
 #endif
@@ -1947,13 +1953,13 @@ acl_var_m = NULL;
 not the first message in an SMTP session and the previous message caused them
 to be referenced in an ACL. */
 
-if (message_body != NULL)
+if (message_body)
   {
   store_free(message_body);
   message_body = NULL;
   }
 
-if (message_body_end != NULL)
+if (message_body_end)
   {
   store_free(message_body_end);
   message_body_end = NULL;
@@ -1963,12 +1969,13 @@ if (message_body_end != NULL)
 repetition in the same message, but it seems right to repeat them for different
 messages. */
 
-while (acl_warn_logged != NULL)
+while (acl_warn_logged)
   {
   string_item *this = acl_warn_logged;
   acl_warn_logged = acl_warn_logged->next;
   store_free(this);
   }
+store_reset(reset_point);
 }
 
 
@@ -4469,9 +4476,13 @@ while (done <= 0)
         case ENV_MAIL_OPT_UTF8:
 	  if (smtputf8_advertised)
 	    {
+	    int old_pool = store_pool;
+
 	    DEBUG(D_receive) debug_printf("smtputf8 requested\n");
 	    message_smtputf8 = allow_utf8_domains = TRUE;
+	    store_pool = POOL_PERM;
 	    received_protocol = string_sprintf("utf8%s", received_protocol);
+	    store_pool = old_pool;
 	    }
 	  break;
 #endif

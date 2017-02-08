@@ -4801,8 +4801,10 @@ while (*s != 0)
             port = ntohs(service_info->s_port);
             }
 
-	  if ((fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
-		  timeout, NULL, &expand_string_message)) < 0)
+	  fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
+		  timeout, NULL, &expand_string_message);
+	  callout_address = NULL;
+	  if (fd < 0)
               goto SOCK_FAIL;
           }
 
@@ -7786,6 +7788,7 @@ typedef struct {
   uschar * 	region_start;
   uschar *	region_end;
   const uschar *var_name;
+  const uschar *var_data;
 } err_ctx;
 
 static void
@@ -7793,7 +7796,10 @@ assert_variable_notin(uschar * var_name, uschar * var_data, void * ctx)
 {
 err_ctx * e = ctx;
 if (var_data >= e->region_start  &&  var_data < e->region_end)
+  {
   e->var_name = CUS var_name;
+  e->var_data = CUS var_data;
+  }
 }
 
 void
@@ -7821,8 +7827,9 @@ for (v = var_table; v < var_table + var_table_size; v++)
     assert_variable_notin(US v->name, *(USS v->value), &e);
 
 if (e.var_name)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "live variable '%s' destroyed by reset_store"
-    " at %s:%d\n", e.var_name, e.filename, e.linenumber);
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "live variable '%s' destroyed by reset_store at %s:%d\n- value '%.64s'",
+    e.var_name, e.filename, e.linenumber, e.var_data);
 }
 
 

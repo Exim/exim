@@ -3195,7 +3195,10 @@ for (i = 1; i < argc; i++)
         }
       else
         {
+	int old_pool = store_pool;
+	store_pool = POOL_PERM;
         received_protocol = string_copyn(argrest, hn - argrest);
+	store_pool = old_pool;
         sender_host_name = hn + 1;
         }
       }
@@ -5121,12 +5124,21 @@ if (host_checking)
 
   if (smtp_start_session())
     {
-    reset_point = store_get(0);
-    for (;;)
+    for (reset_point = store_get(0); ; store_reset(reset_point))
       {
-      store_reset(reset_point);
       if (smtp_setup_msg() <= 0) break;
       if (!receive_msg(FALSE)) break;
+
+      return_path = sender_address = NULL;
+      dnslist_domain = dnslist_matched = NULL;
+#ifndef DISABLE_DKIM
+      dkim_cur_signer = NULL;
+#endif
+      acl_var_m = NULL;
+      deliver_localpart_orig = NULL;
+      deliver_domain_orig = NULL;
+      callout_address = sending_ip_address = NULL;
+      sender_rate = sender_rate_limit = sender_rate_period = NULL;
       }
     smtp_log_no_mail();
     }
@@ -5249,8 +5261,11 @@ if (smtp_input)
   }
 else
   {
-  if (received_protocol == NULL)
+  int old_pool = store_pool;
+  store_pool = POOL_PERM;
+  if (!received_protocol)
     received_protocol = string_sprintf("local%s", called_as);
+  store_pool = old_pool;
   set_process_info("accepting a local non-SMTP message from <%s>",
     sender_address);
   }
@@ -5364,7 +5379,6 @@ collapsed). */
 
 while (more)
   {
-  store_reset(reset_point);
   message_id[0] = 0;
 
   /* Handle the SMTP case; call smtp_setup_mst() to deal with the initial SMTP
@@ -5406,7 +5420,7 @@ while (more)
       more = receive_msg(extract_recipients);
       if (message_id[0] == 0)
         {
-        if (more) continue;
+        if (more) goto moreloop;
         smtp_log_no_mail();               /* Log no mail if configured */
         exim_exit(EXIT_FAILURE);
         }
@@ -5769,6 +5783,21 @@ while (more)
   #ifndef SIG_IGN_WORKS
   while (waitpid(-1, NULL, WNOHANG) > 0);
   #endif
+
+moreloop:
+  return_path = sender_address = NULL;
+  authenticated_sender = NULL;
+  deliver_localpart_orig = NULL;
+  deliver_domain_orig = NULL;
+  deliver_host = deliver_host_address = NULL;
+  dnslist_domain = dnslist_matched = NULL;
+  malware_name = NULL;
+  callout_address = NULL;
+  sending_ip_address = NULL;
+  acl_var_m = NULL;
+  { int i; for(i=0; i<REGEX_VARS; i++) regex_vars[i] = NULL; }
+
+  store_reset(reset_point);
   }
 
 exim_exit(EXIT_SUCCESS);   /* Never returns */

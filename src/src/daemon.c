@@ -564,6 +564,15 @@ if (pid == 0)
 
     /* Reclaim up the store used in accepting this message */
 
+    return_path = sender_address = NULL;
+    authenticated_sender = NULL;
+    sending_ip_address = NULL;
+    deliver_host_address = deliver_host =
+    deliver_domain_orig = deliver_localpart_orig = NULL;
+    dnslist_domain = dnslist_matched = NULL;
+#ifndef DISABLE_DKIM
+    dkim_cur_signer = NULL;
+#endif
     store_reset(reset_point);
 
     /* If queue_only is set or if there are too many incoming connections in
@@ -734,6 +743,8 @@ else (void)close(dup_accept_socket);
 the incoming host address and an expanded active_hostname. */
 
 log_close_all();
+interface_address =
+sender_host_address = NULL;
 store_reset(reset_point);
 sender_host_address = NULL;
 }

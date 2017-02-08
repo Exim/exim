@@ -81,6 +81,14 @@ PP/04 Bug 2018: Also handle Proxy Protocol v2 safely.
 
 PP/05 FreeBSD compat: handle that Ports no longer create /usr/bin/perl
 
+JH/16 Drop variables when they go out of scope.  Memory management drops a whole
+      region in one operation, for speed, and this leaves assigned pointers
+      dangling.  Add checks run only under the testsuite which checks all
+      variables at a store-reset and panics on a dangling pointer; add code
+      explicitly nulling out all the variables discovered.  Fixes one known
+      bug: a transport crash, where a dangling pointer for $sending_ip_address
+      originally assigned in a verify callout, is re-used.
+
 
 Exim version 4.88
 -----------------
