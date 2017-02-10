@@ -1522,7 +1522,7 @@ $munges =
       'rejectlog' => 's/^(.* SMTP protocol synchronization error .* next input=.{8}).*$/$1<suppressed>/'},
 
     'debuglog_stdout' =>
-    { 'stdout' => 's/^\d\d:\d\d:\d\d\s+\d+ //;
+    { 'stdout' => 's/^[ .]*\d\d:\d\d:\d\d\s+\d+ //;
                   s/Process \d+ is ready for new message/Process pppp is ready for new message/'
     },
 
