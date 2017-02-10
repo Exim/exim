@@ -24,12 +24,13 @@ sub get_and_check_version {
 
     # make sure this looks like a real release version
     # which should (currently) be 4.xx[.y] or 4.xx[.y]_RCx
-    unless ( $release =~ /^(?<release>(?<major>4\.\d\d)(?:\.(?<minor>\d+))?(?:_RC\d+)?)$/ ) {
+    unless ( $release =~ /^(?<release>(?<major>4\.\d\d)(?:\.(?<minor>\d+))?(?<rc>_RC\d+)?)$/ ) {
         croak "The given version number does not look right - $release";
     }
     $context->{release}  = $+{release};
     $context->{major} = $+{major};
     $context->{minor} = $+{minor};
+    $context->{candidatev} = $+{rc};
 
     ($context->{trelease} = $+{release}) =~ s/_RC\d+//;
 }
@@ -134,11 +135,18 @@ sub make_version_script {
     # Thus we've to provide the version.sh, based on the info we have
     # about the release. If reversion finds this, it doesn't try to find
     # it's own way to get a valid version number from the git.
+    #
+    # 4.89 series: the logic here did not handle _RC<N> thus breaking RC
+    # status in versions.  nb: candidatev in context should be same as $variant
+    # in local context.
+    my $stamp = $context->{minor} ? '_'.$context->{minor} : '';
+    $stamp .= $context->{candidatev} if $context->{candidatev};
+    #
     open(my $v, '>', 'version.sh') or die "Can't open '>version.sh' $!\n";
     print {$v} <<__;
 # initial version automatically generated from $0
 EXIM_RELEASE_VERSION=$context->{major}
-EXIM_VARIANT_VERSION=@{[$context->{minor}?'_'.$context->{minor}:'']}
+EXIM_VARIANT_VERSION=$stamp
 EXIM_COMPILE_NUMBER=0
 __
     close($v);
@@ -361,6 +369,17 @@ sub create_tar_files {
         }
     }
 
+    # We ideally do not want local system user information in release tarballs;
+    # those are artifacts of use of tar for backups and have no place in
+    # software release packaging; if someone extracts as root, then they should
+    # get sane file ownerships.
+    my $ownership = "";
+    if (`tar --help 2>&1` =~ /^\s*--owner=/m) {
+        $ownership .= " --owner=$context->{tar_perms}{user} --group=$context->{tar_perms}{group}";
+        # on this GNU tar, --numeric-owner works during creation too
+        $ownership .= " --numeric-owner";
+    }
+
     # See also environment variables set in main, tuning compression levels
     my @COMPRESSIONS = (
         # compressors-dict-key, file-extension, flags-as-string
@@ -376,7 +395,7 @@ sub create_tar_files {
             my ($compkey, $extension, $flags) = @{$comp};
             next unless $context->{compressors}{$compkey};
             print "Creating: ${pkgs}/${dirname}.tar.${extension}\n" if ($verbose || $debug);
-            system("$tar cf  ${pkgs}/${dirname}.tar.${extension} ${flags} --numeric-owner -C ${pkgdirs} ${dirname}");
+            system("$tar cf  ${pkgs}/${dirname}.tar.${extension} ${flags} ${ownership} -C ${pkgdirs} ${dirname}");
         }
     }
 
@@ -394,6 +413,10 @@ MAIN: {
         tmp_dir     => File::Temp->newdir(),
         webgen_base => "$FindBin::Bin/../../../exim-website",
         tar_cmd     => 'tar',
+        tar_perms   => {
+                user    => '0',
+                group   => '0',
+        },
         make_cmd    => 'make',
         compressors => {
                 gzip    => 1,
