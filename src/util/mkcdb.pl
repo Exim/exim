@@ -15,6 +15,7 @@
 
 use strict;
 
+BEGIN { pop @INC if $INC[-1] eq '.' };
 $ENV{'PATH'} = "";
 umask(022);
 

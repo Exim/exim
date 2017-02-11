@@ -24,6 +24,8 @@
 #       Vadim Vygonets <vadik-exim@vygo.net>.  All rights reserved.
 # Public domain is OK with me.
 
+BEGIN { pop @INC if $INC[-1] eq '.' };
+
 use MIME::Base64;
 use Digest::MD5;
 

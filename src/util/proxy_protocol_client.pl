@@ -21,6 +21,7 @@
 #
 use strict;
 use warnings;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 use IO::Select;
 use IO::Socket;
 use Getopt::Long;

@@ -2,6 +2,7 @@
 
 use warnings;
 use strict;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 
 # Copyright (c) 2007-2015 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.

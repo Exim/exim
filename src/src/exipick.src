@@ -12,6 +12,7 @@ my $charset = 'ISO-8859-1';
 #       http://www.exim.org/eximwiki/ToolExipickManPage
 
 use strict;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;

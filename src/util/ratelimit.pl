@@ -2,6 +2,8 @@
 
 use strict;
 
+BEGIN { pop @INC if $INC[-1] eq '.' };
+
 sub usage () {
   print <<END;
 usage: ratelimit.pl [options] <period> <regex> <logfile>

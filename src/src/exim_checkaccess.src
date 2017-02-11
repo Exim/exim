@@ -63,6 +63,7 @@ if test "$exim_path" = ""; then exim_path=BIN_DIRECTORY/exim; fi
 
 PERL_COMMAND - $exim_path $args <<'End'
 
+BEGIN { pop @INC if $INC[-1] eq '.' };
 use FileHandle;
 use IPC::Open2;
 

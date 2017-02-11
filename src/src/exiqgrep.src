@@ -18,6 +18,7 @@
 # Version 1.2
 
 use strict;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 use Getopt::Std;
 
 # Have this variable point to your exim binary.
