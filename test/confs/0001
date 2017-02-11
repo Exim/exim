@@ -54,6 +54,7 @@ daemon_smtp_port =
 daemon_smtp_ports =
 daemon_startup_retries = 3
 daemon_startup_sleep = 8s
+debug_store
 delay_warning = 1d
 delay_warning_condition = ${if match{$h_precedence:}{(?i)bulk|list}{no}{yes}}
 deliver_drop_privilege

@@ -144,39 +144,39 @@ if (size > yield_length[store_pool])
   {
   int length = (size <= STORE_BLOCK_SIZE)? STORE_BLOCK_SIZE : size;
   int mlength = length + ALIGNED_SIZEOF_STOREBLOCK;
-  storeblock *newblock = NULL;
+  storeblock * newblock = NULL;
 
   /* Sometimes store_reset() may leave a block for us; check if we can use it */
 
-  if (current_block[store_pool] != NULL &&
-      current_block[store_pool]->next != NULL)
+  if (  (newblock = current_block[store_pool])
+     && (newblock = newblock->next)
+     && newblock->length < length
+     )
     {
-    newblock = current_block[store_pool]->next;
-    if (newblock->length < length)
-      {
-      /* Give up on this block, because it's too small */
-      store_free(newblock);
-      newblock = NULL;
-      }
+    /* Give up on this block, because it's too small */
+    store_free(newblock);
+    newblock = NULL;
     }
 
   /* If there was no free block, get a new one */
 
-  if (newblock == NULL)
+  if (!newblock)
     {
     pool_malloc += mlength;           /* Used in pools */
     nonpool_malloc -= mlength;        /* Exclude from overall total */
     newblock = store_malloc(mlength);
     newblock->next = NULL;
     newblock->length = length;
-    if (chainbase[store_pool] == NULL) chainbase[store_pool] = newblock;
-      else current_block[store_pool]->next = newblock;
+    if (!chainbase[store_pool])
+      chainbase[store_pool] = newblock;
+    else
+      current_block[store_pool]->next = newblock;
     }
 
   current_block[store_pool] = newblock;
   yield_length[store_pool] = newblock->length;
   next_yield[store_pool] =
-    (void *)((char *)current_block[store_pool] + ALIGNED_SIZEOF_STOREBLOCK);
+    (void *)(CS current_block[store_pool] + ALIGNED_SIZEOF_STOREBLOCK);
   (void) VALGRIND_MAKE_MEM_NOACCESS(next_yield[store_pool], yield_length[store_pool]);
   }
 
@@ -354,11 +354,14 @@ the released memory. */
 
 newlength = bc + b->length - CS ptr;
 #ifndef COMPILE_UTILITY
-if (running_in_test_harness)
+if (running_in_test_harness || debug_store)
   {
   assert_no_variables(ptr, newlength, filename, linenumber);
-  (void) VALGRIND_MAKE_MEM_DEFINED(ptr, newlength);
-  memset(ptr, 0xF0, newlength);
+  if (running_in_test_harness)
+    {
+    (void) VALGRIND_MAKE_MEM_DEFINED(ptr, newlength);
+    memset(ptr, 0xF0, newlength);
+    }
   }
 #endif
 (void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
@@ -376,7 +379,7 @@ if (yield_length[store_pool] < STOREPOOL_MIN_SIZE &&
   {
   b = b->next;
 #ifndef COMPILE_UTILITY
-  if (running_in_test_harness)
+  if (running_in_test_harness || debug_store)
     assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
 			filename, linenumber);
 #endif
@@ -390,7 +393,7 @@ b->next = NULL;
 while ((b = bb))
   {
 #ifndef COMPILE_UTILITY
-  if (running_in_test_harness)
+  if (running_in_test_harness || debug_store)
     assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
 			filename, linenumber);
 #endif

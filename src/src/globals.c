@@ -599,6 +599,7 @@ bit_table debug_options[]      = { /* must be in alphabetical order */
 int     debug_options_count    = nelem(debug_options);
 
 unsigned int debug_selector    = 0;
+BOOL    debug_store            = FALSE;
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
 uschar *delay_warning_condition=
   US"${if or {"

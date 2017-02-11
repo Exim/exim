@@ -11,6 +11,10 @@ Version 4.89
 
  1. Allow relative config file names for ".include"
 
+ 2. A main-section config option "debug_store" to control the checks on
+    variable locations during store-reset.  Normally false but can be enabled
+    when a memory corrution issue is suspected on a production system.
+
 
 Version 4.88
 ------------
