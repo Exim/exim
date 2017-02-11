@@ -226,6 +226,7 @@ static optionlist optionlist_config[] = {
   { "dccifd_address",           opt_stringptr,   &dccifd_address },
   { "dccifd_options",           opt_stringptr,   &dccifd_options },
 #endif
+  { "debug_store",              opt_bool,        &debug_store },
   { "delay_warning",            opt_timelist,    &delay_warning },
   { "delay_warning_condition",  opt_stringptr,   &delay_warning_condition },
   { "deliver_drop_privilege",   opt_bool,        &deliver_drop_privilege },

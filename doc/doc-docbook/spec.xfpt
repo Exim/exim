@@ -13541,6 +13541,7 @@ listed in more than one group.
 .section "Miscellaneous" "SECID96"
 .table2
 .row &%bi_command%&                  "to run for &%-bi%& command line option"
+.row &%debug_store%&                 "do extra internal checks"
 .row &%disable_ipv6%&                "do no IPv6 processing"
 .row &%keep_malformed%&              "for broken files &-- should not happen"
 .row &%localhost_number%&            "for unique message ids in clusters"
@@ -14428,6 +14429,15 @@ may wish to deliberately disable them.
 The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
 these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
+
+.new
+.option debug_store main boolean &`false`&
+.cindex debugging "memory corruption"
+.cindex memory debugging
+This option, when true, enables extra checking in Exim's internal memory
+management.  For use when a memory corruption issue is being investigated,
+it should normally be left as default.
+.wen
 
 .option daemon_smtp_ports main string &`smtp`&
 .cindex "port" "for daemon"

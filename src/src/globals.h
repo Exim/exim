@@ -327,6 +327,7 @@ extern FILE   *debug_file;             /* Where to write debugging info */
 extern int     debug_notall[];         /* Debug options excluded from +all */
 extern bit_table debug_options[];      /* Table of debug options */
 extern int     debug_options_count;    /* Size of table */
+extern BOOL    debug_store;	       /* Do extra checks on store_reset */
 extern int     delay_warning[];        /* Times between warnings */
 extern uschar *delay_warning_condition; /* Condition string for warnings */
 extern BOOL    delivery_date_remove;   /* Remove delivery-date headers */

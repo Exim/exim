@@ -152,6 +152,7 @@ data_timeout                         time            5m            smtp
 debug_print                          string*         unset         authenticators    4.00
                                                      unset         routers           4.00
                                                      unset         transports        2.00
+debug_store                          boolean         false         main		     4.90
 delay_after_cutoff                   boolean         true          smtp
 delay_warning                        time list       24h           main
 delay_warning_condition              string*         +             main              1.73
