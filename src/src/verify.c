@@ -1803,7 +1803,7 @@ while (addr_new)
 		  dnssec_domains = &ob->dnssec;
 		  }
 
-                (void)host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
+                (void) host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
 		  dnssec_domains, NULL, NULL);
 		}
               }

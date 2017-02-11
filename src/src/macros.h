@@ -744,7 +744,8 @@ enum { hstatus_unknown, hstatus_usable, hstatus_unusable,
 
 /* Reasons why a host is unusable (for clearer log messages) */
 
-enum { hwhy_unknown, hwhy_retry, hwhy_failed, hwhy_deferred, hwhy_ignored };
+enum { hwhy_unknown, hwhy_retry, hwhy_insecure, hwhy_failed, hwhy_deferred,
+       hwhy_ignored };
 
 /* Domain lookup types for routers */
 
@@ -809,6 +810,7 @@ enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_BDAT,
 enum {
   HOST_FIND_FAILED,     /* failed to find the host */
   HOST_FIND_AGAIN,      /* could not resolve at this time */
+  HOST_FIND_SECURITY,   /* dnssec required but not acheived */
   HOST_FOUND,           /* found host */
   HOST_FOUND_LOCAL,     /* found, but MX points to local host */
   HOST_IGNORED          /* found but ignored - used internally only */

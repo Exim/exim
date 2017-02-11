@@ -146,6 +146,12 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
 
   /* Temporary failure defers, unless pass_on_timeout is set */
 
+  if (rc == HOST_FIND_SECURITY)
+    {
+    addr->message = string_sprintf("host lookup for %s done insecurely" , h->name);
+    addr->basic_errno = ERRNO_DNSDEFER;
+    return DEFER;
+    }
   if (rc == HOST_FIND_AGAIN)
     {
     if (rblock->pass_on_timeout)

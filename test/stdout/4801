@@ -1,6 +1,6 @@
-user@mx-unsec-a-unsec.test.ex cannot be resolved at this time: host lookup did not complete
-user@mx-unsec-a-sec.test.ex cannot be resolved at this time: host lookup did not complete
-user@mx-sec-a-unsec.test.ex is undeliverable: all relevant MX records point to non-existent hosts
+user@mx-unsec-a-unsec.test.ex cannot be resolved at this time: host lookup done insecurely
+user@mx-unsec-a-sec.test.ex cannot be resolved at this time: host lookup done insecurely
+user@mx-sec-a-unsec.test.ex cannot be resolved at this time: host lookup done insecurely
 user@mx-sec-a-sec.test.ex
   router = dnslookup, transport = smtp
   host a-sec.test.ex [V4NET.0.0.100] MX=5 AD

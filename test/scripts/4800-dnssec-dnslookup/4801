@@ -5,7 +5,7 @@ exim -bt user@mx-unsec-a-unsec.test.ex
 1
 exim -bt user@mx-unsec-a-sec.test.ex
 ****
-2
+1
 exim -bt user@mx-sec-a-unsec.test.ex
 ****
 exim -bt user@mx-sec-a-sec.test.ex

@@ -37,7 +37,7 @@ local host in host list - removed hosts:
   other2.test.ex V4NET.12.3.2 5
   other2.test.ex V4NET.12.3.1 5
 fully qualified name = mxt13.test.ex
-host_find_bydns yield = HOST_FOUND (2); returned hosts:
+host_find_bydns yield = HOST_FOUND (3); returned hosts:
   other1.test.ex V4NET.12.4.5 MX=4 
 set transport smtp
 queued for smtp transport: local_part = k

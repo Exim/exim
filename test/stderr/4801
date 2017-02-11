@@ -1,6 +1,0 @@
-LOG: host_lookup_failed MAIN
-  dnssec fail on MX for mx-unsec-a-unsec.test.ex
-LOG: host_lookup_failed MAIN
-  dnssec fail on MX for mx-unsec-a-sec.test.ex
-LOG: host_lookup_failed MAIN
-  dnssec fail on A for a-unsec.test.ex

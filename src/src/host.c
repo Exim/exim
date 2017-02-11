@@ -1831,7 +1831,7 @@ the names, and accepts only those that have the correct IP address. */
 
 save_hostname = sender_host_name;   /* Save for error messages */
 aliases = sender_host_aliases;
-for (hname = sender_host_name; hname != NULL; hname = *aliases++)
+for (hname = sender_host_name; hname; hname = *aliases++)
   {
   int rc;
   BOOL ok = FALSE;
@@ -1859,7 +1859,7 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
 	  h.dnssec == DS_YES ? "DNSSEC verified (AD)" : "unverified");
     if (h.dnssec != DS_YES) sender_host_dnssec = FALSE;
 
-    for (hh = &h; hh != NULL; hh = hh->next)
+    for (hh = &h; hh; hh = hh->next)
       if (host_is_in_net(hh->address, sender_host_address, 0))
         {
         HDEBUG(D_host_lookup) debug_printf("  %s OK\n", hh->address);
@@ -2273,6 +2273,7 @@ Arguments:
 
 Returns:       HOST_FIND_FAILED     couldn't find A record
                HOST_FIND_AGAIN      try again later
+	       HOST_FIND_SECURITY   dnssec required but not acheived
                HOST_FOUND           found AAAA and/or A record(s)
                HOST_IGNORED         found, but all IPs ignored
 */
@@ -2286,6 +2287,7 @@ set_address_from_dns(host_item *host, host_item **lastptr,
 dns_record *rr;
 host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
 BOOL v6_find_again = FALSE;
+BOOL dnssec_fail = FALSE;
 int i;
 
 /* If allow_ip is set, a name which is an IP address returns that value
@@ -2381,8 +2383,8 @@ for (; i >= 0; i--)
       {
       if (dnssec_require)
 	{
-	log_write(L_host_lookup_failed, LOG_MAIN,
-		"dnssec fail on %s for %.256s",
+	dnssec_fail = TRUE;
+	DEBUG(D_host_lookup) debug_printf("dnssec fail on %s for %.256s",
 		i>0 ? "AAAA" : "A", host->name);
 	continue;
 	}
@@ -2504,10 +2506,14 @@ for (; i >= 0; i--)
     }
   }
 
-/* Control gets here only if the econdookup (the A record) succeeded.
+/* Control gets here only if the second lookup (the A record) succeeded.
 However, the address may not be filled in if it was ignored. */
 
-return host->address ? HOST_FOUND : HOST_IGNORED;
+return host->address
+  ? HOST_FOUND
+  : dnssec_fail
+  ? HOST_FIND_SECURITY
+  : HOST_IGNORED;
 }
 
 
@@ -2546,6 +2552,7 @@ Returns:                HOST_FIND_FAILED  Failed to find the host or domain;
                                           if there was a syntax error,
                                           host_find_failed_syntax is set.
                         HOST_FIND_AGAIN   Could not resolve at this time
+			HOST_FIND_SECURITY dnsssec required but not acheived
                         HOST_FOUND        Host found
                         HOST_FOUND_LOCAL  The lowest MX record points to this
                                           machine, if MX records were found, or
@@ -2652,7 +2659,7 @@ same domain. The result will be DNS_NODATA if the domain exists but has no MX
 records. On DNS failures, we give the "try again" error unless the domain is
 listed as one for which we continue. */
 
-if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
+if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
   {
   ind_type = T_MX;
   dnssec = DS_UNK;
@@ -2660,13 +2667,12 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   rc = dns_lookup_timerwrap(&dnsa, host->name, ind_type, fully_qualified_name);
 
   DEBUG(D_dns)
-    if ((dnssec_request || dnssec_require)
-	& !dns_is_secure(&dnsa)
-	& dns_is_aa(&dnsa))
+    if (  (dnssec_request || dnssec_require)
+       && !dns_is_secure(&dnsa)
+       && dns_is_aa(&dnsa))
       debug_printf("DNS lookup of %.256s (MX) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
-    {
     if (dns_is_secure(&dnsa))
       {
       DEBUG(D_host_lookup) debug_printf("%s MX DNSSEC\n", host->name);
@@ -2676,7 +2682,6 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
       {
       dnssec = DS_NO; lookup_dnssec_authenticated = US"no";
       }
-    }
 
   switch (rc)
     {
@@ -2686,17 +2691,22 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
     case DNS_SUCCEED:
       if (!dnssec_require || dns_is_secure(&dnsa))
 	break;
-      log_write(L_host_lookup_failed, LOG_MAIN,
-		  "dnssec fail on MX for %.256s", host->name);
+      DEBUG(D_host_lookup)
+	debug_printf("dnssec fail on MX for %.256s", host->name);
+#ifndef STAND_ALONE
+      if (match_isinlist(host->name, CUSS &mx_fail_domains, 0, NULL, NULL,
+	  MCL_DOMAIN, TRUE, NULL) != OK)
+	{ yield = HOST_FIND_SECURITY; goto out; }
+#endif
       rc = DNS_FAIL;
       /*FALLTHROUGH*/
 
     case DNS_FAIL:
     case DNS_AGAIN:
-      #ifndef STAND_ALONE
+#ifndef STAND_ALONE
       if (match_isinlist(host->name, CUSS &mx_fail_domains, 0, NULL, NULL,
 	  MCL_DOMAIN, TRUE, NULL) != OK)
-      #endif
+#endif
 	{ yield = HOST_FIND_AGAIN; goto out; }
       DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
 	"(domain in mx_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
@@ -3062,13 +3072,17 @@ for (h = host; h != last->next; h = h->next)
   if (rc != HOST_FOUND)
     {
     h->status = hstatus_unusable;
-    if (rc == HOST_FIND_AGAIN)
+    switch (rc)
       {
-      yield = rc;
-      h->why = hwhy_deferred;
+      case HOST_FIND_AGAIN:
+	yield = rc; h->why = hwhy_deferred; break;
+      case HOST_FIND_SECURITY:
+	yield = rc; h->why = hwhy_insecure; break;
+      case HOST_IGNORED:
+	h->why = hwhy_ignored; break;
+      default:
+	h->why = hwhy_failed; break;
       }
-    else
-      h->why = rc == HOST_IGNORED ? hwhy_ignored : hwhy_failed;
     }
   }
 
@@ -3077,7 +3091,7 @@ been explicitly ignored, and remove them from the list, as if they did not
 exist. If we end up with just a single, ignored host, flatten its fields as if
 nothing was found. */
 
-if (ignore_target_hosts != NULL)
+if (ignore_target_hosts)
   {
   host_item *prev = NULL;
   for (h = host; h != last->next; h = h->next)
@@ -3113,24 +3127,22 @@ single MX preference value, IPv6 addresses come first. This can separate the
 addresses of a multihomed host, but that should not matter. */
 
 #if HAVE_IPV6
-if (h != last && !disable_ipv6)
+if (h != last && !disable_ipv6) for (h = host; h != last; h = h->next)
   {
-  for (h = host; h != last; h = h->next)
-    {
-    host_item temp;
-    host_item *next = h->next;
-    if (h->mx != next->mx ||                   /* If next is different MX */
-        h->address == NULL ||                  /* OR this one is unset */
-        Ustrchr(h->address, ':') != NULL ||    /* OR this one is IPv6 */
-        (next->address != NULL &&
-         Ustrchr(next->address, ':') == NULL)) /* OR next is IPv4 */
-      continue;                                /* move on to next */
-    temp = *h;                                 /* otherwise, swap */
-    temp.next = next->next;
-    *h = *next;
-    h->next = next;
-    *next = temp;
-    }
+  host_item temp;
+  host_item *next = h->next;
+
+  if (h->mx != next->mx ||                   /* If next is different MX */
+      h->address == NULL ||                  /* OR this one is unset */
+      Ustrchr(h->address, ':') != NULL ||    /* OR this one is IPv6 */
+      (next->address != NULL &&
+       Ustrchr(next->address, ':') == NULL)) /* OR next is IPv4 */
+    continue;                                /* move on to next */
+  temp = *h;                                 /* otherwise, swap */
+  temp.next = next->next;
+  *h = *next;
+  h->next = next;
+  *next = temp;
   }
 #endif
 
@@ -3154,6 +3166,7 @@ DEBUG(D_host_lookup)
   debug_printf("host_find_bydns yield = %s (%d); returned hosts:\n",
     (yield == HOST_FOUND)? "HOST_FOUND" :
     (yield == HOST_FOUND_LOCAL)? "HOST_FOUND_LOCAL" :
+    (yield == HOST_FIND_SECURITY)? "HOST_FIND_SECURITY" :
     (yield == HOST_FIND_AGAIN)? "HOST_FIND_AGAIN" :
     (yield == HOST_FIND_FAILED)? "HOST_FIND_FAILED" : "?",
     yield);
@@ -3285,9 +3298,13 @@ while (Ufgets(buffer, 256, stdin) != NULL)
       : host_find_bydns(&h, NULL, flags, US"smtp", NULL, NULL,
 			&d, &fully_qualified_name, NULL);
 
-    if (rc == HOST_FIND_FAILED) printf("Failed\n");
-      else if (rc == HOST_FIND_AGAIN) printf("Again\n");
-        else if (rc == HOST_FOUND_LOCAL) printf("Local\n");
+    switch (rc)
+      {
+      case HOST_FIND_FAILED:	printf("Failed\n");	break;
+      case HOST_FIND_AGAIN:	printf("Again\n");	break;
+      case HOST_FIND_SECURITY:	printf("Security\n");	break;
+      case HOST_FOUND_LOCAL:	printf("Local\n");	break;
+      }
     }
 
   printf("\n> ");

@@ -3718,7 +3718,7 @@ for (cutoff_retry = 0;
       commonly points to a configuration error, but the best action is still
       to carry on for the next host. */
 
-      if (rc == HOST_FIND_AGAIN || rc == HOST_FIND_FAILED)
+      if (rc == HOST_FIND_AGAIN || rc == HOST_FIND_SECURITY || rc == HOST_FIND_FAILED)
         {
         retry_add_item(addrlist, string_sprintf("R:%s", host->name), 0);
         expired = FALSE;
@@ -3731,8 +3731,11 @@ for (cutoff_retry = 0;
           {
           if (addr->transport_return != DEFER) continue;
           addr->basic_errno = ERRNO_UNKNOWNHOST;
-          addr->message =
-            string_sprintf("failed to lookup IP address for %s", host->name);
+          addr->message = string_sprintf(
+	    rc == HOST_FIND_SECURITY
+	      ? "lookup of IP address for %s was insecure"
+	      : "failed to lookup IP address for %s",
+	    host->name);
           }
         continue;
         }
@@ -3871,6 +3874,7 @@ for (cutoff_retry = 0;
 	    {
 	    case hwhy_retry: hosts_retry++; break;
 	    case hwhy_failed:  hosts_fail++; break;
+	    case hwhy_insecure:
 	    case hwhy_deferred: hosts_defer++; break;
 	    }
 

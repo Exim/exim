@@ -291,6 +291,11 @@ for (;;)
   /* Deferral returns forthwith, and anything other than failure breaks the
   loop. */
 
+  if (rc == HOST_FIND_SECURITY)
+    {
+    addr->message = US"host lookup done insecurely";
+    return DEFER;
+    }
   if (rc == HOST_FIND_AGAIN)
     {
     if (rblock->pass_on_timeout)
