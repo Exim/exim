@@ -115,7 +115,7 @@ typedef struct header_line {
 /* Entries in lists options are in this form. */
 
 typedef struct {
-  const char   *name;
+  const char   *name; /* should have been uschar but too late now */
   int           type;
   void         *value;
 } optionlist;

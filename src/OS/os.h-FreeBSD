@@ -10,7 +10,21 @@
 
 typedef struct flock flock_t;
 
-/* default is non-const */
-#define ICONV_ARG2_TYPE const char **
+/* iconv arg2 type: libiconv in Ports uses "const char* * inbuf" and was
+ * traditionally the only approach available.  The iconv functionality
+ * in libc is "char ** restrict src".
+ *
+ * <https://www.freebsd.org/doc/en/books/porters-handbook/using-iconv.html>
+ * says that libc has iconv since 2013, in 10-CURRENT.  FreeBSD man-pages
+ * shows it included in 10.0-RELEASE.  Writing this in 2017, 10.3 is the
+ * oldest supported release, so we should assume non-libiconv by default.
+ *
+ * Thus we no longer override iconv.
+ *
+ * However, if libiconv is installed, and anything adds /usr/local/include
+ * to include-path (likely) then we'll get that.  So define a variable
+ * which makes the libiconv try to not interfere with OS iconv.
+ */
+#define LIBICONV_PLUG
 
 /* End */

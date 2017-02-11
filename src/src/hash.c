@@ -25,7 +25,7 @@ typedef struct sha1 {
 sha1;
 #endif	/*STAND_ALONE*/
 
-
+#include <assert.h>
 
 /******************************************************************************/
 #ifdef SHA_OPENSSL
@@ -50,6 +50,9 @@ switch (h->method)
   {
   case HASH_SHA1:   SHA1_Update  (&h->u.sha1, data, len); break;
   case HASH_SHA256: SHA256_Update(&h->u.sha2, data, len); break;
+  /* should be blocked by init not handling these, but be explicit to
+   * guard against accidents later (and hush up clang -Wswitch) */
+  default: assert(0);
   }
 }
 
@@ -62,6 +65,7 @@ switch (h->method)
   {
   case HASH_SHA1:   SHA1_Final  (b->data, &h->u.sha1); break;
   case HASH_SHA256: SHA256_Final(b->data, &h->u.sha2); break;
+  default: assert(0);
   }
 }
 

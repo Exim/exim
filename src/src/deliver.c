@@ -4344,7 +4344,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 	  )  )
        && (  !multi_domain
 	  || (  (
-		!tp->expand_multi_domain || (deliver_set_expansions(next), 1),
+		(void)(!tp->expand_multi_domain || ((void)deliver_set_expansions(next), 1)),
 	        exp_bool(addr,
 		    US"transport", next->transport->name, D_transport,
 		    US"multi_domain", next->transport->multi_domain,
