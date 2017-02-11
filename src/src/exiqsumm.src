@@ -42,6 +42,7 @@
 # Slightly modified sub from eximstats
 
 use warnings;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 
 sub print_volume_rounded {
 my($x) = pop @_;

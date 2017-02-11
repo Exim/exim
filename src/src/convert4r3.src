@@ -8,6 +8,7 @@
 # It is assumed that the input is a valid Exim configuration file.
 
 use warnings;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 
 ##################################################
 #             Analyse one line                   #

@@ -549,6 +549,7 @@ Merging of xls files is not (yet) possible. Be free to implement :)
 
 use warnings;
 use integer;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 use strict;
 use IO::File;
 

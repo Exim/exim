@@ -12,6 +12,7 @@
 #############################################################################
 
 use warnings;
+BEGIN { pop @INC if $INC[-1] eq '.' };
 
 # If the filter is called with any arguments, insert them into the message
 # as X-Arg headers, just to verify what they are.
