@@ -2294,7 +2294,7 @@ for (i = 1; i < argc; i++)
       #ifdef ALT_CONFIG_PREFIX
       int sep = 0;
       int len = Ustrlen(ALT_CONFIG_PREFIX);
-      uschar *list = argrest;
+      const uschar *list = argrest;
       uschar *filename;
       while((filename = string_nextinlist(&list, &sep, big_buffer,
              big_buffer_size)) != NULL)

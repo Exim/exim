@@ -877,7 +877,7 @@ of the macros list is in reverse-alpha (we prepend them) - so longer
 macros that have substrings are always discovered first during
 expansion. */
 
-for (i = 0; i < nopt; i++)  if (*(s = opts[i].name) && *s != '*')
+for (i = 0; i < nopt; i++)  if (*(s = US opts[i].name) && *s != '*')
   if (group)
     macro_create(string_sprintf("_OPT_%T_%T_%T", section, group, s), US"y", FALSE, TRUE);
   else
@@ -1201,7 +1201,7 @@ for (;;)
         "configuration file %s", ss);
 
     config_filename = string_copy(ss);
-    config_directory = string_copyn(ss, (const uschar*) strrchr(ss, '/') - ss);
+    config_directory = string_copyn(ss, CUstrrchr(ss, '/') - ss);
     config_lineno = 0;
     continue;
     }
@@ -3394,11 +3394,11 @@ if (config_file)
     {
       /* relative configuration file name: working dir + / + basename(filename) */
 
-      char buf[PATH_MAX];
+      uschar buf[PATH_MAX];
       int offset = 0;
       int size = 0;
 
-      if (getcwd(buf, PATH_MAX) == NULL)
+      if (os_getcwd(buf, PATH_MAX) == NULL)
         {
         perror("exim: getcwd");
         exit(EXIT_FAILURE);

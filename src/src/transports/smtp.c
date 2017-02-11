@@ -1551,7 +1551,7 @@ if (continue_hostname == NULL)
     uschar * msg = NULL;
     if (sx->verify)
       {
-      msg = strerror(errno);
+      msg = US strerror(errno);
       HDEBUG(D_verify) debug_printf("connect: %s\n", msg);
       }
     set_errno_nohost(sx->addrlist,

@@ -689,6 +689,13 @@ HEADERS_CHARSET="ISO-8859-1"
 #
 # but of course there may need to be other things in CFLAGS and EXTRALIBS_EXIM
 # as well.
+#
+# nb: FreeBSD as of 4.89 defines LIBICONV_PLUG to pick up the system iconv
+# more reliably.  If you explicitly want the libiconv Port then as well
+# as adding -liconv you'll want to unset LIBICONV_PLUG.  If you actually need
+# this, let us know, but for now the Exim Maintainers are assuming that this
+# is uncommon and so you'll need to edit OS/os.h-FreeBSD yourself to remove
+# the define.
 
 
 #------------------------------------------------------------------------------

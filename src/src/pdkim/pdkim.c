@@ -1056,13 +1056,13 @@ else for (p = 0; p<len; p++)
 	if ((rc = pdkim_header_complete(ctx)) != PDKIM_OK)
 	  return rc;
 
-	ctx->flags = ctx->flags & ~(PDKIM_SEEN_LF|PDKIM_SEEN_CR) | PDKIM_PAST_HDRS;
+	ctx->flags = (ctx->flags & ~(PDKIM_SEEN_LF|PDKIM_SEEN_CR)) | PDKIM_PAST_HDRS;
 	DEBUG(D_acl) debug_printf(
 	    "PDKIM >> Body data for hash, canonicalized >>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 	continue;
 	}
       else
-	ctx->flags = ctx->flags & ~PDKIM_SEEN_CR | PDKIM_SEEN_LF;
+	ctx->flags = (ctx->flags & ~PDKIM_SEEN_CR) | PDKIM_SEEN_LF;
       }
     else if (ctx->flags & PDKIM_SEEN_LF)
       {
