@@ -9,38 +9,38 @@
 >>> using ACL "connect"
 >>> processing "accept"
 >>> check acl = log
- >>> using ACL "log"
- >>> processing "accept"
- >>> check logwrite = ===========================================================
+>>>  using ACL "log"
+>>>  processing "accept"
+>>>  check logwrite = ===========================================================
 LOG: ===========================================================
- >>> check logwrite = sender_ip_address=[$sender_host_address]
+>>>  check logwrite = sender_ip_address=[$sender_host_address]
 >>>                = sender_ip_address=[1.2.3.4]
 LOG: sender_ip_address=[1.2.3.4]
- >>> check logwrite = sender_host_authenticated=$sender_host_authenticated
+>>>  check logwrite = sender_host_authenticated=$sender_host_authenticated
 >>>                = sender_host_authenticated=
 LOG: sender_host_authenticated=
- >>> check logwrite = authenticated_id=$authenticated_id
+>>>  check logwrite = authenticated_id=$authenticated_id
 >>>                = authenticated_id=
 LOG: authenticated_id=
- >>> check logwrite = authenticated_sender=$authenticated_sender
+>>>  check logwrite = authenticated_sender=$authenticated_sender
 >>>                = authenticated_sender=
 LOG: authenticated_sender=
- >>> check logwrite = interface_address=[$interface_address]
+>>>  check logwrite = interface_address=[$interface_address]
 >>>                = interface_address=[]
 LOG: interface_address=[]
- >>> check logwrite = received_protocol=$received_protocol
+>>>  check logwrite = received_protocol=$received_protocol
 >>>                = received_protocol=smtp
 LOG: received_protocol=smtp
 >>> looking up host name for 1.2.3.4
 LOG: no host name found for IP address 1.2.3.4
- >>> check logwrite = sender_host_name=$sender_host_name
+>>>  check logwrite = sender_host_name=$sender_host_name
 >>>                = sender_host_name=
 LOG: sender_host_name=
- >>> check logwrite = sender_ident=$sender_ident
+>>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=
 LOG: sender_ident=
- >>> accept: condition test succeeded in ACL "log"
- >>> end of ACL "log": ACCEPT
+>>>  accept: condition test succeeded in ACL "log"
+>>>  end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -54,36 +54,36 @@ LOG: sender_ident=
 >>> using ACL "connect"
 >>> processing "accept"
 >>> check acl = log
- >>> using ACL "log"
- >>> processing "accept"
- >>> check logwrite = ===========================================================
+>>>  using ACL "log"
+>>>  processing "accept"
+>>>  check logwrite = ===========================================================
 LOG: ===========================================================
- >>> check logwrite = sender_ip_address=[$sender_host_address]
+>>>  check logwrite = sender_ip_address=[$sender_host_address]
 >>>                = sender_ip_address=[5.6.7.8]
 LOG: sender_ip_address=[5.6.7.8]
- >>> check logwrite = sender_host_authenticated=$sender_host_authenticated
+>>>  check logwrite = sender_host_authenticated=$sender_host_authenticated
 >>>                = sender_host_authenticated=authname
 LOG: sender_host_authenticated=authname
- >>> check logwrite = authenticated_id=$authenticated_id
+>>>  check logwrite = authenticated_id=$authenticated_id
 >>>                = authenticated_id=authid
 LOG: authenticated_id=authid
- >>> check logwrite = authenticated_sender=$authenticated_sender
+>>>  check logwrite = authenticated_sender=$authenticated_sender
 >>>                = authenticated_sender=authsender
 LOG: authenticated_sender=authsender
- >>> check logwrite = interface_address=[$interface_address]
+>>>  check logwrite = interface_address=[$interface_address]
 >>>                = interface_address=[9.10.11.12]
 LOG: interface_address=[9.10.11.12]
- >>> check logwrite = received_protocol=$received_protocol
+>>>  check logwrite = received_protocol=$received_protocol
 >>>                = received_protocol=smtp
 LOG: received_protocol=smtp
- >>> check logwrite = sender_host_name=$sender_host_name
+>>>  check logwrite = sender_host_name=$sender_host_name
 >>>                = sender_host_name=hostname
 LOG: sender_host_name=hostname
- >>> check logwrite = sender_ident=$sender_ident
+>>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
- >>> accept: condition test succeeded in ACL "log"
- >>> end of ACL "log": ACCEPT
+>>>  accept: condition test succeeded in ACL "log"
+>>>  end of ACL "log": ACCEPT
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
 >>> host in dsn_advertise_hosts? no (option unset)
@@ -92,88 +92,88 @@ LOG: sender_ident=ident
 >>> using ACL "mail"
 >>> processing "accept"
 >>> check acl = log
- >>> using ACL "log"
- >>> processing "accept"
- >>> check logwrite = ===========================================================
+>>>  using ACL "log"
+>>>  processing "accept"
+>>>  check logwrite = ===========================================================
 LOG: ===========================================================
- >>> check logwrite = sender_ip_address=[$sender_host_address]
+>>>  check logwrite = sender_ip_address=[$sender_host_address]
 >>>                = sender_ip_address=[5.6.7.8]
 LOG: sender_ip_address=[5.6.7.8]
- >>> check logwrite = sender_host_authenticated=$sender_host_authenticated
+>>>  check logwrite = sender_host_authenticated=$sender_host_authenticated
 >>>                = sender_host_authenticated=authname
 LOG: sender_host_authenticated=authname
- >>> check logwrite = authenticated_id=$authenticated_id
+>>>  check logwrite = authenticated_id=$authenticated_id
 >>>                = authenticated_id=authid
 LOG: authenticated_id=authid
- >>> check logwrite = authenticated_sender=$authenticated_sender
+>>>  check logwrite = authenticated_sender=$authenticated_sender
 >>>                = authenticated_sender=
 LOG: authenticated_sender=
- >>> check logwrite = interface_address=[$interface_address]
+>>>  check logwrite = interface_address=[$interface_address]
 >>>                = interface_address=[9.10.11.12]
 LOG: interface_address=[9.10.11.12]
- >>> check logwrite = received_protocol=$received_protocol
+>>>  check logwrite = received_protocol=$received_protocol
 >>>                = received_protocol=esmtpa
 LOG: received_protocol=esmtpa
- >>> check logwrite = sender_host_name=$sender_host_name
+>>>  check logwrite = sender_host_name=$sender_host_name
 >>>                = sender_host_name=hostname
 LOG: sender_host_name=hostname
- >>> check logwrite = sender_ident=$sender_ident
+>>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
- >>> accept: condition test succeeded in ACL "log"
- >>> end of ACL "log": ACCEPT
+>>>  accept: condition test succeeded in ACL "log"
+>>>  end of ACL "log": ACCEPT
 >>> check acl = auth
- >>> using ACL "auth"
- >>> processing "accept"
- >>> check authenticated = *
+>>>  using ACL "auth"
+>>>  processing "accept"
+>>>  check authenticated = *
 >>> authname in "*"? yes (matched "*")
- >>> check logwrite = +++ host is authenticated +++
+>>>  check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
- >>> accept: condition test succeeded in ACL "auth"
- >>> end of ACL "auth": ACCEPT
+>>>  accept: condition test succeeded in ACL "auth"
+>>>  end of ACL "auth": ACCEPT
 >>> accept: condition test succeeded in ACL "mail"
 >>> end of ACL "mail": ACCEPT
 >>> using ACL "mail"
 >>> processing "accept"
 >>> check acl = log
- >>> using ACL "log"
- >>> processing "accept"
- >>> check logwrite = ===========================================================
+>>>  using ACL "log"
+>>>  processing "accept"
+>>>  check logwrite = ===========================================================
 LOG: ===========================================================
- >>> check logwrite = sender_ip_address=[$sender_host_address]
+>>>  check logwrite = sender_ip_address=[$sender_host_address]
 >>>                = sender_ip_address=[5.6.7.8]
 LOG: sender_ip_address=[5.6.7.8]
- >>> check logwrite = sender_host_authenticated=$sender_host_authenticated
+>>>  check logwrite = sender_host_authenticated=$sender_host_authenticated
 >>>                = sender_host_authenticated=authname
 LOG: sender_host_authenticated=authname
- >>> check logwrite = authenticated_id=$authenticated_id
+>>>  check logwrite = authenticated_id=$authenticated_id
 >>>                = authenticated_id=authid
 LOG: authenticated_id=authid
- >>> check logwrite = authenticated_sender=$authenticated_sender
+>>>  check logwrite = authenticated_sender=$authenticated_sender
 >>>                = authenticated_sender=<asender@a.domain>
 LOG: authenticated_sender=<asender@a.domain>
- >>> check logwrite = interface_address=[$interface_address]
+>>>  check logwrite = interface_address=[$interface_address]
 >>>                = interface_address=[9.10.11.12]
 LOG: interface_address=[9.10.11.12]
- >>> check logwrite = received_protocol=$received_protocol
+>>>  check logwrite = received_protocol=$received_protocol
 >>>                = received_protocol=esmtpa
 LOG: received_protocol=esmtpa
- >>> check logwrite = sender_host_name=$sender_host_name
+>>>  check logwrite = sender_host_name=$sender_host_name
 >>>                = sender_host_name=hostname
 LOG: sender_host_name=hostname
- >>> check logwrite = sender_ident=$sender_ident
+>>>  check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
- >>> accept: condition test succeeded in ACL "log"
- >>> end of ACL "log": ACCEPT
+>>>  accept: condition test succeeded in ACL "log"
+>>>  end of ACL "log": ACCEPT
 >>> check acl = auth
- >>> using ACL "auth"
- >>> processing "accept"
- >>> check authenticated = *
+>>>  using ACL "auth"
+>>>  processing "accept"
+>>>  check authenticated = *
 >>> authname in "*"? yes (matched "*")
- >>> check logwrite = +++ host is authenticated +++
+>>>  check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
- >>> accept: condition test succeeded in ACL "auth"
- >>> end of ACL "auth": ACCEPT
+>>>  accept: condition test succeeded in ACL "auth"
+>>>  end of ACL "auth": ACCEPT
 >>> accept: condition test succeeded in ACL "mail"
 >>> end of ACL "mail": ACCEPT

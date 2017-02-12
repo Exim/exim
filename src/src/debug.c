@@ -152,33 +152,22 @@ void
 debug_printf_indent(const char * format, ...)
 {
 va_list ap;
-unsigned depth = acl_level + expand_level, i;
-
-if (!debug_file) return;
-if (depth > 0)
-  {
-  for (i = depth >> 2; i > 0; i--)
-    fprintf(debug_file, "   .");
-  fprintf(debug_file, "%*s", depth & 3, "");
-  }
-
 va_start(ap, format);
-debug_vprintf(format, ap);
+debug_vprintf(acl_level + expand_level, format, ap);
 va_end(ap);
 }
-
 
 void
 debug_printf(const char *format, ...)
 {
 va_list ap;
 va_start(ap, format);
-debug_vprintf(format, ap);
+debug_vprintf(0, format, ap);
 va_end(ap);
 }
 
 void
-debug_vprintf(const char *format, va_list ap)
+debug_vprintf(int indent, const char *format, va_list ap)
 {
 int save_errno = errno;
 
@@ -215,6 +204,18 @@ if (debug_ptr == debug_buffer)
     }
 
   debug_prefix_length = debug_ptr - debug_buffer;
+  }
+
+if (indent > 0)
+  {
+  int i;
+  for (i = indent >> 2; i > 0; i--)
+    {
+    Ustrcpy(debug_ptr, "   .");
+    debug_ptr += 4;
+    }
+  Ustrncpy(debug_ptr, "   ", indent & 3);
+  debug_ptr += indent & 3;
   }
 
 /* Use the checked formatting routine to ensure that the buffer
