@@ -5,8 +5,17 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Exim version 4.90
+-----------------
+
+JH/01 Rework error string handling in TLS interface so that the caller in
+      more cases is responsible for logging.  This permits library-sourced
+      string to be attached to addresses during delivery, and collapses
+      pairs of long lines into single ones.
+
+
 Exim version 4.89
--------------------
+-----------------
 
 JH/01 Bug 1922: Support IDNA2008.  This has slightly different conversion rules
       than -2003 did; needs libidn2 in addition to libidn.
@@ -88,11 +97,6 @@ JH/16 Drop variables when they go out of scope.  Memory management drops a whole
       explicitly nulling out all the variables discovered.  Fixes one known
       bug: a transport crash, where a dangling pointer for $sending_ip_address
       originally assigned in a verify callout, is re-used.
-
-JH/17 Rework error string handling in TLS interface so that the caller in
-      more cases is responsible for logging.  This permits library-sourced
-      string to be attached to addresses during delivery, and collapses
-      pairs of long lines into single ones.
 
 PP/06 Drop '.' from @INC in various Perl scripts.
 
