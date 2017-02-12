@@ -89,6 +89,14 @@ JH/16 Drop variables when they go out of scope.  Memory management drops a whole
       bug: a transport crash, where a dangling pointer for $sending_ip_address
       originally assigned in a verify callout, is re-used.
 
+PP/06 Drop '.' from @INC in various Perl scripts.
+
+PP/07 Switch FreeBSD iconv to always use the base-system libc functions.
+
+PP/08 Reduce a number of compilation warnings under clang; building with
+      CC=clang CFLAGS+=-Wno-dangling-else -Wno-logical-op-parentheses
+      should be warning-free.
+
 
 Exim version 4.88
 -----------------
