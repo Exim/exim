@@ -6,7 +6,7 @@ options, and new features, see the NewStuff file next to this ChangeLog.
 
 
 Exim version 4.89
--------------------
+-----------------
 
 JH/01 Bug 1922: Support IDNA2008.  This has slightly different conversion rules
       than -2003 did; needs libidn2 in addition to libidn.
@@ -98,6 +98,9 @@ PP/08 Reduce a number of compilation warnings under clang; building with
       should be warning-free.
 
 JH/17 Fix inbound CHUNKING when DKIM disabled at runtime.
+
+HS/01 Fix portability problems introduced by PP/08 for platforms where
+      realloc(NULL) is not equivalent to malloc() [SunOS et al].
 
 
 Exim version 4.88

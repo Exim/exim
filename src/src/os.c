@@ -879,7 +879,7 @@ char * b = (char *)buffer;
 if (!size) size = PATH_MAX;
 if (!b && !(b = malloc(size))) return NULL;
 if (!(b = getcwd(b, size))) return NULL;
-return realloc(b, strlen(b) + 1);
+return buffer ? buffer : realloc(b, strlen(b) + 1);
 }
 #endif
 
