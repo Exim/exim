@@ -779,10 +779,11 @@ sa-os.o:         $(HDRS) os.c
 test_dbfn:   config.h dbfn.c dummies.o sa-globals.o sa-os.o store.o \
 	       string.o tod.o version.o utf8.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE dbfn.c
+	$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY store.c
 	$(LNCC) -o test_dbfn $(LFLAGS) dbfn.o \
 	  dummies.o sa-globals.o sa-os.o store.o string.o \
 	  tod.o version.o utf8.o $(LIBS) $(DBMLIB) $(LDFLAGS)
-	rm -f dbfn.o
+	rm -f dbfn.o store.o
 
 test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o os.o \
 	       store.o string.o tod.o tree.o
