@@ -18,6 +18,9 @@ typedef struct flock flock_t;
  * says that libc has iconv since 2013, in 10-CURRENT.  FreeBSD man-pages
  * shows it included in 10.0-RELEASE.  Writing this in 2017, 10.3 is the
  * oldest supported release, so we should assume non-libiconv by default.
+ * (Actually, people still using old releases past EOL; we shouldn't support
+ * them but I don't want to deal with howls of complaints because we dare
+ * to not support the unsupported, so guard this on FreeBSD 10+)
  *
  * Thus we no longer override iconv.
  *
@@ -25,6 +28,10 @@ typedef struct flock flock_t;
  * to include-path (likely) then we'll get that.  So define a variable
  * which makes the libiconv try to not interfere with OS iconv.
  */
-#define LIBICONV_PLUG
+#if __FreeBSD__ >= 10
+# define LIBICONV_PLUG
+#endif
+/* for more specific version constraints, include <sys/param.h> and look at
+ * __FreeBSD_version */
 
 /* End */
