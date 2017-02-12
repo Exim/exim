@@ -486,12 +486,17 @@ uschar * log_msg;
 
 for(;;)
   {
+#ifndef DISABLE_DKIM
+  BOOL dkim_save;
+#endif
+
   if (chunking_data_left > 0)
     return lwr_receive_getc(chunking_data_left--);
 
   receive_getc = lwr_receive_getc;
   receive_ungetc = lwr_receive_ungetc;
 #ifndef DISABLE_DKIM
+  dkim_save = dkim_collect_input;
   dkim_collect_input = FALSE;
 #endif
 
@@ -592,7 +597,7 @@ next_cmd:
       receive_getc = bdat_getc;
       receive_ungetc = bdat_ungetc;
 #ifndef DISABLE_DKIM
-      dkim_collect_input = TRUE;
+      dkim_collect_input = dkim_save;
 #endif
       break;	/* to top of main loop */
       }

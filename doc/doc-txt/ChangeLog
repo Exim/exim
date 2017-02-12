@@ -97,6 +97,8 @@ PP/08 Reduce a number of compilation warnings under clang; building with
       CC=clang CFLAGS+=-Wno-dangling-else -Wno-logical-op-parentheses
       should be warning-free.
 
+JH/17 Fix inbound CHUNKING when DKIM disabled at runtime.
+
 
 Exim version 4.88
 -----------------
