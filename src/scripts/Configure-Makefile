@@ -78,6 +78,8 @@ fi
 mf=Makefile
 mft=$mf-t
 mftt=$mf-tt
+mftepcp=$mf-tepcp
+mftepcp2=$mf-tepcp2
 
 look_mf=lookups/Makefile
 look_mf_pre=${look_mf}.predynamic
@@ -86,7 +88,7 @@ look_mf_post=${look_mf}.postdynamic
 # Ensure the temporary does not exist and start the new one by setting
 # the OSTYPE and ARCHTYPE variables.
 
-rm -f $mft $mftt $look_mf-t
+rm -f $mft $mftt $mftepcp $mftepcp2 $look_mf-t
 (echo "OSTYPE=$ostype"; echo "ARCHTYPE=$archtype"; echo "") > $mft || exit 1
 
 # Now concatenate the files to the temporary file. Copy the files using sed to
@@ -116,9 +118,33 @@ done \
      | sed 's/^TMPDIR=/EXIM_&/' \
      >> $mft || exit 1
 
+# handle PKG_CONFIG_PATH because we need it in our env, and we want to handle
+# wildcards; note that this logic means all setting _appends_ values, never
+# replacing; if that's a problem, we can revisit.
+sed -n "s/^[$st]*PKG_CONFIG_PATH[$st]*[+]*=[$st]*//p" $mft | \
+  sed "s/[$st]*\$//" >> $mftepcp
+if test -s ./$mftepcp
+then
+  # expand any wildcards and strip spaces, to make it a real PATH-like variable
+  ( IFS=":${IFS-$st}"; for P in `cat ./$mftepcp`; do echo "$P"; done ) | xargs | sed "s/[$st]/:/g" >./$mftepcp2
+  sed "s/^/PKG_CONFIG_PATH='/" < ./$mftepcp2 | sed "s/\$/'/" > ./$mftepcp
+  . ./$mftepcp
+  export PKG_CONFIG_PATH
+  egrep -v "^[$st]*PKG_CONFIG_PATH[$st]*=" ./$mft > ./$mftt
+  rm -f ./$mft
+  (
+    echo "# Collapsed PKG_CONFIG_PATH in build-prep:"
+    sed "s/'//g" ./$mftepcp
+    echo "# End of collapsed PKG_CONFIG_PATH"
+    echo ""
+    cat ./$mftt
+  ) > ./$mft
+  rm -f ./$mftt
+fi
+rm -f ./$mftepcp ./$mftepcp2
+
 # handle pkg-config
 # beware portability of extended regexps with sed.
-
 egrep "^[$st]*(AUTH|LOOKUP)_[A-Z0-9_]*[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" > $mftt
@@ -165,8 +191,8 @@ then
               echo "CFLAGS += $tls_include"
               echo "LDFLAGS += $tls_libs"
             else
-              echo "CFLAGS += $(libgcrypt-config --cflags)"
-              echo "LDFLAGS += $(libgcrypt-config --libs)"
+              echo "CFLAGS += `libgcrypt-config --cflags`"
+              echo "LDFLAGS += `libgcrypt-config --libs`"
             fi
           fi
         fi

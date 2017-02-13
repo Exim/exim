@@ -13,6 +13,9 @@ JH/01 Rework error string handling in TLS interface so that the caller in
       string to be attached to addresses during delivery, and collapses
       pairs of long lines into single ones.
 
+PP/01 Allow PKG_CONFIG_PATH to be set in Local/Makefile and use it correctly
+      during configuration.  Wildcards are allowed and expanded.
+
 
 Exim version 4.89
 -----------------

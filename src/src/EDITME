@@ -192,6 +192,11 @@ SPOOL_DIRECTORY=/var/spool/exim
 # least one type of lookup. You should consider whether you want to build
 # the Exim monitor or not.
 
+# If you need to override how pkg-config finds configuration files for
+# installed software, then you can set that here; wildcards will be expanded.
+
+# PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig : /opt/*/lib/pkgconfig
+
 
 #------------------------------------------------------------------------------
 # These settings determine which individual router drivers are included in the
