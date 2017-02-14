@@ -25,6 +25,7 @@ static FILE   *data_file = NULL;
 static int     data_fd = -1;
 static uschar *spool_name = US"";
 
+enum CH_STATE {LF_SEEN, MID_LINE, CR_SEEN};
 
 
 /*************************************************
@@ -913,7 +914,8 @@ Returns:    One of the END_xxx values indicating why it stopped reading
 static int
 read_message_bdat_smtp(FILE *fout)
 {
-int ch_state = 0, linelength = 0, ch;
+int linelength = 0, ch;
+enum CH_STATE ch_state = LF_SEEN;
 
 for(;;)
   {
@@ -926,14 +928,14 @@ for(;;)
     }
   switch (ch_state)
     {
-    case 0:                             /* After LF or CRLF */
-      ch_state = 1;
+    case LF_SEEN:                             /* After LF or CRLF */
+      ch_state = MID_LINE;
       /* fall through to handle as normal uschar. */
 
-    case 1:                             /* Mid-line state */
+    case MID_LINE:                            /* Mid-line state */
       if (ch == '\n')
 	{
-	ch_state = 0;
+	ch_state = LF_SEEN;
 	body_linecount++;
 	if (linelength > max_received_linelength)
 	  max_received_linelength = linelength;
@@ -941,25 +943,25 @@ for(;;)
 	}
       else if (ch == '\r')
 	{
-	ch_state = 2;
+	ch_state = CR_SEEN;
 	continue;			/* don't write CR */
 	}
       break;
 
-    case 2:                             /* After (unwritten) CR */
+    case CR_SEEN:                       /* After (unwritten) CR */
       body_linecount++;
       if (linelength > max_received_linelength)
 	max_received_linelength = linelength;
       linelength = -1;
       if (ch == '\n')
-	ch_state = 0;
+	ch_state = LF_SEEN;
       else
 	{
 	message_size++;
 	if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
 	(void) cutthrough_put_nl();
 	if (ch == '\r') continue;	/* don't write CR */
-	ch_state = 1;
+	ch_state = MID_LINE;
 	}
       break;
     }
