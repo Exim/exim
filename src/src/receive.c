@@ -916,14 +916,41 @@ read_message_bdat_smtp(FILE *fout)
 {
 int linelength = 0, ch;
 enum CH_STATE ch_state = LF_SEEN;
+BOOL fix_nl = FALSE;
 
 for(;;)
   {
   switch ((ch = (bdat_getc)(GETC_BUFFER_UNLIMITED)))
     {
     case EOF:	return END_EOF;
-    case EOD:	return END_DOT;		/* normal exit */
     case ERR:	return END_PROTOCOL;
+    case EOD:
+      /* Nothing to get from the sender anymore. We check the last
+      character written to the spool.
+
+      RFC 3030 states, that BDAT chunks are normal text, terminated by CRLF.
+      If we would be strict, we would refuse such broken messages.
+      But we are liberal, so we fix it.  It would be easy just to append
+      the "\n" to the spool.
+
+      But there are some more things (line counting, message size calculation and such),
+      that would need to be duplicated here.  So we simply do some ungetc
+      trickery.
+      */
+      fseek(fout, -1, SEEK_CUR);
+      if (fgetc(fout) == '\n') return END_DOT;
+
+      if (linelength == -1)    /* \r already seen (see below) */
+        {
+        DEBUG(D_receive) debug_printf("Add missing LF\n");
+        bdat_ungetc('\n');
+        continue;
+        }
+      DEBUG(D_receive) debug_printf("Add missing CRLF\n");
+      bdat_ungetc('\r');      /* not even \r was seen */
+      fix_nl = TRUE;
+
+      continue;
     case '\0':  body_zerocount++; break;
     }
   switch (ch_state)
@@ -944,6 +971,7 @@ for(;;)
       else if (ch == '\r')
 	{
 	ch_state = CR_SEEN;
+       if (fix_nl) bdat_ungetc('\n');
 	continue;			/* don't write CR */
 	}
       break;
