@@ -906,7 +906,8 @@ a cut-down version of the state-machine above; we don't need to do leading-dot
 detection and unstuffing.
 
 Arguments:
-  fout      a FILE to which to write the message; NULL if skipping
+  fout      a FILE to which to write the message; NULL if skipping;
+            must be open for both writing and reading.
 
 Returns:    One of the END_xxx values indicating why it stopped reading
 */
