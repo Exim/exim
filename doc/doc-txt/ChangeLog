@@ -114,6 +114,10 @@ JH/17 Fix inbound CHUNKING when DKIM disabled at runtime.
 HS/01 Fix portability problems introduced by PP/08 for platforms where
       realloc(NULL) is not equivalent to malloc() [SunOS et al].
 
+HS/02 Bug 1974: Fix missing line terminator on the last received BDAT
+      chunk. This allows us to accept broken chunked messages. We need a more
+      general solution here.
+
 
 Exim version 4.88
 -----------------
