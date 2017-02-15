@@ -19,7 +19,17 @@ open(OUT, '>eximdir/exim') || die "** Failed to open eximdir/exim: $!\n";
 while(<IN>)
   {
   s/>>>running<<</<<<testing>>>/;
-  s/(\d+\.\d+(?:[_.]\d+)?([_-]RC\d+|[_-]dev)?(?:[0-9a-fA-F-]*)(?:[-_]XX)?\0<<eximversion>>)/"x.yz\0" . ("*" x (length($1) - 5))/e;
+  s{
+    (\d+\.\d+                         # major.minor
+    (?:[_.]\d+)?                      # optional patchlevel
+    (?:[_-]RC\d+|[_-]?dev(?:start)?)? # optional RC or dev(start)
+    (?:(?:[_-]\d+)?                   # git tag distance
+       [-_][[:xdigit:]]+)?            # git id
+    (?:[-_]XX)?\0                     # git dirty bit
+    <<eximversion>>                   # marker
+    )
+   }
+   {"x.yz\0" . ("*" x (length($1) - 5))}xe;
   print OUT;
   }
 
