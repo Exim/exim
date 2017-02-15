@@ -106,6 +106,9 @@ HS/02 Bug 1974: Fix missing line terminator on the last received BDAT
       chunk. This allows us to accept broken chunked messages. We need a more
       general solution here.
 
+PP/09 Wrote util/chunking_fixqueue_finalnewlines.pl to help recover
+      already-broken messages in the queue.
+
 
 Exim version 4.88
 -----------------
