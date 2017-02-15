@@ -3830,7 +3830,13 @@ remote host supports the ESMTP &_DSN_& extension.
 .oindex "&%-MCG%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that an
-alternate queue is used, named by the following option.
+alternate queue is used, named by the following argument.
+
+.vitem &%-MCK%&
+.oindex "&%-MCK%&"
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the &%-MC%& option. It signifies that an
+remote host supports the ESMTP &_CHUNKING_& extension.
 
 .vitem &%-MCP%&
 .oindex "&%-MCP%&"
