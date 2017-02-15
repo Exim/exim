@@ -29,6 +29,15 @@ that might affect a running system.
 Exim version 4.89
 -----------------
 
+ * SMTP CHUNKING in Exim 4.88 did not ensure that received mails had a final
+   newline; attempts to deliver such messages onwards to non-chunking hosts
+   would probably hang, as Exim does not insert the newline before a ".".
+   In 4.89, the newline is added upon receipt.  For already-received messages
+   in your queue, try util/chunking_fixqueue_finalnewlines.pl
+   to walk the queue, fixing any affected messages.  Note that because a
+   delivery attempt will be hanging, attempts to lock the messages for fixing
+   them will stall; stopping all queue-runners temporarily is recommended.
+
  * OpenSSL: oldest supported release series is now 1.0.2, which is the oldest
    supported by the OpenSSL project.  If you can build Exim with an older
    release series, congratulations.  If you can't, then upgrade.
