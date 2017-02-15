@@ -3,28 +3,22 @@
 # A really dumb script for making a quick tarball of Exim
 
 set -e
+trap 'test -n "$TMP_DIR" && rm -r "$TMP_DIR"' EXIT
 
-OWD=$(pwd -P)
+OLD_DIR=$(pwd)
+GIT_DIR=$(git rev-parse --show-toplevel)
+TMP_DIR=$(mktemp -d -t exim-quickrelease.XXXXXX)
 
-GWD=$(git rev-parse --git-dir)
-
-TWD=$(mktemp -d -t exim) || exit 1
-echo $TWD
-cd $TWD
-
-git clone $GWD
+cd $TMP_DIR
+git clone $GIT_DIR
 
 cd exim/src/src
 ../scripts/reversion
-. version.sh
+. ./version.sh
 EXIM=exim-${EXIM_RELEASE_VERSION}${EXIM_VARIANT_VERSION}
 
 cd ../..
-mv src $EXIM
-tar cfz $EXIM.tar.gz $EXIM
-mv $EXIM src
-
-cd $OWD
-mv $TWD/exim/$EXIM.tar.gz .
-rm -rf $EXIM
+mv -v src $EXIM
+tar czf $EXIM.tar.gz $EXIM
+mv $EXIM.tar.gz $OLD_DIR
 echo $EXIM.tar.gz
