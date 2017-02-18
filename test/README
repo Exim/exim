@@ -298,6 +298,9 @@ There are some options for the ./runtest script itself:
             maintainer after making a change to the code that affects a lot of
             tests (for example, the wording of a message).
 
+  -SLOW     For very slow hosts that appear to have Heisenbugs, delay before
+            comparing output files from a testcase
+
 The options for ./runtest must be given first (but after the name of the
 binary, if present). Any further options, that is, items on the command line
 that start with a hyphen, are passed to the Exim binary when it is run as part

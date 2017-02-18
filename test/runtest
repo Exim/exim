@@ -61,6 +61,7 @@ my $more = 'less -XF';
 my $optargs = '';
 my $save_output = 0;
 my $server_opts = '';
+my $slow = 0;
 my $valgrind = 0;
 
 my $have_ipv4 = 1;
@@ -2550,6 +2551,7 @@ while (@ARGV > 0 && $ARGV[0] =~ /^-/)
     if ($arg eq "-NOIPV4") { $have_ipv4 = 0; next; }
     if ($arg eq "-NOIPV6") { $have_ipv6 = 0; next; }
     if ($arg eq "-KEEP")   { $save_output = 1; next; }
+    if ($arg eq "-SLOW")   { $slow = 1; next; }
     if ($arg eq "-VALGRIND")   { $valgrind = 1; next; }
     if ($arg =~ /^-FLAVOU?R$/) { $flavour = shift; next; }
     }
@@ -3997,6 +3999,7 @@ foreach $test (@test_list)
 
   if ($docheck)
     {
+    sleep 1 if $slow;
     my $rc = check_output($TEST_STATE->{munge});
     log_test($log_summary_filename, $testno, 'P') if ($rc == 0);
     if ($rc < 2)
