@@ -12,14 +12,38 @@
 # woe betide the poor sod who does not use a gpg agent, so has
 # to enter their password for every file...
 
-if repo_signing_key="$(git config user.signingkey)"; then
-	: "${EXIM_KEY:=$repo_signing_key}"
-else
-	: "${EXIM_KEY:?Need a PGP key uid to sign with}"
-fi
+prog="$(basename "$0")"
+warn() { printf >&2 "%s: %s\n" "$prog" "$*" ; }
 
 : "${GPG_COMMAND:=gpg}"
 umask 022
+
+# We've always expected an explicit key for signing, instead of just using the
+# gnupg config.  It make sense to honor the git config value.  It makes sense
+# to honor env.  But git doesn't allow specifying multiple subkeys, it only
+# passes one -u option.
+# UID specs explicitly allow whitespace in several formats.
+# We have one scalar value, we're sh, we're not going to try using an array.
+#
+# So if you want to sign with multiple subkeys, then set it up with multiple
+# local-user directives in ~/.gnupg/gpg.conf & set EXIM_KEY=default in environ.
+
+if repo_signing_key="$(git config user.signingkey)"; then
+	: "${EXIM_KEY:=$repo_signing_key}"
+else
+	if [ ".${EXIM_KEY:-}" = "." ]; then
+		warn "no EXIM_KEY found, trusting local gpg config"
+	fi
+fi
+
+case "${EXIM_KEY:-default}" in
+default|DEFAULT)
+	gpg_sign() { ${GPG_COMMAND} --detach-sig --armor "${1:?}" ; }
+	;;
+*) 
+	gpg_sign() { ${GPG_COMMAND} --local-user "${EXIM_KEY}" --detach-sig --armor "${1:?}" ; }
+	;;
+esac
 
 cd_to() { echo "Working in: $1"; cd "$1"; }
 
@@ -49,5 +73,5 @@ set $(find . -name '*.asc' -prune -o -type f -print | cut -c 3- | sort)
 for FILE
 do
 	echo "Signing: $FILE"
-	${GPG_COMMAND} --local-user "${EXIM_KEY}" --detach-sig --armor "$FILE"
+	gpg_sign "$FILE"
 done
