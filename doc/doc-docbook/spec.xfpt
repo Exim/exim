@@ -17136,7 +17136,8 @@ acceptable bound from 1024 to 2048.
 
 .option tls_eccurve main string&!! &`auto`&
 .cindex TLS "EC cryptography"
-This option selects a EC curve for use by Exim.
+This option selects a EC curve for use by Exim when used with OpenSSL.
+It has no effect when Exim is used with GnuTLS.
 
 After expansion it must contain a valid EC curve parameter, such as
 &`prime256v1`&, &`secp384r1`&, or &`P-512`&. Consult your OpenSSL manual
