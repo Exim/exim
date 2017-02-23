@@ -304,7 +304,6 @@ static int     smtp_had_error;
 
 
 /* forward declarations */
-int bdat_ungetc(int ch);
 static int smtp_read_command(BOOL check_sync, unsigned buffer_lim);
 static int synprot_error(int type, int code, uschar *data, uschar *errmess);
 static void smtp_quit_handler(uschar **, uschar **);
