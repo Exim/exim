@@ -14,3 +14,26 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaX-0005vi-00
 221 myhost.test.ex closing connection
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO test
+??? 250
+<<< 250 myhost.test.ex Hello localhost [127.0.0.1]
+>>> MAIL FROM:<>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<x@y>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> .
+??? 250
+<<< 250 OK id=10HmbA-0005vi-00
+>>> QUIT
+>>> ***
+>>> killdaemon
+>>> no_msglog_check
+End of script

@@ -17,4 +17,22 @@ data
 .
 quit
 ****
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+HELO test
+??? 250
+MAIL FROM:<>
+??? 250
+RCPT TO:<x@y>
+??? 250
+DATA
+??? 354
+.
+??? 250
+QUIT
+***
+killdaemon
 no_msglog_check
