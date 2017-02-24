@@ -573,6 +573,7 @@ if (pid == 0)
 #ifndef DISABLE_DKIM
     dkim_cur_signer = NULL;
 #endif
+    acl_var_m = NULL;
     store_reset(reset_point);
 
     /* If queue_only is set or if there are too many incoming connections in
