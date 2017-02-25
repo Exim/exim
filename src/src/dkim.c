@@ -18,7 +18,7 @@ int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
 pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
-static BOOL dkim_collect_error = FALSE;
+static const uschar * dkim_collect_error = NULL;
 
 static int
 dkim_exim_query_dns_txt(char *name, char *answer)
@@ -88,7 +88,7 @@ if (dkim_verify_ctx)
 
 dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt, dot_stuffing);
 dkim_collect_input = !!dkim_verify_ctx;
-dkim_collect_error = FALSE;
+dkim_collect_error = NULL;
 
 /* Start feed up with any cached data */
 receive_get_cache();
@@ -106,9 +106,9 @@ store_pool = POOL_PERM;
 if (  dkim_collect_input
    && (rc = pdkim_feed(dkim_verify_ctx, CS data, len)) != PDKIM_OK)
   {
+  dkim_collect_error = pdkim_errstr(rc);
   log_write(0, LOG_MAIN,
-	     "DKIM: validation error: %.100s", pdkim_errstr(rc));
-  dkim_collect_error = TRUE;
+	     "DKIM: validation error: %.100s", dkim_collect_error);
   dkim_collect_input = FALSE;
   }
 store_pool = dkim_verify_oldpool;
@@ -119,9 +119,8 @@ void
 dkim_exim_verify_finish(void)
 {
 pdkim_signature * sig = NULL;
-int dkim_signers_size = 0;
-int dkim_signers_ptr = 0;
-int rc;
+int dkim_signers_size = 0, dkim_signers_ptr = 0, rc;
+const uschar * errstr;
 
 store_pool = POOL_PERM;
 
@@ -133,8 +132,8 @@ dkim_signatures = NULL;
 if (dkim_collect_error)
   {
   log_write(0, LOG_MAIN,
-	     "DKIM: Error while running this message through validation,"
-	     " disabling signature verification.");
+      "DKIM: Error during validation, disabling signature verification: %.100s",
+      dkim_collect_error);
   dkim_disable_verify = TRUE;
   goto out;
   }
@@ -143,10 +142,11 @@ dkim_collect_input = FALSE;
 
 /* Finish DKIM operation and fetch link to signatures chain */
 
-if ((rc = pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures)) != PDKIM_OK)
+rc = pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures, &errstr);
+if (rc != PDKIM_OK)
   {
-  log_write(0, LOG_MAIN,
-	     "DKIM: validation error: %.100s", pdkim_errstr(rc));
+  log_write(0, LOG_MAIN, "DKIM: validation error: %.100s%s%s", pdkim_errstr(rc),
+	    errstr ? ": " : "", errstr ? errstr : US"");
   goto out;
   }
 
@@ -449,7 +449,7 @@ switch (what)
 
 
 uschar *
-dkim_exim_sign(int dkim_fd, struct ob_dkim * dkim)
+dkim_exim_sign(int dkim_fd, struct ob_dkim * dkim, const uschar ** errstr)
 {
 const uschar * dkim_domain;
 int sep = 0;
@@ -596,13 +596,15 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     dkim_private_key_expanded = big_buffer;
     }
 
-  ctx = pdkim_init_sign(CS dkim_signing_domain,
+  if (!(ctx = pdkim_init_sign(CS dkim_signing_domain,
 			CS dkim_signing_selector,
 			CS dkim_private_key_expanded,
 			PDKIM_ALGO_RSA_SHA256,
 			dkim->dot_stuffed,
-			&dkim_exim_query_dns_txt
-			);
+			&dkim_exim_query_dns_txt,
+			errstr
+			)))
+    goto bad;
   dkim_private_key_expanded[0] = '\0';
   pdkim_set_optional(ctx,
 		      CS dkim_sign_headers_expanded,
@@ -624,7 +626,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
     goto bad;
     }
 
-  if ((pdkim_rc = pdkim_feed_finish(ctx, &signature)) != PDKIM_OK)
+  if ((pdkim_rc = pdkim_feed_finish(ctx, &signature, errstr)) != PDKIM_OK)
     goto pk_bad;
 
   sigbuf = string_append(sigbuf, &sigsize, &sigptr, 2,

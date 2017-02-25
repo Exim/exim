@@ -529,7 +529,7 @@ static void
 do_file(srv_ctx * srv, FILE * f, int timeout,
   unsigned char * inbuffer, unsigned bsiz, unsigned char * inptr)
 {
-unsigned char outbuffer[10240];
+unsigned char outbuffer[1024 * 20];
 
 while (fgets(CS outbuffer, sizeof(outbuffer), f) != NULL)
   {

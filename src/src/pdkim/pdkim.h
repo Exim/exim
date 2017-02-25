@@ -287,7 +287,7 @@ void	   pdkim_init         (void);
 
 DLLEXPORT
 pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int,
-			      BOOL, int(*)(char *, char *));
+			      BOOL, int(*)(char *, char *), const uschar **);
 
 DLLEXPORT
 pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *), BOOL);
@@ -301,13 +301,13 @@ int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,
 DLLEXPORT
 int        pdkim_feed         (pdkim_ctx *, char *, int);
 DLLEXPORT
-int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **);
+int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **, const uschar **);
 
 DLLEXPORT
 void       pdkim_free_ctx     (pdkim_ctx *);
 
 
-const char *	pdkim_errstr(int);
+const uschar *	pdkim_errstr(int);
 
 #ifdef __cplusplus
 }

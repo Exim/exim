@@ -153,7 +153,7 @@ extern uschar *deliver_get_sender_address (uschar *id);
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
 extern BOOL    dkim_transport_write_message(int, transport_ctx *,
-		  struct ob_dkim *);
+		  struct ob_dkim *, const uschar ** errstr);
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern int     dns_basic_lookup(dns_answer *, const uschar *, int);

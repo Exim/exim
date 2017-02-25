@@ -142,19 +142,19 @@ switch(ext_status)
   }
 }
 
-const char *
+const uschar *
 pdkim_errstr(int status)
 {
 switch(status)
   {
-  case PDKIM_OK:		return "OK";
-  case PDKIM_FAIL:		return "FAIL";
-  case PDKIM_ERR_RSA_PRIVKEY:	return "RSA_PRIVKEY";
-  case PDKIM_ERR_RSA_SIGNING:	return "RSA SIGNING";
-  case PDKIM_ERR_LONG_LINE:	return "RSA_LONG_LINE";
-  case PDKIM_ERR_BUFFER_TOO_SMALL:	return "BUFFER_TOO_SMALL";
-  case PDKIM_SIGN_PRIVKEY_WRAP:	return "PRIVKEY_WRAP";
-  case PDKIM_SIGN_PRIVKEY_B64D:	return "PRIVKEY_B64D";
+  case PDKIM_OK:		return US"OK";
+  case PDKIM_FAIL:		return US"FAIL";
+  case PDKIM_ERR_RSA_PRIVKEY:	return US"RSA_PRIVKEY";
+  case PDKIM_ERR_RSA_SIGNING:	return US"RSA SIGNING";
+  case PDKIM_ERR_LONG_LINE:	return US"RSA_LONG_LINE";
+  case PDKIM_ERR_BUFFER_TOO_SMALL:	return US"BUFFER_TOO_SMALL";
+  case PDKIM_SIGN_PRIVKEY_WRAP:	return US"PRIVKEY_WRAP";
+  case PDKIM_SIGN_PRIVKEY_B64D:	return US"PRIVKEY_B64D";
   default: return "(unknown)";
   }
 }
@@ -1311,11 +1311,11 @@ return hdr;
 /* -------------------------------------------------------------------------- */
 
 static pdkim_pubkey *
-pdkim_key_from_dns(pdkim_ctx * ctx, pdkim_signature * sig, ev_ctx * vctx)
+pdkim_key_from_dns(pdkim_ctx * ctx, pdkim_signature * sig, ev_ctx * vctx,
+  const uschar ** errstr)
 {
 uschar * dns_txt_name, * dns_txt_reply;
 pdkim_pubkey * p;
-const uschar * errstr;
 
 /* Fetch public key for signing domain, from DNS */
 
@@ -1364,9 +1364,9 @@ DEBUG(D_acl) debug_printf(
       "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
 /* Import public key */
-if ((errstr = exim_rsa_verify_init(&p->key, vctx)))
+if ((*errstr = exim_rsa_verify_init(&p->key, vctx)))
   {
-  DEBUG(D_acl) debug_printf("verify_init: %s\n", errstr);
+  DEBUG(D_acl) debug_printf("verify_init: %s\n", *errstr);
   sig->verify_status =      PDKIM_VERIFY_INVALID;
   sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_IMPORT;
   return NULL;
@@ -1379,7 +1379,8 @@ return p;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT int
-pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures)
+pdkim_feed_finish(pdkim_ctx * ctx, pdkim_signature ** return_signatures,
+  const uschar ** err)
 {
 pdkim_signature *sig = ctx->sig;
 
@@ -1560,12 +1561,11 @@ while (sig)
   if (ctx->flags & PDKIM_MODE_SIGN)
     {
     es_ctx sctx;
-    const uschar * errstr;
 
     /* Import private key */
-    if ((errstr = exim_rsa_signing_init(US sig->rsa_privkey, &sctx)))
+    if ((*err = exim_rsa_signing_init(US sig->rsa_privkey, &sctx)))
       {
-      DEBUG(D_acl) debug_printf("signing_init: %s\n", errstr);
+      DEBUG(D_acl) debug_printf("signing_init: %s\n", *err);
       return PDKIM_ERR_RSA_PRIVKEY;
       }
 
@@ -1577,9 +1577,9 @@ while (sig)
     hdata = hhash;
 #endif
 
-    if ((errstr = exim_rsa_sign(&sctx, is_sha1, &hdata, &sig->sighash)))
+    if ((*err = exim_rsa_sign(&sctx, is_sha1, &hdata, &sig->sighash)))
       {
-      DEBUG(D_acl) debug_printf("signing: %s\n", errstr);
+      DEBUG(D_acl) debug_printf("signing: %s\n", *err);
       return PDKIM_ERR_RSA_SIGNING;
       }
 
@@ -1596,7 +1596,6 @@ while (sig)
   else
     {
     ev_ctx vctx;
-    const uschar * errstr;
     pdkim_pubkey * p;
 
     /* Make sure we have all required signature tags */
@@ -1630,13 +1629,13 @@ while (sig)
       goto NEXT_VERIFY;
       }
 
-    if (!(sig->pubkey = pdkim_key_from_dns(ctx, sig, &vctx)))
+    if (!(sig->pubkey = pdkim_key_from_dns(ctx, sig, &vctx, err)))
       goto NEXT_VERIFY;
 
     /* Check the signature */
-    if ((errstr = exim_rsa_verify(&vctx, is_sha1, &hhash, &sig->sighash)))
+    if ((*err = exim_rsa_verify(&vctx, is_sha1, &hhash, &sig->sighash)))
       {
-      DEBUG(D_acl) debug_printf("headers verify: %s\n", errstr);
+      DEBUG(D_acl) debug_printf("headers verify: %s\n", *err);
       sig->verify_status =      PDKIM_VERIFY_FAIL;
       sig->verify_ext_status =  PDKIM_VERIFY_FAIL_MESSAGE;
       goto NEXT_VERIFY;
@@ -1694,7 +1693,8 @@ return ctx;
 
 DLLEXPORT pdkim_ctx *
 pdkim_init_sign(char * domain, char * selector, char * rsa_privkey, int algo,
-  BOOL dot_stuffed, int(*dns_txt_callback)(char *, char *))
+  BOOL dot_stuffed, int(*dns_txt_callback)(char *, char *),
+  const uschar ** errstr)
 {
 pdkim_ctx * ctx;
 pdkim_signature * sig;
@@ -1734,7 +1734,7 @@ DEBUG(D_acl)
   ev_ctx vctx;
 
   debug_printf("PDKIM (checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-  if (!pdkim_key_from_dns(ctx, &s, &vctx))
+  if (!pdkim_key_from_dns(ctx, &s, &vctx, errstr))
     debug_printf("WARNING: bad dkim key in dns\n");
   debug_printf("PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }

@@ -1062,18 +1062,16 @@ Returns:       TRUE on success; FALSE (with errno) for any failure
 
 BOOL
 dkim_transport_write_message(int out_fd, transport_ctx * tctx,
-  struct ob_dkim * dkim)
+  struct ob_dkim * dkim, const uschar ** err)
 {
 int dkim_fd;
 int save_errno = 0;
 BOOL rc;
 uschar * dkim_spool_name;
-int sread = 0;
-int wwritten = 0;
-uschar *dkim_signature = NULL;
-int siglen = 0;
+uschar * dkim_signature = NULL;
+int sread = 0, wwritten = 0, siglen = 0, options;
 off_t k_file_size;
-int options;
+const uschar * errstr;
 
 /* If we can't sign, just call the original function. */
 
@@ -1088,6 +1086,7 @@ if ((dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE)) < 0)
   /* Can't create spool file. Ugh. */
   rc = FALSE;
   save_errno = errno;
+  *err = string_sprintf("dkim spoolfile create: %s", strerror(errno));
   goto CLEANUP;
   }
 
@@ -1109,7 +1108,7 @@ if (!rc)
 /* Rewind file and feed it to the goats^W DKIM lib */
 dkim->dot_stuffed = !!(options & topt_end_dot);
 lseek(dkim_fd, 0, SEEK_SET);
-if ((dkim_signature = dkim_exim_sign(dkim_fd, dkim)))
+if ((dkim_signature = dkim_exim_sign(dkim_fd, dkim, &errstr)))
   siglen = Ustrlen(dkim_signature);
 else if (dkim->dkim_strict)
   {
@@ -1122,6 +1121,7 @@ else if (dkim->dkim_strict)
       save_errno = EACCES;
       log_write(0, LOG_MAIN, "DKIM: message could not be signed,"
 	" and dkim_strict is set. Deferring message delivery.");
+      *err = errstr;
       rc = FALSE;
       goto CLEANUP;
       }

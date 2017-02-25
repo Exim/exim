@@ -2745,7 +2745,8 @@ else
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
-  sx.ok = dkim_transport_write_message(sx.inblock.sock, &tctx, &sx.ob->dkim);
+  sx.ok = dkim_transport_write_message(sx.inblock.sock, &tctx, &sx.ob->dkim,
+	    CUSS &message);
 #else
   sx.ok = transport_write_message(sx.inblock.sock, &tctx, 0);
 #endif
@@ -2762,7 +2763,8 @@ else
   Or, when CHUNKING, it can be a protocol-detected failure. */
 
   if (!sx.ok)
-    goto RESPONSE_FAILED;
+    if (message) goto SEND_FAILED;
+    else         goto RESPONSE_FAILED;
 
   /* We used to send the terminating "." explicitly here, but because of
   buffering effects at both ends of TCP/IP connections, you don't gain
@@ -3027,8 +3029,8 @@ if (!sx.ok)
     {
     save_errno = errno;
     code = '4';
-    message = US string_sprintf("send() to %s [%s] failed: %s",
-      host->name, host->address, strerror(save_errno));
+    message = string_sprintf("send() to %s [%s] failed: %s",
+      host->name, host->address, message ? message : strerror(save_errno));
     sx.send_quit = FALSE;
     goto FAILED;
     }
