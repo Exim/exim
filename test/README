@@ -1030,11 +1030,16 @@ Lines in client scripts are of two kinds:
     line is input to be sent to the server.  Backslash escaping is done as
     described below, but no trailing "\r\n" is sent.
 
-(4) Otherwise, the line is an input line line that is sent to the server. Any
+(4) If a line begin with three '<' characters and a space, the rest of the
+    line is a filename; the content of the file is inserted intto the script
+    at this point.
+
+(5) Otherwise, the line is an input line line that is sent to the server. Any
     occurrences of \r and \n in the line are turned into carriage return and
     linefeed, respectively. This is used for testing PIPELINING.
     Any sequences of \x followed by two hex digits are converted to the equvalent
     byte value.  Any other character following a \ is sent verbatim.
+    The line is sent with a trailing "\r\n".
 
 Here is a simple example:
 
