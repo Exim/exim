@@ -3853,12 +3853,12 @@ foreach $test (@test_list)
     # command was run and waited for, and 3 if a command
     # was run and not waited for (usually a daemon or server startup).
 
+    $0 = "[runtest $testno]";
+
     my($commandname) = '';
     my($expectrc) = 0;
     my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE);
     my($cmdrc) = $?;
-
-    $0 = "[runtest $testno]";
 
     if ($debug) {
       print ">> rc=$rc cmdrc=$cmdrc\n";
