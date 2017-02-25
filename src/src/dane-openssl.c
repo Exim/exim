@@ -667,7 +667,7 @@ for (n = sk_X509_num(in); n > 0; --n, ++depth)
     {
     if (grow_chain(dane, UNTRUSTED, ca))
       {
-      if (!X509_check_issued(ca, ca) == X509_V_OK)
+      if (X509_check_issued(ca, ca) != X509_V_OK)
 	{
 	/* Restart with issuer as subject */
 	cert = ca;
