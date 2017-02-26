@@ -1278,8 +1278,8 @@ if (! -e $sf_current)
       log_failure($log_failed_filename, $testno, $rf);
       log_test($log_summary_filename, $testno, 'F') if ($force_continue);
     }
-    return 1 if /^c$/i;
-    last if (/^s$/);
+    return 1 if /^c$/i && $rf !~ /paniclog/ && $rsf !~ /paniclog/;
+    last if (/^[sc]$/);
     }
 
   foreach $f ($rf, $rsf)
