@@ -109,6 +109,8 @@ HS/02 Bug 1974: Fix missing line terminator on the last received BDAT
 PP/09 Wrote util/chunking_fixqueue_finalnewlines.pl to help recover
       already-broken messages in the queue.
 
+JH/18 Bug 2061: Fix ${extract } corrupting an enclosing ${reduce }  $value.
+
 
 Exim version 4.88
 -----------------
