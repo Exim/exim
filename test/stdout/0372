@@ -33,7 +33,4 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250
 <<< 250 OK id=10HmbA-0005vi-00
 >>> QUIT
->>> ***
->>> killdaemon
->>> no_msglog_check
 End of script
