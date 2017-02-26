@@ -4726,8 +4726,9 @@ while (*s != 0)
       struct sockaddr_un sockun;         /* don't call this "sun" ! */
       uschar *arg;
       uschar *sub_arg[4];
+      BOOL do_shutdown = TRUE;
 
-      if ((expand_forbid & RDO_READSOCK) != 0)
+      if (expand_forbid & RDO_READSOCK)
         {
         expand_string_message = US"socket insertions are not permitted";
         goto EXPAND_FAILED;
@@ -4743,17 +4744,27 @@ while (*s != 0)
         case 3: goto EXPAND_FAILED;
         }
 
-      /* Sort out timeout, if given */
+      /* Sort out timeout, if given.  The second arg is a list with the first element
+      being a time value.  Any more are options of form "name=value".  Currently the
+      only option recognised is "shutdown". */
 
-      if (sub_arg[2] != NULL)
+      if (sub_arg[2])
         {
-        timeout = readconf_readtime(sub_arg[2], 0, FALSE);
-        if (timeout < 0)
+	const uschar * list = sub_arg[2];
+	uschar * item;
+	int sep = 0;
+
+	item = string_nextinlist(&list, &sep, NULL, 0);
+        if ((timeout = readconf_readtime(item, 0, FALSE)) < 0)
           {
-          expand_string_message = string_sprintf("bad time value %s",
-            sub_arg[2]);
+          expand_string_message = string_sprintf("bad time value %s", item);
           goto EXPAND_FAILED;
           }
+
+	while ((item = string_nextinlist(&list, &sep, NULL, 0)))
+	  if (Ustrncmp(item, US"shutdown=", 9) == 0)
+	    if (Ustrcmp(item + 9, US"no") == 0)
+	      do_shutdown = FALSE;
         }
       else sub_arg[3] = NULL;                     /* No eol if no timeout */
 
@@ -4867,9 +4878,9 @@ while (*s != 0)
         recognise that it is their turn to do some work. Just in case some
         system doesn't have this function, make it conditional. */
 
-        #ifdef SHUT_WR
-        shutdown(fd, SHUT_WR);
-        #endif
+#ifdef SHUT_WR
+	if (do_shutdown) shutdown(fd, SHUT_WR);
+#endif
 
 	if (running_in_test_harness) millisleep(100);
 
@@ -4909,7 +4920,7 @@ while (*s != 0)
         while (isspace(*s)) s++;
         }
 
-    readsock_done:
+    READSOCK_DONE:
       if (*s++ != '}')
         {
 	expand_string_message = US"missing '}' closing readsocket";
@@ -4921,7 +4932,7 @@ while (*s != 0)
       socket, or timeout on reading. If another substring follows, expand and
       use it. Otherwise, those conditions give expand errors. */
 
-      SOCK_FAIL:
+    SOCK_FAIL:
       if (*s != '{') goto EXPAND_FAILED;
       DEBUG(D_any) debug_printf("%s\n", expand_string_message);
       if (!(arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE, &resetok)))
@@ -4933,7 +4944,7 @@ while (*s != 0)
 	goto EXPAND_FAILED_CURLY;
 	}
       while (isspace(*s)) s++;
-      goto readsock_done;
+      goto READSOCK_DONE;
       }
 
     /* Handle "run" to execute a program. */

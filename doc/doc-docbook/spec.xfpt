@@ -9767,7 +9767,7 @@ locks out the use of this expansion item in filter files.
 
 
 .vitem "&*${readsocket{*&<&'name'&>&*}{*&<&'request'&>&*}&&&
-        {*&<&'timeout'&>&*}{*&<&'eol&~string'&>&*}{*&<&'fail&~string'&>&*}}*&"
+        {*&<&'options'&>&*}{*&<&'eol&~string'&>&*}{*&<&'fail&~string'&>&*}}*&"
 .cindex "expansion" "inserting from a socket"
 .cindex "socket, use of in expansion"
 .cindex "&%readsocket%& expansion item"
@@ -9797,6 +9797,17 @@ extend what can be done. Firstly, you can vary the timeout. For example:
 .code
 ${readsocket{/socket/name}{request string}{3s}}
 .endd
+.new
+The third argument is a list of options, of which the first element is the timeout
+and must be present if the argument is given.
+Further elements are options of form &'name=value'&.
+One option type is currently recognised, defining whether (the default)
+or not a shutdown is done on the connection after sending the request.
+Example, to not do so (preferred, eg. by some webservers):
+.code
+${readsocket{/socket/name}{request string}{3s:shutdown=no}}
+.endd
+.wen
 A fourth argument allows you to change any newlines that are in the data
 that is read, in the same way as for &%readfile%& (see above). This example
 turns them into spaces:

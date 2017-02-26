@@ -25,6 +25,8 @@
 > 9 >>sock error<<
 > 10 >>ANSWER-10
 <<
+> 11 >>ANSWER-11
+<<
 > 
 
 ******** SERVER ********
@@ -119,5 +121,9 @@ Listening on port 1224 ...
 Connection request from [127.0.0.1]
 QUERY-10
 >LF>ANSWER-10
+>*eof
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+>LF>ANSWER-11
 >*eof
 End of script

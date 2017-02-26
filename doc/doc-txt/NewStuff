@@ -12,6 +12,9 @@ Version 4.90
  1. PKG_CONFIG_PATH can now be set in Local/Makefile;
     wildcards will be expanded, values are collapsed.
 
+ 2. The ${readsocket } expansion now takes an option to not shutdown the
+    connection after sending the query string.  The default remains to do so.
+
 
 Version 4.89
 ------------
