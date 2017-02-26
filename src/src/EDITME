@@ -1099,6 +1099,13 @@ SYSTEM_ALIASES_FILE=/etc/aliases
 # Note that this option adds to the size of the Exim binary, because the
 # dynamic loading library is not otherwise included.
 
+# If libreadline is not in the normal library paths, then because Exim is
+# setuid you'll need to ensure that the correct directory is stamped into
+# the binary so that dlopen will find it.
+# Eg, on macOS/Darwin with a third-party install of libreadline, perhaps:
+
+# EXTRALIBS_EXIM+=-Wl,-rpath,/usr/local/opt/readline/lib
+
 
 #------------------------------------------------------------------------------
 # Uncomment this setting to include IPv6 support.
