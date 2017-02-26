@@ -3854,6 +3854,7 @@ foreach $test (@test_list)
     # was run and not waited for (usually a daemon or server startup).
 
     $0 = "[runtest $testno]";
+    $ENV{EXIM_TEST_NUMBER} = $testno;
 
     my($commandname) = '';
     my($expectrc) = 0;
