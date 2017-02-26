@@ -52,6 +52,8 @@
 > reduce: +abc
 > reduce: 6
 > reduce: 9
+> # Check for extract corrupting reduce's 
+> reduce: a , b
 > 
 > listnamed: *.aa.bb : ^\Nxxx(.*)
 > listnamed: *.aa.bb : ^\Nxxx(.*)

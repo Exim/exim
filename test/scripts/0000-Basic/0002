@@ -63,6 +63,8 @@ reduce: "${reduce{}{+}{$value$item}}"
 reduce: ${reduce{a:b:c}{+}{$value$item}}
 reduce: ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
 reduce: ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
+# Check for extract corrupting reduce's $value
+reduce: ${reduce {b}{a aaa}{${extract{1}{ }{$value}} , $item}}
 
 listnamed: ${listnamed:dlist}
 listnamed: ${listnamed:+dlist}
