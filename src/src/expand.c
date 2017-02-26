@@ -3194,17 +3194,17 @@ items. */
 while (isspace(*s)) s++;
 if (*s == '}')
   {
-  if (!skipping)
-    if (type[0] == 'i')
-      {
-      if (yes) *yieldptr = string_catn(*yieldptr, sizeptr, ptrptr, US"true", 4);
-      }
-    else
-      {
-      if (yes && lookup_value)
-	*yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value);
-      lookup_value = save_lookup;
-      }
+  if (type[0] == 'i')
+    {
+    if (yes && !skipping)
+      *yieldptr = string_catn(*yieldptr, sizeptr, ptrptr, US"true", 4);
+    }
+  else
+    {
+    if (yes && lookup_value && !skipping)
+      *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value);
+    lookup_value = save_lookup;
+    }
   s++;
   goto RETURN;
   }
@@ -5801,11 +5801,12 @@ while (*s != 0)
       processing for real, we perform the iteration. */
 
       if (skipping) continue;
-      while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
+      while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)))
         {
         *outsep = (uschar)sep;      /* Separator as a string */
 
-        DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, iterate_item);
+	DEBUG(D_expand) debug_printf_indent("%s: $item = '%s'  $value = '%s'\n",
+			  name, iterate_item, lookup_value);
 
         if (item_type == EITEM_FILTER)
           {
