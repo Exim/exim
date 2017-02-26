@@ -3030,7 +3030,7 @@ if (!sx.ok)
     save_errno = errno;
     code = '4';
     message = string_sprintf("send() to %s [%s] failed: %s",
-      host->name, host->address, message ? message : strerror(save_errno));
+      host->name, host->address, message ? message : US strerror(save_errno));
     sx.send_quit = FALSE;
     goto FAILED;
     }
