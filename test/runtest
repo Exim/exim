@@ -33,6 +33,9 @@ use Exim::Runtest;
 
 use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ('Smart::Comments' => '####');
 
+use constant TEST_TOP => 8999;
+use constant TEST_SPECIAL_TOP => 9999;
+
 
 # Start by initializing some global variables
 
@@ -69,10 +72,9 @@ my $have_ipv6 = 1;
 my $have_largefiles = 0;
 
 my $test_start = 1;
-my $test_end = $test_top = 8999;
-my $test_special_top = 9999;
+my $test_end = TEST_TOP;
+
 my @test_list = ();
-my @test_dirs = ();
 
 
 # Networks to use for DNS tests. We need to choose some networks that will
@@ -2560,14 +2562,15 @@ while (@ARGV > 0 && $ARGV[0] =~ /^-/)
 
 # Any subsequent arguments are a range of test numbers.
 
-if (@ARGV > 0)
+if (@ARGV)
   {
-  $test_end = $test_start = $ARGV[0];
-  $test_end = $ARGV[1] if (@ARGV > 1);
-  $test_end = ($test_start >= 9000)? $test_special_top : $test_top
-    if $test_end eq "+";
+  $test_end = $test_start = shift;
+  $test_end = shift if @ARGV;
+  $test_end = ($test_start >= 9000)? TEST_SPECIAL_TOP : TEST_TOP
+    if $test_end eq '+';
   die "** Test numbers out of order\n" if ($test_end < $test_start);
   }
+my @test_range = $test_start..$test_end;
 
 
 ##################################################
@@ -3372,6 +3375,8 @@ else
   print " OK\n";
   }
 
+tests_exit(-1, "Failed to unlink $log_summary_filename: $!")
+  if not unlink($log_summary_filename) and -e $log_summary_filename;
 
 ##################################################
 #        Create a list of available tests        #
@@ -3391,27 +3396,13 @@ print "Omitting \${dlfunc expansion tests (loadable module not present)\n"
 print "Omitting dbm tests (unable to copy exim_dbmbuild)\n"
   if $dbm_build_deleted;
 
-opendir(DIR, "scripts") || tests_exit(-1, "Failed to opendir(\"scripts\"): $!");
-@test_dirs = sort readdir(DIR);
-closedir(DIR);
 
-# Remove . and .. and CVS from the list.
-
-for ($i = 0; $i < @test_dirs; $i++)
-  {
-  my($d) = $test_dirs[$i];
-  if ($d eq "." || $d eq ".." || $d eq "CVS")
-    {
-    splice @test_dirs, $i, 1;
-    $i--;
-    }
-  }
+my @test_dirs = grep { not /^CVS$/ } map { basename $_ } glob 'scripts/*'
+  or die tests_exit(-1, "Failed to find test scripts in 'scripts/*`: $!");
 
 # Scan for relevant tests
 
-tests_exit(-1, "Failed to unlink $log_summary_filename")
-  if (-e $log_summary_filename && !unlink($log_summary_filename));
-for ($i = 0; $i < @test_dirs; $i++)
+DIR: for ($i = 0; $i < @test_dirs; $i++)
   {
   my($testdir) = $test_dirs[$i];
   my($wantthis) = 1;
@@ -3421,19 +3412,19 @@ for ($i = 0; $i < @test_dirs; $i++)
   # Skip this directory if the first test is equal or greater than the first
   # test in the next directory.
 
-  next if ($i < @test_dirs - 1) &&
+  next DIR if ($i < @test_dirs - 1) &&
           ($test_start >= substr($test_dirs[$i+1], 0, 4));
 
   # No need to carry on if the end test is less than the first test in this
   # subdirectory.
 
-  last if $test_end < substr($testdir, 0, 4);
+  last DIR if $test_end < substr($testdir, 0, 4);
 
   # Check requirements, if any.
 
-  if (open(REQUIRES, "scripts/$testdir/REQUIRES"))
+  if (open(my $requires, "scripts/$testdir/REQUIRES"))
     {
-    while (<REQUIRES>)
+    while (<$requires>)
       {
       next if /^\s*$/;
       s/\s+$//;
@@ -3466,7 +3457,6 @@ for ($i = 0; $i < @test_dirs; $i++)
         tests_exit(-1, "Unknown line in \"scripts/$testdir/REQUIRES\": \"$_\"");
         }
       }
-    close(REQUIRES);
     }
   else
     {
@@ -3485,10 +3475,9 @@ for ($i = 0; $i < @test_dirs; $i++)
   # We want the tests from this subdirectory, provided they are in the
   # range that was selected.
 
-  opendir(SUBDIR, "scripts/$testdir") ||
-    tests_exit(-1, "Failed to opendir(\"scripts/$testdir\"): $!");
-  @testlist = sort readdir(SUBDIR);
-  close(SUBDIR);
+  @testlist = map { basename $_ } glob "scripts/$testdir/*";
+  tests_exit(-1, "Failed to read test scripts from `scripts/$testdir/*': $!")
+    if not @testlist;
 
   foreach $test (@testlist)
     {
@@ -3674,27 +3663,31 @@ closedir(DIR);
 if (not $force_continue) {
   # runtest needs to interact if we're not in continue
   # mode. It does so by communicate to /dev/tty
-  open(T, "/dev/tty") or tests_exit(-1, "Failed to open /dev/tty: $!");
+  open(T, '<', '/dev/tty') or tests_exit(-1, "Failed to open /dev/tty: $!");
+  print "\nPress RETURN to run the tests: ";
+  <T>;
 }
 
 
-print "\nPress RETURN to run the tests: ";
-$_ = $force_continue ? "c" : <T>;
-print "\n";
-
-$lasttestdir = '';
-
 foreach $test (@test_list)
   {
-  local($lineno) = 0;
-  local($commandno) = 0;
-  local($subtestno) = 0;
-  (local $testno = $test) =~ s|.*/||;
-  local($sortlog) = 0;
+  state $lasttestdir = '';
 
-  my($gnutls) = 0;
-  my($docheck) = 1;
-  my($thistestdir) = substr($test, 0, -5);
+  local $lineno     = 0;
+  local $commandno  = 0;
+  local $subtestno  = 0;
+  local $sortlog    = 0;
+
+  (local $testno = $test) =~ s|.*/||;
+
+  # Leaving traces in the process table and in the environment
+  # gives us a chance to identify hanging processes (exim daemons)
+  local $0 = "[runtest $testno]";
+  local $ENV{EXIM_TEST_NUMBER} = $testno;
+
+  my $gnutls   = 0;
+  my $docheck  = 1;
+  my $thistestdir  = substr($test, 0, -5);
 
   $dynamic_socket->close() if $dynamic_socket;
 
@@ -3703,20 +3696,19 @@ foreach $test (@test_list)
     $gnutls = 0;
     if (-s "scripts/$thistestdir/REQUIRES")
       {
-      my($indent) = '';
+      my $indent = '';
       print "\n>>> The following tests require: ";
-      open(IN, "scripts/$thistestdir/REQUIRES") ||
-        tests_exit(-1, "Failed to open scripts/$thistestdir/REQUIRES: $1");
-      while (<IN>)
+      open(my $requires, '<', "scripts/$thistestdir/REQUIRES") ||
+        tests_exit(-1, "Failed to open scripts/$thistestdir/REQUIRES: $!");
+      while (<$requires>)
         {
         $gnutls = 1 if /^support GnuTLS/;
         print $indent, $_;
         $indent = ">>>                              ";
         }
-      close(IN);
       }
+      $lasttestdir = $thistestdir;
     }
-  $lasttestdir = $thistestdir;
 
   # Remove any debris in the spool directory and the test-mail directory
   # and also the files for collecting stdout and stderr. Then put back
@@ -3852,9 +3844,6 @@ foreach $test (@test_list)
     # 1 if a non-exim command was run and waited for, 2 if an exim
     # command was run and waited for, and 3 if a command
     # was run and not waited for (usually a daemon or server startup).
-
-    $0 = "[runtest $testno]";
-    $ENV{EXIM_TEST_NUMBER} = $testno;
 
     my($commandname) = '';
     my($expectrc) = 0;
@@ -4020,7 +4009,7 @@ foreach $test (@test_list)
 #         Exit from the test script              #
 ##################################################
 
-tests_exit(-1, "No runnable tests selected") if @test_list == 0;
+tests_exit(-1, "No runnable tests selected") if not @test_list;
 tests_exit(0);
 
 # End of runtest script
