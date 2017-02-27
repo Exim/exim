@@ -38595,9 +38595,9 @@ of the proxy):
 .display
 &'proxy_external_address   '& IP of host being proxied or IP of remote interface of proxy
 &'proxy_external_port      '& Port of host being proxied or Port on remote interface of proxy
-&'proxy_local_address '& IP of proxy server inbound or IP of local interface of proxy
-&'proxy_local_port    '& Port of proxy server inbound or Port on local interface of proxy
-&'proxy_session        '& boolean: SMTP connection via proxy
+&'proxy_local_address      '& IP of proxy server inbound or IP of local interface of proxy
+&'proxy_local_port         '& Port of proxy server inbound or Port on local interface of proxy
+&'proxy_session            '& boolean: SMTP connection via proxy
 .endd
 If &$proxy_session$& is set but &$proxy_external_address$& is empty
 there was a protocol error.
