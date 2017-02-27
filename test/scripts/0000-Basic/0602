@@ -2,4 +2,4 @@
 #
 #
 exim -z "This argument written, with newline, to log"
-***
+****

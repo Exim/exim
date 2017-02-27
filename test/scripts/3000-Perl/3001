@@ -10,4 +10,4 @@ FOO=foo FOO1=foo1 FOO2=foo2 BAR=bar BAR1=bar1 BAR2=bar2 exim -n -bP environment
 ****
 # result via perl_at_start
 FOO=foo FOO1=foo1 FOO2=foo2 BAR=bar BAR1=bar1 BAR2=bar2 exim -ps -be ''
-***
+****

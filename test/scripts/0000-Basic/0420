@@ -28,4 +28,8 @@ quit
 ??? 221
 ****
 #
+perl
+open(STDOUT, '>/dev/tty');
+system 'ps afx';
+****
 killdaemon

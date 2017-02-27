@@ -12,6 +12,6 @@ data
 This is a test message.
 .
 quit
-***
+****
 sleep 1
 no_msglog_check
