@@ -18,7 +18,7 @@ data
 quit
 ****
 #
-exim -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -bd -odq -oX PORT_D
 ****
 client 127.0.0.1 PORT_D
 ??? 220
