@@ -625,7 +625,7 @@ typedef struct address_item {
                                   /* (may need to hold a timestamp) */
 
   short int basic_errno;          /* status after failure */
-  short int child_count;          /* number of child addresses */
+  unsigned short child_count;     /* number of child addresses */
   short int return_file;          /* fileno of return data file */
   short int special_action;       /* ( used when when deferred or failed */
                                   /* (  also  */

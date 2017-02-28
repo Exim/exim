@@ -671,7 +671,7 @@ address_item *aa;
 while (addr->parent)
   {
   addr = addr->parent;
-  if ((addr->child_count -= 1) > 0) return;   /* Incomplete parent */
+  if (--addr->child_count > 0) return;   /* Incomplete parent */
   address_done(addr, now);
 
   /* Log the completion of all descendents only when there is no ancestor with
@@ -2975,13 +2975,13 @@ while (addr_local)
 	addr3 = store_get(sizeof(address_item));
 	*addr3 = *addr2;
 	addr3->next = NULL;
-	addr3->shadow_message = (uschar *) &(addr2->shadow_message);
+	addr3->shadow_message = US &addr2->shadow_message;
 	addr3->transport = stp;
 	addr3->transport_return = DEFER;
 	addr3->return_filename = NULL;
 	addr3->return_file = -1;
 	*last = addr3;
-	last = &(addr3->next);
+	last = &addr3->next;
 	}
 
     /* If we found any addresses to shadow, run the delivery, and stick any
@@ -5031,6 +5031,7 @@ if (percent_hack_domains)
     address_item *new_parent = store_get(sizeof(address_item));
     *new_parent = *addr;
     addr->parent = new_parent;
+    new_parent->child_count = 1;
     addr->address = new_address;
     addr->unique = string_copy(new_address);
     addr->domain = deliver_domain;
@@ -5901,9 +5902,9 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
 
     while (p)
       {
-      if (parent->child_count == SHRT_MAX)
+      if (parent->child_count == USHRT_MAX)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "system filter generated more "
-          "than %d delivery addresses", SHRT_MAX);
+          "than %d delivery addresses", USHRT_MAX);
       parent->child_count++;
       p->parent = parent;
 
@@ -7141,10 +7142,9 @@ for (addr_dsntmp = addr_succeed; addr_dsntmp; addr_dsntmp = addr_dsntmp->next)
      )
     {
     /* copy and relink address_item and send report with all of them at once later */
-    address_item *addr_next;
-    addr_next = addr_senddsn;
+    address_item * addr_next = addr_senddsn;
     addr_senddsn = store_get(sizeof(address_item));
-    memcpy(addr_senddsn, addr_dsntmp, sizeof(address_item));
+    *addr_senddsn = *addr_dsntmp;
     addr_senddsn->next = addr_next;
     }
   else

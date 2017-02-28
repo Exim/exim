@@ -335,9 +335,9 @@ while (generated)
   next->parent = addr;
   orflag(next, addr, af_ignore_error);
   next->start_router = rblock->redirect_router;
-  if (addr->child_count == SHRT_MAX)
+  if (addr->child_count == USHRT_MAX)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
-      "child addresses for <%s>", rblock->name, SHRT_MAX, addr->address);
+      "child addresses for <%s>", rblock->name, USHRT_MAX, addr->address);
   addr->child_count++;
 
   next->next = *addr_new;
