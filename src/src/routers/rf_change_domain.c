@@ -57,6 +57,7 @@ addr->prop = parent->prop;
 addr->address = address;
 addr->unique = string_copy(address);
 addr->parent = parent;
+parent->child_count = 1;
 
 addr->next = *addr_new;
 *addr_new = addr;
