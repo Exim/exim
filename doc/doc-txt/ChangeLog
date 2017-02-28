@@ -111,6 +111,8 @@ PP/09 Wrote util/chunking_fixqueue_finalnewlines.pl to help recover
 
 JH/18 Bug 2061: Fix ${extract } corrupting an enclosing ${reduce }  $value.
 
+JH/19 Fix reference counting bug in routing-generated-address tracking.
+
 
 Exim version 4.88
 -----------------
