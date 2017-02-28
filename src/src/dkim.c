@@ -571,7 +571,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 
   if (dkim_private_key_expanded[0] == '/')
     {
-    int privkey_fd = 0;
+    int privkey_fd, off = 0, len;
 
     /* Looks like a filename, load the private key. */
 
@@ -585,14 +585,21 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
       goto bad;
       }
 
-    if (read(privkey_fd, big_buffer, big_buffer_size - 2) < 0)
+    do
       {
-      log_write(0, LOG_MAIN|LOG_PANIC, "unable to read private key file: %s",
-		 dkim_private_key_expanded);
-      goto bad;
+      if ((len = read(privkey_fd, big_buffer + off, big_buffer_size - 2 - off)) < 0)
+	{
+	(void) close(privkey_fd);
+	log_write(0, LOG_MAIN|LOG_PANIC, "unable to read private key file: %s",
+		   dkim_private_key_expanded);
+	goto bad;
+	}
+      off += len;
       }
+    while (len > 0);
 
     (void) close(privkey_fd);
+    big_buffer[off] = '\0';
     dkim_private_key_expanded = big_buffer;
     }
 

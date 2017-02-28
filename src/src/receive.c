@@ -938,8 +938,11 @@ for(;;)
       that would need to be duplicated here.  So we simply do some ungetc
       trickery.
       */
-      fseek(fout, -1, SEEK_CUR);
-      if (fgetc(fout) == '\n') return END_DOT;
+      if (fout)
+	{
+	if (fseek(fout, -1, SEEK_CUR) < 0)	return END_PROTOCOL;
+	if (fgetc(fout) == '\n')		return END_DOT;
+	}
 
       if (linelength == -1)    /* \r already seen (see below) */
         {
@@ -987,7 +990,7 @@ for(;;)
       else
 	{
 	message_size++;
-	if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
+	if (fout && fputc('\n', fout) == EOF) return END_WERROR;
 	(void) cutthrough_put_nl();
 	if (ch == '\r') continue;	/* don't write CR */
 	ch_state = MID_LINE;
