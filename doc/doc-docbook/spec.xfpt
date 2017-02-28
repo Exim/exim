@@ -6737,8 +6737,8 @@ PostgreSQL database. See section &<<SECTsql>>&.
 .next
 .cindex "Redis lookup type"
 .cindex lookup Redis
-&(redis)&: The format of the query is an SQL statement that is passed to a
-Redis database. See section &<<SECTsql>>&.
+&(redis)&: The format of the query is either a simple get or simple set,
+passed to a Redis database. See section &<<SECTsql>>&.
 
 .next
 .cindex "sqlite lookup type"
@@ -7811,6 +7811,19 @@ are rejected after a timeout period, during which the SQLite library
 waits for the lock to be released. In Exim, the default timeout is set
 to 5 seconds, but it can be changed by means of the &%sqlite_lock_timeout%&
 option.
+
+.new
+.section "More about Redis" "SECTredis"
+.cindex "lookup" "Redis"
+.cindex "redis lookup type"
+Redis is a non-SQL database. Commands are simple get and set.
+Examples:
+.code
+${lookup redis{set keyname ${quote_redis:objvalue plus}}}
+${lookup redis{get keyname}}
+.endd
+.wen
+
 .ecindex IIDfidalo1
 .ecindex IIDfidalo2
 
