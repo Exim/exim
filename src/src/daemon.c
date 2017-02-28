@@ -570,6 +570,7 @@ if (pid == 0)
     deliver_host_address = deliver_host =
     deliver_domain_orig = deliver_localpart_orig = NULL;
     dnslist_domain = dnslist_matched = NULL;
+    callout_address = NULL;
 #ifndef DISABLE_DKIM
     dkim_cur_signer = NULL;
 #endif
