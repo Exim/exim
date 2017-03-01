@@ -16,9 +16,9 @@
 ###############################################################################
 
 #use strict;
-use 5.010;
-use feature 'state';	# included in 5.010
+use v5.10.1;
 use warnings;
+use if $^V >= v5.19.11, experimental => 'smartmatch';
 
 use Errno;
 use FileHandle;
@@ -32,8 +32,10 @@ use FindBin qw'$RealBin';
 
 use lib "$RealBin/lib";
 use Exim::Runtest;
+use Exim::Utils qw(uniq numerically);
 
-use if $ENV{DEBUG} && $ENV{DEBUG} =~ /\bruntest\b/ => ('Smart::Comments' => '####');
+use if $ENV{DEBUG} && scalar($ENV{DEBUG} =~ /\bruntest\b/) => 'Smart::Comments' => '####';
+use if $ENV{DEBUG} && scalar($ENV{DEBUG} =~ /\bruntest\b/) => 'Data::Dumper';
 
 use constant TEST_TOP => 8999;
 use constant TEST_SPECIAL_TOP => 9999;
@@ -72,9 +74,6 @@ my $valgrind = 0;
 my $have_ipv4 = 1;
 my $have_ipv6 = 1;
 my $have_largefiles = 0;
-
-my $test_start = 1;
-my $test_end = TEST_TOP;
 
 my @test_list = ();
 
@@ -2521,6 +2520,7 @@ $more = 'more' if system('which less >/dev/null 2>&1') != 0;
 # options are passed on to Exim calls within the tests. Typically, this is used
 # to turn on Exim debugging while setting up a test.
 
+Getopt::Long::Configure qw(no_getopt_compat);
 GetOptions(
     'debug'    => sub { $debug          = 1; $cr   = "\n" },
     'diff'     => sub { $cf             = 'diff -u' },
@@ -2531,7 +2531,9 @@ GetOptions(
     'keep'     => \$save_output,
     'slow'     => \$slow,
     'valgrind' => \$valgrind,
-    'flavor|flavour=s' => \$flavour,
+    'range=i{2}'       => \my @range_wanted,
+    'test=i@'          => \my @tests_wanted,
+    'flavor|flavour=s' => $flavour,
     'help'             => sub { pod2usage(-exit => 0) },
     'man'              => sub {
         pod2usage(
@@ -2545,16 +2547,15 @@ GetOptions(
 ($parm_exim, @ARGV) = Exim::Runtest::exim_binary(@ARGV);
 print "Exim binary is `$parm_exim'\n" if defined $parm_exim;
 
-# Any subsequent arguments are a range of test numbers.
 
-if (@ARGV)
-  {
-  $test_end = $test_start = shift;
-  $test_end = shift if @ARGV;
-  $test_end = ($test_start >= 9000)? TEST_SPECIAL_TOP : TEST_TOP
-    if $test_end eq '+';
-  die "** Test numbers out of order\n" if ($test_end < $test_start);
-  }
+my @wanted = sort numerically uniq
+  @tests_wanted ? @tests_wanted : (),
+  @range_wanted ? $range_wanted[0] .. $range_wanted[1] : (),
+  @ARGV ? @ARGV == 1 ? $ARGV[0] :
+          $ARGV[1] eq '+' ? $ARGV[0]..($ARGV[0] >= 9000 ? TEST_SPECIAL_TOP : TEST_TOP) :
+          0+$ARGV[0]..0+$ARGV[1]    # add 0 to cope with test numbers starting with zero
+        : ();
+@wanted = 1..TEST_TOP if not @wanted;
 
 ##################################################
 #        Check for sudo access to root           #
@@ -2597,7 +2598,7 @@ $parm_cwd = Cwd::getcwd();
 
 # If $parm_exim is still empty, ask the caller
 
-if ($parm_exim eq '')
+if (not $parm_exim)
   {
   print "** Did not find an Exim binary to test\n";
   for ($i = 0; $i < 5; $i++)
@@ -3390,7 +3391,9 @@ tests_exit(-1, "Failed to unlink $log_summary_filename: $!")
 # because the current binary does not support the right facilities, and also
 # those that are outside the numerical range selected.
 
-print "\nTest range is $test_start to $test_end (flavour $flavour)\n";
+printf "\nWill run %d tests between %d and %d for flavour %s\n",
+  scalar(@wanted), $wanted[0], $wanted[-1], $flavour;
+
 print "Omitting \${dlfunc expansion tests (loadable module not present)\n"
   if $dlfunc_deleted;
 print "Omitting dbm tests (unable to copy exim_dbmbuild)\n"
@@ -3401,8 +3404,8 @@ my @test_dirs = grep { not /^CVS$/ } map { basename $_ } glob 'scripts/*'
   or die tests_exit(-1, "Failed to find test scripts in 'scripts/*`: $!");
 
 # Scan for relevant tests
-
-DIR: for ($i = 0; $i < @test_dirs; $i++)
+# HS12: Needs to be reworked.
+DIR: for (my $i = 0; $i < @test_dirs; $i++)
   {
   my($testdir) = $test_dirs[$i];
   my($wantthis) = 1;
@@ -3413,12 +3416,12 @@ DIR: for ($i = 0; $i < @test_dirs; $i++)
   # test in the next directory.
 
   next DIR if ($i < @test_dirs - 1) &&
-          ($test_start >= substr($test_dirs[$i+1], 0, 4));
+          ($wanted[0] >= substr($test_dirs[$i+1], 0, 4));
 
   # No need to carry on if the end test is less than the first test in this
   # subdirectory.
 
-  last DIR if $test_end < substr($testdir, 0, 4);
+  last DIR if $wanted[-1] < substr($testdir, 0, 4);
 
   # Check requirements, if any.
 
@@ -3475,14 +3478,13 @@ DIR: for ($i = 0; $i < @test_dirs; $i++)
   # We want the tests from this subdirectory, provided they are in the
   # range that was selected.
 
-  @testlist = map { basename $_ } glob "scripts/$testdir/*";
+  @testlist = grep { $_ ~~ @wanted } grep { /^\d+(?:\.\d+)?$/ } map { basename $_ } glob "scripts/$testdir/*";
   tests_exit(-1, "Failed to read test scripts from `scripts/$testdir/*': $!")
     if not @testlist;
 
   foreach $test (@testlist)
     {
-    next if ($test !~ /^\d{4}(?:\.\d+)?$/);
-    if (!$wantthis || $test < $test_start || $test > $test_end)
+    if (!$wantthis)
       {
       log_test($log_summary_filename, $test, '.');
       }
@@ -3493,7 +3495,7 @@ DIR: for ($i = 0; $i < @test_dirs; $i++)
     }
   }
 
-print ">>Test List: @test_list\n", if $debug;
+print ">>Test List:\n", join "\n", @test_list, '' if $debug;
 
 
 ##################################################
@@ -4020,7 +4022,7 @@ __END__
 
 =head1 SYNOPSIS
 
- runtest [options] [test0 [test1]]
+ runtest [exim-path] [options] [test0 [test1]]
 
 =head1 DESCRIPTION
 
@@ -4032,6 +4034,10 @@ For legacy reasons the options are not case sensitive.
 
 =over
 
+=item B<--continue>
+
+Do not stop for user interaction or on errors. (default: off)
+
 =item B<--debug>
 
 This option enables the output of debug information when running the
@@ -4040,15 +4046,12 @@ various test commands. (default: off)
 =item B<--diff>
 
 Use C<diff -u> for comparing the expected output with the produced
-output. (default: use a built-in comparation routine)
+output. (default: use a built-in routine)
 
-=item B<--continue>
+=item B<--flavor>|B<--flavour> I<flavour>
 
-Do not stop for user interaction or on errors. (default: off)
-
-=item B<--update>
-
-Automatically update the recorded (expected) data on mismatch. (default: off)
+Override the expected results for results for a specific (OS) flavour.
+(default: unused)
 
 =item B<--[no]ipv4>
 
@@ -4062,18 +4065,25 @@ Skip IPv6 related setup and tests (default: use ipv6)
 
 Keep the various output files produced during a test run. (default: don't keep)
 
+=item B<--range> I<n0> I<n1>
+
+Run tests between (including) I<n0> and I<n1>.
+
 =item B<--slow>
 
-Insert some delays to compensate for a slow system. (default: off)
+Insert some delays to compensate for a slow host system. (default: off)
+
+=item B<--test> I<n>
+
+Run the specified test. This option may used multiple times.
+
+=item B<--update>
+
+Automatically update the recorded (expected) data on mismatch. (default: off)
 
 =item B<--valgrind>
 
 Start Exim wrapped by I<valgrind>. (default: don't use valgrind)
-
-=item B<--flavor>|B<--flavour> I<flavour>
-
-Override the expected results for results for a specific (OS) flavour.
-(default: unused)
 
 =back
 
