@@ -26,6 +26,8 @@ use Socket;
 use Time::Local;
 use Cwd;
 use File::Basename;
+use Pod::Usage;
+use Getopt::Long;
 use FindBin qw'$RealBin';
 
 use lib "$RealBin/lib";
@@ -2503,6 +2505,58 @@ $more = 'more' if system('which less >/dev/null 2>&1') != 0;
 
 
 ##################################################
+#      See if an Exim binary has been given      #
+##################################################
+
+# If the first character of the first argument is '/', the argument is taken
+# as the path to the binary. If the first argument does not start with a
+# '/' but exists in the file system, it's assumed to be the Exim binary.
+
+
+##################################################
+# Sort out options and which tests are to be run #
+##################################################
+
+# There are a few possible options for the test script itself; after these, any
+# options are passed on to Exim calls within the tests. Typically, this is used
+# to turn on Exim debugging while setting up a test.
+
+GetOptions(
+    'debug'    => sub { $debug          = 1; $cr   = "\n" },
+    'diff'     => sub { $cf             = 'diff -u' },
+    'continue' => sub { $force_continue = 1; $more = 'cat' },
+    'update'   => \$force_update,
+    'ipv4!'    => \$have_ipv4,
+    'ipv6!'    => \$have_ipv6,
+    'keep'     => \$save_output,
+    'slow'     => \$slow,
+    'valgrind' => \$valgrind,
+    'flavor|flavour=s' => \$flavour,
+    'help'             => sub { pod2usage(-exit => 0) },
+    'man'              => sub {
+        pod2usage(
+            -exit      => 0,
+            -verbose   => 2,
+            -noperldoc => system('perldoc -V 2>/dev/null 1>&2')
+        );
+    },
+) or pod2usage;
+
+($parm_exim, @ARGV) = Exim::Runtest::exim_binary(@ARGV);
+print "Exim binary is `$parm_exim'\n" if defined $parm_exim;
+
+# Any subsequent arguments are a range of test numbers.
+
+if (@ARGV)
+  {
+  $test_end = $test_start = shift;
+  $test_end = shift if @ARGV;
+  $test_end = ($test_start >= 9000)? TEST_SPECIAL_TOP : TEST_TOP
+    if $test_end eq '+';
+  die "** Test numbers out of order\n" if ($test_end < $test_start);
+  }
+
+##################################################
 #        Check for sudo access to root           #
 ##################################################
 
@@ -2517,60 +2571,6 @@ else
   }
 
 
-
-##################################################
-#      See if an Exim binary has been given      #
-##################################################
-
-# If the first character of the first argument is '/', the argument is taken
-# as the path to the binary. If the first argument does not start with a
-# '/' but exists in the file system, it's assumed to be the Exim binary.
-
-($parm_exim, @ARGV) = Exim::Runtest::exim_binary(@ARGV);
-print "Exim binary is $parm_exim\n" if $parm_exim ne '';
-
-
-
-##################################################
-# Sort out options and which tests are to be run #
-##################################################
-
-# There are a few possible options for the test script itself; after these, any
-# options are passed on to Exim calls within the tests. Typically, this is used
-# to turn on Exim debugging while setting up a test.
-
-while (@ARGV > 0 && $ARGV[0] =~ /^-/)
-  {
-  my($arg) = shift @ARGV;
-  if ($optargs eq '')
-    {
-    if ($arg eq "-DEBUG")  { $debug = 1; $cr = "\n"; next; }
-    if ($arg eq "-DIFF")   { $cf = "diff -u"; next; }
-    if ($arg eq "-CONTINUE"){$force_continue = 1;
-                             $more = "cat";
-                             next; }
-    if ($arg eq "-UPDATE") { $force_update = 1; next; }
-    if ($arg eq "-NOIPV4") { $have_ipv4 = 0; next; }
-    if ($arg eq "-NOIPV6") { $have_ipv6 = 0; next; }
-    if ($arg eq "-KEEP")   { $save_output = 1; next; }
-    if ($arg eq "-SLOW")   { $slow = 1; next; }
-    if ($arg eq "-VALGRIND")   { $valgrind = 1; next; }
-    if ($arg =~ /^-FLAVOU?R$/) { $flavour = shift; next; }
-    }
-  $optargs .= " $arg";
-  }
-
-# Any subsequent arguments are a range of test numbers.
-
-if (@ARGV)
-  {
-  $test_end = $test_start = shift;
-  $test_end = shift if @ARGV;
-  $test_end = ($test_start >= 9000)? TEST_SPECIAL_TOP : TEST_TOP
-    if $test_end eq '+';
-  die "** Test numbers out of order\n" if ($test_end < $test_start);
-  }
-my @test_range = $test_start..$test_end;
 
 
 ##################################################
@@ -4011,5 +4011,73 @@ foreach $test (@test_list)
 
 tests_exit(-1, "No runnable tests selected") if not @test_list;
 tests_exit(0);
+
+__END__
+
+=head1 NAME
+
+ runtest - run the exim testsuite
+
+=head1 SYNOPSIS
+
+ runtest [options] [test0 [test1]]
+
+=head1 DESCRIPTION
+
+B<runtest> runs the Exim testsuite.
+
+=head1 OPTIONS
+
+For legacy reasons the options are not case sensitive.
+
+=over
+
+=item B<--debug>
+
+This option enables the output of debug information when running the
+various test commands. (default: off)
+
+=item B<--diff>
+
+Use C<diff -u> for comparing the expected output with the produced
+output. (default: use a built-in comparation routine)
+
+=item B<--continue>
+
+Do not stop for user interaction or on errors. (default: off)
+
+=item B<--update>
+
+Automatically update the recorded (expected) data on mismatch. (default: off)
+
+=item B<--[no]ipv4>
+
+Skip IPv4 related setup and tests (default: use ipv4)
+
+=item B<--[no]ipv6>
+
+Skip IPv6 related setup and tests (default: use ipv6)
+
+=item B<--keep>
+
+Keep the various output files produced during a test run. (default: don't keep)
+
+=item B<--slow>
+
+Insert some delays to compensate for a slow system. (default: off)
+
+=item B<--valgrind>
+
+Start Exim wrapped by I<valgrind>. (default: don't use valgrind)
+
+=item B<--flavor>|B<--flavour> I<flavour>
+
+Override the expected results for results for a specific (OS) flavour.
+(default: unused)
+
+=back
+
+=cut
+
 
 # End of runtest script
