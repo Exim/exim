@@ -36,7 +36,9 @@ Extract the current source of OpenSSL.  Change into that directory.
 This assumes that `/opt/openssl` is not in use.  If it is, pick
 something else.  `/opt/exim/openssl` perhaps.
 
-    ./config --prefix=/opt/openssl --openssldir=/etc/ssl enable-ssl-trace
+    ./config --prefix=/opt/openssl --openssldir=/etc/ssl  \
+        -L/opt/openssl/lib -Wl,-R/opt/openssl/lib         \
+        enable-ssl-trace
     make
     make install
 
@@ -61,6 +63,9 @@ OpenSSL install, and build Exim:
     make
     sudo make install
 
+(From Exim 4.89, you can put that `PKG_CONFIG_PATH` directly into
+ your `Local/Makefile` file.)
+
 
 Confirming
 ----------
@@ -84,6 +89,11 @@ If the `chrpath` package is installed, then:
     chrpath -l $(which exim)
 
 will show the DT_RPATH stamped into the binary.
+
+Your `binutils` package should come with `readelf`, so an alternative
+is to run:
+
+    readelf -d $(which exim) | grep RPATH
 
 
 Very Advanced
