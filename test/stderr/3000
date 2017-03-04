@@ -2,45 +2,45 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
- /considering: ${perl{foo}{arg1}}
-  /considering: foo}{arg1}}
-  |__expanding: foo
-  \_____result: foo
-  /considering: arg1}}
-  |__expanding: arg1
-  \_____result: arg1
+ ┌considering: ${perl{foo}{arg1}}
+  ┌considering: foo}{arg1}}
+  ├──expanding: foo
+  └─────result: foo
+  ┌considering: arg1}}
+  ├──expanding: arg1
+  └─────result: arg1
 Starting Perl interpreter
- |__expanding: ${perl{foo}{arg1}}
- \_____result: Subroutine foo called with args: arg1
- /considering: ${perl{foo_undef}}
-  /considering: foo_undef}}
-  |__expanding: foo_undef
-  \_____result: foo_undef
- |failed to expand: ${perl{foo_undef}}
- |___error message: Perl subroutine "foo_undef" returned undef to force failure
- \failure was forced
- /considering: ${perl{debug_write}{debug from Perl\n}}
-  /considering: debug_write}{debug from Perl\n}}
-  |__expanding: debug_write
-  \_____result: debug_write
-  /considering: debug from Perl\n}}
-  |__expanding: debug from Perl\n
-  \_____result: debug from Perl
+ ├──expanding: ${perl{foo}{arg1}}
+ └─────result: Subroutine foo called with args: arg1
+ ┌considering: ${perl{foo_undef}}
+  ┌considering: foo_undef}}
+  ├──expanding: foo_undef
+  └─────result: foo_undef
+ ├failed to expand: ${perl{foo_undef}}
+ ├───error message: Perl subroutine "foo_undef" returned undef to force failure
+ └failure was forced
+ ┌considering: ${perl{debug_write}{debug from Perl\n}}
+  ┌considering: debug_write}{debug from Perl\n}}
+  ├──expanding: debug_write
+  └─────result: debug_write
+  ┌considering: debug from Perl\n}}
+  ├──expanding: debug from Perl\n
+  └─────result: debug from Perl
 
 debug from Perl
- |__expanding: ${perl{debug_write}{debug from Perl\n}}
- \_____result: Wrote debug
- /considering: ${perl{log_write}{log from Perl}}
-  /considering: log_write}{log from Perl}}
-  |__expanding: log_write
-  \_____result: log_write
-  /considering: log from Perl}}
-  |__expanding: log from Perl
-  \_____result: log from Perl
+ ├──expanding: ${perl{debug_write}{debug from Perl\n}}
+ └─────result: Wrote debug
+ ┌considering: ${perl{log_write}{log from Perl}}
+  ┌considering: log_write}{log from Perl}}
+  ├──expanding: log_write
+  └─────result: log_write
+  ┌considering: log from Perl}}
+  ├──expanding: log from Perl
+  └─────result: log from Perl
 LOG: MAIN
   log from Perl
- |__expanding: ${perl{log_write}{log from Perl}}
- \_____result: Wrote log
+ ├──expanding: ${perl{log_write}{log from Perl}}
+ └─────result: Wrote log
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
   SMTP connection from CALLER

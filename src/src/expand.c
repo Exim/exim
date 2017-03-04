@@ -3872,7 +3872,11 @@ BOOL resetok = TRUE;
 
 expand_level++;
 DEBUG(D_expand)
-  debug_printf_indent("/%s: %s\n", skipping ? "   scanning" : "considering", string);
+  debug_printf_indent(UTF8_DOWN_RIGHT "%s: %s\n",
+    skipping
+    ? UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ "scanning"
+    : "considering",
+    string);
 
 expand_string_forcedfail = FALSE;
 expand_string_message = US"";
@@ -4119,8 +4123,13 @@ while (*s != 0)
 
       DEBUG(D_expand)
 	{
-        debug_printf_indent("|__condition: %.*s\n", (int)(next_s - s), s);
-        debug_printf_indent("|_____result: %s\n", cond ? "true" : "false");
+        debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
+	  "condition: %.*s\n",
+	  (int)(next_s - s), s);
+        debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
+	  UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+	  "result: %s\n",
+	  cond ? "true" : "false");
 	}
 
       s = next_s;
@@ -7501,9 +7510,17 @@ else if (resetok_p) *resetok_p = FALSE;
 
 DEBUG(D_expand)
   {
-  debug_printf_indent("|__expanding: %.*s\n", (int)(s - string), string);
-  debug_printf_indent("%s_____result: %s\n", skipping ? "|" : "\\", yield);
-  if (skipping) debug_printf_indent("\\___skipping: result is not used\n");
+  debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
+    "expanding: %.*s\n",
+    (int)(s - string), string);
+  debug_printf_indent("%s"
+    UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+    "result: %s\n",
+    skipping ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
+    yield);
+  if (skipping)
+    debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+      "skipping: result is not used\n");
   }
 expand_level--;
 return yield;
@@ -7527,10 +7544,14 @@ EXPAND_FAILED:
 if (left != NULL) *left = s;
 DEBUG(D_expand)
   {
-  debug_printf_indent("|failed to expand: %s\n", string);
-  debug_printf_indent("%s___error message: %s\n",
-    expand_string_forcedfail ? "|" : "\\", expand_string_message);
-  if (expand_string_forcedfail) debug_printf_indent("\\failure was forced\n");
+  debug_printf_indent(UTF8_VERT_RIGHT "failed to expand: %s\n",
+    string);
+  debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+    "error message: %s\n",
+    expand_string_forcedfail ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
+    expand_string_message);
+  if (expand_string_forcedfail)
+    debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
   }
 if (resetok_p) *resetok_p = resetok;
 expand_level--;

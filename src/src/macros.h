@@ -974,5 +974,13 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 
 #define GETC_BUFFER_UNLIMITED	UINT_MAX
 
+/* UTF-8 chars for line-drawing */
+
+#define UTF8_DOWN_RIGHT		"\xE2\x94\x8c"
+#define UTF8_HORIZ		"\xE2\x94\x80"
+#define UTF8_VERT_RIGHT		"\xE2\x94\x9C"
+#define UTF8_UP_RIGHT		"\xE2\x94\x94"
+
+
 
 /* End of macros.h */
