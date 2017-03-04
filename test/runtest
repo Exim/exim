@@ -2322,7 +2322,6 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
   if ($cmd =~ /\s-DSERVER=server\s/ && $cmd !~ /\s-DNOTDAEMON\s/)
     {
-    $pidfile = "$parm_cwd/spool/exim-daemon.pid";
     if ($debug) { printf ">> daemon: $cmd\n"; }
     run_system("sudo mkdir spool/log 2>/dev/null");
     run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
@@ -2349,7 +2348,8 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
     while (<SCRIPT>) { $lineno++; last if /^\*{4}\s*$/; }   # Ignore any input
 
     # Interlock with daemon startup
-    while (! stat("$pidfile") ) { select(undef, undef, undef, 0.3); }
+    for (my $count = 0; ! stat("$pidfile") && $count < 30; $count++ )
+      { select(undef, undef, undef, 0.3); }
     return 3;                                     # Don't wait
     }
   elsif ($cmd =~ /\s-DSERVER=wait:(\d+)\s/)
