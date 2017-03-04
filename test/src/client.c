@@ -712,7 +712,7 @@ int rc;
     FILE * new_f;
     if (!(new_f = fopen(outbuffer+4 , "r")))
       {
-      printf("Unable to open '%s': %s", inptr, sys_errlist[errno]);
+      printf("Unable to open '%s': %s", inptr, strerror(errno));
       exit(74);
       }
     do_file(srv, new_f, timeout, inbuffer, bsiz, inptr);
