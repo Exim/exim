@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.88"
+.set previousversion "4.89"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -371,11 +371,13 @@ contributors.
 .section "Exim documentation" "SECID1"
 . Keep this example change bar when updating the documentation!
 
+.new
 .cindex "documentation"
 This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of the document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
+.wen
 
 This document is very much a reference manual; it is not a tutorial. The reader
 is expected to have some familiarity with the SMTP mail transfer protocol and
@@ -4926,11 +4928,9 @@ using this syntax:
 on a line by itself. Double quotes round the file name are optional. If you use
 the first form, a configuration error occurs if the file does not exist; the
 second form does nothing for non-existent files.
-.new
 The first form allows a relative name. It is resolved relative to
 the directory of the including file. For the second form an absolute file
 name is required.
-.wen
 
 Includes may be nested to any depth, but remember that Exim reads its
 configuration file often, so it is a good idea to keep them to a minimum.
@@ -7812,7 +7812,6 @@ waits for the lock to be released. In Exim, the default timeout is set
 to 5 seconds, but it can be changed by means of the &%sqlite_lock_timeout%&
 option.
 
-.new
 .section "More about Redis" "SECTredis"
 .cindex "lookup" "Redis"
 .cindex "redis lookup type"
@@ -7822,7 +7821,6 @@ Examples:
 ${lookup redis{set keyname ${quote_redis:objvalue plus}}}
 ${lookup redis{get keyname}}
 .endd
-.wen
 
 .ecindex IIDfidalo1
 .ecindex IIDfidalo2
@@ -9442,17 +9440,13 @@ filter. Header lines that are added to a particular copy of a message by a
 router or transport are not accessible.
 
 For incoming SMTP messages, no header lines are visible in
-.new
 ACLs that are obeyed before the data phase completes,
-.wen
 because the header structure is not set up until the message is received.
 They are visible in DKIM, PRDR and DATA ACLs.
 Header lines that are added in a RCPT ACL (for example)
 are saved until the message's incoming header lines are available, at which
 point they are added.
-.new
 When any of the above ACLs ar
-.wen
 running, however, header lines added by earlier ACLs are visible.
 
 Upper case and lower case letters are synonymous in header names. If the
@@ -9810,7 +9804,6 @@ extend what can be done. Firstly, you can vary the timeout. For example:
 .code
 ${readsocket{/socket/name}{request string}{3s}}
 .endd
-.new
 The third argument is a list of options, of which the first element is the timeout
 and must be present if the argument is given.
 Further elements are options of form &'name=value'&.
@@ -9820,7 +9813,6 @@ Example, to not do so (preferred, eg. by some webservers):
 .code
 ${readsocket{/socket/name}{request string}{3s:shutdown=no}}
 .endd
-.wen
 A fourth argument allows you to change any newlines that are in the data
 that is read, in the same way as for &%readfile%& (see above). This example
 turns them into spaces:
@@ -12637,12 +12629,10 @@ validating resolver (e.g. unbound, or bind with suitable configuration).
 If you have changed &%host_lookup_order%& so that &`bydns`& is not the first
 mechanism in the list, then this variable will be false.
 
-.new
 This requires that your system resolver library support EDNS0 (and that
 DNSSEC flags exist in the system headers).  If the resolver silently drops
 all EDNS0 options, then this will have no effect.  OpenBSD's asr resolver
 is known to currently ignore EDNS0, documented in CAVEATS of asr_run(3).
-.wen
 
 
 .vitem &$sender_host_name$&
@@ -14454,14 +14444,12 @@ The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
 these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
 
-.new
 .option debug_store main boolean &`false`&
 .cindex debugging "memory corruption"
 .cindex memory debugging
 This option, when true, enables extra checking in Exim's internal memory
 management.  For use when a memory corruption issue is being investigated,
 it should normally be left as default.
-.wen
 
 .option daemon_smtp_ports main string &`smtp`&
 .cindex "port" "for daemon"
@@ -14720,11 +14708,9 @@ on.
 
 If the resolver library does not support EDNS0 then this option has no effect.
 
-.new
 OpenBSD's asr resolver routines are known to ignore the EDNS0 option; this
 means that DNSSEC will not work with Exim on that platform either, unless Exim
 is linked against an alternative DNS client library.
-.wen
 
 
 .option drop_cr main boolean false
@@ -15349,9 +15335,7 @@ connecting on a regular LDAP port.  This is the LDAP equivalent of SMTP's
 of SSL-on-connect.
 In the event of failure to negotiate TLS, the action taken is controlled
 by &%ldap_require_cert%&.
-.new
 This option is ignored for &`ldapi`& connections.
-.wen
 
 
 .option ldap_version main integer unset
@@ -16925,9 +16909,7 @@ generates any deliveries to files or pipes, or any new mail messages, the
 appropriate &%system_filter_..._transport%& option(s) must be set, to define
 which transports are to be used. Details of this facility are given in chapter
 &<<CHAPsystemfilter>>&.
-.new
 A forced expansion failure results in no filter operation.
-.wen
 
 
 .option system_filter_directory_transport main string&!! unset
@@ -23323,9 +23305,7 @@ message_suffix =
 
 
 .option path pipe string&!! "/bin:/usr/bin"
-.new
 This option is expanded and
-.wen
 specifies the string that is set up in the PATH environment
 variable of the subprocess.
 If the &%command%& option does not yield an absolute path name, the command is
@@ -25923,7 +25903,6 @@ turned into a permanent error if you wish. In the second case, Exim tries to
 deliver the message unauthenticated.
 .endlist
 
-.new
 Note that the hostlist test for whether to do authentication can be
 confused if name-IP lookups change between the time the peer is decided
 on and the transport running.  For example, with a manualroute
@@ -25934,7 +25913,6 @@ check which does not match the connection peer IP.
 No authentication will then be done, despite the names being identical.
 
 For such cases use a separate transport which always authenticates.
-.wen
 
 .cindex "AUTH" "on MAIL command"
 When Exim has authenticated itself to a remote server, it adds the AUTH
@@ -28151,10 +28129,8 @@ run. A &"discard"& return from the DATA or the non-SMTP ACL discards all the
 remaining recipients. The &"discard"& return is not permitted for the
 &%acl_smtp_predata%& ACL.
 
-.new
 If the ACL for VRFY returns &"accept"&, a recipient verify (without callout)
 is done on the address and the result determines the SMTP response.
-.wen
 
 
 .cindex "&[local_scan()]& function" "when all recipients discarded"
@@ -28976,9 +28952,7 @@ Cutthrough delivery is not supported via transport-filters or when DKIM signing
 of outgoing messages is done, because it sends data to the ultimate destination
 before the entire message has been received from the source.
 It is not supported for messages received with the SMTP PRDR
-.new
 or CHUNKING
-.wen
 options in use.
 
 Should the ultimate destination system positively accept or reject the mail,
@@ -29831,14 +29805,12 @@ to avoid doing it more than once per message.
 This is a variation of the previous option, in which a modified address is
 verified as a sender.
 
-.new
 Note that '/' is legal in local-parts; if the address may have such
 (eg. is generated from the received message)
 they must be protected from the options parsing by doubling:
 .code
 verify = sender=${sg{${address:$h_sender:}}{/}{//}}
 .endd
-.wen
 .endlist
 
 
@@ -38721,11 +38693,9 @@ Exim has support for Internationalised mail names.
 To include this it must be built with SUPPORT_I18N and the libidn library.
 Standards supported are RFCs 2060, 5890, 6530 and 6533.
 
-.new
 If Exim is built with SUPPORT_I18N_2008 (in addition to SUPPORT_I18N, not
 instead of it) then IDNA2008 is supported; this adds an extra library
 requirement, upon libidn2.
-.wen
 
 .section "MTA operations" SECTi18nMTA
 .cindex SMTPUTF8 "ESMTP option"
