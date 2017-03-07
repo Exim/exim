@@ -3828,7 +3828,7 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that the
 remote host supports the ESMTP &_DSN_& extension.
 
-.vitem &%-MCG%&
+.vitem &%-MCG%&&~<&'queue&~name'&>
 .oindex "&%-MCG%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option. It signifies that an
@@ -3867,6 +3867,15 @@ connection.
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
+
+.new
+.vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port&'&>&~
+.oindex "&%-MCt%&"
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
+connection is being proxied by a parent process for handling TLS encryption.
+The pair of arguments give the local address and port being proxied.
+.wen
 
 .vitem &%-Mc%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
 .oindex "&%-Mc%&"
@@ -23935,6 +23944,25 @@ been started will not be passed to a new delivery process for sending another
 message on the same connection. See section &<<SECTmulmessam>>& for an
 explanation of when this might be needed.
 
+.new
+.option hosts_noproxy_tls smtp "host list&!!" *
+.cindex "TLS" "passing connection"
+.cindex "multiple SMTP deliveries"
+.cindex "TLS" "multiple message deliveries"
+For any host that matches this list, a TLS session which has
+been started will not be passed to a new delivery process for sending another
+message on the same session.
+
+The traditional implementation closes down TLS and re-starts it in the new
+process, on the same open TCP connection, for each successive message
+sent.  If permitted by this option a pipe to to the new process is set up
+instead, and the original process maintains the TLS connection and proxies
+the SMTP connection from and to the new process and any subsequents.
+The new process has no access to TLS information, so cannot include it in
+logging.
+.wen
+
+
 
 .option hosts_override smtp boolean false
 If this option is set and the &%hosts%& option is also set, any hosts that are
@@ -35725,6 +35753,12 @@ SMTP RCPT commands in one transaction) the second and subsequent addresses are
 flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
 down a single SMTP connection, an asterisk follows the IP address in the log
 lines for the second and subsequent messages.
+.new
+When two or more messages are delivered down a single TLS connection, the
+TLS-related information logged for the first message delivered
+(which may not be the earliest line in the log)
+will not be present in the log lines for the second and subsequent messages.
+.wen
 
 .cindex "delivery" "cutthrough; logging"
 .cindex "cutthrough" "logging"

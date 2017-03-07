@@ -2149,7 +2149,6 @@ if ((state_server.session == NULL) && (state_client.session == NULL))
   gnutls_global_deinit();
   exim_gnutls_base_init_done = FALSE;
   }
-
 }
 
 

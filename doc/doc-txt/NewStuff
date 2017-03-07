@@ -15,6 +15,12 @@ Version 4.90
  2. The ${readsocket } expansion now takes an option to not shutdown the
     connection after sending the query string.  The default remains to do so.
 
+ 3. An smtp transport option "hosts_noproxy_tls" to control whether multiple
+    deliveries on a single TCP connection can maintain a TLS connection
+    open.  By default disabled for all hosts, doing so saves the cost of
+    making new TLS sessions, at the cost of having to proxy the data via
+    another process.  Logging is also affected.
+
 
 Version 4.89
 ------------

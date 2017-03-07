@@ -46,7 +46,10 @@ typedef struct {
   uschar *hosts_verify_avoid_tls;
   uschar *hosts_avoid_pipelining;
   uschar *hosts_avoid_esmtp;
+#ifdef SUPPORT_TLS
   uschar *hosts_nopass_tls;
+  uschar *hosts_noproxy_tls;
+#endif
   int     command_timeout;
   int     connect_timeout;
   int     data_timeout;

@@ -1959,7 +1959,7 @@ DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
 if ((pid = fork()) == 0)
   {
-  int i = 17;
+  int i = 19;
   const uschar **argv;
 
   /* Disconnect entirely from the parent process. If we are running in the
@@ -1982,7 +1982,15 @@ if ((pid = fork()) == 0)
   if (smtp_peer_options & PEER_OFFERED_PIPE) argv[i++] = US"-MCP";
   if (smtp_peer_options & PEER_OFFERED_SIZE) argv[i++] = US"-MCS";
 #ifdef SUPPORT_TLS
-  if (smtp_peer_options & PEER_OFFERED_TLS) argv[i++] = US"-MCT";
+  if (smtp_peer_options & PEER_OFFERED_TLS)
+    if (tls_out.active >= 0 || continue_proxy)
+      {
+      argv[i++] = US"-MCt";
+      argv[i++] = sending_ip_address;
+      argv[i++] = string_sprintf("%d", sending_port);
+      }
+    else
+      argv[i++] = US"-MCT";
 #endif
 
   if (queue_run_pid != (pid_t)0)

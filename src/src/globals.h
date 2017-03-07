@@ -293,6 +293,7 @@ extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern BOOL    continue_more;          /* Flag more addresses waiting */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
+extern BOOL    continue_proxy;	       /* Continued delivery is proxied for TLS */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */

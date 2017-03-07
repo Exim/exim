@@ -2479,9 +2479,7 @@ if (error == SSL_ERROR_ZERO_RETURN)
   return -1;
   }
 else if (error != SSL_ERROR_NONE)
-  {
   return -1;
-  }
 
 return inbytes;
 }

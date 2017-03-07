@@ -10,7 +10,7 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = accept
 
-log_selector = +tls_peerdn+smtp_connection+incoming_port
+log_selector = +tls_peerdn+smtp_connection+incoming_port+received_recipients
 
 queue_only
 queue_run_in_order
@@ -55,6 +55,7 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
+  hosts_noproxy_tls = :
   port = PORT_D
   tls_try_verify_hosts = :
 

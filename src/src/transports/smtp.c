@@ -87,6 +87,8 @@ optionlist smtp_transport_options[] = {
 #ifdef SUPPORT_TLS
   { "hosts_nopass_tls",     opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_nopass_tls) },
+  { "hosts_noproxy_tls",    opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_noproxy_tls) },
 #endif
   { "hosts_override",       opt_bool,
       (void *)offsetof(smtp_transport_options_block, hosts_override) },
@@ -219,6 +221,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_avoid_pipelining */
   NULL,                /* hosts_avoid_esmtp */
   NULL,                /* hosts_nopass_tls */
+  US"*",	       /* hosts_noproxy_tls */
   5*60,                /* command_timeout */
   5*60,                /* connect_timeout; shorter system default overrides */
   5*60,                /* data timeout */
@@ -283,6 +286,8 @@ static uschar *smtp_command;		/* Points to last cmd for error messages */
 static uschar *mail_command;		/* Points to MAIL cmd for error messages */
 static uschar *data_command = US"";	/* Points to DATA cmd for error messages */
 static BOOL    update_waiting;		/* TRUE to update the "wait" database */
+
+/*XXX move to smtp_context */
 static BOOL    pipelining_active;	/* current transaction is in pipe mode */
 
 
@@ -1810,10 +1815,22 @@ separate - we could match up by host ip+port as a bodge. */
 
 else
   {
-  sx->inblock.sock = sx->outblock.sock = fileno(stdin);
+  sx->inblock.sock = sx->outblock.sock = 0;	/* stdin */
   smtp_command = big_buffer;
   sx->host->port = sx->port;    /* Record the port that was used */
   sx->helo_data = NULL;		/* ensure we re-expand ob->helo_data */
+
+  /* For a continued connection with TLS being proxied for us, nothing
+  more to do. */
+
+  if (continue_proxy)
+    {
+    sx->peer_offered = smtp_peer_options;
+    pipelining_active = !!(smtp_peer_options & PEER_OFFERED_PIPE);
+    HDEBUG(D_transport) debug_printf("continued connection, proxied TLS\n");
+    return OK;
+    }
+  HDEBUG(D_transport) debug_printf("continued connection, no TLS\n");
   }
 
 /* If TLS is available on this connection, whether continued or not, attempt to
@@ -2487,6 +2504,93 @@ for (addr = sx->first_addr, address_count = 0;
 sx->next_addr = addr;
 return 0;
 }
+
+
+#ifdef SUPPORT_TLS
+/*****************************************************
+* Proxy TLS connection for another transport process *
+******************************************************/
+/*
+Use the smtp-context buffer as a staging area, and select on both the slave
+process and the TLS'd fd for data to read (per the coding in ip_recv() and
+fd_ready() this is legitimate).  Do blocking full-size writes, and reads
+under a timeout.
+
+Arguments:
+  sx		smtp context block
+  proxy_fd	comms to proxied process
+  timeout	per-read timeout, seconds
+*/
+
+static void
+smtp_proxy_tls(smtp_context * sx, int proxy_fd, int timeout)
+{
+fd_set fds;
+int max_fd = MAX(proxy_fd, tls_out.active) + 1;
+int rc, i, fd_bits, nbytes;
+
+set_process_info("proxying TLS connection for continued transport");
+FD_ZERO(&fds);
+FD_SET(tls_out.active, &fds);
+FD_SET(proxy_fd, &fds);
+
+for (fd_bits = 3; fd_bits; )
+  {
+  time_t time_left = timeout;
+  time_t time_start = time(NULL);
+
+  /* wait for data */
+  do
+    {
+    struct timeval tv = { time_left, 0 };
+
+    rc = select(max_fd, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tv);
+
+    if (rc < 0 && errno == EINTR)
+      if ((time_left -= time(NULL) - time_start) > 0) continue;
+
+    if (rc <= 0)
+      {
+      DEBUG(D_transport) if (rc == 0) debug_printf("%s: timed out\n", __FUNCTION__);
+      return;
+      }
+    }
+  while (rc < 0 || !(FD_ISSET(tls_out.active, &fds) || FD_ISSET(proxy_fd, &fds)));
+
+  /* handle inbound data */
+  if (FD_ISSET(tls_out.active, &fds))
+    if ((rc = tls_read(FALSE, sx->buffer, sizeof(sx->buffer))) <= 0)
+      {
+      fd_bits &= ~1;
+      FD_CLR(tls_out.active, &fds);
+      shutdown(proxy_fd, SHUT_WR);
+      }
+    else
+      {
+      for (nbytes = 0; rc - nbytes > 0; nbytes += i)
+	if ((i = write(proxy_fd, sx->buffer + nbytes, rc - nbytes)) < 0) return;
+      }
+  else if (fd_bits & 1)
+    FD_SET(tls_out.active, &fds);
+
+  /* handle outbound data */
+  if (FD_ISSET(proxy_fd, &fds))
+    if ((rc = read(proxy_fd, sx->buffer, sizeof(sx->buffer))) <= 0)
+      {
+      fd_bits &= ~2;
+      FD_CLR(proxy_fd, &fds);
+      shutdown(tls_out.active, SHUT_WR);
+      }
+    else
+      {
+      for (nbytes = 0; rc - nbytes > 0; nbytes += i)
+	if ((i = tls_write(FALSE, sx->buffer + nbytes, rc - nbytes)) < 0) return;
+      }
+  else if (fd_bits & 2)
+    FD_SET(proxy_fd, &fds);
+  }
+}
+#endif
 
 
 /*************************************************
@@ -3171,10 +3275,13 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 
   if (  sx.first_addr != NULL
      || continue_more
-     || (  (  tls_out.active < 0
+     || (
+#ifdef SUPPORT_TLS
+	   (  tls_out.active < 0  &&  !continue_proxy
            || verify_check_given_host(&sx.ob->hosts_nopass_tls, host) != OK
 	   )
         &&
+#endif
            transport_check_waiting(tblock->name, host->name,
              tblock->connection_max_messages, new_message_id, &more,
 	     (oicf)smtp_are_same_identities, (void*)&t_compare)
@@ -3207,29 +3314,51 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 
     if (sx.ok)
       {
-      if (sx.first_addr != NULL)            /* More addresses still to be sent */
+      int pfd[2];
+      int socket_fd = sx.inblock.sock;
+
+
+      if (sx.first_addr != NULL)         /* More addresses still to be sent */
         {                                /*   in this run of the transport */
         continue_sequence++;             /* Causes * in logging */
         goto SEND_MESSAGE;
         }
       if (continue_more) return yield;   /* More addresses for another run */
 
-      /* Pass the socket to a new Exim process. Before doing so, we must shut
-      down TLS. Not all MTAs allow for the continuation of the SMTP session
-      when TLS is shut down. We test for this by sending a new EHLO. If we
-      don't get a good response, we don't attempt to pass the socket on. */
-
+      /* Pass the connection on to a new Exim process. */
 #ifdef SUPPORT_TLS
       if (tls_out.active >= 0)
-        {
-        tls_close(FALSE, TRUE);
-	smtp_peer_options = smtp_peer_options_wrap;
-	sx.ok = !sx.smtps
-          && smtp_write_command(&sx.outblock, FALSE,
-				    "EHLO %s\r\n", sx.helo_data) >= 0
-	  && smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
-				    '2', sx.ob->command_timeout);
-        }
+	if (verify_check_given_host(&sx.ob->hosts_noproxy_tls, host) == OK)
+	  {
+	  /* Pass the socket, for direct use, to a new Exim process. Before
+	  doing so, we must shut down TLS. Not all MTAs allow for the
+	  continuation of the SMTP session when TLS is shut down. We test for
+	  this by sending a new EHLO. If we don't get a good response, we don't
+	  attempt to pass the socket on. */
+
+	  tls_close(FALSE, TRUE);
+	  smtp_peer_options = smtp_peer_options_wrap;
+	  sx.ok = !sx.smtps
+	    && smtp_write_command(&sx.outblock, FALSE,
+				      "EHLO %s\r\n", sx.helo_data) >= 0
+	    && smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
+				      '2', sx.ob->command_timeout);
+	  }
+	else
+	  {
+	  /* Set up a pipe for proxying TLS for the new transport process */
+
+	  smtp_peer_options |= PEER_OFFERED_TLS;
+	  if (sx.ok = (socketpair(AF_LOCAL, SOCK_STREAM, 0, pfd) == 0))
+	    socket_fd = pfd[1];
+	  else
+	    set_errno(sx.first_addr, errno, US"internal allocation problem",
+		    DEFER, FALSE, host
+# ifdef EXPERIMENTAL_DSN_INFO
+		    , sx.smtp_greeting, sx.helo_response
+# endif
+		    );
+	  }
 #endif
 
       /* If the socket is successfully passed, we mustn't send QUIT (or
@@ -3239,13 +3368,38 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 propagate it from the initial
 */
       if (sx.ok && transport_pass_socket(tblock->name, host->name,
-	    host->address, new_message_id, sx.inblock.sock))
+	    host->address, new_message_id, socket_fd))
+	{
         sx.send_quit = FALSE;
+
+	/* If TLS is still active, we need to proxy it for the transport we
+	just passed the baton to.  Fork a child to to do it, and return to
+	get logging done asap.  Which way to place the work makes assumptions
+	about post-fork prioritisation which may not hold on all platforms. */
+
+	if (tls_out.active >= 0)
+	  {
+	  int pid = fork();
+	  if (pid > 0)		/* parent */
+	    {
+	    tls_close(FALSE, FALSE);
+	    (void)close(sx.inblock.sock);
+	    continue_transport = NULL;
+	    continue_hostname = NULL;
+	    return yield;
+	    }
+	  else if (pid == 0)	/* child */
+	    {
+	    smtp_proxy_tls(&sx, pfd[0], sx.ob->command_timeout);
+	    exim_exit(0);
+	    }
+	  }
+	}
       }
 
     /* If RSET failed and there are addresses left, they get deferred. */
-
-    else set_errno(sx.first_addr, errno, msg, DEFER, FALSE, host
+    else
+      set_errno(sx.first_addr, errno, msg, DEFER, FALSE, host
 #ifdef EXPERIMENTAL_DSN_INFO
 		  , sx.smtp_greeting, sx.helo_response
 #endif
@@ -3855,7 +4009,7 @@ for (cutoff_retry = 0;
       host_is_expired = retry_check_address(addrlist->domain, host, pistring,
         incl_ip, &retry_host_key, &retry_message_key);
 
-      DEBUG(D_transport) debug_printf("%s [%s]%s status = %s\n", host->name,
+      DEBUG(D_transport) debug_printf("%s [%s]%s retry-status = %s\n", host->name,
         (host->address == NULL)? US"" : host->address, pistring,
         (host->status == hstatus_usable)? "usable" :
         (host->status == hstatus_unusable)? "unusable" :

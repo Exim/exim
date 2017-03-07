@@ -8,6 +8,9 @@ Test message 1
 exim usery@test.ex
 Test message 2
 ****
+exim userz@test.ex
+Test message 3
+****
 exim -qqf -d-all+acl
 ****
 killdaemon

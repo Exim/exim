@@ -2708,18 +2708,19 @@ for (i = 1; i < argc; i++)
         return EXIT_FAILURE;
         }
 
-      /* Set up $sending_ip_address and $sending_port */
+      /* Set up $sending_ip_address and $sending_port, unless proxied */
 
-      if (getsockname(fileno(stdin), (struct sockaddr *)(&interface_sock),
-          &size) == 0)
-        sending_ip_address = host_ntoa(-1, &interface_sock, NULL,
-          &sending_port);
-      else
-        {
-        fprintf(stderr, "exim: getsockname() failed after -MC option: %s\n",
-          strerror(errno));
-        return EXIT_FAILURE;
-        }
+      if (!continue_proxy)
+	if (getsockname(fileno(stdin), (struct sockaddr *)(&interface_sock),
+	    &size) == 0)
+	  sending_ip_address = host_ntoa(-1, &interface_sock, NULL,
+	    &sending_port);
+	else
+	  {
+	  fprintf(stderr, "exim: getsockname() failed after -MC option: %s\n",
+	    strerror(errno));
+	  return EXIT_FAILURE;
+	  }
 
       if (running_in_test_harness) millisleep(500);
       break;
@@ -2727,7 +2728,7 @@ for (i = 1; i < argc; i++)
 
     else if (*argrest == 'C' && argrest[1] && !argrest[2])
       {
-	switch(argrest[1])
+      switch(argrest[1])
 	{
     /* -MCA: set the smtp_authenticated flag; this is useful only when it
     precedes -MC (see above). The flag indicates that the host to which
@@ -2771,6 +2772,17 @@ for (i = 1; i < argc; i++)
 	case 'S': smtp_peer_options |= PEER_OFFERED_SIZE; break;
 
 #ifdef SUPPORT_TLS
+    /* -MCt: similar to -MCT below but the connection is still open
+    via a proxy proces which handles the TLS context and coding.
+    Require two arguments for the proxied local address and port.  */
+
+	case 't': continue_proxy = TRUE;
+		  if (++i < argc) sending_ip_address = argv[i];
+		  else badarg = TRUE;
+		  if (++i < argc) sending_port = (int)(Uatol(argv[i]));
+		  else badarg = TRUE;
+		  /*FALLTHROUGH*/
+
     /* -MCT: set the tls_offered flag; this is useful only when it
     precedes -MC (see above). The flag indicates that the host to which
     Exim is connected has offered TLS support. */

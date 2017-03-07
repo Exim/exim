@@ -30,47 +30,47 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
-  SMTP<< 250 OK id=10HmaZ-0005vi-00
-  SMTP>> EHLO myhost.test.ex
-cmd buf flush ddd bytes
-  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
-         250-SIZE 52428800
-         250-8BITMIME
-         250-PIPELINING
-         250-STARTTLS
-         250 HELP
-  SMTP(close)>>
+  SMTP<< 250 OK id=10HmbA-0005vi-00
 LOG: MAIN
-  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
+  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
   Completed
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-  SMTP>> STARTTLS
-cmd buf flush ddd bytes
-  SMTP<< 220 TLS go ahead
-  SMTP>> EHLO myhost.test.ex
-cmd buf flush ddd bytes
-  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
-         250-SIZE 52428800
-         250-8BITMIME
-         250-PIPELINING
-         250 HELP
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP>> RCPT TO:<userz@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
-  SMTP<< 250 OK id=10HmbA-0005vi-00
+  SMTP<< 250 OK id=10HmbB-0005vi-00
+  SMTP(close)>>
+LOG: MAIN
+  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* C="250 OK id=10HmbB-0005vi-00"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP>> RCPT TO:<usery@test.ex>
+  SMTP>> DATA
+cmd buf flush ddd bytes
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP<< 250 OK id=10HmbC-0005vi-00
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:AES256-SHA:256 CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
+  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* C="250 OK id=10HmbC-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

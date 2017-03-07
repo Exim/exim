@@ -19,6 +19,13 @@ PP/01 Allow PKG_CONFIG_PATH to be set in Local/Makefile and use it correctly
 JH/02 Rework error string handling in DKIM to pass more info back to callers.
       This permits better logging.
 
+JH/03 Rework the transport continued-connection mechanism: when TLS is active,
+      do not close it down and have the child transport start it up again on
+      the passed-on TCP connection.  Instead, proxy the child (and any
+      subsequent ones) for TLS via a unix-domain socket channel.  Logging is
+      affected: the continued delivery log lines do not have any DNSSEC, TLS
+      cipher, Certificate or OCSP information.
+
 
 Exim version 4.89
 -----------------
