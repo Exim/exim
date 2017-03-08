@@ -1687,6 +1687,16 @@ else if (daemon_listen)
            }
          else if (ipa->address[0] == 0)
            (void)sprintf(CS p, " port %d (IPv4)", ipa->port);
+	  else if (  i > 0
+		  && host_is_tls_on_connect_port(ipa[-1].port) == (j > 0)
+		  && Ustrcmp(ipa->address, ipa[-1].address) == 0
+		  )
+	    {
+	    if (p[-1] == '}') p--;
+	    while (isdigit(*--p)) ;
+	    (void)sprintf(CS p+1, "%s%d,%d}", *p == ',' ? "" : "{",
+	      ipa[-1].port, ipa->port);
+	    }
          else
            (void)sprintf(CS p, " [%s]:%d", ipa->address, ipa->port);
          while (*p != 0) p++;

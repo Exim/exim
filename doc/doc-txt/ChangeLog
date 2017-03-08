@@ -26,6 +26,10 @@ JH/03 Rework the transport continued-connection mechanism: when TLS is active,
       affected: the continued delivery log lines do not have any DNSSEC, TLS
       cipher, Certificate or OCSP information.
 
+JH/04 Shorten the log line for daemon startup by collapsing adjacent sets of
+      identical IP addresses on different listening ports.  Will also affect
+      "exiwhat" output.
+
 
 Exim version 4.89
 -----------------
