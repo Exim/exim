@@ -3869,7 +3869,7 @@ by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
 
 .new
-.vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port&'&>&~
+.vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port'&>
 .oindex "&%-MCt%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
