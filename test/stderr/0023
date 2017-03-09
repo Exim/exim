@@ -518,74 +518,74 @@ LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>>    using ACL "acl_8_8_8"
 >>>    processing "accept"
 >>>    check acl = acl_8_8_8
->>>    .using ACL "acl_8_8_8"
->>>    .processing "accept"
->>>    .check acl = acl_8_8_8
->>>    . using ACL "acl_8_8_8"
->>>    . processing "accept"
->>>    . check acl = acl_8_8_8
->>>    .  using ACL "acl_8_8_8"
->>>    .  processing "accept"
->>>    .  check acl = acl_8_8_8
->>>    .   using ACL "acl_8_8_8"
->>>    .   processing "accept"
->>>    .   check acl = acl_8_8_8
->>>    .   .using ACL "acl_8_8_8"
->>>    .   .processing "accept"
->>>    .   .check acl = acl_8_8_8
->>>    .   . using ACL "acl_8_8_8"
->>>    .   . processing "accept"
->>>    .   . check acl = acl_8_8_8
->>>    .   .  using ACL "acl_8_8_8"
->>>    .   .  processing "accept"
->>>    .   .  check acl = acl_8_8_8
->>>    .   .   using ACL "acl_8_8_8"
->>>    .   .   processing "accept"
->>>    .   .   check acl = acl_8_8_8
->>>    .   .   .using ACL "acl_8_8_8"
->>>    .   .   .processing "accept"
->>>    .   .   .check acl = acl_8_8_8
->>>    .   .   . using ACL "acl_8_8_8"
->>>    .   .   . processing "accept"
->>>    .   .   . check acl = acl_8_8_8
->>>    .   .   .  using ACL "acl_8_8_8"
->>>    .   .   .  processing "accept"
->>>    .   .   .  check acl = acl_8_8_8
->>>    .   .   .   using ACL "acl_8_8_8"
->>>    .   .   .   processing "accept"
->>>    .   .   .   check acl = acl_8_8_8
->>>    .   .   .   .using ACL "acl_8_8_8"
->>>    .   .   .   .processing "accept"
->>>    .   .   .   .check acl = acl_8_8_8
->>>    .   .   .   . using ACL "acl_8_8_8"
->>>    .   .   .   . processing "accept"
->>>    .   .   .   . check acl = acl_8_8_8
->>>    .   .   .   .  using ACL "acl_8_8_8"
->>>    .   .   .   .  processing "accept"
->>>    .   .   .   .  check acl = acl_8_8_8
->>>    .   .   .   .   using ACL "acl_8_8_8"
->>>    .   .   .   .   processing "accept"
->>>    .   .   .   .   check acl = acl_8_8_8
->>>    .   .   .   .   .using ACL "acl_8_8_8"
->>>    .   .   .   .   .processing "accept"
->>>    .   .   .   .   .check acl = acl_8_8_8
->>>    .   .   .   .   .accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   .   .   accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   .   .  accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   .   . accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   .   .accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   .   accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   .  accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   . accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   .accept: condition test error in ACL "acl_8_8_8"
->>>    .   .   accept: condition test error in ACL "acl_8_8_8"
->>>    .   .  accept: condition test error in ACL "acl_8_8_8"
->>>    .   . accept: condition test error in ACL "acl_8_8_8"
->>>    .   .accept: condition test error in ACL "acl_8_8_8"
->>>    .   accept: condition test error in ACL "acl_8_8_8"
->>>    .  accept: condition test error in ACL "acl_8_8_8"
->>>    . accept: condition test error in ACL "acl_8_8_8"
->>>    .accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎using ACL "acl_8_8_8"
+>>>    ╎processing "accept"
+>>>    ╎check acl = acl_8_8_8
+>>>    ╎ using ACL "acl_8_8_8"
+>>>    ╎ processing "accept"
+>>>    ╎ check acl = acl_8_8_8
+>>>    ╎  using ACL "acl_8_8_8"
+>>>    ╎  processing "accept"
+>>>    ╎  check acl = acl_8_8_8
+>>>    ╎   using ACL "acl_8_8_8"
+>>>    ╎   processing "accept"
+>>>    ╎   check acl = acl_8_8_8
+>>>    ╎   ╎using ACL "acl_8_8_8"
+>>>    ╎   ╎processing "accept"
+>>>    ╎   ╎check acl = acl_8_8_8
+>>>    ╎   ╎ using ACL "acl_8_8_8"
+>>>    ╎   ╎ processing "accept"
+>>>    ╎   ╎ check acl = acl_8_8_8
+>>>    ╎   ╎  using ACL "acl_8_8_8"
+>>>    ╎   ╎  processing "accept"
+>>>    ╎   ╎  check acl = acl_8_8_8
+>>>    ╎   ╎   using ACL "acl_8_8_8"
+>>>    ╎   ╎   processing "accept"
+>>>    ╎   ╎   check acl = acl_8_8_8
+>>>    ╎   ╎   ╎using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎processing "accept"
+>>>    ╎   ╎   ╎check acl = acl_8_8_8
+>>>    ╎   ╎   ╎ using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎ processing "accept"
+>>>    ╎   ╎   ╎ check acl = acl_8_8_8
+>>>    ╎   ╎   ╎  using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎  processing "accept"
+>>>    ╎   ╎   ╎  check acl = acl_8_8_8
+>>>    ╎   ╎   ╎   using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   processing "accept"
+>>>    ╎   ╎   ╎   check acl = acl_8_8_8
+>>>    ╎   ╎   ╎   ╎using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎processing "accept"
+>>>    ╎   ╎   ╎   ╎check acl = acl_8_8_8
+>>>    ╎   ╎   ╎   ╎ using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎ processing "accept"
+>>>    ╎   ╎   ╎   ╎ check acl = acl_8_8_8
+>>>    ╎   ╎   ╎   ╎  using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎  processing "accept"
+>>>    ╎   ╎   ╎   ╎  check acl = acl_8_8_8
+>>>    ╎   ╎   ╎   ╎   using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎   processing "accept"
+>>>    ╎   ╎   ╎   ╎   check acl = acl_8_8_8
+>>>    ╎   ╎   ╎   ╎   ╎using ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎   ╎processing "accept"
+>>>    ╎   ╎   ╎   ╎   ╎check acl = acl_8_8_8
+>>>    ╎   ╎   ╎   ╎   ╎accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎   accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎  accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎ accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   ╎accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎   accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎  accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎ accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   ╎accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎   accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎  accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎ accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   ╎accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎   accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎  accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎ accept: condition test error in ACL "acl_8_8_8"
+>>>    ╎accept: condition test error in ACL "acl_8_8_8"
 >>>    accept: condition test error in ACL "acl_8_8_8"
 >>>   accept: condition test error in ACL "acl_8_8_8"
 >>>  accept: condition test error in ACL "acl_8_8_8"

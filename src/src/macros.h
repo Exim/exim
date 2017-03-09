@@ -980,6 +980,7 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define UTF8_HORIZ		"\xE2\x94\x80"
 #define UTF8_VERT_RIGHT		"\xE2\x94\x9C"
 #define UTF8_UP_RIGHT		"\xE2\x94\x94"
+#define UTF8_VERT_2DASH		"\xE2\x95\x8E"
 
 
 

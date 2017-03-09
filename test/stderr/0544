@@ -5,107 +5,107 @@ admin user
  ├──expanding: ${tod_full}
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
  ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
-	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+ 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	${if def:sender_address {(envelope-from <$sender_address>)
+ 	}}id $message_exim_id${if def:received_for {
+ 	for $received_for}}
  ├──condition: def:sender_rcvhost
  ├─────result: false
   ┌───scanning: from $sender_rcvhost
-	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	${if def:sender_address {(envelope-from <$sender_address>)
+  	}}id $message_exim_id${if def:received_for {
+  	for $received_for}}
   ├──expanding: from $sender_rcvhost
-	
+  	
   ├─────result: from 
-	
+  	
   └───skipping: result is not used
   ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	${if def:sender_address {(envelope-from <$sender_address>)
+  	}}id $message_exim_id${if def:received_for {
+  	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
    ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
-   .┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
-   .├──expanding: $sender_ident
-   .└─────result: CALLER
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	${if def:sender_address {(envelope-from <$sender_address>)
+   	}}id $message_exim_id${if def:received_for {
+   	for $received_for}}
+   ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	${if def:sender_address {(envelope-from <$sender_address>)
+   ╎	}}id $message_exim_id${if def:received_for {
+   ╎	for $received_for}}
+   ╎├──expanding: $sender_ident
+   ╎└─────result: CALLER
    ├──expanding: from ${quote_local_part:$sender_ident} 
    └─────result: from CALLER 
   ├──condition: def:sender_helo_name
   ├─────result: false
    ┌───scanning: (helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	${if def:sender_address {(envelope-from <$sender_address>)
+   	}}id $message_exim_id${if def:received_for {
+   	for $received_for}}
    ├──expanding: (helo=$sender_helo_name)
-	
+   	
    ├─────result: (helo=)
-	
+   	
    └───skipping: result is not used
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}
+  	}}
   └─────result: from CALLER 
  ├──condition: def:received_protocol
  ├─────result: true
   ┌considering: with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+  	${if def:sender_address {(envelope-from <$sender_address>)
+  	}}id $message_exim_id${if def:received_for {
+  	for $received_for}}
   ├──expanding: with $received_protocol
   └─────result: with local
  ├──condition: def:tls_cipher
  ├─────result: false
   ┌───scanning: ($tls_cipher)
-	}}(Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+  	}}(Exim $version_number)
+  	${if def:sender_address {(envelope-from <$sender_address>)
+  	}}id $message_exim_id${if def:received_for {
+  	for $received_for}}
   ├──expanding: ($tls_cipher)
-	
+  	
   ├─────result: ()
-	
+  	
   └───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ┌considering: (envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+  	}}id $message_exim_id${if def:received_for {
+  	for $received_for}}
   ├──expanding: (envelope-from <$sender_address>)
-	
+  	
   └─────result: (envelope-from <CALLER@test.ex>)
-	
+  	
  ├──condition: def:received_for
  ├─────result: false
   ┌───scanning: 
-	for $received_for}}
+  	for $received_for}}
   ├──expanding: 
-	for $received_for
+  	for $received_for
   ├─────result: 
-	for 
+  	for 
   └───skipping: result is not used
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
-	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
-	${if def:sender_address {(envelope-from <$sender_address>)
-	}}id $message_exim_id${if def:received_for {
-	for $received_for}}
+ 	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	${if def:sender_address {(envelope-from <$sender_address>)
+ 	}}id $message_exim_id${if def:received_for {
+ 	for $received_for}}
  └─────result: Received: from CALLER by the.local.host.name with local (Exim x.yz)
-	(envelope-from <CALLER@test.ex>)
-	id 10HmaX-0005vi-00
+ 	(envelope-from <CALLER@test.ex>)
+ 	id 10HmaX-0005vi-00
  ┌considering: ${tod_full}
  ├──expanding: ${tod_full}
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000

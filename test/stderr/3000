@@ -26,7 +26,7 @@ Starting Perl interpreter
   ┌considering: debug from Perl\n}}
   ├──expanding: debug from Perl\n
   └─────result: debug from Perl
-
+  
 debug from Perl
  ├──expanding: ${perl{debug_write}{debug from Perl\n}}
  └─────result: Wrote debug

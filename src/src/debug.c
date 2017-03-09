@@ -211,11 +211,13 @@ if (indent > 0)
   int i;
   for (i = indent >> 2; i > 0; i--)
     {
-    Ustrcpy(debug_ptr, "   .");
-    debug_ptr += 4;
+    Ustrcpy(debug_ptr, "   " UTF8_VERT_2DASH);
+    debug_ptr += 6;	/* 3 spaces + 3 UTF-8 octets */
+    debug_prefix_length += 6;
     }
-  Ustrncpy(debug_ptr, "   ", indent & 3);
-  debug_ptr += indent & 3;
+  Ustrncpy(debug_ptr, "   ", indent &= 3);
+  debug_ptr += indent;
+  debug_prefix_length += indent;
   }
 
 /* Use the checked formatting routine to ensure that the buffer
