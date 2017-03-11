@@ -27213,10 +27213,12 @@ tls_require_ciphers = ${if =={$received_port}{25}\
 .cindex "TLS" "configuring an Exim server"
 When Exim has been built with TLS support, it advertises the availability of
 the STARTTLS command to client hosts that match &%tls_advertise_hosts%&,
-but not to any others. The default value of this option is unset, which means
-that STARTTLS is not advertised at all. This default is chosen because you
-need to set some other options in order to make TLS available, and also it is
-sensible for systems that want to use TLS only as a client.
+but not to any others. The default value of this option is *, which means
+that STARTTLS is alway advertised.  Set it to blank to never advertise;
+this is reasonble for systems that want to use TLS only as a client.
+
+If STARTTLS is to be used you
+need to set some other options in order to make TLS available.
 
 If a client issues a STARTTLS command and there is some configuration
 problem in the server, the command is rejected with a 454 error. If the client
