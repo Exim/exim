@@ -21,6 +21,8 @@ Version 4.90
     making new TLS sessions, at the cost of having to proxy the data via
     another process.  Logging is also affected.
 
+ 4. A malware connection type for the FPSCAND protocol.
+
 
 Version 4.89
 ------------

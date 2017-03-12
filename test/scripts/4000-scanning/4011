@@ -1,0 +1,88 @@
+# content scan interface: f-prot6d
+need_ipv4
+munge loopback
+#
+server PORT_S
+<SCAN FILE
+>0 <clean>
+>*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+#
+server PORT_S
+<SCAN FILE
+>0 <infected: EICAR_Test_File> DIR/spool/scan/1clxBT-0003I9-8y/1clxBT-0003I9-8y.eml
+>*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+due to the server response (above)
+.
+quit
+****
+#
+#
+#
+server PORT_S
+<SCAN FILE
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT="/tmo=2s"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be deferred due to timeout
+
+.
+quit
+****
+#
+#
+#
+server PORT_S
+<SCAN FILE
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT="/tmo=2s/defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted despite timeout
+
+.
+quit
+****

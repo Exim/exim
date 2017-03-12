@@ -1,0 +1,29 @@
+# Exim test configuration 4011
+# Content-scan: f-prot6d interface
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+av_scanner = f-prot6d : localhost4 PORT_S
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = c_data
+
+begin acl
+
+c_data:
+  accept !malware = * OPT
+  deny	 logwrite = $callout_address malware_name $malware_name
+
+# ----- Routers -----
+
+begin routers
+
+r:
+  driver = redirect
+  data = :blackhole:
+
+# End

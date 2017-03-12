@@ -31539,6 +31539,18 @@ av_scanner = f-protd:localhost 10200-10204
 .endd
 If you omit the argument, the default values show above are used.
 
+.new
+.vitem &%f-prot6d%&
+.cindex "virus scanners" "f-prot6d"
+The f-prot6d scanner is accessed using the FPSCAND protocol over TCP.
+One argument is taken, being a space-separated hostname and port number.
+For example:
+.code
+av_scanner = f-prot6d:localhost 10200
+.endd
+If you omit the argument, the default values show above are used.
+.wen
+
 .vitem &%fsecure%&
 .cindex "virus scanners" "F-Secure"
 The F-Secure daemon scanner (&url(http://www.f-secure.com)) takes one
