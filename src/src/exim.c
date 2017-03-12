@@ -12,7 +12,7 @@ Also a few functions that don't naturally fit elsewhere. */
 
 #include "exim.h"
 
-#ifdef __GLIBC__
+#if defined(__GLIBC__) && !defined(__UCLIBC__)
 # include <gnu/libc-version.h>
 #endif
 
@@ -1044,7 +1044,7 @@ DEBUG(D_any) do {
   fprintf(f, "Compiler: <unknown>\n");
 #endif
 
-#ifdef __GLIBC__
+#if defined(__GLIBC__) && !defined(__UCLIBC__)
   fprintf(f, "Library version: Glibc: Compile: %d.%d\n",
 	       	__GLIBC__, __GLIBC_MINOR__);
   if (__GLIBC_PREREQ(2, 1))

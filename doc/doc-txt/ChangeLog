@@ -30,6 +30,10 @@ JH/04 Shorten the log line for daemon startup by collapsing adjacent sets of
       identical IP addresses on different listening ports.  Will also affect
       "exiwhat" output.
 
+PP/02 Bug 2070: uClibc defines __GLIBC__ without providing glibc headers;
+      add noisy ifdef guards to special-case this sillyness.
+      Patch from Bernd Kuhls.
+
 
 Exim version 4.89
 -----------------
