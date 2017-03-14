@@ -35769,9 +35769,10 @@ down a single SMTP connection, an asterisk follows the IP address in the log
 lines for the second and subsequent messages.
 .new
 When two or more messages are delivered down a single TLS connection, the
-TLS-related information logged for the first message delivered
-(which may not be the earliest line in the log)
+DNS and TLS-related information logged for the first message delivered
 will not be present in the log lines for the second and subsequent messages.
+A TLS-marker indication of &'X=*'& is added to the log line instead of
+cipher information.
 .wen
 
 .cindex "delivery" "cutthrough; logging"
@@ -35900,7 +35901,7 @@ the following table:
 &`T   `&        on &`<=`& lines: message subject (topic)
 &`    `&        on &`=>`& &`**`& and &`==`& lines: transport name
 &`U   `&        local user or RFC 1413 identity
-&`X   `&        TLS cipher suite
+&`X   `&        TLS cipher suite, or TLS usage mark
 .endd
 
 

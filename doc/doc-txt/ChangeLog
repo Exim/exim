@@ -24,7 +24,8 @@ JH/03 Rework the transport continued-connection mechanism: when TLS is active,
       the passed-on TCP connection.  Instead, proxy the child (and any
       subsequent ones) for TLS via a unix-domain socket channel.  Logging is
       affected: the continued delivery log lines do not have any DNSSEC, TLS
-      cipher, Certificate or OCSP information.
+      cipher, Certificate or OCSP information. A "continued-TLS" marker is
+      added instead of the cipher information: "X=*".
 
 JH/04 Shorten the log line for daemon startup by collapsing adjacent sets of
       identical IP addresses on different listening ports.  Will also affect

@@ -3396,7 +3396,7 @@ while (!done)
 
     /* Cut out any "delete" items on the list. */
 
-    for (rp = &(addr->retries); (r = *rp); rp = &r->next)
+    for (rp = &addr->retries; (r = *rp); rp = &r->next)
       if (Ustrcmp(r->key, ptr+1) == 0)           /* Found item with same key */
         {
         if ((r->flags & rf_delete) == 0) break;  /* It was not "delete" */
@@ -3408,7 +3408,7 @@ while (!done)
     /* We want to add a delete item only if there is no non-delete item;
     however we still have to step ptr through the data. */
 
-    if (!r || (*ptr & rf_delete) == 0)
+    if (!r || !(*ptr & rf_delete))
       {
       r = store_get(sizeof(retry_item));
       r->next = addr->retries;
@@ -3458,36 +3458,34 @@ while (!done)
     switch (subid)
       {
       case '1':
-      addr->cipher = NULL;
-      addr->peerdn = NULL;
+	addr->cipher = NULL;
+	addr->peerdn = NULL;
 
-      if (*ptr)
-	addr->cipher = string_copy(ptr);
-      while (*ptr++);
-      if (*ptr)
-	addr->peerdn = string_copy(ptr);
-      break;
+	if (*ptr)
+	  addr->cipher = string_copy(ptr);
+	while (*ptr++);
+	if (*ptr)
+	  addr->peerdn = string_copy(ptr);
+	break;
 
       case '2':
-      if (*ptr)
-	(void) tls_import_cert(ptr, &addr->peercert);
-      else
-	addr->peercert = NULL;
-      break;
+	if (*ptr)
+	  (void) tls_import_cert(ptr, &addr->peercert);
+	else
+	  addr->peercert = NULL;
+	break;
 
       case '3':
-      if (*ptr)
-	(void) tls_import_cert(ptr, &addr->ourcert);
-      else
-	addr->ourcert = NULL;
-      break;
+	if (*ptr)
+	  (void) tls_import_cert(ptr, &addr->ourcert);
+	else
+	  addr->ourcert = NULL;
+	break;
 
 # ifndef DISABLE_OCSP
       case '4':
-      addr->ocsp = OCSP_NOT_REQ;
-      if (*ptr)
-	addr->ocsp = *ptr - '0';
-      break;
+	addr->ocsp = *ptr ? *ptr - '0' : OCSP_NOT_REQ;
+	break;
 # endif
       }
     while (*ptr++);
@@ -4713,13 +4711,13 @@ for (delivery_count = 0; addr_remote; delivery_count++)
         if (!addr->peerdn)
 	  *ptr++ = 0;
 	else
-          {
-          ptr += sprintf(CS ptr, "%.512s", addr->peerdn);
-          ptr++;
-          }
+          ptr += sprintf(CS ptr, "%.512s", addr->peerdn) + 1;
 
         rmt_dlv_checked_write(fd, 'X', '1', big_buffer, ptr - big_buffer);
         }
+      else if (continue_proxy)		/* known TLS, but no cipher info */
+        rmt_dlv_checked_write(fd, 'X', '1', US"*\0", 3);
+
       if (addr->peercert)
 	{
         ptr = big_buffer;
