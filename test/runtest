@@ -2531,7 +2531,7 @@ GetOptions(
     'keep'     => \$save_output,
     'slow'     => \$slow,
     'valgrind' => \$valgrind,
-    'range=i{2}'       => \my @range_wanted,
+    'range=s{2}'       => \my @range_wanted,
     'test=i@'          => \my @tests_wanted,
     'flavor|flavour=s' => $flavour,
     'help'             => sub { pod2usage(-exit => 0) },
@@ -4067,7 +4067,8 @@ Keep the various output files produced during a test run. (default: don't keep)
 
 =item B<--range> I<n0> I<n1>
 
-Run tests between (including) I<n0> and I<n1>.
+Run tests between (including) I<n0> and I<n1>. A "+" may be used to specify the "last
+test available".
 
 =item B<--slow>
 
