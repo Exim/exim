@@ -42,7 +42,7 @@ int yield = 4;
 /* If an optional mask is permitted, check for it. If found, pass back the
 offset. */
 
-if (maskptr != NULL)
+if (maskptr)
   {
   const uschar *ss = s + Ustrlen(s);
   *maskptr = 0;
@@ -79,7 +79,7 @@ if (Ustrchr(s, ':') != NULL)
     if we hit the / that introduces a mask or the % that introduces the
     interface specifier (scope id) of a link-local address. */
 
-    if (*s == 0 || *s == '%' || *s == '/') return had_double_colon? yield : 0;
+    if (*s == 0 || *s == '%' || *s == '/') return had_double_colon ? yield : 0;
 
     /* If a component starts with an additional colon, we have hit a double
     colon. This is permitted to appear once only, and counts as at least
@@ -135,13 +135,16 @@ if (Ustrchr(s, ':') != NULL)
 
 for (i = 0; i < 4; i++)
   {
+  long n;
+  uschar * end;
+
   if (i != 0 && *s++ != '.') return 0;
-  if (!isdigit(*s++)) return 0;
-  if (isdigit(*s) && isdigit(*(++s))) s++;
+  n = strtol(CCS s, CSS &end, 10);
+  if (n > 255 || n < 0 || end <= s || end > s+3) return 0;
+  s = end;
   }
 
-return (*s == 0 || (*s == '/' && maskptr != NULL && *maskptr != 0))?
-  yield : 0;
+return !*s || (*s == '/' && maskptr && *maskptr != 0) ? yield : 0;
 }
 #endif  /* COMPILE_UTILITY */
 

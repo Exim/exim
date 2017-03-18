@@ -11042,9 +11042,14 @@ colon-separated components are permitted, each containing from one to four
 hexadecimal digits. There may be fewer than eight components if an empty
 component (adjacent colons) is present. Only one empty component is permitted.
 
-&*Note*&: The checks are just on the form of the address; actual numerical
-values are not considered. Thus, for example, 999.999.999.999 passes the IPv4
-check. The main use of these tests is to distinguish between IP addresses and
+.new
+&*Note*&: The checks used to be just on the form of the address; actual numerical
+values were not considered. Thus, for example, 999.999.999.999 passed the IPv4
+check.
+This is no longer the case.
+.wen
+
+The main use of these tests is to distinguish between IP addresses and
 host names, or between IPv4 and IPv6 addresses. For example, you could use
 .code
 ${if isip4{$sender_host_address}...

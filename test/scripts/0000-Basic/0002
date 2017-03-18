@@ -417,6 +417,8 @@ gei:    ${if gei{ABC}{abc}{y}{n}}
 isip:   ${if isip {1.2.3.4}{y}{n}}  1.2.3.4
 isip4:  ${if isip4{1.2.3.4}{y}{n}}  1.2.3.4
 isip6:  ${if isip6{1.2.3.4}{y}{n}}  1.2.3.4
+isip:   ${if isip {::1.2.3.256}{y}{n}}  ::1.2.3.256
+isip4:  ${if isip4{1.2.3.256}{y}{n}}  1.2.3.256
 isip:   ${if isip {1:2:3:4}{y}{n}}  1:2:3:4
 isip4:  ${if isip4{1:2:3:4}{y}{n}}  1:2:3:4
 isip6:  ${if isip6{1:2:3:4}{y}{n}}  1:2:3:4
@@ -426,6 +428,7 @@ isip6:  ${if isip6{::1}{y}{n}}      ::1
 isip:   ${if isip {fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
 isip4:  ${if isip4{fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
 isip6:  ${if isip6{fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
+isip:   ${if isip {fe80::1.2.3.4}{y}{n}}  fe80::1.2.3.4
 isip:   ${if isip {rhubarb}{y}{n}}  rhubarb
 isip4:  ${if isip4{rhubarb}{y}{n}}  rhubarb
 isip6:  ${if isip6{rhubarb}{y}{n}}  rhubarb

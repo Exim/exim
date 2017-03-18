@@ -35,6 +35,9 @@ PP/02 Bug 2070: uClibc defines __GLIBC__ without providing glibc headers;
       add noisy ifdef guards to special-case this sillyness.
       Patch from Bernd Kuhls.
 
+JH/05 Tighten up the checking in isip4 (et al): dotted-quad components larger
+      than 255 are no longer allowed.
+
 
 Exim version 4.89
 -----------------

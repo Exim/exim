@@ -393,6 +393,8 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > isip:   y  1.2.3.4
 > isip4:  y  1.2.3.4
 > isip6:  n  1.2.3.4
+> isip:   n  ::1.2.3.256
+> isip4:  n  1.2.3.256
 > isip:   n  1:2:3:4
 > isip4:  n  1:2:3:4
 > isip6:  n  1:2:3:4
@@ -402,6 +404,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > isip:   y  fe80::a00:20ff:fe86:a061
 > isip4:  n  fe80::a00:20ff:fe86:a061
 > isip6:  y  fe80::a00:20ff:fe86:a061
+> isip:   y  fe80::1.2.3.4
 > isip:   n  rhubarb
 > isip4:  n  rhubarb
 > isip6:  n  rhubarb
