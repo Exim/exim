@@ -2,6 +2,7 @@
 
 use warnings;
 use strict;
+use Pod::Usage;
 BEGIN { pop @INC if $INC[-1] eq '.' };
 
 # Copyright (c) 2007-2015 University of Cambridge.
@@ -205,14 +206,16 @@ sub get_related_ids {
 # which is an additional condition. The -M flag will also display "related"
 # loglines (msgid from matched lines is searched in following lines).
 
-getopts('Ilvt:M',\my %args);
+getopts('Ilvt:Mhm',\my %args);
 $queue_time  = $args{'t'}? $args{'t'} : -1;
 $insensitive = $args{'I'}? 0 : 1;
 $invert      = $args{'v'}? 1 : 0;
 $related     = $args{'M'}? 1 : 0;
 
-die "usage: exigrep [-I] [-l] [-M] [-t <seconds>] [-v] <pattern> [<log file>]...\n"
-  if ($#ARGV < 0);
+pod2usage(-exit => 0, -verbose => 1) if $args{'h'};
+pod2usage(-exit => 0, -verbose => 2, -noperldoc => system('perldoc -V 2>/dev/null >/dev/null'))
+    if $args{'m'};
+pod2usage if not @ARGV;
 
 $pattern = shift @ARGV;
 $pattern = quotemeta $pattern if $args{l};
@@ -256,4 +259,76 @@ for (keys %id_list)
   print "+++ $_ has not completed +++\n$saved{$_}\n";
   }
 
-# End of exigrep
+__END__
+
+=head1 NAME
+
+exigrep - search Exim's main log
+
+=head1 SYNOPSIS
+
+B<exigrep> [options] pattern [log] ...
+
+=head1 DESCRIPTION
+
+The B<exigrep> utility is a Perl script that searches one or more main log
+files for entries that match a given pattern.  When it finds  a  match,
+it  extracts  all  the  log  entries for the relevant message, not just
+those that match the pattern.  Thus, B<exigrep> can extract  complete  log
+entries  for  a  given  message, or all mail for a given user, or for a
+given host, for example.
+
+If no file names are given on the command line, the standard input is read.
+
+For known file extensions indicating compression (F<.gz>, F<.bz2>, F<.xz>, and F<.lzma>)
+a suitable de-compressor is used, if available.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-l>
+
+This means 'literal', that is, treat all characters in the
+pattern  as standing for themselves.  Otherwise the pattern must be a
+Perl regular expression.  The pattern match is case-insensitive.
+
+=item B<-t> I<seconds>
+
+Limit the output to messages that spent at least I<seconds> in the
+queue.
+
+=item B<-I>
+
+Do a case sensitive search.
+
+=item B<-v>
+
+Invert the meaning of the search pattern. That is, print message log
+entries that are not related to that pattern.
+
+=item B<-M>
+
+Search for related messages too.
+
+=item B<-h>
+
+Print a short reference help. For more detailed help try L<exigrep(8)>,
+or C<exigrep -m>.
+
+=item B<-m>
+
+Print this manual page of B<exigrep>.
+
+=back
+
+=head1 SEE ALSO
+
+L<exim(8)>, L<perlre(1)>, L<Exim|http://exim.org/>
+
+=head1 AUTHOR
+
+This  manual  page  was stitched together from spec.txt by Andreas Metzler L<ametzler at downhill.at.eu.org>
+and updated by Heiko Schlittermann L<hs@schlittermann.de>.
+
+=cut
