@@ -220,6 +220,16 @@ pod2usage if not @ARGV;
 $pattern = shift @ARGV;
 $pattern = quotemeta $pattern if $args{l};
 
+# Start a pager if output goes to a terminal
+if (-t 1)
+  {
+  foreach ($ENV{PAGER}//(), 'less', 'more')
+    {
+    open(my $pager, '|-', $_) or next;
+    select $pager;
+    last;
+    }
+}
 
 # If file arguments are given, open each one and process according as it is
 # is compressed or not.
