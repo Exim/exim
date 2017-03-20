@@ -2,8 +2,10 @@
 
 use warnings;
 use strict;
-use Pod::Usage;
 BEGIN { pop @INC if $INC[-1] eq '.' };
+
+use Pod::Usage;
+use Getopt::Long;
 
 # Copyright (c) 2007-2015 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -34,7 +36,6 @@ BEGIN { pop @INC if $INC[-1] eq '.' };
 # Typical run time acceleration: 4 times
 
 
-use Getopt::Std qw(getopts);
 use POSIX qw(mktime);
 
 
@@ -61,10 +62,17 @@ return $seconds;
 # This subroutine processes a single line (in $_) from a log file. Program
 # defensively against short lines finding their way into the log.
 
-my (%saved, %id_list, $pattern, $queue_time, $insensitive, $invert);
+my (%saved, %id_list, $pattern);
+
+my $queue_time  = -1;
+my $insensitive = 1;
+my $invert      = 0;
+my $related     = 0;
+my $use_pager   = 1;
+my $literal     = 0;
+
 
 # If using "related" option, have to track extra message IDs
-my $related;
 my $related_re='';
 my @Mids = ();
 
@@ -206,22 +214,28 @@ sub get_related_ids {
 # which is an additional condition. The -M flag will also display "related"
 # loglines (msgid from matched lines is searched in following lines).
 
-getopts('Ilvt:Mhm',\my %args);
-$queue_time  = $args{'t'}? $args{'t'} : -1;
-$insensitive = $args{'I'}? 0 : 1;
-$invert      = $args{'v'}? 1 : 0;
-$related     = $args{'M'}? 1 : 0;
-
-pod2usage(-exit => 0, -verbose => 1) if $args{'h'};
-pod2usage(-exit => 0, -verbose => 2, -noperldoc => system('perldoc -V 2>/dev/null >/dev/null'))
-    if $args{'m'};
-pod2usage if not @ARGV;
+GetOptions(
+    'I|sensitive' => sub { $insensitive = 0 },
+      'l|literal' => \$literal,
+      'M|related' => \$related,
+      't|queue-time=i' => \$queue_time,
+      'pager!'         => \$use_pager,
+      'v|invert'       => \$invert,
+      'h|help'         => sub { pod2usage(-exit => 0, -verbose => 1) },
+      'm|man'          => sub {
+        pod2usage(
+            -exit      => 0,
+            -verbose   => 2,
+            -noperldoc => system('perldoc -V 2>/dev/null >&2')
+        );
+      },
+) and @ARGV or pod2usage;
 
 $pattern = shift @ARGV;
-$pattern = quotemeta $pattern if $args{l};
+$pattern = quotemeta $pattern if $literal;
 
 # Start a pager if output goes to a terminal
-if (-t 1)
+if (-t 1 and $use_pager)
   {
   foreach ($ENV{PAGER}//(), 'less', 'more')
     {
@@ -293,40 +307,47 @@ If no file names are given on the command line, the standard input is read.
 For known file extensions indicating compression (F<.gz>, F<.bz2>, F<.xz>, and F<.lzma>)
 a suitable de-compressor is used, if available.
 
+The output is sent through a pager if a terminal is connected to STDOUT. As
+pager are considered: C<$ENV{PAGER}>, C<less>, C<more>.
+
 =head1 OPTIONS
 
 =over
 
-=item B<-l>
+=item B<-l>|B<--literal>
 
 This means 'literal', that is, treat all characters in the
 pattern  as standing for themselves.  Otherwise the pattern must be a
 Perl regular expression.  The pattern match is case-insensitive.
 
-=item B<-t> I<seconds>
+=item B<-t>|B<--queue-time> I<seconds>
 
 Limit the output to messages that spent at least I<seconds> in the
 queue.
 
-=item B<-I>
+=item B<-I>|B<--sensitive>
 
 Do a case sensitive search.
 
-=item B<-v>
+=item B<-v>|B<--invert>
 
 Invert the meaning of the search pattern. That is, print message log
 entries that are not related to that pattern.
 
-=item B<-M>
+=item B<-M>|B<--related>
 
 Search for related messages too.
 
-=item B<-h>
+=item B<--no-pager>
+
+Do not use a pager, even if STDOUT is connected to a terminal.
+
+=item B<-h>|B<--help>
 
 Print a short reference help. For more detailed help try L<exigrep(8)>,
 or C<exigrep -m>.
 
-=item B<-m>
+=item B<-m>|B<--man>
 
 Print this manual page of B<exigrep>.
 
