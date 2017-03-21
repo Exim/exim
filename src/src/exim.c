@@ -2710,7 +2710,7 @@ for (i = 1; i < argc; i++)
 
       /* Set up $sending_ip_address and $sending_port, unless proxied */
 
-      if (!continue_proxy)
+      if (!continue_proxy_cipher)
 	if (getsockname(fileno(stdin), (struct sockaddr *)(&interface_sock),
 	    &size) == 0)
 	  sending_ip_address = host_ntoa(-1, &interface_sock, NULL,
@@ -2774,12 +2774,14 @@ for (i = 1; i < argc; i++)
 #ifdef SUPPORT_TLS
     /* -MCt: similar to -MCT below but the connection is still open
     via a proxy proces which handles the TLS context and coding.
-    Require two arguments for the proxied local address and port.  */
+    Require three arguments for the proxied local address and port,
+    and the TLS cipher.  */
 
-	case 't': continue_proxy = TRUE;
-		  if (++i < argc) sending_ip_address = argv[i];
+	case 't': if (++i < argc) sending_ip_address = argv[i];
 		  else badarg = TRUE;
 		  if (++i < argc) sending_port = (int)(Uatol(argv[i]));
+		  else badarg = TRUE;
+		  if (++i < argc) continue_proxy_cipher = argv[i];
 		  else badarg = TRUE;
 		  /*FALLTHROUGH*/
 

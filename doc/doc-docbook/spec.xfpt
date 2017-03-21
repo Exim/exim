@@ -3869,12 +3869,12 @@ by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
 
 .new
-.vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port'&>
+.vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port'&>&~<&'cipher'&>
 .oindex "&%-MCt%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 connection is being proxied by a parent process for handling TLS encryption.
-The pair of arguments give the local address and port being proxied.
+The arguments give the local address and port being proxied, and the TLS cipher.
 .wen
 
 .vitem &%-Mc%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
@@ -35774,10 +35774,9 @@ down a single SMTP connection, an asterisk follows the IP address in the log
 lines for the second and subsequent messages.
 .new
 When two or more messages are delivered down a single TLS connection, the
-DNS and TLS-related information logged for the first message delivered
+DNS and some TLS-related information logged for the first message delivered
 will not be present in the log lines for the second and subsequent messages.
-A TLS-marker indication of &'X=*'& is added to the log line instead of
-cipher information.
+TLS cipher information is still available.
 .wen
 
 .cindex "delivery" "cutthrough; logging"
@@ -35906,7 +35905,7 @@ the following table:
 &`T   `&        on &`<=`& lines: message subject (topic)
 &`    `&        on &`=>`& &`**`& and &`==`& lines: transport name
 &`U   `&        local user or RFC 1413 identity
-&`X   `&        TLS cipher suite, or TLS usage mark
+&`X   `&        TLS cipher suite
 .endd
 
 

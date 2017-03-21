@@ -529,11 +529,11 @@ uid_t   config_uid             = 0;
 #endif
 
 int     connection_max_messages= -1;
+uschar *continue_proxy_cipher  = NULL;
 uschar *continue_hostname      = NULL;
 uschar *continue_host_address  = NULL;
 BOOL    continue_more          = FALSE;
 int     continue_sequence      = 1;
-BOOL    continue_proxy	       = FALSE;
 uschar *continue_transport     = NULL;
 
 uschar *csa_status             = NULL;

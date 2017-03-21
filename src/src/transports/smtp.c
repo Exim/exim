@@ -1823,7 +1823,7 @@ else
   /* For a continued connection with TLS being proxied for us, nothing
   more to do. */
 
-  if (continue_proxy)
+  if (continue_proxy_cipher)
     {
     sx->peer_offered = smtp_peer_options;
     pipelining_active = !!(smtp_peer_options & PEER_OFFERED_PIPE);
@@ -3277,7 +3277,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
      || continue_more
      || (
 #ifdef SUPPORT_TLS
-	   (  tls_out.active < 0  &&  !continue_proxy
+	   (  tls_out.active < 0  &&  !continue_proxy_cipher
            || verify_check_given_host(&sx.ob->hosts_nopass_tls, host) != OK
 	   )
         &&

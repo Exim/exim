@@ -289,11 +289,11 @@ extern uschar *config_main_filelist;   /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */
 extern uschar *config_main_directory;  /* Directory where the main config file was found */
 extern uid_t   config_uid;             /* Additional owner */
+extern uschar *continue_proxy_cipher;  /* TLS cipher for proxied continued delivery */
 extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern BOOL    continue_more;          /* Flag more addresses waiting */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
-extern BOOL    continue_proxy;	       /* Continued delivery is proxied for TLS */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */

@@ -4715,8 +4715,12 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 
         rmt_dlv_checked_write(fd, 'X', '1', big_buffer, ptr - big_buffer);
         }
-      else if (continue_proxy)		/* known TLS, but no cipher info */
-        rmt_dlv_checked_write(fd, 'X', '1', US"*\0", 3);
+      else if (continue_proxy_cipher)
+	{
+        ptr = big_buffer + sprintf(CS big_buffer, "%.128s", continue_proxy_cipher) + 1;
+	*ptr++ = 0;
+        rmt_dlv_checked_write(fd, 'X', '1', big_buffer, ptr - big_buffer);
+	}
 
       if (addr->peercert)
 	{
