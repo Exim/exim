@@ -1238,7 +1238,6 @@ set up a filtering process, fork another process to call the internal function
 to write to the filter, and in this process just suck from the filter and write
 down the given fd. At the end, tidy up the pipes and the processes.
 
-XXX
 Arguments:     as for internal_transport_write_message() above
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
@@ -1934,6 +1933,72 @@ return TRUE;
 *    Deliver waiting message down same socket    *
 *************************************************/
 
+/* Just the regain-root-privilege exec portion */
+void
+transport_do_pass_socket(const uschar *transport_name, const uschar *hostname,
+  const uschar *hostaddress, uschar *id, int socket_fd)
+{
+pid_t pid;
+int status;
+int i = 20;
+const uschar **argv;
+
+/* Set up the calling arguments; use the standard function for the basics,
+but we have a number of extras that may be added. */
+
+argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
+
+if (smtp_authenticated)				argv[i++] = US"-MCA";
+if (smtp_peer_options & PEER_OFFERED_CHUNKING)	argv[i++] = US"-MCK";
+if (smtp_peer_options & PEER_OFFERED_DSN)	argv[i++] = US"-MCD";
+if (smtp_peer_options & PEER_OFFERED_PIPE)	argv[i++] = US"-MCP";
+if (smtp_peer_options & PEER_OFFERED_SIZE)	argv[i++] = US"-MCS";
+#ifdef SUPPORT_TLS
+if (smtp_peer_options & PEER_OFFERED_TLS)
+  if (tls_out.active >= 0 || continue_proxy_cipher)
+    {
+    argv[i++] = US"-MCt";
+    argv[i++] = sending_ip_address;
+    argv[i++] = string_sprintf("%d", sending_port);
+    argv[i++] = tls_out.active >= 0 ? tls_out.cipher : continue_proxy_cipher;
+    }
+  else
+    argv[i++] = US"-MCT";
+#endif
+
+if (queue_run_pid != (pid_t)0)
+  {
+  argv[i++] = US"-MCQ";
+  argv[i++] = string_sprintf("%d", queue_run_pid);
+  argv[i++] = string_sprintf("%d", queue_run_pipe);
+  }
+
+argv[i++] = US"-MC";
+argv[i++] = US transport_name;
+argv[i++] = US hostname;
+argv[i++] = US hostaddress;
+argv[i++] = string_sprintf("%d", continue_sequence + 1);
+argv[i++] = id;
+argv[i++] = NULL;
+
+/* Arrange for the channel to be on stdin. */
+
+if (socket_fd != 0)
+  {
+  (void)dup2(socket_fd, 0);
+  (void)close(socket_fd);
+  }
+
+DEBUG(D_exec) debug_print_argv(argv);
+exim_nullstd();                          /* Ensure std{out,err} exist */
+execv(CS argv[0], (char *const *)argv);
+
+DEBUG(D_any) debug_printf("execv failed: %s\n", strerror(errno));
+_exit(errno);         /* Note: must be _exit(), NOT exit() */
+}
+
+
+
 /* Fork a new exim process to deliver the message, and do a re-exec, both to
 get a clean delivery process, and to regain root privilege in cases where it
 has been given away.
@@ -1959,9 +2024,6 @@ DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
 if ((pid = fork()) == 0)
   {
-  int i = 20;
-  const uschar **argv;
-
   /* Disconnect entirely from the parent process. If we are running in the
   test harness, wait for a bit to allow the previous process time to finish,
   write the log, etc., so that the output is always in the same order for
@@ -1970,59 +2032,8 @@ if ((pid = fork()) == 0)
   if ((pid = fork()) != 0) _exit(EXIT_SUCCESS);
   if (running_in_test_harness) sleep(1);
 
-  /* Set up the calling arguments; use the standard function for the basics,
-  but we have a number of extras that may be added. */
-
-  argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
-
-  if (smtp_authenticated) argv[i++] = US"-MCA";
-
-  if (smtp_peer_options & PEER_OFFERED_CHUNKING) argv[i++] = US"-MCK";
-  if (smtp_peer_options & PEER_OFFERED_DSN) argv[i++] = US"-MCD";
-  if (smtp_peer_options & PEER_OFFERED_PIPE) argv[i++] = US"-MCP";
-  if (smtp_peer_options & PEER_OFFERED_SIZE) argv[i++] = US"-MCS";
-#ifdef SUPPORT_TLS
-  if (smtp_peer_options & PEER_OFFERED_TLS)
-    if (tls_out.active >= 0 || continue_proxy_cipher)
-      {
-      argv[i++] = US"-MCt";
-      argv[i++] = sending_ip_address;
-      argv[i++] = string_sprintf("%d", sending_port);
-      argv[i++] = tls_out.active >= 0 ? tls_out.cipher : continue_proxy_cipher;
-      }
-    else
-      argv[i++] = US"-MCT";
-#endif
-
-  if (queue_run_pid != (pid_t)0)
-    {
-    argv[i++] = US"-MCQ";
-    argv[i++] = string_sprintf("%d", queue_run_pid);
-    argv[i++] = string_sprintf("%d", queue_run_pipe);
-    }
-
-  argv[i++] = US"-MC";
-  argv[i++] = US transport_name;
-  argv[i++] = US hostname;
-  argv[i++] = US hostaddress;
-  argv[i++] = string_sprintf("%d", continue_sequence + 1);
-  argv[i++] = id;
-  argv[i++] = NULL;
-
-  /* Arrange for the channel to be on stdin. */
-
-  if (socket_fd != 0)
-    {
-    (void)dup2(socket_fd, 0);
-    (void)close(socket_fd);
-    }
-
-  DEBUG(D_exec) debug_print_argv(argv);
-  exim_nullstd();                          /* Ensure std{out,err} exist */
-  execv(CS argv[0], (char *const *)argv);
-
-  DEBUG(D_any) debug_printf("execv failed: %s\n", strerror(errno));
-  _exit(errno);         /* Note: must be _exit(), NOT exit() */
+  transport_do_pass_socket(transport_name, hostname, hostaddress,
+    id, socket_fd);
   }
 
 /* If the process creation succeeded, wait for the first-level child, which

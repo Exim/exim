@@ -1887,7 +1887,6 @@ smtp_reset(void *reset_point)
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
-cancel_cutthrough_connection("smtp reset");
 message_linecount = 0;
 message_size = -1;
 acl_added_headers = NULL;
@@ -2018,6 +2017,7 @@ bsmtp_transaction_linecount = receive_linecount;
 
 if ((receive_feof)()) return 0;   /* Treat EOF as QUIT */
 
+cancel_cutthrough_connection(TRUE, US"smtp_setup_batch_msg");
 smtp_reset(reset_point);                /* Reset for start of message */
 
 /* Deal with SMTP commands. This loop is exited by setting done to a POSITIVE
@@ -2042,6 +2042,7 @@ while (done <= 0)
     /* Fall through */
 
     case RSET_CMD:
+    cancel_cutthrough_connection(TRUE, US"RSET received");
     smtp_reset(reset_point);
     bsmtp_transaction_linecount = receive_linecount;
     break;
@@ -2065,6 +2066,7 @@ while (done <= 0)
 
     /* Reset to start of message */
 
+    cancel_cutthrough_connection(TRUE, US"MAIL received");
     smtp_reset(reset_point);
 
     /* Apply SMTP rewrite */
@@ -4253,6 +4255,7 @@ while (done <= 0)
 	  : pnormal)
 	+ (tls_in.active >= 0 ? pcrpted : 0)
 	];
+    cancel_cutthrough_connection(TRUE, US"sent EHLO response");
     smtp_reset(reset_point);
     toomany = FALSE;
     break;   /* HELO/EHLO */
@@ -4307,6 +4310,7 @@ while (done <= 0)
     /* Reset for start of message - even if this is going to fail, we
     obviously need to throw away any previous data. */
 
+    cancel_cutthrough_connection(TRUE, US"MAIL received");
     smtp_reset(reset_point);
     toomany = FALSE;
     sender_data = recipient_data = NULL;
@@ -5162,6 +5166,7 @@ while (done <= 0)
     do an implied RSET when STARTTLS is received. */
 
     incomplete_transaction_log(US"STARTTLS");
+    cancel_cutthrough_connection(TRUE, US"STARTTLS received");
     smtp_reset(reset_point);
     toomany = FALSE;
     cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = FALSE;
@@ -5298,6 +5303,7 @@ while (done <= 0)
 
     case RSET_CMD:
     smtp_rset_handler();
+    cancel_cutthrough_connection(TRUE, US"RSET received");
     smtp_reset(reset_point);
     toomany = FALSE;
     break;

@@ -1,0 +1,26 @@
+# client: callout lazy-close, -bs send
+gnutls
+need_ipv4
+#
+# a tls-capable target for the verify/delivery connection
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# a recipient verify and continued-delivery
+# cmdline -bs send
+exim -bs
+mail from:<usera@ok.example>
+rcpt to:<userb@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 1
+killdaemon
+#
+#
+no_stdout_check
+no_msglog_check

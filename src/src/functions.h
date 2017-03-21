@@ -110,18 +110,19 @@ extern void    bdat_flush_data(void);
 extern void    bits_clear(unsigned int *, size_t, int *);
 extern void    bits_set(unsigned int *, size_t, int *);
 
-extern void    cancel_cutthrough_connection(const char *);
+extern void    cancel_cutthrough_connection(BOOL, const uschar *);
 extern int     check_host(void *, const uschar *, const uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_uid(const uschar **, const uschar **, int,
 		 uid_t *, gid_t *, int *, int *, uschar *, BOOL);
 extern BOOL    cleanup_environment(void);
+extern BOOL    cutthrough_data_puts(uschar *, int);
+extern BOOL    cutthrough_data_put_nl(void);
 extern uschar *cutthrough_finaldot(void);
 extern BOOL    cutthrough_flush_send(void);
 extern BOOL    cutthrough_headers_send(void);
 extern BOOL    cutthrough_predata(void);
-extern BOOL    cutthrough_puts(uschar *, int);
-extern BOOL    cutthrough_put_nl(void);
+extern void    release_cutthrough_connection(const uschar *);
 
 extern void    daemon_go(void);
 
@@ -149,6 +150,7 @@ extern int     deliver_split_address(address_item *);
 extern void    deliver_succeeded(address_item *);
 
 extern uschar *deliver_get_sender_address (uschar *id);
+extern void    delivery_re_exec(int);
 
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
@@ -405,6 +407,7 @@ extern void    smtp_get_cache(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
+extern void    smtp_proxy_tls(uschar *, size_t, int, int);
 extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
@@ -472,6 +475,8 @@ extern void    tls_modify_variables(tls_support *);
 extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, uschar *,
                  BOOL *, oicf, void*);
 extern void    transport_init(void);
+extern void    transport_do_pass_socket(const uschar *, const uschar *,
+		 const uschar *, uschar *, int);
 extern BOOL    transport_pass_socket(const uschar *, const uschar *, const uschar *, uschar *,
                  int);
 extern uschar *transport_rcpt_address(address_item *, BOOL);

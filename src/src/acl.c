@@ -1500,7 +1500,7 @@ static verify_type_t verify_type_list[] = {
 enum { CALLOUT_DEFER_OK, CALLOUT_NOCACHE, CALLOUT_RANDOM, CALLOUT_USE_SENDER,
   CALLOUT_USE_POSTMASTER, CALLOUT_POSTMASTER, CALLOUT_FULLPOSTMASTER,
   CALLOUT_MAILFROM, CALLOUT_POSTMASTER_MAILFROM, CALLOUT_MAXWAIT, CALLOUT_CONNECT,
-  CALLOUT_TIME
+  CALLOUT_HOLD, CALLOUT_TIME	/* TIME must be last */
   };
 typedef struct {
   uschar * name;
@@ -1521,6 +1521,7 @@ static callout_opt_t callout_opt_list[] = {
     { US"mailfrom",	  CALLOUT_MAILFROM,	 0,				TRUE,  FALSE },
     { US"maxwait",	  CALLOUT_MAXWAIT,	 0,				TRUE,  TRUE },
     { US"connect",	  CALLOUT_CONNECT,	 0,				TRUE,  TRUE },
+    { US"hold",		  CALLOUT_HOLD,		 vopt_callout_hold,		FALSE, FALSE },
     { NULL,		  CALLOUT_TIME,		 0,				FALSE, TRUE }
   };
 
@@ -1744,8 +1745,7 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
         uschar buffer[256];
         while (isspace(*sublist)) sublist++;
 
-        while ((opt = string_nextinlist(&sublist, &optsep, buffer, sizeof(buffer)))
-              != NULL)
+        while ((opt = string_nextinlist(&sublist, &optsep, buffer, sizeof(buffer))))
           {
 	  callout_opt_t * op;
 	  double period = 1.0F;
@@ -1767,15 +1767,11 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
               }
             while (isspace(*opt)) opt++;
 	    }
-	  if (op->timeval)
+	  if (op->timeval && (period = readconf_readtime(opt, 0, FALSE)) < 0)
 	    {
-            period = readconf_readtime(opt, 0, FALSE);
-            if (period < 0)
-              {
-              *log_msgptr = string_sprintf("bad time value in ACL condition "
-                "\"verify %s\"", arg);
-              return ERROR;
-              }
+	    *log_msgptr = string_sprintf("bad time value in ACL condition "
+	      "\"verify %s\"", arg);
+	    return ERROR;
 	    }
 
 	  switch(op->value)
@@ -3069,7 +3065,7 @@ for (; cb != NULL; cb = cb->next)
 	break;
 
 	case CONTROL_FAKEREJECT:
-	cancel_cutthrough_connection("fakereject");
+	cancel_cutthrough_connection(TRUE, US"fakereject");
 	case CONTROL_FAKEDEFER:
 	fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
 	if (*p == '/')
@@ -3100,12 +3096,12 @@ for (; cb != NULL; cb = cb->next)
 	  *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
 	  return ERROR;
 	  }
-	cancel_cutthrough_connection("item frozen");
+	cancel_cutthrough_connection(TRUE, US"item frozen");
 	break;
 
 	case CONTROL_QUEUE_ONLY:
 	queue_only_policy = TRUE;
-	cancel_cutthrough_connection("queueing forced");
+	cancel_cutthrough_connection(TRUE, US"queueing forced");
 	break;
 
 	case CONTROL_SUBMISSION:
@@ -4334,8 +4330,9 @@ switch (where)
 #ifndef DISABLE_PRDR
   case ACL_WHERE_PRDR:
 #endif
+
     if (host_checking_callout)	/* -bhc mode */
-      cancel_cutthrough_connection("host-checking mode");
+      cancel_cutthrough_connection(TRUE, US"host-checking mode");
 
     else if (  rc == OK
 	    && cutthrough.delivery
@@ -4362,13 +4359,20 @@ switch (where)
     if (rc == OK)
       cutthrough_predata();
     else
-      cancel_cutthrough_connection("predata acl not ok");
+      cancel_cutthrough_connection(TRUE, US"predata acl not ok");
     break;
 
   case ACL_WHERE_QUIT:
   case ACL_WHERE_NOTQUIT:
-    cancel_cutthrough_connection("quit or notquit");
+    /* Drop cutthrough conns, and drop heldopen verify conns if
+    the previous was not DATA */
+    {
+    uschar prev = smtp_connection_had[smtp_ch_index-2];
+    BOOL dropverify = !(prev == SCH_DATA || prev == SCH_BDAT);
+
+    cancel_cutthrough_connection(dropverify, US"quit or conndrop");
     break;
+    }
 
   default:
     break;

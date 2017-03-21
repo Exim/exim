@@ -23,6 +23,9 @@ Version 4.90
 
  4. A malware connection type for the FPSCAND protocol.
 
+ 5. An option for recipient verify callouts to hold the connection open for
+    further recipients and for delivery.
+
 
 Version 4.89
 ------------

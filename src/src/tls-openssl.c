@@ -1699,6 +1699,7 @@ uschar *expcerts, *expcrl;
 
 if (!expand_check(certs, US"tls_verify_certificates", &expcerts, errstr))
   return DEFER;
+DEBUG(D_tls) debug_printf("tls_verify_certificates: %s\n", expcerts);
 
 if (expcerts && *expcerts)
   {

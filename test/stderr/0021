@@ -183,6 +183,7 @@ end of ACL "rcpt": ACCEPT
 >>
 LOG: MAIN
   <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
+release cutthrough conn: msg passed for delivery
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

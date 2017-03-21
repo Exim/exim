@@ -1,0 +1,264 @@
+# callout lazy-close, smtp send
+need_ipv4
+#
+# a recipient verify and continued-delivery
+# smtp send
+server PORT_S
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<userc@ok.example>
+??? 250
+RCPT TO:<userd@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+killdaemon
+#
+#
+# smtp send, deliver_drop_priv
+server PORT_S
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+exim -DSERVER=server -DOPT=deliver_drop_privilege -bd -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<usere@ok.example>
+??? 250
+RCPT TO:<userf@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+killdaemon
+#
+#
+# multiple recipients
+# 1st callout result is cached (above); should not activate LCC
+# smtp send
+server PORT_S 2
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO:<userd2@test.ex>
+250 OK
+QUIT
+221 Bye
+*eof
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO:<userd@test.ex>
+250 OK
+RCPT TO:<userd2@test.ex>
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<userc@ok.example>
+??? 250
+RCPT TO:<userd@test.ex>
+??? 250
+RCPT TO:<userd2@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+#
+#
+# 2nd callout result is cached (above); should not activate LCC
+# smtp send
+server PORT_S 2
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO:<userd3@test.ex>
+250 OK
+QUIT
+221 Bye
+*eof
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO:<userd3@test.ex>
+250 OK
+RCPT TO:<userd2@test.ex>
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<userc@ok.example>
+??? 250
+RCPT TO:<userd3@test.ex>
+??? 250
+RCPT TO:<userd2@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+#
+#
+# no cache hits; should do LCC
+# smtp send
+server PORT_S 2
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO:<userd4@test.ex>
+250 OK
+RCPT TO:<userd5@test.ex>
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<userc@ok.example>
+??? 250
+RCPT TO:<userd4@test.ex>
+??? 250
+RCPT TO:<userd5@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+killdaemon
+#
+#
+no_stdout_check
+no_msglog_check

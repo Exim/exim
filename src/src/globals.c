@@ -538,8 +538,10 @@ uschar *continue_transport     = NULL;
 
 uschar *csa_status             = NULL;
 cut_t   cutthrough = {
+  FALSE,				/* verify-only: normal delivery */
   FALSE,				/* delivery: when to attempt */
   FALSE,				/* on defer: spool locally */
+  FALSE,				/* not a TLS conn yet */
   -1,					/* fd: open connection */
   0,					/* nrcpt: number of addresses */
 };

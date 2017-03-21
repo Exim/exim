@@ -1,0 +1,15 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for usery@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for usery@test.ex usery2@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => usery@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaY-0005vi-00 -> usery2@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for usery3@test.ex usery@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery3@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 -> usery@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for usery4@test.ex usery5@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 => usery4@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmbA-0005vi-00 -> usery5@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

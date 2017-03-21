@@ -30908,6 +30908,21 @@ command when performing the callout, instead of an empty address. There is no
 need to use this option unless you know that the called hosts make use of the
 sender when checking recipients. If used indiscriminately, it reduces the
 usefulness of callout caching.
+
+.vitem &*hold*&
+This option applies to recipient callouts only. For example:
+.code
+require  verify = recipient/callout=use_sender,hold
+.endd
+It causes the connection to be helod open and used for any further recipients
+and for eventual delivery (should that be done quickly).
+Doing this saves on TCP and SMTP startup costs, and TLS costs also
+when that is used for the connections.
+The advantage is only gained if there are no callout cache hits
+(which could be enforced by the no_cache option),
+if the use_sender option is used,
+if neither the random nor the use_postmaster option is used,
+and if no other callouts intervene.
 .endlist
 
 If you use any of the parameters that set a non-empty sender for the MAIL

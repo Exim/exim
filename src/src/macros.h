@@ -721,7 +721,8 @@ enum { v_none, v_sender, v_recipient, v_expn };
 #define vopt_callout_no_cache     0x0040   /* disable callout cache */
 #define vopt_callout_recipsender  0x0080   /* use real sender to verify recip */
 #define vopt_callout_recippmaster 0x0100   /* use postmaster to verify recip */
-#define vopt_success_on_redirect  0x0200
+#define vopt_callout_hold	  0x0200   /* lazy close connection */
+#define vopt_success_on_redirect  0x0400
 
 /* Values for fields in callout cache records */
 

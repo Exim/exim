@@ -831,7 +831,7 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
       {
       message_size++;
       if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
-      (void) cutthrough_put_nl();
+      (void) cutthrough_data_put_nl();
       if (ch != '\r') ch_state = 1; else continue;
       }
     break;
@@ -850,7 +850,7 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
     if (ch == '.')
       {
       uschar c= ch;
-      (void) cutthrough_puts(&c, 1);
+      (void) cutthrough_data_puts(&c, 1);
       }
     ch_state = 1;
     break;
@@ -860,7 +860,7 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
     message_size++;
     body_linecount++;
     if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
-    (void) cutthrough_put_nl();
+    (void) cutthrough_data_put_nl();
     if (ch == '\r')
       {
       ch_state = 2;
@@ -881,11 +881,11 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
     if (message_size > thismessage_size_limit) return END_SIZE;
     }
   if(ch == '\n')
-    (void) cutthrough_put_nl();
+    (void) cutthrough_data_put_nl();
   else
     {
     uschar c = ch;
-    (void) cutthrough_puts(&c, 1);
+    (void) cutthrough_data_puts(&c, 1);
     }
   }
 
@@ -991,7 +991,7 @@ for(;;)
 	{
 	message_size++;
 	if (fout && fputc('\n', fout) == EOF) return END_WERROR;
-	(void) cutthrough_put_nl();
+	(void) cutthrough_data_put_nl();
 	if (ch == '\r') continue;	/* don't write CR */
 	ch_state = MID_LINE;
 	}
@@ -1008,11 +1008,11 @@ for(;;)
     if (message_size > thismessage_size_limit) return END_SIZE;
     }
   if(ch == '\n')
-    (void) cutthrough_put_nl();
+    (void) cutthrough_data_put_nl();
   else
     {
     uschar c = ch;
-    (void) cutthrough_puts(&c, 1);
+    (void) cutthrough_data_puts(&c, 1);
     }
   }
 /*NOTREACHED*/
@@ -1140,7 +1140,8 @@ switch(where)
   case ACL_WHERE_DKIM:
   case ACL_WHERE_MIME:
   case ACL_WHERE_DATA:
-    if (cutthrough.fd >= 0 && (acl_removed_headers || acl_added_headers))
+    if (  cutthrough.fd >= 0 && cutthrough.delivery
+       && (acl_removed_headers || acl_added_headers))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Header modification in data ACLs"
 			" will not take effect on cutthrough deliveries");
@@ -1148,11 +1149,11 @@ switch(where)
     }
   }
 
-if (acl_removed_headers != NULL)
+if (acl_removed_headers)
   {
   DEBUG(D_receive|D_acl) debug_printf_indent(">>Headers removed by %s ACL:\n", acl_name);
 
-  for (h = header_list; h != NULL; h = h->next) if (h->type != htype_old)
+  for (h = header_list; h; h = h->next) if (h->type != htype_old)
     {
     const uschar * list = acl_removed_headers;
     int sep = ':';         /* This is specified as a colon-separated list */
@@ -1170,10 +1171,10 @@ if (acl_removed_headers != NULL)
   DEBUG(D_receive|D_acl) debug_printf_indent(">>\n");
   }
 
-if (acl_added_headers == NULL) return;
+if (!acl_added_headers) return;
 DEBUG(D_receive|D_acl) debug_printf_indent(">>Headers added by %s ACL:\n", acl_name);
 
-for (h = acl_added_headers; h != NULL; h = next)
+for (h = acl_added_headers; h; h = next)
   {
   next = h->next;
 
@@ -1653,7 +1654,7 @@ search_tidyup();
 cutthrough delivery with the no-spool option.  It shouldn't be possible
 to set up the combination, but just in case kill any ongoing connection. */
 if (extract_recip || !smtp_input)
-  cancel_cutthrough_connection("not smtp input");
+  cancel_cutthrough_connection(TRUE, US"not smtp input");
 
 /* Initialize the chain of headers by setting up a place-holder for Received:
 header. Temporarily mark it as "old", i.e. not to be used. We keep header_last
@@ -2988,26 +2989,25 @@ inbound is, but inbound chunking ought to be ok with outbound plain.
 Could we do onward CHUNKING given inbound CHUNKING?
 */
 if (chunking_state > CHUNKING_OFFERED)
-  cancel_cutthrough_connection("chunking active");
+  cancel_cutthrough_connection(FALSE, US"chunking active");
 
 /* Cutthrough delivery:
 We have to create the Received header now rather than at the end of reception,
 so the timestamp behaviour is a change to the normal case.
 XXX Ensure this gets documented XXX.
 Having created it, send the headers to the destination. */
-if (cutthrough.fd >= 0)
+
+if (cutthrough.fd >= 0 && cutthrough.delivery)
   {
   if (received_count > received_headers_max)
     {
-    cancel_cutthrough_connection("too many headers");
+    cancel_cutthrough_connection(TRUE, US"too many headers");
     if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
     log_write(0, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
       "Too many \"Received\" headers",
       sender_address,
-      (sender_fullhost == NULL)? "" : " H=",
-      (sender_fullhost == NULL)? US"" : sender_fullhost,
-      (sender_ident == NULL)? "" : " U=",
-      (sender_ident == NULL)? US"" : sender_ident);
+      sender_fullhost ? "H=" : "", sender_fullhost ? sender_fullhost : US"",
+      sender_ident ? "U=" : "", sender_ident ? sender_ident : US"");
     message_id[0] = 0;                       /* Indicate no message accepted */
     smtp_reply = US"550 Too many \"Received\" headers - suspected mail loop";
     goto TIDYUP;                             /* Skip to end of function */
@@ -3105,7 +3105,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
       if (smtp_input)
 	{
 	Uunlink(spool_name);                 /* Lose data file when closed */
-	cancel_cutthrough_connection("sender closed connection");
+	cancel_cutthrough_connection(TRUE, US"sender closed connection");
 	message_id[0] = 0;                   /* Indicate no message accepted */
 	smtp_reply = handle_lost_connection(US"");
 	smtp_yield = FALSE;
@@ -3118,7 +3118,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
 
     case END_SIZE:
       Uunlink(spool_name);                /* Lose the data file when closed */
-      cancel_cutthrough_connection("mail too big");
+      cancel_cutthrough_connection(TRUE, US"mail too big");
       if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
 
       log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
@@ -3151,7 +3151,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
 
     case END_PROTOCOL:
       Uunlink(spool_name);		/* Lose the data file when closed */
-      cancel_cutthrough_connection("sender protocol error");
+      cancel_cutthrough_connection(TRUE, US"sender protocol error");
       smtp_reply = US"";		/* Response already sent */
       message_id[0] = 0;		/* Indicate no message accepted */
       goto TIDYUP;			/* Skip to end of function */
@@ -3184,7 +3184,7 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
 
   log_write(0, LOG_MAIN, "Message abandoned: %s", msg);
   Uunlink(spool_name);                /* Lose the data file */
-  cancel_cutthrough_connection("error writing spoolfile");
+  cancel_cutthrough_connection(TRUE, US"error writing spoolfile");
 
   if (smtp_input)
     {
@@ -3423,7 +3423,7 @@ else
 	      DEBUG(D_receive)
 		debug_printf("acl_smtp_dkim: acl_check returned %d on %s, "
 		  "skipping remaining items\n", rc, item);
-	      cancel_cutthrough_connection("dkim acl not ok");
+	      cancel_cutthrough_connection(TRUE, US"dkim acl not ok");
 	      break;
 	      }
             }
@@ -3542,14 +3542,14 @@ else
         {
         recipients_count = 0;
         blackholed_by = US"DATA ACL";
-        if (log_msg != NULL)
+        if (log_msg)
           blackhole_log_msg = string_sprintf(": %s", log_msg);
-	cancel_cutthrough_connection("data acl discard");
+	cancel_cutthrough_connection(TRUE, US"data acl discard");
         }
       else if (rc != OK)
         {
         Uunlink(spool_name);
-	cancel_cutthrough_connection("data acl not ok");
+	cancel_cutthrough_connection(TRUE, US"data acl not ok");
 #ifdef WITH_CONTENT_SCAN
         unspool_mbox();
 #endif
@@ -4148,9 +4148,9 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
-if(cutthrough.fd >= 0)
+if(cutthrough.fd >= 0 && cutthrough.delivery)
   {
-  uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the message */
+  uschar * msg = cutthrough_finaldot();	/* Ask the target system to accept the message */
 					/* Logging was done in finaldot() */
   switch(msg[0])
     {
@@ -4297,7 +4297,6 @@ if (smtp_input)
 	Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
 	Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
 	Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
-	message_id[0] = 0;	  /* Prevent a delivery from starting */
 	break;
 
       case TMP_REJ:
@@ -4307,12 +4306,15 @@ if (smtp_input)
 	  Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
 	  Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 	  }
-	message_id[0] = 0;	  /* Prevent a delivery from starting */
       default:
 	break;
       }
-    cutthrough.delivery = FALSE;
-    cutthrough.defer_pass = FALSE;
+    if (cutthrough_done != NOT_TRIED)
+      {
+      message_id[0] = 0;	  /* Prevent a delivery from starting */
+      cutthrough.delivery = cutthrough.callout_hold_only = FALSE;
+      cutthrough.defer_pass = FALSE;
+      }
     }
 
   /* For batched SMTP, generate an error message on failure, and do

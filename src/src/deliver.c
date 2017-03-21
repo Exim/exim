@@ -3366,15 +3366,15 @@ while (!done)
     up by checking the IP address. */
 
     case 'H':
-    for (h = addrlist->host_list; h; h = h->next)
-      {
-      if (!h->address || Ustrcmp(h->address, ptr+2) != 0) continue;
-      h->status = ptr[0];
-      h->why = ptr[1];
-      }
-    ptr += 2;
-    while (*ptr++);
-    break;
+      for (h = addrlist->host_list; h; h = h->next)
+	{
+	if (!h->address || Ustrcmp(h->address, ptr+2) != 0) continue;
+	h->status = ptr[0];
+	h->why = ptr[1];
+	}
+      ptr += 2;
+      while (*ptr++);
+      break;
 
     /* Retry items are sent in a preceding R item for each address. This is
     kept separate to keep each message short enough to guarantee it won't
@@ -3388,62 +3388,61 @@ while (!done)
     that a "delete" item is dropped in favour of an "add" item. */
 
     case 'R':
-    if (!addr) goto ADDR_MISMATCH;
+      if (!addr) goto ADDR_MISMATCH;
 
-    DEBUG(D_deliver|D_retry)
-      debug_printf("reading retry information for %s from subprocess\n",
-        ptr+1);
-
-    /* Cut out any "delete" items on the list. */
-
-    for (rp = &addr->retries; (r = *rp); rp = &r->next)
-      if (Ustrcmp(r->key, ptr+1) == 0)           /* Found item with same key */
-        {
-        if ((r->flags & rf_delete) == 0) break;  /* It was not "delete" */
-        *rp = r->next;                           /* Excise a delete item */
-        DEBUG(D_deliver|D_retry)
-          debug_printf("  existing delete item dropped\n");
-        }
-
-    /* We want to add a delete item only if there is no non-delete item;
-    however we still have to step ptr through the data. */
-
-    if (!r || !(*ptr & rf_delete))
-      {
-      r = store_get(sizeof(retry_item));
-      r->next = addr->retries;
-      addr->retries = r;
-      r->flags = *ptr++;
-      r->key = string_copy(ptr);
-      while (*ptr++);
-      memcpy(&(r->basic_errno), ptr, sizeof(r->basic_errno));
-      ptr += sizeof(r->basic_errno);
-      memcpy(&(r->more_errno), ptr, sizeof(r->more_errno));
-      ptr += sizeof(r->more_errno);
-      r->message = (*ptr)? string_copy(ptr) : NULL;
       DEBUG(D_deliver|D_retry)
-        debug_printf("  added %s item\n",
-          ((r->flags & rf_delete) == 0)? "retry" : "delete");
-      }
+	debug_printf("reading retry information for %s from subprocess\n",
+	  ptr+1);
 
-    else
-      {
-      DEBUG(D_deliver|D_retry)
-        debug_printf("  delete item not added: non-delete item exists\n");
-      ptr++;
+      /* Cut out any "delete" items on the list. */
+
+      for (rp = &addr->retries; (r = *rp); rp = &r->next)
+	if (Ustrcmp(r->key, ptr+1) == 0)           /* Found item with same key */
+	  {
+	  if (!(r->flags & rf_delete)) break;	   /* It was not "delete" */
+	  *rp = r->next;                           /* Excise a delete item */
+	  DEBUG(D_deliver|D_retry)
+	    debug_printf("  existing delete item dropped\n");
+	  }
+
+      /* We want to add a delete item only if there is no non-delete item;
+      however we still have to step ptr through the data. */
+
+      if (!r || !(*ptr & rf_delete))
+	{
+	r = store_get(sizeof(retry_item));
+	r->next = addr->retries;
+	addr->retries = r;
+	r->flags = *ptr++;
+	r->key = string_copy(ptr);
+	while (*ptr++);
+	memcpy(&(r->basic_errno), ptr, sizeof(r->basic_errno));
+	ptr += sizeof(r->basic_errno);
+	memcpy(&(r->more_errno), ptr, sizeof(r->more_errno));
+	ptr += sizeof(r->more_errno);
+	r->message = *ptr ? string_copy(ptr) : NULL;
+	DEBUG(D_deliver|D_retry) debug_printf("  added %s item\n",
+	    r->flags & rf_delete ? "delete" : "retry");
+	}
+
+      else
+	{
+	DEBUG(D_deliver|D_retry)
+	  debug_printf("  delete item not added: non-delete item exists\n");
+	ptr++;
+	while(*ptr++);
+	ptr += sizeof(r->basic_errno) + sizeof(r->more_errno);
+	}
+
       while(*ptr++);
-      ptr += sizeof(r->basic_errno) + sizeof(r->more_errno);
-      }
-
-    while(*ptr++);
-    break;
+      break;
 
     /* Put the amount of data written into the parlist block */
 
     case 'S':
-    memcpy(&(p->transport_count), ptr, sizeof(transport_count));
-    ptr += sizeof(transport_count);
-    break;
+      memcpy(&(p->transport_count), ptr, sizeof(transport_count));
+      ptr += sizeof(transport_count);
+      break;
 
     /* Address items are in the order of items on the address chain. We
     remember the current address value in case this function is called
@@ -3454,162 +3453,157 @@ while (!done)
 
 #ifdef SUPPORT_TLS
     case 'X':
-    if (!addr) goto ADDR_MISMATCH;          /* Below, in 'A' handler */
-    switch (subid)
-      {
-      case '1':
-	addr->cipher = NULL;
-	addr->peerdn = NULL;
+      if (!addr) goto ADDR_MISMATCH;          /* Below, in 'A' handler */
+      switch (subid)
+	{
+	case '1':
+	  addr->cipher = NULL;
+	  addr->peerdn = NULL;
 
-	if (*ptr)
-	  addr->cipher = string_copy(ptr);
-	while (*ptr++);
-	if (*ptr)
-	  addr->peerdn = string_copy(ptr);
-	break;
+	  if (*ptr)
+	    addr->cipher = string_copy(ptr);
+	  while (*ptr++);
+	  if (*ptr)
+	    addr->peerdn = string_copy(ptr);
+	  break;
 
-      case '2':
-	if (*ptr)
-	  (void) tls_import_cert(ptr, &addr->peercert);
-	else
-	  addr->peercert = NULL;
-	break;
+	case '2':
+	  if (*ptr)
+	    (void) tls_import_cert(ptr, &addr->peercert);
+	  else
+	    addr->peercert = NULL;
+	  break;
 
-      case '3':
-	if (*ptr)
-	  (void) tls_import_cert(ptr, &addr->ourcert);
-	else
-	  addr->ourcert = NULL;
-	break;
+	case '3':
+	  if (*ptr)
+	    (void) tls_import_cert(ptr, &addr->ourcert);
+	  else
+	    addr->ourcert = NULL;
+	  break;
 
 # ifndef DISABLE_OCSP
-      case '4':
-	addr->ocsp = *ptr ? *ptr - '0' : OCSP_NOT_REQ;
-	break;
+	case '4':
+	  addr->ocsp = *ptr ? *ptr - '0' : OCSP_NOT_REQ;
+	  break;
 # endif
-      }
-    while (*ptr++);
-    break;
+	}
+      while (*ptr++);
+      break;
 #endif	/*SUPPORT_TLS*/
 
     case 'C':	/* client authenticator information */
-    switch (subid)
-      {
-      case '1':
-	addr->authenticator = (*ptr)? string_copy(ptr) : NULL;
-	break;
-      case '2':
-	addr->auth_id = (*ptr)? string_copy(ptr) : NULL;
-	break;
-      case '3':
-	addr->auth_sndr = (*ptr)? string_copy(ptr) : NULL;
-	break;
-      }
-    while (*ptr++);
-    break;
+      switch (subid)
+	{
+	case '1': addr->authenticator = *ptr ? string_copy(ptr) : NULL; break;
+	case '2': addr->auth_id = *ptr ? string_copy(ptr) : NULL;	break;
+	case '3': addr->auth_sndr = *ptr ? string_copy(ptr) : NULL;	break;
+	}
+      while (*ptr++);
+      break;
 
 #ifndef DISABLE_PRDR
     case 'P':
-    addr->flags |= af_prdr_used;
-    break;
+      addr->flags |= af_prdr_used;
+      break;
 #endif
 
     case 'K':
-    addr->flags |= af_chunking_used;
-    break;
+      addr->flags |= af_chunking_used;
+      break;
 
     case 'D':
-    if (!addr) goto ADDR_MISMATCH;
-    memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
-    ptr += sizeof(addr->dsn_aware);
-    DEBUG(D_deliver) debug_printf("DSN read: addr->dsn_aware = %d\n", addr->dsn_aware);
-    break;
+      if (!addr) goto ADDR_MISMATCH;
+      memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
+      ptr += sizeof(addr->dsn_aware);
+      DEBUG(D_deliver) debug_printf("DSN read: addr->dsn_aware = %d\n", addr->dsn_aware);
+      break;
 
     case 'A':
-    if (!addr)
-      {
-      ADDR_MISMATCH:
-      msg = string_sprintf("address count mismatch for data read from pipe "
-        "for transport process %d for transport %s", pid,
-          addrlist->transport->driver_name);
-      done = TRUE;
+      if (!addr)
+	{
+	ADDR_MISMATCH:
+	msg = string_sprintf("address count mismatch for data read from pipe "
+	  "for transport process %d for transport %s", pid,
+	    addrlist->transport->driver_name);
+	done = TRUE;
+	break;
+	}
+
+      switch (subid)
+	{
+  #ifdef SUPPORT_SOCKS
+	case '2':	/* proxy information; must arrive before A0 and applies to that addr XXX oops*/
+	  proxy_session = TRUE;	/*XXX should this be cleared somewhere? */
+	  if (*ptr == 0)
+	    ptr++;
+	  else
+	    {
+	    proxy_local_address = string_copy(ptr);
+	    while(*ptr++);
+	    memcpy(&proxy_local_port, ptr, sizeof(proxy_local_port));
+	    ptr += sizeof(proxy_local_port);
+	    }
+	  break;
+  #endif
+
+  #ifdef EXPERIMENTAL_DSN_INFO
+	case '1':	/* must arrive before A0, and applies to that addr */
+			/* Two strings: smtp_greeting and helo_response */
+	  addr->smtp_greeting = string_copy(ptr);
+	  while(*ptr++);
+	  addr->helo_response = string_copy(ptr);
+	  while(*ptr++);
+	  break;
+  #endif
+
+	case '0':
+	  DEBUG(D_deliver) debug_printf("A0 %s tret %d\n", addr->address, *ptr);
+	  addr->transport_return = *ptr++;
+	  addr->special_action = *ptr++;
+	  memcpy(&(addr->basic_errno), ptr, sizeof(addr->basic_errno));
+	  ptr += sizeof(addr->basic_errno);
+	  memcpy(&(addr->more_errno), ptr, sizeof(addr->more_errno));
+	  ptr += sizeof(addr->more_errno);
+	  memcpy(&(addr->flags), ptr, sizeof(addr->flags));
+	  ptr += sizeof(addr->flags);
+	  addr->message = *ptr ? string_copy(ptr) : NULL;
+	  while(*ptr++);
+	  addr->user_message = *ptr ? string_copy(ptr) : NULL;
+	  while(*ptr++);
+
+	  /* Always two strings for host information, followed by the port number and DNSSEC mark */
+
+	  if (*ptr)
+	    {
+	    h = store_get(sizeof(host_item));
+	    h->name = string_copy(ptr);
+	    while (*ptr++);
+	    h->address = string_copy(ptr);
+	    while(*ptr++);
+	    memcpy(&h->port, ptr, sizeof(h->port));
+	    ptr += sizeof(h->port);
+	    h->dnssec = *ptr == '2' ? DS_YES
+		      : *ptr == '1' ? DS_NO
+		      : DS_UNK;
+	    ptr++;
+	    addr->host_used = h;
+	    }
+	  else ptr++;
+
+	  /* Finished with this address */
+
+	  addr = addr->next;
+	  break;
+	}
       break;
-      }
-
-    switch (subid)
-      {
-#ifdef SUPPORT_SOCKS
-      case '2':	/* proxy information; must arrive before A0 and applies to that addr XXX oops*/
-	proxy_session = TRUE;	/*XXX should this be cleared somewhere? */
-	if (*ptr == 0)
-	  ptr++;
-	else
-	  {
-	  proxy_local_address = string_copy(ptr);
-	  while(*ptr++);
-	  memcpy(&proxy_local_port, ptr, sizeof(proxy_local_port));
-	  ptr += sizeof(proxy_local_port);
-	  }
-	break;
-#endif
-
-#ifdef EXPERIMENTAL_DSN_INFO
-      case '1':	/* must arrive before A0, and applies to that addr */
-      		/* Two strings: smtp_greeting and helo_response */
-	addr->smtp_greeting = string_copy(ptr);
-	while(*ptr++);
-	addr->helo_response = string_copy(ptr);
-	while(*ptr++);
-	break;
-#endif
-
-      case '0':
-	addr->transport_return = *ptr++;
-	addr->special_action = *ptr++;
-	memcpy(&(addr->basic_errno), ptr, sizeof(addr->basic_errno));
-	ptr += sizeof(addr->basic_errno);
-	memcpy(&(addr->more_errno), ptr, sizeof(addr->more_errno));
-	ptr += sizeof(addr->more_errno);
-	memcpy(&(addr->flags), ptr, sizeof(addr->flags));
-	ptr += sizeof(addr->flags);
-	addr->message = (*ptr)? string_copy(ptr) : NULL;
-	while(*ptr++);
-	addr->user_message = (*ptr)? string_copy(ptr) : NULL;
-	while(*ptr++);
-
-	/* Always two strings for host information, followed by the port number and DNSSEC mark */
-
-	if (*ptr != 0)
-	  {
-	  h = store_get(sizeof(host_item));
-	  h->name = string_copy(ptr);
-	  while (*ptr++);
-	  h->address = string_copy(ptr);
-	  while(*ptr++);
-	  memcpy(&(h->port), ptr, sizeof(h->port));
-	  ptr += sizeof(h->port);
-	  h->dnssec = *ptr == '2' ? DS_YES
-		    : *ptr == '1' ? DS_NO
-		    : DS_UNK;
-	  ptr++;
-	  addr->host_used = h;
-	  }
-	else ptr++;
-
-	/* Finished with this address */
-
-	addr = addr->next;
-	break;
-      }
-    break;
 
     /* Local interface address/port */
     case 'I':
-    if (*ptr) sending_ip_address = string_copy(ptr);
-    while (*ptr++) ;
-    if (*ptr) sending_port = atoi(CS ptr);
-    while (*ptr++) ;
-    break;
+      if (*ptr) sending_ip_address = string_copy(ptr);
+      while (*ptr++) ;
+      if (*ptr) sending_port = atoi(CS ptr);
+      while (*ptr++) ;
+      break;
 
     /* Z marks the logical end of the data. It is followed by '0' if
     continue_transport was NULL at the end of transporting, otherwise '1'.
@@ -3618,23 +3612,23 @@ while (!done)
     most normal messages it will remain NULL all the time. */
 
     case 'Z':
-    if (*ptr == '0')
-      {
-      continue_transport = NULL;
-      continue_hostname = NULL;
-      }
-    done = TRUE;
-    DEBUG(D_deliver) debug_printf("Z0%c item read\n", *ptr);
-    break;
+      if (*ptr == '0')
+	{
+	continue_transport = NULL;
+	continue_hostname = NULL;
+	}
+      done = TRUE;
+      DEBUG(D_deliver) debug_printf("Z0%c item read\n", *ptr);
+      break;
 
     /* Anything else is a disaster. */
 
     default:
-    msg = string_sprintf("malformed data (%d) read from pipe for transport "
-      "process %d for transport %s", ptr[-1], pid,
-        addr->transport->driver_name);
-    done = TRUE;
-    break;
+      msg = string_sprintf("malformed data (%d) read from pipe for transport "
+	"process %d for transport %s", ptr[-1], pid,
+	  addr->transport->driver_name);
+      done = TRUE;
+      break;
     }
   }
 
@@ -4434,6 +4428,23 @@ for (delivery_count = 0; addr_remote; delivery_count++)
   if (tp->setup)
     (void)((tp->setup)(addr->transport, addr, NULL, uid, gid, NULL));
 
+  /* If we have a connection still open from a verify stage (lazy-close)
+  treat it as if it is a continued connection (apart from the counter used
+  for the log line mark). */
+
+  if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+    {
+    DEBUG(D_deliver)
+      debug_printf("lazy-callout-close: have conn still open from verification\n");
+    continue_transport = cutthrough.transport;
+    continue_hostname = string_copy(cutthrough.host.name);
+    continue_host_address = string_copy(cutthrough.host.address);
+    continue_sequence = 1;
+    sending_ip_address = cutthrough.snd_ip;
+    sending_port = cutthrough.snd_port;
+    smtp_peer_options = cutthrough.peer_options;
+    }
+
   /* If this is a run to continue delivery down an already-established
   channel, check that this set of addresses matches the transport and
   the channel. If it does not, defer the addresses. If a host list exists,
@@ -4775,7 +4786,6 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));
-      DEBUG(D_deliver) debug_printf("DSN write: addr->dsn_aware = %d\n", addr->dsn_aware);
 
       /* Retry information: for most success cases this will be null. */
 
@@ -4889,6 +4899,19 @@ for (delivery_count = 0; addr_remote; delivery_count++)
   /* Back in the mainline: close the unwanted half of the pipe. */
 
   (void)close(pfd[pipe_write]);
+
+  /* If we have a connection still open from a verify stage (lazy-close)
+  release its TLS library context (if any) as responsibility was passed to
+  the delivery child process. */
+
+  if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+    {
+#ifdef SUPPORT_TLS
+    tls_close(FALSE, FALSE);
+#endif
+    (void) close(cutthrough.fd);
+    release_cutthrough_connection(US"passed to transport proc");
+    }
 
   /* Fork failed; defer with error message */
 
@@ -7040,6 +7063,7 @@ phase, to minimize cases of half-done things. */
 
 DEBUG(D_deliver)
   debug_printf(">>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>\n");
+cancel_cutthrough_connection(TRUE, "deliveries are done");
 
 /* Root privilege is no longer needed */
 
@@ -8414,6 +8438,67 @@ assert(new_sender_address);
 deliver_datafile = -1;
 
 return new_sender_address;
+}
+
+
+
+void
+delivery_re_exec(int exec_type)
+{
+uschar * s;
+
+if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+  {
+  int pfd[2], channel_fd = cutthrough.fd, pid;
+
+  smtp_peer_options = cutthrough.peer_options;
+  continue_sequence = 0;
+
+#ifdef SUPPORT_TLS
+  if (cutthrough.is_tls)
+    {
+    smtp_peer_options |= PEER_OFFERED_TLS;
+    sending_ip_address = cutthrough.snd_ip;
+    sending_port = cutthrough.snd_port;
+
+    s = US"socketpair";
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) != 0)
+      goto fail;
+
+    s = US"fork";
+    if ((pid = fork()) < 0)
+      goto fail;
+
+    else if (pid == 0)		/* child */
+      {
+      smtp_proxy_tls(big_buffer, big_buffer_size, pfd[0], 5*60);
+      exim_exit(0);
+      }
+
+    (void) close(channel_fd);	/* release the client socket */
+    channel_fd = pfd[1];
+    }
+#endif
+
+  transport_do_pass_socket(cutthrough.transport, cutthrough.host.name,
+    cutthrough.host.address, message_id, channel_fd);
+  }
+else
+  {
+  cancel_cutthrough_connection(TRUE, "non-continued delivery");
+  (void) child_exec_exim(exec_type, FALSE, NULL, FALSE, 2, US"-Mc", message_id);
+  }
+/* Control does not return here. */
+
+fail:
+  log_write(0,
+    LOG_MAIN | (exec_type == CEE_EXEC_EXIT ? LOG_PANIC : LOG_PANIC_DIE),
+    "delivery re-exec failed: %s", strerror(errno));
+
+  /* Get here if exec_type == CEE_EXEC_EXIT.
+  Note: this must be _exit(), not exit(). */
+
+  _exit(EX_EXECFAILED);
 }
 
 /* vi: aw ai sw=2

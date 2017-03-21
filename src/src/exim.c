@@ -4352,11 +4352,8 @@ if (!unprivileged &&                      /* originally had root AND */
         (msg_action_arg < 0 ||            /*       and               */
           msg_action != MSG_DELIVER) &&   /* not delivering and      */
         (!checking || !address_test_mode) /* not address checking    */
-        )
-      ))
-  {
+   )  ) )
   exim_setugid(exim_uid, exim_gid, TRUE, US"privilege not needed");
-  }
 
 /* When we are retaining a privileged uid, we still change to the exim gid. */
 
@@ -4370,7 +4367,6 @@ else
   there's no security risk.  For me, it's { exim -bV } on a just-built binary,
   no need to complain then. */
   if (rv == -1)
-    {
     if (!(unprivileged || removed_privilege))
       {
       fprintf(stderr,
@@ -4380,7 +4376,6 @@ else
     else
       DEBUG(D_any) debug_printf("changing group to %ld failed: %s\n",
           (long int)exim_gid, strerror(errno));
-    }
   }
 
 /* Handle a request to scan a file for malware */
@@ -5329,15 +5324,13 @@ if (smtp_input)
 else
   {
   thismessage_size_limit = expand_string_integer(message_size_limit, TRUE);
-  if (expand_string_message != NULL)
-    {
+  if (expand_string_message)
     if (thismessage_size_limit == -1)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand "
         "message_size_limit: %s", expand_string_message);
     else
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "invalid value for "
         "message_size_limit: %s", expand_string_message);
-    }
   }
 
 /* Loop for several messages when reading SMTP input. If we fork any child
@@ -5434,6 +5427,7 @@ while (more)
       more = receive_msg(extract_recipients);
       if (message_id[0] == 0)
         {
+	cancel_cutthrough_connection(TRUE, US"receive dropped");
         if (more) goto moreloop;
         smtp_log_no_mail();               /* Log no mail if configured */
         exim_exit(EXIT_FAILURE);
@@ -5441,6 +5435,7 @@ while (more)
       }
     else
       {
+      cancel_cutthrough_connection(TRUE, US"message setup dropped");
       smtp_log_no_mail();               /* Log no mail if configured */
       exim_exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
       }
@@ -5716,20 +5711,27 @@ while (more)
   not if queue_only is set (case 0). Case 1 doesn't happen here (too many
   connections). */
 
-  if (local_queue_only) switch(queue_only_reason)
+  if (local_queue_only)
     {
-    case 2:
-    log_write(L_delay_delivery,
-              LOG_MAIN, "no immediate delivery: more than %d messages "
-      "received in one connection", smtp_accept_queue_per_connection);
-    break;
+    cancel_cutthrough_connection(TRUE, US"no delivery; queueing");
+    switch(queue_only_reason)
+      {
+      case 2:
+	log_write(L_delay_delivery,
+		LOG_MAIN, "no immediate delivery: more than %d messages "
+	  "received in one connection", smtp_accept_queue_per_connection);
+	break;
 
-    case 3:
-    log_write(L_delay_delivery,
-              LOG_MAIN, "no immediate delivery: load average %.2f",
-              (double)load_average/1000.0);
-    break;
+      case 3:
+	log_write(L_delay_delivery,
+		LOG_MAIN, "no immediate delivery: load average %.2f",
+		(double)load_average/1000.0);
+      break;
+      }
     }
+
+  else if (queue_only_policy || deliver_freeze)
+    cancel_cutthrough_connection(TRUE, US"no delivery; queueing");
 
   /* Else do the delivery unless the ACL or local_scan() called for queue only
   or froze the message. Always deliver in a separate process. A fork failure is
@@ -5739,7 +5741,7 @@ while (more)
   thereby defer the delivery if it tries to use (for example) a cached ldap
   connection that the parent has called unbind on. */
 
-  else if (!queue_only_policy && !deliver_freeze)
+  else
     {
     pid_t pid;
     search_tidyup();
@@ -5755,8 +5757,7 @@ while (more)
 
       if (geteuid() != root_uid && !deliver_drop_privilege && !unprivileged)
         {
-        (void)child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE,
-		2, US"-Mc", message_id);
+	delivery_re_exec(CEE_EXEC_EXIT);
         /* Control does not return here. */
         }
 
@@ -5770,22 +5771,27 @@ while (more)
 
     if (pid < 0)
       {
+      cancel_cutthrough_connection(TRUE, US"delivery fork failed");
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to fork automatic delivery "
         "process: %s", strerror(errno));
       }
-
-    /* In the parent, wait if synchronous delivery is required. This will
-    always be the case in MUA wrapper mode. */
-
-    else if (synchronous_delivery)
+    else
       {
-      int status;
-      while (wait(&status) != pid);
-      if ((status & 0x00ff) != 0)
-        log_write(0, LOG_MAIN|LOG_PANIC,
-          "process %d crashed with signal %d while delivering %s",
-          (int)pid, status & 0x00ff, message_id);
-      if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE);
+      release_cutthrough_connection(US"msg passed for delivery");
+
+      /* In the parent, wait if synchronous delivery is required. This will
+      always be the case in MUA wrapper mode. */
+
+      if (synchronous_delivery)
+	{
+	int status;
+	while (wait(&status) != pid);
+	if ((status & 0x00ff) != 0)
+	  log_write(0, LOG_MAIN|LOG_PANIC,
+	    "process %d crashed with signal %d while delivering %s",
+	    (int)pid, status & 0x00ff, message_id);
+	if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE);
+	}
       }
     }
 

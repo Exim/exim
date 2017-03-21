@@ -299,11 +299,17 @@ extern uschar *continue_transport;     /* Transport for continued delivery */
 extern uschar *csa_status;             /* Client SMTP Authorization result */
 
 typedef struct {
+  unsigned     callout_hold_only:1;    /* Conn is only for verify callout */
   unsigned     delivery:1;             /* When to attempt */
   unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spooling */
+  unsigned     is_tls:1;	       /* Conn has TLS active */
   int          fd;                     /* Open connection */
   int          nrcpt;                  /* Count of addresses */
+  uschar *     transport;	       /* Name of transport */
   uschar *     interface;              /* (address of) */
+  uschar *     snd_ip;		       /* sending_ip_address */
+  int	       snd_port;	       /* sending_port */
+  unsigned     peer_options;	       /* smtp_peer_options */
   host_item    host;                   /* Host used */
   address_item addr;                   /* (Chain of) addresses */
 } cut_t;

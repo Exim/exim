@@ -510,6 +510,7 @@ if (pid == 0)
       search_tidyup();                    /* Close cached databases */
       if (!ok)                            /* Connection was dropped */
         {
+	cancel_cutthrough_connection(TRUE, US"receive dropped");
         mac_smtp_fflush();
         smtp_log_no_mail();               /* Log no mail if configured */
         _exit(EXIT_SUCCESS);
@@ -528,6 +529,7 @@ if (pid == 0)
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == 0)
 	  for(i = 16; read(fd, buf, sizeof(buf)) > 0 && i > 0; ) i--;
 	}
+      cancel_cutthrough_connection(TRUE, US"message setup dropped");
       search_tidyup();
       smtp_log_no_mail();                 /* Log no mail if configured */
 
@@ -653,9 +655,9 @@ if (pid == 0)
         /* Don't ever molest the parent's SSL connection, but do clean up
         the data structures if necessary. */
 
-        #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
         tls_close(TRUE, FALSE);
-        #endif
+#endif
 
         /* Reset SIGHUP and SIGCHLD in the child in both cases. */
 
@@ -665,25 +667,28 @@ if (pid == 0)
         if (geteuid() != root_uid && !deliver_drop_privilege)
           {
           signal(SIGALRM, SIG_DFL);
-          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE,
-	    2, US"-Mc", message_id);
+	  delivery_re_exec(CEE_EXEC_PANIC);
           /* Control does not return here. */
           }
 
         /* No need to re-exec; SIGALRM remains set to the default handler */
 
-        (void)deliver_message(message_id, FALSE, FALSE);
+        (void) deliver_message(message_id, FALSE, FALSE);
         search_tidyup();
         _exit(EXIT_SUCCESS);
         }
 
       if (dpid > 0)
         {
+	release_cutthrough_connection(US"passed for delivery");
         DEBUG(D_any) debug_printf("forked delivery process %d\n", (int)dpid);
         }
       else
+	{
+	cancel_cutthrough_connection(TRUE, US"delivery fork failed");
         log_write(0, LOG_MAIN|LOG_PANIC, "daemon: delivery process fork "
           "failed: %s", strerror(errno));
+	}
       }
     }
   }

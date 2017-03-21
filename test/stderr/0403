@@ -47,6 +47,7 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 search_tidyup called
+release cutthrough conn: msg passed for delivery
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -N -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective

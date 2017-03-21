@@ -220,8 +220,10 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_verify_avoid_tls */
   NULL,                /* hosts_avoid_pipelining */
   NULL,                /* hosts_avoid_esmtp */
+#ifdef SUPPORT_TLS
   NULL,                /* hosts_nopass_tls */
   US"*",	       /* hosts_noproxy_tls */
+#endif
   5*60,                /* command_timeout */
   5*60,                /* connect_timeout; shorter system default overrides */
   5*60,                /* data timeout */
@@ -1801,9 +1803,11 @@ goto SEND_QUIT;
     }
   }
 
-/* For continuing deliveries down the same channel, the socket is the standard
-input, and we don't need to redo EHLO here (but may need to do so for TLS - see
-below). Set up the pointer to where subsequent commands will be left, for
+/* For continuing deliveries down the same channel, having re-exec'd  the socket
+is the standard input; for a socket held open from verify it is recorded
+in the cutthrough context block.  Either way we don't need to redo EHLO here
+(but may need to do so for TLS - see below).
+Set up the pointer to where subsequent commands will be left, for
 error messages. Note that smtp_peer_options will have been
 set from the command line if they were set in the process that passed the
 connection on. */
@@ -1815,19 +1819,30 @@ separate - we could match up by host ip+port as a bodge. */
 
 else
   {
-  sx->inblock.sock = sx->outblock.sock = 0;	/* stdin */
+  if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+    {
+    sx->inblock.sock = sx->outblock.sock = cutthrough.fd;
+    sx->host->port = sx->port = cutthrough.host.port;
+    }
+  else
+    {
+    sx->inblock.sock = sx->outblock.sock = 0;	/* stdin */
+    sx->host->port = sx->port;    /* Record the port that was used */
+    }
   smtp_command = big_buffer;
-  sx->host->port = sx->port;    /* Record the port that was used */
   sx->helo_data = NULL;		/* ensure we re-expand ob->helo_data */
 
-  /* For a continued connection with TLS being proxied for us, nothing
-  more to do. */
+  /* For a continued connection with TLS being proxied for us, or a
+  held-open verify connection with TLS, nothing more to do. */
 
-  if (continue_proxy_cipher)
+  if (  continue_proxy_cipher
+     || (cutthrough.fd >= 0 && cutthrough.callout_hold_only && cutthrough.is_tls)
+     )
     {
     sx->peer_offered = smtp_peer_options;
     pipelining_active = !!(smtp_peer_options & PEER_OFFERED_PIPE);
-    HDEBUG(D_transport) debug_printf("continued connection, proxied TLS\n");
+    HDEBUG(D_transport) debug_printf("continued connection, %s TLS\n",
+      continue_proxy_cipher ? "proxied" : "verify conn with");
     return OK;
     }
   HDEBUG(D_transport) debug_printf("continued connection, no TLS\n");
@@ -2511,19 +2526,20 @@ return 0;
 * Proxy TLS connection for another transport process *
 ******************************************************/
 /*
-Use the smtp-context buffer as a staging area, and select on both the slave
-process and the TLS'd fd for data to read (per the coding in ip_recv() and
+Use the given buffer as a staging area, and select on both the given fd
+and the TLS'd client-fd for data to read (per the coding in ip_recv() and
 fd_ready() this is legitimate).  Do blocking full-size writes, and reads
 under a timeout.
 
 Arguments:
-  sx		smtp context block
+  buf		space to use for buffering
+  bufsiz	size of buffer
   proxy_fd	comms to proxied process
   timeout	per-read timeout, seconds
 */
 
-static void
-smtp_proxy_tls(smtp_context * sx, int proxy_fd, int timeout)
+void
+smtp_proxy_tls(uschar * buf, size_t bsize, int proxy_fd, int timeout)
 {
 fd_set fds;
 int max_fd = MAX(proxy_fd, tls_out.active) + 1;
@@ -2559,7 +2575,7 @@ for (fd_bits = 3; fd_bits; )
 
   /* handle inbound data */
   if (FD_ISSET(tls_out.active, &fds))
-    if ((rc = tls_read(FALSE, sx->buffer, sizeof(sx->buffer))) <= 0)
+    if ((rc = tls_read(FALSE, buf, bsize)) <= 0)
       {
       fd_bits &= ~1;
       FD_CLR(tls_out.active, &fds);
@@ -2568,14 +2584,14 @@ for (fd_bits = 3; fd_bits; )
     else
       {
       for (nbytes = 0; rc - nbytes > 0; nbytes += i)
-	if ((i = write(proxy_fd, sx->buffer + nbytes, rc - nbytes)) < 0) return;
+	if ((i = write(proxy_fd, buf + nbytes, rc - nbytes)) < 0) return;
       }
   else if (fd_bits & 1)
     FD_SET(tls_out.active, &fds);
 
   /* handle outbound data */
   if (FD_ISSET(proxy_fd, &fds))
-    if ((rc = read(proxy_fd, sx->buffer, sizeof(sx->buffer))) <= 0)
+    if ((rc = read(proxy_fd, buf, bsize)) <= 0)
       {
       fd_bits &= ~2;
       FD_CLR(proxy_fd, &fds);
@@ -2584,7 +2600,7 @@ for (fd_bits = 3; fd_bits; )
     else
       {
       for (nbytes = 0; rc - nbytes > 0; nbytes += i)
-	if ((i = tls_write(FALSE, sx->buffer + nbytes, rc - nbytes)) < 0) return;
+	if ((i = tls_write(FALSE, buf + nbytes, rc - nbytes)) < 0) return;
       }
   else if (fd_bits & 2)
     FD_SET(proxy_fd, &fds);
@@ -2724,33 +2740,52 @@ sx.send_rset = TRUE;
 sx.completed_addr = FALSE;
 
 
-/* Initiate a message transfer. */
+/* If we are a continued-connection-after-verify the MAIL and RCPT
+commands were already sent; do not re-send but do mark the addrs as
+having been accepted up to RCPT stage.  A traditional cont-conn
+always has a sequence number greater than one. */
 
-switch(smtp_write_mail_and_rcpt_cmds(&sx, &yield))
+if (continue_hostname && continue_sequence == 1)
   {
-  case 0:		break;
-  case -1: case -2:	goto RESPONSE_FAILED;
-  case -3:		goto END_OFF;
-  case -4:		goto SEND_QUIT;
-  default:		goto SEND_FAILED;
+  address_item * addr;
+
+  sx.peer_offered = smtp_peer_options;
+  sx.ok = TRUE;
+  sx.next_addr = NULL;
+
+  for (addr = addrlist; addr; addr = addr->next)
+    addr->transport_return = PENDING_OK;
   }
-
-/* If we are an MUA wrapper, abort if any RCPTs were rejected, either
-permanently or temporarily. We should have flushed and synced after the last
-RCPT. */
-
-if (mua_wrapper)
+else
   {
-  address_item *badaddr;
-  for (badaddr = sx.first_addr; badaddr; badaddr = badaddr->next)
-    if (badaddr->transport_return != PENDING_OK)
-      {
-      /*XXX could we find a better errno than 0 here? */
-      set_errno_nohost(addrlist, 0, badaddr->message, FAIL,
-	testflag(badaddr, af_pass_message));
-      sx.ok = FALSE;
-      break;
-      }
+  /* Initiate a message transfer. */
+
+  switch(smtp_write_mail_and_rcpt_cmds(&sx, &yield))
+    {
+    case 0:		break;
+    case -1: case -2:	goto RESPONSE_FAILED;
+    case -3:		goto END_OFF;
+    case -4:		goto SEND_QUIT;
+    default:		goto SEND_FAILED;
+    }
+
+  /* If we are an MUA wrapper, abort if any RCPTs were rejected, either
+  permanently or temporarily. We should have flushed and synced after the last
+  RCPT. */
+
+  if (mua_wrapper)
+    {
+    address_item *badaddr;
+    for (badaddr = sx.first_addr; badaddr; badaddr = badaddr->next)
+      if (badaddr->transport_return != PENDING_OK)
+	{
+	/*XXX could we find a better errno than 0 here? */
+	set_errno_nohost(addrlist, 0, badaddr->message, FAIL,
+	  testflag(badaddr, af_pass_message));
+	sx.ok = FALSE;
+	break;
+	}
+    }
   }
 
 /* If ok is TRUE, we know we have got at least one good recipient, and must now
@@ -3050,7 +3085,7 @@ else
         else
           sprintf(CS sx.buffer, "%.500s\n", addr->unique);
 
-        DEBUG(D_deliver) debug_printf("journalling %s\n", sx.buffer);
+        DEBUG(D_deliver) debug_printf("S:journalling %s\n", sx.buffer);
         len = Ustrlen(CS sx.buffer);
         if (write(journal_fd, sx.buffer, len) != len)
           log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
@@ -3376,7 +3411,7 @@ propagate it from the initial
 	just passed the baton to.  Fork a child to to do it, and return to
 	get logging done asap.  Which way to place the work makes assumptions
 	about post-fork prioritisation which may not hold on all platforms. */
-
+#ifdef SUPPORT_TLS
 	if (tls_out.active >= 0)
 	  {
 	  int pid = fork();
@@ -3390,10 +3425,11 @@ propagate it from the initial
 	    }
 	  else if (pid == 0)	/* child */
 	    {
-	    smtp_proxy_tls(&sx, pfd[0], sx.ob->command_timeout);
+	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd[0], sx.ob->command_timeout);
 	    exim_exit(0);
 	    }
 	  }
+#endif
 	}
       }
 
@@ -3608,8 +3644,10 @@ DEBUG(D_transport)
     for (host = hostlist; host; host = host->next)
       debug_printf("  %s:%d\n", host->name, host->port);
     }
-  if (continue_hostname) debug_printf("already connected to %s [%s]\n",
-      continue_hostname, continue_host_address);
+  if (continue_hostname)
+    debug_printf("already connected to %s [%s] (on fd %d)\n",
+      continue_hostname, continue_host_address,
+      cutthrough.fd >= 0 ? cutthrough.fd : 0);
   }
 
 /* Set the flag requesting that these hosts be added to the waiting

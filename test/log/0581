@@ -1,0 +1,23 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= userc@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userd@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userd@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= usere@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userf@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userf@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= userc@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userd@test.ex userd2@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userd@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 -> userd2@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= userc@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userd3@test.ex userd2@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userd3@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmbA-0005vi-00 -> userd2@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= userc@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userd4@test.ex userd5@test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userd4@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmbB-0005vi-00 -> userd5@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 yeah got that message"
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
