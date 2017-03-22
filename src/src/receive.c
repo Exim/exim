@@ -831,7 +831,7 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
       {
       message_size++;
       if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
-      (void) cutthrough_data_put_nl();
+      cutthrough_data_put_nl();
       if (ch != '\r') ch_state = 1; else continue;
       }
     break;
@@ -850,7 +850,7 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
     if (ch == '.')
       {
       uschar c= ch;
-      (void) cutthrough_data_puts(&c, 1);
+      cutthrough_data_puts(&c, 1);
       }
     ch_state = 1;
     break;
@@ -860,7 +860,7 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
     message_size++;
     body_linecount++;
     if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
-    (void) cutthrough_data_put_nl();
+    cutthrough_data_put_nl();
     if (ch == '\r')
       {
       ch_state = 2;
@@ -881,11 +881,11 @@ while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
     if (message_size > thismessage_size_limit) return END_SIZE;
     }
   if(ch == '\n')
-    (void) cutthrough_data_put_nl();
+    cutthrough_data_put_nl();
   else
     {
     uschar c = ch;
-    (void) cutthrough_data_puts(&c, 1);
+    cutthrough_data_puts(&c, 1);
     }
   }
 
@@ -991,7 +991,7 @@ for(;;)
 	{
 	message_size++;
 	if (fout && fputc('\n', fout) == EOF) return END_WERROR;
-	(void) cutthrough_data_put_nl();
+	cutthrough_data_put_nl();
 	if (ch == '\r') continue;	/* don't write CR */
 	ch_state = MID_LINE;
 	}
@@ -1008,11 +1008,11 @@ for(;;)
     if (message_size > thismessage_size_limit) return END_SIZE;
     }
   if(ch == '\n')
-    (void) cutthrough_data_put_nl();
+    cutthrough_data_put_nl();
   else
     {
     uschar c = ch;
-    (void) cutthrough_data_puts(&c, 1);
+    cutthrough_data_puts(&c, 1);
     }
   }
 /*NOTREACHED*/

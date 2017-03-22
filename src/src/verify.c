@@ -1217,10 +1217,10 @@ cancel_cutthrough_connection(TRUE, US"transmit failed");
 return FALSE;
 }
 
-BOOL
+void
 cutthrough_data_puts(uschar * cp, int n)
 {
-if (cutthrough.delivery) cutthrough_puts(cp, n);
+if (cutthrough.delivery) (void) cutthrough_puts(cp, n);
 }
 
 
@@ -1253,10 +1253,10 @@ return cutthrough_puts(US"\r\n", 2);
 }
 
 
-BOOL
+void
 cutthrough_data_put_nl(void)
 {
-return cutthrough_data_puts(US"\r\n", 2);
+cutthrough_data_puts(US"\r\n", 2);
 }
 
 

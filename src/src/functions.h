@@ -116,8 +116,8 @@ extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_uid(const uschar **, const uschar **, int,
 		 uid_t *, gid_t *, int *, int *, uschar *, BOOL);
 extern BOOL    cleanup_environment(void);
-extern BOOL    cutthrough_data_puts(uschar *, int);
-extern BOOL    cutthrough_data_put_nl(void);
+extern void    cutthrough_data_puts(uschar *, int);
+extern void    cutthrough_data_put_nl(void);
 extern uschar *cutthrough_finaldot(void);
 extern BOOL    cutthrough_flush_send(void);
 extern BOOL    cutthrough_headers_send(void);

@@ -1967,10 +1967,8 @@ for (;;)
       errno = EINTR;
       }
     else
-      {
       lcount = select(max_socket + 1, (SELECT_ARG2_TYPE *)&select_listen,
         NULL, NULL, NULL);
-      }
 
     if (lcount < 0)
       {
@@ -1996,10 +1994,9 @@ for (;;)
     while (lcount-- > 0)
       {
       int accept_socket = -1;
+
       if (!select_failed)
-        {
         for (sk = 0; sk < listen_socket_count; sk++)
-          {
           if (FD_ISSET(listen_sockets[sk], &select_listen))
             {
             len = sizeof(accepted);
@@ -2008,8 +2005,6 @@ for (;;)
             FD_CLR(listen_sockets[sk], &select_listen);
             break;
             }
-          }
-        }
 
       /* If select or accept has failed and this was not caused by an
       interruption, log the incident and try again. With asymmetric TCP/IP

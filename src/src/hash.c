@@ -51,7 +51,7 @@ switch (h->method)
   case HASH_SHA1:   SHA1_Update  (&h->u.sha1, data, len); break;
   case HASH_SHA256: SHA256_Update(&h->u.sha2, data, len); break;
   /* should be blocked by init not handling these, but be explicit to
-   * guard against accidents later (and hush up clang -Wswitch) */
+  guard against accidents later (and hush up clang -Wswitch) */
   default: assert(0);
   }
 }

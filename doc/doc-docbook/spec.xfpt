@@ -30909,6 +30909,7 @@ need to use this option unless you know that the called hosts make use of the
 sender when checking recipients. If used indiscriminately, it reduces the
 usefulness of callout caching.
 
+.new
 .vitem &*hold*&
 This option applies to recipient callouts only. For example:
 .code
@@ -30923,6 +30924,7 @@ The advantage is only gained if there are no callout cache hits
 if the use_sender option is used,
 if neither the random nor the use_postmaster option is used,
 and if no other callouts intervene.
+.wen
 .endlist
 
 If you use any of the parameters that set a non-empty sender for the MAIL
