@@ -1861,7 +1861,7 @@ A0117: Here! This is a contribution from a RedHat user, somewhat edited. On
 
 ==>      adduser exim
 
-       (3) Now you can prepare to build Exim. Go to \?http://www.exim.org?\ or
+       (3) Now you can prepare to build Exim. Go to \?https://www.exim.org?\ or
        one of its mirrors, or the master ftp site
        \?ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4?\, and download
        \(exim-4.20.tar.gz)\ or whatever the current release is. Then:
@@ -7122,7 +7122,7 @@ C037:  An elegant way of using ETRN, which does immediate delivery if the host
 C042:  ``Since the Exim 4 configuration needed to get Mailman to work differs a
        little bit from Exim 3 and since I still haven't seen a recipe for
        Mailman with Exim 4, I'm providing my configuration (based heavily on
-       \?http://www.exim.org/howto/mailman.html?\).''
+       \?https://www.exim.org/howto/mailman21.html?\).''
 
 C043:  ``Attached is an Exim 4 config file which is designed for an Exim server
        that is put in front of an Exchange 5.5 system but which verifies the

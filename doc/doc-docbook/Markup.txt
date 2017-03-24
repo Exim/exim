@@ -139,9 +139,9 @@ To refer to a URL, use &url, followed by parentheses that can enclose one or
 two arguments, comma separated. The second, if present, is used as the
 displayed text. If there is only one argument, it is used both as the displayed
 text and as the URL. For example, here is a reference to
-&url(http://www.exim.org/,the exim home page). In HTML output, all you see is
+&url(https://www.exim.org/,the exim home page). In HTML output, all you see is
 the display text; in printed output you see something like "the exim home page
-[http://www.exim.org/]". The URL is printed in a bold font.
+[https://www.exim.org/]". The URL is printed in a bold font.
 
 
 CHAPTERS AND SECTIONS

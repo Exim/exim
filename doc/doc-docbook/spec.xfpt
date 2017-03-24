@@ -464,7 +464,7 @@ which contains what used to be a separate FAQ, as well as various other
 examples, tips, and know-how that have been contributed by Exim users.
 
 .cindex Bugzilla
-An Exim Bugzilla exists at &url(http://bugs.exim.org). You can use
+An Exim Bugzilla exists at &url(https://bugs.exim.org). You can use
 this to report bugs, and also to add items to the wish list. Please search
 first to check that you are not duplicating a previous entry.
 
@@ -504,7 +504,7 @@ information will be posted at &url(http://www-tus.csx.cam.ac.uk/courses/exim/).
 .cindex "bug reports"
 .cindex "reporting bugs"
 Reports of obvious bugs can be emailed to &'bugs@exim.org'& or reported
-via the Bugzilla (&url(http://bugs.exim.org)). However, if you are unsure
+via the Bugzilla (&url(https://bugs.exim.org)). However, if you are unsure
 whether some behaviour is a bug or not, the best thing to do is to post a
 message to the &'exim-dev'& mailing list and have it discussed.
 
@@ -36655,8 +36655,7 @@ autodetection of some well known compression extensions.
 .cindex "&'exipick'&"
 John Jetmore's &'exipick'& utility is included in the Exim distribution. It
 lists messages from the queue according to a variety of criteria. For details
-of &'exipick'&'s facilities, visit the web page at
-&url(http://www.exim.org/eximwiki/ToolExipickManPage) or run &'exipick'& with
+of &'exipick'&'s facilities, run &'exipick'& with
 the &%--help%& option.
 
 
