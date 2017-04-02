@@ -1418,9 +1418,9 @@ tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
 #endif
   address_item *addr, tls_ext_ctx_cb ** cbp, uschar ** errstr)
 {
+SSL_CTX * ctx;
 long init_options;
 int rc;
-BOOL okay;
 tls_ext_ctx_cb * cbinfo;
 
 cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
@@ -1461,9 +1461,8 @@ when OpenSSL is built without SSLv2 support.
 By disabling with openssl_options, we can let admins re-enable with the
 existing knob. */
 
-*ctxp = SSL_CTX_new(host ? SSLv23_client_method() : SSLv23_server_method());
-
-if (!*ctxp) return tls_error(US"SSL_CTX_new", host, NULL, errstr);
+if (!(ctx = SSL_CTX_new(host ? SSLv23_client_method() : SSLv23_server_method())))
+  return tls_error(US"SSL_CTX_new", host, NULL, errstr);
 
 /* It turns out that we need to seed the random number generator this early in
 order to get the full complement of ciphers to work. It took me roughly a day
@@ -1491,10 +1490,10 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-DEBUG(D_tls) SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
+DEBUG(D_tls) SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
 
 /* Automatically re-try reads/writes after renegotiation. */
-(void) SSL_CTX_set_mode(*ctxp, SSL_MODE_AUTO_RETRY);
+(void) SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
 
 /* Apply administrator-supplied work-arounds.
 Historically we applied just one requested option,
@@ -1505,31 +1504,34 @@ grandfathered in the first one as the default value for "openssl_options".
 No OpenSSL version number checks: the options we accept depend upon the
 availability of the option value macros from OpenSSL.  */
 
-okay = tls_openssl_options_parse(openssl_options, &init_options);
-if (!okay)
+if (!tls_openssl_options_parse(openssl_options, &init_options))
   return tls_error(US"openssl_options parsing failed", host, NULL, errstr);
 
 if (init_options)
   {
   DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
-  if (!(SSL_CTX_set_options(*ctxp, init_options)))
+  if (!(SSL_CTX_set_options(ctx, init_options)))
     return tls_error(string_sprintf(
           "SSL_CTX_set_option(%#lx)", init_options), host, NULL, errstr);
   }
 else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
 
+/* Disable session cache unconditionally */
+
+(void) SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
+
 /* Initialize with DH parameters if supplied */
 /* Initialize ECDH temp key parameter selection */
 
-if (  !init_dh(*ctxp, dhparam, host, errstr)
-   || !init_ecdh(*ctxp, host, errstr)
+if (  !init_dh(ctx, dhparam, host, errstr)
+   || !init_ecdh(ctx, host, errstr)
    )
   return DEFER;
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
-if ((rc = tls_expand_session_files(*ctxp, cbinfo, errstr)) != OK)
+if ((rc = tls_expand_session_files(ctx, cbinfo, errstr)) != OK)
   return rc;
 
 /* If we need to handle SNI or OCSP, do so */
@@ -1552,14 +1554,14 @@ if (host == NULL)		/* server */
   callback is invoked. */
   if (cbinfo->u_ocsp.server.file)
     {
-    SSL_CTX_set_tlsext_status_cb(server_ctx, tls_server_stapling_cb);
-    SSL_CTX_set_tlsext_status_arg(server_ctx, cbinfo);
+    SSL_CTX_set_tlsext_status_cb(ctx, tls_server_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
     }
 # endif
   /* We always do this, so that $tls_sni is available even if not used in
   tls_certificate */
-  SSL_CTX_set_tlsext_servername_callback(*ctxp, tls_servername_cb);
-  SSL_CTX_set_tlsext_servername_arg(*ctxp, cbinfo);
+  SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
+  SSL_CTX_set_tlsext_servername_arg(ctx, cbinfo);
   }
 # ifndef DISABLE_OCSP
 else			/* client */
@@ -1570,8 +1572,8 @@ else			/* client */
       DEBUG(D_tls) debug_printf("failed to create store for stapling verify\n");
       return FAIL;
       }
-    SSL_CTX_set_tlsext_status_cb(*ctxp, tls_client_stapling_cb);
-    SSL_CTX_set_tlsext_status_arg(*ctxp, cbinfo);
+    SSL_CTX_set_tlsext_status_cb(ctx, tls_client_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
     }
 # endif
 #endif
@@ -1580,15 +1582,16 @@ cbinfo->verify_cert_hostnames = NULL;
 
 #ifdef EXIM_HAVE_EPHEM_RSA_KEX
 /* Set up the RSA callback */
-SSL_CTX_set_tmp_rsa_callback(*ctxp, rsa_callback);
+SSL_CTX_set_tmp_rsa_callback(ctx, rsa_callback);
 #endif
 
 /* Finally, set the timeout, and we are done */
 
-SSL_CTX_set_timeout(*ctxp, ssl_session_timeout);
+SSL_CTX_set_timeout(ctx, ssl_session_timeout);
 DEBUG(D_tls) debug_printf("Initialized TLS\n");
 
 *cbp = cbinfo;
+*ctxp = ctx;
 
 return OK;
 }
@@ -2951,7 +2954,7 @@ uschar *s, *end;
 uschar keep_c;
 BOOL adding, item_parsed;
 
-result = 0L;
+result = SSL_OP_NO_TICKET;
 /* Prior to 4.80 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
  * from default because it increases BEAST susceptibility. */
 #ifdef SSL_OP_NO_SSLv2
@@ -2961,7 +2964,7 @@ result |= SSL_OP_NO_SSLv2;
 result |= SSL_OP_SINGLE_DH_USE;
 #endif
 
-if (option_spec == NULL)
+if (!option_spec)
   {
   *results = result;
   return TRUE;
