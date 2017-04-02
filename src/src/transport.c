@@ -435,9 +435,9 @@ for (ptr = start; ptr < end; ptr++)
 
     if (tctx &&  tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
       {
-      if (  tctx->chunk_cb(fd, tctx, (unsigned)len, 0) != OK
+      if (  tctx->chunk_cb(tctx, (unsigned)len, 0) != OK
 	 || !transport_write_block(fd, deliver_out_buffer, len)
-	 || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
+	 || tctx->chunk_cb(tctx, 0, tc_reap_prev) != OK
 	 )
 	return FALSE;
       }
@@ -979,20 +979,20 @@ if (tctx->options & topt_use_bdat)
     {
     DEBUG(D_transport)
       debug_printf("sending small initial BDAT; hsize=%d\n", hsize);
-    if (  tctx->chunk_cb(fd, tctx, hsize, 0) != OK
+    if (  tctx->chunk_cb(tctx, hsize, 0) != OK
        || !transport_write_block(fd, deliver_out_buffer, hsize)
-       || tctx->chunk_cb(fd, tctx, 0, tc_reap_prev) != OK
+       || tctx->chunk_cb(tctx, 0, tc_reap_prev) != OK
        )
       return FALSE;
     chunk_ptr = deliver_out_buffer;
     size -= hsize;
     }
 
-  /* Emit a LAST datachunk command. */
+  /* Emit a LAST datachunk command, and unmark the context for further
+  BDAT commands. */
 
-  if (tctx->chunk_cb(fd, tctx, size, tc_chunk_last) != OK)
+  if (tctx->chunk_cb(tctx, size, tc_chunk_last) != OK)
     return FALSE;
-
   tctx->options &= ~topt_use_bdat;
   }
 
@@ -1141,15 +1141,18 @@ if (options & topt_use_bdat)
 
   if (siglen + k_file_size > DELIVER_OUT_BUFFER_SIZE && siglen > 0)
     {
-    if (  tctx->chunk_cb(out_fd, tctx, siglen, 0) != OK
+    if (  tctx->chunk_cb(tctx, siglen, 0) != OK
        || !transport_write_block(out_fd, dkim_signature, siglen)
-       || tctx->chunk_cb(out_fd, tctx, 0, tc_reap_prev) != OK
+       || tctx->chunk_cb(tctx, 0, tc_reap_prev) != OK
        )
       goto err;
     siglen = 0;
     }
 
-  if (tctx->chunk_cb(out_fd, tctx, siglen + k_file_size, tc_chunk_last) != OK)
+  /* Send the BDAT command for the entire message, as a single LAST-marked
+  chunk. */
+
+  if (tctx->chunk_cb(tctx, siglen + k_file_size, tc_chunk_last) != OK)
     goto err;
   }
 

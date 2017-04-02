@@ -1347,15 +1347,22 @@ return checks;
 If given a nonzero size, first flush any buffered SMTP commands
 then emit the command.
 
-Reap previous SMTP command responses if requested.
-Reap one SMTP command response if requested.
+Reap previous SMTP command responses if requested, and always reap
+the response from a previous BDAT command.
+
+Args:
+ tctx		transport context
+ chunk_size	value for SMTP BDAT command
+ flags
+   tc_chunk_last	add LAST option to SMTP BDAT command
+   tc_reap_prev		reap response to previous SMTP commands
 
 Returns:	OK or ERROR
 */
 
 static int
-smtp_chunk_cmd_callback(int fd, transport_ctx * tctx,
-  unsigned chunk_size, unsigned flags)
+smtp_chunk_cmd_callback(transport_ctx * tctx, unsigned chunk_size,
+  unsigned flags)
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)(tctx->tblock->options_block);

@@ -230,8 +230,7 @@ typedef struct transport_info {
 #define tc_chunk_last	BIT(1)	/* annotate chunk SMTP cmd as LAST */
 
 struct transport_context;
-typedef int (*tpt_chunk_cmd_cb)(int fd, struct transport_context * tctx,
-				unsigned len, unsigned flags);
+typedef int (*tpt_chunk_cmd_cb)(struct transport_context *, unsigned, unsigned);
 
 /* Structure for information about a delivery-in-progress */
 
