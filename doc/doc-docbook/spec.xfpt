@@ -15676,7 +15676,7 @@ harm. This option overrides the &%pipe_as_creator%& option of the &(pipe)&
 transport driver.
 
 
-.option openssl_options main "string list" "+no_sslv2 +single_dh_use"
+.option openssl_options main "string list" "+no_sslv2 +single_dh_use +no_ticket"
 .cindex "OpenSSL "compatibility options"
 This option allows an administrator to adjust the SSL options applied
 by OpenSSL to connections.  It is given as a space-separated list of items,

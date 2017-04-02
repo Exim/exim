@@ -3787,14 +3787,14 @@ if (tls_dh_max_bits < 1024)
       "tls_dh_max_bits is too small, must be at least 1024 for interop");
 
 /* If openssl_options is set, validate it */
-if (openssl_options != NULL)
+if (openssl_options)
   {
 # ifdef USE_GNUTLS
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "openssl_options is set but we're using GnuTLS");
 # else
   long dummy;
-  if (!(tls_openssl_options_parse(openssl_options, &dummy)))
+  if (!tls_openssl_options_parse(openssl_options, &dummy))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "openssl_options parse error: %s", openssl_options);
 # endif
