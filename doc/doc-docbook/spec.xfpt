@@ -29013,12 +29013,14 @@ sender when the destination system is doing content-scan based rejection.
 .cindex "&ACL;" "enabling debug logging"
 .cindex "debugging" "enabling from an ACL"
 This control turns on debug logging, almost as though Exim had been invoked
-with &`-d`&, with the output going to a new logfile, by default called
-&'debuglog'&.  The filename can be adjusted with the &'tag'& option, which
+with &`-d`&, with the output going to a new logfile in the usual logs directory,
+by default called &'debuglog'&.
+The filename can be adjusted with the &'tag'& option, which
 may access any variables already defined.  The logging may be adjusted with
 the &'opts'& option, which takes the same values as the &`-d`& command-line
 option.
-Logging may be stopped, and the file removed, with the &'kill'& option.
+Logging started this way may be stopped, and the file removed,
+with the &'kill'& option.
 Some examples (which depend on variables that don't exist in all
 contexts):
 .code
