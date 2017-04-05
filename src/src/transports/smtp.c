@@ -2757,6 +2757,7 @@ if (continue_hostname && continue_sequence == 1)
   address_item * addr;
 
   sx.peer_offered = smtp_peer_options;
+  sx.pending_MAIL = FALSE;
   sx.ok = TRUE;
   sx.next_addr = NULL;
 
