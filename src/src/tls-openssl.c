@@ -641,7 +641,7 @@ if (!(dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)))
 if ((8*DH_size(dh)) > tls_dh_max_bits)
   {
   DEBUG(D_tls)
-    debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d",
+    debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d\n",
         8*DH_size(dh), tls_dh_max_bits);
   }
 else

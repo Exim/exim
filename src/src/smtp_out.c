@@ -500,8 +500,9 @@ for (;;)
 
   if((rc = ip_recv(sock, inblock->buffer, inblock->buffersize, timeout)) <= 0)
     {
-    if (!errno)
-      DEBUG(D_deliver|D_transport|D_acl) debug_printf_indent("  SMTP(closed)<<\n");
+    DEBUG(D_deliver|D_transport|D_acl)
+      debug_printf_indent(errno ? "  SMTP(%s)<<\n" : "  SMTP(closed)<<\n",
+	strerror(errno));
     break;
     }
 
