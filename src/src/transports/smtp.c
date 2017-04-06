@@ -3425,14 +3425,17 @@ propagate it from the initial
 	  int pid = fork();
 	  if (pid > 0)		/* parent */
 	    {
+	    waitpid(pid, NULL, 0);
 	    tls_close(FALSE, FALSE);
 	    (void)close(sx.inblock.sock);
 	    continue_transport = NULL;
 	    continue_hostname = NULL;
 	    return yield;
 	    }
-	  else if (pid == 0)	/* child */
+	  else if (pid == 0)	/* child; fork again to disconnect totally */
 	    {
+	    if ((pid = fork()))
+	      _exit(pid ? EXIT_FAILURE : EXIT_SUCCESS);
 	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd[0], sx.ob->command_timeout);
 	    exim_exit(0);
 	    }

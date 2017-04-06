@@ -8469,12 +8469,15 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
     if ((pid = fork()) < 0)
       goto fail;
 
-    else if (pid == 0)		/* child */
+    else if (pid == 0)		/* child: fork again to totally dosconnect */
       {
+      if ((pid = fork()))
+	_exit(pid ? EXIT_FAILURE : EXIT_SUCCESS);
       smtp_proxy_tls(big_buffer, big_buffer_size, pfd[0], 5*60);
       exim_exit(0);
       }
 
+    waitpid(pid, NULL, 0);
     (void) close(channel_fd);	/* release the client socket */
     channel_fd = pfd[1];
     }
