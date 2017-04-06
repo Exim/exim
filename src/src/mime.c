@@ -157,24 +157,16 @@ while (fgets(CS ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
 	{
 	/* Error from decoder. ipos is unchanged. */
 	mime_set_anomaly(MIME_ANOMALY_BROKEN_QP);
-	*opos = '=';
-	++opos;
+	*opos++ = '=';
 	++ipos;
 	}
       else if (decode_qp_result == -1)
 	break;
       else if (decode_qp_result >= 0)
-	{
-	*opos = decode_qp_result;
-	++opos;
-	}
+	*opos++ = decode_qp_result;
       }
     else
-      {
-      *opos = *ipos;
-      ++opos;
-      ++ipos;
-      }
+      *opos++ = *ipos++;
     }
   /* something to write? */
   len = opos - obuf;

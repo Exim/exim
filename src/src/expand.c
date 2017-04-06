@@ -1554,11 +1554,9 @@ for (i = 0; i < 2; i++)
   int size = 0;
   header_line *h;
 
-  for (h = header_list; size < header_insert_maxlen && h != NULL; h = h->next)
-    {
-    if (h->type != htype_old && h->text != NULL)  /* NULL => Received: placeholder */
-      {
-      if (name == NULL || (len <= h->slen && strncmpic(name, h->text, len) == 0))
+  for (h = header_list; size < header_insert_maxlen && h; h = h->next)
+    if (h->type != htype_old && h->text)  /* NULL => Received: placeholder */
+      if (!name || (len <= h->slen && strncmpic(name, h->text, len) == 0))
         {
         int ilen;
         uschar *t;
@@ -1580,7 +1578,7 @@ for (i = 0; i < 2; i++)
         that contains an address list, except when asked for raw headers. Only
         need to do this once. */
 
-        if (!want_raw && name != NULL && comma == 0 &&
+        if (!want_raw && name && comma == 0 &&
             Ustrchr("BCFRST", h->type) != NULL)
           comma = 1;
 
@@ -1613,8 +1611,6 @@ for (i = 0; i < 2; i++)
             }
           }
         }
-      }
-    }
 
   /* At end of first pass, return NULL if no header found. Then truncate size
   if necessary, and get the buffer to hold the data, returning the buffer size.
@@ -1632,9 +1628,7 @@ for (i = 0; i < 2; i++)
 /* That's all we do for raw header expansion. */
 
 if (want_raw)
-  {
   *ptr = 0;
-  }
 
 /* Otherwise, remove a final newline and a redundant added comma. Then we do
 RFC 2047 decoding, translating the charset if requested. The rfc2047_decode2()
