@@ -88,7 +88,7 @@ fi
 
 st='	 '
 exim_path=`grep "^[$st]*exim_path" $config | sed "s/.*=[$st]*//"`
-if test "$exim_path" = ""; then exim_path=BIN_DIRECTORY/exim; fi
+if test "$exim_path" = ""; then exim_path=BIN_DIRECTORY/exim4; fi
 spool_directory=`$exim_path -C $config -bP spool_directory | sed "s/.*=[ ]*//"`
 process_log_path=`$exim_path -C $config -bP process_log_path | sed "s/.*=[ ]*//"`
 

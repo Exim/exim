@@ -72,7 +72,7 @@ config=${EXIMON_EXIM_CONFIG-$config}
 
 st='	 '
 EXIM_PATH=`grep "^[$st]*exim_path" $config | sed "s/.*=[$st]*//"`
-if test "$EXIM_PATH" = ""; then EXIM_PATH=BIN_DIRECTORY/exim; fi
+if test "$EXIM_PATH" = ""; then EXIM_PATH=BIN_DIRECTORY/exim4; fi
 
 SPOOL_DIRECTORY=`$EXIM_PATH -C $config -bP spool_directory | sed 's/.*=[  ]*//'`
 LOG_FILE_PATH=`$EXIM_PATH -C $config -bP log_file_path | sed 's/.*=[  ]*//'`

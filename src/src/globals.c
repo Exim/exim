@@ -712,7 +712,7 @@ const uschar *event_name         = NULL;	/* event name variable */
 
 gid_t   exim_gid               = EXIM_GID;
 BOOL    exim_gid_set           = TRUE;          /* This gid is always set */
-uschar *exim_path              = US BIN_DIRECTORY "/exim"
+uschar *exim_path              = US BIN_DIRECTORY "/exim4"
                         "\0<---------------Space to patch exim_path->";
 uid_t   exim_uid               = EXIM_UID;
 BOOL    exim_uid_set           = TRUE;          /* This uid is always set */

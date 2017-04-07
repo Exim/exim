@@ -90,7 +90,7 @@ if [ "$exim_path" = "" ]; then
   exim_path=`grep "^[$st]*exim_path" $config | sed "s/.*=[$st]*//"`
 fi
 
-if test "$exim_path" = ""; then exim_path=BIN_DIRECTORY/exim; fi
+if test "$exim_path" = ""; then exim_path=BIN_DIRECTORY/exim4; fi
 spool_directory=`$exim_path $eximmacdef -C $config -bP spool_directory | sed 's/.*=[  ]*//'`
 qualify_domain=`$exim_path $eximmacdef -C $config -bP qualify_domain | sed 's/.*=[  ]*//'`
 
@@ -174,7 +174,7 @@ perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain $config
 
   # Run exim_dumpdb to get out the retry data and pick off what we want
 
-  open(DATA, "${exim}_dumpdb $spool retry |") ||
+  open(DATA, "/usr/sbin/exim_dumpdb $spool retry |") ||
     die "can't run exim_dumpdb";
 
   while (<DATA>)
