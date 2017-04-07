@@ -168,6 +168,8 @@ extern uschar *acl_not_smtp_mime;      /* For MIME parts of ditto */
 extern uschar *acl_not_smtp_start;     /* ACL run at the beginning of a non-SMTP session */
 extern uschar *acl_removed_headers;    /* Headers deleted by an ACL */
 extern uschar *acl_smtp_auth;          /* ACL run for AUTH */
+extern uschar *acl_smtp_auth_accept;   /* ACL run for AUTH Success*/
+extern uschar *acl_smtp_auth_fail;     /* ACL run for AUTH Fail*/
 extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
 #ifndef DISABLE_PRDR

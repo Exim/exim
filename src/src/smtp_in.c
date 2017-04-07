@@ -3452,10 +3452,10 @@ smtp_respond(code, len, TRUE, user_msg);
 
 
 static int
-smtp_in_auth(auth_instance *au, uschar ** s, uschar ** ss)
+smtp_in_auth(auth_instance *au, uschar ** s, uschar ** ss, uschar *user_msg, uschar *log_msg)
 {
 const uschar *set_id = NULL;
-int rc, i;
+int rc, acl_rc, i;
 
 /* Run the checking code, passing the remainder of the command line as
 data. Initials the $auth<n> variables as empty. Initialize $0 empty and set
@@ -3486,6 +3486,18 @@ printing characters. */
 
 if (set_id) set_id = string_printing(set_id);
 
+if (set_id != NULL) strcpy(smtp_cmd_argument, set_id);
+/* Check the ACL */
+if (acl_smtp_auth != NULL)
+ {
+  acl_rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth, &user_msg, &log_msg);
+  if (acl_rc != OK)
+  {
+    smtp_handle_acl_fail(ACL_WHERE_AUTH, acl_rc, user_msg, log_msg);
+    return acl_rc;
+  }
+ }
+
 /* For the non-OK cases, set up additional logging data if set_id
 is not empty. */
 
@@ -3500,6 +3512,16 @@ switch(rc)
   case OK:
   if (!au->set_id || set_id)    /* Complete success */
     {
+    if (acl_smtp_auth_accept != NULL)
+      {
+        acl_rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth_accept, &user_msg, &log_msg);
+        if (acl_rc != OK)
+        {
+          smtp_handle_acl_fail(ACL_WHERE_AUTH, acl_rc, user_msg, log_msg);
+          rc = acl_rc;
+          break;
+        }
+      }
     if (set_id) authenticated_id = string_copy_malloc(set_id);
     sender_host_authenticated = au->name;
     authentication_failed = FALSE;
@@ -3540,6 +3562,15 @@ switch(rc)
   break;
 
   case FAIL:
+  if (acl_smtp_auth_fail != NULL)
+    {
+      acl_rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth_fail, &user_msg, &log_msg);
+      if (acl_rc != OK)
+      {
+        smtp_handle_acl_fail(ACL_WHERE_AUTH, acl_rc, user_msg, log_msg);
+        break;
+      }
+    }
   if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
   *s = US"535 Incorrect authentication data";
   *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
@@ -3732,7 +3763,7 @@ while (done <= 0)
 	{
 	smtp_cmd_data = NULL;
 
-	if (smtp_in_auth(au, &s, &ss) == OK)
+	if (smtp_in_auth(au, &s, &ss, &user_msg, &log_msg) == OK)
 	  { DEBUG(D_auth) debug_printf("tls auth succeeded\n"); }
 	else
 	  { DEBUG(D_auth) debug_printf("tls auth not succeeded\n"); }
@@ -3787,17 +3818,6 @@ while (done <= 0)
       break;
       }
 
-    /* Check the ACL */
-
-    if (  acl_smtp_auth
-       && (rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth,
-		  &user_msg, &log_msg)) != OK
-       )
-      {
-      done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
-      break;
-      }
-
     /* Find the name of the requested authentication mechanism. */
 
     s = smtp_cmd_data;
@@ -3832,7 +3852,7 @@ while (done <= 0)
 
     if (au)
       {
-      c = smtp_in_auth(au, &s, &ss);
+      c = smtp_in_auth(au, &s, &ss, &user_msg, &log_msg);
 
       smtp_printf("%s\r\n", s);
       if (c != OK)

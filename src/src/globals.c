@@ -237,6 +237,8 @@ uschar *acl_not_smtp_mime      = NULL;
 uschar *acl_not_smtp_start     = NULL;
 uschar *acl_removed_headers    = NULL;
 uschar *acl_smtp_auth          = NULL;
+uschar *acl_smtp_auth_accept   = NULL;
+uschar *acl_smtp_auth_fail     = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
 #ifndef DISABLE_PRDR

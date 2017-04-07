@@ -161,6 +161,8 @@ static optionlist optionlist_config[] = {
 #endif
   { "acl_not_smtp_start",       opt_stringptr,   &acl_not_smtp_start },
   { "acl_smtp_auth",            opt_stringptr,   &acl_smtp_auth },
+  { "acl_smtp_auth_accept",     opt_stringptr,   &acl_smtp_auth_accept },
+  { "acl_smtp_auth_fail",       opt_stringptr,   &acl_smtp_auth_fail },
   { "acl_smtp_connect",         opt_stringptr,   &acl_smtp_connect },
   { "acl_smtp_data",            opt_stringptr,   &acl_smtp_data },
 #ifndef DISABLE_PRDR
