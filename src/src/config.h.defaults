@@ -74,7 +74,7 @@ Do not put spaces between # and the 'define'.
 #define HAVE_LOCAL_SCAN
 #define HAVE_SA_LEN
 #define HEADERS_CHARSET           "ISO-8859-1"
-#define HEADER_ADD_BUFFER_SIZE    (8192 * 4)
+#define HEADER_ADD_BUFFER_SIZE    (8192 * 10)
 #define HEADER_MAXSIZE            (1024*1024)
 
 #define INPUT_DIRECTORY_MODE       0750
