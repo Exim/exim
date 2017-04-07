@@ -273,19 +273,20 @@ if (!dmarc_abort && !sender_host_authenticated)
   {
   /* Use the envelope sender domain for this part of DMARC */
   spf_sender_domain = expand_string(US"$sender_address_domain");
+  /* No spf domain means null envelope sender so generate a domain name
+   * from the sender_helo_name  */
+  if (!*spf_sender_domain)
+    {
+    spf_sender_domain = sender_helo_name;
+    log_write(0, LOG_MAIN, "DMARC using synthesized SPF sender domain = %s\n",
+              spf_sender_domain);
+    DEBUG(D_receive)
+       debug_printf("DMARC using synthesized SPF sender domain = %s\n",
+       spf_sender_domain);
+    }
+
   if (!spf_response)
     {
-    /* No spf data means null envelope sender so generate a domain name
-     * from the sender_helo_name  */
-    if (!spf_sender_domain)
-      {
-      spf_sender_domain = sender_helo_name;
-      log_write(0, LOG_MAIN, "DMARC using synthesized SPF sender domain = %s\n",
-			     spf_sender_domain);
-      DEBUG(D_receive)
-	debug_printf("DMARC using synthesized SPF sender domain = %s\n",
-	  spf_sender_domain);
-      }
     dmarc_spf_result = DMARC_POLICY_SPF_OUTCOME_NONE;
     dmarc_spf_ares_result = ARES_RESULT_UNKNOWN;
     origin = DMARC_POLICY_SPF_ORIGIN_HELO;
