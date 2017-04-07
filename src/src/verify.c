@@ -556,7 +556,18 @@ else
 if (cached_callout_lookup(addr, address_key, from_address,
       &options, &pm_mailfrom, &yield, failure_ptr,
       &new_domain_record, &old_domain_cache_result))
+  {
+  if (options & vopt_is_recipient)
+    recipient_verify_cache = TRUE;
+  else
+    sender_verify_cache = TRUE;
   goto END_CALLOUT;
+  }
+
+if (options & vopt_is_recipient)
+  recipient_verify_cache = FALSE;
+else
+  sender_verify_cache = FALSE;
 
 if (!addr->transport)
   {
@@ -613,6 +624,15 @@ coding means skipping this whole loop and doing the append separately.  */
      && !pm_mailfrom
      )
     done = cutthrough_multi(addr, host_list, tf, &yield);
+
+    if (options & vopt_is_recipient)
+    {
+      recipient_verify_message = addr->user_message;
+    }
+    else
+    {
+      sender_verify_message = addr->user_message;
+    }
 
   /* If we did not use a cached connection, make connections to the hosts
   and do real callouts. The list of hosts is passed in as an argument. */
