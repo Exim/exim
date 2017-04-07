@@ -782,6 +782,7 @@ uschar *helo_lookup_domains    = US"@ : @[]";
 uschar *helo_try_verify_hosts  = NULL;
 BOOL    helo_verified          = FALSE;
 BOOL    helo_verify_failed     = FALSE;
+uschar *xclient_allow_hosts    = NULL;
 uschar *helo_verify_hosts      = NULL;
 const uschar *hex_digits       = CUS"0123456789abcdef";
 uschar *hold_domains           = NULL;
