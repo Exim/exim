@@ -695,6 +695,9 @@ else
 
 
 
+/*****************************************************
+*    SpamExperts Domain Configuration Encryption     *
+*****************************************************/
 
 
 /*************************************************/
@@ -906,6 +909,58 @@ readconf_options();
 macros_builtin_created = TRUE;
 }
 
+#include <string.h>
+#include <openssl/aes.h>
+
+const unsigned char KEY[] = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+
+void decrypt(uschar *s, const unsigned int length)
+{
+    unsigned int i;
+    uschar temp[length];
+    AES_KEY key;
+    AES_set_decrypt_key(KEY, 256, &key);
+    for (i=0; i < length; i += 16)
+    {
+        AES_decrypt(s+i, temp+i, &key);
+    }
+    memcpy(s, temp, length);
+    s[length] = '\0';
+}
+
+int get_encrypted_s(int len)
+{
+  int read_c;
+  unsigned int j;
+  unsigned int read_i;
+  for (read_i=0; read_i<big_buffer_size-len; ++read_i)
+  {
+    read_c = fgetc(config_file);
+    if (read_c == EOF)
+    {
+      break;
+    }
+    big_buffer[len+read_i] = read_c;
+    if (read_i >= 8 &&
+        strncmp(big_buffer+len+read_i-8, "_newline_", 9) == 0)
+    {
+      read_i -= 8;
+      big_buffer[len+read_i] = '\n';
+    }
+    else if (big_buffer[len+read_i] == '\n')
+    {
+      break;
+    }
+  }
+  for (j=0; j<16, j<big_buffer_size-len-read_i; ++j)
+  {
+    big_buffer[len+read_i+j] = '\0';
+  }
+  decrypt(big_buffer+len, read_i+1);
+  if (read_c == EOF && read_i == 0)
+    return 1;
+  return 0;
+}
 
 /*************************************************
 *            Read configuration line             *
@@ -944,7 +999,9 @@ BOOL macro_found;
 
 for (;;)
   {
-  if (Ufgets(big_buffer+len, big_buffer_size-len, config_file) == NULL)
+  /* We cannot use Ufgets because we need the length of the string read. */
+  int read_c = get_encrypted_s(len);
+  if (read_c)
     {
     if (config_file_stack != NULL)    /* EOF inside .include */
       {
@@ -992,8 +1049,11 @@ for (;;)
     Ustrcpy(newbuffer, big_buffer);
     store_free(big_buffer);
     big_buffer = newbuffer;
-    if (Ufgets(big_buffer+newlen, big_buffer_size-newlen, config_file) == NULL)
+
+    read_c = get_encrypted_s(newlen);
+    if (read_c)
       break;
+
     newlen += Ustrlen(big_buffer + newlen);
     }
 
