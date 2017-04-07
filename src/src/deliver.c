@@ -1599,6 +1599,16 @@ else if (result == DEFER || result == PANIC)
   log or the main log for SMTP defers. */
 
   if (!queue_2stage || addr->basic_errno != 0)
+#ifndef DISABLE_EVENT
+    /* Skip this event for errors of the type "retry time not reached" */
+    if (addr->basic_errno >= ERRNO_RETRY_BASE)
+    {
+      if (deliver_freeze)
+        msg_event_raise(US"msg:defer:delivery:frozen", addr);
+      else
+        msg_event_raise(US"msg:defer:delivery", addr);
+    }
+#endif
     deferral_log(addr, now, logflags, driver_name, driver_kind);
   }
 
@@ -7292,6 +7302,11 @@ while (addr_failed)
   DEBUG(D_deliver)
     debug_printf("processing failed address %s\n", addr_failed->address);
 
+#ifndef DISABLE_EVENT
+  for (addr = addr_failed; addr != NULL; addr = addr->next)
+    msg_event_raise(US"msg:fail:delivery:expired", addr);
+#endif
+
   /* There are only two ways an address in a bounce message can get here:
 
   (1) When delivery was initially deferred, but has now timed out (in the call
@@ -7772,6 +7787,9 @@ wording. */
         {
         for (addr = handled_addr; addr; addr = addr->next)
           {
+#ifndef DISABLE_EVENT
+          msg_event_raise(US"msg:fail:delivery:bounced", addr);
+#endif
           address_done(addr, logtod);
           child_done(addr, logtod);
           }
