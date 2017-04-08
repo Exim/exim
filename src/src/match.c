@@ -1326,4 +1326,25 @@ return match_check_list(listptr, sep, &addresslist_anchor, &local_cache_bits,
     valueptr);
 }
 
+/* Simpler version of match_address_list; always caseless, expanding,
+no cache bits, no value-return.
+
+Arguments:
+  address         address to test
+  listptr         list to check against
+  sep             separator character for the list;
+                  may be 0 to get separator from the list;
+                  may be UCHAR_MAX+1 for one-item list
+
+Returns:          OK    for a positive match, or end list after a negation;
+                  FAIL  for a negative match, or end list after non-negation;
+                  DEFER if a lookup deferred
+*/
+
+int
+match_address_list_basic(const uschar *address, const uschar **listptr, int sep)
+{
+return match_address_list(address, TRUE, TRUE, listptr, NULL, -1, sep, NULL);
+}
+
 /* End of match.c */

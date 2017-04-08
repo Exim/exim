@@ -261,6 +261,7 @@ extern void    malware_init(void);
 #endif
 extern int     match_address_list(const uschar *, BOOL, BOOL, const uschar **,
                  unsigned int *, int, int, const uschar **);
+extern int     match_address_list_basic(const uschar *, const uschar **, int);
 extern int     match_check_list(const uschar **, int, tree_node **, unsigned int **,
                  int(*)(void *, const uschar *, const uschar **, uschar **), void *, int,
                  const uschar *, const uschar **);

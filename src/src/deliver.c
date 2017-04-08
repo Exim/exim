@@ -4607,7 +4607,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     predictable settings for each delivery process, so do something explicit
     here rather they rely on the fixed reset in the random number function. */
 
-    random_seed = running_in_test_harness? 42 + 2*delivery_count : 0;
+    random_seed = running_in_test_harness ? 42 + 2*delivery_count : 0;
 
     /* Set close-on-exec on the pipe so that it doesn't get passed on to
     a new process that may be forked to do another delivery down the same
@@ -6045,9 +6045,7 @@ spool if the message is deferred, and in any case there are casing
 complications for local addresses. */
 
 if (process_recipients != RECIP_IGNORE)
-  {
   for (i = 0; i < recipients_count; i++)
-    {
     if (!tree_search(tree_nonrecipients, recipients_list[i].address))
       {
       recipient_item *r = recipients_list + i;
@@ -6163,8 +6161,6 @@ if (process_recipients != RECIP_IGNORE)
 	}
 #endif
       }
-    }
-  }
 
 DEBUG(D_deliver)
   {
@@ -6229,10 +6225,8 @@ while (addr_new)           /* Loop until all addresses dealt with */
   not exist. In both cases, dbm_file is NULL. */
 
   if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE)))
-    {
     DEBUG(D_deliver|D_retry|D_route|D_hints_lookup)
       debug_printf("no retry data available\n");
-    }
 
   /* Scan the current batch of new addresses, to handle pipes, files and
   autoreplies, and determine which others are ready for routing. */
@@ -6624,7 +6618,6 @@ while (addr_new)           /* Loop until all addresses dealt with */
       if ((rc = match_isinlist(addr->domain, (const uschar **)&queue_domains, 0,
             &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
               != OK)
-        {
         if (rc == DEFER)
           {
           addr->basic_errno = ERRNO_LISTDEFER;
@@ -6636,7 +6629,6 @@ while (addr_new)           /* Loop until all addresses dealt with */
           addr->next = okaddr;
           okaddr = addr;
           }
-        }
       else
         {
         addr->basic_errno = ERRNO_QUEUE_DOMAIN;
@@ -6671,7 +6663,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
          &addr_succeed, v_none)) == DEFER)
       retry_add_item(addr,
         addr->router->retry_use_local_part
-        ?  string_sprintf("R:%s@%s", addr->local_part, addr->domain)
+        ? string_sprintf("R:%s@%s", addr->local_part, addr->domain)
 	: string_sprintf("R:%s", addr->domain),
 	0);
 

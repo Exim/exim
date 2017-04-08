@@ -159,8 +159,7 @@ deliveries (so as to do it all in one go). The tree records addresses that have
 become unusable during this delivery process (i.e. those that will get put into
 the retry database when it is updated). */
 
-node = tree_search(tree_unusable, host_key);
-if (node != NULL)
+if ((node = tree_search(tree_unusable, host_key)))
   {
   DEBUG(D_transport|D_retry) debug_printf("found in tree of unusables\n");
   host->status = (node->data.val > 255)?
@@ -172,7 +171,7 @@ if (node != NULL)
 /* Open the retry database, giving up if there isn't one. Otherwise, search for
 the retry records, and then close the database again. */
 
-if ((dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE)) == NULL)
+if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE)))
   {
   DEBUG(D_deliver|D_retry|D_hints_lookup)
     debug_printf("no retry data available\n");
@@ -184,7 +183,7 @@ dbfn_close(dbm_file);
 
 /* Ignore the data if it is too old - too long since it was written */
 
-if (host_retry_record == NULL)
+if (!host_retry_record)
   {
   DEBUG(D_transport|D_retry) debug_printf("no host retry record\n");
   }
@@ -194,7 +193,7 @@ else if (now - host_retry_record->time_stamp > retry_data_expire)
   DEBUG(D_transport|D_retry) debug_printf("host retry record too old\n");
   }
 
-if (message_retry_record == NULL)
+if (!message_retry_record)
   {
   DEBUG(D_transport|D_retry) debug_printf("no message retry record\n");
   }
@@ -211,7 +210,7 @@ address. Allow the delivery if it has. Otherwise set the appropriate unusable
 flag and return FALSE. Otherwise arrange to return TRUE if this is an expired
 host. */
 
-if (host_retry_record != NULL)
+if (host_retry_record)
   {
   *retry_host_key = host_key;
 
@@ -243,7 +242,7 @@ if (host_retry_record != NULL)
 for reaching its retry time (or forcing). If not, mark the host unusable,
 unless the ultimate address timeout has been reached. */
 
-if (message_retry_record != NULL)
+if (message_retry_record)
   {
   *retry_message_key = message_key;
   if (now < message_retry_record->next_try && !deliver_force)
@@ -295,6 +294,7 @@ retry_add_item(address_item *addr, uschar *key, int flags)
 {
 retry_item *rti = store_get(sizeof(retry_item));
 host_item * host = addr->host_used;
+
 rti->next = addr->retries;
 addr->retries = rti;
 rti->key = key;
@@ -378,7 +378,7 @@ if (alternate)    alternate = string_sprintf("*@%s", alternate);
 
 /* Scan the configured retry items. */
 
-for (yield = retries; yield != NULL; yield = yield->next)
+for (yield = retries; yield; yield = yield->next)
   {
   const uschar *plist = yield->pattern;
   const uschar *slist = yield->senders;
@@ -472,19 +472,19 @@ for (yield = retries; yield != NULL; yield = yield->next)
   /* If the "senders" condition is set, check it. Note that sender_address may
   be null during -brt checking, in which case we do not use this rule. */
 
-  if (slist != NULL && (sender_address == NULL ||
-      match_address_list(sender_address, TRUE, TRUE, &slist, NULL, -1, 0,
-        NULL) != OK))
+  if (  slist
+     && (  !sender_address
+       	|| match_address_list_basic(sender_address, &slist, 0) != OK
+     )  )
     continue;
 
   /* Check for a match between the address list item at the start of this retry
   rule and either the main or alternate keys. */
 
-  if (match_address_list(key, TRUE, TRUE, &plist, NULL, -1, UCHAR_MAX+1,
-        NULL) == OK ||
-     (alternate != NULL &&
-      match_address_list(alternate, TRUE, TRUE, &plist, NULL, -1,
-        UCHAR_MAX+1, NULL) == OK))
+  if (  match_address_list_basic(key, &plist, UCHAR_MAX+1) == OK
+     || (  alternate
+	&& match_address_list_basic(alternate, &plist, UCHAR_MAX+1) == OK
+     )  )
     break;
   }
 
@@ -639,7 +639,6 @@ for (i = 0; i < 3; i++)
           }
 
         DEBUG(D_retry)
-          {
           if (rti->flags & rf_host)
             debug_printf("retry for %s (%s) = %s %d %d\n", rti->key,
               addr->domain, retry->pattern, retry->basic_errno,
@@ -647,7 +646,6 @@ for (i = 0; i < 3; i++)
           else
             debug_printf("retry for %s = %s %d %d\n", rti->key, retry->pattern,
               retry->basic_errno, retry->more_errno);
-          }
 
         /* Set up the message for the database retry record. Because DBM
         records have a maximum data length, we enforce a limit. There isn't
@@ -861,10 +859,8 @@ for (i = 0; i < 3; i++)
           timed_out = TRUE;
           }
         else
-          {
           DEBUG(D_retry)
             debug_printf("timed out but some hosts were skipped\n");
-          }
       }     /* Loop for an address and its parents */
 
     /* If this is a deferred address, and retry processing was requested by

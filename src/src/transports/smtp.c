@@ -2701,17 +2701,14 @@ set it up. This cannot be done until the identify of the host is known. */
 
 if (tblock->filter_command)
   {
-  BOOL rc;
-  uschar fbuf[64];
-  sprintf(CS fbuf, "%.50s transport", tblock->name);
-  rc = transport_set_up_command(&transport_filter_argv, tblock->filter_command,
-    TRUE, DEFER, addrlist, fbuf, NULL);
   transport_filter_timeout = tblock->filter_timeout;
 
   /* On failure, copy the error to all addresses, abandon the SMTP call, and
   yield ERROR. */
 
-  if (!rc)
+  if (!transport_set_up_command(&transport_filter_argv,
+	tblock->filter_command, TRUE, DEFER, addrlist,
+	string_sprintf("%.50s transport", tblock->name), NULL))
     {
     set_errno_nohost(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
       FALSE);
@@ -2730,6 +2727,7 @@ if (tblock->filter_command)
     }
   }
 
+sx.first_addr = addrlist;
 
 /* For messages that have more than the maximum number of envelope recipients,
 we want to send several transactions down the same SMTP connection. (See
@@ -2741,7 +2739,7 @@ transaction to handle. */
 
 SEND_MESSAGE:
 sx.from_addr = return_path;
-sx.first_addr = sx.sync_addr = addrlist;
+sx.sync_addr = sx.first_addr;
 sx.ok = FALSE;
 sx.send_rset = TRUE;
 sx.completed_addr = FALSE;

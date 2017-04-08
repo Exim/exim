@@ -1543,7 +1543,6 @@ Returns:    nothing
 void
 transport_update_waiting(host_item *hostlist, uschar *tpname)
 {
-uschar buffer[256];
 const uschar *prevname = US"";
 host_item *host;
 open_db dbblock;
@@ -1553,19 +1552,20 @@ DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
 
 /* Open the database for this transport */
 
-sprintf(CS buffer, "wait-%.200s", tpname);
-dbm_file = dbfn_open(buffer, O_RDWR, &dbblock, TRUE);
-if (dbm_file == NULL) return;
+if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", tpname),
+		      O_RDWR, &dbblock, TRUE)))
+  return;
 
 /* Scan the list of hosts for which this message is waiting, and ensure
 that the message id is in each host record. */
 
-for (host = hostlist; host!= NULL; host = host->next)
+for (host = hostlist; host; host = host->next)
   {
   BOOL already = FALSE;
   dbdata_wait *host_record;
   uschar *s;
   int i, host_length;
+  uschar buffer[256];
 
   /* Skip if this is the same host as we just processed; otherwise remember
   the name for next time. */
@@ -1575,8 +1575,7 @@ for (host = hostlist; host!= NULL; host = host->next)
 
   /* Look up the host record; if there isn't one, make an empty one. */
 
-  host_record = dbfn_read(dbm_file, host->name);
-  if (host_record == NULL)
+  if (!(host_record = dbfn_read(dbm_file, host->name)))
     {
     host_record = store_get(sizeof(dbdata_wait) + MESSAGE_ID_LENGTH);
     host_record->count = host_record->sequence = 0;
@@ -1590,10 +1589,8 @@ for (host = hostlist; host!= NULL; host = host->next)
 
   for (s = host_record->text; s < host_record->text + host_length;
        s += MESSAGE_ID_LENGTH)
-    {
     if (Ustrncmp(s, message_id, MESSAGE_ID_LENGTH) == 0)
       { already = TRUE; break; }
-    }
 
   /* If we haven't found this message in the main record, search any
   continuation records that exist. */
@@ -1602,15 +1599,12 @@ for (host = hostlist; host!= NULL; host = host->next)
     {
     dbdata_wait *cont;
     sprintf(CS buffer, "%.200s:%d", host->name, i);
-    cont = dbfn_read(dbm_file, buffer);
-    if (cont != NULL)
+    if ((cont = dbfn_read(dbm_file, buffer)))
       {
       int clen = cont->count * MESSAGE_ID_LENGTH;
       for (s = cont->text; s < cont->text + clen; s += MESSAGE_ID_LENGTH)
-        {
         if (Ustrncmp(s, message_id, MESSAGE_ID_LENGTH) == 0)
           { already = TRUE; break; }
-        }
       }
     }
 
@@ -1706,7 +1700,6 @@ dbdata_wait *host_record;
 int host_length;
 open_db dbblock;
 open_db *dbm_file;
-uschar buffer[256];
 
 int         i;
 struct stat statbuf;
@@ -1733,9 +1726,9 @@ if (local_message_max > 0 && continue_sequence >= local_message_max)
 
 /* Open the waiting information database. */
 
-sprintf(CS buffer, "wait-%.200s", transport_name);
-dbm_file = dbfn_open(buffer, O_RDWR, &dbblock, TRUE);
-if (dbm_file == NULL) return FALSE;
+if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", transport_name),
+			  O_RDWR, &dbblock, TRUE)))
+  return FALSE;
 
 /* See if there is a record for this host; if not, there's nothing to do. */
 
@@ -1851,13 +1844,13 @@ while (1)
       }
     }
 
-/* Jeremy: check for a continuation record, this code I do not know how to
-test but the code should work */
+  /* Check for a continuation record. */
 
   while (host_length <= 0)
     {
     int i;
     dbdata_wait * newr = NULL;
+    uschar buffer[256];
 
     /* Search for a continuation */
 

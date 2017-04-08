@@ -3530,7 +3530,7 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_RECIPIENTS:
-    rc = match_address_list((const uschar *)addr->address, TRUE, TRUE, &arg, NULL, -1, 0,
+    rc = match_address_list(CUS addr->address, TRUE, TRUE, &arg, NULL, -1, 0,
       CUSS &recipient_data);
     break;
 
@@ -3548,14 +3548,14 @@ for (; cb != NULL; cb = cb->next)
       {
       uschar *sdomain;
       sdomain = Ustrrchr(sender_address, '@');
-      sdomain = (sdomain == NULL)? US"" : sdomain + 1;
+      sdomain = sdomain ? sdomain + 1 ? US"";
       rc = match_isinlist(sdomain, &arg, 0, &domainlist_anchor,
         sender_domain_cache, MCL_DOMAIN, TRUE, NULL);
       }
     break;
 
     case ACLC_SENDERS:
-    rc = match_address_list((const uschar *)sender_address, TRUE, TRUE, &arg,
+    rc = match_address_list(CUS sender_address, TRUE, TRUE, &arg,
       sender_address_cache, -1, 0, CUSS &sender_data);
     break;
 
