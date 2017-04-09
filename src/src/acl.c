@@ -3548,7 +3548,7 @@ for (; cb != NULL; cb = cb->next)
       {
       uschar *sdomain;
       sdomain = Ustrrchr(sender_address, '@');
-      sdomain = sdomain ? sdomain + 1 ? US"";
+      sdomain = sdomain ? sdomain + 1 : US"";
       rc = match_isinlist(sdomain, &arg, 0, &domainlist_anchor,
         sender_domain_cache, MCL_DOMAIN, TRUE, NULL);
       }
