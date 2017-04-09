@@ -1934,8 +1934,6 @@ void
 transport_do_pass_socket(const uschar *transport_name, const uschar *hostname,
   const uschar *hostaddress, uschar *id, int socket_fd)
 {
-pid_t pid;
-int status;
 int i = 20;
 const uschar **argv;
 

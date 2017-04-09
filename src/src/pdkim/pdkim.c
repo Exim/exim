@@ -1596,7 +1596,6 @@ while (sig)
   else
     {
     ev_ctx vctx;
-    pdkim_pubkey * p;
 
     /* Make sure we have all required signature tags */
     if (!(  sig->domain        && *sig->domain

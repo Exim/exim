@@ -727,7 +727,7 @@ if (Ustrcmp(exp_curve, "auto") == 0)
 #if OPENSSL_VERSION_NUMBER < 0x10002000L
   DEBUG(D_tls) debug_printf(
     "ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
-  exp_curve = "prime256v1";
+  exp_curve = US"prime256v1";
 #else
 # if defined SSL_CTRL_SET_ECDH_AUTO
   DEBUG(D_tls) debug_printf(
