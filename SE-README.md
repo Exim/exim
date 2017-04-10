@@ -92,4 +92,7 @@ This documents the patches applied on the upstream `exim-4_89` branch:
  - Based on this [Debian patch](https://anonscm.debian.org/git/pkg-exim4/exim4.git/tree/debian/patches/35_install.dpatch)
  - Exim's installation scripts install the binary as exim-<version> - disable
    this feature.
+      
+### 12. Read encrypted conf
 
+ - Applied [here](https://github.com/SpamExperts/exim/commit/448c95c573b187211ea102e0e811520a64d8aaf1)
