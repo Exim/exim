@@ -493,13 +493,6 @@ via this web page:
 Please ask Debian-specific questions on this list and not on the general Exim
 lists.
 
-.section "Exim training" "SECID4"
-.cindex "training courses"
-Training courses in Cambridge (UK) used to be run annually by the author of
-Exim, before he retired. At the time of writing, there are no plans to run
-further Exim courses in Cambridge. However, if that changes, relevant
-information will be posted at &url(http://www-tus.csx.cam.ac.uk/courses/exim/).
-
 .section "Bug reports" "SECID5"
 .cindex "bug reports"
 .cindex "reporting bugs"
@@ -514,10 +507,6 @@ message to the &'exim-dev'& mailing list and have it discussed.
 .cindex "FTP site"
 .cindex "distribution" "ftp site"
 The master ftp site for the Exim distribution is
-.display
-&*ftp://ftp.csx.cam.ac.uk/pub/software/email/exim*&
-.endd
-This is mirrored by
 .display
 &*ftp://ftp.exim.org/pub/exim*&
 .endd
