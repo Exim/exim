@@ -4109,7 +4109,7 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
     int c = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (c != EOF) (receive_ungetc)(c); else
       {
-      smtp_notquit_exit(US"connection-lost", NULL, NULL);
+      smtp_notquit_exit(US"connection-lost-after-dot", NULL, NULL);
       smtp_reply = US"";    /* No attempt to send a response */
       smtp_yield = FALSE;   /* Nothing more on this connection */
 
