@@ -4368,11 +4368,11 @@ while (done <= 0)
         s = string_catn(s, &size, &ptr, smtp_code, 3);
         s = string_catn(s, &size, &ptr, US"-ETRN\r\n", 7);
         }
-      if (acl_smtp_vrfy)
-        {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-VRFY\r\n", 7);
-        }
+//      if (acl_smtp_vrfy)
+//        {
+//        s = string_catn(s, &size, &ptr, smtp_code, 3);
+//        s = string_catn(s, &size, &ptr, US"-VRFY\r\n", 7);
+//        }
       if (acl_smtp_expn)
         {
         s = string_catn(s, &size, &ptr, smtp_code, 3);
