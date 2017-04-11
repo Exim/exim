@@ -498,7 +498,7 @@ BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 100;
 int     check_spool_space      = 10*1024;	/* 10K Kbyte == 10MB */
 
-uschar *chunking_advertise_hosts = US"*";
+uschar *chunking_advertise_hosts = US"";
 unsigned chunking_datasize     = 0;
 unsigned chunking_data_left    = 0;
 BOOL    chunking_offered       = FALSE;
