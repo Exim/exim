@@ -71,10 +71,41 @@ EXIM_COMPILE_NUMBER=$(expr "${EXIM_COMPILE_NUMBER:-0}" + 1)
 
 echo "$EXIM_COMPILE_NUMBER" >cnumber.h
 
+# Reproducible builds, accept a build timestamp override from environ per
+# <https://reproducible-builds.org/specs/source-date-epoch/>.
+# We require a fairly modern date(1) command here, which is not portable
+# to some of the systems Exim is built on.  That's okay, because the scenarios
+# are:
+#  1) Local postmaster building, not using $SOURCE_DATE_EPOCH, doesn't matter
+#  2) Packaging folks who don't care about reproducible builds
+#  3) Packaging folks who care but are using systems where date Just Works
+#  3) Packaging folks who care and can put a modern date(1) in $PATH
+#  4) Packaging folks who care and can supply us with a clean patch to support
+#     their requirements
+#  5) Packaging folks who care but won't do any work to support their strange
+#     old systems and want us to do the work for them.  We don't care either,
+#     they're SOL and have to live without reproducible builds.
+#
+exim_build_date_override=''
+if [ ".${SOURCE_DATE_EPOCH:-}" != "." ]; then
+  fmt='+%d-%b-%Y %H:%M:%S'
+  # Non-reproducible, we use __DATE__ and __TIME__ in C, which respect timezone
+  # (think localtime, not gmtime); for reproduction between systems, UTC makes
+  # more sense and the examples available use UTC without explicitly mandating
+  # it.  I think that we can switch behavior and use UTC for reproducible
+  # builds without it causing any problems: nothing really cares about timezone.
+  # GNU date: "date -d @TS"
+  # BSD date: "date -r TS"
+  exim_build_date_override="$(date -u -d "@${SOURCE_DATE_EPOCH}" "$fmt" 2>/dev/null | date -u -r "${SOURCE_DATE_EPOCH}" "$fmt" 2>/dev/null)"
+fi
+
 ( echo '# automatically generated file - see ../scripts/reversion'
   echo EXIM_RELEASE_VERSION='"'"$EXIM_RELEASE_VERSION"'"'
   echo EXIM_VARIANT_VERSION='"'"$EXIM_VARIANT_VERSION"'"'
   echo EXIM_COMPILE_NUMBER='"'"$EXIM_COMPILE_NUMBER"'"'
+  if [ ".${exim_build_date_override:-}" != "." ]; then
+    echo EXIM_BUILD_DATE_OVERRIDE='"'"${exim_build_date_override}"'"'
+  fi
 ) >version.sh
 
 if [ ! -f version.h ]
@@ -83,6 +114,9 @@ then
   echo '#define EXIM_RELEASE_VERSION "'"$EXIM_RELEASE_VERSION"'"'
   echo '#define EXIM_VARIANT_VERSION "'"$EXIM_VARIANT_VERSION"'"'
   echo '#define EXIM_VERSION_STR EXIM_RELEASE_VERSION EXIM_VARIANT_VERSION'
+  if [ ".${exim_build_date_override:-}" != "." ]; then
+    echo '#define EXIM_BUILD_DATE_OVERRIDE "'"${exim_build_date_override}"'"'
+  fi
 ) >version.h
 fi
 

@@ -46,6 +46,9 @@ JH/06 Default openssl_options to include +no_ticket, to reduce load on peers.
       by default on recent versions (3.1.3 +) unless the PFS priority string
       is used (3.2.4 +).
 
+PP/03 Add $SOURCE_DATE_EPOCH support for reproducible builds, per spec at
+      <https://reproducible-builds.org/specs/source-date-epoch/>.
+
 
 Exim version 4.89
 -----------------

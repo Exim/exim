@@ -26,6 +26,9 @@ Version 4.90
  5. An option for recipient verify callouts to hold the connection open for
     further recipients and for delivery.
 
+ 6. The reproducible build $SOURCE_DATE_EPOCH environment variable is now
+    supported.
+
 
 Version 4.89
 ------------
