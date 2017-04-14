@@ -246,6 +246,7 @@ extern int     bmi_deliver;            /* Flag that determines if the message sh
 extern int     bmi_run;                /* Flag that determines if message should be run through Brightmail server */
 extern uschar *bmi_verdicts;           /* BASE64-encoded verdicts with recipient lists */
 #endif
+extern int     bsmtp_transaction_linecount; /* Start of last transaction */
 extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern uschar *bounce_message_file;    /* Template file */
 extern uschar *bounce_message_text;    /* One-liner */
@@ -255,7 +256,7 @@ extern int     bounce_return_linesize_limit; /* Max line length in return */
 extern BOOL    bounce_return_message;  /* Include message in bounce */
 extern int     bounce_return_size_limit; /* Max amount to return */
 extern uschar *bounce_sender_authentication; /* AUTH address for bounces */
-extern int     bsmtp_transaction_linecount; /* Start of last transaction */
+extern uschar *builtin_macros_create_trigger; /* config file line causing lazy-create */
 
 extern uschar *callout_address;         /* Address used for a malware/spamd/verify etc. callout */
 extern int     callout_cache_domain_positive_expire; /* Time for positive domain callout cache records to expire */

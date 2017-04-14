@@ -3811,6 +3811,10 @@ defined) */
 
 readconf_main(checking || list_options);
 
+if (builtin_macros_create_trigger) DEBUG(D_any)
+  debug_printf("Builtin macros created (expensive) due to config line '%.*s'\n",
+    Ustrlen(builtin_macros_create_trigger)-1, builtin_macros_create_trigger);
+
 /* Now in directory "/" */
 
 if (cleanup_environment() == FALSE)
@@ -3830,17 +3834,13 @@ if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
 else
   {
   int i, j;
-  for (i = 0; i < group_count; i++)
-    {
-    if (group_list[i] == exim_gid) admin_user = TRUE;
-    else if (admin_groups != NULL)
-      {
-      for (j = 1; j <= (int)(admin_groups[0]); j++)
+  for (i = 0; i < group_count && !admin_user; i++)
+    if (group_list[i] == exim_gid)
+      admin_user = TRUE;
+    else if (admin_groups)
+      for (j = 1; j <= (int)admin_groups[0] && !admin_user; j++)
         if (admin_groups[j] == group_list[i])
-          { admin_user = TRUE; break; }
-      }
-    if (admin_user) break;
-    }
+          admin_user = TRUE;
   }
 
 /* Another group of privileged users are the trusted users. These are root,
@@ -3854,27 +3854,18 @@ else
   {
   int i, j;
 
-  if (trusted_users != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_users[0]); i++)
+  if (trusted_users)
+    for (i = 1; i <= (int)trusted_users[0] && !trusted_caller; i++)
       if (trusted_users[i] == real_uid)
-        { trusted_caller = TRUE; break; }
-    }
+        trusted_caller = TRUE;
 
-  if (!trusted_caller && trusted_groups != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_groups[0]); i++)
-      {
+  if (trusted_groups)
+    for (i = 1; i <= (int)trusted_groups[0] && !trusted_caller; i++)
       if (trusted_groups[i] == real_gid)
         trusted_caller = TRUE;
-      else for (j = 0; j < group_count; j++)
-        {
+      else for (j = 0; j < group_count && !trusted_caller; j++)
         if (trusted_groups[i] == group_list[j])
-          { trusted_caller = TRUE; break; }
-        }
-      if (trusted_caller) break;
-      }
-    }
+          trusted_caller = TRUE;
   }
 
 /* Handle the decoding of logging options. */

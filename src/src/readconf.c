@@ -1026,6 +1026,7 @@ for (;;)
       if (c = p[1], c == 'O' || c == 'D' || c == 'H')
 	{
 /* fprintf(stderr, "%s: builtins create triggered by '%s'\n", __FUNCTION__, s); */
+	builtin_macros_create_trigger = string_copy(s);
 	macros_create_builtin();
 	break;
 	}
