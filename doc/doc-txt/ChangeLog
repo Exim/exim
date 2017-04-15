@@ -49,6 +49,10 @@ JH/06 Default openssl_options to include +no_ticket, to reduce load on peers.
 PP/03 Add $SOURCE_DATE_EPOCH support for reproducible builds, per spec at
       <https://reproducible-builds.org/specs/source-date-epoch/>.
 
+JH/07 Fix smtp transport use of limited max_rcpt under mua_wrapper. Previously
+      the check for any unsuccessful recipients did not notice the limit, and
+      erroneously found still-pending ones.
+
 
 Exim version 4.89
 -----------------

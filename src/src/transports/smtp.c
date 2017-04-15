@@ -796,7 +796,9 @@ with an address by scanning for the next address whose status is PENDING_DEFER.
 
 while (count-- > 0)
   {
-  while (addr->transport_return != PENDING_DEFER) addr = addr->next;
+  while (addr->transport_return != PENDING_DEFER)
+    if (!(addr = addr->next))
+      return -2;
 
   /* The address was accepted */
   addr->host_used = sx->host;
@@ -2475,7 +2477,8 @@ for (addr = sx->first_addr, address_count = 0;
     ? dsn_support_yes : dsn_support_no;
 
   address_count++;
-  no_flush = pipelining_active && !sx->verify && (!mua_wrapper || addr->next);
+  no_flush = pipelining_active && !sx->verify
+	  && (!mua_wrapper || addr->next && address_count < sx->max_rcpt);
 
   build_rcptcmd_options(sx, addr);
 
@@ -2781,13 +2784,15 @@ else
 
   if (mua_wrapper)
     {
-    address_item *badaddr;
-    for (badaddr = sx.first_addr; badaddr; badaddr = badaddr->next)
-      if (badaddr->transport_return != PENDING_OK)
+    address_item * a;
+    unsigned cnt;
+
+    for (a = sx.first_addr, cnt = 0; a && cnt < sx.max_rcpt; a = a->next, cnt++)
+      if (a->transport_return != PENDING_OK)
 	{
 	/*XXX could we find a better errno than 0 here? */
-	set_errno_nohost(addrlist, 0, badaddr->message, FAIL,
-	  testflag(badaddr, af_pass_message));
+	set_errno_nohost(addrlist, 0, a->message, FAIL,
+	  testflag(a, af_pass_message));
 	sx.ok = FALSE;
 	break;
 	}
