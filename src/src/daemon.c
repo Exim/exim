@@ -1635,7 +1635,7 @@ else if (daemon_listen)
   int i, j;
   int smtp_ports = 0;
   int smtps_ports = 0;
-  ip_address_item * ipa;
+  ip_address_item * ipa, * i2;
   uschar * p = big_buffer;
   uschar * qinfo = queue_interval > 0
     ? string_sprintf("-q%s", readconf_printtime(queue_interval))
@@ -1673,7 +1673,7 @@ else if (daemon_listen)
 	/* Now the information about the port (and sometimes interface) */
 
 	if (ipa->address[0] == ':' && ipa->address[1] == 0)
-	  {
+	  {						/* v6 wildcard */
 	  if (ipa->next && ipa->next->address[0] == 0 &&
 	      ipa->next->port == ipa->port)
 	    {
@@ -1685,20 +1685,24 @@ else if (daemon_listen)
 	  else
 	    p += sprintf(CS p, " port %d (IPv6)", ipa->port);
 	  }
-	else if (ipa->address[0] == 0)
+	else if (ipa->address[0] == 0)			/* v4 wildcard */
 	  p += sprintf(CS p, " port %d (IPv4)", ipa->port);
-	else if (  i > 0
-		&& host_is_tls_on_connect_port(ipa[-1].port) == (j > 0)
-		&& Ustrcmp(ipa->address, ipa[-1].address) == 0
-		)
+	else				/* check for previously-seen IP */
 	  {
-	  if (p[-1] == '}') p--;
-	  while (isdigit(*--p)) ;
-	  p += sprintf(CS p+1, "%s%d,%d}", *p == ',' ? "" : "{",
-	    ipa[-1].port, ipa->port);
+	  for (i2 = addresses; i2 != ipa; i2 = i2->next)
+	    if (  host_is_tls_on_connect_port(i2->port) == (j > 0)
+	       && Ustrcmp(ipa->address, i2->address) == 0
+	       )
+	      {				/* found; append port to list */
+	      if (p[-1] == '}') p--;
+	      while (isdigit(*--p)) ;
+	      p +=  1 + sprintf(CS p+1, "%s%d,%d}", *p == ',' ? "" : "{",
+		i2->port, ipa->port);
+	      break;
+	      }
+	  if (i2 == ipa)		/* first-time IP */
+	    p += sprintf(CS p, " [%s]:%d", ipa->address, ipa->port);
 	  }
-	else
-	  p += sprintf(CS p, " [%s]:%d", ipa->address, ipa->port);
 	}
       }
 
