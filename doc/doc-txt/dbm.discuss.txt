@@ -223,7 +223,7 @@ files in other formats that are created by other programs.
 Berkeley DB 4.x
 ---------------
 
-The 4.x series is a developement of the 2.x and 3.x series, and the above
+The 4.x series is a development of the 2.x and 3.x series, and the above
 comments apply.
 
 

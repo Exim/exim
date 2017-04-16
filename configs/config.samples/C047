@@ -37,11 +37,11 @@ This router has two advantages (for us):
 
 1. You can define the sender host addresses from which you will scan the spam.
 In my example there are ABC.DEF.GHI.JKL and MNO.PQR.STU.VWX (you have to
-substiute this by your real IP-Adresses).
+substiute this by your real IP addresses).
 
 2. The spamcheck router only runs in dependency of the existence of the
-.spamcheck file. So your users can decide whether or not they wont to use 
-Spamassassin. Thats important for protection of privacy in germany.
+.spamcheck file. So your users can decide whether or not they want to use
+Spamassassin. That's important for protection of privacy in Germany.
 
 If you don't need this you can simplify the router, for example:
 
@@ -84,6 +84,6 @@ spamcheck:
 
 
 Put the router and the transport on the right places in your exim conf and send
-the daemon a HUP signal. Thats all.
+the daemon a HUP signal. That's all.
 
 - oliver

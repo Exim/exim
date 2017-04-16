@@ -2983,7 +2983,7 @@ Or just forget about lines?  Or inflate by a fixed proportion? */
   }
 
 #ifndef DISABLE_PRDR
-/* If it supports Per-Recipient Data Reponses, and we have omre than one recipient,
+/* If it supports Per-Recipient Data Responses, and we have more than one recipient,
 request that */
 
 sx->prdr_active = FALSE;
@@ -4117,7 +4117,7 @@ connection if there are several waiting, provided we haven't already sent so
 many as to hit the configured limit. The function transport_check_waiting looks
 for a waiting message and returns its id. Then transport_pass_socket tries to
 set up a continued delivery by passing the socket on to another process. The
-variable send_rset is FALSE if a message has just been successfully transfered.
+variable send_rset is FALSE if a message has just been successfully transferred.
 
 If we are already sending down a continued channel, there may be further
 addresses not yet delivered that are aimed at the same host, but which have not

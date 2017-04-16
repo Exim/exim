@@ -950,7 +950,7 @@ Version 4.68
     longest line that was received as part of the message, not counting the
     line termination character(s).
 
- 7. Host lists can now include +ignore_defer and +include_defer, analagous to
+ 7. Host lists can now include +ignore_defer and +include_defer, analogous to
     +ignore_unknown and +include_unknown. These options should be used with
     care, probably only in non-critical host lists such as whitelists.
 

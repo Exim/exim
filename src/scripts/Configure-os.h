@@ -28,7 +28,7 @@ then    echo ""
 fi
 rm -f os.h
 
-# In order to accomodate for the fudge below, copy the file instead of
+# In order to accommodate for the fudge below, copy the file instead of
 # symlinking it. Otherwise we pollute the clean copy with the fudge.
 cp -p ../OS/os.h-$os os.h || exit 1
 

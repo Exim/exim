@@ -286,7 +286,7 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
   gsasl_property_set(sctx, GSASL_QOPS, "qop-auth");
 #ifdef SUPPORT_TLS
   if (tls_channelbinding_b64) {
-    /* Some auth mechanisms can ensure that both sides are talking withing the
+    /* Some auth mechanisms can ensure that both sides are talking within the
     same security context; for TLS, this means that even if a bad certificate
     has been accepted, they remain MitM-proof because both sides must be within
     the same negotiated session; if someone is terminating one session and

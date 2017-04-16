@@ -24,7 +24,7 @@ by that name; those in the "expired" ones are out-of-date (the
 rest expire in 2038).  The "1" and "2" systems/certs have
 equivalent properties.
 
-In each certicate subdir: the ".db" files are NSS version of the cert,
+In each certificate subdir: the ".db" files are NSS version of the cert,
 the ".pem", ".key" and ".unlocked.key" are usable by OpenSSL (the
 ca_chain.pem being a copy of the CA public information and signer
 public information).

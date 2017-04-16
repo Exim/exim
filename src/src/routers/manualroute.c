@@ -380,7 +380,7 @@ while (*options)
 rc = rf_get_errors_address(addr, rblock, verify, &addr->prop.errors_address);
 if (rc != OK) return rc;
 
-/* Set up the additional and removeable headers for this address. */
+/* Set up the additional and removable headers for this address. */
 
 rc = rf_get_munge_headers(addr, rblock, &addr->prop.extra_headers,
   &addr->prop.remove_headers);

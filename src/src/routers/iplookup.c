@@ -404,7 +404,7 @@ addr->child_count++;
 new_addr->next = *addr_new;
 *addr_new = new_addr;
 
-/* Set up the errors address, if any, and the additional and removeable headers
+/* Set up the errors address, if any, and the additional and removable headers
 for this new address. */
 
 rc = rf_get_errors_address(addr, rblock, verify, &new_addr->prop.errors_address);

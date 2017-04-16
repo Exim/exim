@@ -92,7 +92,7 @@ Exim version 4.83
 -----------------
 
  * SPF condition results renamed "permerror" and "temperror".  The old
-   names are still accepted for back-compatability, for this release.
+   names are still accepted for back-compatibility, for this release.
 
  * TLS details are now logged on rejects, subject to log selectors.
 
@@ -133,7 +133,7 @@ Exim version 4.80
    upgrading, then lock the message, replace the new-lines that should be part
    of the -tls_peerdn line with the two-character sequence \n and then unlock
    the message.  No tool has been provided as we believe this is a rare
-   occurence.
+   occurrence.
 
  * For OpenSSL, SSLv2 is now disabled by default.  (GnuTLS does not support
    SSLv2).  RFC 6176 prohibits SSLv2 and some informal surveys suggest no
@@ -346,7 +346,7 @@ Exim version 4.70
 -----------------
 
 1. Experimental Yahoo! Domainkeys support has been dropped in this release.
-It has been superceded by a native implementation of its successor DKIM.
+It has been superseded by a native implementation of its successor DKIM.
 
 2. Up to version 4.69, Exim came with an embedded version of the PCRE library.
 As of 4.70, this is no longer the case. To compile Exim, you will need PCRE

@@ -103,7 +103,7 @@ if (!(spf_server && spf_request))
   rc = SPF_RESULT_PERMERROR;
 
 else if (SPF_request_set_env_from(spf_request, CS spf_envelope_sender))
-  /* Invalid sender address. This should be a real rare occurence */
+  /* Invalid sender address. This should be a real rare occurrence */
   rc = SPF_RESULT_PERMERROR;
 
 else

@@ -124,7 +124,7 @@ lookup:
   driver = redirect
   address_data = GET_ADDRESS_DATA
   # data is intentionally left blank so that the router will decline
-  # we just want this router to do a lookup so the results are availble
+  # we just want this router to do a lookup so the results are available
   # for the other routers.
   data = 
 
@@ -202,7 +202,7 @@ remote_smtp:
   driver = smtp
 
 # Deliver to the mailbox specified in the LDAP directory. We make sure
-# that quota is obeyed, and we try to send a messge to the user if it
+# that quota is obeyed, and we try to send a message to the user if it
 # gets to over 85%.
 
 local_delivery:

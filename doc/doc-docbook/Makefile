@@ -11,7 +11,7 @@ notarget:;    @echo "** You must specify a target, in the form x.y, where x is '
 # Generate all the documentation files...
 #
 ## removed info files as I cannot generate them -  spec.info filter.info
-## removed html files as superceded by new website code
+## removed html files as superseded by new website code
 everything:		spec.pdf 	spec.ps  	spec.txt \
 				filter.pdf 	filter.ps filter.txt \
 				exim.8

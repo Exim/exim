@@ -117,7 +117,7 @@ DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
 rc = rf_get_errors_address(addr, rblock, verify, &errors_to);
 if (rc != OK) return rc;
 
-/* Set up the additional and removeable headers for the address. */
+/* Set up the additional and removable headers for the address. */
 
 rc = rf_get_munge_headers(addr, rblock, &extra_headers, &remove_headers);
 if (rc != OK) return rc;
