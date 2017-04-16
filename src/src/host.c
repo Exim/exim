@@ -737,16 +737,14 @@ host_build_ifacelist(const uschar *list, uschar *name)
 {
 int sep = 0;
 uschar *s;
-uschar buffer[64];
-ip_address_item *yield = NULL;
-ip_address_item *last = NULL;
-ip_address_item *next;
+ip_address_item * yield = NULL, * last = NULL, * next;
 
-while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
+while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   {
   int ipv;
   int port = host_address_extract_port(s);            /* Leaves just the IP address */
-  if ((ipv = string_is_ip_address(s, NULL)) == 0)
+
+  if (!(ipv = string_is_ip_address(s, NULL)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Malformed IP address \"%s\" in %s",
       s, name);
 
@@ -764,7 +762,9 @@ while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   next->port = port;
   next->v6_include_v4 = FALSE;
 
-  if (yield == NULL) yield = last = next; else
+  if (!yield)
+    yield = last = next;
+  else
     {
     last->next = next;
     last = next;
