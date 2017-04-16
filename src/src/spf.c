@@ -90,7 +90,7 @@ int spf_process(const uschar **listptr, uschar *spf_envelope_sender, int action)
   };
 
   if (SPF_request_set_env_from(spf_request, CS spf_envelope_sender)) {
-    /* Invalid sender address. This should be a real rare occurence */
+    /* Invalid sender address. This should be a real rare occurrence */
     rc = SPF_RESULT_PERMERROR;
     goto SPF_EVALUATE;
   }

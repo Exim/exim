@@ -1175,7 +1175,7 @@ if (!exim_gnutls_base_init_done)
   DEBUG(D_tls)
     {
     gnutls_global_set_log_function(exim_gnutls_logger_cb);
-    /* arbitrarily chosen level; bump upto 9 for more */
+    /* arbitrarily chosen level; bump up to 9 for more */
     gnutls_global_set_log_level(EXIM_GNUTLS_LIBRARY_LOG_LEVEL);
     }
 #endif
@@ -2164,7 +2164,7 @@ Only used by the server-side TLS.
 
 This feeds DKIM and should be used for all message-body reads.
 
-Arguments:  lim		Maximum amount to read/bufffer
+Arguments:  lim		Maximum amount to read/buffer
 Returns:    the next character or EOF
 */
 

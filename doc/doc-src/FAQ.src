@@ -408,7 +408,7 @@ A0018: Recall that Exim does not keep separate queues for each domain, but
        a temporary error. Here are some possibilities:
 
        (1) The messages to \(aol.com)\ got put in your queue, but no previous
-       delivery attempt occured before you did the \-R-\. This might have been
+       delivery attempt occurred before you did the \-R-\. This might have been
        because of your settings of \queue_only_load\, \smtp_accept_queue\, or any
        other option that caused no immediate delivery attempt on arrival. If
        this is the case, you can try using \-qqR-\ instead of \-R-\.
@@ -1538,7 +1538,7 @@ A0089: This was a bad interaction between a change to the Linux kernel and some
        taken from Exim's change log:
 
        When Exim is receiving multiple messages on a single connection, and
-       spinning off delivery processess, it sets the SIGCHLD signal handling to
+       spinning off delivery processes, it sets the SIGCHLD signal handling to
        SIG_IGN, because it doesn't want to wait for these processes. However,
        because on some OS this didn't work, it also has a paranoid call to
        \^waitpid()^\ in the loop to reap any children that have finished. Some
@@ -2917,7 +2917,7 @@ Q0419: I have some obsolete domains which people have been warned not to use
        any more. How can I arrange to delete any mail that is sent to them?
 
 A0419: To reject them at SMTP time, with a customized error message, place
-       statments like this in the ACL:
+       statements like this in the ACL:
 
 ==>      deny message = The domain $domain is obsolete
               domains = lsearch;/etc/exim/obsolete.domains
@@ -5122,7 +5122,7 @@ A1001: Splitting the spool directory has most benefit if there are times when
        up earlier on some types of file system, compared with others.
 
        Exim was not designed for handling large queues. If you are in an
-       enviroment where lots of messages remain on the queue for long periods
+       environment where lots of messages remain on the queue for long periods
        of time, consider implementing a back up host to which you pass these
        messages, so that the main host's queue remains short. You can use
        \fallback_hosts\ to do this, or a router that is conditional on
@@ -6612,7 +6612,7 @@ Q9604: I get the \*too many open files*\ error especially when a lot of messages
        land for Majordomo at the same time.
 
 A9604: The problem appears to be the number of open files the system can
-       handle. This is changable by using the proc filesystem. To your
+       handle. This is changeable by using the proc filesystem. To your
        \(/etc/rc.d/rc.local)\ file append something like the following:
 
 ==>      # Now System is up, Modify kernel parameters for max open etc.

@@ -4625,7 +4625,7 @@ while (*s != 0)
           (void)sscanf(CS now,"%u",&inow);
           (void)sscanf(CS daystamp,"%u",&iexpire);
 
-          /* When "iexpire" is < 7, a "flip" has occured.
+          /* When "iexpire" is < 7, a "flip" has occurred.
              Adjust "inow" accordingly. */
           if ( (iexpire < 7) && (inow >= 993) ) inow = 0;
 
@@ -7171,7 +7171,7 @@ while (*s != 0)
         continue;
         }
 
-      /* Handle time period formating */
+      /* Handle time period formatting */
 
       case EOP_TIME_EVAL:
         {

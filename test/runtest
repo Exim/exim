@@ -2061,7 +2061,7 @@ elsif (/^millisleep\s+(.*)$/)
 
 
 # The "munge" command selects one of a hardwired set of test-result modifications
-# to be made before result compares are run agains the golden set.  This lets
+# to be made before result compares are run against the golden set.  This lets
 # us account for test-system dependent things which only affect a few, but known,
 # test-cases.
 # Currently only the last munge takes effect.

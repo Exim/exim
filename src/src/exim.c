@@ -2773,7 +2773,7 @@ for (i = 1; i < argc; i++)
 
 #ifdef SUPPORT_TLS
     /* -MCt: similar to -MCT below but the connection is still open
-    via a proxy proces which handles the TLS context and coding.
+    via a proxy process which handles the TLS context and coding.
     Require three arguments for the proxied local address and port,
     and the TLS cipher.  */
 
@@ -3782,7 +3782,7 @@ if (running_in_test_harness) smtputf8_advertise_hosts = NULL;
 is a failure. It leaves the configuration file open so that the subsequent
 configuration data for delivery can be read if needed.
 
-NOTE: immediatly after opening the configuration file we change the working
+NOTE: immediately after opening the configuration file we change the working
 directory to "/"! Later we change to $spool_directory. We do it there, because
 during readconf_main() some expansion takes place already. */
 

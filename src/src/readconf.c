@@ -1090,7 +1090,7 @@ for (;;)
 
   /* Handle conditionals, which are also applied to physical lines. Conditions
   are of the form ".ifdef ANYTEXT" and are treated as true if any macro
-  expansion occured on the rest of the line. A preliminary test for the leading
+  expansion occurred on the rest of the line. A preliminary test for the leading
   '.' saves effort on most lines. */
 
   if (*ss == '.')

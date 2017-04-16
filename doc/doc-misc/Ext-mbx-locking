@@ -228,7 +228,7 @@ BEZERK AND MMDF
 
      Locking in the traditional UNIX formats was largely dictated by
 the status quo in other applications; however, additional protection
-is added against inadvertantly running multiple instances of a
+is added against inadvertently running multiple instances of a
 c-client application on the same mail file.
 
      (1) c-client attempts to create a .lock file (mail file name with

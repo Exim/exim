@@ -412,7 +412,7 @@ set_issuer_name(X509 *cert, AUTHORITY_KEYID *akid)
 X509_NAME *name = akid_issuer_name(akid);
 
 /*
- * If subject's akid specifies an authority key identifer issuer name, we
+ * If subject's akid specifies an authority key identifier issuer name, we
  * must use that.
  */
 return X509_set_issuer_name(cert,

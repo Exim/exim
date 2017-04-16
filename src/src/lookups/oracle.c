@@ -420,7 +420,7 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
     result = string_catn(result, &ssize, &offset, s, slen);
     result = string_catn(result, &ssize, &offset, US"=", 1);
 
-    /* int and float type wont ever need escaping. Otherwise, quote the value
+    /* int and float type won't ever need escaping. Otherwise, quote the value
     if it contains spaces or is empty. */
 
     if (desc[i].dbtype != INT_TYPE && desc[i].dbtype != FLOAT_TYPE &&

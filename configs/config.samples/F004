@@ -16,15 +16,15 @@ Message-Id: and Resent-Message-Id: headers to world-unique values.
 # headers to world-unique values.
 
 # Notes:
-# Change every occurence of "home.dom" to your home domain.
-# Change every occurence of "uniqie.remote.dom" to some unique value.
+# Change every occurrence of "home.dom" to your home domain.
+# Change every occurrence of "uniqie.remote.dom" to some unique value.
 
 # Unique values, as Vadik explained in his message to exim-users,
 # can be chosen in different ways:
 
 ### The ideal way is to choose "hostnames" in existing domains whose
 ### admins you know, and you will be sure that no hostname ending
-### with ".nonexistant.friendly.dom" will ever appear on this planet,
+### with ".nonexistent.friendly.dom" will ever appear on this planet,
 ### not even on someone else's message IDs.
 
 ### Another ideas include putting after your hostname things like:
