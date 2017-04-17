@@ -265,9 +265,7 @@ if (spam_ok && Ustrcmp(prev_user_name, user_name) == 0)
   return override ? OK : spam_rc;
 
 /* make sure the eml mbox file is spooled up */
-mbox_file = spool_mbox(&mbox_size, NULL);
-
-if (mbox_file == NULL)
+if (!(mbox_file = spool_mbox(&mbox_size, NULL, NULL)))
   {
   /* error while spooling */
   log_write(0, LOG_MAIN|LOG_PANIC,
@@ -287,8 +285,7 @@ start = time(NULL);
   /* Check how many spamd servers we have
      and register their addresses */
   sep = 0;				/* default colon-sep */
-  while ((address = string_nextinlist(&spamd_address_list_ptr, &sep,
-				      NULL, 0)) != NULL)
+  while ((address = string_nextinlist(&spamd_address_list_ptr, &sep, NULL, 0)))
     {
     const uschar * sublist;
     int sublist_sep = -(int)' ';	/* default space-sep */

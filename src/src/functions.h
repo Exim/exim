@@ -420,7 +420,7 @@ extern BOOL    smtp_verify_helo(void);
 extern int     smtp_write_command(smtp_outblock *, BOOL, const char *, ...) PRINTF_FUNCTION(3,4);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(const uschar **);
-extern FILE   *spool_mbox(unsigned long *, const uschar *);
+extern FILE   *spool_mbox(unsigned long *, const uschar *, uschar **);
 #endif
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
 extern uschar *spool_dname(const uschar *, uschar *);

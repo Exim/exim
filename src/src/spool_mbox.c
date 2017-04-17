@@ -19,11 +19,17 @@ extern int spam_ok;
 int spool_mbox_ok = 0;
 uschar spooled_message_id[MESSAGE_ID_LENGTH+1];
 
-/* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size
- * normally, source_file_override is NULL */
+/*
+Create an MBOX-style message file from the spooled files.
+
+Returns a pointer to the FILE, and puts the size in bytes into mbox_file_size.
+If mbox_fname is non-null, fill in a pointer to the name.
+Normally, source_file_override is NULL
+*/
 
 FILE *
-spool_mbox(unsigned long *mbox_file_size, const uschar *source_file_override)
+spool_mbox(unsigned long *mbox_file_size, const uschar *source_file_override,
+  uschar ** mbox_fname)
 {
 uschar message_subdir[2];
 uschar buffer[16384];
@@ -35,10 +41,13 @@ FILE *yield = NULL;
 header_line *my_headerlist;
 struct stat statbuf;
 int i, j;
-void *reset_point = store_get(0);
+void *reset_point;
 
-mbox_path = string_sprintf("%s/scan/%s/%s.eml", spool_directory, message_id,
-  message_id);
+mbox_path = string_sprintf("%s/scan/%s/%s.eml",
+  spool_directory, message_id, message_id);
+if (mbox_fname) *mbox_fname = mbox_path;
+
+reset_point = store_get(0);
 
 /* Skip creation if already spooled out as mbox file */
 if (!spool_mbox_ok)
@@ -108,7 +117,7 @@ if (!spool_mbox_ok)
     }
 
   /* copy body file */
-  if (source_file_override == NULL)
+  if (!source_file_override)
     {
     message_subdir[1] = '\0';
     for (i = 0; i < 2; i++)

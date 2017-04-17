@@ -1306,36 +1306,30 @@ unsigned long mbox_size;
 header_line *my_headerlist;
 uschar *user_msg, *log_msg;
 int mime_part_count_buffer = -1;
+uschar * mbox_filename;
 int rc = OK;
 
 memset(CS rfc822_file_path,0,2048);
 
 /* check if it is a MIME message */
-my_headerlist = header_list;
-while (my_headerlist != NULL)
-  {
-  /* skip deleted headers */
-  if (my_headerlist->type == '*')
-    {
-    my_headerlist = my_headerlist->next;
-    continue;
-    }
-  if (strncmpic(my_headerlist->text, US"Content-Type:", 13) == 0)
+
+for (my_headerlist = header_list; my_headerlist; my_headerlist = my_headerlist->next)
+  if (  my_headerlist->type != '*'			/* skip deleted headers */
+     && strncmpic(my_headerlist->text, US"Content-Type:", 13) == 0
+     )
     {
     DEBUG(D_receive) debug_printf("Found Content-Type: header - executing acl_smtp_mime.\n");
     goto DO_MIME_ACL;
     }
-  my_headerlist = my_headerlist->next;
-  }
 
 DEBUG(D_receive) debug_printf("No Content-Type: header - presumably not a MIME message.\n");
 return TRUE;
 
 DO_MIME_ACL:
+
 /* make sure the eml mbox file is spooled up */
-mbox_file = spool_mbox(&mbox_size, NULL);
-if (mbox_file == NULL) {
-  /* error while spooling */
+if (!(mbox_file = spool_mbox(&mbox_size, NULL, &mbox_filename)))
+  {								/* error while spooling */
   log_write(0, LOG_MAIN|LOG_PANIC,
          "acl_smtp_mime: error while creating mbox spool file, message temporarily rejected.");
   Uunlink(spool_name);
@@ -1347,7 +1341,7 @@ if (mbox_file == NULL) {
   message_id[0] = 0;            /* Indicate no message accepted */
   *smtp_reply_ptr = US"";       /* Indicate reply already sent */
   return FALSE;                 /* Indicate skip to end of receive function */
-};
+  }
 
 mime_is_rfc822 = 0;
 
@@ -1371,14 +1365,13 @@ if (Ustrlen(rfc822_file_path) > 0)
 /* check if we must check any message/rfc822 attachments */
 if (rc == OK)
   {
-  uschar temp_path[1024];
+  uschar * scandir;
   struct dirent * entry;
   DIR * tempdir;
 
-  (void) string_format(temp_path, sizeof(temp_path), "%s/scan/%s",
-    spool_directory, message_id);
+  scandir = string_copyn(mbox_filename, Ustrrchr(mbox_filename, '/') - mbox_filename);
 
-  tempdir = opendir(CS temp_path);
+  tempdir = opendir(CS scandir);
   for (;;)
     {
     if (!(entry = readdir(tempdir)))
@@ -1386,7 +1379,7 @@ if (rc == OK)
     if (strncmpic(US entry->d_name, US"__rfc822_", 9) == 0)
       {
       (void) string_format(rfc822_file_path, sizeof(rfc822_file_path),
-	"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
+	"%s/%s", scandir, entry->d_name);
       DEBUG(D_receive) debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n",
 	rfc822_file_path);
       break;
