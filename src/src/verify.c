@@ -408,7 +408,7 @@ if (addr->transport == cutthrough.addr.transport)
 
 	/* Match!  Send the RCPT TO, set done from the response */
 	done =
-	  smtp_write_command(&ctblock, FALSE, "RCPT TO:<%.1000s>\r\n",
+	  smtp_write_command(&ctblock, SCMD_FLUSH, "RCPT TO:<%.1000s>\r\n",
 	    transport_rcpt_address(addr,
 	       addr->transport->rcpt_include_affixes)) >= 0 &&
 	  cutthrough_response(cutthrough.fd, '2', &resp, CUTTHROUGH_DATA_TIMEOUT) == '2';
@@ -804,7 +804,7 @@ tls_retry_connection:
 	    XXX We don't care about that for postmaster_full.  Should we? */
 
 	    if ((done =
-	      smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0 &&
+	      smtp_write_command(&sx.outblock, SCMD_FLUSH, "RSET\r\n") >= 0 &&
 	      smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
 		'2', callout)))
 	      break;
@@ -897,7 +897,7 @@ tls_retry_connection:
       cancel_cutthrough_connection(TRUE, US"postmaster verify");
       HDEBUG(D_acl|D_v) debug_printf_indent("Cutthrough cancelled by presence of postmaster verify\n");
 
-      done = smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0
+      done = smtp_write_command(&sx.outblock, SCMD_FLUSH, "RSET\r\n") >= 0
           && smtp_read_response(&sx.inblock, sx.buffer,
 				sizeof(sx.buffer), '2', callout);
 
@@ -921,7 +921,7 @@ tls_retry_connection:
 	  done = TRUE;
 	else
 	  done = (options & vopt_callout_fullpm) != 0
-	      && smtp_write_command(&sx.outblock, FALSE,
+	      && smtp_write_command(&sx.outblock, SCMD_FLUSH,
 			    "RCPT TO:<postmaster>\r\n") >= 0
 	      && smtp_read_response(&sx.inblock, sx.buffer,
 			    sizeof(sx.buffer), '2', callout);
@@ -1065,7 +1065,7 @@ no_conn:
         cancel_cutthrough_connection(TRUE, US"not usable for cutthrough");
       if (sx.send_quit)
 	{
-	(void) smtp_write_command(&sx.outblock, FALSE, "QUIT\r\n");
+	(void) smtp_write_command(&sx.outblock, SCMD_FLUSH, "QUIT\r\n");
 
 	/* Wait a short time for response, and discard it */
 	smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),

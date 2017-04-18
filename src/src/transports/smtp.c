@@ -1372,13 +1372,14 @@ smtp_context * sx = tctx->smtp_context;
 int cmd_count = 0;
 int prev_cmd_count;
 
-/* Write SMTP chunk header command */
+/* Write SMTP chunk header command.  If not reaping responses, note that
+there may be more writes (like, the chunk data) done soon. */
 
 if (chunk_size > 0)
   {
-  if((cmd_count = smtp_write_command(&sx->outblock, FALSE, "BDAT %u%s\r\n",
-			      chunk_size,
-			      flags & tc_chunk_last ? " LAST" : "")
+  if((cmd_count = smtp_write_command(&sx->outblock,
+	      flags & tc_reap_prev ? SCMD_FLUSH : SCMD_MORE,
+	      "BDAT %u%s\r\n", chunk_size, flags & tc_chunk_last ? " LAST" : "")
      ) < 0) return ERROR;
   if (flags & tc_chunk_last)
     data_command = string_copy(big_buffer);  /* Save for later error message */
@@ -1741,7 +1742,7 @@ goto SEND_QUIT;
 
   if (sx->esmtp)
     {
-    if (smtp_write_command(&sx->outblock, FALSE, "%s %s\r\n",
+    if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "%s %s\r\n",
          sx->lmtp ? "LHLO" : "EHLO", sx->helo_data) < 0)
       goto SEND_FAILED;
     sx->esmtp_sent = TRUE;
@@ -1774,7 +1775,7 @@ goto SEND_QUIT;
     if (sx->esmtp_sent && (n = Ustrlen(sx->buffer)) < sizeof(sx->buffer)/2)
       { rsp = sx->buffer + n + 1; n = sizeof(sx->buffer) - n; }
 
-    if (smtp_write_command(&sx->outblock, FALSE, "HELO %s\r\n", sx->helo_data) < 0)
+    if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "HELO %s\r\n", sx->helo_data) < 0)
       goto SEND_FAILED;
     good_response = smtp_read_response(&sx->inblock, rsp, n,
       '2', sx->ob->command_timeout);
@@ -1874,7 +1875,7 @@ if (  smtp_peer_options & PEER_OFFERED_TLS
    )  )
   {
   uschar buffer2[4096];
-  if (smtp_write_command(&sx->outblock, FALSE, "STARTTLS\r\n") < 0)
+  if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "STARTTLS\r\n") < 0)
     goto SEND_FAILED;
 
   /* If there is an I/O error, transmission of this message is deferred. If
@@ -1988,7 +1989,7 @@ if (tls_out.active >= 0)
       debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
     }
 
-  if (smtp_write_command(&sx->outblock, FALSE, "%s %s\r\n",
+  if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "%s %s\r\n",
         sx->lmtp ? "LHLO" : greeting_cmd, sx->helo_data) < 0)
     goto SEND_FAILED;
   good_response = smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
@@ -2192,7 +2193,7 @@ FAILED:
 SEND_QUIT:
 
 if (sx->send_quit)
-  (void)smtp_write_command(&sx->outblock, FALSE, "QUIT\r\n");
+  (void)smtp_write_command(&sx->outblock, SCMD_FLUSH, "QUIT\r\n");
 
 #ifdef SUPPORT_TLS
 tls_close(FALSE, TRUE);
@@ -2422,7 +2423,7 @@ sx->pending_MAIL = TRUE;     /* The block starts with MAIL */
     }
 #endif
 
-  rc = smtp_write_command(&sx->outblock, pipelining_active,
+  rc = smtp_write_command(&sx->outblock, pipelining_active ? SCMD_BUFFER : SCMD_FLUSH,
 	  "MAIL FROM:<%s>%s\r\n", s, sx->buffer);
   }
 
@@ -2500,8 +2501,8 @@ for (addr = sx->first_addr, address_count = 0;
     }
 #endif
 
-  count = smtp_write_command(&sx->outblock, no_flush, "RCPT TO:<%s>%s%s\r\n",
-    rcpt_addr, sx->igquotstr, sx->buffer);
+  count = smtp_write_command(&sx->outblock, no_flush ? SCMD_BUFFER : SCMD_FLUSH,
+    "RCPT TO:<%s>%s%s\r\n", rcpt_addr, sx->igquotstr, sx->buffer);
 
   if (count < 0) return -5;
   if (count > 0)
@@ -2810,7 +2811,7 @@ to send is. */
 if (  !(sx.peer_offered & PEER_OFFERED_CHUNKING)
    && (sx.ok || (pipelining_active && !mua_wrapper)))
   {
-  int count = smtp_write_command(&sx.outblock, FALSE, "DATA\r\n");
+  int count = smtp_write_command(&sx.outblock, SCMD_FLUSH, "DATA\r\n");
 
   if (count < 0) goto SEND_FAILED;
   switch(sync_responses(&sx, count, sx.ok ? +1 : -1))
@@ -3337,7 +3338,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
     BOOL pass_message;
 
     if (sx.send_rset)
-      if (! (sx.ok = smtp_write_command(&sx.outblock, FALSE, "RSET\r\n") >= 0))
+      if (! (sx.ok = smtp_write_command(&sx.outblock, SCMD_FLUSH, "RSET\r\n") >= 0))
         {
         msg = US string_sprintf("send() to %s [%s] failed: %s", host->name,
           host->address, strerror(errno));
@@ -3385,7 +3386,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  tls_close(FALSE, TRUE);
 	  smtp_peer_options = smtp_peer_options_wrap;
 	  sx.ok = !sx.smtps
-	    && smtp_write_command(&sx.outblock, FALSE,
+	    && smtp_write_command(&sx.outblock, SCMD_FLUSH,
 				      "EHLO %s\r\n", sx.helo_data) >= 0
 	    && smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
 				      '2', sx.ob->command_timeout);
@@ -3476,7 +3477,7 @@ This change is being made on 31-Jul-98. After over a year of trouble-free
 operation, the old commented-out code was removed on 17-Sep-99. */
 
 SEND_QUIT:
-if (sx.send_quit) (void)smtp_write_command(&sx.outblock, FALSE, "QUIT\r\n");
+if (sx.send_quit) (void)smtp_write_command(&sx.outblock, SCMD_FLUSH, "QUIT\r\n");
 
 END_OFF:
 
@@ -3557,7 +3558,7 @@ outblock.ptr = outbuffer;
 outblock.cmd_count = 0;
 outblock.authenticating = FALSE;
 
-(void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
+(void)smtp_write_command(&outblock, SCMD_FLUSH, "QUIT\r\n");
 (void)smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
   ob->command_timeout);
 (void)close(inblock.sock);

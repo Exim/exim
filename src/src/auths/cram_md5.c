@@ -280,7 +280,8 @@ if (!secret || !name)
 /* Initiate the authentication exchange and read the challenge, which arrives
 in base 64. */
 
-if (smtp_write_command(outblock, FALSE, "AUTH %s\r\n", ablock->public_name) < 0)
+if (smtp_write_command(outblock, SCMD_FLUSH, "AUTH %s\r\n",
+		       	ablock->public_name) < 0)
   return FAIL_SEND;
 if (!smtp_read_response(inblock, buffer, buffsize, '3', timeout))
   return FAIL;
@@ -313,7 +314,7 @@ in big_buffer, but b64encode() returns its result in working store,
 so calling smtp_write_command(), which uses big_buffer, is OK. */
 
 buffer[0] = 0;
-if (smtp_write_command(outblock, FALSE, "%s\r\n", b64encode(big_buffer,
+if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n", b64encode(big_buffer,
   p - big_buffer)) < 0) return FAIL_SEND;
 
 return smtp_read_response(inblock, (uschar *)buffer, buffsize, '2', timeout)

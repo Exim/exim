@@ -319,23 +319,32 @@ pipelining.
 
 Argument:
   outblock   the SMTP output block
+  mode	     more-expected, or plain
 
 Returns:     TRUE if OK, FALSE on error, with errno set
 */
 
 static BOOL
-flush_buffer(smtp_outblock *outblock)
+flush_buffer(smtp_outblock * outblock, int mode)
 {
 int rc;
 int n = outblock->ptr - outblock->buffer;
 
-HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes\n", n);
+HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes%s\n", n,
+  mode == SCMD_MORE ? " (with MORE annotation)" : "");
+
 #ifdef SUPPORT_TLS
 if (tls_out.active == outblock->sock)
   rc = tls_write(FALSE, outblock->buffer, n);
 else
 #endif
-  rc = send(outblock->sock, outblock->buffer, n, 0);
+  rc = send(outblock->sock, outblock->buffer, n,
+#ifdef MSG_MORE
+	    mode == SCMD_MORE ? MSG_MORE : 0
+#else
+	    0
+#endif
+	   );
 
 if (rc <= 0)
   {
@@ -359,7 +368,7 @@ any error message.
 
 Arguments:
   outblock   contains buffer for pipelining, and socket
-  noflush    if TRUE, save the command in the output buffer, for pipelining
+  mode       buffer, write-with-more-likely, write
   format     a format, starting with one of
              of HELO, MAIL FROM, RCPT TO, DATA, ".", or QUIT.
 	     If NULL, flush pipeline buffer only.
@@ -371,7 +380,7 @@ Returns:     0 if command added to pipelining buffer, with nothing transmitted
 */
 
 int
-smtp_write_command(smtp_outblock *outblock, BOOL noflush, const char *format, ...)
+smtp_write_command(smtp_outblock * outblock, int mode, const char *format, ...)
 {
 int count;
 int rc = 0;
@@ -393,7 +402,7 @@ if (format)
   if (count > outblock->buffersize - (outblock->ptr - outblock->buffer))
     {
     rc = outblock->cmd_count;                 /* flush resets */
-    if (!flush_buffer(outblock)) return -1;
+    if (!flush_buffer(outblock, SCMD_FLUSH)) return -1;
     }
 
   Ustrncpy(CS outblock->ptr, big_buffer, count);
@@ -423,10 +432,10 @@ if (format)
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> %s\n", big_buffer);
   }
 
-if (!noflush)
+if (mode != SCMD_BUFFER)
   {
   rc += outblock->cmd_count;                /* flush resets */
-  if (!flush_buffer(outblock)) return -1;
+  if (!flush_buffer(outblock, mode)) return -1;
   }
 
 return rc;

@@ -855,6 +855,14 @@ enum {
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
 #define topt_use_bdat		0x100  /* prepend chunks with RFC3030 BDAT header */
 
+/* Options for smtp_write_command */
+
+enum {	
+  SCMD_FLUSH = 0,	/* write to kernel */
+  SCMD_MORE,		/* write to kernel, but likely more soon */
+  SCMD_BUFFER		/* stash in application cmd output buffer */
+};
+
 /* Flags for recipient_block, used in DSN support */
 
 #define rf_dsnlasthop           0x01  /* Do not propagate DSN any further */
