@@ -23689,7 +23689,7 @@ the message. As a result, the overall timeout for a message depends on the size
 of the message. Its value must not be zero. See also &%final_timeout%&.
 
 
-.option dkim_domain smtp string&!! unset
+.option dkim_domain smtp string list&!! unset
 .option dkim_selector smtp string&!! unset
 .option dkim_private_key smtp string&!! unset
 .option dkim_canon smtp string&!! unset
@@ -38337,22 +38337,26 @@ senders).
 Signing is enabled by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
 
-.option dkim_domain smtp string&!! unset
-MANDATORY:
-The domain you want to sign with. The result of this expanded
-option is put into the &%$dkim_domain%& expansion variable.
+.option dkim_domain smtp string list&!! unset
+The domain(s) you want to sign with.
+.new
+After expansion, this can be a list.
+Each element in turn is put into the &%$dkim_domain%& expansion variable
+while expanding the remaining signing options.
+.wen
 If it is empty after expansion, DKIM signing is not done.
 
 .option dkim_selector smtp string&!! unset
-MANDATORY:
-This sets the key selector string. You can use the &%$dkim_domain%& expansion
-variable to look up a matching selector. The result is put in the expansion
+This sets the key selector string.
+You can use the &%$dkim_domain%& expansion variable to look up a matching selector.
+The result is put in the expansion
 variable &%$dkim_selector%& which may be used in the &%dkim_private_key%&
 option along with &%$dkim_domain%&.
+If the option is empty after expansion, DKIM signing is not done.
 
 .option dkim_private_key smtp string&!! unset
-MANDATORY:
-This sets the private key to use. You can use the &%$dkim_domain%& and
+This sets the private key to use.
+You can use the &%$dkim_domain%& and
 &%$dkim_selector%& expansion variables to determine the private key to use.
 The result can either
 .ilist
@@ -38365,16 +38369,15 @@ be "0", "false" or the empty string, in which case the message will not
 be signed. This case will not result in an error, even if &%dkim_strict%&
 is set.
 .endlist
+If the option is empty after expansion, DKIM signing is not done.
 
 .option dkim_canon smtp string&!! unset
-OPTIONAL:
 This option sets the canonicalization method used when signing a message.
 The DKIM RFC currently supports two methods: "simple" and "relaxed".
 The option defaults to "relaxed" when unset. Note: the current implementation
 only supports using the same canonicalization method for both headers and body.
 
 .option dkim_strict smtp string&!! unset
-OPTIONAL:
 This  option  defines  how  Exim  behaves  when  signing a message that
 should be signed fails for some reason.  When the expansion evaluates to
 either "1" or "true", Exim will defer. Otherwise Exim will send the message
@@ -38382,11 +38385,10 @@ unsigned. You can use the &%$dkim_domain%& and &%$dkim_selector%& expansion
 variables here.
 
 .option dkim_sign_headers smtp string&!! unset
-OPTIONAL:
-When set, this option must expand to (or be specified as) a colon-separated
+If set, this option must expand to (or be specified as) a colon-separated
 list of header names. Headers with these names will be included in the message
-signature. When unspecified, the header names recommended in RFC4871 will be
-used.
+signature.
+When unspecified, the header names recommended in RFC4871 will be used.
 
 
 .section "Verifying DKIM signatures in incoming mail" "SECID514"
