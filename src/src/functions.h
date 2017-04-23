@@ -154,7 +154,7 @@ extern void    delivery_re_exec(int);
 
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
-extern BOOL    dkim_transport_write_message(int, transport_ctx *,
+extern BOOL    dkim_transport_write_message(transport_ctx *,
 		  struct ob_dkim *, const uschar ** errstr);
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
@@ -231,6 +231,7 @@ extern uschar *imap_utf7_encode(uschar *, const uschar *,
 				 uschar, uschar *, uschar **);
 
 extern void    invert_address(uschar *, uschar *);
+extern BOOL    internal_transport_write_message(transport_ctx *, int);
 extern int     ip_addr(void *, int, const uschar *, int);
 extern int     ip_bind(int, int, uschar *, int);
 extern int     ip_connect(int, int, const uschar *, int, int, BOOL);
@@ -484,11 +485,12 @@ extern uschar *transport_rcpt_address(address_item *, BOOL);
 extern BOOL    transport_set_up_command(const uschar ***, uschar *,
 		 BOOL, int, address_item *, uschar *, uschar **);
 extern void    transport_update_waiting(host_item *, uschar *);
-extern BOOL    transport_write_block(int, uschar *, int);
+extern BOOL    transport_write_block(transport_ctx *, uschar *, int, BOOL);
+extern void    transport_write_reset(int);
 extern BOOL    transport_write_string(int, const char *, ...);
-extern BOOL    transport_headers_send(int, transport_ctx *,
-                 BOOL (*)(int, transport_ctx *, uschar *, int));
-extern BOOL    transport_write_message(int, transport_ctx *, int);
+extern BOOL    transport_headers_send(transport_ctx *,
+                 BOOL (*)(transport_ctx *, uschar *, int));
+extern BOOL    transport_write_message(transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);
 extern void    tree_add_unusable(host_item *);
@@ -522,6 +524,7 @@ extern BOOL    verify_sender(int *, uschar **);
 extern BOOL    verify_sender_preliminary(int *, uschar **);
 extern void    version_init(void);
 
+extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 
 /* vi: aw

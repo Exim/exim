@@ -692,6 +692,7 @@ if (return_message)
     :
     US"------ This is a copy of the message, including all the headers.\n";
   transport_ctx tctx = {
+    fileno(f),
     tblock,
     addr,
     NULL, NULL,
@@ -720,7 +721,7 @@ if (return_message)
 
   fflush(f);
   transport_count = 0;
-  transport_write_message(fileno(f), &tctx, bounce_return_size_limit);
+  transport_write_message(&tctx, bounce_return_size_limit);
   }
 
 /* End the message and wait for the child process to end; no timeout. */

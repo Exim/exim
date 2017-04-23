@@ -1142,10 +1142,14 @@ if (action != MSG_SHOW_COPY) printf("Message %s ", id);
 switch(action)
   {
   case MSG_SHOW_COPY:
-  deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
-  deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
-  transport_write_message(1, NULL, 0);
-  break;
+    {
+    transport_ctx tctx = {0};
+    deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
+    deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
+    tctx.u.fd = 1;
+    transport_write_message(&tctx, 0);
+    break;
+    }
 
 
   case MSG_FREEZE:

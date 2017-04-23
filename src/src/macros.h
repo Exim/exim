@@ -854,6 +854,8 @@ enum {
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
 #define topt_use_bdat		0x100  /* prepend chunks with RFC3030 BDAT header */
+#define topt_output_string	0x200  /* create string rather than write to fd */
+#define topt_continuation	0x400  /* do not reset buffer */
 
 /* Options for smtp_write_command */
 

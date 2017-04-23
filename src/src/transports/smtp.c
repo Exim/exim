@@ -2848,6 +2848,7 @@ if (!(sx.peer_offered & PEER_OFFERED_CHUNKING) && !sx.ok)
 else
   {
   transport_ctx tctx = {
+    sx.inblock.sock,
     tblock,
     addrlist,
     US".", US"..",    /* Escaping strings */
@@ -2896,10 +2897,9 @@ else
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
-  sx.ok = dkim_transport_write_message(sx.inblock.sock, &tctx, &sx.ob->dkim,
-	    CUSS &message);
+  sx.ok = dkim_transport_write_message(&tctx, &sx.ob->dkim, CUSS &message);
 #else
-  sx.ok = transport_write_message(sx.inblock.sock, &tctx, 0);
+  sx.ok = transport_write_message(&tctx, 0);
 #endif
 
   /* transport_write_message() uses write() because it is called from other

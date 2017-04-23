@@ -331,7 +331,7 @@ int rc;
 int n = outblock->ptr - outblock->buffer;
 
 HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes%s\n", n,
-  mode == SCMD_MORE ? " (with MORE annotation)" : "");
+  mode == SCMD_MORE ? " (more expected)" : "");
 
 #ifdef SUPPORT_TLS
 if (tls_out.active == outblock->sock)

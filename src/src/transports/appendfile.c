@@ -916,6 +916,9 @@ copy_mbx_message(int to_fd, int from_fd, off_t saved_size)
 int used;
 off_t size;
 struct stat statbuf;
+transport_ctx tctx = {0};
+
+tctx.u.fd = to_fd;
 
 /* If the current mailbox size is zero, write a header block */
 
@@ -928,7 +931,7 @@ if (saved_size == 0)
     (long int)time(NULL));
   for (i = 0; i < MBX_NUSERFLAGS; i++)
     sprintf (CS(s += Ustrlen(s)), "\015\012");
-  if (!transport_write_block (to_fd, deliver_out_buffer, MBX_HDRSIZE))
+  if (!transport_write_block (&tctx, deliver_out_buffer, MBX_HDRSIZE, FALSE))
     return DEFER;
   }
 
@@ -957,7 +960,7 @@ while (size > 0)
     if (len == 0) errno = ERRNO_MBXLENGTH;
     return DEFER;
     }
-  if (!transport_write_block(to_fd, deliver_out_buffer, used + len))
+  if (!transport_write_block(&tctx, deliver_out_buffer, used + len, FALSE))
     return DEFER;
   size -= len;
   used = 0;
@@ -2874,13 +2877,14 @@ at initialization time. */
 if (yield == OK)
   {
   transport_ctx tctx = {
+    fd,
     tblock,
     addr,
     ob->check_string,
     ob->escape_string,
     ob->options
   };
-  if (!transport_write_message(fd, &tctx, 0))
+  if (!transport_write_message(&tctx, 0))
     yield = DEFER;
   }
 

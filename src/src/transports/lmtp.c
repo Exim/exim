@@ -610,6 +610,7 @@ if (send_data)
   {
   BOOL ok;
   transport_ctx tctx = {
+    fd_in,
     tblock,
     addrlist,
     US".", US"..",
@@ -634,7 +635,7 @@ if (send_data)
     debug_printf("  LMTP>> writing message and terminating \".\"\n");
 
   transport_count = 0;
-  ok = transport_write_message(fd_in, &tctx, 0);
+  ok = transport_write_message(&tctx, 0);
 
   /* Failure can either be some kind of I/O disaster (including timeout),
   or the failure of a transport filter or the expansion of added headers. */

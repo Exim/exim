@@ -448,15 +448,19 @@ switch (what)
 }
 
 
+/* Generate signatures for the given file, returning a string.
+If a prefix is given, prepend it to the file for the calculations.
+*/
+
 uschar *
-dkim_exim_sign(int dkim_fd, struct ob_dkim * dkim, const uschar ** errstr)
+dkim_exim_sign(int fd, off_t off, uschar * prefix,
+  struct ob_dkim * dkim, const uschar ** errstr)
 {
 const uschar * dkim_domain;
 int sep = 0;
 uschar *seen_items = NULL;
 int seen_items_size = 0;
 int seen_items_offset = 0;
-uschar itembuf[256];
 uschar *dkim_canon_expanded;
 uschar *dkim_sign_headers_expanded;
 uschar *dkim_private_key_expanded;
@@ -485,10 +489,9 @@ if (!(dkim_domain = expand_cstring(dkim->dkim_domain)))
 
 /* Set $dkim_domain expansion variable to each unique domain in list. */
 
-while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
-				   itembuf, sizeof(itembuf))))
+while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
   {
-  if (!dkim_signing_domain || dkim_signing_domain[0] == '\0')
+  if (dkim_signing_domain[0] == '\0')
     continue;
 
   /* Only sign once for each domain, no matter how often it
@@ -619,9 +622,12 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep,
 		      pdkim_canon,
 		      pdkim_canon, -1, 0, 0);
 
-  lseek(dkim_fd, 0, SEEK_SET);
+  if (prefix)
+    pdkim_feed(ctx, prefix, Ustrlen(prefix));
 
-  while ((sread = read(dkim_fd, &buf, sizeof(buf))) > 0)
+  lseek(fd, off, SEEK_SET);
+
+  while ((sread = read(fd, &buf, sizeof(buf))) > 0)
     if ((pdkim_rc = pdkim_feed(ctx, buf, sread)) != PDKIM_OK)
       goto pk_bad;
 

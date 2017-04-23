@@ -235,6 +235,10 @@ typedef int (*tpt_chunk_cmd_cb)(struct transport_context *, unsigned, unsigned);
 /* Structure for information about a delivery-in-progress */
 
 typedef struct transport_context {
+  union {			/* discriminated by option topt_output_string */
+    int			  fd;	/* file descriptor to write message to */
+    uschar *		  msg;	/* allocated string with written message */
+  } u;
   transport_instance	* tblock;		/* transport */
   struct address_item	* addr;
   uschar		* check_string;		/* string replacement */
@@ -244,6 +248,10 @@ typedef struct transport_context {
   /* items below only used with option topt_use_bdat */
   tpt_chunk_cmd_cb	  chunk_cb;		/* per-datachunk callback */
   void			* smtp_context;
+
+  /* items below only used with option topt_output_string */
+  int			  msg_size;
+  int			  msg_ptr;
 } transport_ctx;
 
 

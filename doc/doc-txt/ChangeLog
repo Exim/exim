@@ -56,6 +56,11 @@ JH/07 Fix smtp transport use of limited max_rcpt under mua_wrapper. Previously
 JH/08 Pipeline CHUNKING command and data together, on kernels that support
       MSG_MORE.  Only in-clear (not on TLS connections).
 
+JH/09 Avoid using a temporary file during transport using dkim.  Unless a
+      transport-filter is involved we can buffer the headers in memory for
+      creating the signature, and read the spool data file once for the
+      signature and again for transmission.
+
 
 Exim version 4.89
 -----------------

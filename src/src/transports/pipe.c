@@ -552,6 +552,7 @@ const uschar *envlist = ob->environment;
 uschar *cmd, *ss;
 uschar *eol = ob->use_crlf ? US"\r\n" : US"\n";
 transport_ctx tctx = {
+  0,
   tblock,
   addr,
   ob->check_string,
@@ -739,6 +740,7 @@ if ((pid = child_open(USS argv, envp, ob->umask, &fd_in, &fd_out, TRUE)) < 0)
       strerror(errno));
   return FALSE;
   }
+tctx.u.fd = fd_in;
 
 /* Now fork a process to handle the output that comes down the pipe. */
 
@@ -829,7 +831,7 @@ if (ob->message_prefix != NULL)
       expand_string_message);
     return FALSE;
     }
-  if (!transport_write_block(fd_in, prefix, Ustrlen(prefix)))
+  if (!transport_write_block(&tctx, prefix, Ustrlen(prefix), FALSE))
     goto END_WRITE;
   }
 
@@ -857,7 +859,7 @@ if (ob->use_bsmtp)
 
 /* Now the actual message */
 
-if (!transport_write_message(fd_in, &tctx, 0))
+if (!transport_write_message(&tctx, 0))
     goto END_WRITE;
 
 /* Now any configured suffix */
@@ -873,7 +875,7 @@ if (ob->message_suffix)
       expand_string_message);
     return FALSE;
     }
-  if (!transport_write_block(fd_in, suffix, Ustrlen(suffix)))
+  if (!transport_write_block(&tctx, suffix, Ustrlen(suffix), FALSE))
     goto END_WRITE;
   }
 
