@@ -7,13 +7,13 @@
 
 /* Transport shim for dkim signing */
 
-#ifndef DISABLE_DKIM
-
 
 #include "exim.h"
 
+#ifndef DISABLE_DKIM	/* rest of file */
+
 #ifdef HAVE_LINUX_SENDFILE
-#include <sys/sendfile.h>
+# include <sys/sendfile.h>
 #endif
 
 
@@ -157,7 +157,7 @@ mean they go out in the same packet as the MAIL, RCPT and (first) BDAT commands
 (transport_write_message() sizes the BDAT for the buffered amount) - for short
 messages, the BDAT LAST command.  We want no CRLF or dotstuffing expansion */
 
-tctx->options &= ~topt_use_crlf;
+tctx->options &= ~(topt_use_crlf | topt_escape_headers);
 transport_write_reset(0);
 if (  !write_chunk(tctx, dkim_signature, siglen)
    || !write_chunk(tctx, hdrs, hsize))
