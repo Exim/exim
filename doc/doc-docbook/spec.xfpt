@@ -35898,6 +35898,7 @@ the following table:
 &`I   `&        local interface used
 &`K   `&        CHUNKING extension used
 &`id  `&        message id for incoming message
+&`M8S `&        8BITMIME status for incoming message
 &`P   `&        on &`<=`& lines: protocol used
 &`    `&        on &`=>`& and &`**`& lines: return path
 &`PRDR`&        PRDR extension used
