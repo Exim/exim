@@ -483,7 +483,7 @@ LDFLAGS += -lopendmarc
 # Uncomment the following line to add DANE support
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # Note: DANE is only supported when using OpenSSL
-# EXPERIMENTAL_DANE=yes
+EXPERIMENTAL_DANE=yes
 
 # Uncomment the following to include extra information in fail DSN message (bounces)
 # EXPERIMENTAL_DSN_INFO=yes
