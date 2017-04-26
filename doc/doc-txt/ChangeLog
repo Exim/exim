@@ -61,6 +61,10 @@ JH/09 Avoid using a temporary file during transport using dkim.  Unless a
       creating the signature, and read the spool data file once for the
       signature and again for transmission.
 
+JH/10 Enable use of sendfile in Linux builds as default.  It was disabled in
+      4.77 as the kernel support then wasn't solid, having issues in 64bit
+      mode.  Now, it's been long enough.
+
 
 Exim version 4.89
 -----------------

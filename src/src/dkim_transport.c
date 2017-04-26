@@ -58,7 +58,7 @@ if (tls_out.active != out_fd)
   ssize_t copied = 0;
 
   while(copied >= 0 && off < size)
-    copied = sendfile(tctx->u.fd, dkim_fd, &off, size - off);
+    copied = sendfile(out_fd, in_fd, &off, size - off);
   if (copied < 0)
     return FALSE;
   }

@@ -18,9 +18,10 @@ with the issue. */
 /* When using the DKIM, setting HAVE_LINUX_SENDFILE can increase
 performance on outgoing mail a bit. Note: With older glibc versions
 this setting will conflict with the _FILE_OFFSET_BITS=64 setting
-defined as part of the Linux CFLAGS. */
+defined as part of the Linux CFLAGS.  As of 2017 those are declared
+to be too old to build by default. */
 
-/* #define HAVE_LINUX_SENDFILE */
+#define HAVE_LINUX_SENDFILE
 
 #define F_FREESP     O_TRUNC
 typedef struct flock flock_t;
