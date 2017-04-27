@@ -7664,8 +7664,8 @@ wording. */
 	  if ((s = addr->message) && *s)
 	    fprintf(f, "X-Exim-Diagnostic: X-str; %s\n", s);
 #endif
-	  print_dsn_diagnostic_code(addr, f);
 	  }
+	print_dsn_diagnostic_code(addr, f);
 	fputc('\n', f);
         }
 
