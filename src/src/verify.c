@@ -625,15 +625,6 @@ coding means skipping this whole loop and doing the append separately.  */
      )
     done = cutthrough_multi(addr, host_list, tf, &yield);
 
-    if (options & vopt_is_recipient)
-    {
-      recipient_verify_message = addr->user_message;
-    }
-    else
-    {
-      sender_verify_message = addr->user_message;
-    }
-
   /* If we did not use a cached connection, make connections to the hosts
   and do real callouts. The list of hosts is passed in as an argument. */
 
@@ -1009,6 +1000,15 @@ no_conn:
 	  ? string_sprintf("Callout verification failed:\n%s", sx.buffer)
 	  : string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",
 	    host->address, big_buffer, sx.buffer);
+
+    if (options & vopt_is_recipient)
+    {
+      recipient_verify_message = string_sprintf("%s", sx.buffer);
+    }
+    else
+    {
+      sender_verify_message = string_sprintf("%s", sx.buffer);
+    }
 
 	/* Hard rejection ends the process */
 
