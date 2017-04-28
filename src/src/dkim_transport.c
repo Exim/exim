@@ -45,9 +45,6 @@ DEBUG(D_transport) debug_printf("send file fd=%d size=%d\n", out_fd, size - off)
 
 /*XXX should implement timeout, like transport_write_block_fd() ? */
 
-/* Rewind file */
-lseek(in_fd, off, SEEK_SET);
-
 #ifdef HAVE_LINUX_SENDFILE
 /* We can use sendfile() to shove the file contents
    to the socket. However only if we don't use TLS,
@@ -68,6 +65,9 @@ else
 
   {
   int sread, wwritten;
+
+  /* Rewind file */
+  lseek(in_fd, off, SEEK_SET);
 
   /* Send file down the original fd */
   while((sread = read(in_fd, deliver_out_buffer, DELIVER_OUT_BUFFER_SIZE)) >0)
@@ -118,6 +118,7 @@ dkt_direct(transport_ctx * tctx, struct ob_dkim * dkim,
 {
 int save_fd = tctx->u.fd;
 int save_options = tctx->options;
+BOOL save_wireformat = spool_file_wireformat;
 uschar * hdrs, * dkim_signature;
 int siglen, hsize;
 const uschar * errstr;
@@ -125,7 +126,8 @@ BOOL rc;
 
 DEBUG(D_transport) debug_printf("dkim signing direct-mode\n");
 
-/* Get headers in string for signing and transmission */
+/* Get headers in string for signing and transmission.  Do CRLF
+and dotstuffing (but no body nor dot-termination) */
 
 tctx->u.msg = NULL;
 tctx->options = tctx->options & ~(topt_end_dot | topt_use_bdat)
@@ -155,14 +157,18 @@ else if (!(rc = dkt_sign_fail(dkim, &errno)))
 /* Write the signature and headers into the deliver-out-buffer.  This should
 mean they go out in the same packet as the MAIL, RCPT and (first) BDAT commands
 (transport_write_message() sizes the BDAT for the buffered amount) - for short
-messages, the BDAT LAST command.  We want no CRLF or dotstuffing expansion */
+messages, the BDAT LAST command.  We want no dotstuffing expansion here, it
+having already been done - but we have to say we want CRLF output format, and
+temporarily set the marker for possible already-CRLF input. */
 
-tctx->options &= ~(topt_use_crlf | topt_escape_headers);
+tctx->options &= ~topt_escape_headers;
+spool_file_wireformat = TRUE;
 transport_write_reset(0);
 if (  !write_chunk(tctx, dkim_signature, siglen)
    || !write_chunk(tctx, hdrs, hsize))
   return FALSE;
 
+spool_file_wireformat = save_wireformat;
 tctx->options = save_options | topt_no_headers | topt_continuation;
 
 if (!(transport_write_message(tctx, 0)))

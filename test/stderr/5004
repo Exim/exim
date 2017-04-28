@@ -155,6 +155,7 @@ created directory TESTSUITE/test-mail/new
 created directory TESTSUITE/test-mail/cur
 delivering in maildir format in TESTSUITE/test-mail
 writing to tmp/MAILDIR.mail.test.ex
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 renaming temporary file
 renamed tmp/MAILDIR.mail.test.ex as new/MAILDIR.mail.test.ex

@@ -1419,7 +1419,7 @@ while (sig)
     }
 
   DEBUG(D_acl) debug_printf(
-      "PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>>>\n");
+      "PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>\n");
 
   /* SIGNING ---------------------------------------------------------------- */
   /* When signing, walk through our header list and add them to the hash. As we
@@ -1732,10 +1732,10 @@ DEBUG(D_acl)
   pdkim_signature s = *sig;
   ev_ctx vctx;
 
-  debug_printf("PDKIM (checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+  debug_printf("PDKIM (checking verify key)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
   if (!pdkim_key_from_dns(ctx, &s, &vctx, errstr))
     debug_printf("WARNING: bad dkim key in dns\n");
-  debug_printf("PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+  debug_printf("PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 return ctx;
 }

@@ -18004,6 +18004,7 @@ writing to file TESTSUITE/test-mail/sender
 writing data block fd=dddd size=sss timeout=0
 flushing headers buffer
 writing data block fd=dddd size=sss timeout=0
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd

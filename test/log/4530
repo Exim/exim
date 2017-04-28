@@ -1,0 +1,17 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1224 port 1225
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=esmtp S=sss for z@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtp K S=sss for z@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => z <z@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => z@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] K C="250- 652 byte chunk, total 652\\n250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=esmtp K S=sss for y@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtp K S=sss for y@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 => y <y@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => y@test.ex R=to_server T=remote_smtp_dkim H=127.0.0.1 [127.0.0.1] K C="250- 652 byte chunk, total 652\\n250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

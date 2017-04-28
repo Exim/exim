@@ -13566,6 +13566,7 @@ listed in more than one group.
 .row &%message_body_visible%&        "how much to show in &$message_body$&"
 .row &%mua_wrapper%&                 "run in &""MUA wrapper""& mode"
 .row &%print_topbitchars%&           "top-bit characters are printing"
+.row &%spool_wireformat%&            "use wire-format spool data files when possible"
 .row &%timezone%&                    "force time zone"
 .endtable
 
@@ -16820,6 +16821,25 @@ as failures in the configuration file.
 
 By using this option to override the compiled-in path, it is possible to run
 tests of Exim without using the standard spool.
+
+.new
+.option spool_wireformat main boolean false
+.cindex "spool directory" "file formats"
+If this option is set, Exim may for some messages use an alternate format
+for data-files in the spool which matches the wire format.
+Doing this permits more efficient message reception and transmission.
+Currently it is only done for messages received using the EMSTP CHUNKING
+option.
+
+Users of the local_scan() API (see &<<CHAPlocalscan>>&),
+and any external programs which are passed a reference to a message data file
+(except via the &"regex"&, &"malware"& or &"spam"&) ACL conditions)
+will need to be aware of the potential different format.
+
+Using any of the ACL conditions noted will negate the reception benefit
+(as a Unix-mbox-format file is contructed for them).
+The transimssion benefit is maintained.
+.wen
 
 .option sqlite_lock_timeout main time 5s
 .cindex "sqlite lookup type" "lock timeout"
@@ -38094,8 +38114,8 @@ The address of an authenticated sender &-- the value of the
 &$authenticated_sender$& variable.
 
 .vitem "&%-body_linecount%&&~<&'number'&>"
-This records the number of lines in the body of the message, and is always
-present.
+This records the number of lines in the body of the message, and is
+present unless &%-spool_file_wireformat%& is.
 
 .vitem "&%-body_zerocount%&&~<&'number'&>"
 This records the number of binary zero bytes in the body of the message, and is
@@ -38176,6 +38196,12 @@ to ensure that the caller is displayed in queue listings).
 .vitem "&%-spam_score_int%&&~<&'number'&>"
 If a message was scanned by SpamAssassin, this is present. It records the value
 of &$spam_score_int$&.
+
+.vitem &%-spool_file_wireformat%&
+The -D file for this message is in wire-format (for ESMTP CHUNKING)
+rather than Unix-format.
+The line-ending is CRLF rather than newline.
+There is still, however, no leading-dot-stuffing.
 
 .vitem &%-tls_certificate_verified%&
 A TLS certificate was received from the client that sent this message, and the

@@ -1016,6 +1016,46 @@ for(;;)
 /*NOTREACHED*/
 }
 
+static int
+read_message_bdat_smtp_wire(FILE *fout)
+{
+int ch;
+
+/* Remember that this message uses wireformat. */
+
+DEBUG(D_receive) debug_printf("CHUNKING: writing spoolfile in wire format\n");
+spool_file_wireformat = TRUE;
+
+/* Unfortunately cannot use sendfile() even if not TLS
+as that requires (on linux) mmap-like operations on the input fd.
+
+XXX but worthwhile doing a block interface to the bdat_getc buffer
+in the future */
+
+for (;;) switch (ch = bdat_getc(GETC_BUFFER_UNLIMITED))
+  {
+  case EOF: return END_EOF;
+  case EOD: return END_DOT;
+  case ERR: return END_PROTOCOL;
+
+  default:
+    message_size++;
+/*XXX not done:
+linelength
+max_received_linelength
+body_linecount
+body_zerocount
+*/
+    if (fout)
+      {
+      if (fputc(ch, fout) == EOF) return END_WERROR;
+      if (message_size > thismessage_size_limit) return END_SIZE;
+      }
+    break;
+  }
+/*NOTREACHED*/
+}
+
 
 
 
@@ -3078,9 +3118,11 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   {
   if (smtp_input)
     {
-    message_ended = chunking_state > CHUNKING_OFFERED
-      ? read_message_bdat_smtp(data_file)
-      : read_message_data_smtp(data_file);
+    message_ended = chunking_state <= CHUNKING_OFFERED
+      ? read_message_data_smtp(data_file)
+      : spool_wireformat
+      ? read_message_bdat_smtp_wire(data_file)
+      : read_message_bdat_smtp(data_file);
     receive_linecount++;                /* The terminating "." line */
     }
   else message_ended = read_message_data(data_file);
@@ -4258,6 +4300,7 @@ if (smtp_input)
 
       else if (chunking_state > CHUNKING_OFFERED)
 	{
+/*XXX rethink for spool_wireformat */
         smtp_printf("250- %u byte chunk, total %d\r\n250 OK id=%s\r\n",
 	    chunking_datasize, message_size+message_linecount, message_id);
 	chunking_state = CHUNKING_OFFERED;

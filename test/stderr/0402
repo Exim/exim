@@ -487,6 +487,7 @@ writing to file TESTSUITE/test-mail/junk
  └─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
  
 writing data block fd=dddd size=sss timeout=0
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
@@ -542,6 +543,7 @@ writing to file TESTSUITE/test-mail/junk
  └─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
  
 writing data block fd=dddd size=sss timeout=0
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd

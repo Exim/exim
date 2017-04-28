@@ -2254,6 +2254,9 @@ included in the count.) */
 
 if (sx->peer_offered & PEER_OFFERED_SIZE)
   {
+/*XXX problem here under spool_files_wireformat?
+Or just forget about lines?  Or inflate by a fixed proportion? */
+
   sprintf(CS p, " SIZE=%d", message_size+message_linecount+sx->ob->size_addition);
   while (*p) p++;
   }

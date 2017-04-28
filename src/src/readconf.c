@@ -432,6 +432,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "split_spool_directory",    opt_bool,        &split_spool_directory },
   { "spool_directory",          opt_stringptr,   &spool_directory },
+  { "spool_wireformat",         opt_bool,        &spool_wireformat },
 #ifdef LOOKUP_SQLITE
   { "sqlite_lock_timeout",      opt_int,         &sqlite_lock_timeout },
 #endif

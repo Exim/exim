@@ -3890,14 +3890,12 @@ for (;;)   /* Normally we do not repeat this loop */
     maxpipe = 0;
     FD_ZERO(&select_pipes);
     for (poffset = 0; poffset < remote_max_parallel; poffset++)
-      {
       if (parlist[poffset].pid != 0)
         {
         int fd = parlist[poffset].fd;
         FD_SET(fd, &select_pipes);
         if (fd > maxpipe) maxpipe = fd;
         }
-      }
 
     /* Stick in a 60-second timeout, just in case. */
 

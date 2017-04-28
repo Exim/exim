@@ -284,6 +284,9 @@ sender_ident = NULL;
 sender_local = FALSE;
 sender_set_untrusted = FALSE;
 smtp_active_hostname = primary_hostname;
+#ifndef COMPILE_UTILITY
+spool_file_wireformat = FALSE;
+#endif
 tree_nonrecipients = NULL;
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -602,6 +605,10 @@ for (;;)
       spam_score = string_copy(big_buffer + 12);
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
+#endif
+#ifndef COMPILE_UTILITY
+    else if (Ustrncmp(p, "pool_file_wireformat", 20) == 0)
+      spool_file_wireformat = TRUE;
 #endif
 #if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
     else if (Ustrncmp(p, "mtputf8", 7) == 0)

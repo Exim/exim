@@ -529,6 +529,7 @@ socket                               string*         unset         lmtp         
 spamd_address                        string*         +             main              4.50 with content scan
 split_spool_directory                boolean         false         main              1.70
 spool_directory                      string          ++            main
+spool_wireformat                     boolean         false         main              4.90
 sqlite_lock_timeout                  time            5s            main              4.53
 strict_acl_vars                      boolean         false         main              4.64
 srv_fail_domains                     domain list     unset         dnslookup         4.43

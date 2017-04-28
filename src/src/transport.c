@@ -11,6 +11,10 @@ transports. */
 
 #include "exim.h"
 
+#ifdef HAVE_LINUX_SENDFILE
+# include <sys/sendfile.h>
+#endif
+
 /* Structure for keeping list of addresses that have been added to
 Envelope-To:, in order to avoid duplication. */
 
@@ -483,13 +487,22 @@ for (ptr = start; ptr < end; ptr++)
     chunk_ptr = deliver_out_buffer;
     }
 
+  /* Remove CR before NL if required */
+
+  if (  *ptr == '\r' && ptr[1] == '\n'
+     && (!tctx || !(tctx->options & topt_use_crlf))
+     && spool_file_wireformat
+     )
+    ptr++;
+
   if ((ch = *ptr) == '\n')
     {
     int left = end - ptr - 1;  /* count of chars left after NL */
 
     /* Insert CR before NL if required */
 
-    if (tctx  &&  tctx->options & topt_use_crlf) *chunk_ptr++ = '\r';
+    if (tctx  &&  tctx->options & topt_use_crlf && !spool_file_wireformat)
+      *chunk_ptr++ = '\r';
     *chunk_ptr++ = '\n';
     transport_newlines++;
 
@@ -749,9 +762,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
   /* Header removed */
 
   else
-    {
     DEBUG(D_transport) debug_printf("removed header line:\n%s---\n", h->text);
-    }
   }
 
 /* Add on any address-specific headers. If there are multiple addresses,
@@ -890,7 +901,7 @@ Returns:                TRUE on success; FALSE (with errno) on failure.
 BOOL
 internal_transport_write_message(transport_ctx * tctx, int size_limit)
 {
-int len;
+int len, size = 0;
 
 /* Initialize pointer in output buffer. */
 
@@ -906,17 +917,21 @@ if (tctx->check_string && tctx->escape_string)
   nl_escape_length = Ustrlen(nl_escape);
   }
 
+/* Whether the escaping mechanism is applied to headers or not is controlled by
+an option (set for SMTP, not otherwise). Negate the length if not wanted till
+after the headers. */
+
+if (!(tctx->options & topt_escape_headers))
+  nl_check_length = -nl_check_length;
+
 /* Write the headers if required, including any that have to be added. If there
-are header rewriting rules, apply them. */
+are header rewriting rules, apply them.  The datasource is not the -D spoolfile
+so temporarily hide the global that adjusts for its format. */
 
 if (!(tctx->options & topt_no_headers))
   {
-  /* Whether the escaping mechanism is applied to headers or not is controlled by
-  an option (set for SMTP, not otherwise). Negate the length if not wanted till
-  after the headers. */
-
-  if (!(tctx->options & topt_escape_headers))
-    nl_check_length = -nl_check_length;
+  BOOL save_wireformat = spool_file_wireformat;
+  spool_file_wireformat = FALSE;
 
   /* Add return-path: if requested. */
 
@@ -925,7 +940,7 @@ if (!(tctx->options & topt_no_headers))
     uschar buffer[ADDRESS_MAXLENGTH + 20];
     int n = sprintf(CS buffer, "Return-path: <%.*s>\n", ADDRESS_MAXLENGTH,
       return_path);
-    if (!write_chunk(tctx, buffer, n)) return FALSE;
+    if (!write_chunk(tctx, buffer, n)) goto bad;
     }
 
   /* Add envelope-to: if requested */
@@ -938,19 +953,18 @@ if (!(tctx->options & topt_no_headers))
     struct aci *dlist = NULL;
     void *reset_point = store_get(0);
 
-    if (!write_chunk(tctx, US"Envelope-to: ", 13)) return FALSE;
+    if (!write_chunk(tctx, US"Envelope-to: ", 13)) goto bad;
 
     /* Pick up from all the addresses. The plist and dlist variables are
     anchors for lists of addresses already handled; they have to be defined at
     this level because write_env_to() calls itself recursively. */
 
     for (p = tctx->addr; p; p = p->next)
-      if (!write_env_to(p, &plist, &dlist, &first, tctx))
-	return FALSE;
+      if (!write_env_to(p, &plist, &dlist, &first, tctx)) goto bad;
 
     /* Add a final newline and reset the store used for tracking duplicates */
 
-    if (!write_chunk(tctx, US"\n", 1)) return FALSE;
+    if (!write_chunk(tctx, US"\n", 1)) goto bad;
     store_reset(reset_point);
     }
 
@@ -960,7 +974,7 @@ if (!(tctx->options & topt_no_headers))
     {
     uschar buffer[100];
     int n = sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
-    if (!write_chunk(tctx, buffer, n)) return FALSE;
+    if (!write_chunk(tctx, buffer, n)) goto bad;
     }
 
   /* Then the message's headers. Don't write any that are flagged as "old";
@@ -970,7 +984,13 @@ if (!(tctx->options & topt_no_headers))
   addr is not NULL. */
 
   if (!transport_headers_send(tctx, &write_chunk))
+    {
+bad:
+    spool_file_wireformat = save_wireformat;
     return FALSE;
+    }
+
+  spool_file_wireformat = save_wireformat;
   }
 
 /* When doing RFC3030 CHUNKING output, work out how much data would be in a
@@ -988,7 +1008,7 @@ suboptimal. */
 if (tctx->options & topt_use_bdat)
   {
   off_t fsize;
-  int hsize, size = 0;
+  int hsize;
 
   if ((hsize = chunk_ptr - deliver_out_buffer) < 0)
     hsize = 0;
@@ -999,7 +1019,7 @@ if (tctx->options & topt_use_bdat)
     if (size_limit > 0  &&  fsize > size_limit)
       fsize = size_limit;
     size = hsize + fsize;
-    if (tctx->options & topt_use_crlf)
+    if (tctx->options & topt_use_crlf  &&  !spool_file_wireformat)
       size += body_linecount;	/* account for CRLF-expansion */
 
     /* With topt_use_bdat we never do dot-stuffing; no need to
@@ -1039,6 +1059,52 @@ negative in cases where it isn't to apply to the headers). Then ensure the body
 is positioned at the start of its file (following the message id), then write
 it, applying the size limit if required. */
 
+/* If we have a wireformat -D file (CRNL lines, non-dotstuffed, no ending dot)
+and we want to send a body without dotstuffing or ending-dot, in-clear,
+then we can just dump it using sendfile.
+This should get used for CHUNKING output and also for writing the -K file for
+dkim signing,  when we had CHUNKING input.  */
+
+#ifdef HAVE_LINUX_SENDFILE
+if (  spool_file_wireformat
+   && !(tctx->options & (topt_no_body | topt_end_dot))
+   && !nl_check_length
+   && tls_out.active != tctx->u.fd
+   )
+  {
+  ssize_t copied = 0;
+  off_t offset = SPOOL_DATA_START_OFFSET;
+
+  /* Write out any header data in the buffer */
+
+  if ((len = chunk_ptr - deliver_out_buffer) > 0)
+    {
+    if (!transport_write_block(tctx, deliver_out_buffer, len, TRUE))
+      return FALSE;
+    size -= len;
+    }
+
+  DEBUG(D_transport) debug_printf("using sendfile for body\n");
+
+  while(size > 0)
+    {
+    if ((copied = sendfile(tctx->u.fd, deliver_datafile, &offset, size)) <= 0) break;
+    size -= copied;
+    }
+  return copied >= 0;
+  }
+#else
+DEBUG(D_transport) debug_printf("cannot use sendfile for body: no support\n");
+#endif
+
+DEBUG(D_transport)
+  if (!(tctx->options & topt_no_body))
+    debug_printf("cannot use sendfile for body: %s\n",
+      !spool_file_wireformat ? "spoolfile not wireformat"
+      : tctx->options & topt_end_dot ? "terminating dot wanted"
+      : nl_check_length ? "dot- or From-stuffing wanted"
+      : "TLS output wanted");
+
 if (!(tctx->options & topt_no_body))
   {
   int size = size_limit;
@@ -1077,6 +1143,7 @@ return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
 
 
 
+
 /*************************************************
 *    External interface to write the message     *
 *************************************************/
@@ -1098,6 +1165,7 @@ BOOL
 transport_write_message(transport_ctx * tctx, int size_limit)
 {
 BOOL last_filter_was_NL = TRUE;
+BOOL save_spool_file_wireformat = spool_file_wireformat;
 int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
@@ -1215,8 +1283,10 @@ DEBUG(D_transport) debug_printf("copying from the filter\n");
 
 /* Copy the output of the filter, remembering if the last character was NL. If
 no data is returned, that counts as "ended with NL" (default setting of the
-variable is TRUE). */
+variable is TRUE).  The output should always be unix-format as we converted
+any wireformat source on writing input to the filter. */
 
+spool_file_wireformat = FALSE;
 chunk_ptr = deliver_out_buffer;
 
 for (;;)
@@ -1256,6 +1326,7 @@ there has been an error, kill the processes before waiting for them, just to be
 sure. Also apply a paranoia timeout. */
 
 TIDY_UP:
+spool_file_wireformat = save_spool_file_wireformat;
 save_errno = errno;
 
 (void)close(fd_read);

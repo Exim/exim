@@ -265,9 +265,9 @@ if (spam_ok && Ustrcmp(prev_user_name, user_name) == 0)
   return override ? OK : spam_rc;
 
 /* make sure the eml mbox file is spooled up */
+
 if (!(mbox_file = spool_mbox(&mbox_size, NULL, NULL)))
-  {
-  /* error while spooling */
+  {								/* error while spooling */
   log_write(0, LOG_MAIN|LOG_PANIC,
 	 "%s error while creating mbox spool file", loglabel);
   return DEFER;

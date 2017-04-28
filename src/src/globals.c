@@ -1363,6 +1363,8 @@ uschar *spf_smtp_comment       = NULL;
 BOOL    split_spool_directory  = FALSE;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
+BOOL    spool_file_wireformat  = FALSE;
+BOOL    spool_wireformat       = FALSE;
 #ifdef EXPERIMENTAL_SRS
 uschar *srs_config             = NULL;
 uschar *srs_db_address         = NULL;

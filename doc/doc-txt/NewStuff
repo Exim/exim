@@ -29,6 +29,12 @@ Version 4.90
  6. The reproducible build $SOURCE_DATE_EPOCH environment variable is now
     supported.
 
+ 7. Optionally, an alternate format for spool data-files which matches the
+    wire format - meaning more efficient reception and transmission (at the
+    cost of difficulty with standard Unix tools).  Only used for messages
+    received using the ESMTP CHUNKING option, and when a new main-section
+    option "spool_wireformat" (false by default) is set.
+
 
 Version 4.89
 ------------

@@ -1344,6 +1344,7 @@ tctx.tblock = cutthrough.addr.transport;
 tctx.addr = &cutthrough.addr;
 tctx.check_string = US".";
 tctx.escape_string = US"..";
+/*XXX check under spool_files_wireformat.  Might be irrelevant */
 tctx.options = topt_use_crlf;
 
 if (!transport_headers_send(&tctx, &cutthrough_write_chunk))
