@@ -27651,13 +27651,22 @@ built, then you have SNI support).
          "SECTmulmessam"
 .cindex "multiple SMTP deliveries with TLS"
 .cindex "TLS" "multiple message deliveries"
+.new
 Exim sends multiple messages down the same TCP/IP connection by starting up
 an entirely new delivery process for each message, passing the socket from
 one process to the next. This implementation does not fit well with the use
 of TLS, because there is quite a lot of state information associated with a TLS
 connection, not just a socket identification. Passing all the state information
-to a new process is not feasible. Consequently, Exim shuts down an existing TLS
-session before passing the socket to a new process. The new process may then
+to a new process is not feasible. Consequently, for sending using TLS Exim
+starts an additional proxy process for handling the encryption, piping the
+unencrypted data stream from and to the delivery processes.
+
+An older mode of operation can be enabled on a per-host basis by the
+&%hosts_noproxy_tls%& option on the &(smtp)& transport.  If the host matches
+this list the proxy process descibed above is not used; instead Exim
+.wen
+shuts down an existing TLS session being run by the delivery process
+before passing the socket to a new process. The new process may then
 try to start a new TLS session, and if successful, may try to re-authenticate
 if AUTH is in use, before sending the next message.
 
