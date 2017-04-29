@@ -38,10 +38,12 @@ if (dkim->dkim_strict)
 return TRUE;
 }
 
+/* Send the file at in_fd down the output fd */
+
 static BOOL
 dkt_send_file(int out_fd, int in_fd, off_t off, size_t size)
 {
-DEBUG(D_transport) debug_printf("send file fd=%d size=%d\n", out_fd, size - off);
+DEBUG(D_transport) debug_printf("send file fd=%d size=%l\n", out_fd, size - off);
 
 /*XXX should implement timeout, like transport_write_block_fd() ? */
 
@@ -67,10 +69,10 @@ else
   int sread, wwritten;
 
   /* Rewind file */
-  lseek(in_fd, off, SEEK_SET);
+  if (lseek(in_fd, off, SEEK_SET) < 0) return FALSE;
 
   /* Send file down the original fd */
-  while((sread = read(in_fd, deliver_out_buffer, DELIVER_OUT_BUFFER_SIZE)) >0)
+  while((sread = read(in_fd, deliver_out_buffer, DELIVER_OUT_BUFFER_SIZE)) > 0)
     {
     uschar * p = deliver_out_buffer;
     /* write the chunk */
@@ -120,7 +122,7 @@ int save_fd = tctx->u.fd;
 int save_options = tctx->options;
 BOOL save_wireformat = spool_file_wireformat;
 uschar * hdrs, * dkim_signature;
-int siglen, hsize;
+int siglen = 0, hsize;
 const uschar * errstr;
 BOOL rc;
 
@@ -164,7 +166,7 @@ temporarily set the marker for possible already-CRLF input. */
 tctx->options &= ~topt_escape_headers;
 spool_file_wireformat = TRUE;
 transport_write_reset(0);
-if (  !write_chunk(tctx, dkim_signature, siglen)
+if (  siglen > 0 && !write_chunk(tctx, dkim_signature, siglen)
    || !write_chunk(tctx, hdrs, hsize))
   return FALSE;
 
@@ -256,7 +258,11 @@ else if (!(rc = dkt_sign_fail(dkim, &save_errno)))
 #ifndef HAVE_LINUX_SENDFILE
 if (options & topt_use_bdat)
 #endif
-  k_file_size = lseek(dkim_fd, 0, SEEK_END); /* Fetch file size */
+  if ((k_file_size = lseek(dkim_fd, 0, SEEK_END)) < 0)
+    {
+    *err = string_sprintf("dkim spoolfile seek: %s", strerror(errno));
+    goto CLEANUP;
+    }
 
 if (options & topt_use_bdat)
   {
@@ -292,7 +298,7 @@ if (!dkt_send_file(tctx->u.fd, dkim_fd, 0, k_file_size))
 
 CLEANUP:
   /* unlink -K file */
-  (void)close(dkim_fd);
+  if (dkim_fd >= 0) (void)close(dkim_fd);
   Uunlink(dkim_spool_name);
   errno = save_errno;
   return rc;

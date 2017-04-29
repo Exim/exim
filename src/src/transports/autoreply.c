@@ -485,7 +485,7 @@ if (oncelog != NULL && *oncelog != 0 && to != NULL)
     {
     EXIM_DATUM key_datum, result_datum;
     EXIM_DBOPEN(oncelog, O_RDWR|O_CREAT, ob->mode, &dbm_file);
-    if (dbm_file == NULL)
+    if (!dbm_file)
       {
       addr->transport_return = DEFER;
       addr->message = string_sprintf("Failed to open %s file %s when sending "
@@ -745,30 +745,32 @@ if (cache_fd >= 0)
   {
   uschar *from = cache_buff;
   int size = cache_size;
-  (void)lseek(cache_fd, 0, SEEK_SET);
 
-  if (cache_time == NULL)
+  if (lseek(cache_fd, 0, SEEK_SET) == 0)
     {
-    cache_time = from + size;
-    memcpy(cache_time + sizeof(time_t), to, add_size - sizeof(time_t));
-    size += add_size;
-
-    if (cache_size > 0 && size > ob->once_file_size)
+    if (!cache_time)
       {
-      from += sizeof(time_t) + Ustrlen(from + sizeof(time_t)) + 1;
-      size -= (from - cache_buff);
-      }
-    }
+      cache_time = from + size;
+      memcpy(cache_time + sizeof(time_t), to, add_size - sizeof(time_t));
+      size += add_size;
 
-  memcpy(cache_time, &now, sizeof(time_t));
-  if(write(cache_fd, from, size) != size)
-    DEBUG(D_transport) debug_printf("Problem writing cache file %s for %s "
-      "transport\n", oncelog, tblock->name);
+      if (cache_size > 0 && size > ob->once_file_size)
+	{
+	from += sizeof(time_t) + Ustrlen(from + sizeof(time_t)) + 1;
+	size -= (from - cache_buff);
+	}
+      }
+
+    memcpy(cache_time, &now, sizeof(time_t));
+    if(write(cache_fd, from, size) != size)
+      DEBUG(D_transport) debug_printf("Problem writing cache file %s for %s "
+	"transport\n", oncelog, tblock->name);
+    }
   }
 
 /* Update DBM file */
 
-else if (dbm_file != NULL)
+else if (dbm_file)
   {
   EXIM_DATUM key_datum, value_datum;
   EXIM_DATUM_INIT(key_datum);          /* Some DBM libraries need to have */
@@ -869,7 +871,7 @@ if (logfile != NULL)
   }
 
 END_OFF:
-if (dbm_file != NULL) EXIM_DBCLOSE(dbm_file);
+if (dbm_file) EXIM_DBCLOSE(dbm_file);
 if (cache_fd > 0) (void)close(cache_fd);
 
 DEBUG(D_transport) debug_printf("%s transport succeeded\n", tblock->name);

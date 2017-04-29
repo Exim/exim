@@ -949,7 +949,7 @@ used = Ustrlen(deliver_out_buffer);
 
 /* Rewind the temporary file, and copy it over in chunks. */
 
-lseek(from_fd, 0 , SEEK_SET);
+if (lseek(from_fd, 0 , SEEK_SET) < 0) return DEFER;
 
 while (size > 0)
   {

@@ -231,7 +231,6 @@ extern uschar *imap_utf7_encode(uschar *, const uschar *,
 				 uschar, uschar *, uschar **);
 
 extern void    invert_address(uschar *, uschar *);
-extern BOOL    internal_transport_write_message(transport_ctx *, int);
 extern int     ip_addr(void *, int, const uschar *, int);
 extern int     ip_bind(int, int, uschar *, int);
 extern int     ip_connect(int, int, const uschar *, int, int, BOOL);

@@ -1832,7 +1832,7 @@ switch (vp->type)
   case vtype_msgbody:                        /* Pointer to msgbody string */
   case vtype_msgbody_end:                    /* Ditto, the end of the msg */
     ss = (uschar **)(val);
-    if (*ss == NULL && deliver_datafile >= 0)  /* Read body when needed */
+    if (!*ss && deliver_datafile >= 0)  /* Read body when needed */
       {
       uschar *body;
       off_t start_offset = SPOOL_DATA_START_OFFSET;
@@ -1865,7 +1865,7 @@ switch (vp->type)
 	    { if (body[--len] == '\n' || body[len] == 0) body[len] = ' '; }
 	}
       }
-    return (*ss == NULL)? US"" : *ss;
+    return *ss ? *ss : US"";
 
   case vtype_todbsdin:                       /* BSD inbox time of day */
     return tod_stamp(tod_bsdin);

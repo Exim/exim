@@ -625,11 +625,12 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
   if (prefix)
     pdkim_feed(ctx, prefix, Ustrlen(prefix));
 
-  lseek(fd, off, SEEK_SET);
-
-  while ((sread = read(fd, &buf, sizeof(buf))) > 0)
-    if ((pdkim_rc = pdkim_feed(ctx, buf, sread)) != PDKIM_OK)
-      goto pk_bad;
+  if (lseek(fd, off, SEEK_SET) < 0)
+    sread = -1;
+  else
+    while ((sread = read(fd, &buf, sizeof(buf))) > 0)
+      if ((pdkim_rc = pdkim_feed(ctx, buf, sread)) != PDKIM_OK)
+	goto pk_bad;
 
   /* Handle failed read above. */
   if (sread == -1)

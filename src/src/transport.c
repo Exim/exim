@@ -473,7 +473,7 @@ for (ptr = start; ptr < end; ptr++)
     /* If CHUNKING, prefix with BDAT (size) NON-LAST.  Also, reap responses
     from previous SMTP commands. */
 
-    if (tctx &&  tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
+    if (tctx->options & topt_use_bdat  &&  tctx->chunk_cb)
       {
       if (  tctx->chunk_cb(tctx, (unsigned)len, 0) != OK
 	 || !transport_write_block(tctx, deliver_out_buffer, len, FALSE)
@@ -490,7 +490,7 @@ for (ptr = start; ptr < end; ptr++)
   /* Remove CR before NL if required */
 
   if (  *ptr == '\r' && ptr[1] == '\n'
-     && (!tctx || !(tctx->options & topt_use_crlf))
+     && !(tctx->options & topt_use_crlf)
      && spool_file_wireformat
      )
     ptr++;
@@ -501,7 +501,7 @@ for (ptr = start; ptr < end; ptr++)
 
     /* Insert CR before NL if required */
 
-    if (tctx  &&  tctx->options & topt_use_crlf && !spool_file_wireformat)
+    if (tctx->options & topt_use_crlf && !spool_file_wireformat)
       *chunk_ptr++ = '\r';
     *chunk_ptr++ = '\n';
     transport_newlines++;
@@ -898,7 +898,7 @@ Returns:                TRUE on success; FALSE (with errno) on failure.
                         is incremented by the number of bytes written.
 */
 
-BOOL
+static BOOL
 internal_transport_write_message(transport_ctx * tctx, int size_limit)
 {
 int len, size = 0;

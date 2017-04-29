@@ -3676,6 +3676,7 @@ dcc_ok = 0;
 version supplied with Exim always accepts, but this is a hook for sysadmins to
 supply their own checking code. The local_scan() function is run even when all
 the recipients have been discarded. */
+/*XXS could we avoid this for the standard case, given that few people will use it? */
 
 lseek(data_fd, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
 
