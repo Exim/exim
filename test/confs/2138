@@ -1,0 +1,64 @@
+# Exim test configuration 2135
+
+SERVER =
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector = +tls_peerdn+smtp_connection+incoming_port+received_recipients
+
+queue_only
+queue_run_in_order
+
+smtp_accept_max_nonmail = 0
+
+tls_advertise_hosts = *
+
+# Set certificate only if server
+
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver =	manualroute
+  condition =	${if eq {SERVER}{server}{no}{yes}}
+  route_data =	127.0.0.1
+  self =	send
+  retry_use_local_part
+  transport =	send_to_server
+
+server:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  user = CALLER
+
+send_to_server:
+  driver =	smtp
+  allow_localhost
+  hosts_noproxy_tls = :
+  port =	PORT_D
+  tls_try_verify_hosts = :
+  max_rcpt =	1
+
+# End

@@ -4500,8 +4500,11 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     /* Set a flag indicating whether there are further addresses that list
     the continued host. This tells the transport to leave the channel open,
     but not to pass it to another delivery process. */
+    /*XXX really the flag should be settable even by an initial proces
+    (not continue_transport dependent).  Need to check that uses of it
+    are independent. */
 
-    for (next = addr_remote; next; next = next->next)
+    for (next = addr_remote; next && !continue_more; next = next->next)
       {
       host_item *h;
       for (h = next->host_list; h; h = h->next)

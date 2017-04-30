@@ -65,6 +65,14 @@ JH/10 Enable use of sendfile in Linux builds as default.  It was disabled in
       4.77 as the kernel support then wasn't solid, having issues in 64bit
       mode.  Now, it's been long enough.
 
+JH/11 Bug 2104: Fix continued use of a transport connection with TLS.  In the
+      case where the routing stage had gathered several addresses to send to
+      a host before calling the transport for the first, we previously failed
+      to close down TLS in the old transport process before passing the TCP
+      connection to the new process.  The new one sent a STARTTLS command
+      which naturally failed, giving a failed delivery and bloating the retry
+      database.  Investigation and fix prototype from Wolfgang Breyha.
+
 
 Exim version 4.89
 -----------------

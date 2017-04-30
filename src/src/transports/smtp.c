@@ -2202,12 +2202,7 @@ tls_close(FALSE, TRUE);
 /* Close the socket, and return the appropriate value, first setting
 works because the NULL setting is passed back to the calling process, and
 remote_max_parallel is forced to 1 when delivering over an existing connection,
-
-If all went well and continue_more is set, we shouldn't actually get here if
-there are further addresses, as the return above will be taken. However,
-writing RSET might have failed, or there may be other addresses whose hosts are
-specified in the transports, and therefore not visible at top level, in which
-case continue_more won't get set. */
+*/
 
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 if (sx->send_quit)
@@ -3373,18 +3368,22 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
         continue_sequence++;             /* Causes * in logging */
         goto SEND_MESSAGE;
         }
-      if (continue_more) return yield;   /* More addresses for another run */
 
-      /* Pass the connection on to a new Exim process. */
+      /* Unless caller said it already has more messages listed for this host,
+      pass the connection on to a new Exim process (below, the call to
+      transport_pass_socket).  If the caller has more ready, just return with
+      the connection still open. */
+
 #ifdef SUPPORT_TLS
       if (tls_out.active >= 0)
-	if (verify_check_given_host(&sx.ob->hosts_noproxy_tls, host) == OK)
+	if (  continue_more
+	   || verify_check_given_host(&sx.ob->hosts_noproxy_tls, host) == OK)
 	  {
-	  /* Pass the socket, for direct use, to a new Exim process. Before
-	  doing so, we must shut down TLS. Not all MTAs allow for the
-	  continuation of the SMTP session when TLS is shut down. We test for
-	  this by sending a new EHLO. If we don't get a good response, we don't
-	  attempt to pass the socket on. */
+	  /* Before passing the socket on, or returning to caller with it still
+	  open, we must shut down TLS.  Not all MTAs allow for the continuation
+	  of the SMTP session when TLS is shut down. We test for this by sending
+	  a new EHLO. If we don't get a good response, we don't attempt to pass
+	  the socket on. */
 
 	  tls_close(FALSE, TRUE);
 	  smtp_peer_options = smtp_peer_options_wrap;
@@ -3393,6 +3392,9 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 				      "EHLO %s\r\n", sx.helo_data) >= 0
 	    && smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
 				      '2', sx.ob->command_timeout);
+
+	  if (sx.ok && continue_more)
+	    return yield;		/* More addresses for another run */
 	  }
 	else
 	  {
@@ -3409,7 +3411,10 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 # endif
 		    );
 	  }
+      else
 #endif
+	if (continue_more)
+	  return yield;			/* More addresses for another run */
 
       /* If the socket is successfully passed, we mustn't send QUIT (or
       indeed anything!) from here. */
@@ -3432,6 +3437,7 @@ propagate it from the initial
 	  int pid = fork();
 	  if (pid > 0)		/* parent */
 	    {
+	    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
 	    waitpid(pid, NULL, 0);
 	    tls_close(FALSE, FALSE);
 	    (void)close(sx.inblock.sock);
@@ -3442,7 +3448,10 @@ propagate it from the initial
 	  else if (pid == 0)	/* child; fork again to disconnect totally */
 	    {
 	    if ((pid = fork()))
+	      {
+	      DEBUG(D_transport) debug_printf("proxy-prox final-pid %d\n", pid);
 	      _exit(pid ? EXIT_FAILURE : EXIT_SUCCESS);
+	      }
 	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd[0], sx.ob->command_timeout);
 	    exim_exit(0);
 	    }
