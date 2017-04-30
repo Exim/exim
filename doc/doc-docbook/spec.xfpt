@@ -12067,6 +12067,9 @@ when the ACL &%malware%& condition is true (see section &<<SECTscanvirus>>&).
 This variable contains the number of bytes in the longest line that was
 received as part of the message, not counting the line termination
 character(s).
+.new
+It is not valid if the &%spool_files_wireformat%& option is used.
+.wen
 
 .vitem &$message_age$&
 .cindex "message" "age of"
@@ -12108,6 +12111,12 @@ When a message is being delivered, this variable contains the size of the body
 in bytes. The count starts from the character after the blank line that
 separates the body from the header. Newlines are included in the count. See
 also &$message_size$&, &$body_linecount$&, and &$body_zerocount$&.
+
+.new
+If the spool file is wireformat
+(see the &%spool_files_wireformat%& main option)
+the CRLF line-terminators are included in the count.
+.wen
 
 .vitem &$message_exim_id$&
 .vindex "&$message_exim_id$&"
@@ -12158,6 +12167,10 @@ deny message   = Too many lines in message header
 .endd
 In the MAIL and RCPT ACLs, the value is zero because at that stage the
 message has not yet been received.
+
+.new
+This variable is not valid if the &%spool_files_wireformat%& option is used.
+.wen
 
 .vitem &$message_size$&
 .cindex "size" "of message"
@@ -16830,6 +16843,13 @@ for data-files in the spool which matches the wire format.
 Doing this permits more efficient message reception and transmission.
 Currently it is only done for messages received using the EMSTP CHUNKING
 option.
+
+The following variables will not have useful values:
+.code
+$max_received_linelength
+$body_linecount
+$body_zerocount
+.endd
 
 Users of the local_scan() API (see &<<CHAPlocalscan>>&),
 and any external programs which are passed a reference to a message data file
@@ -32483,9 +32503,15 @@ C variables are as follows:
 .vlist
 .vitem &*int&~body_linecount*&
 This variable contains the number of lines in the message's body.
+.new
+It is not valid if the &%spool_files_wireformat%& option is used.
+.wen
 
 .vitem &*int&~body_zerocount*&
 This variable contains the number of binary zero bytes in the message's body.
+.new
+It is not valid if the &%spool_files_wireformat%& option is used.
+.wen
 
 .vitem &*unsigned&~int&~debug_selector*&
 This variable is set to zero when no debugging is taking place. Otherwise, it
@@ -38046,6 +38072,13 @@ file remains in existence. When Exim next processes the message, it notices the
 -J file and uses it to update the -H file before starting the next delivery
 attempt.
 
+.new
+Files whose names end with -K or .eml may also be seen in the spool.
+These are temporaries used for DKIM or malware processing, when that is used.
+They should be tidied up by normal operations; any old ones are probably
+relics of crashes and can be removed.
+.wen
+
 .section "Format of the -H file" "SECID282"
 .cindex "uid (user id)" "in spool file"
 .cindex "gid (group id)" "in spool file"
@@ -38206,11 +38239,13 @@ to ensure that the caller is displayed in queue listings).
 If a message was scanned by SpamAssassin, this is present. It records the value
 of &$spam_score_int$&.
 
+.new
 .vitem &%-spool_file_wireformat%&
 The -D file for this message is in wire-format (for ESMTP CHUNKING)
 rather than Unix-format.
 The line-ending is CRLF rather than newline.
 There is still, however, no leading-dot-stuffing.
+.wen
 
 .vitem &%-tls_certificate_verified%&
 A TLS certificate was received from the client that sent this message, and the
@@ -38318,6 +38353,20 @@ unqualified domain &'foundation'&.
 .ecindex IIDforspo1
 .ecindex IIDforspo2
 .ecindex IIDforspo3
+
+.new
+.section "Format of the -D file" "SECID282a"
+The data file is traditionally in Unix-standard format: lines are ended with
+an ASCII newline character.
+However, when the &%spool_wireformat%& main option is used some -D files
+can have an alternate format.
+This is flagged by a &%-spool_file_wireformat%& line in the corresponding -H file.
+The -D file lines (not including the first name-component line) are
+suitable for direct copying to the wire when transmitting using the
+ESMTP CHUNKING option, meaning lower processing overhead.
+Lines are terminated with an ASCII CRLF pair.
+There is no dot-stuffing (and no dot-termination).
+.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
