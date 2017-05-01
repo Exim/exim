@@ -21,7 +21,7 @@ domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = check_recipient
 acl_smtp_data = check_data
 
-log_selector = +tls_peerdn
+log_selector = +tls_peerdn +received_recipients
 remote_max_parallel = 1
 
 tls_advertise_hosts = *
@@ -71,7 +71,7 @@ client:
   condition = ${if eq {SERVER}{server}{no}{yes}}
   retry_use_local_part
   transport = send_to_server${if eq{$local_part}{nostaple}{1} \
-				{${if eq{$local_part}{norequire} {2} \
+				{${if match{$local_part}{norequire} {2} \
 				{${if eq{$local_part}{smtps} {4}{3}}} \
 			     }}}
 

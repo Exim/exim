@@ -1154,6 +1154,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     {
     # Berkeley DB version differences
     next if / Berkeley DB error: /;
+
+    # CHUNKING: exact sizes depend on hostnames in headers
+    s/(=>.* K C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
     }
 
   # ======== All files other than stderr ========

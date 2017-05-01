@@ -5,7 +5,7 @@
 # Client works when we request but don't require OCSP stapling and none comes
 exim -bd -oX PORT_D -DSERVER=server -DRETURN=/dev/null
 ****
-exim norequire@test.ex
+exim norequire_1@test.ex
 test message.
 ****
 sleep 1
@@ -18,10 +18,10 @@ killdaemon
 exim -bd -oX PORT_D -DSERVER=server \
  -DRETURN=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.good.resp
 ****
-exim norequire@test.ex
+exim norequire_2@test.ex
 test message.
 ****
-millisleep 500
+millisleep 700
 #
 #
 #
@@ -30,7 +30,7 @@ millisleep 500
 exim nostaple@test.ex
 test message.
 ****
-millisleep 500
+millisleep 700
 #
 #
 #

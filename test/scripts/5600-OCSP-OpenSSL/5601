@@ -20,7 +20,7 @@ exim -bd -oX PORT_D -DSERVER=server \
 exim nostaple@test.ex
 test message.
 ****
-millisleep 500
+millisleep 700
 #
 #
 #
