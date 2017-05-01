@@ -43,7 +43,7 @@ return TRUE;
 static BOOL
 dkt_send_file(int out_fd, int in_fd, off_t off, size_t size)
 {
-DEBUG(D_transport) debug_printf("send file fd=%d size=%l\n", out_fd, size - off);
+DEBUG(D_transport) debug_printf("send file fd=%d size=%u\n", out_fd, (unsigned)(size - off));
 
 /*XXX should implement timeout, like transport_write_block_fd() ? */
 
@@ -204,7 +204,7 @@ int dkim_fd;
 int save_errno = 0;
 BOOL rc;
 uschar * dkim_spool_name, * dkim_signature;
-int sread = 0, wwritten = 0, siglen, options;
+int sread = 0, wwritten = 0, siglen = 0, options;
 off_t k_file_size;
 const uschar * errstr;
 
