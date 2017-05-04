@@ -1088,6 +1088,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms build with DKIM enabled
     next if /^PDKIM >> Body data for hash, canonicalized/;
 
+    # Not all platforms have sendfile support
+    next if /^cannot use sendfile for body: no support$/;
+
     #  Parts of DKIM-specific debug output depend on the time/date
     next if /^date:\w+,\{SP\}/;
     next if /^PDKIM \[[^[]+\] (Header hash|b) computed:/;
