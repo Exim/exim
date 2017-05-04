@@ -400,6 +400,44 @@ log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
 
 
 
+/* Refill the buffer, and notify DKIM verification code.
+Return false for error or EOF.
+*/
+
+static BOOL
+smtp_refill(unsigned lim)
+{
+int rc, save_errno;
+if (!smtp_out) return FALSE;
+fflush(smtp_out);
+if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+
+/* Limit amount read, so non-message data is not fed to DKIM */
+
+rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE, lim));
+save_errno = errno;
+alarm(0);
+if (rc <= 0)
+  {
+  /* Must put the error text in fixed store, because this might be during
+  header reading, where it releases unused store above the header. */
+  if (rc < 0)
+    {
+    smtp_had_error = save_errno;
+    smtp_read_error = string_copy_malloc(
+      string_sprintf(" (error: %s)", strerror(save_errno)));
+    }
+  else smtp_had_eof = 1;
+  return FALSE;
+  }
+#ifndef DISABLE_DKIM
+dkim_exim_verify_feed(smtp_inbuffer, rc);
+#endif
+smtp_inend = smtp_inbuffer + rc;
+smtp_inptr = smtp_inbuffer;
+return TRUE;
+}
+
 /*************************************************
 *          SMTP version of getc()                *
 *************************************************/
@@ -417,37 +455,26 @@ int
 smtp_getc(unsigned lim)
 {
 if (smtp_inptr >= smtp_inend)
-  {
-  int rc, save_errno;
-  if (!smtp_out) return EOF;
-  fflush(smtp_out);
-  if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-
-  /* Limit amount read, so non-message data is not fed to DKIM */
-
-  rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE, lim));
-  save_errno = errno;
-  alarm(0);
-  if (rc <= 0)
-    {
-    /* Must put the error text in fixed store, because this might be during
-    header reading, where it releases unused store above the header. */
-    if (rc < 0)
-      {
-      smtp_had_error = save_errno;
-      smtp_read_error = string_copy_malloc(
-        string_sprintf(" (error: %s)", strerror(save_errno)));
-      }
-    else smtp_had_eof = 1;
+  if (!smtp_refill(lim))
     return EOF;
-    }
-#ifndef DISABLE_DKIM
-  dkim_exim_verify_feed(smtp_inbuffer, rc);
-#endif
-  smtp_inend = smtp_inbuffer + rc;
-  smtp_inptr = smtp_inbuffer;
-  }
 return *smtp_inptr++;
+}
+
+uschar *
+smtp_getbuf(unsigned * len)
+{
+unsigned size;
+uschar * buf;
+
+if (smtp_inptr >= smtp_inend)
+  if (!smtp_refill(*len))
+    { *len = 0; return NULL; }
+
+if ((size = smtp_inend - smtp_inptr) > *len) size = *len;
+buf = smtp_inptr;
+smtp_inptr += size;
+*len = size;
+return buf;
 }
 
 void
@@ -493,6 +520,7 @@ for(;;)
     return lwr_receive_getc(chunking_data_left--);
 
   receive_getc = lwr_receive_getc;
+  receive_getbuf = lwr_receive_getbuf;
   receive_ungetc = lwr_receive_ungetc;
 #ifndef DISABLE_DKIM
   dkim_save = dkim_collect_input;
@@ -594,6 +622,7 @@ next_cmd:
 	  }
 
       receive_getc = bdat_getc;
+      receive_getbuf = bdat_getbuf;
       receive_ungetc = bdat_ungetc;
 #ifndef DISABLE_DKIM
       dkim_collect_input = dkim_save;
@@ -604,14 +633,28 @@ next_cmd:
   }
 }
 
+uschar *
+bdat_getbuf(unsigned * len)
+{
+uschar * buf;
+
+if (chunking_data_left <= 0)
+  { *len = 0; return NULL; }
+
+if (*len > chunking_data_left) *len = chunking_data_left;
+buf = lwr_receive_getbuf(len);	/* Either smtp_getbuf or tls_getbuf */
+chunking_data_left -= *len;
+return buf;
+}
+
 void
 bdat_flush_data(void)
 {
-while (chunking_data_left > 0)
-  if (lwr_receive_getc(chunking_data_left--) < 0)
-    break;
+unsigned n = chunking_data_left;
+(void) bdat_getbuf(&n);
 
 receive_getc = lwr_receive_getc;
+receive_getbuf = lwr_receive_getbuf;
 receive_ungetc = lwr_receive_ungetc;
 
 if (chunking_state != CHUNKING_LAST)
@@ -2332,6 +2375,7 @@ if (!(smtp_inbuffer = (uschar *)malloc(IN_BUFFER_SIZE)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
 
 receive_getc = smtp_getc;
+receive_getbuf = smtp_getbuf;
 receive_get_cache = smtp_get_cache;
 receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
@@ -4975,6 +5019,7 @@ while (done <= 0)
 				    (int)chunking_state, chunking_data_left);
 
       lwr_receive_getc = receive_getc;
+      lwr_receive_getbuf = receive_getbuf;
       lwr_receive_ungetc = receive_ungetc;
       receive_getc = bdat_getc;
       receive_ungetc = bdat_ungetc;

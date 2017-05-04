@@ -56,6 +56,7 @@ extern int     tls_feof(void);
 extern int     tls_ferror(void);
 extern void    tls_free_cert(void **);
 extern int     tls_getc(unsigned);
+extern uschar *tls_getbuf(unsigned *);
 extern void    tls_get_cache(void);
 extern int     tls_import_cert(const uschar *, void **);
 extern int     tls_read(BOOL, uschar *, size_t);
@@ -104,6 +105,7 @@ extern int     auth_xtextdecode(uschar *, uschar **);
 extern uschar *b64encode(uschar *, int);
 extern int     b64decode(uschar *, uschar **);
 extern int     bdat_getc(unsigned);
+extern uschar *bdat_getbuf(unsigned *);
 extern int     bdat_ungetc(int);
 extern void    bdat_flush_data(void);
 
@@ -404,6 +406,7 @@ extern BOOL    smtp_get_interface(uschar *, int, address_item *,
                  uschar **, uschar *);
 extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(unsigned);
+extern uschar *smtp_getbuf(unsigned *);
 extern void    smtp_get_cache(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);

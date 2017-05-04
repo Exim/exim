@@ -184,8 +184,10 @@ stand-alone tests. */
 
 #ifndef STAND_ALONE
 int (*lwr_receive_getc)(unsigned) = stdin_getc;
+uschar * (*lwr_receive_getbuf)(unsigned *) = NULL;
 int (*lwr_receive_ungetc)(int) = stdin_ungetc;
 int (*receive_getc)(unsigned)  = stdin_getc;
+uschar * (*receive_getbuf)(unsigned *)  = NULL;
 void (*receive_get_cache)(void)= NULL;
 int (*receive_ungetc)(int)     = stdin_ungetc;
 int (*receive_feof)(void)      = stdin_feof;

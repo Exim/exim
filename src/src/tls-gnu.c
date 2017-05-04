@@ -1885,6 +1885,7 @@ and initialize appropriately. */
 state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 
 receive_getc = tls_getc;
+receive_getbuf = tls_getbuf;
 receive_get_cache = tls_get_cache;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
@@ -2154,6 +2155,75 @@ if ((state_server.session == NULL) && (state_client.session == NULL))
 
 
 
+static BOOL
+tls_refill(unsigned lim)
+{
+exim_gnutls_state_st * state = &state_server;
+ssize_t inbytes;
+
+DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
+  state->session, state->xfer_buffer, ssl_xfer_buffer_size);
+
+if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
+  MIN(ssl_xfer_buffer_size, lim));
+alarm(0);
+
+/* Timeouts do not get this far; see command_timeout_handler().
+   A zero-byte return appears to mean that the TLS session has been
+   closed down, not that the socket itself has been closed down. Revert to
+   non-TLS handling. */
+
+if (sigalrm_seen)
+  {
+  DEBUG(D_tls) debug_printf("Got tls read timeout\n");
+  state->xfer_error = 1;
+  return FALSE;
+  }
+
+else if (inbytes == 0)
+  {
+  DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
+
+  receive_getc = smtp_getc;
+  receive_getbuf = smtp_getbuf;
+  receive_get_cache = smtp_get_cache;
+  receive_ungetc = smtp_ungetc;
+  receive_feof = smtp_feof;
+  receive_ferror = smtp_ferror;
+  receive_smtp_buffered = smtp_buffered;
+
+  gnutls_deinit(state->session);
+  gnutls_certificate_free_credentials(state->x509_cred);
+
+  state->session = NULL;
+  state->tlsp->active = -1;
+  state->tlsp->bits = 0;
+  state->tlsp->certificate_verified = FALSE;
+  tls_channelbinding_b64 = NULL;
+  state->tlsp->cipher = NULL;
+  state->tlsp->peercert = NULL;
+  state->tlsp->peerdn = NULL;
+
+  return FALSE;
+  }
+
+/* Handle genuine errors */
+
+else if (inbytes < 0)
+  {
+  record_io_error(state, (int) inbytes, US"recv", NULL);
+  state->xfer_error = 1;
+  return FALSE;
+  }
+#ifndef DISABLE_DKIM
+dkim_exim_verify_feed(state->xfer_buffer, inbytes);
+#endif
+state->xfer_buffer_hwm = (int) inbytes;
+state->xfer_buffer_lwm = 0;
+return TRUE;
+}
+
 /*************************************************
 *            TLS version of getc                 *
 *************************************************/
@@ -2171,76 +2241,40 @@ Returns:    the next character or EOF
 int
 tls_getc(unsigned lim)
 {
-exim_gnutls_state_st *state = &state_server;
+exim_gnutls_state_st * state = &state_server;
+
 if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
-  {
-  ssize_t inbytes;
-
-  DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
-    state->session, state->xfer_buffer, ssl_xfer_buffer_size);
-
-  if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-  inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
-    MIN(ssl_xfer_buffer_size, lim));
-  alarm(0);
-
-  /* Timeouts do not get this far; see command_timeout_handler().
-     A zero-byte return appears to mean that the TLS session has been
-     closed down, not that the socket itself has been closed down. Revert to
-     non-TLS handling. */
-
-  if (sigalrm_seen)
-    {
-    DEBUG(D_tls) debug_printf("Got tls read timeout\n");
-    state->xfer_error = 1;
-    return EOF;
-    }
-
-  else if (inbytes == 0)
-    {
-    DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
-
-    receive_getc = smtp_getc;
-    receive_get_cache = smtp_get_cache;
-    receive_ungetc = smtp_ungetc;
-    receive_feof = smtp_feof;
-    receive_ferror = smtp_ferror;
-    receive_smtp_buffered = smtp_buffered;
-
-    gnutls_deinit(state->session);
-    gnutls_certificate_free_credentials(state->x509_cred);
-
-    state->session = NULL;
-    state->tlsp->active = -1;
-    state->tlsp->bits = 0;
-    state->tlsp->certificate_verified = FALSE;
-    tls_channelbinding_b64 = NULL;
-    state->tlsp->cipher = NULL;
-    state->tlsp->peercert = NULL;
-    state->tlsp->peerdn = NULL;
-
-    return smtp_getc(lim);
-    }
-
-  /* Handle genuine errors */
-
-  else if (inbytes < 0)
-    {
-    record_io_error(state, (int) inbytes, US"recv", NULL);
-    state->xfer_error = 1;
-    return EOF;
-    }
-#ifndef DISABLE_DKIM
-  dkim_exim_verify_feed(state->xfer_buffer, inbytes);
-#endif
-  state->xfer_buffer_hwm = (int) inbytes;
-  state->xfer_buffer_lwm = 0;
-  }
+  if (!tls_refill(lim))
+    return state->xfer_error ? EOF : smtp_getc(lim);
 
 /* Something in the buffer; return next uschar */
 
 return state->xfer_buffer[state->xfer_buffer_lwm++];
 }
+
+uschar *
+tls_getbuf(unsigned * len)
+{
+exim_gnutls_state_st * state = &state_server;
+unsigned size;
+uschar * buf;
+
+if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
+  if (!tls_refill(*len))
+    {
+    if (!state->xfer_error) return smtp_getbuf(len);
+    *len = 0;
+    return NULL;
+    }
+
+if ((size = state->xfer_buffer_hwm - state->xfer_buffer_lwm) > *len)
+  size = *len;
+buf = &state->xfer_buffer[state->xfer_buffer_lwm];
+state->xfer_buffer_lwm += size;
+*len = size;
+return buf;
+}
+
 
 void
 tls_get_cache()

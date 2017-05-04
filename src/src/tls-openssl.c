@@ -2016,6 +2016,7 @@ ssl_xfer_buffer_lwm = ssl_xfer_buffer_hwm = 0;
 ssl_xfer_eof = ssl_xfer_error = 0;
 
 receive_getc = tls_getc;
+receive_getbuf = tls_getbuf;
 receive_get_cache = tls_get_cache;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
@@ -2352,6 +2353,74 @@ return OK;
 
 
 
+static BOOL
+tls_refill(unsigned lim)
+{
+int error;
+int inbytes;
+
+DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", server_ssl,
+  ssl_xfer_buffer, ssl_xfer_buffer_size);
+
+if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
+		  MIN(ssl_xfer_buffer_size, lim));
+error = SSL_get_error(server_ssl, inbytes);
+alarm(0);
+
+/* SSL_ERROR_ZERO_RETURN appears to mean that the SSL session has been
+closed down, not that the socket itself has been closed down. Revert to
+non-SSL handling. */
+
+if (error == SSL_ERROR_ZERO_RETURN)
+  {
+  DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
+
+  receive_getc = smtp_getc;
+  receive_getbuf = smtp_getbuf;
+  receive_get_cache = smtp_get_cache;
+  receive_ungetc = smtp_ungetc;
+  receive_feof = smtp_feof;
+  receive_ferror = smtp_ferror;
+  receive_smtp_buffered = smtp_buffered;
+
+  SSL_free(server_ssl);
+  server_ssl = NULL;
+  tls_in.active = -1;
+  tls_in.bits = 0;
+  tls_in.cipher = NULL;
+  tls_in.peerdn = NULL;
+  tls_in.sni = NULL;
+
+  return FALSE;
+  }
+
+/* Handle genuine errors */
+
+else if (error == SSL_ERROR_SSL)
+  {
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
+  ssl_xfer_error = 1;
+  return FALSE;
+  }
+
+else if (error != SSL_ERROR_NONE)
+  {
+  DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
+  ssl_xfer_error = 1;
+  return FALSE;
+  }
+
+#ifndef DISABLE_DKIM
+dkim_exim_verify_feed(ssl_xfer_buffer, inbytes);
+#endif
+ssl_xfer_buffer_hwm = inbytes;
+ssl_xfer_buffer_lwm = 0;
+return TRUE;
+}
+
+
 /*************************************************
 *            TLS version of getc                 *
 *************************************************/
@@ -2369,73 +2438,36 @@ int
 tls_getc(unsigned lim)
 {
 if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
-  {
-  int error;
-  int inbytes;
-
-  DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", server_ssl,
-    ssl_xfer_buffer, ssl_xfer_buffer_size);
-
-  if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-  inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
-		    MIN(ssl_xfer_buffer_size, lim));
-  error = SSL_get_error(server_ssl, inbytes);
-  alarm(0);
-
-  /* SSL_ERROR_ZERO_RETURN appears to mean that the SSL session has been
-  closed down, not that the socket itself has been closed down. Revert to
-  non-SSL handling. */
-
-  if (error == SSL_ERROR_ZERO_RETURN)
-    {
-    DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
-
-    receive_getc = smtp_getc;
-    receive_get_cache = smtp_get_cache;
-    receive_ungetc = smtp_ungetc;
-    receive_feof = smtp_feof;
-    receive_ferror = smtp_ferror;
-    receive_smtp_buffered = smtp_buffered;
-
-    SSL_free(server_ssl);
-    server_ssl = NULL;
-    tls_in.active = -1;
-    tls_in.bits = 0;
-    tls_in.cipher = NULL;
-    tls_in.peerdn = NULL;
-    tls_in.sni = NULL;
-
-    return smtp_getc(lim);
-    }
-
-  /* Handle genuine errors */
-
-  else if (error == SSL_ERROR_SSL)
-    {
-    ERR_error_string(ERR_get_error(), ssl_errstring);
-    log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
-    ssl_xfer_error = 1;
-    return EOF;
-    }
-
-  else if (error != SSL_ERROR_NONE)
-    {
-    DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
-    ssl_xfer_error = 1;
-    return EOF;
-    }
-
-#ifndef DISABLE_DKIM
-  dkim_exim_verify_feed(ssl_xfer_buffer, inbytes);
-#endif
-  ssl_xfer_buffer_hwm = inbytes;
-  ssl_xfer_buffer_lwm = 0;
-  }
+  if (!tls_refill(lim))
+    return ssl_xfer_error ? EOF : smtp_getc(lim);
 
 /* Something in the buffer; return next uschar */
 
 return ssl_xfer_buffer[ssl_xfer_buffer_lwm++];
 }
+
+uschar *
+tls_getbuf(unsigned * len)
+{
+unsigned size;
+uschar * buf;
+
+if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
+  if (!tls_refill(*len))
+    {
+    if (!ssl_xfer_error) return smtp_getbuf(len);
+    *len = 0;
+    return NULL;
+    }
+
+if ((size = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm) > *len)
+  size = *len;
+buf = &ssl_xfer_buffer[ssl_xfer_buffer_lwm];
+ssl_xfer_buffer_lwm += size;
+*len = size;
+return buf;
+}
+
 
 void
 tls_get_cache()
