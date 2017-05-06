@@ -12,7 +12,6 @@ src/os.c file. */
 /*************
 * Sendfile   *
 *************/
-#include <sys/sendfile.h>
 
 ssize_t
 os_sendfile(int out, int in, off_t * off, size_t cnt)
