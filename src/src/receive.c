@@ -919,7 +919,7 @@ BOOL fix_nl = FALSE;
 
 for(;;)
   {
-  switch ((ch = (bdat_getc)(GETC_BUFFER_UNLIMITED)))
+  switch ((ch = bdat_getc(GETC_BUFFER_UNLIMITED)))
     {
     case EOF:	return END_EOF;
     case ERR:	return END_PROTOCOL;

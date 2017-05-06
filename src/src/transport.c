@@ -11,10 +11,6 @@ transports. */
 
 #include "exim.h"
 
-#ifdef HAVE_LINUX_SENDFILE
-# include <sys/sendfile.h>
-#endif
-
 /* Structure for keeping list of addresses that have been added to
 Envelope-To:, in order to avoid duplication. */
 
@@ -1065,7 +1061,7 @@ then we can just dump it using sendfile.
 This should get used for CHUNKING output and also for writing the -K file for
 dkim signing,  when we had CHUNKING input.  */
 
-#ifdef HAVE_LINUX_SENDFILE
+#ifdef OS_SENDFILE
 if (  spool_file_wireformat
    && !(tctx->options & (topt_no_body | topt_end_dot))
    && !nl_check_length
@@ -1088,7 +1084,7 @@ if (  spool_file_wireformat
 
   while(size > 0)
     {
-    if ((copied = sendfile(tctx->u.fd, deliver_datafile, &offset, size)) <= 0) break;
+    if ((copied = os_sendfile(tctx->u.fd, deliver_datafile, &offset, size)) <= 0) break;
     size -= copied;
     }
   return copied >= 0;

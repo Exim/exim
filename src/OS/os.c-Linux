@@ -150,4 +150,16 @@ return yield;
 
 #endif  /* FIND_RUNNING_INTERFACES */
 
+
+/*************
+* Sendfile   *
+*************/
+#include <sys/sendfile.h>
+
+ssize_t
+os_sendfile(int out, int in, off_t * off, size_t cnt)
+{
+return sendfile(out, in, off, cnt);
+}
+
 /* End of os.c-Linux */

@@ -1,5 +1,7 @@
 /* Exim: OS-specific C header file for FreeBSD */
 
+#include <sys/types.h>
+
 #define HAVE_BSD_GETLOADAVG
 #define HAVE_SETCLASSRESOURCES
 #define HAVE_MMAP
@@ -33,5 +35,12 @@ typedef struct flock flock_t;
 #endif
 /* for more specific version constraints, include <sys/param.h> and look at
  * __FreeBSD_version */
+
+
+/* When using DKIM, setting OS_SENDFILE can increase
+performance on outgoing mail a bit. */
+
+#define OS_SENDFILE
+extern ssize_t os_sendfile(int, int, off_t *, size_t);
 
 /* End */

@@ -12,10 +12,6 @@
 
 #ifndef DISABLE_DKIM	/* rest of file */
 
-#ifdef HAVE_LINUX_SENDFILE
-# include <sys/sendfile.h>
-#endif
-
 
 static BOOL
 dkt_sign_fail(struct ob_dkim * dkim, int * errp)
@@ -47,7 +43,7 @@ DEBUG(D_transport) debug_printf("send file fd=%d size=%u\n", out_fd, (unsigned)(
 
 /*XXX should implement timeout, like transport_write_block_fd() ? */
 
-#ifdef HAVE_LINUX_SENDFILE
+#ifdef OS_SENDFILE
 /* We can use sendfile() to shove the file contents
    to the socket. However only if we don't use TLS,
    as then there's another layer of indirection
@@ -57,7 +53,7 @@ if (tls_out.active != out_fd)
   ssize_t copied = 0;
 
   while(copied >= 0 && off < size)
-    copied = sendfile(out_fd, in_fd, &off, size - off);
+    copied = os_sendfile(out_fd, in_fd, &off, size - off);
   if (copied < 0)
     return FALSE;
   }
@@ -255,7 +251,7 @@ else if (!(rc = dkt_sign_fail(dkim, &save_errno)))
   goto CLEANUP;
   }
 
-#ifndef HAVE_LINUX_SENDFILE
+#ifndef OS_SENDFILE
 if (options & topt_use_bdat)
 #endif
   if ((k_file_size = lseek(dkim_fd, 0, SEEK_END)) < 0)
