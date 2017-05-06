@@ -29014,6 +29014,11 @@ and cannot depend on content of received headers.
 Note also that headers cannot be
 modified by any of the post-data ACLs (DATA, MIME and DKIM).
 Headers may be modified by routers (subject to the above) and transports.
+.new
+The Received-By: header is generated as soon as the body reception starts,
+rather than the traditional time after the full message is received;
+this will affect the timestamp.
+.wen
 
 All the usual ACLs are called; if one results in the message being
 rejected, all effort spent in delivery (including the costs on

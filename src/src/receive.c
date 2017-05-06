@@ -3027,7 +3027,6 @@ if (chunking_state > CHUNKING_OFFERED)
 /* Cutthrough delivery:
 We have to create the Received header now rather than at the end of reception,
 so the timestamp behaviour is a change to the normal case.
-XXX Ensure this gets documented XXX.
 Having created it, send the headers to the destination. */
 
 if (cutthrough.fd >= 0 && cutthrough.delivery)
