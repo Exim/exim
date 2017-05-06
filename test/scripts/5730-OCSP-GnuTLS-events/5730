@@ -21,7 +21,7 @@ exim -bd -oX PORT_D -DSERVER=server \
 exim norequire@test.ex
 test message.
 ****
-millisleep 500
+millisleep 700
 #
 #
 #
@@ -30,7 +30,7 @@ millisleep 500
 exim nostaple@test.ex
 test message.
 ****
-millisleep 500
+millisleep 700
 #
 #
 #

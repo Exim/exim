@@ -6,14 +6,14 @@ exim -DSERVER=server -bd -oX PORT_D
 exim CALLER@test.ex
 Test message.
 ****
-millisleep 500
+millisleep 700
 #
 #
 # Extended: server uses SNI to choose certificate
 exim abcd@test.ex
 Test message.
 ****
-millisleep 500
+millisleep 700
 #
 #
 killdaemon

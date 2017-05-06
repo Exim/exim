@@ -343,6 +343,9 @@ if (!smtp_enforce_sync || sender_host_address == NULL ||
     sender_host_notsocket || tls_in.active >= 0)
   return TRUE;
 
+if (smtp_inptr < smtp_inend)
+  return FALSE;
+
 fd = fileno(smtp_in);
 FD_ZERO(&fds);
 FD_SET(fd, &fds);
@@ -532,12 +535,15 @@ for(;;)
 
   if (!pipelining_advertised && !check_sync())
     {
+    unsigned n = smtp_inend - smtp_inptr;
+    if (n > 32) n = 32;
+
     incomplete_transaction_log(US"sync failure");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was not advertised): "
       "rejected \"%s\" %s next input=\"%s\"",
       smtp_cmd_buffer, host_and_ident(TRUE),
-      string_printing(smtp_inptr));
+      string_printing(string_copyn(smtp_inptr, n)));
       (void) synprot_error(L_smtp_protocol_error, 554, NULL,
 	US"SMTP synchronization error");
     goto repeat_until_rset;
@@ -2863,10 +2869,13 @@ this synchronisation check is disabled. */
 
 if (!check_sync())
   {
+  unsigned n = smtp_inend - smtp_inptr;
+  if (n > 32) n = 32;
+
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
     "synchronization error (input sent without waiting for greeting): "
     "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-    string_printing(smtp_inptr));
+    string_printing(string_copyn(smtp_inptr, n)));
   smtp_printf("554 SMTP synchronization error\r\n");
   return FALSE;
   }

@@ -73,6 +73,11 @@ JH/11 Bug 2104: Fix continued use of a transport connection with TLS.  In the
       which naturally failed, giving a failed delivery and bloating the retry
       database.  Investigation and fix prototype from Wolfgang Breyha.
 
+JH/12 Fix check on SMTP command input synchronisation.  Previously there were
+      false-negatives in the check that the sender had not preempted a response
+      or prompt from Exim (running as a server), due to that code's lack of
+      awareness of the SMTP input buferring.
+
 
 Exim version 4.89
 -----------------
