@@ -53,11 +53,15 @@ HOST_NOT_FOUND.
 Any DNS record line in a zone file can be prefixed with "DELAY=" and
 a number of milliseconds (followed by one space).
 
-Any DNS record line in a zone file can be prefixed with "DNSSEC ";
+Any DNS record line can be prefixed with "DNSSEC ";
 if all the records found by a lookup are marked
 as such then the response will have the "AD" bit set.
 
-Any DNS record line in a zone file can be prefixed with "AA "
+Any DNS record line can be prefixed with "NXDOMAIN ";
+The record will be ignored (but the prefix set still applied);
+This lets us return a DNSSEC NXDOMAIN.
+
+Any DNS record line can be prefixed with "AA "
 if all the records found by a lookup are marked
 as such then the response will have the "AA" bit set.
 
@@ -354,6 +358,7 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   int qtlen = qtypelen;
   BOOL rr_sec = FALSE;
   BOOL rr_aa = FALSE;
+  BOOL rr_ignore = FALSE;
   int delay = 0;
   uint ttl = DEFAULT_TTL;
 
@@ -378,6 +383,11 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
       {
       rr_sec = TRUE;
       p += 7;
+      }
+    if (Ustrncmp(p, US"NXDOMAIN ", 9) == 0)     /* ignore record content */
+      {
+      rr_ignore = TRUE;
+      p += 9;
       }
     else if (Ustrncmp(p, US"AA ", 3) == 0)      /* tagged as authoritative */
       {
@@ -463,6 +473,8 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
   if (aa && !rr_aa)
     *aa = FALSE;                        /* cancel AA return */
+
+  if (rr_ignore) continue;
 
   yield = 0;
   *countptr = *countptr + 1;

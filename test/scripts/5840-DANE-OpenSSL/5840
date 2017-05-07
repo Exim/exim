@@ -73,13 +73,14 @@ Testing
 exim -odq CALLER@danebroken1.test.ex
 Testing
 ****
-# ### A server securely saying "no TLSA records here", dane required (should fail)
-# exim -odq CALLER@dane.no.3.test.ex
-# Testing
-# ### A server securely saying "no TLSA records here", dane requested only (should transmit)
-# exim -odq CALLER@dane.no.4.test.ex
-# Testing
-# ****
+### A server securely saying "no TLSA records here", dane required (should fail)
+exim -odq CALLER@dane.no.3.test.ex
+Testing
+****
+### A server securely saying "no TLSA records here", dane requested only (should transmit)
+exim -odq CALLER@dane.no.4.test.ex
+Testing
+****
 exim -qf
 ****
 killdaemon
