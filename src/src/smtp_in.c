@@ -4065,19 +4065,19 @@ while (done <= 0)
 #endif
 
     smtp_code = US"250 ";        /* Default response code plus space*/
-    if (user_msg == NULL)
+    if (!user_msg)
       {
       s = string_sprintf("%.3s %s Hello %s%s%s",
         smtp_code,
         smtp_active_hostname,
-        (sender_ident == NULL)?  US"" : sender_ident,
-        (sender_ident == NULL)?  US"" : US" at ",
-        (sender_host_name == NULL)? sender_helo_name : sender_host_name);
+        sender_ident ? sender_ident : US"",
+        sender_ident ? US" at " : US"",
+        sender_host_name ? sender_host_name : sender_helo_name);
 
       ptr = Ustrlen(s);
       size = ptr + 1;
 
-      if (sender_host_address != NULL)
+      if (sender_host_address)
         {
         s = string_catn(s, &size, &ptr, US" [", 2);
         s = string_cat (s, &size, &ptr, sender_host_address);

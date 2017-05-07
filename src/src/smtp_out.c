@@ -100,7 +100,7 @@ smtp_get_port(uschar *rstring, address_item *addr, int *port, uschar *msg)
 {
 uschar *pstring = expand_string(rstring);
 
-if (pstring == NULL)
+if (!pstring)
   {
   addr->transport_return = PANIC;
   addr->message = string_sprintf("failed to expand \"%s\" (\"port\" option) "
@@ -124,7 +124,7 @@ if (isdigit(*pstring))
 else
   {
   struct servent *smtp_service = getservbyname(CS pstring, "tcp");
-  if (smtp_service == NULL)
+  if (!smtp_service)
     {
     addr->transport_return = PANIC;
     addr->message = string_sprintf("TCP port \"%s\" is not defined for %s",
