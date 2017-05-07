@@ -61,14 +61,25 @@ exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 exim -odq CALLER@mxdanelazy.test.ex
 Testing
 ****
-### A server lacking a TLSA, required
+### A server lacking a TLSA, dane required (should fail)
 exim -odq CALLER@dane.no.1.test.ex
 Testing
 ****
-### A server lacking a TLSA, requested only
+### A server lacking a TLSA, dane requested only (should fail, as the NXDOMAIN is not DNSSEC)
 exim -odq CALLER@dane.no.2.test.ex
 Testing
 ****
+### A server where the A is dnssec and the TLSA _fails_
+exim -odq CALLER@danebroken1.test.ex
+Testing
+****
+# ### A server securely saying "no TLSA records here", dane required (should fail)
+# exim -odq CALLER@dane.no.3.test.ex
+# Testing
+# ### A server securely saying "no TLSA records here", dane requested only (should transmit)
+# exim -odq CALLER@dane.no.4.test.ex
+# Testing
+# ****
 exim -qf
 ****
 killdaemon

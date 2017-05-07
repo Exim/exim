@@ -20,10 +20,7 @@
 >>> Attempting full verification using callout
 >>> callout cache: no domain record found for dane256ee.test.ex
 >>> callout cache: no address record found for rcptuser@dane256ee.test.ex
-MUNGED: ::1 will be omitted in what follows
->>> get[host|ipnode]byname[2] looked up these IP addresses:
->>>   name=thishost.test.ex address=127.0.0.1
->>> ip4.ip4.ip4.ip4 in hosts_require_dane? yes (end of list)
+>>> ip4.ip4.ip4.ip4 in hosts_require_dane? yes (matched "ip4.ip4.ip4.ip4")
 >>> interface=NULL port=1225
 >>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:1225 ... connected
 >>>   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -73,8 +70,9 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1]
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer
-### A server lacking a TLSA, required
-### A server lacking a TLSA, requested only
+### A server lacking a TLSA, dane required (should fail)
+### A server lacking a TLSA, dane requested only (should fail, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA _fails_
 
 ******** SERVER ********
 ### TLSA (3 1 1)
@@ -84,5 +82,6 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1]
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer
-### A server lacking a TLSA, required
-### A server lacking a TLSA, requested only
+### A server lacking a TLSA, dane required (should fail)
+### A server lacking a TLSA, dane requested only (should fail, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA _fails_

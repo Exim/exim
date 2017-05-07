@@ -14,8 +14,9 @@
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer
-### A server lacking a TLSA, required
-### A server lacking a TLSA, requested only
+### A server lacking a TLSA, dane required (should fail)
+### A server lacking a TLSA, dane requested only (should fail, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA _fails_
 
 ******** SERVER ********
 ### TLSA (3 1 1)
@@ -25,5 +26,6 @@
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer
-### A server lacking a TLSA, required
-### A server lacking a TLSA, requested only
+### A server lacking a TLSA, dane required (should fail)
+### A server lacking a TLSA, dane requested only (should fail, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA _fails_

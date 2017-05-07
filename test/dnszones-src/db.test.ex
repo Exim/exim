@@ -465,6 +465,10 @@ DNSSEC _1225._tcp.danelazy2 CNAME   test.again.dns.
 DNSSEC dane.no.1            A       HOSTIPV4
 DNSSEC dane.no.2            A       127.0.0.1
 
+; a broken dane config (or under attack) where the TLSA lookup fails (as opposed to there not being one)
+DNSSEC danebroken1          A       127.0.0.1
+_1225._tcp.danebroken1      CNAME   test.fail.dns.
+
 ; ------- Testing delays ------------
 
 DELAY=500 delay500   A HOSTIPV4
