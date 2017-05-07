@@ -342,9 +342,6 @@ if (typeptr->name == NULL)
 rrdomain[0] = 0;                 /* No previous domain */
 (void)fseek(f, 0, SEEK_SET);     /* Start again at the beginning */
 
-if (dnssec) *dnssec = TRUE;     /* cancelled by first nonsecure rec found */
-if (aa) *aa = TRUE;             /* cancelled by first non-aa rec found */
-
 /* Scan for RRs */
 
 while (fgets(CS buffer, sizeof(buffer), f) != NULL)
@@ -438,7 +435,12 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
   /* The domain matches */
 
-  if (yield == HOST_NOT_FOUND) yield = NO_DATA;
+  if (yield == HOST_NOT_FOUND)
+    {
+    yield = NO_DATA;
+    if (dnssec) *dnssec = TRUE;     /* cancelled by first nonsecure rec found */
+    if (aa) *aa = TRUE;             /* cancelled by first non-aa rec found */
+    }
 
   /* Compare RR types; a CNAME record is always returned */
 
