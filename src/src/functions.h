@@ -395,7 +395,7 @@ extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
 extern void    sigalrm_handler(int);
 extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
-extern int     smtp_connect(host_item *, int, int, uschar *, int,
+extern int     smtp_connect(host_item *, int, uschar *, int,
 	       	 transport_instance *);
 extern int     smtp_sock_connect(host_item *, int, int, uschar *,
 		 transport_instance * tb, int);
@@ -415,6 +415,7 @@ extern void    smtp_proxy_tls(uschar *, size_t, int, int);
 extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
+extern void    smtp_port_for_connect(host_item *, int);
 extern void    smtp_send_prohibition_message(int, uschar *);
 extern int     smtp_setup_msg(void);
 extern BOOL    smtp_start_session(void);

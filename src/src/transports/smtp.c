@@ -1186,20 +1186,24 @@ tlsa_lookup(const host_item * host, dns_answer * dnsa, BOOL dane_required)
 /* move this out to host.c given the similarity to dns_lookup() ? */
 uschar buffer[300];
 const uschar * fullname = buffer;
+int rc;
+BOOL sec;
 
 /* TLSA lookup string */
 (void)sprintf(CS buffer, "_%d._tcp.%.256s", host->port, host->name);
 
-switch (dns_lookup(dnsa, buffer, T_TLSA, &fullname))
+rc = dns_lookup(dnsa, buffer, T_TLSA, &fullname);
+sec = dns_is_secure(dnsa);
+DEBUG(D_transport)
+  debug_printf("TLSA lookup ret %d %sDNSSEC\n", rc, sec ? "" : "not ");
+
+switch (rc)
   {
   case DNS_SUCCEED:
-    if (!dns_is_secure(dnsa))
-      {
-      log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
-      return DEFER;
-      }
-    return OK;
+    if (sec) return OK;
 
+    log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
+    /*FALLTHROUGH*/
   case DNS_AGAIN:
     return DEFER; /* just defer this TLS'd conn */
 
@@ -1553,14 +1557,53 @@ if (sx->smtps)
 the initial interaction and HELO/EHLO/LHLO. Connect timeout errors are handled
 specially so they can be identified for retries. */
 
-if (continue_hostname == NULL)
+if (!continue_hostname)
   {
   if (sx->verify)
     HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", sx->interface, sx->port);
 
-  /* This puts port into host->port */
+  /* Get the actual port the connection will use, into sx->host */
+
+  smtp_port_for_connect(sx->host, sx->port);
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+    /* Do TLSA lookup for DANE */
+    {
+    tls_out.dane_verified = FALSE;
+    tls_out.tlsa_usage = 0;
+
+    if (sx->host->dnssec == DS_YES)
+      {
+      if(  sx->dane_required
+	|| verify_check_given_host(&sx->ob->hosts_try_dane, sx->host) == OK
+	)
+	switch (rc = tlsa_lookup(sx->host, &tlsa_dnsa, sx->dane_required))
+	  {
+	  case OK:		sx->dane = TRUE;
+				sx->ob->tls_tempfail_tryclear = FALSE;
+				break;
+	  case FAIL_FORCED:	break;
+	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
+				  string_sprintf("DANE error: tlsa lookup %s",
+				    rc == DEFER ? "DEFER" : "FAIL"),
+				  rc, FALSE);
+				return rc;
+	  }
+      }
+    else if (sx->dane_required)
+      {
+      set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
+	string_sprintf("DANE error: %s lookup not DNSSEC", sx->host->name),
+	FAIL, FALSE);
+      return FAIL;
+      }
+    }
+#endif	/*DANE*/
+
+  /* Make the TCP connection */
+
   sx->inblock.sock = sx->outblock.sock =
-    smtp_connect(sx->host, sx->host_af, sx->port, sx->interface,
+    smtp_connect(sx->host, sx->host_af, sx->interface,
 		  sx->ob->connect_timeout, sx->tblock);
 
   if (sx->inblock.sock < 0)
@@ -1579,40 +1622,6 @@ if (continue_hostname == NULL)
     sx->send_quit = FALSE;
     return DEFER;
     }
-
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
-    {
-    tls_out.dane_verified = FALSE;
-    tls_out.tlsa_usage = 0;
-
-    if (sx->host->dnssec == DS_YES)
-      {
-      if(  sx->dane_required
-	|| verify_check_given_host(&sx->ob->hosts_try_dane, sx->host) == OK
-	)
-	switch (rc = tlsa_lookup(sx->host, &tlsa_dnsa, sx->dane_required))
-	  {
-	  case OK:		sx->dane = TRUE; break;
-	  case FAIL_FORCED:	break;
-	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
-				  string_sprintf("DANE error: tlsa lookup %s",
-				    rc == DEFER ? "DEFER" : "FAIL"),
-				  rc, FALSE);
-				return rc;
-	  }
-      }
-    else if (sx->dane_required)
-      {
-      set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
-	string_sprintf("DANE error: %s lookup not DNSSEC", sx->host->name),
-	FAIL, FALSE);
-      return FAIL;
-      }
-
-    if (sx->dane)
-      sx->ob->tls_tempfail_tryclear = FALSE;
-    }
-#endif	/*DANE*/
 
   /* Expand the greeting message while waiting for the initial response. (Makes
   sense if helo_data contains ${lookup dnsdb ...} stuff). The expansion is

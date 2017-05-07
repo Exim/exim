@@ -243,6 +243,24 @@ else
   }
 }
 
+
+
+
+
+void
+smtp_port_for_connect(host_item * host, int port)
+{
+if (host->port != PORT_NONE)
+  {
+  HDEBUG(D_transport|D_acl|D_v)
+    debug_printf_indent("Transport port=%d replaced by host-specific port=%d\n", port,
+      host->port);
+  port = host->port;
+  }
+else host->port = port;    /* Set the port actually used */
+}
+
+
 /*************************************************
 *           Connect to remote host               *
 *************************************************/
@@ -252,15 +270,9 @@ detected by checking for a colon in the address. AF_INET6 is defined even on
 non-IPv6 systems, to enable the code to be less messy. However, on such systems
 host->address will always be an IPv4 address.
 
-The port field in the host item is used if it is set (usually router from SRV
-records or elsewhere). In other cases, the default passed as an argument is
-used, and the host item is updated with its value.
-
 Arguments:
-  host        host item containing name and address (and sometimes port)
+  host        host item containing name and address and port
   host_af     AF_INET or AF_INET6
-  port        default remote port to connect to, in host byte order, for those
-                hosts whose port setting is PORT_NONE
   interface   outgoing interface address or NULL
   timeout     timeout value or 0
   tb          transport
@@ -269,22 +281,14 @@ Returns:      connected socket number, or -1 with errno set
 */
 
 int
-smtp_connect(host_item *host, int host_af, int port, uschar *interface,
+smtp_connect(host_item *host, int host_af, uschar *interface,
   int timeout, transport_instance * tb)
 {
+int port = host->port;
 #ifdef SUPPORT_SOCKS
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
 #endif
-
-if (host->port != PORT_NONE)
-  {
-  HDEBUG(D_transport|D_acl|D_v)
-    debug_printf_indent("Transport port=%d replaced by host-specific port=%d\n", port,
-      host->port);
-  port = host->port;
-  }
-else host->port = port;    /* Set the port actually used */
 
 callout_address = string_sprintf("[%s]:%d", host->address, port);
 
