@@ -13599,6 +13599,7 @@ listed in more than one group.
 .section "Privilege controls" "SECID98"
 .table2
 .row &%admin_groups%&                "groups that are Exim admin users"
+.row &%commandline_checks_require_admin%& "require admin for various checks"
 .row &%deliver_drop_privilege%&      "drop root for delivery processes"
 .row &%local_from_check%&            "insert &'Sender:'& if necessary"
 .row &%local_from_prefix%&           "for testing &'From:'& for local sender"
@@ -14460,6 +14461,14 @@ may wish to deliberately disable them.
 The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
 these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
+
+.new
+.option commandline_checks_require_admin main boolean &`false`&
+.cindex "restricting access to features"
+This option restricts various basic checking features to require an
+administrative user.
+This affects most of the &%-b*%& options, such as &%-be%&.
+.wen
 
 .option debug_store main boolean &`false`&
 .cindex debugging "memory corruption"
@@ -15942,12 +15951,13 @@ different spool directories.
 
 
 .option prod_requires_admin main boolean true
+.cindex "restricting access to features"
 .oindex "&%-M%&"
 .oindex "&%-R%&"
 .oindex "&%-q%&"
 The &%-M%&, &%-R%&, and &%-q%& command-line options require the caller to be an
 admin user unless &%prod_requires_admin%& is set false. See also
-&%queue_list_requires_admin%&.
+&%queue_list_requires_admin%& and &%commandline_checks_require_admin%&.
 
 
 .option qualify_domain main string "see below"
@@ -15986,10 +15996,12 @@ next queue run. See also &%hold_domains%& and &%queue_smtp_domains%&.
 
 
 .option queue_list_requires_admin main boolean true
+.cindex "restricting access to features"
 .oindex "&%-bp%&"
 The &%-bp%& command-line option, which lists the messages that are on the
 queue, requires the caller to be an admin user unless
-&%queue_list_requires_admin%& is set false. See also &%prod_requires_admin%&.
+&%queue_list_requires_admin%& is set false.
+See also &%prod_requires_admin%& and &%commandline_checks_require_admin%&.
 
 
 .option queue_only main boolean false
@@ -20333,11 +20345,15 @@ relative path is then passed to the transport unmodified.
 
 
 .option forbid_blackhole redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, the &':blackhole:'& item may not appear in a
 redirection list.
 
 
 .option forbid_exim_filter redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is set true, only Sieve filters are permitted when
 &%allow_filter%& is true.
 
@@ -20345,7 +20361,9 @@ If this option is set true, only Sieve filters are permitted when
 
 
 .option forbid_file redirect boolean false
+.cindex "restricting access to features"
 .cindex "delivery" "to file; forbidding"
+.cindex "filter" "locking out certain features"
 .cindex "Sieve filter" "forbidding delivery to a file"
 .cindex "Sieve filter" "&""keep""& facility; disabling"
 If this option is true, this router may not generate a new address that
@@ -20356,17 +20374,22 @@ locks out the Sieve's &"keep"& facility.
 
 
 .option forbid_filter_dlfunc redirect boolean false
+.cindex "restricting access to features"
 .cindex "filter" "locking out certain features"
 If this option is true, string expansions in Exim filters are not allowed to
 make use of the &%dlfunc%& expansion facility to run dynamically loaded
 functions.
 
 .option forbid_filter_existstest redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 .cindex "expansion" "statting a file"
 If this option is true, string expansions in Exim filters are not allowed to
 make use of the &%exists%& condition or the &%stat%& expansion item.
 
 .option forbid_filter_logwrite redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, use of the logging facility in Exim filters is not
 permitted. Logging is in any case available only if the filter is being run
 under some unprivileged uid (which is normally the case for ordinary users'
@@ -20374,27 +20397,37 @@ under some unprivileged uid (which is normally the case for ordinary users'
 
 
 .option forbid_filter_lookup redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, string expansions in Exim filter files are not allowed
 to make use of &%lookup%& items.
 
 
 .option forbid_filter_perl redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 This option has an effect only if Exim is built with embedded Perl support. If
 it is true, string expansions in Exim filter files are not allowed to make use
 of the embedded Perl support.
 
 
 .option forbid_filter_readfile redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, string expansions in Exim filter files are not allowed
 to make use of &%readfile%& items.
 
 
 .option forbid_filter_readsocket redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, string expansions in Exim filter files are not allowed
 to make use of &%readsocket%& items.
 
 
 .option forbid_filter_reply redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, this router may not generate an automatic reply
 message. Automatic replies can be generated only from Exim or Sieve filter
 files, not from traditional forward files. This option is forced to be true if
@@ -20402,11 +20435,15 @@ files, not from traditional forward files. This option is forced to be true if
 
 
 .option forbid_filter_run redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, string expansions in Exim filter files are not allowed
 to make use of &%run%& items.
 
 
 .option forbid_include redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is true, items of the form
 .code
 :include:<path name>
@@ -20415,6 +20452,8 @@ are not permitted in non-filter redirection lists.
 
 
 .option forbid_pipe redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 .cindex "delivery" "to pipe; forbidding"
 If this option is true, this router may not generate a new address which
 specifies delivery to a pipe, either from an Exim filter or from a conventional
@@ -20422,6 +20461,8 @@ forward file. This option is forced to be true if &%one_time%& is set.
 
 
 .option forbid_sieve_filter redirect boolean false
+.cindex "restricting access to features"
+.cindex "filter" "locking out certain features"
 If this option is set true, only Exim filters are permitted when
 &%allow_filter%& is true.
 
@@ -37957,6 +37998,13 @@ the contents of files on the spool via the Exim monitor (which runs
 unprivileged), Exim must be built to allow group read access to its spool
 files.
 
+.new
+By default, regular users are trusted to perform basic testing and
+introspection commands, as themselves.  This setting can be tightened by
+setting the &%commandline_checks_require_admin%& option.
+This affects most of the checking options,
+such as &%-be%& and anything else &%-b*%&.
+.wen
 
 
 .section "Spool files" "SECID275"

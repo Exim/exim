@@ -78,6 +78,14 @@ JH/12 Fix check on SMTP command input synchronisation.  Previously there were
       or prompt from Exim (running as a server), due to that code's lack of
       awareness of the SMTP input buferring.
 
+PP/04 Add commandline_checks_require_admin option.
+      Exim drops privileges sanely, various checks such as -be aren't a
+      security problem, as long as you trust local users with access to their
+      own account.  When invoked by services which pass untrusted data to
+      Exim, this might be an issue.  Set this option in main configuration
+      AND make fixes to the calling application, such as using `--` to stop
+      processing options.
+
 
 Exim version 4.89
 -----------------

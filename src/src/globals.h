@@ -282,6 +282,7 @@ extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH *
 extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
 extern int     clmacro_count;          /* Number of command line macros */
 extern uschar *clmacros[];             /* Copy of them, for re-exec */
+extern BOOL    commandline_checks_require_admin; /* belt and braces for insecure setups */
 extern int     connection_max_messages;/* Max down one SMTP connection */
 extern BOOL    config_changed;         /* True if -C used */
 extern FILE   *config_file;            /* Configuration file */

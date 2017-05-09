@@ -137,6 +137,7 @@ command                              string*         unset         lmtp         
 command_group                        string          unset         queryprogram      4.00
 command_timeout                      time            5m            smtp
 command_user                         string          unset         queryprogram      4.00
+commandline_checks_require_admin     boolean         false         main              4.90
 condition                            string*         unset         routers           4.00
 connect_timeout                      time            0s            smtp              1.60
 connection_max_messages              integer         500           smtp              4.00 replaces batch_max

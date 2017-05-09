@@ -3868,6 +3868,14 @@ else
           trusted_caller = TRUE;
   }
 
+/* At this point, we know if the user is privileged and some command-line
+options become possibly imperssible, depending upon the configuration file. */
+
+if (checking && commandline_checks_require_admin && !admin_user) {
+  fprintf(stderr, "exim: those command-line flags are set to require admin\n");
+  exit(EXIT_FAILURE);
+}
+
 /* Handle the decoding of logging options. */
 
 decode_bits(log_selector, log_selector_size, log_notall,

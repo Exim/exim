@@ -511,6 +511,7 @@ uschar *client_authenticated_id = NULL;
 uschar *client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
+BOOL    commandline_checks_require_admin = FALSE;
 BOOL    config_changed         = FALSE;
 FILE   *config_file            = NULL;
 const uschar *config_filename  = NULL;
