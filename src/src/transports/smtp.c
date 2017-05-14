@@ -1209,7 +1209,7 @@ switch (rc)
 
   case DNS_NODATA:	/* no TLSA RR for this lookup */
   case DNS_NOMATCH:	/* no records at all for this lookup */
-    return dane_required ? FAIL : sec ? FAIL_FORCED : DEFER;
+    return dane_required ? FAIL : FAIL_FORCED;
 
   default:
   case DNS_FAIL:
