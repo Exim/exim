@@ -384,11 +384,13 @@ dn[sizeof(dn)-1] = '\0';
 
 if (preverify_ok == 0)
   {
-  log_write(0, LOG_MAIN, "[%s] SSL verify error: depth=%d error=%s cert=%s",
-	tlsp == &tls_out ? deliver_host_address : sender_host_address,
-    depth,
-    X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
-    dn);
+  uschar * extra = verify_mode ? string_sprintf(" (during %c-verify for [%s])",
+      *verify_mode, sender_host_address)
+    : US"";
+  log_write(0, LOG_MAIN, "[%s] SSL verify error%s: depth=%d error=%s cert=%s",
+    tlsp == &tls_out ? deliver_host_address : sender_host_address,
+    extra, depth,
+    X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)), dn);
   *calledp = TRUE;
   if (!*optionalp)
     {
@@ -449,7 +451,7 @@ else
 	if (rc < 0)
 	  {
 	  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error",
-		deliver_host_address);
+	    tlsp == &tls_out ? deliver_host_address : sender_host_address);
 	  name = NULL;
 	  }
 	break;
@@ -459,10 +461,14 @@ else
     if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
 #endif
       {
+      uschar * extra = verify_mode
+        ? string_sprintf(" (during %c-verify for [%s])",
+	  *verify_mode, sender_host_address)
+	: US"";
       log_write(0, LOG_MAIN,
-		"[%s] SSL verify error: certificate name mismatch: "
-		"DN=\"%s\" H=\"%s\"",
-		deliver_host_address, dn, verify_cert_hostnames);
+	"[%s] SSL verify error%s: certificate name mismatch: DN=\"%s\" H=\"%s\"",
+	tlsp == &tls_out ? deliver_host_address : sender_host_address,
+	extra, dn, verify_cert_hostnames);
       *calledp = TRUE;
       if (!*optionalp)
 	{
