@@ -34,9 +34,14 @@ check_rcpt:
   accept
 
 check_data:
-  warn	logwrite = $message_exim_id received on port $received_port
+  warn	logwrite =	received on port $received_port
   defer	condition =	${if eq {SERVER}{server}}
 	condition =	${if eq {data_defer}{${local_part:$recipients}}}
+  accept
+
+delay:
+  warn	condition =	${if = {$received_port}{PORT_D}}
+	delay =		1s
   accept
 
 # ----- Routers -----
@@ -47,8 +52,9 @@ begin routers
 
 target:
   driver = redirect
-  condition = ${if = {$received_port}{PORT_D}}
-  data = :blackhole:
+  condition =		${if = {$received_port}{PORT_D}}
+  address_data =	${acl {delay}}
+  data =		:blackhole:
 
 dut:
   driver = manualroute

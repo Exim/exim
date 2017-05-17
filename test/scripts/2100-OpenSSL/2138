@@ -1,13 +1,13 @@
 # TLS client: multiple messages over one connection (continue_more)
 exim -DSERVER=server -bd -oX PORT_D
 ****
-exim userx@test.ex userx1@test.ex
+exim userx0@test.ex userx1@test.ex
 Test message 1
 ****
-exim usery@test.ex usery1@test.ex
+exim usery0@test.ex usery1@test.ex
 Test message 2
 ****
-exim userz@test.ex userz1@test.ex
+exim userz0@test.ex userz1@test.ex
 Test message 3
 ****
 exim -qqf
@@ -15,3 +15,4 @@ exim -qqf
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -qf
 ****
+sortlog
