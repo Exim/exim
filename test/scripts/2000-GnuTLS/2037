@@ -10,7 +10,7 @@ mail from:<userg@ok.example>
 rcpt to:<rcpt_defer@test.ex>
 quit
 ****
-sleep 1
+sleep 3
 #
 # cmdline -bs send, data-time defer
 exim -bs
@@ -23,7 +23,7 @@ body
 .
 quit
 ****
-sleep 1
+sleep 3
 killdaemon
 #
 #

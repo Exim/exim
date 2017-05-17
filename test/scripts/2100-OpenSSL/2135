@@ -17,7 +17,7 @@ body
 .
 quit
 ****
-sleep 2
+sleep 3
 killdaemon
 #
 #

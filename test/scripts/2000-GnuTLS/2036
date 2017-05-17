@@ -31,7 +31,7 @@ body
 QUIT
 ??? 221
 ****
-sleep 1
+sleep 3
 killdaemon
 #
 #
@@ -62,7 +62,7 @@ body
 QUIT
 ??? 221
 ****
-sleep 1
+sleep 3
 killdaemon
 #
 #
