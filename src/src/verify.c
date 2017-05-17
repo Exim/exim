@@ -1177,7 +1177,7 @@ if(cutthrough.fd < 0)
 
 if(
 #ifdef SUPPORT_TLS
-   (tls_out.active == cutthrough.fd) ? tls_write(FALSE, ctblock.buffer, n) :
+   tls_out.active == cutthrough.fd ? tls_write(FALSE, ctblock.buffer, n, FALSE) :
 #endif
    send(cutthrough.fd, ctblock.buffer, n, 0) > 0
   )
@@ -1517,7 +1517,7 @@ va_list ap;
 
 va_start(ap, format);
 if (smtp_out && (f == smtp_out))
-  smtp_vprintf(format, ap);
+  smtp_vprintf(format, FALSE, ap);
 else
   vfprintf(f, format, ap);
 va_end(ap);

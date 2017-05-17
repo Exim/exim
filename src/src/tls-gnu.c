@@ -60,6 +60,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030014
 # define SUPPORT_SYSDEFAULT_CABUNDLE
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030109
+# define SUPPORT_CORK
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
@@ -1745,7 +1748,7 @@ exim_gnutls_state_st * state = NULL;
 if (tls_in.active >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", "", NULL, errstr);
-  smtp_printf("554 Already in TLS\r\n");
+  smtp_printf("554 Already in TLS\r\n", FALSE);
   return FAIL;
   }
 
@@ -1806,7 +1809,7 @@ mode, the fflush() happens when smtp_getc() is called. */
 
 if (!state->tlsp->on_connect)
   {
-  smtp_printf("220 TLS go ahead\r\n");
+  smtp_printf("220 TLS go ahead\r\n", FALSE);
   fflush(smtp_out);
   }
 
@@ -2288,6 +2291,14 @@ if (n > 0)
 }
 
 
+BOOL
+tls_could_read(void)
+{
+return state_server.xfer_buffer_lwm < state_server.xfer_buffer_hwm
+ || gnutls_record_check_pending(state_server.session) > 0;
+}
+
+
 
 
 /*************************************************
@@ -2347,19 +2358,27 @@ Arguments:
   is_server channel specifier
   buff      buffer of data
   len       number of bytes
+  more	    more data expected soon
 
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
 */
 
 int
-tls_write(BOOL is_server, const uschar *buff, size_t len)
+tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
 {
 ssize_t outbytes;
 size_t left = len;
 exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
+#ifdef SUPPORT_CORK
+static BOOL corked = FALSE;
 
-DEBUG(D_tls) debug_printf("tls_do_write(%p, " SIZE_T_FMT ")\n", buff, left);
+if (more && !corked) gnutls_record_cork(state->session);
+#endif
+
+DEBUG(D_tls) debug_printf("%s(%p, " SIZE_T_FMT "%s)\n", __FUNCTION__,
+  buff, left, more ? ", more" : "");
+
 while (left > 0)
   {
   DEBUG(D_tls) debug_printf("gnutls_record_send(SSL, %p, " SIZE_T_FMT ")\n",
@@ -2389,6 +2408,14 @@ if (len > INT_MAX)
         len);
   len = INT_MAX;
   }
+
+#ifdef SUPPORT_CORK
+if (more != corked)
+  {
+  if (!more) (void) gnutls_record_uncork(state->session, 0);
+  corked = more;
+  }
+#endif
 
 return (int) len;
 }

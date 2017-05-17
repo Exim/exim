@@ -51,6 +51,7 @@ extern int     tls_client_start(int, host_item *, address_item *,
 # endif
 		uschar **);
 extern void    tls_close(BOOL, BOOL);
+extern BOOL    tls_could_read(void);
 extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
@@ -63,7 +64,7 @@ extern int     tls_read(BOOL, uschar *, size_t);
 extern int     tls_server_start(const uschar *, uschar **);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
-extern int     tls_write(BOOL, const uschar *, size_t);
+extern int     tls_write(BOOL, const uschar *, size_t, BOOL);
 extern uschar *tls_validate_require_cipher(void);
 extern void    tls_version_report(FILE *);
 # ifndef USE_GNUTLS

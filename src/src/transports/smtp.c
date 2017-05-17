@@ -2618,7 +2618,8 @@ for (fd_bits = 3; fd_bits; )
     else
       {
       for (nbytes = 0; rc - nbytes > 0; nbytes += i)
-	if ((i = tls_write(FALSE, buf + nbytes, rc - nbytes)) < 0) return;
+	if ((i = tls_write(FALSE, buf + nbytes, rc - nbytes, FALSE)) < 0)
+	  return;
       }
   else if (fd_bits & 2)
     FD_SET(proxy_fd, &fds);

@@ -2194,7 +2194,7 @@ for (;;)
       sender_address,
       sender_fullhost ? " H=" : "", sender_fullhost ? sender_fullhost : US"",
       sender_ident ? " U=" : "",    sender_ident ? sender_ident : US"");
-    smtp_printf("552 Message header not CRLF terminated\r\n");
+    smtp_printf("552 Message header not CRLF terminated\r\n", FALSE);
     bdat_flush_data();
     smtp_reply = US"";
     goto TIDYUP;                             /* Skip to end of function */
@@ -3501,7 +3501,7 @@ else
       int all_pass = OK;
       int all_fail = FAIL;
 
-      smtp_printf("353 PRDR content analysis beginning\r\n");
+      smtp_printf("353 PRDR content analysis beginning\r\n", TRUE);
       /* Loop through recipients, responses must be in same order received */
       for (c = 0; recipients_count > c; c++)
         {
@@ -4302,13 +4302,12 @@ if (smtp_input)
 
       else if (chunking_state > CHUNKING_OFFERED)
 	{
-/*XXX rethink for spool_wireformat */
-        smtp_printf("250- %u byte chunk, total %d\r\n250 OK id=%s\r\n",
+        smtp_printf("250- %u byte chunk, total %d\r\n250 OK id=%s\r\n", FALSE,
 	    chunking_datasize, message_size+message_linecount, message_id);
 	chunking_state = CHUNKING_OFFERED;
 	}
       else
-        smtp_printf("250 OK id=%s\r\n", message_id);
+        smtp_printf("250 OK id=%s\r\n", FALSE, message_id);
 
       if (host_checking)
         fprintf(stdout,
@@ -4322,7 +4321,7 @@ if (smtp_input)
         smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
           fake_response_text);
       else
-        smtp_printf("%.1024s\r\n", smtp_reply);
+        smtp_printf("%.1024s\r\n", FALSE, smtp_reply);
 
     switch (cutthrough_done)
       {

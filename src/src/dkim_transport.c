@@ -77,7 +77,7 @@ else
       {
 #ifdef SUPPORT_TLS
       wwritten = tls_out.active == out_fd
-	? tls_write(FALSE, p, sread)
+	? tls_write(FALSE, p, sread, FALSE)
 	: write(out_fd, CS p, sread);
 #else
       wwritten = write(out_fd, CS p, sread);

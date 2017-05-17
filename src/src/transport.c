@@ -203,6 +203,7 @@ Arguments:
   tctx      transport context: file descriptor or string to write to
   block     block of bytes to write
   len       number of bytes to write
+  more	    further data expected soon
 
 Returns:    TRUE on success, FALSE on failure (with errno preserved);
               transport_count is incremented by the number of bytes written
@@ -233,7 +234,7 @@ for (i = 0; i < 100; i++)
     {
     rc =
 #ifdef SUPPORT_TLS
-	(tls_out.active == fd) ? tls_write(FALSE, block, len) :
+	tls_out.active == fd ? tls_write(FALSE, block, len, more) :
 #endif
 #ifdef MSG_MORE
 	more ? send(fd, block, len, MSG_MORE) :
@@ -250,7 +251,7 @@ for (i = 0; i < 100; i++)
 
     rc =
 #ifdef SUPPORT_TLS
-	(tls_out.active == fd) ? tls_write(FALSE, block, len) :
+	tls_out.active == fd ? tls_write(FALSE, block, len, more) :
 #endif
 #ifdef MSG_MORE
 	more ? send(fd, block, len, MSG_MORE) :

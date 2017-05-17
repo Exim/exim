@@ -86,6 +86,12 @@ PP/04 Add commandline_checks_require_admin option.
       AND make fixes to the calling application, such as using `--` to stop
       processing options.
 
+JH/13 Do pipelining under TLS, with GnuTLS.  Previously, although safe, no
+      advantage was taken.  Now take care to pack both (client) MAIL,RCPT,DATA,
+      and (server) responses to those, into a single TLS record each way (this
+      usually means a single packet).  As a side issue, we can now detect
+      over-eager senders in non-pipelined mode.
+
 
 Exim version 4.89
 -----------------

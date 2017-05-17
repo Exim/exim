@@ -323,7 +323,7 @@ pipelining.
 
 Argument:
   outblock   the SMTP output block
-  mode	     more-expected, or plain
+  mode	     further data expected, or plain
 
 Returns:     TRUE if OK, FALSE on error, with errno set
 */
@@ -333,18 +333,19 @@ flush_buffer(smtp_outblock * outblock, int mode)
 {
 int rc;
 int n = outblock->ptr - outblock->buffer;
+BOOL more = mode == SCMD_MORE;
 
 HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes%s\n", n,
-  mode == SCMD_MORE ? " (more expected)" : "");
+  more ? " (more expected)" : "");
 
 #ifdef SUPPORT_TLS
 if (tls_out.active == outblock->sock)
-  rc = tls_write(FALSE, outblock->buffer, n);
+  rc = tls_write(FALSE, outblock->buffer, n, more);
 else
 #endif
   rc = send(outblock->sock, outblock->buffer, n,
 #ifdef MSG_MORE
-	    mode == SCMD_MORE ? MSG_MORE : 0
+	    more ? MSG_MORE : 0
 #else
 	    0
 #endif

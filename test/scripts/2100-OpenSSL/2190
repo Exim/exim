@@ -57,13 +57,7 @@ EHLO rhu.barb
 ??? 250-PIPELINING
 ??? 250-CHUNKING
 ??? 250 HELP
-MAIL FROM:<someone@some.domain>
-RCPT TO:<CALLER@test.ex>
-BDAT 88 LAST
-To: Susan@random.com
-From: Sam@random.com
-Subject: This is a bodyless test message
-
+MAIL FROM:<someone@some.domain>\r\nRCPT TO:<CALLER@test.ex>\r\nBDAT 88 LAST\r\nTo: Susan@random.com\r\nFrom: Sam@random.com\r\nSubject: This is a bodyless test message\r\n
 ??? 250
 ??? 250
 ??? 250-

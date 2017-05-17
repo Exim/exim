@@ -1875,7 +1875,7 @@ static uschar cipherbuf[256];
 if (tls_in.active >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", NULL, US"", errstr);
-  smtp_printf("554 Already in TLS\r\n");
+  smtp_printf("554 Already in TLS\r\n", FALSE);
   return FAIL;
   }
 
@@ -1959,7 +1959,7 @@ mode, the fflush() happens when smtp_getc() is called. */
 SSL_set_session_id_context(server_ssl, sid_ctx, Ustrlen(sid_ctx));
 if (!tls_in.on_connect)
   {
-  smtp_printf("220 TLS go ahead\r\n");
+  smtp_printf("220 TLS go ahead\r\n", FALSE);
   fflush(smtp_out);
   }
 
@@ -2480,6 +2480,13 @@ if (n > 0)
 }
 
 
+BOOL
+tls_could_read(void)
+{
+/* XXX no actual inquiry into library; only our buffer */
+return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm;
+}
+
 
 /*************************************************
 *          Read bytes from TLS channel           *
@@ -2533,6 +2540,7 @@ Arguments:
   is_server channel specifier
   buff      buffer of data
   len       number of bytes
+  more	    further data expected soon
 
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
@@ -2541,14 +2549,14 @@ Used by both server-side and client-side TLS.
 */
 
 int
-tls_write(BOOL is_server, const uschar *buff, size_t len)
+tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
 {
 int outbytes;
 int error;
 int left = len;
 SSL *ssl = is_server ? server_ssl : client_ssl;
 
-DEBUG(D_tls) debug_printf("tls_do_write(%p, %d)\n", buff, left);
+DEBUG(D_tls) debug_printf("%s(%p, %d)\n", __FUNCTION__, buff, left);
 while (left > 0)
   {
   DEBUG(D_tls) debug_printf("SSL_write(SSL, %p, %d)\n", buff, left);
