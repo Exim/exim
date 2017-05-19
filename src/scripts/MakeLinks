@@ -85,7 +85,7 @@ cd ..
 mkdir pdkim
 cd pdkim
 for f in README Makefile crypt_ver.h pdkim.c \
-  pdkim.h hash.c hash.h rsa.c rsa.h blob.h
+  pdkim.h hash.c hash.h signing.c signing.h blob.h
 do
   ln -s ../../src/pdkim/$f $f
 done

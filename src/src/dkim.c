@@ -608,6 +608,11 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
     dkim_private_key_expanded = big_buffer;
     }
 
+/*XXX so we currently nail signing to RSA + SHA256.  Need to extract algo
+from privkey, and provide means for selecting hash-method.
+Check for disallowed combos.
+Will need new dkim_ transport option for hash. */
+
   if (!(ctx = pdkim_init_sign(CS dkim_signing_domain,
 			CS dkim_signing_selector,
 			CS dkim_private_key_expanded,

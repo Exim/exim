@@ -42,7 +42,7 @@
 #endif
 
 #include "pdkim.h"
-#include "rsa.h"
+#include "signing.h"
 
 #define PDKIM_SIGNATURE_VERSION     "1"
 #define PDKIM_PUB_RECORD_VERSION    US "DKIM1"
@@ -83,11 +83,13 @@ const uschar * pdkim_canons[] = {
   US"relaxed",
   NULL
 };
+/*XXX currently unused */
 const uschar * pdkim_hashes[] = {
   US"sha256",
   US"sha1",
   NULL
 };
+/*XXX currently unused */
 const uschar * pdkim_keytypes[] = {
   US"rsa",
   NULL
@@ -505,6 +507,7 @@ for (p = raw_hdr; ; p++)
 	      Ustrcmp(cur_val, PDKIM_SIGNATURE_VERSION) == 0 ? 1 : -1;
 	    break;
 	  case 'a':
+/*XXX this searches a list of combined (algo + hash-method)s */
 	    for (i = 0; pdkim_algos[i]; i++)
 	      if (Ustrcmp(cur_val, pdkim_algos[i]) == 0)
 	        {
@@ -583,6 +586,7 @@ DEBUG(D_acl)
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 
+/*XXX hash method: extend for sha512 */
 if (!exim_sha_init(&sig->body_hash_ctx,
 	       sig->algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256))
   {
@@ -1185,6 +1189,7 @@ col = hdr_len;
 
 /* Required and static bits */
 hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"a=",
+/*XXX this is a combo of algo and hash-method */
 		    pdkim_algos[sig->algo]);
 hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"q=",
 		    pdkim_querymethods[sig->querymethod]);
@@ -1332,7 +1337,7 @@ DEBUG(D_acl) debug_printf(
       "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
 /* Import public key */
-if ((*errstr = exim_rsa_verify_init(&p->key, vctx)))
+if ((*errstr = exim_dkim_verify_init(&p->key, vctx)))
   {
   DEBUG(D_acl) debug_printf("verify_init: %s\n", *errstr);
   sig->verify_status =      PDKIM_VERIFY_INVALID;
@@ -1370,6 +1375,7 @@ pdkim_finish_bodyhash(ctx);
 
 while (sig)
   {
+/*XXX bool probably not enough */
   BOOL is_sha1 = sig->algo == PDKIM_ALGO_RSA_SHA1;
   hctx hhash_ctx;
   uschar * sig_hdr = US"";
@@ -1422,7 +1428,7 @@ while (sig)
 	exim_sha_update(&hhash_ctx, CUS rh, Ustrlen(rh));
 
 	/* Remember headers block for signing (when the library cannot do incremental)  */
-	(void) exim_rsa_data_append(&hdata, &hdata_alloc, rh);
+	(void) exim_dkim_data_append(&hdata, &hdata_alloc, rh);
 
 	DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
 	}
@@ -1522,8 +1528,9 @@ while (sig)
     }
 
   /* Remember headers block for signing (when the library cannot do incremental)  */
+/*XXX is this assuing algo == RSA? */
   if (ctx->flags & PDKIM_MODE_SIGN)
-    (void) exim_rsa_data_append(&hdata, &hdata_alloc, US sig_hdr);
+    (void) exim_dkim_data_append(&hdata, &hdata_alloc, US sig_hdr);
 
   /* SIGNING ---------------------------------------------------------------- */
   if (ctx->flags & PDKIM_MODE_SIGN)
@@ -1531,7 +1538,8 @@ while (sig)
     es_ctx sctx;
 
     /* Import private key */
-    if ((*err = exim_rsa_signing_init(US sig->rsa_privkey, &sctx)))
+/*XXX extend for non-RSA algos */
+    if ((*err = exim_dkim_signing_init(US sig->rsa_privkey, &sctx)))
       {
       DEBUG(D_acl) debug_printf("signing_init: %s\n", *err);
       return PDKIM_ERR_RSA_PRIVKEY;
@@ -1545,7 +1553,11 @@ while (sig)
     hdata = hhash;
 #endif
 
-    if ((*err = exim_rsa_sign(&sctx, is_sha1, &hdata, &sig->sighash)))
+/*XXX extend for non-RSA algos */
+/*XXX oddly the dkim rfc does _not_ say what variant (sha1 or sha256) of
+RSA signing should be done.  We use the same variant as the hash-method. */
+
+    if ((*err = exim_dkim_sign(&sctx, is_sha1, &hdata, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("signing: %s\n", *err);
       return PDKIM_ERR_RSA_SIGNING;
@@ -1619,7 +1631,8 @@ while (sig)
       }
 
     /* Check the signature */
-    if ((*err = exim_rsa_verify(&vctx, is_sha1, &hhash, &sig->sighash)))
+/*XXX needs extension for non-RSA */
+    if ((*err = exim_dkim_verify(&vctx, is_sha1, &hhash, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("headers verify: %s\n", *err);
       sig->verify_status =      PDKIM_VERIFY_FAIL;
@@ -1677,6 +1690,9 @@ return ctx;
 
 /* -------------------------------------------------------------------------- */
 
+/*XXX ? needs extension to cover non-RSA algo?  Currently the "algo" is actually
+the combo of algo and hash-method */
+
 DLLEXPORT pdkim_ctx *
 pdkim_init_sign(char * domain, char * selector, char * rsa_privkey, int algo,
   BOOL dot_stuffed, int(*dns_txt_callback)(char *, char *),
@@ -1707,6 +1723,7 @@ sig->selector = string_copy(US selector);
 sig->rsa_privkey = string_copy(US rsa_privkey);
 sig->algo = algo;
 
+/*XXX extend for sha512 */
 if (!exim_sha_init(&sig->body_hash_ctx,
 	       algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256))
   {
@@ -1761,7 +1778,7 @@ return PDKIM_OK;
 void
 pdkim_init(void)
 {
-exim_rsa_init();
+exim_dkim_init();
 }
 
 

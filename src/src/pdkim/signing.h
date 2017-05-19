@@ -69,13 +69,13 @@ typedef struct {
 #endif
 
 
-extern void exim_rsa_init(void);
-extern blob * exim_rsa_data_append(blob *, int *, uschar *);
+extern void exim_dkim_init(void);
+extern blob * exim_dkim_data_append(blob *, int *, uschar *);
 
-extern const uschar * exim_rsa_signing_init(uschar *, es_ctx *);
-extern const uschar * exim_rsa_sign(es_ctx *, BOOL, blob *, blob *);
-extern const uschar * exim_rsa_verify_init(blob *, ev_ctx *);
-extern const uschar * exim_rsa_verify(ev_ctx *, BOOL, blob *, blob *);
+extern const uschar * exim_dkim_signing_init(uschar *, es_ctx *);
+extern const uschar * exim_dkim_sign(es_ctx *, BOOL, blob *, blob *);
+extern const uschar * exim_dkim_verify_init(blob *, ev_ctx *);
+extern const uschar * exim_dkim_verify(ev_ctx *, BOOL, blob *, blob *);
 
 #endif	/*DISABLE_DKIM*/
 /* End of File */
