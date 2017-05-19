@@ -2483,8 +2483,7 @@ if (n > 0)
 BOOL
 tls_could_read(void)
 {
-/* XXX no actual inquiry into library; only our buffer */
-return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm;
+return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm || SSL_pending(server_ssl) > 0;
 }
 
 
@@ -2551,13 +2550,30 @@ Used by both server-side and client-side TLS.
 int
 tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
 {
-int outbytes;
-int error;
-int left = len;
+int outbytes, error, left;
 SSL *ssl = is_server ? server_ssl : client_ssl;
+static uschar * corked = NULL;
+static int c_size = 0, c_len = 0;
 
-DEBUG(D_tls) debug_printf("%s(%p, %d)\n", __FUNCTION__, buff, left);
-while (left > 0)
+DEBUG(D_tls) debug_printf("%s(%p, %d%s)\n", __FUNCTION__,
+  buff, left, more ? ", more" : "");
+
+/* Lacking a CORK or MSG_MORE facility (such as GnuTLS has) we copy data when
+"more" is notified.  This hack is only ok if small amounts are involved AND only
+one stream does it, in one context (i.e. no store reset).  Currently it is used
+for the responses to the received SMTP MAIL , RCPT, DATA sequence, only. */
+
+if (is_server && (more || corked))
+  {
+  corked = string_catn(corked, &c_size, &c_len, buff, len);
+  if (more)
+    return len;
+  buff = CUS corked;
+  len = c_len;
+  corked = NULL; c_size = c_len = 0;
+  }
+
+for (left = len; left > 0;)
   {
   DEBUG(D_tls) debug_printf("SSL_write(SSL, %p, %d)\n", buff, left);
   outbytes = SSL_write(ssl, CS buff, left);

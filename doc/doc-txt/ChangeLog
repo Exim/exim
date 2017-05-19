@@ -76,7 +76,7 @@ JH/11 Bug 2104: Fix continued use of a transport connection with TLS.  In the
 JH/12 Fix check on SMTP command input synchronisation.  Previously there were
       false-negatives in the check that the sender had not preempted a response
       or prompt from Exim (running as a server), due to that code's lack of
-      awareness of the SMTP input buferring.
+      awareness of the SMTP input buffering.
 
 PP/04 Add commandline_checks_require_admin option.
       Exim drops privileges sanely, various checks such as -be aren't a
@@ -86,11 +86,11 @@ PP/04 Add commandline_checks_require_admin option.
       AND make fixes to the calling application, such as using `--` to stop
       processing options.
 
-JH/13 Do pipelining under TLS, with GnuTLS.  Previously, although safe, no
-      advantage was taken.  Now take care to pack both (client) MAIL,RCPT,DATA,
-      and (server) responses to those, into a single TLS record each way (this
-      usually means a single packet).  As a side issue, we can now detect
-      over-eager senders in non-pipelined mode.
+JH/13 Do pipelining under TLS.  Previously, although safe, no advantage was
+      taken.  Now take care to pack both (client) MAIL,RCPT,DATA, and (server)
+      responses to those, into a single TLS record each way (this usually means
+      a single packet).  As a side issue, smtp_enforce_sync now works on TLS
+      connections.
 
 
 Exim version 4.89

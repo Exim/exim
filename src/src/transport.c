@@ -969,9 +969,11 @@ if (!(tctx->options & topt_no_headers))
 
   if (tctx->options & topt_add_delivery_date)
     {
-    uschar buffer[100];
-    int n = sprintf(CS buffer, "Delivery-date: %s\n", tod_stamp(tod_full));
-    if (!write_chunk(tctx, buffer, n)) goto bad;
+    uschar * s = tod_stamp(tod_full);
+
+    if (  !write_chunk(tctx, US"Delivery-date: ", 15)
+       || !write_chunk(tctx, s, Ustrlen(s))
+       || !write_chunk(tctx, US"\n", 1)) goto bad;
     }
 
   /* Then the message's headers. Don't write any that are flagged as "old";
