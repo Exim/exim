@@ -47,7 +47,7 @@ fi
 
 # Double-check that config.h is complete.
 
-if [ "`tail -1 config.h`" != "/* End of config.h */" ] ; then
+if [ "`tail -n 1 config.h`" != "/* End of config.h */" ] ; then
   echo "*** config.h appears to be incomplete"
   echo "*** unexpected failure in buildconfig program"
   exit 1
