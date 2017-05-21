@@ -92,6 +92,12 @@ JH/13 Do pipelining under TLS.  Previously, although safe, no advantage was
       a single packet).  As a side issue, smtp_enforce_sync now works on TLS
       connections.
 
+PP/05 OpenSSL/1.1: use DH_bits() for more accurate DH param sizes.  This
+      affects you only if you're dancing at the edge of the param size limits.
+      If you are, and this message makes sense to you, then: raise the
+      configured limit or use OpenSSL 1.1.  Nothing we can do for older
+      versions.
+
 
 Exim version 4.89
 -----------------

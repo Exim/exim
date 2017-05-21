@@ -46,6 +46,7 @@ functions from the OpenSSL library. */
 #endif
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
+# define EXIM_HAVE_OPENSSL_DH_BITS
 #else
 # define EXIM_HAVE_EPHEM_RSA_KEX
 # define EXIM_HAVE_RAND_PSEUDO
@@ -595,6 +596,7 @@ BIO *bio;
 DH *dh;
 uschar *dhexpanded;
 const char *pem;
+int dh_bitsize;
 
 if (!expand_check(dhparam, US"tls_dhparam", &dhexpanded, errstr))
   return FALSE;
@@ -635,21 +637,34 @@ if (!(dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)))
   return FALSE;
   }
 
+/* note: our default limit of 2236 is not a multiple of 8; the limit comes from
+ * an NSS limit, and the GnuTLS APIs handle bit-sizes fine, so we went with
+ * 2236.  But older OpenSSL can only report in bytes (octets), not bits.
+ * If someone wants to dance at the edge, then they can raise the limit or use
+ * current libraries. */
+#ifdef EXIM_HAVE_OPENSSL_DH_BITS
+/* Added in commit 26c79d5641d; `git describe --contains` says OpenSSL_1_1_0-pre1~1022
+ * This predates OpenSSL_1_1_0 (before a, b, ...) so is in all 1.1.0 */
+dh_bitsize = DH_bits(dh);
+#else
+dh_bitsize = 8 * DH_size(dh);
+#endif
+
 /* Even if it is larger, we silently return success rather than cause things
  * to fail out, so that a too-large DH will not knock out all TLS; it's a
  * debatable choice. */
-if ((8*DH_size(dh)) > tls_dh_max_bits)
+if (dh_bitsize > tls_dh_max_bits)
   {
   DEBUG(D_tls)
     debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d\n",
-        8*DH_size(dh), tls_dh_max_bits);
+        dh_bitsize, tls_dh_max_bits);
   }
 else
   {
   SSL_CTX_set_tmp_dh(sctx, dh);
   DEBUG(D_tls)
     debug_printf("Diffie-Hellman initialized from %s with %d-bit prime\n",
-      dhexpanded ? dhexpanded : US"default", 8*DH_size(dh));
+      dhexpanded ? dhexpanded : US"default", dh_bitsize);
   }
 
 DH_free(dh);
