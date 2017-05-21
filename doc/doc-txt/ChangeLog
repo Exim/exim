@@ -146,6 +146,11 @@ JH/31 Fix a bad use of a copy function, which could be used to pointlessly
       copy a string over itself.  The library routine is documented as not
       supporting overlapping copies, and on MacOS it actually raised a SIGABRT.
 
+JH/32 For main options check_spool_space and check_inode_space, where the
+      platform supports 64b integers, support more than the previous 2^31 kB
+      (i.e. more than 2 TB).  Accept E, P and T multipliers in addition to
+      the previous G, M, k.
+
 
 Exim version 4.91
 -----------------

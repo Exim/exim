@@ -2141,80 +2141,77 @@ switch (type)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%sinteger expected for %s",
         inttype, name);
 
-    if (errno != ERANGE)
-      if (tolower(*endptr) == 'k')
-        {
-        if (lvalue > INT_MAX/1024 || lvalue < INT_MIN/1024) errno = ERANGE;
-          else lvalue *= 1024;
-        endptr++;
-        }
-      else if (tolower(*endptr) == 'm')
-        {
-        if (lvalue > INT_MAX/(1024*1024) || lvalue < INT_MIN/(1024*1024))
-          errno = ERANGE;
-        else lvalue *= 1024*1024;
-        endptr++;
-        }
-      else if (tolower(*endptr) == 'g')
-        {
-        if (lvalue > INT_MAX/(1024*1024*1024) || lvalue < INT_MIN/(1024*1024*1024))
-          errno = ERANGE;
-        else lvalue *= 1024*1024*1024;
-        endptr++;
-        }
+    if (errno != ERANGE && *endptr)
+      {
+      uschar * mp = US"GgMmKk\0";	/* YyZzEePpTtGgMmKk */
+
+      if ((mp = Ustrchr(mp, *endptr)))
+	{
+	endptr++;
+	do
+	  {
+	  if (lvalue > INT_MAX/1024 || lvalue < INT_MIN/1024)
+	    {
+	    errno = ERANGE;
+	    break;
+	    }
+	  lvalue *= 1024;
+	  }
+	while (*(mp += 2));
+	}
+      }
 
     if (errno == ERANGE || lvalue > INT_MAX || lvalue < INT_MIN)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
         "absolute value of integer \"%s\" is too large (overflow)", s);
 
     while (isspace(*endptr)) endptr++;
-    if (*endptr != 0)
+    if (*endptr)
       extra_chars_error(endptr, inttype, US"integer value for ", name);
 
     value = (int)lvalue;
     }
 
-  if (data_block == NULL)
-    *((int *)(ol->value)) = value;
+  if (data_block)
+    *(int *)(US data_block + (long int)ol->value) = value;
   else
-    *((int *)(US data_block + (long int)(ol->value))) = value;
+    *(int *)ol->value = value;
   break;
 
-  /*  Integer held in K: again, allow octal and hex formats, and suffixes K, M
-  and G. */
-  /*XXX consider moving to int_eximarith_t (but mind the overflow test 0415) */
+  /*  Integer held in K: again, allow octal and hex formats, and suffixes K, M,
+  G and T. */
 
   case opt_Kint:
     {
     uschar *endptr;
     errno = 0;
-    value = strtol(CS s, CSS &endptr, intbase);
+    int_eximarith_t lvalue = strtol(CS s, CSS &endptr, intbase);
 
     if (endptr == s)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%sinteger expected for %s",
         inttype, name);
 
-    if (errno != ERANGE)
-      if (tolower(*endptr) == 'g')
-        {
-        if (value > INT_MAX/(1024*1024) || value < INT_MIN/(1024*1024))
-	  errno = ERANGE;
-	else
-	  value *= 1024*1024;
-        endptr++;
-        }
-      else if (tolower(*endptr) == 'm')
-        {
-        if (value > INT_MAX/1024 || value < INT_MIN/1024)
-	  errno = ERANGE;
-	else
-	  value *= 1024;
-        endptr++;
-        }
-      else if (tolower(*endptr) == 'k')
-        endptr++;
+    if (errno != ERANGE && *endptr)
+      {
+      uschar * mp = US"EePpTtGgMmKk\0";	/* YyZzEePpTtGgMmKk */
+
+      if ((mp = Ustrchr(mp, *endptr)))
+	{
+	endptr++;
+	do
+	  {
+	  if (lvalue > EXIM_ARITH_MAX/1024 || lvalue < EXIM_ARITH_MIN/1024)
+	    {
+	    errno = ERANGE;
+	    break;
+	    }
+	  lvalue *= 1024;
+	  }
+	while (*(mp += 2));
+	}
       else
-        value = (value + 512)/1024;
+	lvalue = (lvalue + 512)/1024;
+      }
 
     if (errno == ERANGE) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "absolute value of integer \"%s\" is too large (overflow)", s);
@@ -2222,13 +2219,13 @@ switch (type)
     while (isspace(*endptr)) endptr++;
     if (*endptr != 0)
       extra_chars_error(endptr, inttype, US"integer value for ", name);
-    }
 
-  if (data_block == NULL)
-    *((int *)(ol->value)) = value;
-  else
-    *((int *)(US data_block + (long int)(ol->value))) = value;
-  break;
+    if (data_block)
+      *(int_eximarith_t *)(US data_block + (long int)ol->value) = lvalue;
+    else
+      *(int_eximarith_t *)ol->value = lvalue;
+    break;
+    }
 
   /*  Fixed-point number: held to 3 decimal places. */
 
@@ -2485,11 +2482,12 @@ switch(ol->type & opt_mask)
 
   case opt_Kint:
     {
-    int x = *((int *)value);
+    int_eximarith_t x = *((int_eximarith_t *)value);
     if (!no_labels) printf("%s = ", name);
     if (x == 0) printf("0\n");
-    else if ((x & 1023) == 0) printf("%dM\n", x >> 10);
-    else printf("%dK\n", x);
+    else if ((x & ((1<<20)-1)) == 0) printf(PR_EXIM_ARITH "G\n", x >> 20);
+    else if ((x & ((1<<10)-1)) == 0) printf(PR_EXIM_ARITH "M\n", x >> 10);
+    else printf(PR_EXIM_ARITH "K\n", x);
     }
     break;
 

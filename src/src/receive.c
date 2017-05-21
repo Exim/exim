@@ -144,7 +144,7 @@ Returns:        available on-root space, in kilobytes
 All values are -1 if the STATFS functions are not available.
 */
 
-int
+int_eximarith_t
 receive_statvfs(BOOL isspool, int *inodeptr)
 {
 #ifdef HAVE_STATFS
@@ -223,7 +223,7 @@ if (STATVFS(CS path, &statbuf) != 0)
 
 /* Disks are getting huge. Take care with computing the size in kilobytes. */
 
-return (int)(((double)statbuf.F_BAVAIL * (double)statbuf.F_FRSIZE)/1024.0);
+return (int_eximarith_t)(((double)statbuf.F_BAVAIL * (double)statbuf.F_FRSIZE)/1024.0);
 
 #else
 /* Unable to find partition sizes in this environment. */
@@ -258,7 +258,8 @@ Returns:       FALSE if there isn't enough space, or if the information cannot
 BOOL
 receive_check_fs(int msg_size)
 {
-int space, inodes;
+int_eximarith_t space;
+int inodes;
 
 if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
   {
@@ -266,7 +267,7 @@ if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
 
   DEBUG(D_receive)
     debug_printf("spool directory space = %dK inodes = %d "
-      "check_space = %dK inodes = %d msg_size = %d\n",
+      "check_space = " PR_EXIM_ARITH "K inodes = %d msg_size = %d\n",
       space, inodes, check_spool_space, check_spool_inodes, msg_size);
 
   if ((space >= 0 && space < check_spool_space) ||
@@ -284,7 +285,7 @@ if (check_log_space > 0 || check_log_inodes > 0)
 
   DEBUG(D_receive)
     debug_printf("log directory space = %dK inodes = %d "
-      "check_space = %dK inodes = %d\n",
+      "check_space = " PR_EXIM_ARITH "K inodes = %d\n",
       space, inodes, check_log_space, check_log_inodes);
 
   if ((space >= 0 && space < check_log_space) ||

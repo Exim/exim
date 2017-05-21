@@ -1,3 +1,4 @@
+check_spool_space = 4096000G
 finduser_retries = 0
 finduser_retries = 999999999
 finduser_retries = 1023998976

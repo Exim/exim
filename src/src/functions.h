@@ -376,7 +376,7 @@ extern void    receive_bomb_out(uschar *, uschar *);
 extern BOOL    receive_check_fs(int);
 extern BOOL    receive_check_set_sender(uschar *);
 extern BOOL    receive_msg(BOOL);
-extern int     receive_statvfs(BOOL, int *);
+extern int_eximarith_t receive_statvfs(BOOL, int *);
 extern void    receive_swallow_smtp(void);
 #ifdef WITH_CONTENT_SCAN
 extern int     regex(const uschar **);

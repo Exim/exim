@@ -1,7 +1,7 @@
 # Exim test configuration 0180
 
 # Require immense amount of disk space, expecting to fail.  Can unfortunately work on big filesystems.
-CSS=check_spool_space=400G
+CSS=check_spool_space=1024T
 
 .include DIR/aux-var/std_conf_prefix
 

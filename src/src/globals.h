@@ -382,10 +382,10 @@ extern int     callout_cache_negative_expire; /* Time for negative callout cache
 extern uschar *callout_random_local_part; /* Local part to be used to check if server called will accept any local part */
 extern uschar *check_dns_names_pattern;/* Regex for syntax check */
 extern int     check_log_inodes;       /* Minimum for message acceptance */
-extern int     check_log_space;        /* Minimum for message acceptance */
+extern int_eximarith_t check_log_space; /* Minimum for message acceptance */
 extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length */
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
-extern int     check_spool_space;      /* Minimum for message acceptance */
+extern int_eximarith_t check_spool_space; /* Minimum for message acceptance */
 extern uschar *chunking_advertise_hosts;    /* RFC 3030 CHUNKING */
 extern unsigned chunking_datasize;
 extern unsigned chunking_data_left;

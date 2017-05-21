@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 Exim configuration error in line 15 of TESTSUITE/test-config:
-  absolute value of integer "4000000M" is too large (overflow)
+  absolute value of integer "4000E" is too large (overflow)
 1999-03-02 09:44:33 Exim configuration error in line 15 of TESTSUITE/test-config:
   extra characters follow integer value for check_spool_space
 1999-03-02 09:44:33 Exim configuration error in line 16 of TESTSUITE/test-config:
