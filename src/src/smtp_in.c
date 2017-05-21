@@ -4230,26 +4230,34 @@ while (done <= 0)
 	auth_instance *au;
 	BOOL first = TRUE;
 	for (au = auths; au; au = au->next)
-	  if (au->server && (au->advertise_condition == NULL ||
-	      expand_check_condition(au->advertise_condition, au->name,
-	      US"authenticator")))
+	  {
+	  au->advertised = FALSE;
+	  if (au->server)
 	    {
-	    int saveptr;
-	    if (first)
+	    DEBUG(D_auth+D_expand) debug_printf_indent(
+	      "Evaluating advertise_condition for %s athenticator\n",
+	      au->public_name);
+	    if (  !au->advertise_condition
+	       || expand_check_condition(au->advertise_condition, au->name,
+		      US"authenticator")
+	       )
 	      {
-	      s = string_catn(s, &size, &ptr, smtp_code, 3);
-	      s = string_catn(s, &size, &ptr, US"-AUTH", 5);
-	      first = FALSE;
-	      auth_advertised = TRUE;
+	      int saveptr;
+	      if (first)
+		{
+		s = string_catn(s, &size, &ptr, smtp_code, 3);
+		s = string_catn(s, &size, &ptr, US"-AUTH", 5);
+		first = FALSE;
+		auth_advertised = TRUE;
+		}
+	      saveptr = ptr;
+	      s = string_catn(s, &size, &ptr, US" ", 1);
+	      s = string_cat (s, &size, &ptr, au->public_name);
+	      while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
+	      au->advertised = TRUE;
 	      }
-	    saveptr = ptr;
-	    s = string_catn(s, &size, &ptr, US" ", 1);
-	    s = string_cat (s, &size, &ptr, au->public_name);
-	    while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
-	    au->advertised = TRUE;
 	    }
-	  else
-	    au->advertised = FALSE;
+	  }
 
 	if (!first) s = string_catn(s, &size, &ptr, US"\r\n", 2);
 	}
