@@ -11195,8 +11195,8 @@ example is:
 ${if match_domain{a.b.c}{x.y.z:a.b.c:p.q.r}{yes}{no}}
 .endd
 In each case, the second argument may contain any of the allowable items for a
-list of the appropriate type. Also, because the second argument (after
-expansion) is a standard form of list, it is possible to refer to a named list.
+list of the appropriate type. Also, because the second argument
+is a standard form of list, it is possible to refer to a named list.
 Thus, you can use conditions like this:
 .code
 ${if match_domain{$domain}{+local_domains}{...
