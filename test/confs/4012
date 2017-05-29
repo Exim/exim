@@ -1,0 +1,29 @@
+# Exim test configuration 4012
+# Content-scan: sock interface
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+av_scanner = sock : 127.0.0.1 PORT_S : : BAD : NAME:: (\w+)
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = c_data
+
+begin acl
+
+c_data:
+  accept !malware = * OPT
+  deny	 logwrite = $callout_address malware_name $malware_name
+
+# ----- Routers -----
+
+begin routers
+
+r:
+  driver = redirect
+  data = :blackhole:
+
+# End

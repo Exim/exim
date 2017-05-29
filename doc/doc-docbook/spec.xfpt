@@ -31702,13 +31702,17 @@ an address (which may be an IP address and port, or the path of a Unix socket),
 a commandline to send (may include a single %s which will be replaced with
 the path to the mail file to be scanned),
 an RE to trigger on from the returned data,
-an RE to extract malware_name from the returned data.
+and an RE to extract malware_name from the returned data.
 For example:
 .code
-av_scanner = sock:127.0.0.1 6001:%s:(SPAM|VIRUS):(.*)\$
+av_scanner = sock:127.0.0.1 6001:%s:(SPAM|VIRUS):(.*)$
 .endd
+.new
+Note that surrounding whitespace is stripped from each option, meaning
+there is no way to specify a trailing newline.
+.wen
 Default for the socket specifier is &_/tmp/malware.sock_&.
-Default for the commandline is &_%s\n_&.
+Default for the commandline is &_%s\n_& (note this does have a trailing newline).
 Both regular-expressions are required.
 
 .vitem &%sophie%&

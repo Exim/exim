@@ -98,6 +98,10 @@ PP/05 OpenSSL/1.1: use DH_bits() for more accurate DH param sizes.  This
       configured limit or use OpenSSL 1.1.  Nothing we can do for older
       versions.
 
+JH/14 For the "sock" variant of the malware scanner interface, accept an empty
+      cmdline element to get the documented default one.  Previously it was
+      inaccessible.
+
 
 Exim version 4.89
 -----------------
