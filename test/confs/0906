@@ -18,7 +18,7 @@ spool_wireformat = true
 primary_hostname = testhost.test.ex
 domainlist local_domains = @ : test.ex
 
-acl_smtp_rcpt = accept
+acl_smtp_rcpt = acl_r
 log_selector = +received_recipients
 
 .ifdef _OPT_MAIN_TLS_CERTIFICATE
@@ -27,6 +27,12 @@ tls_privatekey = DIR/aux-fixed/cert1
 .endif
 
 # ----- ACL -----
+
+begin acl
+acl_r:
+ accept	condition = ${if != {$received_port}{PORT_S}}
+	control = queue_only
+ accept
 
 # ----- Routers -----
 

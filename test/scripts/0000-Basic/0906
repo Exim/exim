@@ -119,4 +119,6 @@ QUIT
 #
 sleep 1
 killdaemon
+exim -q
+****
 no_msglog_check
