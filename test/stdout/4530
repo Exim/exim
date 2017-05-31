@@ -31,7 +31,7 @@ Connecting to 127.0.0.1 port 1224 ... connected
 >>> last line: 4
 >>> .
 ??? 250
-<<< 250 OK id=10HmaX-0005vi-00
+<<< 250 OK id=10HmaZ-0005vi-00
 >>> QUIT
 ??? 221
 <<< 221 testhost.test.ex closing connection
@@ -68,7 +68,7 @@ Connecting to 127.0.0.1 port 1224 ... connected
 ??? 250-
 <<< 250- 129 byte chunk, total 129
 ??? 250
-<<< 250 OK id=10HmaZ-0005vi-00
+<<< 250 OK id=10HmbA-0005vi-00
 >>> QUIT
 ??? 221
 <<< 221 testhost.test.ex closing connection
