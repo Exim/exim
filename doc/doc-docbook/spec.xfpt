@@ -4268,7 +4268,7 @@ or &%-bs%& is used. For &%-bh%&, the protocol is forced to one of the standard
 SMTP protocol names (see the description of &$received_protocol$& in section
 &<<SECTexpvar>>&). For &%-bs%&, the protocol is always &"local-"& followed by
 one of those same names. For &%-bS%& (batched SMTP) however, the protocol can
-be set by &%-oMr%&.
+be set by &%-oMr%&. Repeated use of this option is not supported.
 
 .vitem &%-oMs%&&~<&'host&~name'&>
 .oindex "&%-oMs%&"
@@ -4368,6 +4368,7 @@ host name and its colon can be omitted when only the protocol is to be set.
 Note the Exim already has two private options, &%-pd%& and &%-ps%&, that refer
 to embedded Perl. It is therefore impossible to set a protocol value of &`d`&
 or &`s`& using this option (but that does not seem a real limitation).
+Repeated use of this option is not supported.
 
 .vitem &%-q%&
 .oindex "&%-q%&"

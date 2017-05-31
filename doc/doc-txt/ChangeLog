@@ -10,6 +10,8 @@ Exim version 4.89+fixes
 Cherry-Picked from the master development branch
 -------------------------------------------------
 
+HS/01 Cleanup, prevent repeated use of -p/-oMr (CVE-2017-1000369)
+
 
 Exim version 4.89
 -----------------
