@@ -1,6 +1,4 @@
-# Exim test configuration 2035
-
-OPT =
+# Exim test configuration 2135
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -15,73 +13,62 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = check_rcpt
-acl_smtp_data = check_data
+.ifdef SERVER
+acl_smtp_rcpt = srvr_rcpt
+acl_smtp_data = srvr_data
+.else
+acl_smtp_rcpt = client_rcpt
+acl_smtp_data = client_data
+.endif
 
 log_selector = +received_recipients +outgoing_port
-OPT
+
+.ifdef SERVER
+queue_only
+queue_run_in_order = true
+.endif
 
 # ----- ACLs -----
 
 begin acl
 
-check_rcpt:
+client_rcpt:
   accept
-	condition =	${if or { {!eq {SERVER}{server}} {= {$received_port}{PORT_S}} }}
 	verify =	recipient/callout=use_sender,hold
-  defer	condition =	${if eq {SERVER}{server}}
-	local_parts =	rcpt_defer
+
+client_data:
   accept
 
-check_data:
-  warn	logwrite =	received on port $received_port
-  defer	condition =	${if eq {SERVER}{server}}
-	condition =	${if eq {data_defer}{${local_part:$recipients}}}
+srvr_rcpt:
+  defer	local_parts =	rcpt_defer
   accept
 
-delay:
-  warn	condition =	${if = {$received_port}{PORT_D}}
-	delay =		1s
+srvr_data:
+  defer	condition =	${if eq {data_defer}{${local_part:$recipients}}}
   accept
 
 # ----- Routers -----
 
 begin routers
 
-.ifdef SERVER
-
 target:
-  driver = redirect
-  condition =		${if = {$received_port}{PORT_D}}
-  address_data =	${acl {delay}}
-  data =		:blackhole:
-
-dut:
-  driver = manualroute
-  route_list = * 127.0.0.1
-  self = send
-  transport = t1
-
-.else
+  driver =	redirect
+  condition =	${if or {{eq {SERVER}{server}} {queue_running}}}
+  data =	:blackhole:
 
 client:
-  driver = manualroute
-  route_list = * 127.0.0.1
-  self = send
-  transport = t1
-  errors_to = ""
-
-.endif
-
+  driver =	manualroute
+  route_list=	* 127.0.0.1::PORT_D
+  self =	send
+  transport =	t1
+  errors_to =	""
 
 begin transports
 
 t1:
-  driver = smtp
-  port =   PORT_D
-  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
-  tls_verify_cert_hostnames = :
-
+  driver =	smtp
+  tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_verify_cert_hostnames =	:
 
 # ----- Retry -----
 begin retry

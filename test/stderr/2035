@@ -1,0 +1,73 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+Transport port=25 replaced by host-specific port=1225
+Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
+  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+  SMTP>> EHLO myhost.test.ex
+cmd buf flush ddd bytes
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-8BITMIME
+         250-PIPELINING
+         250-STARTTLS
+         250 HELP
+  SMTP>> STARTTLS
+cmd buf flush ddd bytes
+  SMTP<< 220 TLS go ahead
+  SMTP>> EHLO myhost.test.ex
+cmd buf flush ddd bytes
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-8BITMIME
+         250-PIPELINING
+         250 HELP
+using PIPELINING
+not using DSN
+  SMTP>> MAIL FROM:<usera@ok.example> SIZE=ssss
+  SMTP>> RCPT TO:<userb@test.ex>
+cmd buf flush ddd bytes
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
+--------> userb@test.ex <--------
+t1 transport entered
+  userb@test.ex
+hostlist:
+  127.0.0.1:1225
+already connected to 127.0.0.1 [127.0.0.1] (on fd 0)
+checking status of 127.0.0.1
+127.0.0.1 [127.0.0.1]:1111 retry-status = usable
+delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userb@test.ex)
+continued connection, proxied TLS
+  SMTP>> DATA
+cmd buf flush ddd bytes
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP>> writing message and terminating "."
+cannot use sendfile for body: spoolfile not wireformat
+writing data block fd=dddd size=sss timeout=300
+  SMTP<< 250 OK id=10HmaY-0005vi-00
+ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
+  SMTP>> QUIT
+cmd buf flush ddd bytes
+  SMTP(close)>>
+Leaving t1 transport
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:25 X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no C="250 OK id=10HmaY-0005vi-00"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+
+******** SERVER ********

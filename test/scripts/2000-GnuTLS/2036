@@ -2,6 +2,7 @@
 gnutls
 need_ipv4
 #
+# a recipient verify and continued-delivery
 # smtp send
 # a tls-capable target for the verify/delivery connection on PORT_D
 # plus a daemon under test on PORT_S
@@ -33,6 +34,8 @@ QUIT
 ****
 sleep 3
 killdaemon
+exim -q
+****
 #
 #
 # smtp send, deliver_drop_priv
@@ -64,6 +67,9 @@ QUIT
 ****
 sleep 3
 killdaemon
+exim -q
+****
+#
 #
 #
 no_stdout_check

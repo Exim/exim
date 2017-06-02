@@ -33,6 +33,8 @@ QUIT
 ****
 sleep 3
 killdaemon
+exim -q
+****
 #
 #
 # smtp send, deliver_drop_priv
@@ -64,6 +66,8 @@ QUIT
 ****
 sleep 3
 killdaemon
+exim -q
+****
 #
 #
 #
