@@ -38644,7 +38644,7 @@ The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
 .vitem &%$dkim_canon_body%&
 The body canonicalization method. One of 'relaxed' or 'simple'.
 
-.vitem &%dkim_canon_headers%&
+.vitem &%$dkim_canon_headers%&
 The header canonicalization method. One of 'relaxed' or 'simple'.
 
 .vitem &%$dkim_copiedheaders%&
