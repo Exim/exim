@@ -1846,7 +1846,7 @@ else
   else
     {
     sx->inblock.sock = sx->outblock.sock = 0;	/* stdin */
-    sx->host->port = sx->port;    /* Record the port that was used */
+    smtp_port_for_connect(sx->host, sx->port);	/* Record the port that was used */
     }
   smtp_command = big_buffer;
   sx->helo_data = NULL;		/* ensure we re-expand ob->helo_data */
@@ -2660,7 +2660,8 @@ Arguments:
                   failed by one of them.
   host            host to deliver to
   host_af         AF_INET or AF_INET6
-  port            default TCP/IP port to use, in host byte order
+  defport         default TCP/IP port to use if host does not specify, in host
+		  byte order
   interface       interface to bind to, or NULL
   tblock          transport instance block
   message_defer   set TRUE if yield is OK, but all addresses were deferred
@@ -2682,7 +2683,7 @@ Returns:          OK    - the connection was made and the delivery attempted;
 */
 
 static int
-smtp_deliver(address_item *addrlist, host_item *host, int host_af, int port,
+smtp_deliver(address_item *addrlist, host_item *host, int host_af, int defport,
   uschar *interface, transport_instance *tblock,
   BOOL *message_defer, BOOL suppress_tls)
 {
@@ -2705,7 +2706,7 @@ suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 sx.addrlist = addrlist;
 sx.host = host;
 sx.host_af = host_af,
-sx.port = port;
+sx.port = defport;
 sx.interface = interface;
 sx.helo_data = NULL;
 sx.tblock = tblock;
@@ -3661,7 +3662,7 @@ smtp_transport_entry(
   address_item *addrlist)          /* addresses we are working on */
 {
 int cutoff_retry;
-int port;
+int defport;
 int hosts_defer = 0;
 int hosts_fail  = 0;
 int hosts_looked_up = 0;
@@ -3816,7 +3817,7 @@ else if (ob->hosts_randomize && hostlist->mx == MX_NONE && !continue_hostname)
 
 /* Sort out the default port.  */
 
-if (!smtp_get_port(ob->port, addrlist, &port, tid)) return FALSE;
+if (!smtp_get_port(ob->port, addrlist, &defport, tid)) return FALSE;
 
 /* For each host-plus-IP-address on the list:
 
@@ -4055,7 +4056,7 @@ for (cutoff_retry = 0;
     the default. */
 
     pistring = string_sprintf(":%d", host->port == PORT_NONE
-      ? port : host->port);
+      ? defport : host->port);
     if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
 
     /* Select IPv4 or IPv6, and choose an outgoing interface. If the interface
@@ -4255,7 +4256,7 @@ for (cutoff_retry = 0;
       /* Attempt the delivery. */
 
       total_hosts_tried++;
-      rc = smtp_deliver(addrlist, thost, host_af, port, interface, tblock,
+      rc = smtp_deliver(addrlist, thost, host_af, defport, interface, tblock,
         &message_defer, FALSE);
 
       /* Yield is one of:
@@ -4302,7 +4303,7 @@ for (cutoff_retry = 0;
 	  "%s: delivering unencrypted to H=%s [%s] (not in hosts_require_tls)",
 	  first_addr->message, host->name, host->address);
         first_addr = prepare_addresses(addrlist, host);
-        rc = smtp_deliver(addrlist, thost, host_af, port, interface, tblock,
+        rc = smtp_deliver(addrlist, thost, host_af, defport, interface, tblock,
           &message_defer, TRUE);
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
           write_logs(first_addr, host);

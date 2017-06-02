@@ -106,6 +106,9 @@ JH/15 Fix a crash in the smtp transport caused when two hosts in succession
       are unsuable for non-message-specific reasons - eg. connection timeout,
       banner-time rejection.
 
+JH/16 Fix logging of delivery remote port, when specified by router, under
+      callout/hold.
+
 
 Exim version 4.89
 -----------------
