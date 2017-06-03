@@ -9,6 +9,8 @@ QUIT
 exim -odi userx@domain1
 Test message 1
 ****
+sudo rm DIR/spool/db/*
+#
 server PORT_S
 220 Connected OK
 EHLO
@@ -20,6 +22,8 @@ QUIT
 ****
 exim -qf
 ****
+sudo rm DIR/spool/db/*
+#
 server PORT_S
 550 Go away
 QUIT
@@ -27,6 +31,8 @@ QUIT
 ****
 exim -qf
 ****
+sudo rm DIR/spool/db/*
+#
 server PORT_S
 220 Connected OK
 EHLO

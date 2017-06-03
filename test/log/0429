@@ -1,5 +1,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after HELO myhost.test.ex: 550 No
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** x@y R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after HELO myhost.test.ex: 550 No
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

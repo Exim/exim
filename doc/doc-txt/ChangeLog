@@ -102,6 +102,10 @@ JH/14 For the "sock" variant of the malware scanner interface, accept an empty
       cmdline element to get the documented default one.  Previously it was
       inaccessible.
 
+JH/15 Fix a crash in the smtp transport caused when two hosts in succession
+      are unsuable for non-message-specific reasons - eg. connection timeout,
+      banner-time rejection.
+
 
 Exim version 4.89
 -----------------
