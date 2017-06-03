@@ -2128,25 +2128,34 @@ return OK;
 
   /* The failure happened while setting up the call; see if the failure was
   a 5xx response (this will either be on connection, or following HELO - a 5xx
-  after EHLO causes it to try HELO). If so, fail all addresses, as this host is
-  never going to accept them. For other errors during setting up (timeouts or
-  whatever), defer all addresses, and yield DEFER, so that the host is not
-  tried again for a while. */
+  after EHLO causes it to try HELO). If so, and there are no more hosts to try,
+  fail all addresses, as this host is never going to accept them. For other
+  errors during setting up (timeouts or whatever), defer all addresses, and
+  yield DEFER, so that the host is not tried again for a while.
+
+  XXX This peeking for another host feels like a layering violation. We want
+  to note the host as unusable, but down here we shouldn't know if this was
+  the last host to try for the addr(list).  Perhaps the upper layer should be
+  the one to do set_errno() ?  The problem is that currently the addr is where
+  errno etc. are stashed, but until we run out of hosts to try the errors are
+  host-specific.  Maybe we should enhance the host_item definition? */
 
 FAILED:
   sx->ok = FALSE;                /* For when reached by GOTO */
-
-  yield = code == '5'
+  set_errno(sx->addrlist, errno, message,
+	    sx->host->next
+	    ? DEFER
+	    : code == '5'
 #ifdef SUPPORT_I18N
-	  || errno == ERRNO_UTF8_FWD
+			|| errno == ERRNO_UTF8_FWD
 #endif
-    ? FAIL : DEFER;
-
-  set_errno(sx->addrlist, errno, message, yield, pass_message, sx->host
+	    ? FAIL : DEFER,
+	    pass_message, sx->host
 #ifdef EXPERIMENTAL_DSN_INFO
 	    , sx->smtp_greeting, sx->helo_response
 #endif
 	    );
+  yield = DEFER;
   }
 
 

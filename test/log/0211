@@ -14,6 +14,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Test: reject connect
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 550 Go away (A)
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 550 Go away (A)
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> F=<> R=all T=local_delivery
@@ -22,6 +23,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Test: reject helo
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away (C)
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away (C)
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** usery@domain2 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away (C)
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
@@ -32,3 +34,9 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbB-0005vi-00 H=localhost4.test.ex [127.0.0.1]: Remote host closed connection in response to HELO the.local.host.name (EHLO response was: 550 You are banned)
 1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@domain1 R=others T=smtp defer (-18) H=localhost4.test.ex [127.0.0.1]: Remote host closed connection in response to HELO the.local.host.name (EHLO response was: 550 You are banned)
+1999-03-02 09:44:33 Test: smtp-reject conn on 1MX, timeout TCP conn on 2MX
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 554 no smtp service here
+1999-03-02 09:44:33 10HmbB-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP timeout after initial connection: Connection timed out
+1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@domain1 R=others T=smtp defer (dd): Connection timed out H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: SMTP timeout after initial connection
+1999-03-02 09:44:33 End queue run: pid=pppp -qf

@@ -46,6 +46,10 @@ JH/26 Fix DKIM bug: when the pseudoheader generated for signing was exactly
 JH/27 Fix SOCKS bug: an unitialized pointer was deref'd by the transport process
       which could crash as a result.  This could lead to undeliverable messages.
 
+JH/15 Fix a crash in the smtp transport caused when two hosts in succession
+      are unsuable for non-message-specific reasons - eg. connection timeout,
+      banner-time rejection.
+
 
 Exim version 4.89
 -----------------
