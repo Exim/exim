@@ -31710,10 +31710,10 @@ av_scanner = sock:127.0.0.1 6001:%s:(SPAM|VIRUS):(.*)$
 .new
 Note that surrounding whitespace is stripped from each option, meaning
 there is no way to specify a trailing newline.
+The socket specifier and both regular-expressions are required.
+Default for the commandline is &_%s\n_& (note this does have a trailing newline);
+specify an empty element to get this.
 .wen
-Default for the socket specifier is &_/tmp/malware.sock_&.
-Default for the commandline is &_%s\n_& (note this does have a trailing newline).
-Both regular-expressions are required.
 
 .vitem &%sophie%&
 .cindex "virus scanners" "Sophos and Sophie"
