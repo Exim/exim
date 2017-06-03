@@ -30,7 +30,11 @@ begin routers
 others:
   driver = manualroute
   domains = ! +local_domains
-  route_list = * localhost4.test.ex byname
+.ifdef LIST
+  route_data = 127.0.0.1:HOSTIPV4
+.else
+  route_data = localhost4.test.ex byname
+.endif
   self = send
   transport = smtp
   no_more
@@ -48,6 +52,7 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_S
+  command_timeout = 1s
 
 local_delivery:
   driver = appendfile

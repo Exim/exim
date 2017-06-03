@@ -6,6 +6,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@domain1 R=others T=smtp defer (0) H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 450 I'm busy
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 550 Go away
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after initial connection: 550 Go away
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> F=<> R=all T=local_delivery
@@ -13,6 +14,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** userx@domain1 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** usery@domain2 F=<CALLER@test.ex> R=others T=smtp H=localhost4.test.ex [127.0.0.1]: SMTP error from remote mail server after HELO the.local.host.name: 550 Go away
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss

@@ -13,6 +13,7 @@ exim -odi userx@domain1
 Test message 1
 ****
 #
+sudo rm DIR/spool/db/*
 exim -z "Test: temp-rej helo"
 ****
 server PORT_S
@@ -27,6 +28,7 @@ QUIT
 exim -qf
 ****
 #
+sudo rm DIR/spool/db/*
 exim -z "Test: drop conn after banner"
 ****
 server PORT_S
@@ -35,6 +37,7 @@ server PORT_S
 exim -qf
 ****
 #
+sudo rm DIR/spool/db/*
 exim -z "Test: reject connect"
 ****
 server PORT_S
@@ -45,6 +48,7 @@ QUIT
 exim -qf
 ****
 #
+sudo rm DIR/spool/db/*
 exim -z "Test: reject helo"
 ****
 server PORT_S
@@ -71,6 +75,21 @@ HELO
 ****
 exim -odi userx@domain1
 Test message 4
+****
+#
+#
+#
+sudo rm DIR/spool/db/*
+exim -z "Test: smtp-reject conn on 1MX, timeout TCP conn on 2MX"
+****
+server PORT_S 2
+554 no smtp service here
+QUIT
+220 bye
+*eof
+*sleep 2
+****
+exim -DLIST -qf
 ****
 #
 #

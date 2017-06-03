@@ -5,6 +5,108 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Exim version 4.90
+-----------------
+
+JH/01 Rework error string handling in TLS interface so that the caller in
+      more cases is responsible for logging.  This permits library-sourced
+      string to be attached to addresses during delivery, and collapses
+      pairs of long lines into single ones.
+
+PP/01 Allow PKG_CONFIG_PATH to be set in Local/Makefile and use it correctly
+      during configuration.  Wildcards are allowed and expanded.
+
+JH/02 Rework error string handling in DKIM to pass more info back to callers.
+      This permits better logging.
+
+JH/03 Rework the transport continued-connection mechanism: when TLS is active,
+      do not close it down and have the child transport start it up again on
+      the passed-on TCP connection.  Instead, proxy the child (and any
+      subsequent ones) for TLS via a unix-domain socket channel.  Logging is
+      affected: the continued delivery log lines do not have any DNSSEC, TLS
+      Certificate or OCSP information.  TLS cipher information is still logged.
+
+JH/04 Shorten the log line for daemon startup by collapsing adjacent sets of
+      identical IP addresses on different listening ports.  Will also affect
+      "exiwhat" output.
+
+PP/02 Bug 2070: uClibc defines __GLIBC__ without providing glibc headers;
+      add noisy ifdef guards to special-case this sillyness.
+      Patch from Bernd Kuhls.
+
+JH/05 Tighten up the checking in isip4 (et al): dotted-quad components larger
+      than 255 are no longer allowed.
+
+JH/06 Default openssl_options to include +no_ticket, to reduce load on peers.
+      Disable the session-cache too, which might reduce our load.  Since we
+      currrectly use a new context for every connection, both as server and
+      client, there is no benefit for these.
+      GnuTLS appears to not support tickets server-side by default (we don't
+      call gnutls_session_ticket_enable_server()) but client side is enabled
+      by default on recent versions (3.1.3 +) unless the PFS priority string
+      is used (3.2.4 +).
+
+PP/03 Add $SOURCE_DATE_EPOCH support for reproducible builds, per spec at
+      <https://reproducible-builds.org/specs/source-date-epoch/>.
+
+JH/07 Fix smtp transport use of limited max_rcpt under mua_wrapper. Previously
+      the check for any unsuccessful recipients did not notice the limit, and
+      erroneously found still-pending ones.
+
+JH/08 Pipeline CHUNKING command and data together, on kernels that support
+      MSG_MORE.  Only in-clear (not on TLS connections).
+
+JH/09 Avoid using a temporary file during transport using dkim.  Unless a
+      transport-filter is involved we can buffer the headers in memory for
+      creating the signature, and read the spool data file once for the
+      signature and again for transmission.
+
+JH/10 Enable use of sendfile in Linux builds as default.  It was disabled in
+      4.77 as the kernel support then wasn't solid, having issues in 64bit
+      mode.  Now, it's been long enough.  Add support for FreeBSD also.
+
+JH/11 Bug 2104: Fix continued use of a transport connection with TLS.  In the
+      case where the routing stage had gathered several addresses to send to
+      a host before calling the transport for the first, we previously failed
+      to close down TLS in the old transport process before passing the TCP
+      connection to the new process.  The new one sent a STARTTLS command
+      which naturally failed, giving a failed delivery and bloating the retry
+      database.  Investigation and fix prototype from Wolfgang Breyha.
+
+JH/12 Fix check on SMTP command input synchronisation.  Previously there were
+      false-negatives in the check that the sender had not preempted a response
+      or prompt from Exim (running as a server), due to that code's lack of
+      awareness of the SMTP input buffering.
+
+PP/04 Add commandline_checks_require_admin option.
+      Exim drops privileges sanely, various checks such as -be aren't a
+      security problem, as long as you trust local users with access to their
+      own account.  When invoked by services which pass untrusted data to
+      Exim, this might be an issue.  Set this option in main configuration
+      AND make fixes to the calling application, such as using `--` to stop
+      processing options.
+
+JH/13 Do pipelining under TLS.  Previously, although safe, no advantage was
+      taken.  Now take care to pack both (client) MAIL,RCPT,DATA, and (server)
+      responses to those, into a single TLS record each way (this usually means
+      a single packet).  As a side issue, smtp_enforce_sync now works on TLS
+      connections.
+
+PP/05 OpenSSL/1.1: use DH_bits() for more accurate DH param sizes.  This
+      affects you only if you're dancing at the edge of the param size limits.
+      If you are, and this message makes sense to you, then: raise the
+      configured limit or use OpenSSL 1.1.  Nothing we can do for older
+      versions.
+
+JH/14 For the "sock" variant of the malware scanner interface, accept an empty
+      cmdline element to get the documented default one.  Previously it was
+      inaccessible.
+
+JH/15 Fix a crash in the smtp transport caused when two hosts in succession
+      are unsuable for non-message-specific reasons - eg. connection timeout,
+      banner-time rejection.
+
+
 Exim version 4.89
 -----------------
 
