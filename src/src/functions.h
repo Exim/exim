@@ -14,7 +14,7 @@ are in in fact in separate headers. */
 
 #ifdef EXIM_PERL
 extern uschar *call_perl_cat(uschar *, int *, int *, uschar **, uschar *,
-                 uschar **);
+                 uschar **) WARN_UNUSED_RESULT;
 extern void    cleanup_perl(void);
 extern uschar *init_perl(uschar *);
 #endif
@@ -439,12 +439,12 @@ extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
 extern int     stdin_ungetc(int);
-extern uschar *string_append(uschar *, int *, int *, int, ...);
+extern uschar *string_append(uschar *, int *, int *, int, ...) WARN_UNUSED_RESULT;
 extern uschar *string_append_listele(uschar *, uschar, const uschar *);
 extern uschar *string_append_listele_n(uschar *, uschar, const uschar *, unsigned);
 extern uschar *string_base62(unsigned long int);
-extern uschar *string_cat(uschar *, int *, int *, const uschar *);
-extern uschar *string_catn(uschar *, int *, int *, const uschar *, int);
+extern uschar *string_cat(uschar *, int *, int *, const uschar *) WARN_UNUSED_RESULT;
+extern uschar *string_catn(uschar *, int *, int *, const uschar *, int) WARN_UNUSED_RESULT;
 extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);

@@ -30,11 +30,13 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 the arguments of printf-like functions. This is done by a macro. */
 
 #if defined(__GNUC__) || defined(__clang__)
-# define PRINTF_FUNCTION(A,B)  __attribute__((format(printf,A,B)))
-# define ARG_UNUSED  __attribute__((__unused__))
+# define PRINTF_FUNCTION(A,B)	__attribute__((format(printf,A,B)))
+# define ARG_UNUSED		__attribute__((__unused__))
+# define WARN_UNUSED_RESULT	__attribute__((__warn_unused_result__))
 #else
 # define PRINTF_FUNCTION(A,B)
 # define ARG_UNUSED  /**/
+# define WARN_UNUSED_RESULT /**/
 #endif
 
 #ifdef WANT_DEEPER_PRINTF_CHECKS
