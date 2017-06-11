@@ -4468,7 +4468,10 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 
     if (!ok)
       {
-      DEBUG(D_deliver) debug_printf("not suitable for continue_transport\n");
+      DEBUG(D_deliver) debug_printf("not suitable for continue_transport (%s)\n",
+	Ustrcmp(continue_transport, tp->name) != 0
+	? string_sprintf("tpt %s vs %s", continue_transport, tp->name)
+	: string_sprintf("no host matching %s", continue_hostname));
       if (serialize_key) enq_end(serialize_key);
 
       if (addr->fallback_hosts && !fallback)
@@ -8467,12 +8470,14 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
 
     else if (pid == 0)		/* child: fork again to totally dosconnect */
       {
+      close(pfd[1]);
       if ((pid = fork()))
 	_exit(pid ? EXIT_FAILURE : EXIT_SUCCESS);
       smtp_proxy_tls(big_buffer, big_buffer_size, pfd[0], 5*60);
       exim_exit(0);
       }
 
+    close(pfd[0]);
     waitpid(pid, NULL, 0);
     (void) close(channel_fd);	/* release the client socket */
     channel_fd = pfd[1];

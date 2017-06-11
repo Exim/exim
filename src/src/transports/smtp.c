@@ -2568,14 +2568,14 @@ Arguments:
 void
 smtp_proxy_tls(uschar * buf, size_t bsize, int proxy_fd, int timeout)
 {
-fd_set fds;
+fd_set rfds, efds;
 int max_fd = MAX(proxy_fd, tls_out.active) + 1;
 int rc, i, fd_bits, nbytes;
 
 set_process_info("proxying TLS connection for continued transport");
-FD_ZERO(&fds);
-FD_SET(tls_out.active, &fds);
-FD_SET(proxy_fd, &fds);
+FD_ZERO(&rfds);
+FD_SET(tls_out.active, &rfds);
+FD_SET(proxy_fd, &rfds);
 
 for (fd_bits = 3; fd_bits; )
   {
@@ -2583,11 +2583,13 @@ for (fd_bits = 3; fd_bits; )
   time_t time_start = time(NULL);
 
   /* wait for data */
+  efds = rfds;
   do
     {
     struct timeval tv = { time_left, 0 };
 
-    rc = select(max_fd, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tv);
+    rc = select(max_fd,
+      (SELECT_ARG2_TYPE *)&rfds, NULL, (SELECT_ARG2_TYPE *)&efds, &tv);
 
     if (rc < 0 && errno == EINTR)
       if ((time_left -= time(NULL) - time_start) > 0) continue;
@@ -2597,16 +2599,24 @@ for (fd_bits = 3; fd_bits; )
       DEBUG(D_transport) if (rc == 0) debug_printf("%s: timed out\n", __FUNCTION__);
       return;
       }
+
+    if (FD_ISSET(tls_out.active, &efds) || FD_ISSET(proxy_fd, &efds))
+      {
+      DEBUG(D_transport) debug_printf("select: exceptional cond on %s fd\n",
+	FD_ISSET(proxy_fd, &efds) ? "proxy" : "tls");
+      return;
+      }
     }
-  while (rc < 0 || !(FD_ISSET(tls_out.active, &fds) || FD_ISSET(proxy_fd, &fds)));
+  while (rc < 0 || !(FD_ISSET(tls_out.active, &rfds) || FD_ISSET(proxy_fd, &rfds)));
 
   /* handle inbound data */
-  if (FD_ISSET(tls_out.active, &fds))
+  if (FD_ISSET(tls_out.active, &rfds))
     if ((rc = tls_read(FALSE, buf, bsize)) <= 0)
       {
       fd_bits &= ~1;
-      FD_CLR(tls_out.active, &fds);
+      FD_CLR(tls_out.active, &rfds);
       shutdown(proxy_fd, SHUT_WR);
+      timeout = 5;
       }
     else
       {
@@ -2614,15 +2624,14 @@ for (fd_bits = 3; fd_bits; )
 	if ((i = write(proxy_fd, buf + nbytes, rc - nbytes)) < 0) return;
       }
   else if (fd_bits & 1)
-    FD_SET(tls_out.active, &fds);
+    FD_SET(tls_out.active, &rfds);
 
   /* handle outbound data */
-  if (FD_ISSET(proxy_fd, &fds))
+  if (FD_ISSET(proxy_fd, &rfds))
     if ((rc = read(proxy_fd, buf, bsize)) <= 0)
       {
-      fd_bits &= ~2;
-      FD_CLR(proxy_fd, &fds);
-      shutdown(tls_out.active, SHUT_WR);
+      fd_bits = 0;
+      tls_close(FALSE, TRUE);
       }
     else
       {
@@ -2631,7 +2640,7 @@ for (fd_bits = 3; fd_bits; )
 	  return;
       }
   else if (fd_bits & 2)
-    FD_SET(proxy_fd, &fds);
+    FD_SET(proxy_fd, &rfds);
   }
 }
 #endif
@@ -3458,6 +3467,7 @@ propagate it from the initial
 	  if (pid > 0)		/* parent */
 	    {
 	    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
+	    close(pfd[0]);
 	    waitpid(pid, NULL, 0);
 	    tls_close(FALSE, FALSE);
 	    (void)close(sx.inblock.sock);
@@ -3467,6 +3477,7 @@ propagate it from the initial
 	    }
 	  else if (pid == 0)	/* child; fork again to disconnect totally */
 	    {
+	    close(pfd[1]);
 	    if ((pid = fork()))
 	      {
 	      DEBUG(D_transport) debug_printf("proxy-prox final-pid %d\n", pid);
