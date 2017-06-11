@@ -29,6 +29,15 @@ tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 begin routers
 
+.ifdef REQUIRE
+cl_override:
+  driver = manualroute
+  route_data = HOSTIPV4
+  retry_use_local_part
+  transport = send_to_server
+  self = send
+.endif
+
 client:
   driver = accept
   condition = ${if eq {SERVER}{server}{no}{yes}}
@@ -54,6 +63,7 @@ local_delivery:
 send_to_server:
   driver = smtp
   allow_localhost
+  hosts_override
   hosts = 127.0.0.1
   hosts_noproxy_tls = :
   port = PORT_D
