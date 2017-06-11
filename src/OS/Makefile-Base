@@ -602,7 +602,7 @@ crypt16.o:       $(HDRS) crypt16.c
 daemon.o:        $(HDRS) daemon.c
 dbfn.o:          $(HDRS) dbfn.c
 debug.o:         $(HDRS) debug.c
-deliver.o:       $(HDRS) deliver.c
+deliver.o:       $(HDRS) transports/smtp.h deliver.c
 directory.o:     $(HDRS) directory.c
 dns.o:           $(HDRS) dns.c
 enq.o:           $(HDRS) enq.c

@@ -9,6 +9,7 @@
 
 
 #include "exim.h"
+#include "transports/smtp.h"
 #include <assert.h>
 
 
@@ -4453,14 +4454,31 @@ for (delivery_count = 0; addr_remote; delivery_count++)
   if (continue_transport)
     {
     BOOL ok = Ustrcmp(continue_transport, tp->name) == 0;
-    if (ok && addr->host_list)
+
+    /* If the transport is about to override the host list do not check
+    it here but take the cost of running the transport process to discover
+    if the continued_hostname connection is suitable.  This is a layering
+    violation which is unfortunate as it requires we haul in the smtp
+    include file. */
+
+    if (ok)
       {
-      host_item *h;
-      ok = FALSE;
-      for (h = addr->host_list; h; h = h->next)
-        if (Ustrcmp(h->name, continue_hostname) == 0)
-/*XXX should also check port here */
-          { ok = TRUE; break; }
+      smtp_transport_options_block * ob;
+
+      if (  !(  tp->info->driver_name == US"smtp"
+	     && (ob = (smtp_transport_options_block *)tp->options_block)
+	     && ob->hosts_override && ob->hosts
+	     )
+	 && addr->host_list
+	 )
+	{
+	host_item * h;
+	ok = FALSE;
+	for (h = addr->host_list; h; h = h->next)
+	  if (Ustrcmp(h->name, continue_hostname) == 0)
+  /*XXX should also check port here */
+	    { ok = TRUE; break; }
+	}
       }
 
     /* Addresses not suitable; defer or queue for fallback hosts (which

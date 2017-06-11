@@ -11,7 +11,24 @@ Test message 2
 exim userz@test.ex
 Test message 3
 ****
-exim -qqf -d-all+acl
+exim -d-all+acl -qqf
+****
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qf
+****
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim usera@test.ex
+Test message 1
+****
+exim userb@test.ex
+Test message 2
+****
+exim userc@test.ex
+Test message 3
+****
+exim -DEQUIRE -d-all+acl -qqf
 ****
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -qf
