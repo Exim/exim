@@ -169,12 +169,12 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 		: sig->algo == PDKIM_ALGO_RSA_SHA1 ? "rsa-sha1" : "err",
 	string_sprintf(" b=%d",
 			(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
-  if ((s= sig->identity)) string_append(logmsg, &size, &ptr, 2, " i=", s);
-  if (sig->created > 0) string_append(logmsg, &size, &ptr, 1,
+  if ((s= sig->identity)) logmsg = string_append(logmsg, &size, &ptr, 2, " i=", s);
+  if (sig->created > 0) logmsg = string_append(logmsg, &size, &ptr, 1,
 				      string_sprintf(" t=%lu", sig->created));
-  if (sig->expires > 0) string_append(logmsg, &size, &ptr, 1,
+  if (sig->expires > 0) logmsg = string_append(logmsg, &size, &ptr, 1,
 				      string_sprintf(" x=%lu", sig->expires));
-  if (sig->bodylength > -1) string_append(logmsg, &size, &ptr, 1,
+  if (sig->bodylength > -1) logmsg = string_append(logmsg, &size, &ptr, 1,
 				      string_sprintf(" l=%lu", sig->bodylength));
 
   switch (sig->verify_status)
