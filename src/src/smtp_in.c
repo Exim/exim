@@ -339,8 +339,8 @@ int fd, rc;
 fd_set fds;
 struct timeval tzero;
 
-if (tls_in.active >= 0 && tls_could_read())
-  return FALSE;
+if (tls_in.active >= 0)
+ return !tls_could_read();
 
 if (smtp_inptr < smtp_inend)
   return FALSE;
@@ -3011,7 +3011,7 @@ if (rcpt_in_progress)
   rcpt_in_progress = FALSE;
   }
 
-/* Not output the message, splitting it up into multiple lines if necessary.
+/* Now output the message, splitting it up into multiple lines if necessary.
 We only handle pipelining these responses as far as nonfinal/final groups,
 not the whole MAIL/RCPT/DATA response set. */
 
