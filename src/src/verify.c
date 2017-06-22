@@ -801,6 +801,7 @@ tls_retry_connection:
 	  case PENDING_OK:
 	    new_domain_record.random_result = ccache_accept;
 	    break;
+	  case DEFER:
 	  case FAIL:
 	    new_domain_record.random_result = ccache_reject;
 
