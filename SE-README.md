@@ -105,10 +105,13 @@ This documents the patches applied on the upstream `exim-4_89` branch:
  - The CHUNKING extension is no longer advertised by default.
  - Internal ticket `#30986`
 
-### 14. Read encrypted conf
+### 14. Fix handling temporary rejection at callout
 
- - Applied [here](https://github.com/SpamExperts/exim/commit/448c95c573b187211ea102e0e811520a64d8aaf1)
+ - Correctly handles 4XX rejections when doing the random callout check.
+ - [Exim bug](https://bugs.exim.org/show_bug.cgi?id=2137)
+ - Applied [here](https://github.com/SpamExperts/exim/commit/6bc3d4e9dc26a178cd09592e818c836cf83183db)
+ - Internal ticket `#32589`
   
-### 14. Read encrypted conf
+### 15. Read encrypted conf
 
  - Applied [here](https://github.com/SpamExperts/exim/commit/448c95c573b187211ea102e0e811520a64d8aaf1)
