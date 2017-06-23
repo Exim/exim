@@ -801,10 +801,9 @@ tls_retry_connection:
 	  case PENDING_OK:
 	    new_domain_record.random_result = ccache_accept;
 	    break;
-	  case DEFER:
 	  case FAIL:
 	    new_domain_record.random_result = ccache_reject;
-
+	  case DEFER:
 	    /* Between each check, issue RSET, because some servers accept only
 	    one recipient after MAIL FROM:<>.
 	    XXX We don't care about that for postmaster_full.  Should we? */
