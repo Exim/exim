@@ -3469,6 +3469,11 @@ a macro definition. */
 
 while ((s = get_config_line()) != NULL)
   {
+
+  if (config_lineno == 1 && Ustrstr(s, "\xef\xbb\xbf") == s)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+      "found unexpected BOM (Byte Order Mark)");
+
   if (isupper(s[0])) read_macro_assignment(s);
 
   else if (Ustrncmp(s, "domainlist", 10) == 0)

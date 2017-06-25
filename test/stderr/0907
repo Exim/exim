@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 Exim configuration error in line 1 of TESTSUITE/test-config:
+  found unexpected BOM (Byte Order Mark)
