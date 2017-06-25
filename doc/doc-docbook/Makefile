@@ -96,6 +96,7 @@ filter.txt:   filter-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
                 MyStyle.xsl
 	      /bin/rm -rf filter-txt.html
 	      xmlto -x MyStyle-txt-html.xsl html-nochunks filter-txt.xml
+	      command -v w3m >/dev/null
 	      LC_ALL=C w3m -dump filter-txt.html | ./Tidytxt >filter.txt
 	      ./SanityTestText filter.txt
 
@@ -181,9 +182,11 @@ spec.utf8:	spec-txt.html Tidytxt
 		@grep -iq 'LC_CTYPE=.*utf-\?8' local_params || { \
 			echo 'your current locale does not support UTF-8' >&2; \
 			false; }
+		command -v w3m >/dev/null
 		w3m -dump $< | ./Tidytxt -utf8 >$@
 
 spec.txt: spec-txt.html Tidytxt
+	      command -v w3m >/dev/null
 	      LC_ALL=C w3m -dump $< | ./Tidytxt >$@
 	      ./SanityTestText spec.txt
 
@@ -270,6 +273,7 @@ test.txt:     test-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
                 MyStyle.xsl
 	      /bin/rm -rf test-txt.html
 	      xmlto -x MyStyle-txt-html.xsl html-nochunks test-txt.xml
+	      command -v w3m >/dev/null
 	      w3m -dump test-txt.html | Tidytxt >test.txt
 
 # I have not found a way of making docbook2texi write its output anywhere
