@@ -1398,7 +1398,7 @@ else
 DEBUG(D_transport)
   {
   debug_printf("appendfile: mode=%o notify_comsat=%d quota=" OFF_T_FMT
-    "%s"
+    "%s%s"
     " warning=" OFF_T_FMT "%s\n"
     "  %s=%s format=%s\n  message_prefix=%s\n  message_suffix=%s\n  "
     "maildir_use_size_file=%s\n",
