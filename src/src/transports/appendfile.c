@@ -234,7 +234,9 @@ appendfile_transport_options_block appendfile_transport_option_defaults = {
   FALSE,          /* mailstore_format */
   FALSE,          /* mbx_format */
   FALSE,          /* quota_warn_threshold_is_percent */
-  TRUE            /* quota_is_inclusive */
+  TRUE,           /* quota_is_inclusive */
+  FALSE,          /* quota_no_check */
+  FALSE           /* quota_filecount_no_check */
 };
 
 
@@ -285,9 +287,11 @@ mailbox_filecount */
 for (i = 0; i < 5; i++)
   {
   double d;
+  int no_check = 0;
   uschar *which = NULL;
 
-  if (q == NULL) d = default_value; else
+  if (q == NULL) d = default_value;
+  else
     {
     uschar *rest;
     uschar *s = expand_string(q);
@@ -321,12 +325,21 @@ for (i = 0; i < 5; i++)
       rest++;
       }
 
+
+    /* For quota and quota_filecount there may be options
+    appended. Currently only "no_check", so we can be lazy parsing it */
+    if (i < 2 && Ustrstr(rest, "/no_check") == rest)
+      {
+	 no_check = 1;
+	 rest += sizeof("/no_check") - 1;
+      }
+
     while (isspace(*rest)) rest++;
 
     if (*rest != 0)
       {
       *errmsg = string_sprintf("Malformed value \"%s\" (expansion of \"%s\") "
-        "in %s transport", s, q, tblock->name);
+        "in %s transport [%s]", s, q, tblock->name);
       return FAIL;
       }
     }
@@ -338,12 +351,14 @@ for (i = 0; i < 5; i++)
     case 0:
     if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4) which = US"quota";
     ob->quota_value = (off_t)d;
+    ob->quota_no_check = no_check;
     q = ob->quota_filecount;
     break;
 
     case 1:
     if (d >= 2.0*1024.0*1024.0*1024.0) which = US"quota_filecount";
     ob->quota_filecount_value = (int)d;
+    ob->quota_filecount_no_check = no_check;
     q = ob->quota_warn_threshold;
     break;
 
@@ -1383,10 +1398,13 @@ else
 DEBUG(D_transport)
   {
   debug_printf("appendfile: mode=%o notify_comsat=%d quota=" OFF_T_FMT
+    "%s"
     " warning=" OFF_T_FMT "%s\n"
     "  %s=%s format=%s\n  message_prefix=%s\n  message_suffix=%s\n  "
     "maildir_use_size_file=%s\n",
     mode, ob->notify_comsat, ob->quota_value,
+    ob->quota_no_check? " (no_check)" : "",
+    ob->quota_filecount_no_check? " (no_check_filecount)" : "",
     ob->quota_warn_threshold_value,
     ob->quota_warn_threshold_is_percent? "%" : "",
     isdirectory? "directory" : "file",
@@ -2777,21 +2795,33 @@ if (!disable_quota && ob->quota_value > 0)
     debug_printf("  file count quota = %d count = %d\n",
       ob->quota_filecount_value, mailbox_filecount);
     }
+
   if (mailbox_size + (ob->quota_is_inclusive? message_size:0) > ob->quota_value)
     {
-    DEBUG(D_transport) debug_printf("mailbox quota exceeded\n");
-    yield = DEFER;
-    errno = ERRNO_EXIMQUOTA;
+
+      if (!ob->quota_no_check)
+        {
+        DEBUG(D_transport) debug_printf("mailbox quota exceeded\n");
+        yield = DEFER;
+        errno = ERRNO_EXIMQUOTA;
+        }
+      else DEBUG(D_transport) debug_printf("mailbox quota exceeded but ignored\n");
+
     }
-  else if (ob->quota_filecount_value > 0 &&
-           mailbox_filecount + (ob->quota_is_inclusive ? 1:0) >
-             ob->quota_filecount_value)
-    {
-    DEBUG(D_transport) debug_printf("mailbox file count quota exceeded\n");
-    yield = DEFER;
-    errno = ERRNO_EXIMQUOTA;
-    filecount_msg = US" filecount";
-    }
+
+  if (ob->quota_filecount_value > 0
+           && mailbox_filecount + (ob->quota_is_inclusive ? 1:0) >
+              ob->quota_filecount_value)
+    if(!ob->quota_filecount_no_check)
+      {
+      DEBUG(D_transport) debug_printf("mailbox file count quota exceeded\n");
+      yield = DEFER;
+      errno = ERRNO_EXIMQUOTA;
+      filecount_msg = US" filecount";
+      }
+    else DEBUG(D_transport) if (ob->quota_filecount_no_check)
+      debug_printf("mailbox file count quota exceeded but ignored\n");
+
   }
 
 /* If we are writing in MBX format, what we actually do is to write the message

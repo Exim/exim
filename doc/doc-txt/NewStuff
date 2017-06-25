@@ -38,6 +38,9 @@ Version 4.90
  8. New main configuration option "commandline_checks_require_admin" to
     restrict who can use various introspection options.
 
+ 9. New option modifier "no_check" for quota and quota_filecount
+    appendfile transport.
+
 
 Version 4.89
 ------------

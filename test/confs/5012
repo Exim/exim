@@ -1,0 +1,35 @@
+# Exim test configuration 5011
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  directory = DIR/test-mail
+  maildir_format
+  quota = 30/no_check
+  quota_filecount = 1/no_check
+  user = CALLER
+  maildir_use_size_file
+
+# End

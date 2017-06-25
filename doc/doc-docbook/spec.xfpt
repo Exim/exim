@@ -22128,9 +22128,13 @@ the obvious value which users understand most easily.
 
 The value of the option is expanded, and must then be a numerical value
 (decimal point allowed), optionally followed by one of the letters K, M, or G,
-for kilobytes, megabytes, or gigabytes. If Exim is running on a system with
+for kilobytes, megabytes, or gigabytes, optionally followed by a slash
+and further option modifiers. If Exim is running on a system with
 large file support (Linux and FreeBSD have this), mailboxes larger than 2G can
 be handled.
+
+The option modifier &%no_check%& can be used to force delivery even if the over
+quota condition is met. The quota gets updated as usual.
 
 &*Note*&: A value of zero is interpreted as &"no quota"&.
 
@@ -22166,6 +22170,8 @@ can only be used if &%quota%& is also set. The value is expanded; an expansion
 failure causes delivery to be deferred. A value of zero is interpreted as
 &"no quota"&.
 
+The option modifier &%no_check%& can be used to force delivery even if the over
+quota condition is met. The quota gets updated as usual.
 
 .option quota_is_inclusive appendfile boolean true
 See &%quota%& above.
