@@ -333,7 +333,7 @@ while (*options != 0)
     {
     transport_instance *t;
     for (t = transports; t != NULL; t = t->next)
-      if (Ustrcmp(t->name, s) == 0)
+      if (Ustrncmp(t->name, s, n) == 0)
         {
         transport = t;
         individual_transport_set = TRUE;

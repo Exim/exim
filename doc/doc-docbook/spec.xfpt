@@ -19469,6 +19469,10 @@ instead of TRY_AGAIN. That is why the default action is to try a DNS
 lookup first. Only if that gives a definite &"no such host"& is the local
 function called.
 
+&*Compatibility*&: From Exim 4.85 until fixed for 4.90, there was an
+inadvertent constraint that a transport name as an option had to be the last
+option specified.
+
 
 
 If no IP address for a host can be found, what happens is controlled by the
