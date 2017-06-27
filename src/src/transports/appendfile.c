@@ -339,7 +339,7 @@ for (i = 0; i < 5; i++)
     if (*rest != 0)
       {
       *errmsg = string_sprintf("Malformed value \"%s\" (expansion of \"%s\") "
-        "in %s transport [%s]", s, q, tblock->name);
+        "in %s transport", s, q, tblock->name);
       return FAIL;
       }
     }
