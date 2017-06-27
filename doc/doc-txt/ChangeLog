@@ -109,7 +109,8 @@ JH/15 Fix a crash in the smtp transport caused when two hosts in succession
 JH/16 Fix logging of delivery remote port, when specified by router, under
       callout/hold.
 
-PP/06 Repair manualroute's ability to take options before hostnames.
+PP/06 Repair manualroute's ability to take options in any order, even if one
+      is the name of a transport.
       Fixes bug 2140.
 
 
