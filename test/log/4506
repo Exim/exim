@@ -13,3 +13,6 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 DKIM: validation error: RSA_LONG_LINE
 1999-03-02 09:44:33 10HmbA-0005vi-00 DKIM: Error during validation, disabling signature verification: RSA_LONG_LINE
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net
+1999-03-02 09:44:33 10HmbB-0005vi-00 DKIM: d=test.ex s=ses_sha256 c=simple/simple a=rsa-sha1 b=512 [verification failed - unspecified reason]
+1999-03-02 09:44:33 10HmbB-0005vi-00 signer: test.ex bits: 512
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net

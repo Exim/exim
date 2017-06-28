@@ -132,6 +132,7 @@ switch(ext_status)
   {
   case PDKIM_VERIFY_FAIL_BODY: return "PDKIM_VERIFY_FAIL_BODY";
   case PDKIM_VERIFY_FAIL_MESSAGE: return "PDKIM_VERIFY_FAIL_MESSAGE";
+  case PDKIM_VERIFY_FAIL_SIG_ALGO_MISMATCH: return "PDKIM_VERIFY_FAIL_SIG_ALGO_MISMATCH";
   case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE: return "PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE";
   case PDKIM_VERIFY_INVALID_BUFFER_SIZE: return "PDKIM_VERIFY_INVALID_BUFFER_SIZE";
   case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD: return "PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD";
@@ -644,12 +645,8 @@ for (p = raw_record; ; p++)
 	      case 'v':
 		pub->version = string_copy(cur_val); break;
 	      case 'h':
+		pub->hashes = string_copy(cur_val); break;
 	      case 'k':
-/* This field appears to never be used. Also, unclear why
-a 'k' (key-type_ would go in this field name.  There is a field
-"keytype", also never used.
-		pub->hashes = string_copy(cur_val);
-*/
 		break;
 	      case 'g':
 		pub->granularity = string_copy(cur_val); break;
@@ -682,7 +679,11 @@ a 'k' (key-type_ would go in this field name.  There is a field
 
 /* Set fallback defaults */
 if (!pub->version    ) pub->version     = string_copy(PDKIM_PUB_RECORD_VERSION);
-else if (Ustrcmp(pub->version, PDKIM_PUB_RECORD_VERSION) != 0) return NULL;
+else if (Ustrcmp(pub->version, PDKIM_PUB_RECORD_VERSION) != 0)
+  {
+  DEBUG(D_acl) debug_printf(" Bad v= field\n");
+  return NULL;
+  }
 
 if (!pub->granularity) pub->granularity = string_copy(US"*");
 /*
@@ -694,6 +695,7 @@ if (!pub->srvtype    ) pub->srvtype     = string_copy(US"*");
 if (pub->key.data)
   return pub;
 
+DEBUG(D_acl) debug_printf(" Missing p= field\n");
 return NULL;
 }
 
@@ -1630,6 +1632,25 @@ while (sig)
 
     if (!(sig->pubkey = pdkim_key_from_dns(ctx, sig, &vctx, err)))
       goto NEXT_VERIFY;
+
+    /* If the pubkey limits to a list of specific hashes, ignore sigs that
+    do not have the hash part of the sig algorithm matching */
+
+    if (sig->pubkey->hashes)
+      {
+      const uschar * list = sig->pubkey->hashes, * ele;
+      int sep = ':';
+      while ((ele = string_nextinlist(&list, &sep, NULL, 0)))
+	if (Ustrcmp(ele, pdkim_algos[sig->algo] + 4) == 0) break;
+      if (!ele)
+	{
+	DEBUG(D_acl) debug_printf("pubkey h=%s vs sig a=%s\n",
+				sig->pubkey->hashes, pdkim_algos[sig->algo]);
+	sig->verify_status =      PDKIM_VERIFY_FAIL;
+	sig->verify_ext_status =  PDKIM_VERIFY_FAIL_SIG_ALGO_MISMATCH;
+	goto NEXT_VERIFY;
+	}
+      }
 
     /* Check the signature */
     if ((*err = exim_rsa_verify(&vctx, is_sha1, &hhash, &sig->sighash)))

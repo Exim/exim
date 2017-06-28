@@ -51,12 +51,13 @@
 
 #define PDKIM_VERIFY_FAIL_BODY                    1
 #define PDKIM_VERIFY_FAIL_MESSAGE                 2
-#define PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE   3
-#define PDKIM_VERIFY_INVALID_BUFFER_SIZE          4
-#define PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD     5
-#define PDKIM_VERIFY_INVALID_PUBKEY_IMPORT        6
-#define PDKIM_VERIFY_INVALID_SIGNATURE_ERROR      7
-#define PDKIM_VERIFY_INVALID_DKIM_VERSION         8
+#define PDKIM_VERIFY_FAIL_SIG_ALGO_MISMATCH	  3
+#define PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE   4
+#define PDKIM_VERIFY_INVALID_BUFFER_SIZE          5
+#define PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD     6
+#define PDKIM_VERIFY_INVALID_PUBKEY_IMPORT        7
+#define PDKIM_VERIFY_INVALID_SIGNATURE_ERROR      8
+#define PDKIM_VERIFY_INVALID_DKIM_VERSION         9
 
 /* -------------------------------------------------------------------------- */
 /* Some parameter values */
@@ -100,8 +101,8 @@ typedef struct pdkim_pubkey {
   uschar *version;                /* v=  */
   uschar *granularity;            /* g=  */
 
-#ifdef notdef
   uschar *hashes;                 /* h=  */
+#ifdef notdef
   uschar *keytype;                /* k=  */
 #endif
   uschar *srvtype;                /* s=  */

@@ -138,6 +138,9 @@ JH/21 Bug 2151: Avoid using SIZE on the MAIL for a callout verify, on any but
 JH/22 Retire historical build files to an "unsupported" subdir.  These are
       defined as "ones for which we have no current evidence of testing".
 
+JH/23 DKIM: enforce the DNS pubkey record "h" permitted-hashes optional field,
+      if present.  Previously it was ignored.
+
 
 Exim version 4.89
 -----------------
