@@ -2702,7 +2702,7 @@ if (defined $parm_trusted_config_list)
   open(TCL, $parm_trusted_config_list) or die "Can't open $parm_trusted_config_list: $!\n";
   my $test_config = getcwd() . '/test-config';
   die "Can't find '$test_config' in TRUSTED_CONFIG_LIST $parm_trusted_config_list."
-  if not grep { /^$test_config$/ } <TCL>;
+  if not grep { /^\Q$test_config\E$/ } <TCL>;
   }
 else
   {
