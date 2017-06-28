@@ -113,6 +113,8 @@ PP/06 Repair manualroute's ability to take options in any order, even if one
       is the name of a transport.
       Fixes bug 2140.
 
+HS/01 Cleanup, prevent repeated use of -p/-oMr (CVE-2017-1000369)
+
 
 Exim version 4.89
 -----------------
