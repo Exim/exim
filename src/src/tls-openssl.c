@@ -1426,7 +1426,6 @@ tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
 #endif
   address_item *addr, tls_ext_ctx_cb ** cbp)
 {
-SSL_CTX * ctx;
 long init_options;
 int rc;
 tls_ext_ctx_cb * cbinfo;
@@ -1499,10 +1498,10 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-DEBUG(D_tls) SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
+DEBUG(D_tls) SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
 
 /* Automatically re-try reads/writes after renegotiation. */
-(void) SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
+(void) SSL_CTX_set_mode(*ctxp, SSL_MODE_AUTO_RETRY);
 
 /* Apply administrator-supplied work-arounds.
 Historically we applied just one requested option,
@@ -1519,7 +1518,7 @@ if (!tls_openssl_options_parse(openssl_options, &init_options))
 if (init_options)
   {
   DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
-  if (!(SSL_CTX_set_options(ctx, init_options)))
+  if (!(SSL_CTX_set_options(*ctxp, init_options)))
     return tls_error(string_sprintf(
           "SSL_CTX_set_option(%#lx)", init_options), host, NULL);
   }
@@ -1528,7 +1527,7 @@ else
 
 /* Disable session cache unconditionally */
 
-(void) SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
+(void) SSL_CTX_set_session_cache_mode(*ctxp, SSL_SESS_CACHE_OFF);
 
 /* Initialize with DH parameters if supplied */
 /* Initialize ECDH temp key parameter selection */
@@ -1563,14 +1562,14 @@ if (host == NULL)		/* server */
   callback is invoked. */
   if (cbinfo->u_ocsp.server.file)
     {
-    SSL_CTX_set_tlsext_status_cb(ctx, tls_server_stapling_cb);
-    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
+    SSL_CTX_set_tlsext_status_cb(*ctxp, tls_server_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(*ctxp, cbinfo);
     }
 # endif
   /* We always do this, so that $tls_sni is available even if not used in
   tls_certificate */
-  SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
-  SSL_CTX_set_tlsext_servername_arg(ctx, cbinfo);
+  SSL_CTX_set_tlsext_servername_callback(*ctxp, tls_servername_cb);
+  SSL_CTX_set_tlsext_servername_arg(*ctxp, cbinfo);
   }
 # ifndef DISABLE_OCSP
 else			/* client */
@@ -1581,8 +1580,8 @@ else			/* client */
       DEBUG(D_tls) debug_printf("failed to create store for stapling verify\n");
       return FAIL;
       }
-    SSL_CTX_set_tlsext_status_cb(ctx, tls_client_stapling_cb);
-    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
+    SSL_CTX_set_tlsext_status_cb(*ctxp, tls_client_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(*ctxp, cbinfo);
     }
 # endif
 #endif
@@ -1591,16 +1590,15 @@ cbinfo->verify_cert_hostnames = NULL;
 
 #ifdef EXIM_HAVE_EPHEM_RSA_KEX
 /* Set up the RSA callback */
-SSL_CTX_set_tmp_rsa_callback(ctx, rsa_callback);
+SSL_CTX_set_tmp_rsa_callback(*ctxp, rsa_callback);
 #endif
 
 /* Finally, set the timeout, and we are done */
 
-SSL_CTX_set_timeout(ctx, ssl_session_timeout);
+SSL_CTX_set_timeout(*ctxp, ssl_session_timeout);
 DEBUG(D_tls) debug_printf("Initialized TLS\n");
 
 *cbp = cbinfo;
-*ctxp = ctx;
 
 return OK;
 }
