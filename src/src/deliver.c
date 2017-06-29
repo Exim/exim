@@ -3308,7 +3308,12 @@ Each separate item is written to the pipe in a single write(), and as they are
 all short items, the writes will all be atomic and we should never find
 ourselves in the position of having read an incomplete item. "Short" in this
 case can mean up to about 1K in the case when there is a long error message
-associated with an address. */
+associated with an address.
+
+write(3) [Linux] says that atomic writes are not interleaved with each other.
+Not more.
+
+*/
 
 DEBUG(D_deliver) debug_printf("reading pipe for subprocess %d (%s)\n",
   (int)p->pid, eop? "ended" : "not ended");
@@ -4130,44 +4135,43 @@ while (parcount > max)
 
 
 
-
 static void
 rmt_dlv_checked_write(int fd, char id, char subid, void * buf, int size)
 {
-uschar	writebuffer[PIPE_HEADER_SIZE + BIG_BUFFER_SIZE];
-int header_length;
+uschar pipe_header[PIPE_HEADER_SIZE+1];
+size_t total_len = PIPE_HEADER_SIZE + size;
+
+struct iovec iov[2] = {
+  { pipe_header, PIPE_HEADER_SIZE },  /* indication about the data to expect */
+  { buf, size }                       /* *the* data */
+};
+
 int ret;
 
 /* we assume that size can't get larger then BIG_BUFFER_SIZE which currently is set to 16k */
 /* complain to log if someone tries with buffer sizes we can't handle*/
 
-if (size > 99999)
+if (size > BIG_BUFFER_SIZE-1)
   {
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "Failed writing transport result to pipe: can't handle buffers > 99999 bytes. truncating!\n");
-  size = 99999;
+    "Failed writing transport result to pipe: can't handle buffers > %d bytes. truncating!\n",
+      BIG_BUFFER_SIZE-1);
+  size = BIG_BUFFER_SIZE;
   }
 
-/* to keep the write() atomic we build header in writebuffer and copy buf behind */
-/* two write() calls would increase the complexity of reading from pipe */
+/* Should we check that we do not write more than PIPE_BUF? What whould
+that help? */
 
 /* convert size to human readable string prepended by id and subid */
-header_length = snprintf(CS writebuffer, PIPE_HEADER_SIZE+1, "%c%c%05d", id, subid, size);
-if (header_length != PIPE_HEADER_SIZE)
-  {
+if (PIPE_HEADER_SIZE != snprintf(CS pipe_header, PIPE_HEADER_SIZE+1, "%c%c%05d", id, subid, size))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "header snprintf failed\n");
-  writebuffer[0] = '\0';
-  }
 
 DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%d,final:%s\n",
-                                 id, subid, size, writebuffer);
+                                 id, subid, size, pipe_header);
 
-if (buf && size > 0)
-  memcpy(writebuffer + PIPE_HEADER_SIZE, buf, size);
-
-size += PIPE_HEADER_SIZE;
-if ((ret = write(fd, writebuffer, size)) != size)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed writing transport result to pipe: %s\n",
+if ((ret = writev(fd, iov, 2)) != total_len)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed writing transport result to pipe (%d of %d bytes): %s",
+    ret == -1 ? 0 : ret, total_len,
     ret == -1 ? strerror(errno) : "short write");
 }
 
@@ -8551,7 +8555,7 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
     if ((pid = fork()) < 0)
       goto fail;
 
-    else if (pid == 0)		/* child: fork again to totally dosconnect */
+    else if (pid == 0)		/* child: fork again to totally disconnect */
       {
       close(pfd[1]);
       if ((pid = fork()))
