@@ -2639,36 +2639,18 @@ RCPT. */
 
 if (mua_wrapper)
   {
-  /* Initiate a message transfer. */
+  address_item * a;
+  unsigned cnt;
 
-  switch(smtp_write_mail_and_rcpt_cmds(&sx, &yield))
-    {
-    case 0:		break;
-    case -1: case -2:	goto RESPONSE_FAILED;
-    case -3:		goto END_OFF;
-    case -4:		goto SEND_QUIT;
-    default:		goto SEND_FAILED;
-    }
-
-  /* If we are an MUA wrapper, abort if any RCPTs were rejected, either
-  permanently or temporarily. We should have flushed and synced after the last
-  RCPT. */
-
-  if (mua_wrapper)
-    {
-    address_item * a;
-    unsigned cnt;
-
-    for (a = sx.first_addr, cnt = 0; a && cnt < sx.max_rcpt; a = a->next, cnt++)
-      if (a->transport_return != PENDING_OK)
-	{
-	/*XXX could we find a better errno than 0 here? */
-	set_errno_nohost(addrlist, 0, a->message, FAIL,
-	  testflag(a, af_pass_message));
-	sx.ok = FALSE;
-	break;
-	}
-    }
+  for (a = sx.first_addr, cnt = 0; a && cnt < sx.max_rcpt; a = a->next, cnt++)
+    if (a->transport_return != PENDING_OK)
+      {
+      /*XXX could we find a better errno than 0 here? */
+      set_errno_nohost(addrlist, 0, a->message, FAIL,
+	testflag(a, af_pass_message));
+      sx.ok = FALSE;
+      break;
+      }
   }
 
 /* If ok is TRUE, we know we have got at least one good recipient, and must now
