@@ -400,7 +400,8 @@ Version 4.82
     It adds new expansion variables $dmarc_ar_header, $dmarc_status,
     $dmarc_status_text, and $dmarc_used_domain.  It adds a new acl modifier
     dmarc_status.  It adds new control flags dmarc_disable_verify and
-    dmarc_enable_forensic.
+    dmarc_enable_forensic. The default for the dmarc_tld_file option is
+    "/etc/exim/opendmarc.tlds" and can be changed via EDITME.
 
 22. Add expansion variable $authenticated_fail_id, which is the username
     provided to the authentication method which failed.  It is available

@@ -83,8 +83,7 @@ int dmarc_init()
 int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
 char *tld_file = (dmarc_tld_file == NULL) ?
-		 "/etc/exim/opendmarc.tlds" :
-		 (char *)dmarc_tld_file;
+		 DMARC_TLD_FILE : (char *)dmarc_tld_file;
 
 /* Set some sane defaults.  Also clears previous results when
  * multiple messages in one connection. */

@@ -473,6 +473,7 @@ EXIM_MONITOR=eximon.bin
 # Uncomment the following line to add DMARC checking capability, implemented
 # using libopendmarc libraries.  You must have SPF support enabled also.
 # EXPERIMENTAL_DMARC=yes
+# DMARC_TLD_FILE= /etc/exim/opendmarc.tlds
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lopendmarc
 
