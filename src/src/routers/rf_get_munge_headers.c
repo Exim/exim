@@ -91,6 +91,10 @@ if (rblock->remove_headers)
   const uschar * list = rblock->remove_headers;
   int sep = ':';
   uschar * s;
+  int size = 0, len = 0;
+
+  if (*remove_headers)
+    size = (len = Ustrlen(*remove_headers)) + 1;
 
   while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     if (!(s = expand_string(s)))
@@ -104,7 +108,7 @@ if (rblock->remove_headers)
 	}
       }
     else if (*s)
-      *remove_headers = string_append_listele(*remove_headers, ':', s);
+      *remove_headers = string_append_listele(*remove_headers, &size, &len, ':', s);
   }
 
 return OK;

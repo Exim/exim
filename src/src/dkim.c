@@ -251,10 +251,12 @@ for (sig = dkim_signatures; sig; sig = sig->next)
   /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
 
   if (sig->domain)
-    dkim_signers = string_append_listele(dkim_signers, ':', sig->domain);
+    dkim_signers = string_append_listele(dkim_signers, &dkim_signers_size,
+      &dkim_signers_ptr, ':', sig->domain);
 
   if (sig->identity)
-    dkim_signers = string_append_listele(dkim_signers, ':', sig->identity);
+    dkim_signers = string_append_listele(dkim_signers, &dkim_signers_size,
+      &dkim_signers_ptr, ':', sig->identity);
 
   /* Process next signature */
   }

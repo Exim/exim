@@ -5985,7 +5985,9 @@ while (*s != 0)
         {
 	uschar * dstitem;
 	uschar * newlist = NULL;
+	int size = 0, len = 0;
 	uschar * newkeylist = NULL;
+	int ksize = 0, klen = 0;
 	uschar * srcfield;
 
         DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, srcitem);
@@ -6030,33 +6032,33 @@ while (*s != 0)
 	    /* New-item sorts before this dst-item.  Append new-item,
 	    then dst-item, then remainder of dst list. */
 
-	    newlist = string_append_listele(newlist, sep, srcitem);
-	    newkeylist = string_append_listele(newkeylist, sep, srcfield);
+	    newlist = string_append_listele(newlist, &size, &len, sep, srcitem);
+	    newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, srcfield);
 	    srcitem = NULL;
 
-	    newlist = string_append_listele(newlist, sep, dstitem);
-	    newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	    newlist = string_append_listele(newlist, &size, &len, sep, dstitem);
+	    newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, dstfield);
 
 	    while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
 	      {
 	      if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
 		goto sort_mismatch;
-	      newlist = string_append_listele(newlist, sep, dstitem);
-	      newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	      newlist = string_append_listele(newlist, &size, &len, sep, dstitem);
+	      newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, dstfield);
 	      }
 
 	    break;
 	    }
 
-	  newlist = string_append_listele(newlist, sep, dstitem);
-	  newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	  newlist = string_append_listele(newlist, &size, &len, sep, dstitem);
+	  newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, dstfield);
 	  }
 
 	/* If we ran out of dstlist without consuming srcitem, append it */
 	if (srcitem)
 	  {
-	  newlist = string_append_listele(newlist, sep, srcitem);
-	  newkeylist = string_append_listele(newkeylist, sep, srcfield);
+	  newlist = string_append_listele(newlist, &size, &len, sep, srcitem);
+	  newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, srcfield);
 	  }
 
 	dstlist = newlist;

@@ -968,50 +968,6 @@ else
 *listptr = s;
 return buffer;
 }
-#endif  /* COMPILE_UTILITY */
-
-
-#ifndef COMPILE_UTILITY
-/************************************************
-*	Add element to separated list           *
-************************************************/
-/* This function is used to build a list, returning
-an allocated null-terminated growable string. The
-given element has any embedded separator characters
-doubled.
-
-Arguments:
-  list	points to the start of the list that is being built, or NULL
-	if this is a new list that has no contents yet
-  sep	list separator character
-  ele	new element to be appended to the list
-
-Returns:  pointer to the start of the list, changed if copied for expansion.
-*/
-
-uschar *
-string_append_listele(uschar * list, uschar sep, const uschar * ele)
-{
-uschar * new = NULL;
-int sz = 0, off = 0;
-uschar * sp;
-
-if (list)
-  {
-  new = string_cat (new, &sz, &off, list);
-  new = string_catn(new, &sz, &off, &sep, 1);
-  }
-
-while((sp = Ustrchr(ele, sep)))
-  {
-  new = string_catn(new, &sz, &off, ele, sp-ele+1);
-  new = string_catn(new, &sz, &off, &sep, 1);
-  ele = sp+1;
-  }
-new = string_cat(new, &sz, &off, ele);
-new[off] = '\0';
-return new;
-}
 
 
 static const uschar *
@@ -1032,36 +988,73 @@ while (siz)
 return NULL;
 }
 
+
+/************************************************
+*	Add element to separated list           *
+************************************************/
+/* This function is used to build a list, returning an allocated null-terminated
+growable string. The given element has any embedded separator characters
+doubled.
+
+Despite having the same growable-string interface as string_cat() the list is
+always returned null-terminated.
+
+Arguments:
+  list	points to the start of the list that is being built, or NULL
+	if this is a new list that has no contents yet
+  sz    (ptr to) amount of memory allocated for list; zero for a new list
+  off   (ptr to) current list length in chars (insert point for next addition),
+        zero for a new list
+  sep	list separator character
+  ele	new element to be appended to the list
+
+Returns:  pointer to the start of the list, changed if copied for expansion.
+*/
+
 uschar *
-string_append_listele_n(uschar * list, uschar sep, const uschar * ele,
-  unsigned len)
+string_append_listele(uschar * list, int * sz, int * off,
+  uschar sep, const uschar * ele)
 {
-uschar * new = NULL;
-int sz = 0, off = 0;
+uschar * sp;
+
+if (list)
+  list = string_catn(list, sz, off, &sep, 1);
+
+while((sp = Ustrchr(ele, sep)))
+  {
+  list = string_catn(list, sz, off, ele, sp-ele+1);
+  list = string_catn(list, sz, off, &sep, 1);
+  ele = sp+1;
+  }
+list = string_cat(list, sz, off, ele);
+list[*off] = '\0';
+return list;
+}
+
+
+uschar *
+string_append_listele_n(uschar * list, int * sz, int * off,
+  uschar sep, const uschar * ele, unsigned len)
+{
 const uschar * sp;
 
 if (list)
-  {
-  new = string_cat (new, &sz, &off, list);
-  new = string_catn(new, &sz, &off, &sep, 1);
-  }
+  list = string_catn(list, sz, off, &sep, 1);
 
 while((sp = Ustrnchr(ele, sep, &len)))
   {
-  new = string_catn(new, &sz, &off, ele, sp-ele+1);
-  new = string_catn(new, &sz, &off, &sep, 1);
+  list = string_catn(list, sz, off, ele, sp-ele+1);
+  list = string_catn(list, sz, off, &sep, 1);
   ele = sp+1;
   len--;
   }
-new = string_catn(new, &sz, &off, ele, len);
-new[off] = '\0';
-return new;
+list = string_catn(list, sz, off, ele, len);
+list[*off] = '\0';
+return list;
 }
-#endif  /* COMPILE_UTILITY */
 
 
 
-#ifndef COMPILE_UTILITY
 /*************************************************
 *             Add chars to string                *
 *************************************************/

@@ -1899,9 +1899,13 @@ switch (type)
       const uschar * list = sptr;
       uschar * s;
       uschar * list_o = *str_target;
+      int size = 0, len = 0;
+
+      if (list_o)
+	size = (len = Ustrlen(list_o)) + 1;
 
       while ((s = string_nextinlist(&list, &sep_i, NULL, 0)))
-	list_o = string_append_listele(list_o, sep_o, s);
+	list_o = string_append_listele(list_o, &size, &len, sep_o, s);
       if (list_o)
 	*str_target = string_copy_malloc(list_o);
       }

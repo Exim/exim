@@ -280,6 +280,7 @@ uschar *
 tls_cert_subject_altname(void * cert, uschar * mod)
 {
 uschar * list = NULL;
+int lsize = 0, llen = 0;
 int index;
 size_t siz;
 int ret;
@@ -332,7 +333,7 @@ for(index = 0;; index++)
     case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
     default: continue;        /* ignore unrecognised types */
     }
-  list = string_append_listele(list, sep,
+  list = string_append_listele(list, &lsize, &llen, sep,
           match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 /*NOTREACHED*/
@@ -347,6 +348,7 @@ int ret;
 uschar sep = '\n';
 int index;
 uschar * list = NULL;
+int lsize = 0, llen = 0;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -361,8 +363,8 @@ for(index = 0;; index++)
   if (ret < 0)
     return g_err("gai", __FUNCTION__, ret);
 
-  list = string_append_listele(list, sep,
-	    string_copyn(uri.data, uri.size));
+  list = string_append_listele_n(list, &lsize, &llen, sep,
+	    uri.data, uri.size);
   }
 /*NOTREACHED*/
 
@@ -384,6 +386,7 @@ size_t siz;
 uschar sep = '\n';
 int index;
 uschar * list = NULL;
+int lsize = 0, llen = 0;
 uschar * ele;
 
 if (mod)
@@ -403,13 +406,12 @@ for(index = 0;; index++)
       return g_err("gc0", __FUNCTION__, ret);
     }
 
-  ele = store_get(siz+1);
+  ele = store_get(siz);
   if ((ret = gnutls_x509_crt_get_crl_dist_points(
       (gnutls_x509_crt_t)cert, index, ele, &siz, NULL, NULL)) < 0)
     return g_err("gc1", __FUNCTION__, ret);
 
-  ele[siz] = '\0';
-  list = string_append_listele(list, sep, ele);
+  list = string_append_listele_n(list, &lsize, &llen, sep, ele, siz);
   }
 /*NOTREACHED*/
 }

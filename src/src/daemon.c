@@ -1173,6 +1173,8 @@ if (daemon_listen && !inetd_wait_mode)
   while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
     if (!isdigit(*s))
       {
+      int size = 0, len = 0;
+
       list = tls_in.on_connect_ports;
       tls_in.on_connect_ports = NULL;
       sep = 0;
@@ -1180,13 +1182,13 @@ if (daemon_listen && !inetd_wait_mode)
 	{
         if (!isdigit(*s))
 	  {
-	  struct servent *smtp_service = getservbyname(CS s, "tcp");
+	  struct servent * smtp_service = getservbyname(CS s, "tcp");
 	  if (!smtp_service)
 	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
-	  s= string_sprintf("%d", (int)ntohs(smtp_service->s_port));
+	  s = string_sprintf("%d", (int)ntohs(smtp_service->s_port));
 	  }
 	tls_in.on_connect_ports = string_append_listele(tls_in.on_connect_ports,
-	    ':', s);
+	    &size, &len, ':', s);
 	}
       break;
       }
