@@ -239,11 +239,12 @@ if (-t 1 and $use_pager)
   {
   foreach ($ENV{PAGER}//(), 'less', 'more')
     {
+    local $ENV{LESS} .= ' --no-init --quit-if-one-screen';
     open(my $pager, '|-', $_) or next;
     select $pager;
     last;
     }
-}
+  }
 
 # If file arguments are given, open each one and process according as it is
 # is compressed or not.
