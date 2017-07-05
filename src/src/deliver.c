@@ -848,7 +848,7 @@ deliver_host =   addr->host_used ? addr->host_used->name : NULL;
 	  addr->host_used
           || Ustrcmp(addr->transport->driver_name, "smtp") == 0
 	  || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
-	 ? addr->message : NULL); 
+	 ? addr->message : NULL);
 
 deliver_host_port =    save_port;
 deliver_host_address = save_address;
@@ -2221,7 +2221,7 @@ if (  !shadowing
   addr->return_filename =
     spool_fname(US"msglog", message_subdir, message_id,
       string_sprintf("-%d-%d", getpid(), return_count++));
-  
+
   if ((addr->return_file = open_msglog_file(addr->return_filename, 0400, &error)) < 0)
     {
     common_error(TRUE, addr, errno, US"Unable to %s file for %s transport "
@@ -4615,11 +4615,15 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     that it can use either of them, though it prefers O_NONBLOCK, which
     distinguishes between EOF and no-more-data. */
 
+/* The data appears in a timely manner and we already did a select on
+all pipes, so I do not see a reason to use non-blocking IO here
+
 #ifdef O_NONBLOCK
     (void)fcntl(pfd[pipe_read], F_SETFL, O_NONBLOCK);
 #else
     (void)fcntl(pfd[pipe_read], F_SETFL, O_NDELAY);
 #endif
+*/
 
     /* If the maximum number of subprocesses already exist, wait for a process
     to finish. If we ran out of file descriptors, parmax will have been reduced
@@ -7011,7 +7015,7 @@ if (addr_local || addr_remote)
   if (journal_fd < 0)
     {
     uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
-    
+
     if ((journal_fd = Uopen(fname,
 #ifdef O_CLOEXEC
 			O_CLOEXEC |
