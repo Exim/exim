@@ -221,9 +221,10 @@ Delivery address list:
   rd+usery@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@test.ex
@@ -416,8 +417,9 @@ routed by r1 router
   transport: t1
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/junk
@@ -443,8 +445,9 @@ search_tidyup called
 --------> TESTSUITE/test-mail/junk <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
  ┌considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
@@ -502,8 +505,9 @@ LOG: MAIN
 --------> TESTSUITE/test-mail/junk <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=ft1
@@ -558,8 +562,9 @@ LOG: MAIN
 --------> CALLER@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to CALLER <CALLER@test.ex> transport=t1
@@ -583,8 +588,9 @@ LOG: MAIN
 --------> usery@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
  ┌considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
@@ -611,8 +617,9 @@ LOG: MAIN
 --------> userz@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
  ┌considering: /$local_part
  ├──expanding: /$local_part

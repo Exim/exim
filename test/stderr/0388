@@ -9,9 +9,10 @@ set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
@@ -76,8 +77,9 @@ set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (x@y)
@@ -107,8 +109,9 @@ address match test: subject=*@127.0.0.1 pattern=*
 checking status of V4NET.0.0.0
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 V4NET.0.0.0 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0] (x@y)
@@ -137,8 +140,8 @@ Deferred addresses:
  x@y
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x2
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=x@y pattern=*
 y in "*"? yes (matched "*")
@@ -164,6 +167,7 @@ dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 end of retry processing
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb95ced -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
@@ -236,8 +240,8 @@ set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
@@ -248,6 +252,7 @@ dbfn_read: key=R:CALLER@myhost.test.ex:<>
 no domain retry record
 no address retry record
 CALLER@myhost.test.ex: queued for routing
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex

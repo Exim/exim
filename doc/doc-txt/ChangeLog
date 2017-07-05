@@ -123,6 +123,11 @@ JH/18 Prebuild the data-structure for "builtin" macros, for faster startup.
       was met in the configuration file input during startup; now it is done
       during compilation.
 
+JH/19 Bug 2141: Use the full-complex API for Berkeley DB rather than the legacy-
+      compatible one, to avoid the (poorly documented) possibility of a config
+      file in the working directory redirecting the DB files, possibly correpting
+      some existing file.
+
 
 Exim version 4.89
 -----------------

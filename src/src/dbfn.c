@@ -161,9 +161,7 @@ it easy to pin this down, there are now debug statements on either side of the
 open call. */
 
 snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
-DEBUG(D_hints_lookup) debug_printf("EXIM_DBOPEN(%s)\n", filename);
 EXIM_DBOPEN(filename, dirname, flags, EXIMDB_MODE, &(dbblock->dbptr));
-DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN\n");
 
 if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
   {
@@ -171,7 +169,6 @@ if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
     debug_printf("%s appears not to exist: trying to create\n", filename);
   created = TRUE;
   EXIM_DBOPEN(filename, dirname, flags|O_CREAT, EXIMDB_MODE, &(dbblock->dbptr));
-  DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN\n");
   }
 
 save_errno = errno;
@@ -217,17 +214,17 @@ if (created && geteuid() == root_uid)
   }
 
 /* If the open has failed, return NULL, leaving errno set. If lof is TRUE,
-log the event - also for debugging - but not if the file just doesn't exist. */
+log the event - also for debugging - but debug only if the file just doesn't
+exist. */
 
 if (!dbblock->dbptr)
   {
-  if (save_errno != ENOENT)
-    if (lof)
-      log_write(0, LOG_MAIN, "%s", string_open_failed(save_errno, "DB file %s",
+  if (lof && save_errno != ENOENT)
+    log_write(0, LOG_MAIN, "%s", string_open_failed(save_errno, "DB file %s",
         filename));
-    else
-      DEBUG(D_hints_lookup)
-        debug_printf("%s", CS string_open_failed(save_errno, "DB file %s\n",
+  else
+    DEBUG(D_hints_lookup)
+      debug_printf("%s\n", CS string_open_failed(save_errno, "DB file %s",
           filename));
   (void)close(dbblock->lockfd);
   errno = save_errno;
@@ -532,7 +529,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     odb = dbfn_open(s, O_RDWR, dbblock + i, TRUE);
     stop = clock();
 
-    if (odb != NULL)
+    if (odb)
       {
       current = i;
       printf("opened %d\n", current);

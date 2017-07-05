@@ -517,15 +517,16 @@ uschar keybuffer[1024];
 
 dbdata_type = check_args(argc, argv, US"dumpdb", US"");
 spool_directory = argv[1];
-dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE);
-if (dbm == NULL) exit(1);
+if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE)))
+  exit(1);
 
 /* Scan the file, formatting the information for each entry. Note
 that data is returned in a malloc'ed block, in order that it be
 correctly aligned. */
 
-key = dbfn_scan(dbm, TRUE, &cursor);
-while (key != NULL)
+for (key = dbfn_scan(dbm, TRUE, &cursor);
+     key;
+     key = dbfn_scan(dbm, FALSE, &cursor))
   {
   dbdata_retry *retry;
   dbdata_wait *wait;
@@ -547,9 +548,8 @@ while (key != NULL)
     return 1;
     }
   Ustrcpy(keybuffer, key);
-  value = dbfn_read_with_length(dbm, keybuffer, &length);
 
-  if (value == NULL)
+  if (!(value = dbfn_read_with_length(dbm, keybuffer, &length)))
     fprintf(stderr, "**** Entry \"%s\" was in the key scan, but the record "
                     "was not found in the file - something is wrong!\n",
       CS keybuffer);
@@ -669,7 +669,6 @@ while (key != NULL)
       }
     store_reset(value);
     }
-  key = dbfn_scan(dbm, FALSE, &cursor);
   }
 
 dbfn_close(dbm);
@@ -776,8 +775,9 @@ for(;;)
     {
     int verify = 1;
     spool_directory = argv[1];
-    dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE);
-    if (dbm == NULL) continue;
+
+    if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE)))
+      continue;
 
     if (Ustrcmp(field, "d") == 0)
       {
@@ -973,11 +973,10 @@ for(;;)
   /* Handle a read request, or verify after an update. */
 
   spool_directory = argv[1];
-  dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE);
-  if (dbm == NULL) continue;
+  if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE)))
+    continue;
 
-  record = dbfn_read_with_length(dbm, name, &oldlength);
-  if (record == NULL)
+  if (!(record = dbfn_read_with_length(dbm, name, &oldlength)))
     {
     printf("record %s not found\n", name);
     name[0] = 0;
@@ -1160,8 +1159,8 @@ oldest = time(NULL) - maxkeep;
 printf("Tidying Exim hints database %s/db/%s\n", argv[1], argv[2]);
 
 spool_directory = argv[1];
-dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE);
-if (dbm == NULL) exit(1);
+if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE)))
+  exit(1);
 
 /* Prepare for building file names */
 
@@ -1174,14 +1173,14 @@ to the file while scanning it. Pity the man page doesn't warn you about that.
 Therefore, we scan and build a list of all the keys. Then we use that to
 read the records and possibly update them. */
 
-key = dbfn_scan(dbm, TRUE, &cursor);
-while (key != NULL)
+for (key = dbfn_scan(dbm, TRUE, &cursor);
+     key;
+     key = dbfn_scan(dbm, FALSE, &cursor))
   {
   key_item *k = store_get(sizeof(key_item) + Ustrlen(key));
   k->next = keychain;
   keychain = k;
   Ustrcpy(k->key, key);
-  key = dbfn_scan(dbm, FALSE, &cursor);
   }
 
 /* Now scan the collected keys and operate on the records, resetting
@@ -1189,7 +1188,7 @@ the store each time round. */
 
 reset_point = store_get(0);
 
-while (keychain != NULL)
+while (keychain)
   {
   dbdata_generic *value;
 

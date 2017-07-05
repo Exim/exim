@@ -30,6 +30,7 @@ characters. */
 
 #include "exim.h"
 
+uschar * spool_directory = NULL;	/* dummy for dbstuff.h */
 
 #define max_insize   20000
 #define max_outsize 100000

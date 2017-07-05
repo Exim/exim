@@ -1106,6 +1106,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
 
+    # Specific pointer values reported for DB operations change from run to run
+    s/^(returned from EXIM_DBOPEN: 0x)[0-9a-f]+/$1AAAAAAAA/;
+    s/^(EXIM_DBCLOSE.0x)[0-9a-f]+/$1AAAAAAAA/;
+
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
     # of the files that are obtained using readdir() varies from system to
